@@ -154,11 +154,11 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
 {
     int count = wrappers.size();
     for (int i = 0; i < count; i++) {
-        auto wrapper = wrappers[i].first;
+        auto wrapper = wrappers[i].wrapper;
         auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
-        if (wrappers[i].second) {
+        if (wrappers[i].events) {
             EventSerieBasePtr eventSerie = core::dynamic_pointer_cast<EventSerieBase>(serieX);
-            eventSerie->setEvents(wrappers[i].second);
+            eventSerie->setEvents(wrappers[i].events);
         }
         INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
         

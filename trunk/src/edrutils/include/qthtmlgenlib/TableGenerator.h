@@ -17,6 +17,8 @@
 #include <utils/Debug.h>
 #include <boost/array.hpp>
 
+namespace htmlGen {
+
 template<class T>
 class DataTable
 {
@@ -433,4 +435,5 @@ private:
 	QTextTableFormat tableFormat_;
 };
 
+}
 #endif	//	HEADER_GUARD___TABLEGENERATOR_H__

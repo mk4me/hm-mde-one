@@ -60,7 +60,7 @@ int Pin::getIndexOfConnection(const ConnPtr & connection) const
 
 const ConnPtr & Pin::getConnection(int idx) const
 {
-    UTILS_ASSERT((idx >= 0 && idx < connections.size()), "B³êdny indeks po³¹czenia");
+    UTILS_ASSERT((idx >= 0 && idx < static_cast<int>(connections.size())), "B³êdny indeks po³¹czenia");
     return connections[idx];
 }
 

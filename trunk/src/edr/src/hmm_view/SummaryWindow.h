@@ -14,10 +14,12 @@ class HmmMainWindow;
 class VisualizerWidget;
 class TreeItemHelper;
 
+#include <plugins/subject/ISubject.h>
+
 class SummaryWindow
 {
 public:
-    SummaryWindow(HmmMainWindow* hmm) : hmm(hmm) {}
+    SummaryWindow(HmmMainWindow* hmm) : hmm(hmm), tree(nullptr) {}
 	virtual ~SummaryWindow() {}
 
 public:
@@ -27,8 +29,13 @@ public:
     void initialize();
     void display(const HelpersCollection& helpers);
 
+    void addItem( QString text, QTreeWidgetItem* root );
+
+    QString createDescription( PluginSubject::MotionConstPtr motion ) const;
+
 private:
     HmmMainWindow* hmm;
+    QTreeWidget* tree;
 };
 typedef core::shared_ptr<SummaryWindow> SummaryWindowPtr;
 typedef core::shared_ptr<const SummaryWindow> SummaryWindowConstPtr;

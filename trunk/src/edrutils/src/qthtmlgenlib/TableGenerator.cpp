@@ -1,6 +1,8 @@
 #include <qthtmlgenlib/TableGenerator.h>
 #include <QtGui/QTextCursor>
 
+namespace htmlGen {
+
 HtmlCellAttributes::HtmlCellAttributes()
 {
 
@@ -589,4 +591,6 @@ void QTextTableViewHelper::updateHeaders(QTextTable * table)
 			cell.firstCursorPosition().setBlockFormat(headersCellsFormat_[rowStatus][columnStatus].second);
 		}
 	}
+}
+
 }

@@ -45,10 +45,10 @@ private:
 private:
 
 	struct DisordersTabel {
-		HtmlDataTableContent content;
-		TableHeadersStructureDescriptor headersStructure;
-		HtmlDataTableCellAttributes cellsAttributes;
-		HtmlDataTableStyles styles;
+		htmlGen::HtmlDataTableContent content;
+		htmlGen::TableHeadersStructureDescriptor headersStructure;
+		htmlGen::HtmlDataTableCellAttributes cellsAttributes;
+		htmlGen::HtmlDataTableStyles styles;
 	};
 
 private:

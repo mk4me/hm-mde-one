@@ -228,11 +228,23 @@ private:
 class NewMultiserieHelper : public TreeItemHelper
 {
 public:
-    typedef std::pair<core::ObjectWrapperConstPtr, EventsCollectionConstPtr> ChartWithEvents;
-    typedef std::vector<ChartWithEvents> ChartWithEventsCollection;
+    struct ChartWithDescription 
+    {
+        core::ObjectWrapperConstPtr wrapper;
+        EventsCollectionConstPtr events;
+        PluginSubject::MotionConstPtr motion;
+
+        ChartWithDescription(core::ObjectWrapperConstPtr w, EventsCollectionConstPtr e, PluginSubject::MotionConstPtr m) :
+            wrapper(w),
+            events(e),
+            motion(m)
+        {}
+    };
+
+    typedef std::vector<ChartWithDescription> ChartWithDescriptionCollection;
 
 public:
-    NewMultiserieHelper(const ChartWithEventsCollection& charts): 
+    NewMultiserieHelper(const ChartWithDescriptionCollection& charts): 
       colorStrategy(new RandomMultiserieColorStrategy()), title(""), wrappers(charts)
     {
         
@@ -241,8 +253,9 @@ public:
     NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts): 
     colorStrategy(new RandomMultiserieColorStrategy()), title("")
     {
+        UTILS_ASSERT(false);
         for (auto it = charts.begin(); it != charts.end(); it++) {
-            wrappers.push_back(std::make_pair(*it, EventsCollectionConstPtr()));
+            wrappers.push_back(ChartWithDescription(*it, EventsCollectionConstPtr(), PluginSubject::MotionConstPtr()));
         }
     }
 
@@ -255,9 +268,9 @@ public:
     void setTitle(const QString& val) { title = val; }
 
     virtual std::vector<core::TypeInfo> getTypeInfos() const;
-
+    const ChartWithDescriptionCollection& getChartWithDescriptions() const { return wrappers; }
 private:
-    ChartWithEventsCollection wrappers;
+    ChartWithDescriptionCollection wrappers;
     QString title;
     
     IMultiserieColorStrategyConstPtr colorStrategy;

@@ -11,6 +11,8 @@
 
 #include <QtCore/QString>
 
+namespace htmlGen {
+
 class DocumentGenerator
 {
 public:
@@ -21,5 +23,7 @@ public:
     static void openBody(QString & html, const QString & style = QString());
     static void closeBody(QString & html);
 };
+
+}
 
 #endif	//	HEADER_GUARD___DOCUMENTGENERATOR_H__

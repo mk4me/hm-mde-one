@@ -84,33 +84,33 @@ void DisordersDataWidget::initDisordersStyles()
 {
 	disordersTable.styles.tableAttributes.setCellPadding(4);
 	disordersTable.styles.tableAttributes.setCellSpacing(0);
-	disordersTable.styles.tableAttributes.setWidth(100, WRelative);
-	disordersTable.styles.tableAttributes.setHeight(100, WRelative);
+	disordersTable.styles.tableAttributes.setWidth(100, htmlGen::WRelative);
+	disordersTable.styles.tableAttributes.setHeight(100, htmlGen::WRelative);
 	disordersTable.styles.tableAttributes.setBorder(1);
 
 	disordersTable.styles.tableStyle_ = "border-color: rgb(0, 0, 0);";
-	disordersTable.styles.headerRowStyle_[Single] = "color: white; background: rgb(41, 41, 41);";
+	disordersTable.styles.headerRowStyle_[htmlGen::Single] = "color: white; background: rgb(41, 41, 41);";
 
 	//wiersz nag³ówkowy
-	disordersTable.styles.headersStyles[Single][Middle] = "color: white; border-style: none; border-color: white;";
+	disordersTable.styles.headersStyles[htmlGen::Single][htmlGen::Middle] = "color: white; border-style: none; border-color: white;";
 	// kolumna nag³ówkowa - musze dodaæ kolor, nie da siê kolumnom przypisywaæ w³aœciwoœci
-	disordersTable.styles.headersStyles[Middle][Single] = "color: white; border-style: none; border-color: white; background: rgb(41, 41, 41);";
+	disordersTable.styles.headersStyles[htmlGen::Middle][htmlGen::Single] = "color: white; border-style: none; border-color: white; background: rgb(41, 41, 41);";
 	// ostatni element kolumny nag³ówkowej - tylko kolor
-	disordersTable.styles.headersStyles[Last][Single] = "color: white; background: rgb(41, 41, 41);";
+	disordersTable.styles.headersStyles[htmlGen::Last][htmlGen::Single] = "color: white; background: rgb(41, 41, 41);";
 
 	//style contentu - tutaj chcemy uzyskaæ efekt kratownicy bez ramki
-	disordersTable.styles.contentStyles[First][First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	disordersTable.styles.contentStyles[Last][First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	disordersTable.styles.contentStyles[Last][Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+	disordersTable.styles.contentStyles[htmlGen::First][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	disordersTable.styles.contentStyles[htmlGen::Last][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	disordersTable.styles.contentStyles[htmlGen::Last][htmlGen::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
 }
 
 void DisordersDataWidget::initDisordersAtributes()
 {
 	disordersTable.cellsAttributes.setDimensions(disordersTable.content.rows(), disordersTable.content.columns());
 
-	HtmlCellAttributes attributes;
-	attributes.setHAlign(HACenter);
-	attributes.setVAlign(VAMiddle);
+	htmlGen::HtmlCellAttributes attributes;
+	attributes.setHAlign(htmlGen::HACenter);
+	attributes.setVAlign(htmlGen::VAMiddle);
 
 	//centrujemy dane
 	for(int i = 0; i < disordersTable.cellsAttributes.rows(); ++i){
@@ -119,34 +119,34 @@ void DisordersDataWidget::initDisordersAtributes()
 		}
 	}
 
-	attributes.setHAlign(HALeft);
+	attributes.setHAlign(htmlGen::HALeft);
 
 	//kolumnê z opisem wyrównujemy do lewej
 	for(int i = 1; i < disordersTable.cellsAttributes.rows(); ++i){
 		disordersTable.cellsAttributes.setCell(i, 1, attributes);
 	}
 
-	disordersTable.cellsAttributes.cell(0, 0).setWidth(5, WRelative);
-	disordersTable.cellsAttributes.cell(0, 2).setWidth(20, WRelative);
-	disordersTable.cellsAttributes.cell(0, 3).setWidth(10, WRelative);
+	disordersTable.cellsAttributes.cell(0, 0).setWidth(5, htmlGen::WRelative);
+	disordersTable.cellsAttributes.cell(0, 2).setWidth(20, htmlGen::WRelative);
+	disordersTable.cellsAttributes.cell(0, 3).setWidth(10, htmlGen::WRelative);
 }
 
 void DisordersDataWidget::updateContent()
 {
 	QString html;
 
-	DocumentGenerator::openDocument(html);
-	DocumentGenerator::openBody(html);
+	htmlGen::DocumentGenerator::openDocument(html);
+	htmlGen::DocumentGenerator::openBody(html);
 
 	QString disTable;
 
-	HtmlDataTableGenerator::generateHtmlTable(disTable, disordersTable.content, disordersTable.headersStructure,
+	htmlGen::HtmlDataTableGenerator::generateHtmlTable(disTable, disordersTable.content, disordersTable.headersStructure,
 		disordersTable.cellsAttributes, disordersTable.styles);
 
 	html += disTable;
 
-	DocumentGenerator::closeBody(html);
-	DocumentGenerator::closeDocument(html);
+	htmlGen::DocumentGenerator::closeBody(html);
+	htmlGen::DocumentGenerator::closeDocument(html);
 
 	setHtml(html);
 }

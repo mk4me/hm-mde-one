@@ -69,10 +69,10 @@ private:
 private:
 
 	struct AntropometricTabel {
-		HtmlDataTableContent antropometricContent;
-		TableHeadersStructureDescriptor antropometricHeadersStructure;
-		HtmlDataTableCellAttributes antropometricCellsAttributes;
-		HtmlDataTableStyles antropometricStyles;
+		htmlGen::HtmlDataTableContent antropometricContent;
+		htmlGen::TableHeadersStructureDescriptor antropometricHeadersStructure;
+		htmlGen::HtmlDataTableCellAttributes antropometricCellsAttributes;
+		htmlGen::HtmlDataTableStyles antropometricStyles;
 	};
 
 private:

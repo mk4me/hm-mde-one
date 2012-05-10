@@ -140,6 +140,9 @@ color: white;
           <string>Active Data</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <property name="spacing">
+           <number>1</number>
+          </property>
           <property name="margin">
            <number>0</number>
           </property>
@@ -150,6 +153,22 @@ color: white;
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="SummaryWindowWidget" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>120</height>
+             </size>
             </property>
            </widget>
           </item>
@@ -377,8 +396,8 @@ QPushButton#applyButton:hover
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>100</width>
-                  <height>30</height>
+                  <width>318</width>
+                  <height>436</height>
                  </rect>
                 </property>
                </widget>
@@ -413,8 +432,8 @@ QPushButton#applyButton:hover
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>66</width>
-               <height>52</height>
+               <width>318</width>
+               <height>659</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -442,16 +461,6 @@ QPushButton#applyButton:hover
           </item>
          </layout>
         </widget>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTextEdit" name="SummaryWindowWidget">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
        </widget>
       </item>
      </layout>

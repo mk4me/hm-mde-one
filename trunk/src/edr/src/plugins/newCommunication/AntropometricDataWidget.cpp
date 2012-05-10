@@ -188,17 +188,17 @@ void AntropometricDataWidget::updateContent()
 {
 	QString html;
 
-	DocumentGenerator::openDocument(html);
-	DocumentGenerator::openBody(html);
+	htmlGen::DocumentGenerator::openDocument(html);
+	htmlGen::DocumentGenerator::openBody(html);
 
 	QString genTable;
 
-	HtmlDataTableGenerator::generateHtmlTable(genTable, antropometricGeneralTable.antropometricContent, antropometricGeneralTable.antropometricHeadersStructure,
+	htmlGen::HtmlDataTableGenerator::generateHtmlTable(genTable, antropometricGeneralTable.antropometricContent, antropometricGeneralTable.antropometricHeadersStructure,
 		antropometricGeneralTable.antropometricCellsAttributes, antropometricGeneralTable.antropometricStyles);
 
 	QString lrTable;
 
-	HtmlDataTableGenerator::generateHtmlTable(lrTable, antropometricLeftRightTable.antropometricContent, antropometricLeftRightTable.antropometricHeadersStructure,
+	htmlGen::HtmlDataTableGenerator::generateHtmlTable(lrTable, antropometricLeftRightTable.antropometricContent, antropometricLeftRightTable.antropometricHeadersStructure,
 		antropometricLeftRightTable.antropometricCellsAttributes, antropometricLeftRightTable.antropometricStyles);
 
 	html += genTable;
@@ -207,8 +207,8 @@ void AntropometricDataWidget::updateContent()
 
 	html += lrTable;
 
-	DocumentGenerator::closeBody(html);
-	DocumentGenerator::closeDocument(html);
+	htmlGen::DocumentGenerator::closeBody(html);
+	htmlGen::DocumentGenerator::closeDocument(html);
 
 	setHtml(html);
 }
@@ -303,45 +303,45 @@ void AntropometricDataWidget::initAntropometricStyles()
 {
 	antropometricGeneralTable.antropometricStyles.tableAttributes.setCellPadding(4);
 	antropometricGeneralTable.antropometricStyles.tableAttributes.setCellSpacing(0);
-	antropometricGeneralTable.antropometricStyles.tableAttributes.setWidth(100, WRelative);
-	antropometricGeneralTable.antropometricStyles.tableAttributes.setHeight(100, WRelative);
+	antropometricGeneralTable.antropometricStyles.tableAttributes.setWidth(100, htmlGen::WRelative);
+	antropometricGeneralTable.antropometricStyles.tableAttributes.setHeight(100, htmlGen::WRelative);
 	antropometricGeneralTable.antropometricStyles.tableAttributes.setBorder(1);
 
 	antropometricLeftRightTable.antropometricStyles.tableAttributes.setCellPadding(4);
 	antropometricLeftRightTable.antropometricStyles.tableAttributes.setCellSpacing(0);
-	antropometricLeftRightTable.antropometricStyles.tableAttributes.setWidth(100, WRelative);
-	antropometricLeftRightTable.antropometricStyles.tableAttributes.setHeight(100, WRelative);
+	antropometricLeftRightTable.antropometricStyles.tableAttributes.setWidth(100, htmlGen::WRelative);
+	antropometricLeftRightTable.antropometricStyles.tableAttributes.setHeight(100, htmlGen::WRelative);
 	antropometricLeftRightTable.antropometricStyles.tableAttributes.setBorder(1);
 
 	antropometricGeneralTable.antropometricStyles.tableStyle_ = "border-color: rgb(0, 0, 0);";
-	antropometricGeneralTable.antropometricStyles.headerRowStyle_[Single] = "color: white; background: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.headerRowStyle_[htmlGen::Single] = "color: white; background: rgb(41, 41, 41);";
 
 	//wiersz nag³ówkowy
-	antropometricGeneralTable.antropometricStyles.headersStyles[Single][Middle] = "color: white; border-style: none; border-color: white;";
+	antropometricGeneralTable.antropometricStyles.headersStyles[htmlGen::Single][htmlGen::Middle] = "color: white; border-style: none; border-color: white;";
 	// kolumna nag³ówkowa - musze dodaæ kolor, nie da siê kolumnom przypisywaæ w³aœciwoœci
-	antropometricGeneralTable.antropometricStyles.headersStyles[Middle][Single] = "color: white; border-style: none; border-color: white; background: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.headersStyles[htmlGen::Middle][htmlGen::Single] = "color: white; border-style: none; border-color: white; background: rgb(41, 41, 41);";
 	// ostatni element kolumny nag³ówkowej - tylko kolor
-	antropometricGeneralTable.antropometricStyles.headersStyles[Last][Single] = "color: white; background: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.headersStyles[htmlGen::Last][htmlGen::Single] = "color: white; background: rgb(41, 41, 41);";
 
 	//style contentu - tutaj chcemy uzyskaæ efekt kratownicy bez ramki
-	antropometricGeneralTable.antropometricStyles.contentStyles[First][First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricGeneralTable.antropometricStyles.contentStyles[Last][First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricGeneralTable.antropometricStyles.contentStyles[Last][Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.contentStyles[htmlGen::First][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.contentStyles[htmlGen::Last][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.contentStyles[htmlGen::Last][htmlGen::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
 
 	// kopiujemy wiêkszoœæ ustawieñ
 	antropometricLeftRightTable.antropometricStyles = antropometricGeneralTable.antropometricStyles;
 	//poprawiamy style contentu - wiêcej mo¿liwoœci
-	antropometricLeftRightTable.antropometricStyles.contentStyles[First][First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[First][Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[First][Last] = QString();
-
-	antropometricLeftRightTable.antropometricStyles.contentStyles[Middle][First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[Middle][Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[Middle][Last] = "border-style: none; border-color: rgb(41, 41, 41);";
-
-	antropometricLeftRightTable.antropometricStyles.contentStyles[Last][First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[Last][Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[Last][Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::First][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::First][htmlGen::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::First][htmlGen::Last] = QString();
+                                                                  
+	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::Middle][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::Middle][htmlGen::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::Middle][htmlGen::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+                                                                 
+	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::Last][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::Last][htmlGen::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::Last][htmlGen::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
 }
 
 void AntropometricDataWidget::initAntropometricAtributes()
@@ -349,9 +349,9 @@ void AntropometricDataWidget::initAntropometricAtributes()
 	antropometricLeftRightTable.antropometricCellsAttributes.setDimensions(antropometricLeftRightTable.antropometricContent.rows(), antropometricLeftRightTable.antropometricContent.columns());
 	antropometricGeneralTable.antropometricCellsAttributes.setDimensions(antropometricGeneralTable.antropometricContent.rows(), antropometricGeneralTable.antropometricContent.columns());
 
-	HtmlCellAttributes attributes;
-	attributes.setHAlign(HACenter);
-	attributes.setVAlign(VAMiddle);
+	htmlGen::HtmlCellAttributes attributes;
+	attributes.setHAlign(htmlGen::HACenter);
+	attributes.setVAlign(htmlGen::VAMiddle);
 
 	//centrujemy dane
 	for(int i = 0; i < antropometricLeftRightTable.antropometricCellsAttributes.rows(); ++i){
@@ -366,7 +366,7 @@ void AntropometricDataWidget::initAntropometricAtributes()
 		}
 	}
 
-	attributes.setHAlign(HALeft);
+	attributes.setHAlign(htmlGen::HALeft);
 
 	for(int i = 0; i < antropometricLeftRightTable.antropometricCellsAttributes.rows(); ++i){
 		for(int j = 0; j < antropometricLeftRightTable.antropometricHeadersStructure.headerColumns; ++j){
@@ -380,10 +380,10 @@ void AntropometricDataWidget::initAntropometricAtributes()
 		}
 	}
 
-	antropometricLeftRightTable.antropometricCellsAttributes.cell(0,1).setWidth(10, WRelative);
-	antropometricLeftRightTable.antropometricCellsAttributes.cell(0,2).setWidth(25, WRelative);
-	antropometricLeftRightTable.antropometricCellsAttributes.cell(0,3).setWidth(25, WRelative);
+	antropometricLeftRightTable.antropometricCellsAttributes.cell(0,1).setWidth(10, htmlGen::WRelative);
+	antropometricLeftRightTable.antropometricCellsAttributes.cell(0,2).setWidth(25, htmlGen::WRelative);
+	antropometricLeftRightTable.antropometricCellsAttributes.cell(0,3).setWidth(25, htmlGen::WRelative);
 
-	antropometricGeneralTable.antropometricCellsAttributes.cell(0,1).setWidth(10, WRelative);
-	antropometricGeneralTable.antropometricCellsAttributes.cell(0,2).setWidth(50, WRelative);
+	antropometricGeneralTable.antropometricCellsAttributes.cell(0,1).setWidth(10, htmlGen::WRelative);
+	antropometricGeneralTable.antropometricCellsAttributes.cell(0,2).setWidth(50, htmlGen::WRelative);
 }

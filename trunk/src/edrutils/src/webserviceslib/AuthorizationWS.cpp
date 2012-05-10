@@ -40,7 +40,7 @@ const bool AuthorizationWS::checkMyLogin() const
 
 	try{
 		connection_->invoke(true);
-	}catch(WSConnectionSecurityException & e){
+	}catch(WSConnectionSecurityException & ){
 		//nie mam usera
 		return false;
 	}catch(...){

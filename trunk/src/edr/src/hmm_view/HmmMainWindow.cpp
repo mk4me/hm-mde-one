@@ -48,7 +48,6 @@ HmmMainWindow::HmmMainWindow() :
     summaryWindowController(new SummaryWindowController(summaryWindow, this))
 {
     setupUi(this);
-
 	connect(actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 
     splashScreen()->setPixmap(QPixmap(":/resources/splashscreen/spplash.png"));
@@ -138,6 +137,8 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     trySetStyleByName("hmm");
     this->analisis = new AnalisisWidget(nullptr, this);
     QTreeWidget* treeWidget = this->analisis->getTreeWidget();
+    summaryWindow->initialize();
+
     addContext(treeUsageContext, analisisContext);
     addWidgetToContext(treeUsageContext, treeWidget);
 	plainContextWidgets.insert(treeWidget);
@@ -1383,7 +1384,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      UTILS_ASSERT(helper);
     
      if (helper) {
-         NewMultiserieHelper::ChartWithEventsCollection toVisualize;
+         NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
          SessionConstPtr s = helper->getMotion()->getSession();
          Motions motions;
          s->getMotions(motions);
@@ -1399,13 +1400,13 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
              for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
                  if ((*it)->getName() == helper->getWrapper()->getName()) {
-                     toVisualize.push_back(std::make_pair(*it, events));
+                     toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(*it, events, *itMotion));
                  }
              }
          }
          NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
          createNewVisualizer(multi);
-         delete multi;
+         //delete multi;
      }
  }
 
@@ -1482,18 +1483,18 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      UTILS_ASSERT(helper);
 
      if (helper) {
-         NewMultiserieHelper::ChartWithEventsCollection toVisualize;
+         NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
          SessionConstPtr s = helper->getMotion()->getSession();
          Motions motions;
          s->getMotions(motions);
 
-         for (auto it = motions.begin(); it != motions.end(); it++) {
+         for (auto itMotion = motions.begin(); itMotion != motions.end(); itMotion++) {
              std::vector<core::ObjectWrapperConstPtr> wrappers;
-             (*it)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
+             (*itMotion)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
 
              EventsCollectionConstPtr events;
-             if ((*it)->hasObjectOfType(typeid(C3DEventsCollection))) {
-                 auto w = (*it)->getWrapperOfType(typeid(C3DEventsCollection));
+             if ((*itMotion)->hasObjectOfType(typeid(C3DEventsCollection))) {
+                 auto w = (*itMotion)->getWrapperOfType(typeid(C3DEventsCollection));
                  events = w->get();
              }
 
@@ -1511,7 +1512,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                         std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
                         wrapper->setName  (prefix + boost::lexical_cast<std::string>(no));
                         wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
-                        toVisualize.push_back(std::make_pair(wrapper, events));
+                        toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, *itMotion));
                      }
                      
                  }
@@ -1520,13 +1521,12 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          }
          NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
          createNewVisualizer(multi);
-         delete multi;
      }
  }
 
  void HmmMainWindow::createNormalized( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context )
  {
-     std::vector<core::ObjectWrapperConstPtr> toVisualize;
+     NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
      MotionConstPtr motion = helper->getMotion();
      EventsCollectionConstPtr events;
      std::vector<FloatPairPtr> segments;
@@ -1549,31 +1549,31 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              colorMap[wrapper] = channelNo == 0 ? QColor(255, 0, 0) : (channelNo == 1 ? QColor(0, 255, 0) : QColor(0, 0, 255));
              wrapper->setName  (prefix + ":" + boost::lexical_cast<std::string>(j));
              wrapper->setSource(helper->getWrapper()->getSource() + boost::lexical_cast<std::string>(no));
-             toVisualize.push_back(wrapper);
+             toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, motion));
          }
      }
      NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
      multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
      createNewVisualizer(multi);
-     delete multi;
+     //delete multi;
  }
 
  void HmmMainWindow::createNormalizedFromAll( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context )
  {
-     std::vector<core::ObjectWrapperConstPtr> toVisualize;
+     NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
      SessionConstPtr s = helper->getMotion()->getSession();
      Motions motions;
      s->getMotions(motions);
 
      std::map<ObjectWrapperConstPtr, QColor> colorMap;
-     for (auto it = motions.begin(); it != motions.end(); it++) {
+     for (auto itMotion = motions.begin(); itMotion != motions.end(); itMotion++) {
          std::vector<core::ObjectWrapperConstPtr> wrappers;
-         (*it)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
+         (*itMotion)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
 
          EventsCollectionConstPtr events;
          std::vector<FloatPairPtr> segments;
-         if ((*it)->hasObjectOfType(typeid(C3DEventsCollection))) {
-             auto w = (*it)->getWrapperOfType(typeid(C3DEventsCollection));
+         if ((*itMotion)->hasObjectOfType(typeid(C3DEventsCollection))) {
+             auto w = (*itMotion)->getWrapperOfType(typeid(C3DEventsCollection));
              events = w->get();
              segments = getTimeSegments(events, context);
          }
@@ -1605,7 +1605,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                              std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
                              wrapper->setName  (prefix + boost::lexical_cast<std::string>(i) + ":" + boost::lexical_cast<std::string>(j));
                              wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
-                             toVisualize.push_back(wrapper);
+                             toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, *itMotion));
                          }
                      }
                  }
@@ -1614,10 +1614,15 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
          }
      }
-     NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
-     multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
-     createNewVisualizer(multi);
-     delete multi;
+     if (toVisualize.size()) {
+         NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
+         multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
+         createNewVisualizer(multi);
+         //delete multi;
+     } else {
+         // ?
+     }
+     
  }
 
  void HmmMainWindow::registerVisualizerContext( EDRTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer )

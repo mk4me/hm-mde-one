@@ -1,5 +1,7 @@
 #include <qthtmlgenlib/DocumentGenerator.h>
 
+namespace htmlGen {
+
 void DocumentGenerator::openDocument(QString & html)
 {
     html =  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">" \
@@ -21,4 +23,6 @@ void DocumentGenerator::openBody(QString & html, const QString & style)
 void DocumentGenerator::closeBody(QString & html)
 {
     html += "</body>";
+}
+
 }

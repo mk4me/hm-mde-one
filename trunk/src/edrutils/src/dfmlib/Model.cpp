@@ -537,8 +537,8 @@ Model::PathEntry Model::getFirstNodeOutputConnection(const NPtr & node)
 {
     PathEntry pathElement;
 
-    for(int i = 0; i <= node->sizeOut(); i++){
-        for(int j = 0; j < node->getOutPin(i)->size(); j++){
+    for(unsigned int i = 0; i <= node->sizeOut(); i++){
+        for(unsigned int j = 0; j < node->getOutPin(i)->size(); j++){
             pathElement.node = node;
             pathElement.pinIndex = i;
             pathElement.connectionIndex = j;
@@ -555,13 +555,13 @@ Model::PathEntry Model::getNextNodeOutputConnection(const PathEntry & pathElemen
 {
     PathEntry pe = pathElement;
 
-    if(++pe.connectionIndex < pathElement.node->getOutPin(pathElement.pinIndex)->size()){
+    if(++pe.connectionIndex < static_cast<int>(pathElement.node->getOutPin(pathElement.pinIndex)->size())){
         return pe;
     }
 
     pe.pinIndex++;
 
-    for( ; pe.pinIndex < pe.node->sizeOut(); pe.pinIndex++){
+    for( ; pe.pinIndex < static_cast<int>(pe.node->sizeOut()); pe.pinIndex++){
         if(pe.node->getOutPin(pe.pinIndex)->empty() == false){
             pe.connectionIndex = 0;
             return pe;

@@ -129,7 +129,7 @@ Node::iterator Node::endIn() const
 
 const PinPtr & Node::getInPin(int idx) const
 {
-    UTILS_ASSERT((idx >=0 && idx < inPins.size()), "B³êdny indeks pinu wejœciowego");
+    UTILS_ASSERT((idx >=0 && idx < static_cast<int>(inPins.size())), "B³êdny indeks pinu wejœciowego");
     return inPins[idx];
 }
 
@@ -161,7 +161,7 @@ Node::iterator Node::endOut() const
 
 const PinPtr & Node::getOutPin(int idx) const
 {
-    UTILS_ASSERT((idx >=0 && idx < outPins.size()), "B³êdny indeks pinu wyjœciowego");
+    UTILS_ASSERT((idx >=0 && idx < static_cast<int>(outPins.size())), "B³êdny indeks pinu wyjœciowego");
     return outPins[idx];
 }
 
