@@ -154,11 +154,14 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
             std::string l;
 
             if(measurements != nullptr && meta != nullptr && meta->value("EMGConf", l) == true) {
-                config = measurements->getConfig(("EMG_" + l).c_str());
+                QString confName = QString("EMG_") + QString::fromStdString(l);
+                if (measurements->hasConfig(confName)) {
+                    config = measurements->getConfig(confName);
+                }
             }
         }
     }catch(...){
-
+        LOG_WARNING("Problem with setting EMG names");
     }
 
     motion->getWrappers(emgs, typeid(EMGChannel));
