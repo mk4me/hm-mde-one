@@ -284,7 +284,7 @@ void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
     if (item) {*/
     groupID = flexiTabWidget->addGroup(QObject::tr("Tree"));
 
-    recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(tree->currentItem()));
+    recreateFlexiSectionWidget(flexiSection, dynamic_cast<HmmTreeItem*>(tree->currentItem()));
     flexiTabWidget->addSection(groupID, flexiSection, tr("Item Actions"));
     flexiSection->setVisible(true);
     flexiTabWidget->setCurrentGroup(groupID);
@@ -315,7 +315,7 @@ void HMMTreeItemUsageContext::onUnregisterContextWidget( QWidget * contextWidget
 }
 
 
-void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, TreeItemHelper* helper)
+void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, HmmTreeItem* helper)
 {
    if (!flexiSection->layout()) {
        flexiSection->setLayout(new QVBoxLayout());
@@ -388,7 +388,7 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
 
 void HMMTreeItemUsageContext::itemChanged( QTreeWidgetItem* current, QTreeWidgetItem* previous )
 {
-    recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(current));
+    recreateFlexiSectionWidget(flexiSection, dynamic_cast<HmmTreeItem*>(current));
 }
 
 
@@ -396,7 +396,7 @@ void HMMTreeItemUsageContext::refresh()
 {
    QTreeWidget* tree = qobject_cast<QTreeWidget*>(getCurrentContextWidget());
    if (tree) {
-     recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(tree->currentItem()));
+     recreateFlexiSectionWidget(flexiSection, dynamic_cast<HmmTreeItem*>(tree->currentItem()));
    }
 }
 

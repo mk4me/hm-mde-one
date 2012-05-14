@@ -116,16 +116,23 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
                     yWrappers.push_back(wrapperY);
                     zWrappers.push_back(wrapperZ);
                 }
-                QTreeWidgetItem* fX = new NewMultiserieHelper(xWrappers);
-                fX->setText(0, "Motion Forces - X");
+
+                NewMultiserieHelperPtr xhelper(new NewMultiserieHelper(xWrappers));
+                NewMultiserieHelperPtr yhelper(new NewMultiserieHelper(yWrappers));
+                NewMultiserieHelperPtr zhelper(new NewMultiserieHelper(zWrappers));
+                xhelper->setMotion(motion);
+                yhelper->setMotion(motion);
+                zhelper->setMotion(motion);
+                HmmTreeItem* fX = new HmmTreeItem(xhelper);
+                fX->setItemAndHelperText("Motion Items - X");
                 item->addChild(fX);
 
-                QTreeWidgetItem* fY = new NewMultiserieHelper(yWrappers);
-                fY->setText(0, "Motion Forces - Y");
+                HmmTreeItem* fY = new HmmTreeItem(yhelper);
+                fY->setItemAndHelperText("Motion Items - Y");
                 item->addChild(fY);
 
-                QTreeWidgetItem* fZ = new NewMultiserieHelper(zWrappers);
-                fZ->setText(0, "Motion Forces - Z");
+                HmmTreeItem* fZ = new HmmTreeItem(zhelper);
+                fZ->setItemAndHelperText("Motion Items - Z");
                 item->addChild(fZ);
             }
         }

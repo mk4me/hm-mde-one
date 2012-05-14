@@ -23,5 +23,6 @@ public:
     virtual VisualizerPtr createVisualizer();
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
 };
-
+typedef core::shared_ptr<EMGFilterHelper> EMGFilterHelperPtr;
+typedef core::shared_ptr<const EMGFilterHelper> EMGFilterHelperConstPtr;
 #endif

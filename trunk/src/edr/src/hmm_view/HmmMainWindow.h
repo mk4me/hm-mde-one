@@ -22,7 +22,7 @@
 #include "FlexiTabWidget.h"
 #include "IAppUsageContextManager.h"
 #include <QtGui/QToolBox>
-
+#include "TreeBuilder.h"
 #include "SummaryWindow.h"
 #include "HmmContexts.h"
 
@@ -37,16 +37,16 @@ class ContextAction : public QAction
 {
     Q_OBJECT;
 public:
-    ContextAction(TreeItemHelper* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), EDRDockWidgetSet* set = nullptr) : 
-      helper(itemHelper), QAction(parent), visualizer(vis), set(set){}
+    ContextAction(HmmTreeItem* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), EDRDockWidgetSet* set = nullptr) : 
+      item(itemHelper), QAction(parent), visualizer(vis), set(set){}
 
 public:
-    TreeItemHelper* getItemHelper() const { return helper; }
+    HmmTreeItem* getTreeItem() const { return item; }
     VisualizerPtr getVisualizer() const { return visualizer.lock(); }
     EDRDockWidgetSet* getDockSet() const { return set; }
 
 private:
-    TreeItemHelper* helper;
+    HmmTreeItem* item;
     VisualizerWeakPtr visualizer;
     EDRDockWidgetSet* set;
 };
@@ -54,6 +54,7 @@ private:
 class TextEdit;
 
 class ContextEventFilter;
+
 
 
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain, protected IAppUsageContextManager
@@ -93,6 +94,62 @@ private:
         VisualizerWeakPtr visualizer;
         VisualizerWidget* visualizerWidget;
     };
+    class TreeRefresher
+    {
+    public:
+        TreeRefresher() : 
+          preventRefresh(false), 
+          needRefresh(false),
+          tree(nullptr)
+        {}
+
+        virtual ~TreeRefresher() {}
+        bool getPreventRefresh() const { return preventRefresh; }
+        void setPreventRefresh(bool val) { 
+            preventRefresh = val; 
+            if (!val && needRefresh) {
+                UTILS_ASSERT(tree);
+                needRefresh = false;
+                std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
+                actualRefresh(tree, sessions);
+                tree = nullptr;
+            }
+        }
+
+        void refresh(QTreeWidget* tree) {
+            if (preventRefresh) {
+                this->tree = tree;
+                needRefresh = true;
+            } else {
+                std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
+                actualRefresh(tree, sessions);
+            }
+        }
+    private:
+        void actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions) {
+            QTreeWidgetItem* item = TreeBuilder::createTree(tr("Active Data"), sessions);
+
+            tree->clear();
+            tree->addTopLevelItem(item);
+            item->setExpanded(true);
+
+            QFont font = item->font(0);
+            font.setPointSize(12);
+            item->setFont(0, font);
+
+            for (int i = 0; i < item->childCount(); i++) {
+                QTreeWidgetItem* child = item->child(i);
+                child->setExpanded(true);
+
+                QFont font = item->font(0);
+                font.setPointSize(14);
+                item->setFont(0, font);
+            }
+        }
+        bool preventRefresh;
+        bool needRefresh;
+        QTreeWidget* tree;
+    };
 
 public:
     HmmMainWindow();
@@ -109,7 +166,7 @@ public:
     const std::vector<PluginSubject::SessionConstPtr>& getCurrentSessions();
     void addItemToTree(QTreeWidgetItem* item);
     void clearTree();
-    QMenu* getContextMenu( QWidget* parent, TreeItemHelper* helper );
+    QMenu* getContextMenu( QWidget* parent, HmmTreeItem* helper );
     const AnalisisWidget* getAnalisis() const { return analisis; }
     void createRaport( const QString& html );
     virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
@@ -131,7 +188,7 @@ private slots:
 
 	void registerVisualizerContext( EDRTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer );
 
-	VisualizerWidget* createAndAddDockVisualizer( TreeItemHelper* hmmItem, EDRDockWidgetSet* dockSet);	
+	VisualizerWidget* createAndAddDockVisualizer( HmmTreeItem* hmmItem, EDRDockWidgetSet* dockSet);	
 
     //void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
     void onTreeContextMenu(const QPoint & pos);
@@ -141,7 +198,7 @@ private slots:
 
     void createNewVisualizer();
 
-    void createNewVisualizer( TreeItemHelper* helper, EDRDockWidgetSet* dockSet = nullptr );
+    void createNewVisualizer( HmmTreeItem* item, EDRDockWidgetSet* dockSet = nullptr );
 
     void createVisualizerInNewSet();
     void removeFromVisualizer();
@@ -155,12 +212,12 @@ private slots:
     void normalizedLeftChart();
     void normalizedRightChart();
 
-    void createNormalizedFromAll( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context );
+    void createNormalizedFromAll( NewVector3ItemHelperPtr helper, c3dlib::C3DParser::IEvent::Context context );
 
 
-    void createNormalized( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context );
+    void createNormalized( NewVector3ItemHelperPtr helper, c3dlib::C3DParser::IEvent::Context context );
 
-    void allTFromSession( NewVector3ItemHelper* helper, int channelNo );
+    void allTFromSession( NewVector3ItemHelperPtr helper, int channelNo );
 
 
     void removeFromVisualizers( ContextAction* action, bool once );
@@ -182,7 +239,7 @@ private:
     void createFilterTabs();
     void createFilterTab1();
     void createFilterTab2();
-    void dropUnusedElements(std::multimap<TreeItemHelper*, DataItemDescription>& multimap);
+    void dropUnusedElements(std::multimap<TreeItemHelperPtr, DataItemDescription>& multimap);
     
     class ItemDoubleClick
     {
@@ -234,7 +291,7 @@ private:
     //! Zbiór u¿ywanych wizualizatorów
     std::vector<VisualizerWidget*> currentVisualizers;
 
-    std::multimap<TreeItemHelper*, DataItemDescription> items2Descriptions;
+    std::multimap<TreeItemHelperPtr, DataItemDescription> items2Descriptions;
 
     QTreeWidgetItem * currentItem;
     AnalisisWidget* analisis;
@@ -269,6 +326,8 @@ private:
 	ContextEventFilter * contextEventFilter;
     SummaryWindowPtr summaryWindow;
     SummaryWindowController* summaryWindowController;
+
+    TreeRefresher treeRefresher;
 };
 
 class ContextEventFilter : public QObject

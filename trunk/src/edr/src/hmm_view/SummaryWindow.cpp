@@ -18,7 +18,7 @@ void SummaryWindow::initialize()
     parent->layout()->addWidget(tree);
 }
 
-void SummaryWindow::display( const std::vector<TreeItemHelper*>& helpers )
+void SummaryWindow::display( const std::vector<TreeItemHelperPtr>& helpers )
 {
     UTILS_ASSERT(tree != nullptr);
 
@@ -35,7 +35,7 @@ void SummaryWindow::display( const std::vector<TreeItemHelper*>& helpers )
 
         for (auto itHelper = helpers.begin(); itHelper != helpers.end(); itHelper++) {
             
-            NewMultiserieHelper* multiserieHelper = dynamic_cast<NewMultiserieHelper*>(*itHelper);
+            NewMultiserieHelperPtr multiserieHelper = core::dynamic_pointer_cast<NewMultiserieHelper>(*itHelper);
             if (multiserieHelper) {
                 const auto& desc = multiserieHelper->getChartWithDescriptions();
                 for (auto it = desc.begin(); it != desc.end(); it++) {
@@ -48,7 +48,7 @@ void SummaryWindow::display( const std::vector<TreeItemHelper*>& helpers )
             } else {
                 auto motion = (*itHelper)->getMotion();
                 QString text = motion ? createDescription(motion) : QString();
-                text = (*itHelper)->text(0) + "\n" + text;
+                text = (*itHelper)->getText() + "\n" + text;
                 //TreeWrappedItemHelper* wrapped = dynamic_cast<TreeWrappedItemHelper*>(*itHelper);
                 //if (wrapped) {
                 //    text = QString::fromStdString(wrapped->getWrapper()->getName()) + "\n" + text;
@@ -103,9 +103,9 @@ SummaryWindowController::SummaryWindowController( SummaryWindowPtr sw, HmmMainWi
 void SummaryWindowController::onTreeItemSelected( QTreeWidgetItem* item, int column )
 {
     SummaryWindow::HelpersCollection collection;
-    TreeItemHelper* helper = dynamic_cast<TreeItemHelper*>(item);
-    if (helper) {
-        collection.push_back(helper);
+    HmmTreeItem* hmmItem = dynamic_cast<HmmTreeItem*>(item);
+    if (hmmItem) {
+        collection.push_back(hmmItem->getHelper());
     }
     summary->display(collection);
 }

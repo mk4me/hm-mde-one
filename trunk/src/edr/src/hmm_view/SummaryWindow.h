@@ -12,9 +12,9 @@
 
 class HmmMainWindow;
 class VisualizerWidget;
-class TreeItemHelper;
 
 #include <plugins/subject/ISubject.h>
+#include "TreeItemHelper.h"
 
 class SummaryWindow
 {
@@ -23,7 +23,7 @@ public:
 	virtual ~SummaryWindow() {}
 
 public:
-    typedef std::vector<TreeItemHelper*> HelpersCollection;
+    typedef std::vector<TreeItemHelperPtr> HelpersCollection;
 
 public:
     void initialize();

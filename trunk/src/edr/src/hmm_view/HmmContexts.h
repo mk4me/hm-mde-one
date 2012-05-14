@@ -68,7 +68,7 @@ private:
 
 
 class HmmMainWindow;
-class TreeItemHelper;
+class HmmTreeItem;
 class HMMTreeItemUsageContext : public QObject, public IAppUsageContext
 {
     Q_OBJECT;
@@ -94,7 +94,7 @@ private slots:
     //void refresh(QAction* dummy = nullptr);
 
 private:
-    void recreateFlexiSectionWidget(QWidget* flexiSection, TreeItemHelper* helper);
+    void recreateFlexiSectionWidget(QWidget* flexiSection, HmmTreeItem* helper);
 
 private:
     FlexiTabWidget * flexiTabWidget;

@@ -87,10 +87,12 @@ public:
             int count = wrappers.size();
             for (int i = 0; i < count; i++) {	
                 VectorChannelConstPtr c = wrappers[i]->get();
-                TreeItemHelper* channelItem = new NewVector3ItemHelper(wrappers[i]);
+                TreeItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i]));			
+                channelHelper->setMotion(motion);
+
+                HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);
                 channelItem->setIcon(0, childIcon);	
-                channelItem->setText(0, c->getName().c_str());			
-                channelItem->setMotion(motion);
+                channelItem->setItemAndHelperText(c->getName().c_str());
                 collectionItem->addChild(channelItem);		
             }	
         }

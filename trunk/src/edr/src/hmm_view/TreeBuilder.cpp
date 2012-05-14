@@ -100,7 +100,8 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
             if (hasMarkers || hasJoints) {
                 QTreeWidgetItem* kinematicItem;
                 if (hasJoints || hasMarkers || hasGrf) {
-                    kinematicItem = new Multiserie3D(motion);
+                    Multiserie3DPtr multi(new Multiserie3D(motion));
+                    kinematicItem = new HmmTreeItem(multi);
                 } else {
                     kinematicItem = new QTreeWidgetItem();
                 }
@@ -169,12 +170,13 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     for (int i = 0; i < count; i++) {	
         EMGChannelPtr c = emgs[i]->get();	
         if (c) {
-            EMGFilterHelper* channelItem = new EMGFilterHelper(emgs[i]);
-            channelItem->setIcon(0, itemIcon);
             QString n = QString::fromStdString(emgs[i]->getName());
             n = config ? config->tr(n) : n;
-            channelItem->setText(0, n);			
-            channelItem->setMotion(motion);
+            EMGFilterHelperPtr channelHelper(new EMGFilterHelper(emgs[i]));
+            channelHelper->setMotion(motion);
+            HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);
+            channelItem->setIcon(0, itemIcon);
+            channelItem->setItemAndHelperText(n);
             emgItem->addChild(channelItem);			
         }
     }
@@ -186,8 +188,9 @@ QTreeWidgetItem*  TreeBuilder::createGRFBranch( const MotionConstPtr & motion, c
 {
     std::vector<core::ObjectWrapperConstPtr> grfCollections;
     motion->getWrappers(grfCollections, typeid(GRFCollection));
-    QTreeWidgetItem* grfItem = new TreeWrappedItemHelper(grfCollections[0]);
-    grfItem->setText(0, rootName);
+    TreeWrappedItemHelperPtr grfCollectionHelper(new TreeWrappedItemHelper(grfCollections[0]));
+    HmmTreeItem* grfItem = new HmmTreeItem(grfCollectionHelper);
+    grfItem->setItemAndHelperText(rootName);
     grfItem->setIcon(0, rootIcon);
     std::vector<core::ObjectWrapperConstPtr> grfs;
     motion->getWrappers(grfs, typeid(GRFChannel));
@@ -195,14 +198,14 @@ QTreeWidgetItem*  TreeBuilder::createGRFBranch( const MotionConstPtr & motion, c
     for (int i = 0; i < count; i++) {
         GRFChannelConstPtr c = grfs[i]->get();
         if (c) {
-            TreeItemHelper* channelItem = new NewVector3ItemHelper(grfs[i]);	
+            TreeItemHelperPtr channelHelper(new NewVector3ItemHelper(grfs[i]));
+            channelHelper->setMotion(motion);
+            HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);	
             channelItem->setIcon(0, itemIcon);						
-            channelItem->setText(0, c->getName().c_str());		
-            channelItem->setMotion(motion);
+            channelItem->setItemAndHelperText(c->getName().c_str());	
             grfItem->addChild(channelItem);			
         }
     }
-
     return grfItem;
 }
 
@@ -214,11 +217,12 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
     std::vector<core::ObjectWrapperConstPtr> videos;
     motion->getWrappers(videos, typeid(VideoChannel));
     int count = videos.size();			
-    for (int i = 0; i < count; i++) {							
-        TreeWrappedItemHelper* channelItem = new TreeWrappedItemHelper(videos[i]);	
-        channelItem->setMotion(motion);
+    for (int i = 0; i < count; i++) {			
+        TreeWrappedItemHelperPtr channelHelper(new TreeWrappedItemHelper(videos[i]));
+        channelHelper->setMotion(motion);
+        HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);	
         channelItem->setIcon(0, itemIcon);						
-        channelItem->setText(0, videos[i]->getName().c_str());			
+        channelItem->setItemAndHelperText(videos[i]->getName().c_str());			
         videoItem->addChild(channelItem);
     }
 
@@ -227,10 +231,12 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
 
 QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
 {
-    JointsItemHelper* skeletonItem = new JointsItemHelper(motion);
+    JointsItemHelperPtr skeletonHelper(new JointsItemHelper(motion));
+    skeletonHelper->setMotion(motion);
+
+    HmmTreeItem* skeletonItem = new HmmTreeItem(skeletonHelper);
     skeletonItem->setIcon(0, rootIcon);
-    skeletonItem->setText(0, rootName);
-    skeletonItem->setMotion(motion);
+    skeletonItem->setItemAndHelperText(rootName);
     try {
         core::ObjectWrapperConstPtr angleCollection = motion->getWrapperOfType(typeid(AngleCollection));
         AngleCollectionConstPtr m = angleCollection->get();
@@ -244,10 +250,12 @@ QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion,
 QTreeWidgetItem* TreeBuilder::createMarkersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
 {
     core::ObjectWrapperConstPtr markerCollection = motion->getWrapperOfType(typeid(MarkerCollection));
-    TreeWrappedItemHelper* markersItem = new TreeWrappedItemHelper(markerCollection);
-    markersItem->setMotion(motion);
+    TreeWrappedItemHelperPtr markersHelper(new TreeWrappedItemHelper(markerCollection));
+
+    markersHelper->setMotion(motion);
+    HmmTreeItem* markersItem = new HmmTreeItem(markersHelper);
     markersItem->setIcon(0, rootIcon);
-    markersItem->setText(0, rootName);		
+    markersItem->setItemAndHelperText(rootName);		
 
     MarkerCollectionConstPtr m = markerCollection->get(); 
     tryAddVectorToTree<MarkerChannel>(motion, m, "Marker collection", itemIcon, markersItem, false);

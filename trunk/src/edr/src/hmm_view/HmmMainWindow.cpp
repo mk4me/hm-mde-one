@@ -125,7 +125,7 @@ void HmmMainWindow::deactivateContext(QWidget * widget)
 void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
     core::MainWindow::init(pluginLoader, managersAccessor);
-    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChange(QWidget*,QWidget*)));
+    //connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChange(QWidget*,QWidget*)));
     
 	addContext(dataContext);
 	addContext(analisisContext);
@@ -183,7 +183,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&))); 
     QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), summaryWindowController, SLOT(onTreeItemSelected(QTreeWidgetItem* , int)));
-    QObject::connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), summaryWindowController, SLOT(focusChanged(QWidget*,QWidget*)));
+    //QObject::connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), summaryWindowController, SLOT(focusChanged(QWidget*,QWidget*)));
     //QObject::connect(treeWidget, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
 
    /* QSplitter * splitter = new QSplitter();
@@ -386,23 +386,27 @@ HmmMainWindow::~HmmMainWindow()
 
 bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
 {
-    TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(item);
-    return hmmItem && hmmItem->isDataItem();
+    HmmTreeItem* hmmItem = dynamic_cast<HmmTreeItem*>(item);
+    return hmmItem && hmmItem->getHelper()->isDataItem();
 }
+
 
 void HmmMainWindow::createNewVisualizer()
 {
+    treeRefresher.setPreventRefresh(true);
     ContextAction* action = qobject_cast<ContextAction*>(sender());
     UTILS_ASSERT(action);
     if (action) {
-        createNewVisualizer(action->getItemHelper(), action->getDockSet());
+        createNewVisualizer(action->getTreeItem(), action->getDockSet());
     }
+
+    treeRefresher.setPreventRefresh(false);
 }
 
-void HmmMainWindow::createNewVisualizer( TreeItemHelper* helper, EDRDockWidgetSet* dockSet )
+void HmmMainWindow::createNewVisualizer( HmmTreeItem* item, EDRDockWidgetSet* dockSet )
 {
     showTimeline();
-    VisualizerWidget* w = createAndAddDockVisualizer(helper, dockSet);
+    VisualizerWidget* w = createAndAddDockVisualizer(item, dockSet);
 }
 
 void HmmMainWindow::createVisualizerInNewSet()
@@ -415,7 +419,7 @@ void HmmMainWindow::createVisualizerInNewSet()
 		EDRDockWidgetSet* set = new EDRDockWidgetSet(topMainWindow);
 		topMainWindow->addDockWidgetSet(set);
 
-        VisualizerWidget* w = createAndAddDockVisualizer(action->getItemHelper(), set);
+        VisualizerWidget* w = createAndAddDockVisualizer(action->getTreeItem(), set);
         auto vis = w->getCurrentVisualizer();
 		if(vis){
 			set->setWindowTitle(vis->getUIName());
@@ -480,7 +484,9 @@ void HmmMainWindow::addToVisualizer()
     if (action) {
         try {
             VisualizerPtr visualizer = action->getVisualizer();
-            TreeItemHelper* helper = action->getItemHelper();
+
+            HmmTreeItem* item = action->getTreeItem();
+            auto helper = item->getHelper();
             static int counter = 0;
             QString path = QString("Custom_addition...%1").arg(counter++);
             std::vector<core::VisualizerTimeSeriePtr> series;
@@ -522,60 +528,13 @@ void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
         return;
     }
 
-    TreeItemHelper* helper = dynamic_cast<TreeItemHelper*>(currentItem);
+    HmmTreeItem* item = dynamic_cast<HmmTreeItem*>(currentItem);
 
-    if (helper) {
-        QMenu* menu = getContextMenu(treeWidget, helper);
+    if (item) {
+        QMenu* menu = getContextMenu(treeWidget, item);
         menu->exec(treeWidget->mapToGlobal(pos));
     }
 }
-
-//void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
-//{
-//    try {
-//        // sprawdzanie, czy pod item jest podpiety jakis obiekt
-//        TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(item);
-//        //treeUsageContext->setActiveTreeItem(hmmItem);
-//        /*if (hmmItem) {
-//            showTimeline();
-//            VisualizerWidget* w = createDockVisualizer(hmmItem);
-//            topMainWindow->autoAddDockWidget( w );
-//        }
-//
-//        ChildrenVisualizers* cv = dynamic_cast<ChildrenVisualizers*>(item);
-//        if (cv) {
-//            EDRDockWidgetSet* set = new EDRDockWidgetSet(this);
-//            int count = cv->childCount();
-//            for (int i = 0; i < count; i++) {
-//                TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(cv->child(i));
-//                VisualizerWidget* w = createDockVisualizer(hmmItem);
-//                switch (cv->getPolicy()) {
-//                case ChildrenVisualizers::Auto:
-//                    set->addDockWidget(w);
-//                    break;
-//                case ChildrenVisualizers::Horizontal:
-//                    set->addDockWidget(w, Qt::Horizontal);
-//                    break;
-//                case ChildrenVisualizers::Vertical:
-//                    set->addDockWidget(w, Qt::Vertical);
-//                    break;
-//                }
-//            }
-//            int added = set->getNumWidgets();
-//        
-//            if (added > 0) {
-//                showTimeline();
-//                set->setMaxWidgetsNumber(added);
-//                topMainWindow->addDockWidgetSet(set);
-//            } else {
-//                delete set;
-//            }
-//        }*/
-//    } catch ( std::exception& e) {
-//        LOG_ERROR("Click on tree failed, reason : " << e.what());
-//    }
-//}
-//
 
 void HmmMainWindow::showTimeline()
 {
@@ -1028,7 +987,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     return visualizerDockWidget;
 }
 
- VisualizerWidget* HmmMainWindow::createAndAddDockVisualizer( TreeItemHelper* hmmItem, EDRDockWidgetSet* dockSet)
+ VisualizerWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, EDRDockWidgetSet* dockSet)
  {
 	 std::stack<QString> pathStack;
 	 QTreeWidgetItem * pomItem = hmmItem;
@@ -1052,7 +1011,8 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 	 static int incr = 0;
 	 QString suffix = QString("/id_%1").arg(incr++);
 	 path += suffix;
-	 auto visualizer = hmmItem->createVisualizer();
+     TreeItemHelperPtr helper = hmmItem->getHelper();
+	 auto visualizer = helper->createVisualizer();
 	 auto visualizerDockWidget = createDockVisualizer(visualizer);
 
 	 if (dockSet) {
@@ -1062,9 +1022,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 	 }
 
 	 std::vector<VisualizerTimeSeriePtr> series;
-	 hmmItem->getSeries(visualizer, path, series);
+	 helper->getSeries(visualizer, path, series);
 	 DataItemDescription desc(visualizer, series, visualizerDockWidget);
-	 items2Descriptions.insert(std::make_pair(hmmItem, desc));
+	 items2Descriptions.insert(std::make_pair(helper, desc));
 	 VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
 
 	 return visualizerDockWidget;
@@ -1074,44 +1034,48 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
      currentSessions = sessions;
-     QTreeWidgetItem* item = TreeBuilder::createTree(tr("Active Data"), sessions);
-     
-     QTreeWidget* tree = analisis->getTreeWidget();
-     tree->clear();
-     tree->addTopLevelItem(item);
-     item->setExpanded(true);
+     treeRefresher.refresh(analisis->getTreeWidget());
+     //if (prevent) return;
+     //std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
+     //currentSessions = sessions;
+     //QTreeWidgetItem* item = TreeBuilder::createTree(tr("Active Data"), sessions);
+     //
+     //QTreeWidget* tree = analisis->getTreeWidget();
+     //tree->clear();
+     //tree->addTopLevelItem(item);
+     //item->setExpanded(true);
 
-     QFont font = item->font(0);
-     //static int fontSize = font.pointSize();
-     //font.setPointSize(fontSize + 4);
-     font.setPointSize(12);
-     item->setFont(0, font);
+     //QFont font = item->font(0);
+     ////static int fontSize = font.pointSize();
+     ////font.setPointSize(fontSize + 4);
+     //font.setPointSize(12);
+     //item->setFont(0, font);
 
-     for (int i = 0; i < item->childCount(); i++) {
-         QTreeWidgetItem* child = item->child(i);
-         child->setExpanded(true);
+     //for (int i = 0; i < item->childCount(); i++) {
+     //    QTreeWidgetItem* child = item->child(i);
+     //    child->setExpanded(true);
 
-         QFont font = item->font(0);
-         font.setPointSize(14);
-         item->setFont(0, font);
-     }
+     //    QFont font = item->font(0);
+     //    font.setPointSize(14);
+     //    item->setFont(0, font);
+     //}
  }
 
- QMenu* HmmMainWindow::getContextMenu( QWidget* parent, TreeItemHelper* helper )
+ QMenu* HmmMainWindow::getContextMenu( QWidget* parent, HmmTreeItem* item )
  {
      dropUnusedElements(items2Descriptions);
      //helper->getTypeInfos()
      QMenu * menu = new QMenu(parent);
-     QAction * addNew = new ContextAction(helper, menu);
+     QAction * addNew = new ContextAction(item, menu);
      addNew->setText(tr("Create new visualizer"));
      menu->addAction(addNew);
      menu->addSeparator();
      connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
      connect(addNew, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
-     if (dynamic_cast<NewChartItemHelper*>(helper)) {
+     if (core::dynamic_pointer_cast<NewChartItemHelper>(item->getHelper())) {
          QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);
-         QAction * multi = new ContextAction(helper, menu);
+         QAction * multi = new ContextAction(item, menu);
          multi->setText(tr("All from session"));
          multiMenu->addAction(multi);
          connect(multi, SIGNAL(triggered()), this, SLOT(allFromSession()));
@@ -1119,21 +1083,21 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          menu->addMenu(multiMenu);
      }
 
-     if (dynamic_cast<NewVector3ItemHelper*>(helper)) {
+     if (core::dynamic_pointer_cast<NewVector3ItemHelper>(item->getHelper())) {
          QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);
-         QAction * multiX = new ContextAction(helper, menu);
+         QAction * multiX = new ContextAction(item, menu);
          multiX->setText(tr("All X from session"));
          multiMenu->addAction(multiX);
          connect(multiX, SIGNAL(triggered()), this, SLOT(allXFromSession()));
          connect(multiX, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
-         QAction * multiY = new ContextAction(helper, menu);
+         QAction * multiY = new ContextAction(item, menu);
          multiY->setText(tr("All Y from session"));
          multiMenu->addAction(multiY);
          connect(multiY, SIGNAL(triggered()), this, SLOT(allYFromSession()));
          connect(multiY, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
-         QAction * multiZ = new ContextAction(helper, menu);
+         QAction * multiZ = new ContextAction(item, menu);
          multiZ->setText(tr("All Z from session"));
          multiMenu->addAction(multiZ);
          connect(multiZ, SIGNAL(triggered()), this, SLOT(allZFromSession()));
@@ -1141,25 +1105,25 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
          multiMenu->addSeparator();
 
-         QAction * normL = new ContextAction(helper, menu);
+         QAction * normL = new ContextAction(item, menu);
          normL->setText(tr("Left Step normalization"));
          multiMenu->addAction(normL);
          connect(normL, SIGNAL(triggered()), this, SLOT(normalizedLeftChart()));
          connect(normL, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
-         QAction * normR = new ContextAction(helper, menu);
+         QAction * normR = new ContextAction(item, menu);
          normR->setText(tr("Right Step normalization"));
          multiMenu->addAction(normR);
          connect(normR, SIGNAL(triggered()), this, SLOT(normalizedRightChart()));
          connect(normR, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
-         QAction * normAllL = new ContextAction(helper, menu);
+         QAction * normAllL = new ContextAction(item, menu);
          normAllL->setText(tr("Left Step normalization - all from session"));
          multiMenu->addAction(normAllL);
          connect(normAllL, SIGNAL(triggered()), this, SLOT(allLeftNormalized()));
          connect(normAllL, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
-         QAction * normAllR = new ContextAction(helper, menu);
+         QAction * normAllR = new ContextAction(item, menu);
          normAllR->setText(tr("Right Step normalization - all from session"));
          multiMenu->addAction(normAllR);
          connect(normAllR, SIGNAL(triggered()), this, SLOT(allRightNormalized()));
@@ -1182,7 +1146,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                  DataManager* dataManager = DataManager::getInstance();
                  bool compatibile = false;
                  for (int idx = 0; idx < visualizer->getNumInputs(); idx++) {
-                     std::vector<TypeInfo> types = helper->getTypeInfos();
+                     std::vector<TypeInfo> types = item->getHelper()->getTypeInfos();
                      for (unsigned int h = 0; h < types.size(); h++) {
                          if (dataManager->isTypeCompatible(visualizer->getInputType(idx), types[h])) {
                              compatibile = true;
@@ -1193,7 +1157,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                  }
 
                  if (compatibile) {
-                     QAction* addAction = new ContextAction(helper, group, visualizer);
+                     QAction* addAction = new ContextAction(item, group, visualizer);
                      addAction->setText(vw->windowTitle());
                      connect(addAction, SIGNAL(triggered()), this, SLOT(addToVisualizer()));
                      connect(addAction, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
@@ -1213,7 +1177,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          menu->addMenu(addTo);
      }
 
-
+     TreeItemHelperPtr helper = item->getHelper();
      if(items2Descriptions.find(helper) != items2Descriptions.end()) {
          QMenu* removeFrom = new QMenu(tr("Remove from:"), menu);
          connect(removeFrom, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
@@ -1223,14 +1187,14 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          auto range = items2Descriptions.equal_range(helper);
          for (auto it = range.first; it != range.second; it++) {
              DataItemDescription desc = it->second;
-             QAction * action = new ContextAction(helper, menu, desc.visualizer.lock());
+             QAction * action = new ContextAction(item, menu, desc.visualizer.lock());
              action->setText(desc.visualizer.lock()->getUIName());
              connect(action, SIGNAL(triggered()), this, SLOT(removeFromVisualizer()));
              connect(action, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
              removeFrom->addAction(action);
          }
 
-         QAction* all = new ContextAction(helper, menu);
+         QAction* all = new ContextAction(item, menu);
          all->setText("All visualizers");
          connect(all, SIGNAL(triggered()), this, SLOT(removeFromAll()));
          connect(all, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
@@ -1241,14 +1205,14 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      QMenu* createIn = new QMenu(tr("Create in:"), menu);
      BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
          if (set->isAdditionPossible()) {
-             QAction* action = new ContextAction(helper, menu, VisualizerPtr(), set);
+             QAction* action = new ContextAction(item, menu, VisualizerPtr(), set);
              action->setText(set->windowTitle());
              createIn->addAction(action);
              connect(action, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
              connect(action, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
          }
      }
-     QAction* newGroup = new ContextAction(helper, menu);
+     QAction* newGroup = new ContextAction(item, menu);
      newGroup->setText(tr("New group"));
      createIn->addAction(newGroup);
      connect(newGroup, SIGNAL(triggered()), this, SLOT(createVisualizerInNewSet()));
@@ -1271,9 +1235,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      }
  }
 
- void HmmMainWindow::dropUnusedElements( std::multimap<TreeItemHelper*, DataItemDescription>& multimap )
+ void HmmMainWindow::dropUnusedElements( std::multimap<TreeItemHelperPtr, DataItemDescription>& multimap )
  {
-     typedef std::multimap<TreeItemHelper*, DataItemDescription> mmap;
+     typedef std::multimap<TreeItemHelperPtr, DataItemDescription> mmap;
      for (auto it = multimap.begin(); it != multimap.end(); ) {
          DataItemDescription& desc = it->second;
          bool emptySerie = false;
@@ -1339,9 +1303,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      UTILS_ASSERT(action);
      if (action) {
-         typedef std::multimap<TreeItemHelper*, DataItemDescription> mmap;
+         typedef std::multimap<TreeItemHelperPtr, DataItemDescription> mmap;
          std::list<mmap::iterator> toErase;
-         auto range = items2Descriptions.equal_range(action->getItemHelper());
+         auto range = items2Descriptions.equal_range(action->getTreeItem()->getHelper());
          for (auto it = range.first; it != range.second; ) {
              // na razie kopia, w przeciwnym razie jest problem z usuwaniem.
              DataItemDescription desc = it->second;
@@ -1380,7 +1344,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  void HmmMainWindow::allFromSession()
  {
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewChartItemHelper* helper = dynamic_cast<NewChartItemHelper*>(a->getItemHelper());
+     NewChartItemHelperPtr helper = core::dynamic_pointer_cast<NewChartItemHelper>(a->getTreeItem()->getHelper());
      UTILS_ASSERT(helper);
     
      if (helper) {
@@ -1404,8 +1368,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                  }
              }
          }
-         NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
-         createNewVisualizer(multi);
+         NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
+         HmmTreeItem item(multi);
+         createNewVisualizer(&item);
          //delete multi;
      }
  }
@@ -1415,10 +1380,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      auto context = c3dlib::C3DParser::IEvent::Left;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      if (helper) {
          createNormalizedFromAll(helper, context);
-
      }
  }
 
@@ -1426,7 +1390,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      auto context = c3dlib::C3DParser::IEvent::Right;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      if (helper) {
          createNormalizedFromAll(helper, context);
 
@@ -1437,7 +1401,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      auto context = c3dlib::C3DParser::IEvent::Left;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      if (helper) {
          createNormalized(helper, context);
 
@@ -1448,7 +1412,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      auto context = c3dlib::C3DParser::IEvent::Right;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      if (helper) {
          createNormalized(helper, context);
      }
@@ -1458,7 +1422,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      int channelNo = 0;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      allTFromSession(helper, channelNo);
  }
 
@@ -1466,7 +1430,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      int channelNo = 1;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      allTFromSession(helper, channelNo);
  }
 
@@ -1474,11 +1438,11 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      int channelNo = 2;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      allTFromSession(helper, channelNo);
  }
 
- void HmmMainWindow::allTFromSession( NewVector3ItemHelper* helper, int channelNo )
+ void HmmMainWindow::allTFromSession( NewVector3ItemHelperPtr helper, int channelNo )
  {
      UTILS_ASSERT(helper);
 
@@ -1519,12 +1483,13 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                 
              }
          }
-         NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
-         createNewVisualizer(multi);
+         NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
+         HmmTreeItem item(multi);
+         createNewVisualizer(&item);
      }
  }
 
- void HmmMainWindow::createNormalized( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context )
+ void HmmMainWindow::createNormalized( NewVector3ItemHelperPtr helper, c3dlib::C3DParser::IEvent::Context context )
  {
      NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
      MotionConstPtr motion = helper->getMotion();
@@ -1552,13 +1517,14 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, motion));
          }
      }
-     NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
+     NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
      multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
-     createNewVisualizer(multi);
+     HmmTreeItem item(multi);
+     createNewVisualizer(&item);
      //delete multi;
  }
 
- void HmmMainWindow::createNormalizedFromAll( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context )
+ void HmmMainWindow::createNormalizedFromAll( NewVector3ItemHelperPtr helper, c3dlib::C3DParser::IEvent::Context context )
  {
      NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
      SessionConstPtr s = helper->getMotion()->getSession();
@@ -1615,9 +1581,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          }
      }
      if (toVisualize.size()) {
-         NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
+         NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
          multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
-         createNewVisualizer(multi);
+         HmmTreeItem item(multi);
+         createNewVisualizer(&item);
          //delete multi;
      } else {
          // ?

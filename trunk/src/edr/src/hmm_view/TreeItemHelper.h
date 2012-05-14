@@ -17,8 +17,8 @@
 #include <plugins/newChart/INewChartSerie.h>
 #include "Visualizer.h"
 
-//! podstawowa klasa ulatwiajaca tworzenie wizualizatora na podstawie elementu drzewa
-class TreeItemHelper : public QTreeWidgetItem
+
+class TreeItemHelper
 {
 public:
     TreeItemHelper() {}
@@ -34,16 +34,42 @@ public:
     void getSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     PluginSubject::MotionConstPtr getMotion() const { return motion; }
     void setMotion(PluginSubject::MotionConstPtr val) { motion = val; }
+    QString getText() const { return text; }
+    void setText(QString val) { text = val; }
 
     virtual std::vector<core::TypeInfo> getTypeInfos() const = 0;
 
 private:
      VisualizerPtr createdVisualizer;
      PluginSubject::MotionConstPtr motion;
+     QString text;
 };
 
 typedef boost::shared_ptr<TreeItemHelper> TreeItemHelperPtr;
 typedef boost::shared_ptr<const TreeItemHelper> TreeItemHelperConstPtr;
+
+
+//! podstawowa klasa ulatwiajaca tworzenie wizualizatora na podstawie elementu drzewa
+class HmmTreeItem : public QTreeWidgetItem
+{
+public:
+    HmmTreeItem(TreeItemHelperPtr helper) : 
+      helper(helper) 
+    {}
+    virtual ~HmmTreeItem() {}
+
+public:
+    TreeItemHelperPtr getHelper() { return helper; }
+    void setItemAndHelperText(const QString& text) 
+    { 
+        helper->setText(text); 
+        QTreeWidgetItem::setText(0, text); 
+    }
+private:
+    TreeItemHelperPtr helper;
+};
+
+
 
 class ChildrenVisualizers : public QTreeWidgetItem
 {
@@ -80,7 +106,11 @@ public:
     TreeWrappedItemHelper(const core::ObjectWrapperConstPtr & wrapper) : wrapper(wrapper)
     {
     }
-
+    virtual ~TreeWrappedItemHelper() 
+    {
+        int a = 0;
+        a++;
+    }
 public:
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
@@ -98,6 +128,8 @@ public:
 protected:
     core::ObjectWrapperConstPtr wrapper;
 };
+typedef core::shared_ptr<TreeWrappedItemHelper> TreeWrappedItemHelperPtr;
+typedef core::shared_ptr<const TreeWrappedItemHelper> TreeWrappedItemHelperConstPtr;
 
 ////! klasa pomocnicza przy tworzeniu wizualizatora wykresow
 //class ChartItemHelper : public TreeWrappedItemHelper
@@ -129,6 +161,8 @@ public:
     }
 
 };
+typedef core::shared_ptr<NewChartItemHelper> NewChartItemHelperPtr;
+typedef core::shared_ptr<const NewChartItemHelper> NewChartItemHelperConstPtr;
 
 ////! klasa pomocnicza przy tworzeniu wykresow z wektora 3-elementowego
 //class Vector3ItemHelper : public TreeWrappedItemHelper
@@ -154,7 +188,8 @@ public:
         return ret;
     }
 };
-
+typedef core::shared_ptr<NewVector3ItemHelper> NewVector3ItemHelperPtr;
+typedef core::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPtr;
 
 class IMultiserieColorStrategy
 {
@@ -275,6 +310,8 @@ private:
     
     IMultiserieColorStrategyConstPtr colorStrategy;
 };
+typedef core::shared_ptr<NewMultiserieHelper> NewMultiserieHelperPtr;
+typedef core::shared_ptr<const NewMultiserieHelper> NewMultiserieHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu wizualizatora jointow (leniwe parsowanie)
 class JointsItemHelper : public TreeItemHelper
@@ -300,6 +337,8 @@ public:
 private:
     PluginSubject::MotionConstPtr motion;
 };
+typedef core::shared_ptr<JointsItemHelper> JointsItemHelperPtr;
+typedef core::shared_ptr<const JointsItemHelper> JointsItemHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu zbiorczego widoku 3d (markery + jointy + plyty GRF)
 class Multiserie3D : public TreeItemHelper
@@ -327,5 +366,7 @@ public:
 private:
     PluginSubject::MotionConstPtr motion;
 };
+typedef core::shared_ptr<Multiserie3D> Multiserie3DPtr;
+typedef core::shared_ptr<const Multiserie3D> Multiserie3DConstPtr;
 
 #endif
