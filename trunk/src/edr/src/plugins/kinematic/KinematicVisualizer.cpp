@@ -262,8 +262,6 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
 
 	widget->setFocusPolicy(Qt::StrongFocus);
 
-	widget->setMinimumSize(50, 50);
-
     auto info = [&](const PickHandler::PickerList& list) {
         auto it = list.begin();
         if (it != list.end()) {

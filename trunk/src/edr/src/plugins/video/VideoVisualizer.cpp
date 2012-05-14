@@ -215,6 +215,7 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
     using namespace osgui;
 
     viewer = new QOsgDefaultWidget();
+	viewer->setMinimumSize(50,50);
     viewer->setTimerActive(false);
 
     // pobranie cech kontekstu graficznego
@@ -246,12 +247,12 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
 
     // dodanie widgetu
     widget = new Widget("video");
-	widget->setMinimumSize(50, 50);
-    //widget->setUpdateCallback( new WidgetUpdater(this) );
+    widget->setUpdateCallback( new WidgetUpdater(this) );
 
     // ratio keeper
     ratioKeeper = new AspectRatioKeeper(widget, 1);
     workspace->addWidget(ratioKeeper);
+	widget->setMinimumSize(50, 50);
     
     Refresher refresher = { this };
     workspace->addEventCallback(createEventCallback(osgGA::GUIEventAdapter::RESIZE, refresher));
@@ -268,8 +269,6 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
 #endif
 
     viewer->setFocusPolicy(Qt::StrongFocus);
-
-	viewer->setMinimumSize(50, 50);
 
     return viewer;
 }

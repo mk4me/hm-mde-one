@@ -14,6 +14,21 @@
 #include <QtGui/QTreeWidget>
 #include "DataSourceStatusManager.h"
 
+//! Klasa widgeta drzewa, gdzie na prawy przycisk myszy nie ma zaznaczania danych w drzewie
+class PerspectiveTreeWidget : public QTreeWidget
+{
+	Q_OBJECT
+
+public:
+
+	PerspectiveTreeWidget(QWidget * parent = nullptr);
+	virtual ~PerspectiveTreeWidget();
+
+protected:
+
+	virtual void mousePressEvent(QMouseEvent *event);
+};
+
 //! Obiekt zarz¹dzaj¹cy perspektyw¹ po stornie DataSource
 //! Kontroluje czy perspektywa danych jest jeszcze wa¿na, jeœli nie to odœwie¿a j¹ w razie potrzeby (czyœci i przebudowuje)
 class DataSourcePerspective

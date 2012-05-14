@@ -101,10 +101,7 @@ private slots:
 
     void onDownload();
     void onLoad();
-	void onLoadAll();
-
 	void onUnload();
-	void onUnloadAll();
 
     //! Wywo³ywany po stronie w¹tku UI update
     void onUpdateDownloadRequest();
@@ -113,9 +110,14 @@ private slots:
     //! Odœwie¿a progress pobierania
     void refreshDownloadProgress();
 
-    void onPerspectiveCurrentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
+    void onPerspectiveSelectionChanged();
 
 private:
+
+	void generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget * perspective);
+	void generateGeneralContextMenu(QMenu & menu, QTreeWidget * perspective);
+	void generateCommonContextMenu(QMenu & menu, QTreeWidget * perspective);
+
 
 	static core::shared_ptr<communication::AntropometricData> createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs);
 	static float getAntropometricValue(const std::string & attribute, const webservices::MotionShallowCopy::Attrs & attrs, float defValue = 0.0);
@@ -234,12 +236,8 @@ private:
     //! Potem musz¹ zostaæ zresetowane!!
     //! Pliki do za³adowania
     std::set<int> filesToLoad;
-	//! Wszystkie dostepne pliki do zaladowania
-	std::set<int> allFilesToLoad;
     //! Pliki do wy³adowania - EXPEREIMENTAL!!
     std::set<int> filesToUnload;
-	//! Wszystkie dostepne pliki do wyladowania
-	std::set<int> allFilesToUnload;
     //! Pliki do œci¹gniêcia
     std::set<int> filesToDownload;
 

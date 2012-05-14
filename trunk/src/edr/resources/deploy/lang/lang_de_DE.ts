@@ -100,33 +100,33 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Formular</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="143"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="140"/>
         <source>Active Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="167"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="241"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="183"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="257"/>
         <source>Filters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="248"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="264"/>
         <source>Reset All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="267"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="283"/>
         <source>hide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="366"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="382"/>
         <source>Apply</source>
         <translation type="unfinished">Anwenden</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="401"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="417"/>
         <source>Raports</source>
         <translation type="unfinished"></translation>
     </message>
@@ -480,7 +480,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="194"/>
         <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="255"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="605"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="618"/>
         <source>Login</source>
         <translation type="unfinished"></translation>
     </message>
@@ -552,366 +552,371 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Aktivieren</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="472"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="954"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="485"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="967"/>
         <source>Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="554"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="567"/>
         <source>Logout process</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="555"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="568"/>
         <source>Some download is currently performed. Do you want to logout and cancel it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="612"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="625"/>
         <source>Login problem</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="613"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="626"/>
         <source>Both fields: User and Password need to be filled. Please fill them and retry.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="635"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="648"/>
         <source>Error during login: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="643"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="656"/>
         <source>UNKNOWN ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="651"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="664"/>
         <source>Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="654"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="667"/>
         <source>Login error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="670"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="683"/>
         <source>Logout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="677"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="690"/>
         <source>Login information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="678"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="691"/>
         <source>User is logged locally - there might be a problem with internet connection and remote services might not work correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="708"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="721"/>
         <source>Synchronization error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="709"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="722"/>
         <source>Synchronization data is corrupted. Please try again later. If problem continues contact producer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="724"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="743"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="737"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="756"/>
         <source>Synchronization required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="725"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="738"/>
         <source>Database was updated. Some data might be not available. Would You like to synchronize?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="744"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="757"/>
         <source>Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="776"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="789"/>
         <source>Login unsuccessful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="777"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="790"/>
         <source>Given user or password is incorrect. Please correct it and try again. If problem continues contact database administrators.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="821"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="834"/>
         <source>All fields: Login, Password, Repeat password, Name, Surname and E-mail must be filled. Please correct them and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="825"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="838"/>
         <source>Password differs from its repeat. Please verify password.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="842"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="855"/>
         <source>Registration form validation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="854"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="867"/>
         <source>Registration successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="855"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="868"/>
         <source>Your registration has finished. Activate Your account to be able to login and get access to database.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="869"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="882"/>
         <source>Registration failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="870"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="883"/>
         <source>Could not registrate. Please change login or email and try again. If problem continues contact producer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="883"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="896"/>
         <source>Activation validation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="884"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="897"/>
         <source>Both fields: Login and Activation code must be filled. Please correct them and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="891"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="904"/>
         <source>Activation successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="892"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="905"/>
         <source>Given login has been successfully activated. You can now login using this account.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="906"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="919"/>
         <source>Activation failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="907"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="920"/>
         <source>Could not activate given login with provided activation code. Verify data and try again. If problem continiues please contact the producer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="991"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1105"/>
         <source>Load All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="992"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1106"/>
         <source>Unload All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="994"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1026"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="995"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1027"/>
         <source>Unload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="997"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1029"/>
         <source>Download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1000"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2094"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1150"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2252"/>
         <source>Save project as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1001"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1151"/>
         <source>Load project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1002"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1152"/>
         <source>Delete project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1005"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1032"/>
         <source>Refresh status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1007"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1107"/>
+        <source>Download All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1154"/>
         <source>Synchronize</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1283"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1329"/>
         <source>Database synchronization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1284"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1330"/>
         <source>Local data already synchronized. Synchronization is not required. Proceed anyway?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1392"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1438"/>
         <source>Download problem</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1393"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1403"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1439"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1449"/>
         <source>Download request is </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1393"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1439"/>
         <source> bytes large while there is only </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1393"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1439"/>
         <source> bytes free. Download could not be continued. Please free some space or truncate your download request.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1402"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1448"/>
         <source>Download warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1403"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1449"/>
         <source> bytes large. This will take some time to download such amount of data. Are you sure you can wait some longer time?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1426"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1472"/>
         <source>Download preparation error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1427"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1473"/>
         <source>Error while preparing download request. Error description: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1898"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2056"/>
         <source>Loading info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1899"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2057"/>
         <source>Data loaded successfully to application.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1906"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2064"/>
         <source>Errors while data loading:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1911"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1982"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2069"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2140"/>
         <source>
 %1. File ID: %2. Error description: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1916"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1987"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2074"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2145"/>
         <source>
 %1. File ID: %2. Unknown error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1921"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2079"/>
         <source>Loading warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1969"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2127"/>
         <source>Unloading info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1970"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2128"/>
         <source>Data unloaded successfully.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1977"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2135"/>
         <source>Errors while data unloading:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1992"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2150"/>
         <source>Unloading warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2030"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2056"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2188"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2214"/>
         <source>Loading project warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2031"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2189"/>
         <source>Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2057"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2215"/>
         <source>Some project files must are missing. Data download is required. Do You want to continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2092"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2250"/>
         <source>Project name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2093"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2251"/>
         <source>Save</source>
         <translation type="unfinished">Speichern</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2104"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2262"/>
         <source>Save project warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2105"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2263"/>
         <source>Project name can not be empty. Please give a name to the project and continue.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1790"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1948"/>
         <source>Unknown error</source>
         <translation type="unfinished">Unbekannter Fehler</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1851"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2009"/>
         <source>Downloading file %1 [%2/%3]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1536,181 +1541,181 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HmmMainWindow</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="503"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="506"/>
         <source>reason: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="505"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="507"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="508"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="510"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="507"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="510"/>
         <source>Unable to add data to visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="879"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="882"/>
         <source>ILLNESS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="880"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="881"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="882"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="883"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="884"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="885"/>
         <source>MULTI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="888"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="891"/>
         <source>Endo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="889"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="892"/>
         <source>Stroke</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="890"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="893"/>
         <source>Spine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1107"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1077"/>
         <source>Active Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1136"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1106"/>
         <source>Create new visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1143"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1153"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1113"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1123"/>
         <source>Multi chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1145"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1115"/>
         <source>All from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1155"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1125"/>
         <source>All X from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1161"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1131"/>
         <source>All Y from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1167"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1137"/>
         <source>All Z from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1175"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1145"/>
         <source>Left Step normalization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1181"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1151"/>
         <source>Right Step normalization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1187"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1157"/>
         <source>Left Step normalization - all from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1193"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1163"/>
         <source>Right Step normalization - all from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1202"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1172"/>
         <source>Add to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1248"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1218"/>
         <source>Remove from:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1271"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1241"/>
         <source>Create in:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1282"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1252"/>
         <source>New group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="643"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="646"/>
         <source>ANALOG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="644"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="647"/>
         <source>KINETIC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="645"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="648"/>
         <source>KINEMATIC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="646"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="649"/>
         <source>VIDEO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="655"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="658"/>
         <source>GRF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="707"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="710"/>
         <source>EMG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="790"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="793"/>
         <source>FORCES</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="791"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="794"/>
         <source>MOMENTS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="792"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="795"/>
         <source>POWERS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="840"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="843"/>
         <source>MARKERS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="841"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="844"/>
         <source>JOINTS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="845"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="848"/>
         <source>VIDEOS</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1761,103 +1766,103 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>KinematicVisualizer</name>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="142"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="143"/>
         <source>Switch Axes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="151"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="152"/>
         <source>Trajectories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="156"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="157"/>
         <source>Scheme Drawers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="163"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="164"/>
         <source>Ghost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="170"/>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="304"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="171"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="303"/>
         <source>View</source>
         <translation type="unfinished">Ansicht</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="174"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="175"/>
         <source>No active serie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="208"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="209"/>
         <source>Picker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="209"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="210"/>
         <source>Translate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="210"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="211"/>
         <source>Rotate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="211"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="212"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="223"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="224"/>
         <source>Left</source>
         <translation type="unfinished">Links</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="224"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="225"/>
         <source>Right</source>
         <translation type="unfinished">Rechts</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="225"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="226"/>
         <source>Front</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="226"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="227"/>
         <source>Back</source>
         <translation type="unfinished">Zurück</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="227"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="228"/>
         <source>Top</source>
         <translation type="unfinished">Anfang</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="228"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="229"/>
         <source>Bottom</source>
         <translation type="unfinished">Ende</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="238"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="239"/>
         <source>Reset transform</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="278"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="277"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="284"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="283"/>
         <source>Manipulators</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="290"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="289"/>
         <source>Manipulators properties</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2335,144 +2340,144 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>NewChartVisualizer</name>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="103"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="367"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="100"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="364"/>
         <source>No active serie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="114"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="111"/>
         <source>Events context</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="120"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="117"/>
         <source>None events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="121"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="118"/>
         <source>Left events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="122"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="119"/>
         <source>Right events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="129"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="126"/>
         <source>Picker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="136"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="133"/>
         <source>Value Marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="143"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="140"/>
         <source>Horizontal Marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="150"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="147"/>
         <source>Vertical Marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="155"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="152"/>
         <source>Scale to active</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="162"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="159"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="213"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="210"/>
         <source>X:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="214"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="211"/>
         <source>Y:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="220"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="217"/>
         <source>SX:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="221"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="218"/>
         <source>SY:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="235"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="232"/>
         <source>Upper bound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="236"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="233"/>
         <source>Lower bound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="237"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="234"/>
         <source>Moving average</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="250"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="247"/>
         <source>Operations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="257"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="254"/>
         <source>Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="260"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="257"/>
         <source>Tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="265"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="262"/>
         <source>Active Data Series</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="652"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="688"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="696"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="649"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="685"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="693"/>
         <source>Left</source>
         <translation type="unfinished">Links</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="652"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="696"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="649"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="693"/>
         <source>%1: Left step %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="656"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="688"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="700"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="653"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="685"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="697"/>
         <source>Right</source>
         <translation type="unfinished">Rechts</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="656"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="700"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="653"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="697"/>
         <source>%1: Right step %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="685"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="682"/>
         <source>Whole chart</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3598,6 +3603,21 @@ Bitte überprüfen Sie Ihre GStreamer-Installation und stellen Sie sicher, dass 
     <message>
         <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="206"/>
         <source>e-mail [login]:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/PseudoLoginWidget.h" line="91"/>
+        <source>Login problem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/PseudoLoginWidget.h" line="92"/>
+        <source>Invalid username or password - please try again or quit application.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/PseudoLoginWidget.h" line="93"/>
+        <source>Unsuccessful login</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7416,7 +7436,7 @@ Möchten Sie die Datei trotzdem löschen?</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/HmmContexts.cpp" line="43"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="326"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="338"/>
         <source>Visualizer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7559,7 +7579,7 @@ Value: %2</source>
         <translation type="unfinished">Datei</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourcePerspective.cpp" line="203"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourcePerspective.cpp" line="228"/>
         <source>Gender</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7574,6 +7594,36 @@ Value: %2</source>
     <message>
         <source>PulseAudio Sound Server</source>
         <translation type="obsolete">PulseAudio-Sound-Server</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="29"/>
+        <source>Data Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="73"/>
+        <source>Motion: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="74"/>
+        <source>Session: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="75"/>
+        <source>Subject: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="78"/>
+        <source>Patient: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="83"/>
+        <source>Weight: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -13868,7 +13918,7 @@ Do you want to save your changes?</source>
         <translation type="unfinished">Herauslösen</translation>
     </message>
     <message>
-        <location filename="../../../src/core/VisualizerWidget.cpp" line="115"/>
+        <location filename="../../../src/core/VisualizerWidget.cpp" line="113"/>
         <source>Sources</source>
         <translation type="unfinished"></translation>
     </message>

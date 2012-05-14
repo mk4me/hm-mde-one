@@ -1,10 +1,35 @@
 #include "CommunicationPCH.h"
 #include "DataSourcePerspective.h"
+#include <QtGui/QMouseEvent>
 
 using namespace communication;
 
+PerspectiveTreeWidget::PerspectiveTreeWidget(QWidget * parent) : QTreeWidget(parent)
+{
+	
+}
+
+PerspectiveTreeWidget::~PerspectiveTreeWidget()
+{
+
+}
+
+void PerspectiveTreeWidget::mousePressEvent(QMouseEvent *event)
+{
+	if(event->button() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier){
+		auto item = itemAt(event->pos());
+
+		if(item == nullptr || item->isSelected() == true){
+			clearSelection();
+			return;
+		}
+	}
+
+	QTreeWidget::mousePressEvent(event);
+}
+
 DataSourcePerspective::DataSourcePerspective(const communication::DataSourcePerspectivePtr & perspective)
-	: perspective_(perspective), treeWidget(new QTreeWidget()), invalid_(true)
+	: perspective_(perspective), treeWidget(new PerspectiveTreeWidget()), invalid_(true)
 {
 
 }

@@ -453,8 +453,21 @@ void DataSourceWidget::getPatientAndSubject(QTreeWidgetItem * item, const webser
 	}
 }
 
-void DataSourceWidget::onPerspectiveCurrentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
+void DataSourceWidget::onPerspectiveSelectionChanged()
 {
+	QTreeWidget * perspective = qobject_cast<QTreeWidget*>(sender());
+
+	if(perspective == nullptr){
+		return;
+	}
+
+	QTreeWidgetItem * current = nullptr;
+
+	auto sel = perspective->selectedItems();
+	if(sel.empty() == false){
+		current = sel.first();
+	}
+
 	//próbuje ustaliæ pacjenta, je¿eli siê uda to ustawiam kartê pacjenta
 	const MedicalShallowCopy::Patient * patient = nullptr;
 	const MotionShallowCopy::Performer * subject = nullptr;
@@ -917,7 +930,7 @@ void DataSourceWidget::onPerspectiveChange(int idx)
 	auto currentPW = perspectiveManager.currentPerspectiveWidget();
 	if(currentPW != nullptr){
 		disconnect(currentPW, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(perspectiveContextMenu(QPoint)));
-		disconnect(currentPW, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem *)), this, SLOT(onPerspectiveCurrentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+		disconnect(currentPW, SIGNAL(itemSelectionChanged()), this, SLOT(onPerspectiveSelectionChanged()));
 	}
 
 	try{
@@ -929,7 +942,7 @@ void DataSourceWidget::onPerspectiveChange(int idx)
 		currentPW = perspectiveManager.currentPerspectiveWidget();
 		if(currentPW != nullptr){
 			connect(currentPW, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(perspectiveContextMenu(QPoint)));
-			connect(currentPW, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem *)), this, SLOT(onPerspectiveCurrentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+			connect(currentPW, SIGNAL(itemSelectionChanged()), this, SLOT(onPerspectiveSelectionChanged()));
 		}
 
 		auto it = perspectivesContent.find(perspectiveManager.currentPerspectiveWidget());
@@ -987,105 +1000,116 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	//generujemy menu kontekstowe - download, load, unload + updateShallowCopy
 	QMenu menu;
 
-	//poszczeólne akcje
-	auto loadAll = menu.addAction(tr("Load All"));
-	auto unloadAll = menu.addAction(tr("Unload All"));
+	auto selectedItems = perspective->selectedItems();
+	if(selectedItems.empty() == false){		
+		generateItemSpecyficContextMenu(menu, perspective);
+	}else{
+		generateGeneralContextMenu(menu, perspective);
+	}
+
 	menu.addSeparator();
+
+	generateCommonContextMenu(menu, perspective);
+
+	setCursor(Qt::ArrowCursor);
+	menu.exec(perspective->mapToGlobal(pos));
+
+	currentPerspectiveItem = nullptr;
+
+	filesToLoad.swap(std::set<int>());
+	filesToUnload.swap(std::set<int>());
+	//tutaj nie czyszczê plików œci¹ganych bo one s¹ kopiowane w innym w¹tku - tam to robie (LocalDataLoader)
+}
+
+void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget * perspective)
+{
 	auto load = menu.addAction(tr("Load"));
 	auto unload = menu.addAction(tr("Unload"));
 	menu.addSeparator();
 	auto download = menu.addAction(tr("Download"));
 	menu.addSeparator();
 
-	auto saveProject = menu.addAction(tr("Save project as..."));
-	auto loadProject = menu.addMenu(tr("Load project"));
-	auto deleteProject = menu.addMenu(tr("Delete project"));
-	menu.addSeparator();
-
 	auto refresh = menu.addAction(tr("Refresh status"));
-	menu.addSeparator();
-	auto synch = menu.addAction(tr("Synchronize"));
 
-	//chwilowo dezaktywuje - nie wiem co bêdzie
-	loadAll->setEnabled(false);
-	unloadAll->setEnabled(false);
 	load->setEnabled(false);
 	unload->setEnabled(false);
 	download->setEnabled(false);
-
-	loadProject->setEnabled(false);
-	deleteProject->setEnabled(false);
 	refresh->setEnabled(false);
-	synch->setEnabled(false);
 
 	//skoro coœ œci¹gam muszê poczekaæ!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
 
-		connect(saveProject, SIGNAL(triggered()), this, SLOT(onSaveProject()));
-
 		//aktywujemy podstaweowe operacje
 		connect(refresh, SIGNAL(triggered()), this, SLOT(refreshStatus()));
 		refresh->setEnabled(true);
-
-		connect(synch, SIGNAL(triggered()), this, SLOT(updateShallowCopy()));
-		synch->setEnabled(true);
 
 		//sprawdzamy co to za item, potrzebujemy wszystkich plików z nim zwi¹zanych
 		std::set<int> filesIDs;
 
 		auto selectedItems = perspective->selectedItems();
 		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();				
-		if(selectedItems.empty() == false){		
-			//UTILS_ASSERT(selectedItems.size() == 1, "Zly model selekcji");
 
-			//sprawdzam czy to cos co mogê za³adowaæ?
+		//sprawdzam czy to cos co mogê za³adowaæ?
 
-			if(isItemLoadable(selectedItems[0]) == true){
-			
-				currentPerspectiveItem = selectedItems[0];
-				//pobieram pliki dla wybranego elementu
-				getItemsFiles(currentPerspectiveItem, filesIDs, filteredShallowCopy);
-				//UTILS_ASSERT(filesIDs.empty() == false, "Brak danych w drzewie");
-		
-				if(filesIDs.empty() == false){
-					//mam dane - mogê pracowaæ
-					//wyci¹gam dane lokalne i zdalne
-					//wyci¹gam dane za³¹dowane i nieza³adowane
-					//na bazie tych info odpowiednio ³¹cze akcje ze slotami i aktywuje je + zapamiêtuje te info do wykonania ich!!
+		if(isItemLoadable(selectedItems[0]) == true){
 
-					//pomijamy wszystkie niekompatybilne z DM pliki
-				
-					std::set<int> dmOKFiles;
+			currentPerspectiveItem = selectedItems[0];
+			//pobieram pliki dla wybranego elementu
+			getItemsFiles(currentPerspectiveItem, filesIDs, filteredShallowCopy);
+			//UTILS_ASSERT(filesIDs.empty() == false, "Brak danych w drzewie");
 
-					//filtruje pliki obs³ugiwane przez DM
-					FilesHelper::filterFiles(filesIDs, extensions, dmOKFiles, *(dataSource->fileStatusManager));
+			if(filesIDs.empty() == false){
+				//mam dane - mogê pracowaæ
+				//wyci¹gam dane lokalne i zdalne
+				//wyci¹gam dane za³¹dowane i nieza³adowane
+				//na bazie tych info odpowiednio ³¹cze akcje ze slotami i aktywuje je + zapamiêtuje te info do wykonania ich!!
 
-					//pliki do za³adowania
-					FilesHelper::filterFiles(dmOKFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
+				//pomijamy wszystkie niekompatybilne z DM pliki
 
-					//pliki do wy³adowania - EXPERIMENTAL
-					FilesHelper::filterFiles(dmOKFiles, communication::Loaded, filesToUnload, *(dataSource->fileStatusManager));
+				std::set<int> dmOKFiles;
 
-					//pliki do œci¹gniêcia
-					FilesHelper::filterFiles(filesIDs, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
+				//filtruje pliki obs³ugiwane przez DM
+				FilesHelper::filterFiles(filesIDs, extensions, dmOKFiles, *(dataSource->fileStatusManager));
 
-					if(filesToLoad.empty() == false){
-						load->setEnabled(true);
-						connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
-					}
+				//pliki do za³adowania
+				FilesHelper::filterFiles(dmOKFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
 
-					if(filesToUnload.empty() == false){
-						unload->setEnabled(true);
-						connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
-					}
+				//pliki do wy³adowania - EXPERIMENTAL
+				FilesHelper::filterFiles(dmOKFiles, communication::Loaded, filesToUnload, *(dataSource->fileStatusManager));
 
-					if(filesToDownload.empty() == false){
-						download->setEnabled(true);
-						connect(download, SIGNAL(triggered()), this, SLOT(onDownload()));
-					}
+				//pliki do œci¹gniêcia
+				FilesHelper::filterFiles(filesIDs, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
+
+				if(filesToLoad.empty() == false){
+					load->setEnabled(true);
+					connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
+				}
+
+				if(filesToUnload.empty() == false){
+					unload->setEnabled(true);
+					connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
+				}
+
+				if(filesToDownload.empty() == false){
+					download->setEnabled(true);
+					connect(download, SIGNAL(triggered()), this, SLOT(onDownload()));
 				}
 			}
 		}
+	}
+}
+
+void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * perspective)
+{
+	//poszczeólne akcje
+	auto loadAll = menu.addAction(tr("Load All"));
+	auto unloadAll = menu.addAction(tr("Unload All"));
+	auto downloadAll = menu.addAction(tr("Download All"));
+
+	//skoro coœ œci¹gam muszê poczekaæ!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
+	if(currentDownloadRequest == nullptr){
+
+		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();	
 
 		std::set<int> allFiles;
 
@@ -1093,20 +1117,48 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 
 		std::set<int> dmOkFiles;
 		FilesHelper::filterFiles(allFiles, extensions, dmOkFiles, *(dataSource->fileStatusManager));
-		FilesHelper::filterFiles(dmOkFiles, DataStatus(Local, Unloaded), allFilesToLoad, *(dataSource->fileStatusManager));
+		//pliki do za³adowania
+		FilesHelper::filterFiles(dmOkFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
+		//pliki do wy³adowania
+		FilesHelper::filterFiles(dmOkFiles, communication::Loaded, filesToUnload, *(dataSource->fileStatusManager));
+		//pliki do œci¹gniêcia
+		FilesHelper::filterFiles(dmOkFiles, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
-		FilesHelper::filterFiles(allFiles, communication::Loaded, allFilesToUnload, *(dataSource->fileStatusManager));
-	
-		if(allFilesToLoad.empty() == false){
+		if(filesToLoad.empty() == false){
 			loadAll->setEnabled(true);
-			connect(loadAll, SIGNAL(triggered()), this, SLOT(onLoadAll()));
+			connect(loadAll, SIGNAL(triggered()), this, SLOT(onLoad()));
 		}
 
-		if(allFilesToUnload.empty() == false){
+		if(filesToUnload.empty() == false){
 			unloadAll->setEnabled(true);
-			connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnloadAll()));
+			connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnload()));
 		}
 
+		if(filesToDownload.empty() == false){
+			downloadAll->setEnabled(true);
+			connect(downloadAll, SIGNAL(triggered()), this, SLOT(onDownload()));
+		}
+	}else{
+		loadAll->setEnabled(false);
+		unloadAll->setEnabled(false);
+		downloadAll->setEnabled(false);
+	}
+}
+
+void DataSourceWidget::generateCommonContextMenu(QMenu & menu, QTreeWidget * perspective)
+{
+	auto saveProject = menu.addAction(tr("Save project as..."));
+	auto loadProject = menu.addMenu(tr("Load project"));
+	auto deleteProject = menu.addMenu(tr("Delete project"));
+	menu.addSeparator();
+	auto synch = menu.addAction(tr("Synchronize"));
+
+	//skoro coœ œci¹gam muszê poczekaæ!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
+	if(currentDownloadRequest == nullptr){
+
+		connect(saveProject, SIGNAL(triggered()), this, SLOT(onSaveProject()));
+		connect(synch, SIGNAL(triggered()), this, SLOT(updateShallowCopy()));
+		synch->setEnabled(true);
 
 		for(auto it = projects.begin(); it != projects.end(); ++it){
 			auto loadAction = loadProject->addAction(QString::fromUtf8(it->first.c_str()));
@@ -1120,18 +1172,12 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 			loadProject->setEnabled(true);
 			deleteProject->setEnabled(true);
 		}
+	}else{
+		saveProject->setEnabled(false);
+		loadProject->setEnabled(false);
+		deleteProject->setEnabled(false);
+		synch->setEnabled(false);
 	}
-
-	setCursor(Qt::ArrowCursor);
-	menu.exec(perspective->mapToGlobal(pos));
-
-	currentPerspectiveItem = nullptr;
-
-	filesToLoad.swap(std::set<int>());
-	filesToUnload.swap(std::set<int>());
-	allFilesToLoad.swap(std::set<int>());
-	allFilesToUnload.swap(std::set<int>());
-	//tutaj nie czyszczê plików œci¹ganych bo one s¹ kopiowane w innym w¹tku - tam to robie (LocalDataLoader)
 }
 
 bool DataSourceWidget::isItemLoadable(const QTreeWidgetItem * item)
@@ -1439,11 +1485,6 @@ void DataSourceWidget::onLoad()
 	loadFiles(filesToLoad);
 }
 
-void DataSourceWidget::onLoadAll()
-{
-	loadFiles(allFilesToLoad);
-}
-
 void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core::ObjectWrapperPtr>> & loadedFilesObjects)
 {
 	typedef std::map<int, std::set<int>> MotionFiles;
@@ -1696,11 +1737,6 @@ float DataSourceWidget::getAntropometricValue(const std::string & attribute, con
 	}
 
 	return defValue;
-}
-
-void DataSourceWidget::onUnloadAll()
-{
-	unloadFiles(filesLoadedToDM);
 }
 
 void DataSourceWidget::onUnload()
