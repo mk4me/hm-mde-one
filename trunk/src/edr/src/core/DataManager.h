@@ -292,13 +292,13 @@ public:
     //! \param Obiekt ktory chcemy deinicjalizowaæ - dalej jest w DataManager ale nie zawiera danych - trzeba potem inicjalizowaæ
     virtual void deinitializeData(core::ObjectWrapperPtr & data);
 
-    //! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
-    virtual void removeData(const core::ObjectWrapperPtr & data);
-
 private:
 
+	//! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
+	virtual void nonNotifyRemoveData(const core::ObjectWrapperPtr & data);
+
     //! \param Obiekt ktory zostanie utrwalony w DataManager i bêdzie dostepny przy zapytaniach, nie morze byc niezainicjowany - isNull musi byæ false!!
-    virtual void addData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer = core::DataInitializerPtr());
+    virtual void nonNotifyAddData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer = core::DataInitializerPtr());
 
     virtual const core::ObjectWrapperPtr & getObjectWrapperForRawPtr(const void * ptr) const;
 
@@ -312,14 +312,7 @@ public:
     //! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
     virtual void getManagedFiles(core::Files & files) const;
 
-    virtual bool isFileManaged(core::Filesystem::Path & file) const;
-
-    //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
-    //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
-    virtual void addFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects = std::vector<core::ObjectWrapperPtr>());
-
-    //! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
-    virtual void removeFile(const core::Filesystem::Path & file);
+    virtual bool isFileManaged(const core::Filesystem::Path & file) const;
 
     //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) WYMUSZAMY PARSOWANIE I INICJALIZACJE
     virtual void initializeFile(const core::Filesystem::Path & file);
@@ -338,6 +331,18 @@ public:
     virtual const Extensions & getSupportedFilesExtensions() const;
 
     virtual const ExtensionDescription & getExtensionDescription(const std::string & extension) const;
+
+	virtual void notify(const core::IFileDataManager * dm);
+
+private:
+
+	//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
+	//! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
+	virtual void nonNotifyAddFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects = std::vector<core::ObjectWrapperPtr>());
+
+	//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
+	virtual void nonNotifyRemoveFile(const core::Filesystem::Path & file);
+
 };
 
 #endif // DATA_MANAGER_H

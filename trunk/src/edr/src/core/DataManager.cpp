@@ -470,7 +470,7 @@ bool DataManager::objectIsManaged(const void * ptr) const
     return rawPointerToObjectWrapper.find(ptr) != rawPointerToObjectWrapper.end();
 }
 
-void DataManager::addData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer)
+void DataManager::nonNotifyAddData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer)
 {
     ScopedLock lock(stateMutex);
 
@@ -514,12 +514,10 @@ void DataManager::addData(const core::ObjectWrapperPtr & data, const core::DataI
     }else{
         throw std::runtime_error("Attempting to add empty data without initializer");
     }
-
-    this->core::IMemoryDataManager::notify();
 }
 
 
-void DataManager::removeData(const core::ObjectWrapperPtr & data)
+void DataManager::nonNotifyRemoveData(const core::ObjectWrapperPtr & data)
 {
     ScopedLock lock(stateMutex);
 
@@ -559,8 +557,6 @@ void DataManager::removeData(const core::ObjectWrapperPtr & data)
     if(data->isNull() == false){
         rawPointerToObjectWrapper.erase(data->getRawPtr());
     }
-
-    this->core::IMemoryDataManager::notify();
 }
 
 void DataManager::getManagedFiles(core::Files & files) const
@@ -572,13 +568,19 @@ void DataManager::getManagedFiles(core::Files & files) const
     }
 }
 
-bool DataManager::isFileManaged(core::Filesystem::Path & file) const
+void DataManager::notify(const core::IFileDataManager * dm)
+{
+	core::IMemoryDataManager::notify();
+	core::IFileDataManager::notify();
+}
+
+bool DataManager::isFileManaged(const core::Filesystem::Path & file) const
 {
     ScopedLock lock(stateMutex);
     return parsersByFiles.find(file) != parsersByFiles.end();
 }
 
-void DataManager::addFile(const core::Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects)
+void DataManager::nonNotifyAddFile(const core::Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects)
 {
     ScopedLock lock(stateMutex);
 
@@ -632,7 +634,7 @@ void DataManager::addFile(const core::Filesystem::Path & file, std::vector<Objec
                 //ParsersByObjects
                 parsersByObjects[obj] = parser;
                 
-                addData(obj, core::DataInitializerPtr(new ParserInitializer(parser)));
+                nonNotifyAddData(obj, core::DataInitializerPtr(new ParserInitializer(parser)));
 
                 //UWAGA!!
                 //mapowanie surowego wskaŸnika do ObjectWrappera jest robione podczas parsowania!!
@@ -659,12 +661,10 @@ void DataManager::addFile(const core::Filesystem::Path & file, std::vector<Objec
         }
         parsersByFiles.insert(ParsersByFiles::value_type(file, parsers));
         LOG_INFO("File: " << file << " sussesfully loaded to DataManager");
-        
-        this->core::IFileDataManager::notify();
     }
 }
 
-void DataManager::removeFile(const core::Filesystem::Path & file)
+void DataManager::nonNotifyRemoveFile(const core::Filesystem::Path & file)
 {
     ScopedLock lock(stateMutex);
 
@@ -683,7 +683,7 @@ void DataManager::removeFile(const core::Filesystem::Path & file)
 
         for(auto objectIT = objectsByParserIT->second.begin(); objectIT != objectsByParserIT->second.end(); ++objectIT){
 
-            removeData(*objectIT);
+            nonNotifyRemoveData(*objectIT);
 
             parsersByObjects.erase(*objectIT);
         }
@@ -694,8 +694,6 @@ void DataManager::removeFile(const core::Filesystem::Path & file)
 
     //usuwamy ten wpis
     parsersByFiles.erase(fileIT);
-
-   this->core::IFileDataManager::notify();
 }
 
 void DataManager::initializeFile(const core::Filesystem::Path & file)

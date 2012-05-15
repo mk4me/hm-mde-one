@@ -9,6 +9,21 @@
 #include "textedit.h"
 #include "AnalisisWidget.h"
 
+HMMAnalysisContext::HMMAnalysisContext(TreeRefresher * refresher) : refresher(refresher)
+{
+
+}
+
+void HMMAnalysisContext::activateContext(QWidget * contextWidget)
+{
+	refresher->setPreventRefresh(false);
+}
+
+void HMMAnalysisContext::deactivateContext(QWidget * nextContextWidget, bool refresh)
+{
+	refresher->setPreventRefresh(true);
+}
+
 
 HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
 {

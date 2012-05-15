@@ -86,7 +86,7 @@ namespace webservices
             std::string sessionGroupName;
         };
 
-        typedef std::vector<SessionGroup> SessionGroups;
+        typedef std::map<int, SessionGroup> SessionGroups;
 
         struct MotionKind
         {
@@ -101,7 +101,7 @@ namespace webservices
             std::string labName;
         };
 
-        typedef std::vector<Lab> Labs;
+        typedef std::map<int, Lab> Labs;
 
         struct Attribute
         {
@@ -172,6 +172,7 @@ namespace webservices
         struct Session;
         struct Performer;
         struct PerformerConf;
+		struct GroupAssigment;
         struct ShallowCopy;
 
         typedef std::map<std::string, std::string> Attrs;
@@ -212,6 +213,7 @@ namespace webservices
         struct Session
         {
             PerformerConf * performerConf;
+			GroupAssigment * groupAssigment;
             Trials trials;
             Attrs attrs;
             int sessionID;
@@ -231,12 +233,11 @@ namespace webservices
 
         struct GroupAssigment
         {
-            //int sessionID;
             Sessions sessions;
             int sessionGroupID;
         };
 
-        typedef std::vector<GroupAssigment> GroupAssigments;
+        typedef std::map<int, GroupAssigment*> GroupAssigments;
 
         struct PerformerConf
         {
@@ -290,6 +291,10 @@ namespace webservices
                 for(auto it = performerConfs.begin(); it != performerConfs.end(); it++){
                     delete it->second;
                 }
+
+				for(auto it = groupAssigments.begin(); it != groupAssigments.end(); it++){
+					delete it->second;
+				}
 
                 for(auto it = files.begin(); it != files.end(); it++){
                     delete it->second;

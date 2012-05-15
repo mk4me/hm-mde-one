@@ -202,8 +202,6 @@ namespace core {
         //! \return Hierarchia typow danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i moze byc downcastowany na mnie
         virtual const TypeInfoSet & getTypeDerrivedTypes(const TypeInfo & type) const = 0;
 
-	protected:
-
 		//! \param ptr Surowy wskaŸnik, dla którego sprawdzamy czy jest juz za¿adzany przez DM
 		//! \return prawda jeœli wskaŸnik jest zarz¹dzany prze DM i opakowano go w OW
 		virtual bool objectIsManaged(const void * ptr) const = 0;
@@ -215,20 +213,18 @@ namespace core {
 
     //! Zbiór typów
     typedef std::set<TypeInfo> Types;
-
+	
     //! Interfejs najni¿szego poziomu DataManager - pozwala zarz¹dzaæ pojedynczymi ObjectWrapperami: dodawaæ je do puli danych, usuwaæ, inicjalizowaæ, deinicjalizowaæ.
     //!  
     class IMemoryDataManager : public utils::Observable<IMemoryDataManager>, virtual public IDataManagerReader
     {
-        ////! ZaprzyjaŸniona metoda pomagaj¹ca dodawaæ dane do DM
-        //template<class SmartPtr>
-        //friend core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer);
-
-        ////! ZaprzyjaŸniona metoda pomagaj¹ca usuwaæ dane z DM
-        //template<class SmartPtr>
-        //friend void removeData(IMemoryDataManager * manager, const SmartPtr & data);
 
     public:
+
+		IMemoryDataManager() : blockNotify_(false), changed(false)
+		{
+
+		}
 
 		template<class SmartPtr>
 		static ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr())
@@ -243,8 +239,8 @@ namespace core {
 			core::ObjectWrapperPtr objectWrapper(manager->createObjectWrapper(typeid(typename SmartPtr::element_type)));
 			objectWrapper->set(data);
 
-			manager->addData(objectWrapper, initializer);
-
+			manager->nonNotifyAddData(objectWrapper, initializer);
+			manager->tryNotify();
 			return objectWrapper;
 		}
 
@@ -268,17 +264,57 @@ namespace core {
         //! \param Obiekt ktory chcemy deinicjalizowaæ - dalej jest w DataManager ale nie zawiera danych - trzeba potem inicjalizowaæ
         virtual void deinitializeData(ObjectWrapperPtr & data) = 0;
 
+		//! Ta metoda notyfikuje o zmianie stanu DM!!
         //! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
-        virtual void removeData(const ObjectWrapperPtr & data) = 0;
+        void removeData(const ObjectWrapperPtr & data)
+		{
+			nonNotifyRemoveData(data);
+			tryNotify();
+		}
+
+		void blockNotify(bool block)
+		{
+			blockNotify_ = block;
+
+			if(blockNotify_ == false && changed){
+				changed = false;
+				notify();
+			}
+		}
+
+		bool isNotifyBlocked() const
+		{
+			return blockNotify_;
+		}
 
     private:
 
+		void tryNotify()
+		{
+			if(blockNotify_ == false){
+				notify();
+			}else{
+				changed = true;
+			}
+		}
+
+		//! Schowane bo DM wprowadza w³asn¹ implementacjê OW z auto i nicjalizacj¹ zasobów przy pierwszym pobraniu!! Nie upubliczniamy tego w ¿aden sposób!!
+		//! U¿ywamy tylko metod statycznych. Ta metoda nie notyfikuje o zmianie!!
         //! \param Obiekt ktory zostanie utrwalony w DataManager i bêdzie dostepny przy zapytaniach, nie morze byc niezainicjowany - isNull musi byæ false!!
-        virtual void addData(const ObjectWrapperPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr()) = 0;
+        virtual void nonNotifyAddData(const ObjectWrapperPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr()) = 0;
+
+		//! Metoda faktycznie usuwaj¹ca dane z DM ale nie notyfikuj¹ca o jego zmianie
+		virtual void nonNotifyRemoveData(const ObjectWrapperPtr & data) = 0;
 
         //! \param type Typ dla którego tworzymy specyficzny dla DM ObjectWrapper
         //! \return OW dla zadanego typu
         virtual ObjectWrapperPtr createObjectWrapper(const TypeInfo & type) const = 0;
+
+	private:
+
+		bool blockNotify_;
+		bool changed;
+
     };
 
     //! Interfejs dostepu do danych i ³adowania danych w aplikacji
@@ -297,6 +333,10 @@ namespace core {
             Types types;
         };
         
+		IFileDataManager() : blockNotify_(false), changed(false)
+		{
+
+		}
 
 		//! Wirtualny destruktor.
 		virtual ~IFileDataManager() {};
@@ -306,15 +346,23 @@ namespace core {
         
         //! \param file Plik kótry weryfikujemy czy jest zarzadzany przez DM
         //! \return Prawda jesli plik jest zarz¹dzany przez ten DM
-        virtual bool isFileManaged(Filesystem::Path & file) const = 0;
+        virtual bool isFileManaged(const Filesystem::Path & file) const = 0;
 
         //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery
         //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
-		virtual void addFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects = std::vector<ObjectWrapperPtr>()) = 0;
+		void addFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects = std::vector<ObjectWrapperPtr>())
+		{
+			nonNotifyAddFile(file, objects);
+			tryNotify();
+		}
 
         //! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
-		virtual void removeFile(const Filesystem::Path & file) = 0;
+		void removeFile(const Filesystem::Path & file)
+		{
+			nonNotifyRemoveFile(file);
+			tryNotify();
+		}
 
         //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) WYMUSZAMY PARSOWANIE I INICJALIZACJE
         virtual void initializeFile(const Filesystem::Path & file) = 0;
@@ -335,7 +383,70 @@ namespace core {
         //! \param extension Rozszerzenie dla którego pytamy o opis
         //! \return Opis rozszerzenia
         virtual const ExtensionDescription & getExtensionDescription(const std::string & extension) const = 0;
-	};    
+
+		void blockNotify(bool block)
+		{
+			blockNotify_ = block;
+
+			if(blockNotify_ == false && changed){
+				changed = false;
+				notify();
+			}
+		}
+
+		bool isNotifyBlocked() const
+		{
+			return blockNotify_;
+		}
+
+	private:
+
+		void tryNotify()
+		{
+			if(blockNotify_ == false){
+				notify();
+			}else{
+				changed = true;
+			}
+		}
+
+		//! Ta metoda nie notyfikuje o zmianie stanu DM!!
+		//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
+		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery
+		//! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
+		virtual void nonNotifyAddFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects = std::vector<ObjectWrapperPtr>()) = 0;
+
+		//! Ta metoda nie notyfikuje o zmianie stanu DM!!
+		//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
+		virtual void nonNotifyRemoveFile(const Filesystem::Path & file) = 0;
+
+	private:
+
+		bool blockNotify_;
+		bool changed;
+	};
+
+	template<class T>
+	class NotifyBlocker
+	{
+	public:
+
+		NotifyBlocker(T & t) : t(&t), prevBlockingState(t.isNotifyBlocked())
+		{
+			t.blockNotify(true);
+		}
+
+		~NotifyBlocker()
+		{
+			t->blockNotify(false);
+			t->blockNotify(prevBlockingState);
+		}
+
+	private:
+		T * t;
+		bool prevBlockingState;
+
+	};
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

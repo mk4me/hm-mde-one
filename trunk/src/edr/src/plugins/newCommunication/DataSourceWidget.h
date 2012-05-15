@@ -54,10 +54,13 @@ private:
     QString info;
 };
 
+class CommunicationDataSource;
+
 class DataSourceWidget : public QTabWidget, private Ui::DataSourceWidget, private utils::Observer<communication::IDownloadRequest>
 {
     Q_OBJECT;
     friend class LocalDataLoader;
+	friend class CommunicationDataSource;
 
 public:
 
@@ -65,6 +68,14 @@ public:
 
     virtual ~DataSourceWidget();
 
+public slots:
+
+	void showUserData();
+	void showConfiguration();
+	void showPatientCard();
+
+	void setPatientCard(webservices::MedicalShallowCopy::Patient * patient, webservices::MotionShallowCopy::Performer * subject);
+	
 private slots:
 
     //! Odswieza status danych

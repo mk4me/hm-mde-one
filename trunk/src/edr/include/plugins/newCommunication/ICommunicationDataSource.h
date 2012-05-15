@@ -12,6 +12,8 @@
 #include <utils/ObserverPattern.h>
 #include <core/ISource.h>
 #include <plugins/newCommunication/IDataSourceUser.h>
+#include <plugins/subject/ISubject.h>
+#include <plugins/newCommunication/IPatient.h>
 
 namespace communication
 {
@@ -33,6 +35,14 @@ public:
     //virtual void sendUserRegistrationRequest() = 0;
     //! \return Dane aktualnego u¿ytkownika ( w szczególnoœci pusty obiekt jesli niezalogowano)
     virtual const IUser * currentUser() const = 0;
+	//! Automatycznie ustawia widok karty pacjenta i próbuje wyœwietliæ danego pacjenta/subjecta jeœli s¹ znani,
+	//! jeœli nie to czyœci selekcjê drzew i próbuje generowaæ na bazie struktury pluginu subject dane,
+	//! Jesli to siê nie powiedzie nie robi nic (komunikat o b³êdzie)
+	virtual void showPatientCard(const PluginSubject::SubjectConstPtr & subject, const PatientConstPtr & patient = PatientConstPtr()) = 0;
+	//! Prze³ancza widok danych na dane u¿ytkownika
+	virtual void showUserDataCard() = 0;
+	//! Prze³ancza widok danych na konfiguracjê
+	virtual void showConfigurationCard() = 0;
 };
 
 }

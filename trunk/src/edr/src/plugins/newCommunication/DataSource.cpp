@@ -281,6 +281,49 @@ const User * CommunicationDataSource::currentUser() const
     return &currentUser_;
 }
 
+void CommunicationDataSource::showPatientCard(const PluginSubject::SubjectConstPtr & subject, const communication::PatientConstPtr & patient)
+{
+	webservices::MotionShallowCopy::Performer * sub = nullptr;
+	webservices::MedicalShallowCopy::Patient * pat = nullptr;
+
+	if(subject != nullptr){
+		//wyszukujê subjecta
+		for(auto subIT = dataSourceWidget->subjectsMapping.begin(); subIT != dataSourceWidget->subjectsMapping.end(); ++subIT){
+			PluginSubject::SubjectConstPtr tmpSub = subIT->second.first->get();
+			if(tmpSub != nullptr && tmpSub->getID() == subject->getID()){
+				sub = fullShallowCopy.motionShallowCopy->performers.find(subIT->first)->second;
+				break;
+			}
+		}
+	}
+
+	if(patient != nullptr){
+		//wyszukujemy patienta
+		for(auto pIT = dataSourceWidget->patientsMapping.begin(); pIT != dataSourceWidget->patientsMapping.end(); ++pIT){
+			communication::PatientConstPtr tmpPat = pIT->second.first->get();
+			if(tmpPat != nullptr && tmpPat->getID() == subject->getID()){
+				pat = fullShallowCopy.medicalShallowCopy->patients.find(pIT->first)->second;
+				break;
+			}
+		}
+	}
+
+	QMetaObject::invokeMethod(dataSourceWidget, "setPatientCard", Q_ARG(webservices::MedicalShallowCopy::Patient *, pat),
+		Q_ARG(webservices::MotionShallowCopy::Performer *, sub));
+
+	QMetaObject::invokeMethod(dataSourceWidget, "showPatientCard");
+}
+
+void CommunicationDataSource::showUserDataCard()
+{
+	QMetaObject::invokeMethod(dataSourceWidget, "showUserData");
+}
+
+void CommunicationDataSource::showConfigurationCard()
+{
+	QMetaObject::invokeMethod(dataSourceWidget, "showConfiguration");
+}
+
 bool CommunicationDataSource::isShallowCopyComplete() const
 {
     bool ret = false;

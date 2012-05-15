@@ -30,7 +30,7 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
             session_goup_element->QueryIntAttribute("SessionGroupID", &sessionGroup.sessionGroupID);
             session_goup_element->QueryStringAttribute("SessionGroupName", &sessionGroup.sessionGroupName);
 
-            metadata.sessionGroups.push_back(sessionGroup);
+            metadata.sessionGroups[sessionGroup.sessionGroupID] = sessionGroup;
             session_goup_element = session_goup_element->NextSiblingElement();
         }
     }
@@ -55,7 +55,7 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
             lab_element->QueryIntAttribute("LabID", &lab.labID);
             lab_element->QueryStringAttribute("LabName", &lab.labName);
 
-            metadata.labs.push_back(lab);
+            metadata.labs[lab.labID] = lab;
             lab_element = lab_element->NextSiblingElement();
         }
     }

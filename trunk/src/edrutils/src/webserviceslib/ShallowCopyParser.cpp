@@ -92,6 +92,7 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             }
 
             session->performerConf = nullptr;
+			session->groupAssigment = nullptr;
 
             session_element->QueryIntAttribute("UserID", &session->userID);
             session_element->QueryIntAttribute("LabID", &session->labID);
@@ -164,16 +165,34 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
     if(group_assignments_element) {
         TiXmlElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
         while(group_assignment_element) {
-            MotionShallowCopy::GroupAssigment group_assignment ;
-            int sessionID;
-            group_assignment_element->QueryIntAttribute("SessionID", &sessionID);
-            group_assignment.sessions[sessionID] = shallowCopy.sessions[sessionID];
+            MotionShallowCopy::GroupAssigment * group_assignment = nullptr;
 
-            UTILS_ASSERT(group_assignment.sessions[sessionID] != nullptr);
+			int sessionGroupID;
 
-            group_assignment_element->QueryIntAttribute("SessionGroupID", &group_assignment.sessionGroupID);
+			group_assignment_element->QueryIntAttribute("SessionGroupID", &sessionGroupID);
+
+			auto groupAssigmentIT = shallowCopy.groupAssigments.find(sessionGroupID);
+
+			if(groupAssigmentIT == shallowCopy.groupAssigments.end()){
+				group_assignment = new MotionShallowCopy::GroupAssigment;
+				group_assignment->sessionGroupID = sessionGroupID;
+				shallowCopy.groupAssigments[sessionGroupID] = group_assignment;
+
+			}else{
+				group_assignment = groupAssigmentIT->second;
+			}
+
+			int sessionID;
             
-            shallowCopy.groupAssigments.push_back(group_assignment);
+            group_assignment_element->QueryIntAttribute("SessionID", &sessionID);
+
+			auto sessionIT = shallowCopy.sessions.find(sessionID);
+
+			if(sessionIT != shallowCopy.sessions.end()){
+				sessionIT->second->groupAssigment = group_assignment;
+				group_assignment->sessions[sessionIT->first] = sessionIT->second;
+			}            
+            
             group_assignment_element = group_assignment_element->NextSiblingElement();
         }
     }

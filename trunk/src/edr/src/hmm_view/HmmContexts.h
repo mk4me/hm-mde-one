@@ -33,9 +33,21 @@ class HMMDataContext : public HMMEmptyContext
 
 };
 
-class HMMAnalysisContext : public HMMEmptyContext
-{
+class TreeRefresher;
 
+class HMMAnalysisContext : public IAppUsageContext
+{
+public:
+
+	HMMAnalysisContext(TreeRefresher * refresher);
+
+	virtual void activateContext(QWidget * contextWidget);
+
+	virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
+
+private:
+
+	TreeRefresher * refresher;
 };
 
 class HMMReportContext : public HMMEmptyContext

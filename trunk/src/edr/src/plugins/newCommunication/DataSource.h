@@ -34,6 +34,7 @@
 #include "WSConnection.h"
 #include <webserviceslib/IFtpsConnection.h>
 #include "DownloadRequest.h"
+#include "Patient.h"
 
 class DataSourceWidget;
 
@@ -74,6 +75,10 @@ public:
 	
     //! \return Dane aktualnego u¿ytkownika ( w szczególnoœci pusty obiekt jesli niezalogowano)
     virtual const User * currentUser() const;
+
+	virtual void showPatientCard(const PluginSubject::SubjectConstPtr & subject, const communication::PatientConstPtr & patient = communication::PatientConstPtr());
+	virtual void showUserDataCard();
+	virtual void showConfigurationCard();
 
 private:
 

@@ -23,23 +23,6 @@ p, li { white-space: pre-wrap; }
 &lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;prof. dr hab. inż. Konrad Wojciechowski&lt;/li&gt;&lt;/ul&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Kierownik techniczny&lt;/span&gt;&lt;/li&gt;
 &lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Marek Kulbacki&lt;/li&gt;&lt;/ul&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Konsultanci medyczni&lt;/span&gt;&lt;/li&gt;
-&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Klinika Ortopedii i Traumatologii Narządu Ruchu&lt;/li&gt;&lt;/ul&gt;
-&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;prof. dr hab. nauk med. Andrzej Górecki&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr nauk med. Wojciech Glinkowski&lt;/li&gt;&lt;/ul&gt;
-&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Samodzielny Publiczny Wojewódzki Szpital Chirurgii Urazowej im. dr. Janusza Daaba w Piekarach Śląskich&lt;/li&gt;&lt;/ul&gt;
-&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr hab. nauk med. Bogdan Koczy&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;lek. med. Jacek Hermanson&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr nauk med. Michał Mielnik&lt;/li&gt;&lt;/ul&gt;
-&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Instytut &amp;quot;Pomnik-Centrum Zdrowia Dziecka&amp;quot;&lt;/li&gt;&lt;/ul&gt;
-&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Małgorzata Syczewska&lt;/li&gt;&lt;/ul&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Zespoły badawcze&lt;/span&gt;&lt;/li&gt;
-&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;prof. dr hab. inż. Andrzej Polański &lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr hab. Inż. Bogdan Kwolek&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Bartosz Jabłoński&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Henryk Josiński&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Adam Świtoński&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Tomasz Krzeszowski&lt;/li&gt;&lt;/ul&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Oprogramowanie&lt;/span&gt;&lt;/li&gt;
 &lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Piotr Gwiazdowski&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Mariusz Szynalik&lt;/li&gt;
@@ -48,35 +31,26 @@ p, li { white-space: pre-wrap; }
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Rafał Błauciak&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Marek Daniluk&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Michał Szafarski&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Dominika Gierasimiak&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Karol Jędrasiak&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Dominika Gierasimiak&lt;/li&gt;&lt;/ul&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bazy danych&lt;/span&gt;&lt;/li&gt;
 &lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Piotr Habela&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Krzysztof Kaczmarski&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mrg.inż. Wiktor Filipowicz&lt;/li&gt;&lt;/ul&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Laboratorium Ruchu&lt;/span&gt;&lt;/li&gt;
-&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Magdalena Tabaka&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Dawid Pisko&lt;/li&gt;&lt;/ul&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Konsultanci zewnętrzni&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
 &lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr. inż. Jakub Segen&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AboutDialog.ui" line="308"/>
-        <source>Contributions</source>
-        <translation>Biblioteki zewnętrzne</translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/AboutDialog.ui" line="323"/>
+        <location filename="../../../src/hmm_view/ui/AboutDialog.ui" line="305"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Biblioteki&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
 &lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Qt&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Open Scene Graph&lt;/span&gt;&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Open Scene Graph&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SQLite&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;QWT&lt;/span&gt;&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QWT&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QuaZip&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;zLib&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenThreads&lt;/li&gt;
@@ -86,10 +60,15 @@ p, li { white-space: pre-wrap; }
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;FFmpeg&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;log4cxx&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;ODE&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;TinyXml&lt;/span&gt;&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;TinyXml&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;wsdlpull&lt;/li&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenSSL&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/AboutDialog.ui" line="287"/>
+        <source>Contributions</source>
+        <translation>Biblioteki zewnętrzne</translation>
     </message>
 </context>
 <context>
@@ -799,7 +778,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1150"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2252"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2269"/>
         <source>Save project as...</source>
         <translation>Zapisz projekt jako...</translation>
     </message>
@@ -880,102 +859,102 @@ p, li { white-space: pre-wrap; }
         <translation>Błąd przygotowania ściągana danych. Opis błędu: </translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2056"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2070"/>
         <source>Loading info</source>
         <translation>Informacja ładowania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2057"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2071"/>
         <source>Data loaded successfully to application.</source>
         <translation>Dane załadowane pomyslnie do aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2064"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2078"/>
         <source>Errors while data loading:</source>
         <translation>Błędy ładowania danych do aplikacji:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2069"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2140"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2083"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2157"/>
         <source>
 %1. File ID: %2. Error description: %3</source>
         <translation>%1. Identyfikator pliku: %2. Opis błędu: %3</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2074"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2145"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2088"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2162"/>
         <source>
 %1. File ID: %2. Unknown error.</source>
         <translation>%1. Identyfikator pliku: %2. Nieznany błąd.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2079"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2093"/>
         <source>Loading warning</source>
         <translation>Ostrzeżenie ładowania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2127"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2144"/>
         <source>Unloading info</source>
         <translation>Informacja wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2128"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2145"/>
         <source>Data unloaded successfully.</source>
         <translation>Dane wyładowane pomyślnie z aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2135"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2152"/>
         <source>Errors while data unloading:</source>
         <translation>Błędy podczas wyładowywania danych z aplikacji:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2150"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2167"/>
         <source>Unloading warning</source>
         <translation>Ostrzeżenie wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2188"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2214"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2205"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2231"/>
         <source>Loading project warning</source>
         <translation>Ostrzeżenie ładowania projektu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2189"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2206"/>
         <source>Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?</source>
         <translation>Niektóre pliki projektu nie są już dostepne. Skontaktuj się z właścicielem tych plików by przyznał ci do nich prawa. Wczy chcesz załadować projekt bez tych plików?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2215"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2232"/>
         <source>Some project files must are missing. Data download is required. Do You want to continue?</source>
         <translation>Brakuje niektórych plików.  Wymagane jest ich ściągnięcie. Czy chcesz je teraz ściągnąć?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2250"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2267"/>
         <source>Project name:</source>
         <translation>Nazwa projetku:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2251"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2268"/>
         <source>Save</source>
         <translation>Zachowaj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2262"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2279"/>
         <source>Save project warning</source>
         <translation>Ostrzeżenie zapisu projektu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2263"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2280"/>
         <source>Project name can not be empty. Please give a name to the project and continue.</source>
         <translation>Nazwa projektu nie moze być pusta. Proszę podać nazwę i kontynuować.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1948"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1959"/>
         <source>Unknown error</source>
         <translation>Nieznany błąd</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2009"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2020"/>
         <source>Downloading file %1 [%2/%3]</source>
         <translation>Ściąganie pliku %1 [%2/%3]</translation>
     </message>
@@ -1638,7 +1617,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HMMTreeItemUsageContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="288"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="303"/>
         <source>Item Actions</source>
         <translation>Operacje</translation>
     </message>
@@ -1646,181 +1625,180 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HmmMainWindow</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="506"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="520"/>
         <source>reason: </source>
         <translation>powód:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="508"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="510"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="522"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="524"/>
         <source>Warning</source>
         <translation>Ostrzeżenie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="510"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="524"/>
         <source>Unable to add data to visualizer</source>
         <translation>Nie można dodać danych do wizualizatora</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="646"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="613"/>
         <source>ANALOG</source>
         <translation>ANALOGOWE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="647"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="614"/>
         <source>KINETIC</source>
         <translation>KINETYCZNE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="648"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="615"/>
         <source>KINEMATIC</source>
         <translation>KINEMATYCZNE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="649"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="616"/>
         <source>VIDEO</source>
         <translation>VIDEO</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="658"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="625"/>
         <source>GRF</source>
         <translation>GRF</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="710"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="677"/>
         <source>EMG</source>
         <translation>EMG</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="793"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="760"/>
         <source>FORCES</source>
         <translation>SIŁY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="794"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="761"/>
         <source>MOMENTS</source>
         <translation>MOMENTY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="795"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="762"/>
         <source>POWERS</source>
         <translation>MOCE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="843"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="810"/>
         <source>MARKERS</source>
         <translation>MARKERY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="844"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="811"/>
         <source>JOINTS</source>
         <translation>STAWY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="848"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="815"/>
         <source>VIDEOS</source>
         <translation>VIDEO</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="882"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="849"/>
         <source>ILLNESS</source>
         <translation>JEDNOSTKI CHOROBOWE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="883"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="884"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="885"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="850"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="851"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="852"/>
         <source>MULTI</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="891"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="858"/>
         <source>Endo</source>
         <translation>Endoproteza</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="892"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="859"/>
         <source>Stroke</source>
         <translation>Udar</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="893"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="860"/>
         <source>Spine</source>
         <translation>Zwyrodnienie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1077"/>
         <source>Active Data</source>
-        <translation>Aktywne dane</translation>
+        <translation type="obsolete">Aktywne dane</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1106"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1080"/>
         <source>Create new visualizer</source>
         <translation>Twórz nowy wizualizator</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1113"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1123"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1087"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1097"/>
         <source>Multi chart</source>
         <translation>Multi-wykres</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1115"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1089"/>
         <source>All from session</source>
         <translation>Wszystkie z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1125"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1099"/>
         <source>All X from session</source>
         <translation>Wszystkie współrzędne X z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1131"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1105"/>
         <source>All Y from session</source>
         <translation>Wszystkie współrzędne Y z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1137"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1111"/>
         <source>All Z from session</source>
         <translation>Wszystkie współrzędne Z z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1145"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1119"/>
         <source>Left Step normalization</source>
         <translation>Normalizacja wg lewego kroku</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1151"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1125"/>
         <source>Right Step normalization</source>
         <translation>Normalizacja wg prawego kroku</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1157"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1131"/>
         <source>Left Step normalization - all from session</source>
         <translation>Normalizacja wg lewego kroku - wszystkie z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1163"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1137"/>
         <source>Right Step normalization - all from session</source>
         <translation>Normalizacja wg prawego kroku - wszystkie z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1172"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1146"/>
         <source>Add to:</source>
         <translation>Dodaj do:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1218"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1192"/>
         <source>Remove from:</source>
         <translation>Usuń z:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1241"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1215"/>
         <source>Create in:</source>
         <translation>Twórz w:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1252"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1226"/>
         <source>New group</source>
         <translation>Nowa grupa</translation>
     </message>
@@ -7438,7 +7416,7 @@ Proszę o sprawdzenie podanej nazwy pliku.</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="220"/>
+        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="221"/>
         <source>Pre</source>
         <translation>Przed</translation>
     </message>
@@ -7493,39 +7471,39 @@ Proszę o sprawdzenie podanej nazwy pliku.</translation>
         <translation>Moce</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="107"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="108"/>
         <source>Kinematic data</source>
         <translation>Dane kinematyczne</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="110"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="111"/>
         <source>Markers</source>
         <translation>Markery</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="115"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="116"/>
         <source>Joints</source>
         <translation>Stawy</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="125"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="126"/>
         <source>Videos</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="43"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="338"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="58"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="340"/>
         <source>Visualizer</source>
         <translation>Wizualizator</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="285"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="300"/>
         <source>Tree</source>
         <translation>Drzewo danych</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="420"/>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="591"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="435"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="606"/>
         <source>Raports Tab</source>
         <translation>Raporty</translation>
     </message>
@@ -7711,6 +7689,16 @@ Wartość: %2</translation>
         <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="83"/>
         <source>Weight: </source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.h" line="94"/>
+        <source>Refreshing analysis data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.h" line="105"/>
+        <source>Active Data</source>
+        <translation type="unfinished">Aktywne dane</translation>
     </message>
 </context>
 <context>
@@ -13339,17 +13327,17 @@ Proszę wybrać inną nazwę pliku.</translation>
 <context>
     <name>RaportsTabContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="597"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="612"/>
         <source>File</source>
         <translation>Plik</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="598"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="613"/>
         <source>Edit</source>
         <translation>Edycja</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="599"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="614"/>
         <source>Text</source>
         <translation>Tekst</translation>
     </message>
@@ -13357,28 +13345,28 @@ Proszę wybrać inną nazwę pliku.</translation>
 <context>
     <name>RaportsThumbnailsContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="422"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="437"/>
         <source>Actions</source>
         <translation>Operacje</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="447"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="462"/>
         <source>Create raport</source>
         <translation>Twórz raport</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="451"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="466"/>
         <source>Simple Raport</source>
         <translation>Prosty raport</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="461"/>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="468"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="476"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="483"/>
         <source>Empty</source>
         <translation>Pusty</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="528"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="543"/>
         <source>Screenshot %1 &lt;br&gt; &lt;IMG SRC=&quot;data:image/png;base64,%2&quot; ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0&gt;&lt;/P&gt; &lt;br&gt;</source>
         <translation>Obraz  %1 &lt;br&gt; &lt;IMG SRC=&quot;data:image/png;base64,%2&quot; ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0&gt;&lt;/P&gt; &lt;br&gt;</translation>
     </message>
@@ -13387,7 +13375,7 @@ Proszę wybrać inną nazwę pliku.</translation>
         <translation type="obsolete">Domyślny</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="483"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="498"/>
         <source>Raport template:</source>
         <translation>Szablon raportu:</translation>
     </message>
@@ -13922,6 +13910,13 @@ Do you want to save your changes?</source>
     <message>
         <source>Videos</source>
         <translation type="obsolete">Nagrania</translation>
+    </message>
+</context>
+<context>
+    <name>TreeRefresher</name>
+    <message>
+        <source>Active Data</source>
+        <translation type="obsolete">Aktywne dane</translation>
     </message>
 </context>
 <context>

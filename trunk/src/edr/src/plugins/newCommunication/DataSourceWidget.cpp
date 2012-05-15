@@ -1500,6 +1500,8 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		return;
 	}
 
+	core::NotifyBlocker<core::IMemoryDataManager> blocker(*(dataSource->memoryDM));
+
 	//buduje mapê hierarchii subject -> session -> motion -> files
 	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
 	
@@ -1612,6 +1614,13 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				meta->setValue("label", s->sessionName);
 				meta->setValue("EMGConf", boost::lexical_cast<std::string>(s->emgConf));
 				meta->setValue("data", s->sessionDate);
+				if(s->groupAssigment != nullptr){
+					meta->setValue("groupID", boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID));
+					auto sgIT = filteredShallowCopy.motionMetaData.sessionGroups.find(s->groupAssigment->sessionGroupID);
+					if(sgIT != filteredShallowCopy.motionMetaData.sessionGroups.end()){
+						meta->setValue("groupName", sgIT->second.sessionGroupName);
+					}
+				}
 
 				core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
 
@@ -1757,6 +1766,8 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 	if(subjectService == nullptr){
 		return;
 	}
+
+	core::NotifyBlocker<core::IMemoryDataManager> blocker(*(dataSource->memoryDM));
 
 	//buduje mapê hierarchii subject -> session -> motion -> files
 	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
@@ -2021,11 +2032,14 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 {
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
+
+	core::NotifyBlocker<core::IFileDataManager> blocker(*(dataSource->fileDM));
+
 	//! £aduje pliki do DM
 	std::set<int> loadedFiles;
 	std::map<int, std::vector<core::ObjectWrapperPtr>> loadedFilesObjects;
 	std::map<int, std::string> loadingErrors;
-	std::vector<int> unknownErrors;
+	std::vector<int> unknownErrors;	
 
 	for(auto it = files.begin(); it != files.end(); ++it){
 		try{
@@ -2092,6 +2106,9 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 {
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
+
+	core::NotifyBlocker<core::IFileDataManager> blocker(*(dataSource->fileDM));
+
 	//! £aduje pliki do DM
 	std::set<int> unloadedFiles;
 	std::map<int, std::string> unloadingErrors;
@@ -2375,4 +2392,25 @@ void DataSourceWidget::tryLoadProjects()
 	}catch(...){
 
 	}
+}
+
+void DataSourceWidget::showUserData()
+{
+	setCurrentWidget(userDataTab);
+}
+
+void DataSourceWidget::showConfiguration()
+{
+	setCurrentWidget(configTab);
+}
+
+void DataSourceWidget::showPatientCard()
+{
+	setCurrentWidget(motionDataTab);
+}
+
+void DataSourceWidget::setPatientCard(webservices::MedicalShallowCopy::Patient * patient, webservices::MotionShallowCopy::Performer * subject)
+{
+	perspectiveManager.currentPerspectiveWidget()->clearSelection();
+	patientCardManager.currentPatientCard()->setPatient(patient, subject, QPixmap(), dataSource->currentUser_.userData());
 }
