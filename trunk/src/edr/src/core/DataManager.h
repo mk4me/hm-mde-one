@@ -294,6 +294,8 @@ public:
 
 private:
 
+	void removeDataImpl(const core::ObjectWrapperPtr & data);
+
 	//! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
 	virtual void nonNotifyRemoveData(const core::ObjectWrapperPtr & data);
 

@@ -6,41 +6,13 @@
 #include <plugins/subject/Subject.h>
 #include <plugins/subject/Motion.h>
 #include <core/PluginCommon.h>
-#include <plugins/kinematic/Wrappers.h>
-#include <core/IDataManager.h>
 
 using namespace PluginSubject;
 
-Motion::Motion(core::IMemoryDataManager * memoryDataManager, PluginSubject::SubjectID motionID, const PluginSubject::SessionConstPtr & session,
-    PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers) : memoryDataManager(memoryDataManager),
-    motionID(motionID), session(session), localMotionID(localMotionID), wrappers(wrappers)
+Motion::Motion(PluginSubject::SubjectID motionID, const PluginSubject::SessionConstPtr & session,
+    PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
+	: motionID(motionID), session(session), localMotionID(localMotionID), wrappers(wrappers)
 {
-
-    class JointsInitializer : public core::IDataInitializer
-    {
-    public:
-        JointsInitializer(const core::ObjectWrapperConstPtr & dataWrapper, const core::ObjectWrapperConstPtr & modelWrapper) : 
-          dataWrapper(dataWrapper), modelWrapper(modelWrapper)
-          {
-
-          }
-
-          virtual void initialize(core::ObjectWrapperPtr & object)
-          {
-              kinematic::SkeletalDataPtr data;
-              kinematic::SkeletalModelPtr model;
-              if(dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
-                  kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
-                  joints->setSkeletal(model, data);
-                  object->trySet(joints);
-              }
-          }
-
-    private:
-        core::ObjectWrapperConstPtr dataWrapper;
-        core::ObjectWrapperConstPtr modelWrapper;
-    };
-
     //generujemy nazwe
 
     std::stringstream ss;
@@ -58,28 +30,6 @@ Motion::Motion(core::IMemoryDataManager * memoryDataManager, PluginSubject::Subj
     ss1 << localMotionID;
 
     localName += ss1.str();
-
-
-    //sprawdzamy joint angles - jesli nie ma budujemy i dodajemy do DM
-    core::ObjectWrapperConstPtr dataWrapper;
-    core::ObjectWrapperConstPtr modelWrapper;
-    for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
-        if ((*it)->isSupported(typeid(kinematic::JointAnglesCollection))) {
-            return;
-        } else if ((*it)->isSupported(typeid(kinematic::SkeletalData))) {
-            dataWrapper = *it;
-            break;
-        }
-    }
-
-    modelWrapper = session->getWrapperOfType(typeid(kinematic::SkeletalModel));
-
-    if (dataWrapper && modelWrapper) {
-        core::ObjectWrapperPtr jointsWrapper(core::IMemoryDataManager::addData(memoryDataManager, kinematic::JointAnglesCollectionPtr(), core::DataInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper))));        
-        jointsWrapper->setName(localName + " joints");
-        jointsWrapper->setSource("SubjectPlugin->motion->" + localName);
-        this->wrappers.push_back(jointsWrapper);
-    }
 }
 
 Motion::~Motion()

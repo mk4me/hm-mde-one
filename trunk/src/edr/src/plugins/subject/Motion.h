@@ -33,7 +33,7 @@ class Motion : public PluginSubject::IMotion
 
 private:
 	
-    Motion(core::IMemoryDataManager * memoryDataManager, PluginSubject::SubjectID motionID, const PluginSubject::SessionConstPtr & session, PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    Motion(PluginSubject::SubjectID motionID, const PluginSubject::SessionConstPtr & session, PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
 
 public:
 

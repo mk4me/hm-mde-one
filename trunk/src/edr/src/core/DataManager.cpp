@@ -516,19 +516,9 @@ void DataManager::nonNotifyAddData(const core::ObjectWrapperPtr & data, const co
     }
 }
 
-
-void DataManager::nonNotifyRemoveData(const core::ObjectWrapperPtr & data)
+void DataManager::removeDataImpl(const core::ObjectWrapperPtr & data)
 {
-    ScopedLock lock(stateMutex);
-
-    auto it = objects.find(data);
-
-    if(it == objects.end()){
-        throw std::runtime_error("Trying to remove data not managed by DataManager");
-    }
-
-    objects.erase(data);
-	metadataByObjects.erase(data);
+	objects.erase(data);
 
 	//usun z grupowania po typach
 	core::TypeInfoList types;
@@ -544,19 +534,45 @@ void DataManager::nonNotifyRemoveData(const core::ObjectWrapperPtr & data)
 		}
 	} 
 
-    for(auto it = types.begin(); it != types.end(); ++it){
-        auto IT = objectsByTypes.find(*it);
-        IT->second.erase(data);
-        if(IT->second.empty() == true){
-            objectsByTypes.erase(IT);
-        }
+	for(auto it = types.begin(); it != types.end(); ++it){
+		auto IT = objectsByTypes.find(*it);
+		IT->second.erase(data);
+		if(IT->second.empty() == true){
+			objectsByTypes.erase(IT);
+		}
+	}
+
+	objectsWithInitializers.erase(data);
+
+	if(data->isNull() == false){
+		rawPointerToObjectWrapper.erase(data->getRawPtr());
+	}
+}
+
+
+void DataManager::nonNotifyRemoveData(const core::ObjectWrapperPtr & data)
+{
+    ScopedLock lock(stateMutex);
+
+    auto it = objects.find(data);
+
+    if(it == objects.end()){
+        throw std::runtime_error("Trying to remove data not managed by DataManager");
     }
 
-    objectsWithInitializers.erase(data);
+	//usuwam metadane
+	auto metaIT = metadataByObjects.find(data);
 
-    if(data->isNull() == false){
-        rawPointerToObjectWrapper.erase(data->getRawPtr());
-    }
+	if(metaIT != metadataByObjects.end()){
+
+		for(auto it = metaIT->second.begin(); it != metaIT->second.end(); ++it){
+			removeDataImpl(*it);
+		}
+
+		metadataByObjects.erase(metaIT);
+	}
+
+    removeDataImpl(data);
 }
 
 void DataManager::getManagedFiles(core::Files & files) const

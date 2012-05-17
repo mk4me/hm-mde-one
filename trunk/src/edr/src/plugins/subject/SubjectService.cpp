@@ -63,7 +63,7 @@ SubjectService::~SubjectService()
 
 void SubjectService::init(core::IManagersAccessor * managersAccessor)
 {
-    memoryDataManager = managersAccessor->getMemoryDataManager();
+
 }
 
 QWidget* SubjectService::getWidget( core::IActionsGroupManager * actionsManager )
@@ -131,7 +131,7 @@ MotionPtr SubjectService::createMotion(const SessionConstPtr & session,
         throw std::runtime_error("Wrong session for motion");
     }
 
-    MotionPtr ret(new Motion(memoryDataManager, ++currentMotionID, session,
+    MotionPtr ret(new Motion(++currentMotionID, session,
         ++localMotionIDs[session], wrappers));
 
     return ret;

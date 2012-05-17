@@ -19,6 +19,7 @@
 #include <plugins/subject/ISubjectService.h>
 #include <webserviceslib/DateTimeUtils.h>
 #include <QtGui/QInputDialog>
+#include <plugins/kinematic/Wrappers.h>
 
 using namespace communication;
 using namespace webservices;
@@ -583,6 +584,9 @@ void DataSourceWidget::onLogin()
 			}
 		}
 
+		//usuwamy wszystkie elementy pluginu subject
+		unloadSubjectHierarchy();
+
 		//wy³adowaæ wszystkie dane
 		for(auto it = filesLoadedToDM.begin(); it != filesLoadedToDM.end(); ++it){
 			try{
@@ -596,9 +600,6 @@ void DataSourceWidget::onLogin()
 				//unknownErrors.push_back(*it);
 			}
 		}
-
-		//usuwamy wszystkie elementy pluginu subject
-		unloadSubjectHierarchy();
 
 		trySaveProjects();
 
@@ -1491,6 +1492,33 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	typedef std::map<int, std::pair<std::set<int>, MotionFiles>> SessionFiles;
 	typedef std::map<int, SessionFiles> SubjectFiles;
 
+
+	class JointsInitializer : public core::IDataInitializer
+	{
+	public:
+		JointsInitializer(const core::ObjectWrapperConstPtr & dataWrapper, const core::ObjectWrapperConstPtr & modelWrapper) : 
+		  dataWrapper(dataWrapper), modelWrapper(modelWrapper)
+		  {
+
+		  }
+
+		  virtual void initialize(core::ObjectWrapperPtr & object)
+		  {
+			  kinematic::SkeletalDataPtr data;
+			  kinematic::SkeletalModelPtr model;
+			  if(dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
+				  kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
+				  joints->setSkeletal(model, data);
+				  object->trySet(joints);
+			  }
+		  }
+
+	private:
+		core::ObjectWrapperConstPtr dataWrapper;
+		core::ObjectWrapperConstPtr modelWrapper;
+	};
+
+
 	//TODO
 	//zainicjowaæ wskaŸnik do serwisu!!
 
@@ -1652,7 +1680,34 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 						}
 					}
 
+
+					//sprawdzamy joint angles - jesli nie ma budujemy i dodajemy do DM
+					core::ObjectWrapperConstPtr dataWrapper;
+					core::ObjectWrapperConstPtr modelWrapper;
+					for (auto it = motionObjects.begin(); it != motionObjects.end(); it++) {
+						if ((*it)->isSupported(typeid(kinematic::JointAnglesCollection))) {
+							return;
+						} else if ((*it)->isSupported(typeid(kinematic::SkeletalData))) {
+							dataWrapper = *it;
+							break;
+						}
+					}
+
+					modelWrapper = sPtr->getWrapperOfType(typeid(kinematic::SkeletalModel));
+					core::ObjectWrapperPtr jointsWrapper;
+					if (dataWrapper && modelWrapper) {
+						jointsWrapper = core::IMemoryDataManager::addData(dataSource->memoryDM, kinematic::JointAnglesCollectionPtr(), core::DataInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));						
+						motionObjects.push_back(jointsWrapper);
+						motionsMapping[motionIT->first].second.push_back(jointsWrapper);
+					}
+
 					mPtr = subjectService->createMotion(sPtr,motionObjects);
+
+					if(jointsWrapper != nullptr){
+						jointsWrapper->setName(mPtr->getLocalName() + " joints");
+						jointsWrapper->setSource("newCommunication->motion->" + mPtr->getLocalName());
+					}
+
 					//dodajê do DM
 					auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, mPtr);
 
@@ -1868,6 +1923,20 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 				}
 
 				dataSource->memoryDM->removeData(subIT->second.first);
+
+				//musze jeszcze usun¹æ pacjenta jeœli mam!!
+				auto patientIT = patientsMapping.find(subIT->first);
+				if(patientIT != patientsMapping.end()){
+
+					for(auto rIT = patientIT->second.second.begin(); rIT != patientIT->second.second.end(); ++rIT){
+						dataSource->memoryDM->removeData(*rIT);
+					}
+
+					dataSource->memoryDM->removeData(patientIT->second.first);
+
+					patientsMapping.erase(patientIT);
+				}
+
 				subjectsMapping.erase(subIT);
 			}
 		}else{
@@ -2109,6 +2178,10 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 
 	core::NotifyBlocker<core::IFileDataManager> blocker(*(dataSource->fileDM));
 
+	//próbujemy teraz przez plugin subject realizowaæ hierarchiê danych
+
+	unloadSubjectHierarchy(files);
+
 	//! £aduje pliki do DM
 	std::set<int> unloadedFiles;
 	std::map<int, std::string> unloadingErrors;
@@ -2133,10 +2206,6 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 	filesLoadedToDM.swap(std::set<int>(diff.begin(), diff.end()));
 
 	refreshStatus(unloadedFiles);
-
-	//próbujemy teraz przez plugin subject realizowaæ hierarchiê danych
-
-	unloadSubjectHierarchy(unloadedFiles);
 
 	if(showMessage == true){
 		if(unloadingErrors.empty() == true && unknownErrors.empty() == true){

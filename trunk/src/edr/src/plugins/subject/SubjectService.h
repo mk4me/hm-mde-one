@@ -75,8 +75,6 @@ private:
 
     PluginSubject::FilteredDataFacoryPtr filteredDataFactory;
 
-    core::IMemoryDataManager * memoryDataManager;
-
     OpenThreads::Mutex subjectCreationMutex;
     OpenThreads::Mutex sessionCreationMutex;
     OpenThreads::Mutex motionCreationMutex;
