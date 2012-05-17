@@ -15,8 +15,10 @@
 class SkeletalVisualizationScheme : public VisualizationScheme
 {
 public:
-	SkeletalVisualizationScheme() : 
-		counterHelper(-1) 
+    SkeletalVisualizationScheme() : 
+		counterHelper(-1),
+        dotColor(1,1,0,1),
+        connectionColor(1, 1, 1, 0.5f)
 	{}
 	
 public:
@@ -80,6 +82,8 @@ private:
     //! pomocne przy zapelnianiu kolekcji jointow
     int counterHelper;
     osg::Vec3 currentPosition;
+    osg::Vec4 connectionColor;
+    osg::Vec4 dotColor;
 };
 typedef core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;
 typedef core::shared_ptr<const SkeletalVisualizationScheme> SkeletalVisualizationSchemeConstPtr;

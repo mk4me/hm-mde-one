@@ -29,3 +29,10 @@ void VisualizationScheme::setNormalizedTime( double val )
     }
 }
 
+void VisualizationScheme::setGlobalStatesColor( const osg::Vec4& color )
+{
+    for (auto it = states.begin(); it != states.end(); it++) {
+        it->color = color;
+    }
+}
+

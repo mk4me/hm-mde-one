@@ -73,6 +73,32 @@ QString SummaryWindow::createDescription( PluginSubject::MotionConstPtr motion) 
     text += QObject::tr("Motion: ") + QString::fromStdString(motion->getLocalName()) + "\n";
     text += QObject::tr("Session: ") + QString::fromStdString(session->getLocalName()) + "\n";
     text += QObject::tr("Subject: ") + QString::fromStdString(subject->getName()) + "\n";
+   
+    std::vector<core::ObjectWrapperConstPtr> metadata;      
+    try {
+        core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), session, metadata);
+        auto metaITEnd = metadata.end();
+        for(auto metaIT = metadata.begin(); metaIT != metaITEnd; ++metaIT){
+            core::MetadataConstPtr meta = (*metaIT)->get(false);
+            std::string groupName, groupID;
+
+            if(meta != nullptr && meta->value("groupName", groupName) == true) {
+                text += QObject::tr("Owner: %1").arg(groupName.c_str()); 
+                if (meta->value("groupID", groupID) == true) {
+                    text += QString("(%1)").arg(groupID.c_str());
+                }
+                text += "\n";
+            }
+
+            std::string date;
+            if(meta != nullptr && meta->value("data", date) == true) {
+                text += QObject::tr("Date: %1\n").arg(date.c_str());
+            }
+        }
+    } catch (...) {
+        LOG_WARNING("Problem with summary window metadata");
+    }
+    
     if (session->hasObjectOfType(typeid(communication::IPatient))) {
         communication::PatientConstPtr patient = session->getWrapperOfType(typeid(communication::IPatient))->get();
         text += QObject::tr("Patient: ") + QString::fromStdString(patient->getName()) + " " + QString::fromStdString(patient->getSurname()) + "\n";

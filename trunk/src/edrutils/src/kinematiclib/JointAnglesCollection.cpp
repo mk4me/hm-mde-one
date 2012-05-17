@@ -12,8 +12,10 @@ namespace kinematic {
 
 
 JointAnglesCollection::JointAnglesCollection(void) :
-    lengthRatio(-1.0),
+    lengthRatio(4.0),
     initialized(false)
+    //preferedConnectionColor(1, 1, 1, 0.5f),
+    //preferedDotColor(1,1,0,1)
 {
 }
 
@@ -27,19 +29,15 @@ void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelConstPtr skelet
     
    const std::vector<SkeletalData::singleFramePtr>& frm = skeletalData->getFrames();
    this->haSkeleton = hAnimSkeleton::create();
-   double maxLength = getMaxBoneLength(skeletalModel->getSkeleton());
-   // hack, zamiast normalizacji dopasowanie skali do pliku c3d...
-   maxLength = 4.0;
    this->haSkeleton->doSkeletonMapping(skeletalModel);
    this->haSkeleton->createActiveHierarchy();
-   lengthRatio = maxLength;
 
    std::map<std::string, hAnimJointPtr>& joints = this->haSkeleton->getJoints();
    std::for_each(joints.begin(), joints.end(), [&](std::pair<string, hAnimJointPtr> p) 
     {   
         hAnimJointPtr joint = p.second;
 		if (joint->isActive()) {
-			joint->setLength(joint->getLength() / maxLength);
+			joint->setLength(joint->getLength() / lengthRatio);
                     
 			osg::Vec3 shift = joint->getDirection() * joint->getLength();
 			shift = vectorRotation(shift, 
@@ -297,6 +295,8 @@ JointAnglesCollection* JointAnglesCollection::clone() const
 	obj->configurationID = this->configurationID;
 	obj->haSkeleton = hAnimSkeletonPtr(this->haSkeleton->clone());
 	obj->lengthRatio = this->lengthRatio;
+    //obj->preferedConnectionColor = this->preferedConnectionColor;
+    //obj->preferedDotColor = this->preferedDotColor;
 	//obj->skeletalData = SkeletalDataPtr(this->skeletalData->clone());
 	//obj->skeletalModel = SkeletalModelPtr(this->skeletalModel->clone());
 	return obj;

@@ -144,6 +144,8 @@ public: // akcesory
 
 	virtual bool hasData() const = 0;
 
+    void setGlobalStatesColor(const osg::Vec4& color);
+
 
 protected:
     //! stany markerow dla aktualnego czasu

@@ -74,13 +74,11 @@ void SkeletalVisualizationScheme::updateJointTransforms( double normalizedTime )
 
 void SkeletalVisualizationScheme::createSkeletonConnections(kinematic::hAnimJointPtr joint)
 { 
-	// rewizja - hierarchia
-    Vec4 color(1, 1, 1, 0.5f);
 	BOOST_FOREACH(hAnimJointPtr child, joint->getActiveJointChildren()) {
 		Connection c;
 		c.index1 = visJoints[joint];
 		c.index2 = visJoints[child];
-		c.color = color;
+		c.color = connectionColor;
 		connections.push_back(c);
 		createSkeletonConnections(child);
 	}
@@ -89,6 +87,8 @@ void SkeletalVisualizationScheme::createSkeletonConnections(kinematic::hAnimJoin
 void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
 {
 	UTILS_ASSERT(val && val->getHAnimSkeleton());
+    //connectionColor = val->getPreferedConnectionColor();
+    //dotColor = val->getPreferedDotColor();
 	this->joints = val;
 	const auto& jointMap = joints->getHAnimSkeleton()->getJoints();
 	
@@ -100,9 +100,8 @@ void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
 	}
 	
 	states.resize(visJoints.size());
-	osg::Vec4 gold(1,1,0,1);
 	for (auto it = visJoints.begin(); it != visJoints.end(); it++) {
-        states[it->second].color = gold;
+        states[it->second].color = dotColor;
         states[it->second].name = it->first->getName();
 	}
 	hAnimSkeletonPtr skeleton = joints->getHAnimSkeleton();

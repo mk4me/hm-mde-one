@@ -6,6 +6,7 @@
 #include <osg/Quat>
 #include <osg/Matrix>
 #include <osg/Vec3>
+#include <osg/Vec4>
 #include <tinyxml.h>
 #include <utils/Debug.h>
 #include <utils/DataChannelCollection.h>
@@ -63,6 +64,14 @@ public:
     osg::Vec3 getRootPosition(double time) const;
     const std::vector<osg::Vec3>& getRootPositions() const { return rootPositions; }
 
+    //osg::Vec4 getPreferedDotColor() const { return preferedDotColor; }
+    //void setPreferedDotColor(osg::Vec4 val) { preferedDotColor = val; }
+    //osg::Vec4 getPreferedConnectionColor() const { return preferedConnectionColor; }
+    //void setPreferedConnectionColor(osg::Vec4 val) { preferedConnectionColor = val; }
+
+	double getLengthRatio() const { return lengthRatio; }
+	void setLengthRatio(double val) { lengthRatio = val; }
+
 
 private:
     /// \brief  Na podstawie danych z parsera tworzy tablice z kwaternionami
@@ -93,6 +102,8 @@ private:
 	//! dlugosc przez ktora nalezy pomnozyc aby uzyskac poczatkowe dlugosci kosci            
     double lengthRatio;
     bool initialized;
+    //osg::Vec4 preferedDotColor;
+    //osg::Vec4 preferedConnectionColor;
 }; 
 
 typedef boost::shared_ptr<JointAnglesCollection> JointAnglesCollectionPtr;

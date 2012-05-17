@@ -30,15 +30,17 @@ public:
 	void setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName);
 
 private slots:
-	void colorClicked();
+	//void colorClicked();
 	void visibilityChanged(bool visible);
     void rootVisibilityChanged(bool visible);
-	void widthChanged(double width);
-	void startTimeChanged(double time);
-	void endTimeChanged(double time);
-	void treeItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous );
-	void startSliderChanged(int value);
-	void endSliderChanged(int value);
+    void globalColorClicked();
+	//void widthChanged(double width);
+	//void startTimeChanged(double time);
+	//void endTimeChanged(double time);
+	//void treeItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous );
+	//void startSliderChanged(int value);
+	//void endSliderChanged(int value);
+  
 
 private:
 	QColor transformColor(const osg::Vec4& color) const;
@@ -48,7 +50,6 @@ private:
 	void blockAllSignals(bool val);
 
 private:
-	TrajectoryDrawerPtr currentTrajectories;
     std::map<QTreeWidgetItem*, boost::tuple<GlPointSchemeDrawerPtr, GlLineSchemeDrawerPtr, int>> item2Drawer;
     std::map<QTreeWidgetItem*, OsgSchemeDrawerPtr> item2Root;
 };

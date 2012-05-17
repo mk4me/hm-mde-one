@@ -20,6 +20,7 @@ public:
     virtual void init(VisualizationSchemeConstPtr scheme);
     virtual osg::ref_ptr<osg::Node> getNode() { return node; }
 
+
 private:
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
@@ -31,6 +32,7 @@ private:
     GeodePtr createMarker(osg::Vec4 color, float scale = 1.0f);
     TransformPtr addPoint(const osg::Vec3& point, const osg::Vec4& color, const std::string& name = std::string());
     GeometryPtr createCustomSphere(int complex, osg::Vec4 color) const;
+    void changeColorIfNecessary(TransformPtr point, const VisualizationScheme::State& state);
 
 private:
     osg::ref_ptr<osg::Group> node;

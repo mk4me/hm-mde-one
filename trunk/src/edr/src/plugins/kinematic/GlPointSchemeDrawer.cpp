@@ -44,6 +44,7 @@ void GlPointSchemeDrawer::update()
     for (int i = markers.size() - 1; i >= 0; --i) {
         points[i]->setNodeMask(markers[i].visible ? 0xFFFF : 0);
         points[i]->setPosition(markers[i].position);
+        changeColorIfNecessary(points[i], markers[i]);
     }
 }
 
@@ -176,6 +177,42 @@ GlPointSchemeDrawer::GeometryPtr GlPointSchemeDrawer::createCustomSphere( int co
     ref_ptr<StateSet> stateset = new osg::StateSet;
     return sphereGeom;
 }
+
+void GlPointSchemeDrawer::changeColorIfNecessary( TransformPtr point, const VisualizationScheme::State& state )
+{
+    for (int i = point->getNumChildren() - 1; i >= 0; --i) {
+        // punkt powinien zawierac geode ze sfera
+        GeodePtr geode = point->getChild(i)->asGeode();
+        if (geode && geode->getName() == state.name) {
+            UTILS_ASSERT(geode->getNumDrawables() == 1);
+            // sprawdzamy, czy istnieje sfera w odpowiednim kolorze
+            std::map<osg::Vec4, GeometryPtr>::iterator found = spheresByColor.find(state.color);
+            GeometryPtr customSphere;
+            if (found != spheresByColor.end()) {
+                if (found->second == geode->getDrawable(0)) {
+                    // sfera istnieje, i jest ta sama, ktora jest podpieta pod geode
+                    // oznacza to, ze kolor jest ten sam, nic nie trzeba robic
+                    return;
+                } else {
+                    // kolor sie zmienil, ale mamy juz sfere w odpowiednim kolorze,
+                    // podpinamy ja pod geode
+                    geode->removeDrawable(geode->getDrawable(0));
+                    geode->addDrawable(found->second);
+                }
+            } else {
+                // nie ma sfery w odpowiednim kolorze, trzeba ja sobie stworzyc.
+                // complex - dokladnosc sfery
+                auto newSphere = createCustomSphere(complex, state.color);
+                spheresByColor[state.color] = newSphere;
+                // stara sfere trzeba usunac z node'a
+                geode->removeDrawable(geode->getDrawable(0));
+                geode->addDrawable(newSphere);
+            }
+            break;
+        }
+    }
+}
+
 
 
 

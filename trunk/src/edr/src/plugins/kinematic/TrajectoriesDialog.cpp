@@ -3,7 +3,6 @@
 #include "TrajectoriesDialog.h"
 #include "SchemeDrawerContainer.h"
 
-const int columnCount = 2;
 
 TrajectoriesDialog::TrajectoriesDialog( QWidget* parent) :
 	QDialog(parent)
@@ -107,6 +106,7 @@ osg::Vec4 TrajectoriesDialog::transformColor( const QColor& color ) const
 
 QTreeWidgetItem* getItemWhichContainsRecurr(QTreeWidget* tree, QTreeWidgetItem* item, QObject* object )
 {
+    int columnCount = tree->columnCount();
     for (int c = 0; c < columnCount; c++) {
         if (tree->itemWidget(item, c) == object) {
             return item;

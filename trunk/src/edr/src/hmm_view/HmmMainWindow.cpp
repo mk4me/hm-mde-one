@@ -395,7 +395,6 @@ bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
 
 void HmmMainWindow::createNewVisualizer()
 {
-    //treeRefresher.setPreventRefresh(true);
     core::NotifyBlocker<core::IFileDataManager> blockerF(*DataManager::getInstance());
     core::NotifyBlocker<core::IMemoryDataManager> blockerM(*DataManager::getInstance());
     ContextAction* action = qobject_cast<ContextAction*>(sender());
@@ -407,8 +406,6 @@ void HmmMainWindow::createNewVisualizer()
 
         }
     }
-
-    //treeRefresher.setPreventRefresh(false);
 }
 
 void HmmMainWindow::createNewVisualizer( HmmTreeItem* item, EDRDockWidgetSet* dockSet )
