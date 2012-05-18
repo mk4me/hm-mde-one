@@ -1159,7 +1159,6 @@ void DataSourceWidget::generateCommonContextMenu(QMenu & menu, QTreeWidget * per
 
 		connect(saveProject, SIGNAL(triggered()), this, SLOT(onSaveProject()));
 		connect(synch, SIGNAL(triggered()), this, SLOT(updateShallowCopy()));
-		synch->setEnabled(true);
 
 		for(auto it = projects.begin(); it != projects.end(); ++it){
 			auto loadAction = loadProject->addAction(QString::fromUtf8(it->first.c_str()));
@@ -1169,9 +1168,9 @@ void DataSourceWidget::generateCommonContextMenu(QMenu & menu, QTreeWidget * per
 			connect(deleteAction, SIGNAL(triggered()), this, SLOT(onDeleteProject()));
 		}
 
-		if(projects.empty() == false){
-			loadProject->setEnabled(true);
-			deleteProject->setEnabled(true);
+		if(projects.empty() == true){
+			loadProject->setEnabled(false);
+			deleteProject->setEnabled(false);
 		}
 	}else{
 		saveProject->setEnabled(false);
@@ -2249,11 +2248,15 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 void DataSourceWidget::saveProject(const std::string & projectName, const std::set<int> & projectFiles)
 {
 	projects[projectName] = projectFiles;
+
+	trySaveProjects();
 }
 
 void DataSourceWidget::deleteProject(const std::string & projectName)
 {
 	projects.erase(projectName);
+
+	trySaveProjects();
 }
 
 void DataSourceWidget::loadProject(const std::string & projectName)
@@ -2315,9 +2318,9 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 	}
 
 	filesToDownload.swap(std::set<int>());	
-
+	filesToLoad.swap(std::set<int>());	
 	//pliki do za³adowania
-	FilesHelper::filterFiles(dmOKFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
+	FilesHelper::filterFiles(dmOKFiles, Local, filesToLoad, *(dataSource->fileStatusManager));
 
 	unloadFiles(filesLoadedToDM, false);
 
@@ -2377,6 +2380,14 @@ void DataSourceWidget::onLoadProject()
 void DataSourceWidget::trySaveProjects()
 {
 	if(projects.empty() == true){
+		std::string projectsFile(DataSourcePathsManager::instance()->projectsPath().filename().string());
+		if(DataSourceLocalStorage::instance()->fileIsLocal(projectsFile) == true){
+			try{
+				DataSourceLocalStorage::instance()->removeFile(projectsFile);
+			}catch(...){
+
+			}
+		}
 		return;
 	}
 
@@ -2454,7 +2465,7 @@ void DataSourceWidget::tryLoadProjects()
 				}
 
 				if(files.empty() == false){
-					saveProject(projectName, files);
+					projects[projectName] = files;
 				}
 			}
 		}

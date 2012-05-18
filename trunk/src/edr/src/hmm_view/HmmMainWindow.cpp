@@ -77,7 +77,10 @@ void HmmMainWindow::activateContext(QWidget * widget)
         toSet = widget;
     }else{
         auto it = derrivedContextWidgets.left.find(widget);
-        toSet = it->second;
+
+		if(it != derrivedContextWidgets.left.end()){
+			toSet = it->second;
+		}
     }
     
     setCurrentContext(toSet);
@@ -963,8 +966,11 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     visualizerUsageContext->setCurrentContextWidgetDestroyed(false);
     contextEventFilter->unregisterClosableContextWidget(w);
     auto it = derrivedContextWidgets.right.find(w);
-    contextEventFilter->unregisterClosableContextWidget(it->second);
-    derrivedContextWidgets.right.erase(it);
+	while( it != derrivedContextWidgets.right.end() && it->first == w){
+		contextEventFilter->unregisterClosableContextWidget(it->second);
+		++it;
+	}
+    derrivedContextWidgets.right.erase(w);
     plainContextWidgets.erase(w);
 }
 
@@ -974,7 +980,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     visualizer->getOrCreateWidget();
     // todo : zastanowic sie nad bezpieczenstwem tej operacji
     connect(visualizer.get(), SIGNAL(printTriggered(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
-    VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer);
+    VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer, nullptr, 0, false);
     visualizerDockWidget->setPermanent(false);
     visualizerDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     visualizerDockWidget->setVisualizerIconVisible(false);
@@ -1614,7 +1620,6 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      plainContextWidgets.insert(visualizerDockWidget);
      derrivedContextWidgets.insert(DerrivedContextWidgets::value_type(titleBar,visualizerDockWidget));
      derrivedContextWidgets.insert(DerrivedContextWidgets::value_type(visWidget,visualizerDockWidget));
-
 
      visWidget->setFocusPolicy(Qt::ClickFocus);
      //visualizer->getWidget()->setFocusProxy(visualizerDockWidget);

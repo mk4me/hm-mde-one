@@ -16,7 +16,7 @@ typedef std::pair<core::TypeInfo, core::ObjectWrapperConstPtr> TypeData;
 
 Q_DECLARE_METATYPE(TypeData);
 
-VisualizerWidget::VisualizerWidget(QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/) : EDRDockWidget(parent, flags)
+VisualizerWidget::VisualizerWidget(QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/, bool autoRefreshInputs  /*= true*/) : EDRDockWidget(parent, flags), autoRefreshInputs_(autoRefreshInputs)
 {
     init();
     // dodajemy wizualizatory
@@ -25,7 +25,7 @@ VisualizerWidget::VisualizerWidget(QWidget* parent /*= nullptr*/, Qt::WindowFlag
     }
 }
 
-VisualizerWidget::VisualizerWidget( UniqueID visualizerID, QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/ ) : EDRDockWidget(parent, flags)
+VisualizerWidget::VisualizerWidget( UniqueID visualizerID, QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/, bool autoRefreshInputs  /*= true*/ ) : EDRDockWidget(parent, flags), autoRefreshInputs_(autoRefreshInputs)
 {
     init();
     // blokujemy sygna³y 
@@ -39,7 +39,7 @@ VisualizerWidget::VisualizerWidget( UniqueID visualizerID, QWidget* parent /*= n
     setCurrentVisualizer(visualizerID);
 }
 
-VisualizerWidget::VisualizerWidget( const VisualizerPtr& source, QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/ ) : EDRDockWidget(parent, flags)
+VisualizerWidget::VisualizerWidget( const VisualizerPtr& source, QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/, bool autoRefreshInputs  /*= true*/ ) : EDRDockWidget(parent, flags), autoRefreshInputs_(autoRefreshInputs)
 {
     init();
     // blokujemy sygna³y
@@ -59,6 +59,16 @@ VisualizerWidget::~VisualizerWidget()
     // usuniêcie widgeta
 	visualizerWidgetContainer = nullptr;
     clearCurrentVisualizer();
+}
+
+void VisualizerWidget::setAutoRefreshInputs(bool autoRefresh)
+{
+	autoRefreshInputs_ = autoRefresh;
+}
+
+bool VisualizerWidget::autoRefreshInputs() const
+{
+	return autoRefreshInputs_;
 }
 
 void VisualizerWidget::clearCurrentVisualizerWidget()
@@ -198,9 +208,9 @@ void VisualizerWidget::split( Qt::Orientation orientation )
     UTILS_ASSERT(mainWindow);
 
     if ( visualizer ) {
-        dockWidget = new VisualizerWidget(VisualizerManager::getInstance()->createVisualizer(visualizer->getID()), mainWindow);
+        dockWidget = new VisualizerWidget(VisualizerManager::getInstance()->createVisualizer(visualizer->getID()), mainWindow, windowFlags(), autoRefreshInputs_);
     } else {
-        dockWidget = new VisualizerWidget(mainWindow);
+        dockWidget = new VisualizerWidget(mainWindow, windowFlags(), autoRefreshInputs_);
     }
 
     mainWindow->splitDockWidget(this, dockWidget, orientation);
@@ -303,18 +313,21 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
         // dodanie g³ównego widgetu
         if ( visualizer ) {
 
-            //ustaw dane
-            for(int i = 0; i < visualizer->getNumInputs(); i++){
-                bool exact = false;
-                //pobieram dane
+			if(autoRefreshInputs_ == true){
 
-                //stworz nowy OWC, odswiezajacy dane z DM ObjectWrapperCollection
-                core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), exact));
+				//ustaw dane
+				for(int i = 0; i < visualizer->getNumInputs(); i++){
+					bool exact = false;
+					//pobieram dane
 
-                DataManager::getInstance()->getObjects(*collection);
+					//stworz nowy OWC, odswiezajacy dane z DM ObjectWrapperCollection
+					core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), exact));
 
-                visualizer->setObjects(i, collection);
-            }
+					DataManager::getInstance()->getObjects(*collection);
+
+					visualizer->setObjects(i, collection);
+				}
+			}
 
             // czy indeks siê zgadza?
             // tradycyjne wyszukiwanie nie dzia³a przy copy by value

@@ -19,6 +19,99 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Project manager&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;prof. dr hab. inż. Konrad Wojciechowski&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Technical manager&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Marek Kulbacki&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Software&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Piotr Gwiazdowski&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Mariusz Szynalik&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Mateusz Janiak&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Wojciech Knieć&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Rafał Błauciak&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Marek Daniluk&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Michał Szafarski&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Dominika Gierasimiak&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Database&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Piotr Habela&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Krzysztof Kaczmarski&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mrg.inż. Wiktor Filipowicz&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;External consultant&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr. inż. Jakub Segen&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Kierownik projektu&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;prof. dr hab. inż. Konrad Wojciechowski&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Kierownik techniczny&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Marek Kulbacki&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Oprogramowanie&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Piotr Gwiazdowski&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Mariusz Szynalik&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Mateusz Janiak&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Wojciech Knieć&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Rafał Błauciak&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Marek Daniluk&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Michał Szafarski&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Dominika Gierasimiak&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bazy danych&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Piotr Habela&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Krzysztof Kaczmarski&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mrg.inż. Wiktor Filipowicz&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Konsultanci zewnętrzni&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr. inż. Jakub Segen&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/AboutDialog.ui" line="305"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Libraries&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Qt&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Open Scene Graph&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SQLite/SqlCipher&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QWT&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QuaZip&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;zLib&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenThreads&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Boost&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;BTK&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;cURL&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;FFmpeg&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;log4cxx&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;ODE&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;TinyXml&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;wsdlpull&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenSSL&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Biblioteki&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Qt&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Open Scene Graph&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SQLite/SqlCipher&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QWT&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QuaZip&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;zLib&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenThreads&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Boost&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;BTK&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;cURL&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;FFmpeg&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;log4cxx&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;ODE&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;TinyXml&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;wsdlpull&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenSSL&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message utf8="true">
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Kierownik projektu&lt;/span&gt;&lt;/li&gt;
 &lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;prof. dr hab. inż. Konrad Wojciechowski&lt;/li&gt;&lt;/ul&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Kierownik techniczny&lt;/span&gt;&lt;/li&gt;
@@ -38,32 +131,29 @@ p, li { white-space: pre-wrap; }
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mrg.inż. Wiktor Filipowicz&lt;/li&gt;&lt;/ul&gt;
 &lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Konsultanci zewnętrzni&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
 &lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr. inż. Jakub Segen&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/AboutDialog.ui" line="305"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Biblioteki&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
-&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Qt&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Open Scene Graph&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SQLite&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QWT&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;QuaZip&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;zLib&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenThreads&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Boost&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;BTK&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;cURL&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;FFmpeg&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;log4cxx&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;ODE&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;TinyXml&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;wsdlpull&lt;/li&gt;
-&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;OpenSSL&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Kierownik projektu&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;prof. dr hab. inż. Konrad Wojciechowski&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Kierownik techniczny&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Marek Kulbacki&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Oprogramowanie&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Piotr Gwiazdowski&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Mariusz Szynalik&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Mateusz Janiak&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Wojciech Knieć&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mgr. inż. Rafał Błauciak&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Marek Daniluk&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Michał Szafarski&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Dominika Gierasimiak&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bazy danych&lt;/span&gt;&lt;/li&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Piotr Habela&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr inż. Krzysztof Kaczmarski&lt;/li&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;mrg.inż. Wiktor Filipowicz&lt;/li&gt;&lt;/ul&gt;
+&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Konsultanci zewnętrzni&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;ul type=&quot;circle&quot; style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;&lt;li style=&quot; font-size:8pt;&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;dr. inż. Jakub Segen&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/AboutDialog.ui" line="287"/>
@@ -518,7 +608,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="194"/>
         <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="255"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="618"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="619"/>
         <source>Login</source>
         <translation>Login</translation>
     </message>
@@ -590,220 +680,220 @@ p, li { white-space: pre-wrap; }
         <translation>Aktywuj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="485"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="967"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="486"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="968"/>
         <source>Data</source>
         <translation>Dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="567"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="568"/>
         <source>Logout process</source>
         <translation>Wylogowywanie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="568"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="569"/>
         <source>Some download is currently performed. Do you want to logout and cancel it?</source>
         <translation>Dane są aktualnie ściągane. Czy chcesz się wylogować i przerwać to ściąganie?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="625"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="626"/>
         <source>Login problem</source>
         <translation>Problem logowania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="626"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="627"/>
         <source>Both fields: User and Password need to be filled. Please fill them and retry.</source>
         <translation>Oba pola: Uzytkownik i Hasło muszą być wypełnione. Prosze je wypełnić i spróbować ponownie.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="648"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="649"/>
         <source>Error during login: </source>
         <translation>Błąd podczas logowania:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="656"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="657"/>
         <source>UNKNOWN ERROR</source>
         <translation>Nieznany błąd</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="664"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="665"/>
         <source>Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.</source>
         <translation>Prosze sprawdzić połączenie z internetem (zezwolić aplikacji EDR na komunikację z internetem w zaporze internetowej). Jeśli problem będzie się powtarzał skontaktuj się z producentem.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="667"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="668"/>
         <source>Login error</source>
         <translation>Błąd logowania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="683"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="684"/>
         <source>Logout</source>
         <translation>Wyloguj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="690"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="691"/>
         <source>Login information</source>
         <translation>Status logowania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="691"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="692"/>
         <source>User is logged locally - there might be a problem with internet connection and remote services might not work correctly.</source>
         <translation>Użytkownik zalogowany lokalnie - prawdopodobnie problem z połączeniem internetowym i usługami zdalnymi.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="721"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="722"/>
         <source>Synchronization error</source>
         <translation>Błąd synchronizacji</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="722"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="723"/>
         <source>Synchronization data is corrupted. Please try again later. If problem continues contact producer</source>
         <translation>Dane synchronizacyjne uszkodzone. Proszę spróbować jeszcze raz później. Jeśli problem będzie się powtarzał skontaktuj się z producentem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="737"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="756"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="738"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="757"/>
         <source>Synchronization required</source>
         <translation>Wymagana jest synchronizacja</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="738"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="739"/>
         <source>Database was updated. Some data might be not available. Would You like to synchronize?</source>
         <translation>Baza danych została zaktualizaowana. Część danych może być niedostępna. Czy chcesz zsynchronizować się z bazą danych?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="757"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="758"/>
         <source>Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?</source>
         <translation>Część danych jest niedostępna. Aby kontynuować pracę wymagana jest synchronizacja. Czy chcesz przeprowadzić teraz synchronizację?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="789"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="790"/>
         <source>Login unsuccessful</source>
         <translation>Nieudane logowanie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="790"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="791"/>
         <source>Given user or password is incorrect. Please correct it and try again. If problem continues contact database administrators.</source>
         <translation>Podane dane są niepoprawne. Sprawdź ich poprawność i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="834"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="835"/>
         <source>All fields: Login, Password, Repeat password, Name, Surname and E-mail must be filled. Please correct them and try again.</source>
         <translation>Wszystkie pola: Login, Hasło, Powtórz hasło, Imię, Nazwisko i E-mail muszą być wypełnione. Popraw dane i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="838"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="839"/>
         <source>Password differs from its repeat. Please verify password.</source>
         <translation>Hasło i powtórzone hasło różnią się. Popraw hasło.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="855"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="856"/>
         <source>Registration form validation</source>
         <translation>Walidacja formularza rejestracyjnego</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="867"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="868"/>
         <source>Registration successful</source>
         <translation>Rejestracja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="868"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="869"/>
         <source>Your registration has finished. Activate Your account to be able to login and get access to database.</source>
         <translation>Rejestracja dobiegła końca. Aktywuj swoje konto aby logować się do aplikacji i uzyskać dostęp do danych.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="882"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="883"/>
         <source>Registration failed</source>
         <translation>Rejestracja zakończona niepowodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="883"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="884"/>
         <source>Could not registrate. Please change login or email and try again. If problem continues contact producer.</source>
         <translation>Nie można zarejestrować. Spróbuj zmienić login lub email i spróbuj się ponownie zarejestrować. Jeżeli problem będzie się powtarzał skontaktuj się z producentem.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="896"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="897"/>
         <source>Activation validation</source>
         <translation>Walidacja aktywacji</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="897"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="898"/>
         <source>Both fields: Login and Activation code must be filled. Please correct them and try again.</source>
         <translation>Oba pola: Login i Kod aktywacyjny musza być wypełnione. Popraw je i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="904"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="905"/>
         <source>Activation successful</source>
         <translation>Aktywacja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="905"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="906"/>
         <source>Given login has been successfully activated. You can now login using this account.</source>
         <translation>Podany login został poprawnie aktywowany. Można się nim logować do aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="919"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="920"/>
         <source>Activation failed</source>
         <translation>Aktywacja zakończona niepowodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="920"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="921"/>
         <source>Could not activate given login with provided activation code. Verify data and try again. If problem continiues please contact the producer.</source>
         <translation>Nie można aktywować loginu przy pomocy zadanego kodu aktywacyjnego. Sprawdź login i kod aktywacyjny i spróbuj ponownie. Jeżeli problem będzie się powtarzał skontaktuj się z producentem.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1105"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1106"/>
         <source>Load All</source>
         <translation>Załaduj wszystko</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1106"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1107"/>
         <source>Unload All</source>
         <translation>Wyładuj wszystko</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1026"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1027"/>
         <source>Load</source>
         <translation>Załaduj dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1027"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1028"/>
         <source>Unload</source>
         <translation>Wyładuj dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1029"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1030"/>
         <source>Download</source>
         <translation>Pobierz dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1150"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2269"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1151"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2341"/>
         <source>Save project as...</source>
         <translation>Zapisz projekt jako...</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1151"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1152"/>
         <source>Load project</source>
         <translation>Załaduj projekt</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1152"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1153"/>
         <source>Delete project</source>
         <translation>Usuń projekt</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1032"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1033"/>
         <source>Refresh status</source>
         <translation>Odśwież status danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1107"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1108"/>
         <source>Download All</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściągnij wszystko</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1154"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1155"/>
         <source>Synchronize</source>
         <translation>Synchronizuj</translation>
     </message>
@@ -859,102 +949,102 @@ p, li { white-space: pre-wrap; }
         <translation>Błąd przygotowania ściągana danych. Opis błędu: </translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2070"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2138"/>
         <source>Loading info</source>
         <translation>Informacja ładowania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2071"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2139"/>
         <source>Data loaded successfully to application.</source>
         <translation>Dane załadowane pomyslnie do aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2078"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2146"/>
         <source>Errors while data loading:</source>
         <translation>Błędy ładowania danych do aplikacji:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2083"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2157"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2151"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2225"/>
         <source>
 %1. File ID: %2. Error description: %3</source>
         <translation>%1. Identyfikator pliku: %2. Opis błędu: %3</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2088"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2162"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2156"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2230"/>
         <source>
 %1. File ID: %2. Unknown error.</source>
         <translation>%1. Identyfikator pliku: %2. Nieznany błąd.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2093"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2161"/>
         <source>Loading warning</source>
         <translation>Ostrzeżenie ładowania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2144"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2212"/>
         <source>Unloading info</source>
         <translation>Informacja wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2145"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2213"/>
         <source>Data unloaded successfully.</source>
         <translation>Dane wyładowane pomyślnie z aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2152"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2220"/>
         <source>Errors while data unloading:</source>
         <translation>Błędy podczas wyładowywania danych z aplikacji:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2167"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2235"/>
         <source>Unloading warning</source>
         <translation>Ostrzeżenie wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2205"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2231"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2277"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2303"/>
         <source>Loading project warning</source>
         <translation>Ostrzeżenie ładowania projektu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2206"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2278"/>
         <source>Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?</source>
         <translation>Niektóre pliki projektu nie są już dostepne. Skontaktuj się z właścicielem tych plików by przyznał ci do nich prawa. Wczy chcesz załadować projekt bez tych plików?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2232"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2304"/>
         <source>Some project files must are missing. Data download is required. Do You want to continue?</source>
         <translation>Brakuje niektórych plików.  Wymagane jest ich ściągnięcie. Czy chcesz je teraz ściągnąć?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2267"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2339"/>
         <source>Project name:</source>
         <translation>Nazwa projetku:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2268"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2340"/>
         <source>Save</source>
         <translation>Zachowaj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2279"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2351"/>
         <source>Save project warning</source>
         <translation>Ostrzeżenie zapisu projektu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2280"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2352"/>
         <source>Project name can not be empty. Please give a name to the project and continue.</source>
         <translation>Nazwa projektu nie moze być pusta. Proszę podać nazwę i kontynuować.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1959"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2027"/>
         <source>Unknown error</source>
         <translation>Nieznany błąd</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2020"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2088"/>
         <source>Downloading file %1 [%2/%3]</source>
         <translation>Ściąganie pliku %1 [%2/%3]</translation>
     </message>
@@ -1732,73 +1822,73 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Aktywne dane</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1080"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1083"/>
         <source>Create new visualizer</source>
         <translation>Twórz nowy wizualizator</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1087"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1097"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1090"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1100"/>
         <source>Multi chart</source>
         <translation>Multi-wykres</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1089"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1092"/>
         <source>All from session</source>
         <translation>Wszystkie z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1099"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1102"/>
         <source>All X from session</source>
         <translation>Wszystkie współrzędne X z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1105"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1108"/>
         <source>All Y from session</source>
         <translation>Wszystkie współrzędne Y z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1111"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1114"/>
         <source>All Z from session</source>
         <translation>Wszystkie współrzędne Z z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1119"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1122"/>
         <source>Left Step normalization</source>
         <translation>Normalizacja wg lewego kroku</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1125"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1128"/>
         <source>Right Step normalization</source>
         <translation>Normalizacja wg prawego kroku</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1131"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1134"/>
         <source>Left Step normalization - all from session</source>
         <translation>Normalizacja wg lewego kroku - wszystkie z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1137"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1140"/>
         <source>Right Step normalization - all from session</source>
         <translation>Normalizacja wg prawego kroku - wszystkie z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1146"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1149"/>
         <source>Add to:</source>
         <translation>Dodaj do:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1192"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1195"/>
         <source>Remove from:</source>
         <translation>Usuń z:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1215"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1218"/>
         <source>Create in:</source>
         <translation>Twórz w:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1226"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1229"/>
         <source>New group</source>
         <translation>Nowa grupa</translation>
     </message>
@@ -1849,103 +1939,104 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>KinematicVisualizer</name>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="143"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="182"/>
         <source>Switch Axes</source>
         <translation>Przełącz osie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="152"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="191"/>
         <source>Trajectories</source>
         <translation>Trajektorie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="157"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="196"/>
         <source>Scheme Drawers</source>
         <translation>Konfigurator obiektów</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="164"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="203"/>
         <source>Ghost</source>
         <translation>Wizualizacja czasowo przestrzenna</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="171"/>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="303"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="210"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="342"/>
         <source>View</source>
         <translation>Widok</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="175"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="129"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="214"/>
         <source>No active serie</source>
         <translation>Brak aktywnej serii danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="209"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="248"/>
         <source>Picker</source>
         <translation>Wskaźnik</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="210"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="249"/>
         <source>Translate</source>
         <translation>Translacja</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="211"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="250"/>
         <source>Rotate</source>
         <translation>Rotacja</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="212"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="251"/>
         <source>Scale</source>
         <translation>Skalowanie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="224"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="263"/>
         <source>Left</source>
         <translation>Strona lewa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="225"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="264"/>
         <source>Right</source>
         <translation>Strona prawa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="226"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="265"/>
         <source>Front</source>
         <translation>Przód</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="227"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="266"/>
         <source>Back</source>
         <translation>Tył</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="228"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="267"/>
         <source>Top</source>
         <translation>Góra</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="229"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="268"/>
         <source>Bottom</source>
         <translation>Dół</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="239"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="278"/>
         <source>Reset transform</source>
         <translation>Resetuj zmiany</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="277"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="316"/>
         <source>Properties</source>
         <translation>Własności</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="283"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="322"/>
         <source>Manipulators</source>
         <translation>Manipulatory</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="289"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="328"/>
         <source>Manipulators properties</source>
         <translation>Właściwości manipulatorów</translation>
     </message>
@@ -1979,82 +2070,82 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>LocalDataLoader</name>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="53"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="54"/>
         <source>Synchronization data corrupted</source>
         <translation>Uszkodzone dane synchronizacyjne</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="60"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="61"/>
         <source>Synchronizing files:</source>
         <translation>Synchronizacja p lików:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="125"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="126"/>
         <source>Synchronization canceled</source>
         <translation>Synchronizacja anulowana</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="126"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="127"/>
         <source>Synchronization successfully canceled</source>
         <translation>Synchronizacja pomyślnie anulowana</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="128"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="129"/>
         <source>Download canceled</source>
         <translation>Pobieranie anulowane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="129"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="130"/>
         <source>Download successfully canceled</source>
         <translation>Pobieranie pomyślnie anulowane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="140"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="141"/>
         <source>Synchronization error</source>
         <translation>Błąd synchronizacji</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="141"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="142"/>
         <source>Synchronization has failed with the following error: </source>
         <translation>Synchronizacja zakończona niepowodzeniem:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="141"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="142"/>
         <source>Please try to synchronize later. If this error continues to happen contact producer</source>
         <translation>Proszę spróbowac synchronizacji później. Jeśli problem będzie się powtarzał skontaktuj się z producentem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="143"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="144"/>
         <source>Download error</source>
         <translation>Błąd pobierania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="144"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="145"/>
         <source>Download has failed with the following error: </source>
         <translation>Pobieranie zakończone niepowodzeniem:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="144"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="145"/>
         <source>Please try to download later. If this error continues to happen contact producer</source>
         <translation>Spróbuj pobrać dane później. Jeśli problem będzie się powtarzał skontaktuj się z producentem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="155"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="156"/>
         <source>Synchronization successful</source>
         <translation>Synchronizacja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="156"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="157"/>
         <source>Synchronization has finished successfully</source>
         <translation>Synchronizacja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="158"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="159"/>
         <source>Download successful</source>
         <translation>Pobieranie zakończone powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="159"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="160"/>
         <source>Download has finished successfully</source>
         <translation>Pobieranie zakończone powodzeniem</translation>
     </message>
@@ -7492,7 +7583,7 @@ Proszę o sprawdzenie podanej nazwy pliku.</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/HmmContexts.cpp" line="58"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="340"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="343"/>
         <source>Visualizer</source>
         <translation>Wizualizator</translation>
     </message>
@@ -7663,42 +7754,53 @@ Wartość: %2</translation>
     <message>
         <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="29"/>
         <source>Data Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacje</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="73"/>
         <source>Motion: </source>
-        <translation type="unfinished"></translation>
+        <translation>Przejście: </translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="74"/>
         <source>Session: </source>
-        <translation type="unfinished"></translation>
+        <translation>Sesja: </translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="75"/>
         <source>Subject: </source>
-        <translation type="unfinished"></translation>
+        <translation>Wykonawca: </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="78"/>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="86"/>
+        <source>Owner: %1</source>
+        <translation>Własnośc: %1</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="95"/>
+        <source>Date: %1
+</source>
+        <translation>Data: %1</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="104"/>
         <source>Patient: </source>
-        <translation type="unfinished"></translation>
+        <translation>Pacjent: </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="83"/>
+        <location filename="../../../src/hmm_view/SummaryWindow.cpp" line="109"/>
         <source>Weight: </source>
-        <translation type="unfinished"></translation>
+        <translation>Waga: </translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/HmmMainWindow.h" line="94"/>
         <source>Refreshing analysis data</source>
-        <translation type="unfinished"></translation>
+        <translation>Odświeżanie drzewa analiz</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/HmmMainWindow.h" line="105"/>
         <source>Active Data</source>
-        <translation type="unfinished">Aktywne dane</translation>
+        <translation>Aktywne dane</translation>
     </message>
 </context>
 <context>
@@ -13473,7 +13575,12 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
 <context>
     <name>SchemeDialog</name>
     <message>
-        <location filename="../../../src/plugins/kinematic/SchemeDialog.cpp" line="217"/>
+        <location filename="../../../src/plugins/kinematic/SchemeDialog.cpp" line="19"/>
+        <source>Color</source>
+        <translation>Kolor</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/SchemeDialog.cpp" line="191"/>
         <source>Choose color</source>
         <translation>Wybierz kolor</translation>
     </message>
@@ -14048,7 +14155,7 @@ Do you want to save your changes?</source>
         <translation>Dokuj / oddokuj</translation>
     </message>
     <message>
-        <location filename="../../../src/core/VisualizerWidget.cpp" line="113"/>
+        <location filename="../../../src/core/VisualizerWidget.cpp" line="123"/>
         <source>Sources</source>
         <translation>Źródła</translation>
     </message>

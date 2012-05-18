@@ -323,8 +323,9 @@ void VideoVisualizer::reset()
 
 QPixmap VideoVisualizer::print() const
 {
-    QPixmap pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
-    QRect widgetRect = viewer->geometry();
-    widgetRect.moveTopLeft(viewer->parentWidget()->mapToGlobal(widgetRect.topLeft()));
-    return pixmap.copy(widgetRect);
+	/*QPixmap pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
+	QRect widgetRect = viewer->geometry();
+	widgetRect.moveTopLeft(viewer->parentWidget()->mapToGlobal(widgetRect.topLeft()));
+	return pixmap.copy(widgetRect);*/
+	return QPixmap::fromImage(viewer->grabFrameBuffer(true));
 }

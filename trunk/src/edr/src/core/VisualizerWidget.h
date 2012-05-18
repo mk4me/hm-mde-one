@@ -81,15 +81,17 @@ private:
     std::pair<QAction*, core::ObjectWrapperConstPtr> lastSerie;
 	std::map<core::ObjectWrapperConstPtr, const void *> timelineChannels;
 
+	bool autoRefreshInputs_;
+
 public:
     //! Zeruj¹cy konstruktor.
     //! \param parent
     //! \param flags
-    VisualizerWidget(QWidget* parent = nullptr, Qt::WindowFlags flags = 0);
+    VisualizerWidget(QWidget* parent = nullptr, Qt::WindowFlags flags = 0, bool autoRefreshInputs = true);
     //!
-    VisualizerWidget(UniqueID visualizerID, QWidget* parent = nullptr, Qt::WindowFlags flags = 0);
+    VisualizerWidget(UniqueID visualizerID, QWidget* parent = nullptr, Qt::WindowFlags flags = 0, bool autoRefreshInputs = true);
     //!
-    VisualizerWidget(const VisualizerPtr& source, QWidget* parent = nullptr, Qt::WindowFlags flags = 0);
+    VisualizerWidget(const VisualizerPtr& source, QWidget* parent = nullptr, Qt::WindowFlags flags = 0, bool autoRefreshInputs = true);
         
             
     //! Zapewnia mo¿liwoœæ kasowanie widgeta wizualizatora przez jego implementacjê.
@@ -116,6 +118,9 @@ public:
     {
         return visualizer;
     }
+
+	void setAutoRefreshInputs(bool autoRefresh);
+	bool autoRefreshInputs() const;
 
 public slots:
 

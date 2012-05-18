@@ -284,7 +284,7 @@ private:
 
     friend class ItemDoubleClick;
 
-	typedef boost::bimap<boost::bimaps::set_of<QWidget*>, boost::bimaps::multiset_of<QWidget*>> DerrivedContextWidgets;
+	typedef boost::bimap<QWidget*, boost::bimaps::multiset_of<QWidget*>> DerrivedContextWidgets;
 	typedef std::pair<AppUsageContextPtr, QWidget*> ContextState;
 
 private:
