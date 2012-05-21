@@ -15,7 +15,6 @@ set(TARGET_TARGETNAME
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
-	${HEADER_PATH}/Types.h
 	${HEADER_PATH}/TableGenerator.h
 	${HEADER_PATH}/DocumentGenerator.h
 )

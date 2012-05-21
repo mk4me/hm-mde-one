@@ -254,9 +254,9 @@ public:
 //IDataManagerReader
 public:
 
-    virtual void getObjects(std::vector<core::ObjectWrapperConstPtr>& objects, const core::TypeInfo& type, bool exact = true);
+    virtual void getObjects(std::vector<core::ObjectWrapperConstPtr>& objects, const core::TypeInfo& type, bool exact = true, bool initialize = true);
 
-    virtual void getObjects(core::ObjectWrapperCollection& objects);
+    virtual void getObjects(core::ObjectWrapperCollection& objects, bool initialize = true);
 
 	virtual bool isManaged(const core::ObjectWrapperConstPtr & object) const;
 

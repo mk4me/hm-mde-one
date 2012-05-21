@@ -122,7 +122,6 @@ void VideoParser::parseFile(const core::Filesystem::Path& path)
         {
             // tworzymy strumieñ ffmpeg
             std::auto_ptr<FFmpegVideoStream> innerStream(new FFmpegVideoStream(path.string()));
-            FFmpegVideoStream* stream = dynamic_cast<FFmpegVideoStream*>(innerStream->clone());
             // UTILS_ASSERT(!innerStream->getLastError());
 
             // podpinay go pod adapter strumienia

@@ -154,7 +154,7 @@ namespace boost {
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa ze statystykami kana³u - instancja trzymana po stronie kana³u, leniwie aktualizowana w momencie zapytania
+//! Klasa ze statystykami kana³u, leniwie aktualizowana w momencie zapytania
 template<class PointType, class TimeType>
 class ChannelStats
 {

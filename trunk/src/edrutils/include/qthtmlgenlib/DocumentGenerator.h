@@ -13,6 +13,7 @@
 
 namespace htmlGen {
 
+//! Klasa generuj¹ca dokumenty HTML - dodaje podstawowe znaczniki otwieraj¹ce i zamykaj¹ce
 class DocumentGenerator
 {
 public:

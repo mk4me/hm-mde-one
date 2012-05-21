@@ -4,6 +4,5 @@
 //#include "vld.h"
 int main(int argc, char* argv[])
 {
-    //Q_INIT_RESOURCE(Icons);
 	return core::AppInitializer::start<HmmMainWindow>(argc, argv);
 }

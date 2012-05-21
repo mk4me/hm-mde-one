@@ -29,6 +29,7 @@ namespace communication
 		//! Metadane ruchu
 		webservices::MotionMetaData::MetaData motionMetaData;
 
+		//! Konstruktor domyœlny
 		ShallowCopy() : medicalShallowCopy(new webservices::MedicalShallowCopy::ShallowCopy()), motionShallowCopy(new webservices::MotionShallowCopy::ShallowCopy()) {}
 	};
 }

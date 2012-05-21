@@ -17,6 +17,7 @@
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
+//! Interfejs obiektu obserwuj¹cego kana³, udaj¹cego kana³, wykonuj¹cego zadane operacje na kanale
 template<class PointType, class TimeType>
 class IChannelAutoModifier : public IChannelReader<PointType, TimeType, true>
 {

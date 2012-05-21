@@ -49,12 +49,16 @@ namespace webservices
         //! \return WskaŸnik do wartoœci, nullptr jeœli nie ma takiej wartoœci, wskaxnik pozostaje pod kontrol¹ implementacji IWSConnection
         virtual void * getValue(const std::string & name) = 0;
 
+		//! \param param Nazwa parametru dla którego ustawiamy wartoœæ wywo³ania
+		//! \param value Wartoœc dla zadanego parametru
         template<class T>
         void setValue(const std::string& param, const T& value)
         {
             setValue(param, boost::lexical_cast<std::string>(value));
         }
 
+		//! \param param Nazwa parametru dla którego pobieramy wartoœæ jeœli wykonywaliœmy zapytanie z parsowanie
+		//! \param value [out] Wartoœc dla zadanego parametru
         template<class T>
         void getValue(const std::string & name, T & value)
         {

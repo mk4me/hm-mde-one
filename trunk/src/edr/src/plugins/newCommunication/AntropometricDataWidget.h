@@ -12,18 +12,23 @@
 #include <qthtmlgenlib/TableGenerator.h>
 #include <QtGui/QTextEdit>
 
+//! Widget realizuj¹cy prezentacjê danych antropometrycznych
+//! Robi to w oparciu o generowanie/formatowanie/stylowanie tabel HTML za pomoc¹ CSS
 class AntropometricDataWidget : public QTextEdit
 {
 	Q_OBJECT
 
 public:
-
+	//! Konstruktor
 	AntropometricDataWidget(QWidget * parent = nullptr);
+	//! Destruktor
 	virtual ~AntropometricDataWidget();
 
 public slots:
-
+	//! \param autUpdate Czy przy zmianie dowolnego parametru danych antropometrycznych widget ma siê odœwie¿yæ - wygenerowaæ tabele HTML, ....
 	void setAutoUpdate(bool autoUpdate = true);
+
+	//! Funkcje seterów wartosci
 
 	void setBodyMass(const QString & val);
 	void setBodyHeight(const QString & val);
@@ -52,34 +57,50 @@ public slots:
 	void setLeftHandThickness(const QString & val);
 	void setRightHandThickness(const QString & val);
 
+	//! \param val Wartoœæ która zast¹pi wszystkie wpisy w tabelach
 	void resetAntropometricData(const QString & val = QString("-"));
 
 private:
-
+	//! Inicjuje tabele HTML
 	void initAntropometric();
+	//! Inicjuje nag³ówki tabel
 	void initAntropometricHeadersStructure();
+	//! Inicjuje zawartoœc tabel
 	void initAntropometricContent();
+	//! Inicjuje style tabel
 	void initAntropometricStyles();
+	//! Inicjucje atrybuty tabel
 	void initAntropometricAtributes();
 
+	//! Odœwie¿a zawartoœc tabel HTML - generuje/formatuje i styluje od zera
 	void updateContent();
+	//! Próbuje odœwie¿aæ zawartoœæ tabel jeœli jest to konieczne i mo¿liwe
 	void tryUpdateContent();
+	// Próbuje zmieniæ zawartoœc tabeli i odœwie¿yæ j¹
 	void tryChangeContent();
 
 private:
-
+	//! Struktura do opisu tabeli z danymi
 	struct AntropometricTabel {
+		//! Zawartoœæ tabeli
 		htmlGen::HtmlDataTableContent antropometricContent;
+		//! Uk³¹d nag³óków tabeli
 		htmlGen::TableHeadersStructureDescriptor antropometricHeadersStructure;
+		//! Atrybuty poszczególnych komórek tabeli
 		htmlGen::HtmlDataTableCellAttributes antropometricCellsAttributes;
+		//! Style tabeli
 		htmlGen::HtmlDataTableStyles antropometricStyles;
 	};
 
 private:
 
+	//! Czy nale¿y przy ka¿dej zmianie aktualizowaæ
 	bool autoUpdate_;
+	//! Czy nast¹pi³a zmiana zawartoœci
 	bool changed_;
+	//! Opis danych antropometrycznych ogólnych
 	AntropometricTabel antropometricGeneralTable;
+	//! Opis danych antropometrycznych z podzia³em na lew¹ i praw¹ stronê
 	AntropometricTabel antropometricLeftRightTable;
 };
 

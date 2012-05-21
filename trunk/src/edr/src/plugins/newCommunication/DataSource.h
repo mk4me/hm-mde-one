@@ -38,6 +38,7 @@
 
 class DataSourceWidget;
 
+//! èrÛd≥o danych EDR typu communication - dostarcza dancyh z Bazy Danych Ruchu
 class CommunicationDataSource : public communication::ICommunicationDataSource
 {
     UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}","Communication Data Source");

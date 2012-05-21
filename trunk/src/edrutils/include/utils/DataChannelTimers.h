@@ -15,6 +15,7 @@
 
 namespace utils {
 
+//! Interfejs do odczytu czasu timera
 template<class TimeType>
 class ITimerReader
 {
@@ -24,11 +25,13 @@ public:
 	typedef boost::shared_ptr<const TimerReaderType> TimerReaderConstPtr;
 
 public:
+	//! Destruktor wirtualny
 	virtual ~ITimerReader() {}
-
+	//! \return Aktualny czas timera
 	virtual TimeType getTime() const = 0;
 };
 
+//! Interfejs timera dla kana³u - ustawia czas i czyta czas
 template<class TimeType>
 class ITimer : public ITimerReader<TimeType> 
 {
@@ -38,42 +41,54 @@ public:
 	typedef boost::shared_ptr<const TimerType> TimerConstPtr;
 
 public:
-
+	//! \param time Aktualny czas timera
 	virtual void setTime(TimeType time) = 0;
 };
 
+//! Implementacja timera
 template<class TimeType>
 class Timer : public ITimer<TimeType>
 {
 public:
+	//! Konstruktor domyœlny
+	Timer() : time() {}
 
-	Timer() : time(0) {}
-
+	//! Konstruktor
+	//! \param timer Timer z którego kopiujemy czas
 	template<class U>
 	Timer(const ITimer<U> & timer) : time(timer.getTime()) {}
 
+	//! Konstruktor
+	//! \param timer Timer z którego kopiujemy czas
 	template<class U>
 	Timer(const Timer<U> & timer) : time(timer.time) {}
 
+	//! Konstruktor
+	//! \param time Czas timera
 	template<class U>
 	Timer(U time) : time(time) {}
 
+	//! Destruktor wirtualny
 	virtual ~Timer() {}
 
+	//! \param time Aktualny czas timera
 	virtual void setTime(TimeType time)
 	{
 		this->time = time;
 	}
 
+	//! \return Aktualny czas timera
 	virtual TimeType getTime() const
 	{
 		return time;
 	}
 
 private:
+	//! Aktualny czas timera
 	TimeType time;
 };
 
+//! Obiekt wyci¹gaj¹cy aktualn¹ wartoœc kana³u dla czasu wyznaczanego przez timer i obiektu wyci¹gaj¹cego wartoœci kana³u dla zadanego czasu
 template<class PointType, class TimeType>
 class CurrentValueExtractor
 {

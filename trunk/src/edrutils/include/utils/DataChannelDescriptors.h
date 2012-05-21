@@ -152,6 +152,8 @@ namespace utils {
 		}
 	};
 
+
+	//! Klasa rozszerzajaca podstawowe kana³y o opis ich danych
 	template<class Channel>
 	class ChannelWithDescriptor : public Channel, public ChannelDescriptor
 	{
@@ -185,6 +187,8 @@ namespace utils {
 
 	};
 
+
+	//! Obiekt realizuj¹cy interfejs do czytania zawartoœci kana³u ogólnego wraz z jego opisem
 	template<class PointType, class TimeType, bool>
 	class IChannelReader : public utils::IRawGeneralDataChannelReader<PointType, TimeType>, public virtual IChannelDescriptorReader
 	{
@@ -194,7 +198,7 @@ namespace utils {
 		typedef utils::RawGeneralDataChannel<PointType, TimeType> RawChannel;
 		typedef utils::ChannelWithDescriptor<RawChannel> DefaultImplementation;
 	};
-
+	//! Obiekt realizuj¹cy interfejs do czytania zawartoœci kana³u z równoroz³o¿onymi próbkami wraz z jego opisem
 	template<class PointType, class TimeType>
 	class IChannelReader<PointType, TimeType, true> : public utils::IRawUniformDataChannelReader<PointType, TimeType>, public virtual  IChannelDescriptorReader
 	{
@@ -205,6 +209,8 @@ namespace utils {
 		typedef utils::ChannelWithDescriptor<RawChannel> DefaultImplementation;
 	};
 
+
+	//! Klasa realizuj¹ca kana³ z opisem
 	template<class PointType, class TimeType = float, bool uniform = true>
 	class Channel : public IChannelReader<PointType, TimeType, uniform>, public IRawDataChannelBasicWriter<PointType, TimeType>, public IChannelDescriptor
 	{

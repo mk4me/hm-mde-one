@@ -17,17 +17,25 @@
 namespace communication
 {
 
+//! Obiekt schorzenia pacjenta
 struct Disorder
 {
+	//! Nazwa schorzenia
     std::string name;
+	//! Data diagnzy
     std::string diagnosisDate;
+	//! Istotnoœæ schorzenia
     std::string focus;
+	//! Komentarze
     std::string comments;
+	//! Atrybuty
     std::map<std::string, std::string> attributes;
 };
 
+//! Dane antropometryczne
 struct AntropometricData
 {
+	//! Typ przechowuj¹cy wartoœæ i jednostkê (skalar + text)
     typedef std::pair<float, std::string> value_type;
 
 
@@ -58,11 +66,12 @@ struct AntropometricData
     value_type rightHandThickness;
 };
 
+//! Interfejs obiektu pacjenta
 class IPatient
 {
 
 public:
-
+	//! Typ p³ci
 	enum Gender {
 		Male,
 		Female,
@@ -70,17 +79,27 @@ public:
 	};
 
 public:
+	//! Wirtualny destruktor
     virtual ~IPatient() {};
 
+	//! \return Identyfikator pacjenta - zgodny z identyfikatorem subjecta
     virtual PluginSubject::SubjectID getID() const = 0;
 
+	//! \return Imiê/Nazwa pacjenta
     virtual const std::string & getName() const = 0;
+	//! \return Nazwisko pacjenta
     virtual const std::string & getSurname() const = 0;
+	//! \return Data urodzenia pacjenta
     virtual const std::string & getBirthday() const = 0;
+	//! \return P³eæ pacjenta
     virtual Gender getGender() const = 0;
+	//! \return Zdjêcie pacjenta
     virtual const core::shared_ptr<const QPixmap> & getPhoto() const = 0;
 
+	//! \return Iloœæ schorzeñ
     virtual unsigned int disordersCount() const = 0;
+	//! \param idx Indeks schorzenia
+	//! \return Opis schorzenia
     virtual const Disorder & disorder(unsigned int idx) const = 0;
 };
 

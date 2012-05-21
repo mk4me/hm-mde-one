@@ -99,6 +99,8 @@ private:
 private:
     //! 
     AVFormatContext * formatContext;
+	//! Strumieñ
+	AVStream * selectedStream;
     //! Kodek video.
     AVCodecContext * codecContext;
     //! Strumieñ.

@@ -734,6 +734,9 @@ void DataManager::initializeFile(const core::Filesystem::Path & file)
 
     // usuniêcie niew³aœciwych wpisów
     if ( invalid.empty() == false ) {
+
+		NotifyBlocker<core::IMemoryDataManager> blocker(*this);
+
         LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after parsing " << file);
         for(auto it = invalid.begin(); it != invalid.end(); ++it){
             
@@ -844,15 +847,15 @@ core::ObjectWrapperPtr DataManager::createObjectWrapper(const TypeInfo & typeInf
     return core::ObjectWrapperPtr(new DMObjectWrapper(it->second->create()));
 }
 
-void DataManager::getObjects(core::ObjectWrapperCollection& objects)
+void DataManager::getObjects(core::ObjectWrapperCollection& objects, bool initialize)
 {
     ScopedLock lock(stateMutex);
     std::vector<core::ObjectWrapperConstPtr> ob;
-    getObjects(ob, objects.getTypeInfo(), objects.exactTypes());
+    getObjects(ob, objects.getTypeInfo(), objects.exactTypes(), initialize);
     objects.loadCollectionWithData(ob.begin(), ob.end());
 }
 
-void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects, const core::TypeInfo& type, bool exact /*= false*/ )
+void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects, const core::TypeInfo& type, bool exact /*= false*/, bool initialize /*= true*/ )
 {
     ScopedLock lock(stateMutex);
 
@@ -884,18 +887,26 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
             
             core::ObjectWrapperPtr wrapper(*objectIT);
 
-            initializeData(wrapper);
+			if(wrapper->isNull() == false){
+				objects.push_back(wrapper);
+			}else if(initialize == true){
 
-            if(wrapper->isNull() == true){
-                //jesli nadal nie udalo sie zainicjalizowac danych to trzeba je usunac
-                invalid.insert(wrapper);
-            }else{
-                objects.push_back(wrapper);
-            }
+				initializeData(wrapper);
+
+				if(wrapper->isNull() == true){
+					//jesli nadal nie udalo sie zainicjalizowac danych to trzeba je usunac
+					invalid.insert(wrapper);
+				}else{
+					objects.push_back(wrapper);
+				}
+			}
         }
     }
 
     if ( invalid.empty() == false ) {
+
+		NotifyBlocker<core::IMemoryDataManager> blocker(*this);
+
         LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after data request of type " << type.name());
         for(auto it = invalid.begin(); it != invalid.end(); ++it){
             

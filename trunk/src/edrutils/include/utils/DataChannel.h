@@ -167,8 +167,10 @@ namespace utils {
         //! \return Czas trwania kana³u
         virtual float getSamplesPerSecond() const = 0;
 
+		//! \return Czas trwania jednej próbki
         virtual float getSampleDuration() const = 0;
 
+		//! Wydajniejszy mechanizm uzyskiwania próbek okalaj¹cych dany czas
         virtual data_range getValueHelper(time_type time) const
         {
             // wyznaczenie indeksów
@@ -184,9 +186,12 @@ namespace utils {
     class IRawDataChannelBasicWriter
     {
     public:
+		//Wirtualny destruktor
         virtual ~IRawDataChannelBasicWriter() {}
-
+		//! \param time Czas próbki któr¹ dodajemy
+		//! \param point Wartoœæ próbki któr¹ dodajemy
         virtual void addPoint(TimeType time, typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
+		//! \param point Wartoœæ próbki któr¹ dodajemy (czas generowany automatycznie przez kana³ o znanej rozdzielczoœci)
         virtual void addPoint(typename typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
     };
 
@@ -195,8 +200,10 @@ namespace utils {
     class IRawDataChannelExtendedWriter : public virtual IRawDataChannelBasicWriter<PointType, TimeType>
     {
     public:
+		//Wirtualny destruktor
         virtual ~IRawDataChannelExtendedWriter() {}
-      
+		//! \param idx Indeks próbki któr¹ nadpisujemy
+		//! \param point Nowa wartoœæ zadanej próbki
         virtual void setIndexData(typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type idx, typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
     };
 
@@ -227,41 +234,49 @@ namespace utils {
 		typedef typename TimeData::const_reference const_reference;
 
 	private:
-
+		// Dane stablicowane wg indeksów, zawieraj¹ info o czasie próbki i jej wartoœci
 		TimeData timeData;
 
 	public:
 
+		//! Konstruktor domyslny
 		ChannelStorage() {};
+		//! Konstruktor kopiuj¹cy
+		//! \param storage Storage do skopiowania
 		ChannelStorage(const ChannelStorage & storage) : timeData(storage.timeData) {}
-
+		//! Destruktor
 		~ChannelStorage() {}
 
+		//! \return Pierwsza próbka
 		const_reference front() const
 		{
 			return timeData.front();
 		}
 
+		//! \return Ostatnia próbka
 		const_reference back() const
 		{
 			return timeData.back();
 		}
 
+		//! \return Iteraotr poczatku
 		const_iterator begin() const
 		{
 			return timeData.begin();
 		}
 
+		//! \return Iterator koñca
 		const_iterator end() const
 		{
 			return timeData.end();
 		}
 
+		//! \return Odwrotny iterator pocz¹tku
 		const_reverse_iterator rbegin() const
 		{
 			return timeData.rbegin();
 		}
-
+		//! \return Odwrotny iterator koñca
 		const_reverse_iterator rend() const
 		{
 			return timeData.rend();
@@ -311,29 +326,36 @@ namespace utils {
 			return timeData.empty();
 		}
 
+
+		//! \param time Czas dodawanej próbki
+		//! \param point Wartoœæ dodawanej próbki
 		void addPoint(TimeType time, point_type_const_reference point)
 		{
 			timeData.push_back(value_type(time, point));
 		}
 
+		//! \param idx Indeks ustawianej próbki
+		//! \param point Nowa wartoœæ próbki
 		void setPoint(size_type idx, point_type_const_reference point)
 		{
 			timeData[idx].second = point;
 		}
 
+		//! Czyœci wszystkie próbki
 		void clear()
 		{
 			timeData.swap(TimeData());
 		}
 	};
 
+	//! Klasa realizuj¹ca surowy kana³ danych gdzie próbki musz¹ byæ dodawane w sposób hronologiczny
     template<class PointType, class TimeType>
     class RawGeneralDataChannel : public IRawGeneralDataChannelReader<PointType, TimeType>, public IRawDataChannelBasicWriter<PointType, TimeType>
     {
         friend class ChannelAutoModifier<PointType, TimeType>;
 
 	public:
-
+		//! Typ obiektu przechowuj¹cego dane
 		typedef ChannelStorage<PointType, TimeType> Storage;
 
         //! Const iterator dla danych indeksowanych czasem
@@ -344,13 +366,23 @@ namespace utils {
         typedef typename Storage::const_reference const_reference;
 
     protected:
+		//! Obiekt przechowuj¹cy dane
         Storage storage;
+		//! Nazwa kana³u
         std::string name;
 
     public:
 
+		//! Konstruktor
+		//! \param name Nazwa kana³u
         RawGeneralDataChannel(const std::string & name = std::string("")) : name(name) {}
+
+		//! Konstruktor kopiuj¹cy
+		//! \param channel Kana³ do skopiowania
         RawGeneralDataChannel(const RawGeneralDataChannel & channel) : storage(channel.storage), name(channel.name) {}
+
+		//! Konstruktor "pseudo" kopiuj¹cy
+		//! \param channel Interfejs kana³u do skopiowania
 		RawGeneralDataChannel(const IRawGeneralDataChannelReader<PointType, TimeType> & channel) : name(channel.getName())
 		{
 			//kopiujê zawartoœæ
@@ -360,21 +392,25 @@ namespace utils {
 			}
 		}
 
+		//! \return Klon kana³u
         virtual RawGeneralDataChannel<PointType, TimeType> * clone() const
         {
             return new RawGeneralDataChannel(*this);
         }
 
+		//! \return Pusty kana³ tego samego typu (parametry kana³u s¹ przekazane, ale brak danych)
         virtual RawGeneralDataChannel<PointType, TimeType> * create() const
         {
             return new RawGeneralDataChannel();
         }
 
+		//! \return Nazwa kana³u
         virtual const std::string & getName() const
         {
             return name;
         }
 
+		//! \param name Nazwa kana³u
         virtual void setName(const std::string & name)
         {
             this->name = name;
@@ -386,11 +422,15 @@ namespace utils {
             return storage.getLength();
         }
 
+		//! \param idx Indeks próbki dla której pobieramy czas
+		//! \return Czas próbki
         virtual time_type argument(size_type idx) const
         {
             return storage.argument(idx);
         }
 
+		//! \param idx Indeks próbki dla której pobieramy wartoœæ
+		//! \return Wartoœæ próbki
         virtual point_type_const_reference value(size_type idx) const
         {
             return storage.value(idx);
@@ -462,6 +502,7 @@ namespace utils {
         }
     };
 
+	//! Kana³ danych o równo rozmieszczonych próbkach w czasie - rozdzielczoœæ jest znana
     template<class PointType, class TimeType>
     class RawUniformDataChannel : public IRawUniformDataChannelReader<PointType, TimeType>, public IRawDataChannelBasicWriter<PointType, TimeType>
     {
@@ -477,9 +518,13 @@ namespace utils {
 		typedef typename Storage::const_reference const_reference;
 
     private:
+		//! Iloœæ próbek na sekundê
         TimeType samplesPerSecond;
+		//! Czas trwania jednej próbki
         TimeType invSamplesPerSecond;
+		//! Obiekt przechowuj¹cy dane
 		Storage storage;
+		//! Nazwa kana³u
 		std::string name;
 		
 

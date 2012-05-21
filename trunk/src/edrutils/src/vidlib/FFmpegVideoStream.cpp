@@ -252,8 +252,8 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
 {
     VIDLIB_FUNCTION_PROLOG;
     static Initializer initializer;
-
     formatContext = NULL;
+	selectedStream = NULL;
     codecContext = NULL;
     frame = NULL;
     videoStream = NULL;
@@ -295,6 +295,11 @@ FFmpegVideoStream::~FFmpegVideoStream()
     av_free(alignedPacket);
     av_free(packet);
     av_free(frame);
+
+	if(selectedStream != NULL){
+		selectedStream->discard = AVDISCARD_ALL;
+	}
+
     avcodec_close(codecContext);
 	avformat_close_input(&formatContext);
 	av_dict_free(&codec_opts);
@@ -325,7 +330,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
 
     // szukamy strumienia video
     for (unsigned int i = 0; i < formatContext->nb_streams; ++i) {
-        AVStream * selectedStream = formatContext->streams[i];
+        selectedStream = formatContext->streams[i];
         //if ( selectedStream->codec->codec_type == CODEC_TYPE_VIDEO ) {
 		if ( selectedStream->codec->codec_type == AVMEDIA_TYPE_VIDEO ) {
             // czy to jest ten strumieñ, który chcemy otworzyæ?

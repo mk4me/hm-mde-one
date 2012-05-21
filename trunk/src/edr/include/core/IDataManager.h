@@ -157,9 +157,11 @@ namespace core {
 		//! \param objects [out] Obiekty pasuj¹ce do zapytania
 		//! \param type Typ obniektów o które pytamy
 		//! \param exact Czy typ musi byæ zgodny czy moga to byæ tez typy pochodne
-        virtual void getObjects(std::vector<ObjectWrapperConstPtr> & objects, const TypeInfo & type, bool exact = true) = 0;
+		//! \param initialzie Czy automatycznie zainicjalizowaæ wszystkie obiekty? UWAGA - te, których siê nie uda³o zainicjalizowaæ nie zostan¹ zwrócone - DM usunie je jako popsute dane
+        virtual void getObjects(std::vector<ObjectWrapperConstPtr> & objects, const TypeInfo & type, bool exact = true, bool initialize = true) = 0;
 		//! \param objects [out] Obiekty zarz¹dzane przez DM
-        virtual void getObjects(ObjectWrapperCollection& objects) = 0;
+		//! \param initialzie Czy automatycznie zainicjalizowaæ wszystkie obiekty? UWAGA - te, których siê nie uda³o zainicjalizowaæ nie zostan¹ zwrócone - DM usunie je jako popsute dane
+        virtual void getObjects(ObjectWrapperCollection& objects, bool initialize = true) = 0;
 
 		virtual bool isManaged(const ObjectWrapperConstPtr & object) const = 0;
 
@@ -399,7 +401,7 @@ namespace core {
 			return blockNotify_;
 		}
 
-	private:
+	protected:
 
 		void tryNotify()
 		{
@@ -410,6 +412,7 @@ namespace core {
 			}
 		}
 
+	private:
 		//! Ta metoda nie notyfikuje o zmianie stanu DM!!
 		//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery

@@ -95,6 +95,7 @@ public:
         Request type;
     };
 
+	//! Klasa odpowiedzialna za request plików z metadanymi (bez identyfikatorów) - implementuje progress pobierania
     class MetadataRequest : public BasicRequest, public webservices::IFtpsConnection::IProgress
     {
         friend class CommunicationManager;
@@ -106,17 +107,21 @@ public:
         MetadataRequest(Request type, const std::string & filePath);
 
     public:
+		//! \return Œcie¿ka pliku
         const std::string & getFilePath() const;
-
+		//! Implementacja interfejsu webservices::IFtpsConnection::IProgress
         virtual void setProgress(double p);
-
+		//! Impementacja interfejsu webservices::IFtpsConnection::IProgress
         virtual double getProgress() const;
 
     private:
+		//! Progres œci¹gania pliku
         double progress;
+		//! Œcie¿ka docelowa pliku
         std::string filePath;
     };
 
+	//! Klasa odpowiedzialna za request plików (z identyfikatorami)
     class FileRequest : public MetadataRequest
     {
         friend class CommunicationManager;
@@ -126,14 +131,15 @@ public:
         FileRequest(const std::string & filePath, unsigned int fileID);
 
     public:
-
+		//! \return Identyfikator pliku do œci¹gniêcia
         unsigned int getFileID() const;
 
     private:
-
+		//! Identyfikator pliku do œci¹gniêcia
         unsigned int fileID;
     };
 
+	//! Klasa odpowiedzialna za request zdjêæ
     class PhotoRequest : public MetadataRequest
     {
         friend class CommunicationManager;
@@ -143,11 +149,11 @@ public:
         PhotoRequest(const std::string & filePath, unsigned int photoID);
             
     public:
-
+		//! Identyfikator zdjêcia
         unsigned int getPhotoID() const;
 
     private:
-
+		//! Identyfikator zdjêcia
         unsigned int photoID;
     };
 
@@ -177,10 +183,13 @@ public:
     */
     struct CompleteRequest
     {
+		//! Request
         BasicRequestPtr request;
+		//! Callbacki requesta
         RequestCallbacks callbacks;
     };
 
+	//! Typ kolejki requestów do obs³ugi
     typedef std::queue<CompleteRequest> RequestsQueue;
 
     //! Z³o¿one zlecenie
@@ -192,16 +201,17 @@ public:
         ComplexRequest(const std::vector<CompleteRequest> & requests);
 
     public:
-
+		//! \return Iloœæ zagnie¿d¿onych requestów
         unsigned int size() const;
-
+		//! \return Czy request jest pusty
         bool empty() const;
-
+		//! \param i Indeks zagnie¿d¿onego requesta
         const CompleteRequest & getRequest(unsigned int i) const;
-
+		//! \return Ca³kowity postêp requesta
         virtual double getProgress() const;
 
     private:
+		//! Zagnie¿d¿one requesty
         std::vector<CompleteRequest> requests;
     };
 
@@ -227,9 +237,13 @@ private:
     */
     static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
 
+	//! \param request [out] Kolejny request do obs³ugi
     void popRequest(CompleteRequest & reuest);
 
+	//! \param downloaderHelper Obiekt pomagaj¹cy prz œci¹ganiu plików zale¿ny od tego czy œci¹gamy plik danych, zdjêcie czy metadane
     void setCurrentDownloadHelper(webservices::IDownloadHelper * downloadHelper);
+
+	//! Funkcje przetwarzaj¹ce ró¿ne requesty i zapamiêtuj¹ce b³êdy powsta³e podczas przetwarzania
 
     webservices::IFtpsConnection::OperationStatus processComplex(const CompleteRequest & request, std::string & message = std::string());
     webservices::IFtpsConnection::OperationStatus processPhoto(const CompleteRequest & request, std::string & message = std::string());
@@ -241,8 +255,9 @@ private:
     webservices::IFtpsConnection::OperationStatus processPing(const CompleteRequest & request, std::string & message = std::string());
 
 public:
-
+	//! \param urlToPing Adres serwera który pingujemy
 	void setUrlToPingServer(const std::string & urlToPing);
+
 
 	void setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService);
 	void setMedicalFileStoremanService(const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService);
@@ -307,8 +322,10 @@ private:
 
     virtual void run();
 
+	//! Inicjalizuje w¹tek przetwarzaj¹cy requesty
     void init();
 
+	//! Deinicjalizuje w¹tek przetwarzaj¹cy requesty
     void deinit();
 
 public:
@@ -344,30 +361,11 @@ private:
     Jedyna instancja klasy CommunicationManager.
     */
     static CommunicationManager* instance;
-    /**
-    WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych ruchu
-    */
-    //core::shared_ptr<communication::MotionTransportWSDL_FTPS> motionTransportManager;
-
-    /**
-    WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych medycznych
-    */
-    //core::shared_ptr<communication::MedicalTransportWSDL_FTPS> medicalTransportManager;
 
     /**
     WskaŸnik na klasê IDownloadHelper zajmuj¹c¹ siê aktualmnym pobieraniem
     */
     webservices::IDownloadHelper * currentDownloadHelper;
-
-    /**
-    WskaŸnik na klasê MotionQueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
-    */
-    //core::shared_ptr<communication::MotionQueryWSDL> motionQueryManager;
-
-    /**
-    WskaŸnik na klasê MotionQueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
-    */
-    //core::shared_ptr<communication::MedicalQueryWSDL> medicalQueryManager;
 
     /**
     Stan Communication Service

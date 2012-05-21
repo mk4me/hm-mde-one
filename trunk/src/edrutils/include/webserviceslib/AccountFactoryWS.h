@@ -13,6 +13,7 @@
 
 namespace webservices{
 
+	//! Klasa tworz¹ca konto po stronie bazy danych
 	class SingleAccountFactoryWS : public ISingleAccountFactoryWS
 	{
 	public:
@@ -37,6 +38,7 @@ namespace webservices{
 		WSConnectionConstPtr constConnection_;
 	};
 
+	//! Klasa tworz¹ca konto po stronie bazy danych (medycznej i ruchu)
 	class MultiAccountFactoryWS : public IMultiAccountFactoryWS
 	{
 	public:

@@ -31,11 +31,13 @@ namespace communication
 		CustomContent			// w³asna zawartoœæ
 	};
 
+	//! Interfejs bazowy dla elementów realizuj¹cych zawartoœæ
 	class IContent
 	{
 	public:
-
+		//! Wirtualny destruktor
 		virtual ~IContent() {}
+		//! \return Typ contentu zawieranego przez dany element
 		virtual ContentType contentType() const = 0;
 	};
 	
