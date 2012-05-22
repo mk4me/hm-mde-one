@@ -6,6 +6,8 @@
 #include <boost/format.hpp>
 #include <boost/smart_ptr.hpp>
 
+static const char magicKey[] = "P,j.W/s<T>k2:0\"1;2";
+
 DataSourceLocalStorage * DataSourceLocalStorage::instance_ = nullptr;
 
 DataSourceLocalStorage::DataSourceLocalStorage() : dbOpen(false), db(nullptr)
@@ -47,7 +49,7 @@ DataSourceLocalStorage * DataSourceLocalStorage::instance()
 void DataSourceLocalStorage::setLocalStorageDataPath(const core::Filesystem::Path & localStorageDataPath)
 {
 	int rc = SQLITE_ERROR;
-	bool dbStructOk = false;
+
 	rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
 
 	if (rc != SQLITE_OK){
@@ -57,19 +59,56 @@ void DataSourceLocalStorage::setLocalStorageDataPath(const core::Filesystem::Pat
 		sqlite3_close(db);
 		throw std::runtime_error("Could not initialize local storage in specified path");
 	}else {
-		dbOpen = true;
 
-		//sprawdŸ strukturê bazy danych
-		//stwórz niezbêdne wpisy
-		verifyAndRebuildDBStructure();
+		//uda³o siê otworzyæ/stworzyæ bazê
+
+		//sprawdzam czy baza zaszyfrowana		
+		if(checkIfEncrypted() == false){
+			sqlite3_close(db);
+			db = nullptr;
+			encrypt(localStorageDataPath);
+		}
+		localStorageDataPath_ = localStorageDataPath;
+		dbOpen = true;
 	}
 }
 
-void DataSourceLocalStorage::verifyAndRebuildDBStructure()
+bool DataSourceLocalStorage::checkIfEncrypted()
 {
+	bool ret = false;
+
+	int rc = sqlite3_key(this->db, magicKey, 18);
+
+	if (rc != SQLITE_OK){
+		//TODO
+		//obs³uga kodów b³êdu sqlite
+
+		sqlite3_close(db);
+		throw std::runtime_error("Could not decrypt local storage");
+	}
+
+	try{
+		ret = checkIfInitialized();
+
+		if(ret == false){
+			initialize();
+			ret = true;
+		}
+
+	}catch(...){
+
+	}
+
+	return ret;
+}
+
+bool DataSourceLocalStorage::checkIfInitialized()
+{
+	bool ret = false;
+
 	const char* tail;
 	sqlite3_stmt* res;
-	const char sqlCheckTable[] = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='files_table' ORDER BY name;";
+	static const char sqlCheckTable[] = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='files_table' ORDER BY name;";
 	int rc = sqlite3_prepare_v2(db, sqlCheckTable, -1, &res, &tail);
 
 	if (rc != SQLITE_OK || res == nullptr){
@@ -80,16 +119,59 @@ void DataSourceLocalStorage::verifyAndRebuildDBStructure()
 	if(sqlite3_step(res) == SQLITE_ROW){
 		int count = sqlite3_column_int(res, 0);
 		sqlite3_finalize(res);
-		if(count < 1){
-			//musimy utworzyæ tabelê
-			char * error;
-			const char *sqlCreateTable = "CREATE TABLE files_table (file_name TEXT PRIMARY KEY, file BLOB, size UNSIGNED BIG INT);";
-			rc = sqlite3_exec(db, sqlCreateTable, NULL, NULL, &error);
-			if (rc){
-				sqlite3_free(error);
-				throw std::runtime_error("Could not initialize DB structure");
-			}
+		if(count >= 1){
+			ret = true;
 		}
+	}
+
+	return ret;
+}
+
+void DataSourceLocalStorage::initialize()
+{
+	char * error;
+	static const char sqlCreateTable[] = "CREATE TABLE files_table (file_name TEXT PRIMARY KEY, file BLOB, size UNSIGNED BIG INT);";
+	int rc = sqlite3_exec(db, sqlCreateTable, NULL, NULL, &error);
+	if (rc){
+		sqlite3_free(error);
+		throw std::runtime_error("Could not initialize DB structure");
+	}
+}
+
+void DataSourceLocalStorage::encrypt(const core::Filesystem::Path & localStorageDataPath)
+{
+	core::Filesystem::Path tmpDB = core::getPathInterface()->getTmpPath() / "tmpDB.db";
+	char * error;
+	
+	int rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);	
+	std::string encryptSql((boost::format("ATTACH DATABASE '%1%' AS encrypted KEY '%2%'; SELECT sqlcipher_export('encrypted'); DETACH DATABASE encrypted") % tmpDB.string().c_str() % magicKey).str());
+	rc = sqlite3_exec(db, encryptSql.c_str(), NULL, NULL, &error);
+	if (rc){
+		sqlite3_free(error);
+		throw std::runtime_error("Could not encrypt DB");
+	}
+	//zamykam aktualne po³¹czenie - zwalniam uchwyt do pliku - bêdê go kasowa³
+	sqlite3_close(db);
+
+	//uda³o siê zaszyfrowaæ - usuwam star¹ bazê
+	core::Filesystem::deleteFile(localStorageDataPath);
+	// na jej miejsce kopiujê now¹
+	core::Filesystem::copy(tmpDB, localStorageDataPath);
+	// usuwam tymczasow¹
+	core::Filesystem::deleteFile(tmpDB);
+	//otwieram nowe po³¹czenie z now¹, zaszyfrowan¹ ju¿ baz¹
+	rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE, nullptr);
+
+	if (rc != SQLITE_OK){
+		//TODO
+		//obs³uga kodów b³êdu sqlite
+
+		sqlite3_close(db);
+		throw std::runtime_error("Could not initialize local storage in specified path");
+	}
+
+	if(checkIfInitialized() == false){
+		initialize();
 	}
 }
 

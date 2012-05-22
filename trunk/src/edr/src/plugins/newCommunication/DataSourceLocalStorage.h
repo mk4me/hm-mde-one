@@ -65,8 +65,14 @@ public:
 	void removeFile(const std::string & fileName);
 
 private:
-	//! Sprawdzam czy struktura bazy danych jest ok - jeœli nie to próbujê j¹ utworzyæ (tabela files_table)
-	void verifyAndRebuildDBStructure();
+	//! Sprawdza czy baza jest zaszyfrowana po wykonaniu key
+	bool checkIfEncrypted();
+	//! Sprawdzam czy zainicjowano bazê danych
+	bool checkIfInitialized();
+	//! Inicjuje baze danych
+	void initialize();
+	//! Szyfruje bazê danych
+	void encrypt(const core::Filesystem::Path & localStorageDataPath);
 
 private:
 	//! Œcie¿ka do pliku bazy danych

@@ -94,6 +94,7 @@ find_package(qthtmlgenlib)
 find_package(TimelineLib)
 find_package(TESTNODEFACTORY)
 find_package(SQLITE3)
+find_package(SQLCIPHER)
 find_package(prerequisites)
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)

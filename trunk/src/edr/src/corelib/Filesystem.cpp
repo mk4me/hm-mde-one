@@ -89,7 +89,7 @@ void Filesystem::copy(const Path& pathOld, const Path& pathNew)
 		return;
 	}
 
-	copy(pathOld, pathNew);
+	boost::filesystem3::copy(pathOld, pathNew);
 }
 
 std::vector<std::string> Filesystem::listFiles(const std::string& path, bool recursive)
