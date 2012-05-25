@@ -106,6 +106,7 @@ QString SummaryWindow::createDescription( PluginSubject::MotionConstPtr motion) 
 
     if (session->hasObjectOfType(typeid(communication::AntropometricData))) {
         core::shared_ptr<communication::AntropometricData> antro = session->getWrapperOfType(typeid(communication::AntropometricData))->get();
+		text += " ";
         text += QObject::tr("Weight: ") + QString("%1 ").arg(antro->bodyMass.first) + QString::fromStdString(antro->bodyMass.second) + "\n";
     }
     return text;

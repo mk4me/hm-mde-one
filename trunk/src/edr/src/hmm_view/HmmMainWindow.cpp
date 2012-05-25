@@ -105,25 +105,6 @@ void HmmMainWindow::deactivateContext(QWidget * widget)
     }
 }
 
-//void HmmMainWindow::onFocusChange(QWidget * oldWidget, QWidget * newWidget)
-//{
-//    //jesli faktycznie contextWidget to ustawiamy aktywny kontekst
-//    if(isContextWidget(newWidget)){
-//        setCurrentContext(newWidget);
-//    }else{
-//    
-//        QWidget * widget = getParentContextWidget(newWidget);
-//    
-//        if(widget != nullptr){
-//            setCurrentContext(widget);
-//            //if(widget->hasFocus() == false){
-//            //    widget->blockSignals(true);
-//            //    widget->setFocus();
-//            //    widget->blockSignals(false);
-//            //}
-//        }
-//    }
-//}
 
 void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
@@ -405,8 +386,10 @@ void HmmMainWindow::createNewVisualizer()
     if (action) {
         try{
             createNewVisualizer(action->getTreeItem(), action->getDockSet());
-        }catch(...){
-
+        }catch(std::exception& e ){
+            LOG_ERROR("Error creating visualizer: " << e.what());
+        } catch (...) {
+            LOG_ERROR("Error creating visualizer");
         }
     }
 }
@@ -988,7 +971,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     visualizerDockWidget->setVisualizerSwitchVisible(false);
     visualizerDockWidget->setSourceVisible(false);
 
-    EDRTitleBar * titleBar = supplyWithEDRTitleBar(visualizerDockWidget, false);
+    EDRTitleBar * titleBar = supplyWithEDRTitleBar(visualizerDockWidget, true);
 
     registerVisualizerContext(titleBar, visualizerDockWidget, visualizer);
 
@@ -1036,10 +1019,13 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
      std::vector<VisualizerTimeSeriePtr> series;
      helper->getSeries(visualizer, path, series);
-     DataItemDescription desc(visualizer, series, visualizerDockWidget);
-     items2Descriptions.insert(std::make_pair(helper, desc));
-     VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
-
+     if (!series.empty()) {
+         DataItemDescription desc(visualizer, series, visualizerDockWidget);
+         items2Descriptions.insert(std::make_pair(helper, desc));
+         VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
+     } else {
+         LOG_WARNING("Problem adding series to visualizer");
+     }
      return visualizerDockWidget;
  }
 

@@ -275,6 +275,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
 	connect(btm_action, SIGNAL(triggered()), this, SLOT(setBottom())); 	
 
     QAction* resetTransformAction = new QAction(widget);
+    resetTransformAction->setIcon(QIcon(":/resources/icons/left-b.png"));
     resetTransformAction->setText(tr("Reset transform"));
     connect(resetTransformAction, SIGNAL(triggered()), this, SLOT(resetTransform()));
 	
@@ -324,6 +325,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     manager->addGroupAction(id, translateAction);
     manager->addGroupAction(id, rotateAction);
     manager->addGroupAction(id, scaleAction);
+    manager->addGroupAction(id, resetTransformAction);
 
     id = manager->createGroup(tr("Manipulators properties"));
    
@@ -337,7 +339,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     manager->addGroupAction(id, scaleSpinWidgetY.first);
     manager->addGroupAction(id, scaleSpinWidgetZ.first);
 
-    manager->addGroupAction(id, resetTransformAction);
+
 
     id = manager->createGroup(tr("View"));
     manager->addGroupAction(id, viewMenu);

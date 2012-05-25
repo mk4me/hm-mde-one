@@ -81,5 +81,25 @@
         <A Name="R16" Value="m. odwodziciel krótki kciuka [R]" Id="odwodziciel_krotki_kciuka_p" />
       </Attrs>
     </MeasurementConf>
+	<MeasurementConf MeasurementConfID="5" Name="EMG_LB_4">
+      <Attrs>
+        <A Name="EMG1" Value="m. prosty uda [L]" Id="prosty_uda_l"/>
+        <A Name="EMG2" Value="m. prosty uda [R]" Id="prosty_uda_p"/>
+        <A Name="EMG3" Value="m. dwugłowy uda [L]" Id="dwuglowy_uda_l" />
+        <A Name="EMG4" Value="m. dwugłowy uda[ R]" Id="dwuglowy_uda_p" />
+        <A Name="EMG5" Value="m. brzuchaty łydki[L]" Id="brzuchaty_lydki_l" />
+        <A Name="EMG6" Value="m. brzuchaty łydki[R]" Id="brzuchaty_lydki_p" />
+        <A Name="EMG7" Value="m. pośladkowy średni[L]" Id="posladkowy_sredni_l" />
+        <A Name="EMG8" Value="m. pośladkowy średni[R]" Id="posladkowy_sredni_p" />
+        <A Name="EMG9" Value="m. pośladkowy wielki[L]" Id="posladkowy_wielki_l" />
+        <A Name="EMG10" Value="m. pośladkowy wielki[R]" Id="posladkowy_wielki_p" />
+        <A Name="EMG11" Value="m. kulszowo-goleniowe[L]" Id="kulszowo_goleniowe_l" />
+        <A Name="EMG12" Value="m. kulszowo-goleniowe[R]" Id="kulszowo_goleniowe_p" />
+        <A Name="EMG13" Value="m. obszerny boczny[L]" Id="obszerny_boczny_l" />
+        <A Name="EMG14" Value="m. obszerny boczny[R]" Id="obszerny_boczny_p" />
+        <A Name="EMG15" Value="m. obszerny przyśrodkowy[L]" Id="obszerny_przysrodkowy_l" />
+        <A Name="EMG16" Value="m. obszerny przyśrodkowy[R]" Id="obszerny_przysrodkowy_p" />
+      </Attrs>
+    </MeasurementConf>
 </MeasurementConfs>
 	

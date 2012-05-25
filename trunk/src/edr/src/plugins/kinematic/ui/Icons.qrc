@@ -10,6 +10,7 @@
     <file alias="skeletal_tracea.png">../../../../resources/embedded/icons/skeletal_tracea.png</file>
     <file alias="trace.png">../../../../resources/embedded/icons/trace.png</file>
     <file alias="tracea.png">../../../../resources/embedded/icons/tracea.png</file>
+	<file alias="trace-blue.png">../../../../resources/embedded/icons/trace-blue.png</file>
 	<file alias="view.png">../../../../resources/embedded/icons/view.png</file>
     <file alias="viewa.png">../../../../resources/embedded/icons/viewa.png</file>
 	<file alias="right-a.png">../../../../resources/embedded/icons/right-a.png</file>

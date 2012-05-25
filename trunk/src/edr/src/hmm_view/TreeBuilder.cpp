@@ -97,7 +97,8 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
 
             bool hasMarkers = motion->hasObjectOfType(typeid(MarkerCollection));
             bool hasJoints = motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection));
-            if (hasMarkers || hasJoints) {
+            bool hasAngles = motion->hasObjectOfType(typeid(AngleCollection));
+            if (hasMarkers || hasJoints || hasAngles) {
                 QTreeWidgetItem* kinematicItem;
                 if (hasJoints || hasMarkers || hasGrf) {
                     Multiserie3DPtr multi(new Multiserie3D(motion));
@@ -111,15 +112,9 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                     kinematicItem->addChild(createMarkersBranch(motion, QObject::tr("Markers"), getRootMarkersIcon(), getMarkersIcon()));
 
                 }
-
-                if (hasJoints) {
+                if (hasAngles || hasJoints) {
                     kinematicItem->addChild(createJointsBranch(motion, QObject::tr("Joints"), getRootJointsIcon(), getJointsIcon()));
-
                 }
-
-                /*if  {
-                    item2Helper[kinematicItem] = TreeItemHelperPtr(new Multiserie3D(motion));
-                }*/
             }
 
             if (motion->hasObjectOfType(typeid(VideoChannel))) {
@@ -231,12 +226,20 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
 
 QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
 {
-    JointsItemHelperPtr skeletonHelper(new JointsItemHelper(motion));
-    skeletonHelper->setMotion(motion);
-
-    HmmTreeItem* skeletonItem = new HmmTreeItem(skeletonHelper);
-    skeletonItem->setIcon(0, rootIcon);
-    skeletonItem->setItemAndHelperText(rootName);
+    bool hasJoints = motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection));;
+    QTreeWidgetItem* skeletonItem = nullptr;
+    if (hasJoints) {    
+        JointsItemHelperPtr skeletonHelper(new JointsItemHelper(motion));
+        skeletonHelper->setMotion(motion);
+        HmmTreeItem* hmmSkeletonItem = new HmmTreeItem(skeletonHelper);
+        hmmSkeletonItem->setIcon(0, rootIcon);
+        hmmSkeletonItem->setItemAndHelperText(rootName);
+        skeletonItem = hmmSkeletonItem;
+    } else {
+        skeletonItem = new QTreeWidgetItem();
+        skeletonItem->setText(0, rootName);
+    }
+        
     try {
         core::ObjectWrapperConstPtr angleCollection = motion->getWrapperOfType(typeid(AngleCollection));
         AngleCollectionConstPtr m = angleCollection->get();
@@ -244,6 +247,7 @@ QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion,
     } catch (...) {
 
     }
+    
     return skeletonItem;
 }
 
