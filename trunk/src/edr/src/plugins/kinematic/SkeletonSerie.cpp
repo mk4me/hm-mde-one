@@ -139,5 +139,25 @@ void SkeletonSerie::resetTransform()
     setLocalTime(getTime());
 }
 
+void SkeletonSerie::setName( const std::string & name )
+{
+    this->name = name;
+}
+
+const std::string & SkeletonSerie::getName() const
+{
+    return name;
+}
+
+const core::ObjectWrapperConstPtr & SkeletonSerie::getData() const
+{
+    return data;
+}
+
+double SkeletonSerie::getLength() const
+{
+    UTILS_ASSERT(scheme);
+    return scheme->getDuration();
+}
 
 

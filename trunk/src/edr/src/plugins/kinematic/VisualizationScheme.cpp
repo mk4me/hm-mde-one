@@ -36,3 +36,29 @@ void VisualizationScheme::setGlobalStatesColor( const osg::Vec4& color )
     }
 }
 
+
+kinematic::VskParserConstPtr Vsk::get( MarkersCount count ) 
+{
+    switch(count) 
+    {
+    case MarkersCount16:										
+        if (!Count16->isLoaded()) {	
+            Count16->parse(core::getResourceString("trial/CZD.vsk"));		
+        } 																
+        return Count16;
+    case MarkersCount39:										
+        if (!Count39->isLoaded()) {	
+            Count39->parse(core::getResourceString("trial/M39.vsk"));		
+        } 																
+        return Count39;
+
+    case MarkersCount53:										
+        if (!Count53->isLoaded()) {											
+            Count53->parse(core::getResourceString("trial/M53.vsk"));		
+        } 																
+        return Count53;
+
+    default:
+        throw std::runtime_error("Wrong VSK scheme was requested");
+    }
+}

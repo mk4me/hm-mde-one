@@ -98,7 +98,6 @@ osg::Vec4 SchemeDialog::transformColor( const QColor& color ) const
 
 }
 
-
 QTreeWidgetItem* _getItemWhichContainsRecurr(QTreeWidget* tree, QTreeWidgetItem* item, QObject* object )
 {
     int columnCount = tree->columnCount();

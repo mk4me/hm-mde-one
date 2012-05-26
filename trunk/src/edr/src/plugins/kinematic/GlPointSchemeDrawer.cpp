@@ -21,8 +21,6 @@ GlPointSchemeDrawer::GlPointSchemeDrawer(int sphereComplex, float sphereRadius, 
 
 }
 
-
-
 void GlPointSchemeDrawer::init( VisualizationSchemeConstPtr scheme )
 {
     UTILS_ASSERT(scheme);
@@ -105,7 +103,6 @@ GlPointSchemeDrawer::GeometryPtr GlPointSchemeDrawer::createCustomSphere( int co
     double segmentRad = osg::PI / 2.0 / (n + 1);
     int numberOfSeparators = 4 * n + 4;
 
-    //triangleIndices = new Int32Collection();
     osg::Vec3 v;
     
     for (e = -n; e <= n; e++) {

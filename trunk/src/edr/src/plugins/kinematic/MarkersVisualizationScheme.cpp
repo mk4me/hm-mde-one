@@ -124,4 +124,32 @@ float MarkersVisualizationScheme::getStickLength( VectorChannelConstPtr channel1
     return ret;
 }
 
+double MarkersVisualizationScheme::getDuration() const
+{
+    if (markers) {
+        return markers->getLength();
+    }
+    UTILS_ASSERT(false);
+    return 0.0;
+}
+
+MarkerCollectionConstPtr MarkersVisualizationScheme::getMarkers() const 
+{ 
+    return markers; 
+}
+
+bool MarkersVisualizationScheme::hasData() const
+{ 
+    return markers.get(); 
+}
+
+osg::Vec3 MarkersVisualizationScheme::getCurrentPosition() const
+{ 
+   return currentPosition; 
+}
+
+void MarkersVisualizationScheme::update( double time )
+{
+    updateMarkers(time);
+}
 

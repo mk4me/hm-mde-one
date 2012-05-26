@@ -120,7 +120,7 @@ void PluginLoader::load()
         utils::zero(dataFind);
         file = ::FindFirstFile(pattern.c_str(), &dataFind);
         while (file != INVALID_HANDLE_VALUE && moreFiles) {
-            // dodanie plugina
+            // dodanie pluginu
             addPlugIn(combinePath(*itr, dataFind.cFileName));
             // czy dalej? (dziwna postaæ ¿eby pozbyæ siê warninga)
             moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));

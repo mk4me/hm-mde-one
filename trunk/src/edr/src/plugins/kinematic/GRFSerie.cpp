@@ -5,12 +5,21 @@ using namespace osg;
 using namespace boost;
 using namespace std;
 
+//! skala strzalki ukazujacej sile nacisku
 const osg::Vec3 arrowScale(0.01f, 0.01f, 1.0f);
-// prog dla ktorego sensowne jest wizualizowanie odczytow GRF
+//! prog dla ktorego sensowne jest wizualizowanie odczytow GRF
 const float treshold = 0.01f;
 
 osg::ref_ptr<osg::Texture2D> GRFSerie::texture1;
 osg::ref_ptr<osg::Texture2D> GRFSerie::texture2;
+
+GRFSerie::GRFSerie( KinematicVisualizer * visualizer ) : 
+visualizer(visualizer),
+    maxLength(0.0f)
+{
+
+}
+
 
 osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const IForcePlatformCollection& platforms)
 {
@@ -582,13 +591,21 @@ bool GRFSerie::tryGetTexture( osg::ref_ptr<osg::Texture2D>& ret, int number )
     return true;
 }
 
+void GRFSerie::setName( const std::string & name )
+{
+    this->name = name;
+}
 
+const std::string & GRFSerie::getName() const
+{
+    return name;
+}
 
-
-
-
-
-
+double GRFSerie::getLength() const
+{
+    UTILS_ASSERT(grfCollection);
+    return grfCollection->getLength();
+}
 
 
 
@@ -620,3 +637,52 @@ const osg::Vec4& GRFSerie::Arrow::getColor() const
 }
 
 
+
+GRFSerie::GhostStack::GhostStack( int maxSize, GroupPtr hookNode, const osg::Vec4& color ) :
+maxSize(maxSize) ,
+    hookNode(hookNode),
+    color(color)
+{
+    UTILS_ASSERT(maxSize > 0);
+    for (int i = 0; i < maxSize; i++) {
+        ArrowPtr a = createArrow();
+        hookNode->addChild(a->mainPtr);
+        a->mainPtr->setNodeMask(0);
+        stackArrows.push_back(a);
+    }
+}
+
+void GRFSerie::GhostStack::addState( const ArrowState& state )
+{
+    int no = stackArrows.size();
+    if (no < maxSize - 1) {
+        ArrowPtr a = createArrow();
+        a->setArrow(state.first, state.second);
+        a->setColor(color);
+        hookNode->addChild(a->mainPtr);
+        stackArrows.push_back(a);
+    } else {
+        ArrowPtr a = *stackArrows.begin();
+        stackArrows.pop_front();
+        stackArrows.push_back(a);
+        a->setArrow(state.first, state.second);
+        a->setColor(color);
+    }
+}
+
+void GRFSerie::GhostStack::update()
+{
+    float delta = color[3] / static_cast<float>(maxSize);
+
+    for (auto it = stackArrows.begin(); it != stackArrows.end(); it++) {
+        ArrowPtr a = *it;
+        const osg::Vec4& color = a->getColor();
+        float alpha = color[3] - delta;
+        if (alpha > 0) {
+            a->mainPtr->setNodeMask(0xffff);
+            a->setColor(osg::Vec4(color[0], color[1], color[2], alpha));
+        } else {
+            a->mainPtr->setNodeMask(0);
+        }
+    }
+}

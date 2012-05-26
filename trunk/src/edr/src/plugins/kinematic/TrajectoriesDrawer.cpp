@@ -134,7 +134,6 @@ void TrajectoryDrawer::setLineWidth( const std::string& name, float width )
 	osg::ref_ptr<osg::LineWidth> linewidth = new osg::LineWidth();
 	linewidth->setWidth(width);
 	stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
-	//ptr->setStateSet(stateset);
 }
 
 

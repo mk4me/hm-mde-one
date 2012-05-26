@@ -36,24 +36,17 @@ DraggerContainer::DraggerContainer( const DraggerContainer& copy, const osg::Cop
 
 void DraggerContainer::setDraggerPivot( const osg::Vec3& pivot )
 {
-    //float scale = 0.20f;//scene->getBound().radius() * 1.6;
-    //_dragger->setMatrix(osg::Matrix::scale(scale, scale, scale) *  osg::Matrix::translate(pivot));
     _dragger->setMatrix(osg::Matrix::translate(pivot));
 }
 
 osg::Node* Manipulators::addDraggerToScene(osg::PositionAttitudeTransform* scene, Manipulators::DraggerType type, bool fixedSizeInScreen)
 {
     scene->getOrCreateStateSet()->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
-
     osg::MatrixTransform* selection = new osg::MatrixTransform;
     selection->addChild(scene);
-    //osg::PositionAttitudeTransform* selection = scene;
     osgManipulator::Dragger* dragger = createDragger(type);
-    
-
     osg::Group* root = new osg::Group;
     root->addChild(selection);
-
     if ( fixedSizeInScreen ) {
         DraggerContainer* draggerContainer = new DraggerContainer;
         draggerContainer->setDragger( dragger );
@@ -63,19 +56,8 @@ osg::Node* Manipulators::addDraggerToScene(osg::PositionAttitudeTransform* scene
     }
 
     dragger->setMatrix(osg::Matrix::translate(scene->getBound().center()));
-
     dragger->addTransformUpdating(selection);
-
-    // we want the dragger to handle it's own events automatically
     dragger->setHandleEvents(true);
-
-    // if we don't set an activation key or mod mask then any mouse click on
-    // the dragger will activate it, however if do define either of ActivationModKeyMask or
-    // and ActivationKeyEvent then you'll have to press either than mod key or the specified key to
-    // be able to activate the dragger when you mouse click on it.  Please note the follow allows
-    // activation if either the ctrl key or the 'a' key is pressed and held down.
-    //dragger->setActivationModKeyMask(osgGA::GUIEventAdapter::MODKEY_CTRL);
-    //dragger->setActivationKeyEvent('b');
     dragger->setDraggerActive(false);
     return root;
 }
@@ -133,43 +115,12 @@ osgManipulator::Dragger* Manipulators::createDragger( Manipulators::DraggerType 
 
 void Manipulators::connect( osg::PositionAttitudeTransform* parent, osg::MatrixTransform* child, DraggerContainer* draggerContainer, const osg::Vec3& pivot )
 {
-    //scene->getOrCreateStateSet()->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
-
-    //osg::MatrixTransform* selection = new osg::MatrixTransform;
-    //selection->addChild(scene);
-    ////osg::PositionAttitudeTransform* selection = scene;
-    //osgManipulator::Dragger* dragger = createDragger(name);
-
-
-    //osg::Group* root = new osg::Group;
-    //root->addChild(selection);
-
-    //if ( fixedSizeInScreen ) {
-    //    DraggerContainer* draggerContainer = new DraggerContainer;
-    //    draggerContainer->setDragger( dragger );
-    //    root->addChild(draggerContainer);
-    //} else {
-    //    root->addChild(dragger);
-    //}
     parent->addChild(draggerContainer);
     osgManipulator::Dragger* dragger = draggerContainer->getDragger();
-    //float scale = 0.20f;//scene->getBound().radius() * 1.6;
-    //dragger->setMatrix(osg::Matrix::scale(scale, scale, scale) *  osg::Matrix::translate(pivot));
     draggerContainer->setDraggerPivot(pivot);
-
     dragger->addTransformUpdating(child);
-
-    // we want the dragger to handle it's own events automatically
+    // manipulator sam zarzadza swoimi eventami
     dragger->setHandleEvents(true);
-    
-    // if we don't set an activation key or mod mask then any mouse click on
-    // the dragger will activate it, however if do define either of ActivationModKeyMask or
-    // and ActivationKeyEvent then you'll have to press either than mod key or the specified key to
-    // be able to activate the dragger when you mouse click on it.  Please note the follow allows
-    // activation if either the ctrl key or the 'a' key is pressed and held down.
-    //dragger->setActivationModKeyMask(osgGA::GUIEventAdapter::MODKEY_CTRL);
-    //dragger->setActivationKeyEvent('b');
-    //dragger->setDraggerActive(false);
 }
 
 void Manipulators::disconnect( osg::PositionAttitudeTransform* parent, osg::MatrixTransform* child, DraggerContainer* draggerContainer )

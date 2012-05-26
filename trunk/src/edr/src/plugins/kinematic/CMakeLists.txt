@@ -9,6 +9,7 @@ set(TARGET_TARGETNAME
 # nag³ówki prywatne
 set(PRIVATE_H
 	KinematicParser.h
+	AsfParser.h
 	KinematicVisualizer.h
 	ISchemeDrawer.h
 	LineSchemeDrawer.h
@@ -20,6 +21,7 @@ set(PRIVATE_H
 	SchemeDrawerContainer.h
 	GRFSerie.h
 	MarkerSerie.h
+	KinematicSerie.h
 	SkeletonSerie.h
 	TrajectoriesDialog.h
 	TrajectoriesDrawer.h
@@ -46,7 +48,9 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Ÿród³a
 set(TARGET_SRC
 	KinematicPlugin.cpp
+	AsfParser.cpp
 	KinematicParser.cpp
+	KinematicSerie.cpp
 	KinematicVisualizer.cpp
 	LineSchemeDrawer.cpp
 	PointSchemeDrawer.cpp

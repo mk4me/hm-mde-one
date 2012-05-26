@@ -131,8 +131,8 @@ QTreeWidgetItem* TrajectoriesDialog::getItemWhichContains( QObject* object ) con
         if (item) {
             return item;
         }
-		
 	}
+
 	throw std::runtime_error("Tree item not found");
 }
 

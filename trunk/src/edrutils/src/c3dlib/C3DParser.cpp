@@ -22,28 +22,30 @@
 #include <utils/DataChannelCollection.h>
 namespace c3dlib {
 
-// Kanal analogowy
+//! Kanal analogowy, implementacja przykrywa obiekt btk::Analog
 class Analog : public C3DParser::IAnalog
 {
 private:
-	int offset;
+    //! przez ta wartosc zostana przemnozone probki
 	double scale;
+    //! wskaznik do obiektu z biblioteki btk
 	btk::Analog::ConstPointer analog;
-	
 
 public:
+	//! 
+	//! \param val 
 	void setAnalog(btk::Analog::ConstPointer val)	  { analog = val; }
-
+	//! 
 	virtual const std::string& getLabel() const		  { return analog->GetLabel(); }
+	//! 
 	virtual const std::string& getDescription() const { return analog->GetDescription(); }
+	//! 
 	virtual const std::string& getUnit() const	      { return analog->GetUnit(); }
+	//! 
 	virtual double getScale() const					  { return analog->GetScale(); }
+	//! 
+	//! \param index 
 	virtual double getValue(int index) const		  { return analog->GetValues()[index]; }
-
-
-	int getOffset() const							  { return analog->GetOffset(); }
-	btk::Analog::ConstPointer getAnalog() const       { return analog; }
-	
 };
 typedef Analog* AnalogPtr;
 typedef const Analog* AnalogConstPtr;
@@ -135,8 +137,6 @@ public:
 
 	virtual IEvent* clone() const 
 	{
-		//Event* newEvent = new Event();
-		//newEvent->setEventPtr(eventPtr->Clone());
         Event* newEvent = new Event(*this);
 		return newEvent;
 	}

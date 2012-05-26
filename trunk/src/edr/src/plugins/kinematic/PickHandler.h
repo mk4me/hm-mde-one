@@ -21,23 +21,29 @@
 #include <boost/function.hpp>
 #include <list>
 
-
-
+//! klasa pomocnicza, dzieki niej mozna latwo podpiac sie pod system pickingu
 class PickHandler : public osgGA::GUIEventHandler 
 {
 public: 
-    //typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::Geode* GeodePtr;
     typedef osg::ref_ptr<osg::Drawable> DrawablePtr;
-    //typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
     typedef boost::tuple<GeodePtr, DrawablePtr, double> PickerTuple;
     typedef std::list<PickerTuple> PickerList;
     typedef boost::function<void (const PickerList& )> HandlerFunction;
 
 public:
+    //! Konstruktor
+    //! \param callback funkcja, ktora zostanie wywolana za kazdym razem, gdy kliknie sie obiekt na scenie
     PickHandler(HandlerFunction callback);
 
+public:
+    //! Obsluga eventow
+    //! \param ea 
+    //! \param aa 
     bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& aa);
+    //! Metoda realizujaca faktyczny picking
+    //! \param view 
+    //! \param ea 
     virtual void pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea);
     
 protected:

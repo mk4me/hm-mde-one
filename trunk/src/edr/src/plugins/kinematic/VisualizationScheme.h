@@ -42,6 +42,7 @@ UTILS_POP_WARNINGS
 class Vsk
 {
 public:
+    //! Okresla przygotowane wczesniej zestawy danych
 	enum MarkersCount
 	{
         MarkersCount16 = 16,
@@ -50,31 +51,10 @@ public:
 	};
 
 public:
-	static kinematic::VskParserConstPtr get(MarkersCount count) 
-	{
-		switch(count) 
-		{
-        case MarkersCount16:										
-            if (!Count16->isLoaded()) {	
-                Count16->parse(core::getResourceString("trial/CZD.vsk"));		
-            } 																
-            return Count16;
-		case MarkersCount39:										
-			if (!Count39->isLoaded()) {	
-				Count39->parse(core::getResourceString("trial/M39.vsk"));		
-			} 																
-			return Count39;
-
-		case MarkersCount53:										
-			if (!Count53->isLoaded()) {											
-				Count53->parse(core::getResourceString("trial/M53.vsk"));		
-			} 																
-			return Count53;
-
-		default:
-			throw std::runtime_error("Wrong VSK scheme was requested");
-		}
-	}
+	//! Dzieki tej metodzie mozna pobrac przeparsowany plik vsk z obslugiwanych schematow. W przypadku niepowodzenia rzucany jest wyjatek
+	//! \param count Dostepny schemat
+    //! \return Parser z wczytana struktura
+	static kinematic::VskParserConstPtr get(MarkersCount count);
 
 private:
     static kinematic::VskParserPtr Count16;
@@ -87,6 +67,7 @@ private:
 class ISchemeDrawer;
 enum DataToDraw;
 typedef core::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
+
 //! klasa stanowi polaczenie miedzy reprezentacja wewnetrzna, a kontrolka odrysowywujaca szkielet
 class VisualizationScheme
 {
@@ -110,51 +91,58 @@ public:
         int index2;
         //! kolor po³¹czenia (RGBA <0,1>)
         osg::Vec4 color;
+        //! czy polaczenie jest widoczne
         bool visible;
-
+        //! dlugosc polaczenia
         float length;
     };
             
 public:
+    //! 
     VisualizationScheme();
+    //! 
     virtual ~VisualizationScheme() {}
 
-public: // akcesory
+public: 
+    //! \return znormalizowany czas ( z zakresu 0 - 1 )
     double getNormalizedTime() const { return normalizedTime; }
+    //! ustawia znormalizowany czas ( z zakresu 0 - 1 )
+    //! \param val 
     void setNormalizedTime(double val);
-
+    //! Ustawia czas, schemat przechowuje go w postaci znormalizowanej, dlatego konieczna jest konwersja
+    //! \param time ustawiany czas
     void setTime(double time) {
-        //TODO
-        //Trzeba to zweryfikowaæ!!
         setNormalizedTime(std::max(0.0, std::min(1.0, time / getDuration())));
     }
-
+    //! Pobiera czas, schemat przechowuje go w postaci znormalizowanej, dlatego konieczna jest konwersja
     double getTime() const {
         return getNormalizedTime() * getDuration();
     }
-
+    //! \return aktualny srodek geometryczny 
     virtual osg::Vec3 getCurrentPosition() const = 0;
-
-    
+    //! \return czas trwania animacji
     virtual double getDuration() const = 0;
-
-    //! akcesory do zwracanych danych
+    //! \return kolekcja ze stanami obiektow (pozycja, widocznosc itp.)
     const std::vector<State> &getStates() const { return states; }
+    //! \return kolekcja ze stanami polaczen miedzy obiektami
     const std::vector<Connection> &getConnections() const { return connections; }
-
+    //! \return czy schemat przechowuje juz jakies dane?
 	virtual bool hasData() const = 0;
-
+    //! usawia jednolity kolor dla wszystkich obiektow
+    //! \param color ustawiany kolor (RGBA 0-1)
     void setGlobalStatesColor(const osg::Vec4& color);
-
 
 protected:
     //! stany markerow dla aktualnego czasu
     std::vector<State> states;
+    //! polaczenia miedzy markerami
     std::vector<Connection> connections;
     //! aktualny czas
     double normalizedTime; 
 
 protected:
+    //! Uaktualnienie schematu
+    //! \param time czas, do ktorego trzeba uaktualnic
     virtual void update(double time) = 0;
 };
 

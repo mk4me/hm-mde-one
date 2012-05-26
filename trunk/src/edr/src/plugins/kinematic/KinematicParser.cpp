@@ -51,56 +51,16 @@ core::IParser* KinematicParser::create()
 void KinematicParser::getSupportedExtensions(Extensions & extensions) const
 {
     core::IParser::ExtensionDescription extDesc;
+
     extDesc.description = "Acclaim Motion Capture format";
-
     extDesc.types.insert(typeid(kinematic::SkeletalData));
-
     extensions["amc"] = extDesc;
 
-    extDesc.description = "Biovision Hierarchical Data format";
-
-    extensions["bvh"] = extDesc;
+    //extDesc.description = "Biovision Hierarchical Data format";
+    //extensions["bvh"] = extDesc;
 }
 
 void KinematicParser::getObjects( core::Objects& objects )
 {
 	objects.insert(skeletonData);
-}
-
-void AsfParser::parseFile( const core::Filesystem::Path& path )
-{
-	kinematic::SkeletalModelPtr modelPtr(new kinematic::SkeletalModel);
-	kinematic::AsfParser asf;
-	asf.parse(modelPtr, path.string());
-	skeletalModel->set(modelPtr);
-}
-
-core::IParser* AsfParser::create()
-{
-	return new AsfParser();
-}
-
-void AsfParser::getSupportedExtensions(Extensions & extensions) const
-{
-    core::IParser::ExtensionDescription extDesc;
-    extDesc.description = "Acclaim Skeleton File format";
-
-    extDesc.types.insert(typeid(kinematic::SkeletalModel));
-
-    extensions["asf"] = extDesc;
-}
-
-void AsfParser::getObjects( core::Objects& objects )
-{
-	objects.insert(this->skeletalModel);
-}
-
-AsfParser::AsfParser()
-{
-	this->skeletalModel = core::ObjectWrapper::create<kinematic::SkeletalModel>();
-}
-
-AsfParser::~AsfParser()
-{
-
 }

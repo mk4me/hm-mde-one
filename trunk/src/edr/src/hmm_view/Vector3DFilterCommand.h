@@ -404,7 +404,7 @@ public:
       virtual QDialog* getConfigurationDialog(QWidget* parent)
       {
           std::vector<SessionConstPtr> sessions;
-          core::queryDataPtr(core::getDataManagerReader(), sessions);
+          core::queryDataPtr(core::getDataManagerReader(), sessions, false);
           BOOST_FOREACH(SessionConstPtr session, sessions) {
               SessionPtr filtered = simpleTypeFilter->filterData(session);
               Motions motions;

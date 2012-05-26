@@ -3,23 +3,16 @@
 
 #include <string>
 #include <vector>
-
-#include <c3dlib/c3dparser.h>
-#include <plugins/c3d/C3DChannels.h>
-#include <list>
 #include <boost/tuple/tuple.hpp>
-#include "ForcePlatform.h"
+#include <c3dlib/c3dparser.h>
 #include <core/Filesystem.h>
-#ifdef max
-#undef max
-#endif
-
-#ifdef min
-#undef min
-#endif
+#include <plugins/c3d/C3DChannels.h>
+#include "c3dParser.h"
+#include "ForcePlatform.h"
 
 C3DParser::C3DParser()
 {
+    // sztywne stworzenie obiektow, zachowanie kompatybilnosci
 	for(int i = 0; i < 4; i++){
 		GRFChannels.push_back(core::ObjectWrapper::create<GRFChannel>());
 	}
@@ -27,8 +20,10 @@ C3DParser::C3DParser()
 		EMGChannels.push_back(core::ObjectWrapper::create<EMGChannel>());
 	}
 
+    // GRF i EMG sa dosepne tez poprzez standardowe kolekcje
 	GRFs = core::ObjectWrapper::create<GRFCollection>();
 	EMGs = core::ObjectWrapper::create<EMGCollection>();
+    // reszta kolekcji juz bez udziwnien
 	markerChannels = core::ObjectWrapper::create<MarkerCollection>();
 	forceChannels  = core::ObjectWrapper::create<ForceCollection>();
 	angleChannels  = core::ObjectWrapper::create<AngleCollection>();
@@ -51,7 +46,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 	std::string importWarnings;
     parser->importFrom(files, importWarnings);
     
-    
+    // wczytanie danych analogowych
     GRFCollectionPtr grfs(new GRFCollection());
     EMGCollectionPtr e(new EMGCollection());
     if (parser->getNumAnalogs() == 28)
@@ -77,8 +72,9 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         EMGs->set(e, path.filename().string(), path.string());
         EMGs->setSource(path.string());
     }
+
+    // wczytanie eventow
 	int count = parser->getNumEvents();
-    
     EventsCollectionPtr allEventsCollection(new C3DEventsCollection());
 	for (int i = 0; i < count; i++) {
 		c3dlib::C3DParser::IEventPtr event = parser->getEvent(i);
@@ -86,6 +82,8 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         allEventsCollection->addEvent(e);
 	}
     this->allEvents->set(allEventsCollection, path.filename().string(), path.string());
+
+    // wczytanie plikow *vsk, ktore dostarczaja opis do markerow
     core::Filesystem::Path dir = path.parent_path();
     std::vector<std::string> vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
     kinematic::VskParserPtr vsk;

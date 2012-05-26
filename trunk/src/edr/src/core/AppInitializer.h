@@ -36,6 +36,24 @@ CORE_DEFINE_INSTANCE_INFO;
 
 namespace core {
 
+class MyApplication : public QApplication
+{
+public:
+    MyApplication(int argc, char *argv[]) : QApplication(argc, argv) {}
+
+    virtual bool notify(QObject* receiver, QEvent* event)
+    {
+        try {
+            return QApplication::notify(receiver, event);
+        } catch (std::exception &e) {
+            LOG_ERROR("Error occured: " << e.what());
+        } catch (...) {
+            LOG_ERROR("Unknown error occured");
+        }        
+        return false;
+    }
+};
+   
 class AppInitializer
 {
 public:
@@ -207,7 +225,7 @@ public:
 		int result = 0;
 		{
 			// ustawienia aplikacji
-			QApplication application(argc, argv);
+			MyApplication application(argc, argv);
 
 			//tutaj mamy œciezki - potrzebujê je od razu
 			EDRConfig edrConfig;

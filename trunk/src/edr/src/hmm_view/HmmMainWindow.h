@@ -72,7 +72,7 @@ public:
 		  if (!val && needRefresh) {
 			  UTILS_ASSERT(tree);
 			  needRefresh = false;
-			  std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
+			  std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance(), false);
 			  actualRefresh(tree, sessions);
 			  tree = nullptr;
 		  }
@@ -83,7 +83,7 @@ public:
 			  this->tree = tree;
 			  needRefresh = true;
 		  } else {
-			  std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
+			  std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance(), false);
 			  actualRefresh(tree, sessions);
 		  }
 	  }

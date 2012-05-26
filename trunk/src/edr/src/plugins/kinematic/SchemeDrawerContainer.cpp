@@ -6,7 +6,6 @@ SchemeDrawerContainer::SchemeDrawerContainer() :
     nodes(new osg::Group()),
     wasInit(false)
 {
-
 }
 
 osg::ref_ptr<osg::Node> SchemeDrawerContainer::getNode()

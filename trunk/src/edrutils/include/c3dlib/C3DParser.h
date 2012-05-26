@@ -33,15 +33,12 @@ struct C3DLIB_EXPORT ForcePlatform
     //! lista indeksow kanalow analogowych podpietych do plyty (np. F1 i M1 to kanaly 1-6)
     std::set<std::string> channelLabels;
 };
-//typedef boost::shared_ptr<ForcePlatform> ForcePlatformPtr;
-//typedef boost::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;
-//typedef const std::vector<ForcePlatformConstPtr>& ForcePlatformConstCollection;
-//typedef std::vector<ForcePlatformConstPtr> ForcePlatformCollection;
 typedef ForcePlatform* ForcePlatformPtr;
 typedef const ForcePlatform* ForcePlatformConstPtr;
 typedef const std::vector<ForcePlatformConstPtr>& ForcePlatformConstCollection;
 typedef std::vector<ForcePlatformPtr> ForcePlatformCollection;
 
+//! Klasa sluzy do pobierania informacji z pliku C3D, przykrywa biblioteke btk
 class C3DLIB_EXPORT C3DParser
 {
 public:
@@ -57,8 +54,6 @@ public:
 		//! \return Opis danych akwizycji
 		virtual const std::string& getDescription() const = 0;
 	};
-	//typedef boost::shared_ptr<IAquisitionEntry> IAqusitionEntryPtr;
-	//typedef boost::shared_ptr<const IAquisitionEntry> IAqusitionEntryConstPtr;
     typedef IAquisitionEntry* IAqusitionEntryPtr;
     typedef const IAquisitionEntry* IAqusitionEntryConstPtr;
 
@@ -70,7 +65,10 @@ public:
 	public:
         //! \return Typ punktu c3d 
         virtual Type getType() const = 0;
+        //! \return jednostka dla danych analogowych (np. mm)
 		virtual const std::string& getUnit() const = 0;
+		//! \param index nr probki
+        //! \return wartoœæ probki
 		virtual osg::Vec3 getValue(int index) const = 0;
     };
 	typedef IPoint* IPointPtr;
@@ -80,8 +78,12 @@ public:
     class IAnalog : public IAquisitionEntry
     {
 	public:
+        //! \return jednostka dla danych analogowych (np. mm)
 		virtual const std::string& getUnit() const = 0;
+        //! \return uzyta skala w pliku C3D
 		virtual double getScale() const = 0;
+		//! \param index nr probki
+		//! pobiera wartosc probki
 		virtual double getValue(int index) const = 0;
 	};
 	typedef IAnalog* IAnalogPtr;
@@ -101,9 +103,13 @@ public:
         };
 
 	public:
+        //! return kontekst zdarzenia (lewy, prawy)
         virtual Context getContext() const = 0;
+        //! return dodatkowa informacja - nazwa badanego
         virtual std::string getSubject() const = 0;
+        //! return czas, dla ktorego wystapilo zdarzenie
         virtual double getTime() const = 0;
+		//! zwraca kopie obiektu, kopia musi byc pozniej zwolniona !
 		virtual IEvent* clone() const = 0;
     };
 	typedef IEvent* IEventPtr;
@@ -147,8 +153,9 @@ public:
 	int getNumPointFrames() const;
 	//! \return czestotliwosc zapisu danych dla punktow
     double getPointFrequency() const;
-
+    //! \return liczba eventow wczytanych z pliku c3d
 	int getNumEvents() const;
+    //! \return event o konkrentym indeksie (zgodnie z kolejnoscia w c3d)
 	IEventPtr getEvent(int index) const;
 
 	ForcePlatformCollection getForcePlatforms() { return forcePlatforms; }

@@ -14,6 +14,18 @@
 
 #endif
 
+KinematicVisualizer::KinematicVisualizer() :
+//name("Visualizer 3D"),
+trajectoriesDialog(nullptr),
+    schemeDialog(nullptr),
+    currentSerie(-1),
+    currentDragger(nullptr),
+    lastTime(-1.0f),
+    actionTrajectories(nullptr)
+{
+
+}
+
 void KinematicVisualizer::setUp( core::IObjectSource* source )
 {
     reset();
@@ -22,7 +34,7 @@ void KinematicVisualizer::setUp( core::IObjectSource* source )
 void KinematicVisualizer::reset()
 {
     resetScene();
-    refillDrawersMaps();
+    //refillDrawersMaps();
 }
 
 core::IVisualizer* KinematicVisualizer::createClone() const
@@ -120,8 +132,6 @@ void KinematicVisualizer::removeSerie(core::IVisualizer::SerieBase *serie)
     }
 
     activeSerieCombo->blockSignals(true);
-    //updateFIFO.push_back(boost::bind( &NewChartSerie::removeItemsFromPlot, *it ));
-    //updateFIFO.push_back(boost::bind( &QwtPlot::replot, qwtPlot));
     transformNode->removeChild((*it)->getMatrixTransformNode());
     series.erase(it);
     
@@ -360,19 +370,8 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
 
 const std::string& KinematicVisualizer::getName() const
 {
+    static std::string name = "Visualizer 3D";
     return name;
-}
-
-KinematicVisualizer::KinematicVisualizer() :
-    name("Visualizer 3D"),
-    trajectoriesDialog(nullptr),
-    schemeDialog(nullptr),
-    currentSerie(-1),
-    currentDragger(nullptr),
-    lastTime(-1.0f),
-	actionTrajectories(nullptr)
-{
-
 }
 
 void KinematicVisualizer::update( double deltaTime )
@@ -445,12 +444,12 @@ QIcon* KinematicVisualizer::createIcon()
 //    }*/
 //}
 
-void KinematicVisualizer::actionTriggered( QAction* action )
-{
-    resetScene();
-    currentDrawer = drawersByAction[action];
-    transformNode->addChild(currentDrawer->getNode());
-}
+//void KinematicVisualizer::actionTriggered( QAction* action )
+//{
+//    resetScene();
+//    currentDrawer = drawersByAction[action];
+//    transformNode->addChild(currentDrawer->getNode());
+//}
 
 void KinematicVisualizer::resetScene()
 {
@@ -465,30 +464,21 @@ void KinematicVisualizer::resetScene()
     rootNode->addChild(transformNode);
 }
 
-void KinematicVisualizer::addAction(const std::string& name, QMenu* menu, QActionGroup* group)
-{
-    QAction* act = menu->addAction(name.c_str());
+//void KinematicVisualizer::refillDrawersMaps()
+//{
+//    drawersByAction.clear();
+//    drawersByName.clear();
+//    for (std::map<std::string, QAction*>::iterator it = actionByName.begin(); it != actionByName.end(); ++it) {
+//        SchemeDrawerContainerPtr drawer(new SchemeDrawerContainer());
+//        drawersByAction[it->second] = drawer;
+//        drawersByName[it->first] = drawer;
+//    }
+//}
 
-    actionByName[name] = act;
-    act->setCheckable(true);
-    group->addAction(act); 
-}
-
-void KinematicVisualizer::refillDrawersMaps()
-{
-    drawersByAction.clear();
-    drawersByName.clear();
-    for (std::map<std::string, QAction*>::iterator it = actionByName.begin(); it != actionByName.end(); ++it) {
-        SchemeDrawerContainerPtr drawer(new SchemeDrawerContainer());
-        drawersByAction[it->second] = drawer;
-        drawersByName[it->first] = drawer;
-    }
-}
-
-osg::Node* KinematicVisualizer::debugGetLocalSceneRoot()
-{
-    return rootNode;
-}
+//osg::Node* KinematicVisualizer::debugGetLocalSceneRoot()
+//{
+//    return rootNode;
+//}
 
 void KinematicVisualizer::setRight()
 {
@@ -535,20 +525,24 @@ void KinematicVisualizer::setTop()
 void KinematicVisualizer::showTrajectoriesDialog()
 {
     trajectoriesDialog->show();
-    
 }
 
 void KinematicVisualizer::setActiveSerie( int idx )
 {
-    if (currentSerie >= 0) {
-        series[currentSerie]->getMatrixTransformNode()->removeChild(indicatorNode);
-        if (currentDragger) {
-            Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), currentDragger);
+    if (idx >= 0 && idx < static_cast<int>(series.size())) {
+        if (currentSerie >= 0) {
+            series[currentSerie]->getMatrixTransformNode()->removeChild(indicatorNode);
+            if (currentDragger) {
+                Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), currentDragger);
+            }
         }
+        currentSerie = idx;
+        refreshSpinboxes();
+        series[currentSerie]->getMatrixTransformNode()->addChild(indicatorNode);
+    } else {
+        UTILS_ASSERT(false);
+        throw std::runtime_error("Wrong serie index");
     }
-    currentSerie = idx;
-    refreshSpinboxes();
-    series[currentSerie]->getMatrixTransformNode()->addChild(indicatorNode);
 }
 
 void KinematicVisualizer::setActiveSerie( KinematicSerie* serie )
@@ -1011,9 +1005,3 @@ bool KinematicDraggerCallback::receive( const osgManipulator::MotionCommand& mc)
     return osgManipulator::DraggerCallback::receive(mc);
 }
 
-void KinematicSerie::resetTransform()
-{
-    MatrixTransformPtr transform = getMatrixTransformNode();
-    transform->setMatrix(getInitialMatrix());
-    setLocalTime(getTime());
-}

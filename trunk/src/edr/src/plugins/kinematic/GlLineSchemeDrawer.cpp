@@ -4,6 +4,21 @@ using namespace osg;
 using namespace boost;
 using namespace std;
 
+GlLineSchemeDrawer::GlLineSchemeDrawer( int cylinderComplexity, float cylinderRadius ) :
+complex(cylinderComplexity),
+    radius(cylinderRadius),
+    useCustomColor(false)
+{
+}
+
+GlLineSchemeDrawer::GlLineSchemeDrawer( int cylinderComplexity, float cylinderRadius, const osg::Vec4& color ) :
+complex(cylinderComplexity),
+    radius(cylinderRadius),
+    useCustomColor(true),
+    customColor(color)
+{
+}
+
 void GlLineSchemeDrawer::init( VisualizationSchemeConstPtr scheme )
 {
     UTILS_ASSERT(scheme);

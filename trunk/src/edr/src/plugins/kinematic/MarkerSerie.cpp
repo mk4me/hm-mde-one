@@ -93,5 +93,24 @@ osg::Matrix MarkerSerie::getInitialMatrix() const
     return m;
 }
 
+double MarkerSerie::getLength() const
+{
+    UTILS_ASSERT(scheme);
+    return scheme->getDuration();
+}
 
+const core::ObjectWrapperConstPtr & MarkerSerie::getData() const
+{
+    return data;
+}
+
+const std::string & MarkerSerie::getName() const
+{
+    return name;
+}
+
+void MarkerSerie::setName( const std::string & name )
+{
+    this->name = name;
+}
 

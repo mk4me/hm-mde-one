@@ -10,6 +10,7 @@
 #ifndef HEADER_GUARD_C3DPLUGIN__EVENTSERIEBASE_H__
 #define HEADER_GUARD_C3DPLUGIN__EVENTSERIEBASE_H__
 
+#include <core/IVisualizer.h>
 #include <plugins/c3d/C3DCollections.h>
 
 class EventSerieBase : public core::IVisualizer::TimeSerieBase

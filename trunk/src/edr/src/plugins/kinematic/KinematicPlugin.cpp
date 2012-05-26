@@ -5,7 +5,8 @@
 #include "OsgSchemeDrawer.h"
 #include "PointSchemeDrawer.h"
 #include "LineSchemeDrawer.h"
-#include <plugins/kinematic/KinematicParser.h>
+#include "KinematicParser.h"
+#include "AsfParser.h"
 #include <core/ILog.h>
 #include <plugins/kinematic/Wrappers.h>
 
@@ -16,13 +17,14 @@ CORE_PLUGIN_BEGIN("kinematic", UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-A5FE-5
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::JointAnglesCollection);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::SkeletalData);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::SkeletalModel);
-	/*
-    CORE_PLUGIN_ADD_OBJECT_WRAPPER(KinematicModel);
-    CORE_PLUGIN_ADD_OBJECT_WRAPPER(SkeletalVisualizationScheme);*/
 CORE_PLUGIN_END;
 
 using namespace kinematic;
 
+
+//! Metoda mapuje logi z biblioteki kinematic na logi zgodne z systemem EDR
+//! \param severity typ informacji
+//! \param msg przekazywana informacja
 void logCallback(Logger::LogSeverity severity, const std::string& msg)
 {
     switch ( severity ) {
@@ -44,6 +46,11 @@ void logCallback(Logger::LogSeverity severity, const std::string& msg)
     }
 }
 
+
+/*! Struktura widziana tylko w obrebie tego pliku. 
+ * Podpina logowanie kinematic do metody mapujacej komunikaty na te z EDR-a.
+ * Struktura tworzy sie automatycznie.
+ */
 static struct Initializer
 {
     Initializer()

@@ -112,7 +112,6 @@ void HmmMainWindow::deactivateContext(QWidget * widget)
 void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
     core::MainWindow::init(pluginLoader, managersAccessor);
-    //connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChange(QWidget*,QWidget*)));
     
     addContext(dataContext);
     addContext(analisisContext);
@@ -1625,7 +1624,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
  void HmmMainWindow::DataObserver::update( const core::IMemoryDataManager * subject )
  {
-     std::vector<MotionConstPtr> motions = core::queryDataPtr(DataManager::getInstance());
+     std::vector<MotionConstPtr> motions = core::queryDataPtr(DataManager::getInstance(), false);
      int count = motions.size();
 
      if(count > 0){
