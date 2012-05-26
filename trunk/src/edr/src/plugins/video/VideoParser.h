@@ -10,7 +10,6 @@
 #define __HEADER_GUARD_VIDEO__VIDEOPARSER_H__
 
 #include <core/IParser.h>
-#include <core/IDataManager.h>
 
 class VideoParser : public core::IParser
 {

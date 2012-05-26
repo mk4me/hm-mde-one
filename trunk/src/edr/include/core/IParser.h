@@ -1,12 +1,10 @@
 #ifndef HEADER_GUARD_CORE_IPARSER_H__
 #define HEADER_GUARD_CORE_IPARSER_H__
 
-#include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
 #include <core/ObjectWrapper.h>
-#include <core/IPath.h>
-#include <core/PluginCommon.h>
+#include <core/Filesystem.h>
 
 namespace core
 {

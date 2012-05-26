@@ -1,6 +1,5 @@
 #include "CorePCH.h"
 #include "SubjectDataFilters.h"
-#include <boost/foreach.hpp>
 
 using namespace PluginSubject;
 

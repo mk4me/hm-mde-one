@@ -1,9 +1,14 @@
 #include "CorePCH.h"
+#include "VisualizerWidget.h"
+
+#include "VisualizerManager.h"
+#include <QtGui/QLabel>
+#include <QtGui/QComboBox>
 
 #include <iterator>
 #include <core/StringTools.h>
 #include <boost/foreach.hpp>
-#include "VisualizerWidget.h"
+
 #include <core/DataAccessors.h>
 #include "MainWindow.h"
 #include <core/DataAccessors.h>

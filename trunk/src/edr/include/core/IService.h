@@ -9,19 +9,18 @@
 #ifndef HEADER_GUARD___ISERVICE_H__
 #define HEADER_GUARD___ISERVICE_H__
 
-#include <vector>
 #include <utils/Debug.h>
-#include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
-#include <core/IManagersAccessor.h>
-#include <core/IActionsGroupManager.h>
 
 class QObject;
 class QWidget;
 
 namespace core 
 {
+	class IManagersAccessor;
+	class IActionsGroupManager;
+
     class IService : public IIdentifiable
     {
     public:

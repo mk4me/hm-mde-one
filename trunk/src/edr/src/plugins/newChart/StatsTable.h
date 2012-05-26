@@ -11,6 +11,7 @@
 #define HEADER_GUARD_NEW_CHART__STATSTABLE_H__
 
 #include "ui_statsTable.h"
+#include <boost/range.hpp>
 #include <plugins/c3d/C3DChannels.h>
 
 #include <QtGui/QItemDelegate>

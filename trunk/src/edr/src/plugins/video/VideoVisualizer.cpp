@@ -1,20 +1,20 @@
 #include "VideoPCH.h"
 #include "VideoVisualizer.h"
-#include <plugins/video/Wrappers.h>
-#include <vidlib/osg/VideoImageStream.h>
-#include <osgui/EventCallback.h>
-#include <osgui/QOsgWidgets.h>
+
+#include <osgWidget/Widget>
 #include <osgWidget/WindowManager>
 #include <osgWidget/ViewerEventHandlers>
 #include <osgWidget/Box>
+
+#include <osgViewer/Viewer>
+
 #include <osgui/AspectRatioKeeper.h>
+#include <osgui/OsgWidgetUtils.h>
+#include <osgui/EventCallback.h>
+
+#include <vidlib/osg/VideoImageStream.h>
+
 #include <core/StringTools.h>
-
-#ifdef _DEBUG
-
-#include <core/MultiViewWidgetItem.h>
-
-#endif
 
 using namespace core;
 
@@ -46,7 +46,71 @@ struct VideoVisualizer::WidgetUpdater : public osg::Drawable::UpdateCallback
 };
 
 
+VideoVisualizer::VideoSerie::VideoSerie(VideoVisualizer * visualizer)
+	: visualizer(visualizer)
+{
 
+}
+
+VideoVisualizer::VideoSerie::~VideoSerie()
+{
+
+}
+
+void VideoVisualizer::VideoSerie::setName(const std::string & name)
+{
+	this->name = name;
+}
+
+const std::string & VideoVisualizer::VideoSerie::getName() const
+{
+	return name;
+}
+
+void VideoVisualizer::VideoSerie::setData(const core::ObjectWrapperConstPtr & data)
+{
+	this->data = data;
+	visualizer->reset();
+	bool success = false;
+	if (data->isSupported(typeid(VideoStreamPtr))) {
+		success = data->tryGet(visualizer->stream);
+	} else if (data->isSupported(typeid(VideoChannel))) {
+		VideoChannelConstPtr channel = data->get();
+		if (channel) {
+			visualizer->stream = osg::const_pointer_cast<VideoStream>(channel->getVideoStream());
+			success = visualizer->stream != nullptr;
+		}
+	}
+
+	// pobranie obrazka
+	if ( success  == true && visualizer->stream != nullptr ) {
+		visualizer->ratioKeeper->setTarget(visualizer->widget);
+		if(visualizer->getImage() == true){
+			visualizer->refreshImage();
+			//! Fix pierwszej ramki - wymuszam poprawny resize okienek OSG!!
+			visualizer->viewer->getEventQueue()->windowResize(0, 0, visualizer->viewer->width(), visualizer->viewer->height());
+			visualizer->viewer->frame();
+		}
+	}else{
+
+		visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
+	}
+}
+
+const core::ObjectWrapperConstPtr & VideoVisualizer::VideoSerie::getData() const
+{
+	return data;
+}
+
+double VideoVisualizer::VideoSerie::getLength() const
+{
+	return visualizer->stream->getDuration();
+}
+
+void VideoVisualizer::VideoSerie::setTime(double time)
+{
+	visualizer->currentStreamTime = time;
+}
 
 VideoVisualizer::VideoVisualizer() :
 name("Video"), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1), useTextureRect(true)

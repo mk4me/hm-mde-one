@@ -1,4 +1,5 @@
 #include "NewChartPCH.h"
+#include <core/IActionsGroupManager.h>
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QSplitter>

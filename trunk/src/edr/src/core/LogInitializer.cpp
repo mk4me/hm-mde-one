@@ -1,7 +1,5 @@
 #include "CorePCH.h"
 #include "LogInitializer.h"
-
-#include "CorePCH.h"
 #include "Log.h"
 
 #include <boost/foreach.hpp>
@@ -96,11 +94,9 @@ class ConsoleWidgetAppender : public AppenderSkeleton
 {
 private:
     //! Konsola w³aœciwa.
-    //ConsoleWidget* console;
     EDRConsoleWidget* console;
     //! Kolejka wiadomoœci dla konsoli. U¿ywana, gdy pojawiaj¹ siê zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
-    //std::queue<ConsoleWidgetEntryPtr> queuedEntries;
     std::queue<EDRConsoleWidgetEntryPtr> queuedEntries;
 
 public:
@@ -123,7 +119,6 @@ public:
 
 public:
     //! \param console Widget konsoli.
-    //void setConsole(ConsoleWidget* console)
     void setConsole(EDRConsoleWidget* console)
     {
         // korzytamy z muteksa z klasy bazowej !
@@ -154,9 +149,7 @@ protected:
         LogString buf;
         layout->format(buf, event, p);
 
-        //ConsoleWidgetEntryPtr entry(new ConsoleWidgetEntry());
         EDRConsoleWidgetEntryPtr entry(new EDRConsoleWidgetEntry());
-        //entry.message = QString::fromWCharArray( event->getMessage().c_str() );
         int level = event->getLevel()->toInt();
         if ( level <= Level::DEBUG_INT ) {
             entry->severity = core::LogSeverityDebug;
@@ -194,28 +187,6 @@ LogInitializer::LogInitializer( const char* configPath )
     PropertyConfigurator::configure(configPath);
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(Logger::getLogger( "osg" ) ));
     qInstallMsgHandler(QtMessageHandler);
-
-    //log4cxx::helpers::Pool p;  // buffer pool that for activateOptions()
-    //LOG4CXX_DECODE_CHAR(loggerName, "file"); 
-    //log4cxx::RollingFileAppenderPtr rfa = log4cxx::Logger::getRootLogger()->getAppender(loggerName);
-    //if (rfa == 0)
-    //{
-    //    // If there is no appender, then this is a serious error.
-    //    // Logging will not work at all.
-    //    return;
-    //}
-
-    // Configures the output log file name.
-    //LOG4CXX_DECODE_CHAR(fileName, (core::getPathInterface()->getUserDataPath() / "log.xml").string());
-    //rfa->setFile(fileName);
-    /*std::cout << "Logger path: ";
-    for(int i = 0; i < rfa->getFile().size(); i++){
-        char c(rfa->getFile().c_str()[i]);
-        std::cout << c;
-    }
-
-    std::cout << std::endl;*/
-    //rfa->activateOptions(p);
 }
 
 LogInitializer::~LogInitializer()
@@ -224,8 +195,6 @@ LogInitializer::~LogInitializer()
     osg::setNotifyHandler( new osg::StandardNotifyHandler() );
 }
 
-
-//void LogInitializer::setConsoleWidget( ConsoleWidget* widget )
 void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
 {
     // pobranie wszystkich appenderów dla konsoli
@@ -278,7 +247,6 @@ public:
     }
 
     //! \param console
-    //void setConsole(ConsoleWidget* console) 
     void setConsole(EDRConsoleWidget* console) 
     { 
         this->console = console;
@@ -303,7 +271,6 @@ public:
         boost::trim(msg);
 
         EDRConsoleWidgetEntryPtr entry(new EDRConsoleWidgetEntry());
-        //entry.message = QString::fromWCharArray( event->getMessage().c_str() );
         if ( severity >= osg::DEBUG_INFO ) {
             entry->severity = core::LogSeverityDebug;
         } else if ( severity >= osg::NOTICE ) {

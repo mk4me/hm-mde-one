@@ -9,19 +9,20 @@
 #ifndef HEADER_GUARD_CORE__ISOURCE_H__
 #define HEADER_GUARD_CORE__ISOURCE_H__
 
-#include <vector>
 #include <string>
-
 #include <core/IIdentifiable.h>
-#include <core/IDataManager.h>
-#include <core/IServiceManager.h>
-#include <core/IActionsGroupManager.h>
 
 class QObject;
 class QWidget;
 
 namespace core 
 {
+
+	class IMemoryDataManager;
+	class IFileDataManager;
+	class IServiceManager;
+	class IActionsGroupManager;
+
     //! Interfejs Ÿród³a danych. Powinien to byæ jedeny obiekt inicjowany i maj¹cy dostep do MemoryDM i FIleDM
     class ISource : public IIdentifiable
     {

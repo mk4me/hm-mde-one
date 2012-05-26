@@ -11,7 +11,6 @@
 #define HEADER_GUARD_CORE__DIRECTORIESINFO_H__
 
 #include <core/IPath.h>
-#include <core/PluginCommon.h>
 
 namespace core {
 
@@ -42,10 +41,7 @@ public:
 
 public:
 	static void setPaths(EDRConfig& directoriesInfo);
-	static EDRConfig* getInstance()
-	{
-		return static_cast<EDRConfig*>(getPathInterface());
-	}
+	static EDRConfig* getInstance();
 
 protected:
 	static bool trySetPathsFromRegistry(EDRConfig& directoriesInfo);

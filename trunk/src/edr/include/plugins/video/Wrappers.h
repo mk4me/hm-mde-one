@@ -20,25 +20,6 @@ typedef osg::ref_ptr<vidlib::VideoImage> VideoImageOsgPtr;
 typedef vidlib::OsgStream VideoStream;
 typedef osg::ref_ptr<VideoStream> VideoStreamPtr;
 typedef osg::ref_ptr<const VideoStream> VideoStreamConstPtr;
-
-class VideoManipulator
-{
-public:
-	virtual bool isLower(const VideoImageOsgPtr& q1, const VideoImageOsgPtr& q2)
-	{
-		return q1 < q2;
-	}
-	virtual VideoImageOsgPtr normalize(const VideoImageOsgPtr& q, const VideoImageOsgPtr& min, const VideoImageOsgPtr& max) const
-	{
-		UTILS_ASSERT("Unable to normalize VideoImage");
-		throw std::runtime_error("Unable to normalize VideoImage");
-	}
-	virtual void interpolate(VideoImageOsgPtr & ret, const VideoImageOsgPtr& q1, const VideoImageOsgPtr& q2, float t) const
-	{
-		ret = q1;
-	}
-};
-
 typedef utils::IRawUniformDataChannelReader<VideoImageOsgPtr, float> VideoChannelReaderInterface;
 
 class VideoChannel : public VideoChannelReaderInterface

@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_TIMELINE__TIMESLIDERWIDGET_H__
 #define HEADER_GUARD_TIMELINE__TIMESLIDERWIDGET_H__
 
-//#include <qwt/qwt_slider.h>
+#include <qwt/qwt_slider.h>
 #include <QtCore/QTime>
 
 QTime convertToQTime(double timeInSeconds);

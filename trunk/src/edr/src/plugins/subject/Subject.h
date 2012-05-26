@@ -11,7 +11,6 @@
 #define HEADER_GUARD_SUBJECT__SUBJECT_H__
 
 #include <plugins/subject/ISubject.h>
-#include <core/IDataManager.h>
 
 class SubjectService;
 

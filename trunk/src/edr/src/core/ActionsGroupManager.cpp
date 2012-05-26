@@ -1,6 +1,11 @@
 #include "CorePCH.h"
 #include "ActionsGroupManager.h"
 
+#include <QtCore/QObject>
+#include <QtGui/QWidget>
+#include <QtGui/QAction>
+#include <QtGui/QMenu>
+
 
 ActionsGroup::ActionsGroup(const QString & name) : name_(name)
 {

@@ -10,10 +10,8 @@
 #ifndef HEADER_GUARD_SUBJECT__SESSION_H__
 #define HEADER_GUARD_SUBJECT__SESSION_H__
 
-#include <core/IDataManager.h>
 #include <plugins/subject/Types.h>
 #include <plugins/subject/ISession.h>
-
 #include <vector>
 #include <core/SmartPtr.h>
 #include <core/ObjectWrapper.h>

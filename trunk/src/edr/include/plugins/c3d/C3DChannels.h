@@ -9,7 +9,6 @@
 #ifndef __HEADER_GUARD_C3D__C3DCHANNELS_H__
 #define __HEADER_GUARD_C3D__C3DCHANNELS_H__
 
-#include <core/IVisualizer.h>
 #include <core/SmartPtr.h>
 #include <utils/DataChannel.h>
 #include <utils/DataChannelModifiers.h>
@@ -19,9 +18,7 @@
 #include <utils/DataChannelTimers.h>
 #include <core/ObjectWrapper.h>
 #include <osg/Vec3>
-#include <osg/Math>
 #include <c3dlib/C3DParser.h>
-#include <kinematiclib/JointAnglesCollection.h>
 
 typedef utils::ITimerReader<float>::TimerReaderType TimerReader;
 typedef utils::ITimerReader<float>::TimerReaderPtr TimerReaderPtr;
@@ -32,9 +29,6 @@ typedef utils::ITimer<float>::TimerPtr TimerPtr;
 typedef utils::ITimer<float>::TimerConstPtr TimerConstPtr;
 
 typedef utils::Timer<float> GeneralTimer;
-
-//typedef utils::TimerOnTimer<float> TimerOnTimer;
-
 
 typedef utils::DataChannelTimeAccessor<float, float> ScalarContiniousTimeAccessor;
 typedef utils::CurrentValueExtractor<float, float> ScalarCurentValueExtractor;
@@ -67,8 +61,7 @@ protected:
 
 public:
     VectorToScalarAdaptor(const VectorChannelReaderInterfaceConstPtr & vector, size_type idx, const std::string & name = std::string())
-        : descriptor(*vector),// vector(core::const_pointer_cast<VectorChannelReaderInterface>(vector)), index(idx), name(name)
-		 vector(vector), index(idx), name(name)
+        : descriptor(*vector), vector(vector), index(idx), name(name)
     {
         UTILS_ASSERT((idx >= 0 && idx < 3), "Bledny index dla adaptera skalarnego kanalu wektorowego");
     }
@@ -193,8 +186,7 @@ protected:
 
 public:
     ScalarWithTimeSegment(const ScalarChannelReaderInterfaceConstPtr & channel, time_type start, time_type end)
-        : descriptor(*channel),// reader(core::const_pointer_cast<ScalarChannelReaderInterface>(channel))
-		reader(channel)
+        : descriptor(*channel),	reader(channel)
     {
         startIndex = channel->getValueHelper(start).first;
         endIndex = channel->getValueHelper(end).second;
@@ -619,7 +611,6 @@ DEFINE_CHANNEL(Angle);
 DEFINE_CHANNEL(Power);
 
 CORE_DEFINE_WRAPPER(VectorChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-//CORE_DEFINE_WRAPPER(VectorChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER_INHERITANCE(VectorChannel, VectorChannelReaderInterface);
 CORE_DEFINE_WRAPPER_INHERITANCE(MarkerChannel,VectorChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);
@@ -627,13 +618,11 @@ CORE_DEFINE_WRAPPER_INHERITANCE(MomentChannel,VectorChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(AngleChannel, VectorChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(PowerChannel, VectorChannel);
 CORE_DEFINE_WRAPPER(ScalarChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-//CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER_INHERITANCE(ScalarChannel, ScalarChannelReaderInterface);
 CORE_DEFINE_WRAPPER_INHERITANCE(VectorToScalarAdaptor, ScalarChannelReaderInterface);
 CORE_DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);
-//CORE_DEFINE_WRAPPER(GRFCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 
 
 

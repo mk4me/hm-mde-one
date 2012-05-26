@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include "WorkflowService.h"
+#include "WorkflowWidget.h"
 #include "DataProcessorManager.h"
 #include "VisualizerManager.h"
 #include <QtGui/QMenu>

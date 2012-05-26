@@ -10,8 +10,6 @@
 #define HEADER_GUARD___IDATASOURCEMANAGER_H__
 
 #include <core/IDataSource.h>
-#include <map>
-#include <vector>
 #include <utils/Debug.h>
 
 namespace core{

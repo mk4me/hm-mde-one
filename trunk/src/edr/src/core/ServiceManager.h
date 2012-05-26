@@ -1,11 +1,12 @@
 #ifndef SERVICE_MANAGER_H
 #define SERVICE_MANAGER_H
 
-#include <core/IServiceManager.h>
-#include <core/IService.h>
 #include <map>
 #include <vector>
-#include <core/PluginCommon.h>
+
+#include <core/IServiceManager.h>
+#include <core/IService.h>
+
 #include "ManagerHelper.h"
 
 class ServiceManager: public core::IServiceManager, public ManagerHelper<ServiceManager>

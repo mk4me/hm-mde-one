@@ -11,11 +11,10 @@
 
 #include <vector>
 #include <boost/type_traits.hpp>
-#include "utils/Debug.h"
-#include "ObjectWrapper.h"
-#include "ObjectWrapperCollection.h"
+#include <utils/Debug.h>
+#include <core/ObjectWrapper.h>
+#include <core/ObjectWrapperCollection.h>
 #include <core/IDataManager.h>
-#include <core/PluginCommon.h>
 
 namespace core{
 

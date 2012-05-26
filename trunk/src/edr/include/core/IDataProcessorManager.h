@@ -10,8 +10,6 @@
 #define HEADER_GUARD___IDATAPROCESSORMANAGER_H__
 
 #include <core/IDataProcessor.h>
-#include <map>
-#include <vector>
 #include <utils/Debug.h>
 
 namespace core{

@@ -10,8 +10,6 @@
 #ifndef HEADER_GUARD_SUBJECT__IDATAFILTER_H__
 #define HEADER_GUARD_SUBJECT__IDATAFILTER_H__
 
-//#include <boost/date_time.hpp>
-#include "SubjectDataFilters.h"
 #include <core/TypeInfo.h>
 #include <plugins/subject/IDataFilter.h>
 #include <plugins/subject/IMotion.h>
@@ -33,26 +31,6 @@ protected:
 private:
     std::vector<core::TypeInfo> types;
 };
-
-//typedef boost::shared_ptr<TypeFilter> TypeFilterPtr;
-//typedef boost::shared_ptr<const TypeFilter> TypeFilterConstPtr;
-
-////! klasa zapewnia filtrowanie po dacie
-//class DateFilter : public Sub::IDataFilter
-//{
-//public:
-//    DateFilter(const boost::gregorian::date& from, const boost::gregorian::date& to) : fromTime(from), toTime(to) 
-//    {
-//
-//    }
-//
-//public:
-//    virtual SessionPtr doDataFiltering(const SessionConstPtr & session) const;
-//
-//private:
-//    boost::gregorian::date fromTime;
-//    boost::gregorian::date toTime;
-//};
 
 //! klasa jest zlozeniem filtrow prostych
 class CustomFilter : public PluginSubject::IDataFilter

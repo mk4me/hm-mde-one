@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__TYPEINFO_H__
 
 #include <typeinfo>
-#include <boost/any.hpp>
+//#include <boost/any.hpp>
 #include <list>
 #include <set>
 

@@ -9,6 +9,8 @@
 #ifndef HEADER_GUARD_CORE__IEDRTITLEBAR_H__
 #define HEADER_GUARD_CORE__IEDRTITLEBAR_H__
 
+class QObject;
+
 class IEDRTitleBar
 {
 public:

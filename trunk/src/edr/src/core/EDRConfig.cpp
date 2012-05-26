@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include "EDRConfig.h"
+#include <core/PluginCommon.h>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -65,6 +66,11 @@ void EDRConfig::setPaths( EDRConfig& directoriesInfo )
 			throw std::runtime_error("Unable to set paths");
 		}
 	}
+}
+
+EDRConfig* EDRConfig::getInstance()
+{
+	return static_cast<EDRConfig*>(getPathInterface());
 }
 
 //! sprawdza czy katalog dla danych tymczasowych istnieje, jeœli nie tworzy go

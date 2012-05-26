@@ -12,17 +12,7 @@
 
 #include <plugins/subject/IMotion.h>
 #include <core/ObjectWrapper.h>
-#include <core/IDataManager.h>
-
-#include <kinematiclib/JointAnglesCollection.h>
-#include <plugins/kinematic/Wrappers.h>
-#include <plugins/c3d/C3DChannels.h>
-#include <plugins/video/Wrappers.h>
-#include <core/PluginCommon.h>
-#include <core/DataAccessors.h>
-#include <core/SmartPtr.h>
 #include <core/TypeInfo.h>
-//#include <boost/range.hpp>
 
 class SubjectService;
 

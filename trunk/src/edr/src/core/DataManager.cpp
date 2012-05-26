@@ -3,11 +3,8 @@
 
 #include "Log.h"
 #include <core/Filesystem.h>
-#include <boost/foreach.hpp>
-#include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
-#include <list>
 #include <utils/Push.h>
 #include <core/ServiceManager.h>
 

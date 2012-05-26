@@ -1,6 +1,5 @@
 #include "VideoPCH.h"
 #include "VideoParser.h"
-#include <boost/filesystem.hpp>
 #include <plugins/video/Wrappers.h>
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/FileSequenceVideoStream.h>

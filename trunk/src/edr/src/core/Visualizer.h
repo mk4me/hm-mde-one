@@ -11,10 +11,7 @@
 
 #include <core/SmartPtr.h>
 #include <core/IVisualizer.h>
-#include <boost/range.hpp>
 #include "InputItem.h"
-#include "ObjectSource.h"
-#include <timelinelib/IChannel.h>
 #include "ActionsGroupManager.h"
 
 //! Wizualizator. Jego zadaniem jest stworzyæ widget (gdzie on bêdzie osadzony - nie jego sprawa),

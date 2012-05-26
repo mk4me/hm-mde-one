@@ -1,6 +1,11 @@
 #include "CorePCH.h"
 #include "FlexiTabWidget.h"
+
+#include <QtGui/QFrame>
+#include <QtGui/QScrollArea>
+
 #include <iterator>
+#include "FlexiTabSectionWidget.h"
 #include "FlexiWidgetTabContentWidget.h"
 
 FlexiTabWidget::FlexiTabWidget(QWidget * parent, Qt::WindowFlags f) : QWidget(parent, f), nextGroupID(0), nextSectionID(0), currentGroupID(-1), hiddenTabContentPos(-1)

@@ -26,16 +26,9 @@ void EDRConsoleWidget::init()
 
     EDRTitleBar * titleBar = supplyWithEDRTitleBar(this);
 
-    //EDRTitleBar * titleBar = new EDRTitleBar();
-    //setTitleBarWidget(titleBar);
-
-    //connect(this, SIGNAL(windowTitleChanged(const QString &)), titleBar, SLOT(setTitle(const QString &)));
-
     setWidget(consoleWidget);
     setWindowTitle(consoleWidget->windowTitle());
 
-
-    //QLabel * label;
     QToolButton *clearButton;
     QToolButton *toggleWordWrapButton;
 

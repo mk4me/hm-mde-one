@@ -39,7 +39,6 @@ set(PRIVATE_H
 	ObjectSlots.h
 	EDRTitleBar.h
 	EDRDockWidget.h
-	#TestEDRWidget.h
 	WorkflowItemEncapsulator.h
 	InputItem.h
 	InputDescription.h
@@ -62,7 +61,6 @@ set(PRIVATE_H
 	DataSourceManager.h
 	Log.h
 	PluginLoader.h
-	PrintWidgetAction.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -125,7 +123,6 @@ set(TARGET_SRC
 	FlexiTabWidget.cpp
 	FlexiTabSectionWidget.cpp
 	SubjectDataFilters.cpp
-	DataAccessors.cpp
 	MainWindow.cpp
 	EDRConsoleWidget.cpp
 	EDRConsoleInnerWidget.cpp
@@ -142,9 +139,6 @@ set(TARGET_SRC
 	DataProcessor.cpp
 	EDRTitleBar.cpp
 	EDRDockWidget.cpp
-	#TestEDRWidget.cpp
-	InputDescription.cpp
-	OutputDescription.cpp
 	EDRConfig.cpp
 	EDRDFNode.cpp
 	EDRDFSourceNode.cpp
@@ -173,13 +167,11 @@ SET(TARGET_MOC_H
 	#SceneGraphWidget.h
 	VisualizerWidget.h
 	EDRTitleBar.h
-	EDRDockWidget.h
-	#TestEDRWidget.h
+	EDRDockWidget.h	
 	WorkflowWidget.h
 	WorkflowVDFModel.h
 	WorkflowVDFConnDelContextMenu.h
 	LocalDataSourceWidget.h
-	PrintWidgetAction.h
 	Visualizer.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
@@ -195,10 +187,8 @@ set(TARGET_UI
 	#ui/SceneGraphWidget.ui
 	#ui/OsgWidget.ui
 	#ui/VisualizerWidget.ui
-	ui/DataProcessorWidget.ui
 	ui/EDRTitleBar.ui
 	ui/EDRConsoleInnerWidget.ui
-	#ui/TestEDRWidget.ui
 	ui/WorkflowWidget.ui
 	ui/LocalDataSourceWidget.ui
 )

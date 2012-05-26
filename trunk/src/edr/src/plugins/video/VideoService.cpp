@@ -1,14 +1,5 @@
 #include "VideoPCH.h"
-#include <boost/foreach.hpp>
-#include <core/IServiceManager.h>
-#include <core/IDataManager.h>
 #include "VideoService.h"
-#include "VideoWidget.h"
-#include "VideoWidgetOptions.h"
-#include <vidlib/osg/VideoImageStream.h>
-#include <boost/foreach.hpp>
-#include <core/ILog.h>
-#include <plugins/video/Wrappers.h>
 
 using namespace core;
 

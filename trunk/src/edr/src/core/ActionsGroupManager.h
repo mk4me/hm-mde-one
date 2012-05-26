@@ -9,14 +9,16 @@
 #ifndef HEADER_GUARD_CORE__ACTIONSGROUPMANAGER_H__
 #define HEADER_GUARD_CORE__ACTIONSGROUPMANAGER_H__
 
-#include <QtCore/QObject>
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
+#include <core/IActionsGroupManager.h>
+
 #include <map>
 #include <vector>
+#include <QtCore/QString>
 
-#include <core/IActionsGroupManager.h>
+class QObject;
+class QWidget;
+class QMenu;
+class QAction;
 
 class ActionsGroup
 {

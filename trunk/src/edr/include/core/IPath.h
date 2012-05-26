@@ -18,6 +18,7 @@ namespace core {
 class IPath
 {
 public:
+	//! Destruktor wirtualny
 	virtual ~IPath() {}
 
 public:

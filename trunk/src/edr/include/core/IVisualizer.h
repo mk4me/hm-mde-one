@@ -9,29 +9,19 @@
 #ifndef HEADER_GUARD_CORE__IVISUALIZER_H__
 #define HEADER_GUARD_CORE__IVISUALIZER_H__
 
-#include <vector>
-#include <list>
-#include <core/IIdentifiable.h>
-#include <core/IObjectSource.h>
+#include <string>
 #include <core/ObjectWrapper.h>
 #include <core/IInputProcessItem.h>
-#include <core/IActionsGroupManager.h>
-#include <utils/DataChannel.h>
 #include <QtGui/QPixmap>
 
 class QObject;
 class QWidget;
 class QIcon;
 
-#ifdef DEBUG
-namespace osg 
-{
-    class Node;
-} // namespace osg
-#endif
-
 namespace core 
 {
+	class IActionsGroupManager;
+
     //! Interfejs wizualizatorów dla typów danych zarejestrowanych w aplikacji
     class IVisualizer :  public IInputProcessItem
     {

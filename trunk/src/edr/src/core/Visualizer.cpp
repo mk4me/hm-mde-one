@@ -1,10 +1,10 @@
 #include "CorePCH.h"
-#include <core/ObjectWrapper.h>
-#include <core/Visualizer.h>
+#include "Visualizer.h"
 #include "VisualizerManager.h"
 #include "VisualizerChannel.h"
 #include "VisualizerWidget.h"
-#include "PrintWidgetAction.h"
+
+#include <core/ObjectWrapper.h>
 #include <plugins/newTimeline/ITimelineService.h>
 
 using namespace core;

@@ -1,6 +1,7 @@
 #include "C3DPCH.h"
-#include <plugins/c3d/IForcePlatform.h>
 #include "ForcePlatform.h"
+
+#include <plugins/c3d/IForcePlatform.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>

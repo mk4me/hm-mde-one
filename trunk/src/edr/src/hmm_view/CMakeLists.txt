@@ -12,7 +12,6 @@ set(TARGET_TARGETNAME
 # nag³ówki prywatne
 set(PRIVATE_H
 	AboutDialog.h
-	PseudoLoginWidget.h
 	HmmMainWindow.h
 	LoadingDialog.h
 	LoadingThread.h

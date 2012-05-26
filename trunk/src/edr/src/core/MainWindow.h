@@ -10,27 +10,30 @@
 #ifndef HEADER_GUARD_CORE__MAINWINDOW_H__
 #define HEADER_GUARD_CORE__MAINWINDOW_H__
 
+#include <core/SmartPtr.h>
+#include <core/Plugin.h>
+
+class QObject;
+class QSplashScreen;
+
 #include <QtCore/QObject> 
 #include <QtCore/QTimer>
-#include <QtCore/QVector>
 #include <qtCore/QSettings>
-#include <QtGui/QSplashScreen>
 
-#include <osgViewer/CompositeViewer>
+//#include <utils/Debug.h>
+namespace core {
 
-#include <utils/Debug.h>
+	class PluginLoader;
+	class IManagersAccessor;
+}
 
-#include <core/PluginLoader.h>
 #include <core/Window.h>
-#include <core/DataManager.h>
 #include <core/Filesystem.h>
-#include <core/IManagersAccessor.h>
 
 #include "ActionsGroupManager.h"
 
 class UserInterfaceService;
 class ServiceManager;
-//class SceneGraphWidget;
 class EDRConsoleWidget;
 class VisualizerManager;
 class DataProcessorManager;
@@ -198,8 +201,8 @@ namespace core {
 		void writeSettings();
 	};
 
-typedef boost::shared_ptr<MainWindow> MainWindowPtr;
-typedef boost::shared_ptr<const MainWindow> MainWindowConstPtr;
+typedef core::shared_ptr<MainWindow> MainWindowPtr;
+typedef core::shared_ptr<const MainWindow> MainWindowConstPtr;
 
 }
 

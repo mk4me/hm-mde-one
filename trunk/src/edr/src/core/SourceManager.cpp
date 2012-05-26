@@ -1,7 +1,7 @@
 #include "CorePCH.h"
-#include <core/ILog.h>
-#include "Log.h"
 #include "SourceManager.h"
+
+#include <core/ILog.h>
 
 SourceManager * ManagerHelper<SourceManager>::manager = nullptr;
 

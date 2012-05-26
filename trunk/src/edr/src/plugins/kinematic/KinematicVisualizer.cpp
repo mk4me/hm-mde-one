@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "KinematicVisualizer.h"
+#include <core/IActionsGroupManager.h>
 #include "GRFSerie.h"
 #include "SkeletonSerie.h"
 #include "MarkerSerie.h"

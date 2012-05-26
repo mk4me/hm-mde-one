@@ -1,8 +1,5 @@
 #include "SubjectPCH.h"
-#include <limits>
-#include <OpenThreads/Mutex>
-#include <OpenThreads/ScopedLock>
-#include <plugins/subject/Subject.h>
+#include "Subject.h"
 #include <core/DataAccessors.h>
 #include <plugins/subject/ISession.h>
 

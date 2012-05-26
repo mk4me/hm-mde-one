@@ -1,8 +1,10 @@
 #include "hmmPCH.h"
 #include <boost/tuple/tuple.hpp>
 #include <QtGui/QToolBar>
+#include <QtGui/QMenu>
 #include <QtCore/QBuffer>
 #include <core/PluginCommon.h>
+#include "VisualizerManager.h"
 #include "VisualizerWidget.h"
 #include "HmmContexts.h"
 #include "HmmMainWindow.h"
@@ -127,17 +129,17 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             QWidget * widget = it->second;
             if(QComboBox * cbox = qobject_cast<QComboBox*>(widget)){
                 cbox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-                cbox->setMinimumContentsLength(min(cbox->currentText().size(), 10));
+                cbox->setMinimumContentsLength(std::min(cbox->currentText().size(), 10));
             }
 
             //dodajemy od razu do elementow toolbara - indeksy zostaja zachowane dla pozniejszego rozmieszczania wg kolejnosci
             auto s = widget->sizeHint();
-            int width = min(s.width(), 250);
+            int width = std::min(s.width(), 250);
             if(s.width() > 250){
                 widget->setMaximumWidth(250);
             }
             totalWidth += width;
-            maxHeight = max(maxHeight, s.height());
+            maxHeight = std::max(maxHeight, s.height());
         }
 
         totalElements -= others.size();
@@ -163,7 +165,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
             auto s = actionButton->sizeHint();
             totalWidth += s.width();
-            maxHeight = max(maxHeight, s.height());
+            maxHeight = std::max(maxHeight, s.height());
         }
 
         for(auto it = menus.begin(); it != menus.end(); it++){
@@ -188,7 +190,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
             auto s = menuButton->sizeHint();
             totalWidth += s.width();
-            maxHeight = max(maxHeight, s.height());
+            maxHeight = std::max(maxHeight, s.height());
         }
 
         //rozkladamy to w niezaleznych QToolBarach. Maksymalnie 2 rzedy.
@@ -225,7 +227,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
         while(it != toolbarElements.end()){
             auto s = it->second->sizeHint();
-            int width = min(s.width(), 250);
+            int width = std::min(s.width(), 250);
             if(currentWidth + width > halfWidth){
                 it++;
             }else{

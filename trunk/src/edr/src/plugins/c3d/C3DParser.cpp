@@ -1,8 +1,9 @@
 #include "C3DPCH.h"
+#include "C3dParser.h"
 
-#include "c3dParser.h"
 #include <string>
 #include <vector>
+
 #include <c3dlib/c3dparser.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <list>

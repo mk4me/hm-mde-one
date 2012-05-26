@@ -1,13 +1,13 @@
 #include "SubjectPCH.h"
+#include "SubjectService.h"
+
+#include <limits>
 
 #include <OpenThreads/ScopedLock>
-
-#include "SubjectService.h"
-#include <plugins/c3d/C3DChannels.h>
 #include <core/ObjectWrapper.h>
-#include <plugins/subject/Session.h>
-#include <plugins/subject/Subject.h>
-#include <plugins/subject/Motion.h>
+#include "Session.h"
+#include "Subject.h"
+#include "Motion.h"
 
 using namespace PluginSubject;
 

@@ -1,6 +1,10 @@
 #include "hmmPCH.h"
 
+#include <core/IManagersAccessor.h>
+#include <QtGui/QMenu>
+#include <QtGui/QSplashScreen>
 #include <cmath>
+#include "VisualizerManager.h"
 #include "HmmMainWindow.h"
 #include "SourceManager.h"
 #include "ui_LoadingDialog.h"
@@ -21,7 +25,6 @@
 #include "EMGFilter.h"
 #include "EDRTitleBar.h"
 #include "TextEdit.h"
-#include "PseudoLoginWidget.h"
 #include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
 //#include "Measurements.h"

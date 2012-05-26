@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include "EDRTitleBar.h"
+#include "EDRDockWidget.h"
 
 EDRTitleBar::EDRTitleBar(QWidget* parent) : QWidget(parent)
 {

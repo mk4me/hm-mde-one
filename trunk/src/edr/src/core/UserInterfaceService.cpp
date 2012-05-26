@@ -2,9 +2,6 @@
 #include "UserInterfaceService.h"
 #include <iostream>
 
-#include <core/IDataManager.h>
-
-
 //--------------------------------------------------------------------------------------------------
 UserInterfaceService::UserInterfaceService()
 :   name("UserInterface")

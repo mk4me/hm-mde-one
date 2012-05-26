@@ -10,13 +10,13 @@
 #define HEADER_GUARD_CORE__VISUALIZERWIDGET_H__
 
 #include <map>
-#include <QtGui/QDockWidget>
 #include "Visualizer.h"
-#include "VisualizerManager.h"
-#include <core/PluginCommon.h>
 #include "EDRDockWidget.h"
-#include <QtGui/QLabel>
-#include <QtGui/QComboBox>
+
+class QLabel;
+class QComboBox;
+
+
 #include <core/IEDRTitleBar.h>
 
 //! Widget wizualizacyjny.

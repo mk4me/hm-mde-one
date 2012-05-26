@@ -9,11 +9,9 @@
 #ifndef HEADER_GUARD_CORE__OBJECTSOURCE_H__
 #define HEADER_GUARD_CORE__OBJECTSOURCE_H__
 
-#include <vector>
 #include <core/IObjectSource.h>
-#include <core/ObjectWrapperCollection.h>
+//#include <core/ObjectWrapperCollection.h>
 #include "ObjectSlots.h"
-#include "DataManager.h"
 
 class ObjectSource : public ObjectSlots, public core::IObjectSource
 {

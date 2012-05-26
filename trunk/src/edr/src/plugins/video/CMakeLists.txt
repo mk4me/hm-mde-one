@@ -12,7 +12,6 @@ set(PRIVATE_H
 	VideoPlugin.h
 	VideoWidget.h
 	VideoWidgetOptions.h
-	TimelineImageStreamWrapper.h
 	VideoParser.h
 	VideoService.h
 	VideoVisualizer.h
@@ -31,7 +30,6 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-	osgmovie.cpp
 	StreamOsgWidget.cpp
 	VideoPlugin.cpp
 	VideoService.cpp

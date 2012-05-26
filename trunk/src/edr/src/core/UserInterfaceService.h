@@ -2,7 +2,6 @@
 #define USER_INTERFACE_SERVICE_H
 
 #include <string>
-#include <osg/Node>
 #include <core/IService.h>
 #include <core/IUserInterface.h>
 

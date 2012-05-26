@@ -6,7 +6,7 @@
 #include "MainWindow.h"
 #include <osgui/QOsgWidgets.h>
 //#include "SceneGraphWidget.h"
-
+#include "VisualizerManager.h"
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <osg/PositionAttitudeTransform>

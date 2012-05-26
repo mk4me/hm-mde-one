@@ -35,7 +35,6 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	C3DPlugin.cpp
 	C3DParser.cpp
-	C3DChannels.cpp
 	ForcePlatform.cpp
 	#Measurements.cpp
 	#EventVisualizer.cpp

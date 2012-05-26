@@ -10,7 +10,7 @@
 #include <string>
 
 #include <boost/filesystem.hpp>
-#include <boost/range.hpp>
+//#include <boost/range.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {

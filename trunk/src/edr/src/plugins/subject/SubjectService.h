@@ -12,9 +12,9 @@
 
 #include <OpenThreads/Mutex>
 
-#include <core/IDataManager.h>
+//#include <core/IDataManager.h>
 #include <core/IService.h>
-#include <core/PluginCommon.h>
+//#include <core/PluginCommon.h>
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/IDataFilter.h>
 

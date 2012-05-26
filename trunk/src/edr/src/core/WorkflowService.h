@@ -11,8 +11,14 @@
 
 #include <core/IService.h>
 #include <utils/ObserverPattern.h>
-#include "WorkflowWidget.h"
 
+namespace core{
+
+	class IDataManager;
+
+}
+
+class WorkflowWidget;
 class VisualizerManager;
 class DataProcessorManager;
 

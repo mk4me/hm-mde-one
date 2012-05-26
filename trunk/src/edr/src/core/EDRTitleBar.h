@@ -12,8 +12,10 @@
 #include "ui_EDRTitleBar.h"
 #include <QtGui/QWidget>
 #include <core/IEDRTitleBar.h>
+#include <QtGui/QDockWidget>
 #include <map>
-#include "EDRDockWidget.h"
+
+class EDRDockWidget;
 
 class EDRTitleBar : public QWidget, public Ui::EDRTitleBar, public IEDRTitleBar
 {

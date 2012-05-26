@@ -12,8 +12,6 @@
 #include <core/IWorkflowItemBase.h>
 #include <core/IInputDescription.h>
 #include <core/IOutputDescription.h>
-#include <core/IObjectSource.h>
-#include <core/IObjectOutput.h>
 
 namespace core {
 

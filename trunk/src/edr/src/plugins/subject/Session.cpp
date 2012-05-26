@@ -1,11 +1,7 @@
 #include "SubjectPCH.h"
-#include <limits>
-#include <OpenThreads/Mutex>
-#include <OpenThreads/ScopedLock>
-#include <plugins/subject/Motion.h>
-#include <plugins/subject/Session.h>
-#include <plugins/subject/Subject.h>
-#include "SubjectService.h"
+#include "Session.h"
+#include <plugins/subject/IMotion.h>
+#include <plugins/subject/ISubject.h>
 #include <core/DataAccessors.h>
 
 using namespace PluginSubject;

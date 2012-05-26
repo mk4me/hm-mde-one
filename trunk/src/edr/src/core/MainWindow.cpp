@@ -1,19 +1,32 @@
 #include "CorePCH.h"
+#include "MainWindow.h"
+
+#include <iostream>
+
+#include <QtGui/QSplashScreen>
+
+#include <core/PluginLoader.h>
+#include <core/IManagersAccessor.h>
 #include <core/TypeInfo.h>
 #include <core/ObjectWrapperFactory.h>
-#include "MainWindow.h"
+#include <core/StringTools.h>
+#include <core/Visualizer.h>
+
 #include <osgui/QOsgWidgets.h>
+#include <osgui/EventCallback.h>
 
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <osg/PositionAttitudeTransform>
+#include <osg/ShapeDrawable>
+#include <osg/BlendFunc>
+#include <osg/LineWidth>
 
 #include <osgViewer/GraphicsWindow>
 #include <osgText/Text>
-#include <osg/ShapeDrawable>
 #include <osgViewer/Scene>
-#include <iostream>
 #include <osgGA/TerrainManipulator>
+#include <osgWidget/ViewerEventHandlers>
 
 #include "EDRConsoleWidget.h"
 
@@ -22,30 +35,21 @@
 #include "DataProcessorManager.h"
 #include "DataSourceManager.h"
 #include "UserInterfaceService.h"
+#include "VisualizerManager.h"
 #include "EDRConfig.h"
 #include "EDRTitleBar.h"
 
-#include <iostream>
+//#include <utils/Debug.h>
 
-#include <utils/Debug.h>
-
+#include <boost/foreach.hpp>
+#include <boost/random.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
 #include <functional>
 
 #include "Log.h"
-#include <core/StringTools.h>
-#include <boost/foreach.hpp>
+
 #include "VisualizerWidget.h"
-
-#include <core/Visualizer.h>
-#include <osgWidget/ViewerEventHandlers>
-
-#include <osgui/EventCallback.h>
-#include <osg/BlendFunc>
-#include <osg/LineWidth>
-
-#include <boost/random.hpp>
 
 #include <utils/Push.h>
 #include "DataProcessor.h"

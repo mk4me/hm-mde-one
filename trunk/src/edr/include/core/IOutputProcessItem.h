@@ -11,12 +11,13 @@
 
 #include <core/IOutputDescription.h>
 #include <core/IWorkflowItemBase.h>
-#include <core/IObjectOutput.h>
 
 //! Forward declaration
 class QDialog;
 
 namespace core {
+
+	class IObjectOutput;
 
 //! Interfejs elementów dostarczaj¹cych danych do aplikacji (workflow).
 //! Zapewnia opis danych wyjœciowych i podstawowe informacje i w³aœciwoœci elementów logicznych aplikacji operuj¹cych na danych

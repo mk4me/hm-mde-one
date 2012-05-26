@@ -1,6 +1,5 @@
 #include "CorePCH.h"
 #include "DataProcessorManager.h"
-#include <boost/foreach.hpp>
 
 using namespace core;
 

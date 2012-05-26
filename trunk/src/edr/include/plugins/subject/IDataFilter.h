@@ -11,7 +11,6 @@
 
 #include <plugins/subject/Types.h>
 #include <core/SmartPtr.h>
-#include <core/PluginCommon.h>
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>

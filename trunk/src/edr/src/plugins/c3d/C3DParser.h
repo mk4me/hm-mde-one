@@ -10,15 +10,10 @@
 #ifndef HEADER_GUARD_PLUGINC3D__C3DPARSER_H__
 #define HEADER_GUARD_PLUGINC3D__C3DPARSER_H__
 
-#include <core/SmartPtr.h>
-#include <core/Filesystem.h>
 #include <core/IParser.h>
-#include <core/IDataManager.h>
 #include <c3dlib/C3DParser.h>
-#include <utils/DataChannel.h>
-#include <plugins/c3d/C3DChannels.h>
 
-class C3DParser : public core::IParser, utils::DataChannelTimeAccessor<osg::Vec3f, float>
+class C3DParser : public core::IParser
 {
     UNIQUE_ID("{D7801231-BACA-42C6-9A8E-706F561A563F}", "C3D parser");
 	typedef core::shared_ptr<c3dlib::C3DParser> ParserPtr;

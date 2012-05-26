@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include "LocalDataSource.h"
 #include "LocalDataSourceWidget.h"
+#include <core/IObjectOutput.h>
 #include <QtGui/QVBoxLayout>
 
 std::string LocalDataSource::name = "LocalDataSource";

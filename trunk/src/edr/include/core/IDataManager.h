@@ -222,7 +222,7 @@ namespace core {
     {
 
     public:
-
+		//! Konstruktor domyœlny
 		IMemoryDataManager() : blockNotify_(false), changed(false)
 		{
 
@@ -274,6 +274,7 @@ namespace core {
 			tryNotify();
 		}
 
+		//! \param block Czy blokowaæ notyfikacje przy zarz¹dzaniu danymi DM
 		void blockNotify(bool block)
 		{
 			blockNotify_ = block;
@@ -283,14 +284,14 @@ namespace core {
 				notify();
 			}
 		}
-
+		//! \return Czy sa blokowane aktualnie notyfikacje o zmianie stanu DM
 		bool isNotifyBlocked() const
 		{
 			return blockNotify_;
 		}
 
     private:
-
+		//! Wewnêtrzna próba realizacji notyfikacji jeœli nast¹pi³a zmiana i sa w³¹czone notyfikacje
 		void tryNotify()
 		{
 			if(blockNotify_ == false){
@@ -313,8 +314,9 @@ namespace core {
         virtual ObjectWrapperPtr createObjectWrapper(const TypeInfo & type) const = 0;
 
 	private:
-
+		//! Czy blokujemy notyfikacje
 		bool blockNotify_;
+		//! Czy nast¹pi³a zmiana w DM
 		bool changed;
 
     };
@@ -334,7 +336,7 @@ namespace core {
             //! Zarejestrowane typy
             Types types;
         };
-        
+        //! Konstruktor domyœlny
 		IFileDataManager() : blockNotify_(false), changed(false)
 		{
 
@@ -429,16 +431,18 @@ namespace core {
 		bool changed;
 	};
 
+	//! Klasa pomocnicza do lokalnego blokowania notyfikacji w DM
 	template<class T>
 	class NotifyBlocker
 	{
 	public:
-
+		//! Konstruktor
+		//! \param t Obiekt którego notyfikacje chcemy lokalnie wy³¹czyæ, ich stan zostanie przywrócony w momencie niszczenia tego obiektu
 		NotifyBlocker(T & t) : t(&t), prevBlockingState(t.isNotifyBlocked())
 		{
 			t.blockNotify(true);
 		}
-
+		//! Destruktor - przywraca poprzedni stan notyfikcaji
 		~NotifyBlocker()
 		{
 			t->blockNotify(false);
@@ -446,7 +450,9 @@ namespace core {
 		}
 
 	private:
+		//! Obs³ugiwany obiekt
 		T * t;
+		//! Poprzedni stan blokowania notyfikacji
 		bool prevBlockingState;
 
 	};

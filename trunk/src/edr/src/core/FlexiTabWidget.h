@@ -9,12 +9,10 @@
 #ifndef HEADER_GUARD_QT_EXT__FLEXITABWIDGET_H__
 #define HEADER_GUARD_QT_EXT__FLEXITABWIDGET_H__
 
-#include <QtGui/QTabWidget>
-#include <QtGui/QTabBar>
-#include <QtGui/QFrame>
-#include <QtGui/QScrollArea>
-#include "FlexiTabSectionWidget.h"
 #include "ui_FlexiTabWidget.h"
+
+class QScrollArea;
+class FlexiTabSectionWidget;
 
 class FlexiTabWidget : public QWidget, private Ui::FlexiTabWidget
 {
@@ -88,7 +86,7 @@ private:
         QString name;
         QIcon icon;
         bool visible;
-        //! Pozycja zak³¹dki w QTabBar
+        //! Pozycja zak³adki w QTabBar
         int tabPos;
         //! Pozycja zak³¹dki w FlexiTab (mo¿e byæ ukryta -> ró¿na od tabPos)
         unsigned int flexiPos;
@@ -98,7 +96,6 @@ private:
     };
 
     
-
     typedef std::vector<GroupData*> GroupDataByIndex;
     typedef std::map<GUIID, GroupData*> GroupDataByID;
     

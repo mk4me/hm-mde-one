@@ -9,13 +9,29 @@
 #ifndef HEADER_GUARD_VIDEO__VIDEOVISUALIZER_H__
 #define HEADER_GUARD_VIDEO__VIDEOVISUALIZER_H__
 
-#include <osgViewer/Viewer>
-#include <osgWidget/Widget>
-#include <osgui/AspectRatioKeeper.h>
+#include <string>
+#include <osgui/QOsgWidgets.h>
+
+namespace osgui {
+
+	class AspectRatioKeeper;
+}
+
+namespace osgWidget {
+
+	class Box;
+	class Widget;
+
+}
+
+namespace vidlib {
+
+	class VideoImage;
+
+}
+
 #include <core/IVisualizer.h>
 #include <plugins/video/Wrappers.h>
-#include <osgui/QOsgWidgets.h>
-#include <osgui/OsgWidgetUtils.h>
 
 //! Wizualizator wykresów.
 class VideoVisualizer : public core::IVisualizer
@@ -58,74 +74,24 @@ private:
     class VideoSerie : public core::IVisualizer::TimeSerieBase
     {
     public:
-        VideoSerie(VideoVisualizer * visualizer)
-            : visualizer(visualizer)
-        {
+        VideoSerie(VideoVisualizer * visualizer);
 
-        }
+		virtual ~VideoSerie();
 
-		virtual ~VideoSerie()
-		{
+        virtual void setName(const std::string & name);
 
-		}
+        virtual const std::string & getName() const;
 
-        virtual void setName(const std::string & name)
-        {
-            this->name = name;
-        }
+        virtual void setData(const core::ObjectWrapperConstPtr & data);
 
-        virtual const std::string & getName() const
-        {
-            return name;
-        }
-
-        virtual void setData(const core::ObjectWrapperConstPtr & data)
-        {
-            this->data = data;
-            visualizer->reset();
-            bool success = false;
-			if (data->isSupported(typeid(VideoStreamPtr))) {
-				success = data->tryGet(visualizer->stream);
-			} else if (data->isSupported(typeid(VideoChannel))) {
-				VideoChannelConstPtr channel = data->get();
-				if (channel) {
-					visualizer->stream = osg::const_pointer_cast<VideoStream>(channel->getVideoStream());
-					success = visualizer->stream != nullptr;
-				}
-			}
-
-            // pobranie obrazka
-            if ( success  == true && visualizer->stream != nullptr ) {
-                visualizer->ratioKeeper->setTarget(visualizer->widget);
-				if(visualizer->getImage() == true){
-					visualizer->refreshImage();
-					//! Fix pierwszej ramki - wymuszam poprawny resize okienek OSG!!
-					visualizer->viewer->getEventQueue()->windowResize(0, 0, visualizer->viewer->width(), visualizer->viewer->height());
-					visualizer->viewer->frame();
-				}
-            }else{
-
-				visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
-			}
-        }
-
-        virtual const core::ObjectWrapperConstPtr & getData() const
-        {
-            return data;
-        }
+        virtual const core::ObjectWrapperConstPtr & getData() const;
 
         //! \return Dlugosc kanalu w sekundach
-        virtual double getLength() const
-        {
-            return visualizer->stream->getDuration();
-        }
+        virtual double getLength() const;
 
         //! Czas zawiera siê miêdzy 0 a getLength()
         //! \param time Aktualny, lokalny czas kanalu w sekundach
-        virtual void setTime(double time)
-        {
-			visualizer->currentStreamTime = time;
-        }
+        virtual void setTime(double time);
 
     private:
         VideoVisualizer * visualizer;

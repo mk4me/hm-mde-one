@@ -11,10 +11,13 @@
 
 #include <set>
 #include <map>
-#include <QtGui/QWidget>
-#include <QtGui/QMenu>
+//#include <QtGui/QWidget>
+
+
 #include <core/SmartPtr.h>
 
+
+class QWidget;
 class IAppUsageContextManager;
 
 class IAppUsageContext;

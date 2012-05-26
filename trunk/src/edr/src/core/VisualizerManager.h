@@ -9,21 +9,23 @@
 #ifndef HEADER_GUARD_CORE__VISUALIZERMANAGER_H__
 #define HEADER_GUARD_CORE__VISUALIZERMANAGER_H__
 
+#include <vector>
 #include <list>
-#include <boost/any.hpp>
+
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
-#include <vector>
-#include <utils/ObserverPattern.h>
-#include <core/ObjectWrapper.h>
-#include "Visualizer.h"
-#include "VisualizerChannel.h"
+
 #include <QtCore/QMetaType>
 #include <QtGui/QIcon>
+
+#include <OpenThreads/ReentrantMutex>
+
+#include "Visualizer.h"
+#include "VisualizerChannel.h"
+
 #include <core/IVisualizerManager.h>
 #include <core/IManagersAccessor.h>
 #include "ManagerHelper.h"
-#include <OpenThreads/ReentrantMutex>
 
 Q_DECLARE_METATYPE(UniqueID);
 
@@ -91,17 +93,6 @@ public:
     ~VisualizerManager();
 
 public:
-
-    //! \return
-    /*SceneGraphWidget* getDebugWidget() const
-    { 
-        return debugWidget;
-    }*/
-    //! \param debugWidget
-   /* void setDebugWidget(SceneGraphWidget* debugWidget) 
-    { 
-        this->debugWidget = debugWidget; 
-    }*/
 
     //! \param visualizer
     void registerVisualizer(core::IVisualizerPtr visualizer);

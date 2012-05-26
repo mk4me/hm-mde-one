@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__LOGINITIALIZER_H__
 #define HEADER_GUARD_CORE__LOGINITIALIZER_H__
 
-#include"Log.h"
+//#include"Log.h"
 
 class EDRConsoleWidget;
 
