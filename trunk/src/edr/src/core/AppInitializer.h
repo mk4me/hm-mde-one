@@ -279,6 +279,7 @@ public:
 
                         // tworzymy widok
 					    FrontpageWidget widget;
+						widget.setWindowIcon(QPixmap(QString::fromUtf8(":/resources/icons/appIcon.png")));
                         //inicjalizujemy widok
 					    widget.init(&pluginLoader, &appManagers);
                         //inicjalizujemy konsolê logowania

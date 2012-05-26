@@ -845,6 +845,13 @@ QTabWidget#dataTabWidget QTextEdit {
 	margin: 0px;
 }
 
+QTabWidget#DataSourceWidget QCheckBox
+{
+	color: black;
+	background: transparent;
+	border: none;
+}
+
 QTabWidget#dataTabWidget QGroupBox {
 	color: black;
 	border: 1px solid black;
@@ -916,6 +923,11 @@ QTabWidget#dataTabWidget QHeaderView::section:vertical {
 	border-left: none;
 	border-top: none;
 	border-right: none;
+}
+
+QTabWidget#DataSourceWidget QMessageBox, QTabWidget#DataSourceWidget QMessageBox * {
+	background-color: rgb(91, 91, 91);
+	color: black;
 }
 
 /* ANALIZY - QWidget#analisisArea */
@@ -1093,8 +1105,8 @@ QFrame#mainArea VisualizerWidget &gt; .QWidget:hover {
      <y>10</y>
     </hint>
     <hint type="destinationlabel">
-     <x>465</x>
-     <y>312</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

@@ -4,17 +4,31 @@
 #include <quazip/quazipfile.h>
 #include <QtCore/QFile>
 
+#include <plugins/newCommunication/CommunicationManager.h>
+#include <plugins/subject/ISubjectService.h>
+#include <plugins/subject/ISubject.h>
+#include <plugins/subject/ISession.h>
+#include <plugins/subject/IMotion.h>
+
+#include "DataSourceLoginManager.h"
+#include "DataSourceStatusManager.h"
+#include "DataSourceLocalStorage.h"
+#include "DataSourcePathsManager.h"
+#include "DataSourceUser.h"
+#include "DownloadRequest.h"
+#include "Patient.h"
+
 #include "DataSourceConnectionsManager.h"
 #include "DataSourceWebServicesManager.h"
 #include "DataSourceWidget.h"
 #include "DataSourceShallowCopyUtils.h"
 
-#include <algorithm>
-
 using namespace communication;
 using namespace webservices;
 
-CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.pjwstk.edu.pl/"), memoryDM(nullptr), fileDM(nullptr), dataSourceWidget(nullptr)
+CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.pjwstk.edu.pl/"),
+	memoryDM(nullptr), fileDM(nullptr), dataSourceWidget(nullptr), loginManager(new DataSourceLoginManager()),
+	offlineMode_(false)
 {
     //konfiguracja wsdlpulla ¿eby pisa³ pliki tymczasowe tam gdzie mamy prawo zapisu
 
@@ -25,7 +39,7 @@ CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.p
     auto connectionsManager = DataSourceConnectionManager::create();
 
     setConnectionsSerwerCertificatePath(core::getPathInterface()->getResourcesPath() / "v21.pjwstk.edu.pl.crt");
-	
+
 	connectionsManager->accountFactoryWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDBMed/AccountFactoryWS.svc?wsdl");
     connectionsManager->administrationWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AdministrationWS.svc?wsdl");
     connectionsManager->authorizationWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AuthorizationWS.svc?wsdl");
@@ -41,6 +55,8 @@ CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.p
     //connectionsManager->medicalBasicUpdatesWSConnection()->setUrl("https://v21.pjwstk.edu.pl/MotionMed/BasicUpdatesWS.svc?wsdl");
     connectionsManager->medicalFileStoremanWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDBMed/FileStoremanWS.svc?wsdl");
 
+
+	//inicalizujê po³¹czenie ftp - tutaj nic siê nie dzieje, ¿adne po³¹czenie z internetem nie jest nawi¹zywane
     connectionsManager->motionFtps()->setUrl("ftps://v21.pjwstk.edu.pl/");
     connectionsManager->motionFtps()->setCredentials("testUser", "testUser");
     connectionsManager->medicalFtps()->setUrl("ftps://v21.pjwstk.edu.pl/");
@@ -51,6 +67,7 @@ CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.p
 
 	//konfiguracja defaultowa dla us³ugi tworz¹cej userów w bazie - systemowy u¿ytkownik
 	connectionsManager->accountFactoryWSConnection()->setCredentials("hmdbServiceUser", "4accountCreation");
+	//ustawiamy po³¹czenia serwisom, ale po³¹czenia jeszcze nie s¹ gotowe - leniwa inicjalizacja
 	servicesManager->accountFactoryService()->setConnection(connectionsManager->accountFactoryWSConnection());
     servicesManager->administrationService()->setConnection(connectionsManager->administrationWSConnection());
     servicesManager->authorizationService()->setConnection(connectionsManager->authorizationWSConnection());
@@ -66,21 +83,18 @@ CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.p
 
     //tworzymy i konfigurujemy instancje connectionManagera = odpowiada za sci¹ganie plików
     auto communication = CommunicationManager::getInstance();
+	
+	//TODO - obs³uga pingu serwerów
+	//adres serwara/serwerów do pingowania
+    //communication->setUrlToPingServer(serwerPingUrl);
 
-    communication->setUrlToPingServer(serwerPingUrl);
 
-    communication->setMotionFileStoremanService(servicesManager->motionFileStoremanService());
+	//us³ugi do œci¹gania plików z danymi/metadanymi/zdjêciami
+	communication->setMotionFileStoremanService(servicesManager->motionFileStoremanService());
     communication->setMedicalFileStoremanService(servicesManager->medicalFileStoremanService());
 
     communication->setMotionFtps(connectionsManager->motionFtps());
     communication->setMedicalFtps(connectionsManager->medicalFtps());
-
-
-    //uruchamiamy w¹tek przetwarzaj¹cy w communicationManager - dodajemy pierwsze zapytanie (ping)
-    CommunicationManager::CompleteRequest creq;
-    creq.request = CommunicationManager::getInstance()->createRequestPing();
-
-    CommunicationManager::getInstance()->pushRequest(creq);
 
     localStorage = DataSourceLocalStorage::create();
 
@@ -108,6 +122,7 @@ CommunicationDataSource::~CommunicationDataSource()
 		}
 	}
 
+	delete loginManager;
     CommunicationManager::destoryInstance();
     DataSourceWebServicesManager::destroy();
     DataSourceConnectionManager::destroy();
@@ -200,19 +215,24 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
     }
 
     bool connError = false;
-    try{
-        loginManager.login(user, password);
-    }catch(std::exception & e){
-        connError = true;
-        LOG_ERROR("Error during login: " << e.what());
-    }catch(...){
-        connError = true;
-        LOG_ERROR("Unknown error during login");
-    }
 
-    if(loginManager.isLogged() == true){
-        setCurrentUser(loginManager.user());
-    }else if(connError == true){
+	if(offlineMode_ == false){
+
+		try{
+			loginManager->login(user, password);
+		}catch(std::exception & e){
+			connError = true;
+			LOG_ERROR("Error during login: " << e.what());
+		}catch(...){
+			connError = true;
+			LOG_ERROR("Unknown error during login");
+		}
+
+	}
+
+    if(loginManager->isLogged() == true){
+        setCurrentUser(loginManager->user());
+    }else if(offlineMode_ == true || connError == true){
         //próbujemy lokalnie zalogowaæ
         //sprawdzam czy u¿ytkownik ma kompletn¹ p³ytk¹ kopiê bazy danych - jeœli tak to go logujê offline
         User tmpUser;
@@ -274,6 +294,16 @@ void CommunicationDataSource::logout()
 bool CommunicationDataSource::isLogged() const
 {
     return currentUser_.id() != -1;
+}
+
+void CommunicationDataSource::setOfflineMode(bool offline)
+{
+	offlineMode_ = offline;
+}
+
+bool CommunicationDataSource::offlineMode() const
+{
+	return offlineMode_;
 }
 
 const User * CommunicationDataSource::currentUser() const

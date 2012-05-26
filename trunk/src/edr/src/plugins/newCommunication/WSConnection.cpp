@@ -7,7 +7,7 @@ template<class Invoker>
 class _TWSConnection : public ISecureWSConnection
 {
 public:
-	_TWSConnection() : invoker_(new Invoker()), ready(false), exception_(false)
+	_TWSConnection() : invoker_(new Invoker()), ready(false), exception_(false), resetRequired(false)
 	{
 
 	}
@@ -77,7 +77,9 @@ public:
 	virtual void setUrl(const std::string & url)
 	{
 		url_ = url;
-		resetInvoker();
+		if(url != lastUrl){			
+			resetRequired = true;
+		}
 	}
 
 	//! \return adres serwisu
@@ -89,36 +91,63 @@ public:
 	//! \param operation Metoda serwisu do wywo³ania
 	virtual void setOperation(const std::string & operation)
 	{
-		if(ready == false){
-			throw std::runtime_error("setOperation - Connection not ready for data.");
-		}
-
 		operationName_ = operation;
-		invoker_->setOperation(operation);
 	}
 
 	//! \param name Nazwa wartoœci do ustawienia
 	//! \param value Wartoœæ zmiennej
 	virtual void setValue(const std::string & name, const std::string & value)
 	{
-		if(ready == false){
-			throw std::runtime_error("setValue - Connection not ready for data.");
-		}
-
-		invoker_->setValue(name, value);
+		values[name] = value;
 	}
 
 	//! Wykonuje operacjê na serwisie webowym
 	virtual void invoke(bool process)
 	{
-		if(ready == false){
-			throw std::runtime_error("invoke - Connection not ready for data.");
+		if(resetRequired == true){
+			resetRequired = false;
+			resetInvoker();
+			lastUrl = url_;
 		}
 
-		exception_ = false;
-		s = e = std::string::npos;
-		invoker_->setAuth(user_, password_);
-		invoker_->invoke(0, process);
+		try{
+			invoker_->setOperation(operationName_);
+		}catch(std::exception & e){
+			throw webservices::WSConnectionOperationException(e.what());
+		}catch(...){
+			throw webservices::WSConnectionOperationException("Unknown connection operation error");
+		}
+
+		auto it = values.begin();
+
+		try{
+			for( ; it != values.end(); ++it){
+				invoker_->setValue(it->first, it->second);
+			}
+
+			values.swap(std::map<std::string, std::string>());
+		}catch(std::exception & e){
+			values.swap(std::map<std::string, std::string>());
+			throw webservices::WSConnectionOperationValueException(e.what());
+		}catch(...){
+			values.swap(std::map<std::string, std::string>());
+			std::string str("Unknown connection operation value error for value name: ");
+			str += it->first + " with value: " + it->second;
+			throw webservices::WSConnectionOperationValueException(str.c_str());
+		}
+
+		try{
+			exception_ = false;
+			s = e = std::string::npos;
+			invoker_->setAuth(user_, password_);
+
+			invoker_->invoke(0, process);
+		}catch(std::exception & e){
+			throw webservices::WSConnectionInvokeException(e.what());
+		}catch(...){
+			throw webservices::WSConnectionInvokeException("Unknown connection invoke error");
+		}
+
 		//tutaj weryfikujê czy by³ jakis wyj¹tek - jeœli tak to go zg³oszê
 		//pobieram pe³n¹ odpowiedŸ
 		auto const & resp = invoker_->getXMLResponse();
@@ -134,7 +163,7 @@ public:
 			if(resp.find("a:InvalidSecurityToken", 0) != std::string::npos){
 				throw webservices::WSConnectionSecurityException(resp.substr(s + 11, e-s - 11).c_str());
 			}else{
-				throw std::runtime_error(resp.substr(s + 11, e-s - 11));
+				throw webservices::WSConnectionResponseException(resp.substr(s + 11, e-s - 11).c_str());
 			}			
 		}
 	}
@@ -174,16 +203,16 @@ private:
 
 	void resetInvoker()
 	{
-		ready = false;
 		try{
 			invoker_.reset(new Invoker());
 			setInvoker(boost::is_base_of<WsdlPull::CustomSSLWsdlInvoker, Invoker>());
-			ready = true;
 			LOG_INFO("Created Invoker " << typeid(Invoker).name());
 		}catch(std::exception & e){
 			LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with error: " << e.what());
+			throw webservices::WSConnectionInitializationException(e.what());
 		}catch(...){
 			LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with unknown error");
+			throw webservices::WSConnectionInitializationException("Unknown connection initialization error");
 		}
 	}
 
@@ -210,8 +239,13 @@ private:
 	InvokerPtr invoker_;
 	std::string user_;
 	std::string password_;
-	std::string url_;
 	std::string caPath_;
+	std::string url_;
+
+	std::map<std::string, std::string> values;
+
+	std::string lastUrl;
+	bool resetRequired;
 	WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification_;
 };
 

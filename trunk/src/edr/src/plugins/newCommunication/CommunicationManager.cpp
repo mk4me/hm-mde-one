@@ -9,6 +9,122 @@
 CommunicationManager* CommunicationManager::instance = nullptr;
 
 
+CommunicationManager::ProcessingThread::ProcessingThread(CommunicationManager * manager) : manager(manager), idleSleep_(10000), finish_(false)
+{
+
+}
+
+CommunicationManager::ProcessingThread::~ProcessingThread()
+{
+
+}
+
+void CommunicationManager::ProcessingThread::run()
+{
+	while(!finish_){
+		
+		if(manager->requestsQueueEmpty() == false){
+
+			manager->cancelDownloading = false;
+			CompleteRequest currentRequest;
+			manager->popRequest(currentRequest);
+			manager->currentRequest = currentRequest;
+			if(currentRequest.request->canceled == false){
+
+				switch(currentRequest.request->type) {
+
+				case Complex:
+
+					manager->setState(ProcessingComplex);
+
+					manager->processComplex(currentRequest);
+
+					break;
+
+				case DownloadFile:
+
+					manager->setState(DownloadingFile);
+
+					manager->processFile(currentRequest);
+
+					break;
+
+				case DownloadPhoto:
+
+					manager->setState(DownloadingPhoto);
+
+					manager->processPhoto(currentRequest);
+
+					break;
+
+				case CopyMotionShallowCopy:
+
+					manager->setState(CopyingMotionShallowCopy);
+
+					manager->processMotionShallowCopy(currentRequest);
+
+					break;
+
+				case CopyMotionMetadata:
+
+					manager->setState(CopyingMotionMetadata);
+
+					manager->processMotionMetadata(currentRequest);
+
+					break;
+
+				case CopyMedicalShallowCopy:
+
+					manager->setState(CopyingMedicalShallowCopy);
+
+					manager->processMedicalShallowCopy(currentRequest);
+
+					break;
+
+				case CopyMedicalMetadata:
+
+					manager->setState(CopyingMedicalMetadata);
+
+					manager->processMedicalMetadata(currentRequest);
+
+					break;
+
+				case PingServer:
+
+					manager->setState(PingingServer);
+
+					manager->processPing(currentRequest);
+
+					break;
+				}
+
+				currentRequest.request.reset();
+			}
+		}else{
+			if(manager->state != Ready){
+				manager->setState(Ready);
+			}
+			microSleep(idleSleep_);
+		}
+	}
+}
+
+void CommunicationManager::ProcessingThread::finish()
+{
+	finish_ = true;
+}
+
+void CommunicationManager::ProcessingThread::setIdleSleep(unsigned int ms)
+{
+	idleSleep_ = ms;
+}
+
+unsigned int CommunicationManager::ProcessingThread::idleSleep() const
+{
+	return idleSleep_;
+}
+
+
 CommunicationManager::BasicRequest::~BasicRequest()
 {
 
@@ -31,11 +147,6 @@ CommunicationManager::Request CommunicationManager::BasicRequest::getType() cons
 	return type;
 }
 
-double CommunicationManager::BasicRequest::getProgress() const
-{
-	return 0;
-}
-
 bool CommunicationManager::BasicRequest::isComplete() const
 {
 	return getProgress() == 100.0;
@@ -44,6 +155,26 @@ bool CommunicationManager::BasicRequest::isComplete() const
 CommunicationManager::BasicRequest::BasicRequest(Request type) : type(type), canceled(false)
 {
 
+}
+
+CommunicationManager::PingRequest::PingRequest(const std::string & urlToPing) : BasicRequest(PingServer), urlToPing_(urlToPing), response(false)
+{
+
+}
+
+void CommunicationManager::PingRequest::setServerResponse(bool response)
+{
+	this->response = response;
+}
+
+double CommunicationManager::PingRequest::getProgress() const
+{
+	return response == true ? 100.0 : 0.0;
+}
+
+const std::string & CommunicationManager::PingRequest::urlToPing() const
+{
+	return urlToPing_;
 }
 
 CommunicationManager::MetadataRequest::MetadataRequest(Request type, const std::string & filePath) : BasicRequest(type), filePath(filePath), progress(0)
@@ -150,6 +281,8 @@ CommunicationManager::CommunicationManager()
 	}else{
 		throw std::runtime_error("Error while initializing CURL");
 	}
+
+	processingThread.reset(new ProcessingThread(this));
 }
 
 CommunicationManager::~CommunicationManager()
@@ -157,64 +290,11 @@ CommunicationManager::~CommunicationManager()
     if(pingCurl) {
         curl_easy_cleanup(pingCurl);
     }
-    if(isRunning()) {
-        finish = true;
-        join();
+
+	if(processingThread != nullptr && processingThread->isRunning() == true){    
+        processingThread->finish();
+        processingThread->join();
     }
-}
-
-void CommunicationManager::init()
-{
-    ScopedLock lock(requestsMutex);
-
-    
-    //TODO: dane wpisane na sztywno, dodac zapisywanie ustawien
-    /*motionTransportManager->setFTPCredentials("ftps://v21.pjwstk.edu.pl/", "testUser", "testUser");
-    motionTransportManager->setWSCredentials("http://v21.pjwstk.edu.pl/Motion/FileStoremanWS.svc?wsdl", "applet_user", "aplet4Motion");
-
-    medicalTransportManager->setFTPCredentials("ftps://v21.pjwstk.edu.pl/", "testUser", "testUser");
-    medicalTransportManager->setWSCredentials("http://v21.pjwstk.edu.pl/MotionMed/FileStoremanWS.svc?wsdl", "applet_user", "aplet4Motion");
-
-    motionQueryManager->setWSCredentials("applet_user", "aplet4Motion");
-    motionQueryManager->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
-    motionQueryManager->setBasicUpdatesServiceUri("");*/
-
-    /*medicalQueryManager->setWSCredentials("applet_user", "aplet4Motion");
-    medicalQueryManager->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
-    medicalQueryManager->setBasicUpdatesServiceUri("");*/
-    
-    
-    /*webservices::SecureWsdlConnection conn;
-    conn.setCredentials("https://v21.pjwstk.edu.pl/SecureSample/Service1.svc?wsdl", "hml", "hml");
-    conn.setSecurity((core::getPathInterface()->getResourcesPath() / "pjwstk-hm.crt").string(), WsdlPull::CustomSSLWsdlInvoker::HVNone);
-    conn.setOperation("CallMe");
-    conn.setValue("value", "1");
-    try{
-        conn.setSecurity((core::getPathInterface()->getResourcesPath() / "pjwstk-hm.crt").string(), WsdlPull::CustomSSLWsdlInvoker::HVNone);
-        conn.invokeOperation();
-    
-    }
-    catch(const std::exception & e){
-        LOG_DEBUG(e.what());
-    }
-    catch(...){
-
-    }
-    
-    auto resp = conn.getXMLResponse();
-    LOG_DEBUG("HTTPS Communication:");
-    LOG_DEBUG(resp);*/
-}
-
-void CommunicationManager::deinit()
-{
-    
-}
-
-void CommunicationManager::setUrlToPingServer(const std::string & urlToPing)
-{
-	ScopedLock lock(curlMutex);
-	curl_easy_setopt(pingCurl, CURLOPT_URL, urlToPing.c_str());
 }
 
 void CommunicationManager::setMedicalFtps(const webservices::FtpsConnectionPtr & medicalFtps)
@@ -271,8 +351,8 @@ void CommunicationManager::pushRequest(const CompleteRequest & request)
 	ScopedLock lock(requestsMutex);
 	requestsQueue.push(request);
 
-	if(isRunning() == false){
-		start();
+	if(processingThread->isRunning() == false){
+		processingThread->start();
 	}
 }
 
@@ -318,11 +398,6 @@ CommunicationManager::State CommunicationManager::getState()
 {
 	ScopedLock lock(trialsMutex);
 	return state;
-}
-
-bool CommunicationManager::isServerResponse() const
-{
-	return serverResponse;
 }
 
 void CommunicationManager::cancelRequest(const BasicRequestPtr & request)
@@ -819,15 +894,17 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processPing(
 
     try{
 
+		core::shared_ptr<PingRequest> pingRequest = core::dynamic_pointer_cast<PingRequest>(request.request);
+		CURLcode pingCurlResult;
 		{
-			ScopedLock lock(curlMutex);
+			curl_easy_setopt(pingCurl, CURLOPT_URL, pingRequest->urlToPing().c_str());
 			pingCurlResult = curl_easy_perform(pingCurl);
 		}
 
         if(pingCurlResult == CURLE_OK) {
-            serverResponse = true;
+            pingRequest->setServerResponse(true);
         } else {
-            serverResponse = false;
+            pingRequest->setServerResponse(false);
         }
 
         if(request.callbacks.onEndCallback.empty() == false){
@@ -835,7 +912,6 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processPing(
         }
 
     }catch(const std::exception & e){
-        serverResponse = false;
         if(request.callbacks.onErrorCallback.empty() == false){
             request.callbacks.onErrorCallback(request.request, e.what());
         }
@@ -846,128 +922,10 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processPing(
     return ret;
 }
 
-void CommunicationManager::run()
-{
-    //inicjujemy po³¹czenia dla us³ugi plików i zapytañ
-    init();
-
-    while(finish == false){
-
-        if(requestsQueueEmpty() == false){
-
-            cancelDownloading = false;
-
-            popRequest(currentRequest);
-
-            if(currentRequest.request->canceled == false){
-
-                switch(currentRequest.request->type) {
-
-                    case Complex:
-
-                        setState(ProcessingComplex);
-
-                        processComplex(currentRequest);
-
-                        break;
-
-                    case DownloadFile:
-
-                        setState(DownloadingFile);
-
-                        processFile(currentRequest);
-
-                        break;
-
-                    case DownloadPhoto:
-
-                        setState(DownloadingPhoto);
-
-                        processPhoto(currentRequest);
-
-                        break;
-
-                    case CopyMotionShallowCopy:
-
-                        setState(CopyingMotionShallowCopy);
-
-                        processMotionShallowCopy(currentRequest);
-
-                        break;
-                
-                    case CopyMotionMetadata:
-
-                        setState(CopyingMotionMetadata);
-
-                        processMotionMetadata(currentRequest);
-
-                        break;
-
-                    case CopyMedicalShallowCopy:
-
-                        setState(CopyingMedicalShallowCopy);
-
-                        processMedicalShallowCopy(currentRequest);
-
-                        break;
-
-                    case CopyMedicalMetadata:
-
-                        setState(CopyingMedicalMetadata);
-
-                        processMedicalMetadata(currentRequest);
-
-                        break;
-
-                    case PingServer:
-
-                        setState(PingingServer);
-                            
-                        processPing(currentRequest);
-
-                        break;
-                }
-
-                currentRequest.request.reset();
-            }
-        }else{
-            if(state != Ready){
-                setState(Ready);
-            }
-            microSleep(10000);
-        }
-    }
-
-    //zwalniamy zasoby po³¹czeñ dla us³ugi plików i prostych zapytañ
-    deinit();
-}
-
 size_t CommunicationManager::pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream)
 {
     return size*nmemb;
 }
-
-//core::IDataManager::LocalTrial CommunicationManager::findLocalTrialsPaths(const core::Filesystem::Path& path)
-//{
-//    core::IDataManager::LocalTrial trial;
-//
-//    //przeszukujemy katalog w poszukiwaniu plikow:
-//    std::vector<std::string> masks;
-//    masks.push_back(".c3d");
-//    masks.push_back(".mp");
-//    masks.push_back(".vsk");
-//    masks.push_back(".zip");
-//    masks.push_back(".amc");
-//    masks.push_back(".asf");
-//    masks.push_back(".avi");
-//    masks.push_back(".imgsequence");
-//    std::vector<std::string> filesPath = core::Filesystem::listFiles(path.string(), true, masks);
-//    BOOST_FOREACH(std::string path, filesPath)
-//    {
-//        trial.push_back(path);
-//    }
-//    return trial;
-//}
 
 CommunicationManager::ComplexRequestPtr CommunicationManager::createRequestComplex(const std::vector<CompleteRequest> & requests)
 {
@@ -1004,7 +962,7 @@ CommunicationManager::MetadataRequestPtr CommunicationManager::createRequestMedi
     return MetadataRequestPtr(new MetadataRequest(CopyMedicalMetadata, filePath));    
 }
 
-CommunicationManager::BasicRequestPtr CommunicationManager::createRequestPing()
+CommunicationManager::PingRequestPtr CommunicationManager::createRequestPing(const std::string & urlToPing)
 {
-    return BasicRequestPtr(new BasicRequest(PingServer));
+    return PingRequestPtr(new PingRequest(urlToPing));
 }

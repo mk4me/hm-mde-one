@@ -254,6 +254,12 @@
                <property name="text">
                 <string>Login</string>
                </property>
+               <property name="autoDefault">
+                <bool>true</bool>
+               </property>
+               <property name="default">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -286,6 +292,13 @@
               </widget>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="localLogin">
+             <property name="text">
+              <string>Local login only</string>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QProgressBar" name="loginProgressBar">
@@ -329,8 +342,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>245</width>
-            <height>219</height>
+            <width>194</width>
+            <height>201</height>
            </rect>
           </property>
           <attribute name="label">
@@ -721,6 +734,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>localLogin</sender>
+   <signal>clicked()</signal>
+   <receiver>DataSourceWidget</receiver>
+   <slot>connectionModeChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>142</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onLogin()</slot>
@@ -733,5 +762,6 @@
   <slot>onFilterEdit()</slot>
   <slot>perspectiveContextMenu(QPoint)</slot>
   <slot>onActivate()</slot>
+  <slot>connectionModeChanged()</slot>
  </slots>
 </ui>

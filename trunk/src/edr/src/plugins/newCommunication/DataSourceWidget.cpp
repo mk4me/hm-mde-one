@@ -7,6 +7,15 @@
 #include <QtGui/QMenu>
 #include <QtGui/QHBoxLayout>
 #include <QtCore/QRegExp>
+#include <QtGui/QKeyEvent>
+
+#include <boost/tokenizer.hpp>
+
+#include <plugins/subject/ISubjectService.h>
+#include <plugins/subject/ISubject.h>
+#include <plugins/subject/ISession.h>
+#include <plugins/subject/IMotion.h>
+#include "Patient.h"
 
 #include "DataSourceWebServicesManager.h"
 #include "DataSourceShallowCopyUtils.h"
@@ -121,7 +130,7 @@ void LocalDataLoader::showFinalMessage()
 	//obs³uga komunikatu
 	if(sourceWidget->downloadCanceled == true){
 		//anulowano pobieranie
-		QMessageBox messageBox;
+		QMessageBox messageBox(sourceWidget);
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 			messageBox.setWindowTitle(tr("Synchronization canceled"));
 			messageBox.setText(tr("Synchronization successfully canceled"));
@@ -136,7 +145,7 @@ void LocalDataLoader::showFinalMessage()
 		messageBox.exec();
 	}else if(sourceWidget->downloadCrashed == true){
 		//b³¹d pobierania
-		QMessageBox messageBox;
+		QMessageBox messageBox(sourceWidget);
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 			messageBox.setWindowTitle(tr("Synchronization error"));
 			messageBox.setText(tr("Synchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"));
@@ -151,7 +160,7 @@ void LocalDataLoader::showFinalMessage()
 		messageBox.exec();
 	}else{
 		//wszystko ok
-		QMessageBox messageBox;
+		QMessageBox messageBox(sourceWidget);
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 			messageBox.setWindowTitle(tr("Synchronization successful"));
 			messageBox.setText(tr("Synchronization has finished successfully"));
@@ -170,9 +179,27 @@ void LocalDataLoader::showFinalMessage()
 	QTimer::singleShot(3000, sourceWidget, SLOT(tryHideStatusWidget()));
 }
 
+DataSourceWidget::LoginEventFilter::LoginEventFilter(DataSourceWidget * sourceWidget, QObject * parent) : QObject(parent), sourceWidget(sourceWidget)
+{
+
+}
+
+bool DataSourceWidget::LoginEventFilter::eventFilter(QObject * watched, QEvent * event)
+{
+	if(event->type() == QEvent::KeyPress){
+		QKeyEvent * keyEvent = static_cast<QKeyEvent*>(event);
+		if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {
+			sourceWidget->onLogin();
+			return true;
+		} else
+			return false;
+	}
+	return false;
+}
+
 
 DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget * parent) : QTabWidget(parent), dataSource(dataSource),
-	downloadStatusWidget(new DownloadStatusWidget()), downloadCanceled(false), downloadCrashed(false)
+	downloadStatusWidget(new DownloadStatusWidget()), downloadCanceled(false), downloadCrashed(false), loginEventFilter(nullptr)
 {
 	setupUi(this);
 	loginRecoveryButton->setVisible(false);
@@ -211,6 +238,11 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	perspectiveComboBox->setCurrentIndex(0);
 
 	dataViewWidget->layout()->addWidget(downloadStatusWidget);
+
+	loginEventFilter = new LoginEventFilter(this);
+	loginPage->installEventFilter(loginEventFilter);
+	userEdit->installEventFilter(loginEventFilter);
+	passwordEdit->installEventFilter(loginEventFilter);
 }
 
 DataSourceWidget::~DataSourceWidget()
@@ -257,6 +289,17 @@ void DataSourceWidget::refreshCurrentPerspectiveContent()
 	if(selected.empty() == true && perspectiveManager.currentPerspectiveWidget()->topLevelItemCount() > 0){
 		perspectiveManager.currentPerspectiveWidget()->topLevelItem(0)->setSelected(true);
 	}
+}
+
+void DataSourceWidget::connectionModeChanged()
+{
+	QCheckBox * widget = qobject_cast<QCheckBox*>(sender());
+
+	if(widget == nullptr){
+		return;
+	}
+
+	dataSource->setOfflineMode(widget->isChecked());
 }
 
 void DataSourceWidget::refreshStatus()
@@ -564,7 +607,7 @@ void DataSourceWidget::onLogin()
 			//mamy jakieœ œci¹ganie w miêdzyczasie!!
 			//pytamy czy na pewno wylogowaæ - wtedy je anulujemy
 
-			QMessageBox messageBox;
+			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Logout process"));
 			messageBox.setText(tr("Some download is currently performed. Do you want to logout and cancel it?"));
 			messageBox.setIcon(QMessageBox::Warning);
@@ -622,7 +665,7 @@ void DataSourceWidget::onLogin()
 		// pierwsza weryfikacja danych wejœciowych do logowania - czy podano niezbêdne dane
 		if(userEdit->text().isEmpty() == true || passwordEdit->text().isEmpty() == true){
 
-			QMessageBox messageBox;
+			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Login problem"));
 			messageBox.setText(tr("Both fields: User and Password need to be filled. Please fill them and retry."));
 			messageBox.setIcon(QMessageBox::Warning);
@@ -664,7 +707,7 @@ void DataSourceWidget::onLogin()
 
 				error += ". " + tr("Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.");
 
-				QMessageBox messageBox;
+				QMessageBox messageBox(this);
 				messageBox.setWindowTitle(tr("Login error"));
 				messageBox.setText(error);
 				messageBox.setIcon(QMessageBox::Critical);
@@ -687,7 +730,7 @@ void DataSourceWidget::onLogin()
 
 				if(dataSource->currentUser_.id() == -2){
 					// je¿eli jestem zalogowany lokalnie to informujê o tym
-					QMessageBox messageBox;
+					QMessageBox messageBox(this);
 					messageBox.setWindowTitle(tr("Login information"));
 					messageBox.setText(tr("User is logged locally - there might be a problem with internet connection and remote services might not work correctly."));
 					messageBox.setIcon(QMessageBox::Information);
@@ -718,7 +761,7 @@ void DataSourceWidget::onLogin()
 					}
 
 					if(extractStatus == false){
-						QMessageBox messageBox;
+						QMessageBox messageBox(this);
 						messageBox.setWindowTitle(tr("Synchronization error"));
 						messageBox.setText(tr("Synchronization data is corrupted. Please try again later. If problem continues contact producer"));
 						messageBox.setIcon(QMessageBox::Warning);
@@ -734,7 +777,7 @@ void DataSourceWidget::onLogin()
 							auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
 
 							if(DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(userShallowCopy, time) == true){
-								QMessageBox messageBox;
+								QMessageBox messageBox(this);
 								messageBox.setWindowTitle(tr("Synchronization required"));
 								messageBox.setText(tr("Database was updated. Some data might be not available. Would You like to synchronize?"));
 								messageBox.setIcon(QMessageBox::Information);
@@ -753,7 +796,7 @@ void DataSourceWidget::onLogin()
 					}
 				}else{
 
-					QMessageBox messageBox;
+					QMessageBox messageBox(this);
 					messageBox.setWindowTitle(tr("Synchronization required"));
 					messageBox.setText(tr("Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?"));
 					messageBox.setIcon(QMessageBox::Warning);
@@ -786,7 +829,7 @@ void DataSourceWidget::onLogin()
 
 				//poprawna komunikacja, nie uda³o siê zweryfikowaæ u¿ytkownika
 
-				QMessageBox messageBox;
+				QMessageBox messageBox(this);
 				messageBox.setWindowTitle(tr("Login unsuccessful"));
 				messageBox.setText(tr("Given user or password is incorrect. Please correct it and try again. If problem continues contact database administrators."));
 				messageBox.setIcon(QMessageBox::Warning);
@@ -852,7 +895,7 @@ void DataSourceWidget::onRegistration()
 			message += QString::number(i+1) + ". " + verification[i] + "\n";
 		}
 
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Registration form validation"));
 		messageBox.setText(message);
 		messageBox.setIcon(QMessageBox::Warning);
@@ -864,7 +907,7 @@ void DataSourceWidget::onRegistration()
 		if(dataSource->registerUser(regLoginEdit->text().toStdString(), emailEdit->text().toStdString(), regPassEdit->text().toStdString(),
 			nameEdit->text().toStdString(), surnameEdit->text().toStdString()) == true){
 
-			QMessageBox messageBox;
+			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Registration successful"));
 			messageBox.setText(tr("Your registration has finished. Activate Your account to be able to login and get access to database."));
 			messageBox.setIcon(QMessageBox::Information);
@@ -879,7 +922,7 @@ void DataSourceWidget::onRegistration()
 				activationLoginEdit->setText(regLoginEdit->text());
 			}
 		} else{
-			QMessageBox messageBox;
+			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Registration failed"));
 			messageBox.setText(tr("Could not registrate. Please change login or email and try again. If problem continues contact producer."));
 			messageBox.setIcon(QMessageBox::Critical);
@@ -893,7 +936,7 @@ void DataSourceWidget::onRegistration()
 void DataSourceWidget::onActivate()
 {
 	if(activationLoginEdit->text().isEmpty() == true || activationCodeEdit->text().isEmpty() == true){
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Activation validation"));
 		messageBox.setText(tr("Both fields: Login and Activation code must be filled. Please correct them and try again."));
 		messageBox.setIcon(QMessageBox::Warning);
@@ -901,7 +944,7 @@ void DataSourceWidget::onActivate()
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
 	}else if(dataSource->tryActivateAccount(activationLoginEdit->text().toStdString(), activationCodeEdit->text().toStdString()) == true){
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Activation successful"));
 		messageBox.setText(tr("Given login has been successfully activated. You can now login using this account."));
 		messageBox.setIcon(QMessageBox::Information);
@@ -916,7 +959,7 @@ void DataSourceWidget::onActivate()
 			userEdit->setText(activationLoginEdit->text());
 		}
 	}else{
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Activation failed"));
 		messageBox.setText(tr("Could not activate given login with provided activation code. Verify data and try again. If problem continiues please contact the producer."));
 		messageBox.setIcon(QMessageBox::Critical);
@@ -1020,6 +1063,24 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	filesToLoad.swap(std::set<int>());
 	filesToUnload.swap(std::set<int>());
 	//tutaj nie czyszczê plików œci¹ganych bo one s¹ kopiowane w innym w¹tku - tam to robie (LocalDataLoader)
+}
+
+QString DataSourceWidget::formatFileSize(unsigned long long size)
+{
+	double num = size;
+	QStringList list;
+	list << "KB" << "MB" << "GB" << "TB";
+
+	QStringListIterator i(list);
+	QString unit("bytes");
+
+	while(num >= 1024.0 && i.hasNext())
+	{
+		unit = i.next();
+		num /= 1024.0;
+	}
+
+	return QString().setNum(num,'d',2) + " " + unit;
 }
 
 void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget * perspective)
@@ -1325,7 +1386,7 @@ void DataSourceWidget::updateShallowCopy()
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourcePathsManager::instance());
 	if(dataSource->isShallowCopyComplete() == true && dataSource->isShallowCopyCurrent() == true){
 		//message box - nie musimy aktualizowaæ, mamy najœwie¿sz¹ wersjê
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Database synchronization"));
 		messageBox.setText(tr("Local data already synchronized. Synchronization is not required. Proceed anyway?"));
 		messageBox.setIcon(QMessageBox::Question);
@@ -1434,9 +1495,9 @@ void DataSourceWidget::onDownload()
 
 	//mno¿e razy 2 bo muszê to potem jeszcze do local storage wrzuciæ!!
 	if(avaiable < (size << 1)){
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Download problem"));
-		messageBox.setText(tr("Download request is ") + QString::number(size) + tr(" bytes large while there is only ") + QString::number(avaiable) + tr(" bytes free. Download could not be continued. Please free some space or truncate your download request."));
+		messageBox.setText(tr("Download request requires %1 of free space while there is only %2 free space left. Download could not be continued. Please free some space or limit your download request.").arg(formatFileSize(size)).arg( formatFileSize(avaiable)));
 		messageBox.setIcon(QMessageBox::Warning);
 		messageBox.setStandardButtons(QMessageBox::Ok);
 		messageBox.setDefaultButton(QMessageBox::Ok);
@@ -1444,9 +1505,9 @@ void DataSourceWidget::onDownload()
 	}else{
 		//ok - mogê œci¹gaæ ale mo¿e tego jest sporo wiêc trzeba u¿ytkownika uœwiadomiæ
 		if(size > downloadSizeWarningLevel){
-			QMessageBox messageBox;
+			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Download warning"));
-			messageBox.setText(tr("Download request is ") + QString::number(size) + tr(" bytes large. This will take some time to download such amount of data. Are you sure you can wait some longer time?"));
+			messageBox.setText(tr("Download request contains %1. This will take some time to download such amount of data. Are you sure you can wait some longer time?").arg(formatFileSize(size)));
 			messageBox.setIcon(QMessageBox::Warning);
 			messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 			messageBox.setDefaultButton(QMessageBox::No);
@@ -1468,7 +1529,7 @@ void DataSourceWidget::onDownload()
 			
 		}catch(std::exception & e){
 			//nie uda³o siê utworzyæ/przygotowaæ requesta wiêc info o b³êdzie
-			QMessageBox messageBox;
+			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Download preparation error"));
 			messageBox.setText(tr("Error while preparing download request. Error description: ") + QString::fromUtf8(e.what()));
 			messageBox.setIcon(QMessageBox::Critical);
@@ -2134,7 +2195,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 
 
 	if(loadingErrors.empty() == true && unknownErrors.empty() == true){
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Loading info"));
 		messageBox.setText(tr("Data loaded successfully to application."));
 		messageBox.setIcon(QMessageBox::Information);
@@ -2157,7 +2218,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 			++i;
 		}
 
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Loading warning"));
 		messageBox.setText(message);
 		messageBox.setIcon(QMessageBox::Warning);
@@ -2208,7 +2269,7 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 
 	if(showMessage == true){
 		if(unloadingErrors.empty() == true && unknownErrors.empty() == true){
-			QMessageBox messageBox;
+			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Unloading info"));
 			messageBox.setText(tr("Data unloaded successfully."));
 			messageBox.setIcon(QMessageBox::Information);
@@ -2231,7 +2292,7 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 				++i;
 			}
 
-			QMessageBox messageBox;
+			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Unloading warning"));
 			messageBox.setText(message);
 			messageBox.setIcon(QMessageBox::Warning);
@@ -2273,7 +2334,7 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 	}
 
 	if(accessibleFiles.size() < projectFiles.size()){
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Loading project warning"));
 		messageBox.setText(tr("Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?"));
 		messageBox.setIcon(QMessageBox::Warning);
@@ -2299,7 +2360,7 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 	FilesHelper::filterFiles(dmOKFiles, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
 	if(filesToDownload.empty() == false){
-		QMessageBox messageBox;
+		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Loading project warning"));
 		messageBox.setText(tr("Some project files must are missing. Data download is required. Do You want to continue?"));
 		messageBox.setIcon(QMessageBox::Warning);
@@ -2347,7 +2408,7 @@ void DataSourceWidget::onSaveProject()
 
 		if(input.textValue().isEmpty() == true){
 			again = true;
-			QMessageBox messageBox;
+			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Save project warning"));
 			messageBox.setText(tr("Project name can not be empty. Please give a name to the project and continue."));
 			messageBox.setIcon(QMessageBox::Warning);

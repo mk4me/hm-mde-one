@@ -20,7 +20,6 @@
 #include <QtCore/QThread>
 #include <QtGui/QPixmap>
 #include <QtGui/QIcon>
-
 #include <set>
 
 class DownloadStatusWidget;
@@ -62,6 +61,26 @@ class DataSourceWidget : public QTabWidget, private Ui::DataSourceWidget, privat
     friend class LocalDataLoader;
 	friend class CommunicationDataSource;
 
+private:
+
+	//! Obiekt ³api¹cy klawisz ENTER w oknie logowania i wyzwalaj¹cy logowanie/wylogowywanie
+	class LoginEventFilter : public QObject
+	{
+	public:
+		//! Konstruktor
+		//! \param sourceWidget Widget obs³uguj¹cy Ÿród³o, przez któy loguje/wylogowuje
+		//! \param parent Rodzic tego obiektu
+		LoginEventFilter(DataSourceWidget * sourceWidget, QObject *parent = nullptr);
+
+		virtual bool eventFilter(QObject * watched, QEvent * event);
+
+	private:
+		//! Widget obs³uguj¹cy Ÿród³o danych
+		DataSourceWidget * sourceWidget;
+	};
+
+	friend class LoginEventFilter;
+
 public:
 
     DataSourceWidget(CommunicationDataSource * dataSource, QWidget * parent = nullptr);
@@ -77,6 +96,9 @@ public slots:
 	void setPatientCard(webservices::MedicalShallowCopy::Patient * patient, webservices::MotionShallowCopy::Performer * subject);
 	
 private slots:
+
+	//! Zmieniamy metode dzia³ania - online lub offline
+	void connectionModeChanged();
 
     //! Odswieza status danych
     void refreshStatus();
@@ -124,6 +146,8 @@ private slots:
     void onPerspectiveSelectionChanged();
 
 private:
+
+	static QString formatFileSize(unsigned long long size);
 
 	void generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget * perspective);
 	void generateGeneralContextMenu(QMenu & menu, QTreeWidget * perspective);
@@ -194,6 +218,9 @@ private:
 	void addPatientObject(const webservices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID);
 
 private:
+	//! Event filter do obs³ugi ENTER przy logowaniu/wylogownaiu
+	LoginEventFilter * loginEventFilter;
+
     //! Aktualnie ustawiony content perspektyw
     std::map<QTreeWidget*, int> perspectivesContent;
 

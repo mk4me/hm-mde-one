@@ -608,7 +608,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="194"/>
         <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="255"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="619"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="662"/>
         <source>Login</source>
         <translation>Login</translation>
     </message>
@@ -619,432 +619,442 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="225"/>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="355"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="368"/>
         <source>Password:</source>
         <translation>Hasło:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="284"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="290"/>
         <source>Login Recovery</source>
         <translation>Odzyskanie hasła</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="337"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="299"/>
+        <source>Local login only</source>
+        <translation>Logowanie lokalne (offline)</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="350"/>
         <source>Registration</source>
         <translation>Rejestracja</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="345"/>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="508"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="358"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="521"/>
         <source>Login:</source>
         <translation>Login:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="369"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="382"/>
         <source>Repeat password:</source>
         <translation>Powtórz hasło:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="383"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="396"/>
         <source>Name:</source>
         <translation>Imię:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="400"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="413"/>
         <source>Surname:</source>
         <translation>Nazwisko:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="417"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="430"/>
         <source>E-mail:</source>
         <translation>E-mail:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="444"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="457"/>
         <source>Send request</source>
         <translation>Wyślij podanie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="500"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="513"/>
         <source>Activation</source>
         <translation>Aktywacja</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="518"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="531"/>
         <source>Activation Code:</source>
         <translation>Kod aktywacyjny:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="538"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="551"/>
         <source>Activate</source>
         <translation>Aktywuj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="486"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="968"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="529"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1011"/>
         <source>Data</source>
         <translation>Dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="568"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="611"/>
         <source>Logout process</source>
         <translation>Wylogowywanie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="569"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="612"/>
         <source>Some download is currently performed. Do you want to logout and cancel it?</source>
         <translation>Dane są aktualnie ściągane. Czy chcesz się wylogować i przerwać to ściąganie?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="626"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="669"/>
         <source>Login problem</source>
         <translation>Problem logowania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="627"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="670"/>
         <source>Both fields: User and Password need to be filled. Please fill them and retry.</source>
         <translation>Oba pola: Uzytkownik i Hasło muszą być wypełnione. Prosze je wypełnić i spróbować ponownie.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="649"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="692"/>
         <source>Error during login: </source>
         <translation>Błąd podczas logowania:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="657"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="700"/>
         <source>UNKNOWN ERROR</source>
         <translation>Nieznany błąd</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="665"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="708"/>
         <source>Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.</source>
         <translation>Prosze sprawdzić połączenie z internetem (zezwolić aplikacji EDR na komunikację z internetem w zaporze internetowej). Jeśli problem będzie się powtarzał skontaktuj się z producentem.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="668"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="711"/>
         <source>Login error</source>
         <translation>Błąd logowania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="684"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="727"/>
         <source>Logout</source>
         <translation>Wyloguj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="691"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="734"/>
         <source>Login information</source>
         <translation>Status logowania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="692"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="735"/>
         <source>User is logged locally - there might be a problem with internet connection and remote services might not work correctly.</source>
         <translation>Użytkownik zalogowany lokalnie - prawdopodobnie problem z połączeniem internetowym i usługami zdalnymi.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="722"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="765"/>
         <source>Synchronization error</source>
         <translation>Błąd synchronizacji</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="723"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="766"/>
         <source>Synchronization data is corrupted. Please try again later. If problem continues contact producer</source>
         <translation>Dane synchronizacyjne uszkodzone. Proszę spróbować jeszcze raz później. Jeśli problem będzie się powtarzał skontaktuj się z producentem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="738"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="757"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="781"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="800"/>
         <source>Synchronization required</source>
         <translation>Wymagana jest synchronizacja</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="739"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="782"/>
         <source>Database was updated. Some data might be not available. Would You like to synchronize?</source>
         <translation>Baza danych została zaktualizaowana. Część danych może być niedostępna. Czy chcesz zsynchronizować się z bazą danych?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="758"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="801"/>
         <source>Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?</source>
         <translation>Część danych jest niedostępna. Aby kontynuować pracę wymagana jest synchronizacja. Czy chcesz przeprowadzić teraz synchronizację?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="790"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="833"/>
         <source>Login unsuccessful</source>
         <translation>Nieudane logowanie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="791"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="834"/>
         <source>Given user or password is incorrect. Please correct it and try again. If problem continues contact database administrators.</source>
         <translation>Podane dane są niepoprawne. Sprawdź ich poprawność i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="835"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="878"/>
         <source>All fields: Login, Password, Repeat password, Name, Surname and E-mail must be filled. Please correct them and try again.</source>
         <translation>Wszystkie pola: Login, Hasło, Powtórz hasło, Imię, Nazwisko i E-mail muszą być wypełnione. Popraw dane i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="839"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="882"/>
         <source>Password differs from its repeat. Please verify password.</source>
         <translation>Hasło i powtórzone hasło różnią się. Popraw hasło.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="856"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="899"/>
         <source>Registration form validation</source>
         <translation>Walidacja formularza rejestracyjnego</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="868"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="911"/>
         <source>Registration successful</source>
         <translation>Rejestracja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="869"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="912"/>
         <source>Your registration has finished. Activate Your account to be able to login and get access to database.</source>
         <translation>Rejestracja dobiegła końca. Aktywuj swoje konto aby logować się do aplikacji i uzyskać dostęp do danych.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="883"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="926"/>
         <source>Registration failed</source>
         <translation>Rejestracja zakończona niepowodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="884"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="927"/>
         <source>Could not registrate. Please change login or email and try again. If problem continues contact producer.</source>
         <translation>Nie można zarejestrować. Spróbuj zmienić login lub email i spróbuj się ponownie zarejestrować. Jeżeli problem będzie się powtarzał skontaktuj się z producentem.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="897"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="940"/>
         <source>Activation validation</source>
         <translation>Walidacja aktywacji</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="898"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="941"/>
         <source>Both fields: Login and Activation code must be filled. Please correct them and try again.</source>
         <translation>Oba pola: Login i Kod aktywacyjny musza być wypełnione. Popraw je i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="905"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="948"/>
         <source>Activation successful</source>
         <translation>Aktywacja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="906"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="949"/>
         <source>Given login has been successfully activated. You can now login using this account.</source>
         <translation>Podany login został poprawnie aktywowany. Można się nim logować do aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="920"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="963"/>
         <source>Activation failed</source>
         <translation>Aktywacja zakończona niepowodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="921"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="964"/>
         <source>Could not activate given login with provided activation code. Verify data and try again. If problem continiues please contact the producer.</source>
         <translation>Nie można aktywować loginu przy pomocy zadanego kodu aktywacyjnego. Sprawdź login i kod aktywacyjny i spróbuj ponownie. Jeżeli problem będzie się powtarzał skontaktuj się z producentem.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1106"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1167"/>
         <source>Load All</source>
         <translation>Załaduj wszystko</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1107"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1168"/>
         <source>Unload All</source>
         <translation>Wyładuj wszystko</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1027"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1500"/>
+        <source>Download request requires %1 of free space while there is only %2 free space left. Download could not be continued. Please free some space or limit your download request.</source>
+        <translation>Próbujesz ściągnąć %1 danych kiedy dostępne jest tylko %2 wolnego miejsca. Ściąganie nie moze być kontynuowane. Zwolnij miejsce dla danych lub ogranicz ilość ściąganych danych.</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1510"/>
+        <source>Download request contains %1. This will take some time to download such amount of data. Are you sure you can wait some longer time?</source>
+        <translation>Próbujesz ściągnąć %1 danych. Taka ilość danych potrwa dłuższą chwilę. Jesteś pewien że chcesz kontynuować?</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1088"/>
         <source>Load</source>
         <translation>Załaduj dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1028"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1089"/>
         <source>Unload</source>
         <translation>Wyładuj dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1030"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1091"/>
         <source>Download</source>
         <translation>Pobierz dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1151"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2341"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1212"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2402"/>
         <source>Save project as...</source>
         <translation>Zapisz projekt jako...</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1152"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1213"/>
         <source>Load project</source>
         <translation>Załaduj projekt</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1153"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1214"/>
         <source>Delete project</source>
         <translation>Usuń projekt</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1033"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1094"/>
         <source>Refresh status</source>
         <translation>Odśwież status danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1108"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1169"/>
         <source>Download All</source>
         <translation>Ściągnij wszystko</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1155"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1216"/>
         <source>Synchronize</source>
         <translation>Synchronizuj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1329"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1390"/>
         <source>Database synchronization</source>
         <translation>Synchronizowanie bazy danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1330"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1391"/>
         <source>Local data already synchronized. Synchronization is not required. Proceed anyway?</source>
         <translation>Dane lokalne są już zsynchronizowane. Synchronizacja nie jest wymagana. Kontynuować mimo to?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1438"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1499"/>
         <source>Download problem</source>
         <translation>Problem ściągania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1439"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1449"/>
         <source>Download request is </source>
-        <translation>Operacja ściągania obejmuje </translation>
+        <translation type="obsolete">Operacja ściągania obejmuje </translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1439"/>
         <source> bytes large while there is only </source>
-        <translation> bajtów dancyh kiedy tylko </translation>
+        <translation type="obsolete"> bajtów dancyh kiedy tylko </translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1439"/>
         <source> bytes free. Download could not be continued. Please free some space or truncate your download request.</source>
-        <translation> bajtów jest wolne na dysku docelowym. Nie można kontynuować ściągania. Zwolnij odpowiednią ilość wolnego miejsca na dysku lub zaweż zakres ściądanych danych.</translation>
+        <translation type="obsolete"> bajtów jest wolne na dysku docelowym. Nie można kontynuować ściągania. Zwolnij odpowiednią ilość wolnego miejsca na dysku lub zaweż zakres ściądanych danych.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1448"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1509"/>
         <source>Download warning</source>
         <translation>Ostrzeżenie ściągania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1449"/>
         <source> bytes large. This will take some time to download such amount of data. Are you sure you can wait some longer time?</source>
-        <translation> bajtów dancyh. Ściąganie takiej ilości danych zajmie dłuższą chwilę. Czy mimo to chcesz kontynuować?</translation>
+        <translation type="obsolete"> bajtów dancyh. Ściąganie takiej ilości danych zajmie dłuższą chwilę. Czy mimo to chcesz kontynuować?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1472"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1533"/>
         <source>Download preparation error</source>
         <translation>Błąd przygotowania ściągania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1473"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1534"/>
         <source>Error while preparing download request. Error description: </source>
         <translation>Błąd przygotowania ściągana danych. Opis błędu: </translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2138"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2199"/>
         <source>Loading info</source>
         <translation>Informacja ładowania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2139"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2200"/>
         <source>Data loaded successfully to application.</source>
         <translation>Dane załadowane pomyslnie do aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2146"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2207"/>
         <source>Errors while data loading:</source>
         <translation>Błędy ładowania danych do aplikacji:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2151"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2225"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2212"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2286"/>
         <source>
 %1. File ID: %2. Error description: %3</source>
         <translation>%1. Identyfikator pliku: %2. Opis błędu: %3</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2156"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2230"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2217"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2291"/>
         <source>
 %1. File ID: %2. Unknown error.</source>
         <translation>%1. Identyfikator pliku: %2. Nieznany błąd.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2161"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2222"/>
         <source>Loading warning</source>
         <translation>Ostrzeżenie ładowania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2212"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2273"/>
         <source>Unloading info</source>
         <translation>Informacja wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2213"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2274"/>
         <source>Data unloaded successfully.</source>
         <translation>Dane wyładowane pomyślnie z aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2220"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2281"/>
         <source>Errors while data unloading:</source>
         <translation>Błędy podczas wyładowywania danych z aplikacji:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2235"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2296"/>
         <source>Unloading warning</source>
         <translation>Ostrzeżenie wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2277"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2303"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2338"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2364"/>
         <source>Loading project warning</source>
         <translation>Ostrzeżenie ładowania projektu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2278"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2339"/>
         <source>Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?</source>
         <translation>Niektóre pliki projektu nie są już dostepne. Skontaktuj się z właścicielem tych plików by przyznał ci do nich prawa. Wczy chcesz załadować projekt bez tych plików?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2304"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2365"/>
         <source>Some project files must are missing. Data download is required. Do You want to continue?</source>
         <translation>Brakuje niektórych plików.  Wymagane jest ich ściągnięcie. Czy chcesz je teraz ściągnąć?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2339"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2400"/>
         <source>Project name:</source>
         <translation>Nazwa projetku:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2340"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2401"/>
         <source>Save</source>
         <translation>Zachowaj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2351"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2412"/>
         <source>Save project warning</source>
         <translation>Ostrzeżenie zapisu projektu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2352"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2413"/>
         <source>Project name can not be empty. Please give a name to the project and continue.</source>
         <translation>Nazwa projektu nie moze być pusta. Proszę podać nazwę i kontynuować.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2027"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2088"/>
         <source>Unknown error</source>
         <translation>Nieznany błąd</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2088"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2149"/>
         <source>Downloading file %1 [%2/%3]</source>
         <translation>Ściąganie pliku %1 [%2/%3]</translation>
     </message>
@@ -1664,42 +1674,42 @@ p, li { white-space: pre-wrap; }
         <translation>Konsola</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1000"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1007"/>
         <source>About...</source>
         <translation>O programie...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1009"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1016"/>
         <source>&amp;Open</source>
         <translation>&amp;Otwórz</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1012"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1019"/>
         <source>O</source>
         <translation>O</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1017"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1024"/>
         <source>Window</source>
         <translation>Okno</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1022"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1029"/>
         <source>Exit</source>
         <translation>Wyjście</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1031"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1038"/>
         <source>Save layout</source>
         <translation>Zapisz układ</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1036"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1043"/>
         <source>Open...</source>
         <translation>Otwórz...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1041"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1048"/>
         <source>Create workflow</source>
         <translation>Twórz przepływ danych</translation>
     </message>
@@ -2070,82 +2080,82 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>LocalDataLoader</name>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="54"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="63"/>
         <source>Synchronization data corrupted</source>
         <translation>Uszkodzone dane synchronizacyjne</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="61"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="70"/>
         <source>Synchronizing files:</source>
         <translation>Synchronizacja p lików:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="126"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="135"/>
         <source>Synchronization canceled</source>
         <translation>Synchronizacja anulowana</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="127"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="136"/>
         <source>Synchronization successfully canceled</source>
         <translation>Synchronizacja pomyślnie anulowana</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="129"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="138"/>
         <source>Download canceled</source>
         <translation>Pobieranie anulowane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="130"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="139"/>
         <source>Download successfully canceled</source>
         <translation>Pobieranie pomyślnie anulowane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="141"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="150"/>
         <source>Synchronization error</source>
         <translation>Błąd synchronizacji</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="142"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="151"/>
         <source>Synchronization has failed with the following error: </source>
         <translation>Synchronizacja zakończona niepowodzeniem:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="142"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="151"/>
         <source>Please try to synchronize later. If this error continues to happen contact producer</source>
         <translation>Proszę spróbowac synchronizacji później. Jeśli problem będzie się powtarzał skontaktuj się z producentem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="144"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="153"/>
         <source>Download error</source>
         <translation>Błąd pobierania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="145"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="154"/>
         <source>Download has failed with the following error: </source>
         <translation>Pobieranie zakończone niepowodzeniem:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="145"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="154"/>
         <source>Please try to download later. If this error continues to happen contact producer</source>
         <translation>Spróbuj pobrać dane później. Jeśli problem będzie się powtarzał skontaktuj się z producentem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="156"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="165"/>
         <source>Synchronization successful</source>
         <translation>Synchronizacja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="157"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="166"/>
         <source>Synchronization has finished successfully</source>
         <translation>Synchronizacja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="159"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="168"/>
         <source>Download successful</source>
         <translation>Pobieranie zakończone powodzeniem</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="160"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="169"/>
         <source>Download has finished successfully</source>
         <translation>Pobieranie zakończone powodzeniem</translation>
     </message>
@@ -7684,17 +7694,17 @@ Wartość: %2</translation>
         <translation>Oderwanie stopy</translation>
     </message>
     <message>
-        <location filename="../../../include/plugins/newCommunication/IDataSourceContent.h" line="243"/>
+        <location filename="../../../include/plugins/newCommunication/IDataSourceContent.h" line="245"/>
         <source>Man</source>
         <translation>Mężczyzna</translation>
     </message>
     <message>
-        <location filename="../../../include/plugins/newCommunication/IDataSourceContent.h" line="248"/>
+        <location filename="../../../include/plugins/newCommunication/IDataSourceContent.h" line="250"/>
         <source>Woman</source>
         <translation>Kobieta</translation>
     </message>
     <message>
-        <location filename="../../../include/plugins/newCommunication/IDataSourceContent.h" line="251"/>
+        <location filename="../../../include/plugins/newCommunication/IDataSourceContent.h" line="253"/>
         <source>Not specified</source>
         <translation>Niezdefiniowano</translation>
     </message>

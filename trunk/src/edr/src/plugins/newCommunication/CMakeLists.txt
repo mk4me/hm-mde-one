@@ -41,6 +41,7 @@ set(PRIVATE_H
 	WSConnection.h
 	DataSourcePerspective.h
 	DataSourcePerspectiveManager.h
+	ServerStatusManager.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -106,6 +107,7 @@ set(TARGET_SRC
 	DataSourcePrivilagesVerifier.cpp
 	DataSourcePerspective.cpp
 	DataSourcePerspectiveManager.cpp
+	ServerStatusManager.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

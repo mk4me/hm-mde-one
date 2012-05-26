@@ -10,7 +10,6 @@
 #define HEADER_GUARD___ICOMMUNICATIONDATASOURCE_H__
 
 #include <utils/ObserverPattern.h>
-#include <core/ISource.h>
 #include <plugins/newCommunication/IDataSourceUser.h>
 #include <plugins/subject/ISubject.h>
 #include <plugins/newCommunication/IPatient.h>
@@ -19,13 +18,20 @@ namespace communication
 {
 
 //! Interfejs Ÿród³a danych communication
-class ICommunicationDataSource : public core::ISource, public utils::Observable<ICommunicationDataSource>
+class ICommunicationDataSource : public utils::Observable<ICommunicationDataSource>
 {
 public:
+	//! Destruktor wirtualny
     virtual ~ICommunicationDataSource() {}
+
+	//! \param offline Czy Ÿród³o danych ma dzia³aæ w trybie offline?
+	virtual void setOfflineMode(bool offline = true) = 0;
+	//! \return Czy Ÿród³o dzia³a w trybie offline
+	virtual bool offlineMode() const = 0;
 
     //! \param user Nazwa u¿ytkownika
     //! \param password Has³o u¿ytkownika
+	//! \param localLogin Czy logujemy tylko lokalnie - dla problemów lub braku po³aczenia z internetem
     virtual void login(const std::string & user, const std::string & password) = 0;
     //! Wylogowuje u¿ytkownika
     virtual void logout() = 0;

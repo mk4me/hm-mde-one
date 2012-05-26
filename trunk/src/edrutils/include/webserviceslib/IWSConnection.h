@@ -15,6 +15,10 @@
 
 namespace webservices
 {
+
+	//! WA¯NA UWAGA DO WYJ¥TKÓW !! POWINNY BY RZUCANE TYLKO I WY£¥CZNIE PODCZAS WYWO£YWANIA INVOKE W ZALE¯NOŒCI CO SIÊ NIE POWIEDZIE !!
+	//! MA TO NA CELU WPROWADZENIE LENIWEJ INICJALIZACJI US£UG - PO£¥CZENIE JEST NAWI¥ZYWANE FAKTYCZNIE W MOMENCIE U¯YCIA
+
 	//! Wyj¹tek zwi¹zany z wo³aniem us³ug (invoke na connection) do których nie mamy praw
 	class WSConnectionSecurityException : public std::exception
 	{
@@ -22,6 +26,51 @@ namespace webservices
 		WSConnectionSecurityException() throw() : std::exception() {}
 		WSConnectionSecurityException(const WSConnectionSecurityException & exception) throw() : std::exception(exception) {}
 		WSConnectionSecurityException(const char * exception) throw() : std::exception(exception) {}
+	};
+
+	//! Wyj¹tek zwi¹zany z ustawianiem us³ugi - us³uga nie oferuje takiej operacji
+	class WSConnectionOperationException : public std::exception
+	{
+	public:
+		WSConnectionOperationException() throw() : std::exception() {}
+		WSConnectionOperationException(const WSConnectionOperationException & exception) throw() : std::exception(exception) {}
+		WSConnectionOperationException(const char * exception) throw() : std::exception(exception) {}
+	};
+
+	//! Wyj¹tek zwi¹zany z ustawianiem us³ugi - metoda us³ugi nie przyjmuje wartoœci o zadanej nazwie
+	class WSConnectionOperationValueException : public std::exception
+	{
+	public:
+		WSConnectionOperationValueException() throw() : std::exception() {}
+		WSConnectionOperationValueException(const WSConnectionOperationValueException & exception) throw() : std::exception(exception) {}
+		WSConnectionOperationValueException(const char * exception) throw() : std::exception(exception) {}
+	};
+
+	//! Wyj¹tek zwi¹zany z inicjalizacj¹ us³ugi - mo¿e siê pojawiæ kiedy œci¹gamy definicjê us³ugi i j¹ parsujemy
+	class WSConnectionInitializationException : public std::exception
+	{
+	public:
+		WSConnectionInitializationException() throw() : std::exception() {}
+		WSConnectionInitializationException(const WSConnectionInitializationException & exception) throw() : std::exception(exception) {}
+		WSConnectionInitializationException(const char * exception) throw() : std::exception(exception) {}
+	};
+
+	//! Wyj¹tek zwi¹zany z realizacj¹ us³ugi przez web serwis
+	class WSConnectionResponseException : public std::exception
+	{
+	public:
+		WSConnectionResponseException() throw() : std::exception() {}
+		WSConnectionResponseException(const WSConnectionResponseException & exception) throw() : std::exception(exception) {}
+		WSConnectionResponseException(const char * exception) throw() : std::exception(exception) {}
+	};
+
+	//! Wyj¹tek zwi¹zany z wo³aniem us³ugi - kiedy próbujemy ju¿ faktycznie wywo³aæ us³ugê, kiedy parsujemy jej odpowiedŸ i coœ idzie nie tak
+	class WSConnectionInvokeException : public std::exception
+	{
+	public:
+		WSConnectionInvokeException() throw() : std::exception() {}
+		WSConnectionInvokeException(const WSConnectionInvokeException & exception) throw() : std::exception(exception) {}
+		WSConnectionInvokeException(const char * exception) throw() : std::exception(exception) {}
 	};
 
     //! Interfejs realizuj¹cy po³¹czenie z serwisami webowymi - metody powinny rzucac wyj¹tkiem w razie jakiegokolwiek niepowodzenia

@@ -206,7 +206,7 @@ void NotesWidget::noteDialogConfirm()
 	NoteDialog * dialog = qobject_cast<NoteDialog*>(sender());
 
 	if(dialog->titleEdit->text().isEmpty() == true || dialog->textEdit->text().isEmpty() == true){
-		QMessageBox message;
+		QMessageBox message(this);
 		message.setWindowTitle(tr("Note validation"));
 		message.setText(tr("All note fields must be filled. Please fill them and try again."));
 		message.setIcon(QMessageBox::Warning);

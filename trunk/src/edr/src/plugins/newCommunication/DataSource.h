@@ -9,51 +9,48 @@
 #ifndef HEADER_GUARD___COMMUNICATIONDATASOURCE_H__
 #define HEADER_GUARD___COMMUNICATIONDATASOURCE_H__
 
-#include <boost/date_time/gregorian/gregorian.hpp>
 #include <plugins/newCommunication/ICommunicationDataSource.h>
-#include <core/ISource.h>
-#include <plugins/newCommunication/CommunicationManager.h>
-#include <plugins/subject/ISubjectService.h>
-#include <plugins/subject/ISubject.h>
-#include <plugins/subject/ISession.h>
-#include <plugins/subject/IMotion.h>
-#include <QtCore/QObject>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTableWidget>
-#include <QtGui/QListWidget>
-#include <QtGui/QRadioButton>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QLabel>
-#include "Patient.h"
-
-#include "DataSourceLoginManager.h"
-#include "DataSourceStatusManager.h"
-#include "DataSourceLocalStorage.h"
-#include "DataSourcePathsManager.h"
-#include "DataSourceUser.h"
-#include "WSConnection.h"
+#include <plugins/newCommunication/DataSourceShallowCopy.h>
 #include <webserviceslib/IFtpsConnection.h>
-#include "DownloadRequest.h"
-#include "Patient.h"
+#include "DataSourceUser.h"
+#include <core/ISource.h>
+#include "WSConnection.h"
 
+//! Forward declarations
+class DownloadRequest;
+class DataSourcePathsManager;
+class FileStatusManager;
+class DataSourceLocalStorage;
+class DataSourceStatusManager;
+class DataSourceLoginManager;
 class DataSourceWidget;
 
 //! èrÛd≥o danych EDR typu communication - dostarcza dancyh z Bazy Danych Ruchu
-class CommunicationDataSource : public communication::ICommunicationDataSource
+class CommunicationDataSource : public communication::ICommunicationDataSource, public core::ISource
 {
     UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}","Communication Data Source");
 
+	//! Zaprzyjaüniona klasa realizujπca widok danych
 	friend class DataSourceWidget;
 
 private:
-
+	//! Typ smart pointera do requesta úciπgania danych
 	typedef core::shared_ptr<DownloadRequest> DownloadRequestPtr;
 
+	//! Struktura opisujπca stan danego po≥πczenia z WebService
+	struct ConnectionStatus
+	{
+		//! Czy po≥πczenie by≥o juø inicjalizowane
+		bool initialized;
+		//! Adres us≥ugi danego po≥πczenia
+		std::string webServiceURL;
+	};
+
 public:
-
+	//! Domyúlny konstruktor
     CommunicationDataSource();
-
-    ~CommunicationDataSource();
+	//! Destruktor
+    virtual ~CommunicationDataSource();
 
     //! Inicjalizacja ürÛd≥a. NastÍpuje juø po wczytaniu pluginÛw i skonstruowaniu
     //! (nie zainicjalizowaniu!) wszystkich ürÛde≥.
@@ -66,9 +63,14 @@ public:
     //! \return Nazwa ürÛd≥a.
     virtual std::string getName() const;
 
+	//! \param offline Czy ürÛd≥o danych ma dzia≥aÊ w trybie offline?
+	void setOfflineMode(bool offline = true);
+	//! \return Czy ürÛd≥o dzia≥a w trybie offline
+	bool offlineMode() const;
+
     //! \param user Nazwa uøytkownika
     //! \param password Has≥o uøytkownika
-    virtual void login(const std::string & user, const std::string & password) ;
+    virtual void login(const std::string & user, const std::string & password);
     //! Wylogowuje uøytkownika
     virtual void logout();
     //! \return prawda jeúli uøytkownik zalogowany
@@ -77,17 +79,30 @@ public:
     //! \return Dane aktualnego uøytkownika ( w szczegÛlnoúci pusty obiekt jesli niezalogowano)
     virtual const User * currentUser() const;
 
+	//! Implementacja interfejsu communication::ICommunicationDataSource
 	virtual void showPatientCard(const PluginSubject::SubjectConstPtr & subject, const communication::PatientConstPtr & patient = communication::PatientConstPtr());
 	virtual void showUserDataCard();
 	virtual void showConfigurationCard();
 
 private:
 
+	//! \param connection Po≥πczenie z webService ktÛre inicjalizujÍ - ustawiam adres jeøeli jest inny niø aktualnie ustawiony w po≥πczeniu
+	//! Ta metoda w przypadku zmiany adresu us≥ugi powinna úciπgnπc jej definicjÍ, sparsowaÊ jπ i przygotowaÊ po≥aczenie do dalszej pracy
+	//! Jest to leniwa inicjalizacja, kiedy nie chcemy od razu nawiazaywaÊ po≥πczenia poniewaø user moøe sobie zarzyczyÊ trybu offline
+	void ensureConnection(const webservices::WSConnectionPtr & connection);
+
 	//! \param login Login ktÛry prÛbujemy aktywowac po stronie bazy danych
 	//! \param activationCode Kod aktywacyjny otrzymany w mailu
 	//! \return Czy uda≥o siÍ aktywowaÊ konto
 	bool tryActivateAccount(const std::string & login, const std::string & activationCode);
 
+	//! Metoda zak≥ada konto uøytkownika w obu bazach danych - medycznej i ruchu
+	//! \param login Login uøytkownika
+	//! \param email Email uøytkownika
+	//! \param password Has≥o uøytkownika
+	//! \param firstName ImiÍ uøytkownika
+	//! \param lastName Nazwisko uøytkownika
+	//! \return true jeúli uda≥o siÍ za≥oøyÊ konto
 	bool registerUser(const std::string & login, const std::string & email, const std::string & password,
 		const std::string & firstName, const std::string & lastName);
 
@@ -122,8 +137,10 @@ private:
 	//! \return Obiekt pomocniczy przy pobieraniu danych - pozwala odczytywaÊ informacje o statusie pobierania
 	DownloadRequestPtr generateDownloadShallowCopyRequestToLocalUserSpace();
 
-	//! Wyciπgamy dane z lokalnego storage (SQLite) - tylko przy logowaniu
+	//! Wyciπgamy dane z lokalnego storage (SQLite/SQLCipher - szyfrowany SQLite) - tylko przy logowaniu
 	void extractDataFromLocalStorageToUserSpace();
+	//! \param file Plik ktÛry chcemy wypakowaÊ z lokalnego storage
+	//! \param sessionName Nazwa sesji z ktÛrej pochodzi plik
 	void extractFileFromLocalStorageToUserSpace(const webservices::MotionShallowCopy::File * file, const std::string & sessionName);
 	
 	//! \param oldShallowCopy Poprzednia p≥ytka kopia dla ktÛrej wypakowywano dane
@@ -152,7 +169,9 @@ private:
 	//! \param fileIDs ZbiÛr idnetyfikatorÛw plikÛw ktÛre ≥aduje do DM
 	DownloadRequestPtr generateDownloadFilesRequest(const std::set<int> & fileIDs);
 
-	//na potrzeby obs≥ugi rozpakowywania plikÛw VSK z archiwum zip
+	//! Na potrzeby obs≥ugi rozpakowywania plikÛw VSK z archiwum zip
+	//! \param inFile Dane wejsciowe - spakowany plik zip, albo plik z archiwum zip
+	//! \param outFile Gdzie zapisujemy dane z rozpakowanego pliku zip
 	static bool copyData(QIODevice &inFile, QIODevice &outFile);
 
 private:
@@ -160,7 +179,7 @@ private:
 	//! Aktualny uøytkownik
 	User currentUser_;
     //! Manager logowania - zawiera uøytkownika
-    DataSourceLoginManager loginManager;
+    DataSourceLoginManager * loginManager;
 
     //! Pe≥na p≥ytka kopia bazy danych
     communication::ShallowCopy fullShallowCopy;
@@ -185,7 +204,7 @@ private:
 	//! Manager plikÛw
 	core::IFileDataManager * fileDM;
 
-	//! Manager servisÛw - tylko i wy≥πcznie na potrzeby PluginSubject!!
+	//! Manager serwisÛw - tylko i wy≥πcznie na potrzeby PluginSubject!!
 	core::IServiceManager * serviceManager;
 
 	//! ---------------------------Obs≥uga plugin subject ------------------------
@@ -196,6 +215,10 @@ private:
 
 	//! ------------------------------- Web Services -----------------------------
 
+	//! Czy user zaøπda≥ trybu offline?
+	bool offlineMode_;
+	//! Mapa po≥πczeÒ i ich statusÛw
+	std::map<webservices::WSConnectionPtr, ConnectionStatus> connectionsStatus;
 	//! Adres serwera ktÛry pingujemy
 	std::string serwerPingUrl;
 	//! Po≥πczenie z web services dla danych ruchu

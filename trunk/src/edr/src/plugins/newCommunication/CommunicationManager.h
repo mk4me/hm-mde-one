@@ -21,11 +21,41 @@ i web serwisy wsdl.
 #include <boost/function.hpp>
 
 //! Klasa odpowiedzialna za dostarczanie plików z bazy danych
-class CommunicationManager : public utils::Observable<CommunicationManager>, private OpenThreads::Thread
+class CommunicationManager
 {
 private:
     //! Typ lokalnego lokowania obiektów synchronizuj¹cych
     typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
+
+	//! W¹tek przetwarzaj¹cy zlecenia z CommunicationManagera
+	class ProcessingThread : public OpenThreads::Thread
+	{
+	public:
+		//! Konstruktor
+		//! \patam manager Manager którego obs³ugujemy
+		ProcessingThread(CommunicationManager * manager);
+		virtual ~ProcessingThread();
+
+		//! Metoda obs³uguj¹ca managera
+		virtual void run();
+		//! \param ms Iloœc milisekund jakie mam spaæ kiedy nie ma nic do przetwarzania
+		void setIdleSleep(unsigned int ms);
+		//! \return Iloœc milisekund jakie mam spaæ kiedy nie ma nic do przetwarzania
+		unsigned int idleSleep() const;
+		//! Iformujê w¹tek ¿e ma siê zakoñczyæ jak najszybciej - przy kolejnym przejsciu pêtli
+		//! Po tym wywo³aniu bêdê na niego najprawdopodobniej czeka³!!
+		void finish();
+
+	private:
+		//! Obs³ugiwnay manager
+		CommunicationManager * manager;
+		//! Iloœc milisekund jakie mam spaæ kiedy nie ma nic do przetwarzania
+		unsigned int idleSleep_;
+		//! Czy koñczyæ pracê?
+		bool finish_;
+	};
+
+	friend class ProcessingThread;
 
 public:
     //! Typ zlecenie
@@ -82,18 +112,49 @@ public:
 		//! \return Typ zadania
         Request getType() const;
 		//! \return Postêp zadania
-        virtual double getProgress() const;
+        virtual double getProgress() const = 0;
 		//! \return Czy zadanie zakoñczone
         bool isComplete() const;
 
     private:
+		//! Prywatny konstruktor
+		//! \param type Typ requesta
         BasicRequest(Request type);
 
     private:
+		//! Mutex do anulowania requesta
         mutable OpenThreads::Mutex cancelLock;
+		//! Czy request anulowany
         bool canceled;
+		//! Typ requesta
         Request type;
     };
+
+	//! Zlecenie pingu zadanego adresu
+	class PingRequest : public BasicRequest
+	{
+		friend class CommunicationManager;
+
+	public:
+		//! Konstruktor
+		//! \param urlToPing Adres serwera który pingujemy
+		PingRequest(const std::string & urlToPing);
+		//! \param ustawiamy czy serwer nam odpowiedzia³
+		void setServerResponse(bool response);
+		
+	public:
+		//! \return Adres serwera który bêdziemy/ju¿ pingowaliœmy
+		const std::string & urlToPing() const;
+		//! \return Postêp zadania
+		virtual double getProgress() const;
+
+	private:
+		//! Adres serwera do pingowania
+		std::string urlToPing_;
+
+		//! Czy serwer odpowiedzia³
+		bool response;
+	};
 
 	//! Klasa odpowiedzialna za request plików z metadanymi (bez identyfikatorów) - implementuje progress pobierania
     class MetadataRequest : public BasicRequest, public webservices::IFtpsConnection::IProgress
@@ -103,7 +164,9 @@ public:
         friend class PhotoRequest;
 
     private:
-
+		//! Kosntruktor
+		//! \param type Typ requesta
+		//! \param filePath Œcie¿ka zapisu pliku
         MetadataRequest(Request type, const std::string & filePath);
 
     public:
@@ -127,7 +190,9 @@ public:
         friend class CommunicationManager;
 
     private:
-
+		//! Kosntruktor
+		//! \param filePath Œcie¿ka zapisu pliku
+		//! \param fileID ID pliku do œci¹gniêcia
         FileRequest(const std::string & filePath, unsigned int fileID);
 
     public:
@@ -145,7 +210,9 @@ public:
         friend class CommunicationManager;
 
     private:
-
+		//! Kosntruktor
+		//! \param filePath Œcie¿ka zapisu pliku
+		//! \param photoID ID zdjêcia do œci¹gniêcia
         PhotoRequest(const std::string & filePath, unsigned int photoID);
             
     public:
@@ -158,6 +225,7 @@ public:
     };
 
     typedef core::shared_ptr<BasicRequest> BasicRequestPtr;
+	typedef core::shared_ptr<PingRequest> PingRequestPtr;
     typedef core::shared_ptr<MetadataRequest> MetadataRequestPtr;
     typedef core::shared_ptr<FileRequest> FileRequestPtr;
     typedef core::shared_ptr<PhotoRequest> PhotoRequestPtr;
@@ -255,24 +323,31 @@ private:
     webservices::IFtpsConnection::OperationStatus processPing(const CompleteRequest & request, std::string & message = std::string());
 
 public:
-	//! \param urlToPing Adres serwera który pingujemy
-	void setUrlToPingServer(const std::string & urlToPing);
-
-
+	
+	//! \param motionFileStoremanService Serwis do œci¹gania plików ruchu
 	void setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService);
+	//! \param medicalFileStoremanService Serwis do œci¹gania plików medycznych
 	void setMedicalFileStoremanService(const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService);
 
+	//! \param medicalFtps Ftps do œci¹gania danych medycznych
 	void setMedicalFtps(const webservices::FtpsConnectionPtr & medicalFtps);
+	//! \param motionFtps Ftps do œci¹gania danych ruchu
 	void setMotionFtps(const webservices::FtpsConnectionPtr & motionFtps);
 
+	//! \return Po³¹cznie medyczne
 	const WSConnectionPtr & medicalConnection();
+	//! \return Po³¹cznie ruchu
 	const WSConnectionPtr & motionConnection();
 
+	//! \return Ftps do œci¹gania danych medycznych
 	const webservices::FtpsConnectionPtr & medicalFtps();
+	//! \return Ftps do œci¹gania danych ruchu
 	const webservices::FtpsConnectionPtr & motionFtps();
 
+	//! \param request Request wrzucany do kolejki managera - bêdzie przetworzony kiedy wszystkie przed nim zostan¹ obs³u¿one
     void pushRequest(const CompleteRequest & request);
 
+	//! Metody tworz¹ce obs³ugiwane typy zleceñ
     static ComplexRequestPtr createRequestComplex(const std::vector<CompleteRequest> & requests);
     static FileRequestPtr createRequestFile(unsigned int fileID, const std::string & filePath);
     static PhotoRequestPtr createRequestPhoto(unsigned int fileID, const std::string & filePath);
@@ -280,12 +355,15 @@ public:
     static MetadataRequestPtr createRequestMotionMetadata(const std::string & filePath);
     static MetadataRequestPtr createRequestMedicalShallowCopy(const std::string & filePath);
     static MetadataRequestPtr createRequestMedicalMetadata(const std::string & filePath);
-    static BasicRequestPtr createRequestPing();
+    static PingRequestPtr createRequestPing(const std::string & urlToPing);
 
+	//! \param request Zlecenie które chcemy anulowaæ jeœli jeszcze nie by³o przetwarzane - do przetworzenia lub przetwarzane
     void cancelRequest(const BasicRequestPtr & request);
 
+	//! \return Prawda jeœli w kolejce nie ma ju¿ nic do przetwarznia - manager jest w stanie IDLE
     bool requestsQueueEmpty() const;
 
+	//! Anyluje wszystkie zlecenia w kolejce managera
     void cancelAllPendingRequests();
 
     /**
@@ -294,7 +372,7 @@ public:
     */
     int getProgress() const;
 
-protected:
+private:
     /**
     Ustala stan w jakim znajduje siê Communication Service.
     @param state stan jaki ustaliæ jako aktualny dla CS
@@ -307,26 +385,6 @@ public:
     @return aktualny stan CS
     */
     State getState();
-        
-    /**
-    Podaje informacjê czy serwer odpowiedzia³ na ostatni ping.
-    @return czy serwer odpowiedzia³?
-    */
-    bool isServerResponse() const;
-
-private:
-
-    /**
-    Metoda run pochodzi z interfejsu OpenThreads::Thread i zosta³a przes³oniêta do przeniesienia operacji do osobnego w¹tku.
-    */
-
-    virtual void run();
-
-	//! Inicjalizuje w¹tek przetwarzaj¹cy requesty
-    void init();
-
-	//! Deinicjalizuje w¹tek przetwarzaj¹cy requesty
-    void deinit();
 
 public:
 
@@ -391,10 +449,6 @@ private:
     */
     CURL* pingCurl;
     /**
-    Informacja o stanie instancji curla.
-    */
-    CURLcode pingCurlResult;
-    /**
     Muteks zabezpieczaj¹cy przed zakleszczeniami.
     */
     OpenThreads::ReentrantMutex trialsMutex;
@@ -403,13 +457,13 @@ private:
     */
     mutable OpenThreads::ReentrantMutex requestsMutex;
 
-	mutable OpenThreads::ReentrantMutex curlMutex;
-
     mutable OpenThreads::ReentrantMutex downloadHelperMutex;
-
+	//! Czy koñczymy przetwarzanie
     bool finish;
-
+	//! Czy przerwaæ œci¹ganie
     bool cancelDownloading;
+	//! W¹tek przetwarzaj¹cy zlecenia communication managera
+	core::shared_ptr<ProcessingThread> processingThread;	
 };
 
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
