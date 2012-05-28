@@ -26,7 +26,7 @@ namespace core{
         std::vector<ObjectWrapperConstPtr> objects;
         manager->getObjects(objects, typeid(T), exact, initialize);
 
-        for(auto it = objects.begin(); it != objects.end(); it++){
+        for(auto it = objects.begin(); it != objects.end(); ++it){
             target.push_back((*it)->get(exact));
         }
     }

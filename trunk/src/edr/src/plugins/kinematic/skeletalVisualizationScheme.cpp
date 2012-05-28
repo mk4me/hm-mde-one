@@ -10,8 +10,8 @@ using namespace kinematic;
 
 SkeletalVisualizationScheme::SkeletalVisualizationScheme() : 
     counterHelper(-1),
-    dotColor(1,1,0,1),
-    connectionColor(1, 1, 1, 0.5f)
+	connectionColor(1, 1, 1, 0.5f),
+    dotColor(1,1,0,1)
 {
 }
 
@@ -67,14 +67,14 @@ void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
 	const auto& jointMap = joints->getHAnimSkeleton()->getJoints();
 	
 	auto it = jointMap.begin();
-	for (int index = 0; it != jointMap.end(); it++) {
+	for (int index = 0; it != jointMap.end(); ++it) {
 	    if (it->second->isActive()) {
 	        visJoints[it->second] = index++;
 	    }
 	}
 	
 	states.resize(visJoints.size());
-	for (auto it = visJoints.begin(); it != visJoints.end(); it++) {
+	for (auto it = visJoints.begin(); it != visJoints.end(); ++it) {
         states[it->second].color = dotColor;
         states[it->second].name = it->first->getName();
 	}

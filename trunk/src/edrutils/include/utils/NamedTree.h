@@ -162,7 +162,7 @@ public:
         auto itEnd = tok.begin();
         auto itTmp = tok.begin();
         while(++itTmp != tok.end()){
-            itEnd++;
+            ++itEnd;
         }
 
         //stworz drzewo do itEnd, a pod itEnd mamy juz nazwe naszego wezsla
@@ -170,7 +170,7 @@ public:
             NamedTreeBasePtr nodeChild(new Derrived(*it));
             pos->addChild(nodeChild);
             pos = nodeChild;
-            it++;
+            ++it;
         }
 
         pos->addChild(NamedTreeBasePtr(new Derrived(*itEnd)), idx);
@@ -252,7 +252,7 @@ protected:
                     ret = *it;
                 }
             }
-            begin++;
+            ++begin;
         }
 
         return boost::const_pointer_cast<NamedTreeBase>(ret);

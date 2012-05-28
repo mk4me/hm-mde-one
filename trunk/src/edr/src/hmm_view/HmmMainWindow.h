@@ -87,46 +87,13 @@ public:
 			  actualRefresh(tree, sessions);
 		  }
 	  }
+
 private:
-	void actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions) {
 
-		QMessageBox message;
-		message.setWindowTitle(QObject::tr("Refreshing analysis data"));
-		message.setText(message.windowTitle());
-		message.setWindowFlags(Qt::CustomizeWindowHint);
-		message.setStandardButtons(0);
+	void actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions);
 
-		message.setCursor(Qt::WaitCursor);
-		message.show();
-		QApplication::processEvents();
+private:
 
-		try{
-
-			QTreeWidgetItem* item = TreeBuilder::createTree(QObject::tr("Active Data"), sessions);
-
-			tree->clear();
-			tree->addTopLevelItem(item);
-			item->setExpanded(true);
-
-			QFont font = item->font(0);
-			font.setPointSize(12);
-			item->setFont(0, font);
-
-			for (int i = 0; i < item->childCount(); i++) {
-				QTreeWidgetItem* child = item->child(i);
-				child->setExpanded(true);
-
-				QFont font = item->font(0);
-				font.setPointSize(14);
-				item->setFont(0, font);
-			}
-
-		}catch(...){
-
-		}
-
-		message.setCursor(Qt::ArrowCursor);
-	}
 	bool preventRefresh;
 	bool needRefresh;
 	QTreeWidget* tree;
@@ -161,7 +128,7 @@ private:
             visualizerWidget(widget) 
         {
             // konwersja na weak ptr.
-            for (auto it = series.begin(); it != series.end(); it++) {
+            for (auto it = series.begin(); it != series.end(); ++it) {
                 this->series.push_back(*it);
             }
         }

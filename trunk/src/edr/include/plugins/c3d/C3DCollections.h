@@ -51,7 +51,7 @@ public:
     {
         int count = static_cast<int>(es.events.size());
         events.resize(count);
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             events[i] = EventPtr(es.events[i]->clone());
         }
     }
@@ -99,14 +99,14 @@ public:
     {
         // szukanie elementu 'event' w kolekcji
         std::vector<EventPtr>::const_iterator it = events.cbegin();
-        for (; it != events.cend(); it++) {
+        for (; it != events.cend(); ++it) {
             if (*it == event) {
                 break;
             }
         }
         // jesli znaleziono event;
         if (it != events.cend()) {
-            for (it++; it != events.cend(); it++) {
+            for (it++; it != events.cend(); ++it) {
                 if ((*it)->getContext() == context) {
                     return *it;
                 } 
@@ -125,7 +125,7 @@ public:
     {
         // przefiltrowanie eventow wzgledem kontekstu
         std::vector<EventPtr> temp;
-        for (auto it = events.cbegin(); it != events.cend(); it++) {
+        for (auto it = events.cbegin(); it != events.cend(); ++it) {
             if ((*it)->getContext() == context) {
                 temp.push_back(*it);
             }
@@ -133,11 +133,11 @@ public:
 
         EventConstPtr found;
         // poszukiwanie odpowiedniego eventu
-        for (auto it = temp.begin(); it != temp.end(); it++) {
+        for (auto it = temp.begin(); it != temp.end(); ++it) {
 
             if ((*it)->getTime() <= t) {
                 auto check = it;
-                check++;
+                ++check;
                 if (check != temp.end()) {
                     found = *it;
                 } else {
@@ -181,7 +181,7 @@ static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events
     std::vector<FloatPairPtr> ret;
 
     FloatPairPtr currentSegment;
-    for( auto it = events->cbegin(); it != events->cend(); it++) {
+    for( auto it = events->cbegin(); it != events->cend(); ++it) {
         C3DEventsCollection::EventConstPtr event = *it;
         if (event->getContext() == context) {
             if (event->getLabel() == "Foot Strike") {
@@ -209,7 +209,7 @@ public:
 
     GRFChannelConstPtr getGRFChannel(GRFChannel::Type type) const
     {
-        for (auto it = channels.begin(); it != channels.end(); it++) {
+        for (auto it = channels.begin(); it != channels.end(); ++it) {
             GRFChannelConstPtr channel = core::dynamic_pointer_cast<const GRFChannel>(*it);
             if (channel->getType() == type) {
                 return channel;

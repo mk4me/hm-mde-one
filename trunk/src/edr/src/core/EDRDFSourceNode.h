@@ -12,6 +12,12 @@
 #include "EDRDFNode.h"
 #include <dfmlib/DFSourceNode.h>
 
+namespace core {
+
+class IDataSource;
+
+}
+
 class EDRDFSourceNode : public virtual EDRDFNode, public virtual dflm::DFSourceNode
 {
 public:

@@ -137,7 +137,7 @@ bool DFModel::sourcesHaveMoreData() const
 {
 	bool ret = true;
 
-	for(auto it = sourceNodes.begin(); it != sourceNodes.end(); it++){
+	for(auto it = sourceNodes.begin(); it != sourceNodes.end(); ++it){
 		if((*it)->hasMoreData() == false){
 			ret = false;
 			break;
@@ -160,7 +160,7 @@ bool DFModel::additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) 
 
 void DFModel::notifySources()
 {
-	for(auto it = sourceNodes.begin(); it != sourceNodes.end(); it++){
+	for(auto it = sourceNodes.begin(); it != sourceNodes.end(); ++it){
 		(*it)->notify();
 	}
 }
@@ -204,14 +204,14 @@ void DFModel::leafHasProcessedData()
 
 void DFModel::resetPinStates()
 {
-	for(auto it = getNodes().begin(); it != getNodes().end(); it++){
+	for(auto it = getNodes().begin(); it != getNodes().end(); ++it){
 		DFNPtr node(DFNode::getDFNode(*it));
 		if(node != 0){
-			for(auto iT = node->beginIn(); iT != node->endIn(); iT++){
+			for(auto iT = node->beginIn(); iT != node->endIn(); ++iT){
 				resetPinState(*iT);
 			}
 
-			for(auto iT = node->beginOut(); iT != node->endOut(); iT++){
+			for(auto iT = node->beginOut(); iT != node->endOut(); ++iT){
 				resetPinState(*iT);
 			}
 		}
@@ -229,7 +229,7 @@ void DFModel::resetPinState(const PinPtr & pin)
 
 void DFModel::resetNodeStates()
 {
-	for(auto it = getNodes().begin(); it != getNodes().end(); it++){
+	for(auto it = getNodes().begin(); it != getNodes().end(); ++it){
 		DFNPtr node(DFNode::getDFNode(*it));
 		if(node != nullptr){
 			node->reset();

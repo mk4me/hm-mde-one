@@ -150,7 +150,7 @@ private:
 
     void clearContextWidgets()
     {
-        for(auto it = contextWidgets.begin(); it != contextWidgets.end(); it++){
+        for(auto it = contextWidgets.begin(); it != contextWidgets.end(); ++it){
             onUnregisterContextWidget(*it);
         }
 

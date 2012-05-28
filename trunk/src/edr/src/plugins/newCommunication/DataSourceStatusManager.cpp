@@ -207,7 +207,7 @@ void FileStatusManager::refreshFileStatus(FileStatus & fileStatus)
     fileStatus.fileStatus.setUsage(usage);
 }
 
-DataSourceStatusManager::DataSourceStatusManager(const FileStatusManager * fileStatusManager) :fileStatusManager(fileStatusManager)
+DataSourceStatusManager::DataSourceStatusManager(const FileStatusManager * fileStatusManager) : shallowCopy(nullptr), fileStatusManager(fileStatusManager)
 {
 
 }

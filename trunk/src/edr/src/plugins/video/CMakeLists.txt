@@ -9,7 +9,6 @@ set(TARGET_TARGETNAME
 # nag³ówki prywatne
 set(PRIVATE_H
 	StreamOsgWidget.h
-	VideoPlugin.h
 	VideoWidget.h
 	VideoWidgetOptions.h
 	VideoParser.h

@@ -95,7 +95,7 @@ bool MainWindow::trySetStyle( const core::Filesystem::Path& path )
 void MainWindow::setStyleByName( const std::string& styleName )
 {
     int count = getApplicationSkinsFilePathCount();
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         const core::Filesystem::Path& path = getApplicationSkinsFilePath(i);
         if (path.stem() == styleName) {
             setStyle(path);
@@ -167,9 +167,7 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
     DataManager* dataManager = DataManager::getInstance();
     ServiceManager* serviceManager = ServiceManager::getInstance();
 	SourceManager * sourceManager = SourceManager::getInstance();
-    VisualizerManager* visualizerManager = VisualizerManager::getInstance();
 	EDRConfig* directoriesInfo = EDRConfig::getInstance();
-    DataProcessorManager* dataProcesorManager = DataProcessorManager::getInstance();
 
     showSplashScreenMessage(tr("Registering application core data sources"));
 
@@ -297,7 +295,7 @@ void MainWindow::openFile( const std::string& path )
 	std::vector<Filesystem::Path> paths;
 	paths.push_back(path);
     DataManager * dataManager = DataManager::getInstance();
-    for(auto it = paths.begin(); it != paths.end(); it++){
+    for(auto it = paths.begin(); it != paths.end(); ++it){
         try{
             dataManager->addFile(*it);
         }catch(...){
@@ -578,10 +576,10 @@ QDockWidget* MainWindow::embeddWidget( QWidget* widget, const ActionsGroupManage
 
     EDRTitleBar * titleBar = supplyWithEDRTitleBar(dock);
 
-    for(auto groupIT = widgetActions.begin(); groupIT != widgetActions.end(); groupIT++){
+    for(auto groupIT = widgetActions.begin(); groupIT != widgetActions.end(); ++groupIT){
         std::map<int, QObject *> allObjects;
         (*groupIT).getAllObjects(allObjects);
-        for(auto objectIT = allObjects.begin(); objectIT != allObjects.end(); objectIT++){
+        for(auto objectIT = allObjects.begin(); objectIT != allObjects.end(); ++objectIT){
             titleBar->addObject(objectIT->second, IEDRTitleBar::Left);
         }
     }

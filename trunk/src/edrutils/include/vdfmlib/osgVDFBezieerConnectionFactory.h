@@ -34,7 +34,7 @@ public:
         osg::Geometry * geom = dynamic_cast<osg::Geometry*>(connection->getDrawable(0));
         osg::Vec3Array * vertexData = dynamic_cast<osg::Vec3Array*>(geom->getVertexArray());
 
-        for(unsigned int i = 0; i < vertexData->size(); i++){
+        for(unsigned int i = 0; i < vertexData->size(); ++i){
             (*vertexData)[i][2] = z;
         }
     }
@@ -43,9 +43,11 @@ public:
         osg::Geometry * geom = dynamic_cast<osg::Geometry*>(connection->getDrawable(0));
         osg::Vec3Array * vertexData = dynamic_cast<osg::Vec3Array*>(geom->getVertexArray());
 
-        for(unsigned int i = 0; i < vertexData->size(); i++){
+        for(unsigned int i = 0; i < vertexData->size(); ++i){
             (*vertexData)[i][2] = z;
         }
+
+		refreshConnection(connection);
     }
 
     static void finalizeConnection(osg::Geode * connection, float z){
@@ -53,7 +55,7 @@ public:
         osg::Geometry * geom = dynamic_cast<osg::Geometry*>(connection->getDrawable(0));
         osg::Vec3Array * vertexData = dynamic_cast<osg::Vec3Array*>(geom->getVertexArray());
 
-        for(unsigned int i = 0; i < vertexData->size(); i++){
+        for(unsigned int i = 0; i < vertexData->size(); ++i){
             (*vertexData)[i][2] = z;
         }
 
@@ -208,7 +210,7 @@ public:
             osg::Geometry * geom = dynamic_cast<osg::Geometry*>(connection->getDrawable(0));
             osg::Vec3Array * vertexData = dynamic_cast<osg::Vec3Array*>(geom->getVertexArray());
 
-            for(unsigned int i = 0; i < vertexData->size(); i++){
+            for(unsigned int i = 0; i < vertexData->size(); ++i){
                 (*vertexData)[i][2] = z;
             }
 
@@ -244,7 +246,7 @@ protected:
 
         osg::Vec2 res;
 
-        for(unsigned int i = 1; i < interpCount-1; i++){
+        for(unsigned int i = 1; i < interpCount-1; ++i){
             interp.getValue(keyFrames, (float)i / (float)interpCount, res);
             (*vertexData)[i].x() = res.x();
             (*vertexData)[i].y() = res.y();

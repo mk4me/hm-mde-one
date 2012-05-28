@@ -1,13 +1,11 @@
 #include "PCH.h"
 #include "KinematicVisualizer.h"
 #include <utils/DataChannel.h>
-#include <core/Plugin.h>
 #include "OsgSchemeDrawer.h"
 #include "PointSchemeDrawer.h"
 #include "LineSchemeDrawer.h"
 #include "KinematicParser.h"
 #include "AsfParser.h"
-#include <core/ILog.h>
 #include <plugins/kinematic/Wrappers.h>
 
 CORE_PLUGIN_BEGIN("kinematic", UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-A5FE-52AA182E1279}"));

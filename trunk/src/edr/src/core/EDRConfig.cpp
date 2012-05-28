@@ -92,9 +92,7 @@ void EDRConfig::clearTempDirectory() const
 
 bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 {
-#ifdef WIN32
-	DWORD dwDefault = 0;
-	
+#ifdef WIN32	
 	HKEY hKey;
 	LONG lResult;
 	char buffer[1024];

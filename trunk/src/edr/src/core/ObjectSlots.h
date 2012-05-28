@@ -109,7 +109,7 @@ public:
     void setObjects(int slotNo, const core::ObjectWrapperCollectionConstPtr& objects);
 
     //! \return Obiekt w zmiennym wariancie.
-    const core::ObjectWrapperCollectionPtr& getObjects(int slotNo)
+    const core::ObjectWrapperCollectionPtr& getObjects(int slotNo) const
     {
         return objects[slotNo].objects;
     }

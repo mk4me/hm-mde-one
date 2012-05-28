@@ -108,8 +108,6 @@ bool BufferedVideoStream::setTime( double time )
                 // pobieramy ramkê
                 target = popBuffer(time);
                 innerStream->getFrame( *target );
-            } else {
-                int test = 0;
             }
         }
 

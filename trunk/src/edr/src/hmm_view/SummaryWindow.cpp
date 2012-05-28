@@ -33,12 +33,12 @@ void SummaryWindow::display( const std::vector<TreeItemHelperPtr>& helpers )
         root->setFont(0, font);
         tree->addTopLevelItem(root);
 
-        for (auto itHelper = helpers.begin(); itHelper != helpers.end(); itHelper++) {
+        for (auto itHelper = helpers.begin(); itHelper != helpers.end(); ++itHelper) {
             
             NewMultiserieHelperPtr multiserieHelper = core::dynamic_pointer_cast<NewMultiserieHelper>(*itHelper);
             if (multiserieHelper) {
                 const auto& desc = multiserieHelper->getChartWithDescriptions();
-                for (auto it = desc.begin(); it != desc.end(); it++) {
+                for (auto it = desc.begin(); it != desc.end(); ++it) {
                     auto motion = it->motion;
                     if (motion) {
                         QString text = QString::fromStdString(it->wrapper->getName()) + createDescription(it->motion);
@@ -121,8 +121,8 @@ void SummaryWindow::addItem( QString text, QTreeWidgetItem* root )
 
 
 SummaryWindowController::SummaryWindowController( SummaryWindowPtr sw, HmmMainWindow* hmm  ) :
-    summary(sw),
-    hmm(hmm)
+    hmm(hmm),
+	summary(sw)
 {
 
 }
@@ -142,7 +142,7 @@ void SummaryWindowController::onVisualizator( VisualizerWidget* visualizatorWidg
     VisualizerPtr visualizer = visualizatorWidget->getCurrentVisualizer();
     
     SummaryWindow::HelpersCollection collection;
-    for (auto it = hmm->items2Descriptions.begin(); it != hmm->items2Descriptions.end(); it++) {
+    for (auto it = hmm->items2Descriptions.begin(); it != hmm->items2Descriptions.end(); ++it) {
     
         if (it->second.visualizerWidget == visualizatorWidget) {
             collection.push_back(it->first);

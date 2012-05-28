@@ -291,7 +291,7 @@ void Channel::removeTag(const TagPtr & tag)
 
 void Channel::clearTags()
 {
-    for(auto it = tags.begin(); it != tags.end(); it++){
+    for(auto it = tags.begin(); it != tags.end(); ++it){
         (*it)->resetChannel();
     }
 

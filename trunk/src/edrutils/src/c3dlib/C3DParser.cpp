@@ -32,6 +32,12 @@ private:
 	btk::Analog::ConstPointer analog;
 
 public:
+	//! Domyslny konstruktor - pusty
+	Analog() : scale(1.0) {}
+
+	//! Destruktor wirtualny
+	virtual ~Analog() {}
+
 	//! 
 	//! \param val 
 	void setAnalog(btk::Analog::ConstPointer val)	  { analog = val; }
@@ -63,9 +69,9 @@ private:
 	
 public:
 	Point() :
+	  point(nullptr),
 	  numOfFrames(-1),
 	  scale(1.0f),
-	  point(nullptr),
       unit("unknown")
 	  {
 
@@ -89,7 +95,6 @@ public:
 	virtual osg::Vec3 getValue(int index) const 
 	{ 
 		const btk::Measure<3>::Values& value = point->GetValues();
-		const double* data = value.data();
 		return osg::Vec3(value[index ], value[index + numOfFrames], value[index + 2 * numOfFrames]) * scale;
 	}
 };
@@ -183,19 +188,19 @@ C3DParser::C3DParser() :
 C3DParser::~C3DParser()
 {
     delete data;
-    for (auto it = points.begin(); it != points.end(); it++) {
+    for (auto it = points.begin(); it != points.end(); ++it) {
         delete(*it);
     }
     //! kolekcja kanalow analogowych
-    for (auto it = analogs.begin(); it != analogs.end(); it++) {
+    for (auto it = analogs.begin(); it != analogs.end(); ++it) {
         delete(*it);
     }
 
-    for (auto it =  events.begin(); it != events.end(); it++) {
+    for (auto it =  events.begin(); it != events.end(); ++it) {
         delete(*it);
     }
     //! plyty GRF
-    for (auto it = forcePlatforms.begin(); it != forcePlatforms.end(); it++) {
+    for (auto it = forcePlatforms.begin(); it != forcePlatforms.end(); ++it) {
         delete(*it);
     }
 }
@@ -234,14 +239,6 @@ void C3DParser::importFrom( const std::vector<const std::string>& filenames, std
     catch (btk::Exception& e)
     {
         throw std::exception(e.what());
-    }
-    catch (std::exception& e)
-    {
-        throw e;
-    }
-    catch (...)
-    {
-        throw std::exception("Unknown error.");
     }
     // Check if the original acquisition need to be cropped
     if (this->data->aquisitionPointer)
@@ -302,7 +299,7 @@ void C3DParser::loadAcquisition()
 	this->data->forcePlatformsExtractor->Update();
 	btk::ForcePlatformCollection::Pointer fp = this->data->forcePlatformsExtractor->GetOutput();
 	float scale = getUnitScale("mm");
-	for (btk::ForcePlatformCollection::ConstIterator it = fp->Begin(); it != fp->End(); it++) {
+	for (btk::ForcePlatformCollection::ConstIterator it = fp->Begin(); it != fp->End(); ++it) {
 		// system jest przygotowany dla 4 wierzcholkow
 		// nie zaklada sie, ze platformy moga byc innym wielokatem.
 		if ((*it)->GetCorners().size() == 12) {
@@ -311,7 +308,7 @@ void C3DParser::loadAcquisition()
 			platform->origin[1] = (*it)->GetOrigin()[1];
 			platform->origin[2] = (*it)->GetOrigin()[2];
 			platform->origin *= scale;
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 4; ++i) {
 				platform->corners[i].set(
 					(*it)->GetCorner(i)(0,0),
 					(*it)->GetCorner(i)(1,0),
@@ -322,7 +319,7 @@ void C3DParser::loadAcquisition()
 			}
             platform->type = (*it)->GetType();
             int count = (*it)->GetChannelNumber();
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < count; ++i) {
                 auto channel = (*it)->GetChannel(i);
                 platform->channelLabels.insert(channel->GetLabel());
             }

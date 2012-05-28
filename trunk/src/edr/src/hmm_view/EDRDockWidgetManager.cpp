@@ -27,7 +27,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 	if (dockList.size() > 1) {
 		auto it = dockList.begin();
 		auto it2 = dockList.begin();
-		for (++it2; it2 != dockList.end(); it++, it2++) {
+		for (++it2; it2 != dockList.end(); ++it, ++it2) {
 			this->tabifyDockWidget(*it, *it2);
 		}
 
@@ -42,7 +42,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 
         QList<QTabBar*> tabBars = this->findChildren<QTabBar*>();
 
-        for(int i = 0; i < tabBars.size(); i++){
+        for(int i = 0; i < tabBars.size(); ++i){
             QTabBar* tab = tabBars[i];
             if(tab != nullptr && tab->parent() == this){
                 tab->setDrawBase(false);
@@ -68,7 +68,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
 {
     //QWidget::setUpdatesEnabled(false);
-	for (auto it = generatedList.begin(); it != generatedList.end(); it++) {
+	for (auto it = generatedList.begin(); it != generatedList.end(); ++it) {
 		if ((*it)->isAdditionPossible(widget)) {
 			(*it)->addDockWidget(widget);
 			//QWidget::setUpdatesEnabled(true);
@@ -117,7 +117,7 @@ void EDRDockWidgetManager::setTabsPosition( QTabWidget::TabPosition tabPosition 
 void EDRDockWidgetManager::setTabNames()
 {
     int i = 0;
-    for (auto it = dockList.begin(); it != dockList.end(); it++) {
+    for (auto it = dockList.begin(); it != dockList.end(); ++it) {
         (*it)->setWindowTitle(QString(tr("Group %1")).arg(++i));
     }
 }
@@ -131,7 +131,7 @@ void EDRDockWidgetManager::raiseSet( EDRDockWidgetSet* set )
 
 EDRDockWidgetSet* EDRDockWidgetManager::tryGetDockSet( EDRDockWidget* widget )
 {
-    for (auto it = dockList.begin(); it != dockList.end(); it++) {
+    for (auto it = dockList.begin(); it != dockList.end(); ++it) {
         BOOST_FOREACH(const EDRDockWidget* dock, (*it)->getDockWidgets()) {
             if (dock == widget) {
                 return *it;

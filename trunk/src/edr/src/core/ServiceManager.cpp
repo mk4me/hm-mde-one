@@ -19,7 +19,7 @@ ServiceManager::~ServiceManager(void)
 
 void ServiceManager::update(double deltaTime)
 {
-    for(auto it = servicesList.begin(); it != servicesList.end(); it++){
+    for(auto it = servicesList.begin(); it != servicesList.end(); ++it){
         try{
             (*it)->update(deltaTime);
         }catch(std::exception & e){
@@ -32,18 +32,18 @@ void ServiceManager::update(double deltaTime)
 
 void ServiceManager::finalizeServices()
 {
-    for(auto it = servicesList.begin(); it != servicesList.end(); it++){
+    for(auto it = servicesList.begin(); it != servicesList.end(); ++it){
         try{
             (*it)->finalize();
             LOG_DEBUG("ServiceManager: finalized correctly " << (*it)->getName() << " service");
         }
-        catch(std::runtime_error e){
+        catch(std::runtime_error & e){
             LOG_ERROR("ServiceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
         }
-        catch(std::invalid_argument e){
+        catch(std::invalid_argument & e){
             LOG_ERROR("ServiceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
         }
-        catch(std::exception e){
+        catch(std::exception & e){
             LOG_ERROR("ServiceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
         }
         catch(...){

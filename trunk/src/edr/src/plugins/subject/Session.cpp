@@ -69,7 +69,7 @@ void Session::getMotions(Motions & motions) const
     Motions toFiltering;
     core::queryDataPtr(core::getDataManagerReader(), toFiltering, true);
 
-    for(auto it = toFiltering.begin(); it != toFiltering.end(); it++){
+    for(auto it = toFiltering.begin(); it != toFiltering.end(); ++it){
         if((*it)->getSession().get() == this){
             motions.push_back(*it);
         }
@@ -83,7 +83,7 @@ const SubjectConstPtr & Session::getSubject() const
 
 bool Session::hasObjectOfType(const core::TypeInfo& type) const
 {
-    for(auto it = wrappers.begin(); it != wrappers.end(); it++){
+    for(auto it = wrappers.begin(); it != wrappers.end(); ++it){
 
         if((*it)->getTypeInfo() == type) {
             return true;
@@ -93,7 +93,7 @@ bool Session::hasObjectOfType(const core::TypeInfo& type) const
     Motions motions;
     getMotions(motions);
 
-    for(auto it = motions.begin(); it != motions.end(); it++){
+    for(auto it = motions.begin(); it != motions.end(); ++it){
         if((*it)->hasObjectOfType(type) == true){
             return true;
         }
@@ -110,7 +110,7 @@ void Session::getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) c
 FilteredSession::FilteredSession(const SessionConstPtr & originalSession, const std::vector<MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
     : originalSession(originalSession), wrappers(wrappers)
 {
-    for(auto it = motions.begin(); it != motions.end(); it++){
+    for(auto it = motions.begin(); it != motions.end(); ++it){
         this->motions.push_back(*it);
     }
 }

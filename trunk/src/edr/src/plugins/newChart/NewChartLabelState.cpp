@@ -43,7 +43,7 @@ NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const QPoint
 
 NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const NewChartLabel* label ) const
 {
-    for (auto it = labels.begin(); it != labels.end(); it++) {
+    for (auto it = labels.begin(); it != labels.end(); ++it) {
         if ((*it)->label == label) {
             return *it;
         }
@@ -58,7 +58,7 @@ NewChartLabelState::SeriePointDist NewChartLabelState::getClosestPoint(const QPo
     const NewChartSerie* serie = nullptr;
     QPointF ret;
     auto series = visualizer->getSeries();
-    for (auto it = series.begin(); it != series.end(); it++) {
+    for (auto it = series.begin(); it != series.end(); ++it) {
         double dist;
         const QwtPlotCurve* c = (*it)->getCurve();
         int pointIndex = c->closestPoint(pos, &dist);
@@ -90,7 +90,7 @@ void NewChartLabelState::stateEnd()
 
 void NewChartLabelState::removeSerieLabels( const NewChartSerie* serie )
 {
-    for (auto it = labels.begin(); it != labels.end(); it++) {
+    for (auto it = labels.begin(); it != labels.end(); ++it) {
         LabelDataPtr data = *it;
         if (data->serie == serie) {
             if (data->dot1) {
@@ -108,7 +108,7 @@ void NewChartLabelState::removeSerieLabels( const NewChartSerie* serie )
 
 void NewChartLabelState::setVisible( const NewChartSerie* serie, bool visible )
 {
-    for (auto it = labels.begin(); it != labels.end(); it++) {
+    for (auto it = labels.begin(); it != labels.end(); ++it) {
         LabelDataPtr data = *it;
         if (data->serie == serie) {
             if (data->dot1) {

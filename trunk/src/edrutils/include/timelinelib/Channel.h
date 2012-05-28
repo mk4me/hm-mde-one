@@ -232,7 +232,7 @@ protected:
             if((*begin)->getName() == name) {
                 break;
             }
-            begin++;
+            ++begin;
         }
 
         return begin;

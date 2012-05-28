@@ -27,7 +27,6 @@
 #include "TextEdit.h"
 #include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
-//#include "Measurements.h"
 #include "AboutDialog.h"
 
 
@@ -35,19 +34,67 @@ using namespace core;
 
 using namespace PluginSubject;
 
+void TreeRefresher::actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions) {
+
+	QMessageBox message;
+	message.setWindowTitle(QObject::tr("Refreshing analysis data"));
+	message.setText(message.windowTitle());
+	message.setWindowFlags(Qt::CustomizeWindowHint);
+	message.setStandardButtons(0);
+
+	message.show();
+	QApplication::processEvents();
+
+	try{
+
+		QTreeWidgetItem* item = TreeBuilder::createTree(QObject::tr("Active Data"), sessions);
+
+		tree->clear();
+		tree->addTopLevelItem(item);
+		item->setExpanded(true);
+
+		QFont font = item->font(0);
+		font.setPointSize(12);
+		item->setFont(0, font);
+
+		for (int i = 0; i < item->childCount(); ++i) {
+			QTreeWidgetItem* child = item->child(i);
+			child->setExpanded(true);
+
+			QFont font = item->font(0);
+			font.setPointSize(14);
+			item->setFont(0, font);
+		}
+
+	}catch(...){
+
+	}
+
+	message.setCursor(Qt::ArrowCursor);
+}
+
 
 HmmMainWindow::HmmMainWindow() :
     MainWindow(),
     currentVisualizer(nullptr),
+	subjectService(nullptr),
+	pane(nullptr),
     topMainWindow(nullptr),
+	bottomMainWindow(nullptr),
+	currentItem(nullptr),
     analisis(nullptr),
-    currentItem(nullptr),
     data(nullptr),
     operations(nullptr),
+	raports(nullptr),
+	visualizersActionsTab(new QWidget()),
+	flexiTabWidget(new FlexiTabWidget()),
+	visualizerGroupID(-1),
+	toolsGroupID(-1),
+	currentButton(nullptr),
     dataObserver(new DataObserver(this)),
     summaryWindow(new SummaryWindow(this)),
-    visualizersActionsTab(new QWidget()),
-    flexiTabWidget(new FlexiTabWidget()),
+    
+    
     summaryWindowController(new SummaryWindowController(summaryWindow, this))
 {
     setupUi(this);
@@ -161,7 +208,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     analisisButton->setEnabled(false);
     raportsButton->setEnabled(false);
 
-    for(auto it = button2TabWindow.begin(); it != button2TabWindow.end(); it++) {
+    for(auto it = button2TabWindow.begin(); it != button2TabWindow.end(); ++it) {
         mainArea->layout()->addWidget(it->second);
         it->second->hide();
         bool c = connect(it->first, SIGNAL(toggled(bool)), this, SLOT(onToolButton(bool)));
@@ -451,7 +498,7 @@ void HmmMainWindow::removeFromVisualizer()
 
 void HmmMainWindow::highlightVisualizer(const VisualizerPtr& visualizer )
 {
-    for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); it++) {
+    for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
         DataItemDescription desc = it->second;
         if (desc.visualizer.lock() == visualizer) {
             // todo: optymalniej!
@@ -488,7 +535,7 @@ void HmmMainWindow::addToVisualizer()
             //addSeriesToTimeline(series, path, visualizer);
 
             VisualizerWidget* vw = nullptr;
-            for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); it++) {
+            for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
                 DataItemDescription& d = it->second;
                 if (d.visualizer.lock() == visualizer) {
                     vw = d.visualizerWidget;
@@ -814,8 +861,8 @@ void HmmMainWindow::createFilterTab1()
     this->analisis->addDataFilterWidget(filter3);
     this->analisis->addDataFilterWidget(filter4);
 
-    for (auto it = dataFilterWidgets.begin(); it != dataFilterWidgets.end(); it++) {
-        for (int i = 0; i < (*it)->getNumEntries(); i++) {
+    for (auto it = dataFilterWidgets.begin(); it != dataFilterWidgets.end(); ++it) {
+        for (int i = 0; i < (*it)->getNumEntries(); ++i) {
             connect((*it)->getEntry(i), SIGNAL(onFilterClicked(FilterEntryWidget*)), this, SLOT(filterClicked(FilterEntryWidget*)));
         }
     }
@@ -961,7 +1008,6 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
  VisualizerWidget* HmmMainWindow::createDockVisualizer(const VisualizerPtr & visualizer)
 {   
-    VisualizerManager* visualizerManager = VisualizerManager::getInstance();
     visualizer->getOrCreateWidget();
     // todo : zastanowic sie nad bezpieczenstwem tej operacji
     connect(visualizer.get(), SIGNAL(printTriggered(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
@@ -1146,9 +1192,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                  VisualizerPtr visualizer = vw->getCurrentVisualizer();
                  DataManager* dataManager = DataManager::getInstance();
                  bool compatibile = false;
-                 for (int idx = 0; idx < visualizer->getNumInputs(); idx++) {
+                 for (int idx = 0; idx < visualizer->getNumInputs(); ++idx) {
                      std::vector<TypeInfo> types = item->getHelper()->getTypeInfos();
-                     for (unsigned int h = 0; h < types.size(); h++) {
+                     for (unsigned int h = 0; h < types.size(); ++h) {
                          if (dataManager->isTypeCompatible(visualizer->getInputType(idx), types[h])) {
                              compatibile = true;
                              break;
@@ -1242,7 +1288,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      for (auto it = multimap.begin(); it != multimap.end(); ) {
          DataItemDescription& desc = it->second;
          bool emptySerie = false;
-         for (auto s = desc.series.begin(); s != desc.series.end(); s++) {
+         for (auto s = desc.series.begin(); s != desc.series.end(); ++s) {
              if ((*s).use_count() == 0) {
                  emptySerie = true;
                  break;
@@ -1250,10 +1296,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          }
          if (emptySerie || desc.visualizer.use_count() == 0) {
              auto toErase = it;
-             it++;
+             ++it;
              multimap.erase(toErase);
          } else {
-             it++;
+             ++it;
          }
 
      }
@@ -1313,9 +1359,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              // jesli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
              // to znaczy, ze chcemy usunac dane z wszystkich wizualizatorw
              if (action->getVisualizer() == nullptr || desc.visualizer.lock() == action->getVisualizer()) {
-                 auto toErase = it; it++;
+                 auto toErase = it; ++it;
                  items2Descriptions.erase(toErase);
-                 for (unsigned int i = 0; i < desc.series.size(); i++) {
+                 for (unsigned int i = 0; i < desc.series.size(); ++i) {
                      desc.visualizer.lock()->removeSerie(desc.series[i].lock());
                  }
                  if (desc.visualizer.lock()->getDataSeries().size() == 0) {
@@ -1328,7 +1374,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                     break;
                  }
              } else {
-                 it++;
+                 ++it;
              }
 
          }
@@ -1337,7 +1383,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
  void HmmMainWindow::filterClicked( FilterEntryWidget* entry )
  {
-     for (auto it = dataFilterWidgets.begin(); it != dataFilterWidgets.end(); it++) {
+     for (auto it = dataFilterWidgets.begin(); it != dataFilterWidgets.end(); ++it) {
          (*it)->uncheckEntries(entry);
      }
  }
@@ -1354,7 +1400,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          Motions motions;
          s->getMotions(motions);
 
-         for (auto itMotion = motions.begin(); itMotion != motions.end(); itMotion++) {
+         for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
              std::vector<core::ObjectWrapperConstPtr> wrappers;
              (*itMotion)->getWrappers(wrappers, typeid(ScalarChannel), false);
              EventsCollectionConstPtr events;
@@ -1363,7 +1409,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                  events = w->get();
              }
 
-             for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
+             for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
                  if ((*it)->getName() == helper->getWrapper()->getName()) {
                      toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(*it, events, *itMotion));
                  }
@@ -1453,7 +1499,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          Motions motions;
          s->getMotions(motions);
 
-         for (auto itMotion = motions.begin(); itMotion != motions.end(); itMotion++) {
+         for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
              std::vector<core::ObjectWrapperConstPtr> wrappers;
              (*itMotion)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
 
@@ -1463,10 +1509,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                  events = w->get();
              }
 
-             for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
+             for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
                  VectorChannelCollectionConstPtr collection = (*it)->get();
                  int count = collection->getNumChannels();
-                 for (int i = 0; i < count; i++) {
+                 for (int i = 0; i < count; ++i) {
                      VectorChannelConstPtr channel = collection->getChannel(i);
                      VectorChannelConstPtr helperChannel = helper->getWrapper()->get();
                      if (channel->getName() == helperChannel->getName()) {
@@ -1503,9 +1549,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      }
      std::map<ObjectWrapperConstPtr, QColor> colorMap;
      VectorChannelConstPtr channel = helper->getWrapper()->get();
-     for (int j = 0; j != segments.size(); j++) {
+     for (int j = 0; j != segments.size(); ++j) {
          FloatPairPtr segment = segments[j];
-         for (int channelNo = 0; channelNo <= 2; channelNo++) {
+         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
              ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
              ScalarChannelReaderInterfacePtr normalized(new ScalarWithTimeSegment(reader, segment->first, segment->second));
              core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
@@ -1533,7 +1579,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      s->getMotions(motions);
 
      std::map<ObjectWrapperConstPtr, QColor> colorMap;
-     for (auto itMotion = motions.begin(); itMotion != motions.end(); itMotion++) {
+     for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
          std::vector<core::ObjectWrapperConstPtr> wrappers;
          (*itMotion)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
 
@@ -1545,10 +1591,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              segments = getTimeSegments(events, context);
          }
 
-         for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
+         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
              VectorChannelCollectionConstPtr collection = (*it)->get();
              int count = collection->getNumChannels();
-             for (int i = 0; i < count; i++) {
+             for (int i = 0; i < count; ++i) {
                  VectorChannelConstPtr channel = collection->getChannel(i);
                  VectorChannelConstPtr helperChannel = helper->getWrapper()->get();
                  if (channel->getName() == helperChannel->getName()) {
@@ -1559,10 +1605,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                      QColor colorX(r + 55,g , b);
                      QColor colorY(r, g + 55, b);
                      QColor colorZ(r, g, b + 55);
-                     for (int j = 0; j != segments.size(); j++) {
+                     for (int j = 0; j != segments.size(); ++j) {
                          FloatPairPtr segment = segments[j];
 
-                         for (int channelNo = 0; channelNo <= 2; channelNo++) {
+                         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
                              ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
                              ScalarChannelReaderInterfacePtr normalized(new ScalarWithTimeSegment(reader, segment->first, segment->second));
                              core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
@@ -1581,7 +1627,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
          }
      }
-     if (toVisualize.size()) {
+     if (toVisualize.empty() == false) {
          NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
          multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
          HmmTreeItem item(multi);

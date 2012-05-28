@@ -80,7 +80,6 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 	bool perspectiveFirst)
 {
 	DataStatus status;
-	IDataSourceContentFunctionality * contentFunctionality = perspective;
 	int statusColumn = -1;
 	QStringList headers;
 

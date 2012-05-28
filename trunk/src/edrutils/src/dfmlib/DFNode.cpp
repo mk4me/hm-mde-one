@@ -59,8 +59,8 @@ bool DFNode::isPropagatingAllowed() const
 
 bool DFNode::checkInputPins() const
 {
-	for(auto it = beginIn(); it != endIn(); it++){
-		for(auto iT = (*it)->begin(); iT != (*it)->end(); iT++){
+	for(auto it = beginIn(); it != endIn(); ++it){
+		for(auto iT = (*it)->begin(); iT != (*it)->end(); ++iT){
 			DFPinPtr ptr(DFPin::getDFPin((*iT)->getOther(*it)));
 			if( ptr != nullptr && ptr->isUpdated() == false){
 				return false;
@@ -73,12 +73,12 @@ bool DFNode::checkInputPins() const
 
 void DFNode::updateOutputPins()
 {
-	for(auto it = beginOut(); it != endOut(); it++){
+	for(auto it = beginOut(); it != endOut(); ++it){
 		DFPinPtr pin(DFPin::getDFPin(*it));
 		
 		if(pin != nullptr){
 			pin->update();		
-            for(auto iT = (*it)->begin(); iT != (*it)->end(); iT++){
+            for(auto iT = (*it)->begin(); iT != (*it)->end(); ++iT){
 				pin = DFPin::getDFPin((*iT)->getOther(*it));
 				if(pin != nullptr){
 					pin->update();

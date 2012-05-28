@@ -51,7 +51,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
 
                 DataManager* dataManager = DataManager::getInstance();
 
-                for( ; it != endIT; it++){
+                for( ; it != endIT; ++it){
                     if(core::Filesystem::isRegularFile((*it).path()) == true && dataManager->isExtensionSupported(core::Filesystem::fileExtension(*it)) == true){
                         files.push_back((*it).path());
                     }
@@ -63,7 +63,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                     std::set<core::TypeInfo> dataTypes;
                     std::vector<core::ObjectWrapperPtr> objects;
 
-                    for(auto it = files.begin(); it != files.end(); it++){
+                    for(auto it = files.begin(); it != files.end(); ++it){
                         try{
                             dataManager->addFile(*it);
                             //dataManager->initializeData(*it);
@@ -73,7 +73,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                         }
                     }
 
-                    for(auto it = objects.begin(); it != objects.end(); it++){
+                    for(auto it = objects.begin(); it != objects.end(); ++it){
                         core::TypeInfo typeInfo = (*it)->getTypeInfo();
                         auto dataIT = data.find(typeInfo);
                         if(dataIT == data.end()){
@@ -88,7 +88,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                         tableWidget->setRowCount(data.size());
                         bool checked = true;
                         int i = 0;
-                        for(auto it = data.begin(); it != data.end(); it++){
+                        for(auto it = data.begin(); it != data.end(); ++it){
                             QCheckBox* chkBox = new QCheckBox();
 
                             //po³¹czenie pomiêdzy checkbox a typem danych pogrupowanych
@@ -111,7 +111,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                             tableWidget->setCellWidget(i, 0, chkBox);
                             tableWidget->setItem(i, 1, new QTableWidgetItem(it->second->getObject(0)->getClassName().c_str()));
                             checked = false;
-                            i++;
+                            ++i;
                         }
                     }else{
                         errorDesc = "No data loaded from the given directory";
@@ -145,7 +145,7 @@ void LocalDataSourceWidget::onCheckChange(int state)
 
     core::TypeInfo typeInfo(checkBoxToTypeMapping.find(chkBox)->second);
     if(chkBox->isChecked() == true){
-        for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); it++){
+        for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); ++it){
             it->first->setEnabled(true);
         }
 
@@ -154,7 +154,7 @@ void LocalDataSourceWidget::onCheckChange(int state)
     }else{
         //usun typ Ÿrodla z opisu wyjœæ
         std::set<QCheckBox*> checked;
-        for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); it++){
+        for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); ++it){
             if(it->first->isChecked() == true){
                 checked.insert(it->first);
             }
@@ -170,7 +170,7 @@ void LocalDataSourceWidget::onCheckChange(int state)
     }
 
     localDataSource->outputDescription.swap(LocalDataSource::OutputDescription());
-    for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); it++){
+    for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); ++it){
         if(it->first->isChecked() == true){
             localDataSource->outputDescription.push_back(core::IOutputDescription::OutputInfo(data.find(it->second)->second->getObject(0)->getClassName(), it->second));
         }

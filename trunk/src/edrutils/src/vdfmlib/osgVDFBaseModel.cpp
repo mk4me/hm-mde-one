@@ -180,7 +180,7 @@ void osgVDFBaseModel::addNode(const dflm::NPtr & node, osg::ref_ptr<osg::Image> 
     VPinsCompatibility tmpPinsCompatibility;
 
     //piny wejsciowe
-    for(auto it = node->beginIn(); it != node->endIn(); it++){
+    for(auto it = node->beginIn(); it != node->endIn(); ++it){
         osgVDFBasePin * pin = createVisualPin((*it)->getName());
         pin->modelPin = *it;
         pin->visualModel = this;
@@ -193,7 +193,7 @@ void osgVDFBaseModel::addNode(const dflm::NPtr & node, osg::ref_ptr<osg::Image> 
 
         osgVDFBaseNode::Pins compatible;
 
-        for(auto iT = compatiblePins.begin(); iT != compatiblePins.end(); iT++){
+        for(auto iT = compatiblePins.begin(); iT != compatiblePins.end(); ++iT){
             if(iT->first->getModelPin()->getType() == dflm::Pin::OUT
                 && (*it)->isCompatible(iT->first->getModelPin())){
                     compatible.insert(iT->first);
@@ -205,7 +205,7 @@ void osgVDFBaseModel::addNode(const dflm::NPtr & node, osg::ref_ptr<osg::Image> 
     }
 
     //piny wyjsciowe
-    for(auto it = node->beginOut(); it != node->endOut(); it++){
+    for(auto it = node->beginOut(); it != node->endOut(); ++it){
         osgVDFBasePin * pin = createVisualPin((*it)->getName());
         pin->modelPin = *it;
         pin->visualModel = this;
@@ -218,7 +218,7 @@ void osgVDFBaseModel::addNode(const dflm::NPtr & node, osg::ref_ptr<osg::Image> 
 
         osgVDFBaseNode::Pins compatible;
 
-        for(auto iT = compatiblePins.begin(); iT != compatiblePins.end(); iT++){
+        for(auto iT = compatiblePins.begin(); iT != compatiblePins.end(); ++iT){
             if(iT->first->getModelPin()->getType() == dflm::Pin::IN
                 && iT->first->getModelPin()->isCompatible(*it)){
                     compatible.insert(iT->first);
@@ -255,7 +255,7 @@ void osgVDFBaseModel::addNode(const dflm::NPtr & node, osg::ref_ptr<osg::Image> 
     if(vnode->getCollisionNodes().empty() == false){
         vnode->setVisualStatus(osgVDFBaseNode::COLLISION);
 
-        for(auto it = vnode->getCollisionNodes().begin(); it != vnode->getCollisionNodes().end(); it++){
+        for(auto it = vnode->getCollisionNodes().begin(); it != vnode->getCollisionNodes().end(); ++it){
             if((*it)->getVisualStatus() == osgVDFBaseNode::OK){
                 (*it)->setVisualStatus(osgVDFBaseNode::COLLISION);
             }
@@ -315,8 +315,8 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
 
 	dflm::Model::Nodes destNodes;
 
-	for(auto it = node->beginOut(); it != node->endOut(); it++){
-		for(auto iT = (*it)->begin(); iT != (*it)->end(); iT++){
+	for(auto it = node->beginOut(); it != node->endOut(); ++it){
+		for(auto iT = (*it)->begin(); iT != (*it)->end(); ++iT){
 			destNodes.insert((*iT)->getDest()->getParent());
 		}
 	}
@@ -342,7 +342,7 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
 	//get pins to update
 	osgVDFBasePin::Connections connectionsToRemove;
 	for(auto it = pinsToRemove.begin();
-		it != pinsToRemove.end(); it++){
+		it != pinsToRemove.end(); ++it){
 
 			connectionsToRemove.insert((*it)->getConnections().begin(),
 				(*it)->getConnections().end());
@@ -352,7 +352,7 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
 	//delete connections mappings
 	//refresh required pins
 	for(auto it = connectionsToRemove.begin();
-		it != connectionsToRemove.end(); it++){
+		it != connectionsToRemove.end(); ++it){
 			it->second->removeConnection(it->first);
 			it->second->setVisualStatus(it->second->getStaticVisualStatus());
 				
@@ -368,12 +368,12 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
 	//delete pins mappings
 	//delete pins compatibility
 	for(auto it = pinsToRemove.begin();
-		it != pinsToRemove.end(); it++){
+		it != pinsToRemove.end(); ++it){
 
 		pinsLogicalToGraph.erase((*it)->getModelPin());
 		compatiblePins.erase(*it);
 
-		for(auto iT = compatiblePins.begin(); iT != compatiblePins.end(); iT++){
+		for(auto iT = compatiblePins.begin(); iT != compatiblePins.end(); ++iT){
 			iT->second.erase(*it);
 		}
 	}
@@ -383,7 +383,7 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
 	visualNodes.erase(vnode);
 
 	//refresh output pins of affected nodes
-	for(auto it = destNodes.begin(); it != destNodes.end(); it++){
+	for(auto it = destNodes.begin(); it != destNodes.end(); ++it){
 		refreshOutputPins(nodesLogicalToGraph[*it]);
 	}
 
@@ -398,7 +398,7 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
     vnode->setCollisionNodes(VNodes());
     
     //aktualizuj statusy kolizji pozostalych wezlow
-    for(auto it = collisionNodes.begin(); it != collisionNodes.end(); it++){
+    for(auto it = collisionNodes.begin(); it != collisionNodes.end(); ++it){
         if((*it)->getVisualStatus() == osgVDFBaseNode::COLLISION && (*it)->getCollisionNodes().empty() == true){
             (*it)->setVisualStatus(osgVDFBaseNode::OK);
         }
@@ -416,7 +416,7 @@ dflm::Model::Nodes osgVDFBaseModel::getNodesInArea(const osg::BoundingBox & area
 
     VNodes vnodes(getVisualNodesInArea(area));
 
-	for(auto it = vnodes.begin(); it != vnodes.end(); it++){
+	for(auto it = vnodes.begin(); it != vnodes.end(); ++it){
 		ret.insert((*it)->getModelNode());
 	}
 
@@ -427,7 +427,7 @@ osgVDFBaseModel::VNodes osgVDFBaseModel::getVisualNodesInArea(const osg::Boundin
 {
     osgVDFBaseModel::VNodes ret;
 
-    for(auto it = visualNodes.begin(); it != visualNodes.end(); it++){
+    for(auto it = visualNodes.begin(); it != visualNodes.end(); ++it){
         osg::BoundingBox nodeBB(osgui::Utils2D::generateBox(*it));
         if(area.intersects(nodeBB) == true){
             nodeBB = area.intersect(nodeBB);
@@ -509,7 +509,7 @@ void osgVDFBaseModel::selectNodes(const dflm::Model::Nodes & nodes)
 		hideTooltip();
 	}
 	
-	for(auto it = nodes.begin(); it != nodes.end(); it++){
+	for(auto it = nodes.begin(); it != nodes.end(); ++it){
         osgVDFBaseNode * vnode = getVisualNode(*it);
        
         selectVisualNode(vnode);
@@ -618,7 +618,7 @@ void osgVDFBaseModel::deselectVisualNodes(const VNodes & vnodes, const VNodes & 
 		tVis = true;
 	}
 	
-	for(auto it = vnodes.begin(); it != vnodes.end(); it++){
+	for(auto it = vnodes.begin(); it != vnodes.end(); ++it){
 
         if(innerIsNodeSelected(*it) == false){
             continue;
@@ -687,7 +687,7 @@ dflm::Model::Nodes osgVDFBaseModel::filterNodes(const dflm::Model::Nodes & nodes
 
     auto it = std::set_intersection(logicModel->getNodes().begin(), logicModel->getNodes().end(), nodes.begin(), nodes.end(), intersection.begin());
 
-    for(auto iT = intersection.begin(); iT != it; iT++){
+    for(auto iT = intersection.begin(); iT != it; ++iT){
         ret.insert(*iT);
     }
 
@@ -698,7 +698,7 @@ osgVDFBaseModel::VNodes osgVDFBaseModel::getVNodesFromNodes(const dflm::Model::N
 {
     VNodes ret;
 
-    for(auto it = nodes.begin(); it != nodes.end(); it++){
+    for(auto it = nodes.begin(); it != nodes.end(); ++it){
         ret.insert(nodesLogicalToGraph.find(*it)->second);
     }
 
@@ -709,7 +709,7 @@ dflm::Model::Nodes osgVDFBaseModel::getNodesFromVNodes(const VNodes & vnodes) co
 {
     dflm::Model::Nodes ret;
 
-    for(auto it = vnodes.begin(); it != vnodes.end(); it++){
+    for(auto it = vnodes.begin(); it != vnodes.end(); ++it){
         ret.insert((*it)->getModelNode());
     }
 
@@ -741,8 +741,8 @@ osg::BoundingBox osgVDFBaseModel::innerGetNodesBoundingBox( const VNodes & vnode
     if(vnodes.empty() == false){
         auto it = vnodes.begin();
         ret  = osgui::Utils2D::generateBox(*it);
-        it++;
-        for( ; it != vnodes.end(); it++){
+        ++it;
+        for( ; it != vnodes.end(); ++it){
             ret.expandBy(osgui::Utils2D::generateBox(*it));
         }
     }
@@ -797,7 +797,7 @@ bool osgVDFBaseModel::isNodeFullyInVisibleArea(const dflm::NPtr & node) const
 void osgVDFBaseModel::hideConnections()
 {
 	osgWidget::point_type z = getMinNodesZ();
-	for(auto it = connectionsGraphToLogical.begin(); it != connectionsGraphToLogical.end(); it++){
+	for(auto it = connectionsGraphToLogical.begin(); it != connectionsGraphToLogical.end(); ++it){
 		setVisualConnectionZ(it->first, z);
 	}
 }
@@ -863,13 +863,13 @@ void osgVDFBaseModel::setNodeRelativePosition(const dflm::NPtr & node, const osg
         vnode->setVisualStatus(status);
     }
 
-    for(auto it = collisioNodes.begin(); it != collisionNodes.end(); it++){
+    for(auto it = collisioNodes.begin(); it != collisionNodes.end(); ++it){
         if((*it)->getVisualStatus() == osgVDFBaseNode::COLLISION && (*it)->getCollisionNodes().empty() == true){
             (*it)->setVisualStatus(osgVDFBaseNode::OK);
         }
     }
 
-    for(auto it = vnode->getCollisionNodes().begin(); it != vnode->getCollisionNodes().end(); it++){
+    for(auto it = vnode->getCollisionNodes().begin(); it != vnode->getCollisionNodes().end(); ++it){
         if((*it)->getVisualStatus() == osgVDFBaseNode::OK){
             (*it)->setVisualStatus(osgVDFBaseNode::COLLISION);
         }
@@ -885,7 +885,7 @@ osgVDFBaseModel::VNodes osgVDFBaseModel::getCollisionNodes(osgVDFBaseNode * vnod
 
     osg::BoundingBox bb(osgui::Utils2D::generateBox(vnode));
     
-    for(auto it = nodes.begin(); it != nodes.end(); it++){
+    for(auto it = nodes.begin(); it != nodes.end(); ++it){
         if( *it != vnode && bb.intersects(osgui::Utils2D::generateBox(*it)) == true){
             ret.insert(*it);
         }
@@ -907,7 +907,7 @@ void osgVDFBaseModel::moveNode( osgVDFBaseNode* vnode, const osgWidget::XYCoord 
 
 void osgVDFBaseModel::moveNodes( const VNodes & vnodes, const osgWidget::XYCoord &moveStep )
 {
-    for(auto it = vnodes.begin(); it != vnodes.end(); it++){
+    for(auto it = vnodes.begin(); it != vnodes.end(); ++it){
         moveNode(*it, moveStep);
     }
 }
@@ -942,13 +942,13 @@ void osgVDFBaseModel::setNodeAbsolutePosition(const dflm::NPtr & node, const osg
         vnode->setVisualStatus(status);
     }
 
-    for(auto it = collisionNodes.begin(); it != collisionNodes.end(); it++){
+    for(auto it = collisionNodes.begin(); it != collisionNodes.end(); ++it){
         if((*it)->getVisualStatus() == osgVDFBaseNode::COLLISION && (*it)->getCollisionNodes().empty() == true){
             (*it)->setVisualStatus(osgVDFBaseNode::OK);
         }
     }
 
-    for(auto it = vnode->getCollisionNodes().begin(); it != vnode->getCollisionNodes().end(); it++){
+    for(auto it = vnode->getCollisionNodes().begin(); it != vnode->getCollisionNodes().end(); ++it){
         if((*it)->getVisualStatus() == osgVDFBaseNode::OK){
             (*it)->setVisualStatus(osgVDFBaseNode::COLLISION);
         }
@@ -1083,7 +1083,7 @@ void osgVDFBaseModel::removeConnectionFromPin(osgVDFBasePin * pin, osg::Geode * 
 }
 
 void osgVDFBaseModel::refreshOutputPins(osgVDFBaseNode * node){
-	for(osgVDFBaseNode::Pins::iterator it = node->getOutPins().begin(); it != node->getOutPins().end(); it++){
+	for(osgVDFBaseNode::Pins::iterator it = node->getOutPins().begin(); it != node->getOutPins().end(); ++it){
 		//refresh pin visual status
 		refreshPinVisualState(*it);
 	}
@@ -1105,7 +1105,7 @@ void osgVDFBaseModel::showDefaultToolbar(bool show)
 			this->addChild(toolbar);
 			fillToolbarWithGroups(toolbar);
 			for(std::set<osgVDFNodeTypeDescriptor*>::iterator it = nodeTypesMissing.begin();
-				it != nodeTypesMissing.end(); it++){
+				it != nodeTypesMissing.end(); ++it){
 
 				graphAddNodeTypeToToolbar(*it);
 			}
@@ -1134,7 +1134,6 @@ void osgVDFBaseModel::registerNodeType( osgVDFNodeTypeDescriptor * descriptor )
 		throw std::runtime_error("Node type already registered!");
 	}
 
-	bool ret = true;
 	if(toolbar != 0){
 		graphAddNodeTypeToToolbar(descriptor);
 	}else{
@@ -1239,8 +1238,8 @@ osgWidget::point_type osgVDFBaseModel::getMinNodesZ(){
 	if(visualNodes.empty() == false){
 		VNodes::iterator it = visualNodes.begin();
 		ret = osgui::Utils2D::calcAbsZ(*it);
-		it++;
-		for( ; it != visualNodes.end(); it++){
+		++it;
+		for( ; it != visualNodes.end(); ++it){
 			ret = std::min(ret,osgui::Utils2D::calcAbsZ(*it));
 		}
 	}
@@ -1255,8 +1254,8 @@ osgWidget::point_type osgVDFBaseModel::getMaxNodesZ(){
 	if(visualNodes.empty() == false){
 		VNodes::iterator it = visualNodes.begin();
 		ret = osgui::Utils2D::calcAbsZ(*it);
-		it++;
-		for( ; it != visualNodes.end(); it++){
+		++it;
+		for( ; it != visualNodes.end(); ++it){
 			ret = std::max(ret,osgui::Utils2D::calcAbsZ(*it));
 		}
 	}
@@ -1277,9 +1276,9 @@ osgVDFBaseModel::VNodes osgVDFBaseModel::getSelectedNodesCollisions(){
 	std::vector<osgVDFBaseNode*> diff(nodesLogicalToGraph.size() - selectedVNodes.size());
 	std::set_difference(visualNodes.begin(), visualNodes.end(), selectedVNodes.begin(), selectedVNodes.end(), diff.begin());
 
-	for(VNodes::const_iterator it = selectedVNodes.begin(); it != selectedVNodes.end(); it++){
+	for(VNodes::const_iterator it = selectedVNodes.begin(); it != selectedVNodes.end(); ++it){
 		osg::BoundingBox selBB = osgui::Utils2D::generateBox(*it);
-		for(std::vector<osgVDFBaseNode*>::iterator iT = diff.begin(); iT != diff.end(); iT++){
+		for(std::vector<osgVDFBaseNode*>::iterator iT = diff.begin(); iT != diff.end(); ++iT){
 			if(selBB.intersects(osgui::Utils2D::generateBox(*iT)) == true){
 				ret.insert(*iT);
 			}
@@ -1291,14 +1290,14 @@ osgVDFBaseModel::VNodes osgVDFBaseModel::getSelectedNodesCollisions(){
 
 void osgVDFBaseModel::saveCurrentVisualNodesStates()
 {
-    for(auto it = deselectedVNodes.begin(); it != deselectedVNodes.end(); it++){
+    for(auto it = deselectedVNodes.begin(); it != deselectedVNodes.end(); ++it){
         movePrevNodesStatus[*it] = (*it)->getVisualStatus();
     }
 }
 
 void osgVDFBaseModel::restorePreviousVisualNodeStates()
 {
-    for(auto it = movePrevNodesStatus.begin(); it != movePrevNodesStatus.end(); it++){
+    for(auto it = movePrevNodesStatus.begin(); it != movePrevNodesStatus.end(); ++it){
         it->first->setVisualStatus(it->second);
     }
 }
@@ -1318,13 +1317,13 @@ void osgVDFBaseModel::updateCollisions(){
 			collisionNodes.end(), collisions.begin(), collisions.end(), difference.begin());
 
 		//return nodes previous states if they are not in collision any more
-		for(std::vector<osgVDFBaseNode*>::iterator it = difference.begin(); it != diffEnd; it++){
+		for(std::vector<osgVDFBaseNode*>::iterator it = difference.begin(); it != diffEnd; ++it){
 			(*it)->setVisualStatus(movePrevNodesStatus[*it]);
 			movePrevNodesStatus.erase(*it);
 		}
 
 		//fill new collision points
-		for(VNodes::iterator it = collisions.begin(); it != collisions.end(); it++){
+		for(VNodes::iterator it = collisions.begin(); it != collisions.end(); ++it){
 			if(movePrevNodesStatus.find(*it) == movePrevNodesStatus.end()){
 				movePrevNodesStatus[*it] = (*it)->getVisualStatus();
 				(*it)->setVisualStatus(osgVDFBaseNode::COLLISION);
@@ -1333,7 +1332,7 @@ void osgVDFBaseModel::updateCollisions(){
 		}
 	}else{
 		for(VNodesPrevVisualStatus::iterator it = movePrevNodesStatus.begin();
-			it != movePrevNodesStatus.end(); it++){
+			it != movePrevNodesStatus.end(); ++it){
 
 				it->first->setVisualStatus(it->second);
 		}
@@ -1406,11 +1405,11 @@ bool osgVDFBaseModel::onNodeDrag(osgWidget::Event& ev)
                 moveNodes(selectedVNodes, move);
                 selectionBoundingBox = selBB;
 
-                for(auto it = selectedVNodes.begin(); it != selectedVNodes.end(); it++){
+                for(auto it = selectedVNodes.begin(); it != selectedVNodes.end(); ++it){
                     (*it)->setCollisionNodes(getCollisionNodes(*it, deselectedVNodes));
                 }
 
-                for(auto it = deselectedVNodes.begin(); it != deselectedVNodes.end(); it++){
+                for(auto it = deselectedVNodes.begin(); it != deselectedVNodes.end(); ++it){
                     if((*it)->getVisualStatus() == osgVDFBaseNode::COLLISION && (*it)->getCollisionNodes().empty() == true){
                         (*it)->setVisualStatus(osgVDFBaseNode::OK);
                     }else if((*it)->getVisualStatus() == osgVDFBaseNode::OK && (*it)->getCollisionNodes().empty() == false){
@@ -1438,7 +1437,7 @@ bool osgVDFBaseModel::onNodeRelease(osgWidget::Event& ev)
 
             bool moveOk = true;
 
-            for(auto it = selectedVNodes.begin(); it != selectedVNodes.end(); it++){
+            for(auto it = selectedVNodes.begin(); it != selectedVNodes.end(); ++it){
                 osgVDFBaseNode::VNodesDifference intersect(std::min((*it)->getCollisionNodes().size(), deselectedVNodes.size()));
 
                 auto iT = std::set_intersection((*it)->getCollisionNodes().begin(), (*it)->getCollisionNodes().end(),
@@ -1458,11 +1457,11 @@ bool osgVDFBaseModel::onNodeRelease(osgWidget::Event& ev)
 
 			    moveNodes(selectedVNodes, initialMoveCoords);
 
-                for(auto it = selectedVNodes.begin(); it != selectedVNodes.end(); it++){
+                for(auto it = selectedVNodes.begin(); it != selectedVNodes.end(); ++it){
                     (*it)->setCollisionNodes(getCollisionNodes(*it, deselectedVNodes));
                 }
 
-                for(auto it = deselectedVNodes.begin(); it != deselectedVNodes.end(); it++){
+                for(auto it = deselectedVNodes.begin(); it != deselectedVNodes.end(); ++it){
                     if((*it)->getVisualStatus() == osgVDFBaseNode::COLLISION && (*it)->getCollisionNodes().empty() == true){
                         (*it)->setVisualStatus(osgVDFBaseNode::OK);
                     }else if((*it)->getVisualStatus() == osgVDFBaseNode::OK && (*it)->getCollisionNodes().empty() == false){
@@ -1470,11 +1469,11 @@ bool osgVDFBaseModel::onNodeRelease(osgWidget::Event& ev)
                     }
                 }
 		    }else{
-                for(auto it = selectedVNodes.begin(); it != selectedVNodes.end(); it++){
+                for(auto it = selectedVNodes.begin(); it != selectedVNodes.end(); ++it){
                     (*it)->setCollisionNodes(getCollisionNodes(*it, deselectedVNodes));
                 }
 
-                for(auto it = deselectedVNodes.begin(); it != deselectedVNodes.end(); it++){
+                for(auto it = deselectedVNodes.begin(); it != deselectedVNodes.end(); ++it){
                     if((*it)->getVisualStatus() == osgVDFBaseNode::COLLISION && (*it)->getCollisionNodes().empty() == true){
                         (*it)->setVisualStatus(osgVDFBaseNode::OK);
                     }else if((*it)->getVisualStatus() == osgVDFBaseNode::OK && (*it)->getCollisionNodes().empty() == false){
@@ -1568,7 +1567,7 @@ bool osgVDFBaseModel::onPinDrag(osgWidget::Event& ev)
 		    osg::Vec3f pos3D(connectingCurrentPose.x(), connectingCurrentPose.y(),0);
 		    bool isPin = false;
 		    for(auto it = compatiblePins.begin();
-			    it != compatiblePins.end(); it++){
+			    it != compatiblePins.end(); ++it){
 
 				    //onEnter
 				    if(it->first != connectingStartPin && osgui::Utils2D::generateBox(it->first).contains(pos3D) == true){
@@ -1673,13 +1672,13 @@ bool osgVDFBaseModel::onPinRelease(osgWidget::Event& ev)
 }
 
 void osgVDFBaseModel::savePinsStatus(const osgVDFBaseNode::Pins & pins){
-	for(osgVDFBaseNode::Pins::const_iterator it = pins.begin(); it != pins.end(); it++){
+	for(osgVDFBaseNode::Pins::const_iterator it = pins.begin(); it != pins.end(); ++it){
 		connectingPrevPinsStatus[*it] = (*it)->getVisualStatus();
 	}
 }
 
 void osgVDFBaseModel::highlightCompatiblePins(osgVDFBasePin * startPin, const osgVDFBaseNode::Pins & pins){
-	for(osgVDFBaseNode::Pins::const_iterator it = pins.begin(); it != pins.end(); it++){
+	for(osgVDFBaseNode::Pins::const_iterator it = pins.begin(); it != pins.end(); ++it){
 		osgVDFBasePin::VisualStatus pinStatus = (*it)->getDynamicVisualStatus(startPin->getModelPin(), logicModel);
 		if(pinStatus == osgVDFBasePin::ACTIVE){
 			(*it)->setVisualStatus(pinStatus);
@@ -1688,7 +1687,7 @@ void osgVDFBaseModel::highlightCompatiblePins(osgVDFBasePin * startPin, const os
 }
 
 void osgVDFBaseModel::restorePinsStatus(){
-	for(VPinPrevVisualStatus::iterator it = connectingPrevPinsStatus.begin(); it != connectingPrevPinsStatus.end(); it++){
+	for(VPinPrevVisualStatus::iterator it = connectingPrevPinsStatus.begin(); it != connectingPrevPinsStatus.end(); ++it){
 		it->first->setVisualStatus(it->second);
 	}
 
@@ -1709,9 +1708,9 @@ bool osgVDFBaseModel::onPinEnter(osgWidget::Event& ev)
 		std::vector<std::string>::iterator it = pinErrors.begin();
 		std::string text(*it);
 
-		it++;
+		++it;
 
-		for( ; it != pinErrors.end(); it++){
+		for( ; it != pinErrors.end(); ++it){
 			text += "\n" + *it;
 		}
 
@@ -1751,9 +1750,9 @@ bool osgVDFBaseModel::onNodeEnter(osgWidget::Event& ev)
 		std::vector<std::string>::iterator it = nodeErrors.begin();
 		std::string text(*it);
 
-		it++;
+		++it;
 
-		for( ; it != nodeErrors.end(); it++){
+		for( ; it != nodeErrors.end(); ++it){
 			text += "\n" + *it;
 		}
 
@@ -1770,12 +1769,7 @@ bool osgVDFBaseModel::onNodeEnter(osgWidget::Event& ev)
 }
 
 bool osgVDFBaseModel::onNodeLeave(osgWidget::Event& ev){
-	if(isTooltipVisible() == true){
-		hideTooltip();
-		refreshFocused();
-	}
-
-	return false;
+	return onPinLeave(ev);
 }
 
 std::vector<std::string> osgVDFBaseModel::getPinErrors(const dflm::PinPtr & pin){
@@ -1788,7 +1782,7 @@ std::vector<std::string> osgVDFBaseModel::getPinErrors(const dflm::PinPtr & pin)
 	}else if(pin->getType() == dflm::Pin::OUT && pin->empty() == false && pin->isComplete() == false){
 		std::string message("Pin wyjsciowy jest polaczony i zale¿ny od pinów wejœciowych:");
 		auto dependant = pin->getDependantPins();
-		for(auto it = dependant.begin(); it != dependant.end(); it++){
+		for(auto it = dependant.begin(); it != dependant.end(); ++it){
 			if((*it).lock()->empty() == true){
 				message += " " + (*it).lock()->getName();
 			}
@@ -1812,7 +1806,7 @@ std::vector<std::string> osgVDFBaseModel::getNodeErrors(const dflm::NPtr & node)
 			}
 
 			//const dflm::Node::Pins & pinsSet = node->getInPins();
-			for(auto it = node->beginIn(); it != node->endIn(); it++){
+			for(auto it = node->beginIn(); it != node->endIn(); ++it){
 				if(getPinErrors(*it).empty() == false){
 					ret.push_back("Problem z pinami wejsciowymi - sprawdz piny wejsciowe");
 					break;
@@ -1822,7 +1816,7 @@ std::vector<std::string> osgVDFBaseModel::getNodeErrors(const dflm::NPtr & node)
 		
 		//if(node->getOutPins().empty() == false){
 		//	const dflm::Node::Pins & pinsSet = node->getOutPins();
-			for(auto it = node->beginOut(); it != node->endOut(); it++){
+			for(auto it = node->beginOut(); it != node->endOut(); ++it){
 				if(getPinErrors(*it).empty() == false){
 					ret.push_back("Problem z pinami wyjsciowymi - sprawdz piny wyjsciowe");
 					break;
@@ -1887,7 +1881,7 @@ bool osgVDFBaseModel::VisualSelectionManager::handle(const osgGA::GUIEventAdapte
 				osgVDFBaseModel::VNodes currentlySelectedNodes =  model->getVisualNodesInArea(locBB);
 
 				VNodes cs;
-				for(auto it = currentlySelectedNodes.begin(); it != currentlySelectedNodes.end(); it++){
+				for(auto it = currentlySelectedNodes.begin(); it != currentlySelectedNodes.end(); ++it){
 					cs.insert(*it);
 					model->selectVisualNode(*it);
 				}
@@ -1897,7 +1891,7 @@ bool osgVDFBaseModel::VisualSelectionManager::handle(const osgGA::GUIEventAdapte
 					cs.begin(), cs.end(), diff.begin());
 
 				//deselect missing
-				for(auto it = diff.begin(); it != endDiff; it++){
+				for(auto it = diff.begin(); it != endDiff; ++it){
 					model->deselectVisualNode(*it, model->visualNodes);
 				}
 			}
@@ -1961,7 +1955,7 @@ osgVDFBaseModel::UserSpaceClick::~UserSpaceClick(){
 const osgVDFBaseNode* osgVDFBaseModel::UserSpaceClick::getTopNodeInPoint(const osgWidget::XYCoord & pos) const
 {
     const osgVDFBaseNode* ret = nullptr;
-    for(auto it = model->visualNodes.begin(); it != model->visualNodes.end(); it++){
+    for(auto it = model->visualNodes.begin(); it != model->visualNodes.end(); ++it){
         if(osgui::Utils2D::generateBox(*it).contains(osg::Vec3f(pos.x(), pos.y(), 0)) == true ){
             if(ret == nullptr || (ret->getZ() < (*it)->getZ())){
                 ret = *it;
@@ -2037,14 +2031,14 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 		ConnectionsActionsMapping toDelete;
 		
 		for(osgVDFBaseModel::RevConnectionsMapping::iterator it = model->connectionsGraphToLogical.begin();
-			it != model->connectionsGraphToLogical.end(); it++){
+			it != model->connectionsGraphToLogical.end(); ++it){
 
 			osg::Geometry * geom = dynamic_cast<osg::Geometry*>(it->first->getDrawable(0));
 			osg::Vec3Array * vertexData = dynamic_cast<osg::Vec3Array*>(geom->getVertexArray());
 			bool inserted = false;
 			float minDist = std::numeric_limits<float>::max();
 			unsigned int idx = 0;
-			for(unsigned int i = 0; i < vertexData->size(); i++){
+			for(unsigned int i = 0; i < vertexData->size(); ++i){
 				float distLoc = std::pow(pos.x() - (*vertexData)[i][0],2) + std::pow(pos.y() - (*vertexData)[i][1],2);
 				if(distLoc <= model->maxDistToDelConnection){
 					//add to delete map
@@ -2183,19 +2177,10 @@ Subject 1.02: How do I find the distance from a point to a line?
 	double r_numerator = (cx-ax)*(bx-ax) + (cy-ay)*(by-ay);
 	double r_denomenator = (bx-ax)*(bx-ax) + (by-ay)*(by-ay);
 	double r = r_numerator / r_denomenator;
-//
-    double px = ax + r*(bx-ax);
-    double py = ay + r*(by-ay);
-//     
+
     double s =  ((ay-cy)*(bx-ax)-(ax-cx)*(by-ay) ) / r_denomenator;
 
 	distanceLine = fabs(s)*sqrt(r_denomenator);
-
-//
-// (xx,yy) is the point on the lineSegment closest to (cx,cy)
-//
-	double xx = px;
-	double yy = py;
 
 	if ( (r >= 0) && (r <= 1) )
 	{
@@ -2203,23 +2188,16 @@ Subject 1.02: How do I find the distance from a point to a line?
 	}
 	else
 	{
-
 		double dist1 = (cx-ax)*(cx-ax) + (cy-ay)*(cy-ay);
 		double dist2 = (cx-bx)*(cx-bx) + (cy-by)*(cy-by);
 		if (dist1 < dist2)
 		{
-			xx = ax;
-			yy = ay;
 			distanceSegment = sqrt(dist1);
 		}
 		else
 		{
-			xx = bx;
-			yy = by;
 			distanceSegment = sqrt(dist2);
 		}
-
-
 	}
 
 	return;
@@ -2250,7 +2228,7 @@ void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::Co
 
     
 
-    for(ConnectionsActionsMapping::const_iterator it = toDelete.begin(); it != toDelete.end(); it++){
+    for(ConnectionsActionsMapping::const_iterator it = toDelete.begin(); it != toDelete.end(); ++it){
         osgui::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::contextMenuActionWrapper, it->second.second, _1, _2);
         osgui::ContextMenu::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::contextMenuActionWrapper, it->second.first, _1, _2);
 

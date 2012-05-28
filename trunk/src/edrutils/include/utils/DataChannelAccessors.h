@@ -99,7 +99,7 @@ public:
 	static PointType timeUnderflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		auto l = channel.getLength();
-		while(time += l < 0) {}
+		while((time += l) < 0) {}
 		return Interpolator<PointType, TimeType>::extractValue(time, channel);
 	}
 
@@ -108,7 +108,7 @@ public:
 	static PointType timeOverflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		auto l = channel.getLength();
-		while(time -= l > l) {}
+		while((time -= l) > l) {}
 		return Interpolator<PointType, TimeType>::extractValue(time, channel);
 	}
 };

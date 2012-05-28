@@ -28,7 +28,7 @@ osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const IForcePlatformCol
 	colors->push_back(osg::Vec4(0.5f, 0.5f, 0.3f, 1.0f));
 	osg::Vec3 up(0, 0, -0.00001f);
 	int i = 0;
-	for ( auto it = platforms.cbegin(); it != platforms.cend(); it++) {
+	for ( auto it = platforms.cbegin(); it != platforms.cend(); ++it) {
 		GeodePtr platformGeode = new osg::Geode();
 
 		//GeometryPtr platformLines = new osg::Geometry();
@@ -43,7 +43,7 @@ osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const IForcePlatformCol
         platform1->setColor(Vec4(0.5f, 0.5f, 0.3f, 1.0f));
         platformGeode->addDrawable(platform1.get());
 		
-		i++;
+		++i;
 
         osg::ref_ptr<osg::Texture2D> tex;
         
@@ -62,9 +62,9 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& 
 {
     osg::ref_ptr<osg::Group> group = new osg::Group();
     const IForcePlatformCollection& platforms = grf->getPlatforms();
-    for (auto it = platforms.begin(); it != platforms.end(); it++) {
+    for (auto it = platforms.begin(); it != platforms.end(); ++it) {
         auto range = (*it)->getSteps();
-        for (auto step = range.begin(); step != range.end(); step++) {
+        for (auto step = range.begin(); step != range.end(); ++step) {
             if ((*step)->isValid()) {
                 group->addChild(createStep(*step, maxLength, *it));
             }
@@ -107,7 +107,7 @@ GRFSerie::GeodePtr GRFSerie::createStep( IForcePlatform::IStepConstPtr step, flo
     float lengthBuffer = f1->getLength();
     osg::Vec3 lastV1;
     osg::Vec3 lastOrigin1;
-    for (int i = 0; i < numSegments; i++) {
+    for (int i = 0; i < numSegments; ++i) {
         v.set(TimeAccessor::getValue(f, *f1));
         float length = v.length();
 
@@ -299,7 +299,7 @@ void GRFSerie::setLocalTime( double time )
     float t = time;
     try {
         const auto& platforms = grfCollection->getPlatforms();
-        for (auto it = platforms.cbegin(); it != platforms.cend(); it++) {
+        for (auto it = platforms.cbegin(); it != platforms.cend(); ++it) {
             auto f1 = (*it)->getForceChannel();
             osg::Vec3 v1(TimeAccessor::getValue(t, *f1));
 
@@ -313,7 +313,7 @@ void GRFSerie::setLocalTime( double time )
             v1[2] *= -1.0f;
        
             auto range = (*it)->getSteps();
-            for (auto step = range.begin(); step != range.end(); step++) {
+            for (auto step = range.begin(); step != range.end(); ++step) {
                 osg::Vec3 start1 = (*step)->getStartPoint();
                 osg::Vec3 end1   = (*step)->getEndPoint();
                 float startTime1 = (*step)->getStartTime();
@@ -476,9 +476,9 @@ void GRFSerie::setData( const core::ObjectWrapperConstPtr & data )
     transformNode->addChild(createPlatformsGroup(platforms));
 	transformNode->addChild(createButterfly(grfCollection, this->maxLength));
     
-    for (auto it = platforms.begin(); it != platforms.end(); it++) {
+    for (auto it = platforms.begin(); it != platforms.end(); ++it) {
         auto range = (*it)->getSteps();
-        for (auto step = range.begin(); step != range.end(); step++) {
+        for (auto step = range.begin(); step != range.end(); ++step) {
             ArrowPtr a1 = createArrow();
             a1->mainPtr->setNodeMask(0);
             transformNode->addChild(a1->mainPtr);
@@ -644,7 +644,7 @@ maxSize(maxSize) ,
     color(color)
 {
     UTILS_ASSERT(maxSize > 0);
-    for (int i = 0; i < maxSize; i++) {
+    for (int i = 0; i < maxSize; ++i) {
         ArrowPtr a = createArrow();
         hookNode->addChild(a->mainPtr);
         a->mainPtr->setNodeMask(0);
@@ -674,7 +674,7 @@ void GRFSerie::GhostStack::update()
 {
     float delta = color[3] / static_cast<float>(maxSize);
 
-    for (auto it = stackArrows.begin(); it != stackArrows.end(); it++) {
+    for (auto it = stackArrows.begin(); it != stackArrows.end(); ++it) {
         ArrowPtr a = *it;
         const osg::Vec4& color = a->getColor();
         float alpha = color[3] - delta;

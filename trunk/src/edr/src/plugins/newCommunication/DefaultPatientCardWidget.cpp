@@ -34,9 +34,9 @@ private:
 	MotionShallowCopy::Attrs attributes_;
 };
 
-DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(parent), personalDataWidget(new PersonalDataWidget()),
-	disordersDataWidget(new DisordersDataWidget()), antropomtricDataWidget(new AntropometricDataWidget())/*, leftBox(new QMultiToolBox())*/,
-	/*rightBox(new QMultiToolBox()),*/ notesWidget(new NotesWidget()), sessionsWidget(new QTreeWidget())
+DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(parent), sessionsWidget(new QTreeWidget()),
+	personalDataWidget(new PersonalDataWidget()), disordersDataWidget(new DisordersDataWidget()),
+	antropomtricDataWidget(new AntropometricDataWidget()), notesWidget(new NotesWidget())
 {
 	QStringList headers;
 
@@ -86,12 +86,6 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 	leftWidget->setMinimumWidth(450);
 	leftWidget->setContentsMargins(0,0,0,0);
 
-	//leftBox->addItem(personalDataWidget, tr("Personal data"));
-	//leftBox->addItem(disordersDataWidget, tr("Disorders"));
-	//leftBox->addItem(sessionsWidget, tr("Sessions"));
-	//leftBox->addItem(notesWidget, tr("Notes"));	
-
-	//rightBox->addItem(antropomtricDataWidget, tr("Anthropometric Data"));
 	antropomtricDataWidget->setMinimumWidth(450);
 	QGroupBox * groupE = new QGroupBox(tr("Anthropometric Data"));
 	groupE->setLayout(new QHBoxLayout());
@@ -102,14 +96,8 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 	layout->addWidget(leftWidget);
 	layout->addWidget(groupE);
 
-	//layout->addWidget(leftBox);
-	//layout->addWidget(rightBox);
-
 	setLayout(layout);
 
-	//leftBox->setItemExpanded(0);
-	//rightBox->setItemExpanded(0);
-	//rightBox->setItemEnabled(0,false);
 	innerSetPatient(nullptr, QPixmap(), nullptr, UserData());
 }
 

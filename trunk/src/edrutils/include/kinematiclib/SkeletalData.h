@@ -75,7 +75,7 @@ namespace kinematic
 			SkeletalData* clone = new SkeletalData();
 			int count = this->frames.size();
 			clone->frames.resize(count);
-			for (int i = 0; i < count; i++) {
+			for (int i = 0; i < count; ++i) {
 				clone->frames[i] = singleFramePtr(frames[i]->clone());
 			}
 			return clone;

@@ -44,19 +44,19 @@ void TestDFNodeProcessing::process(){
 void TestDFNodeProcessing::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder)
 {
     unsigned int i = 0;
-    for(; i < inPins && i < inRequired; i++){
+    for(; i < inPins && i < inRequired; ++i){
         std::stringstream name;
         name << i;
         pinsAdder->addInPin(dflm::PinPtr(new TestDFPin("Input pin " + name.str() + " [REQUIRED]", true)));
     }
 
-    for(; i < inPins; i++){
+    for(; i < inPins; ++i){
         std::stringstream name;
         name << i;
         pinsAdder->addInPin(dflm::PinPtr(new TestDFPin("Input pin " + name.str())));
     }
 
-    for(unsigned int i = 0; i < outPins; i++){
+    for(unsigned int i = 0; i < outPins; ++i){
         std::stringstream name;
         name << i;
         std::set<dflm::WPinPtr> requiredPins;
@@ -65,7 +65,7 @@ void TestDFNodeProcessing::doInitialization(const dflm::Node::PinsAdderPtr & pin
             dflm::Node::Pins pins(beginIn(), endIn());
             std::random_shuffle(pins.begin(), pins.end());
             unsigned int count = rand() % pins.size();
-            for(unsigned int i = 0; i < count; i++){
+            for(unsigned int i = 0; i < count; ++i){
                 requiredPins.insert(dflm::WPinPtr(pins[i]));
             }
         }

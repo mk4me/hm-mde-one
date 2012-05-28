@@ -1,6 +1,7 @@
 #ifndef HEADER_GUARD_CORE_IPARSER_H__
 #define HEADER_GUARD_CORE_IPARSER_H__
 
+#include <map>
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
 #include <core/ObjectWrapper.h>

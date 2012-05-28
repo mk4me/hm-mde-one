@@ -26,19 +26,19 @@ public:
 
     static DataSourceWebServicesManager * instance();
 
-	const webservices::MotionBasicQueriesWSPtr & motionBasicQueriesService();
-	const webservices::MedicalBasicQueriesWSPtr & medicalBasicQueriesService();
+	const webservices::MotionBasicQueriesWSPtr & motionBasicQueriesService() const;
+	const webservices::MedicalBasicQueriesWSPtr & medicalBasicQueriesService() const;
 
-	const webservices::MotionBasicUpdatesWSPtr & motionBasicUpdatesService();
-	const webservices::MedicalBasicUpdatesWSPtr & medicalBasicUpdatesService();
+	const webservices::MotionBasicUpdatesWSPtr & motionBasicUpdatesService() const;
+	const webservices::MedicalBasicUpdatesWSPtr & medicalBasicUpdatesService() const;
 
-	const webservices::MotionFileStoremanWSPtr & motionFileStoremanService();
-	const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService();
+	const webservices::MotionFileStoremanWSPtr & motionFileStoremanService() const;
+	const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService() const;
 
-	const webservices::MultiAccountFactoryWSPtr & accountFactoryService();
-	const webservices::AuthorizationWSPtr & authorizationService();
-	const webservices::AdministrationWSPtr & administrationService();
-	const webservices::UserPersonalSpaceWSPtr & userPersonalSpaceService();
+	const webservices::MultiAccountFactoryWSPtr & accountFactoryService() const;
+	const webservices::AuthorizationWSPtr & authorizationService() const;
+	const webservices::AdministrationWSPtr & administrationService() const;
+	const webservices::UserPersonalSpaceWSPtr & userPersonalSpaceService() const;
 
 private:
 

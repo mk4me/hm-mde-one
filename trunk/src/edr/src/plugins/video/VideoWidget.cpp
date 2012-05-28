@@ -18,6 +18,7 @@
 #include <osgui/AspectRatioKeeper.h>
 #include <core/MultiViewWidgetItem.h>
 #include <core/OsgSceneDump.h>
+#include <core/PluginCommon.h>
 #include <core/ILog.h>
 
 #include <boost/filesystem.hpp>
@@ -177,11 +178,9 @@ void VideoWidget::createScene()
     clearScene();
 
     // stworzenie widgetów i dodanie ich do multi widoku
-    float avgRatio = 0;
     BOOST_FOREACH(osg::Image* image, images) {
         // wyliczenie wspó³czynnika proporcji oraz aktualizacja zbiorczego wspó³czynnika
         float ratio = image->getPixelAspectRatio() * image->s() / image->t();
-        avgRatio += ratio;
 
         VideoImageStreamSizeOptimizer* optimizer = new VideoImageStreamSizeOptimizer(new osg::Uniform(yuvImageSizeName.c_str(), osg::Vec2(0, 0)));
         
@@ -214,12 +213,6 @@ void VideoWidget::createScene()
         optimizers.push_back(optimizer);
         multiView->addUpdateCallback(optimizer);
     }
-
-    // obliczenie rozmiaru grida (jak najbardziej kwadratowy)
-    avgRatio /= images.size();
-    osg::Vec2s dimensions = osgui::Grid::getDimensionsAsSquare(images.size());
-    unsigned rows = dimensions.y();
-    unsigned columns = dimensions.x();
 
     if ( doSelect ) {
         multiView->setSelectedByIndex(sel);

@@ -11,6 +11,7 @@
 
 #include <plugins/subject/Types.h>
 #include <core/SmartPtr.h>
+#include <core/IServiceManager.h>
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>
@@ -56,7 +57,7 @@ public:
         }
 
         std::vector<SessionPtr> ret;
-        for (auto it = sessions.begin(); it != sessions.end(); it++) {
+        for (auto it = sessions.begin(); it != sessions.end(); ++it) {
             auto filtered = doDataFiltering(*it);
             if (filtered) {
                 ret.push_back(filtered);
@@ -77,7 +78,7 @@ protected:
 
         std::vector<MotionPtr> newMotions;
 
-        for(auto it = motions.begin(); it != motions.end(); it++){
+        for(auto it = motions.begin(); it != motions.end(); ++it){
             newMotions.push_back(cloneMotion(*it));
         }
 

@@ -113,15 +113,13 @@ void VideoVisualizer::VideoSerie::setTime(double time)
 }
 
 VideoVisualizer::VideoVisualizer() :
-name("Video"), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1), useTextureRect(true)
+name("Video"), useTextureRect(true), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1)
 {
 
 }
 
 VideoVisualizer::~VideoVisualizer()
 {
-	/*streamImage = nullptr;
-	stream = nullptr;*/
     viewer = nullptr;
 }
 
@@ -141,11 +139,14 @@ void VideoVisualizer::getInputInfo( std::vector<core::IInputDescription::InputIn
 
     input.name = "videoStream";
     input.type = typeid(VideoStream);
-	input.type = typeid(VideoChannel);
     input.modify = false;
     input.required = false;
 
     info.push_back(input);
+
+	input.name = "videoChannel";
+	input.type = typeid(VideoChannel);
+	info.push_back(input);
 
     input.name = "picture";
     input.type = typeid(vidlib::Picture);
@@ -158,8 +159,6 @@ void VideoVisualizer::refresh( float width, float height )
     // aktualizacja wspó³czynnika proporcji
     if ( streamImage ) {
         ratioKeeper->setAspectRatio( streamImage->getPixelAspectRatio() * streamImage->s() / streamImage->t() );
-		//ratioKeeper->setAspectRatio( width / height );
-
     }
 
     // aktualizacja rozmiaru t³a
@@ -195,24 +194,24 @@ void VideoVisualizer::updateWidget()
             float oldS = fabs( ll.x() - ur.x() );
             float oldT = fabs( ll.y() - ur.y() );
 
-			float h = widget->getHeight();
-			float w = widget->getWidth();
+			//float h = widget->getHeight();
+			//float w = widget->getWidth();
 
-			float wR = w / h;
-			float tR = s / t;
+			//float wR = w / h;
+			//float tR = s / t;
 
-			float mul = wR / tR;
+			//float mul = wR / tR;
 
-			float nextS = s;
-			float nextT = t;
-			if (mul > 1.0f) {
-				nextT = s * h / w;
-			} else { 
-				nextS = w * t / h;
-			}
+			//float nextS = s;
+			//float nextT = t;
+			//if (mul > 1.0f) {
+				//nextT = s * h / w;
+			//} else { 
+				//nextS = w * t / h;
+			//}
 			
-			float deltaS = (s - nextS) / 2.0f;
-			float deltaT = (t - nextT) / 2.0f;
+			//float deltaS = (s - nextS) / 2.0f;
+			//float deltaT = (t - nextT) / 2.0f;
 
             // czy trzeba aktualizowaæ?
             if ( oldS != s || oldT != t ) {

@@ -1,4 +1,5 @@
 #include "CommunicationPCH.h"
+#include <core/ILog.h>
 #include "DataSource.h"
 #include <quazip/quazip.h>
 #include <quazip/quazipfile.h>
@@ -26,9 +27,9 @@
 using namespace communication;
 using namespace webservices;
 
-CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.pjwstk.edu.pl/"),
-	memoryDM(nullptr), fileDM(nullptr), dataSourceWidget(nullptr), loginManager(new DataSourceLoginManager()),
-	offlineMode_(false)
+CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSourceLoginManager()),
+	memoryDM(nullptr), fileDM(nullptr),	offlineMode_(false),
+	serwerPingUrl("http://v21.pjwstk.edu.pl/"), dataSourceWidget(nullptr)
 {
     //konfiguracja wsdlpulla ¿eby pisa³ pliki tymczasowe tam gdzie mamy prawo zapisu
 
@@ -375,9 +376,7 @@ bool CommunicationDataSource::isShallowCopyComplete() const
 }
 
 bool CommunicationDataSource::isShallowCopyCurrent()
-{
-    bool ret = true;
-    
+{    
     OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourceWebServicesManager::instance()->motionBasicQueriesService());
     auto lastMod = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
 
@@ -416,19 +415,24 @@ void CommunicationDataSource::extractShallowCopyFromLocalStorageToUserSpace()
     try{
         //p³ytka kopia danych ruchu
         auto path = pathsManager->motionShallowCopyPath();
-        extractFileFromLocalStorage(path.filename().string(), path, extractedFiles);
+		auto filename = path.filename().string();
+
+		extractFileFromLocalStorage(filename, path, extractedFiles);
         
         //p³ytka kopia metadanych ruchu
         path = pathsManager->motionMetadataPath();
-        extractFileFromLocalStorage(path.filename().string(), path, extractedFiles);
+		filename = path.filename().string();
+        extractFileFromLocalStorage(filename, path, extractedFiles);
         
         //p³ytka kopia danych medycznych
         path = pathsManager->medicalShallowCopyPath();
-        extractFileFromLocalStorage(path.filename().string(), path, extractedFiles);
+		filename = path.filename().string();
+        extractFileFromLocalStorage(filename, path, extractedFiles);
 
         //p³ytka kopia metadanych medycznych
         path = pathsManager->medicalMetadataPath();
-        extractFileFromLocalStorage(path.filename().string(), path, extractedFiles);
+		filename = path.filename().string();
+        extractFileFromLocalStorage(filename, path, extractedFiles);
     }catch(...){
         //próbujemy czyœciæ
 

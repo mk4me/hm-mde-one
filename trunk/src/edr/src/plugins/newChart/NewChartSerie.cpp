@@ -12,7 +12,6 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
     this->data = data;
     curve = new NewChartCurve(data->getName().c_str());
-    //curve = new QwtPlotCurve(data->getName().c_str());
     reader = data->get();
     accessor.reset(new ScalarContiniousTimeAccessor(reader));
     ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
@@ -171,7 +170,7 @@ Scales NewChartSerie::getScales() const
 
 void NewChartSerie::setColorsForEvents( EventsHelper::SegmentsRange range, const QColor& color )
 {
-    for (auto it = range.begin(); it != range.end(); it++) {
+    for (auto it = range.begin(); it != range.end(); ++it) {
         QPen pen = (*it)->normalizedCurve->pen();
         pen.setColor(color);
         (*it)->normalizedCurve->setPen(pen);

@@ -12,6 +12,7 @@
 #include <vector>
 #include <plugins/subject/Types.h>
 #include <core/TypeInfo.h>
+#include <core/ObjectWrapper.h>
 
 namespace PluginSubject {
 

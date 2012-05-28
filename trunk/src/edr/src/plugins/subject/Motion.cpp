@@ -75,7 +75,7 @@ const core::ObjectWrapperConstPtr & Motion::get(int i) const
 
 bool Motion::isSupported( const core::TypeInfo& typeToCheck ) const
 {
-    for (auto it = types.begin(); it != types.end(); it++) {
+    for (auto it = types.begin(); it != types.end(); ++it) {
         if (*it == typeToCheck) {
             return true;
         }

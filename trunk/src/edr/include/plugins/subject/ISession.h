@@ -42,7 +42,7 @@ public:
     {
         std::vector<core::ObjectWrapperConstPtr> wrappers;
         getWrappers(wrappers);
-        for(auto it = wrappers.begin(); it != wrappers.end(); it++){
+        for(auto it = wrappers.begin(); it != wrappers.end(); ++it){
             if((*it)->getTypeInfo() == type || (exact == false && (*it)->isSupported(type))){
                 return (*it);
             }
@@ -57,7 +57,7 @@ public:
         std::vector<core::ObjectWrapperConstPtr> wrappers;
         getWrappers(wrappers);
 
-        for(auto it = wrappers.begin(); it != wrappers.end(); it++){
+        for(auto it = wrappers.begin(); it != wrappers.end(); ++it){
             if((*it)->getTypeInfo() == type || (exact == false && (*it)->isSupported(type))){
                 return true;
             }

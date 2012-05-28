@@ -64,7 +64,7 @@ void DFPin::update()
 			node->notify();
 		}
 	}else if(pinType == OUT){
-		for(auto it = begin(); it != end(); it++){
+		for(auto it = begin(); it != end(); ++it){
 			DFPinPtr pin(boost::dynamic_pointer_cast<DFPin>((*it)->getDest()));
 			if(pin != nullptr){
 				pin->copyDataFromPin(boost::dynamic_pointer_cast<DFPin>(shared_from_this()));

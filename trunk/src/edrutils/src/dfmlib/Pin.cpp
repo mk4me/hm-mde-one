@@ -144,7 +144,7 @@ bool Pin::isRequired() const{
 
 bool Pin::isComplete() const{
 	bool ret = true;
-	for(auto it = requiredPinsDependency.begin(); it != requiredPinsDependency.end(); it++){
+	for(auto it = requiredPinsDependency.begin(); it != requiredPinsDependency.end(); ++it){
         if((*it).lock()->empty() == true){
 			ret = false;
 			break;

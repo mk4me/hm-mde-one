@@ -33,7 +33,7 @@
 using namespace communication;
 using namespace webservices;
 
-LocalDataLoader::LocalDataLoader(DataSourceWidget * sourceWidget) : sourceWidget(sourceWidget)
+LocalDataLoader::LocalDataLoader(DataSourceWidget * sourceWidget) : sourceWidget(sourceWidget), counter(-1)
 {
 
 }
@@ -198,8 +198,8 @@ bool DataSourceWidget::LoginEventFilter::eventFilter(QObject * watched, QEvent *
 }
 
 
-DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget * parent) : QTabWidget(parent), dataSource(dataSource),
-	downloadStatusWidget(new DownloadStatusWidget()), downloadCanceled(false), downloadCrashed(false), loginEventFilter(nullptr)
+DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget * parent) : QTabWidget(parent), loginEventFilter(nullptr), dataSource(dataSource),
+	downloadStatusWidget(new DownloadStatusWidget()), downloadCanceled(false), downloadCrashed(false)
 {
 	setupUi(this);
 	loginRecoveryButton->setVisible(false);
@@ -784,7 +784,7 @@ void DataSourceWidget::onLogin()
 								messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 								messageBox.setDefaultButton(QMessageBox::Yes);
 								auto ret = messageBox.exec();
-								if(ret = QMessageBox::Yes){
+								if(ret == QMessageBox::Yes){
 									synch = true;
 								}
 							}
@@ -1307,9 +1307,10 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 		case FileContent:
 			{
 				auto file = dynamic_cast<FileItem*>(item);
-				filesIDs.insert(file->value()->fileID);
+				auto f = file->value();
+				filesIDs.insert(f->fileID);
 				//extra dodajê pliki specyficzne sesji
-				FilesHelper::getSpecificFiles(file->value()->isSessionFile() == true ? file->value()->session : file->value()->trial->session, filesIDs);
+				FilesHelper::getSpecificFiles(f->isSessionFile() == true ? f->session : f->trial->session, filesIDs);
 			}
 			break;
 		case DisordersGroupContent:
@@ -1744,7 +1745,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					//sprawdzamy joint angles - jesli nie ma budujemy i dodajemy do DM
 					core::ObjectWrapperConstPtr dataWrapper;
 					core::ObjectWrapperConstPtr modelWrapper;
-					for (auto it = motionObjects.begin(); it != motionObjects.end(); it++) {
+					for (auto it = motionObjects.begin(); it != motionObjects.end(); ++it) {
 						if ((*it)->isSupported(typeid(kinematic::JointAnglesCollection))) {
 							return;
 						} else if ((*it)->isSupported(typeid(kinematic::SkeletalData))) {

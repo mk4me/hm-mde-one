@@ -47,7 +47,7 @@ const QString & ActionsGroup::name() const
 
 void ActionsGroup::getAllObjects(std::map<int, QObject *> & allObjects) const
 {
-    for(auto it = allActions.begin(); it != allActions.end(); it++){
+    for(auto it = allActions.begin(); it != allActions.end(); ++it){
         allObjects.insert( std::map<int, QObject *>::value_type(it->second, it->first) );
     }
 }

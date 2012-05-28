@@ -16,12 +16,12 @@ NamedTreeBase::NamedTreeBase(const NamedTreeBase & child, bool deep)
 {
     //zawsze po kopii mamy roota
     if(deep == false){
-        for(auto it = child.children.begin(); it != child.children.end(); it++){            
+        for(auto it = child.children.begin(); it != child.children.end(); ++it){            
             //plytkie kopiowanie
             addChild(*it);
         }
     }else{
-        for(auto it = child.children.begin(); it != child.children.end(); it++){
+        for(auto it = child.children.begin(); it != child.children.end(); ++it){
             //glebokie kopiowanie
             NamedTreeBasePtr newChild(new NamedTreeBase(**it,true));
             addChild(newChild);
@@ -76,7 +76,7 @@ void NamedTreeBase::updateAbsolutePath()
         absolutePath = "/";
     }
 
-    for(auto it = begin(); it != end(); it++){
+    for(auto it = begin(); it != end(); ++it){
         (*it)->updateAbsolutePath();
     }
 }

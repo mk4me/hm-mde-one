@@ -276,27 +276,27 @@ namespace webservices
 
             ~ShallowCopy()
             {
-                for(auto it = sessions.begin(); it != sessions.end(); it++){
+                for(auto it = sessions.begin(); it != sessions.end(); ++it){
                     delete it->second;
                 }
 
-                for(auto it = trials.begin(); it != trials.end(); it++){
+                for(auto it = trials.begin(); it != trials.end(); ++it){
                     delete it->second;
                 }
 
-                for(auto it = performers.begin(); it != performers.end(); it++){
+                for(auto it = performers.begin(); it != performers.end(); ++it){
                     delete it->second;
                 }
 
-                for(auto it = performerConfs.begin(); it != performerConfs.end(); it++){
+                for(auto it = performerConfs.begin(); it != performerConfs.end(); ++it){
                     delete it->second;
                 }
 
-				for(auto it = groupAssigments.begin(); it != groupAssigments.end(); it++){
+				for(auto it = groupAssigments.begin(); it != groupAssigments.end(); ++it){
 					delete it->second;
 				}
 
-                for(auto it = files.begin(); it != files.end(); it++){
+                for(auto it = files.begin(); it != files.end(); ++it){
                     delete it->second;
                 }
             }
@@ -353,11 +353,11 @@ namespace webservices
 
             ~ShallowCopy()
             {
-                for(auto it = disorders.begin(); it !=disorders.end(); it++){
+                for(auto it = disorders.begin(); it !=disorders.end(); ++it){
                     delete it->second;
                 }
 
-                for(auto it = patients.begin(); it != patients.end(); it++){
+                for(auto it = patients.begin(); it != patients.end(); ++it){
                     delete it->second;
                 }
             }

@@ -108,11 +108,11 @@ void osgVDFBaseNode::setCollisionNodes(const VNodes & vnodes)
 {
     if(collisionNodes.empty() == true){
         collisionNodes = vnodes;
-        for(auto it = collisionNodes.begin(); it != collisionNodes.end(); it++){
+        for(auto it = collisionNodes.begin(); it != collisionNodes.end(); ++it){
             (*it)->collisionNodes.insert(this);
         }
     }else if(vnodes.empty() == true){
-        for(auto it = collisionNodes.begin(); it != collisionNodes.end(); it++){
+        for(auto it = collisionNodes.begin(); it != collisionNodes.end(); ++it){
             (*it)->collisionNodes.erase(this);
         }
 
@@ -121,13 +121,13 @@ void osgVDFBaseNode::setCollisionNodes(const VNodes & vnodes)
         VNodesDifference difference(std::max(collisionNodes.size(), vnodes.size()));
         auto it = std::set_difference(collisionNodes.begin(), collisionNodes.end(), vnodes.begin(), vnodes.end(), difference.begin());
 
-        for(auto iT = difference.begin(); iT != it; iT++){
+        for(auto iT = difference.begin(); iT != it; ++iT){
             (*iT)->collisionNodes.erase(this);
         }
 
         it = std::set_difference(vnodes.begin(), vnodes.end(), collisionNodes.begin(), collisionNodes.end(), difference.begin());
 
-        for(auto iT = difference.begin(); iT != it; iT++){
+        for(auto iT = difference.begin(); iT != it; ++iT){
             (*iT)->collisionNodes.insert(this);
         }
 

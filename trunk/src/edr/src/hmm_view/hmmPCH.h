@@ -72,6 +72,7 @@
 #include <core/IDataManager.h>
 #include <core/Filesystem.h>
 
+#include <core/Plugin.h>
 
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>

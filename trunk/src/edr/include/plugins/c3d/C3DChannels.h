@@ -329,7 +329,7 @@ public:
     {
         //uzupe³nij brakujace prboki
         if(myChannel.size() < observedChannel.size()){
-            for(auto idx = myChannel.size(); idx < observedChannel.size(); idx++){
+            for(auto idx = myChannel.size(); idx < observedChannel.size(); ++idx){
                 modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
             }
         }
@@ -340,9 +340,9 @@ public:
         auto minVal = observedChannel.value(0);
         auto maxVal = minVal;
 
-        i++;
+        ++i;
 
-        for( ; i != observedChannel.size(); i++){
+        for( ; i != observedChannel.size(); ++i){
             if(observedChannel.value(i) < minVal){
                 minVal = observedChannel.value(i);
             }else if(observedChannel.value(i) > maxVal){
@@ -354,7 +354,7 @@ public:
 
         if(diff != 0){
             //aktualizacja próbek
-            for(ScalarChannelReaderInterface::size_type idx = 0; idx < myChannel.size(); idx++){
+            for(ScalarChannelReaderInterface::size_type idx = 0; idx < myChannel.size(); ++idx){
                 modifierInterface.setIndexData(idx, (observedChannel.value(idx) - minVal) / diff);
             }
         }
@@ -376,7 +376,7 @@ protected:
              c3dlib::C3DParser::IAnalogConstPtr analog = c3dData.getAnalog(channelNo);
 
              int numSamples = c3dData.getNumAnalogFrames();
-             for (int i = 0; i < numSamples; i++) {
+             for (int i = 0; i < numSamples; ++i) {
                  addPoint(static_cast<float>(analog->getValue(i)));
              }
 
@@ -463,7 +463,7 @@ public:
         int startIndex, endIndex;
 
         int numSamples = data.getNumAnalogFrames();
-        for (int i = 0; i < numSamples; i++) {
+        for (int i = 0; i < numSamples; ++i) {
             osg::Vec3 val = osg::Vec3(x->getValue(i), y->getValue(i), z->getValue(i));
             if (val.length2() > treshold2) {
                 if (!dataStartSet) {
@@ -553,7 +553,7 @@ public:
 
             int numSamples = data.getNumPointFrames();
 
-            for (int i = 0; i < numSamples; i++) {
+            for (int i = 0; i < numSamples; ++i) {
                 osg::Vec3 val = point->getValue(i);
                 addPoint(val);
             }
@@ -591,7 +591,7 @@ typedef boost::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 																								 \
 			  int numSamples = data.getNumPointFrames();										 \
 																								 \
-			  for (int i = 0; i < numSamples; i++) {											 \
+			  for (int i = 0; i < numSamples; ++i) {											 \
 				  addPoint(point->getValue(i));													 \
 			  }																					 \
 			  setName(point->getLabel());														 \

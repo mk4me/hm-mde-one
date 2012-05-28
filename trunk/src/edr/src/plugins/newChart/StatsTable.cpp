@@ -16,12 +16,12 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      
      if (item->isExpanded()) {
          int count = item->childCount();
-         for (int i = 0; i < count; i++){
+         for (int i = 0; i < count; ++i){
              sum += getTreeItemRows(item->child(i));
          }
      }
 
-     sum++;
+     ++sum;
      return sum;
  }
    
@@ -45,12 +45,12 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      item->setText(++i, QString("%1 (%2)").arg(stats->meanValue()).arg(valueUnit));
      item->setText(++i, QString("%1 (%2)").arg(stats->varianceValue()).arg(valueUnit));
 
-     for (int i = 1; i < item->columnCount(); i++) {
+     for (int i = 1; i < item->columnCount(); ++i) {
         item->setBackgroundColor(i, backgroundColor);
      }
     
      stats2TreeItems.insert(std::make_pair(stats, item));
-     for (int i = 0; i < table->topLevelItemCount(); i++) {
+     for (int i = 0; i < table->topLevelItemCount(); ++i) {
          QTreeWidgetItem* groupItem = table->topLevelItem(i);
          if (groupItem->text(0) == group) {
              groupItem->addChild(item);
@@ -118,7 +118,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
  {
      table->resizeColumnToContents(0);
      int height = 0;
-     for (int i = 0; i < table->topLevelItemCount(); i++) {
+     for (int i = 0; i < table->topLevelItemCount(); ++i) {
          height += getTreeItemRows(table->topLevelItem(i));
      }
      table->setMaximumHeight(height * rowHeight + table->header()->height() + 8);
@@ -128,7 +128,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
 QStringList StatsTable::getGroups() const
  {
      QStringList list;
-     for(int i = 0; i < table->topLevelItemCount(); i++) {
+     for(int i = 0; i < table->topLevelItemCount(); ++i) {
         list.push_back(table->topLevelItem(i)->text(0));
      }
      return list;
@@ -143,7 +143,7 @@ StatsTable::range StatsTable::getEntries( ScalarChannelStatsConstPtr stats )
 std::list<QTreeWidgetItem*> StatsTable::getEntriesByChannel( channelConstPtr channel )
 {
     std::list<QTreeWidgetItem*> list;
-    for (auto it = stats2TreeItems.begin(); it != stats2TreeItems.end(); it++) {
+    for (auto it = stats2TreeItems.begin(); it != stats2TreeItems.end(); ++it) {
         if (it->first->getChannel() == channel) {
             list.push_back(it->second);
         }

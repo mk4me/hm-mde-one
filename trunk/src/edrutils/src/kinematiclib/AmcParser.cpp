@@ -26,7 +26,7 @@ void AmcParser::save (const SkeletalModelConstPtr model, const SkeletalDataConst
         out << frames[i]->frameNo << std::endl;
         std::vector<SkeletalData::singleJointStatePtr>& joints = frames[i]->jointsData;
         int bonesCount = joints.size();
-        for (int j = 0; j < bonesCount; j++) {
+        for (int j = 0; j < bonesCount; ++j) {
             out << joints[j]->name;
              if (joints[j]->name == "root" && forceRootXYZ) {
                  const std::vector<DegreeOfFreedom>& dofs = model->getSkeleton().getRoot()->dofs;
@@ -43,7 +43,7 @@ void AmcParser::save (const SkeletalModelConstPtr model, const SkeletalDataConst
                  index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RZ, dofs);
                  out << " " << joints[j]->channelValues[index];
              } else {
-            for (unsigned int k = 0; k < joints[j]->channelValues.size(); k++) {
+            for (unsigned int k = 0; k < joints[j]->channelValues.size(); ++k) {
                 out << " " << joints[j]->channelValues[k];
             }}
 
@@ -56,7 +56,6 @@ void AmcParser::save (const SkeletalModelConstPtr model, const SkeletalDataConst
 void AmcParser::parse(SkeletalDataPtr data, const std::string& filename )
 {
     std::vector<double> numbers;
-    std::string name;
     std::string::size_type loc;
 
     std::ifstream ifs( filename.c_str() );
@@ -108,7 +107,7 @@ void AmcParser::parse(SkeletalDataPtr data, const std::string& filename )
      frames.push_back(frame);
 
     ifs.close();
-    if (frames.size() == 0) {
+    if (frames.empty() == true) {
         throw WrongFileException("No frames defined in " + filename + " file");
     }
 }

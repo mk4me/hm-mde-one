@@ -49,7 +49,7 @@ public:
 		DataChannelCollection* obj = new DataChannelCollection();
 		int count = static_cast<int>(channels.size());
 		obj->channels.resize(count);
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; ++i) {
 			obj->channels[i] = ChannelPtr(this->channels[i]->clone());
 		}
 		return obj;
@@ -118,7 +118,7 @@ public:
 	{
 		int count = static_cast<int>(channels.size());
 		std::vector<PointType> res(channels.size());
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; ++i) {
 			//res[i] = channels[i]->getValue(time);
             res[i] = TimeAccessor::getValue(time, *channels[i]);
 		}
@@ -181,7 +181,7 @@ private:
 		UTILS_ASSERT(channels.size());
 		int count = static_cast<int>(channels.size());
 		std::vector<PointType> m(count);
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; ++i) {
 			m[i] = fillCollection(i);
 		}
 		return static_cast<int>(std::distance(m.begin(), indexGetter(m.begin(), m.end())));

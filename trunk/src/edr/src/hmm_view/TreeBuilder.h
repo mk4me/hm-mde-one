@@ -66,7 +66,7 @@ public:
     {
         if (collection) {
             std::vector<core::ObjectWrapperConstPtr> wrappers;
-            for (int i = 0; i < collection->getNumChannels(); i++) {
+            for (int i = 0; i < collection->getNumChannels(); ++i) {
                 core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<VectorChannel>();
                 wrapper->set(core::const_pointer_cast<VectorChannel>(boost::dynamic_pointer_cast<const VectorChannel>(collection->getChannel(i))));
 
@@ -85,7 +85,7 @@ public:
                 collectionItem = parentItem;
             }
             int count = wrappers.size();
-            for (int i = 0; i < count; i++) {	
+            for (int i = 0; i < count; ++i) {	
                 VectorChannelConstPtr c = wrappers[i]->get();
                 TreeItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i]));			
                 channelHelper->setMotion(motion);

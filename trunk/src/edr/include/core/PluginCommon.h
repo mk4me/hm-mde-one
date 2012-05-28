@@ -10,19 +10,20 @@
 #define HEADER_GUARD_CORE__PLUGINCOMMON_H__
 
 //#include <core/IWorkflowManager.h>
-#include <core/IDataManager.h>
-#include <core/IVisualizerManager.h>
-#include <core/IServiceManager.h>
-#include <core/ISourceManager.h>
-#include <core/IDataProcessorManager.h>
-#include <core/IDataSourceManager.h>
 #include <core/StringTools.h>
 #include <core/IPath.h>
-#include <core/ILog.h>
-#include <core/Filesystem.h>
 
 namespace core 
 {
+
+	class ILog;
+	class IDataManagerReader;
+	class IVisualizerManager;
+	class IServiceManager;
+	class ISourceManager;
+	class IDataProcessorManager;
+	class IDataSourceManager;
+
     //! Struktura przechowuj¹ca informacje o managerach. Tylko do wewnêtrznego u¿ytku.
     struct InstanceInfo
     {

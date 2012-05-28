@@ -59,7 +59,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
         //tworzymy grupe dla wizualizatora
         visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer") + QString(" - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
 
-        for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); sectionIT++){
+        for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); ++sectionIT){
             auto sectionID = flexiTabWidget->addSection(visualizerGroupID, sectionIT->second, sectionIT->first);
             sectionIT->second->setVisible(true);
             visualizerSectionsIDs.insert(sectionID);
@@ -101,7 +101,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
     }
     auto vis = visWidget->getCurrentVisualizer();
 
-    for(auto groupIT = actionsManager.begin(); groupIT != actionsManager.end(); groupIT++){
+    for(auto groupIT = actionsManager.begin(); groupIT != actionsManager.end(); ++groupIT){
 
         //podziel elementy na 4 grupy - akcje, menusy, widget i inne nieobslugiwane elementy
         //przy okazji wyznaczamy ilosc elementow oraz ich sumaryczna szerokosc i najwieksza wysokosc do pozniejszego layoutowania
@@ -125,7 +125,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
         int totalWidth = 0;
         int totalElements = all.size();
 
-        for(auto it = toolbarElements.begin(); it != toolbarElements.end(); it++){
+        for(auto it = toolbarElements.begin(); it != toolbarElements.end(); ++it){
             QWidget * widget = it->second;
             if(QComboBox * cbox = qobject_cast<QComboBox*>(widget)){
                 cbox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
@@ -148,7 +148,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             return;
         }
 
-        for(auto it = actions.begin(); it != actions.end(); it++){
+        for(auto it = actions.begin(); it != actions.end(); ++it){
             QToolButton * actionButton = new QToolButton();
             if(it->second->toolTip().isEmpty() == true){
                 actionButton->setToolTip(it->second->text());
@@ -168,7 +168,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             maxHeight = std::max(maxHeight, s.height());
         }
 
-        for(auto it = menus.begin(); it != menus.end(); it++){
+        for(auto it = menus.begin(); it != menus.end(); ++it){
             QToolButton * menuButton = new QToolButton();
 
             if(it->second->toolTip().isEmpty() == true){
@@ -229,7 +229,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             auto s = it->second->sizeHint();
             int width = std::min(s.width(), 250);
             if(currentWidth + width > halfWidth){
-                it++;
+                ++it;
             }else{
                 topToolbar->addWidget(it->second);
                 currentWidth += width;
@@ -242,7 +242,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
             while(it != toolbarElements.end()){
                 bottomToolbar->addWidget(it->second);
-                it++;
+                ++it;
             }
         }
 
@@ -265,7 +265,7 @@ void HMMVisualizerUsageContext::onUnregisterContextWidget(QWidget * contextWidge
         return;
     }
 
-    for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); sectionIT++){
+    for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); ++sectionIT){
         try{
 
             delete sectionIT->second;
@@ -282,9 +282,9 @@ void HMMVisualizerUsageContext::onUnregisterContextWidget(QWidget * contextWidge
 
 HMMTreeItemUsageContext::HMMTreeItemUsageContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
+	flexiSection(new QWidget()),
     groupID(-1), 
-    hmm(hmm),
-    flexiSection(new QWidget())
+    hmm(hmm)
 {
 
 }
@@ -336,14 +336,10 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
 {
    if (!flexiSection->layout()) {
        flexiSection->setLayout(new QVBoxLayout());
-        //delete flexiSection->layout();
    }
 
     const QObjectList& children = flexiSection->children();
     for (int i = children.size() - 1; i >= 0; --i) {
-        //QWidget* w = qobject_cast
-        //children[i]->setVisible(false);
-        //children[i]->deleteLater();
         QWidget* w = qobject_cast<QWidget*>(children[i]);
         if (w) {
             w->setVisible(false);
@@ -365,10 +361,9 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
         horizontal->setLayout(hl);
 
         QList<QAction*> actions = menu->actions();
-        for (auto it = actions.begin(); it != actions.end(); it++) {
+        for (auto it = actions.begin(); it != actions.end(); ++it) {
             QMenu* m = (*it)->menu();
             if (m) { 
-                //connect(m, SIGNAL(triggered(QAction*)), this, SLOT(refresh(QAction*)));
                 QToolButton* menuButton = new QToolButton();
                 menuButton->setText((*it)->text());
                 menuButton->setPopupMode(QToolButton::InstantPopup);
@@ -380,25 +375,11 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
             } else if (!(*it)->isSeparator()) {
                 QToolButton* actionButton = new QToolButton(horizontal);
                 actionButton->setIcon(QIcon(QString::fromUtf8(":/resources/icons/viewa.png")));
-                //actionButton->addAction(*it);
                 connect(actionButton, SIGNAL(clicked()), *it, SLOT(trigger()));
-                //connect(actionButton, SIGNAL(clicked()), this, SLOT(refresh()));
                 hl->addWidget(actionButton);
             }
             
         }
-
-       
-        /*QToolButton * menuButton = new QToolButton();
-        menuButton->setMenu(menu);*/
-
-        //menuButton->setText("Item operations");
-        //menuButton->setPopupMode(QToolButton::InstantPopup);
-        //
-        //menuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        //hl->addWidget(menuButton);
-        //l->addWidget(new QLabel("Label"));
-        //l->addWidget(new QPushButton("Button"));
         flexiSection->setLayout(l);
     }
 }
@@ -420,9 +401,12 @@ void HMMTreeItemUsageContext::refresh()
 
 RaportsThumbnailsContext::RaportsThumbnailsContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) : 
     flexiTabWidget(flexiTabWidget),
+	flexiSection(new QWidget()),
     groupID(-1), 
     hmm(hmm),
-    flexiSection(new QWidget())
+    projectName(nullptr),
+	projectTemplate(nullptr),
+	cssCombo(nullptr)
 {
 
 }
@@ -524,8 +508,7 @@ void RaportsThumbnailsContext::createRaport()
     QDateTime time = QDateTime::currentDateTime();
     QString images;
     int counter = 0;
-    int sec = time.time().second() + time.time().minute() * 60 + time.time().hour() * 60 * 60;
-    for (auto it = children.begin(); it != children.end(); it++) {
+    for (auto it = children.begin(); it != children.end(); ++it) {
         QLabel* l = qobject_cast<QLabel*>(*it);
         if (l) {
             const QPixmap* pixmap = l->pixmap();
@@ -539,8 +522,6 @@ void RaportsThumbnailsContext::createRaport()
                     h *= static_cast<double>(maxWidth) / w;
                     w = maxWidth;
                 }
-                //const unsigned char* raw = reinterpret_cast<const unsigned char*>(buffer.buffer().constData());
-                //QString base64 = QString::fromStdString(base64_encode(raw, buffer.size()));
                 QString base64 = buffer.buffer().toBase64();
                 images += tr("Screenshot %1 <br> <IMG SRC=\"data:image/png;base64,%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(base64).arg(w).arg(h);
             }
@@ -588,9 +569,9 @@ void RaportsThumbnailsContext::createRaport()
 
 RaportsTabContext::RaportsTabContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) : 
     flexiTabWidget(flexiTabWidget),
+	editSection(nullptr),
     groupID(-1), 
     hmm(hmm),
-    editSection(nullptr),
     textSection(nullptr),
     fileSection(nullptr)
 {
@@ -655,7 +636,7 @@ void RaportsTabContext::onUnregisterContextWidget( QWidget * contextWidget )
 void RaportsTabContext::placeObjects( const QList<QObject*> &editList, QLayout* lowerLayout, QLayout* upperLayout, bool actionsOnTop)
 {
     int count = editList.size();
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         QAction* a = qobject_cast<QAction*>(editList[i]);
         if (a) {
             QToolButton* b = new QToolButton();

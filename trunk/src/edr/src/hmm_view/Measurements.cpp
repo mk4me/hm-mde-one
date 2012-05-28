@@ -2,6 +2,7 @@
 #include <iostream>
 #include <tinyxml.h>
 #include "Measurements.h"
+#include <core/ILog.h>
 
 void MeasurementsParser::parse( const std::string& filename )
 {
@@ -193,7 +194,7 @@ QString MeasurementConfig::tr( const QString& text ) const
 
 QString MeasurementConfig::getIdByName(const QString& name) const
 {
-    for (auto it = entry2Data.cbegin(); it != entry2Data.cend(); it++) {
+    for (auto it = entry2Data.cbegin(); it != entry2Data.cend(); ++it) {
         if (it->second.name == name) {
             return it->second.id;
         }

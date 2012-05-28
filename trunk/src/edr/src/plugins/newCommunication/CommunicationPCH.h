@@ -20,12 +20,11 @@
 #pragma warning( disable : 4251 )
 #include <wsdlparser/WsdlInvoker.h>
 #pragma warning( default : 4251 )
-#include <core/ILog.h>
+
+#include <core/Plugin.h>
 
 #include <webserviceslib/ShallowCopyParser.h>
 #include <webserviceslib/MetadataParser.h>
-
-#include <core/Plugin.h>
 
 #endif
 #endif

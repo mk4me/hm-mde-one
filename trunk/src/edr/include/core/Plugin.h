@@ -17,6 +17,8 @@
 #include <utils/Macros.h>
 
 #include <core/PluginCommon.h>
+#include <core/ILog.h>
+#include <core/IPath.h>
 #include <core/SmartPtr.h>
 #include <core/IService.h>
 #include <core/ISource.h>

@@ -164,7 +164,7 @@ private:
         virtual void run()
         {
             if(controller == nullptr){
-                std::runtime_error("Wrong controller to update");
+                throw std::runtime_error("Wrong controller to update");
             }
 
             while(true){

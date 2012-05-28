@@ -36,7 +36,7 @@ QwtScaleDiv PercentScaleDraw::getScaleDiv()
 
     double diff = right - left;
 
-    for (int i = 0; i <= 100; i++) {
+    for (int i = 0; i <= 100; ++i) {
         if ((i % 25) == 0) {
             majorTicks += left + diff * (i / 100.0);
         } else if ((i % 5) == 0) {

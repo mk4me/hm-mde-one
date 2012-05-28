@@ -174,7 +174,7 @@ public:
 
             regenerateOtherPoints(selection);
 
-            for(unsigned int i = 0; i < vertexData->size(); i++){
+            for(unsigned int i = 0; i < vertexData->size(); ++i){
                 (*vertexData)[0][2] = z;
             }
 

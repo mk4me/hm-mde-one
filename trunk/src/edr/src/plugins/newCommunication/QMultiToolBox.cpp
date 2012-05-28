@@ -34,7 +34,6 @@ void QMultiToolBox::updateTabs()
         // update indexes, since the updates are delayed, the indexes will be correct
         // when we actually paint.
         tB->setIndex(index);
-        QWidget *tW = page.widget;
         if (tB->backgroundRole() != QPalette::Window) {
             tB->setBackgroundRole(QPalette::Window);
             tB->update();
@@ -317,7 +316,7 @@ void QMultiToolBox::expandAllItems(bool expanded)
             _currentlyExpandedItemsCount++;
         }else{
             lastPage->sv->hide();
-            _currentlyExpandedItemsCount--;
+            --_currentlyExpandedItemsCount;
         }
 
         emit expansionChanged(indexOf(c->widget), expanded);
@@ -342,7 +341,7 @@ void QMultiToolBox::setItemExpanded(int index, bool expanded)
         _currentlyExpandedItemsCount++;
     }else{
         lastPage->sv->hide();
-        _currentlyExpandedItemsCount--;
+        --_currentlyExpandedItemsCount;
     }
 
     //updateTabs();

@@ -360,7 +360,7 @@ protected:
         }
         
 
-        for(auto i = from; i < to; i++){
+        for(auto i = from; i < to; ++i){
             float val = channel->value(i);
             sts(channel->value(i));
         }

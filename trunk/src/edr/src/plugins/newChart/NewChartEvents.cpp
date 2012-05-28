@@ -22,7 +22,7 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
 
     int half = (canvasRect.bottom() - canvasRect.top())/ 2 + canvasRect.top();
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         C3DEventsCollection::EventConstPtr event = events->getEvent(i);
         if (event->getContext() != C3DEventsCollection::IEvent::Left && event->getContext() != C3DEventsCollection::IEvent::Right) {
             continue;
@@ -85,7 +85,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
     QObject::tr("Foot Strike");
     QObject::tr("Foot Off"   );
     SegmentPtr currentSegment;
-    for( auto it = events->cbegin(); it != events->cend(); it++) {
+    for( auto it = events->cbegin(); it != events->cend(); ++it) {
         EventConstPtr event = *it;
         if (event->getContext() == context) {
             if (event->getLabel() == "Foot Strike") {
@@ -106,7 +106,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
         } 
     }
 
-    for (unsigned int i = 0; i < collection.size(); i++) {
+    for (unsigned int i = 0; i < collection.size(); ++i) {
         ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
         SegmentPtr segment = collection[i];
         QString name = QString("%1:%2").arg(scalar->getName().c_str()).arg(i);

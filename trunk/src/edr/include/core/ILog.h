@@ -63,6 +63,4 @@ extern std::string __ilog_prefix;
 #define LOG_INFO_STATIC_NAMED(path, msg)    do { LOG_INFO(msg)    ;} while(0)
 #define LOG_WARNING_STATIC_NAMED(path, msg) do { LOG_WARNING(msg) ;} while(0)
 
-#include <core/PluginCommon.h>
-
 #endif

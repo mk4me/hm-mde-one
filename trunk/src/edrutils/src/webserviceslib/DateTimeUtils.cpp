@@ -15,12 +15,12 @@ const DateTime toTime(const std::string & time)
 	//musimy poci¹æ datê na kawa³ki        
 	tokenizer tokens(time, sep);
 	tokenizer::iterator it = tokens.begin();
-	ret.setYear(boost::lexical_cast<int>(*it)); it++;
-	ret.setMonth(boost::lexical_cast<int>(*it)); it++;
-	ret.setDay(boost::lexical_cast<int>(*it)); it++;
+	ret.setYear(boost::lexical_cast<int>(*it)); ++it;
+	ret.setMonth(boost::lexical_cast<int>(*it)); ++it;
+	ret.setDay(boost::lexical_cast<int>(*it)); ++it;
 	if(it != tokens.end()){
-		ret.setHour(boost::lexical_cast<int>(*it)); it++;
-		ret.setMinutes(boost::lexical_cast<int>(*it)); it++;
+		ret.setHour(boost::lexical_cast<int>(*it)); ++it;
+		ret.setMinutes(boost::lexical_cast<int>(*it)); ++it;
 		ret.setSeconds(boost::lexical_cast<int>(*it));
 	}else{
 		ret.setHour(0);

@@ -72,7 +72,7 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
 
     StylesSet styleSet = generateRequiredStyles();
 
-    for(StylesSet::iterator it = styleSet.begin(); it != styleSet.end(); it++){
+    for(StylesSet::iterator it = styleSet.begin(); it != styleSet.end(); ++it){
         workflowVDFModel->getStyleManager()->addStyle(*it);
     }
 
@@ -80,7 +80,7 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
 
     //inicjuj Toolbar w Qt wraz z Drag`n`Drop
     DataProcessorManager* dp = DataProcessorManager::getInstance();
-    for(int i = 0; i < dp->getNumPrototypes(); i++){
+    for(int i = 0; i < dp->getNumPrototypes(); ++i){
         //opakuj prototyp w fabrykê wêz³a dla EDRDataFlow
         
 
@@ -115,7 +115,7 @@ void WorkflowCustomQOSGWidget::tryAddNode()
         //obuduj wezel
         if(dynamic_cast<InputDescription*>(item.get()) == nullptr){
             //sprawdz czy wezel poprawnie zbudowany!!
-            node.reset((EDRDFNode*)(new EDRDFSourceNode(item, item->getName())));
+            node.reset(new EDRDFSourceNode(item, item->getName()));
         }else{
             node.reset(new EDRDFNode(item, item->getName()));
         }              
@@ -127,14 +127,14 @@ void WorkflowCustomQOSGWidget::tryAddNode()
         workflowWidget->currentAction->blockSignals(false);
         workflowWidget->currentAction = nullptr;
 
-    }catch(std::runtime_error e){
+    }catch(std::runtime_error & e){
         LOG_ERROR("Error during node addition to workflow: " << e.what());
         std::string info("Could not add requested node to workflow: ");
         info += e.what();
         QMessageBox msgBox;
         msgBox.setText(info.c_str());
         msgBox.exec();
-    }catch(std::invalid_argument e){
+    }catch(std::invalid_argument & e){
         LOG_ERROR("Error during node addition to workflow: " << e.what());
         std::string info("Could not add requested node to workflow: ");
         info += e.what();
@@ -332,7 +332,7 @@ WorkflowWidget::StylesSet WorkflowWidget::generateRequiredStyles()
     return styleSet;
 }
 
-EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDataFlow())
+EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction(nullptr)
 {
     //inicjalizacja toolbara
     toolbar = new QTabWidget();
@@ -347,7 +347,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
     //inicjuj Toolbar w Qt wraz z Drag`n`Drop
     DataSourceManager* dsm = DataSourceManager::getInstance();
-    for(int i = 0; i < dsm->getNumPrototypes(); i++){
+    for(int i = 0; i < dsm->getNumPrototypes(); ++i){
         //opakuj prototyp w fabrykê wêz³a dla EDRDataFlow
         core::IDataSourceConstPtr proto(dsm->getPrototype(i));
         QToolButton* button = new QToolButton();
@@ -376,7 +376,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
     //inicjuj Toolbar w Qt wraz z Drag`n`Drop
     DataProcessorManager* dpm = DataProcessorManager::getInstance();
-    for(int i = 0; i < dpm->getNumPrototypes(); i++){
+    for(int i = 0; i < dpm->getNumPrototypes(); ++i){
         //opakuj prototyp w fabrykê wêz³a dla EDRDataFlow
         core::IDataProcessorConstPtr proto(dpm->getPrototype(i));
         QToolButton* button = new QToolButton();
@@ -404,7 +404,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
     tmpWidget->setLayout(tmpLayout);
 
     VisualizerManager* vm = VisualizerManager::getInstance();
-    for(int i = 0; i < vm->getNumPrototypes(); i++){
+    for(int i = 0; i < vm->getNumPrototypes(); ++i){
         //opakuj prototyp w fabrykê wêz³a dla EDRDataFlow
         core::IVisualizerConstPtr proto(vm->getPrototype(i));
         QToolButton* button = new QToolButton();
@@ -484,7 +484,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
     StylesSet styleSet = generateRequiredStyles();
 
-    for(StylesSet::iterator it = styleSet.begin(); it != styleSet.end(); it++){
+    for(StylesSet::iterator it = styleSet.begin(); it != styleSet.end(); ++it){
         workflowVDFModel->getStyleManager()->addStyle(*it);
     }
 
@@ -578,7 +578,7 @@ void EDRWorkflowWidget::start()
 
         dynamic_cast<EDRDataFlow*>(workflowVDFModel->getModel().get())->run();
         
-    }catch(std::runtime_error e){
+    }catch(std::runtime_error & e){
         LOG_WARNING(e.what());
         actionStart->setEnabled(true);
         actionStop->setEnabled(false);
@@ -601,7 +601,7 @@ void EDRWorkflowWidget::stop()
         actionStop->setEnabled(false);
         actionStart->setEnabled(true);
         workflowVDFWidget->setEnabled(true);
-    }catch(std::runtime_error e){
+    }catch(std::runtime_error & e){
         LOG_WARNING(e.what());
     }
 }
@@ -620,7 +620,7 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
     ////nie niszcz wizualizatora przy jego zamykaniu !! dopiero usuniecie wêz³a powinno to robiæ
     visWidget->setPermanent(true);
 
-	EDRTitleBar * titleBar = supplyWithEDRTitleBar(visWidget);
+	supplyWithEDRTitleBar(visWidget);
 
     //dodajemy wizualizator do glownego okna
     window->addDockWidget(Qt::RightDockWidgetArea,visWidget);
@@ -628,7 +628,7 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
     //aktualizuj mapowanie logiki do UI
     logicToUI[visWidget->getCurrentVisualizer().get()] = visWidget;
 
-	bool ok = connect(visWidget->getCurrentVisualizer().get(), SIGNAL(printTriggered(QPixmap)), core::MainWindow::getInstance(), SLOT(saveScreen(QPixmap)));
+	connect(visWidget->getCurrentVisualizer().get(), SIGNAL(printTriggered(QPixmap)), core::MainWindow::getInstance(), SLOT(saveScreen(QPixmap)));
 
     return visWidget->getCurrentVisualizer();
 }

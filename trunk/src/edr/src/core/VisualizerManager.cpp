@@ -85,7 +85,7 @@ VisualizerPtr VisualizerManager::createVisualizer( const Visualizer& prototype )
 VisualizerPtr VisualizerManager::createVisualizer( const core::TypeInfo& typeInfo )
 {
 	DataManager* dataManager = DataManager::getInstance();
-	for (auto it = mapType2ID.begin(); it != mapType2ID.end(); it++) {
+	for (auto it = mapType2ID.begin(); it != mapType2ID.end(); ++it) {
 		if (dataManager->isTypeCompatible(typeInfo, it->first)) {
 			return createVisualizer(it->second);
 		}
@@ -117,7 +117,7 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
             LOG_WARNING("Visualizer " << visualizer->getName() << " ID = " << visualizer->getID() << " does not support minimum one data type! NOT registered in application");
         }else{
 			// wypelniamy mape, dzieki ktorej mozemy latwo stworzyc wizualizator na postawie typu
-			for (auto it = visualizerInputInfo.begin(); it != visualizerInputInfo.end(); it++) {
+			for (auto it = visualizerInputInfo.begin(); it != visualizerInputInfo.end(); ++it) {
 				// TODO : co w przypadku, gdy mamy wiele wizualizatorow obslugujacych ten sam typ
 				mapType2ID[it->type] = visualizer->getID();
 			}
@@ -178,9 +178,6 @@ void VisualizerManager::notifyCreated( Visualizer* visualizer )
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     LOG_DEBUG("Visualizer " << visualizer->getName() << " created");
     visualizers.push_back(visualizer);
-    /*if ( debugWidget ) {
-        debugWidget->addVisualizer(visualizer);
-    }*/
 }
 
 void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
@@ -188,10 +185,6 @@ void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     LOG_DEBUG("Visualizer " << visualizer->getName() << " destroyed.");
     visualizers.remove(visualizer);
-
-    /*if ( debugWidget ) {
-        debugWidget->removeVisualizer(visualizer);
-    }*/
 }
 
 void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
@@ -208,7 +201,7 @@ void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
 		for(auto it = channelIT->second.series.begin(); it != seriesITEnd; ++it){
 			try{
 				channelIT->second.visualzier->removeSerie(*it);
-			}catch(std::exception & ){
+			}catch(std::exception & e){
 
 			}catch(...){
 
@@ -249,7 +242,7 @@ const void * VisualizerManager::createChannel(const core::VisualizerTimeSeriePtr
 			channels[channel.get()] = data;
 			visualizerChannels[visualizer].insert(channel.get());
 			return channel.get();
-		}catch(std::runtime_error e){
+		}catch(std::runtime_error & e){
 			LOG_WARNING("Could not add channel to timeline because: " << e.what());
 		}catch(...){
 			LOG_WARNING("Could not add channel to timeline. Unknown reason.");
@@ -279,7 +272,7 @@ const void * VisualizerManager::createChannel(const std::vector<core::Visualizer
 			channels[channel.get()] = data;
 			visualizerChannels[visualizer].insert(channel.get());
 			return channel.get();
-		}catch(std::runtime_error e){
+		}catch(std::runtime_error & e){
 			LOG_WARNING("Could not add channel to timeline because: " << e.what());
 		}catch(...){
 			LOG_WARNING("Could not add channel to timeline. Unknown reason.");
@@ -329,7 +322,6 @@ void VisualizerManager::removeAllChannels()
 {
 	//wlasciwa proba usuniecia kanalu z wizualizatora i timeline
 	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
-	bool removed = false;
 	if(timeline != nullptr) {
 		for(auto channelIT = channels.begin(); channelIT != channels.end(); ++channelIT){
 			try{

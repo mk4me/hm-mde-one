@@ -15,8 +15,8 @@ GlPointSchemeDrawer::GlPointSchemeDrawer( int sphereComplex, float sphereRadius 
 GlPointSchemeDrawer::GlPointSchemeDrawer(int sphereComplex, float sphereRadius, const osg::Vec4& color ) :
     complex(sphereComplex),
     radius(sphereRadius),
-    useCustomColor(true),
-    customColor(color)
+	customColor(color),
+    useCustomColor(true)
 {
 
 }
@@ -105,11 +105,11 @@ GlPointSchemeDrawer::GeometryPtr GlPointSchemeDrawer::createCustomSphere( int co
 
     osg::Vec3 v;
     
-    for (e = -n; e <= n; e++) {
+    for (e = -n; e <= n; ++e) {
         double r_e = r * cosf(segmentRad * e);
         double y_e = r * sinf(segmentRad * e);
 
-        for (int s = 0; s <= (numberOfSeparators - 1); s++) {
+        for (int s = 0; s <= (numberOfSeparators - 1); ++s) {
             double z_s = r_e * sinf(segmentRad * s) * (-1);
             double x_s = r_e * cosf(segmentRad * s);
             v.set(x_s, y_e, z_s);
@@ -134,8 +134,8 @@ GlPointSchemeDrawer::GeometryPtr GlPointSchemeDrawer::createCustomSphere( int co
     sphereGeom->setDataVariance(osg::Object::DYNAMIC);
     
 
-    for (e = 0; e < 2 * n; e++) {
-        for (int i = 0; i < numberOfSeparators; i++) {
+    for (e = 0; e < 2 * n; ++e) {
+        for (int i = 0; i < numberOfSeparators; ++i) {
             osg::ref_ptr<osg::DrawElementsUInt> d = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
             d->push_back(e * numberOfSeparators + i);
             d->push_back(e * numberOfSeparators + i + numberOfSeparators);
@@ -150,7 +150,7 @@ GlPointSchemeDrawer::GeometryPtr GlPointSchemeDrawer::createCustomSphere( int co
         }
     }
 
-    for (int i = 0; i < numberOfSeparators; i++) {
+    for (int i = 0; i < numberOfSeparators; ++i) {
         osg::ref_ptr<osg::DrawElementsUInt> d = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
         d->push_back(e * numberOfSeparators + i);
         d->push_back(e * numberOfSeparators + (i + 1) % numberOfSeparators);
@@ -158,7 +158,7 @@ GlPointSchemeDrawer::GeometryPtr GlPointSchemeDrawer::createCustomSphere( int co
         sphereGeom->addPrimitiveSet(d);
     }
 
-    for (int i = 0; i < numberOfSeparators; i++) {
+    for (int i = 0; i < numberOfSeparators; ++i) {
         osg::ref_ptr<osg::DrawElementsUInt> d = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
         d->push_back(i);
         d->push_back((i + 1) % numberOfSeparators);

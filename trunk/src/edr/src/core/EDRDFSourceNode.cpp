@@ -20,7 +20,7 @@ void EDRDFSourceNode::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdde
     OutputDescription * outputDescription = dynamic_cast<OutputDescription*>(getWorkflowItem().get());
 
     //stwórz piny wyjsciowe
-    for(int i = 0; i < outputDescription->getNumOutputs(); i++){
+    for(int i = 0; i < outputDescription->getNumOutputs(); ++i){
         pinsAdder->addOutPin(dflm::PinPtr(new EDRDFPin(outputDescription->getOutput(), i)));
     }
 }

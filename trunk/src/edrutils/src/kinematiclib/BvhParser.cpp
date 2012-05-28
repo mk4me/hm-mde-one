@@ -26,7 +26,7 @@ std::string kinematic::BvhParser::getChannelName( DegreeOfFreedom::Channel chann
 std::string kinematic::BvhParser::space(int no) const {
     // ugly, na pewno jest jakas funkcja do tego
     string res;
-    for (int i = 0; i < no; i++) {
+    for (int i = 0; i < no; ++i) {
         res += ' ';
     }
     return res;
@@ -39,7 +39,7 @@ string kinematic::BvhParser::spaceL(int lvl) const {
         return space((lvl + 1) * 2);
     } else {
         string tabs;
-        for (int i = 0; i < lvl; i++) {
+        for (int i = 0; i < lvl; ++i) {
             tabs += '\t';
         }
         return tabs;
@@ -88,7 +88,7 @@ void kinematic::BvhParser::saveChannelsInHierarchy( std::ostream& out, JointCons
         int count = joint->dofs.size();
         if (count > 0) {
             out << spaceL(lvl) << "CHANNELS " << count;
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < count; ++i) {
                 out << " " << getChannelName((joint->dofs[i]).channel);
             }
             out << endl;
@@ -109,7 +109,7 @@ void kinematic::BvhParser::saveJoint (SkeletalModelConstPtr model, std::ostream&
         int childrenCount = joint->children.size();
         out << spaceL(lvl) << "JOINT " << joint->name << endl;
         out << spaceL(lvl) << "{" << endl;
-        lvl++; // zwiekszenie wciecia
+        ++lvl; // zwiekszenie wciecia
         out << spaceL(lvl) << "OFFSET ";
         // kosc rodzica jest potrzebna aby obliczyc dlugosc,
         // dlaczego parent nie jest brany z argumentu funkcji? poniewaz argument moze byc nullem
@@ -119,7 +119,7 @@ void kinematic::BvhParser::saveJoint (SkeletalModelConstPtr model, std::ostream&
         out << offset[0] << " " << offset[1] << " " << offset[2] << endl;
         saveChannelsInHierarchy(out, joint, lvl);
         // rekurencja
-        for (int i = 0; i < childrenCount; i++) {
+        for (int i = 0; i < childrenCount; ++i) {
             saveJoint(model, out, joint->children[i], joint, lvl, jointList);
         }
         // lisc jest traktowany inaczej
@@ -164,7 +164,7 @@ void BvhParser::save(SkeletalModelConstPtr model, SkeletalDataConstPtr data, con
     jointList.push_back(root->name);
     int count = root->children.size();
     // rekurencja
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         saveJoint(model, out, root->children[i], root, lvl, jointList);
     }
     out << "}" << endl;
@@ -177,10 +177,10 @@ void BvhParser::save(SkeletalModelConstPtr model, SkeletalDataConstPtr data, con
 
     int framesCount = frames.size();
     // dla wszystkich klatek...
-    for (int i = 0; i < framesCount; i++) {
+    for (int i = 0; i < framesCount; ++i) {
         std::list<std::string>::iterator it;
         // zgodnie z kolejnoscia zapisu jointow w pliku...
-        for (it = jointList.begin(); it != jointList.end(); it++) {
+        for (it = jointList.begin(); it != jointList.end(); ++it) {
             SkeletalData::singleJointStatePtr jointState = getSingleJointState(data, i, *it);
             JointConstPtr bone = model->getJointByName(jointState->name);
 
@@ -255,19 +255,19 @@ void BvhParser::parse(SkeletalModelPtr model, SkeletalDataPtr data, const std::s
             data->setFrameTime(frameTime);
             std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
             // wartosci dla kolejnych klatek
-            for (int m=0; m < noOfFrames; m++) {
+            for (int m=0; m < noOfFrames; ++m) {
                 std::getline(in, line);
                 SkeletalData::singleFramePtr frame(new SkeletalData::singleFrame);
                 frame->frameNo = m + 1;
                 std::list<std::string>::iterator it;
                 // zgodnie z kolejnoscia wystapienia jointow w pliku
-                for (it = jointList.begin(); it != jointList.end(); it++) {
+                for (it = jointList.begin(); it != jointList.end(); ++it) {
                     JointPtr bone = this->tempBonesMap[(*it)];
                     SkeletalData::singleJointStatePtr state;
                     state->name = bone->name;
                     int channelsCount = bone->dofs.size();
                     double number;
-                    for (int k = 0; k < channelsCount; k++ ) {
+                    for (int k = 0; k < channelsCount; ++k ) {
                         in >> number;
                         state->channelValues.push_back(number);
                     }
@@ -398,7 +398,7 @@ void kinematic::BvhParser::readSingleJoint(SkeletalModelPtr model, std::istream&
         }
         in >> token;
         in >> intBuffer;
-        for (int i = 0; i < intBuffer; i++)
+        for (int i = 0; i < intBuffer; ++i)
         {
             DegreeOfFreedom dof;
             in >> token;
@@ -456,7 +456,7 @@ void kinematic::BvhParser::HandleBone(SkeletalModelPtr model, JointPtr newBone)
         newBone->length = 0;
         newBone->direction[0] = newBone->direction[1] = newBone->direction[2] = 0.0;
         newBone->children.clear();
-        for (int i = 0; i < size ; i++) {
+        for (int i = 0; i < size ; ++i) {
             JointPtr child(new Joint);
             child->parent = newBone;
             child->name = newBone->name + (char)('0' + i);
@@ -521,7 +521,7 @@ Axis::Order kinematic::BvhParser::getAxisOrder( JointPtr bone ) const
     DegreeOfFreedom::Channel channels[3];
     int count = bone->dofs.size();
     int index = -1;
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         DegreeOfFreedom::Channel c = bone->dofs[i].channel;
         if (c >= DegreeOfFreedom::RX && c <= DegreeOfFreedom::RZ ) {
                 channels[++index] = c;

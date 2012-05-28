@@ -10,8 +10,13 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTLEGEND_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTLEGEND_H__
 
+#include <QtGui/QWidget>
+#include <qwt/qwt_legend.h>
+#include <qwt/qwt_legend_data.h>
+
 class QCheckBox;
 class QPushButton;
+class QwtPlotItem;
 
 class NewChartLegendItem : public QWidget
 {

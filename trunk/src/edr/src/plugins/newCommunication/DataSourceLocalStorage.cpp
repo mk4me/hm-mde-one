@@ -10,7 +10,7 @@ static const char magicKey[] = "P,j.W/s<T>k2:0\"1;2";
 
 DataSourceLocalStorage * DataSourceLocalStorage::instance_ = nullptr;
 
-DataSourceLocalStorage::DataSourceLocalStorage() : dbOpen(false), db(nullptr)
+DataSourceLocalStorage::DataSourceLocalStorage() : db(nullptr), dbOpen(false)
 {
 
 }
@@ -48,9 +48,7 @@ DataSourceLocalStorage * DataSourceLocalStorage::instance()
 
 void DataSourceLocalStorage::setLocalStorageDataPath(const core::Filesystem::Path & localStorageDataPath)
 {
-	int rc = SQLITE_ERROR;
-
-	rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+	int rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
 
 	if (rc != SQLITE_OK){
 		//TODO
@@ -132,7 +130,7 @@ void DataSourceLocalStorage::initialize()
 	char * error;
 	static const char sqlCreateTable[] = "CREATE TABLE files_table (file_name TEXT PRIMARY KEY, file BLOB, size UNSIGNED BIG INT);";
 	int rc = sqlite3_exec(db, sqlCreateTable, NULL, NULL, &error);
-	if (rc){
+	if (rc != SQLITE_OK){
 		sqlite3_free(error);
 		throw std::runtime_error("Could not initialize DB structure");
 	}
@@ -140,16 +138,21 @@ void DataSourceLocalStorage::initialize()
 
 void DataSourceLocalStorage::encrypt(const core::Filesystem::Path & localStorageDataPath)
 {
-	core::Filesystem::Path tmpDB = core::getPathInterface()->getTmpPath() / "tmpDB.db";
-	char * error;
-	
+	core::Filesystem::Path tmpDB = core::getPathInterface()->getTmpPath() / "tmpDB.db";	
 	int rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);	
+
+	if (rc != SQLITE_OK){
+		sqlite3_close(db);
+		throw std::runtime_error("Could not open DB");
+	}
+	char * error = nullptr;
 	std::string encryptSql((boost::format("ATTACH DATABASE '%1%' AS encrypted KEY '%2%'; SELECT sqlcipher_export('encrypted'); DETACH DATABASE encrypted") % tmpDB.string().c_str() % magicKey).str());
 	rc = sqlite3_exec(db, encryptSql.c_str(), NULL, NULL, &error);
-	if (rc){
+	if (rc != SQLITE_OK){
 		sqlite3_free(error);
 		throw std::runtime_error("Could not encrypt DB");
 	}
+
 	//zamykam aktualne po³¹czenie - zwalniam uchwyt do pliku - bêdê go kasowa³
 	sqlite3_close(db);
 

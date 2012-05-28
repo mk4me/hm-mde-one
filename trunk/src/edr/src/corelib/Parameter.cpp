@@ -116,7 +116,7 @@ int Parameter::saveParam(std::ofstream& out, ProcessorReader* proc, char id) {
 
 	for (iter = this->dimensions.begin();
 		iter != this->dimensions.end();
-		iter++)
+		++iter)
 	{
 		sumDim *= *iter;
 	}
@@ -192,7 +192,7 @@ int Parameter::saveParam(std::ofstream& out, ProcessorReader* proc, char id) {
 
 		for (iter = this->dimensions.begin();
 			iter != this->dimensions.end();
-			iter++)
+			++iter)
 		{
 			proc->writeByte((char) *iter, out); // dimensions values
 		}
@@ -323,7 +323,7 @@ std::string Parameter::toString(){
 
 	for (iter = this->dimensions.begin();
 		iter != this->dimensions.end();
-		iter++)
+		++iter)
 	{
 		std::cout << *iter << " ";
 		sumDim *= *iter;

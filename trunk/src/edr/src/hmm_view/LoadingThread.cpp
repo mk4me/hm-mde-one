@@ -2,13 +2,14 @@
 #include "LoadingThread.h"
 #include <boost/bind.hpp>
 #include <core/PluginCommon.h>
+#include <core/ILog.h>
 #include <QtCore/QElapsedTimer>
 #include "DataManager.h"
 
 LoadingThread::LoadingThread( const QString& directoryName) :
-	filesToLoad(0),
+	QThread(),
 	directoryName(directoryName),
-	QThread()
+	filesToLoad(0)
 {
 
 }
@@ -26,9 +27,9 @@ void LoadingThread::run()
 
 
 	filesToLoad = 0;
-	for( core::Filesystem::Iterator it(dirPath); it != itEnd; it++){
-		std::string ext = core::Filesystem::fileExtension(*it);
-		if(core::Filesystem::isRegularFile(*it) == true) {// && ext == ".c3d") {
+	for( core::Filesystem::Iterator it(dirPath); it != itEnd; ++it){
+		
+		if(core::Filesystem::isRegularFile(*it) == true) {
 			paths.push_back(it->path());
 			filesToLoad++;
 		}
@@ -42,7 +43,7 @@ void LoadingThread::run()
 	QElapsedTimer myTimer;
 	myTimer.start();
     
-    for(auto it = paths.begin(); it != paths.end(); it++){
+    for(auto it = paths.begin(); it != paths.end(); ++it){
         std::string info((*it).filename().string());
         try{
             DataManager::getInstance()->addFile(*it);

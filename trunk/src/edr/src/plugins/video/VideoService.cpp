@@ -5,7 +5,7 @@ using namespace core;
 
 
 VideoService::VideoService()
-:   name("Video")
+:   widget(nullptr), optionsWidget(nullptr), name("Video")
 {
 
 }

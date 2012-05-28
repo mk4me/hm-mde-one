@@ -10,7 +10,7 @@ bool LoadingDialog::event( QEvent * e )
 }
 
 LoadingDialog::LoadingDialog() :
-	QDialog()
+	QDialog(), filesLoaded(0)
 {
 	Ui::LoadingDialog::setupUi(this);
 	label->setText("");

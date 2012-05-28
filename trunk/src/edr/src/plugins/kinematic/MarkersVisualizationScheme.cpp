@@ -16,7 +16,7 @@ void MarkersVisualizationScheme::updateMarkers( double normalizedTime )
         currentPosition = getRootPosition(time);
 
         int count =  markers->getNumChannels();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             states[i].position = markers->getValue(i, time) - currentPosition;
         }
     }
@@ -32,7 +32,7 @@ void MarkersVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserCons
     }
    
     auto vskMarkers = vsk->getMarkers();
-    for (auto it = vskMarkers.first; it != vskMarkers.second; it++) {
+    for (auto it = vskMarkers.first; it != vskMarkers.second; ++it) {
         std::map<std::string, int>::iterator found = markersIndices.find(it->name);
         if (found != markersIndices.end()) {
             states[found->second].color = it->color;
@@ -40,7 +40,7 @@ void MarkersVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserCons
     }
     auto sticks = vsk->getSticks();
     connections.reserve(std::distance(sticks.first, sticks.second));
-    for (auto it = sticks.first; it != sticks.second; it++) {
+    for (auto it = sticks.first; it != sticks.second; ++it) {
         Connection c;
         auto it1 = markersIndices.find(it->name1);
         auto it2 = markersIndices.find(it->name2);
@@ -66,7 +66,7 @@ void MarkersVisualizationScheme::setMarkers( MarkerCollectionConstPtr val )
 		states.resize(count);
 	}
 	osg::Vec4 blue(0,0,1,1);
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; ++i) {
         states[i].color = blue;
         states[i].name = markers->getMarkerName(i);
 	}
@@ -79,7 +79,7 @@ osg::Vec3 MarkersVisualizationScheme::getRootPosition( double time ) const
     int count =  markers->getNumChannels();
     osg::Vec3 position;
     position.set(0.0, 0.0, 0.0);
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         position += markers->getValue(i, time);
     }
     position *= (1.0f / count);

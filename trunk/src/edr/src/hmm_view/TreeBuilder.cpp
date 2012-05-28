@@ -162,9 +162,11 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
 
     motion->getWrappers(emgs, typeid(EMGChannel));
     int count = emgs.size();			
-    for (int i = 0; i < count; i++) {	
+    for (int i = 0; i < count; ++i) {	
         EMGChannelPtr c = emgs[i]->get();	
         if (c) {
+			//TODO t³umaczenia
+			//tak siê tego nie powinno wo³aæ - musi byæ w tr const wartoœæ niezmienna w czasie dzia³ania aplikacji -> switch?
             QString n = QString::fromStdString(emgs[i]->getName());
             n = config ? config->tr(n) : n;
             EMGFilterHelperPtr channelHelper(new EMGFilterHelper(emgs[i]));
@@ -190,7 +192,7 @@ QTreeWidgetItem*  TreeBuilder::createGRFBranch( const MotionConstPtr & motion, c
     std::vector<core::ObjectWrapperConstPtr> grfs;
     motion->getWrappers(grfs, typeid(GRFChannel));
     int count = grfs.size();			
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         GRFChannelConstPtr c = grfs[i]->get();
         if (c) {
             TreeItemHelperPtr channelHelper(new NewVector3ItemHelper(grfs[i]));
@@ -212,7 +214,7 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
     std::vector<core::ObjectWrapperConstPtr> videos;
     motion->getWrappers(videos, typeid(VideoChannel));
     int count = videos.size();			
-    for (int i = 0; i < count; i++) {			
+    for (int i = 0; i < count; ++i) {			
         TreeWrappedItemHelperPtr channelHelper(new TreeWrappedItemHelper(videos[i]));
         channelHelper->setMotion(motion);
         HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);	

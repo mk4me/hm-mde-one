@@ -126,9 +126,9 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
     columnsWeights.assign(_objects.size(), 1);
 
     point_type y = 0.0f;
-    for(unsigned int row = 0; row < _rows; row++) {
+    for(unsigned int row = 0; row < _rows; ++row) {
         point_type x = 0.0f;
-        for(unsigned int col = 0; col < _cols; col++) {
+        for(unsigned int col = 0; col < _cols; ++col) {
             Widget* widget = _objects[_calculateIndex(row, col)].get();
             if(widget) {
                 widget->setOrigin(x, y);
@@ -201,8 +201,8 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
 void Grid::resetFillables()
 {
     using namespace osgWidget;
-    for(unsigned int row = 0; row < _rows; row++) {
-        for(unsigned int col = 0; col < _cols; col++) {
+    for(unsigned int row = 0; row < _rows; ++row) {
+        for(unsigned int col = 0; col < _cols; ++col) {
             Widget* widget = _objects[_calculateIndex(row, col)].get();
             if(widget && widget->canFill() ) {
                 widget->setSize(0, 0);
@@ -233,11 +233,11 @@ void Grid::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::po
 
     // Enumerate each row and determine whether it can fill. If so, increment
     // our numRowFills variable and set the position in rowFills to "true."
-    for(unsigned int row = 0; row < _rows; row++) {
+    for(unsigned int row = 0; row < _rows; ++row) {
         bool fill = isRowVerticallyFillable(row);
 
         if(fill) {
-            numRowFills++;
+            ++numRowFills;
         } else {
             rowsWeights[row] = 0.0f;
         }
@@ -247,11 +247,11 @@ void Grid::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::po
 
     // Enumerate each column and determine whether it can fill. If so, increment
     // our numColFills variable and set the position in colFills to "true."
-    for(unsigned int col = 0; col < _cols; col++) {
+    for(unsigned int col = 0; col < _cols; ++col) {
         bool fill = isColumnHorizontallyFillable(col);
 
         if(fill) { 
-            numColFills++;
+            ++numColFills;
         } else {
             columnsWeights[col] = 0.0f;
         }
@@ -262,7 +262,7 @@ void Grid::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::po
 
     if(numRowFills > 0) {
         point_type totalWeight = std::accumulate( rowsWeights.begin(), rowsWeights.end(), 0.0f );
-        for(unsigned row = 0; row < _rows; row++) {
+        for(unsigned row = 0; row < _rows; ++row) {
             if ( rowFills[row] ) {
                 float dh;
                 if ( totalWeight != 0.0f ) {
@@ -276,7 +276,7 @@ void Grid::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::po
     }
     if(numColFills > 0.0f) {
         point_type totalWeight = std::accumulate( columnsWeights.begin(), columnsWeights.end(), 0.0f );
-        for(unsigned col = 0; col < _cols; col++) {
+        for(unsigned col = 0; col < _cols; ++col) {
             if ( colFills[col] ) {
                 float dw;
                 if ( totalWeight != 0.0f ) {
@@ -297,10 +297,10 @@ void Grid::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::po
 
     point_type y = 0.0f;
 
-    for(unsigned int row = 0; row < _rows; row++) {
+    for(unsigned int row = 0; row < _rows; ++row) {
         point_type x = 0.0f;
 
-        for(unsigned int col = 0; col < _cols; col++) {
+        for(unsigned int col = 0; col < _cols; ++col) {
             Widget* widget = _objects[_calculateIndex(row, col)].get();
 
             if(widget) {
@@ -400,8 +400,8 @@ void Grid::fillEmpty( osg::ref_ptr<osgWidget::Widget> prototype /*= osg::ref_ptr
         prototype->setCanFill(true);
         prototype->setColor(0,0,0,0);
     }
-    for(unsigned int row = 0; row < _rows; row++) {
-        for(unsigned int col = 0; col < _cols; col++) {
+    for(unsigned int row = 0; row < _rows; ++row) {
+        for(unsigned int col = 0; col < _cols; ++col) {
             osgWidget::Widget* widget = _objects[_calculateIndex(row, col)].get();
             if(!widget) {
                 addWidget(  osg::clone(prototype.get(), osg::CopyOp::DEEP_COPY_ALL), row, col );

@@ -141,7 +141,7 @@ public:
     {
         //uzupe³nij brakujace probki 
         if(myChannel.size() < observedChannel.size()){
-            for(auto idx = myChannel.size(); idx < observedChannel.size(); idx ++){
+            for(auto idx = myChannel.size(); idx < observedChannel.size(); ++idx){
                 modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
             }
         }
@@ -150,9 +150,9 @@ public:
         sizeT meanR = 250;
         sizeT count = myChannel.size() - meanR;
         // brzeg lewy...
-        for (sizeT l_idx = 0; l_idx < meanR; l_idx++) {
+        for (sizeT l_idx = 0; l_idx < meanR; ++l_idx) {
             pointT sum = 0;
-            for (sizeT i = 0; i < l_idx + meanR; i++) {
+            for (sizeT i = 0; i < l_idx + meanR; ++i) {
                 sum += observedChannel.value(i) * observedChannel.value(i);
             }
             sum /= (l_idx + meanR);
@@ -160,9 +160,9 @@ public:
             modifierInterface.setIndexData(l_idx, sum);
         }
         // wlasciwa interpolacja
-        for(sizeT idx = meanR; idx < count; idx++) {
+        for(sizeT idx = meanR; idx < count; ++idx) {
             pointT sum = 0;
-            for (sizeT i = idx - meanR; i < idx + meanR + 1; i++) {
+            for (sizeT i = idx - meanR; i < idx + meanR + 1; ++i) {
                 sum += observedChannel.value(i) * observedChannel.value(i);
             }
             sum /= (meanR + meanR + 1);
@@ -170,9 +170,9 @@ public:
             modifierInterface.setIndexData(idx, sum);
         }
         // brzeg prawy...
-        for (sizeT r_idx = count; r_idx < observedChannel.size(); r_idx++) {
+        for (sizeT r_idx = count; r_idx < observedChannel.size(); ++r_idx) {
             pointT sum = 0;
-            for (sizeT i = r_idx; i < observedChannel.size(); i++) {
+            for (sizeT i = r_idx; i < observedChannel.size(); ++i) {
                 sum += observedChannel.value(i) * observedChannel.value(i);
             }
             //sum /= (r_idx - count + meanR);
@@ -204,7 +204,7 @@ public:
                 pointT sum = 0;
                 sizeT right = idx + skipN;
                 right = right < observedChannel.size() ? right : observedChannel.size();
-                for (sizeT idx2 = idx; idx2 < right; idx2++) {
+                for (sizeT idx2 = idx; idx2 < right; ++idx2) {
                     sum += observedChannel.value(idx2);
                 }
                 modifierInterface.addPoint(observedChannel.argument(idx), sum / skipN);
@@ -215,29 +215,29 @@ public:
         sizeT meanR = 10;
         sizeT count = myChannel.size() - meanR;
 
-        for (sizeT step = 0; step < 50; step++) {
+        for (sizeT step = 0; step < 50; ++step) {
             // brzeg lewy...
-            for (sizeT l_idx = 0; l_idx < meanR; l_idx++) {
+            for (sizeT l_idx = 0; l_idx < meanR; ++l_idx) {
                 pointT sum = 0;
-                for (sizeT i = 0; i < l_idx + meanR; i++) {
+                for (sizeT i = 0; i < l_idx + meanR; ++i) {
                     sum += observedChannel.value(i);
                 }
                 sum /= (l_idx + meanR);
                 modifierInterface.setIndexData(l_idx, sum);
             }
             // wlasciwa interpolacja
-            for(sizeT idx = meanR; idx < count; idx++) {
+            for(sizeT idx = meanR; idx < count; ++idx) {
                 pointT sum = 0;
-                for (sizeT i = idx - meanR; i < idx + meanR + 1; i++) {
+                for (sizeT i = idx - meanR; i < idx + meanR + 1; ++i) {
                    sum += observedChannel.value(i);
                 }
                 sum /= (meanR + meanR + 1);
                 modifierInterface.setIndexData(idx, sum);
             }
             // brzeg prawy...
-            for (sizeT r_idx = count; r_idx < myChannel.size(); r_idx++) {
+            for (sizeT r_idx = count; r_idx < myChannel.size(); ++r_idx) {
                 pointT sum = 0;
-                for (sizeT i = r_idx; i < myChannel.size(); i++) {
+                for (sizeT i = r_idx; i < myChannel.size(); ++i) {
                     sum += observedChannel.value(i);
                 }
                 sum /= (r_idx - count + meanR);
@@ -303,7 +303,7 @@ public:
         point_type max = min;
 
         size_type count = channel->size();
-        for(size_type idx = 0; idx < count; idx++){
+        for(size_type idx = 0; idx < count; ++idx){
             point_type val = channel->value(idx);
             if (val > max) {
                 max = val;
@@ -317,7 +317,7 @@ public:
 
         point_type sum = 0;
         //srednia
-        for(size_type idx = 0; idx < count; idx++) {
+        for(size_type idx = 0; idx < count; ++idx) {
             point_type val = channel->value(idx);
             if (val > max4) {
                 val = max4;
@@ -361,10 +361,6 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     wrapperX->setSource(wrapper->getSource());
     visualizer->getOrCreateWidget();
 
-    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getName());
-
-    INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
-
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
+    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(wrapperX, wrapperX->getName())));
 }
 

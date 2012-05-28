@@ -135,7 +135,7 @@ void Model::addNode(const NPtr & node)
         
         PinsSet requiredPins;
         //auto pins = node->getInPins();
-        for(auto it = node->beginIn(); it != node->endIn(); it++){
+        for(auto it = node->beginIn(); it != node->endIn(); ++it){
             if((*it)->isRequired() == true){
                 requiredPins.insert(*it);
             }
@@ -146,7 +146,7 @@ void Model::addNode(const NPtr & node)
             pinsRequiringConnections[node].insert(requiredPins.begin(), requiredPins.end());
         }else{
             //oznacz wêze³ jako niepod³aczony, bo ¿adne wejscie nie ma po³¹czenia
-            pinsRequiringConnections[node];
+            pinsRequiringConnections[node] = PinsSet();
         }
 
         //oznacz jako liœæ
@@ -189,18 +189,18 @@ void Model::quickDisconnectNode(const NPtr & node)
     //get all node connections from all pins and remove them
     Connections allNodeConnections;
 
-    for(auto it = node->beginIn(); it != node->endIn(); it++){
+    for(auto it = node->beginIn(); it != node->endIn(); ++it){
         //const Connections & connections = (*it)->getConnections();
         allNodeConnections.insert((*it)->begin(),(*it)->end());
     }
 
-    for(auto it = node->beginOut(); it != node->endOut(); it++){
+    for(auto it = node->beginOut(); it != node->endOut(); ++it){
         //const Connections & connections = (*it)->getConnections();
         allNodeConnections.insert((*it)->begin(),(*it)->end());
     }
 
     //remove all node connections
-    for(auto it = allNodeConnections.begin(); it != allNodeConnections.end(); it++){
+    for(auto it = allNodeConnections.begin(); it != allNodeConnections.end(); ++it){
         quickRemoveConnection(connections.find(*it));
     }
 }
@@ -310,7 +310,7 @@ ConnPtr Model::connect(const PinPtr & src, const PinPtr & dest)
 
     //jeœli Ÿród³o jest zale¿ne od jakichœ pinów wejœciowych w obrêbie ich wêz³a i s¹ one niepod³¹czone, to trzeba je dodaæ jako wymagane
     PinsSet requiredPins;
-    for(auto it = src->getDependantPins().begin(); it != src->getDependantPins().end(); it++){
+    for(auto it = src->getDependantPins().begin(); it != src->getDependantPins().end(); ++it){
         if((*it).lock()->empty() == true){
             requiredPins.insert(*it);
         }
@@ -396,7 +396,7 @@ void Model::quickRemoveConnection(const Connections::iterator & connIt)
     NPtr srcNode(connection->getSrc()->getParent());
     unsigned int countIn = 0;
     bool otherDepends = false;
-    for(auto it = destNode->beginIn(); it != destNode->endIn(); it++){
+    for(auto it = destNode->beginIn(); it != destNode->endIn(); ++it){
         if((*it)->empty() == false){
             if( otherDepends == false &&
                 (*it)->getDependantPins().find(destPin) != (*it)->getDependantPins().end()){
@@ -411,7 +411,7 @@ void Model::quickRemoveConnection(const Connections::iterator & connIt)
 
     if(countIn == 1){
         //to ostatnie po³¹czenie, wiêc zostanie niepod³¹czony
-        pinsRequiringConnections[destNode];
+        pinsRequiringConnections[destNode] = PinsSet();
     }
 
     if(otherDepends == true || destPin->isRequired() == true){
@@ -428,7 +428,7 @@ void Model::quickRemoveConnection(const Connections::iterator & connIt)
     //sprawdŸ czy nie powsta³ nowy liœæ
     if(srcNode->beginIn() != srcNode->endIn()){
         bool leaf = true;
-        for(auto it = srcNode->beginOut(); it != srcNode->endOut(); it++){
+        for(auto it = srcNode->beginOut(); it != srcNode->endOut(); ++it){
             if((*it)->empty() == false){
                 leaf = false;
                 break;
@@ -537,13 +537,11 @@ Model::PathEntry Model::getFirstNodeOutputConnection(const NPtr & node)
 {
     PathEntry pathElement;
 
-    for(unsigned int i = 0; i <= node->sizeOut(); i++){
-        for(unsigned int j = 0; j < node->getOutPin(i)->size(); j++){
+    for(unsigned int i = 0; i <= node->sizeOut(); ++i){
+        if(node->getOutPin(i)->empty() == false){
             pathElement.node = node;
             pathElement.pinIndex = i;
-            pathElement.connectionIndex = j;
-            //pathElement.pinIT = it;
-            //pathElement.connIT = iT;
+            pathElement.connectionIndex = 0;
             return pathElement;
         }
     }
@@ -593,7 +591,7 @@ ConnPtr Model::findConnection(CPinPtr src, CPinPtr dest) const
 		src.swap(dest);
 	}
 
-	for(auto it = src->begin(); it != src->end(); it++){
+	for(auto it = src->begin(); it != src->end(); ++it){
 		//connection exist and is registered by the model
 		if((*it)->getOther(src) == dest && std::find(connections.begin(), connections.end(), *it) != connections.end()){
 			ret = *it;

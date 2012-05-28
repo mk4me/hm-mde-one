@@ -44,7 +44,7 @@ SessionPtr FilteredDataFacory::createFilteredSession(const SessionConstPtr & ori
 
     SessionPtr ret(new FilteredSession(originalSession, motions, wrappers));
 
-    for(auto it = motions.begin(); it != motions.end(); it++){
+    for(auto it = motions.begin(); it != motions.end(); ++it){
         core::dynamic_pointer_cast<FilteredMotion>(*it)->setSession(ret);
     }
     

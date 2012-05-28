@@ -55,7 +55,6 @@ private:
 
     PluginSubject::SessionConstPtr session;
 
-    core::IMemoryDataManager * memoryDataManager;
     std::string name;
     std::string localName;
 };

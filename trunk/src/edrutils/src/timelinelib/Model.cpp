@@ -265,13 +265,13 @@ void Model::addChannel(const std::string & path, const IChannelPtr & channel)
 void Model::addChannels(const std::map<std::string, IChannelPtr> & channels)
 {
     if(channels.empty() == false){
-        for(auto it = channels.begin(); it != channels.end(); it++){
+        for(auto it = channels.begin(); it != channels.end(); ++it){
             if(it->second == nullptr || findChannel(it->first) != nullptr || iChannels.find(it->second) != iChannels.end()){
                 throw std::runtime_error("Channel path exist, channel already added or nullptr to channel");
             }
         }
 
-        for(auto it = channels.begin(); it != channels.end(); it++){
+        for(auto it = channels.begin(); it != channels.end(); ++it){
             root->addChild(it->first);
             TChannelConstPtr tChild(getChannel(it->first));
             ChannelPtr child(getWritableChannel(tChild));
@@ -299,7 +299,7 @@ void Model::removeChannel(const std::string & path)
 void Model::removeChannels(const std::set<std::string> & paths)
 {
     if(paths.empty() == false){
-        for(auto it = paths.begin(); it != paths.end(); it++){
+        for(auto it = paths.begin(); it != paths.end(); ++it){
             if(findChannel(*it) == nullptr){
                 throw std::runtime_error("Not present in model");
             }
@@ -309,9 +309,9 @@ void Model::removeChannels(const std::set<std::string> & paths)
         std::string lastChannel = *it;
         innerRemoveChannel(getChannel(lastChannel));
 
-        it++;
+        ++it;
 
-        for(; it != paths.end(); it++){
+        for(; it != paths.end(); ++it){
             //mamy hierarchiê kana³ów - nie ma sensu usuwaæ kana³ów z ni¿szych warstw jeœli usuwamy te z wy¿szych
             if((*it).find(lastChannel) != 0){
                 lastChannel = *it;
@@ -599,7 +599,7 @@ TagPtr Model::getWritableTag(const TagConstPtr & tag)
 
 void Model::updateChildrenScale(const Model::TChannelConstPtr & child, double ratio)
 {
-    for(auto it = child->begin(); it != child->end(); it++){
+    for(auto it = child->begin(); it != child->end(); ++it){
         ChannelPtr channel(getWritableChannel(toTChannel(*it)));
         channel->setGlobalTimeScale(channel->getGlobalTimeScale() * ratio);
         channel->setLength(channel->getLength() * ratio);
@@ -619,7 +619,7 @@ void Model::updateForScaleRatio(const ChannelPtr & channel, double ratio)
 
     std::vector<TagConstPtr> updatedTags;
 
-    for(auto it = channel->beginTags(); it != channel->endTags(); it++){
+    for(auto it = channel->beginTags(); it != channel->endTags(); ++it){
         if(std::find(updatedTags.begin(), updatedTags.end(), *it) == updatedTags.end()){
             (*it)->setBeginTime((*it)->getBeginTime() * ratio);
             (*it)->setLength((*it)->getLength() * ratio);
@@ -657,7 +657,7 @@ bool Model::refreshChannelLength(const Model::TChannelConstPtr & channel)
     bool ret = false;
     
     double l = 0;
-    for(auto it = channel->begin(); it != channel->end(); it++){
+    for(auto it = channel->begin(); it != channel->end(); ++it){
         TChannelConstPtr child(toTChannel(*it));
         l = std::max(l, child->getData()->getLocalOffset() + child->getData()->getLength());
     }
@@ -679,7 +679,7 @@ bool Model::refreshChannelLength(const Model::TChannelConstPtr & channel)
 
 void Model::updateChildrenOffset(const Model::TChannelConstPtr & child, double dOffset)
 {
-    for(auto it = child->begin(); it != child->end(); it++){
+    for(auto it = child->begin(); it != child->end(); ++it){
         TChannelConstPtr tChannel(toTChannel(*it));
         ChannelPtr channel(getWritableChannel(tChannel));
         channel->setGlobalOffset(channel->getGlobalOffset() + dOffset);
@@ -695,7 +695,7 @@ void Model::updateParentOffset(const Model::TChannelConstPtr & parent, const Mod
     double offset = wChild->getLocalOffset();
 
     //aktualizuj localne przesuniecia dzieci
-    for(auto it = parent->begin(); it != parent->end(); it++){
+    for(auto it = parent->begin(); it != parent->end(); ++it){
         ChannelPtr wCh(getWritableChannel(toTChannel(*it)));
         wCh->setLocalOffset(wCh->getLocalOffset() - offset);
     }
@@ -821,12 +821,12 @@ void Model::innerRemoveChannel(const TChannelConstPtr & channel)
     //usunac je z list wszystkich tagow, zaznaczen i mapowania kanalow
     getAllChildrenData(channel, tags, channels);
 
-    for(auto it = tags.begin(); it != tags.end(); it++) {
+    for(auto it = tags.begin(); it != tags.end(); ++it) {
         allTags.resize(std::distance(allTags.begin(), std::remove(allTags.begin(), allTags.end(), *it)));
         constAllTags.resize(std::distance(constAllTags.begin(), std::remove(constAllTags.begin(), constAllTags.end(), *it)));
     }
 
-    for(auto it = channels.begin(); it != channels.end(); it++){
+    for(auto it = channels.begin(); it != channels.end(); ++it){
         channelToTChannel.erase(*it);
     }
 
@@ -841,7 +841,7 @@ void Model::getAllChildrenData(const Model::TChannelConstPtr & channel, ConstTag
 {
     channels.push_back(channel->getData());
     tags.insert(tags.end(), channel->getData()->beginTags(), channel->getData()->endTags());
-    for(auto it = channel->begin(); it != channel->end(); it++){
+    for(auto it = channel->begin(); it != channel->end(); ++it){
         getAllChildrenData(toTChannel(*it), tags, channels);
     }
 }
@@ -907,13 +907,13 @@ void Model::innerClearChannelTags(const TChannelConstPtr & channel, bool deeper)
     ConstTags locTags(wChannel->beginTags(),wChannel->endTags());
     wChannel->clearTags();
 
-    for(auto it = locTags.begin(); it != locTags.end(); it++) {
+    for(auto it = locTags.begin(); it != locTags.end(); ++it) {
         allTags.resize(std::distance(allTags.begin(), std::remove(allTags.begin(), allTags.end(), *it)));
         constAllTags.resize(std::distance(constAllTags.begin(), std::remove(constAllTags.begin(), constAllTags.end(), *it)));
     }
 
     if(deeper == true){
-        for(auto it = channel->begin(); it != channel->end(); it++){
+        for(auto it = channel->begin(); it != channel->end(); ++it){
             innerClearChannelTags(toTChannel(*it), true);
         }
     }

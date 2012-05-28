@@ -242,7 +242,7 @@ double CommunicationManager::ComplexRequest::getProgress() const
 {
 	double ret = 0;
 
-	for(auto it = requests.begin(); it != requests.end(); it++){
+	for(auto it = requests.begin(); it != requests.end(); ++it){
 		double loc = (*it).request->getProgress();
 		if(loc == 0){
 			break;

@@ -33,12 +33,12 @@ DataSourceConnectionManager::DataSourceConnectionManager()
 		medicalFilesStoremanWSConnection_(new WSConnection()),
 		medicalBasicQueriesWSConnection_(new WSConnection()),
 		medicalBasicUpdatesWSConnection_(new WSConnection()),
+		accountFactoryWSConnection_(new WSConnection()),
 		userPersonalSpaceWSConnection_(new WSConnection()),
 		administrationWSConnection_(new WSConnection()),
 		authorizationWSConnection_(new WSConnection()),
 		motionFtps_(new webservices::FtpsConnection()),
-		medicalFtps_(new webservices::FtpsConnection()),
-		accountFactoryWSConnection_(new WSConnection())
+		medicalFtps_(new webservices::FtpsConnection())
 {
 	
 }

@@ -128,7 +128,7 @@ public:
     inline bool existVisualizerForType(const core::TypeInfo & type) const
     {
         DataManager* dataManager = DataManager::getInstance();
-        for (auto it = mapType2ID.begin(); it != mapType2ID.end(); it++) {
+        for (auto it = mapType2ID.begin(); it != mapType2ID.end(); ++it) {
             if (dataManager->isTypeCompatible(type, it->first)) {
                 return true;
             }

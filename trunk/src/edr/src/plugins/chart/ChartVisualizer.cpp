@@ -3,7 +3,9 @@
 
 ChartVisualizer::ChartVisualizer() : 
     name("Chart"), prevActiveSerie(-1),
-    prevTime(0)
+    prevTime(0),
+	actionNormalized(nullptr),
+	activeSerieCombo(nullptr)
 {
 
 }

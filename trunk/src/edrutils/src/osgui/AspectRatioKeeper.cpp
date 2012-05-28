@@ -10,11 +10,16 @@ namespace osgui {
 
 class AspectRatioKeeperWindow : public osgWidget::Window
 {
+
+private:
+
     typedef osgWidget::Window Base;
+
+private:
+
     osgWidget::XYCoord size;
     osgWidget::point_type aspectRatio;
 
-private:
     //! Widget poddany zmianie rozmiaru.
     osg::observer_ptr<osgWidget::Widget> target;
 
@@ -59,7 +64,7 @@ Base(name), aspectRatio(aspectRatio)
 }
 
 AspectRatioKeeperWindow::AspectRatioKeeperWindow( const AspectRatioKeeperWindow& window, const osg::CopyOp& copyop ) :
-Base(window, copyop), aspectRatio(window.aspectRatio), size(window.size)
+Base(window, copyop), size(window.size), aspectRatio(window.aspectRatio)
 {
     osg::ref_ptr<osgWidget::Widget> windowTarget;
     if ( window.target.lock(windowTarget) ) {

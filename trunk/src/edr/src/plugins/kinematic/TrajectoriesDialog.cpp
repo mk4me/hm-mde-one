@@ -42,7 +42,7 @@ void TrajectoriesDialog::setDrawer(OsgSchemeDrawerPtr drawer, const QString& roo
                 MarkerCollectionConstPtr markers = trajectories->getMarkers();
                 int count = markers->getNumChannels();
                 if (count) {
-                    for (int i = 0; i < count; i++) {
+                    for (int i = 0; i < count; ++i) {
                         QTreeWidgetItem* item = new QTreeWidgetItem();
 
                         item->setText(1, markers->getChannel(i)->getName().c_str());
@@ -107,13 +107,13 @@ osg::Vec4 TrajectoriesDialog::transformColor( const QColor& color ) const
 QTreeWidgetItem* getItemWhichContainsRecurr(QTreeWidget* tree, QTreeWidgetItem* item, QObject* object )
 {
     int columnCount = tree->columnCount();
-    for (int c = 0; c < columnCount; c++) {
+    for (int c = 0; c < columnCount; ++c) {
         if (tree->itemWidget(item, c) == object) {
             return item;
         }
     }
 
-    for (int c = 0; c < item->childCount(); c++) {
+    for (int c = 0; c < item->childCount(); ++c) {
         QTreeWidgetItem* child = getItemWhichContainsRecurr(tree, item->child(c), object);
         if (child) {
             return child;
@@ -126,7 +126,7 @@ QTreeWidgetItem* getItemWhichContainsRecurr(QTreeWidget* tree, QTreeWidgetItem* 
 QTreeWidgetItem* TrajectoriesDialog::getItemWhichContains( QObject* object ) const
 {
 	int count = tree->topLevelItemCount();
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; ++i) {
         QTreeWidgetItem* item = getItemWhichContainsRecurr(tree, tree->topLevelItem(i), object);
         if (item) {
             return item;
@@ -151,7 +151,7 @@ void TrajectoriesDialog::visibilityChanged( bool visible )
 		currentTrajectories->setVisible(item->text(1).toStdString(), visible);
 
 		int count = tree->topLevelItemCount();
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; ++i) {
 			QTreeWidgetItem* itemToDeselect = tree->topLevelItem(i);
 			if (itemToDeselect != item) {
 				itemToDeselect->setSelected(false);
@@ -169,10 +169,10 @@ void TrajectoriesDialog::colorClicked()
 	QColor color(255, 255, 255, 80);// = transformColor(trajectories->getColor(name));
 	color = QColorDialog::getColor ( color, this, tr("Choose color"), QColorDialog::ShowAlphaChannel);
 
-    for (int j = 0; j < tree->topLevelItemCount(); j++) {
+    for (int j = 0; j < tree->topLevelItemCount(); ++j) {
         QTreeWidgetItem* topItem = tree->topLevelItem(j);
         int count = topItem->childCount();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             QTreeWidgetItem* item = topItem->child(i);
             if (item && item->isSelected()) {
                 std::string name = item->text(1).toStdString();
@@ -185,10 +185,10 @@ void TrajectoriesDialog::colorClicked()
 
 void TrajectoriesDialog::widthChanged( double width )
 {
-    for (int j = 0; j < tree->topLevelItemCount(); j++) {
+    for (int j = 0; j < tree->topLevelItemCount(); ++j) {
         QTreeWidgetItem* topItem = tree->topLevelItem(j);
         int count = topItem->childCount();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             QTreeWidgetItem* item = topItem->child(i);
             if (item && item->isSelected()) {
                 std::string name = item->text(1).toStdString();
@@ -200,10 +200,10 @@ void TrajectoriesDialog::widthChanged( double width )
 
 void TrajectoriesDialog::startTimeChanged( double time )
 {
-    for (int j = 0; j < tree->topLevelItemCount(); j++) {
+    for (int j = 0; j < tree->topLevelItemCount(); ++j) {
         QTreeWidgetItem* topItem = tree->topLevelItem(j);
         int count = topItem->childCount();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             QTreeWidgetItem* item = topItem->child(i);
             if (item && item->isSelected()) {
                 std::string name = item->text(1).toStdString();
@@ -220,10 +220,10 @@ void TrajectoriesDialog::startTimeChanged( double time )
 
 void TrajectoriesDialog::endTimeChanged( double time )
 {
-    for (int j = 0; j < tree->topLevelItemCount(); j++) {
+    for (int j = 0; j < tree->topLevelItemCount(); ++j) {
         QTreeWidgetItem* topItem = tree->topLevelItem(j);
         int count = topItem->childCount();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             QTreeWidgetItem* item = topItem->child(i);
             if (item && item->isSelected()) {
                 std::string name = item->text(1).toStdString();

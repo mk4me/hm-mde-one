@@ -91,19 +91,15 @@ public:
 
     virtual void activateContext(QWidget * contextWidget);
 
-    //virtual void deactivateContext(QWidget * contextWidget);
     virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
     virtual void onRegisterContextWidget(QWidget * contextWidget);
     virtual void onUnregisterContextWidget(QWidget * contextWidget);
-
-    //void setActiveTreeItem(TreeItemHelper* helper);
 
 public slots:
     void refresh();
 
 private slots:
     void itemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    //void refresh(QAction* dummy = nullptr);
 
 private:
     void recreateFlexiSectionWidget(QWidget* flexiSection, HmmTreeItem* helper);

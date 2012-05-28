@@ -40,7 +40,7 @@ public:
                 motion->getWrappers(objects, typeid(Collection));
                 BOOST_FOREACH(core::ObjectWrapperConstPtr ow, objects) {
                     CollectionConstPtr c = ow->get();
-                    for (int i = 0 ; i < c->getNumChannels(); i++) {
+                    for (int i = 0 ; i < c->getNumChannels(); ++i) {
                        ChannelConstPtr channel = c->getChannel(i);
                        core::ObjectWrapperPtr cw = core::ObjectWrapper::create<Channel>();
                        cw->set(core::const_pointer_cast<Channel>(channel));
@@ -76,7 +76,7 @@ public:
 
         bool found = false;
         PluginSubject::SubjectID id = session->getLocalID();
-        for(auto it = numbers.begin(); it != numbers.end(); it++){
+        for(auto it = numbers.begin(); it != numbers.end(); ++it){
             if(*it == id){
                 found = true;
                 break;
@@ -111,13 +111,13 @@ public:
         PluginSubject::Motions motions;
         session->getMotions(motions);
 
-        for(auto motionIT = motions.begin(); motionIT != motions.end(); motionIT++){
+        for(auto motionIT = motions.begin(); motionIT != motions.end(); ++motionIT){
             std::vector<core::ObjectWrapperConstPtr> objects;
             std::vector<core::ObjectWrapperConstPtr> validObjects;
             (*motionIT)->getWrappers(objects);
 
-            for(auto objectIT = objects.begin(); objectIT != objects.end(); objectIT++){
-                for (auto it = names.begin(); it != names.end(); it++) {
+            for(auto objectIT = objects.begin(); objectIT != objects.end(); ++objectIT){
+                for (auto it = names.begin(); it != names.end(); ++it) {
                     if ((*objectIT)->getName() == *it) {
                         validObjects.push_back(*objectIT);
                         break;

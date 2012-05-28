@@ -101,8 +101,8 @@ public:
         std::set<AppUsageContextPtr> contextsToErase;
         getAllSubContexts(context, contextsToErase);
 
-        for(auto it = contextsToErase.begin(); it != contextsToErase.end(); it++){
-            for(auto widgetIT = (*it)->contextWidgets.begin(); widgetIT != (*it)->contextWidgets.end(); widgetIT++){
+        for(auto it = contextsToErase.begin(); it != contextsToErase.end(); ++it){
+            for(auto widgetIT = (*it)->contextWidgets.begin(); widgetIT != (*it)->contextWidgets.end(); ++widgetIT){
                 widgetContexts.erase(*widgetIT);
                 widgets.erase(*widgetIT);
             }
@@ -155,7 +155,7 @@ public:
             //cos znaleziono!!
             if(intIT != intersection.begin()){
                 std::set<QWidget*> intersection(intersection.begin(), intIT);
-                for(auto it = orderedParentWidgets.begin(); it != orderedParentWidgets.end(); it++){
+                for(auto it = orderedParentWidgets.begin(); it != orderedParentWidgets.end(); ++it){
                     if(intersection.find(*it) != intersection.end()){
                         ret = *it;
                         break;
@@ -311,7 +311,7 @@ private:
 
                 int newLastPos = currentContextChain.size()-1;
 
-                for(int i = lastPos; i < newLastPos; i++){
+                for(int i = lastPos; i < newLastPos; ++i){
                     currentContextChain[i]->activate();
                 }
 
@@ -322,7 +322,7 @@ private:
 
     void limitCurrentChainToPosition(int limitPos)
     {
-        for(int pos = currentContextChain.size() - 1; pos > limitPos; pos--){
+        for(int pos = currentContextChain.size() - 1; pos > limitPos; --pos){
             currentContextChain[pos]->tryDeactivate();
             currentContextChain.pop_back();
         }
@@ -331,7 +331,7 @@ private:
     void getAllSubContexts(const AppUsageContextPtr & context, std::set<AppUsageContextPtr> & contexts)
     {
         contexts.insert(context);
-        for(auto it = context->childContexts.begin(); it != context->childContexts.end(); it++){
+        for(auto it = context->childContexts.begin(); it != context->childContexts.end(); ++it){
             getAllSubContexts(*it, contexts);
         }
     }
@@ -341,7 +341,7 @@ protected:
     int contextPositionInCurrentChain(QWidget * contextWidget)
     {
         int ret = -1;
-        for(unsigned int i = 0; i < currentContextChain.size(); i++){
+        for(unsigned int i = 0; i < currentContextChain.size(); ++i){
             if(currentContextChain[i]->getCurrentContextWidget() == contextWidget){
                 ret = i;
                 break;

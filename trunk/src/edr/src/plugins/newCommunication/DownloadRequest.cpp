@@ -5,7 +5,7 @@
 using namespace communication;
 
 //! Prywatny konstruktor
-DownloadRequest::DownloadRequest() : state_(Created), totalSize_(0), currentSize(0), currentTransferID(0)
+DownloadRequest::DownloadRequest() : state_(Created), currentTransferID(0), totalSize_(0), currentSize(0)
 {
 	//inicjalizacja callbacków pojedynczego pobierania
 	singleTransferCallbacks.onBeginCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onDownloadBegin, this, _1);

@@ -24,7 +24,7 @@
 #include <boost/type_traits.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <core/ILog.h>
+#include <core/Plugin.h>
 #include <core/SmartPtr.h>
 
 #include <utils/Utils.h>

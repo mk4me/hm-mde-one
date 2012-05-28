@@ -12,8 +12,6 @@
 
 #include <core/IVisualizer.h>
 #include <core/IObjectSource.h>
-//#include <qwt/qwt_scale_map.h>
-//#include <qwt/qwt_plot_curve.h>
 #include <plugins/c3d/C3DCollections.h>
 #include <plugins/c3d/EventSerieBase.h>
 #include <plugins/newChart/INewChartSerie.h>
@@ -28,12 +26,12 @@ class NewChartSerie : public INewChartSerie
     friend class NewChartVisualizer;
 public:
     NewChartSerie(NewChartVisualizer * visualizer) :
-      visualizer(visualizer), 
+      visualizer(visualizer),
+	  curve(nullptr),
       active(false),
       time(0.0f),
       _z(0),
-      _zBase(0),
-	  curve(nullptr)
+      _zBase(0)
     {
 
     }

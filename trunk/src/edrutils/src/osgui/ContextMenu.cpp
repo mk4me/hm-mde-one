@@ -184,7 +184,7 @@ std::vector<std::string> ContextMenu::parseNextMenuItems(const std::string & pat
 	std::vector<std::string> ret;
 
 	Tokenizer tokens(path, boost::char_separator<char>((*pathSeparator).c_str()));
-	for(Tokenizer::iterator it = tokens.begin(); it != tokens.end(); it++){
+	for(Tokenizer::iterator it = tokens.begin(); it != tokens.end(); ++it){
 		ret.push_back(*it);
 	}
 
@@ -628,7 +628,7 @@ ContextMenu::MenuItem & ContextMenu::findMenuItem(Iter begin, Iter end){
 		}
 	}else{
 		Iter tmpEnd = end;
-		tmpEnd--;
+		--tmpEnd;
 		MenuSubmenu submenu = findMenu(begin, tmpEnd);
 
 		if(submenu.submenu != nullptr){
@@ -659,7 +659,7 @@ const ContextMenu::MenuItem & ContextMenu::findMenuItem(Iter begin, Iter end) co
 		}
 	}else{
 		Iter tmpEnd = end;
-		tmpEnd--;
+		--tmpEnd;
 		MenuSubmenu submenu = findMenu(begin, tmpEnd);
 
 		if(submenu.submenu != nullptr){

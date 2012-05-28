@@ -1,5 +1,4 @@
 #include "SubjectPCH.h"
-#include <core/Plugin.h>
 #include <plugins/subject/ISubject.h>
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>

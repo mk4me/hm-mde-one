@@ -41,10 +41,8 @@
 #include <QtGui/QAction>
 #include <QtGui/QWidget>
 #include <QtGui/QMouseEvent>
-//#include <plugins/c3d/C3DChannels.h>
-#include <core/IVisualizer.h>
-#include <core/IObjectSource.h>
 
+#include <core/Plugin.h>
 #include <core/SmartPtr.h>
 
 #endif

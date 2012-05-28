@@ -41,7 +41,6 @@ void DataFilterWidget::addFilter(FilterEntryWidget* entry)
 {
     UTILS_ASSERT(filtersClosed == false);
     entries.push_back(entry);
-    //connect(entry, SIGNAL( onFilterClicked(FilterEntryWidget*)), this, SLOT(uncheckEntries(FilterEntryWidget*)));
     this->verticalLayout->addWidget(entry);
 }
 
@@ -81,7 +80,7 @@ void DataFilterWidget::setActive( bool val )
 
 void DataFilterWidget::closeFilters()
 {
-    UTILS_ASSERT(filtersClosed == false && entries.size() > 0 && entries.size() <= 3);
+    UTILS_ASSERT(filtersClosed == false && entries.empty() == false && entries.size() <= 3);
     filtersClosed = true;
     FilterEntryWidget* e = entries[0];
     QSpacerItem* item = new QSpacerItem(0, e->height() * (3 - entries.size()));
@@ -102,7 +101,7 @@ const FilterEntryWidget* DataFilterWidget::getEntry( int index ) const
 
 void DataFilterWidget::uncheckEntries( FilterEntryWidget* toSkip)
 {
-    for (auto it = entries.begin(); it != entries.end(); it++) {
+    for (auto it = entries.begin(); it != entries.end(); ++it) {
         if (toSkip != *it) {
             (*it)->blockSignals(true);
             (*it)->setChecked(false);
@@ -116,7 +115,7 @@ void DataFilterWidget::resetFilters()
     blockSignals(true);
     setActive(false);
     uncheckEntries();
-    for (auto it = entries.begin(); it != entries.end(); it++) {
+    for (auto it = entries.begin(); it != entries.end(); ++it) {
         (*it)->getFilterCommand()->reset();
     }
     blockSignals(false);

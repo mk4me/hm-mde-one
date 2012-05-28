@@ -5,6 +5,7 @@
 #include <vidlib/FileSequenceVideoStream.h>
 #include <vidlib/FFmpegVideoStream.h>
 #include <tinyxml.h>
+#include <core/PluginCommon.h>
 #include <core/ILog.h>
 #include <osg/ImageSequence>
 #include <osgDB/ReadFile>

@@ -56,7 +56,7 @@ void AnalisisWidget::addDataFilterWidget( DataFilterWidget* filter )
     connect(filter, SIGNAL( clicked()), this, SLOT(switchToFirstTab()));
     connect(this->resetButton, SIGNAL(clicked()), filter, SLOT(resetFilters()));
     connect(this->resetButton, SIGNAL(clicked()), hmm, SLOT(refreshTree()));
-    for (int i = 0; i < filter->getNumEntries(); i++) {
+    for (int i = 0; i < filter->getNumEntries(); ++i) {
         connect(filter->getEntry(i), SIGNAL( onFilterClicked(FilterEntryWidget*)), this, SLOT(filterClicked(FilterEntryWidget*)));
     }
 }

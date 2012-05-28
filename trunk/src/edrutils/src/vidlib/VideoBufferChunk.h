@@ -80,7 +80,7 @@ public:
   }
   //! \param time Czas do sprawdzenia.
   //! \return Czy bufor zawiera dany czas?
-  inline bool contains(double time)
+  inline bool contains(double time) const
   {
     return time >= getStartTime() && time < getEndTime();
   }

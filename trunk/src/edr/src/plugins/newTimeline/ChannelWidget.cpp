@@ -79,7 +79,7 @@ void ChannelWidget::paintEvent(QPaintEvent * pEvent)
     painter.fillRect(channelRect,fillColor);
 
     //malujemy tagi
-    for(auto it = channel->getData()->beginTags(); it != channel->getData()->endTags(); it++){
+    for(auto it = channel->getData()->beginTags(); it != channel->getData()->endTags(); ++it){
         drawSingleTag(painter, channelRect, controller->getNormalizedTime((*it)->getBeginTime()), controller->getNormalizedLength((*it)->getLength()));
     }
 

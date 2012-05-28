@@ -33,7 +33,7 @@ void Subject::getSessions(PluginSubject::Sessions & sessions) const
     PluginSubject::Sessions toFilter;
     core::queryDataPtr(core::getDataManagerReader(), toFilter, true);
 
-    for(auto it = toFilter.begin(); it != toFilter.end(); it++){
+    for(auto it = toFilter.begin(); it != toFilter.end(); ++it){
         if((*it)->getSubject().get() == this){
             sessions.push_back(*it);
         }

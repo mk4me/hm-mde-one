@@ -97,7 +97,7 @@ QFrame * EDRTitleBar::getSideFrame(SideType side) const
 void EDRTitleBar::clearSide(SideType side)
 {
     QLayout * layout = getSideFrame(side)->layout();
-    for(int i = layout->count() - 1; i > -1; i--){
+    for(int i = layout->count() - 1; i > -1; --i){
         auto it = widgetObjects.find(layout->itemAt(i)->widget());
 
         layout->removeWidget(it->first);

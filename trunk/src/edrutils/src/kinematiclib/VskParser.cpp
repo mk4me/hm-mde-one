@@ -77,7 +77,9 @@ namespace kinematic
                         s.name2 = attrib->Value();
                     } else if (strcmp(attrib->Name(), "RGB") == 0) {
                         istringstream iss(attrib->Value());
-                        int r, g, b;
+                        int r = 0;
+						int g = 0;
+						int b = 0;
                         iss >> r >> g >> b;
                         s.color[0] = static_cast<float>(r / 256.0f);
                         s.color[1] = static_cast<float>(g / 256.0f);
@@ -108,7 +110,9 @@ namespace kinematic
                        m.radius = attrib->DoubleValue();
                    } else if (strcmp(attrib->Name(), "RGB") == 0) {
                        istringstream iss(attrib->Value());
-                       int r, g, b;
+					   int r = 0;
+					   int g = 0;
+					   int b = 0;
                        iss >> r >> g >> b;
                        m.color[0] = static_cast<float>(r / 256.0f);
                        m.color[1] = static_cast<float>(g / 256.0f);

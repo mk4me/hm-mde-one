@@ -54,7 +54,7 @@ void EDRConsoleWidget::init()
 
     QMetaObject::connectSlotsByName(this);
 
-    toggleWordWrapButton->setChecked( consoleWidget->textEdit->lineWrapMode() != QTextOption::NoWrap );
+    toggleWordWrapButton->setChecked( consoleWidget->textEdit->lineWrapMode() != QTextEdit::NoWrap );
 
     titleBar->addObject(clearButton, IEDRTitleBar::Left);
     titleBar->addObject(toggleWordWrapButton, IEDRTitleBar::Left);

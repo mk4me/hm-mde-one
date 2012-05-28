@@ -113,16 +113,11 @@ GlLineSchemeDrawer::GeometryPtr GlLineSchemeDrawer::createCustomCylinder( int co
     osg::ref_ptr<osg::Vec3Array> points = new osg::Vec3Array();
     osg::ref_ptr<osg::Vec3Array> normals = new osg::Vec3Array();
 
-    int n = complex;
     double r = radius;
     double segmentRad = 2 * osg::PI / complex;
-    //int numberOfSeparators = 4 * n + 4;
-
-    //triangleIndices = new Int32Collection();
     osg::Vec3 v;
-    //float height2 = 0.5f * height;
     
-    for (int i = 0; i < complex; i++) {
+    for (int i = 0; i < complex; ++i) {
         float rad = static_cast<float>(i) * segmentRad;
         float x = r * cosf(rad);
         float z = r * sinf(rad);
@@ -150,7 +145,7 @@ GlLineSchemeDrawer::GeometryPtr GlLineSchemeDrawer::createCustomCylinder( int co
     cylinderGeom->setDataVariance(osg::Object::DYNAMIC);
     
     int mod = complex * 2;
-    for (int i = 0; i < complex; i++) {
+    for (int i = 0; i < complex; ++i) {
         osg::ref_ptr<osg::DrawElementsUInt> d = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
         d->push_back((i * 2    ) % mod);
         d->push_back((i * 2 + 1) % mod);

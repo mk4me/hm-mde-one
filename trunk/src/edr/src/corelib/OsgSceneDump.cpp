@@ -185,7 +185,6 @@ bool OsgSceneDumpFileHandler::handle( const osgGA::GUIEventAdapter& gea, osgGA::
 
     if(ev == osgGA::GUIEventAdapter::KEYUP) {
         int key     = gea.getKey();
-        int keyMask = gea.getModKeyMask();
         
         if(key == 'd' || key == 'D') {
             if ( osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&gaa) ) {
@@ -206,8 +205,6 @@ bool OsgSceneDumpFileHandler::handle( const osgGA::GUIEventAdapter& gea, osgGA::
             } else {
                 OSG_FATAL<<"OsgSceneDumpFileHandler: view not found."<<std::endl;
             }
-            
-            
         }
     }
     

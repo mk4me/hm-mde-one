@@ -15,13 +15,12 @@
 #endif
 
 KinematicVisualizer::KinematicVisualizer() :
-//name("Visualizer 3D"),
-trajectoriesDialog(nullptr),
-    schemeDialog(nullptr),
+	actionTrajectories(nullptr), actionScheme(nullptr), actionGhost(nullptr),
+	actionSwitchAxes(nullptr), pickerAction(nullptr), translateAction(nullptr),
+	rotateAction(nullptr),scaleAction(nullptr), resetAction(nullptr),
+	trajectoriesDialog(nullptr), schemeDialog(nullptr), activeSerieCombo(nullptr),
     currentSerie(-1),
-    currentDragger(nullptr),
-    lastTime(-1.0f),
-    actionTrajectories(nullptr)
+    lastTime(-1.0f)
 {
 
 }
@@ -144,7 +143,7 @@ void KinematicVisualizer::removeSerie(core::IVisualizer::SerieBase *serie)
         activeSerieCombo->clear();
         currentSerie = 0;
         int count = series.size();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             KinematicSerie* serie = series[i];
             activeSerieCombo->addItem(QString::fromStdString(serie->getName()));
             if (serie == activeSerie) {
@@ -403,7 +402,7 @@ osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
 
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array(44);
     osg::Vec3 v;
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 11; ++i) {
         v.set(-length + 2 * (i / 10.0f) * length, -length, 0);
         (*vertices)[2 * i] = v;      
         v.set(-length + 2 * (i / 10.0f) * length, length, 0);
@@ -547,7 +546,7 @@ void KinematicVisualizer::setActiveSerie( int idx )
 
 void KinematicVisualizer::setActiveSerie( KinematicSerie* serie )
 {
-    for (unsigned int i = 0; i < series.size(); i++) {
+    for (unsigned int i = 0; i < series.size(); ++i) {
         if (series[i] == serie) {
             setActiveSerie(i);
             return;
@@ -690,7 +689,7 @@ void KinematicVisualizer::draggerTriggered()
 bool isChildRecursive(osg::Group* group, osg::Geode* geode)
 {
     int count = group->getNumChildren();
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         osg::Node* child = group->getChild(i);
         if (geode == child) {
             return true;
@@ -706,7 +705,7 @@ bool isChildRecursive(osg::Group* group, osg::Geode* geode)
 
 KinematicSerie* KinematicVisualizer::getParentSerie( GeodePtr geode )
 {
-    for (auto it = series.begin(); it != series.end(); it++) {
+    for (auto it = series.begin(); it != series.end(); ++it) {
         osg::MatrixTransform* node = (*it)->getMatrixTransformNode();
         if (isChildRecursive(node, geode)) {
             return *it;
@@ -745,13 +744,14 @@ std::pair<QWidget*, QDoubleSpinBox*> KinematicVisualizer::createSpinWidget( QWid
 {
     QWidget* spinWidget = new QWidget(parent);
     spinWidget->setLayout(new QHBoxLayout());
-    spinWidget->layout()->addWidget(new QLabel(name));
+	auto layout = spinWidget->layout();
+    layout->addWidget(new QLabel(name));
     QDoubleSpinBox* spin = new QDoubleSpinBox(parent);
     spin->setMaximum(1000.0);
     spin->setMinimum(-1000.0);
-    spinWidget->layout()->addWidget(spin);
-    spinWidget->layout()->setMargin(0);
-    spinWidget->layout()->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(spin);
+    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     spinWidget->setVisible(visible);
     spin->setSingleStep(step);
     return std::make_pair(spinWidget, spin);

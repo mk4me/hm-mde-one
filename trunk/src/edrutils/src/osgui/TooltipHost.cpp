@@ -52,7 +52,7 @@ std::string TooltipHost::rebuildTooltipText(const std::string & text) const{
 			finished = true;
 		}else if(ret[pos] == '\n'){
 			currBreak = pos;
-			pos++;
+			++pos;
 		}else if(pos - currBreak > maxSignsPerLine){
 			//lam w prev
 			if(ret[prev] == ' '){

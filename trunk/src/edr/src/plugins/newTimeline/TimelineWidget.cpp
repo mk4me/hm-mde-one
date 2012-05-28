@@ -317,7 +317,7 @@ void TimelineWidget::removeSelectedChannels()
 
     std::map<std::string, QTreeWidgetItem*> orderedPathsToDelete;
 
-    for(auto it = selectedItems.begin(); it != selectedItems.end(); it++)
+    for(auto it = selectedItems.begin(); it != selectedItems.end(); ++it)
     {
         ChannelsTreeItem * item = dynamic_cast<ChannelsTreeItem*>(*it);
         if(item != nullptr){
@@ -330,7 +330,7 @@ void TimelineWidget::removeSelectedChannels()
     std::set<std::string> toDelete;
     toDelete.insert(lastNode);
 
-    it++;
+    ++it;
     while(it != orderedPathsToDelete.end()){
         // jeœli to nie moje dziecko w modelu
         std::string::size_type pos = it->first.find(lastNode);
@@ -341,12 +341,12 @@ void TimelineWidget::removeSelectedChannels()
             //zapamietaj ostatni wezel by weryfikowac jego dzieci
             lastNode = it->first;
             toDelete.insert(lastNode);
-            it++;
+            ++it;
         }
     }
 
     //w³aœciwe usuniêcie z drzewa UI
-    for(auto it = orderedPathsToDelete.begin(); it != orderedPathsToDelete.end(); it++){
+    for(auto it = orderedPathsToDelete.begin(); it != orderedPathsToDelete.end(); ++it){
         it->second->parent()->removeChild(it->second);
         delete it->second;
     }
@@ -426,23 +426,23 @@ void TimelineWidget::refreshChannelsHierarchy()
     std::set<QTreeWidgetItem*> uiNodes;
     std::set<timeline::Model::TChannelConstPtr> modelNodes;
 
-    for(int i = 0; i < rootItem->childCount(); i++){    
+    for(int i = 0; i < rootItem->childCount(); ++i){    
         uiNodes.insert(rootItem->child(i));
     }
 
-    for(auto it = getController()->getModel()->beginChannels(); it != getController()->getModel()->endChannels(); it++){
+    for(auto it = getController()->getModel()->beginChannels(); it != getController()->getModel()->endChannels(); ++it){
         modelNodes.insert(core::dynamic_pointer_cast<const timeline::Model::TChannel>(*it));
     }
 
     compareNodes(uiNodes, modelNodes, toDeleteItems, missingItems);
 
-    for(auto it = toDeleteItems.begin(); it != toDeleteItems.end(); it++){
+    for(auto it = toDeleteItems.begin(); it != toDeleteItems.end(); ++it){
         rootItem->removeChild(*it);
         modelToUIChannels.erase(reinterpret_cast<ChannelsTreeItem*>(*it)->getChannel());
         delete *it;
     }
 
-    for(auto it = missingItems.begin(); it != missingItems.end(); it++){
+    for(auto it = missingItems.begin(); it != missingItems.end(); ++it){
         ChannelWidget * channelWidget = new ChannelWidget(getController(), *it, nullptr, 0, slider->getLeftMargin(), slider->getRightMargin());
         ChannelsTreeItem * item = new ChannelsTreeItem(*it, channelWidget);
         
@@ -463,7 +463,7 @@ void TimelineWidget::refreshChannelsHierarchy()
         channelsWidget->setItemWidget(item, 1, checkBox);
     }
 
-    for(int i = 0; i < rootItem->childCount(); i++){    
+    for(int i = 0; i < rootItem->childCount(); ++i){    
         recursiveHierarchyRefresh(rootItem->child(i));
     }
 
@@ -474,7 +474,7 @@ void TimelineWidget::refreshChannelsHierarchy()
 
 void TimelineWidget::refreshChannels()
 {
-    for(int i = 0; i < rootItem->childCount(); i++){    
+    for(int i = 0; i < rootItem->childCount(); ++i){    
         recursiveRefreshChannels(rootItem->child(i));
     }
 }
@@ -483,7 +483,7 @@ void TimelineWidget::recursiveRefreshChannels(QTreeWidgetItem* uiNode)
 {
     reinterpret_cast<ChannelsTreeItem*>(uiNode)->refreschVisualChannel();
 
-    for(int i = 0; i < uiNode->childCount(); i++){    
+    for(int i = 0; i < uiNode->childCount(); ++i){    
         recursiveRefreshChannels(uiNode->child(i));
     }
 }
@@ -537,7 +537,7 @@ void TimelineWidget::compareNodes(const std::set<QTreeWidgetItem*> & uiNodes, co
 {
     std::set<timeline::Model::TChannelConstPtr> present;
     std::vector<timeline::Model::TChannelConstPtr> missingNodes(modelNodes.size());
-    for(auto it = uiNodes.begin(); it != uiNodes.end(); it++){
+    for(auto it = uiNodes.begin(); it != uiNodes.end(); ++it){
         timeline::Model::TChannelConstPtr channel(reinterpret_cast<ChannelsTreeItem*>(*it)->getChannel());
         if(modelNodes.find(channel) == modelNodes.end()){
             toDeleteUINodes.insert(*it);
@@ -548,11 +548,11 @@ void TimelineWidget::compareNodes(const std::set<QTreeWidgetItem*> & uiNodes, co
 
     if(present.empty() == false){
         auto it = std::set_difference(modelNodes.begin(), modelNodes.end(), present.begin(), present.end(), missingNodes.begin());
-        for(auto iT = missingNodes.begin(); iT != it; iT++){
+        for(auto iT = missingNodes.begin(); iT != it; ++iT){
             missingModelNodes.push_back(*iT);
         }
     }else{
-        for(auto it = modelNodes.begin(); it != modelNodes.end(); it++){
+        for(auto it = modelNodes.begin(); it != modelNodes.end(); ++it){
             missingModelNodes.push_back(*it);
         }
     }
@@ -566,25 +566,25 @@ void TimelineWidget::recursiveHierarchyRefresh(QTreeWidgetItem* uiNode)
     std::set<QTreeWidgetItem*> uiNodes;
     std::set<timeline::Model::TChannelConstPtr> modelNodes;
 
-    for(int i = 0; i < uiNode->childCount(); i++){
+    for(int i = 0; i < uiNode->childCount(); ++i){
         uiNodes.insert(uiNode->child(i));
     }
 
     ChannelsTreeItem* channelsTreeNode = reinterpret_cast<ChannelsTreeItem*>(uiNode);
 
-    for(auto it = channelsTreeNode->getChannel()->begin(); it != channelsTreeNode->getChannel()->end(); it++){
+    for(auto it = channelsTreeNode->getChannel()->begin(); it != channelsTreeNode->getChannel()->end(); ++it){
         modelNodes.insert( core::dynamic_pointer_cast<const timeline::Model::TChannel>(*it));
     }    
 
     compareNodes(uiNodes, modelNodes, toDeleteItems, missingItems);
 
-    for(auto it = toDeleteItems.begin(); it != toDeleteItems.end(); it++){
+    for(auto it = toDeleteItems.begin(); it != toDeleteItems.end(); ++it){
         uiNode->removeChild(*it);
         modelToUIChannels.erase(reinterpret_cast<ChannelsTreeItem*>(*it)->getChannel());
         delete *it;
     }
 
-    for(auto it = missingItems.begin(); it != missingItems.end(); it++){
+    for(auto it = missingItems.begin(); it != missingItems.end(); ++it){
         ChannelWidget * channelWidget = new ChannelWidget(getController(), *it, nullptr, 0, slider->getLeftMargin(), slider->getRightMargin());
         ChannelsTreeItem * item = new ChannelsTreeItem(*it, channelWidget);
 
@@ -605,7 +605,7 @@ void TimelineWidget::recursiveHierarchyRefresh(QTreeWidgetItem* uiNode)
         channelsWidget->setItemWidget(item, 1, checkBox);
     }
 
-    for(int i = 0; i < uiNode->childCount(); i++){
+    for(int i = 0; i < uiNode->childCount(); ++i){
         recursiveHierarchyRefresh(uiNode->child(i));
     }
 }

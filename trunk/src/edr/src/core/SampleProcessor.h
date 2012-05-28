@@ -70,7 +70,7 @@ private:
     IplImage* iplImage;
 
 public:
-    RBFlipper() : outputPicture(new vidlib::ScopedPictureRGB)  )
+    RBFlipper() : outputPicture(new vidlib::ScopedPictureRGB)
     {
         utils::zero(*outputPicture);
     }

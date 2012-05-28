@@ -57,7 +57,7 @@ void ForcePlatform::computeSteps(MarkerCollectionPtr markers, EventsCollectionCo
 
     auto getAndRemoveLastStep = [&](std::list<Step>& steps, Context context, Step& ret) -> bool
     {
-        for (auto it = steps.begin(); it != steps.end(); it++) {
+        for (auto it = steps.begin(); it != steps.end(); ++it) {
             if (it->getContext() == context && (it->getStartTime() >= 0.0f && it->getEndTime() < 0.0f)) {
                 ret = *it;
                 steps.erase(it);
@@ -69,7 +69,7 @@ void ForcePlatform::computeSteps(MarkerCollectionPtr markers, EventsCollectionCo
     };
 
     std::list<Step> possibleSteps;
-    for (auto it = events->cbegin(); it != events->cend(); it++) {
+    for (auto it = events->cbegin(); it != events->cend(); ++it) {
         const auto e = *it;
         double time = e->getTime();
         osg::Vec3 ltoePos = TimeAccessor::getValue(time, *ltoe);
@@ -125,7 +125,7 @@ void ForcePlatform::computeSteps(MarkerCollectionPtr markers, EventsCollectionCo
         }
         );
 
-        for (auto it = possibleSteps.begin(); it != possibleSteps.end(); it++) {
+        for (auto it = possibleSteps.begin(); it != possibleSteps.end(); ++it) {
             if (it->isValid()) {
                 float time1 = it->getStartTime();
                 float time2 = it->getEndTime();
@@ -162,7 +162,7 @@ bool ForcePlatform::isInsideXY( const osg::Vec3& v) const
     float minx, miny, maxx, maxy;
     minx = miny = std::numeric_limits<float>::max();
     maxx = maxy = -std::numeric_limits<float>::max();
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; ++i) {
         if (platform.corners[i].x() < minx) {
             minx = platform.corners[i].x();
         }

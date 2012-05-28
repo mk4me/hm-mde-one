@@ -687,7 +687,7 @@ void TextEdit::setHtml( const QString& html )
 
 void TextEdit::processFrame( QTextFrame * frame, QTextDocument* document, SaveMode saveMode )
 {
-    for (auto rootIt = frame->begin(); !(rootIt.atEnd()); rootIt++) {
+    for (auto rootIt = frame->begin(); !(rootIt.atEnd()); ++rootIt) {
         QTextBlock block = rootIt.currentBlock();
         for (auto it = block.begin(); !(it.atEnd()); ++it) {
             QTextFragment fragment = it.fragment(); 
@@ -721,7 +721,7 @@ void TextEdit::processFrame( QTextFrame * frame, QTextDocument* document, SaveMo
     }
 
     auto frames = frame->childFrames();
-    for (auto it = frames.begin(); it != frames.end(); it++){
+    for (auto it = frames.begin(); it != frames.end(); ++it){
         processFrame(*it, document, saveMode);
     }
 
@@ -750,7 +750,7 @@ QString TextEdit::resourceToBase64( QTextDocument* document, const QString& reso
 
 void TextEdit::changeLinksToBase64( QTextFrame * root, QTextDocument* document )
 {
-    for (auto rootIt = root->begin(); !(rootIt.atEnd()); rootIt++) {
+    for (auto rootIt = root->begin(); !(rootIt.atEnd()); ++rootIt) {
         QTextBlock block = rootIt.currentBlock();
         for (auto it = block.begin(); !(it.atEnd()); ++it) {
             QTextFragment fragment = it.fragment(); 
@@ -780,14 +780,13 @@ void TextEdit::changeLinksToBase64( QTextFrame * root, QTextDocument* document )
     }
 
     auto frames = root->childFrames();
-    for (auto it = frames.begin(); it != frames.end(); it++){
+    for (auto it = frames.begin(); it != frames.end(); ++it){
         changeLinksToBase64(*it, document);
     }
 }
 
 bool TextEdit::tryChangeLinkToBase64( QString& result, const QString& link ) const
 {
-    //QString templateDir = QString("C:\\programming\\HMEdr\\src\\edr\\resources\\deploy\\templates\\");
     QString templateDir = core::getResourceString("templates\\");
     QString imgPath = templateDir + link;
     if (QFile::exists(imgPath)) {

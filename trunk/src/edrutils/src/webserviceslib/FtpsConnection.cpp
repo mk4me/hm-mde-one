@@ -16,7 +16,7 @@ class FtpsConnectionImpl
 {
 public:
     //! Domyœlny konstruktor
-    FtpsConnectionImpl()
+    FtpsConnectionImpl() : curl(nullptr)
     {
         progress_.progress = 0;
         progress_.abort = false;

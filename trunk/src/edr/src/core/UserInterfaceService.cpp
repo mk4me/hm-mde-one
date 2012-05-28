@@ -4,7 +4,7 @@
 
 //--------------------------------------------------------------------------------------------------
 UserInterfaceService::UserInterfaceService()
-:   name("UserInterface")
+	: mainWindow(nullptr), name("UserInterface")
 {
 }
 

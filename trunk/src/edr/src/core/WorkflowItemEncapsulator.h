@@ -12,6 +12,7 @@
 #include "DataManager.h"
 #include <core/IWorkflowItemBase.h>
 #include <core/ObjectSlots.h>
+#include <core/IOutputDescription.h>
 #include "ObjectSource.h"
 #include "ObjectOutput.h"
 

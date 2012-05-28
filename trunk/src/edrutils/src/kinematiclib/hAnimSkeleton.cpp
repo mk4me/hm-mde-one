@@ -112,7 +112,7 @@ std::string hAnimSkeleton::mapJointName(const std::string& given)
 {
 	// hack
 	const std::map<std::string, std::string>& jointMappingDictionary = mappingSchemes[0]->getMappingDictionary();
-	if (/*boneMappingDictionary.size() == 0 && */jointMappingDictionary.size() == 0) {
+	if (/*boneMappingDictionary.size() == 0 && */jointMappingDictionary.empty() == true) {
 		throw &kinematic::DictionaryNotLoadedException("dictionary with mapping scheme was not loaded");
 	}
 	std::map<std::string, std::string>::const_iterator it = jointMappingDictionary.find(given);
@@ -139,7 +139,7 @@ void hAnimSkeleton::doSkeletonMapping(SkeletalModelConstPtr skeletalModel)
 {
     const SkeletalModel::JointMap& jointMap = skeletalModel->getJointMap();
     //SkeletalModel::JointMap::iterator it;
-    for (auto it = jointMap.cbegin(); it != jointMap.cend(); it++) {
+    for (auto it = jointMap.cbegin(); it != jointMap.cend(); ++it) {
         std::string mappedName = mapJointName(it->first);
         JointPtr joint = it->second;
         hAnimJointPtr hJoint = joints[mappedName];
@@ -281,7 +281,7 @@ hAnimSkeleton* hAnimSkeleton::clone() const
 	hAnimSkeleton* clone = new hAnimSkeleton;
 	clone->root = cloneHierarchy(this->root, clone->joints, clone->bones);                          
 	                                               
-	for (auto it = mappingSchemes.cbegin(); it != mappingSchemes.cend(); it++) {
+	for (auto it = mappingSchemes.cbegin(); it != mappingSchemes.cend(); ++it) {
 		clone->mappingSchemes.push_back(SkeletonMappingSchemePtr((*it)->clone()));
 	}
 
@@ -293,13 +293,13 @@ kinematic::hAnimJointPtr hAnimSkeleton::cloneHierarchy( hAnimJointConstPtr root,
 	hAnimJointPtr current(new hAnimJoint());
 	hAnimJoint::copyContent(*root, *current);
 	joints[current->getName()] = current;
-	for (auto it = root->getChildrenBones().cbegin(); it != root->getChildrenBones().cend(); it++) {
+	for (auto it = root->getChildrenBones().cbegin(); it != root->getChildrenBones().cend(); ++it) {
 		hAnimBonePtr bone(new hAnimBone);
 		bone->setName((*it)->getName());
 		bones[bone->getName()] = bone;
 		bone->setParentJoint(hAnimJointWeak(current));
 		current->getChildrenBones().push_back(bone);
-		for (auto it2 = (*it)->getChildrenJoints().cbegin(); it2 != (*it)->getChildrenJoints().cend(); it2++) {
+		for (auto it2 = (*it)->getChildrenJoints().cbegin(); it2 != (*it)->getChildrenJoints().cend(); ++it2) {
 			cloneHierarchy(boost::const_pointer_cast<hAnimJoint>(*it2), bone, joints, bones);
 		}
 		
@@ -313,13 +313,13 @@ kinematic::hAnimJointPtr hAnimSkeleton::cloneHierarchy( hAnimJointConstPtr curre
 	hAnimJoint::copyContent(*currentSourceJoint, *current);
 	joints[current->getName()] = current;
 	current->setParentBone(hAnimBoneWeak(destinationParentBone));
-	for (auto it = currentSourceJoint->getChildrenBones().cbegin(); it != currentSourceJoint->getChildrenBones().cend(); it++) {
+	for (auto it = currentSourceJoint->getChildrenBones().cbegin(); it != currentSourceJoint->getChildrenBones().cend(); ++it) {
 		hAnimBonePtr bone(new hAnimBone);
 		bone->setName((*it)->getName());
 		bones[bone->getName()] = bone;
 		bone->setParentJoint(hAnimJointWeak(current));
 		current->getChildrenBones().push_back(bone);
-		for (auto it2 = (*it)->getChildrenJoints().cbegin(); it2 != (*it)->getChildrenJoints().cend(); it2++) {
+		for (auto it2 = (*it)->getChildrenJoints().cbegin(); it2 != (*it)->getChildrenJoints().cend(); ++it2) {
 			cloneHierarchy(boost::const_pointer_cast<hAnimJoint>(*it2), bone, joints, bones);
 		}
 	}

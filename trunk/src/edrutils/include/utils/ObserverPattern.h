@@ -50,7 +50,7 @@ public:
     //! Polimorficzny destruktor.
     virtual ~Observer()
     {
-        for(auto it = observedObjects.begin(); it != observedObjects.end(); it++){
+        for(auto it = observedObjects.begin(); it != observedObjects.end(); ++it){
             (*it)->observers.erase(this);
         }
     }
@@ -145,7 +145,7 @@ public:
     //! Usuwa wszystkich podpiêtych obserwatorów.
     void detachAll()
     {
-        for(auto it = observers.begin(); it != observers.end(); it++){
+        for(auto it = observers.begin(); it != observers.end(); ++it){
             (*it)->observedObjects.erase(this);
         }
 
@@ -168,7 +168,7 @@ public:
         }
 
         isUpdating = true;
-        for ( auto it = observers.begin(); it != observers.end(); ++ it) {
+        for ( auto it = observers.begin(); it != observers.end(); ++it) {
             (*it)->update(self);
         }
         isUpdating = false;

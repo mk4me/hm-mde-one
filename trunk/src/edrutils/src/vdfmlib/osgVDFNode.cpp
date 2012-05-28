@@ -271,15 +271,13 @@ void osgVDFNode::loggZCoordinates() const{
 	std::cout << "m_pNodeNameLabel:\t" << osgui::Utils2D::calcAbsZ(m_pNodeNameLabel) << std::endl;
 
 	std::cout << "IN PINS:" << std::endl;
-	for(osgVDFBaseNode::Pins::const_iterator it = this->getInPins().begin(); it != this->getInPins().end();
-		it++){
+	for(osgVDFBaseNode::Pins::const_iterator it = this->getInPins().begin(); it != this->getInPins().end(); ++it){
 
 			std::cout << (*it)->getName() << ":\t" << osgui::Utils2D::calcAbsZ(*it) << std::endl;
 	}
 
 	std::cout << "OUT PINS:" << std::endl;
-	for(osgVDFBaseNode::Pins::const_iterator it = this->getOutPins().begin(); it != this->getOutPins().end();
-		it++){
+	for(osgVDFBaseNode::Pins::const_iterator it = this->getOutPins().begin(); it != this->getOutPins().end(); ++it){
 
 			std::cout << (*it)->getName() << ":\t" << osgui::Utils2D::calcAbsZ(*it) << std::endl;
 	}
@@ -357,11 +355,11 @@ void osgVDFNode::graphSetStatus(osgVDFBaseNode::VisualStatus nodeVisualStatus) {
 			sm->applyStyles(m_pBottomGrid->getByRowCol(0,2));
 
 			
-			for(int i = 0; i < m_pOutPinsGrid->getNumRows(); i++){
+			for(int i = 0; i < m_pOutPinsGrid->getNumRows(); ++i){
 				sm->applyStyles(m_pOutPinsGrid->getByRowCol(i,0));
 			}
 
-			for(int i = 0; i < m_pInPinsGrid->getNumRows(); i++){
+			for(int i = 0; i < m_pInPinsGrid->getNumRows(); ++i){
 				sm->applyStyles(m_pInPinsGrid->getByRowCol(i,1));
 			}
 		}

@@ -94,7 +94,7 @@ void AsfParser::parseLimit(const string& token, vector<double>& limitValues) {
     int count = token.size();
 
     // na pewno jest jakas funkcja do tego...
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         char c = token[i];
         if (c != '(' && c != ')') {
             limit += (c != ',' ? c : ' ');
@@ -106,7 +106,7 @@ void AsfParser::parseLimit(const string& token, vector<double>& limitValues) {
 
     istringstream is (limit);
 
-    for (int i = 0; i < 2; i++)    {
+    for (int i = 0; i < 2; ++i)    {
         is >> limit;
         if (limit.find("inf") != string::npos) {
             limitValues.push_back(limit.find("-") != string::npos ? min : max);
@@ -299,7 +299,7 @@ bool AsfParser::parseRoot(const string& root, Skeleton& skeleton) {
     
     string s;
     int count = channels.size();
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         if (channels[i] == DegreeOfFreedom::RX) {
             s += "X";
         } else if (channels[i] == DegreeOfFreedom::RY) {
@@ -343,7 +343,7 @@ bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton
         int count = tokens.size();
         if (count > 1) {
             line.first = tokens[0];
-            for (int i = 1; i < count; i++) {
+            for (int i = 1; i < count; ++i) {
                 line.second.push_back(tokens[i]);
             }
             hierarchy.push_back(line);
@@ -358,7 +358,7 @@ bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton
 
     root->order = skeleton.getOrder();
     int count = channels.size();
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         DegreeOfFreedom dof;
         dof.channel = channels[i];
         root->dofs.push_back(dof);
@@ -368,7 +368,7 @@ bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton
     model->getJointIDMap()[root->id] = root;
     model->getJointMap()[root->name] = root;
     
-    for (int i = 0; i < linesCount; i++) {
+    for (int i = 0; i < linesCount; ++i) {
         hierarchyLine line = hierarchy[i];
         JointPtr parent = model->getJointByName(line.first);
         for (int j = line.second.size() - 1; j >= 0; --j) {
@@ -436,7 +436,7 @@ void kinematic::AsfParser::saveRoot( std::ostream& out ) const {
     if (forceRootXYZ) {
         out << "  TX TY TZ RX RY RZ" << endl; 
     } else {
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             out << " " << DegreeOfFreedom::getChannelName(dofs[i].channel, true);
         }
     }
@@ -469,7 +469,7 @@ void kinematic::AsfParser::saveBones( std::ostream& out ) const
     map<int, JointPtr>::iterator it;
     map<int, JointPtr>::iterator end = bonesIds.end();
 
-    for (it = bonesIds.begin(); it != end; it++) {
+    for (it = bonesIds.begin(); it != end; ++it) {
         if (it->second->id != -1) {
             saveSingleBone(out, *(it->second));
         } else {
@@ -541,7 +541,7 @@ void kinematic::AsfParser::saveBoneInHierarchy(std::ostream& out, kinematic::Joi
     BoneTable toInsert;
     
     //for (int i = children.size() - 1; i >= 0; --i) {
-    for (BoneTable::const_iterator it = joint->children.cbegin(); it != joint->children.cend(); it++) {   
+    for (BoneTable::const_iterator it = joint->children.cbegin(); it != joint->children.cend(); ++it) {   
         
         out << " " << (*it)->name;
         if ((*it)->children.size() > 0) {

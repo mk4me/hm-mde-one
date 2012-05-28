@@ -23,6 +23,8 @@
 #include <utils/Utils.h>
 #include <utils/Debug.h>
 
+#include <core/Plugin.h>
+
 //UTILS_PUSH_WARNINGS
 
 //UTILS_POP_WARNINGS

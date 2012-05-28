@@ -56,7 +56,7 @@ namespace kinematic
 		JointPtr cloneHierarchy(JointConstPtr root) const {
 			JointPtr current(new Joint());
 			Joint::copyContent(*root, *current);
-			for (auto it = root->children.cbegin(); it != root->children.cend(); it++) {
+			for (auto it = root->children.cbegin(); it != root->children.cend(); ++it) {
 				cloneHierarchy(*it, current);
 			}
 			return current;
@@ -70,7 +70,7 @@ namespace kinematic
 			if (destinationParent) {
 				destinationParent->children.push_back(current);
 			}
-			for (auto it = currentSourceJoint->children.cbegin(); it != currentSourceJoint->children.cend(); it++) {
+			for (auto it = currentSourceJoint->children.cbegin(); it != currentSourceJoint->children.cend(); ++it) {
 				cloneHierarchy(*it, current);
 			}
 			

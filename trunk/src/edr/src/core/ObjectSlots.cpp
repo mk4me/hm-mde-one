@@ -3,19 +3,19 @@
 #include "DataManager.h"
 
 ObjectSlots::ObjectSlots( const SlotsInfo& info ) :
-info(info), objects(info.size())
+objects(info.size()), info(info)
 {
 
 }
 
 ObjectSlots::ObjectSlots( SlotsInfo&& info ) :
-info(info), objects(info.size())
+objects(info.size()), info(info)
 {
 
 }
 
 ObjectSlots::ObjectSlots( const ObjectSlots& objectSlots ) : 
-info(objectSlots.info), objects(objectSlots.objects)
+objects(objectSlots.objects), info(objectSlots.info)
 {
 
 }
@@ -30,13 +30,13 @@ bool ObjectSlots::isAssignable( int slotNo, const core::TypeInfo & type ) const
             return true;
         }
     }
-    catch(std::runtime_error e){
+    catch(std::runtime_error & e){
         LOG_ERROR("ObjectSlot: Request for unsupported type: " << type.name() << " " << e.what());
     }
-    catch(std::invalid_argument e){
+    catch(std::invalid_argument & e){
         LOG_ERROR("ObjectSlot: Request for unsupported type: " << type.name() << " " << e.what());
     }
-    catch(std::exception e){
+    catch(std::exception & e){
         LOG_ERROR("ObjectSlot: Request for unsupported type: " << type.name() << " " << e.what());
     }
     catch(...){

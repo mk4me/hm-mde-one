@@ -106,7 +106,7 @@ public:
             if((*cIT)->getTypeInfo() != typeInfo){
                 cIT = constObjects.erase(cIT);
             }else{
-                cIT++;
+                ++cIT;
             }
         }
     }

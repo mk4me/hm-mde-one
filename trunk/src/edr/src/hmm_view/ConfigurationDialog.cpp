@@ -47,7 +47,7 @@ void ConfigurationWidget::loadPicture(ConfigurationPainter& painter, const QStri
 void ConfigurationWidget::loadPictures(ConfigurationPainter& painter, const QStringList &files )
 {
     int count = files.size();
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; ++i) {
         const QString& name = files.at(i);
         loadPicture(painter, name, 0, 0);
     }
@@ -130,7 +130,7 @@ void ConfigurationWidget::setText( const QString& text )
 
 void ConfigurationWidget::setVisibles( const std::map<QString, bool>& visibles )
 {
-    for (auto it = painterFront.begin(); it != painterFront.end(); it++) {
+    for (auto it = painterFront.begin(); it != painterFront.end(); ++it) {
         auto found = visibles.find((*it)->getName());
         if (found == visibles.end()) {
             (*it)->setActive(true);
@@ -138,7 +138,7 @@ void ConfigurationWidget::setVisibles( const std::map<QString, bool>& visibles )
             (*it)->setActive(found->second);
         }
     }
-    for (auto it = painterBack.begin(); it != painterBack.end(); it++) {
+    for (auto it = painterBack.begin(); it != painterBack.end(); ++it) {
         auto found = visibles.find((*it)->getName());
         if (found == visibles.end()) {
             (*it)->setActive(true);

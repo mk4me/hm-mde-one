@@ -100,7 +100,7 @@ void ToolboxMain::setCurrentVisualizerActions(VisualizerWidget * visWidget)
 
         titleBar->clear();
 
-        for(auto it = titleBarElements.begin(); it != titleBarElements.end(); it++){
+        for(auto it = titleBarElements.begin(); it != titleBarElements.end(); ++it){
             titleBar->addObject((*it).first, (*it).second);
         }
     }
@@ -202,7 +202,7 @@ void ToolboxMain::onOpen()
 		Filesystem::Path dirPath(directory.toStdString());
 		Filesystem::Iterator itEnd;
 
-		for( Filesystem::Iterator it(dirPath); it != itEnd; it++){
+		for( Filesystem::Iterator it(dirPath); it != itEnd; ++it){
 			if(Filesystem::isRegularFile(*it) == true){
 				//paths.push_back(it->path());
                 try{

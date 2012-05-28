@@ -67,9 +67,6 @@ private:
 
 private:
 
-	QMultiToolBox * leftBox;
-	QMultiToolBox * rightBox;
-
 	QTreeWidget * sessionsWidget;
 
 	PersonalDataWidget * personalDataWidget;

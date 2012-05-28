@@ -57,7 +57,7 @@ void Toolbar::managed(osgWidget::WindowManager* wm){
 		sm->applyStyles(m_pTabsGrid.first);
 			
 		//tabs
-		for(TABS::iterator it = m_vTabs.begin(); it != m_vTabs.end(); it++){
+		for(TABS::iterator it = m_vTabs.begin(); it != m_vTabs.end(); ++it){
 			sm->applyStyles(it->first);
 		}
 
@@ -97,7 +97,7 @@ bool Toolbar::addTab(osgWidget::Widget * tab, int tabIndex, bool enable, bool vi
     //m_pTabsGrid.first->setColumnWeight(m_vTabs.size(), 1);
 
 	//shift right elements if necessary
-	idx--;
+	--idx;
 	while(idx > tabIndex){
 		//tabs visual storage
 		osg::ref_ptr<osgWidget::Widget> tmp = m_pTabsGrid.first->getByRowCol(0,idx-1);
@@ -106,7 +106,7 @@ bool Toolbar::addTab(osgWidget::Widget * tab, int tabIndex, bool enable, bool vi
 		//tabs logical storage
 		m_vTabs[idx] = m_vTabs[idx-1];
 		m_mRevTabs[m_vTabs[idx-1].first] = idx;
-		idx--;
+		--idx;
 	}
 
 	TAB_DESC desc;
@@ -194,7 +194,7 @@ bool Toolbar::removeTab(int tabIndex){
 		}
 	}else{
 		int idx = tabIndex;
-		idx++;
+		++idx;
 		while(idx < m_vTabs.size()){
 			//tabs visual storage
 			osg::ref_ptr<osgWidget::Widget> tmp = m_pTabsGrid.first->getByRowCol(0,idx);
@@ -203,7 +203,7 @@ bool Toolbar::removeTab(int tabIndex){
 			//tabs logical storage
 			m_vTabs[idx-1] = m_vTabs[idx];
 			m_mRevTabs[m_vTabs[idx].first] = idx - 1;
-			idx++;
+			++idx;
 		}
 
 		m_vTabs.resize(m_vTabs.size() - 1);
@@ -480,7 +480,7 @@ bool Toolbar::addTabElement(int tabIndex, osgWidget::Widget * elem, int elemInde
 		grid->removeWidget(tmp);
 		grid->addWidget(tmp,0,idx);
 		tabDesc.second.tabElements[idx] = tabDesc.second.tabElements[idx-1];
-		idx--;
+		--idx;
 	}
 
 	elem->setAlignHorizontal(osgWidget::Widget::HA_CENTER);
@@ -539,13 +539,13 @@ bool Toolbar::removeTabElement(int tabIndex, int elemIndex){
 		tabDesc.second.tabElements.swap(ELEMENTS());
 		grid->removeWidget(grid->getByRowCol(0,0));
 	}else{
-		idx++;
+		++idx;
 		while(elemIndex < idx){
 			osg::ref_ptr<osgWidget::Widget> tmp = grid->getByRowCol(0,elemIndex + 1);
 			grid->removeWidget(tmp);
 			grid->addWidget(tmp,0,elemIndex);
 			tabDesc.second.tabElements[elemIndex] = tabDesc.second.tabElements[elemIndex+1];
-			elemIndex++;
+			++elemIndex;
 		}
 
 		tabDesc.second.tabElements.resize(idx);
@@ -647,7 +647,7 @@ void Toolbar::setToolbarLowerHalfStyleDefault(){
 void Toolbar::setToolbarLowerHalfStyle(const std::string & toolbarLowerHalfStyle){
 	if(m_sToolbarLowerHalfStyle != toolbarLowerHalfStyle){
 		m_sToolbarLowerHalfStyle = toolbarLowerHalfStyle;
-		for(SUBTOOLBARS::iterator it = m_mSubToolbars.begin(); it != m_mSubToolbars.end(); it++){
+		for(SUBTOOLBARS::iterator it = m_mSubToolbars.begin(); it != m_mSubToolbars.end(); ++it){
 			it->second.first->setStyle(m_sToolbarLowerHalfStyle);
 			//it->second.second->setStyle(m_sToolbarLowerHalfStyle);
 			if(this->getWindowManager() != 0 && this->getWindowManager()->getStyleManager() != 0){
@@ -702,12 +702,12 @@ void Toolbar::setStyle(osgWidget::Widget * w, const std::string & style){
 void Toolbar::setTabsStyle(const std::string & style, cond condition){
 	if(condition == 0){
 		//all
-		for(TABS::iterator it = m_vTabs.begin(); it != m_vTabs.end(); it++){
+		for(TABS::iterator it = m_vTabs.begin(); it != m_vTabs.end(); ++it){
 			setStyle(it->first, style);
 		}
 	}else{
 		//selected
-		for(TABS::iterator it = m_vTabs.begin(); it != m_vTabs.end(); it++){
+		for(TABS::iterator it = m_vTabs.begin(); it != m_vTabs.end(); ++it){
 			if((this->*condition)(it->first) == true){
 				setStyle(it->first, style);
 			}

@@ -39,7 +39,7 @@ osgWidget::XYCoord Utils2D::findFreeSpaceInNearby(const osgWidget::XYCoord & pos
 		//check if new pos is ok
 		//if pos is in screen
 		if(boxFullyEnclosedInBox(tmpWBB, wmbb) == false){
-			outsideScreen++;
+			++outsideScreen;
 		}else if(collidesWithOthers(tmpWBB,wm) == false){
 			ret = posLoc;
 			break;
@@ -68,7 +68,7 @@ bool Utils2D::collidesWithOthers(const osg::BoundingBox & bb, const osgWidget::W
 
 	bool ret = false;
 	for(osgWidget::UIObjectParent<osgWidget::Window>::ConstIterator it = wm->begin();
-		it != wm->end(); it++){
+		it != wm->end(); ++it){
 
 		if(exclude.find(it->get()) == exclude.end() &&
 			bb.intersects(generateBox(it->get())) == true){

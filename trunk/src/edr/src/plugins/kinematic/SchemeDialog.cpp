@@ -56,7 +56,7 @@ void SchemeDialog::setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName 
             VisualizationSchemeConstPtr scheme = lines->getVisualiztionScheme();
             const std::vector<VisualizationScheme::Connection>& cons = scheme->getConnections();
             const std::vector<VisualizationScheme::State>& mrks = scheme->getStates();
-            for (unsigned int i = 0; i < mrks.size();  i++) {
+            for (unsigned int i = 0; i < mrks.size();  ++i) {
                 QTreeWidgetItem* item = new QTreeWidgetItem();
 
                 item->setText(1, mrks[i].name.c_str());
@@ -101,13 +101,13 @@ osg::Vec4 SchemeDialog::transformColor( const QColor& color ) const
 QTreeWidgetItem* _getItemWhichContainsRecurr(QTreeWidget* tree, QTreeWidgetItem* item, QObject* object )
 {
     int columnCount = tree->columnCount();
-    for (int c = 0; c < columnCount; c++) {
+    for (int c = 0; c < columnCount; ++c) {
         if (tree->itemWidget(item, c) == object) {
             return item;
         }
     }
 
-    for (int c = 0; c < item->childCount(); c++) {
+    for (int c = 0; c < item->childCount(); ++c) {
         QTreeWidgetItem* child = _getItemWhichContainsRecurr(tree, item->child(c), object);
         if (child) {
             return child;
@@ -120,7 +120,7 @@ QTreeWidgetItem* _getItemWhichContainsRecurr(QTreeWidget* tree, QTreeWidgetItem*
 QTreeWidgetItem* SchemeDialog::getItemWhichContains( QObject* object ) const
 {
 	int count = tree->topLevelItemCount();
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; ++i) {
         QTreeWidgetItem* item = _getItemWhichContainsRecurr(tree, tree->topLevelItem(i), object);
         if (item) {
             return item;

@@ -153,7 +153,7 @@ private:
     void createNameDictionary(const CollectionConstPtr & collection)
     {
         int count = collection->getNumChannels();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             ChannelConstPtr channel = collection->getChannel(i);
             std::string name = channel->getName();
             auto it = activeElements.find(name);
@@ -197,7 +197,7 @@ public:
 
     virtual void reset()
     {
-        for (auto it = activeElements.begin(); it != activeElements.end(); it++) {
+        for (auto it = activeElements.begin(); it != activeElements.end(); ++it) {
             it->second = true;
         }
         if (configurationWidget) {
@@ -211,8 +211,8 @@ public:
         tempNameDictionary = activeElements;
         std::map<QString, bool> visibles;
         const NamesDictionary& names = helper.getNamesDictionary();
-        for (auto elementIT = activeElements.begin(); elementIT != activeElements.end(); elementIT++) {
-            for (auto nameIT = names.cbegin(); nameIT != names.cend(); nameIT++) {
+        for (auto elementIT = activeElements.begin(); elementIT != activeElements.end(); ++elementIT) {
+            for (auto nameIT = names.cbegin(); nameIT != names.cend(); ++nameIT) {
                 if (nameIT->second.first.toStdString() == elementIT->first) {
                     visibles[nameIT->first] = elementIT->second;
                 }
@@ -376,7 +376,7 @@ public:
 
                       CollectionConstPtr collection = objects[0]->get();
                       int count = collection->getNumChannels();
-                      for (int i = 0 ; i < count; i++) {
+                      for (int i = 0 ; i < count; ++i) {
                           ChannelConstPtr channel = collection->getChannel(i);
                           auto entry = activeElements.find(channel->getName());
                           if (entry == activeElements.end() || (entry != activeElements.end() && entry->second)) {
@@ -423,7 +423,7 @@ public:
           QDialog* widget = new QDialog(parent);
           QVBoxLayout* vlayout = new QVBoxLayout(widget);
           widget->setLayout(vlayout);
-          for (auto it = activeElements.begin(); it != activeElements.end(); it++) {
+          for (auto it = activeElements.begin(); it != activeElements.end(); ++it) {
               QWidget* entry = new QWidget(widget);
               QHBoxLayout* hlayout = new QHBoxLayout(entry);
               entry->setLayout(hlayout);
@@ -450,7 +450,7 @@ private:
     void createNameDictionary(const CollectionConstPtr & collection)
     {
         int count = collection->getNumChannels();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             ChannelConstPtr channel = collection->getChannel(i);
             std::string name = channel->getName();
             auto it = activeElements.find(name);
@@ -503,14 +503,9 @@ public:
     {
         if (!dialog) {
             dialog = new ConfigurationDialog(parent);
-            int w = dialog->width();
-            int h = dialog->height();
             dialog->loadConfigurations(frontXml, backXml, helper.getNamesDictionary());
             QObject::connect(dialog, SIGNAL(itemSelected(const QString&, bool)), &helper, SLOT(onItemSelected(const QString&, bool)));
             QObject::connect(dialog, SIGNAL(elementHovered(const QString&, bool)), &helper, SLOT(onElementHovered(const QString&, bool)));
-
-            w = dialog->width();
-            h = dialog->height();
         }
         return dialog;
     }
@@ -520,8 +515,8 @@ public:
         Vector3DFilterCommand::configurationStart();
         std::map<QString, bool> visibles;
         const NamesDictionary& names = helper.getNamesDictionary();
-        for (auto elementIT = activeElements.begin(); elementIT != activeElements.end(); elementIT++) {
-            for (auto nameIT = names.cbegin(); nameIT != names.cend(); nameIT++) {
+        for (auto elementIT = activeElements.begin(); elementIT != activeElements.end(); ++elementIT) {
+            for (auto nameIT = names.cbegin(); nameIT != names.cend(); ++nameIT) {
                 if (nameIT->second.first.toStdString() == elementIT->first) {
                     visibles[nameIT->first] = elementIT->second;
                 }

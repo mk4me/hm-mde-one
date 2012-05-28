@@ -35,7 +35,7 @@ void SkeletalModel::createMaps( JointPtr root, JointMap& jointMap, JointIdMap& j
 {
 	jointMap[root->name] = root;
 	jointIDMap[root->id] = root;
-	for (auto it = root->children.begin(); it != root->children.end(); it++) {
+	for (auto it = root->children.begin(); it != root->children.end(); ++it) {
 		createMaps(*it, jointMap, jointIDMap);
 	}
 }

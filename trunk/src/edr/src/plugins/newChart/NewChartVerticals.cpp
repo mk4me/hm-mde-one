@@ -116,7 +116,7 @@ void NewChartVerticals::insertNewMarker( const QPointF& point1, const QPointF& p
 
 void NewChartVerticals::updateLabels()
 {
-    for (auto it = labels.begin(); it != labels.end(); it++) {
+    for (auto it = labels.begin(); it != labels.end(); ++it) {
         QPointF p1 = (*it)->dot1->getPosition();
         QPointF p2 = (*it)->dot2->getPosition();
         double delta = (style == NewChartLabel::Vertical) ? (p2.y() - p1.y()) : (p2.x() - p1.x());

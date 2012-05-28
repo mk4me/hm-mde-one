@@ -17,15 +17,15 @@ void ConfigurationPainter::paintEvent( QPaintEvent * )
         painter.drawImage(QRect(0, 0, scale * background->width(), scale * background->height()), *background);
     }
 
-    for (auto it = areas.begin(); it != areas.end(); it++) {
+    for (auto it = areas.begin(); it != areas.end(); ++it) {
         (*it)->draw(painter, (*it) == currentArea);
     }
     painter.end();
 }
 
-void ConfigurationPainter::addArea( IAreaPtr data )
+void ConfigurationPainter::addArea( const IAreaPtr & data )
 {
-    for (auto it = areas.begin(); it != areas.end(); it++) {
+    for (auto it = areas.begin(); it != areas.end(); ++it) {
         if ((*it)->getName() == data->getName()) {
             throw std::runtime_error("Picture already added!");
         }
@@ -36,7 +36,7 @@ void ConfigurationPainter::addArea( IAreaPtr data )
 
 void ConfigurationPainter::removeArea( const QString& name )
 {
-    for (auto it = areas.begin(); it != areas.end(); it++) {
+    for (auto it = areas.begin(); it != areas.end(); ++it) {
         if ((*it)->getName() == name) {
             areas.erase(it);
             return;
@@ -81,7 +81,7 @@ IAreaPtr ConfigurationPainter::getArea( int x, int y )
 {
     typedef std::pair<IAreaPtr, int> pair;
     std::vector<pair> clickedAreas;
-    for (auto it = areas.rbegin(); it != areas.rend(); it++) {
+    for (auto it = areas.rbegin(); it != areas.rend(); ++it) {
         if ((*it)->isInside(x, y)) {
             int w2 = (*it)->getWidth() / 2;
             int h2 = (*it)->getHeight() / 2;
@@ -93,7 +93,7 @@ IAreaPtr ConfigurationPainter::getArea( int x, int y )
         }
     }
 
-    if (clickedAreas.size() > 0) {
+    if (clickedAreas.empty() == false) {
         // jesli sa jakies obszary, na ktore kliknieto, to zwracany jest ten, 
         // ktorego srodek jest blizej kursora 
         auto lambda_sort = [&](const pair& left, const pair& right) 
@@ -119,7 +119,7 @@ bool ConfigurationPainter::eventFilter( QObject *obj, QEvent *event )
 
 void ConfigurationPainter::trySetActive( const QString& name, bool selected )
 {
-    for (auto it = areas.begin(); it != areas.end(); it++) {
+    for (auto it = areas.begin(); it != areas.end(); ++it) {
         if ((*it)->getName() == name) {
             (*it)->setActive(selected);
             return;
@@ -130,7 +130,7 @@ void ConfigurationPainter::trySetActive( const QString& name, bool selected )
 void ConfigurationPainter::intersectNames( const  NamesDictionary& names )
 {
     std::list<AreasList::iterator> toErase;
-    for (AreasList::iterator it = areas.begin(); it != areas.end(); it++) {
+    for (AreasList::iterator it = areas.begin(); it != areas.end(); ++it) {
         const QString& areaName = (*it)->getName();
         bool found = false;
         for (auto it2 = names.begin(); it2 != names.end(); it2++) {
@@ -145,7 +145,7 @@ void ConfigurationPainter::intersectNames( const  NamesDictionary& names )
         }
     }
 
-    for (auto it = toErase.begin(); it != toErase.end(); it++) {
+    for (auto it = toErase.begin(); it != toErase.end(); ++it) {
         areas.erase(*it);
     }
 }
@@ -154,7 +154,7 @@ void ConfigurationPainter::setScale( float val )
 {
     UTILS_ASSERT(val > 0.0f);
     scale = val;
-    for (AreasList::iterator it = areas.begin(); it != areas.end(); it++) {
+    for (AreasList::iterator it = areas.begin(); it != areas.end(); ++it) {
         (*it)->setScale(val);
     }
 }

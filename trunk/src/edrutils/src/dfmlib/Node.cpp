@@ -186,7 +186,7 @@ bool Node::validInPinsConnection(const CNPtr & node) {
 	bool empty = true;
 	bool required = false;
 
-	for(auto it = node->beginIn(); it != node->endIn(); it++){
+	for(auto it = node->beginIn(); it != node->endIn(); ++it){
 		if((*it)->isRequired() == true){
 			required = true;
 			if((*it)->empty()){
@@ -208,7 +208,7 @@ bool Node::validInPinsConnection(const CNPtr & node) {
 bool Node::validOutPinsConnection(const CNPtr & node) {
 	bool ret = true;
 
-	for(auto it = node->beginOut(); it != node->endOut(); it++){
+	for(auto it = node->beginOut(); it != node->endOut(); ++it){
 		if((*it)->isComplete() == false){
 			ret = false;
 			break;
@@ -233,7 +233,7 @@ bool Node::anyOutPinConnected(const CNPtr & node){
 bool Node::anyPinConnected(const Pins & pins){
 	bool ret = false;
 
-	for(auto it = pins.begin(); it != pins.end(); it++){
+	for(auto it = pins.begin(); it != pins.end(); ++it){
 		if((*it)->empty() == false){
 			ret = true;
 			break;

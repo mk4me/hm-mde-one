@@ -41,7 +41,7 @@ class WorkflowCustomQOSGWidget : public osgui::QOsgDefaultWidget
     friend class EDRWorkflowWidget;
 public:
     WorkflowCustomQOSGWidget(QWidget * parent = nullptr, const osg::GraphicsContext::Traits* traits = nullptr, Qt::WindowFlags f = 0)
-        : osgui::QOsgDefaultWidget(parent, traits, f)
+        : osgui::QOsgDefaultWidget(parent, traits, f), workflowWidget(nullptr)
     {
 
     }

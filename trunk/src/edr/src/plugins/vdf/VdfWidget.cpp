@@ -99,7 +99,6 @@ VdfWidget::VdfWidget(VdfService* service)
 {
     setupUi(this);
 
-    //vdfQWidget = new osgui::QOsgDefaultWidget(this);
     vdfQWidget = new VdfCustomQOsgWidget(this);
     vdfQWidget->setMouseTracking(true);
 
@@ -108,7 +107,6 @@ VdfWidget::VdfWidget(VdfService* service)
 
     const osg::GraphicsContext::Traits* traits = vdfQWidget->getCamera()->getGraphicsContext()->getTraits();
 
-    //vdfModel = new osgVDF::osgVDFModel<osgVDF::osgVDFNode, osgVDF::osgVDFPin<osgVDF::BezierConnectionFactory> >(
     vdfModel = new VdfQtModel(
         vdfQWidget,
         traits->width,
@@ -129,20 +127,17 @@ VdfWidget::VdfWidget(VdfService* service)
     root->addChild(multiViewCamera);
     vdfQWidget->setSceneData(root);
 
-    //vdfQWidget->addEventHandler( new core::OsgSceneDumpFileHandler("dump_vdf.txt") );
     vdfQWidget->addEventHandler( new osgWidget::MouseHandler(vdfModel) );
     vdfQWidget->addEventHandler( new osgWidget::ResizeHandler(vdfModel, multiViewCamera) );
     vdfQWidget->addEventHandler( new osgViewer::StatsHandler );
     vdfQWidget->addEventHandler( new osgGA::StateSetManipulator( vdfQWidget->getCamera()->getOrCreateStateSet() ) );
-
-    //vdfQWidget->getCamera()->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
 
     // dodanie do widgeta
     verticalLayout->addWidget( vdfQWidget );
 
     StylesSet styleSet = generateRequiredStyles();
 
-    for(StylesSet::iterator it = styleSet.begin(); it != styleSet.end(); it++){
+    for(StylesSet::iterator it = styleSet.begin(); it != styleSet.end(); ++it){
 		vdfModel->getStyleManager()->addStyle(*it);
 	}
 

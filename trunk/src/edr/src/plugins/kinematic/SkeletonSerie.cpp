@@ -68,21 +68,21 @@ MarkerCollectionConstPtr SkeletonSerie::createTrajectories( kinematic::JointAngl
         JointAngleChannelConstPtr joint = joints->getChannel(0);
         const std::vector<VisualizationScheme::State>& s = scheme.getStates();
         int count = s.size();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             MarkerChannelPtr marker(new MarkerChannel(joint->getSamplesPerSecond()));
             marker->setName(s[i].name);
             markers->addChannel(marker);
         }
    
         int argumentsSize = joint->size();
-        for (int arg = 0; arg < argumentsSize; arg++) {
+        for (int arg = 0; arg < argumentsSize; ++arg) {
             auto time = joint->argument(arg);
             scheme.setTime(time);
             auto rootPos = scheme.getCurrentPosition();
             const std::vector<VisualizationScheme::State>& states = scheme.getStates();
             // czy kolejnosc jest zapewniona? 
             int size = states.size();
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < size; ++i) {
                 VectorChannelPtr marker = markers->getChannel(i);
                 marker->addPoint(states[i].position + rootPos);
             }

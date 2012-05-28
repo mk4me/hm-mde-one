@@ -252,7 +252,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Login</string>
+                <string>Logon</string>
                </property>
                <property name="autoDefault">
                 <bool>true</bool>

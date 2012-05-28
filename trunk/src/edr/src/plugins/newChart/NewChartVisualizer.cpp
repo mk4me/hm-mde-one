@@ -22,22 +22,28 @@
 #include <boost/bind.hpp>
 
 
-NewChartVisualizer::NewChartVisualizer() : 
+NewChartVisualizer::NewChartVisualizer() :
+	upperBoundCurve(nullptr),
+	lowerBoundCurve(nullptr),
+	averageCurve(nullptr),
+	boundsAutoRefresh(true),
+	movingAverageTimeWindow(0.125),
+	pointsPerWindow(25),
+	qwtPlot(nullptr),
     showLegend(true), 
     currentSerie(-1),
     plotPanner(nullptr),
     plotMagnifier(nullptr),
     statsTable(nullptr),
+	scaleToActive(false),
+	percentDraw(nullptr),
+	eventsContextWidget(nullptr),
     context(C3DEventsCollection::IEvent::General),
-    eventsContextWidget(nullptr),
     eventsMenu(nullptr),
-    scaleToActive(false),
-    percentDraw(nullptr),
     shiftSpinX(nullptr),
     shiftSpinY(nullptr),
     scaleSpinX(nullptr),
     scaleSpinY(nullptr),
-	qwtPlot(nullptr),
 	legend(nullptr),
 	boundsToRefresh(false),
 	qwtMarker(nullptr),
@@ -48,12 +54,6 @@ NewChartVisualizer::NewChartVisualizer() :
 	hMarkerAction(nullptr),
 	scaleAction(nullptr),
 	bandsAction(nullptr),
-    upperBoundCurve(nullptr),
-    lowerBoundCurve(nullptr),
-    averageCurve(nullptr),
-    boundsAutoRefresh(true),
-    movingAverageTimeWindow(0.125),
-    pointsPerWindow(25),
     currentSerieTime(-1.0f),
     currentSerieValue(-1.0f)
 {
@@ -166,7 +166,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     showStats->setIcon(iconStats);
     connect(showStats, SIGNAL(triggered(bool)), this, SLOT(showStatistics(bool)));
 
-    for ( int i = 0; i < QwtPlot::axisCnt; i++ )    {
+    for ( int i = 0; i < QwtPlot::axisCnt; ++i )    {
         QwtScaleWidget *scaleWidget = qwtPlot->axisWidget( i );
         if ( scaleWidget ) {
             scaleWidget->setMargin( 0 );
@@ -305,16 +305,17 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
 
     activeSerieCombo->setEnabled(true);
     NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
-    legendLabel->setToolTip(data->getSource().c_str());
-    if(series.size() == 1){
-        
-        if(legendLabel != nullptr && legendLabel->isItemActive() == false){
-            legend->blockSignals(true);
-            legendLabel->setItemActive(true);
-            legendLabel->setItemVisibleEnabled(false);
-            legend->blockSignals(false);
-        }
-    }
+	if(legendLabel != nullptr){	
+		legendLabel->setToolTip(data->getSource().c_str());
+		if(series.size() == 1){    
+			if(legendLabel->isItemActive() == false){
+				legend->blockSignals(true);
+				legendLabel->setItemActive(true);
+				legendLabel->setItemVisibleEnabled(false);
+				legend->blockSignals(false);
+			}
+		}
+	}
 
     adjustOffsetStep(shiftSpinX, QwtPlot::xBottom);
     adjustOffsetStep(shiftSpinY, QwtPlot::yLeft);
@@ -369,7 +370,7 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
         activeSerieCombo->clear();
         int active = 0;
         int count = series.size();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; ++i) {
             NewChartSerie* serie = series[i];
             activeSerieCombo->addItem(serie->getName().c_str());
             if (serie->isActive()) {
@@ -477,7 +478,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
         idx = -1; // idx nie chcemy wykorzystywac!
         if (on == true) {
         
-            for (unsigned int i = 0; i < series.size(); i++) {
+            for (unsigned int i = 0; i < series.size(); ++i) {
                 NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->curve));
                 if (series[i]->curve == curve) {
                     // powinno wywolac sygnal, ktory ustawi aktywna serie
@@ -566,7 +567,7 @@ NewChartSerie* NewChartVisualizer::tryGetCurrentSerie()
 
 void NewChartVisualizer::update( double deltaTime )
 {
-    for (auto it = updateFIFO.begin(); it != updateFIFO.end(); it++) {
+    for (auto it = updateFIFO.begin(); it != updateFIFO.end(); ++it) {
         (*it)();
     }
     updateFIFO.clear();
@@ -646,11 +647,11 @@ void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPt
     helper->getEventsItem()->attach(qwtPlot);
     helper->getEventsItem()->setVisible(serie == tryGetCurrentSerie() && eventMode);
     int no = 0;
-    for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); segment++) {
+    for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); ++segment) {
         statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
     }
     no = 0;
-    for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); segment++) {
+    for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); ++segment) {
         statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
     }
 }
@@ -679,7 +680,7 @@ void NewChartVisualizer::rescale( float t1, float t2 )
 void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= ScalarChannelStatsConstPtr()*/ )
 {
     statsTable->clear();
-    for (auto it = series.begin(); it != series.end(); it++) {
+    for (auto it = series.begin(); it != series.end(); ++it) {
         statsTable->addEntry(tr("Whole chart"), (*it)->getName().c_str(), (*it)->getStats() );
     }
     if (stats) {
@@ -687,14 +688,14 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
         QColor color  = context == C3DEventsCollection::IEvent::Left ?  QColor(255, 200, 200) : QColor(200, 255, 200);
         statsTable->addEntry(group, stats->getChannel()->getName().c_str(), stats, color);
     } else {
-        for (auto it = series.begin(); it != series.end(); it++) {
+        for (auto it = series.begin(); it != series.end(); ++it) {
             int no = 0;
             EventsHelperPtr helper = (*it)->getEventsHelper();
-            for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); segment++) {
+            for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); ++segment) {
                 statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
             }
             no = 0;
-            for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); segment++) {
+            for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); ++segment) {
                 statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
             }
         }
@@ -717,7 +718,7 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
         QwtPlotCurve* c = const_cast<QwtPlotCurve*>(curve);
         c->setVisible(visible);
     } else {
-        for (unsigned int i = 0; i < series.size(); i++) {
+        for (unsigned int i = 0; i < series.size(); ++i) {
             if (series[i]->curve == curve) {
                 if (!series[i]->isActive()) {
                     series[i]->setVisible(visible);
@@ -725,7 +726,7 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
                     BOOST_FOREACH(QTreeWidgetItem* item, list) {
                         item->setHidden(!visible);
                     }
-                    for (auto it = statesMap.begin(); it != statesMap.end(); it++) {
+                    for (auto it = statesMap.begin(); it != statesMap.end(); ++it) {
                         NewChartLabelStatePtr labelState = core::dynamic_pointer_cast<NewChartLabelState>(it->second);
                         if (labelState) {
                             labelState->setVisible(series[i], visible);
@@ -753,7 +754,7 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
 void NewChartVisualizer::recreateScales()
 {
     plotScales.clear();
-    for (auto it = series.begin(); it != series.end(); it++) {
+    for (auto it = series.begin(); it != series.end(); ++it) {
         if ((*it)->isVisible()) {
             plotScales.merge((*it)->getScales());
         }
@@ -801,7 +802,7 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
                 } else {
                     float minY = segment->stats->minValue();
                     float maxY = segment->stats->maxValue();
-                    for (auto it = series.begin(); it != series.end(); it++) {
+                    for (auto it = series.begin(); it != series.end(); ++it) {
                         if ((*it)->isVisible()) {
                             auto h = (*it)->getEventsHelper();
                             if (h) {
@@ -968,7 +969,7 @@ void NewChartVisualizer::refreshBounds()
     //maksymalny czas dla wszystkich serii danych
     //minimalna rozdzielczoœæ dla wszystkich kana³ów
     std::vector<ScalarChannelReaderInterfaceConstPtr> channels;
-    for (auto it = series.begin(); it != series.end(); it++) {
+    for (auto it = series.begin(); it != series.end(); ++it) {
         ScalarChannelReaderInterfaceConstPtr data((*it)->getData()->get());
         minT = (std::max)(minT, data->argument(0));
         maxT = (std::min)(maxT, data->argument(data->size() - 1));
@@ -1157,7 +1158,7 @@ void NewChartVisualizer::bbands( int startIdx, int endIdx, const std::vector<flo
     {
         if( optInNbDevUp == 1.0 )
         {
-            for( i=0; i < outNBElement ; i++ )
+            for( i=0; i < outNBElement ; ++i )
             {
                 tempReal = tempBuffer2[i];
                 tempReal2 = outRealMiddleBand[i];
@@ -1167,7 +1168,7 @@ void NewChartVisualizer::bbands( int startIdx, int endIdx, const std::vector<flo
         }
         else
         {
-            for( i=0; i < outNBElement ; i++ )
+            for( i=0; i < outNBElement ; ++i )
             {
                 tempReal = tempBuffer2[i] * optInNbDevUp;
                 tempReal2 = outRealMiddleBand[i];
@@ -1178,7 +1179,7 @@ void NewChartVisualizer::bbands( int startIdx, int endIdx, const std::vector<flo
     }
     else if( optInNbDevUp == 1.0 )
     {
-        for( i=0; i < outNBElement ; i++ )
+        for( i=0; i < outNBElement ; ++i )
         {
             tempReal = tempBuffer2[i];
             tempReal2 = outRealMiddleBand[i];
@@ -1188,7 +1189,7 @@ void NewChartVisualizer::bbands( int startIdx, int endIdx, const std::vector<flo
     }
     else if( optInNbDevDn == 1.0 )
     {
-        for( i=0; i < outNBElement ; i++ )
+        for( i=0; i < outNBElement ; ++i )
         {
             tempReal = tempBuffer2[i];
             tempReal2 = outRealMiddleBand[i];
@@ -1198,7 +1199,7 @@ void NewChartVisualizer::bbands( int startIdx, int endIdx, const std::vector<flo
     }
     else
     {
-        for( i=0; i < outNBElement ; i++ )
+        for( i=0; i < outNBElement ; ++i )
         {
             tempReal = tempBuffer2[i];
             tempReal2 = outRealMiddleBand[i];
@@ -1221,13 +1222,13 @@ void NewChartVisualizer::stddev_using_precalc_ma( const std::vector<float> & inR
     startSum = 1+inMovAvgBegIdx-timePeriod;
     endSum = inMovAvgBegIdx;
     periodTotal2 = 0;
-    for( outIdx = startSum; outIdx < endSum; outIdx++)
+    for( outIdx = startSum; outIdx < endSum; ++outIdx)
     {
         tempReal = inReal[outIdx];
         tempReal *= tempReal;
         periodTotal2 += tempReal;
     }
-    for( outIdx=0; outIdx < inMovAvgNbElement; outIdx++, startSum++, endSum++ )
+    for( outIdx=0; outIdx < inMovAvgNbElement; ++outIdx, ++startSum, ++endSum )
     {
         tempReal = inReal[endSum];
         tempReal *= tempReal;
@@ -1248,7 +1249,7 @@ void NewChartVisualizer::stddev_using_precalc_ma( const std::vector<float> & inR
 
 bool NewChartVisualizer::isCurveFromSerie(const QwtPlotCurve* curve) const
 {
-    for (auto it = series.begin(); it != series.end(); it++) {
+    for (auto it = series.begin(); it != series.end(); ++it) {
         if ((*it)->curve == curve) {
             return true;
         }
@@ -1259,11 +1260,11 @@ bool NewChartVisualizer::isCurveFromSerie(const QwtPlotCurve* curve) const
 
 void NewChartVisualizer::setLabelsVisible( bool val )
 {
-    for (auto serie = series.begin(); serie != series.end(); serie++) {
-        for (auto it = statesMap.begin(); it != statesMap.end(); it++) {
+    for (auto serie = series.begin(); serie != series.end(); ++serie) {
+        for (auto it = statesMap.begin(); it != statesMap.end(); ++it) {
             NewChartLabelStatePtr labels = core::dynamic_pointer_cast<NewChartLabelState>(it->second);
             if (labels) {
-                labels->setVisible(*serie, val & (*serie)->isVisible());
+                labels->setVisible(*serie, val && (*serie)->isVisible());
             }
         }
     }

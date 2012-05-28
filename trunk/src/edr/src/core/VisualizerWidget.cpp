@@ -244,12 +244,12 @@ const ActionsGroupManager & VisualizerWidget::getGenericVisualizerActionsManager
 
 void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements & titleBarElements) const
 {
-    for(auto groupIT = visualizerCommonElementsOrder.begin(); groupIT != visualizerCommonElementsOrder.end(); groupIT++){
+    for(auto groupIT = visualizerCommonElementsOrder.begin(); groupIT != visualizerCommonElementsOrder.end(); ++groupIT){
         
         std::map<int, QObject *> allGroupObjects;
         (*groupIT).getAllObjects(allGroupObjects);
         
-        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); actionIT++){
+        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); ++actionIT){
             auto elementIT = visualizerCommonElements.find(actionIT->second);
             if(elementIT != visualizerCommonElements.end()){
                 if(elementIT->second.visible == true){
@@ -261,11 +261,11 @@ void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements 
         }
     }
 
-    for(auto groupIT = visualizerImplementationCustomElements.begin(); groupIT != visualizerImplementationCustomElements.end(); groupIT++){
+    for(auto groupIT = visualizerImplementationCustomElements.begin(); groupIT != visualizerImplementationCustomElements.end(); ++groupIT){
         std::map<int, QObject *> allGroupObjects;
         (*groupIT).getAllObjects(allGroupObjects);
 
-        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); actionIT++){
+        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); ++actionIT){
             titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, IEDRTitleBar::Left));
         }
     }
@@ -321,7 +321,7 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 			if(autoRefreshInputs_ == true){
 
 				//ustaw dane
-				for(int i = 0; i < visualizer->getNumInputs(); i++){
+				for(int i = 0; i < visualizer->getNumInputs(); ++i){
 					bool exact = false;
 					//pobieram dane
 
@@ -429,7 +429,7 @@ void VisualizerWidget::fillSourcesMenu()
 
     bool allNotInitialized = true;
 
-    for(int i = 0; i < visualizer->getNumInputs(); i++){
+    for(int i = 0; i < visualizer->getNumInputs(); ++i){
         auto objects = visualizer->getObjects(i);
         if(objects != nullptr){
             int total = 0;
@@ -481,7 +481,7 @@ void VisualizerWidget::fillSourcesMenu()
 
             typeMenus[objects->getTypeInfo()] = nestedMenu;
 
-            for(auto it = objects->begin(); it != objects->end(); it++){
+            for(auto it = objects->begin(); it != objects->end(); ++it){
                 if(currentData.insert(*it).second == true){
 
                     std::ostringstream str;
@@ -511,7 +511,7 @@ void VisualizerWidget::fillSourcesMenu()
 
                 bool separator = false;
 
-                for(auto it = iT->second.begin(); it != iT->second.end(); it++){
+                for(auto it = iT->second.begin(); it != iT->second.end(); ++it){
 
                     std::ostringstream str;
                     str << (*it)->getName() << " (from " << (*it)->getSource() << ")";
@@ -684,12 +684,10 @@ std::string VisualizerWidget::getLabel( const ObjectWrapperConstPtr& object, boo
 {
     if ( !object ) {
         return std::string("none");
+    }else if ( noSource ) {
+        return object->getName();
     } else {
-        if ( noSource ) {
-            return object->getName();
-        } else {
-            // TODO: uzupe³niæ
-            return object->getName();
-        }
+        // TODO: uzupe³niæ
+        return object->getName();
     }
 }

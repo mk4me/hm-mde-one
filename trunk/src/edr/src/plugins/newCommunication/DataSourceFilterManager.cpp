@@ -80,7 +80,9 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 	}
 
 	//schorzenia
-	for(auto disorderIT = inShallow.medicalShallowCopy->disorders.begin(); disorderIT != inShallow.medicalShallowCopy->disorders.end(); ++disorderIT){
+	auto disordersITEnd = inShallow.medicalShallowCopy->disorders.end();
+	auto patientsITEnd = inShallow.medicalShallowCopy->patients.end();
+	for(auto disorderIT = inShallow.medicalShallowCopy->disorders.begin(); disorderIT != disordersITEnd; ++disorderIT){
 		
 		if(filter->filterDisorder(disorderIT->second) == true){			
 			
@@ -94,7 +96,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 			auto & patients = outShallow.medicalShallowCopy->patientsByDisorder[disorderIT->first];
 
 			//pacjenci
-			for(auto patientIT = inShallow.medicalShallowCopy->patients.begin(); patientIT != inShallow.medicalShallowCopy->patients.end(); ++patientIT){
+			for(auto patientIT = inShallow.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
 
 				if(filter->filterPatient(patientIT->second) == true){			
 
@@ -127,7 +129,8 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 						outShallow.motionShallowCopy->performers.insert(MotionShallowCopy::Performers::value_type(performer->performerID, performer));
 
 						//konfiguracje i sesje
-						for(auto perfConfIT = patientIT->second->performer->performerConfs.begin(); perfConfIT != patientIT->second->performer->performerConfs.end(); ++perfConfIT){
+						auto performerConfsITEnd = patientIT->second->performer->performerConfs.end();
+						for(auto perfConfIT = patientIT->second->performer->performerConfs.begin(); perfConfIT != performerConfsITEnd; ++perfConfIT){
 							if(filter->filterSession(perfConfIT->second->session) == true){
 								
 								auto perfConf = new MotionShallowCopy::PerformerConf();
@@ -155,7 +158,8 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 								session->userID = perfConfIT->second->session->userID;
 
 								//filtrujemy pliki sesji
-								for(auto fileIT = perfConfIT->second->session->files.begin(); fileIT != perfConfIT->second->session->files.end(); ++fileIT){
+								auto filesITEnd = perfConfIT->second->session->files.end();
+								for(auto fileIT = perfConfIT->second->session->files.begin(); fileIT != filesITEnd; ++fileIT){
 									if(filter->filterFile(fileIT->second) == true){
 										
 										auto file = new MotionShallowCopy::File();
@@ -175,7 +179,8 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 								}
 
 								//filtrujemy triale
-								for(auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != perfConfIT->second->session->trials.end(); ++motionIT){
+								auto motionsITEnd = perfConfIT->second->session->trials.end();
+								for(auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){
 									if(filter->filterMotion(motionIT->second) == true){
 
 										auto motion = new MotionShallowCopy::Trial();
@@ -192,7 +197,8 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 										session->trials.insert(MotionShallowCopy::Trials::value_type(motion->trialID, motion));
 
 										//filtrujemy pliki motiona
-										for(auto fileIT = perfConfIT->second->session->files.begin(); fileIT != perfConfIT->second->session->files.end(); ++fileIT){
+										auto filesITEnd = perfConfIT->second->session->files.end();
+										for(auto fileIT = perfConfIT->second->session->files.begin(); fileIT != filesITEnd; ++fileIT){
 											if(filter->filterFile(fileIT->second) == true){
 
 												auto file = new MotionShallowCopy::File();
@@ -225,11 +231,12 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 	}
 
 	//uzupe³niamy choroby pacjenta
-	for(auto patientIT = outShallow.medicalShallowCopy->patients.begin(); patientIT != outShallow.medicalShallowCopy->patients.end(); ++patientIT){
+	auto outPatientsITEnd = outShallow.medicalShallowCopy->patients.end();
+	for(auto patientIT = outShallow.medicalShallowCopy->patients.begin(); patientIT != outPatientsITEnd; ++patientIT){
 		
 		auto patient = inShallow.medicalShallowCopy->patients.find(patientIT->first);
-
-		for(auto disorderIT = patient->second->disorders.begin(); disorderIT != patient->second->disorders.end(); ++disorderIT){
+		auto disordersITEnd = patient->second->disorders.end();
+		for(auto disorderIT = patient->second->disorders.begin(); disorderIT != disordersITEnd; ++disorderIT){
 
 			auto disorder = outShallow.medicalShallowCopy->disorders.find(disorderIT->first);
 

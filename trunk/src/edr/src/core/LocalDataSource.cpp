@@ -53,11 +53,11 @@ QDialog * LocalDataSource::getOutputConfigurationDialog()
 
 void LocalDataSource::generate(core::IObjectOutput* output)
 {
-    for(unsigned int i = 0; i < outputDescription.size(); i++){
+    for(unsigned int i = 0; i < outputDescription.size(); ++i){
         auto out = output->getObjects(i);
         const auto& in = data[outputDescription[i].type];
         
-        for(auto it = in->begin(); it != in->end(); it++){
+        for(auto it = in->begin(); it != in->end(); ++it){
             try{
                 out.addObject(*it);
             }catch(...){

@@ -108,8 +108,7 @@ public:
     }
     virtual ~TreeWrappedItemHelper() 
     {
-        int a = 0;
-        a++;
+
     }
 public:
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
@@ -280,16 +279,16 @@ public:
 
 public:
     NewMultiserieHelper(const ChartWithDescriptionCollection& charts): 
-      colorStrategy(new RandomMultiserieColorStrategy()), title(""), wrappers(charts)
+	  wrappers(charts), title(""), colorStrategy(new RandomMultiserieColorStrategy())
     {
         
     }
 
     NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts): 
-    colorStrategy(new RandomMultiserieColorStrategy()), title("")
+    title(""), colorStrategy(new RandomMultiserieColorStrategy())
     {
         UTILS_ASSERT(false);
-        for (auto it = charts.begin(); it != charts.end(); it++) {
+        for (auto it = charts.begin(); it != charts.end(); ++it) {
             wrappers.push_back(ChartWithDescription(*it, EventsCollectionConstPtr(), PluginSubject::MotionConstPtr()));
         }
     }
@@ -344,7 +343,7 @@ typedef core::shared_ptr<const JointsItemHelper> JointsItemHelperConstPtr;
 class Multiserie3D : public TreeItemHelper
 {
 public:
-    Multiserie3D(const PluginSubject::MotionConstPtr motion) : motion(motion)
+    Multiserie3D(const PluginSubject::MotionConstPtr & motion) : motion(motion)
     {
 
     }

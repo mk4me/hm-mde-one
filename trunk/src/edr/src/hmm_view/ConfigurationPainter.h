@@ -120,21 +120,21 @@ class SinglePicture : public IArea
 {
 public:
       SinglePicture(const QString& name, int x = 0, int y = 0, bool alwaysVisible = false) :
+		  name(QFileInfo(name).baseName()),
           pixmap(new QImage(name)),
           alphaPixmap( new QImage(name)),
-          //name(name),
           x(x), y(y),
           alwaysVisible(alwaysVisible)
       {
-          QFileInfo info(name);
-          this->name = info.baseName();
+          //QFileInfo info(name);
+          //this->name = info.baseName();
           setPixmapAlpha(*alphaPixmap, 100);
       }
 
       SinglePicture(const QString& name, const QPixmapPtr& pixmap, int x = 0, int y = 0, bool alwaysVisible = false) :
+		  name(name),
           pixmap(pixmap),
           alphaPixmap(new QImage(*pixmap)),
-          name(name),
           x(x), y(y),
           alwaysVisible(alwaysVisible)
       {
@@ -183,8 +183,8 @@ public:
 public:
     QPixmapConstPtr getBackground() const { return background; }
     const QString& getName() const { return name; }
-    void setBackground(const QString& name, QPixmapConstPtr val) { this->name = name; background = val; }
-    void addArea(IAreaPtr data);
+    void setBackground(const QString& name, const QPixmapConstPtr & val) { this->name = name; background = val; }
+    void addArea(const IAreaPtr & data);
     void removeArea(const QString& name);
     AreasList::const_iterator begin() const { return areas.cbegin(); }
     AreasList::const_iterator end() const { return areas.cend(); }

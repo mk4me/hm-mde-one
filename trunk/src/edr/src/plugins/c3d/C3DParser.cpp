@@ -13,10 +13,10 @@
 C3DParser::C3DParser()
 {
     // sztywne stworzenie obiektow, zachowanie kompatybilnosci
-	for(int i = 0; i < 4; i++){
+	for(int i = 0; i < 4; ++i){
 		GRFChannels.push_back(core::ObjectWrapper::create<GRFChannel>());
 	}
-	for(int i = 0; i < 16; i++){
+	for(int i = 0; i < 16; ++i){
 		EMGChannels.push_back(core::ObjectWrapper::create<EMGChannel>());
 	}
 
@@ -76,7 +76,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
     // wczytanie eventow
 	int count = parser->getNumEvents();
     EventsCollectionPtr allEventsCollection(new C3DEventsCollection());
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; ++i) {
 		c3dlib::C3DParser::IEventPtr event = parser->getEvent(i);
         C3DEventsCollection::EventPtr e(event->clone());
         allEventsCollection->addEvent(e);
@@ -106,7 +106,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 		break;
 
 	int markersCount = parser->getNumPoints();
-	for (int i = 0; i < markersCount; i++) {
+	for (int i = 0; i < markersCount; ++i) {
 		switch (parser->getPoint(i)->getType()) {
 			CHANNEL_CASE(Angle, angles);
 			CHANNEL_CASE(Marker, markers);
@@ -125,7 +125,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         IForcePlatformCollection platforms;
         auto parsedPlatforms = parser->getForcePlatforms();
         int count = static_cast<int>(parsedPlatforms.size());
-        for (int i = 0; i < count;  i++) {
+        for (int i = 0; i < count;  ++i) {
             ForcePlatformPtr fp(new ForcePlatform(parsedPlatforms[i]));
             // HACK ! POWINIEN BYC KANAL NA PODST. NR PLATFORMY!
             fp->setForceChannel(grfs->getGRFChannel(i == 0 ? GRFChannel::F1 : GRFChannel::F2));

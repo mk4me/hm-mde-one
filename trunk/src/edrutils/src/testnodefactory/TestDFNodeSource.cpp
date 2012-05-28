@@ -33,5 +33,5 @@ void TestDFNodeSource::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdd
 
 void TestDFNodeSource::process(){
 	TestDFNodeProcessing::process();
-	availableData++;
+	++availableData;
 }

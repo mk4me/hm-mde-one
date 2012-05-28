@@ -106,7 +106,7 @@ public:
 
 	static osgWidget::XYCoord getConnectionEnd(osg::Geode * connection)
     {
-		return getConnectionControlPoint(connection,0);
+		return getConnectionControlPoint(connection,1);
 	}
 
 	static std::pair<osgWidget::XYCoord, osgWidget::XYCoord> getConnectionEndings(osg::Geode * connection)
@@ -172,7 +172,7 @@ public:
 		setControlPoint((*vertexData)[0], startPos);
 		setControlPoint((*vertexData)[1], endPos);
 
-		for(unsigned int i = 0; i < vertexData->size(); i++){
+		for(unsigned int i = 0; i < vertexData->size(); ++i){
 			(*vertexData)[0][3] = z;
 		}
 

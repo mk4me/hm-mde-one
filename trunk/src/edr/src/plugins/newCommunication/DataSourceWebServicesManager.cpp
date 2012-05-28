@@ -36,52 +36,52 @@ DataSourceWebServicesManager * DataSourceWebServicesManager::instance()
 	return instance_;
 }
 
-const MotionBasicQueriesWSPtr & DataSourceWebServicesManager::motionBasicQueriesService()
+const MotionBasicQueriesWSPtr & DataSourceWebServicesManager::motionBasicQueriesService() const
 {
 	return motionBasicQueriesService_;
 }
 
-const MedicalBasicQueriesWSPtr & DataSourceWebServicesManager::medicalBasicQueriesService()
+const MedicalBasicQueriesWSPtr & DataSourceWebServicesManager::medicalBasicQueriesService() const
 {
 	return medicalBasicQueriesService_;
 }
 
-const MotionBasicUpdatesWSPtr & DataSourceWebServicesManager::motionBasicUpdatesService()
+const MotionBasicUpdatesWSPtr & DataSourceWebServicesManager::motionBasicUpdatesService() const
 {
 	return motionBasicUpdatesService_;
 }
 
-const MedicalBasicUpdatesWSPtr & DataSourceWebServicesManager::medicalBasicUpdatesService()
+const MedicalBasicUpdatesWSPtr & DataSourceWebServicesManager::medicalBasicUpdatesService() const
 {
 	return medicalBasicUpdatesService_;
 }
 
-const MotionFileStoremanWSPtr & DataSourceWebServicesManager::motionFileStoremanService()
+const MotionFileStoremanWSPtr & DataSourceWebServicesManager::motionFileStoremanService() const
 {
 	return motionFileStoremanService_;
 }
 
-const MedicalFileStoremanWSPtr & DataSourceWebServicesManager::medicalFileStoremanService()
+const MedicalFileStoremanWSPtr & DataSourceWebServicesManager::medicalFileStoremanService() const
 {
 	return medicalFileSoremanService_;
 }
 
-const AuthorizationWSPtr & DataSourceWebServicesManager::authorizationService()
+const AuthorizationWSPtr & DataSourceWebServicesManager::authorizationService() const
 {
 	return authorizationService_;
 }
 
-const AdministrationWSPtr & DataSourceWebServicesManager::administrationService()
+const AdministrationWSPtr & DataSourceWebServicesManager::administrationService() const
 {
 	return administrationService_;
 }
 
-const UserPersonalSpaceWSPtr & DataSourceWebServicesManager::userPersonalSpaceService()
+const UserPersonalSpaceWSPtr & DataSourceWebServicesManager::userPersonalSpaceService() const
 {
 	return userPersonalSpaceService_;
 }
 
-const MultiAccountFactoryWSPtr & DataSourceWebServicesManager::accountFactoryService()
+const MultiAccountFactoryWSPtr & DataSourceWebServicesManager::accountFactoryService() const
 {
 	return accountFactoryService_;
 }
@@ -93,10 +93,10 @@ DataSourceWebServicesManager::DataSourceWebServicesManager()
 		medicalBasicUpdatesService_(new MedicalBasicUpdatesWS()),
 		motionFileStoremanService_(new MotionFileStoremanWS()),
 		medicalFileSoremanService_(new MedicalFileStoremanWS()),
+		accountFactoryService_(new MultiAccountFactoryWS()),
 		authorizationService_(new AuthorizationWS()),
 		administrationService_(new AdministrationWS()),
-		userPersonalSpaceService_(new UserPersonalSpaceWS()),
-		accountFactoryService_(new MultiAccountFactoryWS())
+		userPersonalSpaceService_(new UserPersonalSpaceWS())
 {
 
 }

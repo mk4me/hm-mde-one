@@ -113,16 +113,16 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalMo
         
     int bdataSize = jointsData.size();
 
-    for (int i = 0; i < framesNo; i++) {
+    for (int i = 0; i < framesNo; ++i) {
         if (frames[i]->jointsData.size() != bdataSize) {
             throw(KinematicModelException("Wrong data format"));
         }
     }
 
     
-    for (int i = 0; i < framesNo; i++) {
+    for (int i = 0; i < framesNo; ++i) {
         int jointStatesNo = frames[i]->jointsData.size();
-        for (int j = 0; j < jointStatesNo; j++) {
+        for (int j = 0; j < jointStatesNo; ++j) {
             double rx, ry, rz;
             int index;
             std::string name = haSkeleton->mapJointName(frames[i]->jointsData[j]->name);
@@ -275,7 +275,7 @@ int JointAnglesCollection::getIndex(const std::string& name ) const
 int JointAnglesCollection::tryGetIndex(const std::string& name ) const
 {
 	int count = getNumChannels();
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; ++i) {
 		std::string channelName = getChannel(i)->getName();
 		if (channelName == name) {
 			return i;
@@ -289,7 +289,7 @@ JointAnglesCollection* JointAnglesCollection::clone() const
 	JointAnglesCollection* obj = new JointAnglesCollection();
 	int count = static_cast<int>(channels.size());
 	obj->channels.resize(count);
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; ++i) {
 		obj->channels[i] = JointAngleChannelPtr(this->channels[i]->clone());
 	}
 	obj->configurationID = this->configurationID;

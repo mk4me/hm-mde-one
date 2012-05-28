@@ -260,7 +260,7 @@ void FlexiTabWidget::removeAllGroupSections(GUIID groupID)
 {
     auto groupIT = getGroup(groupID);
 
-    for(auto sectionIT = groupIT->second->sections.begin(); sectionIT != groupIT->second->sections.end(); sectionIT++){
+    for(auto sectionIT = groupIT->second->sections.begin(); sectionIT != groupIT->second->sections.end(); ++sectionIT){
 
         groupIT->second->tabArea->setWidget(nullptr);
 
@@ -277,7 +277,7 @@ void FlexiTabWidget::removeGroup(GUIID groupID)
 {
     auto groupIT = getGroup(groupID);
 
-    for(auto sectionIT = groupIT->second->sections.begin(); sectionIT != groupIT->second->sections.end(); sectionIT++){
+    for(auto sectionIT = groupIT->second->sections.begin(); sectionIT != groupIT->second->sections.end(); ++sectionIT){
 
         groupIT->second->contentWidget->layout()->removeWidget(sectionIT->second->sectionWidget);
 
@@ -474,7 +474,7 @@ FlexiTabWidget::SectionDataByID::const_iterator FlexiTabWidget::getSection(GUIID
 
 void FlexiTabWidget::shiftPosLeft(unsigned int begin, unsigned int end)
 {
-    for(auto i = begin; i < end; i++){
+    for(auto i = begin; i < end; ++i){
         groupDataByIndex[i]->flexiPos--;
         groupDataByIndex[i]->tabPos--;
     }
@@ -482,7 +482,7 @@ void FlexiTabWidget::shiftPosLeft(unsigned int begin, unsigned int end)
 
 void FlexiTabWidget::shiftPosRight(unsigned int begin, unsigned int end)
 {
-    for(auto i = begin; i < end; i++){
+    for(auto i = begin; i < end; ++i){
         groupDataByIndex[i]->flexiPos++;
         groupDataByIndex[i]->tabPos++;
     }
@@ -490,14 +490,14 @@ void FlexiTabWidget::shiftPosRight(unsigned int begin, unsigned int end)
 
 void FlexiTabWidget::shiftTabPosLeft(unsigned int begin, unsigned int end)
 {
-    for(auto i = begin; i < end; i++){
+    for(auto i = begin; i < end; ++i){
         groupDataByIndex[i]->tabPos--;
     }
 }
 
 void FlexiTabWidget::shiftTabPosRight(unsigned int begin, unsigned int end)
 {
-    for(auto i = begin; i < end; i++){
+    for(auto i = begin; i < end; ++i){
         groupDataByIndex[i]->tabPos++;
     }
 }

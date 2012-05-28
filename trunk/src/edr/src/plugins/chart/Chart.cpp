@@ -1050,7 +1050,6 @@ void Chart::refreshSeries(float & currentZ, float zStep)
                     float diff = range.second - range.first;
                     if ( diff != 0.0f ) {
                         float negRatio = fabs(range.first) / diff;
-                        float posRatio = fabs(range.second) / diff;
                         if ( maxNegRatio == 0.0f ) {
                             // nie ma co skalowaæ
                             UTILS_ASSERT(range.first == 0.0f);

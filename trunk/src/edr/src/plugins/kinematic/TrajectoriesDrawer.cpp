@@ -35,8 +35,8 @@ osg::ref_ptr<osg::Node> TrajectoryDrawer::getNode()
 
 
 TrajectoryDrawer::TrajectoryDrawer( const osg::Vec4& color, int density ) :
-	color(color),
-	density(density)
+	density(density),
+	color(color)
 {
 }
 
@@ -65,7 +65,7 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 
 		float mult = channel->getLength() / static_cast<float>(density);
 		
-		for (int n = 0; n < density - 1; n++) {	
+		for (int n = 0; n < density - 1; ++n) {	
 			vertices->push_back(VectorContiniousTimeAccessor::getValue(mult * n, *channel));
 			vertices->push_back(VectorContiniousTimeAccessor::getValue(mult * (n+1), *channel));
 		}

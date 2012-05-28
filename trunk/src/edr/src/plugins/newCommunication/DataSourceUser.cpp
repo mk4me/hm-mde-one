@@ -1,7 +1,7 @@
 #include "CommunicationPCH.h"
 #include "DataSourceUser.h"
 
-User::User()
+User::User() : id_(-1)
 {
 
 }

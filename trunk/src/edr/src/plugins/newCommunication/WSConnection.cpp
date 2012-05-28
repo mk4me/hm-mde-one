@@ -1,4 +1,5 @@
 #include "CommunicationPCH.h"
+#include <core/ILog.h>
 #include <plugins/newCommunication/WSConnection.h>
 #include <wsdlparser/WsdlInvoker.h>
 #include <boost/type_traits.hpp>

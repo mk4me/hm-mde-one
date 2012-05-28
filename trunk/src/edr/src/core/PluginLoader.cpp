@@ -166,7 +166,7 @@ bool PluginLoader::addPlugIn( const std::string& path )
                     LOG_DEBUG(path<<" is a plugin, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed.");
                 }
             }
-        }catch(std::exception e){
+        }catch(std::exception & e){
             LOG_DEBUG(path << " is a plugin, but trying to check version or libraries failed with error: " << e.what());
         }catch(...){
             LOG_DEBUG(path << " is a plugin, but trying to check version or libraries failed with UNKNOWN error");
@@ -255,7 +255,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
     bool pluginIDFound = false;
     core::PluginPtr collidingPlugin;
     //szukamy pluginu o podanym ID - jesli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
-    for(auto it = plugins.begin(); it != plugins.end(); it++){
+    for(auto it = plugins.begin(); it != plugins.end(); ++it){
         if( (*it).first->getID() == plugin->getID()){
             pluginIDFound = true;
             collidingPlugin = (*it).first;

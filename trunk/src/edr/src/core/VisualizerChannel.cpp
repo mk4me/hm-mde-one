@@ -64,7 +64,7 @@ VisualizerMultiChannel::~VisualizerMultiChannel()
 
 void VisualizerMultiChannel::setTime(double time)
 {
-    for(auto it = channelSeries_.begin(); it != channelSeries_.end(); it++){
+    for(auto it = channelSeries_.begin(); it != channelSeries_.end(); ++it){
         (*it)->setTime(time > (*it)->getLength() ? (*it)->getLength() : time);
     }
 }
@@ -75,9 +75,9 @@ double VisualizerMultiChannel::getLength() const
 
 	auto length = (*it)->getLength();
 
-	it++;
+	++it;
 
-	for( ; it != channelSeries_.end(); it++){
+	for( ; it != channelSeries_.end(); ++it){
 		length = max(length, (*it)->getLength());
 	}
 

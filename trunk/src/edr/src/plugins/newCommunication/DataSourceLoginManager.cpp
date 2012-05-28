@@ -70,14 +70,15 @@ void DataSourceLoginManager::getUserPrivilages(int userID, UserPrivilages & user
 const int DataSourceLoginManager::getUserIDForLoginAndPassword(const std::string & login, const std::string & password)
 {
     OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourceWebServicesManager::instance()->authorizationService());
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lockConn(*DataSourceWebServicesManager::instance()->authorizationService()->connection());
+	auto conn = DataSourceWebServicesManager::instance()->authorizationService()->connection();
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lockConn(*conn);
 
 	int ret = -1;
 
-	auto lUser = DataSourceWebServicesManager::instance()->authorizationService()->connection()->user();
-	auto lPassword = DataSourceWebServicesManager::instance()->authorizationService()->connection()->password();
+	auto lUser = conn->user();
+	auto lPassword = conn->password();
 
-	DataSourceWebServicesManager::instance()->authorizationService()->connection()->setCredentials(login, password);
+	conn->setCredentials(login, password);
 	bool res = DataSourceWebServicesManager::instance()->authorizationService()->checkMyLogin();
 
 	if(res == true){
@@ -87,7 +88,7 @@ const int DataSourceLoginManager::getUserIDForLoginAndPassword(const std::string
 
 	}
 
-	DataSourceWebServicesManager::instance()->authorizationService()->connection()->setCredentials(lUser, lPassword);
+	conn->setCredentials(lUser, lPassword);
 
 	return ret;
 }

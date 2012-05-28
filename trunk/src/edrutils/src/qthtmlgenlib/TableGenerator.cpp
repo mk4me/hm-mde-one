@@ -130,7 +130,7 @@ void HtmlCellAttributes::setBgColor(const QString & bgColor)
 
 void HtmlCellAttributes::clearBgColor()
 {
-    attributes.erase(CellWidth);
+    attributes.erase(CellBgColor);
 }
 
 void HtmlCellAttributes::setColSpan(CellSpan colSpan)
@@ -359,10 +359,6 @@ void HtmlDataTableGenerator::generateHtmlTable(QString & table, const HtmlDataTa
     if(structure.headerColumns > columns){
         structure.headerColumns = columns;
     }
-
-    // wyznaczam maksymalne wartoœci indeksów dla których jeszcze mogê dzia³aæ
-    int maxRows = rows - 1;
-    int maxColumns = columns - 1;
 
     HtmlDataTableContent::Column rowsData(rows);
 

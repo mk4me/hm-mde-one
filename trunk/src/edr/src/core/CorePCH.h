@@ -75,6 +75,15 @@ UTILS_POP_WARNINGS
 #include <core/SmartPtr.h>
 #include <core/ILog.h>
 #include "Log.h"
+#include <core/IDataManager.h>
+#include <core/IDataProcessorManager.h>
+#include <core/IDataSourceManager.h>
+#include <core/IServiceManager.h>
+#include <core/IActionsGroupManager.h>
+#include <core/IAppUsageContextManager.h>
+#include <core/ISourceManager.h>
+#include <core/IVisualizerManager.h>
+
 // przywrócenie warningów wy³¹czonych przez OSG
 #if defined(_MSC_VER)
 #   pragma warning( default : 4244 )

@@ -59,7 +59,7 @@ public:
     {
         UTILS_ASSERT(context == C3DEventsCollection::IEvent::Left || context == C3DEventsCollection::IEvent::Right);
         std::vector<SegmentPtr>& segments = context == C3DEventsCollection::IEvent::Left ? leftSegments : rightSegments;
-        for (auto it = segments.cbegin(); it != segments.cend(); it++) {
+        for (auto it = segments.cbegin(); it != segments.cend(); ++it) {
             if (time >= (*it)->begin && time <= (*it)->end) {
                 return *it;
             }

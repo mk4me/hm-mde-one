@@ -43,7 +43,7 @@ void EDRDFNode::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder)
 
     if(inputDescription != nullptr){
         //stwórz piny wejsciowe
-        for(int i = 0; i < inputDescription->getNumInputs(); i++){
+        for(int i = 0; i < inputDescription->getNumInputs(); ++i){
             pinsAdder->addInPin(dflm::PinPtr(new EDRDFPin(inputDescription->getSource(), i)));
         }
     }
@@ -52,11 +52,11 @@ void EDRDFNode::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder)
 
     if(outputDescription != nullptr){        
         //stwórz piny wyjsciowe
-        for(int i = 0; i < outputDescription->getNumOutputs(); i++){
+        for(int i = 0; i < outputDescription->getNumOutputs(); ++i){
             //buduj piny zalezne
             dflm::Pin::ReqPinsSet reqPins;
             for(auto it = outputDescription->getRequiredInputs(i).begin();
-                it != outputDescription->getRequiredInputs(i).end(); it++) {
+                it != outputDescription->getRequiredInputs(i).end(); ++it) {
                 reqPins.insert(getInPin(*it));
             }
 

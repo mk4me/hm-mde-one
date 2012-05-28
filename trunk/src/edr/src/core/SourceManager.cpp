@@ -17,7 +17,7 @@ SourceManager::~SourceManager(void)
 
 void SourceManager::update(double deltaTime)
 {
-	for(auto it = sourcesList.begin(); it != sourcesList.end(); it++){
+	for(auto it = sourcesList.begin(); it != sourcesList.end(); ++it){
 		try{
 			(*it)->update(deltaTime);
 		}catch(std::exception & e){
@@ -30,7 +30,7 @@ void SourceManager::update(double deltaTime)
 
 void SourceManager::finalizeSources()
 {
-	for(auto it = sourcesList.begin(); it != sourcesList.end(); it++){
+	for(auto it = sourcesList.begin(); it != sourcesList.end(); ++it){
 		try{
 			(*it)->finalize();
 			LOG_DEBUG("SourceManager: finalized correctly " << (*it)->getName() << " service");

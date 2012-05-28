@@ -144,7 +144,7 @@ void osgVDFBasePin::positioned()
 {
 	centerChanged = true;
     
-	for(auto it = connections.begin(); it != connections.end(); it++){
+	for(auto it = connections.begin(); it != connections.end(); ++it){
         connectionsUpdater(it->first, getCenterPosition());
     }
 }

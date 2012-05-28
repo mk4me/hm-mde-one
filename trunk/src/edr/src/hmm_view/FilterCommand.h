@@ -88,7 +88,7 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
                 std::vector<ObjectWrapperConstPtr> xWrappers;
                 std::vector<ObjectWrapperConstPtr> yWrappers;
                 std::vector<ObjectWrapperConstPtr> zWrappers;
-                for( int i = 0; i < collection->getNumChannels(); i++) {
+                for( int i = 0; i < collection->getNumChannels(); ++i) {
                     Type::ChannelPtr f = collection->getChannel(i);
                     ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(f, 0));
                     ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(f, 1));
