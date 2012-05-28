@@ -18,6 +18,7 @@ class QEvent;
 class QPainter;
 class QwtPlotCanvas;
 
+//! Klasa bazowa dla stanow wizualizatora
 class NewChartState : public QObject
 {
     Q_OBJECT
@@ -25,18 +26,26 @@ public:
     typedef core::shared_ptr<QwtPlot> QwtPlotPtr;
 
 public:
+    //! kostruktor pobiera obiekt wizualizatora, ktorym bedzie sie zarzadzalo
     NewChartState(NewChartVisualizer* visualizer);
 	virtual ~NewChartState() { }
 
 public:
+    //! Obsluga eventow Qt 
     virtual bool stateEventFilter( QObject *, QEvent * ) = 0;
+    //! Metoda odrysowujaca stan wizualizatora
     virtual void draw(QPainter *) = 0;
+    //! Wywolywane, stan staje sie aktywny
     virtual void stateBegin() {}
+    //! Wywolywane, gdy stan przestaje byc aktywny
     virtual void stateEnd() {}
 
 protected:
+    //! wizualizator, ktorym bedzie sie zarzadzalo
     NewChartVisualizer* visualizer;
+    //! Wykres qwt (serce wizualizatora)
     QwtPlot* plot;
+    //! Plotno wykresu
     QwtPlotCanvas* canvas;
 };
 typedef core::shared_ptr<NewChartState> NewChartStatePtr;

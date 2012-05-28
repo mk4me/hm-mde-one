@@ -16,58 +16,44 @@
 
 class QCheckBox;
 class QPushButton;
-class QwtPlotItem;
 
-class NewChartLegendItem : public QWidget
-{
-    Q_OBJECT;
-public:
-    NewChartLegendItem(const QwtLegendData & data, QWidget* parent = nullptr);
-
-public:
-    bool isItemVisible();
-    void setItemVisible(bool active);
-    void setItemVisibleEnabled(bool enabled);
-
-    bool isItemActive() const;
-    void setItemActive(bool checked);
-    void setItemActiveEnabled(bool enabled);
-    void setData( const QwtLegendData& data );
-    void setTooltip( const QString& val );
-
-signals:
-    void buttonClicked(bool);
-    void checkClicked(bool);
-
-private slots:
-    void onClick(bool);
-
-private:
-    QCheckBox* check;
-    QPushButton* button;
-};
-
+//! Klasa zarzadzajaca legenda New Charta
 class NewChartLegend : public QwtLegend
 {
     Q_OBJECT;
 public:
+    //! 
+    //! \param parent 
     explicit NewChartLegend( QWidget *parent = nullptr ) : QwtLegend(parent) {}
+    //! 
     virtual ~NewChartLegend() {}
 
 protected:
+    //! Tworzy widget legendy, wywolywane przez qwt
+    //! \param & standardowe qwt dane nt. legendy
     virtual QWidget *createWidget( const QwtLegendData & ) const;
 
 signals:
+    //! Zmienil sie checkbox z widocznoscia serii
+    //! \param item element legendy zawierajacy checkbox
+    //! \param active seria powinna stac sie widoczna/ukryta
     void checkboxChanged(const QwtPlotItem* item, bool active);
 
 public slots:
+    //! Aktualizacja legendy
     virtual void updateLegend( const QwtPlotItem *, const QList<QwtLegendData> & );
+    //! Aktualizacja pojedynczego elementu legendy
+    //! \param w element klasy NewChartLegendItem
+    //! \param data zmienione dane elementu
     virtual void updateWidget( QWidget* w, const QwtLegendData& data );
 
 private slots:
-     void onCheck(bool checked);
+    //! Zmienil sie checkbox z widocznoscia serii
+    //! \param checked seria ma stac sie widoczna/ukryta
+    void onCheck(bool checked);
 
 private:
+    //! mapa z powiazaniem element wykresu (krzywa) - > widget legendy (NewChartLegendItem)
     std::map<const QWidget*, const QwtPlotItem *> widget2PlotItem;
 };
 

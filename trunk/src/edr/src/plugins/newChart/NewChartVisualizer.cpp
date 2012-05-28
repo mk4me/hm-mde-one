@@ -14,10 +14,10 @@
 #include "NewChartMarker.h"
 #include "NewChartValueMarker.h"
 #include "NewChartVerticals.h"
-#include "NewChartHorizontals.h"
 #include "NewChartHelpers.h"
 #include "NewChartScaleDrawer.h"
 #include "NewChartLegend.h"
+#include "NewChartLegendItem.h"
 #include <limits>
 #include <boost/bind.hpp>
 
@@ -79,7 +79,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     QWidget* widget = new QWidget();
     widget->setObjectName(QString::fromUtf8("newChartVisualizerWidget"));
     QwtText txt(getName().c_str());
-    qwtPlot = new NCPlot(txt, nullptr);
+    qwtPlot = new QwtPlot(txt, nullptr);
     qwtPlot->setObjectName(QString::fromUtf8("plot"));
     percentDraw = new PercentScaleDraw(0.0, 5.0);
     qwtPlot->setAxisScaleDraw(QwtPlot::xBottom, percentDraw);
@@ -337,13 +337,6 @@ void NewChartVisualizer::addPlotCurve( QwtPlotCurve* curve, const Scales& scales
     curve->attach(qwtPlot);
 }
 
-//TODO
-//kod debugowy - do usuniêcia na koniec
-void NewChartVisualizer::onComboDestroy(QObject * obj)
-{
-    obj = nullptr;
-}
-
 void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
 {
     NewChartSerie* chSerie = dynamic_cast<NewChartSerie*>(serie);
@@ -459,10 +452,6 @@ void NewChartVisualizer::refreshSerieLayers()
     qwtPlot->replot();
 }
 
-void NewChartVisualizer::setNormalized( bool normalized )
-{
-
-}
 
 void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
 {
@@ -670,11 +659,6 @@ void NewChartVisualizer::onEventContext(int index)
         }
     }
     setScale();
-}
-
-void NewChartVisualizer::rescale( float t1, float t2 )
-{
-
 }
 
 void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= ScalarChannelStatsConstPtr()*/ )
@@ -1275,6 +1259,10 @@ boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> NewChartVisua
     return boost::make_iterator_range(series.cbegin(), series.cend());
 }
 
+QPixmap NewChartVisualizer::print() const 
+{
+    return QPixmap::grabWidget(qwtPlot);
+}
 
 
 

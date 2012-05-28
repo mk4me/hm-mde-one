@@ -10,146 +10,49 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTMARKER_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTMARKER_H__
 
-//#include <qwt/qwt_plot_marker.h>
 #include <plugins/c3d/C3DChannels.h>
 
-class NewChartDot : public QwtPlotItem
-{
-public:
-    NewChartDot( int size = 2);
-
-public:
-    virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
-
-    virtual QPointF getPosition() const = 0;
-    virtual void setPosition(const QPointF& val)  = 0;
-
-    const QBrush& getBrush() const { return brush; }
-    void setBrush(const QBrush& val) { brush = val; }
-
-    const QPen& getPen() const { return pen; }
-    void setPen(const QPen& val) { pen = val; }
-
-    virtual int rtti() const { return QwtPlotItem::Rtti_PlotUserItem; }
-
-private:
-    int size;
-    QPen pen;
-    QBrush brush;
-};
-typedef NewChartDot* NewChartDotPtr;
-typedef const NewChartDot* NewChartDotConstPtr;
-
-class NewChartDotFixed : public NewChartDot
-{
-public:
-    NewChartDotFixed(const QPointF& position, int size = 2) :
-      NewChartDot(size),
-      position(position)
-  {
-  }
-
-public:
-    virtual QPointF getPosition() const { return position; }
-    virtual void setPosition(const QPointF& val) { position = val; }
-
-private:
-    QPointF position;
-};
-
-class NewChartSerie;
-class NewChartDotFloating : public NewChartDot
-{
-public:
-    NewChartDotFloating(const QPointF& position, const NewChartSerie* relatedSerie, int size = 2);
-
-public:
-    virtual QPointF getPosition() const;
-    virtual void setPosition(const QPointF& val);
-
-private:
-    QPointF position;
-    const NewChartSerie* relatedSerie;
-};
-
-
-class NewChartLabel : public QwtPlotItem
-{
-public:
-    enum ConnectionStyle
-    {
-        Simple,
-        Horizontal,
-        Vertical
-    };
-public:
-    NewChartLabel(const QString& text = QString(""), const QPoint& shift = QPoint(20, 20), const QPoint& size = QPoint(80, 35));
-
-public:
-    virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
-    bool isInsideLabel(const QPoint& transformedPoint, const QwtPlotCurve* curve) const;
-    const QString& getText() const { return text; }
-    void setText(const QString& val) { text = val; }
-    const QPoint& getShift() const { return shift; }
-    void setShift(const QPoint& val) { shift = val; }
-    
-    NewChartDotConstPtr getPoint1() const { return point1; }
-    QPoint getPoint1Transformed(const QwtPlotCurve* curve) const;
-    void setPoint1(NewChartDotConstPtr val) { point1 = val; }
-    NewChartDotConstPtr getPoint2() const { return point2; }
-    QPoint getPoint2Transformed(const QwtPlotCurve* curve) const;
-    void setPoint2(NewChartDotConstPtr val) { point2 = val; }
-    
-    const QBrush& getBrush() const { return brush; }
-    void setBrush(const QBrush& val) { brush = val; }
-
-    const QPen& getPen() const { return pen; }
-    void setPen(const QPen& val) { pen = val; }
-
-    virtual int rtti() const { return QwtPlotItem::Rtti_PlotUserItem; }
-    void connectDot(NewChartDotConstPtr dot, ConnectionStyle style = Simple);
-    void connectDots(NewChartDotConstPtr point1, NewChartDotConstPtr point2, ConnectionStyle style );
-    void connectDots(const QPointF& point1, const QPointF& point2, ConnectionStyle style);
-
-private:
-    void drawConnection(QPainter* painter, const QRect& box, const QPoint& transformedTo, ConnectionStyle style, bool arrowOutside = false) const;
-    void drawArrow(QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo, bool outside = false) const;
-
-private:
-    QString text;
-    QPoint size;
-    QPoint shift;
-    QPen pen;
-    QBrush brush;
-    NewChartDotConstPtr point1;
-    NewChartDotConstPtr point2;
-    ConnectionStyle connectionStyle;
-};
-typedef NewChartLabel* NewChartLabelPtr;
-typedef const NewChartLabel* NewChartLabelConstPtr;
-
+//! Marker pokazujacy aktualny czas i wartosc krzywej
+//! Wykorzystuje juz istniejacy obiekt z Qwt
+//! Dodatkowo wprowadza opoznienie przesuwania
 class NewChartMarker : public QwtPlotMarker
 {
 public:
+    //! konstruktor z podpietymi danymi
     explicit NewChartMarker(ScalarChannelReaderInterfaceConstPtr reader);
     explicit NewChartMarker();
 	virtual ~NewChartMarker() {}
 
 protected:
+    //! dziedziczona z QwtPlotMarker. Odrysowanie liniii wskazujacych punkt
     virtual void drawLines( QPainter *, const QRectF &, const QPointF & ) const;
+    //! dziedziczona z QwtPlotMarker. Odrysowanie etykiety
     virtual void drawLabel( QPainter *, const QRectF &, const QPointF & ) const;
 
 public:
+    //! rysuje punkt o okreslonym rozmiarze
     static void drawDot( QPainter * painter, const QPointF & point, int size = 5 );
+    //! resetuje 'ped'. Pozycja etykiety wynika z punktu i przesuniecia
     void resetMomentum() const { positionSet = false; }
+    //! ustawia wspoczynniki opoznienia
+    //! \param x wspolczynnik poziomy
+    //! \param y wspolczynnik pionowy
     void setLerpRatios(float x, float y) { lerpX = x; lerpY = y; }
+    //! ustawia jednolity wspolczynnik opoznienia
+    //! \param lerp wspolczynnik dla pionu i poziomu
     void setLerpRatios(float lerp) { lerpX = lerp; lerpY = lerp; }
 
 private:
+    //! wskazywane dane
     ScalarChannelReaderInterfaceConstPtr reader;
+    //! aktualna pozycja etykiety
     mutable QPointF position;
+    //! umozliwia opoznione ustawienie pozycji
     mutable bool positionSet;
-    float lerpX, lerpY;
+    //! poziomy wspoczynniki opoznienia
+    float lerpX;
+    //! pionowy wspoczynniki opoznienia
+    float lerpY;
 };
 typedef core::shared_ptr<NewChartMarker> NewChartMarkerPtr;
 typedef core::shared_ptr<const NewChartMarker> NewChartMarkerConstPtr;

@@ -7,7 +7,6 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
     treeItemDelegate(100, rowHeight)
 {
     setupUi(this);
-    table->setItemDelegate(&treeItemDelegate);
 }
 
  int getTreeItemRows(const QTreeWidgetItem* item) 

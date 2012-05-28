@@ -3,11 +3,6 @@
 #include <QtCore/QEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QMouseEvent>
-//#include <qwt/qwt_plot.h>
-//#include <qwt/qwt_scale_map.h>
-//#include <qwt/qwt_plot_canvas.h>
-//#include <qwt/qwt_plot_curve.h>
-//#include <qwt/qwt_plot_directpainter.h>
 #include "NewChartPicker.h"
 #include "NewChartVisualizer.h"
 

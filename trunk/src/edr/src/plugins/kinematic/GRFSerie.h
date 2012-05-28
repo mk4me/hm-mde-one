@@ -20,7 +20,7 @@
 //! empirycznie dobrany wspolczynnik dlugosci wizualizowanych sil
 const float grfScale = 0.0008f;
 
-//! Seria danych odpowiedzialna za wizualizacje plyt naciskowych i sil na nich dzialajacych
+//! Seria danych odpowiedzialna za wizualizacje plyt naciskowych i sil na nie dzialajacych
 class GRFSerie : public KinematicSerie
 {
 public:

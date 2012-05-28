@@ -46,7 +46,6 @@ public:
     C3DEventsCollection()
     {}
     //! Konstruktor kopiujacy
-    //! 
     C3DEventsCollection(const C3DEventsCollection& es)
     {
         int count = static_cast<int>(es.events.size());
@@ -154,28 +153,20 @@ public:
 typedef boost::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
 typedef boost::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
 
-
+//! Kolekcja obiektow EMG, obslugiwana w standardowy sposob
 typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
-//class EMGCollection : public utils::DataChannelCollection<EMGChannel>
-//{
-//public:
-//    IMeasurementConfigConstPtr getConfig() const
-//    { 
-//        return config; 
-//    }
-//    void setConfig(IMeasurementConfigConstPtr val) { config = val; }
-//private:
-//    IMeasurementConfigConstPtr config;
-//};
 typedef boost::shared_ptr<EMGCollection> EMGCollectionPtr;
 typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
-
+//! Kolekcja kanalow opartych o trojwymiarowy wektor
 typedef utils::DataChannelCollection<VectorChannel> VectorChannelCollection;
 typedef core::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
 typedef core::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
 
 typedef core::shared_ptr<std::pair<float, float>> FloatPairPtr;
+//! Metoda wydziela przedzialy czasowe, dla ktorych realizowana jest analiza
+//! \param events zdarzenia, z ktorych beda wyciagnane przedzialy
+//! \param context kontekst kroku (lewy, prawy)
 static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events, C3DEventsCollection::Context context) 
 {
     std::vector<FloatPairPtr> ret;
@@ -201,12 +192,17 @@ static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events
     return ret;
 }
 
+//! Kolekcja dostarcza rowniez informacji o plytach GFR oraz ulatwia pobranie konkretnego kanalu
 class GRFCollection : public VectorChannelCollection 
 {
 public:
+    //! \return wszystkie wczytane plyty pomiarowe zwiazane z danymi GRF
     const IForcePlatformCollection& getPlatforms() const { return platforms; }
+    //! Ustawienie plyt pomiarowych
+    //! \param val 
     void setPlatforms(const IForcePlatformCollection& val) { platforms = val; }
-
+    //! Metoda ulatwia pobranie kanalu GRF o odpowiednim typie
+    //! \param type typ kanalu (np. M1 lub F2)
     GRFChannelConstPtr getGRFChannel(GRFChannel::Type type) const
     {
         for (auto it = channels.begin(); it != channels.end(); ++it) {
@@ -220,24 +216,30 @@ public:
     }
 
 private:
+    //! Platformy pomiarowe zwiazane z ta sama proba pomiarowa co kanaly z kolekcji
     IForcePlatformCollection platforms;
 };
 typedef boost::shared_ptr<GRFCollection> GRFCollectionPtr;
 typedef boost::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
 
-//! Kontener wszystkich markerow modelu
+//! Kontener wszystkich markerow modelu, ulatwia obsluge danych, dodaje wsparcie o pliki VSK
 class MarkerCollection : public VectorChannelCollection
 {
 public:
+    //! Konstruktor
+    //! \param vsk parser ze wczytanym plikiem vsk (dzieki niemu tworza sie kolorowe polaczenia midzy markerami)
     MarkerCollection(kinematic::VskParserPtr vsk = kinematic::VskParserPtr()) :
       VectorChannelCollection(),
       vsk(vsk) 
       {}
-
+    //! Zwrace nazwe markera na podstawie indeksu
+    //! \param markerNo poprawny indeks, w przeciwnym razie poleci asercja
     virtual const std::string& getMarkerName(int markerNo) const {
         return this->getChannel(markerNo)->getName();
     }
-
+    //! Probojue pobrac kanal na podstawie nazwy
+    //! \param name nazwa kanalu, wilkosc liter ma znaczenie
+    //! \return kanal lub null jesli takiego nie ma
     VectorChannelConstPtr tryGetChannelByName(const std::string& name) {
         for (int i = this->getNumChannels() - 1; i >= 0; --i) {
             if (getMarkerName(i) == name) {
@@ -247,7 +249,7 @@ public:
 
         return VectorChannelConstPtr();
     }
-
+    //! \return parser vsk zwiazany z kolekcja
     kinematic::VskParserConstPtr getVsk() const { return vsk; }
 
 private:
@@ -256,6 +258,7 @@ private:
 typedef core::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 
+//! makro ulatwia definicje dodatkowych kanalow, osobne typy ulatwiaja otrzymanie konkretnych danych z DM
 #define DEFINE_CHANNEL_COLLECTION(name)                                         \
 class name##Collection : public VectorChannelCollection {};				        \
     typedef core::shared_ptr<name##Collection> name##CollectionPtr;				\

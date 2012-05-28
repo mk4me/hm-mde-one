@@ -1,6 +1,8 @@
 #include "NewChartPCH.h"
 #include "NewChartLabelState.h"
 #include "NewChartVisualizer.h"
+#include "NewChartLabel.h"
+#include "NewChartDot.h"
 
 NewChartLabelState::NewChartLabelState(NewChartVisualizer* visualizer) :
     NewChartState(visualizer)

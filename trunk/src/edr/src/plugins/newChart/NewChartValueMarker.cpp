@@ -2,6 +2,9 @@
 #include "NewChartValueMarker.h"
 #include "NewChartSerie.h"
 #include "NewChartVisualizer.h"
+#include "NewChartLabel.h"
+#include "NewChartDot.h"
+#include "NewChartDotFloating.h"
 
 static const double MIN_DIST = 20.0;
 

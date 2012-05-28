@@ -2,7 +2,8 @@
 #include <QtGui/QHBoxLayout>
 #include "NewChartHelpers.h"
 
-boost::tuple<QWidget*, QLabel*, QDoubleSpinBox*> LabeledSpinbox::create(QWidget* parent, const QString& label, double singleStep, double minimum, double maximum)
+boost::tuple<QWidget*, QLabel*, QDoubleSpinBox*> LabeledSpinbox::create (
+    QWidget* parent, const QString& label, double singleStep, double minimum, double maximum)
 {
     QWidget* spinWidget = new QWidget(parent);
     spinWidget->setLayout(new QHBoxLayout());

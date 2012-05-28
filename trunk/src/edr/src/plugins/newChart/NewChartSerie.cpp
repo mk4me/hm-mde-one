@@ -1,12 +1,23 @@
 #include "NewChartPCH.h"
 #include <QtGui/QPainter>
-//#include <qwt/qwt_curve_fitter.h>
 #include "NewChartSerie.h"
 #include "NewChartVisualizer.h"
 #include "NewChartSeriesData.h"
 
 const int ACTIVE_WIDTH = 2;
 const int NON_ACTIVE_WIDTH = 1;
+
+
+NewChartSerie::NewChartSerie( NewChartVisualizer * visualizer ) :
+visualizer(visualizer),
+    curve(nullptr),
+    active(false),
+    time(0.0f),
+    _z(0),
+    _zBase(0)
+{
+
+}
 
 void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
@@ -72,17 +83,6 @@ void NewChartSerie::setEvents( EventsCollectionConstPtr val )
     setColorsForEvents(eventsHelper->getLeftSegments(), getColor());
     setColorsForEvents(eventsHelper->getRightSegments(), getColor());
     visualizer->setEvents(this, val);
-
-    //EventsHelperPtr helper(new EventsHelper(val, getReader()));
-    //eventsHelpers[serie] = helper;
-    //int no = 0;
-    //for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); segment++) {
-    //    statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
-    //}
-    //no = 0;
-    //for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); segment++) {
-    //    statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
-    //}
 }
 
 void NewChartSerie::removeItemsFromPlot()
@@ -177,3 +177,51 @@ void NewChartSerie::setColorsForEvents( EventsHelper::SegmentsRange range, const
     }
 }
 
+double NewChartSerie::getCurrentValue() const 
+{ 
+    return static_cast<double>(accessor->getValue(time)); 
+} 
+
+double NewChartSerie::getLength() const
+{
+    return reader->getLength();
+}
+
+void NewChartSerie::setColor( int r, int g, int b, int a /*= 255*/ )
+{
+    setColor(QColor(r, g, b, a));
+}
+
+void NewChartSerie::setColor( const QColor& color )
+{
+    UTILS_ASSERT(curve);
+    QPen pen = curve->pen();
+    pen.setColor(color);
+    curve->setPen(pen);
+}
+
+QColor NewChartSerie::getColor() const
+{
+    UTILS_ASSERT(curve);
+    return curve->pen().color();
+}
+
+void NewChartSerie::setName( const std::string & name )
+{
+    this->name = name;
+}
+
+const std::string & NewChartSerie::getName() const
+{
+    return name;
+}
+
+const core::ObjectWrapperConstPtr & NewChartSerie::getData() const
+{
+    return data;
+}
+
+double NewChartSerie::getTime() const
+{
+    return time;
+}

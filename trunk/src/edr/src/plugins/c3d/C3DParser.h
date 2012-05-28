@@ -53,16 +53,16 @@ public:
     //! Parsowanie pliku c3d
     //! \param path poprawna sciezka do pliku
     virtual void parseFile(const core::Filesystem::Path& path);
-    //! 
+    //! \return pusty obiekt nowego parsera
     virtual core::IParser* create();
-    //! 
-    //! \param objects 
+    //! Zwraca obiekty dostarczone przez parser
+    //! \param objects kolekcja z obiektami (set)
     virtual void getObjects(core::Objects& objects);
-    //! 
-    //! \param extensions 
+    //! Zwraca rozszerzenia, ktore sa obslugiwane przez parser (tylko asf)
+    //! \param extensions kolecja z roszerzeniami
     virtual void getSupportedExtensions(Extensions & extensions) const;
-	//! 
-	//! \param path 
+	//! Zapisauje dane w konkretnym miejscu, nie uzywane
+	//! \param path sciezka zapisu
 	void saveFile(const core::Filesystem::Path& path);
 };
 

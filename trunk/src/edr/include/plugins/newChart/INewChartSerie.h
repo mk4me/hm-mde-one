@@ -12,13 +12,18 @@
 
 #include <plugins/c3d/EventSerieBase.h>
 
+//! Niektore elementy serii danych wizualizatora wykresow sa edytowane z zewnatrz, 
+//! dlatego nalezy interfejsowac serie danych, aby dac dostep do obiektu bez koniecznosci linkowania sie z pluginem
 class INewChartSerie : public EventSerieBase
 {
 public:
 	virtual ~INewChartSerie() {}
 
 public:
+    //! pobiera kolor serii
     virtual QColor getColor() const = 0;
+    //! ustawia kolor serii
+    //! \param color kolor w formacie Qt
     virtual void setColor(const QColor& color) = 0;
 };
 typedef core::shared_ptr<INewChartSerie> INewChartSeriePtr;

@@ -12,59 +12,63 @@
 
 class NewChartSeriesData;
 
+//! Klasa rozszerza podstawowa funkcjonalnosc Qwt przede wszystkim o mozliwosc transformacji (przesuniecie + skala)
+//! Pamietac nalezy, ze nie jest to QObject, dlatego trzeba uwazac przy zarzadzaniu pamiecia
 class NewChartCurve : public QwtPlotCurve
 {
 public:
+    //! Konstruktor ustawia domyslne wartosci (offset = 0, skala = 1)
+    //! \param title tytul wykresu
     explicit NewChartCurve( const QString &title = QString::null );
 
 public:
+    //! 
     double getXScale() const { return xScale; }
+    //! 
+    //! \param val 
     void setXScale(double val);
-
+    //! 
     double getYScale() const { return yScale; }
+    //! 
+    //! \param val 
     void setYScale(double val);
-
+    //! 
     double getXOffset() const { return xOffset; }
+    //! 
+    //! \param val 
     void setXOffset(double val); 
-
+    //! 
+    //! \param point 
     void setOffset(const QPointF& point);
+    //! 
     QPointF getOffset() const;
-
+    //! 
     double getYOffset() const { return yOffset; }
+    //! 
+    //! \param val 
     void setYOffset(double val); 
-
+    //! Zasilenie krzywej w dane
+    //! \param data Obiekt z danymi, stworzony na porzeby krzywej, przykrywa DataChannel
     void setSamples(NewChartSeriesData* data);
 
 protected:
-    class OffsetTransformation : public QwtScaleTransformation
-    {
-    public:
-        OffsetTransformation(double offset) : 
-          QwtScaleTransformation( Linear),
-              offset(offset)
-          {}
-          virtual double xForm( double s, double s1, double s2, double p1, double p2 ) const;
-          virtual QwtScaleTransformation *copy() const;
-          virtual double invXForm( double p, double p1, double p2, double s1, double s2 ) const;
-          double getOffset() const { return offset; }
-          void setOffset(double val) { offset = val; }
-    private:
-        double offset;
-
-    };
-    virtual void drawCurve( QPainter *p, int style,
-        const QwtScaleMap &xMap, const QwtScaleMap &yMap,
-        const QRectF &canvasRect, int from, int to ) const;
-
+    //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
     virtual void dataChanged() { QwtPlotSeriesItem::dataChanged(); }
+    //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
     virtual void setRectOfInterest( const QRectF& r ) { QwtSeriesStore<QPointF>::setRectOfInterest(r); }
+    //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
     virtual size_t dataSize() const { return QwtSeriesStore<QPointF>::dataSize(); } 
+    //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
     virtual QRectF dataRect() const { return QwtSeriesStore<QPointF>::dataRect(); } 
 
 private:
+    //! przesuniecie w poziomie
     double xOffset;
+    //! przesuniecie w pionie
     double yOffset;
+    //! skala w poziomie
     double xScale;
+    //! skala w pionie
     double yScale;
 };
 

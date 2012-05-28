@@ -12,9 +12,11 @@
 
 #include <limits>
 
+//! Prosta klasa, ulatwiajaca zarzadzac ekstremami wykresu
 class Scales
 {
 public:
+    //! Konstruktor, zostawia obiekt niezainicjalizowany
     Scales() : 
 	  xMin((std::numeric_limits<float>::max)()),
       xMax((std::numeric_limits<float>::min)()),
@@ -22,6 +24,12 @@ public:
       yMax((std::numeric_limits<float>::min)()),
       initialized(false) 
     {}
+
+    //! Konstruktor, inicjalizuje obiekt
+    //! \param xMin minimalny argument na wykresie
+    //! \param xMax maksymalny argument na wykresie
+    //! \param yMin wartosc minimalna na wykresie
+    //! \param yMax wartosc maksymalna na wykresie
     Scales(float xMin, float xMax, float yMin, float yMax) :
       xMin(xMin),
       xMax(xMax),
@@ -31,18 +39,34 @@ public:
     {}
 
 public:
+    //! 
     float getYMax() const { return yMax; }
+    //! 
     float getYMin() const { return yMin; }
+    //! 
     float getXMax() const { return xMax; }
+    //! 
     float getXMin() const { return xMin; }
+    //! \return czy obiekt juz zostal zainicjalizowany poprawnymi danymi
     bool isInitialized() const { return initialized; }
 
 public:
+    //! resetowanie ustawien, zostawia obiekt niezainicjalizowany
     void clear() { initialized = false; }
+    //! Laczy obiekt z drugim obiektem tego samego typu, w razie potrzeby zmieniane sa ekstrema
+    //! \param scales drugi obiekt z ekstremami
     void merge(const Scales& scales);
 
 private:
-    float xMin, xMax, yMin, yMax;
+    //! minimalny argument na wykresie
+    float xMin;
+    //! maksymalny argument na wykresie
+    float xMax;
+    //! wartosc minimalna na wykresie
+    float yMin;
+    //! wartosc maksymalna na wykresie
+    float yMax;
+    //! flaga okresla, czy obiekt juz zostal zainicjalizowany poprawnymi danymi
     bool initialized;
 };
 

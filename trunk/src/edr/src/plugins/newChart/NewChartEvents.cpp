@@ -1,6 +1,7 @@
 #include "NewChartPCH.h"
 #include "NewChartEvents.h"
 #include "NewChartSeriesData.h"
+#include "NewChartEventStateData.h"
 
 const QColor leftColor1(255, 0, 0, 15);
 const QColor leftColor2(128, 0, 0, 15);
@@ -8,7 +9,7 @@ const QColor rightColor1(0, 255, 0, 15);
 const QColor rightColor2(0, 128, 0, 15);
 
 EventsPlotItem::EventsPlotItem( EventsCollectionConstPtr events ) : 
-events(events) 
+    events(events) 
 {
     UTILS_ASSERT(events);
 }

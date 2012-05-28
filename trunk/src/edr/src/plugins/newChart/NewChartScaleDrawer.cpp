@@ -1,6 +1,15 @@
 #include "NewChartPCH.h"
 #include "NewChartScaleDrawer.h"
 
+
+PercentScaleDraw::PercentScaleDraw( double left, double right, bool percentMode /*= false*/ ) :
+QwtScaleDraw(),
+    left(left),
+    right(right),
+    percentMode(percentMode)
+{
+}
+
 void PercentScaleDraw::drawLabel( QPainter *painter, double value ) const
 {
     double val = percentMode ? ((value - left) / (right - left) * 100) : value;
@@ -49,4 +58,10 @@ QwtScaleDiv PercentScaleDraw::getScaleDiv()
     QwtScaleDiv scaleDiv( majorTicks.first(), majorTicks.last(), ticks );
     scaleDiv.setTicks(QwtScaleDiv::MediumTick, mediumTicks);
     return scaleDiv;
+}
+
+void PercentScaleDraw::setLeftRightValues( double left, double right )
+{
+    this->left = left;
+    this->right = right;
 }
