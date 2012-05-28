@@ -129,3 +129,15 @@ EventsHelper::EventsHelper( EventsCollectionConstPtr events, ScalarChannelReader
     createSegments(rightSegments, C3DEventsCollection::IEvent::Right);
    
 }
+
+EventsHelper::SegmentConstPtr EventsHelper::getSegment( timeType time, C3DEventsCollection::Context context )
+{
+    UTILS_ASSERT(context == C3DEventsCollection::IEvent::Left || context == C3DEventsCollection::IEvent::Right);
+    std::vector<SegmentPtr>& segments = context == C3DEventsCollection::IEvent::Left ? leftSegments : rightSegments;
+    for (auto it = segments.cbegin(); it != segments.cend(); ++it) {
+        if (time >= (*it)->begin && time <= (*it)->end) {
+            return *it;
+        }
+    }
+    return SegmentConstPtr();
+}

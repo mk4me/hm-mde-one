@@ -55,7 +55,7 @@ public:
         //! durgi event
         EventConstPtr event2;
         //! poczatek czasu, w ktorym zaczyna sie event
-        timeType begin;'
+        timeType begin;
         //! koniec czasu, w ktorm event sie konczy
         timeType end;
         //! dane ze statystykami (znormalizowanego odcinka)
@@ -79,17 +79,7 @@ public:
     //! \return element wykresu odpowiedzialny za rysowanie eventow
     EventsPlotItem* getEventsItem() { return eventsItem; }
     //! \return odpowiedni segment dla podanego czasu lub nullptr jesli takiego nie ma
-    SegmentConstPtr getSegment(timeType time, C3DEventsCollection::Context context)
-    {
-        UTILS_ASSERT(context == C3DEventsCollection::IEvent::Left || context == C3DEventsCollection::IEvent::Right);
-        std::vector<SegmentPtr>& segments = context == C3DEventsCollection::IEvent::Left ? leftSegments : rightSegments;
-        for (auto it = segments.cbegin(); it != segments.cend(); ++it) {
-            if (time >= (*it)->begin && time <= (*it)->end) {
-                return *it;
-            }
-        }
-        return SegmentConstPtr();
-    }
+    SegmentConstPtr getSegment(timeType time, C3DEventsCollection::Context context);
     //! \return zwraca segmenty dla prawej nogi
     SegmentsConstRange getRightSegments() const { return boost::make_iterator_range(rightSegments.cbegin(), rightSegments.cend()); }
     //! \return zwraca segmenty dla lewej nogi
@@ -113,7 +103,7 @@ private:
     //! dostarczone dane
     ScalarChannelReaderInterfaceConstPtr scalar;
     //! element rysowany na wykresie
-    EventsPlotItem* eventsItem;s
+    EventsPlotItem* eventsItem;
 };
 typedef core::shared_ptr<EventsHelper> EventsHelperPtr;
 typedef core::shared_ptr<const EventsHelper> EventsHelperConstPtr;
