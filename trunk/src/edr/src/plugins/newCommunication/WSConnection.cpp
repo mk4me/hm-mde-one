@@ -144,8 +144,10 @@ public:
 
 			invoker_->invoke(0, process);
 		}catch(std::exception & e){
+			resetRequired = true;
 			throw webservices::WSConnectionInvokeException(e.what());
 		}catch(...){
+			resetRequired = true;
 			throw webservices::WSConnectionInvokeException("Unknown connection invoke error");
 		}
 
@@ -160,6 +162,8 @@ public:
 			if(e == std::string::npos){
 				e = invoker_->getXMLResponse().size();
 			}
+
+			resetRequired = true;
 
 			if(resp.find("a:InvalidSecurityToken", 0) != std::string::npos){
 				throw webservices::WSConnectionSecurityException(resp.substr(s + 11, e-s - 11).c_str());

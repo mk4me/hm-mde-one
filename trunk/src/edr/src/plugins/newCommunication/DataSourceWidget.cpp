@@ -1038,6 +1038,10 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 		return;
 	}
 
+	filesToLoad.swap(std::set<int>());
+	filesToUnload.swap(std::set<int>());
+	filesToDownload.swap(std::set<int>());
+
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 
@@ -1059,10 +1063,6 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	menu.exec(perspective->mapToGlobal(pos));
 
 	currentPerspectiveItem = nullptr;
-
-	filesToLoad.swap(std::set<int>());
-	filesToUnload.swap(std::set<int>());
-	//tutaj nie czyszczê plików œci¹ganych bo one s¹ kopiowane w innym w¹tku - tam to robie (LocalDataLoader)
 }
 
 QString DataSourceWidget::formatFileSize(unsigned long long size)
