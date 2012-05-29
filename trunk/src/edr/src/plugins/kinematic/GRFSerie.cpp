@@ -615,6 +615,10 @@ void GRFSerie::Arrow::setArrow( Vec3 from, Vec3 to )
 	Vec3 zero;
 	Vec3 up(0.0f, 1.0f, 0.0f);
 	float length = dir.normalize();
+    if (length < 0.01f) {
+        dir.set(0,0,0.1f);
+        length = 0.01f;
+    }
 	osg::Matrix mat;
 	osg::Quat rotation;
 	mat.makeLookAt(zero, -dir, up);
