@@ -24,9 +24,9 @@ extern "C" {
 #pragma warning (disable: 4244)
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libavutil/opt.h>
 #include <libavutil/mathematics.h>
 #include <libavutil/log.h>
+#include <libavutil/opt.h>
 #pragma warning (pop)
 }
 
@@ -39,7 +39,7 @@ extern "C" {
 
 
 #define AVIO_FFMPEG_SEEK_WITH_STREAM_INDEX
-//#define AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
+#define AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
 
 
 #define BREAK_ON_ERROR( x ) { if (!(x)) { VIDLIB_ERROR(*getLastError()); }}
@@ -98,8 +98,6 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
         return;
     }
 
-    //line[0]=0;
-
     // pobieramy wskaŸniki na klasy
     if(avc) {
         if(avc->version >= (50<<16 | 15<<8 | 3) && avc->parent_log_context_offset){
@@ -155,46 +153,6 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
     logCallback(severity, line, itemClass.ptr ? &itemClass : NULL, parentClass.ptr ? &parentClass : NULL);
     line[0] = 0;
     len = 0;
-
-    //colored_fputs(av_clip(level>>3, 0, 6), line);
-    //strcpy(prev, line);
-
-//     void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl)
-//     {
-//         static int print_prefix=1;
-//         static int count;
-//         static char line[1024], prev[1024];
-//         AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
-//         if(level>av_log_level)
-//             return;
-//         line[0]=0;
-// #undef fprintf
-//         if(print_prefix && avc) {
-//             if(avc->version >= (50<<16 | 15<<8 | 3) && avc->parent_log_context_offset){
-//                 AVClass** parent= *(AVClass***)(((uint8_t*)ptr) + avc->parent_log_context_offset);
-//                 if(parent && *parent){
-//                     snprintf(line, sizeof(line), "[%s @ %p] ", (*parent)->item_name(parent), parent);
-//                 }
-//             }
-//             snprintf(line + strlen(line), sizeof(line) - strlen(line), "[%s @ %p] ", avc->item_name(ptr), ptr);
-//         }
-// 
-//         vsnprintf(line + strlen(line), sizeof(line) - strlen(line), fmt, vl);
-// 
-//         print_prefix= line[strlen(line)-1] == '\n';
-//         if(print_prefix && !strcmp(line, prev)){
-//             count++;
-//             fprintf(stderr, "    Last message repeated %d times\r", count);
-//             return;
-//         }
-//         if(count>0){
-//             fprintf(stderr, "    Last message repeated %d times\n", count);
-//             count=0;
-//         }
-//         colored_fputs(av_clip(level>>3, 0, 6), line);
-//         strcpy(prev, line);
-//     }
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -252,9 +210,10 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
 {
     VIDLIB_FUNCTION_PROLOG;
     static Initializer initializer;
+
     formatContext = NULL;
-	selectedStream = NULL;
     codecContext = NULL;
+	selectedStream = NULL;
     frame = NULL;
     videoStream = NULL;
 
@@ -273,12 +232,12 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
     packet = NULL;
     alignedPacket = NULL;
 
-    wantedTime = INVALID_TIMESTAMP;
-
 	codec_opts = NULL;
 
 	av_dict_set(&codec_opts, "threads", "auto", 0);
+	av_dict_set(&codec_opts, "b", "2.5M", 0);
 
+    wantedTime = INVALID_TIMESTAMP;
     init( source, wantedVideoStream );
 
     // sprawdzanie pewnych warunków
@@ -311,10 +270,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
 {
     VIDLIB_FUNCTION_PROLOG;
     int error = 0;
-    // mo¿na inicjalizowaæ wiele razy, sprawdza wewnetrznie czy ju¿ by³a zainicjalizowana
-    //av_register_all();
     // otwieramy plik
-    //if ( (error = av_open_input_file(&formatContext, source.c_str(), NULL, 0, NULL)) != 0 ) {
 	if ( (error = avformat_open_input(&formatContext, source.c_str(), NULL, 0)) != 0 ) {
         VIDLIB_ERROR(FFmpegError( "avformat_open_input error", error ));
     }
@@ -324,14 +280,12 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     }
 
 #ifdef VIDLIB_DEBUG
-    //dump_format(formatContext, 0, source.c_str(), false);
 	av_dump_format(formatContext, 0, source.c_str(), false);
 #endif // VIDLIB_DEBUG
 
     // szukamy strumienia video
     for (unsigned int i = 0; i < formatContext->nb_streams; ++i) {
         selectedStream = formatContext->streams[i];
-        //if ( selectedStream->codec->codec_type == CODEC_TYPE_VIDEO ) {
 		if ( selectedStream->codec->codec_type == AVMEDIA_TYPE_VIDEO ) {
             // czy to jest ten strumieñ, który chcemy otworzyæ?
             if ( wantedVideoStream < 0 || wantedVideoStream == static_cast<int>(i) ) {
@@ -353,7 +307,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
         VIDLIB_ERROR( FFmpegError( "avcodec_find_decoder" ) );
     }
 
-	//codecContext->thread_count = 1;
+	codecContext->thread_type = FF_THREAD_SLICE;
 
     // otwieramy kodek
     if( (error=avcodec_open2(codecContext, pCodec, &codec_opts)) <0) {
@@ -370,7 +324,6 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     packet = (AVPacket*)av_malloc(sizeof(AVPacket));
     av_init_packet(packet);
     alignedPacket = (AVPacket*)av_malloc(sizeof(AVPacket));
-    //utils::zero(*alignedPacket);
     av_init_packet(alignedPacket);
 
     // odstêp miêdzy ramkami
@@ -378,8 +331,6 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     frameSpan = frameSpanRational.den;
     UTILS_ASSERT(frameSpanRational.num == 1, "Error getting frame span.");
     //UTILS_ASSERT(videoStream->duration % frameSpan == 0, "Error getting frame span.");
-
-	timeBaseFrac = videoStream->time_base.den / videoStream->time_base.num;
 
     // parametry strumienia
     double frameRate = av_q2d(videoStream->r_frame_rate);
@@ -433,12 +384,6 @@ bool FFmpegVideoStream::setTime( double time )
         // przy debugowaniu mo¿na zakomentowaæ ten b³¹d i wyzerowaæ czas
         VIDLIB_ERROR( FFmpegError("time < 0.0 || time > getDuration()") );
     }
-//     if ( time == getDuration() ) {
-//         // TODO
-//         // ffmpeg Ÿle ustawia siê przy seeku do zerowego czasu (wypluwa ostatni¹ odczytan¹ ramkê)
-//         // tymczasowe, do stawiania breakpointów jeœli czas == 0
-//         // int brr = 0;
-//     }
 
     // ustawiamy czas
     wantedTime = time;
@@ -559,7 +504,8 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
         int64_t seekMax = !pickNextframe ? seekTarget : INT64_MAX;
         // +- 2 wprowadzone z powodu b³êdu zaokr¹gleñ
         // seek
-        error = avformat_seek_file(formatContext, streamIdx, seekMin, seekTarget, seekMax, AVSEEK_FLAG_ANY);
+        //error = avformat_seek_file(formatContext, streamIdx, seekMin, seekTarget, seekMax, AVSEEK_FLAG_ANY);
+		error = avformat_seek_file(formatContext, streamIdx, seekMin, seekTarget, seekMax, 0);
 #else // AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
         int flags = (pickNextframe ? 0 : AVSEEK_FLAG_BACKWARD);
         if ( av_seek_frame(formatContext, streamIdx, seekTarget, flags) < 0 ) {
@@ -608,28 +554,6 @@ bool FFmpegVideoStream::readFrame()
     int gotPicture = 0;
 
     for (;;) {
-
-//#ifndef VIDLIB_FFMPEG_ENABLE_NEWAPI
-//        //!
-//        while ( frameBytesRemaining > 0 ) {
-//            // odczytujemy ramkê
-//            const int bytesDecoded = avcodec_decode_video(codecContext, frame, &gotPicture, frameData, frameBytesRemaining);
-//            if ( bytesDecoded < 0 ) {
-//                VIDLIB_ERROR( FFmpegError("Error decoding frame") );
-//            }
-//            frameBytesRemaining -= bytesDecoded;
-//            frameData += bytesDecoded;
-//
-//            if ( gotPicture ) {
-//                // liczymy timestamp
-//                frameTimestamp = getTimestamp(frame, packet->dts);
-//                nextFrameTimestamp = std::min(frameTimestamp+frameSpan, videoStream->duration);
-//                onGotFrame(frame, frameTimestamp);
-//                return true;
-//            }
-//        }
-//#endif // VIDLIB_FFMPEG_ENABLE_NEWAPI
-
         // czy to koniec?
         if ( url_feof(formatContext->pb) ) {
             nextFrameTimestamp = frameTimestamp = videoStream->duration;
@@ -663,9 +587,6 @@ bool FFmpegVideoStream::readFrame()
         if ( packet->stream_index == videoStream->index ) {
             // pomocnicza zmienna
             codecContext->reordered_opaque = packet->pts;
-
-//#ifdef VIDLIB_FFMPEG_ENABLE_NEWAPI
-            //packet->flags |= PKT_FLAG_KEY;
             {
                 error = avcodec_decode_video2(codecContext, frame, &gotPicture, packet);
                 if ( error < 0 ) {
@@ -680,13 +601,6 @@ bool FFmpegVideoStream::readFrame()
                 onGotFrame(frame, frameTimestamp);
                 return true;
             }
-
-//#else // VIDLIB_FFMPEG_ENABLE_NEWAPI
-//
-//            frameBytesRemaining = packet->size;
-//            frameData = packet->data;
-//
-//#endif // VIDLIB_FFMPEG_ENABLE_NEWAPI
         }
     }
 }
@@ -720,7 +634,7 @@ inline int64_t FFmpegVideoStream::secToTimestap( double time ) const
 {
     VIDLIB_FUNCTION_PROLOG;
     UTILS_ASSERT(videoStream);
-    return static_cast<int64_t>(time * timeBaseFrac);//videoStream->time_base.den / videoStream->time_base.num);
+    return static_cast<int64_t>(time * videoStream->time_base.den / videoStream->time_base.num);
 }
 
 //------------------------------------------------------------------------------

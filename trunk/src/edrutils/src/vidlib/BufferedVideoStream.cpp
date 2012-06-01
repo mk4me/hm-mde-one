@@ -24,9 +24,6 @@ innerStream(innerStream), maxBufferSize(maxBufferSize),
 wantedTime(0.0)
 {
     VIDLIB_FUNCTION_PROLOG;
-    // skalowanie do potêgi dwójki
-    //int width = innerStream->getWidth();
- // int height = innerStream->getHeight();
 
     // inicjalizacja
     onAfterInit( std::string("Buffered: ") + innerStream->getSource(), 
@@ -56,15 +53,12 @@ BufferedVideoStream::~BufferedVideoStream()
 double BufferedVideoStream::getTime() const
 {
     VIDLIB_FUNCTION_PROLOG;
-    //return innerStream->getTime();
     return wantedTime;
 }
 
 double BufferedVideoStream::getFrameTimestamp() const
 {
     VIDLIB_FUNCTION_PROLOG;
-    //return innerStream->getFrameTimestamp();
-    //return getFrame(wantedTime)->timestamp;
     double timestamp = 0.0;
     convertedFrames->getNearestFrame(wantedTime, &timestamp);
     return timestamp;
@@ -83,7 +77,6 @@ double BufferedVideoStream::getNextFrameTimestamp() const
 bool BufferedVideoStream::setTime( double time )
 {
     VIDLIB_FUNCTION_PROLOG;
-    /*double prevTime = wantedTime;*/
     wantedTime = time;
 
     // czy ramka jest przekonwertowana?
@@ -118,7 +111,6 @@ bool BufferedVideoStream::setTime( double time )
     }
 
     return true;
-    //return returnOrCopyError(innerStream->setTime(time));
 }
 
 
@@ -188,8 +180,6 @@ void BufferedVideoStream::frameRead( Picture * /*picture*/, PictureLayered * /*l
         // ramka ju¿ jest odczytana
         return;
     }
-        
-    //std::cout << "Missed: " << timestamp << " " << endTimestamp << " wanted " << wantedTime << std::endl;
 
     // ramka z bufora
     Picture * target = pendingFrames->pop();
