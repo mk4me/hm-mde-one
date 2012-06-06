@@ -424,7 +424,7 @@ void DataSourceWidget::registerPerspective(communication::IDataSourcePerspective
 	w->setContextMenuPolicy(Qt::CustomContextMenu);
 	w->setIconSize(QSize(40, 20));
 
-	perspectiveComboBox->addItem(QString::fromStdString(perspective->name()));
+	perspectiveComboBox->addItem(QString::fromUtf8(perspective->name().c_str()));
 }
 
 void DataSourceWidget::registerPatientCard(communication::IPatientCard * patientCard)

@@ -82,7 +82,7 @@ DataSourcePatientPerspective::~DataSourcePatientPerspective()
 
 const std::string DataSourcePatientPerspective::name() const
 {
-	return std::string("Patient");
+	return std::string(QObject::tr("Patient").toUtf8().constData());
 }
 
 void DataSourcePatientPerspective::rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy)
@@ -147,7 +147,7 @@ DataSourceDisorderPerspective::~DataSourceDisorderPerspective()
 
 const std::string DataSourceDisorderPerspective::name() const
 {
-	return std::string("Disorder");
+	return std::string(QObject::tr("Disorder").toUtf8().constData());
 }
 
 void DataSourceDisorderPerspective::rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy)
@@ -186,7 +186,7 @@ DataSourceGenderPerspective::~DataSourceGenderPerspective()
 
 const std::string DataSourceGenderPerspective::name() const
 {
-	return std::string("Gender");
+	return std::string(QObject::tr("Gender").toUtf8().constData());
 }
 
 void DataSourceGenderPerspective::rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy)
