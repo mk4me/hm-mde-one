@@ -2536,7 +2536,7 @@ Wartość: %2</translation>
     <name>NewChartVisualizer</name>
     <message>
         <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="101"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="366"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="359"/>
         <source>No active serie</source>
         <translation>Brak aktywnej serii danych</translation>
     </message>
@@ -2654,33 +2654,33 @@ Wartość: %2</translation>
         <translation>Aktywna seria danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="651"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="687"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="695"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="640"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="671"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="679"/>
         <source>Left</source>
         <translation>Strona lewa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="651"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="695"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="640"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="679"/>
         <source>%1: Left step %2</source>
         <translation>%1: Krok %2</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="655"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="687"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="699"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="644"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="671"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="683"/>
         <source>Right</source>
         <translation>Strona prawa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="655"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="699"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="644"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="683"/>
         <source>%1: Right step %2</source>
         <translation>%1: Krok %2</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="684"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="668"/>
         <source>Whole chart</source>
         <translation>Wszystkie wykresy</translation>
     </message>
@@ -2732,6 +2732,7 @@ Wartość: %2</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/ui/NotesWidget.ui" line="129"/>
+        <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="178"/>
         <source>Add note</source>
         <translation>Dodaj notatkę</translation>
     </message>
@@ -2750,6 +2751,11 @@ Wartość: %2</translation>
         <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="177"/>
         <source>New note</source>
         <translation>Nowa notatka</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="193"/>
+        <source>Update note</source>
+        <translation>Aktualizuj notatkę</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="210"/>
@@ -7674,8 +7680,8 @@ Proszę o sprawdzenie podanej nazwy pliku.</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/newChart/NewChartMarker.cpp" line="105"/>
-        <location filename="../../../src/plugins/newChart/NewChartValueMarker.cpp" line="81"/>
-        <location filename="../../../src/plugins/newChart/NewChartValueMarker.cpp" line="99"/>
+        <location filename="../../../src/plugins/newChart/NewChartValueMarker.cpp" line="84"/>
+        <location filename="../../../src/plugins/newChart/NewChartValueMarker.cpp" line="102"/>
         <source>Time: %1
 Value: %2</source>
         <translation>Czas: %1
@@ -7686,12 +7692,12 @@ Wartość: %2</translation>
         <translation type="obsolete">Czas: %1, Wartość: %2</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="85"/>
+        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="86"/>
         <source>Foot Strike</source>
         <translation>Stąpnięcie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="86"/>
+        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="87"/>
         <source>Foot Off</source>
         <translation>Oderwanie stopy</translation>
     </message>
@@ -7712,11 +7718,13 @@ Wartość: %2</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/DataSourceBaseContent.cpp" line="107"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourcePerspective.cpp" line="150"/>
         <source>Disorder</source>
         <translation>Jednostka chorobowa</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/DataSourceBaseContent.cpp" line="111"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourcePerspective.cpp" line="85"/>
         <source>Patient</source>
         <translation>Pacjent</translation>
     </message>
@@ -7742,6 +7750,7 @@ Wartość: %2</translation>
         <translation>Plik</translation>
     </message>
     <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourcePerspective.cpp" line="189"/>
         <location filename="../../../src/plugins/newCommunication/DataSourcePerspective.cpp" line="228"/>
         <source>Gender</source>
         <translation>Płeć</translation>

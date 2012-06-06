@@ -10,7 +10,7 @@
 
 
 NoteDialog::NoteDialog(QWidget * parent) : QDialog(parent),
-	titleEdit(new QLineEdit()), textEdit(new QLineEdit()),
+	titleEdit(new QLineEdit()), textEdit(new QTextEdit()),
 	acceptButton(new QPushButton()), cancelButton(new QPushButton(tr("Cancel")))
 {
 	connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
@@ -175,13 +175,13 @@ void NotesWidget::addNoteDialog()
 	NoteDialog dialog;
 
 	dialog.setWindowTitle(tr("New note"));
-	dialog.acceptButton->setText("Add note");
+	dialog.acceptButton->setText(tr("Add note"));
 
 	connect(&dialog, SIGNAL(acceptRequest()), this, SLOT(noteDialogConfirm()));
 
 	int ret = dialog.exec();
 	if(ret == QDialog::Accepted){
-		addNote(QDateTime::currentDateTime(), dialog.titleEdit->text(), dialog.textEdit->text());
+		addNote(QDateTime::currentDateTime(), dialog.titleEdit->text(), dialog.textEdit->toPlainText());
 	}
 }
 
@@ -190,14 +190,14 @@ void NotesWidget::editNoteDialog()
 	NoteDialog dialog;
 
 	dialog.setWindowTitle(tr("Edit note"));
-	dialog.acceptButton->setText("Update note");
+	dialog.acceptButton->setText(tr("Update note"));
 
 	connect(&dialog, SIGNAL(acceptRequest()), this, SLOT(noteDialogConfirm()));
 
 	int ret = dialog.exec();
 	
 	if(ret == QDialog::Accepted){
-		updateNote(QDateTime::currentDateTime(), dialog.titleEdit->text(), dialog.textEdit->text());
+		updateNote(QDateTime::currentDateTime(), dialog.titleEdit->text(), dialog.textEdit->toPlainText());
 	}
 }
 
@@ -205,7 +205,7 @@ void NotesWidget::noteDialogConfirm()
 {
 	NoteDialog * dialog = qobject_cast<NoteDialog*>(sender());
 
-	if(dialog->titleEdit->text().isEmpty() == true || dialog->textEdit->text().isEmpty() == true){
+	if(dialog->titleEdit->text().isEmpty() == true || dialog->textEdit->toPlainText().isEmpty() == true){
 		QMessageBox message(this);
 		message.setWindowTitle(tr("Note validation"));
 		message.setText(tr("All note fields must be filled. Please fill them and try again."));

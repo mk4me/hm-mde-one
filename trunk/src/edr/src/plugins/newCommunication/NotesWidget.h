@@ -14,6 +14,7 @@
 #include <QtGui/QDialog>
 #include <QtGui/QLineEdit>
 #include <QtGui/QPushButton>
+#include <QtGui/QTextEdit>
 #include <QtCore/QDateTime>
 #include <core/SmartPtr.h>
 
@@ -122,7 +123,7 @@ public:
 	virtual ~NoteDialog();
 
 	QLineEdit * titleEdit;
-	QLineEdit * textEdit;
+	QTextEdit * textEdit;
 
 	QPushButton * acceptButton;
 	QPushButton * cancelButton;
