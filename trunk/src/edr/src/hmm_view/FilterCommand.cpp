@@ -9,5 +9,4 @@ using namespace core;
 SimpleFilterCommand::SimpleFilterCommand( PluginSubject::DataFilterPtr dataFilter ) :
     dataFilter(dataFilter)
 {
-
 }

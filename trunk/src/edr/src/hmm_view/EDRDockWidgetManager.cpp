@@ -4,21 +4,15 @@
 #include <QtGui/QTabWidget>
 
 EDRDockWidgetManager::EDRDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
-	QMainWindow(parent, flags)//,
-    //plusWidget(new EDRDockWidgetSet("+")),
-    //wasRemoved(false)
+	QMainWindow(parent, flags)
 {
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setDockOptions(QMainWindow::ForceTabbedDocks | QMainWindow::AnimatedDocks | QMainWindow::AllowTabbedDocks);
     setCentralWidget(nullptr);
-    //setDocumentMode(true);
-    //connect(plusWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(plusWidgetVisibilityChanged(bool)));
 }
 
 void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 {
-	//QWidget::setUpdatesEnabled(false);
-    //setDocumentMode(true);
 	this->addDockWidget(Qt::TopDockWidgetArea, set, Qt::Horizontal);
 	dockList.push_back(set);
 
@@ -51,27 +45,17 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 
         raiseSet(set);
 
-    } else {
-        //addDockWidget(Qt::TopDockWidgetArea, plusWidget, Qt::Horizontal);
-    }
-    //plusWidget->blockSignals(true);
-    //this->tabifyDockWidget(*dockList.rbegin(), plusWidget);
-    //raiseSet(set);
-    //plusWidget->blockSignals(false);
+    } 
     set->setWindowTitle(QString(tr("Group %1")).arg(dockList.size()));
-
-	//QWidget::setUpdatesEnabled(true);
     set->setPermanent(false);
     //setTabNames();
 }
 
 void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
 {
-    //QWidget::setUpdatesEnabled(false);
 	for (auto it = generatedList.begin(); it != generatedList.end(); ++it) {
 		if ((*it)->isAdditionPossible(widget)) {
 			(*it)->addDockWidget(widget);
-			//QWidget::setUpdatesEnabled(true);
 			return;
 		}
 	}
@@ -99,13 +83,6 @@ void EDRDockWidgetManager::onSetClosed( QObject* object )
     dockList.remove(set);
     generatedList.remove(set);
     setTabNames();
-    /*if (dockList.size()) {
-        raiseSet(*dockList.begin());
-       // wasRemoved = true;
-    } else {
-       // this->removeDockWidget(plusWidget);
-    }*/
-
     emit changed();
 }
 
@@ -143,17 +120,6 @@ EDRDockWidgetSet* EDRDockWidgetManager::tryGetDockSet( EDRDockWidget* widget )
     return nullptr;
 }
 
-//void EDRDockWidgetManager::plusWidgetVisibilityChanged( bool visible )
-//{
-//    if (visible && !wasRemoved) {
-//        EDRDockWidgetSet* set = new EDRDockWidgetSet();
-//        addDockWidgetSet(set);
-//        generatedList.push_back(set);
-//        set->setPermanent(false);
-//    } else {
-//        wasRemoved = false;
-//    }
-//}
 
 void EDRDockWidgetManager::dockClosed()
 {

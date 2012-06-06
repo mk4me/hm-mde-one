@@ -178,7 +178,6 @@ void ConfigurationWidget::showFront()
     this->painterFront.show();
     this->painterBack.hide();
     this->currentPainter = &painterFront;
-    //this->switchButton->setText(tr("Back"));
     isFront = true;
 }
 
@@ -188,7 +187,6 @@ void ConfigurationWidget::showBack()
     this->painterFront.hide();
     this->painterBack.show();
     this->currentPainter = &painterBack;
-    //this->switchButton->setText(tr("Front"));
     isFront = false;
 }
 

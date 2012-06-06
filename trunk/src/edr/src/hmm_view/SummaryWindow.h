@@ -1,11 +1,11 @@
-///********************************************************************
-//	created:	2012/05/04
-//	created:	4:5:2012   13:43
-//	filename: 	SummaryWindow.h
-//	author:		Wojciech Kniec
-//	
-//	purpose:	
-//*********************************************************************/
+/********************************************************************
+	created:	2012/05/04
+	created:	4:5:2012   13:43
+	filename: 	SummaryWindow.h
+	author:		Wojciech Kniec
+	
+	purpose:	
+*********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__SUMMARYWINDOW_H__
 #define HEADER_GUARD_HMM__SUMMARYWINDOW_H__
@@ -16,6 +16,7 @@ class VisualizerWidget;
 #include <plugins/subject/ISubject.h>
 #include "TreeItemHelper.h"
 
+//! okno sluzy do wyswietlenia podsumowania i dodatkowych informacji dla wizualizatora lub elementu drzewa danych
 class SummaryWindow
 {
 public:
@@ -40,10 +41,10 @@ private:
 typedef core::shared_ptr<SummaryWindow> SummaryWindowPtr;
 typedef core::shared_ptr<const SummaryWindow> SummaryWindowConstPtr;
 
+//! Kontroler dla okienka z podsumowaniem
 class SummaryWindowController : public QObject
 {
     Q_OBJECT;
-
 public:
     SummaryWindowController(SummaryWindowPtr sw, HmmMainWindow* hmm);
 

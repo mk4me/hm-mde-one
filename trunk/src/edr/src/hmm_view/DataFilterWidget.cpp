@@ -25,8 +25,9 @@ bool DataFilterWidget::eventFilter(QObject *object, QEvent *event)
         if (mouseEvent->button() == Qt::LeftButton) {
             onClick();
             return true;
-        } else
+        } else {
             return false;
+        }
     }
     return false;
 }

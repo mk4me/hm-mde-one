@@ -1,11 +1,11 @@
 #include "hmmPCH.h"
 #include "AnalisisWidget.h"
 #include "SummaryWindow.h"
+#include "AnalisisTreeWidget.h"
 
 AnalisisWidget::AnalisisWidget( QWidget* parent, HmmMainWindow* hmm, int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
 QWidget(parent, flags),
     margin(margin),
-    lastMouseButton(Qt::NoButton),
     hmm(hmm),
     filterWidth(-1), filterHeight(-1)
 {
@@ -61,15 +61,6 @@ void AnalisisWidget::addDataFilterWidget( DataFilterWidget* filter )
     }
 }
 
-bool AnalisisWidget::eventFilter( QObject* object, QEvent* event )
-{
-    if (event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent* mouse = static_cast<QMouseEvent*>(event);
-        lastMouseButton = mouse->button();
-    }
-
-    return false;
-}
 
 void AnalisisWidget::setFiltersExpanded( bool expand )
 {
@@ -135,25 +126,12 @@ void AnalisisWidget::switchToFirstTab()
     tabWidget->setCurrentIndex(0);
 }
 
-
-void AnalisisTreeWidget::contextMenuEvent( QContextMenuEvent * event )
-{
-    QTreeWidget::contextMenuEvent(event);
+QTreeWidget* AnalisisWidget::getTreeWidget() 
+{ 
+    return this->treeWidget; 
 }
 
-void AnalisisTreeWidget::mousePressEvent( QMouseEvent *event )
+QWidget* AnalisisWidget::getRaportsThumbnailList()
 {
-    if (event->button() == Qt::RightButton) {
-        return;
-    }
-
-    QTreeWidget::mousePressEvent(event);
+    return raportsArea; 
 }
-
-AnalisisTreeWidget::AnalisisTreeWidget( QWidget *parent /*= 0*/ ) :
-QTreeWidget(parent)
-{
-    setHeaderHidden(true);
-    setFrameShape(QFrame::NoFrame);
-}
-

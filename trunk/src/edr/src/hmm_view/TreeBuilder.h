@@ -12,6 +12,7 @@
 
 #include <plugins/subject/Types.h>
 
+//! Klasa sluzy do budowania drzewa danych w analizach
 class TreeBuilder
 {
 public:

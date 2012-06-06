@@ -10,56 +10,64 @@
 #ifndef HEADER_GUARD_HMM__ANALISISWIDGET_H__
 #define HEADER_GUARD_HMM__ANALISISWIDGET_H__
 
-#include <QtCore/QEvent>
-#include <QtGui/QMouseEvent>
+
 #include "DataFilterWidget.h"
 #include "ui_AnalisisWidget.h"
 
-class AnalisisTreeWidget : public QTreeWidget
-{
-    Q_OBJECT;
-public:
-    explicit AnalisisTreeWidget(QWidget *parent = 0);
+class AnalisisTreeWidget;
 
-protected:
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void contextMenuEvent ( QContextMenuEvent * event );
-};
-
-
+//! Klasa jest odpowiedzialna za widok zakladki analiz
 class AnalisisWidget : public QWidget, public Ui::AnalisisWidget
 {
     Q_OBJECT;
 public:
+    //! Konstruktor
+    //! \param parent rodzic widgeta
+    //! \param hmm obiekt widoku HMM 
+    //! \param margin margines dla filtrow
+    //! \param flags flagi Qt
     AnalisisWidget(QWidget* parent, HmmMainWindow* hmm, int margin = 2, Qt::WindowFlags flags = 0);
 	virtual ~AnalisisWidget() {}
 
 public:
-    QTreeWidget* getTreeWidget() { return this->treeWidget; }
-    QWidget* getRaportsThumbnailList() { return raportsArea; }
+    //! \return drzewo danych
+    QTreeWidget* getTreeWidget();
+    //! \return widget przechowujacy miniaturki do raportow
+    QWidget* getRaportsThumbnailList();
+    //! dodaje widget z filtrami
+    //! \param filter dodawany widget
     void addDataFilterWidget(DataFilterWidget* filter);
+    //! \return obszar, gdzie laduja wizualizatory i timeline
     QWidget* getArea() { return analisisArea; }
 
-protected:
-    virtual bool eventFilter(QObject* object, QEvent* event);
-
 private slots:
+    //! chowa/pokazuje filtry
+    //! \param expand 
     void setFiltersExpanded(bool expand);
+    //! kliknieto w filtr
+    //! \param filter klikniety
     void filterClicked(FilterEntryWidget* filter);
+    //! Kliknieto zatwierdz w graficznym konfiguratorze
     void applyClicked();
+    //! proste przejscie do pierwszej zakladki (z drzewem danych)
     void switchToFirstTab();
+    //! odtwarza drzewo danych 
+    //! \param currentFilter filtr, na podstawie ktorego odtworzone zostanie drzewo
     void recreateTree(FilterEntryWidget* currentFilter);
 
 private:
+    //! szerokosc filtru w zakladce
     int filterWidth;
+    //! wysokosc filtru w zakladce
     int filterHeight;
+    //! margines dla filtrow w zakladce
     int margin;
-    Qt::MouseButton lastMouseButton;
+    //! drzewo danych
     AnalisisTreeWidget* treeWidget;
+    //! widok HMM
     HmmMainWindow* hmm;
     //TODO potrzebne tylko, aby przekazac info miedzy elementami.
     FilterEntryWidget* currentFilter;
-
 };
 
 

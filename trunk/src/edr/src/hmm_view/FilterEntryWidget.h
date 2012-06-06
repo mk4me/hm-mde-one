@@ -18,6 +18,7 @@
 
 class HmmMainWindow;
 
+//! widget z widokiem dla filtru
 class FilterEntryWidget : public QWidget, private Ui::FilterEntry
 {
     Q_OBJECT;

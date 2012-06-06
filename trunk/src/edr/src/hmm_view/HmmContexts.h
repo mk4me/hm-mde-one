@@ -21,10 +21,9 @@ class HMMEmptyContext : public IAppUsageContext
 public:
 	HMMEmptyContext() {}
 	virtual ~HMMEmptyContext() {}
+
 public:
-
 	virtual void activateContext(QWidget * contextWidget) {}
-
 	virtual void deactivateContext(QWidget * nextContextWidget, bool refresh) {}
 };
 
@@ -59,7 +58,6 @@ class HMMVisualizerUsageContext : public IAppUsageContext
 {
 public:
     HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget);
-    // IAppUsageContext
 public:
 
     virtual void activateContext(QWidget * contextWidget);
@@ -86,7 +84,6 @@ class HMMTreeItemUsageContext : public QObject, public IAppUsageContext
     Q_OBJECT;
 public:
     HMMTreeItemUsageContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
-    // IAppUsageContext
 public:
 
     virtual void activateContext(QWidget * contextWidget);

@@ -4,6 +4,11 @@
 #include "Measurements.h"
 #include <core/ILog.h>
 
+MeasurementConfig::MeasurementConfig() : 
+    number(-1)
+{
+}
+
 void MeasurementsParser::parse( const std::string& filename )
 {
     measurments = MeasurementsPtr(new Measurements());
@@ -126,7 +131,7 @@ MeasurementConfigConstPtr Measurements::getConfig( int number ) const
     auto it = configsByNumber.find(number);
     if (it != configsByNumber.end()) {
         return it->second;
-    }
+    } 
 
     throw std::runtime_error("Config not found");
 }
@@ -202,3 +207,4 @@ QString MeasurementConfig::getIdByName(const QString& name) const
 
     return QString();
 }
+

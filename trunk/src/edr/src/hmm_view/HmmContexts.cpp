@@ -11,9 +11,9 @@
 #include "textedit.h"
 #include "AnalisisWidget.h"
 
-HMMAnalysisContext::HMMAnalysisContext(TreeRefresher * refresher) : refresher(refresher)
+HMMAnalysisContext::HMMAnalysisContext(TreeRefresher * refresher) :
+    refresher(refresher)
 {
-
 }
 
 void HMMAnalysisContext::activateContext(QWidget * contextWidget)
@@ -347,7 +347,7 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
     }
     
     if (helper) {
-        QLayout* l = new QVBoxLayout(flexiSection);
+        QLayout* l = flexiSection->layout() ? flexiSection->layout() : new QVBoxLayout(flexiSection);
         l = flexiSection->layout();
         l->setContentsMargins(0, 0, 0, 0);
         l->setSpacing(3);

@@ -54,6 +54,7 @@ QT_FORWARD_DECLARE_CLASS(QTextEdit)
 QT_FORWARD_DECLARE_CLASS(QTextCharFormat)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 
+//! Kontrolka zawiera edytor tekstu rich format
 class TextEdit : public QMainWindow
 {
     Q_OBJECT

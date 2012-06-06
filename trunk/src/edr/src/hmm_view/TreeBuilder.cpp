@@ -156,7 +156,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
                 }
             }
         }
-    }catch(...){
+    } catch(...) {
         LOG_WARNING("Problem with setting EMG names");
     }
 

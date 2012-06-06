@@ -10,13 +10,6 @@
 #ifndef HEADER_GUARD_HMM__FILTERCOMMAND_H__
 #define HEADER_GUARD_HMM__FILTERCOMMAND_H__
 
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QCheckBox>
-
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
 #include <core/SmartPtr.h>
@@ -25,48 +18,65 @@
 #include "TreeBuilder.h"
 
 
-
+//! interfejs odpowiada za tworzenie przefiltrowanego drzewa danych lub jego czesci
 class IFilterCommand
 {
 public:
+    //! jesli komenda dostarcza konfiguratora to powinien on zwrocic jedna z tych wartosci
     enum ConfigurationResult
     {
         OK,
         Cancel
     };
+
 public:
 	virtual ~IFilterCommand() {}
    
 public:
+    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! \param rootItemName nazwa korzenia
+    //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) = 0;
+    //! resetuje ustawienia konfiguratora
     virtual void reset() {}
+    //! \return widget z konfiguratorem lub nullptr jesli nie jest on dostarczany
     virtual QWidget* getConfigurationWidget() { return nullptr; }
 };
 typedef boost::shared_ptr<IFilterCommand> IFilterCommandPtr;
 typedef boost::shared_ptr<const IFilterCommand> IFilterCommandConstPtr;
 
+//! komenda bez konfiguratora, ktora tworzy przefiltrowane drzewo na podstawie filtra danych
 class SimpleFilterCommand : public IFilterCommand
 {
 public:
+    //! Konstruktor
+    //! \param dataFilter filtr danych, ktory bedzie uzyty do tworzenia drzewa
     SimpleFilterCommand(PluginSubject::DataFilterPtr dataFilter);
 
 public:
+    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! \param rootItemName nazwa korzenia
+    //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) 
     {
         return TreeBuilder::createTree(rootItemName, sessions, dataFilter);
     }
     
 private:
+    //! filtr danych, ktory bedzie uzyty do tworzenia drzewa
     PluginSubject::DataFilterPtr dataFilter;
 };
 typedef boost::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;
 typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr;
 
+// OBSOLETE!
 template <class Type, class TypePtr = core::shared_ptr<Type> >
 class MultiChartCommand : public IFilterCommand
 {
+    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! \param rootItemName nazwa korzenia
+    //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
-
 };
 
 template <class Type, class TypePtr>
@@ -105,12 +115,12 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
                     static int number = 0;
                     // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
                     std::string suffix = boost::lexical_cast<std::string>(number++);
-                    wrapperX->setName("FX_" + suffix);
-                    wrapperX->setSource("FX_" + suffix);
-                    wrapperY->setName("FY_" + suffix);
-                    wrapperY->setSource("FY_" + suffix);
-                    wrapperZ->setName("FZ_" + suffix);
-                    wrapperZ->setSource("FZ_" + suffix);
+                    wrapperX->setName("X_" + suffix);
+                    wrapperX->setSource("X_" + suffix);
+                    wrapperY->setName("Y_" + suffix);
+                    wrapperY->setSource("Y_" + suffix);
+                    wrapperZ->setName("Z_" + suffix);
+                    wrapperZ->setSource("Z_" + suffix);
 
                     xWrappers.push_back(wrapperX);
                     yWrappers.push_back(wrapperY);

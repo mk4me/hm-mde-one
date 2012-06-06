@@ -54,10 +54,7 @@ void SummaryWindow::display( const std::vector<TreeItemHelperPtr>& helpers )
                 //    text = QString::fromStdString(wrapped->getWrapper()->getName()) + "\n" + text;
                 //} 
                 addItem(text, root);
-
             }
-            
-            
         }
 
         root->setExpanded(true);

@@ -11,16 +11,13 @@
 
 #include "ui_AboutDialog.h"
 
+//! prosty dialog about
 class AboutDialog : public QDialog, public Ui::AboutDialog
 {
 	Q_OBJECT
-
 public:
-
-	explicit AboutDialog(QWidget *parent = 0, Qt::WindowFlags f = 0);
-
-	virtual ~AboutDialog();
-
+    explicit AboutDialog(QWidget *parent = 0, Qt::WindowFlags f = 0);
+    virtual ~AboutDialog();
 };
 
 #endif	//	HEADER_GUARD___ABOUTDIALOG_H__

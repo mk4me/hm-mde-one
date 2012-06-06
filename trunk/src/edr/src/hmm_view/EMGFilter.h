@@ -16,11 +16,18 @@
 class EMGFilterHelper : public NewChartItemHelper
 {
 public:
-    EMGFilterHelper(const core::ObjectWrapperConstPtr& wrapper) : NewChartItemHelper(wrapper) { }
+    //! Konstruktor
+    //! \param wrapper 
+    EMGFilterHelper(const core::ObjectWrapperConstPtr& wrapper);
     virtual ~EMGFilterHelper() {}
 
 public:
+    //! \return wizualizator stworzony dla dostarczonego wrappera
     virtual VisualizerPtr createVisualizer();
+    //! tworzy serie ze zmodyfikowanym EMG na podstawiawie dostarczonego wrappera
+    //! \param visualizer wizualizator, ktory bedzie tworzyl serie
+    //! \param path sciezka dla timeline'a
+    //! \param series zwracana seria 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
 };
 typedef core::shared_ptr<EMGFilterHelper> EMGFilterHelperPtr;

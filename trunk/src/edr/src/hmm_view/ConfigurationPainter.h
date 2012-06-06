@@ -11,166 +11,11 @@
 #define HEADER_GUARD_HMM__CONFIGURATIONPAINTER_H__
 
 #include <QtCore/QFileInfo>
-
-typedef boost::shared_ptr<QImage> QPixmapPtr;
-typedef boost::shared_ptr<const QImage> QPixmapConstPtr;
-
 #include <QtGui/QPen>
 #include <QtGui/QPainter>
+#include "ConfigurationPainterAreas.h"
 
-class IArea
-{
-public:
-    IArea() : active(false),  scale(1.0f) {}
-    virtual ~IArea() {}
-public:
-    virtual int getY() const = 0;
-    virtual void setY(int val) = 0;
-    virtual int getX() const = 0;
-    virtual void setX(int val) = 0;
-    virtual int getWidth() const = 0;
-    virtual int getHeight() const = 0;
-    virtual const QString& getName() const = 0;
-    virtual void draw(QPainter& painter, bool selected) = 0;
-
-    virtual bool isInside(int x, int y) const;
-
-    bool isActive() const { return active; }
-    void setActive(bool val) { active = val; }
-    float getScale() const { return scale; }
-    void setScale(float val) { scale = val; }
-
-
-private:
-    bool active;
-    float scale;
-    
-};
-typedef boost::shared_ptr<IArea> IAreaPtr;
-typedef boost::shared_ptr<const IArea> IAreaConstPtr;
-
-class SingleMarker : public IArea
-{
-public:
-    SingleMarker(const QString& name, int posX, int posY)
-    {
-        init(name, posX, posY, 15);
-    }
-
-    SingleMarker(const QString& name, int posX, int posY, int r)
-    {
-        init(name, posX, posY, r);
-    }
-
-public:
-    virtual int getY() const { return getScale() * ( posY - r); }
-    virtual void setY(int val) { posY = val + r; }
-    virtual int getX() const { return getScale() * (posX - r); }
-    virtual void setX(int val) { posX = val + r; }
-    virtual int getWidth() const { return getScale() * (2 * r); }
-    virtual int getHeight() const { return getScale() * (2 * r); }
-    virtual const QString& getName() const { return name; }
-    virtual void draw(QPainter& painter, bool selected) 
-    {
-        QPen pen;
-        QBrush brush;
-        brush.setStyle(Qt::Dense5Pattern);
-        pen.setWidth(3);
-        if (isActive()) {
-            if (selected) {
-                pen.setColor(QColor(100,255,10));
-                brush.setColor(QColor(100,255,10,50));
-            } else {
-                pen.setColor(QColor(100,200,10));
-                brush.setColor(QColor(100,200,10,50));
-            }
-        } else {
-            if (selected) {
-                pen.setColor(QColor(100,100,100));
-                brush.setColor(QColor(100,100,100,50));
-            } else {
-                pen.setColor(QColor(100,100,100,60));
-                brush.setColor(QColor(100,100,100,10));
-            }
-        }
-
-        painter.setPen(pen);
-        painter.setBrush(brush);
-        painter.drawEllipse(getX(), getY(), getWidth(), getHeight());
-    }
-
-private:
-    void init (const QString& name, int posX, int posY, int r)
-    {
-        this->name = name;
-        this->posX = posX;
-        this->posY = posY;
-        this->r = r;
-    }
-
-private:
-    int posX, posY;
-    int r;
-    QString name;
-};
-typedef boost::shared_ptr<SingleMarker> SingleMarkerPtr;
-typedef boost::shared_ptr<const SingleMarker> SingleMarkerConstPtr;
-
-class SinglePicture : public IArea
-{
-public:
-      SinglePicture(const QString& name, int x = 0, int y = 0, bool alwaysVisible = false) :
-		  name(QFileInfo(name).baseName()),
-          pixmap(new QImage(name)),
-          alphaPixmap( new QImage(name)),
-          x(x), y(y),
-          alwaysVisible(alwaysVisible)
-      {
-          //QFileInfo info(name);
-          //this->name = info.baseName();
-          setPixmapAlpha(*alphaPixmap, 100);
-      }
-
-      SinglePicture(const QString& name, const QPixmapPtr& pixmap, int x = 0, int y = 0, bool alwaysVisible = false) :
-		  name(name),
-          pixmap(pixmap),
-          alphaPixmap(new QImage(*pixmap)),
-          x(x), y(y),
-          alwaysVisible(alwaysVisible)
-      {
-          setPixmapAlpha(*alphaPixmap, 100);
-      }
-
-public:
-    virtual int getY() const { return getScale() * (y); }
-    virtual void setY(int val) { y = val; }
-    virtual int getX() const { return getScale() * (x); }
-    virtual void setX(int val) { x = val; }
-    virtual int getWidth() const { return getScale() * (pixmap->width()); }
-    virtual int getHeight() const { return getScale() * (pixmap->height()); }
-    virtual const QString& getName() const { return name; }
-    virtual void draw(QPainter& painter, bool selected);
-    virtual bool isInside(int x, int y) const;
-
-public:
-    QPixmapConstPtr getPixmap() const { return pixmap; }
-
-public:
-    static void setPixmapAlpha(QImage& pixmap, unsigned int alpha);
-
-
-private:
-    QString name;
-    QPixmapPtr pixmap;
-    QPixmapPtr alphaPixmap;
-
-    int x, y;
-    bool alwaysVisible;
-};
-typedef boost::shared_ptr<SinglePicture> SinglePicturePtr;
-typedef boost::shared_ptr<const SinglePicture> SinglePictureConstPtr;
-
-
+//! klasa odpowiada za wyswietlenie graficznego konfiguratora
 class ConfigurationPainter : public QWidget
 {
     Q_OBJECT;
@@ -181,40 +26,86 @@ public:
     typedef std::list<IAreaPtr> AreasList;
     typedef std::map<QString, std::pair<QString, QString>> NamesDictionary;
 public:
+    //! \return obrazek z tlem
     QPixmapConstPtr getBackground() const { return background; }
+    //! \return nazwa paintera
     const QString& getName() const { return name; }
+    //! ustawia obrazek z tlem
+    //! \param name nazwa obrazka
+    //! \param val pixmapa z obrazkiem
     void setBackground(const QString& name, const QPixmapConstPtr & val) { this->name = name; background = val; }
+    //! dodaje nowy obszar do paintera (marker lub obrazek)
+    //! \param data dodawany obszar
     void addArea(const IAreaPtr & data);
+    //! usuwa obszar (marker lub obrazek) z paintera
+    //! \param name nazwa obszaru
     void removeArea(const QString& name);
+    //! 
     AreasList::const_iterator begin() const { return areas.cbegin(); }
+    //! 
     AreasList::const_iterator end() const { return areas.cend(); }
+    //! 
     AreasList::iterator begin() { return areas.begin(); }
+    //! 
     AreasList::iterator end() { return areas.end(); }
+    //! Jesli obszar o danej nazwie jest w painterze, to staje sie lub przestaje byc aktywny
+    //! \param name nazwa elementu
+    //! \param selected czy ma byc lub przestac byc aktywny
     void trySetActive( const QString& name, bool selected );
+    //! Iloczyn zbiorow nazw dostarczonych przez konfigurator i nazw obslugiwanych (nazw dostepnych obszarow)
+    //! \param names zbior do porownania (brany jest pod uwage tylko pierwszy element wpisu mapy)
     void intersectNames( const NamesDictionary& names );
-
+    //! \return globalna skala dla paintera
     float getScale() const { return scale; }
+    //! ustawia globalna skale dla paintera
+    //! \param val 
     void setScale(float val);
 
 signals:
+    //! obszar zostal najechany myszka
+    //! \param name nazwa obszaru
+    //! \param selected czy zostal lub przestal byc zaznaczony
     void elementHovered(const QString& name, bool selected);
+    //! obszar zostal klikniety myszka
+    //! \param name nazwa obszaru
+    //! \param selected czy stal sie lub przestal byc aktywny
     void elementSelected(const QString& name, bool selected);
 
 protected:
+    //! 
+    //! \param event 
     virtual void mouseMoveEvent ( QMouseEvent * event );
+    //! 
+    //! \param event 
     virtual void mousePressEvent ( QMouseEvent * event );
+    //! 
+    //! \param event 
     virtual void mouseReleaseEvent ( QMouseEvent * event );
+    //! 
+    //! \param * 
     virtual void paintEvent(QPaintEvent *);
+    //! 
+    //! \param obj 
+    //! \param event 
     bool eventFilter(QObject *obj, QEvent *event);
     
 private:
+    //! pobiera arene na podstawie wspolrzednych (w przypadku obrazkow uwzgledniana jest tez alpha)
+    //! \param x wspolrzedna x
+    //! \param y wspolrzedna y
+    //! \return obszar wystepujacy w punkcie lub null jesli takiego nie ma. Jesli wystepuje kilka takich obszarow to zwracany jest najblizszy
     IAreaPtr getArea(int x, int y);
 
 private:
+    //! tlo paintera
     QPixmapConstPtr background;
+    //! nazwa paintera
     QString name;
+    //! lista obszarow w painterze
     AreasList areas;
+    //! element aktualnie najechany myszka
     IAreaPtr currentArea;
+    //! globalna skala paintera
     float scale;
 };
 

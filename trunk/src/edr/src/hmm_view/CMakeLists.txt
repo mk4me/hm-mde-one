@@ -13,8 +13,6 @@ set(TARGET_TARGETNAME
 set(PRIVATE_H
 	AboutDialog.h
 	HmmMainWindow.h
-	LoadingDialog.h
-	LoadingThread.h
 	EDRDockWidgetSet.h
 	EDRDockWidgetManager.h
 	TreeItemHelper.h
@@ -22,21 +20,22 @@ set(PRIVATE_H
 	DataFilterWidget.h
 	FilterEntryWidget.h
 	FilterCommand.h
-	FilterGroup.h
 	TreeBuilder.h
 	Vector3DFilterCommand.h
 	ConfigurationDialog.h
 	ConfigurationPainter.h
+	ConfigurationPainterAreas.h
+	AnalisisTreeWidget.h
 	AnalisisWidget.h
 	IllnessUnit.h
 	SummaryWindow.h
-	LanguageDialog.h
 	HmmContexts.h
 	TextEdit.h
-	#base64.h
 	Measurements.h
-	#Raport.h
-	#RaportsManager.h
+	MultiserieColorStrategy.h
+	TreeRefresher.h
+	ContextAction.h
+	ContextEventFilter.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -55,8 +54,6 @@ set(TARGET_SRC
 	AboutDialog.cpp
 	main.cpp
 	HmmMainWindow.cpp
-	LoadingDialog.cpp
-	LoadingThread.cpp
 	EDRDockWidgetSet.cpp
 	EDRDockWidgetManager.cpp
 	TreeItemHelper.cpp
@@ -64,40 +61,39 @@ set(TARGET_SRC
 	DataFilterWidget.cpp
 	FilterCommand.cpp
 	FilterEntryWidget.cpp
-	FilterGroup.cpp
 	TreeBuilder.cpp
 	ConfigurationDialog.cpp
 	ConfigurationPainter.cpp
+	ConfigurationPainterAreas.cpp
+	AnalisisTreeWidget.cpp
 	IllnessUnit.cpp
 	AnalisisWidget.cpp
-	LanguageDialog.cpp
 	HmmContexts.cpp
 	SummaryWindow.cpp
 	TextEdit.cpp
-	#base64.cpp
+	TreeRefresher.cpp
 	Measurements.cpp
-	#Raport.cpp
-	#RaportsManager.cpp
+	ContextEventFilter.cpp
+	Vector3DFilterCommand.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
 	AboutDialog.h
+	ContextEventFilter.h
 	PseudoLoginWidget.h
+	ContextAction.h
     HmmMainWindow.h
-	LoadingDialog.h
-	LoadingThread.h
 	EDRDockWidgetSet.h
 	EDRDockWidgetManager.h
 	DataFilterWidget.h
+	AnalisisTreeWidget.h
 	FilterEntryWidget.h
-	FilterGroup.h
 	Vector3DFilterCommand.h
 	ConfigurationPainter.h
 	ConfigurationDialog.h
 	AnalisisWidget.h
-	LanguageDialog.h
 	TextEdit.h
 	HmmContexts.h
 	SummaryWindow.h
@@ -111,10 +107,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 set(TARGET_UI
 	ui/AboutDialog.ui
 	ui/PseudoLoginWidget.ui
-    #ui/LanguageDialogWidget.ui
-	#ui/ConfigurationWidget.ui
 	ui/toolboxmaindeffile.ui
-	ui/LoadingDialog.ui
 	ui/filter.ui
 	ui/filterEntry.ui
 	ui/configurationDialog.ui

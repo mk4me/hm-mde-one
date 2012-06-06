@@ -4,6 +4,30 @@
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/c3d/EventSerieBase.h>
 
+
+
+HmmTreeItem::HmmTreeItem( TreeItemHelperPtr helper ) : 
+helper(helper) 
+{
+
+}
+
+void HmmTreeItem::setItemAndHelperText( const QString& text ) 
+{ 
+    helper->setText(text); 
+    QTreeWidgetItem::setText(0, text); 
+}
+
+ChildrenVisualizers::ChildrenVisualizers( PlacePolicy policy /*= Auto*/) :
+    policy(policy)
+{
+}
+
+TreeWrappedItemHelper::TreeWrappedItemHelper( const core::ObjectWrapperConstPtr & wrapper ) : 
+    wrapper(wrapper)
+{
+}
+
 VisualizerPtr TreeWrappedItemHelper::createVisualizer()
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
@@ -15,6 +39,13 @@ void TreeWrappedItemHelper::createSeries( const VisualizerPtr & visualizer, cons
     UTILS_ASSERT(wrapper, "Item should be initialized");
     auto serie = visualizer->createSerie(wrapper, path.toStdString());
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
+}
+
+std::vector<core::TypeInfo> TreeWrappedItemHelper::getTypeInfos() const
+{
+    std::vector<core::TypeInfo> ret;
+    ret.push_back(wrapper->getTypeInfo());
+    return ret;
 }
 
 void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
@@ -38,6 +69,21 @@ VisualizerPtr Multiserie3D::createVisualizer()
     return VisualizerManager::getInstance()->createVisualizer(typeid(kinematic::JointAnglesCollection));                           
 }
 
+std::vector<core::TypeInfo> Multiserie3D::getTypeInfos() const
+{
+    std::vector<core::TypeInfo> ret;
+    ret.push_back(typeid(kinematic::JointAnglesCollection));
+    ret.push_back(typeid(GRFCollection));
+    ret.push_back(typeid(MarkerCollection));
+    return ret;
+}
+
+Multiserie3D::Multiserie3D( const PluginSubject::MotionConstPtr & motion ) :
+    motion(motion)
+{
+
+}
+
 VisualizerPtr JointsItemHelper::createVisualizer()
 {
     return VisualizerManager::getInstance()->createVisualizer(typeid(kinematic::JointAnglesCollection));
@@ -54,6 +100,19 @@ void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QSt
         throw std::runtime_error("Empty object - joints");
     }
 }
+
+std::vector<core::TypeInfo> JointsItemHelper::getTypeInfos() const
+{
+    std::vector<core::TypeInfo> ret;
+    ret.push_back(typeid(kinematic::JointAnglesCollection));
+    return ret;
+}
+
+JointsItemHelper::JointsItemHelper( const PluginSubject::MotionConstPtr & motion ) : 
+    motion(motion)
+{
+}
+
 
 VisualizerPtr NewChartItemHelper::createVisualizer()
 {
@@ -82,6 +141,18 @@ void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const Q
 {
     auto serie = visualizer->createSerie(wrapper, path.toStdString());
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
+}
+
+std::vector<core::TypeInfo> NewChartItemHelper::getTypeInfos() const
+{
+    std::vector<core::TypeInfo> ret;
+    ret.push_back(typeid(ScalarChannelReaderInterface));
+    return ret;
+}
+
+NewChartItemHelper::NewChartItemHelper( const core::ObjectWrapperConstPtr& wrapper ) :
+    TreeWrappedItemHelper(wrapper)
+{
 }
 
 VisualizerPtr NewVector3ItemHelper::createVisualizer()
@@ -148,7 +219,17 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieZ));
 }
 
+NewVector3ItemHelper::NewVector3ItemHelper( const core::ObjectWrapperConstPtr& wrapper ) :
+    TreeWrappedItemHelper(wrapper)
+{
+}
 
+std::vector<core::TypeInfo> NewVector3ItemHelper::getTypeInfos() const
+{
+    std::vector<core::TypeInfo> ret;
+    ret.push_back(typeid(ScalarChannelReaderInterface));
+    return ret;
+}
 
 void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
@@ -191,6 +272,22 @@ std::vector<core::TypeInfo> NewMultiserieHelper::getTypeInfos() const
     return ret;
 }
 
+NewMultiserieHelper::NewMultiserieHelper( const ChartWithDescriptionCollection& charts ): 
+    wrappers(charts), 
+    title(""),
+    colorStrategy(new RandomMultiserieColorStrategy())
+{
+}
+
+NewMultiserieHelper::NewMultiserieHelper( const std::vector<core::ObjectWrapperConstPtr>& charts ): 
+    title(""), 
+    colorStrategy(new RandomMultiserieColorStrategy())
+{
+    UTILS_ASSERT(false);
+    for (auto it = charts.begin(); it != charts.end(); ++it) {
+        wrappers.push_back(ChartWithDescription(*it, EventsCollectionConstPtr(), PluginSubject::MotionConstPtr()));
+    }
+}
 
 void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
@@ -217,4 +314,3 @@ void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString&
         }
     }
 }
-

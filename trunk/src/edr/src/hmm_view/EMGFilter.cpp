@@ -336,6 +336,10 @@ private:
 
 };
 
+EMGFilterHelper::EMGFilterHelper( const core::ObjectWrapperConstPtr& wrapper ) : 
+NewChartItemHelper(wrapper) 
+{
+}
 
 VisualizerPtr EMGFilterHelper::createVisualizer()
 {
@@ -363,4 +367,5 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(wrapperX, wrapperX->getName())));
 }
+
 

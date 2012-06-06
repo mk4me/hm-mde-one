@@ -34,50 +34,55 @@
 
 typedef std::map<QString, std::pair<QString,QString> > NamesDictionary;
 
+//! klasa ktora wykrzystuje metody buildera drzewa danych, do stworzenia przefiltrowanej galezi
+class BuilderFilterCommand : public IFilterCommand
+{
+public:
+    typedef boost::function<QTreeWidgetItem* (const PluginSubject::MotionConstPtr&, const QString&, const QIcon&, const QIcon&)> BranchFunction;
+public:
+    //! Konstruktor
+    //! \param function funkcja, ktora zostanie wykorzystana do stworzenia elementu drzewa
+    //! \param rootIcon ikona korzenia galezi
+    //! \param elementIcon ikona stworzonych elementow
+    BuilderFilterCommand(BranchFunction function, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon());
+
+public:
+    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! \param rootItemName nazwa korzenia
+    //! \param sessions sesje do przefiltrowania
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
+
+protected:
+    //! funkcja, ktora zostanie wykorzystana do stworzenia elementu drzewa
+    BranchFunction branchFunction;
+    //! ikona stworzonych elementow
+    QIcon elementIcon;
+    //! ikona korzenia galezi
+    QIcon rootIcon;
+};
+
+//OBSOLETE
+class JointsCommand : public IFilterCommand
+{
+public:
+    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! \param rootItemName nazwa korzenia
+    //! \param sessions sesje do przefiltrowania
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
+};
+
 //! klasa, dzieki ktorej mozliwe jest korzystanie z sygnalow i slotow w klasie szablonowej.
 //! obsluguje sloty w klasach Vector3DFilterCommand i Vector3DFilterCommand2
 class __Helper : public QObject
 {
     Q_OBJECT;
 public:
-    __Helper(boost::function<void (const QString&, int)> function) :
-      function(function) 
-      {
-      }
-public:
-    
-public slots:
-    void checkBoxChanged ( int state )
-    {
-        QCheckBox* checkBox = qobject_cast<QCheckBox *>(sender());
-        function(checkBox->text(), state);
-    }
+    __Helper(boost::function<void (const QString&, int)> function);
 
-    void onItemSelected(const QString& name, bool selected)
-    {
-        UTILS_ASSERT(namesDictionary.size() > 0);
-        auto it = namesDictionary.find(name);
-        if (it != namesDictionary.end()) {
-            function(it->second.first, selected ? 1 : 0);
-        } else {
-            // ?
-        }
-    }
-
-    void onElementHovered(const QString& name, bool selected) {
-        ConfigurationWidget* widget = qobject_cast<ConfigurationWidget*>(sender());
-        if (selected) {
-            auto it = namesDictionary.find(name);
-            if (it != namesDictionary.end()) {
-                widget->setText(it->second.second);
-            } else {
-                // ?
-                widget->setText("");
-            }
-        } else {
-            widget->setText("");
-        }
-    }
+    public slots:
+        void checkBoxChanged ( int state );
+        void onItemSelected(const QString& name, bool selected);
+        void onElementHovered(const QString& name, bool selected);
 
 public:
     void setNamesDictionary(const NamesDictionary& val) { namesDictionary = val; }
@@ -88,41 +93,7 @@ private:
     NamesDictionary namesDictionary;
 };
 
-
-class BuilderFilterCommand : public IFilterCommand
-{
-public:
-    typedef boost::function<QTreeWidgetItem* (const PluginSubject::MotionConstPtr&, const QString&, const QIcon&, const QIcon&)> BranchFunction;
-public:
-    BuilderFilterCommand(BranchFunction function, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon()) : 
-        branchFunction(function),
-        elementIcon(elementIcon),
-        rootIcon(rootIcon)
-     { }
-
-public:
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
-    {
-        QTreeWidgetItem* root = new QTreeWidgetItem();
-        root->setText(0, rootItemName);
-        root->setIcon(0, rootIcon);
-        BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
-            PluginSubject::Motions motions;
-            session->getMotions(motions);
-            BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
-                root->addChild(branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon));
-            }
-        }
-
-        return root;
-    }
-
-protected:
-    BranchFunction branchFunction;
-    QIcon elementIcon;
-    QIcon rootIcon;
-};
-
+//! klasa ktora wykrzystuje metody buildera drzewa danych, do stworzenia przefiltrowanej galezi, dodatkowo dostarcza konfigurator
 template <class Collection>
 class BuilderConfiguredFilterCommand : public BuilderFilterCommand
 {
@@ -221,13 +192,9 @@ public:
         configurationWidget->setVisibles(visibles);
     }
 
-
-    
-
-
-    //! 
-    //! \param rootItemName 
-    //! \param sessions fdsdsd
+    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! \param rootItemName nazwa korzenia
+    //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
     {
         QTreeWidgetItem* root = BuilderFilterCommand::createTreeBranch(rootItemName, sessions);
@@ -266,67 +233,16 @@ class EMGCommand : public BuilderConfiguredFilterCommand<EMGCollection>
 {
 public:
     EMGCommand(BranchFunction function, const NamesDictionary& namesDictionary, 
-        const QString& frontXml, const QString& backXml, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon()) :
-        BuilderConfiguredFilterCommand(function, namesDictionary, frontXml, backXml, rootIcon, elementIcon) {}
+        const QString& frontXml, const QString& backXml, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon());
 
 public:
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
-    {
-        QTreeWidgetItem* root = new QTreeWidgetItem();
-        root->setText(0, rootItemName);
-        root->setIcon(0, rootIcon);
-        BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
+    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! \param rootItemName nazwa korzenia
+    //! \param sessions sesje do przefiltrowania
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 
-            MeasurementConfigConstPtr config = getMeta(session);
-            PluginSubject::Motions motions;
-            session->getMotions(motions);
-            BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
-                QTreeWidgetItem* colItem = branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon);
-                if (config) {
-                    
-                    for (int i = colItem->childCount() - 1; i >= 0; --i) {
-                        QTreeWidgetItem* item = colItem->child(i);
-                        QString name = item->text(0);
-                        auto entry = activeElements.find(config->getIdByName(name).toStdString());
-                        if (entry != activeElements.end() && !entry->second) {
-                            delete item;
-                        }
-                    }
-                }
-                root->addChild(colItem);
-            }
-        }
-
-        return root;
-    }
-
-    MeasurementConfigConstPtr getMeta( PluginSubject::SessionConstPtr session) 
-    {
-        MeasurementConfigConstPtr config;
-        //próbuje pobraæ metadane
-        try{
-            auto measurements = Measurements::get();
-            std::vector<core::ObjectWrapperConstPtr> metadata;        
-            core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), session, metadata);
-            auto metaITEnd = metadata.end();
-            for(auto metaIT = metadata.begin(); metaIT != metaITEnd; ++metaIT){
-                core::MetadataConstPtr meta = (*metaIT)->get(false);
-                std::string l;
-
-                if(measurements != nullptr && meta != nullptr && meta->value("EMGConf", l) == true) {
-                    config = measurements->getConfig(("EMG_" + l).c_str());
-                }
-            }
-        }catch(...){
-
-        }	
-        return config;
-    }
-
-
+    MeasurementConfigConstPtr getMeta( PluginSubject::SessionConstPtr session);
 };
-
-
 
 template <class Channel, class Collection, class ItemHelper, bool useTreeItemHelperForRoot = false>
 class Vector3DFilterCommand : public IFilterCommand
@@ -348,9 +264,9 @@ public:
 
       }
 
-      //! 
-      //! \param rootItemName 
-      //! \param sessions
+      //! tworzy galaz drzewa z przefiltrowanymi danymi
+      //! \param rootItemName nazwa korzenia
+      //! \param sessions sesje do przefiltrowania
       virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
       {
           QTreeWidgetItem* root = new QTreeWidgetItem();
@@ -531,24 +447,7 @@ private:
 };
 
 
-class JointsCommand : public IFilterCommand
-{
-public:
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
-    {
-        QTreeWidgetItem* root = new QTreeWidgetItem();
-        root->setText(0, rootItemName);
-        BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
-            PluginSubject::Motions motions;
-            session->getMotions(motions);
-            BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
-                root->addChild(TreeBuilder::createJointsBranch(motion, motion->getLocalName().c_str(), TreeBuilder::getRootJointsIcon(), TreeBuilder::getJointsIcon()));
-            }
-        }
 
-        return root;
-    }
-};
 #endif
 
 

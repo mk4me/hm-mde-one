@@ -11,13 +11,10 @@ FilterEntryWidget::FilterEntryWidget( QWidget* parent, HmmMainWindow* hmm,
 {
     setupUi(this);
     this->pushButton->setText(bigLabelText);
-
     this->pushButton->setAttribute(Qt::WA_NoSystemBackground, true);
-
     if (icon) {
         this->pushButton->setIcon(*icon);
     }
-
     connect(pushButton, SIGNAL(clicked()), this, SLOT(onButton()));
 }
 
@@ -28,16 +25,13 @@ FilterEntryWidget::~FilterEntryWidget()
     }
 }
 
-
 void FilterEntryWidget::onButton()
 {
     if (!configurator) {
         configurator = filterCommand->getConfigurationWidget();
     }
-
     emit onFilterClicked(this);
 }
-
 
 QTreeWidgetItem* FilterEntryWidget::createTreeEntry(const std::vector<PluginSubject::SessionConstPtr>& sessions)
 {

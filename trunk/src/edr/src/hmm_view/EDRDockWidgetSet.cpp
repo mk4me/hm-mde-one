@@ -93,11 +93,8 @@ void EDRDockWidgetSet::onDockWidgetLocationChanged(Qt::DockWidgetArea area)
     // http://developer.qt.nokia.com/doc/qt-4.8/qstyle.html
     // http://developer.qt.nokia.com/doc/qt-4.8/qtabbar.html
     // 
-
     QDockWidget * changedDock = qobject_cast<QDockWidget*>(sender());    
-
     QList<QTabBar*> tabBars = mainWindow->findChildren<QTabBar*>();
-
     for(int i = 0; i < tabBars.size(); ++i){
         QTabBar* tab = tabBars[i];
         if(tab->parent() == mainWindow){
