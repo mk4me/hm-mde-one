@@ -101,7 +101,7 @@ private:
 
     private:
 
-        core::ObjectWrapperPtr wrapper;
+        mutable core::ObjectWrapperPtr wrapper;
 
     };
 

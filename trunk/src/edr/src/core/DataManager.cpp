@@ -126,11 +126,29 @@ DataManager::DMObjectWrapper::~DMObjectWrapper()
 
 const void* DataManager::DMObjectWrapper::getRawPtr() const
 {
+	if(wrapper->getRawPtr() == nullptr){
+		try{
+			DataManager::getInstance()->initializeData(core::ObjectWrapperPtr(core::const_pointer_cast<DMObjectWrapper>(shared_from_this())));
+		}
+		catch(std::exception & ){
+
+		}
+	}
+
     return wrapper->getRawPtr();
 }
 
 void* DataManager::DMObjectWrapper::getRawPtr()
 {
+	if(wrapper->getRawPtr() == nullptr){
+		try{
+			DataManager::getInstance()->initializeData(core::ObjectWrapperPtr(shared_from_this()));
+		}
+		catch(std::exception & ){
+
+		}
+	}
+
     return wrapper->getRawPtr();
 }
 

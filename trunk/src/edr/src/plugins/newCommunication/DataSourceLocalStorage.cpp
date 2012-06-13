@@ -48,6 +48,8 @@ DataSourceLocalStorage * DataSourceLocalStorage::instance()
 
 void DataSourceLocalStorage::setLocalStorageDataPath(const core::Filesystem::Path & localStorageDataPath)
 {
+	core::Filesystem::createDirectory(localStorageDataPath.parent_path());
+
 	int rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
 
 	if (rc != SQLITE_OK){

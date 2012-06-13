@@ -50,18 +50,38 @@ std::vector<core::TypeInfo> TreeWrappedItemHelper::getTypeInfos() const
 
 void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
-    if (motion->hasObjectOfType(typeid(MarkerCollection))) {
-        core::ObjectWrapperConstPtr m = motion->getWrapperOfType(typeid(MarkerCollection));
-        series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(m ,path.toStdString())));
-    }                                            
-    if (motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection))) {                          
-        core::ObjectWrapperConstPtr j = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
-        series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(j ,path.toStdString())));
-    }                                            
-    if (motion->hasObjectOfType(typeid(GRFCollection))) {                          
-        core::ObjectWrapperConstPtr g = motion->getWrapperOfType(typeid(GRFCollection));
-        series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(g ,path.toStdString())));
-    }
+	std::vector<core::VisualizerTimeSeriePtr> tmpSeries;
+
+	try{
+		if (motion->hasObjectOfType(typeid(MarkerCollection))) {
+			core::ObjectWrapperConstPtr m = motion->getWrapperOfType(typeid(MarkerCollection));
+			if(m->getRawPtr() != nullptr){
+				tmpSeries.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(m ,path.toStdString())));
+			}else{
+				throw std::runtime_error("Empty object - markers"); 
+			}
+		}                                            
+		if (motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection))) {                          
+			core::ObjectWrapperConstPtr j = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
+			if(j->getRawPtr() != nullptr){
+				tmpSeries.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(j ,path.toStdString())));
+			}else{
+				throw std::runtime_error("Empty object - joints");
+			}
+		}                                            
+		if (motion->hasObjectOfType(typeid(GRFCollection))) {                          
+			core::ObjectWrapperConstPtr g = motion->getWrapperOfType(typeid(GRFCollection));
+			if(g->getRawPtr() != nullptr){
+				tmpSeries.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(g ,path.toStdString())));
+			}else{
+				throw std::runtime_error("Empty object - grfs");
+			}
+		}
+	}catch(...){
+		
+	}
+
+	series.insert(series.end(), tmpSeries.begin(), tmpSeries.end());
 }
 
 VisualizerPtr Multiserie3D::createVisualizer()
@@ -92,7 +112,7 @@ VisualizerPtr JointsItemHelper::createVisualizer()
 void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     core::ObjectWrapperConstPtr joints = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
-    if (joints && !joints->isNull()) {
+    if (joints && joints->getRawPtr() != nullptr) {
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(joints, path.toStdString())));
     } else {
         //LOG_ERROR("Empty object - joints");
