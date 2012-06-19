@@ -147,6 +147,8 @@ private slots:
 
 private:
 
+	void onLogin(const QString & user, const QString & password);
+
 	static QString formatFileSize(unsigned long long size);
 
 	void generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget * perspective);

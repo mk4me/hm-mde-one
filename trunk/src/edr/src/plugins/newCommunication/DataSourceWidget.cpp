@@ -243,6 +243,11 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	loginPage->installEventFilter(loginEventFilter);
 	userEdit->installEventFilter(loginEventFilter);
 	passwordEdit->installEventFilter(loginEventFilter);
+
+	onLogin("bdrdemo", ";bdrdemo");
+	setCurrentWidget(motionDataTab);
+	setTabEnabled(indexOf(configTab), false);
+	setTabEnabled(indexOf(userDataTab), false);
 }
 
 DataSourceWidget::~DataSourceWidget()
@@ -597,6 +602,171 @@ void DataSourceWidget::onFilterRemove()
 
 }
 
+void DataSourceWidget::onLogin(const QString & user, const QString & password)
+{
+	setCursor(Qt::WaitCursor);
+	QApplication::processEvents();
+
+	//mamy jakieœ dane wejœciowe - mo¿emy próbowaæ logowaæ
+
+	QString error(tr("Error during login: "));
+	bool wasError = false;
+	try{
+		dataSource->login(user.toStdString(), password.toStdString());
+	}catch(std::exception & e){
+		error += e.what();
+		wasError = true;
+	}catch(...){
+		error += tr("UNKNOWN ERROR");
+		wasError = true;
+	}
+
+	// b³¹d logowania - b³¹d po³¹czenia z webserwisami
+
+	if(wasError == true){
+
+		error += ". " + tr("Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.");
+
+		QMessageBox messageBox(this);
+		messageBox.setWindowTitle(tr("Login error"));
+		messageBox.setText(error);
+		messageBox.setIcon(QMessageBox::Critical);
+		messageBox.setStandardButtons(QMessageBox::Ok);
+		messageBox.setDefaultButton(QMessageBox::Ok);
+		messageBox.exec();
+
+	}else if(dataSource->isLogged() == true){
+
+		bool synch = false;
+		bool shallowCopyAvailable = false;
+
+		dataSource->pathsManager->createUserDataPaths();
+
+		communication::ShallowCopy userShallowCopy;
+
+		loginButton->setText(tr("Logout"));
+
+		// poprawna komunikacja, u¿ytkownik zweryfikowany || brak komunikacji i logowanie lokalne
+
+		if(dataSource->currentUser_.id() == -2){
+			// je¿eli jestem zalogowany lokalnie to informujê o tym
+			QMessageBox messageBox(this);
+			messageBox.setWindowTitle(tr("Login information"));
+			messageBox.setText(tr("User is logged locally - there might be a problem with internet connection and remote services might not work correctly."));
+			messageBox.setIcon(QMessageBox::Information);
+			messageBox.setStandardButtons(QMessageBox::Ok);
+			messageBox.setDefaultButton(QMessageBox::Ok);
+			messageBox.exec();
+		}
+
+		if(dataSource->isShallowCopyComplete() == true){
+
+			bool extractStatus = false;
+
+			try{
+				dataSource->extractShallowCopyFromLocalStorageToUserSpace();
+				extractStatus = dataSource->buildShallowCopyFromLocalUserSpace(userShallowCopy);
+				dataSource->removeShallowCopyFromUserSpace();
+				if(extractStatus == false){
+					//TODO
+					//coœ nie tak z nasza p³ytk¹kopi¹ bazy danych - trzeba j¹ walidowaæ i poprawiaæ - pewnie obcinaæ a¿ bêdzie poprawna i spójna
+				}else{
+					shallowCopyAvailable = true;
+				}
+
+			}catch(std::exception & ){
+
+			}catch(...){
+
+			}
+
+			if(extractStatus == false){
+				QMessageBox messageBox(this);
+				messageBox.setWindowTitle(tr("Synchronization error"));
+				messageBox.setText(tr("Synchronization data is corrupted. Please try again later. If problem continues contact producer"));
+				messageBox.setIcon(QMessageBox::Warning);
+				messageBox.setStandardButtons(QMessageBox::Ok);
+				messageBox.setDefaultButton(QMessageBox::Ok);
+				messageBox.exec();
+			}else{
+
+				//pobierz datê ostatenij modyfikacji i porównaj
+				//jesli nowsza to zaproponuj synchronizacjê
+				//jeœli odmówi za³aduj ju¿ sparsowan¹ p³ytk¹ kopiê bazy danych
+				try{
+					auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
+
+					if(DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(userShallowCopy, time) == true){
+						QMessageBox messageBox(this);
+						messageBox.setWindowTitle(tr("Synchronization required"));
+						messageBox.setText(tr("Database was updated. Some data might be not available. Would You like to synchronize?"));
+						messageBox.setIcon(QMessageBox::Information);
+						messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+						messageBox.setDefaultButton(QMessageBox::Yes);
+						auto ret = messageBox.exec();
+						if(ret == QMessageBox::Yes){
+							synch = true;
+						}
+					}
+				}catch(std::exception & ){
+
+				}catch(...){
+
+				}
+			}
+		}else{
+
+			QMessageBox messageBox(this);
+			messageBox.setWindowTitle(tr("Synchronization required"));
+			messageBox.setText(tr("Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?"));
+			messageBox.setIcon(QMessageBox::Warning);
+			messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+			messageBox.setDefaultButton(QMessageBox::Yes);
+			int ret = messageBox.exec();
+			if(ret == QMessageBox::Yes){
+				synch = true;
+			}
+
+		}
+
+		if(synch == true){
+			performShallowCopyUpdate();
+		}else if(shallowCopyAvailable == true){
+			//ustawiamy now¹ p³ytk¹ kopiê bazy danych
+			dataSource->setShallowCopy(userShallowCopy);
+			//odœwie¿am przefiltrowan¹ p³ytk¹ kopiê danych co wi¹¿e siê z uniewa¿nieniem dotychczasowych perspektyw
+			onFilterChange(filterManager.currentFilterIndex());
+		}
+
+		tryLoadProjects();
+
+		setTabEnabled(0, true);
+		setTabEnabled(1, true);
+		setTabEnabled(2, true);
+		setCurrentWidget(motionDataTab);
+
+	}else{
+
+		//poprawna komunikacja, nie uda³o siê zweryfikowaæ u¿ytkownika
+
+		QMessageBox messageBox(this);
+		messageBox.setWindowTitle(tr("Login unsuccessful"));
+		messageBox.setText(tr("Given user or password is incorrect. Please correct it and try again. If problem continues contact database administrators."));
+		messageBox.setIcon(QMessageBox::Warning);
+		messageBox.setStandardButtons(QMessageBox::Ok);
+		messageBox.setDefaultButton(QMessageBox::Ok);
+		messageBox.exec();
+	}
+
+	////koniec progressbara
+	////chowam go
+	//loginProgressBar->setVisible(false);
+	////resetuje go
+	//loginProgressBar->setRange(0,100);
+	//loginProgressBar->setValue(0);
+	setCursor(Qt::ArrowCursor);
+}
+
 void DataSourceWidget::onLogin()
 {
 	// je¿eli zalogowany to wyloguj
@@ -684,167 +854,7 @@ void DataSourceWidget::onLogin()
 			////uruchamiam
 			//loginProgressBar->setRange(0,0);
 
-			setCursor(Qt::WaitCursor);
-			QApplication::processEvents();
-
-			//mamy jakieœ dane wejœciowe - mo¿emy próbowaæ logowaæ
-
-			QString error(tr("Error during login: "));
-			bool wasError = false;
-			try{
-				dataSource->login(userEdit->text().toStdString(), passwordEdit->text().toStdString());
-			}catch(std::exception & e){
-				error += e.what();
-				wasError = true;
-			}catch(...){
-				error += tr("UNKNOWN ERROR");
-				wasError = true;
-			}
-
-			// b³¹d logowania - b³¹d po³¹czenia z webserwisami
-
-			if(wasError == true){
-
-				error += ". " + tr("Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.");
-
-				QMessageBox messageBox(this);
-				messageBox.setWindowTitle(tr("Login error"));
-				messageBox.setText(error);
-				messageBox.setIcon(QMessageBox::Critical);
-				messageBox.setStandardButtons(QMessageBox::Ok);
-				messageBox.setDefaultButton(QMessageBox::Ok);
-				messageBox.exec();
-
-			}else if(dataSource->isLogged() == true){
-
-				bool synch = false;
-				bool shallowCopyAvailable = false;
-
-				dataSource->pathsManager->createUserDataPaths();
-
-				communication::ShallowCopy userShallowCopy;
-
-				loginButton->setText(tr("Logout"));
-
-				// poprawna komunikacja, u¿ytkownik zweryfikowany || brak komunikacji i logowanie lokalne
-
-				if(dataSource->currentUser_.id() == -2){
-					// je¿eli jestem zalogowany lokalnie to informujê o tym
-					QMessageBox messageBox(this);
-					messageBox.setWindowTitle(tr("Login information"));
-					messageBox.setText(tr("User is logged locally - there might be a problem with internet connection and remote services might not work correctly."));
-					messageBox.setIcon(QMessageBox::Information);
-					messageBox.setStandardButtons(QMessageBox::Ok);
-					messageBox.setDefaultButton(QMessageBox::Ok);
-					messageBox.exec();
-				}
-
-				if(dataSource->isShallowCopyComplete() == true){
-
-					bool extractStatus = false;
-
-					try{
-						dataSource->extractShallowCopyFromLocalStorageToUserSpace();
-						extractStatus = dataSource->buildShallowCopyFromLocalUserSpace(userShallowCopy);
-						dataSource->removeShallowCopyFromUserSpace();
-						if(extractStatus == false){
-							//TODO
-							//coœ nie tak z nasza p³ytk¹kopi¹ bazy danych - trzeba j¹ walidowaæ i poprawiaæ - pewnie obcinaæ a¿ bêdzie poprawna i spójna
-						}else{
-							shallowCopyAvailable = true;
-						}
-
-					}catch(std::exception & ){
-
-					}catch(...){
-
-					}
-
-					if(extractStatus == false){
-						QMessageBox messageBox(this);
-						messageBox.setWindowTitle(tr("Synchronization error"));
-						messageBox.setText(tr("Synchronization data is corrupted. Please try again later. If problem continues contact producer"));
-						messageBox.setIcon(QMessageBox::Warning);
-						messageBox.setStandardButtons(QMessageBox::Ok);
-						messageBox.setDefaultButton(QMessageBox::Ok);
-						messageBox.exec();
-					}else{
-
-						//pobierz datê ostatenij modyfikacji i porównaj
-						//jesli nowsza to zaproponuj synchronizacjê
-						//jeœli odmówi za³aduj ju¿ sparsowan¹ p³ytk¹ kopiê bazy danych
-						try{
-							auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
-
-							if(DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(userShallowCopy, time) == true){
-								QMessageBox messageBox(this);
-								messageBox.setWindowTitle(tr("Synchronization required"));
-								messageBox.setText(tr("Database was updated. Some data might be not available. Would You like to synchronize?"));
-								messageBox.setIcon(QMessageBox::Information);
-								messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-								messageBox.setDefaultButton(QMessageBox::Yes);
-								auto ret = messageBox.exec();
-								if(ret == QMessageBox::Yes){
-									synch = true;
-								}
-							}
-						}catch(std::exception & ){
-
-						}catch(...){
-
-						}
-					}
-				}else{
-
-					QMessageBox messageBox(this);
-					messageBox.setWindowTitle(tr("Synchronization required"));
-					messageBox.setText(tr("Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?"));
-					messageBox.setIcon(QMessageBox::Warning);
-					messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-					messageBox.setDefaultButton(QMessageBox::Yes);
-					int ret = messageBox.exec();
-					if(ret == QMessageBox::Yes){
-						synch = true;
-					}
-
-				}
-
-				if(synch == true){
-					performShallowCopyUpdate();
-				}else if(shallowCopyAvailable == true){
-					//ustawiamy now¹ p³ytk¹ kopiê bazy danych
-					dataSource->setShallowCopy(userShallowCopy);
-					//odœwie¿am przefiltrowan¹ p³ytk¹ kopiê danych co wi¹¿e siê z uniewa¿nieniem dotychczasowych perspektyw
-					onFilterChange(filterManager.currentFilterIndex());
-				}
-
-				tryLoadProjects();
-
-				setTabEnabled(0, true);
-				setTabEnabled(1, true);
-				setTabEnabled(2, true);
-				setCurrentWidget(motionDataTab);
-
-			}else{
-
-				//poprawna komunikacja, nie uda³o siê zweryfikowaæ u¿ytkownika
-
-				QMessageBox messageBox(this);
-				messageBox.setWindowTitle(tr("Login unsuccessful"));
-				messageBox.setText(tr("Given user or password is incorrect. Please correct it and try again. If problem continues contact database administrators."));
-				messageBox.setIcon(QMessageBox::Warning);
-				messageBox.setStandardButtons(QMessageBox::Ok);
-				messageBox.setDefaultButton(QMessageBox::Ok);
-				messageBox.exec();
-			}
-
-			////koniec progressbara
-			////chowam go
-			//loginProgressBar->setVisible(false);
-			////resetuje go
-			//loginProgressBar->setRange(0,100);
-			//loginProgressBar->setValue(0);
-			setCursor(Qt::ArrowCursor);
+			onLogin(userEdit->text(), passwordEdit->text());
 		}
 	}
 }
