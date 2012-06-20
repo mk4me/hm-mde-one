@@ -250,6 +250,16 @@ public:
 
 			qApp->installTranslator(&appTranslator);
 
+			QTranslator qtTranslator;
+
+			if(qtTranslator.load("qt_" + QLocale::languageToString(QLocale::system().language()), langPath) == false) {
+				qtTranslator.load(QString("qt_pl"), langPath);
+				//TODO
+				//jak tego siê nie uda za³adowaæ to mamy tylko angielski jêzyk - trzeba poinformowaæ
+			}
+
+			qApp->installTranslator(&qtTranslator);
+
 			QSettings::setDefaultFormat(QSettings::IniFormat);
 
             //Tworzymy tempa jeœli brakuje

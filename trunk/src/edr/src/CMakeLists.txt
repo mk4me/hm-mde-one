@@ -147,7 +147,8 @@ if(PROJECT_ENABLE_SVN_RESOURCES)
 	install(DIRECTORY ${PROJECT_SVN_RESOURCES_ROOT}/deploy/ DESTINATION bin/resources/ COMPONENT core
 		PATTERN ".svn" EXCLUDE
 		PATTERN "CMakeLists.txt" EXCLUDE
-		PATTERN "log.ini" EXCLUDE		)
+		PATTERN "log.ini" EXCLUDE
+		PATTERN ".ts" EXCLUDE)		
 	install(DIRECTORY ${PROJECT_LIBRARIES_ROOT}/win32/release/qt/plugins/ DESTINATION bin/ COMPONENT core 
 		PATTERN "*.lib" EXCLUDE)
 endif()
