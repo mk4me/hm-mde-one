@@ -121,33 +121,11 @@ set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 #------------------------------------------------------------------------------
 # RC
 set(TARGET_RC
-	#ui/ConsoleWidget.qrc
 	ui/Icons.qrc
 )
 QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
-
-# #------------------------------------------------------------------------------
-# # CONFIG
-# set(CONFIG_H
-	# config/ConfigBuffer.h
-	# config/ConfigurationGroup.h
-	# config/FileReader.h
-	# config/IConfigManager.h
-	# config/ConfigParameter.h
-# )
-# source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\config" FILES ${CONFIG_H})
-# set(TARGET_H ${TARGET_H} ${CONFIG_H})
-
-# set(CONFIG_SRC
-	# config/ConfigBuffer.cpp
-	# config/ConfigurationGroup.cpp
-	# config/FileReader.cpp
-	# config/ConfigParameter.cpp
-# )
-# source_group("${SOURCEGROUP_SOURCES}\\config" FILES ${CONFIG_SRC})
-# set(TARGET_SRC ${TARGET_SRC} ${CONFIG_SRC})
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek
@@ -159,6 +137,13 @@ set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
 
+
+
+#------------------------------------------------------------------------------
+# DEFINICJE WYNIKAJ¥CE Z KONFLIKTU QT - BOOST (foreach)
+# wy³anczamy s³owa kluczowe qt, zastêpujemy je makrami
+# u¿ywamy tylko i wy³¹cznie BOOST_FOREACH!!
+add_definitions(-DQT_NO_KEYWORDS -Dsignals=Q_SIGNALS -Dslots=Q_SLOTS -Demit=Q_EMIT)
 
 #------------------------------------------------------------------------------
 # tworzenie
@@ -176,7 +161,8 @@ else()
 endif()
 
 #instalacja
-install(TARGETS ${TARGET_TARGETNAME} DESTINATION bin COMPONENT hmm_view)
+install(TARGETS ${TARGET_TARGETNAME} RUNTIME DESTINATION bin COMPONENT hmm_view)
+install(FILES ${PUBLIC_H} DESTINATION include/${TARGET_TARGETNAME} COMPONENT hmm_view)
 # nag³ówki
 set(CORE_PRIVATES ${PROJECT_ROOT}/core)
 list(APPEND DEFAULT_PROJECT_INCLUDES ${CORE_PRIVATES})

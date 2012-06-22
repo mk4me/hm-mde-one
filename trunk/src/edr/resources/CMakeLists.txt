@@ -9,15 +9,6 @@ set(SETTINGS
 source_group("deploy\\settings" FILES ${SETTINGS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SETTINGS})
 
-# modele
-#set(MESHES 
-#	meshes/fixed_biped.fmesh
-#	meshes/Alien.tbs
-#)
-#source_group("meshes" FILES ${MESHES})
-#set(ALL_RESURCES ${ALL_RESURCES} ${MESHES})
-
-
 # pliki shaderów
 set(SHADERS 
 	deploy/shaders/textureRect_yuv_to_rgb.frag
@@ -69,7 +60,6 @@ set(ALL_RESURCES ${ALL_RESURCES} ${ICONS})
 file(GLOB ICONSVDF RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/deploy/icons/vdf/*.png")
 source_group("deploy\\iconsvdf" FILES ${ICONSVDF})
 set(ALL_RESURCES ${ALL_RESURCES} ${ICONSVDF})
-#MESSAGE( STATUS "CMAKE_CURRENT_SOURCE_DIR: " ${ICONSVDF} )
 
 # obrazki
 file(GLOB IMAGES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/deploy/images/*.png")
@@ -144,12 +134,16 @@ ADD_CUSTOM_TARGET(LOCALIZATION ALL
 	COMMAND ${FULL_QM_COMMAND}
 	)
 					
+set(LANG_OUT_FILES)
 # przygotrowanie kopiowania plików QM do odpowiednich lokalizacji dla ró¿nych buildów
  FOREACH(LANGUAGE ${PROJECT_LANGUAGES})
-	foreach (buildType ${CMAKE_CONFIGURATION_TYPES})
-		add_custom_command(TARGET LOCALIZATION POST_BUILD 
-			COMMAND "@CMAKE_COMMAND@" -E copy "${CMAKE_CURRENT_BINARY_DIR}/lang_${LANGUAGE}.qm" "${PROJECT_BUILD_ROOT}/bin/${buildType}/resources/lang/lang_${LANGUAGE}.qm"
-			COMMENT "Copying lang_${LANGUAGE} QM file"
-		)
-	endforeach()
+	list(APPEND LANG_OUT_FILES "${CMAKE_CURRENT_BINARY_DIR}/lang_${LANGUAGE}.qm")
+	#foreach (buildType ${CMAKE_CONFIGURATION_TYPES})
+	#	add_custom_command(TARGET LOCALIZATION POST_BUILD 
+	#		COMMAND "@CMAKE_COMMAND@" -E copy "${CMAKE_CURRENT_BINARY_DIR}/lang_${LANGUAGE}.qm" "${PROJECT_BUILD_ROOT}/bin/${buildType}/resources/lang/lang_${LANGUAGE}.qm"
+	#		COMMENT "Copying lang_${LANGUAGE} QM file"
+	#	)
+	#endforeach()
  ENDFOREACH(LANGUAGE ${PROJECT_LANGUAGES})
+	
+install(FILES ${LANG_OUT_FILES} DESTINATION bin/resources/lang/ COMPONENT core)

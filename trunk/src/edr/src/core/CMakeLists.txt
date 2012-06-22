@@ -67,6 +67,7 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
+	${HEADER_PATH}/StringTools.h
 	${HEADER_PATH}/ISource.h
 	${HEADER_PATH}/ISourceManager.h
 	${HEADER_PATH}/IActionsGroupManager.h
@@ -255,8 +256,8 @@ option(EDR_WIN32_ENABLE_CONSOLE "Enable console on Win32?" OFF)
 
 add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})
 
-#instalacja
-#install(TARGETS ${TARGET_TARGETNAME} DESTINATION bin COMPONENT core)
+#instalacja plików nag³ówkowych
+install(FILES ${PUBLIC_H} DESTINATION include/${TARGET_TARGETNAME} COMPONENT core)
 # nag³ówki
 include_directories(${DEFAULT_PROJECT_INCLUDES})
 # biblioteki

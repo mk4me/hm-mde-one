@@ -68,10 +68,11 @@ set(FIND_LIBRARIES_ROOT_RELEASE ${PROJECT_LIBRARIES_ROOT_RELEASE})
 set(FIND_PLATFORM ${PROJECT_LIBRARIES_PLATFORM})
 
 # Szukamy bibliotek
-find_package(zlib)
+find_package(ZLIB)
+find_package(BTK)
 find_package(Boost)
 find_package(OSG)
-find_package(Stdint)
+#find_package(Stdint)
 find_package(ODE)
 find_package(Qt)
 find_package(QWT)
@@ -128,14 +129,13 @@ endif()
 # ADD_PROJECTS(template)
 
 if (CONFIG_CORE_ENABLE_LOG4CXX)
-	ADD_PROJECT(corelib "KINEMATICLIB;LOG4CXX;BOOST;UTILS;OSG;OSGUI;QT;TINYXML;STDINT")
+	ADD_PROJECT(corelib "KINEMATICLIB;LOG4CXX;BOOST;UTILS;OSG;OSGUI;QT;TINYXML")
 else()
-	ADD_PROJECT(corelib "KINEMATICLIB;BOOST;UTILS;OSG;OSGUI;QT;TINYXML;STDINT")
+	ADD_PROJECT(corelib "KINEMATICLIB;BOOST;UTILS;OSG;OSGUI;QT;TINYXML")
 endif()
 ADD_PROJECT(core "BOOST;UTILS;OSG;QT;TINYXML;corelib;OPENGL;DFMLIB;VDFMLIB")
 ADD_PROJECT(old_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;OPENGL;DFMLIB;VDFMLIB;C3DLIB")
 ADD_PROJECT(hmm_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;OPENGL;DFMLIB;VDFMLIB;C3DLIB;QWT")
-#ADD_PROJECT(experiments "UTILS;OSG;corelib")
 ADD_PROJECTS(plugins)
 
 #---------------------------------------------------
@@ -148,11 +148,16 @@ if(PROJECT_ENABLE_SVN_RESOURCES)
 		PATTERN ".svn" EXCLUDE
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "log.ini" EXCLUDE
-		PATTERN ".ts" EXCLUDE)		
-	install(DIRECTORY ${PROJECT_LIBRARIES_ROOT}/win32/release/qt/plugins/ DESTINATION bin/ COMPONENT core 
+		PATTERN "*.ts" EXCLUDE)
+	install(DIRECTORY ${PROJECT_LIBRARIES_ROOT}/win32/release/qt/plugins/ DESTINATION bin/plugins/ COMPONENT core 
 		PATTERN "*.lib" EXCLUDE)
 endif()
 
+
+#---------------------------------------------------
+# Dodatkowa konfiguracja CPack dla instalatora
+set(CPACK_INSTALLER_RESOURCES "${PROJECT_SOURCE_DIR}/../../../installer_resources" CACHE PATH "Location of installer resources.")
+set(CPACK_PROJECT_SVN_RESOURCES_ROOT ${PROJECT_SVN_RESOURCES_ROOT})
 #---------------------------------------------------
 # CPack
 set(CPACK_PACKAGE_NAME "EDR")
@@ -161,25 +166,19 @@ set(CPACK_NSIS_DISPLAY_NAME "EDR")
 set(CPACK_NSIS_PACKAGE_NAME "EDR")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "EDR")
 set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "EDR")
-set(CPACK_COMPONENT_COMMUNICATION_GROUP "Plugins")
+set(CPACK_COMPONENT_NEWCOMMUNICATION_GROUP "Plugins")
 set(CPACK_COMPONENT_VIDEO_GROUP "Plugins")
 set(CPACK_COMPONENT_C3D_GROUP "Plugins")
 set(CPACK_COMPONENT_NEWCHART_GROUP "Plugins")
 set(CPACK_COMPONENT_NEWTIMELINE_GROUP "Plugins")
-set(CPACK_COMPONENT_VDF_GROUP "Plugins")
-set(CPACK_COMPONENT_DATAEXPLORER_GROUP "Plugins")
-set(CPACK_COMPONENT_COMMUNICATION_DISPLAY_NAME "Communication plugin")
-#set(CPACK_COMPONENT_ANIMATION_DISPLAY_NAME "Animation plugin")
+set(CPACK_COMPONENT_NEWCOMMUNICATION_DISPLAY_NAME "Communication plugin")
 set(CPACK_COMPONENT_VIDEO_DISPLAY_NAME "Video plugin")
 set(CPACK_COMPONENT_NEWCHART_DISPLAY_NAME "Chart plugin")
-set(CPACK_COMPONENT_VDF_DISPLAY_NAME "VDF plugin")
 set(CPACK_COMPONENT_C3D_DISPLAY_NAME "c3d plugin")
-set(CPACK_COMPONENT_DATAEXPLORER_DISPLAY_NAME "Data explorer plugin")
 set(CPACK_COMPONENT_NEWTIMELINE_DISPLAY_NAME "Timeline plugin")
 set(CPACK_COMPONENT_CORE_DISPLAY_NAME "Main application")
 set(CPACK_COMPONENT_CORE_REQUIRED ON)
-set(CPACK_COMPONENT_TRIALS_DISPLAY_NAME "Demo data")
-set(CPACK_COMPONENTS_ALL communication dataExplorer c3d core newChart video newtimeline trials kinematic)
+set(CPACK_COMPONENTS_ALL newCommunication c3d core newChart video newtimeline kinematic)
 option(ENABLE_CPACK "Set on to enable CPack" OFF)
 option(ENABLE_CTEST "Set on to enable CTest" OFF)
 if(ENABLE_CTEST)
@@ -190,6 +189,7 @@ if(ENABLE_CPACK)
 	#konfigurujemy cpacka w zaleznosci od systemu operacyjnego
 	if(WIN32)
 		set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}" ${CMAKE_MODULE_PATH})
+		set(CMAKE_MODULE_PATH "${CPACK_INSTALLER_RESOURCES}" ${CMAKE_MODULE_PATH})
 	else()
 		set(CPACK_BINARY_DEB ON)
 		set(CPACK_BINARY_RPM OFF)

@@ -7,7 +7,6 @@ FIND_SHARED(QuaZip "quazip" "quazip")
 # skopiowanie
 FIND_FINISH(QuaZip)
 
-
 if (NOT QT_FOUND OR NOT ZLIB_FOUND)
 	set(QuaZip_FOUND 0)
 else()
