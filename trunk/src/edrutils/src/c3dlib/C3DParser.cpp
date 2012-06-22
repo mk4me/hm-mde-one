@@ -1,7 +1,8 @@
 #include <boost/smart_ptr.hpp>
 #include <c3dlib/C3DParser.h>
+#include <sstream>
 #include <btkC3DFileIO.h>
-#include <Utilities/StringStreamBuf.h>
+//#include <Utilities/StringStreamBuf.h>
 #include <btkAcquisitionFileReader.h>
 #include <btkAcquisitionFileWriter.h>
 
@@ -21,6 +22,24 @@
 #include <utils/Debug.h>
 #include <utils/DataChannelCollection.h>
 namespace c3dlib {
+
+class StringStreamBuf : public std::stringstream
+{
+public:
+	StringStreamBuf(std::ostream & os) : old(nullptr), os(os)
+	{
+		old = os.rdbuf( rdbuf() );
+	}
+
+	~StringStreamBuf()
+	{
+		os.rdbuf(old);
+	}
+
+private:
+	std::streambuf* old;
+	std::ostream & os;
+};
 
 //! Kanal analogowy, implementacja przykrywa obiekt btk::Analog
 class Analog : public C3DParser::IAnalog

@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 
+#include <boost/call_traits.hpp>
 #include <boost/function.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
@@ -25,17 +26,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
-        //! Wzorzec wyci¹gaj¹cy const referencjê do danych - przydatny przy przekazywaniu danych w innych wzorcach
+    
+	//! Wzorzec wyci¹gaj¹cy const referencjê do danych - przydatny przy przekazywaniu danych w innych wzorcach
     template<class PointType>
     struct ConstReferenceType
     {
-        typedef typename boost::mpl::if_c<boost::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::const_reference>::type type;
+        typedef typename boost::mpl::if_<typename boost::is_pod<PointType>::type, PointType, typename boost::call_traits<PointType>::const_reference>::type type;
     };
 
     template<class PointType>
     struct ReferenceType
     {
-        typedef typename boost::mpl::if_c<boost::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::reference>::type type;
+        typedef typename boost::mpl::if_<typename boost::is_pod<PointType>::type, PointType, typename boost::call_traits<PointType>::reference>::type type;
     };
 
     //! Klasa pozwalaj¹ca obserwowaæ obiekty z danymi i modyfikowaæ w³asne wartoœci
