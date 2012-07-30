@@ -244,10 +244,10 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	userEdit->installEventFilter(loginEventFilter);
 	passwordEdit->installEventFilter(loginEventFilter);
 
-	onLogin("bdrdemo", ";bdrdemo");
-	setCurrentWidget(motionDataTab);
-	setTabEnabled(indexOf(configTab), false);
-	setTabEnabled(indexOf(userDataTab), false);
+	//onLogin("bdrdemo", ";bdrdemo");
+	//setCurrentWidget(motionDataTab);
+	//setTabEnabled(indexOf(configTab), false);
+	//setTabEnabled(indexOf(userDataTab), false);
 }
 
 DataSourceWidget::~DataSourceWidget()
