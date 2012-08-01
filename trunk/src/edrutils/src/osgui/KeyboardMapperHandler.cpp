@@ -1,12 +1,13 @@
 #include "PCH.h"
 #include <osgui/KeyboardMapperHandler.h>
 #include <osgui/KeyboardMapper.h>
+#include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
-KeyboardMapperHandler::KeyboardMapperHandler(osgWidget::WindowManager* wm) : 
+KeyboardMapperHandler::KeyboardMapperHandler(osgWidget::WindowManager* wm) :
 wm(wm)
 {
     UTILS_ASSERT( dynamic_cast<KeyboardMapper*>(wm), "Przekazany obiekt nie rozszerza KeyboardMappera" );
@@ -23,7 +24,7 @@ bool KeyboardMapperHandler::handle(const osgGA::GUIEventAdapter& gea, osgGA::GUI
 	if (key == -1 || (ev != GUIEventAdapter::KEYDOWN && ev != GUIEventAdapter::KEYUP)) {
 		return false;
 	}
-	
+
     // czy to mapper?
     if ( wm.valid() ) {
 	    KeyboardMapper * mapper = dynamic_cast<KeyboardMapper*>(wm.get());

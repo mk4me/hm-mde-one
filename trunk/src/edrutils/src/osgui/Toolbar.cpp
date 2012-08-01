@@ -1,5 +1,7 @@
 #include "PCH.h"
 #include <osgui/Toolbar.h>
+#include <osgWidget/StyleManager>
+#include <osgWidget/WindowManager>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
@@ -55,7 +57,7 @@ void Toolbar::managed(osgWidget::WindowManager* wm){
 	if(sm != 0){
 		//upper half
 		sm->applyStyles(m_pTabsGrid.first);
-			
+
 		//tabs
 		for(TABS::iterator it = m_vTabs.begin(); it != m_vTabs.end(); ++it){
 			sm->applyStyles(it->first);
@@ -132,7 +134,7 @@ bool Toolbar::addTab(osgWidget::Widget * tab, int tabIndex, bool enable, bool vi
 	st.second->setColor(0,0,0,0);
 	st.second->setCanFill(true);
 	m_mSubToolbars[tab] = st;
-	
+
 	//set PUSH event mask
 	tab->addEventMask(osgWidget::EVENT_MOUSE_PUSH);
 	//add PUSH event handler
@@ -187,10 +189,10 @@ bool Toolbar::removeTab(int tabIndex){
 	if(m_vTabs.size() == 1){
 		m_pTabsGrid.first->removeWidget(m_pTabsGrid.first->getByRowCol(0,0));
 		m_pTabsGrid.first->setNumRows(1);
-		m_vTabs.swap(TABS());
+		TABS().swap(m_vTabs);
 
 		if(m_pActiveTab == toDelete){
-			resetActiveTab();	
+			resetActiveTab();
 		}
 	}else{
 		int idx = tabIndex;
@@ -468,7 +470,7 @@ bool Toolbar::addTabElement(int tabIndex, osgWidget::Widget * elem, int elemInde
 
 	osgui::Grid * grid = m_mSubToolbars[tabDesc.first].first;
 	grid->setNumColumns(tabDesc.second.tabElements.size() + 1);
-	
+
 	if(elemIndex > idx){
 		elemIndex = idx;
 	}else if(elemIndex < 0){
@@ -536,7 +538,7 @@ bool Toolbar::removeTabElement(int tabIndex, int elemIndex){
 	osgui::Grid * grid = m_mSubToolbars[m_vTabs[tabIndex].first].first;
 
 	if(idx == 1){
-		tabDesc.second.tabElements.swap(ELEMENTS());
+		ELEMENTS().swap(tabDesc.second.tabElements);
 		grid->removeWidget(grid->getByRowCol(0,0));
 	}else{
 		++idx;
@@ -665,7 +667,7 @@ const std::string & Toolbar::getToolbarLowerHalfStyle() const{
 }
 
 bool Toolbar::tabPush(osgWidget::Event& ev){
-	
+
 	activateTab(ev.getWidget());
 	return false;
 }

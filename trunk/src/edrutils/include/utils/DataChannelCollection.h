@@ -3,8 +3,8 @@
 	created:	4:7:2011   20:56
 	filename: 	DataChannelCollection.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_UTILS__DATACHANNELCOLLECTION_H__
@@ -27,7 +27,7 @@ template <class Channel, class TimeAccessor = DataChannelTimeAccessor<typename C
 class DataChannelCollection
 {
     UTILS_STATIC_ASSERT((boost::is_base_of<IRawGeneralDataChannelReader<typename Channel::point_type, typename Channel::time_type>, Channel>::value), "Base class should inherit from IRawGeneralDataChannelReader");
-    
+
 public:
 	typedef Channel ChannelType;
     typedef typename Channel::time_type TimeType;
@@ -35,9 +35,10 @@ public:
 	typedef boost::shared_ptr<ChannelType> ChannelPtr;
 	typedef boost::shared_ptr<const ChannelType> ChannelConstPtr;
 	typedef std::vector<ChannelPtr> Collection;
+	typedef typename Collection::iterator iterator;
 protected:
 	Collection channels;
-	//! numer konfiguracji 
+	//! numer konfiguracji
 	int configurationID;
 
 public:
@@ -55,13 +56,13 @@ public:
 		return obj;
 	}
 public:
-	void addChannel(const ChannelPtr & ptr) 
+	void addChannel(const ChannelPtr & ptr)
 	{
 		UTILS_ASSERT(channels.size() == 0 || ptr->size() == channels[0]->size());
 		channels.push_back(ptr);
 	}
 
-	const ChannelPtr & getChannel(int index) 
+	const ChannelPtr & getChannel(int index)
 	{
 		UTILS_ASSERT(index >= 0 && index < static_cast<int>(channels.size()));
 		return channels[index];
@@ -125,17 +126,17 @@ public:
 		return res;
 	}
 
-	int getConfigurationID() const 
+	int getConfigurationID() const
 	{
 		return configurationID;
 	}
 
 
-	void setConfigurationID(int id) 
+	void setConfigurationID(int id)
 	{
 		configurationID = id;
 	}
-	
+
 	//! \param index indeks kanalu, dla ktorego pobieramy wartosc
 	//! \param time czas, dla ktorego bedzie zwrocona wartosc
 	//! \return wartosc kanalu
@@ -146,7 +147,7 @@ public:
 
 	//! \return maksymalna wartosc w calej dziedzinie dla wszystkich kanalow
 	boost::tuple<PointType, TimeType, int> getMaxValue() const
-	{ 
+	{
 		int index = _getIndex(
 			[&](int i) { return channels[i]->getMaxValue(); },
 			[&](iterator b, iterator e) -> int { return std::max_element(channels.begin(), channels.end()); }
@@ -157,7 +158,7 @@ public:
 	}
 	//! \return minimalna wartosc w calej dziedzinie dla wszystkich kanalow
 	boost::tuple<PointType, TimeType, int> getMinValue() const
-	{ 
+	{
 		int index = _getIndex(
 			[&](int i) { return channels[i]->getMinValue(); },
 			[&](iterator b, iterator e) -> int { return std::min_element(channels.begin(), channels.end()); }
@@ -167,8 +168,8 @@ public:
 		return make_tuple(val, time, index);
 	}
 
-	//! 
-	//! \param t 
+	//!
+	//! \param t
 	boost::tuple<PointType, int> getMaxValue(TimeType t) const
 	{
 		// todo
@@ -188,7 +189,7 @@ private:
 	}
 };
 ////////////////////////////////////////////////////////////////////////////////
-} //namespace utils 
+} //namespace utils
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif

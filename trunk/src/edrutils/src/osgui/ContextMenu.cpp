@@ -2,6 +2,7 @@
 #include <osgui/ContextMenu.h>
 #include <osgui/Utils2D.h>
 #include <osgui/AspectRatioKeeper.h>
+#include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
@@ -13,16 +14,16 @@ ContextMenu::MenuItem ContextMenu::emptyMenuItem = constEmptyMenuItem;
 ContextMenu::MenuSubmenu ContextMenu::emptyMenuSubmenu = constEmptyMenuSubmenu;
 const std::string ContextMenu::defaultPathSeparator = "/";
 
-ContextMenu::ContextMenu(void) : 
+ContextMenu::ContextMenu(void) :
 pathSeparator(new std::string(defaultPathSeparator))
-{	
+{
     rootMenu = this;
 	setStyle("osg.contextmenu.menu");
 }
 
 ContextMenu::ContextMenu(ContextMenu * parent) :
 parentMenu(parent), pathSeparator(parent->pathSeparator)
-{    
+{
     UTILS_ASSERT((parent != nullptr));
     rootMenu = parent->rootMenu;
     setStyle("osg.contextmenu.menu");
@@ -83,7 +84,7 @@ bool ContextMenu::showMenu(){
     if(this->isVisible() == true){
         return true;
     }
-    
+
     if(rootMenu == this){
         show();
         return true;
@@ -93,7 +94,7 @@ bool ContextMenu::showMenu(){
         if(parentMenu->activeSubMenu != nullptr){
             parentMenu->activeSubMenu->hideMenu();
         }
-        
+
         parentMenu->activeSubMenu = this;
 
         if(parentMenu->getWindowManager() != nullptr){
@@ -106,10 +107,10 @@ bool ContextMenu::showMenu(){
     return false;
 }
 
-bool ContextMenu::showMenu(const osgWidget::XYCoord & pos){	
+bool ContextMenu::showMenu(const osgWidget::XYCoord & pos){
 	setOrigin(pos);
 	resize();
-	
+
     return showMenu();
 }
 
@@ -213,7 +214,7 @@ bool ContextMenu::onItemPush(osgWidget::Event& ev){
 }
 
 bool ContextMenu::onItemEnter(osgWidget::Event& ev){
-	
+
 	MenuItem * menuItem = static_cast<MenuItem *>(ev.getData());
 
 	menuItem->menuItem->setStyle("osg.contextmenu.item.hovered");
@@ -232,7 +233,7 @@ bool ContextMenu::onItemEnter(osgWidget::Event& ev){
 }
 
 bool ContextMenu::onItemLeave(osgWidget::Event& ev){
-	
+
 	MenuItem * menuItem = static_cast<MenuItem *>(ev.getData());
 
 	menuItem->menuItem->setStyle("osg.contextmenu.item.normal");
@@ -291,7 +292,7 @@ bool ContextMenu::onSubmenuLeave(osgWidget::Event& ev){
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->submenuItem);
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->emptyWidget);
 	//}
-	
+
 	return false;
 }
 
@@ -444,7 +445,7 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 		item.checkedWidget->addCallback(cc);
 		item.checkedWidget->addCallback(ec);
 		//item.checkedWidget->addCallback(lc);
-		
+
 		unsigned int row = currentMenu->getNumRows();
 
 		currentMenu->setNumRows(row +1);
@@ -472,14 +473,14 @@ bool ContextMenu::removeMenuItem(const Collection & path){
 template<class Iter>
 bool ContextMenu::removeMenuItem(Iter begin, Iter end){
 	UTILS_FAIL("Nie zaimplementowano");
-    
+
     MenuItem menuItem = findMenuItem(begin, end);
 
 	if(menuItem.menuItem == nullptr){
 		return false;
 	}
 
-    
+
 
 	//TODO
 	//implement
@@ -501,7 +502,7 @@ bool ContextMenu::setMenuItemChecked(Iter begin, Iter end, bool checked){
 
 	if(menuItem.checked != checked){
 		menuItem.checked = checked;
-		
+
 		refreshMenuItemCheckedStyle(menuItem);
 
         if(getWindowManager() != nullptr){
@@ -522,8 +523,8 @@ bool ContextMenu::setMenuItemOnClickCallback(const Collection & path, const OnCl
 template<class Iter>
 bool ContextMenu::setMenuItemOnClickCallback(Iter begin, Iter end, const OnClickCallback & callback){
 	MenuItem & menuItem = findMenuItem(begin, end);
-
-	if(menuItem.menuItem == nullptr || menuItem.onClickCallback == callback){
+    // rev - nie da sie porownywac funkcji!
+	if(menuItem.menuItem == nullptr ) { //|| menuItem.onClickCallback == callback){
 		return false;
 	}
 
@@ -541,7 +542,8 @@ template<class Iter>
 bool ContextMenu::setMenuItemOnHoverCallback(Iter begin, Iter end, const OnHoverCallback & callback){
 	MenuItem & menuItem = findMenuItem(begin, end);
 
-	if(menuItem.menuItem == nullptr || menuItem.onHoverCallback == callback){
+    // rev - nie da sie porownywac funkcji!
+	if(menuItem.menuItem == nullptr) { // || menuItem.onHoverCallback == callback){
 		return false;
 	}
 
@@ -575,7 +577,9 @@ bool ContextMenu::setMenuOnCloseCallback(Iter begin, Iter end, const OnCloseCall
 
 template<class Collection>
 const ContextMenu::OnClickCallback & ContextMenu::getMenuItemOnClickCallback(const Collection & path) const{
-	return getMenuItemOnClickCallback(path.begin(), path.end(), callback);
+    // rev - co to jest callback?
+	//return getMenuItemOnClickCallback(path.begin(), path.end(), callback);
+	return getMenuItemOnClickCallback(path.begin(), path.end(), nullptr);
 }
 
 template<class Iter>
@@ -585,7 +589,9 @@ const ContextMenu::OnClickCallback & ContextMenu::getMenuItemOnClickCallback(Ite
 
 template<class Collection>
 const ContextMenu::OnHoverCallback & ContextMenu::getMenuItemOnHoverCallback(const Collection & path) const{
-	return getMenuItemOnHoverCallback(path.begin(), path.end(), callback);
+    // rev - co to jest callback?
+	//return getMenuItemOnHoverCallback(path.begin(), path.end(), callback);
+	return getMenuItemOnHoverCallback(path.begin(), path.end(), nullptr);
 }
 
 template<class Iter>
@@ -595,7 +601,9 @@ const ContextMenu::OnHoverCallback & ContextMenu::getMenuItemOnHoverCallback(Ite
 
 template<class Collection>
 const ContextMenu::OnCloseCallback & ContextMenu::getMenuOnCloseCallback(const Collection & path) const{
-	return getMenuOnCloseCallback(path.begin(), path.end(), callback);
+	// rev - co to jest callback?
+	//return getMenuOnCloseCallback(path.begin(), path.end(), callback);
+	return getMenuOnCloseCallback(path.begin(), path.end(), nullptr);
 }
 
 template<class Iter>
@@ -605,7 +613,9 @@ const ContextMenu::OnCloseCallback & ContextMenu::getMenuOnCloseCallback(Iter be
 
 template<class Collection>
 bool ContextMenu::getMenuItemChecked(const Collection & path) const{
-	return getMenuItemChecked(path.begin(), path.end(), callback);
+	// rev - co to jest callback?
+	//return getMenuItemChecked(path.begin(), path.end(), callback);
+	return getMenuItemChecked(path.begin(), path.end(), nullptr);
 }
 
 template<class Iter>
@@ -619,7 +629,7 @@ ContextMenu::MenuItem & ContextMenu::findMenuItem(const Collection & path){
 }
 
 template<class Iter>
-ContextMenu::MenuItem & ContextMenu::findMenuItem(Iter begin, Iter end){		
+ContextMenu::MenuItem & ContextMenu::findMenuItem(Iter begin, Iter end){
 	if(std::distance(begin, end) == 1){
 		//check only this level
 		Items::iterator it = items.find(*begin);

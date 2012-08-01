@@ -3,8 +3,8 @@
 	created:	30:5:2011   8:59
 	filename: 	C3DParser.h
 	author:		Wojciech Knieæ
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_C3DLIB__C3DPARSER_H__
@@ -43,7 +43,7 @@ class C3DLIB_EXPORT C3DParser
 {
 public:
 	//! Interfejs dostarcza opisu dla danych akwizycji (jest to czesc wspolna dla danych analogowych, punktow i zdarzen)
-	class IAquisitionEntry 
+	class IAquisitionEntry
 	{
 	public:
 		virtual ~IAquisitionEntry() {}
@@ -63,7 +63,7 @@ public:
 	public:
         typedef enum {Marker, VirtualMarker, VirtualMarkerForFrame, Angle, Force, Moment, Power, Scalar} Type;
 	public:
-        //! \return Typ punktu c3d 
+        //! \return Typ punktu c3d
         virtual Type getType() const = 0;
         //! \return jednostka dla danych analogowych (np. mm)
 		virtual const std::string& getUnit() const = 0;
@@ -73,7 +73,7 @@ public:
     };
 	typedef IPoint* IPointPtr;
 	typedef const IPoint* IPointConstPtr;
-		
+
 	//! Dostarcza danych dla kanalu analogowego
     class IAnalog : public IAquisitionEntry
     {
@@ -89,8 +89,8 @@ public:
 	typedef IAnalog* IAnalogPtr;
 	typedef const IAnalog* IAnalogConstPtr;
 
-	
-	
+
+
 	//! dostarcza danych o zdarzeniu zapisanym w c3d (np. dotkniecie stopa podlogi)
     class IEvent : public IAquisitionEntry
     {
@@ -130,7 +130,7 @@ public:
     //! Wczytanie plikow
     //! \param filenames kolekcja z nazwami plikow
     //! \param importWarnings zwraca warningi podczas wczytywania plikow
-    void importFrom(const std::vector<const std::string>& filenames, std::string& importWarnings);
+    void importFrom(const std::vector<std::string>& filenames, std::string& importWarnings);
 
 public:
 	//! \return czestotliwosc dla wszystkich danych analogowych

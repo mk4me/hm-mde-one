@@ -1,17 +1,19 @@
 # przygotowanie do szukania
 FIND_INIT(QT qt)
 
-FIND_STATIC(QT_QTMAIN "qtmain")
-FIND_SHARED_EXT(QT_QTOPENGL "QtOpenGL4" "QtOpenGLd4" "QtOpenGL4" "QtOpenGLd4")
-FIND_SHARED_EXT(QT_QTGUI "QtGui4" "QtGuid4" "QtGui4" "QtGuid4")
-FIND_SHARED_EXT(QT_QTCORE "QtCore4" "QtCored4" "QtCore4" "QtCored4")
+FIND_SHARED_EXT(QT_QTOPENGL "QtOpenGL<4,?>" "QtOpenGLd<4,?>" "QtOpenGL<4,?>" "QtOpenGLd<4,?>")
+FIND_SHARED_EXT(QT_QTGUI "QtGui<4,?>" "QtGuid<4,?>" "QtGui<4,?>" "QtGuid<4,?>")
+FIND_SHARED_EXT(QT_QTCORE "QtCore<4,?>" "QtCored<4,?>" "QtCore<4,?>" "QtCored<4,?>")
+FIND_SHARED_EXT(QT_QTTEST "QtTest<4,?>" "QtTestd<4,?>" "QtTest<4,?>" "QtTestd<4,?>")
 
 #na potrzeby QWT
-FIND_SHARED_EXT(QT_QTSVG "QtSvg4" "QtSvgd4" "QtSvg4" "QtSvgd4")
+FIND_SHARED_EXT(QT_QTSVG "QtSvg<4,?>" "QtSvgd<4,?>" "QtSvg<4,?>" "QtSvgd<4,?>")
 
 FIND_EXECUTABLE(QT_MOC "moc")
 FIND_EXECUTABLE(QT_UIC "uic")
 FIND_EXECUTABLE(QT_RCC "rcc")
+FIND_EXECUTABLE(QT_LRELEASE "lrelease")
+FIND_EXECUTABLE(QT_LUPDATE "lupdate")
 
 # skopiowanie
 FIND_FINISH(QT)

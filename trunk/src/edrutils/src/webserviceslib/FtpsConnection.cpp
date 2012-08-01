@@ -56,13 +56,13 @@ public:
         if(url_[url_.size() - 1] != '/') {
             url_.append("/");
         }
-        
+
     }
 
     FtpsConnection::OperationStatus get(const std::string & remoteSource, const std::string & localDestination, FtpsConnection::IProgress * customProgress)
     {
         FtpsConnection::OperationStatus ret = FtpsConnection::Complete;
-        errorMessage_.swap(std::string());
+        std::string().swap(errorMessage_);
         progress_.progress = 0;
         progress_.abort = false;
         progress_.customProgress = customProgress;
@@ -92,7 +92,7 @@ public:
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, ftpfile);
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-        
+
         if(customProgress == nullptr){
             curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, setDownloadProgress);
         }else{
@@ -106,7 +106,7 @@ public:
         fclose(ftpfile);
 
         if(CURLE_OK != res) {
-            
+
             try{
                 remove(localDestination.c_str());
             }catch(...){
@@ -129,7 +129,7 @@ public:
     FtpsConnection::OperationStatus put(const std::string& localSource, const std::string& remoteDestination, FtpsConnection::IProgress * customProgress)
     {
         FtpsConnection::OperationStatus ret = FtpsConnection::Complete;
-        errorMessage_.swap(std::string());
+        std::string().swap(errorMessage_);
 
         std::string url(url_);
         url.append(remoteDestination);
@@ -155,7 +155,7 @@ public:
         curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
         curl_easy_setopt(curl, CURLOPT_READFUNCTION, read);
         curl_easy_setopt(curl, CURLOPT_READDATA, ftpfile);
-        
+
         if(customProgress == nullptr){
             curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, setUploadProgress);
         }else{
@@ -269,7 +269,7 @@ private:
         progress->progress = static_cast<int>(val);
 
         progress->customProgress->setProgress(val);
-        
+
         return 0;
     }
     /**
@@ -348,7 +348,7 @@ public:
 
 FtpsConnection::FtpsConnection() : impl(new FtpsConnectionImpl())
 {
-    
+
 }
 
 FtpsConnection::FtpsConnection(const std::string & url, const std::string & user, const std::string & password)
@@ -359,7 +359,7 @@ FtpsConnection::FtpsConnection(const std::string & url, const std::string & user
 
 FtpsConnection::~FtpsConnection()
 {
-    
+
 }
 
 void FtpsConnection::setUrl(const std::string & url)

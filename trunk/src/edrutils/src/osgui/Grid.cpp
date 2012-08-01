@@ -1,6 +1,7 @@
 #include "PCH.h"
 #include <osgui/Grid.h>
 #include <boost/foreach.hpp>
+#include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
@@ -77,16 +78,16 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
 {
     using namespace osgWidget;
     UTILS_ASSERT(aspectRatios.size() == getNumObjects());
-   
-    
+
+
 
     // obliczenie optymalnego rozmiaru
     osg::Vec2s optimalDimensions(1, 1);
     XYCoord optimalCellSize(width, height);
-    double optimalField = -DBL_MAX;    
+    double optimalField = -DBL_MAX;
     for (unsigned rows = 1; rows <= getNumObjects(); ++rows) {
         unsigned columns = static_cast<unsigned>( ceil(static_cast<double>(getNumObjects())/rows) );
-        
+
         // rozmiar komórki
         XYCoord cellSize = XYCoord( width/columns, height/rows );
         double cellRatio = cellSize.x() / cellSize.y();
@@ -152,38 +153,38 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
 //     osg::Vec2s optimalDimensions(0, 0);
 //     osg::Vec2 optimalCellSize(0, 0);
 //     double optimalField = 0.0;
-// 
+//
 //     // dla ka¿dej konfiguracji badamy zajête pole
 //     for ( unsigned rows = 1; rows < getNumObjects(); ++rows ) {
 //         unsigned columns = static_cast<unsigned>(ceil(double(getNumObjects()) / rows));
-// 
+//
 //         // obliczenie maksymalnego rozmiaru przypadaj¹cego na komórkê
 //         osg::Vec2 size = osg::Vec2( width/columns, height/rows );
-// 
+//
 //         double cellRatio = size.x() / size.y();
 //         if ( aspectRatio > cellRatio ) {
 //             size.y() = size.x() / aspectRatio;
 //         } else {
 //             size.x() = size.y() * aspectRatio;
 //         }
-// 
+//
 //         // czy zajêto ³¹cznie wiêcej miejsca ni¿ poprzednio?
 //         double usedField = size.x() * size.y();
-//         if ( usedField > optimalField ) 
+//         if ( usedField > optimalField )
 //         {
 //             optimalField = usedField;
 //             optimalDimensions = osg::Vec2s(rows, columns);
 //             optimalCellSize = size;
 //         }
 //     }
-// 
+//
 //     UIObjectParent::Vector oldObjects;
 //     oldObjects.swap(_objects);
 //     oldObjects.resize( optimalDimensions.x() * optimalDimensions.y() );
-// 
+//
 //     _objects.resize(getNumRows() * getNumColumns());
 //     setDimensions(optimalDimensions.x(), optimalDimensions.y());
-// 
+//
 //     oldObjects.swap(_objects);
 //     for ( Iterator it = begin(); it != end(); ++it ) {
 //         if ( it->valid() ) {
@@ -195,7 +196,7 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
 
 // void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type height, const std::vector<osgWidget::point_type>& aspectRatios )
 // {
-// 
+//
 // }
 
 void Grid::resetFillables()
@@ -250,7 +251,7 @@ void Grid::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::po
     for(unsigned int col = 0; col < _cols; ++col) {
         bool fill = isColumnHorizontallyFillable(col);
 
-        if(fill) { 
+        if(fill) {
             ++numColFills;
         } else {
             columnsWeights[col] = 0.0f;
@@ -319,21 +320,21 @@ void Grid::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::po
 
 //     width = getWidth() + diffWidth;
 //     height = getHeight() + diffHeight;
-// 
+//
 //     // implementacja bazowa
 //     Table::_resizeImplementation(diffWidth, diffHeight);
 //     if ( keepCellAspectRatio ) {
-// 
+//
 //     }
-// 
-// 
+//
+//
 //     // sprawdzamy, czy jest ok
 //     point_type calcWidth = Table::_getWidthImplementation().current;
 //     point_type calcHeight = Table::_getHeightImplementation().current;
-// 
+//
 //     diffWidth = width - calcWidth;
 //     diffHeight = height - calcHeight;
-// 
+//
 //     if ( diffWidth != 0.0 || diffHeight != 0.0 ) {
 //         point_type dwidth = diffWidth / getColumns();
 //         point_type dheight = diffHeight / getRows();

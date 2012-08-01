@@ -116,7 +116,7 @@ void Model::addNode(const NPtr & node)
     if(isNodeSupported(node) == false){
         throw std::runtime_error("Node type not supported by model!");
     }
-    
+
     if(nodes.find(node) != nodes.end()){
         throw std::runtime_error("Node already added to model!");
     }
@@ -132,7 +132,7 @@ void Model::addNode(const NPtr & node)
 
     if(node->beginIn() != node->endIn()){
         //dodaj do listy wymaganych pod³¹czenia
-        
+
         PinsSet requiredPins;
         //auto pins = node->getInPins();
         for(auto it = node->beginIn(); it != node->endIn(); ++it){
@@ -243,7 +243,7 @@ void Model::quickRemoveNode(const Nodes::iterator & nodeIt)
 
 void Model::beforeNodeRemove(const NPtr & node)
 {
-    
+
 }
 
 void Model::clearNodes()
@@ -260,14 +260,14 @@ void Model::clearNodes()
 
     UTILS_ASSERT((connections.size() == 0), "Nie wszystkie po³¹czenia zosta³y usuniête jak siê spodziewano przy usuwaniu wszystkich wêz³ów");
 
-    nodes.swap(Nodes());
-    connections.swap(Connections());
-    pinsRequiringConnections.swap(RequiringConnection());
+    Nodes().swap(nodes);
+    Connections().swap(connections);
+    RequiringConnection().swap(pinsRequiringConnections);
 
     notify();
 }
 
-bool Model::additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) const 
+bool Model::additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) const
 {
     return true;
 }
@@ -312,7 +312,9 @@ ConnPtr Model::connect(const PinPtr & src, const PinPtr & dest)
     PinsSet requiredPins;
     for(auto it = src->getDependantPins().begin(); it != src->getDependantPins().end(); ++it){
         if((*it).lock()->empty() == true){
-            requiredPins.insert(*it);
+            //requiredPins.insert(*it);
+            // rev - visual robil to niejawnie czy jak?
+            requiredPins.insert(it->lock());
         }
     }
 
@@ -373,12 +375,12 @@ void Model::clearConnections()
     if(isModelChangeAllowed() == false){
         throw std::runtime_error("Model modification not allowed!");
     }
-    
+
     while(connections.begin() != connections.end()){
         quickRemoveConnection(connections.begin());
     }
 
-    connections.swap(Connections());
+    Connections().swap(connections);
 
     notify();
 }
@@ -480,7 +482,7 @@ Model::CyclePath Model::getCycle(const CPinPtr & src, const CPinPtr & dest) cons
 
 	//structure for traversing
 	std::vector<PathEntry> path;
-	
+
 	//find first output connection
 	path.push_back(pe);
 	//add it co connections
@@ -572,7 +574,7 @@ Model::PathEntry Model::getNextNodeOutputConnection(const PathEntry & pathElemen
 bool Model::PathEntry::operator==(const PathEntry & pe) const
 {
     if(this->node == pe.node && this->pinIndex == pe.pinIndex && this->connectionIndex == pe.connectionIndex){
-        return true;	
+        return true;
     }
 
     return false;

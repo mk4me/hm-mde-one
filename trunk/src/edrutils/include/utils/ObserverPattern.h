@@ -149,7 +149,7 @@ public:
             (*it)->observedObjects.erase(this);
         }
 
-        observers.swap(Observers());
+        Observers().swap(observers);
     }
 
     //! Aktualizuje wszystkie wyniki.

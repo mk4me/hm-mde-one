@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include <osgui/AspectRatioKeeper.h>
+#include <utils/Debug.h>
 
 #undef min
 #undef max
@@ -40,7 +41,7 @@ public:
     osgWidget::point_type getAspectRatio() const;
     //! \param aspectRatio
     void setAspectRatio(osgWidget::point_type aspectRatio);
-    //! 
+    //!
     //! \param target
     //! \param aspectRatio
     static EmbeddedWindow* createWrapper(osgWidget::Widget* target, osgWidget::point_type aspectRatio);
@@ -55,7 +56,7 @@ protected:
 
 };
 
-AspectRatioKeeperWindow::AspectRatioKeeperWindow(const std::string& name, osgWidget::Widget* target, osgWidget::point_type aspectRatio) : 
+AspectRatioKeeperWindow::AspectRatioKeeperWindow(const std::string& name, osgWidget::Widget* target, osgWidget::point_type aspectRatio) :
 Base(name), aspectRatio(aspectRatio)
 {
     setTarget(target);
@@ -75,7 +76,7 @@ Base(window, copyop), size(window.size), aspectRatio(window.aspectRatio)
 
 //! \return
 osgWidget::Widget* AspectRatioKeeperWindow::getTarget()
-{ 
+{
     return target.get();
 }
 
@@ -85,8 +86,8 @@ const osgWidget::Widget* AspectRatioKeeperWindow::getTarget() const
 }
 
 //! \param target
-void AspectRatioKeeperWindow::setTarget(osgWidget::Widget* target) 
-{ 
+void AspectRatioKeeperWindow::setTarget(osgWidget::Widget* target)
+{
     osg::ref_ptr<osgWidget::Widget> strongTarget;
     this->target.lock(strongTarget);
     if ( strongTarget != target ) {
@@ -104,13 +105,13 @@ void AspectRatioKeeperWindow::setTarget(osgWidget::Widget* target)
 }
 //! \return
 osgWidget::point_type AspectRatioKeeperWindow::getAspectRatio() const
-{ 
+{
     return aspectRatio;
 }
 //! \param aspectRatio
-void AspectRatioKeeperWindow::setAspectRatio(osgWidget::point_type aspectRatio) 
-{ 
-    this->aspectRatio = aspectRatio; 
+void AspectRatioKeeperWindow::setAspectRatio(osgWidget::point_type aspectRatio)
+{
+    this->aspectRatio = aspectRatio;
 }
 
 osgWidget::Window::EmbeddedWindow* AspectRatioKeeperWindow::createWrapper(osgWidget::Widget* target, osgWidget::point_type aspectRatio)
@@ -160,7 +161,7 @@ osgWidget::Window::Sizes AspectRatioKeeperWindow::_getHeightImplementation() con
     return result;
 }
 
-osgWidget::XYCoord AspectRatioKeeperWindow::applyAspectRatio( osgWidget::XYCoord size ) 
+osgWidget::XYCoord AspectRatioKeeperWindow::applyAspectRatio( osgWidget::XYCoord size )
 {
     osgWidget::point_type ratio = size.x() / size.y();
     if ( aspectRatio > ratio ) {
@@ -172,7 +173,7 @@ osgWidget::XYCoord AspectRatioKeeperWindow::applyAspectRatio( osgWidget::XYCoord
 }
 
 
-AspectRatioKeeper::AspectRatioKeeper( osgWidget::Widget* widget, osgWidget::point_type aspectRatio ) : 
+AspectRatioKeeper::AspectRatioKeeper( osgWidget::Widget* widget, osgWidget::point_type aspectRatio ) :
 osgWidget::Window::EmbeddedWindow()
 {
     UTILS_ASSERT(widget);

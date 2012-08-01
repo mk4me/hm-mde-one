@@ -2,15 +2,17 @@
 
 # Inicjuje proces wyszukiwania biblioteki.
 macro(ON_PROJECT_ADDED name)
-
+	
 	# ustawiamy nazwe dla artefaktow wersji debug tak aby do nazwy na koniec by³o doklejane d, dla release bez zmian
 	set_target_properties(${TARGET_TARGETNAME} PROPERTIES DEBUG_POSTFIX "d")
 
 	# flaga aby mozna bylo uzyc projektu w makrach
 	set(${name}_FOUND 1 PARENT_SCOPE)
 	# kopiujemy includy
-	set(${name}_INCLUDE_DIR ${DEFAULT_PROJECT_INCLUDES} PARENT_SCOPE)
-	
+	#list(APPEND ${DEFAULT_PROJECT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR})
+	#set(${name}_INCLUDE_DIR ${DEFAULT_PROJECT_INCLUDES} CACHE STRING INTERNAL FORCE)
+	set(${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+	#list(APPEND ${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 	# co budujemy?
 	get_target_property(BUILD_TYPE ${name} TYPE)
 	
@@ -21,6 +23,7 @@ macro(ON_PROJECT_ADDED name)
 		# wystarczy dodaæ target, reszt¹ zajmie siê CMake
 		# musimy zrobiæ zmienn¹ poœrednicz¹c¹, ¿eby móc iterowaæ po xxx_LIBRARIES
 		set(${name}_LIBRARIES_PROXY ${name} PARENT_SCOPE)
+		#message(${${name}_LIBRARIES_PROXY})
 		set(${name}_LIBRARIES ${name}_LIBRARIES_PROXY PARENT_SCOPE)
 	else()
 		# to nie biblioteka wiêc rêcznie dodajemy bilioteki zale¿ne; tutaj wa¿ne:
@@ -52,6 +55,24 @@ macro(CONFIG_OPTION name info default)
 endmacro(CONFIG_OPTION)
 
 ###############################################################################
+# Makro generuje wykonywalny skrypt z ustawionymi sciezkami do bibliotek
+macro(GENERATE_UNIX_EXECUTABLE_SCRIPT)
+	if (UNIX)
+		set (script "\#!/bin/sh\nexport LD_LIBRARY_PATH=")
+		  
+		foreach(value ${DEFAULT_PROJECT_DEPENDENCIES})
+			set(dir "${${value}_LIBRARY_DIR_RELEASE}")
+			set (script "${script}${dir}:")
+		endforeach()
+
+		set( script "${script}:$LD_LIBRARY_PATH\nexec ./${TARGET_TARGETNAME} $*")
+		set( filename "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/run_${TARGET_TARGETNAME}.sh")
+		file (WRITE ${filename} "${script}")
+		execute_process(COMMAND chmod a+x ${filename})
+	endif()
+endmacro(GENERATE_UNIX_EXECUTABLE_SCRIPT)
+
+###############################################################################
 
 # Makro dodaj¹ce projekt
 # Parametry
@@ -72,27 +93,44 @@ macro(ADD_PROJECT name dependencies)
 	if (ADD_PROJECT_FAILED)
 		message(${name} " not included because dependencies are missing: " ${ADD_PROJECT_MESSAGE})
 	else()
+		if (MSVC)
+			add_definitions(/MP -D_SCL_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_WARNINGS)
+		endif()
 		#message("${name}: ${dependencies}")
 		set (DEFAULT_PROJECT_DEPENDENCIES ${dependencies})
 		set (DEFAULT_PROJECT_LIBS)
-		set (DEFAULT_PROJECT_INCLUDES "${PROJECT_BINARY_DIR}/${name};${PROJECT_BUILD_ROOT};${PROJECT_INCLUDE_ROOT};${PROJECT_ROOT}" )
+		set (DEFAULT_PROJECT_INCLUDES "${PROJECT_BINARY_DIR}/${name};${PROJECT_BINARY_DIR}/src/${name};${PROJECT_BUILD_ROOT};${PROJECT_INCLUDE_ROOT};${PROJECT_ROOT}" )
 		# kopiujemy dane
 		foreach (value ${dependencies})
 			#if (NOT ${createDependency})
 			#	message("(${name}) RAW ${value} libraries: ${${value}_LIBRARIES}")
 			#endif()
 			TARGET_NOTIFY(${name} "RAW DEPENDENCY ${value} libraries: ${${value}_LIBRARIES}")
+			
 			foreach (value2 ${${value}_LIBRARIES})
+			#message("(${name})Current library: ${value2} : ${${value2}} : ")
 				if (NOT ${createDependency})
 					#message("(${name})Current library: ${value2} : ${${value2}} : ")
 				endif()
 				list(APPEND DEFAULT_PROJECT_LIBS ${${value2}})
 			endforeach()
+			
+			#foreach (value3 ${${value}_INCLUDE_DIR})
+			#list(APPEND DEFAULT_PROJECT_INCLUDES ${${value3}})
 			list(APPEND DEFAULT_PROJECT_INCLUDES ${${value}_INCLUDE_DIR})
+			#endforeach()
+			
 			# czy zdefiniowano katalog konfiguracyjny?
 			if ( ${value}_INCLUDE_CONFIG_DIR )
 				list(APPEND DEFAULT_PROJECT_INCLUDES ${${value}_INCLUDE_CONFIG_DIR})
 			endif()
+			
+			if ( ${value}_CUSTOM_COMPILER_DEFINITIONS )
+				#foreach (value4 ${value}_CUSTOM_COMPILER_DEFINITIONS})
+					add_definitions(${${value}_CUSTOM_COMPILER_DEFINITIONS})
+				#endforeach()
+			endif()
+			
 		endforeach()
 
 		add_subdirectory(${name})

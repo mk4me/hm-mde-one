@@ -5,21 +5,21 @@
 
 namespace kinematic
 {
-    /// \brief  Ogolny wyjatek dla parserow. 
+    /// \brief  Ogolny wyjatek dla parserow.
     class Exception : public std::exception
     {
     public:
-        /// \brief  Konstruktor. 
+        /// \brief  Konstruktor.
         /// \param  Dodatkowa tresc komunikatu
         Exception(const std::string& message);
-        virtual ~Exception();
+        virtual ~Exception() throw() {}
     public:
         /// \brief Metoda zwraca tresc komunikatu.
-        ///  Pochodzi z std::exception 
+        ///  Pochodzi z std::exception
         virtual const char* what() const throw();
 
     protected:
-        std::string basicMessage; //!< Tresc 
+        std::string basicMessage; //!< Tresc
         mutable std::string exceptionMessage; //!< Zwrace przez metode what() z dodana informacja z RTTI
     };
 
@@ -32,12 +32,12 @@ namespace kinematic
     };
 
     /// \brief  Wyjatek rzucany, gdy nie udalo sie otworzyc pliku
-    class UnableToOpenFileException : public Exception 
+    class UnableToOpenFileException : public Exception
     {
     public:
         UnableToOpenFileException(const std::string& message);
     };
-    
+
     /// \brief  Wyjatek rzucany, gdy plik zawiera niepoprawna tresc dla parsera
     class WrongFileException : public Exception
     {
@@ -53,29 +53,32 @@ namespace kinematic
     };
 
 
-    class KinematicModelException : public Exception 
+    class KinematicModelException : public Exception
     {
         public:
-        KinematicModelException(const std::string& message) : Exception(message) { };
+            KinematicModelException(const std::string& message) : Exception(message) { };
+            virtual ~KinematicModelException() throw() ;
     };
 
     class UnableToMapJointException : public KinematicModelException
-    { 
+    {
         std::string unmappedJoint;
     public:
         UnableToMapJointException(const std::string& jointName) :
           KinematicModelException("Unable to map : " + jointName),
           unmappedJoint(jointName)
-          { 
+          {
           }
         UnableToMapJointException(const std::string& message, std::string jointName) :
           KinematicModelException(message),
           unmappedJoint(jointName)
           {
           }
+
+          virtual ~UnableToMapJointException() throw() ;
     };
 
-    class DictionaryNotLoadedException : public KinematicModelException 
+    class DictionaryNotLoadedException : public KinematicModelException
     {
     public:
         DictionaryNotLoadedException(const std::string& message) :
@@ -83,19 +86,20 @@ namespace kinematic
     };
 
     class NotHAnimJointException : public KinematicModelException
-    { 
+    {
         std::string notFoundJoint;
     public:
         NotHAnimJointException(const std::string& jointName) :
           KinematicModelException("Joint: "+ jointName + " is not in h-anim 1.1"),
           notFoundJoint(jointName)
-          { 
+          {
           }
         NotHAnimJointException(const std::string& message, std::string jointName) :
           KinematicModelException(message),
           notFoundJoint(jointName)
           {
           }
+        virtual ~NotHAnimJointException() throw() ;
     };
 }
 

@@ -55,11 +55,11 @@ void osgVDFBaseNode::loggZCoordinates() const
 	std::cout << "Z coordinates of all elements:" << std::endl;
 	std::cout << "node (this window):\t" << osgui::Utils2D::calcAbsZ(this) << std::endl;
 }
-	
+
 void osgVDFBaseNode::addInPin(osgVDFBasePin * inPin, const std::string & pinName)
 {
 	UTILS_ASSERT((inPin != nullptr), "Bledny vizualny pin!");
-    
+
     if(inPin->visualParentNode != nullptr){
         throw std::runtime_error("Visual input pin already assigned to a node");
     }
@@ -116,7 +116,7 @@ void osgVDFBaseNode::setCollisionNodes(const VNodes & vnodes)
             (*it)->collisionNodes.erase(this);
         }
 
-        collisionNodes.swap(VNodes());
+        VNodes().swap(collisionNodes);
     }else{
         VNodesDifference difference(std::max(collisionNodes.size(), vnodes.size()));
         auto it = std::set_difference(collisionNodes.begin(), collisionNodes.end(), vnodes.begin(), vnodes.end(), difference.begin());

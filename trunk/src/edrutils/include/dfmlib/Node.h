@@ -5,6 +5,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <set>
 #include <vector>
+#include <stdexcept>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
@@ -12,7 +13,7 @@ namespace dflm{
 
 //class EditableNode;
 
-//! Klasa reprezentujaca weze³ w modelu data flow. Zarz¹dza on pinami wejœciowymi i wyjœciowymi oraz 
+//! Klasa reprezentujaca weze³ w modelu data flow. Zarz¹dza on pinami wejœciowymi i wyjœciowymi oraz
 class Node : public boost::enable_shared_from_this<Node>
 {
 
@@ -206,7 +207,7 @@ private:
     //! \param pins Zbiór pinów do sprawdzenia
     //! \return Prawda jeœli przynajmniej jeden pin jest pod³¹czony
 	static bool anyPinConnected(const Pins & pins);
-    
+
 private:
     //! Zbiór pinów wejœciowych
 	Pins inPins;
@@ -221,10 +222,10 @@ private:
     bool initialized;
 
     //! Model do ktorego nale¿y wêze³
-    WMPtr model;   
+    WMPtr model;
 
     //! Obiekt na potrzby inicjalizacji wêz³a
-    PinsAdderPtr pinsAdder; 
+    PinsAdderPtr pinsAdder;
 };
 
 //class EditableNode : public Node

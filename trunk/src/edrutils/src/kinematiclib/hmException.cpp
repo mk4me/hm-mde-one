@@ -9,11 +9,8 @@ kinematic::Exception::Exception( const std::string& message ) :
     LOGGER(Logger::Warning, "Exception was thrown : " +  message);
 }
 
-kinematic::Exception::~Exception()
-{
-}
 
-const char* kinematic::Exception::what() const
+const char* kinematic::Exception::what() const throw()
 {
     exceptionMessage.clear();
     exceptionMessage += typeid(*this).name();

@@ -3,8 +3,8 @@
     created:  26:4:2012   23:59
     filename: DataChannelDescriptors.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD_UTILS__DATACHANNELDESCRIPTORS_H__
 #define HEADER_GUARD_UTILS__DATACHANNELDESCRIPTORS_H__
@@ -105,49 +105,49 @@ namespace utils {
 
 		//! \return
 		virtual const std::string& getTimeBaseUnit() const
-		{ 
+		{
 			return timeBaseUnit;
 		}
 
 		//! \return
 		virtual float getTimeScaleFactor() const
-		{ 
+		{
 			return timeScaleFactor;
 		}
 
 		//! \return
 		virtual const std::string& getValueBaseUnit() const
-		{ 
+		{
 			return valueBaseUnit;
 		}
 
 		//! \return
 		virtual float getValueScaleFactor() const
-		{ 
+		{
 			return valueScaleFactor;
 		}
 
 		//! \param timeBaseUnit
-		virtual void setTimeBaseUnit(const std::string& timeBaseUnit) 
-		{ 
+		virtual void setTimeBaseUnit(const std::string& timeBaseUnit)
+		{
 			this->timeBaseUnit = timeBaseUnit;
 		}
 
 		//! \param timeBaseUnit
-		virtual void setTimeScaleFactor(float timeScaleFactor) 
-		{ 
+		virtual void setTimeScaleFactor(float timeScaleFactor)
+		{
 			this->timeScaleFactor = timeScaleFactor;
 		}
 
 		//! \param yUnit
-		virtual void setValueBaseUnit(const std::string& valueBaseUnit) 
-		{ 
+		virtual void setValueBaseUnit(const std::string& valueBaseUnit)
+		{
 			this->valueBaseUnit = valueBaseUnit;
 		}
 
 		//! \param timeBaseUnit
-		virtual void setValueScaleFactor(float valueScaleFactor) 
-		{ 
+		virtual void setValueScaleFactor(float valueScaleFactor)
+		{
 			this->valueScaleFactor = valueScaleFactor;
 		}
 	};
@@ -217,6 +217,11 @@ namespace utils {
 	public:
 		typedef IChannelReader<PointType, TimeType, uniform> Interface;
 
+		typedef typename Interface::size_type size_type;
+		typedef typename Interface::point_type_const_reference point_type_const_reference;
+		typedef typename Interface::time_type time_type;
+		typedef typename Interface::data_range data_range;
+
 	private:
 
 		typedef typename Interface::DefaultImplementation Impl;
@@ -225,7 +230,7 @@ namespace utils {
 
 		Channel() {}
 
-		Channel(const Channel & channel) : impl(channel.impl) {}    
+		Channel(const Channel & channel) : impl(channel.impl) {}
 		Channel(const IChannelDescriptorReader & descriptor) : impl(descriptor) {}
 		Channel(const Interface & channel) : impl(channel, channel) {}
 		Channel(const Impl & channel) : impl(channel) {}
@@ -318,49 +323,49 @@ namespace utils {
 
 		//! \return
 		virtual const std::string& getTimeBaseUnit() const
-		{ 
+		{
 			return impl.getTimeBaseUnit();
 		}
 
 		//! \return
 		virtual float getTimeScaleFactor() const
-		{ 
+		{
 			return impl.getTimeScaleFactor();
 		}
 
 		//! \return
 		virtual const std::string& getValueBaseUnit() const
-		{ 
+		{
 			return impl.getValueBaseUnit();
 		}
 
 		//! \return
 		virtual float getValueScaleFactor() const
-		{ 
+		{
 			return impl.getValueScaleFactor();
 		}
 
 		//! \param timeBaseUnit
-		virtual void setTimeBaseUnit(const std::string& timeBaseUnit) 
-		{ 
+		virtual void setTimeBaseUnit(const std::string& timeBaseUnit)
+		{
 			impl.setTimeBaseUnit(timeBaseUnit);
 		}
 
 		//! \param timeBaseUnit
-		virtual void setTimeScaleFactor(float timeScaleFactor) 
-		{ 
+		virtual void setTimeScaleFactor(float timeScaleFactor)
+		{
 			impl.setTimeScaleFactor(timeScaleFactor);
 		}
 
 		//! \param yUnit
-		virtual void setValueBaseUnit(const std::string& valueBaseUnit) 
-		{ 
+		virtual void setValueBaseUnit(const std::string& valueBaseUnit)
+		{
 			impl.setValueBaseUnit(valueBaseUnit);
 		}
 
 		//! \param timeBaseUnit
-		virtual void setValueScaleFactor(float valueScaleFactor) 
-		{ 
+		virtual void setValueScaleFactor(float valueScaleFactor)
+		{
 			impl.setValueScaleFactor(valueScaleFactor);
 		}
 

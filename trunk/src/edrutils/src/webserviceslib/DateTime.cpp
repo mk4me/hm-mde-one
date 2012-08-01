@@ -6,6 +6,7 @@
 #include <string>
 #include <webserviceslib/DateTime.h>
 #include <utils/Debug.h>
+#include <stdexcept>
 
 namespace webservices
 {
@@ -40,14 +41,14 @@ void Date::setYear(int year)
 void Date::setMonth(int month)
 {
     if(month > 12 || month < 1)
-        throw std::exception("Incorrect date format.");
+        throw std::runtime_error("Incorrect date format.");
     this->month = month;
 }
 
 void Date::setDay(int day)
 {
     if(day > 31 || day < 1)
-        throw std::exception("Incorrect date format.");
+        throw std::runtime_error("Incorrect date format.");
     this->day = day;
 }
 
@@ -194,21 +195,21 @@ const Time Time::now()
 void Time::setHour(int hour)
 {
     if(hour > 23 || hour < 0)
-        throw std::exception("Incorrect date format.");
+        throw std::runtime_error("Incorrect date format.");
     this->hour = hour;
 }
 
 void Time::setMinutes(int minutes)
 {
     if(minutes > 59 || minutes < 0)
-        throw std::exception("Incorrect date format.");
+        throw std::runtime_error("Incorrect date format.");
     this->minutes = minutes;
 }
 
 void Time::setSeconds(int seconds)
 {
     if(seconds > 59 || seconds < 0)
-        throw std::exception("Incorrect date format.");
+        throw std::runtime_error("Incorrect date format.");
     this->seconds = seconds;
 }
 

@@ -3,8 +3,8 @@
 	created:  10:6:2010   10:36
 	filename: Button.h
 	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+
+	purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD__BUTTON_H__
 #define HEADER_GUARD__BUTTON_H__
@@ -14,10 +14,13 @@
 #include <boost/type_traits.hpp>
 #include <utils/Debug.h>
 #include <osgui/macroHacks.h>
+#include <osgWidget/WindowManager>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
+
+class DefaultStylePolicy;
 
 template <class Base, class StylePolicy = DefaultStylePolicy>
 class Buttonized : public Base, public StylePolicy
@@ -40,7 +43,7 @@ private:
     bool toggled;
 
 public:
-    //! 
+    //!
     //! \param name
     //! \param color
     //! \param width
@@ -81,8 +84,8 @@ public:
     }
 
 
-          
-    //! 
+
+    //!
     //! \param button
     //! \param copyop
     Buttonized(const Buttonized& button, const osg::CopyOp& copyop) :
@@ -96,7 +99,7 @@ public:
     }
 
 public:
-    //! 
+    //!
     //! \param x
     //! \param y
     //! \param manager
@@ -106,7 +109,7 @@ public:
         onStyleChanged();
         return Base::mousePush(x, y , manager);
     }
-    //! 
+    //!
     //! \param x
     //! \param y
     //! \param manager
@@ -117,7 +120,7 @@ public:
         onStyleChanged();
         return Base::mouseRelease(x, y , manager);
     }
-    //! 
+    //!
     //! \param x
     //! \param y
     //! \param manager
@@ -127,7 +130,7 @@ public:
         onStyleChanged();
         return Base::mouseEnter(x, y , manager);
     }
-    //! 
+    //!
     //! \param x
     //! \param y
     //! \param manager
@@ -141,32 +144,32 @@ public:
 public:
     //! \return
     bool isPushed() const
-    { 
+    {
         return pushed;
     }
     //! \return
     bool isHovered() const
-    { 
+    {
         return hovered;
     }
     //! \return
     bool isToggleEnabled() const
-    { 
+    {
         return toggleEnabled;
     }
     //! \param checkable
-    void setToggleEnabled(bool triggerEnabled) 
-    { 
+    void setToggleEnabled(bool triggerEnabled)
+    {
         this->toggleEnabled = triggerEnabled;
     }
     //! \return
     bool isToggled() const
-    { 
+    {
         return toggled;
     }
     //! \param triggered
-    void setToggled(bool triggered) 
-    { 
+    void setToggled(bool triggered)
+    {
         this->toggled = triggered;
         onStyleChanged();
     }
@@ -214,52 +217,52 @@ public:
 
 public:
 	//! \param hoverColor
-	void setAllColors(osgWidget::Color color) 
-	{ 
+	void setAllColors(osgWidget::Color color)
+	{
 		normalColor = hoverColor = pushedColor = toggleColor = color;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getHoverColor() const
-	{ 
+	{
 		return hoverColor;
 	}
 	//! \param hoverColor
-	void setHoverColor(osgWidget::Color hoverColor) 
-	{ 
+	void setHoverColor(osgWidget::Color hoverColor)
+	{
 		this->hoverColor = hoverColor;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getPushedColor() const
-	{ 
+	{
 		return pushedColor;
 	}
 	//! \param clickedColor
-	void setPushedColor(osgWidget::Color clickedColor) 
-	{ 
+	void setPushedColor(osgWidget::Color clickedColor)
+	{
 		this->pushedColor = clickedColor;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getNormalColor() const
-	{ 
+	{
 		return normalColor;
 	}
 	//! \param normalColor
-	void setNormalColor(osgWidget::Color normalColor) 
-	{ 
+	void setNormalColor(osgWidget::Color normalColor)
+	{
 		this->normalColor = normalColor;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getToggleColor() const
-	{ 
+	{
 		return toggleColor;
 	}
 	//! \param toggleColor
-	void setToggleColor(osgWidget::Color toggleColor) 
-	{ 
+	void setToggleColor(osgWidget::Color toggleColor)
+	{
 		this->toggleColor = toggleColor;
 		onStyleChanged();
 	}
@@ -268,7 +271,7 @@ protected:
 
 	//! Metoda do implementacji przez klas� pochodn�. Powinna wywo�ywa� metod� applyStyle.
 	virtual void onStyleChanged() = 0;
-	//! 
+	//!
 	//! \param widget
 	//! \param toggled
 	//! \param pushed
@@ -325,52 +328,52 @@ public:
 
 public:
 	//! \param hoverColor
-	void setLabelAllColors(osgWidget::Color color) 
-	{ 
+	void setLabelAllColors(osgWidget::Color color)
+	{
 		normalColor = hoverColor = pushedColor = toggleColor = color;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getLabelHoverColor() const
-	{ 
+	{
 		return hoverColor;
 	}
 	//! \param hoverColor
-	void setLabelHoverColor(osgWidget::Color hoverColor) 
-	{ 
+	void setLabelHoverColor(osgWidget::Color hoverColor)
+	{
 		this->hoverColor = hoverColor;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getLabelPushedColor() const
-	{ 
+	{
 		return pushedColor;
 	}
 	//! \param clickedColor
-	void setLabelPushedColor(osgWidget::Color clickedColor) 
-	{ 
+	void setLabelPushedColor(osgWidget::Color clickedColor)
+	{
 		this->pushedColor = clickedColor;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getLabelNormalColor() const
-	{ 
+	{
 		return normalColor;
 	}
 	//! \param normalColor
-	void setLabelNormalColor(osgWidget::Color normalColor) 
-	{ 
+	void setLabelNormalColor(osgWidget::Color normalColor)
+	{
 		this->normalColor = normalColor;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getLabelToggleColor() const
-	{ 
+	{
 		return toggleColor;
 	}
 	//! \param toggleColor
-	void setLabelToggleColor(osgWidget::Color toggleColor) 
-	{ 
+	void setLabelToggleColor(osgWidget::Color toggleColor)
+	{
 		this->toggleColor = toggleColor;
 		onStyleChanged();
 	}
@@ -379,7 +382,7 @@ protected:
 
 	//! Metoda do implementacji przez klas� pochodn�. Powinna wywo�ywa� metod� applyStyle.
 	virtual void onStyleChanged() = 0;
-	//! 
+	//!
 	//! \param widget
 	//! \param toggled
 	//! \param pushed
@@ -431,52 +434,52 @@ public:
 
 public:
 	//! \param hoverColor
-	void setAllStyles(const std::string & allStyle) 
+	void setAllStyles(const std::string & allStyle)
 	{
 		normalStyle = hoverStyle = pushedStyle = toggleStyle = allStyle;
 		onStyleChanged();
 	}
 	//! \return
 	const std::string & getHoverStyle() const
-	{ 
+	{
 		return hoverStyle;
 	}
 	//! \param hoverColor
-	void setHoverStyle(const std::string & hoverStyle) 
-	{	
+	void setHoverStyle(const std::string & hoverStyle)
+	{
 		this->hoverStyle = hoverStyle;
 		onStyleChanged();
 	}
 	//! \return
 	const std::string & getPushedStyle() const
-	{ 
+	{
 		return pushedStyle;
 	}
 	//! \param clickedColor
-	void setPushedStyle(const std::string & pushedStyle) 
-	{ 
+	void setPushedStyle(const std::string & pushedStyle)
+	{
 		this->pushedStyle = pushedStyle;
 		onStyleChanged();
 	}
 	//! \return
 	const std::string & getNormalStyle() const
-	{ 
+	{
 		return normalStyle;
 	}
 	//! \param normalColor
-	void setNormalStyle(const std::string &  normalStyle) 
-	{ 
+	void setNormalStyle(const std::string &  normalStyle)
+	{
 		this->normalStyle = normalStyle;
 		onStyleChanged();
 	}
 	//! \return
 	const std::string & getToggleColor() const
-	{ 
+	{
 		return toggleStyle;
 	}
 	//! \param toggleColor
-	void setToggleStyle(const std::string &  toggleStyle) 
-	{ 
+	void setToggleStyle(const std::string &  toggleStyle)
+	{
 		this->toggleStyle = toggleStyle;
 		onStyleChanged();
 	}
@@ -485,7 +488,7 @@ protected:
 
 	//! Metoda do implementacji przez klas� pochodn�. Powinna wywo�ywa� metod� applyStyle.
 	virtual void onStyleChanged() = 0;
-	//! 
+	//!
 	//! \param widget
 	//! \param toggled
 	//! \param pushed
@@ -539,13 +542,13 @@ private:
 	osgWidget::Color borderPushedColor;
 	//! Kolor podczas kliknięcia.
 	osgWidget::Color borderToggleColor;
-public:    //! 
+public:    //!
 	//! \param name
 	BorderStylePolicy() :
 		   Base()
 		   {}
 
-		   //! 
+		   //!
 		   //! \param borderized
 		   //! \param copyop
 		   BorderStylePolicy(const BorderStylePolicy& border, const osg::CopyOp& copyop) :
@@ -559,46 +562,46 @@ public:    //!
 public:
 	//! \return
 	osgWidget::Color getBorderNormalColor() const
-	{ 
+	{
 		return borderNormalColor;
 	}
 	//! \param borderNormalColor
-	void setBorderNormalColor(osgWidget::Color borderNormalColor) 
-	{ 
-		this->borderNormalColor = borderNormalColor; 
+	void setBorderNormalColor(osgWidget::Color borderNormalColor)
+	{
+		this->borderNormalColor = borderNormalColor;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getBorderHoverColor() const
-	{ 
+	{
 		return borderHoverColor;
 	}
 	//! \param borderHoverColor
-	void setBorderHoverColor(osgWidget::Color borderHoverColor) 
-	{ 
+	void setBorderHoverColor(osgWidget::Color borderHoverColor)
+	{
 		this->borderHoverColor = borderHoverColor;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getBorderPushedColor() const
-	{ 
+	{
 		return borderPushedColor;
 	}
 	//! \param borderPushedColor
-	void setBorderPushedColor(osgWidget::Color borderPushedColor) 
-	{ 
-		this->borderPushedColor = borderPushedColor; 
+	void setBorderPushedColor(osgWidget::Color borderPushedColor)
+	{
+		this->borderPushedColor = borderPushedColor;
 		onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getBorderToggleColor() const
-	{ 
+	{
 		return borderToggleColor;
 	}
 	//! \param borderToggleColor
-	void setBorderToggleColor(osgWidget::Color borderToggleColor) 
-	{ 
-		this->borderToggleColor = borderToggleColor; 
+	void setBorderToggleColor(osgWidget::Color borderToggleColor)
+	{
+		this->borderToggleColor = borderToggleColor;
 		onStyleChanged();
 	}
 	//!
@@ -610,7 +613,7 @@ public:
 
 protected:
 
-	//! 
+	//!
 	//! \param widget
 	//! \param toggled
 	//! \param pushed
@@ -640,7 +643,7 @@ typedef Buttonized< osgWidget::Widget > Button;
 
 //
 ///**
-// *	
+// *
 // */
 //class Button : public osgWidget::Widget
 //{
@@ -669,39 +672,39 @@ typedef Buttonized< osgWidget::Widget > Button;
 //public:
 //  META_Object(osgui, Button);
 //
-//  //! 
+//  //!
 //  //! \param name
 //  //! \param color
 //  //! \param width
 //  //! \param height
-//  Button(const std::string & name = "", 
+//  Button(const std::string & name = "",
 //    double width = 0.0, double height = 0.0);
-//  //! 
+//  //!
 //  //! \param button
 //  //! \param copyop
 //  Button(const Button& button, const osg::CopyOp& copyop);
 //
-//  //! 
+//  //!
 //  //! \param x
 //  //! \param y
 //  //! \param manager
 //  virtual bool mousePush(double x, double y, const osgWidget::WindowManager* manager);
-//  //! 
+//  //!
 //  //! \param x
 //  //! \param y
 //  //! \param manager
 //  virtual bool mouseRelease(double x, double y, const osgWidget::WindowManager* manager);
-//  //! 
+//  //!
 //  //! \param x
 //  //! \param y
 //  //! \param manager
 //  virtual bool mouseEnter(double x, double y, const osgWidget::WindowManager* manager);
-//  //! 
+//  //!
 //  //! \param x
 //  //! \param y
 //  //! \param manager
 //  virtual bool mouseLeave(double x, double y, const osgWidget::WindowManager* manager);
-//  //! 
+//  //!
 //  //! \param x
 //  //! \param y
 //  //! \param manager
@@ -709,84 +712,84 @@ typedef Buttonized< osgWidget::Widget > Button;
 //
 //  //! \return
 //  osgWidget::Color getHoverColor() const
-//  { 
+//  {
 //    return hoverColor;
 //  }
 //  //! \param hoverColor
-//  void setHoverColor(osgWidget::Color hoverColor) 
-//  { 
+//  void setHoverColor(osgWidget::Color hoverColor)
+//  {
 //    this->hoverColor = hoverColor;
 //    refresh();
 //  }
 //  //! \return
 //  osgWidget::Color getPushedColor() const
-//  { 
+//  {
 //    return pushedColor;
 //  }
 //  //! \param clickedColor
-//  void setPushedColor(osgWidget::Color clickedColor) 
-//  { 
+//  void setPushedColor(osgWidget::Color clickedColor)
+//  {
 //    this->pushedColor = clickedColor;
 //    refresh();
 //  }
 //  //! \return
 //  osgWidget::Color getNormalColor() const
-//  { 
+//  {
 //    return normalColor;
 //  }
 //  //! \param normalColor
-//  void setNormalColor(osgWidget::Color normalColor) 
-//  { 
+//  void setNormalColor(osgWidget::Color normalColor)
+//  {
 //    this->normalColor = normalColor;
 //    refresh();
 //  }
 //  //! \return
 //  osgWidget::Color getToggleColor() const
-//  { 
+//  {
 //      return toggleColor;
 //  }
 //  //! \param toggleColor
-//  void setToggleColor(osgWidget::Color toggleColor) 
-//  { 
+//  void setToggleColor(osgWidget::Color toggleColor)
+//  {
 //      this->toggleColor = toggleColor;
 //      refresh();
 //  }
 //
 //  //! \return
 //  bool isPushed() const
-//  { 
+//  {
 //    return pushed;
 //  }
 //  //! \return
 //  bool isDragged() const
-//  { 
+//  {
 //    return dragged;
 //  }
 //  //! \return
 //  bool isHovered() const
-//  { 
+//  {
 //    return hovered;
 //  }
 //
 //  //! \return
 //  bool isToggleEnabled() const
-//  { 
+//  {
 //      return toggleEnabled;
 //  }
 //  //! \param checkable
-//  void setToggleEnabled(bool triggerEnabled) 
-//  { 
+//  void setToggleEnabled(bool triggerEnabled)
+//  {
 //      this->toggleEnabled = triggerEnabled;
 //  }
 //
 //  //! \return
 //  bool isToggled() const
-//  { 
+//  {
 //      return toggled;
 //  }
 //  //! \param triggered
-//  void setToggled(bool triggered) 
-//  { 
+//  void setToggled(bool triggered)
+//  {
 //      this->toggled = triggered;
 //      refresh();
 //  }

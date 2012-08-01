@@ -2,6 +2,7 @@
 #define HEADER_GUARD__TOOLTIP_H__
 
 #include <osgWidget/Box>
+#include <osgWidget/Label>
 #include <osgui/Borderized.h>
 #include <set>
 

@@ -70,26 +70,26 @@ const IChannelPtr & Channel::getInnerChannel()
 }
 
 const Channel::Mask & Channel::getMask() const
-{ 
+{
     return mask;
 }
 
-void Channel::setMask(const Channel::Mask & mask) 
-{ 
+void Channel::setMask(const Channel::Mask & mask)
+{
     UTILS_ASSERT((mask.first >= 0 && mask.second >= 0 && mask.first + mask.second <= getLength()), "Nieprawidlowa maska dla kanalu");
     this->mask = mask;
     if(innerChannel != nullptr){
         innerChannel->maskChanged(mask.first, mask.second);
     }
-}    
+}
 
 double Channel::getMaskBegin() const
-{ 
+{
     return mask.first;
 }
 
-void Channel::setMaskBegin(double maskBegin) 
-{ 
+void Channel::setMaskBegin(double maskBegin)
+{
     UTILS_ASSERT((maskBegin >= 0 && maskBegin + mask.second <= getLength()), "Poczatek maski sprawi ze maska wyjdzie poza kanal");
     Mask mask = getMask();
     mask.first = maskBegin;
@@ -110,14 +110,14 @@ void Channel::setMaskLength(double maskLength)
 }
 
 double Channel::getMaskEnd() const
-{ 
+{
     return mask.first + mask.second;
 }
 
-void Channel::setMaskEnd(double maskEnd) 
-{ 
+void Channel::setMaskEnd(double maskEnd)
+{
     UTILS_ASSERT((maskEnd <= getLength() && maskEnd >= mask.first), "Koniec maski dla kanalu musi byc w przedziale maskBegin-length");
-    setMaskLength(maskEnd - mask.first); 
+    setMaskLength(maskEnd - mask.first);
 }
 
 double Channel::getLocalOffset() const
@@ -295,8 +295,8 @@ void Channel::clearTags()
         (*it)->resetChannel();
     }
 
-    tags.swap(Tags());
-    constTags.swap(ConstTags());
+    Tags().swap(tags);
+    ConstTags().swap(constTags);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

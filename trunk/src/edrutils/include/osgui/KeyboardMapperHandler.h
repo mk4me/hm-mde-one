@@ -3,6 +3,8 @@
 
 #include <set>
 #include <osgGA/GUIEventAdapter>
+#include <osgGA/GUIEventHandler>
+#include <osgWidget/WindowManager>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
@@ -19,12 +21,12 @@ public:
 	KeyboardMapperHandler(osgWidget::WindowManager* wm);
 
     //! Handler przekazuj¹cy zdarzenia KeyboardMapperowi.
-	virtual bool handle(const osgGA::GUIEventAdapter& gea, 
+	virtual bool handle(const osgGA::GUIEventAdapter& gea,
         osgGA::GUIActionAdapter& gaa, osg::Object* obj, osg::NodeVisitor* nv);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace osgui 
+} // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif

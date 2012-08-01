@@ -2,6 +2,7 @@
 #include <utils/Debug.h>
 #include <tinyxml.h>
 #include <webserviceslib/DateTimeUtils.h>
+#include <webserviceslib/Entity.h>
 
 namespace webservices
 {
@@ -38,7 +39,7 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
         while(performer_element) {
             //newMotionShallowCopy::Performer * performer = new MotionShallowCopy::Performer;
             MotionShallowCopy::Performer * performer = nullptr;
-            
+
             int perfID;
 
             performer_element->QueryIntAttribute("PerformerID", &perfID);
@@ -58,10 +59,15 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
+                    // rev : hack , trzeba znalezc uniwersalne rozwiazanie
+                    #ifdef __WIN32__
                     MotionShallowCopy::Attrs::_Val_type attribute;
+                    #else
+                    MotionShallowCopy::Attrs::value_type attribute;
+                    #endif
                     attr_element->QueryStringAttribute("Name", &attribute.first);
                     attr_element->QueryStringAttribute("Value", &attribute.second);
-                    
+
                     performer->attrs.insert(attribute);
                     attr_element = attr_element->NextSiblingElement();
                 }
@@ -108,7 +114,12 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
+                    // rev : hack , trzeba znalezc uniwersalne rozwiazanie
+                    #ifdef __WIN32__
                     MotionShallowCopy::Attrs::_Val_type attribute;
+                    #else
+                    MotionShallowCopy::Attrs::value_type attribute;
+                    #endif
                     attr_element->QueryStringAttribute("Name", &attribute.first);
                     attr_element->QueryStringAttribute("Value", &attribute.second);
 
@@ -139,7 +150,7 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
                     }else{
                         file = fileIT->second;
                     }
-                    
+
                     file->trial = nullptr;
                     file->session = session;
 					file->fileSize = 0;
@@ -150,9 +161,9 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
 					file_element->QueryStringAttribute("SubdirPath", &file->subdirPath);
 					file_element->QueryUnsignedAttribute("Size", &s);
 					file->fileSize = s;
-                    
+
                     session->files[file->fileID] = file;
-                    
+
                     file_element = file_element->NextSiblingElement();
                 }
             }
@@ -183,7 +194,7 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
 			}
 
 			int sessionID;
-            
+
             group_assignment_element->QueryIntAttribute("SessionID", &sessionID);
 
 			auto sessionIT = shallowCopy.sessions.find(sessionID);
@@ -191,8 +202,8 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
 			if(sessionIT != shallowCopy.sessions.end()){
 				sessionIT->second->groupAssigment = group_assignment;
 				group_assignment->sessions[sessionIT->first] = sessionIT->second;
-			}            
-            
+			}
+
             group_assignment_element = group_assignment_element->NextSiblingElement();
         }
     }
@@ -203,7 +214,7 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
         while(trial_element) {
             //newMotionShallowCopy::Trial * trial = new MotionShallowCopy::Trial;
             MotionShallowCopy::Trial * trial = nullptr;
-            
+
             int sessionID;
             int trialID;
             trial_element->QueryIntAttribute("TrialID", &trialID);
@@ -217,14 +228,14 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             }else{
                 trial = trialIT->second;
             }
-            
+
             trial_element->QueryIntAttribute("SessionID", &sessionID);
             trial->session = shallowCopy.sessions[sessionID];
 
             UTILS_ASSERT(trial->session != nullptr);
 
             trial->session->trials[trial->trialID] = trial;
-            
+
             trial_element->QueryStringAttribute("TrialName", &trial->trialName);
             trial_element->QueryStringAttribute("TrialDescription", &trial->trialDescription);
 
@@ -233,7 +244,12 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
+                    // rev : hack , trzeba znalezc uniwersalne rozwiazanie
+                    #ifdef __WIN32__
                     MotionShallowCopy::Attrs::_Val_type attribute;
+                    #else
+                    MotionShallowCopy::Attrs::value_type attribute;
+                    #endif
                     attr_element->QueryStringAttribute("Name", &attribute.first);
                     attr_element->QueryStringAttribute("Value", &attribute.second);
 
@@ -267,13 +283,13 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
                     file->session = trial->session;
 					file->fileSize = 0;
 					unsigned int s = 0;
-                    
+
                     file_element->QueryStringAttribute("FileName", &file->fileName);
                     file_element->QueryStringAttribute("FileDescription", &file->fileDescription);
                     file_element->QueryStringAttribute("SubdirPath", &file->subdirPath);
 					file_element->QueryUnsignedAttribute("Size", &s);
 					file->fileSize = s;
-                    
+
                     trial->files[file->fileID] = file;
                     file_element = file_element->NextSiblingElement();
                 }
@@ -282,7 +298,7 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             trial_element = trial_element->NextSiblingElement();
         }
     }
-    
+
     //PerformerConfs
     TiXmlElement* performer_consfs_element = hParent.FirstChild("PerformerConfs").ToElement();
     if(performer_consfs_element) {
@@ -326,16 +342,21 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
+                    // rev : hack , trzeba znalezc uniwersalne rozwiazanie
+                    #ifdef __WIN32__
                     MotionShallowCopy::Attrs::_Val_type attribute;
+                    #else
+                    MotionShallowCopy::Attrs::value_type attribute;
+                    #endif
                     attr_element->QueryStringAttribute("Name", &attribute.first);
                     attr_element->QueryStringAttribute("Value", &attribute.second);
 
                     performerConf->attrs.insert(attribute);
-                    
+
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
-            
+
             performer_consf_element = performer_consf_element->NextSiblingElement();
         }
     }

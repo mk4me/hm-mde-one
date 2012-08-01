@@ -2,6 +2,7 @@
 #include <osgViewer/Renderer>
 #include <osgui/QOsgWidgets.h>
 #include <osgui/DisableableRenderer.h>
+#include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
@@ -167,13 +168,13 @@ void QOsgViewer::setRenderingEnabled( bool renderingEnabled )
 
 QOsgViewer::~QOsgViewer()
 {
-}   
+}
 
 void QOsgViewer::paintEvent( QPaintEvent* event )
 {
     if ( !skipFramesIfInvisible || (isVisible() && !isHidden()) ) {
         frame();
-    } 
+    }
     // if ( isTimerActive() ) {
     //     if ( !skipFramesIfInvisible || ( isVisible() && !isHidden() )  ) {
     //         frame();

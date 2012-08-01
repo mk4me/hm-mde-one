@@ -3,8 +3,8 @@
     created:  26:4:2012   23:47
     filename: DataChannelAccessors.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___DATACHANNELACCESSORS_H__
 #define HEADER_GUARD___DATACHANNELACCESSORS_H__
@@ -50,6 +50,7 @@ template <	class PointType,
 class ExceptionExtrapolator
 {
 public:
+    typedef IRawGeneralDataChannelReader<PointType, TimeType> ChannelReader;
 	//! Domyœ³ny konstruktor
 	ExceptionExtrapolator() {}
 
@@ -61,7 +62,7 @@ public:
 public:
 	//! \param time Czas ponizej zera
 	//! \param point Zwracana wartosc
-	static PointType timeUnderflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
+	static PointType timeUnderflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		throw std::runtime_error("Time value less than 0");
 		return PointType();
@@ -69,7 +70,7 @@ public:
 
 	//! \param time Czas poza dlugoscia kanalu
 	//! \param point Zwracana wartosc
-	static PointType timeOverflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
+	static PointType timeOverflow(TimeType time, const ChannelReader & channel)
 	{
 		throw std::runtime_error("Time value greater than channel length");
 		return PointType();
@@ -96,7 +97,7 @@ public:
 public:
 	//! \param time Czas ponizej zera
 	//! \param point Zwracana wartosc
-	static PointType timeUnderflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
+	static PointType timeUnderflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		auto l = channel.getLength();
 		while((time += l) < 0) {}
@@ -105,7 +106,7 @@ public:
 
 	//! \param time Czas poza dlugoscia kanalu
 	//! \param point Zwracana wartosc
-	static PointType timeOverflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
+	static PointType timeOverflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		auto l = channel.getLength();
 		while((time -= l) > l) {}
@@ -133,14 +134,14 @@ public:
 public:
 	//! \param time Czas ponizej zera
 	//! \param point Zwracana wartosc
-	static PointType timeUnderflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
+	static PointType timeUnderflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		return channel.value(0);
 	}
 
 	//! \param time Czas poza dlugoscia kanalu
 	//! \param point Zwracana wartosc
-	static PointType timeOverflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
+	static PointType timeOverflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		return channel.value(channel.size() - 1);
 	}
@@ -150,14 +151,14 @@ public:
 template <	class PointType,
 			class TimeType,
 			template<typename Point, typename Time> class Interpolator>
-struct InterpolatorHelper 
+struct InterpolatorHelper
 {
 public:
 
 	//! \param time Czas dla któego chcemy interpolowaæ wartoœc kana³u
 	//! \param channel Kana³ dla którego interpolujemy
 
-	static PointType extractValue(TimeType time, const typename IRawGeneralDataChannelReader<PointType, TimeType> & channel)
+	static PointType extractValue(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		auto r = channel.getValueHelper(time);
 		if(channel.argument(r.first) == time){
@@ -180,7 +181,7 @@ struct LerpInterpolator
 	//! \param p1 Probka dla czasu ponizej lub identycznego
 	//! \param Probka dla czasu powyzej lub identycznego
 	//! \param time Wartosc okreslajaca procent przesuniecia wzgledem probki ponizej
-	static PointType extractValue(IndexType idxA, IndexType idxB, TimeType time, const typename IRawGeneralDataChannelReader<PointType, TimeType> & channel)
+	static PointType extractValue(IndexType idxA, IndexType idxB, TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		//// lerp
 		const auto & valA = channel.value(idxA);
@@ -239,7 +240,7 @@ struct DiscreteInterpolator : public EpsilonManager<TimeType>
 	//! \param p1 Probka dla czasu ponizej lub identycznego
 	//! \param Probka dla czasu powyzej lub identycznego
 	//! \param time Wartosc okreslajaca procent przesuniecia wzgledem probki ponizej
-	static PointType extractValue(IndexType idxA, IndexType idxB, TimeType time, const typename IRawGeneralDataChannelReader<PointType, TimeType> & channel)
+	static PointType extractValue(IndexType idxA, IndexType idxB, TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		TimeType diffA = time - channel.argument(idxA);
 		TimeType diffB = channel.argument(idxB) - time;
@@ -269,7 +270,7 @@ class DataChannelTimeAccessor : public IDataChannelTimeAccessor<PointType, TimeT
 {
 public:
 
-	typedef typename IRawGeneralDataChannelReader<PointType, TimeType> Channel;
+	typedef IRawGeneralDataChannelReader<PointType, TimeType> Channel;
 	typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr ConstChannelPtr;
 
 private:
@@ -316,7 +317,7 @@ public:
 			return Extrapolator<PointType, TimeType, Interpolator, typename Channel::point_type_reference>::timeOverflow(time, channel);
 		}else{
 			return InterpolatorHelper<PointType, TimeType, Interpolator>::extractValue(time, channel);
-		}   
+		}
 	}
 	//! \param time Czas dla którego chcemy pobraæ wartoœæ
 	//! \return Wartoœæ kana³u dla zadanego czasu uwzglêdniaj¹ca extrapolatro i interpolator (mo¿e w szczególnoœci rzucaæ wyj¹tkami!!!)

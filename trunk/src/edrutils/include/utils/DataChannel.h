@@ -3,8 +3,8 @@
 	created:  17:2:2011   13:57
 	filename: DataChannel.h
 	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+
+	purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_UTILS__DATACHANNEL_H__
 #define __HEADER_GUARD_UTILS__DATACHANNEL_H__
@@ -26,7 +26,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
-    
+
 	//! Wzorzec wyci¹gaj¹cy const referencjê do danych - przydatny przy przekazywaniu danych w innych wzorcach
     template<class PointType>
     struct ConstReferenceType
@@ -74,7 +74,7 @@ namespace utils {
 		typedef unsigned int size_type;
 
 		//! Zakres danych wg indeksów próbek
-		typedef std::pair<size_type, size_type> data_range;
+		typedef typename std::pair<size_type, size_type> data_range;
 
         //! Typ obserwatora dla kana³u o podanym interfejsie ( typach danych)
         typedef Observer<_MyRawChannelReaderType> _MyObserverType;
@@ -154,7 +154,10 @@ namespace utils {
     class IRawUniformDataChannelReader : public IRawGeneralDataChannelReader<PointType, TimeType>
     {
     public:
-
+        // TODO znalezc lepszy sposob na dostanie sie do tych typow (pod gcc)
+        typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::data_range data_range;
+        typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::time_type time_type;
+        typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type size_type;
         virtual ~IRawUniformDataChannelReader() {};
 
         // Fix na buga w Visual Studio z virtualnym dziedziczeniem i koherentnymi typami
@@ -194,7 +197,7 @@ namespace utils {
 		//! \param point Wartoœæ próbki któr¹ dodajemy
         virtual void addPoint(TimeType time, typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
 		//! \param point Wartoœæ próbki któr¹ dodajemy (czas generowany automatycznie przez kana³ o znanej rozdzielczoœci)
-        virtual void addPoint(typename typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
+        virtual void addPoint(typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
     };
 
 	//! Interfejs na potrzeby kanalow sledzacych, umozliwia zmiane wartosci probek dla danego indesku
@@ -359,6 +362,9 @@ namespace utils {
 	public:
 		//! Typ obiektu przechowuj¹cego dane
 		typedef ChannelStorage<PointType, TimeType> Storage;
+		typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type size_type;
+		typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point_type_const_reference;
+		typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::time_type time_type;
 
         //! Const iterator dla danych indeksowanych czasem
         typedef typename Storage::const_iterator const_iterator;
@@ -388,7 +394,7 @@ namespace utils {
 		RawGeneralDataChannel(const IRawGeneralDataChannelReader<PointType, TimeType> & channel) : name(channel.getName())
 		{
 			//kopiujê zawartoœæ
-			for(size_type i = 0; i < channel.size(), ++i){
+			for(size_type i = 0; i < channel.size(); ++i){
 				const auto & v = channel.pair(i);
 				storage.addPoint(v.first, v.second);
 			}
@@ -511,6 +517,9 @@ namespace utils {
 	public:
 
 		typedef ChannelStorage<PointType, TimeType> Storage;
+		typedef typename IRawUniformDataChannelReader<PointType, TimeType>::size_type size_type;
+		typedef typename IRawUniformDataChannelReader<PointType, TimeType>::point_type_const_reference point_type_const_reference;
+		typedef typename IRawUniformDataChannelReader<PointType, TimeType>::time_type time_type;
 
 		//! Const iterator dla danych indeksowanych czasem
 		typedef typename Storage::const_iterator const_iterator;
@@ -528,7 +537,7 @@ namespace utils {
 		Storage storage;
 		//! Nazwa kana³u
 		std::string name;
-		
+
 
 	public:
         RawUniformDataChannel(TimeType samplesPerSecond = 25, const std::string & name = std::string("")) : name(name), samplesPerSecond(samplesPerSecond)
@@ -540,12 +549,20 @@ namespace utils {
             invSamplesPerSecond = (TimeType)1.0 / samplesPerSecond;
         }
 
-        RawUniformDataChannel(const RawUniformDataChannel & channel) : name(channel.name), storage(channel.storage), samplesPerSecond(channel.samplesPerSecond), invSamplesPerSecond(channel.invSamplesPerSecond) {}
+        RawUniformDataChannel(const RawUniformDataChannel & channel) :
+            name(channel.name),
+            storage(channel.storage),
+            samplesPerSecond(channel.samplesPerSecond),
+            invSamplesPerSecond(channel.invSamplesPerSecond)
+        {}
 
-		RawUniformDataChannel(const IRawUniformDataChannelReader<PointType, TimeType> & channel) : name(channel.getName()) samplesPerSecond(channel.samplesPerSecond), invSamplesPerSecond(channel.invSamplesPerSecond)
+		RawUniformDataChannel(const IRawUniformDataChannelReader<PointType, TimeType> & channel) :
+            name(channel.getName()),
+            samplesPerSecond(channel.samplesPerSecond),
+            invSamplesPerSecond(channel.invSamplesPerSecond)
 		{
 			//kopiujê zawartoœæ
-			for(size_type i = 0; i < channel.size(), ++i){
+			for(size_type i = 0; i < channel.size(); ++i){
 				storage.addPoint(channel.value(i));
 			}
 		}
@@ -664,7 +681,7 @@ namespace utils {
             notify();
         }
     };
-   
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////

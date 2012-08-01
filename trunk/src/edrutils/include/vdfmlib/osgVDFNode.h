@@ -4,7 +4,7 @@
 //#include <osgText/Text>
 #include <osgDB/ReadFile>
 #include <iterator>
-#include <osgWidget\EventInterface>
+#include <osgWidget/EventInterface>
 #include <stdio.h>
 
 #include <vdfmlib/osgVDFBaseNode.h>
@@ -26,7 +26,7 @@ public:
 
 	osgVDFNode(const std::string& nodeName = "", osg::ref_ptr<osg::Image> img = osg::ref_ptr<osg::Image>());
 	osgVDFNode(const osgVDFNode& node, const osg::CopyOp& co) {};
-	
+
 	~osgVDFNode(void);
 
 	virtual void managed(osgWidget::WindowManager* wm);
@@ -59,7 +59,7 @@ protected:
 
 	osgWidget::point_type getTotalPinsHeight();
 	osgWidget::point_type getBodyHeight();
-	
+
 	virtual void graphSetStatus(VisualStatus nodeVisualStatus);
 
     virtual void lockForEditing(bool lock);

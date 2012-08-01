@@ -3,8 +3,8 @@
     created:  17:3:2011   18:15
     filename: NamedTree.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD_TIMELINE__DATASTRUCTURE_H__
 #define HEADER_GUARD_TIMELINE__DATASTRUCTURE_H__
@@ -40,7 +40,7 @@ private:
     //! mapa dzieci ktore mozna modyfikowac
     typedef std::vector<NamedTreeBasePtr> Children;
     typedef Children::iterator iterator;
-    
+
     //! definicja tokenizera opartego o boost
     typedef boost::char_separator<char> Separator;
     typedef boost::tokenizer<Separator> Tokenizer;
@@ -282,12 +282,12 @@ class NamedTree : public NamedTreeBase, protected PtrPolicy
 
 public:
     //!
-    typedef PtrPolicy PtrPolicy;
+    //typedef typename PtrPolicy PtrPolicy;
     //!
     typedef PtrPolicy Base;
     //! Wskaznik do danych
-    typedef typename Base::Ptr<Data>::Type Ptr;
-    typedef typename Base::Ptr<const Data>::Type ConstPtr;
+    typedef typename Base::template Ptr<Data>::Type Ptr;
+    typedef typename Base::template Ptr<const Data>::Type ConstPtr;
     typedef NamedTree<Data, PtrPolicy> NamedTreeType;
 
 private:
@@ -304,7 +304,7 @@ public:
     //! \param data Dane do przechowania w wezle, domyslnie brak danych
     NamedTree(const std::string & name = "UnnamedNode", const Ptr & data = Ptr())
         : NamedTreeBase(name)
-    {        
+    {
         if(data != nullptr){
             setData(data);
         }else{
@@ -318,7 +318,7 @@ public:
     //! \param deep Czy glebokie kopiowanie
     NamedTree(const NamedTree & child, bool deep = true)
         : NamedTreeBase(child, deep)
-    {        
+    {
         if(deep == true){
             setData(new Data(*(child.data)));
         }else{
@@ -345,8 +345,8 @@ public:
     //! \param data Dane do przechowania w wezle
     void setData(const Ptr & data)
     {
-        PtrPolicy::setPtr<Data>(this->data, data);
-        PtrPolicy::setPtr<const Data>(this->constData, data);
+        PtrPolicy::template setPtr<Data>(this->data, data);
+        PtrPolicy::template setPtr<const Data>(this->constData, data);
     }
 
     virtual void addChild(const std::string & path)

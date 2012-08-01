@@ -65,7 +65,7 @@ void osgVDFBaseModel::setModel(const dflm::MPtr & model, const NodesPositions & 
 
     logicModel = model;
 
-    //if(logicModel->trylock() == true){        
+    //if(logicModel->trylock() == true){
 
         //TODO
         //iteruj po nowym modelu i dodaj elementy
@@ -114,7 +114,7 @@ const dflm::MPtr & osgVDFBaseModel::getModel() const
     return logicModel;
 }
 
-void osgVDFBaseModel::init( osgViewer::View* view ) 
+void osgVDFBaseModel::init( osgViewer::View* view )
 {
     //add event to create nodes
 //#ifdef _DEBUG
@@ -156,7 +156,7 @@ bool osgVDFBaseModel::innerIsPointFree( const osgWidget::XYCoord &posToStart ) c
     return ret;
 }
 
-bool osgVDFBaseModel::isPointFree(const osgWidget::XYCoord & posToStart) const 
+bool osgVDFBaseModel::isPointFree(const osgWidget::XYCoord & posToStart) const
 {
     ScopeLock lock(const_cast<osgVDFBaseModel*>(this)->stateMutex);
 
@@ -230,7 +230,7 @@ void osgVDFBaseModel::addNode(const dflm::NPtr & node, osg::ref_ptr<osg::Image> 
     }
 
     compatiblePins.insert(tmpPinsCompatibility.begin(), tmpPinsCompatibility.end());
-		
+
 	//create logical node -> visual node assosiation
 	nodesLogicalToGraph[node] = vnode;
 	visualNodes.insert(vnode);
@@ -279,13 +279,13 @@ void osgVDFBaseModel::configureVisualNode(osgVDFBaseNode * node)
 void osgVDFBaseModel::configureVisualPin(osgVDFBasePin * pin)
 {
 	pin->addEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG | osgWidget::EVENT_MASK_MOUSE_MOVE);
-	
+
 	pin->addCallback(pinPushEvent);
 	pin->addCallback(pinDragEvent);
 	pin->addCallback(pinReleaseEvent);
 	pin->addCallback(pinEnterEvent);
 	pin->addCallback(pinLeaveEvent);
-	
+
 	pin->setVisualStatus(pin->getStaticVisualStatus());
 }
 
@@ -355,7 +355,7 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
 		it != connectionsToRemove.end(); ++it){
 			it->second->removeConnection(it->first);
 			it->second->setVisualStatus(it->second->getStaticVisualStatus());
-				
+
 			//remove connection from connection map
 			auto iT = connectionsGraphToLogical.find(it->first);
 			connectionsLogicalToGraph.erase(iT->second);
@@ -396,7 +396,7 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
 
     VNodes collisionNodes = vnode->getCollisionNodes();
     vnode->setCollisionNodes(VNodes());
-    
+
     //aktualizuj statusy kolizji pozostalych wezlow
     for(auto it = collisionNodes.begin(); it != collisionNodes.end(); ++it){
         if((*it)->getVisualStatus() == osgVDFBaseNode::COLLISION && (*it)->getCollisionNodes().empty() == true){
@@ -442,7 +442,7 @@ osgVDFBaseModel::VNodes osgVDFBaseModel::getVisualNodesInArea(const osg::Boundin
     return ret;
 }
 
-osgWidget::XYCoord osgVDFBaseModel::getFreePlaceForNode(const dflm::NPtr & node, const osgWidget::XYCoord & posToStart) const 
+osgWidget::XYCoord osgVDFBaseModel::getFreePlaceForNode(const dflm::NPtr & node, const osgWidget::XYCoord & posToStart) const
 {
     ScopeLock lock(const_cast<osgVDFBaseModel*>(this)->stateMutex);
 
@@ -451,7 +451,7 @@ osgWidget::XYCoord osgVDFBaseModel::getFreePlaceForNode(const dflm::NPtr & node,
     }
 
     osgVDFBaseNode * vnode = getVisualNode(node);
-	
+
 	return osgui::Utils2D::findFreeSpaceInNearby(posToStart,vnode->getWidth(), vnode->getHeight(), this);
 }
 
@@ -500,18 +500,18 @@ void osgVDFBaseModel::selectVisualNode(osgVDFBaseNode * vnode)
 void osgVDFBaseModel::selectNodes(const dflm::Model::Nodes & nodes)
 {
     if(nodes.empty() == true){
-        return;       
+        return;
     }
 
 	bool tVis = isTooltipVisible();
-    	
+
     if(tVis == true){
 		hideTooltip();
 	}
-	
+
 	for(auto it = nodes.begin(); it != nodes.end(); ++it){
         osgVDFBaseNode * vnode = getVisualNode(*it);
-       
+
         selectVisualNode(vnode);
 	}
 
@@ -617,13 +617,13 @@ void osgVDFBaseModel::deselectVisualNodes(const VNodes & vnodes, const VNodes & 
 		hideTooltip();
 		tVis = true;
 	}
-	
+
 	for(auto it = vnodes.begin(); it != vnodes.end(); ++it){
 
         if(innerIsNodeSelected(*it) == false){
             continue;
         }
-        
+
         deselectVisualNode(*it, refNodes);
 
         /*if(focusedNode == vnode){
@@ -680,8 +680,8 @@ const dflm::Model::Nodes & osgVDFBaseModel::getSelectedNodes() const
 
 dflm::Model::Nodes osgVDFBaseModel::filterNodes(const dflm::Model::Nodes & nodes) const
 {
-    dflm::Model::Nodes ret;    
-    
+    dflm::Model::Nodes ret;
+
     std::vector<dflm::NPtr> intersection;
     intersection.reserve(std::max(nodes.size(), logicModel->getNodes().size()));
 
@@ -719,7 +719,7 @@ dflm::Model::Nodes osgVDFBaseModel::getNodesFromVNodes(const VNodes & vnodes) co
 osg::BoundingBox osgVDFBaseModel::getNodesBoundingBox( const dflm::Model::Nodes & nodes ) const
 {
 	osg::BoundingBox ret;
-    
+
     if(nodes.empty() == false){
 
         //przeciêcie podanych wêz³ów i wêz³ów z modelu - tylko pokrywaj¹ce siê wêz³y wezm¹ udzia³ w tworzeniu obszaru
@@ -802,7 +802,7 @@ void osgVDFBaseModel::hideConnections()
 	}
 }
 
-osgWidget::XYCoord osgVDFBaseModel::innerGetNodePosition( const dflm::NPtr & node ) 
+osgWidget::XYCoord osgVDFBaseModel::innerGetNodePosition( const dflm::NPtr & node )
 {
     osgVDFBaseNode * vnode = getVisualNode(node);
 
@@ -830,7 +830,7 @@ osgWidget::XYCoord osgVDFBaseModel::getNodeSize(const dflm::NPtr & node)
     }
 
 	osgVDFBaseNode* vnode = getVisualNode(node);
-	
+
 	return osgWidget::XYCoord(vnode->getWidth(), vnode->getHeight());
 }
 
@@ -884,7 +884,7 @@ osgVDFBaseModel::VNodes osgVDFBaseModel::getCollisionNodes(osgVDFBaseNode * vnod
     VNodes ret;
 
     osg::BoundingBox bb(osgui::Utils2D::generateBox(vnode));
-    
+
     for(auto it = nodes.begin(); it != nodes.end(); ++it){
         if( *it != vnode && bb.intersects(osgui::Utils2D::generateBox(*it)) == true){
             ret.insert(*it);
@@ -896,10 +896,10 @@ osgVDFBaseModel::VNodes osgVDFBaseModel::getCollisionNodes(osgVDFBaseNode * vnod
 
 void osgVDFBaseModel::updateVisualNodeStatus(osgVDFBaseNode * vnode, const VNodes & nodes)
 {
-    
+
 }
 
-void osgVDFBaseModel::moveNode( osgVDFBaseNode* vnode, const osgWidget::XYCoord &moveStep ) 
+void osgVDFBaseModel::moveNode( osgVDFBaseNode* vnode, const osgWidget::XYCoord &moveStep )
 {
     vnode->addOrigin(moveStep.x(), moveStep.y());
     vnode->resizeAdd(0,0);
@@ -958,7 +958,7 @@ void osgVDFBaseModel::setNodeAbsolutePosition(const dflm::NPtr & node, const osg
 
 }
 
-void osgVDFBaseModel::positionNode( osgVDFBaseNode* vnode, const osgWidget::XYCoord &nodePos ) 
+void osgVDFBaseModel::positionNode( osgVDFBaseNode* vnode, const osgWidget::XYCoord &nodePos )
 {
     vnode->setOrigin(nodePos.x() - vnode->getWidth() / 2.0, nodePos.y() - vnode->getHeight() / 2.0);
     vnode->resizeAdd(0,0);
@@ -980,7 +980,7 @@ dflm::ConnPtr osgVDFBaseModel::connect(const dflm::PinPtr & src, const dflm::Pin
 	osg::Geode* vconnection = createVisualConnection();
 	setVisualConnectionZ(vconnection, getMinNodesZ());
 	setVisualConnectionColor(vconnection, visualConnectionNormalColor);
-	
+
 	//update visual pins
 	addConnectionToPin(vsrc, vconnection, vdest);
 	addConnectionToPin(vdest, vconnection, vsrc);
@@ -999,7 +999,7 @@ dflm::ConnPtr osgVDFBaseModel::connect(const dflm::PinPtr & src, const dflm::Pin
 }
 
 void osgVDFBaseModel::disconnect(const dflm::ConnPtr & connection)
-{	
+{
     ScopeLock lock(const_cast<osgVDFBaseModel*>(this)->stateMutex);
     dflm::PinPtr src = connection->getSrc();
     dflm::PinPtr dest = connection->getDest();
@@ -1110,7 +1110,7 @@ void osgVDFBaseModel::showDefaultToolbar(bool show)
 				graphAddNodeTypeToToolbar(*it);
 			}
 
-			nodeTypesMissing.swap(std::set<osgVDFNodeTypeDescriptor*>());
+			std::set<osgVDFNodeTypeDescriptor*>().swap(nodeTypesMissing);
 		}
 
 		//m_pToolbar->setOrigin(0,this->getHeight() - m_pToolbar->getHeight());
@@ -1336,8 +1336,8 @@ void osgVDFBaseModel::updateCollisions(){
 
 				it->first->setVisualStatus(it->second);
 		}
-		collisionNodes.swap(VNodes());
-		movePrevNodesStatus.swap(VNodesPrevVisualStatus());
+		VNodes().swap(collisionNodes);
+		VNodesPrevVisualStatus().swap(movePrevNodesStatus);
 	}
 }
 
@@ -1348,9 +1348,9 @@ bool osgVDFBaseModel::onNodeClick(osgWidget::Event& ev)
 	    if(ev.getWindowManager()->isLeftMouseButtonDown() == false){
 		    return false;
 	    }
-	
+
 	    osgVDFBaseNode * vnode = dynamic_cast<osgVDFBaseNode*>(ev.getWindow());
-	
+
 	    focusedNode = vnode;
 
 	    moveStarted = true;
@@ -1629,7 +1629,7 @@ bool osgVDFBaseModel::onPinRelease(osgWidget::Event& ev)
                     connectingCurrentPin->setVisualStatus(osgVDFBasePin::CONNECTED);
 
                     dflm::ConnPtr conn = logicModel->connect(connectingStartPin->getModelPin(), connectingCurrentPin->getModelPin());
-                
+
                     //aktuzlizuj piny, dodaj po³¹czenie do map
                     addConnectionToPin(connectingStartPin, visualConnection, connectingCurrentPin);
                     addConnectionToPin(connectingCurrentPin, visualConnection, connectingStartPin);
@@ -1659,7 +1659,7 @@ bool osgVDFBaseModel::onPinRelease(osgWidget::Event& ev)
 		    visualConnection = nullptr;
 		    connectingStartPin = connectingCurrentPin = nullptr;
 		    connectionContinue = osgVDFBasePin::VisualConnectionsUpdater();
-            
+
             connectingStarted = false;
             stateMutex.unlock();
 	    }
@@ -1691,7 +1691,7 @@ void osgVDFBaseModel::restorePinsStatus(){
 		it->first->setVisualStatus(it->second);
 	}
 
-	connectingPrevPinsStatus.swap(VPinPrevVisualStatus());
+	VPinPrevVisualStatus().swap(connectingPrevPinsStatus);
 }
 
 bool osgVDFBaseModel::onPinEnter(osgWidget::Event& ev)
@@ -1719,7 +1719,7 @@ bool osgVDFBaseModel::onPinEnter(osgWidget::Event& ev)
 		osgWidget::XYCoord pos = pin->getParent()->getAbsoluteOrigin() + pin->getOrigin();
 		pos.x() += pin->getWidth();
 		pos.y() += pin->getHeight();
-				
+
 		showTooltip(pos);
 		refreshFocused();
 	}
@@ -1797,7 +1797,7 @@ std::vector<std::string> osgVDFBaseModel::getPinErrors(const dflm::PinPtr & pin)
 
 std::vector<std::string> osgVDFBaseModel::getNodeErrors(const dflm::NPtr & node){
 	std::vector<std::string> ret;
-	
+
 	//if(dynamic_cast<chart::DFSourceNode*>(node.get()) == 0){
 	if(boost::dynamic_pointer_cast<dflm::DFSourceNode>(node) == 0){
 		if(node->beginIn() != node->endIn()){
@@ -1813,7 +1813,7 @@ std::vector<std::string> osgVDFBaseModel::getNodeErrors(const dflm::NPtr & node)
 				}
 			}
 		}
-		
+
 		//if(node->getOutPins().empty() == false){
 		//	const dflm::Node::Pins & pinsSet = node->getOutPins();
 			for(auto it = node->beginOut(); it != node->endOut(); ++it){
@@ -1841,7 +1841,7 @@ bool osgVDFBaseModel::VisualSelectionManager::handle(const osgGA::GUIEventAdapte
 	osg::Object*                  obj,
 	osg::NodeVisitor*             nv
 	){
-	
+
 		//do this if the descriptor is set
 		//check if mouse was pushed - left button!!
 
@@ -1872,7 +1872,7 @@ bool osgVDFBaseModel::VisualSelectionManager::handle(const osgGA::GUIEventAdapte
 			if(visualSelectionStarted == true){
 				//continue with frame
 				model->continueVisulaSelection(model->visualSelection, osgWidget::XYCoord(gea.getX(), gea.getY()));
-				
+
 				osg::BoundingBox locBB(std::min(gea.getX(), model->selectionStartPose.x()),
 					std::min(gea.getY(), model->selectionStartPose.y()), 0,
 					std::max(gea.getX(), model->selectionStartPose.x()),
@@ -1933,7 +1933,7 @@ bool osgVDFBaseModel::ModelResizeHandler::handle(const osgGA::GUIEventAdapter& g
 	if(gea.getEventType() == osgGA::GUIEventAdapter::RESIZE){
 		model->modelBoundingBox.xMax() = gea.getWindowWidth();
 		model->modelBoundingBox.yMax() = gea.getWindowHeight();
-		
+
 		if(model->toolbar != 0){
 			//resize toolbar to fit width, keep height
 			model->toolbar->resize(gea.getWindowWidth(), model->toolbar->getHeight());
@@ -1983,7 +1983,7 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 
         if(node != nullptr){
             model->clickNodeAction(node, pos);
-        }        
+        }
     }else if(model->doubleClickNodeAction.empty() == false && gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && gea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK){
         osgWidget::XYCoord pos(gea.getX(), gea.getY());
         const osgVDFBaseNode* node = getTopNodeInPoint(pos);
@@ -2029,7 +2029,7 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 		osgWidget::XYCoord pos(gea.getX(), gea.getY());
 		//go through all points in all connections and identify the closest one to delete
 		ConnectionsActionsMapping toDelete;
-		
+
 		for(osgVDFBaseModel::RevConnectionsMapping::iterator it = model->connectionsGraphToLogical.begin();
 			it != model->connectionsGraphToLogical.end(); ++it){
 
@@ -2112,39 +2112,39 @@ Subject 1.02: How do I find the distance from a point to a line?
 
     Let the point be C (Cx,Cy) and the line be AB (Ax,Ay) to (Bx,By).
     Let P be the point of perpendicular projection of C on AB.  The parameter
-    r, which indicates P's position along AB, is computed by the dot product 
+    r, which indicates P's position along AB, is computed by the dot product
     of AC and AB divided by the square of the length of AB:
-    
+
     (1)     AC dot AB
-        r = ---------  
+        r = ---------
             ||AB||^2
-    
+
     r has the following meaning:
-    
+
         r=0      P = A
         r=1      P = B
         r<0      P is on the backward extension of AB
         r>1      P is on the forward extension of AB
         0<r<1    P is interior to AB
-    
+
     The length of a line segment in d dimensions, AB is computed by:
-    
+
         L = sqrt( (Bx-Ax)^2 + (By-Ay)^2 + ... + (Bd-Ad)^2)
 
-    so in 2D:   
-    
+    so in 2D:
+
         L = sqrt( (Bx-Ax)^2 + (By-Ay)^2 )
-    
+
     and the dot product of two vectors in d dimensions, U dot V is computed:
-    
+
         D = (Ux * Vx) + (Uy * Vy) + ... + (Ud * Vd)
-    
-    so in 2D:   
-    
-        D = (Ux * Vx) + (Uy * Vy) 
-    
+
+    so in 2D:
+
+        D = (Ux * Vx) + (Uy * Vy)
+
     So (1) expands to:
-    
+
             (Cx-Ax)(Bx-Ax) + (Cy-Ay)(By-Ay)
         r = -------------------------------
                           L^2
@@ -2156,7 +2156,7 @@ Subject 1.02: How do I find the distance from a point to a line?
 
     And the distance from A to P = r*L.
 
-    Use another parameter s to indicate the location along PC, with the 
+    Use another parameter s to indicate the location along PC, with the
     following meaning:
            s<0      C is left of AB
            s>0      C is right of AB
@@ -2216,17 +2216,17 @@ bool osgVDFBaseModel::onLeaveContextMenu(osgWidget::Event& ev)
 
 void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::ConnectionsActionsMapping & toDelete,
     const ConnectionAction & leaveContextMenu, const osgWidget::XYCoord & pos){
-	
+
     contextMenu = new osgui::ContextMenu();
 
     contextMenu->addEventMask(osgWidget::EVENT_MASK_MOUSE_MOVE);
     contextMenu->addCallback(new osgWidget::Callback(&osgVDFBaseModel::onLeaveContextMenu, this, osgWidget::EVENT_MOUSE_LEAVE, (void*)&leaveContextMenu));
 
     contextMenu->setMenuOnCloseCallback(std::string(), boost::bind(&osgVDFBaseModel::onCloseContextMenu, this, _1));
-    
+
     addChild(contextMenu);
 
-    
+
 
     for(ConnectionsActionsMapping::const_iterator it = toDelete.begin(); it != toDelete.end(); ++it){
         osgui::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::contextMenuActionWrapper, it->second.second, _1, _2);
@@ -2235,8 +2235,8 @@ void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::Co
 		contextMenu->addMenuItem(it->first, false, cc, hc);
 	}
 
-    
-    
+
+
     setFocused(contextMenu);
 	hideConnections();
 	contextMenu->showMenu(pos);
@@ -2262,9 +2262,9 @@ void osgVDFBaseModel::removeConnection(const dflm::ConnPtr & connection, const s
 	if(lastHighlightedConnection == connectionsLogicalToGraph[connection]){
 		lastHighlightedConnection = nullptr;
 	}
-	
+
 	disconnect(connection);
-	
+
 }
 
 void osgVDFBaseModel::onCloseContextMenu(osgui::ContextMenu * menu){
@@ -2273,7 +2273,7 @@ void osgVDFBaseModel::onCloseContextMenu(osgui::ContextMenu * menu){
     setFocused(nullptr);
 
 	if(lastHighlightedConnection != nullptr){
-		setVisualConnectionColor(lastHighlightedConnection, visualConnectionNormalColor); 
+		setVisualConnectionColor(lastHighlightedConnection, visualConnectionNormalColor);
 		lastHighlightedConnection = nullptr;
 	}
 }

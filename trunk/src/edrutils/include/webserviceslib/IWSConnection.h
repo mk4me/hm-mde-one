@@ -3,12 +3,13 @@
     created:  2:3:2012   13:40
     filename: IWSConnection.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___IWSCONNECTION_H__
 #define HEADER_GUARD___IWSCONNECTION_H__
 
+#include <stdexcept>
 #include <webserviceslib/IWSCredentials.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
@@ -20,57 +21,57 @@ namespace webservices
 	//! MA TO NA CELU WPROWADZENIE LENIWEJ INICJALIZACJI US£UG - PO£¥CZENIE JEST NAWI¥ZYWANE FAKTYCZNIE W MOMENCIE U¯YCIA
 
 	//! Wyj¹tek zwi¹zany z wo³aniem us³ug (invoke na connection) do których nie mamy praw
-	class WSConnectionSecurityException : public std::exception
+	class WSConnectionSecurityException : public std::runtime_error
 	{
 	public:
-		WSConnectionSecurityException() throw() : std::exception() {}
-		WSConnectionSecurityException(const WSConnectionSecurityException & exception) throw() : std::exception(exception) {}
-		WSConnectionSecurityException(const char * exception) throw() : std::exception(exception) {}
+		WSConnectionSecurityException() throw() : std::runtime_error("") {}
+		WSConnectionSecurityException(const WSConnectionSecurityException & exception) throw() : std::runtime_error(exception) {}
+		WSConnectionSecurityException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
 	//! Wyj¹tek zwi¹zany z ustawianiem us³ugi - us³uga nie oferuje takiej operacji
-	class WSConnectionOperationException : public std::exception
+	class WSConnectionOperationException : public std::runtime_error
 	{
 	public:
-		WSConnectionOperationException() throw() : std::exception() {}
-		WSConnectionOperationException(const WSConnectionOperationException & exception) throw() : std::exception(exception) {}
-		WSConnectionOperationException(const char * exception) throw() : std::exception(exception) {}
+		WSConnectionOperationException() throw() : std::runtime_error("") {}
+		WSConnectionOperationException(const WSConnectionOperationException & exception) throw() : std::runtime_error(exception) {}
+		WSConnectionOperationException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
 	//! Wyj¹tek zwi¹zany z ustawianiem us³ugi - metoda us³ugi nie przyjmuje wartoœci o zadanej nazwie
-	class WSConnectionOperationValueException : public std::exception
+	class WSConnectionOperationValueException : public std::runtime_error
 	{
 	public:
-		WSConnectionOperationValueException() throw() : std::exception() {}
-		WSConnectionOperationValueException(const WSConnectionOperationValueException & exception) throw() : std::exception(exception) {}
-		WSConnectionOperationValueException(const char * exception) throw() : std::exception(exception) {}
+		WSConnectionOperationValueException() throw() : std::runtime_error("") {}
+		WSConnectionOperationValueException(const WSConnectionOperationValueException & exception) throw() : std::runtime_error(exception) {}
+		WSConnectionOperationValueException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
 	//! Wyj¹tek zwi¹zany z inicjalizacj¹ us³ugi - mo¿e siê pojawiæ kiedy œci¹gamy definicjê us³ugi i j¹ parsujemy
-	class WSConnectionInitializationException : public std::exception
+	class WSConnectionInitializationException : public std::runtime_error
 	{
 	public:
-		WSConnectionInitializationException() throw() : std::exception() {}
-		WSConnectionInitializationException(const WSConnectionInitializationException & exception) throw() : std::exception(exception) {}
-		WSConnectionInitializationException(const char * exception) throw() : std::exception(exception) {}
+		WSConnectionInitializationException() throw() : std::runtime_error("") {}
+		WSConnectionInitializationException(const WSConnectionInitializationException & exception) throw() : std::runtime_error(exception) {}
+		WSConnectionInitializationException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
 	//! Wyj¹tek zwi¹zany z realizacj¹ us³ugi przez web serwis
-	class WSConnectionResponseException : public std::exception
+	class WSConnectionResponseException : public std::runtime_error
 	{
 	public:
-		WSConnectionResponseException() throw() : std::exception() {}
-		WSConnectionResponseException(const WSConnectionResponseException & exception) throw() : std::exception(exception) {}
-		WSConnectionResponseException(const char * exception) throw() : std::exception(exception) {}
+		WSConnectionResponseException() throw() : std::runtime_error("") {}
+		WSConnectionResponseException(const WSConnectionResponseException & exception) throw() : std::runtime_error(exception) {}
+		WSConnectionResponseException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
 	//! Wyj¹tek zwi¹zany z wo³aniem us³ugi - kiedy próbujemy ju¿ faktycznie wywo³aæ us³ugê, kiedy parsujemy jej odpowiedŸ i coœ idzie nie tak
-	class WSConnectionInvokeException : public std::exception
+	class WSConnectionInvokeException : public std::runtime_error
 	{
 	public:
-		WSConnectionInvokeException() throw() : std::exception() {}
-		WSConnectionInvokeException(const WSConnectionInvokeException & exception) throw() : std::exception(exception) {}
-		WSConnectionInvokeException(const char * exception) throw() : std::exception(exception) {}
+		WSConnectionInvokeException() throw() : std::runtime_error("") {}
+		WSConnectionInvokeException(const WSConnectionInvokeException & exception) throw() : std::runtime_error(exception) {}
+		WSConnectionInvokeException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
     //! Interfejs realizuj¹cy po³¹czenie z serwisami webowymi - metody powinny rzucac wyj¹tkiem w razie jakiegokolwiek niepowodzenia
@@ -116,7 +117,7 @@ namespace webservices
 				value = *((T*)ret);
 			}else{
 				throw std::runtime_error("Could not find requested value in response.");
-			}            
+			}
         }
 
         //! \return Pe³na odpowiedŸ serwisu webowego w formacie html/xml

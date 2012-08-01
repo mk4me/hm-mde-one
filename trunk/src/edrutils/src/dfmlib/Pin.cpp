@@ -32,7 +32,7 @@ NPtr Pin::getParent() const{
 	if(parentNode.expired() == true){
         throw std::runtime_error("Pin referring to expired Node!");
     }
-    
+
     return parentNode.lock();
 }
 //const Pin::Connections & Pin::getConnections() const{
@@ -101,8 +101,11 @@ void Pin::addConnection(const ConnPtr & connection)
 
 void Pin::removeConnection(const ConnPtr & connection)
 {
-    auto it = std::find(begin(), end(), connection);
-    if(it == end()){
+    // rev - czemu nie dzialalo w takiej formie? jakas konwersja?
+    //auto it = std::find(begin(), end(), connection);
+    //if(it == end()){
+    auto it = std::find(connections.begin(), connections.end(), connection);
+    if(it == connections.end()){
         throw std::runtime_error("Connection not found in pin!");
     }
 
@@ -110,7 +113,7 @@ void Pin::removeConnection(const ConnPtr & connection)
 }
 
 void Pin::clearConnections(){
-	connections.swap(Connections());
+	Connections().swap(connections);
 }
 
 const std::string & Pin::getName() const{

@@ -3,20 +3,22 @@
 	created:  16:11:2010   1:20
 	filename: Borderized.h
 	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+
+	purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD__BORDERIZED_H__
 #define HEADER_GUARD__BORDERIZED_H__
 
 #include <boost/type_traits.hpp>
 #include <osg/LineWidth>
+#include <osg/PrimitiveSet>
 #include <osgWidget/Widget>
 #include <osgWidget/Window>
 #include <osgWidget/WindowManager>
 #include <utils/Debug.h>
 #include <osgui/macroHacks.h>
 #include <osgui/StyleEx.h>
+#include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
@@ -49,9 +51,9 @@ private:
     unsigned borderIdx;
     //! Gruboœæ ramki.
     float thickness;
-   
+
 public:
-    //! 
+    //!
     //! \param name
     Borderized(const std::string & name = "" ) :
         Base(name)
@@ -75,7 +77,7 @@ public:
         init();
     }
 
-    //! 
+    //!
     //! \param borderized
     //! \param copyop
     Borderized(const Borderized& borderized, const osg::CopyOp& copyop) :
@@ -93,13 +95,13 @@ public:
 
     //! \return Gruboœæ ramki.
     virtual float getBorderWidth() const
-    { 
+    {
         return thickness;
     }
     //! \param thickness Gruboœæ ramki.
-    virtual void setBorderWidth(float thickness) 
-    { 
-        this->thickness = thickness; 
+    virtual void setBorderWidth(float thickness)
+    {
+        this->thickness = thickness;
         positionBorder( Mode<Primitives>() );
     }
 
@@ -183,7 +185,7 @@ protected:
 private:
 
     //! Inicjalizacja.
-    void init() 
+    void init()
     {
         thickness = 1;
         borderIdx = 0;
@@ -224,13 +226,13 @@ private:
     //! \param corner
     //! \param w
     //! \param h
-    //! \param 
+    //! \param
     void positionBorder( Mode<osg::PrimitiveSet::LINE_STRIP> )
     {
         osg::Vec3 corner = getCornerPosition();
         osg::Vec3 h = osg::Vec3(0, getHeight(), 0);
         osg::Vec3 w = osg::Vec3(getWidth(), 0, 0);
-        
+
         // inicjalizacja tablicy
         osg::Vec3Array* positions = getBorderPositionData();
         if ( !positions ) {
@@ -259,7 +261,7 @@ private:
     //! \param corner
     //! \param w
     //! \param h
-    //! \param 
+    //! \param
     void positionBorder( Mode<osg::PrimitiveSet::QUADS> )
     {
         osg::Vec3 corner = getCornerPosition();
@@ -305,12 +307,13 @@ private:
         border->setVertexArray(positions);
     }
 
-    //! 
-    //! \param 
-    template <osg::PrimitiveSet::Mode Primitives>
-    void positionBorder( Mode<Primitives> )
+    //!
+    //! \param
+    template <osg::PrimitiveSet::Mode P>
+    void positionBorder( Mode<P> )
     {
-        UTILS_STATIC_ASSERT(false, "Not supported");
+        // rev - jak to ma dzialac?, wywalana
+        //UTILS_STATIC_ASSERT(false, "Not supported");
     }
 };
 
@@ -326,13 +329,13 @@ private:
 //    osgWidget::Color borderPushedColor;
 //    //! Kolor podczas klikniêcia.
 //    osgWidget::Color borderToggleColor;
-//public:    //! 
+//public:    //!
 //    //! \param name
 //    BorderStylePolicy() :
 //        Base()
 //    {}
 //
-//    //! 
+//    //!
 //    //! \param borderized
 //    //! \param copyop
 //    BorderStylePolicy(const BorderStylePolicy& border, const osg::CopyOp& copyop) :
@@ -346,46 +349,46 @@ private:
 //public:
 //    //! \return
 //    osgWidget::Color getBorderNormalColor() const
-//    { 
+//    {
 //        return borderNormalColor;
 //    }
 //    //! \param borderNormalColor
-//    void setBorderNormalColor(osgWidget::Color borderNormalColor) 
-//    { 
-//        this->borderNormalColor = borderNormalColor; 
+//    void setBorderNormalColor(osgWidget::Color borderNormalColor)
+//    {
+//        this->borderNormalColor = borderNormalColor;
 //        onStyleChanged();
 //    }
 //    //! \return
 //    osgWidget::Color getBorderHoverColor() const
-//    { 
+//    {
 //        return borderHoverColor;
 //    }
 //    //! \param borderHooverColor
-//    void setBorderHoverColor(osgWidget::Color borderHooverColor) 
-//    { 
+//    void setBorderHoverColor(osgWidget::Color borderHooverColor)
+//    {
 //        this->borderHoverColor = borderHooverColor;
 //        onStyleChanged();
 //    }
 //    //! \return
 //    osgWidget::Color getBorderPushedColor() const
-//    { 
+//    {
 //        return borderPushedColor;
 //    }
 //    //! \param borderPushedColor
-//    void setBorderPushedColor(osgWidget::Color borderPushedColor) 
-//    { 
-//        this->borderPushedColor = borderPushedColor; 
+//    void setBorderPushedColor(osgWidget::Color borderPushedColor)
+//    {
+//        this->borderPushedColor = borderPushedColor;
 //        onStyleChanged();
 //    }
 //    //! \return
 //    osgWidget::Color getBorderToggleColor() const
-//    { 
+//    {
 //        return borderToggleColor;
 //    }
 //    //! \param borderToggleColor
-//    void setBorderToggleColor(osgWidget::Color borderToggleColor) 
-//    { 
-//        this->borderToggleColor = borderToggleColor; 
+//    void setBorderToggleColor(osgWidget::Color borderToggleColor)
+//    {
+//        this->borderToggleColor = borderToggleColor;
 //        onStyleChanged();
 //    }
 //    //!
@@ -397,7 +400,7 @@ private:
 //
 //protected:
 //
-//    //! 
+//    //!
 //    //! \param widget
 //    //! \param toggled
 //    //! \param pushed
@@ -445,13 +448,13 @@ private:
 //
 //public:
 //
-//    //! 
+//    //!
 //    //! \param name
 //    Borderized(const std::string & name = "" ) :
 //        Borderized<Base, false, Primitives>(name)
 //    {}
 //
-//    //! 
+//    //!
 //    //! \param borderized
 //    //! \param copyop
 //    Borderized(const Borderized& borderized, const osg::CopyOp& copyop) :
@@ -464,46 +467,46 @@ private:
 //
 //    //! \return
 //    osgWidget::Color getBorderNormalColor() const
-//    { 
+//    {
 //        return borderNormalColor;
 //    }
 //    //! \param borderNormalColor
-//    void setBorderNormalColor(osgWidget::Color borderNormalColor) 
-//    { 
-//        this->borderNormalColor = borderNormalColor; 
+//    void setBorderNormalColor(osgWidget::Color borderNormalColor)
+//    {
+//        this->borderNormalColor = borderNormalColor;
 //        Base::refresh();
 //    }
 //    //! \return
 //    osgWidget::Color getBorderHoverColor() const
-//    { 
+//    {
 //        return borderHoverColor;
 //    }
 //    //! \param borderHoverColor
-//    void setBorderHooverColor(osgWidget::Color borderHoverColor) 
-//    { 
+//    void setBorderHooverColor(osgWidget::Color borderHoverColor)
+//    {
 //        this->borderHoverColor = borderHoverColor;
 //        Base::refresh();
 //    }
 //    //! \return
 //    osgWidget::Color getBorderPushedColor() const
-//    { 
+//    {
 //        return borderPushedColor;
 //    }
 //    //! \param borderPushedColor
-//    void setBorderPushedColor(osgWidget::Color borderPushedColor) 
-//    { 
-//        this->borderPushedColor = borderPushedColor; 
+//    void setBorderPushedColor(osgWidget::Color borderPushedColor)
+//    {
+//        this->borderPushedColor = borderPushedColor;
 //        Base::refresh();
 //    }
 //    //! \return
 //    osgWidget::Color getBorderToggleColor() const
-//    { 
+//    {
 //        return borderToggleColor;
 //    }
 //    //! \param borderToggleColor
-//    void setBorderToggleColor(osgWidget::Color borderToggleColor) 
-//    { 
-//        this->borderToggleColor = borderToggleColor; 
+//    void setBorderToggleColor(osgWidget::Color borderToggleColor)
+//    {
+//        this->borderToggleColor = borderToggleColor;
 //        Base::refresh();
 //    }
 //    //!

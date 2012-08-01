@@ -5,7 +5,7 @@
 //#include <Utilities/StringStreamBuf.h>
 #include <btkAcquisitionFileReader.h>
 #include <btkAcquisitionFileWriter.h>
-
+#include <stdexcept>
 #include <btkProcessObject.h>
 #include <btkAcquisition.h>
 #include <btkSeparateKnownVirtualMarkersFilter.h>
@@ -57,19 +57,19 @@ public:
 	//! Destruktor wirtualny
 	virtual ~Analog() {}
 
-	//! 
-	//! \param val 
+	//!
+	//! \param val
 	void setAnalog(btk::Analog::ConstPointer val)	  { analog = val; }
-	//! 
+	//!
 	virtual const std::string& getLabel() const		  { return analog->GetLabel(); }
-	//! 
+	//!
 	virtual const std::string& getDescription() const { return analog->GetDescription(); }
-	//! 
+	//!
 	virtual const std::string& getUnit() const	      { return analog->GetUnit(); }
-	//! 
+	//!
 	virtual double getScale() const					  { return analog->GetScale(); }
-	//! 
-	//! \param index 
+	//!
+	//! \param index
 	virtual double getValue(int index) const		  { return analog->GetValues()[index]; }
 };
 typedef Analog* AnalogPtr;
@@ -85,10 +85,10 @@ private:
 	//! przez ta wartosc zostana przemnozone pobierane wartosci
 	float scale;
     std::string unit;
-	
+
 public:
 	Point() :
-	  point(nullptr),
+	  //point(nullptr),
 	  numOfFrames(-1),
 	  scale(1.0f),
       unit("unknown")
@@ -111,8 +111,8 @@ public:
     virtual const std::string& getUnit() const { return unit; }
 	virtual Point::Type getType() const { return type; }
 
-	virtual osg::Vec3 getValue(int index) const 
-	{ 
+	virtual osg::Vec3 getValue(int index) const
+	{
 		const btk::Measure<3>::Values& value = point->GetValues();
 		return osg::Vec3(value[index ], value[index + numOfFrames], value[index + 2 * numOfFrames]) * scale;
 	}
@@ -127,7 +127,7 @@ private:
 	btk::Event::ConstPointer eventPtr;
 
 public:
-	virtual Context getContext() const 
+	virtual Context getContext() const
 	{
         std::string ctx = eventPtr->GetContext();
         if (ctx == "Left") {
@@ -159,7 +159,7 @@ public:
 		return eventPtr->GetDescription();
 	}
 
-	virtual IEvent* clone() const 
+	virtual IEvent* clone() const
 	{
         Event* newEvent = new Event(*this);
 		return newEvent;
@@ -173,7 +173,7 @@ typedef const Event* EventConstPtr;
 
 //! Pola tej klasy agreguja te dane wykorzystywane wewnatrz klasy C3DParser,
 //! ktore nie moga byc widoczne w naglowku
-class C3DParser::__data 
+class C3DParser::__data
 {
 public:
     //! wskaznik do danych akwizycji
@@ -185,7 +185,7 @@ public:
     int roi[2];
     int firstFrame;
     int lastFrame;
-	    
+
     __data() :
         firstFrame(0),
         lastFrame(0)
@@ -201,7 +201,7 @@ public:
 C3DParser::C3DParser() :
     data( new __data)
 {
-    
+
 }
 
 C3DParser::~C3DParser()
@@ -236,12 +236,12 @@ void C3DParser::save( const std::string& filename )
 void C3DParser::load(const std::string& filename)
 {
     std::string warnings;
-	std::vector<const std::string> filenames;
+	std::vector<std::string> filenames;
 	filenames.push_back(filename);
 	importFrom(filenames, warnings);
 }
 
-void C3DParser::importFrom( const std::vector<const std::string>& filenames, std::string& importWarnings )
+void C3DParser::importFrom( const std::vector<std::string>& filenames, std::string& importWarnings )
 {
     // wczytywanie plikow (niekoniecznie c3d)
     std::vector<btk::AcquisitionFileReader::Pointer> readers;
@@ -257,7 +257,7 @@ void C3DParser::importFrom( const std::vector<const std::string>& filenames, std
     }
     catch (btk::Exception& e)
     {
-        throw std::exception(e.what());
+        throw std::runtime_error(e.what());
     }
     // Check if the original acquisition need to be cropped
     if (this->data->aquisitionPointer)
@@ -285,7 +285,7 @@ void C3DParser::importFrom( const std::vector<const std::string>& filenames, std
     btk::MergeAcquisitionFilter::Pointer merger = btk::MergeAcquisitionFilter::New();
     merger->SetInput(0, this->data->aquisitionPointer);
     for (unsigned int i = 0 ; i < readers.size() ; ++i) {
-        merger->SetInput(i+shift, readers[i]->GetOutput()); 
+        merger->SetInput(i+shift, readers[i]->GetOutput());
     }
     merger->Update();
     this->data->aquisitionPointer = merger->GetOutput();
@@ -311,7 +311,7 @@ void C3DParser::loadAcquisition()
 
     this->data->virtualMarkersSeparator->SetInput(this->data->aquisitionPointer->GetPoints());
     this->data->forcePlatformsExtractor->SetInput(this->data->aquisitionPointer);
-    
+
     this->data->virtualMarkersSeparator->SetLabelPrefix(labelPrefix);
     this->data->virtualMarkersSeparator->Update();
 
@@ -334,7 +334,7 @@ void C3DParser::loadAcquisition()
 					(*it)->GetCorner(i)(2,0)
 					);
 				platform->corners[i] *= scale;
-				
+
 			}
             platform->type = (*it)->GetType();
             int count = (*it)->GetChannelNumber();
@@ -349,8 +349,8 @@ void C3DParser::loadAcquisition()
     this->data->firstFrame = this->data->aquisitionPointer->GetFirstFrame();
     this->data->lastFrame = this->data->aquisitionPointer->GetLastFrame();
     this->data->roi[0] = this->data->firstFrame;
-    this->data->roi[1] = this->data->lastFrame; 
-    
+    this->data->roi[1] = this->data->lastFrame;
+
     btk::PointCollection::Pointer points = this->data->virtualMarkersSeparator->GetOutput(0);
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it)
     {
@@ -363,7 +363,7 @@ void C3DParser::loadAcquisition()
 		this->points.push_back(p);
     }
     // Virtual markers (CoM, CoG, ...)
-	
+
     points = this->data->virtualMarkersSeparator->GetOutput(2);
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
         PointPtr p = new Point();
@@ -386,7 +386,7 @@ void C3DParser::loadAcquisition()
     }
     // Other points
     points = this->data->virtualMarkersSeparator->GetOutput(3);
-	
+
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
         PointPtr p = new Point();
 		p->setPoint(*it);
@@ -402,7 +402,7 @@ void C3DParser::loadAcquisition()
         this->points.push_back(p);
     }
 
-	
+
     for (btk::Acquisition::AnalogIterator it = this->data->aquisitionPointer->BeginAnalog() ; it != this->data->aquisitionPointer->EndAnalog() ; ++it) {
         AnalogPtr a = new Analog();
 		a->setAnalog(*it);

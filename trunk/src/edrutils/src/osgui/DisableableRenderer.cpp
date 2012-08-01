@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include <osgui/DisableableRenderer.h>
+#include <osgViewer/View>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
