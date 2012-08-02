@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include <vidlib/FFmpegError.h>
+#include <utils/Utils.h>
 
 #ifdef WIN32
 // blok definicji dla ffmpeg'a
