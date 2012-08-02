@@ -113,7 +113,7 @@ std::string hAnimSkeleton::mapJointName(const std::string& given)
 	// hack
 	const std::map<std::string, std::string>& jointMappingDictionary = mappingSchemes[0]->getMappingDictionary();
 	if (/*boneMappingDictionary.size() == 0 && */jointMappingDictionary.empty() == true) {
-		throw &kinematic::DictionaryNotLoadedException("dictionary with mapping scheme was not loaded");
+		throw kinematic::DictionaryNotLoadedException("dictionary with mapping scheme was not loaded");
 	}
 	std::map<std::string, std::string>::const_iterator it = jointMappingDictionary.find(given);
 	if (it != jointMappingDictionary.end()) {
