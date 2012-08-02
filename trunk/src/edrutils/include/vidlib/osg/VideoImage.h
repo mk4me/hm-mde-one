@@ -105,7 +105,7 @@ namespace vidlib
     class VideoImageSafe : public VideoImage, public PtrPolicy
     {
     public:
-        typedef typename PtrPolicy::Ptr<T>::Type Ptr;
+        typedef typename PtrPolicy::template Ptr<T>::Type Ptr;
 
     private:
         Ptr referenceHolder;
