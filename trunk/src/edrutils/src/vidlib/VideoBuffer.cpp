@@ -4,6 +4,7 @@
 #include "VideoBufferChunk.h"
 #include <vidlib/VideoBuffer.h>
 #include <float.h>
+#include <stack>
 
 // TODO: pixelFormat->bogatyEnum, buforowanie
 
