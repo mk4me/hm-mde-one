@@ -95,13 +95,13 @@ source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/Config
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek
-#set(PRECOMPILED_H PCH.h)
-#set(PRECOMPILED_SRC PCH.cpp)
-#SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
-#source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
-#set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
-#source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
-#set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
+set(PRECOMPILED_H PCH.h)
+set(PRECOMPILED_SRC PCH.cpp)
+SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
+set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
 
 
 #------------------------------------------------------------------------------
