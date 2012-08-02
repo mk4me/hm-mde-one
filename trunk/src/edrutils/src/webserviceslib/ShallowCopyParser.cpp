@@ -59,16 +59,13 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    // rev : hack , trzeba znalezc uniwersalne rozwiazanie
-                    #ifdef __WIN32__
-                    MotionShallowCopy::Attrs::_Val_type attribute;
-                    #else
-                    MotionShallowCopy::Attrs::value_type attribute;
-                    #endif
-                    attr_element->QueryStringAttribute("Name", &attribute.first);
-                    attr_element->QueryStringAttribute("Value", &attribute.second);
+					MotionShallowCopy::Attrs::key_type name;
+					MotionShallowCopy::Attrs::mapped_type value;
 
-                    performer->attrs.insert(attribute);
+                    attr_element->QueryStringAttribute("Name", &name);
+                    attr_element->QueryStringAttribute("Value", &value);
+
+                    performer->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
@@ -114,16 +111,13 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    // rev : hack , trzeba znalezc uniwersalne rozwiazanie
-                    #ifdef __WIN32__
-                    MotionShallowCopy::Attrs::_Val_type attribute;
-                    #else
-                    MotionShallowCopy::Attrs::value_type attribute;
-                    #endif
-                    attr_element->QueryStringAttribute("Name", &attribute.first);
-                    attr_element->QueryStringAttribute("Value", &attribute.second);
+					MotionShallowCopy::Attrs::key_type name;
+					MotionShallowCopy::Attrs::mapped_type value;
 
-                    session->attrs.insert(attribute);
+                    attr_element->QueryStringAttribute("Name", &name);
+                    attr_element->QueryStringAttribute("Value", &value);
+
+                    session->attrs.insert(MotionShallowCopy::Attrs::value_type(name,value));
 
                     attr_element = attr_element->NextSiblingElement();
                 }
@@ -244,16 +238,13 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    // rev : hack , trzeba znalezc uniwersalne rozwiazanie
-                    #ifdef __WIN32__
-                    MotionShallowCopy::Attrs::_Val_type attribute;
-                    #else
-                    MotionShallowCopy::Attrs::value_type attribute;
-                    #endif
-                    attr_element->QueryStringAttribute("Name", &attribute.first);
-                    attr_element->QueryStringAttribute("Value", &attribute.second);
+					MotionShallowCopy::Attrs::key_type name;
+					MotionShallowCopy::Attrs::mapped_type value;
 
-                    trial->attrs.insert(attribute);
+                    attr_element->QueryStringAttribute("Name", &name);
+                    attr_element->QueryStringAttribute("Value", &value);
+
+                    trial->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
 
                     attr_element = attr_element->NextSiblingElement();
                 }
@@ -342,16 +333,13 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    // rev : hack , trzeba znalezc uniwersalne rozwiazanie
-                    #ifdef __WIN32__
-                    MotionShallowCopy::Attrs::_Val_type attribute;
-                    #else
-                    MotionShallowCopy::Attrs::value_type attribute;
-                    #endif
-                    attr_element->QueryStringAttribute("Name", &attribute.first);
-                    attr_element->QueryStringAttribute("Value", &attribute.second);
+					MotionShallowCopy::Attrs::key_type name;
+					MotionShallowCopy::Attrs::mapped_type value;
 
-                    performerConf->attrs.insert(attribute);
+                    attr_element->QueryStringAttribute("Name", &name);
+                    attr_element->QueryStringAttribute("Value", &value);
+
+                    performerConf->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
 
                     attr_element = attr_element->NextSiblingElement();
                 }

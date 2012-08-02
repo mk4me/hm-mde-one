@@ -579,7 +579,8 @@ template<class Collection>
 const ContextMenu::OnClickCallback & ContextMenu::getMenuItemOnClickCallback(const Collection & path) const{
     // rev - co to jest callback?
 	//return getMenuItemOnClickCallback(path.begin(), path.end(), callback);
-	return getMenuItemOnClickCallback(path.begin(), path.end(), nullptr);
+	//return getMenuItemOnClickCallback(path.begin(), path.end(), nullptr);
+	return getMenuItemOnClickCallback(path.begin(), path.end());
 }
 
 template<class Iter>
@@ -591,7 +592,8 @@ template<class Collection>
 const ContextMenu::OnHoverCallback & ContextMenu::getMenuItemOnHoverCallback(const Collection & path) const{
     // rev - co to jest callback?
 	//return getMenuItemOnHoverCallback(path.begin(), path.end(), callback);
-	return getMenuItemOnHoverCallback(path.begin(), path.end(), nullptr);
+	//return getMenuItemOnHoverCallback(path.begin(), path.end(), nullptr);
+	return getMenuItemOnHoverCallback(path.begin(), path.end());
 }
 
 template<class Iter>
@@ -603,7 +605,8 @@ template<class Collection>
 const ContextMenu::OnCloseCallback & ContextMenu::getMenuOnCloseCallback(const Collection & path) const{
 	// rev - co to jest callback?
 	//return getMenuOnCloseCallback(path.begin(), path.end(), callback);
-	return getMenuOnCloseCallback(path.begin(), path.end(), nullptr);
+	//return getMenuOnCloseCallback(path.begin(), path.end(), nullptr);
+	return getMenuOnCloseCallback(path.begin(), path.end());
 }
 
 template<class Iter>
@@ -615,7 +618,8 @@ template<class Collection>
 bool ContextMenu::getMenuItemChecked(const Collection & path) const{
 	// rev - co to jest callback?
 	//return getMenuItemChecked(path.begin(), path.end(), callback);
-	return getMenuItemChecked(path.begin(), path.end(), nullptr);
+	//return getMenuItemChecked(path.begin(), path.end(), nullptr);
+	return getMenuItemChecked(path.begin(), path.end());
 }
 
 template<class Iter>
