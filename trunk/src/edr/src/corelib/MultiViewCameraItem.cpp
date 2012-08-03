@@ -1,11 +1,12 @@
 #include "CorePCH.h"
+#include <utils/Debug.h>
 #include <core/MultiViewCameraItem.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-MultiViewCameraItem::MultiViewCameraItem( osg::Camera* camera, osg::Group* parent, osg::View* view ) : 
+MultiViewCameraItem::MultiViewCameraItem( osg::Camera* camera, osg::Group* parent, osg::View* view ) :
 camera(camera), view(view), aspectRatio(1), childIdx(-1), parent(parent)
 {
     UTILS_ASSERT(camera);
@@ -76,17 +77,17 @@ void MultiViewCameraItem::setLocation( osgWidget::point_type x, osgWidget::point
     if ( osg::Viewport* viewport = camera->getViewport() ) {
         double widthChangeRatio = double(w) / double(viewport->width());
         double heigtChangeRatio = double(h) / double(viewport->height());
-        double aspectRatioChange = widthChangeRatio / heigtChangeRatio; 
+        double aspectRatioChange = widthChangeRatio / heigtChangeRatio;
         if ( camera->getReferenceFrame() != osg::Transform::RELATIVE_RF ) {
             switch(camera->getProjectionResizePolicy())
             {
-            case(osg::Camera::HORIZONTAL): 
-                camera->getProjectionMatrix() *= osg::Matrix::scale(1.0/aspectRatioChange, 1.0, 1.0); 
+            case(osg::Camera::HORIZONTAL):
+                camera->getProjectionMatrix() *= osg::Matrix::scale(1.0/aspectRatioChange, 1.0, 1.0);
                 break;
-            case(osg::Camera::VERTICAL): 
-                camera->getProjectionMatrix() *= osg::Matrix::scale(1.0, aspectRatioChange, 1.0); 
+            case(osg::Camera::VERTICAL):
+                camera->getProjectionMatrix() *= osg::Matrix::scale(1.0, aspectRatioChange, 1.0);
                 break;
-            default: 
+            default:
                 break;
             }
         }

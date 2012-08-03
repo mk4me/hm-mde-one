@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <osg/CopyOp>
+#include <osg/Object>
 //Plik zawiera podstawowe zasady kopiowania obiektow domenowych
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ namespace utils {
         }
     };
 
-    //! Klonowanie odbywa sie za pomoca metody clone() 
+    //! Klonowanie odbywa sie za pomoca metody clone()
     struct ClonePolicyVirtualCloneMethod
     {
         template <typename T>
@@ -30,7 +31,7 @@ namespace utils {
         }
     };
 
-    //! Klonowanie odbywa sie za pomoca metody clone() 
+    //! Klonowanie odbywa sie za pomoca metody clone()
     struct ClonePolicyOsgCloneMethod
     {
         template <typename T>

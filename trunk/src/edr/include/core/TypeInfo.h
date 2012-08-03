@@ -3,8 +3,8 @@
     created:  14:4:2011   12:38
     filename: TypeInfo.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD_CORE__TYPEINFO_H__
 #define HEADER_GUARD_CORE__TYPEINFO_H__
@@ -59,7 +59,7 @@ namespace core {
         inline bool operator<(const TypeInfo& obj) const
         {
             return (*typeinfo).before(*(obj.typeinfo)) != 0;
-        } 
+        }
 
         //! \param obj
         inline bool operator==(const TypeInfo& obj) const
@@ -109,11 +109,12 @@ namespace core {
             return (*typeinfo).hash_code();
         }
 
+        //rev - niezgodne ze standardem
         //! \return
-        inline const char * raw_name() const
-        {
-            return (*typeinfo).raw_name();
-        }
+        //inline const char * raw_name() const
+        //{
+        //    return (*typeinfo).raw_name();
+        //}
 
     protected:
         static inline bool areTypesEqual(const std::type_info& t1, const std::type_info& t2)

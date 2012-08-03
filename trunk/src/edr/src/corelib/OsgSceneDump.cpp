@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include <fstream>
-//#include <Qt/qtreewidget.h>
+#include <boost/lexical_cast.hpp>
+#include <QtGui/QTreeWidgetItem>
 #include <core/OsgSceneDump.h>
 #include <core/StringTools.h>
 
@@ -185,7 +186,7 @@ bool OsgSceneDumpFileHandler::handle( const osgGA::GUIEventAdapter& gea, osgGA::
 
     if(ev == osgGA::GUIEventAdapter::KEYUP) {
         int key     = gea.getKey();
-        
+
         if(key == 'd' || key == 'D') {
             if ( osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&gaa) ) {
                 std::ofstream output(filename.c_str());
@@ -207,7 +208,7 @@ bool OsgSceneDumpFileHandler::handle( const osgGA::GUIEventAdapter& gea, osgGA::
             }
         }
     }
-    
+
     return false;
 }
 

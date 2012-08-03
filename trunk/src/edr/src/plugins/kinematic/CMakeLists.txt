@@ -15,8 +15,8 @@ set(PRIVATE_H
 	LineSchemeDrawer.h
 	OsgSchemeDrawer.h
 	PointSchemeDrawer.h
-	GLPointSchemeDrawer.h
-	GLLineSchemeDrawer.h
+	GlPointSchemeDrawer.h
+	GlLineSchemeDrawer.h
 	UniqueCollection.h
 	SchemeDrawerContainer.h
 	GRFSerie.h
@@ -54,8 +54,8 @@ set(TARGET_SRC
 	KinematicVisualizer.cpp
 	LineSchemeDrawer.cpp
 	PointSchemeDrawer.cpp
-	GLPointSchemeDrawer.cpp
-	GLLineSchemeDrawer.cpp
+	GlPointSchemeDrawer.cpp
+	GlLineSchemeDrawer.cpp
 	SchemeDrawerContainer.cpp
 	GRFSerie.cpp
 	MarkerSerie.cpp
@@ -122,7 +122,9 @@ include(${QT_USE_FILE})
 add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
 #instalacja
 install(FILES ${PUBLIC_H} DESTINATION include/plugins/${PROJECT_NAME} COMPONENT ${PROJECT_NAME}_dev)
+if (WIN32)
 install(TARGETS ${TARGET_TARGETNAME} RUNTIME DESTINATION bin COMPONENT ${PROJECT_NAME})
+endif()
 install(TARGETS ${TARGET_TARGETNAME} LIBRARY DESTINATION lib/plugins/${PROJECT_NAME} ARCHIVE DESTINATION lib/plugins/${PROJECT_NAME} COMPONENT ${PROJECT_NAME}_dev)
 #add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
 # nag³ówki

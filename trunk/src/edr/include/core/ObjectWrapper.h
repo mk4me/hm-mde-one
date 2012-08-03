@@ -3,8 +3,8 @@
 	created:  11:2:2011   15:32
 	filename: ObjectWrapper.h
 	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+
+	purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
 #define __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
@@ -22,31 +22,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
-    //! Deklaracja typu. Trzeba go specjalizowaæ za pomoc¹ makr. Ta wersja bêdzie
-    //! rzucaæ statyczn¹ asercj¹.
-    template <class T>
-    class ObjectWrapperT : public ObjectWrapper
-    {
-    public:
-        typedef T* Ptr;
-        typedef const T* ConstPtr;
-        Ptr get()
-        {
-            UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
-            return nullptr;
-        }
-        void set(Ptr)
-        {
-            UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
-        }
-    };
-
-    template <class T>
-    struct ObjectWrapperTraits
-    {
-        static const bool isDefinitionVisible = false;
-    };
-
     class IObjectWrapper;
     typedef shared_ptr<IObjectWrapper> ObjectWrapperPtr;
     typedef shared_ptr<const IObjectWrapper> ObjectWrapperConstPtr;
@@ -194,7 +169,7 @@ namespace core {
         //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
         template <class T>
         typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
-        {   
+        {
             UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
             typedef ObjectWrapperT<T> Wrapper;
             return static_cast<Wrapper::Ptr>(get());
@@ -283,7 +258,7 @@ namespace core {
         //! \param changed
         virtual void setChanged(bool changed) = 0;
 
-        //! \param type 
+        //! \param type
         //! \return Czy obiekt wspiera okreœlony typ?
         virtual bool isSupported(const TypeInfo& type) const = 0;
         //! \param type Typ inteligentnego wskaŸnika.
@@ -353,7 +328,7 @@ namespace core {
 
     public:
         //! Pusty polimorficzny destruktor.
-        virtual ~ObjectWrapper() 
+        virtual ~ObjectWrapper()
         {
 
         }
@@ -362,7 +337,7 @@ namespace core {
 
         //! \return ID typu.
         virtual std::size_t getClassID() const
-        { 
+        {
             return classID;
         }
         //! \return Nazwa typu.
@@ -382,25 +357,50 @@ namespace core {
         }
         //! \return
         virtual const std::string& getSource() const
-        { 
+        {
             return source;
         }
         //! \param source
-        virtual void setSource(const std::string& source) 
-        { 
-            this->source = source; 
+        virtual void setSource(const std::string& source)
+        {
+            this->source = source;
         }
 
         //! \return
         virtual bool isChanged() const
-        { 
+        {
             return changed;
         }
         //! \param changed
-        virtual void setChanged(bool changed) 
-        { 
-            this->changed = changed; 
+        virtual void setChanged(bool changed)
+        {
+            this->changed = changed;
         }
+    };
+
+    //! Deklaracja typu. Trzeba go specjalizowaæ za pomoc¹ makr. Ta wersja bêdzie
+    //! rzucaæ statyczn¹ asercj¹.
+    template <class T>
+    class ObjectWrapperT : public ObjectWrapper
+    {
+    public:
+        typedef T* Ptr;
+        typedef const T* ConstPtr;
+        Ptr get()
+        {
+            UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+            return nullptr;
+        }
+        void set(Ptr)
+        {
+            UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+        }
+    };
+
+    template <class T>
+    struct ObjectWrapperTraits
+    {
+        static const bool isDefinitionVisible = false;
     };
 
     //! Pomocniczy typ bazowy, zarz¹dzaj¹cy obiektem za pomoc¹ parametru
@@ -479,7 +479,7 @@ namespace core {
             }
         }
 
-        //! \param type 
+        //! \param type
         //! \return Czy obiekt wspiera okreœlony typ?
         virtual bool isSupported(const TypeInfo& type) const
         {
@@ -536,7 +536,7 @@ namespace core {
         typedef typename Base::PtrPolicy PtrPolicy;
         //! U¿ywany wskaŸnik.
         typedef typename PtrPolicy::Ptr<T>::Type Ptr;
-        //! 
+        //!
         typedef typename PtrPolicy::Ptr<const T>::Type ConstPtr;
 
     protected:
@@ -564,7 +564,7 @@ namespace core {
             return ObjectWrapperPtr(new __ObjectWrapperTInherited(ObjectWrapperT<T>::className()));
         }
 
-        //! \param type 
+        //! \param type
         //! \return Czy obiekt wspira okreœlony typ?
         virtual bool isSupported(const TypeInfo& type) const
         {

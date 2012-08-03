@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include <utils/Debug.h>
 #include <core/MultiViewManipulatorItem.h>
 #include <core/ILog.h>
 
@@ -7,8 +8,8 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 MultiViewManipulatorItem::MultiViewManipulatorItem( osg::Camera* thumbnailCamera, osgViewer::View* view, osgGA::CameraManipulator* manipulator ) :
-thumbnailCamera(thumbnailCamera), 
-view(view), 
+thumbnailCamera(thumbnailCamera),
+view(view),
 manipulator(manipulator)
 {
     UTILS_ASSERT(thumbnailCamera);

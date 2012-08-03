@@ -50,9 +50,9 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-MultiView::MultiView( osgViewer::View * view, float width, float height, unsigned int mask, unsigned int flags ) : 
-osgWidget::WindowManager(view, width, height, mask, flags), 
-thumbnailsPaneWidth(100.0f), 
+MultiView::MultiView( osgViewer::View * view, float width, float height, unsigned int mask, unsigned int flags ) :
+osgWidget::WindowManager(view, width, height, mask, flags),
+thumbnailsPaneWidth(100.0f),
 previewVisible(true)
 {
     osgWidget::Widget* button = new osgWidget::Widget("button", 32, 32);
@@ -67,7 +67,7 @@ previewVisible(true)
 
     thumbnails = new osgui::Grid("thumbnails", 0, 0);
     thumbnails->getBackground()->setColor(0, 0, 0, 0);
-    //thumbnails->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);    
+    //thumbnails->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);
     thumbnails->setStrata( osgWidget::Window::STRATA_NONE );
     setThumbnailBuitinTemplate(TemplatesLabelBased);
 
@@ -89,7 +89,7 @@ bool MultiView::addItem( Item* thumbnail, Item* preview /*= NULL*/ )
         WidgetAdapter* adapter = adapterTemplate->clone();
         adapter->setLabel(widget, thumbnail->getName());
         adapter->setToggle(widget, false);
-        osgWidget::EventInterface* ei = adapter->getEventSource(widget); 
+        osgWidget::EventInterface* ei = adapter->getEventSource(widget);
         UTILS_ASSERT(ei, "Musi byc zrodlo eventow!");
         ei->addCallback( new osgWidget::Callback( &MultiView::onItemClicked, this, osgWidget::EVENT_MOUSE_PUSH ) );
 
@@ -181,7 +181,7 @@ void MultiView::refreshLayout()
         BOOST_FOREACH(Entry& entry, items) {
             aspectRatios.push_back( entry.thumbnail->getAspectRatio() );
             entry.keeper->setAspectRatio( aspectRatios.back() );
-        } 
+        }
         // przed automatycznym dostosowaniem rozmiaru
         thumbnails->setDirtyMode(true);
         // usuwamy niepotrzebne elementy
@@ -304,9 +304,10 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
 
         boost::function< OverlayButton* (osgWidget::Widget*) > getOverlayFunc = boost::bind(
             // wywo³ujemy getOverlay...
-            &OverlayWindow::getOverlay, boost::bind(
+            static_cast<OverlayButton* (OverlayWindow::*)(void)>(&OverlayWindow::getOverlay),
+                boost::bind(
                 // ... z Overlaya ...
-                &Overlay::getWindow,
+                static_cast<OverlayWindow* (Overlay::*)(void)>(&Overlay::getWindow),
                 boost::bind(
                     // który jest rzutowany z widgeta
                     &boost::polymorphic_cast<Overlay*, osgWidget::Widget>,
@@ -320,12 +321,13 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
         adapter->setToggleFunc = boost::bind( &OverlayButton::setToggled, boost::bind(getOverlayFunc, _1), _2 );
         adapter->getMarginFunc = boost::bind( &OverlayButton::getBorderWidth, boost::bind(getOverlayFunc, _1) );
         // poniewa¿ osgWidget::Label::setLabel jest prze³adowane, trzeba jawnie wskazaæ okreœlon¹ wersjê
-        adapter->setLabelFunc = boost::bind( static_cast<void (osgWidget::Label::*)(const std::string&)>(&osgWidget::Label::setLabel), 
+        adapter->setLabelFunc = boost::bind( static_cast<void (osgWidget::Label::*)(const std::string&)>(&osgWidget::Label::setLabel),
             boost::bind(
                 // pobieramy labelkê ...
-                &OverlayWindow::getLabel, boost::bind(
+                static_cast<osgWidget::Label* (OverlayWindow::*)(void)>(&OverlayWindow::getLabel),
+                    boost::bind(
                     // ... z Overlaya ...
-                    &Overlay::getWindow,
+                    static_cast<OverlayWindow* (Overlay::*)(void)>(&Overlay::getWindow),
                     boost::bind(
                         // ... który jest rzutowany z widgeta
                         &boost::polymorphic_cast<Overlay*, osgWidget::Widget>,
@@ -337,7 +339,7 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
 
         thumbnailTemplate = embedded;
         adapterTemplate = adapter;
-            
+
     } else {
         UTILS_ASSERT(false, "Nieznany domyœlny styl.");
     }
@@ -382,7 +384,7 @@ bool MultiView::onItemClicked( osgWidget::Event& ev )
 //     if ( !isPreviewVisible() ) {
 //         setPreviewVisible(true);
 //     }
-    
+
     return true;
 }
 
@@ -436,7 +438,8 @@ void MultiView::setSelected( Item* item )
 {
     if ( item != selectedItem ) {
         if ( item ) {
-            setSelectedByEntry( &*checked(getIterator(item)) );
+            Items::iterator it = getIterator(item);
+            setSelectedByEntry( &*checked(it) );
         } else {
             setSelectedByEntry( NULL );
         }
@@ -468,27 +471,30 @@ void MultiView::setEntrySelected( Entry &entry, bool selected )
 std::pair<MultiViewItem*, MultiViewItem*> MultiView::getSelected()
 {
     if ( selectedItem ) {
-        Items::iterator found = checked(getIterator(selectedItem));
+        Items::iterator it = getIterator(selectedItem);
+        Items::iterator found = checked(it);
         return std::make_pair(found->thumbnail.get(), found->preview.get());
     } else {
-        return std::make_pair<Item*, Item*>(NULL, NULL); 
+        return std::make_pair<Item*, Item*>(NULL, NULL);
     }
 }
 
 std::pair<const MultiViewItem*, const MultiViewItem*> MultiView::getSelected() const
 {
     if ( selectedItem ) {
-        Items::const_iterator found = checked(getIterator(selectedItem));
+        Items::const_iterator it = getIterator(selectedItem);
+        Items::const_iterator found = checked(it);
         return std::make_pair(found->thumbnail.get(), found->preview.get());
     } else {
-        return std::make_pair<Item*, Item*>(NULL, NULL); 
+        return std::make_pair<Item*, Item*>(NULL, NULL);
     }
 }
 
 unsigned MultiView::getSelectedIndex() const
 {
     if ( selectedItem ) {
-        return std::distance(items.begin(), checked(getIterator(selectedItem)));
+        Items::const_iterator it = getIterator(selectedItem);
+        return std::distance(items.cbegin(), checked(it));
     } else {
         return items.size();
     }

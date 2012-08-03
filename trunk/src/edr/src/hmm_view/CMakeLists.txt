@@ -16,7 +16,7 @@ set(PRIVATE_H
 	EDRDockWidgetSet.h
 	EDRDockWidgetManager.h
 	TreeItemHelper.h
-	EmgFilter.h
+	EMGFilter.h
 	DataFilterWidget.h
 	FilterEntryWidget.h
 	FilterCommand.h
@@ -30,7 +30,7 @@ set(PRIVATE_H
 	IllnessUnit.h
 	SummaryWindow.h
 	HmmContexts.h
-	TextEdit.h
+	textedit.h
 	Measurements.h
 	MultiserieColorStrategy.h
 	TreeRefresher.h
@@ -57,7 +57,7 @@ set(TARGET_SRC
 	EDRDockWidgetSet.cpp
 	EDRDockWidgetManager.cpp
 	TreeItemHelper.cpp
-	EmgFilter.cpp
+	EMGFilter.cpp
 	DataFilterWidget.cpp
 	FilterCommand.cpp
 	FilterEntryWidget.cpp
@@ -70,7 +70,7 @@ set(TARGET_SRC
 	AnalisisWidget.cpp
 	HmmContexts.cpp
 	SummaryWindow.cpp
-	TextEdit.cpp
+	textedit.cpp
 	TreeRefresher.cpp
 	Measurements.cpp
 	ContextEventFilter.cpp
@@ -94,7 +94,7 @@ SET(TARGET_MOC_H
 	ConfigurationPainter.h
 	ConfigurationDialog.h
 	AnalisisWidget.h
-	TextEdit.h
+	textedit.h
 	HmmContexts.h
 	SummaryWindow.h
 )
@@ -129,8 +129,8 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek
-set(PRECOMPILED_H HmmPCH.h)
-set(PRECOMPILED_SRC HmmPCH.cpp)
+set(PRECOMPILED_H hmmPCH.h)
+set(PRECOMPILED_SRC hmmPCH.cpp)
 SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
 set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})

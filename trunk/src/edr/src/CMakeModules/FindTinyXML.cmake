@@ -2,8 +2,11 @@
 FIND_INIT(TINYXML tinyxml)
 
 # szukanie
-FIND_STATIC(TINYXML "tinyxmlSTL")
-
+if (WIN32)
+	FIND_STATIC(TINYXML "tinyxmlSTL")
+elseif (UNIX)
+	FIND_GLOB(TINYXML "*.*" "libtinyxml.so.?.*")
+endif()
 # koniec
 FIND_FINISH(TINYXML)
 

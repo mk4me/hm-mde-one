@@ -3,8 +3,8 @@
 	created:  24:11:2010   13:21
 	filename: MultiView.h
 	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+
+	purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD__CORE_MULTIVIEW_H__
 #define __HEADER_GUARD__CORE_MULTIVIEW_H__
@@ -172,14 +172,14 @@ public:
     //! \return Liczba itemów.
     unsigned getNumItems() const;
 
-    //! \return Prototyp 
+    //! \return Prototyp
     const osgWidget::Widget* getThumbnailTemplate() const
-    { 
+    {
         return thumbnailTemplate;
     }
     //! \return
     osgWidget::Widget* getThumbnailTemplate()
-    { 
+    {
         return thumbnailTemplate;
     }
     //! \param thumbnail

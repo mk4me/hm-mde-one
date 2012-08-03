@@ -3,8 +3,8 @@
 	created:  15:12:2010   10:50
 	filename: OsgSceneDump.h
 	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+
+	purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD__OSGSCENEDUMP_H__
 #define __HEADER_GUARD__OSGSCENEDUMP_H__
@@ -12,6 +12,7 @@
 #include <string>
 #include <sstream>
 #include <osg/NodeVisitor>
+#include <osgViewer/Viewer>
 #include <osgGA/GUIEventHandler>
 
 class QTreeWidget;
@@ -38,7 +39,7 @@ public:
     virtual void apply(osg::Geode& geode);
     virtual void apply(osg::Drawable& drawable);
     virtual void apply(osg::Geometry& geometry);
-    
+
 private:
     void log(osg::Object& object, osg::StateSet* stateset);
     void increaseIdent();
@@ -47,7 +48,7 @@ private:
 
 //------------------------------------------------------------------------------
 
-class OsgSceneDumpFileHandler: public osgGA::GUIEventHandler 
+class OsgSceneDumpFileHandler: public osgGA::GUIEventHandler
 {
 private:
     std::string filename;
