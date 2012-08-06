@@ -6,7 +6,14 @@
 #include <deque>
 #include <core/Plugin.h>
 #include <core/SmartPtr.h>
-#include "Windows.h"
+
+
+// rev
+#ifdef WIN32
+#   include "Windows.h"
+#else
+#   define HMODULE int
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -39,9 +46,9 @@ public:
     virtual ~PluginLoader();
 
 public:
-    //! 
+    //!
     void clear();
-    //! 
+    //!
     void addDefaultPaths();
     //! £aduje pluginy.
     void load();
@@ -56,13 +63,13 @@ public:
     {
         return static_cast<int>(plugins.size());
     }
-    //! 
+    //!
     //! \param idx
     const PluginPtr & getPlugin(int idx)
     {
         return plugins[idx].first;
     }
-    //! 
+    //!
     //! \param idx
     const PluginConstPtr & getPlugin(int idx) const
     {
@@ -70,50 +77,50 @@ public:
     }
     //! \return
     const Paths& getPaths() const
-    { 
+    {
         return paths;
     }
     //! \param paths
-    void setPaths(const Paths& paths) 
-    { 
-        this->paths = paths; 
+    void setPaths(const Paths& paths)
+    {
+        this->paths = paths;
     }
 
     void unloadPlugins();
 
 
 private:
-    //! 
+    //!
     //! \param path
     bool addPlugIn(const std::string& path);
 
-    //! 
+    //!
     //! \param library
     //! \param path
     bool checkPluginVersion( HMODULE library, const std::string& path );
 
-    //! 
+    //!
     //! \param library
     //! \param path
     bool checkPluginBuildType( HMODULE library, const std::string& path );
-    //! 
+    //!
     //! \param library
     //! \param path
     bool checkLibrariesVersions( HMODULE library, const std::string& path );
-    //! 
+    //!
     //! \param path
     //! \param library
     //! \param createFunction
     bool onAddPlugin(const std::string& path, uint32_t library, Plugin::CreateFunction createFunction);
-    //! 
+    //!
     //! \param paths
     //! \param filepath
     void convertStringPathIntoFileDirList(const std::string& paths, Paths& filepath);
-    //! 
+    //!
     //! \param path
     //! \param fileName
     std::string combinePath(const std::string& path, const std::string& fileName);
-    //! 
+    //!
     //! \param fileName
     std::string getFileName(const std::string& fileName);
 

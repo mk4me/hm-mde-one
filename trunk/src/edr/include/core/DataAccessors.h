@@ -3,8 +3,8 @@
     created:  18:10:2011   11:43
     filename: DataAccessors.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___DATAACCESSORS_H__
 #define HEADER_GUARD___DATAACCESSORS_H__
@@ -35,7 +35,8 @@ namespace core{
     template <class T, class Ptr>
     void queryDataIsConvertible__(IDataManagerReader*, std::vector<Ptr>&, bool, boost::false_type, bool initialize = true)
     {
-        UTILS_STATIC_ASSERT( false, "Niewlasciwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
+        // rev
+        //UTILS_STATIC_ASSERT( false, "Niewlasciwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
     }
 
     //! \param manager Data manager.

@@ -26,7 +26,7 @@ namespace utils {
     __pragma(warning(push))             \
     __pragma(warning(disable: 4127))    \
     } while(0) /* brak ; na koncu! */   \
-    __pragma(warning(pop))        
+    __pragma(warning(pop))
 #else
 #   define UTILS_MULTISTATEMENT_END    } while(0) /* brak ; na koncu! */
 #endif
@@ -128,13 +128,14 @@ inline std::string toString(const T& source)
 #   define UTILS_POP_WARNINGS   __pragma(warning(pop))
 #   define UTILS_DISABLE_DLL_INTERFACE_WARNING __pragma(warning(disable: 4251))
 #elif defined(__GNUC__) && defined(UTILS_CXX0X)
-#   define UTILS_PUSH_WARNINGS  _Pragma(GCC diagnostic push)
-#   define UTILS_POP_WARNINGS   _Pragma(GCC diagnostic pop)
+#   define DO_PRAGMA(x) _Pragma (#x)
+#   define UTILS_PUSH_WARNINGS  DO_PRAGMA(GCC diagnostic push)
+#   define UTILS_POP_WARNINGS   DO_PRAGMA(GCC diagnostic pop)
 #   define UTILS_DISABLE_DLL_INTERFACE_WARNING
 #else
 #   pragma basicMessage("WARNING: You need to implement _Pragma for this compiler")
 #   define UTILS_PUSH_WARNINGS
-#   define UTILS_POP_WARNINGS 
+#   define UTILS_POP_WARNINGS
 #   define UTILS_DISABLE_DLL_INTERFACE_WARNING
 #endif
 

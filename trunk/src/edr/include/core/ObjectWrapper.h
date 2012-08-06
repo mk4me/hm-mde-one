@@ -31,6 +31,8 @@ namespace core {
     typedef std::set<ObjectWrapperPtr> Objects;
     typedef std::set<ObjectWrapperConstPtr> ConstObjects;
 
+    template <class OWT> class ObjectWrapperT;
+
     class IObjectWrapper
     {
     protected:
@@ -172,7 +174,8 @@ namespace core {
         {
             UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
             typedef ObjectWrapperT<T> Wrapper;
-            return static_cast<Wrapper::Ptr>(get());
+            typedef typename Wrapper::Ptr Ptr;
+            return static_cast<Ptr>(get());
         }
 
         //! Pobiera obiekt z wrappera. W razie b≥Ídu rzuca bad_castem.
@@ -388,12 +391,14 @@ namespace core {
         typedef const T* ConstPtr;
         Ptr get()
         {
-            UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+            // rev co z tymi statycznymi asercjami?
+            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
             return nullptr;
         }
         void set(Ptr)
         {
-            UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+            // rev co z tymi statycznymi asercjami?
+            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
         }
     };
 
@@ -410,13 +415,14 @@ namespace core {
     {
     public:
         //!
-        typedef PtrPolicy PtrPolicy;
+        //typedef PtrPolicy PtrPolicy;
         //!
         typedef PtrPolicy Base;
+
         //! Wrappowany obiekt.
-        typedef typename Base::Ptr<T>::Type Ptr;
+        typedef typename Base::template Ptr<T>::Type Ptr;
         //! Sta≥y wrappowany obiekt
-        typedef typename Base::Ptr<const T>::Type ConstPtr;
+        typedef typename Base::template Ptr<const T>::Type ConstPtr;
 
     protected:
         //! Wrappowany obiekt.
@@ -451,7 +457,8 @@ namespace core {
 
         virtual ObjectWrapperPtr clone() const {
             std::auto_ptr<ObjectWrapperT<T>> cloned(new ObjectWrapperT<T>(ObjectWrapperT<T>::className()));
-            T* newPtr = ClonePolicy::clone<T>(&*wrapped);
+            // rev czy na pewno nie trzeba <T> przy clone?
+            T* newPtr = ClonePolicy::clone(&*wrapped);
             Ptr temp;
             PtrPolicy::setPtr(temp, newPtr);
             cloned->wrapped = temp;
@@ -475,7 +482,8 @@ namespace core {
         virtual void reset()
         {
             if(wrapped != nullptr){
-                PtrPolicy::setPtr<T>(wrapped, nullptr);
+                // rev usuniete <T>
+                PtrPolicy::setPtr(wrapped, static_cast<T*>(nullptr));
             }
         }
 
@@ -535,9 +543,9 @@ namespace core {
         //! Uøycie PtrPolicy typu bazowego.
         typedef typename Base::PtrPolicy PtrPolicy;
         //! Uøywany wskaünik.
-        typedef typename PtrPolicy::Ptr<T>::Type Ptr;
+        typedef typename PtrPolicy::template Ptr<T>::Type Ptr;
         //!
-        typedef typename PtrPolicy::Ptr<const T>::Type ConstPtr;
+        typedef typename PtrPolicy::template Ptr<const T>::Type ConstPtr;
 
     protected:
         //! \param wrapped

@@ -24,7 +24,7 @@ namespace core
     class IService : public IIdentifiable
     {
     public:
-	    virtual ~IService() {}
+        virtual ~IService() {}
  
         //! Inicjalizacja us³ugi. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich us³ug.

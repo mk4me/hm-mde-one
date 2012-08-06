@@ -5,7 +5,7 @@
 #include <QtGui/QWidget>
 #include <QtGui/QAction>
 #include <QtGui/QMenu>
-
+#include <stdexcept>
 
 ActionsGroup::ActionsGroup(const QString & name) : name_(name)
 {

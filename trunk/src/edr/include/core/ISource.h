@@ -3,7 +3,7 @@
     created:  31:1:2012   8:58
     filename: ISource.h
     author:   Mateusz Janiak
-    
+
     purpose:  Interfejs ürÛd≥a danych mogπcy wstrzykiwaÊ dane poprzez obiekty domenowe do aplikacji. Ma dostÍp do MemoryDataManager i FileDataManager
 *********************************************************************/
 #ifndef HEADER_GUARD_CORE__ISOURCE_H__
@@ -11,11 +11,12 @@
 
 #include <string>
 #include <core/IIdentifiable.h>
+#include <core/SmartPtr.h>
 
 class QObject;
 class QWidget;
 
-namespace core 
+namespace core
 {
 
 	class IMemoryDataManager;
@@ -51,7 +52,7 @@ namespace core
         //! Jako parametr dostajemy przyrost czasu jaki mina≥ od poprzedniego wywo≥ania
         virtual void update(double deltaTime)
         {
-       
+
         }
 
         //! èrÛd≥o nie musi mieÊ wizualnej reprezentacji.

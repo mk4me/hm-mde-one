@@ -20,7 +20,7 @@
 #include <core/ILog.h>
 #include <core/IPath.h>
 #include <core/SmartPtr.h>
-#include <core/IService.h>
+#include <core/IService.h> 
 #include <core/ISource.h>
 #include <core/IParser.h>
 #include <core/IVisualizer.h>

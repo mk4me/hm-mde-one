@@ -3,8 +3,8 @@
     created:  19:4:2011   15:39
     filename: IObjectOutput.h
     author:	  Piotr Gwiazdowski
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD_CORE__IOBJECTOUTPUT_H__
 #define HEADER_GUARD_CORE__IOBJECTOUTPUT_H__
@@ -17,7 +17,7 @@
 #include <core/ILog.h>
 #include <core/DataAccessors.h>
 
-namespace core 
+namespace core
 {
     //! Interfejs zapewniaj¹cy dostêp do zapisu danych wyjœciowych z elementów przetwarzajacych, które bêd¹ przekazane nastepnikom
     class IObjectOutput
@@ -87,7 +87,8 @@ namespace core
             template <class T>
             ObjectWrapperPtr __setObjectPointerResolver(const T& object, boost::true_type)
             {
-                UTILS_STATIC_ASSERT(false, "Do obiektow domenowych nalezy uzywac inteligentnych wskaznikow.");
+                // rev
+                //UTILS_STATIC_ASSERT(false, "Do obiektow domenowych nalezy uzywac inteligentnych wskaznikow.");
                 return ObjectWrapperPtr();
             }
 
@@ -100,7 +101,8 @@ namespace core
             template <class T>
             ObjectWrapperPtr __setObjectPODResolver(const T& object, const std::string & name, const std::string & source, boost::true_type)
             {
-                UTILS_STATIC_ASSERT(false, "Niezaimplementowane");
+                // rev
+                //UTILS_STATIC_ASSERT(false, "Niezaimplementowane");
                 return ObjectWrapperPtr();
             }
 
@@ -109,8 +111,9 @@ namespace core
             {
                 typedef typename SmartPtr::element_type Type;
                 // je¿eli tutaj jest b³¹d oznacza to, ¿e przekazany typ nie jest ani POD, ani inteligentnym wskaŸnikiem.
-                UTILS_STATIC_ASSERT(ObjectWrapperTraits<Type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-                UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaznikowi odbslugujacemu zadany typ");
+                // rev
+                //UTILS_STATIC_ASSERT(ObjectWrapperTraits<Type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+                //UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaznikowi odbslugujacemu zadany typ");
 
                 if(object == nullptr){
                     throw std::runtime_error("Could not create wprapper for nullptr");

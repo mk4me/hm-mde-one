@@ -2,8 +2,8 @@
 	created:	2011/05/12
 	created:	12:5:2011   11:27
 	filename: 	WorkflowItemEncapsulator.h
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_CORE__WORKFLOWITEMENCAPSULATOR_H__
@@ -12,6 +12,8 @@
 #include "DataManager.h"
 #include <core/IWorkflowItemBase.h>
 #include <core/ObjectSlots.h>
+#include <core/ILog.h>
+#include <core/PluginCommon.h>
 #include <core/IOutputDescription.h>
 #include "ObjectSource.h"
 #include "ObjectOutput.h"
@@ -19,8 +21,8 @@
 class WorkflowItem : public core::IWorkflowItemBase
 {
 public:
-    virtual ~WorkflowItem() 
-    { 
+    virtual ~WorkflowItem()
+    {
     }
 public:
 
@@ -29,7 +31,7 @@ public:
 
     virtual void run() = 0;
 
-    bool tryRun() 
+    bool tryRun()
     {
         try {
             run();
@@ -47,7 +49,7 @@ public:
         return true;
     }
 
-    bool tryReset() 
+    bool tryReset()
     {
         try {
             reset();

@@ -68,7 +68,7 @@ private:
         //! \param changed
         virtual void setChanged(bool changed);
 
-        //! \param type 
+        //! \param type
         //! \return Czy obiekt wspiera okreœlony typ?
         virtual bool isSupported(const core::TypeInfo& type) const;
         //! \param type Typ inteligentnego wskaŸnika.
@@ -175,7 +175,7 @@ private:
 
 private:
     //! S³owniki parserów niezainicjalizowanych.
-    IParsersByID registeredParsers;    
+    IParsersByID registeredParsers;
 
     //! S³ownik parserów przypisanych do rozszerzeñ.
     SupportedExtensionsPersistenceData registeredExtensions;
@@ -340,7 +340,7 @@ private:
 
 	//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 	//! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
-	virtual void nonNotifyAddFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects = std::vector<core::ObjectWrapperPtr>());
+	virtual void nonNotifyAddFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects);
 
 	//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
 	virtual void nonNotifyRemoveFile(const core::Filesystem::Path & file);

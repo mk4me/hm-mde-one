@@ -125,7 +125,7 @@ namespace core {
 
         //! \param object Obiekt do inicjalizacji
         virtual void initialize(ObjectWrapperPtr & object) = 0;
-        
+
         //! \param object Obiekt do deinicjalizacji
         void deinitialize(ObjectWrapperPtr & object)
         {
@@ -215,9 +215,9 @@ namespace core {
 
     //! Zbiór typów
     typedef std::set<TypeInfo> Types;
-	
+
     //! Interfejs najni¿szego poziomu DataManager - pozwala zarz¹dzaæ pojedynczymi ObjectWrapperami: dodawaæ je do puli danych, usuwaæ, inicjalizowaæ, deinicjalizowaæ.
-    //!  
+    //!
     class IMemoryDataManager : public utils::Observable<IMemoryDataManager>, virtual public IDataManagerReader
     {
 
@@ -347,15 +347,24 @@ namespace core {
 
         //! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
         virtual void getManagedFiles(Files & files) const = 0;
-        
+
         //! \param file Plik kótry weryfikujemy czy jest zarzadzany przez DM
         //! \return Prawda jesli plik jest zarz¹dzany przez ten DM
         virtual bool isFileManaged(const Filesystem::Path & file) const = 0;
 
         //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
+        //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
+		void addFile(const Filesystem::Path & file)
+		{
+		    std::vector<ObjectWrapperPtr> temp;
+			nonNotifyAddFile(file, temp);
+			tryNotify();
+		}
+
+        //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery
         //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
-		void addFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects = std::vector<ObjectWrapperPtr>())
+		void addFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects)
 		{
 			nonNotifyAddFile(file, objects);
 			tryNotify();
@@ -415,11 +424,13 @@ namespace core {
 		}
 
 	private:
+
+        // rev - prywatna i czysto wirtualna?
 		//! Ta metoda nie notyfikuje o zmianie stanu DM!!
 		//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery
 		//! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
-		virtual void nonNotifyAddFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects = std::vector<ObjectWrapperPtr>()) = 0;
+		virtual void nonNotifyAddFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects) = 0;
 
 		//! Ta metoda nie notyfikuje o zmianie stanu DM!!
 		//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane

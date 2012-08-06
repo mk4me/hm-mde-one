@@ -2,8 +2,9 @@
 #include "SourceManager.h"
 
 #include <core/ILog.h>
-
-SourceManager * ManagerHelper<SourceManager>::manager = nullptr;
+#include <core/PluginCommon.h>
+// rev - niepotrzebne?
+//SourceManager * ManagerHelper<SourceManager>::manager = nullptr;
 
 SourceManager::SourceManager()
 {
@@ -47,7 +48,7 @@ void SourceManager::finalizeSources()
 void SourceManager::registerSource(const core::ISourcePtr & source)
 {
 	if (sourcesMap.find(source->getID()) == sourcesMap.end()) {
-		sourcesMap.insert( std::make_pair(source->getID(), source)); 
+		sourcesMap.insert( std::make_pair(source->getID(), source));
 		sourcesList.push_back(source);
 		LOG_INFO("Source " << source->getName() << " registered.");
 	} else {
@@ -73,7 +74,7 @@ core::ISourcePtr SourceManager::getSource( UniqueID id )
 {
 	auto it = sourcesMap.find(id);
 	if (it != sourcesMap.end()) {
-		return it->second; 
+		return it->second;
 	} else {
 		return core::ISourcePtr();
 	}

@@ -3,8 +3,8 @@
 	created:	1:8:2011   8:37
 	filename: 	MainWindow.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_CORE__MAINWINDOW_H__
@@ -16,9 +16,10 @@
 class QObject;
 class QSplashScreen;
 
-#include <QtCore/QObject> 
+#include <QtCore/QObject>
 #include <QtCore/QTimer>
-#include <qtCore/QSettings>
+#include <QtCore/QSettings>
+#include <QtGui/QMainWindow>
 
 //#include <utils/Debug.h>
 namespace core {
@@ -52,7 +53,7 @@ namespace core {
 
 	class MainWindow : public QMainWindow, public core::Window
 	{
-		Q_OBJECT        
+		Q_OBJECT
 
 	protected:
 
@@ -61,7 +62,7 @@ namespace core {
 		//! Widget ze scen¹ jakiegoœ grafu OSG.
 		//SceneGraphWidget* widgetSceneGraph;
 		//! Widget konsoli.
-		EDRConsoleWidget* widgetConsole; 
+		EDRConsoleWidget* widgetConsole;
 		//! Czy update jest w³¹czony?
 		bool updateEnabled;
 		//! Timer wyznaczaj¹cy update'y wizualizatorów.
@@ -192,7 +193,7 @@ namespace core {
 		//!
 		virtual void closeEvent(QCloseEvent* event);
 
-	protected: 
+	protected:
 		//! Odczytuje ustawienia aplikacji.
 		//! \param settings
 		//! \param readGeometry

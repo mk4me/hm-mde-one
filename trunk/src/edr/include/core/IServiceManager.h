@@ -18,7 +18,7 @@ namespace core {
     class IServiceManager
     {
     public:
-        virtual ~IServiceManager() {};
+        virtual ~IServiceManager() {}
 
         //! Rejestruje zadan¹ us³ugê.
         //! \param newService

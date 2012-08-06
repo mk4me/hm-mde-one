@@ -3,8 +3,8 @@
 	created:	23:5:2011   23:14
 	filename: 	ObjectWrapperCollection.h
 	author:		Wojciech Knieæ
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_CORE__OBJECTWRAPPERCOLLECTION_H__
@@ -150,7 +150,7 @@ public:
     //! Czyœci wszystkie elementy kolekcji
     void clear()
     {
-        constObjects.swap(ConstObjects());
+        ConstObjects().swap(constObjects);
     }
 
     //! Metoda udostepnia obiekt domenowy z agregatu
@@ -173,22 +173,26 @@ public:
         std::advance(cIT, idx);
         constObjects.erase(cIT);
     }
-   
+
     //! Dodanie obiektu do agregatu
     //! \param object Wskaznik do niemodyfikowalnego obiektu domenowego
-    void addObject(const ObjectWrapperConstPtr & object) 
+    void addObject(const ObjectWrapperConstPtr & object)
     {
         // sprawdzenie poprawnosci typu
         if (exact == true){
             if(object->isTypeEqual(typeInfo) == true) {
                 constObjects.push_back(object);
             } else {
-                throw std::bad_cast("Type of object not equal to type of collection");
+                // bad_cast nie pobiera parametrow
+                //throw std::bad_cast("Type of object not equal to type of collection");
+                throw std::bad_cast();
             }
         }else if(object->isSupported(typeInfo) == true){
             constObjects.push_back(object);
         } else {
-            throw std::bad_cast("Type of object not supported by collection");
+            // rev jw
+            //throw std::bad_cast("Type of object not supported by collection");
+            throw std::bad_cast();
         }
     }
 };

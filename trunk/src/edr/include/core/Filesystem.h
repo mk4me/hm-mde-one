@@ -59,7 +59,7 @@ public:
 	@param pathOldFile œcie¿ka do pliku lub folderu który ma byæ kopiowany
 	@param pathNewFile œcie¿ka docelowa kopiowania
 	*/
-	static void copy(const std::string& pathOld, const std::string& pathNew);
+    static void copy(const std::string& pathOld, const std::string& pathNew);
     static void copy(const Path& pathOld, const Path& pathNew);
 
     /*

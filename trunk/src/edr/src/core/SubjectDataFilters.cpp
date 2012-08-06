@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include <map>
 #include "SubjectDataFilters.h"
 
 using namespace PluginSubject;
@@ -33,13 +34,13 @@ SessionPtr TypeFilter::doDataFiltering(const SessionConstPtr & session) const
     }
 
     std::vector<MotionPtr> filteredMotions;
-    
+
     for(auto it = validMotions.begin(); it != validMotions.end(); ++it){
         std::set<core::ObjectWrapperConstPtr> swrappers(it->second.begin(), it->second.end());
         std::vector<core::ObjectWrapperConstPtr> wrappers(swrappers.begin(), swrappers.end());
         filteredMotions.push_back(createFilteredMotion(it->first, wrappers));
     }
-    
+
     std::vector<core::ObjectWrapperConstPtr> sesWraps;
     session->getWrappers(sesWraps);
 

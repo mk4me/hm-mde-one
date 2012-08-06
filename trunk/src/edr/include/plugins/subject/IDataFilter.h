@@ -3,8 +3,8 @@
     created:  3:11:2011   10:00
     filename: IDataFilter.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___IDATAFILTER_H__
 #define HEADER_GUARD___IDATAFILTER_H__
@@ -15,6 +15,7 @@
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>
+#include <core/PluginCommon.h>
 
 namespace PluginSubject {
 
@@ -50,7 +51,7 @@ public:
         return doDataFiltering(session);
     }
 
-    std::vector<SessionPtr> filterData(const std::vector<SessionConstPtr>& sessions) const 
+    std::vector<SessionPtr> filterData(const std::vector<SessionConstPtr>& sessions) const
     {
         if(filteredDataFactory == nullptr){
             return std::vector<SessionPtr>();
@@ -94,7 +95,7 @@ protected:
         motion->getWrappers(objects);
         return createFilteredMotion(motion, objects);
     }
-    
+
     virtual MotionPtr createFilteredMotion(const MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const
     {
         return filteredDataFactory->createFilteredMotion(originalMotion, wrappers);

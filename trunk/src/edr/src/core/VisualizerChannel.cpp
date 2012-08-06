@@ -20,7 +20,7 @@ VisualizerChannel::VisualizerChannel(const core::VisualizerTimeSeriePtr & serie)
 
 VisualizerChannel::~VisualizerChannel()
 {
-   
+
 }
 
 void VisualizerChannel::setTime(double time)
@@ -59,7 +59,7 @@ VisualizerMultiChannel::VisualizerMultiChannel(const std::vector<core::Visualize
 
 VisualizerMultiChannel::~VisualizerMultiChannel()
 {
-    
+
 }
 
 void VisualizerMultiChannel::setTime(double time)
@@ -78,7 +78,7 @@ double VisualizerMultiChannel::getLength() const
 	++it;
 
 	for( ; it != channelSeries_.end(); ++it){
-		length = max(length, (*it)->getLength());
+		length = (std::max)(length, (*it)->getLength());
 	}
 
 	return length;

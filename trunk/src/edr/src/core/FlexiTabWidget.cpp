@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include <utils/Debug.h>
 #include "FlexiTabWidget.h"
 
 #include <QtGui/QFrame>
@@ -7,6 +8,7 @@
 #include <iterator>
 #include "FlexiTabSectionWidget.h"
 #include "FlexiWidgetTabContentWidget.h"
+
 
 FlexiTabWidget::FlexiTabWidget(QWidget * parent, Qt::WindowFlags f) : QWidget(parent, f), nextGroupID(0), nextSectionID(0), currentGroupID(-1), hiddenTabContentPos(-1)
 {
@@ -81,7 +83,7 @@ void FlexiTabWidget::setSectionConfig(GUIID sectionID, QDialog * cfgDialog)
     auto sectionIT = getSection(sectionID);
 
     sectionIT->second->cfgDialog = cfgDialog;
-    
+
     //TODO
 }
 
@@ -220,7 +222,7 @@ void FlexiTabWidget::moveGroup(GUIID groupID, unsigned int newPos)
     if(srcGroupIT->second->visible == true){
         refreshTabsTexts();
     }
-    
+
     if(currentGroupID > -1){
         setCurrentGroup(currentGroupID);
     }
@@ -270,7 +272,7 @@ void FlexiTabWidget::removeAllGroupSections(GUIID groupID)
         sectionDataByID.erase(sectionIT->first);
     }
 
-    groupIT->second->sections.swap(SectionDataByID());
+    SectionDataByID().swap(groupIT->second->sections);
 }
 
 void FlexiTabWidget::removeGroup(GUIID groupID)
@@ -291,7 +293,7 @@ void FlexiTabWidget::removeGroup(GUIID groupID)
     std::advance(newIT, groupIT->second->flexiPos);
 
     groupDataByIndex.erase(newIT);
-    
+
     if(groupIT->second->visible == true){
         innerFlexiTabWidget->removeTab(groupIT->second->tabPos);
     }
@@ -505,7 +507,7 @@ void FlexiTabWidget::shiftTabPosRight(unsigned int begin, unsigned int end)
 void FlexiTabWidget::refreshTabsTexts()
 {
     int size = groupDataByIndex.size();
-    
+
     for(int i = 0; i < size; ++i){
         auto groupData = groupDataByIndex[i];
         if(groupData->visible == true){
