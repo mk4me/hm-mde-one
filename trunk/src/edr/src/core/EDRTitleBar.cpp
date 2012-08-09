@@ -1,4 +1,9 @@
 #include "CorePCH.h"
+#include <stdexcept>
+#include <QtGui/QMenu>
+#include <QtGui/QPainter>
+#include <core/ILog.h>
+#include <core/PluginCommon.h>
 #include "EDRTitleBar.h"
 #include "EDRDockWidget.h"
 
@@ -34,7 +39,7 @@ void EDRTitleBar::addObject(QObject * object, SideType side)
             button->setText(menu->title());
             button->setPopupMode(QToolButton::InstantPopup);
             button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-            
+
             if(side == Right){
                 button->setLayoutDirection(Qt::LeftToRight);
             }
@@ -43,7 +48,7 @@ void EDRTitleBar::addObject(QObject * object, SideType side)
             widget = button;
         }
     }
-    
+
     if(widget == nullptr){
         widget = qobject_cast<QWidget*>(object);
     }
@@ -51,7 +56,7 @@ void EDRTitleBar::addObject(QObject * object, SideType side)
     if(widget == nullptr){
         throw std::runtime_error("Object type not supported in titlebar!");
     }
-        
+
     frame->layout()->addWidget(widget);
     objectData[object] = ObjectDescriptor(side, widget);
     widgetObjects[widget] = object;
@@ -64,9 +69,9 @@ void EDRTitleBar::removeObject(QObject * object)
         throw std::runtime_error("Object is not present in titlebar!");
     }
     QLayout * layout = getSideFrame(it->second.first)->layout();
-    
+
     layout->removeWidget(it->second.second);
-    
+
     //jezeli nie widget customowy to znaczy ze akcja lub menu dla ktorych przygotowalem button,
     // reszta klient sam zarzadza
     if(it->first != it->second.second){
@@ -104,7 +109,7 @@ void EDRTitleBar::clearSide(SideType side)
         delete it->first;
 
         objectData.erase(it->second);
-        
+
         widgetObjects.erase(it);
     }
 }
@@ -114,8 +119,8 @@ void EDRTitleBar::clear()
     clearSide(Left);
     clearSide(Right);
 
-    objectData.swap(ObjectData());
-    widgetObjects.swap(WidgetObjects());
+    ObjectData().swap(objectData);
+    WidgetObjects().swap(widgetObjects);
 }
 
 bool EDRTitleBar::isCloseButtonVisible() const
@@ -206,7 +211,7 @@ EDRTitleBar * supplyWithEDRTitleBar(EDRDockWidget * dockWidget, bool refresh)
     QObject::connect(dockWidget, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), titleBar, SLOT(refreshFeatures(QDockWidget::DockWidgetFeatures)));
     QObject::connect(titleBar->actionFloat, SIGNAL(triggered()), dockWidget, SLOT(toggleFloating()));
     QObject::connect(titleBar->actionClose, SIGNAL(triggered()), dockWidget, SLOT(close()));
-    
+
     //odswiezam titlebar!!
     if(refresh == true){
         titleBar->setTitle(dockWidget->windowTitle());

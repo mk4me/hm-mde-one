@@ -92,7 +92,7 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 	groupE->layout()->addWidget(antropomtricDataWidget);
 
 	QHBoxLayout * layout = new QHBoxLayout();
-	
+
 	layout->addWidget(leftWidget);
 	layout->addWidget(groupE);
 
@@ -123,15 +123,15 @@ void DefaultPatientCardWidget::setPersonalData(const MedicalShallowCopy::Patient
 		personalDataWidget->setGender(communication::IDataSourceContent::decodeGender(patient->gender));
 		personalDataWidget->setBirthdate(QString::fromStdString(patient->birthDate));
 		personalDataWidget->setPhoto(photo);
-	}	
+	}
 }
 
 void DefaultPatientCardWidget::setDisordersData(const MedicalShallowCopy::PatientDisorders & patientDisorders)
 {
-	disordersDataWidget->setAutoUpdate(false);	
+	disordersDataWidget->setAutoUpdate(false);
 
-	if(patientDisorders.empty() == false){	
-		int s = max(patientDisorders.size(), 2);
+	if(patientDisorders.empty() == false){
+		int s = (std::max)(patientDisorders.size(), static_cast<MedicalShallowCopy::PatientDisorders::size_type>(2));
 		disordersDataWidget->setDisordersCount(s);
 
 		int i = 0;
@@ -166,7 +166,7 @@ void DefaultPatientCardWidget::currentSessionChanged(QTreeWidgetItem * current, 
 		headers << tr("Date");
 	}else{
 		setAntropometricData(item->attributes());
-		
+
 		headers << tr("Session");
 		headers << tr("Laboratory");
 		headers << tr("Owner ID");
@@ -217,7 +217,7 @@ void DefaultPatientCardWidget::setSessionsData(const MotionShallowCopy::Performe
 
 	if(sessionsWidget->topLevelItemCount() > 0 && sessionsWidget->topLevelItem(0)->childCount() > 0){
 		sessionsWidget->setCurrentItem(sessionsWidget->topLevelItem(0)->child(0));
-	}	
+	}
 }
 
 QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, const std::map<int, const MotionShallowCopy::Session *> & sessions)
@@ -284,7 +284,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 	item->setText(3, QString::fromStdString(sessions.rbegin()->second->motionKind));
 	item->setText(4, QString::fromStdString(sessions.rbegin()->second->tags));
 
-	attr.swap(std::string());
+	std::string().swap(attr);
 
 	for(auto it = sessions.rbegin()->second->attrs.begin(); it != sessions.rbegin()->second->attrs.end(); ++it){
 		attr += it->first + "=" + it->second + ";";

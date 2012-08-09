@@ -3,6 +3,7 @@
 #include "LocalDataSourceWidget.h"
 #include <core/IObjectOutput.h>
 #include <QtGui/QVBoxLayout>
+#include <QtGui/QDialog>
 
 std::string LocalDataSource::name = "LocalDataSource";
 
@@ -56,7 +57,7 @@ void LocalDataSource::generate(core::IObjectOutput* output)
     for(unsigned int i = 0; i < outputDescription.size(); ++i){
         auto out = output->getObjects(i);
         const auto& in = data[outputDescription[i].type];
-        
+
         for(auto it = in->begin(); it != in->end(); ++it){
             try{
                 out.addObject(*it);

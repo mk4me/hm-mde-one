@@ -1,4 +1,6 @@
 #include "CorePCH.h"
+#include <core/ILog.h>
+#include <core/PluginCommon.h>
 #include "ObjectSlots.h"
 #include "DataManager.h"
 
@@ -14,7 +16,7 @@ objects(info.size()), info(info)
 
 }
 
-ObjectSlots::ObjectSlots( const ObjectSlots& objectSlots ) : 
+ObjectSlots::ObjectSlots( const ObjectSlots& objectSlots ) :
 objects(objectSlots.objects), info(objectSlots.info)
 {
 

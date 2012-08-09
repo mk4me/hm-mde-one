@@ -3,8 +3,8 @@
     created:  23:5:2011   8:27
     filename: EDRDFSourceNode.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___EDRDFSOURCENODE_H__
 #define HEADER_GUARD___EDRDFSOURCENODE_H__
@@ -31,7 +31,7 @@ protected:
     virtual bool hasMoreData() const;
 
     virtual void processData();
-	
+
 private:
 
     const core::IDataSource* source;

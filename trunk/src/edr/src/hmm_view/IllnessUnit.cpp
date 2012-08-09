@@ -1,10 +1,11 @@
 #include "hmmPCH.h"
 #include "IllnessUnit.h"
+#include "TreeItemHelper.h"
 
 using namespace PluginSubject;
 
 template<class TreeItem>
-TreeItem* createItem(const QString& name, QTreeWidgetItem* parent = nullptr) 
+TreeItem* createItem(const QString& name, QTreeWidgetItem* parent = nullptr)
 {
     TreeItem* item = new TreeItem();
     item->setText(0, name);
@@ -15,9 +16,9 @@ TreeItem* createItem(const QString& name, QTreeWidgetItem* parent = nullptr)
 }
 
 template<class TreeHelperPtr, class Args>
-std::pair<HmmTreeItem*, TreeHelperPtr> createHelperItem(const QString& name, const Args& args, QTreeWidgetItem* parent = nullptr) 
+std::pair<HmmTreeItem*, TreeHelperPtr> createHelperItem(const QString& name, const Args& args, QTreeWidgetItem* parent = nullptr)
 {
-    TreeHelperPtr helper(new TreeHelperPtr::element_type(args));
+    TreeHelperPtr helper(new typename TreeHelperPtr::element_type(args));
     HmmTreeItem* item = new HmmTreeItem(helper);
     item->setItemAndHelperText(name);
     if (parent) {
@@ -30,7 +31,7 @@ std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromVector( const 
 {
     std::vector<core::ObjectWrapperConstPtr> xWrappers;
     BOOST_FOREACH(SessionConstPtr session, sessions)
-    {   
+    {
         Motions motions;
         session->getMotions(motions);
         BOOST_FOREACH(MotionConstPtr motion, motions) {
@@ -54,14 +55,14 @@ std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromVector( const 
 }
 
 void Endo::createKineticBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
-{   
+{
     DataFilterPtr leftPrev =  createCustomV3Filter<MomentCollection>(false, "LHipMoment");
     DataFilterPtr rightPrev = createCustomV3Filter<MomentCollection>(false, "RHipMoment");
     DataFilterPtr leftPost =  createCustomV3Filter<MomentCollection>(true, "LHipMoment");
     DataFilterPtr rightPost = createCustomV3Filter<MomentCollection>(true, "RHipMoment");
     createVectorEntry(root, sessions, "Moment w stawie biodrowym", leftPrev, rightPrev, leftPost, rightPost, 0);
 
-    
+
     DataFilterPtr leftPrevF =  createCustomV3Filter<ForceCollection>(false, "LHipForce");
     DataFilterPtr rightPrevF = createCustomV3Filter<ForceCollection>(false, "RHipForce");
     DataFilterPtr leftPostF =  createCustomV3Filter<ForceCollection>(true, "LHipForce");
@@ -163,11 +164,11 @@ void Endo::createEMGEntry(QTreeWidgetItem* root, const std::vector<SessionConstP
     DataFilterPtr leftPrev, DataFilterPtr rightPrev, DataFilterPtr leftPost, DataFilterPtr rightPost)
 {
     std::vector<SessionPtr> filtered = leftPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end())); 
+    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
     filtered = rightPrev->filterData (sessions);
     std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
     filtered = leftPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end())); 
+    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
     filtered = rightPost->filterData (sessions);
     std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
 
@@ -204,11 +205,11 @@ void Endo::createVectorEntry(QTreeWidgetItem* root, const std::vector<SessionCon
     DataFilterPtr leftPrev, DataFilterPtr rightPrev, DataFilterPtr leftPost, DataFilterPtr rightPost, int index)
 {
     std::vector<SessionPtr> filtered = leftPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index); 
+    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
     filtered = rightPrev->filterData (sessions);
     std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
     filtered = leftPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index); 
+    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
     filtered = rightPost->filterData (sessions);
     std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
 
@@ -254,7 +255,7 @@ QTreeWidgetItem* Stroke::createTreeBranch( const QString& rootItemName, const st
         DataFilterPtr rpost = createCustomEMGFilter(true, "R9");
         createEMGEntry(root, sessions, "miesien prosty uda", lprev, rprev, lpost, rpost);
     }
-    
+
     {
         DataFilterPtr lprev = createCustomEMGFilter(false, "L2");
         DataFilterPtr rprev = createCustomEMGFilter(false, "R10");
@@ -344,9 +345,9 @@ QTreeWidgetItem* Spine::createTreeBranch( const QString& rootItemName, const std
     this->createEMGBranch(root, sessions);
     this->createKineticBranch(root, sessions);
     this->createAngleBranch(root, sessions);
-    
+
     return root;
 }
 
 
-    
+

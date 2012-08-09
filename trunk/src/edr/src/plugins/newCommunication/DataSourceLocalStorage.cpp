@@ -5,6 +5,14 @@
 #include <fstream>
 #include <boost/format.hpp>
 #include <boost/smart_ptr.hpp>
+// rev - hack, z jakiegos wzgledu nie bylo widac tej deklaracji
+//#define SQLITE_HAS_CODEC
+//#include <sqlite3.h>
+extern int sqlite3_key(
+  sqlite3 *db,                   /* Database to be rekeyed */
+  const void *pKey, int nKey     /* The key */
+);
+#include <core/PluginCommon.h>
 
 static const char magicKey[] = "P,j.W/s<T>k2:0\"1;2";
 
@@ -55,14 +63,14 @@ void DataSourceLocalStorage::setLocalStorageDataPath(const core::Filesystem::Pat
 	if (rc != SQLITE_OK){
 		//TODO
 		//obs³uga kodów b³êdu sqlite
-		
+
 		sqlite3_close(db);
 		throw std::runtime_error("Could not initialize local storage in specified path");
 	}else {
 
 		//uda³o siê otworzyæ/stworzyæ bazê
 
-		//sprawdzam czy baza zaszyfrowana		
+		//sprawdzam czy baza zaszyfrowana
 		if(checkIfEncrypted() == false){
 			sqlite3_close(db);
 			db = nullptr;
@@ -140,8 +148,8 @@ void DataSourceLocalStorage::initialize()
 
 void DataSourceLocalStorage::encrypt(const core::Filesystem::Path & localStorageDataPath)
 {
-	core::Filesystem::Path tmpDB = core::getPathInterface()->getTmpPath() / "tmpDB.db";	
-	int rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);	
+	core::Filesystem::Path tmpDB = core::getPathInterface()->getTmpPath() / "tmpDB.db";
+	int rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
 
 	if (rc != SQLITE_OK){
 		sqlite3_close(db);
@@ -244,7 +252,7 @@ void DataSourceLocalStorage::loadFile(const core::Filesystem::Path & path, const
 			//update
 			querry = (boost::format("UPDATE files_table SET file = ?, size = %1% WHERE file_name = '%2%';") % (size * sizeof(char)) % uniqueName).str();
 		}
-			
+
 		int rc = sqlite3_prepare_v2(db, querry.c_str(), -1, &res, &tail);
 
 		if (rc != SQLITE_OK || res == nullptr){
@@ -271,7 +279,7 @@ void DataSourceLocalStorage::extractFile(const std::string & fileName, const cor
 	std::ofstream file (destPath.string().c_str(), std::ios::out|std::ios::binary);
 	if (file.is_open())
 	{
-		//pobieramy dane z bazy		
+		//pobieramy dane z bazy
 		const char* tail;
 		sqlite3_stmt* res;
 

@@ -3,7 +3,8 @@
 #include "WorkflowVDFModel.h"
 #include "EDRDataFlow.h"
 #include <QtGui/QHBoxLayout>
-
+#include <QtGui/QMouseEvent>
+#include <osgGA/StateSetManipulator>
 #include <iomanip>
 #include <core/PluginCommon.h>
 #include "DataProcessorManager.h"
@@ -82,7 +83,7 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
     DataProcessorManager* dp = DataProcessorManager::getInstance();
     for(int i = 0; i < dp->getNumPrototypes(); ++i){
         //opakuj prototyp w fabrykê wêz³a dla EDRDataFlow
-        
+
 
 
         //dodaj odpowiadaj¹cy element do toolbara
@@ -118,7 +119,7 @@ void WorkflowCustomQOSGWidget::tryAddNode()
             node.reset(new EDRDFSourceNode(item, item->getName()));
         }else{
             node.reset(new EDRDFNode(item, item->getName()));
-        }              
+        }
 
         workflowWidget->workflowVDFModel->addNode(node, osg::ref_ptr<osg::Image>(), node->getName(), osgWidget::XYCoord(pos.x(), pos.y()));
 
@@ -467,7 +468,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
 
     //widget obserwuje model
     model->attach(this);
-    workflowVDFModel->setModel(dflm::MPtr(model));  
+    workflowVDFModel->setModel(dflm::MPtr(model));
 
     connect(workflowVDFWidget, SIGNAL(customContextMenuRequested(QPoint)), dynamic_cast<QObject*>(workflowVDFModel.get()), SLOT(contextMenuRequestPosition(QPoint)));
 
@@ -491,7 +492,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
     workflowVDFModel->showDefaultToolbar(false);
 
     EDRTitleBar * titleBar = supplyWithEDRTitleBar(this);
-    
+
     actionStart = new QAction(titleBar);
     actionStart->setText(tr("Start"));
     actionStart->setObjectName(QString::fromUtf8("actionStart"));
@@ -577,7 +578,7 @@ void EDRWorkflowWidget::start()
         actionStop->setEnabled(true);
 
         dynamic_cast<EDRDataFlow*>(workflowVDFModel->getModel().get())->run();
-        
+
     }catch(std::runtime_error & e){
         LOG_WARNING(e.what());
         actionStart->setEnabled(true);

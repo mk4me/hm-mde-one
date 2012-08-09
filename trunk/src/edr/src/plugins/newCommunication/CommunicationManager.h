@@ -19,6 +19,7 @@ i web serwisy wsdl.
 #include <OpenThreads/ReentrantMutex>
 #include <queue>
 #include <boost/function.hpp>
+#include <curl/curl.h>
 
 //! Klasa odpowiedzialna za dostarczanie plików z bazy danych
 class CommunicationManager
@@ -141,7 +142,7 @@ public:
 		PingRequest(const std::string & urlToPing);
 		//! \param ustawiamy czy serwer nam odpowiedzia³
 		void setServerResponse(bool response);
-		
+
 	public:
 		//! \return Adres serwera który bêdziemy/ju¿ pingowaliœmy
 		const std::string & urlToPing() const;
@@ -214,7 +215,7 @@ public:
 		//! \param filePath Œcie¿ka zapisu pliku
 		//! \param photoID ID zdjêcia do œci¹gniêcia
         PhotoRequest(const std::string & filePath, unsigned int photoID);
-            
+
     public:
 		//! Identyfikator zdjêcia
         unsigned int getPhotoID() const;
@@ -312,18 +313,26 @@ private:
     void setCurrentDownloadHelper(webservices::IDownloadHelper * downloadHelper);
 
 	//! Funkcje przetwarzaj¹ce ró¿ne requesty i zapamiêtuj¹ce b³êdy powsta³e podczas przetwarzania
+	webservices::IFtpsConnection::OperationStatus processComplex(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processPhoto(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processFile(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processMotionShallowCopy(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processMotionMetadata(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processMedicalMetadata(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processPing(const CompleteRequest & request, std::string & message);
 
-    webservices::IFtpsConnection::OperationStatus processComplex(const CompleteRequest & request, std::string & message = std::string());
-    webservices::IFtpsConnection::OperationStatus processPhoto(const CompleteRequest & request, std::string & message = std::string());
-    webservices::IFtpsConnection::OperationStatus processFile(const CompleteRequest & request, std::string & message = std::string());
-    webservices::IFtpsConnection::OperationStatus processMotionShallowCopy(const CompleteRequest & request, std::string & message = std::string());
-    webservices::IFtpsConnection::OperationStatus processMotionMetadata(const CompleteRequest & request, std::string & message = std::string());
-    webservices::IFtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request, std::string & message = std::string());
-    webservices::IFtpsConnection::OperationStatus processMedicalMetadata(const CompleteRequest & request, std::string & message = std::string());
-    webservices::IFtpsConnection::OperationStatus processPing(const CompleteRequest & request, std::string & message = std::string());
+	webservices::IFtpsConnection::OperationStatus processComplex(const CompleteRequest & request) { std::string temp; return processComplex(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processPhoto(const CompleteRequest & request) { std::string temp; return processPhoto(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processFile(const CompleteRequest & request) { std::string temp; return processFile(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processMotionShallowCopy(const CompleteRequest & request) { std::string temp; return processMotionShallowCopy(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processMotionMetadata(const CompleteRequest & request) { std::string temp; return processMotionMetadata(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request) { std::string temp; return processMedicalShallowCopy(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processMedicalMetadata(const CompleteRequest & request) { std::string temp; return processMedicalMetadata(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processPing(const CompleteRequest & request) { std::string temp; return processPing(request, temp); }
 
 public:
-	
+
 	//! \param motionFileStoremanService Serwis do œci¹gania plików ruchu
 	void setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService);
 	//! \param medicalFileStoremanService Serwis do œci¹gania plików medycznych
@@ -463,7 +472,7 @@ private:
 	//! Czy przerwaæ œci¹ganie
     bool cancelDownloading;
 	//! W¹tek przetwarzaj¹cy zlecenia communication managera
-	core::shared_ptr<ProcessingThread> processingThread;	
+	core::shared_ptr<ProcessingThread> processingThread;
 };
 
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

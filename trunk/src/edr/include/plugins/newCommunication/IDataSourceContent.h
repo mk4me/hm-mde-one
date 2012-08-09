@@ -3,8 +3,8 @@
     created:  23:3:2012   13:47
     filename: IDataSourceContent.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___IDATASOURCECONTENT_H__
 #define HEADER_GUARD___IDATASOURCECONTENT_H__
@@ -40,7 +40,7 @@ namespace communication
 		//! \return Typ contentu zawieranego przez dany element
 		virtual ContentType contentType() const = 0;
 	};
-	
+
 	//! Wzorzec elementu drzewa danych. U¿ywany do przechowywania informacji o pacjentach, subjectach, sesjach, motionach i plikach
 	template<class T>
 	class Item : public QTreeWidgetItem, public IContent

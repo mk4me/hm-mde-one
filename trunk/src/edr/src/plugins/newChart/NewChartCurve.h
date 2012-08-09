@@ -3,12 +3,14 @@
 	created:	22:2:2012   10:14
 	filename: 	NewChartCurve.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTCURVE_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTCURVE_H__
+
+#include <qwt/qwt_plot_curve.h>
 
 class NewChartSeriesData;
 
@@ -22,31 +24,31 @@ public:
     explicit NewChartCurve( const QString &title = QString::null );
 
 public:
-    //! 
+    //!
     double getXScale() const { return xScale; }
-    //! 
-    //! \param val 
+    //!
+    //! \param val
     void setXScale(double val);
-    //! 
+    //!
     double getYScale() const { return yScale; }
-    //! 
-    //! \param val 
+    //!
+    //! \param val
     void setYScale(double val);
-    //! 
+    //!
     double getXOffset() const { return xOffset; }
-    //! 
-    //! \param val 
-    void setXOffset(double val); 
-    //! 
-    //! \param point 
+    //!
+    //! \param val
+    void setXOffset(double val);
+    //!
+    //! \param point
     void setOffset(const QPointF& point);
-    //! 
+    //!
     QPointF getOffset() const;
-    //! 
+    //!
     double getYOffset() const { return yOffset; }
-    //! 
-    //! \param val 
-    void setYOffset(double val); 
+    //!
+    //! \param val
+    void setYOffset(double val);
     //! Zasilenie krzywej w dane
     //! \param data Obiekt z danymi, stworzony na porzeby krzywej, przykrywa DataChannel
     void setSamples(NewChartSeriesData* data);
@@ -57,9 +59,9 @@ protected:
     //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
     virtual void setRectOfInterest( const QRectF& r ) { QwtSeriesStore<QPointF>::setRectOfInterest(r); }
     //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
-    virtual size_t dataSize() const { return QwtSeriesStore<QPointF>::dataSize(); } 
+    virtual size_t dataSize() const { return QwtSeriesStore<QPointF>::dataSize(); }
     //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
-    virtual QRectF dataRect() const { return QwtSeriesStore<QPointF>::dataRect(); } 
+    virtual QRectF dataRect() const { return QwtSeriesStore<QPointF>::dataRect(); }
 
 private:
     //! przesuniecie w poziomie

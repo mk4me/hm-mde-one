@@ -3,8 +3,8 @@
     created:  17:8:2011   14:20
     filename: TimeSliderWidget.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD_TIMELINE__TIMESLIDERWIDGET_H__
 #define HEADER_GUARD_TIMELINE__TIMESLIDERWIDGET_H__
@@ -22,7 +22,7 @@ class TimeSliderWidget : public QwtSlider
 public:
     explicit TimeSliderWidget(QWidget *parent = nullptr,
         Qt::Orientation orientation = Qt::Horizontal,
-        ScalePos scalePos = NoScale, BackgroundStyles bgStyle = Groove );
+        ScalePosition scalePos = NoScale, BackgroundStyles bgStyle = Groove );
 
     virtual ~TimeSliderWidget();
 
@@ -30,7 +30,7 @@ public:
 
     double getRightMargin() const;
 
-    QwtScaleDraw * scaleDraw();
+    const QwtScaleDraw * scaleDraw() const;
 
 signals:
 

@@ -1,4 +1,6 @@
 #include "CorePCH.h"
+#include <QtGui/QDialog>
+#include <QtGui/QLayout>
 #include "EDRDFNode.h"
 #include "EDRDFPin.h"
 #include "InputDescription.h"
@@ -50,7 +52,7 @@ void EDRDFNode::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder)
 
     OutputDescription * outputDescription = dynamic_cast<OutputDescription*>(workflowItem.get());
 
-    if(outputDescription != nullptr){        
+    if(outputDescription != nullptr){
         //stwórz piny wyjsciowe
         for(int i = 0; i < outputDescription->getNumOutputs(); ++i){
             //buduj piny zalezne

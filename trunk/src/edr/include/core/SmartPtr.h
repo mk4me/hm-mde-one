@@ -3,8 +3,8 @@
 	created:  21:10:2010   16:48
 	filename: Ptr.h
 	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+
+	purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_CORE__SMARTPTR_H__
 #define __HEADER_GUARD_CORE__SMARTPTR_H__

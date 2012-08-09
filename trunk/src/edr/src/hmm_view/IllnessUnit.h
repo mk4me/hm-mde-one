@@ -3,8 +3,8 @@
 	created:	6:11:2011   14:44
 	filename: 	IllnessUnit.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__ILLNESSUNIT_H__
@@ -19,17 +19,17 @@ class ChannelExtractorFilter : public PluginSubject::IDataFilter
 {
 public:
     ChannelExtractorFilter() {}
-    
+
     virtual PluginSubject::SessionPtr doDataFiltering(const PluginSubject::SessionConstPtr & session) const
     {
-        typedef core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
-        typedef core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
+        typedef typename core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
+        typedef typename core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
         typedef typename Collection::ChannelType Channel;
-        typedef core::ObjectWrapperT<Channel>::Ptr ChannelPtr;
-        typedef core::ObjectWrapperT<Channel>::ConstPtr ChannelConstPtr;
+        typedef typename core::ObjectWrapperT<Channel>::Ptr ChannelPtr;
+        typedef typename core::ObjectWrapperT<Channel>::ConstPtr ChannelConstPtr;
         PluginSubject::Motions motions;
 
-        std::vector<MotionPtr> newMotions;
+        std::vector<PluginSubject::MotionPtr> newMotions;
 
         session->getMotions(motions);
         BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
@@ -41,7 +41,7 @@ public:
                 BOOST_FOREACH(core::ObjectWrapperConstPtr ow, objects) {
                     CollectionConstPtr c = ow->get();
                     for (int i = 0 ; i < c->getNumChannels(); ++i) {
-                       ChannelConstPtr channel = c->getChannel(i);
+                       auto channel = c->getChannel(i);
                        core::ObjectWrapperPtr cw = core::ObjectWrapper::create<Channel>();
                        cw->set(core::const_pointer_cast<Channel>(channel));
                        cw->setName(channel->getName());
@@ -107,7 +107,7 @@ public:
         std::vector<PluginSubject::MotionPtr> newMotions;
         std::vector<core::ObjectWrapperConstPtr> objects;
         session->getWrappers(objects);
-        
+
         PluginSubject::Motions motions;
         session->getMotions(motions);
 
@@ -156,7 +156,7 @@ protected:
 
     PluginSubject::DataFilterPtr createCustomEMGFilter(bool post, const std::string& name);
     std::vector<core::ObjectWrapperConstPtr> extractWrappersFromEMG(const std::vector<PluginSubject::SessionConstPtr>& sessions);
-    
+
     template<class CollectionPtr>
     PluginSubject::DataFilterPtr createCustomV3Filter(bool post, const std::string& name);
     std::vector<core::ObjectWrapperConstPtr> extractWrappersFromVector( const std::vector<PluginSubject::SessionConstPtr>& sessions, int scalarIndex );

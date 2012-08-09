@@ -3,8 +3,8 @@
 	created:	7:10:2011   9:59
 	filename: 	FilterCommand.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__FILTERCOMMAND_H__
@@ -15,6 +15,7 @@
 #include <core/SmartPtr.h>
 
 #include <core/SubjectDataFilters.h>
+#include <plugins/subject/Types.h>
 #include "TreeBuilder.h"
 
 
@@ -31,7 +32,7 @@ public:
 
 public:
 	virtual ~IFilterCommand() {}
-   
+
 public:
     //! tworzy galaz drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
@@ -57,11 +58,11 @@ public:
     //! tworzy galaz drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) 
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
     {
         return TreeBuilder::createTree(rootItemName, sessions, dataFilter);
     }
-    
+
 private:
     //! filtr danych, ktory bedzie uzyty do tworzenia drzewa
     PluginSubject::DataFilterPtr dataFilter;
@@ -84,22 +85,24 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
 {
     QTreeWidgetItem* rootItem = new QTreeWidgetItem();
     rootItem->setText(0, rootItemName);
-    BOOST_FOREACH(SessionConstPtr session, sessions)
+    for (auto it = sessions.begin(); it != sessions.end(); ++it)
     {
-        std::vector<MotionConstPtr> motions;
+        auto session = *it;
+        std::vector<PluginSubject::MotionConstPtr> motions;
         session->getMotions(motions);
-        BOOST_FOREACH(MotionConstPtr motion, motions) {
+        for (auto it = motions.begin(); it != motions.end(); ++it) {
+            auto motion = *it;
             QTreeWidgetItem* item = new QTreeWidgetItem();
             rootItem->addChild(item);
             item->setText(0, motion->getLocalName().c_str());
             if (motion->hasObjectOfType(typeid(Type))) {
-                ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(Type));
+                core::ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(Type));
                 TypePtr collection = wrapper->get();
-                std::vector<ObjectWrapperConstPtr> xWrappers;
-                std::vector<ObjectWrapperConstPtr> yWrappers;
-                std::vector<ObjectWrapperConstPtr> zWrappers;
+                std::vector<core::ObjectWrapperConstPtr> xWrappers;
+                std::vector<core::ObjectWrapperConstPtr> yWrappers;
+                std::vector<core::ObjectWrapperConstPtr> zWrappers;
                 for( int i = 0; i < collection->getNumChannels(); ++i) {
-                    Type::ChannelPtr f = collection->getChannel(i);
+                    typename Type::ChannelPtr f = collection->getChannel(i);
                     ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(f, 0));
                     ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(f, 1));
                     ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(f, 2));

@@ -3,18 +3,21 @@
     created:  12:4:2011   18:15
     filename: LogInitializer.h
     author:	  Piotr Gwiazdowski
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD_CORE__LOGINITIALIZER_H__
 #define HEADER_GUARD_CORE__LOGINITIALIZER_H__
 
 //#include"Log.h"
+#include <cstddef>
+#include <core/ILog.h>
+#include <log4cxx/logger.h>
 
 class EDRConsoleWidget;
 
 //! Obiekt logu. Powinien byæ tworzony w g³ównej binarce na samym pocz¹tku maina.
-class LogInitializer 
+class LogInitializer
 {
 public:
     //! \param configPath Œcie¿ka do pliku konfiguracyjnego.
@@ -31,10 +34,10 @@ private:
     /**
      *	Prze³adowania operatorów new-delete. Prywatne, aby niemo¿liwe by³o
      *  tworzenie instancji typu na stercie.
-     */     
-    void *operator new(size_t bytes);
+     */
+    void *operator new(std::size_t bytes);
     //! \see LogInitializer::operator new
-    void *operator new[](size_t bytes);
+    void *operator new[](std::size_t bytes);
     //! \see LogInitializer::operator new
     void operator delete(void* p);
     //! \see LogInitializer::operator new
@@ -54,7 +57,7 @@ public:
 	  {
 	  }
 
-	virtual void log( core::LogSeverity severity, const std::string& message, const std::string& filename, int lineNumber ) 
+	virtual void log( core::LogSeverity severity, const std::string& message, const std::string& filename, int lineNumber )
 	{
 		std::string msg(message);
 	/*	msg += " (";

@@ -2,7 +2,7 @@
 #define HEADER_GUARD_ISCHEMEDRAWER_H__
 
 #include <boost/utility.hpp>
-#include <plugins/kinematic/visualizationScheme.h>
+#include <plugins/kinematic/VisualizationScheme.h>
 
 //! Interfejs powinien byc zaimplementowany przez warstwe wizualizacji danych 3D.
 //! Stworzona klasa powinna czerpac dane ze schematu wizualizacji/

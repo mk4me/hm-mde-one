@@ -3,8 +3,8 @@
 	created:	4:6:2012   20:00
 	filename: 	ContextEventFilter.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__CONTEXTEVENTFILTER_H__
@@ -13,8 +13,8 @@
 #include <set>
 
 class HmmMainWindow;
-class QWidget;
-class QObject;
+#include<QtGui/QWidget>
+#include<QtCore/QObject>
 
 class ContextEventFilter : public QObject
 {

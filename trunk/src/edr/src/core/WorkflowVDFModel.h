@@ -3,8 +3,8 @@
     created:  23:5:2011   20:58
     filename: WorkflowVDFModel.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___WORKFLOWVDFMODEL_H__
 #define HEADER_GUARD___WORKFLOWVDFMODEL_H__
@@ -18,6 +18,7 @@
 #endif
 
 #include <QtCore/QObject>
+#include <QtCore/QPoint>
 #include <vdfmlib/osgVDFModel.h>
 
 class WorkflowService;

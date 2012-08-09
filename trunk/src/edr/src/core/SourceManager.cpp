@@ -3,8 +3,9 @@
 
 #include <core/ILog.h>
 #include <core/PluginCommon.h>
-// rev - niepotrzebne?
-//SourceManager * ManagerHelper<SourceManager>::manager = nullptr;
+// rev - specjalizacja?
+template<>
+SourceManager * ManagerHelper<SourceManager>::manager = nullptr;
 
 SourceManager::SourceManager()
 {

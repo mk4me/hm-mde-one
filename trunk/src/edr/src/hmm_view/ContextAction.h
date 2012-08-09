@@ -3,14 +3,15 @@
 	created:	31:5:2012   12:22
 	filename: 	ContextAction.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__CONTEXTACTION_H__
 #define HEADER_GUARD_HMM__CONTEXTACTION_H__
 
 #include <core/Visualizer.h>
+#include <QtGui/QAction>
 class EDRDockWidgetSet;
 class HmmTreeItem;
 
@@ -25,7 +26,7 @@ public:
     //! \param parent rodzic akcji
     //! \param vis wizualizator zwiazany z akcja
     //! \param set set, do ktorego ma trafic wizualizator
-    ContextAction(HmmTreeItem* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), EDRDockWidgetSet* set = nullptr) : 
+    ContextAction(HmmTreeItem* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), EDRDockWidgetSet* set = nullptr) :
       item(itemHelper), QAction(parent), visualizer(vis), set(set){}
 
 public:

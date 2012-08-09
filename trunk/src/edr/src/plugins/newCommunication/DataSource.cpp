@@ -1,9 +1,11 @@
 #include "CommunicationPCH.h"
 #include <core/ILog.h>
+#include <core/PluginCommon.h>
 #include "DataSource.h"
 #include <quazip/quazip.h>
 #include <quazip/quazipfile.h>
 #include <QtCore/QFile>
+#include <wsdlparser/WsdlExtension.h>
 
 #include <plugins/newCommunication/CommunicationManager.h>
 #include <plugins/subject/ISubjectService.h>
@@ -34,7 +36,8 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     //konfiguracja wsdlpulla ¿eby pisa³ pliki tymczasowe tam gdzie mamy prawo zapisu
 
     XmlUtils::TMPFILESDIR = core::getPathInterface()->getTmpPath().string();
-    WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();   
+    // rev - zeby to przeszlo, w naglowku musial byc wywalony warunek na WIN32
+    WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();
 
     //konfigurujemy ustawienia po³¹czeñ - adresy serwisów i ftp
     auto connectionsManager = DataSourceConnectionManager::create();
@@ -84,7 +87,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
 
     //tworzymy i konfigurujemy instancje connectionManagera = odpowiada za sci¹ganie plików
     auto communication = CommunicationManager::getInstance();
-	
+
 	//TODO - obs³uga pingu serwerów
 	//adres serwara/serwerów do pingowania
     //communication->setUrlToPingServer(serwerPingUrl);
@@ -172,7 +175,7 @@ void CommunicationDataSource::setConnectionsCredentials(const User & user)
     //connectionsManager->medicalFtps()->setCredentials(user.name(), user.password());
 }
 
-    
+
 void CommunicationDataSource::init(core::IMemoryDataManager * memoryDM, core::IFileDataManager * fileDM, core::IServiceManager * serviceManager)
 {
     this->memoryDM = memoryDM;
@@ -376,7 +379,7 @@ bool CommunicationDataSource::isShallowCopyComplete() const
 }
 
 bool CommunicationDataSource::isShallowCopyCurrent()
-{    
+{
     OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourceWebServicesManager::instance()->motionBasicQueriesService());
     auto lastMod = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
 
@@ -418,12 +421,12 @@ void CommunicationDataSource::extractShallowCopyFromLocalStorageToUserSpace()
 		auto filename = path.filename().string();
 
 		extractFileFromLocalStorage(filename, path, extractedFiles);
-        
+
         //p³ytka kopia metadanych ruchu
         path = pathsManager->motionMetadataPath();
 		filename = path.filename().string();
         extractFileFromLocalStorage(filename, path, extractedFiles);
-        
+
         //p³ytka kopia danych medycznych
         path = pathsManager->medicalShallowCopyPath();
 		filename = path.filename().string();
@@ -476,7 +479,7 @@ void CommunicationDataSource::extractDataFromLocalStorageToUserSpace()
 
             auto motionsItEnd = sessionIT->second->trials.end();
             for(auto motionIT = sessionIT->second->trials.begin(); motionIT != motionsItEnd; ++motionIT){
-            
+
                 auto filesItEnd = motionIT->second->files.end();
                 for(auto fileIT = motionIT->second->files.begin(); fileIT != filesItEnd; ++fileIT){
                     extractFileFromLocalStorageToUserSpace(fileIT->second, sessionIT->second->sessionName);
@@ -501,7 +504,7 @@ void CommunicationDataSource::extractFileFromLocalStorageToUserSpace(const webse
     if(localStorage->fileIsLocal(file->fileName) == true){
         try{
             //czy zadana œciezka istnieje?
-            core::Filesystem::Path p(filePath.parent_path());	
+            core::Filesystem::Path p(filePath.parent_path());
             if(core::Filesystem::pathExists(p) == false){
                 core::Filesystem::createDirectory(p);
             }
@@ -534,7 +537,7 @@ void CommunicationDataSource::extractFileFromLocalStorageToUserSpace(const webse
 				//znalaz³em vsk - próbujemy go wypakowaæ
 				QuaZipFile inFile(&zip);
 				if(inFile.open(QIODevice::ReadOnly) && inFile.getZipError() == UNZ_OK) {
-					
+
 					//tworze plik docelowy
 					QFile outFile;
 					outFile.setFileName(vskDestPath.string().c_str());
@@ -589,7 +592,7 @@ void CommunicationDataSource::extractDataFromLocalStorageToUserSpace(const Shall
     //do dodania
     toAdd.resize(newFiles.size());
     //do odœwie¿enia
-    toRefresh.resize(min(prevFiles.size(), newFiles.size()));
+    toRefresh.resize((std::min)(prevFiles.size(), newFiles.size()));
 
     //wyznaczam ró¿nice zbiorów
     auto toDeleteIT = std::set_difference(prevFiles.begin(), prevFiles.end(), newFiles.begin(), newFiles.end(), toDelete.begin());
@@ -718,7 +721,7 @@ void CommunicationDataSource::removeShallowCopyFromUserSpace()
 void CommunicationDataSource::removeShallowCopyFromLocalStorage()
 {
     OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*pathsManager);
-    
+
     //p³ytka kopia danych ruchu
     try{
         localStorage->removeFile(pathsManager->motionShallowCopyPath().filename().string());

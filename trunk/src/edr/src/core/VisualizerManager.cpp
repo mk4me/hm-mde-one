@@ -9,6 +9,8 @@
 
 using namespace core;
 
+// rev - specjalizacja
+template<>
 VisualizerManager * ManagerHelper<VisualizerManager>::manager = nullptr;
 
 VisualizerManager::VisualizerManager() //:
@@ -27,7 +29,7 @@ VisualizerManager::~VisualizerManager()
         delete data;
     }
 
-    visualizersData.swap(std::vector< IVisualizerPersistantData* >());
+    std::vector< IVisualizerPersistantData* >().swap(visualizersData);
 
     UTILS_ASSERT(visualizerChannels.empty(), "Wszystkie kana³y czasowe wizualizatorów powinny byæ zniszczone.");
 
@@ -42,7 +44,7 @@ VisualizerManager::~VisualizerManager()
 IVisualizerConstPtr VisualizerManager::getPrototype( UniqueID id ) const
 {
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
-    IVisualizers::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(), 
+    IVisualizers::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
         [=](const IVisualizerPtr& ptr) { return ptr->getID() == id; }
     );
     if ( found != prototypes.end() ) {
@@ -130,7 +132,7 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
             QIcon* icon = visualizer->createIcon();
             if ( !icon ) {
                 icon = new QIcon();
-            } 
+            }
             data->icon = *icon;
 
             delete icon;
@@ -163,7 +165,7 @@ const VisualizerManager::SourcesTypes& VisualizerManager::getSourcesTypes( Uniqu
 int VisualizerManager::getPrototypeIdx( UniqueID id ) const
 {
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
-    IVisualizers::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(), 
+    IVisualizers::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
         [=](const IVisualizerPtr& ptr) { return ptr->getID() == id; }
     );
     if ( found != prototypes.end() ) {
@@ -289,7 +291,7 @@ void VisualizerManager::removeChannel(const void * channel)
 	if(channelIT == channels.end()){
 		//jesli nie ma to wychodzimy
 		return;
-	}	
+	}
 
 	//wlasciwa proba usuniecia kanalu z wizualizatora i timeline
 	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
@@ -335,8 +337,8 @@ void VisualizerManager::removeAllChannels()
 		}
 	}
 
-	channels.swap(std::map<IVisualizerChannel *, ChannelData>());
-	visualizerChannels.swap(std::map<Visualizer *, std::set<IVisualizerChannel *>>());
+	std::map<IVisualizerChannel *, ChannelData>().swap(channels);
+	std::map<Visualizer *, std::set<IVisualizerChannel *>>().swap(visualizerChannels);
 }
 
 void VisualizerManager::markAsRemovedFromVisualizer(const void * channel)

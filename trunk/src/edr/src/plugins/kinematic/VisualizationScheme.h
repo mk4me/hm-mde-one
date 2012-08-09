@@ -3,8 +3,8 @@
 	created:	23:4:2012   12:45
 	filename: 	VisualizationScheme.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_KINEMATIC__VISUALIZATIONSCHEME_H__
@@ -65,7 +65,6 @@ private:
 
 
 class ISchemeDrawer;
-enum DataToDraw;
 typedef core::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
 
 //! klasa stanowi polaczenie miedzy reprezentacja wewnetrzna, a kontrolka odrysowywujaca szkielet
@@ -86,7 +85,7 @@ public:
     struct Connection {
         Connection() : index1(-1), index2(-1), color(), visible(true), length(-1.0f) {}
         //! indeks pierwszego stawu/markera (zgodny z przekazywana tablica State)
-        int index1;         
+        int index1;
         //! indeks drugiego stawu/markera (zgodny z przekazywana tablica State)
         int index2;
         //! kolor po³¹czenia (RGBA <0,1>)
@@ -96,18 +95,18 @@ public:
         //! dlugosc polaczenia
         float length;
     };
-            
+
 public:
-    //! 
+    //!
     VisualizationScheme();
-    //! 
+    //!
     virtual ~VisualizationScheme() {}
 
-public: 
+public:
     //! \return znormalizowany czas ( z zakresu 0 - 1 )
     double getNormalizedTime() const { return normalizedTime; }
     //! ustawia znormalizowany czas ( z zakresu 0 - 1 )
-    //! \param val 
+    //! \param val
     void setNormalizedTime(double val);
     //! Ustawia czas, schemat przechowuje go w postaci znormalizowanej, dlatego konieczna jest konwersja
     //! \param time ustawiany czas
@@ -118,7 +117,7 @@ public:
     double getTime() const {
         return getNormalizedTime() * getDuration();
     }
-    //! \return aktualny srodek geometryczny 
+    //! \return aktualny srodek geometryczny
     virtual osg::Vec3 getCurrentPosition() const = 0;
     //! \return czas trwania animacji
     virtual double getDuration() const = 0;
@@ -138,7 +137,7 @@ protected:
     //! polaczenia miedzy markerami
     std::vector<Connection> connections;
     //! aktualny czas
-    double normalizedTime; 
+    double normalizedTime;
 
 protected:
     //! Uaktualnienie schematu

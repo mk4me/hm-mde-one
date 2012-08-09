@@ -3,11 +3,16 @@
 
 #include <boost/foreach.hpp>
 #include <osg/GraphicsContext>
-
+#include <osgGA/GUIEventHandler>
+#include <osgWidget/ViewerEventHandlers>
+#include <osgViewer/ViewerEventHandlers>
+#include <osgDB/ReadFile>
+#include <osgGA/StateSetManipulator>
+#include <QtGui/QMenu>
 #include <utils/ObserverPattern.h>
 #include <utils/PtrPolicyOSG.h>
 #include <utils/PtrWrapper.h>
-
+#include <osgViewer/View>
 #include <vidlib/osg/VideoImageStreamSizeOptimizer.h>
 #include "StreamOsgWidget.h"
 
@@ -50,13 +55,13 @@ public:
 
 public:
 
-    //! 
+    //!
     virtual bool isValid()
     {
         return window.valid() && widget.valid();
     }
 
-    //! \return Czy 
+    //! \return Czy
     virtual osg::Vec2 getDesiredImageSize()
     {
         if ( window->isVisible() ) {
@@ -90,7 +95,7 @@ VideoWidget::VideoWidget() :
 format(PixelFormatBGRA)
 {
     // inicjalizacja UI
-    setupUi(this); 
+    setupUi(this);
 
     // dodanie grupy akcji (designer na to nie pozwala :()
     // TIP: w przyk³adach Qt nie ma jawnego zwalniania akcji
@@ -117,7 +122,7 @@ format(PixelFormatBGRA)
     viewer->addEventHandler( new osgWidget::MouseHandler(multiView) );
     viewer->addEventHandler( new osgWidget::KeyboardHandler(multiView) );
     viewer->addEventHandler( new osgWidget::ResizeHandler(multiView, multiViewCamera) );
-    viewer->addEventHandler( new osgViewer::StatsHandler );
+    viewer->addEventHandler( new osgViewer::StatsHandler() );
     viewer->addEventHandler( new osgGA::StateSetManipulator( viewer->getCamera()->getOrCreateStateSet() ) );
 
     // ustawienie sceny
@@ -138,7 +143,7 @@ void VideoWidget::init( std::vector<std::string> &files )
             LOG_ERROR("VideoService: "<<file<<" could not be read.");
         }
     }
-   
+
     createScene();
 }
 
@@ -183,7 +188,7 @@ void VideoWidget::createScene()
         float ratio = image->getPixelAspectRatio() * image->s() / image->t();
 
         VideoImageStreamSizeOptimizer* optimizer = new VideoImageStreamSizeOptimizer(new osg::Uniform(yuvImageSizeName.c_str(), osg::Vec2(0, 0)));
-        
+
         // faktyczne dodanie miniaturki do grida
         osgWidget::Widget* streamWidget = createStreamWidget( image, optimizer );
         osgWidget::Box* thumbnail = new osgWidget::Box(streamWidget->getName());
@@ -194,7 +199,7 @@ void VideoWidget::createScene()
 
         // faktyczne dodanie du¿ego okna
         osgWidget::Widget* streamWidgetClone = createStreamWidget( /*osg::clone*/(image), optimizer);
-        osgWidget::Box* preview = new osgWidget::Box(std::string(streamWidgetClone->getName()) + "Preview");        
+        osgWidget::Box* preview = new osgWidget::Box(std::string(streamWidgetClone->getName()) + "Preview");
         osgui::AspectRatioKeeper* keeper = new osgui::AspectRatioKeeper(streamWidgetClone, ratio);
         keeper->setColor(0, 0, 0, 0);
         preview->getBackground()->setColor(0,0,0,0);
@@ -273,7 +278,7 @@ osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Unif
             widget->getOrCreateStateSet()->addUniform( sampler );
             widget->getOrCreateStateSet()->addUniform( imageSize );
         }
-        widget->setPixelFormat(stream->getTargetFormat());   
+        widget->setPixelFormat(stream->getTargetFormat());
     }
 
     widget->refreshShaders();
@@ -296,9 +301,9 @@ void VideoWidget::loadShaders(const std::string& yuvTextureRect, const std::stri
 
 void VideoWidget::loadShaders()
 {
-    loadShaders( 
+    loadShaders(
         yuvTextureRectShader ? yuvTextureRectShader->getFileName() : "",
-        yuvTexture2DShader ? yuvTexture2DShader->getFileName() : "" 
+        yuvTexture2DShader ? yuvTexture2DShader->getFileName() : ""
     );
 }
 

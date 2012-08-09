@@ -3,12 +3,13 @@
     created:  3:11:2011   10:04
     filename: ISession.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___ISESSION_H__
 #define HEADER_GUARD___ISESSION_H__
 
+#include <stdexcept>
 #include <plugins/subject/Types.h>
 #include <core/ObjectWrapper.h>
 

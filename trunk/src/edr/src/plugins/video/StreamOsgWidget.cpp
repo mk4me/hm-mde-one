@@ -3,12 +3,13 @@
 #include <vidlib/osg/VideoImageStream.h>
 #include <core/PluginCommon.h>
 #include <core/ILog.h>
+#include <osg/TextureRectangle>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace video {
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamOsgWidget::StreamOsgWidget( const std::string& name ) : 
+StreamOsgWidget::StreamOsgWidget( const std::string& name ) :
 osgWidget::Widget(name),
 yuvProgram(new osg::Program),
 format(vidlib::PixelFormatBGRA)
@@ -74,7 +75,7 @@ void StreamOsgWidget::refreshShaders( bool useTextureRect, vidlib::PixelFormat f
             if (yuvTextureRectShader) {
                 yuvProgram->addShader(yuvTextureRectShader);
             } else {
-                LOG_ERROR("Missing yuv texture_rect shader. As a result image may be incorrect.");        
+                LOG_ERROR("Missing yuv texture_rect shader. As a result image may be incorrect.");
             }
         } else {
             if (yuvTexture2DShader) {

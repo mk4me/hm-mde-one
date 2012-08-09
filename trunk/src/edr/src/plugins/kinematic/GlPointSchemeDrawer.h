@@ -3,7 +3,7 @@
 #include <map>
 #include <osg/Geode>
 #include <osg/Vec4f>
-#include <plugins/kinematic/skeletalVisualizationScheme.h>	
+#include <plugins/kinematic/SkeletalVisualizationScheme.h>
 #include "OsgSchemeDrawer.h"
 
 //! Schemat odrysowywujacy punkty

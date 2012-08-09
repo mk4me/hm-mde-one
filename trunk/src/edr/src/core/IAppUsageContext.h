@@ -3,8 +3,8 @@
     created:  16:12:2011   8:47
     filename: IAppUsageContext.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___IAPPUSAGECONTEXT_H__
 #define HEADER_GUARD___IAPPUSAGECONTEXT_H__
@@ -12,7 +12,7 @@
 #include <set>
 #include <map>
 //#include <QtGui/QWidget>
-
+#include <stdexcept>
 
 #include <core/SmartPtr.h>
 
@@ -154,12 +154,12 @@ private:
             onUnregisterContextWidget(*it);
         }
 
-        contextWidgets.swap(std::set<QWidget*>());
+        std::set<QWidget*>().swap(contextWidgets);
     }
 
     void clearChildContexts()
     {
-        childContexts.swap(ChildContexts());
+        ChildContexts().swap(childContexts);
     }
 
     void clearContext()

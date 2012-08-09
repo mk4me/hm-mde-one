@@ -3,12 +3,13 @@
     created:  4:2:2012   20:55
     filename: IDataSourceUser.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___IDATASOURCEUSER_H__
 #define HEADER_GUARD___IDATASOURCEUSER_H__
 
+#include <string>
 #include <plugins/newCommunication/IDataSourceUserData.h>
 #include <plugins/newCommunication/IDataSourceUserPrivilages.h>
 

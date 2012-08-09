@@ -3,14 +3,16 @@
 	created:  27:9:2010   19:50
 	filename: VideoService.h
 	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+
+	purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD__VIDEOSERVICE_H__
 #define __HEADER_GUARD__VIDEOSERVICE_H__
 
 #include <core/IService.h>
 #include <vidlib/PixelFormat.h>
+#include <osg/ref_ptr>
+#include <osg/Image>
 
 class QWidget;
 class VideoWidget;
@@ -32,7 +34,7 @@ private:
     typedef std::vector<osg::ref_ptr<osg::Image> > ImagesList;
     //! Lista strumieni.
     ImagesList imagesList;
-    
+
 
     //! Lista strumieni.
 //    typedef std::vector<timeline::StreamPtr> Streams;
@@ -49,7 +51,7 @@ public:
     bool isUsingTextureRectangle();
     //! \param useTextureRectangle Czy u¿ywa rozszerzenia TEXTURE_RECT?
     void setUseTextureRectangle(bool useTextureRectangle);
-    
+
 
 public:
     VideoService();
@@ -57,7 +59,7 @@ public:
     virtual void finalize() {};
 
     virtual QWidget* getWidget(std::vector<QObject*>& actions)
-    { 
+    {
         return nullptr;
     }
 

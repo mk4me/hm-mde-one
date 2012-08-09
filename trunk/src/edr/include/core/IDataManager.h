@@ -5,8 +5,10 @@
 #include <map>
 #include <set>
 #include <algorithm>
+#include <stdexcept>
 #include <boost/type_traits.hpp>
 #include <utils/Utils.h>
+#include <utils/Debug.h>
 #include <utils/ObserverPattern.h>
 #include <core/Filesystem.h>
 #include <core/ObjectWrapper.h>

@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include <string>
 
 #if defined(__WIN32__)
 #include <windows.h>
@@ -32,10 +33,10 @@ PluginLoader::~PluginLoader()
 void PluginLoader::clear()
 {
     // wyczyszczenie œcie¿ek
-    paths.swap(Paths());
+    Paths().swap(paths);
 
     //wyczyszczenie pluginów
-    plugins.swap(Plugins());
+    Plugins().swap(plugins);
 }
 
 void PluginLoader::unloadPlugins()
@@ -68,37 +69,37 @@ void PluginLoader::addDefaultPaths()
     std::string executableDir;
 
     retval = ::GetModuleFileName(NULL, path, size);
-    if (retval != 0 && retval < size) 
+    if (retval != 0 && retval < size)
     {
         std::string pathstr(path);
         executableDir = std::string( pathstr, 0, pathstr.find_last_of("\\/") );
         convertStringPathIntoFileDirList(executableDir, paths);
-    } 
-    else 
+    }
+    else
     {
         LOG_ERROR("Could not get application directory "
             "using Win32 API. It will not be searched.");
     }
 
     // katalog plugins
-    if (!executableDir.empty())  
+    if (!executableDir.empty())
     {
         std::string dirpath = executableDir;
         dirpath.append("\\plugins");
         convertStringPathIntoFileDirList(dirpath, paths);
-    } 
-    else 
+    }
+    else
     {
         LOG_ERROR("Could not get application directory -- plugins folder"
             "using Win32 API. It will not be searched.");
     }
 #elif defined(__UNIX__)
     // katalog uruchomieniowy
-    std::string dir = string(".");
+    std::string dir = std::string(".");
     paths.push_back(dir);
 
     // zagnie¿d¿ony katalog plugins
-    dir = string("plugins/.");
+    dir = std::string("plugins/.");
     paths.push_back(dir);
 #endif
 
@@ -129,17 +130,17 @@ void PluginLoader::load()
 #elif defined(__UNIX__)
     for(Paths::const_iterator itr = paths.begin(); itr!=paths.end(); ++itr)
     {
-        std::vector<string> files = vector<string>();
+        std::vector<std::string> files;
 
         DIR *dp;
         struct dirent *dirp;
-        if( (dp  = opendir(itr->c_str())) == NULL) 
+        if( (dp  = opendir(itr->c_str())) == NULL)
         {
             LOG_ERROR("Error(" << errno << ") opening " << (*itr));
             continue;;
         }
 
-        while ((dirp = readdir(dp)) != NULL) 
+        while ((dirp = readdir(dp)) != NULL)
         {
             addPlugIn(combinePath(*itr, dirp->d_name));
         }
@@ -189,7 +190,8 @@ bool PluginLoader::addPlugIn( const std::string& path )
     FreeLibrary(library);
     return false;
 #elif defined(__UNIX__)
-#error Dla UNIXa jeszcze nie zmienione
+// rev - tymczasowo wywalone
+/*#error Dla UNIXa jeszcze nie zmienione
     ISystemPlugin* iControlPlugin = NULL;
     typedef ISystemPlugin* (*pvFunction)();
     pvFunction createPlugin;
@@ -222,7 +224,7 @@ bool PluginLoader::addPlugIn( const std::string& path )
     {
         std::cout << "Loading Plugin -- Plugin Name :"<< iControlPlugin->GetPluginName() << std::endl;
         m_pluginList.push_back(iControlPlugin);
-    }
+    }*/
 #endif
 
     return true;
@@ -291,17 +293,17 @@ void PluginLoader::convertStringPathIntoFileDirList(const std::string& paths, Pa
 #else
     char delimitor = ':';
 #endif
-    if (!paths.empty()) 
+    if (!paths.empty())
     {
         std::string::size_type start = 0;
         std::string::size_type end;
-        while ( (end = paths.find_first_of(delimitor, start)) != std::string::npos) 
+        while ( (end = paths.find_first_of(delimitor, start)) != std::string::npos)
         {
             filepath.push_back(std::string(paths,start,end-start));
             start = end+1;
         }
         std::string lastPath(paths,start,std::string::npos);
-        if (!lastPath.empty()) 
+        if (!lastPath.empty())
         {
             filepath.push_back(lastPath);
         }
@@ -322,16 +324,16 @@ std::string PluginLoader::getFileName(const std::string& fileName)
 {
     std::string::size_type slash1 = fileName.find_last_of('/');
     std::string::size_type slash2 = fileName.find_last_of('\\');
-    if (slash1==std::string::npos) 
+    if (slash1==std::string::npos)
     {
-        if (slash2==std::string::npos) 
+        if (slash2==std::string::npos)
         {
             return fileName;
         }
         return std::string(fileName.begin()+slash2+1,fileName.end());
     }
-    if (slash2==std::string::npos) 
-    {   
+    if (slash2==std::string::npos)
+    {
         return std::string(fileName.begin()+slash1+1,fileName.end());
     }
     return std::string(fileName.begin()+(slash1>slash2?slash1:slash2)+1,fileName.end());
@@ -339,12 +341,14 @@ std::string PluginLoader::getFileName(const std::string& fileName)
 
 void PluginLoader::freeLibraries()
 {
-    for (size_t i = 0; i < libraries.size(); ++i) 
+    for (size_t i = 0; i < libraries.size(); ++i)
     {
 #if defined(__WIN32__)
         ::FreeLibrary( reinterpret_cast<HMODULE>(libraries[i]) );
 #elif defined(__UNIX__)
-#error Not implemented yet
+// rev - tymczasowo wywalone
+//#error Not implemented yet
+
 #endif
     }
     libraries.clear();
@@ -352,6 +356,8 @@ void PluginLoader::freeLibraries()
 
 bool PluginLoader::checkLibrariesVersions( HMODULE library, const std::string& path )
 {
+    // rev - czy to wszystko jest kodem Win32?
+    #if defined(__WIN32__)
     // pobranie wersji bibliotek
     auto libsVerProc = reinterpret_cast<Plugin::GetLibrariesVersionFunction>(
         ::GetProcAddress(library, STRINGIZE(CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME)));
@@ -384,10 +390,14 @@ bool PluginLoader::checkLibrariesVersions( HMODULE library, const std::string& p
         LOG_ERROR(path << " is a plugin, but finding " << STRINGIZE(CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME) << " failed");
         return false;
     }
+    #endif
+    return false;
 }
 
 bool PluginLoader::checkPluginVersion( HMODULE library, const std::string& path )
 {
+    // rev - czy to wszystko jest kodem Win32?
+    #if defined(__WIN32__)
     FARPROC versionProc = ::GetProcAddress(library, STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME));
     if ( versionProc ) {
         int version = reinterpret_cast<Plugin::GetVersionFunction>(versionProc)();
@@ -401,10 +411,14 @@ bool PluginLoader::checkPluginVersion( HMODULE library, const std::string& path 
         LOG_ERROR(path<<" is a .dll, but finding "<<STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
         return false;
     }
+    #endif
+    return false;
 }
 
 bool PluginLoader::checkPluginBuildType( HMODULE library, const std::string& path )
 {
+    // rev - czy to wszystko jest kodem Win32?
+    #if defined(__WIN32__)
     FARPROC buildTypeProc = ::GetProcAddress(library, STRINGIZE(CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME));
     if ( buildTypeProc ) {
         int buildType = reinterpret_cast<Plugin::GetBuildTypeFunction>(buildTypeProc)();
@@ -418,6 +432,8 @@ bool PluginLoader::checkPluginBuildType( HMODULE library, const std::string& pat
         LOG_ERROR(path<<" is a .dll, but finding "<<STRINGIZE(CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
         return false;
     }
+    #endif
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

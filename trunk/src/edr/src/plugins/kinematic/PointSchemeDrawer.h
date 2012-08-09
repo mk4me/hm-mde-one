@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_POINTSCHEMEDRAWER_H__
 #define HEADER_GUARD_POINTSCHEMEDRAWER_H__
 #include <osg/Geode>
-#include <plugins/kinematic/skeletalVisualizationScheme.h>
+#include <plugins/kinematic/SkeletalVisualizationScheme.h>
 #include "OsgSchemeDrawer.h"
 
 //! Schemat odrysowywujacy punkty

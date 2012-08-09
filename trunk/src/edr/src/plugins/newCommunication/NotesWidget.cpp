@@ -20,7 +20,7 @@ NoteDialog::NoteDialog(QWidget * parent) : QDialog(parent),
 
 	formLayout->addRow(tr("Title"), titleEdit);
 	formLayout->addRow(tr("Text"), textEdit);
-	
+
 	QHBoxLayout * hBoxLayout = new QHBoxLayout();
 	hBoxLayout->addWidget(acceptButton);
 	hBoxLayout->addItem(new QSpacerItem(0,0, QSizePolicy::Expanding, QSizePolicy::Fixed));
@@ -65,7 +65,7 @@ NotesWidget::~NotesWidget()
 void NotesWidget::setCurrentPatient(int patientID)
 {
 	currentPatientID = patientID;
-	
+
 	reloadPatientNotes();
 }
 
@@ -163,7 +163,7 @@ void NotesWidget::removeNote()
 
 	pNotes.erase(--pNotes.end());
 
-	notesTable->setSortingEnabled(sorting);	
+	notesTable->setSortingEnabled(sorting);
 
 	if(notesTable->rowCount() > 0){
 		notesTable->selectRow(0);
@@ -195,7 +195,7 @@ void NotesWidget::editNoteDialog()
 	connect(&dialog, SIGNAL(acceptRequest()), this, SLOT(noteDialogConfirm()));
 
 	int ret = dialog.exec();
-	
+
 	if(ret == QDialog::Accepted){
 		updateNote(QDateTime::currentDateTime(), dialog.titleEdit->text(), dialog.textEdit->toPlainText());
 	}
@@ -252,7 +252,7 @@ void NotesWidget::fillNotesList()
 			notesTable->setItem(row, 3, new QTableWidgetItem());
 		}
 	}else{
-		unsigned int rows = max(it->second.size(), 2);
+		unsigned int rows = (std::max)(it->second.size(), static_cast<PatientNotes::size_type>(2));
 		notesTable->setRowCount(rows);
 		unsigned int row = 0;
 		for( ; row < it->second.size(); ++row){
@@ -284,7 +284,7 @@ void NotesWidget::updateNote(const QDateTime & modified, const QString & title, 
 {
 	currentNote->modified = modified;
 	currentNote->title = title;
-	currentNote->text = text;	
+	currentNote->text = text;
 
 	//odœwie¿ listê danych (tabelê) - aktualny wpis
 	bool sorting = notesTable->isSortingEnabled();
@@ -296,7 +296,7 @@ void NotesWidget::updateNote(const QDateTime & modified, const QString & title, 
 
 	notesTable->setSortingEnabled(sorting);
 	//odœwie¿ treœæ notatki
-	loadNote();	
+	loadNote();
 }
 
 void NotesWidget::onCurrentNoteChange()
@@ -308,7 +308,7 @@ void NotesWidget::onCurrentNoteChange()
 
 	int noteID = -1;
 	auto idText = notesTable->item(notesTable->currentRow(), 0)->text();
-	
+
 	if(idText.isEmpty() == false){
 		noteID = idText.toInt();
 		if(notes.find(noteID) == notes.end()) {

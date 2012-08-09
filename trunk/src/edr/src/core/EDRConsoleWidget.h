@@ -3,8 +3,8 @@
     created:  4:5:2011   8:42
     filename: EDRConsoleWidget.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD_CORE__EDRCONSOLEWIDGET_H__
 #define HEADER_GUARD_CORE__EDRCONSOLEWIDGET_H__
@@ -15,6 +15,8 @@
 #include "Log.h"
 #include <core/SmartPtr.h>
 #include <queue>
+#include <QtCore/QDate>
+#include <QtCore/QMutex>
 
 //! Wpis do konsoli.
 struct EDRConsoleWidgetEntry {

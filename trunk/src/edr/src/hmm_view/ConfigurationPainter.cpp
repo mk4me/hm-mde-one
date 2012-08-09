@@ -1,6 +1,7 @@
 #include "ConfigurationPainter.h"
 #include <QtGui/QMouseEvent>
-
+#include <stdexcept>
+#include <utils/Debug.h>
 ConfigurationPainter::ConfigurationPainter( QWidget* parent ) :
 QWidget(parent),
     scale(1.0f)
@@ -94,9 +95,9 @@ IAreaPtr ConfigurationPainter::getArea( int x, int y )
     }
 
     if (clickedAreas.empty() == false) {
-        // jesli sa jakies obszary, na ktore kliknieto, to zwracany jest ten, 
-        // ktorego srodek jest blizej kursora 
-        auto lambda_sort = [&](const pair& left, const pair& right) 
+        // jesli sa jakies obszary, na ktore kliknieto, to zwracany jest ten,
+        // ktorego srodek jest blizej kursora
+        auto lambda_sort = [&](const pair& left, const pair& right)
         {
             return left.second < right.second;
         };

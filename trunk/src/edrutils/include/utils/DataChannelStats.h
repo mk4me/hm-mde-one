@@ -3,8 +3,8 @@
 	created:	10:12:2011   19:28
 	filename: 	DataChannelStats.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_UTILS__DATACHANNELSTATS_H__
@@ -23,11 +23,12 @@
 #include <boost/accumulators/framework/depends_on.hpp>
 #include <boost/accumulators/statistics_fwd.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/type_traits/add_reference.hpp>
 #include <utils/DataChannel.h>
 
-// Implementacje dodatkowych akumulatorow 
+// Implementacje dodatkowych akumulatorow
 namespace boost {
-	
+
 	namespace accumulators
 	{
 
@@ -52,7 +53,8 @@ namespace boost {
             template<typename Args>
             void operator ()(Args const &args)
             {
-                boost::add_reference<const Sample>::type current = args[sample];
+                typedef typename boost::add_reference<const Sample>::type SampleType;
+                SampleType current = args[sample];
                 if (current < minimum) {
                     minimum = current;
                     index = count;
@@ -96,7 +98,7 @@ namespace boost {
             template<typename Args>
             void operator ()(Args const &args)
             {
-                boost::add_reference<const Sample>::type current = args[sample];
+                typename boost::add_reference<const Sample>::type current = args[sample];
                 if (current > maximum) {
                     maximum = current;
                     index = count;
@@ -188,7 +190,7 @@ private:
 
 public:
 
-    ChannelStats(const ChannelPtr & channel) : 
+    ChannelStats(const ChannelPtr & channel) :
       useDefinedTimes(false),
       definedFrom(0),
       definedTo(channel->getLength())
@@ -196,7 +198,7 @@ public:
         init(channel);
     }
 
-    ChannelStats(const ChannelPtr& channel, const TimeType& from, const TimeType& to) : 
+    ChannelStats(const ChannelPtr& channel, const TimeType& from, const TimeType& to) :
         useDefinedTimes(true),
         definedFrom(from),
         definedTo(to)
@@ -278,7 +280,7 @@ public:
         return constChannel->argument(maximum().second);
     }
 
-   
+
     //! \return Variancja danych kana³u
     PointTypeConstReference varianceValue() const
     {
@@ -302,15 +304,15 @@ public:
     }
 
     //! \return czas, od ktorego liczone sa statystyki
-    TimeType getDefinedFrom() const 
-    { 
-        return definedFrom; 
+    TimeType getDefinedFrom() const
+    {
+        return definedFrom;
     }
 
     //! \return czas, do ktorego liczone sa statystyki
-    TimeType getDefinedTo() const 
-    { 
-        return definedTo; 
+    TimeType getDefinedTo() const
+    {
+        return definedTo;
     }
 
     const std::string& getTimeUnit() const
@@ -325,12 +327,12 @@ public:
         }
     }
 
-    const std::string& getValueUnit() const 
+    const std::string& getValueUnit() const
     {
         UTILS_ASSERT(channel);
         IChannelDescriptorReader* reader = dynamic_cast<IChannelDescriptorReader*>(channel.get());
         if (reader) {
-            return reader->getValueBaseUnit(); 
+            return reader->getValueBaseUnit();
         } else {
             static std::string dummy = "NA";
             return dummy;
@@ -349,7 +351,7 @@ protected:
 
         size_t from;
         size_t to;
-        
+
         if (useDefinedTimes) {
             // w jaki sposob brac probki?
             from = channel->getValueHelper(definedFrom).first;
@@ -358,7 +360,7 @@ protected:
             from = 0;
             to = channel->size();
         }
-        
+
 
         for(auto i = from; i < to; ++i){
             float val = channel->value(i);
@@ -371,10 +373,10 @@ protected:
         varianceVal = variance(sts);
     }
 
-    void init( const ChannelPtr & channel ) 
+    void init( const ChannelPtr & channel )
     {
-        this->channel = channel; 
-        this->constChannel = channel; 
+        this->channel = channel;
+        this->constChannel = channel;
         this->changed = false;
 
         if(channel == nullptr){
@@ -414,7 +416,7 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-} //namespace utils 
+} //namespace utils
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif

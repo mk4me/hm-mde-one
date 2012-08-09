@@ -3,7 +3,7 @@
 #include <map>
 #include <osg/Geode>
 #include <osg/Vec4f>
-#include <plugins/kinematic/skeletalVisualizationScheme.h>	
+#include <plugins/kinematic/SkeletalVisualizationScheme.h>
 #include "OsgSchemeDrawer.h"
 
 //! Schemat odrysowywujacy polaczenia pomiedzy punktami, polaczenia sa w formie cylindrow
@@ -58,7 +58,7 @@ private:
     std::vector<TransformPtr> cones;
     //! Wezel ze stworzonymi cylindrami
     osg::ref_ptr<osg::Group> node;
-    //! zlozonej pojedynczego cylindrami 
+    //! zlozonej pojedynczego cylindrami
     int complex;
     //! promien cylindra
     float radius;

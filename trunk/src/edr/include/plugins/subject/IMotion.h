@@ -3,12 +3,13 @@
     created:  3:11:2011   10:02
     filename: IMotion.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___IMOTION_H__
 #define HEADER_GUARD___IMOTION_H__
 
+#include <stdexcept>
 #include <plugins/subject/Types.h>
 #include <core/ObjectWrapper.h>
 #include <plugins/subject/ISession.h>
@@ -78,7 +79,7 @@ public:
         auto s = size();
         for(int i = 0; i < s; ++i){
             auto obj = get(i);
-            
+
             if(obj->getTypeInfo() == type || (exact == false && obj->isSupported(type))){
                 return true;
             }
@@ -92,7 +93,7 @@ public:
         auto s = size();
         for(int i = 0; i < s; ++i){
             auto obj = get(i);
-            
+
             if(obj->getTypeInfo() == type || (exact == false && obj->isSupported(type))){
                 return obj;
             }

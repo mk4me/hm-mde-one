@@ -97,7 +97,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     // toBegin action
     connect(timeToBeginAction, SIGNAL(triggered()), this, SLOT(toBegin()));
- 
+
     // toEnd action
     connect(timeToEndAction, SIGNAL(triggered()), this, SLOT(toEnd()));
 
@@ -138,9 +138,11 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     rootItem->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
 
     //nowy slider
-    slider->setScalePosition(QwtSlider::TopScale);
+
+    // rev - zmienilo sie troche API, nie ma juz TopScale
+    //slider->setScalePosition(QwtSlider::TopScale);
     slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    slider->setHandleSize(45,10);
+    slider->setHandleSize(QSize(45,10));
     slider->setSpacing(-6);
     slider->scaleDraw()->setTickLength(QwtScaleDiv::MinorTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MinorTick) + 4);
     slider->scaleDraw()->setTickLength(QwtScaleDiv::MajorTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MajorTick) + 4);
@@ -149,7 +151,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     connect(slider, SIGNAL(valueChanged(double)), this, SLOT(timeSliderChanged(double)));
 
     //channelsWidget->setItemWidget(rootItem, 2, slider);
-    //slider->setFixedHeight(slider->height() + 6);    
+    //slider->setFixedHeight(slider->height() + 6);
 
     channelsWidget->header()->setMinimumSectionSize(14);
     channelsWidget->header()->resizeSection(1, 14);
@@ -297,7 +299,7 @@ void TimelineWidget::refresh()
     refreshChannelsHierarchy();
     refreshChannels();
     refreshPlayerStatus();
-    
+
     //odblokuj komponenty
     slider->blockSignals(false);
     preciseTimeWidget->blockSignals(false);
@@ -363,7 +365,9 @@ void TimelineWidget::removeSelectedChannels()
 
 void TimelineWidget::timeSliderChanged(int value)
 {
-    getController()->setNormalizedTime((double)value / (slider->maxValue() - slider->minValue()));
+    // rev maxValue zmienione na maximum (to pewno to samo ;) )
+    //getController()->setNormalizedTime((double)value / (slider->maxValue() - slider->minValue()));
+    getController()->setNormalizedTime((double)value / (slider->maximum() - slider->minimum()));
 }
 
 void TimelineWidget::timeSliderChanged(double time)
@@ -426,7 +430,7 @@ void TimelineWidget::refreshChannelsHierarchy()
     std::set<QTreeWidgetItem*> uiNodes;
     std::set<timeline::Model::TChannelConstPtr> modelNodes;
 
-    for(int i = 0; i < rootItem->childCount(); ++i){    
+    for(int i = 0; i < rootItem->childCount(); ++i){
         uiNodes.insert(rootItem->child(i));
     }
 
@@ -445,7 +449,7 @@ void TimelineWidget::refreshChannelsHierarchy()
     for(auto it = missingItems.begin(); it != missingItems.end(); ++it){
         ChannelWidget * channelWidget = new ChannelWidget(getController(), *it, nullptr, 0, slider->getLeftMargin(), slider->getRightMargin());
         ChannelsTreeItem * item = new ChannelsTreeItem(*it, channelWidget);
-        
+
         modelToUIChannels[*it] = item;
 
         rootItem->addChild(item);
@@ -463,7 +467,7 @@ void TimelineWidget::refreshChannelsHierarchy()
         channelsWidget->setItemWidget(item, 1, checkBox);
     }
 
-    for(int i = 0; i < rootItem->childCount(); ++i){    
+    for(int i = 0; i < rootItem->childCount(); ++i){
         recursiveHierarchyRefresh(rootItem->child(i));
     }
 
@@ -474,7 +478,7 @@ void TimelineWidget::refreshChannelsHierarchy()
 
 void TimelineWidget::refreshChannels()
 {
-    for(int i = 0; i < rootItem->childCount(); ++i){    
+    for(int i = 0; i < rootItem->childCount(); ++i){
         recursiveRefreshChannels(rootItem->child(i));
     }
 }
@@ -483,7 +487,7 @@ void TimelineWidget::recursiveRefreshChannels(QTreeWidgetItem* uiNode)
 {
     reinterpret_cast<ChannelsTreeItem*>(uiNode)->refreschVisualChannel();
 
-    for(int i = 0; i < uiNode->childCount(); ++i){    
+    for(int i = 0; i < uiNode->childCount(); ++i){
         recursiveRefreshChannels(uiNode->child(i));
     }
 }
@@ -512,10 +516,13 @@ void TimelineWidget::refreshPlayerStatus()
     //ustawiamy slider z czasem
 
     if(getController()->getLength() > 0){
-        slider->setRange(getController()->getModel()->getBeginTime(), getController()->getModel()->getEndTime(), 0.001);
+        // rev - zmiana api
+        //slider->setRange(getController()->getModel()->getBeginTime(), getController()->getModel()->getEndTime(), 0.001);
+        slider->setScale(getController()->getModel()->getBeginTime(), getController()->getModel()->getEndTime(), 0.001);
         slider->setValue(getController()->getTime());
     }else{
-        slider->setValue(slider->minValue());
+        // rev - zmiana api
+        slider->setValue(slider->minimum());
     }
 
     //ustawiamy czas w oknie edycji textowej
@@ -574,7 +581,7 @@ void TimelineWidget::recursiveHierarchyRefresh(QTreeWidgetItem* uiNode)
 
     for(auto it = channelsTreeNode->getChannel()->begin(); it != channelsTreeNode->getChannel()->end(); ++it){
         modelNodes.insert( core::dynamic_pointer_cast<const timeline::Model::TChannel>(*it));
-    }    
+    }
 
     compareNodes(uiNodes, modelNodes, toDeleteItems, missingItems);
 

@@ -3,8 +3,8 @@
 	created:	18:1:2012   11:35
 	filename: 	HmmContexts.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__HMMCONTEXTS_H__
@@ -13,6 +13,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <QtGui/QPlainTextEdit>
 #include <QtGui/QComboBox>
+#include <QtGui/QTreeWidget>
 #include "FlexiTabWidget.h"
 #include "IAppUsageContextManager.h"
 

@@ -6,7 +6,7 @@ using namespace communication;
 
 PerspectiveTreeWidget::PerspectiveTreeWidget(QWidget * parent) : QTreeWidget(parent)
 {
-	
+
 }
 
 PerspectiveTreeWidget::~PerspectiveTreeWidget()
@@ -153,7 +153,7 @@ const std::string DataSourceDisorderPerspective::name() const
 void DataSourceDisorderPerspective::rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy)
 {
 	auto disordersITEnd = shallowCopy.medicalShallowCopy->patientsByDisorder.end();
-	for(auto disorderIT = shallowCopy.medicalShallowCopy->patientsByDisorder.begin(); disorderIT != disordersITEnd; ++disorderIT){		
+	for(auto disorderIT = shallowCopy.medicalShallowCopy->patientsByDisorder.begin(); disorderIT != disordersITEnd; ++disorderIT){
 
 		if(disorderIT->second.empty() == true){
 			continue;
@@ -234,5 +234,5 @@ bool DataSourceGenderPerspective::headers(const QTreeWidgetItem * item, QStringL
 
 void DataSourceGenderPerspective::release()
 {
-	contentMap.swap(std::map<const QTreeWidgetItem*, char>());
+	std::map<const QTreeWidgetItem*, char>().swap(contentMap);
 }

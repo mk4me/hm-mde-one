@@ -9,8 +9,7 @@
 class LineSchemeDrawer : public OsgSchemeDrawer
 {
 public:
-    LineSchemeDrawer(DataToDraw toDraw) :
-      dataToDraw(toDraw)
+    LineSchemeDrawer()
       {
       }
 
@@ -26,7 +25,7 @@ private:
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
     typedef VisualizationScheme::Connection Connection;
     typedef VisualizationScheme::State JointState;
-    
+
 private:
     void addLine(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color);
 
@@ -34,7 +33,6 @@ private:
     std::vector<GeodePtr> lines;
     std::vector< osg::ref_ptr<osg::Vec3Array> > buffers;
     osg::ref_ptr<osg::Group> node;
-    DataToDraw dataToDraw;
 };
 
 class ConeDrawer : public OsgSchemeDrawer
@@ -60,7 +58,6 @@ private:
 private:
     std::vector<TransformPtr> cones;
     osg::ref_ptr<osg::Group> node;
-    DataToDraw dataToDraw;
 };
 
 #endif

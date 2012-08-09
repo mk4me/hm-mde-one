@@ -2,9 +2,11 @@
 #include <core/ILog.h>
 #include "Log.h"
 #include "ServiceManager.h"
-
+#include <core/ManagerHelper.h>
 #include <core/IDataManager.h>
 
+// rev czy na pewno specjalizacja jest tutaj rozwiazaniem?
+template<>
 ServiceManager * ManagerHelper<ServiceManager>::manager = nullptr;
 
 ServiceManager::ServiceManager()
@@ -14,7 +16,7 @@ ServiceManager::ServiceManager()
 
 ServiceManager::~ServiceManager(void)
 {
-	
+
 }
 
 void ServiceManager::update(double deltaTime)
@@ -55,7 +57,7 @@ void ServiceManager::finalizeServices()
 void ServiceManager::registerService(core::IServicePtr service)
 {
     if (servicesMap.find(service->getID()) == servicesMap.end()) {
-        servicesMap.insert( std::make_pair(service->getID(), service)); 
+        servicesMap.insert( std::make_pair(service->getID(), service));
         servicesList.push_back(service);
         LOG_INFO("Service " << service->getName() << " registered.");
     } else {
@@ -81,7 +83,7 @@ core::IServicePtr ServiceManager::getService( UniqueID id )
 {
     ServicesMap::iterator it = servicesMap.find(id);
     if (it != servicesMap.end()) {
-        return it->second; 
+        return it->second;
     } else {
         return core::IServicePtr();
     }

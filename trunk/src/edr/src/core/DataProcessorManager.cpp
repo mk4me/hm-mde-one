@@ -1,8 +1,11 @@
 #include "CorePCH.h"
+#include <utils/Debug.h>
 #include "DataProcessorManager.h"
 
 using namespace core;
 
+// rev - specjalizacja
+template<>
 DataProcessorManager * ManagerHelper<DataProcessorManager>::manager = nullptr;
 
 DataProcessorManager::DataProcessorManager()
@@ -20,7 +23,7 @@ DataProcessorManager::~DataProcessorManager()
 
 IDataProcessorConstPtr DataProcessorManager::getPrototype( UniqueID id ) const
 {
-    IDataProcessors::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(), 
+    IDataProcessors::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
         [=](const IDataProcessorConstPtr& ptr) { return ptr->getID() == id; }
     );
     if ( found != prototypes.end() ) {
@@ -72,7 +75,7 @@ void DataProcessorManager::registerDataProcessor(const IDataProcessorPtr & dataP
 
 int DataProcessorManager::getPrototypeIdx( UniqueID id ) const
 {
-    IDataProcessors::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(), 
+    IDataProcessors::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
         [=](const IDataProcessorPtr& ptr) { return ptr->getID() == id; }
     );
     if ( found != prototypes.end() ) {

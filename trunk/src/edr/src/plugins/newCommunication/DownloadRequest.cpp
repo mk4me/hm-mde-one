@@ -12,7 +12,7 @@ DownloadRequest::DownloadRequest() : state_(Created), currentTransferID(0), tota
 	singleTransferCallbacks.onEndCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onDownloadComplete, this, _1);
 	singleTransferCallbacks.onCancelCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onDownloadCancel, this, _1);
 	singleTransferCallbacks.onErrorCallback = (CommunicationManager::RequestErrorCallback)boost::bind(&DownloadRequest::onDownloadError, this, _1, _2);
-	
+
 	//inicjalizacja callbacków ca³ego pakietu transferów
 	complexTransferCallbacks.onBeginCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onFullDownloadStart, this, _1);
 	complexTransferCallbacks.onEndCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onFullDownloadComplete, this, _1);
@@ -33,7 +33,7 @@ DownloadRequest * DownloadRequest::createFilesRequest(const std::map<int, FileDe
 		completeRequest.request = communicationManager->createRequestFile(it->first, it->second.destPath);
 		completeRequest.callbacks = ret->singleTransferCallbacks;
         filesRequests.push_back(completeRequest);
-        
+
 		ret->totalSize_ += it->second.size;
         ret->filesSizes[it->first] = it->second.size;
     }
@@ -92,7 +92,7 @@ DownloadRequest * DownloadRequest::createShallowCopyRequest(const std::map<Commu
 				ret->totalSize_ += it->second.size;
 				ret->filesSizes[it->first] = it->second.size;
 			}
-		}		
+		}
 	}
 
 	ret->request_ = communicationManager->createRequestComplex(filesRequests);
@@ -129,7 +129,7 @@ void DownloadRequest::cancel()
 	}
 
     CommunicationManager::getInstance()->cancelRequest(request_);
-	
+
 	state_ = FinishedCancel;
 
 	notify();
@@ -166,7 +166,7 @@ const float DownloadRequest::currentFileProgress() const
     if(currentTransfer != nullptr){
         return currentTransfer->getProgress();
     }
-    
+
     return 0;
 }
 
@@ -215,13 +215,13 @@ const int DownloadRequest::totalFilesToDownload() const
 const int DownloadRequest::filesDownloaded() const
 {
 	ScopedLock lock(stateMutex);
-    return max(currentTransferID - 1, 0);
+    return (std::max)(currentTransferID - 1, 0);
 }
 
 const int DownloadRequest::currentFile() const
 {
     ScopedLock lock(stateMutex);
-    return max(currentTransferID, 1);
+    return (std::max)(currentTransferID, 1);
 }
 
 const long DownloadRequest::getRequestSize(const CommunicationManager::BasicRequestPtr & request) const
@@ -290,7 +290,7 @@ void DownloadRequest::onDownloadCancel(const CommunicationManager::BasicRequestP
 			state_ = FinishedCancel;
 		}
 	}
-    
+
 	if(state_ == FinishedCancel){
 		notify();
 	}

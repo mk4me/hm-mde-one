@@ -3,21 +3,23 @@
 	created:  17:2:2011   14:06
 	filename: C3DChannels.h
 	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+
+	purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_C3D__C3DCHANNELS_H__
 #define __HEADER_GUARD_C3D__C3DCHANNELS_H__
 
 #include <core/SmartPtr.h>
+#include <stdexcept>
+#include <utils/Debug.h>
 #include <utils/DataChannel.h>
 #include <utils/DataChannelModifiers.h>
 #include <utils/DataChannelStats.h>
 #include <utils/DataChannelCollection.h>
 #include <utils/DataChannelAccessors.h>
 #include <utils/DataChannelTimers.h>
+#include <utils/PtrPolicyBoost.h>
 #include <core/ObjectWrapper.h>
-#include <osg/Vec3>
 #include <c3dlib/C3DParser.h>
 
 typedef utils::ITimerReader<float>::TimerReaderType TimerReader;
@@ -126,49 +128,49 @@ public:
 
 	//! \return
 	virtual const std::string& getTimeBaseUnit() const
-	{ 
+	{
 		return descriptor.getTimeBaseUnit();
 	}
 
 	//! \return
 	virtual float getTimeScaleFactor() const
-	{ 
+	{
 		return descriptor.getTimeScaleFactor();
 	}
 
 	//! \return
 	virtual const std::string& getValueBaseUnit() const
-	{ 
+	{
 		return descriptor.getValueBaseUnit();
 	}
 
 	//! \return
 	virtual float getValueScaleFactor() const
-	{ 
+	{
 		return descriptor.getValueScaleFactor();
 	}
 
 	//! \param timeBaseUnit
-	virtual void setTimeBaseUnit(const std::string& timeBaseUnit) 
-	{ 
+	virtual void setTimeBaseUnit(const std::string& timeBaseUnit)
+	{
 		descriptor.setTimeBaseUnit(timeBaseUnit);
 	}
 
 	//! \param timeBaseUnit
-	virtual void setTimeScaleFactor(float timeScaleFactor) 
-	{ 
+	virtual void setTimeScaleFactor(float timeScaleFactor)
+	{
 		descriptor.setTimeScaleFactor(timeScaleFactor);
 	}
 
 	//! \param yUnit
-	virtual void setValueBaseUnit(const std::string& valueBaseUnit) 
-	{ 
+	virtual void setValueBaseUnit(const std::string& valueBaseUnit)
+	{
 		descriptor.setValueBaseUnit(valueBaseUnit);
 	}
 
 	//! \param timeBaseUnit
-	virtual void setValueScaleFactor(float valueScaleFactor) 
-	{ 
+	virtual void setValueScaleFactor(float valueScaleFactor)
+	{
 		descriptor.setValueScaleFactor(valueScaleFactor);
 	}
 
@@ -258,49 +260,49 @@ public:
 
 	//! \return
 	virtual const std::string& getTimeBaseUnit() const
-	{ 
+	{
 		return descriptor.getTimeBaseUnit();
 	}
 
 	//! \return
 	virtual float getTimeScaleFactor() const
-	{ 
+	{
 		return descriptor.getTimeScaleFactor();
 	}
 
 	//! \return
 	virtual const std::string& getValueBaseUnit() const
-	{ 
+	{
 		return descriptor.getValueBaseUnit();
 	}
 
 	//! \return
 	virtual float getValueScaleFactor() const
-	{ 
+	{
 		return descriptor.getValueScaleFactor();
 	}
 
 	//! \param timeBaseUnit
-	virtual void setTimeBaseUnit(const std::string& timeBaseUnit) 
-	{ 
+	virtual void setTimeBaseUnit(const std::string& timeBaseUnit)
+	{
 		descriptor.setTimeBaseUnit(timeBaseUnit);
 	}
 
 	//! \param timeBaseUnit
-	virtual void setTimeScaleFactor(float timeScaleFactor) 
-	{ 
+	virtual void setTimeScaleFactor(float timeScaleFactor)
+	{
 		descriptor.setTimeScaleFactor(timeScaleFactor);
 	}
 
 	//! \param yUnit
-	virtual void setValueBaseUnit(const std::string& valueBaseUnit) 
-	{ 
+	virtual void setValueBaseUnit(const std::string& valueBaseUnit)
+	{
 		descriptor.setValueBaseUnit(valueBaseUnit);
 	}
 
 	//! \param timeBaseUnit
-	virtual void setValueScaleFactor(float valueScaleFactor) 
-	{ 
+	virtual void setValueScaleFactor(float valueScaleFactor)
+	{
 		descriptor.setValueScaleFactor(valueScaleFactor);
 	}
 
@@ -408,7 +410,7 @@ public:
     EMGChannel(const c3dlib::C3DParser& data, int channelNo) :
     C3DAnalogChannel(data, channelNo)
     {}
-        
+
 public:
     virtual EMGChannel* clone() const
     {
@@ -522,16 +524,16 @@ public:
 	bool hasStartEndData() const { return dataStart >= 0.0f && dataEnd >= 0.0f; }
 	float getDataStartTime() const { UTILS_ASSERT(dataStart >= 0.0f); return dataStart; }
 	float getDataEndTime() const { UTILS_ASSERT(dataEnd >= 0.0f); return dataEnd; }
-	
+
 	osg::Vec3 getEndPoint() const { UTILS_ASSERT(dataStart >= 0.0f); return endPoint; }
 	osg::Vec3 getStartPoint() const { UTILS_ASSERT(dataEnd >= 0.0f); return startPoint; }
-	
+
 private:
 	Type type;
 	float treshold;
 	float dataStart, dataEnd;
 	osg::Vec3 startPoint, endPoint;
-	
+
 };
 typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
 typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
@@ -539,9 +541,9 @@ typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 //! Kanal zawiera dane o jednym markerze
 class MarkerChannel : public VectorChannel
 {
-public:  
+public:
     MarkerChannel(int samplesPerSec) : VectorChannel(samplesPerSec) {}
-        
+
     MarkerChannel(const MarkerChannel& channel) :
         VectorChannel(channel)
         { }
@@ -602,8 +604,8 @@ typedef boost::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 		virtual name##Channel* clone() const {  return new name##Channel(*this); }				 \
 	};												 											 \
 	typedef core::shared_ptr<name##Channel> name##ChannelPtr;									 \
-	typedef core::shared_ptr<const name##Channel> name##ChannelConstPtr;						 \
-	
+	typedef core::shared_ptr<const name##Channel> name##ChannelConstPtr;
+
 
 DEFINE_CHANNEL(Force);
 DEFINE_CHANNEL(Moment);

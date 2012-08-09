@@ -18,7 +18,7 @@ class OsgImageLoader : public FileSequenceVideoStream::ILoader
     osg::ref_ptr<osgDB::Options> options;
 
 public:
-    OsgImageLoader(osgDB::Options* options) 
+    OsgImageLoader(osgDB::Options* options)
         : options(options)
     {
     }
@@ -56,8 +56,8 @@ public:
 
 
 
-VideoParser::VideoParser() : 
-	adapter(core::ObjectWrapper::create<::VideoStream>()),
+VideoParser::VideoParser() :
+	adapter(core::ObjectWrapper::create< ::VideoStream>()),
 	channelWrapper(core::ObjectWrapper::create<VideoChannel>())
 {
 }
@@ -69,7 +69,7 @@ VideoParser::~VideoParser()
 void VideoParser::parseFile(const core::Filesystem::Path& path)
 {
     if ( core::Filesystem::fileExtension(path).compare(".imgsequence") == 0 ) {
-        
+
         std::ostringstream errbuff;
         TiXmlDocument document(path.string());
         if ( !document.LoadFile() ) {
@@ -94,7 +94,7 @@ void VideoParser::parseFile(const core::Filesystem::Path& path)
             }
             LOG_INFO(directory << " " << framerate);
 
-            
+
             // ustawienie œcie¿ki do katalogu
             core::Filesystem::Path dirPath = directory;
             if ( !dirPath.is_complete() ) {

@@ -9,10 +9,10 @@ macro(ON_PROJECT_ADDED name)
 	# flaga aby mozna bylo uzyc projektu w makrach
 	set(${name}_FOUND 1 PARENT_SCOPE)
 	# kopiujemy includy
-	#list(APPEND ${DEFAULT_PROJECT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR})
-	#set(${name}_INCLUDE_DIR ${DEFAULT_PROJECT_INCLUDES} CACHE STRING INTERNAL FORCE)
-	set(${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
-	#list(APPEND ${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+	list(APPEND ${DEFAULT_PROJECT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR})
+	set(${name}_INCLUDE_DIR ${DEFAULT_PROJECT_INCLUDES} CACHE STRING INTERNAL FORCE)
+	#set(${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+	list(APPEND ${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 	# co budujemy?
 	get_target_property(BUILD_TYPE ${name} TYPE)
 	
@@ -33,7 +33,8 @@ macro(ON_PROJECT_ADDED name)
 		foreach(value ${DEFAULT_PROJECT_DEPENDENCIES})
 			list(APPEND ${name}_LIBRARIES_PROXY ${${value}_LIBRARIES})
 		endforeach()
-		#set(${name}_LIBRARIES ${${name}_LIBRARIES_PROXY} PARENT_SCOPE)
+		# // rev - przywrocona linijka ponizej
+		set(${name}_LIBRARIES ${${name}_LIBRARIES_PROXY} PARENT_SCOPE)
 	endif()
 	
 	

@@ -349,7 +349,7 @@ namespace utils {
 		//! Czyœci wszystkie próbki
 		void clear()
 		{
-			timeData.swap(TimeData());
+			TimeData().swap(timeData);
 		}
 	};
 

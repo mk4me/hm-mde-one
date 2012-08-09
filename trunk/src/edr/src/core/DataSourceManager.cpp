@@ -1,8 +1,11 @@
 #include "CorePCH.h"
+#include <QtGui/QMessageBox>
 #include "DataSourceManager.h"
 
 using namespace core;
 
+// rev
+template <>
 DataSourceManager * ManagerHelper<DataSourceManager>::manager = nullptr;
 
 DataSourceManager::DataSourceManager()
@@ -17,7 +20,7 @@ DataSourceManager::~DataSourceManager()
 
 IDataSourceConstPtr DataSourceManager::getPrototype( UniqueID id ) const
 {
-    IDataSources::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(), 
+    IDataSources::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
         [=](const IDataSourceConstPtr& ptr) { return ptr->getID() == id; }
     );
     if ( found != prototypes.end() ) {
@@ -63,7 +66,7 @@ DataSourcePtr DataSourceManager::createDataSource( const IDataSourceConstPtr& pr
         //throw std::runtime_error(std::string("Source: ") + src->getName() + std::string(" ID: ") + boost::lexical_cast<std::string>(src->getID()) + std::string(" created without any outputs!"));
         return DataSourcePtr();
     }
-    
+
     DataSourcePtr result(new DataSource(src));
     return result;
 }
@@ -86,7 +89,7 @@ void DataSourceManager::registerDataSource(const IDataSourcePtr & dataProcesor )
 
 int DataSourceManager::getPrototypeIdx( UniqueID id ) const
 {
-    IDataSources::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(), 
+    IDataSources::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
         [=](const IDataSourcePtr& ptr) { return ptr->getID() == id; }
     );
     if ( found != prototypes.end() ) {

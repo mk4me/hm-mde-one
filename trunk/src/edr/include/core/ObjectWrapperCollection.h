@@ -11,6 +11,7 @@
 #define HEADER_GUARD_CORE__OBJECTWRAPPERCOLLECTION_H__
 
 #include <vector>
+#include <stdexcept>
 #include <core/ObjectWrapper.h>
 
 class DataManager;
@@ -49,7 +50,9 @@ private:
     //! Czy kolekcja przechowyje elementy wylacznie danego typu czy rowniez pochodne mu
     bool exact;
 
-private:
+// rev - zmiana na public, bo z tej metody korzysta DataManager
+// gcc jakos nie widzi slowa friend wczesniej !?
+public:
 
     //! Metoda dedykowana DataManager do szybkiego ³adowania kolekcji bez sprawdzania typów ladowanych danych - powinno byc juz sprawdzone i zagwarantowane
     //! \param begin Iterator pocz¹tku zakresu ObjectWrapperPtr

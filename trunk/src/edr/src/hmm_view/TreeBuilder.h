@@ -3,14 +3,15 @@
 	created:	12:10:2011   12:28
 	filename: 	TreeBuilder.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__TREEBUILDER_H__
 #define HEADER_GUARD_HMM__TREEBUILDER_H__
 
 #include <plugins/subject/Types.h>
+#include "TreeItemHelper.h"
 
 //! Klasa sluzy do budowania drzewa danych w analizach
 class TreeBuilder
@@ -55,15 +56,15 @@ public:
         core::ObjectWrapperConstPtr collection = motion->getWrapperOfType(typeid(Collection));
         QTreeWidgetItem* rootItem = new QTreeWidgetItem();
         rootItem->setIcon(0, rootIcon);
-        rootItem->setText(0, rootName);		
+        rootItem->setText(0, rootName);
 
-        CollectionConstPtr m = collection->get(); 
+        CollectionConstPtr m = collection->get();
         tryAddVectorToTree<Channel>(motion, m, "Collection", itemIcon, rootItem, false);
         return rootItem;
     }
 
     template <class Channel, class CollectionPtr>
-    static void tryAddVectorToTree(const PluginSubject::MotionConstPtr & motion, const CollectionPtr & collection, const std::string& name, const QIcon& childIcon, QTreeWidgetItem* parentItem, bool createContainerItem = true ) 
+    static void tryAddVectorToTree(const PluginSubject::MotionConstPtr & motion, const CollectionPtr & collection, const std::string& name, const QIcon& childIcon, QTreeWidgetItem* parentItem, bool createContainerItem = true )
     {
         if (collection) {
             std::vector<core::ObjectWrapperConstPtr> wrappers;
@@ -80,22 +81,22 @@ public:
             QTreeWidgetItem* collectionItem;
             if (createContainerItem) {
                 collectionItem = new QTreeWidgetItem();
-                collectionItem->setText(0, name.c_str());	
+                collectionItem->setText(0, name.c_str());
                 parentItem->addChild(collectionItem);
             } else {
                 collectionItem = parentItem;
             }
             int count = wrappers.size();
-            for (int i = 0; i < count; ++i) {	
+            for (int i = 0; i < count; ++i) {
                 VectorChannelConstPtr c = wrappers[i]->get();
-                TreeItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i]));			
+                TreeItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i]));
                 channelHelper->setMotion(motion);
 
                 HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);
-                channelItem->setIcon(0, childIcon);	
+                channelItem->setIcon(0, childIcon);
                 channelItem->setItemAndHelperText(c->getName().c_str());
-                collectionItem->addChild(channelItem);		
-            }	
+                collectionItem->addChild(channelItem);
+            }
         }
     }
 private:

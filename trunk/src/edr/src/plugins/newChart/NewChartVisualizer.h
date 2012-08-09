@@ -3,8 +3,8 @@
 	created:	12:11:2011   15:12
 	filename: 	ChartVisualizer.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_NEW_CHART__CHARTVISUALIZER_H__
@@ -16,6 +16,13 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QPushButton>
 #include <QtGui/QSpinBox>
+#include <qwt/qwt_plot.h>
+#include <qwt/qwt_plot_marker.h>
+#include <qwt/qwt_plot_grid.h>
+#include <qwt/qwt_plot_item.h>
+#include <qwt/qwt_plot_zoomer.h>
+#include <qwt/qwt_plot_panner.h>
+#include <qwt/qwt_plot_magnifier.h>
 #include <core/IVisualizer.h>
 #include <core/IObjectSource.h>
 #include <plugins/c3d/C3DChannels.h>
@@ -41,7 +48,7 @@ class NewChartVisualizer : public QObject, public INewChartVisualizer
 public:
     NewChartVisualizer();
 	virtual ~NewChartVisualizer();
-    
+
 public:
       //! \return wykres QWT, ktory jest sercem wizualizatora
       QwtPlot* getPlot();
@@ -75,7 +82,7 @@ public:
       //! \param info zwracana struktura z opisami
       virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info);
       //! Metoda wywo³ywana w momencie dostarczenia nowych danych do przetwarzania, nie wykorzystywana
-      //! \param source 
+      //! \param source
       virtual void setUp(core::IObjectSource* source);
       //! Metoda wywolywana cyklicznie pozwala odswiezyc stan wizualizatora
       //! \param deltaTime czas od ostatniego wywolania metody
@@ -96,8 +103,8 @@ public:
       //! \param val wlacza/wylacza rysowanie legendy
       void setShowLegend(bool val);
       //! Filtrowanie eventow Qt, przekazywane do obiektu obslugujacego stan wizualizatora
-      //! \param object 
-      //! \param event 
+      //! \param object
+      //! \param event
       bool eventFilter( QObject *object, QEvent *event );
       //! \return wszystkie serie aktyalnie obslugiwane przez wizualizator
       boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> getSeries() const;
@@ -118,7 +125,7 @@ private:
       //! \param val kolekcja ze zdarzeniami
       void setEvents(NewChartSerie* serie, EventsCollectionConstPtr val );
       //! Tworzy drzewo ze statystykami
-      //! \param stats 
+      //! \param stats
       void recreateStats(ScalarChannelStatsConstPtr stats = ScalarChannelStatsConstPtr());
       //! Odswieza widzialne serie, przypisanie wspolrzednej Z (przykrywanie)
       void refreshSerieLayers();
@@ -142,42 +149,42 @@ private:
       void plotChanged();
       //! Odswieza dodatkowe krzywe
       void refreshBounds();
-      //! chowa lub pokazuje wszystkie etykiety 
+      //! chowa lub pokazuje wszystkie etykiety
       void setLabelsVisible(bool);
       //! Tworzy kroczaca srednia dla wykresu
-      //! \param startIdx 
-      //! \param endIdx 
-      //! \param inReal 
-      //! \param optInTimePeriod 
-      //! \param outBegIdx 
-      //! \param outNBElement 
-      //! \param outReal 
+      //! \param startIdx
+      //! \param endIdx
+      //! \param inReal
+      //! \param optInTimePeriod
+      //! \param outBegIdx
+      //! \param outNBElement
+      //! \param outReal
       void simpleMovingAverage(int startIdx, int endIdx, const std::vector<float> & inReal,
           int optInTimePeriod, int & outBegIdx, int & outNBElement, std::vector<float> & outReal);
       //! tworzy ograniczenia - gorne i dolne krzywych
-      //! \param startIdx 
-      //! \param endIdx 
-      //! \param inReal 
-      //! \param optInTimePeriod 
-      //! \param optInNbDevUp 
-      //! \param optInNbDevDn 
-      //! \param outBegIdx 
-      //! \param outNBElement 
-      //! \param outRealUpperBand 
-      //! \param outRealMiddleBand 
-      //! \param outRealLowerBand 
+      //! \param startIdx
+      //! \param endIdx
+      //! \param inReal
+      //! \param optInTimePeriod
+      //! \param optInNbDevUp
+      //! \param optInNbDevDn
+      //! \param outBegIdx
+      //! \param outNBElement
+      //! \param outRealUpperBand
+      //! \param outRealMiddleBand
+      //! \param outRealLowerBand
       void bbands( int startIdx, int endIdx, const std::vector<float> & inReal,
           int optInTimePeriod, double optInNbDevUp, double optInNbDevDn, int & outBegIdx, int & outNBElement,
           std::vector<float> & outRealUpperBand,
           std::vector<float> & outRealMiddleBand,
           std::vector<float> & outRealLowerBand);
       //! Tworzy odchylenie standardowe
-      //! \param inReal 
-      //! \param inMovAvg 
-      //! \param inMovAvgBegIdx 
-      //! \param inMovAvgNbElement 
-      //! \param timePeriod 
-      //! \param output 
+      //! \param inReal
+      //! \param inMovAvg
+      //! \param inMovAvgBegIdx
+      //! \param inMovAvgNbElement
+      //! \param timePeriod
+      //! \param output
       void stddev_using_precalc_ma( const std::vector<float> & inReal,
           const std::vector<float> & inMovAvg,
           int inMovAvgBegIdx,
@@ -330,5 +337,5 @@ typedef core::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef core::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;
 
 
-    
-#endif  
+
+#endif

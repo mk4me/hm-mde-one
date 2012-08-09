@@ -3,8 +3,8 @@
     created:  15:7:2011   12:35
     filename: KinematicVisualizer.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___KINEMATICVISUALIZER_H__
 #define HEADER_GUARD___KINEMATICVISUALIZER_H__
@@ -13,6 +13,7 @@
 
 #include <core/IVisualizer.h>
 #include <osg/Geode>
+#include <osgGA/OrbitManipulator>
 #include <osgManipulator/Dragger>
 #include <osgManipulator/Command>
 #include <osgui/QOsgWidgets.h>
@@ -20,7 +21,8 @@
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 #include <QtGui/QDoubleSpinBox>
-#include <plugins/kinematic/skeletalVisualizationScheme.h>
+#include <QtGui/QComboBox>
+#include <plugins/kinematic/SkeletalVisualizationScheme.h>
 #include "ISchemeDrawer.h"
 #include "OsgSchemeDrawer.h"
 #include "LineSchemeDrawer.h"
@@ -74,7 +76,7 @@ public:
     //! Zwraca informacje o obslugiwanych danych
     //! \param info kolecja z typami danych
     virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info );
-    //! Tworzy widget w ktorym znajduje sie 
+    //! Tworzy widget w ktorym znajduje sie
     //! \param manager Manager Flexi Bara
     virtual QWidget* createWidget(core::IActionsGroupManager * manager);
     //! Tworzy ikone
@@ -104,9 +106,9 @@ private:
     //! \return wyliczone katy Eulera
     osg::Vec3 getEulerFromQuat(const osg::Quat& q);
     //! Metoda pomocnicza, do konwersji zapisu rotacji
-    //! \param heading 
-    //! \param attitude 
-    //! \param bank 
+    //! \param heading
+    //! \param attitude
+    //! \param bank
     //! \return wyliczony kwaternion
     osg::Quat getQuatFromEuler(double heading, double attitude, double bank);
     //! Metoda pomocnicza, do konwersji zapisu rotacji
@@ -209,13 +211,13 @@ private slots:
 	void setLeft();
 	//! Ustawia widok sceny - strona prawa
 	void setRight();
-	//! Ustawia widok sceny - od przodu 
+	//! Ustawia widok sceny - od przodu
 	void setFront();
-	//! Ustawia widok sceny - z tylu 
+	//! Ustawia widok sceny - z tylu
 	void setBehind();
-	//! Ustawia widok sceny - z gory 
+	//! Ustawia widok sceny - z gory
 	void setTop();
-	//! Ustawia widok sceny - od dolu 
+	//! Ustawia widok sceny - od dolu
 	void setBottom();
     //! Zmienil sie stan manipulatora
     void draggerTriggered();

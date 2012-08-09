@@ -40,7 +40,7 @@ LocalDataLoader::LocalDataLoader(DataSourceWidget * sourceWidget) : sourceWidget
 
 LocalDataLoader::~LocalDataLoader()
 {
-		
+
 }
 
 void LocalDataLoader::run()
@@ -89,7 +89,7 @@ void LocalDataLoader::run()
 			try{
 				core::Filesystem::deleteFile(*it);
 			}catch(...){
-				
+
 			}
 		}
 	}else{
@@ -102,8 +102,8 @@ void LocalDataLoader::run()
 		sourceWidget->shallowCopyRequest.reset();
 	}
 
-	sourceWidget->filesToDownload.swap(std::set<int>());
-	sourceWidget->downloadedFiles.swap(std::vector<std::string>());
+	std::set<int>().swap(sourceWidget->filesToDownload);
+	std::vector<std::string>().swap(sourceWidget->downloadedFiles);
 
 	sourceWidget->currentDownloadRequest.reset();
 }
@@ -389,16 +389,16 @@ QIcon DataSourceWidget::statusIcon(const communication::DataStorage storage, con
 
 QPixmap DataSourceWidget::mergePixmaps(const QPixmap & pmL, const QPixmap & pmR)
 {
-	int halfWidth = max(pmL.width(), pmR.width());
-	int width = max(pmL.width() + pmR.width(), 2 * halfWidth);
+	int halfWidth = (std::max)(pmL.width(), pmR.width());
+	int width = (std::max)(pmL.width() + pmR.width(), 2 * halfWidth);
 	int pomHalfWidth = halfWidth/4;
 	width += pomHalfWidth;
 
-	int height = max(pmL.height(), pmR.height());
+	int height = (std::max)(pmL.height(), pmR.height());
 
 	QPixmap ret(width, height);
 
-	QPainter painter(&ret);    
+	QPainter painter(&ret);
 	painter.fillRect(0,0, width, height, Qt::white);
 
 	painter.setOpacity(1);
@@ -523,7 +523,7 @@ void DataSourceWidget::onPerspectiveSelectionChanged()
 	getPatientAndSubject(current, patient, subject);
 
 	patientCardManager.currentPatientCard()->setPatient(patient, subject, QPixmap(), dataSource->currentUser_.userData());
-	
+
 	//nag³ówek danych
 	QStringList headers;
 	bool ok = perspectiveManager.currentPerspective()->headers(current, headers);
@@ -544,7 +544,7 @@ void DataSourceWidget::onPerspectiveSelectionChanged()
 
 
 void DataSourceWidget::onFilterChange(int idx)
-{	
+{
 	try{
 
 		ShallowCopy tmpShallow;
@@ -556,7 +556,7 @@ void DataSourceWidget::onFilterChange(int idx)
 			//nie trzeba filtrowaæ - wystarczy przepisaæ
 			tmpShallow = dataSource->fullShallowCopy;
 		}
-	
+
 		//ustawiam przefiltorwane dane
 		std::swap(filteredShallowCopy, tmpShallow);
 
@@ -573,7 +573,7 @@ void DataSourceWidget::onFilterChange(int idx)
 		//uniewa¿niam content - zmieni³a siê zawartoœæ
 		invalidatePerspectivesContent();
 		//wype³niamy content aktualnej perspektywy
-		refreshCurrentPerspectiveContent();		
+		refreshCurrentPerspectiveContent();
 
 	}catch(...){
 
@@ -827,7 +827,7 @@ void DataSourceWidget::onLogin()
 		onPerspectiveChange(0);
 		onContentChange(0);
 
-		projects.swap(std::map<std::string, std::set<int>>());
+		std::map<std::string, std::set<int>>().swap(projects);
 
 		loginButton->setText(tr("Login"));
 	}else{
@@ -913,7 +913,7 @@ void DataSourceWidget::onRegistration()
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
 	}else {
-		
+
 		if(dataSource->registerUser(regLoginEdit->text().toStdString(), emailEdit->text().toStdString(), regPassEdit->text().toStdString(),
 			nameEdit->text().toStdString(), surnameEdit->text().toStdString()) == true){
 
@@ -1048,9 +1048,9 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 		return;
 	}
 
-	filesToLoad.swap(std::set<int>());
-	filesToUnload.swap(std::set<int>());
-	filesToDownload.swap(std::set<int>());
+	std::set<int>().swap(filesToLoad);
+	std::set<int>().swap(filesToUnload);
+	std::set<int>().swap(filesToDownload);
 
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
@@ -1059,7 +1059,7 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	QMenu menu;
 
 	auto selectedItems = perspective->selectedItems();
-	if(selectedItems.empty() == false){		
+	if(selectedItems.empty() == false){
 		generateItemSpecyficContextMenu(menu, perspective);
 	}else{
 		generateGeneralContextMenu(menu, perspective);
@@ -1119,7 +1119,7 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 		std::set<int> filesIDs;
 
 		auto selectedItems = perspective->selectedItems();
-		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();				
+		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
 
 		//sprawdzam czy to cos co mogê za³adowaæ?
 
@@ -1181,7 +1181,7 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 	//skoro coœ œci¹gam muszê poczekaæ!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
 
-		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();	
+		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
 
 		std::set<int> allFiles;
 
@@ -1387,7 +1387,7 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 		for(int i = 0; i < childrenCount; ++i){
 			getItemsFiles(item->child(i), filesIDs, shallowCopy);
 		}
-	}	
+	}
 }
 
 void DataSourceWidget::updateShallowCopy()
@@ -1439,7 +1439,7 @@ void DataSourceWidget::processDataDownload(QTreeWidgetItem * item, const Communi
 
 void DataSourceWidget::processDownload(const CommunicationDataSource::DownloadRequestPtr & request)
 {
-	downloadedFiles.swap(std::vector<std::string>());
+	std::vector<std::string>().swap(downloadedFiles);
 	//zanim wystartujemy musimy zarejestrowaæ obiekt który bêdzie obserwowa³ zmiany w requeœcie pobierania + aktualizowa³ progress pobierania
 	request->attach(this);
 	registeredRequests[request.get()] = request;
@@ -1481,7 +1481,7 @@ bool DataSourceWidget::refreshShallowCopy()
 void DataSourceWidget::filteredFiles(std::set<int> & files) const
 {
 	if(filteredShallowCopy.motionShallowCopy != nullptr){
-		auto filesITEnd = filteredShallowCopy.motionShallowCopy->files.end(); 
+		auto filesITEnd = filteredShallowCopy.motionShallowCopy->files.end();
 		for(auto it = filteredShallowCopy.motionShallowCopy->files.begin(); it != filesITEnd; ++it){
 			files.insert(it->first);
 		}
@@ -1522,7 +1522,7 @@ void DataSourceWidget::onDownload()
 			messageBox.setIcon(QMessageBox::Warning);
 			messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 			messageBox.setDefaultButton(QMessageBox::No);
-			
+
 			int ret = messageBox.exec();
 
 			if(ret == QMessageBox::No){
@@ -1537,7 +1537,7 @@ void DataSourceWidget::onDownload()
 			auto downloadRequest = dataSource->generateDownloadFilesRequest(filesToDownload);
 			//zacznij przetwarzaæ request
 			processDataDownload(nullptr, downloadRequest);
-			
+
 		}catch(std::exception & e){
 			//nie uda³o siê utworzyæ/przygotowaæ requesta wiêc info o b³êdzie
 			QMessageBox messageBox(this);
@@ -1567,7 +1567,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	class JointsInitializer : public core::IDataInitializer
 	{
 	public:
-		JointsInitializer(const core::ObjectWrapperConstPtr & dataWrapper, const core::ObjectWrapperConstPtr & modelWrapper) : 
+		JointsInitializer(const core::ObjectWrapperConstPtr & dataWrapper, const core::ObjectWrapperConstPtr & modelWrapper) :
 		  dataWrapper(dataWrapper), modelWrapper(modelWrapper)
 		  {
 
@@ -1603,7 +1603,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 	//buduje mapê hierarchii subject -> session -> motion -> files
 	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
-	
+
 	//TODO
 	//zrewidowaæ plugin subject!!
 	//obiekty tej hierarchii powinny byæ edytowalne po stronie Ÿród³a aby mog³o elastyczniej nimi zarz¹dzaæ!!
@@ -1637,7 +1637,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			}
 		}
 	}
-	
+
 	for(auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
 		//tworzê subject jeœli to konieczne!!
 
@@ -1709,7 +1709,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, sPtr);
 
 				core::MetadataPtr meta(new core::Metadata(ow));
-				
+
 				meta->setValue("label", s->sessionName);
 				meta->setValue("EMGConf", boost::lexical_cast<std::string>(s->emgConf));
 				meta->setValue("data", s->sessionDate);
@@ -1767,7 +1767,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					modelWrapper = sPtr->getWrapperOfType(typeid(kinematic::SkeletalModel));
 					core::ObjectWrapperPtr jointsWrapper;
 					if (dataWrapper && modelWrapper) {
-						jointsWrapper = core::IMemoryDataManager::addData(dataSource->memoryDM, kinematic::JointAnglesCollectionPtr(), core::DataInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));						
+						jointsWrapper = core::IMemoryDataManager::addData(dataSource->memoryDM, kinematic::JointAnglesCollectionPtr(), core::DataInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));
 						motionObjects.push_back(jointsWrapper);
 						motionsMapping[motionIT->first].second.push_back(jointsWrapper);
 					}
@@ -1810,7 +1810,7 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 
 		disorders.push_back(dis);
 	}
-	
+
 	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, patient->birthDate,
 		Patient::decodeGender(patient->gender), core::shared_ptr<const QPixmap>(), disorders));
 
@@ -1928,7 +1928,7 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 					FilesHelper::getMotionFiles(motionIT->first, filteredShallowCopy, motionFiles);
 
 					//teraz robiê ró¿nicê tego co jest w p³ytkiej kopii a tego co mam wy³adowaæ
-					std::vector<int> diff(max(motionFiles.size(), motionIT->second.size()));
+					std::vector<int> diff((std::max)(motionFiles.size(), motionIT->second.size()));
 					auto diffIT = std::set_difference(motionFiles.begin(), motionFiles.end(), motionIT->second.begin(), motionIT->second.end(), diff.begin());
 
 					if(diffIT == diff.begin()){
@@ -1936,7 +1936,7 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 						for(auto rIT = mIT->second.second.begin(); rIT != mIT->second.second.end(); ++rIT){
 							dataSource->memoryDM->removeData(*rIT);
 						}
-						
+
 						dataSource->memoryDM->removeData(mIT->second.first);
 
 						motionsMapping.erase(mIT);
@@ -2056,10 +2056,10 @@ void DataSourceWidget::unloadSubjectHierarchy()
 		dataSource->memoryDM->removeData(it->second.first);
 	}
 
-	patientsMapping.swap(std::map<int, MappingValue>());
-	subjectsMapping.swap(std::map<int, MappingValue>());
-	sessionsMapping.swap(std::map<int, MappingValue>());
-	motionsMapping.swap(std::map<int, MappingValue>());
+	std::map<int, MappingValue>().swap(patientsMapping);
+	std::map<int, MappingValue>().swap(subjectsMapping);
+	std::map<int, MappingValue>().swap(sessionsMapping);
+	std::map<int, MappingValue>().swap(motionsMapping);
 }
 
 void DataSourceWidget::onUpdateDownloadRequest()
@@ -2117,7 +2117,7 @@ void DataSourceWidget::finishDownloadRequest()
 	downloadRefreshTimer.stop();
 	localDataLoader.reset(new LocalDataLoader(this));
 	//synchronizujemy to co siê uda³o w ca³oœci pobraæ (zapisujemy do loaclStorage + informacja co siê sta³o
-	localDataLoader->start();	
+	localDataLoader->start();
 }
 
 void DataSourceWidget::tryHideStatusWidget()
@@ -2179,7 +2179,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	std::set<int> loadedFiles;
 	std::map<int, std::vector<core::ObjectWrapperPtr>> loadedFilesObjects;
 	std::map<int, std::string> loadingErrors;
-	std::vector<int> unknownErrors;	
+	std::vector<int> unknownErrors;
 
 	for(auto it = files.begin(); it != files.end(); ++it){
 		try{
@@ -2274,7 +2274,8 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 	std::vector<int> diff(filesLoadedToDM.size() - unloadedFiles.size());
 	std::set_difference(filesLoadedToDM.begin(), filesLoadedToDM.end(), unloadedFiles.begin(), unloadedFiles.end(), diff.begin());
 
-	filesLoadedToDM.swap(std::set<int>(diff.begin(), diff.end()));
+    std::set<int> s(diff.begin(), diff.end());
+	filesLoadedToDM.swap(s);
 
 	refreshStatus(unloadedFiles);
 
@@ -2365,7 +2366,7 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 	const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
 	FilesHelper::filterFiles(toVerify, extensions, dmOKFiles, *(dataSource->fileStatusManager));
 
-	filesToDownload.swap(std::set<int>());
+	std::set<int>().swap(filesToDownload);
 
 	//pliki do œci¹gniêcia
 	FilesHelper::filterFiles(dmOKFiles, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
@@ -2389,8 +2390,8 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 
 	}
 
-	filesToDownload.swap(std::set<int>());	
-	filesToLoad.swap(std::set<int>());	
+	std::set<int>().swap(filesToDownload);
+	std::set<int>().swap(filesToLoad);
 	//pliki do za³adowania
 	FilesHelper::filterFiles(dmOKFiles, Local, filesToLoad, *(dataSource->fileStatusManager));
 
@@ -2412,7 +2413,7 @@ void DataSourceWidget::onSaveProject()
 		input.setOkButtonText(tr("Save"));
 		input.setWindowTitle(tr("Save project as..."));
 		int ret = input.exec();
-		
+
 		if(!ret){
 			return;
 		}
@@ -2495,7 +2496,7 @@ void DataSourceWidget::trySaveProjects()
 void DataSourceWidget::tryLoadProjects()
 {
 	try{
-		
+
 		if(DataSourceLocalStorage::instance()->fileIsLocal(DataSourcePathsManager::instance()->projectsPath().filename().string()) == false){
 			return;
 		}
@@ -2508,7 +2509,7 @@ void DataSourceWidget::tryLoadProjects()
 
 			std::string line;
 			std::getline(projectsInput, line);
-			
+
 			if(line.empty() == true || line.size() < 4){
 				continue;
 			}

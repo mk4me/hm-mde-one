@@ -1,6 +1,9 @@
 #include "ConfigurationDialog.h"
+#include <core/PluginCommon.h>
 #include <QtCore/QFileInfo>
 #include <QtGui/QListWidgetItem>
+#include <utils/Debug.h>
+#include <tinyxml.h>
 
 const float SCALE = 0.6f;
 
@@ -28,7 +31,7 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
 }
 
 void ConfigurationWidget::setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap )
-{ 
+{
     int w = static_cast<int>(SCALE * pixmap->width());
     int h = static_cast<int>(SCALE * pixmap->height());
     scrollArea->setMaximumSize(w, h);
@@ -120,7 +123,7 @@ void ConfigurationWidget::loadXml(ConfigurationPainter& painter, const QString &
 void ConfigurationWidget::onElementHovered( const QString& name, bool selected )
 {
     emit elementHovered(name, selected);
-    
+
 }
 
 void ConfigurationWidget::setText( const QString& text )

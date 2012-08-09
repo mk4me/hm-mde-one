@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include <QtCore/QThread>
 #include "EDRConsoleWidget.h"
 #include "EDRTitleBar.h"
 
@@ -19,7 +20,7 @@ EDRConsoleWidget::~EDRConsoleWidget()
 
 }
 
-void EDRConsoleWidget::init() 
+void EDRConsoleWidget::init()
 {
     qRegisterMetaType<EDRConsoleWidgetEntry>("EDRConsoleWidgetEntry");
     qRegisterMetaType<EDRConsoleWidgetEntryPtr>("EDRConsoleWidgetEntryPtr");
@@ -75,7 +76,7 @@ void EDRConsoleWidget::logEntry( const EDRConsoleWidgetEntry& entry )
     }
 
     consoleWidget->textEdit->setCurrentCharFormat(fmt);
-    consoleWidget->textEdit->append( entry.message ); 
+    consoleWidget->textEdit->append( entry.message );
 }
 
 void EDRConsoleWidget::logEntry( EDRConsoleWidgetEntryPtr entry )

@@ -1,7 +1,7 @@
 #include "CorePCH.h"
 #include "LogInitializer.h"
 #include "Log.h"
-
+#include <QtCore/QThread>
 #include <boost/foreach.hpp>
 #include <osg/Notify>
 #include <boost/algorithm/string.hpp>
@@ -53,7 +53,7 @@ private:
 
 public:
     //! \param logger Faktyczny logger.
-    OsgNotifyHandlerLog4cxx(LoggerPtr logger) : 
+    OsgNotifyHandlerLog4cxx(LoggerPtr logger) :
     logger(logger)
     {}
     //! \param severity
@@ -236,7 +236,7 @@ private:
 
 public:
     //! \param console Konsola.
-    OsgNotifyHandlerConsoleWidget(osg::NotifyHandler* handler) : 
+    OsgNotifyHandlerConsoleWidget(osg::NotifyHandler* handler) :
     console(NULL), defaultHandler(handler)
     {}
 
@@ -247,8 +247,8 @@ public:
     }
 
     //! \param console
-    void setConsole(EDRConsoleWidget* console) 
-    { 
+    void setConsole(EDRConsoleWidget* console)
+    {
         this->console = console;
         // opró¿niamy kolejkê komunikatów
         if ( console ) {

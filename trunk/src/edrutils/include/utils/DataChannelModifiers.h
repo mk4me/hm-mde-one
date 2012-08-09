@@ -3,8 +3,8 @@
 	created:	13:12:2011   13:19
 	filename: 	DataChannelModifiers.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_UTILS__DATACHANNELMODIFIERS_H__
@@ -22,19 +22,22 @@ template<class PointType, class TimeType>
 class IChannelAutoModifier : public IChannelReader<PointType, TimeType, true>
 {
 public:
+    typedef typename IChannelReader<PointType, TimeType, true>::_MyChannelPtr _ChannelPtr;
+    typedef typename IChannelReader<PointType, TimeType, true>::_MyChannelConstPtr _ChannelConstPtr;
+    typedef typename IChannelReader<PointType, TimeType, true>::_MyModifierType _ModifierType;
 
     virtual ~IChannelAutoModifier() {}
 
-    virtual _MyChannelPtr getObservedChannel() = 0;
+    virtual _ChannelPtr getObservedChannel() = 0;
 
-    virtual _MyChannelConstPtr getObservedChannel() const = 0;
+    virtual _ChannelConstPtr getObservedChannel() const = 0;
 
-    virtual void setObservedChannel(const _MyChannelPtr & channel) = 0;
+    virtual void setObservedChannel(const _ChannelPtr & channel) = 0;
 
-    virtual const _MyModifierType & getModifier() const = 0;
+    virtual const _ModifierType & getModifier() const = 0;
 
     // Metody pochodza posrednio z IChannelReader, ich implementacja troche burzy koncept interfejsu,
-    // z drugiej zas strony pokryje to 90% zastosowan i bedzie duzo bardziej 
+    // z drugiej zas strony pokryje to 90% zastosowan i bedzie duzo bardziej
     // IChannelDescriptorReader
     virtual const std::string& getTimeBaseUnit() const { return getDesc()->getTimeBaseUnit(); }
     virtual float getTimeScaleFactor() const { return getDesc()->getTimeScaleFactor(); }
@@ -47,13 +50,15 @@ public:
 
 private:
     template<class T>
-    const T* getReader() const 
+    const T* getReader() const
     {
         const T* reader =  dynamic_cast<const T*>(getObservedChannel().get());
         if (reader) {
             return reader;
         }
-        throw std::bad_cast("Channel does not implement all necessary interfaces");
+        // rev
+        throw std::bad_cast();
+        //throw std::bad_cast("Channel does not implement all necessary interfaces");
     }
 
     const IChannelDescriptorReader* getDesc() const { return getReader<IChannelDescriptorReader>(); }
@@ -65,12 +70,13 @@ class ChannelAutoModifier : public IChannelAutoModifier<PointType, TimeType>, pr
 {
 
 private:
+    typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyObserverType _MyObserverType;
     //! Prywatna klasa realizuj¹ca obserwacjê zadanej klasy. Na jej zmianê wyzwala modyfikacje
     class UpdateNotifier : public _MyObserverType
     {
     public:
-
-        virtual void update(const _MyRawChannelReaderType * channel)
+        typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyRawChannelReaderType _RawChannelReaderType;
+        virtual void update(const _RawChannelReaderType * channel)
         {
             mod->update();
         }
@@ -87,20 +93,29 @@ private:
     friend class UpdateNotifier;
 
 public:
+    typedef typename IChannelReader<PointType, TimeType, true>::_MyChannelPtr _ChannelPtr;
+    typedef typename IChannelReader<PointType, TimeType, true>::_MyChannelConstPtr _ChannelConstPtr;
+    typedef typename IChannelReader<PointType, TimeType, true>::_MyModifierType _ModifierType;
+    typedef typename IChannelReader<PointType, TimeType, true>::time_type time_type;
+    typedef typename IChannelReader<PointType, TimeType, true>::size_type size_type;
+    typedef typename IChannelReader<PointType, TimeType, true>::point_type point_type;
+    typedef typename IChannelReader<PointType, TimeType, true>::point_type_const_reference point_type_const_reference;
+    typedef typename IChannelReader<PointType, TimeType, true>::data_range data_range;
+
 
     virtual ~ChannelAutoModifier() {}
 
-    virtual _MyChannelPtr getObservedChannel()
+    virtual _ChannelPtr getObservedChannel()
     {
         return channel;
     }
 
-    virtual _MyChannelConstPtr getObservedChannel() const
+    virtual _ChannelConstPtr getObservedChannel() const
     {
         return channel;
     }
 
-    virtual void setObservedChannel(const _MyChannelPtr & channel)
+    virtual void setObservedChannel(const _ChannelPtr & channel)
     {
         if(channel == nullptr){
             throw std::runtime_error("Wrong channel for Tracker");
@@ -120,7 +135,7 @@ public:
         }
     }
 
-    virtual const _MyModifierType & getModifier() const
+    virtual const _ModifierType & getModifier() const
     {
         return modifier;
     }
@@ -245,6 +260,6 @@ private:
 	RawGeneralDataChannel<PointType, TimeType> impl;
 };
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace 
+} // namespace
 ////////////////////////////////////////////////////////////////////////////////
 #endif

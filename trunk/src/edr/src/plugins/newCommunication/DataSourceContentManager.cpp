@@ -113,44 +113,45 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 		case DisorderContent:
 			{
 				auto disorder = dynamic_cast<DisorderItem*>(item);
-				status = globalStatusManager->disorderStatus(disorder->value()->disorderID);
+				// rev - wynika ze zmiany w IDataSourceStatusManager
+				status = dynamic_cast<const DataStatus&>(globalStatusManager->disorderStatus(disorder->value()->disorderID));
 			}
 			break;
 		case PatientContent:
 			{
 				auto patient = dynamic_cast<PatientItem*>(item);
-				status = globalStatusManager->patientStatus(patient->value()->patientID);
+				status = dynamic_cast<const DataStatus&>(globalStatusManager->patientStatus(patient->value()->patientID));
 			}
 			break;
 		case SubjectContent:
 			{
 				auto subject = dynamic_cast<SubjectItem*>(item);
-				status = globalStatusManager->subjectStatus(subject->value()->performerID);
+				status = dynamic_cast<const DataStatus&>(globalStatusManager->subjectStatus(subject->value()->performerID));
 			}
 			break;
 		case SessionContent:
 			{
 				auto session = dynamic_cast<SessionItem*>(item);
-				status = globalStatusManager->sessionStatus(session->value()->sessionID);
+				status = dynamic_cast<const DataStatus&>(globalStatusManager->sessionStatus(session->value()->sessionID));
 			}
 			break;
 		case MotionContent:
 			{
 				auto motion = dynamic_cast<MotionItem*>(item);
-				status = globalStatusManager->motionStatus(motion->value()->trialID);
+				status = dynamic_cast<const DataStatus&>(globalStatusManager->motionStatus(motion->value()->trialID));
 			}
 			break;
 		case FileContent:
 			{
 				auto file = dynamic_cast<FileItem*>(item);
-				status = globalStatusManager->fileStatus(file->value()->fileID);
+				status = dynamic_cast<const DataStatus&>(globalStatusManager->fileStatus(file->value()->fileID));
 			}
 			break;
 		case DisordersGroupContent:
 			{
 				auto disordersGroup = dynamic_cast<DisordersGroupItem*>(item);
 				for(auto it = disordersGroup->value().begin(); it != disordersGroup->value().end(); ++it){
-					status |= globalStatusManager->disorderStatus((*it)->disorderID);
+					status |= dynamic_cast<const DataStatus&>(globalStatusManager->disorderStatus((*it)->disorderID));
 				}
 			}
 			break;
@@ -158,7 +159,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 			{
 				auto patientsGroup = dynamic_cast<PatientsGroupItem*>(item);
 				for(auto it = patientsGroup->value().begin(); it != patientsGroup->value().end(); ++it){
-					status |= globalStatusManager->patientStatus((*it)->patientID);
+					status |= dynamic_cast<const DataStatus&>(globalStatusManager->patientStatus((*it)->patientID));
 				}
 			}
 			break;
@@ -166,7 +167,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 			{
 				auto subjectsGroup = dynamic_cast<SubjectsGroupItem*>(item);
 				for(auto it = subjectsGroup->value().begin(); it != subjectsGroup->value().end(); ++it){
-					status |= globalStatusManager->subjectStatus((*it)->performerID);
+					status |= dynamic_cast<const DataStatus&>(globalStatusManager->subjectStatus((*it)->performerID));
 				}
 			}
 			break;
@@ -174,7 +175,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 			{
 				auto sessionsGroup = dynamic_cast<SessionsGroupItem*>(item);
 				for(auto it = sessionsGroup->value().begin(); it != sessionsGroup->value().end(); ++it){
-					status |= globalStatusManager->sessionStatus((*it)->sessionID);
+					status |= dynamic_cast<const DataStatus&>(globalStatusManager->sessionStatus((*it)->sessionID));
 				}
 			}
 			break;
@@ -182,7 +183,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 			{
 				auto motionsGroup = dynamic_cast<MotionsGroupItem*>(item);
 				for(auto it = motionsGroup->value().begin(); it != motionsGroup->value().end(); ++it){
-					status |= globalStatusManager->motionStatus((*it)->trialID);
+					status |= dynamic_cast<const DataStatus&>(globalStatusManager->motionStatus((*it)->trialID));
 				}
 			}
 			break;
@@ -190,7 +191,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 			{
 				auto filesGroup = dynamic_cast<FilesGroupItem*>(item);
 				for(auto it = filesGroup->value().begin(); it != filesGroup->value().end(); ++it){
-					status |= globalStatusManager->fileStatus((*it)->fileID);
+					status |= dynamic_cast<const DataStatus&>(globalStatusManager->fileStatus((*it)->fileID));
 				}
 			}
 			break;
@@ -198,9 +199,9 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 			found = false;
 			break;
 		}
-	}	
+	}
 
-	DataStatus tmpStatus;		
+	DataStatus tmpStatus;
 	//odœwie¿am zawartoœc dzieci jesli nie znamy typu obiektu
 	int childrenCount = item->childCount();
 	for(int i = 0; i < childrenCount; ++i){

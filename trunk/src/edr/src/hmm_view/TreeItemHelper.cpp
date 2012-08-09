@@ -3,19 +3,19 @@
 #include "VisualizerManager.h"
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/c3d/EventSerieBase.h>
+#include <utils/Debug.h>
 
 
-
-HmmTreeItem::HmmTreeItem( TreeItemHelperPtr helper ) : 
-helper(helper) 
+HmmTreeItem::HmmTreeItem( TreeItemHelperPtr helper ) :
+helper(helper)
 {
 
 }
 
-void HmmTreeItem::setItemAndHelperText( const QString& text ) 
-{ 
-    helper->setText(text); 
-    QTreeWidgetItem::setText(0, text); 
+void HmmTreeItem::setItemAndHelperText( const QString& text )
+{
+    helper->setText(text);
+    QTreeWidgetItem::setText(0, text);
 }
 
 ChildrenVisualizers::ChildrenVisualizers( PlacePolicy policy /*= Auto*/) :
@@ -23,7 +23,7 @@ ChildrenVisualizers::ChildrenVisualizers( PlacePolicy policy /*= Auto*/) :
 {
 }
 
-TreeWrappedItemHelper::TreeWrappedItemHelper( const core::ObjectWrapperConstPtr & wrapper ) : 
+TreeWrappedItemHelper::TreeWrappedItemHelper( const core::ObjectWrapperConstPtr & wrapper ) :
     wrapper(wrapper)
 {
 }
@@ -58,18 +58,18 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 			if(m->getRawPtr() != nullptr){
 				tmpSeries.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(m ,path.toStdString())));
 			}else{
-				throw std::runtime_error("Empty object - markers"); 
+				throw std::runtime_error("Empty object - markers");
 			}
-		}                                            
-		if (motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection))) {                          
+		}
+		if (motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection))) {
 			core::ObjectWrapperConstPtr j = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
 			if(j->getRawPtr() != nullptr){
 				tmpSeries.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(j ,path.toStdString())));
 			}else{
 				throw std::runtime_error("Empty object - joints");
 			}
-		}                                            
-		if (motion->hasObjectOfType(typeid(GRFCollection))) {                          
+		}
+		if (motion->hasObjectOfType(typeid(GRFCollection))) {
 			core::ObjectWrapperConstPtr g = motion->getWrapperOfType(typeid(GRFCollection));
 			if(g->getRawPtr() != nullptr){
 				tmpSeries.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(g ,path.toStdString())));
@@ -78,7 +78,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 			}
 		}
 	}catch(...){
-		
+
 	}
 
 	series.insert(series.end(), tmpSeries.begin(), tmpSeries.end());
@@ -86,7 +86,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 
 VisualizerPtr Multiserie3D::createVisualizer()
 {
-    return VisualizerManager::getInstance()->createVisualizer(typeid(kinematic::JointAnglesCollection));                           
+    return VisualizerManager::getInstance()->createVisualizer(typeid(kinematic::JointAnglesCollection));
 }
 
 std::vector<core::TypeInfo> Multiserie3D::getTypeInfos() const
@@ -128,7 +128,7 @@ std::vector<core::TypeInfo> JointsItemHelper::getTypeInfos() const
     return ret;
 }
 
-JointsItemHelper::JointsItemHelper( const PluginSubject::MotionConstPtr & motion ) : 
+JointsItemHelper::JointsItemHelper( const PluginSubject::MotionConstPtr & motion ) :
     motion(motion)
 {
 }
@@ -262,7 +262,7 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
             eventSerie->setEvents(wrappers[i].events);
         }
         INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
-        
+
         chartSerieX->setColor(colorStrategy->getColor(chartSerieX, wrapper));
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
     }
@@ -292,15 +292,15 @@ std::vector<core::TypeInfo> NewMultiserieHelper::getTypeInfos() const
     return ret;
 }
 
-NewMultiserieHelper::NewMultiserieHelper( const ChartWithDescriptionCollection& charts ): 
-    wrappers(charts), 
+NewMultiserieHelper::NewMultiserieHelper( const ChartWithDescriptionCollection& charts ):
+    wrappers(charts),
     title(""),
     colorStrategy(new RandomMultiserieColorStrategy())
 {
 }
 
-NewMultiserieHelper::NewMultiserieHelper( const std::vector<core::ObjectWrapperConstPtr>& charts ): 
-    title(""), 
+NewMultiserieHelper::NewMultiserieHelper( const std::vector<core::ObjectWrapperConstPtr>& charts ):
+    title(""),
     colorStrategy(new RandomMultiserieColorStrategy())
 {
     UTILS_ASSERT(false);

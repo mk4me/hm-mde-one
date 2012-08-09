@@ -2,10 +2,13 @@
 #include "EDRDFSourceNode.h"
 #include "EDRDFPin.h"
 #include "OutputDescription.h"
+#include <core/IDataSource.h>
 
-EDRDFSourceNode::EDRDFSourceNode(const WorkflowItemPtr & workflowItem, const std::string & name)
-    : dflm::DFNode(name), dflm::DFSourceNode(name),
-    EDRDFNode(workflowItem, name), source(dynamic_cast<const core::IDataSource*>(workflowItem->getImplementation()))
+EDRDFSourceNode::EDRDFSourceNode(const WorkflowItemPtr & workflowItem, const std::string & name) :
+    dflm::DFNode(name),
+    dflm::DFSourceNode(name),
+    EDRDFNode(workflowItem, name),
+    source(dynamic_cast<const core::IDataSource*>(workflowItem->getImplementation()))
 {
 
 }

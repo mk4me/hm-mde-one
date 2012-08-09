@@ -5,6 +5,8 @@
 
 #include <QtGui/QFileDialog>
 #include <QtCore/QString>
+#include <QtGui/QMessageBox>
+#include <core/PluginCommon.h>
 #include <map>
 
 LocalDataSourceWidget::LocalDataSourceWidget(LocalDataSource * dataSource, QWidget * parent)
@@ -23,7 +25,7 @@ void LocalDataSourceWidget::onOpen()
 {
     core::Filesystem::Path initPath = core::getUserDataPath() / "trial";
     QString path = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
-    if (!path.isEmpty()) 
+    if (!path.isEmpty())
     {
         lineEdit->setText(path);
     }
@@ -36,11 +38,11 @@ void LocalDataSourceWidget::onEdit(const QString & text)
     if(text.isEmpty() == false){
         //resetuj poprzednie ustawienia widgweta i Ÿród³a
         trialNameLabel->clear();
-        localDataSource->trialPath.swap(std::string());
-        localDataSource->outputDescription.swap(LocalDataSource::OutputDescription());
-        localDataSource->data.swap(LocalDataSource::Data());
-        data.swap(LocalDataSource::Data());
-        checkBoxToTypeMapping.swap(std::map<QCheckBox*, core::TypeInfo>());
+        std::string().swap(localDataSource->trialPath);
+        LocalDataSource::OutputDescription().swap(localDataSource->outputDescription);
+        LocalDataSource::Data().swap(localDataSource->data);
+        LocalDataSource::Data().swap(data);
+        std::map<QCheckBox*, core::TypeInfo>().swap(checkBoxToTypeMapping);
 
         core::Filesystem::Path p(text.toStdString());
         if(core::Filesystem::pathExists(p) == true){
@@ -169,7 +171,7 @@ void LocalDataSourceWidget::onCheckChange(int state)
         localDataSource->data.erase(typeInfo);
     }
 
-    localDataSource->outputDescription.swap(LocalDataSource::OutputDescription());
+    LocalDataSource::OutputDescription().swap(localDataSource->outputDescription);
     for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); ++it){
         if(it->first->isChecked() == true){
             localDataSource->outputDescription.push_back(core::IOutputDescription::OutputInfo(data.find(it->second)->second->getObject(0)->getClassName(), it->second));

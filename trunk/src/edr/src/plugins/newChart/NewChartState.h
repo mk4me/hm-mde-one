@@ -3,14 +3,15 @@
 	created:	25:11:2011   8:50
 	filename: 	NewChartState.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTSTATE_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTSTATE_H__
 
 #include <QtCore/QObject>
+#include <core/SmartPtr.h>
 
 class NewChartVisualizer;
 class QwtPlot;
@@ -31,7 +32,7 @@ public:
 	virtual ~NewChartState() { }
 
 public:
-    //! Obsluga eventow Qt 
+    //! Obsluga eventow Qt
     virtual bool stateEventFilter( QObject *, QEvent * ) = 0;
     //! Metoda odrysowujaca stan wizualizatora
     virtual void draw(QPainter *) = 0;

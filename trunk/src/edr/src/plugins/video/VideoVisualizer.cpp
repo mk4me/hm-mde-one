@@ -15,13 +15,16 @@
 #include <vidlib/osg/VideoImageStream.h>
 
 #include <core/StringTools.h>
+#include <core/PluginCommon.h>
+
+#include <QtGui/QIcon>
 
 using namespace core;
 
 struct VideoVisualizer::Refresher
 {
     VideoVisualizer* visualizer;
-    void operator()(osg::Node* node, const osgGA::GUIEventAdapter* event) 
+    void operator()(osg::Node* node, const osgGA::GUIEventAdapter* event)
     {
         UTILS_ASSERT(visualizer);
         visualizer->refresh( static_cast<float>(event->getWindowWidth()), static_cast<float>(event->getWindowHeight()) );
@@ -151,7 +154,7 @@ void VideoVisualizer::getInputInfo( std::vector<core::IInputDescription::InputIn
     input.name = "picture";
     input.type = typeid(vidlib::Picture);
 
-    info.push_back(input);    
+    info.push_back(input);
 }
 
 void VideoVisualizer::refresh( float width, float height )
@@ -168,7 +171,7 @@ void VideoVisualizer::refresh( float width, float height )
     // aktualizacja tekstury t³a
     //workspace->getBackground()->setTexCoordRegion(0, height, width, -height);
 	workspace->getBackground()->setTexCoordRegion(0, 0, width, height);
-	
+
     // aktualizacja rozmiaru tekstury
     if ( streamImage ) {
         // odœwie¿enia danych zale¿nych od obrazka
@@ -188,7 +191,7 @@ void VideoVisualizer::updateWidget()
             // sprawdzamy, czy trzeba odœwie¿yæ wspó³rzêdne tekstury
             float s = static_cast<float>(streamImage->s());
             float t = static_cast<float>(streamImage->t());
-            // 
+            //
             auto ll = widget->getTexCoord(osgWidget::Widget::LOWER_LEFT);
             auto ur = widget->getTexCoord(osgWidget::Widget::UPPER_RIGHT);
             float oldS = fabs( ll.x() - ur.x() );
@@ -206,10 +209,10 @@ void VideoVisualizer::updateWidget()
 			//float nextT = t;
 			//if (mul > 1.0f) {
 				//nextT = s * h / w;
-			//} else { 
+			//} else {
 				//nextS = w * t / h;
 			//}
-			
+
 			//float deltaS = (s - nextS) / 2.0f;
 			//float deltaT = (t - nextT) / 2.0f;
 
@@ -246,11 +249,11 @@ void VideoVisualizer::update( double deltaTime )
 		refreshImage();
 
         int width = streamImage->s();
-        
+
         if ( prevStreamWidth != width ) {
             prevStreamWidth = width;
             needsUpdate = true;
-        }    
+        }
     }
 
 	if ( needsUpdate ) {
@@ -316,7 +319,7 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
     ratioKeeper = new AspectRatioKeeper(widget, 1);
     workspace->addWidget(ratioKeeper);
 	widget->setMinimumSize(50, 50);
-    
+
     Refresher refresher = { this };
     workspace->addEventCallback(createEventCallback(osgGA::GUIEventAdapter::RESIZE, refresher));
 

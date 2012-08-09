@@ -3,8 +3,8 @@
     created:  27:4:2011   14:58
     filename: ObjectWrapperFactory.h
     author:	  Piotr Gwiazdowski
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD_CORE__OBJECTWRAPPERFACTORY_H__
 #define HEADER_GUARD_CORE__OBJECTWRAPPERFACTORY_H__
@@ -13,7 +13,7 @@
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
 
-namespace core 
+namespace core
 {
     //! Abstrakcyjna fabryka obiektów.
     class IObjectWrapperFactory
@@ -29,7 +29,7 @@ namespace core
         virtual ObjectWrapper* createWrapper() = 0;
         //!
         virtual ObjectWrapperCollection* createWrapperCollection() = 0;
-        
+
     };
 
     typedef shared_ptr<IObjectWrapperFactory> IObjectWrapperFactoryPtr;
@@ -39,7 +39,8 @@ namespace core
     template <class T>
     class ObjectWrapperFactory : public IObjectWrapperFactory
     {
-        UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+        // rev - statyczna asercja
+        //UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
 
     public:
 

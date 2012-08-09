@@ -2,9 +2,10 @@
 #include "VisualizerWidget.h"
 
 #include "VisualizerManager.h"
+#include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QComboBox>
-
+#include <QtGui/QMenu>
 #include <iterator>
 #include <core/StringTools.h>
 #include <boost/foreach.hpp>
@@ -33,7 +34,7 @@ VisualizerWidget::VisualizerWidget(QWidget* parent /*= nullptr*/, Qt::WindowFlag
 VisualizerWidget::VisualizerWidget( UniqueID visualizerID, QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/, bool autoRefreshInputs  /*= true*/ ) : EDRDockWidget(parent, flags), autoRefreshInputs_(autoRefreshInputs)
 {
     init();
-    // blokujemy sygna³y 
+    // blokujemy sygna³y
     comboType->blockSignals(true);
     // dodajemy wizualizatory
     BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
@@ -60,7 +61,7 @@ VisualizerWidget::VisualizerWidget( const VisualizerPtr& source, QWidget* parent
 }
 
 VisualizerWidget::~VisualizerWidget()
-{        
+{
     // usuniêcie widgeta
 	visualizerWidgetContainer = nullptr;
     clearCurrentVisualizer();
@@ -102,7 +103,7 @@ void VisualizerWidget::init()
 	setWidget(visualizerWidgetContainer);
 
     setFocusPolicy(Qt::StrongFocus);
-    lastSerie.first = nullptr;    
+    lastSerie.first = nullptr;
 
     //labelka jako ikona z okiem
     label = new QLabel();
@@ -245,10 +246,10 @@ const ActionsGroupManager & VisualizerWidget::getGenericVisualizerActionsManager
 void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements & titleBarElements) const
 {
     for(auto groupIT = visualizerCommonElementsOrder.begin(); groupIT != visualizerCommonElementsOrder.end(); ++groupIT){
-        
+
         std::map<int, QObject *> allGroupObjects;
         (*groupIT).getAllObjects(allGroupObjects);
-        
+
         for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); ++actionIT){
             auto elementIT = visualizerCommonElements.find(actionIT->second);
             if(elementIT != visualizerCommonElements.end()){
@@ -279,7 +280,7 @@ void VisualizerWidget::clearCurrentVisualizer()
 
 	VisualizerManager::getInstance()->markAllChannelsAsRemovedFromVisualizer(visualizer.get());
 	VisualizerManager::getInstance()->removeAllChannelsFromVisualizer(visualizer.get());
-    
+
     //wyczyœæ menu wyboru Ÿróde³ i kana³ów
     clearSources();
 
@@ -295,8 +296,8 @@ void VisualizerWidget::clearCurrentVisualizer()
 
 void VisualizerWidget::clearDataSeries()
 {
-    currentSeriesData.swap(std::map<core::ObjectWrapperConstPtr, core::VisualizerSeriePtr >());
-    groupedSeriesData.swap(std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> >());
+    std::map<core::ObjectWrapperConstPtr, core::VisualizerSeriePtr >().swap(currentSeriesData);
+    std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> >().swap(groupedSeriesData);
 }
 
 void VisualizerWidget::setCurrentVisualizer( UniqueID id )
@@ -307,9 +308,9 @@ void VisualizerWidget::setCurrentVisualizer( UniqueID id )
 }
 
 void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
-{    
+{
     if ( this->visualizer != visualizer ) {
-        
+
         // wyczyszczenie aktuyalnego - zamieniamy go
         clearCurrentVisualizer();
 
@@ -354,7 +355,7 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
                 //visualizerWidget->setObjectName(QString::fromUtf8("visualizerWidget"));
                 //setWidget(visualizerWidget);
 				visualizerWidgetContainer->layout()->addWidget(visualizerWidget);
-				setMinimumSize(max(visualizerWidget->minimumWidth(), 50), max(visualizerWidget->minimumHeight(), 50));
+				setMinimumSize((std::max)(visualizerWidget->minimumWidth(), 50), (std::max)(visualizerWidget->minimumHeight(), 50));
             }else{
 				setMinimumSize(0, 0);
 			}
@@ -436,7 +437,7 @@ void VisualizerWidget::fillSourcesMenu()
             int aditional = 0;
 
             QMenu * activeMenu = nullptr;
-        
+
             auto iT = groupedSeriesData.find(objects->getTypeInfo());
             if(iT != groupedSeriesData.end()){
                 aditional = iT->second.size();
@@ -532,7 +533,7 @@ void VisualizerWidget::fillSourcesMenu()
                             }
                         }
 
-                        
+
                         QAction* action = nestedMenu->addAction(toQString(s));
                         connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
                         action->setCheckable(true);

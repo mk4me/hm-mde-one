@@ -55,7 +55,7 @@
 #include "DataProcessor.h"
 
 #include <core/EDRDockWidget.h>
-
+#include <QtCore/QFile>
 #include "WorkflowService.h"
 #include "WorkflowWidget.h"
 #include "LocalDataSource.h"
@@ -107,7 +107,7 @@ void MainWindow::setStyleByName( const std::string& styleName )
 }
 
 void MainWindow::saveScreen(const QPixmap & pixmap)
-{	
+{
 	static int i = 0;
 	static auto filePath = core::getUserDataPath() / "screens";
 
@@ -152,7 +152,7 @@ void MainWindow::showSplashScreenMessage(const QString & message, int alignment,
     QCoreApplication::processEvents();
 }
 
-void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAccessor) 
+void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAccessor)
 {
     instance = this;
 	this->pluginLoader = pluginLoader;
@@ -176,7 +176,7 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
     showSplashScreenMessage(tr("Registering plugins"));
 
 	Filesystem::Path pluginPath = getApplicationDataPath() / "plugins";
-	
+
 	if(Filesystem::pathExists(pluginPath) == true) {
         Filesystem::Iterator endIT;
 		std::for_each(Filesystem::Iterator(pluginPath), endIT, [=](Filesystem::Path p) {
@@ -236,7 +236,7 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 		sourceManager->getSource(i)->init(dataManager, dataManager, serviceManager);
 	}
 
-    //initializeConsole();          // Console Widget 
+    //initializeConsole();          // Console Widget
     //InitializeControlWidget();          // Control Widget + TimeLine
     //visualizerManager->setDebugWidget(widgetSceneGraph);
 
@@ -335,7 +335,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 //    gDock->setObjectName(QString("GridWidget"));
 //    gDock->setAllowedAreas(Qt::LeftDockWidgetArea);
 //
-//    widgetSceneGraph = new SceneGraphWidget();    
+//    widgetSceneGraph = new SceneGraphWidget();
 //    addDockWidget(Qt::LeftDockWidgetArea, gDock);
 //    //gDock->getInnerWidget()->layout()->addWidget((QWidget*)widgetSceneGraph);
 //    gDock->setWidget((QWidget*)widgetSceneGraph);
@@ -346,7 +346,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::initializeConsole()
 {
-    widgetConsole = new EDRConsoleWidget(tr("Console"), this, Qt::WindowTitleHint);    
+    widgetConsole = new EDRConsoleWidget(tr("Console"), this, Qt::WindowTitleHint);
     widgetConsole->setObjectName("Console");
     widgetConsole->setAllowedAreas(Qt::BottomDockWidgetArea);
     widgetConsole->setPermanent(true);
@@ -410,7 +410,7 @@ void MainWindow::safeRegisterParser(const IParserPtr & parser)
 
         DataManager::getInstance()->registerParser(parser);
 
-    }catch(std::exception & e){ 
+    }catch(std::exception & e){
         LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
             " has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
     }
@@ -426,7 +426,7 @@ void MainWindow::safeRegisterObjectFactory(const IObjectWrapperFactoryPtr & fact
 
         DataManager::getInstance()->registerObjectFactory(factory);
 
-    }catch(std::exception & e){ 
+    }catch(std::exception & e){
         LOG_WARNING("Object factory for type " << factory->getType().name() << " has caused an error during registration: "
             << e.what() << ". Object type NOT registered in application!" );
     }
@@ -441,7 +441,7 @@ void MainWindow::safeRegisterVisualizer(const IVisualizerPtr & visualizer)
 
         VisualizerManager::getInstance()->registerVisualizer(visualizer);
 
-    }catch(std::exception & e){ 
+    }catch(std::exception & e){
         LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
             << " has caused an error during registration: " << e.what() << ". Visualizer NOT registered in application!" );
     }
@@ -457,7 +457,7 @@ void MainWindow::safeRegisterDataProcessor(const IDataProcessorPtr & dataProcess
 
         DataProcessorManager::getInstance()->registerDataProcessor(dataProcessor);
 
-    }catch(std::exception & e){ 
+    }catch(std::exception & e){
         LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
             << " has caused an error during registration: " << e.what() << ". DataProcessor NOT registered in application!" );
     }
@@ -473,7 +473,7 @@ void MainWindow::safeRegisterDataSource(const IDataSourcePtr & dataSource)
 
         DataSourceManager::getInstance()->registerDataSource(dataSource);
 
-    }catch(std::exception & e){ 
+    }catch(std::exception & e){
         LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
             << " has caused an error during registration: " << e.what() << ". DataSource NOT registered in application!" );
     }
@@ -565,8 +565,8 @@ void MainWindow::registerPluginsDataSources()
 QDockWidget* MainWindow::embeddWidget( QWidget* widget, const ActionsGroupManager & widgetActions, const QString& name, const QString& style, const QString& sufix,
     Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)
 {
-    // dodajemy widget dokowalny     
-    EDRDockWidget* dock = new EDRDockWidget( name, this, Qt::WindowTitleHint);        
+    // dodajemy widget dokowalny
+    EDRDockWidget* dock = new EDRDockWidget( name, this, Qt::WindowTitleHint);
     dock->setAllowedAreas(area);
     dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
     dock->setStyleSheet(style);

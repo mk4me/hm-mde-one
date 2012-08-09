@@ -4,8 +4,8 @@
 #include <string>
 #include <iterator>
 #include <boost/shared_ptr.hpp>
-#include <osg/Vec4>
 #include <osg/Vec3>
+#include <osg/Vec4>
 #include <tinyxml.h>
 
 namespace kinematic
@@ -34,8 +34,8 @@ public:
     VskParser();
 
 public:
-    /// \brief  Parsuje podany plik. 
-    /// \param  filename  Nazwa pliku do parsowania. 
+    /// \brief  Parsuje podany plik.
+    /// \param  filename  Nazwa pliku do parsowania.
     virtual void parse(const std::string& filename );
 
     stickIterators getSticks() const;

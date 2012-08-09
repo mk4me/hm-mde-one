@@ -15,6 +15,7 @@
 #include <core/ILog.h>
 #include <core/PluginCommon.h>
 #include <core/IOutputDescription.h>
+#include <core/IInputDescription.h>
 #include "ObjectSource.h"
 #include "ObjectOutput.h"
 

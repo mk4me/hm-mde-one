@@ -3,13 +3,14 @@
     created:  23:5:2011   17:06
     filename: WorkflowService.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___WORKFLOWSERVICE_H__
 #define HEADER_GUARD___WORKFLOWSERVICE_H__
 
 #include <core/IService.h>
+#include <core/IServiceManager.h>
 #include <utils/ObserverPattern.h>
 
 namespace core{
@@ -25,13 +26,13 @@ class DataProcessorManager;
 class WorkflowService : public core::IService, public utils::Observer<VisualizerManager>, public utils::Observer<DataProcessorManager>
 {
 private:
-	/*struct VisualizerObserver : 
+	/*struct VisualizerObserver :
 	{
 		WorkflowService* self;
 		VisualizerObserver(WorkflowService* self) : self(self) {}
 		void update(const VisualizerManager* manager) { self->update(manager); }
 	};
-	struct DataProcessorObserver : 
+	struct DataProcessorObserver :
 	{
 		WorkflowService* self;
 		DataProcessorObserver(WorkflowService* self) : self(self) {}

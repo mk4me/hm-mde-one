@@ -3,12 +3,14 @@
 	created:	5:6:2012   8:57
 	filename: 	ConfigurationPainterAreas.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__CONFIGURATIONPAINTERAREAS_H__
 #define HEADER_GUARD_HMM__CONFIGURATIONPAINTERAREAS_H__
+
+#include <boost/shared_ptr.hpp>
 
 //! okresla obszar na konfiguratorze graficznym
 class IArea
@@ -20,13 +22,13 @@ public:
 public:
     //! \return pozycja Y
     virtual int getY() const = 0;
-    //! 
-    //! \param val 
+    //!
+    //! \param val
     virtual void setY(int val) = 0;
     //! \return pozycja X
     virtual int getX() const = 0;
-    //! 
-    //! \param val 
+    //!
+    //! \param val
     virtual void setX(int val) = 0;
     //! \return szerokosc obszaru
     virtual int getWidth() const = 0;
@@ -45,12 +47,12 @@ public:
     //! czy obszar jest aktywny (normalnie - czy kliknieto w niego myszka)
     bool isActive() const { return active; }
     //! ustawia aktywnosc obszaru (norm. po kliknieciu myszka)
-    //! \param val 
+    //! \param val
     void setActive(bool val) { active = val; }
     //! \return skala obszaru
     float getScale() const { return scale; }
-    //! 
-    //! \param val 
+    //!
+    //! \param val
     void setScale(float val) { scale = val; }
 
 private:
@@ -59,8 +61,8 @@ private:
     //! skala obszaru
     float scale;
 };
-typedef boost::shared_ptr<IArea> IAreaPtr;
-typedef boost::shared_ptr<const IArea> IAreaConstPtr;
+typedef typename boost::shared_ptr<IArea> IAreaPtr;
+typedef typename boost::shared_ptr<const IArea> IAreaConstPtr;
 
 //! zwykly punkt na konfiguratorze
 //! rysowany jako polprzezroczyste kolo
@@ -75,26 +77,26 @@ public:
     //! Konstruktor
     //! \param name nazwa punktu
     //! \param posX pozycja x
-    //! \param posY pozycja y 
+    //! \param posY pozycja y
     //! \param r promien rysowanego kola
     SingleMarker(const QString& name, int posX, int posY, int r);
 
 public:
-    //! 
+    //!
     virtual int getY() const { return getScale() * ( posY - r); }
-    //! 
-    //! \param val 
+    //!
+    //! \param val
     virtual void setY(int val) { posY = val + r; }
-    //! 
+    //!
     virtual int getX() const { return getScale() * (posX - r); }
-    //! 
-    //! \param val 
+    //!
+    //! \param val
     virtual void setX(int val) { posX = val + r; }
-    //! 
+    //!
     virtual int getWidth() const { return getScale() * (2 * r); }
-    //! 
+    //!
     virtual int getHeight() const { return getScale() * (2 * r); }
-    //! 
+    //!
     virtual const QString& getName() const { return name; }
     //! pozwala odrysowac sie obiektowi
     //! \param painter obiekt paintera
@@ -127,7 +129,7 @@ public:
     //! Konstruktor
     //! \param name nazwa obrazka do wczytania
     //! \param posX pozycja x
-    //! \param posY pozycja y 
+    //! \param posY pozycja y
     //! \param alwaysVisible czy obrazek ma byc zawsze widoczny
     SinglePicture(const QString& name, int x = 0, int y = 0, bool alwaysVisible = false);
     //! Konstruktor
@@ -139,21 +141,21 @@ public:
     SinglePicture(const QString& name, const QPixmapPtr& pixmap, int x = 0, int y = 0, bool alwaysVisible = false);
 
 public:
-    //! 
+    //!
     virtual int getY() const { return getScale() * (y); }
-    //! 
-    //! \param val 
+    //!
+    //! \param val
     virtual void setY(int val) { y = val; }
-    //! 
+    //!
     virtual int getX() const { return getScale() * (x); }
-    //! 
-    //! \param val 
+    //!
+    //! \param val
     virtual void setX(int val) { x = val; }
-    //! 
+    //!
     virtual int getWidth() const { return getScale() * (pixmap->width()); }
-    //! 
+    //!
     virtual int getHeight() const { return getScale() * (pixmap->height()); }
-    //! 
+    //!
     virtual const QString& getName() const { return name; }
     //! pozwala odrysowac sie obiektowi
     //! \param painter obiekt paintera

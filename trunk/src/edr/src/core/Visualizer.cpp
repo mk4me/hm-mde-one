@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include <QtGui/QAction>
 #include "Visualizer.h"
 #include "VisualizerManager.h"
 #include "VisualizerChannel.h"
@@ -9,7 +10,7 @@
 
 using namespace core;
 
-Visualizer::Visualizer( IVisualizer* impl ) : 
+Visualizer::Visualizer( IVisualizer* impl ) :
     InputItem<IVisualizer>(impl, VisualizerManager::getInstance()->getSourcesTypes(impl->getID())),
     widget(nullptr)
 {
@@ -36,7 +37,7 @@ QWidget* Visualizer::getOrCreateWidget()
 {
     if (!widget) {
         LOG_DEBUG("Visualizer " << getImplementation()->getName() << " widget created");
-        
+
         widget = getImplementation()->createWidget(&genericActions);
         //PrintWidgetAction* print = new PrintWidgetAction(widget, "Print visualizer", widget);
         QAction* print = new QAction("Print visualizer", widget);
@@ -48,7 +49,7 @@ QWidget* Visualizer::getOrCreateWidget()
 
         core::IActionsGroupManager::GroupID id = genericActions.createGroup(tr("Common"));
         genericActions.addGroupAction(id, print);
-        
+
         tryRun();
         UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");
     }
@@ -101,7 +102,7 @@ int Visualizer::getMaxSeries() const
 const core::VisualizerSeriePtr & Visualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
 {
     core::VisualizerSeriePtr serie(getImplementation()->createSerie(data, name));
-    
+
     if(serie->getName().empty() == true){
         serie->setName(name);
     }
@@ -124,7 +125,7 @@ void Visualizer::clearAllSeries()
         dataSeries.erase(dataSeries.begin());
     }
 
-    dataSeries.swap(DataSeries());
+    DataSeries().swap(dataSeries);
 }
 
 const Visualizer::DataSeries & Visualizer::getDataSeries() const

@@ -1,6 +1,6 @@
 #include "PCH.h"
 #include <osg/LineWidth>
-#include "uniqueCollection.h"
+#include "UniqueCollection.h"
 #include "TrajectoriesDrawer.h"
 #include "MarkersVisualizationScheme.h"
 
@@ -49,7 +49,7 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 	std::pair<float, float> times;
 	times.first = 0.0f;
 	times.second = markers->getLength();
-	
+
 	for (int i = markers->getNumChannels() - 1; i >= 0; --i) {
 		VectorChannelConstPtr channel = markers->getChannel(i);
 
@@ -64,8 +64,8 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 		osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
 
 		float mult = channel->getLength() / static_cast<float>(density);
-		
-		for (int n = 0; n < density - 1; ++n) {	
+
+		for (int n = 0; n < density - 1; ++n) {
 			vertices->push_back(VectorContiniousTimeAccessor::getValue(mult * n, *channel));
 			vertices->push_back(VectorContiniousTimeAccessor::getValue(mult * (n+1), *channel));
 		}
@@ -82,7 +82,7 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 		thicknessMap[channel->getName()] = 1.0f;
 
 		geode->addDrawable(lines);
-		
+
 		node->addChild(geode);
 		geode->setNodeMask(0);
 	}
@@ -106,7 +106,7 @@ osg::Vec4 TrajectoryDrawer::getColor( const std::string& name )
 		if (lines && lines->getColorArray() && lines->getColorArray()->getDataSize()) {
 			const osg::Vec4Array* colors = static_cast<const osg::Vec4Array*>( lines->getColorArray() );
 			return (*colors)[0];
-		} 
+		}
 	}
 
 	throw std::runtime_error("Wrong color buffer");
@@ -164,9 +164,9 @@ void TrajectoryDrawer::setTimes( const std::string& name, const std::pair<float,
 	GeodePtr ptr = trajectoriesMap[name];
 	try {
 		osg::Geometry* geometry = ptr->getDrawable(0)->asGeometry();
-		
+
 		float length = OsgSchemeDrawer::getVisualiztionScheme()->getDuration();
-		
+
 		const osg::Array* vertices = geometry->getVertexArray();
 		int start = static_cast<int>(vertices->getNumElements() * (times.first / length));
 		start = start - (start % 4);

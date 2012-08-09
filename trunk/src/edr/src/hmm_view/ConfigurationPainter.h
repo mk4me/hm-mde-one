@@ -3,14 +3,17 @@
 	created:	18:10:2011   8:58
 	filename: 	ConfigurationPainter.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__CONFIGURATIONPAINTER_H__
 #define HEADER_GUARD_HMM__CONFIGURATIONPAINTER_H__
 
 #include <QtCore/QFileInfo>
+#include <map>
+#include <list>
+#include <QtGui/QWidget>
 #include <QtGui/QPen>
 #include <QtGui/QPainter>
 #include "ConfigurationPainterAreas.h"
@@ -40,13 +43,13 @@ public:
     //! usuwa obszar (marker lub obrazek) z paintera
     //! \param name nazwa obszaru
     void removeArea(const QString& name);
-    //! 
+    //!
     AreasList::const_iterator begin() const { return areas.cbegin(); }
-    //! 
+    //!
     AreasList::const_iterator end() const { return areas.cend(); }
-    //! 
+    //!
     AreasList::iterator begin() { return areas.begin(); }
-    //! 
+    //!
     AreasList::iterator end() { return areas.end(); }
     //! Jesli obszar o danej nazwie jest w painterze, to staje sie lub przestaje byc aktywny
     //! \param name nazwa elementu
@@ -58,7 +61,7 @@ public:
     //! \return globalna skala dla paintera
     float getScale() const { return scale; }
     //! ustawia globalna skale dla paintera
-    //! \param val 
+    //! \param val
     void setScale(float val);
 
 signals:
@@ -72,23 +75,23 @@ signals:
     void elementSelected(const QString& name, bool selected);
 
 protected:
-    //! 
-    //! \param event 
+    //!
+    //! \param event
     virtual void mouseMoveEvent ( QMouseEvent * event );
-    //! 
-    //! \param event 
+    //!
+    //! \param event
     virtual void mousePressEvent ( QMouseEvent * event );
-    //! 
-    //! \param event 
+    //!
+    //! \param event
     virtual void mouseReleaseEvent ( QMouseEvent * event );
-    //! 
-    //! \param * 
+    //!
+    //! \param *
     virtual void paintEvent(QPaintEvent *);
-    //! 
-    //! \param obj 
-    //! \param event 
+    //!
+    //! \param obj
+    //! \param event
     bool eventFilter(QObject *obj, QEvent *event);
-    
+
 private:
     //! pobiera arene na podstawie wspolrzednych (w przypadku obrazkow uwzgledniana jest tez alpha)
     //! \param x wspolrzedna x

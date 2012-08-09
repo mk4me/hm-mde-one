@@ -1,7 +1,9 @@
 #include "CorePCH.h"
 #include "EDRConfig.h"
 #include <core/PluginCommon.h>
-
+#include <utils/Debug.h>
+#include <QtCore/QDir>
+#include <QtGui/QDesktopServices>
 #ifdef WIN32
 #include <Windows.h>
 //#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
@@ -11,7 +13,7 @@
 #endif
 
 
-namespace core 
+namespace core
 {
 
 const Filesystem::Path& EDRConfig::getApplicationDataPath() const
@@ -92,12 +94,12 @@ void EDRConfig::clearTempDirectory() const
 
 bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 {
-#ifdef WIN32	
+#ifdef WIN32
 	HKEY hKey;
 	LONG lResult;
 	char buffer[1024];
 	DWORD dwType, dwSize = sizeof(buffer);
-	
+
 	LPTSTR lpValueName = "ProgramFilesPath";
 	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
 	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
@@ -126,7 +128,7 @@ bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
 		directoriesInfo.setUserDataPath(core::Filesystem::Path(buffer));
 		RegCloseKey(hKey);
-	} 
+	}
 
 	return lResult == ERROR_SUCCESS ? true : false;
 #else
@@ -136,7 +138,7 @@ bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 
 bool EDRConfig::trySetDefaultPaths( EDRConfig& directoriesInfo )
 {
-	core::Filesystem::Path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
+	core::Filesystem::Path userPath = toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
 	userPath /= "PJWSTK";
 	userPath /= "EDR";
 	directoriesInfo.setUserDataPath(userPath);
@@ -144,7 +146,7 @@ bool EDRConfig::trySetDefaultPaths( EDRConfig& directoriesInfo )
 	core::Filesystem::Path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
 	directoriesInfo.setApplicationDataPath(appDataPath);
 
-	core::Filesystem::Path resourcesPath(core::toStdString(QDir::currentPath())); 
+	core::Filesystem::Path resourcesPath(core::toStdString(QDir::currentPath()));
 	resourcesPath /= "resources";
 	directoriesInfo.setResourcesPath(resourcesPath);
 	return true;

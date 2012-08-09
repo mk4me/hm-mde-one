@@ -4,6 +4,5 @@
 //#include "vld.h"
 int main(int argc, char* argv[])
 {
-    COS CO NIE MOZE SIE SKOMPILOWAC -> TEST POWIADOMIEN HUDSONA :)
 	return core::AppInitializer::start<HmmMainWindow>(argc, argv);
 }

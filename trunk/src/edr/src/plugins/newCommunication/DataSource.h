@@ -3,12 +3,13 @@
     created:  28:10:2011   13:11
     filename: CommunicationDataSource.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___COMMUNICATIONDATASOURCE_H__
 #define HEADER_GUARD___COMMUNICATIONDATASOURCE_H__
 
+#include <core/Filesystem.h>
 #include <plugins/newCommunication/ICommunicationDataSource.h>
 #include <plugins/newCommunication/DataSourceShallowCopy.h>
 #include <webserviceslib/IFtpsConnection.h>
@@ -75,7 +76,7 @@ public:
     virtual void logout();
     //! \return prawda jeœli u¿ytkownik zalogowany
     virtual bool isLogged() const;
-	
+
     //! \return Dane aktualnego u¿ytkownika ( w szczególnoœci pusty obiekt jesli niezalogowano)
     virtual const User * currentUser() const;
 
@@ -142,7 +143,7 @@ private:
 	//! \param file Plik który chcemy wypakowaæ z lokalnego storage
 	//! \param sessionName Nazwa sesji z której pochodzi plik
 	void extractFileFromLocalStorageToUserSpace(const webservices::MotionShallowCopy::File * file, const std::string & sessionName);
-	
+
 	//! \param oldShallowCopy Poprzednia p³ytka kopia dla której wypakowywano dane
 	//! \param newShallowCopy Nowa p³ytka kopia dla której wypakowywujemy dane
 	//! Algorytm opiera siê na ró¿nicy zbioru plików do których u¿ytkownik ma dostep zdefiniowany p³ytk¹ kopi¹ bazy danych

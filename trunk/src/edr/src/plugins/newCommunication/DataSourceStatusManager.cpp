@@ -36,15 +36,15 @@ void FileStatusManager::removeFile(int fileID)
     if(it == filesStatus.end()){
         throw std::runtime_error("File not registered");
     }
-    
+
     filesStatus.erase(it);
 	files.erase(fileID);
 }
 
 void FileStatusManager::removeAllFiles()
 {
-	filesStatus.swap(FilesStatus());
-	files.swap(std::set<int>());
+	FilesStatus().swap(filesStatus);
+	std::set<int>().swap(files);
 }
 
 bool FileStatusManager::fileExists(int fileID)
@@ -144,7 +144,7 @@ void FileStatusManager::refreshFilesStatus(const std::set<int> & files)
 
     auto managedFilesITEnd = managedFiles.end();
 
-    std::map<FileStatus*, DataStatus> newStatus;    
+    std::map<FileStatus*, DataStatus> newStatus;
 
     auto itEnd = files.end();
     auto fileITEnd = filesStatus.end();
@@ -220,9 +220,9 @@ DataSourceStatusManager::~DataSourceStatusManager()
 void DataSourceStatusManager::setShallowCopy(const ShallowCopy * shallowCopy)
 {
     clearAllStatusData();
-    
+
     this->shallowCopy = shallowCopy;
-    
+
     if(shallowCopy != nullptr){
         rebuildDataStatus();
     }
@@ -344,7 +344,7 @@ void DataSourceStatusManager::refreshDataStatus(const std::set<int> & modifiedFi
         }
 
         locSubjectsStatus.insert(std::map<int, DataStatus>::value_type(subjectIT->second->performerID, subjectStatus));
-		
+
 		//teraz tak to robimy, jesli pacjent bêdzie mia³ swoje pliki to trzeba to rozbiæ
 		if(subjectIT->second->patient != nullptr){
 			locPatientsStatus.insert(std::map<int, DataStatus>::value_type(subjectIT->second->patient->patientID, subjectStatus));
@@ -371,7 +371,7 @@ void DataSourceStatusManager::refreshDataStatus(const std::set<int> & modifiedFi
 				}
             }
         }
-        
+
         locDisordersStatus.insert(std::map<int, DataStatus>::value_type(disorderIT->second->disorderID, disorderStatus));
     }
 
@@ -517,7 +517,7 @@ void DataSourceStatusManager::rebuildDataStatus()
         if(subjectIT == locSubjectsStatus.end()){
             throw std::runtime_error("Incomplete data - missing subject for patient");
         }
-        
+
         locPatientsStatus.insert(std::map<int, DataStatus>::value_type(patientIT->second->patientID, subjectIT->second));
     }
 
@@ -548,11 +548,11 @@ void DataSourceStatusManager::rebuildDataStatus()
 
 void DataSourceStatusManager::clearAllStatusData()
 {
-    disordersStatus.swap(std::map<int, DataStatus>());
-    patientsStatus.swap(std::map<int, DataStatus>());
-    subjectsStatus.swap(std::map<int, DataStatus>());
-    sessionsStatus.swap(std::map<int, DataStatus>());
-    motionsStatus.swap(std::map<int, DataStatus>());
+    std::map<int, DataStatus>().swap(disordersStatus);
+    std::map<int, DataStatus>().swap(patientsStatus);
+    std::map<int, DataStatus>().swap(subjectsStatus);
+    std::map<int, DataStatus>().swap(sessionsStatus);
+    std::map<int, DataStatus>().swap(motionsStatus);
 }
 
 QIcon DataSourceStatusManager::statusIcon(const communication::IDataStatus & status)

@@ -3,13 +3,14 @@
     created:  27:5:2011   11:17
     filename: LocalDataSourceWidget.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___LOCALDATASOURCEWIDGET_H__
 #define HEADER_GUARD___LOCALDATASOURCEWIDGET_H__
 
 #include <QtGui/QWidget>
+#include <QtGui/QCheckBox>
 #include "ui_LocalDataSourceWidget.h"
 #include <core/TypeInfo.h>
 #include "LocalDataSource.h"

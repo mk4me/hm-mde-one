@@ -3,8 +3,8 @@
     created:  16:12:2011   8:59
     filename: IAppUsageContextManager.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___IAPPUSAGECONTEXTMANAGER_H__
 #define HEADER_GUARD___IAPPUSAGECONTEXTMANAGER_H__
@@ -123,7 +123,7 @@ public:
             refreshContext(it->second);
         }
 
-        widgets.erase(it->first);        
+        widgets.erase(it->first);
         it->second->unregisterContextWidget(contextWidget);
         widgetContexts.erase(it);
     }
@@ -154,9 +154,17 @@ public:
 
             //cos znaleziono!!
             if(intIT != intersection.begin()){
-                std::set<QWidget*> intersection(intersection.begin(), intIT);
+                // rev - intersection tworzone tutaj, ale tez brane z przestrzeni rodzica ?!
+                /*std::set<QWidget*> intersection(intersection.begin(), intIT);
                 for(auto it = orderedParentWidgets.begin(); it != orderedParentWidgets.end(); ++it){
                     if(intersection.find(*it) != intersection.end()){
+                        ret = *it;
+                        break;
+                    }
+                }*/
+                std::set<QWidget*> intersection2(intersection.begin(), intIT);
+                for(auto it = orderedParentWidgets.begin(); it != orderedParentWidgets.end(); ++it){
+                    if(intersection2.find(*it) != intersection2.end()){
                         ret = *it;
                         break;
                     }
@@ -170,7 +178,7 @@ public:
     bool isCurrentContextWidget(QWidget * candidate) const
     {
         auto it = widgetContexts.find(candidate);
-        
+
         if(it != widgetContexts.end() && it->second->getCurrentContextWidget() == candidate){
             return true;
         }
@@ -219,7 +227,7 @@ public:
             //chowamy caly ³añcuch kontekstów
             if(currentContextChain.empty() == false){
                 limitCurrentChainToPosition(-1);
-                currentContextChain.swap(ContextChain());
+                ContextChain().swap(currentContextChain);
             }
 
         }else if(contextWidget == getCurrentContextWidget()){
@@ -258,7 +266,7 @@ private:
             //chowamy caly ³añcuch kontekstów
             if(currentContextChain.empty() == false){
                 limitCurrentChainToPosition(-1);
-                currentContextChain.swap(ContextChain());
+                ContextChain().swap(currentContextChain);
             }
         }else{
             //sprawdzamy czy kontekst nie jest juz aktywny - jesli tak to wszystkie nizsze od niego sa dezaktywowane
@@ -294,7 +302,7 @@ private:
                     //jesli ostatni ma widget to musimy go przelaczyc
                     auto tmpCurrent = currentContextChain.back();
                     if(tmpCurrent->getCurrentContextWidget() != nullptr){
-                        
+
                         refreshContext(tmpCurrent);
                     }
 

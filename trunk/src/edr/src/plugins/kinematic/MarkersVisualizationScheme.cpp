@@ -1,6 +1,6 @@
 #include "PCH.h"
 #include "MarkersVisualizationScheme.h"
-#include "uniqueCollection.h"
+#include "UniqueCollection.h"
 #include "ISchemeDrawer.h"
 
 using namespace std;
@@ -30,7 +30,7 @@ void MarkersVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserCons
     for (int i = markers->getNumChannels() - 1; i >= 0; --i) {
         markersIndices[markers->getMarkerName(i)] = i;
     }
-   
+
     auto vskMarkers = vsk->getMarkers();
     for (auto it = vskMarkers.first; it != vskMarkers.second; ++it) {
         std::map<std::string, int>::iterator found = markersIndices.find(it->name);
@@ -44,7 +44,7 @@ void MarkersVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserCons
         Connection c;
         auto it1 = markersIndices.find(it->name1);
         auto it2 = markersIndices.find(it->name2);
-        
+
         if (it1 != markersIndices.end() && it2 != markersIndices.end()) {
             c.index1 = markersIndices[it->name1];
             c.index2 = markersIndices[it->name2];
@@ -92,7 +92,7 @@ float MarkersVisualizationScheme::getStickLength( VectorChannelConstPtr channel1
     float length = (std::min)(channel1->getLength(), channel2->getLength());
     float t = 0.0f;
     float delta = length / 100;
- 
+
     while (t < length) {
         auto i1 = channel1->utils::IRawUniformDataChannelReader<osg::Vec3f,float>::getValueHelper(t).first;
         auto i2 = channel2->utils::IRawUniformDataChannelReader<osg::Vec3f,float>::getValueHelper(t).first;
@@ -133,19 +133,19 @@ double MarkersVisualizationScheme::getDuration() const
     return 0.0;
 }
 
-MarkerCollectionConstPtr MarkersVisualizationScheme::getMarkers() const 
-{ 
-    return markers; 
+MarkerCollectionConstPtr MarkersVisualizationScheme::getMarkers() const
+{
+    return markers;
 }
 
 bool MarkersVisualizationScheme::hasData() const
-{ 
-    return markers.get(); 
+{
+    return markers.get();
 }
 
 osg::Vec3 MarkersVisualizationScheme::getCurrentPosition() const
-{ 
-   return currentPosition; 
+{
+   return currentPosition;
 }
 
 void MarkersVisualizationScheme::update( double time )

@@ -11,6 +11,7 @@
 
 #include <boost/type_traits.hpp>
 #include <core/SmartPtr.h>
+#include <stdexcept>
 #include <utils/Debug.h>
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>

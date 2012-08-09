@@ -1,13 +1,13 @@
 #include "C3DPCH.h"
-#include "C3dParser.h"
+#include "C3DParser.h"
 
 #include <string>
 #include <vector>
 #include <boost/tuple/tuple.hpp>
-#include <c3dlib/c3dparser.h>
+#include <c3dlib/C3DParser.h>
 #include <core/Filesystem.h>
 #include <plugins/c3d/C3DChannels.h>
-#include "c3dParser.h"
+#include "C3DParser.h"
 #include "ForcePlatform.h"
 
 C3DParser::C3DParser()
@@ -40,12 +40,12 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 {
 	ParserPtr parser(new c3dlib::C3DParser());
 	parserPtr = parser;
-    
-    std::vector<const std::string> files;
+
+    std::vector<std::string> files;
     files.push_back(path.string());
 	std::string importWarnings;
     parser->importFrom(files, importWarnings);
-    
+
     // wczytanie danych analogowych
     GRFCollectionPtr grfs(new GRFCollection());
     EMGCollectionPtr e(new EMGCollection());
@@ -61,7 +61,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 
         GRFs->set(grfs, path.filename().string(), path.string());
         GRFs->setSource(path.string());
-        
+
         for (int i = 12; i < 28; ++i) {
             EMGChannelPtr ptr(new EMGChannel(*parser , i));
             EMGChannels[i-12]->set(ptr);
@@ -91,28 +91,35 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         vsk = kinematic::VskParserPtr(new kinematic::VskParser());
         vsk->parse(*vskFiles.begin());
     }
-	MarkerCollectionPtr markers(new MarkerCollection(vsk)); 
+	MarkerCollectionPtr markers(new MarkerCollection(vsk));
 	ForceCollectionPtr forces(new ForceCollection);
 	AngleCollectionPtr angles(new AngleCollection);
 	MomentCollectionPtr moments(new MomentCollection);
 	PowerCollectionPtr powers(new PowerCollection);
-	
-#define CHANNEL_CASE(name, collection)						  	 \
-	case c3dlib::C3DParser::IPoint::##name:					  	 \
-		{														 \
-			name##ChannelPtr ptr(new name##Channel(*parser, i)); \
-			collection->addChannel(ptr);						 \
-		}														 \
-		break;
 
 	int markersCount = parser->getNumPoints();
 	for (int i = 0; i < markersCount; ++i) {
 		switch (parser->getPoint(i)->getType()) {
-			CHANNEL_CASE(Angle, angles);
-			CHANNEL_CASE(Marker, markers);
-			CHANNEL_CASE(Force, forces);
-			CHANNEL_CASE(Moment, moments);
-			CHANNEL_CASE(Power, powers);
+			case c3dlib::C3DParser::IPoint::Angle: {
+                AngleChannelPtr ptr(new AngleChannel(*parser, i));
+                angles->addChannel(ptr);
+            } break;
+            case c3dlib::C3DParser::IPoint::Marker: {
+                MarkerChannelPtr ptr(new MarkerChannel(*parser, i));
+                markers->addChannel(ptr);
+            } break;
+            case c3dlib::C3DParser::IPoint::Force: {
+                ForceChannelPtr ptr(new ForceChannel(*parser, i));
+                forces->addChannel(ptr);
+            } break;
+            case c3dlib::C3DParser::IPoint::Moment: {
+                MomentChannelPtr ptr(new MomentChannel(*parser, i));
+                moments->addChannel(ptr);
+            } break;
+            case c3dlib::C3DParser::IPoint::Power: {
+                PowerChannelPtr ptr(new PowerChannel(*parser, i));
+                powers->addChannel(ptr);
+            } break;
 		}
 	}
 	markerChannels->set(markers, path.filename().string(), path.string());

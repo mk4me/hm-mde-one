@@ -3,15 +3,15 @@
 	created:	6:9:2011   13:34
 	filename: 	TrajectoriesDrawer.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_TRAJECTORIES_DRAWER__TRAJECTORIESDRAWER_H__
 #define HEADER_GUARD_TRAJECTORIES_DRAWER__TRAJECTORIESDRAWER_H__
 
 #include <osg/Geode>
-#include <plugins/kinematic/skeletalVisualizationScheme.h>
+#include <plugins/kinematic/SkeletalVisualizationScheme.h>
 #include <plugins/c3d/C3DChannels.h>
 #include "OsgSchemeDrawer.h"
 
@@ -42,7 +42,7 @@ public:
 	void setVisible(const std::string& name, bool visible);
 	//! pobiera kolor trajektorii
 	//! \param name nazwa markera, dla ktorego stworzona zostala trajektoria
-    //! \return 
+    //! \return
 	osg::Vec4 getColor(const std::string& name);
 	//! ustawia kolor trajektorii
 	//! \param name nazwa markera, dla ktorego stworzona zostala trajektoria
@@ -68,7 +68,7 @@ public:
     //! Metoda pozwala zmienic wzgledna pozycje wezla
     //! \param offset nowe przesuniecie wezla z trajektoriami
     void setOffset(const osg::Vec3& offset);
-	
+
 private:
 	//! Metoda tworzy wszystkie trajektorie
 	//! \param markers kolekcje markerow, na podstawie ktorych stworzone zostana trajektorie

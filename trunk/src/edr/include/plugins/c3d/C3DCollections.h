@@ -3,21 +3,21 @@
     created:	25:3:2012   20:35
     filename: 	C3DCollections.h
     author:		Wojciech Kniec
-    
-    purpose:	
+
+    purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_C3DPLUGIN__C3DCOLLECTIONS_H__
 #define HEADER_GUARD_C3DPLUGIN__C3DCOLLECTIONS_H__
 
 #include <kinematiclib/VskParser.h>
-#include <plugins/c3d/C3DChannels.h>
 #include <plugins/c3d/IForcePlatform.h>
+#include <plugins/c3d/C3DChannels.h>
 
 //! Prosta kolekcja przechowujaca wszystkie zdarzenia z pliku c3d
 class C3DEventsCollection
 {
-public: 
+public:
     // pomocnicze typy
     typedef core::shared_ptr<c3dlib::C3DParser::IEvent> EventPtr;
     typedef core::shared_ptr<const c3dlib::C3DParser::IEvent> EventConstPtr;
@@ -60,7 +60,7 @@ public:
     int getNumEvents() const { return events.size(); }
     //! pobranie zdarzenia
     //! \param index indeks z zakresu <0 , getNumEvents)
-    EventPtr getEvent(int index) 
+    EventPtr getEvent(int index)
     {
         UTILS_ASSERT(index >= 0 && index < getNumEvents());
         return events[index];
@@ -81,8 +81,8 @@ public:
     //! \return przepisany, stl-owy iterator
     const_iterator cend() const { return events.cend(); }
     //! dodanie zdarzenia do kolekcji
-    //! \param event 
-    void addEvent(EventPtr event) 
+    //! \param event
+    void addEvent(EventPtr event)
     {
         events.push_back(event);
         // wymuszenie kolejnosci zwiazanej z czasem
@@ -108,7 +108,7 @@ public:
             for (it++; it != events.cend(); ++it) {
                 if ((*it)->getContext() == context) {
                     return *it;
-                } 
+                }
             }
         }
 
@@ -167,7 +167,7 @@ typedef core::shared_ptr<std::pair<float, float>> FloatPairPtr;
 //! Metoda wydziela przedzialy czasowe, dla ktorych realizowana jest analiza
 //! \param events zdarzenia, z ktorych beda wyciagnane przedzialy
 //! \param context kontekst kroku (lewy, prawy)
-static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events, C3DEventsCollection::Context context) 
+static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events, C3DEventsCollection::Context context)
 {
     std::vector<FloatPairPtr> ret;
 
@@ -186,20 +186,20 @@ static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events
             } else if (currentSegment && event->getLabel() == "Foot Off") {
                 //currentSegment->event2 = event;
             }
-        } 
+        }
     }
 
     return ret;
 }
 
 //! Kolekcja dostarcza rowniez informacji o plytach GFR oraz ulatwia pobranie konkretnego kanalu
-class GRFCollection : public VectorChannelCollection 
+class GRFCollection : public VectorChannelCollection
 {
 public:
     //! \return wszystkie wczytane plyty pomiarowe zwiazane z danymi GRF
     const IForcePlatformCollection& getPlatforms() const { return platforms; }
     //! Ustawienie plyt pomiarowych
-    //! \param val 
+    //! \param val
     void setPlatforms(const IForcePlatformCollection& val) { platforms = val; }
     //! Metoda ulatwia pobranie kanalu GRF o odpowiednim typie
     //! \param type typ kanalu (np. M1 lub F2)
@@ -230,7 +230,7 @@ public:
     //! \param vsk parser ze wczytanym plikiem vsk (dzieki niemu tworza sie kolorowe polaczenia midzy markerami)
     MarkerCollection(kinematic::VskParserPtr vsk = kinematic::VskParserPtr()) :
       VectorChannelCollection(),
-      vsk(vsk) 
+      vsk(vsk)
       {}
     //! Zwrace nazwe markera na podstawie indeksu
     //! \param markerNo poprawny indeks, w przeciwnym razie poleci asercja
@@ -262,7 +262,7 @@ typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 #define DEFINE_CHANNEL_COLLECTION(name)                                         \
 class name##Collection : public VectorChannelCollection {};				        \
     typedef core::shared_ptr<name##Collection> name##CollectionPtr;				\
-    typedef core::shared_ptr<const name##Collection> name##CollectionConstPtr;	
+    typedef core::shared_ptr<const name##Collection> name##CollectionConstPtr;
 
 
 DEFINE_CHANNEL_COLLECTION(Force);

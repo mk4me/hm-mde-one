@@ -3,8 +3,8 @@
 	created:	12:11:2011   18:08
 	filename: 	ChartSerie.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTSERIE_H__
@@ -20,6 +20,7 @@
 #include "Scales.h"
 
 class NewChartCurve;
+class NewChartVisualizer;
 
 //! Podstawowa seria danych wizualizatora 2D
 class NewChartSerie : public INewChartSerie
@@ -45,7 +46,7 @@ public:
     //! \param val kolecja zdarzen
     virtual void setEvents(EventsCollectionConstPtr val);
     //! pobierz krzywa qwt
-    const QwtPlotCurve* getCurve() const; 
+    const QwtPlotCurve* getCurve() const;
     //! ustaw widzialnosc krzywej
     //! \param visible widoczna / niewidoczna
     void setVisible(bool visible);
@@ -72,13 +73,13 @@ public:
     virtual void setName(const std::string & name);
     //! \return nazwa krzywej
     virtual const std::string & getName() const;
-    //! dostarcza ObjectWrapper z danymi 
+    //! dostarcza ObjectWrapper z danymi
     //! \param data ObjectWrapper przechowujacy interfejs ScalarChannelReaderInterface
     virtual void setData(const core::ObjectWrapperConstPtr & data);
     //! \return ObjectWrapper przechowujacy interfejs ScalarChannelReaderInterface
     virtual const core::ObjectWrapperConstPtr & getData() const;
     //! \return ekstrema krzywej
-    Scales getScales() const; 
+    Scales getScales() const;
     //! \return czy krzywa jest aktywna
     bool isActive() const { return active; }
     //! ustawia aktywnosc krzywej
@@ -91,8 +92,8 @@ public:
     //! odlacza krzywa od wykresu
     void removeItemsFromPlot();
     //! ustawia kolejnosc wyswietlania
-    //! \param z 
-    //! \param replot 
+    //! \param z
+    //! \param replot
     void setZ(double z, bool replot = false);
     //! \return skladowa z odpowiedzialna z kolejnosc wyswietlania
     double z() const;
@@ -118,7 +119,7 @@ public:
     void setYOffset(double val);
     //! \return przesuniecie krzywej
     QPointF getOffset() const;
-    //! ustawia przesuniecie 
+    //! ustawia przesuniecie
     //! \param offset nowa wartosc przesuniecia
     void setOffset(const QPointF& offset);
 
@@ -152,7 +153,7 @@ private:
     //! skladowa okresla kolejnosc rysowania
     double _z;
     //! poczatkowa wartosc skladowej zd
-    double _zBase;    
+    double _zBase;
 };
 
 #endif

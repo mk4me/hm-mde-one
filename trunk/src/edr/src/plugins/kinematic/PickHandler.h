@@ -3,8 +3,8 @@
 	created:	9:3:2012   12:10
 	filename: 	PickHandler.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_KINEMATIC__PICKHANDLER_H__
@@ -13,8 +13,8 @@
 
 #include <osg/Geode>
 #include <osg/Drawable>
-#include <osgGa/GUIEventHandler>
-#include <osgGa/GUIEventAdapter>
+#include <osgGA/GUIEventHandler>
+#include <osgGA/GUIEventAdapter>
 #include <osgViewer/View>
 
 #include <boost/tuple/tuple.hpp>
@@ -22,9 +22,9 @@
 #include <list>
 
 //! klasa pomocnicza, dzieki niej mozna latwo podpiac sie pod system pickingu
-class PickHandler : public osgGA::GUIEventHandler 
+class PickHandler : public osgGA::GUIEventHandler
 {
-public: 
+public:
     typedef osg::Geode* GeodePtr;
     typedef osg::ref_ptr<osg::Drawable> DrawablePtr;
     typedef boost::tuple<GeodePtr, DrawablePtr, double> PickerTuple;
@@ -38,14 +38,14 @@ public:
 
 public:
     //! Obsluga eventow
-    //! \param ea 
-    //! \param aa 
+    //! \param ea
+    //! \param aa
     bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& aa);
     //! Metoda realizujaca faktyczny picking
-    //! \param view 
-    //! \param ea 
+    //! \param view
+    //! \param ea
     virtual void pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea);
-    
+
 protected:
     HandlerFunction handlerFunction;
 };

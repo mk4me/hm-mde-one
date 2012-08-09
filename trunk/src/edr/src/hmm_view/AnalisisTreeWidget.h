@@ -3,12 +3,16 @@
 	created:	5:6:2012   9:48
 	filename: 	AnalisisTreeWidget.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_HMM__ANALISISTREEWIDGET_H__
 #define HEADER_GUARD_HMM__ANALISISTREEWIDGET_H__
+
+
+#include <QtCore/QObject>
+#include <QtGui/QTreeWidget>
 
 class QMouseEvent;
 class QContextMenuEvent;

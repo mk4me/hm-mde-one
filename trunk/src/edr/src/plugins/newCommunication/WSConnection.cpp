@@ -1,5 +1,6 @@
 #include "CommunicationPCH.h"
 #include <core/ILog.h>
+#include <core/PluginCommon.h>
 #include <plugins/newCommunication/WSConnection.h>
 #include <wsdlparser/WsdlInvoker.h>
 #include <boost/type_traits.hpp>
@@ -78,7 +79,7 @@ public:
 	virtual void setUrl(const std::string & url)
 	{
 		url_ = url;
-		if(url != lastUrl){			
+		if(url != lastUrl){
 			resetRequired = true;
 		}
 	}
@@ -126,12 +127,12 @@ public:
 				invoker_->setValue(it->first, it->second);
 			}
 
-			values.swap(std::map<std::string, std::string>());
+			std::map<std::string, std::string>().swap(values);
 		}catch(std::exception & e){
-			values.swap(std::map<std::string, std::string>());
+			std::map<std::string, std::string>().swap(values);
 			throw webservices::WSConnectionOperationValueException(e.what());
 		}catch(...){
-			values.swap(std::map<std::string, std::string>());
+			std::map<std::string, std::string>().swap(values);
 			std::string str("Unknown connection operation value error for value name: ");
 			str += it->first + " with value: " + it->second;
 			throw webservices::WSConnectionOperationValueException(str.c_str());
@@ -156,7 +157,7 @@ public:
 		auto const & resp = invoker_->getXMLResponse();
 
 		s = resp.find("<faultstring", 0);
-		if(s != std::string::npos){	
+		if(s != std::string::npos){
 			exception_ = true;
 			e = invoker_->getXMLResponse().find("</s:Fault>", s + 12);
 			if(e == std::string::npos){
@@ -169,7 +170,7 @@ public:
 				throw webservices::WSConnectionSecurityException(resp.substr(s + 11, e-s - 11).c_str());
 			}else{
 				throw webservices::WSConnectionResponseException(resp.substr(s + 11, e-s - 11).c_str());
-			}			
+			}
 		}
 	}
 	//! \param name Nazwa wartoœci któr¹ chcemy pobraæ
@@ -189,7 +190,7 @@ public:
 		if(exception_ != true){
 
 			s = ret.find("<" + operationName_ + "Result", 0);
-		
+
 			if(s != std::string::npos){
 				e = ret.find("</" + operationName_ + "Result>", s + 1) + 9 + operationName_.size();
 				if(e == std::string::npos){

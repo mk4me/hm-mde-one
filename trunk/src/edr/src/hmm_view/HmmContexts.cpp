@@ -86,7 +86,7 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
     if(visualizerGroupID != -1){
         flexiTabWidget->removeGroup(visualizerGroupID);
         visualizerGroupID = -1;
-        visualizerSectionsIDs.swap(std::set<FlexiTabWidget::GUIID>());
+        std::set<FlexiTabWidget::GUIID>().swap(visualizerSectionsIDs);
     }
 }
 
@@ -283,7 +283,7 @@ void HMMVisualizerUsageContext::onUnregisterContextWidget(QWidget * contextWidge
 HMMTreeItemUsageContext::HMMTreeItemUsageContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
 	flexiSection(new QWidget()),
-    groupID(-1), 
+    groupID(-1),
     hmm(hmm)
 {
 
@@ -345,7 +345,7 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
             w->setVisible(false);
         }
     }
-    
+
     if (helper) {
         QLayout* l = flexiSection->layout() ? flexiSection->layout() : new QVBoxLayout(flexiSection);
         l = flexiSection->layout();
@@ -363,13 +363,13 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
         QList<QAction*> actions = menu->actions();
         for (auto it = actions.begin(); it != actions.end(); ++it) {
             QMenu* m = (*it)->menu();
-            if (m) { 
+            if (m) {
                 QToolButton* menuButton = new QToolButton();
                 menuButton->setText((*it)->text());
                 menuButton->setPopupMode(QToolButton::InstantPopup);
-                
+
                 menuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-                
+
                 menuButton->setMenu(m);
                 hl->addWidget(menuButton);
             } else if (!(*it)->isSeparator()) {
@@ -378,7 +378,7 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
                 connect(actionButton, SIGNAL(clicked()), *it, SLOT(trigger()));
                 hl->addWidget(actionButton);
             }
-            
+
         }
         flexiSection->setLayout(l);
     }
@@ -399,10 +399,10 @@ void HMMTreeItemUsageContext::refresh()
 }
 
 
-RaportsThumbnailsContext::RaportsThumbnailsContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) : 
+RaportsThumbnailsContext::RaportsThumbnailsContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
 	flexiSection(new QWidget()),
-    groupID(-1), 
+    groupID(-1),
     hmm(hmm),
     projectName(nullptr),
 	projectTemplate(nullptr),
@@ -417,7 +417,7 @@ void RaportsThumbnailsContext::activateContext( QWidget * contextWidget )
     if(contextWidget == nullptr || groupID != -1){
         return;
     }
-    
+
     groupID = flexiTabWidget->addGroup(QObject::tr("Raports Tab"));
 
     flexiTabWidget->addSection(groupID, flexiSection, tr("Actions"));
@@ -463,7 +463,7 @@ void RaportsThumbnailsContext::onRegisterContextWidget( QWidget * contextWidget 
     projectTemplate->addItems(templateDir.entryList());
     projectTemplate->setMaximumSize(100, 20);
     projectTemplate->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    
+
     QDir cssDir(dirPath, "*.css");
     cssCombo = new QComboBox();
     cssCombo->addItem(tr("Empty"));
@@ -525,7 +525,7 @@ void RaportsThumbnailsContext::createRaport()
                 QString base64 = buffer.buffer().toBase64();
                 images += tr("Screenshot %1 <br> <IMG SRC=\"data:image/png;base64,%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(base64).arg(w).arg(h);
             }
-            
+
         }
     }
 
@@ -537,7 +537,7 @@ void RaportsThumbnailsContext::createRaport()
         css = f.readAll();
         f.close();
     }
-     
+
 
     QString p = templateDir + projectTemplate->currentText();
     QFile file(p);
@@ -555,22 +555,22 @@ void RaportsThumbnailsContext::createRaport()
                 "</HEAD> ").arg(css);
         }
         html = QString(
-            "<HTML> "                                  
-            "%1     "                            
+            "<HTML> "
+            "%1     "
             "<BODY> "
             "<P><FONT SIZE=8> %3</FONT></P>"
-            "%2     "                            
-            "</BODY>"                                  
-            "</HTML>").arg(css).arg(images).arg(projectName->toPlainText());   
+            "%2     "
+            "</BODY>"
+            "</HTML>").arg(css).arg(images).arg(projectName->toPlainText());
     }
-    
+
     hmm->createRaport(html);
 }
 
-RaportsTabContext::RaportsTabContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) : 
+RaportsTabContext::RaportsTabContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
 	editSection(nullptr),
-    groupID(-1), 
+    groupID(-1),
     hmm(hmm),
     textSection(nullptr),
     fileSection(nullptr)
@@ -616,7 +616,7 @@ void RaportsTabContext::onRegisterContextWidget( QWidget * contextWidget )
     TextEdit* textEdit = qobject_cast<TextEdit*>(contextWidget);
 
     auto twoLine = createTwoLineWidget();
-    editSection = twoLine.get<0>();  
+    editSection = twoLine.get<0>();
     placeObjects(textEdit->getEditActions(), twoLine.get<1>(), twoLine.get<2>());
 
     twoLine = createTwoLineWidget();
@@ -625,7 +625,7 @@ void RaportsTabContext::onRegisterContextWidget( QWidget * contextWidget )
 
     twoLine = createTwoLineWidget();
     textSection = twoLine.get<0>();
-    placeObjects(textEdit->getTextActions(), twoLine.get<1>(), twoLine.get<2>(), true);       
+    placeObjects(textEdit->getTextActions(), twoLine.get<1>(), twoLine.get<2>(), true);
 }
 
 void RaportsTabContext::onUnregisterContextWidget( QWidget * contextWidget )
@@ -654,7 +654,7 @@ void RaportsTabContext::placeObjects( const QList<QObject*> &editList, QLayout* 
             QWidget* w = qobject_cast<QWidget*>(editList[i]);
             if (actionsOnTop || i >= count / 2) {
                 lowerLayout->addWidget(w);
-            } else {                   
+            } else {
                 upperLayout->addWidget(w);
             }
         }

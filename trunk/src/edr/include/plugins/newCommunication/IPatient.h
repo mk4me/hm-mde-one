@@ -3,16 +3,18 @@
     created:  28:10:2011   14:10
     filename: IPatient.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___IPATIENT_H__
 #define HEADER_GUARD___IPATIENT_H__
 
 #include <QtGui/QPixmap>
 #include <string>
+#include <map>
 #include <plugins/subject/ISubject.h>
 #include <core/SmartPtr.h>
+
 
 namespace communication
 {

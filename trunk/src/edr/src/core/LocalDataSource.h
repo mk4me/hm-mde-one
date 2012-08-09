@@ -3,12 +3,13 @@
     created:  27:5:2011   10:55
     filename: LocalDataSource.h
     author:   Mateusz Janiak
-    
-    purpose:  
+
+    purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD___LOCALDATASOURCE_H__
 #define HEADER_GUARD___LOCALDATASOURCE_H__
 
+#include <map>
 #include <core/IDataSource.h>
 #include <core/ObjectWrapperCollection.h>
 

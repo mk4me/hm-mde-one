@@ -1,5 +1,5 @@
 #include "hmmPCH.h"
-#include "EdrDockWidgetSet.h"
+#include "EDRDockWidgetSet.h"
 #include "EDRDockWidgetManager.h"
 #include <QtGui/QTabWidget>
 
@@ -32,7 +32,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
         // http://developer.qt.nokia.com/doc/qt-4.8/qstyleoptiontabbarbasev2.html#details
         // http://developer.qt.nokia.com/doc/qt-4.8/qstyle.html
         // http://developer.qt.nokia.com/doc/qt-4.8/qtabbar.html
-        // 
+        //
 
         QList<QTabBar*> tabBars = this->findChildren<QTabBar*>();
 
@@ -45,7 +45,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 
         raiseSet(set);
 
-    } 
+    }
     set->setWindowTitle(QString(tr("Group %1")).arg(dockList.size()));
     set->setPermanent(false);
     //setTabNames();
@@ -114,7 +114,7 @@ EDRDockWidgetSet* EDRDockWidgetManager::tryGetDockSet( EDRDockWidget* widget )
                 return *it;
             }
         }
-        
+
     }
 
     return nullptr;

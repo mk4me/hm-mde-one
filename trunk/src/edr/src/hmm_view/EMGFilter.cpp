@@ -7,7 +7,16 @@ template<class PointType, class TimeType>
 class ChannelNoCopyModifier : public utils::IChannelAutoModifier<PointType, TimeType>
 {
 public:
-    ChannelNoCopyModifier(const typename utils::IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr & channel) : 
+    typedef typename utils::IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr _MyChannelPtr;
+    typedef typename utils::IChannelAutoModifier<PointType, TimeType>::_MyChannelConstPtr _MyChannelConstPtr;
+    typedef typename utils::IChannelAutoModifier<PointType, TimeType>::_MyModifierType _MyModifierType;
+    typedef typename utils::IChannelAutoModifier<PointType, TimeType>::time_type time_type;
+    typedef typename utils::IChannelAutoModifier<PointType, TimeType>::point_type point_type;
+    typedef typename utils::IChannelAutoModifier<PointType, TimeType>::size_type size_type;
+    typedef typename utils::IChannelAutoModifier<PointType, TimeType>::point_type_const_reference point_type_const_reference;
+
+
+    ChannelNoCopyModifier(const typename utils::IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr & channel) :
       channel(channel)
     {
         UTILS_ASSERT((channel != nullptr), "Wrong channel for Tracker");
@@ -42,7 +51,7 @@ public:
         if(channel == nullptr){
             throw std::runtime_error("Wrong channel for Tracker");
         }
-        
+
         //this->channel->detach(notifier.get());
         this->channel = channel;
         //channel->attach(notifier.get());
@@ -96,7 +105,7 @@ public:
     }
 
 protected:
-    typename IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr channel;
+    _MyChannelPtr channel;
 };
 
 //class ScalarChannelAbs
@@ -139,7 +148,7 @@ public:
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
-        //uzupe³nij brakujace probki 
+        //uzupe³nij brakujace probki
         if(myChannel.size() < observedChannel.size()){
             for(auto idx = myChannel.size(); idx < observedChannel.size(); ++idx){
                 modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
@@ -211,7 +220,7 @@ public:
             }
         }
         //aktualizacja próbek
-        
+
         sizeT meanR = 10;
         sizeT count = myChannel.size() - meanR;
 
@@ -253,7 +262,7 @@ public:
 //{
 //    typedef float PointType;
 //    typedef float TimeType;
-//    class IntegratorChannel(const utils::IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr & channel) : 
+//    class IntegratorChannel(const utils::IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr & channel) :
 //        ChannelNoCopyModifier(channel)
 //    {
 //    }
@@ -263,7 +272,7 @@ public:
 //        return tempPoint = point > mean ? point : -point;
 //    }
 //
-//    virtual void initialize() 
+//    virtual void initialize()
 //    {
 //        point_type sum = 0;
 //        //srednia
@@ -284,8 +293,17 @@ template <class PointType, class TimeType>
 class AbsMeanChannel : public ChannelNoCopyModifier<PointType, TimeType>
 {
 public:
-    AbsMeanChannel(const utils::IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr & channel) : 
-      ChannelNoCopyModifier(channel)
+    typedef ChannelNoCopyModifier<PointType, TimeType> BaseClass;
+    typedef typename BaseClass::_MyChannelPtr _MyChannelPtr;
+    typedef typename BaseClass::_MyChannelConstPtr _MyChannelConstPtr;
+    typedef typename BaseClass::_MyModifierType _MyModifierType;
+    typedef typename BaseClass::time_type time_type;
+    typedef typename BaseClass::point_type point_type;
+    typedef typename BaseClass::size_type size_type;
+    typedef typename BaseClass::point_type_const_reference point_type_const_reference;
+
+    AbsMeanChannel(const _MyChannelPtr & channel) :
+      BaseClass(channel)
     {
     }
 
@@ -297,14 +315,14 @@ public:
         return tempPoint;
     }
 
-    virtual void initialize() 
+    virtual void initialize()
     {
-        point_type min = channel->value(0);
+        point_type min = this->channel->value(0);
         point_type max = min;
 
-        size_type count = channel->size();
+        size_type count = this->channel->size();
         for(size_type idx = 0; idx < count; ++idx){
-            point_type val = channel->value(idx);
+            point_type val = this->channel->value(idx);
             if (val > max) {
                 max = val;
             } else if (val < min) {
@@ -318,7 +336,7 @@ public:
         point_type sum = 0;
         //srednia
         for(size_type idx = 0; idx < count; ++idx) {
-            point_type val = channel->value(idx);
+            point_type val = this->channel->value(idx);
             if (val > max4) {
                 val = max4;
             } else if (val < min4) {
@@ -336,8 +354,8 @@ private:
 
 };
 
-EMGFilterHelper::EMGFilterHelper( const core::ObjectWrapperConstPtr& wrapper ) : 
-NewChartItemHelper(wrapper) 
+EMGFilterHelper::EMGFilterHelper( const core::ObjectWrapperConstPtr& wrapper ) :
+NewChartItemHelper(wrapper)
 {
 }
 
@@ -352,13 +370,13 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     ScalarChannelReaderInterfacePtr nonConstChannel2(core::const_pointer_cast<ScalarChannelReaderInterface>(channel));
 
     //core::shared_ptr<ScalarModifier> absChannel(new ScalarModifier(nonConstChannel2, ScalarChannelAbs()));
-   
+
     boost::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(nonConstChannel2));
     absTest->initialize();
-    
+
     //core::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
     core::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, RMSModifier()));
-    
+
     core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
     wrapperX->set(core::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
     wrapperX->setName  (wrapper->getName());

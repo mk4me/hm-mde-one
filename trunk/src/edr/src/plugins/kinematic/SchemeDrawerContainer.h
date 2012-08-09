@@ -3,7 +3,7 @@
 #include <osg/Geode>
 #include <vector>
 #include <boost/range.hpp>
-#include <plugins/kinematic/skeletalVisualizationScheme.h>
+#include <plugins/kinematic/SkeletalVisualizationScheme.h>
 #include "OsgSchemeDrawer.h"
 
 //! Klasa realizuje wzorzec 'kompozyt'
@@ -20,7 +20,7 @@ public:
     SchemeDrawerContainer();
 
 public:
-    //! reuturn 
+    //! reuturn
     virtual osg::ref_ptr<osg::Node> getNode();
     //! inicjalizacja drawera
     //! \param scheme schemat wizualizacji z danymi

@@ -128,7 +128,8 @@ const void* DataManager::DMObjectWrapper::getRawPtr() const
 {
 	if(wrapper->getRawPtr() == nullptr){
 		try{
-			DataManager::getInstance()->initializeData(core::ObjectWrapperPtr(core::const_pointer_cast<DMObjectWrapper>(shared_from_this())));
+		    core::ObjectWrapperPtr wrapper(core::const_pointer_cast<DMObjectWrapper>(shared_from_this()));
+			DataManager::getInstance()->initializeData(wrapper);
 		}
 		catch(std::exception & ){
 
@@ -142,7 +143,8 @@ void* DataManager::DMObjectWrapper::getRawPtr()
 {
 	if(wrapper->getRawPtr() == nullptr){
 		try{
-			DataManager::getInstance()->initializeData(core::ObjectWrapperPtr(shared_from_this()));
+		    core::ObjectWrapperPtr wrapper(shared_from_this());
+			DataManager::getInstance()->initializeData(wrapper);
 		}
 		catch(std::exception & ){
 
@@ -229,7 +231,7 @@ bool DataManager::DMObjectWrapper::isNull() const
 
 core::ObjectWrapperPtr DataManager::DMObjectWrapper::clone() const
 {
-    return core::ObjectWrapperPtr(new DMObjectWrapper(wrapper->clone())); 
+    return core::ObjectWrapperPtr(new DMObjectWrapper(wrapper->clone()));
 }
 
 core::ObjectWrapperPtr DataManager::DMObjectWrapper::create() const {
@@ -246,7 +248,8 @@ bool DataManager::DMObjectWrapper::getSmartPtr(void* ptr, const core::TypeInfo& 
 {
     if(wrapper->getRawPtr() == nullptr){
         try{
-            DataManager::getInstance()->initializeData(core::ObjectWrapperPtr(core::const_pointer_cast<DMObjectWrapper>(shared_from_this())));
+            core::ObjectWrapperPtr wrapper(core::const_pointer_cast<DMObjectWrapper>(shared_from_this()));
+            DataManager::getInstance()->initializeData(wrapper);
         }
         catch(std::exception & ){
 
@@ -292,6 +295,8 @@ void DataManager::ParserInitializer::doDeinitialize(core::ObjectWrapperPtr & obj
     }
 }
 
+// rev - specjalizacja
+template <>
 DataManager * ManagerHelper<DataManager>::manager = nullptr;
 
 DataManager::DataManager()
@@ -336,7 +341,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
             if(it->second.types.empty() == true){
                 std::stringstream str;
                 str << "Trying to register extension " << ext << " without supported types for parser " << parser->getID();
-                throw std::runtime_error(str.str());                
+                throw std::runtime_error(str.str());
             }
         }
 
@@ -349,7 +354,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
             auto extIT = registeredExtensions.find(extension);
 
             if(extIT != registeredExtensions.end()) {
-                LOG_WARNING("There is at least one parser that supports extension " << extension);                
+                LOG_WARNING("There is at least one parser that supports extension " << extension);
             }else{
                 //tworzymy nowy wpis dla nowego rozszerzenia
                 extIT = registeredExtensions.insert(SupportedExtensionsPersistenceData::value_type(extension, ExtendedExtensionDescription())).first;
@@ -439,7 +444,7 @@ bool DataManager::isInitializable(const core::ObjectWrapperPtr & data) const
     if(initializerIT == objectsWithInitializers.end() || initializerIT->second == nullptr){
         return false;
     }
-    
+
     return true;
 }
 
@@ -512,9 +517,9 @@ void DataManager::nonNotifyAddData(const core::ObjectWrapperPtr & data, const co
 
 			metadataByObjects[obj].push_back(data);
 		}
-		
+
         objects.insert(data);
-		
+
         for(auto it = types.begin(); it != types.end(); ++it){
             objectsByTypes[*it].insert(data);
         }
@@ -547,7 +552,7 @@ void DataManager::removeDataImpl(const core::ObjectWrapperPtr & data)
 			auto & m = metadataByObjects[obj];
 			std::remove(m.begin(), m.end(), data);
 		}
-	} 
+	}
 
 	for(auto it = types.begin(); it != types.end(); ++it){
 		auto IT = objectsByTypes.find(*it);
@@ -621,7 +626,7 @@ void DataManager::nonNotifyAddFile(const core::Filesystem::Path & file, std::vec
         throw std::runtime_error("Trying to add unsupported file. Extension not registered by any parser");
     }
 
-    auto fileIT = parsersByFiles.find(file);    
+    auto fileIT = parsersByFiles.find(file);
     if(fileIT != parsersByFiles.end()){
         throw std::runtime_error("Trying to add file that already is managed by DataManager");
     }
@@ -656,7 +661,7 @@ void DataManager::nonNotifyAddFile(const core::Filesystem::Path & file, std::vec
                 if((*objectIT)->getName().empty() == true){
                     //LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " not initialized properly name for type " << (*objectIT)->getTypeInfo().name() << " while parsing file " << parser->getPath() << " Setting source to file name");
                     (*objectIT)->setName(file.filename().string());
-                }                
+                }
 
                 ObjectWrapperPtr obj(new DMObjectWrapper(*objectIT));
 
@@ -664,7 +669,7 @@ void DataManager::nonNotifyAddFile(const core::Filesystem::Path & file, std::vec
                 verifiedObjects.insert(obj);
                 //ParsersByObjects
                 parsersByObjects[obj] = parser;
-                
+
                 nonNotifyAddData(obj, core::DataInitializerPtr(new ParserInitializer(parser)));
 
                 //UWAGA!!
@@ -699,7 +704,7 @@ void DataManager::nonNotifyRemoveFile(const core::Filesystem::Path & file)
 {
     ScopedLock lock(stateMutex);
 
-    auto fileIT = parsersByFiles.find(file);    
+    auto fileIT = parsersByFiles.find(file);
     if(fileIT == parsersByFiles.end()){
         throw std::runtime_error("Trying to remove file that is not managed by DataManager");
     }
@@ -709,7 +714,7 @@ void DataManager::nonNotifyRemoveFile(const core::Filesystem::Path & file)
     //zwalniamy zasoby parserów ¿eby potem zwolniæ same parsery
     for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); ++parserIT){
         auto objectsByParserIT = objectsByParsers.find(*parserIT);
-        
+
         totalObjects.insert(objectsByParserIT->second.begin(), objectsByParserIT->second.end());
 
         for(auto objectIT = objectsByParserIT->second.begin(); objectIT != objectsByParserIT->second.end(); ++objectIT){
@@ -732,7 +737,7 @@ void DataManager::initializeFile(const core::Filesystem::Path & file)
     ScopedLock lock(stateMutex);
 
     std::vector<core::ObjectWrapperPtr> toInitialize;
-    
+
     getObjectsForFile(file, toInitialize);
 
     Objects invalid;
@@ -754,7 +759,7 @@ void DataManager::initializeFile(const core::Filesystem::Path & file)
 
         LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after parsing " << file);
         for(auto it = invalid.begin(); it != invalid.end(); ++it){
-            
+
             /*auto parserIT = parsersByObjects.find(*it);
             objectsByParsers[parserIT->second].erase(*it);
             parsersByObjects.erase(parserIT);        */
@@ -780,7 +785,7 @@ void DataManager::getObjectsForFile(const core::Filesystem::Path & file, std::ve
 {
     ScopedLock lock(stateMutex);
 
-    auto fileIT = parsersByFiles.find(file);    
+    auto fileIT = parsersByFiles.find(file);
     if(fileIT == parsersByFiles.end()){
         throw std::runtime_error("Trying to get object for file that is not managed by DataManager");
     }
@@ -899,7 +904,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
         }
 
         for(auto objectIT = typeObjectsIT->second.begin(); objectIT != typeObjectsIT->second.end(); ++objectIT){
-            
+
             core::ObjectWrapperPtr wrapper(*objectIT);
 
 			if(wrapper->isNull() == false){
@@ -924,7 +929,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
 
         LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after data request of type " << type.name());
         for(auto it = invalid.begin(); it != invalid.end(); ++it){
-            
+
             removeData(*it);
         }
     }

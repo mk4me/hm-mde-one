@@ -3,8 +3,8 @@
 	created:	29:7:2011   10:41
 	filename: 	AppInitializer.h
 	author:		Wojciech Kniec
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef HEADER_GUARD_CORE__APPINITIALIZER_H__
@@ -16,7 +16,7 @@
 #include <core/Config.h>
 #include "LogInitializer.h"
 #include <core/ObjectWrapperCollection.h>
-
+#include <QtCore/QSettings>
 #include "ServiceManager.h"
 #include "SourceManager.h"
 #include "DataManager.h"
@@ -27,6 +27,8 @@
 #include <utils/Push.h>
 #include <core/IManagersAccessor.h>
 #include <osgQt/GraphicsWindowQt>
+#include <osg/ArgumentParser>
+#include <QtCore/QTranslator>
 
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
@@ -49,11 +51,11 @@ public:
             LOG_ERROR("Error occured: " << e.what());
         } catch (...) {
             LOG_ERROR("Unknown error occured");
-        }        
+        }
         return false;
     }
 };
-   
+
 class AppInitializer
 {
 public:
@@ -62,13 +64,14 @@ public:
 	template<class FrontpageWidget>
 	static int start(int argc, char *argv[])
 	{
-        UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyæ po klasie MainWindow");
+	    // rev - statyczna
+        //UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyæ po klasie MainWindow");
 
         //WA¯NE!!
         //tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest tak¹ bibliotek¹ i jego resourcy musza byæ jawnie inicjalizowane
         //Nazwa resourców musi byc unikalna poniewa¿ Qt "miesza" nazwy metod z nazwamy plików resourców które chcemy inicjalizowaæ tworz¹c unikalne statyczne funkcje na potrzeby inicjalizacji
         //link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dó³ stronki
-        Q_INIT_RESOURCE(CoreIcons);
+        //Q_INIT_RESOURCE(CoreIcons);
 
         //! Wewnêtrzna klasa tworz¹ca wszystkie managery aplikacji i udostepniaj¹ca je widokom oraz serwisom
         class AppManagers : public IManagersAccessor
@@ -206,7 +209,7 @@ public:
 		arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display this information");
 
 		// czy wyœwietlamy pomoc?
-		if (arguments.read("-h") || arguments.read("--help")) 
+		if (arguments.read("-h") || arguments.read("--help"))
 		{
 			arguments.getApplicationUsage()->write(std::cout);
 			return 1;
@@ -214,9 +217,9 @@ public:
 
 		// nazwa pliku do za³adowania
 		std::string filePath;
-		for (int i=1; i<arguments.argc() && filePath.empty(); ++i) 
+		for (int i=1; i<arguments.argc() && filePath.empty(); ++i)
 		{
-			if (arguments.isString(i)) 
+			if (arguments.isString(i))
 			{
 				filePath = arguments[i];
 			}
@@ -234,14 +237,14 @@ public:
             //ustawienia aplikacji
             application.setApplicationName("EDR");
 			application.setOrganizationName("PJWSTK");
-			
+
 			//t³umaczenia
 			QString locale = QLocale::system().name();
 
 			auto langPath = QString((edrConfig.getResourcesPath() / "lang").string().c_str());
 
 			QTranslator appTranslator;
-			
+
 			if(appTranslator.load("lang_" + locale, langPath) == false) {
 				appTranslator.load(QString("lang_pl_PL"), langPath);
 				//TODO
@@ -314,7 +317,7 @@ public:
 					    logger.setConsoleWidget( widget.getConsole() );
                         //pokazujemy widok
 					    widget.show();
-					    if (!filePath.empty()) 
+					    if (!filePath.empty())
 					    {
 						    widget.openFile(filePath);
 					    }
