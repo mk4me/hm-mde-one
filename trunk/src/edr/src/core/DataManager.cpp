@@ -295,7 +295,6 @@ void DataManager::ParserInitializer::doDeinitialize(core::ObjectWrapperPtr & obj
     }
 }
 
-// rev - specjalizacja
 template <>
 DataManager * ManagerHelper<DataManager>::manager = nullptr;
 

@@ -57,7 +57,7 @@ namespace kinematic
     {
         public:
             KinematicModelException(const std::string& message) : Exception(message) { };
-            virtual ~KinematicModelException() throw() ;
+            virtual ~KinematicModelException() throw() {}
     };
 
     class UnableToMapJointException : public KinematicModelException
@@ -75,7 +75,7 @@ namespace kinematic
           {
           }
 
-          virtual ~UnableToMapJointException() throw() ;
+          virtual ~UnableToMapJointException() throw() {}
     };
 
     class DictionaryNotLoadedException : public KinematicModelException
@@ -99,7 +99,7 @@ namespace kinematic
           notFoundJoint(jointName)
           {
           }
-        virtual ~NotHAnimJointException() throw() ;
+        virtual ~NotHAnimJointException() throw() {}
     };
 }
 

@@ -9,7 +9,7 @@
 
 using namespace core;
 
-// rev - specjalizacja
+
 template<>
 VisualizerManager * ManagerHelper<VisualizerManager>::manager = nullptr;
 

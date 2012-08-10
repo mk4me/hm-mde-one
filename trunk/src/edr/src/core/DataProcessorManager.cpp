@@ -4,7 +4,6 @@
 
 using namespace core;
 
-// rev - specjalizacja
 template<>
 DataProcessorManager * ManagerHelper<DataProcessorManager>::manager = nullptr;
 

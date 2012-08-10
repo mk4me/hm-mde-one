@@ -4,6 +4,6 @@
 
 int main(int argc, char *argv[])
 {
-	core::AppInitializer::start<ToolboxMain>( argc, argv);
+	core::AppInitializer::start<ToolboxMain>(argc, argv);
 }
 

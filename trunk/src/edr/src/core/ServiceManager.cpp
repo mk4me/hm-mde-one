@@ -5,7 +5,6 @@
 #include <core/ManagerHelper.h>
 #include <core/IDataManager.h>
 
-// rev czy na pewno specjalizacja jest tutaj rozwiazaniem?
 template<>
 ServiceManager * ManagerHelper<ServiceManager>::manager = nullptr;
 

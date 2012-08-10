@@ -4,7 +4,6 @@
 
 using namespace core;
 
-// rev
 template <>
 DataSourceManager * ManagerHelper<DataSourceManager>::manager = nullptr;
 
