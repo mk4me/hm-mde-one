@@ -40,8 +40,8 @@
 #include <QtGui/QPainter>
 
 #define QT_NO_QT_INCLUDE_WARN
-#include <qwt/qwt_scale_draw.h>
-#include <qwt/qwt_slider.h>
+#include <qwt_scale_draw.h>
+#include <qwt_slider.h>
 #undef QT_NO_QT_INCLUDE_WARN
 
 #endif  //  HEADER_GUARD_TIMELINE__TIMELINEPCH_H__

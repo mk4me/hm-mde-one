@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTCURVE_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTCURVE_H__
 
-#include <qwt/qwt_plot_curve.h>
+#include <qwt_plot_curve.h>
 
 class NewChartSeriesData;
 

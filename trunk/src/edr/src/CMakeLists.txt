@@ -23,12 +23,20 @@ if(WIN32)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 	set(PROJECT_LIBRARIES_PLATFORM "win32" CACHE STRING "Platform")
+	if (MSVC)
+		add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+	endif()
 	add_definitions(-D__WIN32__)
 elseif(UNIX)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 	set(PROJECT_LIBRARIES_PLATFORM "linux32" CACHE STRING "Platform")
-	add_definitions(-D__UNIX__ -std=c++0x -fpermissive -g)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fpermissive -g -m32")
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -fpermissive -g -m32")
+	SET(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -m32")
+	add_definitions(-D__UNIX__)
 else()
 	message(FATAL_ERROR "Platform not supported.")
 endif()
@@ -149,8 +157,13 @@ if(PROJECT_ENABLE_SVN_RESOURCES)
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "log.ini" EXCLUDE
 		PATTERN "*.ts" EXCLUDE)
-	install(DIRECTORY ${PROJECT_LIBRARIES_ROOT}/win32/release/qt/plugins/ DESTINATION bin/plugins/ COMPONENT core 
-		PATTERN "*.lib" EXCLUDE)
+	if(WIN32)	
+		install(DIRECTORY ${PROJECT_LIBRARIES_ROOT}/win32/release/qt/plugins/ DESTINATION bin/plugins/ COMPONENT core 
+			PATTERN "*.lib" EXCLUDE)
+	elseif(UNIX)
+		install(DIRECTORY ${PROJECT_LIBRARIES_ROOT}/linux32/release/qt/plugins/ DESTINATION bin/plugins/ COMPONENT core 
+			PATTERN "*.so*" EXCLUDE)
+	endif()
 endif()
 
 

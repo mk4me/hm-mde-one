@@ -36,8 +36,10 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     //konfiguracja wsdlpulla ¿eby pisa³ pliki tymczasowe tam gdzie mamy prawo zapisu
 
     XmlUtils::TMPFILESDIR = core::getPathInterface()->getTmpPath().string();
+#if (defined _WIN32)
     // rev - zeby to przeszlo, w naglowku musial byc wywalony warunek na WIN32
     WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();
+#endif
 
     //konfigurujemy ustawienia po³¹czeñ - adresy serwisów i ftp
     auto connectionsManager = DataSourceConnectionManager::create();

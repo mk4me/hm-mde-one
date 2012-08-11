@@ -11,8 +11,8 @@
 #define HEADER_GUARD_NEW_CHART__NEWCHARTLEGENDITEM_H__
 
 #include <QtGui/QWidget>
-#include <qwt/qwt_legend.h>
-#include <qwt/qwt_legend_data.h>
+#include <qwt_legend.h>
+#include <qwt_legend_data.h>
 
 class QCheckBox;
 class QPushButton;
