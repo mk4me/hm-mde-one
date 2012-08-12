@@ -144,9 +144,11 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     slider->setHandleSize(QSize(45,10));
     slider->setSpacing(-6);
-    slider->scaleDraw()->setTickLength(QwtScaleDiv::MinorTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MinorTick) + 4);
-    slider->scaleDraw()->setTickLength(QwtScaleDiv::MajorTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MajorTick) + 4);
-    slider->scaleDraw()->setTickLength(QwtScaleDiv::MediumTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MediumTick) + 4);
+	//hack bo aktualnie to jest ukryte w klasie slidera
+    QwtScaleDraw * scaleDraw = const_cast<QwtScaleDraw*>(slider->scaleDraw());
+    scaleDraw->setTickLength(QwtScaleDiv::MinorTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MinorTick) + 4);
+    scaleDraw->setTickLength(QwtScaleDiv::MajorTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MajorTick) + 4);
+    scaleDraw->setTickLength(QwtScaleDiv::MediumTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MediumTick) + 4);
 
     connect(slider, SIGNAL(valueChanged(double)), this, SLOT(timeSliderChanged(double)));
 

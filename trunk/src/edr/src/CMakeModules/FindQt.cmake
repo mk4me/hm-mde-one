@@ -6,7 +6,9 @@ FIND_SHARED_EXT(QT_QTGUI "QtGui<4,?>" "QtGuid<4,?>" "QtGui<4,?>" "QtGuid<4,?>")
 FIND_SHARED_EXT(QT_QTCORE "QtCore<4,?>" "QtCored<4,?>" "QtCore<4,?>" "QtCored<4,?>")
 FIND_SHARED_EXT(QT_QTTEST "QtTest<4,?>" "QtTestd<4,?>" "QtTest<4,?>" "QtTestd<4,?>")
 # na potrzeby Windowsa i aplikacji bez konsoli
-FIND_STATIC_EXT(QT_QTMAIN "qtmain<4,?>" "qtmaind<4,?>")
+if(WIN32)
+	FIND_STATIC_EXT(QT_QTMAIN "qtmain<4,?>" "qtmaind<4,?>")
+endif(WIN32)
 
 #na potrzeby QWT
 FIND_SHARED_EXT(QT_QTSVG "QtSvg<4,?>" "QtSvgd<4,?>" "QtSvg<4,?>" "QtSvgd<4,?>")

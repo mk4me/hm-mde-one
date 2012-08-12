@@ -22,7 +22,7 @@ class TimeSliderWidget : public QwtSlider
 public:
     explicit TimeSliderWidget(QWidget *parent = nullptr,
         Qt::Orientation orientation = Qt::Horizontal,
-        ScalePos scalePos = NoScale, BackgroundStyles bgStyle = Groove );
+        ScalePosition scalePos = NoScale, BackgroundStyles bgStyle = Groove );
 
     virtual ~TimeSliderWidget();
 
@@ -31,8 +31,6 @@ public:
     double getRightMargin() const;
 
     const QwtScaleDraw * scaleDraw() const;
-
-	QwtScaleDraw * scaleDraw();
 
 signals:
 

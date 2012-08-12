@@ -36,7 +36,7 @@
 
 CORE_DEFINE_INSTANCE_INFO;
 
-namespace core {
+//namespace core {
 
 class MyApplication : public QApplication
 {
@@ -64,6 +64,7 @@ public:
 	template<class FrontpageWidget>
 	static int start(int argc, char *argv[])
 	{
+		using namespace core;
 	    // rev - statyczna
         //UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyæ po klasie MainWindow");
 
@@ -342,5 +343,5 @@ public:
 		return result;
 	}
 };
-}
+//}
 #endif
