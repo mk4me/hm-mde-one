@@ -669,8 +669,8 @@ class ObjectWrapperT<type> : public __ObjectWrapperT<type,  ptrPolicy, clonePoli
 public:                                                                                           \
     typedef ObjectWrapperT<type> ObjectWrapperType;                                                                         \
     typedef __ObjectWrapperT<type,  ptrPolicy, clonePolicy> __Base;\
-    typedef typename __Base::PtrPolicy PtrPolicy;\
-    typedef typename __Base::ClonePolicy ClonePolicy;\
+    typedef __Base::PtrPolicy PtrPolicy;\
+    typedef  __Base::ClonePolicy ClonePolicy;\
     static const char* className() { return #type; }                                              \
 protected:                                                                                         \
     ObjectWrapperT(const char* className = #type) :                                               \
@@ -717,9 +717,9 @@ public:\
     static const char* className() { return #typeT; }\
     public:\
         typedef ObjectWrapperT<baseType> Base;\
-        typedef typename Base::PtrPolicy PtrPolicy;\
-        typedef typename PtrPolicy::Ptr<type>::Type Ptr;\
-        typedef typename PtrPolicy::Ptr<const type>::Type ConstPtr;\
+        typedef Base::PtrPolicy PtrPolicy;\
+        typedef PtrPolicy::Ptr<type>::Type Ptr;\
+        typedef PtrPolicy::Ptr<const type>::Type ConstPtr;\
     protected:\
         ObjectWrapperT(const char* className = #typeT) :\
         Base(className)\

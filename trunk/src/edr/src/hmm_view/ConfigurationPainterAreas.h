@@ -61,8 +61,8 @@ private:
     //! skala obszaru
     float scale;
 };
-typedef typename boost::shared_ptr<IArea> IAreaPtr;
-typedef typename boost::shared_ptr<const IArea> IAreaConstPtr;
+typedef boost::shared_ptr<IArea> IAreaPtr;
+typedef boost::shared_ptr<const IArea> IAreaConstPtr;
 
 //! zwykly punkt na konfiguratorze
 //! rysowany jako polprzezroczyste kolo

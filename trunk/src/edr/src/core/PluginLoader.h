@@ -6,13 +6,15 @@
 #include <deque>
 #include <core/Plugin.h>
 #include <core/SmartPtr.h>
+#include <utils/Debug.h>
+#include <type_traits>
 
 
 // rev
 #ifdef WIN32
 #   include "Windows.h"
 #else
-#   define HMODULE int
+#   define HMODULE void *
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +33,7 @@ private:
     //! Za³adowane pluginy.
     typedef std::vector<PluginPair> Plugins;
     //! Uchwyty do bibliotek dynamicznie ³adowanych.
-    typedef std::vector<uint32_t> Handles;
+    typedef std::vector<HMODULE> Handles;
 
 private:
     //! Uchwyty do bibliotek dynamicznie ³adowanych.
@@ -88,6 +90,24 @@ public:
 
     void unloadPlugins();
 
+	static HMODULE loadSharedLibrary(const std::string & path);
+	static void unloadSharedLibrary(HMODULE library);
+	static const std::string lastLoadSharedLibraryError();
+
+	template<typename T>
+	static T loadProcedure(HMODULE library, const char * procName)
+	{
+		//UTILS_STATIC_ASSERT((std::is_member_function_pointer<T>::value || std::is_function<T>::value), "Casting type must be member funtion pointer or function");
+		#if defined(__WIN32__)
+			return reinterpret_cast<T>(::GetProcAddress(library, procName));
+		#elif defined(__UNIX__)
+			return reinterpret_cast<Plugin::CreateFunction>(dlsym(library, procName));
+		#else
+		#error "Unsupported system for unloading shared libraries"
+			return 0;
+		#endif
+	}
+
 
 private:
     //!
@@ -111,15 +131,7 @@ private:
     //! \param path
     //! \param library
     //! \param createFunction
-    bool onAddPlugin(const std::string& path, uint32_t library, Plugin::CreateFunction createFunction);
-    //!
-    //! \param paths
-    //! \param filepath
-    void convertStringPathIntoFileDirList(const std::string& paths, Paths& filepath);
-    //!
-    //! \param path
-    //! \param fileName
-    std::string combinePath(const std::string& path, const std::string& fileName);
+    bool onAddPlugin(const std::string& path, HMODULE library, Plugin::CreateFunction createFunction);
     //!
     //! \param fileName
     std::string getFileName(const std::string& fileName);

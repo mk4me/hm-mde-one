@@ -34,7 +34,7 @@ public:
 };
 
 TimeSliderWidget::TimeSliderWidget(QWidget *parent, Qt::Orientation orientation,
-    ScalePosition scalePos, BackgroundStyles bgStyle)
+    ScalePos scalePos, BackgroundStyles bgStyle)
     : QwtSlider(parent, orientation, scalePos, bgStyle), leftMargin(0), rightMargin(0)
 {
     setScaleDraw(new TimeScaleDraw());
@@ -48,6 +48,11 @@ TimeSliderWidget::~TimeSliderWidget()
 const QwtScaleDraw * TimeSliderWidget::scaleDraw() const
 {
     return QwtSlider::scaleDraw();
+}
+
+QwtScaleDraw * TimeSliderWidget::scaleDraw()
+{
+	return QwtSlider::scaleDraw();
 }
 
 void TimeSliderWidget::drawSlider(QPainter *painter, const QRect &sliderRect ) const
