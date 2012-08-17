@@ -119,6 +119,8 @@ set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
 
 # kompilacja do wspó³dzielonej biblioteki
 add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
+#set_target_properties(${TARGET_TARGETNAME} PROPERTIES
+#         LIBRARY_OUTPUT_DIRECTORY ${RUNTIME_OUTPUT_DIRECTORY}/bin)
 #instalacja
 install(FILES ${PUBLIC_H} DESTINATION include/plugins/${PROJECT_NAME} COMPONENT ${PROJECT_NAME}_dev)
 if (WIN32)

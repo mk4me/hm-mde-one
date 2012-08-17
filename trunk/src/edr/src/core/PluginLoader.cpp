@@ -110,11 +110,11 @@ void PluginLoader::load()
 #if defined(__WIN32__)
 	static const std::regex pluginFilter("^plugin_.*\.dll$");
 #elif defined(__UNIX__)
-	static const std::regex pluginFilter("<plugin_*\.so");
+	static const std::regex pluginFilter(".*plugin_.*\.so");
 #endif
 
 	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {
-		
+        //std::unique_ptr<std::string> pathIT(new std::string("/home/wojtek/programming/WORK/EDR/_out/edrCB/bin"));
 		std::vector<std::string> localFiles = core::Filesystem::listFiles(*pathIT, true);
 
 		for(auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
@@ -165,7 +165,7 @@ const std::string PluginLoader::lastLoadSharedLibraryError()
 		}
 
 		std::string ret(p);
-		
+
 		::LocalFree(errStr);
 
 		return ret + ". Error code: " + boost::lexical_cast<std::string>(err);
@@ -267,7 +267,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin
 
 void PluginLoader::freeLibraries()
 {
-    for (size_t i = 0; i < libraries.size(); ++i) 
+    for (size_t i = 0; i < libraries.size(); ++i)
     {
 		unloadSharedLibrary(libraries[i]);
     }
