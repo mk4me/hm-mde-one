@@ -194,7 +194,4 @@ private:
 typedef boost::shared_ptr<SinglePicture> SinglePicturePtr;
 typedef boost::shared_ptr<const SinglePicture> SinglePictureConstPtr;
 
-
-
-
 #endif

@@ -110,7 +110,8 @@ void PluginLoader::load()
 #if defined(__WIN32__)
 	static const std::regex pluginFilter("^plugin_.*\.dll$");
 #elif defined(__UNIX__)
-	static const std::regex pluginFilter(".*plugin_.*\.so");
+    // GCC cos nie radzi sobie ze znakami poczatku i konca linii !?
+	static const std::regex pluginFilter("libplugin_.*\.so");
 #endif
 
 	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {

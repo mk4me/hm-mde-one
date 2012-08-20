@@ -26,7 +26,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
-//#include <QtOpenGL/QtOpenGL>
 
 UTILS_PUSH_WARNINGS
 #include <osg/Node>
@@ -68,3 +67,4 @@ UTILS_PUSH_WARNINGS
 UTILS_POP_WARNINGS
 
 #endif //HEADER_GUARD_SKELETON_VIEWER__PCH_H__
+

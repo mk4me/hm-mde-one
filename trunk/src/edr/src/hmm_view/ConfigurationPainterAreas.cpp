@@ -36,7 +36,6 @@ void SinglePicture::draw( QPainter& painter, bool selected )
             painter.drawImage(QRect(getX(), getY(), getWidth(), getHeight()), *alphaPixmap);
         }
     }
-
 }
 
 bool SinglePicture::isInside( int x, int y ) const
@@ -123,3 +122,4 @@ SingleMarker::SingleMarker( const QString& name, int posX, int posY, int r )
 {
     init(name, posX, posY, r);
 }
+

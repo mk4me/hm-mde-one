@@ -20,7 +20,6 @@ visualizer(visualizer),
 
 }
 
-
 osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const IForcePlatformCollection& platforms)
 {
 	osg::ref_ptr<osg::Group> group = new osg::Group();
