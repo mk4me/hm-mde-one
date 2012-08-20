@@ -32,11 +32,11 @@ using namespace webservices;
 CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSourceLoginManager()),
 	memoryDM(nullptr), fileDM(nullptr),	offlineMode_(false),
 	serwerPingUrl("http://v21.pjwstk.edu.pl/"), dataSourceWidget(nullptr)
-{
-    //konfiguracja wsdlpulla ¿eby pisa³ pliki tymczasowe tam gdzie mamy prawo zapisu
-
-    XmlUtils::TMPFILESDIR = core::getPathInterface()->getTmpPath().string();
-#if (defined _WIN32)
+{    
+#if (defined _WIN32) || (defined _WIN64)
+	//konfiguracja wsdlpulla ¿eby pisa³ pliki tymczasowe tam gdzie mamy prawo zapisu
+	//pod windows
+	XmlUtils::TMPFILESDIR = core::getPathInterface()->getTmpPath().string();
     // rev - zeby to przeszlo, w naglowku musial byc wywalony warunek na WIN32
     WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();
 #endif
