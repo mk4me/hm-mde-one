@@ -410,12 +410,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="../../../src/core/EDRConsoleWidget.cpp" line="49"/>
+        <location filename="../../../src/core/EDRConsoleWidget.cpp" line="50"/>
         <source>clear</source>
         <translation>wyczyść</translation>
     </message>
     <message>
-        <location filename="../../../src/core/EDRConsoleWidget.cpp" line="50"/>
+        <location filename="../../../src/core/EDRConsoleWidget.cpp" line="51"/>
         <source>toggle word wrap</source>
         <translation>zawijaj wiersze</translation>
     </message>
@@ -773,7 +773,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1222"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2413"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2414"/>
         <source>Save project as...</source>
         <translation>Zapisz projekt jako...</translation>
     </message>
@@ -849,14 +849,14 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2223"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2297"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2298"/>
         <source>
 %1. File ID: %2. Error description: %3</source>
         <translation>%1. Identyfikator pliku: %2. Opis błędu: %3</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2228"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2302"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2303"/>
         <source>
 %1. File ID: %2. Unknown error.</source>
         <translation>%1. Identyfikator pliku: %2. Nieznany błąd.</translation>
@@ -867,58 +867,58 @@ p, li { white-space: pre-wrap; }
         <translation>Ostrzeżenie ładowania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2284"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2285"/>
         <source>Unloading info</source>
         <translation>Informacja wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2285"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2286"/>
         <source>Data unloaded successfully.</source>
         <translation>Dane wyładowane pomyślnie z aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2292"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2293"/>
         <source>Errors while data unloading:</source>
         <translation>Błędy podczas wyładowywania danych z aplikacji:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2307"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2308"/>
         <source>Unloading warning</source>
         <translation>Ostrzeżenie wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2349"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2375"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2350"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2376"/>
         <source>Loading project warning</source>
         <translation>Ostrzeżenie ładowania projektu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2350"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2351"/>
         <source>Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?</source>
         <translation>Niektóre pliki projektu nie są już dostepne. Skontaktuj się z właścicielem tych plików by przyznał ci do nich prawa. Wczy chcesz załadować projekt bez tych plików?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2376"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2377"/>
         <source>Some project files must are missing. Data download is required. Do You want to continue?</source>
         <translation>Brakuje niektórych plików.  Wymagane jest ich ściągnięcie. Czy chcesz je teraz ściągnąć?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2411"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2412"/>
         <source>Project name:</source>
         <translation>Nazwa projetku:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2412"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2413"/>
         <source>Save</source>
         <translation>Zachowaj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2423"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2424"/>
         <source>Save project warning</source>
         <translation>Ostrzeżenie zapisu projektu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2424"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="2425"/>
         <source>Project name can not be empty. Please give a name to the project and continue.</source>
         <translation>Nazwa projektu nie moze być pusta. Proszę podać nazwę i kontynuować.</translation>
     </message>
@@ -1357,12 +1357,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>EDRWorkflowWidget</name>
     <message>
-        <location filename="../../../src/core/WorkflowWidget.cpp" line="496"/>
+        <location filename="../../../src/core/WorkflowWidget.cpp" line="497"/>
         <source>Start</source>
         <translation>Rozpocznij</translation>
     </message>
     <message>
-        <location filename="../../../src/core/WorkflowWidget.cpp" line="502"/>
+        <location filename="../../../src/core/WorkflowWidget.cpp" line="503"/>
         <source>Stop</source>
         <translation>Zatrzymaj</translation>
     </message>
@@ -1550,181 +1550,181 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HmmMainWindow</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="420"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="421"/>
         <source>Multichart</source>
         <translation>Multiwykres</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="447"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="448"/>
         <source>reason: </source>
         <translation>powód:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="449"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="451"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="450"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="452"/>
         <source>Warning</source>
         <translation>Ostrzeżenie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="451"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="452"/>
         <source>Unable to add data to visualizer</source>
         <translation>Nie można dodać danych do wizualizatora</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="540"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="541"/>
         <source>ANALOG</source>
         <translation>ANALOGOWE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="541"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="542"/>
         <source>KINETIC</source>
         <translation>KINETYCZNE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="542"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="543"/>
         <source>KINEMATIC</source>
         <translation>KINEMATYCZNE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="543"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="544"/>
         <source>VIDEO</source>
         <translation>VIDEO</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="546"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="547"/>
         <source>GRF</source>
         <translation>GRF</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="598"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="599"/>
         <source>EMG</source>
         <translation>EMG</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="678"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="679"/>
         <source>FORCES</source>
         <translation>SIŁY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="679"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="680"/>
         <source>MOMENTS</source>
         <translation>MOMENTY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="680"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="681"/>
         <source>POWERS</source>
         <translation>MOCE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="727"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="728"/>
         <source>MARKERS</source>
         <translation>MARKERY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="728"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="729"/>
         <source>JOINTS</source>
         <translation>STAWY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="732"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="733"/>
         <source>VIDEOS</source>
         <translation>VIDEO</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="766"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="767"/>
         <source>ILLNESS</source>
         <translation>JEDNOSTKI CHOROBOWE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="767"/>
         <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="768"/>
         <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="769"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="770"/>
         <source>MULTI</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="775"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="776"/>
         <source>Endo</source>
         <translation>Endoproteza</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="776"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="777"/>
         <source>Stroke</source>
         <translation>Udar</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="777"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="778"/>
         <source>Spine</source>
         <translation>Zwyrodnienie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="971"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="972"/>
         <source>Create new visualizer</source>
         <translation>Twórz nowy wizualizator</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="978"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="988"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="979"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="989"/>
         <source>Multi chart</source>
         <translation>Multi-wykres</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="980"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="981"/>
         <source>All from session</source>
         <translation>Wszystkie z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="990"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="991"/>
         <source>All X from session</source>
         <translation>Wszystkie współrzędne X z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="996"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="997"/>
         <source>All Y from session</source>
         <translation>Wszystkie współrzędne Y z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1002"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1003"/>
         <source>All Z from session</source>
         <translation>Wszystkie współrzędne Z z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1010"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1011"/>
         <source>Left Step normalization</source>
         <translation>Normalizacja wg lewego kroku</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1016"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1017"/>
         <source>Right Step normalization</source>
         <translation>Normalizacja wg prawego kroku</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1022"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1023"/>
         <source>Left Step normalization - all from session</source>
         <translation>Normalizacja wg lewego kroku - wszystkie z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1028"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1029"/>
         <source>Right Step normalization - all from session</source>
         <translation>Normalizacja wg prawego kroku - wszystkie z sesji</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1037"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1038"/>
         <source>Add to:</source>
         <translation>Dodaj do:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1084"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1085"/>
         <source>Remove from:</source>
         <translation>Usuń z:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1107"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1108"/>
         <source>Create in:</source>
         <translation>Twórz w:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1118"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1119"/>
         <source>New group</source>
         <translation>Nowa grupa</translation>
     </message>
@@ -3182,22 +3182,22 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="221"/>
+        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="222"/>
         <source>Pre</source>
         <translation>Przed</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="222"/>
+        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="223"/>
         <source>Post</source>
         <translation>Po </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="229"/>
+        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="230"/>
         <source>Left</source>
         <translation>Lewa strona</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="230"/>
+        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="231"/>
         <source>Right</source>
         <translation>Prawa strona</translation>
     </message>
@@ -3258,7 +3258,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/hmm_view/HmmContexts.cpp" line="60"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="281"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="282"/>
         <source>Visualizer</source>
         <translation>Wizualizator</translation>
     </message>
@@ -3721,161 +3721,161 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
 <context>
     <name>TextEdit</name>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="633"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="636"/>
         <source>About</source>
         <translation>O programie </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="113"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="116"/>
         <source>&amp;New</source>
         <translation>&amp;Nowy</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="120"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="123"/>
         <source>&amp;Open...</source>
         <translation>&amp;Otwórz...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="125"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="128"/>
         <source>&amp;Save</source>
         <translation>&amp;Zapisz</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="132"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="135"/>
         <source>Save &amp;As...</source>
         <translation>Zapisz &amp;jako...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="139"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="142"/>
         <source>&amp;Print...</source>
         <translation>&amp;Drukuj...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="146"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="149"/>
         <source>Print Preview...</source>
         <translation>Podgląd wydruku...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="151"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="154"/>
         <source>&amp;Export PDF...</source>
         <translation>&amp;Eksportuj do PDF... </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="167"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="170"/>
         <source>&amp;Undo</source>
         <translation>&amp;Cofnij</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="172"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="175"/>
         <source>&amp;Redo</source>
         <translation>&amp;Popraw</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="177"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="180"/>
         <source>Cu&amp;t</source>
         <translation>Wy&amp;tnij</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="182"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="185"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopiuj</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="187"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="190"/>
         <source>&amp;Paste</source>
         <translation>&amp;Wklej</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="220"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="223"/>
         <source>&amp;Bold</source>
         <translation>&amp;Pogrubienie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="230"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="233"/>
         <source>&amp;Italic</source>
         <translation>P&amp;ochylenie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="240"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="243"/>
         <source>&amp;Underline</source>
         <translation>Pod&amp;kreślenie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="256"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="262"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="259"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="265"/>
         <source>&amp;Left</source>
         <translation>Do &amp;lewej</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="257"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="261"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="260"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="264"/>
         <source>C&amp;enter</source>
         <translation>&amp;Centruj</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="258"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="260"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="261"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="263"/>
         <source>&amp;Right</source>
         <translation>Do P&amp;rawej</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="264"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="267"/>
         <source>&amp;Justify</source>
         <translation>&amp;Justuj</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="287"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="290"/>
         <source>&amp;Color...</source>
         <translation>&amp;Zmień kolor...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="354"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="357"/>
         <source>Application</source>
         <translation>Aplikacja</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="355"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="358"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
         <translation>Dokument został zmodyfikowany. Czy chcesz zachować zmiany?</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="377"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="380"/>
         <source>%1[*] - %2</source>
         <translation>%1[*] - %2</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="377"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="380"/>
         <source>Rich Text</source>
         <translation>Format RTF</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="391"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="394"/>
         <source>Open File...</source>
         <translation>Otwórz plik...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="392"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="395"/>
         <source>HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation>Pliki HTML (*.htm *.html);;Wszystkie pliki (*)</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="421"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="424"/>
         <source>Save as...</source>
         <translation>Zapisz jako...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="422"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="425"/>
         <source>ODF files (*.odt);;HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation>Pliki ODF (*.odt);;Pliki HTML (*.htm *.html);; Wszystkie pliki(*)</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="440"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="443"/>
         <source>Print Document</source>
         <translation>Drukuj dokument</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="633"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="636"/>
         <source>This example demonstrates Qt&apos;s rich text editing facilities in action, providing an example document for you to experiment with.</source>
         <translation>Ten przykład pokazuje udogodnienia rft w akcji, dostarczając przykładowy dokument do eksperymentów.</translation>
     </message>
@@ -4092,7 +4092,7 @@ Do you want to save your changes?</source>
 <context>
     <name>Visualizer</name>
     <message>
-        <location filename="../../../src/core/Visualizer.cpp" line="49"/>
+        <location filename="../../../src/core/Visualizer.cpp" line="50"/>
         <source>Common</source>
         <translation>Wspólne</translation>
     </message>
@@ -4121,7 +4121,7 @@ Do you want to save your changes?</source>
         <translation>Dokuj / oddokuj</translation>
     </message>
     <message>
-        <location filename="../../../src/core/VisualizerWidget.cpp" line="128"/>
+        <location filename="../../../src/core/VisualizerWidget.cpp" line="129"/>
         <source>Sources</source>
         <translation>Źródła</translation>
     </message>
