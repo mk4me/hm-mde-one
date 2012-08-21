@@ -1,14 +1,15 @@
 #include "CorePCH.h"
+#include <QtCore/QDir>
 
 class ResourcesInitializer
 {
 public:
 	ResourcesInitializer()
 	{
-		//WA¯NE!!
-		//tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest tak¹ bibliotek¹ i jego resourcy musza byæ jawnie inicjalizowane
-		//Nazwa resourców musi byc unikalna poniewa¿ Qt "miesza" nazwy metod z nazwamy plików resourców które chcemy inicjalizowaæ tworz¹c unikalne statyczne funkcje na potrzeby inicjalizacji
-		//link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dó³ stronki
+		//WAï¿½NE!!
+		//tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest takï¿½ bibliotekï¿½ i jego resourcy musza byï¿½ jawnie inicjalizowane
+		//Nazwa resourcï¿½w musi byc unikalna poniewaï¿½ Qt "miesza" nazwy metod z nazwamy plikï¿½w resourcï¿½w ktï¿½re chcemy inicjalizowaï¿½ tworzï¿½c unikalne statyczne funkcje na potrzeby inicjalizacji
+		//link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dï¿½ stronki
 		Q_INIT_RESOURCE(CoreIcons);
 	}
 

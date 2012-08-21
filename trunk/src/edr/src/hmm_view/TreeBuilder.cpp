@@ -27,11 +27,11 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
 
 			QString label(QString::fromUtf8(motion->getLocalName().c_str()));
 
-			//próbuje pobraæ metadane
+			//prï¿½buje pobraï¿½ metadane
 			try{
 				std::vector<core::ObjectWrapperConstPtr> metadata;
 
-				//najpierw pobieram wszystkie motiony z DM, potem znajdujê ten którego id równa siê mojemu motionowi i dla niego pobieram metadane
+				//najpierw pobieram wszystkie motiony z DM, potem znajdujï¿½ ten ktï¿½rego id rï¿½wna siï¿½ mojemu motionowi i dla niego pobieram metadane
 				std::vector<PluginSubject::MotionConstPtr> dmMotions;
 
 				core::queryDataPtr(DataManager::getInstance(), dmMotions, true);
@@ -140,7 +140,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     auto measurements = Measurements::get();
 
     MeasurementConfigConstPtr config;
-    //próbuje pobraæ metadane
+    //prï¿½buje pobraï¿½ metadane
     try{
         std::vector<core::ObjectWrapperConstPtr> metadata;        
         core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), motion->getSession(), metadata);
@@ -165,10 +165,11 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     for (int i = 0; i < count; ++i) {	
         EMGChannelPtr c = emgs[i]->get();	
         if (c) {
-			//TODO t³umaczenia
-			//tak siê tego nie powinno wo³aæ - musi byæ w tr const wartoœæ niezmienna w czasie dzia³ania aplikacji -> switch?
-            QString n = QString::fromStdString(emgs[i]->getName());
-            n = config ? config->tr(n) : n;
+			//TODO tï¿½umaczenia
+			//tak siï¿½ tego nie powinno woï¿½aï¿½ - musi byï¿½ w tr const wartoï¿½ï¿½ niezmienna w czasie dziaï¿½ania aplikacji -> switch?
+            //QString n = QString::fromStdString(emgs[i]->getName());
+            //n = config ? config->tr(n) : n;
+            QString n = QObject::tr(emgs[i]->getName().c_str());
             EMGFilterHelperPtr channelHelper(new EMGFilterHelper(emgs[i]));
             channelHelper->setMotion(motion);
             HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);

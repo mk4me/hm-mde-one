@@ -211,6 +211,7 @@ private:
 	{
 		try{
 			invoker_.reset(new Invoker());
+			invoker_->setVerbose(true);
 			setInvoker(boost::is_base_of<WsdlPull::CustomSSLWsdlInvoker, Invoker>());
 			LOG_INFO("Created Invoker " << typeid(Invoker).name());
 		}catch(std::exception & e){
