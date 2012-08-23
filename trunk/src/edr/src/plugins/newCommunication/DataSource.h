@@ -92,7 +92,7 @@ private:
 	//! Jest to leniwa inicjalizacja, kiedy nie chcemy od razu nawiazaywaæ po³¹czenia poniewa¿ user mo¿e sobie zarzyczyæ trybu offline
 	void ensureConnection(const webservices::WSConnectionPtr & connection);
 
-	//! \param login Login który próbujemy aktywowac po stronie bazy danych
+	//! \param login Login który próbujemy aktywowaæ po stronie bazy danych
 	//! \param activationCode Kod aktywacyjny otrzymany w mailu
 	//! \return Czy uda³o siê aktywowaæ konto
 	bool tryActivateAccount(const std::string & login, const std::string & activationCode);
@@ -146,8 +146,8 @@ private:
 
 	//! \param oldShallowCopy Poprzednia p³ytka kopia dla której wypakowywano dane
 	//! \param newShallowCopy Nowa p³ytka kopia dla której wypakowywujemy dane
-	//! Algorytm opiera siê na ró¿nicy zbioru plików do których u¿ytkownik ma dostep zdefiniowany p³ytk¹ kopi¹ bazy danych
-	//! Usuwamy to do czego nei mamy ju¿ dostepu i wyci¹gamy to co jest i do czego mamy ju¿ dostep
+	//! Algorytm opiera siê na ró¿nicy zbioru plików do których u¿ytkownik ma dostêp zdefiniowany p³ytk¹ kopi¹ bazy danych
+	//! Usuwamy to do czego nei mamy ju¿ dostêpu i wyci¹gamy to co jest i do czego mamy ju¿ dostêp
 	//! Ewentualnie odœwie¿amy to co siê zgadza
 	void extractDataFromLocalStorageToUserSpace(const communication::ShallowCopy & prevShallowCopy, const communication::ShallowCopy & newShallowCopy);
 

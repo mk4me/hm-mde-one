@@ -12,8 +12,8 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
-//! Marker pokazujacy aktualny czas i wartosc krzywej
-//! Wykorzystuje ju¿ istniejacy obiekt z Qwt
+//! Marker pokazuj¹cy aktualny czas i wartoœæ krzywej
+//! Wykorzystuje ju¿ istniej¹cy obiekt z Qwt
 //! Dodatkowo wprowadza opoznienie przesuwania
 class NewChartMarker : public QwtPlotMarker
 {
@@ -24,13 +24,13 @@ public:
 	virtual ~NewChartMarker() {}
 
 protected:
-    //! dziedziczona z QwtPlotMarker. Odrysowanie liniii wskazujacych punkt
+    //! dziedziczona z QwtPlotMarker. Odrysowanie liniii wskazuj¹cych punkt
     virtual void drawLines( QPainter *, const QRectF &, const QPointF & ) const;
     //! dziedziczona z QwtPlotMarker. Odrysowanie etykiety
     virtual void drawLabel( QPainter *, const QRectF &, const QPointF & ) const;
 
 public:
-    //! rysuje punkt o okreslonym rozmiarze
+    //! rysuje punkt o okreœlonym rozmiarze
     static void drawDot( QPainter * painter, const QPointF & point, int size = 5 );
     //! resetuje 'ped'. Pozycja etykiety wynika z punktu i przesuniecia
     void resetMomentum() const { positionSet = false; }

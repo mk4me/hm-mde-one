@@ -24,7 +24,7 @@ namespace core
 	class IServiceManager;
 	class IActionsGroupManager;
 
-    //! Interfejs Ÿród³a danych. Powinien to byæ jedeny obiekt inicjowany i maj¹cy dostep do MemoryDM i FIleDM
+    //! Interfejs Ÿród³a danych. Powinien to byæ jedeny obiekt inicjowany i maj¹cy dostêp do MemoryDM i FIleDM
     class ISource : public IIdentifiable
     {
     public:
@@ -40,9 +40,9 @@ namespace core
 
         }
 
-		//! Metoda powinna w bezpieczny sposób zwalniac zasoby, majac na uwadze ¿e niekoniecznie wszystkie uslugi i zasoby pobrane z zewnatrz s¹ jeszcze dostepne.
+		//! Metoda powinna w bezpieczny sposób zwalniac zasoby, maj¹c na uwadze ¿e niekoniecznie wszystkie us³ugi i zasoby pobrane z zewn¹trz s¹ jeszcze dostêpne.
         //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomi³ serwis, mo¿e tez zwalniac pamieæ przydzielon¹ dynamicznie
-        //! Generalnie to taki bezpieczny destruktor uniezalezniajacy dana usluge od pozosta³ych uslug i przygotowujacy ja na usuniecie
+        //! Generalnie to taki bezpieczny destruktor uniezale¿niaj¹cy dana us³ugê od pozosta³ych us³ug i przygotowuj¹cy ja na usuniecie
         virtual void finalize()
         {
 

@@ -7,7 +7,7 @@
 #include "OsgSchemeDrawer.h"
 
 //! Klasa realizuje wzorzec 'kompozyt'
-//! pozwala przechowywac wiecej drawerów pod sob¹
+//! pozwala przechowywaæ wiecej drawerów pod sob¹
 class SchemeDrawerContainer : public OsgSchemeDrawer
 {
 public:

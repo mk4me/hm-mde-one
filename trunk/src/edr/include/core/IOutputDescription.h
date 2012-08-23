@@ -16,7 +16,7 @@
 
 namespace core {
 
-//! Interfejs s³u¿¹cy do opisu typów danych wyjœciowcyh oferowanych przez element przetwarzajacy.
+//! Interfejs s³u¿¹cy do opisu typów danych wyjœciowcyh oferowanych przez element przetwarzaj¹cy.
 class IOutputDescription
 {
 public:

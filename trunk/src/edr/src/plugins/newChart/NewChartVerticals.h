@@ -16,7 +16,7 @@
 #include "NewChartMarker.h"
 #include "NewChartLabelState.h"
 
-//! Stan wizualizatora odpowiadajacy za etykiety roznicowe
+//! Stan wizualizatora odpowiadajπcy za etykiety roznicowe
 class NewChartVerticals : public NewChartLabelState
 {
 public:
@@ -27,11 +27,11 @@ public:
     virtual ~NewChartVerticals() {}
 
 public:
-    //! Filtrowanie eventow Qt (g≥Ûwnie myszka) zarzπdzanie etykietami
+    //! Filtrowanie eventÛw Qt (g≥Ûwnie myszka) zarzπdzanie etykietami
     virtual bool stateEventFilter(QObject *, QEvent *);
-    //! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wskaünik (ulatwiajacy dodawanie nowych etykiet)
+    //! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wskaünik (u≥atwiajπcy dodawanie nowych etykiet)
     virtual void stateBegin();
-    //! konczy stan, usuwa dodatkowy wskaünik z wykresu
+    //! koÒczy stan, usuwa dodatkowy wskaünik z wykresu
     virtual void stateEnd();
 
 private:
@@ -45,7 +45,7 @@ private:
     void updateLabels();
 
 private:
-    //! dodatkowy wskaünik (ulatwiajacy dodawanie nowych etykiet)
+    //! dodatkowy wskaünik (u≥atwiajπcy dodawanie nowych etykiet)
     NewChartLabelPtr labelMarker;
     //! etykieta, ktÛra jest obecnie przesuwana (moøe to byÊ dowolna etykieta)
     LabelDataConstPtr currentLabel;
@@ -53,7 +53,7 @@ private:
     boost::shared_ptr<std::pair<const NewChartSerie*, QPointF>> point1;
     //! styl po≥πczenia (pionowe, poziome, proste)
     NewChartLabel::ConnectionStyle style;
-    //! marker obrazujacy pierwszy wskazywany punkt 
+    //! marker obrazujπcy pierwszy wskazywany punkt 
     NewChartMarker marker;
 };
 typedef core::shared_ptr<NewChartVerticals> NewChartVerticalsPtr;

@@ -84,7 +84,7 @@ public:
     }
 
     //! \param idx Indeks próbki
-    //! \return Wartosc czasu dla danego indeksu
+    //! \return Wartoœæ czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
         UTILS_ASSERT((idx >= 0),"B³êdny indeks dla kana³y - musi byæ wiêkszy lub równy 0");
@@ -92,7 +92,7 @@ public:
     }
 
     //! \param idx Indeks próbki
-    //! \return Wartosc próbki dla danego indeksu
+    //! \return Wartoœæ próbki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         static VideoImageOsgPtr ret;

@@ -22,7 +22,7 @@ class IDataSource : public core::IOutputProcessItem
 public:
     //! \return Dialog konfiguruj¹cy opis wyjœcia Ÿród³a danych
     virtual QDialog * getOutputConfigurationDialog() = 0;
-    //! \return Czy Ÿród³o mo¿e jeszcze generowac kolejne dane
+    //! \return Czy Ÿród³o mo¿e jeszcze generowaæ kolejne dane
     virtual bool empty() const = 0;
     //! \return Ikona Ÿród³a
     virtual QIcon* getIcon() const = 0;

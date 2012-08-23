@@ -395,7 +395,7 @@ osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
 	colors->push_back(osg::Vec4(0.05f, 0.05f, 0.3f, 1.0f));
 
     GeodePtr geode = new osg::Geode();
-    // todo sparametryzowac
+    // todo sparametryzowaæ
     osg::ref_ptr<osg::Geometry> linesGeom = new osg::Geometry();
 
 	float length = 3.5f;

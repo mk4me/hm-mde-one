@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEW_CHART__NEWCHARTSCALEDRAWER_H__
 
 //! Klasa umo¿liwia odrysowanie podzialki z procentami
-//! nale¿y pamiêtaæ, ze w zaden sposób nie s¹ zmieniane wartosci krzywych, podmieniana jest jedynie podzialka
+//! nale¿y pamiêtaæ, ze w zaden sposób nie s¹ zmieniane wartoœci krzywych, podmieniana jest jedynie podzialka
 class PercentScaleDraw : public QwtScaleDraw
 {
 public:

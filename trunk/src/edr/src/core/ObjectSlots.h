@@ -24,7 +24,7 @@ public:
     //! Typ opisu slotu.
     struct SlotInfo
     {
-        //! Typ kolekcji slotow zaleznych (ich indeksow)
+        //! Typ kolekcji slotow zaleznych (ich indeksów)
         typedef std::set<int> DependentSlots;
 
         //! Nazwa slotu.

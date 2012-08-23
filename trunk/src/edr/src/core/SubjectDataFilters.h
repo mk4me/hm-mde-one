@@ -32,7 +32,7 @@ private:
     std::vector<core::TypeInfo> types;
 };
 
-//! klasa jest zlozeniem filtrow prostych
+//! klasa jest zlozeniem filtrów prostych
 class CustomFilter : public PluginSubject::IDataFilter
 {
 public:

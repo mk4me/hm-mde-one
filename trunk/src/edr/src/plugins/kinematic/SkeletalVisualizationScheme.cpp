@@ -19,7 +19,7 @@ SkeletalVisualizationScheme::SkeletalVisualizationScheme() :
 
 void SkeletalVisualizationScheme::updateJointTransforms(const std::vector<osg::Quat>& rotations, hAnimJointPtr joint, Quat parentRot, Vec3 parentPos)
 {
-    // zapewnienie zgodnosci indeksow (miêdzy tablicami connections i states)
+    // zapewnienie zgodnoœci indeksów (miêdzy tablicami connections i states)
     int i = visJoints[joint];
     Quat ident;
     Vec3 shift = joint->getLocalShift();

@@ -120,7 +120,7 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
         }else{
 			// wype³niamy mape, dziêki której mozemy ³atwo stworzyæ wizualizator na postawie typu
 			for (auto it = visualizerInputInfo.begin(); it != visualizerInputInfo.end(); ++it) {
-				// TODO : co w przypadku, gdy mamy wiele wizualizatorow obslugujacych ten sam typ
+				// TODO : co w przypadku, gdy mamy wiele wizualizatorów obs³uguj¹cych ten sam typ
 				mapType2ID[it->type] = visualizer->getID();
 			}
 
@@ -211,7 +211,7 @@ void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
 		}
 	}
 
-	//teraz próbuje usuwac serie danych z wizualizatora
+	//teraz próbuje usuwaæ serie danych z wizualizatora
 	visualizerChannels[channelIT->second.visualzier].erase(channelIT->first);
 
 	if(visualizerChannels[channelIT->second.visualzier].empty() == true){

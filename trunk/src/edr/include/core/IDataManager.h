@@ -200,10 +200,10 @@ namespace core {
         //! \return Zarejestrowane w aplikacji typy danych
         virtual const TypeInfoSet & getSupportedTypes() const = 0;
 
-        //! \return Hierarchia typow danych - jakie operacje moge realizowac, po czym dziedzicze
+        //! \return Hierarchia typów danych - jakie operacje moge realizowaæ, po czym dziedzicze
         virtual const TypeInfoSet & getTypeBaseTypes(const TypeInfo & type) const = 0;
 
-        //! \return Hierarchia typow danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
+        //! \return Hierarchia typów danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
         virtual const TypeInfoSet & getTypeDerrivedTypes(const TypeInfo & type) const = 0;
 
 		//! \param ptr Surowy wskaŸnik, dla którego sprawdzamy czy jest ju¿ za¿adzany przez DM
@@ -323,7 +323,7 @@ namespace core {
 
     };
 
-    //! Interfejs dostepu do danych i ³adowania danych w aplikacji
+    //! Interfejs dostêpu do danych i ³adowania danych w aplikacji
 	class IFileDataManager : public utils::Observable<IFileDataManager>, virtual public IDataManagerReader
 	{
 	public:
@@ -355,7 +355,7 @@ namespace core {
         virtual bool isFileManaged(const Filesystem::Path & file) const = 0;
 
         //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
-        //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
+        //! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
 		void addFile(const Filesystem::Path & file)
 		{
 		    std::vector<ObjectWrapperPtr> temp;
@@ -365,7 +365,7 @@ namespace core {
 
         //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery
-        //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
+        //! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
 		void addFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects)
 		{
 			nonNotifyAddFile(file, objects);
@@ -385,11 +385,11 @@ namespace core {
         //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) ZWALNIAMY ZASOBY, ALE ZEZWALAMY PONOWNIE NA LENIWA INICJALIZACJE
         virtual void deinitializeFile(const Filesystem::Path & file) = 0;
 
-        //! \param files Zbior plikow dla których chcemy pobraæ listê obiektów
-        //! \return Mapa obiektów wzgledem plikow z których pochodza
+        //! \param files Zbior plików dla których chcemy pobraæ listê obiektów
+        //! \return Mapa obiektów wzgledem plików z których pochodza
         virtual void getObjectsForFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects) const = 0;
 
-        //! \return Zbior obs³ugiwanych rozszerzen plikow wraz z ich opisem
+        //! \return Zbior obs³ugiwanych rozszerzen plików wraz z ich opisem
         virtual const Extensions & getSupportedFilesExtensions() const = 0;
 
         //! \return true jeœli rozszerznie jest wspierane przez DataManager, w przeciwnym wypadku false
@@ -431,7 +431,7 @@ namespace core {
 		//! Ta metoda nie notyfikuje o zmianie stanu DM!!
 		//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery
-		//! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
+		//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
 		virtual void nonNotifyAddFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects) = 0;
 
 		//! Ta metoda nie notyfikuje o zmianie stanu DM!!

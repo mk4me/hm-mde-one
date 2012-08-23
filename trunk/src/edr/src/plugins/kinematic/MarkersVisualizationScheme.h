@@ -30,7 +30,7 @@ public:
     //! ustawienie kolekcji z markerami
     //! \param val obiekt z markerami
     void setMarkers(MarkerCollectionConstPtr val);
-    //! ustawienie po³¹czeñ i ich kolorow
+    //! ustawienie po³¹czeñ i ich kolorów
     //! \param vsk parser z wczytanymi danymi nt. po³¹czeñ markerów
     void setMarkersDataFromVsk(kinematic::VskParserConstPtr vsk);
 

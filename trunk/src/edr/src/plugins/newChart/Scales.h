@@ -12,7 +12,7 @@
 
 #include <limits>
 
-//! Prosta klasa, ulatwiajaca zarz¹dzac ekstremami wykresu
+//! Prosta klasa, u³atwiaj¹ca zarz¹dzaæ ekstremami wykresu
 class Scales
 {
 public:
@@ -28,8 +28,8 @@ public:
     //! Konstruktor, inicjalizuje obiekt
     //! \param xMin minimalny argument na wykresie
     //! \param xMax maksymalny argument na wykresie
-    //! \param yMin wartosc minimalna na wykresie
-    //! \param yMax wartosc maksymalna na wykresie
+    //! \param yMin wartoœæ minimalna na wykresie
+    //! \param yMax wartoœæ maksymalna na wykresie
     Scales(float xMin, float xMax, float yMin, float yMax) :
       xMin(xMin),
       xMax(xMax),
@@ -62,9 +62,9 @@ private:
     float xMin;
     //! maksymalny argument na wykresie
     float xMax;
-    //! wartosc minimalna na wykresie
+    //! wartoœæ minimalna na wykresie
     float yMin;
-    //! wartosc maksymalna na wykresie
+    //! wartoœæ maksymalna na wykresie
     float yMax;
     //! flaga okresla, czy obiekt ju¿ zosta³ zainicjalizowany poprawnymi danymi
     bool initialized;

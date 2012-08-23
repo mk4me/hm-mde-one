@@ -30,18 +30,18 @@ public:
     virtual void draw(QPainter *);
     //! ustawienie stanu, zmiana kursora
     virtual void stateBegin();
-    //! zakonczenie stanu, nieobs³ugiwane
+    //! zakoñczenie stanu, nieobs³ugiwane
     virtual void stateEnd();
     //! usuwa etykiety z wykresu zwi¹zane z konkretna seria
     //! \param serie seria, dla której usuwamy
     void removeSerieLabels(const NewChartSerie* serie);
     //! zarz¹dza widocznoœci¹ etykiet z wykresu zwiazanych z konkretna seria
-    //! \param serie seria, dla której zmieniamy widocznoœæ elementow
+    //! \param serie seria, dla której zmieniamy widocznoœæ elementów
     //! \param visible widoczny / ukryty
     void setVisible(const NewChartSerie* serie, bool visible);
 
 protected:
-    //! prosta struktura zawierajaca informacje o etykiecie
+    //! prosta struktura zawieraj¹ca informacje o etykiecie
     struct LabelData
     {
         //! obiekt etykiety
@@ -61,7 +61,7 @@ protected:
 protected:
     //! Realizuje przesuniecie pojedynczej etykiety
     //! \param pos nowa pozycja
-    //! \param curve krzywa pod która jest podpieta etykieta
+    //! \param curve krzywa pod która jest podpiêta etykieta
     //! \param label przesuwana etykieta
     void move(const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label);
     //! próbuje pobraæ dane etykiety

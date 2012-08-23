@@ -342,7 +342,7 @@ void TimelineWidget::removeSelectedChannels()
             //usuwamy podkana³, zostanie usuniêty wraz ze swoim rodzicem
             it = orderedPathsToDelete.erase(it);
         }else{
-            //zapamietaj ostatni wêze³ by weryfikowac jego dzieci
+            //zapamietaj ostatni wêze³ by weryfikowaæ jego dzieci
             lastNode = it->first;
             toDelete.insert(lastNode);
             ++it;

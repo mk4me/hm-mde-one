@@ -36,17 +36,17 @@ public:
     virtual int getHeight() const = 0;
     //! \return nazwa przypisana do obszaru
     virtual const QString& getName() const = 0;
-    //! pozwala odrysowac siê obiektowi
+    //! pozwala odrysowaæ siê obiektowi
     //! \param painter obiekt paintera
     //! \param selected czy obiekt jest zaznaczony
     virtual void draw(QPainter& painter, bool selected) = 0;
-    //! czy podany punkt znajduje siê wewnatrz obszaru
+    //! czy podany punkt znajduje siê wewn¹trz obszaru
     //! \param x wspó³rzêdna x
     //! \param y wspó³rzêdna y
     virtual bool isInside(int x, int y) const;
     //! czy obszar jest aktywny (normalnie - czy kliknieto w niego myszka)
     bool isActive() const { return active; }
-    //! ustawia aktywnosc obszaru (norm. po kliknieciu myszka)
+    //! ustawia aktywnoœæ obszaru (norm. po kliknieciu myszka)
     //! \param val
     void setActive(bool val) { active = val; }
     //! \return skala obszaru
@@ -98,7 +98,7 @@ public:
     virtual int getHeight() const { return getScale() * (2 * r); }
     //!
     virtual const QString& getName() const { return name; }
-    //! pozwala odrysowac siê obiektowi
+    //! pozwala odrysowaæ siê obiektowi
     //! \param painter obiekt paintera
     //! \param selected czy marker jest zaznaczony przez myszke
     virtual void draw(QPainter& painter, bool selected);
@@ -157,11 +157,11 @@ public:
     virtual int getHeight() const { return getScale() * (pixmap->height()); }
     //!
     virtual const QString& getName() const { return name; }
-    //! pozwala odrysowac siê obiektowi
+    //! pozwala odrysowaæ siê obiektowi
     //! \param painter obiekt paintera
     //! \param selected czy marker jest zaznaczony przez myszke
     virtual void draw(QPainter& painter, bool selected);
-    //! czy podany punkt znajduje siê wewnatrz obszaru
+    //! czy podany punkt znajduje siê wewn¹trz obszaru
     //! \param x wspó³rzêdna x
     //! \param y wspó³rzêdna y
     virtual bool isInside(int x, int y) const;
@@ -171,9 +171,9 @@ public:
     QPixmapConstPtr getPixmap() const { return pixmap; }
 
 public:
-    //! ustawia nowa wartosc przezroczystosci obrazka
+    //! ustawia nowa wartoœæ przezroczystoœci obrazka
     //! \param pixmap obrazek, którego alpha siê zmienia
-    //! \param alpha nowa wartosc przezroczystosci
+    //! \param alpha nowa wartoœæ przezroczystoœci
     static void setPixmapAlpha(QImage& pixmap, unsigned int alpha);
 
 

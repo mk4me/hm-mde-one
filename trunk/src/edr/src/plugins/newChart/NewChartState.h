@@ -19,7 +19,7 @@ class QEvent;
 class QPainter;
 class QwtPlotCanvas;
 
-//! Klasa bazowa dla stanow wizualizatora
+//! Klasa bazowa dla stanów wizualizatora
 class NewChartState : public QObject
 {
     Q_OBJECT
@@ -32,7 +32,7 @@ public:
 	virtual ~NewChartState() { }
 
 public:
-    //! Obsluga eventow Qt
+    //! Obs³uga eventów Qt
     virtual bool stateEventFilter( QObject *, QEvent * ) = 0;
     //! Metoda odrysowuj¹ca stan wizualizatora
     virtual void draw(QPainter *) = 0;

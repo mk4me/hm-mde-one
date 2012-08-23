@@ -19,7 +19,7 @@
 #include "GlPointSchemeDrawer.h"
 #include "ui_TrajectoriesDialog.h"
 
-//! Dialog Qt s³u¿¹cy do zarz¹dzania widocznoœcia elementow na scenie
+//! Dialog Qt s³u¿¹cy do zarz¹dzania widocznoœcia elementów na scenie
 class SchemeDialog : public QDialog, private Ui::TrajectoriesDialog
 {
 	Q_OBJECT;

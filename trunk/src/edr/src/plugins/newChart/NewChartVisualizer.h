@@ -38,7 +38,7 @@ class StatsTable;
 class NewChartLegend;
 class PercentScaleDraw;
 
-//! Wizualizator wykresow, oparty o QWT
+//! Wizualizator wykresów, oparty o QWT
 class NewChartVisualizer : public QObject, public INewChartVisualizer
 {
     friend class NewChartSerie;
@@ -84,7 +84,7 @@ public:
       //! Metoda wywo³ywana w momencie dostarczenia nowych danych do przetwarzania, nie wykorzystywana
       //! \param source
       virtual void setUp(core::IObjectSource* source);
-      //! Metoda wywo³ywana cyklicznie pozwala odswiezyc stan wizualizatora
+      //! Metoda wywo³ywana cyklicznie pozwala odœwie¿yc stan wizualizatora
       //! \param deltaTime czas od ostatniego wywo³ania metody
       virtual void update(double deltaTime);
       //! metoda, na podstawie stanu wizualizatora, ustawia widoczne przedzia³y wykresu
@@ -98,17 +98,17 @@ public:
       //! Umo¿liwia manipulowanie wykresem, przesuwanie , zblizanie
       //! \param val w³¹cza / wy³¹cza mo¿liwoœæ manipulacji
       void setManipulation(bool val);
-      //! \return czy pokazywac legende
+      //! \return czy pokazywaæ legende
       bool isShowLegend() const { return showLegend; }
       //! \param val w³¹cza/wy³¹cza rysowanie legendy
       void setShowLegend(bool val);
-      //! Filtrowanie eventow Qt, przekazywane do obiektu obslugujacego stan wizualizatora
+      //! Filtrowanie eventów Qt, przekazywane do obiektu obs³uguj¹cego stan wizualizatora
       //! \param object
       //! \param event
       bool eventFilter( QObject *object, QEvent *event );
       //! \return wszystkie serie aktualnie obs³ugiwane przez wizualizator
       boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> getSeries() const;
-      //! \return czy wizualizator jest w trybie wizualizacji eventow
+      //! \return czy wizualizator jest w trybie wizualizacji eventów
       bool isEventMode() const { return context != C3DEventsCollection::IEvent::General; }
       //! Zrzut wizualizatora do pixmapy
       virtual QPixmap print() const;
@@ -129,16 +129,16 @@ private:
       void recreateStats(ScalarChannelStatsConstPtr stats = ScalarChannelStatsConstPtr());
       //! odœwie¿a widzialne serie, przypisanie wspó³rzêdnej Z (przykrywanie)
       void refreshSerieLayers();
-      //! odœwie¿a spinboxy zawierajace przesuniecie i skale aktywnej serii
+      //! odœwie¿a spinboxy zawieraj¹ce przesuniecie i skale aktywnej serii
       void refreshSpinBoxes();
       //! Ustawia podzialki wykresu
-      //! \param scaleToActive czy skalowanie ma byæ wzgledem aktywnej serii czy calosci
+      //! \param scaleToActive czy skalowanie ma byæ wzgledem aktywnej serii czy caloœci
       //! \param eventMode czy jest aktywny eventMode
       void setScale(bool scaleToActive, bool eventMode);
       //! Ustawia podzialki wykresu, czesciowo na podstawie stanu wizualizatora
-      //! \param scaleToActive czy skalowanie ma byæ wzgledem aktywnej serii czy calosci
+      //! \param scaleToActive czy skalowanie ma byæ wzgledem aktywnej serii czy caloœci
       void setGlobalScales(bool scaleToActive);
-      //! Dostosowywuje krok, z którym mo¿na przesuwac wykres (adaptacyjne spinboxy)
+      //! Dostosowywuje krok, z którym mo¿na przesuwaæ wykres (adaptacyjne spinboxy)
       //! \param spinBox modyfikowany spinbox
       //! \param axis os, na podstawie której ma byæ obliczony nowy krok
       void adjustOffsetStep(QDoubleSpinBox* spinBox, QwtPlot::Axis axis);
@@ -210,13 +210,13 @@ private slots:
       void onSerieVisible(const QwtPlotItem* dataSerie, bool visible);
       //! wybrano zmiane stanu wizualizatora
       void onStateAction();
-      //! zmiana kontekstu eventow, czyli sposobu rysowania wykresu
+      //! zmiana kontekstu eventów, czyli sposobu rysowania wykresu
       //! \param  okresla czy wykres ma obs³ugiwac zdarzenia, a jeœli tak to czy lewe, czy prawe
       void onEventContext(int);
       //! zarz¹dza widocznoœcia statystyk
       //! \param visible pokaz / ukryj
       void showStatistics(bool visible);
-      //! \return czy czas aktywnej serii jest wewnatrz jakiegos eventu zwi¹zanego z próba pomiarowa
+      //! \return czy czas aktywnej serii jest wewn¹trz jakiegos eventu zwi¹zanego z próba pomiarowa
       bool timeInsideEvent();
       //! zmiana podzialki
       //! \param czy skalowanie powinno byæ do aktywnej serii czy do ca³ego wykresu
@@ -251,25 +251,25 @@ private:
     QwtPlotCurve* lowerBoundCurve;
     //! dodatkowa krzywa - srednia kroczaca
     QwtPlotCurve* averageCurve;
-    //! wektor z operacjami do wykonania na póŸniej (w update) pozwala wyeliminowac problemy z watkami
+    //! wektor z operacjami do wykonania na póŸniej (w update) pozwala wyeliminowaæ problemy z watkami
     std::vector< boost::function<void ()> > updateFIFO;
     //! automatyczne odœwie¿anie dodatkowych krzywych
     bool boundsAutoRefresh;
-    //! dodatkowe krzywe powinny zostac odswiezone
+    //! dodatkowe krzywe powinny zostac odœwie¿one
     bool boundsToRefresh;
     //! zakres czasowy dla kroczacej krzywej
     double movingAverageTimeWindow;
-    //! liczba punktow przypadajacych na zakres czasowy (okno) krzywej kroczacej
+    //! liczba punktów przypadaj¹cych na zakres czasowy (okno) krzywej kroczacej
     int pointsPerWindow;
     //! Obiekt wykresu z Qwt, serce wizualizatora
     QwtPlot* qwtPlot;
     //! Legenda, która zosta³a wzbogacona w customowe widgety
     NewChartLegend* legend;
-    //! Marker obrazujacy aktualna wartosc na wykresie
+    //! Marker obrazuj¹cy aktualna wartoœæ na wykresie
     QwtPlotMarker* qwtMarker;
     //! "kratka" na wykresie
     core::shared_ptr<QwtPlotGrid> grid;
-    //! obiekt przechwujacy ekstrema krzywych
+    //! obiekt przechwuj¹cy ekstrema krzywych
     Scales plotScales;
     //! combo z lista serii danych
     QComboBox* activeSerieCombo;
@@ -294,21 +294,21 @@ private:
 
     //! Tabela statystyk
     StatsTable* statsTable;
-    //! czy wykres powinno siê skalowac do aktywnego
+    //! czy wykres powinno siê skalowaæ do aktywnego
     bool scaleToActive;
-    //! obiekt umo¿liwiajacy rysowanie podzialki z procentami
+    //! obiekt umo¿liwiaj¹cy rysowanie podzialki z procentami
     PercentScaleDraw* percentDraw;
-    //! widget z menu eventow
+    //! widget z menu eventów
     QWidget* eventsContextWidget;
-    //! menu eventow (general, left, right)
+    //! menu eventów (general, left, right)
     QComboBox * eventsMenu;
     //! akcja wywoluj¹ca stan 'picker'
     QAction* pickerAction;
-    //! akcja wywoluj¹ca stan zaznaczania wartosci na wykresie
+    //! akcja wywoluj¹ca stan zaznaczania wartoœci na wykresie
     QAction* valueMarkerAction;
-    //! akcja wywoluj¹ca stan zaznaczania roznicy wartosci na wykresie
+    //! akcja wywoluj¹ca stan zaznaczania roznicy wartoœci na wykresie
     QAction* vMarkerAction;
-    //! akcja wywoluj¹ca stan zaznaczania roznicy argumentow na wykresie
+    //! akcja wywoluj¹ca stan zaznaczania roznicy argumentów na wykresie
     QAction* hMarkerAction;
     //! akcja wywoluj¹ca skalowanie do aktywnej serii
     QAction* scaleAction;
@@ -322,15 +322,15 @@ private:
     QDoubleSpinBox* scaleSpinX;
     //! spinbox z aktualna skala w T aktywnej serii
     QDoubleSpinBox* scaleSpinY;
-    //! aktualny kontekst eventow (general, left, right)
+    //! aktualny kontekst eventów (general, left, right)
     C3DEventsCollection::Context context;
     //! pomocnicze, do ustalenia czy zmieni³ siê aktualnie obrazowany event
     EventsHelper::SegmentConstPtr oldSegment;
-    //! stan wizualizatora, picker - umo¿liwia wybieranie aktywnej serii klikajac na nia
+    //! stan wizualizatora, picker - umo¿liwia wybieranie aktywnej serii klikaj¹c na nia
     NewChartPickerPtr picker;
     //! czas aktywnej serii
     float currentSerieTime;
-    //! aktualna wartosc dla serii
+    //! aktualna wartoœæ dla serii
     float currentSerieValue;
 };
 typedef core::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;

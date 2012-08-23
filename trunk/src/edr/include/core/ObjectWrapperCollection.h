@@ -47,7 +47,7 @@ private:
     ConstObjects constObjects;
     //! typ przechowywanych obiektów
     TypeInfo typeInfo;
-    //! Czy kolekcja przechowyje elementy wylacznie danego typu czy rowniez pochodne mu
+    //! Czy kolekcja przechowyje elementy wylacznie danego typu czy równie¿ pochodne mu
     bool exact;
 
 // rev - zmiana na public, bo z tej metody korzysta DataManager
@@ -65,7 +65,7 @@ public:
 
 public:
 
-    //! Chroniony konstruktor, klasa pochodna powinna zdeklarowac przechowywany typ
+    //! Chroniony konstruktor, klasa pochodna powinna zdeklarowaæ przechowywany typ
     //! \param info typ przechowywanych obiektów
     ObjectWrapperCollection(TypeInfo info, bool exact = true) :
       typeInfo(info), exact(exact) {}
@@ -156,7 +156,7 @@ public:
         ConstObjects().swap(constObjects);
     }
 
-    //! Metoda udostepnia obiekt domenowy z agregatu
+    //! Metoda udostêpnia obiekt domenowy z agregatu
     //! \param index indesk pobieranego elementu
     //! \return Niemodyfikowalny obiekt domenowy
     const ObjectWrapperConstPtr & getObject(int index) const
@@ -181,12 +181,12 @@ public:
     //! \param object wskaŸnik do niemodyfikowalnego obiektu domenowego
     void addObject(const ObjectWrapperConstPtr & object)
     {
-        // sprawdzenie poprawnosci typu
+        // sprawdzenie poprawnoœci typu
         if (exact == true){
             if(object->isTypeEqual(typeInfo) == true) {
                 constObjects.push_back(object);
             } else {
-                // bad_cast nie pobiera parametrow
+                // bad_cast nie pobiera parametrów
                 //throw std::bad_cast("Type of object not equal to type of collection");
                 throw std::bad_cast();
             }

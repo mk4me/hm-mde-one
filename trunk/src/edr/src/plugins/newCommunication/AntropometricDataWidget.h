@@ -28,7 +28,7 @@ public slots:
 	//! \param autUpdate Czy przy zmianie dowolnego parametru danych antropometrycznych widget ma siê odœwie¿yæ - wygenerowaæ tabele HTML, ....
 	void setAutoUpdate(bool autoUpdate = true);
 
-	//! Funkcje seterów wartosci
+	//! Funkcje seterów wartoœci
 
 	void setBodyMass(const QString & val);
 	void setBodyHeight(const QString & val);

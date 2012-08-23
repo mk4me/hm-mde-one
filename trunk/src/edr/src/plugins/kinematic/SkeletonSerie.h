@@ -79,7 +79,7 @@ private:
     TransformPtr skeletonNode;
     //! czy operujemy na uk³adzie XYZ czy innym
     bool xyzAxis;
-    //! Drawer rysujacy trajektorie, powsta³y one dziêki konwersji JoinAnglesCollection - > MarkersCollection
+    //! Drawer rysuj¹cy trajektorie, powsta³y one dziêki konwersji JoinAnglesCollection - > MarkersCollection
     TrajectoryDrawerPtr trajectoryDrawer;
 };
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;

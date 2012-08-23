@@ -37,7 +37,7 @@ public:
 
 public slots:
 
-	//! \param patient Pacjent którego nale¿y sformatowac w karcie pacjenta - dla nullptr nale¿y zresetowaæ kartê pacjenta
+	//! \param patient Pacjent którego nale¿y sformatowaæ w karcie pacjenta - dla nullptr nale¿y zresetowaæ kartê pacjenta
 	//! \param subject Subject którego sesje bêdziemy czytaæ
 	//! \param photo Zdjêcie pacjenta
 	//! \param userData Dane u¿ytkownika (na potrzeby notatek!!)
@@ -90,7 +90,7 @@ public:
 	virtual const std::string name();
 	//! \return Widget z kart¹ pacjenta
 	virtual QWidget * widget();
-	//! \param patient Pacjent którego nale¿y sformatowac w karcie pacjenta - dla nullptr nale¿y zresetowaæ kartê pacjenta
+	//! \param patient Pacjent którego nale¿y sformatowaæ w karcie pacjenta - dla nullptr nale¿y zresetowaæ kartê pacjenta
 	//! \param subject Subject którego sesje bêdziemy czytaæ
 	//! \param photo Zdjêcie pacjenta
 	//! \param userData Dane u¿ytkownika (na potrzeby notatek!!)

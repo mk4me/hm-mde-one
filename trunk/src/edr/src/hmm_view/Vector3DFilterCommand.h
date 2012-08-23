@@ -43,7 +43,7 @@ public:
     //! Konstruktor
     //! \param function funkcja, która zostanie wykorzystana do stworzenia elementu drzewa
     //! \param rootIcon ikona korzenia galezi
-    //! \param elementIcon ikona stworzonych elementow
+    //! \param elementIcon ikona stworzonych elementów
     BuilderFilterCommand(BranchFunction function, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon());
 
 public:
@@ -55,7 +55,7 @@ public:
 protected:
     //! funkcja, która zostanie wykorzystana do stworzenia elementu drzewa
     BranchFunction branchFunction;
-    //! ikona stworzonych elementow
+    //! ikona stworzonych elementów
     QIcon elementIcon;
     //! ikona korzenia galezi
     QIcon rootIcon;
@@ -71,8 +71,8 @@ public:
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 };
 
-//! klasa, dziêki której mo¿liwe jest korzystanie z sygnalow i slotow w klasie szablonowej.
-//! obsluguje sloty w klasach Vector3DFilterCommand i Vector3DFilterCommand2
+//! klasa, dziêki której mo¿liwe jest korzystanie z sygnalow i slotów w klasie szablonowej.
+//! obs³uguje sloty w klasach Vector3DFilterCommand i Vector3DFilterCommand2
 class __Helper : public QObject
 {
     Q_OBJECT;

@@ -32,17 +32,17 @@ private:
 	core::ObjectWrapperPtr EMGs;
     //! Kolekcja z markerami
 	core::ObjectWrapperPtr markerChannels;
-    //! Kolekcja z silami w stawach - dane s¹ estymowane
+    //! Kolekcja z si³ami w stawach - dane s¹ estymowane
 	core::ObjectWrapperPtr forceChannels;
-    //! Kolekcja z kontami w stawach - dane s¹ estymowane
+    //! Kolekcja z k¹tami w stawach - dane s¹ estymowane
 	core::ObjectWrapperPtr angleChannels;
-    //! Kolekcja z momentami sil w stawach - dane s¹ estymowane
+    //! Kolekcja z momentami si³ w stawach - dane s¹ estymowane
 	core::ObjectWrapperPtr momentChannels;
-    //! Kolecka z mocami w stawach - dane s¹ estymowane
+    //! Kolekcja z mocami w stawach - dane s¹ estymowane
 	core::ObjectWrapperPtr powerChannels;
-    //! Kolekcja ze zdarzeniami zapisanymi w pliku C3D (np. stapniecie stopy)
+    //! Kolekcja ze zdarzeniami zapisanymi w pliku C3D (np. st¹pniêcie stopy)
     core::ObjectWrapperPtr allEvents;
-    //! wskaŸnik do wlasciwego parsera z biblioteki c3dlib
+    //! wskaŸnik do w³aœciwego parsera z biblioteki c3dlib
 	ParserPtr parserPtr;
 
 public:
@@ -51,18 +51,18 @@ public:
 
 public:
     //! Parsowanie pliku c3d
-    //! \param path poprawna sciezka do pliku
+    //! \param path poprawna œcie¿ka do pliku
     virtual void parseFile(const core::Filesystem::Path& path);
     //! \return pusty obiekt nowego parsera
     virtual core::IParser* create();
     //! Zwraca obiekty dostarczone przez parser
     //! \param objects kolekcja z obiektami (set)
     virtual void getObjects(core::Objects& objects);
-    //! Zwraca rozszerzenia, ktore s¹ obs³ugiwane przez parser (tylko asf)
+    //! Zwraca rozszerzenia, które s¹ obs³ugiwane przez parser (tylko asf)
     //! \param extensions kolecja z roszerzeniami
     virtual void getSupportedExtensions(Extensions & extensions) const;
 	//! Zapisauje dane w konkretnym miejscu, nie u¿ywane
-	//! \param path sciezka zapisu
+	//! \param path œcie¿ka zapisu
 	void saveFile(const core::Filesystem::Path& path);
 };
 

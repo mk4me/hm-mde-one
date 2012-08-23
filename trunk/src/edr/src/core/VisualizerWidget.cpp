@@ -119,7 +119,7 @@ void VisualizerWidget::init()
 
     visualizerCommonElements[comboType] = InnerVisualizerElement(true, comboType, IEDRTitleBar::Left);
 
-    //ustawienie zdarzen na zmiane pozycji w combo (zmiana wizualizatora)
+    //ustawienie zdarzeñ na zmiane pozycji w combo (zmiana wizualizatora)
     connect(comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(setCurrentVisualizer(int)));
 
     //ustawienie domyslnej pozycji w combo
@@ -136,7 +136,7 @@ void VisualizerWidget::init()
     //dynamiczne ³adowanie menu Ÿróde³ na ich rozwiniêcie
     connect(menuSource, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
 
-    //wyczyszczenie wizualizatorow, inicjalizacja wszystkich kontrolek z tym zwiazanych
+    //wyczyszczenie wizualizatorów, inicjalizacja wszystkich kontrolek z tym zwiazanych
     clearCurrentVisualizer();
 
     ActionsGroupManager::GroupID id = visualizerCommonElementsOrder.createGroup("Decoration");
@@ -326,7 +326,7 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 					bool exact = false;
 					//pobieram dane
 
-					//stworz nowy OWC, odœwie¿ajacy dane z DM ObjectWrapperCollection
+					//stworz nowy OWC, odœwie¿aj¹cy dane z DM ObjectWrapperCollection
 					core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), exact));
 
 					DataManager::getInstance()->getObjects(*collection);
@@ -408,7 +408,7 @@ void VisualizerWidget::fillSourcesMenu()
     clearSources();
 
     //odbuduj menu Ÿróde³ danych
-    //dostepne dane
+    //dostêpne dane
     QMenu * avaiableDataMenu = menuSource->addMenu("Available data");
     //aktywne dane w seriach
     QMenu * activeDataMenu = menuSource->addMenu("Active data");
@@ -595,7 +595,7 @@ void VisualizerWidget::sourceSelected()
         actionNone->setChecked(false);
         actionNone->blockSignals(false);
 
-        //czy mo¿na jeszcze utworzyc serie?
+        //czy mo¿na jeszcze utworzyæ serie?
         if(visualizer->getMaxSeries() < 0 || visualizer->getMaxSeries() != currentSeriesData.size()){
             //aktualizujemy ostatnia serie danych
 
@@ -621,7 +621,7 @@ void VisualizerWidget::sourceSelected()
             //co jeœli mam ju¿ komplet? moge odznaczaæ serie, ale nie dodawaæ - mo¿e jakoœ kolorem menu?
 
 
-            ////nie moge utworzyc serii - przelacz ostatnia serie
+            ////nie moge utworzyæ serii - przelacz ostatnia serie
             //lastSerie.first->blockSignals(true);
             //lastSerie.first->setChecked(false);
             //lastSerie.first->blockSignals(false);

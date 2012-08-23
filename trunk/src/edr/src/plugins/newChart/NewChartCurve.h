@@ -14,12 +14,12 @@
 
 class NewChartSeriesData;
 
-//! Klasa rozszerza podstawowa funkcjonalnosc Qwt przede wszystkim o mo¿liwoœæ transformacji (przesuniecie + skala)
+//! Klasa rozszerza podstawowa funkcjonalnoœæ Qwt przede wszystkim o mo¿liwoœæ transformacji (przesuniecie + skala)
 //! pamiêtaæ nale¿y, ze nie jest to QObject, dlatego trzeba uwazac przy zarz¹dzaniu pamiecia
 class NewChartCurve : public QwtPlotCurve
 {
 public:
-    //! Konstruktor ustawia domyslne wartosci (offset = 0, skala = 1)
+    //! Konstruktor ustawia domyslne wartoœci (offset = 0, skala = 1)
     //! \param title tytul wykresu
     explicit NewChartCurve( const QString &title = QString::null );
 
@@ -54,13 +54,13 @@ public:
     void setSamples(NewChartSeriesData* data);
 
 protected:
-    //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
+    //! Metoda jawnie wskazuje, ktorej metody u¿yæ (usuniecie warn. 'via dominance')
     virtual void dataChanged() { QwtPlotSeriesItem::dataChanged(); }
-    //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
+    //! Metoda jawnie wskazuje, ktorej metody u¿yæ (usuniecie warn. 'via dominance')
     virtual void setRectOfInterest( const QRectF& r ) { QwtSeriesStore<QPointF>::setRectOfInterest(r); }
-    //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
+    //! Metoda jawnie wskazuje, ktorej metody u¿yæ (usuniecie warn. 'via dominance')
     virtual size_t dataSize() const { return QwtSeriesStore<QPointF>::dataSize(); }
-    //! Metoda jawnie wskazuje, ktorej metody uzyc (usuniecie warn. 'via dominance')
+    //! Metoda jawnie wskazuje, ktorej metody u¿yæ (usuniecie warn. 'via dominance')
     virtual QRectF dataRect() const { return QwtSeriesStore<QPointF>::dataRect(); }
 
 private:

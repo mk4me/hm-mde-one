@@ -138,7 +138,7 @@ private:
 
 // Zbiór œcie¿ek
 typedef std::set<Filesystem::Path> Paths;
-// Zbiór plikow
+// Zbiór plików
 typedef Paths Files;
 
 

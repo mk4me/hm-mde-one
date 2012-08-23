@@ -410,7 +410,7 @@ public:
 
 private:
 
-	// ---------------------------- dostarczane z zewnatrz ------------------------
+	// ---------------------------- dostarczane z zewn¹trz ------------------------
 	webservices::FtpsConnectionPtr motionFtps_;
 	webservices::FtpsConnectionPtr medicalFtps_;
 
@@ -462,7 +462,7 @@ private:
     */
     OpenThreads::ReentrantMutex trialsMutex;
     /**
-    Muteks synchronizuj¹cy obs³uge kolejki zleceñ
+    Muteks synchronizuj¹cy obs³ugê kolejki zleceñ
     */
     mutable OpenThreads::ReentrantMutex requestsMutex;
 

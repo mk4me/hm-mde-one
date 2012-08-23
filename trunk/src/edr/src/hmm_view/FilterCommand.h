@@ -23,7 +23,7 @@
 class IFilterCommand
 {
 public:
-    //! jeœli komenda dostarcza konfiguratora to powinien on zwrocic jedna z tych wartosci
+    //! jeœli komenda dostarcza konfiguratora to powinien on zwrocic jedna z tych wartoœci
     enum ConfigurationResult
     {
         OK,

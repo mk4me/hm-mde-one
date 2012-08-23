@@ -87,8 +87,8 @@ void HmmMainWindow::activateContext(QWidget * widget)
 
     setCurrentContext(toSet);
 
-    // hack - nie da siê zinstalowac dwoch filtrow eventow dla jednego widgeta,
-    // obecne rozwiazanie jest specyficzne dla kontekstow
+    // hack - nie da siê zinstalowaæ dwoch filtrow eventów dla jednego widgeta,
+    // obecne rozwiazanie jest specyficzne dla kontekstów
     VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(toSet);
     if (vw) {
         summaryWindowController->onVisualizator(vw);
@@ -282,7 +282,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     auto visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer"), QIcon(), false);
 
     //TODO
-    //Tak dlugo jak nie mamy raportow chowamy je w wersji release
+    //Tak dlugo jak nie mamy raportów chowamy je w wersji release
     //Podobnie odnosnik do stronki
     #ifndef _DEBUG
         openButton->setVisible(false);

@@ -21,7 +21,7 @@ class QwtPlotItem;
 #include "NewChartSerie.h"
 #include "NewChartState.h"
 
-//! klasa reprezentuje stan wizualizatora pozwalajacy wybor aktywnej serii danych
+//! klasa reprezentuje stan wizualizatora pozwalaj¹cy wybor aktywnej serii danych
 class NewChartPicker: public NewChartState
 {
     Q_OBJECT
@@ -31,11 +31,11 @@ public:
 	virtual ~NewChartPicker() {}
 
 public:
-    //! filtrowanie eventow Qt, obsluga myszki
+    //! filtrowanie eventów Qt, obs³uga myszki
     virtual bool stateEventFilter( QObject *, QEvent * );
-    //! picker nie musi siê odrysowywac
+    //! picker nie musi siê odrysowywaæ
     virtual void draw(QPainter* painter) {} 
-    //! rozpoczecie stanu, zmiana kursora
+    //! rozpoczêcie stanu, zmiana kursora
     virtual void stateBegin();
     //! nic nie trzeba robic po zakoñczeniu stanu
     virtual void stateEnd() {}
@@ -54,16 +54,16 @@ signals:
     void serieSelected(QwtPlotItem* curve);
 
 private:
-    //! metoda obsluguje klikniecie w wykres, sprawdza, czy kliknieto w krzywa i ewentualnie ja zaznacza
+    //! metoda obs³uguje klikniêcie w wykres, sprawdza, czy klikniêto w krzyw¹ i ewentualnie ja zaznacza
     //! \param pos kliknieta pozycja
     bool select( const QPoint & pos);
 
 private:
     //! plotno wykresu
     QwtPlotCanvas* canvas;
-    //! tolerancja, czyli maksymalna odlegnosc od krzywej zaliczajaca klikniecie w nia
+    //! tolerancja, czyli maksymalna odleg³oœæ od krzywej zaliczaj¹ca klikniêcie w ni¹
     int pixelTolerance;
-    //! aktualnie wybrana krzywa, klikniecie w nia bêdzie ignorowane
+    //! aktualnie wybrana krzywa, klikniêcie w ni¹ bêdzie ignorowane
     QwtPlotCurve* currentCurve;
     //! flaga okreœlaj¹ca, czy kursor siê porusza, jeœli tak, to nie mo¿na wykonaæ wszystkich akcji pickera
     bool move;

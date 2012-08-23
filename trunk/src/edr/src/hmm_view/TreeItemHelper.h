@@ -17,7 +17,7 @@
 #include "MultiserieColorStrategy.h"
 #include "Visualizer.h"
 
-//! klasa podpinana pod elementy drzewa, pozwala tworzyc i zasilac wizualizatory
+//! klasa podpinana pod elementy drzewa, pozwala tworzyæ i zasilac wizualizatory
 class TreeItemHelper
 {
 public:
@@ -27,7 +27,7 @@ public:
 protected:
     //! Tworzy serie danych
     //! \param visualizer wizualizator, który bêdzie tworzy³ serie
-    //! \param path sciezka dla timeline
+    //! \param path œcie¿ka dla timeline
     //! \param series tutaj trafia stworzone serie
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series) = 0;
 
@@ -38,7 +38,7 @@ public:
     virtual bool isDataItem() const { return true; }
     //! zwraca utworzone serie danych
     //! \param visualizer wizualizator, który bêdzie tworzy³ serie
-    //! \param path sciezka dla timelin
+    //! \param path œcie¿ka dla timeline
     //! \param series tutaj trafia stworzone serie
     void getSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     //! \return zwraca próbê pomiarowa powiazana z danym helperem 
@@ -66,7 +66,7 @@ typedef boost::shared_ptr<TreeItemHelper> TreeItemHelperPtr;
 typedef boost::shared_ptr<const TreeItemHelper> TreeItemHelperConstPtr;
 
 
-//! podstawowa klasa ulatwiajaca tworzenie wizualizatora na podstawie elementu drzewa
+//! podstawowa klasa u³atwiaj¹ca tworzenie wizualizatora na podstawie elementu drzewa
 class HmmTreeItem : public QTreeWidgetItem
 {
 public:
@@ -86,12 +86,12 @@ private:
     TreeItemHelperPtr helper;
 };
 
-//! Klasa, dziêki której mo¿na stworzyæ wiecej wizualizatorow (na podstawie childow)
+//! Klasa, dziêki której mo¿na stworzyæ wiecej wizualizatorow (na podstawie childów)
 //! dodatkowo mo¿na wymusic ich specyficzny uk³ad
 class ChildrenVisualizers : public QTreeWidgetItem
 {
 public:
-    //! uk³ad tworzonych wizualizatorow
+    //! uk³ad tworzonych wizualizatorów
     enum PlacePolicy 
     {
         Horizontal,
@@ -99,17 +99,17 @@ public:
         Auto
     };
 
-    //! Konstuktor, mo¿na ustawic uk³ad wizualizatorow
+    //! Konstuktor, mo¿na ustawic uk³ad wizualizatorów
     //! \param policy 
     ChildrenVisualizers(PlacePolicy policy = Auto);
-    //! \return uk³ad tworzonych wizualizatorow
+    //! \return uk³ad tworzonych wizualizatorów
     ChildrenVisualizers::PlacePolicy getPolicy() const { return policy; }
     //! Polityka podzia³u wizualizatorów dla potomnych elementów
     //! \param val polityka (podzia³ pionowy, poziomy, ...)
     void setPolicy(ChildrenVisualizers::PlacePolicy val) { policy = val; }
 
 private:
-    //! uk³ad tworzonych wizualizatorow
+    //! uk³ad tworzonych wizualizatorów
     PlacePolicy policy;
 };
 
@@ -126,10 +126,10 @@ public:
 public:
     //! zwraca utworzone serie danych
     //! \param visualizer wizualizator, który bêdzie tworzy³ serie
-    //! \param path sciezka dla timelin
+    //! \param path œcie¿ka dla timeline
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
-    //! \return tworzy wizualizator o typie zgodnym z wrapperem (gdy w systemie jest zarejstrowanych wiecej wizualizatorow danego typu to tworzony jest przpadkowy)
+    //! \return tworzy wizualizator o typie zgodnym z wrapperem (gdy w systemie jest zarejstrowanych wiecej wizualizatorów danego typu to tworzony jest przpadkowy)
     virtual VisualizerPtr createVisualizer();
     //! \return typ wspierany przez helper (typ wpisany do wrappera)
     std::vector<core::TypeInfo> getTypeInfos() const;
@@ -142,8 +142,8 @@ protected:
 typedef core::shared_ptr<TreeWrappedItemHelper> TreeWrappedItemHelperPtr;
 typedef core::shared_ptr<const TreeWrappedItemHelper> TreeWrappedItemHelperConstPtr;
 
-//! klasa pomocnicza przy tworzeniu wizualizatora wykresow
-//! klasa musi dostarczyc ScalarChannelReaderInterface z danymi we wrapperze
+//! klasa pomocnicza przy tworzeniu wizualizatora wykresów
+//! klasa musi dostarczyæ ScalarChannelReaderInterface z danymi we wrapperze
 class NewChartItemHelper : public TreeWrappedItemHelper
 {
 public:
@@ -154,7 +154,7 @@ public:
     virtual VisualizerPtr createVisualizer();
     //! zwraca utworzone serie danych
     //! \param visualizer wizualizator, który bêdzie tworzy³ serie
-    //! \param path sciezka dla timelin
+    //! \param path œcie¿ka dla timeline
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     //! \return typ ScalarChannelReaderInterface
@@ -164,7 +164,7 @@ public:
 typedef core::shared_ptr<NewChartItemHelper> NewChartItemHelperPtr;
 typedef core::shared_ptr<const NewChartItemHelper> NewChartItemHelperConstPtr;
 
-//! klasa pomocnicza przy tworzeniu wykresow z wektora 3-elementowego
+//! klasa pomocnicza przy tworzeniu wykresów z wektora 3-elementowego
 class NewVector3ItemHelper : public TreeWrappedItemHelper
 {
 public:
@@ -175,7 +175,7 @@ public:
 public:
     //! zwraca utworzone serie danych
     //! \param visualizer wizualizator, który bêdzie tworzy³ serie
-    //! \param path sciezka dla timelin
+    //! \param path œcie¿ka dla timeline
     //! \param series tutaj trafia stworzone serie
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     //! \return wizualizator 2D
@@ -186,7 +186,7 @@ public:
 typedef core::shared_ptr<NewVector3ItemHelper> NewVector3ItemHelperPtr;
 typedef core::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPtr;
 
-//! pomaga tworzyc wizualizator 2D z wieloma seriami danych
+//! pomaga tworzyæ wizualizator 2D z wieloma seriami danych
 class NewMultiserieHelper : public TreeItemHelper
 {
 public:
@@ -207,19 +207,19 @@ public:
 
 public:
     //! Konstruktor
-    //! \param charts kolekcja wrapperow, wraz z opisem (eventy + motion)
+    //! \param charts kolekcja wrapperów, wraz z opisem (eventy + motion)
     NewMultiserieHelper(const ChartWithDescriptionCollection& charts);
     //! Koknstruktor
-    //! \param charts kolekcja wrapperow, ich opis wype³niany pustymi obiektami
+    //! \param charts kolekcja wrapperów, ich opis wype³niany pustymi obiektami
     NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts);
     
 public:
-    //! Ustawia strategie kolorow (np. random)
+    //! Ustawia strategie kolorów (np. random)
     //! \param strategy 
     void setColorStrategy(IMultiserieColorStrategyConstPtr strategy) { colorStrategy = strategy; }
     //! zwraca utworzone serie danych
     //! \param visualizer wizualizator, który bêdzie tworzy³ serie
-    //! \param path sciezka dla timelin
+    //! \param path œcie¿ka dla timeline
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     //! \return wizualizator 2D
@@ -231,10 +231,10 @@ public:
     void setTitle(const QString& val) { title = val; }
     //! \return typ ScalarChannelReaderInterface
     virtual std::vector<core::TypeInfo> getTypeInfos() const;
-    //! \return ustawiona kolekcja wrapperow wraz z opisami
+    //! \return ustawiona kolekcja wrapperów wraz z opisami
     const ChartWithDescriptionCollection& getChartWithDescriptions() const { return wrappers; }
 private:
-    //! ustawiona kolekcja wrapperow wraz z opisami
+    //! ustawiona kolekcja wrapperów wraz z opisami
     ChartWithDescriptionCollection wrappers;
     //! tytul w wizualizatorze 2D
     QString title;
@@ -244,7 +244,7 @@ private:
 typedef core::shared_ptr<NewMultiserieHelper> NewMultiserieHelperPtr;
 typedef core::shared_ptr<const NewMultiserieHelper> NewMultiserieHelperConstPtr;
 
-//! klasa pomocnicza przy tworzeniu wizualizatora jointow (leniwe parsowanie)
+//! klasa pomocnicza przy tworzeniu wizualizatora jointów (leniwe parsowanie)
 class JointsItemHelper : public TreeItemHelper
 {
 public:
@@ -255,7 +255,7 @@ public:
 public:
     //! zwraca utworzone serie danych
     //! \param visualizer wizualizator, który bêdzie tworzy³ serie
-    //! \param path sciezka dla timelin
+    //! \param path œcie¿ka dla timeline
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     //! \return wizualizator 3D
@@ -281,7 +281,7 @@ public:
 public:
     //! zwraca utworzone serie danych
     //! \param visualizer wizualizator, który bêdzie tworzy³ serie
-    //! \param path sciezka dla timelin
+    //! \param path œcie¿ka dla timeline
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     //! \return wizualizator 3D

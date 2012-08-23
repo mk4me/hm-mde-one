@@ -74,7 +74,7 @@ public:
     const core::Filesystem::Path photoPath(const std::string & photoname) const;
 
     //! \param Œcie¿ka któr¹ zarz¹dza DataSourceLocalStorage
-    //! \return Czy œcie¿ka faktycznie istnieje - katalog lub plik s¹ fizycznie dostepne
+    //! \return Czy œcie¿ka faktycznie istnieje - katalog lub plik s¹ fizycznie dostêpne
     static bool pathExists(const core::Filesystem::Path & path);
 
 	//! \return Œcie¿ka do p³ytkiej kopii bazy danych ruchu

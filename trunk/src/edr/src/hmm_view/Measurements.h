@@ -57,7 +57,7 @@ private:
 typedef core::shared_ptr<MeasurementConfig> MeasurementConfigPtr;
 typedef core::shared_ptr<const MeasurementConfig> MeasurementConfigConstPtr;
 
-//! klasa przechowuje wszystkie konfigi oraz u³atwia dostep do nich
+//! klasa przechowuje wszystkie konfigi oraz u³atwia dostêp do nich
 class Measurements
 {
 public:

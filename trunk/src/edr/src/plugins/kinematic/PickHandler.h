@@ -42,7 +42,7 @@ public:
     PickHandler(HandlerFunction callback);
 
 public:
-    //! Obsluga eventow
+    //! Obs³uga eventów
     //! \param ea eventy myszki, klawiatury lub okna
     //! \param aa interfejs obs³ugi akcji
     bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& aa);

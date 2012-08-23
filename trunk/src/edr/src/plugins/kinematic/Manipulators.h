@@ -37,9 +37,9 @@
 class DraggerContainer : public osg::Group
 {
 public:
-    //! ustawienie domyœlnych parametrow
+    //! ustawienie domyœlnych parametrów
     DraggerContainer() : _draggerSize(100.0f), _active(true) {}
-    //! Konstruktor kopiujacy (w tylu osg)
+    //! Konstruktor kopiuj¹cy (w tylu osg)
     //! \param copy kopiowany obiekt
     //! \param copyop rodzaj kopii (p³ytka, g³êboka, ... )
     DraggerContainer( const DraggerContainer& copy, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
@@ -117,8 +117,8 @@ public:
     //! Metoda tworzy nowy manipulator i podpina go pod wêze³, który chcemy manipulowaæ
     //! \param scene wêze³, który bêdzie manipulowany
     //! \param type typ manipulatora
-    //! \param fixedSizeInScreen czy manipulator ma miec sta³y rozmiar
-    //! \return wêze³ zawierajacy manipulator
+    //! \param fixedSizeInScreen czy manipulator ma mieæ sta³y rozmiar
+    //! \return wêze³ zawieraj¹cy manipulator
     static osg::Node* addDraggerToScene(osg::PositionAttitudeTransform* scene, DraggerType type, bool fixedSizeInScreen);
 };
 #endif

@@ -278,9 +278,9 @@ private:
                 //prze³adowanie kontekstu / odœwie¿enie, dla widgetów które zmieniaj¹ stan ale nie ze wzglêdu na inne widgety dzieci (np. QTreeWidget na zmianê aktualnego wiersza)
                 refreshContext(currentContextChain.back(), contextWidget);
             }else{
-                //nowy kontest wydaje siê niezalezny od aktualnie aktywnych - szukamy zaleznosci
+                //nowy kontest wydaje siê niezalezny od aktualnie aktywnych - szukamy zaleznoœci
 
-                //szukamy zaleznosci wzgledem aktualnego lancucha idac w gore od zadanego kontekstu
+                //szukamy zaleznoœci wzgledem aktualnego lancucha idac w gore od zadanego kontekstu
                 auto parent = context->parentContext();
                 ContextChain newContextChain;
                 newContextChain.push_back(context);
@@ -299,7 +299,7 @@ private:
                     //ograniczamy aktualny lancuch do punktu przeciecia
                     limitCurrentChainToPosition(contextPositionInCurrentChain(parent));
 
-                    //jeœli ostatni ma widget to musimy go przelaczyc
+                    //jeœli ostatni ma widget to musimy go przel¹czyæ
                     auto tmpCurrent = currentContextChain.back();
                     if(tmpCurrent->getCurrentContextWidget() != nullptr){
 

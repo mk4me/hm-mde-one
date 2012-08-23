@@ -12,7 +12,7 @@
 
 C3DParser::C3DParser()
 {
-    // sztywne stworzenie obiektów, zachowanie kompatybilnosci
+    // sztywne stworzenie obiektów, zachowanie kompatybilnoœci
 	for(int i = 0; i < 4; ++i){
 		GRFChannels.push_back(core::ObjectWrapper::create<GRFChannel>());
 	}
@@ -73,7 +73,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         EMGs->setSource(path.string());
     }
 
-    // wczytanie eventow
+    // wczytanie eventów
 	int count = parser->getNumEvents();
     EventsCollectionPtr allEventsCollection(new C3DEventsCollection());
 	for (int i = 0; i < count; ++i) {
@@ -83,7 +83,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 	}
     this->allEvents->set(allEventsCollection, path.filename().string(), path.string());
 
-    // wczytanie plikow *vsk, ktore dostarczaja opis do markerów
+    // wczytanie plików *vsk, które dostarczaja opis do markerów
     core::Filesystem::Path dir = path.parent_path();
     std::vector<std::string> vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
     kinematic::VskParserPtr vsk;

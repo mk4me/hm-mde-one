@@ -35,7 +35,7 @@ public:
 public:
     //! \return czas ustawiony przez timeline
     double getTime() const;
-    //! \return aktualna wartosc (dla aktualnego czasu)
+    //! \return aktualna wartoœæ (dla aktualnego czasu)
     double getCurrentValue() const;
     //! ustawia czas dla serii
     //! \param time czas do ustawienia
@@ -43,16 +43,16 @@ public:
     //! \return czas trwania serii
     virtual double getLength() const;
     //! ustawia obiekt ze zdarzeniami powiazanymi z próba pomiarowa
-    //! \param val kolecja zdarzen
+    //! \param val kolecja zdarzeñ
     virtual void setEvents(EventsCollectionConstPtr val);
     //! pobierz krzywa qwt
     const QwtPlotCurve* getCurve() const;
-    //! ustaw widzialnosc krzywej
+    //! ustaw widzialnoœæ krzywej
     //! \param visible widoczna / niewidoczna
     void setVisible(bool visible);
     //! \return czy krzywa jest widoczna
     bool isVisible() const;
-    //! \return obiekt ulatwiajacy zarz¹dzanie eventami
+    //! \return obiekt u³atwiaj¹cy zarz¹dzanie eventami
     EventsHelperPtr getEventsHelper() const { return eventsHelper; }
     //! ustawienie koloru krzywej
     //! \param r skladowa czerwona (0 - 255)
@@ -74,15 +74,15 @@ public:
     //! \return nazwa krzywej
     virtual const std::string & getName() const;
     //! dostarcza ObjectWrapper z danymi
-    //! \param data ObjectWrapper przechowujacy interfejs ScalarChannelReaderInterface
+    //! \param data ObjectWrapper przechowuj¹cy interfejs ScalarChannelReaderInterface
     virtual void setData(const core::ObjectWrapperConstPtr & data);
-    //! \return ObjectWrapper przechowujacy interfejs ScalarChannelReaderInterface
+    //! \return ObjectWrapper przechowuj¹cy interfejs ScalarChannelReaderInterface
     virtual const core::ObjectWrapperConstPtr & getData() const;
     //! \return ekstrema krzywej
     Scales getScales() const;
     //! \return czy krzywa jest aktywna
     bool isActive() const { return active; }
-    //! ustawia aktywnosc krzywej
+    //! ustawia aktywnoœæ krzywej
     //! \param val aktywna / nieaktywna
     void setActive(bool val);
     //! \return statystyki dla ustawionego ScalarChannelReaderInterface
@@ -91,42 +91,42 @@ public:
     ScalarChannelReaderInterfaceConstPtr getReader() const { return reader; }
     //! odlacza krzywa od wykresu
     void removeItemsFromPlot();
-    //! ustawia kolejnosc wyœwietlania
+    //! ustawia kolejnoœæ wyœwietlania
     //! \param z
     //! \param replot
     void setZ(double z, bool replot = false);
-    //! \return skladowa z odpowiedzialna z kolejnosc wyœwietlania
+    //! \return skladowa z odpowiedzialna z kolejnoœæ wyœwietlania
     double z() const;
     //! \return skala w poziomie
     double getXScale() const;
     //! ustawia skale w poziomie dla krzywej
-    //! \param val nowa wartosc skali
+    //! \param val nowa wartoœæ skali
     void setXScale(double val);
     //! \return skala w pionie
     double getYScale() const;
     //! ustawia skale w pionie dla krzywej
-    //! \param val nowa wartosc skali
+    //! \param val nowa wartoœæ skali
     void setYScale(double val);
     //! \return przesuniecie w poziomie
     double getXOffset() const;
     //! ustawia przesuniecie w poziomie
-    //! \param val nowa wartosc przesuniecia
+    //! \param val nowa wartoœæ przesuniecia
     void setXOffset(double val);
     //! \return przesuniecie w pionie
     double getYOffset() const;
     //! ustawia przesuniecie w pionie
-    //! \param val nowa wartosc przesuniecia
+    //! \param val nowa wartoœæ przesuniecia
     void setYOffset(double val);
     //! \return przesuniecie krzywej
     QPointF getOffset() const;
     //! ustawia przesuniecie
-    //! \param offset nowa wartosc przesuniecia
+    //! \param offset nowa wartoœæ przesuniecia
     void setOffset(const QPointF& offset);
 
 private:
-    //! Ustawia kolory dla krzywych znormalizowanych wzgledem eventow
+    //! Ustawia kolory dla krzywych znormalizowanych wzgledem eventów
     //! \param range dostarczane segmenty
-    //! \param color kolor dla ustawianych segmentow (zwykle ten sam co bazowa krzywa)
+    //! \param color kolor dla ustawianych segmentów (zwykle ten sam co bazowa krzywa)
     void setColorsForEvents(EventsHelper::SegmentsRange range, const QColor& color);
 
 private:
@@ -144,15 +144,15 @@ private:
     core::shared_ptr<ScalarContiniousTimeAccessor> accessor;
     //! obiekt z danymi
     ScalarChannelReaderInterfaceConstPtr reader;
-    //! obiekt zajmujacy siê logika eventow
+    //! obiekt zajmuj¹cy siê logika eventów
     EventsHelperPtr eventsHelper;
     //! czy seria jest aktywna
     bool active;
     //! aktualny czas, ustawiony przez timeline
     double time;
-    //! skladowa okresla kolejnosc rysowania
+    //! skladowa okresla kolejnoœæ rysowania
     double _z;
-    //! pocz¹tkowa wartosc skladowej zd
+    //! pocz¹tkowa wartoœæ skladowej zd
     double _zBase;
 };
 

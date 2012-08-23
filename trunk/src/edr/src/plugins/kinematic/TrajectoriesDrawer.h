@@ -77,7 +77,7 @@ private:
 private:
      //! wêze³, do którego podpiête zostan¹ trajektorie
 	 osg::ref_ptr<osg::PositionAttitudeTransform> node;
-     //! gestosc trajektori (liczba wierzcho³ków j¹ tworz¹cych)
+     //! gestoœæ trajektori (liczba wierzcho³ków j¹ tworz¹cych)
 	 int density;
      //! domyœlny kolor trajektorii
 	 osg::Vec4 color;

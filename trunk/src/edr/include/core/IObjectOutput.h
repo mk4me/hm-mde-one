@@ -20,7 +20,7 @@
 
 namespace core
 {
-    //! Interfejs zapewniaj¹cy dostêp do zapisu danych wyjœciowych z elementów przetwarzajacych, które bêd¹ przekazane nastepnikom
+    //! Interfejs zapewniaj¹cy dostêp do zapisu danych wyjœciowych z elementów przetwarzaj¹cych, które bêd¹ przekazane nastepnikom
     class IObjectOutput
     {
     public:
@@ -89,7 +89,7 @@ namespace core
             ObjectWrapperPtr __setObjectPointerResolver(const T& object, boost::true_type)
             {
                 // rev
-                //UTILS_STATIC_ASSERT(false, "Do obiektów domenowych nale¿y u¿ywaæ inteligentnych wskaznikow.");
+                //UTILS_STATIC_ASSERT(false, "Do obiektów domenowych nale¿y u¿ywaæ inteligentnych wskazników.");
                 return ObjectWrapperPtr();
             }
 
@@ -114,7 +114,7 @@ namespace core
                 // je¿eli tutaj jest b³¹d oznacza to, ¿e przekazany typ nie jest ani POD, ani inteligentnym wskaŸnikiem.
                 // rev
                 //UTILS_STATIC_ASSERT(ObjectWrapperTraits<Type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-                //UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaŸnikowi odbslugujacemu zadany typ");
+                //UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaŸnikowi odbs³uguj¹cemu zadany typ");
 
                 if(object == nullptr){
                     throw std::runtime_error("Could not create wprapper for nullptr");

@@ -31,7 +31,7 @@ public:
 	//! \param shallowCopy P³ytka kopia danych dla której generujemy perspektywê
     virtual void rebuildPerspective(QTreeWidget * treeWidget, const ShallowCopy & shallowCopy) = 0;
 
-	//! Pusta implementacja funkcjonalnoœci contentu - perspektywa mo¿e generowac w³asne itemy-agregaty danych o których content nic nie wie
+	//! Pusta implementacja funkcjonalnoœci contentu - perspektywa mo¿e generowaæ w³asne itemy-agregaty danych o których content nic nie wie
 
 	//! \param item Element który wype³niamy zawartoœci¹
 	//! \param shallowCopy P³ytka kopia na bazie której wype³niamy item

@@ -67,13 +67,13 @@ public:
 	    // rev - statyczna
         //UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyæ po klasie MainWindow");
 
-        //! Wewnêtrzna klasa tworz¹ca wszystkie managery aplikacji i udostepniaj¹ca je widokom oraz serwisom
+        //! Wewnêtrzna klasa tworz¹ca wszystkie managery aplikacji i udostêpniaj¹ca je widokom oraz serwisom
         class AppManagers : public IManagersAccessor
         {
         public:
 
             //! Domyœlny konstruktor inicjuje wrazenie singletona dla kazdego managera
-            //! dziêki temu w kodzie po stronie EDR mamy wrazenie ze pracujemy z singletonami i mamy globalnie dostep do managerow!!
+            //! dziêki temu w kodzie po stronie EDR mamy wrazenie ze pracujemy z singletonami i mamy globalnie dostêp do managerów!!
             AppManagers()
             {
                 __instanceInfo.dataManagerReader = dataManager.manager = &dataManager;
@@ -84,7 +84,7 @@ public:
                 __instanceInfo.dataSourceManager = dataSourceManager.manager = &dataSourceManager;
             }
 
-            //! Destruktor deinicjalizuje wrazenie singletona managerow
+            //! Destruktor deinicjalizuje wrazenie singletona managerów
             ~AppManagers()
             {
                 __instanceInfo.dataManagerReader = dataManager.manager = nullptr;
@@ -186,7 +186,7 @@ public:
             }
 
         private:
-            //SEKCJA WSZYSTKICH MANAGEROW W APLIKACJI - TUTAJ POWINNY SIÊ ZNAJDOWAÆ ICH JEDYNE INSTANJCE!!
+            //SEKCJA WSZYSTKICH MANAGERÓW W APLIKACJI - TUTAJ POWINNY SIÊ ZNAJDOWAÆ ICH JEDYNE INSTANJCE!!
 
             DataManager dataManager;
             VisualizerManager visualizerManager;
@@ -264,7 +264,7 @@ public:
 
 			core::Filesystem::Path p = edrConfig.getApplicationDataPath() / "resources" / "settings" / "log.ini";
 
-			// UWAGA - obiekty udostepniane klientom poprzez interfejsy musz¹ mieæ przywracane (zerowane) wartoœci na tym samym
+			// UWAGA - obiekty udostêpniane klientom poprzez interfejsy musz¹ mieæ przywracane (zerowane) wartoœci na tym samym
 			// poziomie na którym zosta³y stworzone. Dlatego tutaj mamy Push dla logera i konfiguracji.
 			// Dodatkowo trzeba pamiêtaæ o kolejnoœci niszczenia obiektów po zakoñczeniu czasu ich ¿ycia - jest to odwrotna kolejnoœæ
 			// w stosunku do tej w jakiej zosta³y zdeklarowane w kodzie.
@@ -294,7 +294,7 @@ public:
 						{
 							//HACK - wymuszamy statyczne linkowanie z bibliotek¹ osgQt.
 							// to gwarantuje poprawne zainicjowanie obiektu HeartBeat odpowiedzialnego
-							// za obs³uge scen OpenGL po stronie widgetów OSG.
+							// za obs³ugê scen OpenGL po stronie widgetów OSG.
 							// Choæ niekoniecznie w tym w¹tku z tego kozystamy ( nie musimy mieæ tworzonych na starcie ¿adnych widgetów OSG)
 							// jest to niezbêdne dla prawid³owej deinicjalizacji tego obiektu - czasu ¿ycia jego zasobów.
 							// W przeciwnym wypadku powstanie kilka instancji tego obiektu - po jednej dla ka¿dego pluginu dostarczaj¹cego widgetów OSG

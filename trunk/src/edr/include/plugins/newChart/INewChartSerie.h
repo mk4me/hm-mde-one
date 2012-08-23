@@ -12,11 +12,12 @@
 
 #include <plugins/c3d/EventSerieBase.h>
 
-//! Niektóre elementy serii danych wizualizatora wykresow s¹ edytowane z zewnatrz, 
-//! dlatego nale¿y interfejsowac serie danych, aby dac dostep do obiektu bez koniecznosci linkowania siê z pluginem
+//! Niektóre elementy serii danych wizualizatora wykresów s¹ edytowane z zewn¹trz, 
+//! dlatego nale¿y interfejsowaæ serie danych, aby daæ dostêp do obiektu bez koniecznoœci linkowania siê z pluginem
 class INewChartSerie : public EventSerieBase
 {
 public:
+	//! 
 	virtual ~INewChartSerie() {}
 
 public:

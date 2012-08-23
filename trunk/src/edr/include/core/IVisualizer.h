@@ -92,10 +92,10 @@ namespace core
         virtual void update(double deltaTime) = 0;
 
         //----------------- Obs³uga serii danych ---------------------
-        //! Wizualizator musi zapewnic ze da siê stworzyæ MAX serii za pomoca metody createSerie. Ilos cserii jest dynamicznie zarz¹dzana z zewwnatrz poprzez create i remove serie.
-        //! SerieBase to klasa delegata, która implementuje specyficzne dla danego wizualizatora operacje ustawiania nazwy serii i jej danych. Kazdy wizualizator mo¿e inaczej ustawiac te informacje i prezentowac je.
+        //! Wizualizator musi zapewnic ze da siê stworzyæ MAX serii za pomoca metody createSerie. Ilos cserii jest dynamicznie zarz¹dzana z zewn¹trz poprzez create i remove serie.
+        //! SerieBase to klasa delegata, która implementuje specyficzne dla danego wizualizatora operacje ustawiania nazwy serii i jej danych. Kazdy wizualizator mo¿e inaczej ustawiac te informacje i prezentowaæ je.
 
-        //! \return Maksymalna ilosc serii danych jaka mo¿e obs³u¿yc wizualizator, wartosc 0 i mniej oznacza maksumalny zakres dla INT, inna wartosc stanowi gorna granice
+        //! \return Maksymalna iloœæ serii danych jaka mo¿e obs³u¿yc wizualizator, wartoœæ 0 i mniej oznacza maksumalny zakres dla INT, inna wartoœæ stanowi gorna granice
         virtual int getMaxDataSeries() const = 0;
 
         //! \return Seria danych która mo¿na ustawiac - nazwa i dane, nie zarz¹dza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
@@ -103,7 +103,7 @@ namespace core
 
         virtual SerieBase* createSerie(const SerieBase* serie) = 0;
 
-        //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarz¹dzamy ni¹ my!!
+        //! \param serie Seria danych do usuniêcia, nie powinien usuwaæ tej serii! Zarz¹dzamy ni¹ my!!
         virtual void removeSerie(SerieBase* serie) = 0;
     };
 

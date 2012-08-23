@@ -15,20 +15,20 @@
 #include <core/SmartPtr.h>
 #include <plugins/c3d/C3DChannels.h>
 
-//! Interfejs platformy GRF, obiekty tego typu zasilaja system
+//! Interfejs platformy GRF, obiekty tego typu zasilaj¹ system
 class IForcePlatform
 {
 public:
-    //! Interfejs wykrytego kroku na plycie pomiarowej.
-    //! W tym przypadku jako krok, bierze siê moment, w którym cala stopa spoczywa na plycie pomiarowej
+    //! Interfejs wykrytego kroku na p³ycie pomiarowej.
+    //! W tym przypadku jako krok, bierze siê moment, w którym ca³a stopa spoczywa na p³ycie pomiarowej
     class IStep {
         public:
             virtual ~IStep() {}
-            //! \return czas rozpoczecia kroku
+            //! \return czas rozpoczêcia kroku
             virtual float getStartTime() const = 0;
-            //! \return czas zakonczenia kroku
+            //! \return czas zakoñczenia kroku
             virtual float getEndTime() const = 0;
-            //! \return punkt, w którym znajduje siê koniec stopy (pieta)
+            //! \return punkt, w którym znajduje siê koniec stopy (piêta)
             virtual osg::Vec3 getStartPoint() const = 0;
             //! \return punkt, w którym znajduje siê pocz¹tek stopy (palce)
             virtual osg::Vec3 getEndPoint() const = 0;
@@ -38,10 +38,13 @@ public:
     typedef core::shared_ptr<IStep> IStepPtr;
     typedef core::shared_ptr<const IStep> IStepConstPtr;
 
+    //! wektor z krokami
     typedef std::vector<IStepConstPtr> Steps;
+    //! niemodyfikowalny zakres kroków z kolekcji
     typedef boost::iterator_range<Steps::const_iterator> StepsConstRange;
-
+    //! wektor z kana³ami GRF
     typedef std::vector<GRFChannelConstPtr> GRFChannels;
+    //! niemodyfikowalny zakres kana³ów GRF
     typedef boost::iterator_range<GRFChannels::const_iterator> GRFChannelsConstRange;
 
 public:
@@ -56,15 +59,15 @@ public:
     virtual float getWidth() const = 0;
     //! \return d³ugoœæ p³yty pomiarowej
     virtual float getLength() const = 0;
-    //! Metoda pozwala okreslic orientacje p³yty pomiarowej
-    //! \return kolejnosc wystapienia wiercholkow (lewy prawy = 1, prawy lewy = -1)
+    //! Metoda pozwala okreœliæ orientacje p³yty pomiarowej
+    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (lewy prawy = 1, prawy lewy = -1)
     virtual float getSignX() const = 0;
-    //! Metoda pozwala okreslic orientacje p³yty pomiarowej
-    //! \return kolejnosc wystapienia wiercholkow (gora dol = 1, dol gora = -1)
+    //! Metoda pozwala okreœliæ orientacje p³yty pomiarowej
+    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (gora dol = 1, dol gora = -1)
     virtual float getSignY() const = 0;
-    //! \return kana³ z odpowiadajaca plycie sila
+    //! \return kana³ z odpowiadaj¹ca p³ycie si³a
     virtual GRFChannelConstPtr getForceChannel() const = 0;
-    //! \return kana³ z odpowiadajaca plycie momentem sily
+    //! \return kana³ z odpowiadaj¹ca p³ycie momentem si³y
     virtual GRFChannelConstPtr getMomentChannel() const = 0;
     //! Metoda liczy odleg³oœæ danego punktu od srodka p³yty pomiarowej
     //! \param vec dany punkt

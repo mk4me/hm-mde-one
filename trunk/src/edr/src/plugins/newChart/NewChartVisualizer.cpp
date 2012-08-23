@@ -464,7 +464,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
         pen.setColor(c);
         curve->setPen(pen);
     } else {
-        idx = -1; // idx nie chcemy wykorzystywac!
+        idx = -1; // idx nie chcemy wykorzystywaæ!
         if (on == true) {
         
             for (unsigned int i = 0; i < series.size(); ++i) {
@@ -969,7 +969,7 @@ void NewChartVisualizer::refreshBounds()
     //obcinam max do ca³kowitej liczby okien
     //maxT = std::min(maxT, (float)totalWindows * (float)movingAverageTimeWindow);
     maxT = totalWindows * movingAverageTimeWindow;
-    //wyliczam ilosc wszystkich punktow jakie mam
+    //wyliczam iloœæ wszystkich punktów jakie mam
     int totalPoints = totalWindows * pointsPerWindow;
     //wyliczam pojedynczy krok czasu
     float timeStep = (maxT - minT) / (float)totalPoints;

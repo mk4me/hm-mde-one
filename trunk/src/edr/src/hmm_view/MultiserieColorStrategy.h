@@ -12,7 +12,7 @@
 
 #include <QtGui/QColor>
 
-//! interfejs realizujacy strategie do zmiany kolorow multiserii
+//! interfejs realizuj¹cy strategie do zmiany kolorów multiserii
 class IMultiserieColorStrategy
 {
 public:
@@ -26,7 +26,7 @@ public:
 typedef core::shared_ptr<IMultiserieColorStrategy> IMultiserieColorStrategyPtr;
 typedef core::shared_ptr<const IMultiserieColorStrategy> IMultiserieColorStrategyConstPtr;
 
-//! klasa dostarcza losowych kolorow dla serii
+//! klasa dostarcza losowych kolorów dla serii
 class RandomMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
@@ -70,7 +70,7 @@ private:
     QColor c1, c2;
 };
 
-//! kazdy wrapper dostaje kolor przypisany z zewnatrz
+//! kazdy wrapper dostaje kolor przypisany z zewn¹trz
 class ColorMapMultiserieStrategy : public IMultiserieColorStrategy
 {
 public:

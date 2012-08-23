@@ -101,7 +101,7 @@ namespace core {
             return instance;
         }
 	public slots:
-		//! Aktualizacja wizualizatorow.
+		//! Aktualizacja wizualizatorów.
 		void updateVisualizers();
         void updateServices();
 

@@ -16,7 +16,7 @@ void KinematicSerie::resetTransform()
     MatrixTransformPtr transform = getMatrixTransformNode();
     // pobieramy podstawowa macierz (dla czasu 0)
     transform->setMatrix(getInitialMatrix());
-    // ustawienie czasu (powinno odswiezyc 
+    // ustawienie czasu (powinno odœwie¿yc 
     setLocalTime(getTime());
 }
 

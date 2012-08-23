@@ -199,7 +199,7 @@ namespace core
     //    template <class RawPtr>
     //    RawPtr __getObjectsPtrResolver(int idx, boost::true_type, RawPtr* /*dummy*/ = nullptr)
     //    {
-    //        UTILS_STATIC_ASSERT(false, "Do obiektów domenowych nale¿y u¿ywaæ inteligentnych wskaznikow.");
+    //        UTILS_STATIC_ASSERT(false, "Do obiektów domenowych nale¿y u¿ywaæ inteligentnych wskazników.");
     //        return nullptr;
     //    }
 

@@ -24,7 +24,7 @@ public:
     //! Konstruktor
     //! \param parent rodzic widgeta
     //! \param hmm obiekt widoku HMM 
-    //! \param margin margines dla filtrow
+    //! \param margin margines dla filtrów
     //! \param flags flagi Qt
     AnalisisWidget(QWidget* parent, HmmMainWindow* hmm, int margin = 2, Qt::WindowFlags flags = 0);
 	virtual ~AnalisisWidget() {}
@@ -32,7 +32,7 @@ public:
 public:
     //! \return drzewo danych
     QTreeWidget* getTreeWidget();
-    //! \return widget przechowujacy miniaturki do raportow
+    //! \return widget przechowuj¹cy miniaturki do raportów
     QWidget* getRaportsThumbnailList();
     //! dodaje widget z filtrami
     //! \param filter dodawany widget
@@ -60,7 +60,7 @@ private:
     int filterWidth;
     //! wysokoœæ filtru w zakladce
     int filterHeight;
-    //! margines dla filtrow w zakladce
+    //! margines dla filtrów w zakladce
     int margin;
     //! drzewo danych
     AnalisisTreeWidget* treeWidget;

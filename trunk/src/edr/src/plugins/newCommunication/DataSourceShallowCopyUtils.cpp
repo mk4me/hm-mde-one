@@ -35,7 +35,7 @@ void DataSourceShallowCopyUtils::createShallowCopy(ShallowCopy & shallowCopy, co
 		}
 	}
 
-	// jeœli wszystko siê powiod³o podmieniamy wartosci
+	// jeœli wszystko siê powiod³o podmieniamy wartoœci
 	std::swap(shallowCopy, tmpShallowCopy);
 }
 

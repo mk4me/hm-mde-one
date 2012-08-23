@@ -15,7 +15,7 @@
 #include <QtGui/QMainWindow>
 #include "EDRDockWidget.h"
 
-//! Klasa obsluguje grupe dock widgetow, sama bêd¹c dock widgetem
+//! Klasa obs³uguje grupe dock widgetów, sama bêd¹c dock widgetem
 class EDRDockWidgetSet : public EDRDockWidget
 {
 	Q_OBJECT;
@@ -49,21 +49,21 @@ public:
     void addDockWidget(EDRDockWidget* widget);
 	//! \return czy mo¿na jeszcze dodaæ dock widget do grpy
 	bool isAdditionPossible(EDRDockWidget* widget = nullptr) const;
-	//! blokuje lub odblokowuje mo¿liwoœæ dodawania widgetow
+	//! blokuje lub odblokowuje mo¿liwoœæ dodawania widgetów
 	//! \param additionPossible 
 	void blockAddition(bool additionPossible);
-	//! \return liczba dock widgetow w grupie
+	//! \return liczba dock widgetów w grupie
 	int getNumWidgets() const;
-	//! \return maksymalna liczba dock widgetow w grupie
+	//! \return maksymalna liczba dock widgetów w grupie
 	int getMaxWidgetsNumber() const { return maxWidgetsNumber; }
-	//! ustawia maksymalna liczbe dock widgetow w grupie
+	//! ustawia maksymalna liczbe dock widgetów w grupie
 	//! \param val 
 	void setMaxWidgetsNumber(int val) { maxWidgetsNumber = val; }
-    //! \return const range wszystkich dock widgetow w grupie
+    //! \return const range wszystkich dock widgetów w grupie
     const_range getDockWidgets() const { return boost::make_iterator_range(widgetsList.cbegin(), widgetsList.cend()); }
 
 signals:
-    //! sygnal oznaczajacy, ze dock widget podpiêty pod grupe zosta³ zamkniety
+    //! sygnal oznaczaj¹cy, ze dock widget podpiêty pod grupe zosta³ zamkniety
     void dockClosed();
 
 private slots:
@@ -75,13 +75,13 @@ private slots:
     void onDockWidgetLocationChanged(Qt::DockWidgetArea area);
 
 private:
-    //! kontener dodawanych dock widgetow
+    //! kontener dodawanych dock widgetów
 	QMainWindow* mainWindow;
     //! dodane do grupy dock widgety
 	std::list<EDRDockWidget*> widgetsList;
-    //! maksymalna liczba dock widgetow w grupie
+    //! maksymalna liczba dock widgetów w grupie
 	int maxWidgetsNumber;
-    //! czy mo¿liwe jest dalsze dodawanie widgetow (niezalezne od maksymalnej liczby dock widgetow)
+    //! czy mo¿liwe jest dalsze dodawanie widgetow (niezalezne od maksymalnej liczby dock widgetów)
 	bool additionPossible;
 };
 

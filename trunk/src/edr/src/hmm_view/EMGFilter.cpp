@@ -63,14 +63,14 @@ public:
     }
 
     //! \param idx Indeks próbki
-    //! \return Wartosc czasu dla danego indeksu
+    //! \return Wartoœæ czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
         return channel->argument(idx);
     }
 
     //! \param idx Indeks próbki
-    //! \return Wartosc próbki dla danego indeksu
+    //! \return Wartoœæ próbki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         return modify(channel->value(idx));
@@ -88,7 +88,7 @@ public:
         return channel->empty();
     }
     //! \param time Czas dla którego chemy uzyskac dwie najblizsze próbki
-    //! \return para indeksow, pierwszy wskazujke próbkê o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje próbkê o czasie wiekszym lub rownym zadanemu
+    //! \return para indeksów, pierwszy wskazujke próbkê o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje próbkê o czasie wiekszym lub rownym zadanemu
     virtual std::pair<size_type, size_type> getValueHelper(time_type time) const
     {
         return channel->getValueHelper(time);
@@ -116,7 +116,7 @@ protected:
 //        const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
 //        const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
 //    {
-//        //uzupe³nij brakujace prboki
+//        //uzupe³nij brakuj¹ce prboki
 //        if(myChannel.size() < observedChannel.size()){
 //            for(auto idx = myChannel.size(); idx < observedChannel.size(); idx++){
 //                modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
@@ -148,7 +148,7 @@ public:
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
-        //uzupe³nij brakujace próbki
+        //uzupe³nij brakuj¹ce próbki
         if(myChannel.size() < observedChannel.size()){
             for(auto idx = myChannel.size(); idx < observedChannel.size(); ++idx){
                 modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
@@ -206,7 +206,7 @@ public:
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
-        ////uzupe³nij brakujace próbki : co dziesiata...
+        ////uzupe³nij brakuj¹ce próbki : co dziesiata...
         sizeT skipN = 10;
         if(myChannel.size() * skipN < observedChannel.size()){
             for(auto idx = myChannel.size() * skipN; idx < observedChannel.size(); idx += skipN){

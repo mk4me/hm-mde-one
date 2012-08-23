@@ -48,13 +48,13 @@ protected:
 	static bool trySetDefaultPaths(EDRConfig& directoriesInfo);
 
 private:
-	//! sciezka do folderu z zasobami aplikacji
+	//! ścieżka do folderu z zasobami aplikacji
 	Filesystem::Path resourcesPath;
-	//! sciezka do folderu "ApplicationData\EDR"
+	//! ścieżka do folderu "ApplicationData\EDR"
 	Filesystem::Path applicationDataPath;
-	//! sciezka do folderu "MyDocuments\EDR"
+	//! ścieżka do folderu "MyDocuments\EDR"
 	Filesystem::Path userDataPath;
-    //! sciezka do folderu Tempów ("MyDocuments\EDR\Temp"
+    //! ścieżka do folderu Tempów ("MyDocuments\EDR\Temp"
     Filesystem::Path tempDataPath;
 };
 

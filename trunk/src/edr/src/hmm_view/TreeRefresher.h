@@ -20,17 +20,17 @@ public:
     virtual ~TreeRefresher() {}
 
 public:
-    //! \return czy mo¿na odœwie¿ac drzewo
+    //! \return czy mo¿na odœwie¿aæ drzewo
     bool getPreventRefresh() const { return preventRefresh; }
     //! ustawia mo¿liwoœæ odœwie¿ania drzewa
     //! \param val 
     void setPreventRefresh(bool val);
-    //! Odswiezy drzewo, jeœli jest to mo¿liwe, jeœli nie drzewo zostanie odswiezone kiedy blokada zostanie zdjeta.
+    //! odœwie¿y drzewo, jeœli jest to mo¿liwe, jeœli nie drzewo zostanie odœwie¿one kiedy blokada zostanie zdjeta.
     //! \param tree drzewo do odœwie¿enia
     void refresh(QTreeWidget* tree);
 
 private:
-    //! wlasciwe odœwie¿enie drzewa
+    //! w³aœciwe odœwie¿enie drzewa
     //! \param tree drzewo do odœwie¿enia
     //! \param sessions sesje, na podstawie których budowane bêdzie drzewo
     void actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions);
@@ -40,7 +40,7 @@ private:
     bool preventRefresh;
     //! true - odœwie¿anie bylo zablokowane kiedy przyszlo polecenia odœwie¿enia
     bool needRefresh;
-    //! drzewo, które trzeba odswiezyc
+    //! drzewo, które trzeba odœwie¿yc
     QTreeWidget* tree;
 };
 

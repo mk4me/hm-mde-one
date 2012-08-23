@@ -45,8 +45,8 @@ void logCallback(Logger::LogSeverity severity, const std::string& msg)
 }
 
 
-/*! Struktura widziana tylko w obrebie tego pliku. 
- * Podpina logowanie kinematic do metody mapujacej komunikaty na te z EDR-a.
+/*! Struktura widziana tylko w obrêbie tego pliku. 
+ * Podpina logowanie kinematic do metody mapuj¹cej komunikaty na te z EDR-a.
  * Struktura tworzy siê automatycznie.
  */
 static struct Initializer

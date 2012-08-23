@@ -55,7 +55,7 @@ public:
     //! \param name nazwa elementu
     //! \param selected czy ma byæ lub przestac byæ aktywny
     void trySetActive( const QString& name, bool selected );
-    //! Iloczyn zbiorow nazw dostarczonych przez konfigurator i nazw obs³ugiwanych (nazw dostêpnych obszarow)
+    //! Iloczyn zbiorow nazw dostarczonych przez konfigurator i nazw obs³ugiwanych (nazw dostêpnych obszarów)
     //! \param names zbior do porownania (brany jest pod uwage tylko pierwszy element wpisu mapy)
     void intersectNames( const NamesDictionary& names );
     //! \return globalna skala dla paintera
@@ -93,10 +93,10 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-    //! pobiera arene na podstawie wspó³rzêdnych (w przypadku obrazkow uwzgledniana jest tez alpha)
+    //! pobiera arene na podstawie wspó³rzêdnych (w przypadku obrazków uwzgledniana jest tez alpha)
     //! \param x wspó³rzêdna x
     //! \param y wspó³rzêdna y
-    //! \return obszar wystepujacy w punkcie lub null jeœli takiego nie ma. Jeœli wystepuje kilka takich obszarow to zwracany jest najblizszy
+    //! \return obszar wystepuj¹cy w punkcie lub null jeœli takiego nie ma. Jeœli wystepuje kilka takich obszarów to zwracany jest najblizszy
     IAreaPtr getArea(int x, int y);
 
 private:
@@ -104,7 +104,7 @@ private:
     QPixmapConstPtr background;
     //! nazwa paintera
     QString name;
-    //! lista obszarow w painterze
+    //! lista obszarów w painterze
     AreasList areas;
     //! element aktualnie najechany myszka
     IAreaPtr currentArea;

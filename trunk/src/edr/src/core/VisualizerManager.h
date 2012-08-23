@@ -189,7 +189,7 @@ private:
 	//! Jeœli tam go usuwam to uruchamiam jego destruktor który realizuje czyszczenie w wizualizatorach
 	void notifyDestroyed(IVisualizerChannel * channel);
 
-// TODO: create publiczne bez friend Visualizer czy prywatne + jakis inny mechanizm dostepu?
+// TODO: create publiczne bez friend Visualizer czy prywatne + jakis inny mechanizm dostêpu?
 public:
 	//! Tworzy instancjê wizualizatora.
 	//! \param typeInfo typ, który bêdzie wyœwietlany w wizualizatorze.

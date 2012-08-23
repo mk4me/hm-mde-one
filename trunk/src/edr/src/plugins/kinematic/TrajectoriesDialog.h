@@ -34,7 +34,7 @@ public:
 private slots:
 	//! zmieniono kolor
 	void colorClicked();
-	//! zmieniono vidocznosc pojedynczego wêz³a
+	//! zmieniono widocznoœæ pojedynczego wêz³a
 	//! \param visible czy widoczny
 	void visibilityChanged(bool visible);
     //! zmieniono widocznoœæ roota (dzia³a na ca³oœæ)
@@ -53,10 +53,10 @@ private slots:
 	//! \param current aktualnie aktywny element
 	//! \param previous poprzednio aktywny element
 	void treeItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous );
-	//! zmieni³ siê slider reprezentujacy pocz¹tkowy czas, dla którego trajektoria jest widoczna
+	//! zmieni³ siê slider reprezentuj¹cy pocz¹tkowy czas, dla którego trajektoria jest widoczna
 	//! \param value nowa wartoœæ pocz¹tkowa slidra
     void startSliderChanged(int value);
-    //! zmieni³ siê slider reprezentujacy koñcowy czas, dla którego trajektoria jest widoczna
+    //! zmieni³ siê slider reprezentuj¹cy koñcowy czas, dla którego trajektoria jest widoczna
 	//! \param value nowa wartoœæ koñcowa slidera
 	void endSliderChanged(int value);
 

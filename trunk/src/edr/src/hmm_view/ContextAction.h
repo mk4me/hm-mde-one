@@ -15,8 +15,8 @@
 class EDRDockWidgetSet;
 class HmmTreeItem;
 
-//! akcja obs³ugiwana w obrebie drzewa danych w analizach
-//! przechowuje dodatkowe informacje, które ulatwiaja tworzenie wizualizatorow i drzewa
+//! akcja obs³ugiwana w obrêbie drzewa danych w analizach
+//! przechowuje dodatkowe informacje, które u³atwiaja tworzenie wizualizatorów i drzewa
 class ContextAction : public QAction
 {
     Q_OBJECT;

@@ -314,7 +314,7 @@ void FlexiTabWidget::removeGroup(GUIID groupID)
     groupDataByID.erase(groupIT);
 
     //TODO
-    //poprawic mechanizm widzialnosci grup/ich aktywnosci
+    //poprawic mechanizm widzialnoœci grup/ich aktywnoœci
     if(currentGroupID == groupID){
         innerFlexiTabWidget->setCurrentIndex(-1);
         currentGroupID = -1;

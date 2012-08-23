@@ -16,15 +16,15 @@
 
 #include <QtGui/QItemDelegate>
 
-//! klasa powstala, aby wymusic wielkoœæ wpisow, dziêki temu mo¿na ³atwo obliczyc potrzebna wysokoœæ
+//! klasa powstala, aby wymusic wielkoœæ wpisów, dziêki temu mo¿na ³atwo obliczyæ potrzebna wysokoœæ
 class ItemDelegate : public QItemDelegate
 {
 public:
-    //! Konstruktor wymagajacy podania rozmiaru
+    //! Konstruktor wymagaj¹cy podania rozmiaru
     //! \param width szerokoœæ 
     //! \param height wysokoœæ
     ItemDelegate(int width, int height) : width(width), height(height) {}
-    //! metoda wykorzystywana przez Qt przy ustalaniu wielkoœci elementow
+    //! metoda wykorzystywana przez Qt przy ustalaniu wielkoœci elementów
     QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
     {
         return QSize(width, height);
@@ -48,7 +48,7 @@ private:
     int height;
 };
 
-//! wyœwietla statystyki wykresow w postaci pogrupowanego drzewa wpisow.
+//! wyœwietla statystyki wykresow w postaci pogrupowanego drzewa wpisów.
 //! Widget normalnie jest zwiniety, rozwijanie nastepuje po nacisnieciu przycisku.
 class StatsTable : public QWidget, private Ui::StatsTable
 {
@@ -84,7 +84,7 @@ public slots:
     //! \param channel kana³ dla którego maja byæ pobrane wpisy
     //! \return lista z elementami drzewa
     std::list<QTreeWidgetItem*> getEntriesByChannel(channelConstPtr channel);
-    //! \return wszytskie grupy wpisow (np. strona lewa, prawa ...)
+    //! \return wszytskie grupy wpisów (np. strona lewa, prawa ...)
     QStringList getGroups() const;
     //! dany element staje siê aktywny (rozwiniety, pozostale na jego poziome s¹ zwijane)
     //! \param treeItem obiekt, który ma stac siê aktywny

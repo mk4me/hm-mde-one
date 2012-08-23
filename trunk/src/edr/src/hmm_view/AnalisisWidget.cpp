@@ -122,7 +122,7 @@ void AnalisisWidget::recreateTree(FilterEntryWidget* filter)
 
 void AnalisisWidget::switchToFirstTab()
 {
-    // Hack - to rozwiazanie nie jest odporne na zmiane kolejnosci tabow
+    // Hack - to rozwiazanie nie jest odporne na zmiane kolejnoœci tabów
     tabWidget->setCurrentIndex(0);
 }
 

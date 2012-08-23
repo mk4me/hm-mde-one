@@ -202,7 +202,7 @@ namespace core {
         //! Ustawia obiekt wrappera, jego nazwę i źródło
         //! \param object Obiekt
         //! \param name Nazwa obiektu, która ma być wyświetlona
-        //! \param source źródło obiektu - sciezka do pliku z którego pochodzi
+        //! \param source źródło obiektu - ścieżka do pliku z którego pochodzi
         template <class Ptr>
         void set(const Ptr& object)
         {
@@ -228,7 +228,7 @@ namespace core {
         //! Ustawia obiekt wrappera, jego nazwę i źródło
         //! \param object Obiekt
         //! \param name Nazwa obiektu, która ma być wyświetlona
-        //! \param source źródło obiektu - sciezka do pliku z którego pochodzi
+        //! \param source źródło obiektu - ścieżka do pliku z którego pochodzi
         template <class Ptr>
         bool trySet(const Ptr& object, const std::string& name, const std::string& source)
         {
@@ -396,13 +396,13 @@ namespace core {
         Ptr get()
         {
             // rev co z tymi statycznymi asercjami?
-            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
             return nullptr;
         }
         void set(Ptr)
         {
             // rev co z tymi statycznymi asercjami?
-            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
         }
     };
 
@@ -680,7 +680,7 @@ protected:                                                                      
 __CORE_WRAPPER_DEFINE_META(type)                                                                  \
 }
 
-// rev - makro zastapione nowym pelnieszym (ale nie używajacym posredniej klasy)
+// rev - makro zastapione nowym pelnieszym (ale nie używającym posredniej klasy)
 /*
 
 #define CORE_DEFINE_WRAPPER_INHERITANCE(type, baseType)                                            \

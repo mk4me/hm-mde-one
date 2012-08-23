@@ -27,9 +27,9 @@ public:
     virtual size_t size() const;
     //! Zwraca próbkê z przedzia³u eventa
     //! \param i indeks próbki
-    //! \return wartosc próbki
+    //! \return wartoœæ próbki
     virtual QPointF sample( size_t i ) const;
-    //! Obszar otaczajacy krzywa
+    //! Obszar otaczaj¹cy krzyw¹
     virtual QRectF boundingRect() const;
 
 private:

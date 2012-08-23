@@ -53,7 +53,7 @@ extern std::string __ilog_prefix;
 #define LOG_WARNING(msg) do { __strstream_temp.str(""); __strstream_temp << "[" << __ilog_prefix << "] " << msg; core::getLogInterface()->log(core::LogSeverityWarning, __strstream_temp.str(), __FILE__, __LINE__); } while (0)
 
 //TODO
-//przywrocic wczesniejsza funkcjonalnosc
+//przywrocic wczesniejsza funkcjonalnoœæ
 #define LOG_DEBUG_NAMED(path, msg)			do { LOG_DEBUG(msg)   ;} while(0)
 #define LOG_ERROR_NAMED(path, msg)			do { LOG_ERROR(msg)   ;} while(0)
 #define LOG_INFO_NAMED(path, msg)			do { LOG_INFO(msg)    ;} while(0)

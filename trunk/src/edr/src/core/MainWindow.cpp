@@ -270,7 +270,7 @@ void MainWindow::findResources(const std::string& resourcesPath)
 {
     // TODO : potrzebna rewizja tego kodu...
     resourcesPaths.clear();
-    //szukaj shaderow
+    //szukaj shaderów
     std::vector<std::string> ext;
     ext.push_back(".frag");
     ext.push_back(".vert");

@@ -162,7 +162,7 @@ class Plugin : IIdentifiable
 public:
     //! Typ funkcji tworz¹cej plugin.
     typedef Plugin* (*CreateFunction)(InstanceInfo* data);
-    //! Typ funkcji pobierajacej wersjê pluginu.
+    //! Typ funkcji pobieraj¹cej wersjê pluginu.
     typedef int (*GetVersionFunction)();
     //! Typ funkcji pobieraj¹cej typ builda pluginu
     typedef int (*GetBuildTypeFunction)();

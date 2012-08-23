@@ -14,7 +14,7 @@ DataProcessorManager::DataProcessorManager()
 
 DataProcessorManager::~DataProcessorManager()
 {
-    UTILS_ASSERT(dataProcessors.empty(), "Wszystkie elementy przetwarzajace powinny byæ zniszczone.");
+    UTILS_ASSERT(dataProcessors.empty(), "Wszystkie elementy przetwarzaj¹ce powinny byæ zniszczone.");
     while (prototypes.size()) {
         prototypes.pop_back();
     }

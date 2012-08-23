@@ -362,7 +362,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
 
             // aktualizujemy parsery dla danego rozszerzenia
             extIT->second.parsers.insert(parser);
-            //prubujemy aktualizaowac opisy tego rozszerzenia
+            //prubujemy aktualizaowaæ opisy tego rozszerzenia
             if(it->second.description.empty() == false){
                 extIT->second.descriptions.push_back(it->second.description);
             }
@@ -638,7 +638,7 @@ void DataManager::nonNotifyAddFile(const core::Filesystem::Path & file, std::vec
         //twworzymy w³asne opakowanie parsera klienckiego
         ParserPtr parser(new Parser((*parserIT)->create(), file));
         Objects objects;
-        //pobieramy udostepniane obiekty
+        //pobieramy udostêpniane obiekty
         parser->getObjects(objects);
 
         Objects verifiedObjects;
@@ -913,7 +913,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
 				initializeData(wrapper);
 
 				if(wrapper->isNull() == true){
-					//jeœli nadal nie udalo siê zainicjalizowac danych to trzeba je usun¹æ
+					//jeœli nadal nie udalo siê zainicjalizowaæ danych to trzeba je usun¹æ
 					invalid.insert(wrapper);
 				}else{
 					objects.push_back(wrapper);
@@ -962,7 +962,7 @@ void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & 
         //zapamiêtyjemy fabrykê
         objectFactories[type] = factory;
 
-        //tworzymy prototyp by miec dostep do informacji o wspieranych typach
+        //tworzymy prototyp by mieæ dostêp do informacji o wspieranych typach
         core::ObjectWrapperConstPtr proto(factory->createWrapper());
 
         //rejestrujemy typ i jego prototyp
@@ -971,7 +971,7 @@ void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & 
         //aktualizujemy hierarchiê typów
         registeredTypes.insert(type);
 
-        //hierarchia typow
+        //hierarchia typów
         core::TypeInfoList types;
         proto->getSupportedTypes(types);
 

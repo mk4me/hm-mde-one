@@ -27,12 +27,12 @@ public:
     //! ustawia opis konfiguratora
     //! \param text ustawiany tekst
     void setText(const QString& text);
-    //! wczytuje pliki z rozmieszczeniem obszarow konfiguratora
+    //! wczytuje pliki z rozmieszczeniem obszarów konfiguratora
     //! \param frontXml plik z obszarami dla przodu postaci
     //! \param backXml plik z obszarami dla tylu postaci
     //! \param names mapa [nazwa elementu - > nazwa do wyœwietlenia]
     void loadConfigurations(const QString& frontXml, const QString& backXml, const  std::map<QString, std::pair<QString, QString>>& names);
-    //! Ustawia widocznoœæ elementow w konfiguratorze
+    //! Ustawia widocznoœæ elementów w konfiguratorze
     //! \param visibles mapa [nazwa -> czy element ma byæ widoczny]
     void setVisibles(const std::map<QString, bool>& visibles);
 
@@ -55,7 +55,7 @@ private slots:
     //! \param name nazwa elementu
     //! \param selected 
     void onItemSelected(const QString& name, bool selected);
-    //! nacisnieto przycisk odwracajacy postac
+    //! nacisnieto przycisk odwracaj¹cy postac
     void onSwitchButton();
 
 private:   
@@ -70,9 +70,9 @@ private:
     //! \param y pozycja y
     //! \param alwaysVisible czy obrazek ma byæ widoczny zawsze
     void loadPicture(ConfigurationPainter& painter, const QString& name, int x, int y, bool alwaysVisible = false);
-    //! laduje plik xml z zapisanymi obszarami w postaci markerów lub obrazkow
+    //! laduje plik xml z zapisanymi obszarami w postaci markerów lub obrazków
     //! \param painter konfigurowany painter, tam trafia wczytane obszary
-    //! \param filename sciezka do pliku
+    //! \param filename œcie¿ka do pliku
     void loadXml(ConfigurationPainter& painter, const QString& filename);
     //! Tworzy pojedynczy marker i dodaje go do paintera
     //! \param painter tam trafi tworzony marker

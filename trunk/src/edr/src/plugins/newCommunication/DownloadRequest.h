@@ -170,10 +170,10 @@ private:
     long totalSize_;
     //! Rozmiar aktualnie œci¹ganego pliku
     long currentSize;
-    //! Zbiór callbacków realizujacych obs³uge stanu zlecenia pojedynczego œci¹gania
+    //! Zbiór callbacków realizuj¹cych obs³ugê stanu zlecenia pojedynczego œci¹gania
     CommunicationManager::RequestCallbacks singleTransferCallbacks;
 
-    //! Zbiór callbacków realizujacych obs³uge stanu ca³ego pakietu zleceñ
+    //! Zbiór callbacków realizuj¹cych obs³ugê stanu ca³ego pakietu zleceñ
     CommunicationManager::RequestCallbacks complexTransferCallbacks;
 
     //! Mapa plików do œci¹gniêcia wraz z ich rozmiarem

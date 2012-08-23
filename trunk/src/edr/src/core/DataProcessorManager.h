@@ -53,28 +53,28 @@ public:
     {
         return static_cast<int>(prototypes.size());
     }
-    //! \param i Indeks elementu przetwarzajacego.
+    //! \param i Indeks elementu przetwarzaj¹cego.
     inline core::IDataProcessorConstPtr getPrototype(int i) const
     {
         UTILS_ASSERT(i < getNumPrototypes());
         return prototypes[i];
     }
 
-    //! \param id ID elementu przetwarzajacego.
+    //! \param id ID elementu przetwarzaj¹cego.
     core::IDataProcessorConstPtr getPrototype(UniqueID id) const;
 
-    //! Tworzy instancjê elementu przetwarzajacego.
-    //! \param id id elementu przetwarzajacego.
-    //! \return Instancja elementu przetwarzajacego.
+    //! Tworzy instancjê elementu przetwarzaj¹cego.
+    //! \param id id elementu przetwarzaj¹cego.
+    //! \return Instancja elementu przetwarzaj¹cego.
     DataProcessorPtr createDataProcessor(UniqueID id);
 
-    //! \return Liczba instancji elementow przetwarzajacych danego typu.
+    //! \return Liczba instancji elementów przetwarzaj¹cych danego typu.
     int getNumInstances(UniqueID id);
 
 private:
-    //! Tworzy instancjê elementu przetwarzajacego.
-    //! \param id id elementu przetwarzajacego.
-    //! \return Instancja elementu przetwarzajacego.
+    //! Tworzy instancjê elementu przetwarzaj¹cego.
+    //! \param id id elementu przetwarzaj¹cego.
+    //! \return Instancja elementu przetwarzaj¹cego.
     DataProcessorPtr createDataProcessor(const core::IDataProcessorConstPtr& prototype);
     //! 
     DataProcessorPtr createDataProcessor(const DataProcessor& prototype);

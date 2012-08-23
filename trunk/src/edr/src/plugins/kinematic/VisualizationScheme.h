@@ -38,7 +38,7 @@ UTILS_POP_WARNINGS
     #undef min
 #endif
 
-//! Pomocnicza klasa do obs³ugi plikow vsk. Likwiduje koniecznosc ich wielokrotnego parsowania
+//! Pomocnicza klasa do obs³ugi plików vsk. Likwiduje koniecznoœæ ich wielokrotnego parsowania
 class Vsk
 {
 public:

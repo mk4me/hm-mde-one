@@ -1393,7 +1393,7 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 void DataSourceWidget::updateShallowCopy()
 {
 	//lokujemy - nie mo¿na teraz zmieniæ u¿ytkownika z zewn¹trz
-	//w sumie powinniœmy lokowac ca³e Ÿród³o
+	//w sumie powinniœmy lokowaæ ca³e Ÿród³o
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourcePathsManager::instance());
 	if(dataSource->isShallowCopyComplete() == true && dataSource->isShallowCopyCurrent() == true){
 		//message box - nie musimy aktualizowaæ, mamy najœwie¿sz¹ wersjê

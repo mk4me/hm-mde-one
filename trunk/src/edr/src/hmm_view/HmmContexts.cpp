@@ -104,14 +104,14 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
     for(auto groupIT = actionsManager.begin(); groupIT != actionsManager.end(); ++groupIT){
 
         //podziel elementy na 4 grupy - akcje, menusy, widget i inne nieobs³ugiwane elementy
-        //przy okazji wyznaczamy ilosc elementow oraz ich sumaryczna szerokoœæ i najwieksza wysokoœæ do póŸniejszego layoutowania
-        //elementy s¹ indeksowane tak jak podeslal nam je klient, ale ich kolejnosc mo¿e zostac zmieniona zeby lepiej je rozlozyc
+        //przy okazji wyznaczamy iloœæ elementów oraz ich sumaryczna szerokoœæ i najwieksza wysokoœæ do póŸniejszego layoutowania
+        //elementy s¹ indeksowane tak jak podeslal nam je klient, ale ich kolejnoœæ mo¿e zostac zmieniona zeby lepiej je roz³o¿yæ
         std::map<int, QAction*> actions;
         std::map<int, QMenu*> menus;
         std::map<int, QObject*> others;
         std::map<int, QObject*> all;
 
-        // budujemy widgety które beda potem trafialy do toolbarow
+        // budujemy widgety które beda potem trafialy do toolbarów
         std::map<int, QWidget*> toolbarElements;
 
         (*groupIT).getActions(actions);
@@ -132,7 +132,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
                 cbox->setMinimumContentsLength(std::min(cbox->currentText().size(), 10));
             }
 
-            //dodajemy od razu do elementow toolbara - indeksy zostaja zachowane dla póŸniejszego rozmieszczania wg kolejnosci
+            //dodajemy od razu do elementów toolbara - indeksy zostaja zachowane dla póŸniejszego rozmieszczania wg kolejnoœci
             auto s = widget->sizeHint();
             int width = std::min(s.width(), 250);
             if(s.width() > 250){
@@ -195,7 +195,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
         //rozkladamy to w niezaleznych QToolBarach. Maksymalnie 2 rzedy.
         //TODO
-        //dodaæ maksymalna szerokoœæ + przerzucanie elementow do ukrytego panelu jeœli za duzo ich jest
+        //dodaæ maksymalna szerokoœæ + przerzucanie elementów do ukrytego panelu jeœli za duzo ich jest
 
         int halfWidth = totalWidth;
 
@@ -211,7 +211,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
         QToolBar * bottomToolbar = nullptr;
 
-        //budujemy 2 wiersze jeœli conajmniej 5 elementow
+        //budujemy 2 wiersze jeœli conajmniej 5 elementów
         if(halfElements > 4){
             bottomToolbar = new QToolBar();
             bottomToolbar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);

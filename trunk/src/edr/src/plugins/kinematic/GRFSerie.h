@@ -17,10 +17,10 @@
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
 
-//! empirycznie dobrany wspó³czynnik d³ugoœci wizualizowanych sil
+//! empirycznie dobrany wspó³czynnik d³ugoœci wizualizowanych si³
 const float grfScale = 0.0008f;
 
-//! Seria danych odpowiedzialna za wizualizacje p³yt naciskowych i sil na nie dzia³aj¹cych
+//! Seria danych odpowiedzialna za wizualizacje p³yt naciskowych i si³ na nie dzia³aj¹cych
 class GRFSerie : public KinematicSerie
 {
 public:
@@ -54,7 +54,7 @@ public:
 	virtual void setLocalTime(double time);
 
 private:
-    //! Struktura pomocna przy wizualizacji wektora sily.
+    //! Struktura pomocna przy wizualizacji wektora si³y.
     //! Wektor sklada siê z prostopadloscianu i stozka
 	struct Arrow 
 	{
@@ -98,7 +98,7 @@ private:
         //! Dodanie strzalki do stosu i usuwa najstarsza strzalke, jeœli jest taka potrzeba
         //! \param state 
         void addState(const ArrowState& state);
-		//! Aktualizacja kolorow strzalek, zarz¹dzanie widocznoœci¹ wêz³ów
+		//! Aktualizacja kolorów strzalek, zarz¹dzanie widocznoœci¹ wêz³ów
 		void update();
 
 	private:
@@ -119,14 +119,14 @@ private:
 	//! \param platforms kolecja platform pochodz¹cych z C3D
     //! \return utworzony wêze³
 	GroupPtr createPlatformsGroup(const IForcePlatformCollection& platforms);
-	//! Tworzy "skrzydla motyla" czyli graficzna reprezentacje zmiany sily nacisku konkretnej p³yty w czasie
+	//! Tworzy "skrzydla motyla" czyli graficzna reprezentacje zmiany si³y nacisku konkretnej p³yty w czasie
 	//! \param grf dane p³yty GRF
-	//! \param maxLength tutaj zwracana jest maksymalna d³ugoœæ sily, jest to pomocne przy kolorowaniu wektora
+	//! \param maxLength tutaj zwracana jest maksymalna d³ugoœæ si³y, jest to pomocne przy kolorowaniu wektora
     //! \return utworzony wêze³
 	GroupPtr createButterfly(GRFCollectionConstPtr grf, float& maxLength) const;
-    //! Tworzy pojedyncze "skrzydla motyla" czyli graficzna reprezentacje zmiany sily nacisku konkretnej p³yty w czasie
-    //! \param step wykryty wczesniej krok w obrebie p³yty pomiarowej
-    //! \param maxLength maksymalna d³ugoœæ sily, jest to pomocne przy kolorowaniu wektora
+    //! Tworzy pojedyncze "skrzydla motyla" czyli graficzna reprezentacje zmiany si³y nacisku konkretnej p³yty w czasie
+    //! \param step wykryty wczesniej krok w obrêbie p³yty pomiarowej
+    //! \param maxLength maksymalna d³ugoœæ si³y, jest to pomocne przy kolorowaniu wektora
     //! \param platform plaforma, dla której tworzona jest geometria
     //! \return utworzony wêze³ 
     GeodePtr createStep( IForcePlatform::IStepConstPtr step, float &maxLength, IForcePlatformConstPtr platform) const;
@@ -141,11 +141,11 @@ private:
 	//! Statyczna metoda, tworzy strukture z geometria i opisem strzalki
     //! \return utworzony wêze³
 	static ArrowPtr createArrow();
-	//! Pobiera teksture z resource'ow
+	//! Pobiera teksture z resource'ów
 	//! \param number obecnie 1 lub 2
     //! \return zaladowana tekstura, wyj¹tek w przypadku bledu
 	static osg::ref_ptr<osg::Texture2D> getTexture(int number);
-    //! próbuje pobraæ teksture z resource'ow
+    //! próbuje pobraæ teksture z resource'ów
     //! \param ret tutaj trafi pobrana tekstura
     //! \param number obecnie 1 lub 2
     //! \return czy operacja siê udala
@@ -156,7 +156,7 @@ private:
 	KinematicVisualizer * visualizer;
     //! Dane GRF dostarczone serii
 	GRFCollectionPtr grfCollection;
-    //! maksymalna d³ugoœæ sily, pomocne przy kolorowaniu wektora
+    //! maksymalna d³ugoœæ si³y, pomocne przy kolorowaniu wektora
 	float maxLength;
     //! mapa (krok -> (strzalka, jej ghost) pomocne przy rysowaniu i odœwie¿aniu wizualizacji
     std::map<IForcePlatform::IStepConstPtr, std::pair<ArrowPtr, GhostStackPtr>> stepsData;

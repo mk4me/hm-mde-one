@@ -34,15 +34,15 @@ public:
     //! Ustawia widocznoœæ serii (i check boxa)
     //! \param active krzywa widoczna / ukryta
     void setItemVisible(bool active);
-    //! Ustawia check box zmieniajacy widocznoœæ serii
+    //! Ustawia check box zmieniaj¹cy widocznoœæ serii
     //! \param enabled edytowalny / nieedytowalny
     void setItemVisibleEnabled(bool enabled);
     //! \return czy seria danych jest aktywna
     bool isItemActive() const;
-    //! ustawia aktywnosc serii danych (i stan przycisku)
+    //! ustawia aktywnoœæ serii danych (i stan przycisku)
     //! \param checked seria aktywna / nieaktywna
     void setItemActive(bool checked);
-    //! Ustawia przysik zmieniajacy aktywnosc serii
+    //! Ustawia przysik zmieniaj¹cy aktywnoœæ serii
     //! \param enabled edytowalny / nieedytowalny
     void setItemActiveEnabled(bool enabled);
     //! Zmienia dane legendy (kolor, tytul itp.) wywo³ywane przez qwt

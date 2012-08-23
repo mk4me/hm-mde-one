@@ -57,7 +57,7 @@ DataSourcePtr DataSourceManager::createDataSource( const IDataSourceConstPtr& pr
         }
     }
 
-    //test czy jakieœ dane wyjsciowe dostepne
+    //test czy jakieœ dane wyjsciowe dostêpne
     std::vector<core::IOutputDescription::OutputInfo> output;
     src->getOutputInfo(output);
 

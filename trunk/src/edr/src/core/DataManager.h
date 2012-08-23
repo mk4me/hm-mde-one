@@ -129,7 +129,7 @@ private:
     //! Dane sta³e na temat rozszerzenia
     struct ExtendedExtensionDescription : public ExtensionDescription
     {
-        //! Prototypu parserów wspierajace to rozszerzenie
+        //! Prototypu parserów wspieraj¹ce to rozszerzenie
         std::set<core::IParserPtr> parsers;
     };
 
@@ -170,7 +170,7 @@ private:
     typedef std::map<core::TypeInfo, core::IObjectWrapperFactoryPtr> ObjectFactories;
     //! Mapa typów i prototypów ich ObjectWrapperów
     typedef std::map<core::TypeInfo, core::ObjectWrapperConstPtr> RegisteredTypesPrototypes;
-    //! S³ownik hierarchii typow -> mapuje typ do jego typow bazowych (hierarchia dziedziczenia) [first] i do typow po nim dziedziczacych [second]
+    //! S³ownik hierarchii typow -> mapuje typ do jego typow bazowych (hierarchia dziedziczenia) [first] i do typów po nim dziedziczacych [second]
     typedef std::map<core::TypeInfo, std::pair<core::TypeInfoSet, core::TypeInfoSet> > TypesHierarchy;
 
 private:
@@ -271,10 +271,10 @@ public:
     //! \return Zarejestrowane w aplikacji typy danych
     virtual const core::TypeInfoSet & getSupportedTypes() const;
 
-    //! \return Hierarchia typow danych - jakie operacje moge realizowac, po czym dziedzicze
+    //! \return Hierarchia typów danych - jakie operacje moge realizowaæ, po czym dziedzicze
     virtual const core::TypeInfoSet & getTypeBaseTypes(const core::TypeInfo & type) const;
 
-    //! \return Hierarchia typow danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
+    //! \return Hierarchia typów danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
     virtual const core::TypeInfoSet & getTypeDerrivedTypes(const core::TypeInfo & type) const;
 
     //core::IMemoryDataManager
@@ -299,7 +299,7 @@ private:
 	//! \param Obiekt który zostanie usuniety jeœli zarz¹dza nim DataManager
 	virtual void nonNotifyRemoveData(const core::ObjectWrapperPtr & data);
 
-    //! \param Obiekt który zostanie utrwalony w DataManager i bêdzie dostêpny przy zapytaniach, nie morze byæ niezainicjowany - isNull musi byæ false!!
+    //! \param Obiekt który zostanie utrwalony w DataManager i bêdzie dostêpny przy zapytaniach, nie mo¿e byæ niezainicjowany - isNull musi byæ false!!
     virtual void nonNotifyAddData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer = core::DataInitializerPtr());
 
     virtual const core::ObjectWrapperPtr & getObjectWrapperForRawPtr(const void * ptr) const;
@@ -322,14 +322,14 @@ public:
     //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) ZWALNIAMY ZASOBY, ALE ZEZWALAMY PONOWNIE NA LENIWA INICJALIZACJE
     virtual void deinitializeFile(const core::Filesystem::Path & file);
 
-    //! \param files Zbior plikow dla których chcemy pobraæ liste obiektów
-    //! \return Mapa obiektów wzgledem plikow z których pochodza
+    //! \param files Zbior plików dla których chcemy pobraæ liste obiektów
+    //! \return Mapa obiektów wzgledem plików z których pochodza
     virtual void  getObjectsForFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects) const;
 
     //! \return true jeœli rozszerznie jest wspierane przez DataManager, w przeciwnym wypadku false
     virtual bool isExtensionSupported(const std::string & extension) const;
 
-    //! \return Zbior obs³ugiwanych rozszerzen plikow wraz z ich opisem
+    //! \return Zbior obs³ugiwanych rozszerzen plików wraz z ich opisem
     virtual const Extensions & getSupportedFilesExtensions() const;
 
     virtual const ExtensionDescription & getExtensionDescription(const std::string & extension) const;
@@ -339,7 +339,7 @@ public:
 private:
 
 	//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
-	//! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
+	//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
 	virtual void nonNotifyAddFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects);
 
 	//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane

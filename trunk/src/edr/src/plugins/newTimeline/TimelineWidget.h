@@ -149,11 +149,11 @@ private:
     QAction * stopAction;
     //! Widget do precyzyjnego ustawiania czasu
     QDateTimeEdit * preciseTimeWidget;
-    //! Kontener na akcje kontrolujace timeline
+    //! Kontener na akcje kontroluj¹ce timeline
     QWidget * timelineTabs;
     //! lewy kontener na kontrolki timeline - kierunek i precyzyjny czas
     QToolBar * leftTabButton;
-    //! œrodkowy kontener na kontrolki timeline - do pocz¹tku, odtwarzaj/pauza, stop, do konca
+    //! œrodkowy kontener na kontrolki timeline - do pocz¹tku, odtwarzaj/pauza, stop, do koñca
     QToolBar * middleTabButton;
     //! prawy kontener na kontrolki timeline - aktualnie pusty
     QToolBar * rightTabButton;

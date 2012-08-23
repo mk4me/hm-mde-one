@@ -140,7 +140,7 @@ public:
 
     virtual core::IVisualizer::TimeSerieBase* createSerie(const core::IVisualizer::SerieBase * serie);
 
-    //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarz¹dzamy ni¹ my!!
+    //! \param serie Seria danych do usuniêcia, nie powinien usuwaæ tej serii! Zarz¹dzamy ni¹ my!!
     virtual void removeSerie(core::IVisualizer::SerieBase* serie);
 
     virtual void reset();

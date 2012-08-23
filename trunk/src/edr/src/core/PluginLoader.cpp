@@ -110,7 +110,7 @@ void PluginLoader::load()
 #if defined(__WIN32__)
 	static const std::regex pluginFilter("^plugin_.*\.dll$");
 #elif defined(__UNIX__)
-    // GCC cos nie radzi sobie ze znakami pocz¹tku i konca linii !?
+    // GCC cos nie radzi sobie ze znakami pocz¹tku i koñca linii !?
 	static const std::regex pluginFilter("libplugin_.*\.so");
 #endif
 

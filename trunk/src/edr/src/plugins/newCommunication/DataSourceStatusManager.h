@@ -4,7 +4,7 @@
     filename: DataSourceStatusManager.h
     author:   Mateusz Janiak
     
-    purpose:  Klasa udostepniaj¹ca informacje o statusie podstawowych elementów
+    purpose:  Klasa udostêpniaj¹ca informacje o statusie podstawowych elementów
               Dodatkowo umo¿liwa ich odœwie¿anie.
 *********************************************************************/
 #ifndef HEADER_GUARD___DATASOURCESTATUSMANAGER_H__
@@ -153,7 +153,7 @@ public:
 	static void setStatusIcon(const communication::IDataStatus & status, const QIcon & icon);
 
 protected:
-    //! Aktualizuje ca³y status danych - u¿ycie i dostepnoœæ
+    //! Aktualizuje ca³y status danych - u¿ycie i dostêpnoœæ
     void rebuildDataStatus();
 
     //! Czyœci informacje o statusach wszystkich znanych obiektów

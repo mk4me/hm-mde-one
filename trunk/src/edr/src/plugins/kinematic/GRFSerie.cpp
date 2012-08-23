@@ -5,9 +5,9 @@ using namespace osg;
 using namespace boost;
 using namespace std;
 
-//! skala strzalki ukazujacej sile nacisku
+//! skala strza³ki ukazuj¹cej si³ê nacisku
 const osg::Vec3 arrowScale(0.01f, 0.01f, 1.0f);
-//! prog dla którego sensowne jest wizualizowanie odczytow GRF
+//! prog dla którego sensowne jest wizualizowanie odczytów GRF
 const float treshold = 0.01f;
 
 osg::ref_ptr<osg::Texture2D> GRFSerie::texture1;

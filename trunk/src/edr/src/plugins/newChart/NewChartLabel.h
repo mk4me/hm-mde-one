@@ -38,7 +38,7 @@ public:
     //! \param yMap transformacja Y
     //! \param canvasRect obszar do rysowania
     virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
-    //! Sprawdza, czy punkt znajduje siê wewnatrz etykiety
+    //! Sprawdza, czy punkt znajduje siê wewn¹trz etykiety
     //! \param transformedPoint przetransformowany punkt
     //! \param curve krzywa, wykorzystuje siê jej transformacjê
     bool isInsideLabel(const QPoint& transformedPoint, const QwtPlotCurve* curve) const;

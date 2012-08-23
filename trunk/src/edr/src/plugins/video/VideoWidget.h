@@ -53,7 +53,7 @@ private:
     std::string yuvImageSizeName;
 
 public:
-    //! Konstruktor inicjalizujacu UI.
+    //! Konstruktor inicjalizuj¹cy UI.
     VideoWidget();
 
     virtual ~VideoWidget();

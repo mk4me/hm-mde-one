@@ -16,7 +16,7 @@
 class SkeletalVisualizationScheme : public VisualizationScheme
 {
 public:
-    //! Konstruktor ustawia domyslne wartosci w tym kolory
+    //! Konstruktor ustawia domyslne wartoœci w tym kolory
     SkeletalVisualizationScheme();
 	
 public:
@@ -52,7 +52,7 @@ private:
     //! \param time czas, dla którego maja byæ liczone transformacje
     void updateJointTransforms(double time);
     //! obliczenie transformacji dla podanego czasu
-    //! \param rotations rotacje jointow dla konkretnej klatki
+    //! \param rotations rotacje jointów dla konkretnej klatki
     //! \param joint przetwarzany staw
     //! \param parentRot rotacja rodzica
     //! \param parentPos pozycja rodzica
@@ -63,11 +63,11 @@ private:
     void createSkeletonConnections(kinematic::hAnimJointPtr joint);
 
 private:
-    //! u³atwia ineksowanie jointow
+    //! u³atwia ineksowanie jointów
     std::map<kinematic::hAnimJointPtr, int> visJoints;
     //! ustawiona struktura z jointami
 	kinematic::JointAnglesCollectionConstPtr joints;
-    //! pomocne przy zape³nianiu kolekcji jointow
+    //! pomocne przy zape³nianiu kolekcji jointów
     int counterHelper;
     //! aktualny œrodek geometryczny
     osg::Vec3 currentPosition;

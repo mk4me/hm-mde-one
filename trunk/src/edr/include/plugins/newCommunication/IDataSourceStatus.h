@@ -4,7 +4,7 @@
     filename: IDataSourceStatus.h
     author:   Mateusz Janiak
     
-    purpose:  Obiekty pozwalaj¹ce okreœliæ status danych  - ich dostepnoœc i u¿ycie
+    purpose:  Obiekty pozwalaj¹ce okreœliæ status danych  - ich dostêpnoœc i u¿ycie
 *********************************************************************/
 #ifndef HEADER_GUARD___IDATASOURCESTATUS_H__
 #define HEADER_GUARD___IDATASOURCESTATUS_H__
@@ -17,7 +17,7 @@ enum DataStorage {
     UnknownStorage = 0x00, /* Nieznany status - problem na serwerze, brak lokalnie */
     Local = 0x10,           /* Dane ca³kowicie lokalne */
     Remote = 0x01,          /* Dane ca³koowice zdalne */
-    PartiallyLocal = 0x11   /* Dane czêsciowo dostepne lokalnie*/
+    PartiallyLocal = 0x11   /* Dane czêsciowo dostêpne lokalnie*/
 };
 
 //! Status u¿ycia danych w DM

@@ -24,11 +24,11 @@ public:
     virtual ~NewChartValueMarker() {}
 
 public:
-    //! Filtrowanie eventow Qt (g≥Ûwnie myszka) zarzπdzanie etykietami
+    //! Filtrowanie eventÛw Qt (g≥Ûwnie myszka) zarzπdzanie etykietami
     virtual bool stateEventFilter(QObject *, QEvent *);
-    //! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wskaünik (ulatwiajacy dodawanie nowych etykiet)
+    //! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wskaünik (u≥atwiajπcy dodawanie nowych etykiet)
     virtual void stateBegin();
-    //! konczy stan, usuwa dodatkowy wskaünik z wykresu
+    //! koÒczy stan, usuwa dodatkowy wskaünik z wykresu
     virtual void stateEnd();
 
 private:
@@ -40,7 +40,7 @@ private:
     void updateLabels();
 
 private:
-    //! dodatkowy wskaünik (ulatwiajacy dodawanie nowych etykiet)
+    //! dodatkowy wskaünik (u≥atwiajπcy dodawanie nowych etykiet)
     NewChartMarker marker;
     //! etykieta, ktÛra jest obecnie przesuwana (moøe to byÊ dowolna etykieta)
     LabelDataConstPtr currentLabel;

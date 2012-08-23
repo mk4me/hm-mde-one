@@ -22,7 +22,7 @@ public:
     virtual void parseFile(const core::Filesystem::Path& path);
     //! tworzy pusty obiekt parsera
     virtual core::IParser* create();
-    //! zwraca wspierane rozszerzenia plikow (amc, bvh)
+    //! zwraca wspierane rozszerzenia plików (amc, bvh)
     //! \param extensions kolecja, do której trafi¹ wspierane rozszerzenia
     virtual void getSupportedExtensions(Extensions & extensions) const;
     //! \param objects kolekcja z object wrapperem (skeletonData)

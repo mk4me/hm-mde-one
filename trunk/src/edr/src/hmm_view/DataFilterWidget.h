@@ -19,7 +19,7 @@
 #include "HmmMainWindow.h"
 #include "ui_filter.h"
 
-//! widget przechowujacy grupe filtrow
+//! widget przechowuj¹cy grupe filtrów
 class DataFilterWidget : public QWidget, private Ui::FilterWidget
 {
     Q_OBJECT;

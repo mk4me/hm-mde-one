@@ -187,7 +187,7 @@ WorkflowWidget::StylesSet WorkflowWidget::generateRequiredStyles()
     std::string graphExt = "png";
 
     //PIN STYLES
-    //czcionka pinow
+    //czcionka pinów
     styleSet.insert(new osgui::StyleEx("vdf.node.pin.text", "font_size 10\nfont_type \"font\\segoeui.ttf\""));
 
     //piny wyjsciowe
@@ -424,7 +424,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
 
     toolbar->addTab(tmpWidget, "Visualizers");
 
-    //Elementy zapisujace
+    //Elementy zapisuj¹ce
     tmpWidget = new QWidget(toolbar);
     tmpLayout = new QHBoxLayout(tmpWidget);
     tmpLayout->setAlignment(Qt::AlignLeft);
@@ -535,7 +535,7 @@ void EDRWorkflowWidget::update(const dflm::Model* model)
         msgBox.setText("Workflow has finished");
         msgBox.exec();
 
-        //obsluga zakonczenia przetwarzania
+        //obs³uga zakoñczenia przetwarzania
         actionStop->setEnabled(true);
         actionStart->setEnabled(false);
 
@@ -678,7 +678,7 @@ EDRWorkflowWidget::StylesSet EDRWorkflowWidget::generateRequiredStyles()
     std::string graphExt = "png";
 
     //PIN STYLES
-    //czcionka pinow
+    //czcionka pinów
     styleSet.insert(new osgui::StyleEx("vdf.node.pin.text", "font_size 10\nfont_type \"font\\segoeui.ttf\""));
 
     //piny wyjsciowe

@@ -17,7 +17,7 @@
 class QCheckBox;
 class QPushButton;
 
-//! Klasa zarz¹dzajaca legenda New Charta
+//! Klasa zarz¹dzaj¹ca legend¹ New Charta
 class NewChartLegend : public QwtLegend
 {
     Q_OBJECT;
@@ -35,7 +35,7 @@ protected:
 
 signals:
     //! zmieni³ siê checkbox z widocznoœci¹ serii
-    //! \param item element legendy zawierajacy checkbox
+    //! \param item element legendy zawieraj¹cy checkbox
     //! \param active seria powinna stac siê widoczna/ukryta
     void checkboxChanged(const QwtPlotItem* item, bool active);
 

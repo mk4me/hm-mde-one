@@ -18,21 +18,27 @@
 class C3DEventsCollection
 {
 public:
-    // pomocnicze typy
+    //! wskaŸnik na zdarzenie wczytane z pliku C3D
     typedef core::shared_ptr<c3dlib::C3DParser::IEvent> EventPtr;
+    //! niemodyfikowalny wskaŸnik na zdarzenie wczytane z pliku C3D
     typedef core::shared_ptr<const c3dlib::C3DParser::IEvent> EventConstPtr;
+    //! kolekcja zdarzeñ wczytanych z pliku C3D
     typedef std::vector<EventPtr> Collection;
+    //! iterator kolekcji zdarzeñ wczytanych z pliku C3D
     typedef Collection::iterator iterator;
+    //! niemodyfikowalny iterator kolekcji zdarzeñ wczytanych z pliku C3D
     typedef Collection::const_iterator const_iterator;
+    //! typ zdarzenia wczytanego z pliku C3D
     typedef c3dlib::C3DParser::IEvent IEvent;
+    //! kontekst zdarzenia (strona lewa, prawa, ... )
     typedef IEvent::Context Context;
 
 private:
     //! kolekcja przechowuje zdarzenia wczytane z pliku c3d
     std::vector<EventPtr> events;
-    // wyglada na to, ze VS2010 ma blad - wrzucenie naglowka zawierajacego funkcje lambda
-    // do naglowkow prekompilowanych skutkuje uniemo¿liwieniem korzystania z lambdy wszedzie indziej
-    // porownywanie eventow odbywa siê zatem w 'klasyczny' sposób
+    // wyglada na to, ze VS2010 ma blad - wrzucenie nag³ówka zawieraj¹cego funkcje lambda
+    // do nag³ówków prekompilowanych skutkuje uniemo¿liwieniem korzystania z lambdy wszedzie indziej
+    // porownywanie eventów odbywa siê zatem w 'klasyczny' sposób
     struct EventFunctor : public std::binary_function<EventPtr,EventPtr,bool>
     {
         inline bool operator()(const EventPtr& e1, const EventPtr& e2)
@@ -45,7 +51,7 @@ public:
     //! Konstruktor
     C3DEventsCollection()
     {}
-    //! Konstruktor kopiujacy
+    //! Konstruktor kopiuj¹cy
     C3DEventsCollection(const C3DEventsCollection& es)
     {
         int count = static_cast<int>(es.events.size());
@@ -56,7 +62,7 @@ public:
     }
 
 public:
-    //! \return liczba wczytanych zdarzen
+    //! \return liczba wczytanych zdarzeñ
     int getNumEvents() const { return events.size(); }
     //! pobranie zdarzenia
     //! \param index indeks z zakresu <0 , getNumEvents)
@@ -85,15 +91,15 @@ public:
     void addEvent(EventPtr event)
     {
         events.push_back(event);
-        // wymuszenie kolejnosci zwi¹zanej z czasem
+        // wymuszenie kolejnoœci zwi¹zanej z czasem
         std::sort(events.begin(), events.end(), EventFunctor());
     }
 
 
-    //! Zwraca event o okreslonym kontekscie; nastepny do danego
+    //! Zwraca event o okreœlonym kontekscie; nastepny do danego
     //! \param event konkretny event
-    //! \param context konteks, który musi miec zwracany event
-    //! \return event, który spe³nia zalozenia lub pusty wskaŸnik
+    //! \param context konteks, który musi mieæ zwracany event
+    //! \return event, który spe³nia za³o¿enia lub pusty wskaŸnik
     EventConstPtr getNextEvent(EventConstPtr event, Context context) const
     {
         // szukanie elementu 'event' w kolekcji
@@ -115,14 +121,14 @@ public:
         return EventConstPtr();
     }
 
-    //! Zwraca event dla podanego czasu, event musi miec odpowiedni kontekst,
-    //! czas rozpoczecia mniejszy lub rowny t i nie mo¿e byæ ostatnim eventem w kolekcji
+    //! Zwraca event dla podanego czasu, event musi mieæ odpowiedni kontekst,
+    //! czas rozpoczêcia mniejszy lub rowny t i nie mo¿e byæ ostatnim eventem w kolekcji
     //! \param t czas, dla którego wyszukiwany jest event
     //! \param context kontekst, dla którego wyszukiwany jest event (lewy, prawy.. )
-    //! \return event, który spe³nia zalozenia lub pusty wskaŸnik
+    //! \return event, który spe³nia za³o¿enia lub pusty wskaŸnik
     EventConstPtr getEvent(float t, Context context) const
     {
-        // przefiltrowanie eventow wzgledem kontekstu
+        // przefiltrowanie eventów wzgledem kontekstu
         std::vector<EventPtr> temp;
         for (auto it = events.cbegin(); it != events.cend(); ++it) {
             if ((*it)->getContext() == context) {
@@ -158,14 +164,15 @@ typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
 typedef boost::shared_ptr<EMGCollection> EMGCollectionPtr;
 typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
-//! Kolekcja kana³ów opartych o trojwymiarowy wektor
+//! Kolekcja kana³ów opartych o trójwymiarowy wektor
 typedef utils::DataChannelCollection<VectorChannel> VectorChannelCollection;
 typedef core::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
 typedef core::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
 
+//! para liczb zmiennoprzecinkowych, s³u¿¹ca do okreœlenia przedzia³u czasowego zdarzenia
 typedef core::shared_ptr<std::pair<float, float>> FloatPairPtr;
 //! Metoda wydziela przedzia³y czasowe, dla których realizowana jest analiza
-//! \param events zdarzenia, z których beda wyciagnane przedzia³y
+//! \param events zdarzenia, z których beda wyci¹gane przedzia³y
 //! \param context kontekst kroku (lewy, prawy)
 static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events, C3DEventsCollection::Context context)
 {
@@ -192,7 +199,7 @@ static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events
     return ret;
 }
 
-//! Kolekcja dostarcza rowniez informacji o p³ytach GFR oraz u³atwia pobranie konkretnego kana³u
+//! Kolekcja dostarcza równie¿ informacji o p³ytach GFR oraz u³atwia pobranie konkretnego kana³u
 class GRFCollection : public VectorChannelCollection
 {
 public:
@@ -216,29 +223,29 @@ public:
     }
 
 private:
-    //! Platformy pomiarowe zwi¹zane z ta sama próba pomiarowa co kana³y z kolekcji
+    //! Platformy pomiarowe zwi¹zane z t¹ sam¹ prób¹ pomiarow¹ co kana³y z kolekcji
     IForcePlatformCollection platforms;
 };
 typedef boost::shared_ptr<GRFCollection> GRFCollectionPtr;
 typedef boost::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
 
-//! Kontener wszystkich markerów modelu, u³atwia obsluge danych, dodaje wsparcie o pliki VSK
+//! Kontener wszystkich markerów modelu, u³atwia obs³ugê danych, dodaje wsparcie o pliki VSK
 class MarkerCollection : public VectorChannelCollection
 {
 public:
     //! Konstruktor
-    //! \param vsk parser ze wczytanym plikiem vsk (dziêki niemu tworza siê kolorowe po³¹czenia midzy markerami)
+    //! \param vsk parser ze wczytanym plikiem vsk (dziêki niemu tworz¹ siê kolorowe po³¹czenia midzy markerami)
     MarkerCollection(kinematic::VskParserPtr vsk = kinematic::VskParserPtr()) :
       VectorChannelCollection(),
       vsk(vsk)
       {}
-    //! Zwrace nazwê markera na podstawie indeksu
+    //! Zwraca nazwê markera na podstawie indeksu
     //! \param markerNo poprawny indeks, w przeciwnym razie poleci asercja
     virtual const std::string& getMarkerName(int markerNo) const {
         return this->getChannel(markerNo)->getName();
     }
     //! próbuje pobraæ kana³ na podstawie nazwy
-    //! \param name nazwa kana³u, wilkosc liter ma znaczenie
+    //! \param name nazwa kana³u, wielkoœæ liter ma znaczenie
     //! \return kana³ lub null jeœli takiego nie ma
     VectorChannelConstPtr tryGetChannelByName(const std::string& name) {
         for (int i = this->getNumChannels() - 1; i >= 0; --i) {
@@ -249,16 +256,17 @@ public:
 
         return VectorChannelConstPtr();
     }
-    //! \return parser vsk zwiazany z kolekcja
+    //! \return parser vsk zwi¹zany z kolekcj¹
     kinematic::VskParserConstPtr getVsk() const { return vsk; }
 
 private:
+    //! parser vsk zwi¹zany z kolekcj¹
     kinematic::VskParserPtr vsk;
 };
 typedef core::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 
-//! makro u³atwia definicje dodatkowych kana³ów, osobne typy ulatwiaja otrzymanie konkretnych danych z DM
+//! makro u³atwia definicje dodatkowych kana³ów, osobne typy u³atwiaja otrzymanie konkretnych danych z DM
 #define DEFINE_CHANNEL_COLLECTION(name)                                         \
 class name##Collection : public VectorChannelCollection {};				        \
     typedef core::shared_ptr<name##Collection> name##CollectionPtr;				\

@@ -9,7 +9,7 @@
 EDRDFNode::EDRDFNode(const WorkflowItemPtr & workflowItem, const std::string & nodeName)
     : dflm::DFNode(nodeName), workflowItem(workflowItem)
 {
-    UTILS_ASSERT((workflowItem != nullptr), "Z³y element przetwarzajacy");
+    UTILS_ASSERT((workflowItem != nullptr), "Z³y element przetwarzaj¹cy");
 }
 
 EDRDFNode::~EDRDFNode()
@@ -40,7 +40,7 @@ void EDRDFNode::configure()
 void EDRDFNode::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder)
 {
     //cast workflow item na 2 obiekty - InputDescription i OutputDescription
-    //dla kazdego z tych interfejsow tworz odpowiednio inputpins lub output pins
+    //dla kazdego z tych interfejsów tworz odpowiednio inputpins lub output pins
     InputDescription * inputDescription = dynamic_cast<InputDescription*>(workflowItem.get());
 
     if(inputDescription != nullptr){
