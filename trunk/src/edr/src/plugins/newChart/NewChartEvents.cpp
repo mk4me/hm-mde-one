@@ -81,7 +81,7 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
 
 void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEventsCollection::Context context)
 {
-    // te translacje, uzywane sa pozniej, w trakcie rysowania
+    // te translacje, u¿ywane s¹ póŸniej, w trakcie rysowania
     // nazwy te pochodza z pliku c3d
     QObject::tr("Foot Strike");
     QObject::tr("Foot Off"   );

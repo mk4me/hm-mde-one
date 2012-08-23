@@ -89,7 +89,7 @@ namespace core
             ObjectWrapperPtr __setObjectPointerResolver(const T& object, boost::true_type)
             {
                 // rev
-                //UTILS_STATIC_ASSERT(false, "Do obiektow domenowych nalezy uzywac inteligentnych wskaznikow.");
+                //UTILS_STATIC_ASSERT(false, "Do obiektów domenowych nale¿y u¿ywaæ inteligentnych wskaznikow.");
                 return ObjectWrapperPtr();
             }
 
@@ -114,7 +114,7 @@ namespace core
                 // je¿eli tutaj jest b³¹d oznacza to, ¿e przekazany typ nie jest ani POD, ani inteligentnym wskaŸnikiem.
                 // rev
                 //UTILS_STATIC_ASSERT(ObjectWrapperTraits<Type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-                //UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaznikowi odbslugujacemu zadany typ");
+                //UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaŸnikowi odbslugujacemu zadany typ");
 
                 if(object == nullptr){
                     throw std::runtime_error("Could not create wprapper for nullptr");

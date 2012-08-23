@@ -17,11 +17,11 @@ class NewChartSerie;
 class NewChartDot;
 class NewChartLabel;
 
-//! Stan wykresu, ktory operuje w jakis sposob na etykietach
+//! Stan wykresu, który operuje w jakis sposób na etykietach
 class NewChartLabelState : public NewChartState
 {
 public:
-    //! Konstruktor pobiera wizualizator, na ktorym stan bedzie operowal
+    //! Konstruktor pobiera wizualizator, na którym stan bêdzie operowa³
     NewChartLabelState(NewChartVisualizer* visualizer);
 	virtual ~NewChartLabelState() {}
 
@@ -30,13 +30,13 @@ public:
     virtual void draw(QPainter *);
     //! ustawienie stanu, zmiana kursora
     virtual void stateBegin();
-    //! zakonczenie stanu, nieobslugiwane
+    //! zakonczenie stanu, nieobs³ugiwane
     virtual void stateEnd();
-    //! usuwa etykiety z wykresu zwiazane z konkretna seria
-    //! \param serie seria, dla ktorej usuwamy
+    //! usuwa etykiety z wykresu zwi¹zane z konkretna seria
+    //! \param serie seria, dla której usuwamy
     void removeSerieLabels(const NewChartSerie* serie);
-    //! zarzadza widocznoscia etykiet z wykresu zwiazanych z konkretna seria
-    //! \param serie seria, dla ktorej zmieniamy widocznosc elementow
+    //! zarz¹dza widocznoœci¹ etykiet z wykresu zwiazanych z konkretna seria
+    //! \param serie seria, dla której zmieniamy widocznoœæ elementow
     //! \param visible widoczny / ukryty
     void setVisible(const NewChartSerie* serie, bool visible);
 
@@ -46,9 +46,9 @@ protected:
     {
         //! obiekt etykiety
         NewChartLabel* label;
-        //! pierwsze polacznie etykiety 
+        //! pierwsze po³¹cznie etykiety 
         NewChartDot* dot1;
-        //! drugie polaczenie etykiety (moze byc puste)
+        //! drugie po³¹czenie etykiety (mo¿e byæ puste)
         NewChartDot* dot2;
         //! seria zwiazana z etykieta
         const NewChartSerie* serie;
@@ -61,29 +61,29 @@ protected:
 protected:
     //! Realizuje przesuniecie pojedynczej etykiety
     //! \param pos nowa pozycja
-    //! \param curve krzywa pod ktora jest podpieta etykieta
+    //! \param curve krzywa pod która jest podpieta etykieta
     //! \param label przesuwana etykieta
     void move(const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label);
-    //! Probuje pobrac dane etykiety
-    //! \param pos pozycja na wykresie (wspolrzedne ekranowe)
-    //! \return dane etykiety lub pusty wskaznik
+    //! próbuje pobraæ dane etykiety
+    //! \param pos pozycja na wykresie (wspó³rzêdne ekranowe)
+    //! \return dane etykiety lub pusty wskaŸnik
     LabelDataConstPtr getLabel(const QPoint& pos);
-    //! Probuje pobrac dane etykiety
-    //! \param pos pozycja na wykresie (wspolrzedne ekranowe)
+    //! próbuje pobraæ dane etykiety
+    //! \param pos pozycja na wykresie (wspó³rzêdne ekranowe)
     //! \param curve krzywa zwiazana z etykieta
-    //! \return dane etykiety lub pusty wskaznik
+    //! \return dane etykiety lub pusty wskaŸnik
     LabelDataConstPtr getLabel(const QPoint& pos, const QwtPlotCurve* curve);
-    //! Probuje pobrac dane etykiety
-    //! \param label etykieta, dla ktorej pobierane sa dane
-    //! \return dane etykiety lub pusty wskaznik
+    //! próbuje pobraæ dane etykiety
+    //! \param label etykieta, dla której pobierane s¹ dane
+    //! \return dane etykiety lub pusty wskaŸnik
     LabelDataConstPtr getLabel(const NewChartLabel* label) const;
     //! Pobiera najblizszy punkt od klikniecia
     //! \param pos pozycja klikniecia
-    //! \return krotka <najblizsza seria, punkt na niej, odleglosc od punktu klikniecia>
+    //! \return krotka <najblizsza seria, punkt na niej, odleg³oœæ od punktu klikniecia>
     SeriePointDist getClosestPoint(const QPoint& pos) const;
 
 protected:
-    //! wszystkie etykiety zwiazane ze stanem wizualizatora
+    //! wszystkie etykiety zwi¹zane ze stanem wizualizatora
     std::vector<LabelDataPtr> labels;
 
 };

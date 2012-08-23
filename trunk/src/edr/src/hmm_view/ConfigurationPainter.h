@@ -18,7 +18,7 @@
 #include <QtGui/QPainter>
 #include "ConfigurationPainterAreas.h"
 
-//! klasa odpowiada za wyswietlenie graficznego konfiguratora
+//! klasa odpowiada za wyœwietlenie graficznego konfiguratora
 class ConfigurationPainter : public QWidget
 {
     Q_OBJECT;
@@ -51,11 +51,11 @@ public:
     AreasList::iterator begin() { return areas.begin(); }
     //!
     AreasList::iterator end() { return areas.end(); }
-    //! Jesli obszar o danej nazwie jest w painterze, to staje sie lub przestaje byc aktywny
+    //! jeœli obszar o danej nazwie jest w painterze, to staje siê lub przestaje byæ aktywny
     //! \param name nazwa elementu
-    //! \param selected czy ma byc lub przestac byc aktywny
+    //! \param selected czy ma byæ lub przestac byæ aktywny
     void trySetActive( const QString& name, bool selected );
-    //! Iloczyn zbiorow nazw dostarczonych przez konfigurator i nazw obslugiwanych (nazw dostepnych obszarow)
+    //! Iloczyn zbiorow nazw dostarczonych przez konfigurator i nazw obs³ugiwanych (nazw dostêpnych obszarow)
     //! \param names zbior do porownania (brany jest pod uwage tylko pierwszy element wpisu mapy)
     void intersectNames( const NamesDictionary& names );
     //! \return globalna skala dla paintera
@@ -65,13 +65,13 @@ public:
     void setScale(float val);
 
 signals:
-    //! obszar zostal najechany myszka
+    //! obszar zosta³ najechany myszka
     //! \param name nazwa obszaru
-    //! \param selected czy zostal lub przestal byc zaznaczony
+    //! \param selected czy zosta³ lub przesta³ byæ zaznaczony
     void elementHovered(const QString& name, bool selected);
-    //! obszar zostal klikniety myszka
+    //! obszar zosta³ klikniety myszka
     //! \param name nazwa obszaru
-    //! \param selected czy stal sie lub przestal byc aktywny
+    //! \param selected czy sta³ siê lub przesta³ byæ aktywny
     void elementSelected(const QString& name, bool selected);
 
 protected:
@@ -93,10 +93,10 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-    //! pobiera arene na podstawie wspolrzednych (w przypadku obrazkow uwzgledniana jest tez alpha)
-    //! \param x wspolrzedna x
-    //! \param y wspolrzedna y
-    //! \return obszar wystepujacy w punkcie lub null jesli takiego nie ma. Jesli wystepuje kilka takich obszarow to zwracany jest najblizszy
+    //! pobiera arene na podstawie wspó³rzêdnych (w przypadku obrazkow uwzgledniana jest tez alpha)
+    //! \param x wspó³rzêdna x
+    //! \param y wspó³rzêdna y
+    //! \return obszar wystepujacy w punkcie lub null jeœli takiego nie ma. Jeœli wystepuje kilka takich obszarow to zwracany jest najblizszy
     IAreaPtr getArea(int x, int y);
 
 private:

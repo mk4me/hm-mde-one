@@ -14,28 +14,30 @@
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
 
-//! Seria danych wizualizatora 3D wizualizujaca animacje szkieletowa
+//! Seria danych wizualizatora 3D wizualizuj¹ca animacje szkieletowa
 class SkeletonSerie :  public QObject, public KinematicSerie
 {
 	Q_OBJECT;
 public:
+    //! wskaŸnik do wêz³a przechowywuj¹cego geometriê
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;
+    //! wskaŸnik do wêz³a przechowywuj¹cego grupê wêz³ów
 	typedef osg::ref_ptr<osg::Group> GroupPtr;
 
 public:
 	//! Konstuktor
-	//! \param visualizer wizualizator, ktory stworzyl serie danych
+	//! \param visualizer wizualizator, który stworzy³ serie danych
 	SkeletonSerie(KinematicVisualizer * visualizer);
 	virtual ~SkeletonSerie() {}
 
 private slots:
-	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukl. wspolrzednych
+	//! zmiana osi, gdy otrzymamy obiekt w nietypowym uk³. wspó³rzêdnych
 	//! \param xyz 
 	void setAxis(bool xyz);
 
 public:
-    //! Ustawia nowa nazwe seri
-    //! \param name 
+    //! Ustawia now¹ nazwê serii
+    //! \param name nowa nazwa
     virtual void setName(const std::string & name);
     //! \return nazwa serii
     virtual const std::string & getName() const;
@@ -44,28 +46,28 @@ public:
 	virtual void setData(const core::ObjectWrapperConstPtr & data);
     //! \return ustawione dane
     virtual const core::ObjectWrapperConstPtr & getData() const;
-	//! \return Dlugosc kanalu w sekundach
+	//! \return d³ugoœæ kana³u w sekundach
 	virtual double getLength() const;
 	//! Czas zawiera siê miêdzy 0 a getLength()
-	//! \param time Aktualny, lokalny czas kanalu w sekundach
+	//! \param time Aktualny, lokalny czas kana³u w sekundach
 	virtual void setLocalTime(double time);
-    //! \return macierz serii z transformacja, ktora nie zostala zmieniona przez manipulatory
+    //! \return macierz serii z transformacja, która nie zosta³a zmieniona przez manipulatory
     osg::Matrix getInitialMatrix() const;
 
 private:
-    //! Dialog z trajektoriami dziala dla MarkersCollection, dlatego nalezy dokonac konwersji
+    //! Dialog z trajektoriami dzia³a dla MarkersCollection, dlatego nale¿y dokonaæ konwersji
     //! \param joints struktura i dane animacji szkieletowej
-    //! \return kolekcja z markerami, dla ktorej mozna juz uzywac dialogu TrajectoriesDialog
+    //! \return kolekcja z markerami, dla której mo¿na ju¿ u¿ywaæ dialogu TrajectoriesDialog
     MarkerCollectionConstPtr createTrajectories(kinematic::JointAnglesCollectionConstPtr joints);
-    //! \return macierz potrzebna przy operacjach z roznymi ukl. wspolrzednych
+    //! \return macierz potrzebna przy operacjach z ró¿nymi ukl. wspó³rzêdnych
     osg::Matrix getXYZMatrix() const;
-    //! niweluje dzialanie manipulatorow
+    //! niweluje dzia³anie manipulatorów
     virtual void resetTransform();
 
 private:
-    //! Wizualizator, ktory utworzyl serie
+    //! Wizualizator, który utworzy³ serie
 	KinematicVisualizer * visualizer;
-    //! Polacznie miedzy aniamcja szieletowa (struktura + dane) a ich wizualizacja
+    //! po³¹czenie miêdzy aniamcja szieletowa (struktura + dane) a ich wizualizacja
 	SkeletalVisualizationSchemePtr scheme;
     //! drawer schematu
 	SchemeDrawerContainerPtr skeletonDrawers;
@@ -73,11 +75,11 @@ private:
     core::ObjectWrapperConstPtr data;
     //! nazwa serii
     std::string name;
-    //! glowny wezej animacji
+    //! g³ówny wezej animacji
     TransformPtr skeletonNode;
-    //! czy operujemy na ukladzie XYZ czy innym
+    //! czy operujemy na uk³adzie XYZ czy innym
     bool xyzAxis;
-    //! Drawer rysujacy trajektorie, powstaly one dzieki konwersji JoinAnglesCollection - > MarkersCollection
+    //! Drawer rysujacy trajektorie, powsta³y one dziêki konwersji JoinAnglesCollection - > MarkersCollection
     TrajectoryDrawerPtr trajectoryDrawer;
 };
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;

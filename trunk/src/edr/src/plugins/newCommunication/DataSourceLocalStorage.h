@@ -41,7 +41,7 @@ public:
 
     //! Niszczy instacjê obiektu DataSourceLocalStorage
     static void destroy();
-	//! \param localStorageDataPath Œcie¿ka do pliku z danymi - jesli brak to tworzymy now¹
+	//! \param localStorageDataPath Œcie¿ka do pliku z danymi - jeœli brak to tworzymy now¹
 	void setLocalStorageDataPath(const core::Filesystem::Path & localStorageDataPath);
 	//! \return Œcie¿ka do pliku z danymi
 	const core::Filesystem::Path & localStorageDataPath() const;
@@ -50,7 +50,7 @@ public:
     static DataSourceLocalStorage * instance();
 
 	//! \param fileName Unikalna nazwa pliku o który pytamy czy jest dostêpny lokalnie
-	//! \return Czy plik jest dostepny lokalnie
+	//! \return Czy plik jest dostêpny lokalnie
 	bool fileIsLocal(const std::string & fileName) const;
 
 	//! \param path Œcie¿ka do pliku który dodajemy do ogólnej puli plików

@@ -18,7 +18,7 @@ public:
     DataSourceFilterManager();
     virtual ~DataSourceFilterManager();
 
-    //! \param filter Filtr danych ktory rejestrujemy
+    //! \param filter Filtr danych który rejestrujemy
     //! \return Indeks zarejestrowanego filtra
     virtual int registerFilter(DataSourceFilter * filter);
 

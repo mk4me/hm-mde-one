@@ -12,7 +12,7 @@
 
 #include <plugins/subject/Types.h>
 
-//! klasa sluzy do odswiezania drzewa danych
+//! klasa s³u¿y do odœwie¿ania drzewa danych
 class TreeRefresher
 {
 public:
@@ -20,27 +20,27 @@ public:
     virtual ~TreeRefresher() {}
 
 public:
-    //! \return czy mozna odswiezac drzewo
+    //! \return czy mo¿na odœwie¿ac drzewo
     bool getPreventRefresh() const { return preventRefresh; }
-    //! ustawia mozliwosc odswiezania drzewa
+    //! ustawia mo¿liwoœæ odœwie¿ania drzewa
     //! \param val 
     void setPreventRefresh(bool val);
-    //! Odswiezy drzewo, jesli jest to mozliwe, jesli nie drzewo zostanie odswiezone kiedy blokada zostanie zdjeta.
-    //! \param tree drzewo do odswiezenia
+    //! Odswiezy drzewo, jeœli jest to mo¿liwe, jeœli nie drzewo zostanie odswiezone kiedy blokada zostanie zdjeta.
+    //! \param tree drzewo do odœwie¿enia
     void refresh(QTreeWidget* tree);
 
 private:
-    //! wlasciwe odswiezenie drzewa
-    //! \param tree drzewo do odswiezenia
-    //! \param sessions sesje, na podstawie ktorych budowane bedzie drzewo
+    //! wlasciwe odœwie¿enie drzewa
+    //! \param tree drzewo do odœwie¿enia
+    //! \param sessions sesje, na podstawie których budowane bêdzie drzewo
     void actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions);
 
 private:
-    //! true - odswiezanie zablokowane
+    //! true - odœwie¿anie zablokowane
     bool preventRefresh;
-    //! true - odswiezanie bylo zablokowane kiedy przyszlo polecenia odswiezenia
+    //! true - odœwie¿anie bylo zablokowane kiedy przyszlo polecenia odœwie¿enia
     bool needRefresh;
-    //! drzewo, ktore trzeba odswiezyc
+    //! drzewo, które trzeba odswiezyc
     QTreeWidget* tree;
 };
 

@@ -28,7 +28,7 @@ class NewChartSerie : public INewChartSerie
     friend class NewChartVisualizer;
 public:
     //! Konstruktor
-    //! \param visualizer wizualzator, ktory tworzy serie danych
+    //! \param visualizer wizualzator, który tworzy serie danych
     NewChartSerie(NewChartVisualizer * visualizer);
     virtual ~NewChartSerie();
 
@@ -42,7 +42,7 @@ public:
     virtual void setTime(double time);
     //! \return czas trwania serii
     virtual double getLength() const;
-    //! ustawia obiekt ze zdarzeniami powiazanymi z proba pomiarowa
+    //! ustawia obiekt ze zdarzeniami powiazanymi z próba pomiarowa
     //! \param val kolecja zdarzen
     virtual void setEvents(EventsCollectionConstPtr val);
     //! pobierz krzywa qwt
@@ -52,7 +52,7 @@ public:
     void setVisible(bool visible);
     //! \return czy krzywa jest widoczna
     bool isVisible() const;
-    //! \return obiekt ulatwiajacy zarzadzanie eventami
+    //! \return obiekt ulatwiajacy zarz¹dzanie eventami
     EventsHelperPtr getEventsHelper() const { return eventsHelper; }
     //! ustawienie koloru krzywej
     //! \param r skladowa czerwona (0 - 255)
@@ -65,10 +65,10 @@ public:
     virtual void setColor(const QColor& color);
     //! \return kolor krzywej
     virtual QColor getColor() const;
-    //! ustawia szerokosc krzywej
-    //! \param width nowa szerokosc w pikselach
+    //! ustawia szerokoœæ krzywej
+    //! \param width nowa szerokoœæ w pikselach
     void setWidth(int width);
-    //! ustawia nazwe krzywej
+    //! ustawia nazwê krzywej
     //! \param name nowa nazwa krzywej
     virtual void setName(const std::string & name);
     //! \return nazwa krzywej
@@ -91,11 +91,11 @@ public:
     ScalarChannelReaderInterfaceConstPtr getReader() const { return reader; }
     //! odlacza krzywa od wykresu
     void removeItemsFromPlot();
-    //! ustawia kolejnosc wyswietlania
+    //! ustawia kolejnosc wyœwietlania
     //! \param z
     //! \param replot
     void setZ(double z, bool replot = false);
-    //! \return skladowa z odpowiedzialna z kolejnosc wyswietlania
+    //! \return skladowa z odpowiedzialna z kolejnosc wyœwietlania
     double z() const;
     //! \return skala w poziomie
     double getXScale() const;
@@ -130,7 +130,7 @@ private:
     void setColorsForEvents(EventsHelper::SegmentsRange range, const QColor& color);
 
 private:
-    //! wizualizator, ktory stworzyl serie
+    //! wizualizator, który stworzy³ serie
     NewChartVisualizer* visualizer;
     //! nazwa serii
     std::string name;
@@ -144,7 +144,7 @@ private:
     core::shared_ptr<ScalarContiniousTimeAccessor> accessor;
     //! obiekt z danymi
     ScalarChannelReaderInterfaceConstPtr reader;
-    //! obiekt zajmujacy sie logika eventow
+    //! obiekt zajmujacy siê logika eventow
     EventsHelperPtr eventsHelper;
     //! czy seria jest aktywna
     bool active;
@@ -152,7 +152,7 @@ private:
     double time;
     //! skladowa okresla kolejnosc rysowania
     double _z;
-    //! poczatkowa wartosc skladowej zd
+    //! pocz¹tkowa wartosc skladowej zd
     double _zBase;
 };
 

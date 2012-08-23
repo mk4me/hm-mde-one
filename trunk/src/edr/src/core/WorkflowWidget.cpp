@@ -113,9 +113,9 @@ void WorkflowCustomQOSGWidget::tryAddNode()
         }
 
         dflm::DFNPtr node;
-        //obuduj wezel
+        //obuduj wêze³
         if(dynamic_cast<InputDescription*>(item.get()) == nullptr){
-            //sprawdz czy wezel poprawnie zbudowany!!
+            //sprawdz czy wêze³ poprawnie zbudowany!!
             node.reset(new EDRDFSourceNode(item, item->getName()));
         }else{
             node.reset(new EDRDFNode(item, item->getName()));
@@ -153,7 +153,7 @@ void WorkflowCustomQOSGWidget::tryAddNode()
 void WorkflowCustomQOSGWidget::mousePressEvent(QMouseEvent * event)
 {
     if(event->button() == Qt::LeftButton){
-        //probuj dodac element
+        //próbuj dodaæ element
         if(workflowWidget->currentAction != nullptr){
 
             pos = event->pos();
@@ -165,7 +165,7 @@ void WorkflowCustomQOSGWidget::mousePressEvent(QMouseEvent * event)
             return;
         }
     }else{
-        //prawy klawisz wiec moze chce usunac polaczenia
+        //prawy klawisz wiec mo¿e chce usun¹æ po³¹czenia
         emit customContextMenuRequested(event->pos());
     }
 
@@ -623,7 +623,7 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
 
 	supplyWithEDRTitleBar(visWidget);
 
-    //dodajemy wizualizator do glownego okna
+    //dodajemy wizualizator do g³ównego okna
     window->addDockWidget(Qt::RightDockWidgetArea,visWidget);
 
     //aktualizuj mapowanie logiki do UI

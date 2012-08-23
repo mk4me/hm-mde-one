@@ -15,11 +15,11 @@ void MeasurementsParser::parse( const std::string& filename )
     TiXmlDocument doc(filename);
     bool loadOkay = doc.LoadFile();
     TiXmlElement* rootElement = nullptr;
-    // jesli plik jest plikiem *xml ...
+    // jeœli plik jest plikiem *xml ...
     if (loadOkay) {
         TiXmlElement* docElement = doc.FirstChildElement();
         while (docElement) {
-            // szukanie glownego elementu - "MeasurementConfs"
+            // szukanie g³ównego elementu - "MeasurementConfs"
             if (strcmp(docElement->Value(), "MeasurementConfs") == 0) {
                 rootElement = docElement;
                 break;
@@ -27,11 +27,11 @@ void MeasurementsParser::parse( const std::string& filename )
             docElement = docElement->NextSiblingElement();
         }
     } else {
-        // oczyt nie udal sie z jakiegos powodu
+        // oczyt nie udal siê z jakiegos powodu
         throw std::runtime_error(std::string("Unable to load : ") + filename);
     }
 
-    // jesli plik zawiera odpowiedni korzen (root)
+    // jeœli plik zawiera odpowiedni korzen (root)
     if (rootElement) {
         for (TiXmlElement* element = rootElement->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
             if (element && strcmp(element->Value(), "MeasurementConf") == 0) {

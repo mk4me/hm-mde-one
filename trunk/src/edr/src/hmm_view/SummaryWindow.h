@@ -16,7 +16,7 @@ class VisualizerWidget;
 #include <plugins/subject/ISubject.h>
 #include "TreeItemHelper.h"
 
-//! okno sluzy do wyswietlenia podsumowania i dodatkowych informacji dla wizualizatora lub elementu drzewa danych
+//! okno s³u¿y do wyœwietlenia podsumowania i dodatkowych informacji dla wizualizatora lub elementu drzewa danych
 class SummaryWindow
 {
 public:

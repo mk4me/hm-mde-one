@@ -7,8 +7,8 @@
 #ifdef WIN32
 #include <Windows.h>
 //#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
-// Od Visty dodawane sa przedrostki typu Wow6432Node do sciezki w rejestrach
-// adres podawany do oczytu klucza powinien byc automatycznie konwertowany.
+// Od Visty dodawane s¹ przedrostki typu Wow6432Node do sciezki w rejestrach
+// adres podawany do oczytu klucza powinien byæ automatycznie konwertowany.
 #define KEY_PATH TEXT("Software\\PJWSTK\\EDR")
 #endif
 
@@ -78,7 +78,7 @@ EDRConfig* EDRConfig::getInstance()
 //! sprawdza czy katalog dla danych tymczasowych istnieje, jeœli nie tworzy go
 void EDRConfig::ensureTempDirectory() const
 {
-    //sprawdzamy czy katalog dla danych tymczasowych istnieje - jesli nie tworzymy go
+    //sprawdzamy czy katalog dla danych tymczasowych istnieje - jeœli nie tworzymy go
     if(Filesystem::pathExists(getTmpPath()) == false){
         Filesystem::createDirectory(getTmpPath());
     }
@@ -86,7 +86,7 @@ void EDRConfig::ensureTempDirectory() const
 //! czyœci katalog danych tymczasowych przy zamykaniu aplikacji
 void EDRConfig::clearTempDirectory() const
 {
-    //sprawdzamy czy katalog dla danych tymczasowych istnieje - jesli nie tworzymy go
+    //sprawdzamy czy katalog dla danych tymczasowych istnieje - jeœli nie tworzymy go
     if(Filesystem::pathExists(getTmpPath()) == true){
         Filesystem::deleteDirectory(getTmpPath());
     }

@@ -93,7 +93,7 @@ namespace core {
         /*template <class T>
         static ObjectWrapperPtr create(T* dummy = nullptr)
         {
-            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien być używany");
             typedef ObjectWrapperT<T> Wrapper;
             Wrapper * wrapper = new Wrapper();
             return ObjectWrapperPtr(wrapper);
@@ -103,7 +103,7 @@ namespace core {
         template <class T>
         static const char* getClassName(T* dummy = nullptr)
         {
-            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
             return ObjectWrapperT<T>::className();
         }
 
@@ -174,7 +174,7 @@ namespace core {
         template <class T>
         typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
         {
-            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
             typedef ObjectWrapperT<T> Wrapper;
             typedef typename Wrapper::Ptr Ptr;
             return static_cast<Ptr>(get());
@@ -199,10 +199,10 @@ namespace core {
             }
         }
 
-        //! Ustawia obiekt wrappera, jego nazwe i zrodlo
+        //! Ustawia obiekt wrappera, jego nazwę i źródło
         //! \param object Obiekt
-        //! \param name Nazwa obiektu, ktora ma byc wyswietlona
-        //! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
+        //! \param name Nazwa obiektu, która ma być wyświetlona
+        //! \param source źródło obiektu - sciezka do pliku z którego pochodzi
         template <class Ptr>
         void set(const Ptr& object)
         {
@@ -225,10 +225,10 @@ namespace core {
             }
         }
 
-        //! Ustawia obiekt wrappera, jego nazwe i zrodlo
+        //! Ustawia obiekt wrappera, jego nazwę i źródło
         //! \param object Obiekt
-        //! \param name Nazwa obiektu, ktora ma byc wyswietlona
-        //! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
+        //! \param name Nazwa obiektu, która ma być wyświetlona
+        //! \param source źródło obiektu - sciezka do pliku z którego pochodzi
         template <class Ptr>
         bool trySet(const Ptr& object, const std::string& name, const std::string& source)
         {
@@ -318,7 +318,7 @@ namespace core {
         template <class T>
         static ObjectWrapperPtr create(T* dummy = nullptr)
         {
-            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
             typedef ObjectWrapperT<T> Wrapper;
             Wrapper * wrapper = new Wrapper();
             return ObjectWrapperPtr(wrapper);
@@ -541,7 +541,7 @@ namespace core {
     };
 
 // rev - klasa przeniesiona do makrodefinicji
-// wyglada na to, ze nie da sie odwolac do pola specjalizowanej klasy, po ktorej sie dziedziczy
+// wyglada na to, ze nie da się odwołać do pola specjalizowanej klasy, po której się dziedziczy
 /*
     template <class T, class B>
     class __ObjectWrapperTInherited : public ObjectWrapperT<B>
@@ -680,7 +680,7 @@ protected:                                                                      
 __CORE_WRAPPER_DEFINE_META(type)                                                                  \
 }
 
-// rev - makro zastapione nowym pelnieszym (ale nie uzywajacym posredniej klasy)
+// rev - makro zastapione nowym pelnieszym (ale nie używajacym posredniej klasy)
 /*
 
 #define CORE_DEFINE_WRAPPER_INHERITANCE(type, baseType)                                            \

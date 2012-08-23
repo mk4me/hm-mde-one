@@ -118,7 +118,7 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
         if(visualizerInputInfo.empty() == true){
             LOG_WARNING("Visualizer " << visualizer->getName() << " ID = " << visualizer->getID() << " does not support minimum one data type! NOT registered in application");
         }else{
-			// wypelniamy mape, dzieki ktorej mozemy latwo stworzyc wizualizator na postawie typu
+			// wype³niamy mape, dziêki której mozemy ³atwo stworzyæ wizualizator na postawie typu
 			for (auto it = visualizerInputInfo.begin(); it != visualizerInputInfo.end(); ++it) {
 				// TODO : co w przypadku, gdy mamy wiele wizualizatorow obslugujacych ten sam typ
 				mapType2ID[it->type] = visualizer->getID();
@@ -211,7 +211,7 @@ void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
 		}
 	}
 
-	//teraz probuje usuwac serie danych z wizualizatora
+	//teraz próbuje usuwac serie danych z wizualizatora
 	visualizerChannels[channelIT->second.visualzier].erase(channelIT->first);
 
 	if(visualizerChannels[channelIT->second.visualzier].empty() == true){
@@ -286,14 +286,14 @@ const void * VisualizerManager::createChannel(const std::vector<core::Visualizer
 
 void VisualizerManager::removeChannel(const void * channel)
 {
-	//sprawdzam czy jest taki kanal
+	//sprawdzam czy jest taki kana³
 	auto channelIT = channels.find((IVisualizerChannel*)channel);
 	if(channelIT == channels.end()){
-		//jesli nie ma to wychodzimy
+		//jeœli nie ma to wychodzimy
 		return;
 	}
 
-	//wlasciwa proba usuniecia kanalu z wizualizatora i timeline
+	//w³aœciwa próba usuniecia kana³u z wizualizatora i timeline
 	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
 	bool removed = false;
 	if(timeline != nullptr) {
@@ -322,7 +322,7 @@ void VisualizerManager::removeChannel(const void * channel)
 
 void VisualizerManager::removeAllChannels()
 {
-	//wlasciwa proba usuniecia kanalu z wizualizatora i timeline
+	//w³aœciwa próba usuniecia kana³u z wizualizatora i timeline
 	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
 	if(timeline != nullptr) {
 		for(auto channelIT = channels.begin(); channelIT != channels.end(); ++channelIT){
@@ -343,10 +343,10 @@ void VisualizerManager::removeAllChannels()
 
 void VisualizerManager::markAsRemovedFromVisualizer(const void * channel)
 {
-	//sprawdzam czy jest taki kanal
+	//sprawdzam czy jest taki kana³
 	auto channelIT = channels.find((IVisualizerChannel*)channel);
 	if(channelIT == channels.end()){
-		//jesli nie ma to wychodzimy
+		//jeœli nie ma to wychodzimy
 		return;
 	}
 

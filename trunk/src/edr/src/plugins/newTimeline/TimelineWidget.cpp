@@ -139,7 +139,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     //nowy slider
 
-    // rev - zmienilo sie troche API, nie ma juz TopScale
+    // rev - zmieni³o siê troche API, nie ma ju¿ TopScale
     //slider->setScalePosition(QwtSlider::TopScale);
     slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     slider->setHandleSize(QSize(45,10));
@@ -196,7 +196,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     timelineTabs->setLayout(layout);
 
     //HACK
-    //to powinno byc stylowane za pomoc¹ CSS, niestety Qwt operuje tylko na paletach
+    //to powinno byæ stylowane za pomoc¹ CSS, niestety Qwt operuje tylko na paletach
     QPalette sliderPalette(this->palette());
     sliderPalette.setBrush(QPalette::Light, QBrush(QColor(135, 177, 255)));
     sliderPalette.setBrush(QPalette::Mid, QBrush(QColor(255,0,0)));
@@ -342,7 +342,7 @@ void TimelineWidget::removeSelectedChannels()
             //usuwamy podkana³, zostanie usuniêty wraz ze swoim rodzicem
             it = orderedPathsToDelete.erase(it);
         }else{
-            //zapamietaj ostatni wezel by weryfikowac jego dzieci
+            //zapamietaj ostatni wêze³ by weryfikowac jego dzieci
             lastNode = it->first;
             toDelete.insert(lastNode);
             ++it;
@@ -496,7 +496,7 @@ void TimelineWidget::recursiveRefreshChannels(QTreeWidgetItem* uiNode)
 
 void TimelineWidget::refreshPlayerStatus()
 {
-    //jeœli nie mamy pustego timeline (sa kana³y) to umo¿liwiamy odtwarzanie i zatrzymywanie
+    //jeœli nie mamy pustego timeline (s¹ kana³y) to umo¿liwiamy odtwarzanie i zatrzymywanie
     if(getController()->getModel()->sizeChannels() > 0){
         playPauseAction->setEnabled(true);
         stopAction->setEnabled(true);

@@ -23,13 +23,13 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QListWidget>
 
-//! Domyslny widget obs³uguj¹cy karte pacjenta
+//! domyœlny widget obs³uguj¹cy karte pacjenta
 class DefaultPatientCardWidget : public QFrame
 {
 	Q_OBJECT
 
 public:
-	//! Domyslny konstruktor
+	//! domyœlny konstruktor
 	//! \param parent Rodzic widgeta
 	DefaultPatientCardWidget(QWidget * parent = nullptr);
 	//! Wirtualny destruktor

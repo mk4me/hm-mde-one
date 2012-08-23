@@ -12,7 +12,7 @@
 
 C3DParser::C3DParser()
 {
-    // sztywne stworzenie obiektow, zachowanie kompatybilnosci
+    // sztywne stworzenie obiektów, zachowanie kompatybilnosci
 	for(int i = 0; i < 4; ++i){
 		GRFChannels.push_back(core::ObjectWrapper::create<GRFChannel>());
 	}
@@ -20,10 +20,10 @@ C3DParser::C3DParser()
 		EMGChannels.push_back(core::ObjectWrapper::create<EMGChannel>());
 	}
 
-    // GRF i EMG sa dosepne tez poprzez standardowe kolekcje
+    // GRF i EMG s¹ dosepne tez poprzez standardowe kolekcje
 	GRFs = core::ObjectWrapper::create<GRFCollection>();
 	EMGs = core::ObjectWrapper::create<EMGCollection>();
-    // reszta kolekcji juz bez udziwnien
+    // reszta kolekcji ju¿ bez udziwnien
 	markerChannels = core::ObjectWrapper::create<MarkerCollection>();
 	forceChannels  = core::ObjectWrapper::create<ForceCollection>();
 	angleChannels  = core::ObjectWrapper::create<AngleCollection>();
@@ -83,7 +83,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 	}
     this->allEvents->set(allEventsCollection, path.filename().string(), path.string());
 
-    // wczytanie plikow *vsk, ktore dostarczaja opis do markerow
+    // wczytanie plikow *vsk, ktore dostarczaja opis do markerów
     core::Filesystem::Path dir = path.parent_path();
     std::vector<std::string> vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
     kinematic::VskParserPtr vsk;

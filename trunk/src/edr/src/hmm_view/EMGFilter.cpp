@@ -62,15 +62,15 @@ public:
         return channel->getLength();
     }
 
-    //! \param idx Indeks probki
+    //! \param idx Indeks próbki
     //! \return Wartosc czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
         return channel->argument(idx);
     }
 
-    //! \param idx Indeks probki
-    //! \return Wartosc probki dla danego indeksu
+    //! \param idx Indeks próbki
+    //! \return Wartosc próbki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         return modify(channel->value(idx));
@@ -87,8 +87,8 @@ public:
     {
         return channel->empty();
     }
-    //! \param time Czas dla ktorego chemy uzyskac dwie najblizsze probki
-    //! \return para indeksow, pierwszy wskazujke probke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje probke o czasie wiekszym lub rownym zadanemu
+    //! \param time Czas dla którego chemy uzyskac dwie najblizsze próbki
+    //! \return para indeksow, pierwszy wskazujke próbkê o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje próbkê o czasie wiekszym lub rownym zadanemu
     virtual std::pair<size_type, size_type> getValueHelper(time_type time) const
     {
         return channel->getValueHelper(time);
@@ -148,7 +148,7 @@ public:
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
-        //uzupe³nij brakujace probki
+        //uzupe³nij brakujace próbki
         if(myChannel.size() < observedChannel.size()){
             for(auto idx = myChannel.size(); idx < observedChannel.size(); ++idx){
                 modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
@@ -168,7 +168,7 @@ public:
             sum = sqrt(sum);
             modifierInterface.setIndexData(l_idx, sum);
         }
-        // wlasciwa interpolacja
+        // w³aœciwa interpolacja
         for(sizeT idx = meanR; idx < count; ++idx) {
             pointT sum = 0;
             for (sizeT i = idx - meanR; i < idx + meanR + 1; ++i) {
@@ -206,7 +206,7 @@ public:
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
-        ////uzupe³nij brakujace probki : co dziesiata...
+        ////uzupe³nij brakujace próbki : co dziesiata...
         sizeT skipN = 10;
         if(myChannel.size() * skipN < observedChannel.size()){
             for(auto idx = myChannel.size() * skipN; idx < observedChannel.size(); idx += skipN){
@@ -234,7 +234,7 @@ public:
                 sum /= (l_idx + meanR);
                 modifierInterface.setIndexData(l_idx, sum);
             }
-            // wlasciwa interpolacja
+            // w³aœciwa interpolacja
             for(sizeT idx = meanR; idx < count; ++idx) {
                 pointT sum = 0;
                 for (sizeT i = idx - meanR; i < idx + meanR + 1; ++i) {

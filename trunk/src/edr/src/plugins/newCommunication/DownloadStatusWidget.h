@@ -17,7 +17,7 @@ class DownloadStatusWidget : public QWidget, public Ui::DownloadStatusWidget
 	Q_OBJECT
 
 public:
-	//! Domyslny konstruktor
+	//! domyœlny konstruktor
 	DownloadStatusWidget(QWidget * parent = nullptr);
 	//! Wirtualny destruktor
 	virtual ~DownloadStatusWidget();

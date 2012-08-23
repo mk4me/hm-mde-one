@@ -21,38 +21,38 @@ public:
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
 
 public:
-    //! W konstruktorze tworzone sa juz wezly i zerowany czas
+    //! W konstruktorze tworzone s¹ ju¿ wêz³y i zerowany czas
     KinematicSerie();
     virtual ~KinematicSerie() {}
 
 public:
-    //! \return macierz, na ktorej operuja manipulatory
+    //! \return macierz, na której operuj¹ manipulatory
     inline MatrixTransformPtr getMatrixTransformNode();
-    //! \return punkt zaczepienia manipulatorow
+    //! \return punkt zaczepienia manipulatorów
     osg::Vec3 getPivot() const;
-    //! KinematicSerie jest seria zawierajaca eventy. Klasy pochodne maja mozliwosc ich obslugi
+    //! KinematicSerie jest seri¹ zawieraj¹c¹ eventy. Klasy pochodne maja mo¿liwoœæ ich obs³ugi
     virtual void setEvents(EventsCollectionConstPtr val);
     //! Zwraca czas 
     double getTime() const { return time; }
-    //! Ustawia czas. Metoda celowo nie jest wirtualna, klasy dziedziczace powinny implementowac setLocalTime
+    //! Ustawia czas. Metoda celowo nie jest wirtualna, klasy dziedzicz¹ce powinny implementowaæ setLocalTime
     //! \param val ustawiany czas
     void setTime(double val);
-    //! Macierz serii z transformacja, ktora nie zostala zmieniona przez manipulatory
+    //! Macierz serii z transformacj¹, która nie zosta³a zmieniona przez manipulatory
     virtual osg::Matrix getInitialMatrix() const { return osg::Matrix(); }
-    //! Metoda niweluje efekty dzialania manipulatorow
+    //! Metoda niweluje efekty dzia³ania manipulatorów
     virtual void resetTransform();
 
 protected:
-    //! Abstrakcyjny setter do czasu, metoda z inna sygnatura moze uchronic przed bledami
+    //! Abstrakcyjny setter do czasu, metoda z inn¹ sygnatur¹ mo¿e uchroniæ przed b³êdami
     //! \param time ustawiany czas
     virtual void setLocalTime(double time) = 0;
 
 protected:
-    //! wezel uzywany przez klase pochodna
+    //! wêze³ u¿ywany przez klasê pochodn¹
     TransformPtr transformNode;
-    //! zdarzenia zwiazane z proba pomiarowa
+    //! zdarzenia zwi¹zane z próba pomiarowa
     EventsCollectionConstPtr events;
-    //! macierz, na ktorej dzialaja manipulatory
+    //! macierz, na której dzia³aj¹ manipulatory
     MatrixTransformPtr matrixTransform;
 private:
     //! ustawiony czas dla serii

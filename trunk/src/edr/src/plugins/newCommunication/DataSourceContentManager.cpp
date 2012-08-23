@@ -202,7 +202,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 	}
 
 	DataStatus tmpStatus;
-	//odœwie¿am zawartoœc dzieci jesli nie znamy typu obiektu
+	//odœwie¿am zawartoœc dzieci jeœli nie znamy typu obiektu
 	int childrenCount = item->childCount();
 	for(int i = 0; i < childrenCount; ++i){
 		tmpStatus |= refrshItemContent(item->child(i), shallowCopy, perspective, localStatusManager, globalStatusManager, perspectiveFirst);

@@ -269,7 +269,7 @@ private:
                 ContextChain().swap(currentContextChain);
             }
         }else{
-            //sprawdzamy czy kontekst nie jest juz aktywny - jesli tak to wszystkie nizsze od niego sa dezaktywowane
+            //sprawdzamy czy kontekst nie jest ju¿ aktywny - jeœli tak to wszystkie nizsze od niego s¹ dezaktywowane
             int pos = contextPositionInCurrentChain(context);
 
             if(pos > -1){
@@ -278,7 +278,7 @@ private:
                 //prze³adowanie kontekstu / odœwie¿enie, dla widgetów które zmieniaj¹ stan ale nie ze wzglêdu na inne widgety dzieci (np. QTreeWidget na zmianê aktualnego wiersza)
                 refreshContext(currentContextChain.back(), contextWidget);
             }else{
-                //nowy kontest wydaje sie niezalezny od aktualnie aktywnych - szukamy zaleznosci
+                //nowy kontest wydaje siê niezalezny od aktualnie aktywnych - szukamy zaleznosci
 
                 //szukamy zaleznosci wzgledem aktualnego lancucha idac w gore od zadanego kontekstu
                 auto parent = context->parentContext();
@@ -299,7 +299,7 @@ private:
                     //ograniczamy aktualny lancuch do punktu przeciecia
                     limitCurrentChainToPosition(contextPositionInCurrentChain(parent));
 
-                    //jesli ostatni ma widget to musimy go przelaczyc
+                    //jeœli ostatni ma widget to musimy go przelaczyc
                     auto tmpCurrent = currentContextChain.back();
                     if(tmpCurrent->getCurrentContextWidget() != nullptr){
 

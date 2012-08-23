@@ -77,8 +77,8 @@ void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
 
 void EDRDockWidgetManager::onSetClosed( QObject* object )
 {
-    // edr dock widget juz nie isnieje, ale potrzebny jest nam tylko wskaznik,
-    // zeby usunac obiekt z listy
+    // edr dock widget juø nie isnieje, ale potrzebny jest nam tylko wskaünik,
+    // zeby usunπÊ obiekt z listy
     EDRDockWidgetSet* set = reinterpret_cast<EDRDockWidgetSet*>(object);
     dockList.remove(set);
     generatedList.remove(set);

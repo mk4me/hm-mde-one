@@ -52,13 +52,13 @@ private slots:
     //! proste przejscie do pierwszej zakladki (z drzewem danych)
     void switchToFirstTab();
     //! odtwarza drzewo danych 
-    //! \param currentFilter filtr, na podstawie ktorego odtworzone zostanie drzewo
+    //! \param currentFilter filtr, na podstawie którego odtworzone zostanie drzewo
     void recreateTree(FilterEntryWidget* currentFilter);
 
 private:
-    //! szerokosc filtru w zakladce
+    //! szerokoœæ filtru w zakladce
     int filterWidth;
-    //! wysokosc filtru w zakladce
+    //! wysokoœæ filtru w zakladce
     int filterHeight;
     //! margines dla filtrow w zakladce
     int margin;
@@ -66,7 +66,7 @@ private:
     AnalisisTreeWidget* treeWidget;
     //! widok HMM
     HmmMainWindow* hmm;
-    //TODO potrzebne tylko, aby przekazac info miedzy elementami.
+    //TODO potrzebne tylko, aby przekazac info miêdzy elementami.
     FilterEntryWidget* currentFilter;
 };
 

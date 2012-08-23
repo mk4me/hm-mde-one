@@ -14,16 +14,16 @@
 #include <plugins/c3d/C3DCollections.h>
 
 //! klasa dostarcza eventow do podstawowej serii danych.
-//! Jesli seria danych ma je obslugiwac, powinna dziedziczyc po tej klasie
+//! jeœli seria danych ma je obs³ugiwac, powinna dziedziczyc po tej klasie
 class EventSerieBase : public core::IVisualizer::TimeSerieBase
 {
 public:
-    //! Abstraktycja metoda, seria danych po jej wywolaniu powinna zainicjalizowac sobie obsluge eventow
+    //! Abstraktycja metoda, seria danych po jej wywo³aniu powinna zainicjalizowac sobie obsluge eventow
     //! \param val 
     virtual void setEvents(EventsCollectionConstPtr val) = 0;
-    //! \return kontekst, dla ktorego aktualnie rozpatrywany sa jointy (typowo left, right)
+    //! \return kontekst, dla którego aktualnie rozpatrywany s¹ jointy (typowo left, right)
     C3DEventsCollection::Context getContext() const { return context; }
-    //! ustawia kontekst, dla ktorego aktualnie rozpatrywany sa jointy 
+    //! ustawia kontekst, dla którego aktualnie rozpatrywany s¹ jointy 
     //! \param val kontekst typowo left, right
     void setContext(C3DEventsCollection::Context val) { context = val; }
 

@@ -162,7 +162,7 @@ protected:
         }
 
         // rev - jakie flagi/ustawienia powoduja roznice? trzeba znalezc uniwersalne rozwiazanie
-        // jesli Utf16 jest ustawiane w konfiguracji, to nie mozna tego tak zahardcodowac
+        // jeœli Utf16 jest ustawiane w konfiguracji, to nie mo¿na tego tak zahardcodowac
         #ifdef __WIN32__
             entry->message = QString::fromUtf16( reinterpret_cast<const ushort*>(buf.c_str()) );
         #else

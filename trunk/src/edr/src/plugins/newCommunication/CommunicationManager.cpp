@@ -430,7 +430,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processCompl
         }
 
         //sprawdz czy anulowano lub blad
-        //jesli nie to kontynuj
+        //jeœli nie to kontynuj
         if(ret != webservices::IFtpsConnection::Complete){
             break;
         }

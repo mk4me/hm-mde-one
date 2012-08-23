@@ -16,7 +16,7 @@
 #include "TrajectoriesDrawer.h"
 #include "ui_TrajectoriesDialog.h"
 
-//! Dialog Qt sluzacy do zarzadzania trajektoriami markerow
+//! Dialog Qt s³u¿¹cy do zarz¹dzania trajektoriami markerów
 class TrajectoriesDialog : public QDialog, private Ui::TrajectoriesDialog
 {
 	Q_OBJECT;
@@ -26,38 +26,38 @@ public:
 	TrajectoriesDialog(QWidget* parent);
 
 public:
-	//! Dodanie do dialogu drawera, ktory bedzie modyfikowany
+	//! Dodanie do dialogu drawera, który bêdzie modyfikowany
 	//! \param drawer obiekt drawera osg
-	//! \param rootName wyswietlana nazwa
+	//! \param rootName wyœwietlana nazwa
 	void setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName);
 
 private slots:
 	//! zmieniono kolor
 	void colorClicked();
-	//! zmieniono vidocznosc pojedynczego wezla
+	//! zmieniono vidocznosc pojedynczego wêz³a
 	//! \param visible czy widoczny
 	void visibilityChanged(bool visible);
-    //! zmieniono widocznosc roota (dziala na calosc)
+    //! zmieniono widocznoœæ roota (dzia³a na ca³oœæ)
     //! \param visible czy widoczny
     void rootVisibilityChanged(bool visible);
-	//! zmieniono szerokosc trajektorii
-	//! \param width nowa szerokosc
+	//! zmieniono szerokoœæ trajektorii
+	//! \param width nowa szerokoœæ
 	void widthChanged(double width);
-	//! zmieniony zostal poczaktowy czas, dla ktorej trajektoria jest widoczna
+	//! zmieniony zosta³ poczaktowy czas, dla którego trajektoria jest widoczna
 	//! \param time ustawiwany czas
 	void startTimeChanged(double time);
-    //! zmieniony zostal koncowy czas, dla ktorej trajektoria jest widoczna
+    //! zmieniony zosta³ koñcowy czas, dla którego trajektoria jest widoczna
     //! \param time ustawiwany czas
 	void endTimeChanged(double time);
-	//! Zmienil sie aktywny element drzewa
-	//! \param current 
-	//! \param previous 
+	//! zmieni³ siê aktywny element drzewa
+	//! \param current aktualnie aktywny element
+	//! \param previous poprzednio aktywny element
 	void treeItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous );
-	//! zmienil sie slider reprezentujacy poczatkowy czas, dla ktorej trajektoria jest widoczna
-	//! \param value 
+	//! zmieni³ siê slider reprezentujacy pocz¹tkowy czas, dla którego trajektoria jest widoczna
+	//! \param value nowa wartoœæ pocz¹tkowa slidra
     void startSliderChanged(int value);
-    //! zmienil sie slider reprezentujacy koncowy czas, dla ktorej trajektoria jest widoczna
-	//! \param value 
+    //! zmieni³ siê slider reprezentujacy koñcowy czas, dla którego trajektoria jest widoczna
+	//! \param value nowa wartoœæ koñcowa slidera
 	void endSliderChanged(int value);
 
 private:
@@ -69,16 +69,16 @@ private:
 	//! \param color kolor w formacie Qt 
     //! \return kolor w formacie RGBA(0-1)
 	osg::Vec4 transformColor(const QColor& color) const;
-	//! Metoda przechodzi przez drzewo i zwraca element, ktory zawiera w ktorejs kolumnie podany obiekt
+	//! Metoda przechodzi przez drzewo i zwraca element, który zawiera w którejœ kolumnie podany obiekt
 	//! \param object szukany obiekt
-    //! \return element drzwa lub wyjatek jesli takiego nie znaleziono
+    //! \return element drzwa lub wyj¹tek jeœli takiego nie znaleziono
 	QTreeWidgetItem* getItemWhichContains(QObject* object) const;
-	//! Pomocnicza metoda, zmienia kolor tla przycisku
-	//! \param button 
-	//! \param color 
+	//! Pomocnicza metoda, zmienia kolor t³a przycisku za pomoc¹ styli Qt
+	//! \param button przycisk ze zmienianym kolorem
+	//! \param color nowy kolor
 	void setButtonColor(QPushButton* button, const QColor& color);
-	//! blokuje sygnaly kontrolek modyfikujacych trajektorie
-	//! \param val 
+	//! blokuje sygnaly kontrolek modyfikuj¹cych trajektorie
+	//! \param val czy zablokowaæ / odblokowaæ
 	void blockAllSignals(bool val);
 
 private:
@@ -86,7 +86,7 @@ private:
 	TrajectoryDrawerPtr currentTrajectories;
     //! mapa element drzewa -> drawer z trajektoriami
     std::map<QTreeWidgetItem*, TrajectoryDrawerPtr> item2Trajectories;
-    //! mapa element drzewa -> drawer bedacy parentem dla drawera z trajektoriami
+    //! mapa element drzewa -> drawer bêd¹cy parentem dla drawera z trajektoriami
     std::map<QTreeWidgetItem*, OsgSchemeDrawerPtr> item2Root;
 };
 

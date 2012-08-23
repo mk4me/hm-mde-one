@@ -13,22 +13,22 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/c3d/C3DCollections.h>
 
-//! Klasa wizualizuje eventy na wykresie. Sa one reprezentowane jako szerokie pasy.
+//! Klasa wizualizuje eventy na wykresie. S¹ one reprezentowane jako szerokie pasy.
 //! Czerwone dla eventow lewych i zielone dla prawych
 class EventsPlotItem : public QwtPlotItem
 {
 public:
     //! Obiekt tworzony jest od razu z eventami 
-    //! \param events wskaznik do poprawnych danych
+    //! \param events wskaŸnik do poprawnych danych
     EventsPlotItem(EventsCollectionConstPtr events);
     virtual ~EventsPlotItem() {}
 
 public:
     //! Metoda dziedziczona z QwtPlotItem, odrysowywuje obiekt na wykresie
     //! \param painter obiekt paintera
-    //! \param xMap zapewnia konwersje wspolrzednych w poziomie
-    //! \param yMap zapewnia konwersje wspolrzednych w pionie
-    //! \param canvasRect obszar, ktory mozna zarysowac
+    //! \param xMap zapewnia konwersje wspó³rzêdnych w poziomie
+    //! \param yMap zapewnia konwersje wspó³rzêdnych w pionie
+    //! \param canvasRect obszar, który mo¿na zarysowac
     virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
     //! \return kolekcja z rysowanymi eventami
     EventsCollectionConstPtr getEvents() const { return events; }
@@ -39,7 +39,7 @@ private:
 
 };
 
-//! Klasa sluzy do ulatwienia obslugi eventow C3D w wizualizatorze
+//! Klasa s³u¿y do ulatwienia obs³ugi eventow C3D w wizualizatorze
 class EventsHelper
 {
 public:
@@ -47,16 +47,16 @@ public:
     typedef C3DEventsCollection::EventConstPtr EventConstPtr;
     typedef C3DEventsCollection::EventPtr EventPtr;
     typedef boost::shared_ptr<QwtPlotCurve> PlotCurvePtr;
-    //! segment oznaczajacy przedzial czasowy zwiazany z eventami
+    //! segment oznaczajacy przedzia³ czasowy zwiazany z eventami
     struct Segment 
     {
         //! pierszy event
         EventConstPtr event1;
         //! durgi event
         EventConstPtr event2;
-        //! poczatek czasu, w ktorym zaczyna sie event
+        //! pocz¹tek czasu, w którym zaczyna siê event
         timeType begin;
-        //! koniec czasu, w ktorm event sie konczy
+        //! koniec czasu, w którym event siê konczy
         timeType end;
         //! dane ze statystykami (znormalizowanego odcinka)
         ScalarChannelStatsPtr stats;
@@ -70,7 +70,7 @@ public:
     typedef boost::iterator_range<Segments::iterator> SegmentsRange;
 
 public:
-    //! konstruktor pobiera dane i zwiazane z nimi eventy
+    //! konstruktor pobiera dane i zwi¹zane z nimi eventy
     EventsHelper(EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar);
     //! \return eventy C3D
     EventsCollectionConstPtr getEvents() const { return events; }
@@ -78,7 +78,7 @@ public:
     const EventsPlotItem* getEventsItem() const { return eventsItem; }
     //! \return element wykresu odpowiedzialny za rysowanie eventow
     EventsPlotItem* getEventsItem() { return eventsItem; }
-    //! \return odpowiedni segment dla podanego czasu lub nullptr jesli takiego nie ma
+    //! \return odpowiedni segment dla podanego czasu lub nullptr jeœli takiego nie ma
     SegmentConstPtr getSegment(timeType time, C3DEventsCollection::Context context);
     //! \return zwraca segmenty dla prawej nogi
     SegmentsConstRange getRightSegments() const { return boost::make_iterator_range(rightSegments.cbegin(), rightSegments.cend()); }

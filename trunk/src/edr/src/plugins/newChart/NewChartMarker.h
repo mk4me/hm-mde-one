@@ -13,12 +13,12 @@
 #include <plugins/c3d/C3DChannels.h>
 
 //! Marker pokazujacy aktualny czas i wartosc krzywej
-//! Wykorzystuje juz istniejacy obiekt z Qwt
+//! Wykorzystuje ju¿ istniejacy obiekt z Qwt
 //! Dodatkowo wprowadza opoznienie przesuwania
 class NewChartMarker : public QwtPlotMarker
 {
 public:
-    //! konstruktor z podpietymi danymi
+    //! konstruktor z podpiêtymi danymi
     explicit NewChartMarker(ScalarChannelReaderInterfaceConstPtr reader);
     explicit NewChartMarker();
 	virtual ~NewChartMarker() {}
@@ -35,11 +35,11 @@ public:
     //! resetuje 'ped'. Pozycja etykiety wynika z punktu i przesuniecia
     void resetMomentum() const { positionSet = false; }
     //! ustawia wspoczynniki opoznienia
-    //! \param x wspolczynnik poziomy
-    //! \param y wspolczynnik pionowy
+    //! \param x wspó³czynnik poziomy
+    //! \param y wspó³czynnik pionowy
     void setLerpRatios(float x, float y) { lerpX = x; lerpY = y; }
-    //! ustawia jednolity wspolczynnik opoznienia
-    //! \param lerp wspolczynnik dla pionu i poziomu
+    //! ustawia jednolity wspó³czynnik opoznienia
+    //! \param lerp wspó³czynnik dla pionu i poziomu
     void setLerpRatios(float lerp) { lerpX = lerp; lerpY = lerp; }
 
 private:
@@ -47,7 +47,7 @@ private:
     ScalarChannelReaderInterfaceConstPtr reader;
     //! aktualna pozycja etykiety
     mutable QPointF position;
-    //! umozliwia opoznione ustawienie pozycji
+    //! umo¿liwia opoznione ustawienie pozycji
     mutable bool positionSet;
     //! poziomy wspoczynniki opoznienia
     float lerpX;

@@ -15,8 +15,8 @@
 class EDRDockWidgetSet;
 class HmmTreeItem;
 
-//! akcja obslugiwana w obrebie drzewa danych w analizach
-//! przechowuje dodatkowe informacje, ktore ulatwiaja tworzenie wizualizatorow i drzewa
+//! akcja obs³ugiwana w obrebie drzewa danych w analizach
+//! przechowuje dodatkowe informacje, które ulatwiaja tworzenie wizualizatorow i drzewa
 class ContextAction : public QAction
 {
     Q_OBJECT;
@@ -25,7 +25,7 @@ public:
     //! \param itemHelper helper przypiasany do elementu drzewa
     //! \param parent rodzic akcji
     //! \param vis wizualizator zwiazany z akcja
-    //! \param set set, do ktorego ma trafic wizualizator
+    //! \param set set, do którego ma trafic wizualizator
     ContextAction(HmmTreeItem* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), EDRDockWidgetSet* set = nullptr) :
       item(itemHelper), QAction(parent), visualizer(vis), set(set){}
 
@@ -34,7 +34,7 @@ public:
     HmmTreeItem* getTreeItem() const { return item; }
     //! \return wizualizator zwiazany z akcja
     VisualizerPtr getVisualizer() const { return visualizer.lock(); }
-    //! \return set, do ktorego ma trafic wizualizator lub nullptr jesli nie jest to sprecyzowane
+    //! \return set, do którego ma trafic wizualizator lub nullptr jeœli nie jest to sprecyzowane
     EDRDockWidgetSet* getDockSet() const { return set; }
 
 private:
@@ -42,7 +42,7 @@ private:
     HmmTreeItem* item;
     //! wizualizator zwiazany z akcja
     VisualizerWeakPtr visualizer;
-    //! set, do ktorego ma trafic wizualizator lub nullptr jesli nie jest to sprecyzowane
+    //! set, do którego ma trafic wizualizator lub nullptr jeœli nie jest to sprecyzowane
     EDRDockWidgetSet* set;
 };
 

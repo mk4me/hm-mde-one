@@ -21,37 +21,37 @@ class NewChartVerticals : public NewChartLabelState
 {
 public:
     //! Konstruktor
-    //! \param visualizer wizualizator, na ktorym stan bedzie operowal
-    //! \param style styl polaczen miedzy wskazywanymi przez etykiete punktami
+    //! \param visualizer wizualizator, na którym stan bêdzie operowa³
+    //! \param style styl po³¹czeñ miêdzy wskazywanymi przez etykiete punktami
     NewChartVerticals(NewChartVisualizer* visualizer, NewChartLabel::ConnectionStyle style);
     virtual ~NewChartVerticals() {}
 
 public:
-    //! Filtrowanie eventow Qt (glownie myszka) zarzadzanie etykietami
+    //! Filtrowanie eventow Qt (g³ównie myszka) zarz¹dzanie etykietami
     virtual bool stateEventFilter(QObject *, QEvent *);
-    //! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wskaznik (ulatwiajacy dodawanie nowych etykiet)
+    //! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wskaŸnik (ulatwiajacy dodawanie nowych etykiet)
     virtual void stateBegin();
-    //! konczy stan, usuwa dodatkowy wskaznik z wykresu
+    //! konczy stan, usuwa dodatkowy wskaŸnik z wykresu
     virtual void stateEnd();
 
 private:
     //! Wstawienie nowej etykiety
     //! \param point1 pierwszy wskazywany punkt
     //! \param point2 drugi wskazywany punkt
-    //! \param currentSerie seria, z ktora jest zwiazana etykieta
+    //! \param currentSerie seria, z która jest zwiazana etykieta
     //! \param color kolor obwodki etykiety
     void insertNewMarker(const QPointF& point1, const QPointF& point2, const NewChartSerie* currentSerie, const QColor& color = QColor(Qt::blue));
-    //! odswiezenie etykiet
+    //! odœwie¿enie etykiet
     void updateLabels();
 
 private:
-    //! dodatkowy wskaznik (ulatwiajacy dodawanie nowych etykiet)
+    //! dodatkowy wskaŸnik (ulatwiajacy dodawanie nowych etykiet)
     NewChartLabelPtr labelMarker;
-    //! etykieta, ktora jest obecnie przesuwana (moze to byc dowolna etykieta)
+    //! etykieta, która jest obecnie przesuwana (mo¿e to byæ dowolna etykieta)
     LabelDataConstPtr currentLabel;
     //! wybrany, pierwszy punkt
     boost::shared_ptr<std::pair<const NewChartSerie*, QPointF>> point1;
-    //! styl polaczenia (pionowe, poziome, proste)
+    //! styl po³¹czenia (pionowe, poziome, proste)
     NewChartLabel::ConnectionStyle style;
     //! marker obrazujacy pierwszy wskazywany punkt 
     NewChartMarker marker;

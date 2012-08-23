@@ -4,16 +4,16 @@
 #include <boost/utility.hpp>
 #include <plugins/kinematic/VisualizationScheme.h>
 
-//! Interfejs powinien byc zaimplementowany przez warstwe wizualizacji danych 3D.
-//! Stworzona klasa powinna czerpac dane ze schematu wizualizacji/
+//! Interfejs powinien byæ zaimplementowany przez warstwe wizualizacji danych 3D.
+//! Stworzona klasa powinna czerpaæ dane ze schematu wizualizacji
 class ISchemeDrawer : boost::noncopyable
 {
 public:
-    //! wywolywane cyklicznie odrysowanie (nie jest konieczne, jesli uzywamy osg)
+    //! wywo³ywane cyklicznie odrysowanie (nie jest konieczne, jeœli u¿ywamy osg)
     virtual void draw() = 0;
-    //! wywolywane, gdy schemat zmienil swoj stan
+    //! wywo³ywane, gdy schemat zmieni³ swój stan
     virtual void update() = 0;
-    //! wywolywane przed zakonczeniem pracy schematu wizulalizacji
+    //! wywo³ywane przed zakoñczeniem pracy schematu wizulalizacji
     virtual void deinit() = 0;
     //! inicjalizacja drawera
     //! \param scheme schemat wizualizacji z danymi

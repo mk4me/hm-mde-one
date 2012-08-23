@@ -12,22 +12,22 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
-//! Klasa dostarcza danych do wizualizacji kawalka krzywej zwiazanego z eventem
+//! Klasa dostarcza danych do wizualizacji kawalka krzywej zwi¹zanego z eventem
 class NewChartEventStateData : public QwtSeriesData<QPointF>
 {
 public:
     //! Konstruktor wymaga zasilenia obiektu w dane
     //! \param channel DataChannel z danymi dla krzywej
-    //! \param startTime poczatkowy czas dla eventu
-    //! \param endTime koncowy czas dla eventu
+    //! \param startTime pocz¹tkowy czas dla eventu
+    //! \param endTime koñcowy czas dla eventu
     NewChartEventStateData(ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime);
 
 public:
-    //! \return liczba probek przedzialu
+    //! \return liczba próbek przedzia³u
     virtual size_t size() const;
-    //! Zwraca probke z przedzialu eventa
-    //! \param i indeks probki
-    //! \return wartosc probki
+    //! Zwraca próbkê z przedzia³u eventa
+    //! \param i indeks próbki
+    //! \return wartosc próbki
     virtual QPointF sample( size_t i ) const;
     //! Obszar otaczajacy krzywa
     virtual QRectF boundingRect() const;
@@ -35,9 +35,9 @@ public:
 private:
     //! DataChannel z danymi dla krzywej
     ScalarChannelReaderInterfaceConstPtr channel;
-    //! indeks poczatkowego czas dla eventu
+    //! indeks pocz¹tkowego czas dla eventu
     int startIndex;
-    //! indeks koncowego czas dla eventu
+    //! indeks koñcowego czas dla eventu
     int endIndex;
 };
 

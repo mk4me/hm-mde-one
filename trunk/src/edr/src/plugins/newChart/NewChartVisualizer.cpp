@@ -470,7 +470,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
             for (unsigned int i = 0; i < series.size(); ++i) {
                 NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->curve));
                 if (series[i]->curve == curve) {
-                    // powinno wywolac sygnal, ktory ustawi aktywna serie
+                    // powinno wywo³ac sygnal, który ustawi aktywna serie
                     activeSerieCombo->setCurrentIndex(i);
                     legendLabel->setItemVisible(true);
                     series[i]->setVisible(true);
@@ -500,7 +500,7 @@ void NewChartVisualizer::onSerieSelected( QwtPlotItem* item)
     //QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
     //for (int i = series.size() - 1; i >= 0; --i) {
     //    if (series[i]->curve == curve) {
-    //        // powinno wywolac sygnal, ktory ustawi aktywna serie
+    //        // powinno wywo³ac sygnal, który ustawi aktywna serie
     //        activeSerieCombo->setCurrentIndex(i);
     //        return;
     //    }
@@ -717,7 +717,7 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
                         }
                     }
                 } else {
-                    // aktywna seria nie moze byc niewidoczna, trzeba zapobiegac tej sytuacji wylaczajac checkBoxa
+                    // aktywna seria nie mo¿e byæ niewidoczna, trzeba zapobiegac tej sytuacji wy³¹czaj¹c checkBoxa
                     UTILS_ASSERT(false, "Active serie has to be visible");
                 }
 

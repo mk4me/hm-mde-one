@@ -5,7 +5,7 @@
     author:   Mateusz Janiak
     
     purpose:  Klasa udostepniaj¹ca informacje o statusie podstawowych elementów
-              Dodatkowo umozliwa ich odœwie¿anie.
+              Dodatkowo umo¿liwa ich odœwie¿anie.
 *********************************************************************/
 #ifndef HEADER_GUARD___DATASOURCESTATUSMANAGER_H__
 #define HEADER_GUARD___DATASOURCESTATUSMANAGER_H__
@@ -92,7 +92,7 @@ public:
     //! Odœwie¿a status wszystkich plików
     void refreshFilesStatus();
 
-    //! Odœwie¿a status zadanych plików
+    //! Odœwie¿a status ¿¹danych plików
     void refreshFilesStatus(const std::set<int> & files);
 
     //! Odœwie¿a status zadanego pliku
@@ -145,10 +145,10 @@ public:
     //! \param fileID Identyfikator pliku którego status chcemy pobraæ
     //! \return Status pliku
     virtual const DataStatus & fileStatus(int fileID) const;
-	//! \param status Status danych dla którego chcemy pobrac ikonê
+	//! \param status Status danych dla którego chcemy pobraæ ikonê
 	//! \return Ikona dla danego statusu
 	static QIcon statusIcon(const communication::IDataStatus & status);
-	//! \param status Status danych dla którego chcemy pobrac ikonê
+	//! \param status Status danych dla którego chcemy pobraæ ikonê
 	//! \param icon Ikona dla danego statusu
 	static void setStatusIcon(const communication::IDataStatus & status, const QIcon & icon);
 

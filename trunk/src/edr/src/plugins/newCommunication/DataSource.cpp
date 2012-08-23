@@ -37,7 +37,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
 	//konfiguracja wsdlpulla �eby pisa� pliki tymczasowe tam gdzie mamy prawo zapisu
 	//pod windows
 	XmlUtils::TMPFILESDIR = core::getPathInterface()->getTmpPath().string();
-    // rev - zeby to przeszlo, w naglowku musial byc wywalony warunek na WIN32
+    // rev - zeby to przeszlo, w naglowku musial być wywalony warunek na WIN32
     WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();
 #endif
     WsdlPull::WsdlParser::useLocalSchema_ = false;
@@ -110,7 +110,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     //Zeruje aktualnego u�ytkownika
     currentUser_.setID(-1);
 
-    //tworze instancje obiektu zarzadzajacego �cie�kami danych u�ytkownik�w
+    //tworze instancje obiektu zarządzajacego �cie�kami danych u�ytkownik�w
     pathsManager = DataSourcePathsManager::create();
     //inicjuj� roota danych u�ytkownik�w podczas dzia�ania aplikacji (rozpakowywana z localStorage na bazie shallowCopy)
     pathsManager->setUsersDataPath(core::getPathInterface()->getTmpPath() / "data");
@@ -119,7 +119,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
 
 CommunicationDataSource::~CommunicationDataSource()
 {
-	//jesli ktos zalogowany to czyscimy
+	//jeśli ktos zalogowany to czyscimy
 	if(isLogged() == true){
 		try{
 			logout();
@@ -250,11 +250,11 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
 
         pathsManager->setUser(tmpUser);
 
-        //jesli mam pelna plytka kopie bazy danych
+        //jeśli mam pelna płytka kopie bazy danych
         if(isShallowCopyComplete() == true){
             setCurrentUser(tmpUser);
         }else{
-            //nie mam plytkiej kopi bazy danych wiec resetuje
+            //nie mam płytkiej kopi bazy danych wiec resetuje
             pathsManager->setUser(currentUser_);
         }
     }else{
@@ -264,7 +264,7 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
 
 	}
 
-    //jesli zalogowano poprawnie
+    //jeśli zalogowano poprawnie
     if(isLogged() == true){
         //tworz� �cie�ki dla danych u�ytkownika
         pathsManager->createUserDataPaths();
@@ -626,7 +626,7 @@ void CommunicationDataSource::extractDataFromLocalStorageToUserSpace(const Shall
         extractFileFromLocalStorageToUserSpace(file, file->isSessionFile() ? file->session->sessionName : file->trial->session->sessionName);
     }
 
-    //odsiwezamy pliki ktore teoretycznie powinny byc
+    //odsiwezamy pliki ktore teoretycznie powinny być
     for(auto it = toRefresh.begin(); it != toRefreshIT; ++it){
         auto file = prevShallowCopy.motionShallowCopy->files.find(*it)->second;
         auto filePath = pathsManager->filePath(file->fileName, file->isSessionFile() == true ? file->session->sessionName : file->trial->session->sessionName);

@@ -14,8 +14,8 @@
 
 class NewChartSeriesData;
 
-//! Klasa rozszerza podstawowa funkcjonalnosc Qwt przede wszystkim o mozliwosc transformacji (przesuniecie + skala)
-//! Pamietac nalezy, ze nie jest to QObject, dlatego trzeba uwazac przy zarzadzaniu pamiecia
+//! Klasa rozszerza podstawowa funkcjonalnosc Qwt przede wszystkim o mo¿liwoœæ transformacji (przesuniecie + skala)
+//! pamiêtaæ nale¿y, ze nie jest to QObject, dlatego trzeba uwazac przy zarz¹dzaniu pamiecia
 class NewChartCurve : public QwtPlotCurve
 {
 public:

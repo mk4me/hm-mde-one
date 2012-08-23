@@ -133,7 +133,7 @@ private:
         std::set<core::IParserPtr> parsers;
     };
 
-    //! Kolekcja parserów zarzadzanych przez DataManager
+    //! Kolekcja parserów zarz¹dzanych przez DataManager
     typedef std::set<ParserPtr> Parsers;
 
     //! S³ownik prototypów parserów wed³ug ID.
@@ -237,12 +237,12 @@ public:
     //! \return prototyp ObjectWrapper dla zadanego typu
     const core::ObjectWrapperConstPtr & getTypePrototype(const core::TypeInfo & typeInfo) const;
 
-    ////! \param sourceTypeInfo Typ z ktorego chcemy pobrac dane
-    ////! \param destTypeInfo Typ do ktorego chcemy zapisac dane
-    ////! \return true jesli typ Ÿród³owy wspiera typ docelowy lub sa identyczne
+    ////! \param sourceTypeInfo Typ z którego chcemy pobraæ dane
+    ////! \param destTypeInfo Typ do którego chcemy zapisac dane
+    ////! \return true jeœli typ Ÿród³owy wspiera typ docelowy lub s¹ identyczne
     bool isTypeCompatible(const core::TypeInfo & sourceTypeInfo, const core::TypeInfo & destTypeInfo) const;
 
-    //! Rejestruje zadany parser.
+    //! Rejestruje ¿¹dany parser.
     //! \param newService
     void registerParser(const core::IParserPtr & parser);
     //! \return Liczba niezainicjalizowanych parserów.
@@ -263,7 +263,7 @@ public:
 	//! \param object Obiekt dla którego pobieram metadane
 	//! \param metadataCollection [out] Kolekcja metadanych dla zadanego obiektu
 	virtual void getMetadataForObject(const core::ObjectWrapperConstPtr & object, std::vector<core::ObjectWrapperConstPtr> & metadataCollection) const;
-	//! \param typeInfo Typ danych dla których chcemy pobrac wszystkie metadane
+	//! \param typeInfo Typ danych dla których chcemy pobraæ wszystkie metadane
 	//! \param metadataCollection [out] Kolekcja metadanych dla zadanego obiektu
 	//! \param exact Czy mamy do³anczaæ metadane typów pochodnych
 	virtual void getMetadataForType(const core::TypeInfo & typeInfo, std::vector<core::ObjectWrapperConstPtr> & metadataCollection, bool exact = true) const;
@@ -274,7 +274,7 @@ public:
     //! \return Hierarchia typow danych - jakie operacje moge realizowac, po czym dziedzicze
     virtual const core::TypeInfoSet & getTypeBaseTypes(const core::TypeInfo & type) const;
 
-    //! \return Hierarchia typow danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i moze byc downcastowany na mnie
+    //! \return Hierarchia typow danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
     virtual const core::TypeInfoSet & getTypeDerrivedTypes(const core::TypeInfo & type) const;
 
     //core::IMemoryDataManager
@@ -283,23 +283,23 @@ public:
     //! \param objects Zbiór obiektów domenowych zarz¹dzanych przez ten DataManager
     virtual void getManagedData(core::Objects & objects) const;
 
-    //! \param Obiekt ktory chcemy inicjalizowaæ
+    //! \param Obiekt który chcemy inicjalizowaæ
     virtual void initializeData(core::ObjectWrapperPtr & data);
 
-    //! \param Obiekt dla ktorego chcemy wykonac deinicjalizacje
+    //! \param Obiekt dla którego chcemy wykonaæ deinicjalizacje
     virtual bool isInitializable(const core::ObjectWrapperPtr & data) const;
 
-    //! \param Obiekt ktory chcemy deinicjalizowaæ - dalej jest w DataManager ale nie zawiera danych - trzeba potem inicjalizowaæ
+    //! \param Obiekt który chcemy deinicjalizowaæ - dalej jest w DataManager ale nie zawiera danych - trzeba potem inicjalizowaæ
     virtual void deinitializeData(core::ObjectWrapperPtr & data);
 
 private:
 
 	void removeDataImpl(const core::ObjectWrapperPtr & data);
 
-	//! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
+	//! \param Obiekt który zostanie usuniety jeœli zarz¹dza nim DataManager
 	virtual void nonNotifyRemoveData(const core::ObjectWrapperPtr & data);
 
-    //! \param Obiekt ktory zostanie utrwalony w DataManager i bêdzie dostepny przy zapytaniach, nie morze byc niezainicjowany - isNull musi byæ false!!
+    //! \param Obiekt który zostanie utrwalony w DataManager i bêdzie dostêpny przy zapytaniach, nie morze byæ niezainicjowany - isNull musi byæ false!!
     virtual void nonNotifyAddData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer = core::DataInitializerPtr());
 
     virtual const core::ObjectWrapperPtr & getObjectWrapperForRawPtr(const void * ptr) const;
@@ -322,14 +322,14 @@ public:
     //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) ZWALNIAMY ZASOBY, ALE ZEZWALAMY PONOWNIE NA LENIWA INICJALIZACJE
     virtual void deinitializeFile(const core::Filesystem::Path & file);
 
-    //! \param files Zbior plikow dla ktorych chcemy pobrac liste obiektow
-    //! \return Mapa obiektow wzgledem plikow z ktorych pochodza
+    //! \param files Zbior plikow dla których chcemy pobraæ liste obiektów
+    //! \return Mapa obiektów wzgledem plikow z których pochodza
     virtual void  getObjectsForFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects) const;
 
     //! \return true jeœli rozszerznie jest wspierane przez DataManager, w przeciwnym wypadku false
     virtual bool isExtensionSupported(const std::string & extension) const;
 
-    //! \return Zbior obslugiwanych rozszerzen plikow wraz z ich opisem
+    //! \return Zbior obs³ugiwanych rozszerzen plikow wraz z ich opisem
     virtual const Extensions & getSupportedFilesExtensions() const;
 
     virtual const ExtensionDescription & getExtensionDescription(const std::string & extension) const;

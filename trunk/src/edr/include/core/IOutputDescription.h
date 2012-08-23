@@ -51,7 +51,7 @@ public:
 
 public:
     //! Pobiera informacje o typach wyjœæ. Kolejnoœæ obowi¹zuje potem w metodzie process.
-    //! \param output Obiekt umozliwiaj¹cy zapis danych wyjsciowych - zapis zawsze jest mo¿liwy!!
+    //! \param output Obiekt umo¿liwiaj¹cy zapis danych wyjsciowych - zapis zawsze jest mo¿liwy!!
     virtual void getOutputInfo( std::vector<OutputInfo> & output ) = 0;
 
     virtual ~IOutputDescription() {}

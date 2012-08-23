@@ -26,7 +26,7 @@ public:
 
 protected:
     //! Tworzy serie danych
-    //! \param visualizer wizualizator, ktory bedzie tworzyl serie
+    //! \param visualizer wizualizator, który bêdzie tworzy³ serie
     //! \param path sciezka dla timeline
     //! \param series tutaj trafia stworzone serie
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series) = 0;
@@ -37,13 +37,13 @@ public:
     //! \return czy obiekt zawiera dane
     virtual bool isDataItem() const { return true; }
     //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, ktory bedzie tworzyl serie
+    //! \param visualizer wizualizator, który bêdzie tworzy³ serie
     //! \param path sciezka dla timelin
     //! \param series tutaj trafia stworzone serie
     void getSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
-    //! \return zwraca probe pomiarowa powiazana z danym helperem 
+    //! \return zwraca próbê pomiarowa powiazana z danym helperem 
     PluginSubject::MotionConstPtr getMotion() const { return motion; }
-    //! ustawia probe pomiarowa powiazana z danym helperem
+    //! ustawia próbê pomiarowa powiazana z danym helperem
     //! \param val 
     void setMotion(PluginSubject::MotionConstPtr val) { motion = val; }
     //! \return tekst do GUI (np. summary window)
@@ -56,7 +56,7 @@ public:
 private:
     //! utworzony przez helper wizualizator
     VisualizerPtr createdVisualizer;
-    //! proba pomiarowa powiazana z danym helperem
+    //! próba pomiarowa powiazana z danym helperem
     PluginSubject::MotionConstPtr motion;
     //! tekst GUI (np. summary window)
     QString text;
@@ -86,12 +86,12 @@ private:
     TreeItemHelperPtr helper;
 };
 
-//! Klasa, dzieki ktorej mozna stworzyc wiecej wizualizatorow (na podstawie childow)
-//! dodatkowo mozna wymusic ich specyficzny uklad
+//! Klasa, dziêki której mo¿na stworzyæ wiecej wizualizatorow (na podstawie childow)
+//! dodatkowo mo¿na wymusic ich specyficzny uk³ad
 class ChildrenVisualizers : public QTreeWidgetItem
 {
 public:
-    //! uklad tworzonych wizualizatorow
+    //! uk³ad tworzonych wizualizatorow
     enum PlacePolicy 
     {
         Horizontal,
@@ -99,22 +99,22 @@ public:
         Auto
     };
 
-    //! Konstuktor, mozna ustawic uklad wizualizatorow
+    //! Konstuktor, mo¿na ustawic uk³ad wizualizatorow
     //! \param policy 
     ChildrenVisualizers(PlacePolicy policy = Auto);
-    //! \return uklad tworzonych wizualizatorow
+    //! \return uk³ad tworzonych wizualizatorow
     ChildrenVisualizers::PlacePolicy getPolicy() const { return policy; }
-    //! 
-    //! \param val 
+    //! Polityka podzia³u wizualizatorów dla potomnych elementów
+    //! \param val polityka (podzia³ pionowy, poziomy, ...)
     void setPolicy(ChildrenVisualizers::PlacePolicy val) { policy = val; }
 
 private:
-    //! uklad tworzonych wizualizatorow
+    //! uk³ad tworzonych wizualizatorow
     PlacePolicy policy;
 };
 
 //! Najbardziej podstawowy helper dla drzewa danych
-//! Tworzy domyslny wizualizator dla wrappera, bez dodatkowych operacji
+//! Tworzy domyœlny wizualizator dla wrappera, bez dodatkowych operacji
 class TreeWrappedItemHelper : public TreeItemHelper
 {
 public:
@@ -125,7 +125,7 @@ public:
 
 public:
     //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, ktory bedzie tworzyl serie
+    //! \param visualizer wizualizator, który bêdzie tworzy³ serie
     //! \param path sciezka dla timelin
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
@@ -153,7 +153,7 @@ public:
     //! Tworzy wizualizator newChart
     virtual VisualizerPtr createVisualizer();
     //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, ktory bedzie tworzyl serie
+    //! \param visualizer wizualizator, który bêdzie tworzy³ serie
     //! \param path sciezka dla timelin
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
@@ -174,7 +174,7 @@ public:
 
 public:
     //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, ktory bedzie tworzyl serie
+    //! \param visualizer wizualizator, który bêdzie tworzy³ serie
     //! \param path sciezka dla timelin
     //! \param series tutaj trafia stworzone serie
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
@@ -190,7 +190,7 @@ typedef core::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPt
 class NewMultiserieHelper : public TreeItemHelper
 {
 public:
-    //! Krotka : obiekt; zwiazane z nim eventy; proba, z ktorej pochodzi
+    //! Krotka : obiekt; zwi¹zane z nim eventy; próba, z której pochodzi
     struct ChartWithDescription 
     {
         core::ObjectWrapperConstPtr wrapper;
@@ -210,7 +210,7 @@ public:
     //! \param charts kolekcja wrapperow, wraz z opisem (eventy + motion)
     NewMultiserieHelper(const ChartWithDescriptionCollection& charts);
     //! Koknstruktor
-    //! \param charts kolekcja wrapperow, ich opis wypelniany pustymi obiektami
+    //! \param charts kolekcja wrapperow, ich opis wype³niany pustymi obiektami
     NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts);
     
 public:
@@ -218,7 +218,7 @@ public:
     //! \param strategy 
     void setColorStrategy(IMultiserieColorStrategyConstPtr strategy) { colorStrategy = strategy; }
     //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, ktory bedzie tworzyl serie
+    //! \param visualizer wizualizator, który bêdzie tworzy³ serie
     //! \param path sciezka dla timelin
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
@@ -249,12 +249,12 @@ class JointsItemHelper : public TreeItemHelper
 {
 public:
     //! Konstruktor
-    //! \param motion motion, z ktorego beda wyciagane elementy do stworzenia JointAnglesCollection
+    //! \param motion motion, z którego beda wyciagane elementy do stworzenia JointAnglesCollection
     JointsItemHelper(const PluginSubject::MotionConstPtr & motion);
 
 public:
     //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, ktory bedzie tworzyl serie
+    //! \param visualizer wizualizator, który bêdzie tworzy³ serie
     //! \param path sciezka dla timelin
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
@@ -264,23 +264,23 @@ public:
     std::vector<core::TypeInfo> getTypeInfos() const;
 
 private:
-    //! motion, z ktorego beda wyciagane elementy do stworzenia JointAnglesCollection
+    //! motion, z którego beda wyciagane elementy do stworzenia JointAnglesCollection
     PluginSubject::MotionConstPtr motion;
 };
 typedef core::shared_ptr<JointsItemHelper> JointsItemHelperPtr;
 typedef core::shared_ptr<const JointsItemHelper> JointsItemHelperConstPtr;
 
-//! klasa pomocnicza przy tworzeniu zbiorczego widoku 3d (markery + jointy + plyty GRF)
+//! klasa pomocnicza przy tworzeniu zbiorczego widoku 3d (markery + jointy + p³yty GRF)
 class Multiserie3D : public TreeItemHelper
 {
 public:
     //! Konstruktor
-    //! \param motion proba pomiarowa, z ktorej beda wyciagane elementy 3D
+    //! \param motion próba pomiarowa, z której beda wyciagane elementy 3D
     Multiserie3D(const PluginSubject::MotionConstPtr & motion);
 
 public:
     //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, ktory bedzie tworzyl serie
+    //! \param visualizer wizualizator, który bêdzie tworzy³ serie
     //! \param path sciezka dla timelin
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
@@ -290,7 +290,7 @@ public:
     std::vector<core::TypeInfo> getTypeInfos() const;
 
 private:
-    //! proba pomiarowa, z ktorej beda wyciagane elementy 3D
+    //! próba pomiarowa, z której beda wyciagane elementy 3D
     PluginSubject::MotionConstPtr motion;
 };
 typedef core::shared_ptr<Multiserie3D> Multiserie3DPtr;

@@ -49,7 +49,7 @@ void LocalDataLoader::run()
 
 	auto localStorage = DataSourceLocalStorage::instance();
 
-	//jesli mamy synchronizacjê to próbujemy parsowaæ dane, ustawiæ je, jesli wszystko ok to ³adujemy do localstorage
+	//jeœli mamy synchronizacjê to próbujemy parsowaæ dane, ustawiæ je, jeœli wszystko ok to ³adujemy do localstorage
 	if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest && sourceWidget->downloadCanceled == false){
 		communication::ShallowCopy shallowCopy;
 		try{
@@ -314,7 +314,7 @@ void DataSourceWidget::refreshStatus()
 	QApplication::processEvents();
 	//odœwie¿am status plików
 	dataSource->fileStatusManager->refreshFilesStatus();
-	//odœwie¿am status pe³nej plytkiej kopii
+	//odœwie¿am status pe³nej p³ytkiej kopii
 	dataSource->fullShallowCopyStatus->setShallowCopy(&dataSource->fullShallowCopy);
 	//odœwie¿am status przefiltrowanej p³ytkiej kopii
 	filteredShallowCopyStatus->setShallowCopy(&filteredShallowCopy);
@@ -330,7 +330,7 @@ void DataSourceWidget::refreshStatus(const std::set<int> & filesIDs)
 {
 	//odœwie¿am status plików
 	dataSource->fileStatusManager->refreshFilesStatus(filesIDs);
-	//odœwie¿am status pe³nej plytkiej kopii
+	//odœwie¿am status pe³nej p³ytkiej kopii
 	dataSource->fullShallowCopyStatus->refreshDataStatus(filesIDs);
 	//odœwie¿am status przefiltrowanej p³ytkiej kopii
 	filteredShallowCopyStatus->refreshDataStatus(filesIDs);
@@ -691,7 +691,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 			}else{
 
 				//pobierz datê ostatenij modyfikacji i porównaj
-				//jesli nowsza to zaproponuj synchronizacjê
+				//jeœli nowsza to zaproponuj synchronizacjê
 				//jeœli odmówi za³aduj ju¿ sparsowan¹ p³ytk¹ kopiê bazy danych
 				try{
 					auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
@@ -1392,7 +1392,7 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 
 void DataSourceWidget::updateShallowCopy()
 {
-	//lokujemy - nie mo¿na teraz zmieniæ uzytkownika z zewn¹trz
+	//lokujemy - nie mo¿na teraz zmieniæ u¿ytkownika z zewn¹trz
 	//w sumie powinniœmy lokowac ca³e Ÿród³o
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourcePathsManager::instance());
 	if(dataSource->isShallowCopyComplete() == true && dataSource->isShallowCopyCurrent() == true){
@@ -1752,7 +1752,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					}
 
 
-					//sprawdzamy joint angles - jesli nie ma budujemy i dodajemy do DM
+					//sprawdzamy joint angles - jeœli nie ma budujemy i dodajemy do DM
 					core::ObjectWrapperConstPtr dataWrapper;
 					core::ObjectWrapperConstPtr modelWrapper;
 					for (auto it = motionObjects.begin(); it != motionObjects.end(); ++it) {

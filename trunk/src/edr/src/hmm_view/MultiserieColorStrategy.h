@@ -46,7 +46,7 @@ public:
     }
 };
 
-//! podawane sa dwa kolory, strategia dostarcza losowy kolor interpolowany pomiedzy nimi
+//! podawane s¹ dwa kolory, strategia dostarcza losowy kolor interpolowany pomiêdzy nimi
 class RandomBetweenMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:

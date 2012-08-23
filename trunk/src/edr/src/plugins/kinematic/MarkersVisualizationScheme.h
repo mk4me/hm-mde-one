@@ -12,7 +12,7 @@
 
 #include "VisualizationScheme.h"
 
-//! polaczenie miedzy kolekcja markerow a ich wizualizacja
+//! po³¹czenie miêdzy kolekcj¹ markerów a ich wizualizacj¹
 class MarkersVisualizationScheme : public VisualizationScheme
 {
 public:
@@ -20,40 +20,40 @@ public:
     MarkerCollectionConstPtr getMarkers() const;
     //! \return czas trwania animacji
     virtual double getDuration() const;
-    //! \return czy poprawne dane zostaly dostarczone?
+    //! \return czy poprawne dane zosta³y dostarczone?
     virtual bool hasData() const;
-    //! \return srodek geometryczny
+    //! \return œrodek geometryczny
     virtual osg::Vec3 getCurrentPosition() const;
-    //! \return srodek geometryczny
-    //! \param time czas, dla ktorego zwracamy srodek geometryczny
+    //! \return œrodek geometryczny
+    //! \param time czas, dla którego zwracamy œrodek geometryczny
     osg::Vec3 getRootPosition(double time) const;
     //! ustawienie kolekcji z markerami
     //! \param val obiekt z markerami
     void setMarkers(MarkerCollectionConstPtr val);
-    //! ustawienie polaczen i ich kolorow
-    //! \param vsk parser z wczytanymi danymi nt. polaczen markerow
+    //! ustawienie po³¹czeñ i ich kolorow
+    //! \param vsk parser z wczytanymi danymi nt. po³¹czeñ markerów
     void setMarkersDataFromVsk(kinematic::VskParserConstPtr vsk);
 
 protected:
     //! aktualizacja schematu
-    //! \param time czas, dla ktorego dokonywana jest aktualizacja
+    //! \param time czas, dla którego dokonywana jest aktualizacja
     virtual void update( double time );
 
 private:
-    //! odswiezenie informacji o markerach
-    //! \param time czas, dla ktorego dokonywana jest aktualizacja
+    //! odœwie¿enie informacji o markerach
+    //! \param time czas, dla którego dokonywana jest aktualizacja
     void updateMarkers(double time);
-    //! Oblicza typowa dlugosc pomiedzy dwoma markerami, odleglosci liczone sa 100 razy dla animacji, tworzony jest histogram
+    //! Oblicza typowa d³ugoœæ pomiêdzy dwoma markerami, odleg³oœci liczone s¹ 100 razy dla animacji, tworzony jest histogram
     //! \param channel1 pierwszy marker
     //! \param channel2 drugi marker
-    //! \param epsilon przedzial histogramu
-    //! \return typowa dlugosc miedzy markerami
+    //! \param epsilon przedzia³ histogramu
+    //! \return typowa d³ugoœæ miêdzy markerami
     float getStickLength( VectorChannelConstPtr channel1, VectorChannelConstPtr channel2, float epsilon = 0.001f );
 
 private:
     //! kolekcja z markerami
     MarkerCollectionConstPtr markers;
-    //! aktualny srodek geometryczny
+    //! aktualny œrodek geometryczny
     osg::Vec3 currentPosition;
 };
 typedef core::shared_ptr<MarkersVisualizationScheme> MarkersVisualizationSchemePtr;

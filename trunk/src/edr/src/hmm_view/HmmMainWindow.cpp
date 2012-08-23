@@ -87,7 +87,7 @@ void HmmMainWindow::activateContext(QWidget * widget)
 
     setCurrentContext(toSet);
 
-    // hack - nie da sie zinstalowac dwoch filtrow eventow dla jednego widgeta,
+    // hack - nie da siê zinstalowac dwoch filtrow eventow dla jednego widgeta,
     // obecne rozwiazanie jest specyficzne dla kontekstow
     VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(toSet);
     if (vw) {
@@ -267,7 +267,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         dataTabWidget->addTab(dataExplorer->getWidget(&settingsWidgetActions), QString::fromStdString(dataExplorer->getName()));
     }
 
-    //chowamy zak³adki jesli tylko jedno Ÿród³o
+    //chowamy zak³adki jeœli tylko jedno Ÿród³o
     if(dataTabWidget->count() == 1){
         QList<QTabBar*> tabBars = dataTabWidget->findChildren<QTabBar*>();
         for(auto it = tabBars.begin(); it != tabBars.end(); ++it){
@@ -833,7 +833,7 @@ void HmmMainWindow::onToolButton(bool checked)
 {
     QToolButton* button = qobject_cast<QToolButton*>(sender());
 
-    //zawsze ktorys button z podstawowych musi byc klikniety/checked
+    //zawsze którys button z podstawowych musi byæ klikniety/checked
     if(currentButton == button){
         if(checked == false){
             button->blockSignals(true);
@@ -895,7 +895,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  VisualizerWidget* HmmMainWindow::createDockVisualizer(const VisualizerPtr & visualizer)
 {
     visualizer->getOrCreateWidget();
-    // todo : zastanowic sie nad bezpieczenstwem tej operacji
+    // todo : zastanowic siê nad bezpieczenstwem tej operacji
     connect(visualizer.get(), SIGNAL(printTriggered(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
     VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer, nullptr, 0, false);
     visualizerDockWidget->setPermanent(false);
@@ -1212,8 +1212,8 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          for (auto it = range.first; it != range.second; ) {
              // na razie kopia, w przeciwnym razie jest problem z usuwaniem.
              DataItemDescription desc = it->second;
-             // jesli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
-             // to znaczy, ze chcemy usunac dane z wszystkich wizualizatorw
+             // jeœli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
+             // to znaczy, ze chcemy usun¹æ dane z wszystkich wizualizatorw
              if (action->getVisualizer() == nullptr || desc.visualizer.lock() == action->getVisualizer()) {
                  auto toErase = it; ++it;
                  items2Descriptions.erase(toErase);

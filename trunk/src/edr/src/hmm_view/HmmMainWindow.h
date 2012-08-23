@@ -38,7 +38,7 @@ class ContextEventFilter;
 class ContextAction;
 
 //! Klasa realizuje widok aplikacji dla medykow
-//! Z czasem klasa zaczela sie rozrastac, wymaga glebszej refaktoryzacji
+//! Z czasem klasa zaczela siê rozrastac, wymaga glebszej refaktoryzacji
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain, protected IAppUsageContextManager
 {
     Q_OBJECT
@@ -46,38 +46,38 @@ private:
 	friend class ContextEventFilter;
     friend class SummaryWindowController; //tymczasowo
 
-    //! Obserwuje Memory data manager. Jezeli dane sie zmienia, to odswiezone zostanie drzewo.
+    //! Obserwuje Memory data manager. Jezeli dane siê zmienia, to odswiezone zostanie drzewo.
     class DataObserver : public utils::Observer<core::IMemoryDataManager>
     {
     public:
         //! 
         //! \param hmm 
         DataObserver(HmmMainWindow* hmm) : hmm(hmm), motionsCount(0) {}
-        //! wywolywane, gdy dane sie zmieniaja, metoda odswieza drzewa analiz
+        //! wywo³ywane, gdy dane siê zmieniaja, metoda odœwie¿a drzewa analiz
         //! \param subject 
         virtual void update( const core::IMemoryDataManager * subject );
 
     private:
-        //! obiekt, ktory bedzie odswiezany po zmianie danych
+        //! obiekt, który bêdzie odœwie¿any po zmianie danych
         HmmMainWindow* hmm;
         //! do okreslania zmiany stanu
         int motionsCount;
     };
     typedef core::shared_ptr<DataObserver> DataObserverPtr;
 
-    //! sluzy do przechowywania informacji o utworzonych wizualizatorach i ich seriach, uzywane w mapie itemHelper -> itemDesc
+    //! s³u¿y do przechowywania informacji o utworzonych wizualizatorach i ich seriach, u¿ywane w mapie itemHelper -> itemDesc
     struct DataItemDescription 
     {
-        //! Konstruktor wypelnia wszystkie pola struktury 
+        //! Konstruktor wype³nia wszystkie pola struktury 
         //! \param visualizer 
         //! \param series 
         //! \param widget 
         DataItemDescription(VisualizerWeakPtr visualizer, const std::vector<core::VisualizerTimeSeriePtr>& series, VisualizerWidget* widget);
-        //! serie danych podpiete pod wizualizator, slaby wskaznik zapobiega "trzymaniu danych"
+        //! serie danych podpiête pod wizualizator, slaby wskaŸnik zapobiega "trzymaniu danych"
         std::vector<core::VisualizerTimeSerieWeakPtr> series;
-        //! wizualizator z seriami, slaby wskaznik zapobiega "trzymaniu danych"
+        //! wizualizator z seriami, slaby wskaŸnik zapobiega "trzymaniu danych"
         VisualizerWeakPtr visualizer;
-        //! widget, w ktory reprezentuje wizualizator
+        //! widget, w który reprezentuje wizualizator
         VisualizerWidget* visualizerWidget;
     };
 
@@ -97,45 +97,45 @@ public:
     virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
     //! \return aktualnie zaladowane sesje pomiarowe
     const std::vector<PluginSubject::SessionConstPtr>& getCurrentSessions();
-    //! dodanie glownego elementu (topItem) do drzewa danych w analizach
+    //! dodanie g³ównego elementu (topItem) do drzewa danych w analizach
     //! \param item dodawany element
     void addItemToTree(QTreeWidgetItem* item);
     //! czyszczenie drzewa danych w analizach
     void clearTree();
     //! Pobiera menu kontekstowe dla wybranego elementu drzewa analiz
     //! \param parent rodzic tworzonego menu
-    //! \param helper item drzewa, dla ktorego tworzone jest menu
+    //! \param helper item drzewa, dla którego tworzone jest menu
     //! \return utworzone menu
     QMenu* getContextMenu( QWidget* parent, HmmTreeItem* helper );
     //! \return widget (zakladka) z analizami
     const AnalisisWidget* getAnalisis() const { return analisis; }
-    //! Tworzy raport, zakladka z raportami staje sie aktywna
+    //! Tworzy raport, zakladka z raportami staje siê aktywna
     //! \param html tresc raportu w formie ograniczonego przez Qt html-a
     void createRaport( const QString& html );
     //! Ustawienie kontekstu na konkretny wizualizator
-    //! \param visWidget wizualizator, dla ktorego aktywuje sie kontekst
+    //! \param visWidget wizualizator, dla którego aktywuje siê kontekst
     virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
 
 public slots:
-    //! odswiezenie drzewa danych z zakladki analiz
+    //! odœwie¿enie drzewa danych z zakladki analiz
     void refreshTree();
 
 private slots:
-    //! wywolywane po nacisnieciu about
+    //! wywo³ywane po nacisnieciu about
     void onAbout();
     //! Po zniszczeniu wizualizatora trzeba go wyrejstrowac z kontekstow
     //! \param visualizer niszczony wizualizator
     void visualizerDestroyed(QObject * visualizer);
     //! kliknieto filtr, trzeba utworzyc drzewo
-    //! \param entry filtr, ktory zostal klikniety
+    //! \param entry filtr, który zosta³ klikniety
     void filterClicked(FilterEntryWidget* entry);
     //! Kliknieto prawym przyciskiem na drzewie, trzeba pokazac menu kontekstowe
-    //! \param pos pozycja, w ktora kliknieto
+    //! \param pos pozycja, w która kliknieto
     void onTreeContextMenu(const QPoint & pos);
     //! Dodanie pixmapy do raportow
     //! \param pixmap dodawana pixmapa
     void addToRaports(const QPixmap& pixmap);
-    //! tworzy nowy wizualizator na podstwie wywolanej akcji
+    //! tworzy nowy wizualizator na podstwie wywo³anej akcji
     void createNewVisualizer();
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w nowej zakladce
     void createVisualizerInNewSet();
@@ -149,55 +149,55 @@ private slots:
     void allYFromSession();
     //! Tworzy wizualizator 2D z wszystkimi seriami Z danego typu wystepujacymi w sesji
     void allZFromSession();
-    //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepujacymi w sesji, ktore zostaly znormalizowane w kontekscie krokow lewej nogi
+    //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepujacymi w sesji, które zosta³y znormalizowane w kontekscie krokow lewej nogi
     void allLeftNormalized();
-    //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepujacymi w sesji, ktore zostaly znormalizowane w kontekscie krokow prawej nogi
+    //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepujacymi w sesji, które zosta³y znormalizowane w kontekscie krokow prawej nogi
     void allRightNormalized();
-    //! Tworzy wizualizator 2D na podstawie danych (przypisanych do elementu drzewa analiz), ktore zostaly znormalizowane w kontekscie krokow lewej nogi
+    //! Tworzy wizualizator 2D na podstawie danych (przypisanych do elementu drzewa analiz), które zosta³y znormalizowane w kontekscie krokow lewej nogi
     void normalizedLeftChart();
-    //! Tworzy wizualizator 2D na podstawie danych (przypisanych do elementu drzewa analiz), ktore zostaly znormalizowane w kontekscie krokow prawej nogi
+    //! Tworzy wizualizator 2D na podstawie danych (przypisanych do elementu drzewa analiz), które zosta³y znormalizowane w kontekscie krokow prawej nogi
     void normalizedRightChart();
-    //! Na podstawie elementu drzewa usuwa zwiazane z nim serie danych z wszystkich wizualizatorow
+    //! Na podstawie elementu drzewa usuwa zwi¹zane z nim serie danych z wszystkich wizualizatorow
     void removeFromAll();
-    //! Na podstawie elementu drzewa dodaje zwiazane z nim serie do podswietlonego wizualizatora
+    //! Na podstawie elementu drzewa dodaje zwi¹zane z nim serie do podswietlonego wizualizatora
     void addToVisualizer();
     //! Podswietla wizualizator na podstawie obiektu ContextAction
     void menuHighlightVisualizer(QAction* action = nullptr);
-    //! Zmienila sie aktywnosc jednej z grupy filtrow, moze byc aktywna tylko jedna
-    //! \param active czy grupa jest aktywna, jesli tak to wszystkie pozostale staja sie nieaktywne
+    //! zmieni³a siê aktywnosc jednej z grupy filtrow, mo¿e byæ aktywna tylko jedna
+    //! \param active czy grupa jest aktywna, jeœli tak to wszystkie pozostale staja siê nieaktywne
     void filterGroupActivated(bool active);
-    //! zostal klikniety przycisk z glownym kontekstem aplikacji (Dane, analizy, ...)
+    //! zosta³ klikniety przycisk z g³ównym kontekstem aplikacji (Dane, analizy, ...)
     //! \param checked 
     void onToolButton(bool checked);
 
 private:
-    //! Timeline staje sie widoczny, o ile juz nie jest
+    //! Timeline staje siê widoczny, o ile ju¿ nie jest
     void showTimeline();
-    //! Czy pod element drzewa podpiete sa jakies dane
+    //! Czy pod element drzewa podpiête s¹ jakieœ dane
     //! \param item badany element
     //! \return 
     bool isDataItem(QTreeWidgetItem * item);
     //! Tworzy zakladke z filtrami
     void createFilterTabs();
-    //! Tworzy zakladke z filtrami (glowne filtry)
+    //! Tworzy zakladke z filtrami (g³ówne filtry)
     void createFilterTab1();
     //! Tworzy zakladke z filtrami (filtry dla jednostek chorobowych)
     void createFilterTab2();
-    //! metoda przechodzi przez cala kolekcje i usuwa te wpisy, ktorych weak pointery przestaly juz istniec
+    //! metoda przechodzi przez cala kolekcje i usuwa te wpisy, których weak pointery przesta³y ju¿ istnieæ
     //! \param multimap sprawdzana kolekcja
     void dropUnusedElements(std::multimap<TreeItemHelperPtr, DataItemDescription>& multimap);
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
-    //! \param hmmItem wybrany item, na podstwie ktorego tworzony jest wizualizator
-    //! \param dockSet set, do ktorego ma byc dodany element, jesli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
+    //! \param hmmItem wybrany item, na podstwie którego tworzony jest wizualizator
+    //! \param dockSet set, do którego ma byæ dodany element, jeœli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
     //! \return utworzony dockWidget z wizualizatorem
     VisualizerWidget* createAndAddDockVisualizer( HmmTreeItem* hmmItem, EDRDockWidgetSet* dockSet);
-    //! wywolywane, gdy jakis widget dostaje focusa.
+    //! wywo³ywane, gdy jakis widget dostaje focusa.
     //! wykorzystywane na potrzeby kontekstow flexi bara
-    //! Hack - dodatkowo podpina sie pod to okienko summary
-    //! \param widget widget, ktory dostaje focusa
+    //! Hack - dodatkowo podpina siê pod to okienko summary
+    //! \param widget widget, który dostaje focusa
     void activateContext(QWidget * widget);
-    //! wywolywane, gdy obslugiwany widget nie ma juz focusa
-    //! \param widget widget, ktory stracil focus
+    //! wywo³ywane, gdy obs³ugiwany widget nie ma ju¿ focusa
+    //! \param widget widget, który stracil focus
     void deactivateContext(QWidget * widget);
     //! Opakowuje wizualizator w DockWidget
     //! \param visualizer wizualizator do opakowania
@@ -208,24 +208,24 @@ private:
     //! \param visualizer 
     void registerVisualizerContext( EDRTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer );	
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
-    //! \param item wybrany item, na podstwie ktorego tworzony jest wizualizator
-    //! \param dockSet set, do ktorego ma byc dodany element, jesli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
+    //! \param item wybrany item, na podstwie którego tworzony jest wizualizator
+    //! \param dockSet set, do którego ma byæ dodany element, jeœli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
     void createNewVisualizer( HmmTreeItem* item, EDRDockWidgetSet* dockSet = nullptr );
-    //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepujacymi w sesji, ktore zostaly znormalizowane w kontekscie krokow
-    //! \param helper element, dla ktorego zostanie utworzony wizualizator
+    //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepujacymi w sesji, które zosta³y znormalizowane w kontekscie krokow
+    //! \param helper element, dla którego zostanie utworzony wizualizator
     //! \param context kontekst krokow (lewy, prawy)
     void createNormalizedFromAll( NewVector3ItemHelperPtr helper, c3dlib::C3DParser::IEvent::Context context );
-    //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepujacymi w sesji, ktore zostaly znormalizowane w kontekscie krokow
-    //! \param helper element, dla ktorego zostanie utworzony wizualizator
+    //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepujacymi w sesji, które zosta³y znormalizowane w kontekscie krokow
+    //! \param helper element, dla którego zostanie utworzony wizualizator
     //! \param context kontekst krokow (lewy, prawy)
     void createNormalized( NewVector3ItemHelperPtr helper, c3dlib::C3DParser::IEvent::Context context );
     //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie i konkretnym kanale) wystepujacymi w sesji
-    //! \param helper element, dla ktorego zostanie utworzony wizualizator
-    //! \param channelNo numer kanalu (0 - X, 1 - Y, 2 - Z)
+    //! \param helper element, dla którego zostanie utworzony wizualizator
+    //! \param channelNo numer kana³u (0 - X, 1 - Y, 2 - Z)
     void allTFromSession( NewVector3ItemHelperPtr helper, int channelNo );
     //! Usuwa serie z wizualizatora
     //! \param action akcja zawierajaca dane o seriach i wizualizatorze
-    //! \param once czy usunac z wszystkich, czy tylko ze wskazanego wizualizatora
+    //! \param once czy usun¹æ z wszystkich, czy tylko ze wskazanego wizualizatora
     void removeFromVisualizers( ContextAction* action, bool once );
     //! podswietla wizualizator zolta ramka, inne traca podswietlenie
     //! \param visualizer wizualizator do podswietlenia
@@ -235,7 +235,7 @@ private:
 	typedef std::pair<AppUsageContextPtr, QWidget*> ContextState;
 
 private:
-    //! kolekcja z aktualnie obslugiwanymi sesjami
+    //! kolekcja z aktualnie obs³ugiwanymi sesjami
     std::vector<PluginSubject::SessionConstPtr> currentSessions;
     // TODO, tu jest blad, obiekt jest zawsze nullem
     VisualizerWidget* currentVisualizer;    
@@ -245,7 +245,7 @@ private:
     QMainWindow* bottomMainWindow;
     //! widget, gdzie trafiaja filtry analiz
     std::vector<DataFilterWidget*> dataFilterWidgets;
-    //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z ktorego elementu powstaly
+    //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z którego elementu powsta³y
     std::multimap<TreeItemHelperPtr, DataItemDescription> items2Descriptions;
     //! widget z analizami
     AnalisisWidget* analisis;
@@ -291,7 +291,7 @@ private:
     SummaryWindowPtr summaryWindow;
     //! kontrolek okienka z podsumowaniami
     SummaryWindowController* summaryWindowController;
-    //! zarzadza odswiezaniem drzewa danych w analizach
+    //! zarz¹dza odœwie¿aniem drzewa danych w analizach
     TreeRefresher treeRefresher;
 };
 

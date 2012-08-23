@@ -86,11 +86,11 @@ private:
 
         virtual const core::ObjectWrapperConstPtr & getData() const;
 
-        //! \return Dlugosc kanalu w sekundach
+        //! \return d³ugoœæ kana³u w sekundach
         virtual double getLength() const;
 
         //! Czas zawiera siê miêdzy 0 a getLength()
-        //! \param time Aktualny, lokalny czas kanalu w sekundach
+        //! \param time Aktualny, lokalny czas kana³u w sekundach
         virtual void setTime(double time);
 
     private:
@@ -135,12 +135,12 @@ public:
 
     virtual int getMaxDataSeries() const;
 
-    //! \return Seria danych ktora mozna ustawiac - nazwa i dane, nie zarzadza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
+    //! \return Seria danych która mo¿na ustawiac - nazwa i dane, nie zarz¹dza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
     virtual core::IVisualizer::TimeSerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
 
     virtual core::IVisualizer::TimeSerieBase* createSerie(const core::IVisualizer::SerieBase * serie);
 
-    //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
+    //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarz¹dzamy ni¹ my!!
     virtual void removeSerie(core::IVisualizer::SerieBase* serie);
 
     virtual void reset();

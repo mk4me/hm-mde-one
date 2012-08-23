@@ -94,11 +94,11 @@ private slots:
     void playbackDirectionChanged(bool backward);
     //! \param pauseTimeline Czy wstrzymujemy timeline
     void pause(bool pauseTimeline);
-    //! \brief Cofa czas do poczatku
+    //! \brief Cofa czas do pocz¹tku
     void toBegin();
     //! \brief Ustawia czas na koñcu
     void toEnd();
-    //! \brief Zatrzymuje timeline i wraca do poczatku
+    //! \brief Zatrzymuje timeline i wraca do pocz¹tku
     void stop();
     //! \param state Stan checkboxa zwi¹zanego z danym kana³em
     void channelsActivityChanged(int state);
@@ -153,7 +153,7 @@ private:
     QWidget * timelineTabs;
     //! lewy kontener na kontrolki timeline - kierunek i precyzyjny czas
     QToolBar * leftTabButton;
-    //! œrodkowy kontener na kontrolki timeline - do poczatku, odtwarzaj/pauza, stop, do konca
+    //! œrodkowy kontener na kontrolki timeline - do pocz¹tku, odtwarzaj/pauza, stop, do konca
     QToolBar * middleTabButton;
     //! prawy kontener na kontrolki timeline - aktualnie pusty
     QToolBar * rightTabButton;

@@ -20,7 +20,7 @@ class IForcePlatform
 {
 public:
     //! Interfejs wykrytego kroku na plycie pomiarowej.
-    //! W tym przypadku jako krok, bierze sie moment, w ktorym cala stopa spoczywa na plycie pomiarowej
+    //! W tym przypadku jako krok, bierze siê moment, w którym cala stopa spoczywa na plycie pomiarowej
     class IStep {
         public:
             virtual ~IStep() {}
@@ -28,11 +28,11 @@ public:
             virtual float getStartTime() const = 0;
             //! \return czas zakonczenia kroku
             virtual float getEndTime() const = 0;
-            //! \return punkt, w ktorym znajduje sie koniec stopy (pieta)
+            //! \return punkt, w którym znajduje siê koniec stopy (pieta)
             virtual osg::Vec3 getStartPoint() const = 0;
-            //! \return punkt, w ktorym znajduje sie poczatek stopy (palce)
+            //! \return punkt, w którym znajduje siê pocz¹tek stopy (palce)
             virtual osg::Vec3 getEndPoint() const = 0;
-            //! \return czy dane zawarte w klaasie sa poprawne
+            //! \return czy dane zawarte w klasie s¹ poprawne
             virtual bool isValid() const = 0;
     };
     typedef core::shared_ptr<IStep> IStepPtr;
@@ -50,25 +50,25 @@ public:
 public:
     //! \return wykryte kroki (w rozumieniu IStep)
     virtual StepsConstRange getSteps() const = 0;
-    //! \return srodek plyty pomiarowej
+    //! \return œrodek p³yty pomiarowej
     virtual osg::Vec3 getCenter() const = 0;
-    //! \return szerokosc plyty pomiarowej
+    //! \return szerokoœæ p³yty pomiarowej
     virtual float getWidth() const = 0;
-    //! \return dlugosc plyty pomiarowej
+    //! \return d³ugoœæ p³yty pomiarowej
     virtual float getLength() const = 0;
-    //! Metoda pozwala okreslic orientacje plyty pomiarowej
+    //! Metoda pozwala okreslic orientacje p³yty pomiarowej
     //! \return kolejnosc wystapienia wiercholkow (lewy prawy = 1, prawy lewy = -1)
     virtual float getSignX() const = 0;
-    //! Metoda pozwala okreslic orientacje plyty pomiarowej
+    //! Metoda pozwala okreslic orientacje p³yty pomiarowej
     //! \return kolejnosc wystapienia wiercholkow (gora dol = 1, dol gora = -1)
     virtual float getSignY() const = 0;
-    //! \return kanal z odpowiadajaca plycie sila
+    //! \return kana³ z odpowiadajaca plycie sila
     virtual GRFChannelConstPtr getForceChannel() const = 0;
-    //! \return kanal z odpowiadajaca plycie momentem sily
+    //! \return kana³ z odpowiadajaca plycie momentem sily
     virtual GRFChannelConstPtr getMomentChannel() const = 0;
-    //! Metoda liczy odleglosc danego punktu od srodka plyty pomiarowej
+    //! Metoda liczy odleg³oœæ danego punktu od srodka p³yty pomiarowej
     //! \param vec dany punkt
-    //! \return zmierzona odleglosc
+    //! \return zmierzona odleg³oœæ
     float getDistanceToCenter(const osg::Vec3& vec) const {
         return (getCenter() - vec).length();
     }

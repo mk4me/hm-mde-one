@@ -16,7 +16,7 @@
 namespace communication
 {
 
-//! Interfejs klasy z danymi uzytkownika
+//! Interfejs klasy z danymi u퓓tkownika
 class IUser
 {
 public:
@@ -29,7 +29,7 @@ public:
     //! \return Nazwa u퓓tkownika z bazy
     virtual const std::string & name() const = 0;
 
-    //! \return Prawa uzytkownika
+    //! \return Prawa u퓓tkownika
     virtual const IUserPrivilages & userPrivilages() const = 0;
     //! \return Dane u퓓tkownika
     virtual const IUserData & userData() const = 0;

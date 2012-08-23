@@ -23,7 +23,7 @@
 class IFilterCommand
 {
 public:
-    //! jesli komenda dostarcza konfiguratora to powinien on zwrocic jedna z tych wartosci
+    //! jeœli komenda dostarcza konfiguratora to powinien on zwrocic jedna z tych wartosci
     enum ConfigurationResult
     {
         OK,
@@ -40,18 +40,18 @@ public:
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) = 0;
     //! resetuje ustawienia konfiguratora
     virtual void reset() {}
-    //! \return widget z konfiguratorem lub nullptr jesli nie jest on dostarczany
+    //! \return widget z konfiguratorem lub nullptr jeœli nie jest on dostarczany
     virtual QWidget* getConfigurationWidget() { return nullptr; }
 };
 typedef boost::shared_ptr<IFilterCommand> IFilterCommandPtr;
 typedef boost::shared_ptr<const IFilterCommand> IFilterCommandConstPtr;
 
-//! komenda bez konfiguratora, ktora tworzy przefiltrowane drzewo na podstawie filtra danych
+//! komenda bez konfiguratora, która tworzy przefiltrowane drzewo na podstawie filtra danych
 class SimpleFilterCommand : public IFilterCommand
 {
 public:
     //! Konstruktor
-    //! \param dataFilter filtr danych, ktory bedzie uzyty do tworzenia drzewa
+    //! \param dataFilter filtr danych, który bêdzie u¿yty do tworzenia drzewa
     SimpleFilterCommand(PluginSubject::DataFilterPtr dataFilter);
 
 public:
@@ -64,7 +64,7 @@ public:
     }
 
 private:
-    //! filtr danych, ktory bedzie uzyty do tworzenia drzewa
+    //! filtr danych, który bêdzie u¿yty do tworzenia drzewa
     PluginSubject::DataFilterPtr dataFilter;
 };
 typedef boost::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;

@@ -83,7 +83,7 @@ public:
         return videoStream->getFrameCount() == 0;
     }
 
-    //! \param idx Indeks probki
+    //! \param idx Indeks próbki
     //! \return Wartosc czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
@@ -91,8 +91,8 @@ public:
         return static_cast<time_type>(videoStream->getFrameDuration() * idx);
     }
 
-    //! \param idx Indeks probki
-    //! \return Wartosc probki dla danego indeksu
+    //! \param idx Indeks próbki
+    //! \return Wartosc próbki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         static VideoImageOsgPtr ret;

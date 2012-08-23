@@ -100,7 +100,7 @@ private slots:
 	//! Zmieniamy metode dzia³ania - online lub offline
 	void connectionModeChanged();
 
-    //! Odswieza status danych
+    //! odœwie¿a status danych
     void refreshStatus();
     //! Odœwie¿a status po œci¹ganiu danych
     void refreshStatusAfterDownload();

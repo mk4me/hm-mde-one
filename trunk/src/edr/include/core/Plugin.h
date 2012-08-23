@@ -122,7 +122,7 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
     instance->addObjectWrapperFactory<className>();
 
 
-//! Interfejs pluginu przez który dostarczane sa us³ugi (serwisy) i prototypy elementów przetwarzaj¹cych dane
+//! Interfejs pluginu przez który dostarczane s¹ us³ugi (serwisy) i prototypy elementów przetwarzaj¹cych dane
 class IPlugin : IIdentifiable
 {
 public:

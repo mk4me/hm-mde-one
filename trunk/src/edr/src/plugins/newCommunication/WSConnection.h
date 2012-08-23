@@ -40,7 +40,7 @@ public:
 	typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
 
 public:
-	//! Domyslny konstruktor
+	//! domyœlny konstruktor
 	WSConnection();
 
 	//! Wirtualny destruktor

@@ -187,21 +187,21 @@ void GlPointSchemeDrawer::changeColorIfNecessary( TransformPtr point, const Visu
             GeometryPtr customSphere;
             if (found != spheresByColor.end()) {
                 if (found->second == geode->getDrawable(0)) {
-                    // sfera istnieje, i jest ta sama, ktora jest podpieta pod geode
+                    // sfera istnieje, i jest ta sama, która jest podpieta pod geode
                     // oznacza to, ze kolor jest ten sam, nic nie trzeba robic
                     return;
                 } else {
-                    // kolor sie zmienil, ale mamy juz sfere w odpowiednim kolorze,
+                    // kolor siê zmieni³, ale mamy ju¿ sfere w odpowiednim kolorze,
                     // podpinamy ja pod geode
                     geode->removeDrawable(geode->getDrawable(0));
                     geode->addDrawable(found->second);
                 }
             } else {
-                // nie ma sfery w odpowiednim kolorze, trzeba ja sobie stworzyc.
+                // nie ma sfery w odpowiednim kolorze, trzeba ja sobie stworzyæ.
                 // complex - dokladnosc sfery
                 auto newSphere = createCustomSphere(complex, state.color);
                 spheresByColor[state.color] = newSphere;
-                // stara sfere trzeba usunac z node'a
+                // stara sfere trzeba usun¹æ z node'a
                 geode->removeDrawable(geode->getDrawable(0));
                 geode->addDrawable(newSphere);
             }

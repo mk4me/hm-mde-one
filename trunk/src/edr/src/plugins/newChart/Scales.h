@@ -12,7 +12,7 @@
 
 #include <limits>
 
-//! Prosta klasa, ulatwiajaca zarzadzac ekstremami wykresu
+//! Prosta klasa, ulatwiajaca zarz¹dzac ekstremami wykresu
 class Scales
 {
 public:
@@ -47,13 +47,13 @@ public:
     float getXMax() const { return xMax; }
     //! 
     float getXMin() const { return xMin; }
-    //! \return czy obiekt juz zostal zainicjalizowany poprawnymi danymi
+    //! \return czy obiekt ju¿ zosta³ zainicjalizowany poprawnymi danymi
     bool isInitialized() const { return initialized; }
 
 public:
     //! resetowanie ustawien, zostawia obiekt niezainicjalizowany
     void clear() { initialized = false; }
-    //! Laczy obiekt z drugim obiektem tego samego typu, w razie potrzeby zmieniane sa ekstrema
+    //! Laczy obiekt z drugim obiektem tego samego typu, w razie potrzeby zmieniane s¹ ekstrema
     //! \param scales drugi obiekt z ekstremami
     void merge(const Scales& scales);
 
@@ -66,7 +66,7 @@ private:
     float yMin;
     //! wartosc maksymalna na wykresie
     float yMax;
-    //! flaga okresla, czy obiekt juz zostal zainicjalizowany poprawnymi danymi
+    //! flaga okresla, czy obiekt ju¿ zosta³ zainicjalizowany poprawnymi danymi
     bool initialized;
 };
 

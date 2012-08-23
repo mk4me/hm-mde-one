@@ -30,10 +30,10 @@ public:
     //! wczytuje pliki z rozmieszczeniem obszarow konfiguratora
     //! \param frontXml plik z obszarami dla przodu postaci
     //! \param backXml plik z obszarami dla tylu postaci
-    //! \param names mapa [nazwa elementu - > nazwa do wyswietlenia]
+    //! \param names mapa [nazwa elementu - > nazwa do wyœwietlenia]
     void loadConfigurations(const QString& frontXml, const QString& backXml, const  std::map<QString, std::pair<QString, QString>>& names);
-    //! Ustawia widocznosc elementow w konfiguratorze
-    //! \param visibles mapa [nazwa -> czy element ma byc widoczny]
+    //! Ustawia widocznoœæ elementow w konfiguratorze
+    //! \param visibles mapa [nazwa -> czy element ma byæ widoczny]
     void setVisibles(const std::map<QString, bool>& visibles);
 
 signals:
@@ -41,13 +41,13 @@ signals:
     //! \param name nazwa elementu
     //! \param  
     void itemSelected(const QString& name, bool);
-    //! Element zostal najechany myszka
+    //! Element zosta³ najechany myszka
     //! \param name nazwa elementu
     //! \param selected 
     void elementHovered(const QString& name, bool selected);
 
 private slots:
-    //! element zostal najechany przez myszke
+    //! element zosta³ najechany przez myszke
     //! \param name nazwa elementu
     //! \param selected
     void onElementHovered(const QString& name, bool selected);
@@ -68,9 +68,9 @@ private:
     //! \param name nazwa pliku do wczytania
     //! \param x pozycja x
     //! \param y pozycja y
-    //! \param alwaysVisible czy obrazek ma byc widoczny zawsze
+    //! \param alwaysVisible czy obrazek ma byæ widoczny zawsze
     void loadPicture(ConfigurationPainter& painter, const QString& name, int x, int y, bool alwaysVisible = false);
-    //! laduje plik xml z zapisanymi obszarami w postaci markerow lub obrazkow
+    //! laduje plik xml z zapisanymi obszarami w postaci markerów lub obrazkow
     //! \param painter konfigurowany painter, tam trafia wczytane obszary
     //! \param filename sciezka do pliku
     void loadXml(ConfigurationPainter& painter, const QString& filename);
@@ -87,17 +87,17 @@ private:
     //! Ustawia obrazek z tlem
     //! \param painter modyfikowany painter
     //! \param name nazwa widoku
-    //! \param pixmap obrazek tla
+    //! \param pixmap obrazek t³a
     void setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap);
 
 private:
-    //! painter, ktory rysuje przod podstaci
+    //! painter, który rysuje przod podstaci
     ConfigurationPainter painterFront;
-    //! painter, ktory rysuje tyl podstaci
+    //! painter, który rysuje tyl podstaci
     ConfigurationPainter painterBack;
     //! aktualny painter
     ConfigurationPainter* currentPainter;
-    //! layout ze scrollem (jesli widget nie miesci sie w wyznaczonym miejscu)
+    //! layout ze scrollem (jeœli widget nie miesci siê w wyznaczonym miejscu)
     QHBoxLayout scrollLayout;
     //! czy konfigurator aktualnie pokazuje przod postaci
     bool isFront;

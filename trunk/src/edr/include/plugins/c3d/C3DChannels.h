@@ -90,15 +90,15 @@ public:
         return vector->getLength();
     }
 
-    //! \param idx Indeks probki
+    //! \param idx Indeks próbki
     //! \return Wartosc czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
         return vector->argument(idx);
     }
 
-    //! \param idx Indeks probki
-    //! \return Wartosc probki dla danego indeksu
+    //! \param idx Indeks próbki
+    //! \return Wartosc próbki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         return vector->value(idx)[index];
@@ -218,15 +218,15 @@ public:
         return static_cast<size_type>(startIndex * (1.0f - x) + endIndex * x);
     }
 
-    //! \param idx Indeks probki
+    //! \param idx Indeks próbki
     //! \return Wartosc czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
         return static_cast<time_type>(idx * 100) / size();
     }
 
-    //! \param idx Indeks probki
-    //! \return Wartosc probki dla danego indeksu
+    //! \param idx Indeks próbki
+    //! \return Wartosc próbki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         return reader->value(transformIndex(idx));
@@ -364,7 +364,7 @@ public:
 };
 
 
-//! Podstawa dla kanalu analogowego zapisanego w pliku c3d
+//! Podstawa dla kana³u analogowego zapisanego w pliku c3d
 class C3DAnalogChannel : public ScalarChannel
 {
 protected:
@@ -397,7 +397,7 @@ protected:
 };
 typedef boost::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
 
-//! Kanal EMG
+//! kana³ EMG
 class EMGChannel : public C3DAnalogChannel
 {
 public:
@@ -423,7 +423,7 @@ typedef boost::shared_ptr<const EMGChannel> EMGChannelConstPtr;
 
 
 
-//! Kanal GRF
+//! kana³ GRF
 class GRFChannel : public VectorChannel
 {
 friend class C3DParser;
@@ -494,7 +494,7 @@ public:
         //std::string name = x->getLabel().erase( remove( str.begin(), str.end(), 'x' ), str.end() );
         setName(name);
         setValueBaseUnit(x->getUnit());
-        //? w pliku c3d nie pojawia sie cos takiego jak jednostka czasu, dlatego mozna przyjac sekundy
+        //? w pliku c3d nie pojawia siê cos takiego jak jednostka czasu, dlatego mo¿na przyjac sekundy
         setTimeBaseUnit("s");
 
         if (dataStartSet) {
@@ -538,7 +538,7 @@ private:
 typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
 typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
-//! Kanal zawiera dane o jednym markerze
+//! kana³ zawiera dane o jednym markerze
 class MarkerChannel : public VectorChannel
 {
 public:

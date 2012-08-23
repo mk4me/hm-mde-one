@@ -6,13 +6,13 @@ transformNode(new osg::PositionAttitudeTransform()),
     matrixTransform(new osg::MatrixTransform()),
     time(0.0)
 {
-    // wezel obslugiwany przez manipulatory jest parentem dla wezja wewnetrznego serii
+    // wêze³ obs³ugiwany przez manipulatory jest parentem dla wezja wewnetrznego serii
     matrixTransform->addChild(transformNode);
 }
 
 void KinematicSerie::resetTransform()
 {
-    // zerowanie pracy manipulatorow
+    // zerowanie pracy manipulatorów
     MatrixTransformPtr transform = getMatrixTransformNode();
     // pobieramy podstawowa macierz (dla czasu 0)
     transform->setMatrix(getInitialMatrix());
@@ -30,7 +30,7 @@ void KinematicSerie::setTime( double val )
 osg::Vec3 KinematicSerie::getPivot() const
 {
     // w najprostszym wariancie, pivot pobieramy od razu z macierzy
-    // klasy pochodne moga to robic w inny sposob
+    // klasy pochodne moga to robic w inny sposób
     auto matrix = matrixTransform->getMatrix();
     auto t1 = matrix.getTrans();
     return t1;

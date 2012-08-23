@@ -19,7 +19,7 @@
 #include "GlPointSchemeDrawer.h"
 #include "ui_TrajectoriesDialog.h"
 
-//! Dialog Qt sluzacy do zarzadzania widocznoscia elementow na scenie
+//! Dialog Qt s³u¿¹cy do zarz¹dzania widocznoœcia elementow na scenie
 class SchemeDialog : public QDialog, private Ui::TrajectoriesDialog
 {
 	Q_OBJECT;
@@ -29,16 +29,16 @@ public:
 	SchemeDialog(QWidget* parent);
 
 public:
-    //! Dodanie do dialogu drawera, ktory bedzie modyfikowany
+    //! Dodanie do dialogu drawera, który bêdzie modyfikowany
     //! \param drawer obiekt drawera osg
-    //! \param rootName wyswietlana nazwa
+    //! \param rootName wyœwietlana nazwa
 	void setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName);
 
 private slots:
-    //! zmieniono vidocznosc pojedynczego wezla
+    //! zmieniono widocznoœæ pojedynczego wêz³a
     //! \param visible czy widoczny
     void visibilityChanged(bool visible);
-    //! zmieniono widocznosc roota (dziala na calosc)
+    //! zmieniono widocznoœæ roota (dzia³a na ca³oœæ)
     //! \param visible czy widoczny
     void rootVisibilityChanged(bool visible);
     //! zmieniono kolor
@@ -53,20 +53,22 @@ private:
     //! \param color kolor w formacie Qt 
     //! \return kolor w formacie RGBA(0-1)
     osg::Vec4 transformColor(const QColor& color) const;
-    //! Metoda przechodzi przez drzewo i zwraca element, ktory zawiera w ktorejs kolumnie podany obiekt
+    //! Metoda przechodzi przez drzewo i zwraca element, który zawiera w którejœ kolumnie podany obiekt
     //! \param object szukany obiekt
-    //! \return element drzwa lub wyjatek jesli takiego nie znaleziono
+    //! \return element drzwa lub wyj¹tek jeœli takiego nie znaleziono
     QTreeWidgetItem* getItemWhichContains(QObject* object) const;
-    //! Pomocnicza metoda, zmienia kolor tla przycisku
-    //! \param button 
-    //! \param color 
+    //! Pomocnicza metoda, zmienia kolor t³a przycisku za pomoc¹ stylów Qt
+    //! \param button przycisk, któremu zmienione zostanie t³o
+    //! \param color nowy kolor przycisku
     void setButtonColor(QPushButton* button, const QColor& color);
-    //! blokuje sygnaly kontrolek modyfikujacych trajektorie
-    //! \param val 
+    //! blokuje sygnaly kontrolek modyfikuj¹cych trajektorie
+    //! \param val czy zablokowaæ, czy odblokowaæ
 	void blockAllSignals(bool val);
 
 private:
+    //! mapa (element drzewa - > krotka(punkty, linie, nr markera))
     std::map<QTreeWidgetItem*, boost::tuple<GlPointSchemeDrawerPtr, GlLineSchemeDrawerPtr, int>> item2Drawer;
+    //! mapa (element drzewa -> g³owny drawer obiektu powi¹zanego z elementem drzewa)
     std::map<QTreeWidgetItem*, OsgSchemeDrawerPtr> item2Root;
 };
 

@@ -78,7 +78,7 @@ void AnalisisWidget::filterClicked( FilterEntryWidget* filter )
         if (configurationWidget->layout()) {
             delete configurationWidget->layout();
         }
-        // TODO zrobic to w lepszy sposob...
+        // TODO zrobic to w lepszy sposób...
         const QObjectList& childList = configurationWidget->children();
         for (int i = childList.size() - 1; i >= 0; --i) {
             QWidget* w = qobject_cast<QWidget*>(childList.at(i));

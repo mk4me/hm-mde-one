@@ -54,7 +54,7 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 		VectorChannelConstPtr channel = markers->getChannel(i);
 
 		// stateset colowo jest generowany dla kazdej trajektorii osobno
-		// mozna w ten sposob zmieniac grubosc linii, itp.
+		// mo¿na w ten sposób zmieniac gruboœæ linii, itp.
 		osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 		stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 		stateset->setMode( GL_BLEND, osg::StateAttribute::ON );

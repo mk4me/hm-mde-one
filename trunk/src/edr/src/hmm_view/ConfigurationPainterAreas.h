@@ -30,19 +30,19 @@ public:
     //!
     //! \param val
     virtual void setX(int val) = 0;
-    //! \return szerokosc obszaru
+    //! \return szerokoœæ obszaru
     virtual int getWidth() const = 0;
-    //! \return wysokosc obszaru
+    //! \return wysokoœæ obszaru
     virtual int getHeight() const = 0;
     //! \return nazwa przypisana do obszaru
     virtual const QString& getName() const = 0;
-    //! pozwala odrysowac sie obiektowi
+    //! pozwala odrysowac siê obiektowi
     //! \param painter obiekt paintera
     //! \param selected czy obiekt jest zaznaczony
     virtual void draw(QPainter& painter, bool selected) = 0;
-    //! czy podany punkt znajduje sie wewnatrz obszaru
-    //! \param x wspolrzedna x
-    //! \param y wspolrzedna y
+    //! czy podany punkt znajduje siê wewnatrz obszaru
+    //! \param x wspó³rzêdna x
+    //! \param y wspó³rzêdna y
     virtual bool isInside(int x, int y) const;
     //! czy obszar jest aktywny (normalnie - czy kliknieto w niego myszka)
     bool isActive() const { return active; }
@@ -78,7 +78,7 @@ public:
     //! \param name nazwa punktu
     //! \param posX pozycja x
     //! \param posY pozycja y
-    //! \param r promien rysowanego kola
+    //! \param r promieñ rysowanego kola
     SingleMarker(const QString& name, int posX, int posY, int r);
 
 public:
@@ -98,7 +98,7 @@ public:
     virtual int getHeight() const { return getScale() * (2 * r); }
     //!
     virtual const QString& getName() const { return name; }
-    //! pozwala odrysowac sie obiektowi
+    //! pozwala odrysowac siê obiektowi
     //! \param painter obiekt paintera
     //! \param selected czy marker jest zaznaczony przez myszke
     virtual void draw(QPainter& painter, bool selected);
@@ -111,7 +111,7 @@ private:
     int posX;
     //! pozycja y
     int posY;
-    //! promien odrysowywanego kola
+    //! promieñ odrysowywanego kola
     int r;
     //! nazwa obiektu
     QString name;
@@ -130,14 +130,14 @@ public:
     //! \param name nazwa obrazka do wczytania
     //! \param posX pozycja x
     //! \param posY pozycja y
-    //! \param alwaysVisible czy obrazek ma byc zawsze widoczny
+    //! \param alwaysVisible czy obrazek ma byæ zawsze widoczny
     SinglePicture(const QString& name, int x = 0, int y = 0, bool alwaysVisible = false);
     //! Konstruktor
     //! \param name nazwa obszaru
-    //! \param pixmap wyswietlany obrazek
+    //! \param pixmap wyœwietlany obrazek
     //! \param x pozycja x
     //! \param y pozycja y
-    //! \param alwaysVisible czy obrazek ma byc zawsze widoczny
+    //! \param alwaysVisible czy obrazek ma byæ zawsze widoczny
     SinglePicture(const QString& name, const QPixmapPtr& pixmap, int x = 0, int y = 0, bool alwaysVisible = false);
 
 public:
@@ -157,22 +157,22 @@ public:
     virtual int getHeight() const { return getScale() * (pixmap->height()); }
     //!
     virtual const QString& getName() const { return name; }
-    //! pozwala odrysowac sie obiektowi
+    //! pozwala odrysowac siê obiektowi
     //! \param painter obiekt paintera
     //! \param selected czy marker jest zaznaczony przez myszke
     virtual void draw(QPainter& painter, bool selected);
-    //! czy podany punkt znajduje sie wewnatrz obszaru
-    //! \param x wspolrzedna x
-    //! \param y wspolrzedna y
+    //! czy podany punkt znajduje siê wewnatrz obszaru
+    //! \param x wspó³rzêdna x
+    //! \param y wspó³rzêdna y
     virtual bool isInside(int x, int y) const;
 
 public:
-    //! \return wyswietlany obrazek
+    //! \return wyœwietlany obrazek
     QPixmapConstPtr getPixmap() const { return pixmap; }
 
 public:
     //! ustawia nowa wartosc przezroczystosci obrazka
-    //! \param pixmap obrazek, ktorego alpha sie zmienia
+    //! \param pixmap obrazek, którego alpha siê zmienia
     //! \param alpha nowa wartosc przezroczystosci
     static void setPixmapAlpha(QImage& pixmap, unsigned int alpha);
 
@@ -180,15 +180,15 @@ public:
 private:
     //! nazwa obszaru
     QString name;
-    //! wyswietlany obrazek
+    //! wyœwietlany obrazek
     QPixmapPtr pixmap;
-    //! kopia obrazka ze zmieniona alpha (wyswietlane, gdy zaznacza sie obszar)
+    //! kopia obrazka ze zmieniona alpha (wyœwietlane, gdy zaznacza siê obszar)
     QPixmapPtr alphaPixmap;
     //! pozycja x
     int x;
     //! pozycja y
     int y;
-    //! czy obrazek ma byc zawsze widoczny
+    //! czy obrazek ma byæ zawsze widoczny
     bool alwaysVisible;
 };
 typedef boost::shared_ptr<SinglePicture> SinglePicturePtr;

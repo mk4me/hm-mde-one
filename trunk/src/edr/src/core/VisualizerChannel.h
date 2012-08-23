@@ -31,11 +31,11 @@ public:
 	//! \return Sklonowany kana³
 	virtual VisualizerChannel * clone() const;
 
-	//! \return Dlugosc kanalu w sekundach
+	//! \return d³ugoœæ kana³u w sekundach
 	virtual double getLength() const;
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
-	//! \param time Aktualny, lokalny czas kanalu w sekundach
+	//! \param time Aktualny, lokalny czas kana³u w sekundach
 	virtual void setTime(double time);
 
 	const core::VisualizerTimeSeriePtr & getSerie();
@@ -60,11 +60,11 @@ public:
 	//! \return Sklonowany kana³
 	virtual VisualizerMultiChannel * clone() const;
 
-	//! \return Dlugosc kanalu w sekundach
+	//! \return d³ugoœæ kana³u w sekundach
 	virtual double getLength() const;
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
-	//! \param time Aktualny, lokalny czas kanalu w sekundach
+	//! \param time Aktualny, lokalny czas kana³u w sekundach
 	virtual void setTime(double time);
 
 	const std::vector<core::VisualizerTimeSeriePtr> & channelSeries() const;

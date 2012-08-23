@@ -15,17 +15,19 @@
 #include "KinematicVisualizer.h"
 #include "MarkersVisualizationScheme.h"
 
-//! Seria danych wizualizatora 3D wizualizujaca markery z pliku C3D
+//! Seria danych wizualizatora 3D wizualizuj¹ca markery z pliku C3D
 class MarkerSerie : public QObject, public KinematicSerie
 {
 	Q_OBJECT;
 public:
+    //! wskaŸnik na wêze³ przechowuj¹cy geometriê
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;
+    //! wskaŸnik na wêze³ przechowuj¹cy grupê innych wêz³ów
 	typedef osg::ref_ptr<osg::Group> GroupPtr;
 
 public:
     //! Konstuktor
-    //! \param visualizer wizualizator, ktory stworzyl serie danych
+    //! \param visualizer wizualizator, który stworzy³ serie danych
 	MarkerSerie(KinematicVisualizer * visualizer) : 
 	  visualizer(visualizer),
 	  markersDrawer(new SchemeDrawerContainer())
@@ -34,8 +36,7 @@ public:
 	  }
 
 public:
-    //! Ustawia nowa nazwe seri
-    //! \param name 
+    //! Ustawia nowa nazwê serii
     virtual void setName(const std::string & name);
     //! \return nazwa serii
     virtual const std::string & getName() const;
@@ -44,29 +45,29 @@ public:
 	virtual void setData(const core::ObjectWrapperConstPtr & data);
     //! \return ustawione dane
     virtual const core::ObjectWrapperConstPtr & getData() const;
-	//! \return Dlugosc kanalu w sekundach
+	//! \return d³ugoœæ kana³u w sekundach
 	virtual double getLength() const;
-    //! \return macierz serii z transformacja, ktora nie zostala zmieniona przez manipulatory
+    //! \return macierz serii z transformacj¹, która nie zosta³a zmieniona przez manipulatory
     virtual osg::Matrix getInitialMatrix() const;
 	//! Czas zawiera siê miêdzy 0 a getLength()
-	//! \param time Aktualny, lokalny czas kanalu w sekundach
+	//! \param time Aktualny, lokalny czas kana³u w sekundach
 	virtual void setLocalTime(double time);
 
 private slots:
-    //! Pokauje/chowa ghosta, ktory ukazuje charakterystyke ruchu na przestrzeni czasu, tworzy ghosta jesli jest to konieczne
+    //! Pokauje/chowa ghosta, który ukazuje charakterystykê ruchu na przestrzeni czasu, tworzy ghosta jeœli jest to konieczne
     //! \param visible czy widoczny
     void showGhost(bool visible);
 	
 private:
-    //! Wizualizator, ktory utworzyl serie
+    //! Wizualizator, który utworzy³ serie
 	KinematicVisualizer * visualizer;
-    //! Polacznie miedzy markerami z C3D a ich wizualizacja
+    //! Po³¹cznie miêdzy markerami z C3D a ich wizualizacj¹
     MarkersVisualizationSchemePtr scheme;
     //! drawer schematu
 	SchemeDrawerContainerPtr markersDrawer;
-    //! drawer trajektorii markerow
+    //! drawer trajektorii markerów
 	TrajectoryDrawerPtr trajectoryDrawer;
-    //! wezel, w ktorym przechowywany jest ghost
+    //! wêze³, w którym przechowywany jest ghost
     osg::ref_ptr<osg::PositionAttitudeTransform> ghostNode;
     //! wrapper przekazany serii
     core::ObjectWrapperConstPtr data;

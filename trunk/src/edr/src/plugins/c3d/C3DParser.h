@@ -22,9 +22,9 @@ class C3DParser : public core::IParser
     UNIQUE_ID("{D7801231-BACA-42C6-9A8E-706F561A563F}", "C3D parser");
 	typedef core::shared_ptr<c3dlib::C3DParser> ParserPtr;
 private:
-    //! Obsolete. Wektor zawiera 4 kanaly analogowe z plyt GRF
+    //! Obsolete. Wektor zawiera 4 kana≥y analogowe z p≥yt GRF
 	std::vector<core::ObjectWrapperPtr> GRFChannels;
-    //! Obsolete. Wektor zawiera 16 kanalow analogowych EMG
+    //! Obsolete. Wektor zawiera 16 kana≥Ûw analogowych EMG
 	std::vector<core::ObjectWrapperPtr> EMGChannels;
     //! Kolekcja z danymi GRF
 	core::ObjectWrapperPtr GRFs;
@@ -32,17 +32,17 @@ private:
 	core::ObjectWrapperPtr EMGs;
     //! Kolekcja z markerami
 	core::ObjectWrapperPtr markerChannels;
-    //! Kolekcja z silami w stawach - dane sa estymowane
+    //! Kolekcja z silami w stawach - dane sπ estymowane
 	core::ObjectWrapperPtr forceChannels;
-    //! Kolekcja z kontami w stawach - dane sa estymowane
+    //! Kolekcja z kontami w stawach - dane sπ estymowane
 	core::ObjectWrapperPtr angleChannels;
-    //! Kolekcja z momentami sil w stawach - dane sa estymowane
+    //! Kolekcja z momentami sil w stawach - dane sπ estymowane
 	core::ObjectWrapperPtr momentChannels;
-    //! Kolecka z mocami w stawach - dane sa estymowane
+    //! Kolecka z mocami w stawach - dane sπ estymowane
 	core::ObjectWrapperPtr powerChannels;
     //! Kolekcja ze zdarzeniami zapisanymi w pliku C3D (np. stapniecie stopy)
     core::ObjectWrapperPtr allEvents;
-    //! Wskaznik do wlasciwego parsera z biblioteki c3dlib
+    //! wskaünik do wlasciwego parsera z biblioteki c3dlib
 	ParserPtr parserPtr;
 
 public:
@@ -58,10 +58,10 @@ public:
     //! Zwraca obiekty dostarczone przez parser
     //! \param objects kolekcja z obiektami (set)
     virtual void getObjects(core::Objects& objects);
-    //! Zwraca rozszerzenia, ktore sa obslugiwane przez parser (tylko asf)
+    //! Zwraca rozszerzenia, ktore sπ obs≥ugiwane przez parser (tylko asf)
     //! \param extensions kolecja z roszerzeniami
     virtual void getSupportedExtensions(Extensions & extensions) const;
-	//! Zapisauje dane w konkretnym miejscu, nie uzywane
+	//! Zapisauje dane w konkretnym miejscu, nie uøywane
 	//! \param path sciezka zapisu
 	void saveFile(const core::Filesystem::Path& path);
 };

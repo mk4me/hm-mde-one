@@ -15,7 +15,7 @@
 #include <QtGui/QMainWindow>
 #include "EDRDockWidget.h"
 
-//! Klasa obsluguje grupe dock widgetow, sama bedac dock widgetem
+//! Klasa obsluguje grupe dock widgetow, sama bêd¹c dock widgetem
 class EDRDockWidgetSet : public EDRDockWidget
 {
 	Q_OBJECT;
@@ -24,7 +24,7 @@ public:
 
 public:
 	//! Konstruktor
-	//! \param title wyswietlana w tabie nazwa grupy
+	//! \param title wyœwietlana w tabie nazwa grupy
 	//! \param parent 
 	//! \param flags 
 	explicit EDRDockWidgetSet(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0);
@@ -35,21 +35,21 @@ public:
 	virtual ~EDRDockWidgetSet() {}
 
 public:
-    //! Dodaje dock widget do grupy, jesli nie ma na niego miejsca rzucany jest wyjatek
+    //! Dodaje dock widget do grupy, jeœli nie ma na niego miejsca rzucany jest wyj¹tek
     //! \param widget dodawany dock widget
     //! \param area obszar okna (lewy, prawy, gora dol)
     //! \param orientation orientacja (dzielenie w pionie lub poziomie)
     void addDockWidget(EDRDockWidget* widget, Qt::DockWidgetArea area, Qt::Orientation orientation);
-    //! Dodaje dock widget do grupy, jesli nie ma na niego miejsca rzucany jest wyjatek
+    //! Dodaje dock widget do grupy, jeœli nie ma na niego miejsca rzucany jest wyj¹tek
     //! \param widget dodawany dock widget
     //! \param orientation orientacja (dzielenie w pionie lub poziomie)
 	void addDockWidget(EDRDockWidget* widget, Qt::Orientation orientation);
-    //! Dodaje dock widget do grupy, jesli nie ma na niego miejsca rzucany jest wyjatek
+    //! Dodaje dock widget do grupy, jeœli nie ma na niego miejsca rzucany jest wyj¹tek
     //! \param widget dodawany dock widget
     void addDockWidget(EDRDockWidget* widget);
-	//! \return czy mozna jeszcze dodac dock widget do grpy
+	//! \return czy mo¿na jeszcze dodaæ dock widget do grpy
 	bool isAdditionPossible(EDRDockWidget* widget = nullptr) const;
-	//! blokuje lub odblokowuje mozliwosc dodawania widgetow
+	//! blokuje lub odblokowuje mo¿liwoœæ dodawania widgetow
 	//! \param additionPossible 
 	void blockAddition(bool additionPossible);
 	//! \return liczba dock widgetow w grupie
@@ -63,14 +63,14 @@ public:
     const_range getDockWidgets() const { return boost::make_iterator_range(widgetsList.cbegin(), widgetsList.cend()); }
 
 signals:
-    //! sygnal oznaczajacy, ze dock widget podpiety pod grupe zostal zamkniety
+    //! sygnal oznaczajacy, ze dock widget podpiêty pod grupe zosta³ zamkniety
     void dockClosed();
 
 private slots:
-    //! dock widget podpiety pod grupe zostal zamkniety
+    //! dock widget podpiêty pod grupe zosta³ zamkniety
     //! \param object 
     void onDockWidgetClosed(QObject* object);
-    //! dock widget podpiety pod grupe zmienil pozycje
+    //! dock widget podpiêty pod grupe zmieni³ pozycje
     //! \param area 
     void onDockWidgetLocationChanged(Qt::DockWidgetArea area);
 
@@ -81,7 +81,7 @@ private:
 	std::list<EDRDockWidget*> widgetsList;
     //! maksymalna liczba dock widgetow w grupie
 	int maxWidgetsNumber;
-    //! czy mozliwe jest dalsze dodawanie widgetow (niezalezne od maksymalnej liczby dock widgetow)
+    //! czy mo¿liwe jest dalsze dodawanie widgetow (niezalezne od maksymalnej liczby dock widgetow)
 	bool additionPossible;
 };
 

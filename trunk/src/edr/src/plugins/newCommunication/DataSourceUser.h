@@ -18,7 +18,7 @@ class User : public communication::IUser
 {
 public:
 
-    //! Konstruktor domyslny
+    //! Konstruktor domyœlny
     User();
 
     //! Destruktor wirtualny
@@ -39,7 +39,7 @@ public:
     //! \param password Has³o u¿ytkownika
     void setPassword(const std::string & password);
 
-    //! \return Prawa uzytkownika
+    //! \return Prawa u¿ytkownika
     virtual const UserPrivilages & userPrivilages() const;
     //! \param userPrivilages Nowe uprawnienia u¿ytkownika
     void setPrivilages(const UserPrivilages & userPrivilages);

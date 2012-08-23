@@ -326,7 +326,7 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 					bool exact = false;
 					//pobieram dane
 
-					//stworz nowy OWC, odswiezajacy dane z DM ObjectWrapperCollection
+					//stworz nowy OWC, odœwie¿ajacy dane z DM ObjectWrapperCollection
 					core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), exact));
 
 					DataManager::getInstance()->getObjects(*collection);
@@ -595,7 +595,7 @@ void VisualizerWidget::sourceSelected()
         actionNone->setChecked(false);
         actionNone->blockSignals(false);
 
-        //czy mozna jeszcze utworzyc serie?
+        //czy mo¿na jeszcze utworzyc serie?
         if(visualizer->getMaxSeries() < 0 || visualizer->getMaxSeries() != currentSeriesData.size()){
             //aktualizujemy ostatnia serie danych
 

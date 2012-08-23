@@ -17,7 +17,7 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Przykladowa, najprotsza implementacja adaptera. Bazuje na obiektach boost::function.
+ *	Przyk³adowa, najprotsza implementacja adaptera. Bazuje na obiektach boost::function.
  *  U¿ywany jest przy definicji domyœlnych styli, ale mo¿na go wykorzystaæ równie¿ w kodzie
  *  klienckim.
  */

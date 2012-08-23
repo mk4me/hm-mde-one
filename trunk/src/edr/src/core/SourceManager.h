@@ -37,7 +37,7 @@ public:
 
 	void update(double deltaTime);
 
-	//! Metoda finalizujaca wszystkie serwisy  wywolywana przed niszczeniem managera
+	//! Metoda finalizuj¹ca wszystkie serwisy  wywo³ywana przed niszczeniem managera
 	void finalizeSources();
 
 	// IServiceManager

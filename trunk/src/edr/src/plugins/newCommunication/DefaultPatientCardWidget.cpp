@@ -187,7 +187,7 @@ void DefaultPatientCardWidget::setSessionsData(const MotionShallowCopy::Performe
 	sessionsWidget->clear();
 
 	if(subjectConfigurations.empty() == false){
-		//wypelniamy sesjami
+		//wype³niamy sesjami
 
 		//grupujemy wykresy na przed/po badaniu + upperBody, lowerBody
 		std::map<std::string, std::map<int, const MotionShallowCopy::Session *>> groupedData;

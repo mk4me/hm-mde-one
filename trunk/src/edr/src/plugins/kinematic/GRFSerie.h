@@ -17,10 +17,10 @@
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
 
-//! empirycznie dobrany wspolczynnik dlugosci wizualizowanych sil
+//! empirycznie dobrany wspó³czynnik d³ugoœci wizualizowanych sil
 const float grfScale = 0.0008f;
 
-//! Seria danych odpowiedzialna za wizualizacje plyt naciskowych i sil na nie dzialajacych
+//! Seria danych odpowiedzialna za wizualizacje p³yt naciskowych i sil na nie dzia³aj¹cych
 class GRFSerie : public KinematicSerie
 {
 public:
@@ -33,11 +33,11 @@ public:
 
 public:
 	//! Konstruktor
-	//! \param visualizer wizualizator tworzacy ta serie
+	//! \param visualizer wizualizator tworz¹cy ta serie
 	GRFSerie(KinematicVisualizer * visualizer);
 
 public:
-	//! Ustawia nazwe serii
+	//! Ustawia nazwê serii
 	//! \param name ustawiana nazwa 
 	virtual void setName(const std::string & name);
     //! \return nazwa serii
@@ -47,31 +47,31 @@ public:
 	virtual void setData(const core::ObjectWrapperConstPtr & data);
     //! \return ustawione dane
     virtual const core::ObjectWrapperConstPtr & getData() const;
-	//! \return Dlugosc kanalu w sekundach
+	//! \return d³ugoœæ kana³u w sekundach
 	virtual double getLength() const;
 	//! Czas zawiera siê miêdzy 0 a getLength()
-	//! \param time Aktualny, lokalny czas kanalu w sekundach
+	//! \param time Aktualny, lokalny czas kana³u w sekundach
 	virtual void setLocalTime(double time);
 
 private:
     //! Struktura pomocna przy wizualizacji wektora sily.
-    //! Wektor sklada sie z prostopadloscianu i stozka
+    //! Wektor sklada siê z prostopadloscianu i stozka
 	struct Arrow 
 	{
-        //! glowny wezel z wektorem
+        //! g³ówny wêze³ z wektorem
 		TransformPtr mainPtr;
-        //! wezel z prostopadloscianem
+        //! wêze³ z prostopadloscianem
 		TransformPtr boxPtr;
-        //! wezel ze stozkiem
+        //! wêze³ ze stozkiem
 		TransformPtr conePtr;
         //! geometria prostopadloscianu
 		ShapeDrawablePtr boxShape; 
         //! geometria stozka
 		ShapeDrawablePtr coneShape;
 
-		//! Ustawienie transformacji, w taki sposob, aby wektor znalazl sie pomiedzy dwoma punktami
-		//! \param from punkt, od ktorego prowadzony jest wektor
-		//! \param to punkt, do ktorego prowadzone jest wektor
+		//! Ustawienie transformacji, w taki sposób, aby wektor znalazl siê pomiêdzy dwoma punktami
+		//! \param from punkt, od którego prowadzony jest wektor
+		//! \param to punkt, do którego prowadzone jest wektor
 		void setArrow(osg::Vec3 from, osg::Vec3 to);
 		//! Ustawienie koloru wektora
 		//! \param color kolor do ustawienia RGBA (0 - 1)
@@ -84,7 +84,7 @@ private:
 
     typedef std::map<IForcePlatformConstPtr, osg::ref_ptr<osg::ShapeDrawable> > Platform2Shape;
 
-    //! Klasa ulatwia rysowanie "ducha" strzalki. Wizualizowane sa poprzednie pozycje strzalki. Im starcza pozycja tym mniejsza alfa.
+    //! Klasa u³atwia rysowanie "ducha" strzalki. Wizualizowane s¹ poprzednie pozycje strzalki. Im starcza pozycja tym mniejsza alfa.
 	class GhostStack
 	{
 	public:
@@ -92,13 +92,13 @@ private:
 		typedef std::pair<osg::Vec3, osg::Vec3> ArrowState;
 		//! Konstruktor
 		//! \param maxSize maksymalny rozmiar stosu strzalek
-		//! \param hookNode wezel, pod ktory beda podczepiane strzalki
+		//! \param hookNode wêze³, pod który beda podczepiane strzalki
 		//! \param color kolor strzalek
 		GhostStack(int maxSize, GroupPtr hookNode, const osg::Vec4& color );
-        //! Dodanie strzalki do stosu i usuwa najstarsza strzalke, jesli jest taka potrzeba
+        //! Dodanie strzalki do stosu i usuwa najstarsza strzalke, jeœli jest taka potrzeba
         //! \param state 
         void addState(const ArrowState& state);
-		//! Aktualizacja kolorow strzalek, zarzadzanie widocznoscia wezlow
+		//! Aktualizacja kolorow strzalek, zarz¹dzanie widocznoœci¹ wêz³ów
 		void update();
 
 	private:
@@ -106,7 +106,7 @@ private:
 		osg::Vec4 color;
         //! Stos ze strzalkami
 		std::list<ArrowPtr> stackArrows;
-        //! Wezel, pod ktory podpiete sa strzalki
+        //! wêze³, pod który podpiête s¹ strzalki
 		GroupPtr hookNode;
         //! maksymalny rozmiar stosu
 		int maxSize;
@@ -115,60 +115,60 @@ private:
 	typedef boost::shared_ptr<const GhostStack> GhostStackConstPtr;
 
 private:
-	//! Tworzy wezel z geometria wszystkich plyt GRF
-	//! \param platforms kolecja platform pochodzacych z C3D
-    //! \return utworzony wezel
+	//! Tworzy wêze³ z geometria wszystkich p³yt GRF
+	//! \param platforms kolecja platform pochodz¹cych z C3D
+    //! \return utworzony wêze³
 	GroupPtr createPlatformsGroup(const IForcePlatformCollection& platforms);
-	//! Tworzy "skrzydla motyla" czyli graficzna reprezentacje zmiany sily nacisku konkretnej plyty w czasie
-	//! \param grf dane plyty GRF
-	//! \param maxLength tutaj zwracana jest maksymalna dlugosc sily, jest to pomocne przy kolorowaniu wektora
-    //! \return utworzony wezel
+	//! Tworzy "skrzydla motyla" czyli graficzna reprezentacje zmiany sily nacisku konkretnej p³yty w czasie
+	//! \param grf dane p³yty GRF
+	//! \param maxLength tutaj zwracana jest maksymalna d³ugoœæ sily, jest to pomocne przy kolorowaniu wektora
+    //! \return utworzony wêze³
 	GroupPtr createButterfly(GRFCollectionConstPtr grf, float& maxLength) const;
-    //! Tworzy pojedyncze "skrzydla motyla" czyli graficzna reprezentacje zmiany sily nacisku konkretnej plyty w czasie
-    //! \param step wykryty wczesniej krok w obrebie plyty pomiarowej
-    //! \param maxLength maksymalna dlugosc sily, jest to pomocne przy kolorowaniu wektora
-    //! \param platform plaforma, dla ktorej tworzona jest geometria
-    //! \return utworzony wezel 
+    //! Tworzy pojedyncze "skrzydla motyla" czyli graficzna reprezentacje zmiany sily nacisku konkretnej p³yty w czasie
+    //! \param step wykryty wczesniej krok w obrebie p³yty pomiarowej
+    //! \param maxLength maksymalna d³ugoœæ sily, jest to pomocne przy kolorowaniu wektora
+    //! \param platform plaforma, dla której tworzona jest geometria
+    //! \return utworzony wêze³ 
     GeodePtr createStep( IForcePlatform::IStepConstPtr step, float &maxLength, IForcePlatformConstPtr platform) const;
-    //! Tworzy wezel z geometria pojedynczej plyty GRF
-    //! \param texture tekstura, ktora ma byc na prostopadloscianie, moze byc nullptr
-    //! \param origin punkt, w ktorym znajduje sie lewy gorny rog plyty
-    //! \param width szerokosc plyty
-    //! \param lenght dlugosc plyty
-    //! \param height wysokosc plyty
-    //! \return utworzony wezel
+    //! Tworzy wêze³ z geometria pojedynczej p³yty GRF
+    //! \param texture tekstura, która ma byæ na prostopadloscianie, mo¿e byæ nullptr
+    //! \param origin punkt, w którym znajduje siê lewy gorny rog p³yty
+    //! \param width szerokoœæ p³yty
+    //! \param lenght d³ugoœæ p³yty
+    //! \param height wysokoœæ p³yty
+    //! \return utworzony wêze³
     TransformPtr createPlatformTransform(osg::Texture2D* texture, const osg::Vec3& origin, float width, float lenght, float height) const;
 	//! Statyczna metoda, tworzy strukture z geometria i opisem strzalki
-    //! \return utworzony wezel
+    //! \return utworzony wêze³
 	static ArrowPtr createArrow();
 	//! Pobiera teksture z resource'ow
 	//! \param number obecnie 1 lub 2
-    //! \return zaladowana tekstura, wyjatek w przypadku bledu
+    //! \return zaladowana tekstura, wyj¹tek w przypadku bledu
 	static osg::ref_ptr<osg::Texture2D> getTexture(int number);
-    //! Probuje pobrac teksture z resource'ow
+    //! próbuje pobraæ teksture z resource'ow
     //! \param ret tutaj trafi pobrana tekstura
     //! \param number obecnie 1 lub 2
-    //! \return czy operacja sie udala
+    //! \return czy operacja siê udala
     static bool tryGetTexture(osg::ref_ptr<osg::Texture2D>& ret, int number);
 	
 private:
-    //! Wizualizator, ktory utworzyl serie
+    //! Wizualizator, który utworzy³ serie
 	KinematicVisualizer * visualizer;
     //! Dane GRF dostarczone serii
 	GRFCollectionPtr grfCollection;
-    //! maksymalna dlugosc sily, pomocne przy kolorowaniu wektora
+    //! maksymalna d³ugoœæ sily, pomocne przy kolorowaniu wektora
 	float maxLength;
-    //! mapa (krok -> (strzalka, jej ghost) pomocne przy rysowaniu i odswiezaniu wizualizacji
+    //! mapa (krok -> (strzalka, jej ghost) pomocne przy rysowaniu i odœwie¿aniu wizualizacji
     std::map<IForcePlatform::IStepConstPtr, std::pair<ArrowPtr, GhostStackPtr>> stepsData;
-    //! pobrana z resource'ow testura dla pierwszej plyty
+    //! pobrana z zasobów tekstura dla pierwszej p³yty
 	static osg::ref_ptr<osg::Texture2D> texture1;
-    //! pobrana z resource'ow testura dla drugiej plyty
+    //! pobrana z zasobów tekstura dla drugiej p³yty
     static osg::ref_ptr<osg::Texture2D> texture2;
     //! wrapper przekazany serii
     core::ObjectWrapperConstPtr data;
     //! nazwa serii
     std::string name;
-    //! mapa, ktora ulatwia pobranie geometrii na postawie platformy z C3D
+    //! mapa, która u³atwia pobranie geometrii na postawie platformy z C3D
     Platform2Shape platform2Shape;
 };
 

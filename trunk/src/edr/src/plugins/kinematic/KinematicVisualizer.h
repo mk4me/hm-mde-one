@@ -35,10 +35,10 @@
 #include "SchemeDialog.h"
 #include "KinematicSerie.h"
 
-/*! Klasa dostarcza scene 3d i zarzadza obiektami na niej */
+/*! Klasa dostarcza scenê 3d i zarz¹dza obiektami na niej */
 class KinematicVisualizer :  public QObject, public core::IVisualizer
 {
-	// wszystkie mozliwe serie przeniesione do osobnego pliku
+	// wszystkie mo¿liwe serie przeniesione do osobnego pliku
 	//friend class GRFSerie;
 	friend class MarkerSerie;
 	friend class SkeletonSerie;
@@ -53,19 +53,19 @@ public:
     KinematicVisualizer();
 
 public:
-    //! Update wywolywany przez EDR, sprawdza, czy zmienil sie czas serii, jesli tak, to konieczne jest odswiezenie
+    //! Update wywo³ywany przez EDR, sprawdza, czy zmieni³ siê czas serii, jeœli tak, to konieczne jest odœwie¿enie
     //! \param deltaTime czas od ostatniego update'u
     virtual void update( double deltaTime );
-    //! Setup wywolany przez system, resetuje scene
-    //! \param source zrodlo danych
+    //! Setup wywo³any przez system, resetuje scenê
+    //! \param source Ÿród³o danych
     virtual void setUp( core::IObjectSource* source );
-	//! wizualizator nie ma ograniczen w liczbie serii
+	//! wizualizator nie ma ograniczeñ w liczbie serii
 	virtual int getMaxDataSeries() const;
     //! Fabryka serii, na podstawie typu danych we wrapperze tworzona jest konkretna seria
     //! \param data Obiekt z danymi
     //! \param name Nazwa danych
     virtual core::IVisualizer::TimeSerieBase *createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
-    //! Stworzenie serii na podstawie juz istniejacej, nie zaimplementowane
+    //! Tworzenie serii na podstawie ju¿ istniejacej, nie zaimplementowane
     //! \param serie Kopiowana seria
     virtual core::IVisualizer::TimeSerieBase *createSerie(const core::IVisualizer::SerieBase* serie);
     //! Usuwa serie z wizualizatora
@@ -73,33 +73,33 @@ public:
     virtual void removeSerie(core::IVisualizer::SerieBase *serie);
 	//! Tworzy pusty wizualizator
 	virtual core::IVisualizer* createClone() const;
-    //! Zwraca informacje o obslugiwanych danych
+    //! Zwraca informacje o obs³ugiwanych danych
     //! \param info kolecja z typami danych
     virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info );
-    //! Tworzy widget w ktorym znajduje sie
+    //! Tworzy widget w którym znajduje siê
     //! \param manager Manager Flexi Bara
     virtual QWidget* createWidget(core::IActionsGroupManager * manager);
-    //! Tworzy ikone
+    //! Tworzy ikonê
     virtual QIcon* createIcon();
     //! Nazwa wizualizatora
     virtual const std::string& getName() const;
     //! resetuje ustawienia sceny 3d
     virtual void reset();
-    //! Tworzy pixmape z aktualnym widokiem wizualizatora
+    //! Tworzy pixmapê z aktualnym widokiem wizualizatora
     virtual QPixmap print() const;
 	//! resetuje ustawienia sceny 3d
 	void resetScene();
 
 private:
-    //! \return wezel z siatka reprezentujaca podloge
+    //! \return wêze³ z siatk¹ reprezentuj¹c¹ podlogê
     osg::ref_ptr<osg::Group> createFloor();
-    //! \return aktywna seria, o ile taka zostala wybrana
+    //! \return aktywna seria, o ile taka zosta³a wybrana
     KinematicSerie* tryGetCurrentSerie();
-    //! odswieza dane w spinboxach zawierajacych informcacje o transformacjach manipulatorow
+    //! odœwie¿a dane w spinboxach zawierajacych informcacje o transformacjach manipulatorów
     void refreshSpinboxes();
-    //! Metoda ustala, do ktorej serii nalezy dana geoda
-    //! \param geode obiekt sceny, ktory chcemy sprawdzic
-    //! \return seria, do ktorej nalezy obiekt lub nullptr jesli nie znaleziono
+    //! Metoda ustala, do której serii nale¿y dana geoda
+    //! \param geode obiekt sceny, który chcemy sprawdzic
+    //! \return seria, do której nale¿y obiekt lub nullptr jeœli nie znaleziono
     KinematicSerie* getParentSerie(GeodePtr geode);
     //! Metoda pomocnicza, do konwersji zapisu rotacji
     //! \param q kwaternion z liczona rotacja
@@ -116,96 +116,96 @@ private:
     //! \return wyliczony kwaternion
     osg::Quat getQuatFromEuler(const osg::Vec3& euler);
     //! Metoda ulatwiajaca tworzenie spinwidgetow z opisem. Tworzony jest widget rodzica zawierajacy spinbox i label z opisem
-    //! \param parent rodzic, do ktorego zostanie towrzony widget
+    //! \param parent rodzic, do którego zostanie towrzony widget
     //! \param name opis spinboxa
     //! \param step krok dla strzalek
-    //! \param visible czy ma byc widoczny po utworzeniu
+    //! \param visible czy ma byæ widoczny po utworzeniu
     //! \return para (widget, spinbox) widget jest rodzicem spinboxa
     SpinPair createSpinWidget( QWidget* parent, QString name, double step = 0.1, bool visible = true );
-    //! Wymusza zmiane wezla podlegajacego wplywom manipulatorow
-    //! \param serie seria, dla ktorej ma byc zmianiony wezel
-    //! \param m macierz z transformacja, ktora ma zostac ustawiona w wezle
+    //! Wymusza zmiane wêz³a podlegajacego wplywom manipulatorów
+    //! \param serie seria, dla której ma byæ zmianiony wêze³
+    //! \param m macierz z transformacja, która ma zostac ustawiona w wezle
     void setTransformMatrix(KinematicSerie* serie, const osg::Matrix& m);
-    //! Wymusza zmiane translacji wezla podlegajacego wplywom manipulatorow
-    //! \param serie seria, dla ktorej ma byc zmianiony wezel
-    //! \param index Indeks wspolrzednej (0 - x, 1 - y, 2 - z)
+    //! Wymusza zmiane translacji wêz³a podlegajacego wplywom manipulatorów
+    //! \param serie seria, dla której ma byæ zmianiony wêze³
+    //! \param index Indeks wspó³rzêdnej (0 - x, 1 - y, 2 - z)
     //! \param d ustawiana wartosc translacji
     void setTranslation(KinematicSerie* serie, int index, double d );
-    //! Wymusza zmiane obrotu wezla podlegajacego wplywom manipulatorow
-    //! \param serie seria, dla ktorej ma byc zmianiony wezel
-    //! \param index Indeks wspolrzednej (0 - x, 1 - y, 2 - z)
+    //! Wymusza zmiane obrotu wêz³a podlegajacego wplywom manipulatorów
+    //! \param serie seria, dla której ma byæ zmianiony wêze³
+    //! \param index Indeks wspó³rzêdnej (0 - x, 1 - y, 2 - z)
     //! \param d ustawiana wartosc katu Eulera
     void setRotation( KinematicSerie* serie, int index, double d );
-    //! Wymusza zmiane skali wezla podlegajacego wplywom manipulatorow
-    //! \param serie seria, dla ktorej ma byc zmianiony wezel
-    //! \param index Indeks wspolrzednej (0 - x, 1 - y, 2 - z)
+    //! Wymusza zmiane skali wêz³a podlegajacego wplywom manipulatorów
+    //! \param serie seria, dla której ma byæ zmianiony wêze³
+    //! \param index Indeks wspó³rzêdnej (0 - x, 1 - y, 2 - z)
     //! \param d ustawiana wartosc skali
     void setScale(KinematicSerie* serie, int index, double d );
-    //! Wymusza zmiane translacji wezla podlegajacego wplywom manipulatorow
-    //! \param serie seria, dla ktorej ma byc zmianiony wezel
+    //! Wymusza zmiane translacji wêz³a podlegajacego wplywom manipulatorów
+    //! \param serie seria, dla której ma byæ zmianiony wêze³
     //! \param t nowa translacja
     void setTranslation(KinematicSerie* serie, const osg::Vec3& t  );
-    //! Wymusza zmiane obrotu wezla podlegajacego wplywom manipulatorow
-    //! \param serie seria, dla ktorej ma byc zmianiony wezel
+    //! Wymusza zmiane obrotu wêz³a podlegajacego wplywom manipulatorów
+    //! \param serie seria, dla której ma byæ zmianiony wêze³
     //! \param r nowy obrot w postaci katow Eulera
     void setRotation( KinematicSerie* serie, const osg::Vec3& r );
-    //! Wymusza zmiane obrotu wezla podlegajacego wplywom manipulatorow
-    //! \param serie seria, dla ktorej ma byc zmianiony wezel
+    //! Wymusza zmiane obrotu wêz³a podlegajacego wplywom manipulatorów
+    //! \param serie seria, dla której ma byæ zmianiony wêze³
     //! \param q nowy obrot
     void setRotation( KinematicSerie* serie, const osg::Quat& q);
-    //! Wymusza zmiane skali wezla podlegajacego wplywom manipulatorow
-    //! \param serie seria, dla ktorej ma byc zmianiony wezel
+    //! Wymusza zmiane skali wêz³a podlegajacego wplywom manipulatorów
+    //! \param serie seria, dla której ma byæ zmianiony wêze³
     //! \param s nowa skala
     void setScale(KinematicSerie* serie, const osg::Vec3& s );
-    //! tworzy wezel ze wskaznikiem aktywnej serii danych
-    //! \return utworzony wezel
+    //! tworzy wêze³ ze wskaŸnikiem aktywnej serii danych
+    //! \return utworzony wêze³
     TransformPtr createIndicator() const;
-    //! Odwieza spinboxy translacji, jesli ulegly one zmianie
+    //! Odwieza spinboxy translacji, jeœli ulegly one zmianie
     void refreshTranslateSpinboxes();
-    //! Odwieza spinboxy rotacji, jesli ulegly one zmianie
+    //! Odwieza spinboxy rotacji, jeœli ulegly one zmianie
     void refreshRotateSpinboxes();
-    //! Odwieza spinboxy skali, jesli ulegly one zmianie
+    //! Odwieza spinboxy skali, jeœli ulegly one zmianie
     void refreshScaleSpinboxes();
 
 private slots:
-    //! Dialog z ustawieniami trajektorii stanie sie widoczny
+    //! Dialog z ustawieniami trajektorii stanie siê widoczny
     void showTrajectoriesDialog();
-    //! Dialog z ustawieniami widocznosci wezlow stanie sie widoczny
+    //! Dialog z ustawieniami widocznoœci wêz³ów stanie siê widoczny
     void showSchemeDialog();
     //! ustawienie aktywnej serii
-    //! \param idx indeks serii, ktora ma stac sie aktywna. Musi byc z zakresu <0, liczbaSerii)
+    //! \param idx indeks serii, która ma stac siê aktywna. Musi byæ z zakresu <0, liczbaSerii)
     void setActiveSerie(int idx);
     //! ustawienie aktywnej serii
-    //! \param serie seria, ktora ma stac sie aktywna
+    //! \param serie seria, która ma stac siê aktywna
     void setActiveSerie(KinematicSerie* serie);
-    //! Pobiera aktywna serie i zminia jej wezel przeznaczony dla manipulatorow
+    //! Pobiera aktywna serie i zminia jej wêze³ przeznaczony dla manipulatorów
     //! \param d wartosc X nowej translacji
     void shiftX(double d);
-    //! Pobiera aktywna serie i zminia jej wezel przeznaczony dla manipulatorow
+    //! Pobiera aktywna serie i zminia jej wêze³ przeznaczony dla manipulatorów
     //! \param d wartosc Y nowej translacji
     void shiftY(double d);
-    //! Pobiera aktywna serie i zminia jej wezel przeznaczony dla manipulatorow
+    //! Pobiera aktywna serie i zminia jej wêze³ przeznaczony dla manipulatorów
     //! \param d wartosc Z nowej translacji
     void shiftZ(double d);
-    //! Pobiera aktywna serie i zminia jej wezel przeznaczony dla manipulatorow
+    //! Pobiera aktywna serie i zminia jej wêze³ przeznaczony dla manipulatorów
     //! \param d wartosc X nowej rotacji
     void rotateX(double d);
-    //! Pobiera aktywna serie i zminia jej wezel przeznaczony dla manipulatorow
+    //! Pobiera aktywna serie i zminia jej wêze³ przeznaczony dla manipulatorów
     //! \param d wartosc Y nowej rotacji
     void rotateY(double d);
-    //! Pobiera aktywna serie i zminia jej wezel przeznaczony dla manipulatorow
+    //! Pobiera aktywna serie i zminia jej wêze³ przeznaczony dla manipulatorów
     //! \param d wartosc Z nowej rotacji
     void rotateZ(double d);
-    //! Pobiera aktywna serie i zminia jej wezel przeznaczony dla manipulatorow
+    //! Pobiera aktywna serie i zminia jej wêze³ przeznaczony dla manipulatorów
     //! \param d wartosc X nowej skali
     void scaleX(double d);
-    //! Pobiera aktywna serie i zminia jej wezel przeznaczony dla manipulatorow
+    //! Pobiera aktywna serie i zminia jej wêze³ przeznaczony dla manipulatorów
     //! \param d wartosc Y nowej skali
     void scaleY(double d);
-    //! Pobiera aktywna serie i zminia jej wezel przeznaczony dla manipulatorow
+    //! Pobiera aktywna serie i zminia jej wêze³ przeznaczony dla manipulatorów
     //! \param d wartosc Z nowej skali
     void scaleZ(double d);
-    //! usuwa dzialanie manipulatorow
+    //! usuwa dzia³anie manipulatorów
     void resetTransform();
 	//! Ustawia widok sceny - strona lewa
 	void setLeft();
@@ -219,29 +219,29 @@ private slots:
 	void setTop();
 	//! Ustawia widok sceny - od dolu
 	void setBottom();
-    //! Zmienil sie stan manipulatora
+    //! zmieni³ siê stan manipulatora
     void draggerTriggered();
 
 private:
-    //! glowny wezel sceny 3d
+    //! g³ówny wêze³ sceny 3d
     osg::ref_ptr<osg::Group> rootNode;
-    //! wezel, pod ktory podpinane sa wezly serii
+    //! wêze³, pod który podpinane s¹ wêz³y serii
     TransformPtr transformNode;
     //! manipulator kamery (myszka + klawiatura)
 	osg::ref_ptr<osgGA::OrbitManipulator> cameraManipulator;
-    //! wezel ze wskaznikiem aktywnej serii
+    //! wêze³ ze wskaŸnikiem aktywnej serii
     TransformPtr indicatorNode;
     //! zwracany widget wizualizatora
     osg::ref_ptr<osgui::QOsgDefaultWidget> widget;
     //! pokazuje dialog z trajektoriami
     QAction* actionTrajectories;
-    //! pokazuje dialog umozliwiajacy chowanie wezlow z geometria
+    //! pokazuje dialog umo¿liwiajacy chowanie wêz³ów z geometria
     QAction* actionScheme;
-    //! pokazuje ghosta dla markerow
+    //! pokazuje ghosta dla markerów
     QAction* actionGhost;
-    //! zamienia osie jesli jest taka potrzeba
+    //! zamienia osie jeœli jest taka potrzeba
     QAction* actionSwitchAxes;
-    //! wywoluje stan 'pickera' - mozna wybrac aktywna serie klikajac na nia myszka
+    //! wywoluje stan 'pickera' - mo¿na wybraæ aktywna serie klikajac na nia myszka
     QAction* pickerAction;
     //! wywoluje manipulator translacji
     QAction* translateAction;
@@ -249,17 +249,17 @@ private:
     QAction* rotateAction;
     //! wywoluje manipulator skali
     QAction* scaleAction;
-    //! niweluje dzialanie manipulatorow
+    //! niweluje dzia³anie manipulatorów
     QAction* resetAction;
-    //! Dialog zarzadzajacy trajektoriami
+    //! Dialog zarz¹dzajacy trajektoriami
     TrajectoriesDialog* trajectoriesDialog;
-    //! Dialog zarzadzajacy widocznoscia wezlow na scenie
+    //! Dialog zarz¹dzajacy widocznoœci¹ wêz³ów na scenie
     SchemeDialog* schemeDialog;
     //! combo z seriami danych
     QComboBox* activeSerieCombo;
-    //! nr aktywnej serii, -1 jesli takiej nie ma
+    //! nr aktywnej serii, -1 jeœli takiej nie ma
     int currentSerie;
-    //! kolecja z seriami danych podpietymi pod wizualizator
+    //! kolecja z seriami danych podpiêtymi pod wizualizator
     std::vector<KinematicSerie*> series;
     //! spinbox pokazujacy translacje X
     SpinPair translateSpinWidgetX;
@@ -285,26 +285,26 @@ private:
     DraggerContainerPtr rotationDragger;
     //! manipulator skali
     DraggerContainerPtr scaleDragger;
-    //! obecnie wybrany manipulator lub nullptr jesli takiego nie ma
+    //! obecnie wybrany manipulator lub nullptr jeœli takiego nie ma
     DraggerContainerPtr currentDragger;
-    //! ostatnio ustawiony czas, pomocne przy odswiezaniu wizualizatora
+    //! ostatnio ustawiony czas, pomocne przy odœwie¿aniu wizualizatora
     double lastTime;
 };
 
-//! Klasa pomocnicza do obslugi komunikatow pochodzacych od manipulatorow
+//! Klasa pomocnicza do obs³ugi komunikatów pochodz¹cych od manipulatorów
 class KinematicDraggerCallback : public osgManipulator::DraggerCallback
 {
 public:
-    //! Obiekt jest zaprzyjazniony z KinematicVisualizer
-    //! \param kv obslugiwany wizualizator
+    //! Obiekt jest zaprzyjaŸniony z KinematicVisualizer
+    //! \param kv obs³ugiwany wizualizator
     KinematicDraggerCallback(KinematicVisualizer* kv) : visualizer(kv) {}
 
 public:
-    //! Wywolywane, gdy stan manipulatora sie zmienil
-    //! \param mc informacja, jakiego typu zaszla zmiana
+    //! wywo³ywane, gdy stan manipulatora siê zmieni³
+    //! \param mc informacja, jakiego typu zasz³a zmiana
     virtual bool receive( const osgManipulator::MotionCommand& mc);
 private:
-    //! Obiekt, na ktorego scenie dzialaja manipulatory
+    //! Obiekt, na którego scenie dzia³aj¹ manipulatory
     KinematicVisualizer* visualizer;
 };
 

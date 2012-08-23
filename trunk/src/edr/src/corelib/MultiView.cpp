@@ -90,7 +90,7 @@ bool MultiView::addItem( Item* thumbnail, Item* preview /*= NULL*/ )
         adapter->setLabel(widget, thumbnail->getName());
         adapter->setToggle(widget, false);
         osgWidget::EventInterface* ei = adapter->getEventSource(widget);
-        UTILS_ASSERT(ei, "Musi byc zrodlo eventow!");
+        UTILS_ASSERT(ei, "Musi byc Ÿród³o eventow!");
         ei->addCallback( new osgWidget::Callback( &MultiView::onItemClicked, this, osgWidget::EVENT_MOUSE_PUSH ) );
 
         // opakowanie miniaturki tak, aby wspó³czynnik proporcji by³ zachowany

@@ -17,16 +17,16 @@ class NewChartDot : public QwtPlotItem
 {
 public:
     //! Konstruktor
-    //! \param size wielkosc punktu 
+    //! \param size wielkoœæ punktu 
     NewChartDot( int size = 2);
 
 public:
     //! odrysowanie punktu
     virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
-    //! \return pozycja puntku w wspolrzednych ekranowych
+    //! \return pozycja puntku w wspó³rzêdnych ekranowych
     virtual QPointF getPosition() const = 0;
     //! ustawia pozycje
-    //! \param val nowa pozcja w wspolrzednych ekranowych
+    //! \param val nowa pozcja w wspó³rzêdnych ekranowych
     virtual void setPosition(const QPointF& val)  = 0;
     //! 
     const QBrush& getBrush() const { return brush; }
@@ -38,7 +38,7 @@ public:
     //! 
     //! \param val 
     void setPen(const QPen& val) { pen = val; }
-    //! Emulacja rtti obslugiwana przez Qwt
+    //! Emulacja rtti obs³ugiwana przez Qwt
     virtual int rtti() const { return QwtPlotItem::Rtti_PlotUserItem; }
 
 private:

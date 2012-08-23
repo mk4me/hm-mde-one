@@ -18,7 +18,7 @@ class QMouseEvent;
 class QContextMenuEvent;
 class QWidget;
 
-//! Klasa do ktorej trafiaja elementy drzewa danych w analizach
+//! Klasa do której trafiaja elementy drzewa danych w analizach
 class AnalisisTreeWidget : public QTreeWidget
 {
     Q_OBJECT;

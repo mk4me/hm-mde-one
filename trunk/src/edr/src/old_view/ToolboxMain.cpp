@@ -381,7 +381,7 @@ void ToolboxMain::onSaveLayout()
 	// TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
 	Filesystem::Path dir = getPathInterface()->getUserDataPath() / "layouts";
 
-	//jesli nie istnieje spróbuj utworzyæ
+	//jeœli nie istnieje spróbuj utworzyæ
 	if(Filesystem::pathExists(dir) == false) {
 		Filesystem::createDirectory(dir);
 	}

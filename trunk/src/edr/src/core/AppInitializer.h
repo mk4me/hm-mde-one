@@ -73,7 +73,7 @@ public:
         public:
 
             //! Domyœlny konstruktor inicjuje wrazenie singletona dla kazdego managera
-            //! Dzieki temu w kodzie po stronie EDR mamy wrazenie ze pracujemy z singletonami i mamy globalnie dostep do managerow!!
+            //! dziêki temu w kodzie po stronie EDR mamy wrazenie ze pracujemy z singletonami i mamy globalnie dostep do managerow!!
             AppManagers()
             {
                 __instanceInfo.dataManagerReader = dataManager.manager = &dataManager;

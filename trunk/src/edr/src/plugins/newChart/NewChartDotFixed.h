@@ -12,13 +12,13 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
-//! punkt zaczepiony na wykresie, stala pozycja nie zmienia sie wraz z wykresem
+//! punkt zaczepiony na wykresie, stala pozycja nie zmienia siê wraz z wykresem
 class NewChartDotFixed : public NewChartDot
 {
 public:
     //! Konstruktor
     //! \param position pozycja na wykresie
-    //! \param size wielkosc punktu
+    //! \param size wielkoœæ punktu
     NewChartDotFixed(const QPointF& position, int size = 2) :
         NewChartDot(size),
         position(position)

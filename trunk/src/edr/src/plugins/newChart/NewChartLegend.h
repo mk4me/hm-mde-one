@@ -17,7 +17,7 @@
 class QCheckBox;
 class QPushButton;
 
-//! Klasa zarzadzajaca legenda New Charta
+//! Klasa zarz¹dzajaca legenda New Charta
 class NewChartLegend : public QwtLegend
 {
     Q_OBJECT;
@@ -29,14 +29,14 @@ public:
     virtual ~NewChartLegend() {}
 
 protected:
-    //! Tworzy widget legendy, wywolywane przez qwt
+    //! Tworzy widget legendy, wywo³ywane przez qwt
     //! \param & standardowe qwt dane nt. legendy
     virtual QWidget *createWidget( const QwtLegendData & ) const;
 
 signals:
-    //! Zmienil sie checkbox z widocznoscia serii
+    //! zmieni³ siê checkbox z widocznoœci¹ serii
     //! \param item element legendy zawierajacy checkbox
-    //! \param active seria powinna stac sie widoczna/ukryta
+    //! \param active seria powinna stac siê widoczna/ukryta
     void checkboxChanged(const QwtPlotItem* item, bool active);
 
 public slots:
@@ -48,12 +48,12 @@ public slots:
     virtual void updateWidget( QWidget* w, const QwtLegendData& data );
 
 private slots:
-    //! Zmienil sie checkbox z widocznoscia serii
-    //! \param checked seria ma stac sie widoczna/ukryta
+    //! zmieni³ siê checkbox z widocznoœci¹ serii
+    //! \param checked seria ma stac siê widoczna/ukryta
     void onCheck(bool checked);
 
 private:
-    //! mapa z powiazaniem element wykresu (krzywa) - > widget legendy (NewChartLegendItem)
+    //! mapa z powi¹zaniem element wykresu (krzywa) - > widget legendy (NewChartLegendItem)
     std::map<const QWidget*, const QwtPlotItem *> widget2PlotItem;
 };
 

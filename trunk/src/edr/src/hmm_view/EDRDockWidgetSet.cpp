@@ -75,7 +75,7 @@ void EDRDockWidgetSet::blockAddition( bool additionPossible )
 void EDRDockWidgetSet::onDockWidgetClosed( QObject* object )
 { 
     emit dockClosed();
-    // konwersja wystarczajaca, poniewaz chcemy tylko usunac obiekt z listy
+    // konwersja wystarczajaca, poniewaz chcemy tylko usun¹æ obiekt z listy
     EDRDockWidget* widget = reinterpret_cast<EDRDockWidget*>(object);
     widgetsList.remove(widget);
     if(widgetsList.empty() == true){

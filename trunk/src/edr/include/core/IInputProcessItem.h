@@ -21,7 +21,7 @@ class IInputProcessItem : public IWorkflowItemBase, public IInputDescription
 {
 public:
     //! Metoda wywo≥ywana w momencie dostarczenia nowych danych do przetwarzania
-    //! \param source èrÛd≥o danych. NIE MA GWARANCJI ØE MAMY JAKIEKOLWIEK DANE, naleøy to zawsze sprawdzaÊ przy kazdym wywo≥aniu
+    //! \param source èrÛd≥o danych. NIE MA GWARANCJI ØE MAMY JAKIEKOLWIEK DANE, naleøy to zawsze sprawdzaÊ przy kaødym wywo≥aniu
     virtual void setUp(IObjectSource* source) = 0;
 };
 

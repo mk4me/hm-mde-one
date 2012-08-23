@@ -13,7 +13,7 @@ Motion::Motion(PluginSubject::SubjectID motionID, const PluginSubject::SessionCo
     PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
 	: motionID(motionID), session(session), localMotionID(localMotionID), wrappers(wrappers)
 {
-    //generujemy nazwe
+    //generujemy nazwê
 
     std::stringstream ss;
     ss.fill('0');

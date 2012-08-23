@@ -110,7 +110,7 @@ void PluginLoader::load()
 #if defined(__WIN32__)
 	static const std::regex pluginFilter("^plugin_.*\.dll$");
 #elif defined(__UNIX__)
-    // GCC cos nie radzi sobie ze znakami poczatku i konca linii !?
+    // GCC cos nie radzi sobie ze znakami pocz¹tku i konca linii !?
 	static const std::regex pluginFilter("libplugin_.*\.so");
 #endif
 
@@ -236,7 +236,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin
 
     bool pluginIDFound = false;
     core::PluginPtr collidingPlugin;
-    //szukamy pluginu o podanym ID - jesli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
+    //szukamy pluginu o podanym ID - jeœli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
     for(auto it = plugins.begin(); it != plugins.end(); ++it){
         if( (*it).first->getID() == plugin->getID()){
             pluginIDFound = true;
@@ -249,7 +249,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin
 
         plugin->setPath(path);
 
-        // musi tak byc, inaczej dwa smart pointery do jendego obiektu!!
+        // musi tak byæ, inaczej dwa smart pointery do jendego obiektu!!
         PluginPair p;
         p.first.reset(plugin);
         p.second = p.first;

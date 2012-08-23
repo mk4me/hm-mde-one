@@ -5,8 +5,8 @@
 #include <utils/Enum.h>
 #include <utils/Debug.h>
 
-//! Prosta metoda, rzucajaca ostra asercja, gdy probujemy dodac obiekt, ktory juz istnieje w kolecji
-//! \param vec kolecja, do ktorej dodajemy obiekt
+//! Prosta metoda, rzucajaca ostr¹ asercjê, gdy próbujemy dodaæ obiekt, który ju¿ istnieje w kolecji
+//! \param vec kolecja, do której dodajemy obiekt
 //! \param val dodawany obiekt
 template<typename T>
 void pushBackUnique( std::vector<T>& vec, T& val )
@@ -16,8 +16,8 @@ void pushBackUnique( std::vector<T>& vec, T& val )
     vec.push_back(val);
 }
 
-//! Prosta metoda, rzucajaca ostra asercja, gdy probujemy usunac obiekt, ktorego nie ma w kolecji
-//! \param vec kolecja, z ktorej usuwamy obiekt
+//! Prosta metoda, rzucajaca ostr¹ asercjê, gdy próbujemy usun¹æ obiekt, którego nie ma w kolecji
+//! \param vec kolecja, z której usuwamy obiekt
 //! \param val usuwany obiekt
 template<typename T>
 void removeFromVector( std::vector<T>& vec, T& val )

@@ -23,7 +23,7 @@ class NewChartLegendItem : public QWidget
 {
     Q_OBJECT;
 public:
-    //! Konstruktor, wywolywany przez Qwt przy tworzeniu legendy
+    //! Konstruktor, wywo³ywany przez Qwt przy tworzeniu legendy
     //! \param data dane elementu (np. kolor, nazwa)
     //! \param parent parent elementu
     NewChartLegendItem(const QwtLegendData & data, QWidget* parent = nullptr);
@@ -31,10 +31,10 @@ public:
 public:
     //! Czy seria danych jest widoczna (stan check boxa)
     bool isItemVisible();
-    //! Ustawia widocznosc serii (i check boxa)
+    //! Ustawia widocznoœæ serii (i check boxa)
     //! \param active krzywa widoczna / ukryta
     void setItemVisible(bool active);
-    //! Ustawia check box zmieniajacy widocznosc serii
+    //! Ustawia check box zmieniajacy widocznoœæ serii
     //! \param enabled edytowalny / nieedytowalny
     void setItemVisibleEnabled(bool enabled);
     //! \return czy seria danych jest aktywna
@@ -45,7 +45,7 @@ public:
     //! Ustawia przysik zmieniajacy aktywnosc serii
     //! \param enabled edytowalny / nieedytowalny
     void setItemActiveEnabled(bool enabled);
-    //! Zmienia dane legendy (kolor, tytul itp.) wywolywane przez qwt
+    //! Zmienia dane legendy (kolor, tytul itp.) wywo³ywane przez qwt
     //! \param data dane elementu
     void setData( const QwtLegendData& data );
     //! Ustawia opis elementu
@@ -53,9 +53,9 @@ public:
     void setTooltip( const QString& val );
 
 signals:
-    //! kliknieto przycisk, po wcisnieciu ktorego seria staje sie aktywna
+    //! kliknieto przycisk, po wcisnieciu którego seria staje siê aktywna
     void buttonClicked(bool);
-    //! zmieniono check box zarzadza widocznoscia serii danych
+    //! zmieniono check box zarz¹dza widocznoœci¹ serii danych
     //! \param widoczny / ukryty 
     void checkClicked(bool);
 
@@ -64,9 +64,9 @@ private slots:
     void onClick(bool);
 
 private:
-    //! check box zarzadza widocznoscia serii danych
+    //! check box zarz¹dza widocznoœci¹ serii danych
     QCheckBox* check;
-    //! przycisk, po wcisnieciu ktorego seria staje sie aktywna, tylko jeden moze byc wcisniety
+    //! przycisk, po wcisnieciu którego seria staje siê aktywna, tylko jeden mo¿e byæ wcisniety
     QPushButton* button;
 };
 

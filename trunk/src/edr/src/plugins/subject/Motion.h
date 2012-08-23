@@ -16,7 +16,7 @@
 
 class SubjectService;
 
-//! Klasa reprezentuje pojedyncza probe pomiarowa w ramach konkretnej sesji.
+//! Klasa reprezentuje pojedyncza próbê pomiarowa w ramach konkretnej sesji.
 class Motion : public PluginSubject::IMotion
 {
     friend class SubjectService;

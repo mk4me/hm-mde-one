@@ -16,15 +16,15 @@
 
 #include <QtGui/QItemDelegate>
 
-//! klasa powstala, aby wymusic wielkosc wpisow, dzieki temu mozna latwo obliczyc potrzebna wysokosc
+//! klasa powstala, aby wymusic wielkoœæ wpisow, dziêki temu mo¿na ³atwo obliczyc potrzebna wysokoœæ
 class ItemDelegate : public QItemDelegate
 {
 public:
     //! Konstruktor wymagajacy podania rozmiaru
-    //! \param width szerokosc 
-    //! \param height wysokosc
+    //! \param width szerokoœæ 
+    //! \param height wysokoœæ
     ItemDelegate(int width, int height) : width(width), height(height) {}
-    //! metoda wykorzystywana przez Qt przy ustalaniu wielkosci elementow
+    //! metoda wykorzystywana przez Qt przy ustalaniu wielkoœci elementow
     QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
     {
         return QSize(width, height);
@@ -42,13 +42,13 @@ public:
     void setHeight(int val) { height = val; }
 
 private:
-    //! szerokosc
+    //! szerokoœæ
     int width;
-    //! wysokosc
+    //! wysokoœæ
     int height;
 };
 
-//! Wyswietla statystyki wykresow w postaci pogrupowanego drzewa wpisow.
+//! wyœwietla statystyki wykresow w postaci pogrupowanego drzewa wpisow.
 //! Widget normalnie jest zwiniety, rozwijanie nastepuje po nacisnieciu przycisku.
 class StatsTable : public QWidget, private Ui::StatsTable
 {
@@ -65,41 +65,41 @@ public:
 
 public slots:
     //! Dodanie wpisu ze statystykami
-    //! \param group nazwa grupy (np. strona lewa, prawa ...), jesli grupa nie istnieje, to zostanie stworzona, jesli "" to grupa jest pominieta.
+    //! \param group nazwa grupy (np. strona lewa, prawa ...), jeœli grupa nie istnieje, to zostanie stworzona, jeœli "" to grupa jest pominieta.
     //! \param name nazwa wpisu 
     //! \param stats obiekt ze statystykami
-    //! \param backgroundColor kolor tla dla dodawanego elementu
+    //! \param backgroundColor kolor t³a dla dodawanego elementu
     //! \return utworzony element drzwa
     QTreeWidgetItem* addEntry(const QString& group, const QString& name, ScalarChannelStatsConstPtr stats, const QColor& backgroundColor = Qt::white);
-    //! Probuje pobrac wpis ze statystykami
+    //! próbuje pobraæ wpis ze statystykami
     //! \param group nazwa grupy (np. strona lewa, prawa ...)
     //! \param name nazwa wpisu 
     //! \return element drzewa z wpisem lub nullptr
     QTreeWidgetItem* tryGetEntry(const QString& group, const QString& name);
-    //! Pobiera wszystkie wpisy zwiazane z konkretynymi statystykami
-    //! \param stats statystyki, dla ktorych maja byc pobrane wpisy
+    //! Pobiera wszystkie wpisy zwi¹zane z konkretynymi statystykami
+    //! \param stats statystyki, dla których maja byæ pobrane wpisy
     //! \return obiekt boost::range z wpisami
     range getEntries(ScalarChannelStatsConstPtr stats);
-    //! Pobiera wszystkie wpisy zwiazane z konkretynym kanalem
-    //! \param channel kanal dla ktorego maja byc pobrane wpisy
+    //! Pobiera wszystkie wpisy zwi¹zane z konkretynym kana³em
+    //! \param channel kana³ dla którego maja byæ pobrane wpisy
     //! \return lista z elementami drzewa
     std::list<QTreeWidgetItem*> getEntriesByChannel(channelConstPtr channel);
     //! \return wszytskie grupy wpisow (np. strona lewa, prawa ...)
     QStringList getGroups() const;
-    //! dany element staje sie aktywny (rozwiniety, pozostale na jego poziome sa zwijane)
-    //! \param treeItem obiekt, ktory ma stac sie aktywny
+    //! dany element staje siê aktywny (rozwiniety, pozostale na jego poziome s¹ zwijane)
+    //! \param treeItem obiekt, który ma stac siê aktywny
     void setActive(QTreeWidgetItem* treeItem);
-    //! dany element staje sie aktywny (rozwiniety, pozostale na jego poziome sa zwijane)
+    //! dany element staje siê aktywny (rozwiniety, pozostale na jego poziome s¹ zwijane)
     //! \param group nazwa grupy (np. strona lewa, prawa ...)
     //! \param name nazwa wpisu 
     void setActive(const QString& group, const QString& name);
     //! czysci / resetuje obiekt
     void clear();
-    //! oblicza na nowo wymagana wysokosc
+    //! oblicza na nowo wymagana wysokoœæ
     void recalculateHeight();
     
 private:
-    //! wysokosc wiersza
+    //! wysokoœæ wiersza
     int rowHeight;
     //! mapa statystyki -> wpis z drzewie ze statystykami
     std::multimap<ScalarChannelStatsConstPtr, QTreeWidgetItem*> stats2TreeItems;

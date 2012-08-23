@@ -345,7 +345,7 @@ void DataSourceStatusManager::refreshDataStatus(const std::set<int> & modifiedFi
 
         locSubjectsStatus.insert(std::map<int, DataStatus>::value_type(subjectIT->second->performerID, subjectStatus));
 
-		//teraz tak to robimy, jesli pacjent bêdzie mia³ swoje pliki to trzeba to rozbiæ
+		//teraz tak to robimy, jeœli pacjent bêdzie mia³ swoje pliki to trzeba to rozbiæ
 		if(subjectIT->second->patient != nullptr){
 			locPatientsStatus.insert(std::map<int, DataStatus>::value_type(subjectIT->second->patient->patientID, subjectStatus));
 		}
@@ -464,7 +464,7 @@ const DataStatus & DataSourceStatusManager::fileStatus(int fileID) const
 
 void DataSourceStatusManager::rebuildDataStatus()
 {
-    //lokalne statusy, ktore potem przepiszemy
+    //lokalne statusy, które potem przepiszemy
     std::map<int, DataStatus> locDisordersStatus;
     std::map<int, DataStatus> locPatientsStatus;
     std::map<int, DataStatus> locSubjectsStatus;

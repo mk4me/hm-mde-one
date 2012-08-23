@@ -119,7 +119,7 @@ void Manipulators::connect( osg::PositionAttitudeTransform* parent, osg::MatrixT
     osgManipulator::Dragger* dragger = draggerContainer->getDragger();
     draggerContainer->setDraggerPivot(pivot);
     dragger->addTransformUpdating(child);
-    // manipulator sam zarzadza swoimi eventami
+    // manipulator sam zarz¹dza swoimi eventami
     dragger->setHandleEvents(true);
 }
 

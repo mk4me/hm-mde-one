@@ -12,28 +12,28 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
-//! Klasa rozszerza podstawowy kontener probek z Qwt
-//! Dzieki niej mozna zasilic wykres bez koniecznosci kopiowania danych
-//! Dodatkowo dodana zostala mozliwosc transformacji wykresu (offset + skala)
+//! Klasa rozszerza podstawowy kontener próbek z Qwt
+//! dziêki niej mo¿na zasilic wykres bez koniecznosci kopiowania danych
+//! Dodatkowo dodana zosta³a mo¿liwoœæ transformacji wykresu (offset + skala)
 class NewChartSeriesData : public QwtSeriesData<QPointF>
 {
 public:
     //! Konstruktor, trzeba dostarczyc dane do wykresu
-    //! \param channel DataChannel, bedzie przechowywany na wlasnosc
-    //! \param offset poczatkowe przesuniecie (domyslnie = (0,0))
-    //! \param scaleX poczatkowa skala w poziomie (domyslnie 1)
-    //! \param scaleY poczatkowa skala w pionie (domyslnie 1)
+    //! \param channel DataChannel, bêdzie przechowywany na w³asnoœæ
+    //! \param offset pocz¹tkowe przesuniecie (domyslnie = (0,0))
+    //! \param scaleX pocz¹tkowa skala w poziomie (domyslnie 1)
+    //! \param scaleY pocz¹tkowa skala w pionie (domyslnie 1)
     NewChartSeriesData(ScalarChannelReaderInterfaceConstPtr channel, 
         QPointF offset = QPointF(), double scaleX = 1.0, double scaleY = 1.0);
 
 public:
-    //! \return liczba probek
+    //! \return liczba próbek
     virtual size_t size() const;
-    //! Konwertuje probke z DataChannel na format obslugiwany przez Qwt
-    //! \param i numer probki
-    //! \return wartosc konkretnej probki
+    //! Konwertuje próbkê z DataChannel na format obs³ugiwany przez Qwt
+    //! \param i numer próbki
+    //! \return wartosc konkretnej próbki
     virtual QPointF sample( size_t i ) const;
-    //! \return wielkosc obszaru zajmowanego przez krzywa
+    //! \return wielkoœæ obszaru zajmowanego przez krzywa
     virtual QRectF boundingRect() const;
 
 public:

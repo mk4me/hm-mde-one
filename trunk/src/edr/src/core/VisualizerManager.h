@@ -149,14 +149,14 @@ public:
     int getNumInstances(UniqueID id);
 
 	//! \param serie Seria danych, któr¹ opakowujemy w kana³ i dodajemy do timeline
-	//! \param visualizer Wizualizator ktorego seria ta dotyczy
-	//! \param path Œcie¿ka w timeline gdzie probujemy dodaæ kana³
+	//! \param visualizer Wizualizator którego seria ta dotyczy
+	//! \param path Œcie¿ka w timeline gdzie próbujemy dodaæ kana³
 	//! \param synchRemove Czy usuniêcie kana³u z timeline powinno skutkowaæ usuniêciem jego serii danych z wizualizatora
 	//! \return WskaŸnik typu const void * identyfikuj¹cy utworzony kana³, wartoœæ nullptr oznacza ¿e kana³u nie utworzono
 	const void * createChannel(const core::VisualizerTimeSeriePtr & serie, Visualizer * visualizer, const std::string & path = std::string(), bool synchRemove = true);
 	//! \param series Serie danych, które opakowujemy w kana³ i dodajemy do timeline
-	//! \param visualizer Wizualizator ktorego serie te dotyczy
-	//! \param path Œcie¿ka w timeline gdzie probujemy dodaæ kana³
+	//! \param visualizer Wizualizator którego serie te dotyczy
+	//! \param path Œcie¿ka w timeline gdzie próbujemy dodaæ kana³
 	//! \param synchRemove Czy usuniêcie kana³u z timeline powinno skutkowaæ usuniêciem jego serii danych z wizualizatora
 	//! \return WskaŸnik typu const void * identyfikuj¹cy utworzony kana³, wartoœæ nullptr oznacza ¿e kana³u nie utworzono
 	const void * createChannel(const std::vector<core::VisualizerTimeSeriePtr> & series, Visualizer * visualizer, const std::string & path, bool synchRemove = true);
@@ -166,14 +166,14 @@ public:
 	//! Metoda oznacza ¿e serie danych kana³u zosta³y ju¿ usuniêtê z wizualizatora
 	void markAsRemovedFromVisualizer(const void * channel);
 
-	//! \param visualizer Wizualizator dla ktorego oznaczamy ze wszystkie serie kanalow zostaly juz obsluzone - nie wymagaja usuwania
+	//! \param visualizer Wizualizator dla którego oznaczamy ze wszystkie serie kana³ów zosta³y ju¿ obs³u¿one - nie wymagaja usuwania
 	void markAllChannelsAsRemovedFromVisualizer(Visualizer * visualizer);
-	//! \param visualizer Wizualizator dla ktorego usuwamy wszystkie kanaly
+	//! \param visualizer Wizualizator dla którego usuwamy wszystkie kana³y
 	void removeAllChannelsFromVisualizer(Visualizer * visualizer);
 
-	//! Wszystkie kanaly sa oznaczone jako obsluzone przez wizualizaotry
+	//! Wszystkie kana³y s¹ oznaczone jako obs³u¿one przez wizualizaotry
 	void markAllChannelsAsRemoved();
-	//! Usuwa wszystkie kanaly
+	//! Usuwa wszystkie kana³y
 	void removeAllChannels();
 
 private:
@@ -192,7 +192,7 @@ private:
 // TODO: create publiczne bez friend Visualizer czy prywatne + jakis inny mechanizm dostepu?
 public:
 	//! Tworzy instancjê wizualizatora.
-	//! \param typeInfo typ, ktory bedzie wyswietlany w wizualizatorze.
+	//! \param typeInfo typ, który bêdzie wyœwietlany w wizualizatorze.
 	//! \return Instancja wizualizatora.
 	VisualizerPtr createVisualizer(const core::TypeInfo& typeInfo);
 

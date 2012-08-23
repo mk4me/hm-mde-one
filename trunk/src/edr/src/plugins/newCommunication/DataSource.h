@@ -77,7 +77,7 @@ public:
     //! \return prawda jeœli u¿ytkownik zalogowany
     virtual bool isLogged() const;
 
-    //! \return Dane aktualnego u¿ytkownika ( w szczególnoœci pusty obiekt jesli niezalogowano)
+    //! \return Dane aktualnego u¿ytkownika ( w szczególnoœci pusty obiekt jeœli niezalogowano)
     virtual const User * currentUser() const;
 
 	//! Implementacja interfejsu communication::ICommunicationDataSource

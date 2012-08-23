@@ -13,7 +13,7 @@
 #include <plugins/subject/Types.h>
 #include "TreeItemHelper.h"
 
-//! Klasa sluzy do budowania drzewa danych w analizach
+//! Klasa s³u¿y do budowania drzewa danych w analizach
 class TreeBuilder
 {
 public:

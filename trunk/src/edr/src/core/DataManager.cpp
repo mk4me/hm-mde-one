@@ -415,7 +415,7 @@ void DataManager::initializeData(core::ObjectWrapperPtr & data)
 
     UTILS_ASSERT((data != nullptr), "Niezainicjowany ObjectWrapper");
     if(data->isNull() == true){
-        //szukamy inicjalizatora - mamy go w spisie obiektow
+        //szukamy inicjalizatora - mamy go w spisie obiektów
         auto initializerIT = objectsWithInitializers.find(data);
 
         if(initializerIT->second == nullptr){
@@ -437,7 +437,7 @@ bool DataManager::isInitializable(const core::ObjectWrapperPtr & data) const
 {
     ScopedLock lock(stateMutex);
 
-    //szukamy inicjalizatora - mamy go w spisie obiektow
+    //szukamy inicjalizatora - mamy go w spisie obiektów
     auto initializerIT = objectsWithInitializers.find(data);
 
     if(initializerIT == objectsWithInitializers.end() || initializerIT->second == nullptr){
@@ -453,7 +453,7 @@ void DataManager::deinitializeData(core::ObjectWrapperPtr & data)
     ScopedLock lock(stateMutex);
 
     if(data->isNull() == false){
-        //szukamy inicjalizatora - mamy go w spisie obiektow
+        //szukamy inicjalizatora - mamy go w spisie obiektów
         auto initializerIT = objectsWithInitializers.find(data);
 
         if(initializerIT == objectsWithInitializers.end() || initializerIT->second == nullptr){
@@ -913,7 +913,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
 				initializeData(wrapper);
 
 				if(wrapper->isNull() == true){
-					//jesli nadal nie udalo sie zainicjalizowac danych to trzeba je usunac
+					//jeœli nadal nie udalo siê zainicjalizowac danych to trzeba je usun¹æ
 					invalid.insert(wrapper);
 				}else{
 					objects.push_back(wrapper);

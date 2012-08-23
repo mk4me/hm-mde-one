@@ -28,7 +28,7 @@ typedef const shared_ptr<const ObjectWrapperCollection> ConstObjectWrapperCollec
 typedef weak_ptr<ObjectWrapperCollection> ObjectWrapperCollectionWeakPtr;
 typedef weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeakPtr;
 
-//! Klasa sluzy do agregowania obiektow domenowych tego samego typu lub pocohdnych od tego samego typu
+//! Klasa s³u¿y do agregowania obiektów domenowych tego samego typu lub pocohdnych od tego samego typu
 class ObjectWrapperCollection
 {
     friend class DataManager;
@@ -45,7 +45,7 @@ private:
 
     //! przechowuje stale, niemodyfikowalne obiekty
     ConstObjects constObjects;
-    //! typ przechowywanych obiektow
+    //! typ przechowywanych obiektów
     TypeInfo typeInfo;
     //! Czy kolekcja przechowyje elementy wylacznie danego typu czy rowniez pochodne mu
     bool exact;
@@ -54,7 +54,7 @@ private:
 // gcc jakos nie widzi slowa friend wczesniej !?
 public:
 
-    //! Metoda dedykowana DataManager do szybkiego ³adowania kolekcji bez sprawdzania typów ladowanych danych - powinno byc juz sprawdzone i zagwarantowane
+    //! Metoda dedykowana DataManager do szybkiego ³adowania kolekcji bez sprawdzania typów ladowanych danych - powinno byæ ju¿ sprawdzone i zagwarantowane
     //! \param begin Iterator pocz¹tku zakresu ObjectWrapperPtr
     //! \param begin Iterator koñca zakresu ObjectWrapperPtr
     template<class Iter>
@@ -66,7 +66,7 @@ public:
 public:
 
     //! Chroniony konstruktor, klasa pochodna powinna zdeklarowac przechowywany typ
-    //! \param info typ przechowywanych obiektow
+    //! \param info typ przechowywanych obiektów
     ObjectWrapperCollection(TypeInfo info, bool exact = true) :
       typeInfo(info), exact(exact) {}
 
@@ -103,7 +103,7 @@ public:
     //! Czyœci dane innego typu ni¿ ten dla którego utworozno kolekcjê
     void removeDerivedTypes()
     {
-        //iteruj po kolekcji i usun te typy ktore nie sa dokladnie typu kolekcji
+        //iteruj po kolekcji i usun te typy które nie s¹ dokladnie typu kolekcji
         auto cIT = constObjects.begin();
         while( cIT != constObjects.end() ) {
             if((*cIT)->getTypeInfo() != typeInfo){
@@ -161,7 +161,7 @@ public:
     //! \return Niemodyfikowalny obiekt domenowy
     const ObjectWrapperConstPtr & getObject(int index) const
     {
-        // wyjatek zamiast asercji (na wypadek trybu release)
+        // wyj¹tek zamiast asercji (na wypadek trybu release)
         if (!(index < static_cast<int>(size()) && index >= 0)) {
             throw std::runtime_error("ObjectWrapperCollection::getObject - wrong index");
         }
@@ -178,7 +178,7 @@ public:
     }
 
     //! Dodanie obiektu do agregatu
-    //! \param object Wskaznik do niemodyfikowalnego obiektu domenowego
+    //! \param object wskaŸnik do niemodyfikowalnego obiektu domenowego
     void addObject(const ObjectWrapperConstPtr & object)
     {
         // sprawdzenie poprawnosci typu

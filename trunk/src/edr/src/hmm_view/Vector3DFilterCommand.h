@@ -34,14 +34,14 @@
 
 typedef std::map<QString, std::pair<QString,QString> > NamesDictionary;
 
-//! klasa ktora wykrzystuje metody buildera drzewa danych, do stworzenia przefiltrowanej galezi
+//! klasa która wykrzystuje metody buildera drzewa danych, do stworzenia przefiltrowanej galezi
 class BuilderFilterCommand : public IFilterCommand
 {
 public:
     typedef boost::function<QTreeWidgetItem* (const PluginSubject::MotionConstPtr&, const QString&, const QIcon&, const QIcon&)> BranchFunction;
 public:
     //! Konstruktor
-    //! \param function funkcja, ktora zostanie wykorzystana do stworzenia elementu drzewa
+    //! \param function funkcja, która zostanie wykorzystana do stworzenia elementu drzewa
     //! \param rootIcon ikona korzenia galezi
     //! \param elementIcon ikona stworzonych elementow
     BuilderFilterCommand(BranchFunction function, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon());
@@ -53,7 +53,7 @@ public:
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 
 protected:
-    //! funkcja, ktora zostanie wykorzystana do stworzenia elementu drzewa
+    //! funkcja, która zostanie wykorzystana do stworzenia elementu drzewa
     BranchFunction branchFunction;
     //! ikona stworzonych elementow
     QIcon elementIcon;
@@ -71,7 +71,7 @@ public:
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 };
 
-//! klasa, dzieki ktorej mozliwe jest korzystanie z sygnalow i slotow w klasie szablonowej.
+//! klasa, dziêki której mo¿liwe jest korzystanie z sygnalow i slotow w klasie szablonowej.
 //! obsluguje sloty w klasach Vector3DFilterCommand i Vector3DFilterCommand2
 class __Helper : public QObject
 {
@@ -93,7 +93,7 @@ private:
     NamesDictionary namesDictionary;
 };
 
-//! klasa ktora wykrzystuje metody buildera drzewa danych, do stworzenia przefiltrowanej galezi, dodatkowo dostarcza konfigurator
+//! klasa która wykrzystuje metody buildera drzewa danych, do stworzenia przefiltrowanej galezi, dodatkowo dostarcza konfigurator
 template <class Collection>
 class BuilderConfiguredFilterCommand : public BuilderFilterCommand
 {

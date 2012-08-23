@@ -14,7 +14,7 @@
 
 class SubjectService;
 
-//! Reprezentacja subjecta. Z jednym subjectem zwiazane sa sytemy (np. miesniowy, szkieletowy) oraz jeden ruch (motion)
+//! Reprezentacja subjecta. Z jednym subjectem zwi¹zane s¹ sytemy (np. miesniowy, szkieletowy) oraz jeden ruch (motion)
 class Subject : public PluginSubject::ISubject
 {
     friend class SubjectService;

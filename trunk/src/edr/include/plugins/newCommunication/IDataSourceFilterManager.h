@@ -29,7 +29,7 @@ public:
     //Wirtualny destruktor
     virtual ~IDataSourceFilterManager() {}
 
-    //! \param filter Filtr danych ktory rejestrujemy
+    //! \param filter Filtr danych który rejestrujemy
     //! \return Indeks zarejestrowanego filtra
     virtual int registerFilter(DataSourceFilter * filter) = 0;
 

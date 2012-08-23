@@ -17,7 +17,7 @@
 class EDRDockWidget;
 class EDRDockWidgetSet;
 
-//! Klasa zarzadza calymi grupami dock widgetow, laczac je w sety
+//! Klasa zarz¹dza calymi grupami dock widgetow, laczac je w sety
 class EDRDockWidgetManager : public QMainWindow
 {
     Q_OBJECT;
@@ -36,10 +36,10 @@ public:
 	//! Dodaj grupe dock widgetow
 	//! \param set dodawana grupa
 	void addDockWidgetSet(EDRDockWidgetSet* set);
-    //! Grupa dock widgetow stanie sie aktywna (widoczna)
+    //! Grupa dock widgetow stanie siê aktywna (widoczna)
     //! \param set 
     void raiseSet( EDRDockWidgetSet* set );
-    //! Dodaje widget do grupy, ktora ma na niego miejsce, jesli takiej nie ma to tworzona jest nowa
+    //! Dodaje widget do grupy, która ma na niego miejsce, jeœli takiej nie ma to tworzona jest nowa
     //! \param widget dodawany dock widget
     void autoAddDockWidget(EDRDockWidget* widget);
     //! ustawia pozycje belki z tabami
@@ -49,7 +49,7 @@ public:
     const_range getDockSet() const { return boost::make_iterator_range(dockList.cbegin(), dockList.cend()); }
     //! \return range z wszystkimi grupami dock widgetow
     range getDockSet() { return boost::make_iterator_range(dockList.begin(), dockList.end()); }
-    //! Na podstawie dock widgeta pobierana jest grupa, do ktorej nalezy
+    //! Na podstawie dock widgeta pobierana jest grupa, do której nale¿y
     //! \param widget badany dock widget
     //! \return odnaleziona grupa lub nullptr
     EDRDockWidgetSet* tryGetDockSet(EDRDockWidget* widget);
@@ -59,7 +59,7 @@ private:
     void setTabNames();
 
 signals:
-    //! stan dock widgetow zmienil sie
+    //! stan dock widgetow zmieni³ siê
     void changed();
 
 private slots:
@@ -72,7 +72,7 @@ private slots:
 private:
     //! lista wszystkich grup managera
 	std::list<EDRDockWidgetSet*> dockList;
-    //! lista grup, ktory zostaly stworzone przez manager
+    //! lista grup, który zosta³y stworzone przez manager
 	std::list<EDRDockWidgetSet*> generatedList;
 };
 

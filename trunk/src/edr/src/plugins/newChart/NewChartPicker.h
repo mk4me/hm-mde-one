@@ -26,22 +26,22 @@ class NewChartPicker: public NewChartState
 {
     Q_OBJECT
 public:
-    //! Konstruktor pobiera wizualizator, na ktorym stan bedzie operowal
+    //! Konstruktor pobiera wizualizator, na którym stan bêdzie operowa³
     NewChartPicker( NewChartVisualizer* visualizer );
 	virtual ~NewChartPicker() {}
 
 public:
     //! filtrowanie eventow Qt, obsluga myszki
     virtual bool stateEventFilter( QObject *, QEvent * );
-    //! picker nie musi sie odrysowywac
+    //! picker nie musi siê odrysowywac
     virtual void draw(QPainter* painter) {} 
     //! rozpoczecie stanu, zmiana kursora
     virtual void stateBegin();
-    //! nic nie trzeba robic po zakonczeniu stanu
+    //! nic nie trzeba robic po zakoñczeniu stanu
     virtual void stateEnd() {}
-    //! \return tolerancja w pikselach wg ktorej zaliczane jest klikniecie na krzywa
+    //! \return tolerancja w pikselach wg której zaliczane jest klikniecie na krzywa
     int getPixelTolerance() const { return pixelTolerance; }
-    //! ustawia tolerancje wg ktorej zaliczane jest klikniecie na krzywa
+    //! ustawia tolerancje wg której zaliczane jest klikniecie na krzywa
     //! \param val nowa tolerancja w pikselach
     void setPixelTolerance(int val) { pixelTolerance = val; }
     //! ustawia aktualnie aktywna krzywa, klikniecia na nia beda ignorowane
@@ -63,9 +63,9 @@ private:
     QwtPlotCanvas* canvas;
     //! tolerancja, czyli maksymalna odlegnosc od krzywej zaliczajaca klikniecie w nia
     int pixelTolerance;
-    //! aktualnie wybrana krzywa, klikniecie w nia bedzie ignorowane
+    //! aktualnie wybrana krzywa, klikniecie w nia bêdzie ignorowane
     QwtPlotCurve* currentCurve;
-    //! flaga okreslajaca, czy kursor sie porusza, jesli tak, to nie mozna wykonac wszystkich akcji pickera
+    //! flaga okreœlaj¹ca, czy kursor siê porusza, jeœli tak, to nie mo¿na wykonaæ wszystkich akcji pickera
     bool move;
 };
 typedef core::shared_ptr<NewChartPicker> NewChartPickerPtr;

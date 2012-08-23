@@ -33,57 +33,56 @@
 
 #include <iostream>
 
-//! Klasa wzorowana na przykladzie z osg, pozwala zachowac staly rozmiar manipulatora niezaleznie od odleglosci od kamery
+//! Klasa wzorowana na przyk³adzie z osg, pozwala zachowaæ sta³y rozmiar manipulatora niezaleznie od odleg³oœci od kamery
 class DraggerContainer : public osg::Group
 {
 public:
-    //! ustawienie domyslnych parametrow
+    //! ustawienie domyœlnych parametrow
     DraggerContainer() : _draggerSize(100.0f), _active(true) {}
     //! Konstruktor kopiujacy (w tylu osg)
-    //! \param copy 
-    //! \param copyop 
+    //! \param copy kopiowany obiekt
+    //! \param copyop rodzaj kopii (p³ytka, g³êboka, ... )
     DraggerContainer( const DraggerContainer& copy, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
     
 public:
     META_Node( osgManipulator, DraggerContainer );
-    //! Ustawienie manipulatora, ktory ma zachowac jednakowy rozmiar
+    //! Ustawienie manipulatora, który ma zachowaæ jednakowy rozmiar
     //! \param dragger 
     void setDragger( osgManipulator::Dragger* dragger );
-    //! \return ustawiony manipulator, ktory ma zachowac jednakowy rozmiar
+    //! \return ustawiony manipulator, który ma zachowaæ jednakowy rozmiar
     osgManipulator::Dragger* getDragger() { return _dragger.get(); }
-    //! \return ustawiony manipulator, ktory ma zachowac jednakowy rozmiar
+    //! \return ustawiony manipulator, który ma zachowaæ jednakowy rozmiar
     const osgManipulator::Dragger* getDragger() const { return _dragger.get(); }
     //! nowy rozmiar manipulaotra
-    //! \param size 
+    //! \param size rozmiar w jednostkach sceny
     void setDraggerSize( float size ) { _draggerSize = size; }
-    //! 
+    //! \return pobiera rozmiar manipulatora w jednostkach sceny
     float getDraggerSize() const { return _draggerSize; }
-    //! 
-    //! \param b 
+    //! zmiana aktywnoœci manipulatora
     void setActive( bool b ) { _active = b; }
-    //! 
+    //! \return aktywnoœæ manipulatora
     bool getActive() const { return _active; }
-    //! Metoda wykonuje glowna prace, dostosowywuje rozmiar do faktycznej rozdzielczosci okna, w ktorym odbywa sie renderowanie
-    //! \param nv 
+    //! Metoda wykonuje g³ówn¹ pracê, dostosowywuje rozmiar do faktycznej rozdzielczoœci okna, w którym odbywa siê renderowanie
+    //! \param nv obiekt odwiedzaj¹cy wêze³ (zgodnie ze wzorcem projektowym)
     void traverse( osg::NodeVisitor& nv );
-    //! 
-    //! \param pivot 
+    //! Ustawia punkt obrotu manipulatora
+    //! \param pivot nowy punkt obrotu
     void setDraggerPivot( const osg::Vec3& pivot );
 protected:
     //! opakowywany manipulator
     osg::ref_ptr<osgManipulator::Dragger> _dragger;
-    //! staly rozmiar manipulatora
+    //! sta³y rozmiar manipulatora
     float _draggerSize;
-    //! czy aktualnie uzywany
+    //! czy aktualnie u¿ywany
     bool _active;
 };
 typedef osg::ref_ptr<DraggerContainer> DraggerContainerPtr;
 
-//! Klasa sluzaca do obslugi manipulatorow
+//! Klasa s³u¿¹ca do obs³ugi manipulatorów
 class Manipulators
 {
 public:
-    //! rodzaje dostepnych manipulatorow
+    //! rodzaje dostêpnych manipulatorów
     enum DraggerType 
     {
         TabPlane,
@@ -96,30 +95,30 @@ public:
         TabBox
     };
 
-    //! Podlaczenie manipulatora miedzy parenta i childa
-    //! \param parent do niego zostanie podpiety manipulator
-    //! \param child obiekt, na ktorym bedzie dzialal manipulator
-    //! \param draggerContainer opakowany manipulator (staly rozmiar)
-    //! \param pivot punkt zaczepienie manipulatora
+    //! Pod³¹czenie manipulatora miêdzy parenta i childa
+    //! \param parent do niego zostanie podpiêty manipulator
+    //! \param child obiekt, na którym bêdzie dzialal manipulator
+    //! \param draggerContainer opakowany manipulator (sta³y rozmiar)
+    //! \param pivot punkt zaczepienia manipulatora
     static void connect(osg::PositionAttitudeTransform* parent, osg::MatrixTransform* child, DraggerContainer* draggerContainer, const osg::Vec3& pivot );
-    //! Rozlaczenie manipulaotra
-    //! \param parent od niego trzeba sie odpiac
-    //! \param child obiekt, ktory przestaje byc manipulowany
+    //! Roz³¹czenie manipulaotra
+    //! \param parent od niego trzeba siê odpi¹æ
+    //! \param child obiekt, który przestaje byæ manipulowany
     //! \param draggerContainer odpinany manipulaotr
     static void disconnect(osg::PositionAttitudeTransform* parent, osg::MatrixTransform* child, DraggerContainer* draggerContainer);
-    //! Metoda fabrykujaca manipulatory
+    //! Metoda fabrykuj¹ca manipulatory
     //! \param type typ manipulaotra
     //! \return stworzony obiekt
     static osgManipulator::Dragger* createDragger(DraggerType type);
-    //! Metoda fabrykujaca manipulatory o stalym rozmiarze
+    //! Metoda fabrykuj¹ca manipulatory o sta³ym rozmiarze
     //! \param type  typ manipulaotra
     //! \return stworzony obiekt
     static DraggerContainer* creatreDraggerContainer(DraggerType type);
-    //! Metoda tworzy nowy manipulator i podpina go pod wezel, ktory chcemy manipulowac
-    //! \param scene wezel, ktory bedzie manipulowany
+    //! Metoda tworzy nowy manipulator i podpina go pod wêze³, który chcemy manipulowaæ
+    //! \param scene wêze³, który bêdzie manipulowany
     //! \param type typ manipulatora
-    //! \param fixedSizeInScreen czy manipulator ma miec staly rozmiar
-    //! \return wezel zawierajacy manipulator
+    //! \param fixedSizeInScreen czy manipulator ma miec sta³y rozmiar
+    //! \return wêze³ zawierajacy manipulator
     static osg::Node* addDraggerToScene(osg::PositionAttitudeTransform* scene, DraggerType type, bool fixedSizeInScreen);
 };
 #endif

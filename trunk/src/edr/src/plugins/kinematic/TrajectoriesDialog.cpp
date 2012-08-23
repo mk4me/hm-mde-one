@@ -242,7 +242,7 @@ void TrajectoriesDialog::treeItemChanged( QTreeWidgetItem * current, QTreeWidget
 {
 	std::string name = current->text(1).toStdString();
     currentTrajectories = item2Trajectories[current];
-    // w drzewie moga istniec elementy, nie odnoszace sie bezposrednio do trajektorii.
+    // w drzewie moga istnieæ elementy, nie odnoszace siê bezposrednio do trajektorii.
     if (!currentTrajectories) {
         return;         // <----------   return !
     }

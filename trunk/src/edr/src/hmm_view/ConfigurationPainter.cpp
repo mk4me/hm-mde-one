@@ -89,14 +89,14 @@ IAreaPtr ConfigurationPainter::getArea( int x, int y )
             int distX = x - ((*it)->getX() + w2);
             int distY = y - ((*it)->getY() + h2);
             // obsluga przypadku, gdy kliknieto wiecej niz jeden obszar
-            // wykorzystywana jest odleglosc kursora od srodka (metryka kwadratowa bo jest szybsza)
+            // wykorzystywana jest odleg³oœæ kursora od srodka (metryka kwadratowa bo jest szybsza)
             clickedAreas.push_back(std::make_pair(*it, distX * distX + distY * distY));
         }
     }
 
     if (clickedAreas.empty() == false) {
-        // jesli sa jakies obszary, na ktore kliknieto, to zwracany jest ten,
-        // ktorego srodek jest blizej kursora
+        // jeœli s¹ jakieœ obszary, na które kliknieto, to zwracany jest ten,
+        // którego œrodek jest blizej kursora
         auto lambda_sort = [&](const pair& left, const pair& right)
         {
             return left.second < right.second;

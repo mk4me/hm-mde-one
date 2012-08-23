@@ -34,8 +34,8 @@ void SchemeDrawerContainer::addDrawer( OsgSchemeDrawerPtr drawer )
 void SchemeDrawerContainer::removeDrawer( OsgSchemeDrawerPtr drawer )
 {
     UTILS_ASSERT(false);
-    // TODO jesli byl init to usun z kolekcji i noda
-    //      jesli nie to tylko z kolekcji
+    // TODO jeœli byl init to usun z kolekcji i noda
+    //      jeœli nie to tylko z kolekcji
     removeFromVector(drawers, drawer);
 }
 
