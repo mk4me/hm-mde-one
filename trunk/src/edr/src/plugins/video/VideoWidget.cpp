@@ -236,7 +236,7 @@ void VideoWidget::clearScene()
     multiView->removeAllItems();
     // usuniêcie wszystkich wêz³ów (!)
     multiView->removeChildren(0, multiView->getNumChildren());
-    // reinicjalizacja multi view (po usunieciu wszystkich wêz³ów - wymagana)
+    // reinicjalizacja multi view (po usuniêciu wszystkich wêz³ów - wymagana)
     multiView->restoreRequiredChildren();
 
     // dodanie "hacka"

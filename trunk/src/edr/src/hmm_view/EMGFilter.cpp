@@ -87,7 +87,7 @@ public:
     {
         return channel->empty();
     }
-    //! \param time Czas dla którego chemy uzyskac dwie najblizsze próbki
+    //! \param time Czas dla którego chemy uzyskac dwie najbli¿sze próbki
     //! \return para indeksów, pierwszy wskazujke próbkê o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje próbkê o czasie wiekszym lub rownym zadanemu
     virtual std::pair<size_type, size_type> getValueHelper(time_type time) const
     {
@@ -124,7 +124,7 @@ protected:
 //        }
 //
 //        ScalarChannelReaderInterface::point_type sum = 0;
-//        //srednia
+//        //œrednia
 //        for(ScalarChannelReaderInterface::size_type idx = 0; idx < myChannel.size(); idx++){
 //            sum += observedChannel.value(idx);
 //        }
@@ -275,7 +275,7 @@ public:
 //    virtual void initialize()
 //    {
 //        point_type sum = 0;
-//        //srednia
+//        //œrednia
 //        size_type count = channel->size();
 //        for(size_type idx = 0; idx < channel->size(); idx++){
 //            sum += channel->value(idx);
@@ -334,7 +334,7 @@ public:
         point_type max4 = max / 4;
 
         point_type sum = 0;
-        //srednia
+        //œrednia
         for(size_type idx = 0; idx < count; ++idx) {
             point_type val = this->channel->value(idx);
             if (val > max4) {

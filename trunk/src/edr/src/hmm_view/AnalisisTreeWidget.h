@@ -26,7 +26,11 @@ public:
     explicit AnalisisTreeWidget(QWidget *parent = 0);
 
 protected:
+    //! Obs³uga zdarzeñ myszki
+    //! \param event 
     virtual void mousePressEvent(QMouseEvent *event);
+    //! Obs³uga zdarzeñ menu kontekstowego
+    //! \param event 
     virtual void contextMenuEvent ( QContextMenuEvent * event );
 };
 

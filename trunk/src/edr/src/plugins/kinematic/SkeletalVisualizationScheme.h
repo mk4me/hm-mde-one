@@ -16,7 +16,7 @@
 class SkeletalVisualizationScheme : public VisualizationScheme
 {
 public:
-    //! Konstruktor ustawia domyslne wartoœci w tym kolory
+    //! Konstruktor ustawia domyœlne wartoœci w tym kolory
     SkeletalVisualizationScheme();
 	
 public:
@@ -48,7 +48,7 @@ protected:
 private:
     //! odœwie¿enie informacji o jointach
     void updateJoints();
-    //! obliczenie transformacji szkieletu. Metoda wywoluje rekurencje
+    //! obliczenie transformacji szkieletu. Metoda wywo³uje rekurencje
     //! \param time czas, dla którego maja byæ liczone transformacje
     void updateJointTransforms(double time);
     //! obliczenie transformacji dla podanego czasu

@@ -20,15 +20,13 @@ public:
     virtual ~IArea() {}
 
 public:
-    //! \return pozycja Y
+    //! \return pozycja Y rysowanego obszaru
     virtual int getY() const = 0;
-    //!
-    //! \param val
+    //! \param val ustawia pozycjê Y rysowanego obszaru
     virtual void setY(int val) = 0;
-    //! \return pozycja X
+    //! \return pozycja X rysowanego obszaru
     virtual int getX() const = 0;
-    //!
-    //! \param val
+    //! \param val ustawia pozycjê X rysowanego obszaru
     virtual void setX(int val) = 0;
     //! \return szerokoœæ obszaru
     virtual int getWidth() const = 0;
@@ -44,19 +42,19 @@ public:
     //! \param x wspó³rzêdna x
     //! \param y wspó³rzêdna y
     virtual bool isInside(int x, int y) const;
-    //! czy obszar jest aktywny (normalnie - czy kliknieto w niego myszka)
+    //! czy obszar jest aktywny (normalnie - czy klikniêto w niego myszka)
     bool isActive() const { return active; }
     //! ustawia aktywnoœæ obszaru (norm. po kliknieciu myszka)
     //! \param val
     void setActive(bool val) { active = val; }
     //! \return skala obszaru
     float getScale() const { return scale; }
-    //!
-    //! \param val
+    //! ustawia skalê rysowanego obszaru, nie mo¿e byæ równa 0
+    //! \param val nowa skala
     void setScale(float val) { scale = val; }
 
 private:
-    //! czy obszar jest aktywny (normalnie - czy kliknieto w niego myszka)
+    //! czy obszar jest aktywny (normalnie - czy klikniêto w niego myszka)
     bool active;
     //! skala obszaru
     float scale;
@@ -82,28 +80,33 @@ public:
     SingleMarker(const QString& name, int posX, int posY, int r);
 
 public:
-    //!
+    //! \return pozycja Y rysowanego markera (œrodek - promieñ)
     virtual int getY() const { return getScale() * ( posY - r); }
-    //!
-    //! \param val
+    //! ustawia pozycjê Y rysowanego markera
+    //! \param val nowa pozycja
     virtual void setY(int val) { posY = val + r; }
-    //!
+    //! \return pozycja Y rysowanego markera
     virtual int getX() const { return getScale() * (posX - r); }
-    //!
-    //! \param val
+    //! ustawia pozycjê X rysowanego markera  (œrodek - promieñ)
+    //! \param val nowa pozycja
     virtual void setX(int val) { posX = val + r; }
-    //!
+    //! \return szerokoœæ rysowanego markera (2 x promieñ)
     virtual int getWidth() const { return getScale() * (2 * r); }
-    //!
+    //! \return wysokoœæ rysowanego markera (2 x promieñ)
     virtual int getHeight() const { return getScale() * (2 * r); }
-    //!
+    //! \return nazwa markera
     virtual const QString& getName() const { return name; }
     //! pozwala odrysowaæ siê obiektowi
     //! \param painter obiekt paintera
-    //! \param selected czy marker jest zaznaczony przez myszke
+    //! \param selected czy marker jest zaznaczony przez myszkê
     virtual void draw(QPainter& painter, bool selected);
 
 private:
+    //! Inicjalizacja markera
+    //! \param name nazwa markera
+    //! \param posX wspó³rzêdna X œrodka markera
+    //! \param posY wspó³rzêdna Y œrodka markera
+    //! \param r promieñ markera
     void init (const QString& name, int posX, int posY, int r);
 
 private:
@@ -141,25 +144,25 @@ public:
     SinglePicture(const QString& name, const QPixmapPtr& pixmap, int x = 0, int y = 0, bool alwaysVisible = false);
 
 public:
-    //!
+    //! \return wspó³rzêdna Y rysowanego obrazka
     virtual int getY() const { return getScale() * (y); }
-    //!
-    //! \param val
+    //! ustawia wspó³rzêdn¹ Y rysowanego obrazka
+    //! \param val nowa wspó³rzêdna
     virtual void setY(int val) { y = val; }
-    //!
+    //! \return wspó³rzêdna X rysowanego obrazka
     virtual int getX() const { return getScale() * (x); }
-    //!
-    //! \param val
+    //! ustawia wspó³rzêdn¹ Y rysowanego obrazka
+    //! \param val nowa wspó³rzêdna
     virtual void setX(int val) { x = val; }
-    //!
+    //! \return szerokoœæ obrazka
     virtual int getWidth() const { return getScale() * (pixmap->width()); }
-    //!
+    //! \return wysokoœæ obrazka
     virtual int getHeight() const { return getScale() * (pixmap->height()); }
-    //!
+    //! \return nazwa wyœwietlana wraz z obrazkiem
     virtual const QString& getName() const { return name; }
     //! pozwala odrysowaæ siê obiektowi
     //! \param painter obiekt paintera
-    //! \param selected czy marker jest zaznaczony przez myszke
+    //! \param selected czy marker jest zaznaczony przez myszkê
     virtual void draw(QPainter& painter, bool selected);
     //! czy podany punkt znajduje siê wewn¹trz obszaru
     //! \param x wspó³rzêdna x
@@ -175,8 +178,7 @@ public:
     //! \param pixmap obrazek, którego alpha siê zmienia
     //! \param alpha nowa wartoœæ przezroczystoœci
     static void setPixmapAlpha(QImage& pixmap, unsigned int alpha);
-
-
+    
 private:
     //! nazwa obszaru
     QString name;

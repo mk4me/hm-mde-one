@@ -41,7 +41,7 @@ public:
     //! Dodanie kolejnego drawera do kolecji, nie mo¿e on ju¿ w tej kolekcji figurowaæ
     //! \param drawer dodawany drawer, jeœli ju¿ istnieje to wywo³a siê asercja
     void addDrawer(OsgSchemeDrawerPtr drawer);
-    //! Usuniecie drawera z kolekcji, drawer musi w kolekcji istnieæ
+    //! Usuniêcie drawera z kolekcji, drawer musi w kolekcji istnieæ
     //! \param drawer usuwany drawer, jeœli go nie ma to wywo³ana zostnie asercja
     void removeDrawer(OsgSchemeDrawerPtr drawer);
     //! \return zwraca wszystkie potomne drawery

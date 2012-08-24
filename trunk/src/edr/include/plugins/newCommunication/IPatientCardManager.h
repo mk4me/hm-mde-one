@@ -31,7 +31,7 @@ namespace communication
 		//! \param idx Index karty pacjenta dla której chcemy uzyskaæ widget
 		//! \return Widget danej karty pacjenta
 		virtual QWidget * patientCardWidget(int idx) const = 0;
-		//! \param idx Index karty pacjenta ktorej nazwê chcemy pobraæ
+		//! \param idx Index karty pacjenta której nazwê chcemy pobraæ
 		//! \return Nazwa karty pacjenta
 		virtual const std::string & patientCardName(int idx) const = 0;
 		//! \return Iloœc zarejestrowanych kart pacjenta

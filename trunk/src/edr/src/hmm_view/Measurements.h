@@ -15,13 +15,15 @@
 #include <core/SmartPtr.h>
 #include <boost/bimap.hpp>
 
-//! W klasie przechowywany jest konkretna konfiguracja EMG
+//! W klasie przechowywana jest konkretna konfiguracja EMG
 class MeasurementConfig
 {
     friend class MeasurementsParser;
 
 public:
+	//! 
 	MeasurementConfig();
+    //! 
     virtual ~MeasurementConfig() {}
 
 public:
@@ -43,7 +45,9 @@ public:
     int getNumber() const { return number; }
 
 private:
+    //! nazwa obrazka, unikalny identyfikator elementu
     struct EntryData { QString name; QString id; };
+    //! mapa [element konfiguracji (np. elektroda) -> wpis z odpowiadaj¹c¹ nazw¹ + ew. nazw¹ obrazka]
     typedef std::pair<QString, EntryData> MapEntry;
 	
 private:
@@ -92,9 +96,13 @@ public:
     bool hasConfig(int number) const;
 
 private:
+    //! konfiguracja po jej numerze
     std::map<int, MeasurementConfigPtr> configsByNumber;
+    //! konfiguracja po jej nazwie
     std::map<QString, MeasurementConfigPtr> configsByName;
+
 private:
+    //! kolekcja z konfiguracjami pomiarowymi
     static core::shared_ptr<const Measurements> measurements;
 };
 typedef core::shared_ptr<Measurements> MeasurementsPtr;

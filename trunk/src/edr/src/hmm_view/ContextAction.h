@@ -24,7 +24,7 @@ public:
     //! Konstruktor
     //! \param itemHelper helper przypiasany do elementu drzewa
     //! \param parent rodzic akcji
-    //! \param vis wizualizator zwiazany z akcja
+    //! \param vis wizualizator zwi¹zany z akcja
     //! \param set set, do którego ma trafic wizualizator
     ContextAction(HmmTreeItem* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), EDRDockWidgetSet* set = nullptr) :
       item(itemHelper), QAction(parent), visualizer(vis), set(set){}
@@ -32,7 +32,7 @@ public:
 public:
     //! \return helper przypiasany do elementu drzewa
     HmmTreeItem* getTreeItem() const { return item; }
-    //! \return wizualizator zwiazany z akcja
+    //! \return wizualizator zwi¹zany z akcja
     VisualizerPtr getVisualizer() const { return visualizer.lock(); }
     //! \return set, do którego ma trafic wizualizator lub nullptr jeœli nie jest to sprecyzowane
     EDRDockWidgetSet* getDockSet() const { return set; }
@@ -40,7 +40,7 @@ public:
 private:
     //!  helper przypiasany do elementu drzewa
     HmmTreeItem* item;
-    //! wizualizator zwiazany z akcja
+    //! wizualizator zwi¹zany z akcja
     VisualizerWeakPtr visualizer;
     //! set, do którego ma trafic wizualizator lub nullptr jeœli nie jest to sprecyzowane
     EDRDockWidgetSet* set;

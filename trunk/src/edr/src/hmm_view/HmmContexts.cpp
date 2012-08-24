@@ -56,7 +56,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
     if(it->second.empty() == false){
         auto visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
         auto vis = visWidget->getCurrentVisualizer();
-        //tworzymy grupe dla wizualizatora
+        //tworzymy grupê dla wizualizatora
         visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer") + QString(" - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
 
         for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); ++sectionIT){
@@ -193,7 +193,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             maxHeight = std::max(maxHeight, s.height());
         }
 
-        //rozkladamy to w niezaleznych QToolBarach. Maksymalnie 2 rzedy.
+        //rozk³adamy to w niezaleznych QToolBarach. Maksymalnie 2 rzedy.
         //TODO
         //dodaæ maksymalna szerokoœæ + przerzucanie elementów do ukrytego panelu jeœli za duzo ich jest
 
@@ -246,7 +246,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             }
         }
 
-        //wype³niamy grupe
+        //wype³niamy grupê
         QWidget * widget = new QWidget();
         widget->setLayout(layout);
         layout->setContentsMargins(0,0,0,0);

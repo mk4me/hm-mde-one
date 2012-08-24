@@ -14,7 +14,7 @@
 #include <QtGui/QFrame>
 #include <timelinelib/Model.h>
 
-//! Klasa reprezentuj¹ca pojedynczy kana³ w czasie - rysuje jego zakres na osi ze wzgledu na parametry begin i end,
+//! Klasa reprezentuj¹ca pojedynczy kana³ w czasie - rysuje jego zakres na osi ze wzglêdu na parametry begin i end,
 //! które stanowi¹ znormalizowane wartoœci. Root zajmuje zawsze caly dostêpny kana³, jego d³ugoœæ jest punktem 
 //! odniesienia dla pozosta³ych kana³ów. Zakres pocz¹tku i koñca to [0;1] gdzie pocz¹tek musi byæ przed lub równo z koñcem
 class ChannelWidget : //public QWidget 

@@ -833,7 +833,7 @@ void HmmMainWindow::onToolButton(bool checked)
 {
     QToolButton* button = qobject_cast<QToolButton*>(sender());
 
-    //zawsze którys button z podstawowych musi byæ klikniety/checked
+    //zawsze którys button z podstawowych musi byæ klikniêty/checked
     if(currentButton == button){
         if(checked == false){
             button->blockSignals(true);

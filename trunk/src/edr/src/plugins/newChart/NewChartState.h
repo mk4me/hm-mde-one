@@ -27,7 +27,7 @@ public:
     typedef core::shared_ptr<QwtPlot> QwtPlotPtr;
 
 public:
-    //! kostruktor pobiera obiekt wizualizatora, którym bêdzie siê zarz¹dzalo
+    //! kostruktor pobiera obiekt wizualizatora, którym bêdzie siê zarz¹dza³o
     NewChartState(NewChartVisualizer* visualizer);
 	virtual ~NewChartState() { }
 
@@ -42,11 +42,11 @@ public:
     virtual void stateEnd() {}
 
 protected:
-    //! wizualizator, którym bêdzie siê zarz¹dzalo
+    //! wizualizator, którym bêdzie siê zarz¹dza³o
     NewChartVisualizer* visualizer;
     //! Wykres qwt (serce wizualizatora)
     QwtPlot* plot;
-    //! Plotno wykresu
+    //! p³ótno wykresu
     QwtPlotCanvas* canvas;
 };
 typedef core::shared_ptr<NewChartState> NewChartStatePtr;

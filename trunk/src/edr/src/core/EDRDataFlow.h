@@ -32,7 +32,7 @@ public:
 
 protected:
 
-    //! \param connection Po³aczenie do usuniecia z modelu
+    //! \param connection Po³aczenie do usuniêcia z modelu
     virtual void beforeRemoveConnection(const dflm::ConnPtr & connection);
 
     //! \param src Pin Ÿród³owy (wyjœciowy)

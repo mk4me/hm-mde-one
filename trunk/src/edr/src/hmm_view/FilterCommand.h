@@ -34,7 +34,7 @@ public:
 	virtual ~IFilterCommand() {}
 
 public:
-    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) = 0;
@@ -55,7 +55,7 @@ public:
     SimpleFilterCommand(PluginSubject::DataFilterPtr dataFilter);
 
 public:
-    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
@@ -71,15 +71,19 @@ typedef boost::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;
 typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr;
 
 // OBSOLETE!
+//! tworzy ga³¹Ÿ drzewa danych z multiwykresem
 template <class Type, class TypePtr = core::shared_ptr<Type> >
 class MultiChartCommand : public IFilterCommand
 {
-    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 };
 
+//! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
+//! \param rootItemName nazwa korzenia
+//! \param sessions sesje do przefiltrowania
 template <class Type, class TypePtr>
 QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions )
 {

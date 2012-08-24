@@ -95,7 +95,7 @@ public:
     //! \return kolejnoœæ wyst¹pienia wierzcho³ków (lewy prawy = 1, prawy lewy = -1)
     virtual float getSignX() const;
     //! Metoda pozwala okreœliæ orientacjê p³yty pomiarowej
-    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (gora dol = 1, dol gora = -1)
+    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (góra dol = 1, dol góra = -1)
     virtual float getSignY() const;
     //! Algorytm stara siê wykryæ wszystkie kroki(w rozumieniu Step) zwiazene z p³yta GRF
     //! \param markers kolekcja z markerami, potrzebna aby pobraæ markery zwi¹zane ze stop¹

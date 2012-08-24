@@ -22,7 +22,9 @@ class EDRDockWidgetManager : public QMainWindow
 {
     Q_OBJECT;
 public:
+    //! niemodyfikowalny zakres wszystkich podleg³ych grup zak³adek aplikacji
     typedef boost::iterator_range<std::list<EDRDockWidgetSet*>::iterator> range;
+    //! zakres wszystkich podleg³ych grup zak³adek aplikacji
     typedef boost::iterator_range<std::list<EDRDockWidgetSet*>::const_iterator> const_range;
 
 public:
@@ -33,7 +35,7 @@ public:
 	virtual ~EDRDockWidgetManager() {}
 
 public:
-	//! Dodaj grupe dock widgetów
+	//! Dodaj grupê dock widgetów
 	//! \param set dodawana grupa
 	void addDockWidgetSet(EDRDockWidgetSet* set);
     //! Grupa dock widgetów stanie siê aktywna (widoczna)
@@ -63,10 +65,10 @@ signals:
     void changed();
 
 private slots:
-    //! gdy grupa zostaje zamknieta
+    //! gdy grupa zostaje zamkniêta
     //! \param object 
     void onSetClosed(QObject* object);
-    //! gdy pojedynczy dock widget zostaje zamkniety
+    //! gdy pojedynczy dock widget zostaje zamkniêty
     void dockClosed();
 
 private:

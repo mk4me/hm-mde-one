@@ -122,7 +122,7 @@ void VisualizerWidget::init()
     //ustawienie zdarzeñ na zmiane pozycji w combo (zmiana wizualizatora)
     connect(comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(setCurrentVisualizer(int)));
 
-    //ustawienie domyslnej pozycji w combo
+    //ustawienie domyœlnej pozycji w combo
     comboType->setCurrentIndex(-1);
 
     //ustawienie menu odpowiedzialnego za wybor Ÿród³a danych

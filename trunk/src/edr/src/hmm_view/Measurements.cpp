@@ -27,7 +27,7 @@ void MeasurementsParser::parse( const std::string& filename )
             docElement = docElement->NextSiblingElement();
         }
     } else {
-        // oczyt nie udal siê z jakiegos powodu
+        // oczyt nie udal siê z jakiegoœ powodu
         throw std::runtime_error(std::string("Unable to load : ") + filename);
     }
 

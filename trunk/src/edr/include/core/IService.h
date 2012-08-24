@@ -38,7 +38,7 @@ namespace core
 
         //! Metoda powinna w bezpieczny sposób zwalniac zasoby, maj¹c na uwadze ¿e niekoniecznie wszystkie us³ugi i zasoby pobrane z zewn¹trz s¹ jeszcze dostêpne.
         //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomi³ serwis, mo¿e tez zwalniac pamieæ przydzielon¹ dynamicznie
-        //! Generalnie to taki bezpieczny destruktor uniezale¿niaj¹cy dana us³ugê od pozosta³ych us³ug i przygotowuj¹cy ja na usuniecie
+        //! Generalnie to taki bezpieczny destruktor uniezale¿niaj¹cy dana us³ugê od pozosta³ych us³ug i przygotowuj¹cy ja na usuniêcie
         virtual void finalize()
         {
 

@@ -65,8 +65,8 @@ public:
 	void setTimes(const std::string& name, const std::pair<float, float>& times);
     //! \return markery, dla których zosta³y utworzone trajektorie
     MarkerCollectionConstPtr getMarkers() const;
-    //! Metoda pozwala zmienic wzgledna pozycje wêz³a
-    //! \param offset nowe przesuniecie wêz³a z trajektoriami
+    //! Metoda pozwala zmienic wzglêdna pozycje wêz³a
+    //! \param offset nowe przesuniêcie wêz³a z trajektoriami
     void setOffset(const osg::Vec3& offset);
 
 private:

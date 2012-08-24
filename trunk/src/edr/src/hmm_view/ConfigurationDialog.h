@@ -37,21 +37,21 @@ public:
     void setVisibles(const std::map<QString, bool>& visibles);
 
 signals:
-    //! kliknieto w element
+    //! klikniêto w element
     //! \param name nazwa elementu
     //! \param  
     void itemSelected(const QString& name, bool);
-    //! Element zosta³ najechany myszka
+    //! Element zosta³ najechany myszk¹
     //! \param name nazwa elementu
     //! \param selected 
     void elementHovered(const QString& name, bool selected);
 
 private slots:
-    //! element zosta³ najechany przez myszke
+    //! element zosta³ najechany przez myszkê
     //! \param name nazwa elementu
     //! \param selected
     void onElementHovered(const QString& name, bool selected);
-    //! kliknieto w element
+    //! klikniêto w element
     //! \param name nazwa elementu
     //! \param selected 
     void onItemSelected(const QString& name, bool selected);
@@ -80,26 +80,26 @@ private:
     //! \param x pozycja x
     //! \param y pozycja y
     void createMarker(ConfigurationPainter &painter, const QString& name, int x, int y);
-    //! pokazuje przod postaci
+    //! pokazuje przód postaci
     void showFront();
-    //! pokazuje tyl postaci
+    //! pokazuje ty³ postaci
     void showBack();
-    //! Ustawia obrazek z tlem
+    //! Ustawia obrazek z t³em
     //! \param painter modyfikowany painter
     //! \param name nazwa widoku
     //! \param pixmap obrazek t³a
     void setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap);
 
 private:
-    //! painter, który rysuje przod podstaci
+    //! painter, który rysuje przód podstaci
     ConfigurationPainter painterFront;
-    //! painter, który rysuje tyl podstaci
+    //! painter, który rysuje ty³ podstaci
     ConfigurationPainter painterBack;
     //! aktualny painter
     ConfigurationPainter* currentPainter;
-    //! layout ze scrollem (jeœli widget nie miesci siê w wyznaczonym miejscu)
+    //! layout ze scrollem (jeœli widget nie mieœci siê w wyznaczonym miejscu)
     QHBoxLayout scrollLayout;
-    //! czy konfigurator aktualnie pokazuje przod postaci
+    //! czy konfigurator aktualnie pokazuje przód postaci
     bool isFront;
 };
 

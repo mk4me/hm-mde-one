@@ -470,7 +470,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
             for (unsigned int i = 0; i < series.size(); ++i) {
                 NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->curve));
                 if (series[i]->curve == curve) {
-                    // powinno wywo³ac sygnal, który ustawi aktywna serie
+                    // powinno wywo³aæ sygna³, który ustawi aktywn¹ seriê
                     activeSerieCombo->setCurrentIndex(i);
                     legendLabel->setItemVisible(true);
                     series[i]->setVisible(true);
@@ -500,7 +500,7 @@ void NewChartVisualizer::onSerieSelected( QwtPlotItem* item)
     //QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
     //for (int i = series.size() - 1; i >= 0; --i) {
     //    if (series[i]->curve == curve) {
-    //        // powinno wywo³ac sygnal, który ustawi aktywna serie
+    //        // powinno wywo³aæ sygna³, który ustawi aktywn¹ seriê
     //        activeSerieCombo->setCurrentIndex(i);
     //        return;
     //    }

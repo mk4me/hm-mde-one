@@ -50,8 +50,8 @@ private:
     class DataObserver : public utils::Observer<core::IMemoryDataManager>
     {
     public:
-        //! 
-        //! \param hmm 
+        //! konstruktor 
+        //! \param hmm dostarcza drzewo analiz
         DataObserver(HmmMainWindow* hmm) : hmm(hmm), motionsCount(0) {}
         //! wywo³ywane, gdy dane siê zmieniaja, metoda odœwie¿a drzewa analiz
         //! \param subject 
@@ -107,9 +107,9 @@ public:
     //! \param helper item drzewa, dla którego tworzone jest menu
     //! \return utworzone menu
     QMenu* getContextMenu( QWidget* parent, HmmTreeItem* helper );
-    //! \return widget (zakladka) z analizami
+    //! \return widget (zak³adka) z analizami
     const AnalisisWidget* getAnalisis() const { return analisis; }
-    //! Tworzy raport, zakladka z raportami staje siê aktywna
+    //! Tworzy raport, zak³adka z raportami staje siê aktywna
     //! \param html tresc raportu w formie ograniczonego przez Qt html-a
     void createRaport( const QString& html );
     //! Ustawienie kontekstu na konkretny wizualizator
@@ -117,7 +117,7 @@ public:
     virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
 
 public slots:
-    //! odœwie¿enie drzewa danych z zakladki analiz
+    //! odœwie¿enie drzewa danych z zak³adki analiz
     void refreshTree();
 
 private slots:
@@ -126,18 +126,18 @@ private slots:
     //! Po zniszczeniu wizualizatora trzeba go wyrejstrowaæ z kontekstów
     //! \param visualizer niszczony wizualizator
     void visualizerDestroyed(QObject * visualizer);
-    //! kliknieto filtr, trzeba utworzyæ drzewo
-    //! \param entry filtr, który zosta³ klikniety
+    //! klikniêto filtr, trzeba utworzyæ drzewo
+    //! \param entry filtr, który zosta³ klikniêty
     void filterClicked(FilterEntryWidget* entry);
-    //! Kliknieto prawym przyciskiem na drzewie, trzeba pokazac menu kontekstowe
-    //! \param pos pozycja, w która kliknieto
+    //! Klikniêto prawym przyciskiem na drzewie, trzeba pokazac menu kontekstowe
+    //! \param pos pozycja, w która klikniêto
     void onTreeContextMenu(const QPoint & pos);
     //! Dodanie pixmapy do raportów
     //! \param pixmap dodawana pixmapa
     void addToRaports(const QPixmap& pixmap);
     //! tworzy nowy wizualizator na podstwie wywo³anej akcji
     void createNewVisualizer();
-    //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w nowej zakladce
+    //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w nowej zak³adce
     void createVisualizerInNewSet();
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
     void removeFromVisualizer();
@@ -166,7 +166,7 @@ private slots:
     //! zmieni³a siê aktywnoœæ jednej z grupy filtrów, mo¿e byæ aktywna tylko jedna
     //! \param active czy grupa jest aktywna, jeœli tak to wszystkie pozostale staja siê nieaktywne
     void filterGroupActivated(bool active);
-    //! zosta³ klikniety przycisk z g³ównym kontekstem aplikacji (Dane, analizy, ...)
+    //! zosta³ klikniêty przycisk z g³ównym kontekstem aplikacji (Dane, analizy, ...)
     //! \param checked 
     void onToolButton(bool checked);
 
@@ -177,11 +177,11 @@ private:
     //! \param item badany element
     //! \return 
     bool isDataItem(QTreeWidgetItem * item);
-    //! Tworzy zakladke z filtrami
+    //! Tworzy zak³adke z filtrami
     void createFilterTabs();
-    //! Tworzy zakladke z filtrami (g³ówne filtry)
+    //! Tworzy zak³adke z filtrami (g³ówne filtry)
     void createFilterTab1();
-    //! Tworzy zakladke z filtrami (filtry dla jednostek chorobowych)
+    //! Tworzy zak³adke z filtrami (filtry dla jednostek chorobowych)
     void createFilterTab2();
     //! metoda przechodzi przez ca³¹ kolekcje i usuwa te wpisy, których weak pointery przesta³y ju¿ istnieæ
     //! \param multimap sprawdzana kolekcja
@@ -239,7 +239,7 @@ private:
     std::vector<PluginSubject::SessionConstPtr> currentSessions;
     // TODO, tu jest blad, obiekt jest zawsze nullem
     VisualizerWidget* currentVisualizer;    
-    //! gorny widget aplikacji gdzie trafiaja dock Widgety
+    //! górny widget aplikacji gdzie trafiaja dock Widgety
     EDRDockWidgetManager* topMainWindow;
     //! dolny widget aplikacji na timeline
     QMainWindow* bottomMainWindow;
@@ -249,21 +249,21 @@ private:
     std::multimap<TreeItemHelperPtr, DataItemDescription> items2Descriptions;
     //! widget z analizami
     AnalisisWidget* analisis;
-    //! zakladka z danymi
+    //! zak³adka z danymi
     QWidget* data;
-    //! zakladka z operacjami (konsola)
+    //! zak³adka z operacjami (konsola)
     QWidget* operations;
-    //! zakladka z raportami
+    //! zak³adka z raportami
     TextEdit* raports;
     //! 
     FlexiTabWidget * flexiTabWidget;
     //!
     //FlexiTabWidget::GUIID visualizerGroupID;
-    //! mapa [przycisk -> zakladka]
+    //! mapa [przycisk -> zak³adka]
     std::map<QWidget*, QWidget*> button2TabWindow;
     //!
 	std::map<QWidget*, ContextState> contextStates;
-    //! aktywny przycisk oznaczaj¹cy aktywna zakladke (dane, analizy, operacje... )
+    //! aktywny przycisk oznaczaj¹cy aktywna zak³adke (dane, analizy, operacje... )
     QToolButton* currentButton;
     //! obiekt informuje o zmianie danych w data managerze
     DataObserverPtr dataObserver;
@@ -275,17 +275,17 @@ private:
     RaportsThumbnailsContextPtr raportsThumbnailsContext;
     //! kontekst dla kontrolki TextEdit z raportami
     RaportsTabContextPtr raportsTabContext;
-    //! kontekst dla zakladki z danymi
+    //! kontekst dla zak³adki z danymi
 	AppUsageContextPtr dataContext;
-    //! kontekst dla zakladki z analizami
+    //! kontekst dla zak³adki z analizami
 	AppUsageContextPtr analisisContext;
-    //! kontekst dla zakladki z raportami
+    //! kontekst dla zak³adki z raportami
 	AppUsageContextPtr reportsContext;
-    //! grupuje konteksty zakladek
+    //! grupuje konteksty zak³adek
 	std::set<QWidget*> plainContextWidgets;
     //! 
 	DerrivedContextWidgets derrivedContextWidgets;
-    //! filtruje zmiany focusow widgetow, obs³uguje zdarzenia dla kontekstów
+    //! filtruje zmiany focusów widgetów, obs³uguje zdarzenia dla kontekstów
 	ContextEventFilter* contextEventFilter;
     //! okienko summary (podsumowanie, informacje o wybranch danych)
     SummaryWindowPtr summaryWindow;

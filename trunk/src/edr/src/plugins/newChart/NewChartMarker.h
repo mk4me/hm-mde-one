@@ -14,7 +14,7 @@
 
 //! Marker pokazuj¹cy aktualny czas i wartoœæ krzywej
 //! Wykorzystuje ju¿ istniej¹cy obiekt z Qwt
-//! Dodatkowo wprowadza opoznienie przesuwania
+//! Dodatkowo wprowadza opóŸnienie przesuwania
 class NewChartMarker : public QwtPlotMarker
 {
 public:
@@ -32,13 +32,13 @@ protected:
 public:
     //! rysuje punkt o okreœlonym rozmiarze
     static void drawDot( QPainter * painter, const QPointF & point, int size = 5 );
-    //! resetuje 'ped'. Pozycja etykiety wynika z punktu i przesuniecia
+    //! resetuje 'ped'. Pozycja etykiety wynika z punktu i przesuniêcia
     void resetMomentum() const { positionSet = false; }
-    //! ustawia wspoczynniki opoznienia
+    //! ustawia wspoczynniki opóŸnienia
     //! \param x wspó³czynnik poziomy
     //! \param y wspó³czynnik pionowy
     void setLerpRatios(float x, float y) { lerpX = x; lerpY = y; }
-    //! ustawia jednolity wspó³czynnik opoznienia
+    //! ustawia jednolity wspó³czynnik opóŸnienia
     //! \param lerp wspó³czynnik dla pionu i poziomu
     void setLerpRatios(float lerp) { lerpX = lerp; lerpY = lerp; }
 
@@ -49,9 +49,9 @@ private:
     mutable QPointF position;
     //! umo¿liwia opoznione ustawienie pozycji
     mutable bool positionSet;
-    //! poziomy wspoczynniki opoznienia
+    //! poziomy wspoczynniki opóŸnienia
     float lerpX;
-    //! pionowy wspoczynniki opoznienia
+    //! pionowy wspoczynniki opóŸnienia
     float lerpY;
 };
 typedef core::shared_ptr<NewChartMarker> NewChartMarkerPtr;

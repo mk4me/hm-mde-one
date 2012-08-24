@@ -39,13 +39,13 @@ public:
     {}
 
 public:
-    //! 
+    //! \return wartoœæ maksymalna na wykresie
     float getYMax() const { return yMax; }
-    //! 
+    //! \return wartoœæ minimalna na wykresie
     float getYMin() const { return yMin; }
-    //! 
+    //! \return maksymalny argument na wykresie
     float getXMax() const { return xMax; }
-    //! 
+    //! \return minimalny argument na wykresie
     float getXMin() const { return xMin; }
     //! \return czy obiekt ju¿ zosta³ zainicjalizowany poprawnymi danymi
     bool isInitialized() const { return initialized; }
@@ -53,7 +53,7 @@ public:
 public:
     //! resetowanie ustawien, zostawia obiekt niezainicjalizowany
     void clear() { initialized = false; }
-    //! Laczy obiekt z drugim obiektem tego samego typu, w razie potrzeby zmieniane s¹ ekstrema
+    //! ³¹czy obiekt z drugim obiektem tego samego typu, w razie potrzeby zmieniane s¹ ekstrema
     //! \param scales drugi obiekt z ekstremami
     void merge(const Scales& scales);
 

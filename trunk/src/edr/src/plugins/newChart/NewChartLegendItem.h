@@ -45,7 +45,7 @@ public:
     //! Ustawia przysik zmieniaj¹cy aktywnoœæ serii
     //! \param enabled edytowalny / nieedytowalny
     void setItemActiveEnabled(bool enabled);
-    //! Zmienia dane legendy (kolor, tytul itp.) wywo³ywane przez qwt
+    //! Zmienia dane legendy (kolor, tytu³ itp.) wywo³ywane przez qwt
     //! \param data dane elementu
     void setData( const QwtLegendData& data );
     //! Ustawia opis elementu
@@ -53,14 +53,14 @@ public:
     void setTooltip( const QString& val );
 
 signals:
-    //! kliknieto przycisk, po wcisnieciu którego seria staje siê aktywna
+    //! klikniêto przycisk, po wcisnieciu którego seria staje siê aktywna
     void buttonClicked(bool);
     //! zmieniono check box zarz¹dza widocznoœci¹ serii danych
     //! \param widoczny / ukryty 
     void checkClicked(bool);
 
 private slots:
-    //! Przechwytuje sygnal i przesyla go dalej
+    //! Przechwytuje sygna³ i przesy³a go dalej
     void onClick(bool);
 
 private:

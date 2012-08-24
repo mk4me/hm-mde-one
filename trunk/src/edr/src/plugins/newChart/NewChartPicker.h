@@ -49,17 +49,17 @@ public:
     void setCurrentCurve(QwtPlotCurve * curve);
 
 signals:
-    //! sygnal emitowany, gdy kliknieta zostanie krzywa
-    //! \param curve kliknieta krzywa
+    //! sygna³ emitowany, gdy klikniêta zostanie krzywa
+    //! \param curve klikniêta krzywa
     void serieSelected(QwtPlotItem* curve);
 
 private:
     //! metoda obs³uguje klikniêcie w wykres, sprawdza, czy klikniêto w krzyw¹ i ewentualnie ja zaznacza
-    //! \param pos kliknieta pozycja
+    //! \param pos klikniêta pozycja
     bool select( const QPoint & pos);
 
 private:
-    //! plotno wykresu
+    //! p³ótno wykresu
     QwtPlotCanvas* canvas;
     //! tolerancja, czyli maksymalna odleg³oœæ od krzywej zaliczaj¹ca klikniêcie w ni¹
     int pixelTolerance;

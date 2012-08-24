@@ -296,7 +296,7 @@ private:
 
 	void removeDataImpl(const core::ObjectWrapperPtr & data);
 
-	//! \param Obiekt który zostanie usuniety jeœli zarz¹dza nim DataManager
+	//! \param Obiekt który zostanie usuniêty jeœli zarz¹dza nim DataManager
 	virtual void nonNotifyRemoveData(const core::ObjectWrapperPtr & data);
 
     //! \param Obiekt który zostanie utrwalony w DataManager i bêdzie dostêpny przy zapytaniach, nie mo¿e byæ niezainicjowany - isNull musi byæ false!!
@@ -323,7 +323,7 @@ public:
     virtual void deinitializeFile(const core::Filesystem::Path & file);
 
     //! \param files Zbior plików dla których chcemy pobraæ liste obiektów
-    //! \return Mapa obiektów wzgledem plików z których pochodza
+    //! \return Mapa obiektów wzglêdem plików z których pochodza
     virtual void  getObjectsForFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects) const;
 
     //! \return true jeœli rozszerznie jest wspierane przez DataManager, w przeciwnym wypadku false

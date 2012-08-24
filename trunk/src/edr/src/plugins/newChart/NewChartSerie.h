@@ -42,7 +42,7 @@ public:
     virtual void setTime(double time);
     //! \return czas trwania serii
     virtual double getLength() const;
-    //! ustawia obiekt ze zdarzeniami powiazanymi z próba pomiarowa
+    //! ustawia obiekt ze zdarzeniami powiazanymi z prób¹ pomiarow¹
     //! \param val kolecja zdarzeñ
     virtual void setEvents(EventsCollectionConstPtr val);
     //! pobierz krzywa qwt
@@ -55,10 +55,10 @@ public:
     //! \return obiekt u³atwiaj¹cy zarz¹dzanie eventami
     EventsHelperPtr getEventsHelper() const { return eventsHelper; }
     //! ustawienie koloru krzywej
-    //! \param r skladowa czerwona (0 - 255)
-    //! \param g skladowa zielona (0 - 255)
-    //! \param b skladowa niebieska (0 - 255)
-    //! \param a skladowa alpha (0 - 255)
+    //! \param r sk³adowa czerwona (0 - 255)
+    //! \param g sk³adowa zielona (0 - 255)
+    //! \param b sk³adowa niebieska (0 - 255)
+    //! \param a sk³adowa alpha (0 - 255)
     void setColor(int r, int g, int b, int a = 255);
     //! ustawienie koloru krzywej
     //! \param color kolor do ustawienia
@@ -95,7 +95,7 @@ public:
     //! \param z
     //! \param replot
     void setZ(double z, bool replot = false);
-    //! \return skladowa z odpowiedzialna z kolejnoœæ wyœwietlania
+    //! \return sk³adowa z odpowiedzialna z kolejnoœæ wyœwietlania
     double z() const;
     //! \return skala w poziomie
     double getXScale() const;
@@ -107,24 +107,24 @@ public:
     //! ustawia skale w pionie dla krzywej
     //! \param val nowa wartoœæ skali
     void setYScale(double val);
-    //! \return przesuniecie w poziomie
+    //! \return przesuniêcie w poziomie
     double getXOffset() const;
-    //! ustawia przesuniecie w poziomie
-    //! \param val nowa wartoœæ przesuniecia
+    //! ustawia przesuniêcie w poziomie
+    //! \param val nowa wartoœæ przesuniêcia
     void setXOffset(double val);
-    //! \return przesuniecie w pionie
+    //! \return przesuniêcie w pionie
     double getYOffset() const;
-    //! ustawia przesuniecie w pionie
-    //! \param val nowa wartoœæ przesuniecia
+    //! ustawia przesuniêcie w pionie
+    //! \param val nowa wartoœæ przesuniêcia
     void setYOffset(double val);
-    //! \return przesuniecie krzywej
+    //! \return przesuniêcie krzywej
     QPointF getOffset() const;
-    //! ustawia przesuniecie
-    //! \param offset nowa wartoœæ przesuniecia
+    //! ustawia przesuniêcie
+    //! \param offset nowa wartoœæ przesuniêcia
     void setOffset(const QPointF& offset);
 
 private:
-    //! Ustawia kolory dla krzywych znormalizowanych wzgledem eventów
+    //! Ustawia kolory dla krzywych znormalizowanych wzglêdem eventów
     //! \param range dostarczane segmenty
     //! \param color kolor dla ustawianych segmentów (zwykle ten sam co bazowa krzywa)
     void setColorsForEvents(EventsHelper::SegmentsRange range, const QColor& color);
@@ -150,9 +150,9 @@ private:
     bool active;
     //! aktualny czas, ustawiony przez timeline
     double time;
-    //! skladowa okresla kolejnoœæ rysowania
+    //! sk³adowa okresla kolejnoœæ rysowania
     double _z;
-    //! pocz¹tkowa wartoœæ skladowej zd
+    //! pocz¹tkowa wartoœæ sk³adowej zd
     double _zBase;
 };
 

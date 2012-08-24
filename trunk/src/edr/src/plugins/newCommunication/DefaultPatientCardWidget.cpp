@@ -227,7 +227,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 	ret->setText(0, name);
 	ret->setText(1, sessions.begin()->second->sessionDate.c_str());
 
-	//gorna partia
+	//górna partia
 	if(sessions.begin()->first % 2 == 0){
 		SessionTreeItem * item = new SessionTreeItem(sessions.begin()->second->performerConf->attrs);
 		item->setText(0, tr("Upper body") + " - " + sessions.begin()->second->sessionName.c_str());
@@ -249,7 +249,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 
 	QString sname(tr("Lower body"));
 
-	//gorna partia
+	//górna partia
 	if(sessions.begin()->first % 2 == 1){
 		sname = tr("Upper body");
 	}

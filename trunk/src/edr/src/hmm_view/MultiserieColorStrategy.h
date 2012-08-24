@@ -30,6 +30,7 @@ typedef core::shared_ptr<const IMultiserieColorStrategy> IMultiserieColorStrateg
 class RandomMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
+    //! \return losowy kolor
     QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const
     {
         return QColor(rand() % 256, rand() % 256, rand() % 256);
@@ -40,6 +41,7 @@ public:
 class CopyColorMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
+    //! \return przypisany do serii kolor
     QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const
     {
         return s->getColor();
@@ -50,8 +52,12 @@ public:
 class RandomBetweenMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
+    //! Konstruktor
+    //! \param c1 lewy zakres interpolacji
+    //! \param c2 prawy zakres interpolacji
     RandomBetweenMultiserieColorStrategy(QColor c1, QColor c2) : c1(c1), c2(c2) {}
 
+    //! \return interpolowany kolor
     QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const
     {
         float r = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
@@ -63,6 +69,10 @@ public:
     }
 
 private:
+    //! interpolacja liniowa
+    //! \param from lewy zakres interpolacji
+    //! \param to prawy zakres interpolacji
+    //! \param r wspó³czynnik interpolacji [0 - 1]
     int lerp(int from, int to, float r) const
     {
         return static_cast<int>(from * (1.0f - r) + to * r);
@@ -74,7 +84,10 @@ private:
 class ColorMapMultiserieStrategy : public IMultiserieColorStrategy
 {
 public:
+    //! Konstruktor
+    //! \param colorMap mapa przechowuje kolory dla konkretnych widgetów
     ColorMapMultiserieStrategy(const std::map<core::ObjectWrapperConstPtr, QColor>& colorMap) : colorMap(colorMap) {}
+    //! \return przypisany kolor
     virtual QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const 
     {
         auto it = colorMap.find(w);
@@ -86,6 +99,7 @@ public:
     }
 
 private:
+    //! mapa przechowuje kolory dla konkretnych widgetów
     std::map<core::ObjectWrapperConstPtr, QColor> colorMap;
 };
 

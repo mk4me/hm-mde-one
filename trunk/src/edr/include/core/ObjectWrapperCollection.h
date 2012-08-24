@@ -103,7 +103,7 @@ public:
     //! Czyœci dane innego typu ni¿ ten dla którego utworozno kolekcjê
     void removeDerivedTypes()
     {
-        //iteruj po kolekcji i usun te typy które nie s¹ dokladnie typu kolekcji
+        //iteruj po kolekcji i usun te typy które nie s¹ dok³adnie typu kolekcji
         auto cIT = constObjects.begin();
         while( cIT != constObjects.end() ) {
             if((*cIT)->getTypeInfo() != typeInfo){

@@ -16,7 +16,7 @@
 
 class AnalisisTreeWidget;
 
-//! Klasa jest odpowiedzialna za widok zakladki analiz
+//! Klasa jest odpowiedzialna za widok zak³adki analiz
 class AnalisisWidget : public QWidget, public Ui::AnalisisWidget
 {
     Q_OBJECT;
@@ -41,26 +41,26 @@ public:
     QWidget* getArea() { return analisisArea; }
 
 private slots:
-    //! chowa/pokazuje filtry
-    //! \param expand 
+    //! zmienia widocznoœæ filtrów
+    //! \param expand chowa/pokazuje filtry
     void setFiltersExpanded(bool expand);
-    //! kliknieto w filtr
-    //! \param filter klikniety
+    //! klikniêto w filtr
+    //! \param filter klikniêty
     void filterClicked(FilterEntryWidget* filter);
-    //! Kliknieto zatwierdz w graficznym konfiguratorze
+    //! Klikniêto zatwierdŸ w graficznym konfiguratorze
     void applyClicked();
-    //! proste przejscie do pierwszej zakladki (z drzewem danych)
+    //! proste przejœcie do pierwszej zak³adki (z drzewem danych)
     void switchToFirstTab();
     //! odtwarza drzewo danych 
     //! \param currentFilter filtr, na podstawie którego odtworzone zostanie drzewo
     void recreateTree(FilterEntryWidget* currentFilter);
 
 private:
-    //! szerokoœæ filtru w zakladce
+    //! szerokoœæ filtru w zak³adce
     int filterWidth;
-    //! wysokoœæ filtru w zakladce
+    //! wysokoœæ filtru w zak³adce
     int filterHeight;
-    //! margines dla filtrów w zakladce
+    //! margines dla filtrów w zak³adce
     int margin;
     //! drzewo danych
     AnalisisTreeWidget* treeWidget;

@@ -293,7 +293,7 @@ void VisualizerManager::removeChannel(const void * channel)
 		return;
 	}
 
-	//w³aœciwa próba usuniecia kana³u z wizualizatora i timeline
+	//w³aœciwa próba usuniêcia kana³u z wizualizatora i timeline
 	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
 	bool removed = false;
 	if(timeline != nullptr) {
@@ -322,7 +322,7 @@ void VisualizerManager::removeChannel(const void * channel)
 
 void VisualizerManager::removeAllChannels()
 {
-	//w³aœciwa próba usuniecia kana³u z wizualizatora i timeline
+	//w³aœciwa próba usuniêcia kana³u z wizualizatora i timeline
 	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
 	if(timeline != nullptr) {
 		for(auto channelIT = channels.begin(); channelIT != channels.end(); ++channelIT){

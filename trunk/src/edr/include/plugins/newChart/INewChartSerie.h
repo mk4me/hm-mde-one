@@ -14,10 +14,11 @@
 
 //! Niektóre elementy serii danych wizualizatora wykresów s¹ edytowane z zewn¹trz, 
 //! dlatego nale¿y interfejsowaæ serie danych, aby daæ dostêp do obiektu bez koniecznoœci linkowania siê z pluginem
+//! tak¹ funkcjonalnoœæ w obrêbie serii zapewnia w³aœnie ten interfejs
 class INewChartSerie : public EventSerieBase
 {
 public:
-	//! 
+	//! destruktor
 	virtual ~INewChartSerie() {}
 
 public:

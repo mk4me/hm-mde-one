@@ -95,7 +95,7 @@ namespace core
         //! Wizualizator musi zapewnic ze da siê stworzyæ MAX serii za pomoca metody createSerie. Ilos cserii jest dynamicznie zarz¹dzana z zewn¹trz poprzez create i remove serie.
         //! SerieBase to klasa delegata, która implementuje specyficzne dla danego wizualizatora operacje ustawiania nazwy serii i jej danych. Kazdy wizualizator mo¿e inaczej ustawiac te informacje i prezentowaæ je.
 
-        //! \return Maksymalna iloœæ serii danych jaka mo¿e obs³u¿yc wizualizator, wartoœæ 0 i mniej oznacza maksumalny zakres dla INT, inna wartoœæ stanowi gorna granice
+        //! \return Maksymalna iloœæ serii danych jaka mo¿e obs³u¿yc wizualizator, wartoœæ 0 i mniej oznacza maksumalny zakres dla INT, inna wartoœæ stanowi górna granice
         virtual int getMaxDataSeries() const = 0;
 
         //! \return Seria danych która mo¿na ustawiac - nazwa i dane, nie zarz¹dza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!

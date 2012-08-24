@@ -16,7 +16,7 @@
 
 #include <QtGui/QItemDelegate>
 
-//! klasa powstala, aby wymusic wielkoœæ wpisów, dziêki temu mo¿na ³atwo obliczyæ potrzebna wysokoœæ
+//! klasa powsta³a, aby wymusic wielkoœæ wpisów, dziêki temu mo¿na ³atwo obliczyæ potrzebna wysokoœæ
 class ItemDelegate : public QItemDelegate
 {
 public:
@@ -65,7 +65,7 @@ public:
 
 public slots:
     //! Dodanie wpisu ze statystykami
-    //! \param group nazwa grupy (np. strona lewa, prawa ...), jeœli grupa nie istnieje, to zostanie stworzona, jeœli "" to grupa jest pominieta.
+    //! \param group nazwa grupy (np. strona lewa, prawa ...), jeœli grupa nie istnieje, to zostanie stworzona, jeœli "" to grupa jest pominiêta.
     //! \param name nazwa wpisu 
     //! \param stats obiekt ze statystykami
     //! \param backgroundColor kolor t³a dla dodawanego elementu
@@ -86,10 +86,10 @@ public slots:
     std::list<QTreeWidgetItem*> getEntriesByChannel(channelConstPtr channel);
     //! \return wszytskie grupy wpisów (np. strona lewa, prawa ...)
     QStringList getGroups() const;
-    //! dany element staje siê aktywny (rozwiniety, pozostale na jego poziome s¹ zwijane)
+    //! dany element staje siê aktywny (rozwiniety, pozosta³e na jego poziome s¹ zwijane)
     //! \param treeItem obiekt, który ma stac siê aktywny
     void setActive(QTreeWidgetItem* treeItem);
-    //! dany element staje siê aktywny (rozwiniety, pozostale na jego poziome s¹ zwijane)
+    //! dany element staje siê aktywny (rozwiniety, pozosta³e na jego poziome s¹ zwijane)
     //! \param group nazwa grupy (np. strona lewa, prawa ...)
     //! \param name nazwa wpisu 
     void setActive(const QString& group, const QString& name);

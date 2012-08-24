@@ -12,7 +12,7 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
-//! punkt zaczepiony na wykresie, stala pozycja nie zmienia siê wraz z wykresem
+//! punkt zaczepiony na wykresie, sta³a pozycja nie zmienia siê wraz z wykresem
 class NewChartDotFixed : public NewChartDot
 {
 public:
@@ -28,7 +28,7 @@ public:
 public:
     //! \return pozycja na wykresie
     virtual QPointF getPosition() const { return position; }
-    //! Ustawia nowa pozycje na wykresie
+    //! Ustawia now¹ pozycje na wykresie
     virtual void setPosition(const QPointF& val) { position = val; }
 
 private:

@@ -198,7 +198,7 @@ void GlPointSchemeDrawer::changeColorIfNecessary( TransformPtr point, const Visu
                 }
             } else {
                 // nie ma sfery w odpowiednim kolorze, trzeba ja sobie stworzyæ.
-                // complex - dokladnoœæ sfery
+                // complex - dok³adnoœæ sfery
                 auto newSphere = createCustomSphere(complex, state.color);
                 spheresByColor[state.color] = newSphere;
                 // stara sfere trzeba usun¹æ z node'a

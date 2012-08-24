@@ -32,6 +32,7 @@
 #include "ConfigurationDialog.h"
 #include "Measurements.h"
 
+//! mapa [element konfiguracji (np. elektroda) -> wpis z odpowiadaj¹c¹ nazw¹ + ew. nazw¹ obrazka]
 typedef std::map<QString, std::pair<QString,QString> > NamesDictionary;
 
 //! klasa która wykrzystuje metody buildera drzewa danych, do stworzenia przefiltrowanej galezi
@@ -47,7 +48,7 @@ public:
     BuilderFilterCommand(BranchFunction function, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon());
 
 public:
-    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
@@ -62,46 +63,66 @@ protected:
 };
 
 //OBSOLETE
+//! tworzy ga³¹Ÿ z reprezentacj¹ stawów
 class JointsCommand : public IFilterCommand
 {
 public:
-    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 };
 
-//! klasa, dziêki której mo¿liwe jest korzystanie z sygnalow i slotów w klasie szablonowej.
+//! klasa, dziêki której mo¿liwe jest korzystanie z sygna³ow i slotów w klasie szablonowej.
 //! obs³uguje sloty w klasach Vector3DFilterCommand i Vector3DFilterCommand2
 class __Helper : public QObject
 {
     Q_OBJECT;
 public:
+    //! konstruktor, pobiera funkcjê, która obs³uguje zmianê widgeta
+    //! \param function odpowiada sygnaturze checkBoxChanged
     __Helper(boost::function<void (const QString&, int)> function);
 
     public slots:
+        //! slot, które przeka¿e informacjê o zmianie checkBoxa do ownera
         void checkBoxChanged ( int state );
+        //! slot, które przeka¿e informacjê o zaznaczeniu elementu do ownera
         void onItemSelected(const QString& name, bool selected);
+        //! slot, które przeka¿e informacjê o najechaniu elementu do ownera
         void onElementHovered(const QString& name, bool selected);
 
 public:
+    //! ustawia mapê z elementami konfiguratora
+    //! \param val mapa z elementami konfiguratora oraz ich identyfikatorami
     void setNamesDictionary(const NamesDictionary& val) { namesDictionary = val; }
+    //! \return mapa z elementami konfiguratora
     const NamesDictionary& getNamesDictionary() const { return namesDictionary; }
 
 private:
+    //! funkcja, która obs³uguje zmianê widgeta
     boost::function<void (const QString&, int)> function;
+    //! mapa z elementami konfiguratora
     NamesDictionary namesDictionary;
 };
 
-//! klasa która wykrzystuje metody buildera drzewa danych, do stworzenia przefiltrowanej galezi, dodatkowo dostarcza konfigurator
+//! klasa która wykrzystuje metody buildera drzewa danych, do stworzenia przefiltrowanej ga³êzi, dodatkowo dostarcza konfigurator
 template <class Collection>
 class BuilderConfiguredFilterCommand : public BuilderFilterCommand
 {
 public:
+    //! wskaŸnik na kolekcjê z kana³ami danych
     typedef typename core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
+    //! niemodyfikowalny wskaŸnik na kolekcjê z kana³ami danych
     typedef typename core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
 
 public:
+    //! konstruktor
+    //! \param function funktor tworz¹cy ga³¹Ÿ
+    //! \param namesDictionary mapa z elementami konfiguratora
+    //! \param frontXml informacje, o rozmieszczeniu elementów z przodu pacjenta
+    //! \param backXml informacje, o rozmieszczeniu elementów z ty³u pacjenta
+    //! \param rootIcon ikona ga³êzi
+    //! \param elementIcon ikona dla liœci ga³êzi
     BuilderConfiguredFilterCommand(BranchFunction function, const NamesDictionary& namesDictionary,
         const QString& frontXml, const QString& backXml, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon()) :
           BuilderFilterCommand(function, rootIcon, elementIcon),
@@ -114,6 +135,9 @@ public:
         helper.setNamesDictionary(namesDictionary);
       }
 
+      //! metoda, tkóra jest zwi¹zana z helperem, zmieni³ siê stan elementu
+      //! \param box nazwa zmienionego elementu
+      //! \param state aktywny / nieaktywny
       void checkBoxChanged (const QString& box, int state )
       {
           std::string name = box.toStdString();
@@ -121,6 +145,8 @@ public:
       }
 
 private:
+    //! tworzy mapê z elementami konfiguratora
+    //! \param collection kolekcja, która bêdzie konfigurowana 
     void createNameDictionary(const CollectionConstPtr & collection)
     {
         int count = collection->getNumChannels();
@@ -135,14 +161,15 @@ private:
     }
 
 public:
+    //! wywo³ane po zakoñczegu konfiguracji
+    //! \param result rezultat, oznacza, czy zmiany maj¹ wejœæ w ¿ycie
     virtual void configurationStop( ConfigurationResult result )
     {
         if (result == Cancel) {
             activeElements = tempNameDictionary;
         }
     }
-
-public:
+    //! \return widget konfiguratora lub nullptr jesli nie zosta³ dostarczony
     virtual QWidget* getConfigurationWidget()
     {
         if (!configurationWidget) {
@@ -165,7 +192,7 @@ public:
         }
         return parentWidget;
     }
-
+    //! przywraca domyœlne ustawienia konfiguratora
     virtual void reset()
     {
         for (auto it = activeElements.begin(); it != activeElements.end(); ++it) {
@@ -176,7 +203,7 @@ public:
             configurationWidget->repaint();
         }
     }
-
+    //! konfigurator zosta³ wywo³any
     virtual void configurationStart()
     {
         tempNameDictionary = activeElements;
@@ -191,8 +218,7 @@ public:
         }
         configurationWidget->setVisibles(visibles);
     }
-
-    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
@@ -203,6 +229,8 @@ public:
     }
 
 private:
+    //! filtruje ga³¹Ÿ za pomoc¹ ustawieñ konfiguratora
+    //! \param item ga³¹Ÿ drzewa
     virtual void filterTree(QTreeWidgetItem* item)
     {
         if (item->childCount()) {
@@ -220,51 +248,72 @@ private:
     }
 
 protected:
+    //! mapa aktywnych elemnetów konfiguratora
     std::map<std::string, bool> activeElements;
+    //! pomocnicze, przy zatwierdzaniu lub odrzucaniu zmian konfiguratora
     std::map<std::string, bool> tempNameDictionary;
-    PluginSubject::DataFilterPtr simpleTypeFilter;
+    //PluginSubject::DataFilterPtr simpleTypeFilter;
+    //! pomocniczy obiekt, dziêki któremu mo¿na zgraæ szablony z sygna³ami qt
     __Helper helper;
-    QString frontXml, backXml;
+    //! œcie¿ka do pliku z rozmieszczeniem elemnetów
+    QString frontXml;
+    //! œcie¿ka do pliku z rozmieszczeniem elemnetów
+    QString backXml;
+    //! konfigurator
     ConfigurationWidget* configurationWidget;
+    //! rodzic
     QWidget* parentWidget;
 };
 
+//! klasa dostarcza drzewu przefiltrowanych danych emg
 class EMGCommand : public BuilderConfiguredFilterCommand<EMGCollection>
 {
 public:
+    //! konstruktor
+    //! \param function funktor tworz¹cy ga³¹Ÿ
+    //! \param namesDictionary mapa z elementami konfiguratora
+    //! \param frontXml informacje, o rozmieszczeniu elementów z przodu pacjenta
+    //! \param backXml informacje, o rozmieszczeniu elementów z ty³u pacjenta
+    //! \param rootIcon ikona ga³êzi
+    //! \param elementIcon ikona dla liœci ga³êzi
     EMGCommand(BranchFunction function, const NamesDictionary& namesDictionary,
         const QString& frontXml, const QString& backXml, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon());
 
 public:
-    //! tworzy galaz drzewa z przefiltrowanymi danymi
+    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
-
+    //! pobiera i zwraca metadane (konfiguracjê pomiarow¹)
+    //! \param session badana sesja
+    //! \return konfiguracja pomiarowa dla podanej sesji
     MeasurementConfigConstPtr getMeta( PluginSubject::SessionConstPtr session);
 };
 
+//! klasa dostarcza drzewu  przefiltrowanych danych z kana³ów z wektorami
 template <class Channel, class Collection, class ItemHelper, bool useTreeItemHelperForRoot = false>
 class Vector3DFilterCommand : public IFilterCommand
 {
 public:
-
+    //! wskaŸnik na kolekcjê z kana³ami wektorów
     typedef typename core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
+    //! niemodyfikowalny wskaŸnik na kolekcjê z kana³ami wektorów
     typedef typename core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
 
+    //! wskaŸnik na kana³ z wektorami
     typedef typename core::ObjectWrapperT<Channel>::Ptr ChannelPtr;
+    //! niemodyfikowalny wskaŸnik na kana³ z wektorami
     typedef typename core::ObjectWrapperT<Channel>::ConstPtr ChannelConstPtr;
 
 public:
-
+      //! konstruktor, tworzy dowi¹zanie do helpera
       Vector3DFilterCommand() :
           simpleTypeFilter(new TypeFilter(typeid(Collection))),
           helper(boost::bind( &Vector3DFilterCommand::checkBoxChanged, this, _1, _2 ))
       {
 
       }
-
-      //! tworzy galaz drzewa z przefiltrowanymi danymi
+      //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
       //! \param rootItemName nazwa korzenia
       //! \param sessions sesje do przefiltrowania
       virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
@@ -319,6 +368,7 @@ public:
 
           return root;
       }
+      //! \return widget konfiguratora lub nullptr jesli nie zosta³ dostarczony
       virtual QDialog* getConfigurationDialog(QWidget* parent)
       {
           std::vector<PluginSubject::SessionConstPtr> sessions;
@@ -360,14 +410,33 @@ public:
 
           return widget;
       }
-
+      //! metoda, tkóra jest zwi¹zana z helperem, zmieni³ siê stan elementu
+      //! \param box nazwa zmienionego elementu
+      //! \param state aktywny / nieaktywny
       void checkBoxChanged (const QString& box, int state )
       {
           std::string name = box.toStdString();
           activeElements[name] = (bool)state;
       }
 
+public:
+    //! konfigurator zosta³ wywo³any
+    virtual void configurationStart()
+    {
+        tempNameDictionary = activeElements;
+    }
+    //! wywo³ane po zakoñczegu konfiguracji
+    //! \param result rezultat, oznacza, czy zmiany maj¹ wejœæ w ¿ycie
+    virtual void configurationStop( ConfigurationResult result )
+    {
+        if (result == Cancel) {
+            activeElements = tempNameDictionary;
+        }
+    }
+
 private:
+    //! tworzy mapê z elementami konfiguratora
+    //! \param collection kolekcja, która bêdzie konfigurowana 
     void createNameDictionary(const CollectionConstPtr & collection)
     {
         int count = collection->getNumChannels();
@@ -381,32 +450,29 @@ private:
         }
     }
 
-public:
-    virtual void configurationStart()
-    {
-        tempNameDictionary = activeElements;
-    }
-
-    virtual void configurationStop( ConfigurationResult result )
-    {
-        if (result == Cancel) {
-            activeElements = tempNameDictionary;
-        }
-    }
-
-
 protected:
+    //! mapa aktywnych elemnetów konfiguratora
     std::map<std::string, bool> activeElements;
+    //! pomocnicze, przy zatwierdzaniu lub odrzucaniu zmian konfiguratora
     std::map<std::string, bool> tempNameDictionary;
+    //! zapewnia filtrowanie wzglêdem dostarczonego typu
     PluginSubject::DataFilterPtr simpleTypeFilter;
+    //! pomocniczy obiekt, dziêki któremu mo¿na zgraæ szablony z sygna³ami qt
     __Helper helper;
 };
 
+//! klasa dostarcza drzewu  przefiltrowanych danych z kana³ów z wektorami, dodatkowo dostarcza graficzne konfiguratory
 template <class Channel, class Collection, class ItemHelper, bool useTreeItemHelperForRoot = false>
 class Vector3DFilterCommand2 : public Vector3DFilterCommand<Channel, Collection, ItemHelper, useTreeItemHelperForRoot>
 {
 public:
+    //! klasa bazowa
     typedef Vector3DFilterCommand<Channel, Collection, ItemHelper, useTreeItemHelperForRoot> BaseClass;
+
+    //! konstruktor
+    //! \param namesDictionary mapa z elementami konfiguratora
+    //! \param frontXml informacje, o rozmieszczeniu elementów z przodu pacjenta
+    //! \param backXml informacje, o rozmieszczeniu elementów z ty³u pacjenta
     Vector3DFilterCommand2(const NamesDictionary& namesDictionary, const QString& frontXml, const QString& backXml) :
       BaseClass(),
       frontXml(frontXml),
@@ -415,16 +481,16 @@ public:
     {
         this->helper.setNamesDictionary(namesDictionary);
     }
-
+    //! destruktor
     virtual ~Vector3DFilterCommand2()
     {
     }
 
 public:
+    //! \return widget konfiguratora lub nullptr jesli nie zosta³ dostarczony
     virtual QDialog* getConfigurationDialog( QWidget* parent)
     {
         if (!dialog) {
-            // rev - ConfigurationDialog?
             dialog = new ConfigurationWidget(parent);
             dialog->loadConfigurations(frontXml, backXml, this->helper.getNamesDictionary());
             QObject::connect(dialog, SIGNAL(itemSelected(const QString&, bool)), &this->helper, SLOT(onItemSelected(const QString&, bool)));
@@ -432,7 +498,7 @@ public:
         }
         return dialog;
     }
-
+    //! konfigurator zosta³ wywo³any
     virtual void configurationStart()
     {
         BaseClass::configurationStart();
@@ -449,8 +515,12 @@ public:
     }
 
 private:
-    QString frontXml, backXml;
-    ConfigurationWidget* dialog;
+    //! œcie¿ka do pliku z rozmieszczeniem elemnetów
+    QString frontXml;
+    //! œcie¿ka do pliku z rozmieszczeniem elemnetów
+    QString backXml;
+    //! konfigurator
+    ConfigurationWidget* configurationDialog;
 };
 
 

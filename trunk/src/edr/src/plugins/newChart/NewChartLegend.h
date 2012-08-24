@@ -22,10 +22,10 @@ class NewChartLegend : public QwtLegend
 {
     Q_OBJECT;
 public:
-    //! 
-    //! \param parent 
+    //! konstruktor
+    //! \param parent  
     explicit NewChartLegend( QWidget *parent = nullptr ) : QwtLegend(parent) {}
-    //! 
+    //! destruktor
     virtual ~NewChartLegend() {}
 
 protected:

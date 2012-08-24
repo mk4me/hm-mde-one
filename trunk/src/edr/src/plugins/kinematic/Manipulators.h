@@ -97,7 +97,7 @@ public:
 
     //! Pod³¹czenie manipulatora miêdzy parenta i childa
     //! \param parent do niego zostanie podpiêty manipulator
-    //! \param child obiekt, na którym bêdzie dzialal manipulator
+    //! \param child obiekt, na którym bêdzie dzia³a³ manipulator
     //! \param draggerContainer opakowany manipulator (sta³y rozmiar)
     //! \param pivot punkt zaczepienia manipulatora
     static void connect(osg::PositionAttitudeTransform* parent, osg::MatrixTransform* child, DraggerContainer* draggerContainer, const osg::Vec3& pivot );

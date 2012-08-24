@@ -46,7 +46,7 @@ public:
 	//! \param idx Index karty pacjenta dla której chcemy uzyskaæ widget
 	//! \return Widget danej karty pacjenta
 	virtual QWidget * patientCardWidget(int idx) const;
-	//! \param idx Index karty pacjenta ktorej nazwê chcemy pobraæ
+	//! \param idx Index karty pacjenta której nazwê chcemy pobraæ
 	//! \return Nazwa karty pacjenta
 	virtual const std::string & patientCardName(int idx) const;
 	//! \return Iloœc zarejestrowanych kart pacjenta

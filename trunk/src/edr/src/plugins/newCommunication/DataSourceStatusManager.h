@@ -121,7 +121,7 @@ public:
     //! Destruktor wirtualny
     virtual ~DataSourceStatusManager();
 
-    //! \param shallowCopy P³ytka kopia bazy danych na bazie ktorej bêd¹ tworzone statusy (odtworzona ich hierarchia)
+    //! \param shallowCopy P³ytka kopia bazy danych na bazie której bêd¹ tworzone statusy (odtworzona ich hierarchia)
     void setShallowCopy(const communication::ShallowCopy * shallowCopy);
 
     //! \param modifiedFilesStatus Zbiór plików które zmieni³y swój status. Ich nowy status dostaniemy poprzez obiekt FileStatusManager)

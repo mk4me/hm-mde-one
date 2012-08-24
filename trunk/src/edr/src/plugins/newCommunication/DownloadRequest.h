@@ -132,27 +132,27 @@ private:
     //! ------------------------- Metody ustaiwaj¹ stan zlecenia i dane konieczne do obs³ugi postêpu -------------------------------------
 
     //! Metoda wywo³ywana kiedy zaczynamy obs³ugiwaæ ca³e zlecenie
-    //! \param request Zlecenie ktorego dotyczy callback
+    //! \param request Zlecenie którego dotyczy callback
     void onFullDownloadStart(const CommunicationManager::BasicRequestPtr & request);
 
     //! Metoda wywo³ywana kiedy koñczymy pomyœlnie obs³ugiwaæ ca³e zlecenie
-    //! \param request Zlecenie ktorego dotyczy callback
+    //! \param request Zlecenie którego dotyczy callback
     void onFullDownloadComplete(const CommunicationManager::BasicRequestPtr & request);
 
     //! Metoda wywo³ywana kiedy pojedyczny plik rozpoczyna œci¹ganie
-    //! \param request Zlecenie ktorego dotyczy callback
+    //! \param request Zlecenie którego dotyczy callback
     void onDownloadBegin(const CommunicationManager::BasicRequestPtr & request);
 
     //! Metoda wywo³ywana kiedy zadanie jest anulowane
-    //! \param request Zlecenie ktorego dotyczy callback
+    //! \param request Zlecenie którego dotyczy callback
     void onDownloadCancel(const CommunicationManager::BasicRequestPtr & request);
 
     //! Metoda wywo³ywana kiedy pojedyczny plik zostanie œci¹gniêty
-    //! \param request Zlecenie ktorego dotyczy callback
+    //! \param request Zlecenie którego dotyczy callback
     void onDownloadComplete(const CommunicationManager::BasicRequestPtr & request);
 
     //! Metoda wywo³ywana kiedy zadanie koñczy siê b³êdem
-    //! \param request Zlecenie ktorego dotyczy callback
+    //! \param request Zlecenie którego dotyczy callback
     void onDownloadError(const CommunicationManager::BasicRequestPtr & request, const std::string & error);
 
 private:

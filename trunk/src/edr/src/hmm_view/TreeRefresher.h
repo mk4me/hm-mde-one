@@ -12,11 +12,14 @@
 
 #include <plugins/subject/Types.h>
 
-//! klasa s³u¿y do odœwie¿ania drzewa danych
+//! klasa s³u¿y do odœwie¿ania drzewa danych, 
+//! dodaje mo¿liwoœæ zablokowania, drzewo zostanie odœwie¿one dopiero, gdy bêdzie to mo¿liwe
 class TreeRefresher
 {
 public:
+    //! 
     TreeRefresher();
+    //! 
     virtual ~TreeRefresher() {}
 
 public:
@@ -40,7 +43,7 @@ private:
     bool preventRefresh;
     //! true - odœwie¿anie bylo zablokowane kiedy przyszlo polecenia odœwie¿enia
     bool needRefresh;
-    //! drzewo, które trzeba odœwie¿yc
+    //! drzewo, które trzeba odœwie¿yæ
     QTreeWidget* tree;
 };
 

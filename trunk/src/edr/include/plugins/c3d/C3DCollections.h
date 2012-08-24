@@ -128,7 +128,7 @@ public:
     //! \return event, który spe³nia za³o¿enia lub pusty wskaŸnik
     EventConstPtr getEvent(float t, Context context) const
     {
-        // przefiltrowanie eventów wzgledem kontekstu
+        // przefiltrowanie eventów wzglêdem kontekstu
         std::vector<EventPtr> temp;
         for (auto it = events.cbegin(); it != events.cend(); ++it) {
             if ((*it)->getContext() == context) {

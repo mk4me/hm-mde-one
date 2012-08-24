@@ -22,7 +22,7 @@ class NewChartVerticals : public NewChartLabelState
 public:
     //! Konstruktor
     //! \param visualizer wizualizator, na którym stan bêdzie operowa³
-    //! \param style styl po³¹czeñ miêdzy wskazywanymi przez etykiete punktami
+    //! \param style styl po³¹czeñ miêdzy wskazywanymi przez etykietê punktami
     NewChartVerticals(NewChartVisualizer* visualizer, NewChartLabel::ConnectionStyle style);
     virtual ~NewChartVerticals() {}
 
@@ -39,7 +39,7 @@ private:
     //! \param point1 pierwszy wskazywany punkt
     //! \param point2 drugi wskazywany punkt
     //! \param currentSerie seria, z która jest zwiazana etykieta
-    //! \param color kolor obwodki etykiety
+    //! \param color kolor obwódki etykiety
     void insertNewMarker(const QPointF& point1, const QPointF& point2, const NewChartSerie* currentSerie, const QColor& color = QColor(Qt::blue));
     //! odœwie¿enie etykiet
     void updateLabels();

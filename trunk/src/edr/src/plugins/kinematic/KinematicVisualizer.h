@@ -69,7 +69,7 @@ public:
     //! \param serie Kopiowana seria
     virtual core::IVisualizer::TimeSerieBase *createSerie(const core::IVisualizer::SerieBase* serie);
     //! Usuwa serie z wizualizatora
-    //! \param serie seria do usuniecia
+    //! \param serie seria do usuniêcia
     virtual void removeSerie(core::IVisualizer::SerieBase *serie);
 	//! Tworzy pusty wizualizator
 	virtual core::IVisualizer* createClone() const;
@@ -118,7 +118,7 @@ private:
     //! Metoda u³atwiaj¹ca tworzenie spinwidgetów z opisem. Tworzony jest widget rodzica zawieraj¹cy spinbox i label z opisem
     //! \param parent rodzic, do którego zostanie towrzony widget
     //! \param name opis spinboxa
-    //! \param step krok dla strzalek
+    //! \param step krok dla strza³ek
     //! \param visible czy ma byæ widoczny po utworzeniu
     //! \return para (widget, spinbox) widget jest rodzicem spinboxa
     SpinPair createSpinWidget( QWidget* parent, QString name, double step = 0.1, bool visible = true );
@@ -241,13 +241,13 @@ private:
     QAction* actionGhost;
     //! zamienia osie jeœli jest taka potrzeba
     QAction* actionSwitchAxes;
-    //! wywoluje stan 'pickera' - mo¿na wybraæ aktywna serie klikaj¹c na nia myszka
+    //! wywo³uje stan 'pickera' - mo¿na wybraæ aktywna serie klikaj¹c na nia myszka
     QAction* pickerAction;
-    //! wywoluje manipulator translacji
+    //! wywo³uje manipulator translacji
     QAction* translateAction;
-    //! wywoluje manipulator rotacji
+    //! wywo³uje manipulator rotacji
     QAction* rotateAction;
-    //! wywoluje manipulator skali
+    //! wywo³uje manipulator skali
     QAction* scaleAction;
     //! niweluje dzia³anie manipulatorów
     QAction* resetAction;

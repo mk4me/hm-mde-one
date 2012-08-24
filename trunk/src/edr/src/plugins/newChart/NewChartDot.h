@@ -28,15 +28,15 @@ public:
     //! ustawia pozycje
     //! \param val nowa pozcja w wspó³rzêdnych ekranowych
     virtual void setPosition(const QPointF& val)  = 0;
-    //! 
+    //! \return zwraca pêdzel u¿ywany do rysowania punktu
     const QBrush& getBrush() const { return brush; }
-    //! 
-    //! \param val 
+    //! ustawia pêdzel
+    //! \param val pêdzel u¿ywany do rysowania punktu
     void setBrush(const QBrush& val) { brush = val; }
-    //! 
+    //! \return pióro u¿ywane do rysowania punktu
     const QPen& getPen() const { return pen; }
-    //! 
-    //! \param val 
+    //! ustawia pióro
+    //! \param val pióro u¿ywane do rysowania punktu
     void setPen(const QPen& val) { pen = val; }
     //! Emulacja rtti obs³ugiwana przez Qwt
     virtual int rtti() const { return QwtPlotItem::Rtti_PlotUserItem; }
@@ -44,9 +44,9 @@ public:
 private:
     //! rozmiar punktu
     int size;
-    //! pioro punktu
+    //! pióro punktu
     QPen pen;
-    //! pedzel punktu
+    //! pêdzel punktu
     QBrush brush;
 };
 typedef NewChartDot* NewChartDotPtr;

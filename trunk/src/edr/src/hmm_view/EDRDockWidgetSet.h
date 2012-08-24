@@ -15,11 +15,12 @@
 #include <QtGui/QMainWindow>
 #include "EDRDockWidget.h"
 
-//! Klasa obs³uguje grupe dock widgetów, sama bêd¹c dock widgetem
+//! Klasa obs³uguje grupê dock widgetów, sama bêd¹c dock widgetem
 class EDRDockWidgetSet : public EDRDockWidget
 {
 	Q_OBJECT;
 public:
+    //! niemodyfikowalny zakres wszystkich podleg³ych widgetów zak³adki
     typedef boost::iterator_range<std::list<EDRDockWidget*>::const_iterator> const_range;
 
 public:
@@ -37,7 +38,7 @@ public:
 public:
     //! Dodaje dock widget do grupy, jeœli nie ma na niego miejsca rzucany jest wyj¹tek
     //! \param widget dodawany dock widget
-    //! \param area obszar okna (lewy, prawy, gora dol)
+    //! \param area obszar okna (lewy, prawy, góra, dol)
     //! \param orientation orientacja (dzielenie w pionie lub poziomie)
     void addDockWidget(EDRDockWidget* widget, Qt::DockWidgetArea area, Qt::Orientation orientation);
     //! Dodaje dock widget do grupy, jeœli nie ma na niego miejsca rzucany jest wyj¹tek
@@ -50,27 +51,27 @@ public:
 	//! \return czy mo¿na jeszcze dodaæ dock widget do grpy
 	bool isAdditionPossible(EDRDockWidget* widget = nullptr) const;
 	//! blokuje lub odblokowuje mo¿liwoœæ dodawania widgetów
-	//! \param additionPossible 
+	//! \param additionPossible mo¿na / nie mo¿na dodaæ nowego widgeta
 	void blockAddition(bool additionPossible);
 	//! \return liczba dock widgetów w grupie
 	int getNumWidgets() const;
 	//! \return maksymalna liczba dock widgetów w grupie
 	int getMaxWidgetsNumber() const { return maxWidgetsNumber; }
 	//! ustawia maksymalna liczbe dock widgetów w grupie
-	//! \param val 
+	//! \param val maksymalna liczbe dock widgetów
 	void setMaxWidgetsNumber(int val) { maxWidgetsNumber = val; }
     //! \return const range wszystkich dock widgetów w grupie
     const_range getDockWidgets() const { return boost::make_iterator_range(widgetsList.cbegin(), widgetsList.cend()); }
 
 signals:
-    //! sygnal oznaczaj¹cy, ze dock widget podpiêty pod grupe zosta³ zamkniety
+    //! sygna³ oznaczaj¹cy, ze dock widget podpiêty pod grupê zosta³ zamkniêty
     void dockClosed();
 
 private slots:
-    //! dock widget podpiêty pod grupe zosta³ zamkniety
+    //! dock widget podpiêty pod grupê zosta³ zamkniêty
     //! \param object 
     void onDockWidgetClosed(QObject* object);
-    //! dock widget podpiêty pod grupe zmieni³ pozycje
+    //! dock widget podpiêty pod grupê zmieni³ pozycjê
     //! \param area 
     void onDockWidgetLocationChanged(Qt::DockWidgetArea area);
 
@@ -81,7 +82,7 @@ private:
 	std::list<EDRDockWidget*> widgetsList;
     //! maksymalna liczba dock widgetów w grupie
 	int maxWidgetsNumber;
-    //! czy mo¿liwe jest dalsze dodawanie widgetow (niezalezne od maksymalnej liczby dock widgetów)
+    //! czy mo¿liwe jest dalsze dodawanie widgetów (niezalezne od maksymalnej liczby dock widgetów)
 	bool additionPossible;
 };
 

@@ -43,16 +43,20 @@ private:
 class EventsHelper
 {
 public:
+    //! typ u¿ywany do reprezentacji czasu
     typedef float timeType;
+    //! niemodyfikowalny wskaŸnik do wczytanego z pliku C3D zdarzenia
     typedef C3DEventsCollection::EventConstPtr EventConstPtr;
+    //! wskaŸnik do wczytanego z pliku C3D zdarzenia
     typedef C3DEventsCollection::EventPtr EventPtr;
+    //! wska¿nik do krzywej wykresu
     typedef boost::shared_ptr<QwtPlotCurve> PlotCurvePtr;
-    //! segment oznaczaj¹cy przedzia³ czasowy zwiazany z eventami
+    //! segment oznaczaj¹cy przedzia³ czasowy zwi¹zany z eventami
     struct Segment 
     {
-        //! pierszy event
+        //! pierwszy event
         EventConstPtr event1;
-        //! durgi event
+        //! drugi event
         EventConstPtr event2;
         //! pocz¹tek czasu, w którym zaczyna siê event
         timeType begin;
@@ -63,10 +67,15 @@ public:
         //! znormalizowana krzywa
         PlotCurvePtr normalizedCurve;
     };
+    //! 
     typedef core::shared_ptr<Segment> SegmentPtr;
+    //!
     typedef core::shared_ptr<const Segment> SegmentConstPtr;
+    //! 
     typedef std::vector<SegmentPtr> Segments;
+    //!
     typedef boost::iterator_range<Segments::const_iterator> SegmentsConstRange;
+    //!
     typedef boost::iterator_range<Segments::iterator> SegmentsRange;
 
 public:

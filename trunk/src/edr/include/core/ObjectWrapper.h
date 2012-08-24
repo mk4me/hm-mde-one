@@ -488,7 +488,7 @@ namespace core {
         virtual void reset()
         {
             if(wrapped != nullptr){
-                // rev usuniete <T>
+                // rev usunięte <T>
                 PtrPolicy::setPtr(wrapped, static_cast<T*>(nullptr));
             }
         }
@@ -680,7 +680,7 @@ protected:                                                                      
 __CORE_WRAPPER_DEFINE_META(type)                                                                  \
 }
 
-// rev - makro zastapione nowym pelnieszym (ale nie używającym posredniej klasy)
+// rev - makro zastapione nowym pelnieszym (ale nie używającym pośredniej klasy)
 /*
 
 #define CORE_DEFINE_WRAPPER_INHERITANCE(type, baseType)                                            \

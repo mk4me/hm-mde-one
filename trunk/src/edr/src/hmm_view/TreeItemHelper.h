@@ -193,10 +193,17 @@ public:
     //! Krotka : obiekt; zwi¹zane z nim eventy; próba, z której pochodzi
     struct ChartWithDescription 
     {
+        //! obiekt, z danymi serii
         core::ObjectWrapperConstPtr wrapper;
+        //! zwi¹zane z obiektem zdarzenia
         EventsCollectionConstPtr events;
+        //! próba, z której pochodzi obiekt z danymi
         PluginSubject::MotionConstPtr motion;
 
+        //! konstruktor
+        //! \param w obiekt, z danymi serii
+        //! \param e zwi¹zane z obiektem zdarzenia
+        //! \param m próba, z której pochodzi obiekt z danymi
         ChartWithDescription(core::ObjectWrapperConstPtr w, EventsCollectionConstPtr e, PluginSubject::MotionConstPtr m) :
             wrapper(w),
             events(e),
@@ -220,13 +227,13 @@ public:
     //! zwraca utworzone serie danych
     //! \param visualizer wizualizator, który bêdzie tworzy³ serie
     //! \param path œcie¿ka dla timeline
-    //! \param series tutaj trafia stworzone serie 
+    //! \param series tutaj trafi¹ stworzone serie 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     //! \return wizualizator 2D
     virtual VisualizerPtr createVisualizer();
-    //! \return tytul wizualizatora 2D
+    //! \return tytu³ wizualizatora 2D
     const QString& getTitle() const { return title; }
-    //! ustawia tytul
+    //! ustawia tytu³
     //! \param val 
     void setTitle(const QString& val) { title = val; }
     //! \return typ ScalarChannelReaderInterface
@@ -236,7 +243,7 @@ public:
 private:
     //! ustawiona kolekcja wrapperów wraz z opisami
     ChartWithDescriptionCollection wrappers;
-    //! tytul w wizualizatorze 2D
+    //! tytu³ w wizualizatorze 2D
     QString title;
     //! wykorzystana strategia do kolorowania serii
     IMultiserieColorStrategyConstPtr colorStrategy;

@@ -618,7 +618,7 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
     visWidget->setAllowedAreas(Qt::RightDockWidgetArea);
     ////blokujemy zmiane wizualizatora
     visWidget->setVisualizerSwitchEnable(false);
-    ////nie niszcz wizualizatora przy jego zamykaniu !! dopiero usuniecie wêz³a powinno to robiæ
+    ////nie niszcz wizualizatora przy jego zamykaniu !! dopiero usuniêcie wêz³a powinno to robiæ
     visWidget->setPermanent(true);
 
 	supplyWithEDRTitleBar(visWidget);

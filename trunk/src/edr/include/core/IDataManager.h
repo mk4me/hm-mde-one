@@ -131,8 +131,8 @@ namespace core {
         //! \param object Obiekt do deinicjalizacji
         void deinitialize(ObjectWrapperPtr & object)
         {
-            //wywolujemy metode klienta do deinicjalizacji
-            //nie musi bezposrednio resetowaæ wskaŸnika - zrobimy to tutaj sami jeœli trzeba
+            //wywo³ujemy metode klienta do deinicjalizacji
+            //nie musi bezpoœrednio resetowaæ wskaŸnika - zrobimy to tutaj sami jeœli trzeba
             doDeinitialize(object);
             if(object->isNull() == false){
                 object->reset();
@@ -269,7 +269,7 @@ namespace core {
         virtual void deinitializeData(ObjectWrapperPtr & data) = 0;
 
 		//! Ta metoda notyfikuje o zmianie stanu DM!!
-        //! \param Obiekt który zostanie usuniety jeœli zarz¹dza nim DataManager
+        //! \param Obiekt który zostanie usuniêty jeœli zarz¹dza nim DataManager
         void removeData(const ObjectWrapperPtr & data)
 		{
 			nonNotifyRemoveData(data);
@@ -386,7 +386,7 @@ namespace core {
         virtual void deinitializeFile(const Filesystem::Path & file) = 0;
 
         //! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-        //! \return Mapa obiektów wzgledem plików z których pochodza
+        //! \return Mapa obiektów wzglêdem plików z których pochodza
         virtual void getObjectsForFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects) const = 0;
 
         //! \return Zbior obs³ugiwanych rozszerzen plików wraz z ich opisem

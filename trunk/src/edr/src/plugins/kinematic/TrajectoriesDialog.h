@@ -77,7 +77,7 @@ private:
 	//! \param button przycisk ze zmienianym kolorem
 	//! \param color nowy kolor
 	void setButtonColor(QPushButton* button, const QColor& color);
-	//! blokuje sygnaly kontrolek modyfikuj¹cych trajektorie
+	//! blokuje sygna³y kontrolek modyfikuj¹cych trajektorie
 	//! \param val czy zablokowaæ / odblokowaæ
 	void blockAllSignals(bool val);
 

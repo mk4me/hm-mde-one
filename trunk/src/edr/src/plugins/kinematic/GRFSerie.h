@@ -55,7 +55,7 @@ public:
 
 private:
     //! Struktura pomocna przy wizualizacji wektora si³y.
-    //! Wektor sklada siê z prostopadloscianu i stozka
+    //! Wektor sk³ada siê z prostopadloscianu i stozka
 	struct Arrow 
 	{
         //! g³ówny wêze³ z wektorem
@@ -84,29 +84,29 @@ private:
 
     typedef std::map<IForcePlatformConstPtr, osg::ref_ptr<osg::ShapeDrawable> > Platform2Shape;
 
-    //! Klasa u³atwia rysowanie "ducha" strzalki. Wizualizowane s¹ poprzednie pozycje strzalki. Im starcza pozycja tym mniejsza alfa.
+    //! Klasa u³atwia rysowanie "ducha" strza³ki. Wizualizowane s¹ poprzednie pozycje strza³ki. Im starcza pozycja tym mniejsza alfa.
 	class GhostStack
 	{
 	public:
-        //! Stan strzalki, pozycje - od - do
+        //! Stan strza³ki, pozycje - od - do
 		typedef std::pair<osg::Vec3, osg::Vec3> ArrowState;
 		//! Konstruktor
-		//! \param maxSize maksymalny rozmiar stosu strzalek
-		//! \param hookNode wêze³, pod który beda podczepiane strzalki
-		//! \param color kolor strzalek
+		//! \param maxSize maksymalny rozmiar stosu strza³ek
+		//! \param hookNode wêze³, pod który beda podczepiane strza³ki
+		//! \param color kolor strza³ek
 		GhostStack(int maxSize, GroupPtr hookNode, const osg::Vec4& color );
-        //! Dodanie strzalki do stosu i usuwa najstarsza strzalke, jeœli jest taka potrzeba
+        //! Dodanie strza³ki do stosu i usuwa najstarsza strza³ke, jeœli jest taka potrzeba
         //! \param state 
         void addState(const ArrowState& state);
-		//! Aktualizacja kolorów strzalek, zarz¹dzanie widocznoœci¹ wêz³ów
+		//! Aktualizacja kolorów strza³ek, zarz¹dzanie widocznoœci¹ wêz³ów
 		void update();
 
 	private:
-        //! Kolor strzalek
+        //! Kolor strza³ek
 		osg::Vec4 color;
-        //! Stos ze strzalkami
+        //! Stos ze strza³kami
 		std::list<ArrowPtr> stackArrows;
-        //! wêze³, pod który podpiête s¹ strzalki
+        //! wêze³, pod który podpiête s¹ strza³ki
 		GroupPtr hookNode;
         //! maksymalny rozmiar stosu
 		int maxSize;
@@ -132,13 +132,13 @@ private:
     GeodePtr createStep( IForcePlatform::IStepConstPtr step, float &maxLength, IForcePlatformConstPtr platform) const;
     //! Tworzy wêze³ z geometria pojedynczej p³yty GRF
     //! \param texture tekstura, która ma byæ na prostopadloscianie, mo¿e byæ nullptr
-    //! \param origin punkt, w którym znajduje siê lewy gorny rog p³yty
+    //! \param origin punkt, w którym znajduje siê lewy górny róg p³yty
     //! \param width szerokoœæ p³yty
     //! \param lenght d³ugoœæ p³yty
     //! \param height wysokoœæ p³yty
     //! \return utworzony wêze³
     TransformPtr createPlatformTransform(osg::Texture2D* texture, const osg::Vec3& origin, float width, float lenght, float height) const;
-	//! Statyczna metoda, tworzy strukture z geometria i opisem strzalki
+	//! Statyczna metoda, tworzy strukture z geometria i opisem strza³ki
     //! \return utworzony wêze³
 	static ArrowPtr createArrow();
 	//! Pobiera teksture z resource'ów
@@ -158,7 +158,7 @@ private:
 	GRFCollectionPtr grfCollection;
     //! maksymalna d³ugoœæ si³y, pomocne przy kolorowaniu wektora
 	float maxLength;
-    //! mapa (krok -> (strzalka, jej ghost) pomocne przy rysowaniu i odœwie¿aniu wizualizacji
+    //! mapa (krok -> (strza³ka, jej ghost) pomocne przy rysowaniu i odœwie¿aniu wizualizacji
     std::map<IForcePlatform::IStepConstPtr, std::pair<ArrowPtr, GhostStackPtr>> stepsData;
     //! pobrana z zasobów tekstura dla pierwszej p³yty
 	static osg::ref_ptr<osg::Texture2D> texture1;

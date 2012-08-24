@@ -14,7 +14,7 @@
 #include "NewChartMarker.h"
 #include "NewChartLabelState.h"
 
-//! stan wizualizatora za etykiety z wartosciami
+//! stan wizualizatora za etykiety z wartoœciami
 class NewChartValueMarker : public NewChartLabelState
 {
 public:
@@ -34,7 +34,7 @@ public:
 private:
     //! Wstawienie nowej etykiety
     //! \param point wskazywany punkt
-    //! \param color kolor obwodki etykiety
+    //! \param color kolor obwódki etykiety
     void insertNewMarker(const QPointF& point, const QColor& color = QColor(Qt::blue));
     //! odœwie¿enie etykiet
     void updateLabels();

@@ -63,7 +63,7 @@ public:
     //! \return kolejnoœæ wyst¹pienia wierzcho³ków (lewy prawy = 1, prawy lewy = -1)
     virtual float getSignX() const = 0;
     //! Metoda pozwala okreœliæ orientacje p³yty pomiarowej
-    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (gora dol = 1, dol gora = -1)
+    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (góra dol = 1, dol góra = -1)
     virtual float getSignY() const = 0;
     //! \return kana³ z odpowiadaj¹ca p³ycie si³a
     virtual GRFChannelConstPtr getForceChannel() const = 0;

@@ -76,7 +76,7 @@ private:
     std::vector<TransformPtr> points;
     //! mapa kolor -> geometria, stworzona w celu optymalizacji
     std::map<osg::Vec4f, GeometryPtr> spheresByColor;
-    //! domysla z³o¿onoœæ sfery
+    //! domyœlna z³o¿onoœæ sfery
     int complex;
     //! domyœlny promieñ sfery
     float radius;

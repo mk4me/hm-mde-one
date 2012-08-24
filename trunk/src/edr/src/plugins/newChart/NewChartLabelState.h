@@ -32,10 +32,10 @@ public:
     virtual void stateBegin();
     //! zakoñczenie stanu, nieobs³ugiwane
     virtual void stateEnd();
-    //! usuwa etykiety z wykresu zwi¹zane z konkretna seria
+    //! usuwa etykiety z wykresu zwi¹zane z konkretn¹ seria
     //! \param serie seria, dla której usuwamy
     void removeSerieLabels(const NewChartSerie* serie);
-    //! zarz¹dza widocznoœci¹ etykiet z wykresu zwiazanych z konkretna seria
+    //! zarz¹dza widocznoœci¹ etykiet z wykresu zwiazanych z konkretn¹ seria
     //! \param serie seria, dla której zmieniamy widocznoœæ elementów
     //! \param visible widoczny / ukryty
     void setVisible(const NewChartSerie* serie, bool visible);
@@ -50,7 +50,7 @@ protected:
         NewChartDot* dot1;
         //! drugie po³¹czenie etykiety (mo¿e byæ puste)
         NewChartDot* dot2;
-        //! seria zwiazana z etykieta
+        //! seria zwiazana z etykiet¹
         const NewChartSerie* serie;
     };
     typedef core::shared_ptr<LabelData> LabelDataPtr;
@@ -59,7 +59,7 @@ protected:
     typedef boost::tuple<const NewChartSerie*, QPointF, double> SeriePointDist;
 
 protected:
-    //! Realizuje przesuniecie pojedynczej etykiety
+    //! Realizuje przesuniêcie pojedynczej etykiety
     //! \param pos nowa pozycja
     //! \param curve krzywa pod która jest podpiêta etykieta
     //! \param label przesuwana etykieta
@@ -70,16 +70,16 @@ protected:
     LabelDataConstPtr getLabel(const QPoint& pos);
     //! próbuje pobraæ dane etykiety
     //! \param pos pozycja na wykresie (wspó³rzêdne ekranowe)
-    //! \param curve krzywa zwiazana z etykieta
+    //! \param curve krzywa zwiazana z etykiet¹
     //! \return dane etykiety lub pusty wskaŸnik
     LabelDataConstPtr getLabel(const QPoint& pos, const QwtPlotCurve* curve);
     //! próbuje pobraæ dane etykiety
     //! \param label etykieta, dla której pobierane s¹ dane
     //! \return dane etykiety lub pusty wskaŸnik
     LabelDataConstPtr getLabel(const NewChartLabel* label) const;
-    //! Pobiera najblizszy punkt od klikniecia
+    //! Pobiera najbli¿szy punkt od klikniecia
     //! \param pos pozycja klikniecia
-    //! \return krotka <najblizsza seria, punkt na niej, odleg³oœæ od punktu klikniecia>
+    //! \return krotka <najbli¿sza seria, punkt na niej, odleg³oœæ od punktu klikniecia>
     SeriePointDist getClosestPoint(const QPoint& pos) const;
 
 protected:

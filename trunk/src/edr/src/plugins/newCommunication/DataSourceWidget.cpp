@@ -309,7 +309,7 @@ void DataSourceWidget::connectionModeChanged()
 
 void DataSourceWidget::refreshStatus()
 {
-	//ustaw kursor na myslenie
+	//ustaw kursor na myœlenie
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 	//odœwie¿am status plików

@@ -280,7 +280,7 @@ private:
             }else{
                 //nowy kontest wydaje siê niezalezny od aktualnie aktywnych - szukamy zaleznoœci
 
-                //szukamy zaleznoœci wzgledem aktualnego lancucha idac w gore od zadanego kontekstu
+                //szukamy zaleznoœci wzglêdem aktualnego lancucha idac w gore od zadanego kontekstu
                 auto parent = context->parentContext();
                 ContextChain newContextChain;
                 newContextChain.push_back(context);

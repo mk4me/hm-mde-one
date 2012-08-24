@@ -5,7 +5,7 @@
 #include <fstream>
 #include <boost/format.hpp>
 #include <boost/smart_ptr.hpp>
-// rev - hack, z jakiegos wzgledu nie bylo widac tej deklaracji
+// rev - hack, z jakiegoœ wzglêdu nie bylo widac tej deklaracji
 //#define SQLITE_HAS_CODEC
 //#include <sqlite3.h>
 extern int sqlite3_key(
