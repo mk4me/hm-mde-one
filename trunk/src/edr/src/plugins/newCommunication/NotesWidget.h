@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/12
     created:  12:3:2012   17:49
     filename: NotesWidget.h
@@ -32,44 +32,44 @@ public slots:
 	//! \param patientID Identyfikator aktualnego pacjenta
 	void setCurrentPatient(int patientID);
 
-	//! \param patientID Identyfikator pacjenta któemu dodajemy notatkê
+	//! \param patientID Identyfikator pacjenta ktÃ³emu dodajemy notatkÄ™
 	//! \param created Czas utworzenia notatki
-	//! \param title Tytu³ notatki
-	//! \param text Treœæ notatki
+	//! \param title TytuÅ‚ notatki
+	//! \param text TreÅ›Ä‡ notatki
 	void addNote(int patientID, const QDateTime & created, const QString & title, const QString & text);
 	//! \param created Czas utworzenia notatki
-	//! \param title Tytu³ notatki
-	//! \param text Treœæ notatki
+	//! \param title TytuÅ‚ notatki
+	//! \param text TreÅ›Ä‡ notatki
 	void addNote(const QDateTime & created, const QString & title, const QString & text);
 
-	//! Usuwa aktualn¹ notatkê
+	//! Usuwa aktualnÄ… notatkÄ™
 	void removeNote();
 
-	//! Wywo³uje dialog dodawania notatki
+	//! WywoÅ‚uje dialog dodawania notatki
 	void addNoteDialog();
-	//! Wywo³uje dialog edycji notatki
+	//! WywoÅ‚uje dialog edycji notatki
 	void editNoteDialog();
 
-	//! Czyœci zawartoœæ pola notatki
+	//! CzyÅ›ci zawartoÅ›Ä‡ pola notatki
 	void clearNote();
 
-	//! Wype³nia listê notatek (tabelê)
+	//! WypeÅ‚nia listÄ™ notatek (tabelÄ™)
 	void fillNotesList();
-	//! Czyœci liste notatek (tabelê)
+	//! CzyÅ›ci liste notatek (tabelÄ™)
 	void clearNotesList();
 
 private slots:
 
-	//! £aduje text aktualnej notatki
+	//! Åaduje text aktualnej notatki
 	void loadNote();
 	//! \param created Czas utworzenia notatki
-	//! \param title Tytu³ notatki
-	//! \param text Treœæ notatki
+	//! \param title TytuÅ‚ notatki
+	//! \param text TreÅ›Ä‡ notatki
 	void updateNote(const QDateTime & modified, const QString & title, const QString & text);
-	//! Prze³adowywuje notatki po zmianie u¿ytkownika
+	//! PrzeÅ‚adowywuje notatki po zmianie uÅ¼ytkownika
 	void reloadPatientNotes();
 
-	//! Reakcja na zmianê notatki
+	//! Reakcja na zmianÄ™ notatki
 	void onCurrentNoteChange();
 	//! Weryfikuje dane dialogu edycji i nowej notatki
 	void noteDialogConfirm();
@@ -79,13 +79,13 @@ private:
 	int generateNoteUniqueID();
 
 private:
-	//! Struktura opisuj¹ca notatkê
+	//! Struktura opisujÄ…ca notatkÄ™
 	struct NoteData {
-		//! Tytu³
+		//! TytuÅ‚
 		QString title;
-		//! Treœæ
+		//! TreÅ›Ä‡
 		QString text;
-		//! Lokalne ID w obrêbie pacjenta
+		//! Lokalne ID w obrÄ™bie pacjenta
 		int localID;
 		//! Globalne ID
 		int globalID;
@@ -99,7 +99,7 @@ private:
 
 	//! Agregat indeksowanych notatek
 	typedef std::map<int, core::shared_ptr<NoteData>> Notes;
-	//! Notatki wg pacjentów
+	//! Notatki wg pacjentÃ³w
 	typedef std::map<int, Notes> PatientNotes;
 
 private:
@@ -109,7 +109,7 @@ private:
 	core::shared_ptr<NoteData> currentNote;
 	//! Notatki
 	Notes notes;
-	//! Notatki wg pacjentów
+	//! Notatki wg pacjentÃ³w
 	PatientNotes patientNotes;
 };
 

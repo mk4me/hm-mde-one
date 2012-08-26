@@ -1,4 +1,4 @@
-#include "TimelinePCH.h"
+ï»¿#include "TimelinePCH.h"
 #include "ChannelWidget.h"
 #include <timelinelib/Tag.h>
 #include <timelinelib/Controller.h>
@@ -60,7 +60,7 @@ void ChannelWidget::paintEvent(QPaintEvent * pEvent)
     rect.setRight(rect.right() - rightMargin);
     // at first fill the rect
     
-    //wype³niamy t³o
+    //wypeÅ‚niamy tÅ‚o
     painter.fillRect(rect,backgroundColor);
 
     QRectF channelRect = rect;
@@ -73,7 +73,7 @@ void ChannelWidget::paintEvent(QPaintEvent * pEvent)
         channelRect.setBottom(bottom);
     }
     
-    //wype³aniamy kana³
+    //wypeÅ‚aniamy kanaÅ‚
     channelRect.setLeft(rect.left() + rect.width() * controller->getNormalizedTime(channel->getData()->getGlobalOffset()));
     channelRect.setRight(rect.left() + rect.width() * controller->getNormalizedTime(channel->getData()->getGlobalOffset() + channel->getData()->getLength()));
     painter.fillRect(channelRect,fillColor);

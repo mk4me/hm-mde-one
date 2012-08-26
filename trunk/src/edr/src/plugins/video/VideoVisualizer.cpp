@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+ï»¿#include "VideoPCH.h"
 #include "VideoVisualizer.h"
 
 #include <osgWidget/Widget>
@@ -159,22 +159,22 @@ void VideoVisualizer::getInputInfo( std::vector<core::IInputDescription::InputIn
 
 void VideoVisualizer::refresh( float width, float height )
 {
-    // aktualizacja wspó³czynnika proporcji
+    // aktualizacja wspÃ³Å‚czynnika proporcji
     if ( streamImage ) {
         ratioKeeper->setAspectRatio( streamImage->getPixelAspectRatio() * streamImage->s() / streamImage->t() );
     }
 
-    // aktualizacja rozmiaru t³a
+    // aktualizacja rozmiaru tÅ‚a
     workspace->setOrigin(0, 0);
     workspace->resize(width , height);
     workspace->update();
-    // aktualizacja tekstury t³a
+    // aktualizacja tekstury tÅ‚a
     //workspace->getBackground()->setTexCoordRegion(0, height, width, -height);
 	workspace->getBackground()->setTexCoordRegion(0, 0, width, height);
 
     // aktualizacja rozmiaru tekstury
     if ( streamImage ) {
-        // odœwie¿enia danych zale¿nych od obrazka
+        // odÅ›wieÅ¼enia danych zaleÅ¼nych od obrazka
         // resize obrazka
         streamImage->setMaxWidth(widget, widget->getWidth());
 		if(width > 0 && height > 0){
@@ -185,10 +185,10 @@ void VideoVisualizer::refresh( float width, float height )
 
 void VideoVisualizer::updateWidget()
 {
-    // korekcja wspó³rzêdnych tekstury
+    // korekcja wspÃ³Å‚rzÄ™dnych tekstury
     if ( streamImage ) {
         if ( useTextureRect ) {
-            // sprawdzamy, czy trzeba odœwie¿yæ wspó³rzêdne tekstury
+            // sprawdzamy, czy trzeba odÅ›wieÅ¼yÄ‡ wspÃ³Å‚rzÄ™dne tekstury
             float s = static_cast<float>(streamImage->s());
             float t = static_cast<float>(streamImage->t());
             //
@@ -216,7 +216,7 @@ void VideoVisualizer::updateWidget()
 			//float deltaS = (s - nextS) / 2.0f;
 			//float deltaT = (t - nextT) / 2.0f;
 
-            // czy trzeba aktualizowaæ?
+            // czy trzeba aktualizowaÄ‡?
             if ( oldS != s || oldT != t ) {
                 //widget->setTexCoord(0 + deltaS, t - deltaT, osgWidget::Widget::UPPER_LEFT);
                 //widget->setTexCoord(0 + deltaS, 0 + deltaT, osgWidget::Widget::LOWER_LEFT);

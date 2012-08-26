@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/03/24
     created:  24:3:2012   10:11
     filename: DataSourceContentManager.h
@@ -22,38 +22,38 @@ public:
 	DataSourceContentManager();
 	virtual ~DataSourceContentManager();
 
-	//! \param content Generator zawartoúci ktÛry rejestrujemy
-	//! \return indeks zarejestrowanego generatora zawartoúci
+	//! \param content Generator zawarto≈õci kt√≥ry rejestrujemy
+	//! \return indeks zarejestrowanego generatora zawarto≈õci
 	virtual int registerContent(communication::IDataSourceContent * content);
-	//! \return Indeks aktualnego generatora zawartoúci
+	//! \return Indeks aktualnego generatora zawarto≈õci
 	virtual int currentContentIndex() const;
-	//! \return Aktualny generator zawartoúci
+	//! \return Aktualny generator zawarto≈õci
 	virtual communication::DataSourceContentPtr currentContent() const;
-	//! \param idx Indeks nowego generatora zawartoúci
+	//! \param idx Indeks nowego generatora zawarto≈õci
 	virtual void setCurrentContent(int idx);
-	//! \return Czy jest zarejestrowany jakiú generator zawartoúci
+	//! \return Czy jest zarejestrowany jaki≈õ generator zawarto≈õci
 	virtual bool empty() const;
-	//! \return Iloúc zarejestrowanych generatorÛw zawartoúci
+	//! \return Ilo≈õc zarejestrowanych generator√≥w zawarto≈õci
 	virtual int size() const;
 
-	//! \param treeWidget Drzewo z danymi ktÛrego zawartoúÊ odúwieøamy
-	//! \param shallowCopy P≥ytka kopia dla ktÛrej odúiweøamy zawartoúÊ
+	//! \param treeWidget Drzewo z danymi kt√≥rego zawarto≈õƒá od≈õwie≈ºamy
+	//! \param shallowCopy P≈Çytka kopia dla kt√≥rej od≈õiwe≈ºamy zawarto≈õƒá
 	//! \param perspective Aktualna perspektywa danych
 	//! \patam localStatusManager Manager danych w lokalnej formie (przefiltrowana shallowCopy usera)
-	//! \patam globalStatusManager Manager danych w globalnej formie (pe≥ne shallowCopy usera)
-	//! \param perspectiveFirst Czy w przypadku kolizji contentu pierwszeÒstwo ma perspektywa
+	//! \patam globalStatusManager Manager danych w globalnej formie (pe≈Çne shallowCopy usera)
+	//! \param perspectiveFirst Czy w przypadku kolizji contentu pierwsze≈Ñstwo ma perspektywa
 	void refreshCurrentContent(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy, communication::IDataSourcePerspective * perspective,
 		const communication::IDataSourceStatusManager * localStatusManager, const communication::IDataSourceStatusManager * globalStatusManager,
 		bool perspectiveFirst = false);
 
 private:
 	//! Metoda rekurencyjna
-	//! \param item Element drzewa ktÛrego status odúwieøamy
-	//! \param shallowCopy P≥ytka kopia dla ktÛrej odúiweøamy zawartoúÊ
+	//! \param item Element drzewa kt√≥rego status od≈õwie≈ºamy
+	//! \param shallowCopy P≈Çytka kopia dla kt√≥rej od≈õiwe≈ºamy zawarto≈õƒá
 	//! \param perspective Aktualna perspektywa danych
 	//! \patam localStatusManager Manager danych w lokalnej formie (przefiltrowana shallowCopy usera)
-	//! \patam globalStatusManager Manager danych w globalnej formie (pe≥ne shallowCopy usera)
-	//! \param perspectiveFirst Czy w przypadku kolizji pierwszeÒstwo ma perspektywa
+	//! \patam globalStatusManager Manager danych w globalnej formie (pe≈Çne shallowCopy usera)
+	//! \param perspectiveFirst Czy w przypadku kolizji pierwsze≈Ñstwo ma perspektywa
 	//! \return Status danych
 	DataStatus refrshItemContent(QTreeWidgetItem * item, const communication::ShallowCopy & shallowCopy, communication::IDataSourcePerspective * perspective,
 		const communication::IDataSourceStatusManager * localStatusManager, const communication::IDataSourceStatusManager * globalStatusManager,

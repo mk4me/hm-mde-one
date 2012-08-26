@@ -1,10 +1,10 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/04
     created:  4:2:2012   11:24
     filename: IDataSourceStatus.h
     author:   Mateusz Janiak
     
-    purpose:  Obiekty pozwalaj¹ce okreœliæ status danych  - ich dostêpnoœc i u¿ycie
+    purpose:  Obiekty pozwalajÄ…ce okreÅ›liÄ‡ status danych  - ich dostÄ™pnoÅ›c i uÅ¼ycie
 *********************************************************************/
 #ifndef HEADER_GUARD___IDATASOURCESTATUS_H__
 #define HEADER_GUARD___IDATASOURCESTATUS_H__
@@ -12,25 +12,25 @@
 namespace communication
 {
 
-//! Status sk³adowania danych
+//! Status skÅ‚adowania danych
 enum DataStorage {
     UnknownStorage = 0x00, /* Nieznany status - problem na serwerze, brak lokalnie */
-    Local = 0x10,           /* Dane ca³kowicie lokalne */
-    Remote = 0x01,          /* Dane ca³koowice zdalne */
-    PartiallyLocal = 0x11   /* Dane czêsciowo dostêpne lokalnie*/
+    Local = 0x10,           /* Dane caÅ‚kowicie lokalne */
+    Remote = 0x01,          /* Dane caÅ‚koowice zdalne */
+    PartiallyLocal = 0x11   /* Dane czÄ™sciowo dostÄ™pne lokalnie*/
 };
 
-//! Status u¿ycia danych w DM
+//! Status uÅ¼ycia danych w DM
 enum DataUsage {
-    UnknownUsage = 0x00,    /* Nieznany status - status startowy przy wyznaczaniu finalnego statusu. Ostatecznie ten status nie mo¿e siê pojawiæ dla danych */
-    Loaded = 0x10,          /* Dane za³adowane w ca³oœci do DM */
-    Unloaded = 0x01,        /* Dane nie za³adowane do DM */
-    PartiallyLoaded = 0x11  /* Dane czêsciowo za³adowane do DM */
+    UnknownUsage = 0x00,    /* Nieznany status - status startowy przy wyznaczaniu finalnego statusu. Ostatecznie ten status nie moÅ¼e siÄ™ pojawiÄ‡ dla danych */
+    Loaded = 0x10,          /* Dane zaÅ‚adowane w caÅ‚oÅ›ci do DM */
+    Unloaded = 0x01,        /* Dane nie zaÅ‚adowane do DM */
+    PartiallyLoaded = 0x11  /* Dane czÄ™sciowo zaÅ‚adowane do DM */
 };
 
-//! Interfejs dostarczaj¹cy informacji o statusie poszczególnych elementów hierarchi danych oraz tych sztucznie stworzonych.
-//! Przechowuje stan sk³adowania danych: Lokalne, Zdalne, Czêsciowo lokalne, Nieznany (problem z baz¹, wymaganiami dla danych)
-//! Przechowuje stan u¿ycia danych: Za³adowane, Nieza³adowane, Czêsciowo za³adowane
+//! Interfejs dostarczajÄ…cy informacji o statusie poszczegÃ³lnych elementÃ³w hierarchi danych oraz tych sztucznie stworzonych.
+//! Przechowuje stan skÅ‚adowania danych: Lokalne, Zdalne, CzÄ™sciowo lokalne, Nieznany (problem z bazÄ…, wymaganiami dla danych)
+//! Przechowuje stan uÅ¼ycia danych: ZaÅ‚adowane, NiezaÅ‚adowane, CzÄ™sciowo zaÅ‚adowane
 class IDataStatus
 {
 public:
@@ -38,10 +38,10 @@ public:
     //! Wirtualny destruktor
     virtual ~IDataStatus() {};
 
-    //! \return Stan sk³adowania danych
+    //! \return Stan skÅ‚adowania danych
     virtual const DataStorage storage() const = 0;
 
-    //! \return Stan u¿ycia danych w DM
+    //! \return Stan uÅ¼ycia danych w DM
     virtual const DataUsage usage() const = 0;
 };
 

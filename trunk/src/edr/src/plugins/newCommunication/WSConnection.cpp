@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include <core/ILog.h>
 #include <core/PluginCommon.h>
 #include <plugins/newCommunication/WSConnection.h>
@@ -19,57 +19,57 @@ public:
 
 	}
 
-	//! \param caPath Œcie¿ka certyfikatu, którym weryfikujemy hosta
+	//! \param caPath ÅšcieÅ¼ka certyfikatu, ktÃ³rym weryfikujemy hosta
 	virtual void setCAPath(const std::string & caPath)
 	{
 		caPath_ = caPath;
 	}
 
-	//! \return Œcie¿ka certyfikatu, którym weryfikujemy hosta
+	//! \return ÅšcieÅ¼ka certyfikatu, ktÃ³rym weryfikujemy hosta
 	virtual const std::string CAPath() const
 	{
 		return caPath_;
 	}
 
-	//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL wzglêdem ceryfikatów
+	//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL wzglÄ™dem ceryfikatÃ³w
 	virtual void setHostVerification(WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification)
 	{
 		hostVerification_ = hostVerification;
 	}
 
-	//! \return Mechanizm weryfikacji hosta po SSL wzglêdem ceryfikatów
+	//! \return Mechanizm weryfikacji hosta po SSL wzglÄ™dem ceryfikatÃ³w
 	virtual WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification() const
 	{
 		return hostVerification_;
 	}
 
-	//! \param name Nazwa u¿ytkownika wywo³uj¹cego us³ugê
+	//! \param name Nazwa uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
 	virtual void setUser(const std::string & user)
 	{
 		user_ = user;
 	}
 
-	//! \param password Has³o u¿ytkownika wywo³uj¹cego us³ugê
+	//! \param password HasÅ‚o uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
 	virtual void setPassword(const std::string & password)
 	{
 		password_ = password;
 	}
 
-	//! \param name Nazwa u¿ytkownika wywo³uj¹cego us³ugê
-	//! \param password Has³o u¿ytkownika wywo³uj¹cego us³ugê
+	//! \param name Nazwa uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
+	//! \param password HasÅ‚o uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
 	virtual void setCredentials(const std::string & user, const std::string & password)
 	{
 		user_ = user;
 		password_ = password;
 	}
 
-	//! \return Nazwa u¿ytkownika który wywo³uje us³ugê
+	//! \return Nazwa uÅ¼ytkownika ktÃ³ry wywoÅ‚uje usÅ‚ugÄ™
 	virtual const std::string user() const
 	{
 		return user_;
 	}
 
-	//! \return Has³o u¿ytkownika który wywo³uje us³ugê
+	//! \return HasÅ‚o uÅ¼ytkownika ktÃ³ry wywoÅ‚uje usÅ‚ugÄ™
 	virtual const std::string password() const
 	{
 		return password_;
@@ -90,20 +90,20 @@ public:
 		return url_;
 	}
 
-	//! \param operation Metoda serwisu do wywo³ania
+	//! \param operation Metoda serwisu do wywoÅ‚ania
 	virtual void setOperation(const std::string & operation)
 	{
 		operationName_ = operation;
 	}
 
-	//! \param name Nazwa wartoœci do ustawienia
-	//! \param value Wartoœæ zmiennej
+	//! \param name Nazwa wartoÅ›ci do ustawienia
+	//! \param value WartoÅ›Ä‡ zmiennej
 	virtual void setValue(const std::string & name, const std::string & value)
 	{
 		values[name] = value;
 	}
 
-	//! Wykonuje operacjê na serwisie webowym
+	//! Wykonuje operacjÄ™ na serwisie webowym
 	virtual void invoke(bool process)
 	{
 		if(resetRequired == true){
@@ -152,8 +152,8 @@ public:
 			throw webservices::WSConnectionInvokeException("Unknown connection invoke error");
 		}
 
-		//tutaj weryfikujê czy by³ jakis wyj¹tek - jeœli tak to go zg³oszê
-		//pobieram pe³n¹ odpowiedŸ
+		//tutaj weryfikujÄ™ czy byÅ‚ jakis wyjÄ…tek - jeÅ›li tak to go zgÅ‚oszÄ™
+		//pobieram peÅ‚nÄ… odpowiedÅº
 		auto const & resp = invoker_->getXMLResponse();
 
 		s = resp.find("<faultstring", 0);
@@ -173,18 +173,18 @@ public:
 			}
 		}
 	}
-	//! \param name Nazwa wartoœci któr¹ chcemy pobraæ
-	//! \return WskaŸnik do wartoœci, nullptr jeœli nie ma takiej wartoœci, wskaxnik pozostaje pod kontrol¹ implementacji IWSConnection
+	//! \param name Nazwa wartoÅ›ci ktÃ³rÄ… chcemy pobraÄ‡
+	//! \return WskaÅºnik do wartoÅ›ci, nullptr jeÅ›li nie ma takiej wartoÅ›ci, wskaxnik pozostaje pod kontrolÄ… implementacji IWSConnection
 	virtual void * getValue(const std::string & name)
 	{
 		Schema::Type type;
 		return invoker_->getValue(name, type);
 	}
 
-	//! \return Pe³na odpowiedŸ serwisu webowego w formacie html/xml
+	//! \return PeÅ‚na odpowiedÅº serwisu webowego w formacie html/xml
 	virtual const std::string xmlResponse()
 	{
-		//musze przetworzyæ odpowiedŸ - chcê w niej mieæ tylko to co istotne bez zbêdnych nag³ówków SOAP i bezpieczeñstwa
+		//musze przetworzyÄ‡ odpowiedÅº - chcÄ™ w niej mieÄ‡ tylko to co istotne bez zbÄ™dnych nagÅ‚Ã³wkÃ³w SOAP i bezpieczeÅ„stwa
 		std::string ret(invoker_->getXMLResponse());
 
 		if(exception_ != true){
@@ -309,7 +309,7 @@ const std::string WSConnection::password() const
 
 void WSConnection::setUrl(const std::string & url)
 {
-	//metoda fabryka dla naszych po³¹czeñ!!
+	//metoda fabryka dla naszych poÅ‚Ä…czeÅ„!!
 	//automatycznie kopiuje wszystkie ustawienia
 
 	auto pos = url.find("https");

@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include <fstream>
 #include <boost/lexical_cast.hpp>
 #include <QtGui/QTreeWidgetItem>

@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+Ôªø#include "CommunicationPCH.h"
 #include "CommunicationWidgetEx.h"
 #include <plugins/communication/CommunicationService.h>
 #include <core/StringTools.h>
@@ -61,7 +61,7 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
     setupUi(this);
 
     // dodanie grupy akcji (designer na to nie pozwala :()
-    // TIP: w przyk≥adach Qt nie ma jawnego zwalniania akcji
+    // TIP: w przyk≈Çadach Qt nie ma jawnego zwalniania akcji
     // wzialem z VideoWidget
     formatGroup = new QActionGroup(this);
     formatGroup->addAction(actionPerformer_View);
@@ -243,7 +243,7 @@ void CommunicationWidgetEx::downloadTrial(int trialID)
 
 void CommunicationWidgetEx::update(const CommunicationManager* subject)
 {
-    //p≥ytka kopia bazy danych
+    //p≈Çytka kopia bazy danych
     constShallowCopy = subject->getShalloCopy();
 
     metaData = subject->getMetadata();
@@ -404,7 +404,7 @@ void CommunicationWidgetEx::buildLocalView(QTreeWidget* tree)
 CommunicationWidgetEx::TrialTreeItem* CommunicationWidgetEx::createTrialItem(const communication::ShallowCopy::Trial * trial)
 {
     TrialTreeItem* item = new TrialTreeItem(trial);
-    //lokalny czy serwerowy? jeúli nie ma w ogole lokalnych prob to zaznaczamy od razu jako serwerowy
+    //lokalny czy serwerowy? je≈õli nie ma w ogole lokalnych prob to zaznaczamy od razu jako serwerowy
     if(localTrials.size() != 0) {
         BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
         {

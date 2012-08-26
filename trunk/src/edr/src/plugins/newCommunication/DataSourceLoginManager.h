@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/03
     created:  3:2:2012   17:11
     filename: CommunicationDataSourceLogin.h
@@ -12,41 +12,41 @@
 #include <string>
 #include "DataSourceUser.h"
 
-//! Klasa zarzπdzajπca logowaniem uøytkownika
+//! Klasa zarzƒÖdzajƒÖca logowaniem u≈ºytkownika
 class DataSourceLoginManager
 {
 public:
-    //! Domyúlny konstruktor
+    //! Domy≈õlny konstruktor
     DataSourceLoginManager();
     //! Destruktor
     ~DataSourceLoginManager();
 
-    //! \param user Nazwa uøytkownika w bazie danych
-    //! \param password Has≥o uøytkownika w bazie danych
+    //! \param user Nazwa u≈ºytkownika w bazie danych
+    //! \param password Has≈Ço u≈ºytkownika w bazie danych
     void login(const std::string & user, const std::string & password);
-    //! Wylogowanie uøytkownika
+    //! Wylogowanie u≈ºytkownika
     void logout();
 
-    //! \return Aktualnie zalogowany uøytkownik
+    //! \return Aktualnie zalogowany u≈ºytkownik
     const User & user() const;
 
-    //! \return Czy uda≥o siÍ zalogowaÊ
+    //! \return Czy uda≈Ço siƒô zalogowaƒá
     const bool isLogged() const;
 
 private:
-    //! \param userID Identyfikator uøytkownika dla ktÛrego chcemy pobraÊ specyficzne dane
-    //! \param userData [out] Dane uøytkownika zapisane w bazie
+    //! \param userID Identyfikator u≈ºytkownika dla kt√≥rego chcemy pobraƒá specyficzne dane
+    //! \param userData [out] Dane u≈ºytkownika zapisane w bazie
     static void getUserData(int userID, UserData & userData);
-    //! \param userID Identyfikator uøytkownika dla ktÛrego chcemy pobraÊ prawa do przeglπdania danych w bazie danych
-    //! \param userPrivilages [out] Uprawnienia uøytkownika do danych
+    //! \param userID Identyfikator u≈ºytkownika dla kt√≥rego chcemy pobraƒá prawa do przeglƒÖdania danych w bazie danych
+    //! \param userPrivilages [out] Uprawnienia u≈ºytkownika do danych
     static void getUserPrivilages(int userID, UserPrivilages & userPrivilages);
-    //! \param login Login uøytkownika w bazie (najprawdopodobniej jego email)
-    //! \param password Has≥o uøytkownika w bazie
-    //! \return Identyfikator uøytkownika lub -1 jeøeli nie znaleziono
+    //! \param login Login u≈ºytkownika w bazie (najprawdopodobniej jego email)
+    //! \param password Has≈Ço u≈ºytkownika w bazie
+    //! \return Identyfikator u≈ºytkownika lub -1 je≈ºeli nie znaleziono
     static const int getUserIDForLoginAndPassword(const std::string & login, const std::string & password);
 
 private:
-    //! Identyfikator aktualnie zalogowanego uøytkownika
+    //! Identyfikator aktualnie zalogowanego u≈ºytkownika
     User user_;
 };
 

@@ -1,4 +1,4 @@
-#include "ChartPCH.h"
+ï»¿#include "ChartPCH.h"
 #include "ChartVisualizer.h"
 
 ChartVisualizer::ChartVisualizer() : 
@@ -74,7 +74,7 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
 	camera->setClearColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1));
     //camera->setClearColor(osg::Vec4(1, 1, 1, 1));
 
-    // dodanie callbacak dostosowuj¹cego rozmiar kamery do rozmiaru okna
+    // dodanie callbacak dostosowujÄ…cego rozmiar kamery do rozmiaru okna
     camera->setEventCallback( osgui::createEventCallback( 
         osgGA::GUIEventAdapter::RESIZE,
         [&](osg::Node* node, const osgGA::GUIEventAdapter* event) {
@@ -100,7 +100,7 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
 
     chart->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
 
-    // dodanie callbacka dostosowuj¹cego rozmiar wykresu do rozmiaru okna
+    // dodanie callbacka dostosowujÄ…cego rozmiar wykresu do rozmiaru okna
     chart->setEventCallback( osgui::createEventCallback( 
         osgGA::GUIEventAdapter::RESIZE,
         [](osg::Node* node, const osgGA::GUIEventAdapter* event) {

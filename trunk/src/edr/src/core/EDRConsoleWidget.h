@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/05/04
     created:  4:5:2011   8:42
     filename: EDRConsoleWidget.h
@@ -20,17 +20,17 @@
 
 //! Wpis do konsoli.
 struct EDRConsoleWidgetEntry {
-    //! Poziom wa¿noœci komuniaktu.
+    //! Poziom waÅ¼noÅ›ci komuniaktu.
     core::LogSeverity severity;
-    //! Wiadomoœæ.
+    //! WiadomoÅ›Ä‡.
     QString message;
-    //! Plik Ÿród³owy.
+    //! Plik ÅºrÃ³dÅ‚owy.
     QString file;
     //! Linia w pliku.
     unsigned line;
     //! Moment zalogowania.
     QDate timestamp;
-    //! Id w¹tku loguj¹cego.
+    //! Id wÄ…tku logujÄ…cego.
     Qt::HANDLE theadId;
 };
 
@@ -50,8 +50,8 @@ public:
     ~EDRConsoleWidget();
 
 public:
-    //! \param entry Komunikat do zakolejkowania b¹dŸ natychmiastowego zalogowania,
-    //! w zale¿noœci od tego, czy mamy do czynienia z w¹tkiem w³aœciwym konsoli.
+    //! \param entry Komunikat do zakolejkowania bÄ…dÅº natychmiastowego zalogowania,
+    //! w zaleÅ¼noÅ›ci od tego, czy mamy do czynienia z wÄ…tkiem wÅ‚aÅ›ciwym konsoli.
     void logOrQueueEntry(EDRConsoleWidgetEntryPtr entry);
     //! \param entry Komunikat do natychmiastowgo zalogowania.
     void logEntry(EDRConsoleWidgetEntryPtr entry);
@@ -65,9 +65,9 @@ public slots:
 
     //! \param entry Komunikat do natychmiastowgo zalogowania.
     void logEntry(const EDRConsoleWidgetEntry& entry);
-    //! Opró¿nia kolejkê komunikatów.
+    //! OprÃ³Å¼nia kolejkÄ™ komunikatÃ³w.
     void flushQueue();
-    //! \param wrap Czy zawijaæ tekst?
+    //! \param wrap Czy zawijaÄ‡ tekst?
     void setWordWrap(bool wrap);
 
 private:
@@ -75,7 +75,7 @@ private:
 
     //! Zakolejkowane wpisy.
     std::queue< EDRConsoleWidgetEntryPtr > queuedEntries;
-    //! Muteks do kontroli kolejki wpisów.
+    //! Muteks do kontroli kolejki wpisÃ³w.
     QMutex queueMutex;
 };
 

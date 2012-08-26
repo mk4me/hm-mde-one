@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+ï»¿#include "VideoPCH.h"
 #include <core/Plugin.h>
 #include "VideoParser.h"
 #include <vidlib/osg/FFmpegImageStream.h>
@@ -44,7 +44,7 @@ void logCallback(vidlib::FFmpegVideoStream::LogSeverity severity, const char* ms
             break;
 
         default:
-            UTILS_ASSERT(false, "Nieznany poziom FFmpeg. Wiadomoœæ: %s", msg);
+            UTILS_ASSERT(false, "Nieznany poziom FFmpeg. WiadomoÅ›Ä‡: %s", msg);
             break;
     }
 }

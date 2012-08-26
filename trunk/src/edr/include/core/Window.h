@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+ï»¿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <string>
@@ -25,7 +25,7 @@ private:
     MenuItems menuItems;
 
 public:
-    //! Dodaje opcjê do menu.
+    //! Dodaje opcjÄ™ do menu.
     void addMenuItem(const std::string& path, ItemPressedWeakPtr callback, bool checkable = false, bool initialState = false);
     //!
     void removeMenuItem(const std::string& path);
@@ -33,7 +33,7 @@ public:
 protected:
     //! Natywne dodanie opcji do menu.
     virtual void onAddMenuItem( const std::string& path, bool checkable, bool initalState ) = 0;
-    //! Natywne usuniêcie opcji z menu.
+    //! Natywne usuniÄ™cie opcji z menu.
     virtual void onRemoveMenuItem( const std::string& path ) = 0;
 
     //! Odpala callbacka.

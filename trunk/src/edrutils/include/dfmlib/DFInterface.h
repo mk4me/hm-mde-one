@@ -1,11 +1,11 @@
-#ifndef HEADER_GUARD__DFINTERFACE_H__
+ï»¿#ifndef HEADER_GUARD__DFINTERFACE_H__
 #define HEADER_GUARD__DFINTERFACE_H__
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa wprowadzaj¹ca obs³uge przep³ywu danych w data flow.
+//! Klasa wprowadzajÄ…ca obsÅ‚uge przepÅ‚ywu danych w data flow.
 class DFInterface
 {
 public:
@@ -24,10 +24,10 @@ public:
     //! \return Czy obiekt moze przetwarzac informacje
 	bool isEnable() const;
 
-    //! Metoda resetuj¹ca stan obiektu - wywo³ywana po ka¿dym pe³nym cyklu danych
+    //! Metoda resetujÄ…ca stan obiektu - wywoÅ‚ywana po kaÅ¼dym peÅ‚nym cyklu danych
 	virtual void reset();
 
-    //! Metoda informuj¹ca o zmianie otoczenia obiektu - obiekt sam musi zweryfikowaæ zmianê i na ni¹ zareagowaæ
+    //! Metoda informujÄ…ca o zmianie otoczenia obiektu - obiekt sam musi zweryfikowaÄ‡ zmianÄ™ i na niÄ… zareagowaÄ‡
 	void notify();
 
 protected:
@@ -37,7 +37,7 @@ protected:
 
 private:
 
-    //! Czy obiekt mo¿e przetwarzaæ dane
+    //! Czy obiekt moÅ¼e przetwarzaÄ‡ dane
 	bool objectEnable;
 };
 

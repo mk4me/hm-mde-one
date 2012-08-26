@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include <utils/Debug.h>
 #include "FlexiTabWidget.h"
 
@@ -314,7 +314,7 @@ void FlexiTabWidget::removeGroup(GUIID groupID)
     groupDataByID.erase(groupIT);
 
     //TODO
-    //poprawic mechanizm widzialnoœci grup/ich aktywnoœci
+    //poprawic mechanizm widzialnoÅ›ci grup/ich aktywnoÅ›ci
     if(currentGroupID == groupID){
         innerFlexiTabWidget->setCurrentIndex(-1);
         currentGroupID = -1;

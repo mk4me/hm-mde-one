@@ -1,32 +1,32 @@
-#ifndef HEADER_GUARD_POINTSCHEMEDRAWER_H__
+ï»¿#ifndef HEADER_GUARD_POINTSCHEMEDRAWER_H__
 #define HEADER_GUARD_POINTSCHEMEDRAWER_H__
 #include <osg/Geode>
 #include <plugins/kinematic/SkeletalVisualizationScheme.h>
 #include "OsgSchemeDrawer.h"
 
-//! Schemat odrysowywuj¹cy punkty
+//! Schemat odrysowywujÄ…cy punkty
 class PointSchemeDrawer : public OsgSchemeDrawer
 {
 public:
     //! Konstruktor
     PointSchemeDrawer() {}
 public:
-    //! Realizacja metody abstrakcyjnej (nieu¿ywana)
+    //! Realizacja metody abstrakcyjnej (nieuÅ¼ywana)
     virtual void draw();
-    //! wywo³ywane, gdy schemat zosta³ zmieniony i jego wizualizacja wymaga odœwie¿enia
+    //! wywoÅ‚ywane, gdy schemat zostaÅ‚ zmieniony i jego wizualizacja wymaga odÅ›wieÅ¼enia
     virtual void update();
-    //! Inicjalizacja drawera, tworzone s¹ wêz³y
+    //! Inicjalizacja drawera, tworzone sÄ… wÄ™zÅ‚y
     //! \param scheme Dostarczany schemat wizualizacji
     virtual void init(VisualizationSchemeConstPtr scheme);
-    //! wywo³ywane przy zakoñczeniu dzia³ania, sprz¹tniêcie obiektów ze sceny
+    //! wywoÅ‚ywane przy zakoÅ„czeniu dziaÅ‚ania, sprzÄ…tniÄ™cie obiektÃ³w ze sceny
     virtual void deinit();
-    //! \return zwraca wêze³ ze stworzonymi po³¹czeniami
+    //! \return zwraca wÄ™zeÅ‚ ze stworzonymi poÅ‚Ä…czeniami
     virtual osg::ref_ptr<osg::Node> getNode() { return node; }
 
 private:
-    //! wskaŸnik do wêz³a przechowywuj¹cego geometriê
+    //! wskaÅºnik do wÄ™zÅ‚a przechowywujÄ…cego geometriÄ™
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
-    //! wskaŸnik do wêz³a zawieraj¹cego transformacjê
+    //! wskaÅºnik do wÄ™zÅ‚a zawierajÄ…cego transformacjÄ™
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
     //! aktualny stan markera (kolor, pozycja, ...)
     typedef VisualizationScheme::State MarkerState;
@@ -35,22 +35,22 @@ private:
     //! Tworzy wszystkie punkty ze schematu wizualizcji
     //! \param markers kolekcja z markerami
     void createMarkersCrowd(const std::vector<MarkerState>& markers);
-    //! Tworzy geode markera (jeœli istnieje sfera o danym kolorze to nie tworzy nowej geometrii)
-    //! \param color ¿¹dany kolor
+    //! Tworzy geode markera (jeÅ›li istnieje sfera o danym kolorze to nie tworzy nowej geometrii)
+    //! \param color Å¼Ä…dany kolor
     //! \param scale skala sfery
-    //! \return wskaŸnik do stworzonej geody
+    //! \return wskaÅºnik do stworzonej geody
     GeodePtr createMarker(const osg::Vec4& color, float scale = 1.0f) const;
-    //! Tworzy wêze³ markera i ustawia mu odpowiednia transformacjê
-    //! \param point punkt w przestrzeni, gdzie ma byæ umieszczony wêze³
-    //! \param color ¿¹dany kolor
-    //! \param name nazwa wêz³a
-    //! \return wêze³ ze stowrzonym markerem
+    //! Tworzy wÄ™zeÅ‚ markera i ustawia mu odpowiednia transformacjÄ™
+    //! \param point punkt w przestrzeni, gdzie ma byÄ‡ umieszczony wÄ™zeÅ‚
+    //! \param color Å¼Ä…dany kolor
+    //! \param name nazwa wÄ™zÅ‚a
+    //! \return wÄ™zeÅ‚ ze stowrzonym markerem
     TransformPtr addPoint(const osg::Vec3& point, const osg::Vec4& color);
 
 private:
-    //! wêze³ ze stworzonymi markerami
+    //! wÄ™zeÅ‚ ze stworzonymi markerami
     osg::ref_ptr<osg::Group> node;
-    //! struktura ze stworzonymi wêz³ami markerów
+    //! struktura ze stworzonymi wÄ™zÅ‚ami markerÃ³w
     std::vector<TransformPtr> points;
 };
 

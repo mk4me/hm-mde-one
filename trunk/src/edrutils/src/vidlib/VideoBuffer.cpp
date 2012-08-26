@@ -1,4 +1,4 @@
-#include "PCH.h"
+Ôªø#include "PCH.h"
 #include <iostream>
 #include "VidLibPrivate.h"
 #include "VideoBufferChunk.h"
@@ -16,11 +16,11 @@ Iter lowerBound( Iter first, Iter last, const Val& val, Pred pred )
   typedef typename std::iterator_traits<Iter>::difference_type Diff;
   Diff count = std::distance(first, last);
   while ( count > 0 ) {
-    // wybieramy úrodkowy element
+    // wybieramy ≈õrodkowy element
     Diff count2 = (count>>1);
     Iter mid = first;
     std::advance(mid, count2);
-    // rÛwnowaøne *mid < val
+    // r√≥wnowa≈ºne *mid < val
     if ( pred(*mid, val) ) {
       first = ++mid;
       count -= count2 + 1;
@@ -38,11 +38,11 @@ Iter upperBound( Iter first, Iter last, const Val& val, Pred pred )
   typedef typename std::iterator_traits<Iter>::difference_type Diff;
   Diff count = std::distance(first, last);
   while ( count > 0 ) {
-    // wybieramy úrodkowy element
+    // wybieramy ≈õrodkowy element
     Diff count2 = (count>>1);
     Iter mid = first;
     std::advance(mid, count2);
-    // rÛwnowaøne *mid < val
+    // r√≥wnowa≈ºne *mid < val
     if ( !pred(val, *mid) ) {
       first = ++mid;
       count -= count2 + 1;
@@ -85,7 +85,7 @@ struct PredStartTimeL
 class VideoBufferImpl
 {
 private:
-    //! Typ listy chunkÛw.
+    //! Typ listy chunk√≥w.
     typedef std::list<VideoBufferChunk*> Chunks;
 
 private:
@@ -93,15 +93,15 @@ private:
     Chunks chunks;
     //! Wszystkie ramki.
     std::vector<Picture*> buffer;
-    //! Nieuøywne, a zaalokowane ramki
+    //! Nieu≈ºywne, a zaalokowane ramki
     std::stack<Picture*> unused;
     //! Maksymalny rozmiar buforu.
     const int maxSize;
-    //! SzerokoúÊ ramki.
+    //! Szeroko≈õƒá ramki.
     int width;
-    //! WysokoúÊ ramki.
+    //! Wysoko≈õƒá ramki.
     int height;
-    //! Ile ramek maksymalnie moøna zbuforowaÊ?
+    //! Ile ramek maksymalnie mo≈ºna zbuforowaƒá?
     size_t maxBufferSize;
     //! Format ramki
     PixelFormat format;
@@ -113,7 +113,7 @@ public:
     //! \param height
     //! \param format
     VideoBufferImpl(int maxSize, int width, int height, PixelFormat format);
-    //! Destruktor, zwalnia ca≥y bufor.
+    //! Destruktor, zwalnia ca≈Çy bufor.
     ~VideoBufferImpl();
 
     //! \return
@@ -122,18 +122,18 @@ public:
         return format;
     }
 
-    //! \return Wskaünik na bufor ramki albo NULL, jeøeli wyczerpa≥o siÍ miejsce w buforze.
+    //! \return Wska≈∫nik na bufor ramki albo NULL, je≈ºeli wyczerpa≈Ço siƒô miejsce w buforze.
     Picture * pop();
-    //! \param frame Ramka, ktÛra ma byÊ zwrÛcona do bufora. Wywo≥ywaÊ TYLKO, jeúli po uøyciu
-    //!              metody pop ramka nie zosta≥a uøyta.
+    //! \param frame Ramka, kt√≥ra ma byƒá zwr√≥cona do bufora. Wywo≈Çywaƒá TYLKO, je≈õli po u≈ºyciu
+    //!              metody pop ramka nie zosta≈Ça u≈ºyta.
     void push(Picture * frame);
 
-    //! Zaznacza, øe ramka jest uøyta.
+    //! Zaznacza, ≈ºe ramka jest u≈ºyta.
     //! \param frame
-    //! \param startTime Poczπtek przedzia≥u czasu.
-    //! \param endTime Koniec przedzia≥u czasu.
+    //! \param startTime PoczƒÖtek przedzia≈Çu czasu.
+    //! \param endTime Koniec przedzia≈Çu czasu.
     bool notifyUsed(Picture * frame, double startTime, double endTime);
-    //! Zwalania ramkÍ w zadanym punkcie czasowym.
+    //! Zwalania ramkƒô w zadanym punkcie czasowym.
     bool freeFrame(double time);
     //!
     bool freeFirstFrame();
@@ -150,12 +150,12 @@ public:
     //! \param time
     //! \param timestamp
     //! \param finish
-    //! \return Zbuforowana ramka dla zdanego czasu bπdü NULL, jeøeli nie jest zbuforowana.
+    //! \return Zbuforowana ramka dla zdanego czasu bƒÖd≈∫ NULL, je≈ºeli nie jest zbuforowana.
     const Picture * getFrame(double time, double * timestamp = NULL, double * finish = NULL);
     //! \param time
     //! \param timestamp
     //! \param finish
-    //! \return Zbuforowana ramka dla zdanego czasu bπdü NULL, jeøeli nie jest zbuforowana.
+    //! \return Zbuforowana ramka dla zdanego czasu bƒÖd≈∫ NULL, je≈ºeli nie jest zbuforowana.
     const Picture * getNearestFrame(double time, double * timestamp = NULL, double * finish = NULL);
 
 
@@ -191,18 +191,18 @@ Picture * VideoBufferImpl::pop()
 {
   VIDLIB_FUNCTION_PROLOG;
   if ( unused.empty() ) {
-    // nie ma niewykorzystanych, trzeba wiÍc zaalokowaÊ nowe (jeúli jest miejsce)
+    // nie ma niewykorzystanych, trzeba wiƒôc zaalokowaƒá nowe (je≈õli jest miejsce)
     if ( buffer.size() == maxBufferSize ) {
       // koniec miejsca
       return NULL;
     } else {
-      // miejsce jest, moøna alokowaÊ
+      // miejsce jest, mo≈ºna alokowaƒá
       Picture * picture = new Picture(Picture::create(width, height, format));
       buffer.push_back(picture);
       return picture;
     }
   } else {
-    // zdejmujemy ze stosu nieuøywanych
+    // zdejmujemy ze stosu nieu≈ºywanych
     Picture * result = unused.top();
     unused.pop();
     return result;
@@ -212,7 +212,7 @@ Picture * VideoBufferImpl::pop()
 void VideoBufferImpl::push( Picture * frame )
 {
   VIDLIB_FUNCTION_PROLOG;
-  // dodajemy do stosu nieuøywanych
+  // dodajemy do stosu nieu≈ºywanych
   unused.push(frame);
 }
 
@@ -228,29 +228,29 @@ bool VideoBufferImpl::freeFrame( double time )
     unused.push(frame->second.second);
     if ( frame == chunk->begin() ) {
       if ( frame == --chunk->end() ) {
-        // chunk ma tylko tÍ ramkÍ, usuwamy go
+        // chunk ma tylko tƒô ramkƒô, usuwamy go
         delete *it;
         chunks.erase(it);
       } else {
-        // usuwamy z poczπtku
+        // usuwamy z poczƒÖtku
         chunk->popFront();
       }
     } else if ( frame == --chunk->end() ) {
-      // usuwamy z ty≥u
+      // usuwamy z ty≈Çu
       chunk->popBack();
     } else {
-      // kopiujemy czeúÊ do nowego bufora
+      // kopiujemy cze≈õƒá do nowego bufora
       VideoBufferChunk * newChunk = new VideoBufferChunk();
       VideoBufferChunk::const_iterator startCopy = frame;
       newChunk->append<VideoBufferChunk::const_iterator>(++startCopy, chunk->end());
-      // usuwamy zbÍdne z bufora
+      // usuwamy zbƒôdne z bufora
       chunk->erase(frame, chunk->end());
-      // dodajemy do listy chunkÛw
+      // dodajemy do listy chunk√≥w
       chunks.insert(++it, newChunk);
     }
     return true;
   } else {
-    // nie ma chunka ktÛry by to obs≥uøy≥
+    // nie ma chunka kt√≥ry by to obs≈Çu≈ºy≈Ç
     return false;
   }
 }
@@ -260,21 +260,21 @@ bool VideoBufferImpl::notifyUsed( Picture * frame, double startTime, double endT
 {
   VIDLIB_FUNCTION_PROLOG;
 #if _DEBUG
-  // sprawdzamy, czy ramki na pewno nie ma na liúcie uøytych i nieuøytych
+  // sprawdzamy, czy ramki na pewno nie ma na li≈õcie u≈ºytych i nieu≈ºytych
   //assert( std::find(unused.begin(), unused.end(), frame) == unused.end() );
   UTILS_ASSERT( getFrame(startTime) == NULL );
 #endif
   UTILS_ASSERT( startTime < endTime );
   UTILS_ASSERT( startTime >= 0.0 );
 
-  // wyszukujemy bufor, ktÛry siÍ nadaje
+  // wyszukujemy bufor, kt√≥ry siƒô nadaje
   PredStartTimeL pred;
   Chunks::iterator begin = chunks.begin(), end = chunks.end();
   Chunks::iterator found = upperBound( begin, end, startTime, pred );
   Chunks::iterator next = found;
   Chunks::iterator prev = next==begin ? end : --Chunks::iterator(next);
 
-  // sprawdzenie poprawnoúci bufora, tj fragmenty nie mogπ na siebie nachodziÊ
+  // sprawdzenie poprawno≈õci bufora, tj fragmenty nie mogƒÖ na siebie nachodziƒá
   if ( next != end ) {
     double chunkStart = (*next)->getStartTime();
     if ( chunkStart < endTime ) {
@@ -294,20 +294,20 @@ bool VideoBufferImpl::notifyUsed( Picture * frame, double startTime, double endT
 
   if ( next != end ) {
     if ( prev != end ) {
-      // dopisaÊ i po≥πczyÊ oba bufory
+      // dopisaƒá i po≈ÇƒÖczyƒá oba bufory
       (*prev)->append(frame, startTime, endTime);
       (*prev)->append((*next)->begin(), (*next)->end());
       delete *next;
       chunks.erase(next);
     } else {
-      // dopisaÊ na poczπtek
+      // dopisaƒá na poczƒÖtek
       (*next)->append(frame, startTime, endTime);
     }
   } else if ( prev != end ) {
-    // dopisaÊ na koniec
+    // dopisaƒá na koniec
     (*prev)->append(frame, startTime, endTime);
   } else {
-    // trzeba stworzyÊ nowy bufor
+    // trzeba stworzyƒá nowy bufor
     VideoBufferChunk * newChunk = new VideoBufferChunk();
     newChunk->append(frame, startTime, endTime);
     // wstawiamy
@@ -328,7 +328,7 @@ bool VideoBufferImpl::freeFirstFrame()
       delete chunk;
       chunks.pop_front();
     }
-    // dodajemy do nieuøywanych
+    // dodajemy do nieu≈ºywanych
     unused.push(picture);
     return true;
   } else {
@@ -348,7 +348,7 @@ bool VideoBufferImpl::freeLastFrame()
       delete chunk;
       chunks.pop_back();
     }
-    // dodajemy do nieuøywanych
+    // dodajemy do nieu≈ºywanych
     unused.push(picture);
     return true;
   } else {
@@ -370,7 +370,7 @@ const Picture * VideoBufferImpl::getFrame( double time, double * timestamp /*= N
 const Picture * VideoBufferImpl::getNearestFrame( double time, double * timestamp /*= NULL*/, double * finish /*= NULL*/ )
 {
   VIDLIB_FUNCTION_PROLOG;
-  // jest co szukaÊ?
+  // jest co szukaƒá?
   if ( chunks.empty() ) {
     return NULL;
   }
@@ -382,7 +382,7 @@ const Picture * VideoBufferImpl::getNearestFrame( double time, double * timestam
   Chunks::iterator next = lowerBound(begin, end, time, pred);
   Chunks::iterator prev = next;
 
-  // odleg≥oúci od obu chunkÛw
+  // odleg≈Ço≈õci od obu chunk√≥w
   double deltaRight = (next == end ? DBL_MAX : (*next)->getStartTime() - time);
   double deltaLeft = (prev == begin ? DBL_MAX : time - (*--prev)->getEndTime());
 
@@ -427,9 +427,9 @@ const Picture * VideoBufferImpl::getFirstFrame( double * timestamp /*= NULL*/, d
 
 // void VideoBufferImpl::trimBuffer( double begin, double end )
 // {
-//   // wyszukujemy granicy przedzia≥u
+//   // wyszukujemy granicy przedzia≈Çu
 //   UsedMap::iterator first = used.lower_bound(begin);
-//   // dodajemy do listy nieuøywanych
+//   // dodajemy do listy nieu≈ºywanych
 //   for (UsedMap::iterator it = used.begin(); it != first; ++it) {
 //     unused.push_back(it->second.second);
 //   }

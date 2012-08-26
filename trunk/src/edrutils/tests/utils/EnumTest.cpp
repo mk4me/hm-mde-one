@@ -1,4 +1,4 @@
-#include <utils/Enum.h>
+﻿#include <utils/Enum.h>
 #include "EnumTest.h"
 
 // Registers the fixture into the 'registry'

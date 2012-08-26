@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/10/24
     created:  24:10:2011   13:18
     filename: IDataExplorerSource.h
@@ -16,24 +16,24 @@
 #include <QtGui/QAction>
 
 
-//! Interfejs dla ürÛde≥ danych obs≥ugiwany przez DataExplorera
+//! Interfejs dla ≈∫r√≥de≈Ç danych obs≈Çugiwany przez DataExplorera
 class IDataExplorerSource : public core::IIdentifiable
 {
 public:
     virtual ~IDataExplorerSource() {}
 
-    //! \return Widget z widokiem ürÛd≥a - g≥wny widget realizujπcy ca≥a funkcjonalnoúÊ ürÛd≥a wraz z filtrami
+    //! \return Widget z widokiem ≈∫r√≥d≈Ça - g≈Çwny widget realizujƒÖcy ca≈Ça funkcjonalno≈õƒá ≈∫r√≥d≈Ça wraz z filtrami
     virtual QWidget * getOrCreateView() = 0;
-    //! \return Widget do konfiguracji ürÛd≥a
+    //! \return Widget do konfiguracji ≈∫r√≥d≈Ça
     virtual QDialog * getOrCreateConfigurationDialog() = 0;
-    //! \return Widget do obs≥ugi filtrowania danych
+    //! \return Widget do obs≈Çugi filtrowania danych
     virtual QWidget * getOrCreateFiltersWidget() = 0;
-    //! \return Akcja s≥uøπca do odúwieøania danych
+    //! \return Akcja s≈Çu≈ºƒÖca do od≈õwie≈ºania danych
     virtual QAction * getOrCreateRefreshAction() = 0;
-    //! \return Nazwa ürÛd≥a
+    //! \return Nazwa ≈∫r√≥d≈Ça
     virtual const std::string & getName() const = 0;
-    //! \param memoryDataManager Manager danych w pamieci - dostÍp do inicjalizacji poszczegÛlnych obiektÛw domenowych
-    //! \param fileDataManager Manager danych plikowych - dostÍp do inicjalizacji poszczegÛlnych plikÛw
+    //! \param memoryDataManager Manager danych w pamieci - dostƒôp do inicjalizacji poszczeg√≥lnych obiekt√≥w domenowych
+    //! \param fileDataManager Manager danych plikowych - dostƒôp do inicjalizacji poszczeg√≥lnych plik√≥w
     virtual void init(core::IMemoryDataManager * memoryDataManager, core::IFileDataManager * fileDataManager) = 0;
 };
 

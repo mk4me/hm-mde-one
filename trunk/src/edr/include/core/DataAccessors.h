@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/10/18
     created:  18:10:2011   11:43
     filename: DataAccessors.h
@@ -36,13 +36,13 @@ namespace core{
     void queryDataIsConvertible__(IDataManagerReader*, std::vector<Ptr>&, bool, boost::false_type, bool initialize = true)
     {
         // rev
-        //UTILS_STATIC_ASSERT( false, "Niew³aœciwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
+        //UTILS_STATIC_ASSERT( false, "NiewÅ‚aÅ›ciwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
     }
 
     //! \param manager Data manager.
-    //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
-    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
-    //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
+    //! \param target Wektor wskaÅºnikÃ³w na obiekty. WskaÅºniki muszÄ… byÄ‡ konwertowalne z tego
+    //!     zdefiniowanego w zasadach wskaÅºnikÃ³w dla wrappera.
+    //! \param exact Czy majÄ… byÄ‡ wyciÄ…gane obiekty konkretnie tego typu (z pominiÄ™ciem polimorfizmu)?
     template <class SmartPtr>
     inline void queryDataPtr(IDataManagerReader* manager, std::vector<SmartPtr>& target, bool exact = false, bool initialize = true)
     {
@@ -53,9 +53,9 @@ namespace core{
     }
 
     //! \param manager Data manager.
-    //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
-    //! \return Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
-    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
+    //! \param exact Czy majÄ… byÄ‡ wyciÄ…gane obiekty konkretnie tego typu (z pominiÄ™ciem polimorfizmu)?
+    //! \return Wektor wskaÅºnikÃ³w na obiekty. WskaÅºniki muszÄ… byÄ‡ konwertowalne z tego
+    //!     zdefiniowanego w zasadach wskaÅºnikÃ³w dla wrappera.
     template <class SmartPtr>
     inline std::vector<SmartPtr> queryDataPtr(IDataManagerReader* manager, bool exact = false, bool initialize = true, SmartPtr* /*dummy*/ = nullptr)
     {
@@ -64,7 +64,7 @@ namespace core{
         return target;
     }
 
-    //! Zastosowanie idiomu "Return Type Resolver" do unikania podwójnego okreœlania typu
+    //! Zastosowanie idiomu "Return Type Resolver" do unikania podwÃ³jnego okreÅ›lania typu
     //! elementu kolekcji
     //! \see http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Return_Type_Resolver
     struct queryDataPtr_t
@@ -81,7 +81,7 @@ namespace core{
         manager(manager), exact(exact), initialize(initialize)
         {}
 
-        //! \return Kolekcja wskaŸników.
+        //! \return Kolekcja wskaÅºnikÃ³w.
         template <class SmartPtr>
         inline operator std::vector<SmartPtr>() const
         {
@@ -92,16 +92,16 @@ namespace core{
     };
 
     //! Wersja funkcji queryData oparta o idiom "Return Type Resolver". Nie trzeba
-    //! podawaæ jawnie typu elementu kolekcji jako parametru szablonu.
+    //! podawaÄ‡ jawnie typu elementu kolekcji jako parametru szablonu.
     inline queryDataPtr_t queryDataPtr(IDataManagerReader* manager, bool exact = false, bool initialize = true)
     {
         return queryDataPtr_t(manager, exact, initialize);
     }
 
     //! \param manager Data manager.
-    //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
-    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
-    //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
+    //! \param target Wektor wskaÅºnikÃ³w na obiekty. WskaÅºniki muszÄ… byÄ‡ konwertowalne z tego
+    //!     zdefiniowanego w zasadach wskaÅºnikÃ³w dla wrappera.
+    //! \param exact Czy majÄ… byÄ‡ wyciÄ…gane obiekty konkretnie tego typu (z pominiÄ™ciem polimorfizmu)?
     template <class T, class Ptr>
     inline void queryData(IDataManagerReader* manager, std::vector<Ptr>& target, bool exact = false, bool initialize = true)
     {
@@ -110,9 +110,9 @@ namespace core{
     }
 
     //! \param manager Data manager.
-    //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
-    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
-    //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
+    //! \param target Wektor wskaÅºnikÃ³w na obiekty. WskaÅºniki muszÄ… byÄ‡ konwertowalne z tego
+    //!     zdefiniowanego w zasadach wskaÅºnikÃ³w dla wrappera.
+    //! \param exact Czy majÄ… byÄ‡ wyciÄ…gane obiekty konkretnie tego typu (z pominiÄ™ciem polimorfizmu)?
     template <class T>
     inline std::vector<typename ObjectWrapperT<T>::ConstPtr> queryData(IDataManagerReader* manager, bool exact = false, bool initialize = true, T* /*dummy*/ = nullptr)
     {

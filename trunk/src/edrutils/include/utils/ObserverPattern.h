@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/05/14
 	created:  14:5:2010   10:05
 	filename: ObserverPattern.h
@@ -58,7 +58,7 @@ public:
     //! \param subject Obiekt podany obserwacji.
     virtual void update(const T * subject) = 0;
 
-    //! \return Lista obserwowanych obiektów
+    //! \return Lista obserwowanych obiektÃ³w
     const ObservedObjects & getObservedObjects() const
     {
         return observedObjects;
@@ -71,8 +71,8 @@ private:
 //------------------------------------------------------------------------------
 
 /**
- *  Klasa bazowa dla obiektów obserwowalnych.
- *  \tparam T Typ dziedzicz¹cy po tej klasie.
+ *  Klasa bazowa dla obiektÃ³w obserwowalnych.
+ *  \tparam T Typ dziedziczÄ…cy po tej klasie.
  */
 template <class T>
 class Observable
@@ -80,13 +80,13 @@ class Observable
     friend class Observer<T>;
 
 public:
-    //! Bie¿¹cy typ.
+    //! BieÅ¼Ä…cy typ.
     typedef Observer<T> ObserverType;
-    //! Typ wskaŸnika.
+    //! Typ wskaÅºnika.
     typedef ObserverType * ObserverPtr;
 
 private:
-    //! Kolekcja elementów obserwuj¹cych
+    //! Kolekcja elementÃ³w obserwujÄ…cych
     typedef std::set<ObserverPtr> Observers;
 
 private:
@@ -98,9 +98,9 @@ private:
     volatile bool isUpdating;
 
 protected:
-    //! Tylko klasa pochodna mo¿e wywo³aæ ten konstruktor.
+    //! Tylko klasa pochodna moÅ¼e wywoÅ‚aÄ‡ ten konstruktor.
     Observable() : self(NULL), isUpdating(false) {}
-    //! Tylko klasa pochodna mo¿e wywo³aæ ten konstruktor.
+    //! Tylko klasa pochodna moÅ¼e wywoÅ‚aÄ‡ ten konstruktor.
     Observable(const T* self) : self(self), isUpdating(false) {}
 
 public:
@@ -122,7 +122,7 @@ public:
         }
     }
 
-    //! \param observer Obserwator do usuniêcia.
+    //! \param observer Obserwator do usuniÄ™cia.
     void detach(ObserverPtr observer)
     {
         auto it = observers.find(observer);
@@ -134,7 +134,7 @@ public:
         }
     }
 
-    //! Czy obserwator jest podpiêty?
+    //! Czy obserwator jest podpiÄ™ty?
     //! \param observer Obserwator.
     //! \return
     bool isAttached(ObserverPtr observer)
@@ -142,7 +142,7 @@ public:
         return ( observers.find(observer) != observers.end() );
     }
 
-    //! Usuwa wszystkich podpiêtych obserwatorów.
+    //! Usuwa wszystkich podpiÄ™tych obserwatorÃ³w.
     void detachAll()
     {
         for(auto it = observers.begin(); it != observers.end(); ++it){

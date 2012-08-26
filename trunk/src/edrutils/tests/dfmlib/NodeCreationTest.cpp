@@ -1,9 +1,9 @@
-#include "NodeCreationTest.h"
+ï»¿#include "NodeCreationTest.h"
 #include <testnodefactory/TestNodeFactory.h>
 #include <dfmlib/DFPin.h>
 
 //TODO
-//testy dla fabryki do poprawki - wêze³ jest inicjalizowany dopiero po pod³¹czneiu go do modelu!!
+//testy dla fabryki do poprawki - wÄ™zeÅ‚ jest inicjalizowany dopiero po podÅ‚Ä…czneiu go do modelu!!
 //CPPUNIT_TEST_SUITE_REGISTRATION( NodeCreationTest );
 
 NodeCreationTest::NodeCreationTest(void) : TestFixture()

@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:	2012/03/25
     created:	25:3:2012   20:35
     filename: 	C3DCollections.h
@@ -14,19 +14,19 @@
 #include <plugins/c3d/IForcePlatform.h>
 #include <plugins/c3d/C3DChannels.h>
 
-//! Prosta kolekcja przechowujπca wszystkie zdarzenia z pliku c3d
+//! Prosta kolekcja przechowujƒÖca wszystkie zdarzenia z pliku c3d
 class C3DEventsCollection
 {
 public:
-    //! wskaünik na zdarzenie wczytane z pliku C3D
+    //! wska≈∫nik na zdarzenie wczytane z pliku C3D
     typedef core::shared_ptr<c3dlib::C3DParser::IEvent> EventPtr;
-    //! niemodyfikowalny wskaünik na zdarzenie wczytane z pliku C3D
+    //! niemodyfikowalny wska≈∫nik na zdarzenie wczytane z pliku C3D
     typedef core::shared_ptr<const c3dlib::C3DParser::IEvent> EventConstPtr;
-    //! kolekcja zdarzeÒ wczytanych z pliku C3D
+    //! kolekcja zdarze≈Ñ wczytanych z pliku C3D
     typedef std::vector<EventPtr> Collection;
-    //! iterator kolekcji zdarzeÒ wczytanych z pliku C3D
+    //! iterator kolekcji zdarze≈Ñ wczytanych z pliku C3D
     typedef Collection::iterator iterator;
-    //! niemodyfikowalny iterator kolekcji zdarzeÒ wczytanych z pliku C3D
+    //! niemodyfikowalny iterator kolekcji zdarze≈Ñ wczytanych z pliku C3D
     typedef Collection::const_iterator const_iterator;
     //! typ zdarzenia wczytanego z pliku C3D
     typedef c3dlib::C3DParser::IEvent IEvent;
@@ -36,9 +36,9 @@ public:
 private:
     //! kolekcja przechowuje zdarzenia wczytane z pliku c3d
     std::vector<EventPtr> events;
-    // wyglada na to, ze VS2010 ma blad - wrzucenie nag≥Ûwka zawierajπcego funkcje lambda
-    // do nag≥ÛwkÛw prekompilowanych skutkuje uniemoøliwieniem korzystania z lambdy wszedzie indziej
-    // porownywanie eventÛw odbywa siÍ zatem w 'klasyczny' sposÛb
+    // wyglada na to, ze VS2010 ma blad - wrzucenie nag≈Ç√≥wka zawierajƒÖcego funkcje lambda
+    // do nag≈Ç√≥wk√≥w prekompilowanych skutkuje uniemo≈ºliwieniem korzystania z lambdy wszedzie indziej
+    // porownywanie event√≥w odbywa siƒô zatem w 'klasyczny' spos√≥b
     struct EventFunctor : public std::binary_function<EventPtr,EventPtr,bool>
     {
         inline bool operator()(const EventPtr& e1, const EventPtr& e2)
@@ -51,7 +51,7 @@ public:
     //! Konstruktor
     C3DEventsCollection()
     {}
-    //! Konstruktor kopiujπcy
+    //! Konstruktor kopiujƒÖcy
     C3DEventsCollection(const C3DEventsCollection& es)
     {
         int count = static_cast<int>(es.events.size());
@@ -62,7 +62,7 @@ public:
     }
 
 public:
-    //! \return liczba wczytanych zdarzeÒ
+    //! \return liczba wczytanych zdarze≈Ñ
     int getNumEvents() const { return events.size(); }
     //! pobranie zdarzenia
     //! \param index indeks z zakresu <0 , getNumEvents)
@@ -91,15 +91,15 @@ public:
     void addEvent(EventPtr event)
     {
         events.push_back(event);
-        // wymuszenie kolejnoúci zwiπzanej z czasem
+        // wymuszenie kolejno≈õci zwiƒÖzanej z czasem
         std::sort(events.begin(), events.end(), EventFunctor());
     }
 
 
-    //! Zwraca event o okreúlonym kontekscie; nastepny do danego
+    //! Zwraca event o okre≈õlonym kontekscie; nastepny do danego
     //! \param event konkretny event
-    //! \param context konteks, ktÛry musi mieÊ zwracany event
-    //! \return event, ktÛry spe≥nia za≥oøenia lub pusty wskaünik
+    //! \param context konteks, kt√≥ry musi mieƒá zwracany event
+    //! \return event, kt√≥ry spe≈Çnia za≈Ço≈ºenia lub pusty wska≈∫nik
     EventConstPtr getNextEvent(EventConstPtr event, Context context) const
     {
         // szukanie elementu 'event' w kolekcji
@@ -109,7 +109,7 @@ public:
                 break;
             }
         }
-        // jeúli znaleziono event;
+        // je≈õli znaleziono event;
         if (it != events.cend()) {
             for (it++; it != events.cend(); ++it) {
                 if ((*it)->getContext() == context) {
@@ -121,14 +121,14 @@ public:
         return EventConstPtr();
     }
 
-    //! Zwraca event dla podanego czasu, event musi mieÊ odpowiedni kontekst,
-    //! czas rozpoczÍcia mniejszy lub rowny t i nie moøe byÊ ostatnim eventem w kolekcji
-    //! \param t czas, dla ktÛrego wyszukiwany jest event
-    //! \param context kontekst, dla ktÛrego wyszukiwany jest event (lewy, prawy.. )
-    //! \return event, ktÛry spe≥nia za≥oøenia lub pusty wskaünik
+    //! Zwraca event dla podanego czasu, event musi mieƒá odpowiedni kontekst,
+    //! czas rozpoczƒôcia mniejszy lub rowny t i nie mo≈ºe byƒá ostatnim eventem w kolekcji
+    //! \param t czas, dla kt√≥rego wyszukiwany jest event
+    //! \param context kontekst, dla kt√≥rego wyszukiwany jest event (lewy, prawy.. )
+    //! \return event, kt√≥ry spe≈Çnia za≈Ço≈ºenia lub pusty wska≈∫nik
     EventConstPtr getEvent(float t, Context context) const
     {
-        // przefiltrowanie eventÛw wzglÍdem kontekstu
+        // przefiltrowanie event√≥w wzglƒôdem kontekstu
         std::vector<EventPtr> temp;
         for (auto it = events.cbegin(); it != events.cend(); ++it) {
             if ((*it)->getContext() == context) {
@@ -159,20 +159,20 @@ public:
 typedef boost::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
 typedef boost::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
 
-//! Kolekcja obiektÛw EMG, obs≥ugiwana w standardowy sposÛb
+//! Kolekcja obiekt√≥w EMG, obs≈Çugiwana w standardowy spos√≥b
 typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
 typedef boost::shared_ptr<EMGCollection> EMGCollectionPtr;
 typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
-//! Kolekcja kana≥Ûw opartych o trÛjwymiarowy wektor
+//! Kolekcja kana≈Ç√≥w opartych o tr√≥jwymiarowy wektor
 typedef utils::DataChannelCollection<VectorChannel> VectorChannelCollection;
 typedef core::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
 typedef core::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
 
-//! para liczb zmiennoprzecinkowych, s≥uøπca do okreúlenia przedzia≥u czasowego zdarzenia
+//! para liczb zmiennoprzecinkowych, s≈Çu≈ºƒÖca do okre≈õlenia przedzia≈Çu czasowego zdarzenia
 typedef core::shared_ptr<std::pair<float, float>> FloatPairPtr;
-//! Metoda wydziela przedzia≥y czasowe, dla ktÛrych realizowana jest analiza
-//! \param events zdarzenia, z ktÛrych beda wyciπgane przedzia≥y
+//! Metoda wydziela przedzia≈Çy czasowe, dla kt√≥rych realizowana jest analiza
+//! \param events zdarzenia, z kt√≥rych beda wyciƒÖgane przedzia≈Çy
 //! \param context kontekst kroku (lewy, prawy)
 static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events, C3DEventsCollection::Context context)
 {
@@ -199,17 +199,17 @@ static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events
     return ret;
 }
 
-//! Kolekcja dostarcza rÛwnieø informacji o p≥ytach GFR oraz u≥atwia pobranie konkretnego kana≥u
+//! Kolekcja dostarcza r√≥wnie≈º informacji o p≈Çytach GFR oraz u≈Çatwia pobranie konkretnego kana≈Çu
 class GRFCollection : public VectorChannelCollection
 {
 public:
-    //! \return wszystkie wczytane p≥yty pomiarowe zwiπzane z danymi GRF
+    //! \return wszystkie wczytane p≈Çyty pomiarowe zwiƒÖzane z danymi GRF
     const IForcePlatformCollection& getPlatforms() const { return platforms; }
-    //! Ustawienie p≥yt pomiarowych
+    //! Ustawienie p≈Çyt pomiarowych
     //! \param val
     void setPlatforms(const IForcePlatformCollection& val) { platforms = val; }
-    //! Metoda u≥atwia pobranie kana≥u GRF o odpowiednim typie
-    //! \param type typ kana≥u (np. M1 lub F2)
+    //! Metoda u≈Çatwia pobranie kana≈Çu GRF o odpowiednim typie
+    //! \param type typ kana≈Çu (np. M1 lub F2)
     GRFChannelConstPtr getGRFChannel(GRFChannel::Type type) const
     {
         for (auto it = channels.begin(); it != channels.end(); ++it) {
@@ -223,30 +223,30 @@ public:
     }
 
 private:
-    //! Platformy pomiarowe zwiπzane z tπ samπ prÛbπ pomiarowπ co kana≥y z kolekcji
+    //! Platformy pomiarowe zwiƒÖzane z tƒÖ samƒÖ pr√≥bƒÖ pomiarowƒÖ co kana≈Çy z kolekcji
     IForcePlatformCollection platforms;
 };
 typedef boost::shared_ptr<GRFCollection> GRFCollectionPtr;
 typedef boost::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
 
-//! Kontener wszystkich markerÛw modelu, u≥atwia obs≥ugÍ danych, dodaje wsparcie o pliki VSK
+//! Kontener wszystkich marker√≥w modelu, u≈Çatwia obs≈Çugƒô danych, dodaje wsparcie o pliki VSK
 class MarkerCollection : public VectorChannelCollection
 {
 public:
     //! Konstruktor
-    //! \param vsk parser ze wczytanym plikiem vsk (dziÍki niemu tworzπ siÍ kolorowe po≥πczenia midzy markerami)
+    //! \param vsk parser ze wczytanym plikiem vsk (dziƒôki niemu tworzƒÖ siƒô kolorowe po≈ÇƒÖczenia midzy markerami)
     MarkerCollection(kinematic::VskParserPtr vsk = kinematic::VskParserPtr()) :
       VectorChannelCollection(),
       vsk(vsk)
       {}
-    //! Zwraca nazwÍ markera na podstawie indeksu
+    //! Zwraca nazwƒô markera na podstawie indeksu
     //! \param markerNo poprawny indeks, w przeciwnym razie poleci asercja
     virtual const std::string& getMarkerName(int markerNo) const {
         return this->getChannel(markerNo)->getName();
     }
-    //! prÛbuje pobraÊ kana≥ na podstawie nazwy
-    //! \param name nazwa kana≥u, wielkoúÊ liter ma znaczenie
-    //! \return kana≥ lub null jeúli takiego nie ma
+    //! pr√≥buje pobraƒá kana≈Ç na podstawie nazwy
+    //! \param name nazwa kana≈Çu, wielko≈õƒá liter ma znaczenie
+    //! \return kana≈Ç lub null je≈õli takiego nie ma
     VectorChannelConstPtr tryGetChannelByName(const std::string& name) {
         for (int i = this->getNumChannels() - 1; i >= 0; --i) {
             if (getMarkerName(i) == name) {
@@ -256,17 +256,17 @@ public:
 
         return VectorChannelConstPtr();
     }
-    //! \return parser vsk zwiπzany z kolekcjπ
+    //! \return parser vsk zwiƒÖzany z kolekcjƒÖ
     kinematic::VskParserConstPtr getVsk() const { return vsk; }
 
 private:
-    //! parser vsk zwiπzany z kolekcjπ
+    //! parser vsk zwiƒÖzany z kolekcjƒÖ
     kinematic::VskParserPtr vsk;
 };
 typedef core::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 
-//! makro u≥atwia definicje dodatkowych kana≥Ûw, osobne typy u≥atwiaja otrzymanie konkretnych danych z DM
+//! makro u≈Çatwia definicje dodatkowych kana≈Ç√≥w, osobne typy u≈Çatwiaja otrzymanie konkretnych danych z DM
 #define DEFINE_CHANNEL_COLLECTION(name)                                         \
 class name##Collection : public VectorChannelCollection {};				        \
     typedef core::shared_ptr<name##Collection> name##CollectionPtr;				\

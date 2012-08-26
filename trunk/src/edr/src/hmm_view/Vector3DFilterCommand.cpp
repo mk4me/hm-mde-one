@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+ï»¿#include "hmmPCH.h"
 #include "Vector3DFilterCommand.h"
 
 __Helper::__Helper( boost::function<void (const QString&, int)> function ) :
@@ -116,7 +116,7 @@ QTreeWidgetItem* EMGCommand::createTreeBranch( const QString& rootItemName, cons
 MeasurementConfigConstPtr EMGCommand::getMeta( PluginSubject::SessionConstPtr session ) 
 {
     MeasurementConfigConstPtr config;
-    //próbuje pobraæ metadane
+    //prÃ³buje pobraÄ‡ metadane
     try{
         auto measurements = Measurements::get();
         std::vector<core::ObjectWrapperConstPtr> metadata;        

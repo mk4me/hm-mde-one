@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   11:27
 	filename: 	WorkflowItemEncapsulator.h
@@ -97,7 +97,7 @@ protected:
         ObjectSlots::SlotsInfo outputInfos(getSlotsInfoFromOutputInfo(coreOutputInfos));
 
         ObjectOutput output(outputInfos);
-        // stworzenie instancji ObjectWrapperów dla ka¿dego z wyjœæ
+        // stworzenie instancji ObjectWrapperÃ³w dla kaÅ¼dego z wyjÅ›Ä‡
         for (int i = 0; i < output.getNumSlots(); ++i) {
             core::ObjectWrapperCollectionPtr wrp = DataManager::getInstance()->createWrapperCollection( output.getSlotType(i) );
             output.ObjectSlots::setObjects(i, wrp);

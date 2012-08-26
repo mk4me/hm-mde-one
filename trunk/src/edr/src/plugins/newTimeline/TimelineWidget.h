@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/08/02
     created:  2:8:2011   11:30
     filename: TimelineWidget.h
@@ -62,12 +62,12 @@ public:
     const TimelineService::UIChannelAction & getOnChannelRemove() const;
 
 public slots:
-    //! \param time Nowy czas dla timeline podany przez u¿ytkownika w sekundach
+    //! \param time Nowy czas dla timeline podany przez uÅ¼ytkownika w sekundach
     //void setTime(double time);
 
 signals:
 
-    //! Informuje o zmianie d³ugoœci timeline
+    //! Informuje o zmianie dÅ‚ugoÅ›ci timeline
     void lengthChanged(double length);
     //! Informuje o zmianie aktualnego czasu timeline
     void timeChanged(double time);
@@ -78,40 +78,40 @@ private slots:
     void onItemClicked(QTreeWidgetItem * item, int column);
     void onItemDblClicked(QTreeWidgetItem * item, int column);
 
-    //! \param pnt Pozycja zapytania o menu kotnekstowe dla drzewa kana³ów
+    //! \param pnt Pozycja zapytania o menu kotnekstowe dla drzewa kanaÅ‚Ã³w
     void showChannelsTreeContextMenu(const QPoint& pnt);
-    //! \param value Nowa wartoœæ slidera kontroluj¹cego czas w wersji znormalizowanej
+    //! \param value Nowa wartoÅ›Ä‡ slidera kontrolujÄ…cego czas w wersji znormalizowanej
     void timeSliderChanged(int value);
-    //! \param time Nowa wartoœæ czasu
+    //! \param time Nowa wartoÅ›Ä‡ czasu
     void timeSliderChanged(double time);
-    //! \brief Usuwa zaznacznoe w drzewie kana³y
+    //! \brief Usuwa zaznacznoe w drzewie kanaÅ‚y
     void removeSelectedChannels();
     //! \param Nowy czas dla timeline
     void timeChanged(const QTime & time);
     //! \param scale Nowa skala dla timeline
     void scaleChanged(double scale);
-    //! \param backward Czy mamy odtwarzac timeline do ty³u
+    //! \param backward Czy mamy odtwarzac timeline do tyÅ‚u
     void playbackDirectionChanged(bool backward);
     //! \param pauseTimeline Czy wstrzymujemy timeline
     void pause(bool pauseTimeline);
-    //! \brief Cofa czas do pocz¹tku
+    //! \brief Cofa czas do poczÄ…tku
     void toBegin();
-    //! \brief Ustawia czas na koñcu
+    //! \brief Ustawia czas na koÅ„cu
     void toEnd();
-    //! \brief Zatrzymuje timeline i wraca do pocz¹tku
+    //! \brief Zatrzymuje timeline i wraca do poczÄ…tku
     void stop();
-    //! \param state Stan checkboxa zwi¹zanego z danym kana³em
+    //! \param state Stan checkboxa zwiÄ…zanego z danym kanaÅ‚em
     void channelsActivityChanged(int state);
-    //! \brief W³aœciwa metoda update
+    //! \brief WÅ‚aÅ›ciwa metoda update
     void refresh();
 
 private:
 
-    //! \brief Po dodaniu/usuniêciu kana³u odœwie¿a chierarchiê kana³ów w drzewie timeline
+    //! \brief Po dodaniu/usuniÄ™ciu kanaÅ‚u odÅ›wieÅ¼a chierarchiÄ™ kanaÅ‚Ã³w w drzewie timeline
     void refreshChannelsHierarchy();
-    //! \brief Odœwie¿a kana³, tagi, marker aktualnego czasu
+    //! \brief OdÅ›wieÅ¼a kanaÅ‚, tagi, marker aktualnego czasu
     void refreshChannels();
-    //! \brief Odœwie¿a ustawienia odtwarzacza timeline - skalê, kierunek, aktualny czas
+    //! \brief OdÅ›wieÅ¼a ustawienia odtwarzacza timeline - skalÄ™, kierunek, aktualny czas
     void refreshPlayerStatus();
 
     static void compareNodes(const std::set<QTreeWidgetItem*> & uiNodes, const std::set<timeline::Model::TChannelConstPtr> & modelNodes,
@@ -125,41 +125,41 @@ private:
 
 private:
 
-    //! Wpis w drzewie bêd¹cy jego najwy¿szym poziomem - zawiera slider z osi¹ czasu
+    //! Wpis w drzewie bÄ™dÄ…cy jego najwyÅ¼szym poziomem - zawiera slider z osiÄ… czasu
     QTreeWidgetItem * rootItem;
-    //! Menu kontekstowe do usuwania zaznaczonych kana³ów
+    //! Menu kontekstowe do usuwania zaznaczonych kanaÅ‚Ã³w
     QMenu * removeChannelsMenu;
-    ////! Labelka opisuj¹ca kontrolkê zmiany skali
+    ////! Labelka opisujÄ…ca kontrolkÄ™ zmiany skali
     //QLabel * scaleLabel;
     //! Kontrolka do zmiany skali timeline
     //QDoubleSpinBox * scaleSpinBox;
-    ////! Labelka opisuj¹ca kontrolkê zmiany kierunku odtwarzania
+    ////! Labelka opisujÄ…ca kontrolkÄ™ zmiany kierunku odtwarzania
     //QLabel * directionLabel;
-    ////! Labelka opisuj¹ca kontrolkê zmiany czasu w formie tekstowej i spinnera
+    ////! Labelka opisujÄ…ca kontrolkÄ™ zmiany czasu w formie tekstowej i spinnera
     //QLabel * timeLabel;
     //! Akcja do zmiany kierunku odtwarzania
     QAction * playbackDirectionAction;
-    //! Akcja ustawiaj¹ca czas na pocz¹tek timeline
+    //! Akcja ustawiajÄ…ca czas na poczÄ…tek timeline
     QAction * timeToBeginAction;
-    //! Akcja ustawiaj¹ca czas na koniec timeline
+    //! Akcja ustawiajÄ…ca czas na koniec timeline
     QAction * timeToEndAction;
-    //! Akcja zarz¹dzaj¹ca odtwarzaniem/wstrzymywaniem timeline
+    //! Akcja zarzÄ…dzajÄ…ca odtwarzaniem/wstrzymywaniem timeline
     QAction * playPauseAction;
-    //! Akcja zatrzymuj¹ca timeline
+    //! Akcja zatrzymujÄ…ca timeline
     QAction * stopAction;
     //! Widget do precyzyjnego ustawiania czasu
     QDateTimeEdit * preciseTimeWidget;
-    //! Kontener na akcje kontroluj¹ce timeline
+    //! Kontener na akcje kontrolujÄ…ce timeline
     QWidget * timelineTabs;
     //! lewy kontener na kontrolki timeline - kierunek i precyzyjny czas
     QToolBar * leftTabButton;
-    //! œrodkowy kontener na kontrolki timeline - do pocz¹tku, odtwarzaj/pauza, stop, do koñca
+    //! Å›rodkowy kontener na kontrolki timeline - do poczÄ…tku, odtwarzaj/pauza, stop, do koÅ„ca
     QToolBar * middleTabButton;
     //! prawy kontener na kontrolki timeline - aktualnie pusty
     QToolBar * rightTabButton;
 
 
-    //! Nowy slider z osi¹ czasu
+    //! Nowy slider z osiÄ… czasu
     TimeSliderWidget * slider;
 
     std::map<timeline::Model::TChannelConstPtr, ChannelsTreeItem*> modelToUIChannels;

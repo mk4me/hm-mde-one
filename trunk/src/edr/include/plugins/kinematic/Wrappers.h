@@ -1,4 +1,4 @@
-#ifndef __HEADER_GUARD_KINEMATIC__WRAPPERS_H__
+﻿#ifndef __HEADER_GUARD_KINEMATIC__WRAPPERS_H__
 #define __HEADER_GUARD_KINEMATIC__WRAPPERS_H__
 
 #include <core/ObjectWrapper.h>

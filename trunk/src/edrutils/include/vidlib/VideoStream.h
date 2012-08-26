@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/02/11
 	created:  11:2:2010   13:15
 	filename: VideoStream.h
@@ -22,13 +22,13 @@ namespace vidlib {
 class Converter;
 
 enum {
-    //! Nieprawid³owy czas
+    //! NieprawidÅ‚owy czas
     INVALID_TIMESTAMP = -1
 };
 
 
 /**
- *	Abstrakcyjna klasa dla wejœcia wideo.
+ *	Abstrakcyjna klasa dla wejÅ›cia wideo.
  */
 class VIDLIB_EXPORT VideoStream
 {
@@ -36,12 +36,12 @@ public:
     //! Sygnatura callbacka.
     class VIDLIB_EXPORT Callback {
     protected:
-        //! Chroniony destruktor - aby zaznaczyæ, ¿e strumieñ nie przemuje callbacka
-        //! na w³asnoœæ (wskaŸnika nie mo¿na skasowaæ)
+        //! Chroniony destruktor - aby zaznaczyÄ‡, Å¼e strumieÅ„ nie przemuje callbacka
+        //! na wÅ‚asnoÅ›Ä‡ (wskaÅºnika nie moÅ¼na skasowaÄ‡)
         virtual ~Callback() {}
     public:
-        //! Callback wywo³ywany w momencie pominiêcia pewnej ramki. Mechanizm ten
-        //! umo¿liwa wydajniejsze buforowanie.
+        //! Callback wywoÅ‚ywany w momencie pominiÄ™cia pewnej ramki. Mechanizm ten
+        //! umoÅ¼liwa wydajniejsze buforowanie.
         //! \param picture
         //! \param layers
         //! \param timestamp
@@ -54,33 +54,33 @@ protected:
 
 
 private:
-    //! U¿ywane tylko w przypadku nieobs³ugiwania wyj¹tków.
+    //! UÅ¼ywane tylko w przypadku nieobsÅ‚ugiwania wyjÄ…tkÃ³w.
     VideoError * lastError;
-    //! Zbuforowana d³ugoœæ ramki.
+    //! Zbuforowana dÅ‚ugoÅ›Ä‡ ramki.
     double frameDuration;
-    //! Zbuforowana liczba klatek na sekundê.
+    //! Zbuforowana liczba klatek na sekundÄ™.
     double frameRate;
-    //! Zbuforowana d³ugoœæ strumienia.
+    //! Zbuforowana dÅ‚ugoÅ›Ä‡ strumienia.
     double duration;
     //!
     double aspectRatio;
     //! Format piksela.
     PixelFormat format;
-    //! Wysokoœæ ramki.
+    //! WysokoÅ›Ä‡ ramki.
     int width;
-    //! Szerokoœæ ramki.
+    //! SzerokoÅ›Ä‡ ramki.
     int height;
     //!
     Callback * callback;
-    //! Zastosowany wzorzec "Pimpl" (¿eby usun¹æ warningi przy budowie DLL)
+    //! Zastosowany wzorzec "Pimpl" (Å¼eby usunÄ…Ä‡ warningi przy budowie DLL)
     class VideoStreamImpl* impl;
 
 protected:
-    //! Konstruktor zeruj¹cy.
+    //! Konstruktor zerujÄ…cy.
     VideoStream();
 
 private:
-    //! Brak konstruktora kopiuj¹cego.
+    //! Brak konstruktora kopiujÄ…cego.
     VideoStream(const VideoStream&);
 
 public:
@@ -88,57 +88,57 @@ public:
     virtual ~VideoStream();
 
 public:
-    //! \return Klon bie¿¹cej instancji.
+    //! \return Klon bieÅ¼Ä…cej instancji.
     virtual VideoStream* clone() const = 0;
 
-    //! Odczytuje nastêpn¹ klatkê.
-    /** Przesuwa siê w strumieniu na nastêpn¹ ramkê. Modyfikacji ulega
-      * czas oraz timestamp (nadane im s¹ te same wartoœci
+    //! Odczytuje nastÄ™pnÄ… klatkÄ™.
+    /** Przesuwa siÄ™ w strumieniu na nastÄ™pnÄ… ramkÄ™. Modyfikacji ulega
+      * czas oraz timestamp (nadane im sÄ… te same wartoÅ›ci
       */
     virtual bool readNext() = 0;
 
     //! \retrun Pozycja w strumieniu.
     virtual double getTime() const = 0;
-    //! \param time Pozycja w Ÿródle
+    //! \param time Pozycja w ÅºrÃ³dle
     virtual bool setTime(double time) = 0;
     //! \return Prawdziwy timestamp ramki.
     virtual double getFrameTimestamp() const = 0;
     //! \return Prawdziwy timestamp kolejnej ramki.
     virtual double getNextFrameTimestamp() const = 0;
 
-    //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci spakowanej
-    //! powinien prze³adowaæ tê metodê.
+    //! JeÅ¼eli strumieÅ„ jest w stanie zaprezentowaÄ‡ ramkÄ™ w postaci spakowanej
+    //! powinien przeÅ‚adowaÄ‡ tÄ™ metodÄ™.
     //! \param dst
     virtual bool getData(Picture & /*dst*/) const
     { 
         return false; 
     }
 
-    //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci zdjêcia
-    //! powinien prze³adowaæ tê metodê.
+    //! JeÅ¼eli strumieÅ„ jest w stanie zaprezentowaÄ‡ ramkÄ™ w postaci zdjÄ™cia
+    //! powinien przeÅ‚adowaÄ‡ tÄ™ metodÄ™.
     //! \param dst
     virtual bool getData(PictureLayered & /*dst*/) const
     { 
         return false; 
     }
 
-    //! Konwertuje bie¿¹c¹ ramkê do zadanego formatu. Docelowa ramka
-    //! musi byæ zaalokowana.
+    //! Konwertuje bieÅ¼Ä…cÄ… ramkÄ™ do zadanego formatu. Docelowa ramka
+    //! musi byÄ‡ zaalokowana.
     //! \param dst
     bool getFrame(Picture & dst) const;
-    //! Konwertuje bie¿¹c¹ ramkê do zadanego formatu. Docelowa ramka
-    //! musi byæ zaalokowana.
+    //! Konwertuje bieÅ¼Ä…cÄ… ramkÄ™ do zadanego formatu. Docelowa ramka
+    //! musi byÄ‡ zaalokowana.
     //! \param dst
     bool getFrame(PictureLayered & dst) const;
 
-    //! \return ród³o.
+    //! \return Å¹rÃ³dÅ‚o.
     const std::string& getSource() const;
-    //! \return Szerokoœæ strumienia.
+    //! \return SzerokoÅ›Ä‡ strumienia.
     inline int getWidth() const
     {
         return width;
     }
-    //! \return Wysokoœæ strumienia.
+    //! \return WysokoÅ›Ä‡ strumienia.
     inline int getHeight() const
     {
         return height;
@@ -148,22 +148,22 @@ public:
     {
         return format;
     }
-    //! \return D³ugoœæ strumienia.
+    //! \return DÅ‚ugoÅ›Ä‡ strumienia.
     inline double getDuration() const
     {
         return duration;
     }
-    //! \return D³ugoœæ ramki w sekundach.
+    //! \return DÅ‚ugoÅ›Ä‡ ramki w sekundach.
     inline double getFrameDuration() const
     {
         return frameDuration;
     }
-    //! \return Liczba klatek na sekundê.
+    //! \return Liczba klatek na sekundÄ™.
     inline double getFramerate() const
     {
         return frameRate;
     }
-    //! \return £¹czna, przybli¿ona liczba klatek.
+    //! \return ÅÄ…czna, przybliÅ¼ona liczba klatek.
     int getFrameCount() const;
 
     //! \return Format.
@@ -175,7 +175,7 @@ public:
     //! \return Znormalizowana pozycja w strumieniu.
     double getNormalizedTime() const;
 
-    //! \param normalizedTime Znormalizowana pozycja w Ÿródle.
+    //! \param normalizedTime Znormalizowana pozycja w ÅºrÃ³dle.
     void setNormalizedTime(double normalizedTime);
 
     //! Czy to koniec strumienia?
@@ -184,10 +184,10 @@ public:
         return getFrameTimestamp() >= getDuration();
     }
 
-    //! Metoda u¿ywana tylko w przypadku wy³¹czenia wyj¹tków. Jeœli jakakolwiek
-    //! publiczna metoda zwróci false mo¿na sprawdziæ dok³adnie b³¹d. Jeœli wyj¹tki
-    //! s¹ w³¹czone zawsze zwróci NULL.
-    //! \return Ostatni b³¹d.
+    //! Metoda uÅ¼ywana tylko w przypadku wyÅ‚Ä…czenia wyjÄ…tkÃ³w. JeÅ›li jakakolwiek
+    //! publiczna metoda zwrÃ³ci false moÅ¼na sprawdziÄ‡ dokÅ‚adnie bÅ‚Ä…d. JeÅ›li wyjÄ…tki
+    //! sÄ… wÅ‚Ä…czone zawsze zwrÃ³ci NULL.
+    //! \return Ostatni bÅ‚Ä…d.
     const VideoError * getLastError() const;
 
     //! \return
@@ -200,7 +200,7 @@ public:
     { 
         return callback;
     }
-    //! \param callback WskaŸnik na callback. Strumieñ NIE kontroluje odwo³ania, tj.
+    //! \param callback WskaÅºnik na callback. StrumieÅ„ NIE kontroluje odwoÅ‚ania, tj.
     //!                 samodzielnie nie go nie zwalnia ani nie zeruje.
     inline void setCallback(Callback * callback) 
     { 
@@ -208,8 +208,8 @@ public:
     }
 
 protected:
-    //! Metoda któr¹ nale¿y wywo³aæ po inicjalizacji strumienia w klasie pochodnej.
-    //! \param source ród³o.
+    //! Metoda ktÃ³rÄ… naleÅ¼y wywoÅ‚aÄ‡ po inicjalizacji strumienia w klasie pochodnej.
+    //! \param source Å¹rÃ³dÅ‚o.
     bool onAfterInit(const std::string& source, double frameRate, double duration, 
       PixelFormat format, int width, int height, double aspectRatio);
 

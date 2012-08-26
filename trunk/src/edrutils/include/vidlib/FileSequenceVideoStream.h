@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/08
     created:  8:4:2011   13:39
     filename: FileSequenceVideoStream.h
@@ -20,7 +20,7 @@ namespace vidlib
     UTILS_PUSH_WARNINGS
     UTILS_DISABLE_DLL_INTERFACE_WARNING
 
-    //! Strumieñ video oparty o fizyczny pliki. Do wczytywania plików u¿ywa obiektu ILoader
+    //! StrumieÅ„ video oparty o fizyczny pliki. Do wczytywania plikÃ³w uÅ¼ywa obiektu ILoader
     class VIDLIB_EXPORT FileSequenceVideoStream : public VideoStream
     {
     public:
@@ -30,32 +30,32 @@ namespace vidlib
         public:
             //!
             virtual ~ILoader() {}
-            //! \param path Œcie¿ka z której nale¿y odczytaæ plik.
-            //! \param picture Zdjêcie wynikowe. Powinno mu siê przypisywaæ pola, ale nie alokowaæ!
-            //! \return true gdy siê uda³o, false w przeciwnym razie
+            //! \param path ÅšcieÅ¼ka z ktÃ³rej naleÅ¼y odczytaÄ‡ plik.
+            //! \param picture ZdjÄ™cie wynikowe. Powinno mu siÄ™ przypisywaÄ‡ pola, ale nie alokowaÄ‡!
+            //! \return true gdy siÄ™ udaÅ‚o, false w przeciwnym razie
             virtual bool readImage(const std::string& path, Picture& picture) = 0;
-            //! Klonuje bie¿¹cego loadera. To, czy ma to byæ p³ytka czy g³êboka kopia, zale¿y
-            //! od logiki loadera; gdy jest to mo¿liwe p³ytka kopia jest preferowana.
+            //! Klonuje bieÅ¼Ä…cego loadera. To, czy ma to byÄ‡ pÅ‚ytka czy gÅ‚Ä™boka kopia, zaleÅ¼y
+            //! od logiki loadera; gdy jest to moÅ¼liwe pÅ‚ytka kopia jest preferowana.
             virtual ILoader* clone() const = 0;
         };
 
     private:
-        //! Lista plików.
+        //! Lista plikÃ³w.
         std::vector<std::string> files;
-        //! Bie¿¹ca ramka.
+        //! BieÅ¼Ä…ca ramka.
         Picture frame;
         //! Wybrany czas.
         double wantedTime;
-        //! Numer bie¿¹cej ramki.
+        //! Numer bieÅ¼Ä…cej ramki.
         int currentFrame;
-        //! Interfejs do ³adowania obrazków.
+        //! Interfejs do Å‚adowania obrazkÃ³w.
         ILoader* loader;
 
     public:
         //! \param name
         //! \param framerate
         //! \param files
-        //! \param loader Obiekt przejmowany na w³asnoœæ.
+        //! \param loader Obiekt przejmowany na wÅ‚asnoÅ›Ä‡.
         FileSequenceVideoStream(const std::string& name, double framerate, const std::vector<std::string>& files, ILoader* loader);
         //!
         virtual ~FileSequenceVideoStream();
@@ -66,9 +66,9 @@ namespace vidlib
         virtual VideoStream* clone() const;
         //!
         virtual bool readNext();
-        //! \return Pozycja w Ÿródle.
+        //! \return Pozycja w ÅºrÃ³dle.
         virtual double getTime() const;
-        //! \param time Pozycja w Ÿródle
+        //! \param time Pozycja w ÅºrÃ³dle
         virtual bool setTime(double time);
         //! \return Prawdziwy timestamp ramki.
         virtual double getFrameTimestamp() const;

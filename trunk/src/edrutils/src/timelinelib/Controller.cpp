@@ -1,4 +1,4 @@
-#include <timelinelib/Controller.h>
+ï»¿#include <timelinelib/Controller.h>
 
 namespace timeline {
 
@@ -56,20 +56,20 @@ std::pair<double, double> Controller::getNormalizedRange(double begin, double le
 
 double Controller::getAbsoluteTime(double normalizedTime) const
 {
-    UTILS_ASSERT((normalizedTime >= 0.0 && normalizedTime <= 1.0), "B³êdny czas - poza zakresem 0-1");
+    UTILS_ASSERT((normalizedTime >= 0.0 && normalizedTime <= 1.0), "BÅ‚Ä™dny czas - poza zakresem 0-1");
     return normalizedTime * model->getLength() + model->getBeginTime();
 }
 
 double Controller::getAbsoluteLength(double normalizedLength) const
 {
-    UTILS_ASSERT((normalizedLength >= 0.0 && normalizedLength <= 1.0), "B³êdny czas - poza zakresem 0-1");
+    UTILS_ASSERT((normalizedLength >= 0.0 && normalizedLength <= 1.0), "BÅ‚Ä™dny czas - poza zakresem 0-1");
     return normalizedLength * model->getLength();
 }
 
 std::pair<double, double> Controller::getAbsoluteRange(double begin, double length) const
 {
-    UTILS_ASSERT((begin >= 0.0 && begin <= 1.0), "B³êdny czas poczatku - poza zakresem 0-1");
-    UTILS_ASSERT((length >= 0.0 && length <= 1.0), "B³êdna dlugoœæ - poza zakresem 0-1");
+    UTILS_ASSERT((begin >= 0.0 && begin <= 1.0), "BÅ‚Ä™dny czas poczatku - poza zakresem 0-1");
+    UTILS_ASSERT((length >= 0.0 && length <= 1.0), "BÅ‚Ä™dna dlugoÅ›Ä‡ - poza zakresem 0-1");
     
     std::pair<double, double> ret(0,0);
         

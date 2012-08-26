@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/28
     created:  28:2:2012   22:30
     filename: DateTime.h
@@ -14,7 +14,7 @@
 namespace webservices
 {
     
-    //! Klasa reprezentuje prosta obs³ugê daty
+    //! Klasa reprezentuje prosta obsÅ‚ugÄ™ daty
     class Date{
         private:
 		/**
@@ -34,16 +34,16 @@ namespace webservices
 
         //! Konstruktor domyslny
         Date();
-        //! Konstruktor kopiuj¹cy
+        //! Konstruktor kopiujÄ…cy
         Date(const Date & date);
         //! Konstruktor
         //! \param year Rok
-        //! \param month Miesi¹c
-        //! \param day Dzieñ
+        //! \param month MiesiÄ…c
+        //! \param day DzieÅ„
         Date(int year, int month = 1, int day = 1);
         virtual ~Date();
 
-        //! \return Zwraca dzisiejsz¹ datê wg ustawieñ komputera
+        //! \return Zwraca dzisiejszÄ… datÄ™ wg ustawieÅ„ komputera
         static const Date today();
 
         /**
@@ -81,7 +81,7 @@ namespace webservices
         const std::string toString() const;
 
         //! Operator przypisania
-        //! \param date Wartoœc przypisywana
+        //! \param date WartoÅ›c przypisywana
         Date & operator=(const Date & date);
 
         bool operator==(const Date & dater) const;
@@ -99,7 +99,7 @@ namespace webservices
         std::ostream& operator <<(std::ostream& out) const;
     };    
 
-    //! Klasa przechowuj¹ca czas
+    //! Klasa przechowujÄ…ca czas
     class Time{
     private:
         /**
@@ -116,7 +116,7 @@ namespace webservices
 		int seconds;
 
     public:
-        //! Konstruktor kopiuj¹cy
+        //! Konstruktor kopiujÄ…cy
         //! \param time Czas do skopiowania
         Time(const Time & time);
         //! Konstruktor domyslny
@@ -165,7 +165,7 @@ namespace webservices
         const std::string toString() const;
 
         //! Operator przypisania
-        //! \param time Wartoœc przypisywana
+        //! \param time WartoÅ›c przypisywana
         Time & operator=(const Time & time);
 
         bool operator==(const Time & timer) const;
@@ -183,7 +183,7 @@ namespace webservices
         std::ostream& operator <<(std::ostream& out) const;
     };
 
-    //! Klasa przechowuj¹ca datê i czas
+    //! Klasa przechowujÄ…ca datÄ™ i czas
 	class DateTime : public Date, public Time {
 	public:
         //! \return Aktualna data i czas

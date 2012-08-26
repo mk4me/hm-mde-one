@@ -1,4 +1,4 @@
-#include "../PCH.h"
+Ôªø#include "../PCH.h"
 #include <vidlib/osg/VideoImageStream.h>
 
 #include <iostream>
@@ -31,7 +31,7 @@ copies( new Copies() ),
 targetFormat(defaultFormat)
 {
     VIDLIB_FUNCTION_PROLOG;
-    // TODO: zmieniÊ
+    // TODO: zmieniƒá
 
     utils::zero(currentPicture);
     currentPicture.format = targetFormat;
@@ -84,7 +84,7 @@ void VideoImageStream::run()
 {
     try
     {
-        // poczπtek
+        // poczƒÖtek
         {
             ScopedLock lock(getMutex());
             // synchronizacja timera
@@ -100,7 +100,7 @@ void VideoImageStream::run()
                 // aktualizacja
                 ScopedLock lock(getMutex());
 
-                // bieøπce tykniÍcie
+                // bie≈ºƒÖce tykniƒôcie
                 osg::Timer& timer = getTimer();
                 osg::Timer_t tick = timer.tick();
                 double delta = timer.delta_s(timer.getStartTick(), tick);
@@ -114,7 +114,7 @@ void VideoImageStream::run()
                     done = (_loopingMode != LOOPING);
                 }
             }
-            // jak d≥ugo to trwa≥o?
+            // jak d≈Çugo to trwa≈Ço?
             double waitTime = getStream()->getFrameDuration() / timeScale - frameLength.time_s();
             if ( waitTime > 0.0 ) {
                 // czekamy
@@ -152,7 +152,7 @@ void VideoImageStream::pause()
 void VideoImageStream::rewind()
 {
     VIDLIB_FUNCTION_PROLOG;
-    // trzeba synchronizowaÊ
+    // trzeba synchronizowaƒá
     ScopedLock lock(getMutex());
     setStreamTime(0.0);
     publishFrameAndNotify();
@@ -245,7 +245,7 @@ void VideoImageStream::setMaxWidth( int maxWidth )
     int streamWidth = getStream()->getWidth();
     int streamHeight = getStream()->getHeight();
 
-    // jaka szerokoúÊ zostanie zastosowana?
+    // jaka szeroko≈õƒá zostanie zastosowana?
     if ( maxWidth >= streamWidth ) {
         width = streamWidth;
         height = streamHeight;
@@ -339,7 +339,7 @@ void VideoImageStream::setTargetFormat( PixelFormat targetFormat )
     if ( targetFormat != this->targetFormat ) {
 
         if ( targetFormat == PixelFormatYV12 ) {
-            // poniewaø wymagamy konwersji w shaderach, ustawiamy aspect ratio
+            // poniewa≈º wymagamy konwersji w shaderach, ustawiamy aspect ratio
             setPixelAspectRatio( static_cast<float>(getStream()->getAspectRatio()) * 1.5f );
         } else {
             setPixelAspectRatio( static_cast<float>(getStream()->getAspectRatio()));

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/10/04
 	created:	4:10:2011   10:20
 	filename: 	DataFilterWidget.h
@@ -19,7 +19,7 @@
 #include "HmmMainWindow.h"
 #include "ui_filter.h"
 
-//! widget przechowuj¹cy grupê filtrów
+//! widget przechowujÄ…cy grupÄ™ filtrÃ³w
 class DataFilterWidget : public QWidget, private Ui::FilterWidget
 {
     Q_OBJECT;
@@ -33,33 +33,33 @@ public:
 
 public:
     //! Dodaje nowy filtr do grupy
-    //! \param bigLabelText du¿a etykieta dla tekstu
-    //! \param dataFilter filtr danych trafiaj¹cych do drzewa
+    //! \param bigLabelText duÅ¼a etykieta dla tekstu
+    //! \param dataFilter filtr danych trafiajÄ…cych do drzewa
     //! \param icon ikona filtru
     void addFilter(const QString& bigLabelText, PluginSubject::DataFilterPtr dataFilter, const QPixmap* icon = nullptr);
     //! Dodaje nowy filtr do grupy
-    //! \param bigLabelText du¿a etykieta dla tekstu
-    //! \param command akcja filtruj¹ca dane trafiaj¹ce do drzewa
+    //! \param bigLabelText duÅ¼a etykieta dla tekstu
+    //! \param command akcja filtrujÄ…ca dane trafiajÄ…ce do drzewa
     //! \param icon ikona filtru
     void addFilter(const QString& bigLabelText, IFilterCommandPtr command, const QPixmap* icon = nullptr);
     //!  Dodaje nowy filtr do grupy
-    //! \param entry gotowy, przygotowany wczeœniej filtr
+    //! \param entry gotowy, przygotowany wczeÅ›niej filtr
     void addFilter(FilterEntryWidget* entry);
-    //! zamyka mo¿liwoœæ dodawania kolejnych filtrów do grupy
+    //! zamyka moÅ¼liwoÅ›Ä‡ dodawania kolejnych filtrÃ³w do grupy
     void closeFilters();
     //! \return czy dana grupa jest aktualnie aktywna?
     bool getActive() const { return active; }
-    //! ustawia aktywnoœæ grupy
-    //! \param val aktywuje / deaktywuje grupê
+    //! ustawia aktywnoÅ›Ä‡ grupy
+    //! \param val aktywuje / deaktywuje grupÄ™
     void setActive(bool val);
-    //! \return obrazek reprezentujacy grupê
+    //! \return obrazek reprezentujacy grupÄ™
     const QPixmap& getPixmap() const { return *this->pictureLabel->pixmap(); }
-    //! \return nazwa grupy filtrów
+    //! \return nazwa grupy filtrÃ³w
     QString getName() const { return this->label->text(); }
-    //! usawia kolor grupy filtrów
+    //! usawia kolor grupy filtrÃ³w
     //! \param color nowy kolor
     void setColor(const QColor& color);
-    //! \return liczba filtrów w grupie
+    //! \return liczba filtrÃ³w w grupie
     int getNumEntries() const { return entries.size(); }
     //! zwraca filtr 
     //! \param index ineks filtru w grupie
@@ -67,42 +67,42 @@ public:
     const FilterEntryWidget* getEntry(int index) const;
 
 protected:
-    //! obs³uguje zdarzenia klikniêcia myszki i wywo³uje odpowiednie filtry
+    //! obsÅ‚uguje zdarzenia klikniÄ™cia myszki i wywoÅ‚uje odpowiednie filtry
     //! \param object 
     //! \param event 
     bool eventFilter(QObject *object, QEvent *event);
 
 signals:
-    //! zmieni³a siê aktywnoœæ grupy
+    //! zmieniÅ‚a siÄ™ aktywnoÅ›Ä‡ grupy
     //! \param aktywowana / deaktywowana
     void activated(bool);
-    //! grupa zosta³a klikniêta
+    //! grupa zostaÅ‚a klikniÄ™ta
     void clicked();
 
 public:
-    //! obs³uguje zdarzenia klikniêcia myszki i wywo³uje odpowiednie filtry
+    //! obsÅ‚uguje zdarzenia klikniÄ™cia myszki i wywoÅ‚uje odpowiednie filtry
     //! \param e 
     virtual void mousePressEvent(QMouseEvent *e);
     //! deaktywuje filtry w grupie
-    //! \param toSkip filtr, który powinien zostaæ pominiêty
+    //! \param toSkip filtr, ktÃ³ry powinien zostaÄ‡ pominiÄ™ty
     void uncheckEntries(FilterEntryWidget* toSkip = nullptr);
 
 public slots:
-    //! resetuje ustawienia filtrów (zmienione np. przez konfiguratory)
+    //! resetuje ustawienia filtrÃ³w (zmienione np. przez konfiguratory)
     void resetFilters();
 
 private slots:
-    //! klikniêto grupê filtrów
+    //! klikniÄ™to grupÄ™ filtrÃ³w
     void onClick();
 
 private:
     //! filtry zawarte w grupie
     std::vector<FilterEntryWidget*> entries;
-    //! g³ówne okno aplikacji, dostarcza drzewo danych
+    //! gÅ‚Ã³wne okno aplikacji, dostarcza drzewo danych
     HmmMainWindow* hmmWindow;
     //! czy grupa jest aktywna
     bool active;
-    //! czy do grupy mo¿na jeszcze dodaæ nastêpne filtry
+    //! czy do grupy moÅ¼na jeszcze dodaÄ‡ nastÄ™pne filtry
     bool filtersClosed;
 };
 typedef boost::shared_ptr<DataFilterWidget> DataFilterWidgetPtr;

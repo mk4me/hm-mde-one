@@ -1,4 +1,4 @@
-#ifndef PLUGIN_SERVICE_H
+Ôªø#ifndef PLUGIN_SERVICE_H
 #define PLUGIN_SERVICE_H
 
 #include <vector>
@@ -24,23 +24,23 @@ namespace core {
 class PluginLoader
 {
 public:
-    //! åcieøki wyszukiwania.
+    //! ≈öcie≈ºki wyszukiwania.
     typedef std::deque<std::string> Paths;
 
 private:
 
     typedef std::pair<PluginPtr, PluginConstPtr> PluginPair;
-    //! Za≥adowane pluginy.
+    //! Za≈Çadowane pluginy.
     typedef std::vector<PluginPair> Plugins;
-    //! Uchwyty do bibliotek dynamicznie ≥adowanych.
+    //! Uchwyty do bibliotek dynamicznie ≈Çadowanych.
     typedef std::vector<HMODULE> Handles;
 
 private:
-    //! Uchwyty do bibliotek dynamicznie ≥adowanych.
+    //! Uchwyty do bibliotek dynamicznie ≈Çadowanych.
     Handles libraries;
-    //! Za≥adowane pluginy.
+    //! Za≈Çadowane pluginy.
     Plugins plugins;
-    //! åcieøki wyszukiwania.
+    //! ≈öcie≈ºki wyszukiwania.
     Paths paths;
 
 public:
@@ -52,7 +52,7 @@ public:
     void clear();
     //!
     void addDefaultPaths();
-    //! £aduje pluginy.
+    //! ≈Åaduje pluginy.
     void load();
 
 	void addPath(const std::string& path)
@@ -136,7 +136,7 @@ private:
     //! \param fileName
     std::string getFileName(const std::string& fileName);
 
-    //! Zwalnia biblioteki. Moøna to wywo≥aÊ dopiero po zniszczeniu g≥Ûwnego okna.
+    //! Zwalnia biblioteki. Mo≈ºna to wywo≈Çaƒá dopiero po zniszczeniu g≈Ç√≥wnego okna.
     void freeLibraries();
 };
 

@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include <osgui/Grid.h>
 #include <boost/foreach.hpp>
 #include <utils/Debug.h>
@@ -26,8 +26,8 @@ osgWidget::Table(name, rows, columns), dirtyMode(false)
 Grid::Grid( const Grid& grid, const osg::CopyOp& copyop ) :
 osgWidget::Table(grid, copyop), rowsWeights(grid.rowsWeights), columnsWeights(grid.columnsWeights), dirtyMode(grid.dirtyMode)
 {
-    // TODO: zaproponowaæ fixa dla OSG
-    UTILS_ASSERT(false, "osgWidget::Table ma b³êdnie dzia³aj¹cy konstruktor kopiuj¹cy");
+    // TODO: zaproponowaÄ‡ fixa dla OSG
+    UTILS_ASSERT(false, "osgWidget::Table ma bÅ‚Ä™dnie dziaÅ‚ajÄ…cy konstruktor kopiujÄ…cy");
 }
 
 void Grid::setDimensions( unsigned rows, unsigned columns )
@@ -44,7 +44,7 @@ void Grid::setDimensions( unsigned rows, unsigned columns )
         for ( unsigned x = 0; x < columns && x < oldColumns; ++x)  {
             _objects[y * columns + x] = oldObjects[y * oldColumns + x];
         }
-        // usniêcie starych kolumn
+        // usniÄ™cie starych kolumn
         for ( unsigned x = columns; x < oldColumns; ++x ) {
             osg::ref_ptr<osgWidget::Widget> ptr;
             if ( oldObjects[y * oldColumns + x].lock(ptr) ) {
@@ -52,7 +52,7 @@ void Grid::setDimensions( unsigned rows, unsigned columns )
             }
         }
     }
-    // usuniêcie starych wierszy
+    // usuniÄ™cie starych wierszy
     for ( unsigned y = rows; y < oldRows; ++y ) {
         for ( unsigned x = 0; x < oldColumns; ++x ) {
             osg::ref_ptr<osgWidget::Widget> ptr;
@@ -88,12 +88,12 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
     for (unsigned rows = 1; rows <= getNumObjects(); ++rows) {
         unsigned columns = static_cast<unsigned>( ceil(static_cast<double>(getNumObjects())/rows) );
 
-        // rozmiar komórki
+        // rozmiar komÃ³rki
         XYCoord cellSize = XYCoord( width/columns, height/rows );
         double cellRatio = cellSize.x() / cellSize.y();
         double usedField = 0.0;
 
-        // zsumowanie pól widgetów
+        // zsumowanie pÃ³l widgetÃ³w
         BOOST_FOREACH (point_type aspectRatio, aspectRatios) {
             XYCoord widgetSize = cellSize;
             if ( aspectRatio > cellRatio ) {
@@ -104,7 +104,7 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
             usedField += widgetSize.x() * widgetSize.y();
         }
 
-        // sprawdzenie, czy nowe rozwi¹zanie jest lepsze
+        // sprawdzenie, czy nowe rozwiÄ…zanie jest lepsze
         if ( usedField > optimalField ) {
             optimalField = usedField;
             optimalDimensions = osg::Vec2s(columns, rows);
@@ -118,8 +118,8 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
     // nadanie optymalnego rozmiaru
     // tutaj lekko zhackowana zmiana rozmiaru w stosunku do setDimensions
 
-    // mo¿na tak zrobiæ, gdy¿ nowy rozmiar >= bie¿¹cy
-    // TODO: czy to poprawne? mo¿e powodowaæ rozrost do nieskoñczonoœci
+    // moÅ¼na tak zrobiÄ‡, gdyÅ¼ nowy rozmiar >= bieÅ¼Ä…cy
+    // TODO: czy to poprawne? moÅ¼e powodowaÄ‡ rozrost do nieskoÅ„czonoÅ›ci
     _objects.resize( optimalDimensions.x() * optimalDimensions.y() );
     _rows = optimalDimensions.y();
     _cols = optimalDimensions.x();
@@ -148,17 +148,17 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
 // void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type height, osgWidget::point_type aspectRatio /*= -1*/ )
 // {
 //     // obliczenie optymalnego rozmiaru
-//     // TODO: da siê to zapewne zrobiæ analitycznie, ale na razie
+//     // TODO: da siÄ™ to zapewne zrobiÄ‡ analitycznie, ale na razie
 //     // mamy tutaj prosty algorytm empiryczny
 //     osg::Vec2s optimalDimensions(0, 0);
 //     osg::Vec2 optimalCellSize(0, 0);
 //     double optimalField = 0.0;
 //
-//     // dla ka¿dej konfiguracji badamy zajête pole
+//     // dla kaÅ¼dej konfiguracji badamy zajÄ™te pole
 //     for ( unsigned rows = 1; rows < getNumObjects(); ++rows ) {
 //         unsigned columns = static_cast<unsigned>(ceil(double(getNumObjects()) / rows));
 //
-//         // obliczenie maksymalnego rozmiaru przypadaj¹cego na komórkê
+//         // obliczenie maksymalnego rozmiaru przypadajÄ…cego na komÃ³rkÄ™
 //         osg::Vec2 size = osg::Vec2( width/columns, height/rows );
 //
 //         double cellRatio = size.x() / size.y();
@@ -168,7 +168,7 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
 //             size.x() = size.y() * aspectRatio;
 //         }
 //
-//         // czy zajêto ³¹cznie wiêcej miejsca ni¿ poprzednio?
+//         // czy zajÄ™to Å‚Ä…cznie wiÄ™cej miejsca niÅ¼ poprzednio?
 //         double usedField = size.x() * size.y();
 //         if ( usedField > optimalField )
 //         {
@@ -218,7 +218,7 @@ void Grid::resetFillables()
 void Grid::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::point_type diffHeight )
 {
     using namespace osgWidget;
-    // kod wziêty z osgWidget::Table, nieznacznie zmodyfikowany
+    // kod wziÄ™ty z osgWidget::Table, nieznacznie zmodyfikowany
     CellSizes rowsWeights(this->rowsWeights);
     CellSizes columnsWeights(this->columnsWeights);
 
@@ -440,7 +440,7 @@ void Grid::setDirtyMode( bool dirtyMode )
 {
     if ( this->dirtyMode ) {
         if ( !dirtyMode ) {
-            // je¿eli wychodzimy z trybu dirty - automatyczny resize
+            // jeÅ¼eli wychodzimy z trybu dirty - automatyczny resize
             resizeAdd();
         }
     }

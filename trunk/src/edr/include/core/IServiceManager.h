@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/04/19
     created:  19:4:2011   11:43
     filename: IServiceManager.h
@@ -20,17 +20,17 @@ namespace core {
     public:
         virtual ~IServiceManager() {}
 
-        //! Rejestruje zadanπ us≥ugÍ.
+        //! Rejestruje zadanƒÖ us≈Çugƒô.
         //! \param newService
         virtual void registerService(IServicePtr newService) = 0;
 
-        //! \return Liczba us≥ug.
+        //! \return Liczba us≈Çug.
         virtual int getNumServices() const = 0;
-        //! \param idx Indeks us≥ugi.
-        //! \return Us≥uga o zadanym indeksie.
+        //! \param idx Indeks us≈Çugi.
+        //! \return Us≈Çuga o zadanym indeksie.
         virtual IServicePtr getService(int idx) = 0;
-        //! \param id ID us≥ugi do wyszukania.
-        //! \return Odnaleziona us≥uga bπdü NULL.
+        //! \param id ID us≈Çugi do wyszukania.
+        //! \return Odnaleziona us≈Çuga bƒÖd≈∫ NULL.
         virtual IServicePtr getService(UniqueID id) = 0;
     };
 
@@ -39,7 +39,7 @@ namespace core {
     typedef weak_ptr<IServiceManager> IServiceManagerWeakPtr;
     typedef weak_ptr<const IServiceManager> IServiceManagerWeakConstPtr;
 
-    //! Metoda wyszukujπca wszystkie us≥ugi danego typu (np. implementujπce
+    //! Metoda wyszukujƒÖca wszystkie us≈Çugi danego typu (np. implementujƒÖce
     //! dany interfejs).
     template <class T>
     shared_ptr<T> queryServices(IServiceManager* manager, T* dummy = nullptr)
@@ -54,7 +54,7 @@ namespace core {
         }
     }
 
-    //! Metoda wyszukujπca wszystkie us≥ugi danego typu (np. implementujπce
+    //! Metoda wyszukujƒÖca wszystkie us≈Çugi danego typu (np. implementujƒÖce
     //! dany interfejs).
     template <class T>
     void queryServices(IServiceManager* manager, std::vector<shared_ptr<T>>& target)

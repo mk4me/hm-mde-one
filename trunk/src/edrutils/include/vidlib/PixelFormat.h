@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_VIDLIB__PIXELFORMAT_H__
+﻿#ifndef HEADER_GUARD_VIDLIB__PIXELFORMAT_H__
 #define HEADER_GUARD_VIDLIB__PIXELFORMAT_H__
 
 #include <utils/Enum.h>
@@ -7,7 +7,7 @@
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Definicja format�w danych
+//! Definicja formatów danych
 #define VIDLIB_PIXELFORMAT_DEFINITION \
   PixelFormatYV12,\
   PixelFormatRESERVED0,\

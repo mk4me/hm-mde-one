@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/02/11
 	created:  11:2:2010   13:14
 	filename: FFmpegVideoStream.h
@@ -21,7 +21,7 @@ namespace video {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Strumieñ wejœciowy video kontorlowany przez bibliotekê ffmpeg.
+ *	StrumieÅ„ wejÅ›ciowy video kontorlowany przez bibliotekÄ™ ffmpeg.
  */
 class FFmpegVideoStream : public VideoStream
 {
@@ -38,16 +38,16 @@ public:
   //!
   typedef int (*LockManager)(void **mutex, LockOp lock);
 
-  //! Klasa FFmpeg u¿ywana podczas logowania wiadomoœci.
+  //! Klasa FFmpeg uÅ¼ywana podczas logowania wiadomoÅ›ci.
   struct FFmpegClass {
       //! Nazwa klasy.
       const char* name;
-      //! WskaŸnik do AVClass. Gdy chce siê wiêcej informacji - nale¿y zaincludowaæ
-      //! avutil/log.h oraz rêcznie rzutowaæ.
+      //! WskaÅºnik do AVClass. Gdy chce siÄ™ wiÄ™cej informacji - naleÅ¼y zaincludowaÄ‡
+      //! avutil/log.h oraz rÄ™cznie rzutowaÄ‡.
       void* ptr;
   };
 
-  //! Poziom wa¿noœci komunikatów.
+  //! Poziom waÅ¼noÅ›ci komunikatÃ³w.
   enum LogSeverity {
     LogSeverityQuiet,
     LogSeverityPanic,
@@ -59,7 +59,7 @@ public:
     LogSeverityDebug
   };
 
-  //! Typ callbacka otrzymuj¹cego komunikaty z ffmpeg.
+  //! Typ callbacka otrzymujÄ…cego komunikaty z ffmpeg.
   typedef void (*LogCallback)(LogSeverity severity, const char* msg, FFmpegClass* item, FFmpegClass* parent);
 
 //------------------------------------------------------------------------------
@@ -72,16 +72,16 @@ private:
     ~Initializer();
   };
 
-  //! Statystki dotycz¹ce klatek kluczowych. S³u¿¹ do optymalizacji operacji
-  //! przesuwania siê w strumieniu.
+  //! Statystki dotyczÄ…ce klatek kluczowych. SÅ‚uÅ¼Ä… do optymalizacji operacji
+  //! przesuwania siÄ™ w strumieniu.
   struct KeyframeStats {
     //! Liczba przetworzonych klatek kluczowych.
     unsigned int count;
     //! Czas ostatniej ramki kluczowej. W jednostkach strumienia.
     int64_t lastTimestamp;
-    //! Œredni odstêp miêdzy ramkami kluczowymi.
+    //! Åšredni odstÄ™p miÄ™dzy ramkami kluczowymi.
     double avgSpan;
-    //! Maksymalny odstêp miêdzy klatkami kluczowymi.
+    //! Maksymalny odstÄ™p miÄ™dzy klatkami kluczowymi.
     int64_t maxSpan;
   };
 
@@ -91,35 +91,35 @@ private:
   AVFormatContext * formatContext;
   //! Kodek video.
   AVCodecContext * codecContext;
-  //! Strumieñ.
+  //! StrumieÅ„.
   AVStream * videoStream;
-  //! Bie¿¹ca ramka.
+  //! BieÅ¼Ä…ca ramka.
   AVFrame * frame;
-  //! Prawdziwy timestamp prezentacji bie¿¹cej ramki. W jednostkach strumienia.
+  //! Prawdziwy timestamp prezentacji bieÅ¼Ä…cej ramki. W jednostkach strumienia.
   int64_t frameTimestamp;
-  //! Minimalny odstêp miêdzy ramkami.
+  //! Minimalny odstÄ™p miÄ™dzy ramkami.
   int64_t frameSpan;
-  //! Timestamp nastêpnej ramki.
+  //! Timestamp nastÄ™pnej ramki.
   int64_t nextFrameTimestamp;
 
-  //! Czas w Ÿródle widziany na zewn¹trz klasy. Mo¿e byæ >= frameTimestamp,
-  //! ale tylko jeœli wci¹¿ dotyczy tej samej klatki.
+  //! Czas w ÅºrÃ³dle widziany na zewnÄ…trz klasy. MoÅ¼e byÄ‡ >= frameTimestamp,
+  //! ale tylko jeÅ›li wciÄ…Å¼ dotyczy tej samej klatki.
   double wantedTime;
   //! Statystyki klatek kluczowych.
   KeyframeStats keyframeStats;
 
-  //! Liczba bajtów do zdekodowania. U¿ywane tylko w starym API.
+  //! Liczba bajtÃ³w do zdekodowania. UÅ¼ywane tylko w starym API.
   int frameBytesRemaining;
   //! Dane pakietu. Tylko w starym API.
   const uint8_t * frameData;
   //! Pakiet.
   AVPacket * packet;
-  //! Prawdziwy u¿ywany w momencie, gdy Ÿród³owy nie ma wyalignowanych danych.
+  //! Prawdziwy uÅ¼ywany w momencie, gdy ÅºrÃ³dÅ‚owy nie ma wyalignowanych danych.
   AVPacket * alignedPacket;
 
 //------------------------------------------------------------------------------
 public:
-  //! \param source ród³o.
+  //! \param source Å¹rÃ³dÅ‚o.
   FFmpegVideoStream(const std::string& source, int wantedVideoStream = -1);
   //!
   virtual ~FFmpegVideoStream();
@@ -136,7 +136,7 @@ public:
   virtual double getNextFrameTimestamp() const;
   //! \retrun Pozycja w strumieniu.
   virtual double getTime() const;
-  //! \param time Pozycja w Ÿródle.
+  //! \param time Pozycja w ÅºrÃ³dle.
   virtual bool setTime(double time);
 
   //! \param callback
@@ -148,21 +148,21 @@ public:
 
 //------------------------------------------------------------------------------
 protected:
-  //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci zdjêcia
-  //! powinien prze³adowaæ tê metodê.
+  //! JeÅ¼eli strumieÅ„ jest w stanie zaprezentowaÄ‡ ramkÄ™ w postaci zdjÄ™cia
+  //! powinien przeÅ‚adowaÄ‡ tÄ™ metodÄ™.
   //! \param dst
   virtual bool getData(PictureLayered & dst);
 
 //------------------------------------------------------------------------------
 private:
-  //! Pomija ramki a¿ dotrze do zadanego czasu.
-  //! Jeœli po wywo³aniu tej funkcji warunek frameTimestamp >= targetTimestamp nie jest spe³niony
-  //! strumieñ znajduje siê w nieokreœlonym stanie i trzeba rêcznie ustawiæ jego pozycjê metod¹
+  //! Pomija ramki aÅ¼ dotrze do zadanego czasu.
+  //! JeÅ›li po wywoÅ‚aniu tej funkcji warunek frameTimestamp >= targetTimestamp nie jest speÅ‚niony
+  //! strumieÅ„ znajduje siÄ™ w nieokreÅ›lonym stanie i trzeba rÄ™cznie ustawiÄ‡ jego pozycjÄ™ metodÄ…
   //! seekToKeyframe.
   bool skipFramesToTimestamp( int64_t targetTimestamp, int maxFramesToSkip, bool stopOnKeyframe );
   //! Przechodzi do wybranego miejsca w strumieniu.
   bool seekToKeyframe(int64_t timestamp, bool pickNextFrame);
-  //! Odczytuje klatkê z bie¿¹cej pozycji w strumieniu.
+  //! Odczytuje klatkÄ™ z bieÅ¼Ä…cej pozycji w strumieniu.
   bool readFrame();
   //!
   void alignPacket(AVPacket * packet);
@@ -172,12 +172,12 @@ private:
   inline double timestampToSec( int64_t timestamp ) const;
   //!
   inline int64_t secToTimestap( double time ) const;
-  //! Czy bie¿¹ca klatka jest kluczowa?
+  //! Czy bieÅ¼Ä…ca klatka jest kluczowa?
   inline bool isKeyframe() const;
 
   //!
   bool init(const std::string& source, int wantedVideoStream = -1);
-  //! Wewnêtrzny callback wywo³ywany w momencie kiedy uda siê zdekodowaæ ramkê.
+  //! WewnÄ™trzny callback wywoÅ‚ywany w momencie kiedy uda siÄ™ zdekodowaÄ‡ ramkÄ™.
   void onGotFrame(AVFrame * frame, int64_t timestamp);
 };
 

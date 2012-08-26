@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include <utils/Debug.h>
 #include "DataProcessorManager.h"
 
@@ -14,7 +14,7 @@ DataProcessorManager::DataProcessorManager()
 
 DataProcessorManager::~DataProcessorManager()
 {
-    UTILS_ASSERT(dataProcessors.empty(), "Wszystkie elementy przetwarzaj¹ce powinny byæ zniszczone.");
+    UTILS_ASSERT(dataProcessors.empty(), "Wszystkie elementy przetwarzajÄ…ce powinny byÄ‡ zniszczone.");
     while (prototypes.size()) {
         prototypes.pop_back();
     }

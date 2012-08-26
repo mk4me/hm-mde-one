@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:    2010/07/15
 	created:    15:7:2010     8:50
 	filename: Pool.h
@@ -19,30 +19,30 @@ namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Typ przechowuj¹cy obiekty dowolnych typów w wewnêtrznym buforze.
+ *	Typ przechowujÄ…cy obiekty dowolnych typÃ³w w wewnÄ™trznym buforze.
  */
 class Pool
 {
 private:
-    //! Makro definiuj¹ce typ Align1st
+    //! Makro definiujÄ…ce typ Align1st
     #define UTILS_POOL_ALIGNS1(type1) \
         typedef AlignToType<0, type1> Align1st
-    //! Makro definiuj¹ce typ Align1st i Align2nd
+    //! Makro definiujÄ…ce typ Align1st i Align2nd
     #define UTILS_POOL_ALIGNS2(type1, type2) \
         UTILS_POOL_ALIGNS1(type1);\
         typedef AlignToType<Align1st::value + sizeof(type1), type2> Align2nd
-    //! Makro definiuj¹ce typ Align1st, Align2nd i Align3rd
+    //! Makro definiujÄ…ce typ Align1st, Align2nd i Align3rd
     #define UTILS_POOL_ALIGNS3(type1, type2, type3) \
         UTILS_POOL_ALIGNS2(type1, type2);\
         typedef AlignToType<Align2nd::value + sizeof(type2), type3> Align3rd
 
-    //! Interfejs obiektu zdolnego wywo³ywaæ destruktory innych obiektów.
+    //! Interfejs obiektu zdolnego wywoÅ‚ywaÄ‡ destruktory innych obiektÃ³w.
     class DestructorCaller
     {
     public:
         //! Pusty polimorficzny destruktor.
         virtual ~DestructorCaller() {}
-        //! \param addr Adres jakiegoœ obiektu.
+        //! \param addr Adres jakiegoÅ› obiektu.
         virtual void destroy(unsigned char * addr) = 0;
     };
 
@@ -58,7 +58,7 @@ private:
         }
     };
 
-    //! Implementacja interfejsu dla dwóch sekwencyjnie u³o¿onych typów.
+    //! Implementacja interfejsu dla dwÃ³ch sekwencyjnie uÅ‚oÅ¼onych typÃ³w.
     template <class T1, class T2>
     class Destructor2 : public Destructor1<T1>
     {
@@ -71,7 +71,7 @@ private:
         }
     };
 
-    //! Implementacja interfejsu dla trzech sekwencyjnie u³o¿onych typów.
+    //! Implementacja interfejsu dla trzech sekwencyjnie uÅ‚oÅ¼onych typÃ³w.
     template <class T1, class T2, class T3>
     class Destructor3 : public Destructor2<T1, T2>
     {
@@ -107,7 +107,7 @@ private:
     DestructorCaller * destructor;
 
 public:
-    //! Konstruktor ustawiaj¹cy parametry.
+    //! Konstruktor ustawiajÄ…cy parametry.
     //! \param sender
     Pool() :
         destructor(NULL)
@@ -120,8 +120,8 @@ public:
     template <class T1>
     Pool(const T1 & data)
     {
-        // tworzymy kopiê w naszych surowych danych
-        // jeœli wyst¹pi b³¹d oznacza to, ¿e rozmiar struktury jest wiêkszy ni¿ rozmiar bufora
+        // tworzymy kopiÄ™ w naszych surowych danych
+        // jeÅ›li wystÄ…pi bÅ‚Ä…d oznacza to, Å¼e rozmiar struktury jest wiÄ™kszy niÅ¼ rozmiar bufora
         UTILS_POOL_ALIGNS1(T1);
         UTILS_STATIC_ASSERT(Align1st::value+sizeof(T1)<=sizeof(rawData), "Overflow");
         new (rawData + Align1st::value) T1(data);
@@ -133,8 +133,8 @@ public:
     template <class T1, class T2>
     Pool(const T1 & data1, const T2 & data2)
     {
-        // tworzymy kopiê w naszych surowych danych
-        // jeœli wyst¹pi b³¹d oznacza to, ¿e rozmiar struktury jest wiêkszy ni¿ rozmiar bufora
+        // tworzymy kopiÄ™ w naszych surowych danych
+        // jeÅ›li wystÄ…pi bÅ‚Ä…d oznacza to, Å¼e rozmiar struktury jest wiÄ™kszy niÅ¼ rozmiar bufora
         UTILS_POOL_ALIGNS2(T1, T2);
         UTILS_STATIC_ASSERT(Align2nd::value+sizeof(T2)<=sizeof(rawData), "Overflow");
         new (rawData+Align1st::value) T1(data1);
@@ -147,8 +147,8 @@ public:
     template <class T1, class T2, class T3>
     Pool(const T1 & data1, const T2 & data2, const T3 & data3)
     {
-        // tworzymy kopiê w naszych surowych danych
-        // jeœli wyst¹pi b³¹d oznacza to, ¿e rozmiar struktury jest wiêkszy ni¿ rozmiar bufora
+        // tworzymy kopiÄ™ w naszych surowych danych
+        // jeÅ›li wystÄ…pi bÅ‚Ä…d oznacza to, Å¼e rozmiar struktury jest wiÄ™kszy niÅ¼ rozmiar bufora
         UTILS_POOL_ALIGNS3(T1, T2, T3);
         UTILS_STATIC_ASSERT(Align3rd::value+sizeof(T3)<=sizeof(rawData), "Overflow");
         new (rawData+Align1st::value) T1(data1);
@@ -163,8 +163,8 @@ public:
     template <class T, int Size>
     Pool(T (&data)[Size])
     {
-        // tworzymy kopiê w naszych surowych danych
-        // jeœli wyst¹pi b³¹d oznacza to, ¿e rozmiar struktury jest wiêkszy ni¿ rozmiar bufora
+        // tworzymy kopiÄ™ w naszych surowych danych
+        // jeÅ›li wystÄ…pi bÅ‚Ä…d oznacza to, Å¼e rozmiar struktury jest wiÄ™kszy niÅ¼ rozmiar bufora
         UTILS_STATIC_ASSERT(sizeof(T) * Size <= sizeof(rawData), "Overflow");
         for (int i = 0; i < Size; ++i) {
             new (rawData+i*sizeof(T)) T(data[i]);
@@ -182,8 +182,8 @@ public:
         }
     }
 
-    //! Pomocnicza funkcja. Zwraca referencjê do pierwszego parametru.
-    //! \param dummy Nie podawaæ nic tylko specjalizowaæ!
+    //! Pomocnicza funkcja. Zwraca referencjÄ™ do pierwszego parametru.
+    //! \param dummy Nie podawaÄ‡ nic tylko specjalizowaÄ‡!
     //! \return Referencja do pierwszego parametru.
     template <class T>
     T& getValue(T * dummy = NULL)
@@ -191,7 +191,7 @@ public:
         return *reinterpret_cast<T*>(rawData);
     }
 
-    //! Ustawia wskaŸnik na pierwszy parametr.
+    //! Ustawia wskaÅºnik na pierwszy parametr.
     //! \param value1
     template <class T1>
     void getValues(T1 *& value1)
@@ -200,7 +200,7 @@ public:
         value1 = reinterpret_cast<T1*>(rawData+Align1st::value);
     }
 
-    //! Ustawia wskaŸniki na dwa parametry.
+    //! Ustawia wskaÅºniki na dwa parametry.
     //! \param value1
     //! \param value2
     template <class T1, class T2>
@@ -211,7 +211,7 @@ public:
         value2 = reinterpret_cast<T2*>(rawData+Align2nd::value);
     }
 
-    //! Ustawia wskaŸniki na dwa parametry.
+    //! Ustawia wskaÅºniki na dwa parametry.
     //! \param value1
     //! \param value2
     //! \param value3

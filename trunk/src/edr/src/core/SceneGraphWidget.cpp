@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+Ôªø#include "CorePCH.h"
 #include "SceneGraphWidget.h"
 #include <core/OsgSceneDump.h>
 #include <core/StringTools.h>
@@ -60,7 +60,7 @@ void SceneGraphWidget::setCurrentVisualizer( int index )
 
 void SceneGraphWidget::addVisualizer( Visualizer* visualizer )
 {
-    // ustalenie parametrÛw...
+    // ustalenie parametr√≥w...
     QString name = core::toQString(visualizer->getName());
     QVariant userData = qVariantFromValue(visualizer);
 
@@ -77,5 +77,5 @@ void SceneGraphWidget::removeVisualizer( Visualizer* visualizer )
             return;
         }
     }
-    UTILS_FAIL("Nie powinien tutaj wejúc.");
+    UTILS_FAIL("Nie powinien tutaj wej≈õc.");
 }

@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include "VisualizerManager.h"
 #include <plugins/newTimeline/ITimelineService.h>
 #include "ServiceManager.h"
@@ -21,7 +21,7 @@ VisualizerManager::VisualizerManager() //:
 
 VisualizerManager::~VisualizerManager()
 {
-    UTILS_ASSERT(visualizers.empty(), "Wszystkie wizualizatory powinny byæ zniszczone.");
+    UTILS_ASSERT(visualizers.empty(), "Wszystkie wizualizatory powinny byÄ‡ zniszczone.");
     while (prototypes.size()) {
         prototypes.pop_back();
     }
@@ -31,9 +31,9 @@ VisualizerManager::~VisualizerManager()
 
     std::vector< IVisualizerPersistantData* >().swap(visualizersData);
 
-    UTILS_ASSERT(visualizerChannels.empty(), "Wszystkie kana³y czasowe wizualizatorów powinny byæ zniszczone.");
+    UTILS_ASSERT(visualizerChannels.empty(), "Wszystkie kanaÅ‚y czasowe wizualizatorÃ³w powinny byÄ‡ zniszczone.");
 
-    //// zwalniamy wszystkie pozosta³e kana³y poniewa¿ nie mamy ju¿ ¿adnego wizualizatora
+    //// zwalniamy wszystkie pozostaÅ‚e kanaÅ‚y poniewaÅ¼ nie mamy juÅ¼ Å¼adnego wizualizatora
     //BOOST_FOREACH( IVisualizerChannel* channel, visualizerChannels ) {
     //    channel->releaseChannel();
     //}
@@ -118,9 +118,9 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
         if(visualizerInputInfo.empty() == true){
             LOG_WARNING("Visualizer " << visualizer->getName() << " ID = " << visualizer->getID() << " does not support minimum one data type! NOT registered in application");
         }else{
-			// wype³niamy mape, dziêki której mozemy ³atwo stworzyæ wizualizator na postawie typu
+			// wypeÅ‚niamy mape, dziÄ™ki ktÃ³rej mozemy Å‚atwo stworzyÄ‡ wizualizator na postawie typu
 			for (auto it = visualizerInputInfo.begin(); it != visualizerInputInfo.end(); ++it) {
-				// TODO : co w przypadku, gdy mamy wiele wizualizatorów obs³uguj¹cych ten sam typ
+				// TODO : co w przypadku, gdy mamy wiele wizualizatorÃ³w obsÅ‚ugujÄ…cych ten sam typ
 				mapType2ID[it->type] = visualizer->getID();
 			}
 
@@ -211,7 +211,7 @@ void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
 		}
 	}
 
-	//teraz próbuje usuwaæ serie danych z wizualizatora
+	//teraz prÃ³buje usuwaÄ‡ serie danych z wizualizatora
 	visualizerChannels[channelIT->second.visualzier].erase(channelIT->first);
 
 	if(visualizerChannels[channelIT->second.visualzier].empty() == true){
@@ -286,20 +286,20 @@ const void * VisualizerManager::createChannel(const std::vector<core::Visualizer
 
 void VisualizerManager::removeChannel(const void * channel)
 {
-	//sprawdzam czy jest taki kana³
+	//sprawdzam czy jest taki kanaÅ‚
 	auto channelIT = channels.find((IVisualizerChannel*)channel);
 	if(channelIT == channels.end()){
-		//jeœli nie ma to wychodzimy
+		//jeÅ›li nie ma to wychodzimy
 		return;
 	}
 
-	//w³aœciwa próba usuniêcia kana³u z wizualizatora i timeline
+	//wÅ‚aÅ›ciwa prÃ³ba usuniÄ™cia kanaÅ‚u z wizualizatora i timeline
 	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
 	bool removed = false;
 	if(timeline != nullptr) {
 
 		try{
-			//oczekuje ¿e destuktor kana³u zrobi resztê wywo³uj¹c notifyDestroyed
+			//oczekuje Å¼e destuktor kanaÅ‚u zrobi resztÄ™ wywoÅ‚ujÄ…c notifyDestroyed
 			timeline->removeChannel(channelIT->second.path);
 			removed = true;
 		}catch(std::runtime_error & e){
@@ -322,12 +322,12 @@ void VisualizerManager::removeChannel(const void * channel)
 
 void VisualizerManager::removeAllChannels()
 {
-	//w³aœciwa próba usuniêcia kana³u z wizualizatora i timeline
+	//wÅ‚aÅ›ciwa prÃ³ba usuniÄ™cia kanaÅ‚u z wizualizatora i timeline
 	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
 	if(timeline != nullptr) {
 		for(auto channelIT = channels.begin(); channelIT != channels.end(); ++channelIT){
 			try{
-				//oczekuje ¿e destuktor kana³u zrobi resztê wywo³uj¹c notifyDestroyed
+				//oczekuje Å¼e destuktor kanaÅ‚u zrobi resztÄ™ wywoÅ‚ujÄ…c notifyDestroyed
 				timeline->removeChannel(channelIT->second.path);
 			}catch(std::runtime_error & e){
 				LOG_WARNING("Could not remove channel from timeline because: " << e.what());
@@ -343,10 +343,10 @@ void VisualizerManager::removeAllChannels()
 
 void VisualizerManager::markAsRemovedFromVisualizer(const void * channel)
 {
-	//sprawdzam czy jest taki kana³
+	//sprawdzam czy jest taki kanaÅ‚
 	auto channelIT = channels.find((IVisualizerChannel*)channel);
 	if(channelIT == channels.end()){
-		//jeœli nie ma to wychodzimy
+		//jeÅ›li nie ma to wychodzimy
 		return;
 	}
 

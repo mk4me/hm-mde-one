@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+Ôªø#include "CorePCH.h"
 #include "EDRConfig.h"
 #include <core/PluginCommon.h>
 #include <utils/Debug.h>
@@ -7,8 +7,8 @@
 #ifdef WIN32
 #include <Windows.h>
 //#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
-// Od Visty dodawane sπ przedrostki typu Wow6432Node do sciezki w rejestrach
-// adres podawany do oczytu klucza powinien byÊ automatycznie konwertowany.
+// Od Visty dodawane sƒÖ przedrostki typu Wow6432Node do sciezki w rejestrach
+// adres podawany do oczytu klucza powinien byƒá automatycznie konwertowany.
 #define KEY_PATH TEXT("Software\\PJWSTK\\EDR")
 #endif
 
@@ -75,18 +75,18 @@ EDRConfig* EDRConfig::getInstance()
 	return static_cast<EDRConfig*>(getPathInterface());
 }
 
-//! sprawdza czy katalog dla danych tymczasowych istnieje, jeúli nie tworzy go
+//! sprawdza czy katalog dla danych tymczasowych istnieje, je≈õli nie tworzy go
 void EDRConfig::ensureTempDirectory() const
 {
-    //sprawdzamy czy katalog dla danych tymczasowych istnieje - jeúli nie tworzymy go
+    //sprawdzamy czy katalog dla danych tymczasowych istnieje - je≈õli nie tworzymy go
     if(Filesystem::pathExists(getTmpPath()) == false){
         Filesystem::createDirectory(getTmpPath());
     }
 }
-//! czyúci katalog danych tymczasowych przy zamykaniu aplikacji
+//! czy≈õci katalog danych tymczasowych przy zamykaniu aplikacji
 void EDRConfig::clearTempDirectory() const
 {
-    //sprawdzamy czy katalog dla danych tymczasowych istnieje - jeúli nie tworzymy go
+    //sprawdzamy czy katalog dla danych tymczasowych istnieje - je≈õli nie tworzymy go
     if(Filesystem::pathExists(getTmpPath()) == true){
         Filesystem::deleteDirectory(getTmpPath());
     }

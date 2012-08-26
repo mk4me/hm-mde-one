@@ -1,12 +1,12 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/05/12
     created:  12:5:2011   15:21
     filename: Synchronized.h
     author:   Mateusz Janiak
     
-    purpose:  Klasa do zapewniania synchronizacji na poziomie obiektów.
-                By wykonaæ operacje na obiekcie nale¿y wykonaæ na nim LOCK(x) { blok instrukcji }
-                lub pos³u¿yc siê typem lokuj¹cym dany obiekt na czas swojego ¿ycia - _Locker
+    purpose:  Klasa do zapewniania synchronizacji na poziomie obiektÃ³w.
+                By wykonaÄ‡ operacje na obiekcie naleÅ¼y wykonaÄ‡ na nim LOCK(x) { blok instrukcji }
+                lub posÅ‚uÅ¼yc siÄ™ typem lokujÄ…cym dany obiekt na czas swojego Å¼ycia - _Locker
 
                 Koncepcja pochodzi ze storny: http://tlzprgmr.wordpress.com/2008/08/10/adding-a-lock-statement-to-c/
 *********************************************************************/

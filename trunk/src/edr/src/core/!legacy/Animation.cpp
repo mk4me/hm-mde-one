@@ -1,4 +1,4 @@
-#include "Animation.h"
+﻿#include "Animation.h"
 
 #include "ServiceManager.h"
 #include "AnimationService.h"
@@ -130,7 +130,7 @@ double Animation::MoveToProperPart(CAnimationGroup* ag)
     if(_isStartAnimation)
     {
         // sprawdzenie pierwszego noda - i odjecie wartosci.  porzebne do przesuniecia czasu - poniewaz
-        // nie kazda animacja zaczyna sie od czasu r�wnego 0.
+        // nie kazda animacja zaczyna sie od czasu równego 0.
         _firstNodeTime = ag->getActNode()->GetTime();
 
         _length -= _firstNodeTime;

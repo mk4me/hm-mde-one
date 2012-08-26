@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/10/18
 	created:	18:10:2011   8:58
 	filename: 	ConfigurationPainter.h
@@ -18,7 +18,7 @@
 #include <QtGui/QPainter>
 #include "ConfigurationPainterAreas.h"
 
-//! klasa odpowiada za wyœwietlenie graficznego konfiguratora
+//! klasa odpowiada za wyÅ›wietlenie graficznego konfiguratora
 class ConfigurationPainter : public QWidget
 {
     Q_OBJECT;
@@ -26,16 +26,16 @@ public:
     ConfigurationPainter(QWidget* parent);
 
 public:
-    //! lista rysowanych obszarów
+    //! lista rysowanych obszarÃ³w
     typedef std::list<IAreaPtr> AreasList;
     //! 
     typedef std::map<QString, std::pair<QString, QString>> NamesDictionary;
 public:
-    //! \return obrazek z t³em
+    //! \return obrazek z tÅ‚em
     QPixmapConstPtr getBackground() const { return background; }
     //! \return nazwa paintera
     const QString& getName() const { return name; }
-    //! ustawia obrazek z t³em
+    //! ustawia obrazek z tÅ‚em
     //! \param name nazwa obrazka
     //! \param val pixmapa z obrazkiem
     void setBackground(const QString& name, const QPixmapConstPtr & val) { this->name = name; background = val; }
@@ -45,19 +45,19 @@ public:
     //! usuwa obszar (marker lub obrazek) z paintera
     //! \param name nazwa obszaru
     void removeArea(const QString& name);
-    //! \return niemodyfikowalny iterator wskazuj¹cy pocz¹tek kolekcji obszarów
+    //! \return niemodyfikowalny iterator wskazujÄ…cy poczÄ…tek kolekcji obszarÃ³w
     AreasList::const_iterator begin() const { return areas.cbegin(); }
-    //! \return niemodyfikowalny iterator wskazuj¹cy koniec kolekcji obszarów
+    //! \return niemodyfikowalny iterator wskazujÄ…cy koniec kolekcji obszarÃ³w
     AreasList::const_iterator end() const { return areas.cend(); }
-    //! \return iterator wskazuj¹cy pocz¹tek kolekcji obszarów
+    //! \return iterator wskazujÄ…cy poczÄ…tek kolekcji obszarÃ³w
     AreasList::iterator begin() { return areas.begin(); }
-    //! \return iterator wskazuj¹cy koniec kolekcji obszarów
+    //! \return iterator wskazujÄ…cy koniec kolekcji obszarÃ³w
     AreasList::iterator end() { return areas.end(); }
-    //! jeœli obszar o danej nazwie jest w painterze, to staje siê lub przestaje byæ aktywny
+    //! jeÅ›li obszar o danej nazwie jest w painterze, to staje siÄ™ lub przestaje byÄ‡ aktywny
     //! \param name nazwa elementu
-    //! \param selected czy ma byæ lub przestaæ byæ aktywny
+    //! \param selected czy ma byÄ‡ lub przestaÄ‡ byÄ‡ aktywny
     void trySetActive( const QString& name, bool selected );
-    //! Iloczyn zbiorów nazw dostarczonych przez konfigurator i nazw obs³ugiwanych (nazw dostêpnych obszarów)
+    //! Iloczyn zbiorÃ³w nazw dostarczonych przez konfigurator i nazw obsÅ‚ugiwanych (nazw dostÄ™pnych obszarÃ³w)
     //! \param names zbior do porownania (brany jest pod uwage tylko pierwszy element wpisu mapy)
     void intersectNames( const NamesDictionary& names );
     //! \return globalna skala dla paintera
@@ -67,46 +67,46 @@ public:
     void setScale(float val);
 
 signals:
-    //! obszar zosta³ najechany myszk¹
+    //! obszar zostaÅ‚ najechany myszkÄ…
     //! \param name nazwa obszaru
-    //! \param selected czy zosta³ lub przesta³ byæ zaznaczony
+    //! \param selected czy zostaÅ‚ lub przestaÅ‚ byÄ‡ zaznaczony
     void elementHovered(const QString& name, bool selected);
-    //! obszar zosta³ klikniêty myszk¹
+    //! obszar zostaÅ‚ klikniÄ™ty myszkÄ…
     //! \param name nazwa obszaru
-    //! \param selected czy sta³ siê lub przesta³ byæ aktywny
+    //! \param selected czy staÅ‚ siÄ™ lub przestaÅ‚ byÄ‡ aktywny
     void elementSelected(const QString& name, bool selected);
 
 protected:
-    //! obs³uga ruchu myszki
+    //! obsÅ‚uga ruchu myszki
     //! \param event
     virtual void mouseMoveEvent ( QMouseEvent * event );
-    //! obs³uga naciœniêcia przycisku myszki
+    //! obsÅ‚uga naciÅ›niÄ™cia przycisku myszki
     //! \param event
     virtual void mousePressEvent ( QMouseEvent * event );
-    //! obs³uga zwolnienia przycisku myszki
+    //! obsÅ‚uga zwolnienia przycisku myszki
     //! \param event
     virtual void mouseReleaseEvent ( QMouseEvent * event );
     //! odrysowanie konfiguratora
     //! \param *
     virtual void paintEvent(QPaintEvent *);
-    //! filtruje zdarzenia zwi¹zane z ruchem myszki
+    //! filtruje zdarzenia zwiÄ…zane z ruchem myszki
     //! \param obj
     //! \param event
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-    //! pobiera arene na podstawie wspó³rzêdnych (w przypadku obrazków uwzglêdniana jest tez alpha)
-    //! \param x wspó³rzêdna x
-    //! \param y wspó³rzêdna y
-    //! \return obszar wystepuj¹cy w punkcie lub null jeœli takiego nie ma. Jeœli wystepuje kilka takich obszarów to zwracany jest najbli¿szy
+    //! pobiera arene na podstawie wspÃ³Å‚rzÄ™dnych (w przypadku obrazkÃ³w uwzglÄ™dniana jest tez alpha)
+    //! \param x wspÃ³Å‚rzÄ™dna x
+    //! \param y wspÃ³Å‚rzÄ™dna y
+    //! \return obszar wystepujÄ…cy w punkcie lub null jeÅ›li takiego nie ma. JeÅ›li wystepuje kilka takich obszarÃ³w to zwracany jest najbliÅ¼szy
     IAreaPtr getArea(int x, int y);
 
 private:
-    //! t³o paintera
+    //! tÅ‚o paintera
     QPixmapConstPtr background;
     //! nazwa paintera
     QString name;
-    //! lista obszarów w painterze
+    //! lista obszarÃ³w w painterze
     AreasList areas;
     //! element aktualnie najechany myszka
     IAreaPtr currentArea;

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2011/02/22
 	created:  22:2:2011   8:35
 	filename: ChartSerie.h
@@ -13,7 +13,7 @@
 #include <utility>
 #include <osg/Geometry>
 
-//! Klasa bazowa dla serii danych wykresów.
+//! Klasa bazowa dla serii danych wykresÃ³w.
 class ChartSerie : public osg::Geometry
 {
 
@@ -28,7 +28,7 @@ protected:
     osg::Vec4 color;
 
 public:
-    //! Zeruj¹cy konstruktor.
+    //! ZerujÄ…cy konstruktor.
     ChartSerie();
 
     //! Pusty polimorficzny destruktor.
@@ -38,9 +38,9 @@ public:
 public:
     //! Generuje wykres na nowo.
     virtual void refresh() = 0;
-    //! \return Zakres wartoœci dla osi X.
+    //! \return Zakres wartoÅ›ci dla osi X.
     virtual std::pair<float, float> getXRange() const = 0;
-    //! \return Zakres wartoœci dla osi Y.
+    //! \return Zakres wartoÅ›ci dla osi Y.
     virtual std::pair<float, float> getYRange() const = 0;
     //! \return Jednostka dla osi X.
     virtual const std::string& getXUnit() const = 0;
@@ -56,34 +56,34 @@ public:
     virtual void setActive(bool active) = 0;
 
 public:
-    //! \return D³ugoœæ zakresu dla X.
+    //! \return DÅ‚ugoÅ›Ä‡ zakresu dla X.
     inline float getXLength() const
     {
         auto range = getXRange();
         return range.second - range.first;
     }
 
-    //! \return D³ugoœæ zakresu dla Y.
+    //! \return DÅ‚ugoÅ›Ä‡ zakresu dla Y.
     inline float getYLength() const
     {
         auto range = getYRange();
         return range.second - range.first;
     }
 
-    //! \return Maksymalna liczba wierzcho³ków per jednostka miary. Domyœlnie 1.
+    //! \return Maksymalna liczba wierzchoÅ‚kÃ³w per jednostka miary. DomyÅ›lnie 1.
     inline float getVerticesPerUnit() const
     { 
         return verticesPerUnit;
     }
-    //! \return Maksymalna liczba wierzcho³ków per jednostka miary. Domyœlnie 1.
+    //! \return Maksymalna liczba wierzchoÅ‚kÃ³w per jednostka miary. DomyÅ›lnie 1.
     void setVerticesPerUnit(float verticesPerUnit);
 
-    //! \return Czy wykres ma siê generowaæ na nowo przy ka¿dej zmianie property? Domyœlnie false.
+    //! \return Czy wykres ma siÄ™ generowaÄ‡ na nowo przy kaÅ¼dej zmianie property? DomyÅ›lnie false.
     inline bool isAutoRefresh() const
     { 
         return autoRefresh;
     }
-    //! \return Czy wykres ma siê generowaæ na nowo przy ka¿dej zmianie property? Domyœlnie false.
+    //! \return Czy wykres ma siÄ™ generowaÄ‡ na nowo przy kaÅ¼dej zmianie property? DomyÅ›lnie false.
     inline void setAutoRefresh(bool autoRefresh) 
     { 
         this->autoRefresh = autoRefresh; 
@@ -110,12 +110,12 @@ public:
         return osg::Vec2(w, h);
     }
 
-    //! \return Wspó³rzêdna z wykresu. Domyœlnie 0.
+    //! \return WspÃ³Å‚rzÄ™dna z wykresu. DomyÅ›lnie 0.
     inline float getZ() const
     { 
         return z;
     }
-    //! \return Wspó³rzêdna z wykresu. Domyœlnie 0.
+    //! \return WspÃ³Å‚rzÄ™dna z wykresu. DomyÅ›lnie 0.
     void setZ( float z );
 
     //! \return Kolor wykresu.
@@ -128,7 +128,7 @@ public:
     void setColor(const osg::Vec4& color);
     
 protected:
-    //! Tê metodê powinny wywo³ywaæ implementacje po modyfikacji którejœ
+    //! TÄ™ metodÄ™ powinny wywoÅ‚ywaÄ‡ implementacje po modyfikacji ktÃ³rejÅ›
     //! z propert.
     inline void tryRefresh()
     {

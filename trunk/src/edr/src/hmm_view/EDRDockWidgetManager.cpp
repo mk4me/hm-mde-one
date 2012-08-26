@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+ï»¿#include "hmmPCH.h"
 #include "EDRDockWidgetSet.h"
 #include "EDRDockWidgetManager.h"
 #include <QtGui/QTabWidget>
@@ -26,9 +26,9 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 		}
 
         //HACK!!
-        //TO POWINNO SIÊ DAæ STYLOWAæ - NIESTETY JEST TO UKRYTE PRZEZ QT
-        //TYLKO TAK MO¯NA USUN¥æ ODSTÊP POMIÊDZY QTabBar a Widgetem zwi¹zanym z aktualnym Tabem
-        //patrz równie¿: http://developer.qt.nokia.com/doc/qt-4.8/qstyleoptiontabbarbase.html
+        //TO POWINNO SIÄ˜ DAÄ‡ STYLOWAÄ‡ - NIESTETY JEST TO UKRYTE PRZEZ QT
+        //TYLKO TAK MOÅ»NA USUNÄ„Ä‡ ODSTÄ˜P POMIÄ˜DZY QTabBar a Widgetem zwiÄ…zanym z aktualnym Tabem
+        //patrz rÃ³wnieÅ¼: http://developer.qt.nokia.com/doc/qt-4.8/qstyleoptiontabbarbase.html
         // http://developer.qt.nokia.com/doc/qt-4.8/qstyleoptiontabbarbasev2.html#details
         // http://developer.qt.nokia.com/doc/qt-4.8/qstyle.html
         // http://developer.qt.nokia.com/doc/qt-4.8/qtabbar.html
@@ -77,8 +77,8 @@ void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
 
 void EDRDockWidgetManager::onSetClosed( QObject* object )
 {
-    // edr dock widget ju¿ nie isnieje, ale potrzebny jest nam tylko wskaŸnik,
-    // zeby usun¹æ obiekt z listy
+    // edr dock widget juÅ¼ nie isnieje, ale potrzebny jest nam tylko wskaÅºnik,
+    // zeby usunÄ…Ä‡ obiekt z listy
     EDRDockWidgetSet* set = reinterpret_cast<EDRDockWidgetSet*>(object);
     dockList.remove(set);
     generatedList.remove(set);

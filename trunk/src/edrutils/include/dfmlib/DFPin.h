@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__DFPIN_H__
+ï»¿#ifndef HEADER_GUARD__DFPIN_H__
 #define HEADER_GUARD__DFPIN_H__
 
 #include <dfmlib/Pin.h>
@@ -7,27 +7,27 @@
 namespace dflm {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa pinów œwiadomych istnienia danych i wymiany tych danych. Dzia³aj¹ z wêz³ami œwiadomymi danych - DFNode
+//! Klasa pinÃ³w Å›wiadomych istnienia danych i wymiany tych danych. DziaÅ‚ajÄ… z wÄ™zÅ‚ami Å›wiadomymi danych - DFNode
 class DFPin : public Pin
 {
 public:
 
     //! \param pinName nazwa pinu
-    //! \param required Czy pin jest wymagany? (dotyczy tylko pinów wejœciowych)
-    //! \param requiredPins Zbiór pinów od których jest uzale¿nione wystêpowanie informacji na danym pinie (dotyczy pinów wyjœciowych)
+    //! \param required Czy pin jest wymagany? (dotyczy tylko pinÃ³w wejÅ›ciowych)
+    //! \param requiredPins ZbiÃ³r pinÃ³w od ktÃ³rych jest uzaleÅ¼nione wystÄ™powanie informacji na danym pinie (dotyczy pinÃ³w wyjÅ›ciowych)
     DFPin(const std::string & pinName = std::string(), bool required = false,
         const ReqPinsSet & requiredPins = ReqPinsSet());
 
     //! Wirtualny destruktor
 	virtual ~DFPin(void);
 
-    //! \return Czy pin zosta³ zaktualizowany ( za³adowano mu dane )
+    //! \return Czy pin zostaÅ‚ zaktualizowany ( zaÅ‚adowano mu dane )
 	bool isUpdated() const;
 
-    //! Resetuje stan update pinu po przekazaniu danych (wêze³ wyjœciowy - do innego pina / wêze³ wejœciowy - do wêz³a przetwarzaj¹cego)
+    //! Resetuje stan update pinu po przekazaniu danych (wÄ™zeÅ‚ wyjÅ›ciowy - do innego pina / wÄ™zeÅ‚ wejÅ›ciowy - do wÄ™zÅ‚a przetwarzajÄ…cego)
 	void reset();
 
-    //! \return Czy dane w pinie s¹ gotowe do odczytu
+    //! \return Czy dane w pinie sÄ… gotowe do odczytu
 	void update();
 
     //! \param pin Pin do sprawdzenia czy jest typu DFPin
@@ -35,28 +35,28 @@ public:
 	static bool isDFPin(const CPinPtr & pin);
 
     //! \param pin Pin do konwertowania do typu DFPin
-    //! \return WskaŸnik do pinu typu DFPin lub nullptr (pusty wskaŸnik)
+    //! \return WskaÅºnik do pinu typu DFPin lub nullptr (pusty wskaÅºnik)
 	static DFPinPtr getDFPin(const PinPtr & pin);
 
     //! \param pin Pin do konwertowania do typu DFPin
-    //! \return WskaŸnik do pinu typu const DFPin lub nullptr (pusty wskaŸnik)
+    //! \return WskaÅºnik do pinu typu const DFPin lub nullptr (pusty wskaÅºnik)
     static CDFPinPtr getDFPin(const CPinPtr & pin);
 
 protected:
 
-    //! Metoda odpalana przy ka¿dym wywo³aniu update()
+    //! Metoda odpalana przy kaÅ¼dym wywoÅ‚aniu update()
 	virtual void onUpdate();
 
     virtual void onReset();
 
-    //! Metoda pozwalaj¹ca kopiowaæ dane pomiêdzy wêz³ami - kopiowanie inicjuje wêze³ wyjsciowy i wywo³uje t¹ metodê na wêŸle wejœciowym
-    //! Mechanizm ten przenosi odpowiedzialnoœæ kopiowania danych na wêze³ wejœciowy który mo¿e miesz szersz¹ funkcjonalnoœæ (kompatybilnoœæ typów) ni¿ wêze³ wyjœciowy
-    //! \param pin Pin z którego wêze³ wejsciowy powinien skopiowaæ dane
+    //! Metoda pozwalajÄ…ca kopiowaÄ‡ dane pomiÄ™dzy wÄ™zÅ‚ami - kopiowanie inicjuje wÄ™zeÅ‚ wyjsciowy i wywoÅ‚uje tÄ… metodÄ™ na wÄ™Åºle wejÅ›ciowym
+    //! Mechanizm ten przenosi odpowiedzialnoÅ›Ä‡ kopiowania danych na wÄ™zeÅ‚ wejÅ›ciowy ktÃ³ry moÅ¼e miesz szerszÄ… funkcjonalnoÅ›Ä‡ (kompatybilnoÅ›Ä‡ typÃ³w) niÅ¼ wÄ™zeÅ‚ wyjÅ›ciowy
+    //! \param pin Pin z ktÃ³rego wÄ™zeÅ‚ wejsciowy powinien skopiowaÄ‡ dane
 	virtual void copyDataFromPin(const DFPinPtr & pin);
 
 private:
 
-    //! Czy wêze³ zosta³ zaktualizowany - za³adowano nowe dane
+    //! Czy wÄ™zeÅ‚ zostaÅ‚ zaktualizowany - zaÅ‚adowano nowe dane
 	bool updated;
 };
 

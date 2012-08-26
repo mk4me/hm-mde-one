@@ -1,4 +1,4 @@
-#include <dfmlib/Pin.h>
+ï»¿#include <dfmlib/Pin.h>
 #include <dfmlib/Connection.h>
 #include <dfmlib/Node.h>
 #include <dfmlib/Model.h>
@@ -60,7 +60,7 @@ int Pin::getIndexOfConnection(const ConnPtr & connection) const
 
 const ConnPtr & Pin::getConnection(int idx) const
 {
-    UTILS_ASSERT((idx >= 0 && idx < static_cast<int>(connections.size())), "B³êdny indeks po³¹czenia");
+    UTILS_ASSERT((idx >= 0 && idx < static_cast<int>(connections.size())), "BÅ‚Ä™dny indeks poÅ‚Ä…czenia");
     return connections[idx];
 }
 

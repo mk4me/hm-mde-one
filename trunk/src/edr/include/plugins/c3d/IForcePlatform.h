@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/03/23
 	created:	23:3:2012   10:37
 	filename: 	ForcePlatform.h
@@ -15,24 +15,24 @@
 #include <core/SmartPtr.h>
 #include <plugins/c3d/C3DChannels.h>
 
-//! Interfejs platformy GRF, obiekty tego typu zasilaj¹ system
+//! Interfejs platformy GRF, obiekty tego typu zasilajÄ… system
 class IForcePlatform
 {
 public:
-    //! Interfejs wykrytego kroku na p³ycie pomiarowej.
-    //! W tym przypadku jako krok, bierze siê moment, w którym ca³a stopa spoczywa na p³ycie pomiarowej
+    //! Interfejs wykrytego kroku na pÅ‚ycie pomiarowej.
+    //! W tym przypadku jako krok, bierze siÄ™ moment, w ktÃ³rym caÅ‚a stopa spoczywa na pÅ‚ycie pomiarowej
     class IStep {
         public:
             virtual ~IStep() {}
-            //! \return czas rozpoczêcia kroku
+            //! \return czas rozpoczÄ™cia kroku
             virtual float getStartTime() const = 0;
-            //! \return czas zakoñczenia kroku
+            //! \return czas zakoÅ„czenia kroku
             virtual float getEndTime() const = 0;
-            //! \return punkt, w którym znajduje siê koniec stopy (piêta)
+            //! \return punkt, w ktÃ³rym znajduje siÄ™ koniec stopy (piÄ™ta)
             virtual osg::Vec3 getStartPoint() const = 0;
-            //! \return punkt, w którym znajduje siê pocz¹tek stopy (palce)
+            //! \return punkt, w ktÃ³rym znajduje siÄ™ poczÄ…tek stopy (palce)
             virtual osg::Vec3 getEndPoint() const = 0;
-            //! \return czy dane zawarte w klasie s¹ poprawne
+            //! \return czy dane zawarte w klasie sÄ… poprawne
             virtual bool isValid() const = 0;
     };
     typedef core::shared_ptr<IStep> IStepPtr;
@@ -40,11 +40,11 @@ public:
 
     //! wektor z krokami
     typedef std::vector<IStepConstPtr> Steps;
-    //! niemodyfikowalny zakres kroków z kolekcji
+    //! niemodyfikowalny zakres krokÃ³w z kolekcji
     typedef boost::iterator_range<Steps::const_iterator> StepsConstRange;
-    //! wektor z kana³ami GRF
+    //! wektor z kanaÅ‚ami GRF
     typedef std::vector<GRFChannelConstPtr> GRFChannels;
-    //! niemodyfikowalny zakres kana³ów GRF
+    //! niemodyfikowalny zakres kanaÅ‚Ã³w GRF
     typedef boost::iterator_range<GRFChannels::const_iterator> GRFChannelsConstRange;
 
 public:
@@ -53,25 +53,25 @@ public:
 public:
     //! \return wykryte kroki (w rozumieniu IStep)
     virtual StepsConstRange getSteps() const = 0;
-    //! \return œrodek p³yty pomiarowej
+    //! \return Å›rodek pÅ‚yty pomiarowej
     virtual osg::Vec3 getCenter() const = 0;
-    //! \return szerokoœæ p³yty pomiarowej
+    //! \return szerokoÅ›Ä‡ pÅ‚yty pomiarowej
     virtual float getWidth() const = 0;
-    //! \return d³ugoœæ p³yty pomiarowej
+    //! \return dÅ‚ugoÅ›Ä‡ pÅ‚yty pomiarowej
     virtual float getLength() const = 0;
-    //! Metoda pozwala okreœliæ orientacje p³yty pomiarowej
-    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (lewy prawy = 1, prawy lewy = -1)
+    //! Metoda pozwala okreÅ›liÄ‡ orientacje pÅ‚yty pomiarowej
+    //! \return kolejnoÅ›Ä‡ wystÄ…pienia wierzchoÅ‚kÃ³w (lewy prawy = 1, prawy lewy = -1)
     virtual float getSignX() const = 0;
-    //! Metoda pozwala okreœliæ orientacje p³yty pomiarowej
-    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (góra dol = 1, dol góra = -1)
+    //! Metoda pozwala okreÅ›liÄ‡ orientacje pÅ‚yty pomiarowej
+    //! \return kolejnoÅ›Ä‡ wystÄ…pienia wierzchoÅ‚kÃ³w (gÃ³ra dol = 1, dol gÃ³ra = -1)
     virtual float getSignY() const = 0;
-    //! \return kana³ z odpowiadaj¹ca p³ycie si³a
+    //! \return kanaÅ‚ z odpowiadajÄ…ca pÅ‚ycie siÅ‚a
     virtual GRFChannelConstPtr getForceChannel() const = 0;
-    //! \return kana³ z odpowiadaj¹ca p³ycie momentem si³y
+    //! \return kanaÅ‚ z odpowiadajÄ…ca pÅ‚ycie momentem siÅ‚y
     virtual GRFChannelConstPtr getMomentChannel() const = 0;
-    //! Metoda liczy odleg³oœæ danego punktu od srodka p³yty pomiarowej
+    //! Metoda liczy odlegÅ‚oÅ›Ä‡ danego punktu od srodka pÅ‚yty pomiarowej
     //! \param vec dany punkt
-    //! \return zmierzona odleg³oœæ
+    //! \return zmierzona odlegÅ‚oÅ›Ä‡
     float getDistanceToCenter(const osg::Vec3& vec) const {
         return (getCenter() - vec).length();
     }

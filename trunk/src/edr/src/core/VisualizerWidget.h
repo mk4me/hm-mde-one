@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2011/03/10
 	created:  10:3:2011   17:15
 	filename: VisualizerWidget.h
@@ -59,14 +59,14 @@ private:
     QLabel *label;
     QComboBox *comboType;
 
-    //! Bie¿¹cy wizualizator.
+    //! BieÅ¼Ä…cy wizualizator.
     VisualizerPtr visualizer;
     //customowe elementu titlebara dla danego wizualizatora
     InnerVisualizerElements visualizerCommonElements;
     ActionsGroupManager visualizerCommonElementsOrder;
     ActionsGroupManager visualizerImplementationCustomElements;
 
-    //! Menu do wyboru Ÿróde³.
+    //! Menu do wyboru ÅºrÃ³deÅ‚.
     QMenu* menuSource;
 
     QWidget * visualizerWidget;
@@ -84,7 +84,7 @@ private:
 	bool autoRefreshInputs_;
 
 public:
-    //! Zeruj¹cy konstruktor.
+    //! ZerujÄ…cy konstruktor.
     //! \param parent
     //! \param flags
     VisualizerWidget(QWidget* parent = nullptr, Qt::WindowFlags flags = 0, bool autoRefreshInputs = true);
@@ -94,26 +94,26 @@ public:
     VisualizerWidget(const VisualizerPtr& source, QWidget* parent = nullptr, Qt::WindowFlags flags = 0, bool autoRefreshInputs = true);
         
             
-    //! Zapewnia mo¿liwoœæ kasowanie widgeta wizualizatora przez jego implementacjê.
+    //! Zapewnia moÅ¼liwoÅ›Ä‡ kasowanie widgeta wizualizatora przez jego implementacjÄ™.
     ~VisualizerWidget();
         
 public:
 
     //-------------------------- Old VisualizerTitleBar methods -------------------------------------------
-    //! Dodaje wizualizator do listy obs³ugiwanych.
+    //! Dodaje wizualizator do listy obsÅ‚ugiwanych.
     void addVisualizer(const QString& label, UniqueID id);
-    //! Dodaje wizualizator do listy obs³ugiwanych.
+    //! Dodaje wizualizator do listy obsÅ‚ugiwanych.
     void addVisualizer(const QIcon& icon, const QString& label, UniqueID id);
 
-    //! \return Liczba zarejestrowanych wizualizatorów.
+    //! \return Liczba zarejestrowanych wizualizatorÃ³w.
     int getNumVisualizers() const;
     //! Usuwa wszystkie wizualizatory.
     void removeAllVisualizers();
 
-    //! Przywraca stan pocz¹tkowy.
+    //! Przywraca stan poczÄ…tkowy.
     void clearCurrentVisualizer();
 
-    //! \return Bie¿¹cy wizualizator.
+    //! \return BieÅ¼Ä…cy wizualizator.
     inline VisualizerPtr getCurrentVisualizer()
     {
         return visualizer;
@@ -150,11 +150,11 @@ private slots:
 
     void removeAllSeries();    
 
-    //! \param id Id bie¿¹cego wizualizatora.
+    //! \param id Id bieÅ¼Ä…cego wizualizatora.
     void setCurrentVisualizer(UniqueID id);
-    //! \param visualizer Bie¿¹cy wizualizator.
+    //! \param visualizer BieÅ¼Ä…cy wizualizator.
     void setCurrentVisualizer(const VisualizerPtr& visualizer);
-    //! \param idx Indeks bie¿¹cego wizualizatora.
+    //! \param idx Indeks bieÅ¼Ä…cego wizualizatora.
     void setCurrentVisualizer(int idx);
 
     //! 

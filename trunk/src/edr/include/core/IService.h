@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/19
     created:  19:4:2011   11:39
     filename: IService.h
@@ -26,48 +26,48 @@ namespace core
     public:
         virtual ~IService() {}
  
-        //! Inicjalizacja us³ugi. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
-        //! (nie zainicjalizowaniu!) wszystkich us³ug.
+        //! Inicjalizacja usÅ‚ugi. NastÄ™puje juÅ¼ po wczytaniu pluginÃ³w i skonstruowaniu
+        //! (nie zainicjalizowaniu!) wszystkich usÅ‚ug.
         virtual void init(IManagersAccessor * managersAccessor) = 0;
 
-        //! Póxna inicjalizacja us³ug, nastêpuje po wczytaniu i inicjalizacji wszystkich us³ug
+        //! PÃ³xna inicjalizacja usÅ‚ug, nastÄ™puje po wczytaniu i inicjalizacji wszystkich usÅ‚ug
         virtual void lateInit()
         {
 
         }
 
-        //! Metoda powinna w bezpieczny sposób zwalniac zasoby, maj¹c na uwadze ¿e niekoniecznie wszystkie us³ugi i zasoby pobrane z zewn¹trz s¹ jeszcze dostêpne.
-        //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomi³ serwis, mo¿e tez zwalniac pamieæ przydzielon¹ dynamicznie
-        //! Generalnie to taki bezpieczny destruktor uniezale¿niaj¹cy dana us³ugê od pozosta³ych us³ug i przygotowuj¹cy ja na usuniêcie
+        //! Metoda powinna w bezpieczny sposÃ³b zwalniac zasoby, majÄ…c na uwadze Å¼e niekoniecznie wszystkie usÅ‚ugi i zasoby pobrane z zewnÄ…trz sÄ… jeszcze dostÄ™pne.
+        //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, ktÃ³re uruchomiÅ‚ serwis, moÅ¼e tez zwalniac pamieÄ‡ przydzielonÄ… dynamicznie
+        //! Generalnie to taki bezpieczny destruktor uniezaleÅ¼niajÄ…cy dana usÅ‚ugÄ™ od pozostaÅ‚ych usÅ‚ug i przygotowujÄ…cy ja na usuniÄ™cie
         virtual void finalize()
         {
 
         }
 
-        //! Metoda aktualizuj¹ca pochodzi z w¹tku UI! Powinny tu byæ realizowane lekkie operacje odœwie¿ania widgetów!!
-        //! Jako parametr dostajemy przyrost czasu jaki mina³ od poprzedniego wywo³ania
+        //! Metoda aktualizujÄ…ca pochodzi z wÄ…tku UI! Powinny tu byÄ‡ realizowane lekkie operacje odÅ›wieÅ¼ania widgetÃ³w!!
+        //! Jako parametr dostajemy przyrost czasu jaki minaÅ‚ od poprzedniego wywoÅ‚ania
         virtual void update(double deltaTime)
         {
        
         }
 
-        //! Us³uga nie musi mieæ wizualnej reprezentacji.
-        //! \return Widget tworzony przez us³ugê b¹dŸ NULL.
+        //! UsÅ‚uga nie musi mieÄ‡ wizualnej reprezentacji.
+        //! \return Widget tworzony przez usÅ‚ugÄ™ bÄ…dÅº NULL.
         virtual QWidget* getWidget(IActionsGroupManager * actionsManager) = 0;
         
-        //! \return Widget kontroluj¹cy zachowanie us³ugi/us³ug zale¿nych.
+        //! \return Widget kontrolujÄ…cy zachowanie usÅ‚ugi/usÅ‚ug zaleÅ¼nych.
         virtual QWidget* getControlWidget(IActionsGroupManager * actionsManager)
         {
             return nullptr;
         }
 
-        //! \return Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
+        //! \return Widget dostarczajÄ…cy opcji zwiÄ…zanych z usÅ‚ugÄ…/usÅ‚ugami zaleÅ¼nymi.
         virtual QWidget* getSettingsWidget(IActionsGroupManager * actionsManager)
         {
             return nullptr;
         }
 
-        //! \return Nazwa us³ugi.
+        //! \return Nazwa usÅ‚ugi.
         virtual const std::string& getName() const = 0;
 
     };

@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+﻿#include "hmmPCH.h"
 #include "DataFilterWidget.h"
 #include "FilterEntryWidget.h"
 #include "FilterCommand.h"

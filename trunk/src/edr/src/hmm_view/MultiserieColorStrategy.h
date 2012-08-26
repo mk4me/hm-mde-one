@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/06/05
 	created:	5:6:2012   14:28
 	filename: 	MultiserieColorStrategy.h
@@ -12,7 +12,7 @@
 
 #include <QtGui/QColor>
 
-//! interfejs realizuj¹cy strategie do zmiany kolorów multiserii
+//! interfejs realizujÄ…cy strategie do zmiany kolorÃ³w multiserii
 class IMultiserieColorStrategy
 {
 public:
@@ -26,7 +26,7 @@ public:
 typedef core::shared_ptr<IMultiserieColorStrategy> IMultiserieColorStrategyPtr;
 typedef core::shared_ptr<const IMultiserieColorStrategy> IMultiserieColorStrategyConstPtr;
 
-//! klasa dostarcza losowych kolorów dla serii
+//! klasa dostarcza losowych kolorÃ³w dla serii
 class RandomMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
@@ -48,7 +48,7 @@ public:
     }
 };
 
-//! podawane s¹ dwa kolory, strategia dostarcza losowy kolor interpolowany pomiêdzy nimi
+//! podawane sÄ… dwa kolory, strategia dostarcza losowy kolor interpolowany pomiÄ™dzy nimi
 class RandomBetweenMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
@@ -72,7 +72,7 @@ private:
     //! interpolacja liniowa
     //! \param from lewy zakres interpolacji
     //! \param to prawy zakres interpolacji
-    //! \param r wspó³czynnik interpolacji [0 - 1]
+    //! \param r wspÃ³Å‚czynnik interpolacji [0 - 1]
     int lerp(int from, int to, float r) const
     {
         return static_cast<int>(from * (1.0f - r) + to * r);
@@ -80,12 +80,12 @@ private:
     QColor c1, c2;
 };
 
-//! kazdy wrapper dostaje kolor przypisany z zewn¹trz
+//! kazdy wrapper dostaje kolor przypisany z zewnÄ…trz
 class ColorMapMultiserieStrategy : public IMultiserieColorStrategy
 {
 public:
     //! Konstruktor
-    //! \param colorMap mapa przechowuje kolory dla konkretnych widgetów
+    //! \param colorMap mapa przechowuje kolory dla konkretnych widgetÃ³w
     ColorMapMultiserieStrategy(const std::map<core::ObjectWrapperConstPtr, QColor>& colorMap) : colorMap(colorMap) {}
     //! \return przypisany kolor
     virtual QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const 
@@ -99,7 +99,7 @@ public:
     }
 
 private:
-    //! mapa przechowuje kolory dla konkretnych widgetów
+    //! mapa przechowuje kolory dla konkretnych widgetÃ³w
     std::map<core::ObjectWrapperConstPtr, QColor> colorMap;
 };
 

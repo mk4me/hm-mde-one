@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/04/21
     created:  21:4:2011   7:59
     filename: PluginCommon.h
@@ -24,7 +24,7 @@ namespace core
 	class IDataProcessorManager;
 	class IDataSourceManager;
 
-    //! Struktura przechowujπca informacje o managerach. Tylko do wewnÍtrznego uøytku.
+    //! Struktura przechowujƒÖca informacje o managerach. Tylko do wewnƒôtrznego u≈ºytku.
     struct InstanceInfo
     {
         IDataManagerReader* dataManagerReader;
@@ -38,21 +38,21 @@ namespace core
         //IWorkflowManager* workflowManager;
     };
 
-    //! Zmienna defininowana przez makro tworzπce pluginy. Tylko do uøytku wewnÍtrznego.
+    //! Zmienna defininowana przez makro tworzƒÖce pluginy. Tylko do u≈ºytku wewnƒôtrznego.
     extern InstanceInfo __instanceInfo;
 
-    //! Makro definiujπce zmiennπ przechowujπcπ managery. Automatycznie uøywane w pluginach.
+    //! Makro definiujƒÖce zmiennƒÖ przechowujƒÖcƒÖ managery. Automatycznie u≈ºywane w pluginach.
     #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr/*, nullptr*/ }; }
 
-    //! \return Bieøπca instancja data managera readera. Rozwiπzanie w ten sposÛb, w stosunku do
-    //! klasycznego upublicznienia tylko nag≥ÛwkÛw funkcji i schowania definicji, pozwala
-    //! na rozwijanie, wiÍc jest potencjalnie szybsze.
+    //! \return Bie≈ºƒÖca instancja data managera readera. RozwiƒÖzanie w ten spos√≥b, w stosunku do
+    //! klasycznego upublicznienia tylko nag≈Ç√≥wk√≥w funkcji i schowania definicji, pozwala
+    //! na rozwijanie, wiƒôc jest potencjalnie szybsze.
     inline IDataManagerReader* getDataManagerReader()
     {
         return __instanceInfo.dataManagerReader;
     }
 
-    //! \return Interfejs dostÍpu do úcieøek aplikacji
+    //! \return Interfejs dostƒôpu do ≈õcie≈ºek aplikacji
 	inline IPath* getPathInterface()
 	{
 		return __instanceInfo.pathInterface;
@@ -94,37 +94,37 @@ namespace core
     //    return __instanceInfo.workflowManager;
     //}
 
-    //! Pomocnica metoda upraszczajπca odwo≥anie do katalogÛw.
+    //! Pomocnica metoda upraszczajƒÖca odwo≈Çanie do katalog√≥w.
     inline const Filesystem::Path& getResourcesPath()
     {
         return getPathInterface()->getResourcesPath();
     }
 
-    //! Pomocnica metoda upraszczajπca odwo≥anie do katalogÛw.
+    //! Pomocnica metoda upraszczajƒÖca odwo≈Çanie do katalog√≥w.
     inline const Filesystem::Path& getApplicationDataPath()
     {
         return getPathInterface()->getApplicationDataPath();
     }
 
-    //! Pomocnica metoda upraszczajπca odwo≥anie do katalogÛw.
+    //! Pomocnica metoda upraszczajƒÖca odwo≈Çanie do katalog√≥w.
     inline const Filesystem::Path& getUserDataPath()
     {
         return getPathInterface()->getUserDataPath();
     }
 
-    //! \return Pomocnicza metoda do pobierania úcieøek.
+    //! \return Pomocnicza metoda do pobierania ≈õcie≈ºek.
     inline toString_t getResourceString(const std::string& str)
     {
         return toString_t(toStdString(getResourcesPath()/str));
     }
 
-    //! \return Pomocnicza metoda do pobierania úcieøek.
+    //! \return Pomocnicza metoda do pobierania ≈õcie≈ºek.
     inline toString_t getApplicationDataString(const std::string& str)
     {
         return toString_t(toStdString(getApplicationDataPath()/str));
     }
 
-    //! \return Pomocnicza metoda do pobierania úcieøek.
+    //! \return Pomocnicza metoda do pobierania ≈õcie≈ºek.
     inline toString_t getUserDataString(const std::string& str)
     {
         return toString_t(toStdString(getUserDataPath()/str));

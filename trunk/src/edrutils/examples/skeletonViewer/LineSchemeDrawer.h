@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_LINESCHEMEDRAWER_H__
+﻿#ifndef HEADER_GUARD_LINESCHEMEDRAWER_H__
 #define HEADER_GUARD_LINESCHEMEDRAWER_H__
 
 #include <boost/shared_ptr.hpp>

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/28
     created:  28:2:2012   22:36
     filename: IUserPersonalSpaceWS.h
@@ -14,7 +14,7 @@
 namespace webservices
 {
 
-//! Interfejs us³ugi zarz¹dzaj¹cej prywatn¹ przestrzeni¹ u¿ytkownika w bazie
+//! Interfejs usÅ‚ugi zarzÄ…dzajÄ…cej prywatnÄ… przestrzeniÄ… uÅ¼ytkownika w bazie
 class IUserPersonalSpaceWS : public IWebService
 {
 public:

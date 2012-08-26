@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/05/28
 	created:	28:5:2012   10:19
 	filename: 	NewChartEventStateData.h
@@ -12,32 +12,32 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
-//! Klasa dostarcza danych do wizualizacji kawa³ka krzywej zwi¹zanego z eventem
+//! Klasa dostarcza danych do wizualizacji kawaÅ‚ka krzywej zwiÄ…zanego z eventem
 class NewChartEventStateData : public QwtSeriesData<QPointF>
 {
 public:
     //! Konstruktor wymaga zasilenia obiektu w dane
     //! \param channel DataChannel z danymi dla krzywej
-    //! \param startTime pocz¹tkowy czas dla eventu
-    //! \param endTime koñcowy czas dla eventu
+    //! \param startTime poczÄ…tkowy czas dla eventu
+    //! \param endTime koÅ„cowy czas dla eventu
     NewChartEventStateData(ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime);
 
 public:
-    //! \return liczba próbek przedzia³u
+    //! \return liczba prÃ³bek przedziaÅ‚u
     virtual size_t size() const;
-    //! Zwraca próbkê z przedzia³u eventa
-    //! \param i indeks próbki
-    //! \return wartoœæ próbki
+    //! Zwraca prÃ³bkÄ™ z przedziaÅ‚u eventa
+    //! \param i indeks prÃ³bki
+    //! \return wartoÅ›Ä‡ prÃ³bki
     virtual QPointF sample( size_t i ) const;
-    //! Obszar otaczaj¹cy krzyw¹
+    //! Obszar otaczajÄ…cy krzywÄ…
     virtual QRectF boundingRect() const;
 
 private:
     //! DataChannel z danymi dla krzywej
     ScalarChannelReaderInterfaceConstPtr channel;
-    //! indeks pocz¹tkowego czas dla eventu
+    //! indeks poczÄ…tkowego czas dla eventu
     int startIndex;
-    //! indeks koñcowego czas dla eventu
+    //! indeks koÅ„cowego czas dla eventu
     int endIndex;
 };
 

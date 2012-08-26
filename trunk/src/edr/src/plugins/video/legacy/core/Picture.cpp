@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+ï»¿#include "../VideoPCH.h"
 #include "VMPrivate.h"
 #include <plugins/video/core/Picture.h>
 
@@ -13,16 +13,16 @@ using namespace video;
 //!
 struct PictureContext
 {
-  //! Funkcja konwertuj¹ca obrazek do postaci planarnej.
+  //! Funkcja konwertujÄ…ca obrazek do postaci planarnej.
   typedef PictureLayered (*ConvertToLayers)(Picture& src);
-  //! Funkcja tworz¹ca pusty obrazek.
+  //! Funkcja tworzÄ…ca pusty obrazek.
   typedef void (*InitPictureDataSize)(Picture& src);
   //!
   typedef void (*InitLayersDataSize)(PictureLayered& src);
 
-  //! Funkcja konwertuj¹ca obrazek do postaci planarnej.
+  //! Funkcja konwertujÄ…ca obrazek do postaci planarnej.
   ConvertToLayers convertToLayers;
-  //! Funkcja tworz¹ca obrazek.
+  //! Funkcja tworzÄ…ca obrazek.
   InitPictureDataSize initPictureDataSize;
 };
 
@@ -85,9 +85,9 @@ PictureLayered layeredFromYV12(Picture & src)
   result.height = src.height;
   // ustawienie warstw
   result.data[0] = src.data;
-  // warstwa U znajduje siê poni¿ej warswy Y (src.height == 0.66 * src.dataHeight)
+  // warstwa U znajduje siÄ™ poniÅ¼ej warswy Y (src.height == 0.66 * src.dataHeight)
   result.data[1] = result.data[0] + ( src.dataWidth * src.height );
-  // w po³owie wiersza zaczyna siê warstwa V
+  // w poÅ‚owie wiersza zaczyna siÄ™ warstwa V
   result.data[2] = result.data[1] + ( src.dataWidth >> 1);
   //
   result.dataWidth[0] = src.dataWidth;

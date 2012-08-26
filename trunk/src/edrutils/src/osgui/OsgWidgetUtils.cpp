@@ -1,4 +1,4 @@
-#include "PCH.h"
+﻿#include "PCH.h"
 #include <osgui/OsgWidgetUtils.h>
 #include <utils/Debug.h>
 
@@ -128,7 +128,7 @@ void correctTexCoords(osgWidget::Widget* widget, osg::Image* image)
 
 void flipTexCoordsVertically(osgWidget::Widget* widget)
 {
-    // czy trzeba zrobi� flipa?
+    // czy trzeba zrobić flipa?
     osgWidget::TexCoord temp = widget->getTexCoord(osgWidget::Widget::UPPER_LEFT);
     widget->setTexCoord(widget->getTexCoord(osgWidget::Widget::LOWER_LEFT), osgWidget::Widget::UPPER_LEFT);
     widget->setTexCoord(temp, osgWidget::Widget::LOWER_LEFT);

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:    2010/05/14
 	created:    14:5:2010     10:13
 	filename: Utils.h
@@ -17,10 +17,10 @@
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
-// Sugerowany pocz¹tek makra sk³adaj¹cego siê z wielu instrukcji
+// Sugerowany poczÄ…tek makra skÅ‚adajÄ…cego siÄ™ z wielu instrukcji
 #define UTILS_MULTISTATEMENT_BEGIN  do {
 
-// Sugerowany koniec makra sk³adaj¹cego siê z wielu instrukcji
+// Sugerowany koniec makra skÅ‚adajÄ…cego siÄ™ z wielu instrukcji
 #ifdef _MSC_VER
 #   define UTILS_MULTISTATEMENT_END     \
     __pragma(warning(push))             \
@@ -52,14 +52,14 @@ inline void zero(T & object)
 
 //------------------------------------------------------------------------------
 
-//! Zwalnia zadany wskaŸnik oraz zeruje jego wartoœæ.
+//! Zwalnia zadany wskaÅºnik oraz zeruje jego wartoÅ›Ä‡.
 #define UTIL_DELETEPTR(ptr) UTILS_MULTISTATEMENT_BEGIN \
     delete ptr; \
     ptr = nullptr; \
     UTILS_MULTISTATEMENT_END
 
-//! Zwalnia zadany wskaŸnik oraz zeruje jego wartoœæ.
-//! \param ptr WskaŸnik do zwolnienia.
+//! Zwalnia zadany wskaÅºnik oraz zeruje jego wartoÅ›Ä‡.
+//! \param ptr WskaÅºnik do zwolnienia.
 template <class T>
 inline void deletePtr(T *& ptr)
 {
@@ -69,7 +69,7 @@ inline void deletePtr(T *& ptr)
 
 //------------------------------------------------------------------------------
 
-//! Zwraca znak liczby. U¿ywane do uproszczenia mno¿enia.
+//! Zwraca znak liczby. UÅ¼ywane do uproszczenia mnoÅ¼enia.
 //! \param value
 //! \return 1 albo -1
 template <class T>
@@ -80,7 +80,7 @@ inline T sign(T value)
 
 //------------------------------------------------------------------------------
 
-//! Zwraca znak liczby. U¿ywane do uproszczenia mno¿enia.
+//! Zwraca znak liczby. UÅ¼ywane do uproszczenia mnoÅ¼enia.
 //! \param value
 //! \return 1 albo -1
 template <class T, size_t Size>
@@ -96,7 +96,7 @@ struct NullType {};
 
 //------------------------------------------------------------------------------
 
-//! Konwersja danego typu do ³añcucha.
+//! Konwersja danego typu do Å‚aÅ„cucha.
 //! \param source
 template <class T>
 inline std::string toString(const T& source)
@@ -107,7 +107,7 @@ inline std::string toString(const T& source)
 //------------------------------------------------------------------------------
 
 /**
- *	Definicja ostrze¿enia o przestarza³ej funkcjonalnoœci
+ *	Definicja ostrzeÅ¼enia o przestarzaÅ‚ej funkcjonalnoÅ›ci
  */
 #ifdef __GNUC__
 #   define UTILS_DEPRECATED(func) func __attribute__ ((deprecated))
@@ -121,7 +121,7 @@ inline std::string toString(const T& source)
 //------------------------------------------------------------------------------
 
 /**
- *	Makra zapamiêtuj¹ce/odtwarzaj¹ce stan warningów.
+ *	Makra zapamiÄ™tujÄ…ce/odtwarzajÄ…ce stan warningÃ³w.
  */
 #if defined(_MSC_VER)
 #   define UTILS_PUSH_WARNINGS  __pragma(warning(push))

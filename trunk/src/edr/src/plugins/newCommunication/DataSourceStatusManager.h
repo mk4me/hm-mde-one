@@ -1,11 +1,11 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/04
     created:  4:2:2012   11:32
     filename: DataSourceStatusManager.h
     author:   Mateusz Janiak
     
-    purpose:  Klasa udostêpniaj¹ca informacje o statusie podstawowych elementów
-              Dodatkowo umo¿liwa ich odœwie¿anie.
+    purpose:  Klasa udostÄ™pniajÄ…ca informacje o statusie podstawowych elementÃ³w
+              Dodatkowo umoÅ¼liwa ich odÅ›wieÅ¼anie.
 *********************************************************************/
 #ifndef HEADER_GUARD___DATASOURCESTATUSMANAGER_H__
 #define HEADER_GUARD___DATASOURCESTATUSMANAGER_H__
@@ -21,33 +21,33 @@
 #include "DataSourceLocalStorage.h"
 #include <QtGui/QIcon>
 
-//! Kalsa zarz¹dzaj¹ca statusem plików. Ma charakter singletona
+//! Kalsa zarzÄ…dzajÄ…ca statusem plikÃ³w. Ma charakter singletona
 class FileStatusManager
 {
 private:
 
-    //! Struktura na u¿ytek wewnêtrzny opisuj¹ca ka¿dy plik
+    //! Struktura na uÅ¼ytek wewnÄ™trzny opisujÄ…ca kaÅ¼dy plik
     struct FileStatus{
         //! Identyfikator pliku
         int fileID;
-        //! Œcie¿ka pliku
+        //! ÅšcieÅ¼ka pliku
         core::Filesystem::Path filePath;
         //! Status pliku
         DataStatus fileStatus;
     };
 
-    //! Typ kolekcji plików
+    //! Typ kolekcji plikÃ³w
     typedef std::map<int, FileStatus> FilesStatus;
 
 public:
     //! Prywatny konstruktor
-    //! \param fileDataManager Manager plików w oparciu o którego bêd¹ sprawdzane przypadki u¿ycia plików
+    //! \param fileDataManager Manager plikÃ³w w oparciu o ktÃ³rego bÄ™dÄ… sprawdzane przypadki uÅ¼ycia plikÃ³w
     FileStatusManager(const core::IFileDataManager * fileDataManager);
     //! Destruktor
     ~FileStatusManager();
 
     //! \param fileID Identyfikator pliku
-    //! \param path Œcie¿ka do pliku
+    //! \param path ÅšcieÅ¼ka do pliku
     //! \param status Status pliku
     void addFile(int fileID, const core::Filesystem::Path & path, const DataStatus & status = DataStatus(communication::Remote, communication::Unloaded));
 
@@ -56,125 +56,125 @@ public:
 	//! Usuwa informacje o wszysktich plikach
 	void removeAllFiles();
 
-	//! \param files [out] Pliki obs³ugiwane przez FileStatusManager
+	//! \param files [out] Pliki obsÅ‚ugiwane przez FileStatusManager
 	void managedFiles(std::set<int> & files) const;
 
 	//! \param fileID Identyfikator pliku
-	//! \return Czy plik jest pod kontrol¹ managera
+	//! \return Czy plik jest pod kontrolÄ… managera
 	bool fileExists(int fileID);
     
     //! \param fileID Identyfikator pliku
     //! \param status Status pliku
     void setFileStatus(int fileID, const DataStatus & status);
     //! \param fileID Identyfikator pliku
-    //! \param usage Stan u¿ycia pliku
+    //! \param usage Stan uÅ¼ycia pliku
     void setFileUsage(int fileID, communication::DataUsage usage);
     //! \param fileID Identyfikator pliku
-    //! \param storage Sposób przechowywania pliku
+    //! \param storage SposÃ³b przechowywania pliku
     void setFileStorage(int fileID, communication::DataStorage storage);
 	//! \param fileID Identyfikator pliku
-	//! \param path Œcie¿ka do pliku
+	//! \param path ÅšcieÅ¼ka do pliku
 	void setFilePath(int fileID, const core::Filesystem::Path & path);
 
     //! \param fileID Identyfikator pliku
-    //! \return Œcie¿ka do pliku
+    //! \return ÅšcieÅ¼ka do pliku
     const core::Filesystem::Path & filePath(int fileID) const;
     //! \param fileID Identyfikator pliku
     //! \return Status pliku
     const DataStatus & fileStatus(int fileID) const;
     //! \param fileID Identyfikator pliku
-    //! \return Sposób u¿ycia pliku
+    //! \return SposÃ³b uÅ¼ycia pliku
     const communication::DataUsage fileUsage(int fileID) const;
     //! \param fileID Identyfikator pliku
-    //! \return Sposób przechowywania pliku
+    //! \return SposÃ³b przechowywania pliku
     const communication::DataStorage fileStorage(int fileID) const;
 
-    //! Odœwie¿a status wszystkich plików
+    //! OdÅ›wieÅ¼a status wszystkich plikÃ³w
     void refreshFilesStatus();
 
-    //! Odœwie¿a status ¿¹danych plików
+    //! OdÅ›wieÅ¼a status Å¼Ä…danych plikÃ³w
     void refreshFilesStatus(const std::set<int> & files);
 
-    //! Odœwie¿a status zadanego pliku
+    //! OdÅ›wieÅ¼a status zadanego pliku
     //! \param fileID Identyfikator pliku
     void refreshFileStatus(int fileID);
 
 private:
-    //! \param fileStatus Opis statusu pliku który aktualizujemy
+    //! \param fileStatus Opis statusu pliku ktÃ³ry aktualizujemy
     void refreshFileStatus(FileStatus & fileStatus);
 
 private:
 
-    //! Informacje o statusie plików
+    //! Informacje o statusie plikÃ³w
     FilesStatus filesStatus;
 	std::set<int> files;
-    //! Manager plików do weryfikacji ich statusów
+    //! Manager plikÃ³w do weryfikacji ich statusÃ³w
     const core::IFileDataManager * fileDataManager;
 };
 
-//! Klasa udostêpniaj¹ca statusy danych na ró¿nych poziomach hierarchii
+//! Klasa udostÄ™pniajÄ…ca statusy danych na rÃ³Å¼nych poziomach hierarchii
 class DataSourceStatusManager : public communication::IDataSourceStatusManager
 {
 public:
-    //Konstruktor domyœlny
+    //Konstruktor domyÅ›lny
     DataSourceStatusManager(const FileStatusManager * fileStatusManager);
     //! Destruktor wirtualny
     virtual ~DataSourceStatusManager();
 
-    //! \param shallowCopy P³ytka kopia bazy danych na bazie której bêd¹ tworzone statusy (odtworzona ich hierarchia)
+    //! \param shallowCopy PÅ‚ytka kopia bazy danych na bazie ktÃ³rej bÄ™dÄ… tworzone statusy (odtworzona ich hierarchia)
     void setShallowCopy(const communication::ShallowCopy * shallowCopy);
 
-    //! \param modifiedFilesStatus Zbiór plików które zmieni³y swój status. Ich nowy status dostaniemy poprzez obiekt FileStatusManager)
+    //! \param modifiedFilesStatus ZbiÃ³r plikÃ³w ktÃ³re zmieniÅ‚y swÃ³j status. Ich nowy status dostaniemy poprzez obiekt FileStatusManager)
     void refreshDataStatus(const std::set<int> & modifiedFilesStatus);
 
-    //! \param disorderID Identyfikator schorzenia którego status chcemy pobraæ
+    //! \param disorderID Identyfikator schorzenia ktÃ³rego status chcemy pobraÄ‡
     //! \return Status schorzenia
     virtual const DataStatus & disorderStatus(int disorderID) const;
-    //! \param patientID Identyfikator pacjenta którego status chcemy pobraæ
+    //! \param patientID Identyfikator pacjenta ktÃ³rego status chcemy pobraÄ‡
     //! \return Status pacjenta
     virtual const DataStatus & patientStatus(int patientID) const;
-    //! \param subjectID Identyfikator subjecta którego status chcemy pobraæ
+    //! \param subjectID Identyfikator subjecta ktÃ³rego status chcemy pobraÄ‡
     //! \return Status subjecta
     virtual const DataStatus & subjectStatus(int subjectID) const;
-    //! \param sessionID Identyfikator sesji której status chcemy pobraæ
+    //! \param sessionID Identyfikator sesji ktÃ³rej status chcemy pobraÄ‡
     //! \return Status sesji
     virtual const DataStatus & sessionStatus(int sessionID) const;
-    //! \param motionID Identyfikator motiona którego status chcemy pobraæ
+    //! \param motionID Identyfikator motiona ktÃ³rego status chcemy pobraÄ‡
     //! \return Status motiona
     virtual const DataStatus & motionStatus(int motionID) const;
-    //! \param fileID Identyfikator pliku którego status chcemy pobraæ
+    //! \param fileID Identyfikator pliku ktÃ³rego status chcemy pobraÄ‡
     //! \return Status pliku
     virtual const DataStatus & fileStatus(int fileID) const;
-	//! \param status Status danych dla którego chcemy pobraæ ikonê
+	//! \param status Status danych dla ktÃ³rego chcemy pobraÄ‡ ikonÄ™
 	//! \return Ikona dla danego statusu
 	static QIcon statusIcon(const communication::IDataStatus & status);
-	//! \param status Status danych dla którego chcemy pobraæ ikonê
+	//! \param status Status danych dla ktÃ³rego chcemy pobraÄ‡ ikonÄ™
 	//! \param icon Ikona dla danego statusu
 	static void setStatusIcon(const communication::IDataStatus & status, const QIcon & icon);
 
 protected:
-    //! Aktualizuje ca³y status danych - u¿ycie i dostêpnoœæ
+    //! Aktualizuje caÅ‚y status danych - uÅ¼ycie i dostÄ™pnoÅ›Ä‡
     void rebuildDataStatus();
 
-    //! Czyœci informacje o statusach wszystkich znanych obiektów
+    //! CzyÅ›ci informacje o statusach wszystkich znanych obiektÃ³w
     void clearAllStatusData();
 
 private:
-    //! Mapa statusów schorzeñ
+    //! Mapa statusÃ³w schorzeÅ„
     std::map<int, DataStatus> disordersStatus;
-    //! Mapa statusów pacjentów
+    //! Mapa statusÃ³w pacjentÃ³w
     std::map<int, DataStatus> patientsStatus;
-    //! Mapa statusów subjectów
+    //! Mapa statusÃ³w subjectÃ³w
     std::map<int, DataStatus> subjectsStatus;
-    //! Mapa statusów sesji
+    //! Mapa statusÃ³w sesji
     std::map<int, DataStatus> sessionsStatus;
-    //! Mapa statusów motionów
+    //! Mapa statusÃ³w motionÃ³w
     std::map<int, DataStatus> motionsStatus;
-    //! P³ytka kopia dla której generujemy statusy
+    //! PÅ‚ytka kopia dla ktÃ³rej generujemy statusy
     const communication::ShallowCopy * shallowCopy;
-	//! Manager statusu plików
+	//! Manager statusu plikÃ³w
 	const FileStatusManager * fileStatusManager;
-	//! Ikony statusów
+	//! Ikony statusÃ³w
 	static std::map<communication::DataStorage, std::map<communication::DataUsage, QIcon>> statusIcons;
 };
 

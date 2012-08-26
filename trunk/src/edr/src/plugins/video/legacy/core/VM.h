@@ -1,11 +1,11 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2010/02/11
 	created:	11:2:2010   13:04
 	filename: VM.h
 	author:		Piotr Gwiazdowski
 
-	purpose:	Jedyny nag³ówek biblioteczny który kliencka aplikacja musi
-            zaincludowaæ aby mieæ dostêp do podstawowej funkcjonalnoœci.
+	purpose:	Jedyny nagÅ‚Ã³wek biblioteczny ktÃ³ry kliencka aplikacja musi
+            zaincludowaÄ‡ aby mieÄ‡ dostÄ™p do podstawowej funkcjonalnoÅ›ci.
 *********************************************************************/
 #ifndef __AVINOUT_H__
 #define __AVINOUT_H__

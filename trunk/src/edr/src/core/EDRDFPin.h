@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/05/20
     created:  20:5:2011   11:54
     filename: EDRDFPin.h
@@ -28,8 +28,8 @@ public:
 
     ~EDRDFPin();
 
-    //! \param pin Pin ktÛrego kompatybilnoúc testujemy
-    //! \return Prawda jeúli piny sπ kompatybilne (aktualny pin potrafi obs≥uøyÊ testowany pin)
+    //! \param pin Pin kt√≥rego kompatybilno≈õc testujemy
+    //! \return Prawda je≈õli piny sƒÖ kompatybilne (aktualny pin potrafi obs≈Çu≈ºyƒá testowany pin)
     virtual bool isCompatible(const dflm::CPinPtr & pin) const;
 
     const core::ObjectWrapperCollectionPtr & getSlotData();

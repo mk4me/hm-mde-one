@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/06
     created:  6:3:2012   9:11
     filename: WSConnection.h
@@ -13,26 +13,26 @@
 #include <wsdlparser/WsdlInvoker.h>
 #include <core/SmartPtr.h>
 
-//! Interfejs rozszerzaj¹cy podstawowe po³¹czenie webservices o zabezpieczenia
+//! Interfejs rozszerzajÄ…cy podstawowe poÅ‚Ä…czenie webservices o zabezpieczenia
 class ISecureWSConnection : public webservices::IWSConnection
 {
 public:
 	//! Destruktor wirtualny
 	virtual ~ISecureWSConnection() {}
-	//! \param caPath Œcie¿ka certyfikatu, którym weryfikujemy hosta
+	//! \param caPath ÅšcieÅ¼ka certyfikatu, ktÃ³rym weryfikujemy hosta
 	virtual void setCAPath(const std::string & caPath) = 0;
-	//! \return Œcie¿ka certyfikatu, którym weryfikujemy hosta
+	//! \return ÅšcieÅ¼ka certyfikatu, ktÃ³rym weryfikujemy hosta
 	virtual const std::string CAPath() const = 0;
 
-	//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL wzglêdem ceryfikatów
+	//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL wzglÄ™dem ceryfikatÃ³w
 	virtual void setHostVerification(WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification) = 0;
-	//! \return Mechanizm weryfikacji hosta po SSL wzglêdem ceryfikatów
+	//! \return Mechanizm weryfikacji hosta po SSL wzglÄ™dem ceryfikatÃ³w
 	virtual WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification() const = 0;
 };
 
 typedef core::shared_ptr<ISecureWSConnection> WSConnectionPtr;
 
-//! Implementacja po³¹czenia po stronie communication
+//! Implementacja poÅ‚Ä…czenia po stronie communication
 class WSConnection : public ISecureWSConnection
 {
 public:
@@ -40,33 +40,33 @@ public:
 	typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
 
 public:
-	//! domyœlny konstruktor
+	//! domyÅ›lny konstruktor
 	WSConnection();
 
 	//! Wirtualny destruktor
 	virtual ~WSConnection() {}
 
-	//! \param caPath Œcie¿ka certyfikatu, którym weryfikujemy hosta
+	//! \param caPath ÅšcieÅ¼ka certyfikatu, ktÃ³rym weryfikujemy hosta
 	virtual void setCAPath(const std::string & caPath);
-	//! \return Œcie¿ka certyfikatu, którym weryfikujemy hosta
+	//! \return ÅšcieÅ¼ka certyfikatu, ktÃ³rym weryfikujemy hosta
 	virtual const std::string CAPath() const;
 
-	//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL wzglêdem ceryfikatów
+	//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL wzglÄ™dem ceryfikatÃ³w
 	virtual void setHostVerification(WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification);
-	//! \return Mechanizm weryfikacji hosta po SSL wzglêdem ceryfikatów
+	//! \return Mechanizm weryfikacji hosta po SSL wzglÄ™dem ceryfikatÃ³w
 	virtual WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification() const;
 
-	//! \param name Nazwa u¿ytkownika wywo³uj¹cego us³ugê
+	//! \param name Nazwa uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
 	virtual void setUser(const std::string & user);
-	//! \param password Has³o u¿ytkownika wywo³uj¹cego us³ugê
+	//! \param password HasÅ‚o uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
 	virtual void setPassword(const std::string & password);
-	//! \param name Nazwa u¿ytkownika wywo³uj¹cego us³ugê
-	//! \param password Has³o u¿ytkownika wywo³uj¹cego us³ugê
+	//! \param name Nazwa uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
+	//! \param password HasÅ‚o uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
 	virtual void setCredentials(const std::string & user, const std::string & password);
 
-	//! \return Nazwa u¿ytkownika który wywo³uje us³ugê
+	//! \return Nazwa uÅ¼ytkownika ktÃ³ry wywoÅ‚uje usÅ‚ugÄ™
 	virtual const std::string user() const;
-	//! \return Has³o u¿ytkownika który wywo³uje us³ugê
+	//! \return HasÅ‚o uÅ¼ytkownika ktÃ³ry wywoÅ‚uje usÅ‚ugÄ™
 	virtual const std::string password() const;
 
 	//! \param url Adres serwisu
@@ -74,22 +74,22 @@ public:
 	//! \return adres serwisu
 	virtual const std::string & url() const;
 
-	//! \param operation Metoda serwisu do wywo³ania
+	//! \param operation Metoda serwisu do wywoÅ‚ania
 	virtual void setOperation(const std::string & operation);
-	//! \param name Nazwa wartoœci do ustawienia
-	//! \param value Wartoœæ zmiennej
+	//! \param name Nazwa wartoÅ›ci do ustawienia
+	//! \param value WartoÅ›Ä‡ zmiennej
 	virtual void setValue(const std::string & name, const std::string & value);
-	//! Wykonuje operacjê na serwisie webowym
+	//! Wykonuje operacjÄ™ na serwisie webowym
 	virtual void invoke(bool process = false);
-	//! \param name Nazwa wartoœci któr¹ chcemy pobraæ
-	//! \return WskaŸnik do wartoœci, nullptr jeœli nie ma takiej wartoœci, wskaxnik pozostaje pod kontrol¹ implementacji IWSConnection
+	//! \param name Nazwa wartoÅ›ci ktÃ³rÄ… chcemy pobraÄ‡
+	//! \return WskaÅºnik do wartoÅ›ci, nullptr jeÅ›li nie ma takiej wartoÅ›ci, wskaxnik pozostaje pod kontrolÄ… implementacji IWSConnection
 	virtual void * getValue(const std::string & name);
 
-	//! \return Pe³na odpowiedŸ serwisu webowego w formacie html/xml
+	//! \return PeÅ‚na odpowiedÅº serwisu webowego w formacie html/xml
 	virtual const std::string xmlResponse();
 
 private:
-	//! Wewnêtrzne po³¹czenie realizuj¹ce faktycznie wszystkie zapytania
+	//! WewnÄ™trzne poÅ‚Ä…czenie realizujÄ…ce faktycznie wszystkie zapytania
 	WSConnectionPtr connection_;
 
 };

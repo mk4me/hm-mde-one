@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+﻿#include "hmmPCH.h"
 #include "TreeRefresher.h"
 #include <QtGui/QMessageBox>
 #include <core/PluginCommon.h>

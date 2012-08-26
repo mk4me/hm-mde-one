@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/07/20
 	created:  20:7:2010   16:31
 	filename: BufferedVideoStream.h
@@ -25,26 +25,26 @@ private:
     VideoBuffer * convertedFrames;
     //! Bufor na ramki jeszcze nie przekonwertowane.
     VideoBuffer * pendingFrames;
-    //! Strumieñ który jest buforowany.
+    //! StrumieÅ„ ktÃ³ry jest buforowany.
     VideoStream * innerStream;
     //! Maksymalny rozmiar bufora.
     int maxBufferSize;
-    //! Wybrany czas (pomiêdzy bie¿¹cym faktycznym timestampem a czasem nastêpnej ramki).
+    //! Wybrany czas (pomiÄ™dzy bieÅ¼Ä…cym faktycznym timestampem a czasem nastÄ™pnej ramki).
     double wantedTime;
 
 public:
     //! 
-    //! \param innerStream Strumieñ buforowany. Przejmowany na w³aœnoœæ.
+    //! \param innerStream StrumieÅ„ buforowany. Przejmowany na wÅ‚aÅ›noÅ›Ä‡.
     //! \param maxBufferSize Maksymalny rozmiar bufora.
     BufferedVideoStream(VideoStream * innerStream, int maxBufferSize = INT_MAX);
-    //! Zwalnia bufor oraz strumieñ wewnêtrzny.
+    //! Zwalnia bufor oraz strumieÅ„ wewnÄ™trzny.
     virtual ~BufferedVideoStream();
 
-    //! Odczytuje nastêpn¹ ramkê.
+    //! Odczytuje nastÄ™pnÄ… ramkÄ™.
     virtual bool readNext();
     //! \retrun Pozycja w strumieniu.
     virtual double getTime() const;
-    //! \param time Pozycja w Ÿródle
+    //! \param time Pozycja w ÅºrÃ³dle
     virtual bool setTime(double time);
     //! \return Prawdziwy timestamp ramki.
     virtual double getFrameTimestamp() const;
@@ -52,7 +52,7 @@ public:
     virtual double getNextFrameTimestamp() const;
 
 public:
-    //! Callback wewnêtrznego strumienia.
+    //! Callback wewnÄ™trznego strumienia.
     void frameRead(Picture * picture, PictureLayered * layers, double timestamp, double endTimestamp);
 
 private:

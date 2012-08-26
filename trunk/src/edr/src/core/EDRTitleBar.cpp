@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include <stdexcept>
 #include <QtGui/QMenu>
 #include <QtGui/QPainter>
@@ -72,8 +72,8 @@ void EDRTitleBar::removeObject(QObject * object)
 
     layout->removeWidget(it->second.second);
 
-    //jezeli nie widget customowy to znaczy ze akcja lub menu dla których przygotowalem button,
-    // reszta klient sam zarz¹dza
+    //jezeli nie widget customowy to znaczy ze akcja lub menu dla ktÃ³rych przygotowalem button,
+    // reszta klient sam zarzÄ…dza
     if(it->first != it->second.second){
         delete it->second.second;
     }
@@ -212,7 +212,7 @@ EDRTitleBar * supplyWithEDRTitleBar(EDRDockWidget * dockWidget, bool refresh)
     QObject::connect(titleBar->actionFloat, SIGNAL(triggered()), dockWidget, SLOT(toggleFloating()));
     QObject::connect(titleBar->actionClose, SIGNAL(triggered()), dockWidget, SLOT(close()));
 
-    //odœwie¿am titlebar!!
+    //odÅ›wieÅ¼am titlebar!!
     if(refresh == true){
         titleBar->setTitle(dockWidget->windowTitle());
         titleBar->refreshFeatures(dockWidget->features());

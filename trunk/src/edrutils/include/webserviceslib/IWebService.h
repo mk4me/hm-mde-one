@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/02
     created:  2:3:2012   14:16
     filename: IWebService.h
@@ -15,7 +15,7 @@
 
 namespace webservices
 {
-    //! Podstawowy interfejs ka¿dedo web serwisu
+    //! Podstawowy interfejs kaÅ¼dedo web serwisu
     class IWebService : public OpenThreads::ReentrantMutex
     {
 	public:
@@ -28,11 +28,11 @@ namespace webservices
         //! Wirtualny destruktor
         virtual ~IWebService() {}
 
-        //! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+        //! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
         virtual void setConnection(const WSConnectionPtr & connection) = 0;
-        //! \return Po³¹czenie przez które jest realizowany serwis
+        //! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
         virtual const WSConnectionPtr & connection() = 0;
-        //! \return Po³¹czenie przez które jest realizowany serwis
+        //! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
         virtual const WSConnectionConstPtr & connection() const = 0;
     };
 

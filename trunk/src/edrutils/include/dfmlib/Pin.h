@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__PIN_H__
+ï»¿#ifndef HEADER_GUARD__PIN_H__
 #define HEADER_GUARD__PIN_H__
 
 #include <dfmlib/DFLMTypes.h>
@@ -11,93 +11,93 @@
 namespace dflm {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa reprezentuj¹ca punkt ³¹czenia wêz³ów. Rozró¿niamy 2 typy pinów - wejœciowe i wyjœciowe.
+//! Klasa reprezentujÄ…ca punkt Å‚Ä…czenia wÄ™zÅ‚Ã³w. RozrÃ³Å¼niamy 2 typy pinÃ³w - wejÅ›ciowe i wyjÅ›ciowe.
 class Pin : public boost::enable_shared_from_this<Pin>
 {
 public:
 
-    //! Typ okreœlaj¹cy typ pinu
+    //! Typ okreÅ›lajÄ…cy typ pinu
 	enum PinType {
         IN, //! Pin wejsciowy
-        OUT, //! Pin wyjœciowy
+        OUT, //! Pin wyjÅ›ciowy
         UNSET //! Pin niezdefiniowany
     };
 
-    //! Typ okreœlaj¹cy statyczny stan pinu
+    //! Typ okreÅ›lajÄ…cy statyczny stan pinu
 	enum StaticStatus {
-        OK,         //! Z pinem wszystko OK, neutralny stan pinu niepod³¹czonego bez ¿adnych wymagañ (zale¿noœci, wymaganie pod³aczenia)
-        REQUIRED,   //! Pin jest wymagany a nie jest pod³¹czony (dotyczy pinów wejœciowych)
-        INCOMPLETE, //! Pin ma niespe³nione zale¿noœci - jeden z pinów od których jest zale¿ny nie jest pod³¹czony (dotyczy pinów wyjœciowych)
-        CONNECTED   //! Pin poprawnie pod³¹czony
+        OK,         //! Z pinem wszystko OK, neutralny stan pinu niepodÅ‚Ä…czonego bez Å¼adnych wymagaÅ„ (zaleÅ¼noÅ›ci, wymaganie podÅ‚aczenia)
+        REQUIRED,   //! Pin jest wymagany a nie jest podÅ‚Ä…czony (dotyczy pinÃ³w wejÅ›ciowych)
+        INCOMPLETE, //! Pin ma niespeÅ‚nione zaleÅ¼noÅ›ci - jeden z pinÃ³w od ktÃ³rych jest zaleÅ¼ny nie jest podÅ‚Ä…czony (dotyczy pinÃ³w wyjÅ›ciowych)
+        CONNECTED   //! Pin poprawnie podÅ‚Ä…czony
     };
 
-    //! Typ okreœlaj¹cy dynamiczny stan pinu podczas ³¹czenia
+    //! Typ okreÅ›lajÄ…cy dynamiczny stan pinu podczas Å‚Ä…czenia
 	enum DynamicStatus {
-        COMPATIBLE,         //! Pin kompatybilny - mo¿na ³¹czyæ
-        COMPATIBLE_CYCLE,   //! Pin kompatybilny ale tworzy cykl - nie mo¿na ³¹czyæ
-        COMPATIBLE_FULL,    //! Pin kompatybilny ale docelowy pin wejœciowy ju¿ zajêty - nie mo¿na ³¹czyæ
-        INCOMPATIBLE        //! Pin nmiekompatybilny - nie mo¿na ³¹czyæ
+        COMPATIBLE,         //! Pin kompatybilny - moÅ¼na Å‚Ä…czyÄ‡
+        COMPATIBLE_CYCLE,   //! Pin kompatybilny ale tworzy cykl - nie moÅ¼na Å‚Ä…czyÄ‡
+        COMPATIBLE_FULL,    //! Pin kompatybilny ale docelowy pin wejÅ›ciowy juÅ¼ zajÄ™ty - nie moÅ¼na Å‚Ä…czyÄ‡
+        INCOMPATIBLE        //! Pin nmiekompatybilny - nie moÅ¼na Å‚Ä…czyÄ‡
     };
 
-    //! Typ kolekcji po³¹czeñ
+    //! Typ kolekcji poÅ‚Ä…czeÅ„
 	//typedef std::set<ConnPtr> Connections;
     typedef std::vector<ConnPtr> Connections;
 
-    //! Typ kolekcji pionów wymaganych
+    //! Typ kolekcji pionÃ³w wymaganych
 	typedef std::set<WPinPtr> ReqPinsSet;
 
-    //! Typ iteratora do kolekcji po³¹czeñ
+    //! Typ iteratora do kolekcji poÅ‚Ä…czeÅ„
     typedef Connections::const_iterator iterator;
 
-    //! Typ iloœci po³¹czeñ w kolekcji
+    //! Typ iloÅ›ci poÅ‚Ä…czeÅ„ w kolekcji
     typedef Connections::size_type size_type;
 
 private:
 
-    //! Funktor zwracaj¹cy indeks pinu
+    //! Funktor zwracajÄ…cy indeks pinu
     typedef boost::function<int(const PinPtr &)> PinIndexFunc;
 
 public:
 
-    //! ZaprzyjaŸniony typ wêz³a - one zarz¹dzaj¹ swoimi pinami i na ich bazie s¹ ³aczone
+    //! ZaprzyjaÅºniony typ wÄ™zÅ‚a - one zarzÄ…dzajÄ… swoimi pinami i na ich bazie sÄ… Å‚aczone
 	friend class Node;
 
-    //! ZaprzyjaŸniony typ modelu - zarz¹dza, weryfikuje stan modelu, regu³y jego ³¹czenia miêdzy innymi przez piny
+    //! ZaprzyjaÅºniony typ modelu - zarzÄ…dza, weryfikuje stan modelu, reguÅ‚y jego Å‚Ä…czenia miÄ™dzy innymi przez piny
 	friend class Model;
 
 public:
 
-    //! Konstruktor domyœlny
+    //! Konstruktor domyÅ›lny
     //! \param name nazwa pinu
-    //! \param required Czy pin wymagany (dotyczy tylko pinów wejsciowych)
-    //! \param requiredPins Piny od których jest zale¿ny aktualny pin (dotyczy pinów wyjœciowych)
+    //! \param required Czy pin wymagany (dotyczy tylko pinÃ³w wejsciowych)
+    //! \param requiredPins Piny od ktÃ³rych jest zaleÅ¼ny aktualny pin (dotyczy pinÃ³w wyjÅ›ciowych)
 	Pin(const std::string & name = std::string(),
 		bool required = false, const ReqPinsSet & requiredPins = ReqPinsSet());
 	
     //! Wirtualny destruktor
 	virtual ~Pin(void);
 
-    //! \return WskaŸnik do rodzica lub nullptr jeœli pin nie jest dodany do wêz³a
+    //! \return WskaÅºnik do rodzica lub nullptr jeÅ›li pin nie jest dodany do wÄ™zÅ‚a
 	NPtr getParent() const;
 
-    //! \return Iterator pocz¹tka kolekcji po³¹czeñ
+    //! \return Iterator poczÄ…tka kolekcji poÅ‚Ä…czeÅ„
     iterator begin() const;
 
-    //! \return Iterator koñca kolekcji po³¹czeñ
+    //! \return Iterator koÅ„ca kolekcji poÅ‚Ä…czeÅ„
     iterator end() const;
 
-    //! \param idx Indeks po³¹czenia
-    //! \return Zwraca po³aczenie o zadanym indeksie
+    //! \param idx Indeks poÅ‚Ä…czenia
+    //! \return Zwraca poÅ‚aczenie o zadanym indeksie
     const ConnPtr & getConnection(int idx) const;
 
-    //! \param connection Po³aczenie którego indeksu szukamy
-    //! \return Indeks po³¹czenia w kolekcji lub -1 jeœli po³¹czenia nie ma w kolekcji
+    //! \param connection PoÅ‚aczenie ktÃ³rego indeksu szukamy
+    //! \return Indeks poÅ‚Ä…czenia w kolekcji lub -1 jeÅ›li poÅ‚Ä…czenia nie ma w kolekcji
     int getIndexOfConnection(const ConnPtr & connection) const;
 
-    //! \return Czy kolekcja po³¹czeñ jest pusta
+    //! \return Czy kolekcja poÅ‚Ä…czeÅ„ jest pusta
     bool empty() const;
 
-    //! \return Iloœæ po³¹czeñ w kolekcji
+    //! \return IloÅ›Ä‡ poÅ‚Ä…czeÅ„ w kolekcji
     size_type size() const;
 
     //! \return Typ pinu (IN|OUT)
@@ -106,26 +106,26 @@ public:
     //! \return Statyczny status pinu
 	StaticStatus getStaticStatus() const;
 
-    //! \param refPin Pin wzgledem ktorego badamy stan dynamiczny pinu (podczas ³¹czenia)
-    //! \param model Model w obrêbie którego siê poruszamy definiuj¹c status dynamiczny
-    //! \return Status dynamiczny pinu przed prob¹ po³¹czenia
+    //! \param refPin Pin wzgledem ktorego badamy stan dynamiczny pinu (podczas Å‚Ä…czenia)
+    //! \param model Model w obrÄ™bie ktÃ³rego siÄ™ poruszamy definiujÄ…c status dynamiczny
+    //! \return Status dynamiczny pinu przed probÄ… poÅ‚Ä…czenia
 	DynamicStatus getDynamicStatus(const PinPtr & refPin, const MPtr & model) const;
 
-    //! \param pin Pin którego kompatybilnoœc testujemy
-    //! \return Prawda jeœli piny s¹ kompatybilne (aktualny pin potrafi obs³u¿yæ testowany pin)
+    //! \param pin Pin ktÃ³rego kompatybilnoÅ›c testujemy
+    //! \return Prawda jeÅ›li piny sÄ… kompatybilne (aktualny pin potrafi obsÅ‚uÅ¼yÄ‡ testowany pin)
 	virtual bool isCompatible(const CPinPtr & pin) const;
 	
-    //! \param pin Pin którego testujemy czy aktualny pin jest od niego zale¿ny (dotyczy pinów wyjsciowych)
-    //! \returen Prawda jeœli aktualny pin jest zale¿ny od zadanego pinu
+    //! \param pin Pin ktÃ³rego testujemy czy aktualny pin jest od niego zaleÅ¼ny (dotyczy pinÃ³w wyjsciowych)
+    //! \returen Prawda jeÅ›li aktualny pin jest zaleÅ¼ny od zadanego pinu
 	bool dependsOnPin(const PinPtr & pin) const;
 
-    //! \return Zwraca zbiór pinów od których jest uzale¿niony aktualny pin
+    //! \return Zwraca zbiÃ³r pinÃ³w od ktÃ³rych jest uzaleÅ¼niony aktualny pin
 	const ReqPinsSet & getDependantPins() const;
 
-    //! \return Czy dany pin jest wymagany (dotyczy pinów wejœciowych)
+    //! \return Czy dany pin jest wymagany (dotyczy pinÃ³w wejÅ›ciowych)
 	bool isRequired() const;
 
-    //! \return Czy wszystkie zale¿noœci pinu s¹ spe³nione (dotyczy pinów wyjœciowych)
+    //! \return Czy wszystkie zaleÅ¼noÅ›ci pinu sÄ… speÅ‚nione (dotyczy pinÃ³w wyjÅ›ciowych)
 	bool isComplete() const;
 
     //! \return Nazwa pinu
@@ -134,7 +134,7 @@ public:
  //   //! \param Nazwa pinu
 	//void setPinName(const std::string & name);
 
-    //! \return Indeks pinu w wêŸle (-1 jeœli pin nigdzie nie dodany, automatycznie ropoznaje typ pinu
+    //! \return Indeks pinu w wÄ™Åºle (-1 jeÅ›li pin nigdzie nie dodany, automatycznie ropoznaje typ pinu
     int getPinIndex() const;
 
 private:
@@ -142,39 +142,39 @@ private:
     //! \param name Nowa nazwa pinu
     void setName(const std::string & name);
 
-    //! \param connection Po³¹czenie dodawane do pinu
+    //! \param connection PoÅ‚Ä…czenie dodawane do pinu
     void addConnection(const ConnPtr & connection);
 
-    //! \param connection Po³¹czenie usuwane z pinu
+    //! \param connection PoÅ‚Ä…czenie usuwane z pinu
     void removeConnection(const ConnPtr & connection);
 
-    //! Usuwa wszystkie po³¹czenia pinu
+    //! Usuwa wszystkie poÅ‚Ä…czenia pinu
 	void clearConnections();
 
-    //! \param type Typ pinu ustawiany podczas do³anczania go do wêz³a
+    //! \param type Typ pinu ustawiany podczas doÅ‚anczania go do wÄ™zÅ‚a
 	void setType(PinType type);
 
 private:
 
-    //! Zbiór po³¹czeñ pinu
+    //! ZbiÃ³r poÅ‚Ä…czeÅ„ pinu
 	Connections connections;
 
-    //! Wêze³ rodzic pinu
+    //! WÄ™zeÅ‚ rodzic pinu
 	WNPtr parentNode;
 
-    //! Czy pin wymagany (dla pin ów wejœciowych)
+    //! Czy pin wymagany (dla pin Ã³w wejÅ›ciowych)
 	bool pinRequired;
 
-    //! Piny od których uzale¿niony jest pin (dla pinów wyjœciowych)
+    //! Piny od ktÃ³rych uzaleÅ¼niony jest pin (dla pinÃ³w wyjÅ›ciowych)
 	ReqPinsSet requiredPinsDependency;
 
-    //! Typ pinu (wejœciowy|wyjœciowy)
+    //! Typ pinu (wejÅ›ciowy|wyjÅ›ciowy)
 	PinType pinType;
 
     //! Nazwa pinu
 	std::string name;
 
-    //! Funktor zwracaj¹cy indeks pinu
+    //! Funktor zwracajÄ…cy indeks pinu
      PinIndexFunc pinIndexFunc;
 };
 

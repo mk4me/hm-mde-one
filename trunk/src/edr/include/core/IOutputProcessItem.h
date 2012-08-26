@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   9:13
 	filename: 	IOutputProcessItem.h
@@ -19,12 +19,12 @@ namespace core {
 
 	class IObjectOutput;
 
-//! Interfejs elementów dostarczaj¹cych danych do aplikacji (workflow).
-//! Zapewnia opis danych wyjœciowych i podstawowe informacje i w³aœciwoœci elementów logicznych aplikacji operuj¹cych na danych
+//! Interfejs elementÃ³w dostarczajÄ…cych danych do aplikacji (workflow).
+//! Zapewnia opis danych wyjÅ›ciowych i podstawowe informacje i wÅ‚aÅ›ciwoÅ›ci elementÃ³w logicznych aplikacji operujÄ…cych na danych
 class IOutputProcessItem : public IOutputDescription, public IWorkflowItemBase
 {
 public:
-    //! Metoda dostarczaj¹ca kolejn¹ porcjê danych podczas przetwarzania
+    //! Metoda dostarczajÄ…ca kolejnÄ… porcjÄ™ danych podczas przetwarzania
     virtual void generate(IObjectOutput* output) = 0;
 };
 

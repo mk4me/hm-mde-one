@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/09/04
 	created:	4:9:2011   14:24
 	filename: 	SkeletonSerie.h
@@ -14,29 +14,29 @@
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
 
-//! Seria danych wizualizatora 3D wizualizuj¹ca animacje szkieletowa
+//! Seria danych wizualizatora 3D wizualizujÄ…ca animacje szkieletowa
 class SkeletonSerie :  public QObject, public KinematicSerie
 {
 	Q_OBJECT;
 public:
-    //! wskaŸnik do wêz³a przechowywuj¹cego geometriê
+    //! wskaÅºnik do wÄ™zÅ‚a przechowywujÄ…cego geometriÄ™
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;
-    //! wskaŸnik do wêz³a przechowywuj¹cego grupê wêz³ów
+    //! wskaÅºnik do wÄ™zÅ‚a przechowywujÄ…cego grupÄ™ wÄ™zÅ‚Ã³w
 	typedef osg::ref_ptr<osg::Group> GroupPtr;
 
 public:
 	//! Konstuktor
-	//! \param visualizer wizualizator, który stworzy³ serie danych
+	//! \param visualizer wizualizator, ktÃ³ry stworzyÅ‚ serie danych
 	SkeletonSerie(KinematicVisualizer * visualizer);
 	virtual ~SkeletonSerie() {}
 
 private slots:
-	//! zmiana osi, gdy otrzymamy obiekt w nietypowym uk³. wspó³rzêdnych
+	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukÅ‚. wspÃ³Å‚rzÄ™dnych
 	//! \param xyz 
 	void setAxis(bool xyz);
 
 public:
-    //! Ustawia now¹ nazwê serii
+    //! Ustawia nowÄ… nazwÄ™ serii
     //! \param name nowa nazwa
     virtual void setName(const std::string & name);
     //! \return nazwa serii
@@ -46,28 +46,28 @@ public:
 	virtual void setData(const core::ObjectWrapperConstPtr & data);
     //! \return ustawione dane
     virtual const core::ObjectWrapperConstPtr & getData() const;
-	//! \return d³ugoœæ kana³u w sekundach
+	//! \return dÅ‚ugoÅ›Ä‡ kanaÅ‚u w sekundach
 	virtual double getLength() const;
-	//! Czas zawiera siê miêdzy 0 a getLength()
-	//! \param time Aktualny, lokalny czas kana³u w sekundach
+	//! Czas zawiera siÄ™ miÄ™dzy 0 a getLength()
+	//! \param time Aktualny, lokalny czas kanaÅ‚u w sekundach
 	virtual void setLocalTime(double time);
-    //! \return macierz serii z transformacja, która nie zosta³a zmieniona przez manipulatory
+    //! \return macierz serii z transformacja, ktÃ³ra nie zostaÅ‚a zmieniona przez manipulatory
     osg::Matrix getInitialMatrix() const;
 
 private:
-    //! Dialog z trajektoriami dzia³a dla MarkersCollection, dlatego nale¿y dokonaæ konwersji
+    //! Dialog z trajektoriami dziaÅ‚a dla MarkersCollection, dlatego naleÅ¼y dokonaÄ‡ konwersji
     //! \param joints struktura i dane animacji szkieletowej
-    //! \return kolekcja z markerami, dla której mo¿na ju¿ u¿ywaæ dialogu TrajectoriesDialog
+    //! \return kolekcja z markerami, dla ktÃ³rej moÅ¼na juÅ¼ uÅ¼ywaÄ‡ dialogu TrajectoriesDialog
     MarkerCollectionConstPtr createTrajectories(kinematic::JointAnglesCollectionConstPtr joints);
-    //! \return macierz potrzebna przy operacjach z ró¿nymi ukl. wspó³rzêdnych
+    //! \return macierz potrzebna przy operacjach z rÃ³Å¼nymi ukl. wspÃ³Å‚rzÄ™dnych
     osg::Matrix getXYZMatrix() const;
-    //! niweluje dzia³anie manipulatorów
+    //! niweluje dziaÅ‚anie manipulatorÃ³w
     virtual void resetTransform();
 
 private:
-    //! Wizualizator, który utworzy³ serie
+    //! Wizualizator, ktÃ³ry utworzyÅ‚ serie
 	KinematicVisualizer * visualizer;
-    //! po³¹czenie miêdzy aniamcja szieletowa (struktura + dane) a ich wizualizacja
+    //! poÅ‚Ä…czenie miÄ™dzy aniamcja szieletowa (struktura + dane) a ich wizualizacja
 	SkeletalVisualizationSchemePtr scheme;
     //! drawer schematu
 	SchemeDrawerContainerPtr skeletonDrawers;
@@ -75,11 +75,11 @@ private:
     core::ObjectWrapperConstPtr data;
     //! nazwa serii
     std::string name;
-    //! g³ówny wezej animacji
+    //! gÅ‚Ã³wny wezej animacji
     TransformPtr skeletonNode;
-    //! czy operujemy na uk³adzie XYZ czy innym
+    //! czy operujemy na ukÅ‚adzie XYZ czy innym
     bool xyzAxis;
-    //! Drawer rysuj¹cy trajektorie, powsta³y one dziêki konwersji JoinAnglesCollection - > MarkersCollection
+    //! Drawer rysujÄ…cy trajektorie, powstaÅ‚y one dziÄ™ki konwersji JoinAnglesCollection - > MarkersCollection
     TrajectoryDrawerPtr trajectoryDrawer;
 };
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;

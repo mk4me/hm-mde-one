@@ -1,4 +1,4 @@
-#include <dfmlib/Model.h>
+ï»¿#include <dfmlib/Model.h>
 #include <dfmlib/Pin.h>
 #include <dfmlib/Connection.h>
 #include <utils/Debug.h>
@@ -25,7 +25,7 @@ bool Model::isModelChangeAllowed() const
 
 void Model::setNodeName(const NPtr & node, const std::string & name)
 {
-    UTILS_ASSERT((node != nullptr), "B³êdny wêze³ do edycji!");
+    UTILS_ASSERT((node != nullptr), "BÅ‚Ä™dny wÄ™zeÅ‚ do edycji!");
 
     ScopedLock lock(editMutex);
 
@@ -38,11 +38,11 @@ void Model::setNodeName(const NPtr & node, const std::string & name)
     notify();
 }
 
-//! \param pin Pin któremu nazwê zmieniamy
+//! \param pin Pin ktÃ³remu nazwÄ™ zmieniamy
 //! \param name Nowa nazwa pinu
 void Model::setPinName(const PinPtr & pin, const std::string & name)
 {
-    UTILS_ASSERT((pin != nullptr), "B³êdny pin do edycji!");
+    UTILS_ASSERT((pin != nullptr), "BÅ‚Ä™dny pin do edycji!");
 
     ScopedLock lock(editMutex);
 
@@ -131,7 +131,7 @@ void Model::addNode(const NPtr & node)
     afterNodeAdd(node);
 
     if(node->beginIn() != node->endIn()){
-        //dodaj do listy wymaganych pod³¹czenia
+        //dodaj do listy wymaganych podÅ‚Ä…czenia
 
         PinsSet requiredPins;
         //auto pins = node->getInPins();
@@ -142,14 +142,14 @@ void Model::addNode(const NPtr & node)
         }
 
         if(requiredPins.empty() == false){
-            //zainicjuj brakuj¹ce piny
+            //zainicjuj brakujÄ…ce piny
             pinsRequiringConnections[node].insert(requiredPins.begin(), requiredPins.end());
         }else{
-            //oznacz wêze³ jako niepod³aczony, bo ¿adne wejscie nie ma po³¹czenia
+            //oznacz wÄ™zeÅ‚ jako niepodÅ‚aczony, bo Å¼adne wejscie nie ma poÅ‚Ä…czenia
             pinsRequiringConnections[node] = PinsSet();
         }
 
-        //oznacz jako liœæ
+        //oznacz jako liÅ›Ä‡
         addLeaf(node);
     }
 
@@ -163,7 +163,7 @@ void Model::afterNodeAdd(const NPtr & node)
 
 void Model::disconnectNode(const NPtr & node)
 {
-    UTILS_ASSERT((node != nullptr), "B³êdny wêze³");
+    UTILS_ASSERT((node != nullptr), "BÅ‚Ä™dny wÄ™zeÅ‚");
 
     ScopedLock lock(editMutex);
 
@@ -258,7 +258,7 @@ void Model::clearNodes()
         quickRemoveNode(nodes.begin());
     }
 
-    UTILS_ASSERT((connections.size() == 0), "Nie wszystkie po³¹czenia zosta³y usuniête jak siê spodziewano przy usuwaniu wszystkich wêz³ów");
+    UTILS_ASSERT((connections.size() == 0), "Nie wszystkie poÅ‚Ä…czenia zostaÅ‚y usuniÄ™te jak siÄ™ spodziewano przy usuwaniu wszystkich wÄ™zÅ‚Ã³w");
 
     Nodes().swap(nodes);
     Connections().swap(connections);
@@ -308,7 +308,7 @@ ConnPtr Model::connect(const PinPtr & src, const PinPtr & dest)
     src->addConnection(ret);
     dest->addConnection(ret);
 
-    //jeœli Ÿród³o jest zale¿ne od jakichœ pinów wejœciowych w obrêbie ich wêz³a i s¹ one niepod³¹czone, to trzeba je dodaæ jako wymagane
+    //jeÅ›li ÅºrÃ³dÅ‚o jest zaleÅ¼ne od jakichÅ› pinÃ³w wejÅ›ciowych w obrÄ™bie ich wÄ™zÅ‚a i sÄ… one niepodÅ‚Ä…czone, to trzeba je dodaÄ‡ jako wymagane
     PinsSet requiredPins;
     for(auto it = src->getDependantPins().begin(); it != src->getDependantPins().end(); ++it){
         if((*it).lock()->empty() == true){
@@ -323,12 +323,12 @@ ConnPtr Model::connect(const PinPtr & src, const PinPtr & dest)
     }
 
 
-    //jeœli cel jest na liœcie wymagaj¹cych podpiêcia usuñ go
+    //jeÅ›li cel jest na liÅ›cie wymagajÄ…cych podpiÄ™cia usuÅ„ go
     auto it = pinsRequiringConnections.find(dest->getParent());
     if(it != pinsRequiringConnections.end()){
         it->second.erase(dest);
 
-        //sprawdŸ czy wêze³ poprawnie pod³¹czony
+        //sprawdÅº czy wÄ™zeÅ‚ poprawnie podÅ‚Ä…czony
         if(it->second.empty() == true){
             pinsRequiringConnections.erase(it);
         }
@@ -391,8 +391,8 @@ void Model::quickRemoveConnection(const Connections::iterator & connIt)
 
     beforeRemoveConnection(connection);
 
-    //policz ile po³¹czeñ dochodzi do wêz³a docelowego usuwanego po³¹czenia (wystarczy ¿e bêdzie ich wiêcej ni¿ 1)
-    //sprawdŸ czy docelowy pin nie jest wymagany dla jakiegoœ po³¹czonego piny wyjœciowego wêz³a
+    //policz ile poÅ‚Ä…czeÅ„ dochodzi do wÄ™zÅ‚a docelowego usuwanego poÅ‚Ä…czenia (wystarczy Å¼e bÄ™dzie ich wiÄ™cej niÅ¼ 1)
+    //sprawdÅº czy docelowy pin nie jest wymagany dla jakiegoÅ› poÅ‚Ä…czonego piny wyjÅ›ciowego wÄ™zÅ‚a
     PinPtr destPin(connection->getDest());
     NPtr destNode(destPin->getParent());
     NPtr srcNode(connection->getSrc()->getParent());
@@ -412,12 +412,12 @@ void Model::quickRemoveConnection(const Connections::iterator & connIt)
     }
 
     if(countIn == 1){
-        //to ostatnie po³¹czenie, wiêc zostanie niepod³¹czony
+        //to ostatnie poÅ‚Ä…czenie, wiÄ™c zostanie niepodÅ‚Ä…czony
         pinsRequiringConnections[destNode] = PinsSet();
     }
 
     if(otherDepends == true || destPin->isRequired() == true){
-        //ten pin by³ albo wymagany albo zale¿¹ od niego inne piny wyjœciowe wêz³a
+        //ten pin byÅ‚ albo wymagany albo zaleÅ¼Ä… od niego inne piny wyjÅ›ciowe wÄ™zÅ‚a
         pinsRequiringConnections[destNode].insert(destPin);
     }
 
@@ -427,7 +427,7 @@ void Model::quickRemoveConnection(const Connections::iterator & connIt)
     connection->setSrc(PinPtr());
     connections.erase(connIt);
 
-    //sprawdŸ czy nie powsta³ nowy liœæ
+    //sprawdÅº czy nie powstaÅ‚ nowy liÅ›Ä‡
     if(srcNode->beginIn() != srcNode->endIn()){
         bool leaf = true;
         for(auto it = srcNode->beginOut(); it != srcNode->endOut(); ++it){

@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "DataSourcePathsManager.h"
 #include <OpenThreads/Mutex>
 #include <OpenThreads/ScopedLock>
@@ -56,10 +56,10 @@ void DataSourcePathsManager::setUser(const User & user)
 
 void DataSourcePathsManager::setUsersDataPath(const core::Filesystem::Path & usersDataPath)
 {
-	//Aktualizuje g³ówn¹ œcie¿kê danych
+	//Aktualizuje gÅ‚Ã³wnÄ… Å›cieÅ¼kÄ™ danych
 	localUsersDataPath = usersDataPath;
 
-	//Muszê aktualizowaæ œcie¿ki
+	//MuszÄ™ aktualizowaÄ‡ Å›cieÅ¼ki
 	if(user_.id() != -1){
 		rebuildUserPaths();
 	}
@@ -83,7 +83,7 @@ const std::string & DataSourcePathsManager::userHash() const
 std::string DataSourcePathsManager::generateUserHash(const User & user)
 {
 	//TODO
-	//dodaæ coœ sensownie mieszaj¹cego
+	//dodaÄ‡ coÅ› sensownie mieszajÄ…cego
 	std::string hash(user.name() + ":" + user.password());
 	
 	bool first = true;
@@ -107,13 +107,13 @@ std::string DataSourcePathsManager::generateUserHash(const User & user)
 
 				case 2:
 
-					//obcinamy do dy¿ych liter
+					//obcinamy do dyÅ¼ych liter
 					nChar = 'A' + c % 24;
 					break;
 
 				case 0:
 
-					//obcinamy do ma³ych liter
+					//obcinamy do maÅ‚ych liter
 					nChar = 'a' + c % 24;
 					break;
 				}
@@ -206,13 +206,13 @@ void DataSourcePathsManager::rebuildUserPaths()
 	
 	localPatientPhotosPath = localMedicalSchemasPath / "patient_photos";
 	
-	// dodajê na pocz¹tek m dla unikalnoœci (od motion) oraz s na koniec (od shallow)
+	// dodajÄ™ na poczÄ…tek m dla unikalnoÅ›ci (od motion) oraz s na koniec (od shallow)
 	localMotionShallowCopyPath = localMotionSchemasPath / ("m" + userHash_ + "s.xml");
-	// dodajê na pocz¹tek m dla unikalnoœci (od motion) oraz m na koniec (od metadata)
+	// dodajÄ™ na poczÄ…tek m dla unikalnoÅ›ci (od motion) oraz m na koniec (od metadata)
 	localMotionMetadataPath = localMotionSchemasPath / ("m" + userHash_ + "m.xml");
-	// dodajê na pocz¹tek med dla unikalnoœci (od medical) oraz s na koniec (od shallow)
+	// dodajÄ™ na poczÄ…tek med dla unikalnoÅ›ci (od medical) oraz s na koniec (od shallow)
 	localMedicalShallowCopyPath = localMedicalSchemasPath / ("med" + userHash_ + "s.xml");
-	// dodajê na pocz¹tek med dla unikalnoœci (od medical) oraz m na koniec (od metadata)
+	// dodajÄ™ na poczÄ…tek med dla unikalnoÅ›ci (od medical) oraz m na koniec (od metadata)
 	localMedicalMetadataPath = localMedicalSchemasPath / ("med" + userHash_ + "m.xml");
 }
 
@@ -270,7 +270,7 @@ void DataSourcePathsManager::createUserDataPaths() const
 
 void DataSourcePathsManager::removeUserDataPaths() const
 {
-	// próbujemy posprz¹taæ po u¿ytkowniku jego dane usuwaj¹c ich roota
+	// prÃ³bujemy posprzÄ…taÄ‡ po uÅ¼ytkowniku jego dane usuwajÄ…c ich roota
 	try{
 		core::Filesystem::deleteDirectory(localUserDataPath);
 	}

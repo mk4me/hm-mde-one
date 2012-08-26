@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/07/13
 	created:  13:7:2010   22:04
 	filename: ImageCanvas.h
@@ -25,9 +25,9 @@ class ImageCanvas : public osgWidget::Canvas
 private:
   //! Obrazek.
   osg::ref_ptr<osg::Image> image;
-  //! Prostok¹t zawieraj¹cy obrazek.
+  //! ProstokÄ…t zawierajÄ…cy obrazek.
   osg::ref_ptr<osgWidget::Widget> rect;
-  //! Czy rozmiar ma odpowiadaæ rozmiarowi obrazka?
+  //! Czy rozmiar ma odpowiadaÄ‡ rozmiarowi obrazka?
   bool keepImageRatio;
   //!
   core::OsgWidgetBorder border;
@@ -35,11 +35,11 @@ private:
 public:
   META_Object(osgUI, ImageCanvas)
 
-  //! Konstruktor domyœlny.
+  //! Konstruktor domyÅ›lny.
   //! \param Nazwa kontrolki.
   ImageCanvas(const std::string& name = "");
 
-  //! Konstruktor kopiuj¹cy.
+  //! Konstruktor kopiujÄ…cy.
   //! \param canvas
   //! \param copyop
   ImageCanvas(const ImageCanvas& canvas, const osg::CopyOp& copyop);
@@ -48,7 +48,7 @@ public:
 
   //! \param maxWidth
   //! \param maxHeight
-  //! \return Rozmiar (przewa¿nie mniejszy) zgodny z proporcjami obrazka.
+  //! \return Rozmiar (przewaÅ¼nie mniejszy) zgodny z proporcjami obrazka.
   osgWidget::XYCoord getRationedSize(float maxWidth, float maxHeight);
 
 
@@ -90,8 +90,8 @@ public:
   //! \param image
   void setImage(osg::Image* image, bool useTextureRect = false);
 
-  //! Ustawia wspó³rzêdne tekstury.
-  //! \param normCoords Znormalizowane wspó³rzêdne.
+  //! Ustawia wspÃ³Å‚rzÄ™dne tekstury.
+  //! \param normCoords Znormalizowane wspÃ³Å‚rzÄ™dne.
   void setTexCoord(osgWidget::Quad normCoords = osgWidget::Quad(0,0,1,1) );
   
   //! \return
@@ -103,13 +103,13 @@ public:
   void setKeepImageRatio(bool keepImageRatio);
 
 protected:
-  //! Prze³adowanie metody rozmieszczaj¹cej elementy.
+  //! PrzeÅ‚adowanie metody rozmieszczajÄ…cej elementy.
   //! \param diffWidth
   //! \param diffHeight
   virtual void _resizeImplementation( osgWidget::point_type diffWidth, osgWidget::point_type diffHeight );
-  //! Prze³adowanie metody obliczaj¹cej rozmiar.
+  //! PrzeÅ‚adowanie metody obliczajÄ…cej rozmiar.
   virtual osgWidget::Window::Sizes _getWidthImplementation() const;
-  //! Prze³adowanie metody obliczaj¹cej rozmiar.
+  //! PrzeÅ‚adowanie metody obliczajÄ…cej rozmiar.
   virtual osgWidget::Window::Sizes _getHeightImplementation() const;
 };
 

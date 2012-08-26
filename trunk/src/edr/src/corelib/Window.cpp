@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include <core/Window.h>
 #include <core/PluginCommon.h>
 #include <core/ILog.h>

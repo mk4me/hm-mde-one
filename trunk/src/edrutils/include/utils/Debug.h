@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/08/05
 	created:  5:8:2010   18:28
 	filename: Debug.h
@@ -38,7 +38,7 @@ public:
     //! \param format
     //! \param
     static void formatMessage(char * buffer, int bufferSize, const char * format, ...);
-    //! Zaœlepka. Pomaga w budowaniu makr.
+    //! ZaÅ›lepka. Pomaga w budowaniu makr.
     //! \param buffer
     //! \param bufferSize
     static void formatMessage(char * buffer, int bufferSize);
@@ -49,7 +49,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Definicja funkcji wypisuj¹cej do konsoli w trybie debug.
+ *	Definicja funkcji wypisujÄ…cej do konsoli w trybie debug.
  */
 #ifdef UTILS_DEBUG
 #   define UTILS_DEBUG_PRINT(format, ...) utils::Debug::print(__FILE__, __LINE__, format, __VA_ARGS__)

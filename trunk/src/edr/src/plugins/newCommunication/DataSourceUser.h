@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/03
     created:  3:2:2012   17:10
     filename: CommunicationDataSourceUser.h
@@ -13,52 +13,52 @@
 #include "DataSourceUserData.h"
 #include "DataSourceUserPrivilages.h"
 
-//! Implementacja obs≥ugujπca informacje o aktualnym uøytkowniku
+//! Implementacja obs≈ÇugujƒÖca informacje o aktualnym u≈ºytkowniku
 class User : public communication::IUser
 {
 public:
 
-    //! Konstruktor domyúlny
+    //! Konstruktor domy≈õlny
     User();
 
     //! Destruktor wirtualny
     virtual ~User();
 
-    //! \return Identyfikator uøytkownika
+    //! \return Identyfikator u≈ºytkownika
     virtual const int id() const;
-    //! \param id Nazwa uøytkownika
+    //! \param id Nazwa u≈ºytkownika
     void setID(int id);
 
-    //! \return Nazwa uøytkownika
+    //! \return Nazwa u≈ºytkownika
     virtual const std::string & name() const;
-    //! \param name Nazwa uøytkownika
+    //! \param name Nazwa u≈ºytkownika
     void setName(const std::string & name);
 
-    //! \return Has≥o uøytkownika
+    //! \return Has≈Ço u≈ºytkownika
     const std::string & password() const;
-    //! \param password Has≥o uøytkownika
+    //! \param password Has≈Ço u≈ºytkownika
     void setPassword(const std::string & password);
 
-    //! \return Prawa uøytkownika
+    //! \return Prawa u≈ºytkownika
     virtual const UserPrivilages & userPrivilages() const;
-    //! \param userPrivilages Nowe uprawnienia uøytkownika
+    //! \param userPrivilages Nowe uprawnienia u≈ºytkownika
     void setPrivilages(const UserPrivilages & userPrivilages);
 
-    //! \return Dane uøytkownika
+    //! \return Dane u≈ºytkownika
     virtual const UserData & userData() const;
-    //! \param userData Nowe dane uøytkownika
+    //! \param userData Nowe dane u≈ºytkownika
     void setData(const UserData & userData);
 
 private:
-    //! Identyfikator uøytkownika
+    //! Identyfikator u≈ºytkownika
     int id_;
-    //! Nazwa uøytkownika
+    //! Nazwa u≈ºytkownika
     std::string name_;
-    //! Has≥o uøytkownika
+    //! Has≈Ço u≈ºytkownika
     std::string password_;
-    //! Uprawnienia uøytkownika
+    //! Uprawnienia u≈ºytkownika
     UserPrivilages privilages_;
-    //! Dane uøytkownika
+    //! Dane u≈ºytkownika
     UserData data_;
 };
 

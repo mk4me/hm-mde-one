@@ -1,4 +1,4 @@
-#include <QtGui/QWidget>
+﻿#include <QtGui/QWidget>
 #include <QtGui/QApplication>
 #include <osg/BoundingBox>
 

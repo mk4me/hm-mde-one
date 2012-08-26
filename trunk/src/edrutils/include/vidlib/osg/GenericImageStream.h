@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2011/01/26
 	created:  26:1:2011   15:15
 	filename: GenericImageStream.h
@@ -17,24 +17,24 @@
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! ImageStream korzystaj¹cy z FFmpegVideoStream
+//! ImageStream korzystajÄ…cy z FFmpegVideoStream
 template <class InnerStream>
 class VIDLIB_EXPORT GenericImageStream : public VideoImageStream
 {
 public:
-    /** Domyœlne implementacje */
+    /** DomyÅ›lne implementacje */
     META_Object(vidlib, GenericImageStream);
 
-    /** Konstruktor zeruj¹cy */
+    /** Konstruktor zerujÄ…cy */
     GenericImageStream()
     {}
 
-    /** Konstruktor kopiuj¹cy */
+    /** Konstruktor kopiujÄ…cy */
     GenericImageStream(const GenericImageStream& image, const osg::CopyOp & copyop = osg::CopyOp::SHALLOW_COPY) :
     VideoImageStream(image, copyop)
     {}
 
-    /** Otwiera strumieñ */
+    /** Otwiera strumieÅ„ */
     virtual bool open(const std::string & filename)
     {
         try {

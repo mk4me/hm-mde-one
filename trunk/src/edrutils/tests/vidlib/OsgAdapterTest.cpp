@@ -1,4 +1,4 @@
-#include <cppunit/extensions/HelperMacros.h>
+﻿#include <cppunit/extensions/HelperMacros.h>
 #include <vidlib/Config.h>
 
 #ifdef VIDLIB_ENABLE_OSG

@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/10/28
     created:  28:10:2011   13:11
     filename: CommunicationDataSource.h
@@ -889,12 +889,12 @@ private:
     void retrivePatientPhotos();
 
     /**
-    Parsowanie plikÛw xml p≥ytkiej kopii bazy danych ruchu.
+    Parsowanie plik√≥w xml p≈Çytkiej kopii bazy danych ruchu.
     */
     void readMotionDbSchemas(const std::string& shallowCopyPath, const std::string& metaDataPath);
 
     /**
-    Parsowanie plikÛw xml p≥ytkiej kopii bazy danych ruchu.
+    Parsowanie plik√≥w xml p≈Çytkiej kopii bazy danych ruchu.
     */
     void readMedicalDbSchemas(const std::string& shallowCopyPath, const std::string& metaDataPath);
 
@@ -922,7 +922,7 @@ private:
     MedicalShallowCopyPtr medicalShallowCopy;
     communication::MedicalMetaData::MetaData medicalMetadata;
 
-    //åcieøki lokalne danych
+    //≈öcie≈ºki lokalne danych
 
     core::Filesystem::Path localDataPath;
 
@@ -935,7 +935,7 @@ private:
     core::Filesystem::Path localMedicalShallowCopyPath;
     core::Filesystem::Path localMedicalMetadataPath;
 
-    //parsery XML dla kopii schematÛw baz danych
+    //parsery XML dla kopii schemat√≥w baz danych
     MotionShallowCopyParserPtr motionShallowCopyParser; 
     MotionMetadataParserPtr motionMetadataParser; 
     MedicalShallowCopyParserPtr medicalShallowCopyParser; 

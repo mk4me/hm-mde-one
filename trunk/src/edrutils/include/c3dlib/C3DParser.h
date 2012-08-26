@@ -1,8 +1,8 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/30
 	created:	30:5:2011   8:59
 	filename: 	C3DParser.h
-	author:		Wojciech Knieæ
+	author:		Wojciech KnieÄ‡
 
 	purpose:
 *********************************************************************/
@@ -68,7 +68,7 @@ public:
         //! \return jednostka dla danych analogowych (np. mm)
 		virtual const std::string& getUnit() const = 0;
 		//! \param index nr probki
-        //! \return wartoœæ probki
+        //! \return wartoÅ›Ä‡ probki
 		virtual osg::Vec3 getValue(int index) const = 0;
     };
 	typedef IPoint* IPointPtr;
@@ -179,7 +179,7 @@ private:
 private:
 	//! Zapewnia wlasciwe wczytywanie danych akwizycji
     void loadAcquisition();
-	//! zwraca mno¿nik, dziêki któremu mo¿na przekonwertowaæ wartoœæ do SI
+	//! zwraca mnoÅ¼nik, dziÄ™ki ktÃ³remu moÅ¼na przekonwertowaÄ‡ wartoÅ›Ä‡ do SI
 	float getUnitScale(const std::string& unit) const;
 };
 

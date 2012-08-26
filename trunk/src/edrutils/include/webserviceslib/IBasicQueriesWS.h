@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/28
     created:  28:2:2012   22:41
     filename: IBasicQueriesWS.h
@@ -15,7 +15,7 @@
 namespace webservices
 {
 
-//! Interfejs dostarczaj¹cy informacji o czasie ostatnich zmian danych po stronie bazy danych
+//! Interfejs dostarczajÄ…cy informacji o czasie ostatnich zmian danych po stronie bazy danych
 class IGeneralBasicQueriesWS : public IWebService
 {
 public:
@@ -30,7 +30,7 @@ public:
 typedef boost::shared_ptr<IGeneralBasicQueriesWS> GeneralBasicQueriesWSPtr;
 typedef boost::shared_ptr<const IGeneralBasicQueriesWS> GeneralBasicQueriesWSConstPtr;
 
-//! Interfejs us³ugi zwi¹zanej z danymi ruchu
+//! Interfejs usÅ‚ugi zwiÄ…zanej z danymi ruchu
 class IMotionBasicQueriesWS : public IGeneralBasicQueriesWS
 {
 public:
@@ -38,28 +38,28 @@ public:
     virtual ~IMotionBasicQueriesWS() {}
 
     /**
-	Listuje próby pomiarowe sesji.
-	@param sessionID id sesji której próby pomiarowe maj¹ zostaæ wylistowane
-	@return zbiór prób pomiarowych dla wybranej sesji
+	Listuje prÃ³by pomiarowe sesji.
+	@param sessionID id sesji ktÃ³rej prÃ³by pomiarowe majÄ… zostaÄ‡ wylistowane
+	@return zbiÃ³r prÃ³b pomiarowych dla wybranej sesji
 	*/
 	virtual const std::vector<motionWsdl::Trial> listSessionTrials(int sessionID) = 0;
 	/**
 	Listuje sesje dla danego laboratorium.
-	@param labID id labu którego sesje maj¹ zostaæ wylistowane
-	@return zbiór sesji dla wybranego labu
+	@param labID id labu ktÃ³rego sesje majÄ… zostaÄ‡ wylistowane
+	@return zbiÃ³r sesji dla wybranego labu
 	*/
 	virtual const std::vector<motionWsdl::Session> listLabSessionsWithAttributes(int labID) = 0;
 	/**
 	Listuje pliki dla encji typu subjectType i id ID.
-	@param ID id encji dla której maj¹ zostaæ wylistowane pliki
-	@param subjectType typ encji dla której maj¹ zostaæ wylistowane pliki
-	@return zbiór plików dla wybranej encji
+	@param ID id encji dla ktÃ³rej majÄ… zostaÄ‡ wylistowane pliki
+	@param subjectType typ encji dla ktÃ³rej majÄ… zostaÄ‡ wylistowane pliki
+	@return zbiÃ³r plikÃ³w dla wybranej encji
 	*/
 	virtual const std::vector<motionWsdl::File> listFiles(int ID, const std::string& subjectType) = 0;
 	/**
-	TODO: Listuje encje bazodanowe, sesje, podleg³e sesjom próby pomiarowe i
-	informacje o plikach poszczególnych sesji i prób pomiarowych.
-	@return lista prób pomiarowych, w przysz³oœci powinno znaleŸæ siê drzewko zale¿noœci miêdzy encjami
+	TODO: Listuje encje bazodanowe, sesje, podlegÅ‚e sesjom prÃ³by pomiarowe i
+	informacje o plikach poszczegÃ³lnych sesji i prÃ³b pomiarowych.
+	@return lista prÃ³b pomiarowych, w przyszÅ‚oÅ›ci powinno znaleÅºÄ‡ siÄ™ drzewko zaleÅ¼noÅ›ci miÄ™dzy encjami
 	*/
 	virtual const std::vector<motionWsdl::Trial> listSessionContents() = 0;
 };

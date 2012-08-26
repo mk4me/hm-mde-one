@@ -1,4 +1,4 @@
-#ifndef ANIMATION_SERVICE_H
+﻿#ifndef ANIMATION_SERVICE_H
 #define ANIMATION_SERVICE_H
 
 #include <map>

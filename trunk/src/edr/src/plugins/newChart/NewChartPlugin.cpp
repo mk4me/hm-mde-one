@@ -1,4 +1,4 @@
-#include "NewChartPCH.h"
+﻿#include "NewChartPCH.h"
 #include "NewChartVisualizer.h"
 
 CORE_PLUGIN_BEGIN("newChart", UID::GenerateUniqueID("{FB092C90-DC6E-4E5A-B33C-EAF84F325A99}"))

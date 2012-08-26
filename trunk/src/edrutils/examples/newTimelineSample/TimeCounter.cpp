@@ -1,4 +1,4 @@
-#include "TimeCounter.h"
+﻿#include "TimeCounter.h"
 #include <timelinelib/Model.h>
 #include <OpenThreads/ScopedLock>
 #include <utils/Debug.h>

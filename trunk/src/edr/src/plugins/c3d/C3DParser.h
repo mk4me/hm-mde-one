@@ -1,8 +1,8 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2011/05/25
 	created:	25:5:2011   10:14
 	filename: 	C3DParser.h
-	author:		Wojciech KnieÊ
+	author:		Wojciech Knieƒá
 	
 	purpose:	
 *********************************************************************/
@@ -16,15 +16,15 @@
 #include <c3dlib/C3DParser.h>
 
 
-//! Klasa wykorzystuje c3dlib do zasilenia systemu w obiekty domenowe pochodzπce z plikÛw C3D
+//! Klasa wykorzystuje c3dlib do zasilenia systemu w obiekty domenowe pochodzƒÖce z plik√≥w C3D
 class C3DParser : public core::IParser
 {
     UNIQUE_ID("{D7801231-BACA-42C6-9A8E-706F561A563F}", "C3D parser");
 	typedef core::shared_ptr<c3dlib::C3DParser> ParserPtr;
 private:
-    //! Obsolete. Wektor zawiera 4 kana≥y analogowe z p≥yt GRF
+    //! Obsolete. Wektor zawiera 4 kana≈Çy analogowe z p≈Çyt GRF
 	std::vector<core::ObjectWrapperPtr> GRFChannels;
-    //! Obsolete. Wektor zawiera 16 kana≥Ûw analogowych EMG
+    //! Obsolete. Wektor zawiera 16 kana≈Ç√≥w analogowych EMG
 	std::vector<core::ObjectWrapperPtr> EMGChannels;
     //! Kolekcja z danymi GRF
 	core::ObjectWrapperPtr GRFs;
@@ -32,17 +32,17 @@ private:
 	core::ObjectWrapperPtr EMGs;
     //! Kolekcja z markerami
 	core::ObjectWrapperPtr markerChannels;
-    //! Kolekcja z si≥ami w stawach - dane sπ estymowane
+    //! Kolekcja z si≈Çami w stawach - dane sƒÖ estymowane
 	core::ObjectWrapperPtr forceChannels;
-    //! Kolekcja z kπtami w stawach - dane sπ estymowane
+    //! Kolekcja z kƒÖtami w stawach - dane sƒÖ estymowane
 	core::ObjectWrapperPtr angleChannels;
-    //! Kolekcja z momentami si≥ w stawach - dane sπ estymowane
+    //! Kolekcja z momentami si≈Ç w stawach - dane sƒÖ estymowane
 	core::ObjectWrapperPtr momentChannels;
-    //! Kolekcja z mocami w stawach - dane sπ estymowane
+    //! Kolekcja z mocami w stawach - dane sƒÖ estymowane
 	core::ObjectWrapperPtr powerChannels;
-    //! Kolekcja ze zdarzeniami zapisanymi w pliku C3D (np. stπpniÍcie stopy)
+    //! Kolekcja ze zdarzeniami zapisanymi w pliku C3D (np. stƒÖpniƒôcie stopy)
     core::ObjectWrapperPtr allEvents;
-    //! wskaünik do w≥aúciwego parsera z biblioteki c3dlib
+    //! wska≈∫nik do w≈Ça≈õciwego parsera z biblioteki c3dlib
 	ParserPtr parserPtr;
 
 public:
@@ -51,18 +51,18 @@ public:
 
 public:
     //! Parsowanie pliku c3d
-    //! \param path poprawna úcieøka do pliku
+    //! \param path poprawna ≈õcie≈ºka do pliku
     virtual void parseFile(const core::Filesystem::Path& path);
     //! \return pusty obiekt nowego parsera
     virtual core::IParser* create();
     //! Zwraca obiekty dostarczone przez parser
     //! \param objects kolekcja z obiektami (set)
     virtual void getObjects(core::Objects& objects);
-    //! Zwraca rozszerzenia, ktÛre sπ obs≥ugiwane przez parser (tylko asf)
+    //! Zwraca rozszerzenia, kt√≥re sƒÖ obs≈Çugiwane przez parser (tylko asf)
     //! \param extensions kolecja z roszerzeniami
     virtual void getSupportedExtensions(Extensions & extensions) const;
-	//! Zapisauje dane w konkretnym miejscu, nie uøywane
-	//! \param path úcieøka zapisu
+	//! Zapisauje dane w konkretnym miejscu, nie u≈ºywane
+	//! \param path ≈õcie≈ºka zapisu
 	void saveFile(const core::Filesystem::Path& path);
 };
 

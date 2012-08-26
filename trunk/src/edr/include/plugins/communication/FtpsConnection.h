@@ -1,7 +1,7 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Klasa FtpsConnection opiera siê o bibliotekê LibCurl i protokó³ FTPS. Metody czytania i odbierania pakietów
-zosta³y zaimplementowane w sposób zapobiegaj¹cy blokowania siê nawzajem klienta i serwera. Klasa implementuje
+@brief Klasa FtpsConnection opiera siÄ™ o bibliotekÄ™ LibCurl i protokÃ³Å‚ FTPS. Metody czytania i odbierania pakietÃ³w
+zostaÅ‚y zaimplementowane w sposÃ³b zapobiegajÄ…cy blokowania siÄ™ nawzajem klienta i serwera. Klasa implementuje
 interfejs ISendable.
 */
 
@@ -30,12 +30,12 @@ namespace communication
     private:
         /**
         @author Marek Daniluk
-        @brief Struktura pozwalaj¹ca na anulowanie operacji. Przechowuje te¿ informacjê o postêpie operacji.
+        @brief Struktura pozwalajÄ…ca na anulowanie operacji. Przechowuje teÅ¼ informacjÄ™ o postÄ™pie operacji.
         */
         struct Progress
         {
             /**
-            Postêp
+            PostÄ™p
             */
             int progress;
 
@@ -45,57 +45,57 @@ namespace communication
             IProgress * customProgress;
 
             /**
-            czy anulowaæ?
+            czy anulowaÄ‡?
             */
             bool abort;
         };
         /**
-        Metoda statyczna (wymagana przez curla) typu callback wymagana przy przesy³aniu danych na serwer.
-        Daje nam informacjê zwrotn¹ o iloœci danych wys³anych na serwer.
-        @param buffer wskaŸnik do bloku pamiêci o rozmiarze size*nmemb
+        Metoda statyczna (wymagana przez curla) typu callback wymagana przy przesyÅ‚aniu danych na serwer.
+        Daje nam informacjÄ™ zwrotnÄ… o iloÅ›ci danych wysÅ‚anych na serwer.
+        @param buffer wskaÅºnik do bloku pamiÄ™ci o rozmiarze size*nmemb
         @param size rozmiar w bajtach elementu do odczytania
-        @param nmemb liczba elementów do odczytania
-        @param stream wskaŸnik na strumieñ danych
-        @return iloœæ bajtów przetworzonych przez funkcjê
+        @param nmemb liczba elementÃ³w do odczytania
+        @param stream wskaÅºnik na strumieÅ„ danych
+        @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
         */
         static size_t read(void* buffer, size_t size, size_t nmemb, void* stream);
         /**
         Metoda statyczna (wymagana przez curla) typu callback wymagana przy odbieraniu danych z serwera.
-        Daje nam informacjê zwrotn¹ o iloœci danych pobranych z serwera.
-        @param buffer wskaŸnik do bloku pamiêci o rozmiarze size*nmemb
+        Daje nam informacjÄ™ zwrotnÄ… o iloÅ›ci danych pobranych z serwera.
+        @param buffer wskaÅºnik do bloku pamiÄ™ci o rozmiarze size*nmemb
         @param size rozmiar w bajtach elementu do odczytania
-        @param nmemb liczba elementów do odczytania
-        @param stream wskaŸnik na strumieñ danych
-        @return iloœæ bajtów przetworzonych przez funkcjê
+        @param nmemb liczba elementÃ³w do odczytania
+        @param stream wskaÅºnik na strumieÅ„ danych
+        @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
         */
         static size_t write(void *buffer, size_t size, size_t nmemb, void *stream);
         /**
-        Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji postêpu.
-        Daje nam informacje zwrotna o procentowym postêpie aktualnej operacji.
-        @param progress wskaŸnik na strukturê typu Progress
-        @param t wieloœæ ca³kowita pliku pobieranego
-        @param d obecna iloœæ pobranych bajtów
-        @param ultotal wielkoœæ ca³kowita pliku wysy³anego
-        @param ulnow obecna iloœæ wys³anych bajtów
-        @return iloœæ bajtów przetworzonych przez funkcjê
+        Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji postÄ™pu.
+        Daje nam informacje zwrotna o procentowym postÄ™pie aktualnej operacji.
+        @param progress wskaÅºnik na strukturÄ™ typu Progress
+        @param t wieloÅ›Ä‡ caÅ‚kowita pliku pobieranego
+        @param d obecna iloÅ›Ä‡ pobranych bajtÃ³w
+        @param ultotal wielkoÅ›Ä‡ caÅ‚kowita pliku wysyÅ‚anego
+        @param ulnow obecna iloÅ›Ä‡ wysÅ‚anych bajtÃ³w
+        @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
         */
         static size_t setProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow);
         static size_t setCustomProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow);
     protected:
         /**
-        Pole klasy przechowuj¹ce uri do serwera FTPS.
+        Pole klasy przechowujÄ…ce uri do serwera FTPS.
         */
         std::string uri;
         /**
-        Pole klasy przechowuj¹ce nazwê u¿ytkownika.
+        Pole klasy przechowujÄ…ce nazwÄ™ uÅ¼ytkownika.
         */
         std::string usr;
         /**
-        Pole klasy przechowuj¹ce has³o u¿ytkownika.
+        Pole klasy przechowujÄ…ce hasÅ‚o uÅ¼ytkownika.
         */
         std::string pswd;
         /**
-        Pole klasy przechowuj¹ce informacje o procentowym postêpie operacji. S³u¿y te¿ do przerwañ operacji.
+        Pole klasy przechowujÄ…ce informacje o procentowym postÄ™pie operacji. SÅ‚uÅ¼y teÅ¼ do przerwaÅ„ operacji.
         */
         Progress progress;
 
@@ -103,11 +103,11 @@ namespace communication
 
     private:
         /**
-        WskaŸnik na obiekt typu CURL potrzebny do operacji ftpowych.
+        WskaÅºnik na obiekt typu CURL potrzebny do operacji ftpowych.
         */
         CURL* curl;
         /**
-        Pole klasy przechowuj¹ce wyniki dzia³ania funkcji biblioteki LibCurl.
+        Pole klasy przechowujÄ…ce wyniki dziaÅ‚ania funkcji biblioteki LibCurl.
         */
         CURLcode res;
     public:
@@ -118,8 +118,8 @@ namespace communication
         /**
         Konstruktor klasy FtpsConnection.
         @param uri adres serwera FTPS
-        @param usr nazwa u¿ytkownika
-        @param pswd has³o u¿ytkownika
+        @param usr nazwa uÅ¼ytkownika
+        @param pswd hasÅ‚o uÅ¼ytkownika
         */
         FtpsConnection(const std::string& uri, const std::string& usr, const std::string& pswd);
         /**
@@ -127,60 +127,60 @@ namespace communication
         */
         virtual ~FtpsConnection();
         /**
-        Metoda setUri ustala adres ip lub alias hosta z którym zostanie nawi¹zane po³¹czenie.
+        Metoda setUri ustala adres ip lub alias hosta z ktÃ³rym zostanie nawiÄ…zane poÅ‚Ä…czenie.
         @param uri adres serwera FTPS
         */
         virtual void setUri(const std::string& uri);
         /**
-        Metoda setUser ustala nazwê u¿ytkownika wykorzystywana do logowania.
-        @param usr nazwa u¿ytkownika
+        Metoda setUser ustala nazwÄ™ uÅ¼ytkownika wykorzystywana do logowania.
+        @param usr nazwa uÅ¼ytkownika
         */
         virtual void setUser(const std::string& usr);
         /**
-        Metoda setPassword ustala has³o u¿ytkownika wykorzystywane do logowania.
-        @param pswd has³o u¿ytkownika
+        Metoda setPassword ustala hasÅ‚o uÅ¼ytkownika wykorzystywane do logowania.
+        @param pswd hasÅ‚o uÅ¼ytkownika
         */
         virtual void setPassword(const std::string& pswd);
         /**
-        Metoda setCredentials ustala dane u¿ytkownika wykorzystywane do logowania takie jak host,
-        nazwa i has³o u¿ytkownika.
+        Metoda setCredentials ustala dane uÅ¼ytkownika wykorzystywane do logowania takie jak host,
+        nazwa i hasÅ‚o uÅ¼ytkownika.
         @param uri adres serwera FTPS
-        @param usr nazwa u¿ytkownika
-        @param pswd has³o u¿ytkownika
+        @param usr nazwa uÅ¼ytkownika
+        @param pswd hasÅ‚o uÅ¼ytkownika
         */
         virtual void setCredentials(const std::string& uri, const std::string& usr, const std::string& pswd);
         /**
-        Metoda zwraca nazwê hosta lub adres ip (w zale¿nosci co zosta³o podane) u¿ywana dla danego po³¹czenia.
+        Metoda zwraca nazwÄ™ hosta lub adres ip (w zaleÅ¼nosci co zostaÅ‚o podane) uÅ¼ywana dla danego poÅ‚Ä…czenia.
         @return uri do serwera FTPS
         */
         virtual const std::string& getUri() const;
         /**
-        Metoda zwraca login u¿ytkownika u¿ywany dla danego po³¹czenia.
+        Metoda zwraca login uÅ¼ytkownika uÅ¼ywany dla danego poÅ‚Ä…czenia.
         @return login uzytkownika
         */
         virtual const std::string& getUser() const;
         /**
-        Metoda zwraca has³o u¿ytkownika u¿ywane dla danego po³¹czenia.
-        @return has³o u¿ytkownika
+        Metoda zwraca hasÅ‚o uÅ¼ytkownika uÅ¼ywane dla danego poÅ‚Ä…czenia.
+        @return hasÅ‚o uÅ¼ytkownika
         */
         virtual const std::string& getPassword() const;
         /**
-        Metoda wysy³aj¹ca na serwer plik. Nazwa wys³anego pliku przechowywana jest w zmiennej filename.
-        @param filename nazwa pliku który ma wzi¹æ udzia³ w operacji ftp
+        Metoda wysyÅ‚ajÄ…ca na serwer plik. Nazwa wysÅ‚anego pliku przechowywana jest w zmiennej filename.
+        @param filename nazwa pliku ktÃ³ry ma wziÄ…Ä‡ udziaÅ‚ w operacji ftp
         */
         virtual OperationStatus put(const std::string& localSource, const std::string & remoteDestination);
         /**
-        Metoda pobieraj¹ca plik z serwera. Nazwa pobranego pliku przechowywana jest w zmiennej filename.
-        @param filename nazwa pliku który ma wzi¹c udzia³ w operacji ftp
+        Metoda pobierajÄ…ca plik z serwera. Nazwa pobranego pliku przechowywana jest w zmiennej filename.
+        @param filename nazwa pliku ktÃ³ry ma wziÄ…c udziaÅ‚ w operacji ftp
         */
         virtual OperationStatus get(const std::string& remoteSource, const std::string & localDestination, IProgress * customProgress = nullptr);
         /**
-        Postêp operacji przesy³ania.
-        @return postêp wyra¿ony w procentach dla pojedynczego transferu
+        PostÄ™p operacji przesyÅ‚ania.
+        @return postÄ™p wyraÅ¼ony w procentach dla pojedynczego transferu
         */
         virtual int getProgress() const;
         /**
-        Anuluje obecnie wykonywan¹ operacjê. Czyœci zasoby uzyte na jej potrzeby (np. utworzone pliki)
+        Anuluje obecnie wykonywanÄ… operacjÄ™. CzyÅ›ci zasoby uzyte na jej potrzeby (np. utworzone pliki)
         */
         virtual void abort();
 

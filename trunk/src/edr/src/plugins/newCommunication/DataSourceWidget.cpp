@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "DataSourceWidget.h"
 #include "DownloadStatusWidget.h"
 #include "DataSource.h"
@@ -49,7 +49,7 @@ void LocalDataLoader::run()
 
 	auto localStorage = DataSourceLocalStorage::instance();
 
-	//jeœli mamy synchronizacjê to próbujemy parsowaæ dane, ustawiæ je, jeœli wszystko ok to ³adujemy do localstorage
+	//jeÅ›li mamy synchronizacjÄ™ to prÃ³bujemy parsowaÄ‡ dane, ustawiÄ‡ je, jeÅ›li wszystko ok to Å‚adujemy do localstorage
 	if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest && sourceWidget->downloadCanceled == false){
 		communication::ShallowCopy shallowCopy;
 		try{
@@ -66,7 +66,7 @@ void LocalDataLoader::run()
 
 	if(synch == true){
 		QMetaObject::invokeMethod(this, "prepareStatusWidget", Qt::BlockingQueuedConnection);
-		//od razu ³adujemy do local storage
+		//od razu Å‚adujemy do local storage
 		QString info(tr("Synchronizing files:") + " %1 / " + QString::number(sourceWidget->downloadedFiles.size()));
 		counter = 1;
 		for(auto it = sourceWidget->downloadedFiles.begin(); it != sourceWidget->downloadedFiles.end(); ++it){
@@ -81,10 +81,10 @@ void LocalDataLoader::run()
 		}
 	}
 
-	//definitywnie koñczymy pobieranie i jego obs³ugê
+	//definitywnie koÅ„czymy pobieranie i jego obsÅ‚ugÄ™
 	if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 		//TODO - jedna wspolna metoda
-		//usuwam p³ytk¹ kopiê
+		//usuwam pÅ‚ytkÄ… kopiÄ™
 		for(auto it = sourceWidget->downloadedFiles.begin(); it != sourceWidget->downloadedFiles.end(); ++it){
 			try{
 				core::Filesystem::deleteFile(*it);
@@ -93,7 +93,7 @@ void LocalDataLoader::run()
 			}
 		}
 	}else{
-		//nie by³ to shallowCopy wiêc zwyk³y transfer - muszê odœwiezyæ status plików!!
+		//nie byÅ‚ to shallowCopy wiÄ™c zwykÅ‚y transfer - muszÄ™ odÅ›wiezyÄ‡ status plikÃ³w!!
 		QMetaObject::invokeMethod(sourceWidget, "refreshStatusAfterDownload", Qt::BlockingQueuedConnection);
 	}
 
@@ -127,7 +127,7 @@ void LocalDataLoader::updateStatusWidget()
 
 void LocalDataLoader::showFinalMessage()
 {
-	//obs³uga komunikatu
+	//obsÅ‚uga komunikatu
 	if(sourceWidget->downloadCanceled == true){
 		//anulowano pobieranie
 		QMessageBox messageBox(sourceWidget);
@@ -144,7 +144,7 @@ void LocalDataLoader::showFinalMessage()
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
 	}else if(sourceWidget->downloadCrashed == true){
-		//b³¹d pobierania
+		//bÅ‚Ä…d pobierania
 		QMessageBox messageBox(sourceWidget);
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 			messageBox.setWindowTitle(tr("Synchronization error"));
@@ -175,7 +175,7 @@ void LocalDataLoader::showFinalMessage()
 		messageBox.exec();
 	}
 
-	//próbujemy chowaæ po 3 sekundach
+	//prÃ³bujemy chowaÄ‡ po 3 sekundach
 	QTimer::singleShot(3000, sourceWidget, SLOT(tryHideStatusWidget()));
 }
 
@@ -217,7 +217,7 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 
 	connect(&downloadRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshDownloadProgress()));
 
-	//inicjujê karty pacjenta i ustawiam domyœln¹
+	//inicjujÄ™ karty pacjenta i ustawiam domyÅ›lnÄ…
 	patientCardPlaceholerWidget->setLayout(new QHBoxLayout());
 	registerPatientCard(new DefaultPatientCard());
 	patientCardManager.setPatientCard(0);
@@ -234,7 +234,7 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 
 	filteredShallowCopyStatus.reset(new DataSourceStatusManager(dataSource->fileStatusManager.get()));
 
-	//ustawiamy aktualn¹ perspektywê
+	//ustawiamy aktualnÄ… perspektywÄ™
 	perspectiveComboBox->setCurrentIndex(0);
 
 	dataViewWidget->layout()->addWidget(downloadStatusWidget);
@@ -280,14 +280,14 @@ void DataSourceWidget::initializeStatusIcons()
 
 void DataSourceWidget::refreshCurrentPerspectiveContent()
 {
-	//odœwie¿am bie¿¹c¹
+	//odÅ›wieÅ¼am bieÅ¼Ä…cÄ…
 	contentManager.refreshCurrentContent(perspectiveManager.currentPerspectiveWidget(), filteredShallowCopy, perspectiveManager.currentPerspective().get(),
 		filteredShallowCopyStatus.get(),dataSource->fullShallowCopyStatus.get(), true);
 
-	//aktualna perspektywa jest ju¿ ok
+	//aktualna perspektywa jest juÅ¼ ok
 	perspectivesContent[perspectiveManager.currentPerspectiveWidget()] = contentManager.currentContentIndex();
 
-	//sprawdzam czy mam jakiegoœ selecta - je¿eli nie to próbuje coœ zaznaczyæ
+	//sprawdzam czy mam jakiegoÅ› selecta - jeÅ¼eli nie to prÃ³buje coÅ› zaznaczyÄ‡
 
 	auto selected = perspectiveManager.currentPerspectiveWidget()->selectedItems();
 
@@ -309,18 +309,18 @@ void DataSourceWidget::connectionModeChanged()
 
 void DataSourceWidget::refreshStatus()
 {
-	//ustaw kursor na myœlenie
+	//ustaw kursor na myÅ›lenie
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
-	//odœwie¿am status plików
+	//odÅ›wieÅ¼am status plikÃ³w
 	dataSource->fileStatusManager->refreshFilesStatus();
-	//odœwie¿am status pe³nej p³ytkiej kopii
+	//odÅ›wieÅ¼am status peÅ‚nej pÅ‚ytkiej kopii
 	dataSource->fullShallowCopyStatus->setShallowCopy(&dataSource->fullShallowCopy);
-	//odœwie¿am status przefiltrowanej p³ytkiej kopii
+	//odÅ›wieÅ¼am status przefiltrowanej pÅ‚ytkiej kopii
 	filteredShallowCopyStatus->setShallowCopy(&filteredShallowCopy);
-	//uniewa¿niam wszystkie perspektywy
+	//uniewaÅ¼niam wszystkie perspektywy
 	invalidatePerspectivesContent();
-	//odœwie¿am bierz¹c¹ perspektywê
+	//odÅ›wieÅ¼am bierzÄ…cÄ… perspektywÄ™
 	refreshCurrentPerspectiveContent();
 	//przywracam kursor
 	setCursor(Qt::ArrowCursor);
@@ -328,15 +328,15 @@ void DataSourceWidget::refreshStatus()
 
 void DataSourceWidget::refreshStatus(const std::set<int> & filesIDs)
 {
-	//odœwie¿am status plików
+	//odÅ›wieÅ¼am status plikÃ³w
 	dataSource->fileStatusManager->refreshFilesStatus(filesIDs);
-	//odœwie¿am status pe³nej p³ytkiej kopii
+	//odÅ›wieÅ¼am status peÅ‚nej pÅ‚ytkiej kopii
 	dataSource->fullShallowCopyStatus->refreshDataStatus(filesIDs);
-	//odœwie¿am status przefiltrowanej p³ytkiej kopii
+	//odÅ›wieÅ¼am status przefiltrowanej pÅ‚ytkiej kopii
 	filteredShallowCopyStatus->refreshDataStatus(filesIDs);
-	//uniewa¿niam wszystkie perspektywy
+	//uniewaÅ¼niam wszystkie perspektywy
 	invalidatePerspectivesContent();
-	//odœwie¿am bie¿¹c¹
+	//odÅ›wieÅ¼am bieÅ¼Ä…cÄ…
 	refreshCurrentPerspectiveContent();
 }
 
@@ -348,7 +348,7 @@ void DataSourceWidget::refreshStatusAfterDownload()
 
 QIcon DataSourceWidget::statusIcon(const communication::DataStorage storage, const communication::DataUsage usage)
 {
-	//zaczynamy ze sposobem sk³adowania
+	//zaczynamy ze sposobem skÅ‚adowania
 	QPixmap s;
 
 	switch(storage){
@@ -365,7 +365,7 @@ QIcon DataSourceWidget::statusIcon(const communication::DataStorage storage, con
 		break;
 	}
 
-	// teraz stan u¿ycia
+	// teraz stan uÅ¼ycia
 	QPixmap u;
 
 	switch(usage){
@@ -382,7 +382,7 @@ QIcon DataSourceWidget::statusIcon(const communication::DataStorage storage, con
 		break;
 	}
 
-	//// mamy ju¿ wszystko - generujemy ikonê
+	//// mamy juÅ¼ wszystko - generujemy ikonÄ™
 	return QIcon(mergePixmaps(s, u));
 }
 
@@ -442,8 +442,8 @@ void DataSourceWidget::registerPatientCard(communication::IPatientCard * patient
 
 	patientCardPlaceholerWidget->layout()->addWidget(w);
 	//TODO
-	//w³asne menu kontekstowe?
-	//dodaæ jakieœ combo do zmiany widoku karty pacjenta?
+	//wÅ‚asne menu kontekstowe?
+	//dodaÄ‡ jakieÅ› combo do zmiany widoku karty pacjenta?
 }
 
 void DataSourceWidget::getPatientAndSubject(QTreeWidgetItem * item, const webservices::MedicalShallowCopy::Patient *& patient,
@@ -517,14 +517,14 @@ void DataSourceWidget::onPerspectiveSelectionChanged()
 		current = sel.first();
 	}
 
-	//próbuje ustaliæ pacjenta, je¿eli siê uda to ustawiam kartê pacjenta
+	//prÃ³buje ustaliÄ‡ pacjenta, jeÅ¼eli siÄ™ uda to ustawiam kartÄ™ pacjenta
 	const MedicalShallowCopy::Patient * patient = nullptr;
 	const MotionShallowCopy::Performer * subject = nullptr;
 	getPatientAndSubject(current, patient, subject);
 
 	patientCardManager.currentPatientCard()->setPatient(patient, subject, QPixmap(), dataSource->currentUser_.userData());
 
-	//nag³ówek danych
+	//nagÅ‚Ã³wek danych
 	QStringList headers;
 	bool ok = perspectiveManager.currentPerspective()->headers(current, headers);
 	if(ok == false){
@@ -553,7 +553,7 @@ void DataSourceWidget::onFilterChange(int idx)
 			//filtrujemy dane
 			DataSourceFilterManager::filterShallowCopy(dataSource->fullShallowCopy, tmpShallow, filterManager.dataFilter(idx));
 		}else{
-			//nie trzeba filtrowaæ - wystarczy przepisaæ
+			//nie trzeba filtrowaÄ‡ - wystarczy przepisaÄ‡
 			tmpShallow = dataSource->fullShallowCopy;
 		}
 
@@ -563,16 +563,16 @@ void DataSourceWidget::onFilterChange(int idx)
 		//ustawiamy aktualny filtr
 		filterManager.setCurrentFilter(idx);
 
-		//odœwie¿am status przefiltrowanych danych
+		//odÅ›wieÅ¼am status przefiltrowanych danych
 		filteredShallowCopyStatus->setShallowCopy(&filteredShallowCopy);
 
-		//uniewa¿niamy perspektywy
+		//uniewaÅ¼niamy perspektywy
 		perspectiveManager.invalidatePerspectives();
-		//odœwie¿amy aktualn¹ perspektywê
+		//odÅ›wieÅ¼amy aktualnÄ… perspektywÄ™
 		perspectiveManager.rebuildCurrentPerspective(filteredShallowCopy);
-		//uniewa¿niam content - zmieni³a siê zawartoœæ
+		//uniewaÅ¼niam content - zmieniÅ‚a siÄ™ zawartoÅ›Ä‡
 		invalidatePerspectivesContent();
-		//wype³niamy content aktualnej perspektywy
+		//wypeÅ‚niamy content aktualnej perspektywy
 		refreshCurrentPerspectiveContent();
 
 	}catch(...){
@@ -607,7 +607,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 
-	//mamy jakieœ dane wejœciowe - mo¿emy próbowaæ logowaæ
+	//mamy jakieÅ› dane wejÅ›ciowe - moÅ¼emy prÃ³bowaÄ‡ logowaÄ‡
 
 	QString error(tr("Error during login: "));
 	bool wasError = false;
@@ -621,7 +621,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 		wasError = true;
 	}
 
-	// b³¹d logowania - b³¹d po³¹czenia z webserwisami
+	// bÅ‚Ä…d logowania - bÅ‚Ä…d poÅ‚Ä…czenia z webserwisami
 
 	if(wasError == true){
 
@@ -646,10 +646,10 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 		loginButton->setText(tr("Logout"));
 
-		// poprawna komunikacja, u¿ytkownik zweryfikowany || brak komunikacji i logowanie lokalne
+		// poprawna komunikacja, uÅ¼ytkownik zweryfikowany || brak komunikacji i logowanie lokalne
 
 		if(dataSource->currentUser_.id() == -2){
-			// je¿eli jestem zalogowany lokalnie to informujê o tym
+			// jeÅ¼eli jestem zalogowany lokalnie to informujÄ™ o tym
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Login information"));
 			messageBox.setText(tr("User is logged locally - there might be a problem with internet connection and remote services might not work correctly."));
@@ -669,7 +669,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 				dataSource->removeShallowCopyFromUserSpace();
 				if(extractStatus == false){
 					//TODO
-					//coœ nie tak z nasza p³ytk¹kopi¹ bazy danych - trzeba j¹ walidowaæ i poprawiaæ - pewnie obcinaæ a¿ bêdzie poprawna i spójna
+					//coÅ› nie tak z nasza pÅ‚ytkÄ…kopiÄ… bazy danych - trzeba jÄ… walidowaÄ‡ i poprawiaÄ‡ - pewnie obcinaÄ‡ aÅ¼ bÄ™dzie poprawna i spÃ³jna
 				}else{
 					shallowCopyAvailable = true;
 				}
@@ -690,9 +690,9 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 				messageBox.exec();
 			}else{
 
-				//pobierz datê ostatenij modyfikacji i porównaj
-				//jeœli nowsza to zaproponuj synchronizacjê
-				//jeœli odmówi za³aduj ju¿ sparsowan¹ p³ytk¹ kopiê bazy danych
+				//pobierz datÄ™ ostatenij modyfikacji i porÃ³wnaj
+				//jeÅ›li nowsza to zaproponuj synchronizacjÄ™
+				//jeÅ›li odmÃ³wi zaÅ‚aduj juÅ¼ sparsowanÄ… pÅ‚ytkÄ… kopiÄ™ bazy danych
 				try{
 					auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
 
@@ -732,9 +732,9 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 		if(synch == true){
 			performShallowCopyUpdate();
 		}else if(shallowCopyAvailable == true){
-			//ustawiamy now¹ p³ytk¹ kopiê bazy danych
+			//ustawiamy nowÄ… pÅ‚ytkÄ… kopiÄ™ bazy danych
 			dataSource->setShallowCopy(userShallowCopy);
-			//odœwie¿am przefiltrowan¹ p³ytk¹ kopiê danych co wi¹¿e siê z uniewa¿nieniem dotychczasowych perspektyw
+			//odÅ›wieÅ¼am przefiltrowanÄ… pÅ‚ytkÄ… kopiÄ™ danych co wiÄ…Å¼e siÄ™ z uniewaÅ¼nieniem dotychczasowych perspektyw
 			onFilterChange(filterManager.currentFilterIndex());
 		}
 
@@ -747,7 +747,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 	}else{
 
-		//poprawna komunikacja, nie uda³o siê zweryfikowaæ u¿ytkownika
+		//poprawna komunikacja, nie udaÅ‚o siÄ™ zweryfikowaÄ‡ uÅ¼ytkownika
 
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Login unsuccessful"));
@@ -769,13 +769,13 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 void DataSourceWidget::onLogin()
 {
-	// je¿eli zalogowany to wyloguj
+	// jeÅ¼eli zalogowany to wyloguj
 
 	if(dataSource->isLogged() == true){
 
 		if(currentDownloadRequest != nullptr){
-			//mamy jakieœ œci¹ganie w miêdzyczasie!!
-			//pytamy czy na pewno wylogowaæ - wtedy je anulujemy
+			//mamy jakieÅ› Å›ciÄ…ganie w miÄ™dzyczasie!!
+			//pytamy czy na pewno wylogowaÄ‡ - wtedy je anulujemy
 
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Logout process"));
@@ -800,7 +800,7 @@ void DataSourceWidget::onLogin()
 		//usuwamy wszystkie elementy pluginu subject
 		unloadSubjectHierarchy();
 
-		//wy³adowaæ wszystkie dane
+		//wyÅ‚adowaÄ‡ wszystkie dane
 		for(auto it = filesLoadedToDM.begin(); it != filesLoadedToDM.end(); ++it){
 			try{
 				std::vector<core::ObjectWrapperPtr> objects;
@@ -832,7 +832,7 @@ void DataSourceWidget::onLogin()
 		loginButton->setText(tr("Login"));
 	}else{
 
-		// pierwsza weryfikacja danych wejœciowych do logowania - czy podano niezbêdne dane
+		// pierwsza weryfikacja danych wejÅ›ciowych do logowania - czy podano niezbÄ™dne dane
 		if(userEdit->text().isEmpty() == true || passwordEdit->text().isEmpty() == true){
 
 			QMessageBox messageBox(this);
@@ -866,7 +866,7 @@ void DataSourceWidget::saveAndRemoveShallowCopy()
 		dataSource->removeShallowCopyFromUserSpace();
 	}catch(...){
 		//TODO
-		//zareagowaæ kiedy nie mo¿emy zapisaæ danych do loaclStorage - w sumie ju¿ ich nie potrzebujemy, tylko przy kolejnym logowaniu trzeba znów p³ytk¹ kopiê œci¹gn¹c
+		//zareagowaÄ‡ kiedy nie moÅ¼emy zapisaÄ‡ danych do loaclStorage - w sumie juÅ¼ ich nie potrzebujemy, tylko przy kolejnym logowaniu trzeba znÃ³w pÅ‚ytkÄ… kopiÄ™ Å›ciÄ…gnÄ…c
 	}
 }
 
@@ -898,7 +898,7 @@ void DataSourceWidget::onRegistration()
 
 	if(verification.empty() == false){
 
-		//generuje liste problemów
+		//generuje liste problemÃ³w
 		QString message;
 
 		for(int i = 0; i < verification.size(); ++i){
@@ -926,9 +926,9 @@ void DataSourceWidget::onRegistration()
 			messageBox.exec();
 
 			if(dataSource->isLogged() == false){
-				//jeœli nikt nie jest jeszcze zalogowany to przenosimy do strony logowania
+				//jeÅ›li nikt nie jest jeszcze zalogowany to przenosimy do strony logowania
 				toolBox->setCurrentIndex(2);
-				//czêsciowo wype³niam ju¿ dane usera
+				//czÄ™sciowo wypeÅ‚niam juÅ¼ dane usera
 				activationLoginEdit->setText(regLoginEdit->text());
 			}
 		} else{
@@ -963,9 +963,9 @@ void DataSourceWidget::onActivate()
 		messageBox.exec();
 
 		if(dataSource->isLogged() == false){
-			//jeœli nikt nie jest jeszcze zalogowany to przenosimy do strony logowania
+			//jeÅ›li nikt nie jest jeszcze zalogowany to przenosimy do strony logowania
 			toolBox->setCurrentIndex(0);
-			//czêsciowo wype³niam ju¿ dane usera
+			//czÄ™sciowo wypeÅ‚niam juÅ¼ dane usera
 			userEdit->setText(activationLoginEdit->text());
 		}
 	}else{
@@ -988,9 +988,9 @@ void DataSourceWidget::onPerspectiveChange(int idx)
 	}
 
 	try{
-		//ustawiamy aktualn¹ perspektywê
+		//ustawiamy aktualnÄ… perspektywÄ™
 		perspectiveManager.setCurrentPerspective(idx);
-		//odœwie¿amy aktualn¹ perspektywê
+		//odÅ›wieÅ¼amy aktualnÄ… perspektywÄ™
 		perspectiveManager.rebuildCurrentPerspective(filteredShallowCopy);
 
 		currentPW = perspectiveManager.currentPerspectiveWidget();
@@ -1009,7 +1009,7 @@ void DataSourceWidget::onPerspectiveChange(int idx)
 		}
 
 		if(refreshContent == true){
-			//wype³niamy content aktualnej perspektywy
+			//wypeÅ‚niamy content aktualnej perspektywy
 			refreshCurrentPerspectiveContent();
 		}
 
@@ -1030,10 +1030,10 @@ void DataSourceWidget::onPerspectiveChange(int idx)
 void DataSourceWidget::onContentChange(int idx)
 {
 	try{
-		//ustawiamy aktualn¹ perspektywê
+		//ustawiamy aktualnÄ… perspektywÄ™
 		contentManager.setCurrentContent(idx);
 
-		//wype³niamy content aktualnej perspektywy
+		//wypeÅ‚niamy content aktualnej perspektywy
 		refreshCurrentPerspectiveContent();
 	}catch(...){
 
@@ -1108,20 +1108,20 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 	download->setEnabled(false);
 	refresh->setEnabled(false);
 
-	//skoro coœ œci¹gam muszê poczekaæ!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
+	//skoro coÅ› Å›ciÄ…gam muszÄ™ poczekaÄ‡!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
 
 		//aktywujemy podstaweowe operacje
 		connect(refresh, SIGNAL(triggered()), this, SLOT(refreshStatus()));
 		refresh->setEnabled(true);
 
-		//sprawdzamy co to za item, potrzebujemy wszystkich plików z nim zwi¹zanych
+		//sprawdzamy co to za item, potrzebujemy wszystkich plikÃ³w z nim zwiÄ…zanych
 		std::set<int> filesIDs;
 
 		auto selectedItems = perspective->selectedItems();
 		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
 
-		//sprawdzam czy to cos co mogê za³adowaæ?
+		//sprawdzam czy to cos co mogÄ™ zaÅ‚adowaÄ‡?
 
 		if(isItemLoadable(selectedItems[0]) == true){
 
@@ -1131,25 +1131,25 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 			//UTILS_ASSERT(filesIDs.empty() == false, "Brak danych w drzewie");
 
 			if(filesIDs.empty() == false){
-				//mam dane - mogê pracowaæ
-				//wyci¹gam dane lokalne i zdalne
-				//wyci¹gam dane za³¹dowane i nieza³adowane
-				//na bazie tych info odpowiednio ³¹cze akcje ze slotami i aktywuje je + zapamiêtuje te info do wykonania ich!!
+				//mam dane - mogÄ™ pracowaÄ‡
+				//wyciÄ…gam dane lokalne i zdalne
+				//wyciÄ…gam dane zaÅ‚Ä…dowane i niezaÅ‚adowane
+				//na bazie tych info odpowiednio Å‚Ä…cze akcje ze slotami i aktywuje je + zapamiÄ™tuje te info do wykonania ich!!
 
 				//pomijamy wszystkie niekompatybilne z DM pliki
 
 				std::set<int> dmOKFiles;
 
-				//filtruje pliki obs³ugiwane przez DM
+				//filtruje pliki obsÅ‚ugiwane przez DM
 				FilesHelper::filterFiles(filesIDs, extensions, dmOKFiles, *(dataSource->fileStatusManager));
 
-				//pliki do za³adowania
+				//pliki do zaÅ‚adowania
 				FilesHelper::filterFiles(dmOKFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
 
-				//pliki do wy³adowania - EXPERIMENTAL
+				//pliki do wyÅ‚adowania - EXPERIMENTAL
 				FilesHelper::filterFiles(dmOKFiles, communication::Loaded, filesToUnload, *(dataSource->fileStatusManager));
 
-				//pliki do œci¹gniêcia
+				//pliki do Å›ciÄ…gniÄ™cia
 				FilesHelper::filterFiles(filesIDs, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
 				if(filesToLoad.empty() == false){
@@ -1173,12 +1173,12 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 
 void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * perspective)
 {
-	//poszczeólne akcje
+	//poszczeÃ³lne akcje
 	auto loadAll = menu.addAction(tr("Load All"));
 	auto unloadAll = menu.addAction(tr("Unload All"));
 	auto downloadAll = menu.addAction(tr("Download All"));
 
-	//skoro coœ œci¹gam muszê poczekaæ!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
+	//skoro coÅ› Å›ciÄ…gam muszÄ™ poczekaÄ‡!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
 
 		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
@@ -1189,11 +1189,11 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 
 		std::set<int> dmOkFiles;
 		FilesHelper::filterFiles(allFiles, extensions, dmOkFiles, *(dataSource->fileStatusManager));
-		//pliki do za³adowania
+		//pliki do zaÅ‚adowania
 		FilesHelper::filterFiles(dmOkFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
-		//pliki do wy³adowania
+		//pliki do wyÅ‚adowania
 		FilesHelper::filterFiles(dmOkFiles, communication::Loaded, filesToUnload, *(dataSource->fileStatusManager));
-		//pliki do œci¹gniêcia
+		//pliki do Å›ciÄ…gniÄ™cia
 		FilesHelper::filterFiles(dmOkFiles, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
 		if(filesToLoad.empty() == false){
@@ -1225,7 +1225,7 @@ void DataSourceWidget::generateCommonContextMenu(QMenu & menu, QTreeWidget * per
 	menu.addSeparator();
 	auto synch = menu.addAction(tr("Synchronize"));
 
-	//skoro coœ œci¹gam muszê poczekaæ!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
+	//skoro coÅ› Å›ciÄ…gam muszÄ™ poczekaÄ‡!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
 
 		connect(saveProject, SIGNAL(triggered()), this, SLOT(onSaveProject()));
@@ -1310,7 +1310,7 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 			{
 				auto motion = dynamic_cast<MotionItem*>(item);
 				FilesHelper::getFiles(motion->value(), filesIDs);
-				//extra dodajê pliki specyficzne sesji
+				//extra dodajÄ™ pliki specyficzne sesji
 				FilesHelper::getSpecificFiles(motion->value()->session, filesIDs);
 			}
 			break;
@@ -1319,7 +1319,7 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 				auto file = dynamic_cast<FileItem*>(item);
 				auto f = file->value();
 				filesIDs.insert(f->fileID);
-				//extra dodajê pliki specyficzne sesji
+				//extra dodajÄ™ pliki specyficzne sesji
 				FilesHelper::getSpecificFiles(f->isSessionFile() == true ? f->session : f->trial->session, filesIDs);
 			}
 			break;
@@ -1360,7 +1360,7 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 				auto motionsGroup = dynamic_cast<MotionsGroupItem*>(item);
 				for(auto it = motionsGroup->value().begin(); it != motionsGroup->value().end(); ++it){
 					FilesHelper::getFiles(*it, filesIDs);
-					//extra dodajê pliki specyficzne sesji
+					//extra dodajÄ™ pliki specyficzne sesji
 					FilesHelper::getSpecificFiles((*it)->session, filesIDs);
 				}
 			}
@@ -1370,7 +1370,7 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 				auto filesGroup = dynamic_cast<FilesGroupItem*>(item);
 				for(auto it = filesGroup->value().begin(); it != filesGroup->value().end(); ++it){
 					filesIDs.insert((*it)->fileID);
-					//extra dodajê pliki specyficzne sesji
+					//extra dodajÄ™ pliki specyficzne sesji
 					FilesHelper::getSpecificFiles((*it)->isSessionFile() == true ? (*it)->session : (*it)->trial->session, filesIDs);
 				}
 			}
@@ -1381,7 +1381,7 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 		}
 	}
 
-	//jezeli nie znalazlem to ide w dó³ hierarchi perspektywy - mo¿e tam coœ znajdê
+	//jezeli nie znalazlem to ide w dÃ³Å‚ hierarchi perspektywy - moÅ¼e tam coÅ› znajdÄ™
 	if(found == false){
 		int childrenCount = item->childCount();
 		for(int i = 0; i < childrenCount; ++i){
@@ -1392,11 +1392,11 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 
 void DataSourceWidget::updateShallowCopy()
 {
-	//lokujemy - nie mo¿na teraz zmieniæ u¿ytkownika z zewn¹trz
-	//w sumie powinniœmy lokowaæ ca³e Ÿród³o
+	//lokujemy - nie moÅ¼na teraz zmieniÄ‡ uÅ¼ytkownika z zewnÄ…trz
+	//w sumie powinniÅ›my lokowaÄ‡ caÅ‚e ÅºrÃ³dÅ‚o
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourcePathsManager::instance());
 	if(dataSource->isShallowCopyComplete() == true && dataSource->isShallowCopyCurrent() == true){
-		//message box - nie musimy aktualizowaæ, mamy najœwie¿sz¹ wersjê
+		//message box - nie musimy aktualizowaÄ‡, mamy najÅ›wieÅ¼szÄ… wersjÄ™
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Database synchronization"));
 		messageBox.setText(tr("Local data already synchronized. Synchronization is not required. Proceed anyway?"));
@@ -1414,7 +1414,7 @@ void DataSourceWidget::updateShallowCopy()
 
 void DataSourceWidget::performShallowCopyUpdate()
 {
-	//generujemy œcie¿ki
+	//generujemy Å›cieÅ¼ki
 
 	auto downloadRequest = dataSource->generateDownloadShallowCopyRequestToLocalUserSpace();
 
@@ -1440,19 +1440,19 @@ void DataSourceWidget::processDataDownload(QTreeWidgetItem * item, const Communi
 void DataSourceWidget::processDownload(const CommunicationDataSource::DownloadRequestPtr & request)
 {
 	std::vector<std::string>().swap(downloadedFiles);
-	//zanim wystartujemy musimy zarejestrowaæ obiekt który bêdzie obserwowa³ zmiany w requeœcie pobierania + aktualizowa³ progress pobierania
+	//zanim wystartujemy musimy zarejestrowaÄ‡ obiekt ktÃ³ry bÄ™dzie obserwowaÅ‚ zmiany w requeÅ›cie pobierania + aktualizowaÅ‚ progress pobierania
 	request->attach(this);
 	registeredRequests[request.get()] = request;
-	//startujemy request - dodajemy do kolejki, wiêc niekoniecznie po tym wywo³aniu zaczniemy pobieraæ
-	//to operuje na communication manager - coœ mo¿e jednak pójœæ nie tak
+	//startujemy request - dodajemy do kolejki, wiÄ™c niekoniecznie po tym wywoÅ‚aniu zaczniemy pobieraÄ‡
+	//to operuje na communication manager - coÅ› moÅ¼e jednak pÃ³jÅ›Ä‡ nie tak
 	try{
 		request->start();
 	}catch(std::exception & ){
 		//TODO
-		//message box z informacj¹
+		//message box z informacjÄ…
 	}catch(...){
 		//TODO
-		//message box z informacj¹
+		//message box z informacjÄ…
 	}
 }
 
@@ -1464,9 +1464,9 @@ bool DataSourceWidget::refreshShallowCopy()
 	try{
 		if(dataSource->buildShallowCopyFromLocalUserSpace(shallowCopy) == true){
 
-			//ustawiam nowa p³ytka kopiê danych
+			//ustawiam nowa pÅ‚ytka kopiÄ™ danych
 			dataSource->setShallowCopy(shallowCopy);
-			//odœwie¿am przefiltrowan¹ p³ytk¹ kopiê danych co wi¹¿e siê z uniewa¿nieniem dotychczasowych perspektyw
+			//odÅ›wieÅ¼am przefiltrowanÄ… pÅ‚ytkÄ… kopiÄ™ danych co wiÄ…Å¼e siÄ™ z uniewaÅ¼nieniem dotychczasowych perspektyw
 			QMetaObject::invokeMethod(this, "onFilterChange", Q_ARG(int, filterManager.currentFilterIndex()));
 		}else{
 			ret = false;
@@ -1491,7 +1491,7 @@ void DataSourceWidget::filteredFiles(std::set<int> & files) const
 
 void DataSourceWidget::onDownload()
 {
-	// poziom 100MB jako limit ostrze¿enia
+	// poziom 100MB jako limit ostrzeÅ¼enia
 	static const long downloadSizeWarningLevel = 104857600;
 	//wyliczmy ile miejsca potrzebujemy i ile mamy
 
@@ -1504,7 +1504,7 @@ void DataSourceWidget::onDownload()
 
 	unsigned long long avaiable = dataSource->pathsManager->freeSpace(dataSource->pathsManager->userDataPath());
 
-	//mno¿e razy 2 bo muszê to potem jeszcze do local storage wrzuciæ!!
+	//mnoÅ¼e razy 2 bo muszÄ™ to potem jeszcze do local storage wrzuciÄ‡!!
 	if(avaiable < (size << 1)){
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Download problem"));
@@ -1514,7 +1514,7 @@ void DataSourceWidget::onDownload()
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
 	}else{
-		//ok - mogê œci¹gaæ ale mo¿e tego jest sporo wiêc trzeba u¿ytkownika uœwiadomiæ
+		//ok - mogÄ™ Å›ciÄ…gaÄ‡ ale moÅ¼e tego jest sporo wiÄ™c trzeba uÅ¼ytkownika uÅ›wiadomiÄ‡
 		if(size > downloadSizeWarningLevel){
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Download warning"));
@@ -1526,20 +1526,20 @@ void DataSourceWidget::onDownload()
 			int ret = messageBox.exec();
 
 			if(ret == QMessageBox::No){
-				//u¿ytkownik siê nawróci³ - anulujemy
+				//uÅ¼ytkownik siÄ™ nawrÃ³ciÅ‚ - anulujemy
 				return;
 			}
 		}
 
-		//skoro tu jestem to zaczynamy œci¹gaæ
+		//skoro tu jestem to zaczynamy Å›ciÄ…gaÄ‡
 		try{
-			//przygotuj request dla œci¹gania
+			//przygotuj request dla Å›ciÄ…gania
 			auto downloadRequest = dataSource->generateDownloadFilesRequest(filesToDownload);
-			//zacznij przetwarzaæ request
+			//zacznij przetwarzaÄ‡ request
 			processDataDownload(nullptr, downloadRequest);
 
 		}catch(std::exception & e){
-			//nie uda³o siê utworzyæ/przygotowaæ requesta wiêc info o b³êdzie
+			//nie udaÅ‚o siÄ™ utworzyÄ‡/przygotowaÄ‡ requesta wiÄ™c info o bÅ‚Ä™dzie
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Download preparation error"));
 			messageBox.setText(tr("Error while preparing download request. Error description: ") + QString::fromUtf8(e.what()));
@@ -1591,7 +1591,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 
 	//TODO
-	//zainicjowaæ wskaŸnik do serwisu!!
+	//zainicjowaÄ‡ wskaÅºnik do serwisu!!
 
 	auto subjectService = core::queryServices<PluginSubject::ISubjectService>(dataSource->serviceManager);
 
@@ -1601,12 +1601,12 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 	core::NotifyBlocker<core::IMemoryDataManager> blocker(*(dataSource->memoryDM));
 
-	//buduje mapê hierarchii subject -> session -> motion -> files
-	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
+	//buduje mapÄ™ hierarchii subject -> session -> motion -> files
+	//na bazie tej mapy bÄ™dÄ™ realizowaÅ‚ hierarchiÄ™ pluginu subject
 
 	//TODO
-	//zrewidowaæ plugin subject!!
-	//obiekty tej hierarchii powinny byæ edytowalne po stronie Ÿród³a aby mog³o elastyczniej nimi zarz¹dzaæ!!
+	//zrewidowaÄ‡ plugin subject!!
+	//obiekty tej hierarchii powinny byÄ‡ edytowalne po stronie ÅºrÃ³dÅ‚a aby mogÅ‚o elastyczniej nimi zarzÄ…dzaÄ‡!!
 	SubjectFiles subjectHierarchy;
 
 	auto itEND = loadedFilesObjects.end();
@@ -1619,14 +1619,14 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				subjectHierarchy[s->second->performerConf->performer->performerID][s->second->sessionID].first.insert(it->first);
 			}else{
 				//TODO
-				//INFO o nieobs³ugiwanym pliku
+				//INFO o nieobsÅ‚ugiwanym pliku
 			}
 
 		}else{
 			auto fileIT = filteredShallowCopy.motionShallowCopy->files.find(it->first);
 			if(fileIT == filteredShallowCopy.motionShallowCopy->files.end()){
 				//TODO
-				//INFO o nieobs³ugiwanym pliku
+				//INFO o nieobsÅ‚ugiwanym pliku
 				continue;
 			}
 
@@ -1639,18 +1639,18 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	}
 
 	for(auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
-		//tworzê subject jeœli to konieczne!!
+		//tworzÄ™ subject jeÅ›li to konieczne!!
 
 		PluginSubject::SubjectPtr subPtr;
 
 		auto subIT = subjectsMapping.find(subjectIT->first);
 		if(subIT != subjectsMapping.end()){
-			//mam subjecta - nie musze ju¿ nic robiæ
+			//mam subjecta - nie musze juÅ¼ nic robiÄ‡
 			subPtr = subIT->second.first->get();
 		}else{
-			//tworzê subjecta
+			//tworzÄ™ subjecta
 			subPtr = subjectService->createSubject();
-			//dodajê do DM
+			//dodajÄ™ do DM
 			auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, subPtr);
 
 			core::MetadataPtr meta(new core::Metadata(ow));
@@ -1670,22 +1670,22 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 			core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
 
-			//zapamiêtujê mapowanie
+			//zapamiÄ™tujÄ™ mapowanie
 			subjectsMapping[subjectIT->first].first = ow;
 		}
 
-		//mam subjecta, mogê iœæ dalej do sesji
+		//mam subjecta, mogÄ™ iÅ›Ä‡ dalej do sesji
 		for(auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
 
 			PluginSubject::SessionPtr sPtr;
 
 			auto sIT = sessionsMapping.find(sessionIT->first);
 			if(sIT != sessionsMapping.end()){
-				//mam subjecta - nie musze ju¿ nic robiæ
+				//mam subjecta - nie musze juÅ¼ nic robiÄ‡
 				sPtr = sIT->second.first->get();
 			}else{
-				//tworzê sesjê
-				//generujê zbiór ow dla sesji
+				//tworzÄ™ sesjÄ™
+				//generujÄ™ zbiÃ³r ow dla sesji
 				std::vector<core::ObjectWrapperConstPtr> sessionObjects;
 				for(auto fIT = sessionIT->second.first.begin(); fIT != sessionIT->second.first.end(); ++fIT){
 					//pobieram obiekty
@@ -1705,7 +1705,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				sessionsMapping[sessionIT->first].second.push_back(antroOW);
 
 				sPtr = subjectService->createSession(subPtr, sessionObjects);
-				//dodajê do DM
+				//dodajÄ™ do DM
 				auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, sPtr);
 
 				core::MetadataPtr meta(new core::Metadata(ow));
@@ -1723,24 +1723,24 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 				core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
 
-				//zapamiêtujê mapowanie
+				//zapamiÄ™tujÄ™ mapowanie
 				sessionsMapping[sessionIT->first].first = ow;
 			}
 
-			//mam sesjê - mogê iœæ dalej z motionami!!
+			//mam sesjÄ™ - mogÄ™ iÅ›Ä‡ dalej z motionami!!
 			for(auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
 
 				PluginSubject::MotionPtr mPtr;
 
 				auto mIT = motionsMapping.find(motionIT->first);
 				if(mIT != motionsMapping.end()){
-					//mam subjecta - nie musze ju¿ nic robiæ
+					//mam subjecta - nie musze juÅ¼ nic robiÄ‡
 					//TODO
-					//nie powinno mnie tu byæ wg aktualnego dzia³ania pluginu subject!!
+					//nie powinno mnie tu byÄ‡ wg aktualnego dziaÅ‚ania pluginu subject!!
 					mPtr = mIT->second.first->get();
 				}else{
-					//tworzê sesjê
-					//generujê zbiór ow dla motiona
+					//tworzÄ™ sesjÄ™
+					//generujÄ™ zbiÃ³r ow dla motiona
 					std::vector<core::ObjectWrapperConstPtr> motionObjects;
 					for(auto fIT = motionIT->second.begin(); fIT != motionIT->second.end(); ++fIT){
 						//pobieram obiekty
@@ -1752,7 +1752,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					}
 
 
-					//sprawdzamy joint angles - jeœli nie ma budujemy i dodajemy do DM
+					//sprawdzamy joint angles - jeÅ›li nie ma budujemy i dodajemy do DM
 					core::ObjectWrapperConstPtr dataWrapper;
 					core::ObjectWrapperConstPtr modelWrapper;
 					for (auto it = motionObjects.begin(); it != motionObjects.end(); ++it) {
@@ -1779,7 +1779,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 						jointsWrapper->setSource("newCommunication->motion->" + mPtr->getLocalName());
 					}
 
-					//dodajê do DM
+					//dodajÄ™ do DM
 					auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, mPtr);
 
 					core::MetadataPtr meta(new core::Metadata(ow));
@@ -1788,7 +1788,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 					core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
 
-					//zapamiêtujê mapowanie
+					//zapamiÄ™tujÄ™ mapowanie
 					motionsMapping[motionIT->first].first = ow;
 				}
 			}
@@ -1798,7 +1798,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID)
 {
-	//generujê listê schorzeñ
+	//generujÄ™ listÄ™ schorzeÅ„
 	std::vector<communication::Disorder> disorders;
 	for(auto it = patient->disorders.begin(); it != patient->disorders.end(); ++it)	{
 
@@ -1814,10 +1814,10 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, patient->birthDate,
 		Patient::decodeGender(patient->gender), core::shared_ptr<const QPixmap>(), disorders));
 
-	//dodajê do DM
+	//dodajÄ™ do DM
 	auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, pPtr);
 
-	//zapamiêtuje
+	//zapamiÄ™tuje
 	patientsMapping[patient->patientID].first = ow;
 }
 
@@ -1885,7 +1885,7 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 	typedef std::map<int, std::pair<std::set<int>, MotionFiles>> SessionFiles;
 	typedef std::map<int, SessionFiles> SubjectFiles;
 
-	//zainicjowaæ wskaŸnik do serwisu!!
+	//zainicjowaÄ‡ wskaÅºnik do serwisu!!
 
 	auto subjectService = core::queryServices<PluginSubject::ISubjectService>(dataSource->serviceManager);
 
@@ -1895,12 +1895,12 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 
 	core::NotifyBlocker<core::IMemoryDataManager> blocker(*(dataSource->memoryDM));
 
-	//buduje mapê hierarchii subject -> session -> motion -> files
-	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
+	//buduje mapÄ™ hierarchii subject -> session -> motion -> files
+	//na bazie tej mapy bÄ™dÄ™ realizowaÅ‚ hierarchiÄ™ pluginu subject
 
 	//TODO
-	//zrewidowaæ plugin subject!!
-	//obiekty tej hierarchii powinny byæ edytowalne po stronie Ÿród³a aby mog³o elastyczniej nimi zarz¹dzaæ!!
+	//zrewidowaÄ‡ plugin subject!!
+	//obiekty tej hierarchii powinny byÄ‡ edytowalne po stronie ÅºrÃ³dÅ‚a aby mogÅ‚o elastyczniej nimi zarzÄ…dzaÄ‡!!
 	SubjectFiles subjectHierarchy;
 
 	auto itEND = unloadedFilesIDs.end();
@@ -1923,16 +1923,16 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 
 				auto mIT = motionsMapping.find(motionIT->first);
 				if(mIT != motionsMapping.end()){
-					//mam motion - sprawdzam czy mogê go usun¹æ
+					//mam motion - sprawdzam czy mogÄ™ go usunÄ…Ä‡
 					std::set<int> motionFiles;
 					FilesHelper::getMotionFiles(motionIT->first, filteredShallowCopy, motionFiles);
 
-					//teraz robiê ró¿nicê tego co jest w p³ytkiej kopii a tego co mam wy³adowaæ
+					//teraz robiÄ™ rÃ³Å¼nicÄ™ tego co jest w pÅ‚ytkiej kopii a tego co mam wyÅ‚adowaÄ‡
 					std::vector<int> diff((std::max)(motionFiles.size(), motionIT->second.size()));
 					auto diffIT = std::set_difference(motionFiles.begin(), motionFiles.end(), motionIT->second.begin(), motionIT->second.end(), diff.begin());
 
 					if(diffIT == diff.begin()){
-						//to znaczy ¿e usun¹³em wszystkie pliki motiona -> mogê usuwaæ motiona
+						//to znaczy Å¼e usunÄ…Å‚em wszystkie pliki motiona -> mogÄ™ usuwaÄ‡ motiona
 						for(auto rIT = mIT->second.second.begin(); rIT != mIT->second.second.end(); ++rIT){
 							dataSource->memoryDM->removeData(*rIT);
 						}
@@ -1942,27 +1942,27 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 						motionsMapping.erase(mIT);
 					}else{
 						//TODO
-						//ta sytuacja obecnie nie powinna mieæ miejsca ze wzglêdu na specyfikê pluginu subject!!
+						//ta sytuacja obecnie nie powinna mieÄ‡ miejsca ze wzglÄ™du na specyfikÄ™ pluginu subject!!
 						throw std::runtime_error("Plugin subject to redesign");
 					}
 				}else{
 					//TODO
-					//tutaj mnie nie powinno byæ - chyba ¿e plugin subject wczeœniej nie dzia³a³
+					//tutaj mnie nie powinno byÄ‡ - chyba Å¼e plugin subject wczeÅ›niej nie dziaÅ‚aÅ‚
 					//w takim razie nie reaguje
 				}
 			}
 
-			//usun¹³em motiony sesji - czas zobaczyæ czy sesja jeszcze czymœ dysponuje
+			//usunÄ…Å‚em motiony sesji - czas zobaczyÄ‡ czy sesja jeszcze czymÅ› dysponuje
 			PluginSubject::SessionPtr sPtr;
 
 			auto sIT = sessionsMapping.find(sessionIT->first);
 			if(sIT != sessionsMapping.end()){
-				//mam subjecta - nie musze ju¿ nic robiæ
+				//mam subjecta - nie musze juÅ¼ nic robiÄ‡
 				sPtr = sIT->second.first->get();
 				PluginSubject::Motions motions;
 				sPtr->getMotions(motions);
 				if(motions.empty() == true){
-					//sesja jest pusta - do usuniêcia
+					//sesja jest pusta - do usuniÄ™cia
 					for(auto rIT = sIT->second.second.begin(); rIT != sIT->second.second.end(); ++rIT){
 						dataSource->memoryDM->removeData(*rIT);
 					}
@@ -1972,18 +1972,18 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 				}
 			}else{
 				//TODO
-				//tutaj mnie nie powinno byæ - chyba ¿e plugin subject wczeœniej nie dzia³a³
+				//tutaj mnie nie powinno byÄ‡ - chyba Å¼e plugin subject wczeÅ›niej nie dziaÅ‚aÅ‚
 				//w takim razie nie reaguje
 			}
 		}
 
-		//usuwam subject jeœli to konieczne!!
+		//usuwam subject jeÅ›li to konieczne!!
 
 		PluginSubject::SubjectPtr subPtr;
 
 		auto subIT = subjectsMapping.find(subjectIT->first);
 		if(subIT != subjectsMapping.end()){
-			//mam subjecta - nie musze ju¿ nic robiæ
+			//mam subjecta - nie musze juÅ¼ nic robiÄ‡
 			subPtr = subIT->second.first->get();
 			PluginSubject::Sessions sessions;
 			subPtr->getSessions(sessions);
@@ -1995,7 +1995,7 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 
 				dataSource->memoryDM->removeData(subIT->second.first);
 
-				//musze jeszcze usun¹æ pacjenta jeœli mam!!
+				//musze jeszcze usunÄ…Ä‡ pacjenta jeÅ›li mam!!
 				auto patientIT = patientsMapping.find(subIT->first);
 				if(patientIT != patientsMapping.end()){
 
@@ -2012,7 +2012,7 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 			}
 		}else{
 			//TODO
-			//tutaj mnie nie powinno byæ - chyba ¿e plugin subject wczeœniej nie dzia³a³
+			//tutaj mnie nie powinno byÄ‡ - chyba Å¼e plugin subject wczeÅ›niej nie dziaÅ‚aÅ‚
 			//w takim razie nie reaguje
 		}
 	}
@@ -2079,13 +2079,13 @@ void DataSourceWidget::onUpdateDownloadRequest()
 
 			downloadStatusWidget->setVisible(true);
 
-			//rozpocznij odœwie¿anie widgeta w osobnym w¹tku
+			//rozpocznij odÅ›wieÅ¼anie widgeta w osobnym wÄ…tku
 			downloadRefreshTimer.start(40);
 		}
 		break;
 
 	case IDownloadRequest::FinishedCancel:
-		//info co siê sta³o
+		//info co siÄ™ staÅ‚o
 		downloadCanceled = true;
 		finishDownloadRequest();
 		break;
@@ -2093,7 +2093,7 @@ void DataSourceWidget::onUpdateDownloadRequest()
 	case IDownloadRequest::FinishedError:
 		{
 			downloadCrashed = true;
-			//info co siê sta³o
+			//info co siÄ™ staÅ‚o
 			auto reqError = currentDownloadRequest->error();
 			if(reqError.empty() == true){
 				downloadError = tr("Unknown error");
@@ -2113,10 +2113,10 @@ void DataSourceWidget::onUpdateDownloadRequest()
 
 void DataSourceWidget::finishDownloadRequest()
 {
-	//zakoñcz odœwie¿anie widgeta w osobnym w¹tku
+	//zakoÅ„cz odÅ›wieÅ¼anie widgeta w osobnym wÄ…tku
 	downloadRefreshTimer.stop();
 	localDataLoader.reset(new LocalDataLoader(this));
-	//synchronizujemy to co siê uda³o w ca³oœci pobraæ (zapisujemy do loaclStorage + informacja co siê sta³o
+	//synchronizujemy to co siÄ™ udaÅ‚o w caÅ‚oÅ›ci pobraÄ‡ (zapisujemy do loaclStorage + informacja co siÄ™ staÅ‚o
 	localDataLoader->start();
 }
 
@@ -2139,7 +2139,7 @@ void DataSourceWidget::update(const communication::IDownloadRequest * request)
 		registeredRequests.erase(it);
 	}
 
-	//zapamiêtuje sobie pliki które siê dobrze œci¹gne³y
+	//zapamiÄ™tuje sobie pliki ktÃ³re siÄ™ dobrze Å›ciÄ…gneÅ‚y
 	if(currentDownloadRequest->state() == IDownloadRequest::SingleFinished){
 		if(core::Filesystem::pathExists(currentDownloadRequest->currentFilePath()) == true){
 			downloadedFiles.push_back(currentDownloadRequest->currentFilePath());
@@ -2175,7 +2175,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 
 	core::NotifyBlocker<core::IFileDataManager> blocker(*(dataSource->fileDM));
 
-	//! £aduje pliki do DM
+	//! Åaduje pliki do DM
 	std::set<int> loadedFiles;
 	std::map<int, std::vector<core::ObjectWrapperPtr>> loadedFilesObjects;
 	std::map<int, std::string> loadingErrors;
@@ -2199,8 +2199,8 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 
 	refreshStatus(loadedFiles);
 
-	//w loadedFilesObjects mamy info o plikach i zwi¹zanych z nimi obiektach domenowych
-	//próbujemy teraz przez plugin subject realizowaæ hierarchiê danych
+	//w loadedFilesObjects mamy info o plikach i zwiÄ…zanych z nimi obiektach domenowych
+	//prÃ³bujemy teraz przez plugin subject realizowaÄ‡ hierarchiÄ™ danych
 
 	loadSubjectHierarchy(loadedFilesObjects);
 
@@ -2249,11 +2249,11 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 
 	core::NotifyBlocker<core::IFileDataManager> blocker(*(dataSource->fileDM));
 
-	//próbujemy teraz przez plugin subject realizowaæ hierarchiê danych
+	//prÃ³bujemy teraz przez plugin subject realizowaÄ‡ hierarchiÄ™ danych
 
 	unloadSubjectHierarchy(files);
 
-	//! £aduje pliki do DM
+	//! Åaduje pliki do DM
 	std::set<int> unloadedFiles;
 	std::map<int, std::string> unloadingErrors;
 	std::vector<int> unknownErrors;
@@ -2362,13 +2362,13 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 
 	std::set<int> toVerify(accessibleFiles.begin(), accessibleFiles.end());
 	std::set<int> dmOKFiles;
-	//filtruje pliki obs³ugiwane przez DM
+	//filtruje pliki obsÅ‚ugiwane przez DM
 	const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
 	FilesHelper::filterFiles(toVerify, extensions, dmOKFiles, *(dataSource->fileStatusManager));
 
 	std::set<int>().swap(filesToDownload);
 
-	//pliki do œci¹gniêcia
+	//pliki do Å›ciÄ…gniÄ™cia
 	FilesHelper::filterFiles(dmOKFiles, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
 	if(filesToDownload.empty() == false){
@@ -2386,13 +2386,13 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 		}
 
 		//TODO
-		//obs³uga œci¹gania - jak siê ca³e skoñczy to ³¹duje projekt z powodzeniem, jak tylko czêsciowo to warning!!
+		//obsÅ‚uga Å›ciÄ…gania - jak siÄ™ caÅ‚e skoÅ„czy to Å‚Ä…duje projekt z powodzeniem, jak tylko czÄ™sciowo to warning!!
 
 	}
 
 	std::set<int>().swap(filesToDownload);
 	std::set<int>().swap(filesToLoad);
-	//pliki do za³adowania
+	//pliki do zaÅ‚adowania
 	FilesHelper::filterFiles(dmOKFiles, Local, filesToLoad, *(dataSource->fileStatusManager));
 
 	unloadFiles(filesLoadedToDM, false);
@@ -2403,8 +2403,8 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 void DataSourceWidget::onSaveProject()
 {
 	//TODO
-	//widget z opcj¹ podania nazwy
-	//nazwa staje siê nazwa projektu jezeli jeszcze takiego nie ma, jak jest to pytam czy nadpisaæ
+	//widget z opcjÄ… podania nazwy
+	//nazwa staje siÄ™ nazwa projektu jezeli jeszcze takiego nie ma, jak jest to pytam czy nadpisaÄ‡
 	bool again = false;
 	do{
 		QInputDialog input;
@@ -2468,7 +2468,7 @@ void DataSourceWidget::trySaveProjects()
 
 	if(projectsOut.is_open() == false){
 		//TODO
-		//b³¹d zapisu
+		//bÅ‚Ä…d zapisu
 	}
 
 	try{
@@ -2519,10 +2519,10 @@ void DataSourceWidget::tryLoadProjects()
 
 			if(pos != std::string::npos){
 				using namespace boost;
-				//mamy nazwê
+				//mamy nazwÄ™
 				std::string projectName(line.substr(0, pos));
 				std::set<int> files;
-				//szukam plików
+				//szukam plikÃ³w
 				static const char_separator<char> sep(":,;");
 				auto filesString = line.substr(pos+1, line.size()-1);
 				tokenizer< char_separator<char> > tokens(filesString, sep);

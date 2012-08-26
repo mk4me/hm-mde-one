@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__TIMELINETAG_H__
+﻿#ifndef HEADER_GUARD__TIMELINETAG_H__
 #define HEADER_GUARD__TIMELINETAG_H__
 
 #include <timelinelib/Types.h>
@@ -20,7 +20,7 @@ private:
     //! Nazwa tagu
     std::string name;
 
-    //! Pozycja pocz�tku w czasie tagu wzgledem jego strumienia
+    //! Pozycja początku w czasie tagu wzgledem jego strumienia
     double begin;
 
     //! Czas trwania taga - dlugosc

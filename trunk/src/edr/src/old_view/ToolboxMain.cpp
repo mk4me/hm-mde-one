@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include "ToolboxMain.h"
 #include <utils/Push.h>
 #include <core/TypeInfo.h>
@@ -117,7 +117,7 @@ void ToolboxMain::initializeUI()
 
 	IServicePtr dataExplorer;
 
-	// pozosta³e widgety "p³ywaj¹ce"
+	// pozostaÅ‚e widgety "pÅ‚ywajÄ…ce"
 	for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
 		IServicePtr service = ServiceManager::getInstance()->getService(i);
 
@@ -173,7 +173,7 @@ void ToolboxMain::initializeUI()
 		ActionsGroupManager settingsWidgetActions;
 		dataTabWidget->addTab(source->getWidget(&settingsWidgetActions), QString::fromStdString(source->getName()));
 		//TODO
-		//obs³u¿yc konteksy Ÿróde³
+		//obsÅ‚uÅ¼yc konteksy ÅºrÃ³deÅ‚
 	}
 
 	if(dataExplorer != nullptr){
@@ -272,7 +272,7 @@ void ToolboxMain::openLayout( const QString& path )
 
 void ToolboxMain::onOpenLayout()
 {
-	// TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
+	// TODO: czy na pewno ma wychodziÄ‡ gdy nie uda siÄ™ sprawdziÄ‡, czy katalog istnieje?
 	Filesystem::Path dir = getPathInterface()->getUserDataPath() / "layouts";
 	utils::Push<bool> pushed(updateEnabled, false);
 	const QString fileName = QFileDialog::getOpenFileName(this, 0, dir.string().c_str(), "*.layout");
@@ -283,14 +283,14 @@ void ToolboxMain::onOpenLayout()
 
 void ToolboxMain::onShowSavedLayouts()
 {
-	// usuniêcie starych akcji
+	// usuniÄ™cie starych akcji
 	menuLoad_layout->clear();
 	menuLoad_layout->addAction(actionLayoutOpen);
 
 	// layouty wbudowane
 	Filesystem::Path dir = getPathInterface()->getResourcesPath() / "layouts";
 	addLayoutsToMenu(dir);
-	// layouty zdefiniowane przez u¿ytkownika
+	// layouty zdefiniowane przez uÅ¼ytkownika
 	dir = getPathInterface()->getUserDataPath() / "layouts";
 	addLayoutsToMenu(dir);
 }
@@ -302,14 +302,14 @@ void ToolboxMain::addLayoutsToMenu( const Filesystem::Path &dir )
 
 void ToolboxMain::populateWindowMenu()
 {
-	// uwaga: nie musimy usuwaæ starych akcji, poniewa¿ QMenu pilnuje,
-	// aby nie by³ dodane dwie jednakowe instancje
+	// uwaga: nie musimy usuwaÄ‡ starych akcji, poniewaÅ¼ QMenu pilnuje,
+	// aby nie byÅ‚ dodane dwie jednakowe instancje
 	populateWindowMenu(menuWindow);
 }
 
 void ToolboxMain::populateVisualizersMenu()
 {
-	// czyœcimy menu
+	// czyÅ›cimy menu
 	menuCreateVisualizer->clear();
 	populateVisualizersMenu(menuCreateVisualizer);
 }
@@ -378,10 +378,10 @@ void ToolboxMain::onLayoutTriggered()
 
 void ToolboxMain::onSaveLayout()
 {
-	// TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
+	// TODO: czy na pewno ma wychodziÄ‡ gdy nie uda siÄ™ sprawdziÄ‡, czy katalog istnieje?
 	Filesystem::Path dir = getPathInterface()->getUserDataPath() / "layouts";
 
-	//jeœli nie istnieje spróbuj utworzyæ
+	//jeÅ›li nie istnieje sprÃ³buj utworzyÄ‡
 	if(Filesystem::pathExists(dir) == false) {
 		Filesystem::createDirectory(dir);
 	}

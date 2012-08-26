@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:  2010/09/27
 	created:  27:9:2010   19:50
 	filename: VideoService.h
@@ -43,13 +43,13 @@ private:
 
 
 public:
-    //! \return Format uøywany przy rysowaniu.
+    //! \return Format u≈ºywany przy rysowaniu.
     vidlib::PixelFormat getOutputFormat();
-    //! \param format Format uøywany przy rysowaniu.
+    //! \param format Format u≈ºywany przy rysowaniu.
     void setOutputFormat(vidlib::PixelFormat format);
-    //! \return Czy uøywa rozszerzenia TEXTURE_RECT?
+    //! \return Czy u≈ºywa rozszerzenia TEXTURE_RECT?
     bool isUsingTextureRectangle();
-    //! \param useTextureRectangle Czy uøywa rozszerzenia TEXTURE_RECT?
+    //! \param useTextureRectangle Czy u≈ºywa rozszerzenia TEXTURE_RECT?
     void setUseTextureRectangle(bool useTextureRectangle);
 
 

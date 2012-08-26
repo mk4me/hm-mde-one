@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/14
     created:  14:4:2011   12:38
     filename: TypeInfo.h
@@ -17,11 +17,11 @@
 
 namespace core {
 
-    //! Struktura reprezentuj¹ca typ obiektu.
+    //! Struktura reprezentujÄ…ca typ obiektu.
     class TypeInfo
     {
     private:
-        //! Wewnêtrzna informacja o typie.
+        //! WewnÄ™trzna informacja o typie.
          const std::type_info* typeinfo;
 
     public:
@@ -120,7 +120,7 @@ namespace core {
     protected:
         static inline bool areTypesEqual(const std::type_info& t1, const std::type_info& t2)
         {
-            // tutaj u¿ywamy sta³ej z boost/any - pozwala okreœliæ, czy lepiej porównywaæ po nazwie, czy po adresie
+            // tutaj uÅ¼ywamy staÅ‚ej z boost/any - pozwala okreÅ›liÄ‡, czy lepiej porÃ³wnywaÄ‡ po nazwie, czy po adresie
             #ifdef BOOST_AUX_ANY_TYPE_ID_NAME
                         return std::strcmp(t1.name(), t2.name()) == 0;
             #else

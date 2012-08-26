@@ -1,4 +1,4 @@
-#include <utils/DataChannel.h>
+﻿#include <utils/DataChannel.h>
 #include "DataChannelTest.h"
 
 // Registers the fixture into the 'registry'

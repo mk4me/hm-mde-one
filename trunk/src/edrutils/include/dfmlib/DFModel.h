@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__DFMODEL_H__
+ï»¿#ifndef HEADER_GUARD__DFMODEL_H__
 #define HEADER_GUARD__DFMODEL_H__
 
 #include <dfmlib/DFPin.h>
@@ -12,13 +12,13 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa modelu obs³uguj¹cego przep³yw danych. Model te¿ jest czêœci¹ tego przep³ywu - zbiera informacjê o przetworzeniu danych przez wêz³y liœcie.
-//! Na bazie tej informacji kontroluje moment wprowadzenia nowych danych do modelu (wyzwolenie Ÿróde³).
+//! Klasa modelu obsÅ‚ugujÄ…cego przepÅ‚yw danych. Model teÅ¼ jest czÄ™Å›ciÄ… tego przepÅ‚ywu - zbiera informacjÄ™ o przetworzeniu danych przez wÄ™zÅ‚y liÅ›cie.
+//! Na bazie tej informacji kontroluje moment wprowadzenia nowych danych do modelu (wyzwolenie ÅºrÃ³deÅ‚).
 class DFModel : public Model
 {
 public:
 
-    //! Typ przechowuj¹cy zestaw Ÿróde³ na potrzeby wstrzykiwania kolejnej porcji danych do data flow
+    //! Typ przechowujÄ…cy zestaw ÅºrÃ³deÅ‚ na potrzeby wstrzykiwania kolejnej porcji danych do data flow
 	typedef std::set<DFSNPtr> SourceNodes;
 
     //typedef std::set<DFNPtr> Nodes;
@@ -45,7 +45,7 @@ public:
 
 public:
 
-    //! Domyœ³ny konstruktor
+    //! DomyÅ›Å‚ny konstruktor
 	DFModel(void);
 
     //! Wirtualny destruktor
@@ -53,31 +53,31 @@ public:
 
     //---------------------- Model interface ----------------------------
     
-    //! \param node Wêze³ którego kompatybilnoœæ z modelem sprawdzamy
-    //! \return Czy wêze³ jest wspierany przez model
+    //! \param node WÄ™zeÅ‚ ktÃ³rego kompatybilnoÅ›Ä‡ z modelem sprawdzamy
+    //! \return Czy wÄ™zeÅ‚ jest wspierany przez model
     virtual bool isNodeSupported(const NPtr & node) const;
 
     //---------------------- DFModel -------------------------------------
 
-    //! \return Zwraca zbiór wêz³ów Ÿród³owych
+    //! \return Zwraca zbiÃ³r wÄ™zÅ‚Ã³w ÅºrÃ³dÅ‚owych
 	const SourceNodes & getSourceNodes() const;
 
-    //! Wyzwala Ÿród³a, rozpoczyna przep³yw informacji w modelu
+    //! Wyzwala ÅºrÃ³dÅ‚a, rozpoczyna przepÅ‚yw informacji w modelu
     void run();
 
-    //! \return Czy model jest uruchomiony (mo¿e byæ spauzpowany)
+    //! \return Czy model jest uruchomiony (moÅ¼e byÄ‡ spauzpowany)
     bool isRunning() const;
 
-    //! \return Czy wszystkie dane zosta³y przetworzone
+    //! \return Czy wszystkie dane zostaÅ‚y przetworzone
     bool isFinished() const;
 
-    //! Wstrzymuje wyzpolenie Ÿróde³ po zakoñczeniu aktualnie trwaj¹cego cyklu danych
+    //! Wstrzymuje wyzpolenie ÅºrÃ³deÅ‚ po zakoÅ„czeniu aktualnie trwajÄ…cego cyklu danych
     void pause();
 
-    //! \return Czy model jest wstrzymany (rownoznatrzne ¿e isRunning daje true jeœli isPaused równie¿ true)
+    //! \return Czy model jest wstrzymany (rownoznatrzne Å¼e isRunning daje true jeÅ›li isPaused rÃ³wnieÅ¼ true)
     bool isPaused() const;
 
-    //! Zatrzymuje model, resetuje wszystkie wêz³y i piny do ich stanu pocvz¹tkowego
+    //! Zatrzymuje model, resetuje wszystkie wÄ™zÅ‚y i piny do ich stanu pocvzÄ…tkowego
     void stop();
 
     void reset();
@@ -86,52 +86,52 @@ protected:
 
     //---------------- Interfejs Model --------------------
 
-    //! \return true jeœli mo¿na dokonaæ zmiany modelu, inaczej false lub wyj¹tek
+    //! \return true jeÅ›li moÅ¼na dokonaÄ‡ zmiany modelu, inaczej false lub wyjÄ…tek
     virtual bool isModelChangeAllowed() const;
 
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
-    //! \return Czy mozna po³¹czyæ piny
+    //! \param src Pin ÅºrÃ³dÅ‚owy (wyjÅ›ciowy)
+    //! \param src Pin docelowy (wejÅ›ciowy)
+    //! \return Czy mozna poÅ‚Ä…czyÄ‡ piny
     virtual bool additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) const;
 
-    //! \return true jeœli model jest poprawny
+    //! \return true jeÅ›li model jest poprawny
     virtual bool additionalModelValidation() const;
 
-    //! \param node Wêze³ do dodania
+    //! \param node WÄ™zeÅ‚ do dodania
     virtual void afterNodeAdd(const NPtr & node);
 
-    //! \param node Wêze³ do usuniêcia
+    //! \param node WÄ™zeÅ‚ do usuniÄ™cia
     virtual void beforeNodeRemove(const NPtr & node);
 
-    //! \param node Wêze³ który sta³ siê w³aœnie liœciem
+    //! \param node WÄ™zeÅ‚ ktÃ³ry staÅ‚ siÄ™ wÅ‚aÅ›nie liÅ›ciem
     virtual void afterLeafAdd(const NPtr & node);
 
-    //! \param node Wêze³ który przestaje byæ liœciem
+    //! \param node WÄ™zeÅ‚ ktÃ³ry przestaje byÄ‡ liÅ›ciem
     virtual void beforeLeafRemove(const NPtr & node);
 
-    //! Resetuje stany wez³ów
+    //! Resetuje stany wezÅ‚Ã³w
 	void resetNodeStates();
 
-    //! Resetuje stany pinów
+    //! Resetuje stany pinÃ³w
 	void resetPinStates();
 
-    //! \param pin Pin którego stan resetujemy
+    //! \param pin Pin ktÃ³rego stan resetujemy
 	void resetPinState(const PinPtr & pin);
 
-    //! Powiadamia Ÿród³a o koniecznoœci zasilenia model w nowe dane
+    //! Powiadamia ÅºrÃ³dÅ‚a o koniecznoÅ›ci zasilenia model w nowe dane
 	void notifySources();
 	
-    //! \return Prawda jeœli Ÿród³a maj¹ wiêcej danych do zasilenia modelu
+    //! \return Prawda jeÅ›li ÅºrÃ³dÅ‚a majÄ… wiÄ™cej danych do zasilenia modelu
 	bool sourcesHaveMoreData() const;
 
 private:
 
-    //! Informuje ¿e liœæ przetworzy³ dane
+    //! Informuje Å¼e liÅ›Ä‡ przetworzyÅ‚ dane
 	void leafHasProcessedData();
 
 private:
 
-    //! Zbiór wêz³ów Ÿród³owych
+    //! ZbiÃ³r wÄ™zÅ‚Ã³w ÅºrÃ³dÅ‚owych
 	SourceNodes sourceNodes;
 
     //! Czy model jest uruchomiony
@@ -147,19 +147,19 @@ private:
 
     bool pausePending;
 
-    //! Licznik iloœci wêz³ów liœci które przetworzy³y dane
+    //! Licznik iloÅ›ci wÄ™zÅ‚Ã³w liÅ›ci ktÃ³re przetworzyÅ‚y dane
 	unsigned int finishedLeafes;
 
-    //! mutex do kontroli w¹tku notyfikujacego Ÿród³a
+    //! mutex do kontroli wÄ…tku notyfikujacego ÅºrÃ³dÅ‚a
     //OpenThreads::Mutex pauseMutex;
 
-    //! mutex do synchronizacji aktualizacji iloœci liœci które przetworzy³y dane
+    //! mutex do synchronizacji aktualizacji iloÅ›ci liÅ›ci ktÃ³re przetworzyÅ‚y dane
     //OpenThreads::Mutex leavesMutex;
 
     //! mutex do synchronizacji operacji uruchamiania/zatrzymywania/pauzowania dataflow
     mutable OpenThreads::ReentrantMutex runningMutex;
 
-    //! w¹tek obs³uguj¹cy wyzwalanie Ÿróde³
+    //! wÄ…tek obsÅ‚ugujÄ…cy wyzwalanie ÅºrÃ³deÅ‚
     //boost::shared_ptr<ModelRunner> modelRunner;
 };
 

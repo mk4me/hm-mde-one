@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/16
     created:  16:2:2012   11:01
     filename: IDataSource.h
@@ -17,37 +17,37 @@
 namespace communication
 {
 
-//! Interfejs ürÛd≥a danych communication
+//! Interfejs ≈∫r√≥d≈Ça danych communication
 class ICommunicationDataSource : public utils::Observable<ICommunicationDataSource>
 {
 public:
 	//! Destruktor wirtualny
     virtual ~ICommunicationDataSource() {}
 
-	//! \param offline Czy ürÛd≥o danych ma dzia≥aÊ w trybie offline?
+	//! \param offline Czy ≈∫r√≥d≈Ço danych ma dzia≈Çaƒá w trybie offline?
 	virtual void setOfflineMode(bool offline = true) = 0;
-	//! \return Czy ürÛd≥o dzia≥a w trybie offline
+	//! \return Czy ≈∫r√≥d≈Ço dzia≈Ça w trybie offline
 	virtual bool offlineMode() const = 0;
 
-    //! \param user Nazwa uøytkownika
-    //! \param password Has≥o uøytkownika
-	//! \param localLogin Czy logujemy tylko lokalnie - dla problemÛw lub braku po≥aczenia z internetem
+    //! \param user Nazwa u≈ºytkownika
+    //! \param password Has≈Ço u≈ºytkownika
+	//! \param localLogin Czy logujemy tylko lokalnie - dla problem√≥w lub braku po≈Çaczenia z internetem
     virtual void login(const std::string & user, const std::string & password) = 0;
-    //! Wylogowuje uøytkownika
+    //! Wylogowuje u≈ºytkownika
     virtual void logout() = 0;
-    //! \return prawda jeúli uøytkownik zalogowany
+    //! \return prawda je≈õli u≈ºytkownik zalogowany
     virtual bool isLogged() const = 0;
-    ////! Wysy≥a proúbÍ o za≥oøenie konta w bazie
+    ////! Wysy≈Ça pro≈õbƒô o za≈Ço≈ºenie konta w bazie
     //virtual void sendUserRegistrationRequest() = 0;
-    //! \return Dane aktualnego uøytkownika ( w szczegÛlnoúci pusty obiekt jeúli niezalogowano)
+    //! \return Dane aktualnego u≈ºytkownika ( w szczeg√≥lno≈õci pusty obiekt je≈õli niezalogowano)
     virtual const IUser * currentUser() const = 0;
-	//! Automatycznie ustawia widok karty pacjenta i prÛbuje wyúwietliÊ danego pacjenta/subjecta jeúli sπ znani,
-	//! jeúli nie to czyúci selekcjÍ drzew i prÛbuje generowaÊ na bazie struktury pluginu subject dane,
-	//! jeúli to siÍ nie powiedzie nie robi nic (komunikat o b≥Ídzie)
+	//! Automatycznie ustawia widok karty pacjenta i pr√≥buje wy≈õwietliƒá danego pacjenta/subjecta je≈õli sƒÖ znani,
+	//! je≈õli nie to czy≈õci selekcjƒô drzew i pr√≥buje generowaƒá na bazie struktury pluginu subject dane,
+	//! je≈õli to siƒô nie powiedzie nie robi nic (komunikat o b≈Çƒôdzie)
 	virtual void showPatientCard(const PluginSubject::SubjectConstPtr & subject, const PatientConstPtr & patient = PatientConstPtr()) = 0;
-	//! Prze≥ancza widok danych na dane uøytkownika
+	//! Prze≈Çancza widok danych na dane u≈ºytkownika
 	virtual void showUserDataCard() = 0;
-	//! Prze≥ancza widok danych na konfiguracjÍ
+	//! Prze≈Çancza widok danych na konfiguracjƒô
 	virtual void showConfigurationCard() = 0;
 };
 

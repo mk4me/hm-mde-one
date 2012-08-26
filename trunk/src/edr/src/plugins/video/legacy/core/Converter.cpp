@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+Ôªø#include "../VideoPCH.h"
 #include "VMPrivate.h"
 #include "Converter.h"
 
@@ -42,7 +42,7 @@ bool Converter::convert( PictureLayered src, PictureLayered dst )
     dst.width, dst.height, dst.format
   };
 
-  // czy jest juø odpowiedni konwerter?
+  // czy jest ju≈º odpowiedni konwerter?
   std::map<Description, SwsContext*>::iterator found = cache.find(description);
   if ( found == cache.end() ) {
     // wstawiamy!
@@ -50,7 +50,7 @@ bool Converter::convert( PictureLayered src, PictureLayered dst )
   }
 
   VM_MEASURE_SCOPE(ConvertFrame);
-  // odúwieøamy kontekst
+  // od≈õwie≈ºamy kontekst
   SwsContext *ctx = sws_getCachedContext( found->second,
     description.srcWidth, description.srcHeight, static_cast< ::PixelFormat>(description.srcFormat),
     description.dstWidth, description.dstHeight, static_cast< ::PixelFormat>(description.dstFormat),
@@ -59,9 +59,9 @@ bool Converter::convert( PictureLayered src, PictureLayered dst )
   // aktualizacja cache
   found->second = ctx;
 
-  // konwersja w≥aúciwa
+  // konwersja w≈Ça≈õciwa
   if ( !ctx ) {
-    // nie da siÍ!
+    // nie da siƒô!
     return false;
   } else {
     int newHeight = sws_scale(ctx, src.data, src.dataWidth, 0, description.srcHeight, dst.data, dst.dataWidth );

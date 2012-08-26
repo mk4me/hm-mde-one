@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/06/04
 	created:	4:6:2012   20:00
 	filename: 	ContextEventFilter.h
@@ -16,23 +16,23 @@ class HmmMainWindow;
 #include<QtGui/QWidget>
 #include<QtCore/QObject>
 
-//! filtruje zmiany focusów widgetów, obs³uguje zdarzenia dla kontekstów, wywo³uje przydzielanie kontekstu dla odpowiedniego widgetu
+//! filtruje zmiany focusÃ³w widgetÃ³w, obsÅ‚uguje zdarzenia dla kontekstÃ³w, wywoÅ‚uje przydzielanie kontekstu dla odpowiedniego widgetu
 class ContextEventFilter : public QObject
 {
     Q_OBJECT
 public:
-    //! konstruktor, przyjmuje na w³asnoœæ g³ówne okno
-    //! \param mainWindow potrzebne, aby uzyskaæ dostêp do kontekstów
+    //! konstruktor, przyjmuje na wÅ‚asnoÅ›Ä‡ gÅ‚Ã³wne okno
+    //! \param mainWindow potrzebne, aby uzyskaÄ‡ dostÄ™p do kontekstÃ³w
     ContextEventFilter(HmmMainWindow * mainWindow);
     //! destruktor
     virtual ~ContextEventFilter() {}
 
 public:
-    //! rejestruje widget, któremu przekazywany bêdzie focus
-    //! \param widget  widget, który nie zostanie zniszczony
+    //! rejestruje widget, ktÃ³remu przekazywany bÄ™dzie focus
+    //! \param widget  widget, ktÃ³ry nie zostanie zniszczony
     void registerPermamentContextWidget(QWidget * widget);
-    //! rejestruje widget, któremu przekazywany bêdzie focus
-    //! \param widget widget, który trzeba wyrejstrowaæ z systemu w przypadku jego zamkniêcia 
+    //! rejestruje widget, ktÃ³remu przekazywany bÄ™dzie focus
+    //! \param widget widget, ktÃ³ry trzeba wyrejstrowaÄ‡ z systemu w przypadku jego zamkniÄ™cia 
     void registerClosableContextWidget(QWidget * widget);
     //! usuwa widget z kolekcji
     //! \param widget usuwany widget
@@ -42,8 +42,8 @@ public:
     void unregisterClosableContextWidget(QWidget * widget);
 
 protected:
-    //! filtruje zdarzenia dla zarejstrowanych widgetów, 
-    //! dziêki tej metodzie wysy³ane s¹ informacje, dla jakich widgetów powinien zostaæ aktywowany kontekst
+    //! filtruje zdarzenia dla zarejstrowanych widgetÃ³w, 
+    //! dziÄ™ki tej metodzie wysyÅ‚ane sÄ… informacje, dla jakich widgetÃ³w powinien zostaÄ‡ aktywowany kontekst
     //! \param obj 
     //! \param event 
     bool eventFilter(QObject *obj, QEvent *event);

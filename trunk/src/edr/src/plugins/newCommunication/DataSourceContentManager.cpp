@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "DataSourceContentManager.h"
 #include "DataSourceStatusManager.h"
 
@@ -83,7 +83,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 	int statusColumn = -1;
 	QStringList headers;
 
-	//zawartoœæ wg regu³ pierwszeñstwa i stanu wype³nienia
+	//zawartoÅ›Ä‡ wg reguÅ‚ pierwszeÅ„stwa i stanu wypeÅ‚nienia
 	if(perspectiveFirst == true){
 		if(perspective->fillContent(item, shallowCopy) == false){
 			contents[currentContent_]->fillContent(item, shallowCopy);
@@ -202,7 +202,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 	}
 
 	DataStatus tmpStatus;
-	//odœwie¿am zawartoœc dzieci jeœli nie znamy typu obiektu
+	//odÅ›wieÅ¼am zawartoÅ›c dzieci jeÅ›li nie znamy typu obiektu
 	int childrenCount = item->childCount();
 	for(int i = 0; i < childrenCount; ++i){
 		tmpStatus |= refrshItemContent(item->child(i), shallowCopy, perspective, localStatusManager, globalStatusManager, perspectiveFirst);
@@ -212,7 +212,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 		status = tmpStatus;
 	}
 
-	//odœwie¿am status
+	//odÅ›wieÅ¼am status
 	if(statusColumn == -1 || statusColumn >= headers.size()){
 		statusColumn = 0;
 	}
@@ -220,7 +220,7 @@ DataStatus DataSourceContentManager::refrshItemContent(QTreeWidgetItem * item, c
 	item->setIcon(statusColumn, DataSourceStatusManager::statusIcon(status));
 
 	//TODO
-	//stan œci¹gania dla elementów
+	//stan Å›ciÄ…gania dla elementÃ³w
 
 	return status;
 }

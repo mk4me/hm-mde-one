@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/07/19
     created:  19:7:2011   14:17
     filename: Controller.h
@@ -30,16 +30,16 @@ class IController : public utils::Observable<State>
 {
 public:
 
-    //! Sposób aktualizacji czasu
+    //! SposÃ³b aktualizacji czasu
     enum TimeUpdateMode {
-        AsynchTimeUpdate, //! Asynchroniczna aktualizacja czasu - przyjscie nowego czasu przerywa poprzedni¹ aktualizacjê jeœli taka by³a i rozpoczyna aktualizacjê od nowa
-        SynchTimeUpdate     //! Czeka a¿ skoñczy siê poprzenia aktualizacja czasu, ustawia nowy czas do kolejnej aktualizacji
+        AsynchTimeUpdate, //! Asynchroniczna aktualizacja czasu - przyjscie nowego czasu przerywa poprzedniÄ… aktualizacjÄ™ jeÅ›li taka byÅ‚a i rozpoczyna aktualizacjÄ™ od nowa
+        SynchTimeUpdate     //! Czeka aÅ¼ skoÅ„czy siÄ™ poprzenia aktualizacja czasu, ustawia nowy czas do kolejnej aktualizacji
     };
 
     //! Kierunek odtwarzania timeline
     enum PlaybackDirection {
         PlayForward     = 1,    // odtwarzanie do przodu
-        PlayBackward    = -1    // odtwarzanie do ty³u
+        PlayBackward    = -1    // odtwarzanie do tyÅ‚u
     };
 
     IController(State * state) : utils::Observable<State>(state) {}
@@ -57,10 +57,10 @@ public:
 
     //------------------------------- Konfiguracja aktualizacji czasu -----------------------
 
-    //! \param timeUpdateMode Sposób aktualizacji czasu
+    //! \param timeUpdateMode SposÃ³b aktualizacji czasu
     virtual void setTimeUpdateMode(TimeUpdateMode timeUpdateMode) = 0;
 
-    //! \return Sposób aktualizacji czasu
+    //! \return SposÃ³b aktualizacji czasu
     virtual TimeUpdateMode getTimeUpdateMode() const = 0;
 
     //! \param playbackDirection Kierunek aktualizacji czasu w timeline
@@ -77,7 +77,7 @@ public:
     //! Wstrzymuje odtwarzanie timeline
     virtual void pause() = 0;
 
-    //! Zatrzymuje odtwarzanie, wraca do "pocz¹tku" - w zale¿noœci od kierunku odtwarzania
+    //! Zatrzymuje odtwarzanie, wraca do "poczÄ…tku" - w zaleÅ¼noÅ›ci od kierunku odtwarzania
     //virtual void stop() = 0;
 
     //! \return Czy timeline jest odtwarzany
@@ -89,7 +89,7 @@ public:
     //! \return Czy czas timeline jest "brudny"
     virtual bool isTimeDirty() const = 0;
 
-    //! \return Czy kontroler jest zajêty?
+    //! \return Czy kontroler jest zajÄ™ty?
     virtual bool isBusy() const = 0;
 
     //------------------------------- Operacje na timeline -----------------------------------
@@ -125,7 +125,7 @@ public:
     //! \param channel fatyczny kanal dotarczony przez klienta
     virtual void addChannel(const std::string & path, const IChannelPtr & channel) = 0;
 
-    //! \param channels Kana³y do dodawnia w formie œciezka -> kana³, kana³ nie powiniem byæ nullptr
+    //! \param channels KanaÅ‚y do dodawnia w formie Å›ciezka -> kanaÅ‚, kanaÅ‚ nie powiniem byÄ‡ nullptr
     virtual void addChannels(const std::map<std::string, IChannelPtr> & channels) = 0;
 
     //! \param path Sciezka kanalu do usuniecia
@@ -158,7 +158,7 @@ private:
         Timer(unsigned long int delay)
             : delay(delay)
         {
-            UTILS_ASSERT((delay != 0), "Z³y czas pomiêdzy tikami tegara");
+            UTILS_ASSERT((delay != 0), "ZÅ‚y czas pomiÄ™dzy tikami tegara");
         }
 
         virtual void run()
@@ -185,13 +185,13 @@ private:
 
     void setController(Controller * controller)
     {
-        UTILS_ASSERT((controller != nullptr), "B³êdny kontroler do aktualizacji");
+        UTILS_ASSERT((controller != nullptr), "BÅ‚Ä™dny kontroler do aktualizacji");
         this->controller = controller;
     }
 
     void setDelay(unsigned long int delay)
     {
-        UTILS_ASSERT((delay > 0), "Blêdne opóŸnienie zegara");
+        UTILS_ASSERT((delay > 0), "BlÄ™dne opÃ³Åºnienie zegara");
         this->delay = delay;
     }
 
@@ -215,16 +215,16 @@ private:
     //! Model logiczny timeline w wersji const
     ModelConstPtr constModel;
 
-    //! Wewnêtrzny timer
+    //! WewnÄ™trzny timer
     TimerPtr timer;
 
-    //! Sposób aktualizacji czasu
+    //! SposÃ³b aktualizacji czasu
     TimeUpdateMode timeUpdateMode;
 
     //! Kierunek aktualizacji czasu
     PlaybackDirection playbackDirection;
 
-    //! Mutex do synchronizacji edycji modelu (struktura kana³ów)
+    //! Mutex do synchronizacji edycji modelu (struktura kanaÅ‚Ã³w)
     OpenThreads::ReentrantMutex modelMutex;
     
     //! Mutex do edycji odtwarzania timeline
@@ -233,22 +233,22 @@ private:
     //! Mutex do zarzadzania odtwarzaniem timeline - wstrzymywania go
     OpenThreads::Mutex pauseMutex;
 
-    //! Czy kontroler jest zajêty?
+    //! Czy kontroler jest zajÄ™ty?
     volatile bool busy;
 
-    //! Czy czas modelu i timeline s¹ ró¿ne
+    //! Czy czas modelu i timeline sÄ… rÃ³Å¼ne
     bool dirty;
 
     //! "Brudny" stan timeline
     State dirtyState;
 
-    //! Czy czas kontrolera i modelu s¹ rózne
+    //! Czy czas kontrolera i modelu sÄ… rÃ³zne
     bool timeDirty;
 
     //! Generator nowego czasu dla timera
     TimeGenerator timeGenerator;
 
-    //! Informacja czy jawnie zapauzowano odtwarzanie czy osi¹gniêto limit czasu (true - pauza, false - limit czasu)
+    //! Informacja czy jawnie zapauzowano odtwarzanie czy osiÄ…gniÄ™to limit czasu (true - pauza, false - limit czasu)
     bool paused;
 
 public:
@@ -274,10 +274,10 @@ public:
 
     //------------------------------- Konfiguracja aktualizacji czasu -----------------------
 
-    //! \param timeUpdateMode Sposób aktualizacji czasu
+    //! \param timeUpdateMode SposÃ³b aktualizacji czasu
     virtual void setTimeUpdateMode(TimeUpdateMode timeUpdateMode);
 
-    //! \return Sposób aktualizacji czasu
+    //! \return SposÃ³b aktualizacji czasu
     virtual TimeUpdateMode getTimeUpdateMode() const;
 
     //! \param playbackDirection Kierunek aktualizacji czasu w timeline
@@ -305,7 +305,7 @@ public:
     //! \return Czy czas timeline jest "brudny"
     virtual bool isTimeDirty() const;
 
-    //! \return Czy kontroler jest zajêty?
+    //! \return Czy kontroler jest zajÄ™ty?
     bool isBusy() const;
 
     //------------------------------- Operacje na timeline -----------------------------------
@@ -341,7 +341,7 @@ public:
     //! \param channel fatyczny kanal dotarczony przez klienta
     virtual void addChannel(const std::string & path, const IChannelPtr & channel);
 
-    //! \param channels Kana³y do dodawnia w formie œciezka -> kana³, kana³ nie powiniem byæ nullptr
+    //! \param channels KanaÅ‚y do dodawnia w formie Å›ciezka -> kanaÅ‚, kanaÅ‚ nie powiniem byÄ‡ nullptr
     virtual void addChannels(const std::map<std::string, IChannelPtr> & channels);
 
     //! \param path Sciezka kanalu do usuniecia
@@ -359,31 +359,31 @@ public:
 
 private:
 
-    //! \return Czy mo¿liwy jest "czysty" zapis?
+    //! \return Czy moÅ¼liwy jest "czysty" zapis?
     bool isWriteEnabled() const;
 
-    //! \return Bie¿¹cy stan. W zale¿noœci od rezultatu isWriteEnabled
+    //! \return BieÅ¼Ä…cy stan. W zaleÅ¼noÅ›ci od rezultatu isWriteEnabled
     //! zwracany jest albo faktyczny stan modelu, albo jego "brudna" kopia.
     State getState() const;
 
-    //! Ustawia bie¿¹cy stan. Zmienna dirtyState zawsze jest ustawiana,
+    //! Ustawia bieÅ¼Ä…cy stan. Zmienna dirtyState zawsze jest ustawiana,
     //! ewentualnie jeszcze (na podstawie rezultatu isWriteEnabled) 
     //! ustawiana jest flaga dirty.
-    //! \param state Bie¿¹cy stan.
+    //! \param state BieÅ¼Ä…cy stan.
     void setState(const State& state);
 
-    //! \param controller Kontroler, którego czas aktualizujemy do przodu
+    //! \param controller Kontroler, ktÃ³rego czas aktualizujemy do przodu
     //! \param realTimeDelta Rzeczywisty krok czasu w milisekundach
     //! \return nowy czas do ustawienia
     static double forwardTimeUpdate(Controller * controller, unsigned long int realTimeDelta);
 
-    //! \param controller Kontroler, którego czas aktualizujemy do ty³u
+    //! \param controller Kontroler, ktÃ³rego czas aktualizujemy do tyÅ‚u
     //! \param realTimeDelta Rzeczywisty krok czasu w milisekundach
     //! \return nowy czas do ustawienia
     static double backwardTimeUpdate(Controller * controller, unsigned long int realTimeDelta);
 
     //! \param realTimeDelta Rzeczywisty krok czasu w milisekundach    
-    //! \return Informacja czy osi¹gniêto/przekroczono limit czasu timeline
+    //! \return Informacja czy osiÄ…gniÄ™to/przekroczono limit czasu timeline
     bool setNextTime(unsigned long int realTimeDelta);
 };
 

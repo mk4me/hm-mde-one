@@ -1,11 +1,11 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/10/04
 	created:  4:10:2010   15:30
 	filename: LeakDetection.h
 	author:	  Piotr Gwiazdowski
 	
-	purpose:  Nag³ówek nale¿y za³¹czaæ tylko w g³ównym pliku projektu.
-              Dodanie go wiêcej razy mo¿e spowodowaæ b³êdy linkera.
+	purpose:  NagÅ‚Ã³wek naleÅ¼y zaÅ‚Ä…czaÄ‡ tylko w gÅ‚Ã³wnym pliku projektu.
+              Dodanie go wiÄ™cej razy moÅ¼e spowodowaÄ‡ bÅ‚Ä™dy linkera.
 *********************************************************************/
 #ifndef HEADER_GUARD__CORE_LEAKDETECTION_H__
 #define HEADER_GUARD__CORE_LEAKDETECTION_H__
@@ -16,19 +16,19 @@
 
 #   ifdef UTILS_ENABLE_LEAK_DETECTION_VLD
 
-// na razie VLD nie jest w³¹czone do projektu tak jak nale¿y; trzeba
-// œci¹gn¹æ rêcznie (http://sites.google.com/site/dmoulding/vld) oraz
-// samemu skonfigurowaæ (readme po instalacji)
+// na razie VLD nie jest wÅ‚Ä…czone do projektu tak jak naleÅ¼y; trzeba
+// Å›ciÄ…gnÄ…Ä‡ rÄ™cznie (http://sites.google.com/site/dmoulding/vld) oraz
+// samemu skonfigurowaÄ‡ (readme po instalacji)
 #include <vld.h>
 
 #   else // UTILS_ENABLE_LEAK_DETECTION_VLD
 
 /**
- *	Prosty typ uruchamiaj¹cy œledzenie leaków z u¿yciem CRT. Poprzednio
- *  znajdowa³ siê w pliku .cpp, ale zgodnie z polityk¹ usuwania konfiguracji z utilsów
- *  znajduje siê tutaj.
- *  Je¿eliby przenosiæ ten typ do .cpp, to powinno siê daæ hinta linkerowi, aby
- *  instancjonowa³ statyczny obiekt:
+ *	Prosty typ uruchamiajÄ…cy Å›ledzenie leakÃ³w z uÅ¼yciem CRT. Poprzednio
+ *  znajdowaÅ‚ siÄ™ w pliku .cpp, ale zgodnie z politykÄ… usuwania konfiguracji z utilsÃ³w
+ *  znajduje siÄ™ tutaj.
+ *  JeÅ¼eliby przenosiÄ‡ ten typ do .cpp, to powinno siÄ™ daÄ‡ hinta linkerowi, aby
+ *  instancjonowaÅ‚ statyczny obiekt:
  *  #pragma comment(linker, "/include:?__leakDetector@@3V__CrtLeakDetector@@A")
  */
 class __CrtLeakDetector
@@ -47,7 +47,7 @@ public:
 
 #else // __WIN32__
 
-// jak to zrobiæ na unixie?
+// jak to zrobiÄ‡ na unixie?
 
 #endif // __WIN32__
 

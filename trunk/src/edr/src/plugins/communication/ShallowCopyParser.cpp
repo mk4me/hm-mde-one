@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include <plugins/communication/ShallowCopyParser.h>
 #include <core/IDataManager.h>
 
@@ -376,7 +376,7 @@ void MedicalShallowCopyParser::parseFile(const core::Filesystem::Path& path)
     }
     hParent = TiXmlHandle(_element);
 
-    //S�owniki
+    //Słowniki
     TiXmlElement* dictionary_elements = hParent.FirstChild("Dictionaries").ToElement();
     if(dictionary_elements != nullptr){
         //Disorders

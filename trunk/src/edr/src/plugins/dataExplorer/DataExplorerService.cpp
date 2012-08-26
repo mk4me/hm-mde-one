@@ -1,4 +1,4 @@
-#include "DataExplorerPCH.h"
+ï»¿#include "DataExplorerPCH.h"
 #include "DataExplorerService.h"
 #include <boost/algorithm/string.hpp>
 #include <QtGui/QToolButton>
@@ -33,7 +33,7 @@ const std::string& DataExplorerService::getName() const
 
 void DataExplorerService::registerSource(IDataExplorerSource * source)
 {
-    UTILS_ASSERT((source != nullptr), "B³êdne Ÿród³o danych dla DataExplorer");
+    UTILS_ASSERT((source != nullptr), "BÅ‚Ä™dne ÅºrÃ³dÅ‚o danych dla DataExplorer");
     DataExplorerSourcePtr sourcePtr(source);
 
     if(source == nullptr){
@@ -44,15 +44,15 @@ void DataExplorerService::registerSource(IDataExplorerSource * source)
         throw std::runtime_error("Source with given ID already registered in DataExplorer");
     }
 
-    //przygotowanie Ÿród³a
+    //przygotowanie ÅºrÃ³dÅ‚a
 
     source->init(managersAccessor->getMemoryDataManager(), managersAccessor->getFileDataManager());
 
-    //dodanie Ÿród³a do widgeta
+    //dodanie ÅºrÃ³dÅ‚a do widgeta
 
     addSourceToWidget(source);
 
-    //ostateczna rejestracja Ÿród³a
+    //ostateczna rejestracja ÅºrÃ³dÅ‚a
 
     sources[source->getID()] = sourcePtr;
 
@@ -85,7 +85,7 @@ void DataExplorerService::addSourceToWidget(IDataExplorerSource * source)
     tabWidget->setObjectName(QString::fromUtf8("sourceTab"));
     //tabWidget->setContentsMargins(4,4,4,4);
 
-    //dzielimy widok na pó³ w poziomie
+    //dzielimy widok na pÃ³Å‚ w poziomie
     QVBoxLayout * vLayout = new QVBoxLayout();
     tabWidget->setLayout(vLayout);
 
@@ -117,7 +117,7 @@ void DataExplorerService::addSourceToWidget(IDataExplorerSource * source)
 
     if(refreshAction != nullptr || configDialog != nullptr){
 
-        //czêœæ na operacje
+        //czÄ™Å›Ä‡ na operacje
         if(refreshAction != nullptr){
             QToolButton * button = new QToolButton();
             button->setDefaultAction(refreshAction);

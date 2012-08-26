@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include <osg/LineWidth>
 #include "UniqueCollection.h"
 #include "TrajectoriesDrawer.h"
@@ -54,7 +54,7 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 		VectorChannelConstPtr channel = markers->getChannel(i);
 
 		// stateset colowo jest generowany dla kazdej trajektorii osobno
-		// mo¿na w ten sposób zmieniac gruboœæ linii, itp.
+		// moÅ¼na w ten sposÃ³b zmieniac gruboÅ›Ä‡ linii, itp.
 		osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 		stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 		stateset->setMode( GL_BLEND, osg::StateAttribute::ON );

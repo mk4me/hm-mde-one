@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/04
     created:  4:2:2012   20:49
     filename: IDataSourceShallowCopy.h
@@ -19,30 +19,30 @@
 namespace communication
 {
 
-//! Typ wartosci pochodz¹cych z bazy danych
+//! Typ wartosci pochodzÄ…cych z bazy danych
 //enum ValueType {
-//    VTBOOL,       //! Wartoœæ prawda/fa³sz (bool)                                 tekst: "true", "false"
+//    VTBOOL,       //! WartoÅ›Ä‡ prawda/faÅ‚sz (bool)                                 tekst: "true", "false"
 //    VTCHAR,       //! Znak (char)                                                 tekst: ASCII
-//    VTINT,        //! Wartoœc sta³oprzecinkowa   (int)                            tekst: wartoœc numeryczna
-//    VTFLOAT,      //! Wartoœæ zmiennoprzecinkowa pojedynczej precyzji (float)     tekst: wartoœc numeryczna
-//    VTDOUBLE,     //! Wartoœæ zmiennoprzecinkowa podwójnej precyzji (double)      tekst: wartoœc numeryczna
-//    VTSTRING,     //! Tekst (std::string)                                         tekst: ta sama wartoœæ
+//    VTINT,        //! WartoÅ›c staÅ‚oprzecinkowa   (int)                            tekst: wartoÅ›c numeryczna
+//    VTFLOAT,      //! WartoÅ›Ä‡ zmiennoprzecinkowa pojedynczej precyzji (float)     tekst: wartoÅ›c numeryczna
+//    VTDOUBLE,     //! WartoÅ›Ä‡ zmiennoprzecinkowa podwÃ³jnej precyzji (double)      tekst: wartoÅ›c numeryczna
+//    VTSTRING,     //! Tekst (std::string)                                         tekst: ta sama wartoÅ›Ä‡
 //    VTDATE,       //! Data (boost::date_time::gregorian)                          tekst: DD-MM-RRRR
 //    VTTIME,       //! Czas (boost::date_time::gregorian)                          tekst: HH:MM:SS:UUUU
 //    VTDATETIME,   //! Data i czas (boost::date_time::gregorian)                   tekst: DD-MM-RRRR HH:MM:SS:UUUU
-//    VTPHOTO       //! Zdjêcie (QIcon)                                             tekst: "Photo"
+//    VTPHOTO       //! ZdjÄ™cie (QIcon)                                             tekst: "Photo"
 //};
 
-////! Struktura opisuj¹ca pole danych
+////! Struktura opisujÄ…ca pole danych
 //struct FieldDescriptor
 //{
 //    //! Nazwa pola
 //    std::string name;
 //    //! Opis pola
 //    std::string description;
-//    //! Typ wartoœci pola
+//    //! Typ wartoÅ›ci pola
 //    ValueType type;
-//    //! Jednostka (jeœli wystepuje i dotyczy wartoœci, w przeciwnym razie nullptr)
+//    //! Jednostka (jeÅ›li wystepuje i dotyczy wartoÅ›ci, w przeciwnym razie nullptr)
 //    const std::string * unit;
 //};
 //
@@ -53,54 +53,54 @@ namespace communication
 //    FieldDescriptor * fieldDescriptor;
 //};
 //
-////! Klasa przechowuj¹ca rózne wartoœci opisane w wyliczeniu ValueType
+////! Klasa przechowujÄ…ca rÃ³zne wartoÅ›ci opisane w wyliczeniu ValueType
 //class ValueAccessor
 //{
 //public:
 //    //! KOnstruktor
-//    //! \param value Wartoœæ przechowywana
-//    //! \param valueType typ wartoœci
+//    //! \param value WartoÅ›Ä‡ przechowywana
+//    //! \param valueType typ wartoÅ›ci
 //    //! \param valueAsString 
 //    ValueAccessor(const boost::any & value, ValueType valueType, const std::string & valueAsString);
 //
-//    //! \return Wartoœæ jako napis
+//    //! \return WartoÅ›Ä‡ jako napis
 //    const std::string & valueAsString() const;
-//    //! \return Wartoœæ
+//    //! \return WartoÅ›Ä‡
 //    const boost::any & value() const;
-//    //! \return Typ wartoœci
+//    //! \return Typ wartoÅ›ci
 //    const ValueType type() const;
 //
 //private:
-//    //! Wartoœæ
+//    //! WartoÅ›Ä‡
 //    boost::any value_;
-//    //! Typ wartoœci
+//    //! Typ wartoÅ›ci
 //    ValueType type_;
-//    //! Wartoœæ jako napis
+//    //! WartoÅ›Ä‡ jako napis
 //    std::string valueAsString_;
 //};
 //
-////! Wartoœæ danych zwracana z akcesorów - opisuje typ danych oraz ich wartoœc w formie napisu
+////! WartoÅ›Ä‡ danych zwracana z akcesorÃ³w - opisuje typ danych oraz ich wartoÅ›c w formie napisu
 ////typedef std::pair<ValueType, ValueAccessor> Value;
 //typedef ValueAccessor Value;
 //
-////! Interfejs akcesora do pól danych wraz z ich opisem
+////! Interfejs akcesora do pÃ³l danych wraz z ich opisem
 //class IFieldAccessor
 //{
 //public:
 //    //! Wirtualny destruktor
 //    virtual ~IFieldAccessor() {}
-//    //! Akcesor do danych z weryfikacj¹ praw u¿ytkownika do tych danych
+//    //! Akcesor do danych z weryfikacjÄ… praw uÅ¼ytkownika do tych danych
 //    //! \param fieldID Identyfikator pola do odczytania
-//    //! \param shallowCopy P³ytka kopia bazy danych
+//    //! \param shallowCopy PÅ‚ytka kopia bazy danych
 //    virtual const Value & field(int fieldID) const = 0;
 //    //! \param idx Indeks opisu pola od 0 do fieldsCount() - 1
 //    //! \return Opis pola danych
 //    virtual const IndentifiableFieldDescriptor & fieldsDescriptor(int idx) const = 0;
-//    //! \return Iloœæ dostêpnych pól danych
+//    //! \return IloÅ›Ä‡ dostÄ™pnych pÃ³l danych
 //    virtual const int fieldsCount() const = 0;
 //};
 //
-////! Akcesor pól identyfikowalny za pomoc¹ unikalnego ID
+////! Akcesor pÃ³l identyfikowalny za pomocÄ… unikalnego ID
 //class IIdentifiableFieldAccessor : public IFieldAccessor
 //{
 //public:
@@ -111,14 +111,14 @@ namespace communication
 //    virtual const int id() const = 0;
 //};
 //
-////! Interfejs akcesora do atrybutów antropometrycznych
+////! Interfejs akcesora do atrybutÃ³w antropometrycznych
 //class IAntropometricAccessor : public IIdentifiableFieldAccessor
 //{
 //public:
 //    //! Pola danych atrybutu antropometrycznego
 //    enum Field {
 //        NAME,       //! Nazwa atrybutu
-//        VALUE,      //! Wartoœæ atrybutu
+//        VALUE,      //! WartoÅ›Ä‡ atrybutu
 //        DESCRIPTION //! Opis atrybutu
 //    };
 //
@@ -136,42 +136,42 @@ namespace communication
 //    //! \param attributeID Identyfikator atrybutu
 //    //! \return Atrybut zadanego identyfikatora
 //    virtual const IFieldAccessor * attribute(int attributeID) const = 0;
-//    //! \param idx Indeks atrybutu którego opisu szukamy z przedzia³u 0 - (attributesCount() - 1)
-//    //! \return Opis atrybutu którego szukamy
+//    //! \param idx Indeks atrybutu ktÃ³rego opisu szukamy z przedziaÅ‚u 0 - (attributesCount() - 1)
+//    //! \return Opis atrybutu ktÃ³rego szukamy
 //    virtual const IndentifiableFieldDescriptor & attributeDescriptor(int idx) const = 0;
-//    //! \return Iloœæ dostêpnych atrybutów
+//    //! \return IloÅ›Ä‡ dostÄ™pnych atrybutÃ³w
 //    virtual const int attributesCount() const = 0;
 //};
 //
-////! Interfejs akcesora atrybutów antropometrycznych
+////! Interfejs akcesora atrybutÃ³w antropometrycznych
 //class IAntropometricAttributes : public IAttributesAccessor
 //{
 //public:
 //    //! Atrybuty antropometryczne
 //    enum Attribute {
-//        BodyMass,           //! Masa cia³a
-//        Height,             //! Wysokoœæ
+//        BodyMass,           //! Masa ciaÅ‚a
+//        Height,             //! WysokoÅ›Ä‡
 //        InterAsisDistance,  //! ?
-//        LeftLegLength,      //! D³ugoœæ lewej nogi
-//        RightLegLenght,     //! D³ugoœc prawej nogi
-//        LeftKneeWidth,      //! Szerokoœæ lewego kolana
-//        RightKneeWidth,     //! Szerokoœæ prawego kolana
-//        LeftAnkleWidth,     //! Szerokoœæ lewej kostki
-//        RightAnkleWidth,    //! Szerokoœæ prawej kostki
+//        LeftLegLength,      //! DÅ‚ugoÅ›Ä‡ lewej nogi
+//        RightLegLenght,     //! DÅ‚ugoÅ›c prawej nogi
+//        LeftKneeWidth,      //! SzerokoÅ›Ä‡ lewego kolana
+//        RightKneeWidth,     //! SzerokoÅ›Ä‡ prawego kolana
+//        LeftAnkleWidth,     //! SzerokoÅ›Ä‡ lewej kostki
+//        RightAnkleWidth,    //! SzerokoÅ›Ä‡ prawej kostki
 //        LeftCircuitThigh,   //! ?
 //        RightCircuitThight, //! ?
 //        LeftCircuitShank,   //! ?
 //        RightCircuitShank,  //! ?
 //        LeftShoulderOffset, //! ?
 //        RightShoulderOffset,//! ?
-//        LeftElbowWidth,     //! Szerokoœæ lewego ³okcia
-//        RightElbowWidth,    //! Szerokoœæ prawego ³okcia
-//        LeftWristWidth,     //! Szerokoœæ lewego nadgarstka
-//        RightWristWidth,    //! Szerokoœæ prawego nadgarstka
-//        LeftWristThickness, //! Wysokoœæ lewego nadgarstka
-//        RightWristThickness,//! Wysokoœæ prawego nadgarstka
-//        LeftHandWidth,      //! Szerokoœæ lewej rêki
-//        RightHandWidth,     //! Szerokoœc prawej rêki
+//        LeftElbowWidth,     //! SzerokoÅ›Ä‡ lewego Å‚okcia
+//        RightElbowWidth,    //! SzerokoÅ›Ä‡ prawego Å‚okcia
+//        LeftWristWidth,     //! SzerokoÅ›Ä‡ lewego nadgarstka
+//        RightWristWidth,    //! SzerokoÅ›Ä‡ prawego nadgarstka
+//        LeftWristThickness, //! WysokoÅ›Ä‡ lewego nadgarstka
+//        RightWristThickness,//! WysokoÅ›Ä‡ prawego nadgarstka
+//        LeftHandWidth,      //! SzerokoÅ›Ä‡ lewej rÄ™ki
+//        RightHandWidth,     //! SzerokoÅ›c prawej rÄ™ki
 //        LeftHandThickness,  //! ?
 //        RightHandThickness  //! ?
 //    };
@@ -194,7 +194,7 @@ namespace communication
 //class IFileAccessor;
 //class IFiles;
 //
-////! Interfejs akcesora do danych plików z uwzglêdnieniem praw u¿ytkownika do danych
+////! Interfejs akcesora do danych plikÃ³w z uwzglÄ™dnieniem praw uÅ¼ytkownika do danych
 //class IFileAccessor : public IIdentifiableFieldAccessor
 //{
 //public:
@@ -208,36 +208,36 @@ namespace communication
 //public:
 //    //! Wirtualny destruktor
 //    virtual ~IFileAccessor() {}
-//    //! \return W³aœciciel pliku w hierarchi - jeden z podstawowych akcesorów obiektów które dziedzicza po IFiles
+//    //! \return WÅ‚aÅ›ciciel pliku w hierarchi - jeden z podstawowych akcesorÃ³w obiektÃ³w ktÃ³re dziedzicza po IFiles
 //    virtual const IFiles * owner() const = 0;
 //};
 //
-////! Klasa bazowa elementów agreguj¹cych pliki
+////! Klasa bazowa elementÃ³w agregujÄ…cych pliki
 //class IFiles
 //{
 //public:
 //    //! Destruktor wirtualny
 //    virtual ~IFiles() {}
-//    //! \return Iloœæ plików
+//    //! \return IloÅ›Ä‡ plikÃ³w
 //    virtual const int filesCount() const = 0;
-//    //! \param idx Indeks pliku który chemy pobraæ z przedzia³u 0 - (filesCount() - 1)
+//    //! \param idx Indeks pliku ktÃ³ry chemy pobraÄ‡ z przedziaÅ‚u 0 - (filesCount() - 1)
 //    virtual const IFileAccessor * file(int idx) const = 0;
 //};
 //
-////! Interfejs agreguj¹cy wyst¹pienia schorzeñ
+////! Interfejs agregujÄ…cy wystÄ…pienia schorzeÅ„
 //class IDisorderOccurences
 //{
 //public:
 //    //! Wirtualny destruktor
 //    virtual ~IDisorderOccurences() {}
-//    //! \return Ilosæ wyst¹pieñ danego schorzenia
+//    //! \return IlosÄ‡ wystÄ…pieÅ„ danego schorzenia
 //    virtual const int disorderOccurencesCount() const = 0;
-//    //! \param idx Indeks wystapienia schorzenia z przedzia³u 0 - (disorderOccurencesCount() - 1)
-//    //! \return Wyst¹pienie schorzenia
+//    //! \param idx Indeks wystapienia schorzenia z przedziaÅ‚u 0 - (disorderOccurencesCount() - 1)
+//    //! \return WystÄ…pienie schorzenia
 //    virtual const IDisorderOccurenceAccessor * disorderOccurence(int idx) const = 0;
 //};
 //
-////! Interfejs akcesora do danych schorzenia z uwzglêdnieniem praw u¿ytkownika do danych
+////! Interfejs akcesora do danych schorzenia z uwzglÄ™dnieniem praw uÅ¼ytkownika do danych
 //class IDisorderAccessor : public IIdentifiableFieldAccessor, public IDisorderOccurences
 //{
 //public:
@@ -247,9 +247,9 @@ namespace communication
 //    };
 //
 //public:
-//    //! \return Iloœæ pacjentów z tym schorzeniem
+//    //! \return IloÅ›Ä‡ pacjentÃ³w z tym schorzeniem
 //    virtual const int patientsCount() const = 0;
-//    //! \param idx Indeks pacjenta z przedzia³u 0 - (patientsCount() - 1)
+//    //! \param idx Indeks pacjenta z przedziaÅ‚u 0 - (patientsCount() - 1)
 //    //! \return Pacjenc o zadanym indeksie
 //    virtual const IPatientAccessor * patient(int idx) const = 0;
 //
@@ -257,28 +257,28 @@ namespace communication
 //    virtual ~IDisorderAccessor() {}
 //};
 //
-////! Interfejs akcesora do danych wyst¹pienia schorzenia z uwzglêdnieniem praw u¿ytkownika do danych
+////! Interfejs akcesora do danych wystÄ…pienia schorzenia z uwzglÄ™dnieniem praw uÅ¼ytkownika do danych
 //class IDisorderOccurenceAccessor : public IIdentifiableFieldAccessor
 //{
 //public:
-//    //! Pola informacji o wyst¹pieniu schorzeniu
+//    //! Pola informacji o wystÄ…pieniu schorzeniu
 //    enum Field {
-//        FOCUS,          //! Istotnoœæ schorzenia w badaniu
+//        FOCUS,          //! IstotnoÅ›Ä‡ schorzenia w badaniu
 //        DIAGNOSIS_DATE, //! Data diagnozy schorzenia
 //        COMMENTS        //! Komentarz
 //    };
 //
 //public:
-//    //! \return Pacjent którego dotyczy to schorzenie
+//    //! \return Pacjent ktÃ³rego dotyczy to schorzenie
 //    virtual const IPatientAccessor * patient() const = 0;
-//    //! \return Schorzenie którego dotyczy ten opis wyst¹pienia schorzenia
+//    //! \return Schorzenie ktÃ³rego dotyczy ten opis wystÄ…pienia schorzenia
 //    virtual const IDisorderAccessor * disorder() const = 0;
 //
 //    //! Destruktor wirtualny
 //    virtual ~IDisorderOccurenceAccessor() {}
 //};
 //
-////! Interfejs akcesora do danych pacjenta z uwzglêdnieniem praw u¿ytkownika do danych
+////! Interfejs akcesora do danych pacjenta z uwzglÄ™dnieniem praw uÅ¼ytkownika do danych
 //class IPatientAccessor : public IIdentifiableFieldAccessor, public IFiles, public IDisorderOccurences
 //{
 //public:
@@ -287,12 +287,12 @@ namespace communication
 //        NAME,       //! Nazwa pacjenta
 //        SURNAME,    //! Nazwisko pacjenta
 //        BIRTHDATE,  //! Data urodzenia pacjenta
-//        GENDER,     //! P³eæ pacjenta
-//        PHOTO       //! Zdjêcie pacjenta
+//        GENDER,     //! PÅ‚eÄ‡ pacjenta
+//        PHOTO       //! ZdjÄ™cie pacjenta
 //    };
 //
 //public:
-//    //! \return Subject i ruchy zwi¹zane z danym pacjentem
+//    //! \return Subject i ruchy zwiÄ…zane z danym pacjentem
 //    virtual const ISubjectAccessor * subject() const = 0;
 //    //! Destruktor wirtualny
 //    virtual ~IPatientAccessor() {}
@@ -306,14 +306,14 @@ namespace communication
 //public:
 //    //! Destruktor wirtualny
 //    virtual ~ISessions() {}
-//    //! \return Iloœc sesji subjecta
+//    //! \return IloÅ›c sesji subjecta
 //    virtual const int sessionsCount() const = 0;
 //    //! \param idx Indeks sesji z zakresu 0 - (sessionsCount() -1)
 //    //! \return Akcesor sesji
 //    virtual const ISessionAccessor * session(int idx) const = 0;
 //};
 //
-////! Interfejs akcesora do danych subjecta z uwzglêdnieniem praw u¿ytkownika do danych
+////! Interfejs akcesora do danych subjecta z uwzglÄ™dnieniem praw uÅ¼ytkownika do danych
 //class ISubjectAccessor : public IIdentifiableFieldAccessor, public ISessions, public IAttributesAccessor
 //{
 //public:
@@ -329,10 +329,10 @@ namespace communication
 //    virtual ~ISubjectAccessor() {}
 //};
 //
-////! Forward declaration interfejsu akcesora do motionów
+////! Forward declaration interfejsu akcesora do motionÃ³w
 //class IMotionAccessor;
 //
-////! Interfejs akcesora do danych laboratorium z uwzglêdnieniem praw u¿ytkownika do danych
+////! Interfejs akcesora do danych laboratorium z uwzglÄ™dnieniem praw uÅ¼ytkownika do danych
 //class ILabAccessor : public IIdentifiableFieldAccessor, public ISessions
 //{
 //public:
@@ -346,7 +346,7 @@ namespace communication
 //    virtual ~ILabAccessor() {}
 //};
 //
-////! Interfejs akcesora do danych sesji z uwzglêdnieniem praw u¿ytkownika do danych
+////! Interfejs akcesora do danych sesji z uwzglÄ™dnieniem praw uÅ¼ytkownika do danych
 //class ISessionAccessor : public IIdentifiableFieldAccessor, public IFiles, public IAntropometricAttributes
 //{
 //public:
@@ -354,27 +354,27 @@ namespace communication
 //    enum Field {
 //        NAME,           //! Nazwa sesji
 //        DATE,           //! Data przeprowadzenia sesji
-//        OWNER,          //! Identyfikator w³aœciciela sesji (zleceniodawcy)
+//        OWNER,          //! Identyfikator wÅ‚aÅ›ciciela sesji (zleceniodawcy)
 //        MOTION_KIND,    //! Typ ruchu wykonywanego w sesji
 //        TAGS,           //! Tagi sesji
 //        DESCRIPTION     //! Opis sesji
 //    };
 //
 //public:
-//    //! \return Subject którego dotyczy ta sesja
+//    //! \return Subject ktÃ³rego dotyczy ta sesja
 //    virtual const ISubjectAccessor * subject() const = 0;
-//    //! \return Laboratorium gdzie przeprowadzono sesjê
+//    //! \return Laboratorium gdzie przeprowadzono sesjÄ™
 //    virtual const ILabAccessor * lab() const = 0;
-//    //! \return Iloœæ ruchów subjecta
+//    //! \return IloÅ›Ä‡ ruchÃ³w subjecta
 //    virtual const int motionsCount() const = 0;
-//    //! \param idx Indeks ruchu z przedzia³u 0 - (motionsCount() - 1)
+//    //! \param idx Indeks ruchu z przedziaÅ‚u 0 - (motionsCount() - 1)
 //    //! \return Akcesor ruchu
 //    virtual const IMotionAccessor * motion(int idx) const = 0;
 //    //! Destruktor wirtualny
 //    virtual ~ISessionAccessor() {}
 //};
 //
-////! Interfejs akcesora do danych motiona z uwzglêdnieniem praw u¿ytkownika do danych
+////! Interfejs akcesora do danych motiona z uwzglÄ™dnieniem praw uÅ¼ytkownika do danych
 //class IMotionAccessors : public IIdentifiableFieldAccessor, public IFiles, public IAttributesAccessor
 //{
 //public:
@@ -385,20 +385,20 @@ namespace communication
 //    };
 //
 //public:
-//    //! \return Sesja której dotyczy ten motion
+//    //! \return Sesja ktÃ³rej dotyczy ten motion
 //    virtual const ISessionAccessor * session() const = 0;
 //    //! Destruktor wirtualny
 //    virtual ~IMotionAccessors() {}
 //};
 //
-////! Mapy obiektów danych ruchu - ID <-> obiekt
+////! Mapy obiektÃ³w danych ruchu - ID <-> obiekt
 //typedef std::map<int, IFileAccessor *> Files;
 //typedef std::map<int, IMotionAccessor *> Motions;
 //typedef std::map<int, ISessionAccessor *> Sessions;
 //typedef std::map<int, ISubjectAccessor *> Subjects;
 //typedef std::map<int, ILabAccessor *> Labs;
 
-////! P³ytka kopia bazy danych ruchu uwzglêdniaj¹ca ju¿ prawa u¿ytkownika do danych
+////! PÅ‚ytka kopia bazy danych ruchu uwzglÄ™dniajÄ…ca juÅ¼ prawa uÅ¼ytkownika do danych
 //struct MotionShallowCopy
 //{
 //public:
@@ -406,9 +406,9 @@ namespace communication
 //    Labs labs;
 //    //! Subjecty
 //    Subjects subjects;
-//    //! Sesje subjectów
+//    //! Sesje subjectÃ³w
 //    Sessions sessions;
-//    //! Nagrania ruchów
+//    //! Nagrania ruchÃ³w
 //    Motions motions;
 //    //! Pliki
 //    Files files;
@@ -417,18 +417,18 @@ namespace communication
 //    ~MotionShallowCopy();
 //};
 //
-////! Mapy obiektów danych medycznych - ID <-> obiekt
+////! Mapy obiektÃ³w danych medycznych - ID <-> obiekt
 //typedef std::map<int, IDisorderAccessor *> Disorders;
 //typedef std::map<int, IDisorderOccurenceAccessor *> DisordersOccurences;
 //typedef std::map<int, IPatientAccessor *> Patients;
 //
-////! P³ytka kopia bazy danych medycznych uwzglêdniaj¹ca ju¿ prawa u¿ytkownika do danych
+////! PÅ‚ytka kopia bazy danych medycznych uwzglÄ™dniajÄ…ca juÅ¼ prawa uÅ¼ytkownika do danych
 //struct MedicalShallowCopy
 //{
 //public:
 //    //! Schorzenia
 //    Disorders disorders;
-//    //! Wyst¹pienia schorzeñ
+//    //! WystÄ…pienia schorzeÅ„
 //    DisordersOccurences occurences;
 //    //! Pacjenci
 //    Patients patients;
@@ -436,7 +436,7 @@ namespace communication
 //    ~MedicalShallowCopy();
 //};
 //
-////! P³ytka kopia bazy danych uwzglêdniaj¹ca ju¿ prawa u¿ytkownika do danych
+////! PÅ‚ytka kopia bazy danych uwzglÄ™dniajÄ…ca juÅ¼ prawa uÅ¼ytkownika do danych
 //struct ShallowCopy {
 //    MotionShallowCopy motionShallowCopy;
 //    MedicalShallowCopy medicalShallowCopy;

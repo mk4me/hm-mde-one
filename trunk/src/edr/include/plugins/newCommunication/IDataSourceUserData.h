@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/05
     created:  5:2:2012   17:00
     filename: IDataSourceUserData.h
@@ -12,7 +12,7 @@
 namespace communication
 {
 	
-//! Interfejs zapewniaj¹cy dostêp do specyficznych danych u¿ytkownika zapisanych w bazie danych
+//! Interfejs zapewniajÄ…cy dostÄ™p do specyficznych danych uÅ¼ytkownika zapisanych w bazie danych
 class IUserData
 {
 public:

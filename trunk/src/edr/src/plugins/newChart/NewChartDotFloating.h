@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/05/28
 	created:	28:5:2012   21:10
 	filename: 	NewChartDotFloating.h
@@ -14,27 +14,27 @@
 #include "NewChartDot.h"
 
 class NewChartSerie;
-//! Punkt, którego pozycja zmienia siê wraz z wykresem
+//! Punkt, ktÃ³rego pozycja zmienia siÄ™ wraz z wykresem
 class NewChartDotFloating : public NewChartDot
 {
 public:
     //! Konstruktor
     //! \param position pozycja na wykresie
-    //! \param relatedSerie seria powiazana z punktem, u¿ywane s¹ jej transformacje 
-    //! \param size wielkoœæ punktu
+    //! \param relatedSerie seria powiazana z punktem, uÅ¼ywane sÄ… jej transformacje 
+    //! \param size wielkoÅ›Ä‡ punktu
     NewChartDotFloating(const QPointF& position, const NewChartSerie* relatedSerie, int size = 2);
 
 public:
-    //! \return pozycja z uwzglêdnieniem transformacji serii danych
+    //! \return pozycja z uwzglÄ™dnieniem transformacji serii danych
     virtual QPointF getPosition() const;
-    //! ustawia pozycje z uwzglêdnieniem transformacji serii danych
-    //! \param val wspó³rzêdne ekranowe
+    //! ustawia pozycje z uwzglÄ™dnieniem transformacji serii danych
+    //! \param val wspÃ³Å‚rzÄ™dne ekranowe
     virtual void setPosition(const QPointF& val);
 
 private:
     //! pozycja obiektu
     QPointF position;
-    //! przechowywana seria danych, z której pobiera siê transformacjê
+    //! przechowywana seria danych, z ktÃ³rej pobiera siÄ™ transformacjÄ™
     const NewChartSerie* relatedSerie;
 };
 

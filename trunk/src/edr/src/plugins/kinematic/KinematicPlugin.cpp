@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include "KinematicVisualizer.h"
 #include <utils/DataChannel.h>
 #include "OsgSchemeDrawer.h"
@@ -39,15 +39,15 @@ void logCallback(Logger::LogSeverity severity, const std::string& msg)
             LOG_DEBUG_STATIC_NAMED("kinematic", msg);
             break;
         default:
-            UTILS_ASSERT(false, "Nieznany poziom logowania. Wiadomoœæ: %s", msg);
+            UTILS_ASSERT(false, "Nieznany poziom logowania. WiadomoÅ›Ä‡: %s", msg);
             break;
     }
 }
 
 
-/*! Struktura widziana tylko w obrêbie tego pliku. 
- * Podpina logowanie kinematic do metody mapuj¹cej komunikaty na te z EDR-a.
- * Struktura tworzy siê automatycznie.
+/*! Struktura widziana tylko w obrÄ™bie tego pliku. 
+ * Podpina logowanie kinematic do metody mapujÄ…cej komunikaty na te z EDR-a.
+ * Struktura tworzy siÄ™ automatycznie.
  */
 static struct Initializer
 {

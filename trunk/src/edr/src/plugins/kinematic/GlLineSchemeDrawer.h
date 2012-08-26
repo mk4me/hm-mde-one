@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_GLLINESCHEMEDRAWER_H__
+ï»¿#ifndef HEADER_GUARD_GLLINESCHEMEDRAWER_H__
 #define HEADER_GUARD_GLLINESCHEMEDRAWER_H__
 #include <map>
 #include <osg/Geode>
@@ -6,67 +6,67 @@
 #include <plugins/kinematic/SkeletalVisualizationScheme.h>
 #include "OsgSchemeDrawer.h"
 
-//! Schemat odrysowywuj¹cy po³¹czenia pomiêdzy punktami, po³¹czenia s¹ w formie cylindrów
+//! Schemat odrysowywujÄ…cy poÅ‚Ä…czenia pomiÄ™dzy punktami, poÅ‚Ä…czenia sÄ… w formie cylindrÃ³w
 class GlLineSchemeDrawer : public OsgSchemeDrawer
 {
 public:
     //! Konstruktor
-    //! \param cylinderComplexity z³o¿onosc pojedynczego cylindra (l. wierzcho³ków podstawy)
-    //! \param cylinderRadius promieñ pojedynczego cylindra
+    //! \param cylinderComplexity zÅ‚oÅ¼onosc pojedynczego cylindra (l. wierzchoÅ‚kÃ³w podstawy)
+    //! \param cylinderRadius promieÅ„ pojedynczego cylindra
     GlLineSchemeDrawer(int cylinderComplexity, float cylinderRadius);
     //! Konstruktor
-    //! \param cylinderComplexity z³o¿onosc pojedynczego cylindra (l. wierzcho³ków podstawy)
-    //! \param cylinderRadius promieñ pojedynczego cylindra
-    //! \param color domyœlny kolor tworzonych cylindrów
+    //! \param cylinderComplexity zÅ‚oÅ¼onosc pojedynczego cylindra (l. wierzchoÅ‚kÃ³w podstawy)
+    //! \param cylinderRadius promieÅ„ pojedynczego cylindra
+    //! \param color domyÅ›lny kolor tworzonych cylindrÃ³w
     GlLineSchemeDrawer(int cylinderComplexity, float cylinderRadius, const osg::Vec4& color);
 
 public:
-    //! Realizacja metody abstrakcyjnej (nieu¿ywana)
+    //! Realizacja metody abstrakcyjnej (nieuÅ¼ywana)
     virtual void draw();
-    //! Wywo³ywane, gdy schemat zosta³ zmieniony i jego wizualizacja wymaga odswie¿enia
+    //! WywoÅ‚ywane, gdy schemat zostaÅ‚ zmieniony i jego wizualizacja wymaga odswieÅ¼enia
     virtual void update();
-    //! Inicjalizacja drawera, tworzone s¹ wêz³y
+    //! Inicjalizacja drawera, tworzone sÄ… wÄ™zÅ‚y
     //! \param scheme Dostarczany schemat wizualizacji
     virtual void init(VisualizationSchemeConstPtr scheme);
-    //! Wywo³ywane przy zakoñczeniu dzia³ania, sprz¹tniêcie obiektów ze sceny
+    //! WywoÅ‚ywane przy zakoÅ„czeniu dziaÅ‚ania, sprzÄ…tniÄ™cie obiektÃ³w ze sceny
     virtual void deinit();
-    //! \return zwraca wêze³ ze stworzonymi po³¹czeniami
+    //! \return zwraca wÄ™zeÅ‚ ze stworzonymi poÅ‚Ä…czeniami
     virtual osg::ref_ptr<osg::Node> getNode() { return node; }
 
 private:
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
-    //! wskaŸnik do geometrii, która trafia do wêz³a
+    //! wskaÅºnik do geometrii, ktÃ³ra trafia do wÄ™zÅ‚a
     typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
-    //! wskaŸnik do wêz³a zawieraj¹cego transformacjê
+    //! wskaÅºnik do wÄ™zÅ‚a zawierajÄ…cego transformacjÄ™
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
 
 private:
-    //! Metoda tworzy wêze³ z cylindrem
-    //! \param complex z³o¿onoœæ cylindra (l. wierzcho³ków podstawy)
-    //! \param height d³ugoœæ / wysokoœæ cylindra
-    //! \param radius promieñ cylindra
+    //! Metoda tworzy wÄ™zeÅ‚ z cylindrem
+    //! \param complex zÅ‚oÅ¼onoÅ›Ä‡ cylindra (l. wierzchoÅ‚kÃ³w podstawy)
+    //! \param height dÅ‚ugoÅ›Ä‡ / wysokoÅ›Ä‡ cylindra
+    //! \param radius promieÅ„ cylindra
     //! \param color kolor cylindra
-    //! \return wêze³ z nowo utworzonym cylindrem
+    //! \return wÄ™zeÅ‚ z nowo utworzonym cylindrem
     GeometryPtr createCustomCylinder( int complex , float height, float radius, osg::Vec4 color) const;
-    //! Metoda towrzy cylinder oraz nadaje mu w³aœciw¹ transformacjê
-    //! \param from punkt, w którym cylinder siê zaczyna
-    //! \param to punkt, do którego cylinder zmierza
+    //! Metoda towrzy cylinder oraz nadaje mu wÅ‚aÅ›ciwÄ… transformacjÄ™
+    //! \param from punkt, w ktÃ³rym cylinder siÄ™ zaczyna
+    //! \param to punkt, do ktÃ³rego cylinder zmierza
     //! \param color kolor cylindra
-    //! \param length d³ugoœæ cylindra
+    //! \param length dÅ‚ugoÅ›Ä‡ cylindra
     TransformPtr addTransform(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color, float length);
 
 private:
     //! Kolekcja ze stworzonymi cylindrami
     std::vector<TransformPtr> cones;
-    //! wêze³ ze stworzonymi cylindrami
+    //! wÄ™zeÅ‚ ze stworzonymi cylindrami
     osg::ref_ptr<osg::Group> node;
-    //! z³o¿onoœæ pojedynczego cylindrami
+    //! zÅ‚oÅ¼onoÅ›Ä‡ pojedynczego cylindrami
     int complex;
-    //! promieñ cylindra
+    //! promieÅ„ cylindra
     float radius;
-    //! flaga oznaczaj¹ca, czy przy wizualizacji ma byæ u¿yty kolor u¿ytkownika
+    //! flaga oznaczajÄ…ca, czy przy wizualizacji ma byÄ‡ uÅ¼yty kolor uÅ¼ytkownika
     bool useCustomColor;
-    //! kolor wybrany przez u¿ytkownika
+    //! kolor wybrany przez uÅ¼ytkownika
     osg::Vec4 customColor;
 };
 typedef core::shared_ptr<GlLineSchemeDrawer> GlLineSchemeDrawerPtr;

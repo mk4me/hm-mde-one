@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/10/12
 	created:	12:10:2011   12:28
 	filename: 	TreeBuilder.h
@@ -13,7 +13,7 @@
 #include <plugins/subject/Types.h>
 #include "TreeItemHelper.h"
 
-//! Klasa s³u¿y do budowania drzewa danych w analizach
+//! Klasa sÅ‚uÅ¼y do budowania drzewa danych w analizach
 class TreeBuilder
 {
 public:
@@ -25,97 +25,97 @@ public:
     //! Tworzy drzewo na podstawie dostarczony sesji
     //! \param rootItemName nazwa korzenia
     //! \param sessions dostarczone sesje
-    //! \param dataFilter obiekt filtruj¹cy sesje
+    //! \param dataFilter obiekt filtrujÄ…cy sesje
     //! \return stworzony element
     static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions, const PluginSubject::DataFilterPtr & dataFilter);
-    //! Tworzy ga³¹Ÿ dla markerów
-    //! \param motion próba pomiarowa
-    //! \param rootName nazwa dla rodzica tworzonych elementów
+    //! Tworzy gaÅ‚Ä…Åº dla markerÃ³w
+    //! \param motion prÃ³ba pomiarowa
+    //! \param rootName nazwa dla rodzica tworzonych elementÃ³w
     //! \param rootIcon ikona rodzica
-    //! \param itemIcon ikona dla liœci
+    //! \param itemIcon ikona dla liÅ›ci
     static QTreeWidgetItem* createMarkersBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
-    //! Tworzy ga³¹Ÿ dla stawów
-    //! \param motion próba pomiarowa
-    //! \param rootName nazwa dla rodzica tworzonych elementów
+    //! Tworzy gaÅ‚Ä…Åº dla stawÃ³w
+    //! \param motion prÃ³ba pomiarowa
+    //! \param rootName nazwa dla rodzica tworzonych elementÃ³w
     //! \param rootIcon ikona rodzica
-    //! \param itemIcon ikona dla liœci
+    //! \param itemIcon ikona dla liÅ›ci
     static QTreeWidgetItem* createJointsBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
-    //! Tworzy ga³¹Ÿ dla nagrañ video
-    //! \param motion próba pomiarowa
-    //! \param rootName nazwa dla rodzica tworzonych elementów
+    //! Tworzy gaÅ‚Ä…Åº dla nagraÅ„ video
+    //! \param motion prÃ³ba pomiarowa
+    //! \param rootName nazwa dla rodzica tworzonych elementÃ³w
     //! \param rootIcon ikona rodzica
-    //! \param itemIcon ikona dla liœci
+    //! \param itemIcon ikona dla liÅ›ci
     static QTreeWidgetItem* createVideoBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
-    //! Tworzy ga³¹Ÿ dla danych grf
-    //! \param motion próba pomiarowa
-    //! \param rootName nazwa dla rodzica tworzonych elementów
+    //! Tworzy gaÅ‚Ä…Åº dla danych grf
+    //! \param motion prÃ³ba pomiarowa
+    //! \param rootName nazwa dla rodzica tworzonych elementÃ³w
     //! \param rootIcon ikona rodzica
-    //! \param itemIcon ikona dla liœci
+    //! \param itemIcon ikona dla liÅ›ci
     static QTreeWidgetItem* createGRFBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
-    //! Tworzy ga³¹Ÿ dla danych emg
-    //! \param motion próba pomiarowa
-    //! \param rootName nazwa dla rodzica tworzonych elementów
+    //! Tworzy gaÅ‚Ä…Åº dla danych emg
+    //! \param motion prÃ³ba pomiarowa
+    //! \param rootName nazwa dla rodzica tworzonych elementÃ³w
     //! \param rootIcon ikona rodzica
-    //! \param itemIcon ikona dla liœci
+    //! \param itemIcon ikona dla liÅ›ci
     static QTreeWidgetItem* createEMGBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
-    //! Tworzy ga³¹Ÿ dla 
-    //! \param motion próba pomiarowa
-    //! \param rootName nazwa dla rodzica tworzonych elementów
+    //! Tworzy gaÅ‚Ä…Åº dla 
+    //! \param motion prÃ³ba pomiarowa
+    //! \param rootName nazwa dla rodzica tworzonych elementÃ³w
     //! \param rootIcon ikona rodzica
-    //! \param itemIcon ikona dla liœci
+    //! \param itemIcon ikona dla liÅ›ci
     static QTreeWidgetItem* createForcesBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
-    //! Tworzy ga³¹Ÿ dla momentów
-    //! \param motion próba pomiarowa
-    //! \param rootName nazwa dla rodzica tworzonych elementów
+    //! Tworzy gaÅ‚Ä…Åº dla momentÃ³w
+    //! \param motion prÃ³ba pomiarowa
+    //! \param rootName nazwa dla rodzica tworzonych elementÃ³w
     //! \param rootIcon ikona rodzica
-    //! \param itemIcon ikona dla liœci
+    //! \param itemIcon ikona dla liÅ›ci
     static QTreeWidgetItem* createMomentsBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
-    //! Tworzy ga³¹Ÿ dla mocy
-    //! \param motion próba pomiarowa
-    //! \param rootName nazwa dla rodzica tworzonych elementów
+    //! Tworzy gaÅ‚Ä…Åº dla mocy
+    //! \param motion prÃ³ba pomiarowa
+    //! \param rootName nazwa dla rodzica tworzonych elementÃ³w
     //! \param rootIcon ikona rodzica
-    //! \param itemIcon ikona dla liœci
+    //! \param itemIcon ikona dla liÅ›ci
     static QTreeWidgetItem* createPowersBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
 
-    //! \return ikona dla ga³êzi z markerami
+    //! \return ikona dla gaÅ‚Ä™zi z markerami
     static const QIcon& getMarkersIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/markerSmall.png")); return icon; }
-    //! \return ikona dla ga³êzi ze stawami
+    //! \return ikona dla gaÅ‚Ä™zi ze stawami
     static const QIcon& getJointsIcon( )       { static QIcon icon(QString::fromUtf8(":/resources/icons/jointSmall.png"));  return icon; }
-    //! \return ikona dla ga³êzi z nagraniami
+    //! \return ikona dla gaÅ‚Ä™zi z nagraniami
     static const QIcon& getVideoIcon( )        { static QIcon icon(QString::fromUtf8(":/resources/icons/videoSmall.png"));  return icon; }
-    //! \return ikona dla ga³êzi z danymi grf
+    //! \return ikona dla gaÅ‚Ä™zi z danymi grf
     static const QIcon& getGRFIcon( )          { static QIcon icon(QString::fromUtf8(":/resources/icons/grfSmall.png"));    return icon; }
-    //! \return ikona dla ga³êzi z danymi emg
+    //! \return ikona dla gaÅ‚Ä™zi z danymi emg
     static const QIcon& getEMGIcon( )          { static QIcon icon(QString::fromUtf8(":/resources/icons/emg1Small.png"));   return icon; }
-    //! \return ikona dla ga³êzi z si³ami
+    //! \return ikona dla gaÅ‚Ä™zi z siÅ‚ami
     static const QIcon& getForcesIcon( )       { static QIcon icon(QString::fromUtf8(":/resources/icons/forcesSmall.png")); return icon; }
-    //! \return ikona dla ga³êzi z momentami
+    //! \return ikona dla gaÅ‚Ä™zi z momentami
     static const QIcon& getMomentsIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/momentSmall.png")); return icon; }
-    //! \return ikona dla ga³êzi z mocami
+    //! \return ikona dla gaÅ‚Ä™zi z mocami
     static const QIcon& getPowersIcon( )       { static QIcon icon(QString::fromUtf8(":/resources/icons/powerSmall.png"));  return icon; }
 
-    //! \return ikona dla g³ównej ga³êzi z markerami
+    //! \return ikona dla gÅ‚Ã³wnej gaÅ‚Ä™zi z markerami
     static const QIcon& getRootMarkersIcon( )  { static QIcon icon(QString::fromUtf8(":/resources/icons/markerSmall.png")); return icon; }
-    //! \return ikona dla g³ównej ga³êzi ze stawami
+    //! \return ikona dla gÅ‚Ã³wnej gaÅ‚Ä™zi ze stawami
     static const QIcon& getRootJointsIcon( )   { static QIcon icon(QString::fromUtf8(":/resources/icons/jointSmall.png"));  return icon; }
-    //! \return ikona dla g³ównej ga³êzi z nagraniami
+    //! \return ikona dla gÅ‚Ã³wnej gaÅ‚Ä™zi z nagraniami
     static const QIcon& getRootVideoIcon( )    { static QIcon icon(QString::fromUtf8(":/resources/icons/videoSmall.png"));  return icon; }
-    //! \return ikona dla g³ównej ga³êzi z danymi grf
+    //! \return ikona dla gÅ‚Ã³wnej gaÅ‚Ä™zi z danymi grf
     static const QIcon& getRootGRFIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/grfSmall.png"));    return icon; }
-    //! \return ikona dla g³ównej ga³êzi z danymi emg
+    //! \return ikona dla gÅ‚Ã³wnej gaÅ‚Ä™zi z danymi emg
     static const QIcon& getRootEMGIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/emg1Small.png"));   return icon; }
-    //! \return ikona dla g³ównej ga³êzi z si³ami
+    //! \return ikona dla gÅ‚Ã³wnej gaÅ‚Ä™zi z siÅ‚ami
     static const QIcon& getRootForcesIcon( )   { static QIcon icon(QString::fromUtf8(":/resources/icons/forcesSmall.png")); return icon; }
-    //! \return ikona dla g³ównej ga³êzi z momentami
+    //! \return ikona dla gÅ‚Ã³wnej gaÅ‚Ä™zi z momentami
     static const QIcon& getRootMomentsIcon( )  { static QIcon icon(QString::fromUtf8(":/resources/icons/momentSmall.png")); return icon; }
-    //! \return ikona dla g³ównej ga³êzi z mocami
+    //! \return ikona dla gÅ‚Ã³wnej gaÅ‚Ä™zi z mocami
     static const QIcon& getRootPowersIcon( )   { static QIcon icon(QString::fromUtf8(":/resources/icons/powerSmall.png"));  return icon; }
 
-    //! tworzy element drzewa z dowolnej kolekcji kana³ów danych
-    //! \param motion próba pomiarowa
-    //! \param rootName nazwa dla rodzica tworzonych elementów
+    //! tworzy element drzewa z dowolnej kolekcji kanaÅ‚Ã³w danych
+    //! \param motion prÃ³ba pomiarowa
+    //! \param rootName nazwa dla rodzica tworzonych elementÃ³w
     //! \param rootIcon ikona rodzica
-    //! \param itemIcon ikona dla liœci
+    //! \param itemIcon ikona dla liÅ›ci
     template <class Collection>
     static QTreeWidgetItem* createTBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
     {
@@ -132,13 +132,13 @@ public:
         tryAddVectorToTree<Channel>(motion, m, "Collection", itemIcon, rootItem, false);
         return rootItem;
     }
-    //! dodanie do drzewa elementów z podpiêtymi danymi w postaci wektorów
-    //! \param motion próba pomiarowa
-    //! \param collection kolekcja zawieraj¹ca wektory
+    //! dodanie do drzewa elementÃ³w z podpiÄ™tymi danymi w postaci wektorÃ³w
+    //! \param motion prÃ³ba pomiarowa
+    //! \param collection kolekcja zawierajÄ…ca wektory
     //! \param name nazwa tworzonego elementu
-    //! \param childIcon ikona dla liœci
-    //! \param parentItem rodzic dla tworzonych elementów
-    //! \param createContainerItem czy stworzyæ element pomiêdzy rodzicem a liœæmi
+    //! \param childIcon ikona dla liÅ›ci
+    //! \param parentItem rodzic dla tworzonych elementÃ³w
+    //! \param createContainerItem czy stworzyÄ‡ element pomiÄ™dzy rodzicem a liÅ›Ä‡mi
     template <class Channel, class CollectionPtr>
     static void tryAddVectorToTree(const PluginSubject::MotionConstPtr & motion, const CollectionPtr & collection, const std::string& name, const QIcon& childIcon, QTreeWidgetItem* parentItem, bool createContainerItem = true )
     {

@@ -1,13 +1,13 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2010/02/11
 	created:	11:2:2010   13:05
 	filename: VMPrivate.h
 	author:		Piotr Gwiazdowski
 
-	purpose:	Nag³ówek u¿ywany przez wszystkie pliki niew³¹czone do
-            publicznego interfejsu biblioteki. Aby nie zaœmiecaæ
-            publicznego namespace'a i unikaæ konfliktów tutaj powinna
-            znajdowaæ siê wiêkszoœæ makr
+	purpose:	NagÅ‚Ã³wek uÅ¼ywany przez wszystkie pliki niewÅ‚Ä…czone do
+            publicznego interfejsu biblioteki. Aby nie zaÅ›miecaÄ‡
+            publicznego namespace'a i unikaÄ‡ konfliktÃ³w tutaj powinna
+            znajdowaÄ‡ siÄ™ wiÄ™kszoÅ›Ä‡ makr
 *********************************************************************/
 
 #ifndef __AVINOUTPRIVATE_H__
@@ -68,9 +68,9 @@ extern "C" {
 
 //------------------------------------------------------------------------------
 
-//! Czy mo¿na u¿ywaæ nowego API?
+//! Czy moÅ¼na uÅ¼ywaÄ‡ nowego API?
 #define VM_FFMPEG_ENABLE_NEWAPI
-//! Do jakiej wartoœci dane maj¹ byæ alignowane?
+//! Do jakiej wartoÅ›ci dane majÄ… byÄ‡ alignowane?
 #define VM_FFMPEG_ALIGN_BYTES 4
 
 //------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   9:09
 	filename: 	ISerializable.h
@@ -14,16 +14,16 @@
 
 namespace core {
 
-//! Interfejs s≥uøπcy do serializacji i deserializacji.
+//! Interfejs s≈Çu≈ºƒÖcy do serializacji i deserializacji.
 class ISerializable
 {
 public:
     virtual ~ISerializable() 
     {
     }
-    //! \param output StrumieÒ wyjúciowy do ktÛrego robimy zrzut zserializowanego obiektu
+    //! \param output Strumie≈Ñ wyj≈õciowy do kt√≥rego robimy zrzut zserializowanego obiektu
     virtual void serialize(std::ostream& output) = 0;
-    //! \param input StrumieÒ z ktÛrego dokonujemy deserializacji obiektu
+    //! \param input Strumie≈Ñ z kt√≥rego dokonujemy deserializacji obiektu
     virtual void deserialize(std::istream& input) = 0;
 };
 

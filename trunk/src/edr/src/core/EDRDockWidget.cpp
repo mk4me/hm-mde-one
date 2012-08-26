@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include "EDRDockWidget.h"
 
 EDRDockWidget::EDRDockWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)

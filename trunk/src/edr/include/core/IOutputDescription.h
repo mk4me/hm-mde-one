@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   9:14
 	filename: 	IOutputDescription.h
@@ -16,20 +16,20 @@
 
 namespace core {
 
-//! Interfejs s≥uøπcy do opisu typÛw danych wyjúciowcyh oferowanych przez element przetwarzajπcy.
+//! Interfejs s≈Çu≈ºƒÖcy do opisu typ√≥w danych wyj≈õciowcyh oferowanych przez element przetwarzajƒÖcy.
 class IOutputDescription
 {
 public:
-    //! Struktura opisujπca typy danych wyjúciowe.
+    //! Struktura opisujƒÖca typy danych wyj≈õciowe.
     struct OutputInfo
     {
-        //! Typ opisujπcy zaleøne elementy wejúciowe, ktÛre sπ wymagane do generowana danego typu wyjúciowego
+        //! Typ opisujƒÖcy zale≈ºne elementy wej≈õciowe, kt√≥re sƒÖ wymagane do generowana danego typu wyj≈õciowego
         typedef std::set<int> DependentInput;
-        //! Nazwa wyjúcia.
+        //! Nazwa wyj≈õcia.
         std::string name;
-        //! Typ wyjúcia.
+        //! Typ wyj≈õcia.
         TypeInfo type;
-        //! Zaleøne wejúcia
+        //! Zale≈ºne wej≈õcia
         DependentInput dependentInput;
 
         //!
@@ -50,8 +50,8 @@ public:
     };
 
 public:
-    //! Pobiera informacje o typach wyjúÊ. KolejnoúÊ obowiπzuje potem w metodzie process.
-    //! \param output Obiekt umoøliwiajπcy zapis danych wyjsciowych - zapis zawsze jest moøliwy!!
+    //! Pobiera informacje o typach wyj≈õƒá. Kolejno≈õƒá obowiƒÖzuje potem w metodzie process.
+    //! \param output Obiekt umo≈ºliwiajƒÖcy zapis danych wyjsciowych - zapis zawsze jest mo≈ºliwy!!
     virtual void getOutputInfo( std::vector<OutputInfo> & output ) = 0;
 
     virtual ~IOutputDescription() {}

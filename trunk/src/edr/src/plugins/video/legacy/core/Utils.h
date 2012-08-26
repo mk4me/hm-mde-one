@@ -1,4 +1,4 @@
-#ifndef __AVINOUT_UTILS_H__
+Ôªø#ifndef __AVINOUT_UTILS_H__
 #define __AVINOUT_UTILS_H__
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -7,13 +7,13 @@ namespace video {
 
 //------------------------------------------------------------------------------
 
-//! Imitacja s≥owa kluczowego "override" z C# wskazujπce, ktÛra metoda w klasie
-//! pochodnej stanowi prze≥adowanie wirtualnej metody z klasy bazowej.
+//! Imitacja s≈Çowa kluczowego "override" z C# wskazujƒÖce, kt√≥ra metoda w klasie
+//! pochodnej stanowi prze≈Çadowanie wirtualnej metody z klasy bazowej.
 
 //------------------------------------------------------------------------------
 
 enum {
-  //! Nieprawid≥owy czas
+  //! Nieprawid≈Çowy czas
   INVALID_TIMESTAMP = -1
 };
 

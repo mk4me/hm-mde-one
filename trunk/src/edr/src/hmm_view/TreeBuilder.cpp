@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+﻿#include "hmmPCH.h"
 #include "TreeBuilder.h"
 #include "HmmMainWindow.h"
 #include "EMGFilter.h"
@@ -27,11 +27,11 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
 
 			QString label(QString::fromUtf8(motion->getLocalName().c_str()));
 
-			//pr�buje pobra� metadane
+			//prďż˝buje pobraďż˝ metadane
 			try{
 				std::vector<core::ObjectWrapperConstPtr> metadata;
 
-				//najpierw pobieram wszystkie motiony z DM, potem znajduj� ten kt�rego id r�wna si� mojemu motionowi i dla niego pobieram metadane
+				//najpierw pobieram wszystkie motiony z DM, potem znajdujďż˝ ten ktďż˝rego id rďż˝wna siďż˝ mojemu motionowi i dla niego pobieram metadane
 				std::vector<PluginSubject::MotionConstPtr> dmMotions;
 
 				core::queryDataPtr(DataManager::getInstance(), dmMotions, true);
@@ -89,7 +89,7 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                 if (!moments.empty()) {
                     kineticItem->addChild(createMomentsBranch(motion, QObject::tr("Moments"), getRootMomentsIcon(), getMomentsIcon()));
                 }
-                // do rozwiniecia - potrzeba parsować pliki vsk i interpretować strukture kinamatyczna tak jak to robi Vicon
+                // do rozwiniecia - potrzeba parsowaÄ‡ pliki vsk i interpretowaÄ‡ strukture kinamatyczna tak jak to robi Vicon
                 if (!powers.empty()) {
                     kineticItem->addChild(createPowersBranch(motion, QObject::tr("Powers"), getRootPowersIcon(), getPowersIcon()));
                 }
@@ -140,7 +140,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     auto measurements = Measurements::get();
 
     MeasurementConfigConstPtr config;
-    //pr�buje pobra� metadane
+    //prďż˝buje pobraďż˝ metadane
     try{
         std::vector<core::ObjectWrapperConstPtr> metadata;        
         core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), motion->getSession(), metadata);
@@ -165,8 +165,8 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     for (int i = 0; i < count; ++i) {	
         EMGChannelPtr c = emgs[i]->get();	
         if (c) {
-			//TODO t�umaczenia
-			//tak si� tego nie powinno wo�a� - musi by� w tr const warto�� niezmienna w czasie dzia�ania aplikacji -> switch?
+			//TODO tďż˝umaczenia
+			//tak siďż˝ tego nie powinno woďż˝aďż˝ - musi byďż˝ w tr const wartoďż˝ďż˝ niezmienna w czasie dziaďż˝ania aplikacji -> switch?
             //QString n = QString::fromStdString(emgs[i]->getName());
             //n = config ? config->tr(n) : n;
             QString n = QObject::tr(emgs[i]->getName().c_str());

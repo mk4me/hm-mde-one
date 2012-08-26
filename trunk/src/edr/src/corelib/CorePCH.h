@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/09/28
 	created:  28:9:2010   17:40
 	filename: CorePCH.h
@@ -10,8 +10,8 @@
 #define __HEADER_GUARD__COREPCH_H__
 
 #ifndef DISABLE_PRECOMPILED_HEADERS
-// do momentu obs³u¿enia nag³ówków prekompilowanych na innych platformach
-// mechanizm ten musi byæ wy³¹czony, inaczej mo¿e negatywnie wp³yn¹æ na
+// do momentu obsÅ‚uÅ¼enia nagÅ‚Ã³wkÃ³w prekompilowanych na innych platformach
+// mechanizm ten musi byÄ‡ wyÅ‚Ä…czony, inaczej moÅ¼e negatywnie wpÅ‚ynÄ…Ä‡ na
 // czas kompilacji
 
 #include <vector>
@@ -79,7 +79,7 @@ UTILS_POP_WARNINGS
 #include <utils/Debug.h>
 #include <utils/Enum.h>
 
-// przywrócenie warningów wy³¹czonych przez OSG
+// przywrÃ³cenie warningÃ³w wyÅ‚Ä…czonych przez OSG
 #if defined(_MSC_VER)
 #   pragma warning( default : 4244 )
 //#   pragma warning( default : 4251 )

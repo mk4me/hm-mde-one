@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/12
     created:  12:4:2011   21:20
     filename: VideoStreamAdapter.h
@@ -13,26 +13,26 @@
 
 namespace vidlib 
 {
-    //! Adapter strumienia, umo¿liwiaj¹cy zunifikowany dostêp do strumieni
-    //! kontroluj¹cych inne strumienie (bufory, osg)
+    //! Adapter strumienia, umoÅ¼liwiajÄ…cy zunifikowany dostÄ™p do strumieni
+    //! kontrolujÄ…cych inne strumienie (bufory, osg)
     class VIDLIB_EXPORT VideoStreamAdapter : public VideoStream
     {
     private:
-        //! Wewnêtrzny strumieñ.
+        //! WewnÄ™trzny strumieÅ„.
         VideoStream* innerStream;
 
     public:
-        //! \param innerStream Strumieñ przejmowany na w³asnoœæ.
+        //! \param innerStream StrumieÅ„ przejmowany na wÅ‚asnoÅ›Ä‡.
         VideoStreamAdapter(VideoStream* innerStream);
         //!
         virtual ~VideoStreamAdapter();
 
     protected:
-        //! Prywatny konstruktor do klonowania. Wykonuje g³êbok¹ kopiê.
+        //! Prywatny konstruktor do klonowania. Wykonuje gÅ‚Ä™bokÄ… kopiÄ™.
         VideoStreamAdapter(const VideoStreamAdapter& adapter);
 
     public:
-        //! \return Wewnêtrzny strumieñ.
+        //! \return WewnÄ™trzny strumieÅ„.
         inline const VideoStream* getInnerStream() const
         {
             return innerStream;
@@ -42,9 +42,9 @@ namespace vidlib
     public:
         //!
         virtual VideoStream* clone() const;
-        //! \param time Pozycja w Ÿródle
+        //! \param time Pozycja w ÅºrÃ³dle
         virtual bool setTime(double time);
-        //! Odczytuje nastêpn¹ klatkê.
+        //! Odczytuje nastÄ™pnÄ… klatkÄ™.
         virtual bool readNext();
         //! \retrun Pozycja w strumieniu.
         virtual double getTime() const;

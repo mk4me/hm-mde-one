@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/05/18
     created:  18:5:2011   12:25
     filename: osgVDFPin.h
@@ -17,7 +17,7 @@
 namespace osgVDF{
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa wizualnie preprezentuj¹ca pin. Przechowuje referencjê do pinu który reprezentuje oraz do wizualnego modelu w kontekœcie którego wystêpuje
+//! Klasa wizualnie preprezentujÄ…ca pin. Przechowuje referencjÄ™ do pinu ktÃ³ry reprezentuje oraz do wizualnego modelu w kontekÅ›cie ktÃ³rego wystÄ™puje
 
 class osgVDFPin : public osgVDFBasePin
 {

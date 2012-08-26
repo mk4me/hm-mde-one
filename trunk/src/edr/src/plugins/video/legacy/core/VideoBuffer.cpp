@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+Ôªø#include "../VideoPCH.h"
 #include <iostream>
 #include "VMPrivate.h"
 #include "VideoBufferChunk.h"
@@ -15,11 +15,11 @@ Iter lowerBound( Iter first, Iter last, const Val& val, Pred pred )
   typedef typename std::iterator_traits<Iter>::difference_type Diff;
   Diff count = std::distance(first, last);
   while ( count > 0 ) {
-    // wybieramy úrodkowy element
+    // wybieramy ≈õrodkowy element
     Diff count2 = (count>>1);
     Iter mid = first;
     std::advance(mid, count2);
-    // rÛwnowaøne *mid < val
+    // r√≥wnowa≈ºne *mid < val
     if ( pred(*mid, val) ) {
       first = ++mid;
       count -= count2 + 1;
@@ -37,11 +37,11 @@ Iter upperBound( Iter first, Iter last, const Val& val, Pred pred )
   typedef typename std::iterator_traits<Iter>::difference_type Diff;
   Diff count = std::distance(first, last);
   while ( count > 0 ) {
-    // wybieramy úrodkowy element
+    // wybieramy ≈õrodkowy element
     Diff count2 = (count>>1);
     Iter mid = first;
     std::advance(mid, count2);
-    // rÛwnowaøne *mid < val
+    // r√≥wnowa≈ºne *mid < val
     if ( !pred(val, *mid) ) {
       first = ++mid;
       count -= count2 + 1;
@@ -101,18 +101,18 @@ Picture * VideoBuffer::pop()
 {
   VM_FUNCTION_PROLOG;
   if ( unused.empty() ) {
-    // nie ma niewykorzystanych, trzeba wiÍc zaalokowaÊ nowe (jeúli jest miejsce)
+    // nie ma niewykorzystanych, trzeba wiƒôc zaalokowaƒá nowe (je≈õli jest miejsce)
     if ( buffer.size() == maxBufferSize ) {
       // koniec miejsca
       return NULL;
     } else {
-      // miejsce jest, moøna alokowaÊ
+      // miejsce jest, mo≈ºna alokowaƒá
       Picture * picture = new Picture(Picture::create(width, height, format));
       buffer.push_back(picture);
       return picture;
     }
   } else {
-    // zdejmujemy ze stosu nieuøywanych
+    // zdejmujemy ze stosu nieu≈ºywanych
     video::Picture * result = unused.top();
     unused.pop();
     return result;
@@ -122,7 +122,7 @@ Picture * VideoBuffer::pop()
 void VideoBuffer::push( video::Picture * frame )
 {
   VM_FUNCTION_PROLOG;
-  // dodajemy do stosu nieuøywanych
+  // dodajemy do stosu nieu≈ºywanych
   unused.push(frame);
 }
 
@@ -138,29 +138,29 @@ bool VideoBuffer::freeFrame( double time )
     unused.push(frame->second.second);
     if ( frame == chunk->begin() ) {
       if ( frame == --chunk->end() ) {
-        // chunk ma tylko tÍ ramkÍ, usuwamy go
+        // chunk ma tylko tƒô ramkƒô, usuwamy go
         delete *it;
         chunks.erase(it);
       } else {
-        // usuwamy z poczπtku
+        // usuwamy z poczƒÖtku
         chunk->popFront();
       }
     } else if ( frame == --chunk->end() ) {
-      // usuwamy z ty≥u
+      // usuwamy z ty≈Çu
       chunk->popBack();
     } else {
-      // kopiujemy czeúÊ do nowego bufora
+      // kopiujemy cze≈õƒá do nowego bufora
       VideoBufferChunk * newChunk = new VideoBufferChunk();
       VideoBufferChunk::const_iterator startCopy = frame;
       newChunk->append<VideoBufferChunk::const_iterator>(++startCopy, chunk->end());
-      // usuwamy zbÍdne z bufora
+      // usuwamy zbƒôdne z bufora
       chunk->erase(frame, chunk->end());
-      // dodajemy do listy chunkÛw
+      // dodajemy do listy chunk√≥w
       chunks.insert(++it, newChunk);
     }
     return true;
   } else {
-    // nie ma chunka ktÛry by to obs≥uøy≥
+    // nie ma chunka kt√≥ry by to obs≈Çu≈ºy≈Ç
     return false;
   }
 }
@@ -170,21 +170,21 @@ bool VideoBuffer::notifyUsed( Picture * frame, double startTime, double endTime 
 {
   VM_FUNCTION_PROLOG;
 #if _DEBUG
-  // sprawdzamy, czy ramki na pewno nie ma na liúcie uøytych i nieuøytych
+  // sprawdzamy, czy ramki na pewno nie ma na li≈õcie u≈ºytych i nieu≈ºytych
   //assert( std::find(unused.begin(), unused.end(), frame) == unused.end() );
   UTILS_ASSERT( getFrame(startTime) == NULL );
 #endif
   UTILS_ASSERT( startTime < endTime );
   UTILS_ASSERT( startTime >= 0.0 );
 
-  // wyszukujemy bufor, ktÛry siÍ nadaje
+  // wyszukujemy bufor, kt√≥ry siƒô nadaje
   PredStartTimeL pred;
   Chunks::iterator begin = chunks.begin(), end = chunks.end();
   Chunks::iterator found = upperBound( begin, end, startTime, pred );
   Chunks::iterator next = found;
   Chunks::iterator prev = next==begin ? end : --Chunks::iterator(next);
 
-  // sprawdzenie poprawnoúci bufora, tj fragmenty nie mogπ na siebie nachodziÊ
+  // sprawdzenie poprawno≈õci bufora, tj fragmenty nie mogƒÖ na siebie nachodziƒá
   if ( next != end ) {
     double chunkStart = (*next)->getStartTime();
     if ( chunkStart < endTime ) {
@@ -204,20 +204,20 @@ bool VideoBuffer::notifyUsed( Picture * frame, double startTime, double endTime 
 
   if ( next != end ) {
     if ( prev != end ) {
-      // dopisaÊ i po≥πczyÊ oba bufory
+      // dopisaƒá i po≈ÇƒÖczyƒá oba bufory
       (*prev)->append(frame, startTime, endTime);
       (*prev)->append((*next)->begin(), (*next)->end());
       delete *next;
       chunks.erase(next);
     } else {
-      // dopisaÊ na poczπtek
+      // dopisaƒá na poczƒÖtek
       (*next)->append(frame, startTime, endTime);
     }
   } else if ( prev != end ) {
-    // dopisaÊ na koniec
+    // dopisaƒá na koniec
     (*prev)->append(frame, startTime, endTime);
   } else {
-    // trzeba stworzyÊ nowy bufor
+    // trzeba stworzyƒá nowy bufor
     VideoBufferChunk * newChunk = new VideoBufferChunk();
     newChunk->append(frame, startTime, endTime);
     // wstawiamy
@@ -238,7 +238,7 @@ bool VideoBuffer::freeFirstFrame()
       delete chunk;
       chunks.pop_front();
     }
-    // dodajemy do nieuøywanych
+    // dodajemy do nieu≈ºywanych
     unused.push(picture);
     return true;
   } else {
@@ -258,7 +258,7 @@ bool VideoBuffer::freeLastFrame()
       delete chunk;
       chunks.pop_back();
     }
-    // dodajemy do nieuøywanych
+    // dodajemy do nieu≈ºywanych
     unused.push(picture);
     return true;
   } else {
@@ -280,7 +280,7 @@ const Picture * VideoBuffer::getFrame( double time, double * timestamp /*= NULL*
 const Picture * VideoBuffer::getNearestFrame( double time, double * timestamp /*= NULL*/, double * finish /*= NULL*/ )
 {
   VM_FUNCTION_PROLOG;
-  // jest co szukaÊ?
+  // jest co szukaƒá?
   if ( chunks.empty() ) {
     return NULL;
   }
@@ -292,7 +292,7 @@ const Picture * VideoBuffer::getNearestFrame( double time, double * timestamp /*
   Chunks::iterator next = lowerBound(begin, end, time, pred);
   Chunks::iterator prev = next;
 
-  // odleg≥oúci od obu chunkÛw
+  // odleg≈Ço≈õci od obu chunk√≥w
   double deltaRight = (next == end ? DBL_MAX : (*next)->getStartTime() - time);
   double deltaLeft = (prev == begin ? DBL_MAX : time - (*--prev)->getEndTime());
 
@@ -325,9 +325,9 @@ Iter VideoBuffer::getChunk( double time, Iter begin, Iter end ) const
 
 // void VideoBuffer::trimBuffer( double begin, double end )
 // {
-//   // wyszukujemy granicy przedzia≥u
+//   // wyszukujemy granicy przedzia≈Çu
 //   UsedMap::iterator first = used.lower_bound(begin);
-//   // dodajemy do listy nieuøywanych
+//   // dodajemy do listy nieu≈ºywanych
 //   for (UsedMap::iterator it = used.begin(); it != first; ++it) {
 //     unused.push_back(it->second.second);
 //   }

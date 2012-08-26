@@ -1,9 +1,9 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include <vidlib/VideoError.h>
 #include <utils/Debug.h>
 
 #ifdef _MSC_VER
-// wy³¹czamy warning bo wiemy co robimy
+// wyÅ‚Ä…czamy warning bo wiemy co robimy
 #pragma warning(disable: 4996)
 #endif
 

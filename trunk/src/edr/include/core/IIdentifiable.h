@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/09/28
 	created:  28:9:2010   1:22
 	filename: IIdentifiable.h
@@ -17,7 +17,7 @@
 
 namespace core {
 
-//! Interfejs reprezentuj¹cy obiekt mo¿liwy do identyfikacji.
+//! Interfejs reprezentujÄ…cy obiekt moÅ¼liwy do identyfikacji.
 class IIdentifiable
 {
 public:
@@ -33,7 +33,7 @@ public:
 
 }
 
-//! Makro u³atwiaj¹ce "wstrzykiwanie" metod interfejsu IIdentifable do klas implementuj¹cych go
+//! Makro uÅ‚atwiajÄ…ce "wstrzykiwanie" metod interfejsu IIdentifable do klas implementujÄ…cych go
 #define UNIQUE_ID(uuidStr, shortDescription)                            \
  public:                                                                \
     static boost::uuids::uuid getClassID()                              \

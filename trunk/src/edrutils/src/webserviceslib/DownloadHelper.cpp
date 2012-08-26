@@ -1,4 +1,4 @@
-#include <webserviceslib/DownloadHelper.h>
+ï»¿#include <webserviceslib/DownloadHelper.h>
 
 namespace webservices
 {
@@ -27,8 +27,8 @@ IFtpsConnection::OperationStatus BasicDownloadHelper::get(IFtpsConnection::IProg
 	webservices::IWebService::ScopedLock lock(*basicStoremanWS);
 	webservices::IFtpsConnection::ScopedLock lock2(*ftpsConnection);
 
-	// Tutaj mo¿e siê nie powieœæ ca³e pobieranie jeœli na ftp po stornie bazy nie uda siê przygotowaæ pliku do pobrania
-	// Lub us³uga sie wywróci
+	// Tutaj moÅ¼e siÄ™ nie powieÅ›Ä‡ caÅ‚e pobieranie jeÅ›li na ftp po stornie bazy nie uda siÄ™ przygotowaÄ‡ pliku do pobrania
+	// Lub usÅ‚uga sie wywrÃ³ci
 	try{
 		remotePath = basicStoremanWS->retrieve(fileID);
 	}catch(std::exception & e){
@@ -42,7 +42,7 @@ IFtpsConnection::OperationStatus BasicDownloadHelper::get(IFtpsConnection::IProg
 		return ret;
 	}	
 
-	// Tutaj pobieranie mo¿e siê nie powieœæ
+	// Tutaj pobieranie moÅ¼e siÄ™ nie powieÅ›Ä‡
 	try {
 		ret = ftpsConnection->get(remotePath, destinationPath, progress);
 		if(ret == webservices::IFtpsConnection::Error){
@@ -57,7 +57,7 @@ IFtpsConnection::OperationStatus BasicDownloadHelper::get(IFtpsConnection::IProg
 		errorMessage_ = str.str();
 	}
 
-	// To nie wp³ywa zasadniczo na wynik poniewaz plik jest ju¿ u nas i ewentualnie nie mozna go posprz¹taæ na serwerze
+	// To nie wpÅ‚ywa zasadniczo na wynik poniewaz plik jest juÅ¼ u nas i ewentualnie nie mozna go posprzÄ…taÄ‡ na serwerze
 	try{
 		basicStoremanWS->downloadComplete(fileID, remotePath);
 	}catch(...){

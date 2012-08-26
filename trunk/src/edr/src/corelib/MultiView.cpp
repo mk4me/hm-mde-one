@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include <osgWidget/ViewerEventHandlers>
 #include <core/MultiView.h>
 #include <osgui/AspectRatioKeeper.h>
@@ -15,7 +15,7 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Typ powiadamiaj¹cy MultiView o tym, ¿e nast¹pi³ resize (nie da siê prze³adowaæ,
+ *	Typ powiadamiajÄ…cy MultiView o tym, Å¼e nastÄ…piÅ‚ resize (nie da siÄ™ przeÅ‚adowaÄ‡,
  *  bo nie ma wirtualnych metod :()
  */
 class ResizeNotifier : public osg::NodeCallback
@@ -25,8 +25,8 @@ private:
     osgWidget::XYCoord prevSize;
 
 public:
-    //! \param w Pocz¹tkowa szerokoœæ.
-    //! \param h Pocz¹tkowa wysokoœæ.
+    //! \param w PoczÄ…tkowa szerokoÅ›Ä‡.
+    //! \param h PoczÄ…tkowa wysokoÅ›Ä‡.
     ResizeNotifier(osgWidget::XYCoord::value_type w = 0, osgWidget::XYCoord::value_type h = 0) :
     prevSize(w, h)
     {}
@@ -71,7 +71,7 @@ previewVisible(true)
     thumbnails->setStrata( osgWidget::Window::STRATA_NONE );
     setThumbnailBuitinTemplate(TemplatesLabelBased);
 
-    // dodanie obs³ugi zdarzeñ
+    // dodanie obsÅ‚ugi zdarzeÅ„
     setUpdateCallback( new ResizeNotifier(width, height) );
     // dodanie dziecka
     addChild(thumbnails);
@@ -90,10 +90,10 @@ bool MultiView::addItem( Item* thumbnail, Item* preview /*= NULL*/ )
         adapter->setLabel(widget, thumbnail->getName());
         adapter->setToggle(widget, false);
         osgWidget::EventInterface* ei = adapter->getEventSource(widget);
-        UTILS_ASSERT(ei, "Musi byc Ÿród³o eventow!");
+        UTILS_ASSERT(ei, "Musi byc ÅºrÃ³dÅ‚o eventow!");
         ei->addCallback( new osgWidget::Callback( &MultiView::onItemClicked, this, osgWidget::EVENT_MOUSE_PUSH ) );
 
-        // opakowanie miniaturki tak, aby wspó³czynnik proporcji by³ zachowany
+        // opakowanie miniaturki tak, aby wspÃ³Å‚czynnik proporcji byÅ‚ zachowany
         osgui::AspectRatioKeeper* keeper = new osgui::AspectRatioKeeper(widget, thumbnail->getAspectRatio());
         keeper->getWindow()->hide();
 
@@ -101,14 +101,14 @@ bool MultiView::addItem( Item* thumbnail, Item* preview /*= NULL*/ )
         Entry entry = { thumbnail, preview, widget, adapter, false, keeper };
         items.push_back( entry );
 
-        // dodanie widgeta kontroluj¹cego rozmiar do miniaturek
+        // dodanie widgeta kontrolujÄ…cego rozmiar do miniaturek
         thumbnails->setDirtyMode(true);
         thumbnails->flattenHorizontally();
         thumbnails->setNumColumns(items.size());
         thumbnails->addWidget( keeper, 0, items.size()-1 );
         thumbnails->resetFillables();
 
-        // upewnienie siê, ¿e preview jest wy³¹czony
+        // upewnienie siÄ™, Å¼e preview jest wyÅ‚Ä…czony
         thumbnail->setVisible(true);
         if ( preview ) {
             preview->setVisible(false);
@@ -117,7 +117,7 @@ bool MultiView::addItem( Item* thumbnail, Item* preview /*= NULL*/ )
         refreshLayout();
         return true;
     } else {
-        // item zosta³ ju¿ dodany
+        // item zostaÅ‚ juÅ¼ dodany
         return false;
     }
 }
@@ -129,10 +129,10 @@ void MultiView::removeItem( Item* item )
 
 void MultiView::removeAllItems()
 {
-    // wy³¹czenie wybranego elementu
+    // wyÅ‚Ä…czenie wybranego elementu
     setSelected(NULL);
 
-    // wyczyszczenie _lastEvent oraz flag przycisków
+    // wyczyszczenie _lastEvent oraz flag przyciskÃ³w
     pointerMove(-FLT_MAX, -FLT_MAX);
     // wyczyszczenie _lastPush
     mouseReleasedLeft(0, 0);
@@ -171,11 +171,11 @@ bool MultiView::isPreviewVisible() const
 
 void MultiView::refreshLayout()
 {
-    // obs³uga grida z miniaturkami
+    // obsÅ‚uga grida z miniaturkami
     if ( isThumbnailsVisible() ) {
-        // dostêpna wysokoœæ
+        // dostÄ™pna wysokoÅ›Ä‡
         osgWidget::point_type height = isPreviewVisible() ? thumbnailsPaneWidth : getHeight();
-        // pobranie wspó³czynników proporcji itemów
+        // pobranie wspÃ³Å‚czynnikÃ³w proporcji itemÃ³w
         std::vector<float> aspectRatios;
         aspectRatios.reserve(items.size());
         BOOST_FOREACH(Entry& entry, items) {
@@ -187,34 +187,34 @@ void MultiView::refreshLayout()
         // usuwamy niepotrzebne elementy
         thumbnails->flattenHorizontally();
         thumbnails->setNumColumns(items.size());
-        // dostosowujemy rozmiar oraz dodajemy widgety, które zape³ni¹ woln¹ przestrzeñ
+        // dostosowujemy rozmiar oraz dodajemy widgety, ktÃ³re zapeÅ‚niÄ… wolnÄ… przestrzeÅ„
         thumbnails->adjustDimensions(getWidth(), height, aspectRatios);
         thumbnails->fillEmpty();
         // faktyczny resize
         thumbnails->resize( getWidth(), height );
-        // aktualizacja po³o¿enia
+        // aktualizacja poÅ‚oÅ¼enia
         thumbnails->setOrigin( (getWidth() - thumbnails->getWidth())/2, getHeight() - thumbnails->getHeight());
         thumbnails->update();
-        // wy³¹czenie "brudnego" trybu
+        // wyÅ‚Ä…czenie "brudnego" trybu
         thumbnails->setDirtyMode(false);
     }
 
     Item* selectedPreview = NULL;
     BOOST_FOREACH(Entry& entry, items) {
         UTILS_ASSERT(entry.thumbnail && entry.widget);
-        // obs³uga miniaturek
+        // obsÅ‚uga miniaturek
         if ( isThumbnailsVisible() ) {
-            // nowe wspó³rzêdne i rozmiar itemów
+            // nowe wspÃ³Å‚rzÄ™dne i rozmiar itemÃ³w
             osgWidget::XYCoord position = entry.widget->getOrigin() + entry.widget->getParent()->getAbsoluteOrigin();
             osgWidget::XYCoord size = entry.widget->getSize();
             osgWidget::point_type margin = entry.adapter->getMargin(entry.widget);
             entry.thumbnail->setVisible( true );
             entry.thumbnail->setLocation( position.x() + margin, position.y() + margin, size.x() - 2*margin, size.y() - 2*margin );
         } else {
-            // schowanie itemów
+            // schowanie itemÃ³w
             entry.thumbnail->setVisible( false );
         }
-        // obs³uga podgl¹du
+        // obsÅ‚uga podglÄ…du
         if ( entry.preview ) {
             if ( selectedItem == entry.thumbnail ) {
                 if ( isPreviewVisible() ) {
@@ -242,7 +242,7 @@ void MultiView::setThumbnailsPaneWidth( osgWidget::point_type thumbnailsPaneWidt
 void MultiView::setThumbnailBuitinTemplate(Templates templ)
 {
     if ( templ == TemplatesLabelBased ) {
-        //! Typ overlay'a nad miniaturk¹.
+        //! Typ overlay'a nad miniaturkÄ….
         typedef osgui::Buttonized< osgui::Borderized<osgWidget::Label>, osgui::BorderStylePolicy<osgui::LabelStylePolicy> > OverlayButton;
         OverlayButton* button = new OverlayButton("TEMPLATE", "TEMPLATE");
         button->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);
@@ -263,9 +263,9 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
         MultiViewFunctorWidgetAdapter* adapter = new MultiViewFunctorWidgetAdapter();
         // najpierw po prostu rzutujemy na typ OverlayButton
         boost::function< OverlayButton* (osgWidget::Widget*) > getOverlayFunc = boost::bind(&boost::polymorphic_cast<OverlayButton*, osgWidget::Widget>, _1);
-        // na tej podstawie dalej ju¿ ³atwo
+        // na tej podstawie dalej juÅ¼ Å‚atwo
         adapter->getEventSourceFunc= boost::bind(getOverlayFunc, _1);
-        // poniewa¿ osgWidget::Label::setLabel jest prze³adowane, trzeba jawnie wskazaæ okreœlon¹ wersjê
+        // poniewaÅ¼ osgWidget::Label::setLabel jest przeÅ‚adowane, trzeba jawnie wskazaÄ‡ okreÅ›lonÄ… wersjÄ™
         adapter->setLabelFunc = boost::bind( static_cast<void (osgWidget::Label::*)(const std::string&)>(&osgWidget::Label::setLabel), boost::bind(getOverlayFunc, _1), _2);
         adapter->setToggleFunc = boost::bind( &OverlayButton::setToggled, boost::bind(getOverlayFunc, _1), _2 );
         adapter->getMarginFunc = boost::bind( &OverlayButton::getBorderWidth, boost::bind(getOverlayFunc, _1) );
@@ -303,33 +303,33 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
 //         };
 
         boost::function< OverlayButton* (osgWidget::Widget*) > getOverlayFunc = boost::bind(
-            // wywo³ujemy getOverlay...
+            // wywoÅ‚ujemy getOverlay...
             static_cast<OverlayButton* (OverlayWindow::*)(void)>(&OverlayWindow::getOverlay),
                 boost::bind(
                 // ... z Overlaya ...
                 static_cast<OverlayWindow* (Overlay::*)(void)>(&Overlay::getWindow),
                 boost::bind(
-                    // który jest rzutowany z widgeta
+                    // ktÃ³ry jest rzutowany z widgeta
                     &boost::polymorphic_cast<Overlay*, osgWidget::Widget>,
                     _1
                 )
             )
         );
 
-        // na tej podstawie dalej ju¿ ³atwo
+        // na tej podstawie dalej juÅ¼ Å‚atwo
         adapter->getEventSourceFunc= boost::bind(getOverlayFunc, _1);
         adapter->setToggleFunc = boost::bind( &OverlayButton::setToggled, boost::bind(getOverlayFunc, _1), _2 );
         adapter->getMarginFunc = boost::bind( &OverlayButton::getBorderWidth, boost::bind(getOverlayFunc, _1) );
-        // poniewa¿ osgWidget::Label::setLabel jest prze³adowane, trzeba jawnie wskazaæ okreœlon¹ wersjê
+        // poniewaÅ¼ osgWidget::Label::setLabel jest przeÅ‚adowane, trzeba jawnie wskazaÄ‡ okreÅ›lonÄ… wersjÄ™
         adapter->setLabelFunc = boost::bind( static_cast<void (osgWidget::Label::*)(const std::string&)>(&osgWidget::Label::setLabel),
             boost::bind(
-                // pobieramy labelkê ...
+                // pobieramy labelkÄ™ ...
                 static_cast<osgWidget::Label* (OverlayWindow::*)(void)>(&OverlayWindow::getLabel),
                     boost::bind(
                     // ... z Overlaya ...
                     static_cast<OverlayWindow* (Overlay::*)(void)>(&Overlay::getWindow),
                     boost::bind(
-                        // ... który jest rzutowany z widgeta
+                        // ... ktÃ³ry jest rzutowany z widgeta
                         &boost::polymorphic_cast<Overlay*, osgWidget::Widget>,
                         _1
                     )
@@ -341,7 +341,7 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
         adapterTemplate = adapter;
 
     } else {
-        UTILS_ASSERT(false, "Nieznany domyœlny styl.");
+        UTILS_ASSERT(false, "Nieznany domyÅ›lny styl.");
     }
 }
 
@@ -351,7 +351,7 @@ bool MultiView::onItemClicked( osgWidget::Event& ev )
         return false;
     }
 
-    // wybór itema bazuj¹cy na Ÿródle eventów
+    // wybÃ³r itema bazujÄ…cy na ÅºrÃ³dle eventÃ³w
     BOOST_FOREACH(Entry& entry, items) {
         UTILS_ASSERT(entry.adapter->getEventSource(entry.widget));
         if ( entry.adapter->getEventSource(entry.widget) == ev.getWidget() ) {
@@ -360,13 +360,13 @@ bool MultiView::onItemClicked( osgWidget::Event& ev )
         }
     }
 
-    // po wyborze itema przywracamy panel z podgl¹dem
+    // po wyborze itema przywracamy panel z podglÄ…dem
     if ( !isPreviewVisible() ) {
         setPreviewVisible(true);
     }
 
 
-//     // wy³¹czenie pozosta³ych itemów
+//     // wyÅ‚Ä…czenie pozostaÅ‚ych itemÃ³w
 //     Entry* selected = NULL;
 //     BOOST_FOREACH(Entry& entry, items) {
 //         UTILS_ASSERT(entry.adapter->getEventSource(entry.widget));
@@ -376,7 +376,7 @@ bool MultiView::onItemClicked( osgWidget::Event& ev )
 //             selected = &entry;
 //         }
 //     }
-//     // w³¹czenie wybranego
+//     // wÅ‚Ä…czenie wybranego
 //     if ( selected ) {
 //         setEntrySelected(*selected, true);
 //         selectedItem = selected->thumbnail;
@@ -415,7 +415,7 @@ bool MultiView::onShowHideButtonClicked( osgWidget::Event& ev )
 
 void MultiView::setSelectedByEntry( Entry* selected )
 {
-    // wy³¹czenie pozosta³ych itemów
+    // wyÅ‚Ä…czenie pozostaÅ‚ych itemÃ³w
     BOOST_FOREACH(Entry& entry, items) {
         UTILS_ASSERT(entry.adapter->getEventSource(entry.widget));
         if ( !selected || entry.thumbnail != selected->thumbnail ) {
@@ -423,7 +423,7 @@ void MultiView::setSelectedByEntry( Entry* selected )
             entry.adapter->setToggle( entry.widget, false );
         }
     }
-    // w³¹czenie wybranego
+    // wÅ‚Ä…czenie wybranego
     if ( selected ) {
         selected->toggled = true;
         selected->adapter->setToggle( selected->widget, true );
@@ -462,7 +462,7 @@ void MultiView::setEntrySelected( Entry &entry, bool selected )
             entry.toggled = true;
             if ( entry.preview ) {
                 entry.preview->setVisible(true);
-                // poniewa¿ dopiero co pokazaliœmy trzeba wypozycjonowaæ
+                // poniewaÅ¼ dopiero co pokazaliÅ›my trzeba wypozycjonowaÄ‡
                 entry.preview->setLocation(0, 0, getWidth(), getHeight() - thumbnails->getHeight());
             }
         }

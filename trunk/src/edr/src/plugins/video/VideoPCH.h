@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/09/29
 	created:  29:9:2010   14:13
 	filename: VideoPCH.h
@@ -56,7 +56,7 @@ UTILS_POP_WARNINGS
 
 #include <core/Plugin.h>
 
-// przywrócenie warningów wy³¹czonych przez OSG
+// przywrÃ³cenie warningÃ³w wyÅ‚Ä…czonych przez OSG
 #if defined(_MSC_VER)
 #   pragma warning( default : 4244 )
 //#   pragma warning( default : 4251 )

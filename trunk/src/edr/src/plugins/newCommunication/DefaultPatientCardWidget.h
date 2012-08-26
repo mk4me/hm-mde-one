@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/12
     created:  12:3:2012   13:06
     filename: DefaultPatientCardWidget.h
@@ -23,13 +23,13 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QListWidget>
 
-//! domyœlny widget obs³uguj¹cy karte pacjenta
+//! domyÅ›lny widget obsÅ‚ugujÄ…cy karte pacjenta
 class DefaultPatientCardWidget : public QFrame
 {
 	Q_OBJECT
 
 public:
-	//! domyœlny konstruktor
+	//! domyÅ›lny konstruktor
 	//! \param parent Rodzic widgeta
 	DefaultPatientCardWidget(QWidget * parent = nullptr);
 	//! Wirtualny destruktor
@@ -37,10 +37,10 @@ public:
 
 public slots:
 
-	//! \param patient Pacjent którego nale¿y sformatowaæ w karcie pacjenta - dla nullptr nale¿y zresetowaæ kartê pacjenta
-	//! \param subject Subject którego sesje bêdziemy czytaæ
-	//! \param photo Zdjêcie pacjenta
-	//! \param userData Dane u¿ytkownika (na potrzeby notatek!!)
+	//! \param patient Pacjent ktÃ³rego naleÅ¼y sformatowaÄ‡ w karcie pacjenta - dla nullptr naleÅ¼y zresetowaÄ‡ kartÄ™ pacjenta
+	//! \param subject Subject ktÃ³rego sesje bÄ™dziemy czytaÄ‡
+	//! \param photo ZdjÄ™cie pacjenta
+	//! \param userData Dane uÅ¼ytkownika (na potrzeby notatek!!)
 	void setPatient(const webservices::MedicalShallowCopy::Patient * patient = nullptr,
 		const webservices::MotionShallowCopy::Performer * subject = nullptr,
 		const QPixmap & photo = QPixmap(), const communication::IUserData & userData = communication::IUserData());
@@ -88,12 +88,12 @@ public:
 
 	//! \return Nazwa schematu karty pacjenta
 	virtual const std::string name();
-	//! \return Widget z kart¹ pacjenta
+	//! \return Widget z kartÄ… pacjenta
 	virtual QWidget * widget();
-	//! \param patient Pacjent którego nale¿y sformatowaæ w karcie pacjenta - dla nullptr nale¿y zresetowaæ kartê pacjenta
-	//! \param subject Subject którego sesje bêdziemy czytaæ
-	//! \param photo Zdjêcie pacjenta
-	//! \param userData Dane u¿ytkownika (na potrzeby notatek!!)
+	//! \param patient Pacjent ktÃ³rego naleÅ¼y sformatowaÄ‡ w karcie pacjenta - dla nullptr naleÅ¼y zresetowaÄ‡ kartÄ™ pacjenta
+	//! \param subject Subject ktÃ³rego sesje bÄ™dziemy czytaÄ‡
+	//! \param photo ZdjÄ™cie pacjenta
+	//! \param userData Dane uÅ¼ytkownika (na potrzeby notatek!!)
 	virtual void setPatient(const webservices::MedicalShallowCopy::Patient * patient = nullptr,
 		const webservices::MotionShallowCopy::Performer * subject = nullptr,
 		const QPixmap & photo = QPixmap(), const communication::IUserData & userData = communication::IUserData());

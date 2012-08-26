@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/05/30
     created:  30:5:2011   8:21
     filename: IDataSource.h
@@ -16,15 +16,15 @@ class QIcon;
 
 namespace core {
 
-//! Interfejs do implemntacji ürÛde≥ danych
+//! Interfejs do implemntacji ≈∫r√≥de≈Ç danych
 class IDataSource : public core::IOutputProcessItem
 {
 public:
-    //! \return Dialog konfigurujπcy opis wyjúcia ürÛd≥a danych
+    //! \return Dialog konfigurujƒÖcy opis wyj≈õcia ≈∫r√≥d≈Ça danych
     virtual QDialog * getOutputConfigurationDialog() = 0;
-    //! \return Czy ürÛd≥o moøe jeszcze generowaÊ kolejne dane
+    //! \return Czy ≈∫r√≥d≈Ço mo≈ºe jeszcze generowaƒá kolejne dane
     virtual bool empty() const = 0;
-    //! \return Ikona ürÛd≥a
+    //! \return Ikona ≈∫r√≥d≈Ça
     virtual QIcon* getIcon() const = 0;
 };
 

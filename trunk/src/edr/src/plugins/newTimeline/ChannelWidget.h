@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/07/18
     created:  18:7:2011   14:05
     filename: ChannelWidget.h
@@ -14,9 +14,9 @@
 #include <QtGui/QFrame>
 #include <timelinelib/Model.h>
 
-//! Klasa reprezentujπca pojedynczy kana≥ w czasie - rysuje jego zakres na osi ze wzglÍdu na parametry begin i end,
-//! ktÛre stanowiπ znormalizowane wartoúci. Root zajmuje zawsze caly dostÍpny kana≥, jego d≥ugoúÊ jest punktem 
-//! odniesienia dla pozosta≥ych kana≥Ûw. Zakres poczπtku i koÒca to [0;1] gdzie poczπtek musi byÊ przed lub rÛwno z koÒcem
+//! Klasa reprezentujƒÖca pojedynczy kana≈Ç w czasie - rysuje jego zakres na osi ze wzglƒôdu na parametry begin i end,
+//! kt√≥re stanowiƒÖ znormalizowane warto≈õci. Root zajmuje zawsze caly dostƒôpny kana≈Ç, jego d≈Çugo≈õƒá jest punktem 
+//! odniesienia dla pozosta≈Çych kana≈Ç√≥w. Zakres poczƒÖtku i ko≈Ñca to [0;1] gdzie poczƒÖtek musi byƒá przed lub r√≥wno z ko≈Ñcem
 class ChannelWidget : //public QWidget 
     public QFrame 
 {
@@ -25,13 +25,13 @@ class ChannelWidget : //public QWidget
 
 private:
 
-    //! Znormalizowana po≥owa szerokoúci dla aktualnego czasu
+    //! Znormalizowana po≈Çowa szeroko≈õci dla aktualnego czasu
     double currentTimeHalfWidth;
 
-    //! Kolor wype≥nienia kana≥u
+    //! Kolor wype≈Çnienia kana≈Çu
     QColor fillColor;
 
-    //! Kolor t≥a
+    //! Kolor t≈Ça
     QColor backgroundColor;
 
     //! Kolor markera czasu
@@ -53,10 +53,10 @@ public:
         double currentTimeHalfWidth = 0.03);
 
 
-    //! \return Kolor wype≥nienia kana≥u
+    //! \return Kolor wype≈Çnienia kana≈Çu
     const QColor & getFillColor() const;
 
-    //! \return Kolor t≥a
+    //! \return Kolor t≈Ça
     const QColor & getBackgroundColor() const;
 
     //! \return Kolor znacznika czasu
@@ -77,17 +77,17 @@ public slots:
     //! \param margin Margines z lewej i prawej strony
     void setMargins(double margin);
 
-    //! \param fillColor Kolor wype≥niajπcy kana≥
+    //! \param fillColor Kolor wype≈ÇniajƒÖcy kana≈Ç
     void setFillColor(const QColor & fillColor);
 
-    //! \param backgorundColor Kolor t≥a
+    //! \param backgorundColor Kolor t≈Ça
     void setBackgorundColor(const QColor & backgorundColor);
 
-    //! \param backgorundColor Kolor t≥a
+    //! \param backgorundColor Kolor t≈Ça
     void setMarkerColor(const QColor & markerColor);
 
 protected:
-    //! Reimplementacja metody rysujπcej z QWidget
+    //! Reimplementacja metody rysujƒÖcej z QWidget
     virtual void paintEvent(QPaintEvent * pEvent);
 
     virtual void drawSingleTag(QPainter & painter, const QRectF & rect, double normBegin, double normLength);

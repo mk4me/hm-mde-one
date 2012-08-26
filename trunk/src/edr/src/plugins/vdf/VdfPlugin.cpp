@@ -1,4 +1,4 @@
-#include "VdfPCH.h"
+﻿#include "VdfPCH.h"
 #include <core/Plugin.h>
 #include <plugins/vdf/VdfService.h>
 #include <core/Log.h>

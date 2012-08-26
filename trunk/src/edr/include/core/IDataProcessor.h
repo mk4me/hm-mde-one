@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
     created:  2011/04/14
     created:  14:4:2011   17:29
     filename: IDataProcessor.h
@@ -14,7 +14,7 @@
 
 namespace core 
 {
-    //! Definicja typu elementu przetwarzaj�cego
+    //! Definicja typu elementu przetwarzającego
     typedef IInputOutputProcessItem IDataProcessor;
 
     typedef shared_ptr<IDataProcessor> IDataProcessorPtr;

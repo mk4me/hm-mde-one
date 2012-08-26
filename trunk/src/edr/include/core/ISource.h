@@ -1,10 +1,10 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/01/31
     created:  31:1:2012   8:58
     filename: ISource.h
     author:   Mateusz Janiak
 
-    purpose:  Interfejs Ÿród³a danych mog¹cy wstrzykiwaæ dane poprzez obiekty domenowe do aplikacji. Ma dostêp do MemoryDataManager i FileDataManager
+    purpose:  Interfejs ÅºrÃ³dÅ‚a danych mogÄ…cy wstrzykiwaÄ‡ dane poprzez obiekty domenowe do aplikacji. Ma dostÄ™p do MemoryDataManager i FileDataManager
 *********************************************************************/
 #ifndef HEADER_GUARD_CORE__ISOURCE_H__
 #define HEADER_GUARD_CORE__ISOURCE_H__
@@ -24,49 +24,49 @@ namespace core
 	class IServiceManager;
 	class IActionsGroupManager;
 
-    //! Interfejs Ÿród³a danych. Powinien to byæ jedeny obiekt inicjowany i maj¹cy dostêp do MemoryDM i FIleDM
+    //! Interfejs ÅºrÃ³dÅ‚a danych. Powinien to byÄ‡ jedeny obiekt inicjowany i majÄ…cy dostÄ™p do MemoryDM i FIleDM
     class ISource : public IIdentifiable
     {
     public:
         virtual ~ISource() {}
 
-        //! Inicjalizacja Ÿród³a. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
-        //! (nie zainicjalizowaniu!) wszystkich Ÿróde³.
+        //! Inicjalizacja ÅºrÃ³dÅ‚a. NastÄ™puje juÅ¼ po wczytaniu pluginÃ³w i skonstruowaniu
+        //! (nie zainicjalizowaniu!) wszystkich ÅºrÃ³deÅ‚.
         virtual void init(IMemoryDataManager * memoryDM, IFileDataManager * fileDM, IServiceManager * serviceManager) = 0;
 
-        //! PóŸna inicjalizacja Ÿród³a, nastêpuje po wczytaniu i inicjalizacji wszystkich innych Ÿróde³
+        //! PÃ³Åºna inicjalizacja ÅºrÃ³dÅ‚a, nastÄ™puje po wczytaniu i inicjalizacji wszystkich innych ÅºrÃ³deÅ‚
         virtual void lateInit()
         {
 
         }
 
-		//! Metoda powinna w bezpieczny sposób zwalniac zasoby, maj¹c na uwadze ¿e niekoniecznie wszystkie us³ugi i zasoby pobrane z zewn¹trz s¹ jeszcze dostêpne.
-        //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomi³ serwis, mo¿e tez zwalniac pamieæ przydzielon¹ dynamicznie
-        //! Generalnie to taki bezpieczny destruktor uniezale¿niaj¹cy dana us³ugê od pozosta³ych us³ug i przygotowuj¹cy ja na usuniêcie
+		//! Metoda powinna w bezpieczny sposÃ³b zwalniac zasoby, majÄ…c na uwadze Å¼e niekoniecznie wszystkie usÅ‚ugi i zasoby pobrane z zewnÄ…trz sÄ… jeszcze dostÄ™pne.
+        //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, ktÃ³re uruchomiÅ‚ serwis, moÅ¼e tez zwalniac pamieÄ‡ przydzielonÄ… dynamicznie
+        //! Generalnie to taki bezpieczny destruktor uniezaleÅ¼niajÄ…cy dana usÅ‚ugÄ™ od pozostaÅ‚ych usÅ‚ug i przygotowujÄ…cy ja na usuniÄ™cie
         virtual void finalize()
         {
 
         }
 
-        //! Metoda aktualizuj¹ca pochodzi z w¹tku UI! Powinny tu byæ realizowane lekkie operacje odœwie¿ania widgetów!!
-        //! Jako parametr dostajemy przyrost czasu jaki mina³ od poprzedniego wywo³ania
+        //! Metoda aktualizujÄ…ca pochodzi z wÄ…tku UI! Powinny tu byÄ‡ realizowane lekkie operacje odÅ›wieÅ¼ania widgetÃ³w!!
+        //! Jako parametr dostajemy przyrost czasu jaki minaÅ‚ od poprzedniego wywoÅ‚ania
         virtual void update(double deltaTime)
         {
 
         }
 
-        //! ród³o nie musi mieæ wizualnej reprezentacji.
-        //! \return Widget tworzony przez Ÿród³o b¹dŸ NULL.
+        //! Å¹rÃ³dÅ‚o nie musi mieÄ‡ wizualnej reprezentacji.
+        //! \return Widget tworzony przez ÅºrÃ³dÅ‚o bÄ…dÅº NULL.
         virtual QWidget* getWidget(IActionsGroupManager * actionsGroupManager) = 0;
 
-        //! ród³o nie musi mieæ widgeta konfiguruj¹cego.
-        //! \return Widget tworzony przez Ÿród³o b¹dŸ NULL.
+        //! Å¹rÃ³dÅ‚o nie musi mieÄ‡ widgeta konfigurujÄ…cego.
+        //! \return Widget tworzony przez ÅºrÃ³dÅ‚o bÄ…dÅº NULL.
         virtual QWidget* getConfigurationWidget(IActionsGroupManager * actionsGroupManager)
         {
             return nullptr;
         }
 
-        //! \return Nazwa Ÿród³a.
+        //! \return Nazwa ÅºrÃ³dÅ‚a.
         virtual std::string getName() const = 0;
 
     };

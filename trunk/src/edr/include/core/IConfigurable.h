@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   9:10
 	filename: 	IConfigurable.h
@@ -14,14 +14,14 @@ class QWidget;
 
 namespace core {
 
-//! Klasa zapewniaj¹ca widget konfiguracyjny
+//! Klasa zapewniajÄ…ca widget konfiguracyjny
 class IConfigurable
 {
 public:
     virtual ~IConfigurable() 
     {
     }
-    //! \return Widget konfiguruj¹cy dany obiekt
+    //! \return Widget konfigurujÄ…cy dany obiekt
     virtual QWidget* getConfigurationWidget() = 0;
 };
 

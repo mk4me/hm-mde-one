@@ -1,4 +1,4 @@
-#include "../PCH.h"
+Ôªø#include "../PCH.h"
 #include <vidlib/osg/VideoImageStreamSizeOptimizer.h>
 #include <boost/foreach.hpp>
 UTILS_PUSH_WARNINGS
@@ -30,7 +30,7 @@ void VideoImageStreamSizeOptimizer::refreshSize()
     UTILS_ASSERT(image);
     int prevWidth = image->s();
     int prevHeight = image->t();
-    // okreúlenie maksymalnej szerokoúci
+    // okre≈õlenie maksymalnej szeroko≈õci
     float maxWidth = 0;
     for ( size_t i = 0; i < clients.size(); ++i ) {
         Client* client = clients[i];
@@ -39,9 +39,9 @@ void VideoImageStreamSizeOptimizer::refreshSize()
         }
     }
     
-    // TODO: przenieúÊ do metody wirtualnej?
+    // TODO: przenie≈õƒá do metody wirtualnej?
     if ( vidlib::VideoImageStream* videoImageStream = dynamic_cast<vidlib::VideoImageStream*>(image.get()) ) {
-        // aktualizacja wymiarÛw
+        // aktualizacja wymiar√≥w
         videoImageStream->setMaxWidth( int(ceil(maxWidth)) );
     }
 

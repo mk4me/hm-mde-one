@@ -1,4 +1,4 @@
-#include "ChannelsTreeItem.h"
+﻿#include "ChannelsTreeItem.h"
 
 ChannelsTreeItem::ChannelsTreeItem(timeline::Model::TChannelConstPtr channelPtr) : QTreeWidgetItem(), channelPtr(channelPtr)
 {

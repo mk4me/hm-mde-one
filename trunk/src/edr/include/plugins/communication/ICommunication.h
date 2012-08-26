@@ -1,8 +1,8 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Interfejs ICommunication dostarcza metod zwi¹zanych z komunikacj¹ klient - serwer. Za jego pomoc¹
-mo¿liwe jest pobieranie informacji o próbach pomiarowych przechowywanych na serwerze, oraz pobieranie ich
-na lokaln¹ maszyne.
+@brief Interfejs ICommunication dostarcza metod zwiÄ…zanych z komunikacjÄ… klient - serwer. Za jego pomocÄ…
+moÅ¼liwe jest pobieranie informacji o prÃ³bach pomiarowych przechowywanych na serwerze, oraz pobieranie ich
+na lokalnÄ… maszyne.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_ICOMMUNICATION_H__
@@ -18,28 +18,28 @@ public:
 	*/
     virtual ~ICommunication() {}
 	/**
-	P³ytka kopia bazy danych.
+	PÅ‚ytka kopia bazy danych.
 	*/
 	virtual void copyDbData() = 0;
 	/**
 	Pobieranie pojedynczego pliku.
-	@param fileID id pliku w bazie danych który ma byæ pobrany
+	@param fileID id pliku w bazie danych ktÃ³ry ma byÄ‡ pobrany
 	*/
 	virtual void downloadFile(unsigned int fileID) = 0;
 	/**
-	Pobieranie wszystkich plików próby pomiarowej.
-	@param trialID id triala w bazie danych którego pliki maj¹ byæ pobrane
+	Pobieranie wszystkich plikÃ³w prÃ³by pomiarowej.
+	@param trialID id triala w bazie danych ktÃ³rego pliki majÄ… byÄ‡ pobrane
 	*/
 	virtual void downloadTrial(unsigned int trialID) = 0;
 
 	/**
-	£adowanie listy plików do edytora.
-    @param files lista plików do za³adowania
+	Åadowanie listy plikÃ³w do edytora.
+    @param files lista plikÃ³w do zaÅ‚adowania
 	*/
 	virtual void loadFiles(const std::vector<core::Filesystem::Path> files) = 0;
     /**
-    Usuwanie listy plików z edytora.
-    @param files lista plików do usuniêcia
+    Usuwanie listy plikÃ³w z edytora.
+    @param files lista plikÃ³w do usuniÄ™cia
     */
     virtual void removeFiles(const std::vector<core::Filesystem::Path> files) = 0;
 	/**

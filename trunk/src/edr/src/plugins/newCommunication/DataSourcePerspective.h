@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/14
     created:  14:3:2012   17:45
     filename: DataSourcePerspective.h
@@ -29,8 +29,8 @@ protected:
 	virtual void mousePressEvent(QMouseEvent *event);
 };
 
-//! Obiekt zarz¹dzaj¹cy perspektyw¹ po stornie DataSource
-//! Kontroluje czy perspektywa danych jest jeszcze wa¿na, jeœli nie to odœwie¿a j¹ w razie potrzeby (czyœci i przebudowuje)
+//! Obiekt zarzÄ…dzajÄ…cy perspektywÄ… po stornie DataSource
+//! Kontroluje czy perspektywa danych jest jeszcze waÅ¼na, jeÅ›li nie to odÅ›wieÅ¼a jÄ… w razie potrzeby (czyÅ›ci i przebudowuje)
 class DataSourcePerspective
 {
 public:
@@ -43,30 +43,30 @@ public:
 	//! \return Zarejestrowana perspektywa
 	const communication::DataSourcePerspectivePtr & perspective() const;
 
-	//! Uniewaznia perspektywê
+	//! Uniewaznia perspektywÄ™
 	void invalidate();
 
-	//! \return Czy perspektywa jest wa¿na
+	//! \return Czy perspektywa jest waÅ¼na
 	bool invalid() const;
 
 	//! \return Drzewo danych perspektywy
 	QTreeWidget * widget();
 
-	//! \param shallowCopy P³ytka kopia bazy danych któr¹ odœwie¿amy perspektywê
+	//! \param shallowCopy PÅ‚ytka kopia bazy danych ktÃ³rÄ… odÅ›wieÅ¼amy perspektywÄ™
 	void rebuildPerspective(const communication::ShallowCopy & shallowCopy);
-	//! Czyœci perspektywê
+	//! CzyÅ›ci perspektywÄ™
 	void clearPerspective();
 
 private:
 	//! Zarejestroana perspektywa
 	communication::DataSourcePerspectivePtr perspective_;
-	//! Drzewo danych na których operuje zarejestrowana perspektywa
+	//! Drzewo danych na ktÃ³rych operuje zarejestrowana perspektywa
 	QTreeWidget * treeWidget;
-	//! Czy perspektywa jest wa¿na
+	//! Czy perspektywa jest waÅ¼na
 	bool invalid_;
 };
 
-//! Perspektywa pacjenta pe³na
+//! Perspektywa pacjenta peÅ‚na
 class DataSourcePatientPerspective : public communication::IDataSourcePerspective
 {
 public:
@@ -78,7 +78,7 @@ public:
 	virtual void rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy);
 };
 
-//! Perspektywa chorób - pacjenci pojawiaj¹ siê kilka razy w zale¿noœci od choroby
+//! Perspektywa chorÃ³b - pacjenci pojawiajÄ… siÄ™ kilka razy w zaleÅ¼noÅ›ci od choroby
 class DataSourceDisorderPerspective : public communication::IDataSourcePerspective
 {
 public:
@@ -90,7 +90,7 @@ public:
 	virtual void rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy);
 };
 
-//! Perspektywa p³ci
+//! Perspektywa pÅ‚ci
 class DataSourceGenderPerspective : public communication::IDataSourcePerspective
 {
 public:

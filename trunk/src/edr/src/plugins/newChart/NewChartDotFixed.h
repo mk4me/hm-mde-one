@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/05/28
 	created:	28:5:2012   21:10
 	filename: 	NewChartDotFixed.h
@@ -12,13 +12,13 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
-//! punkt zaczepiony na wykresie, sta³a pozycja nie zmienia siê wraz z wykresem
+//! punkt zaczepiony na wykresie, staÅ‚a pozycja nie zmienia siÄ™ wraz z wykresem
 class NewChartDotFixed : public NewChartDot
 {
 public:
     //! Konstruktor
     //! \param position pozycja na wykresie
-    //! \param size wielkoœæ punktu
+    //! \param size wielkoÅ›Ä‡ punktu
     NewChartDotFixed(const QPointF& position, int size = 2) :
         NewChartDot(size),
         position(position)
@@ -28,7 +28,7 @@ public:
 public:
     //! \return pozycja na wykresie
     virtual QPointF getPosition() const { return position; }
-    //! Ustawia now¹ pozycje na wykresie
+    //! Ustawia nowÄ… pozycje na wykresie
     virtual void setPosition(const QPointF& val) { position = val; }
 
 private:

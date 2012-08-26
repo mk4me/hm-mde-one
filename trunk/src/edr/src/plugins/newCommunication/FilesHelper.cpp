@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include "FilesHelper.h"
 #include "DataSourceStatusManager.h"
 

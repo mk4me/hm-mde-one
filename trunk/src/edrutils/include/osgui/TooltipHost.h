@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__TOOLTIPHOST_H__
+﻿#ifndef HEADER_GUARD__TOOLTIPHOST_H__
 #define HEADER_GUARD__TOOLTIPHOST_H__
 
 #include <osgWidget/Widget>

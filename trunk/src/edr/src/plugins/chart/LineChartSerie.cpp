@@ -1,4 +1,4 @@
-#include "ChartPCH.h"
+ï»¿#include "ChartPCH.h"
 #include <core/ILog.h>
 #include <osg/BlendFunc>
 #include "LineChartSerie.h"
@@ -52,8 +52,8 @@ void LineChartSerie::refresh()
     typedef ScalarChannelReaderInterface::point_type point_type;
     typedef ScalarChannelReaderInterface::time_type time_type;
 
-    // dodajemy wierzcho³ki tylko tak, aby ich gêstoœæ wynosi³a maksymalnie verticesPerUnit per piksel
-    // okreœlenie maksymalnej liczby wierzcho³ków
+    // dodajemy wierzchoÅ‚ki tylko tak, aby ich gÄ™stoÅ›Ä‡ wynosiÅ‚a maksymalnie verticesPerUnit per piksel
+    // okreÅ›lenie maksymalnej liczby wierzchoÅ‚kÃ³w
     size_t maxVertices = std::min<size_t>( normalizedChannel->size(), static_cast<size_t>(ceil(w * verticesPerUnit)) );
     
     // odrwacamy wykres (koordynaty OGL)
@@ -62,10 +62,10 @@ void LineChartSerie::refresh()
     osg::ref_ptr<osg::DrawArrays> primitiveSet;
 
     if ( maxVertices == normalizedChannel->size() ) {
-        // rezerwujemy odpowiedni¹ iloœæ miejsca; niekonieczne, ale powinno zmniejszyæ liczbê alokacji
+        // rezerwujemy odpowiedniÄ… iloÅ›Ä‡ miejsca; niekonieczne, ale powinno zmniejszyÄ‡ liczbÄ™ alokacji
         vertices->reserve( maxVertices );
         vertices->resize(0);
-        // nie ma co interpolowaæ, po prostu dodajemy
+        // nie ma co interpolowaÄ‡, po prostu dodajemy
         for(auto i = 0; i != normalizedChannel->size(); i++) {
             vertices->push_back(osg::Vec3(
                 normalizedChannel->argument(i) * lenInv * w + x,
@@ -74,49 +74,49 @@ void LineChartSerie::refresh()
                 ));
         }
     } else {
-        // rezerwujemy odpowiedni¹ iloœæ miejsca; niekonieczne, ale powinno zmniejszyæ liczbê alokacji
+        // rezerwujemy odpowiedniÄ… iloÅ›Ä‡ miejsca; niekonieczne, ale powinno zmniejszyÄ‡ liczbÄ™ alokacji
         vertices->reserve( maxVertices*2 );
         vertices->resize(0);
 
-        // o ile bêdziemy siê przesuwaæ
+        // o ile bÄ™dziemy siÄ™ przesuwaÄ‡
         const time_type delta = normalizedChannel->getLength() / maxVertices;
-        // przedzia³ czasu w ramach którego siê przesuwamy
+        // przedziaÅ‚ czasu w ramach ktÃ³rego siÄ™ przesuwamy
         time_type timeStart = 0;
         time_type timeEnd = delta;
         // interatory
         auto i = 0;
         auto last = normalizedChannel->size();
-        // pocz¹tkowe maksimum i minimum w bie¿¹cym przedziale
+        // poczÄ…tkowe maksimum i minimum w bieÅ¼Ä…cym przedziale
         point_type nextMaxValue = 0;
         point_type nextMinValue = 1;
-        // wierzcho³ki
+        // wierzchoÅ‚ki
         osg::Vec3 lineStart(0, 0, z);
         osg::Vec3 lineStop(0, 0, z);
 
-        // pêtla obliczaj¹ca minimum i maksimum w ka¿dym z przedzia³ów oraz dodaj¹ca linie pionowe
-        // o d³ugoœci równej amplitudzie
+        // pÄ™tla obliczajÄ…ca minimum i maksimum w kaÅ¼dym z przedziaÅ‚Ã³w oraz dodajÄ…ca linie pionowe
+        // o dÅ‚ugoÅ›ci rÃ³wnej amplitudzie
         while ( i != last ) {
             point_type minValue = nextMinValue;
             point_type maxValue = nextMaxValue;
-            // wyznaczenie maksimum i minimum z punktów le¿¹cych w ca³oœci w danym przedziale
+            // wyznaczenie maksimum i minimum z punktÃ³w leÅ¼Ä…cych w caÅ‚oÅ›ci w danym przedziale
             while ( i != last && normalizedChannel->argument(i) < timeEnd ) {
                 maxValue = std::max(maxValue, normalizedChannel->value(i));
                 minValue = std::min(minValue, normalizedChannel->value(i));
                 ++i;
             }
-            // mo¿e prawa skrajna wartoœæ jest wiêksza?
+            // moÅ¼e prawa skrajna wartoÅ›Ä‡ jest wiÄ™ksza?
             if ( i != last ) {
                 point_type interpolated = accessor->getValue( std::min(normalizedChannel->getLength(), timeEnd) );
                 maxValue = std::max(maxValue, interpolated);
                 minValue = std::min(minValue, interpolated);
-                // uwaga: NIE zerujemy max/min, ¿eby kolejny przedzia³ równie¿ zaczynaæ od zinterpolowanych
-                // wartoœci
+                // uwaga: NIE zerujemy max/min, Å¼eby kolejny przedziaÅ‚ rÃ³wnieÅ¼ zaczynaÄ‡ od zinterpolowanych
+                // wartoÅ›ci
                 nextMaxValue = nextMinValue = interpolated;
             } else {
                 nextMaxValue = 0;
                 nextMinValue = 1;
             }
-            // zamiana ze skali znormalizowanej na faktyczne wartoœci
+            // zamiana ze skali znormalizowanej na faktyczne wartoÅ›ci
             lineStop.x() = lineStart.x() = timeStart * lenInv * w + x;
             lineStart.y() = minValue * h + y;
             lineStop.y() = maxValue * h + y;
@@ -125,7 +125,7 @@ void LineChartSerie::refresh()
             }
             vertices->push_back(lineStart);
             vertices->push_back(lineStop);
-            // nastêpny przedzia³
+            // nastÄ™pny przedziaÅ‚
             timeStart = timeEnd;
             timeEnd += delta;
         }
@@ -173,7 +173,7 @@ std::pair<float, float> LineChartSerie::getXRange() const
     if ( !normalizedChannel ) {
         throw std::runtime_error("Data not set.");
     }
-    // TODO: dodaæ offsetowanie!
+    // TODO: dodaÄ‡ offsetowanie!
     return std::make_pair<float, float>( 0, normalizedChannel->getLength() );
 }
 

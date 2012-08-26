@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/11/29
 	created:  29:11:2010   16:42
 	filename: EmbeddedWindow.h
@@ -40,7 +40,7 @@ public:
     //! \param name
     //! \param window
     EmbeddedWindow( const std::string& name, osgWidget::Window* window );
-    //! Konstruktor kopiuj¹cy EmbeddedWindow nie ma konstruktora kopiuj¹cego!
+    //! Konstruktor kopiujÄ…cy EmbeddedWindow nie ma konstruktora kopiujÄ…cego!
     //! \param widget
     //! \param copyop
     EmbeddedWindow( const EmbeddedWindow& widget, const osg::CopyOp& copyop);
@@ -58,7 +58,7 @@ public:
 };
 
 /**
- *	Generalizacja osgWidget::Window::EmbeddedWindow. Automatycznie ustawia sobie kolor t³a na (0,0,0,0).
+ *	Generalizacja osgWidget::Window::EmbeddedWindow. Automatycznie ustawia sobie kolor tÅ‚a na (0,0,0,0).
  */
 template <class T>
 class Embedded : public EmbeddedWindow
@@ -80,7 +80,7 @@ public:
     Base(name, window)
     {}
 
-    //! Konstruktor kopiuj¹cy EmbeddedWindow nie ma konstruktora kopiuj¹cego!
+    //! Konstruktor kopiujÄ…cy EmbeddedWindow nie ma konstruktora kopiujÄ…cego!
     //! \param widget
     //! \param copyop
     Embedded( const Embedded& widget, const osg::CopyOp& copyop) :
@@ -88,7 +88,7 @@ public:
     {}
 
 public:
-    //! \return Wewnêtrzne okno.
+    //! \return WewnÄ™trzne okno.
     T* getOrCreateWindow()
     {
         if ( Base::getWindow() ) {
@@ -96,17 +96,17 @@ public:
         }
         return getWindow();
     }
-    //! \return Wewnêtrzne okno.
+    //! \return WewnÄ™trzne okno.
     T* getWindow()
     {
         return dynamic_cast<T*>(Base::getWindow());
     }
-    //! \return Wewnêtrzne okno.
+    //! \return WewnÄ™trzne okno.
     const T* getWindow() const
     {
         return dynamic_cast<const T*>(Base::getWindow());
     }
-    //! \param window Wewnêtrzne okno.
+    //! \param window WewnÄ™trzne okno.
     void setWindow(T* window)
     {
         Base::setWindow(window);

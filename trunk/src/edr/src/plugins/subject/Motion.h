@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/07/14
 	created:	14:7:2011   10:52
 	filename: 	Motion.h
@@ -16,7 +16,7 @@
 
 class SubjectService;
 
-//! Klasa reprezentuje pojedyncza próbê pomiarowa w ramach konkretnej sesji.
+//! Klasa reprezentuje pojedyncza prÃ³bÄ™ pomiarowa w ramach konkretnej sesji.
 class Motion : public PluginSubject::IMotion
 {
     friend class SubjectService;

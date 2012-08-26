@@ -1,4 +1,4 @@
-#include <core/Parameter.h>
+﻿#include <core/Parameter.h>
 #include <plugins/chart/ProcessorReader.h>
 #include <iostream>
 

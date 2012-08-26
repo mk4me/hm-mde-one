@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/12/13
 	created:  13:12:2010   14:24
 	filename: MultiViewManipulatorItem.h
@@ -18,14 +18,14 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Item powinien byæ u¿ywany wy³¹cznie jako preview. Jego dzia³anie polega
-//! na kontrolowaniu manipulatorów kamer.
+//! Item powinien byÄ‡ uÅ¼ywany wyÅ‚Ä…cznie jako preview. Jego dziaÅ‚anie polega
+//! na kontrolowaniu manipulatorÃ³w kamer.
 class MultiViewManipulatorItem : public core::MultiViewItem
 {
 private:
     //! Kamera z miniaturka.
     osg::ref_ptr<osg::Camera> thumbnailCamera;
-    //! Wspó³czynnik proporcji.
+    //! WspÃ³Å‚czynnik proporcji.
     osg::observer_ptr<osgViewer::View> view;
     //! Manipulator kamery.
     osg::ref_ptr<osgGA::CameraManipulator> manipulator;
@@ -40,14 +40,14 @@ public:
     //! \return Nazwa widgetu.
     virtual const std::string& getName() const;
 
-    //! \return Wspó³czynnik proporcji.
+    //! \return WspÃ³Å‚czynnik proporcji.
     virtual osgWidget::point_type getAspectRatio();
 
-    //! Ustawia/usuwa manipulator viewera oraz przenosi transformacjê z/do kamery.
+    //! Ustawia/usuwa manipulator viewera oraz przenosi transformacjÄ™ z/do kamery.
     virtual void setVisible(bool visible);
 
-    //! Tutaj nic siê nie dzieje - pracujemy na g³ównej kamerze viewera, która
-    //! zawsze zajmuje pe³ny ekran.
+    //! Tutaj nic siÄ™ nie dzieje - pracujemy na gÅ‚Ã³wnej kamerze viewera, ktÃ³ra
+    //! zawsze zajmuje peÅ‚ny ekran.
     virtual void setLocation(osgWidget::point_type x, osgWidget::point_type y,
         osgWidget::point_type w, osgWidget::point_type h)
     {}

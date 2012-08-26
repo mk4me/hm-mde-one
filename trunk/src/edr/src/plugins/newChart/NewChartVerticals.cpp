@@ -1,4 +1,4 @@
-#include "NewChartPCH.h"
+﻿#include "NewChartPCH.h"
 #include "NewChartVerticals.h"
 #include "NewChartSerie.h"
 #include "NewChartVisualizer.h"

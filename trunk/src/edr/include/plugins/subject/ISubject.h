@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/11/03
     created:  3:11:2011   10:06
     filename: ISubject.h
@@ -14,7 +14,7 @@
 
 namespace PluginSubject {
 
-//! Abstrakcyjna klasa reprezentuj¹ca obiekt wykonuj¹cy ruch - cz³owiek, zwierzê, avatar
+//! Abstrakcyjna klasa reprezentujÄ…ca obiekt wykonujÄ…cy ruch - czÅ‚owiek, zwierzÄ™, avatar
 
 class ISubject
 {
@@ -22,11 +22,11 @@ public:
 
     virtual ~ISubject() {}
 
-    //! \return Unikalny identyfikator obiektu. Po usuniêciu i ponownym dodaniu zostanie przyznany nowy!!
+    //! \return Unikalny identyfikator obiektu. Po usuniÄ™ciu i ponownym dodaniu zostanie przyznany nowy!!
     virtual SubjectID getID() const = 0;
     //! \return "Przyjazna" lub "naturalna" nazwa obiektu.
     virtual const std::string & getName() const = 0;
-    //! \param sessions Lista sesji zwi¹zanych z tym obiektem - dynamicznie pobierana z DM!!
+    //! \param sessions Lista sesji zwiÄ…zanych z tym obiektem - dynamicznie pobierana z DM!!
     virtual void getSessions(Sessions & sessions) const = 0;
 };
 

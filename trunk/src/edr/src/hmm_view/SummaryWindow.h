@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2012/05/04
 	created:	4:5:2012   13:43
 	filename: 	SummaryWindow.h
@@ -16,7 +16,7 @@ class VisualizerWidget;
 #include <plugins/subject/ISubject.h>
 #include "TreeItemHelper.h"
 
-//! okno s≥uøy do wyúwietlenia podsumowania i dodatkowych informacji dla wizualizatora lub elementu drzewa danych
+//! okno s≈Çu≈ºy do wy≈õwietlenia podsumowania i dodatkowych informacji dla wizualizatora lub elementu drzewa danych
 class SummaryWindow
 {
 public:
@@ -27,27 +27,27 @@ public:
 	virtual ~SummaryWindow() {}
 
 public:
-    //! kolekcja z obiektami pomocniczymi dla elementÛw drzewa analiz
+    //! kolekcja z obiektami pomocniczymi dla element√≥w drzewa analiz
     typedef std::vector<TreeItemHelperPtr> HelpersCollection;
 
 public:
     //! inicjalizuje widget z podsumowaniami
     void initialize();
-    //! wyúwietla konkretne informacje w okienku podsumowaÒ
-    //! \param helpers kolekcja z obiektami pomocniczymi dla elementÛw drzewa analiz, dostarczajπ one informacje do wyúwietlenia
+    //! wy≈õwietla konkretne informacje w okienku podsumowa≈Ñ
+    //! \param helpers kolekcja z obiektami pomocniczymi dla element√≥w drzewa analiz, dostarczajƒÖ one informacje do wy≈õwietlenia
     void display(const HelpersCollection& helpers);
     //! dodaje element z informacjami
-    //! \param text tekst do wyúwietlenia
-    //! \param root korzeÒ, do ktÛrego zostanie dodany element
+    //! \param text tekst do wy≈õwietlenia
+    //! \param root korze≈Ñ, do kt√≥rego zostanie dodany element
     void addItem( QString text, QTreeWidgetItem* root );
-    //! Metoda pomocnicza, tworzy opis prÛby pomiarowej
-    //! \param motion prÛba pomiarowa, ktÛrej bÍdzie dotyczy≥ opis
+    //! Metoda pomocnicza, tworzy opis pr√≥by pomiarowej
+    //! \param motion pr√≥ba pomiarowa, kt√≥rej bƒôdzie dotyczy≈Ç opis
     QString createDescription( PluginSubject::MotionConstPtr motion ) const;
 
 private:
-    //! g≥Ûwne okno aplikacji
+    //! g≈Ç√≥wne okno aplikacji
     HmmMainWindow* hmm;
-    //! drzewo, ktÛre bÍdzie wyúwietlane w oknie z podsumowaniami
+    //! drzewo, kt√≥re bƒôdzie wy≈õwietlane w oknie z podsumowaniami
     QTreeWidget* tree;
 };
 typedef core::shared_ptr<SummaryWindow> SummaryWindowPtr;
@@ -59,23 +59,23 @@ class SummaryWindowController : public QObject
     Q_OBJECT;
 public:
     //! konstruktor
-    //! \param sw obiekt z oknem podsumowaÒ
-    //! \param hmm g≥Ûwne okno aplikacji
+    //! \param sw obiekt z oknem podsumowa≈Ñ
+    //! \param hmm g≈Ç√≥wne okno aplikacji
     SummaryWindowController(SummaryWindowPtr sw, HmmMainWindow* hmm);
 
 public slots:
-    //! pobiera dane z elementu i przesy≥a je do okna podsumowaÒ
+    //! pobiera dane z elementu i przesy≈Ça je do okna podsumowa≈Ñ
     //! \param item elmenet drzewa analiz
     //! \param column zaznaczona kolumna, ignorowane
     void onTreeItemSelected(QTreeWidgetItem* item, int column);
-    //! pobiera dane na podstawie elementÛw zawartych w wizualizatorze i przesy≥a je do okna podsumowaÒ
-    //! \param visualizatorWidget wizualizator, ktÛry uzyska≥ focus
+    //! pobiera dane na podstawie element√≥w zawartych w wizualizatorze i przesy≈Ça je do okna podsumowa≈Ñ
+    //! \param visualizatorWidget wizualizator, kt√≥ry uzyska≈Ç focus
     void onVisualizator(VisualizerWidget* visualizatorWidget);
 
 private:
-    //! g≥Ûwne okno aplikacji
+    //! g≈Ç√≥wne okno aplikacji
     HmmMainWindow* hmm;
-    //! obiekt z oknem podsumowaÒ
+    //! obiekt z oknem podsumowa≈Ñ
     SummaryWindowPtr summary;
 };
 

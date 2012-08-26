@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+Ôªø#include "CorePCH.h"
 #include "MainWindow.h"
 
 #include <iostream>
@@ -219,19 +219,19 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 
 	showSplashScreenMessage(tr("Initializing services"));
 
-	// inicjalizacja us≥ug
+	// inicjalizacja us≈Çug
 	for (int i = 0; i < serviceManager->getNumServices(); ++i) {
 		serviceManager->getService(i)->init(managersAccessor);
 	}
 
-	// inicjalizacja us≥ug
+	// inicjalizacja us≈Çug
 	for (int i = 0; i < serviceManager->getNumServices(); ++i) {
 		serviceManager->getService(i)->lateInit();
 	}
 
 	showSplashScreenMessage(tr("Initializing sources"));
 
-	// inicjalizacja ürÛde≥
+	// inicjalizacja ≈∫r√≥de≈Ç
 	for (int i = 0; i < sourceManager->getNumSources(); ++i) {
 		sourceManager->getSource(i)->init(dataManager, dataManager, serviceManager);
 	}
@@ -258,7 +258,7 @@ MainWindow::~MainWindow()
 {
 	visualizerTimer.stop();
 	serviceTimer.stop();
-	//øπdanie od≥πczenia siÍ serwisÛw od widgetÛw i elementÛw UI oraz innych serwisÛw czy zasobÛw aplikacji
+	//≈ºƒÖdanie od≈ÇƒÖczenia siƒô serwis√≥w od widget√≥w i element√≥w UI oraz innych serwis√≥w czy zasob√≥w aplikacji
 	ServiceManager::getInstance()->finalizeServices();
 
 //    VisualizerManager::getInstance()->setDebugWidget(nullptr);
@@ -270,7 +270,7 @@ void MainWindow::findResources(const std::string& resourcesPath)
 {
     // TODO : potrzebna rewizja tego kodu...
     resourcesPaths.clear();
-    //szukaj shaderÛw
+    //szukaj shader√≥w
     std::vector<std::string> ext;
     ext.push_back(".frag");
     ext.push_back(".vert");

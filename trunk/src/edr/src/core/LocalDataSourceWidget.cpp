@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include "LocalDataSourceWidget.h"
 #include "LocalDataSource.h"
 #include "DataManager.h"
@@ -12,7 +12,7 @@
 LocalDataSourceWidget::LocalDataSourceWidget(LocalDataSource * dataSource, QWidget * parent)
     : QWidget(parent), localDataSource(dataSource)
 {
-    UTILS_ASSERT((localDataSource != nullptr), "B³êdny wskaŸnik do Ÿród³a danych");
+    UTILS_ASSERT((localDataSource != nullptr), "BÅ‚Ä™dny wskaÅºnik do ÅºrÃ³dÅ‚a danych");
     setupUi(this);
 }
 
@@ -36,7 +36,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
     std::string errorDesc;
 
     if(text.isEmpty() == false){
-        //resetuj poprzednie ustawienia widgweta i Ÿród³a
+        //resetuj poprzednie ustawienia widgweta i ÅºrÃ³dÅ‚a
         trialNameLabel->clear();
         std::string().swap(localDataSource->trialPath);
         LocalDataSource::OutputDescription().swap(localDataSource->outputDescription);
@@ -86,14 +86,14 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                     }
 
                     if(data.empty() == false){
-                        //teraz budujemy opis wyjœæ
+                        //teraz budujemy opis wyjÅ›Ä‡
                         tableWidget->setRowCount(data.size());
                         bool checked = true;
                         int i = 0;
                         for(auto it = data.begin(); it != data.end(); ++it){
                             QCheckBox* chkBox = new QCheckBox();
 
-                            //po³¹czenie pomiêdzy checkbox a typem danych pogrupowanych
+                            //poÅ‚Ä…czenie pomiÄ™dzy checkbox a typem danych pogrupowanych
                             checkBoxToTypeMapping.insert(std::make_pair(chkBox, it->first));
 
                             if(checked == true){
@@ -107,7 +107,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                                 chkBox->setChecked(false);
                             }
 
-                            //po³¹czenie sygna³u zmiany zaznaczenia aby poprawnie budowaæ output info
+                            //poÅ‚Ä…czenie sygnaÅ‚u zmiany zaznaczenia aby poprawnie budowaÄ‡ output info
                             connect(chkBox, SIGNAL(stateChanged(int)), this, SLOT(onCheckChange(int)));
 
                             tableWidget->setCellWidget(i, 0, chkBox);
@@ -151,10 +151,10 @@ void LocalDataSourceWidget::onCheckChange(int state)
             it->first->setEnabled(true);
         }
 
-        //dodaj dane do Ÿród³a!!
+        //dodaj dane do ÅºrÃ³dÅ‚a!!
         localDataSource->data[typeInfo] = data[typeInfo];
     }else{
-        //usun typ Ÿrodla z opisu wyjœæ
+        //usun typ Åºrodla z opisu wyjÅ›Ä‡
         std::set<QCheckBox*> checked;
         for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); ++it){
             if(it->first->isChecked() == true){
@@ -167,7 +167,7 @@ void LocalDataSourceWidget::onCheckChange(int state)
             (*it)->setEnabled(false);
         }
 
-        //usuñ dane do Ÿród³a!!
+        //usuÅ„ dane do ÅºrÃ³dÅ‚a!!
         localDataSource->data.erase(typeInfo);
     }
 

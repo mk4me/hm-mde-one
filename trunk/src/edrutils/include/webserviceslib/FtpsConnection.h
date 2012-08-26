@@ -1,7 +1,7 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Klasa FtpsConnection opiera siê o bibliotekê LibCurl i protokó³ FTPS. Metody czytania i odbierania pakietów
-zosta³y zaimplementowane w sposób zapobiegaj¹cy blokowania siê nawzajem klienta i serwera. Klasa implementuje
+@brief Klasa FtpsConnection opiera siÄ™ o bibliotekÄ™ LibCurl i protokÃ³Å‚ FTPS. Metody czytania i odbierania pakietÃ³w
+zostaÅ‚y zaimplementowane w sposÃ³b zapobiegajÄ…cy blokowania siÄ™ nawzajem klienta i serwera. Klasa implementuje
 interfejs ISendable.
 */
 
@@ -18,12 +18,12 @@ namespace webservices
     //! Forward declaration pimpl
     class FtpsConnectionImpl;
 
-    //! Klasa realizuj¹ca po³aczenia FTP i FTPS
+    //! Klasa realizujÄ…ca poÅ‚aczenia FTP i FTPS
     class FtpsConnection : public IFtpsConnection
     {
 
     private:
-        //! Obiekt implementuj¹cy funkcjonalnoœæ
+        //! Obiekt implementujÄ…cy funkcjonalnoÅ›Ä‡
         boost::shared_ptr<FtpsConnectionImpl> impl;
 
 		OpenThreads::ReentrantMutex * mutex;
@@ -36,8 +36,8 @@ namespace webservices
         /**
         Konstruktor klasy FtpsConnection.
         @param url adres serwera FTPS
-        @param user nazwa u¿ytkownika
-        @param password has³o u¿ytkownika
+        @param user nazwa uÅ¼ytkownika
+        @param password hasÅ‚o uÅ¼ytkownika
         */
         FtpsConnection(const std::string & url, const std::string & user, const std::string & password);
         /**
@@ -45,67 +45,67 @@ namespace webservices
         */
         ~FtpsConnection();
         /**
-        Metoda setUri ustala adres ip lub alias hosta z którym zostanie nawi¹zane po³¹czenie.
+        Metoda setUri ustala adres ip lub alias hosta z ktÃ³rym zostanie nawiÄ…zane poÅ‚Ä…czenie.
         @param url adres serwera FTPS
         */
         virtual void setUrl(const std::string & url);
         /**
-        Metoda setUser ustala nazwê u¿ytkownika wykorzystywana do logowania.
-        @param user nazwa u¿ytkownika
+        Metoda setUser ustala nazwÄ™ uÅ¼ytkownika wykorzystywana do logowania.
+        @param user nazwa uÅ¼ytkownika
         */
         virtual void setUser(const std::string & user);
         /**
-        Metoda setPassword ustala has³o u¿ytkownika wykorzystywane do logowania.
-        @param password has³o u¿ytkownika
+        Metoda setPassword ustala hasÅ‚o uÅ¼ytkownika wykorzystywane do logowania.
+        @param password hasÅ‚o uÅ¼ytkownika
         */
         virtual void setPassword(const std::string & password);
         /**
-        Metoda setCredentials ustala dane u¿ytkownika wykorzystywane do logowania takie jak host,
-        nazwa i has³o u¿ytkownika.
+        Metoda setCredentials ustala dane uÅ¼ytkownika wykorzystywane do logowania takie jak host,
+        nazwa i hasÅ‚o uÅ¼ytkownika.
         @param url adres serwera FTPS
-        @param user nazwa u¿ytkownika
-        @param password has³o u¿ytkownika
+        @param user nazwa uÅ¼ytkownika
+        @param password hasÅ‚o uÅ¼ytkownika
         */
         virtual void setCredentials(const std::string & user, const std::string & password);
         /**
-        Metoda zwraca nazwê hosta lub adres ip (w zale¿nosci co zosta³o podane) u¿ywana dla danego po³¹czenia.
+        Metoda zwraca nazwÄ™ hosta lub adres ip (w zaleÅ¼nosci co zostaÅ‚o podane) uÅ¼ywana dla danego poÅ‚Ä…czenia.
         @return uri do serwera FTPS
         */
         virtual const std::string url() const;
         /**
-        Metoda zwraca login u¿ytkownika u¿ywany dla danego po³¹czenia.
+        Metoda zwraca login uÅ¼ytkownika uÅ¼ywany dla danego poÅ‚Ä…czenia.
         @return login uzytkownika
         */
         virtual const std::string user() const;
         /**
-        Metoda zwraca has³o u¿ytkownika u¿ywane dla danego po³¹czenia.
-        @return has³o u¿ytkownika
+        Metoda zwraca hasÅ‚o uÅ¼ytkownika uÅ¼ywane dla danego poÅ‚Ä…czenia.
+        @return hasÅ‚o uÅ¼ytkownika
         */
         virtual const std::string password() const;
         /**
-        Metoda wysy³aj¹ca na serwer plik. Nazwa wys³anego pliku przechowywana jest w zmiennej filename.
-        @param localSource nazwa pliku który wysy³amy na serwer ftp
+        Metoda wysyÅ‚ajÄ…ca na serwer plik. Nazwa wysÅ‚anego pliku przechowywana jest w zmiennej filename.
+        @param localSource nazwa pliku ktÃ³ry wysyÅ‚amy na serwer ftp
         @param remoteDestination miejsce zapisu naszego pliku na ftp
-        @param customProgress customowy obiekt obs³uguj¹cy postêp operacji
+        @param customProgress customowy obiekt obsÅ‚ugujÄ…cy postÄ™p operacji
         */
         virtual const OperationStatus put(const std::string & localSource, const std::string & remoteDestination, IProgress * customProgress = nullptr);
         /**
-        Metoda pobieraj¹ca plik z serwera. Nazwa pobranego pliku przechowywana jest w zmiennej filename.
-        @param remoteSource œcia¿ka pliku na serwerze ftp który chcemy œci¹gn¹æ
-        @param localDestination œcia¿ka w której chcemy zpaisaæ œci¹gany plik
-        @param customProgress customowy obiekt obs³uguj¹cy postêp operacji
+        Metoda pobierajÄ…ca plik z serwera. Nazwa pobranego pliku przechowywana jest w zmiennej filename.
+        @param remoteSource Å›ciaÅ¼ka pliku na serwerze ftp ktÃ³ry chcemy Å›ciÄ…gnÄ…Ä‡
+        @param localDestination Å›ciaÅ¼ka w ktÃ³rej chcemy zpaisaÄ‡ Å›ciÄ…gany plik
+        @param customProgress customowy obiekt obsÅ‚ugujÄ…cy postÄ™p operacji
         */
         virtual const OperationStatus get(const std::string& remoteSource, const std::string & localDestination, IProgress * customProgress = nullptr);
         /**
-        Postêp operacji przesy³ania.
-        @return postêp wyra¿ony w procentach dla pojedynczego transferu
+        PostÄ™p operacji przesyÅ‚ania.
+        @return postÄ™p wyraÅ¼ony w procentach dla pojedynczego transferu
         */
         virtual const int progress() const;
         /**
-        Anuluje obecnie wykonywan¹ operacjê. Czyœci zasoby uzyte na jej potrzeby (np. utworzone pliki)
+        Anuluje obecnie wykonywanÄ… operacjÄ™. CzyÅ›ci zasoby uzyte na jej potrzeby (np. utworzone pliki)
         */
         virtual void abort();
-        //! \return Informacja o ostatnim b³êdzie
+        //! \return Informacja o ostatnim bÅ‚Ä™dzie
         virtual const std::string errorMessage() const;
     };
 }

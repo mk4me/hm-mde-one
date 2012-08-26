@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+ï»¿#include "../VideoPCH.h"
 #include <math.h>
 #include <utils/Debug.h>
 #include <utils/Profiler.h>
@@ -52,7 +52,7 @@ VideoStream* VideoStream::create( Type type, const std::string& path, int buffer
         return NULL;
 #endif
     }
-    // czy strumieñ ma byæ buforowany?
+    // czy strumieÅ„ ma byÄ‡ buforowany?
     if ( bufferSize ) {
         return new BufferedVideoStream(result, bufferSize);
     } else {
@@ -101,13 +101,13 @@ const VideoError * VideoStream::getLastError() const
 
 // bool VideoStream::getFrame( FrameData & dst )
 // {
-//   // najpierw próbujemy pobraæ bie¿¹c¹ ramkê
+//   // najpierw prÃ³bujemy pobraÄ‡ bieÅ¼Ä…cÄ… ramkÄ™
 //   FrameData src;
 //   if ( getCurrentFrameData(src) ) {
 //     return converter->convert( src, dst );
 //   } else {
-//     // je¿eli strumieñ nie jest w stanie upakowaæ danych do ramki próbujemy
-//     // skonwertowaæ obie ramki do postaci zdjêcia
+//     // jeÅ¼eli strumieÅ„ nie jest w stanie upakowaÄ‡ danych do ramki prÃ³bujemy
+//     // skonwertowaÄ‡ obie ramki do postaci zdjÄ™cia
 //     FrameLayered srcPicture, dstPicture;
 //     if ( getCurrentFrameData(srcPicture) && dst.translate(&dstPicture) ) {
 //       return converter->convert(srcPicture, dstPicture);
@@ -124,8 +124,8 @@ bool VideoStream::getFrame( Picture & dst )
     if ( getData(src) ) {
         return converter->convert( src, dst );
     } else {
-        // je¿eli strumieñ nie jest w stanie upakowaæ danych do ramki próbujemy
-        // skonwertowaæ obie ramki do postaci zdjêcia
+        // jeÅ¼eli strumieÅ„ nie jest w stanie upakowaÄ‡ danych do ramki prÃ³bujemy
+        // skonwertowaÄ‡ obie ramki do postaci zdjÄ™cia
         PictureLayered layers = dst.getLayers();
         return getFrame(layers);
     }
@@ -134,8 +134,8 @@ bool VideoStream::getFrame( Picture & dst )
 bool VideoStream::getFrame( PictureLayered & dst )
 {
     VM_FUNCTION_PROLOG;
-    // je¿eli strumieñ nie jest w stanie upakowaæ danych do ramki próbujemy
-    // skonwertowaæ obie ramki do postaci zdjêcia
+    // jeÅ¼eli strumieÅ„ nie jest w stanie upakowaÄ‡ danych do ramki prÃ³bujemy
+    // skonwertowaÄ‡ obie ramki do postaci zdjÄ™cia
     PictureLayered srcPicture;
     if ( getData(srcPicture) ) {
         return converter->convert(srcPicture, dst);

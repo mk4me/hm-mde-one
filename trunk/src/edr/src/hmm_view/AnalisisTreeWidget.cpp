@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+﻿#include "hmmPCH.h"
 #include "AnalisisTreeWidget.h"
 #include <QtCore/QEvent>
 #include <QtGui/QMouseEvent>

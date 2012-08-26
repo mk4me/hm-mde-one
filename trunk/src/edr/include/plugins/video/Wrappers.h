@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2011/02/04
 	created:  4:2:2011   13:02
 	filename: DataWrappers.h
@@ -71,28 +71,28 @@ public:
 	{
 		return static_cast<time_type>(videoStream->getDuration());
 	}
-	//! \return Liczba punktów pomiarowych.
+	//! \return Liczba punktÃ³w pomiarowych.
 	virtual size_type size() const
 	{
 		return videoStream->getFrameCount();
 	}
 
-    //! \return Czy kana³ nie zawiera danych
+    //! \return Czy kanaÅ‚ nie zawiera danych
     virtual bool empty() const
     {
         return videoStream->getFrameCount() == 0;
     }
 
-    //! \param idx Indeks próbki
-    //! \return Wartoœæ czasu dla danego indeksu
+    //! \param idx Indeks prÃ³bki
+    //! \return WartoÅ›Ä‡ czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
-        UTILS_ASSERT((idx >= 0),"B³êdny indeks dla kana³y - musi byæ wiêkszy lub równy 0");
+        UTILS_ASSERT((idx >= 0),"BÅ‚Ä™dny indeks dla kanaÅ‚y - musi byÄ‡ wiÄ™kszy lub rÃ³wny 0");
         return static_cast<time_type>(videoStream->getFrameDuration() * idx);
     }
 
-    //! \param idx Indeks próbki
-    //! \return Wartoœæ próbki dla danego indeksu
+    //! \param idx Indeks prÃ³bki
+    //! \return WartoÅ›Ä‡ prÃ³bki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         static VideoImageOsgPtr ret;
@@ -110,7 +110,7 @@ public:
 
 protected:
 	//! \param time
-	//! \return Zinterpolowana wartoœæ dla zadanego czasu.
+	//! \return Zinterpolowana wartoÅ›Ä‡ dla zadanego czasu.
 	virtual point_type innerGetValue(time_type time) const
 	{
 		videoStream->setTime(time);

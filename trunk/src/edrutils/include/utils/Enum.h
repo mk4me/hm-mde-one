@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 created:  2010/04/21
 created:  21:4:2010   17:47
 filename: Enum.h
@@ -24,10 +24,10 @@ namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
-* Makro kojarz¹ce z wyliczeniem dodatkowe informacje. Nie mo¿e byæ u¿ywane w
-* nag³ówkach (tworzy zmienn¹ statyczn¹).
+* Makro kojarzÄ…ce z wyliczeniem dodatkowe informacje. Nie moÅ¼e byÄ‡ uÅ¼ywane w
+* nagÅ‚Ã³wkach (tworzy zmiennÄ… statycznÄ…).
 *
-* Przyk³ad u¿ycia:
+* PrzykÅ‚ad uÅ¼ycia:
 * enum Color {
 *  ColorRed  = 0x01,
 *  ColorBlue,
@@ -47,11 +47,11 @@ namespace utils {
 * enum Color { COLOR_ENUM_DEF };
 * DECLARE_ENUM_ENCHANCEMENT(Color, COLOR_ENUM_DEF);
 *
-* \param TYPE      Typ ju¿ istniej¹cego wyliczenia.
+* \param TYPE      Typ juÅ¼ istniejÄ…cego wyliczenia.
 * \param ENUM_DEF  Definicja wyliczenia podana w postaci makra. Definicja musi
-*                  zawieraæ tylko to, co znajduje siê miêdzy klamrami.
-*                  Mog¹ w niej wystêpowaæ komentarze w stylu C (komentarzy w stylu C++ nie
-*                  da siê umieœciæ w makrze).
+*                  zawieraÄ‡ tylko to, co znajduje siÄ™ miÄ™dzy klamrami.
+*                  MogÄ… w niej wystÄ™powaÄ‡ komentarze w stylu C (komentarzy w stylu C++ nie
+*                  da siÄ™ umieÅ›ciÄ‡ w makrze).
 */
 #define DECLARE_ENUM_ENCHANCEMENT(TYPE, ENUM_DEF)                   \
 namespace utils {                                                   \
@@ -63,14 +63,14 @@ public:                                                             \
     __EnumData<TYPE> data;                                          \
     __EnumInitializer()                                             \
     {                                                               \
-        /*pobieramy wartoœci enuma*/                                \
+        /*pobieramy wartoÅ›ci enuma*/                                \
         std::vector<__EnumInitHelper::value_type> values;           \
         /*inicjalizacja*/                                           \
         __EnumInitHelper::pValues = &values;                        \
         __EnumInitHelper::lastValue = __EnumInitHelper::initValue;  \
-        /*w³aœciwe dane*/                                           \
+        /*wÅ‚aÅ›ciwe dane*/                                           \
         __EnumInitHelper ENUM_DEF;                                  \
-        /*zerujemy dla bezpieczeñstwa*/                             \
+        /*zerujemy dla bezpieczeÅ„stwa*/                             \
         __EnumInitHelper::lastValue = __EnumInitHelper::initValue;  \
         __EnumInitHelper::pValues = NULL;                           \
         /**/                                                        \
@@ -83,38 +83,38 @@ public:                                                             \
 
 //------------------------------------------------------------------------------
 
-//! Klasa u¿ywana do inicjalizacji. U¿ywana jedynie w drodze specjalizacji.
+//! Klasa uÅ¼ywana do inicjalizacji. UÅ¼ywana jedynie w drodze specjalizacji.
 template <class T>
 class __EnumInitializer;
 
 //------------------------------------------------------------------------------
 
-//! Pomocnicza klasa s³u¿¹ca rekonstrukcji wartoœci wyliczeñ. Konstrukcja
-//! tych obiektów odbywa siê przez C++ runtime.
+//! Pomocnicza klasa sÅ‚uÅ¼Ä…ca rekonstrukcji wartoÅ›ci wyliczeÅ„. Konstrukcja
+//! tych obiektÃ³w odbywa siÄ™ przez C++ runtime.
 struct __EnumInitHelper
 {
-    //! Typ u¿ywanych wartoœci.
+    //! Typ uÅ¼ywanych wartoÅ›ci.
     typedef unsigned value_type;
 
-    //! Wartoœæ.
+    //! WartoÅ›Ä‡.
     value_type value;
-    //! Ostatnia u¿yta wartoœæ.
+    //! Ostatnia uÅ¼yta wartoÅ›Ä‡.
     static value_type lastValue;
-    //! WskaŸnik na kontener wartoœci.
+    //! WskaÅºnik na kontener wartoÅ›ci.
     static std::vector<value_type> * pValues;
-    //! Wartoœæ "zeruj¹ca"
+    //! WartoÅ›Ä‡ "zerujÄ…ca"
     static const value_type initValue = value_type(-1);
 
-    //! Inkrementacja wzglêdem poprzedniej wartoœci.
+    //! Inkrementacja wzglÄ™dem poprzedniej wartoÅ›ci.
     __EnumInitHelper() { init(lastValue+1); }
-    //! Jawnie podana wartoœæ.
+    //! Jawnie podana wartoÅ›Ä‡.
     __EnumInitHelper(value_type val) { init(val); }
     //! Kopia.
     __EnumInitHelper(const __EnumInitHelper& val) { init(val.value); }
-    //! Rzutowanie na typ wartoœci.
+    //! Rzutowanie na typ wartoÅ›ci.
     operator value_type() { return value; }
 
-    //! Metoda inicjuj¹ca.
+    //! Metoda inicjujÄ…ca.
     void init(value_type val)
     {
         lastValue = value = val;
@@ -124,16 +124,16 @@ struct __EnumInitHelper
 
 //------------------------------------------------------------------------------
 
-//! Klasa zawieraj¹ca informacje odnoœnie wyliczeñ. Singleton.
+//! Klasa zawierajÄ…ca informacje odnoÅ›nie wyliczeÅ„. Singleton.
 template <class T>
 class __EnumData
 {
 public:
     //! Tym wyliczenia.
     typedef T EnumType;
-    //! Typ s³ownika z kluczem bêd¹cym wartoœci¹.
+    //! Typ sÅ‚ownika z kluczem bÄ™dÄ…cym wartoÅ›ciÄ….
     typedef std::multimap<EnumType, std::string> DictValues;
-    //! Typ s³ownika z kluczem bêd¹cym ³añcuchem
+    //! Typ sÅ‚ownika z kluczem bÄ™dÄ…cym Å‚aÅ„cuchem
     typedef std::map<std::string, EnumType> DictNames;
 
     //! Typ rozmiaru (nazwa w stylu STLa)
@@ -142,13 +142,13 @@ public:
     typedef typename DictValues::value_type value_type;
 
 public:
-    //! Nazwy enumów.
+    //! Nazwy enumÃ³w.
     DictValues byValues;
-    //! Wartoœci enumów.
+    //! WartoÅ›ci enumÃ³w.
     DictNames byNames;
 
 public:
-    //! \param Wartoœæ dla której zwróciæ nazwê.
+    //! \param WartoÅ›Ä‡ dla ktÃ³rej zwrÃ³ciÄ‡ nazwÄ™.
     //! \return Nazwa.
     //! \throws std::invalid_argument
     const std::string& getName(EnumType value) const
@@ -163,7 +163,7 @@ public:
         }
     }
 
-    //! \param Wartoœæ dla której zwróciæ nazwê.
+    //! \param WartoÅ›Ä‡ dla ktÃ³rej zwrÃ³ciÄ‡ nazwÄ™.
     //! \return Nazwa.
     //! \throws std::invalid_argument
     EnumType parse(const std::string& name) const
@@ -178,39 +178,39 @@ public:
         }
     }
 
-    //! \return Liczba enumów.
+    //! \return Liczba enumÃ³w.
     size_type size() const
     {
         return byNames.size();
     }
 
-    //! Parsuje ³añcuch.
-    //! \param values Wartoœci wyliczeñ.
-    //! \param input £añcuch reprezentuj¹cy wyliczenie.
-    //! \return true jeœli siê uda³o.
+    //! Parsuje Å‚aÅ„cuch.
+    //! \param values WartoÅ›ci wyliczeÅ„.
+    //! \param input ÅaÅ„cuch reprezentujÄ…cy wyliczenie.
+    //! \return true jeÅ›li siÄ™ udaÅ‚o.
     bool init(const std::vector<__EnumInitHelper::value_type>& values, std::string input)
     {
-//         // usuwamy komentarze (w stylu C) oraz bia³e znaki
+//         // usuwamy komentarze (w stylu C) oraz biaÅ‚e znaki
 //         boost::regex removeComments("/\\*(.|[\r\n])*?\\*/|[\\s\n\r]");
 //         input = boost::regex_replace(input, removeComments, std::string(""));
 // 
-//         // teraz szukamy poszczególnych wartoœci
+//         // teraz szukamy poszczegÃ³lnych wartoÅ›ci
 //         boost::regex enrtySearch("(\\w+).*?(,|$)");
 // 
 //         boost::sregex_iterator it(input.begin(), input.end(), enrtySearch);
 //         boost::sregex_iterator end;
 //         for (size_t i = 0; it != end; ++it, ++i) {
-//             // pobieramy nazwê i wartoæœ
+//             // pobieramy nazwÄ™ i wartoÄ‡Å›
 //             const std::string & name = (*it)[1];
 //             EnumType value = static_cast<EnumType>(values[i]);
-//             // uzupe³niamy s³owniki
+//             // uzupeÅ‚niamy sÅ‚owniki
 //             byNames[name] = value;
 //             byValues.insert( std::make_pair(value, name) );
 //         }
 //         return true;
 
-        // odpowiednik wyszukiwania z u¿yciem klasycznych metod
-        // usuwamy bia³e znaki
+        // odpowiednik wyszukiwania z uÅ¼yciem klasycznych metod
+        // usuwamy biaÅ‚e znaki
         std::string::iterator lastSign = std::remove_if(input.begin(), input.end(), isspace);
         input.resize( std::distance(input.begin(), lastSign) );
 
@@ -224,7 +224,7 @@ public:
             // koniec tokenu
             size_t nameEnd = entryEnd;
             if ( equalPos != std::string::npos && equalPos < entryEnd ) {
-                // przechodzimy na kolejny znak równoœci
+                // przechodzimy na kolejny znak rÃ³wnoÅ›ci
                 nameEnd = equalPos;
                 equalPos = input.find_first_of('=', equalPos + 1);
             }
@@ -234,10 +234,10 @@ public:
             byNames[name] = value;
             byValues.insert( std::make_pair(value, name) );
             
-            // przechodzimy na nastêpny wpis
+            // przechodzimy na nastÄ™pny wpis
             entryBegin = entryEnd + 1;
 
-            // sprawdzamy, czy to nie przypadkiem koniec ³añcucha
+            // sprawdzamy, czy to nie przypadkiem koniec Å‚aÅ„cucha
             if ( entryEnd != input.size() ) {
                 entryEnd = input.find_first_of(",\0", entryBegin);
                 if ( entryEnd == std::string::npos ) {
@@ -266,11 +266,11 @@ public:
     typedef typename EnumData::size_type size_type;
 
 public:
-    //! Definicja sta³ego iteratora (w stylu STL).
+    //! Definicja staÅ‚ego iteratora (w stylu STL).
     typedef typename EnumData::DictValues::const_iterator const_iterator;
-    //! Definicja sta³ego odwrotnego iteratora    (w stylu STL).
+    //! Definicja staÅ‚ego odwrotnego iteratora    (w stylu STL).
     typedef typename EnumData::DictValues::const_reverse_iterator const_reverse_iterator;
-    //! Definicja wartoœci interatorów (w stylu STL).
+    //! Definicja wartoÅ›ci interatorÃ³w (w stylu STL).
     typedef typename EnumData::DictValues::value_type value_type;
 
 public:
@@ -278,21 +278,21 @@ public:
     Enum() {}
 
 public:
-    //! \param Wartoœæ dla której zwróciæ nazwê.
+    //! \param WartoÅ›Ä‡ dla ktÃ³rej zwrÃ³ciÄ‡ nazwÄ™.
     //! \return Nazwa.
     //! \throws std::invalid_argument
     static EnumType parse(const std::string& name)
     {
         return getInitializer().data.parse(name);
     }
-    //! \param Wartoœæ dla której zwróciæ nazwê.
+    //! \param WartoÅ›Ä‡ dla ktÃ³rej zwrÃ³ciÄ‡ nazwÄ™.
     //! \return Nazwa.
     //! \throws std::invalid_argument
     static const std::string& getName(EnumType value)
     {
         return getInitializer().data.getName(value);
     }
-    //! \return Liczba enumów.
+    //! \return Liczba enumÃ³w.
     static size_type size()
     {
         return getInitializer().data.size();

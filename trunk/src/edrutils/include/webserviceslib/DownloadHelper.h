@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/06
     created:  6:3:2012   7:51
     filename: DownloadHelper.h
@@ -14,7 +14,7 @@
 
 namespace webservices
 {
-	//! Klasa pomagaj¹ca pobierac pliki i zdjêcia
+	//! Klasa pomagajÄ…ca pobierac pliki i zdjÄ™cia
 	class BasicDownloadHelper : public IDownloadHelper
 	{
 	public:
@@ -40,14 +40,14 @@ namespace webservices
 		std::string errorMessage_;
 	};
 
-	//! Klasa pomagaj¹ca pobieraæ p³ytkie kopie danych
+	//! Klasa pomagajÄ…ca pobieraÄ‡ pÅ‚ytkie kopie danych
 	class ShallowDownloadHelper : public IDownloadHelper
 	{
 	public:
-		//! Typ pliku p³ytkiej kopii danych
+		//! Typ pliku pÅ‚ytkiej kopii danych
 		enum ShallowFile {
-			ShallowData,	//! Plik p³ytkiej kopi danych
-			ShallowMetadata	//! Plik p³ytkiej kopi metadanych
+			ShallowData,	//! Plik pÅ‚ytkiej kopi danych
+			ShallowMetadata	//! Plik pÅ‚ytkiej kopi metadanych
 		};
 
 	public:

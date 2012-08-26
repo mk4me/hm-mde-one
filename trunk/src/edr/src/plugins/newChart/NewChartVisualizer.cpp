@@ -1,4 +1,4 @@
-#include "NewChartPCH.h"
+ï»¿#include "NewChartPCH.h"
 #include <core/IActionsGroupManager.h>
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
@@ -63,7 +63,7 @@ NewChartVisualizer::NewChartVisualizer() :
 
 NewChartVisualizer::~NewChartVisualizer()
 {
-    //przejrzec niszczenie dynamicznie tworzonych zasobów
+    //przejrzec niszczenie dynamicznie tworzonych zasobÃ³w
     if(eventsContextWidget != nullptr){
         delete eventsContextWidget;
     }
@@ -84,7 +84,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     percentDraw = new PercentScaleDraw(0.0, 5.0);
     qwtPlot->setAxisScaleDraw(QwtPlot::xBottom, percentDraw);
     
-    //aby legenda nie by³a usuwana podczas chowania i pokazywania trzeba ustawiæ parenta innego ni¿ QwtPlot
+    //aby legenda nie byÅ‚a usuwana podczas chowania i pokazywania trzeba ustawiÄ‡ parenta innego niÅ¼ QwtPlot
     legend = new NewChartLegend(widget);
     legend->setDefaultItemMode(QwtLegendData::Checkable);
   
@@ -464,13 +464,13 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
         pen.setColor(c);
         curve->setPen(pen);
     } else {
-        idx = -1; // idx nie chcemy wykorzystywaæ!
+        idx = -1; // idx nie chcemy wykorzystywaÄ‡!
         if (on == true) {
         
             for (unsigned int i = 0; i < series.size(); ++i) {
                 NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->curve));
                 if (series[i]->curve == curve) {
-                    // powinno wywo³aæ sygna³, który ustawi aktywn¹ seriê
+                    // powinno wywoÅ‚aÄ‡ sygnaÅ‚, ktÃ³ry ustawi aktywnÄ… seriÄ™
                     activeSerieCombo->setCurrentIndex(i);
                     legendLabel->setItemVisible(true);
                     series[i]->setVisible(true);
@@ -483,7 +483,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
                 }
             }
         }else{
-            //ignorujemy to - zawsze musi byæ jedna seria aktywna
+            //ignorujemy to - zawsze musi byÄ‡ jedna seria aktywna
             NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(item));
             if(legendLabel != nullptr && legendLabel->isItemActive() == false){
                 legendLabel->setItemActive(true);
@@ -500,7 +500,7 @@ void NewChartVisualizer::onSerieSelected( QwtPlotItem* item)
     //QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
     //for (int i = series.size() - 1; i >= 0; --i) {
     //    if (series[i]->curve == curve) {
-    //        // powinno wywo³aæ sygna³, który ustawi aktywn¹ seriê
+    //        // powinno wywoÅ‚aÄ‡ sygnaÅ‚, ktÃ³ry ustawi aktywnÄ… seriÄ™
     //        activeSerieCombo->setCurrentIndex(i);
     //        return;
     //    }
@@ -717,7 +717,7 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
                         }
                     }
                 } else {
-                    // aktywna seria nie mo¿e byæ niewidoczna, trzeba zapobiegac tej sytuacji wy³¹czaj¹c checkBoxa
+                    // aktywna seria nie moÅ¼e byÄ‡ niewidoczna, trzeba zapobiegac tej sytuacji wyÅ‚Ä…czajÄ…c checkBoxa
                     UTILS_ASSERT(false, "Active serie has to be visible");
                 }
 
@@ -948,10 +948,10 @@ void NewChartVisualizer::refreshBounds()
     float minT = (std::numeric_limits<float>::min)();
     float maxT = (std::numeric_limits<float>::max)();
 
-    //wyznaczamy parametry dla wsteg i œrednich
+    //wyznaczamy parametry dla wsteg i Å›rednich
     //minimalny czas dla wszystkich seri danych
     //maksymalny czas dla wszystkich serii danych
-    //minimalna rozdzielczoœæ dla wszystkich kana³ów
+    //minimalna rozdzielczoÅ›Ä‡ dla wszystkich kanaÅ‚Ã³w
     std::vector<ScalarChannelReaderInterfaceConstPtr> channels;
     for (auto it = series.begin(); it != series.end(); ++it) {
         ScalarChannelReaderInterfaceConstPtr data((*it)->getData()->get());
@@ -966,20 +966,20 @@ void NewChartVisualizer::refreshBounds()
         return;
     }
 
-    //obcinam max do ca³kowitej liczby okien
+    //obcinam max do caÅ‚kowitej liczby okien
     //maxT = std::min(maxT, (float)totalWindows * (float)movingAverageTimeWindow);
     maxT = totalWindows * movingAverageTimeWindow;
-    //wyliczam iloœæ wszystkich punktów jakie mam
+    //wyliczam iloÅ›Ä‡ wszystkich punktÃ³w jakie mam
     int totalPoints = totalWindows * pointsPerWindow;
     //wyliczam pojedynczy krok czasu
     float timeStep = (maxT - minT) / (float)totalPoints;
-    //dzielnik dla œredniej
+    //dzielnik dla Å›redniej
     float size = channels.size();
     //akcesor do danych
     core::shared_ptr<ScalarContiniousTimeAccessor> accessor(new ScalarContiniousTimeAccessor(channels.front()));
 
-    //wyliczamy próbki czasowe
-    //wyliczam œredni¹ dla wszystkich próbek
+    //wyliczamy prÃ³bki czasowe
+    //wyliczam Å›redniÄ… dla wszystkich prÃ³bek
     std::vector<float> timeValues;
     std::vector<float> avgValues;
     int i = 0;
@@ -997,9 +997,9 @@ void NewChartVisualizer::refreshBounds()
     int outBegIdx = 0;
     int outNBElement = 0;
 
-    //potem liczê œredni¹ krocz¹c¹ z danym oknem    
-    //odœwie¿yæ œredni¹ krocz¹c¹
-    //odœwie¿yæ wstêgi
+    //potem liczÄ™ Å›redniÄ… kroczÄ…cÄ… z danym oknem    
+    //odÅ›wieÅ¼yÄ‡ Å›redniÄ… kroczÄ…cÄ…
+    //odÅ›wieÅ¼yÄ‡ wstÄ™gi
 
     std::vector<float> maAvgValues(totalPoints);
     std::vector<float> upperBandValues(totalPoints);

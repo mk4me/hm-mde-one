@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/11/16
 	created:  16:11:2010   1:20
 	filename: Borderized.h
@@ -28,8 +28,8 @@ namespace osgui {
 // class Borderized;
 
 /**
- *	Klasa do opakowywania dowolnych widgetów w ramkê. Wariant QUAD generujê ramkê
- *  "do œrodka", podczas gdy LINE_STRIP po równo do œrodka i na zewn¹trz.
+ *	Klasa do opakowywania dowolnych widgetÃ³w w ramkÄ™. Wariant QUAD generujÄ™ ramkÄ™
+ *  "do Å›rodka", podczas gdy LINE_STRIP po rÃ³wno do Å›rodka i na zewnÄ…trz.
  */
 template <class Base, osg::PrimitiveSet::Mode Primitives = osg::PrimitiveSet::QUADS>
 class Borderized : public Base, public osgui::IBorderized
@@ -41,7 +41,7 @@ public:
     META_ObjectBase(osgui, Borderized);
 
 private:
-    //! Typ u¿ywany do wyró¿niania wariantów.
+    //! Typ uÅ¼ywany do wyrÃ³Å¼niania wariantÃ³w.
     template <osg::PrimitiveSet::Mode M>
     struct Mode : public boost::integral_constant<osg::PrimitiveSet::Mode, M>
     {};
@@ -49,7 +49,7 @@ private:
     osg::ref_ptr<osg::Geometry> border;
     //!
     unsigned borderIdx;
-    //! Gruboœæ ramki.
+    //! GruboÅ›Ä‡ ramki.
     float thickness;
 
 public:
@@ -93,12 +93,12 @@ public:
     {}
 
 
-    //! \return Gruboœæ ramki.
+    //! \return GruboÅ›Ä‡ ramki.
     virtual float getBorderWidth() const
     {
         return thickness;
     }
-    //! \param thickness Gruboœæ ramki.
+    //! \param thickness GruboÅ›Ä‡ ramki.
     virtual void setBorderWidth(float thickness)
     {
         this->thickness = thickness;
@@ -123,14 +123,14 @@ public:
     }
 
 public:
-    //! Dodaje ramkê do parenta.
+    //! Dodaje ramkÄ™ do parenta.
     //! \param window
     virtual void parented(osgWidget::Window* window)
     {
         Base::parented(window);
         osg::Geode* geode = window->getGeode();
         if ( borderIdx ) {
-            // prawdopodobnie zostaliœmy sklonowani
+            // prawdopodobnie zostaliÅ›my sklonowani
             osg::Geometry* geom = dynamic_cast<osg::Geometry*>(geode->getDrawable(borderIdx));
             if ( geom ) {
                 geode->setDrawable( borderIdx, border.get() );
@@ -148,7 +148,7 @@ public:
         //    borderIdx = window->addDrawableAndGetIndex(border.get());
         //}
     }
-    //! Usuwa ramkê z parenta.
+    //! Usuwa ramkÄ™ z parenta.
     //! \param window
     virtual void unparented(osgWidget::Window* window)
     {
@@ -158,7 +158,7 @@ public:
             borderIdx = 0;
         }
     }
-    //! Pozycjonuje wierzcho³ki.
+    //! Pozycjonuje wierzchoÅ‚ki.
     virtual void positioned()
     {
         Base::positioned();
@@ -166,12 +166,12 @@ public:
     }
 
 protected:
-    //! \return Tablica kolorów ramki.
+    //! \return Tablica kolorÃ³w ramki.
     osgWidget::ColorArray* getBorderColorArray()
     {
         return dynamic_cast<osgWidget::ColorArray*>(border->getColorArray());
     }
-    //! \return Tablica kolorów ramki.
+    //! \return Tablica kolorÃ³w ramki.
     const osgWidget::ColorArray* getBorderColorArray() const
     {
         return dynamic_cast<osgWidget::ColorArray*>(border->getColorArray());
@@ -191,11 +191,11 @@ private:
         borderIdx = 0;
         border = new osg::Geometry();
         border->setDataVariance( osg::Object::DYNAMIC );
-        // stworzenie kolorów
+        // stworzenie kolorÃ³w
         osg::Vec4Array* colors = new osg::Vec4Array(1);
         border->setColorArray(colors);
         border->setColorBinding(osg::Geometry::BIND_OVERALL);
-        // stworzenie wierzcho³ków
+        // stworzenie wierzchoÅ‚kÃ³w
         positionBorder( Mode<Primitives>() );
     }
 
@@ -222,7 +222,7 @@ private:
     }
 
 
-    //! Tworzy ramkê w postaci LINE_STRIP
+    //! Tworzy ramkÄ™ w postaci LINE_STRIP
     //! \param corner
     //! \param w
     //! \param h
@@ -240,14 +240,14 @@ private:
             border->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0, positions->size()));
         }
 
-        // wype³nienie danymi
+        // wypeÅ‚nienie danymi
         (*positions)[0] = corner + h;
         (*positions)[1] = corner;
         (*positions)[2] = corner + w;
         (*positions)[3] = corner + w + h;
         (*positions)[4] = (*positions)[0];
 
-        // gruboœæ linii
+        // gruboÅ›Ä‡ linii
         osg::LineWidth* lineWidth = dynamic_cast<osg::LineWidth*>(border->getOrCreateStateSet()->getAttribute(osg::StateAttribute::LINEWIDTH));
         if ( lineWidth ) {
             lineWidth->setWidth( thickness );
@@ -257,7 +257,7 @@ private:
         border->setVertexArray(positions);
     }
 
-    //! Tworzy ramkê w postaci QUAD
+    //! Tworzy ramkÄ™ w postaci QUAD
     //! \param corner
     //! \param w
     //! \param h
@@ -325,9 +325,9 @@ private:
 //    osgWidget::Color borderNormalColor;
 //    //! Kolor przy najechaniu.
 //    osgWidget::Color borderHoverColor;
-//    //! Kolor podczas klikniêcia.
+//    //! Kolor podczas klikniÄ™cia.
 //    osgWidget::Color borderPushedColor;
-//    //! Kolor podczas klikniêcia.
+//    //! Kolor podczas klikniÄ™cia.
 //    osgWidget::Color borderToggleColor;
 //public:    //!
 //    //! \param name
@@ -428,7 +428,7 @@ private:
 //
 ///**
 // *	Szablon obramowania rozszerzony o cechy interaktywnego widgetu.
-// *  TODO: rozwa¿yæ zrobienie jednej klasy opatrzonej statycznymi asercjami.
+// *  TODO: rozwaÅ¼yÄ‡ zrobienie jednej klasy opatrzonej statycznymi asercjami.
 // */
 //template <class Base, osg::PrimitiveSet::Mode Primitives>
 //class Borderized<Base, true, Primitives> : public Borderized<Base, false, Primitives>
@@ -441,9 +441,9 @@ private:
 //    osgWidget::Color borderNormalColor;
 //    //! Kolor przy najechaniu.
 //    osgWidget::Color borderHoverColor;
-//    //! Kolor podczas klikniêcia.
+//    //! Kolor podczas klikniÄ™cia.
 //    osgWidget::Color borderPushedColor;
-//    //! Kolor podczas klikniêcia.
+//    //! Kolor podczas klikniÄ™cia.
 //    osgWidget::Color borderToggleColor;
 //
 //public:
@@ -517,7 +517,7 @@ private:
 //    }
 //
 //protected:
-//    //! Wywo³ywane w pierwszej kolejnoœci.
+//    //! WywoÅ‚ywane w pierwszej kolejnoÅ›ci.
 //    virtual void applyState(bool triggered)
 //    {
 //        Base::applyState(triggered);
@@ -527,7 +527,7 @@ private:
 //            setBorderColor( borderNormalColor );
 //        }
 //    }
-//    //! Wywo³ywane w drugiej kolejnoœci.
+//    //! WywoÅ‚ywane w drugiej kolejnoÅ›ci.
 //    virtual void applyHoover(bool pushed)
 //    {
 //        Base::applyHoover(pushed);

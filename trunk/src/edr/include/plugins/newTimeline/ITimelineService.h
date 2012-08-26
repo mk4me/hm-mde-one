@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/08/08
     created:  8:8:2011   8:05
     filename: ITimelineService.h
@@ -28,11 +28,11 @@ public:
 
 
 public:
-    //! \param stream Strumieñ do dodania.
+    //! \param stream StrumieÅ„ do dodania.
     virtual void addChannel(const std::string & path, const timeline::IChannelPtr & channel) = 0;
 
     virtual void removeChannel(const std::string & path) = 0;
-    //! \return true je¿eli timeline sam siê odtwarza.
+    //! \return true jeÅ¼eli timeline sam siÄ™ odtwarza.
     virtual bool isPlaying() const = 0;
     //!
     virtual void setPlaying(bool playing) = 0;

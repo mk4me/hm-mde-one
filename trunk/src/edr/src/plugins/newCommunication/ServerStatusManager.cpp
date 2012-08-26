@@ -1,4 +1,4 @@
-#include "ServerStatusManager.h"
+﻿#include "ServerStatusManager.h"
 #include <boost/bind.hpp>
 #include <ctime>
 #include <iterator>

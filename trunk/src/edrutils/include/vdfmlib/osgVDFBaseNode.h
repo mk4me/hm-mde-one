@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__VDFBASENODE_H__
+ï»¿#ifndef HEADER_GUARD__VDFBASENODE_H__
 #define HEADER_GUARD__VDFBASENODE_H__
 
 #include <vdfmlib/osgVDFBasePin.h>
@@ -9,7 +9,7 @@ namespace osgVDF{
 ////////////////////////////////////////////////////////////////////////////////
 
 
-    //! Klasa bazowa dla wizualnych reprezentacji wêz³ów logicznych z Data Flow.
+    //! Klasa bazowa dla wizualnych reprezentacji wÄ™zÅ‚Ã³w logicznych z Data Flow.
 class osgVDFBaseModel;
 
 class osgVDFBaseNode : public osgWidget::Window
@@ -22,24 +22,24 @@ private:
     typedef std::vector<osgVDFBaseNode*> VNodesDifference;
 
 public:
-    //! Typ opisuj¹cy stan wizualny wêz³a w wyniku operacji na nim (wizualnych), wynikaj¹cy z jego po³o¿enia
+    //! Typ opisujÄ…cy stan wizualny wÄ™zÅ‚a w wyniku operacji na nim (wizualnych), wynikajÄ…cy z jego poÅ‚oÅ¼enia
 	enum VisualStatus {
-        OK,         //! z wêz³em wszystko ok
-        COLLISION,  //! wêze³ bierz eudzia³ w kolizji - nachodzi siê z innym wêzê³m/ami
-        ACTIVE      //! wêze³ zaznaczony, nadrzêdny status wzglêdem wszystkich innych, kiedy wêze³ jest zaznaczony
+        OK,         //! z wÄ™zÅ‚em wszystko ok
+        COLLISION,  //! wÄ™zeÅ‚ bierz eudziaÅ‚ w kolizji - nachodzi siÄ™ z innym wÄ™zÄ™Å‚m/ami
+        ACTIVE      //! wÄ™zeÅ‚ zaznaczony, nadrzÄ™dny status wzglÄ™dem wszystkich innych, kiedy wÄ™zeÅ‚ jest zaznaczony
     };
 
 
-    //TODO - do zmian póxniej, musi to byæ bardziej elastyczne!!
-    //! Typ opisuj¹cy charakter wêz³a, uzywany przy tworzeniu toolbara
+    //TODO - do zmian pÃ³xniej, musi to byÄ‡ bardziej elastyczne!!
+    //! Typ opisujÄ…cy charakter wÄ™zÅ‚a, uzywany przy tworzeniu toolbara
 	enum NodeType {
-        SOURCE,    //! wêze³ Ÿród³o
-        VISUALIZE, //! wêze³ wizualizuj¹cy
-        PROCESS,   //! wêze³ przetwarzaj¹cy
-        ANALYZE    //! wêze³ analizuj¹cy dane
+        SOURCE,    //! wÄ™zeÅ‚ ÅºrÃ³dÅ‚o
+        VISUALIZE, //! wÄ™zeÅ‚ wizualizujÄ…cy
+        PROCESS,   //! wÄ™zeÅ‚ przetwarzajÄ…cy
+        ANALYZE    //! wÄ™zeÅ‚ analizujÄ…cy dane
     };
 
-    //! Zbiór pinów wizualnych
+    //! ZbiÃ³r pinÃ³w wizualnych
 	typedef std::set<osg::ref_ptr<osgVDFBasePin> > Pins;
 
 public:
@@ -49,31 +49,31 @@ public:
 	osgVDFBaseNode(const std::string & nodeName = std::string());
 	virtual ~osgVDFBaseNode(void);
 
-    //! \return Logiczny wêze³ zwi¹zany z t¹ graficzna reprezentacj¹
+    //! \return Logiczny wÄ™zeÅ‚ zwiÄ…zany z tÄ… graficzna reprezentacjÄ…
 	const dflm::NPtr & getModelNode() const;
 
-    //! \return Wizualny model, z którym skojarzony jest ten wizualny wêze³
+    //! \return Wizualny model, z ktÃ³rym skojarzony jest ten wizualny wÄ™zeÅ‚
 	osgVDFBaseModel * getVisualModel() const;
 
-    //! \return Kolekcja wizualnych pinów wejsciowych
+    //! \return Kolekcja wizualnych pinÃ³w wejsciowych
 	const Pins & getInPins() const;
 
-    //! \return Kolekcja wizualnych pinów wyjœciowych
+    //! \return Kolekcja wizualnych pinÃ³w wyjÅ›ciowych
 	const Pins & getOutPins() const;
 
 	//for debug purpose only!!
 	virtual void loggZCoordinates() const;
 
-    //! \return Wizualn¹ nazwê wêz³a
+    //! \return WizualnÄ… nazwÄ™ wÄ™zÅ‚a
 	virtual std::string getName() const = 0;
 
-    //! \return Wizualny stan wêz³a
+    //! \return Wizualny stan wÄ™zÅ‚a
 	VisualStatus getVisualStatus() const;
 
-    //! \return Powierzchnia wêz³a
+    //! \return Powierzchnia wÄ™zÅ‚a
     osgWidget::point_type getArea() const;
 
-    //! Usuwa wêze³ z modelu, wczeœniej wywo³uje zadan¹ funkcjê jeœli ustawiono
+    //! Usuwa wÄ™zeÅ‚ z modelu, wczeÅ›niej wywoÅ‚uje zadanÄ… funkcjÄ™ jeÅ›li ustawiono
     void deleteNode();
 
 private:
@@ -86,27 +86,27 @@ private:
     //! \param pinName Nazwa dodawanego wizualnego pina wyjsciowego
     void addOutPin(osgVDFBasePin * outPin, const std::string & pinName = std::string());
 
-    //! \param nodeVisualStatus Wizualny stan wêz³a ze wzglêdu na podjête na nim akcje u¿ytkownika lub jego statyczny stan w modelu logicznym
+    //! \param nodeVisualStatus Wizualny stan wÄ™zÅ‚a ze wzglÄ™du na podjÄ™te na nim akcje uÅ¼ytkownika lub jego statyczny stan w modelu logicznym
     void setVisualStatus(VisualStatus nodeVisualStatus);
 
-    //! \param name Nowa wizualna nazwa wêz³a
+    //! \param name Nowa wizualna nazwa wÄ™zÅ‚a
     virtual void setName(const std::string & name) = 0;
 
-    //! \param inPin Wizualny pin dodawany do wêz³a
+    //! \param inPin Wizualny pin dodawany do wÄ™zÅ‚a
     //! \param pinName Nazwa wizualnego pinu
 	virtual void graphAddInPin(osgVDFBasePin * inPin, const std::string & pinName) = 0;
 
-    //! \param outPin Wyjœciowy wizualny pin dodawany do wêz³a
-    //! \param pinName Nazwa wizualnego pinu dodawanego do wêz³a
+    //! \param outPin WyjÅ›ciowy wizualny pin dodawany do wÄ™zÅ‚a
+    //! \param pinName Nazwa wizualnego pinu dodawanego do wÄ™zÅ‚a
 	virtual void graphAddOutPin(osgVDFBasePin * outPin, const std::string & pinName) = 0;
 
-    //! \param nodeVisualStatus Nowy wizualny status wêz³a
+    //! \param nodeVisualStatus Nowy wizualny status wÄ™zÅ‚a
 	virtual void graphSetStatus(VisualStatus nodeVisualStatus) = 0;
 
-    //! Chwilowo wy³ancza mo¿liwoœæ edycji i usuwania wêz³a
+    //! Chwilowo wyÅ‚ancza moÅ¼liwoÅ›Ä‡ edycji i usuwania wÄ™zÅ‚a
     virtual void lockForEditing(bool lock) = 0;
 
-    //! \param area powierzchnia wêz³a
+    //! \param area powierzchnia wÄ™zÅ‚a
     void setArea(osgWidget::point_type area);
 
     void setCollisionNodes(const VNodes & vnodes);
@@ -115,22 +115,22 @@ private:
 
     protected:
 
-    //! Aktualny status wizulany wêz³a
+    //! Aktualny status wizulany wÄ™zÅ‚a
 	VisualStatus visualStatus;
 
-	//! Wêze³ logiczny odpowiadaj¹cy tej wizualnej reprezentacji
+	//! WÄ™zeÅ‚ logiczny odpowiadajÄ…cy tej wizualnej reprezentacji
 	dflm::NPtr modelNode;
 
-	//! Piny wejœciowe w wersji wizualnej
+	//! Piny wejÅ›ciowe w wersji wizualnej
 	Pins inPins;
 
-    //! Piny wyjœciowe w wersji wizualnej
+    //! Piny wyjÅ›ciowe w wersji wizualnej
 	Pins outPins;
 
-    //! Wizualny model wêz³a
+    //! Wizualny model wÄ™zÅ‚a
 	osgVDFBaseModel * visualModel;
 
-    //! Obszar wêz³a
+    //! Obszar wÄ™zÅ‚a
     osgWidget::point_type area;
 
     //! Wizualne wezly z ktorymi aktualnie jest w kolizji

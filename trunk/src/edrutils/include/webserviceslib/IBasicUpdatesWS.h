@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/28
     created:  28:2:2012   22:39
     filename: IBasicUpdatesWS.h
@@ -15,7 +15,7 @@
 namespace webservices
 {
 
-//! Interfejs us³ugi pozwalaj¹cej edytowaæ dane w bazie
+//! Interfejs usÅ‚ugi pozwalajÄ…cej edytowaÄ‡ dane w bazie
 class IMotionBasicUpdatesWS : public IWebService
 {
 public:
@@ -24,21 +24,21 @@ public:
 
     /**
 	Manualne utworzenie encji performera w oparciu o dane z aplikacji klienckiej
-	@param name imiê performera
+	@param name imiÄ™ performera
 	@param surname nazwisko performera
 	@return utworzony Performer
 	*/
 	//virtual const motionWsdl::Performer createPerformer() = 0;
 	/**
-	Manualne utworzenie encji sesji przez u¿ytkownika
-	@param userID identyfikator u¿ytkownika
+	Manualne utworzenie encji sesji przez uÅ¼ytkownika
+	@param userID identyfikator uÅ¼ytkownika
 	@param labID identyfikator laboratorium
 	@param performerID identyfikator performera
 	@param sessionDate data powstania sesji
 	@param sessionDescription opis sesji
 	@param motionKindName ???
-	@param groupsIDs referencja do wektora przechowuj¹cego identyfikatory grup do których ma nale¿eæ sesja
-	@return wskaŸnik na obiekt klasy Session
+	@param groupsIDs referencja do wektora przechowujÄ…cego identyfikatory grup do ktÃ³rych ma naleÅ¼eÄ‡ sesja
+	@return wskaÅºnik na obiekt klasy Session
 	*/
 	/*virtual const motionWsdl::Session createSession(int labID, int performerID, DateTime & sessionDate,
         const std::string & sessionDescription, const std::string & motionKindName,

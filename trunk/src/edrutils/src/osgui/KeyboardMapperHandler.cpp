@@ -1,4 +1,4 @@
-#include "PCH.h"
+﻿#include "PCH.h"
 #include <osgui/KeyboardMapperHandler.h>
 #include <osgui/KeyboardMapper.h>
 #include <utils/Debug.h>
@@ -36,7 +36,7 @@ bool KeyboardMapperHandler::handle(const osgGA::GUIEventAdapter& gea, osgGA::GUI
 	    }
     }
 
-    // nie blokujemy innych handler�w
+    // nie blokujemy innych handlerów
 	return false;
 }
 

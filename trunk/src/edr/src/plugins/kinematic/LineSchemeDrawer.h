@@ -1,11 +1,11 @@
-#ifndef HEADER_GUARD_LINESCHEMEDRAWER_H__
+ï»¿#ifndef HEADER_GUARD_LINESCHEMEDRAWER_H__
 #define HEADER_GUARD_LINESCHEMEDRAWER_H__
 
 #include <core/SmartPtr.h>
 #include <osg/PositionAttitudeTransform>
 #include "OsgSchemeDrawer.h"
 
-//! Schemat odrysowywuj¹cy linie szkieletu
+//! Schemat odrysowywujÄ…cy linie szkieletu
 class LineSchemeDrawer : public OsgSchemeDrawer
 {
 public:
@@ -13,41 +13,41 @@ public:
     LineSchemeDrawer() {}
 
 public:
-    //! Realizacja metody abstrakcyjnej (nieu¿ywana)
+    //! Realizacja metody abstrakcyjnej (nieuÅ¼ywana)
     virtual void draw();
-    //! Wywo³ywane, gdy schemat zosta³ zmieniony i jego wizualizacja wymaga odswie¿enia
+    //! WywoÅ‚ywane, gdy schemat zostaÅ‚ zmieniony i jego wizualizacja wymaga odswieÅ¼enia
     virtual void update();
-    //! Wywo³ywane przy zakoñczeniu dzia³ania, sprz¹tniêcie obiektów ze sceny
+    //! WywoÅ‚ywane przy zakoÅ„czeniu dziaÅ‚ania, sprzÄ…tniÄ™cie obiektÃ³w ze sceny
     virtual void deinit();
-    //! Inicjalizacja drawera, tworzone s¹ wêz³y
+    //! Inicjalizacja drawera, tworzone sÄ… wÄ™zÅ‚y
     //! \param scheme Dostarczany schemat wizualizacji
     virtual void init(VisualizationSchemeConstPtr scheme);
-    //! \return zwraca wêze³ ze stworzonymi po³¹czeniami
+    //! \return zwraca wÄ™zeÅ‚ ze stworzonymi poÅ‚Ä…czeniami
     virtual osg::ref_ptr<osg::Node> getNode();
 
 private:
-    //! wskaŸnik do wêz³a przechowywuj¹cego geometriê
+    //! wskaÅºnik do wÄ™zÅ‚a przechowywujÄ…cego geometriÄ™
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
-    //! wskaŸnik do wêz³a zawieraj¹cego transformacjê
+    //! wskaÅºnik do wÄ™zÅ‚a zawierajÄ…cego transformacjÄ™
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
-    //! po³¹czenie pomiêdzy stawami lub markerami
+    //! poÅ‚Ä…czenie pomiÄ™dzy stawami lub markerami
     typedef VisualizationScheme::Connection Connection;
     //! aktualny stan markera (kolor, pozycja, ...)
     typedef VisualizationScheme::State JointState;
 
 private:
-    //! Metoda tworzy liniê pomiêdzy punktami
-    //! \param from pocz¹tek linii  
+    //! Metoda tworzy liniÄ™ pomiÄ™dzy punktami
+    //! \param from poczÄ…tek linii  
     //! \param to koniec linii
     //! \param color kolor linii
     void addLine(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color);
 
 private:
-    //! tutaj trafiaj¹ tworzone linie
+    //! tutaj trafiajÄ… tworzone linie
     std::vector<GeodePtr> lines;
-    //! bufory z wierzcho³kami dla linii
+    //! bufory z wierzchoÅ‚kami dla linii
     std::vector< osg::ref_ptr<osg::Vec3Array> > buffers;
-    //! wêze³ ze stworzonymi liniami
+    //! wÄ™zeÅ‚ ze stworzonymi liniami
     osg::ref_ptr<osg::Group> node;
 };
 

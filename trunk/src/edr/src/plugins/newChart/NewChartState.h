@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/11/25
 	created:	25:11:2011   8:50
 	filename: 	NewChartState.h
@@ -19,7 +19,7 @@ class QEvent;
 class QPainter;
 class QwtPlotCanvas;
 
-//! Klasa bazowa dla stanów wizualizatora
+//! Klasa bazowa dla stanÃ³w wizualizatora
 class NewChartState : public QObject
 {
     Q_OBJECT
@@ -27,26 +27,26 @@ public:
     typedef core::shared_ptr<QwtPlot> QwtPlotPtr;
 
 public:
-    //! kostruktor pobiera obiekt wizualizatora, którym bêdzie siê zarz¹dza³o
+    //! kostruktor pobiera obiekt wizualizatora, ktÃ³rym bÄ™dzie siÄ™ zarzÄ…dzaÅ‚o
     NewChartState(NewChartVisualizer* visualizer);
 	virtual ~NewChartState() { }
 
 public:
-    //! Obs³uga eventów Qt
+    //! ObsÅ‚uga eventÃ³w Qt
     virtual bool stateEventFilter( QObject *, QEvent * ) = 0;
-    //! Metoda odrysowuj¹ca stan wizualizatora
+    //! Metoda odrysowujÄ…ca stan wizualizatora
     virtual void draw(QPainter *) = 0;
-    //! wywo³ywane, stan staje siê aktywny
+    //! wywoÅ‚ywane, stan staje siÄ™ aktywny
     virtual void stateBegin() {}
-    //! wywo³ywane, gdy stan przestaje byæ aktywny
+    //! wywoÅ‚ywane, gdy stan przestaje byÄ‡ aktywny
     virtual void stateEnd() {}
 
 protected:
-    //! wizualizator, którym bêdzie siê zarz¹dza³o
+    //! wizualizator, ktÃ³rym bÄ™dzie siÄ™ zarzÄ…dzaÅ‚o
     NewChartVisualizer* visualizer;
     //! Wykres qwt (serce wizualizatora)
     QwtPlot* plot;
-    //! p³ótno wykresu
+    //! pÅ‚Ã³tno wykresu
     QwtPlotCanvas* canvas;
 };
 typedef core::shared_ptr<NewChartState> NewChartStatePtr;

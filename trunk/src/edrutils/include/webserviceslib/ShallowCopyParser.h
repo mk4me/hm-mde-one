@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/29
     created:  29:2:2012   8:54
     filename: ShallowCopyParser.h
@@ -14,21 +14,21 @@
 namespace webservices
 {
 
-//! Parser p≥ytkiej kopi danych ruchu
+//! Parser p≈Çytkiej kopi danych ruchu
 class MotionShallowCopyParser
 {
 public:
-    //! \param path åcieøka do pliku do przeparsowania
-    //! \param shallowCopy [out] Struktura p≥ytkiej kopii danych ruchu do wype≥nienia
+    //! \param path ≈öcie≈ºka do pliku do przeparsowania
+    //! \param shallowCopy [out] Struktura p≈Çytkiej kopii danych ruchu do wype≈Çnienia
     static void parseFile(const std::string & path, MotionShallowCopy::ShallowCopy & shallowCopy);
 };
 
-//! Parser p≥ytkiej kopi danych medycznych
+//! Parser p≈Çytkiej kopi danych medycznych
 class MedicalShallowCopyParser
 {
 public:
-    //! \param path åcieøka do pliku do przeparsowania
-    //! \param shallowCopy [out] Struktura p≥ytkiej kopii danych medycznych do wype≥nienia
+    //! \param path ≈öcie≈ºka do pliku do przeparsowania
+    //! \param shallowCopy [out] Struktura p≈Çytkiej kopii danych medycznych do wype≈Çnienia
     static void parseFile(const std::string & path, MedicalShallowCopy::ShallowCopy & shallowCopy);
 };
 

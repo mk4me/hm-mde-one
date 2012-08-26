@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:    2010/07/30
 	created:    30:7:2010     18:25
 	filename: PtrWrapper.h
@@ -19,7 +19,7 @@ class Adapter : public PtrPolicy::Base
 public:
     typedef T value_type;
 private:
-    //! Wartoœæ.
+    //! WartoÅ›Ä‡.
     T value;
 
 public:
@@ -57,14 +57,14 @@ public:
 };
 
 /**
- *	Typ wrapuj¹cy wskaŸniki typów abstrakcyjnych, które nie maj¹ klasy bazowej niezbêdnej,
- *  aby mog³y byæ u¿ywane w "m¹drych" wskaŸnikach.
+ *	Typ wrapujÄ…cy wskaÅºniki typÃ³w abstrakcyjnych, ktÃ³re nie majÄ… klasy bazowej niezbÄ™dnej,
+ *  aby mogÅ‚y byÄ‡ uÅ¼ywane w "mÄ…drych" wskaÅºnikach.
  */
 template <class T, class PtrPolicy>
 class PtrWrapper : public PtrPolicy::Base
 {
 private:
-    //! Wartoœæ.
+    //! WartoÅ›Ä‡.
     T * ptr;
 
 public:

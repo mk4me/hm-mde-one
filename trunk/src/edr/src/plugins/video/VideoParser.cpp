@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+ï»¿#include "VideoPCH.h"
 #include "VideoParser.h"
 #include <plugins/video/Wrappers.h>
 #include <vidlib/osg/VideoImageStream.h>
@@ -95,15 +95,15 @@ void VideoParser::parseFile(const core::Filesystem::Path& path)
             LOG_INFO(directory << " " << framerate);
 
 
-            // ustawienie œcie¿ki do katalogu
+            // ustawienie Å›cieÅ¼ki do katalogu
             core::Filesystem::Path dirPath = directory;
             if ( !dirPath.is_complete() ) {
                 dirPath = path.branch_path() / directory;
             }
-            // wylistowanie plików
+            // wylistowanie plikÃ³w
             std::vector<std::string> files = core::Filesystem::listFiles(dirPath);
 
-            // tworzymy strumieñ z sekwencji plików
+            // tworzymy strumieÅ„ z sekwencji plikÃ³w
             osg::ref_ptr<osgDB::Options> options = new osgDB::Options();
             options->setObjectCacheHint( osgDB::Options::CACHE_NONE );
             std::auto_ptr<FileSequenceVideoStream> innerStream(new FileSequenceVideoStream(directory, framerate, files, new OsgImageLoader(options)));
@@ -120,7 +120,7 @@ void VideoParser::parseFile(const core::Filesystem::Path& path)
         }
     } else {
         {
-            // tworzymy strumieñ ffmpeg
+            // tworzymy strumieÅ„ ffmpeg
             std::auto_ptr<FFmpegVideoStream> innerStream(new FFmpegVideoStream(path.string()));
             // UTILS_ASSERT(!innerStream->getLastError());
 

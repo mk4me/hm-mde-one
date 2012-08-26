@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/01
     created:  1:3:2012   11:14
     filename: DocumentGenerator.h
@@ -13,7 +13,7 @@
 
 namespace htmlGen {
 
-//! Klasa generuj¹ca dokumenty HTML - dodaje podstawowe znaczniki otwieraj¹ce i zamykaj¹ce
+//! Klasa generujÄ…ca dokumenty HTML - dodaje podstawowe znaczniki otwierajÄ…ce i zamykajÄ…ce
 class DocumentGenerator
 {
 public:

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/03/25
     created:  25:3:2011   14:47
     filename: ChartVisualizer.h
@@ -18,7 +18,7 @@
 #include "LineChartSerie.h"
 #include <osgui/QOsgWidgets.h>
 
-//! Wizualizator wykresów.
+//! Wizualizator wykresÃ³w.
 class ChartVisualizer : public QObject, public core::IVisualizer
 {
 public:
@@ -47,7 +47,7 @@ public:
             return (float)serie->getData()->getLength();
         }
 
-        //! Czas zawiera siê miêdzy 0 a getLength()
+        //! Czas zawiera siÄ™ miÄ™dzy 0 a getLength()
         //! \param time Aktualny, lokalny czas kanalu w sekundach
         virtual void setTime(float time)
         {
@@ -152,12 +152,12 @@ public:
 
     virtual ChartVisualizerSerie* createSerie(const SerieBase * serie);
 
-    //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
+    //! \param serie Seria danych do usuniÄ™cia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
     virtual void removeSerie(core::IVisualizer::SerieBase* serie);
 
     virtual void reset();
 
-    //! \return Czy wykres sam siê odœwie¿a przy zmianie?
+    //! \return Czy wykres sam siÄ™ odÅ›wieÅ¼a przy zmianie?
     virtual bool getAutoRefresh() const;
     //! \param autoRefresh
     virtual void setAutoRefresh(bool autoRefresh);
@@ -227,14 +227,14 @@ public:
     //! Ustawia kolor kursora w rgba
     virtual void setCursorColor(osg::Vec4 color);
 
-    //! \return Czy pokazywaæ tytu³
+    //! \return Czy pokazywaÄ‡ tytuÅ‚
     virtual bool isShowingTitle() const;
-    //! \param, showTitle Czy pokazywaæ tytu³
+    //! \param, showTitle Czy pokazywaÄ‡ tytuÅ‚
     virtual void setShowTitle(bool showTitle);
 
-    //! \return Tytu³ wykresu
+    //! \return TytuÅ‚ wykresu
     virtual std::string getTitleText() const;
-    //! \param titleText Tytu³ wykresu
+    //! \param titleText TytuÅ‚ wykresu
     virtual void setTitleText(const std::string & titleText);
 
     virtual int getTitleTextSize() const;
@@ -271,8 +271,8 @@ public:
 
     //! \return Prototyp labelek.
     virtual const osgText::Text* getLabelPrototype() const;
-    //! \param prototype Prototyp labelek. Obiekt nie jest kopiowany. Gdy wprowadza siê zmiany w labelce trzeba
-    //! koniecznie wywo³aæ jeszcze raz setLabelPrototype, bo inaczej nie bêd¹ odœwie¿one. Mo¿na równie¿ sklonowaæ
+    //! \param prototype Prototyp labelek. Obiekt nie jest kopiowany. Gdy wprowadza siÄ™ zmiany w labelce trzeba
+    //! koniecznie wywoÅ‚aÄ‡ jeszcze raz setLabelPrototype, bo inaczej nie bÄ™dÄ… odÅ›wieÅ¼one. MoÅ¼na rÃ³wnieÅ¼ sklonowaÄ‡
     //! tekst w parametrze.
     virtual void setLabelPrototype(osgText::Text* prototype);
     

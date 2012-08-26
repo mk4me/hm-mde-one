@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:    2010/04/07
 	created:    7:4:2010     17:59
 	filename: VideoInputAdapterPolicies.h
@@ -16,35 +16,35 @@
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa bazowa dla adaptera umoøliwiajπca wykorzystanie zwyk≥ych wskaünikÛw.
-//! Dodajπc rozszerzenie dla innych typÛw wskaünikÛw naleøy powieliÊ
-//! ca≥y interfejs publiczny.
+//! Klasa bazowa dla adaptera umo≈ºliwiajƒÖca wykorzystanie zwyk≈Çych wska≈∫nik√≥w.
+//! DodajƒÖc rozszerzenie dla innych typ√≥w wska≈∫nik√≥w nale≈ºy powieliƒá
+//! ca≈Çy interfejs publiczny.
 struct PtrPolicyRaw
 {
-    //! Typ wskaünika.
+    //! Typ wska≈∫nika.
     template <class T> struct Ptr 
     {
         typedef T* Type;
     };
-    //! Tylko deklaracja, specjalizacja wyciπga wskaünik!
+    //! Tylko deklaracja, specjalizacja wyciƒÖga wska≈∫nik!
     template <class T> struct Pointed;
-    //! Specjalizacja wyciπgajπca wskaünik.
+    //! Specjalizacja wyciƒÖgajƒÖca wska≈∫nik.
     template <class T> struct Pointed<T*>
     {
         typedef T Type;
     };
 
-    //! Klasa bazowa wymagana dla typÛw poddanych dzia≥aniu wskaünika.
+    //! Klasa bazowa wymagana dla typ√≥w poddanych dzia≈Çaniu wska≈∫nika.
     typedef NullType Base;
 
-    //! Zerowanie wartoúci wskaünika.
+    //! Zerowanie warto≈õci wska≈∫nika.
     template <class T>
     void initPtr( T *& ptr )
     {
         ptr = nullptr;
     }
 
-    //! Ustawienie nowej wartoúci.
+    //! Ustawienie nowej warto≈õci.
     template <class T>
     void setPtr( T *& ptr, T * data)
     {
@@ -54,7 +54,7 @@ struct PtrPolicyRaw
         }
     }
 
-    //! Zwraca surowy wskaünik
+    //! Zwraca surowy wska≈∫nik
     //! \param ptr
     template<class T>
     void* getRawPtr(T* ptr)
@@ -62,7 +62,7 @@ struct PtrPolicyRaw
         return ptr;
     }
 
-    //! Zwraca surowy wskaünik
+    //! Zwraca surowy wska≈∫nik
     //! \param ptr
     template<class T>
     const void* getRawPtr(const T * ptr) const
@@ -70,7 +70,7 @@ struct PtrPolicyRaw
         return ptr;
     }
 
-    //! Czy wskaünik jest unikatowy?
+    //! Czy wska≈∫nik jest unikatowy?
     template <class T>
     bool isUnique( const T * ptr) const
     {
@@ -80,12 +80,12 @@ struct PtrPolicyRaw
 
 template <> struct is_ptr_policy<PtrPolicyRaw> : public __traits::true_type {};
 
-//! Klasa bazowa dla adaptera umoøliwiajπca wykorzystanie zwyk≥ych wskaünikÛw.
-//! Dodajπc rozszerzenie dla innych typÛw wskaünikÛw naleøy powieliÊ
-//! ca≥y interfejs publiczny.
+//! Klasa bazowa dla adaptera umo≈ºliwiajƒÖca wykorzystanie zwyk≈Çych wska≈∫nik√≥w.
+//! DodajƒÖc rozszerzenie dla innych typ√≥w wska≈∫nik√≥w nale≈ºy powieliƒá
+//! ca≈Çy interfejs publiczny.
 struct PtrPolicyRawWeak : public PtrPolicyRaw
 {
-    //! Ustawienie nowej wartoúci.
+    //! Ustawienie nowej warto≈õci.
     template <class T>
     void setPtr( T *& ptr, T * data)
     {

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/28
     created:  28:2:2012   22:31
     filename: SimpleFileStoremanWS.h
@@ -13,7 +13,7 @@
 
 namespace webservices
 {
-	//! Klasa przygotowuj¹ca pliki do pobrania
+	//! Klasa przygotowujÄ…ca pliki do pobrania
     class SimpleFileStoremanWS : public IBasicStoremanWS
     {
     public:
@@ -22,11 +22,11 @@ namespace webservices
 
         virtual ~SimpleFileStoremanWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
         virtual void downloadComplete(int id, const std::string & path);
@@ -39,7 +39,7 @@ namespace webservices
 		WSConnectionConstPtr constConnection_;
     };
 
-	//! Klasa przygotowuj¹ca zdjêcia do pobrania
+	//! Klasa przygotowujÄ…ca zdjÄ™cia do pobrania
     class PhotoStoremanWS : public IBasicStoremanWS
     {
     public:
@@ -48,11 +48,11 @@ namespace webservices
 
         virtual ~PhotoStoremanWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
         virtual void downloadComplete(int id, const std::string & path);
@@ -65,7 +65,7 @@ namespace webservices
 		WSConnectionConstPtr constConnection_;
     };
 
-	//! Klasa przygotowuj¹ca p³ytkie kopie do pobrania
+	//! Klasa przygotowujÄ…ca pÅ‚ytkie kopie do pobrania
     class ShallowStoremanWS : public IShallowStoremanWS
     {
     public:
@@ -74,11 +74,11 @@ namespace webservices
 
         virtual ~ShallowStoremanWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
         virtual const std::string getShallowCopy();
@@ -102,11 +102,11 @@ namespace webservices
 
         virtual ~MotionFileStoremanWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
 		virtual void downloadComplete(int fileID, const std::string& path);
@@ -121,49 +121,49 @@ namespace webservices
 		
 		virtual const std::string getMetadata();
         /**
-		Realizuje wprowadzenie pojedynczego pliku przez performera pod kontrolê bazy danych.
+		Realizuje wprowadzenie pojedynczego pliku przez performera pod kontrolÄ™ bazy danych.
 		@param performerID id performera
-		@param path wzglêdna œcie¿ka do pliku na dysku serwera w stosunku do korzenia obszaru Us³ugi Transportu Plików
+		@param path wzglÄ™dna Å›cieÅ¼ka do pliku na dysku serwera w stosunku do korzenia obszaru UsÅ‚ugi Transportu PlikÃ³w
 		@param description opis pliku
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
 		virtual const int storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename);
 		/**
-		Realizuje wprowadzenie plików pod kontrolê bazy danych.
+		Realizuje wprowadzenie plikÃ³w pod kontrolÄ™ bazy danych.
 		@param performerID id performera
-		@param path œcie¿ka do katalogu z plikami do wgrania na serwer
+		@param path Å›cieÅ¼ka do katalogu z plikami do wgrania na serwer
 		*/
 		virtual void storePerformerFiles(int performerID, const std::string& path);
 		/**
-		Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolê bazy danych.
-		@param sessionID id sesji która wczeœniej zosta³a juz umieszczona w bazie danych
-		@param path wzglêdna œcie¿ka do pliku na dysku serwera w stosunku do korzenia obszaru Us³ugi Transportu Plików
+		Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolÄ™ bazy danych.
+		@param sessionID id sesji ktÃ³ra wczeÅ›niej zostaÅ‚a juz umieszczona w bazie danych
+		@param path wzglÄ™dna Å›cieÅ¼ka do pliku na dysku serwera w stosunku do korzenia obszaru UsÅ‚ugi Transportu PlikÃ³w
 		@param description opis pliku
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
 		virtual const int storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename);
 		/**
-		Realizuje wprowadzenie plików pod kontrolê bazy danych.
-		@param sessionID id sesji która wczeœniej zosta³a juz umieszczona w bazie danych
-		@param path œcie¿ka do katalogu z plikami do wgrania na serwer
+		Realizuje wprowadzenie plikÃ³w pod kontrolÄ™ bazy danych.
+		@param sessionID id sesji ktÃ³ra wczeÅ›niej zostaÅ‚a juz umieszczona w bazie danych
+		@param path Å›cieÅ¼ka do katalogu z plikami do wgrania na serwer
 		@param description
 		*/
 		virtual const int storeSessionFiles(int sessionID, const std::string& path, const std::string& description);
 		/**
-		Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolê bazy danych.
+		Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolÄ™ bazy danych.
 		@param trialID id trial
-		@param path wzglêdna œcie¿ka do pliku na dysku serwera w stosunku do korzenia obszaru Us³ugi Transportu Plików
+		@param path wzglÄ™dna Å›cieÅ¼ka do pliku na dysku serwera w stosunku do korzenia obszaru UsÅ‚ugi Transportu PlikÃ³w
 		@param description opis pliku
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
 		virtual const int storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename);
 		/**
-		Realizuje wprowadzenie plików pod kontrolê bazy danych.
+		Realizuje wprowadzenie plikÃ³w pod kontrolÄ™ bazy danych.
 		@param trialID id trial
-		@param path œcie¿ka do katalogu z plikami do wgrania na serwer
+		@param path Å›cieÅ¼ka do katalogu z plikami do wgrania na serwer
 		*/
 		virtual void storeTrialFiles(int trialID, const std::string& path);
 
@@ -183,11 +183,11 @@ namespace webservices
 
 		virtual ~MedicalFileStoremanWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
 		virtual void downloadComplete(int fileID, const std::string& path);

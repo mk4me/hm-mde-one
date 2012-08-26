@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/02/11
 	created:  11:2:2010   13:14
 	filename: VideoError.h
@@ -14,26 +14,26 @@
 
 namespace vidlib {
 
-//! Wyj¹tek u¿ywany przez bibliotekê.
+//! WyjÄ…tek uÅ¼ywany przez bibliotekÄ™.
 class VIDLIB_EXPORT VideoError : public std::exception
 {
 private:
-    //! Wg. standradu std::exception NIE ma konstruktora przyjmuj¹cego
-    //! const char*, z tego powodu trzymamy rêczn¹ kopiê.
+    //! Wg. standradu std::exception NIE ma konstruktora przyjmujÄ…cego
+    //! const char*, z tego powodu trzymamy rÄ™cznÄ… kopiÄ™.
     char* msgCopy;
 
 protected:
-    //! Konstruktor zeruj¹cy.
+    //! Konstruktor zerujÄ…cy.
     VideoError();
 
 public:
-    //! \param msg Wiadomoœæ o b³êdzie.
-    //! \return id ID b³êdu.
+    //! \param msg WiadomoÅ›Ä‡ o bÅ‚Ä™dzie.
+    //! \return id ID bÅ‚Ä™du.
     VideoError(const char* msg);
-    //! \param msg Wiadomoœæ o b³êdzie.
-    //! \return id ID b³êdu.
+    //! \param msg WiadomoÅ›Ä‡ o bÅ‚Ä™dzie.
+    //! \return id ID bÅ‚Ä™du.
     VideoError(const std::string& msg);
-    //! \param error Wyj¹tek Ÿród³owy.
+    //! \param error WyjÄ…tek ÅºrÃ³dÅ‚owy.
     VideoError(const VideoError& error);
 
     //! Polimorficzny destruktor.
@@ -41,11 +41,11 @@ public:
 
     //! \return Klon obiektu.
     virtual VideoError * clone() const;
-    //! \return Komunikat b³êdu.
+    //! \return Komunikat bÅ‚Ä™du.
     virtual const char* what() const throw();
 
 protected:
-    //! Kopiuje wiadomoœæ do wewnêtrznego bufora. Specjalnie niewirtualna.
+    //! Kopiuje wiadomoÅ›Ä‡ do wewnÄ™trznego bufora. Specjalnie niewirtualna.
     void setMessage( const char* msg, size_t length );
 };
 

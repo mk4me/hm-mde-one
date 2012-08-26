@@ -1,4 +1,4 @@
-#include "SubjectPCH.h"
+﻿#include "SubjectPCH.h"
 #include <plugins/subject/ISubject.h>
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>

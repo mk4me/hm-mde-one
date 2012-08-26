@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/02/22
 	created:	22:2:2012   10:13
 	filename: 	Scales.h
@@ -12,7 +12,7 @@
 
 #include <limits>
 
-//! Prosta klasa, u³atwiaj¹ca zarz¹dzaæ ekstremami wykresu
+//! Prosta klasa, uÅ‚atwiajÄ…ca zarzÄ…dzaÄ‡ ekstremami wykresu
 class Scales
 {
 public:
@@ -28,8 +28,8 @@ public:
     //! Konstruktor, inicjalizuje obiekt
     //! \param xMin minimalny argument na wykresie
     //! \param xMax maksymalny argument na wykresie
-    //! \param yMin wartoœæ minimalna na wykresie
-    //! \param yMax wartoœæ maksymalna na wykresie
+    //! \param yMin wartoÅ›Ä‡ minimalna na wykresie
+    //! \param yMax wartoÅ›Ä‡ maksymalna na wykresie
     Scales(float xMin, float xMax, float yMin, float yMax) :
       xMin(xMin),
       xMax(xMax),
@@ -39,21 +39,21 @@ public:
     {}
 
 public:
-    //! \return wartoœæ maksymalna na wykresie
+    //! \return wartoÅ›Ä‡ maksymalna na wykresie
     float getYMax() const { return yMax; }
-    //! \return wartoœæ minimalna na wykresie
+    //! \return wartoÅ›Ä‡ minimalna na wykresie
     float getYMin() const { return yMin; }
     //! \return maksymalny argument na wykresie
     float getXMax() const { return xMax; }
     //! \return minimalny argument na wykresie
     float getXMin() const { return xMin; }
-    //! \return czy obiekt ju¿ zosta³ zainicjalizowany poprawnymi danymi
+    //! \return czy obiekt juÅ¼ zostaÅ‚ zainicjalizowany poprawnymi danymi
     bool isInitialized() const { return initialized; }
 
 public:
     //! resetowanie ustawien, zostawia obiekt niezainicjalizowany
     void clear() { initialized = false; }
-    //! ³¹czy obiekt z drugim obiektem tego samego typu, w razie potrzeby zmieniane s¹ ekstrema
+    //! Å‚Ä…czy obiekt z drugim obiektem tego samego typu, w razie potrzeby zmieniane sÄ… ekstrema
     //! \param scales drugi obiekt z ekstremami
     void merge(const Scales& scales);
 
@@ -62,11 +62,11 @@ private:
     float xMin;
     //! maksymalny argument na wykresie
     float xMax;
-    //! wartoœæ minimalna na wykresie
+    //! wartoÅ›Ä‡ minimalna na wykresie
     float yMin;
-    //! wartoœæ maksymalna na wykresie
+    //! wartoÅ›Ä‡ maksymalna na wykresie
     float yMax;
-    //! flaga okresla, czy obiekt ju¿ zosta³ zainicjalizowany poprawnymi danymi
+    //! flaga okresla, czy obiekt juÅ¼ zostaÅ‚ zainicjalizowany poprawnymi danymi
     bool initialized;
 };
 

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/14
     created:  14:3:2012   8:04
     filename: AntropometricDataWidget.h
@@ -12,8 +12,8 @@
 #include <qthtmlgenlib/TableGenerator.h>
 #include <QtGui/QTextEdit>
 
-//! Widget realizuj¹cy prezentacjê danych antropometrycznych
-//! Robi to w oparciu o generowanie/formatowanie/stylowanie tabel HTML za pomoc¹ CSS
+//! Widget realizujÄ…cy prezentacjÄ™ danych antropometrycznych
+//! Robi to w oparciu o generowanie/formatowanie/stylowanie tabel HTML za pomocÄ… CSS
 class AntropometricDataWidget : public QTextEdit
 {
 	Q_OBJECT
@@ -25,10 +25,10 @@ public:
 	virtual ~AntropometricDataWidget();
 
 public slots:
-	//! \param autUpdate Czy przy zmianie dowolnego parametru danych antropometrycznych widget ma siê odœwie¿yæ - wygenerowaæ tabele HTML, ....
+	//! \param autUpdate Czy przy zmianie dowolnego parametru danych antropometrycznych widget ma siÄ™ odÅ›wieÅ¼yÄ‡ - wygenerowaÄ‡ tabele HTML, ....
 	void setAutoUpdate(bool autoUpdate = true);
 
-	//! Funkcje seterów wartoœci
+	//! Funkcje seterÃ³w wartoÅ›ci
 
 	void setBodyMass(const QString & val);
 	void setBodyHeight(const QString & val);
@@ -57,36 +57,36 @@ public slots:
 	void setLeftHandThickness(const QString & val);
 	void setRightHandThickness(const QString & val);
 
-	//! \param val Wartoœæ która zast¹pi wszystkie wpisy w tabelach
+	//! \param val WartoÅ›Ä‡ ktÃ³ra zastÄ…pi wszystkie wpisy w tabelach
 	void resetAntropometricData(const QString & val = QString("-"));
 
 private:
 	//! Inicjuje tabele HTML
 	void initAntropometric();
-	//! Inicjuje nag³ówki tabel
+	//! Inicjuje nagÅ‚Ã³wki tabel
 	void initAntropometricHeadersStructure();
-	//! Inicjuje zawartoœc tabel
+	//! Inicjuje zawartoÅ›c tabel
 	void initAntropometricContent();
 	//! Inicjuje style tabel
 	void initAntropometricStyles();
 	//! Inicjucje atrybuty tabel
 	void initAntropometricAtributes();
 
-	//! Odœwie¿a zawartoœc tabel HTML - generuje/formatuje i styluje od zera
+	//! OdÅ›wieÅ¼a zawartoÅ›c tabel HTML - generuje/formatuje i styluje od zera
 	void updateContent();
-	//! Próbuje odœwie¿aæ zawartoœæ tabel jeœli jest to konieczne i mo¿liwe
+	//! PrÃ³buje odÅ›wieÅ¼aÄ‡ zawartoÅ›Ä‡ tabel jeÅ›li jest to konieczne i moÅ¼liwe
 	void tryUpdateContent();
-	// Próbuje zmieniæ zawartoœc tabeli i odœwie¿yæ j¹
+	// PrÃ³buje zmieniÄ‡ zawartoÅ›c tabeli i odÅ›wieÅ¼yÄ‡ jÄ…
 	void tryChangeContent();
 
 private:
 	//! Struktura do opisu tabeli z danymi
 	struct AntropometricTabel {
-		//! Zawartoœæ tabeli
+		//! ZawartoÅ›Ä‡ tabeli
 		htmlGen::HtmlDataTableContent antropometricContent;
-		//! Uk³¹d nag³óków tabeli
+		//! UkÅ‚Ä…d nagÅ‚Ã³kÃ³w tabeli
 		htmlGen::TableHeadersStructureDescriptor antropometricHeadersStructure;
-		//! Atrybuty poszczególnych komórek tabeli
+		//! Atrybuty poszczegÃ³lnych komÃ³rek tabeli
 		htmlGen::HtmlDataTableCellAttributes antropometricCellsAttributes;
 		//! Style tabeli
 		htmlGen::HtmlDataTableStyles antropometricStyles;
@@ -94,13 +94,13 @@ private:
 
 private:
 
-	//! Czy nale¿y przy ka¿dej zmianie aktualizowaæ
+	//! Czy naleÅ¼y przy kaÅ¼dej zmianie aktualizowaÄ‡
 	bool autoUpdate_;
-	//! Czy nast¹pi³a zmiana zawartoœci
+	//! Czy nastÄ…piÅ‚a zmiana zawartoÅ›ci
 	bool changed_;
-	//! Opis danych antropometrycznych ogólnych
+	//! Opis danych antropometrycznych ogÃ³lnych
 	AntropometricTabel antropometricGeneralTable;
-	//! Opis danych antropometrycznych z podzia³em na lew¹ i praw¹ stronê
+	//! Opis danych antropometrycznych z podziaÅ‚em na lewÄ… i prawÄ… stronÄ™
 	AntropometricTabel antropometricLeftRightTable;
 };
 

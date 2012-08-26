@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2011/12/10
 	created:	10:12:2011   19:28
 	filename: 	DataChannelStats.h
@@ -156,7 +156,7 @@ namespace boost {
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa ze statystykami kana≥u, leniwie aktualizowana w momencie zapytania
+//! Klasa ze statystykami kana≈Çu, leniwie aktualizowana w momencie zapytania
 template<class PointType, class TimeType>
 class ChannelStats
 {
@@ -168,7 +168,7 @@ public:
     typedef std::pair<PointType, std::size_t> extremumPair;
 
 private:
-    //! Klasa obserwujπca - obiekt statystyk bezpoúrendio nie moze byÊ obserwatore bo moønaby go by≥o przypadkiem podpiπÊ pod kilka kana≥Ûw!!
+    //! Klasa obserwujƒÖca - obiekt statystyk bezpo≈õrendio nie moze byƒá obserwatore bo mo≈ºnaby go by≈Ço przypadkiem podpiƒÖƒá pod kilka kana≈Ç√≥w!!
     class ChannelObserver : public Channel::_MyObserverType
     {
     public:
@@ -178,7 +178,7 @@ private:
             stats->changed = true;
         }
 
-        //! \param Obiekt statystyk aktualizowany na zmianÍ danych kana≥u
+        //! \param Obiekt statystyk aktualizowany na zmianƒô danych kana≈Çu
         void setChannelStats(ChannelStats * stats)
         {
             this->stats = stats;
@@ -214,7 +214,7 @@ public:
         changed = true;
     }
 
-    //! \return Srednia wartoú danych kana≥u
+    //! \return Srednia warto≈õ danych kana≈Çu
     PointTypeConstReference meanValue() const
     {
         if(changed == true){
@@ -224,7 +224,7 @@ public:
         return meanVal;
     }
 
-    //! \return Minimalna wartoúÊ danych kana≥u
+    //! \return Minimalna warto≈õƒá danych kana≈Çu
     extremumPair minimum() const
     {
         if(changed == true){
@@ -234,7 +234,7 @@ public:
         return minVal;
     }
 
-    //! \return Maksymalna wartoúÊ danych kana≥u
+    //! \return Maksymalna warto≈õƒá danych kana≈Çu
     extremumPair maximum() const
     {
         if(changed == true){
@@ -244,13 +244,13 @@ public:
         return maxVal;
     }
 
-    //! \return Minimalna wartoúÊ danych kana≥u
+    //! \return Minimalna warto≈õƒá danych kana≈Çu
     PointType minValue() const
     {
         return minimum().first;
     }
 
-    //! \return Maksymalna wartoúÊ danych kana≥u
+    //! \return Maksymalna warto≈õƒá danych kana≈Çu
     PointType maxValue() const
     {
         return maximum().first;
@@ -281,7 +281,7 @@ public:
     }
 
 
-    //! \return Variancja danych kana≥u
+    //! \return Variancja danych kana≈Çu
     PointTypeConstReference varianceValue() const
     {
         if(changed == true){
@@ -291,13 +291,13 @@ public:
         return varianceVal;
     }
 
-    //! \return Kana≥ ktÛrego zegar dotyczy
+    //! \return Kana≈Ç kt√≥rego zegar dotyczy
     const ChannelPtr & getChannel()
     {
         return channel;
     }
 
-    //! \return Kana≥ ktÛrego zegar dotyczy
+    //! \return Kana≈Ç kt√≥rego zegar dotyczy
     const ChannelConstPtr & getChannel() const
     {
         return constChannel;
@@ -340,7 +340,7 @@ public:
     }
 
 protected:
-    //! Aktualizuje statystyki kana≥u
+    //! Aktualizuje statystyki kana≈Çu
     void updateStats() const
     {
         using namespace boost::accumulators;
@@ -392,24 +392,24 @@ protected:
     }
 
 private:
-    //! årednia wartoúÊ danych w kanale
+    //! ≈örednia warto≈õƒá danych w kanale
     mutable PointType meanVal;
-    //! Minimalna wartoúÊ danych w kanale
+    //! Minimalna warto≈õƒá danych w kanale
     mutable extremumPair minVal;
-    //! Maksymalna wartoúÊ danych w kanale
+    //! Maksymalna warto≈õƒá danych w kanale
     mutable extremumPair maxVal;
     //! Wariancja danych w kanale
     mutable PointType varianceVal;
 
-    //! Czy kana≥ uleg≥ zmianie
+    //! Czy kana≈Ç uleg≈Ç zmianie
     mutable bool changed;
 
     bool useDefinedTimes;
     TimeType definedFrom;
     TimeType definedTo;
-    //! Obserwator zmian kana≥u
+    //! Obserwator zmian kana≈Çu
     ChannelObserver observer;
-    //! Obserwowany kana≥
+    //! Obserwowany kana≈Ç
     ChannelConstPtr constChannel;
 
     ChannelPtr channel;

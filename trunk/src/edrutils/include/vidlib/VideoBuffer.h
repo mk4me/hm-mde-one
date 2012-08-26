@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:  2010/07/28
 	created:  28:7:2010   14:40
 	filename: VideoBufferImpl.h
@@ -24,7 +24,7 @@ class VideoBufferChunk;
 class VIDLIB_EXPORT VideoBuffer
 {
 private:
-    //! Zastosowany wzorzec "Pimpl" (øeby usunπÊ warningi przy budowie DLL)
+    //! Zastosowany wzorzec "Pimpl" (≈ºeby usunƒÖƒá warningi przy budowie DLL)
     class VideoBufferImpl* impl;
 
 public:
@@ -33,25 +33,25 @@ public:
     //! \param height
     //! \param format
     VideoBuffer(int maxSize, int width, int height, PixelFormat format);
-    //! Destruktor, zwalnia ca≥y bufor.
+    //! Destruktor, zwalnia ca≈Çy bufor.
     ~VideoBuffer();
 
     //! \return
     PixelFormat getFormat() const;
 
-    //! \return Wskaünik na bufor ramki albo NULL, jeøeli wyczerpa≥o siÍ miejsce w buforze.
+    //! \return Wska≈∫nik na bufor ramki albo NULL, je≈ºeli wyczerpa≈Ço siƒô miejsce w buforze.
     Picture * pop();
-    //! \param frame Ramka, ktÛra ma byÊ zwrÛcona do bufora. Wywo≥ywaÊ TYLKO, jeúli po uøyciu
-    //!              metody pop ramka nie zosta≥a uøyta.
+    //! \param frame Ramka, kt√≥ra ma byƒá zwr√≥cona do bufora. Wywo≈Çywaƒá TYLKO, je≈õli po u≈ºyciu
+    //!              metody pop ramka nie zosta≈Ça u≈ºyta.
     void push(Picture * frame);
 
-    //! Zaznacza, øe ramka jest uøyta.
+    //! Zaznacza, ≈ºe ramka jest u≈ºyta.
     //! \param frame
-    //! \param startTime Poczπtek przedzia≥u czasu.
-    //! \param endTime Koniec przedzia≥u czasu.
+    //! \param startTime PoczƒÖtek przedzia≈Çu czasu.
+    //! \param endTime Koniec przedzia≈Çu czasu.
     bool notifyUsed(Picture * frame, double startTime, double endTime);
 
-    //! Zwalania ramkÍ w zadanym punkcie czasowym.
+    //! Zwalania ramkƒô w zadanym punkcie czasowym.
     bool freeFrame(double time);
     //!
     bool freeFirstFrame();
@@ -68,12 +68,12 @@ public:
     //! \param time
     //! \param timestamp
     //! \param finish
-    //! \return Zbuforowana ramka dla zdanego czasu bπdü NULL, jeøeli nie jest zbuforowana.
+    //! \return Zbuforowana ramka dla zdanego czasu bƒÖd≈∫ NULL, je≈ºeli nie jest zbuforowana.
     const Picture * getFrame(double time, double * timestamp = NULL, double * finish = NULL);
     //! \param time
     //! \param timestamp
     //! \param finish
-    //! \return Zbuforowana ramka dla zdanego czasu bπdü NULL, jeøeli nie jest zbuforowana.
+    //! \return Zbuforowana ramka dla zdanego czasu bƒÖd≈∫ NULL, je≈ºeli nie jest zbuforowana.
     const Picture * getNearestFrame(double time, double * timestamp = NULL, double * finish = NULL);
 };
 

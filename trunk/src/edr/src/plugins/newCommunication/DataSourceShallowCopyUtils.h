@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/03/08
     created:  8:3:2012   11:09
     filename: DataSourceShallowCopyUtils.h
@@ -12,26 +12,26 @@
 #include <plugins/newCommunication/DataSourceShallowCopy.h>
 #include <core/Filesystem.h>
 
-//! Klasa pomagajπca tworzyÊ/zarzπdzaÊ p≥ytkimi kopiami danych
+//! Klasa pomagajƒÖca tworzyƒá/zarzƒÖdzaƒá p≈Çytkimi kopiami danych
 class DataSourceShallowCopyUtils
 {
 public:
 
-    //! \param shallowCopy P≥ytka kopia bazy danych do wype≥nienia
-    //! \param motionShallowCopy åcieøka do zapisu pliku danych p≥ytkiej kopi danych ruchu
-    //! \param motionMetadata åcieøka do zapisu pliku metadanych p≥ytkiej kopi danych ruchu
-    //! \param medicalShallowCopy åcieøka do zapisu pliku danych p≥ytkiej kopi danych medycznych
-    //! \param medicalMetadata åcieøka do zapisu pliku metadanych p≥ytkiej kopi danych medycznych
+    //! \param shallowCopy P≈Çytka kopia bazy danych do wype≈Çnienia
+    //! \param motionShallowCopy ≈öcie≈ºka do zapisu pliku danych p≈Çytkiej kopi danych ruchu
+    //! \param motionMetadata ≈öcie≈ºka do zapisu pliku metadanych p≈Çytkiej kopi danych ruchu
+    //! \param medicalShallowCopy ≈öcie≈ºka do zapisu pliku danych p≈Çytkiej kopi danych medycznych
+    //! \param medicalMetadata ≈öcie≈ºka do zapisu pliku metadanych p≈Çytkiej kopi danych medycznych
     static void createShallowCopy(communication::ShallowCopy & shallowCopy, const core::Filesystem::Path & motionShallowCopy,
         const core::Filesystem::Path & motionMetadata, const core::Filesystem::Path & medicalShallowCopy,
         const core::Filesystem::Path & medicalMetadata);
 
-    //! \param p≥ytka kopia bazy danych
-    //! \return Czy p≥ytka kopia bazy danych jest spÛjna i poprawna
+    //! \param p≈Çytka kopia bazy danych
+    //! \return Czy p≈Çytka kopia bazy danych jest sp√≥jna i poprawna
     static bool checkShallowCopyIntegrity(const communication::ShallowCopy & shallowCopy);
 
-    //! \param P≥ytka kopia bazy danych
-    //! \return Czy p≥ytka kopia bazy danych wymaga odúwieøenia (úciπgniÍcia nowych plikÛw
+    //! \param P≈Çytka kopia bazy danych
+    //! \return Czy p≈Çytka kopia bazy danych wymaga od≈õwie≈ºenia (≈õciƒÖgniƒôcia nowych plik√≥w
     static bool shallowCopyRequiresRefresh(const communication::ShallowCopy & shallowCopy, webservices::DateTime & currentVersion);
 };
 

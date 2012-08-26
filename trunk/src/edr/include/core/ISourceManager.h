@@ -1,11 +1,11 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/01/31
     created:  31:1:2012   9:19
     filename: ISourceManager.h
     author:   Mateusz Janiak
     
-    purpose:  Mechanizm Ÿróde³ oparty na zasadach serwisów - pluginy dostarczaj¹ ju¿ instancji Ÿróde³ które nale¿y obs³u¿yæ.
-              Nie s¹ one prototypami ani klonowalne. Wiêcej w IService i IServiceManager
+    purpose:  Mechanizm ÅºrÃ³deÅ‚ oparty na zasadach serwisÃ³w - pluginy dostarczajÄ… juÅ¼ instancji ÅºrÃ³deÅ‚ ktÃ³re naleÅ¼y obsÅ‚uÅ¼yÄ‡.
+              Nie sÄ… one prototypami ani klonowalne. WiÄ™cej w IService i IServiceManager
 *********************************************************************/
 #ifndef HEADER_GUARD_CORE__ISOURCEMANAGER_H__
 #define HEADER_GUARD_CORE__ISOURCEMANAGER_H__
@@ -16,23 +16,23 @@
 
 namespace core {
 
-    //! Interfejs zarz¹dzaj¹cy/agreguj¹cy Ÿród³a danych aplikacji
+    //! Interfejs zarzÄ…dzajÄ…cy/agregujÄ…cy ÅºrÃ³dÅ‚a danych aplikacji
     class ISourceManager
     {
     public:
         virtual ~ISourceManager() {};
 
-        //! Rejestruje zadan¹ us³ugê.
+        //! Rejestruje zadanÄ… usÅ‚ugÄ™.
         //! \param newService
         virtual void registerSource(const ISourcePtr & newSource) = 0;
 
-        //! \return Liczba Ÿróde³.
+        //! \return Liczba ÅºrÃ³deÅ‚.
         virtual int getNumSources() const = 0;
-        //! \param idx Indeks Ÿród³a.
-        //! \return ród³o o zadanym indeksie.
+        //! \param idx Indeks ÅºrÃ³dÅ‚a.
+        //! \return Å¹rÃ³dÅ‚o o zadanym indeksie.
         virtual ISourcePtr getSource(int idx) = 0;
-        //! \param id ID Ÿród³a do wyszukania.
-        //! \return Odnalezione Ÿród³o b¹dŸ NULL.
+        //! \param id ID ÅºrÃ³dÅ‚a do wyszukania.
+        //! \return Odnalezione ÅºrÃ³dÅ‚o bÄ…dÅº NULL.
         virtual ISourcePtr getSource(UniqueID id) = 0;
     };
 
@@ -41,7 +41,7 @@ namespace core {
     typedef weak_ptr<ISourceManager> ISourceManagerWeakPtr;
     typedef weak_ptr<const ISourceManager> ISourceManagerWeakConstPtr;
 
-    //! Metoda wyszukuj¹ca wszystkie Ÿród³a danego typu (np. implementuj¹ce
+    //! Metoda wyszukujÄ…ca wszystkie ÅºrÃ³dÅ‚a danego typu (np. implementujÄ…ce
     //! dany interfejs).
     template <class T>
     shared_ptr<T> querySource(ISourceManager* manager, T* dummy = nullptr)
@@ -56,7 +56,7 @@ namespace core {
         }
     }
 
-    //! Metoda wyszukuj¹ca wszystkie Ÿród³a danego typu (np. implementuj¹ce
+    //! Metoda wyszukujÄ…ca wszystkie ÅºrÃ³dÅ‚a danego typu (np. implementujÄ…ce
     //! dany interfejs).
     template <class T>
     void querySources(ISourceManager* manager, std::vector<shared_ptr<T>>& target)

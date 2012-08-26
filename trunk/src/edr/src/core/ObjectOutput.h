@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/05/07
     created:  7:5:2011   16:33
     filename: ObjectOutput.h
@@ -31,7 +31,7 @@ public:
         return core::IObjectOutput::OutputObjectsCollection(ObjectSlots::getObjects(idx));
     }
 
-    //! \return Liczba slotÛw wyjúciowych.
+    //! \return Liczba slot√≥w wyj≈õciowych.
     virtual int getNumOutputs() const
     {
         return ObjectSlots::getNumSlots();

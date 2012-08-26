@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/04/23
 	created:	23:4:2012   12:45
 	filename: 	VisualizationScheme.h
@@ -38,7 +38,7 @@ UTILS_POP_WARNINGS
     #undef min
 #endif
 
-//! Pomocnicza klasa do obs³ugi plików vsk. Likwiduje koniecznoœæ ich wielokrotnego parsowania
+//! Pomocnicza klasa do obsÅ‚ugi plikÃ³w vsk. Likwiduje koniecznoÅ›Ä‡ ich wielokrotnego parsowania
 class Vsk
 {
 public:
@@ -51,49 +51,49 @@ public:
 	};
 
 public:
-	//! dziêki tej metodzie mo¿na pobraæ przeparsowany plik vsk z obs³ugiwanych schematów. W przypadku niepowodzenia rzucany jest wyj¹tek
-	//! \param count dostêpny schemat
-    //! \return Parser z wczytan¹ struktur¹
+	//! dziÄ™ki tej metodzie moÅ¼na pobraÄ‡ przeparsowany plik vsk z obsÅ‚ugiwanych schematÃ³w. W przypadku niepowodzenia rzucany jest wyjÄ…tek
+	//! \param count dostÄ™pny schemat
+    //! \return Parser z wczytanÄ… strukturÄ…
 	static kinematic::VskParserConstPtr get(MarkersCount count);
 
 private:
-    //! przygotowany schemat dla 16 markerów
+    //! przygotowany schemat dla 16 markerÃ³w
     static kinematic::VskParserPtr Count16;
-    //! przygotowany schemat dla 39 markerów
+    //! przygotowany schemat dla 39 markerÃ³w
 	static kinematic::VskParserPtr Count39;
-    //! przygotowany schemat dla 53 markerów
+    //! przygotowany schemat dla 53 markerÃ³w
 	static kinematic::VskParserPtr Count53;
 };
 
 class ISchemeDrawer;
 typedef core::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
 
-//! klasa stanowi po³¹czenie miêdzy reprezentacj¹ wewnêtrzn¹, a kontrolk¹ odrysowywuj¹c¹ szkielet
+//! klasa stanowi poÅ‚Ä…czenie miÄ™dzy reprezentacjÄ… wewnÄ™trznÄ…, a kontrolkÄ… odrysowywujÄ…cÄ… szkielet
 class VisualizationScheme
 {
 public:
     //! stan pojedynczego markera / jointa
     struct State {
         State() : position(), color(), isEffector(false), visible(true), name("UNKNOWN") {}
-        osg::Vec3 position;  //!< pozycja w globalnym uk³adzie odniesienia
+        osg::Vec3 position;  //!< pozycja w globalnym ukÅ‚adzie odniesienia
         osg::Vec4 color;     //!< kolor w formacie RGBA <0,1>
-        bool isEffector;     //!< czy joint / marker jest liœciem w hierarchii
-        bool visible;        //!< czy joint / marker powinien byæ widoczny
+        bool isEffector;     //!< czy joint / marker jest liÅ›ciem w hierarchii
+        bool visible;        //!< czy joint / marker powinien byÄ‡ widoczny
         std::string name;    //!< nazwa jointa / markera
     };
 
-    //! struktura zawiera jedno po³¹czenie pomiêdzy stawami lub markerami
+    //! struktura zawiera jedno poÅ‚Ä…czenie pomiÄ™dzy stawami lub markerami
     struct Connection {
         Connection() : index1(-1), index2(-1), color(), visible(true), length(-1.0f) {}
-        //! indeks pierwszego stawu/markera (zgodny z przekazywan¹ tablica State)
+        //! indeks pierwszego stawu/markera (zgodny z przekazywanÄ… tablica State)
         int index1;
-        //! indeks drugiego stawu/markera (zgodny z przekazywan¹ tablica State)
+        //! indeks drugiego stawu/markera (zgodny z przekazywanÄ… tablica State)
         int index2;
-        //! kolor po³¹czenia (RGBA <0,1>)
+        //! kolor poÅ‚Ä…czenia (RGBA <0,1>)
         osg::Vec4 color;
-        //! czy po³¹czenie jest widoczne
+        //! czy poÅ‚Ä…czenie jest widoczne
         bool visible;
-        //! d³ugoœæ po³¹czenia
+        //! dÅ‚ugoÅ›Ä‡ poÅ‚Ä…czenia
         float length;
     };
 
@@ -118,31 +118,31 @@ public:
     double getTime() const {
         return getNormalizedTime() * getDuration();
     }
-    //! \return aktualny œrodek geometryczny
+    //! \return aktualny Å›rodek geometryczny
     virtual osg::Vec3 getCurrentPosition() const = 0;
     //! \return czas trwania animacji
     virtual double getDuration() const = 0;
-    //! \return kolekcja ze stanami obiektów (pozycja, widocznoœæ itp.)
+    //! \return kolekcja ze stanami obiektÃ³w (pozycja, widocznoÅ›Ä‡ itp.)
     const std::vector<State> &getStates() const { return states; }
-    //! \return kolekcja ze stanami po³¹czeñ miêdzy obiektami
+    //! \return kolekcja ze stanami poÅ‚Ä…czeÅ„ miÄ™dzy obiektami
     const std::vector<Connection> &getConnections() const { return connections; }
-    //! \return czy schemat przechowuje ju¿ jakieœ dane?
+    //! \return czy schemat przechowuje juÅ¼ jakieÅ› dane?
 	virtual bool hasData() const = 0;
-    //! usawia jednolity kolor dla wszystkich obiektów
+    //! usawia jednolity kolor dla wszystkich obiektÃ³w
     //! \param color ustawiany kolor (RGBA 0-1)
     void setGlobalStatesColor(const osg::Vec4& color);
 
 protected:
-    //! stany markerów dla aktualnego czasu
+    //! stany markerÃ³w dla aktualnego czasu
     std::vector<State> states;
-    //! po³¹czenia miêdzy markerami
+    //! poÅ‚Ä…czenia miÄ™dzy markerami
     std::vector<Connection> connections;
     //! aktualny czas
     double normalizedTime;
 
 protected:
     //! Uaktualnienie schematu
-    //! \param time czas, do którego trzeba uaktualniæ
+    //! \param time czas, do ktÃ³rego trzeba uaktualniÄ‡
     virtual void update(double time) = 0;
 };
 

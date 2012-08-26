@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:  2011/02/11
 	created:  11:2:2011   15:32
 	filename: ObjectWrapper.h
@@ -51,7 +51,7 @@ namespace core {
         };
 
     public:
-        //! Lista typów.
+        //! Lista typĂłw.
         typedef TypeInfoList Types;
 
     public:
@@ -93,7 +93,7 @@ namespace core {
         /*template <class T>
         static ObjectWrapperPtr create(T* dummy = nullptr)
         {
-            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien być używany");
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byÄ‡ uĹĽywany");
             typedef ObjectWrapperT<T> Wrapper;
             Wrapper * wrapper = new Wrapper();
             return ObjectWrapperPtr(wrapper);
@@ -103,11 +103,11 @@ namespace core {
         template <class T>
         static const char* getClassName(T* dummy = nullptr)
         {
-            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uĹĽywany");
             return ObjectWrapperT<T>::className();
         }
 
-        //! \param type Typ do porównania.
+        //! \param type Typ do porĂłwnania.
         //! \return Czy to te same typy?
         inline bool isTypeEqual(const TypeInfo& type) const
         {
@@ -120,10 +120,10 @@ namespace core {
 
     public:
 
-        //! Próba pobrania obiektu z wrappera.
+        //! PrĂłba pobrania obiektu z wrappera.
         //! \param object Rezultat.
-        //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-        //! \return Sukces/pora¿ka.
+        //! \param exact Czy ma byĂ¦ tylko i wyÂłÂącznie ten typ czy teÂż moÂże byĂ¦ rzutowanie w dĂłÂł?
+        //! \return Sukces/poraÂżka.
         template <class Ptr>
         bool tryGet(Ptr& object, bool exact = false)
         {
@@ -140,10 +140,10 @@ namespace core {
             }
         }
 
-        //! Próba pobrania obiektu z wrappera.
+        //! PrĂłba pobrania obiektu z wrappera.
         //! \param object Rezultat.
-        //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-        //! \return Sukces/pora¿ka.
+        //! \param exact Czy ma byĂ¦ tylko i wyÂłÂącznie ten typ czy teÂż moÂże byĂ¦ rzutowanie w dĂłÂł?
+        //! \return Sukces/poraÂżka.
         template <class Ptr>
         bool tryGet(Ptr& object, bool exact = false) const
         {
@@ -160,8 +160,8 @@ namespace core {
             }
         }
 
-        //! Pobiera obiekt z wrappera. W razie b³êdu rzuca bad_castem.
-        //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
+        //! Pobiera obiekt z wrappera. W razie bÂłĂŞdu rzuca bad_castem.
+        //! \param exact Czy ma byĂ¦ tylko i wyÂłÂącznie ten typ czy teÂż moÂże byĂ¦ rzutowanie w dĂłÂł?
         //! \return Return Type Resolver
         get_t get(bool exact = false)
         {
@@ -169,19 +169,19 @@ namespace core {
             return result;
         }
 
-        //! \param dummy Pozostawiæ pusty.
-        //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
+        //! \param dummy PozostawiĂ¦ pusty.
+        //! \return Wrappowany obiekt. Gdy wrapper jest innego typu niÂż parametr szablonu rzucany jest wyjÂątek.
         template <class T>
         typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
         {
-            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uĹĽywany");
             typedef ObjectWrapperT<T> Wrapper;
             typedef typename Wrapper::Ptr Ptr;
             return static_cast<Ptr>(get());
         }
 
-        //! Pobiera obiekt z wrappera. W razie b³êdu rzuca bad_castem.
-        //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
+        //! Pobiera obiekt z wrappera. W razie bÂłĂŞdu rzuca bad_castem.
+        //! \param exact Czy ma byĂ¦ tylko i wyÂłÂącznie ten typ czy teÂż moÂże byĂ¦ rzutowanie w dĂłÂł?
         //! \return Return Type Resolver
         const get_t get(bool exact = false) const
         {
@@ -189,7 +189,7 @@ namespace core {
             return result;
         }
 
-        //! Ustawia obiekt wrappera. W razie b³êdu rzuca bad_castem.
+        //! Ustawia obiekt wrappera. W razie bÂłĂŞdu rzuca bad_castem.
         //! \param object Obiekt.
         template <class Ptr>
         void set(const Ptr& object, const std::string& name, const std::string& source)
@@ -199,10 +199,10 @@ namespace core {
             }
         }
 
-        //! Ustawia obiekt wrappera, jego nazwę i źródło
+        //! Ustawia obiekt wrappera, jego nazwÄ™ i ĹşrĂłdĹ‚o
         //! \param object Obiekt
-        //! \param name Nazwa obiektu, która ma być wyświetlona
-        //! \param source źródło obiektu - ścieżka do pliku z którego pochodzi
+        //! \param name Nazwa obiektu, ktĂłra ma byÄ‡ wyĹ›wietlona
+        //! \param source ĹşrĂłdĹ‚o obiektu - Ĺ›cieĹĽka do pliku z ktĂłrego pochodzi
         template <class Ptr>
         void set(const Ptr& object)
         {
@@ -213,7 +213,7 @@ namespace core {
 
         //! Ustawia obiekt wrappera.
         //! \param object Obiekt.
-        //! \return Sukces/pora¿ka.
+        //! \return Sukces/poraÂżka.
         template <class Ptr>
         bool trySet(const Ptr& object)
         {
@@ -225,10 +225,10 @@ namespace core {
             }
         }
 
-        //! Ustawia obiekt wrappera, jego nazwę i źródło
+        //! Ustawia obiekt wrappera, jego nazwÄ™ i ĹşrĂłdĹ‚o
         //! \param object Obiekt
-        //! \param name Nazwa obiektu, która ma być wyświetlona
-        //! \param source źródło obiektu - ścieżka do pliku z którego pochodzi
+        //! \param name Nazwa obiektu, ktĂłra ma byÄ‡ wyĹ›wietlona
+        //! \param source ĹşrĂłdĹ‚o obiektu - Ĺ›cieĹĽka do pliku z ktĂłrego pochodzi
         template <class Ptr>
         bool trySet(const Ptr& object, const std::string& name, const std::string& source)
         {
@@ -264,39 +264,39 @@ namespace core {
         virtual void setChanged(bool changed) = 0;
 
         //! \param type
-        //! \return Czy obiekt wspiera okreœlony typ?
+        //! \return Czy obiekt wspiera okreĹ“lony typ?
         virtual bool isSupported(const TypeInfo& type) const = 0;
-        //! \param type Typ inteligentnego wskaŸnika.
-        //! \return true je¿eli do z obiektu mo¿na wy³uskaæ dany wskaŸnik.
+        //! \param type Typ inteligentnego wskaĹ¸nika.
+        //! \return true jeÂżeli do z obiektu moÂżna wyÂłuskaĂ¦ dany wskaĹ¸nik.
         virtual bool isPtrSupported(const TypeInfo& type) const = 0;
 
         //! \return Informacje o typie.
         virtual TypeInfo getTypeInfo() const = 0;
 
-        //! \return Informacje o typie odpowiednio normalnego i sta³ego wskaŸnika.
+        //! \return Informacje o typie odpowiednio normalnego i staÂłego wskaĹ¸nika.
         virtual std::pair<TypeInfo, TypeInfo> getPtrTypeInfo() const = 0;
 
-        //! \param supported Lista wspieranych rozszerzeñ.
+        //! \param supported Lista wspieranych rozszerzeĂ±.
         virtual void getSupportedTypes(Types& supported) const = 0;
 
         //! \return Czy wrappowany obiekt jest wyzerowany?
         virtual bool isNull() const = 0;
 
-        //! \return Klon bie¿¹cego obiektu. Wewnêtrzny wskaŸnik równie¿ jest kopiowany.
+        //! \return Klon bieÂżÂącego obiektu. WewnĂŞtrzny wskaĹ¸nik rĂłwnieÂż jest kopiowany.
         virtual ObjectWrapperPtr clone() const = 0;
 
         virtual ObjectWrapperPtr create() const = 0;
 
     protected:
 
-        //! \return Czy uda³o siê ustawiæ m¹dry wskaŸnik?
+        //! \return Czy udaÂło siĂŞ ustawiĂ¦ mÂądry wskaĹ¸nik?
         virtual bool getSmartPtr(void* ptr, const TypeInfo& type) const = 0;
 
         virtual bool setSmartPtr(const void* ptr, const TypeInfo& type) = 0;
     };
 
-    //! Baza dla typu wrapuj¹cego jakiœ obiekt. Poza trzymaniem metadanych klasy pochodne
-    //! trzymaj¹ referencje do obiektów.
+    //! Baza dla typu wrapujÂącego jakiĹ“ obiekt. Poza trzymaniem metadanych klasy pochodne
+    //! trzymajÂą referencje do obiektĂłw.
     class ObjectWrapper : public IObjectWrapper
     {
     protected:
@@ -304,11 +304,11 @@ namespace core {
         std::string name;
         //! Nazwa typu.
         std::string className;
-        //! Hash identyfikuj¹cy typ.
+        //! Hash identyfikujÂący typ.
         std::size_t classID;
-        //! Opis Ÿród³a.
+        //! Opis Ĺ¸rĂłdÂła.
         std::string source;
-        //! Czy obiekt uleg³ zmianie?
+        //! Czy obiekt ulegÂł zmianie?
         bool changed;
 
     public:
@@ -318,7 +318,7 @@ namespace core {
         template <class T>
         static ObjectWrapperPtr create(T* dummy = nullptr)
         {
-            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uĹĽywany");
             typedef ObjectWrapperT<T> Wrapper;
             Wrapper * wrapper = new Wrapper();
             return ObjectWrapperPtr(wrapper);
@@ -385,8 +385,8 @@ namespace core {
 
 
 
-    //! Deklaracja typu. Trzeba go specjalizowaæ za pomoc¹ makr. Ta wersja bêdzie
-    //! rzucaæ statyczn¹ asercj¹.
+    //! Deklaracja typu. Trzeba go specjalizowaĂ¦ za pomocÂą makr. Ta wersja bĂŞdzie
+    //! rzucaĂ¦ statycznÂą asercjÂą.
     template <class T>
     class ObjectWrapperT : public ObjectWrapper
     {
@@ -396,13 +396,13 @@ namespace core {
         Ptr get()
         {
             // rev co z tymi statycznymi asercjami?
-            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagĹ‚Ăłwka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
             return nullptr;
         }
         void set(Ptr)
         {
             // rev co z tymi statycznymi asercjami?
-            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+            //UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagĹ‚Ăłwka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
         }
     };
 
@@ -412,8 +412,8 @@ namespace core {
         static const bool isDefinitionVisible = false;
     };
 
-    //! Pomocniczy typ bazowy, zarz¹dzaj¹cy obiektem za pomoc¹ parametru
-    //! PtrPolicy. Tego typu nigdy nie u¿ywa siê wprost.
+    //! Pomocniczy typ bazowy, zarzÂądzajÂący obiektem za pomocÂą parametru
+    //! PtrPolicy. Tego typu nigdy nie uÂżywa siĂŞ wprost.
     template <class T, class PtrPolicyT, class ClonePolicyT>
     class __ObjectWrapperT : public ObjectWrapper, protected PtrPolicyT, protected ClonePolicyT
     {
@@ -427,7 +427,7 @@ namespace core {
 
         //! Wrappowany obiekt.
         typedef typename Base::template Ptr<T>::Type Ptr;
-        //! Sta³y wrappowany obiekt
+        //! StaÂły wrappowany obiekt
         typedef typename Base::template Ptr<const T>::Type ConstPtr;
 
     protected:
@@ -488,13 +488,13 @@ namespace core {
         virtual void reset()
         {
             if(wrapped != nullptr){
-                // rev usunięte <T>
+                // rev usuniÄ™te <T>
                 PtrPolicy::setPtr(wrapped, static_cast<T*>(nullptr));
             }
         }
 
         //! \param type
-        //! \return Czy obiekt wspiera okreœlony typ?
+        //! \return Czy obiekt wspiera okreĹ“lony typ?
         virtual bool isSupported(const TypeInfo& type) const
         {
             return type == typeid(T);
@@ -504,7 +504,7 @@ namespace core {
         {
             supported.push_back(typeid(T));
         }
-        //! \return Czy wewnêtrzny wskaŸnik jest wyzerowany?
+        //! \return Czy wewnĂŞtrzny wskaĹ¸nik jest wyzerowany?
         virtual bool isNull() const
         {
             return wrapped ? false : true;
@@ -541,7 +541,7 @@ namespace core {
     };
 
 // rev - klasa przeniesiona do makrodefinicji
-// wyglada na to, ze nie da się odwołać do pola specjalizowanej klasy, po której się dziedziczy
+// wyglada na to, ze nie da siÄ™ odwoĹ‚aÄ‡ do pola specjalizowanej klasy, po ktĂłrej siÄ™ dziedziczy
 /*
     template <class T, class B>
     class __ObjectWrapperTInherited : public ObjectWrapperT<B>
@@ -549,9 +549,9 @@ namespace core {
     public:
         //! Wrappowany obiekt.
         typedef ObjectWrapperT<B> Base;
-        //! U¿ycie PtrPolicy typu bazowego.
+        //! UÂżycie PtrPolicy typu bazowego.
         typedef typename Base::PtrPolicy PtrPolicy;
-        //! U¿ywany wskaŸnik.
+        //! UÂżywany wskaĹ¸nik.
         typedef typename PtrPolicy::template Ptr<T>::Type Ptr;
         //!
         typedef typename PtrPolicy::template Ptr<const T>::Type ConstPtr;
@@ -582,7 +582,7 @@ namespace core {
         }
 
         //! \param type
-        //! \return Czy obiekt wspira okreœlony typ?
+        //! \return Czy obiekt wspira okreĹ“lony typ?
         virtual bool isSupported(const TypeInfo& type) const
         {
             if ( type == typeid(T) ) {
@@ -655,8 +655,8 @@ namespace core {
 	class ObjectWrapperFactory;
 }
 
-// Makro tworz¹ce specjalizacjê ObjectWrapperT. Musi wystêpowaæ w globalnym
-// namespace. Drugim parametrem mo¿e byæ dowolny typ maj¹cy cechy ptrPolicy,
+// Makro tworzÂące specjalizacjĂŞ ObjectWrapperT. Musi wystĂŞpowaĂ¦ w globalnym
+// namespace. Drugim parametrem moÂże byĂ¦ dowolny typ majÂący cechy ptrPolicy,
 // wbudowane: PtrPolicyRaw, PtrPolicyBoost, PtrPolicyOSG
 #define CORE_DEFINE_WRAPPER(type, ptrPolicy, clonePolicy)                                         \
 namespace core {                                                                                  \
@@ -680,7 +680,7 @@ protected:                                                                      
 __CORE_WRAPPER_DEFINE_META(type)                                                                  \
 }
 
-// rev - makro zastapione nowym pelnieszym (ale nie używającym pośredniej klasy)
+// rev - makro zastapione nowym pelnieszym (ale nie uĹĽywajÄ…cym poĹ›redniej klasy)
 /*
 
 #define CORE_DEFINE_WRAPPER_INHERITANCE(type, baseType)                                            \

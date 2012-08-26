@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/11/28
 	created:	28:11:2011   22:37
 	filename: 	NewChartLabelState.h
@@ -17,11 +17,11 @@ class NewChartSerie;
 class NewChartDot;
 class NewChartLabel;
 
-//! Stan wykresu, który operuje w jakis sposób na etykietach
+//! Stan wykresu, ktÃ³ry operuje w jakis sposÃ³b na etykietach
 class NewChartLabelState : public NewChartState
 {
 public:
-    //! Konstruktor pobiera wizualizator, na którym stan bêdzie operowa³
+    //! Konstruktor pobiera wizualizator, na ktÃ³rym stan bÄ™dzie operowaÅ‚
     NewChartLabelState(NewChartVisualizer* visualizer);
 	virtual ~NewChartLabelState() {}
 
@@ -30,27 +30,27 @@ public:
     virtual void draw(QPainter *);
     //! ustawienie stanu, zmiana kursora
     virtual void stateBegin();
-    //! zakoñczenie stanu, nieobs³ugiwane
+    //! zakoÅ„czenie stanu, nieobsÅ‚ugiwane
     virtual void stateEnd();
-    //! usuwa etykiety z wykresu zwi¹zane z konkretn¹ seria
-    //! \param serie seria, dla której usuwamy
+    //! usuwa etykiety z wykresu zwiÄ…zane z konkretnÄ… seria
+    //! \param serie seria, dla ktÃ³rej usuwamy
     void removeSerieLabels(const NewChartSerie* serie);
-    //! zarz¹dza widocznoœci¹ etykiet z wykresu zwiazanych z konkretn¹ seria
-    //! \param serie seria, dla której zmieniamy widocznoœæ elementów
+    //! zarzÄ…dza widocznoÅ›ciÄ… etykiet z wykresu zwiazanych z konkretnÄ… seria
+    //! \param serie seria, dla ktÃ³rej zmieniamy widocznoÅ›Ä‡ elementÃ³w
     //! \param visible widoczny / ukryty
     void setVisible(const NewChartSerie* serie, bool visible);
 
 protected:
-    //! prosta struktura zawieraj¹ca informacje o etykiecie
+    //! prosta struktura zawierajÄ…ca informacje o etykiecie
     struct LabelData
     {
         //! obiekt etykiety
         NewChartLabel* label;
-        //! pierwsze po³¹cznie etykiety 
+        //! pierwsze poÅ‚Ä…cznie etykiety 
         NewChartDot* dot1;
-        //! drugie po³¹czenie etykiety (mo¿e byæ puste)
+        //! drugie poÅ‚Ä…czenie etykiety (moÅ¼e byÄ‡ puste)
         NewChartDot* dot2;
-        //! seria zwiazana z etykiet¹
+        //! seria zwiazana z etykietÄ…
         const NewChartSerie* serie;
     };
     typedef core::shared_ptr<LabelData> LabelDataPtr;
@@ -59,31 +59,31 @@ protected:
     typedef boost::tuple<const NewChartSerie*, QPointF, double> SeriePointDist;
 
 protected:
-    //! Realizuje przesuniêcie pojedynczej etykiety
+    //! Realizuje przesuniÄ™cie pojedynczej etykiety
     //! \param pos nowa pozycja
-    //! \param curve krzywa pod która jest podpiêta etykieta
+    //! \param curve krzywa pod ktÃ³ra jest podpiÄ™ta etykieta
     //! \param label przesuwana etykieta
     void move(const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label);
-    //! próbuje pobraæ dane etykiety
-    //! \param pos pozycja na wykresie (wspó³rzêdne ekranowe)
-    //! \return dane etykiety lub pusty wskaŸnik
+    //! prÃ³buje pobraÄ‡ dane etykiety
+    //! \param pos pozycja na wykresie (wspÃ³Å‚rzÄ™dne ekranowe)
+    //! \return dane etykiety lub pusty wskaÅºnik
     LabelDataConstPtr getLabel(const QPoint& pos);
-    //! próbuje pobraæ dane etykiety
-    //! \param pos pozycja na wykresie (wspó³rzêdne ekranowe)
-    //! \param curve krzywa zwiazana z etykiet¹
-    //! \return dane etykiety lub pusty wskaŸnik
+    //! prÃ³buje pobraÄ‡ dane etykiety
+    //! \param pos pozycja na wykresie (wspÃ³Å‚rzÄ™dne ekranowe)
+    //! \param curve krzywa zwiazana z etykietÄ…
+    //! \return dane etykiety lub pusty wskaÅºnik
     LabelDataConstPtr getLabel(const QPoint& pos, const QwtPlotCurve* curve);
-    //! próbuje pobraæ dane etykiety
-    //! \param label etykieta, dla której pobierane s¹ dane
-    //! \return dane etykiety lub pusty wskaŸnik
+    //! prÃ³buje pobraÄ‡ dane etykiety
+    //! \param label etykieta, dla ktÃ³rej pobierane sÄ… dane
+    //! \return dane etykiety lub pusty wskaÅºnik
     LabelDataConstPtr getLabel(const NewChartLabel* label) const;
-    //! Pobiera najbli¿szy punkt od klikniecia
+    //! Pobiera najbliÅ¼szy punkt od klikniecia
     //! \param pos pozycja klikniecia
-    //! \return krotka <najbli¿sza seria, punkt na niej, odleg³oœæ od punktu klikniecia>
+    //! \return krotka <najbliÅ¼sza seria, punkt na niej, odlegÅ‚oÅ›Ä‡ od punktu klikniecia>
     SeriePointDist getClosestPoint(const QPoint& pos) const;
 
 protected:
-    //! wszystkie etykiety zwi¹zane ze stanem wizualizatora
+    //! wszystkie etykiety zwiÄ…zane ze stanem wizualizatora
     std::vector<LabelDataPtr> labels;
 
 };

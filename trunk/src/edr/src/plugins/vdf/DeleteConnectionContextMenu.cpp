@@ -1,4 +1,4 @@
-#include "DeleteConnectionContextMenu.h"
+﻿#include "DeleteConnectionContextMenu.h"
 #include <Qt/qaction.h>
 
 DeleteConnectionContextMenu::DeleteConnectionContextMenu(const osgVDF::osgVDFBaseModel::CONNECTIONS_ACTIONS_MAP & toDelete, const osgVDF::osgVDFBaseModel::CONNECTION_ACTION & leaveContextMenu)

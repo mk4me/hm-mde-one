@@ -1,7 +1,7 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Klasa CommunicationManager wykorzystuj¹ca wzorce projektowe fasada oraz singleton do zarz¹dzania po³¹czeniem
-z baz¹ danych i przesy³ania/odbierania plików miêdzy serwerem i klientem. Obecnie implementacja opiera siê o protokó³ FTP
+@brief Klasa CommunicationManager wykorzystujÄ…ca wzorce projektowe fasada oraz singleton do zarzÄ…dzania poÅ‚Ä…czeniem
+z bazÄ… danych i przesyÅ‚ania/odbierania plikÃ³w miÄ™dzy serwerem i klientem. Obecnie implementacja opiera siÄ™ o protokÃ³Å‚ FTP
 i web serwisy wsdl.
 */
 
@@ -42,11 +42,11 @@ public:
     };
 
     /**
-    Stany managera pomocne przy wykonywaniu dzia³añ wspó³bie¿nie.
+    Stany managera pomocne przy wykonywaniu dziaÅ‚aÅ„ wspÃ³Å‚bieÅ¼nie.
     */
     enum State
     {
-        Ready, /** Gotowy do wszelkich dzia³añ */
+        Ready, /** Gotowy do wszelkich dziaÅ‚aÅ„ */
         ProcessingComplex, /** Przetwarzanie kompleksowego zapytania */
         DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
         DownloadingPhoto, /** Trwa pobieranie pojedynczego pliku */
@@ -196,7 +196,7 @@ public:
     };
 
     /**
-    Typ zlecenia przekazywany do kolejki zleceñ CommunicationManagera
+    Typ zlecenia przekazywany do kolejki zleceÅ„ CommunicationManagera
     */
     struct CompleteRequest
     {
@@ -262,11 +262,11 @@ private:
     virtual ~CommunicationManager();
     /**
     Metoda statyczna (wymagana przez curla) typu callback do odbierania danych podczas pingowania.
-    @param buffer wskaŸnik do bloku pamiêci o rozmiarze size*nmemb
+    @param buffer wskaÅºnik do bloku pamiÄ™ci o rozmiarze size*nmemb
     @param size rozmiar w bajtach elementu do odczytania
-    @param nmemb liczba elementów do odczytania
-    @param stream wskaŸnik na strumieñ danych
-    @return iloœæ bajtów przetworzonych przez funkcjê
+    @param nmemb liczba elementÃ³w do odczytania
+    @param stream wskaÅºnik na strumieÅ„ danych
+    @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
     */
     static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
 
@@ -335,13 +335,13 @@ public:
     }
 
     /**
-    Zwraca postêp w procentach aktualnie wykonywanego zadania jako pejedynczego transferu
-    @return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
+    Zwraca postÄ™p w procentach aktualnie wykonywanego zadania jako pejedynczego transferu
+    @return wartoÅ›Ä‡ procentowa (od 0 do 100) pokazujÄ…ca postÄ™p wykonywanej operacji
     */
     int getProgress() const;
 
     /**
-    Przerwanie operacji pobierania pliku lub próby pomiarowej.
+    Przerwanie operacji pobierania pliku lub prÃ³by pomiarowej.
     */
     //void cancelDownload()
     //{
@@ -354,8 +354,8 @@ public:
 
 protected:
     /**
-    Ustala stan w jakim znajduje siê Communication Service.
-    @param state stan jaki ustaliæ jako aktualny dla CS
+    Ustala stan w jakim znajduje siÄ™ Communication Service.
+    @param state stan jaki ustaliÄ‡ jako aktualny dla CS
     */
     void setState(State state)
     {
@@ -365,7 +365,7 @@ protected:
 
 public:
     /**
-    Sprawdza stan w jakim znajduje siê Communication Service.
+    Sprawdza stan w jakim znajduje siÄ™ Communication Service.
     @return aktualny stan CS
     */
     State getState()
@@ -375,8 +375,8 @@ public:
     };
         
     /**
-    Podaje informacjê czy serwer odpowiedzia³ na ostatni ping.
-    @return czy serwer odpowiedzia³?
+    Podaje informacjÄ™ czy serwer odpowiedziaÅ‚ na ostatni ping.
+    @return czy serwer odpowiedziaÅ‚?
     */
     bool isServerResponse() const
     {
@@ -386,7 +386,7 @@ public:
 private:
 
     /**
-    Metoda run pochodzi z interfejsu OpenThreads::Thread i zosta³a przes³oniêta do przeniesienia operacji do osobnego w¹tku.
+    Metoda run pochodzi z interfejsu OpenThreads::Thread i zostaÅ‚a przesÅ‚oniÄ™ta do przeniesienia operacji do osobnego wÄ…tku.
     */
 
     virtual void run();
@@ -398,12 +398,12 @@ private:
 public:
 
     /**
-    Statyczna metoda pobieraj¹ca jedyna instancjê klasy CommuniationManagera.
+    Statyczna metoda pobierajÄ…ca jedyna instancjÄ™ klasy CommuniationManagera.
     @return jedyna instancja CommunicationManagera
     */
     static CommunicationManager* getInstance();
     /**
-    Statyczna metoda usuwaj¹ca jedyn¹ instancjê CommunicationManagera.
+    Statyczna metoda usuwajÄ…ca jedynÄ… instancjÄ™ CommunicationManagera.
     */
     static void destoryInstance();
 
@@ -415,27 +415,27 @@ private:
     */
     static CommunicationManager* instance;
     /**
-    WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych ruchu
+    WskaÅºnik na klasÄ™ MotionTransportWSDL_FTPS odpowiedzialnÄ… za transport danych ruchu
     */
     core::shared_ptr<communication::MotionTransportWSDL_FTPS> motionTransportManager;
 
     /**
-    WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych medycznych
+    WskaÅºnik na klasÄ™ MotionTransportWSDL_FTPS odpowiedzialnÄ… za transport danych medycznych
     */
     core::shared_ptr<communication::MedicalTransportWSDL_FTPS> medicalTransportManager;
 
     /**
-    WskaŸnik na klasê TransportWSDL_FTPSBase odpowiedzialn¹ za aktualny transport danych
+    WskaÅºnik na klasÄ™ TransportWSDL_FTPSBase odpowiedzialnÄ… za aktualny transport danych
     */
     core::shared_ptr<communication::TransportWSDL_FTPSBase> currentDownloadHelper;
 
     /**
-    WskaŸnik na klasê MotionQueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
+    WskaÅºnik na klasÄ™ MotionQueryWSDL odpowiedzialnÄ… za odpytywanie bazy danych
     */
     core::shared_ptr<communication::MotionQueryWSDL> motionQueryManager;
 
     /**
-    WskaŸnik na klasê MotionQueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
+    WskaÅºnik na klasÄ™ MotionQueryWSDL odpowiedzialnÄ… za odpytywanie bazy danych
     */
     core::shared_ptr<communication::MedicalQueryWSDL> medicalQueryManager;
 
@@ -450,7 +450,7 @@ private:
     CompleteRequest currentRequest;
 
     /**
-    Kolejka zapytañ
+    Kolejka zapytaÅ„
     */
     RequestsQueue requestsQueue;
 
@@ -467,11 +467,11 @@ private:
     */
     CURLcode pingCurlResult;
     /**
-    Muteks zabezpieczaj¹cy przed zakleszczeniami.
+    Muteks zabezpieczajÄ…cy przed zakleszczeniami.
     */
     OpenThreads::ReentrantMutex trialsMutex;
     /**
-    Muteks synchronizuj¹cy obs³uge kolejki zleceñ
+    Muteks synchronizujÄ…cy obsÅ‚uge kolejki zleceÅ„
     */
     mutable OpenThreads::ReentrantMutex requestsMutex;
 

@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 @author Marek Daniluk
 */
 
@@ -23,7 +23,7 @@ DateTime GeneralBasicQueriesService::dbTimeFormatExtractor(const std::string & t
 
     DateTime ret;
 
-    //musimy poci¹æ datê na kawa³ki        
+    //musimy pociÄ…Ä‡ datÄ™ na kawaÅ‚ki        
     tokenizer tokens(time, sep);
     tokenizer::iterator it = tokens.begin();
     ret.setYear(boost::lexical_cast<int>(*it)); it++;
@@ -190,7 +190,7 @@ std::vector<motionWsdl::Session> MotionBasicQueriesService::listLabSessionsWithA
 		temp = sessionDetails->getValue("SessionDate", type);
 		if(temp) {
             //TODO
-            //setDate nie dzia³a dla DateTime w formacie YYYY-MM-DD
+            //setDate nie dziaÅ‚a dla DateTime w formacie YYYY-MM-DD
 
 			//session.sessionDate.setDate(*((std::string*)temp));
 		} else {

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   9:12
 	filename: 	IInputOutputProcessItem.h
@@ -18,8 +18,8 @@ namespace core {
 	class IObjectSource;
 	class IObjectOutput;
 
-//! Interfejs dla elementów przetwarzaj¹cych.
-//! Zawiera opis wejœc i wyjœæ, podstawowe informacje i w³aœciwoœci elementów logicznych aplikacji operuj¹cych na danych
+//! Interfejs dla elementÃ³w przetwarzajÄ…cych.
+//! Zawiera opis wejÅ›c i wyjÅ›Ä‡, podstawowe informacje i wÅ‚aÅ›ciwoÅ›ci elementÃ³w logicznych aplikacji operujÄ…cych na danych
 class IInputOutputProcessItem : public IWorkflowItemBase, public IInputDescription, public IOutputDescription
 {
 public:
@@ -27,8 +27,8 @@ public:
 	virtual ~IInputOutputProcessItem() {}
 
     //! Przetwarza informacje.
-    //! \param input Obiekt z danymi wejsciowymi, NIE MA GWARANCJI ¯E DANE S¥ DOSTÊPNE - nale¿y to sprawdzaæ przy ka¿dym wywo³aniu
-    //! \param output Miejsce zapisu danych wyjsciowych, przekazywanych dalej, MAMY ZAGWARANTOWANE ¯E DANE MO¯NA ZAWSZE zapisywaæ do wyjœcia (kwestia ich kompatybilnoœci z tym co zadeklarowano)
+    //! \param input Obiekt z danymi wejsciowymi, NIE MA GWARANCJI Å»E DANE SÄ„ DOSTÄ˜PNE - naleÅ¼y to sprawdzaÄ‡ przy kaÅ¼dym wywoÅ‚aniu
+    //! \param output Miejsce zapisu danych wyjsciowych, przekazywanych dalej, MAMY ZAGWARANTOWANE Å»E DANE MOÅ»NA ZAWSZE zapisywaÄ‡ do wyjÅ›cia (kwestia ich kompatybilnoÅ›ci z tym co zadeklarowano)
     virtual void process(IObjectSource* input, IObjectOutput* output) = 0;
 };
 

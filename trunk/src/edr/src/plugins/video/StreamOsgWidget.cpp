@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+Ôªø#include "VideoPCH.h"
 #include "StreamOsgWidget.h"
 #include <vidlib/osg/VideoImageStream.h>
 #include <core/PluginCommon.h>
@@ -67,7 +67,7 @@ bool StreamOsgWidget::isUsingTextureRectangle() const
 void StreamOsgWidget::refreshShaders( bool useTextureRect, vidlib::PixelFormat format )
 {
     if ( format == vidlib::PixelFormatYV12 ) {
-        // usuniÍcie shaderÛw z programu
+        // usuniƒôcie shader√≥w z programu
         while ( yuvProgram->getNumShaders() ) {
             yuvProgram->removeShader( yuvProgram->getShader(0) );
         }
@@ -84,15 +84,15 @@ void StreamOsgWidget::refreshShaders( bool useTextureRect, vidlib::PixelFormat f
                 LOG_ERROR("Missing yuv texture2D shader. As a result image may be incorrect.");
             }
         }
-        // TODO: sprawdziÊ czy wielokrotnie nie dodajemy
+        // TODO: sprawdziƒá czy wielokrotnie nie dodajemy
         getOrCreateStateSet()->setAttribute(yuvProgram);
     } else if ( format == vidlib::PixelFormatARGB || format == vidlib::PixelFormatBGRA || format == vidlib::PixelFormatRGB24 ) {
-        // usuwamy shadera, poniewaz moøna odrysowaÊ wprost
+        // usuwamy shadera, poniewaz mo≈ºna odrysowaƒá wprost
         if ( osg::StateSet* state = getOrCreateStateSet() ) {
             state->removeAttribute(yuvProgram);
         }
     } else {
-        LOG_ERROR("Nieobs≥ugiwany format: "<<utils::Enum<vidlib::PixelFormat>::getName(format));
+        LOG_ERROR("Nieobs≈Çugiwany format: "<<utils::Enum<vidlib::PixelFormat>::getName(format));
     }
 }
 

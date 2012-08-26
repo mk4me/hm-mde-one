@@ -1,4 +1,4 @@
-#include "ChartPCH.h"
+ï»¿#include "ChartPCH.h"
 #include <osg/LineStipple>
 #include <boost/foreach.hpp>
 #include <math.h>
@@ -118,7 +118,7 @@ void Chart::setSerieName(const ChartSeriePtr& serie, const std::string & name)
 bool Chart::addSerie( const ChartSeriePtr& serie, const std::string & name )
 {
     if ( geode->containsDrawable(serie) ) {
-        UTILS_FAIL("Kana³ ju¿ jest dodany.");
+        UTILS_FAIL("KanaÅ‚ juÅ¼ jest dodany.");
         return false;
     } else {
 
@@ -326,12 +326,12 @@ void Chart::repositionAll()
 
     gridPosition.x() = x + xDelta;
 
-    // musimy te¿ uwzglêdniæ prawy opis wartoœci na osi X
+    // musimy teÅ¼ uwzglÄ™dniÄ‡ prawy opis wartoÅ›ci na osi X
     gridPosition.w() = w - (wDelta + xDelta);
 
     gridPosition.y() = y + yDelta;
 
-    // musimy tez uwzglêdniæ wysokoœc tekstu górnej wartoœci na osi Y
+    // musimy tez uwzglÄ™dniÄ‡ wysokoÅ›c tekstu gÃ³rnej wartoÅ›ci na osi Y
 
     gridPosition.z() = h - (hDelta + yDelta);
 
@@ -354,7 +354,7 @@ void Chart::repositionAll()
     }
 }
 
-//! Przed wywo³aniem tej metody labelki powinny byæ zaktualizowane!!
+//! Przed wywoÅ‚aniem tej metody labelki powinny byÄ‡ zaktualizowane!!
 void Chart::getGridLocation(float& x, float& y, float& w, float& h) const
 {
     x = gridPosition.x();
@@ -548,7 +548,7 @@ void Chart::setGridDensity(int gridDensity)
     }
 
     this->gridDensity=gridDensity;
-    // +1 poniewa¿ dodawane na ekstremum
+    // +1 poniewaÅ¼ dodawane na ekstremum
     labelsY.resize( gridDensity + 1 );
     labelsX.resize( gridDensity + 1 );
     setDirty();
@@ -760,7 +760,7 @@ float Chart::maxLabelsWidth(const std::vector< osgText::TextPtr > & labels)
 
 void Chart::refreshAllLabelsText()
 {
-    //odœwie¿ labelki jeœli to konieczne
+    //odÅ›wieÅ¼ labelki jeÅ›li to konieczne
     ChartSeriePtr activeSerie = this->activeSerieIndex < 0 ? nullptr : series[this->activeSerieIndex];
     if ( activeSerie ){
         
@@ -830,14 +830,14 @@ void Chart::refreshAll()
 
     repositionAll();
 
-    //sprawdz czy jest sens odœwie¿aæ
+    //sprawdz czy jest sens odÅ›wieÅ¼aÄ‡
     if(gridPosition.w() <= 0 || gridPosition.z() <= 0)
     {
         return;
     }
 
-    // odstêp miedzy elementami;
-    // 2 podane jawnie, bo trzeba zarezerwowaæ wspó³rzêdne dla t³a i osiek
+    // odstÄ™p miedzy elementami;
+    // 2 podane jawnie, bo trzeba zarezerwowaÄ‡ wspÃ³Å‚rzÄ™dne dla tÅ‚a i osiek
     float zStep = zRange/float(3 + series.size());
     float currentZ = z;
 
@@ -890,7 +890,7 @@ osg::ref_ptr<osgText::Text> Chart::createText( const osg::Vec3& pos, float size,
 void Chart::formatStream(std::ostringstream& stream, float min, float max, int decimalsToShow /*= 2*/ )
 {
     float diff = fabs(max - min);
-    // rz¹d ró¿nicy miêdzy max i min (ujemny dla diff < 1)
+    // rzÄ…d rÃ³Å¼nicy miÄ™dzy max i min (ujemny dla diff < 1)
     int logdiff = static_cast<int>(floorf(log10f(diff)));
     decimalsToShow = std::max( decimalsToShow - logdiff, 0 );
     stream << std::setiosflags(std::ios::fixed) << std::setprecision(decimalsToShow);
@@ -912,10 +912,10 @@ void Chart::setDirty( bool dirty /*= true*/ )
 
 bool Chart::prepareGeometry( osg::GeometryPtr& geom, bool condition, const char* name )
 {
-    // czy w ogóle jest coœ do pkazania?
+    // czy w ogÃ³le jest coÅ› do pkazania?
     if ( condition ) {
         if ( geom && (geode->getDrawableIndex(geom) < geode->getNumDrawables()) ) {
-            // trzeba usun¹æ!
+            // trzeba usunÄ…Ä‡!
             geode->removeDrawable(geom);
         }
         geom = nullptr;
@@ -936,10 +936,10 @@ bool Chart::prepareGeometry( osg::GeometryPtr& geom, bool condition, const char*
 }
 bool Chart::prepareText( osgText::TextPtr& text, bool condition, const char* name )
 {
-    // czy w ogóle jest coœ do pokazania?
+    // czy w ogÃ³le jest coÅ› do pokazania?
     if ( condition ) {
         if ( text && ( geode->getDrawableIndex(text) < geode->getNumDrawables()) ) {
-            // trzeba usun¹æ!
+            // trzeba usunÄ…Ä‡!
             geode->removeDrawable(text);
         }
         text = nullptr;
@@ -966,7 +966,7 @@ void Chart::refreshSeries(float & currentZ, float zStep)
 
     float activeSerieZ = currentZ + zStep * (float)(series.size() - 1);
 
-    //aktualizujemy aktywn¹ seriê
+    //aktualizujemy aktywnÄ… seriÄ™
     BOOST_FOREACH( const ChartSeriePtr& serie, series ) {
         if(serie == getActiveSerie()){
             if(serie->isActive() == false){
@@ -995,7 +995,7 @@ void Chart::refreshSeries(float & currentZ, float zStep)
 
         // dzielenie po jednostkach
         std::multimap<std::string, ChartSeriePtr> byUnits;
-        // TODO: dodaæ skalowanie dla OX!
+        // TODO: dodaÄ‡ skalowanie dla OX!
         std::map<std::string, std::pair<float, float> > unitInfo;
 
         BOOST_FOREACH( const ChartSeriePtr& serie, series ) {
@@ -1003,7 +1003,7 @@ void Chart::refreshSeries(float & currentZ, float zStep)
             std::pair<float, float> yRange = serie->getYRange();
             UTILS_ASSERT( yRange.first <= yRange.second );
             const std::string & yUnit = serie->getYUnit();
-            // uzupe³nienie min/max zakresu danej jednostki
+            // uzupeÅ‚nienie min/max zakresu danej jednostki
             auto found = unitInfo.find(yUnit);
             if ( found == unitInfo.end() ) {
                 unitInfo[yUnit] = yRange;
@@ -1011,13 +1011,13 @@ void Chart::refreshSeries(float & currentZ, float zStep)
                 found->second.first = std::min(yRange.first, found->second.first);
                 found->second.second = std::max(yRange.second, found->second.second);
             }
-            // uzupe³nienie podzia³u po jednostkach
+            // uzupeÅ‚nienie podziaÅ‚u po jednostkach
             byUnits.insert(std::make_pair(serie->getYUnit(), serie));
         }
 
         if ( shareZero ) {
-            // uwspólnienie polega na przeskalowaniu zakresów tak, ¿eby wzglêdna odleg³oœæ min/max od zera
-            // by³a jednakowa
+            // uwspÃ³lnienie polega na przeskalowaniu zakresÃ³w tak, Å¼eby wzglÄ™dna odlegÅ‚oÅ›Ä‡ min/max od zera
+            // byÅ‚a jednakowa
             float maxNegRatio = 0.0f;
             float maxPosRatio = 0.0f;
             for ( auto it = unitInfo.begin(), last = unitInfo.end(); it != last; ++it ) {
@@ -1035,45 +1035,45 @@ void Chart::refreshSeries(float & currentZ, float zStep)
                     maxPosRatio = std::max(maxPosRatio, fabs(range.second) / diff );
                 }
             }
-            // normalizujemy zakres - w takim stosunku do zakresu musz¹ byæ min i max
+            // normalizujemy zakres - w takim stosunku do zakresu muszÄ… byÄ‡ min i max
             float maxDiff = maxPosRatio + maxNegRatio;
             if ( maxDiff != 0.0f ) {
                 float maxDiffInv = 1.0f / maxDiff;
                 maxPosRatio = maxPosRatio * maxDiffInv;
                 maxNegRatio = maxNegRatio * maxDiffInv;
-                // pomocnicze zmienne pozwalaj¹ce unikn¹æ wielokrotnego dzielenia
+                // pomocnicze zmienne pozwalajÄ…ce uniknÄ…Ä‡ wielokrotnego dzielenia
                 float scaleMinToMaxFactor = maxPosRatio / maxNegRatio;
                 float scaleMaxToMinFactor = 1.0f / scaleMinToMaxFactor;
-                // skalujemy wszystkie zakresy tak, aby stosunek max i min do zakresu by³ taki jak wyliczone zbiorcze
+                // skalujemy wszystkie zakresy tak, aby stosunek max i min do zakresu byÅ‚ taki jak wyliczone zbiorcze
                 for ( auto it = unitInfo.begin(), last = unitInfo.end(); it != last; ++it ) {
                     std::pair<float, float>& range = it->second;
                     float diff = range.second - range.first;
                     if ( diff != 0.0f ) {
                         float negRatio = fabs(range.first) / diff;
                         if ( maxNegRatio == 0.0f ) {
-                            // nie ma co skalowaæ
+                            // nie ma co skalowaÄ‡
                             UTILS_ASSERT(range.first == 0.0f);
                         } else if ( maxPosRatio == 0.0f ) {
-                            // nie ma co skalowaæ
+                            // nie ma co skalowaÄ‡
                             UTILS_ASSERT(range.second == 0.0f);
                         } else if ( negRatio > maxNegRatio ) {
-                            // rozci¹gamy górny zakres
+                            // rozciÄ…gamy gÃ³rny zakres
                             range.second = scaleMinToMaxFactor * fabs(range.first);
                         } else {
-                            // rozci¹gamy dolny zakres
+                            // rozciÄ…gamy dolny zakres
                             range.first = -scaleMaxToMinFactor * fabs(range.second);
                         }
                     } else {
-                        // poniewa¿ funkcja jest niezmienna wporawdzamy rozszerzamy sztucznie zakres
+                        // poniewaÅ¼ funkcja jest niezmienna wporawdzamy rozszerzamy sztucznie zakres
                         range.first -= maxNegRatio;
                         range.second += maxPosRatio;
                     }
                 }
             } else {
-                // poniewa¿ wszystkie funkcje s¹ sta³e wprowadzamy sztuczny zakres
+                // poniewaÅ¼ wszystkie funkcje sÄ… staÅ‚e wprowadzamy sztuczny zakres
                 for ( auto it = unitInfo.begin(), last = unitInfo.end(); it != last; ++it ) {
                     std::pair<float, float>& range = it->second;
-                    // poniewa¿ funkcja jest niezmienna wporawdzamy rozszerzamy sztucznie zakres
+                    // poniewaÅ¼ funkcja jest niezmienna wporawdzamy rozszerzamy sztucznie zakres
                     range.first -= 1.0f;
                     range.second += 1.0f;
                 }
@@ -1085,7 +1085,7 @@ void Chart::refreshSeries(float & currentZ, float zStep)
             auto first = byUnits.lower_bound(unit->first);
             auto last = byUnits.upper_bound(unit->first);
 
-            // okreœlamy minimum i maksimum z danego zakresu
+            // okreÅ›lamy minimum i maksimum z danego zakresu
             float xMin = FLT_MAX;
             float xMax = -FLT_MAX;
             float yMin = unit->second.first;
@@ -1097,7 +1097,7 @@ void Chart::refreshSeries(float & currentZ, float zStep)
                 xMax = std::max(xRange.second, xMax);
             }
 
-            // teraz mo¿emy pozycjonowaæ
+            // teraz moÅ¼emy pozycjonowaÄ‡
             for ( auto it = first; it != last; ++it ) {
                 const ChartSeriePtr& serie = it->second;
                 std::pair<float, float> xRange = serie->getXRange();
@@ -1177,7 +1177,7 @@ void Chart::refreshTitle(float z)
 
 void Chart::refreshGrid(float z)
 {
-    // czy w ogóle jest coœ do pkazania?
+    // czy w ogÃ³le jest coÅ› do pkazania?
     if ( prepareGeometry(grid, !showGridX && !showGridY, "grid" ) ) {
 
         if ( !grid->getOrCreateStateSet()->getAttribute(osg::StateAttribute::LINESTIPPLE) ) {
@@ -1187,7 +1187,7 @@ void Chart::refreshGrid(float z)
         float x, y, w, h;
         getGridLocation(x, y, w, h);
 
-        // wierzcho³ki
+        // wierzchoÅ‚ki
         osg::Vec3Array* vertices = dynamic_cast<osg::Vec3Array*>(grid->getVertexArray());
         vertices->resize(0);
         for ( float dy = 0.0f, step = h / gridDensity; showGridY && dy < h; dy += step  ) {
@@ -1205,7 +1205,7 @@ void Chart::refreshGrid(float z)
         colors->at(0) = gridColor;
         grid->setColorBinding(osg::Geometry::BIND_OVERALL);
 
-        // ustawienie prymitywów
+        // ustawienie prymitywÃ³w
         osg::DrawArrays* primitives = dynamic_cast<osg::DrawArrays*>(grid->getPrimitiveSet(0));
         primitives->set(GL_LINES, 0, vertices->getNumElements());
 
@@ -1216,12 +1216,12 @@ void Chart::refreshGrid(float z)
 
 void Chart::refreshFrame(float z)
 {
-    // czy w ogóle jest coœ do pkazania?
+    // czy w ogÃ³le jest coÅ› do pkazania?
     if ( prepareGeometry(frame, !showFrame, "frame" ) ) {
         float x, y, w, h;
         getGridLocation(x, y, w, h);
 
-        // wierzcho³ki
+        // wierzchoÅ‚ki
         osg::Vec3Array* vertices = dynamic_cast<osg::Vec3Array*>(frame->getVertexArray());
         vertices->resize(0);
         vertices->push_back(osg::Vec3(x,y,z));
@@ -1242,7 +1242,7 @@ void Chart::refreshFrame(float z)
         colors->at(0) = frameColor;
         frame->setColorBinding(osg::Geometry::BIND_OVERALL);
 
-        // ustawienie prymitywów
+        // ustawienie prymitywÃ³w
         osg::DrawArrays* primitives = dynamic_cast<osg::DrawArrays*>(frame->getPrimitiveSet(0));
         primitives->set(GL_LINES, 0, vertices->getNumElements());
 
@@ -1254,13 +1254,13 @@ void Chart::refreshFrame(float z)
 void Chart::refreshAxis(float z)
 {
     using namespace osg;
-    // czy w ogóle jest coœ do pkazania?
+    // czy w ogÃ³le jest coÅ› do pkazania?
     if ( prepareGeometry(axises, !showAxisX && !showAxisY, "axises" ) ) {
 
         float x, y, w, h;
         getGridLocation(x, y, w, h);
 
-        // wierzcho³ki
+        // wierzchoÅ‚ki
         Vec3Array* vertices = dynamic_cast<Vec3Array*>(axises->getVertexArray());
         vertices->resize(0);
         if (showAxisY) {
@@ -1268,7 +1268,7 @@ void Chart::refreshAxis(float z)
             vertices->push_back(Vec3(x, y, z));
             vertices->push_back(Vec3(x, y+h, z));
             
-            // koñcówki
+            // koÅ„cÃ³wki
             float dashWidth = this->dashWidth;
             if(axisYInside == false){
                 dashWidth = -dashWidth;
@@ -1285,7 +1285,7 @@ void Chart::refreshAxis(float z)
             vertices->push_back(Vec3(x, y, z));
             vertices->push_back(Vec3(x+w, y, z));
 
-            // koñcówki
+            // koÅ„cÃ³wki
             float dashWidth = this->dashWidth;
             if(axisXInside == false){
                 dashWidth = -dashWidth;
@@ -1303,7 +1303,7 @@ void Chart::refreshAxis(float z)
         colors->at(0) = axisesColor;
         axises->setColorBinding(osg::Geometry::BIND_OVERALL);
 
-        // ustawienie prymitywów
+        // ustawienie prymitywÃ³w
         osg::DrawArrays* primitives = dynamic_cast<osg::DrawArrays*>(axises->getPrimitiveSet(0));
         primitives->set(GL_LINES, 0, vertices->getNumElements());
 
@@ -1328,13 +1328,13 @@ void Chart::refreshLabels( float z )
         osg::Vec2 size = activeSerie->getSize();
         auto yrange = activeSerie->getYRange();
 
-        // znormalizowane wspó³rzêdne
+        // znormalizowane wspÃ³Å‚rzÄ™dne
         float ny = (pos.y() - y) / h;
         float nh = size.y() / h;
-        // prze³o¿enie znormalizowanych wspó³rzêdnych na zakres jednostek
+        // przeÅ‚oÅ¼enie znormalizowanych wspÃ³Å‚rzÄ™dnych na zakres jednostek
         float range = (yrange.second - yrange.first) / nh;
         float rangeMin = yrange.first - ny * range;
-        // odœwie¿amy
+        // odÅ›wieÅ¼amy
         refreshLabels(labelsY, activeSerie->getYUnit(), !showGridY, rangeMin, rangeMin + range, x + labelsToAxisesOffset, x + labelsToAxisesOffset, y, y + h, z, osgText::Text::LEFT_CENTER);
     } else {
         BOOST_FOREACH(osgText::TextPtr& text, labelsX) {
@@ -1355,20 +1355,20 @@ void Chart::refreshCursor( float z, float range )
 
     // tekst...
     if ( cursorTextCond && cursorCond) {
-        // okreœlamy miejsce gdzie bêdziemy rysowaæ tekst
+        // okreÅ›lamy miejsce gdzie bÄ™dziemy rysowaÄ‡ tekst
         ChartSeriePtr serie = series[activeSerieIndex];
         float x = serie->getPosition().x();
         float y = serie->getPosition().y();
         float w = serie->getSize().x();
         float h = serie->getSize().y();
 
-        // trzeba jeszcze okreœliæ wartoœæ w bie¿¹cym punkcie czasowym
+        // trzeba jeszcze okreÅ›liÄ‡ wartoÅ›Ä‡ w bieÅ¼Ä…cym punkcie czasowym
         auto yrange = serie->getYRange();
         auto xrange = serie->getXRange();
         float value = serie->getValue();
         float time = serie->getTime();
 
-        // znormalizowana wartoœæ, znormalizowany czas
+        // znormalizowana wartoÅ›Ä‡, znormalizowany czas
         float nvalue = (value - yrange.first) / (yrange.second - yrange.first);
         float ntime = (time - xrange.first) / (xrange.second - xrange.first);
 
@@ -1400,9 +1400,9 @@ void Chart::refreshCursor( float z, float range )
         float width = osgText::textWidth(*cursorText);
         float height = osgText::textHeight(*cursorText);
 
-        //ustalamy pozycjê - mamy punkt zaczepienia (cursorX, cursorY)
-        //defaultowo wartoœci sa pokazywane z prawej storny kursora
-        //ale mo¿e siê okazaæ ¿e bêd¹ niewidoczne wiêc bêdziemy musieli je modyfikowaæ
+        //ustalamy pozycjÄ™ - mamy punkt zaczepienia (cursorX, cursorY)
+        //defaultowo wartoÅ›ci sa pokazywane z prawej storny kursora
+        //ale moÅ¼e siÄ™ okazaÄ‡ Å¼e bÄ™dÄ… niewidoczne wiÄ™c bÄ™dziemy musieli je modyfikowaÄ‡
         Vec3 pos(cursorX + labelsToAxisesOffset, cursorY, z);
 
         if(pos.y() + height / 2.0 > y + h){
@@ -1418,7 +1418,7 @@ void Chart::refreshCursor( float z, float range )
             switched = true;
         }
 
-        // teraz mo¿na pozycjonowaæ...
+        // teraz moÅ¼na pozycjonowaÄ‡...
         cursorText->setPosition( pos );
 
         // przygotowanie kursora
@@ -1438,7 +1438,7 @@ void Chart::refreshCursor( float z, float range )
         colors->at(0) = cursorColor;
         cursor->setColorBinding(osg::Geometry::BIND_OVERALL);
 
-        // ustawienie prymitywów
+        // ustawienie prymitywÃ³w
         osg::DrawArrays* primitives = dynamic_cast<osg::DrawArrays*>(cursor->getPrimitiveSet(0));
         primitives->set(GL_LINES, 0, vertices->getNumElements());
 

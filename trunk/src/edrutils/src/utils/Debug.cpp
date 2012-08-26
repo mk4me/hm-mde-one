@@ -1,4 +1,4 @@
-#include <stdarg.h>
+ï»¿#include <stdarg.h>
 #include <utils/Debug.h>
 
 #ifdef __WIN32__
@@ -25,7 +25,7 @@ void Debug::print( const char * file, int line, const char * format, ... )
     snprintf(buffer, BUFFER_SIZE-1, "%s(%d): ", file, line);
     PRINT(buffer);
 
-    // nastêpnie musimy sformatowaæ wiadomoœæ
+    // nastÄ™pnie musimy sformatowaÄ‡ wiadomoÅ›Ä‡
     va_list vaList;
     va_start(vaList, format);
     vsnprintf(buffer, BUFFER_SIZE-1, format, vaList);

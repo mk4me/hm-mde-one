@@ -1,4 +1,4 @@
-#include <string>
+﻿#include <string>
 #include <utils/Macros.h>
 #include <utils/Utils.h>
 #include "UtilsTest.h"
@@ -27,7 +27,7 @@ void UtilsTest::testClamp()
   CPPUNIT_ASSERT_EQUAL( 0.0, utils::clamp(0.0, 0.0, 1.0 ) );
   CPPUNIT_ASSERT_EQUAL( 1.0, utils::clamp(1.0, 0.0, 1.0 ) );
 
-  // na odwr�t
+  // na odwrót
   CPPUNIT_ASSERT_EQUAL( 1.0, utils::clamp(0.5, 1.0, 0.0 ) );
   CPPUNIT_ASSERT_EQUAL( 0.0, utils::clamp(1.5, 1.0, 0.0 ) );
 }

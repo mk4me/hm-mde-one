@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/04/12
     created:  12:4:2011   18:15
     filename: LogInitializer.h
@@ -16,11 +16,11 @@
 
 class EDRConsoleWidget;
 
-//! Obiekt logu. Powinien byÊ tworzony w g≥Ûwnej binarce na samym poczπtku maina.
+//! Obiekt logu. Powinien byƒá tworzony w g≈Ç√≥wnej binarce na samym poczƒÖtku maina.
 class LogInitializer
 {
 public:
-    //! \param configPath åcieøka do pliku konfiguracyjnego.
+    //! \param configPath ≈öcie≈ºka do pliku konfiguracyjnego.
     LogInitializer(const char* configPath);
     //!
     ~LogInitializer();
@@ -32,7 +32,7 @@ public:
 
 private:
     /**
-     *	Prze≥adowania operatorÛw new-delete. Prywatne, aby niemoøliwe by≥o
+     *	Prze≈Çadowania operator√≥w new-delete. Prywatne, aby niemo≈ºliwe by≈Ço
      *  tworzenie instancji typu na stercie.
      */
     void *operator new(std::size_t bytes);

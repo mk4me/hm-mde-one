@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2012/02/22
 	created:	22:2:2012   10:22
 	filename: 	NewChartScaleDrawer.h
@@ -10,43 +10,43 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTSCALEDRAWER_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTSCALEDRAWER_H__
 
-//! Klasa umoøliwia odrysowanie podzia≥ki z procentami
-//! naleøy pamiÍtaÊ, ze w zaden sposÛb nie sπ zmieniane wartoúci krzywych, podmieniana jest jedynie podzia≥ka
+//! Klasa umo≈ºliwia odrysowanie podzia≈Çki z procentami
+//! nale≈ºy pamiƒôtaƒá, ze w zaden spos√≥b nie sƒÖ zmieniane warto≈õci krzywych, podmieniana jest jedynie podzia≈Çka
 class PercentScaleDraw : public QwtScaleDraw
 {
 public:
-    //! Konstruktor wymaga podania przedzia≥Ûw wykresu
-    //! \param left minimalny argument aktualnie wyúwietlanego wykresu
-    //! \param right maskymalny argument aktualnie wyúwietlanego wykresu 
-    //! \param percentMode czy wyúwietlaÊ podzia≥kÍ z procentami czy podzia≥kÍ zwyk≥π
+    //! Konstruktor wymaga podania przedzia≈Ç√≥w wykresu
+    //! \param left minimalny argument aktualnie wy≈õwietlanego wykresu
+    //! \param right maskymalny argument aktualnie wy≈õwietlanego wykresu 
+    //! \param percentMode czy wy≈õwietlaƒá podzia≈Çkƒô z procentami czy podzia≈Çkƒô zwyk≈ÇƒÖ
     PercentScaleDraw(double left, double right, bool percentMode = false);
     virtual ~PercentScaleDraw() {}
 
 public:
-    //! Usawia przedzia≥y aktyalnie wyúwietlanego wykresu
-    //! \param left minimalny argument aktualnie wyúwietlanego wykresu
-    //! \param right maskymalny argument aktualnie wyúwietlanego wykresu 
+    //! Usawia przedzia≈Çy aktyalnie wy≈õwietlanego wykresu
+    //! \param left minimalny argument aktualnie wy≈õwietlanego wykresu
+    //! \param right maskymalny argument aktualnie wy≈õwietlanego wykresu 
     void setLeftRightValues(double left, double right);
-    //! \return czy wyúwietlana podzia≥ka z procentami czy podzia≥ka zwykla
+    //! \return czy wy≈õwietlana podzia≈Çka z procentami czy podzia≈Çka zwykla
     bool isPercentMode() const { return percentMode; }
-    //! Ustawienie podzia≥ki
-    //! \param val true - podzia≥ka z procentami, false - zwykla podzia≥ka
+    //! Ustawienie podzia≈Çki
+    //! \param val true - podzia≈Çka z procentami, false - zwykla podzia≈Çka
     void setPercentMode(bool val) { percentMode = val; }
-    //! \return obiekt wykorzystywany przez Qwt do rysowania podzia≥ki utworzony na podstawie stanu klasy
+    //! \return obiekt wykorzystywany przez Qwt do rysowania podzia≈Çki utworzony na podstawie stanu klasy
     QwtScaleDiv getScaleDiv();
 
 protected:
-    //! Rysuje etykietÍ dla konkretnego argumentu (np. 50 %)
+    //! Rysuje etykietƒô dla konkretnego argumentu (np. 50 %)
     //! \param painter obiekt paintera
-    //! \param value argument dla ktÛrego ma byÊ narysowana etykieta
+    //! \param value argument dla kt√≥rego ma byƒá narysowana etykieta
     void drawLabel( QPainter *painter, double value ) const;
 
 private:
-    //! minimalny argument aktualnie wyúwietlanego wykresu (przedzia≥ lewy)
+    //! minimalny argument aktualnie wy≈õwietlanego wykresu (przedzia≈Ç lewy)
     double left;
-    //! maksymalny argument aktualnie wyúwietlanego wykresu (przedzia≥ prawy)
+    //! maksymalny argument aktualnie wy≈õwietlanego wykresu (przedzia≈Ç prawy)
     double right;
-    //! czy wyúwietlaÊ podzia≥kÍ z procentami czy podzia≥kÍ zwyk≥π
+    //! czy wy≈õwietlaƒá podzia≈Çkƒô z procentami czy podzia≈Çkƒô zwyk≈ÇƒÖ
     bool percentMode;
 };
 

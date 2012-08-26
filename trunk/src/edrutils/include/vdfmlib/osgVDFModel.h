@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__VDFMODEL_H__
+﻿#ifndef HEADER_GUARD__VDFMODEL_H__
 #define HEADER_GUARD__VDFMODEL_H__
 
 #include <vdfmlib/osgVDFBaseModel.h>

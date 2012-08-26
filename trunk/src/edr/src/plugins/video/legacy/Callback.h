@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/07/14
 	created:  14:7:2010   17:39
 	filename: Callback.h
@@ -20,19 +20,19 @@ namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Typ przechowywuj¹cy informacje o zdarzeniu. Bazuje na puli (utils::Pool),
- *  dziêki czemu mo¿e przechowywaæ obiekty dowolnego typu (obiekty i prymitywy),
- *  ale tylko do okreœlonego rozmiaru. Poza to wa¿na jest kolejnoœæ, która
- *  jest u¿ywana do ich odczytu!
+ *	Typ przechowywujÄ…cy informacje o zdarzeniu. Bazuje na puli (utils::Pool),
+ *  dziÄ™ki czemu moÅ¼e przechowywaÄ‡ obiekty dowolnego typu (obiekty i prymitywy),
+ *  ale tylko do okreÅ›lonego rozmiaru. Poza to waÅ¼na jest kolejnoÅ›Ä‡, ktÃ³ra
+ *  jest uÅ¼ywana do ich odczytu!
  */
 class Event : public utils::Pool
 {
 private:
-  //! Obiekt zg³aszaj¹cy event.
+  //! Obiekt zgÅ‚aszajÄ…cy event.
   osg::Object * sender;
 
 public:
-  //! Konstruktor ustawiaj¹cy parametry.
+  //! Konstruktor ustawiajÄ…cy parametry.
   //! \param sender
   Event(osg::Object * sender) :
     sender(sender)
@@ -81,7 +81,7 @@ public:
 };
 
 /**
- *  Interfejs wszystkich callbacków.
+ *  Interfejs wszystkich callbackÃ³w.
  */
 class CallbackInterface: public osg::Referenced
 {
@@ -90,22 +90,22 @@ public:
   virtual ~CallbackInterface() {}
   //! Operator nazwiasowy z zadanym eventem.
   virtual bool operator()(Event& event) = 0;
-  //! Czy jest prawid³owy? Jeœli nie jest usuwany!
+  //! Czy jest prawidÅ‚owy? JeÅ›li nie jest usuwany!
   virtual bool isValid() = 0;
 };
 
 /**
- *	Callback u¿ywaj¹cy metody obiektu.
+ *	Callback uÅ¼ywajÄ…cy metody obiektu.
  */
 template<typename T>
 class ObjectCallback: public CallbackInterface
 {
 public:
-  //! Metoda u¿ywaj¹ca eventu.
+  //! Metoda uÅ¼ywajÄ…ca eventu.
   typedef bool (T::*ObjectCallbackType)(Event&);
 
 private:
-  //! Obiekt Ÿród³owy.
+  //! Obiekt ÅºrÃ³dÅ‚owy.
   osg::observer_ptr<T> object;
   //! Metoda.
   ObjectCallbackType callback;
@@ -135,13 +135,13 @@ public:
 };
 
 /**
- *	Callback u¿ywaj¹cy wskaŸnika na funkcjê.
+ *	Callback uÅ¼ywajÄ…cy wskaÅºnika na funkcjÄ™.
  */
 template<typename T>
 class FunctionCallback: public CallbackInterface
 {
 private:
-  //! WskaŸnik na funckjê/funktor.
+  //! WskaÅºnik na funckjÄ™/funktor.
   T* callback;
 
 public:
@@ -175,21 +175,21 @@ protected:
   int id;
 
 public:
-  //! Konstruktor zeruj¹cy.
+  //! Konstruktor zerujÄ…cy.
   Callback(): id(0), callback(NULL) {}
 
-  //! Konstruktor kopiuj¹cy.
+  //! Konstruktor kopiujÄ…cy.
   Callback(const Callback& rhs) : 
   osg::Referenced(rhs), id(rhs.id), callback(rhs.callback) 
   {}
 
-  //! Konstruktor na podstawie wskaŸnika do metody.
+  //! Konstruktor na podstawie wskaÅºnika do metody.
   template<typename T>
   Callback(int id, bool (T::*function)(Event&), T* obj):
   id(id), callback(new ObjectCallback<T>(function, obj)) 
   {}
 
-  //! Konstruktor na podstawie wskaŸnika do funkcji.
+  //! Konstruktor na podstawie wskaÅºnika do funkcji.
   template<typename T>
   Callback(int id, T* functor):
   id(id), callback(new FunctionCallback<T>(functor)) 
@@ -206,7 +206,7 @@ public:
     return (*callback)(ev);
   }
 
-  //! \return false jeœli Callbacka nale¿y usun¹æ.
+  //! \return false jeÅ›li Callbacka naleÅ¼y usunÄ…Ä‡.
   virtual bool isValid()
   {
     return callback ? callback->isValid() : false;
@@ -223,18 +223,18 @@ public:
 class EventSource
 {
 protected:
-  //! Lista callbacków.
+  //! Lista callbackÃ³w.
   typedef std::vector< osg::ref_ptr<Callback> > List;
 
 protected:
-  //! Lista callbacków.
+  //! Lista callbackÃ³w.
   List callbacks;
  
 protected:
-  //! Tylko klasa pochodna mo¿e go zniszczyæ.
+  //! Tylko klasa pochodna moÅ¼e go zniszczyÄ‡.
   virtual ~EventSource() {}
 
-  //! Pomocnicza metoda do odpalania eventów.
+  //! Pomocnicza metoda do odpalania eventÃ³w.
   //! \param id
   //! \param sender
   bool fireEvent(int id, osg::Object* sender)
@@ -279,7 +279,7 @@ protected:
     return fireEvent(id, event);
   }
 
-  //! Pomocnicza metoda do odpalania eventów.
+  //! Pomocnicza metoda do odpalania eventÃ³w.
   //! \param id
   //! \param sender
   template <class T, int Size>
@@ -290,11 +290,11 @@ protected:
   }
 
 
-  //! Powiadamia callbacki o zadanym id o zajœciu zdarzenia.
+  //! Powiadamia callbacki o zadanym id o zajÅ›ciu zdarzenia.
   /**
-   *	Poniewa¿ parametr event jest referencj¹ (a nie sta³¹ referencj¹) nie mo¿na napisaæ
-   *  fireEvent(<jakieœ_id>, Event(<sender>, <parametry>)) poniewa¿ spowoduje to b³¹d niezgodnoœci
-   *  sygnatur (kompilator bêdzie szuka³ odmiany z const Event&). Do zaradzenia temu s³u¿¹ odmiany
+   *	PoniewaÅ¼ parametr event jest referencjÄ… (a nie staÅ‚Ä… referencjÄ…) nie moÅ¼na napisaÄ‡
+   *  fireEvent(<jakieÅ›_id>, Event(<sender>, <parametry>)) poniewaÅ¼ spowoduje to bÅ‚Ä…d niezgodnoÅ›ci
+   *  sygnatur (kompilator bÄ™dzie szukaÅ‚ odmiany z const Event&). Do zaradzenia temu sÅ‚uÅ¼Ä… odmiany
    *  z jawnie podanymi parametrami.
    *  \param id
    *  \param event
@@ -302,12 +302,12 @@ protected:
   bool fireEvent(int id, Event & event)
   {
     for (List::size_type i = 0; i < callbacks.size(); ++i) {
-      // usuwamy "wymar³e" eventy
+      // usuwamy "wymarÅ‚e" eventy
       if ( !callbacks[i]->isValid() ) {
         callbacks.erase( callbacks.begin() + i );
         --i;
       } else {
-        // jeœli któryœ callback zwróci³ true - przerywamy
+        // jeÅ›li ktÃ³ryÅ› callback zwrÃ³ciÅ‚ true - przerywamy
         if ( callbacks[i]->getId() == id && (*callbacks[i])(event) ) {
           return true;
         }

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/03/14
     created:  14:3:2011   15:08
     filename: Visualizer.h
@@ -14,8 +14,8 @@
 #include "InputItem.h"
 #include "ActionsGroupManager.h"
 
-//! Wizualizator. Jego zadaniem jest stworzyæ widget (gdzie on bêdzie osadzony - nie jego sprawa),
-//! zadeklarowaæ ile Ÿróde³ i jakiego typu jest w stanie obs³u¿yæ oraz przyj¹æ Ÿród³a danych.
+//! Wizualizator. Jego zadaniem jest stworzyÄ‡ widget (gdzie on bÄ™dzie osadzony - nie jego sprawa),
+//! zadeklarowaÄ‡ ile ÅºrÃ³deÅ‚ i jakiego typu jest w stanie obsÅ‚uÅ¼yÄ‡ oraz przyjÄ…Ä‡ ÅºrÃ³dÅ‚a danych.
 class Visualizer : public QObject, public InputItem<core::IVisualizer>
 {
         Q_OBJECT;
@@ -28,37 +28,37 @@ private:
 
     //! Akcje wizualizatora.
     ActionsGroupManager genericActions;
-    //! Nazwa uzupe³niona o przyrostek.
+    //! Nazwa uzupeÅ‚niona o przyrostek.
     QString uiName;
 
-    //! Serie danych utrworzone przez u¿ytkownika
+    //! Serie danych utrworzone przez uÅ¼ytkownika
     DataSeries dataSeries;
 
 public:
-    //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w³asnoœæ.
+    //! \param impl Implementacja wizualizatora. Obiekt przejmowany na wÅ‚asnoÅ›Ä‡.
     Visualizer( core::IVisualizer* impl );
-    //! Konstuktor kopiuj¹cy - g³êboka kopia. Nie kopiuje widgeta.
+    //! Konstuktor kopiujÄ…cy - gÅ‚Ä™boka kopia. Nie kopiuje widgeta.
     Visualizer( const Visualizer& visualizer );
     //! Niepolimorficzny (!) destruktor 
     ~Visualizer();
 
 public:
-    //! \return Lista akcji ogólnych wizualizatora.
+    //! \return Lista akcji ogÃ³lnych wizualizatora.
     const ActionsGroupManager& getGenericActions() const;
-    //! \return Lista akcji ogólnych wizualizatora.
+    //! \return Lista akcji ogÃ³lnych wizualizatora.
     const ActionsGroupManager& getOrCreateGenericActions();
 
     //! \return Widget wizualizatora.
     QWidget* getOrCreateWidget();
-    //! \return Widget wizualizatora. Mo¿e byæ nullptr, je¿eli jeszcze nie jest stworzony.
+    //! \return Widget wizualizatora. MoÅ¼e byÄ‡ nullptr, jeÅ¼eli jeszcze nie jest stworzony.
     QWidget* getWidget();
 
     void update(double deltaTime);
 
-    //! \return Nazwa wizualizatora. U¿ywana w UI.
+    //! \return Nazwa wizualizatora. UÅ¼ywana w UI.
     const QString& getUIName() const;
 
-    //! \param uiName Nazwa wizualizatora u¿ywana w UI. Nie powoduje automatycznego odœwie¿enia UI.
+    //! \param uiName Nazwa wizualizatora uÅ¼ywana w UI. Nie powoduje automatycznego odÅ›wieÅ¼enia UI.
     void setUIName(const QString& uiName);
 
     //!

@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/04
     created:  4:2:2012   20:55
     filename: IDataSourceUser.h
@@ -16,22 +16,22 @@
 namespace communication
 {
 
-//! Interfejs klasy z danymi uøytkownika
+//! Interfejs klasy z danymi u≈ºytkownika
 class IUser
 {
 public:
     //! Destruktor wirtualny
     virtual ~IUser() {}
 
-    //! \return Identyfikator uøytkownika
+    //! \return Identyfikator u≈ºytkownika
     virtual const int id() const = 0;
 
-    //! \return Nazwa uøytkownika z bazy
+    //! \return Nazwa u≈ºytkownika z bazy
     virtual const std::string & name() const = 0;
 
-    //! \return Prawa uøytkownika
+    //! \return Prawa u≈ºytkownika
     virtual const IUserPrivilages & userPrivilages() const = 0;
-    //! \return Dane uøytkownika
+    //! \return Dane u≈ºytkownika
     virtual const IUserData & userData() const = 0;
 };
 

@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__CONNECTION_H__
+ï»¿#ifndef HEADER_GUARD__CONNECTION_H__
 #define HEADER_GUARD__CONNECTION_H__
 
 #include <dfmlib/DFLMTypes.h>
@@ -8,49 +8,49 @@ namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
 
-//! Klasa opisuj¹ca po³¹czenie dwóch pinów. Mo¿na z niej pobraæ piny w uporz¹dkowanej kolejnoœci - pin wyjœciowy (Ÿród³o) - pin wejœciowy (odbiorca).
+//! Klasa opisujÄ…ca poÅ‚Ä…czenie dwÃ³ch pinÃ³w. MoÅ¼na z niej pobraÄ‡ piny w uporzÄ…dkowanej kolejnoÅ›ci - pin wyjÅ›ciowy (ÅºrÃ³dÅ‚o) - pin wejÅ›ciowy (odbiorca).
 class Connection
 {
 
 public:
 
-    //! Klasa zaprzyjaŸniona - model ma pe³n¹ kontrolê nad po³¹czeniami - sam je tworzy i nimi zarz¹dza, u¿ytkownik tylko z nich korzysta
+    //! Klasa zaprzyjaÅºniona - model ma peÅ‚nÄ… kontrolÄ™ nad poÅ‚Ä…czeniami - sam je tworzy i nimi zarzÄ…dza, uÅ¼ytkownik tylko z nich korzysta
 	friend class Model;
 
 public:
 
-    //! Konstruktor chroniony, pozwala dziedziczyæ ale nie pozwala klientowi samemu tworzyæ po³¹czenia i ich modyfikowaæ
-    //! \param src Wêze³ Ÿród³owy
-    //! \param dest Wêze³ docelowy
+    //! Konstruktor chroniony, pozwala dziedziczyÄ‡ ale nie pozwala klientowi samemu tworzyÄ‡ poÅ‚Ä…czenia i ich modyfikowaÄ‡
+    //! \param src WÄ™zeÅ‚ ÅºrÃ³dÅ‚owy
+    //! \param dest WÄ™zeÅ‚ docelowy
     Connection(const PinPtr & src, const PinPtr & dest);
 
     //! Wirtualny destruktor
 	virtual ~Connection(void);
 
-    //! \return Weze³ Ÿród³owy
+    //! \return WezeÅ‚ ÅºrÃ³dÅ‚owy
 	PinPtr getSrc() const;
 
-    //! \return Weze³ docelowy
+    //! \return WezeÅ‚ docelowy
 	PinPtr getDest() const;
 
-    //! \return drugi wêze³ bior¹cy udzia³ w po³¹czeniu lub wyj¹tek jesli wêze³ nie bierze udzia³u w tym po³¹czeniu
+    //! \return drugi wÄ™zeÅ‚ biorÄ…cy udziaÅ‚ w poÅ‚Ä…czeniu lub wyjÄ…tek jesli wÄ™zeÅ‚ nie bierze udziaÅ‚u w tym poÅ‚Ä…czeniu
 	PinPtr getOther(const CWPinPtr & pin) const;
 
-    //! \return Nazwa po³aczenia
+    //! \return Nazwa poÅ‚aczenia
 	std::string getConnectionName() const;
 
 private:
-    //! \param src Wêze³ Ÿród³owy(wyjœciowy)
+    //! \param src WÄ™zeÅ‚ ÅºrÃ³dÅ‚owy(wyjÅ›ciowy)
 	void setSrc(const PinPtr & src);
 
-    //! \param dest Wêze³ docelowy(wejœciowy)
+    //! \param dest WÄ™zeÅ‚ docelowy(wejÅ›ciowy)
 	void setDest(const PinPtr & dest);
 
 private:
-    //! Wêze³ Ÿród³owy po³¹czenia
+    //! WÄ™zeÅ‚ ÅºrÃ³dÅ‚owy poÅ‚Ä…czenia
 	WPinPtr srcPin;
 
-    //! Wêze³ docelowy po³aczenia
+    //! WÄ™zeÅ‚ docelowy poÅ‚aczenia
 	WPinPtr destPin;
 };
 

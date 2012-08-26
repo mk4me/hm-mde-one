@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_KINEMATIC__KINEMATICMODEL_H__
+﻿#ifndef HEADER_GUARD_KINEMATIC__KINEMATICMODEL_H__
 #define HEADER_GUARD_KINEMATIC__KINEMATICMODEL_H__
 
 #include <vector>
@@ -46,7 +46,7 @@ public:
 	//! Tworzy dane zgodne z parserami na podstawie reprezentacji wewnetrznej
 	//kinematic::SkeletalModelPtr createSkeletalData() const;
     /// \brief  Ustawia dane z parsera
-    /// \details W tym miejscu tworzony jest pe�ny szkielet h-anim, robiona jest normalizacja danych
+    /// \details W tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
     /// \param  skeletalModel   The skeletal model. 
     void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData);
     void setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const std::vector<JointAngleChannelPtr>& channels);

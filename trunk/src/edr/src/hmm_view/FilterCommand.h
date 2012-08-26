@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/10/07
 	created:	7:10:2011   9:59
 	filename: 	FilterCommand.h
@@ -23,7 +23,7 @@
 class IFilterCommand
 {
 public:
-    //! jeœli komenda dostarcza konfiguratora to powinien on zwrocic jedna z tych wartoœci
+    //! jeÅ›li komenda dostarcza konfiguratora to powinien on zwrocic jedna z tych wartoÅ›ci
     enum ConfigurationResult
     {
         OK,
@@ -34,28 +34,28 @@ public:
 	virtual ~IFilterCommand() {}
 
 public:
-    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
+    //! tworzy gaÅ‚Ä…Åº drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) = 0;
     //! resetuje ustawienia konfiguratora
     virtual void reset() {}
-    //! \return widget z konfiguratorem lub nullptr jeœli nie jest on dostarczany
+    //! \return widget z konfiguratorem lub nullptr jeÅ›li nie jest on dostarczany
     virtual QWidget* getConfigurationWidget() { return nullptr; }
 };
 typedef boost::shared_ptr<IFilterCommand> IFilterCommandPtr;
 typedef boost::shared_ptr<const IFilterCommand> IFilterCommandConstPtr;
 
-//! komenda bez konfiguratora, która tworzy przefiltrowane drzewo na podstawie filtra danych
+//! komenda bez konfiguratora, ktÃ³ra tworzy przefiltrowane drzewo na podstawie filtra danych
 class SimpleFilterCommand : public IFilterCommand
 {
 public:
     //! Konstruktor
-    //! \param dataFilter filtr danych, który bêdzie u¿yty do tworzenia drzewa
+    //! \param dataFilter filtr danych, ktÃ³ry bÄ™dzie uÅ¼yty do tworzenia drzewa
     SimpleFilterCommand(PluginSubject::DataFilterPtr dataFilter);
 
 public:
-    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
+    //! tworzy gaÅ‚Ä…Åº drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
@@ -64,24 +64,24 @@ public:
     }
 
 private:
-    //! filtr danych, który bêdzie u¿yty do tworzenia drzewa
+    //! filtr danych, ktÃ³ry bÄ™dzie uÅ¼yty do tworzenia drzewa
     PluginSubject::DataFilterPtr dataFilter;
 };
 typedef boost::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;
 typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr;
 
 // OBSOLETE!
-//! tworzy ga³¹Ÿ drzewa danych z multiwykresem
+//! tworzy gaÅ‚Ä…Åº drzewa danych z multiwykresem
 template <class Type, class TypePtr = core::shared_ptr<Type> >
 class MultiChartCommand : public IFilterCommand
 {
-    //! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
+    //! tworzy gaÅ‚Ä…Åº drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 };
 
-//! tworzy ga³¹Ÿ drzewa z przefiltrowanymi danymi
+//! tworzy gaÅ‚Ä…Åº drzewa z przefiltrowanymi danymi
 //! \param rootItemName nazwa korzenia
 //! \param sessions sesje do przefiltrowania
 template <class Type, class TypePtr>

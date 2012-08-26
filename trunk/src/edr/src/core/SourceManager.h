@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/03/19
     created:  19:3:2012   11:25
     filename: SourceManager.h
@@ -18,15 +18,15 @@
 class SourceManager: public core::ISourceManager, public ManagerHelper<SourceManager>
 {
 public:
-	//! S≥ownik us≥ug.
+	//! S≈Çownik us≈Çug.
 	typedef std::map<UniqueID, core::ISourcePtr> SourcesMap;
-	//! Sekwencja us≥ug.
+	//! Sekwencja us≈Çug.
 	typedef std::vector<core::ISourcePtr> SourcesList;
 
 private:
-	//! S≥ownik us≥ug.
+	//! S≈Çownik us≈Çug.
 	SourcesMap sourcesMap; 
-	//! Sekwencja us≥ug.
+	//! Sekwencja us≈Çug.
 	SourcesList sourcesList;
 
 public:
@@ -37,21 +37,21 @@ public:
 
 	void update(double deltaTime);
 
-	//! Metoda finalizujπca wszystkie serwisy  wywo≥ywana przed niszczeniem managera
+	//! Metoda finalizujƒÖca wszystkie serwisy  wywo≈Çywana przed niszczeniem managera
 	void finalizeSources();
 
 	// IServiceManager
 public:
-	//! Rejestruje ürÛd≥o. èrÛd≥a muszπ mieÊ unikatowe ID!
-	//! \param source èrÛd≥o do rejestracji.
+	//! Rejestruje ≈∫r√≥d≈Ço. ≈πr√≥d≈Ça muszƒÖ mieƒá unikatowe ID!
+	//! \param source ≈πr√≥d≈Ço do rejestracji.
 	virtual void registerSource(const core::ISourcePtr & source);
-	//! \return Liczba ürÛde≥.
+	//! \return Liczba ≈∫r√≥de≈Ç.
 	virtual int getNumSources() const;
-	//! \param idx Indeks ürÛd≥a.
-	//! \return èrÛd≥o o zadanym indeksie.
+	//! \param idx Indeks ≈∫r√≥d≈Ça.
+	//! \return ≈πr√≥d≈Ço o zadanym indeksie.
 	virtual core::ISourcePtr getSource(int idx);
-	//! \param id ID ürÛd≥a do wyszukania.
-	//! \return Odnalezione ürÛd≥o bπdü NULL.
+	//! \param id ID ≈∫r√≥d≈Ça do wyszukania.
+	//! \return Odnalezione ≈∫r√≥d≈Ço bƒÖd≈∫ NULL.
 	virtual core::ISourcePtr getSource(UniqueID id);
 };
 

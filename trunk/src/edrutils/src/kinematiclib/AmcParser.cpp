@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include <kinematiclib/AmcParser.h>
 #include <kinematiclib/SkeletalParsers.h>
 

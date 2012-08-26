@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/07/19
     created:  19:7:2011   14:18
     filename: View.h
@@ -20,29 +20,29 @@ class View : public utils::Observer<State>
 {
 public:
 
-    //! \return Kontroler z którym wspó³pracuje widok
+    //! \return Kontroler z ktÃ³rym wspÃ³Å‚pracuje widok
     const ControllerPtr & getController()
     {
         return controller;
     }
 
-    //! \return Kontroler z którym wspó³pracuje widok
+    //! \return Kontroler z ktÃ³rym wspÃ³Å‚pracuje widok
     const ControllerConstPtr & getController() const
     {
         return constController;
     }
 
-    //! \param controller Kontroler z którym wspó³pracuje widok
+    //! \param controller Kontroler z ktÃ³rym wspÃ³Å‚pracuje widok
     void setController(const ControllerPtr & controller)
     {
-        UTILS_ASSERT((controller != nullptr), "B³êdny kontroler");
+        UTILS_ASSERT((controller != nullptr), "BÅ‚Ä™dny kontroler");
         this->constController = this->controller = controller;
     }
 
 private:
-    //! Kontroler z któym wspó³pracuje widok
+    //! Kontroler z ktÃ³ym wspÃ³Å‚pracuje widok
     ControllerPtr controller;
-    //! Kontroler z któym wspó³pracuje widok
+    //! Kontroler z ktÃ³ym wspÃ³Å‚pracuje widok
     ControllerConstPtr constController;
 };
 

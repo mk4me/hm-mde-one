@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+﻿#include "hmmPCH.h"
 #include "ConfigurationPainterAreas.h"
 #include <QtGui/QPainter>
 #include <QtGui/QPen>

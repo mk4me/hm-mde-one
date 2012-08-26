@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include <QtGui/QDialog>
 #include <QtGui/QLayout>
 #include "EDRDFNode.h"
@@ -9,7 +9,7 @@
 EDRDFNode::EDRDFNode(const WorkflowItemPtr & workflowItem, const std::string & nodeName)
     : dflm::DFNode(nodeName), workflowItem(workflowItem)
 {
-    UTILS_ASSERT((workflowItem != nullptr), "Z³y element przetwarzaj¹cy");
+    UTILS_ASSERT((workflowItem != nullptr), "ZÅ‚y element przetwarzajÄ…cy");
 }
 
 EDRDFNode::~EDRDFNode()
@@ -40,11 +40,11 @@ void EDRDFNode::configure()
 void EDRDFNode::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder)
 {
     //cast workflow item na 2 obiekty - InputDescription i OutputDescription
-    //dla kazdego z tych interfejsów tworz odpowiednio inputpins lub output pins
+    //dla kazdego z tych interfejsÃ³w tworz odpowiednio inputpins lub output pins
     InputDescription * inputDescription = dynamic_cast<InputDescription*>(workflowItem.get());
 
     if(inputDescription != nullptr){
-        //stwórz piny wejsciowe
+        //stwÃ³rz piny wejsciowe
         for(int i = 0; i < inputDescription->getNumInputs(); ++i){
             pinsAdder->addInPin(dflm::PinPtr(new EDRDFPin(inputDescription->getSource(), i)));
         }
@@ -53,7 +53,7 @@ void EDRDFNode::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder)
     OutputDescription * outputDescription = dynamic_cast<OutputDescription*>(workflowItem.get());
 
     if(outputDescription != nullptr){
-        //stwórz piny wyjsciowe
+        //stwÃ³rz piny wyjsciowe
         for(int i = 0; i < outputDescription->getNumOutputs(); ++i){
             //buduj piny zalezne
             dflm::Pin::ReqPinsSet reqPins;

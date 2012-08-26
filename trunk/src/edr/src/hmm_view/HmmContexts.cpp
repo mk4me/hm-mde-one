@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+ï»¿#include "hmmPCH.h"
 #include <boost/tuple/tuple.hpp>
 #include <QtGui/QToolBar>
 #include <QtGui/QMenu>
@@ -34,12 +34,12 @@ HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWi
 
 void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
 {
-    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest ju¿ zaladowany
+    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest juÅ¼ zaladowany
     if(contextWidget == nullptr || visualizerGroupID != -1){
         return;
     }
 
-    //TODO zapisaæ styl widgeta, dokleiæ nasz styl i ustawiæ a nie nadpisywaæ
+    //TODO zapisaÄ‡ styl widgeta, dokleiÄ‡ nasz styl i ustawiÄ‡ a nie nadpisywaÄ‡
 
     contextWidget->setStyleSheet(QString::fromUtf8(
         "VisualizerWidget > .QWidget, VisualizerWidget > .QWidget:focus:hover {" \
@@ -56,7 +56,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
     if(it->second.empty() == false){
         auto visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
         auto vis = visWidget->getCurrentVisualizer();
-        //tworzymy grupê dla wizualizatora
+        //tworzymy grupÄ™ dla wizualizatora
         visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer") + QString(" - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
 
         for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); ++sectionIT){
@@ -79,7 +79,7 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
 
     if(w != nullptr && isCurrentContextWidgetDestroyed() == false){
 
-        //TODO przywróciæ poprzedni styl widgeta
+        //TODO przywrÃ³ciÄ‡ poprzedni styl widgeta
         getCurrentContextWidget()->setStyleSheet(QString());
     }
 
@@ -103,15 +103,15 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
     for(auto groupIT = actionsManager.begin(); groupIT != actionsManager.end(); ++groupIT){
 
-        //podziel elementy na 4 grupy - akcje, menusy, widget i inne nieobs³ugiwane elementy
-        //przy okazji wyznaczamy iloœæ elementów oraz ich sumaryczna szerokoœæ i najwieksza wysokoœæ do póŸniejszego layoutowania
-        //elementy s¹ indeksowane tak jak podeslal nam je klient, ale ich kolejnoœæ mo¿e zostac zmieniona zeby lepiej je roz³o¿yæ
+        //podziel elementy na 4 grupy - akcje, menusy, widget i inne nieobsÅ‚ugiwane elementy
+        //przy okazji wyznaczamy iloÅ›Ä‡ elementÃ³w oraz ich sumaryczna szerokoÅ›Ä‡ i najwieksza wysokoÅ›Ä‡ do pÃ³Åºniejszego layoutowania
+        //elementy sÄ… indeksowane tak jak podeslal nam je klient, ale ich kolejnoÅ›Ä‡ moÅ¼e zostac zmieniona zeby lepiej je rozÅ‚oÅ¼yÄ‡
         std::map<int, QAction*> actions;
         std::map<int, QMenu*> menus;
         std::map<int, QObject*> others;
         std::map<int, QObject*> all;
 
-        // budujemy widgety które beda potem trafialy do toolbarów
+        // budujemy widgety ktÃ³re beda potem trafialy do toolbarÃ³w
         std::map<int, QWidget*> toolbarElements;
 
         (*groupIT).getActions(actions);
@@ -132,7 +132,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
                 cbox->setMinimumContentsLength(std::min(cbox->currentText().size(), 10));
             }
 
-            //dodajemy od razu do elementów toolbara - indeksy zostaja zachowane dla póŸniejszego rozmieszczania wg kolejnoœci
+            //dodajemy od razu do elementÃ³w toolbara - indeksy zostaja zachowane dla pÃ³Åºniejszego rozmieszczania wg kolejnoÅ›ci
             auto s = widget->sizeHint();
             int width = std::min(s.width(), 250);
             if(s.width() > 250){
@@ -193,9 +193,9 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             maxHeight = std::max(maxHeight, s.height());
         }
 
-        //rozk³adamy to w niezaleznych QToolBarach. Maksymalnie 2 rzedy.
+        //rozkÅ‚adamy to w niezaleznych QToolBarach. Maksymalnie 2 rzedy.
         //TODO
-        //dodaæ maksymalna szerokoœæ + przerzucanie elementów do ukrytego panelu jeœli za duzo ich jest
+        //dodaÄ‡ maksymalna szerokoÅ›Ä‡ + przerzucanie elementÃ³w do ukrytego panelu jeÅ›li za duzo ich jest
 
         int halfWidth = totalWidth;
 
@@ -211,7 +211,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
         QToolBar * bottomToolbar = nullptr;
 
-        //budujemy 2 wiersze jeœli conajmniej 5 elementów
+        //budujemy 2 wiersze jeÅ›li conajmniej 5 elementÃ³w
         if(halfElements > 4){
             bottomToolbar = new QToolBar();
             bottomToolbar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -246,7 +246,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             }
         }
 
-        //wype³niamy grupê
+        //wypeÅ‚niamy grupÄ™
         QWidget * widget = new QWidget();
         widget->setLayout(layout);
         layout->setContentsMargins(0,0,0,0);
@@ -291,7 +291,7 @@ HMMTreeItemUsageContext::HMMTreeItemUsageContext( FlexiTabWidget * flexiTabWidge
 
 void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
 {
-    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest ju¿ zaladowany
+    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest juÅ¼ zaladowany
     if(contextWidget == nullptr || groupID != -1){
         return;
     }
@@ -413,7 +413,7 @@ RaportsThumbnailsContext::RaportsThumbnailsContext( FlexiTabWidget * flexiTabWid
 
 void RaportsThumbnailsContext::activateContext( QWidget * contextWidget )
 {
-       //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest ju¿ zaladowany
+       //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest juÅ¼ zaladowany
     if(contextWidget == nullptr || groupID != -1){
         return;
     }
@@ -581,7 +581,7 @@ RaportsTabContext::RaportsTabContext( FlexiTabWidget * flexiTabWidget, HmmMainWi
 
 void RaportsTabContext::activateContext( QWidget * contextWidget )
 {
-    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest ju¿ zaladowany
+    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest juÅ¼ zaladowany
     if(contextWidget == nullptr || groupID != -1){
         return;
     }

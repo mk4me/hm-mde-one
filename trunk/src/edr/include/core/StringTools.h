@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:  2011/02/08
 	created:  8:2:2011   11:51
 	filename: StringTools.h
@@ -54,18 +54,18 @@ namespace core {
 
 
 
-    //! Przechowywanie instancji tego typu spowoduje b≥Ídy przy wy≥uskiwaniu wartoúci.
+    //! Przechowywanie instancji tego typu spowoduje b≈Çƒôdy przy wy≈Çuskiwaniu warto≈õci.
     struct toString_t
     {
-        //! Forma poúrednia, potrzebna gdy korzystamy z l-wartoúci.
+        //! Forma po≈õrednia, potrzebna gdy korzystamy z l-warto≈õci.
         std::string strval;
-        //! Gdy korzystamy z r-wartoúci.
+        //! Gdy korzystamy z r-warto≈õci.
         const std::string& strref;
 
-        //! Konstruktor dla r-wartoúci
+        //! Konstruktor dla r-warto≈õci
         toString_t(const std::string& str) : strval(), strref(str)
         {}
-        //! Konstruktor dla l-wartoúci.
+        //! Konstruktor dla l-warto≈õci.
         toString_t(std::string && str) : strval(str), strref(strval)
         {}
 

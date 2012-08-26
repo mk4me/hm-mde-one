@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+ï»¿#include "VideoPCH.h"
 #undef M_PI
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -101,14 +101,14 @@ void Potentiometer::update( double deltaTime )
 {
   PotentiometerModel::update(deltaTime);
 
-  // okreœlenie stanu
+  // okreÅ›lenie stanu
   bool absoulteCoords = false;
   osg::Image * image = NULL;
   if ( osg::StateSet* ss = getStateSet() ) {
-    // czy mamy teksturê?
+    // czy mamy teksturÄ™?
     if (osg::Texture * texture = dynamic_cast<osg::Texture*>(ss->getTextureAttribute(0, osg::StateAttribute::TEXTURE))) {
       image = texture->getImage(0);
-      // czy mamy absolutne wspó³rzêdne?
+      // czy mamy absolutne wspÃ³Å‚rzÄ™dne?
       if ( dynamic_cast<osg::TextureRectangle*>(texture) ) {
         absoulteCoords = true;
       }
@@ -116,31 +116,31 @@ void Potentiometer::update( double deltaTime )
   }
 
 #if 0
-  // przesuniêcie tekstury
+  // przesuniÄ™cie tekstury
   float delta = getDelta();
-  // maksymalna wartoœæ
+  // maksymalna wartoÅ›Ä‡
   float maxS = (absoulteCoords && image) ? image->s() : 1.0f;
   float prevS = getTexCoord(LL).x();
   float s = prevS - delta;
 
   while ( prevS <= maxS - textureTileWidth && s > maxS - textureTileWidth ) {
-    // wracamy do pocz¹tku
+    // wracamy do poczÄ…tku
     s -= maxS - textureTileWidth;
   }
   while ( prevS >= 0.0f && s < 0.0f ) {
-    // wracamy do koñca
+    // wracamy do koÅ„ca
     s += maxS - textureTileWidth;
   }
 #else
-  // wartoœæ w radianach...
+  // wartoÅ›Ä‡ w radianach...
   float value = -getValue();
-  // ... t³umaczona na znormalizowan¹
+  // ... tÅ‚umaczona na znormalizowanÄ…
   value /= 2 * M_PI;
 
-  // maksymalna wspó³rzêdna s lewej krawêdzi
+  // maksymalna wspÃ³Å‚rzÄ™dna s lewej krawÄ™dzi
   float maxS = ((absoulteCoords && image) ? image->s() : 1.0f) - textureTileWidth;
-  // wspó³rzêdna tekstury jako reszta z dzielenia
-  // pamiêtaæ o odwróceniu wartoœci!
+  // wspÃ³Å‚rzÄ™dna tekstury jako reszta z dzielenia
+  // pamiÄ™taÄ‡ o odwrÃ³ceniu wartoÅ›ci!
   float s = fmodf(value * maxS, maxS);
   if ( s < 0 ) {
     s += maxS;

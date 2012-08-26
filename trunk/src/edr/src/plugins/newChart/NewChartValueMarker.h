@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2011/11/25
 	created:	25:11:2011   8:54
 	filename: 	NewChartValueMarker.h
@@ -14,35 +14,35 @@
 #include "NewChartMarker.h"
 #include "NewChartLabelState.h"
 
-//! stan wizualizatora za etykiety z wartoúciami
+//! stan wizualizatora za etykiety z warto≈õciami
 class NewChartValueMarker : public NewChartLabelState
 {
 public:
     //! Konstruktor
-    //! \param visualizer wizualizator, na ktÛrym stan bÍdzie operowa≥
+    //! \param visualizer wizualizator, na kt√≥rym stan bƒôdzie operowa≈Ç
     NewChartValueMarker(NewChartVisualizer* visualizer);
     virtual ~NewChartValueMarker() {}
 
 public:
-    //! Filtrowanie eventÛw Qt (g≥Ûwnie myszka) zarzπdzanie etykietami
+    //! Filtrowanie event√≥w Qt (g≈Ç√≥wnie myszka) zarzƒÖdzanie etykietami
     virtual bool stateEventFilter(QObject *, QEvent *);
-    //! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wskaünik (u≥atwiajπcy dodawanie nowych etykiet)
+    //! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wska≈∫nik (u≈ÇatwiajƒÖcy dodawanie nowych etykiet)
     virtual void stateBegin();
-    //! koÒczy stan, usuwa dodatkowy wskaünik z wykresu
+    //! ko≈Ñczy stan, usuwa dodatkowy wska≈∫nik z wykresu
     virtual void stateEnd();
 
 private:
     //! Wstawienie nowej etykiety
     //! \param point wskazywany punkt
-    //! \param color kolor obwÛdki etykiety
+    //! \param color kolor obw√≥dki etykiety
     void insertNewMarker(const QPointF& point, const QColor& color = QColor(Qt::blue));
-    //! odúwieøenie etykiet
+    //! od≈õwie≈ºenie etykiet
     void updateLabels();
 
 private:
-    //! dodatkowy wskaünik (u≥atwiajπcy dodawanie nowych etykiet)
+    //! dodatkowy wska≈∫nik (u≈ÇatwiajƒÖcy dodawanie nowych etykiet)
     NewChartMarker marker;
-    //! etykieta, ktÛra jest obecnie przesuwana (moøe to byÊ dowolna etykieta)
+    //! etykieta, kt√≥ra jest obecnie przesuwana (mo≈ºe to byƒá dowolna etykieta)
     LabelDataConstPtr currentLabel;
 };
 typedef core::shared_ptr<NewChartValueMarker> NewChartValueMarkerPtr;

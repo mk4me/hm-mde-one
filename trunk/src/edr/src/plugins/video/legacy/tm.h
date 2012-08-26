@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/06/30
 	created:  30:6:2010   15:04
 	filename: tm.h
@@ -23,13 +23,13 @@ private:
   static TimelineManager * instance;
 
 private:
-	//! Prywatny konstruktor, tylko dla metod konstruuj¹cych.
+	//! Prywatny konstruktor, tylko dla metod konstruujÄ…cych.
   TimelineManager() {}
-	//! Prywatny destruktor, tylko dla metod konstruuj¹cych.
+	//! Prywatny destruktor, tylko dla metod konstruujÄ…cych.
   virtual ~TimelineManager() {}
 
 public:
-  //! Tworzy instancjê. Je¿eli istnieje, raporuje b³¹d.
+  //! Tworzy instancjÄ™. JeÅ¼eli istnieje, raporuje bÅ‚Ä…d.
   //! \return Instancja typu.
   static TimelineManager* createInstance();
   //! \return Instancja typu.

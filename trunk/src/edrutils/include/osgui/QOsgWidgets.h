@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2011/01/03
 	created:  3:1:2011   16:42
 	filename: QOsgComponentWidget.h
@@ -21,7 +21,7 @@ namespace osgui {
 class QOsgContextWidget : public osgQt::GLWidget
 {
 public:
-    //! T³umaczy format osg do formatu qt
+    //! TÅ‚umaczy format osg do formatu qt
     static QGLFormat translateFormat(const osg::GraphicsContext::Traits& traits);
 
 public:
@@ -58,7 +58,7 @@ public:
 
 public:
 
-    //! Metoda usprawniaj¹ca testowanie ró¿nych wariantów ³¹czenia OSG/QT.
+    //! Metoda usprawniajÄ…ca testowanie rÃ³Å¼nych wariantÃ³w Å‚Ä…czenia OSG/QT.
     void onInit(osgViewer::CompositeViewer* composite)
     {
         composite->addView(this);
@@ -74,7 +74,7 @@ protected:
     osg::GraphicsOperation* createRenderer(osg::Camera* camera);
 
 private:
-    //! Inicjalizacja. Byæ mo¿e bêdzie musia³a byæ publiczna, zobaczymy.
+    //! Inicjalizacja. ByÄ‡ moÅ¼e bÄ™dzie musiaÅ‚a byÄ‡ publiczna, zobaczymy.
     void init();
 };
 
@@ -83,13 +83,13 @@ private:
 class QOsgViewer : public QOsgContextWidget, public osgViewer::Viewer
 {
 public:
-    //! Domyœlny okres timera.
+    //! DomyÅ›lny okres timera.
     static const int defaultInterval = 16;
 
 private:
-    //! Timer odmierzaj¹cy kolejne ramki.
+    //! Timer odmierzajÄ…cy kolejne ramki.
     QTimer frameTimer;
-    //! Czy ramki maj¹ byæ omijane gdy widget jest niewidoczny? Dzia³a tylko dla automatycznego timera.
+    //! Czy ramki majÄ… byÄ‡ omijane gdy widget jest niewidoczny? DziaÅ‚a tylko dla automatycznego timera.
     bool skipFramesIfInvisible;
 
 public:
@@ -101,13 +101,13 @@ public:
 
     virtual ~QOsgViewer();
 
-    //! \return Czy timer jest aktywny? Je¿eli nie ramki nie bêd¹ aktualizowane i nale¿y dodaæ go do rodzica, czyli
+    //! \return Czy timer jest aktywny? JeÅ¼eli nie ramki nie bÄ™dÄ… aktualizowane i naleÅ¼y dodaÄ‡ go do rodzica, czyli
     //! do osgViewer::CompositeViewer
     inline bool isTimerActive() const
     {
         return frameTimer.isActive();
     }
-    //! \params active Czy timer jest aktywny? Je¿eli nie ramki nie bêd¹ aktualizowane i nale¿y dodaæ go do rodzica, czyli
+    //! \params active Czy timer jest aktywny? JeÅ¼eli nie ramki nie bÄ™dÄ… aktualizowane i naleÅ¼y dodaÄ‡ go do rodzica, czyli
     //! do osgViewer::CompositeViewer
     void setTimerActive(bool active);
 
@@ -133,7 +133,7 @@ public:
         this->skipFramesIfInvisible = skipFramesIfInvisible; 
     }
 
-    //! Metoda usprawniaj¹ca testowanie ró¿nych wariantów ³¹czenia OSG/QT.
+    //! Metoda usprawniajÄ…ca testowanie rÃ³Å¼nych wariantÃ³w Å‚Ä…czenia OSG/QT.
     void onInit(osgViewer::CompositeViewer* composite)
     {
         if ( !isTimerActive() ) {
@@ -156,7 +156,7 @@ protected:
     osg::GraphicsOperation* createRenderer(osg::Camera* camera);
 
 private:
-    //! Inicjalizacja. Byæ mo¿e bêdzie musia³a byæ publiczna, zobaczymy.
+    //! Inicjalizacja. ByÄ‡ moÅ¼e bÄ™dzie musiaÅ‚a byÄ‡ publiczna, zobaczymy.
     void init();
 };
 

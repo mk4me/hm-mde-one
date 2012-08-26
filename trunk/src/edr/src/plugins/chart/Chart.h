@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 created:  2010/11/17
 filename: Chart.h
 author:	  Michal Szafarski
@@ -37,8 +37,8 @@ class Chart : public osg::Group
 public:
 
     enum TitlePosition {
-        TOP_GRID_CENTER,    //nad gridem wyœrodkowany
-        TOP_CHART_CENTER,   //nad ca³ym wykresem wyœrodkowany
+        TOP_GRID_CENTER,    //nad gridem wyÅ›rodkowany
+        TOP_CHART_CENTER,   //nad caÅ‚ym wykresem wyÅ›rodkowany
         BOTTOM_GRID_CENTER,
         BOTTOM_CHART_CENTER
     };
@@ -58,7 +58,7 @@ private:
 
     //! Serie danych wykresu.
     Series series;
-    //! Bie¿¹ca seria.
+    //! BieÅ¼Ä…ca seria.
     int activeSerieIndex;
 
     //! Geode.
@@ -66,33 +66,33 @@ private:
 
     //! Ramka
     osg::GeometryPtr frame;
-    //! Szerokoœæ kreski ramki
+    //! SzerokoÅ›Ä‡ kreski ramki
     float frameWidth;
-    //! Czy pokazywaæ ramkê
+    //! Czy pokazywaÄ‡ ramkÄ™
     bool showFrame;
     //! Kolor ramki
     osg::Vec4 frameColor;
 
     //! Grid.
     osg::GeometryPtr grid;
-    //! Szerokoœæ kreski siatki.
+    //! SzerokoÅ›Ä‡ kreski siatki.
     float dashWidth;
-    //! Czy pokazywaæ poziome linie?
+    //! Czy pokazywaÄ‡ poziome linie?
     bool showGridX;
-    //! Czy pokazywaæ pionowe linie?
+    //! Czy pokazywaÄ‡ pionowe linie?
     bool showGridY;
     //! Kolor siatki.
     osg::Vec4 gridColor;
 
     //! Osie.
     osg::GeometryPtr axises;
-    //! Czy pokazywaæ oœ X?
+    //! Czy pokazywaÄ‡ oÅ› X?
     bool showAxisX;
-    //! Czy oœ X ma byæ do œrodka czy na zewn¹trz?
+    //! Czy oÅ› X ma byÄ‡ do Å›rodka czy na zewnÄ…trz?
     bool axisXInside;
-    //! Czy pokazywaæ oœ Y?
+    //! Czy pokazywaÄ‡ oÅ› Y?
     bool showAxisY;
-    //! Czy oœ Y ma byæ do œrodka czy na zewn¹trz?
+    //! Czy oÅ› Y ma byÄ‡ do Å›rodka czy na zewnÄ…trz?
     bool axisYInside;
 
     //! Kolor osi
@@ -102,23 +102,23 @@ private:
     std::vector< osgText::TextPtr > labelsY;
     //! Labelki dla osi x.
     std::vector< osgText::TextPtr > labelsX;
-    //! Offset pomiêdzy labelkami i osiami
+    //! Offset pomiÄ™dzy labelkami i osiami
     float labelsToAxisesOffset;
-    //! WskaŸnik bie¿¹cego czasu.
+    //! WskaÅºnik bieÅ¼Ä…cego czasu.
     osgText::TextPtr cursorText;
     //! Kolor kursora
     osg::Vec4 cursorColor;
-    //! WskaŸnik bie¿¹cego czasu.
+    //! WskaÅºnik bieÅ¼Ä…cego czasu.
     osg::GeometryPtr cursor;
-    //! Czy pokazywaæ czas w kursorze
+    //! Czy pokazywaÄ‡ czas w kursorze
     bool showTimeInCursor;
     //! Czy pokazywac jednostki w kursorze
     bool showUnitsInCursor;
-    //! Czy pokazywaæ dodatkowe t³o kursora
+    //! Czy pokazywaÄ‡ dodatkowe tÅ‚o kursora
     bool showCursorBackground;
-    //! Kolor t³a kursora
+    //! Kolor tÅ‚a kursora
     osg::Vec4 cursorBackgroundColor;
-    //! T³o kursora
+    //! TÅ‚o kursora
     osg::GeometryPtr cursorBackground;
 
     //! Jednostki osi X
@@ -133,41 +133,41 @@ private:
     bool yUnitLabelVisible;
     //! Pokazuj jednostki osi Y
     bool showYUnits;
-    //! Czy jednostki osobno od wartoœci
+    //! Czy jednostki osobno od wartoÅ›ci
     bool xUnitsSeparated;
-    //! Czy jednostki osobno od wartoœci
+    //! Czy jednostki osobno od wartoÅ›ci
     bool yUnitsSeparated;
-    //! Tytu³ wykresu
+    //! TytuÅ‚ wykresu
     osgText::TextPtr titleLabel;
-    //! Czy pokazywac tytu³
+    //! Czy pokazywac tytuÅ‚
     bool showTitle;
-    //! Czy tutu³ widoczny - klient chcia³ go zobaczyæ i ustawi³ mu jakiœ tekst (czy text dodany do sceny)
+    //! Czy tutuÅ‚ widoczny - klient chciaÅ‚ go zobaczyÄ‡ i ustawiÅ‚ mu jakiÅ› tekst (czy text dodany do sceny)
     bool titleVisible;
-    //! Pozycja tytu³u
+    //! Pozycja tytuÅ‚u
     TitlePosition titlePosition;
 
 
-    //! Wspó³rzêdna bazowa wykresu.
+    //! WspÃ³Å‚rzÄ™dna bazowa wykresu.
     float z;
-    //! Zakres, w ramach którego mo¿na pozycjonowaæ elementy.
+    //! Zakres, w ramach ktÃ³rego moÅ¼na pozycjonowaÄ‡ elementy.
     float zRange;
-    //! Wspó³rzêdna x.
+    //! WspÃ³Å‚rzÄ™dna x.
     float x;
-    //! Wspó³rzêdna y.
+    //! WspÃ³Å‚rzÄ™dna y.
     float y;
-    //! Szerokoœæ.
+    //! SzerokoÅ›Ä‡.
     float w;
-    //! Wysokoœæ.
+    //! WysokoÅ›Ä‡.
     float h;
     //! Margines.
     float margin;
 
-    //! Pozycja grida dla wykresów (x, y, w, h)
+    //! Pozycja grida dla wykresÃ³w (x, y, w, h)
     osg::Vec4 gridPosition;
 
     //! Czy wykres wymaga ponownego odrysowania?
     bool dirty;
-    //! Czy wykres sam siê odœwie¿a?
+    //! Czy wykres sam siÄ™ odÅ›wieÅ¼a?
     bool autoRefresh;
 
     //!
@@ -175,11 +175,11 @@ private:
 
     //!
 	int gridDensity;
-    //! Prototyp dla tekstów.
+    //! Prototyp dla tekstÃ³w.
     osg::ref_ptr<osgText::Text> textPrototype;
 
 public:
-    //! Konstruktor zeruj¹cy.
+    //! Konstruktor zerujÄ…cy.
 	Chart();
     //! Pusty polimorficzny destruktor.
 	virtual ~Chart();
@@ -206,10 +206,10 @@ public:
         return series.end();
     }
 
-    //! Dodaje kana³ do wykres.ug
+    //! Dodaje kanaÅ‚ do wykres.ug
     bool addSerie( const ChartSeriePtr& serie, const std::string & serieName = std::string() );
 
-    //! Usuniêcie kana³ z wykres.ug
+    //! UsuniÄ™cie kanaÅ‚ z wykres.ug
     bool removeSerie( const ChartSeriePtr& serie );
 
     const std::string & getSerieName(const ChartSeriePtr& serie) const;
@@ -218,25 +218,25 @@ public:
 
     //! Usuwa wszystkie wykresy.
     void removeAllSeries();
-    //! \return Liczba kana³ów.
+    //! \return Liczba kanaÅ‚Ã³w.
     int getNumSeries() const;
 
-    //! \return Indeks kana³u b¹dŸ -1 jeœli kana³u nie ma.
+    //! \return Indeks kanaÅ‚u bÄ…dÅº -1 jeÅ›li kanaÅ‚u nie ma.
     int getSerieIndex(const ChartSeriePtr& serie) const;
 
-    //! \return Indeks aktywnego kana³u b¹dŸ -1.
+    //! \return Indeks aktywnego kanaÅ‚u bÄ…dÅº -1.
     int getActiveSerieIndex() const;
-    //! \param currentSerie Indeks aktywnego kana³u.
+    //! \param currentSerie Indeks aktywnego kanaÅ‚u.
     void setActiveSerie(int currentSerie);
-    //! \return Aktywny kana³ b¹dŸ nullptr.
+    //! \return Aktywny kanaÅ‚ bÄ…dÅº nullptr.
     const ChartSerie* getActiveSerie() const;
 
-    //! \return Czy wykres wymaga odœwie¿enia?
+    //! \return Czy wykres wymaga odÅ›wieÅ¼enia?
     inline bool isDirty() const
     { 
         return dirty;
     }
-    //! \return Czy wykres sam siê odœwie¿a przy zmianie?
+    //! \return Czy wykres sam siÄ™ odÅ›wieÅ¼a przy zmianie?
     inline bool getAutoRefresh() const
     { 
         return autoRefresh;
@@ -253,12 +253,12 @@ public:
     void setLocation(osg::Vec4 loc);
     //! \return Lokalizacja wykresu.
     osg::Vec4 getLocation() const;
-    //! \return Obszar, gdzie mo¿na rysowaæ.
+    //! \return Obszar, gdzie moÅ¼na rysowaÄ‡.
     osg::Vec4 getClientLocation() const;
-    //! \param x Wspó³rzêdna obszaru, gdzie mo¿na rysowaæ.
-    //! \param y Wspó³rzêdna obszaru, gdzie mo¿na rysowaæ.
-    //! \param w Wspó³rzêdna obszaru, gdzie mo¿na rysowaæ.
-    //! \param h Wspó³rzêdna obszaru, gdzie mo¿na rysowaæ.
+    //! \param x WspÃ³Å‚rzÄ™dna obszaru, gdzie moÅ¼na rysowaÄ‡.
+    //! \param y WspÃ³Å‚rzÄ™dna obszaru, gdzie moÅ¼na rysowaÄ‡.
+    //! \param w WspÃ³Å‚rzÄ™dna obszaru, gdzie moÅ¼na rysowaÄ‡.
+    //! \param h WspÃ³Å‚rzÄ™dna obszaru, gdzie moÅ¼na rysowaÄ‡.
     void getClientLocation(float& x, float& y, float& w, float& h) const;
 
     //! \return
@@ -335,14 +335,14 @@ public:
     //! Ustawia kolor kursora w rgba
     void setCursorColor(osg::Vec4 color);
 
-    //! \return Czy pokazywaæ tytu³
+    //! \return Czy pokazywaÄ‡ tytuÅ‚
     bool isShowingTitle() const;
-    //! \param, showTitle Czy pokazywaæ tytu³
+    //! \param, showTitle Czy pokazywaÄ‡ tytuÅ‚
     void setShowTitle(bool showTitle);
 
-    //! \return Tytu³ wykresu
+    //! \return TytuÅ‚ wykresu
     std::string getTitleText() const;
-    //! \param titleText Tytu³ wykresu
+    //! \param titleText TytuÅ‚ wykresu
     void setTitleText(const std::string & titleText);
 
     int getTitleTextSize() const;
@@ -381,8 +381,8 @@ public:
     {
         return textPrototype.get();
     }
-    //! \param prototype Prototyp labelek. Obiekt nie jest kopiowany. Gdy wprowadza siê zmiany w labelce trzeba
-    //! koniecznie wywo³aæ jeszcze raz setLabelPrototype, bo inaczej nie bêd¹ odœwie¿one. Mo¿na równie¿ sklonowaæ
+    //! \param prototype Prototyp labelek. Obiekt nie jest kopiowany. Gdy wprowadza siÄ™ zmiany w labelce trzeba
+    //! koniecznie wywoÅ‚aÄ‡ jeszcze raz setLabelPrototype, bo inaczej nie bÄ™dÄ… odÅ›wieÅ¼one. MoÅ¼na rÃ³wnieÅ¼ sklonowaÄ‡
     //! tekst w parametrze.
     void setLabelPrototype(osgText::Text* prototype);
 
@@ -391,7 +391,7 @@ public:
     //! \param normalized
     void setNormalized(bool normalized);
 
-    //! Odœwie¿a wykres.
+    //! OdÅ›wieÅ¼a wykres.
     void refreshAll();
     void refreshCursor();
 
@@ -425,7 +425,7 @@ private:
     void refreshTitle(float z);
     void refreshSeries(float & currentZ, float zStep);
 
-    //! Pomocnicza metoda do odœwie¿ania labelek.
+    //! Pomocnicza metoda do odÅ›wieÅ¼ania labelek.
     void refreshLabels(std::vector<osgText::TextPtr> &labels, const std::string& unit, bool condition, float min, float max, float x0, float x1, float y0, float y1, float z, osgText::Text::AlignmentType align );
     bool prepareGeometry(osg::GeometryPtr& geom, bool condition, const char* name);
     bool prepareText(osgText::TextPtr& text, bool condition, const char* name);
@@ -436,10 +436,10 @@ private:
     //! \param label Tekst.
     osg::ref_ptr<osgText::Text> createText(const osg::Vec3& pos, float size, const std::string& label);
 
-    //! Formatuje strumieñ tak, aby dobrze formatowa³ liczby zmiennoprzecinkowe.
+    //! Formatuje strumieÅ„ tak, aby dobrze formatowaÅ‚ liczby zmiennoprzecinkowe.
     //! \param stream
-    //! \param decimalsToShow Liczba dodatkowych miejsc zmiennoprzecinkowych od pokazania. Gdy ró¿nica miêdzy
-    //!                       max a min jest rzêdu 10^n, to wyswietlone zostan¹ cyfry z rzêdów 10^n-decimalsToShow
+    //! \param decimalsToShow Liczba dodatkowych miejsc zmiennoprzecinkowych od pokazania. Gdy rÃ³Å¼nica miÄ™dzy
+    //!                       max a min jest rzÄ™du 10^n, to wyswietlone zostanÄ… cyfry z rzÄ™dÃ³w 10^n-decimalsToShow
     //! \param max
     //! \param min
     void formatStream(std::ostringstream& stream, float min, float max, int decimalsToShow = 2 );

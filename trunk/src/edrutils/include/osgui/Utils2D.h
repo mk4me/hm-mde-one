@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__UTILS2D_H__
+﻿#ifndef HEADER_GUARD__UTILS2D_H__
 #define HEADER_GUARD__UTILS2D_H__
 
 #include <osgWidget/Window>

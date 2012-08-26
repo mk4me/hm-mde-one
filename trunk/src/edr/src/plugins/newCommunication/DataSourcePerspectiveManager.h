@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/14
     created:  14:3:2012   18:02
     filename: DataSourcePerspectiveManager.h
@@ -21,7 +21,7 @@ public:
 
 	//! \param perspective Perspektywa do zarejestrowania
 	virtual int registerPerspective(communication::IDataSourcePerspective * perspective);
-	//! \return iloœc zarejestrowanych perspektyw
+	//! \return iloÅ›c zarejestrowanych perspektyw
 	virtual int perspectivesCount() const;
 	//! \param idx Index aktualnej perspektywy
 	virtual void setCurrentPerspective(int idx);
@@ -29,11 +29,11 @@ public:
 	virtual communication::DataSourcePerspectivePtr currentPerspective() const;
 	//! \return Index aktualnej perspektywy
 	virtual int currentPerspectiveIndex() const;
-	//! Uniewa¿nia poprzednie perspektywy - np z powodu zmiany filtra
+	//! UniewaÅ¼nia poprzednie perspektywy - np z powodu zmiany filtra
 	void invalidatePerspectives();
-	//! \param shallowCopy P³ytka kopia któr¹ zasilam perspektywê
-	//! \param localStatusManager Status danych w takiej formie jakiej s¹
-	//! \param globalStatusManager Status danych w pe³nej formie
+	//! \param shallowCopy PÅ‚ytka kopia ktÃ³rÄ… zasilam perspektywÄ™
+	//! \param localStatusManager Status danych w takiej formie jakiej sÄ…
+	//! \param globalStatusManager Status danych w peÅ‚nej formie
 	void rebuildCurrentPerspective(const communication::ShallowCopy & shallowCopy);
 	//! \return Drzewo danych perspektywy
 	QTreeWidget * perspectiveWidget(int idx);

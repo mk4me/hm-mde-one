@@ -1,4 +1,4 @@
-#include "NamedTreeBaseTest.h"
+﻿#include "NamedTreeBaseTest.h"
 #include <utils/NamedTree.h>
 
 // Registers the fixture into the 'registry'

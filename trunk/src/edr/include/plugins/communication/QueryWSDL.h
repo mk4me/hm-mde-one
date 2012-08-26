@@ -1,6 +1,6 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Klasa MotionQueryWSDL implementuje funkcjonalnoœæ interfejsu IQueryable przy pomocy web serwisów.
+@brief Klasa MotionQueryWSDL implementuje funkcjonalnoÅ›Ä‡ interfejsu IQueryable przy pomocy web serwisÃ³w.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_QUERYWSDL_H__
@@ -15,13 +15,13 @@ namespace communication
 	{
 	protected:	
 		/**
-		WskaŸnik na obiekt klasy MotionBasicQueriesService pozwalaj¹cy na korzystanie z web serwisu
-		zdefiniowanego do komunikacji z baz¹ danych generuj¹cego zapytania
+		WskaÅºnik na obiekt klasy MotionBasicQueriesService pozwalajÄ…cy na korzystanie z web serwisu
+		zdefiniowanego do komunikacji z bazÄ… danych generujÄ…cego zapytania
 		*/
 		core::shared_ptr<MotionBasicQueriesService> bqs;
 		/**
-		WskaŸnik na obiekt klasy MotionBasicUpdatesService pozwalaj¹cy na korzystanie z web serwisu
-		zdefiniowanego do komunikacji z baz¹ danych pozwalaj¹cego tworzenie nowych encji
+		WskaÅºnik na obiekt klasy MotionBasicUpdatesService pozwalajÄ…cy na korzystanie z web serwisu
+		zdefiniowanego do komunikacji z bazÄ… danych pozwalajÄ…cego tworzenie nowych encji
 		*/
 		core::shared_ptr<MotionBasicUpdatesService> bus;
 	public:
@@ -34,9 +34,9 @@ namespace communication
 		*/
 		virtual ~MotionQueryWSDL();
 		/**
-		Metoda setWSCredentials ustala login i has³o potrzebne do autoryzacji web serwisów.
-		@param usr nazwa u¿ytkownika
-		@param pswd haslo u¿ytkownika
+		Metoda setWSCredentials ustala login i hasÅ‚o potrzebne do autoryzacji web serwisÃ³w.
+		@param usr nazwa uÅ¼ytkownika
+		@param pswd haslo uÅ¼ytkownika
 		*/
 		void setWSCredentials(const std::string& usr, const std::string& pswd);
 		/**
@@ -55,28 +55,28 @@ namespace communication
         DateTime getLastMetadataModificationTime();
 
 		/**
-		Listuje próby pomiarowe sesji.
-		@param sessionID id sesji której próby pomiarowe maj¹ zostaæ wylistowane
-		@return zbiór prób pomiarowych dla wybranej sesji
+		Listuje prÃ³by pomiarowe sesji.
+		@param sessionID id sesji ktÃ³rej prÃ³by pomiarowe majÄ… zostaÄ‡ wylistowane
+		@return zbiÃ³r prÃ³b pomiarowych dla wybranej sesji
 		*/
 		virtual std::vector<motionWsdl::Trial> listSessionTrials(int sessionID);
 		/**
 		Listuje sesje dla danego laboratorium.
-		@param labID id labu którego sesje maj¹ zostaæ wylistowane
-		@return zbiór sesji dla wybranego labu
+		@param labID id labu ktÃ³rego sesje majÄ… zostaÄ‡ wylistowane
+		@return zbiÃ³r sesji dla wybranego labu
 		*/
 		virtual std::vector<motionWsdl::Session> listLabSessionsWithAttributes(int labID);
 		/**
 		Listuje pliki dla encji typu subjectType i id ID.
-		@param ID id encji dla której maj¹ zostaæ wylistowane pliki
-		@param subjectType typ encji dla której maj¹ zostaæ wylistowane pliki
-		@return zbiór plików dla wybranej encji
+		@param ID id encji dla ktÃ³rej majÄ… zostaÄ‡ wylistowane pliki
+		@param subjectType typ encji dla ktÃ³rej majÄ… zostaÄ‡ wylistowane pliki
+		@return zbiÃ³r plikÃ³w dla wybranej encji
 		*/
 		virtual std::vector<motionWsdl::File> listFiles(int ID, const std::string& subjectType);
 		/**
-		TODO: Listuje encje bazodanowe, sesje, podleg³e sesjom próby pomiarowe i
-		informacje o plikach poszczególnych sesji i prób pomiarowych.
-		@return lista prób pomiarowych, w przysz³oœci powinno znaleŸæ siê drzewko zale¿noœci miêdzy encjami
+		TODO: Listuje encje bazodanowe, sesje, podlegÅ‚e sesjom prÃ³by pomiarowe i
+		informacje o plikach poszczegÃ³lnych sesji i prÃ³b pomiarowych.
+		@return lista prÃ³b pomiarowych, w przyszÅ‚oÅ›ci powinno znaleÅºÄ‡ siÄ™ drzewko zaleÅ¼noÅ›ci miÄ™dzy encjami
 		*/
 		virtual std::vector<motionWsdl::Trial> listSessionContents();
 
@@ -167,13 +167,13 @@ namespace communication
 	{
 	protected:	
 		/**
-		WskaŸnik na obiekt klasy MotionBasicQueriesService pozwalaj¹cy na korzystanie z web serwisu
-		zdefiniowanego do komunikacji z baz¹ danych generuj¹cego zapytania
+		WskaÅºnik na obiekt klasy MotionBasicQueriesService pozwalajÄ…cy na korzystanie z web serwisu
+		zdefiniowanego do komunikacji z bazÄ… danych generujÄ…cego zapytania
 		*/
 		core::shared_ptr<MedicalBasicQueriesService> bqs;
 		/**
-		WskaŸnik na obiekt klasy MotionBasicUpdatesService pozwalaj¹cy na korzystanie z web serwisu
-		zdefiniowanego do komunikacji z baz¹ danych pozwalaj¹cego tworzenie nowych encji
+		WskaÅºnik na obiekt klasy MotionBasicUpdatesService pozwalajÄ…cy na korzystanie z web serwisu
+		zdefiniowanego do komunikacji z bazÄ… danych pozwalajÄ…cego tworzenie nowych encji
 		*/
 		core::shared_ptr<MedicalBasicUpdatesService> bus;
 	public:
@@ -186,9 +186,9 @@ namespace communication
 		*/
 		virtual ~MedicalQueryWSDL();
 		/**
-		Metoda setWSCredentials ustala login i has³o potrzebne do autoryzacji web serwisów.
-		@param usr nazwa u¿ytkownika
-		@param pswd haslo u¿ytkownika
+		Metoda setWSCredentials ustala login i hasÅ‚o potrzebne do autoryzacji web serwisÃ³w.
+		@param usr nazwa uÅ¼ytkownika
+		@param pswd haslo uÅ¼ytkownika
 		*/
 		void setWSCredentials(const std::string& usr, const std::string& pswd);
 		/**

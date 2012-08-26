@@ -1,6 +1,6 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Klasa MotionBasicUpdatesService dziedzicz¹ca po WsdlConnection wykonuj¹ca operacje dokumentu MotionBasicUpdatesService.wsdl.
+@brief Klasa MotionBasicUpdatesService dziedziczÄ…ca po WsdlConnection wykonujÄ…ca operacje dokumentu MotionBasicUpdatesService.wsdl.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_BASICUPDATESSERVICE_H__
@@ -25,29 +25,29 @@ namespace webservices
 		*/
 		virtual ~MotionBasicUpdatesWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 		/**
 		Manualne utworzenie encji performera w oparciu o dane z aplikacji klienckiej
-		@param name imiê performera
+		@param name imiÄ™ performera
 		@param surname nazwisko performera
 		@return utworzony Performer
 		*/
 		//wsdl::Performer createPerformer(const std::string& name = "", const std::string& surname = "");
 		/**
-		Manualne utworzenie encji sesji przez u¿ytkownika (oznaczone TODO)
-		@param userID identyfikator u¿ytkownika
+		Manualne utworzenie encji sesji przez uÅ¼ytkownika (oznaczone TODO)
+		@param userID identyfikator uÅ¼ytkownika
 		@param labID identyfikator laboratorium
 		@param performerID identyfikator performera
 		@param sessionDate data powstania sesji
 		@param sessionDescription opis sesji
 		@param motionKindName ???
-		@param groupsIDs referencja do wektora przechowuj¹cego identyfikatory grup do których ma nale¿eæ sesja
-		@return wskaŸnik na obiekt klasy Session
+		@param groupsIDs referencja do wektora przechowujÄ…cego identyfikatory grup do ktÃ³rych ma naleÅ¼eÄ‡ sesja
+		@return wskaÅºnik na obiekt klasy Session
 		*/
 		//Session* createSession(int labID, int performerID, DateTime& sessionDate, const std::string& sessionDescription, const std::string& motionKindName, std::vector<int>& groupsIDs);
 		///**
@@ -95,11 +95,11 @@ namespace webservices
         MedicalBasicUpdatesWS(const WSConnectionPtr & connection = WSConnectionPtr());
         virtual ~MedicalBasicUpdatesWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
 	private:

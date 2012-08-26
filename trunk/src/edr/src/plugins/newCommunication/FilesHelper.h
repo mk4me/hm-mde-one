@@ -1,4 +1,4 @@
-//Login i has³o dla nowego testowego u¿ytkownika: applet_user / aplet4Motion
+ï»¿//Login i hasÅ‚o dla nowego testowego uÅ¼ytkownika: applet_user / aplet4Motion
 
 /********************************************************************
     created:  2012/02/23
@@ -15,89 +15,89 @@
 #include "DataSourceStatus.h"
 #include "DataSourceStatusManager.h"
 
-//! Klasa pomocnicza przy zbieraniu plików dla poszczególnych poziomów hierarchi danych i filtorawaniu ich wg statusu
+//! Klasa pomocnicza przy zbieraniu plikÃ³w dla poszczegÃ³lnych poziomÃ³w hierarchi danych i filtorawaniu ich wg statusu
 class FilesHelper
 {
 public:
 
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param shallowCopy P³ytka kopia danych
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param shallowCopy PÅ‚ytka kopia danych
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getDisorderFiles(int disorderID, const communication::ShallowCopy & shallowCopy, std::set<int> & files);
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param shallowCopy P³ytka kopia danych
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param shallowCopy PÅ‚ytka kopia danych
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getPatientFiles(int patientID, const communication::ShallowCopy & shallowCopy, std::set<int> & files);
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param shallowCopy P³ytka kopia danych
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param shallowCopy PÅ‚ytka kopia danych
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getSubjectFiles(int subjectID, const communication::ShallowCopy & shallowCopy, std::set<int> & files);
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param shallowCopy P³ytka kopia danych
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param shallowCopy PÅ‚ytka kopia danych
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getSessionFiles(int sessionID, const communication::ShallowCopy & shallowCopy, std::set<int> & files);
-	//! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-	//! \param shallowCopy P³ytka kopia danych
-	//! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+	//! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+	//! \param shallowCopy PÅ‚ytka kopia danych
+	//! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
 	static void getSessionSpecificFiles(int sessionID, const communication::ShallowCopy & shallowCopy, std::set<int> & files);
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param shallowCopy P³ytka kopia danych
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param shallowCopy PÅ‚ytka kopia danych
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getMotionFiles(int motionID, const communication::ShallowCopy & shallowCopy, std::set<int> & files);
 
-    //! \param inFiles Zbiór plików które chcemy filtrowaæ
-    //! \param storage Stan sk³adowania pliku wzglêdem którego filtrujemy pliki
-    //! \param filteredFiles [out] Wyjœciowy zbiór przefiltrowanych plików
-	//! \param filesStatusManager Manager statusu plików
+    //! \param inFiles ZbiÃ³r plikÃ³w ktÃ³re chcemy filtrowaÄ‡
+    //! \param storage Stan skÅ‚adowania pliku wzglÄ™dem ktÃ³rego filtrujemy pliki
+    //! \param filteredFiles [out] WyjÅ›ciowy zbiÃ³r przefiltrowanych plikÃ³w
+	//! \param filesStatusManager Manager statusu plikÃ³w
     static void filterFiles(const std::set<int> & inFiles, communication::DataStorage storage, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager);
-    //! \param inFiles Zbiór plików które chcemy filtrowaæ
-    //! \param storage Stan za³adowania pliku wzglêdem którego filtrujemy pliki
-    //! \param filteredFiles [out] Wyjœciowy zbiór przefiltrowanych plików
-	//! \param filesStatusManager Manager statusu plików
+    //! \param inFiles ZbiÃ³r plikÃ³w ktÃ³re chcemy filtrowaÄ‡
+    //! \param storage Stan zaÅ‚adowania pliku wzglÄ™dem ktÃ³rego filtrujemy pliki
+    //! \param filteredFiles [out] WyjÅ›ciowy zbiÃ³r przefiltrowanych plikÃ³w
+	//! \param filesStatusManager Manager statusu plikÃ³w
     static void filterFiles(const std::set<int> & inFiles, communication::DataUsage usage, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager);
-    //! \param inFiles Zbiór plików które chcemy filtrowaæ
-    //! \param status Stan wzglêdem którego filtrujemy pliki
-    //! \param filteredFiles [out] Wyjœciowy zbiór przefiltrowanych plików
-	//! \param filesStatusManager Manager statusu plików
+    //! \param inFiles ZbiÃ³r plikÃ³w ktÃ³re chcemy filtrowaÄ‡
+    //! \param status Stan wzglÄ™dem ktÃ³rego filtrujemy pliki
+    //! \param filteredFiles [out] WyjÅ›ciowy zbiÃ³r przefiltrowanych plikÃ³w
+	//! \param filesStatusManager Manager statusu plikÃ³w
     static void filterFiles(const std::set<int> & inFiles, const DataStatus & status, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager);
-	//! \param inFiles Zbiór plików które chcemy filtrowaæ
-	//! \param filesExtensions Rozszerzenia plików wzglêdem których filtrujemy pliki
-	//! \param filteredFiles [out] Wyjœciowy zbiór przefiltrowanych plików
-	//! \param filesStatusManager Manager statusu plików
+	//! \param inFiles ZbiÃ³r plikÃ³w ktÃ³re chcemy filtrowaÄ‡
+	//! \param filesExtensions Rozszerzenia plikÃ³w wzglÄ™dem ktÃ³rych filtrujemy pliki
+	//! \param filteredFiles [out] WyjÅ›ciowy zbiÃ³r przefiltrowanych plikÃ³w
+	//! \param filesStatusManager Manager statusu plikÃ³w
 	static void filterFiles(const std::set<int> & inFiles, const std::set<std::string> & filesExtensions, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager);
-	//! \param inFiles Zbiór plików które chcemy filtrowaæ
-	//! \param filesExtension Rozszerzenie plików wzglêdem którego filtrujemy pliki
-	//! \param filteredFiles [out] Wyjœciowy zbiór przefiltrowanych plików
-	//! \param filesStatusManager Manager statusu plików
+	//! \param inFiles ZbiÃ³r plikÃ³w ktÃ³re chcemy filtrowaÄ‡
+	//! \param filesExtension Rozszerzenie plikÃ³w wzglÄ™dem ktÃ³rego filtrujemy pliki
+	//! \param filteredFiles [out] WyjÅ›ciowy zbiÃ³r przefiltrowanych plikÃ³w
+	//! \param filesStatusManager Manager statusu plikÃ³w
 	static void filterFiles(const std::set<int> & inFiles, const std::string & filesExtension, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager);
 
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param shallowCopy P³ytka kopia danych
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param shallowCopy PÅ‚ytka kopia danych
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getFiles(const webservices::MedicalShallowCopy::Disorder * disord, const communication::ShallowCopy & shallowCopy, std::set<int> & files);
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getFiles(const webservices::MedicalShallowCopy::Patient * patient, std::set<int> & files);
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getFiles(const webservices::MotionShallowCopy::Performer * subject, std::set<int> & files);
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getFiles(const webservices::MotionShallowCopy::Session * session, std::set<int> & files);
-	//! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-	//! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+	//! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+	//! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
 	static void getSpecificFiles(const webservices::MotionShallowCopy::Session * session, std::set<int> & files);
-    //! \param disorderID Identyfikator schorzenia dla którego chcemy pobraæ pliki
-    //! \param files [out] Zbiór plików zwi¹zanych z chorob¹
+    //! \param disorderID Identyfikator schorzenia dla ktÃ³rego chcemy pobraÄ‡ pliki
+    //! \param files [out] ZbiÃ³r plikÃ³w zwiÄ…zanych z chorobÄ…
     static void getFiles(const webservices::MotionShallowCopy::Trial * motion, std::set<int> & files);
 
-	//! \param files Zbiór plików których sumaryczny rozmiar chcemy poznaæ
-	//! \param shallowCopy P³ytka kopia bazy danych
-	//! \return Sumaryczny rozmiar plików
+	//! \param files ZbiÃ³r plikÃ³w ktÃ³rych sumaryczny rozmiar chcemy poznaÄ‡
+	//! \param shallowCopy PÅ‚ytka kopia bazy danych
+	//! \return Sumaryczny rozmiar plikÃ³w
 	static unsigned long long filesSize(const std::set<int> & filesIDs, const communication::ShallowCopy & shallowCopy);
 
-	//! \param file Plik którego rozmiar chcemy poznaæ
-	//! \param shallowCopy P³ytka kopia bazy danych
+	//! \param file Plik ktÃ³rego rozmiar chcemy poznaÄ‡
+	//! \param shallowCopy PÅ‚ytka kopia bazy danych
 	//! \return Rozmiar pliku
 	static unsigned long long fileSize(const int fileID, const communication::ShallowCopy & shallowCopy);
 };

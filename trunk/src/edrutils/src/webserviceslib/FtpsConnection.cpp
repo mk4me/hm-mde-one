@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 @author Marek Daniluk
 */
 
@@ -15,7 +15,7 @@ namespace webservices
 class FtpsConnectionImpl
 {
 public:
-    //! Domyœlny konstruktor
+    //! DomyÅ›lny konstruktor
     FtpsConnectionImpl() : curl(nullptr)
     {
         progress_.progress = 0;
@@ -185,12 +185,12 @@ private:
 
     /**
     @author Marek Daniluk
-    @brief Struktura pozwalaj¹ca na anulowanie operacji. Przechowuje te¿ informacjê o postêpie operacji.
+    @brief Struktura pozwalajÄ…ca na anulowanie operacji. Przechowuje teÅ¼ informacjÄ™ o postÄ™pie operacji.
     */
     struct Progress
     {
         /**
-        Postêp
+        PostÄ™p
         */
         int progress;
 
@@ -200,18 +200,18 @@ private:
         FtpsConnection::IProgress * customProgress;
 
         /**
-        czy anulowaæ?
+        czy anulowaÄ‡?
         */
         bool abort;
     };
     /**
-    Metoda statyczna (wymagana przez curla) typu callback wymagana przy przesy³aniu danych na serwer.
-    Daje nam informacjê zwrotn¹ o iloœci danych wys³anych na serwer.
-    @param buffer wskaŸnik do bloku pamiêci o rozmiarze size*nmemb
+    Metoda statyczna (wymagana przez curla) typu callback wymagana przy przesyÅ‚aniu danych na serwer.
+    Daje nam informacjÄ™ zwrotnÄ… o iloÅ›ci danych wysÅ‚anych na serwer.
+    @param buffer wskaÅºnik do bloku pamiÄ™ci o rozmiarze size*nmemb
     @param size rozmiar w bajtach elementu do odczytania
-    @param nmemb liczba elementów do odczytania
-    @param stream wskaŸnik na strumieñ danych
-    @return iloœæ bajtów przetworzonych przez funkcjê
+    @param nmemb liczba elementÃ³w do odczytania
+    @param stream wskaÅºnik na strumieÅ„ danych
+    @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
     */
     static size_t read(void* buffer, size_t size, size_t nmemb, void* stream)
     {
@@ -219,26 +219,26 @@ private:
     }
     /**
     Metoda statyczna (wymagana przez curla) typu callback wymagana przy odbieraniu danych z serwera.
-    Daje nam informacjê zwrotn¹ o iloœci danych pobranych z serwera.
-    @param buffer wskaŸnik do bloku pamiêci o rozmiarze size*nmemb
+    Daje nam informacjÄ™ zwrotnÄ… o iloÅ›ci danych pobranych z serwera.
+    @param buffer wskaÅºnik do bloku pamiÄ™ci o rozmiarze size*nmemb
     @param size rozmiar w bajtach elementu do odczytania
-    @param nmemb liczba elementów do odczytania
-    @param stream wskaŸnik na strumieñ danych
-    @return iloœæ bajtów przetworzonych przez funkcjê
+    @param nmemb liczba elementÃ³w do odczytania
+    @param stream wskaÅºnik na strumieÅ„ danych
+    @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
     */
     static size_t write(void *buffer, size_t size, size_t nmemb, void *stream)
     {
         return fwrite(buffer, size, nmemb, (FILE*)stream);
     }
     /**
-    Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji postêpu.
-    Daje nam informacje zwrotna o procentowym postêpie aktualnej operacji.
-    @param progress wskaŸnik na strukturê typu Progress
-    @param t wieloœæ ca³kowita pliku pobieranego
-    @param d obecna iloœæ pobranych bajtów
-    @param ultotal wielkoœæ ca³kowita pliku wysy³anego
-    @param ulnow obecna iloœæ wys³anych bajtów
-    @return iloœæ bajtów przetworzonych przez funkcjê
+    Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji postÄ™pu.
+    Daje nam informacje zwrotna o procentowym postÄ™pie aktualnej operacji.
+    @param progress wskaÅºnik na strukturÄ™ typu Progress
+    @param t wieloÅ›Ä‡ caÅ‚kowita pliku pobieranego
+    @param d obecna iloÅ›Ä‡ pobranych bajtÃ³w
+    @param ultotal wielkoÅ›Ä‡ caÅ‚kowita pliku wysyÅ‚anego
+    @param ulnow obecna iloÅ›Ä‡ wysÅ‚anych bajtÃ³w
+    @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
     */
     static size_t setDownloadProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow)
     {
@@ -249,14 +249,14 @@ private:
         return 0;
     }
     /**
-    Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji costomowego postêpu przez interfejs IProgress.
-    Daje nam informacje zwrotna o procentowym postêpie aktualnej operacji.
-    @param progress wskaŸnik na strukturê typu Progress
-    @param t wieloœæ ca³kowita pliku pobieranego
-    @param d obecna iloœæ pobranych bajtów
-    @param ultotal wielkoœæ ca³kowita pliku wysy³anego
-    @param ulnow obecna iloœæ wys³anych bajtów
-    @return iloœæ bajtów przetworzonych przez funkcjê
+    Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji costomowego postÄ™pu przez interfejs IProgress.
+    Daje nam informacje zwrotna o procentowym postÄ™pie aktualnej operacji.
+    @param progress wskaÅºnik na strukturÄ™ typu Progress
+    @param t wieloÅ›Ä‡ caÅ‚kowita pliku pobieranego
+    @param d obecna iloÅ›Ä‡ pobranych bajtÃ³w
+    @param ultotal wielkoÅ›Ä‡ caÅ‚kowita pliku wysyÅ‚anego
+    @param ulnow obecna iloÅ›Ä‡ wysÅ‚anych bajtÃ³w
+    @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
     */
     static size_t setDownloadCustomProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow)
     {
@@ -273,14 +273,14 @@ private:
         return 0;
     }
     /**
-    Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji postêpu.
-    Daje nam informacje zwrotna o procentowym postêpie aktualnej operacji.
-    @param progress wskaŸnik na strukturê typu Progress
-    @param t wieloœæ ca³kowita pliku pobieranego
-    @param d obecna iloœæ pobranych bajtów
-    @param ultotal wielkoœæ ca³kowita pliku wysy³anego
-    @param ulnow obecna iloœæ wys³anych bajtów
-    @return iloœæ bajtów przetworzonych przez funkcjê
+    Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji postÄ™pu.
+    Daje nam informacje zwrotna o procentowym postÄ™pie aktualnej operacji.
+    @param progress wskaÅºnik na strukturÄ™ typu Progress
+    @param t wieloÅ›Ä‡ caÅ‚kowita pliku pobieranego
+    @param d obecna iloÅ›Ä‡ pobranych bajtÃ³w
+    @param ultotal wielkoÅ›Ä‡ caÅ‚kowita pliku wysyÅ‚anego
+    @param ulnow obecna iloÅ›Ä‡ wysÅ‚anych bajtÃ³w
+    @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
     */
     static size_t setUploadProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow)
     {
@@ -291,14 +291,14 @@ private:
         return 0;
     }
     /**
-    Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji costomowego postêpu przez interfejs IProgress.
-    Daje nam informacje zwrotna o procentowym postêpie aktualnej operacji.
-    @param progress wskaŸnik na strukturê typu Progress
-    @param t wieloœæ ca³kowita pliku pobieranego
-    @param d obecna iloœæ pobranych bajtów
-    @param ultotal wielkoœæ ca³kowita pliku wysy³anego
-    @param ulnow obecna iloœæ wys³anych bajtów
-    @return iloœæ bajtów przetworzonych przez funkcjê
+    Metoda statyczna (wymagana przez curla) typu callback wymagana przy aktualizacji costomowego postÄ™pu przez interfejs IProgress.
+    Daje nam informacje zwrotna o procentowym postÄ™pie aktualnej operacji.
+    @param progress wskaÅºnik na strukturÄ™ typu Progress
+    @param t wieloÅ›Ä‡ caÅ‚kowita pliku pobieranego
+    @param d obecna iloÅ›Ä‡ pobranych bajtÃ³w
+    @param ultotal wielkoÅ›Ä‡ caÅ‚kowita pliku wysyÅ‚anego
+    @param ulnow obecna iloÅ›Ä‡ wysÅ‚anych bajtÃ³w
+    @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
     */
     static size_t setUploadCustomProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow)
     {
@@ -317,31 +317,31 @@ private:
 
 public:
     /**
-    Pole klasy przechowuj¹ce url do serwera FTPS.
+    Pole klasy przechowujÄ…ce url do serwera FTPS.
     */
     std::string url_;
     /**
-    Pole klasy przechowuj¹ce nazwê u¿ytkownika.
+    Pole klasy przechowujÄ…ce nazwÄ™ uÅ¼ytkownika.
     */
     std::string user_;
     /**
-    Pole klasy przechowuj¹ce has³o u¿ytkownika.
+    Pole klasy przechowujÄ…ce hasÅ‚o uÅ¼ytkownika.
     */
     std::string password_;
     /**
-    Pole klasy przechowuj¹ce informacje o procentowym postêpie operacji. S³u¿y te¿ do przerwañ operacji.
+    Pole klasy przechowujÄ…ce informacje o procentowym postÄ™pie operacji. SÅ‚uÅ¼y teÅ¼ do przerwaÅ„ operacji.
     */
     Progress progress_;
 
-    //! Informacja o b³êdzie
+    //! Informacja o bÅ‚Ä™dzie
     std::string errorMessage_;
 
     /**
-    WskaŸnik na obiekt typu CURL potrzebny do operacji ftpowych.
+    WskaÅºnik na obiekt typu CURL potrzebny do operacji ftpowych.
     */
     CURL* curl;
     /**
-    Pole klasy przechowuj¹ce wyniki dzia³ania funkcji biblioteki LibCurl.
+    Pole klasy przechowujÄ…ce wyniki dziaÅ‚ania funkcji biblioteki LibCurl.
     */
     CURLcode res;
 };

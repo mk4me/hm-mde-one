@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__NODE_H__
+ï»¿#ifndef HEADER_GUARD__NODE_H__
 #define HEADER_GUARD__NODE_H__
 
 #include <dfmlib/DFLMTypes.h>
@@ -13,68 +13,68 @@ namespace dflm{
 
 //class EditableNode;
 
-//! Klasa reprezentujaca weze³ w modelu data flow. Zarz¹dza on pinami wejœciowymi i wyjœciowymi oraz
+//! Klasa reprezentujaca wezeÅ‚ w modelu data flow. ZarzÄ…dza on pinami wejÅ›ciowymi i wyjÅ›ciowymi oraz
 class Node : public boost::enable_shared_from_this<Node>
 {
 
 public:
-    //! ZaprzyjaŸniona klasa modelu
+    //! ZaprzyjaÅºniona klasa modelu
 	friend class Model;
 
-    //! Jeœli wêze³ zezwala na edycjê
+    //! JeÅ›li wÄ™zeÅ‚ zezwala na edycjÄ™
     //friend class EditableNode;
 
 public:
-    //! Typ opisuj¹cy zbiór pinów
+    //! Typ opisujÄ…cy zbiÃ³r pinÃ³w
 	//typedef std::set<PinPtr> Pins;
     typedef std::vector<PinPtr> Pins;
 
-    //! Typ itertatora do kolekcji pinów
+    //! Typ itertatora do kolekcji pinÃ³w
     typedef Pins::const_iterator iterator;
 
-    //! Typ rozmiaru kolekcji pinów
+    //! Typ rozmiaru kolekcji pinÃ³w
     typedef Pins::size_type size_type;
 
 protected:
-    //! Interfejs klienta podczas inicjalizacji wêz³a, do dodawania pinów (klient sam powienien trzymaæ wewnêtrznie wskaŸniki do odpowiednich pinów)
+    //! Interfejs klienta podczas inicjalizacji wÄ™zÅ‚a, do dodawania pinÃ³w (klient sam powienien trzymaÄ‡ wewnÄ™trznie wskaÅºniki do odpowiednich pinÃ³w)
     class IPinsAdder
     {
     public:
-        //! \param pin Pin do dodania do pinów wejœicowych
+        //! \param pin Pin do dodania do pinÃ³w wejÅ›icowych
         virtual void addInPin(const PinPtr & pin) = 0;
 
-        //! \pin Pin do dodania do pinów wyjœciowych
+        //! \pin Pin do dodania do pinÃ³w wyjÅ›ciowych
         virtual void addOutPin(const PinPtr & pin) = 0;
     };
 
-    //! Interfejs s³u¿¹cy do usuwania pinów z wêz³a
+    //! Interfejs sÅ‚uÅ¼Ä…cy do usuwania pinÃ³w z wÄ™zÅ‚a
     class IPinsDeleter
     {
     public:
-        //! \param pin Pin do usuniêcia z pinów wejœicowych
+        //! \param pin Pin do usuniÄ™cia z pinÃ³w wejÅ›icowych
         virtual void removeInPin(const PinPtr & pin) = 0;
 
-        //! \param pin Pin do usuniêcia z pinów wyjœciowych
+        //! \param pin Pin do usuniÄ™cia z pinÃ³w wyjÅ›ciowych
         virtual void removeOutPin(const PinPtr & pin) = 0;
     };
 
-    //! WskaŸnik inteligêtny do interfejsu dodaj¹cego piny do wêz³a
+    //! WskaÅºnik inteligÄ™tny do interfejsu dodajÄ…cego piny do wÄ™zÅ‚a
     typedef boost::shared_ptr<IPinsAdder> PinsAdderPtr;
 
-    //! WskaŸnik inteligêtny do interfejsu usuwaj¹cego piny z wêz³a
+    //! WskaÅºnik inteligÄ™tny do interfejsu usuwajÄ…cego piny z wÄ™zÅ‚a
     typedef boost::shared_ptr<IPinsDeleter> PinsDeleterPtr;
 
 private:
 
-    //! Prywatna, bazowa implementacja interfejsu dodaj¹cego piny do wêz³a u¿ywana na potrzeby inicjalizacji wêz³a
+    //! Prywatna, bazowa implementacja interfejsu dodajÄ…cego piny do wÄ™zÅ‚a uÅ¼ywana na potrzeby inicjalizacji wÄ™zÅ‚a
     class PinsAdder : public IPinsAdder
     {
     public:
-        //! \param node Wêze³ do którego dodajemy piny
+        //! \param node WÄ™zeÅ‚ do ktÃ³rego dodajemy piny
         PinsAdder(Node * node) : node(node) {}
         ~PinsAdder() {}
 
-        //! Przekierowuje wywo³anie do prywatenej metody wêz³a
+        //! Przekierowuje wywoÅ‚anie do prywatenej metody wÄ™zÅ‚a
         virtual void addInPin(const PinPtr & pin)
         {
             if(node->initialized == true){
@@ -83,7 +83,7 @@ private:
             node->addInPin(pin);
         }
 
-        //! Przekierowuje wywo³anie do prywatenej metody wêz³a
+        //! Przekierowuje wywoÅ‚anie do prywatenej metody wÄ™zÅ‚a
         virtual void addOutPin(const PinPtr & pin)
         {
             if(node->initialized == true){
@@ -93,88 +93,88 @@ private:
         }
 
     private:
-        //! Wêze³ na którym dzxia³amy
+        //! WÄ™zeÅ‚ na ktÃ³rym dzxiaÅ‚amy
         Node * node;
     };
 
-    //! ZaprzyjaŸnienie aby PinAdder mia³ dostêp do prywatnych metod wêz³a
+    //! ZaprzyjaÅºnienie aby PinAdder miaÅ‚ dostÄ™p do prywatnych metod wÄ™zÅ‚a
     friend class PinsAdder;
 
 public:
 
-    //! \param name nazwa wêz³a
+    //! \param name nazwa wÄ™zÅ‚a
     Node(const std::string & name = std::string());
 
     //! Wirtualny destruktor
 	virtual ~Node(void);
 
-    //! \return Czy wêze³ zosta³ zainicjalizowany
+    //! \return Czy wÄ™zeÅ‚ zostaÅ‚ zainicjalizowany
     bool isInitialized() const;
 
     MPtr getModel() const;
 
-    //! \return Iterator pocz¹tku kolekcji pinów wejsciowych
+    //! \return Iterator poczÄ…tku kolekcji pinÃ³w wejsciowych
     iterator beginIn() const;
 
-    //! \return Iterator koñca kolekcji pinów wejsciowych
+    //! \return Iterator koÅ„ca kolekcji pinÃ³w wejsciowych
     iterator endIn() const;
 
-    //! \param idx Indeks pinu wejsciowego, zg³asza wyj¹tek jeœli niepoprawny index
-    //! \return Pin wejœciowy spod wskazanego indeksu
+    //! \param idx Indeks pinu wejsciowego, zgÅ‚asza wyjÄ…tek jeÅ›li niepoprawny index
+    //! \return Pin wejÅ›ciowy spod wskazanego indeksu
     const PinPtr & getInPin(int idx) const;
 
-    //! \param pin Pin wejœciowy którego indeks chcemy dostaæ, potrzebne w przypadku zarz¹dzania pinami - indeksy mog¹ siê zmieniaæ!
-    //! \return Indeks pinu wejœciowego lub -1 jeœli pin wejœciowy nie istnieje
+    //! \param pin Pin wejÅ›ciowy ktÃ³rego indeks chcemy dostaÄ‡, potrzebne w przypadku zarzÄ…dzania pinami - indeksy mogÄ… siÄ™ zmieniaÄ‡!
+    //! \return Indeks pinu wejÅ›ciowego lub -1 jeÅ›li pin wejÅ›ciowy nie istnieje
     int indexOfInPin(const PinPtr & pin) const;
 
-    //! \return Iloœæ pinów wejœciowych
+    //! \return IloÅ›Ä‡ pinÃ³w wejÅ›ciowych
     size_type sizeIn() const;
 
-    //! \return Iterator pocz¹tku kolekcji pinów wyjsciowych
+    //! \return Iterator poczÄ…tku kolekcji pinÃ³w wyjsciowych
     iterator beginOut() const;
 
-    //! \return Iterator koñca kolekcji pinów wyjsciowych
+    //! \return Iterator koÅ„ca kolekcji pinÃ³w wyjsciowych
     iterator endOut() const;
 
-    //! \param idx Indeks pinu wyjsciowego, zg³asza wyj¹tek jeœli niepoprawny index
-    //! \return Pin wyjœciowy spod wskazanego indeksu
+    //! \param idx Indeks pinu wyjsciowego, zgÅ‚asza wyjÄ…tek jeÅ›li niepoprawny index
+    //! \return Pin wyjÅ›ciowy spod wskazanego indeksu
     const PinPtr & getOutPin(int idx) const;
 
-    //! \param pin Pin wyjœciowy którego indeks chcemy dostaæ, potrzebne w przypadku zarz¹dzania pinami - indeksy mog¹ siê zmieniaæ!
-    //! \return Indeks pinu wyjœciowego lub -1 jeœli pin wyjœciowy nie istnieje
+    //! \param pin Pin wyjÅ›ciowy ktÃ³rego indeks chcemy dostaÄ‡, potrzebne w przypadku zarzÄ…dzania pinami - indeksy mogÄ… siÄ™ zmieniaÄ‡!
+    //! \return Indeks pinu wyjÅ›ciowego lub -1 jeÅ›li pin wyjÅ›ciowy nie istnieje
     int indexOfOutPin(const PinPtr & pin) const;
 
-    //! \return Iloœæ pinów wyjœciowych
+    //! \return IloÅ›Ä‡ pinÃ³w wyjÅ›ciowych
     size_type sizeOut() const;
 
-    //! \param node Wêze³ któremu sprawdza siê poprawnoœæ po³¹czeñ pinów wejœciowych
-    //! \return Prawda jeœli po³¹czenia pinów wejsciowych s¹ poprawne
+    //! \param node WÄ™zeÅ‚ ktÃ³remu sprawdza siÄ™ poprawnoÅ›Ä‡ poÅ‚Ä…czeÅ„ pinÃ³w wejÅ›ciowych
+    //! \return Prawda jeÅ›li poÅ‚Ä…czenia pinÃ³w wejsciowych sÄ… poprawne
 	static bool validInPinsConnection(const CNPtr & node);
 
-    //! \param node Wêze³ któremu sprawdza siê poprawnoœæ po³¹czeñ pinów wyjœciowych
-    //! \return Prawda jeœli po³¹czenia pinów wyjsciowych s¹ poprawne
+    //! \param node WÄ™zeÅ‚ ktÃ³remu sprawdza siÄ™ poprawnoÅ›Ä‡ poÅ‚Ä…czeÅ„ pinÃ³w wyjÅ›ciowych
+    //! \return Prawda jeÅ›li poÅ‚Ä…czenia pinÃ³w wyjsciowych sÄ… poprawne
 	static bool validOutPinsConnection(const CNPtr & node);
 
-    //! \param node Wêze³ któremu sprawdza siê poprawnoœæ pod³¹czeñ
-    //! \return Prawda jeœli wêze³ jest pod³¹czony poprawnie
+    //! \param node WÄ™zeÅ‚ ktÃ³remu sprawdza siÄ™ poprawnoÅ›Ä‡ podÅ‚Ä…czeÅ„
+    //! \return Prawda jeÅ›li wÄ™zeÅ‚ jest podÅ‚Ä…czony poprawnie
 	static bool validConnection(const CNPtr & node);
 
-    //! \param node Wêze³ któremu sprawdza siê czy jakikolwiek pin wejœciowy zosta³ pod³¹czony
-    //! \return Prawda jeœli conajmniej jeden pin wejsciowy jest pod³¹czony
+    //! \param node WÄ™zeÅ‚ ktÃ³remu sprawdza siÄ™ czy jakikolwiek pin wejÅ›ciowy zostaÅ‚ podÅ‚Ä…czony
+    //! \return Prawda jeÅ›li conajmniej jeden pin wejsciowy jest podÅ‚Ä…czony
 	static bool anyInPinConnected(const CNPtr & node);
 
-    //! \param node Wêze³ któremu sprawdza siê czy jakikolwiek pin wyjœciowy zosta³ pod³¹czony
-    //! \return Prawda jeœli conajmniej jeden pin wyjsciowy jest pod³¹czony
+    //! \param node WÄ™zeÅ‚ ktÃ³remu sprawdza siÄ™ czy jakikolwiek pin wyjÅ›ciowy zostaÅ‚ podÅ‚Ä…czony
+    //! \return Prawda jeÅ›li conajmniej jeden pin wyjsciowy jest podÅ‚Ä…czony
 	static bool anyOutPinConnected(const CNPtr & node);
 
-    //! \param node Wêze³ któremu sprawdza siê czy jakikolwiek pin zosta³ pod³¹czony
-    //! \return Prawda jeœli conajmniej jeden pin jest pod³¹czony
+    //! \param node WÄ™zeÅ‚ ktÃ³remu sprawdza siÄ™ czy jakikolwiek pin zostaÅ‚ podÅ‚Ä…czony
+    //! \return Prawda jeÅ›li conajmniej jeden pin jest podÅ‚Ä…czony
 	static bool anyPinConnected(const CNPtr & node);
 
-    //! \return Nazwa wêz³a
+    //! \return Nazwa wÄ™zÅ‚a
 	const std::string & getName() const;
 
-    //! Metoda pozwalaj¹ca podpi¹æ metody konfiguracji wêz³a
+    //! Metoda pozwalajÄ…ca podpiÄ…Ä‡ metody konfiguracji wÄ™zÅ‚a
 	virtual void configure();
 
 protected:
@@ -182,49 +182,49 @@ protected:
     //! Inicjalizacja do implementacji przez klienta
     virtual void doInitialization(const PinsAdderPtr & pinsAdder);
 
-    //! Resetuje wêze³ - do implementacji przez klienta
+    //! Resetuje wÄ™zeÅ‚ - do implementacji przez klienta
     //virtual void onReset();
 
 private:
 
-    //! \param name Nowa nazwa wêz³a
+    //! \param name Nowa nazwa wÄ™zÅ‚a
     void setName(const std::string & name);
 
-    //! \param pin Pin do dodania do pinów wejsciowych
+    //! \param pin Pin do dodania do pinÃ³w wejsciowych
     virtual void addInPin(const PinPtr & pin);
 
-    //! \param pin Pin do dodania do pinów wyjsciowych
+    //! \param pin Pin do dodania do pinÃ³w wyjsciowych
     virtual void addOutPin(const PinPtr & pin);
 
     //! Inicjalizacja
     void initialize();
 
-    //! \param pins Zbiór pinów wœród ktróych poszukujemy zadanego pinu
-    //! \param pin Pin którego indeksu poszukujemy w zadanym zbiorze
-    //! \return Indeks pinu w zadanym zbiorze lub -1 jeœli pinu nie znaleziono
+    //! \param pins ZbiÃ³r pinÃ³w wÅ›rÃ³d ktrÃ³ych poszukujemy zadanego pinu
+    //! \param pin Pin ktÃ³rego indeksu poszukujemy w zadanym zbiorze
+    //! \return Indeks pinu w zadanym zbiorze lub -1 jeÅ›li pinu nie znaleziono
     static int indexOfPin(const Pins & pins, const PinPtr & pin);
 
-    //! \param pins Zbiór pinów do sprawdzenia
-    //! \return Prawda jeœli przynajmniej jeden pin jest pod³¹czony
+    //! \param pins ZbiÃ³r pinÃ³w do sprawdzenia
+    //! \return Prawda jeÅ›li przynajmniej jeden pin jest podÅ‚Ä…czony
 	static bool anyPinConnected(const Pins & pins);
 
 private:
-    //! Zbiór pinów wejœciowych
+    //! ZbiÃ³r pinÃ³w wejÅ›ciowych
 	Pins inPins;
 
-    //! Zbiór pinów wyjœciowych
+    //! ZbiÃ³r pinÃ³w wyjÅ›ciowych
 	Pins outPins;
 
-    //! Nazwa wêz³a
+    //! Nazwa wÄ™zÅ‚a
 	std::string name;
 
-    //! Czy wêze³ zainicjalizowano
+    //! Czy wÄ™zeÅ‚ zainicjalizowano
     bool initialized;
 
-    //! Model do ktorego nale¿y wêze³
+    //! Model do ktorego naleÅ¼y wÄ™zeÅ‚
     WMPtr model;
 
-    //! Obiekt na potrzby inicjalizacji wêz³a
+    //! Obiekt na potrzby inicjalizacji wÄ™zÅ‚a
     PinsAdderPtr pinsAdder;
 };
 
@@ -249,28 +249,28 @@ private:
 //    virtual void onOutPinAdd(const PinPtr & pin);
 //
 //private:
-//    //! \param newPin Pin do dodania do pinów wejsciowych
+//    //! \param newPin Pin do dodania do pinÃ³w wejsciowych
 //    void addInPin(const PinPtr & pin)
 //    {
 //        addPin(inPins, pin);
 //        onInPinAdd(pin);
 //    }
 //
-//    //! \param newPin Pin do dodania do pinów wyjsciowych
+//    //! \param newPin Pin do dodania do pinÃ³w wyjsciowych
 //    void addOutPin(const PinPtr & pin)
 //    {
 //        addPin(outPins, pin);
 //        onOutPinAdd(pin);
 //    }
 //
-//    //! \param newPin Pin do dodania do pinów wejsciowych
+//    //! \param newPin Pin do dodania do pinÃ³w wejsciowych
 //    void removeInPin(const PinPtr & pin)
 //    {
 //        removePin(inPins, pin);
 //        onInPinRemove(pin);
 //    }
 //
-//    //! \param newPin Pin do dodania do pinów wyjsciowych
+//    //! \param newPin Pin do dodania do pinÃ³w wyjsciowych
 //    void removeOutPin(const PinPtr & pin)
 //    {
 //        removePin(outPins, pin);

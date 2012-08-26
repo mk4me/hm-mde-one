@@ -1,4 +1,4 @@
-#include "PCH.h"
+﻿#include "PCH.h"
 #include "Manipulators.h"
 
 void DraggerContainer::traverse( osg::NodeVisitor& nv )
@@ -119,7 +119,7 @@ void Manipulators::connect( osg::PositionAttitudeTransform* parent, osg::MatrixT
     osgManipulator::Dragger* dragger = draggerContainer->getDragger();
     draggerContainer->setDraggerPivot(pivot);
     dragger->addTransformUpdating(child);
-    // manipulator sam zarz�dza swoimi eventami
+    // manipulator sam zarządza swoimi eventami
     dragger->setHandleEvents(true);
 }
 

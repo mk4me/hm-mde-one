@@ -1,12 +1,12 @@
-#ifndef SINGLETON_H
+ï»¿#ifndef SINGLETON_H
 #define SINGLETON_H
 
 #include <iostream>
 
-// Prostrza wersja rozbudowanego Singletona (pominiêto odwo³ywania poprzez adresy pamiêci)
-// pozwalaj¹ca na dziedziczenie - co daje mnustwo korzysci - mo¿liwe jest ponadto stworzenie dla niego interfejsu
-// co w naszym przyapdku - ³adowania Servisów z dllek jest bardzo przydatne - mog¹c wykorzystaæ ten singleton
-// jako fabryki - Fabryka jest wyszczególnieniem, uogólnienia jakim jest klasa Singleton 
+// Prostrza wersja rozbudowanego Singletona (pominiÄ™to odwoÅ‚ywania poprzez adresy pamiÄ™ci)
+// pozwalajÄ…ca na dziedziczenie - co daje mnustwo korzysci - moÅ¼liwe jest ponadto stworzenie dla niego interfejsu
+// co w naszym przyapdku - Å‚adowania ServisÃ³w z dllek jest bardzo przydatne - mogÄ…c wykorzystaÄ‡ ten singleton
+// jako fabryki - Fabryka jest wyszczegÃ³lnieniem, uogÃ³lnienia jakim jest klasa Singleton 
 
 class Singleton
 {

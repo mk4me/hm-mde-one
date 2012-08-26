@@ -1,4 +1,4 @@
-#include "../PCH.h"
+ï»¿#include "../PCH.h"
 #include <vidlib/osg/VideoImage.h>
 #include <utils/Align.h>
 
@@ -57,7 +57,7 @@ namespace vidlib
     int VideoImage::getMaxWidth()
     {
         int maxWidth = 0;
-        // usuniêcie zbêdnych wpisów
+        // usuniÄ™cie zbÄ™dnych wpisÃ³w
         for ( SizeClients::iterator it = sizes.begin(); it != sizes.end(); ) {
             const osg::observer_ptr<osg::Referenced>& obs = it->first;
             if ( !obs.valid() ) {
@@ -125,7 +125,7 @@ namespace vidlib
         const int streamWidth = getStream()->getWidth();
         const int streamHeight = getStream()->getHeight();
 
-        // jaka szerokoœæ zostanie zastosowana?
+        // jaka szerokoÅ›Ä‡ zostanie zastosowana?
         if ( maxWidth >= streamWidth ) {
             width = streamWidth;
             height = streamHeight;

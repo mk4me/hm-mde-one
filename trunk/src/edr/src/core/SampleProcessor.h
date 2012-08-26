@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/15
     created:  15:4:2011   15:19
     filename: SampleProcessor.h
@@ -65,7 +65,7 @@ private:
 class RBFlipper : public core::IDataProcessor
 {
 private:
-    //! Zdjêcie wyjœciowe.
+    //! ZdjÄ™cie wyjÅ›ciowe.
     core::shared_ptr<vidlib::ScopedPictureRGB> outputPicture;
     IplImage* iplImage;
 
@@ -96,13 +96,13 @@ public:
 
         core::shared_ptr<const vidlib::ScopedPictureRGB> source = input->getObject(0);
 
-        // je¿eli zmieni³ siê rozmiar alokujemy ramkê na nowo
+        // jeÅ¼eli zmieniÅ‚ siÄ™ rozmiar alokujemy ramkÄ™ na nowo
         if (outputPicture->dataWidth != source->dataWidth || 
             outputPicture->dataHeight != source->dataHeight ) {
             outputPicture->create( source->width, source->height );
         }
 
-        // zamieniamy miejscami dwa kana³y
+        // zamieniamy miejscami dwa kanaÅ‚y
         int size = source->dataWidth * source->dataHeight;
         for (int i = 0; i < size; i+=3) {
             outputPicture->data[i] = source->data[i+2];
@@ -110,7 +110,7 @@ public:
             outputPicture->data[i+2] = source->data[i];
         }
 
-        // wystawienie wyjœcia
+        // wystawienie wyjÅ›cia
         output->setObject(0, outputPicture);
     }
 };

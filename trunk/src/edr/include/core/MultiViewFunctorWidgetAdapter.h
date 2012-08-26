@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:  2010/12/03
 	created:  3:12:2010   16:24
 	filename: MultiViewFunctorWidgetAdapter.h
@@ -17,8 +17,8 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Przyk≥adowa, najprotsza implementacja adaptera. Bazuje na obiektach boost::function.
- *  Uøywany jest przy definicji domyúlnych styli, ale moøna go wykorzystaÊ rÛwnieø w kodzie
+ *	Przyk≈Çadowa, najprotsza implementacja adaptera. Bazuje na obiektach boost::function.
+ *  U≈ºywany jest przy definicji domy≈õlnych styli, ale mo≈ºna go wykorzystaƒá r√≥wnie≈º w kodzie
  *  klienckim.
  */
 struct MultiViewFunctorWidgetAdapter : public MultiView::WidgetAdapter

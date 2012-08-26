@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/03/24
     created:  24:3:2012   10:12
     filename: IDataSourceContentManager.h
@@ -13,24 +13,24 @@
 
 namespace communication {
 
-//! Interfejs managera zawartoúci
+//! Interfejs managera zawarto≈õci
 class IDataSourceContentManager
 {
 public:
 	//! Wirtualny destruktor
 	virtual ~IDataSourceContentManager() {}
-	//! \param content Generator zawartoúci ktÛry rejestrujemy
-	//! \return indeks zarejestrowanego generatora zawartoúci
+	//! \param content Generator zawarto≈õci kt√≥ry rejestrujemy
+	//! \return indeks zarejestrowanego generatora zawarto≈õci
 	virtual int registerContent(IDataSourceContent * content) = 0;
-	//! \return Indeks aktualnego generatora zawartoúci
+	//! \return Indeks aktualnego generatora zawarto≈õci
 	virtual int currentContentIndex() const = 0;
-	//! \return Aktualny generator zawartoúci
+	//! \return Aktualny generator zawarto≈õci
 	virtual DataSourceContentPtr currentContent() const = 0;
-	//! \param idx Indeks nowego generatora zawartoúci
+	//! \param idx Indeks nowego generatora zawarto≈õci
 	virtual void setCurrentContent(int idx) = 0;
-	//! \return Czy jest zarejestrowany jakiú generator zawartoúci
+	//! \return Czy jest zarejestrowany jaki≈õ generator zawarto≈õci
 	virtual bool empty() const = 0;
-	//! \return Iloúc zarejestrowanych generatorÛw zawartoúci
+	//! \return Ilo≈õc zarejestrowanych generator√≥w zawarto≈õci
 	virtual int size() const = 0;
 };
 

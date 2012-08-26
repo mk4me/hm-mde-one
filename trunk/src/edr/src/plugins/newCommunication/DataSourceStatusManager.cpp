@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+Ôªø#include "CommunicationPCH.h"
 #include "DataSourceStatusManager.h"
 #include <QtGui/QPainter>
 
@@ -231,11 +231,11 @@ void DataSourceStatusManager::setShallowCopy(const ShallowCopy * shallowCopy)
 void DataSourceStatusManager::refreshDataStatus(const std::set<int> & modifiedFilesStatus)
 {
     //do tego potrzebujemy ShallowCopy
-    //znajdü wspÛlne motiony do odúwieøenia
-    //znajdü wspÛlne sesje do odúwieøenia
-    //znajdü wsÛlnych subjectÛw do odúwieøenia
-    //znajdü wspÛlnych pacjentÛw do odúwieøenia
-    //znajdü wspÛlne schorzenia do odúwieøenia
+    //znajd≈∫ wsp√≥lne motiony do od≈õwie≈ºenia
+    //znajd≈∫ wsp√≥lne sesje do od≈õwie≈ºenia
+    //znajd≈∫ ws√≥lnych subject√≥w do od≈õwie≈ºenia
+    //znajd≈∫ wsp√≥lnych pacjent√≥w do od≈õwie≈ºenia
+    //znajd≈∫ wsp√≥lne schorzenia do od≈õwie≈ºenia
 
     std::map<int, const webservices::MedicalShallowCopy::Disorder*> disordersToUpdate;
     std::map<int, const webservices::MedicalShallowCopy::Patient*> patientsToUpdate;
@@ -345,7 +345,7 @@ void DataSourceStatusManager::refreshDataStatus(const std::set<int> & modifiedFi
 
         locSubjectsStatus.insert(std::map<int, DataStatus>::value_type(subjectIT->second->performerID, subjectStatus));
 
-		//teraz tak to robimy, jeúli pacjent bÍdzie mia≥ swoje pliki to trzeba to rozbiÊ
+		//teraz tak to robimy, je≈õli pacjent bƒôdzie mia≈Ç swoje pliki to trzeba to rozbiƒá
 		if(subjectIT->second->patient != nullptr){
 			locPatientsStatus.insert(std::map<int, DataStatus>::value_type(subjectIT->second->patient->patientID, subjectStatus));
 		}
@@ -464,7 +464,7 @@ const DataStatus & DataSourceStatusManager::fileStatus(int fileID) const
 
 void DataSourceStatusManager::rebuildDataStatus()
 {
-    //lokalne statusy, ktÛre potem przepiszemy
+    //lokalne statusy, kt√≥re potem przepiszemy
     std::map<int, DataStatus> locDisordersStatus;
     std::map<int, DataStatus> locPatientsStatus;
     std::map<int, DataStatus> locSubjectsStatus;

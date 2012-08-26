@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGETEX_H__
+ï»¿#ifndef HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGETEX_H__
 #define HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGETEX_H__
 
 #include <QtGui/QMenu>
@@ -11,10 +11,10 @@ class CommunicationService;
 
 /**
 @author Marek Daniluk
-@brief Klasa CommunicationWidgetEx pe³ni funkcjê widoku dla serwisu Communication. Korzysta z biblioteki Qt.
-Jest to druga wersja widoku, bazuj¹ca na widgecie QTreeWidget. Widok dostarcza t¹ sam¹ funkcjonalnoœæ co poprzedni, czyli
-listowanie triali, wyszczegó³nienie lokalnych i serwerowych prób pomiarowych, ³adowanie lokalnych prób pomiarowych, pobieranie
-serwerowych triali. Dodatkow¹ funkcjonalnoœci¹ s¹ widoki wprowadzone wraz z nowym widokiem.
+@brief Klasa CommunicationWidgetEx peÅ‚ni funkcjÄ™ widoku dla serwisu Communication. Korzysta z biblioteki Qt.
+Jest to druga wersja widoku, bazujÄ…ca na widgecie QTreeWidget. Widok dostarcza tÄ… samÄ… funkcjonalnoÅ›Ä‡ co poprzedni, czyli
+listowanie triali, wyszczegÃ³Å‚nienie lokalnych i serwerowych prÃ³b pomiarowych, Å‚adowanie lokalnych prÃ³b pomiarowych, pobieranie
+serwerowych triali. DodatkowÄ… funkcjonalnoÅ›ciÄ… sÄ… widoki wprowadzone wraz z nowym widokiem.
 */
 class CommunicationWidgetEx : public QWidget, public Ui::CommunicationWidget, public utils::Observer<communication::CommunicationManager>
 {
@@ -57,9 +57,9 @@ typedef std::map<int,PerformerRelationPtr> PerformersRelations;
 
 /**
 @author Marek Daniluk
-@brief Klasa IEntityTreeItem dziedziczy po QTreeWidgetItem i rozszerza mo¿liwoœci elementów drzewa o menu
-kontekstowe i dynamiczn¹ zmianê liczby i nazw kolumn nag³ówka QTreeWidget. Poniewa¿ reprezentuje dane
-powi¹zane z p³ytk¹ kopi¹ baz¹ danych opieraj¹c¹ siê na wielu typach, klasa jest abstrakcyjna.
+@brief Klasa IEntityTreeItem dziedziczy po QTreeWidgetItem i rozszerza moÅ¼liwoÅ›ci elementÃ³w drzewa o menu
+kontekstowe i dynamicznÄ… zmianÄ™ liczby i nazw kolumn nagÅ‚Ã³wka QTreeWidget. PoniewaÅ¼ reprezentuje dane
+powiÄ…zane z pÅ‚ytkÄ… kopiÄ… bazÄ… danych opierajÄ…cÄ… siÄ™ na wielu typach, klasa jest abstrakcyjna.
 */
 class IEntityTreeItem : public QTreeWidgetItem
 {
@@ -147,18 +147,18 @@ public:
     */
     virtual ~CommunicationWidgetEx();
     /**
-    Metoda aktualizuj¹ca dane widoku.
-    @param subject dane pozwalaj¹ce zaktualizowaæ widok
+    Metoda aktualizujÄ…ca dane widoku.
+    @param subject dane pozwalajÄ…ce zaktualizowaÄ‡ widok
     */
     virtual void update(const communication::CommunicationManager* subject);
     /**
-    Ustala informacjê na etykiecie.
-    @param info informacja do wyœwietlenia na etykiecie
+    Ustala informacjÄ™ na etykiecie.
+    @param info informacja do wyÅ›wietlenia na etykiecie
     */
     void setInfoLabel(const std::string& info);
     /**
-    Ustala wartoœæ procentow¹ w pasku pobierania.
-    @param value wartoœæ do przedstawienia przez pasek pobierania
+    Ustala wartoÅ›Ä‡ procentowÄ… w pasku pobierania.
+    @param value wartoÅ›Ä‡ do przedstawienia przez pasek pobierania
     */
     void setProgress(int value);
     /**
@@ -175,7 +175,7 @@ public:
         }
     }
     /**
-    W³aœciwa metoda aktualizuj¹ca widok. powinna wykonywaæ siê w g³ównym w¹tku.
+    WÅ‚aÅ›ciwa metoda aktualizujÄ…ca widok. powinna wykonywaÄ‡ siÄ™ w gÅ‚Ã³wnym wÄ…tku.
     */
     void refreshUI();
 
@@ -186,7 +186,7 @@ public slots:
     void sessionViewPressed(bool tog);
     //widok proby pomiarowej
     void trialViewPressed(bool tog);
-    //widok tylko lokalnych zasobów
+    //widok tylko lokalnych zasobÃ³w
     void localViewPressed(bool tog);
     //update triali
     void updatePressed();
@@ -196,7 +196,7 @@ public slots:
     void downloadPressed();
     //przerwanie pobierania proby
     void abortPressed();
-    //menu ogólne dla widgetów
+    //menu ogÃ³lne dla widgetÃ³w
     void contextMenu(QPoint);
     //menu dla triala
     void trialContextMenu(QPoint);
@@ -204,17 +204,17 @@ public slots:
     void treeItemClicked(QTreeWidgetItem* item, int column);
 private:
     /**
-    WskaŸnik na kontroler serwisu
+    WskaÅºnik na kontroler serwisu
     */
     CommunicationService* communicationService;
 
     /**
-    Za³aduj pliki do aplikacji.
-    @param files lista plików do za³adowania po filtracji.
+    ZaÅ‚aduj pliki do aplikacji.
+    @param files lista plikÃ³w do zaÅ‚adowania po filtracji.
     */
     void loadFiles(const std::vector<core::Filesystem::Path>& files);
     /**
-    Pobranie próby pomiarowej z serwera.
+    Pobranie prÃ³by pomiarowej z serwera.
     @param trialID id encji trialowej do pobrania.
     */
     void downloadTrial(int trialID);
@@ -227,11 +227,11 @@ private:
     */
     void buildSessionView(QTreeWidget* tree);
     /**
-    Buduj widok próby pomiarowej
+    Buduj widok prÃ³by pomiarowej
     */
     void buildTrialView(QTreeWidget* tree);
     /**
-    Buduj widok lokalnych zasobów
+    Buduj widok lokalnych zasobÃ³w
     */
     void buildLocalView(QTreeWidget* tree);
     /**
@@ -239,23 +239,23 @@ private:
     */
     TrialTreeItem* createTrialItem(const communication::ShallowCopy::Trial * trial);
     /**
-    Odœwie¿ headery drzewa danych. Dzia³a tylko gdy drzewo posiada same elementy IEntityTreeItem
+    OdÅ›wieÅ¼ headery drzewa danych. DziaÅ‚a tylko gdy drzewo posiada same elementy IEntityTreeItem
     */
     void refreshHeader(QTreeWidget* tree);
     /**
-    Dane z p³ytkiej kopii DB powi¹zane relacjami.
+    Dane z pÅ‚ytkiej kopii DB powiÄ…zane relacjami.
     */
     PerformersRelations performersWithRelations;
     /**
-    Lokalna kopia danych zwi¹zana z problemem Qt i w¹tkami "z zewn¹trz".
+    Lokalna kopia danych zwiÄ…zana z problemem Qt i wÄ…tkami "z zewnÄ…trz".
     */
     communication::MetaData::MetaData metaData;
     /**
-    Kopia prób pomiarowych znajduj¹cych siê lokalnie.
+    Kopia prÃ³b pomiarowych znajdujÄ…cych siÄ™ lokalnie.
     */
     //std::vector<core::IDataManager::LocalTrial> localTrials;
     /**
-    menu kontekstowe dla poszczególnych elementów ui.
+    menu kontekstowe dla poszczegÃ³lnych elementÃ³w ui.
     */
     QMenu* menuTl;
     QMenu* menuTs;

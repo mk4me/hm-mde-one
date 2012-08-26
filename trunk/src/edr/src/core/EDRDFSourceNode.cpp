@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include "EDRDFSourceNode.h"
 #include "EDRDFPin.h"
 #include "OutputDescription.h"
@@ -22,7 +22,7 @@ void EDRDFSourceNode::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdde
 {
     OutputDescription * outputDescription = dynamic_cast<OutputDescription*>(getWorkflowItem().get());
 
-    //stw�rz piny wyjsciowe
+    //stwórz piny wyjsciowe
     for(int i = 0; i < outputDescription->getNumOutputs(); ++i){
         pinsAdder->addOutPin(dflm::PinPtr(new EDRDFPin(outputDescription->getOutput(), i)));
     }

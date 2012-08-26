@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/11/12
 	created:	12:11:2011   18:08
 	filename: 	ChartSerie.h
@@ -28,61 +28,61 @@ class NewChartSerie : public INewChartSerie
     friend class NewChartVisualizer;
 public:
     //! Konstruktor
-    //! \param visualizer wizualzator, który tworzy serie danych
+    //! \param visualizer wizualzator, ktÃ³ry tworzy serie danych
     NewChartSerie(NewChartVisualizer * visualizer);
     virtual ~NewChartSerie();
 
 public:
     //! \return czas ustawiony przez timeline
     double getTime() const;
-    //! \return aktualna wartoœæ (dla aktualnego czasu)
+    //! \return aktualna wartoÅ›Ä‡ (dla aktualnego czasu)
     double getCurrentValue() const;
     //! ustawia czas dla serii
     //! \param time czas do ustawienia
     virtual void setTime(double time);
     //! \return czas trwania serii
     virtual double getLength() const;
-    //! ustawia obiekt ze zdarzeniami powiazanymi z prób¹ pomiarow¹
-    //! \param val kolecja zdarzeñ
+    //! ustawia obiekt ze zdarzeniami powiazanymi z prÃ³bÄ… pomiarowÄ…
+    //! \param val kolecja zdarzeÅ„
     virtual void setEvents(EventsCollectionConstPtr val);
     //! pobierz krzywa qwt
     const QwtPlotCurve* getCurve() const;
-    //! ustaw widzialnoœæ krzywej
+    //! ustaw widzialnoÅ›Ä‡ krzywej
     //! \param visible widoczna / niewidoczna
     void setVisible(bool visible);
     //! \return czy krzywa jest widoczna
     bool isVisible() const;
-    //! \return obiekt u³atwiaj¹cy zarz¹dzanie eventami
+    //! \return obiekt uÅ‚atwiajÄ…cy zarzÄ…dzanie eventami
     EventsHelperPtr getEventsHelper() const { return eventsHelper; }
     //! ustawienie koloru krzywej
-    //! \param r sk³adowa czerwona (0 - 255)
-    //! \param g sk³adowa zielona (0 - 255)
-    //! \param b sk³adowa niebieska (0 - 255)
-    //! \param a sk³adowa alpha (0 - 255)
+    //! \param r skÅ‚adowa czerwona (0 - 255)
+    //! \param g skÅ‚adowa zielona (0 - 255)
+    //! \param b skÅ‚adowa niebieska (0 - 255)
+    //! \param a skÅ‚adowa alpha (0 - 255)
     void setColor(int r, int g, int b, int a = 255);
     //! ustawienie koloru krzywej
     //! \param color kolor do ustawienia
     virtual void setColor(const QColor& color);
     //! \return kolor krzywej
     virtual QColor getColor() const;
-    //! ustawia szerokoœæ krzywej
-    //! \param width nowa szerokoœæ w pikselach
+    //! ustawia szerokoÅ›Ä‡ krzywej
+    //! \param width nowa szerokoÅ›Ä‡ w pikselach
     void setWidth(int width);
-    //! ustawia nazwê krzywej
+    //! ustawia nazwÄ™ krzywej
     //! \param name nowa nazwa krzywej
     virtual void setName(const std::string & name);
     //! \return nazwa krzywej
     virtual const std::string & getName() const;
     //! dostarcza ObjectWrapper z danymi
-    //! \param data ObjectWrapper przechowuj¹cy interfejs ScalarChannelReaderInterface
+    //! \param data ObjectWrapper przechowujÄ…cy interfejs ScalarChannelReaderInterface
     virtual void setData(const core::ObjectWrapperConstPtr & data);
-    //! \return ObjectWrapper przechowuj¹cy interfejs ScalarChannelReaderInterface
+    //! \return ObjectWrapper przechowujÄ…cy interfejs ScalarChannelReaderInterface
     virtual const core::ObjectWrapperConstPtr & getData() const;
     //! \return ekstrema krzywej
     Scales getScales() const;
     //! \return czy krzywa jest aktywna
     bool isActive() const { return active; }
-    //! ustawia aktywnoœæ krzywej
+    //! ustawia aktywnoÅ›Ä‡ krzywej
     //! \param val aktywna / nieaktywna
     void setActive(bool val);
     //! \return statystyki dla ustawionego ScalarChannelReaderInterface
@@ -91,46 +91,46 @@ public:
     ScalarChannelReaderInterfaceConstPtr getReader() const { return reader; }
     //! odlacza krzywa od wykresu
     void removeItemsFromPlot();
-    //! ustawia kolejnoœæ wyœwietlania
+    //! ustawia kolejnoÅ›Ä‡ wyÅ›wietlania
     //! \param z
     //! \param replot
     void setZ(double z, bool replot = false);
-    //! \return sk³adowa z odpowiedzialna z kolejnoœæ wyœwietlania
+    //! \return skÅ‚adowa z odpowiedzialna z kolejnoÅ›Ä‡ wyÅ›wietlania
     double z() const;
     //! \return skala w poziomie
     double getXScale() const;
     //! ustawia skale w poziomie dla krzywej
-    //! \param val nowa wartoœæ skali
+    //! \param val nowa wartoÅ›Ä‡ skali
     void setXScale(double val);
     //! \return skala w pionie
     double getYScale() const;
     //! ustawia skale w pionie dla krzywej
-    //! \param val nowa wartoœæ skali
+    //! \param val nowa wartoÅ›Ä‡ skali
     void setYScale(double val);
-    //! \return przesuniêcie w poziomie
+    //! \return przesuniÄ™cie w poziomie
     double getXOffset() const;
-    //! ustawia przesuniêcie w poziomie
-    //! \param val nowa wartoœæ przesuniêcia
+    //! ustawia przesuniÄ™cie w poziomie
+    //! \param val nowa wartoÅ›Ä‡ przesuniÄ™cia
     void setXOffset(double val);
-    //! \return przesuniêcie w pionie
+    //! \return przesuniÄ™cie w pionie
     double getYOffset() const;
-    //! ustawia przesuniêcie w pionie
-    //! \param val nowa wartoœæ przesuniêcia
+    //! ustawia przesuniÄ™cie w pionie
+    //! \param val nowa wartoÅ›Ä‡ przesuniÄ™cia
     void setYOffset(double val);
-    //! \return przesuniêcie krzywej
+    //! \return przesuniÄ™cie krzywej
     QPointF getOffset() const;
-    //! ustawia przesuniêcie
-    //! \param offset nowa wartoœæ przesuniêcia
+    //! ustawia przesuniÄ™cie
+    //! \param offset nowa wartoÅ›Ä‡ przesuniÄ™cia
     void setOffset(const QPointF& offset);
 
 private:
-    //! Ustawia kolory dla krzywych znormalizowanych wzglêdem eventów
+    //! Ustawia kolory dla krzywych znormalizowanych wzglÄ™dem eventÃ³w
     //! \param range dostarczane segmenty
-    //! \param color kolor dla ustawianych segmentów (zwykle ten sam co bazowa krzywa)
+    //! \param color kolor dla ustawianych segmentÃ³w (zwykle ten sam co bazowa krzywa)
     void setColorsForEvents(EventsHelper::SegmentsRange range, const QColor& color);
 
 private:
-    //! wizualizator, który stworzy³ serie
+    //! wizualizator, ktÃ³ry stworzyÅ‚ serie
     NewChartVisualizer* visualizer;
     //! nazwa serii
     std::string name;
@@ -144,15 +144,15 @@ private:
     core::shared_ptr<ScalarContiniousTimeAccessor> accessor;
     //! obiekt z danymi
     ScalarChannelReaderInterfaceConstPtr reader;
-    //! obiekt zajmuj¹cy siê logika eventów
+    //! obiekt zajmujÄ…cy siÄ™ logika eventÃ³w
     EventsHelperPtr eventsHelper;
     //! czy seria jest aktywna
     bool active;
     //! aktualny czas, ustawiony przez timeline
     double time;
-    //! sk³adowa okresla kolejnoœæ rysowania
+    //! skÅ‚adowa okresla kolejnoÅ›Ä‡ rysowania
     double _z;
-    //! pocz¹tkowa wartoœæ sk³adowej zd
+    //! poczÄ…tkowa wartoÅ›Ä‡ skÅ‚adowej zd
     double _zBase;
 };
 

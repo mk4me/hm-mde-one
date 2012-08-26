@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "DisordersDataWidget.h"
 #include <qthtmlgenlib/DocumentGenerator.h>
 #include <qthtmlgenlib/TableGenerator.h>
@@ -70,12 +70,12 @@ void DisordersDataWidget::initDisordersContent()
 	//wymiary
 	disordersTable.content.setDimensions(3, 4);
 
-	//zawartoœæ tabeli z danymi ogólnymi
-	//! wiersz nag³ówkowy - pierwsza komórka pusta - ³¹cznik z nag³ówkiem pionowym
+	//zawartoÅ›Ä‡ tabeli z danymi ogÃ³lnymi
+	//! wiersz nagÅ‚Ã³wkowy - pierwsza komÃ³rka pusta - Å‚Ä…cznik z nagÅ‚Ã³wkiem pionowym
 	disordersTable.content.setCell(0, 1, tr("Disorder"));
 	disordersTable.content.setCell(0, 2, tr("Diagnosis date"));
 	disordersTable.content.setCell(0, 3, tr("Focus"));
-	//! kolumna nag³ówkowa - pierwsza komórka pusta - ³¹cznik z nag³ówkiem poziomym
+	//! kolumna nagÅ‚Ã³wkowa - pierwsza komÃ³rka pusta - Å‚Ä…cznik z nagÅ‚Ã³wkiem poziomym
 	disordersTable.content.setCell(1, 0, QString::number(1));
 	disordersTable.content.setCell(2, 0, QString::number(2));	
 }
@@ -91,14 +91,14 @@ void DisordersDataWidget::initDisordersStyles()
 	disordersTable.styles.tableStyle_ = "border-color: rgb(0, 0, 0);";
 	disordersTable.styles.headerRowStyle_[htmlGen::Single] = "color: white; background: rgb(41, 41, 41);";
 
-	//wiersz nag³ówkowy
+	//wiersz nagÅ‚Ã³wkowy
 	disordersTable.styles.headersStyles[htmlGen::Single][htmlGen::Middle] = "color: white; border-style: none; border-color: white;";
-	// kolumna nag³ówkowa - musze dodaæ kolor, nie da siê kolumnom przypisywaæ w³aœciwoœci
+	// kolumna nagÅ‚Ã³wkowa - musze dodaÄ‡ kolor, nie da siÄ™ kolumnom przypisywaÄ‡ wÅ‚aÅ›ciwoÅ›ci
 	disordersTable.styles.headersStyles[htmlGen::Middle][htmlGen::Single] = "color: white; border-style: none; border-color: white; background: rgb(41, 41, 41);";
-	// ostatni element kolumny nag³ówkowej - tylko kolor
+	// ostatni element kolumny nagÅ‚Ã³wkowej - tylko kolor
 	disordersTable.styles.headersStyles[htmlGen::Last][htmlGen::Single] = "color: white; background: rgb(41, 41, 41);";
 
-	//style contentu - tutaj chcemy uzyskaæ efekt kratownicy bez ramki
+	//style contentu - tutaj chcemy uzyskaÄ‡ efekt kratownicy bez ramki
 	disordersTable.styles.contentStyles[htmlGen::First][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
 	disordersTable.styles.contentStyles[htmlGen::Last][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
 	disordersTable.styles.contentStyles[htmlGen::Last][htmlGen::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
@@ -121,7 +121,7 @@ void DisordersDataWidget::initDisordersAtributes()
 
 	attributes.setHAlign(htmlGen::HALeft);
 
-	//kolumnê z opisem wyrównujemy do lewej
+	//kolumnÄ™ z opisem wyrÃ³wnujemy do lewej
 	for(int i = 1; i < disordersTable.cellsAttributes.rows(); ++i){
 		disordersTable.cellsAttributes.setCell(i, 1, attributes);
 	}

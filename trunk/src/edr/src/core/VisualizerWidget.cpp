@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include "VisualizerWidget.h"
 
 #include "VisualizerManager.h"
@@ -34,7 +34,7 @@ VisualizerWidget::VisualizerWidget(QWidget* parent /*= nullptr*/, Qt::WindowFlag
 VisualizerWidget::VisualizerWidget( UniqueID visualizerID, QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/, bool autoRefreshInputs  /*= true*/ ) : EDRDockWidget(parent, flags), autoRefreshInputs_(autoRefreshInputs)
 {
     init();
-    // blokujemy sygna³y
+    // blokujemy sygnaÅ‚y
     comboType->blockSignals(true);
     // dodajemy wizualizatory
     BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
@@ -48,7 +48,7 @@ VisualizerWidget::VisualizerWidget( UniqueID visualizerID, QWidget* parent /*= n
 VisualizerWidget::VisualizerWidget( const VisualizerPtr& source, QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/, bool autoRefreshInputs  /*= true*/ ) : EDRDockWidget(parent, flags), autoRefreshInputs_(autoRefreshInputs)
 {
     init();
-    // blokujemy sygna³y
+    // blokujemy sygnaÅ‚y
     comboType->blockSignals(true);
     // dodajemy wizualizatory
     BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
@@ -62,7 +62,7 @@ VisualizerWidget::VisualizerWidget( const VisualizerPtr& source, QWidget* parent
 
 VisualizerWidget::~VisualizerWidget()
 {
-    // usuniêcie widgeta
+    // usuniÄ™cie widgeta
 	visualizerWidgetContainer = nullptr;
     clearCurrentVisualizer();
 }
@@ -95,7 +95,7 @@ void VisualizerWidget::clearCurrentVisualizerWidget()
 
 void VisualizerWidget::init()
 {
-	//wewnêtrzny widget - realizuje ramkê i padding
+	//wewnÄ™trzny widget - realizuje ramkÄ™ i padding
 	visualizerWidgetContainer = new QWidget();
 	visualizerWidgetContainer->setObjectName(QString::fromUtf8("visualizerContainer"));
 	visualizerWidgetContainer->setLayout(new QHBoxLayout());
@@ -112,20 +112,20 @@ void VisualizerWidget::init()
 
     visualizerCommonElements[label] = InnerVisualizerElement(true, label, IEDRTitleBar::Left);
 
-    //combo do przechowywania typów wizualizatorów
+    //combo do przechowywania typÃ³w wizualizatorÃ³w
     comboType = new QComboBox();
     comboType->setObjectName(QString::fromUtf8("comboType"));
     comboType->setInsertPolicy(QComboBox::InsertAlphabetically);
 
     visualizerCommonElements[comboType] = InnerVisualizerElement(true, comboType, IEDRTitleBar::Left);
 
-    //ustawienie zdarzeñ na zmiane pozycji w combo (zmiana wizualizatora)
+    //ustawienie zdarzeÅ„ na zmiane pozycji w combo (zmiana wizualizatora)
     connect(comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(setCurrentVisualizer(int)));
 
-    //ustawienie domyœlnej pozycji w combo
+    //ustawienie domyÅ›lnej pozycji w combo
     comboType->setCurrentIndex(-1);
 
-    //ustawienie menu odpowiedzialnego za wybor Ÿród³a danych
+    //ustawienie menu odpowiedzialnego za wybor ÅºrÃ³dÅ‚a danych
     menuSource = new QMenu(tr("Sources"), this);
     QIcon icon2;
     icon2.addFile(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png"), QSize(), QIcon::Normal, QIcon::Off);
@@ -133,10 +133,10 @@ void VisualizerWidget::init()
 
     visualizerCommonElements[menuSource] = InnerVisualizerElement(true, menuSource, IEDRTitleBar::Left);
 
-    //dynamiczne ³adowanie menu Ÿróde³ na ich rozwiniêcie
+    //dynamiczne Å‚adowanie menu ÅºrÃ³deÅ‚ na ich rozwiniÄ™cie
     connect(menuSource, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
 
-    //wyczyszczenie wizualizatorów, inicjalizacja wszystkich kontrolek z tym zwiazanych
+    //wyczyszczenie wizualizatorÃ³w, inicjalizacja wszystkich kontrolek z tym zwiazanych
     clearCurrentVisualizer();
 
     ActionsGroupManager::GroupID id = visualizerCommonElementsOrder.createGroup("Decoration");
@@ -281,16 +281,16 @@ void VisualizerWidget::clearCurrentVisualizer()
 	VisualizerManager::getInstance()->markAllChannelsAsRemovedFromVisualizer(visualizer.get());
 	VisualizerManager::getInstance()->removeAllChannelsFromVisualizer(visualizer.get());
 
-    //wyczyœæ menu wyboru Ÿróde³ i kana³ów
+    //wyczyÅ›Ä‡ menu wyboru ÅºrÃ³deÅ‚ i kanaÅ‚Ã³w
     clearSources();
 
     //usun wszystkie serie danych wizualizatora
     innerRemoveAllSeries();
 
-    // usuniêcie wizualizatora
+    // usuniÄ™cie wizualizatora
     visualizer.reset();
 
-    //usuñ wizualizator widget z innerWidget!!
+    //usuÅ„ wizualizator widget z innerWidget!!
     clearCurrentVisualizerWidget();
 }
 
@@ -316,7 +316,7 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 
         // pobranie nowego wizualizatora
         this->visualizer = visualizer;
-        // dodanie g³ównego widgetu
+        // dodanie gÅ‚Ã³wnego widgetu
         if ( visualizer ) {
 
 			if(autoRefreshInputs_ == true){
@@ -326,7 +326,7 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 					bool exact = false;
 					//pobieram dane
 
-					//stworz nowy OWC, odœwie¿aj¹cy dane z DM ObjectWrapperCollection
+					//stworz nowy OWC, odÅ›wieÅ¼ajÄ…cy dane z DM ObjectWrapperCollection
 					core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), exact));
 
 					DataManager::getInstance()->getObjects(*collection);
@@ -335,8 +335,8 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 				}
 			}
 
-            // czy indeks siê zgadza?
-            // tradycyjne wyszukiwanie nie dzia³a przy copy by value
+            // czy indeks siÄ™ zgadza?
+            // tradycyjne wyszukiwanie nie dziaÅ‚a przy copy by value
             int idx = -1;
             UniqueID id = visualizer->getID();
             for ( int i = 0; i < comboType->count(); ++i ) {
@@ -407,14 +407,14 @@ void VisualizerWidget::fillSourcesMenu()
 
     clearSources();
 
-    //odbuduj menu Ÿróde³ danych
-    //dostêpne dane
+    //odbuduj menu ÅºrÃ³deÅ‚ danych
+    //dostÄ™pne dane
     QMenu * avaiableDataMenu = menuSource->addMenu("Available data");
     //aktywne dane w seriach
     QMenu * activeDataMenu = menuSource->addMenu("Active data");
     activeDataMenu->setEnabled(visualizer->getDataSeries().empty() == false);
 
-    // akcja zeruj¹ca obiekt - czyœci wszystkie serie danych
+    // akcja zerujÄ…ca obiekt - czyÅ›ci wszystkie serie danych
     actionNone = menuSource->addAction("none");
     actionNone->setCheckable(true);
     actionNone->setChecked(visualizer->getDataSeries().empty() == true ? true : false);
@@ -461,8 +461,8 @@ void VisualizerWidget::fillSourcesMenu()
                 aditional = std::distance(result.begin(), stopIT);
             }
 
-            //znajdŸ wspólne elementy
-            //znajdŸ ró¿nicê
+            //znajdÅº wspÃ³lne elementy
+            //znajdÅº rÃ³Å¼nicÄ™
 
             total = objects->size() + aditional;
             str << objects->getTypeInfo().name() << " [" << total;
@@ -595,14 +595,14 @@ void VisualizerWidget::sourceSelected()
         actionNone->setChecked(false);
         actionNone->blockSignals(false);
 
-        //czy mo¿na jeszcze utworzyæ serie?
+        //czy moÅ¼na jeszcze utworzyÄ‡ serie?
         if(visualizer->getMaxSeries() < 0 || visualizer->getMaxSeries() != currentSeriesData.size()){
             //aktualizujemy ostatnia serie danych
 
             lastSerie.first = action;
             lastSerie.second = td.second;
 
-            //dodaj nowa seriê
+            //dodaj nowa seriÄ™
             VisualizerSeriePtr serie(visualizer->createSerie(lastSerie.second, getLabel(lastSerie.second, true)));
 
             VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie));
@@ -618,10 +618,10 @@ void VisualizerWidget::sourceSelected()
             groupedSeriesData[td.first].insert(lastSerie.second);
         }else{
             //TODO
-            //co jeœli mam ju¿ komplet? moge odznaczaæ serie, ale nie dodawaæ - mo¿e jakoœ kolorem menu?
+            //co jeÅ›li mam juÅ¼ komplet? moge odznaczaÄ‡ serie, ale nie dodawaÄ‡ - moÅ¼e jakoÅ› kolorem menu?
 
 
-            ////nie moge utworzyæ serii - przelacz ostatnia serie
+            ////nie moge utworzyÄ‡ serii - przelacz ostatnia serie
             //lastSerie.first->blockSignals(true);
             //lastSerie.first->setChecked(false);
             //lastSerie.first->blockSignals(false);
@@ -642,7 +642,7 @@ void VisualizerWidget::sourceSelected()
             //groupedSeriesData[td.first].insert(lastSerie.second);
         }
     }else{
-        //usuñ seriê
+        //usuÅ„ seriÄ™
         auto it = currentSeriesData.find(td.second);
 
         groupedSeriesData[td.first].erase(it->first);
@@ -688,7 +688,7 @@ std::string VisualizerWidget::getLabel( const ObjectWrapperConstPtr& object, boo
     }else if ( noSource ) {
         return object->getName();
     } else {
-        // TODO: uzupe³niæ
+        // TODO: uzupeÅ‚niÄ‡
         return object->getName();
     }
 }

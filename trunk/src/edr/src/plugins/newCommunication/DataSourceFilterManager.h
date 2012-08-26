@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/16
     created:  16:2:2012   13:11
     filename: DataSourceFilterManager.h
@@ -18,32 +18,32 @@ public:
     DataSourceFilterManager();
     virtual ~DataSourceFilterManager();
 
-    //! \param filter Filtr danych ktÛry rejestrujemy
+    //! \param filter Filtr danych kt√≥ry rejestrujemy
     //! \return Indeks zarejestrowanego filtra
     virtual int registerFilter(DataSourceFilter * filter);
 
     //! \param idx Indeks filtra, zakres indeksu [-1; size()-1], -1 oznacza brak filtra
     virtual void setCurrentFilter(int idx);
 
-    //! \return IloúÊ zarejestrowanych filtrÛw
+    //! \return Ilo≈õƒá zarejestrowanych filtr√≥w
     virtual int size() const;
 
-    //! \return Czy mamy zarejestrowane jakieú filtry
+    //! \return Czy mamy zarejestrowane jakie≈õ filtry
     virtual bool empty() const;
 
-    //! \return Aktualnie aktywny  filtr - -1 gdy øaden nieaktywny
+    //! \return Aktualnie aktywny  filtr - -1 gdy ≈ºaden nieaktywny
     virtual int currentFilterIndex() const;
 
-	//! \return Aktualnie aktywny  filtr - -1 gdy øaden nieaktywny
+	//! \return Aktualnie aktywny  filtr - -1 gdy ≈ºaden nieaktywny
 	virtual communication::DataFilterPtr currentFilter() const;
 
     //! \param idx Indeks filtra
     //! \return Filtr o zadanym indeksie
     virtual communication::DataFilterPtr dataFilter(int idx) const;
 
-	//! \param inShallow Wejúciowa p≥ytka kopia do filtrowania
-	//! \param outShallow Wyjúciowa, przefiltrowana p≥ytka kopia
-	//! \param filter Filtr uøywany do filtrowania
+	//! \param inShallow Wej≈õciowa p≈Çytka kopia do filtrowania
+	//! \param outShallow Wyj≈õciowa, przefiltrowana p≈Çytka kopia
+	//! \param filter Filtr u≈ºywany do filtrowania
 	static void filterShallowCopy(const communication::ShallowCopy & inShallow, communication::ShallowCopy & outShallow, const communication::DataFilterPtr & filter);
 
 private:

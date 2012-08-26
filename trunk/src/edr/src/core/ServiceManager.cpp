@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include <core/ILog.h>
 #include "Log.h"
 #include "ServiceManager.h"

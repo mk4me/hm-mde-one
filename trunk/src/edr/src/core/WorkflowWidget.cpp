@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include "WorkflowWidget.h"
 #include "WorkflowVDFModel.h"
 #include "EDRDataFlow.h"
@@ -33,7 +33,7 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
     workflowVDFWidget->setMouseTracking(true);
     workflowVDFWidget->setFocusPolicy(Qt::StrongFocus);
 
-    //dla lapania pozycji kursora na menu kontekstowe poniewa¿ z poziomu OSG tracê czêœciowo t¹ informacjê
+    //dla lapania pozycji kursora na menu kontekstowe poniewaÅ¼ z poziomu OSG tracÄ™ czÄ™Å›ciowo tÄ… informacjÄ™
     workflowVDFWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     const osg::GraphicsContext::Traits* traits = workflowVDFWidget->getCamera()->getGraphicsContext()->getTraits();
@@ -82,11 +82,11 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
     //inicjuj Toolbar w Qt wraz z Drag`n`Drop
     DataProcessorManager* dp = DataProcessorManager::getInstance();
     for(int i = 0; i < dp->getNumPrototypes(); ++i){
-        //opakuj prototyp w fabrykê wêz³a dla EDRDataFlow
+        //opakuj prototyp w fabrykÄ™ wÄ™zÅ‚a dla EDRDataFlow
 
 
 
-        //dodaj odpowiadaj¹cy element do toolbara
+        //dodaj odpowiadajÄ…cy element do toolbara
     }
 
 #ifdef _DEBUG
@@ -113,9 +113,9 @@ void WorkflowCustomQOSGWidget::tryAddNode()
         }
 
         dflm::DFNPtr node;
-        //obuduj wêze³
+        //obuduj wÄ™zeÅ‚
         if(dynamic_cast<InputDescription*>(item.get()) == nullptr){
-            //sprawdz czy wêze³ poprawnie zbudowany!!
+            //sprawdz czy wÄ™zeÅ‚ poprawnie zbudowany!!
             node.reset(new EDRDFSourceNode(item, item->getName()));
         }else{
             node.reset(new EDRDFNode(item, item->getName()));
@@ -153,7 +153,7 @@ void WorkflowCustomQOSGWidget::tryAddNode()
 void WorkflowCustomQOSGWidget::mousePressEvent(QMouseEvent * event)
 {
     if(event->button() == Qt::LeftButton){
-        //próbuj dodaæ element
+        //prÃ³buj dodaÄ‡ element
         if(workflowWidget->currentAction != nullptr){
 
             pos = event->pos();
@@ -165,7 +165,7 @@ void WorkflowCustomQOSGWidget::mousePressEvent(QMouseEvent * event)
             return;
         }
     }else{
-        //prawy klawisz wiec mo¿e chce usun¹æ po³¹czenia
+        //prawy klawisz wiec moÅ¼e chce usunÄ…Ä‡ poÅ‚Ä…czenia
         emit customContextMenuRequested(event->pos());
     }
 
@@ -187,7 +187,7 @@ WorkflowWidget::StylesSet WorkflowWidget::generateRequiredStyles()
     std::string graphExt = "png";
 
     //PIN STYLES
-    //czcionka pinów
+    //czcionka pinÃ³w
     styleSet.insert(new osgui::StyleEx("vdf.node.pin.text", "font_size 10\nfont_type \"font\\segoeui.ttf\""));
 
     //piny wyjsciowe
@@ -209,7 +209,7 @@ WorkflowWidget::StylesSet WorkflowWidget::generateRequiredStyles()
     styleSet.insert(new osgui::StyleEx("vdf.pin.in.required", "rect_image_cache \"" +  path + "in_required." + graphExt + "\""));
 
     //NODE STYLES
-    //obwódka, cieñ
+    //obwÃ³dka, cieÅ„
     //normal
     styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.normal", "rect_image_cache \"" +  path + "normal_board_TL." + graphExt + "\""));
     styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.normal", "rect_image_cache \"" +  path + "normal_board_TM." + graphExt + "\""));
@@ -241,7 +241,7 @@ WorkflowWidget::StylesSet WorkflowWidget::generateRequiredStyles()
     styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.active", "rect_image_cache \"" +  path + "selected_board_BR." + graphExt + "\""));
 
 
-    //cia³o wêz³a
+    //ciaÅ‚o wÄ™zÅ‚a
     //normal
     //top
     styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.normal", "rect_image_cache \"" +  path + "normal_body_TL." + graphExt + "\""));
@@ -340,7 +340,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
     toolbar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
 
-    //Zródla danych
+    //ZrÃ³dla danych
     QWidget* tmpWidget = new QWidget(toolbar);
     QHBoxLayout* tmpLayout = new QHBoxLayout(tmpWidget);
     tmpLayout->setAlignment(Qt::AlignLeft);
@@ -349,7 +349,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
     //inicjuj Toolbar w Qt wraz z Drag`n`Drop
     DataSourceManager* dsm = DataSourceManager::getInstance();
     for(int i = 0; i < dsm->getNumPrototypes(); ++i){
-        //opakuj prototyp w fabrykê wêz³a dla EDRDataFlow
+        //opakuj prototyp w fabrykÄ™ wÄ™zÅ‚a dla EDRDataFlow
         core::IDataSourceConstPtr proto(dsm->getPrototype(i));
         QToolButton* button = new QToolButton();
         QAction* action = new QAction(button);
@@ -364,7 +364,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
 
         connect(action, SIGNAL(toggled(bool)), this, SLOT(tollbarButoonChanged(bool)));
 
-        //dodaj odpowiadaj¹cy element do toolbara
+        //dodaj odpowiadajÄ…cy element do toolbara
     }
 
     toolbar->addTab(tmpWidget, "Sources");
@@ -378,7 +378,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
     //inicjuj Toolbar w Qt wraz z Drag`n`Drop
     DataProcessorManager* dpm = DataProcessorManager::getInstance();
     for(int i = 0; i < dpm->getNumPrototypes(); ++i){
-        //opakuj prototyp w fabrykê wêz³a dla EDRDataFlow
+        //opakuj prototyp w fabrykÄ™ wÄ™zÅ‚a dla EDRDataFlow
         core::IDataProcessorConstPtr proto(dpm->getPrototype(i));
         QToolButton* button = new QToolButton();
         QAction* action = new QAction(button);
@@ -393,7 +393,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
 
         connect(action, SIGNAL(toggled(bool)), this, SLOT(tollbarButoonChanged(bool)));
 
-        //dodaj odpowiadaj¹cy element do toolbara
+        //dodaj odpowiadajÄ…cy element do toolbara
     }
 
     toolbar->addTab(tmpWidget, "Processors");
@@ -406,7 +406,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
 
     VisualizerManager* vm = VisualizerManager::getInstance();
     for(int i = 0; i < vm->getNumPrototypes(); ++i){
-        //opakuj prototyp w fabrykê wêz³a dla EDRDataFlow
+        //opakuj prototyp w fabrykÄ™ wÄ™zÅ‚a dla EDRDataFlow
         core::IVisualizerConstPtr proto(vm->getPrototype(i));
         QToolButton* button = new QToolButton();
         QAction* action = new QAction(button);
@@ -424,7 +424,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
 
     toolbar->addTab(tmpWidget, "Visualizers");
 
-    //Elementy zapisuj¹ce
+    //Elementy zapisujÄ…ce
     tmpWidget = new QWidget(toolbar);
     tmpLayout = new QHBoxLayout(tmpWidget);
     tmpLayout->setAlignment(Qt::AlignLeft);
@@ -448,7 +448,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : model(new EDRDataFlow()), currentAction
 
     workflowVDFWidget->setMouseTracking(true);
 
-    //dla lapania pozycji kursora na menu kontekstowe poniewa¿ z poziomu OSG tracê czêœciowo t¹ informacjê
+    //dla lapania pozycji kursora na menu kontekstowe poniewaÅ¼ z poziomu OSG tracÄ™ czÄ™Å›ciowo tÄ… informacjÄ™
     workflowVDFWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     const osg::GraphicsContext::Traits* traits = workflowVDFWidget->getCamera()->getGraphicsContext()->getTraits();
@@ -535,7 +535,7 @@ void EDRWorkflowWidget::update(const dflm::Model* model)
         msgBox.setText("Workflow has finished");
         msgBox.exec();
 
-        //obs³uga zakoñczenia przetwarzania
+        //obsÅ‚uga zakoÅ„czenia przetwarzania
         actionStop->setEnabled(true);
         actionStart->setEnabled(false);
 
@@ -618,12 +618,12 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
     visWidget->setAllowedAreas(Qt::RightDockWidgetArea);
     ////blokujemy zmiane wizualizatora
     visWidget->setVisualizerSwitchEnable(false);
-    ////nie niszcz wizualizatora przy jego zamykaniu !! dopiero usuniêcie wêz³a powinno to robiæ
+    ////nie niszcz wizualizatora przy jego zamykaniu !! dopiero usuniÄ™cie wÄ™zÅ‚a powinno to robiÄ‡
     visWidget->setPermanent(true);
 
 	supplyWithEDRTitleBar(visWidget);
 
-    //dodajemy wizualizator do g³ównego okna
+    //dodajemy wizualizator do gÅ‚Ã³wnego okna
     window->addDockWidget(Qt::RightDockWidgetArea,visWidget);
 
     //aktualizuj mapowanie logiki do UI
@@ -678,7 +678,7 @@ EDRWorkflowWidget::StylesSet EDRWorkflowWidget::generateRequiredStyles()
     std::string graphExt = "png";
 
     //PIN STYLES
-    //czcionka pinów
+    //czcionka pinÃ³w
     styleSet.insert(new osgui::StyleEx("vdf.node.pin.text", "font_size 10\nfont_type \"font\\segoeui.ttf\""));
 
     //piny wyjsciowe
@@ -700,7 +700,7 @@ EDRWorkflowWidget::StylesSet EDRWorkflowWidget::generateRequiredStyles()
     styleSet.insert(new osgui::StyleEx("vdf.pin.in.required", "rect_image_cache \"" +  path + "in_required." + graphExt + "\""));
 
     //NODE STYLES
-    //obwódka, cieñ
+    //obwÃ³dka, cieÅ„
     //normal
     styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.normal", "rect_image_cache \"" +  path + "normal_board_TL." + graphExt + "\""));
     styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.normal", "rect_image_cache \"" +  path + "normal_board_TM." + graphExt + "\""));
@@ -732,7 +732,7 @@ EDRWorkflowWidget::StylesSet EDRWorkflowWidget::generateRequiredStyles()
     styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.active", "rect_image_cache \"" +  path + "selected_board_BR." + graphExt + "\""));
 
 
-    //cia³o wêz³a
+    //ciaÅ‚o wÄ™zÅ‚a
     //normal
     //top
     styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.normal", "rect_image_cache \"" +  path + "normal_body_TL." + graphExt + "\""));

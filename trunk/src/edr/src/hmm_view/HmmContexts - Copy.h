@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+﻿#include "hmmPCH.h"
 #include <QtGui/QToolBar>
 #include "VisualizerWidget.h"
 #include "HmmContexts.h"

@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+Ôªø#include "CommunicationPCH.h"
 #include "DefaultPatientCardWidget.h"
 #include "DataSourceUserData.h"
 #include <QtGui/QFormLayout>
@@ -183,11 +183,11 @@ void DefaultPatientCardWidget::currentSessionChanged(QTreeWidgetItem * current, 
 
 void DefaultPatientCardWidget::setSessionsData(const MotionShallowCopy::PerformerConfs & subjectConfigurations)
 {
-	//czyúcimy zawartoúÊ sesji
+	//czy≈õcimy zawarto≈õƒá sesji
 	sessionsWidget->clear();
 
 	if(subjectConfigurations.empty() == false){
-		//wype≥niamy sesjami
+		//wype≈Çniamy sesjami
 
 		//grupujemy wykresy na przed/po badaniu + upperBody, lowerBody
 		std::map<std::string, std::map<int, const MotionShallowCopy::Session *>> groupedData;
@@ -227,7 +227,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 	ret->setText(0, name);
 	ret->setText(1, sessions.begin()->second->sessionDate.c_str());
 
-	//gÛrna partia
+	//g√≥rna partia
 	if(sessions.begin()->first % 2 == 0){
 		SessionTreeItem * item = new SessionTreeItem(sessions.begin()->second->performerConf->attrs);
 		item->setText(0, tr("Upper body") + " - " + sessions.begin()->second->sessionName.c_str());
@@ -249,7 +249,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 
 	QString sname(tr("Lower body"));
 
-	//gÛrna partia
+	//g√≥rna partia
 	if(sessions.begin()->first % 2 == 1){
 		sname = tr("Upper body");
 	}

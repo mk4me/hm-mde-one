@@ -1,11 +1,11 @@
-#include "TimelinePCH.h"
+ï»¿#include "TimelinePCH.h"
 #include "ChannelsTreeItem.h"
 
 ChannelsTreeItem::ChannelsTreeItem(const timeline::Model::TChannelConstPtr & channelPtr, ChannelWidget * channelWidget)
     : channelPtr(channelPtr), channelWidget(channelWidget)
 {
-    UTILS_ASSERT((channelPtr != nullptr), "B³êdny kana³ modelu timeline");
-    UTILS_ASSERT((channelWidget != nullptr), "B³êdny widget wizualizuj¹cy kana³");
+    UTILS_ASSERT((channelPtr != nullptr), "BÅ‚Ä™dny kanaÅ‚ modelu timeline");
+    UTILS_ASSERT((channelWidget != nullptr), "BÅ‚Ä™dny widget wizualizujÄ…cy kanaÅ‚");
     setText(0, QString::fromUtf8(channelPtr->getName().c_str()));
 }
 

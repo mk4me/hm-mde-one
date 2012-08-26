@@ -1,9 +1,9 @@
-#ifndef HEADER_GUARD_OSGSCHEMEDRAWER_H__
+ï»¿#ifndef HEADER_GUARD_OSGSCHEMEDRAWER_H__
 #define HEADER_GUARD_OSGSCHEMEDRAWER_H__
 
 #include "ISchemeDrawer.h"
 
-//! Klasa bazowa dla schematów osg specyficznych
+//! Klasa bazowa dla schematÃ³w osg specyficznych
 class OsgSchemeDrawer : public ISchemeDrawer
 {
 public:
@@ -11,39 +11,39 @@ public:
     OsgSchemeDrawer() : initialized(false) {}
 
 public:
-    //! metoda powinna zwracaæ wêze³ 
+    //! metoda powinna zwracaÄ‡ wÄ™zeÅ‚ 
     virtual osg::ref_ptr<osg::Node> getNode() = 0;
-    //! ustawia widocznoœæ ca³ego drawera
+    //! ustawia widocznoÅ›Ä‡ caÅ‚ego drawera
     //! \param visible czy widoczny
     virtual void setVisible(bool visible) 
     {
         getNode()->setNodeMask(visible ? 0xFFFF : 0);
     }
-    //! klasa pochodna powinna wykonaæ najpierw t¹ metode a póŸniej dokonaæ reszty inicjalizacji
-    //! \param scheme schemat przechowywany na w³asnoœæ
+    //! klasa pochodna powinna wykonaÄ‡ najpierw tÄ… metode a pÃ³Åºniej dokonaÄ‡ reszty inicjalizacji
+    //! \param scheme schemat przechowywany na wÅ‚asnoÅ›Ä‡
     virtual void init(VisualizationSchemeConstPtr scheme) 
     { 
         UTILS_ASSERT(initialized == false, "Drawer was previously initialized");
         visualizationScheme = scheme; 
         initialized = true;
     }
-    //! \return czy drawer zosta³ zainicjalizowany
+    //! \return czy drawer zostaÅ‚ zainicjalizowany
     bool isInitialized() const { return initialized; }
 
 protected:
-    //! wskaŸnik do wêz³a przechowywuj¹cego geometriê
+    //! wskaÅºnik do wÄ™zÅ‚a przechowywujÄ…cego geometriÄ™
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
-    //! wskaŸnik do geometrii, która trafia do wêz³a
+    //! wskaÅºnik do geometrii, ktÃ³ra trafia do wÄ™zÅ‚a
     typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
 
 public:
-    //! return schemat wizualizacji, który jest odrysowywany
+    //! return schemat wizualizacji, ktÃ³ry jest odrysowywany
     VisualizationSchemeConstPtr getVisualiztionScheme() const { return visualizationScheme; }
 
 private:
-    //! schemat wizualizacji, który jest odrysowywany
+    //! schemat wizualizacji, ktÃ³ry jest odrysowywany
     VisualizationSchemeConstPtr visualizationScheme;
-    //! czy drawer zosta³ ju¿ zainicjalizowany
+    //! czy drawer zostaÅ‚ juÅ¼ zainicjalizowany
     bool initialized;
 };
 

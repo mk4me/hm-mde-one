@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+ï»¿#include "VideoPCH.h"
 #include "VideoWidget.h"
 
 #include <boost/foreach.hpp>
@@ -43,9 +43,9 @@ using namespace video;
 
 class OsgWidgetWindowItem : public vidlib::VideoImageStreamSizeOptimizer::Client
 {
-    //! Okno wzglêdem którego sprawdzaæ widocznoœæ.
+    //! Okno wzglÄ™dem ktÃ³rego sprawdzaÄ‡ widocznoÅ›Ä‡.
     osg::observer_ptr<osgWidget::Window> window;
-    //! Widget dla którego dostosowywaæ wspó³rzêdne tekstury.
+    //! Widget dla ktÃ³rego dostosowywaÄ‡ wspÃ³Å‚rzÄ™dne tekstury.
     osg::observer_ptr<osgWidget::Widget> widget;
 
 public:
@@ -79,7 +79,7 @@ public:
         osg::Image* image = optimizer->getImage();
         if ( osg::StateSet* state = widget->getStateSet() ) {
             if ( osg::TextureRectangle* rect = dynamic_cast<osg::TextureRectangle*>(state->getTextureAttribute(0, osg::StateAttribute::TEXTURE)) ) {
-                // przeskalowanie wspó³rzêdnych tekstury
+                // przeskalowanie wspÃ³Å‚rzÄ™dnych tekstury
                 for (unsigned i = 0; i < 4; ++i) {
                     osgWidget::TexCoord coord = widget->getTexCoord(static_cast<osgWidget::Widget::Corner>(i));
                     coord.x() *= image->s()/static_cast<double>(prevS);
@@ -98,7 +98,7 @@ format(PixelFormatBGRA)
     setupUi(this);
 
     // dodanie grupy akcji (designer na to nie pozwala :()
-    // TIP: w przyk³adach Qt nie ma jawnego zwalniania akcji
+    // TIP: w przykÅ‚adach Qt nie ma jawnego zwalniania akcji
     QActionGroup* formatGroup = new QActionGroup(this);
     formatGroup->addAction( actionFormatYUV );
     formatGroup->addAction( actionFormatRGB );
@@ -131,7 +131,7 @@ format(PixelFormatBGRA)
 
 void VideoWidget::init( std::vector<std::string> &files )
 {
-    // odczytanie plików
+    // odczytanie plikÃ³w
     images.clear();
     BOOST_FOREACH(const std::string& file, files) {
         if ( osg::Image* image = osgDB::readImageFile(file) ) {
@@ -179,12 +179,12 @@ void VideoWidget::createScene()
     unsigned sel = multiView->getSelectedIndex();
     bool doSelect = ( sel != multiView->getNumItems() );
 
-    // na wszelki wypadek czyœcimy scenê
+    // na wszelki wypadek czyÅ›cimy scenÄ™
     clearScene();
 
-    // stworzenie widgetów i dodanie ich do multi widoku
+    // stworzenie widgetÃ³w i dodanie ich do multi widoku
     BOOST_FOREACH(osg::Image* image, images) {
-        // wyliczenie wspó³czynnika proporcji oraz aktualizacja zbiorczego wspó³czynnika
+        // wyliczenie wspÃ³Å‚czynnika proporcji oraz aktualizacja zbiorczego wspÃ³Å‚czynnika
         float ratio = image->getPixelAspectRatio() * image->s() / image->t();
 
         VideoImageStreamSizeOptimizer* optimizer = new VideoImageStreamSizeOptimizer(new osg::Uniform(yuvImageSizeName.c_str(), osg::Vec2(0, 0)));
@@ -197,7 +197,7 @@ void VideoWidget::createScene()
         thumbnail->setStrata( osgWidget::Window::STRATA_BACKGROUND );
         multiView->addChild(thumbnail);
 
-        // faktyczne dodanie du¿ego okna
+        // faktyczne dodanie duÅ¼ego okna
         osgWidget::Widget* streamWidgetClone = createStreamWidget( /*osg::clone*/(image), optimizer);
         osgWidget::Box* preview = new osgWidget::Box(std::string(streamWidgetClone->getName()) + "Preview");
         osgui::AspectRatioKeeper* keeper = new osgui::AspectRatioKeeper(streamWidgetClone, ratio);
@@ -207,7 +207,7 @@ void VideoWidget::createScene()
         preview->setStrata( osgWidget::Window::STRATA_BACKGROUND );
         multiView->addChild(preview);
 
-        // dodanie itemów do multiviewa
+        // dodanie itemÃ³w do multiviewa
         core::MultiViewWidgetItem* thumbnailItem = new core::MultiViewWidgetItem(thumbnail, ratio);
         core::MultiViewWidgetItem* previewItem = new core::MultiViewWidgetItem(preview, ratio);
         multiView->addItem(thumbnailItem, previewItem);
@@ -226,17 +226,17 @@ void VideoWidget::createScene()
 
 void VideoWidget::clearScene()
 {
-    // usuniêcie callbacków
+    // usuniÄ™cie callbackÃ³w
     BOOST_FOREACH(VideoImageStreamSizeOptimizer* optimizer, optimizers) {
         multiView->removeUpdateCallback(optimizer);
     }
     optimizers.clear();
 
-    // usuniêcie itemów
+    // usuniÄ™cie itemÃ³w
     multiView->removeAllItems();
-    // usuniêcie wszystkich wêz³ów (!)
+    // usuniÄ™cie wszystkich wÄ™zÅ‚Ã³w (!)
     multiView->removeChildren(0, multiView->getNumChildren());
-    // reinicjalizacja multi view (po usuniêciu wszystkich wêz³ów - wymagana)
+    // reinicjalizacja multi view (po usuniÄ™ciu wszystkich wÄ™zÅ‚Ã³w - wymagana)
     multiView->restoreRequiredChildren();
 
     // dodanie "hacka"
@@ -257,12 +257,12 @@ osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, VideoImag
 osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Uniform* sampler, osg::Uniform* imageSize )
 {
     UTILS_ASSERT(image);
-    // tworzymy kontrolkê
+    // tworzymy kontrolkÄ™
     StreamOsgWidget* widget = new StreamOsgWidget( core::Filesystem::Path(image->getFileName()).filename().string() );
 
     // ustawienie tekstury
     widget->setImage(image, true, useTextureRect);
-    // czy trzeba zrobiæ flipa?
+    // czy trzeba zrobiÄ‡ flipa?
     osgui::correctTexCoords(widget, image);
     // poprawki
     if ( !useTextureRect && osgui::getTexture(widget) ) {
@@ -272,7 +272,7 @@ osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Unif
     // ustawienie formatu
     if (VideoImageStream* stream = dynamic_cast<VideoImageStream*>(image)) {
         if ( stream->getTargetFormat() == PixelFormatYV12 ) {
-            // ustawienie shaderów
+            // ustawienie shaderÃ³w
             widget->setYuvTexture2DShader(yuvTexture2DShader);
             widget->setYuvTextureRectShader(yuvTextureRectShader);
             widget->getOrCreateStateSet()->addUniform( sampler );

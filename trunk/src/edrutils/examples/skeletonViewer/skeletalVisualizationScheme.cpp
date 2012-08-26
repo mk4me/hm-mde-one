@@ -1,4 +1,4 @@
-#include "PCH.h"
+﻿#include "PCH.h"
 #include <kinematiclib/KinematicModel.h>
 #include "uniqueCollection.h"
 #include "skeletalVisualizationScheme.h"

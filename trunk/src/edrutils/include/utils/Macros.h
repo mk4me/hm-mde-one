@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 created:  2010/04/23
 created:  23:4:2010   7:58
 filename: Macros.h
@@ -24,24 +24,24 @@ purpose:
 
 //------------------------------------------------------------------------------
 
-// Makro zamieniaj¹ca parametr na ³añcuch.
+// Makro zamieniajÄ…ca parametr na Å‚aÅ„cuch.
 #define STRINGIZE(arg)  __STRINGIZE(arg)
 #define __STRINGIZE(arg) #arg
 
 //------------------------------------------------------------------------------
 
-// Makro ³¹cz¹ce dwa parametry.
+// Makro Å‚Ä…czÄ…ce dwa parametry.
 #define CONCATENATE(arg1, arg2)   __CONCATENATE(arg1, arg2)
 #define __CONCATENATE(arg1, arg2)  arg1##arg2
 
 //------------------------------------------------------------------------------
 
-// Makro zamieniaj¹ce definicjê zawieraj¹c¹ przecinki na ³añcuch.
+// Makro zamieniajÄ…ce definicjÄ™ zawierajÄ…cÄ… przecinki na Å‚aÅ„cuch.
 #ifdef __GNUC__
-// Dla gcc parametry trzeba "rozbiæ"
+// Dla gcc parametry trzeba "rozbiÄ‡"
 #define COMA_AWARE_STRINGIZE(...) __FOR_EACH(STRINGIZE, ",", __VA_ARGS__)
 #else // __GNUC__
-// Liczymy na to, ¿e sobie poradzi (tak jak MSVC)
+// Liczymy na to, Å¼e sobie poradzi (tak jak MSVC)
 #define COMA_AWARE_STRINGIZE(...) __STRINGIZE(__VA_ARGS__)
 #endif // __GNUC__
 
@@ -78,8 +78,8 @@ purpose:
 
 #ifdef __GNUC__
 
-// Makro wywo³uj¹ce makro what dla kazdego z parametrow w __VA_ARGS__.
-// Obecnie wspiera od 1 do 63 parametrów
+// Makro wywoÅ‚ujÄ…ce makro what dla kazdego z parametrow w __VA_ARGS__.
+// Obecnie wspiera od 1 do 63 parametrÃ³w
 #define __FOR_EACH(what, separator, ...) __FOR_EACH_N(NARG(__VA_ARGS__), what, separator, __VA_ARGS__)
 #define __FOR_EACH_N(N, what, separator, x, ...) CONCATENATE(__FOR_EACH_, N)(what, separator, x, __VA_ARGS__)
 

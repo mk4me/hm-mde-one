@@ -1,4 +1,4 @@
-#include "PCH.h"
+﻿#include "PCH.h"
 #include <QtGui/QTableView>
 #include "SchemeDialog.h"
 #include "SchemeDrawerContainer.h"

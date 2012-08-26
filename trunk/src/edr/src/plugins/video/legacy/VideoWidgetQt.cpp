@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+ï»¿#include "VideoPCH.h"
 #include <stdint.h>
 #include "VideoWidgetQt.h"
 
@@ -31,7 +31,7 @@ void VideoWidgetQt::init( const std::vector<std::string> &files )
             
         }
         // TODO
-        // mo¿e przekroczyæ zakres
+        // moÅ¼e przekroczyÄ‡ zakres
         if ( stream ) {
             video::Picture picture = video::Picture::create( stream->getWidth(), stream->getHeight(), video::PixelFormatRGB24 );
             stream->setTime(0);

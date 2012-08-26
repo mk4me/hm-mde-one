@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/11/06
 	created:	6:11:2011   14:44
 	filename: 	IllnessUnit.h
@@ -20,9 +20,9 @@ class ChannelExtractorFilter : public PluginSubject::IDataFilter
 public:
     //! konstruktor
     ChannelExtractorFilter() {}
-    //! wywo³uje filtrowanie sesji po typie przekazanym w szablonie
+    //! wywoÅ‚uje filtrowanie sesji po typie przekazanym w szablonie
     //! \param session filtrowane sesje
-    //! \return sesje zawieraj¹ce tylko konkretny typ
+    //! \return sesje zawierajÄ…ce tylko konkretny typ
     virtual PluginSubject::SessionPtr doDataFiltering(const PluginSubject::SessionConstPtr & session) const
     {
         typedef typename core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
@@ -68,19 +68,19 @@ public:
 class SessionNumberFilter : public PluginSubject::IDataFilter
 {
 public:
-    //! konstruktor, który umo¿liwia filtrowanie po jednym nr sesji
-    //! \param nr tylko sesje o tym numerze bêd¹ przefiltrowane
+    //! konstruktor, ktÃ³ry umoÅ¼liwia filtrowanie po jednym nr sesji
+    //! \param nr tylko sesje o tym numerze bÄ™dÄ… przefiltrowane
     SessionNumberFilter(int nr) { numbers.push_back(nr); }
-    //! konstruktor, który umo¿liwia filtrowanie po dwóch nr sesji
+    //! konstruktor, ktÃ³ry umoÅ¼liwia filtrowanie po dwÃ³ch nr sesji
     //! \param nr1 pierwszy filtrowany nr sesji
     //! \param nr2 drugi filtrowany nr sesji
     SessionNumberFilter(int nr1, int nr2) { numbers.push_back(nr1); numbers.push_back(nr2); }
-    //! konstruktor, który umo¿liwia filtrowanie po wielu numerach sesji
+    //! konstruktor, ktÃ³ry umoÅ¼liwia filtrowanie po wielu numerach sesji
     //! \param numbers numery do filtrowania
     SessionNumberFilter(const std::vector<int>& numbers) : numbers(numbers) { }
-    //! wywo³uje w³aœciwe filtrowanie sesji po dostarczonych numerach
+    //! wywoÅ‚uje wÅ‚aÅ›ciwe filtrowanie sesji po dostarczonych numerach
     //! \param session filtrowane sesje
-    //! \return sesje zawieraj¹ce spe³niaj¹ce warunek 
+    //! \return sesje zawierajÄ…ce speÅ‚niajÄ…ce warunek 
     virtual PluginSubject::SessionPtr doDataFiltering(const PluginSubject::SessionConstPtr & session ) const
     {
         PluginSubject::SessionPtr ret;
@@ -106,21 +106,21 @@ private:
     std::vector<int> numbers;
 };
 
-//! klasa zapewnia filtrowanie po nazwach obiektów
+//! klasa zapewnia filtrowanie po nazwach obiektÃ³w
 class NameFilter : public PluginSubject::IDataFilter
 {
 public:
-    //! konstruktor zapewniaj¹cy filtrowanie obiektów o konkretnej nazwie
+    //! konstruktor zapewniajÄ…cy filtrowanie obiektÃ³w o konkretnej nazwie
     //! \param name nazwa filtrowanego obiektu
     NameFilter(const std::string& name) { names.push_back(name); }
-    //! konstruktor zapewniaj¹cy filtrowanie obiektów o podanych nazwach
-    //! \param name nazwy filtrowanych obiektów 
+    //! konstruktor zapewniajÄ…cy filtrowanie obiektÃ³w o podanych nazwach
+    //! \param name nazwy filtrowanych obiektÃ³w 
     NameFilter(const std::vector<std::string>& names) : names(names) {}
 
 public:
-    //! wywo³uje w³aœciwe filtrowanie sesji po dostarczych nazwach
+    //! wywoÅ‚uje wÅ‚aÅ›ciwe filtrowanie sesji po dostarczych nazwach
     //! \param session filtrowane sesje
-    //! \return sesje zawieraj¹ce tylko obiekty o dostarczonych nazwach
+    //! \return sesje zawierajÄ…ce tylko obiekty o dostarczonych nazwach
     virtual PluginSubject::SessionPtr doDataFiltering( const PluginSubject::SessionConstPtr & session ) const
     {
         PluginSubject::SessionPtr ret;
@@ -154,7 +154,7 @@ public:
     }
 
 private:
-    //! dostarczone nazwy filtrowanych obiektów
+    //! dostarczone nazwy filtrowanych obiektÃ³w
     std::vector<std::string> names;
 };
 
@@ -163,38 +163,38 @@ class Endo : public IFilterCommand
 {
 public:
     //! tworzy element drzewa analiz z przefiltrowanymi danymi
-    //! \param rootItemName nazwa elementu g³ównego
-    //! \param sessions sesje, które bêd¹ filtrowane
+    //! \param rootItemName nazwa elementu gÅ‚Ã³wnego
+    //! \param sessions sesje, ktÃ³re bÄ™dÄ… filtrowane
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 
 private:
     //! tworzy elementy z danymi EMG
-    //! \param root korzeñ, do którego zostan¹ podpiete elementy
+    //! \param root korzeÅ„, do ktÃ³rego zostanÄ… podpiete elementy
     //! \param sessions filtrowane sesje
     void createEMGBranch( QTreeWidgetItem* root, const std::vector<PluginSubject::SessionConstPtr>& sessions );
     //! tworzy elementy z danymi kinetycznymi
-    //! \param root korzeñ, do którego zostan¹ podpiete elementy
+    //! \param root korzeÅ„, do ktÃ³rego zostanÄ… podpiete elementy
     //! \param sessions filtrowane sesje
     void createKineticBranch( QTreeWidgetItem* root, const std::vector<PluginSubject::SessionConstPtr>& sessions );
-    //! tworzy elementy z danymi k¹tów
-    //! \param root korzeñ, do którego zostan¹ podpiete elementy
+    //! tworzy elementy z danymi kÄ…tÃ³w
+    //! \param root korzeÅ„, do ktÃ³rego zostanÄ… podpiete elementy
     //! \param sessions filtrowane sesje 
     void createAngleBranch( QTreeWidgetItem* root, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 
 protected:
-    //! Tworzy element zawieraj¹cy zbiorcze zestawienie wykresów
-    //! \param root korzeñ, do którego zostan¹ podpiete elementy
+    //! Tworzy element zawierajÄ…cy zbiorcze zestawienie wykresÃ³w
+    //! \param root korzeÅ„, do ktÃ³rego zostanÄ… podpiete elementy
     //! \param sessions filtrowane sesje 
     //! \param name nazwa elementu
     //! \param leftPrev wykresy, dla kontekstu lewej nogi, przed zabiegiem
     //! \param rightPrev wykresy, dla kontekstu prawej nogi, przed zabiegiem 
     //! \param leftPost wykresy, dla kontekstu lewej nogi, po zabiegu
     //! \param rightPost wykresy, dla kontekstu prawej nogi, po zabiegu
-    //! \param index indeks kana³u (0 - x, 1 - y, 2 - z)
+    //! \param index indeks kanaÅ‚u (0 - x, 1 - y, 2 - z)
     void createVectorEntry(QTreeWidgetItem* root, const std::vector<PluginSubject::SessionConstPtr>& sessions, const QString& name,
         PluginSubject::DataFilterPtr leftPrev, PluginSubject::DataFilterPtr rightPrev, PluginSubject::DataFilterPtr leftPost, PluginSubject::DataFilterPtr rightPost, int index);
-    //! Tworzy element zawieraj¹cy zbiorcze zestawienie wykresów
-    //! \param root korzeñ, do którego zostan¹ podpiete elementy
+    //! Tworzy element zawierajÄ…cy zbiorcze zestawienie wykresÃ³w
+    //! \param root korzeÅ„, do ktÃ³rego zostanÄ… podpiete elementy
     //! \param sessions filtrowane sesje 
     //! \param name nazwa elementu
     //! \param leftPrev wykresy, dla kontekstu lewej nogi, przed zabiegiem
@@ -203,14 +203,14 @@ protected:
     //! \param rightPost wykresy, dla kontekstu prawej nogi, po zabiegu
     void createEMGEntry(QTreeWidgetItem* root, const std::vector<PluginSubject::SessionConstPtr>& sessions, const QString& name,
         PluginSubject::DataFilterPtr leftPrev, PluginSubject::DataFilterPtr rightPrev, PluginSubject::DataFilterPtr leftPost, PluginSubject::DataFilterPtr rightPost);
-    //! tworzy obiekt, który filtruje elementy emg po nazwie i czasie zabiegu
+    //! tworzy obiekt, ktÃ³ry filtruje elementy emg po nazwie i czasie zabiegu
     //! \param post po lub przed zabiegiem
-    //! \param name nazwa filtrowanych elementów
+    //! \param name nazwa filtrowanych elementÃ³w
     PluginSubject::DataFilterPtr createCustomEMGFilter(bool post, const std::string& name);
     std::vector<core::ObjectWrapperConstPtr> extractWrappersFromEMG(const std::vector<PluginSubject::SessionConstPtr>& sessions);
-    //! tworzy obiekt, który filtruje elementy z wektorem po nazwie i czasie zabiegu
+    //! tworzy obiekt, ktÃ³ry filtruje elementy z wektorem po nazwie i czasie zabiegu
     //! \param post po lub przed zabiegiem
-    //! \param name nazwa filtrowanych elementów
+    //! \param name nazwa filtrowanych elementÃ³w
     template<class CollectionPtr>
     PluginSubject::DataFilterPtr createCustomV3Filter(bool post, const std::string& name);
     std::vector<core::ObjectWrapperConstPtr> extractWrappersFromVector( const std::vector<PluginSubject::SessionConstPtr>& sessions, int scalarIndex );
@@ -221,31 +221,31 @@ class Stroke : public Endo
 {
 public:
     //! tworzy element drzewa analiz z przefiltrowanymi danymi
-    //! \param rootItemName nazwa elementu g³ównego
-    //! \param sessions sesje, które bêd¹ filtrowane
+    //! \param rootItemName nazwa elementu gÅ‚Ã³wnego
+    //! \param sessions sesje, ktÃ³re bÄ™dÄ… filtrowane
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 };
 
-//! klasa tworzy drzewo analiz z danymi istotnymi dla analizy urazu krêgos³upa
+//! klasa tworzy drzewo analiz z danymi istotnymi dla analizy urazu krÄ™gosÅ‚upa
 class Spine : public Endo
 {
 public:
     //! tworzy element drzewa analiz z przefiltrowanymi danymi
-    //! \param rootItemName nazwa elementu g³ównego
-    //! \param sessions sesje, które bêd¹ filtrowane
+    //! \param rootItemName nazwa elementu gÅ‚Ã³wnego
+    //! \param sessions sesje, ktÃ³re bÄ™dÄ… filtrowane
     virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 
 private:
     //! tworzy elementy z danymi EMG
-    //! \param root korzeñ, do którego zostan¹ podpiete elementy
+    //! \param root korzeÅ„, do ktÃ³rego zostanÄ… podpiete elementy
     //! \param sessions filtrowane sesje
     void createEMGBranch( QTreeWidgetItem* root, const std::vector<PluginSubject::SessionConstPtr>& sessions );
     //! tworzy elementy z danymi kinetycznymi
-    //! \param root korzeñ, do którego zostan¹ podpiete elementy
+    //! \param root korzeÅ„, do ktÃ³rego zostanÄ… podpiete elementy
     //! \param sessions filtrowane sesje
     void createKineticBranch( QTreeWidgetItem* root, const std::vector<PluginSubject::SessionConstPtr>& sessions );
-    //! tworzy elementy z danymi k¹tów
-    //! \param root korzeñ, do którego zostan¹ podpiete elementy
+    //! tworzy elementy z danymi kÄ…tÃ³w
+    //! \param root korzeÅ„, do ktÃ³rego zostanÄ… podpiete elementy
     //! \param sessions filtrowane sesje 
     void createAngleBranch( QTreeWidgetItem* root, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 };

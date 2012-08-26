@@ -1,4 +1,4 @@
-/****************************************************************************
+ï»¿/****************************************************************************
 **
 ** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
@@ -58,7 +58,7 @@ QT_FORWARD_DECLARE_CLASS(QMenu)
 class TextEdit : public QMainWindow
 {
     Q_OBJECT
-    //! mo¿liwe formaty zapisu
+    //! moÅ¼liwe formaty zapisu
     enum SaveMode {
         toHtml,
         toOdt
@@ -70,175 +70,175 @@ public:
     TextEdit(QWidget *parent = 0);
 
 public:
-    //! zasila kontrolkê w kod html
-    //! \param html kod, który ma zostaæ wyœwietlony 
+    //! zasila kontrolkÄ™ w kod html
+    //! \param html kod, ktÃ³ry ma zostaÄ‡ wyÅ›wietlony 
     void setHtml(const QString& html);
-    //! \return akcje zwi¹zane z zapisem / odczytem plików
+    //! \return akcje zwiÄ…zane z zapisem / odczytem plikÃ³w
     const QList<QObject*>& getFileActions() const { return fileList; }
-    //! \return akcje zwi¹zane z edycj¹ tekstu
+    //! \return akcje zwiÄ…zane z edycjÄ… tekstu
     const QList<QObject*>& getEditActions() const { return editList; }
-    //! \return akcje zwi¹zane z operacjami na tekœcie
+    //! \return akcje zwiÄ…zane z operacjami na tekÅ›cie
     const QList<QObject*>& getTextActions() const { return textList; }
 
 private:
-    //! wywo³ywane po zmianie czcionki
+    //! wywoÅ‚ywane po zmianie czcionki
     //! \param f nowa czcionka
     void fontChanged(const QFont &f);
-    //! wywo³ywane po zmianie koloru
+    //! wywoÅ‚ywane po zmianie koloru
     //! \param c nowy kolor tesktu
     void colorChanged(const QColor &c);
-    //! wywo³ywane po zmianie wyrównania
-    //! \param a nowe wyrównanie zaznaczonego tekstu
+    //! wywoÅ‚ywane po zmianie wyrÃ³wnania
+    //! \param a nowe wyrÃ³wnanie zaznaczonego tekstu
     void alignmentChanged(Qt::Alignment a);
-    //! ³¹czy stary format z nowym (np. bold + italic)
+    //! Å‚Ä…czy stary format z nowym (np. bold + italic)
     //! \param format nowy format
     void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
-    //! próba zapisu
-    //! \return true lub false, gdy u¿ytkownik zrezygnowa³ z zapisu
+    //! prÃ³ba zapisu
+    //! \return true lub false, gdy uÅ¼ytkownik zrezygnowaÅ‚ z zapisu
     bool maybeSave();
     //! wczytuje plik
-    //! \param f œcie¿ka pliku do wczytania
+    //! \param f Å›cieÅ¼ka pliku do wczytania
     bool load(const QString &f);
-    //! ustawia nazwê aktualnego pliku
+    //! ustawia nazwÄ™ aktualnego pliku
     //! \param fileName nazwa aktualnie edytowanego pliku
     void setCurrentFileName(const QString &fileName);
-    //! twórz akcje zwi¹zane z zapisem / odczytem plików
+    //! twÃ³rz akcje zwiÄ…zane z zapisem / odczytem plikÃ³w
     void createFileActions();
-    //! twórz akcje zwi¹zane z edycj¹ tekstu
+    //! twÃ³rz akcje zwiÄ…zane z edycjÄ… tekstu
     void createEditActions();
-    //! twórz akcje zwi¹zane z operacjami na tekœcie
+    //! twÃ³rz akcje zwiÄ…zane z operacjami na tekÅ›cie
     void createTextActions();
 
 private slots:
-    //! twórz nowy plik
+    //! twÃ³rz nowy plik
     void fileNew();
-    //! otwórz nowy plik
+    //! otwÃ³rz nowy plik
     void fileOpen();
     //! zapisz plik
-    //! \return true lub false, gdy u¿ytkownik zrezygnowa³
+    //! \return true lub false, gdy uÅ¼ytkownik zrezygnowaÅ‚
     bool fileSave();
     //! zapisz plik jako..
-    //! \return true lub false, gdy u¿ytkownik zrezygnowa³
+    //! \return true lub false, gdy uÅ¼ytkownik zrezygnowaÅ‚
     bool fileSaveAs();
     //! drukuj
     void filePrint();
-    //! pogl¹d wydruku
+    //! poglÄ…d wydruku
     void filePrintPreview();
-    //! twórz plik pdf
+    //! twÃ³rz plik pdf
     void filePrintPdf();
     //! pogrubienie tekstu
     void textBold();
-    //! podkreœlenie tekstu
+    //! podkreÅ›lenie tekstu
     void textUnderline();
     //! kursywa tekstu
     void textItalic();
-    //! zmieni³a siê czcionka
+    //! zmieniÅ‚a siÄ™ czcionka
     //! \param f nowa czcionka
     void textFamily(const QString &f);
-    //! zmieni³ siê rozmiar czcionki
+    //! zmieniÅ‚ siÄ™ rozmiar czcionki
     //! \param p nowy rozmiar czcionki
     void textSize(const QString &p);
-    //! zmieni³ siê styl
+    //! zmieniÅ‚ siÄ™ styl
     //! \param styleIndex 
     void textStyle(int styleIndex);
-    //! zmieni³ siê kolor tekstu
+    //! zmieniÅ‚ siÄ™ kolor tekstu
     void textColor();
-    //! wyrównaj tekst
+    //! wyrÃ³wnaj tekst
     //! \param a 
     void textAlign(QAction *a);
-    //! zmieni³ siê format
+    //! zmieniÅ‚ siÄ™ format
     //! \param format 
     void currentCharFormatChanged(const QTextCharFormat &format);
-    //! zmieni³a siê pozycja kursora
+    //! zmieniÅ‚a siÄ™ pozycja kursora
     void cursorPositionChanged();
-    //! zmieni³a siê zawartoœæ schowka
+    //! zmieniÅ‚a siÄ™ zawartoÅ›Ä‡ schowka
     void clipboardDataChanged();
     //! 
     void about();
-    //! poka¿ podgl¹d wydruku
+    //! pokaÅ¼ podglÄ…d wydruku
     //! \param * 
     void printPreview(QPrinter *);
 
 private:
-    //! metoda tworzy zasób dokumentu na podstawie kodu base 64
-    //! \param document dokument, do którego trafi nowy zasób
+    //! metoda tworzy zasÃ³b dokumentu na podstawie kodu base 64
+    //! \param document dokument, do ktÃ³rego trafi nowy zasÃ³b
     //! \param encrypted obrazek zakodowany jako base 64
-    //! \return œcie¿ka do zasobu
+    //! \return Å›cieÅ¼ka do zasobu
     QString base64ToResource(QTextDocument* document, const QString& encrypted) const;
     //! metoda tworzy obrazek w kodzie base64 na podstawie zasobu dokumentu
-    //! \param document dokument zawieraj¹cy zasób
-    //! \param resource œcie¿ka do zasobu
+    //! \param document dokument zawierajÄ…cy zasÃ³b
+    //! \param resource Å›cieÅ¼ka do zasobu
     //! \return obrazek w kodzie base64
     QString resourceToBase64(QTextDocument* document, const QString& resource) const;
-    //! metoda zamienia odnoœnik (html) na obrazek w kodzie base64
+    //! metoda zamienia odnoÅ›nik (html) na obrazek w kodzie base64
     //! \param result obrazek w kodziebase64
     //! \param link link do obrazka (html)
-    //! \return true, jeœli siê uda³o, false, w przeciwnym razie
+    //! \return true, jeÅ›li siÄ™ udaÅ‚o, false, w przeciwnym razie
     bool tryChangeLinkToBase64(QString& result, const QString& link) const;
     //! metoda przechodzi przez tekst i przygotowuje go do zapisu
     //! \param root ramka z zapisywanym tekstem
     //! \param savedDocument zapisywany dokument
-    //! \param saveMode tryb zapisu, na tej podstawie tworzone s¹ zasoby, lub obrazki w base64
+    //! \param saveMode tryb zapisu, na tej podstawie tworzone sÄ… zasoby, lub obrazki w base64
     void processFrame( QTextFrame * root, QTextDocument* savedDocument, SaveMode saveMode );
-    //! zamienia wszystkie odnoœniki na obrazki w kodzie base64
+    //! zamienia wszystkie odnoÅ›niki na obrazki w kodzie base64
     //! \param root ramka ze zmienianym tekstem
     //! \param savedDocument zmieniany dokument
     void changeLinksToBase64( QTextFrame * root, QTextDocument* document);
 
 private: 
-    //! lista akcji zwi¹zanych z edycj¹ tekstu
+    //! lista akcji zwiÄ…zanych z edycjÄ… tekstu
     QList<QObject*> editList;
-    //! lista akcji zwi¹zanych z zapisem / odczytem plików
+    //! lista akcji zwiÄ…zanych z zapisem / odczytem plikÃ³w
     QList<QObject*> fileList;
-    //! lista akcji zwi¹zanych z operacjami na tekœcie
+    //! lista akcji zwiÄ…zanych z operacjami na tekÅ›cie
     QList<QObject*> textList;
 
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionSave;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionTextBold;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionTextUnderline;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionTextItalic;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionTextColor;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionAlignLeft;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionAlignCenter;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionAlignRight;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionAlignJustify;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionUndo;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionRedo;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionCut;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionCopy;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionPaste;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionNew;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionOpen;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionSaveAs;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionPrint;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionPrintPreview;
-    //! akcja, która trafi do flexi widgeta
+    //! akcja, ktÃ³ra trafi do flexi widgeta
     QAction* actionExportPdf;
 
-    //! kombo ze stylami, które trafi do flexi widgeta
+    //! kombo ze stylami, ktÃ³re trafi do flexi widgeta
     QComboBox *comboStyle;
-    //! kombo z czcionkami, które trafi do flexi widgeta
+    //! kombo z czcionkami, ktÃ³re trafi do flexi widgeta
     QFontComboBox *comboFont;
-    //! kombo z rozmiarami, które trafi do flexi widgeta
+    //! kombo z rozmiarami, ktÃ³re trafi do flexi widgeta
     QComboBox *comboSize;
 
     //! aktualna nazwa edytowanego pliku

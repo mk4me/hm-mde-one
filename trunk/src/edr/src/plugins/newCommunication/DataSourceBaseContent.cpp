@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include "DataSourceBaseContent.h"
 #include <QtCore/QObject>
 

@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+ï»¿#include "../VideoPCH.h"
 #include "VMPrivate.h"
 #include "FFmpegError.h"
 #include "FFmpegVideoStream.h"
@@ -30,11 +30,11 @@ extern "C" {
 #pragma warning (pop)
 }
 
-//! Ile ramek mo¿na omin¹æ podczas wyszukiwania do przodu?
+//! Ile ramek moÅ¼na ominÄ…Ä‡ podczas wyszukiwania do przodu?
 #define AVIO_FFMPEG_MAXSKIPFRAMES 100
-//! Ile ramek mo¿na omin¹æ podczas wyszukiwania do przodu?
+//! Ile ramek moÅ¼na ominÄ…Ä‡ podczas wyszukiwania do przodu?
 #define AVIO_FFMPEG_MINSKIPFRAMES 5
-//! Maska u¿ywana podczas alignowania danych
+//! Maska uÅ¼ywana podczas alignowania danych
 #define AVIO_FFMPEG_ALIGN_MASK (VM_FFMPEG_ALIGN_BYTES-1)
 
 
@@ -49,19 +49,19 @@ extern "C" {
 static video::FFmpegVideoStream::LockManager lockManager = NULL;
 static video::FFmpegVideoStream::LogCallback logCallback = NULL;
 
-//! Funkcja przekazuj¹ca ¿¹danie locka do ustawionego callbacka.
+//! Funkcja przekazujÄ…ca Å¼Ä…danie locka do ustawionego callbacka.
 //! \param mutex
 //! \param op
 static int FFmpegLockForwarder( void **mutex, enum AVLockOp op )
 {
   using namespace video;
-  // t³umaczymy operacjê
+  // tÅ‚umaczymy operacjÄ™
   FFmpegVideoStream::LockOp lockOp =
   op == AV_LOCK_CREATE ? FFmpegVideoStream::LockOpCreate :
   op == AV_LOCK_DESTROY ? FFmpegVideoStream::LockOpDestroy :
   op == AV_LOCK_OBTAIN ? FFmpegVideoStream::LockOpObtain : FFmpegVideoStream::LockOpRelease;
 
-  // wywo³anie callbacka
+  // wywoÅ‚anie callbacka
   if ( lockManager ) {
     return lockManager(mutex, lockOp);
   } else {
@@ -69,7 +69,7 @@ static int FFmpegLockForwarder( void **mutex, enum AVLockOp op )
   }
 }
 
-//! Funkcja przekazuj¹ca ¿¹danie logowania do ustawionego callbacka.
+//! Funkcja przekazujÄ…ca Å¼Ä…danie logowania do ustawionego callbacka.
 //! \param ptr
 //! \param level
 //! \param fmt
@@ -100,7 +100,7 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
 
     //line[0]=0;
 
-    // pobieramy wskaŸniki na klasy
+    // pobieramy wskaÅºniki na klasy
     if(avc) {
         if(avc->version >= (50<<16 | 15<<8 | 3) && avc->parent_log_context_offset){
             AVClass** parent= *(AVClass***)(((uint8_t*)ptr) + avc->parent_log_context_offset);
@@ -113,7 +113,7 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
         itemClass.name = avc->item_name(ptr);
     }
 
-    // formatowanie wiadomoœci
+    // formatowanie wiadomoÅ›ci
     size_t len = strlen(line);
     vsnprintf(line + len, sizeof(line) - len, fmt, vl);
 
@@ -127,7 +127,7 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
     // usuwamy znak nowej linii
     line[len - 1] = 0;
 
-    // przet³umaczenie poziomu wa¿noœci komunikatu
+    // przetÅ‚umaczenie poziomu waÅ¼noÅ›ci komunikatu
     FFmpegVideoStream::LogSeverity severity;
     if ( level <= AV_LOG_QUIET ) {
         severity = FFmpegVideoStream::LogSeverityQuiet;
@@ -147,7 +147,7 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
         severity = FFmpegVideoStream::LogSeverityDebug;
     }
 
-    // przekierowanie do callbacka w³aœciwego
+    // przekierowanie do callbacka wÅ‚aÅ›ciwego
     logCallback(severity, line, itemClass.ptr ? &itemClass : NULL, parentClass.ptr ? &parentClass : NULL);
     line[0] = 0;
 
@@ -198,7 +198,7 @@ namespace video {
 
 FFmpegVideoStream::Initializer::Initializer()
 {
-  // rejestracja formatów
+  // rejestracja formatÃ³w
   av_register_all();
   // rejestracja callbacka
   av_lockmgr_register( FFmpegLockForwarder );
@@ -239,7 +239,7 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
   wantedTime = INVALID_TIMESTAMP;
   init( source, wantedVideoStream );
 
-  // sprawdzanie pewnych warunków
+  // sprawdzanie pewnych warunkÃ³w
   int frameCount = static_cast<int>(videoStream->duration/frameSpan);
   //UTILS_ASSERT(frameCount==getFrameCount(), "Frame count does not match (%d vs %d)", frameCount, getFrameCount());
 }
@@ -263,7 +263,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
 {
   VM_FUNCTION_PROLOG;
   int error = 0;
-  // mo¿na inicjalizowaæ wiele razy, sprawdza wewnetrznie czy ju¿ by³a zainicjalizowana
+  // moÅ¼na inicjalizowaÄ‡ wiele razy, sprawdza wewnetrznie czy juÅ¼ byÅ‚a zainicjalizowana
   av_register_all();
   // otwieramy plik
   if (error = av_open_input_file(&formatContext, source.c_str(), NULL, 0, NULL)) {
@@ -282,7 +282,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
   for (unsigned int i = 0; i < formatContext->nb_streams; ++i) {
     AVStream * selectedStream = formatContext->streams[i];
     if ( selectedStream->codec->codec_type == CODEC_TYPE_VIDEO ) {
-      // czy to jest ten strumieñ, który chcemy otworzyæ?
+      // czy to jest ten strumieÅ„, ktÃ³ry chcemy otworzyÄ‡?
       if ( wantedVideoStream < 0 || wantedVideoStream == i ) {
         codecContext = selectedStream->codec;
         videoStream = selectedStream;
@@ -291,7 +291,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     }
   }
 
-  // TODO: ujednolicenie errorów
+  // TODO: ujednolicenie errorÃ³w
   if ( codecContext == NULL ) {
     VM_ERROR( FFmpegError( "Video stream not found." ) );
   }
@@ -320,7 +320,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
   utils::zero(*alignedPacket);
   av_init_packet(alignedPacket);
 
-  // odstêp miêdzy ramkami
+  // odstÄ™p miÄ™dzy ramkami
   AVRational frameSpanRational = av_mul_q(videoStream->time_base, videoStream->r_frame_rate);
   frameSpan = frameSpanRational.den;
   UTILS_ASSERT(frameSpanRational.num == 1, "Error getting frame span.");
@@ -375,14 +375,14 @@ bool FFmpegVideoStream::setTime( double time )
   VM_FUNCTION_PROLOG;
   //Measurer measurer("setTime");
   if ( time < 0.0 || time > getDuration() ) {
-    // przy debugowaniu mo¿na zakomentowaæ ten b³¹d i wyzerowaæ czas
+    // przy debugowaniu moÅ¼na zakomentowaÄ‡ ten bÅ‚Ä…d i wyzerowaÄ‡ czas
     //VM_ERROR( FFmpegError("time < 0.0 || time > getDuration()") );
     time = 0.0;
   }
   if ( time == getDuration() ) {
     // TODO
-    // ffmpeg Ÿle ustawia siê przy seeku do zerowego czasu (wypluwa ostatni¹ odczytan¹ ramkê)
-    // tymczasowe, do stawiania breakpointów jeœli czas == 0
+    // ffmpeg Åºle ustawia siÄ™ przy seeku do zerowego czasu (wypluwa ostatniÄ… odczytanÄ… ramkÄ™)
+    // tymczasowe, do stawiania breakpointÃ³w jeÅ›li czas == 0
     int brr = 0;
   }
 
@@ -392,22 +392,22 @@ bool FFmpegVideoStream::setTime( double time )
   // konwersja czasu na jednostki strumienia
   int64_t targetTimestamp = secToTimestap(time);
 
-  // flaga mówi¹ca, czy zrobimy seeka na klatkê kluczow¹ przed zadany czas,
-  // a nastêpnie ominiemy klatki
+  // flaga mÃ³wiÄ…ca, czy zrobimy seeka na klatkÄ™ kluczowÄ… przed zadany czas,
+  // a nastÄ™pnie ominiemy klatki
   bool seekThenSkipFrames = true;
   // teraz sprawdzamy
   if ( frameTimestamp == AV_NOPTS_VALUE ) {
-    // strumieñ w nieustalonym stanie, musimy po prostu przejœæ
+    // strumieÅ„ w nieustalonym stanie, musimy po prostu przejÅ›Ä‡
   } else if ( targetTimestamp >= frameTimestamp ) {
     // delta
     int64_t delta = targetTimestamp - frameTimestamp;
     if ( delta < frameSpan ) {
-      // timestamp mieœci siê pomiêdzy faktycznym timestampem poprzedniej oraz bie¿¹cej klatki,
-      // wiêc nie trzeba nic robiæ
+      // timestamp mieÅ›ci siÄ™ pomiÄ™dzy faktycznym timestampem poprzedniej oraz bieÅ¼Ä…cej klatki,
+      // wiÄ™c nie trzeba nic robiÄ‡
       seekThenSkipFrames = false;
     } else {
       if ( keyframeStats.count > 1 ) {
-        // potencjalna liczba ramek do ominiêcia (zaokr¹glone w górê)
+        // potencjalna liczba ramek do ominiÄ™cia (zaokrÄ…glone w gÃ³rÄ™)
         int potentialToSkip = static_cast<int>( (delta+frameSpan-1)/frameSpan );
         if ( potentialToSkip <= AVIO_FFMPEG_MINSKIPFRAMES ) {
           BREAK_ON_ERROR(skipFramesToTimestamp(targetTimestamp, AVIO_FFMPEG_MINSKIPFRAMES, false));
@@ -420,11 +420,11 @@ bool FFmpegVideoStream::setTime( double time )
           }
         }
       } else {
-        // nie mo¿na przewidywaæ; nie pozostaje nic jak leciec do przodu, a w momencie
-        // natrafienia na klatkê kluczow¹ siê zatrzymaæ
+        // nie moÅ¼na przewidywaÄ‡; nie pozostaje nic jak leciec do przodu, a w momencie
+        // natrafienia na klatkÄ™ kluczowÄ… siÄ™ zatrzymaÄ‡
         BREAK_ON_ERROR(skipFramesToTimestamp(targetTimestamp, INT_MAX, true));
       }
-      // sprawdzamy, czy uda³o siê przejœæ
+      // sprawdzamy, czy udaÅ‚o siÄ™ przejÅ›Ä‡
       seekThenSkipFrames = ( nextFrameTimestamp < targetTimestamp );
     }
   }
@@ -433,8 +433,8 @@ bool FFmpegVideoStream::setTime( double time )
     int repeatCount = 3;
     // wyszukujemy tamki
     BREAK_ON_ERROR(seekToKeyframe(targetTimestamp, false));
-    // dla niektórych strumieni seek zatrzymuje siê za ramk¹, której szukamy;
-    // dlatego podejmujemy trzy próby cofniêcia siê jeszcze bardziej
+    // dla niektÃ³rych strumieni seek zatrzymuje siÄ™ za ramkÄ…, ktÃ³rej szukamy;
+    // dlatego podejmujemy trzy prÃ³by cofniÄ™cia siÄ™ jeszcze bardziej
     int64_t target = targetTimestamp;
     for (int i = 4; --i && target > 0 && frameTimestamp > target; ) {
       target = std::max<int64_t>(target-frameSpan, 0);
@@ -443,15 +443,15 @@ bool FFmpegVideoStream::setTime( double time )
     }
 
     if ( nextFrameTimestamp < targetTimestamp ) {
-      // przeszliœmy na klatkê przed wybranym czasem, spróbujmy jeszcze raz
+      // przeszliÅ›my na klatkÄ™ przed wybranym czasem, sprÃ³bujmy jeszcze raz
       BREAK_ON_ERROR(skipFramesToTimestamp(targetTimestamp, INT_MAX, true));
       if ( nextFrameTimestamp < time ) {
-        // zatrzymaliœmy siê na klatce kluczowej, czyli coœ jest nie tak z wyszukiwaniem...
+        // zatrzymaliÅ›my siÄ™ na klatce kluczowej, czyli coÅ› jest nie tak z wyszukiwaniem...
         VM_ERROR( FFmpegError("Error during seek.") );
       }
     } else {
-      // seek nie przeniós³ nas na klatkê kluczow¹ przed zadan¹ ramk¹, wiêc
-      // nic nie mo¿emy ju¿ zrobiæ
+      // seek nie przeniÃ³sÅ‚ nas na klatkÄ™ kluczowÄ… przed zadanÄ… ramkÄ…, wiÄ™c
+      // nic nie moÅ¼emy juÅ¼ zrobiÄ‡
       return true;
     }
   } else {
@@ -485,7 +485,7 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
     //Measurer measurer("seek");
     UTILS_ASSERT(timestamp >= 0.0 && timestamp <= videoStream->duration, "Timestamp out of bounds.");
 
-    // zerowanie zmiennych trzymaj¹cych stan
+    // zerowanie zmiennych trzymajÄ…cych stan
     frameBytesRemaining = 0;
     frameData = NULL;
 
@@ -504,7 +504,7 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
     // granice
     int64_t seekMin = pickNextframe ? seekTarget : INT64_MIN;
     int64_t seekMax = !pickNextframe ? seekTarget : INT64_MAX;
-    // +- 2 wprowadzone z powodu b³êdu zaokr¹gleñ
+    // +- 2 wprowadzone z powodu bÅ‚Ä™du zaokrÄ…gleÅ„
     // seek
     error = avformat_seek_file(formatContext, streamIdx, seekMin, seekTarget, seekMax, AVSEEK_FLAG_ANY);
 #else // AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
@@ -522,7 +522,7 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
     // flush buffers
     avcodec_flush_buffers(codecContext);
 
-    // "symulujemy" timestamp, aby nextFrameTimestamp zosta³ ustawiony
+    // "symulujemy" timestamp, aby nextFrameTimestamp zostaÅ‚ ustawiony
     nextFrameTimestamp = frameTimestamp = AV_NOPTS_VALUE;
     // zerujemy timestamp ramki kluczowej
     keyframeStats.lastTimestamp = AV_NOPTS_VALUE;
@@ -530,10 +530,10 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
 
 
 
-  // odczytujemy ramkê
+  // odczytujemy ramkÄ™
   if ( readFrame() ) {
 //     if ( frameTimestamp > timestamp ) {
-//       // seek poszedl za daleko, staramy siê wróciæ
+//       // seek poszedl za daleko, staramy siÄ™ wrÃ³ciÄ‡
 //       if (timestamp > 0) {
 //         UTILS_DEBUG_PRINT("Fixing invalid seek (%ld)", frameTimestamp-timestamp);
 //         return seekToKeyframe( std::max(timestamp - frameSpan, int64_t(0)), false );
@@ -560,7 +560,7 @@ bool FFmpegVideoStream::readFrame()
 #ifndef VM_FFMPEG_ENABLE_NEWAPI
     //!
     while ( frameBytesRemaining > 0 ) {
-      // odczytujemy ramkê
+      // odczytujemy ramkÄ™
       const int bytesDecoded = avcodec_decode_video(codecContext, frame, &gotPicture, frameData, frameBytesRemaining);
       if ( bytesDecoded < 0 ) {
         VM_ERROR( FFmpegError("Error decoding frame") );
@@ -607,7 +607,7 @@ bool FFmpegVideoStream::readFrame()
       alignPacket(packet);
     }
 
-    // czy to ten strumieñ?
+    // czy to ten strumieÅ„?
     if ( packet->stream_index == videoStream->index ) {
       // pomocnicza zmienna
       codecContext->reordered_opaque = packet->pts;
@@ -617,10 +617,10 @@ bool FFmpegVideoStream::readFrame()
       {
         error = avcodec_decode_video2(codecContext, frame, &gotPicture, packet);
         if ( error < 0 ) {
-          // tolerujemy b³¹d
+          // tolerujemy bÅ‚Ä…d
         }
       }
-      // czy uda³o siê?
+      // czy udaÅ‚o siÄ™?
       if ( gotPicture ) {
         // obliczenie timestamp'u
         frameTimestamp = getTimestamp(frame, packet->dts);
@@ -689,12 +689,12 @@ void FFmpegVideoStream::alignPacket( AVPacket * packet )
   UTILS_ASSERT(packet && alignedPacket);
   int realSize = packet->size + VM_FFMPEG_ALIGN_BYTES;
   if ( realSize > alignedPacket->size ) {
-    // alokujemy pamiêæ dla pakietu...
+    // alokujemy pamiÄ™Ä‡ dla pakietu...
     av_free_packet(alignedPacket);
     av_new_packet(alignedPacket, realSize);
   }
 
-  // alignujemy wskaŸnik i rozmiar ...
+  // alignujemy wskaÅºnik i rozmiar ...
   uint8_t * alignedData = reinterpret_cast<uint8_t*>(reinterpret_cast<int>(alignedPacket->data + AVIO_FFMPEG_ALIGN_MASK) & (~AVIO_FFMPEG_ALIGN_MASK));
   int alignedSize = alignedPacket->size - (alignedData - alignedPacket->data);
 
@@ -710,7 +710,7 @@ void FFmpegVideoStream::alignPacket( AVPacket * packet )
   // nie pozwalamy na kasowanie!
   packet->destruct = NULL;
   packet->data = alignedData;
-  // shrink spowoduje, ¿e dodatkowe miejsce alokowane przez ffmpega bêdzie wyzerowane
+  // shrink spowoduje, Å¼e dodatkowe miejsce alokowane przez ffmpega bÄ™dzie wyzerowane
   packet->size = alignedSize;
   av_shrink_packet(packet, packetCopy.size);
 }
@@ -748,7 +748,7 @@ bool FFmpegVideoStream::skipFramesToTimestamp( int64_t targetTimestamp, int maxF
 void FFmpegVideoStream::onGotFrame(AVFrame * frame, int64_t timestamp)
 {
   VM_FUNCTION_PROLOG;
-  // czy to najwiêkszy odstêp?
+  // czy to najwiÄ™kszy odstÄ™p?
   int64_t span = timestamp - keyframeStats.lastTimestamp;
   if ( keyframeStats.lastTimestamp != AV_NOPTS_VALUE ) {
     keyframeStats.maxSpan = std::max<int64_t>(span, keyframeStats.maxSpan);
@@ -757,9 +757,9 @@ void FFmpegVideoStream::onGotFrame(AVFrame * frame, int64_t timestamp)
   // czy to ramka kluczowa?
   if ( frame->key_frame ) {
     if ( keyframeStats.lastTimestamp != AV_NOPTS_VALUE && timestamp != keyframeStats.lastTimestamp ) {
-      // ok, zwiêkszamy licznik
+      // ok, zwiÄ™kszamy licznik
       unsigned int prevCount = keyframeStats.count++;
-      // aktualizujemy œredni¹
+      // aktualizujemy Å›redniÄ…
       double spanSec = timestampToSec(span);
       keyframeStats.avgSpan = (keyframeStats.avgSpan * prevCount + spanSec) / keyframeStats.count;
     }
@@ -792,7 +792,7 @@ bool FFmpegVideoStream::getData( PictureLayered & dst )
     dst.dataHeight[i] = dst.dataWidth[i] ? codecContext->height : 0;
   }
 
-  // dla YV12 zmieniamy wysokoœæ...
+  // dla YV12 zmieniamy wysokoÅ›Ä‡...
   if ( codecContext->pix_fmt == PIX_FMT_YUV420P ) {
     dst.dataHeight[1]>>=1;
     dst.dataHeight[2]>>=1;

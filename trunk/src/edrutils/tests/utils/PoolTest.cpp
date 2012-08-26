@@ -1,4 +1,4 @@
-#include <utils/Pool.h>
+ï»¿#include <utils/Pool.h>
 #include "PoolTest.h"
 
 using namespace utils;
@@ -6,7 +6,7 @@ using namespace utils;
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( PoolTest );
 
-//! Ma³a struktura.
+//! MaÅ‚a struktura.
 struct Small {
   char c;
   bool operator==(const Small & rhs) const { return !memcmp(this, &rhs, sizeof(rhs)); }
@@ -17,7 +17,7 @@ std::ostream& operator<<(std::ostream& s, const Small& rhs)
   return s << "{" << rhs.c << "}"; 
 };
 
-//! Struktura œredniego rozmiaru.
+//! Struktura Å›redniego rozmiaru.
 struct Medium {
   char c[2];
   int i;
@@ -30,7 +30,7 @@ std::ostream& operator<<(std::ostream& s, const Medium& rhs)
   return s<<"{"<< rhs.c[0]<<","<<rhs.c[1]<<","<<rhs.i<<","<<rhs.f<<"}";
 };
 
-//! Du¿a struktura.
+//! DuÅ¼a struktura.
 struct Large {
   double d[2];
   int i[4];
@@ -88,7 +88,7 @@ int LargeClass::instances = 0;
 void PoolTest::testPrimitives()
 {
   {
-    // dodanie sta³ych
+    // dodanie staÅ‚ych
     int *p1, *p2, *p3;
     Pool pool(100, 200, 300);
     pool.getValues(p1, p2, p3);
@@ -97,12 +97,12 @@ void PoolTest::testPrimitives()
     CPPUNIT_ASSERT_EQUAL( 300, *p3 );
   }
 
-  // testowanie tych samych typów
+  // testowanie tych samych typÃ³w
   testPool(100);
   testPool(100, 200);
   testPool(100, 200, 300);
 
-  // testowanie ró¿nych typów
+  // testowanie rÃ³Å¼nych typÃ³w
   testPool(100, 200.0);
   testPool(100.0f, 200.0);
   testPool(100, 200.0, reinterpret_cast<int*>(666));
@@ -133,7 +133,7 @@ void PoolTest::testDestructors()
     SmallClass sc(s);
     MediumClass mc(m);
     LargeClass lc(l);
-    // powinna zostaæ jedna instancja!
+    // powinna zostaÄ‡ jedna instancja!
     CPPUNIT_ASSERT_EQUAL(1, SmallClass::instances);
     CPPUNIT_ASSERT_EQUAL(1, MediumClass::instances);
     CPPUNIT_ASSERT_EQUAL(1, LargeClass::instances);

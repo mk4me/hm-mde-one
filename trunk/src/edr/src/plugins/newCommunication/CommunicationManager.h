@@ -1,7 +1,7 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Klasa CommunicationManager wykorzystuj¹ca wzorce projektowe fasada oraz singleton do zarz¹dzania po³¹czeniem
-z baz¹ danych i przesy³ania/odbierania plików miêdzy serwerem i klientem. Obecnie implementacja opiera siê o protokó³ FTP
+@brief Klasa CommunicationManager wykorzystujÄ…ca wzorce projektowe fasada oraz singleton do zarzÄ…dzania poÅ‚Ä…czeniem
+z bazÄ… danych i przesyÅ‚ania/odbierania plikÃ³w miÄ™dzy serwerem i klientem. Obecnie implementacja opiera siÄ™ o protokÃ³Å‚ FTP
 i web serwisy wsdl.
 */
 
@@ -21,38 +21,38 @@ i web serwisy wsdl.
 #include <boost/function.hpp>
 #include <curl/curl.h>
 
-//! Klasa odpowiedzialna za dostarczanie plików z bazy danych
+//! Klasa odpowiedzialna za dostarczanie plikÃ³w z bazy danych
 class CommunicationManager
 {
 private:
-    //! Typ lokalnego lokowania obiektów synchronizuj¹cych
+    //! Typ lokalnego lokowania obiektÃ³w synchronizujÄ…cych
     typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
 
-	//! W¹tek przetwarzaj¹cy zlecenia z CommunicationManagera
+	//! WÄ…tek przetwarzajÄ…cy zlecenia z CommunicationManagera
 	class ProcessingThread : public OpenThreads::Thread
 	{
 	public:
 		//! Konstruktor
-		//! \patam manager Manager którego obs³ugujemy
+		//! \patam manager Manager ktÃ³rego obsÅ‚ugujemy
 		ProcessingThread(CommunicationManager * manager);
 		virtual ~ProcessingThread();
 
-		//! Metoda obs³uguj¹ca managera
+		//! Metoda obsÅ‚ugujÄ…ca managera
 		virtual void run();
-		//! \param ms Iloœc milisekund jakie mam spaæ kiedy nie ma nic do przetwarzania
+		//! \param ms IloÅ›c milisekund jakie mam spaÄ‡ kiedy nie ma nic do przetwarzania
 		void setIdleSleep(unsigned int ms);
-		//! \return Iloœc milisekund jakie mam spaæ kiedy nie ma nic do przetwarzania
+		//! \return IloÅ›c milisekund jakie mam spaÄ‡ kiedy nie ma nic do przetwarzania
 		unsigned int idleSleep() const;
-		//! Iformujê w¹tek ¿e ma siê zakoñczyæ jak najszybciej - przy kolejnym przejsciu pêtli
-		//! Po tym wywo³aniu bêdê na niego najprawdopodobniej czeka³!!
+		//! IformujÄ™ wÄ…tek Å¼e ma siÄ™ zakoÅ„czyÄ‡ jak najszybciej - przy kolejnym przejsciu pÄ™tli
+		//! Po tym wywoÅ‚aniu bÄ™dÄ™ na niego najprawdopodobniej czekaÅ‚!!
 		void finish();
 
 	private:
-		//! Obs³ugiwnay manager
+		//! ObsÅ‚ugiwnay manager
 		CommunicationManager * manager;
-		//! Iloœc milisekund jakie mam spaæ kiedy nie ma nic do przetwarzania
+		//! IloÅ›c milisekund jakie mam spaÄ‡ kiedy nie ma nic do przetwarzania
 		unsigned int idleSleep_;
-		//! Czy koñczyæ pracê?
+		//! Czy koÅ„czyÄ‡ pracÄ™?
 		bool finish_;
 	};
 
@@ -62,28 +62,28 @@ public:
     //! Typ zlecenie
     enum Request
     {
-        DownloadFile,           //! Proœba o plik
-        Complex,                //! Z³o¿ona proœba (mo¿na zagnie¿d¿aæ i dodawaæ wszystkie pozosta³e
-        DownloadPhoto,          //! Proœba o plik
-        CopyMotionShallowCopy,  //! Proœba o plik z p³ytk¹ kopi¹ bazy danych ruchu
-        CopyMotionMetadata,     //! Proœba o plik z metadanymi ruchu
-        CopyMedicalShallowCopy, //! Proœba o plik z p³yk¹ kopia danych medycznych
-        CopyMedicalMetadata,    //! Proœba o plik z metadanymi medycznymi
-        PingServer              //! Proœba o sprawdzenie dostêpnoœci serwera poprzez ping
+        DownloadFile,           //! ProÅ›ba o plik
+        Complex,                //! ZÅ‚oÅ¼ona proÅ›ba (moÅ¼na zagnieÅ¼dÅ¼aÄ‡ i dodawaÄ‡ wszystkie pozostaÅ‚e
+        DownloadPhoto,          //! ProÅ›ba o plik
+        CopyMotionShallowCopy,  //! ProÅ›ba o plik z pÅ‚ytkÄ… kopiÄ… bazy danych ruchu
+        CopyMotionMetadata,     //! ProÅ›ba o plik z metadanymi ruchu
+        CopyMedicalShallowCopy, //! ProÅ›ba o plik z pÅ‚ykÄ… kopia danych medycznych
+        CopyMedicalMetadata,    //! ProÅ›ba o plik z metadanymi medycznymi
+        PingServer              //! ProÅ›ba o sprawdzenie dostÄ™pnoÅ›ci serwera poprzez ping
     };
 
     /**
-    Stany managera pomocne przy wykonywaniu dzia³añ wspó³bie¿nie.
+    Stany managera pomocne przy wykonywaniu dziaÅ‚aÅ„ wspÃ³Å‚bieÅ¼nie.
     */
     enum State
     {
-        Ready, /** Gotowy do wszelkich dzia³añ */
+        Ready, /** Gotowy do wszelkich dziaÅ‚aÅ„ */
         ProcessingComplex, /** Przetwarzanie kompleksowego zapytania */
         DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
-        DownloadingPhoto, /** Trwa pobieranie pojedynczego zdjêcia */
-        CopyingMotionShallowCopy, /** Trwa pobieranie pliku z p³ytk¹ kopi¹ bazy danych ruchu*/
+        DownloadingPhoto, /** Trwa pobieranie pojedynczego zdjÄ™cia */
+        CopyingMotionShallowCopy, /** Trwa pobieranie pliku z pÅ‚ytkÄ… kopiÄ… bazy danych ruchu*/
         CopyingMotionMetadata, /** Trwa pobieranie pliku z metadanymi ruchu*/
-        CopyingMedicalShallowCopy, /** Trwa pobieranie pliku z p³yk¹ kopia danych medycznych*/
+        CopyingMedicalShallowCopy, /** Trwa pobieranie pliku z pÅ‚ykÄ… kopia danych medycznych*/
         CopyingMedicalMetadata, /** Trwa pobieranie pliku z metadanymi medycznymi*/
         PingingServer /** Pingowanie serwera */
     };
@@ -94,7 +94,7 @@ public:
     class PhotoRequest;
     class ComplexRequest;
 
-    //! Klasa reprezentuj¹ca podstawê wszystkich zleceñ
+    //! Klasa reprezentujÄ…ca podstawÄ™ wszystkich zleceÅ„
     class BasicRequest
     {
         friend class CommunicationManager;
@@ -112,9 +112,9 @@ public:
         bool isCancelled() const;
 		//! \return Typ zadania
         Request getType() const;
-		//! \return Postêp zadania
+		//! \return PostÄ™p zadania
         virtual double getProgress() const = 0;
-		//! \return Czy zadanie zakoñczone
+		//! \return Czy zadanie zakoÅ„czone
         bool isComplete() const;
 
     private:
@@ -138,26 +138,26 @@ public:
 
 	public:
 		//! Konstruktor
-		//! \param urlToPing Adres serwera który pingujemy
+		//! \param urlToPing Adres serwera ktÃ³ry pingujemy
 		PingRequest(const std::string & urlToPing);
-		//! \param ustawiamy czy serwer nam odpowiedzia³
+		//! \param ustawiamy czy serwer nam odpowiedziaÅ‚
 		void setServerResponse(bool response);
 
 	public:
-		//! \return Adres serwera który bêdziemy/ju¿ pingowaliœmy
+		//! \return Adres serwera ktÃ³ry bÄ™dziemy/juÅ¼ pingowaliÅ›my
 		const std::string & urlToPing() const;
-		//! \return Postêp zadania
+		//! \return PostÄ™p zadania
 		virtual double getProgress() const;
 
 	private:
 		//! Adres serwera do pingowania
 		std::string urlToPing_;
 
-		//! Czy serwer odpowiedzia³
+		//! Czy serwer odpowiedziaÅ‚
 		bool response;
 	};
 
-	//! Klasa odpowiedzialna za request plików z metadanymi (bez identyfikatorów) - implementuje progress pobierania
+	//! Klasa odpowiedzialna za request plikÃ³w z metadanymi (bez identyfikatorÃ³w) - implementuje progress pobierania
     class MetadataRequest : public BasicRequest, public webservices::IFtpsConnection::IProgress
     {
         friend class CommunicationManager;
@@ -167,11 +167,11 @@ public:
     private:
 		//! Kosntruktor
 		//! \param type Typ requesta
-		//! \param filePath Œcie¿ka zapisu pliku
+		//! \param filePath ÅšcieÅ¼ka zapisu pliku
         MetadataRequest(Request type, const std::string & filePath);
 
     public:
-		//! \return Œcie¿ka pliku
+		//! \return ÅšcieÅ¼ka pliku
         const std::string & getFilePath() const;
 		//! Implementacja interfejsu webservices::IFtpsConnection::IProgress
         virtual void setProgress(double p);
@@ -179,49 +179,49 @@ public:
         virtual double getProgress() const;
 
     private:
-		//! Progres œci¹gania pliku
+		//! Progres Å›ciÄ…gania pliku
         double progress;
-		//! Œcie¿ka docelowa pliku
+		//! ÅšcieÅ¼ka docelowa pliku
         std::string filePath;
     };
 
-	//! Klasa odpowiedzialna za request plików (z identyfikatorami)
+	//! Klasa odpowiedzialna za request plikÃ³w (z identyfikatorami)
     class FileRequest : public MetadataRequest
     {
         friend class CommunicationManager;
 
     private:
 		//! Kosntruktor
-		//! \param filePath Œcie¿ka zapisu pliku
-		//! \param fileID ID pliku do œci¹gniêcia
+		//! \param filePath ÅšcieÅ¼ka zapisu pliku
+		//! \param fileID ID pliku do Å›ciÄ…gniÄ™cia
         FileRequest(const std::string & filePath, unsigned int fileID);
 
     public:
-		//! \return Identyfikator pliku do œci¹gniêcia
+		//! \return Identyfikator pliku do Å›ciÄ…gniÄ™cia
         unsigned int getFileID() const;
 
     private:
-		//! Identyfikator pliku do œci¹gniêcia
+		//! Identyfikator pliku do Å›ciÄ…gniÄ™cia
         unsigned int fileID;
     };
 
-	//! Klasa odpowiedzialna za request zdjêæ
+	//! Klasa odpowiedzialna za request zdjÄ™Ä‡
     class PhotoRequest : public MetadataRequest
     {
         friend class CommunicationManager;
 
     private:
 		//! Kosntruktor
-		//! \param filePath Œcie¿ka zapisu pliku
-		//! \param photoID ID zdjêcia do œci¹gniêcia
+		//! \param filePath ÅšcieÅ¼ka zapisu pliku
+		//! \param photoID ID zdjÄ™cia do Å›ciÄ…gniÄ™cia
         PhotoRequest(const std::string & filePath, unsigned int photoID);
 
     public:
-		//! Identyfikator zdjêcia
+		//! Identyfikator zdjÄ™cia
         unsigned int getPhotoID() const;
 
     private:
-		//! Identyfikator zdjêcia
+		//! Identyfikator zdjÄ™cia
         unsigned int photoID;
     };
 
@@ -234,21 +234,21 @@ public:
     typedef boost::function<void(const BasicRequestPtr &)> RequestCallback;
     typedef boost::function<void(const BasicRequestPtr &, const std::string &)> RequestErrorCallback;
 
-    //! Struktura przechowuj¹ca metody wywo³ywane przy odpowiednich etapach wykonania zlecenia
+    //! Struktura przechowujÄ…ca metody wywoÅ‚ywane przy odpowiednich etapach wykonania zlecenia
     struct RequestCallbacks
     {
-        //! Wywo³anie na rozpoczêcie przetwarzania zlecenia
+        //! WywoÅ‚anie na rozpoczÄ™cie przetwarzania zlecenia
         RequestCallback onBeginCallback;
-        //! Wywo³anie na zakoñczenie przetwarzania zlecenia (powodzenie)
+        //! WywoÅ‚anie na zakoÅ„czenie przetwarzania zlecenia (powodzenie)
         RequestCallback onEndCallback;
-        //! Wywo³anie na anulowanie przetwarzania zlecenia
+        //! WywoÅ‚anie na anulowanie przetwarzania zlecenia
         RequestCallback onCancelCallback;
-        //! Wywo³anie na zakoñczenie przetwarzanie zlecenia z b³êdem
+        //! WywoÅ‚anie na zakoÅ„czenie przetwarzanie zlecenia z bÅ‚Ä™dem
         RequestErrorCallback onErrorCallback;
     };
 
     /**
-    Typ zlecenia przekazywany do kolejki zleceñ CommunicationManagera
+    Typ zlecenia przekazywany do kolejki zleceÅ„ CommunicationManagera
     */
     struct CompleteRequest
     {
@@ -258,10 +258,10 @@ public:
         RequestCallbacks callbacks;
     };
 
-	//! Typ kolejki requestów do obs³ugi
+	//! Typ kolejki requestÃ³w do obsÅ‚ugi
     typedef std::queue<CompleteRequest> RequestsQueue;
 
-    //! Z³o¿one zlecenie
+    //! ZÅ‚oÅ¼one zlecenie
     class ComplexRequest : public BasicRequest
     {
         friend class CommunicationManager;
@@ -270,17 +270,17 @@ public:
         ComplexRequest(const std::vector<CompleteRequest> & requests);
 
     public:
-		//! \return Iloœæ zagnie¿d¿onych requestów
+		//! \return IloÅ›Ä‡ zagnieÅ¼dÅ¼onych requestÃ³w
         unsigned int size() const;
 		//! \return Czy request jest pusty
         bool empty() const;
-		//! \param i Indeks zagnie¿d¿onego requesta
+		//! \param i Indeks zagnieÅ¼dÅ¼onego requesta
         const CompleteRequest & getRequest(unsigned int i) const;
-		//! \return Ca³kowity postêp requesta
+		//! \return CaÅ‚kowity postÄ™p requesta
         virtual double getProgress() const;
 
     private:
-		//! Zagnie¿d¿one requesty
+		//! ZagnieÅ¼dÅ¼one requesty
         std::vector<CompleteRequest> requests;
     };
 
@@ -298,21 +298,21 @@ private:
     virtual ~CommunicationManager();
     /**
     Metoda statyczna (wymagana przez curla) typu callback do odbierania danych podczas pingowania.
-    @param buffer wskaŸnik do bloku pamiêci o rozmiarze size*nmemb
+    @param buffer wskaÅºnik do bloku pamiÄ™ci o rozmiarze size*nmemb
     @param size rozmiar w bajtach elementu do odczytania
-    @param nmemb liczba elementów do odczytania
-    @param stream wskaŸnik na strumieñ danych
-    @return iloœæ bajtów przetworzonych przez funkcjê
+    @param nmemb liczba elementÃ³w do odczytania
+    @param stream wskaÅºnik na strumieÅ„ danych
+    @return iloÅ›Ä‡ bajtÃ³w przetworzonych przez funkcjÄ™
     */
     static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
 
-	//! \param request [out] Kolejny request do obs³ugi
+	//! \param request [out] Kolejny request do obsÅ‚ugi
     void popRequest(CompleteRequest & reuest);
 
-	//! \param downloaderHelper Obiekt pomagaj¹cy prz œci¹ganiu plików zale¿ny od tego czy œci¹gamy plik danych, zdjêcie czy metadane
+	//! \param downloaderHelper Obiekt pomagajÄ…cy prz Å›ciÄ…ganiu plikÃ³w zaleÅ¼ny od tego czy Å›ciÄ…gamy plik danych, zdjÄ™cie czy metadane
     void setCurrentDownloadHelper(webservices::IDownloadHelper * downloadHelper);
 
-	//! Funkcje przetwarzaj¹ce ró¿ne requesty i zapamiêtuj¹ce b³êdy powsta³e podczas przetwarzania
+	//! Funkcje przetwarzajÄ…ce rÃ³Å¼ne requesty i zapamiÄ™tujÄ…ce bÅ‚Ä™dy powstaÅ‚e podczas przetwarzania
 	webservices::IFtpsConnection::OperationStatus processComplex(const CompleteRequest & request, std::string & message);
     webservices::IFtpsConnection::OperationStatus processPhoto(const CompleteRequest & request, std::string & message);
     webservices::IFtpsConnection::OperationStatus processFile(const CompleteRequest & request, std::string & message);
@@ -333,30 +333,30 @@ private:
 
 public:
 
-	//! \param motionFileStoremanService Serwis do œci¹gania plików ruchu
+	//! \param motionFileStoremanService Serwis do Å›ciÄ…gania plikÃ³w ruchu
 	void setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService);
-	//! \param medicalFileStoremanService Serwis do œci¹gania plików medycznych
+	//! \param medicalFileStoremanService Serwis do Å›ciÄ…gania plikÃ³w medycznych
 	void setMedicalFileStoremanService(const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService);
 
-	//! \param medicalFtps Ftps do œci¹gania danych medycznych
+	//! \param medicalFtps Ftps do Å›ciÄ…gania danych medycznych
 	void setMedicalFtps(const webservices::FtpsConnectionPtr & medicalFtps);
-	//! \param motionFtps Ftps do œci¹gania danych ruchu
+	//! \param motionFtps Ftps do Å›ciÄ…gania danych ruchu
 	void setMotionFtps(const webservices::FtpsConnectionPtr & motionFtps);
 
-	//! \return Po³¹cznie medyczne
+	//! \return PoÅ‚Ä…cznie medyczne
 	const WSConnectionPtr & medicalConnection();
-	//! \return Po³¹cznie ruchu
+	//! \return PoÅ‚Ä…cznie ruchu
 	const WSConnectionPtr & motionConnection();
 
-	//! \return Ftps do œci¹gania danych medycznych
+	//! \return Ftps do Å›ciÄ…gania danych medycznych
 	const webservices::FtpsConnectionPtr & medicalFtps();
-	//! \return Ftps do œci¹gania danych ruchu
+	//! \return Ftps do Å›ciÄ…gania danych ruchu
 	const webservices::FtpsConnectionPtr & motionFtps();
 
-	//! \param request Request wrzucany do kolejki managera - bêdzie przetworzony kiedy wszystkie przed nim zostan¹ obs³u¿one
+	//! \param request Request wrzucany do kolejki managera - bÄ™dzie przetworzony kiedy wszystkie przed nim zostanÄ… obsÅ‚uÅ¼one
     void pushRequest(const CompleteRequest & request);
 
-	//! Metody tworz¹ce obs³ugiwane typy zleceñ
+	//! Metody tworzÄ…ce obsÅ‚ugiwane typy zleceÅ„
     static ComplexRequestPtr createRequestComplex(const std::vector<CompleteRequest> & requests);
     static FileRequestPtr createRequestFile(unsigned int fileID, const std::string & filePath);
     static PhotoRequestPtr createRequestPhoto(unsigned int fileID, const std::string & filePath);
@@ -366,31 +366,31 @@ public:
     static MetadataRequestPtr createRequestMedicalMetadata(const std::string & filePath);
     static PingRequestPtr createRequestPing(const std::string & urlToPing);
 
-	//! \param request Zlecenie które chcemy anulowaæ jeœli jeszcze nie by³o przetwarzane - do przetworzenia lub przetwarzane
+	//! \param request Zlecenie ktÃ³re chcemy anulowaÄ‡ jeÅ›li jeszcze nie byÅ‚o przetwarzane - do przetworzenia lub przetwarzane
     void cancelRequest(const BasicRequestPtr & request);
 
-	//! \return Prawda jeœli w kolejce nie ma ju¿ nic do przetwarznia - manager jest w stanie IDLE
+	//! \return Prawda jeÅ›li w kolejce nie ma juÅ¼ nic do przetwarznia - manager jest w stanie IDLE
     bool requestsQueueEmpty() const;
 
 	//! Anyluje wszystkie zlecenia w kolejce managera
     void cancelAllPendingRequests();
 
     /**
-    Zwraca postêp w procentach aktualnie wykonywanego zadania jako pejedynczego transferu
-    @return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
+    Zwraca postÄ™p w procentach aktualnie wykonywanego zadania jako pejedynczego transferu
+    @return wartoÅ›Ä‡ procentowa (od 0 do 100) pokazujÄ…ca postÄ™p wykonywanej operacji
     */
     int getProgress() const;
 
 private:
     /**
-    Ustala stan w jakim znajduje siê Communication Service.
-    @param state stan jaki ustaliæ jako aktualny dla CS
+    Ustala stan w jakim znajduje siÄ™ Communication Service.
+    @param state stan jaki ustaliÄ‡ jako aktualny dla CS
     */
     void setState(State state);
 
 public:
     /**
-    Sprawdza stan w jakim znajduje siê Communication Service.
+    Sprawdza stan w jakim znajduje siÄ™ Communication Service.
     @return aktualny stan CS
     */
     State getState();
@@ -398,19 +398,19 @@ public:
 public:
 
     /**
-    Statyczna metoda pobieraj¹ca jedyna instancjê klasy CommuniationManagera.
+    Statyczna metoda pobierajÄ…ca jedyna instancjÄ™ klasy CommuniationManagera.
     @return jedyna instancja CommunicationManagera
     */
     static CommunicationManager* getInstance();
     /**
-    Statyczna metoda usuwaj¹ca jedyn¹ instancjê CommunicationManagera.
+    Statyczna metoda usuwajÄ…ca jedynÄ… instancjÄ™ CommunicationManagera.
     */
     static void destoryInstance();
 
 
 private:
 
-	// ---------------------------- dostarczane z zewn¹trz ------------------------
+	// ---------------------------- dostarczane z zewnÄ…trz ------------------------
 	webservices::FtpsConnectionPtr motionFtps_;
 	webservices::FtpsConnectionPtr medicalFtps_;
 
@@ -430,7 +430,7 @@ private:
     static CommunicationManager* instance;
 
     /**
-    WskaŸnik na klasê IDownloadHelper zajmuj¹c¹ siê aktualmnym pobieraniem
+    WskaÅºnik na klasÄ™ IDownloadHelper zajmujÄ…cÄ… siÄ™ aktualmnym pobieraniem
     */
     webservices::IDownloadHelper * currentDownloadHelper;
 
@@ -445,7 +445,7 @@ private:
     CompleteRequest currentRequest;
 
     /**
-    Kolejka zapytañ
+    Kolejka zapytaÅ„
     */
     RequestsQueue requestsQueue;
 
@@ -458,20 +458,20 @@ private:
     */
     CURL* pingCurl;
     /**
-    Muteks zabezpieczaj¹cy przed zakleszczeniami.
+    Muteks zabezpieczajÄ…cy przed zakleszczeniami.
     */
     OpenThreads::ReentrantMutex trialsMutex;
     /**
-    Muteks synchronizuj¹cy obs³ugê kolejki zleceñ
+    Muteks synchronizujÄ…cy obsÅ‚ugÄ™ kolejki zleceÅ„
     */
     mutable OpenThreads::ReentrantMutex requestsMutex;
 
     mutable OpenThreads::ReentrantMutex downloadHelperMutex;
-	//! Czy koñczymy przetwarzanie
+	//! Czy koÅ„czymy przetwarzanie
     bool finish;
-	//! Czy przerwaæ œci¹ganie
+	//! Czy przerwaÄ‡ Å›ciÄ…ganie
     bool cancelDownloading;
-	//! W¹tek przetwarzaj¹cy zlecenia communication managera
+	//! WÄ…tek przetwarzajÄ…cy zlecenia communication managera
 	core::shared_ptr<ProcessingThread> processingThread;
 };
 

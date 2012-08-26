@@ -1,4 +1,4 @@
-#include "NewChartPCH.h"
+﻿#include "NewChartPCH.h"
 #include "NewChartDot.h"
 
 NewChartDot::NewChartDot( int size /*= 2*/) :

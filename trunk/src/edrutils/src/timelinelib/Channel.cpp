@@ -1,4 +1,4 @@
-#include <timelinelib/Channel.h>
+﻿#include <timelinelib/Channel.h>
 #include <timelinelib/Tag.h>
 #include <timelinelib/IChannel.h>
 #include <utils/Debug.h>

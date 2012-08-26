@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include <core/ILog.h>
 #include <core/PluginCommon.h>
 #include "DataSource.h"
@@ -34,14 +34,14 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
 	serwerPingUrl("http://v21.pjwstk.edu.pl/"), dataSourceWidget(nullptr)
 {    
 #if (defined _WIN32) || (defined _WIN64)
-	//konfiguracja wsdlpulla �eby pisa� pliki tymczasowe tam gdzie mamy prawo zapisu
+	//konfiguracja wsdlpulla ďż˝eby pisaďż˝ pliki tymczasowe tam gdzie mamy prawo zapisu
 	//pod windows
 	XmlUtils::TMPFILESDIR = core::getPathInterface()->getTmpPath().string();
-    // rev - zeby to przeszlo, w nagłówku musial być wywalony warunek na WIN32
+    // rev - zeby to przeszlo, w nagĹ‚Ăłwku musial byÄ‡ wywalony warunek na WIN32
     WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();
 #endif
     WsdlPull::WsdlParser::useLocalSchema_ = false;
-    //konfigurujemy ustawienia po��cze� - adresy serwis�w i ftp
+    //konfigurujemy ustawienia poďż˝ďż˝czeďż˝ - adresy serwisďż˝w i ftp
     auto connectionsManager = DataSourceConnectionManager::create();
 
     setConnectionsSerwerCertificatePath(core::getPathInterface()->getResourcesPath() / "v21.pjwstk.edu.pl.crt");
@@ -56,13 +56,13 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     connectionsManager->motionFileStoremanWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/FileStoremanWS.svc?wsdl");
 
     //TODO
-    //te 2 elementy s� aktualnie niedost�pne po stronie bazy!!
+    //te 2 elementy sďż˝ aktualnie niedostďż˝pne po stronie bazy!!
     //connectionsManager->medicalBasicQueriesWSConnection()->setUrl("https://v21.pjwstk.edu.pl/MotionMed/res/BasicQueriesWSStandalone.wsdl");
     //connectionsManager->medicalBasicUpdatesWSConnection()->setUrl("https://v21.pjwstk.edu.pl/MotionMed/BasicUpdatesWS.svc?wsdl");
     connectionsManager->medicalFileStoremanWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDBMed/FileStoremanWS.svc?wsdl");
 
 
-	//inicalizuj� po��czenie ftp - tutaj nic si� nie dzieje, �adne po��czenie z internetem nie jest nawi�zywane
+	//inicalizujďż˝ poďż˝ďż˝czenie ftp - tutaj nic siďż˝ nie dzieje, ďż˝adne poďż˝ďż˝czenie z internetem nie jest nawiďż˝zywane
     connectionsManager->motionFtps()->setUrl("ftps://v21.pjwstk.edu.pl/");
     connectionsManager->motionFtps()->setCredentials("testUser", "testUser");
     connectionsManager->medicalFtps()->setUrl("ftps://v21.pjwstk.edu.pl/");
@@ -71,9 +71,9 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     //konfigurujemy web serwisy
     auto servicesManager = DataSourceWebServicesManager::create();
 
-	//konfiguracja defaultowa dla us�ugi tworz�cej user�w w bazie - systemowy u�ytkownik
+	//konfiguracja defaultowa dla usďż˝ugi tworzďż˝cej userďż˝w w bazie - systemowy uďż˝ytkownik
 	connectionsManager->accountFactoryWSConnection()->setCredentials("hmdbServiceUser", "4accountCreation");
-	//ustawiamy po��czenia serwisom, ale po��czenia jeszcze nie s� gotowe - leniwa inicjalizacja
+	//ustawiamy poďż˝ďż˝czenia serwisom, ale poďż˝ďż˝czenia jeszcze nie sďż˝ gotowe - leniwa inicjalizacja
 	servicesManager->accountFactoryService()->setConnection(connectionsManager->accountFactoryWSConnection());
     servicesManager->administrationService()->setConnection(connectionsManager->administrationWSConnection());
     servicesManager->authorizationService()->setConnection(connectionsManager->authorizationWSConnection());
@@ -87,15 +87,15 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     servicesManager->medicalBasicUpdatesService()->setConnection(connectionsManager->medicalBasicUpdatesWSConnection());
     servicesManager->medicalFileStoremanService()->setConnection(connectionsManager->medicalFileStoremanWSConnection());
 
-    //tworzymy i konfigurujemy instancje connectionManagera = odpowiada za sci�ganie plik�w
+    //tworzymy i konfigurujemy instancje connectionManagera = odpowiada za sciďż˝ganie plikďż˝w
     auto communication = CommunicationManager::getInstance();
 
-	//TODO - obs�uga pingu serwer�w
-	//adres serwara/serwer�w do pingowania
+	//TODO - obsďż˝uga pingu serwerďż˝w
+	//adres serwara/serwerďż˝w do pingowania
     //communication->setUrlToPingServer(serwerPingUrl);
 
 
-	//us�ugi do �ci�gania plik�w z danymi/metadanymi/zdj�ciami
+	//usďż˝ugi do ďż˝ciďż˝gania plikďż˝w z danymi/metadanymi/zdjďż˝ciami
 	communication->setMotionFileStoremanService(servicesManager->motionFileStoremanService());
     communication->setMedicalFileStoremanService(servicesManager->medicalFileStoremanService());
 
@@ -104,22 +104,22 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
 
     localStorage = DataSourceLocalStorage::create();
 
-    //inicjuj� managera danych dla u�ytkownik�w �cie�k� do wps�lnej bazy danych
+    //inicjujďż˝ managera danych dla uďż˝ytkownikďż˝w ďż˝cieďż˝kďż˝ do wpsďż˝lnej bazy danych
     localStorage->setLocalStorageDataPath(core::getPathInterface()->getApplicationDataPath() / "db" / "localStorage.db");
 
-    //Zeruje aktualnego u�ytkownika
+    //Zeruje aktualnego uďż˝ytkownika
     currentUser_.setID(-1);
 
-    //tworze instancje obiektu zarządzającego �cie�kami danych u�ytkownik�w
+    //tworze instancje obiektu zarzÄ…dzajÄ…cego ďż˝cieďż˝kami danych uďż˝ytkownikďż˝w
     pathsManager = DataSourcePathsManager::create();
-    //inicjuj� roota danych u�ytkownik�w podczas dzia�ania aplikacji (rozpakowywana z localStorage na bazie shallowCopy)
+    //inicjujďż˝ roota danych uďż˝ytkownikďż˝w podczas dziaďż˝ania aplikacji (rozpakowywana z localStorage na bazie shallowCopy)
     pathsManager->setUsersDataPath(core::getPathInterface()->getTmpPath() / "data");
     pathsManager->setUser(currentUser_);
 }
 
 CommunicationDataSource::~CommunicationDataSource()
 {
-	//jeśli ktos zalogowany to czyscimy
+	//jeĹ›li ktos zalogowany to czyscimy
 	if(isLogged() == true){
 		try{
 			logout();
@@ -159,7 +159,7 @@ void CommunicationDataSource::setConnectionsCredentials(const User & user)
 {
     auto connectionsManager = DataSourceConnectionManager::instance();
 
-	//TODO weryfikowa� do jakich us�ug klient ma dost�p i tylko te mu konfigurowa�
+	//TODO weryfikowaďż˝ do jakich usďż˝ug klient ma dostďż˝p i tylko te mu konfigurowaďż˝
 	//connectionsManager->accountFactoryWSConnection()->setCredentials(user.name(), user.password());
     connectionsManager->administrationWSConnection()->setCredentials(user.name(), user.password());
     connectionsManager->authorizationWSConnection()->setCredentials(user.name(), user.password());
@@ -208,9 +208,9 @@ std::string CommunicationDataSource::getName() const
 void CommunicationDataSource::setCurrentUser(const User & user)
 {
     currentUser_ = user;
-    //aktualizuje po�aczenia z webserwices
+    //aktualizuje poďż˝aczenia z webserwices
     setConnectionsCredentials(currentUser_);
-    //inicjuje pathManagera - tworz� struktur� danych u�ytkownika i generuje �cie�ki dla danych
+    //inicjuje pathManagera - tworzďż˝ strukturďż˝ danych uďż˝ytkownika i generuje ďż˝cieďż˝ki dla danych
     pathsManager->setUser(currentUser_);
 }
 
@@ -239,8 +239,8 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
     if(loginManager->isLogged() == true){
         setCurrentUser(loginManager->user());
     }else if(offlineMode_ == true || connError == true){
-        //pr�bujemy lokalnie zalogowa�
-        //sprawdzam czy u�ytkownik ma kompletn� p�ytk� kopi� bazy danych - je�li tak to go loguj� offline
+        //prďż˝bujemy lokalnie zalogowaďż˝
+        //sprawdzam czy uďż˝ytkownik ma kompletnďż˝ pďż˝ytkďż˝ kopiďż˝ bazy danych - jeďż˝li tak to go logujďż˝ offline
         User tmpUser;
         tmpUser.setName(user);
         tmpUser.setPassword(password);
@@ -250,23 +250,23 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
 
         pathsManager->setUser(tmpUser);
 
-        //jeśli mam pelna płytka kopie bazy danych
+        //jeĹ›li mam pelna pĹ‚ytka kopie bazy danych
         if(isShallowCopyComplete() == true){
             setCurrentUser(tmpUser);
         }else{
-            //nie mam płytkiej kopi bazy danych wiec resetuje
+            //nie mam pĹ‚ytkiej kopi bazy danych wiec resetuje
             pathsManager->setUser(currentUser_);
         }
     }else{
 		//TODO
-		//nie zalogowano i nie ma usera - mo�e usuni�ty?
-		//je�li mamy takiego lokalnie to usuwamy z localStorage
+		//nie zalogowano i nie ma usera - moďż˝e usuniďż˝ty?
+		//jeďż˝li mamy takiego lokalnie to usuwamy z localStorage
 
 	}
 
-    //jeśli zalogowano poprawnie
+    //jeĹ›li zalogowano poprawnie
     if(isLogged() == true){
-        //tworz� �cie�ki dla danych u�ytkownika
+        //tworzďż˝ ďż˝cieďż˝ki dla danych uďż˝ytkownika
         pathsManager->createUserDataPaths();
         //informuj wszystkich o zalogowaniu
         notify();
@@ -279,16 +279,16 @@ void CommunicationDataSource::logout()
         throw std::runtime_error("Already logout");
     }
 
-    //czyszcze lokalne dane u�ytkownika rozpakowane z localStorage
+    //czyszcze lokalne dane uďż˝ytkownika rozpakowane z localStorage
     pathsManager->removeUserDataPaths();
 
-    //resetuje u�ytkownika
+    //resetuje uďż˝ytkownika
     currentUser_ = User();
     currentUser_.setID(-1);
-    //aktualizuje jego dane wszedzie gdzie to niezb�dne
+    //aktualizuje jego dane wszedzie gdzie to niezbďż˝dne
     pathsManager->setUser(currentUser_);
 
-    //wyczy�c p�ytk� kopi� bazy danych
+    //wyczyďż˝c pďż˝ytkďż˝ kopiďż˝ bazy danych
     fullShallowCopy = ShallowCopy();
 	fileStatusManager->removeAllFiles();
 	fullShallowCopyStatus->setShallowCopy(nullptr);
@@ -323,7 +323,7 @@ void CommunicationDataSource::showPatientCard(const PluginSubject::SubjectConstP
 	webservices::MedicalShallowCopy::Patient * pat = nullptr;
 
 	if(subject != nullptr){
-		//wyszukuj� subjecta
+		//wyszukujďż˝ subjecta
 		for(auto subIT = dataSourceWidget->subjectsMapping.begin(); subIT != dataSourceWidget->subjectsMapping.end(); ++subIT){
 			PluginSubject::SubjectConstPtr tmpSub = subIT->second.first->get();
 			if(tmpSub != nullptr && tmpSub->getID() == subject->getID()){
@@ -418,28 +418,28 @@ void CommunicationDataSource::extractShallowCopyFromLocalStorageToUserSpace()
     std::vector<core::Filesystem::Path> extractedFiles;
 
     try{
-        //p�ytka kopia danych ruchu
+        //pďż˝ytka kopia danych ruchu
         auto path = pathsManager->motionShallowCopyPath();
 		auto filename = path.filename().string();
 
 		extractFileFromLocalStorage(filename, path, extractedFiles);
 
-        //p�ytka kopia metadanych ruchu
+        //pďż˝ytka kopia metadanych ruchu
         path = pathsManager->motionMetadataPath();
 		filename = path.filename().string();
         extractFileFromLocalStorage(filename, path, extractedFiles);
 
-        //p�ytka kopia danych medycznych
+        //pďż˝ytka kopia danych medycznych
         path = pathsManager->medicalShallowCopyPath();
 		filename = path.filename().string();
         extractFileFromLocalStorage(filename, path, extractedFiles);
 
-        //p�ytka kopia metadanych medycznych
+        //pďż˝ytka kopia metadanych medycznych
         path = pathsManager->medicalMetadataPath();
 		filename = path.filename().string();
         extractFileFromLocalStorage(filename, path, extractedFiles);
     }catch(...){
-        //pr�bujemy czy�ci�
+        //prďż˝bujemy czyďż˝ciďż˝
 
         for(auto it = extractedFiles.begin(); it != extractedFiles.end(); ++it){
             try{
@@ -505,7 +505,7 @@ void CommunicationDataSource::extractFileFromLocalStorageToUserSpace(const webse
 
     if(localStorage->fileIsLocal(file->fileName) == true){
         try{
-            //czy zadana �ciezka istnieje?
+            //czy zadana ďż˝ciezka istnieje?
             core::Filesystem::Path p(filePath.parent_path());
             if(core::Filesystem::pathExists(p) == false){
                 core::Filesystem::createDirectory(p);
@@ -520,7 +520,7 @@ void CommunicationDataSource::extractFileFromLocalStorageToUserSpace(const webse
         fileStatusManager->setFileStorage(file->fileID, Remote);
     }
 
-	//pr�buje pliki vsk wypakowa� z zip
+	//prďż˝buje pliki vsk wypakowaďż˝ z zip
 
 	auto zipName = sessionName + ".zip";
 	auto vskName = sessionName + ".vsk";
@@ -531,12 +531,12 @@ void CommunicationDataSource::extractFileFromLocalStorageToUserSpace(const webse
 		QuaZip zip(filePath.string().c_str());
 
 		if(zip.open(QuaZip::mdUnzip) == true){
-			//uda�o si� otworzy� plik do wypakowywania
+			//udaďż˝o siďż˝ otworzyďż˝ plik do wypakowywania
 			auto files = zip.getFileNameList();
 			if(files.contains(QString::fromUtf8(vskName.c_str())) == true &&
 				zip.setCurrentFile(QString::fromUtf8(vskName.c_str())) == true){
 
-				//znalaz�em vsk - pr�bujemy go wypakowa�
+				//znalazďż˝em vsk - prďż˝bujemy go wypakowaďż˝
 				QuaZipFile inFile(&zip);
 				if(inFile.open(QIODevice::ReadOnly) && inFile.getZipError() == UNZ_OK) {
 
@@ -545,7 +545,7 @@ void CommunicationDataSource::extractFileFromLocalStorageToUserSpace(const webse
 					outFile.setFileName(vskDestPath.string().c_str());
 					if(outFile.open(QIODevice::WriteOnly)) {
 
-						//uda�o si� - mog� kopiowa�
+						//udaďż˝o siďż˝ - mogďż˝ kopiowaďż˝
 						auto ok = copyData(inFile, outFile);
 						ok &= (inFile.getZipError()==UNZ_OK);
 
@@ -588,23 +588,23 @@ void CommunicationDataSource::extractDataFromLocalStorageToUserSpace(const Shall
         newFiles.insert(fileIT->first);
     }
 
-    //zapewniam minimalny rozmiar wektor�w wynikowych
-    //do usuni�cia
+    //zapewniam minimalny rozmiar wektorďż˝w wynikowych
+    //do usuniďż˝cia
     toDelete.resize(prevFiles.size());
     //do dodania
     toAdd.resize(newFiles.size());
-    //do od�wie�enia
+    //do odďż˝wieďż˝enia
     toRefresh.resize((std::min)(prevFiles.size(), newFiles.size()));
 
-    //wyznaczam r�nice zbior�w
+    //wyznaczam rďż˝nice zbiorďż˝w
     auto toDeleteIT = std::set_difference(prevFiles.begin(), prevFiles.end(), newFiles.begin(), newFiles.end(), toDelete.begin());
     auto toAddIT = std::set_difference(newFiles.begin(), newFiles.end(), prevFiles.begin(), prevFiles.end(), toAdd.begin());
 
-    //cz�� wsp�lna do od�wie�enia
+    //czďż˝ďż˝ wspďż˝lna do odďż˝wieďż˝enia
     auto toRefreshIT = std::set_intersection(newFiles.begin(), newFiles.end(), prevFiles.begin(), prevFiles.end(), toRefresh.begin());
 
-    //cz�� w�a�ciwa
-    //usuwamy pliki kt�rych nie powinno by�
+    //czďż˝ďż˝ wďż˝aďż˝ciwa
+    //usuwamy pliki ktďż˝rych nie powinno byďż˝
     for(auto it = toDelete.begin(); it != toDeleteIT; ++it){
         //auto file = prevShallowCopy.motionShallowCopy->files.find(*it)->second;
         try{
@@ -620,13 +620,13 @@ void CommunicationDataSource::extractDataFromLocalStorageToUserSpace(const Shall
 		}
     }
 
-    //dodajemy pliki do k�trych mamy dost�p, s� lokalne a jeszcze ich nie ma
+    //dodajemy pliki do kďż˝trych mamy dostďż˝p, sďż˝ lokalne a jeszcze ich nie ma
     for(auto it = toAdd.begin(); it != toAddIT; ++it){
         auto file = newShallowCopy.motionShallowCopy->files.find(*it)->second;
         extractFileFromLocalStorageToUserSpace(file, file->isSessionFile() ? file->session->sessionName : file->trial->session->sessionName);
     }
 
-    //odsiwezamy pliki które teoretycznie powinny być
+    //odsiwezamy pliki ktĂłre teoretycznie powinny byÄ‡
     for(auto it = toRefresh.begin(); it != toRefreshIT; ++it){
         auto file = prevShallowCopy.motionShallowCopy->files.find(*it)->second;
         auto filePath = pathsManager->filePath(file->fileName, file->isSessionFile() == true ? file->session->sessionName : file->trial->session->sessionName);
@@ -691,28 +691,28 @@ void CommunicationDataSource::saveShallowCopyInLocalStorage()
 
 void CommunicationDataSource::removeShallowCopyFromUserSpace()
 {
-    //p�ytka kopia danych ruchu
+    //pďż˝ytka kopia danych ruchu
     try{
         core::Filesystem::deleteFile(pathsManager->motionShallowCopyPath());
     }catch(...){
 
     }
 
-    //p�ytka kopia metadanych ruchu
+    //pďż˝ytka kopia metadanych ruchu
     try{
         core::Filesystem::deleteFile(pathsManager->motionMetadataPath());
     }catch(...){
 
     }
 
-    //p�ytka kopia danych medycznych
+    //pďż˝ytka kopia danych medycznych
     try{
         core::Filesystem::deleteFile(pathsManager->medicalShallowCopyPath());
     }catch(...){
 
     }
 
-    //p�ytka kopia metadanych medycznych
+    //pďż˝ytka kopia metadanych medycznych
     try{
         core::Filesystem::deleteFile(pathsManager->medicalMetadataPath());
     }catch(...){
@@ -724,28 +724,28 @@ void CommunicationDataSource::removeShallowCopyFromLocalStorage()
 {
     OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*pathsManager);
 
-    //p�ytka kopia danych ruchu
+    //pďż˝ytka kopia danych ruchu
     try{
         localStorage->removeFile(pathsManager->motionShallowCopyPath().filename().string());
     }catch(...){
 
     }
 
-    //p�ytka kopia metadanych ruchu
+    //pďż˝ytka kopia metadanych ruchu
     try{
         localStorage->removeFile(pathsManager->motionMetadataPath().filename().string());
     }catch(...){
 
     }
 
-    //p�ytka kopia danych medycznych
+    //pďż˝ytka kopia danych medycznych
     try{
         localStorage->removeFile(pathsManager->medicalShallowCopyPath().filename().string());
     }catch(...){
 
     }
 
-    //p�ytka kopia metadanych medycznych
+    //pďż˝ytka kopia metadanych medycznych
     try{
         localStorage->removeFile(pathsManager->medicalMetadataPath().filename().string());
     }catch(...){
@@ -755,7 +755,7 @@ void CommunicationDataSource::removeShallowCopyFromLocalStorage()
 
 void CommunicationDataSource::setShallowCopy(const ShallowCopy & shallowCopy)
 {
-    //r�nica danych wypakowanych z localStorage + status plik�w je�i chodzi o storage
+    //rďż˝nica danych wypakowanych z localStorage + status plikďż˝w jeďż˝i chodzi o storage
     extractDataFromLocalStorageToUserSpace(fullShallowCopy, shallowCopy);
 
     fullShallowCopy = shallowCopy;
@@ -831,7 +831,7 @@ CommunicationDataSource::DownloadRequestPtr CommunicationDataSource::generateDow
 
         desc.destPath = pathsManager->filePath(file->fileName, sessionName).string();
 
-        //musimy zagwarantowa� �e mamy gdzie zpaisywa� wi�c �cie�ki do sesji s� tworzone
+        //musimy zagwarantowaďż˝ ďż˝e mamy gdzie zpaisywaďż˝ wiďż˝c ďż˝cieďż˝ki do sesji sďż˝ tworzone
 
         auto sessionPath = pathsManager->sessionPath(sessionName);
 

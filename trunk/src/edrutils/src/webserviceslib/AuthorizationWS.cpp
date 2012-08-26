@@ -1,4 +1,4 @@
-#include <webserviceslib/AuthorizationWS.h>
+Ôªø#include <webserviceslib/AuthorizationWS.h>
 #include <utils/Debug.h>
 #include <tinyxml.h>
 
@@ -44,7 +44,7 @@ const bool AuthorizationWS::checkMyLogin() const
 		//nie mam usera
 		return false;
 	}catch(...){
-		//problem inny niø prawa do us≥ug
+		//problem inny ni≈º prawa do us≈Çug
 		//rzucam dalej
 		throw;
 	}

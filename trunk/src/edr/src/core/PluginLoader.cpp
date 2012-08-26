@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+Ôªø#include "CorePCH.h"
 #if defined(__WIN32__)
 #include <windows.h>
 #elif defined(__UNIX__)
@@ -20,7 +20,7 @@ namespace core {
 
 PluginLoader::PluginLoader()
 {
-    // dodaje domyúlne úcieøki
+    // dodaje domy≈õlne ≈õcie≈ºki
     addDefaultPaths();
 }
 
@@ -31,10 +31,10 @@ PluginLoader::~PluginLoader()
 
 void PluginLoader::clear()
 {
-    // wyczyszczenie úcieøek
+    // wyczyszczenie ≈õcie≈ºek
     Paths().swap(paths);
 
-    //wyczyszczenie pluginÛw
+    //wyczyszczenie plugin√≥w
     Plugins().swap(plugins);
 }
 
@@ -97,7 +97,7 @@ void PluginLoader::addDefaultPaths()
 	std::string dir = std::string(".");
 	paths.push_back(dir);
 
-	// zagnieødøony katalog plugins
+	// zagnie≈ºd≈ºony katalog plugins
 	dir = std::string("plugins/.");
 	paths.push_back(dir);
 #endif
@@ -110,7 +110,7 @@ void PluginLoader::load()
 #if defined(__WIN32__)
 	static const std::regex pluginFilter("^plugin_.*\.dll$");
 #elif defined(__UNIX__)
-    // GCC cos nie radzi sobie ze znakami poczπtku i koÒca linii !?
+    // GCC cos nie radzi sobie ze znakami poczƒÖtku i ko≈Ñca linii !?
 	static const std::regex pluginFilter("libplugin_.*\.so");
 #endif
 
@@ -216,7 +216,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin
 
     LOG_INFO("Loading plugin " << path);
 
-    // prÛba za≥adowania
+    // pr√≥ba za≈Çadowania
     try {
         plugin = createFunction(&__instanceInfo);
     } catch ( std::exception& ex ) {
@@ -227,7 +227,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin
         return false;
     }
 
-    // czy uda≥o siÍ wczytaÊ?
+    // czy uda≈Ço siƒô wczytaƒá?
     if ( !plugin ) {
         LOG_ERROR("Error loading plugin "<<path<<": Plugin not created");
         return false;
@@ -236,7 +236,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin
 
     bool pluginIDFound = false;
     core::PluginPtr collidingPlugin;
-    //szukamy pluginu o podanym ID - jeúli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
+    //szukamy pluginu o podanym ID - je≈õli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
     for(auto it = plugins.begin(); it != plugins.end(); ++it){
         if( (*it).first->getID() == plugin->getID()){
             pluginIDFound = true;
@@ -249,7 +249,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin
 
         plugin->setPath(path);
 
-        // musi tak byÊ, inaczej dwa smart pointery do jendego obiektu!!
+        // musi tak byƒá, inaczej dwa smart pointery do jendego obiektu!!
         PluginPair p;
         p.first.reset(plugin);
         p.second = p.first;

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/09/20
 	created:	20:9:2011   8:37
 	filename: 	EDRDockWidgetManager.h
@@ -17,14 +17,14 @@
 class EDRDockWidget;
 class EDRDockWidgetSet;
 
-//! Klasa zarz¹dza calymi grupami dock widgetów, laczac je w sety
+//! Klasa zarzÄ…dza calymi grupami dock widgetÃ³w, laczac je w sety
 class EDRDockWidgetManager : public QMainWindow
 {
     Q_OBJECT;
 public:
-    //! niemodyfikowalny zakres wszystkich podleg³ych grup zak³adek aplikacji
+    //! niemodyfikowalny zakres wszystkich podlegÅ‚ych grup zakÅ‚adek aplikacji
     typedef boost::iterator_range<std::list<EDRDockWidgetSet*>::iterator> range;
-    //! zakres wszystkich podleg³ych grup zak³adek aplikacji
+    //! zakres wszystkich podlegÅ‚ych grup zakÅ‚adek aplikacji
     typedef boost::iterator_range<std::list<EDRDockWidgetSet*>::const_iterator> const_range;
 
 public:
@@ -35,46 +35,46 @@ public:
 	virtual ~EDRDockWidgetManager() {}
 
 public:
-	//! Dodaj grupê dock widgetów
+	//! Dodaj grupÄ™ dock widgetÃ³w
 	//! \param set dodawana grupa
 	void addDockWidgetSet(EDRDockWidgetSet* set);
-    //! Grupa dock widgetów stanie siê aktywna (widoczna)
+    //! Grupa dock widgetÃ³w stanie siÄ™ aktywna (widoczna)
     //! \param set 
     void raiseSet( EDRDockWidgetSet* set );
-    //! Dodaje widget do grupy, która ma na niego miejsce, jeœli takiej nie ma to tworzona jest nowa
+    //! Dodaje widget do grupy, ktÃ³ra ma na niego miejsce, jeÅ›li takiej nie ma to tworzona jest nowa
     //! \param widget dodawany dock widget
     void autoAddDockWidget(EDRDockWidget* widget);
     //! ustawia pozycje belki z tabami
     //! \param tabPosition pozycja N,S,W,E
     void setTabsPosition(QTabWidget::TabPosition tabPosition);
-    //! \return const range z wszystkimi grupami dock widgetów
+    //! \return const range z wszystkimi grupami dock widgetÃ³w
     const_range getDockSet() const { return boost::make_iterator_range(dockList.cbegin(), dockList.cend()); }
-    //! \return range z wszystkimi grupami dock widgetów
+    //! \return range z wszystkimi grupami dock widgetÃ³w
     range getDockSet() { return boost::make_iterator_range(dockList.begin(), dockList.end()); }
-    //! Na podstawie dock widgeta pobierana jest grupa, do której nale¿y
+    //! Na podstawie dock widgeta pobierana jest grupa, do ktÃ³rej naleÅ¼y
     //! \param widget badany dock widget
     //! \return odnaleziona grupa lub nullptr
     EDRDockWidgetSet* tryGetDockSet(EDRDockWidget* widget);
 
 private:
-    //! iteruje po wszystkich grupach zmieniaj¹c im nazwy
+    //! iteruje po wszystkich grupach zmieniajÄ…c im nazwy
     void setTabNames();
 
 signals:
-    //! stan dock widgetów zmieni³ siê
+    //! stan dock widgetÃ³w zmieniÅ‚ siÄ™
     void changed();
 
 private slots:
-    //! gdy grupa zostaje zamkniêta
+    //! gdy grupa zostaje zamkniÄ™ta
     //! \param object 
     void onSetClosed(QObject* object);
-    //! gdy pojedynczy dock widget zostaje zamkniêty
+    //! gdy pojedynczy dock widget zostaje zamkniÄ™ty
     void dockClosed();
 
 private:
     //! lista wszystkich grup managera
 	std::list<EDRDockWidgetSet*> dockList;
-    //! lista grup, który zosta³y stworzone przez manager
+    //! lista grup, ktÃ³ry zostaÅ‚y stworzone przez manager
 	std::list<EDRDockWidgetSet*> generatedList;
 };
 

@@ -1,4 +1,4 @@
-#include "SubjectPCH.h"
+﻿#include "SubjectPCH.h"
 #include "Subject.h"
 #include <core/DataAccessors.h>
 #include <plugins/subject/ISession.h>

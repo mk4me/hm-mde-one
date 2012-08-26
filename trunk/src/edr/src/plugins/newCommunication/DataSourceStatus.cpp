@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include "DataSourceStatus.h"
 
 using namespace communication;

@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__DFMTYPES_H__
+﻿#ifndef HEADER_GUARD__DFMTYPES_H__
 #define HEADER_GUARD__DFMTYPES_H__
 
 #include <boost/shared_ptr.hpp>

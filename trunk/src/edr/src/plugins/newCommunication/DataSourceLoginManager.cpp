@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "DataSourceLoginManager.h"
 #include "DataSourceWebServicesManager.h"
 
@@ -36,9 +36,9 @@ void DataSourceLoginManager::login(const std::string & user, const std::string &
 void DataSourceLoginManager::logout()
 {
     //TODO
-    //zapis zmienionych danych u¿ytkownika w bazie!!
+    //zapis zmienionych danych uÅ¼ytkownika w bazie!!
     //w przypadku niepowodzenia serializacja do pliku!!
-    //potem takie dane powinny byæ wczytywane z dysku i ponownie musi nastapiæ próba zapisu
+    //potem takie dane powinny byÄ‡ wczytywane z dysku i ponownie musi nastapiÄ‡ prÃ³ba zapisu
 
     user_.setID(-1);
     user_.setPrivilages(UserPrivilages());
@@ -58,13 +58,13 @@ const bool DataSourceLoginManager::isLogged() const
 void DataSourceLoginManager::getUserData(int userID, UserData & userData)
 {
     //TODO
-    //dodaæ œci¹ganie i parsowanie danych u¿ytkownika z bazy
+    //dodaÄ‡ Å›ciÄ…ganie i parsowanie danych uÅ¼ytkownika z bazy
 }
 
 void DataSourceLoginManager::getUserPrivilages(int userID, UserPrivilages & userPrivilages)
 {
     //TODO
-    //dodaæ œci¹ganie i parsowanie uprawnieñ do danych u¿ytkownika
+    //dodaÄ‡ Å›ciÄ…ganie i parsowanie uprawnieÅ„ do danych uÅ¼ytkownika
 }
 
 const int DataSourceLoginManager::getUserIDForLoginAndPassword(const std::string & login, const std::string & password)
@@ -83,7 +83,7 @@ const int DataSourceLoginManager::getUserIDForLoginAndPassword(const std::string
 
 	if(res == true){
 		//TODO
-		//czym identyfikujemy u¿ytkownika?
+		//czym identyfikujemy uÅ¼ytkownika?
 		ret = 1;
 
 	}

@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/12/09
     created:  9:12:2011   14:11
     filename: FlexiTabWidget.h
@@ -86,9 +86,9 @@ private:
         QString name;
         QIcon icon;
         bool visible;
-        //! Pozycja zak≥adki w QTabBar
+        //! Pozycja zak≈Çadki w QTabBar
         int tabPos;
-        //! Pozycja zak≥πdki w FlexiTab (moøe byÊ ukryta -> rÛøna od tabPos)
+        //! Pozycja zak≈ÇƒÖdki w FlexiTab (mo≈ºe byƒá ukryta -> r√≥≈ºna od tabPos)
         unsigned int flexiPos;
         QScrollArea * tabArea;
         QWidget * contentWidget;

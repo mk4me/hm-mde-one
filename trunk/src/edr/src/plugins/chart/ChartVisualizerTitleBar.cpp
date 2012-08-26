@@ -1,4 +1,4 @@
-#include "ChartPCH.h"
+ï»¿#include "ChartPCH.h"
 #include <osgui/EventCallback.h>
 #include "ChartVisualizerTitleBar.h"
 
@@ -17,7 +17,7 @@ ChartWidget::ChartWidget()
     camera->setViewMatrix(osg::Matrix::identity());
     camera->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
 
-    // dodanie callbacak dostosowuj¹cego rozmiar kamery do rozmiaru okna
+    // dodanie callbacak dostosowujÄ…cego rozmiar kamery do rozmiaru okna
     camera->setEventCallback( osgui::createEventCallback( 
         osgGA::GUIEventAdapter::RESIZE,
         [](osg::Node* node, const osgGA::GUIEventAdapter* event) { 
@@ -42,7 +42,7 @@ ChartWidget::ChartWidget()
     //chart->getOrCreateStateSet()->setAttribute(new osg::LineWidth(10), osg::StateAttribute::ON);
     chart->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
 
-    // dodanie callbacka dostosowuj¹cego rozmiar wykresu do rozmiaru okna
+    // dodanie callbacka dostosowujÄ…cego rozmiar wykresu do rozmiaru okna
     chart->setEventCallback( osgui::createEventCallback( 
         osgGA::GUIEventAdapter::RESIZE,
         [](osg::Node* node, const osgGA::GUIEventAdapter* event) {

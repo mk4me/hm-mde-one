@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/08/01
 	created:	1:8:2011   8:37
 	filename: 	MainWindow.h
@@ -59,25 +59,25 @@ namespace core {
 
         static MainWindow * instance;
 
-		//! Widget ze scen¹ jakiegoœ grafu OSG.
+		//! Widget ze scenÄ… jakiegoÅ› grafu OSG.
 		//SceneGraphWidget* widgetSceneGraph;
 		//! Widget konsoli.
 		EDRConsoleWidget* widgetConsole;
-		//! Czy update jest w³¹czony?
+		//! Czy update jest wÅ‚Ä…czony?
 		bool updateEnabled;
-		//! Timer wyznaczaj¹cy update'y wizualizatorów.
+		//! Timer wyznaczajÄ…cy update'y wizualizatorÃ³w.
 		QTimer visualizerTimer;
-        //! Timer wyznaczaj¹cy updaty dla serwisów
+        //! Timer wyznaczajÄ…cy updaty dla serwisÃ³w
 		QTimer serviceTimer;
 		//! Pluginy.
 		core::PluginLoader* pluginLoader;
-        //! Dostêp do managerów aplikacji.
+        //! DostÄ™p do managerÃ³w aplikacji.
         core::IManagersAccessor* managersAccessor;
 
-        //! Lista zasobów.
+        //! Lista zasobÃ³w.
         std::vector<std::string> resourcesPaths;
 
-        //! Lista skórek dla UI
+        //! Lista skÃ³rek dla UI
         std::vector<core::Filesystem::Path> applicationSkinsPaths;
 
         QSplashScreen * splashScreen_;
@@ -101,7 +101,7 @@ namespace core {
             return instance;
         }
 	public slots:
-		//! Aktualizacja wizualizatorów.
+		//! Aktualizacja wizualizatorÃ³w.
 		void updateVisualizers();
         void updateServices();
 
@@ -139,16 +139,16 @@ namespace core {
             safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<T>()) );
         }
 
-		//! Rejestruje wbudowane us³ugi.
+		//! Rejestruje wbudowane usÅ‚ugi.
 		void registerCoreServices();
-		//! Rejestruje wbudowane Ÿród³a danych.
+		//! Rejestruje wbudowane ÅºrÃ³dÅ‚a danych.
 		void registerCoreDataSources();
 
-		//! Rejestruje us³ugi pochodz¹ce z pluginów.
+		//! Rejestruje usÅ‚ugi pochodzÄ…ce z pluginÃ³w.
 		void registerPluginsServices();
-		//! Rejestruje Ÿród³a pochodz¹ce z pluginów.
+		//! Rejestruje ÅºrÃ³dÅ‚a pochodzÄ…ce z pluginÃ³w.
 		void registerPluginsSources();
-		//! Rejestruje parsery pochodz¹ce z pluginów.
+		//! Rejestruje parsery pochodzÄ…ce z pluginÃ³w.
 		void registerPluginsParsers();
 		//!
 		void registerPluginsVisualizers();
@@ -159,7 +159,7 @@ namespace core {
 
 		void registerPluginsWrapperFactories();
 
-        //! Szuka na dysku zasobów.
+        //! Szuka na dysku zasobÃ³w.
         void findResources(const std::string& resourcesPath);
 
         const core::Filesystem::Path& getApplicationSkinsFilePath(int i)

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   11:26
 	filename: 	OutputDescription.h
@@ -45,14 +45,14 @@ public:
         return output->getSlotName(outputNo);
     }
 
-    //! \return Liczba obiektów.
+    //! \return Liczba obiektÃ³w.
     int getNumOutputs() const
     {
         return output->getNumOutputs();
     }
 
-    //! \param outputNo Numer wyjœcia.
-    //! \return Obiekt na wyjœciu.
+    //! \param outputNo Numer wyjÅ›cia.
+    //! \return Obiekt na wyjÅ›ciu.
     const core::ObjectWrapperCollectionPtr & getOutputObjects(int outputNo)
     {
         return output->ObjectSlots::getObjects(outputNo);

@@ -1,4 +1,4 @@
-#include "PCH.h"
+﻿#include "PCH.h"
 
 #include <osgViewer/Renderer>
 #include "DisableableRenderer.h"
@@ -22,7 +22,7 @@ osgQt::GLWidget( translateFormat( traits ? *traits : osg::GraphicsContext::Trait
     UTILS_ASSERT(t->inheritedWindowData == NULL);
     t->inheritedWindowData = new osgQt::GraphicsWindowQt::WindowData( this );
 
-    // wygl�da dziwnie, ale w kontruktorze ustawiana jest zmienna _gw
+    // wygląda dziwnie, ale w kontruktorze ustawiana jest zmienna _gw
     osgQt::GraphicsWindowQt* temp = new osgQt::GraphicsWindowQt(t);
     UTILS_ASSERT(temp == _gw);
 }

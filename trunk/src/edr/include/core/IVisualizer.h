@@ -1,4 +1,4 @@
-/*******************************************************************
+ï»¿/*******************************************************************
     created:  2011/03/14
     created:  14:3:2011   16:49
     filename: IVisualizer.h
@@ -22,12 +22,12 @@ namespace core
 {
 	class IActionsGroupManager;
 
-    //! Interfejs wizualizatorów dla typów danych zarejestrowanych w aplikacji
+    //! Interfejs wizualizatorÃ³w dla typÃ³w danych zarejestrowanych w aplikacji
     class IVisualizer :  public IInputProcessItem
     {
     public:
 
-        //! Klasa bazowa do tworzenia i zarz¹dzania seriami danych
+        //! Klasa bazowa do tworzenia i zarzÄ…dzania seriami danych
         class SerieBase
         {
         public:
@@ -40,8 +40,8 @@ namespace core
             //! \return Nazwa serii danych
             virtual const std::string & getName() const = 0;
 
-            //! \param data Dane do ustawienia w serii danych. ObjecWrappery pozwalaj¹ nam unikn¹æ potrzeby generowania wielu metod dla ró¿nych argumentów.
-            //! Znacz¹co uprasza interfejs, w przeciwnym wypadku musielibyœmy skorzystaæ z template
+            //! \param data Dane do ustawienia w serii danych. ObjecWrappery pozwalajÄ… nam uniknÄ…Ä‡ potrzeby generowania wielu metod dla rÃ³Å¼nych argumentÃ³w.
+            //! ZnaczÄ…co uprasza interfejs, w przeciwnym wypadku musielibyÅ›my skorzystaÄ‡ z template
             virtual void setData(const ObjectWrapperConstPtr & data) = 0;
 
             //! \return Dane serii
@@ -74,36 +74,36 @@ namespace core
         //! Pusty polimorficzny destruktor.
         virtual ~IVisualizer() {}
 
-        //! Tylko tutaj powinno nastêpowaæ tworzenie widgetu. Metoda wywo³ywana tylko jeden raz.
-        //! To wizualizator musi niszczyæ widget w destruktorze. Gdy widget jest równoczeœnie
-        //! widokiem OSG to wystarczy przypisaæ go do osg::ref_ptr.
-        //! \param action Akcje które nale¿y dodaæ do paska tytu³owego. Ka¿dym elementem mo¿e byæ
-        //! albo QAction, QMenu z zagnied¿onymi akcjami, albo ca³y QWidget. Rodzice tych elementów nie s¹ zmieniani!
-        //! \return Widget bêd¹cy korzeniem wizualizacji. Musi mieæ slot setActiveSource(int).
+        //! Tylko tutaj powinno nastÄ™powaÄ‡ tworzenie widgetu. Metoda wywoÅ‚ywana tylko jeden raz.
+        //! To wizualizator musi niszczyÄ‡ widget w destruktorze. Gdy widget jest rÃ³wnoczeÅ›nie
+        //! widokiem OSG to wystarczy przypisaÄ‡ go do osg::ref_ptr.
+        //! \param action Akcje ktÃ³re naleÅ¼y dodaÄ‡ do paska tytuÅ‚owego. KaÅ¼dym elementem moÅ¼e byÄ‡
+        //! albo QAction, QMenu z zagniedÅ¼onymi akcjami, albo caÅ‚y QWidget. Rodzice tych elementÃ³w nie sÄ… zmieniani!
+        //! \return Widget bÄ™dÄ…cy korzeniem wizualizacji. Musi mieÄ‡ slot setActiveSource(int).
         virtual QWidget* createWidget(IActionsGroupManager * manager) = 0;
 
-        //! Tworzy ikonê dla zadanego wizualizatora. Mo¿e zwracaæ nullptr, chocia¿ to niewskazane.
-        //! W odgró¿nieniu od createWidget ikona przejmowana jest na w³asnoœæ.
+        //! Tworzy ikonÄ™ dla zadanego wizualizatora. MoÅ¼e zwracaÄ‡ nullptr, chociaÅ¼ to niewskazane.
+        //! W odgrÃ³Å¼nieniu od createWidget ikona przejmowana jest na wÅ‚asnoÅ›Ä‡.
         virtual QIcon* createIcon() = 0;
 
         virtual QPixmap print() const = 0;
 
-        //! Aktualizacja wyœwietlania. NIE aktualizacja stanu wyœwietlanych danych.
+        //! Aktualizacja wyÅ›wietlania. NIE aktualizacja stanu wyÅ›wietlanych danych.
         virtual void update(double deltaTime) = 0;
 
-        //----------------- Obs³uga serii danych ---------------------
-        //! Wizualizator musi zapewnic ze da siê stworzyæ MAX serii za pomoca metody createSerie. Ilos cserii jest dynamicznie zarz¹dzana z zewn¹trz poprzez create i remove serie.
-        //! SerieBase to klasa delegata, która implementuje specyficzne dla danego wizualizatora operacje ustawiania nazwy serii i jej danych. Kazdy wizualizator mo¿e inaczej ustawiac te informacje i prezentowaæ je.
+        //----------------- ObsÅ‚uga serii danych ---------------------
+        //! Wizualizator musi zapewnic ze da siÄ™ stworzyÄ‡ MAX serii za pomoca metody createSerie. Ilos cserii jest dynamicznie zarzÄ…dzana z zewnÄ…trz poprzez create i remove serie.
+        //! SerieBase to klasa delegata, ktÃ³ra implementuje specyficzne dla danego wizualizatora operacje ustawiania nazwy serii i jej danych. Kazdy wizualizator moÅ¼e inaczej ustawiac te informacje i prezentowaÄ‡ je.
 
-        //! \return Maksymalna iloœæ serii danych jaka mo¿e obs³u¿yc wizualizator, wartoœæ 0 i mniej oznacza maksumalny zakres dla INT, inna wartoœæ stanowi górna granice
+        //! \return Maksymalna iloÅ›Ä‡ serii danych jaka moÅ¼e obsÅ‚uÅ¼yc wizualizator, wartoÅ›Ä‡ 0 i mniej oznacza maksumalny zakres dla INT, inna wartoÅ›Ä‡ stanowi gÃ³rna granice
         virtual int getMaxDataSeries() const = 0;
 
-        //! \return Seria danych która mo¿na ustawiac - nazwa i dane, nie zarz¹dza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
+        //! \return Seria danych ktÃ³ra moÅ¼na ustawiac - nazwa i dane, nie zarzÄ…dza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
         virtual SerieBase* createSerie(const ObjectWrapperConstPtr & data, const std::string & name = std::string()) = 0;
 
         virtual SerieBase* createSerie(const SerieBase* serie) = 0;
 
-        //! \param serie Seria danych do usuniêcia, nie powinien usuwaæ tej serii! Zarz¹dzamy ni¹ my!!
+        //! \param serie Seria danych do usuniÄ™cia, nie powinien usuwaÄ‡ tej serii! ZarzÄ…dzamy niÄ… my!!
         virtual void removeSerie(SerieBase* serie) = 0;
     };
 

@@ -1,4 +1,4 @@
-#include <timelinelib/Model.h>
+Ôªø#include <timelinelib/Model.h>
 #include <timelinelib/Channel.h>
 #include <timelinelib/Tag.h>
 #include <stack>
@@ -244,7 +244,7 @@ void Model::addChannel(const std::string & path, const IChannelPtr & channel)
     UTILS_ASSERT((channel != nullptr && channel->getLength() >= 0), "Nieprawidlowy kanal");
 
     //TODO
-    //aktualizacja czasu w dÛ≥ úciezki aø do dodawanego kana≥u
+    //aktualizacja czasu w d√≥≈Ç ≈õciezki a≈º do dodawanego kana≈Çu
 
     root->addChild(path);
     TChannelConstPtr tChild(getChannel(path));
@@ -312,7 +312,7 @@ void Model::removeChannels(const std::set<std::string> & paths)
         ++it;
 
         for(; it != paths.end(); ++it){
-            //mamy hierarchiÍ kana≥Ûw - nie ma sensu usuwaÊ kana≥Ûw z niøszych warstw jeúli usuwamy te z wyøszych
+            //mamy hierarchiƒô kana≈Ç√≥w - nie ma sensu usuwaƒá kana≈Ç√≥w z ni≈ºszych warstw je≈õli usuwamy te z wy≈ºszych
             if((*it).find(lastChannel) != 0){
                 lastChannel = *it;
                 innerRemoveChannel(getChannel(lastChannel));

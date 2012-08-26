@@ -1,4 +1,4 @@
-#include "SummaryWindow.h"
+﻿#include "SummaryWindow.h"
 #include "TreeItemHelper.h"
 #include "HmmMainWindow.h"
 #include "AnalisisWidget.h"

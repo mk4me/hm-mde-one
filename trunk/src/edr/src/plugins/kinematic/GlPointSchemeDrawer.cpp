@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 			
 #include "GlPointSchemeDrawer.h"
 using namespace osg;
@@ -187,21 +187,21 @@ void GlPointSchemeDrawer::changeColorIfNecessary( TransformPtr point, const Visu
             GeometryPtr customSphere;
             if (found != spheresByColor.end()) {
                 if (found->second == geode->getDrawable(0)) {
-                    // sfera istnieje, i jest ta sama, która jest podpiêta pod geode
+                    // sfera istnieje, i jest ta sama, ktÃ³ra jest podpiÄ™ta pod geode
                     // oznacza to, ze kolor jest ten sam, nic nie trzeba robic
                     return;
                 } else {
-                    // kolor siê zmieni³, ale mamy ju¿ sfere w odpowiednim kolorze,
+                    // kolor siÄ™ zmieniÅ‚, ale mamy juÅ¼ sfere w odpowiednim kolorze,
                     // podpinamy ja pod geode
                     geode->removeDrawable(geode->getDrawable(0));
                     geode->addDrawable(found->second);
                 }
             } else {
-                // nie ma sfery w odpowiednim kolorze, trzeba ja sobie stworzyæ.
-                // complex - dok³adnoœæ sfery
+                // nie ma sfery w odpowiednim kolorze, trzeba ja sobie stworzyÄ‡.
+                // complex - dokÅ‚adnoÅ›Ä‡ sfery
                 auto newSphere = createCustomSphere(complex, state.color);
                 spheresByColor[state.color] = newSphere;
-                // stara sfere trzeba usun¹æ z node'a
+                // stara sfere trzeba usunÄ…Ä‡ z node'a
                 geode->removeDrawable(geode->getDrawable(0));
                 geode->addDrawable(newSphere);
             }

@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
     created:  2011/04/06
     created:  6:4:2011   10:10
     filename: TimeChannelWidget.h
@@ -14,7 +14,7 @@
 #include <QtGui/QFrame>
 
 //! Klasa reprezentujaca pojedynczy kanal w czasie - rysuje jego zakres na osi ze wzgledu na parametry begin i end,
-//! kt�re stanowia znormalizowane wartosci. Root zajmuje zawsze caly dostepny kanal, jego dlugosc jest punktem 
+//! które stanowia znormalizowane wartosci. Root zajmuje zawsze caly dostepny kanal, jego dlugosc jest punktem 
 //! odniesienia dla pozostalych kanalow. Zakres poczatku i konca to [0;1] gdzie poczatek musi byc przed lub rowno z koncem
 class TimeChannelWidget : //public QWidget 
     public QFrame 

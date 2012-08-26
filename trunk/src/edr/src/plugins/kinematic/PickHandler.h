@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/03/09
 	created:	9:3:2012   12:10
 	filename: 	PickHandler.h
@@ -21,38 +21,38 @@
 #include <boost/function.hpp>
 #include <list>
 
-//! klasa pomocnicza, dziêki niej mo¿na ³atwo podpi¹æ siê pod system pickingu
+//! klasa pomocnicza, dziÄ™ki niej moÅ¼na Å‚atwo podpiÄ…Ä‡ siÄ™ pod system pickingu
 class PickHandler : public osgGA::GUIEventHandler
 {
 public:
-    //! wskaŸnik do wêz³a przechowywuj¹cego geometriê
+    //! wskaÅºnik do wÄ™zÅ‚a przechowywujÄ…cego geometriÄ™
     typedef osg::Geode* GeodePtr;
-    //! wskaŸnik do obiektu, który mo¿e zostaæ odrysowany na scenie
+    //! wskaÅºnik do obiektu, ktÃ³ry moÅ¼e zostaÄ‡ odrysowany na scenie
     typedef osg::ref_ptr<osg::Drawable> DrawablePtr;
-    //! krotka przechowuj¹ca : wêze³, jego obiekt, który zosta³ klikniêty, doleg³oœæ od obserwatora
+    //! krotka przechowujÄ…ca : wÄ™zeÅ‚, jego obiekt, ktÃ³ry zostaÅ‚ klikniÄ™ty, dolegÅ‚oÅ›Ä‡ od obserwatora
     typedef boost::tuple<GeodePtr, DrawablePtr, double> PickerTuple;
-    //! lista obiektów, które zosta³y "klikniête"
+    //! lista obiektÃ³w, ktÃ³re zostaÅ‚y "klikniÄ™te"
     typedef std::list<PickerTuple> PickerList;
-    //! funktor realizuj¹cy jak¹œ akcjê po klikniêciu
+    //! funktor realizujÄ…cy jakÄ…Å› akcjÄ™ po klikniÄ™ciu
     typedef boost::function<void (const PickerList& )> HandlerFunction;
 
 public:
     //! Konstruktor
-    //! \param callback funkcja, która zostanie wywo³ana za ka¿dym razem, gdy kliknie siê obiekt na scenie
+    //! \param callback funkcja, ktÃ³ra zostanie wywoÅ‚ana za kaÅ¼dym razem, gdy kliknie siÄ™ obiekt na scenie
     PickHandler(HandlerFunction callback);
 
 public:
-    //! Obs³uga eventów
+    //! ObsÅ‚uga eventÃ³w
     //! \param ea eventy myszki, klawiatury lub okna
-    //! \param aa interfejs obs³ugi akcji
+    //! \param aa interfejs obsÅ‚ugi akcji
     bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& aa);
-    //! Metoda realizuj¹ca faktyczny picking
+    //! Metoda realizujÄ…ca faktyczny picking
     //! \param view widok sceny
     //! \param ea eventy myszki, klawiatury lub okna
     virtual void pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea);
 
 protected:
-    //! funktor realiuzj¹cy pewn¹ akcjê po klikniêciu
+    //! funktor realiuzjÄ…cy pewnÄ… akcjÄ™ po klikniÄ™ciu
     HandlerFunction handlerFunction;
 };
 

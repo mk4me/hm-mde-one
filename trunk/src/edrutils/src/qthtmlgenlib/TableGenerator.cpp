@@ -1,4 +1,4 @@
-#include <qthtmlgenlib/TableGenerator.h>
+Ôªø#include <qthtmlgenlib/TableGenerator.h>
 #include <QtGui/QTextCursor>
 
 namespace htmlGen {
@@ -315,7 +315,7 @@ void HtmlTableAttributes::clearCellPadding()
 
 StyleStatus styleStatus(int value, int min, int max)
 {
-    UTILS_ASSERT(value >= min && value <= max, "Z≥a wartoúÊ po≥oøenia wzglÍdem zakresu moøliwych wartoúci");
+    UTILS_ASSERT(value >= min && value <= max, "Z≈Ça warto≈õƒá po≈Ço≈ºenia wzglƒôdem zakresu mo≈ºliwych warto≈õci");
     StyleStatus ret = Middle;
     if(min == max){
         ret = Single;
@@ -362,7 +362,7 @@ void HtmlDataTableGenerator::generateHtmlTable(QString & table, const HtmlDataTa
 
     HtmlDataTableContent::Column rowsData(rows);
 
-    // budujemy nag≥owki tabeli
+    // budujemy nag≈Çowki tabeli
     buildHeaders(c, a, rowsData, structure, styles, rows, columns);
     // budujemy wnetrze tabeli - dane
     buildContent(c, a, structure, styles, rows, columns);
@@ -389,7 +389,7 @@ void HtmlDataTableGenerator::buildHeaders(HtmlDataTableContent & content, const 
         HtmlDataTableContent::Column & rowsData, const TableHeadersStructureDescriptor & structure,
         const HtmlDataTableStyles & styles, int rows, int columns)
 {
-    // wyznaczam maksymalne wartoúci indeksÛw dla ktÛrych jeszcze mogÍ dzia≥aÊ
+    // wyznaczam maksymalne warto≈õci indeks√≥w dla kt√≥rych jeszcze mogƒô dzia≈Çaƒá
     int maxRows = structure.headerRows - 1;
     int maxColumns = structure.headerColumns - 1;
 
@@ -405,7 +405,7 @@ void HtmlDataTableGenerator::buildHeaders(HtmlDataTableContent & content, const 
     }
     }*/
 
-    // Najpierw generujemy komÛrki wierszy nag≥Ûwkowych
+    // Najpierw generujemy kom√≥rki wierszy nag≈Ç√≥wkowych
     for( ; row < structure.headerRows; ++row){
         StyleStatus rowCellStatus = styleStatus(row, 0, maxRows);
         rowsData[row] = styles.headerRowStyle_[rowCellStatus];
@@ -439,11 +439,11 @@ void HtmlDataTableGenerator::buildCell(QString & content, const QString & style,
 void HtmlDataTableGenerator::buildContent(HtmlDataTableContent & content, const HtmlDataTableCellAttributes & cellAttributes,
     const TableHeadersStructureDescriptor & structure, const HtmlDataTableStyles & styles, int rows, int columns)
 {
-    // wyznaczam maksymalne wartoúci indeksÛw dla ktÛrych jeszcze mogÍ dzia≥aÊ
+    // wyznaczam maksymalne warto≈õci indeks√≥w dla kt√≥rych jeszcze mogƒô dzia≈Çaƒá
     int maxRows = rows - 1;
     int maxColumns = columns - 1;
 
-    // uzupe≥niam style komÛrek nag≥Ûwkowych wiersza i kolumny
+    // uzupe≈Çniam style kom√≥rek nag≈Ç√≥wkowych wiersza i kolumny
     for(int row = structure.headerRows; row < rows; ++row){
         auto rowStatus = styleStatus(row, structure.headerRows, maxRows);
         for(int column = structure.headerColumns; column < columns; ++column){
@@ -552,7 +552,7 @@ void QTextTableViewHelper::updateTable(QTextTable * table)
 
 void QTextTableViewHelper::updateContent(QTextTable * table)
 {
-	//odúwieøam dane
+	//od≈õwie≈ºam dane
 	for(int i = headerRows_; i < table->rows(); ++i){
 		auto rowStatus = styleStatus(i, headerRows_, table->rows() - 1);
 		for(int j = headerColumns_; j < table->columns(); ++j){
@@ -566,7 +566,7 @@ void QTextTableViewHelper::updateContent(QTextTable * table)
 
 void QTextTableViewHelper::updateHeaders(QTextTable * table)
 {
-	//odúwieøam wiersze nag≥owkowe
+	//od≈õwie≈ºam wiersze nag≈Çowkowe
 	for(int i = 0; i < headerRows_; ++i){
 		auto rowStatus = styleStatus(i, 0, headerRows_ - 1);
 		for(int j = 0; j < table->columns(); ++j){
@@ -577,7 +577,7 @@ void QTextTableViewHelper::updateHeaders(QTextTable * table)
 		}
 	}
 
-	//odúwieøam kolumny nag≥owka
+	//od≈õwie≈ºam kolumny nag≈Çowka
 	for(int j = 0; j < headerColumns_; ++j){
 		auto columnStatus = styleStatus(j, 0, headerColumns_ - 1);
 		for(int i = headerRows_; i < table->rows(); ++i){

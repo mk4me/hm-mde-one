@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:  2010/11/12
 	created:  12:11:2010   16:29
 	filename: StreamOsgWidget.h
@@ -19,16 +19,16 @@ namespace video {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Widget dostowany do wymagaÒ strumieni video. Obs≥uguje niestandardowe
+ *	Widget dostowany do wymaga≈Ñ strumieni video. Obs≈Çuguje niestandardowe
  *  formaty pikseli.
  */
 class StreamOsgWidget : public osgWidget::Widget
 {
-    //! Program uøywany w przypadku konwersji yuv w karcie graficznej.
+    //! Program u≈ºywany w przypadku konwersji yuv w karcie graficznej.
     osg::ref_ptr<osg::Program> yuvProgram;
-    //! Shader uøywany dla texture_rectÛw.
+    //! Shader u≈ºywany dla texture_rect√≥w.
     osg::ref_ptr<osg::Shader> yuvTextureRectShader;
-    //! Shader uøywany dla texture2D.
+    //! Shader u≈ºywany dla texture2D.
     osg::ref_ptr<osg::Shader> yuvTexture2DShader;
     //! Format pikseli.
     vidlib::PixelFormat format;
@@ -44,7 +44,7 @@ public:
     vidlib::PixelFormat getPixelFormat() const;
     //! \param format
     void setPixelFormat(vidlib::PixelFormat format);
-    //! \return Czy uøywany jest texture_rectangle
+    //! \return Czy u≈ºywany jest texture_rectangle
     bool isUsingTextureRectangle() const;
     //! \return
     osg::Shader* getYuvTextureRectShader() const;

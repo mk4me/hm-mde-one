@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+ï»¿#include "VideoPCH.h"
 #undef M_PI
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -17,34 +17,34 @@ PotentiometerModel::PotentiometerModel( const PotentiometerModel& src ) :
 
 void PotentiometerModel::update( float deltaTime )
 {
-  // opór
+  // opÃ³r
   float frictionMoment = pushed ? clickFriction : airFriction;
 
-  // prêdkoœæ bez uwzglêdnienia oporu
+  // prÄ™dkoÅ›Ä‡ bez uwzglÄ™dnienia oporu
   angularVelocity = angularVelocity + (forcedMoment / momentOfInteria) * deltaTime;
-  // delta wynikaj¹ca z oporu (przeciwna do prêdkoœci)
+  // delta wynikajÄ…ca z oporu (przeciwna do prÄ™dkoÅ›ci)
   float frictionVelocity = -1.0f * utils::sign(angularVelocity) * ( frictionMoment / momentOfInteria ) * deltaTime;
 
   if ( fabs(angularVelocity) < fabs(frictionVelocity) ) {
-    // cia³o jest w spoczynku (nie uda³o siê pokonaæ tarcia)
+    // ciaÅ‚o jest w spoczynku (nie udaÅ‚o siÄ™ pokonaÄ‡ tarcia)
     angularVelocity = 0.0;
   } else {
-    // odejmujemy wartoœæ wynikaj¹c¹ z oporu
+    // odejmujemy wartoÅ›Ä‡ wynikajÄ…cÄ… z oporu
     angularVelocity += frictionVelocity;
   }
 
-  // delta k¹towa
+  // delta kÄ…towa
   delta = 0.5f * angularVelocity * deltaTime;
   // zerujemy wymuszony moment obrotowy
   forcedMoment = 0.0f;
 
-  // nowa wartoœæ
+  // nowa wartoÅ›Ä‡
   float prevValue = value;
   value += delta;
 
-  // czy dotarliœmy do granicy?
+  // czy dotarliÅ›my do granicy?
   if ( value < minValue || value > maxValue ) {
-    // zerujemy fizykê, bo jesteœmy na koñcu
+    // zerujemy fizykÄ™, bo jesteÅ›my na koÅ„cu
     value = utils::clamp(value, minValue, maxValue);
     delta = value - prevValue;
     angularVelocity = 0.0f;

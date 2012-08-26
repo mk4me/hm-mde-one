@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/03
     created:  3:2:2012   17:29
     filename: CommunicationDataSourceStatus.h
@@ -11,49 +11,49 @@
 
 #include <plugins/newCommunication/IDataSourceStatus.h>
 
-//! Klasa dostarczajπca informacji o statusie poszczegÛlnych elementÛw hierarchi danych oraz tych sztucznie stworzonych.
-//! Przechowuje stan sk≥adowania danych: Lokalne, Zdalne, CzÍsciowo lokalne
-//! Przechowuje stan uøycia danych: Za≥adowane, Nieza≥adowane, CzÍsciowo za≥adowane
+//! Klasa dostarczajƒÖca informacji o statusie poszczeg√≥lnych element√≥w hierarchi danych oraz tych sztucznie stworzonych.
+//! Przechowuje stan sk≈Çadowania danych: Lokalne, Zdalne, Czƒôsciowo lokalne
+//! Przechowuje stan u≈ºycia danych: Za≈Çadowane, Nieza≈Çadowane, Czƒôsciowo za≈Çadowane
 class DataStatus : public communication::IDataStatus
 {
     friend bool operator==(const DataStatus & a, const DataStatus & b);
     friend bool operator!=(const DataStatus & a, const DataStatus & b);
 
 public:
-    //! Konstruktor kopiujπcy
+    //! Konstruktor kopiujƒÖcy
     DataStatus(const DataStatus & status);
-    //! Domyúlny konstruktor
-    //! \param storage Stan sk≥πdowania danych
-    //! \param usage Stan uøycia danych
+    //! Domy≈õlny konstruktor
+    //! \param storage Stan sk≈ÇƒÖdowania danych
+    //! \param usage Stan u≈ºycia danych
     DataStatus(communication::DataStorage storage = communication::UnknownStorage, communication::DataUsage usage = communication::UnknownUsage);
 
     //! Wirtualny destruktor
     virtual ~DataStatus();
 
-    //! \param storage Nowy stan sk≥adowania danych
+    //! \param storage Nowy stan sk≈Çadowania danych
     void setStorage(communication::DataStorage storage);
-    //! \return stan sk≥πdowania danych
+    //! \return stan sk≈ÇƒÖdowania danych
     virtual const communication::DataStorage storage() const;
 
-    //! \param usage Nowy stan uøycia danych w DM
+    //! \param usage Nowy stan u≈ºycia danych w DM
     void setUsage(communication::DataUsage usage);
-    //! \return stan uøycia danych w DM
+    //! \return stan u≈ºycia danych w DM
     virtual const communication::DataUsage usage() const;
 
-    //! \param status WartoúÊ do przypisania
+    //! \param status Warto≈õƒá do przypisania
     //! \return obiekt po przypisaniu danych
     DataStatus & operator=(const DataStatus & status);
 
 private:
-    //! Status sk≥adowania danych
+    //! Status sk≈Çadowania danych
     communication::DataStorage storage_;
-    //! Status uøycia danych w DM
+    //! Status u≈ºycia danych w DM
     communication::DataUsage usage_;
 };
 
-//! Operator rÛwnoúci statusÛw
+//! Operator r√≥wno≈õci status√≥w
 bool operator==(const DataStatus & a, const DataStatus & b);
-//! Operator rÛønoúci statusÛw
+//! Operator r√≥≈ºno≈õci status√≥w
 bool operator!=(const DataStatus & a, const DataStatus & b);
 
 communication::DataStorage operator|(communication::DataStorage l, communication::DataStorage r);

@@ -1,4 +1,4 @@
-#include <SDL.h>
+ï»¿#include <SDL.h>
 #include <SDL_thread.h>
 #include <Windows.h>
 #include <iostream>
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // otwieramy Ÿród³o
+    // otwieramy ÅºrÃ³dÅ‚o
     VideoStream * input = NULL;
     SDL_Surface * screen = NULL;
     SDL_Surface * bmp = NULL;
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 
         fs::path path = argv[1];
         if (fs::is_directory(path)) {
-            // wczytanie listy plików
+            // wczytanie listy plikÃ³w
             std::vector<std::string> files;
             for ( fs::directory_iterator it(path), last; it != last; ++it ) {
                 files.push_back(it->path().string());
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 #endif
 
         } else {
-            // strumieñ dla pliku
+            // strumieÅ„ dla pliku
             input = new FFmpegVideoStream( path.string() );
         }
 
@@ -131,18 +131,18 @@ int main(int argc, char **argv)
         SDL_Event event;
         bool quit = false;
 
-        // czas rozpoczêcia ramki
+        // czas rozpoczÄ™cia ramki
         clock_t begin = clock();
         double bufferedTimeScale = 0.0f;
 
-        // pêtla
+        // pÄ™tla
         while (!quit && !input->isEndOfStream()) {
 
-            // próba ustawienia czasu
+            // prÃ³ba ustawienia czasu
             time = min(time, input->getDuration());
             input->setTime(time);
 
-            // kopiujemy i wyœwietlamy ramke
+            // kopiujemy i wyÅ›wietlamy ramke
             SDL_LockSurface(bmp);
             Picture picture;
             picture.format = PixelFormatRGB24;
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
             SDL_BlitSurface( bmp, NULL, screen, NULL );
             SDL_Flip( screen );
 
-            // zajmujemy siê eventami
+            // zajmujemy siÄ™ eventami
             while (SDL_PollEvent(&event)) {
                 switch ( event.type ) {
           case SDL_QUIT:
@@ -204,11 +204,11 @@ int main(int argc, char **argv)
                 }
             }
 
-            // drukujemy spacje aby zamazaæ rzeczy z poprzedniego odpisania
+            // drukujemy spacje aby zamazaÄ‡ rzeczy z poprzedniego odpisania
             cout << "time: " << time << "\t timestamp: " << input->getFrameTimestamp() << "\t timescale: " << timeScale << "              \r";
             cout.flush();
 
-            // ile czasu minê³o?
+            // ile czasu minÄ™Å‚o?
             clock_t delta = clock() - begin;
             time += delta / double(CLOCKS_PER_SEC) * timeScale;
             begin = clock();

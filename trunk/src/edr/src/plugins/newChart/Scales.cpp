@@ -1,4 +1,4 @@
-#include "NewChartPCH.h"
+﻿#include "NewChartPCH.h"
 #include "Scales.h"
 
 void Scales::merge( const Scales& scales )

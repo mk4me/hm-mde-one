@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/28
     created:  28:2:2012   9:44
     filename: IWsdlServiceCredentials.h
@@ -17,7 +17,7 @@
 namespace webservices
 {
 
-//! Interfejs konfigurowania autoryzacji u¿ytkownika us³ug webowych
+//! Interfejs konfigurowania autoryzacji uÅ¼ytkownika usÅ‚ug webowych
 class IWSCredentials : public OpenThreads::ReentrantMutex
 {
 public:
@@ -30,18 +30,18 @@ public:
     //! Wirtualny destruktor
     virtual ~IWSCredentials() {}
 
-    //! \param name Nazwa u¿ytkownika wywo³uj¹cego us³ugê
+    //! \param name Nazwa uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
     virtual void setUser(const std::string & user) = 0;
 
-    //! \param password Has³o u¿ytkownika wywo³uj¹cego us³ugê
+    //! \param password HasÅ‚o uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
     virtual void setPassword(const std::string & password) = 0;
-    //! \param name Nazwa u¿ytkownika wywo³uj¹cego us³ugê
-    //! \param password Has³o u¿ytkownika wywo³uj¹cego us³ugê
+    //! \param name Nazwa uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
+    //! \param password HasÅ‚o uÅ¼ytkownika wywoÅ‚ujÄ…cego usÅ‚ugÄ™
     virtual void setCredentials(const std::string & user, const std::string & password) = 0;
 
-    //! \return Nazwa u¿ytkownika który wywo³uje us³ugê
+    //! \return Nazwa uÅ¼ytkownika ktÃ³ry wywoÅ‚uje usÅ‚ugÄ™
     virtual const std::string user() const = 0;
-    //! \return Has³o u¿ytkownika który wywo³uje us³ugê
+    //! \return HasÅ‚o uÅ¼ytkownika ktÃ³ry wywoÅ‚uje usÅ‚ugÄ™
     virtual const std::string password() const = 0;
 };
 

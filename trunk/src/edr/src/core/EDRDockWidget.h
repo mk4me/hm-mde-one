@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/28
     created:  28:4:2011   16:34
     filename: EDRDockWidget.h
@@ -11,7 +11,7 @@
 
 #include <QtGui/QDockWidget>
 
-//! Klasa rozszerza klasycznego QDockWidget o mo¿liwosæ prze³anczania trybu oddokowywania na przeciwny,
+//! Klasa rozszerza klasycznego QDockWidget o moÅ¼liwosÄ‡ przeÅ‚anczania trybu oddokowywania na przeciwny,
 //! ustawaiania okna jako "niesmiertelnego" przy zamykaniu go oraz modyfikacji jego flag przy oddokowywaniu
 class EDRDockWidget : public QDockWidget
 {
@@ -34,7 +34,7 @@ public slots:
     void toggleFloating();
 
 public:
-    //// przykrywamy oryginaln¹ metodê ¿eby móc emitowaæ sygna³!
+    //// przykrywamy oryginalnÄ… metodÄ™ Å¼eby mÃ³c emitowaÄ‡ sygnaÅ‚!
     void setWindowTitle(const QString & title);
 
     bool isPermanent() const;

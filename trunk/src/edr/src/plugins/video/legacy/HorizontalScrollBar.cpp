@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+ï»¿#include "VideoPCH.h"
 #include <osgWidget/Box>
 #include <iostream>
 #include <algorithm>
@@ -26,12 +26,12 @@ HorizontalScrollBar::HorizontalScrollBar( const std::string& name /*= ""*/ )
   track->setEventMask(osgWidget::EVENT_MOUSE_PUSH);
   track->addCallback( new osgWidget::Callback(&HorizontalScrollBar::onTrackClicked, this, osgWidget::EVENT_MOUSE_PUSH));
 
-  // lewa krawêdŸ tracka
+  // lewa krawÄ™dÅº tracka
   borderLeft = createBackgroundWidget("borderLeft");
-  // prawa krawêdŸ tracka
+  // prawa krawÄ™dÅº tracka
   borderRight = createBackgroundWidget("borderRight");
 
-  // podokienko z t³em
+  // podokienko z tÅ‚em
   osgWidget::Box * trackWindow = new osgWidget::Box("trackWindow");
   trackWindow->addWidget(borderLeft);
   trackWindow->addWidget(track);
@@ -83,10 +83,10 @@ osgWidget::Widget * HorizontalScrollBar::createBackgroundWidget( const std::stri
 osgWidget::Quad HorizontalScrollBar::getCursorBounds() const
 {
   osgWidget::Quad result;
-  // wysokoœæ taka jak chcemy
+  // wysokoÅ›Ä‡ taka jak chcemy
   result.y() = track->getY();
   result.w() = track->getHeight() - cursor->getHeight();
-  // szerokoœæ domyœlnie te¿
+  // szerokoÅ›Ä‡ domyÅ›lnie teÅ¼
   result.x() = track->getX();
   result.z() = track->getWidth() - cursor->getWidth();
   //
@@ -155,12 +155,12 @@ void HorizontalScrollBar::operator()( osg::Node* node, osg::NodeVisitor* nv )
       if ( !tooltipWindow->isVisible() ) {
         tooltipWindow->show();
       }
-      // pozycja nad œrodkiem kursora
+      // pozycja nad Å›rodkiem kursora
       osgWidget::XYCoord pos = cursor->getOrigin();
       pos.x() += cursor->getWidth() / 2.0;
       pos.y() += cursor->getHeight();
       pos += cursor->getParent()->getAbsoluteOrigin();
-      // lewy dolny róg okienka
+      // lewy dolny rÃ³g okienka
       pos.x() -= tooltipWindow->getWidth() / 2.0;
       tooltipWindow->setOrigin(pos);
       tooltipWindow->resizeAdd();
@@ -175,7 +175,7 @@ void HorizontalScrollBar::operator()( osg::Node* node, osg::NodeVisitor* nv )
 
 bool HorizontalScrollBar::onScrollPushed( osgWidget::Event& event )
 {
-  // zapamiêtujemy jaki by³ pocz¹tkowy scroll
+  // zapamiÄ™tujemy jaki byÅ‚ poczÄ…tkowy scroll
   draggedValue = currentValue;
   return false;
 }

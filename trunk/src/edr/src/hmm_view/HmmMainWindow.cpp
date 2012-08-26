@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+ï»¿#include "hmmPCH.h"
 
 #include <core/IManagersAccessor.h>
 #include <QtGui/QMenu>
@@ -87,8 +87,8 @@ void HmmMainWindow::activateContext(QWidget * widget)
 
     setCurrentContext(toSet);
 
-    // hack - nie da siê zinstalowaæ dwoch filtrow eventów dla jednego widgeta,
-    // obecne rozwiazanie jest specyficzne dla kontekstów
+    // hack - nie da siÄ™ zinstalowaÄ‡ dwoch filtrow eventÃ³w dla jednego widgeta,
+    // obecne rozwiazanie jest specyficzne dla kontekstÃ³w
     VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(toSet);
     if (vw) {
         summaryWindowController->onVisualizator(vw);
@@ -175,9 +175,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     bottomMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     connect(topMainWindow, SIGNAL(changed()), treeUsageContext.get(), SLOT(refresh()));
     //TODO
-    //trzeba wyzanaczaæ max wysokoœæ tak aby nie "wypycha³o" nam timeline!!
-    // powinno byæ mniej wiêcej coœ takiego - wysokoœæ dla aktualnej rozdzielczoœci - wysokoœc timeline - wysokoœæ górnego paska - przestrzeñ wolna pomiêdzy tymi elementami w pionie
-    // ~ currentRes.h - 270 w przybli¿eniu -> trtzeba dok³¹dnie sprawdziæ i policzyæ
+    //trzeba wyzanaczaÄ‡ max wysokoÅ›Ä‡ tak aby nie "wypychaÅ‚o" nam timeline!!
+    // powinno byÄ‡ mniej wiÄ™cej coÅ› takiego - wysokoÅ›Ä‡ dla aktualnej rozdzielczoÅ›ci - wysokoÅ›c timeline - wysokoÅ›Ä‡ gÃ³rnego paska - przestrzeÅ„ wolna pomiÄ™dzy tymi elementami w pionie
+    // ~ currentRes.h - 270 w przybliÅ¼eniu -> trtzeba dokÅ‚Ä…dnie sprawdziÄ‡ i policzyÄ‡
     //topMainWindow->setMaximumHeight(850);
     //topMainWindow->setMinimumHeight(850);
 
@@ -192,8 +192,8 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     topMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     v->addWidget(bottomMainWindow);
     //TODO
-    //zapewniamy timelie minimaln¹, ale wystarczaj¹ca iloœc miejsca
-    //trzeba to zgraæ razem z max wysokoœci¹ dla wizualizatorów
+    //zapewniamy timelie minimalnÄ…, ale wystarczajÄ…ca iloÅ›c miejsca
+    //trzeba to zgraÄ‡ razem z max wysokoÅ›ciÄ… dla wizualizatorÃ³w
     bottomMainWindow->setMaximumHeight(120); // tymczasowo
     bottomMainWindow->setMinimumHeight(120); // tymczasowo
     bottomMainWindow->layout()->setMargin(0);
@@ -201,7 +201,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     analisisArea->setLayout(v);
 
 
-    // akcje - Workflow (VDF) i konsola <--- aktualnie œmietnik na inne serwisy i testy
+    // akcje - Workflow (VDF) i konsola <--- aktualnie Å›mietnik na inne serwisy i testy
     QMainWindow * actionsMainWindow = new QMainWindow(nullptr);
     QVBoxLayout* layout = new QVBoxLayout();
     IServicePtr dataExplorer;
@@ -234,7 +234,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
                 layout->addWidget(controlWidget);
             }
         }else{
-            //mam dataExplorer - zapamiêtuje i potem go wrzuce do danych
+            //mam dataExplorer - zapamiÄ™tuje i potem go wrzuce do danych
             dataExplorer = service;
         }
     }
@@ -259,7 +259,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         ActionsGroupManager settingsWidgetActions;
         dataTabWidget->addTab(source->getWidget(&settingsWidgetActions), QString::fromStdString(source->getName()));
         //TODO
-        //obs³u¿yc konteksy Ÿróde³
+        //obsÅ‚uÅ¼yc konteksy ÅºrÃ³deÅ‚
     }
 
     if(dataExplorer != nullptr){
@@ -267,7 +267,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         dataTabWidget->addTab(dataExplorer->getWidget(&settingsWidgetActions), QString::fromStdString(dataExplorer->getName()));
     }
 
-    //chowamy zak³adki jeœli tylko jedno Ÿród³o
+    //chowamy zakÅ‚adki jeÅ›li tylko jedno ÅºrÃ³dÅ‚o
     if(dataTabWidget->count() == 1){
         QList<QTabBar*> tabBars = dataTabWidget->findChildren<QTabBar*>();
         for(auto it = tabBars.begin(); it != tabBars.end(); ++it){
@@ -282,7 +282,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     auto visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer"), QIcon(), false);
 
     //TODO
-    //Tak dlugo jak nie mamy raportów chowamy je w wersji release
+    //Tak dlugo jak nie mamy raportÃ³w chowamy je w wersji release
     //Podobnie odnosnik do stronki
     #ifndef _DEBUG
         openButton->setVisible(false);
@@ -833,7 +833,7 @@ void HmmMainWindow::onToolButton(bool checked)
 {
     QToolButton* button = qobject_cast<QToolButton*>(sender());
 
-    //zawsze którys button z podstawowych musi byæ klikniêty/checked
+    //zawsze ktÃ³rys button z podstawowych musi byÄ‡ klikniÄ™ty/checked
     if(currentButton == button){
         if(checked == false){
             button->blockSignals(true);
@@ -842,7 +842,7 @@ void HmmMainWindow::onToolButton(bool checked)
         }
     }else{
 
-        //zapamiêtaæ aktualny kontekst
+        //zapamiÄ™taÄ‡ aktualny kontekst
         contextStates[currentButton] = ContextState(getCurrentContext(), getCurrentContextWidget());
 
         currentButton->blockSignals(true);
@@ -895,7 +895,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  VisualizerWidget* HmmMainWindow::createDockVisualizer(const VisualizerPtr & visualizer)
 {
     visualizer->getOrCreateWidget();
-    // todo : zastanowic siê nad bezpieczenstwem tej operacji
+    // todo : zastanowic siÄ™ nad bezpieczenstwem tej operacji
     connect(visualizer.get(), SIGNAL(printTriggered(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
     VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer, nullptr, 0, false);
     visualizerDockWidget->setPermanent(false);
@@ -1212,8 +1212,8 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          for (auto it = range.first; it != range.second; ) {
              // na razie kopia, w przeciwnym razie jest problem z usuwaniem.
              DataItemDescription desc = it->second;
-             // jeœli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
-             // to znaczy, ze chcemy usun¹æ dane z wszystkich wizualizatorw
+             // jeÅ›li w akcji nie przechowujemy informacji o konkretnym wizualizatorze
+             // to znaczy, ze chcemy usunÄ…Ä‡ dane z wszystkich wizualizatorw
              if (action->getVisualizer() == nullptr || desc.visualizer.lock() == action->getVisualizer()) {
                  auto toErase = it; ++it;
                  items2Descriptions.erase(toErase);

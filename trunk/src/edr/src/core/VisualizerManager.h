@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:  2011/03/11
 	created:  11:3:2011   14:29
 	filename: VisualizerManager.h
@@ -37,28 +37,28 @@ class VisualizerManager : public core::IVisualizerManager, public utils::Observa
     friend class Visualizer;
 	friend class IVisualizerChannel;
 public:
-    //! Lista wizualizatorÛw.
+    //! Lista wizualizator√≥w.
     typedef std::vector<core::IVisualizerPtr> IVisualizers;
     //! 
     typedef boost::iterator_range<IVisualizers::const_iterator> IVisualizersConstRange;
 
     typedef std::list<Visualizer*> Visualizers;
 
-    //! Lista typÛw kolejnych ürÛde≥.
+    //! Lista typ√≥w kolejnych ≈∫r√≥de≈Ç.
     typedef ObjectSlots::SlotsInfo SourcesTypes;
 
 private:
 
-    //! Niezmienne dane pobrane z wizualizatorÛw.
+    //! Niezmienne dane pobrane z wizualizator√≥w.
     struct IVisualizerPersistantData
     {
         //! Ikona.
         QIcon icon;
-        //! Lista typÛw kolejnych ürÛde≥.
+        //! Lista typ√≥w kolejnych ≈∫r√≥de≈Ç.
         SourcesTypes sourcesTypes;
     };
 
-	//! Dane zwiπzane z obs≥uga kana≥Ûw timeline
+	//! Dane zwiƒÖzane z obs≈Çuga kana≈Ç√≥w timeline
 	struct ChannelData {
 		Visualizer * visualzier;
 		std::set<core::VisualizerTimeSeriePtr> series;
@@ -70,17 +70,17 @@ private:
 	//! pomocnicza mapa (typ obiektu domenowego) -> (identyfikator wizualizatora)
 	std::map<core::TypeInfo, UniqueID> mapType2ID;
 
-    //! Prototypy wizualizatorÛw.
+    //! Prototypy wizualizator√≥w.
     IVisualizers prototypes;
 
     Visualizers visualizers;
 
-    //! Sta≥e dane wizualizatorÛw.
+    //! Sta≈Çe dane wizualizator√≥w.
     std::vector< IVisualizerPersistantData* > visualizersData;
     //! Widget do wizualizacji struktury sceny 3D. Do debuggowania.
     //SceneGraphWidget* debugWidget;
 
-	//! Utworzone kana≥y
+	//! Utworzone kana≈Çy
 	std::map<IVisualizerChannel *, ChannelData> channels;
 	std::map<Visualizer *, std::set<IVisualizerChannel *>> visualizerChannels;
 
@@ -97,20 +97,20 @@ public:
     //! \param visualizer
     void registerVisualizer(core::IVisualizerPtr visualizer);
 
-    //! Aktualizacja wizualizatorÛw.
+    //! Aktualizacja wizualizator√≥w.
     void update();
 
     //! \return Ikona dla danego wizualizatora.
     const QIcon& getIcon(UniqueID id) const;
-    //! \return Informacje o wejúciu dla danego wizualizatora.
+    //! \return Informacje o wej≈õciu dla danego wizualizatora.
     const SourcesTypes& getSourcesTypes(UniqueID id) const;
 
-    //! \return Wyliczenie prototypÛw.
+    //! \return Wyliczenie prototyp√≥w.
     inline IVisualizersConstRange enumPrototypes() const
     {
         return boost::make_iterator_range(prototypes.begin(), prototypes.end());
     }
-    //! \return Liczba zarejestrowanych prototypÛw.
+    //! \return Liczba zarejestrowanych prototyp√≥w.
     inline int getNumPrototypes() const
     {
         return static_cast<int>(prototypes.size());
@@ -123,8 +123,8 @@ public:
     }
 
     //! Sprawdzenie czy dla danego typu danych istnieje wizualizator
-    //! \param type Typ danych dla ktÛrego chcemy uzyskaÊ wizualizator
-    //! \return Instancja wizualizatora lub wyjπtek jeúli nie moøna utworzyÊ (bo nie istnieje + inne b≥Ídy)
+    //! \param type Typ danych dla kt√≥rego chcemy uzyskaƒá wizualizator
+    //! \return Instancja wizualizatora lub wyjƒÖtek je≈õli nie mo≈ºna utworzyƒá (bo nie istnieje + inne b≈Çƒôdy)
     inline bool existVisualizerForType(const core::TypeInfo & type) const
     {
         DataManager* dataManager = DataManager::getInstance();
@@ -140,59 +140,59 @@ public:
     //! \param id ID wizualizatora.
     core::IVisualizerConstPtr getPrototype(UniqueID id) const;
 
-    //! Tworzy instancjÍ wizualizatora.
+    //! Tworzy instancjƒô wizualizatora.
     //! \param id id wizualizatora.
     //! \return Instancja wizualizatora.
     VisualizerPtr createVisualizer(UniqueID id);
 
-    //! \return Liczba instancji wizualizatorÛw danego typu.
+    //! \return Liczba instancji wizualizator√≥w danego typu.
     int getNumInstances(UniqueID id);
 
-	//! \param serie Seria danych, ktÛrπ opakowujemy w kana≥ i dodajemy do timeline
-	//! \param visualizer Wizualizator ktÛrego seria ta dotyczy
-	//! \param path åcieøka w timeline gdzie prÛbujemy dodaÊ kana≥
-	//! \param synchRemove Czy usuniÍcie kana≥u z timeline powinno skutkowaÊ usuniÍciem jego serii danych z wizualizatora
-	//! \return Wskaünik typu const void * identyfikujπcy utworzony kana≥, wartoúÊ nullptr oznacza øe kana≥u nie utworzono
+	//! \param serie Seria danych, kt√≥rƒÖ opakowujemy w kana≈Ç i dodajemy do timeline
+	//! \param visualizer Wizualizator kt√≥rego seria ta dotyczy
+	//! \param path ≈öcie≈ºka w timeline gdzie pr√≥bujemy dodaƒá kana≈Ç
+	//! \param synchRemove Czy usuniƒôcie kana≈Çu z timeline powinno skutkowaƒá usuniƒôciem jego serii danych z wizualizatora
+	//! \return Wska≈∫nik typu const void * identyfikujƒÖcy utworzony kana≈Ç, warto≈õƒá nullptr oznacza ≈ºe kana≈Çu nie utworzono
 	const void * createChannel(const core::VisualizerTimeSeriePtr & serie, Visualizer * visualizer, const std::string & path = std::string(), bool synchRemove = true);
-	//! \param series Serie danych, ktÛre opakowujemy w kana≥ i dodajemy do timeline
-	//! \param visualizer Wizualizator ktÛrego serie te dotyczy
-	//! \param path åcieøka w timeline gdzie prÛbujemy dodaÊ kana≥
-	//! \param synchRemove Czy usuniÍcie kana≥u z timeline powinno skutkowaÊ usuniÍciem jego serii danych z wizualizatora
-	//! \return Wskaünik typu const void * identyfikujπcy utworzony kana≥, wartoúÊ nullptr oznacza øe kana≥u nie utworzono
+	//! \param series Serie danych, kt√≥re opakowujemy w kana≈Ç i dodajemy do timeline
+	//! \param visualizer Wizualizator kt√≥rego serie te dotyczy
+	//! \param path ≈öcie≈ºka w timeline gdzie pr√≥bujemy dodaƒá kana≈Ç
+	//! \param synchRemove Czy usuniƒôcie kana≈Çu z timeline powinno skutkowaƒá usuniƒôciem jego serii danych z wizualizatora
+	//! \return Wska≈∫nik typu const void * identyfikujƒÖcy utworzony kana≈Ç, warto≈õƒá nullptr oznacza ≈ºe kana≈Çu nie utworzono
 	const void * createChannel(const std::vector<core::VisualizerTimeSeriePtr> & series, Visualizer * visualizer, const std::string & path, bool synchRemove = true);
-	//! \param channel Wskaünik typu const void * identyfikujπcy kana≥ dla serii danych utworzony dla timeline
+	//! \param channel Wska≈∫nik typu const void * identyfikujƒÖcy kana≈Ç dla serii danych utworzony dla timeline
 	void removeChannel(const void * channel);
-	//! \param channel Wskaünik typu const void * identyfikujπcy kana≥ dla serii danych utworzony dla timeline
-	//! Metoda oznacza øe serie danych kana≥u zosta≥y juø usuniÍtÍ z wizualizatora
+	//! \param channel Wska≈∫nik typu const void * identyfikujƒÖcy kana≈Ç dla serii danych utworzony dla timeline
+	//! Metoda oznacza ≈ºe serie danych kana≈Çu zosta≈Çy ju≈º usuniƒôtƒô z wizualizatora
 	void markAsRemovedFromVisualizer(const void * channel);
 
-	//! \param visualizer Wizualizator dla ktÛrego oznaczamy ze wszystkie serie kana≥Ûw zosta≥y juø obs≥uøone - nie wymagaja usuwania
+	//! \param visualizer Wizualizator dla kt√≥rego oznaczamy ze wszystkie serie kana≈Ç√≥w zosta≈Çy ju≈º obs≈Çu≈ºone - nie wymagaja usuwania
 	void markAllChannelsAsRemovedFromVisualizer(Visualizer * visualizer);
-	//! \param visualizer Wizualizator dla ktÛrego usuwamy wszystkie kana≥y
+	//! \param visualizer Wizualizator dla kt√≥rego usuwamy wszystkie kana≈Çy
 	void removeAllChannelsFromVisualizer(Visualizer * visualizer);
 
-	//! Wszystkie kana≥y sπ oznaczone jako obs≥uøone przez wizualizaotry
+	//! Wszystkie kana≈Çy sƒÖ oznaczone jako obs≈Çu≈ºone przez wizualizaotry
 	void markAllChannelsAsRemoved();
-	//! Usuwa wszystkie kana≥y
+	//! Usuwa wszystkie kana≈Çy
 	void removeAllChannels();
 
 private:
-    //! Tworzy instancjÍ wizualizatora.
+    //! Tworzy instancjƒô wizualizatora.
     //! \param id id wizualizatora.
     //! \return Instancja wizualizatora.
     VisualizerPtr createVisualizer(const core::IVisualizerConstPtr& prototype);
     //! 
     VisualizerPtr createVisualizer(const Visualizer& prototype);
 
-	//! \param channel Kana≥ ktÛry w≥aúnie jest usuwamy
+	//! \param channel Kana≈Ç kt√≥ry w≈Ça≈õnie jest usuwamy
 	//! Jedyny smart pointer jest trzymany przez timeline
-	//! Jeúli tam go usuwam to uruchamiam jego destruktor ktÛry realizuje czyszczenie w wizualizatorach
+	//! Je≈õli tam go usuwam to uruchamiam jego destruktor kt√≥ry realizuje czyszczenie w wizualizatorach
 	void notifyDestroyed(IVisualizerChannel * channel);
 
-// TODO: create publiczne bez friend Visualizer czy prywatne + jakis inny mechanizm dostÍpu?
+// TODO: create publiczne bez friend Visualizer czy prywatne + jakis inny mechanizm dostƒôpu?
 public:
-	//! Tworzy instancjÍ wizualizatora.
-	//! \param typeInfo typ, ktÛry bÍdzie wyúwietlany w wizualizatorze.
+	//! Tworzy instancjƒô wizualizatora.
+	//! \param typeInfo typ, kt√≥ry bƒôdzie wy≈õwietlany w wizualizatorze.
 	//! \return Instancja wizualizatora.
 	VisualizerPtr createVisualizer(const core::TypeInfo& typeInfo);
 

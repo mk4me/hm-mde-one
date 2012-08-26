@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+ï»¿#include "VideoPCH.h"
 #include <osg/TextureRectangle>
 #include "ImageCanvas.h"
 
@@ -13,7 +13,7 @@ ImageCanvas::ImageCanvas( const std::string& name/*= ""*/ ) :
   osgWidget::Canvas(name),
   keepImageRatio(false)
 {
-  // t³o przeŸroczyste
+  // tÅ‚o przeÅºroczyste
   getBackground()->setColor(0, 0, 0, 0);
 
   // tworzymy widget
@@ -39,7 +39,7 @@ ImageCanvas::ImageCanvas( const ImageCanvas& canvas, const osg::CopyOp& copyop )
   border.setParent(this);
   border.onClone(canvas.border);
 
-  // ustawiamy zmienn¹ image
+  // ustawiamy zmiennÄ… image
   osg::StateSet* ss = rect->getStateSet();
   if (ss) {
     osg::Texture * texture = dynamic_cast<osg::Texture*>(ss->getTextureAttribute(0, osg::StateAttribute::TEXTURE));
@@ -77,14 +77,14 @@ void ImageCanvas::setImage( osg::Image* image, bool useTextureRect /*= false*/ )
       texture = new osg::TextureRectangle();
       texture->setImage(0, image);
     } else {
-      // tworzymy teksturkê
+      // tworzymy teksturkÄ™
       texture = new osg::Texture2D();
       texture->setImage(0, image);
       texture->setResizeNonPowerOfTwoHint(false);
     }
-    // ustawiamy teksturkê
+    // ustawiamy teksturkÄ™
     rect->setTexture(texture, false, false);
-    // ustawiamy wspó³rzêdne
+    // ustawiamy wspÃ³Å‚rzÄ™dne
     setTexCoord();
     getLabel()->setLabel(image->getFileName());
   } else {
@@ -96,7 +96,7 @@ void ImageCanvas::setImage( osg::Image* image, bool useTextureRect /*= false*/ )
 void ImageCanvas::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::point_type diffHeight )
 {
   osgWidget::Canvas::_resizeImplementation(diffWidth, diffHeight);
-  // aktualizacja rozmiaru prostok¹ta z obrazkiem
+  // aktualizacja rozmiaru prostokÄ…ta z obrazkiem
   float height = getHeight() + diffHeight;
   float width = getWidth() + diffWidth;
 
@@ -147,7 +147,7 @@ void ImageCanvas::setKeepImageRatio( bool keepImageRatio )
 
 void ImageCanvas::setTexCoord(osgWidget::Quad normCoords /*= osgWidget::Quad(0,0,1,1)*/ )
 {
-  // ustawiamy zmienn¹ image
+  // ustawiamy zmiennÄ… image
   osg::StateSet* ss = rect->getStateSet();
   bool useTextureRect = ss && dynamic_cast<osg::TextureRectangle*>(ss->getTextureAttribute(0, osg::StateAttribute::TEXTURE));
   bool flip = image->getOrigin()==osg::Image::TOP_LEFT;

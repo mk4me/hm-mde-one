@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include "VisualizerChannel.h"
 #include "VisualizerManager.h"
 
@@ -36,7 +36,7 @@ double VisualizerChannel::getLength() const
 VisualizerChannel * VisualizerChannel::clone() const
 {
     //TODO
-    //mo¿na tutaj wprowadzic zarz¹dzanie klonowaniem serii
+    //moÅ¼na tutaj wprowadzic zarzÄ…dzanie klonowaniem serii
 
     return nullptr;
 }
@@ -54,7 +54,7 @@ const core::VisualizerTimeSerieConstPtr & VisualizerChannel::getSerie() const
 VisualizerMultiChannel::VisualizerMultiChannel(const std::vector<core::VisualizerTimeSeriePtr> & channelSeries)
     : channelSeries_(channelSeries)
 {
-    UTILS_ASSERT((channelSeries.empty() == false), "Nie podano ¿adnych serii dla kanalu");
+    UTILS_ASSERT((channelSeries.empty() == false), "Nie podano Å¼adnych serii dla kanalu");
 }
 
 VisualizerMultiChannel::~VisualizerMultiChannel()
@@ -87,7 +87,7 @@ double VisualizerMultiChannel::getLength() const
 VisualizerMultiChannel * VisualizerMultiChannel::clone() const
 {
     //TODO
-    //mo¿na tutaj wprowadzic zarz¹dzanie klonowaniem serii
+    //moÅ¼na tutaj wprowadzic zarzÄ…dzanie klonowaniem serii
 
     return nullptr;
 }

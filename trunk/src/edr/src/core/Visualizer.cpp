@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include <QtGui/QAction>
 #include "Visualizer.h"
 #include "VisualizerManager.h"
@@ -51,7 +51,7 @@ QWidget* Visualizer::getOrCreateWidget()
         genericActions.addGroupAction(id, print);
 
         tryRun();
-        UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");
+        UTILS_ASSERT(widget, "Nie udaÅ‚o siÄ™ stworzyÄ‡ widgeta.");
     }
     return widget;
 }

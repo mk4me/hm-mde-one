@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/07/14
 	created:  14:7:2010   10:40
 	filename: Potentiometer.h
@@ -12,7 +12,7 @@
 #include <osg/Timer>
 #include <osgWidget/Widget>
 
-// TODO: przenieœæ do nawiasów <>
+// TODO: przenieÅ›Ä‡ do nawiasÃ³w <>
 #include "PotentiometerModel.h"
 #include "NestedNodeCallback.h"
 #include "Callback.h"
@@ -22,27 +22,27 @@ namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Kontrolka potencjometru. Po³¹czenie widoku i kontrolera.
- *  Jego dzia³anie polega na przesuwaniu wspó³rzêdnych tekstury. Wobec tego
- *  musi byæ do tego celu specjalnie przygotowana: musi sk³adaæ siê z kafelek
+ *	Kontrolka potencjometru. PoÅ‚Ä…czenie widoku i kontrolera.
+ *  Jego dziaÅ‚anie polega na przesuwaniu wspÃ³Å‚rzÄ™dnych tekstury. Wobec tego
+ *  musi byÄ‡ do tego celu specjalnie przygotowana: musi skÅ‚adaÄ‡ siÄ™ z kafelek
  *  (tiles):
  *      +----+-- ... --+----+
  *      |    |         |    |
  *      +----+-- ... --+----+
- *  ¯eby efekt obrotu móg³ byæ uzyskany pierwszy i ostatni tile musz¹ byæ
- *  jednakowe. Alternatyw¹ jest tekstura bez "zapêtlenia" oraz taki dobór
- *  parametrów, aby nie musia³o dojœæ do obrotu wymagaj¹cego zapêtlonej
+ *  Å»eby efekt obrotu mÃ³gÅ‚ byÄ‡ uzyskany pierwszy i ostatni tile muszÄ… byÄ‡
+ *  jednakowe. AlternatywÄ… jest tekstura bez "zapÄ™tlenia" oraz taki dobÃ³r
+ *  parametrÃ³w, aby nie musiaÅ‚o dojÅ›Ä‡ do obrotu wymagajÄ…cego zapÄ™tlonej
  *  tekstury.
- *  Przy obrocie potencjometru o 2*PI (360 stopni) tekstura ustawia siê na
+ *  Przy obrocie potencjometru o 2*PI (360 stopni) tekstura ustawia siÄ™ na
  *  ostatnim tile'u.
  */
 class Potentiometer : public osgWidget::Widget, public PotentiometerModel,
   public EventSource
 {
 public:
-  //! Lista eventów.
+  //! Lista eventÃ³w.
   enum EventID {
-    //! Zmieni³a siê wartoœæ potencjometru.
+    //! ZmieniÅ‚a siÄ™ wartoÅ›Ä‡ potencjometru.
     EventIDValueChanged = 1
   };
 
@@ -52,7 +52,7 @@ private:
   {
     //! Poprzedni timestamp
     float previous;
-    //! Konstruktor zeruj¹cy.
+    //! Konstruktor zerujÄ…cy.
     Updater() : previous(0.0f) {}
     //! Aktualizacja.
     virtual void update(osg::NodeVisitor* nv , osg::Drawable* geom);
@@ -62,17 +62,17 @@ private:
   using osgWidget::Widget::Corner;
 
 private:
-  //! Czas rozpoczêcia dotyku.
+  //! Czas rozpoczÄ™cia dotyku.
   osg::Timer pushTime;
-  //! Miejsce rozpoczêcia dotyku.
+  //! Miejsce rozpoczÄ™cia dotyku.
   osgWidget::XYCoord pushDelta;
-  //! Szerokoœæ tile'i w jednostkach tekstury.
+  //! SzerokoÅ›Ä‡ tile'i w jednostkach tekstury.
   osgWidget::texcoord_type textureTileWidth;
-  //! Parametr mówi¹cy, jak bardzo d³ugoœæ ruchu bêdzie przek³adana na si³ê
-  //! przy³o¿on¹ do potencjometru.
-  /** Przy³o¿ona si³a = Wektor wodz¹cy myszy * czu³oœæ / (deltaCzasowa * szerokoœæ/2) */
+  //! Parametr mÃ³wiÄ…cy, jak bardzo dÅ‚ugoÅ›Ä‡ ruchu bÄ™dzie przekÅ‚adana na siÅ‚Ä™
+  //! przyÅ‚oÅ¼onÄ… do potencjometru.
+  /** PrzyÅ‚oÅ¼ona siÅ‚a = Wektor wodzÄ…cy myszy * czuÅ‚oÅ›Ä‡ / (deltaCzasowa * szerokoÅ›Ä‡/2) */
   float sensetivity;
-  //! Poprzednia wartoœæ.
+  //! Poprzednia wartoÅ›Ä‡.
   float prevValue;
 
 public:
@@ -85,7 +85,7 @@ public:
   Potentiometer(const std::string& name = "", osgWidget::point_type width = 0, 
     osgWidget::point_type height = 0);
 
-  //! Konstruktor kopiuj¹cy.
+  //! Konstruktor kopiujÄ…cy.
   //! \param src
   //! \param copyop
   Potentiometer(const Potentiometer& src, const osg::CopyOp& copyop);
@@ -100,12 +100,12 @@ public:
   { 
     this->sensetivity = sensetivity; 
   }
-  //! \return Szerokoœæ tile'i w jednostkach tekstury.
+  //! \return SzerokoÅ›Ä‡ tile'i w jednostkach tekstury.
   inline osgWidget::texcoord_type getTextureTileWidth() const
   { 
     return textureTileWidth;
   }
-  //! \param textureTileWidth Szerokoœæ tile'i w jednostkach tekstury.
+  //! \param textureTileWidth SzerokoÅ›Ä‡ tile'i w jednostkach tekstury.
   inline void setTextureTileWidth(osgWidget::texcoord_type textureTileWidth) 
   { 
     this->textureTileWidth = textureTileWidth; 
@@ -132,7 +132,7 @@ public:
   virtual bool mouseDrag(double x, double y, const osgWidget::WindowManager* wm);
 
 private:
-  //! Reakcja na wykonanie ruchu mysz¹.
+  //! Reakcja na wykonanie ruchu myszÄ….
   //! \param delta
   void notifyDrag(osgWidget::XYCoord delta);
 
@@ -140,7 +140,7 @@ private:
   //! \param deltaTime Delta.
   void update(double deltaTime);
 
-  //! Pomocnicza funkcja do ustawiania koordynatów tekstury.
+  //! Pomocnicza funkcja do ustawiania koordynatÃ³w tekstury.
   //! \param s
   //! \param corner
   inline void setTexCoordS(osgWidget::texcoord_type s, Corner corner)
@@ -148,7 +148,7 @@ private:
     setTexCoord( s, getTexCoord(corner).y(), corner );
   }
 
-  //! Prze³adowanie metody z obserwatora.
+  //! PrzeÅ‚adowanie metody z obserwatora.
   virtual void notify();
 
   //! Ukrycie metody bazowej.

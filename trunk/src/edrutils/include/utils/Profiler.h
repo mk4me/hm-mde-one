@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/08/05
 	created:  5:8:2010   11:27
 	filename: Profiler.h
@@ -34,32 +34,32 @@ struct ProfilerEntryUpdater;
 struct ProfilerThreadScope;
 struct ThreadEntryToCSV;
 
-//! Maksymalna liczba wpisów.
+//! Maksymalna liczba wpisÃ³w.
 #define UTILS_PROFILER_MAX_ENTRIES 1000
-//! Maksymalna liczba aktywnych w¹tków mo¿liwa do identyfikacji bez rozga³êzieñ.
+//! Maksymalna liczba aktywnych wÄ…tkÃ³w moÅ¼liwa do identyfikacji bez rozgaÅ‚Ä™zieÅ„.
 #define UTILS_PROFILER_LIST_SIZE 4
-//! Domyœlny plik docelowy.
+//! DomyÅ›lny plik docelowy.
 #define UTILS_PROFILER_DEFAULT_DUMP_FILE "ProfilerLog.csv"
 
 /**
- *  Profiler wielow¹tkowy. Dzia³a z minimalnymi narzutami (kilka promili) nawet
+ *  Profiler wielowÄ…tkowy. DziaÅ‚a z minimalnymi narzutami (kilka promili) nawet
  *  w trybie debug.
- *  ¯eby uaktywniæ profilowanie w¹tku, nale¿y albo stworzyæ lokalnie instancjê
- *  typu ThreadScope, albo pos³u¿yæ siê metod¹ Profiler::setThreadEnabled
- *  przy rozpoczynaniu i koñczeniu w¹tku.
- *  Pomiary odbywaj¹ siê przy u¿yciu statycznych wpisów identyfikuj¹cych funkcjê
+ *  Å»eby uaktywniÄ‡ profilowanie wÄ…tku, naleÅ¼y albo stworzyÄ‡ lokalnie instancjÄ™
+ *  typu ThreadScope, albo posÅ‚uÅ¼yÄ‡ siÄ™ metodÄ… Profiler::setThreadEnabled
+ *  przy rozpoczynaniu i koÅ„czeniu wÄ…tku.
+ *  Pomiary odbywajÄ… siÄ™ przy uÅ¼yciu statycznych wpisÃ³w identyfikujÄ…cych funkcjÄ™
  *  (ProfilerEntry) oraz ich aktualizatory, tworzone lokalnie ProfilerEntryUpdater. 
- *  Gdy zasiêg nazw, dla którego stworzono instancjê ProfilerEntryUpdater siê zakoñczy,
- *  destruktur na podstawie wskaŸnika do ProfilerEntry bêdzie w stanie zaktualizowaæ
+ *  Gdy zasiÄ™g nazw, dla ktÃ³rego stworzono instancjÄ™ ProfilerEntryUpdater siÄ™ zakoÅ„czy,
+ *  destruktur na podstawie wskaÅºnika do ProfilerEntry bÄ™dzie w stanie zaktualizowaÄ‡
  *  dane pomiarowe.
  *
- *  Problemem okaza³o siê przeprowadzanie pomiarów œrodowisku wielow¹tkowym. Ostatecznie
- *  ka¿dy w¹tek dysponuje swoim zestawem pomiarów, dziêki czemu kod synchronizuj¹cy
- *  ograniczony jest do minimum. W momencie wykonywania zrzutu do pliku dane s¹ konsolidowane.
- *  Dodatkowo je¿eli liczba aktywnych w¹tków jest niska (<= UTILS_PROFILER_LIST_SIZE),
- *  wyznaczenie zestawu danych na podsatwie id odbywa siê bez instrukcji rozga³êzieñ. Je¿eli
- *  liczba aktywnych w¹tków uroœnie ponad tê liczbê, wówczas u¿ywany jest kontener std::map,
- *  w którym overhead zwi¹zany z obs³ug¹ drzewa zwiêksza narzut czasowy Profilera, zw³aszcza
+ *  Problemem okazaÅ‚o siÄ™ przeprowadzanie pomiarÃ³w Å›rodowisku wielowÄ…tkowym. Ostatecznie
+ *  kaÅ¼dy wÄ…tek dysponuje swoim zestawem pomiarÃ³w, dziÄ™ki czemu kod synchronizujÄ…cy
+ *  ograniczony jest do minimum. W momencie wykonywania zrzutu do pliku dane sÄ… konsolidowane.
+ *  Dodatkowo jeÅ¼eli liczba aktywnych wÄ…tkÃ³w jest niska (<= UTILS_PROFILER_LIST_SIZE),
+ *  wyznaczenie zestawu danych na podsatwie id odbywa siÄ™ bez instrukcji rozgaÅ‚Ä™zieÅ„. JeÅ¼eli
+ *  liczba aktywnych wÄ…tkÃ³w uroÅ›nie ponad tÄ™ liczbÄ™, wÃ³wczas uÅ¼ywany jest kontener std::map,
+ *  w ktÃ³rym overhead zwiÄ…zany z obsÅ‚ugÄ… drzewa zwiÄ™ksza narzut czasowy Profilera, zwÅ‚aszcza
  *  w trybie Debug.
  */
 class Profiler
@@ -70,12 +70,12 @@ class Profiler
     friend struct ThreadEntryToCSV;
 
 public:
-    //! Czas w wysokiej rozdzielczoœci.
+    //! Czas w wysokiej rozdzielczoÅ›ci.
     typedef __system::Tick tick;
-    //! Typ id w¹tku.
+    //! Typ id wÄ…tku.
     typedef __system::ThreadID threadID;
 
-    //! Typ w³¹czaj¹cy profilowanie bie¿¹cego w¹tku w bie¿¹cej przestrzeni nazw.
+    //! Typ wÅ‚Ä…czajÄ…cy profilowanie bieÅ¼Ä…cego wÄ…tku w bieÅ¼Ä…cej przestrzeni nazw.
     struct ThreadScope
     {
         ThreadScope() { Profiler::instance.setThreadEnabled(true);}
@@ -85,61 +85,61 @@ public:
     //! Pomiar.
     struct Measurement
     {
-        //! Liczba tykniêæ.
+        //! Liczba tykniÄ™Ä‡.
         Profiler::tick ticks;
-        //! Liczba wejœæ.
+        //! Liczba wejÅ›Ä‡.
         unsigned entrances;
     };
 
     //! Stan profilingu.
     struct State
     {
-        //! Bie¿¹cy wpis.
+        //! BieÅ¼Ä…cy wpis.
         ProfilerEntry* currentEntry;
-        //! Czas rozpoczêcia.
+        //! Czas rozpoczÄ™cia.
         tick start;
-        //! £¹czny czas trwania.
+        //! ÅÄ…czny czas trwania.
         tick duration;
         //! Pomiary.
         Measurement measurements[UTILS_PROFILER_MAX_ENTRIES];
     };
 
-    //! Skojarzenie w¹tku ze stanem.
+    //! Skojarzenie wÄ…tku ze stanem.
     typedef std::pair<threadID, State*> ThreadEntry;
-    //! Dane o w¹tkach w postaci mapy.
+    //! Dane o wÄ…tkach w postaci mapy.
     typedef std::map<ThreadEntry::first_type, ThreadEntry::second_type> ThreadMap;
 
 private:
     //! Instancja profilera.
     static Profiler instance;
-    //! ID nastêpnego wpisu.
+    //! ID nastÄ™pnego wpisu.
     volatile long nextID;
-    //! Czy jest w³¹czony?
+    //! Czy jest wÅ‚Ä…czony?
     bool enabled;
     //! Czas trwania programu.
     tick duration;
     //! Czas startu programu.
     tick start;
-    //! Czas ostatniego w³¹czenia.
+    //! Czas ostatniego wÅ‚Ä…czenia.
     tick enabledStart;
-    //! £¹czny czas w³¹czenia.
+    //! ÅÄ…czny czas wÅ‚Ä…czenia.
     tick enabledDuration;
-    //! Czas zmarnotrawiony na logikê profilera.
+    //! Czas zmarnotrawiony na logikÄ™ profilera.
     volatile tick overhead;
     //! Wpisy.
     ProfilerEntry* entires[UTILS_PROFILER_MAX_ENTRIES];
-    //! Lista aktywnych w¹tków.
+    //! Lista aktywnych wÄ…tkÃ³w.
     ThreadEntry threadList[UTILS_PROFILER_LIST_SIZE];
-    //! Mapa aktywnych w¹tków.
+    //! Mapa aktywnych wÄ…tkÃ³w.
     ThreadMap threadMap;
-    //! Liczba aktywnych w¹tków.
+    //! Liczba aktywnych wÄ…tkÃ³w.
     int threadCount;
-    //! Niekatywne ju¿ w¹tki.
+    //! Niekatywne juÅ¼ wÄ…tki.
     ThreadMap inactiveThreads;
 
     //! Plik do automatycznego zapisu loga.
     std::string autoDumpFile;
-    //! Czy w logu dane pomiarowe maj¹ byæ rozbite na poszczegolne w¹tki?
+    //! Czy w logu dane pomiarowe majÄ… byÄ‡ rozbite na poszczegolne wÄ…tki?
     bool perThreadDumpEnabled;
 
 public:
@@ -157,37 +157,37 @@ public:
     }
 
 
-    //! Czy profiler jest w³¹czony?
+    //! Czy profiler jest wÅ‚Ä…czony?
     //! \param enabled
     static void setEnabled(bool enabled);
-    //! Czy profilowanie dla w¹tku jest w³¹czone?
+    //! Czy profilowanie dla wÄ…tku jest wÅ‚Ä…czone?
     void setThreadEnabled(bool enabled);
-    //! Czy profilowanie dla w¹tku jest w³¹czone?
+    //! Czy profilowanie dla wÄ…tku jest wÅ‚Ä…czone?
     bool isThreadEnabled();
 
-    //! \return Œcie¿ka do automatycznego zapisu.
+    //! \return ÅšcieÅ¼ka do automatycznego zapisu.
     static const std::string& getAutoDumpFile() 
     { 
         return instance.autoDumpFile;
     }
-    //! \param autoDumpFile Œcie¿ka do automatycznego zapisu.
+    //! \param autoDumpFile ÅšcieÅ¼ka do automatycznego zapisu.
     static void setAutoDumpFile(const std::string& autoDumpFile) 
     { 
         instance.autoDumpFile = autoDumpFile; 
     }
 
-    //! \return Tykniêcia zegara o wysokiej czêstotliwoœci.
+    //! \return TykniÄ™cia zegara o wysokiej czÄ™stotliwoÅ›ci.
     inline static tick getTick()
     {
         return __system::getTick();
     }
-    //! Konwersja tykniêcia do sekund.
+    //! Konwersja tykniÄ™cia do sekund.
     inline static double tickToSeconds(tick value)
     {
         return __system::tickToSeconds(value);
     }
 
-    //! Zapisuje log pod zadany strumieñ.
+    //! Zapisuje log pod zadany strumieÅ„.
     static void dump(std::ostream& output);
     //! \return Log.
     static std::string dump();
@@ -207,23 +207,23 @@ private:
     //! Dodaje wpis do listy.
     static void addEntry(ProfilerEntry * entry);
     
-    //! \return Stan dla bie¿¹cego w¹tku b¹dŸ NULL, je¿eli jest wy³¹czony.
+    //! \return Stan dla bieÅ¼Ä…cego wÄ…tku bÄ…dÅº NULL, jeÅ¼eli jest wyÅ‚Ä…czony.
     State* getState();
 
-    //! W³¹cza profilowanie dla w¹tku.
+    //! WÅ‚Ä…cza profilowanie dla wÄ…tku.
     void enableThread(threadID thread);
-    //! Wy³¹cza profileowanie dla w¹tku.
+    //! WyÅ‚Ä…cza profileowanie dla wÄ…tku.
     void disableThread(threadID thread);
 
-    //! Zrzuca dane do ³añcucha.
+    //! Zrzuca dane do Å‚aÅ„cucha.
     //! \param output
     std::string createCSV();
-    //! Funkcja zrzucaj¹ca pewien przedzia³ elementów ThreadEntry
+    //! Funkcja zrzucajÄ…ca pewien przedziaÅ‚ elementÃ³w ThreadEntry
 
     template <class FwdIter>
     void scopeToCSV(std::ostringstream& str, FwdIter first, FwdIter last);
 
-    //! Funkcja wykonuj¹ca jak¹œ czynnoœæ na wszystkich stanach wszystkich w¹tków.
+    //! Funkcja wykonujÄ…ca jakÄ…Å› czynnoÅ›Ä‡ na wszystkich stanach wszystkich wÄ…tkÃ³w.
     template <class Func>
     void forEachThread(Func func);
 
@@ -236,8 +236,8 @@ private:
 
 /**
  *	Wpis profilera. Typ przeznaczany do tworzenia jako zmienne statyczne w funckjach. Rodzi
- *  to problem wyœcigu w warunkach wielow¹tkowoœci, ale poniewa¿ typ nie konstruuje ¿adnych
- *  podobiektów ani ich nie kasuje - nie jest wa¿ne, ile razy bêdzie wywo³any
+ *  to problem wyÅ›cigu w warunkach wielowÄ…tkowoÅ›ci, ale poniewaÅ¼ typ nie konstruuje Å¼adnych
+ *  podobiektÃ³w ani ich nie kasuje - nie jest waÅ¼ne, ile razy bÄ™dzie wywoÅ‚any
  *  konstruktor / destruktor.
  */
 struct ProfilerEntry
@@ -267,8 +267,8 @@ struct ProfilerEntry
     //!
     ~ProfilerEntry();
 
-    //! \param length D³ugoœæ nazwy.
-    //! \return Nazwa typu. Nie jest zakoñczona zerem!
+    //! \param length DÅ‚ugoÅ›Ä‡ nazwy.
+    //! \return Nazwa typu. Nie jest zakoÅ„czona zerem!
     const char* getTypeName(int& length) const;
     //! \return Typ.
     const char* getFunctionName() const;
@@ -276,7 +276,7 @@ struct ProfilerEntry
 
 
 /**
- *	Struktura aktualizuj¹ca dane profilera.
+ *	Struktura aktualizujÄ…ca dane profilera.
  */
 struct ProfilerEntryUpdater
 {
@@ -286,9 +286,9 @@ struct ProfilerEntryUpdater
     Profiler::State* state;
     //! Pomiary.
     Profiler::Measurement* measurement;
-    //! Poprzedni czas wpisu minus tick wejœcia. Czemu po prostu nie dodajemy delty do czasu? Wywo³ania rekurencyjne!
+    //! Poprzedni czas wpisu minus tick wejÅ›cia. Czemu po prostu nie dodajemy delty do czasu? WywoÅ‚ania rekurencyjne!
     Profiler::tick entryTickMinusPrev;
-    //! Czy w³¹czony?
+    //! Czy wÅ‚Ä…czony?
     bool enabled;
 
     //! 
@@ -296,11 +296,11 @@ struct ProfilerEntryUpdater
     ProfilerEntryUpdater(ProfilerEntry * entry)
     {
         if ( (state = Profiler::instance.getState()) != 0 ) {
-            // zamiana bie¿¹cego wpisu
+            // zamiana bieÅ¼Ä…cego wpisu
             prevEntry = state->currentEntry;
             state->currentEntry = entry;
             measurement = state->measurements + entry->id;
-            // aktualizacja i zapamiêtanie czasu wejœcia
+            // aktualizacja i zapamiÄ™tanie czasu wejÅ›cia
             if ( (enabled = Profiler::instance.enabled) != false ) {
                 ++measurement->entrances;
                 entryTickMinusPrev = Profiler::getTick() - measurement->ticks;
@@ -324,13 +324,13 @@ struct ProfilerEntryUpdater
 //#define UTILS_RELEASE_PROFILER
 #if !defined(DISABLE_PROFILER) && (defined(_DEBUG) || defined(DEBUG) || defined(UTILS_RELEASE_PROFILER))
 
-//! Makro, które nale¿y wstawiæ w g³ównej funkcji w¹tku, aby umo¿liwiæ zbieranie danych
-//! pomiarowych z nim zwi¹zanych
+//! Makro, ktÃ³re naleÅ¼y wstawiÄ‡ w gÅ‚Ã³wnej funkcji wÄ…tku, aby umoÅ¼liwiÄ‡ zbieranie danych
+//! pomiarowych z nim zwiÄ…zanych
 #define UTILS_PROFILER_THREAD_SCOPE utils::Profiler::ThreadScope __profiler_thread_scope;
 
-//! Makro s³u¿¹ce do pomiaru czasu wykonania funkcji. Powinno byæ umieszczane
-//! w pierwszej linii. NIE nale¿y umieszczaæ w funkcjach inline (gdy¿ przestan¹
-//! wtedy byæ inline :))
+//! Makro sÅ‚uÅ¼Ä…ce do pomiaru czasu wykonania funkcji. Powinno byÄ‡ umieszczane
+//! w pierwszej linii. NIE naleÅ¼y umieszczaÄ‡ w funkcjach inline (gdyÅ¼ przestanÄ…
+//! wtedy byÄ‡ inline :))
 #if defined(_MSC_VER)
 #define UTILS_PROFILER_ENTRY \
     static utils::ProfilerEntry __profiler_entry(__FUNCSIG__, __FUNCTION__, __FILE__, __LINE__);\
@@ -341,7 +341,7 @@ struct ProfilerEntryUpdater
     utils::ProfilerEntryUpdater __profiler_updater(&__profiler_entry)
 #endif
 
-//! Makro s³u¿¹ce do pomiaru czêœci funkcji. Nazwa mo¿e sk³adaæ siê tylko ze znaków
+//! Makro sÅ‚uÅ¼Ä…ce do pomiaru czÄ™Å›ci funkcji. Nazwa moÅ¼e skÅ‚adaÄ‡ siÄ™ tylko ze znakÃ³w
 //! alfanumerycznych.
 //! \param name Nazwa zakresu
 #if defined(_MSC_VER)
@@ -349,7 +349,7 @@ struct ProfilerEntryUpdater
     static utils::ProfilerEntry __scope_entry_##name(__FUNCSIG__, __FUNCTION__ "{" STRINGIZE(name) "}", __FILE__, __LINE__); \
     utils::ProfilerEntryUpdater __scope_updater_##name(&__scope_entry_##name)
 #elif defined(__GNUC__)
-// nie da siê robiæ konkatenacji __FUNCTION__ i ³añcuchów...
+// nie da siÄ™ robiÄ‡ konkatenacji __FUNCTION__ i Å‚aÅ„cuchÃ³w...
 #define UTILS_PROFILER_SCOPE(name) \
     static utils::ProfilerEntry __scope_entry_##name(__PRETTY_FUNCTION__, "customscope::" STRINGIZE(name), __FILE__, __LINE__); \
     utils::ProfilerEntryUpdater __scope_updater_##name(&__scope_entry_##name)

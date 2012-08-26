@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 @author Marek Daniluk
 */
 
@@ -21,8 +21,8 @@ Date::Date() : year(0), month(0), day(0)
 Date::Date(int year, int month, int day)
     : year(year), month(month), day(day)
 {
-    UTILS_ASSERT((month > 0 && month < 13), "B³êdny miesi¹c");
-    UTILS_ASSERT((day > 0 && day < 32), "B³êdny dzieñ");
+    UTILS_ASSERT((month > 0 && month < 13), "BÅ‚Ä™dny miesiÄ…c");
+    UTILS_ASSERT((day > 0 && day < 32), "BÅ‚Ä™dny dzieÅ„");
 }
 
 Date::~Date()
@@ -95,9 +95,9 @@ Time::Time(const Time & time) : hour(time.hour), minutes(time.minutes), seconds(
 
 Time::Time(int hour, int minutes, int seconds) : hour(hour), minutes(minutes), seconds(seconds)
 {
-    UTILS_ASSERT((hour > -1), "B³êdna godzina");
-    UTILS_ASSERT((minutes > -1 && minutes < 60), "B³êdne minuty");
-    UTILS_ASSERT((seconds > -1 && seconds < 60), "B³êdne sekundy");
+    UTILS_ASSERT((hour > -1), "BÅ‚Ä™dna godzina");
+    UTILS_ASSERT((minutes > -1 && minutes < 60), "BÅ‚Ä™dne minuty");
+    UTILS_ASSERT((seconds > -1 && seconds < 60), "BÅ‚Ä™dne sekundy");
 }
 
 Time::~Time()

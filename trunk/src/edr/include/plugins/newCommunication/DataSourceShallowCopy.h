@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/03/08
     created:  8:3:2012   11:01
     filename: DataSourceShallowCopy.h
@@ -17,19 +17,19 @@ namespace communication
 	typedef core::shared_ptr<webservices::MotionShallowCopy::ShallowCopy> MotionShallowCopyPtr;
 	typedef core::shared_ptr<webservices::MedicalShallowCopy::ShallowCopy> MedicalShallowCopyPtr;
 
-	//! Struktura zawierajπca sparsowane p≥ytkie kopie bazy danych medycznej i ruchu oraz ich metadane
+	//! Struktura zawierajƒÖca sparsowane p≈Çytkie kopie bazy danych medycznej i ruchu oraz ich metadane
 	struct ShallowCopy
 	{
-		//! P≥ytka kopia bazy danych medycznych
+		//! P≈Çytka kopia bazy danych medycznych
 		MedicalShallowCopyPtr medicalShallowCopy;
 		//! Metadane medyczne
 		webservices::MedicalMetaData::MetaData medicalMetaData;
-		//! P≥ytka kopia bazy danych ruchu
+		//! P≈Çytka kopia bazy danych ruchu
 		MotionShallowCopyPtr motionShallowCopy;
 		//! Metadane ruchu
 		webservices::MotionMetaData::MetaData motionMetaData;
 
-		//! Konstruktor domyúlny
+		//! Konstruktor domy≈õlny
 		ShallowCopy() : medicalShallowCopy(new webservices::MedicalShallowCopy::ShallowCopy()), motionShallowCopy(new webservices::MotionShallowCopy::ShallowCopy()) {}
 	};
 }

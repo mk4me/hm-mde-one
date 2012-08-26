@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2012/06/05
 	created:	5:6:2012   9:48
 	filename: 	AnalisisTreeWidget.h
@@ -18,7 +18,7 @@ class QMouseEvent;
 class QContextMenuEvent;
 class QWidget;
 
-//! Klasa do ktÛrej trafiaja elementy drzewa danych w analizach
+//! Klasa do kt√≥rej trafiaja elementy drzewa danych w analizach
 class AnalisisTreeWidget : public QTreeWidget
 {
     Q_OBJECT;
@@ -26,10 +26,10 @@ public:
     explicit AnalisisTreeWidget(QWidget *parent = 0);
 
 protected:
-    //! Obs≥uga zdarzeÒ myszki
+    //! Obs≈Çuga zdarze≈Ñ myszki
     //! \param event 
     virtual void mousePressEvent(QMouseEvent *event);
-    //! Obs≥uga zdarzeÒ menu kontekstowego
+    //! Obs≈Çuga zdarze≈Ñ menu kontekstowego
     //! \param event 
     virtual void contextMenuEvent ( QContextMenuEvent * event );
 };

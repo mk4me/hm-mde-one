@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__KEYBOARDMAPPER_H__
+ï»¿#ifndef HEADER_GUARD__KEYBOARDMAPPER_H__
 #define HEADER_GUARD__KEYBOARDMAPPER_H__
 
 #include <set>
@@ -24,7 +24,7 @@ private:
     Keys keysPressed;
 
 public:
-    //! Konstruktor zeruj¹cy
+    //! Konstruktor zerujÄ…cy
 	KeyboardMapper();
 
 protected:
@@ -33,26 +33,26 @@ protected:
 
 public:
 
-    //! \return Liczba wciœniêtych klawiszy.
+    //! \return Liczba wciÅ›niÄ™tych klawiszy.
     int getNumPressedKeys() const
     {
         return keysPressed.size();
     }
 
-    //! \return Czy zdany klaiwsz jest naciœniêty?
+    //! \return Czy zdany klaiwsz jest naciÅ›niÄ™ty?
 	bool isKeyPressed(osgGA::GUIEventAdapter::KeySymbol key) const
     {        
         return keysPressed.find(key) != keysPressed.end();
     }
 
-    //! \return Czy któryœ z zadanych klawiszy jest naciœniêty?
+    //! \return Czy ktÃ³ryÅ› z zadanych klawiszy jest naciÅ›niÄ™ty?
     template <class Range>
     bool areAnyKeysPressed(const Range& range) const
     {
         return areAnyKeysPressed(boost::begin(range), boost::end(range));
     }
 
-    //! \return Czy któryœ z zadanych klawiszy jest naciœniêty?
+    //! \return Czy ktÃ³ryÅ› z zadanych klawiszy jest naciÅ›niÄ™ty?
     template <class FwdIter>
     bool areAnyKeysPressed(FwdIter first, FwdIter last) const
     {
@@ -64,21 +64,21 @@ public:
 
     //! \param range Zakres.
     //! \param sorted Czy zakres jest posortowany?
-    //! \return Czy wszystkie zadane klawisze s¹ naciœniête?
+    //! \return Czy wszystkie zadane klawisze sÄ… naciÅ›niÄ™te?
     template <class Range>
     bool areKeysPressed(const Range& range, bool sorted = true) const
     {
         return areKeysPressed(boost::begin(range), boost::end(range), sorted);
     }
 
-    //! \param first Pocz¹tek zakresu.
+    //! \param first PoczÄ…tek zakresu.
     //! \param last Koniec zakresu.
     //! \param sorted Czy zakres jest posortowany?
-    //! \return Czy wszystkie zadane klawisze s¹ naciœniête?
+    //! \return Czy wszystkie zadane klawisze sÄ… naciÅ›niÄ™te?
     template <class FwdIter>
     bool areKeysPressed(FwdIter first, FwdIter last, bool sorted = true) const
     {
-        // TODO: rozwa¿yæ, czy wariant z includes w ogóle jest przydatny
+        // TODO: rozwaÅ¼yÄ‡, czy wariant z includes w ogÃ³le jest przydatny
         if (sorted) {
             return std::includes(begin(), end(), first, last);
         } else {
@@ -89,10 +89,10 @@ public:
         }
     }
 
-    //! \return Wszystkie naciœniête klawisze.
+    //! \return Wszystkie naciÅ›niÄ™te klawisze.
 	const Keys & getPressedKeys() const;
 
-    //! \return Pocz¹tek wyliczenia klawiszy.
+    //! \return PoczÄ…tek wyliczenia klawiszy.
     const_iterator begin() const
     {
         return keysPressed.begin();

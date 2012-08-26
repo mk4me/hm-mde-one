@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include <QtCore/QThread>
 #include "EDRConsoleWidget.h"
 #include "EDRTitleBar.h"

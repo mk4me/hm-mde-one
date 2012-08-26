@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   9:12
 	filename: 	IClonable.h
@@ -11,8 +11,8 @@
 
 namespace core {
 
-//! Wzorzec interfejsu zapewniaj¹cego klonowanie obiektu.
-//! W³aœnoœæ metod virtualnych pozwala klasom pochodnym od klasy dziedzicz¹cej ten interfejs zwracaæ wskaŸniki na w³asny typ
+//! Wzorzec interfejsu zapewniajÄ…cego klonowanie obiektu.
+//! WÅ‚aÅ›noÅ›Ä‡ metod virtualnych pozwala klasom pochodnym od klasy dziedziczÄ…cej ten interfejs zwracaÄ‡ wskaÅºniki na wÅ‚asny typ
 
 template<class T>
 class IClonable

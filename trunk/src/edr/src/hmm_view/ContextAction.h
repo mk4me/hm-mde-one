@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/05/31
 	created:	31:5:2012   12:22
 	filename: 	ContextAction.h
@@ -15,8 +15,8 @@
 class EDRDockWidgetSet;
 class HmmTreeItem;
 
-//! akcja obs³ugiwana w obrêbie drzewa danych w analizach
-//! przechowuje dodatkowe informacje, które u³atwiaja tworzenie wizualizatorów i drzewa
+//! akcja obsÅ‚ugiwana w obrÄ™bie drzewa danych w analizach
+//! przechowuje dodatkowe informacje, ktÃ³re uÅ‚atwiaja tworzenie wizualizatorÃ³w i drzewa
 class ContextAction : public QAction
 {
     Q_OBJECT;
@@ -24,25 +24,25 @@ public:
     //! Konstruktor
     //! \param itemHelper helper przypiasany do elementu drzewa
     //! \param parent rodzic akcji
-    //! \param vis wizualizator zwi¹zany z akcja
-    //! \param set set, do którego ma trafic wizualizator
+    //! \param vis wizualizator zwiÄ…zany z akcja
+    //! \param set set, do ktÃ³rego ma trafic wizualizator
     ContextAction(HmmTreeItem* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), EDRDockWidgetSet* set = nullptr) :
       item(itemHelper), QAction(parent), visualizer(vis), set(set){}
 
 public:
     //! \return helper przypiasany do elementu drzewa
     HmmTreeItem* getTreeItem() const { return item; }
-    //! \return wizualizator zwi¹zany z akcja
+    //! \return wizualizator zwiÄ…zany z akcja
     VisualizerPtr getVisualizer() const { return visualizer.lock(); }
-    //! \return set, do którego ma trafic wizualizator lub nullptr jeœli nie jest to sprecyzowane
+    //! \return set, do ktÃ³rego ma trafic wizualizator lub nullptr jeÅ›li nie jest to sprecyzowane
     EDRDockWidgetSet* getDockSet() const { return set; }
 
 private:
     //!  helper przypiasany do elementu drzewa
     HmmTreeItem* item;
-    //! wizualizator zwi¹zany z akcja
+    //! wizualizator zwiÄ…zany z akcja
     VisualizerWeakPtr visualizer;
-    //! set, do którego ma trafic wizualizator lub nullptr jeœli nie jest to sprecyzowane
+    //! set, do ktÃ³rego ma trafic wizualizator lub nullptr jeÅ›li nie jest to sprecyzowane
     EDRDockWidgetSet* set;
 };
 

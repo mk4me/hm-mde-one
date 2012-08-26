@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/12/13
 	created:	13:12:2011   13:19
 	filename: 	DataChannelModifiers.h
@@ -17,7 +17,7 @@
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Interfejs obiektu obserwuj¹cego kana³, udaj¹cego kana³, wykonuj¹cego zadane operacje na kanale
+//! Interfejs obiektu obserwujÄ…cego kanaÅ‚, udajÄ…cego kanaÅ‚, wykonujÄ…cego zadane operacje na kanale
 template<class PointType, class TimeType>
 class IChannelAutoModifier : public IChannelReader<PointType, TimeType, true>
 {
@@ -71,7 +71,7 @@ class ChannelAutoModifier : public IChannelAutoModifier<PointType, TimeType>, pr
 
 private:
     typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyObserverType _MyObserverType;
-    //! Prywatna klasa realizuj¹ca obserwacjê zadanej klasy. Na jej zmianê wyzwala modyfikacje
+    //! Prywatna klasa realizujÄ…ca obserwacjÄ™ zadanej klasy. Na jej zmianÄ™ wyzwala modyfikacje
     class UpdateNotifier : public _MyObserverType
     {
     public:
@@ -127,7 +127,7 @@ public:
         this->channel = channel;
         channel->attach(notifier.get());
 
-        //sprawdziæ czy s¹ jakieœ dane? jesli tak odpaliæ modifier
+        //sprawdziÄ‡ czy sÄ… jakieÅ› dane? jesli tak odpaliÄ‡ modifier
         if(channel->empty() == false){
             update();
         }else{
@@ -153,7 +153,7 @@ public:
         notifier->setModifier(this);
         channel->attach(notifier.get());
 
-        //sprawdziæ czy s¹ jakieœ dane? jesli tak odpaliæ modifier
+        //sprawdziÄ‡ czy sÄ… jakieÅ› dane? jesli tak odpaliÄ‡ modifier
         if(channel->empty() == false){
             update();
         }
@@ -193,13 +193,13 @@ public:
         return impl.value(idx);
     }
 
-    //! \return Iloœæ próbek w kanale
+    //! \return IloÅ›Ä‡ prÃ³bek w kanale
     virtual size_type size() const
     {
         return impl.size();
     }
 
-    //! \return Czy kana³ nie zawiera danych
+    //! \return Czy kanaÅ‚ nie zawiera danych
     virtual bool empty() const
     {
         return impl.empty();

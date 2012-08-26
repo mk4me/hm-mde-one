@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
+ï»¿#ifndef HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
 #define HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
 
 #include <vidlib/VideoError.h>
@@ -8,17 +8,17 @@
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Wyj¹tek u¿ywany przez bibliotekê.
+//! WyjÄ…tek uÅ¼ywany przez bibliotekÄ™.
 class VIDLIB_EXPORT FFmpegError : public VideoError
 {
 public:
     enum {
-        //! B³ad posiada nieznane ID.
+        //! BÅ‚ad posiada nieznane ID.
         UnknownID = -1
     };
 
 private:
-    //! Wewnêtrzne ID b³êdu.
+    //! WewnÄ™trzne ID bÅ‚Ä™du.
     const int id;
 
 public:
@@ -26,7 +26,7 @@ public:
     FFmpegError(const std::string& msg, int id = UnknownID);
     FFmpegError(const FFmpegError& error);
 
-    //! \return Wewnêtrzne ID b³êdu.
+    //! \return WewnÄ™trzne ID bÅ‚Ä™du.
     inline int getID()
     {
         return id;

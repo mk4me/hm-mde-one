@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/04/05
     created:  5:4:2012   8:45
     filename: VisualizerChannel.h
@@ -28,14 +28,14 @@ public:
 
 	virtual ~VisualizerChannel();
 
-	//! \return Sklonowany kana³
+	//! \return Sklonowany kanaÅ‚
 	virtual VisualizerChannel * clone() const;
 
-	//! \return d³ugoœæ kana³u w sekundach
+	//! \return dÅ‚ugoÅ›Ä‡ kanaÅ‚u w sekundach
 	virtual double getLength() const;
 
-	//! Czas zawiera siê miêdzy 0 a getLength()
-	//! \param time Aktualny, lokalny czas kana³u w sekundach
+	//! Czas zawiera siÄ™ miÄ™dzy 0 a getLength()
+	//! \param time Aktualny, lokalny czas kanaÅ‚u w sekundach
 	virtual void setTime(double time);
 
 	const core::VisualizerTimeSeriePtr & getSerie();
@@ -57,14 +57,14 @@ public:
 
 	virtual ~VisualizerMultiChannel();
 
-	//! \return Sklonowany kana³
+	//! \return Sklonowany kanaÅ‚
 	virtual VisualizerMultiChannel * clone() const;
 
-	//! \return d³ugoœæ kana³u w sekundach
+	//! \return dÅ‚ugoÅ›Ä‡ kanaÅ‚u w sekundach
 	virtual double getLength() const;
 
-	//! Czas zawiera siê miêdzy 0 a getLength()
-	//! \param time Aktualny, lokalny czas kana³u w sekundach
+	//! Czas zawiera siÄ™ miÄ™dzy 0 a getLength()
+	//! \param time Aktualny, lokalny czas kanaÅ‚u w sekundach
 	virtual void setTime(double time);
 
 	const std::vector<core::VisualizerTimeSeriePtr> & channelSeries() const;

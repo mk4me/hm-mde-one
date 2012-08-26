@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/16
     created:  16:2:2012   12:59
     filename: IDataSourceFilterManager.h
@@ -22,30 +22,30 @@ typedef core::weak_ptr<DataSourceFilter> DataFilterWPtr;
 typedef core::weak_ptr<const DataSourceFilter> DataFilterWConstPtr;
 
 
-//! Interfejs zarz¹dzaj¹cy filtrami danych
+//! Interfejs zarzÄ…dzajÄ…cy filtrami danych
 class IDataSourceFilterManager
 {
 public:
     //Wirtualny destruktor
     virtual ~IDataSourceFilterManager() {}
 
-    //! \param filter Filtr danych który rejestrujemy
+    //! \param filter Filtr danych ktÃ³ry rejestrujemy
     //! \return Indeks zarejestrowanego filtra
     virtual int registerFilter(DataSourceFilter * filter) = 0;
 
     //! \param idx Indeks filtra, zakres indeksu [-1; size()-1], -1 oznacza brak filtra
     virtual void setCurrentFilter(int idx) = 0;
 
-    //! \return Iloœæ zarejestrowanych filtrów
+    //! \return IloÅ›Ä‡ zarejestrowanych filtrÃ³w
     virtual int size() const = 0;
 
-    //! \return Czy mamy zarejestrowane jakieœ filtry
+    //! \return Czy mamy zarejestrowane jakieÅ› filtry
     virtual bool empty() const = 0;
 
-    //! \return Indeks aktualnie aktywnego  filtru - -1 gdy ¿aden nieaktywny
+    //! \return Indeks aktualnie aktywnego  filtru - -1 gdy Å¼aden nieaktywny
     virtual int currentFilterIndex() const = 0;
 
-	//! \return WskaŸnik do aktualnego filtra - nullptr jeœli nie ustawiono ¿adnego
+	//! \return WskaÅºnik do aktualnego filtra - nullptr jeÅ›li nie ustawiono Å¼adnego
 	virtual DataFilterPtr currentFilter() const = 0;
 
     //! \param idx Indeks filtra

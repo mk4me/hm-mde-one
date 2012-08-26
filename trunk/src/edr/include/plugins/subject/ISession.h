@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/11/03
     created:  3:11:2011   10:04
     filename: ISession.h
@@ -15,20 +15,20 @@
 
 namespace PluginSubject {
 
-//! Abstrakcyjna klasa reprezentuj¹ca zbiór ruchów w ramach jednego celu/badania/grupy
+//! Abstrakcyjna klasa reprezentujÄ…ca zbiÃ³r ruchÃ³w w ramach jednego celu/badania/grupy
 class ISession
 {
 public:
     virtual ~ISession() {}
 
-    //! \return Unikalne, globalne ID sesji. Po usuniêci i dodaniu mo¿e byæ inne!
+    //! \return Unikalne, globalne ID sesji. Po usuniÄ™ci i dodaniu moÅ¼e byÄ‡ inne!
     virtual SubjectID getID() const = 0;
-    //! \return Unikalne, lokalne ID sesji w obrêbie sesji tego samego obiektu wykonuj¹cego ruch. Podobnie jak globalne - po usuniêci i ponownym dodaniu ID mo¿e ulec zmianie!
+    //! \return Unikalne, lokalne ID sesji w obrÄ™bie sesji tego samego obiektu wykonujÄ…cego ruch. Podobnie jak globalne - po usuniÄ™ci i ponownym dodaniu ID moÅ¼e ulec zmianie!
     virtual SubjectID getLocalID() const = 0;
-    //! \param motions Zbiór wype³niany konkretnymi ruchami danego obiektu w ramach aktualnej sesji
+    //! \param motions ZbiÃ³r wypeÅ‚niany konkretnymi ruchami danego obiektu w ramach aktualnej sesji
     virtual void getMotions(Motions & motions) const = 0;
 
-    //! \return Obiekt z którym zwi¹zana jest ta sesja
+    //! \return Obiekt z ktÃ³rym zwiÄ…zana jest ta sesja
     virtual const SubjectConstPtr & getSubject() const = 0;
 
     //! \return Globalna nazwa sesji
@@ -36,7 +36,7 @@ public:
     //! \return Lokalna nazwa sesji
     virtual const std::string & getLocalName() const = 0;
 
-    //! \param wrappers Zbiór OW zwi¹zanych z t¹ sesj¹ (ale nie z Motions)
+    //! \param wrappers ZbiÃ³r OW zwiÄ…zanych z tÄ… sesjÄ… (ale nie z Motions)
     virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const = 0;
 
     virtual core::ObjectWrapperConstPtr getWrapperOfType(const core::TypeInfo& type, bool exact = false) const

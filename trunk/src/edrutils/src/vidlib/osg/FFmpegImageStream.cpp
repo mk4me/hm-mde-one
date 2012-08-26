@@ -1,4 +1,4 @@
-#include "../PCH.h"
+ï»¿#include "../PCH.h"
 #include <vidlib/osg/FFmpegImageStream.h>
 #include <vidlib/VidLibPrivate.h>
 
@@ -68,7 +68,7 @@ void FFmpegImageStream::logCallback( FFmpegVideoStream::LogSeverity severity, co
             break;
 
         default:
-            UTILS_FAIL("Nieznany poziom FFmpeg. Wiadomoœæ: %s", buff.str());
+            UTILS_FAIL("Nieznany poziom FFmpeg. WiadomoÅ›Ä‡: %s", buff.str());
             break;
     }
 }

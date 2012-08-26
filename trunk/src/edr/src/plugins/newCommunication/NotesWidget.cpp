@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "NotesWidget.h"
 #include <utils/Debug.h>
 
@@ -96,7 +96,7 @@ void NotesWidget::addNote(int patientID, const QDateTime & created, const QStrin
 	patientNotes[patientID][noteData->localID] = noteData;
 
 	if(currentPatientID == patientID){
-		//dodaæ dane do listy(tabeli)
+		//dodaÄ‡ dane do listy(tabeli)
 		bool sorting = notesTable->isSortingEnabled();
 		notesTable->setSortingEnabled(false);
 		int row = notesTable->rowCount();
@@ -157,7 +157,7 @@ void NotesWidget::removeNote()
 		pNotes[i] = pNotes[i+1];
 		pNotes[i]->localID = i;
 
-		//przebuduj indeksy pozosta³ych
+		//przebuduj indeksy pozostaÅ‚ych
 		notesTable->item(notesTable->visualRow(i), 0)->setText(QString::number(i));
 	}
 
@@ -286,7 +286,7 @@ void NotesWidget::updateNote(const QDateTime & modified, const QString & title, 
 	currentNote->title = title;
 	currentNote->text = text;
 
-	//odœwie¿ listê danych (tabelê) - aktualny wpis
+	//odÅ›wieÅ¼ listÄ™ danych (tabelÄ™) - aktualny wpis
 	bool sorting = notesTable->isSortingEnabled();
 	notesTable->setSortingEnabled(false);
 
@@ -295,7 +295,7 @@ void NotesWidget::updateNote(const QDateTime & modified, const QString & title, 
 	notesTable->item(row, 3)->setText(modified.toString("dd.MM.yyyy"));
 
 	notesTable->setSortingEnabled(sorting);
-	//odœwie¿ treœæ notatki
+	//odÅ›wieÅ¼ treÅ›Ä‡ notatki
 	loadNote();
 }
 

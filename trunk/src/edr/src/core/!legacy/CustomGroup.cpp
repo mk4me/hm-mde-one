@@ -1,4 +1,4 @@
-#include "CustomGroup.h"
+﻿#include "CustomGroup.h"
 
 //--------------------------------------------------------------------------------------------------
 CCustomGroup::CCustomGroup()

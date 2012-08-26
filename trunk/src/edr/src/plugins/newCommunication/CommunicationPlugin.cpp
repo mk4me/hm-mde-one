@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include "CommunicationPlugin.h"
 #include <plugins/newCommunication/Patient.h>
 #include "DataSource.h"

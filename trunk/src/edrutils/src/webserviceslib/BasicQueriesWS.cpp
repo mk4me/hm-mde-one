@@ -1,4 +1,4 @@
-#include <webserviceslib/BasicQueriesWS.h>
+ï»¿#include <webserviceslib/BasicQueriesWS.h>
 #include <webserviceslib/DateTimeUtils.h>
 #include <utils/Debug.h>
 #include <tinyxml.h>
@@ -129,7 +129,7 @@ const std::vector<motionWsdl::Trial> MotionBasicQueriesWS::listSessionTrials(int
 		trial_details->QueryStringAttribute("TrialDescription", &trial.trialDescription);
 		
 		//TODO
-		//uzupe³niæ brakuj¹ce pliki triala lub poprawiæ strukturê wsdlow¹
+		//uzupeÅ‚niÄ‡ brakujÄ…ce pliki triala lub poprawiÄ‡ strukturÄ™ wsdlowÄ…
 
 		ret.push_back(trial);
 
@@ -233,7 +233,7 @@ const std::vector<motionWsdl::File> MotionBasicQueriesWS::listFiles(int subjectI
 		file_details->QueryStringAttribute("FileDescription", &file.fileDescription);		
 
 		//TODO
-		//uzupe³niæ brakuj¹ce sk³¹dowe file lub poprawiæ strukturê wsdlow¹
+		//uzupeÅ‚niÄ‡ brakujÄ…ce skÅ‚Ä…dowe file lub poprawiÄ‡ strukturÄ™ wsdlowÄ…
 
 		ret.push_back(file);
 

@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:	2011/10/04
 	created:	4:10:2011   8:07
 	filename: 	SubjectDataFilters.h
@@ -32,7 +32,7 @@ private:
     std::vector<core::TypeInfo> types;
 };
 
-//! klasa jest zlozeniem filtr�w prostych
+//! klasa jest zlozeniem filtrów prostych
 class CustomFilter : public PluginSubject::IDataFilter
 {
 public:

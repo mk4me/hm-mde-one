@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/03/25
     created:  25:3:2011   16:01
     filename: VideoVisualizer.h
@@ -33,7 +33,7 @@ namespace vidlib {
 #include <core/IVisualizer.h>
 #include <plugins/video/Wrappers.h>
 
-//! Wizualizator wykresów.
+//! Wizualizator wykresÃ³w.
 class VideoVisualizer : public core::IVisualizer
 {
     struct Refresher;
@@ -47,7 +47,7 @@ private:
     osg::ref_ptr<osgui::QOsgDefaultWidget> viewer;
     //!
     VideoStreamPtr stream;
-    //! Czy u¿ywaæ textureRect?
+    //! Czy uÅ¼ywaÄ‡ textureRect?
     bool useTextureRect;
     //!
     double prevStreamTime;
@@ -56,13 +56,13 @@ private:
     //!
     int prevStreamWidth;
 
-    //! Obiekt pilnuj¹cy wspó³czynników proporcji widgetów.
+    //! Obiekt pilnujÄ…cy wspÃ³Å‚czynnikÃ³w proporcji widgetÃ³w.
     osg::ref_ptr<osgui::AspectRatioKeeper> ratioKeeper;
     //! Obszar roboczy.
     osg::ref_ptr<osgWidget::Box> workspace;
-    //! Widget w którym rysujemy.
+    //! Widget w ktÃ³rym rysujemy.
     osg::ref_ptr<osgWidget::Widget> widget;
-    //! Bie¿¹cy obrazek.
+    //! BieÅ¼Ä…cy obrazek.
     osg::ref_ptr<vidlib::VideoImage> streamImage;
 
 private:
@@ -86,11 +86,11 @@ private:
 
         virtual const core::ObjectWrapperConstPtr & getData() const;
 
-        //! \return d³ugoœæ kana³u w sekundach
+        //! \return dÅ‚ugoÅ›Ä‡ kanaÅ‚u w sekundach
         virtual double getLength() const;
 
-        //! Czas zawiera siê miêdzy 0 a getLength()
-        //! \param time Aktualny, lokalny czas kana³u w sekundach
+        //! Czas zawiera siÄ™ miÄ™dzy 0 a getLength()
+        //! \param time Aktualny, lokalny czas kanaÅ‚u w sekundach
         virtual void setTime(double time);
 
     private:
@@ -135,12 +135,12 @@ public:
 
     virtual int getMaxDataSeries() const;
 
-    //! \return Seria danych która mo¿na ustawiac - nazwa i dane, nie zarz¹dza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
+    //! \return Seria danych ktÃ³ra moÅ¼na ustawiac - nazwa i dane, nie zarzÄ…dza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
     virtual core::IVisualizer::TimeSerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
 
     virtual core::IVisualizer::TimeSerieBase* createSerie(const core::IVisualizer::SerieBase * serie);
 
-    //! \param serie Seria danych do usuniêcia, nie powinien usuwaæ tej serii! Zarz¹dzamy ni¹ my!!
+    //! \param serie Seria danych do usuniÄ™cia, nie powinien usuwaÄ‡ tej serii! ZarzÄ…dzamy niÄ… my!!
     virtual void removeSerie(core::IVisualizer::SerieBase* serie);
 
     virtual void reset();

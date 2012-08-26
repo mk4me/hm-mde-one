@@ -1,4 +1,4 @@
-#include <osgWidget/Widget>
+ï»¿#include <osgWidget/Widget>
 #include <osgWidget/Window>
 #include <osgWidget/Label>
 #include <osgWidget/Box>
@@ -184,7 +184,7 @@ StylesSet generateRequiredStyles(){
 	styleSet.insert(new osgui::StyleEx("vdf.pin.in.required", "rect_image_cache \"" +  path + "in_required." + graphExt + "\""));
 
 	//NODE STYLES
-	//border - obwódka, cieñ
+	//border - obwÃ³dka, cieÅ„
 	//normal
 	styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.normal", "rect_image_cache \"" +  path + "normal_board_TL." + graphExt + "\""));
 	styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.normal", "rect_image_cache \"" +  path + "normal_board_TM." + graphExt + "\""));
@@ -216,7 +216,7 @@ StylesSet generateRequiredStyles(){
 	styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.active", "rect_image_cache \"" +  path + "selected_board_BR." + graphExt + "\""));
 
 
-	//cia³o wêz³a
+	//ciaÅ‚o wÄ™zÅ‚a
 	//normal
 	//top
 	styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.normal", "rect_image_cache \"" +  path + "normal_body_TL." + graphExt + "\""));

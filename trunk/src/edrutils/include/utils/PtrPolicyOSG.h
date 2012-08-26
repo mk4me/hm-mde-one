@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:    2010/04/07
 	created:    7:4:2010     18:06
 	filename: PoliciesOSG.h
@@ -18,18 +18,18 @@ namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
-*	Domyúlna implementacja dla wskaünikÛw osg::ref_ptr.
+*	Domy≈õlna implementacja dla wska≈∫nik√≥w osg::ref_ptr.
 */
 struct PtrPolicyOSG
 {
-    //! Typ wskaünika.
+    //! Typ wska≈∫nika.
     template <class T> struct Ptr 
     {
         typedef osg::ref_ptr<T> Type;
     };
-    //! Tylko deklaracja, specjalizacja wyciπga wskaünik!
+    //! Tylko deklaracja, specjalizacja wyciƒÖga wska≈∫nik!
     template <class T> struct Pointed;
-    //! Specjalizacja wyciπgajπca wskaünik.
+    //! Specjalizacja wyciƒÖgajƒÖca wska≈∫nik.
     template <class T> struct Pointed<osg::ref_ptr<T> >
     {
         typedef T Type;
@@ -38,13 +38,13 @@ struct PtrPolicyOSG
     //! Klasa bazowa.
     typedef osg::Referenced Base;
 
-    //! Inicjalizacja wartoúci.
+    //! Inicjalizacja warto≈õci.
     //! \param ptr
     template <class T>
     void initPtr( T & ptr ) const
     {}
 
-    //! Implemetnacja resetowania wskaünika dla osg::ref_ptr.
+    //! Implemetnacja resetowania wska≈∫nika dla osg::ref_ptr.
     //! \param ptr
     //! \param data
     template<class T>
@@ -53,7 +53,7 @@ struct PtrPolicyOSG
         ptr = data;
     }
 
-    //! Implemetnacja resetowania wskaünika dla osg::ref_ptr.
+    //! Implemetnacja resetowania wska≈∫nika dla osg::ref_ptr.
     //! \param ptr
     //! \param data
     template<class T>
@@ -62,7 +62,7 @@ struct PtrPolicyOSG
         ptr = data;
     }
 
-    //! Zwraca surowy wskaünik
+    //! Zwraca surowy wska≈∫nik
     //! \param ptr
     template<class T>
     void* getRawPtr(const osg::ref_ptr<T> & ptr)
@@ -70,7 +70,7 @@ struct PtrPolicyOSG
         return ptr.get();
     }
 
-    //! Zwraca surowy wskaünik
+    //! Zwraca surowy wska≈∫nik
     //! \param ptr
     template<class T>
     const void* getRawPtr(const osg::ref_ptr<T> & ptr) const
@@ -78,7 +78,7 @@ struct PtrPolicyOSG
         return ptr.get();
     }
 
-    //! Implementacja unikalnoúci wskaünika dla osg::ref_ptr.
+    //! Implementacja unikalno≈õci wska≈∫nika dla osg::ref_ptr.
     //! \param ptr
     template<class T>
     bool isUnique(osg::ref_ptr<T> & ptr) const

@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include "ActionsGroupManager.h"
 
 #include <QtCore/QObject>

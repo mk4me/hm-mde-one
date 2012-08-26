@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include <kinematiclib/SkeletalParsers.h>
 #include <kinematiclib/hmException.h>
 #include <kinematiclib/DegreeOfFreedom.h>

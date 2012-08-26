@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__VDFBASEMODEL_H__
+ï»¿#ifndef HEADER_GUARD__VDFBASEMODEL_H__
 #define HEADER_GUARD__VDFBASEMODEL_H__
 
 #include <OpenThreads/ReentrantMutex>
@@ -39,16 +39,16 @@ class osgVDFBaseModel : public osgWidget::WindowManager, public osgui::KeyboardM
 //friend class osgVDFBaseNode;
 
 public:
-    //! Typ akcji na potrzeby realizacji usuwania po³¹czeñ przez zewnêtrzne menu kontekstowe
+    //! Typ akcji na potrzeby realizacji usuwania poÅ‚Ä…czeÅ„ przez zewnÄ™trzne menu kontekstowe
     typedef boost::function<void(void)> ConnectionAction;
 
-    //! Para akcji - podœwietlenia danego po³¹czenia wizualnego i jego usuniêcia na potrzeby realizacji tego zadania przez zewnêtrzne menu kontekstowe - np Qt
+    //! Para akcji - podÅ›wietlenia danego poÅ‚Ä…czenia wizualnego i jego usuniÄ™cia na potrzeby realizacji tego zadania przez zewnÄ™trzne menu kontekstowe - np Qt
     typedef std::pair<ConnectionAction, ConnectionAction> ConnectionActions;
 
-    //! Typ mapuj¹cy nazwê po³¹czenia i akcje z nim zwi¹zane
+    //! Typ mapujÄ…cy nazwÄ™ poÅ‚Ä…czenia i akcje z nim zwiÄ…zane
     typedef std::map<std::string, ConnectionActions> ConnectionsActionsMapping; 
 
-    //! Typ akcji wêz³a
+    //! Typ akcji wÄ™zÅ‚a
     typedef boost::function<void(const osgVDFBaseNode *, const osgWidget::XYCoord &)> NodeAction;
 
     //! Akcja usuwajaca wezel
@@ -58,43 +58,43 @@ protected:
     
     typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopeLock;
 
-    //! Typ s³u¿¹cy do ³adowania konfiguracji wêz³ów
+    //! Typ sÅ‚uÅ¼Ä…cy do Å‚adowania konfiguracji wÄ™zÅ‚Ã³w
     typedef std::map<dflm::NPtr, osgWidget::XYCoord> NodesPositions;
 
-    //! Mapa ³¹cz¹ca wêz³y logiczne z ich wizualnymi reprezentacjami
+    //! Mapa Å‚Ä…czÄ…ca wÄ™zÅ‚y logiczne z ich wizualnymi reprezentacjami
     typedef std::map<dflm::NPtr, osg::ref_ptr<osgVDFBaseNode>> NodesMapping;
 
-    //! Mapa ³¹cz¹ca piny logiczne z ich wizualnymi reprezentacjami
+    //! Mapa Å‚Ä…czÄ…ca piny logiczne z ich wizualnymi reprezentacjami
     typedef std::map<dflm::PinPtr, osgVDFBasePin*> PinsMapping;
 
     //typedef boost::bimap< set_of<dflm::ConnPtr>, set_of<osg::ref_ptr<osg::Geode> > > CoonMapp;
 
-    //! Mapa ³¹cz¹ca logiczne po³¹czenia z ich wizualnymi reprezentacjami
+    //! Mapa Å‚Ä…czÄ…ca logiczne poÅ‚Ä…czenia z ich wizualnymi reprezentacjami
     typedef std::map<dflm::ConnPtr, osg::ref_ptr<osg::Geode> > ConnectionsMapping;
 
-    //! Mapa ³¹cz¹ca wizualne po³¹czenia z ich logicznymi reprezentacjami
+    //! Mapa Å‚Ä…czÄ…ca wizualne poÅ‚Ä…czenia z ich logicznymi reprezentacjami
     typedef std::map<osg::ref_ptr<osg::Geode>, dflm::ConnPtr> RevConnectionsMapping;
 
-    //! Zbiór wizualnych wêz³ów
+    //! ZbiÃ³r wizualnych wÄ™zÅ‚Ã³w
     typedef osgVDFBaseNode::VNodes VNodes;
 
-    //! Mapa poprzednich wizualnych statusów wizualnych wêz³ów
+    //! Mapa poprzednich wizualnych statusÃ³w wizualnych wÄ™zÅ‚Ã³w
     typedef std::map<osgVDFBaseNode*, osgVDFBaseNode::VisualStatus> VNodesPrevVisualStatus;
 
-    //! Mapa poprzednich wizualnych statusów wizualnych pinów
+    //! Mapa poprzednich wizualnych statusÃ³w wizualnych pinÃ³w
     typedef std::map<osgVDFBasePin*, osgVDFBasePin::VisualStatus> VPinPrevVisualStatus;
 
-    //! Mapa kompatybilnoœci pinów wizualnych
+    //! Mapa kompatybilnoÅ›ci pinÃ³w wizualnych
     typedef std::map<osgVDFBasePin*, osgVDFBaseNode::Pins> VPinsCompatibility;
 
 private:
 
     typedef osgVDFBasePin::VisualConnectionsUpdater VisualConnectionUpdater;
 
-    //! Typ przycisku w OSG na potrzeby realizacji wewnêtrznego toolbara z wêz³ami
+    //! Typ przycisku w OSG na potrzeby realizacji wewnÄ™trznego toolbara z wÄ™zÅ‚ami
     typedef osgui::Buttonized<osgui::Borderized<osgWidget::Label>, osgui::TextStylePolicy> Button;
 
-    //! Klasa przechwytuj¹ca zmianê rozmiaru okna i aktualizuj¹ca ten rozmiar dla VDF
+    //! Klasa przechwytujÄ…ca zmianÄ™ rozmiaru okna i aktualizujÄ…ca ten rozmiar dla VDF
     class ModelResizeHandler : public osgGA::GUIEventHandler{
 
     public:
@@ -114,7 +114,7 @@ private:
     friend class ModelResizeHandler;
 
 
-    //! Klasa odpowiedzialna za zarz¹dzanie zaznaczeniami wizualnych wêz³ów
+    //! Klasa odpowiedzialna za zarzÄ…dzanie zaznaczeniami wizualnych wÄ™zÅ‚Ã³w
     class VisualSelectionManager : public osgGA::GUIEventHandler{
 
     public:
@@ -135,7 +135,7 @@ private:
 
     friend class VisualSelectionManager;
 
-    //! Klasa odpowiadaj¹ca za obs³uge akcji u¿ytkownika na przestrzeni VDF - tam gdzie osadzone s¹ wêz³y, toolbar i po³¹czenia
+    //! Klasa odpowiadajÄ…ca za obsÅ‚uge akcji uÅ¼ytkownika na przestrzeni VDF - tam gdzie osadzone sÄ… wÄ™zÅ‚y, toolbar i poÅ‚Ä…czenia
     class UserSpaceClick : public osgGA::GUIEventHandler{
     public:
         UserSpaceClick(osgVDFBaseModel * m);
@@ -176,10 +176,10 @@ public:
 
     const dflm::MPtr & getModel() const;
 
-    //! \param dewscriptor Klasa opisuj¹ca typ wêz³a dodawanego do defualtowego toolbara
+    //! \param dewscriptor Klasa opisujÄ…ca typ wÄ™zÅ‚a dodawanego do defualtowego toolbara
     void registerNodeType(osgVDFNodeTypeDescriptor * descriptor);
 
-    //! \param lock Czy zablokowac do edycji logiki i w³aœciwoœci modelu - tylko wizualna zmiana layoutu mo¿liwa
+    //! \param lock Czy zablokowac do edycji logiki i wÅ‚aÅ›ciwoÅ›ci modelu - tylko wizualna zmiana layoutu moÅ¼liwa
     void lockForModelEdition(bool lock);
 
     //! \return Czy zablokowano do edycji logiki
@@ -193,143 +193,143 @@ public:
 
     //-------------------------- NODES LAYOUT MANAGMENT ------------------------------------
 
-    //! \param pos Pozycja która testujemy czy jest wolna
-    //! \return true jeœli podana pozycja jest wolna, nizajêta przez ¿aden wêze³ wizualny
+    //! \param pos Pozycja ktÃ³ra testujemy czy jest wolna
+    //! \return true jeÅ›li podana pozycja jest wolna, nizajÄ™ta przez Å¼aden wÄ™zeÅ‚ wizualny
 	bool isPointFree(const osgWidget::XYCoord & pos) const;
 
-    //! \param area Obszar z którego wêz³y chcemy pobraæ
-    //! \return Kolekcja wêz³ów z zadanego obszaru
+    //! \param area Obszar z ktÃ³rego wÄ™zÅ‚y chcemy pobraÄ‡
+    //! \return Kolekcja wÄ™zÅ‚Ã³w z zadanego obszaru
     dflm::Model::Nodes getNodesInArea(const osg::BoundingBox & area) const;
 
-    //! \param node Wêzê³ dla którego poszukujemy pustego miejsca
-    //! \posToStart Pozycja startowa od której powinniœmy zacz¹æ szukaæ
-    //! \return Pozycja znalezionego wolnego miejsca lub pozycja startowa jeœli nic nie znaleziono
+    //! \param node WÄ™zÄ™Å‚ dla ktÃ³rego poszukujemy pustego miejsca
+    //! \posToStart Pozycja startowa od ktÃ³rej powinniÅ›my zaczÄ…Ä‡ szukaÄ‡
+    //! \return Pozycja znalezionego wolnego miejsca lub pozycja startowa jeÅ›li nic nie znaleziono
     virtual osgWidget::XYCoord getFreePlaceForNode(const dflm::NPtr & node, const osgWidget::XYCoord & posToStart) const;
 
     //----------------------------- LOGIC EDITION ------------------------------------------
 
-    //! \param node Wêze³ logiczny do doania
-    //! \param image Obrazek zwi¹zany z podanym wêz³em (powinien byæ obslugiwany przez implementacjê wêz³a wizualnego)
-    //! \param name Nazwa wêz³a
-    //! \param pos Pozycja do wstawienia wêz³a
+    //! \param node WÄ™zeÅ‚ logiczny do doania
+    //! \param image Obrazek zwiÄ…zany z podanym wÄ™zÅ‚em (powinien byÄ‡ obslugiwany przez implementacjÄ™ wÄ™zÅ‚a wizualnego)
+    //! \param name Nazwa wÄ™zÅ‚a
+    //! \param pos Pozycja do wstawienia wÄ™zÅ‚a
 	void addNode(const dflm::NPtr & node, osg::ref_ptr<osg::Image> image = osg::ref_ptr<osg::Image>(),
 		const std::string &  name = std::string(), const osgWidget::XYCoord & pos = osgWidget::XYCoord(-1,-1));
 	
-    //! \param node Wêze³ do usuniêcia
+    //! \param node WÄ™zeÅ‚ do usuniÄ™cia
     void removeNode(const dflm::NPtr & node);
 
-    //! Roz³ancza wêze³, usuwa wszystkie jego po³¹czenia
-    //! \param node Wêze³ do roz³¹czenia
+    //! RozÅ‚ancza wÄ™zeÅ‚, usuwa wszystkie jego poÅ‚Ä…czenia
+    //! \param node WÄ™zeÅ‚ do rozÅ‚Ä…czenia
     void disconnectNode(const dflm::NPtr & node);
 
-    //! \param src Pin który chcemy ³¹czyæ
-    //! \param dest Pin który chcemy ³¹czyæ
-    //! \return Po³¹czenie miêdzy pinami
+    //! \param src Pin ktÃ³ry chcemy Å‚Ä…czyÄ‡
+    //! \param dest Pin ktÃ³ry chcemy Å‚Ä…czyÄ‡
+    //! \return PoÅ‚Ä…czenie miÄ™dzy pinami
     virtual dflm::ConnPtr connect(const dflm::PinPtr & src, const dflm::PinPtr & dest);
 
-    //! \param connection Po³¹czenie które usuwamy
+    //! \param connection PoÅ‚Ä…czenie ktÃ³re usuwamy
     virtual void disconnect(const dflm::ConnPtr & connection);
 
-    //! Usuwa wszystkie wêz³y i ich po³¹czenia
+    //! Usuwa wszystkie wÄ™zÅ‚y i ich poÅ‚Ä…czenia
     void removeAllNodes();
 
-    //! Usuwa wszystkie po³¹czenia
+    //! Usuwa wszystkie poÅ‚Ä…czenia
     void removceAllConnections();
     
     //----------------------- SELECTION ---------------------------------------------
 
-    //! \node Wêze³ do zaznaczenia
+    //! \node WÄ™zeÅ‚ do zaznaczenia
 	void selectNode(const dflm::NPtr & node);
 
     //! \param rect Obszar w ktorym zaznaczamy wszystkie wezly
     void selectNodes(const osg::BoundingBox & rect);
 
-    //! Zaznacza wszystkie wêz³yu
+    //! Zaznacza wszystkie wÄ™zÅ‚yu
 	void selectAllNodes();
 
-    //! \param node Wêze³ do odznaczenia
+    //! \param node WÄ™zeÅ‚ do odznaczenia
 	void deselectNode(const dflm::NPtr & node);
 
     //! \param Obszar w ktorym odznaczamy wszystkie wezly
     void deselectNodes(const osg::BoundingBox & rect);
     
-    //! Odznacza wszystkie wêz³y
+    //! Odznacza wszystkie wÄ™zÅ‚y
 	void deselectAllNodes();
 
-	//! \return Zaznaczone wêz³y
+	//! \return Zaznaczone wÄ™zÅ‚y
     const dflm::Model::Nodes & getSelectedNodes() const;
 
-    //! \param node Wêze³ który testujemy pod k¹tem zaznaczenia
-    //! \return true jeœli wêze³ zaznaczony
+    //! \param node WÄ™zeÅ‚ ktÃ³ry testujemy pod kÄ…tem zaznaczenia
+    //! \return true jeÅ›li wÄ™zeÅ‚ zaznaczony
     bool isNodeSelected(const dflm::NPtr & node) const;
 
     //------------------------------ VISUAL NODES PROPERTIES ---------------------------------
 
-    //! \param node Wêze³ który testujemy czy jest w kolizji
-    //! \return true jeœli wêze³ bvierze udzia³ w kolizji
+    //! \param node WÄ™zeÅ‚ ktÃ³ry testujemy czy jest w kolizji
+    //! \return true jeÅ›li wÄ™zeÅ‚ bvierze udziaÅ‚ w kolizji
 	bool isNodeInCollision(const dflm::NPtr & node) const;
 
-    //! \param node Wêze³ który testujemy na wystêpowanie w widzialnym obszarze
-    //! \return true jeœli wêze³ jest choæ czêsciowo zawarty w widocznym obszarze
+    //! \param node WÄ™zeÅ‚ ktÃ³ry testujemy na wystÄ™powanie w widzialnym obszarze
+    //! \return true jeÅ›li wÄ™zeÅ‚ jest choÄ‡ czÄ™sciowo zawarty w widocznym obszarze
 	bool isNodeInVisibleArea(const dflm::NPtr & node) const;
 
-    //! \param Wêze³ który testujmey czy jest ca³kowicie widzoczny
-    //! \return true jeœli wêze³ ca³kowicie widoczny
+    //! \param WÄ™zeÅ‚ ktÃ³ry testujmey czy jest caÅ‚kowicie widzoczny
+    //! \return true jeÅ›li wÄ™zeÅ‚ caÅ‚kowicie widoczny
 	bool isNodeFullyInVisibleArea(const dflm::NPtr & node) const;
 
-    //! \param node Wêze³ którego pozycjê chcemy pobraæ
-    //! \return Pozycja wêz³a
+    //! \param node WÄ™zeÅ‚ ktÃ³rego pozycjÄ™ chcemy pobraÄ‡
+    //! \return Pozycja wÄ™zÅ‚a
 	osgWidget::XYCoord getNodePosition(const dflm::NPtr & node);
 
-    //! \param node Wêze³ którego rozmiar chcemy pobraæ
-    //! \return Rozmiar danego wêz³a
+    //! \param node WÄ™zeÅ‚ ktÃ³rego rozmiar chcemy pobraÄ‡
+    //! \return Rozmiar danego wÄ™zÅ‚a
 	osgWidget::XYCoord getNodeSize(const dflm::NPtr & node);
 
-    //! \param nodes Kolekcja wêz³ów których obszar chcemy dostaæ
-    //! \return obszar na bazie wêz³ów które wystêpuja w modelu
+    //! \param nodes Kolekcja wÄ™zÅ‚Ã³w ktÃ³rych obszar chcemy dostaÄ‡
+    //! \return obszar na bazie wÄ™zÅ‚Ã³w ktÃ³re wystÄ™puja w modelu
     osg::BoundingBox getNodesBoundingBox(const dflm::Model::Nodes & nodes ) const;
 
-    //! \param node Wêze³ któy przesuwamy wzglêdem jego aktualnej pozycji
-    //! \param moveStep Przesuniêcie wêz³a wzglêdem jego aktualnej pozycji
+    //! \param node WÄ™zeÅ‚ ktÃ³y przesuwamy wzglÄ™dem jego aktualnej pozycji
+    //! \param moveStep PrzesuniÄ™cie wÄ™zÅ‚a wzglÄ™dem jego aktualnej pozycji
 	void setNodeRelativePosition(const dflm::NPtr & node, const osgWidget::XYCoord & moveStep);
 
-    //! \param node Wêze³ któy ustawiamy bezwzglêdnie
-    //! \param nodePos Nowa pozycja wêz³a
+    //! \param node WÄ™zeÅ‚ ktÃ³y ustawiamy bezwzglÄ™dnie
+    //! \param nodePos Nowa pozycja wÄ™zÅ‚a
 	void setNodeAbsolutePosition(const dflm::NPtr & node, const osgWidget::XYCoord & nodePos);
 
     //---------------------------------- VMODEL CONFIGURATION --------------------------------------
 
-    //! \param show Czy pokazywaæ domyœlny toolbar
+    //! \param show Czy pokazywaÄ‡ domyÅ›lny toolbar
 	void showDefaultToolbar(bool show);
 
-    //! \return Minimalny obszar wezla jaki trzeba zaznaczyc aby wezel by³ uznany za zaznaczony/odznaczony
-    //! wartosc procentowa powierzchni wez³a z przedzialu [0..1], gdzie 0 oznacza zaznaczenie na kontakt z wêz³em a 1 wymaga objêcia ca³ego wêz³a
+    //! \return Minimalny obszar wezla jaki trzeba zaznaczyc aby wezel byÅ‚ uznany za zaznaczony/odznaczony
+    //! wartosc procentowa powierzchni wezÅ‚a z przedzialu [0..1], gdzie 0 oznacza zaznaczenie na kontakt z wÄ™zÅ‚em a 1 wymaga objÄ™cia caÅ‚ego wÄ™zÅ‚a
 	osgWidget::point_type getMinSelectedNodeAreaRatioToSelect() const;
 
-    //! \param areaRatio Procentowy obszar wêz³a jaki nale¿y obj¹æ by zaznaczyæ/odznaczyæ wêze³
+    //! \param areaRatio Procentowy obszar wÄ™zÅ‚a jaki naleÅ¼y objÄ…Ä‡ by zaznaczyÄ‡/odznaczyÄ‡ wÄ™zeÅ‚
 	void setMinSelectedNodeAreaRatioToSelect(osgWidget::point_type areaRatio);
 
-    //! \return Zbiór klawiszy modyfikuj¹cych sposób zaznaczania
+    //! \return ZbiÃ³r klawiszy modyfikujÄ…cych sposÃ³b zaznaczania
 	const osgui::KeyboardMapper::Keys & getSelectionActionKeys() const;
 
-    //! \param keys Zbiór klawisdzy modyfikuj¹cy sposób zaznaczania
+    //! \param keys ZbiÃ³r klawisdzy modyfikujÄ…cy sposÃ³b zaznaczania
 	void setSelectionActionKeys(const osgui::KeyboardMapper::Keys & keys);
 
-    //! \return Mnimalny dystans pomiedzy aktualn¹ pozycj¹ a po³¹czeniem aby uznaæ po³aczenie jako potencjalnie wybrane
+    //! \return Mnimalny dystans pomiedzy aktualnÄ… pozycjÄ… a poÅ‚Ä…czeniem aby uznaÄ‡ poÅ‚aczenie jako potencjalnie wybrane
 	osgWidget::point_type getMinDistToDelConnection() const;
 
-    //! \param dist Minimalny dystans kursora do po³¹czenia aby uznaæ po³¹czenie jako potencjalnie wybrane
+    //! \param dist Minimalny dystans kursora do poÅ‚Ä…czenia aby uznaÄ‡ poÅ‚Ä…czenie jako potencjalnie wybrane
 	void setMinDistToDelConnection(osgWidget::point_type dist);
 
-    //! \param Normalny kolor po³¹czenia
+    //! \param Normalny kolor poÅ‚Ä…czenia
 	osgWidget::Color getVisualConnectionNormalColor() const;
 
-    //! \param color Normalny kolor po³¹czenia
+    //! \param color Normalny kolor poÅ‚Ä…czenia
 	void setVisualConnectionNormalColor( const osgWidget::Color & color);
 	
-    //! \return Kolor zaznaczonego po³¹czenia
+    //! \return Kolor zaznaczonego poÅ‚Ä…czenia
 	osgWidget::Color getVisualConnectionHighlightColor() const;
-    //! \param color Kolor zaznaczonego po³aczenia
+    //! \param color Kolor zaznaczonego poÅ‚aczenia
 	void setVisualConnectionHighlightColor( const osgWidget::Color & color);
 
     //--------------------------------------- NODES ACTIONS -----------------------------------------------------------

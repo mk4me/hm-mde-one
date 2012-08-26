@@ -1,4 +1,4 @@
-#ifndef TOOLBOXMAIN_H
+ï»¿#ifndef TOOLBOXMAIN_H
 #define TOOLBOXMAIN_H
 
 #include <utils/Debug.h>
@@ -53,10 +53,10 @@ public slots:
 	void onLayoutTriggered();
 
 private slots:
-	//! Wype³nia podmenu akcjami dla dostêpnych okien.
-	//! \param target Menu do wype³nienia.
+	//! WypeÅ‚nia podmenu akcjami dla dostÄ™pnych okien.
+	//! \param target Menu do wypeÅ‚nienia.
 	void populateWindowMenu();
-	//! Wype³nia podmenu akcjami tworz¹cymi wizualizatory.
+	//! WypeÅ‚nia podmenu akcjami tworzÄ…cymi wizualizatory.
 	void populateVisualizersMenu();
 	//!
 	void actionCreateVisualizer();
@@ -73,7 +73,7 @@ private:
 
 	//! Natywne dodanie opcji do menu.
 	virtual void onAddMenuItem( const std::string& path, bool checkable, bool initialState );
-	//! Natywne usuniêcie opcji z menu.
+	//! Natywne usuniÄ™cie opcji z menu.
 	virtual void onRemoveMenuItem( const std::string& path );
 	
 	void openLayout( const QString& path );

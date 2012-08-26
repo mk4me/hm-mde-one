@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include <math.h>
 #include <utils/Debug.h>
 #include <utils/Profiler.h>
@@ -91,13 +91,13 @@ const VideoError * VideoStream::getLastError() const
 
 // bool VideoStream::getFrame( FrameData & dst )
 // {
-//   // najpierw próbujemy pobraæ bie¿¹c¹ ramkê
+//   // najpierw prÃ³bujemy pobraÄ‡ bieÅ¼Ä…cÄ… ramkÄ™
 //   FrameData src;
 //   if ( getCurrentFrameData(src) ) {
 //     return converter->convert( src, dst );
 //   } else {
-//     // je¿eli strumieñ nie jest w stanie upakowaæ danych do ramki próbujemy
-//     // skonwertowaæ obie ramki do postaci zdjêcia
+//     // jeÅ¼eli strumieÅ„ nie jest w stanie upakowaÄ‡ danych do ramki prÃ³bujemy
+//     // skonwertowaÄ‡ obie ramki do postaci zdjÄ™cia
 //     FrameLayered srcPicture, dstPicture;
 //     if ( getCurrentFrameData(srcPicture) && dst.translate(&dstPicture) ) {
 //       return converter->convert(srcPicture, dstPicture);
@@ -117,8 +117,8 @@ bool VideoStream::getFrame( Picture & dst ) const
     if ( getData(src) ) {
         return converter->convert( src, dst );
     } else {
-        // je¿eli strumieñ nie jest w stanie upakowaæ danych do ramki próbujemy
-        // skonwertowaæ obie ramki do postaci zdjêcia
+        // jeÅ¼eli strumieÅ„ nie jest w stanie upakowaÄ‡ danych do ramki prÃ³bujemy
+        // skonwertowaÄ‡ obie ramki do postaci zdjÄ™cia
         PictureLayered layers = dst.getLayers();
         return getFrame(layers);
     }
@@ -130,8 +130,8 @@ bool VideoStream::getFrame( PictureLayered & dst ) const
     if ( getTime() < 0.0 || getTime() > getDuration() ) {
         VIDLIB_ERROR( VideoError("Stream time is out of bounds.") );
     }
-    // je¿eli strumieñ nie jest w stanie upakowaæ danych do ramki próbujemy
-    // skonwertowaæ obie ramki do postaci zdjêcia
+    // jeÅ¼eli strumieÅ„ nie jest w stanie upakowaÄ‡ danych do ramki prÃ³bujemy
+    // skonwertowaÄ‡ obie ramki do postaci zdjÄ™cia
     PictureLayered srcPicture;
     if ( getData(srcPicture) ) {
         return converter->convert(srcPicture, dst);

@@ -1,19 +1,19 @@
-#ifndef HEADER_GUARD_ISCHEMEDRAWER_H__
+Ôªø#ifndef HEADER_GUARD_ISCHEMEDRAWER_H__
 #define HEADER_GUARD_ISCHEMEDRAWER_H__
 
 #include <boost/utility.hpp>
 #include <plugins/kinematic/VisualizationScheme.h>
 
-//! Interfejs powinien byÊ zaimplementowany przez warstwe wizualizacji danych 3D.
-//! Stworzona klasa powinna czerpaÊ dane ze schematu wizualizacji
+//! Interfejs powinien byƒá zaimplementowany przez warstwe wizualizacji danych 3D.
+//! Stworzona klasa powinna czerpaƒá dane ze schematu wizualizacji
 class ISchemeDrawer : boost::noncopyable
 {
 public:
-    //! wywo≥ywane cyklicznie odrysowanie (nie jest konieczne, jeúli uøywamy osg)
+    //! wywo≈Çywane cyklicznie odrysowanie (nie jest konieczne, je≈õli u≈ºywamy osg)
     virtual void draw() = 0;
-    //! wywo≥ywane, gdy schemat zmieni≥ swÛj stan
+    //! wywo≈Çywane, gdy schemat zmieni≈Ç sw√≥j stan
     virtual void update() = 0;
-    //! wywo≥ywane przed zakoÒczeniem pracy schematu wizulalizacji
+    //! wywo≈Çywane przed zako≈Ñczeniem pracy schematu wizulalizacji
     virtual void deinit() = 0;
     //! inicjalizacja drawera
     //! \param scheme schemat wizualizacji z danymi

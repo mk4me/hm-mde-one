@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include "DataSourcePerspectiveManager.h"
 #include <utils/Debug.h>
 
@@ -34,7 +34,7 @@ int DataSourcePerspectiveManager::perspectivesCount() const
 
 void DataSourcePerspectiveManager::setCurrentPerspective(int idx)
 {
-	UTILS_ASSERT(idx > -1 && idx < perspectivesCount(), "Bl�dny index perspektywy");
+	UTILS_ASSERT(idx > -1 && idx < perspectivesCount(), "Blędny index perspektywy");
 	if(currentPerspective_ != -1){
 		perspectives[currentPerspective_]->widget()->setVisible(false);
 	}

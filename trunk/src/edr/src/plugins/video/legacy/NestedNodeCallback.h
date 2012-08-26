@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/06/11
 	created:  11:6:2010   11:09
 	filename: NestedNodeCallback.h
@@ -14,11 +14,11 @@
 template <class Node>
 struct NestedCallback : public osg::NodeCallback
 {
-  //! Wêze³ w³aœciwy.
+  //! WÄ™zeÅ‚ wÅ‚aÅ›ciwy.
   Node * node;
-  //! \param node Wêze³ do którego siê podpi¹æ.
+  //! \param node WÄ™zeÅ‚ do ktÃ³rego siÄ™ podpiÄ…Ä‡.
   NestedCallback(Node * node) : node(node) {}
-  //! Operator przekazywania callbacka do wêz³a.
+  //! Operator przekazywania callbacka do wÄ™zÅ‚a.
   //! \param node
   //! \param nv
   void operator()(osg::Node* node, osg::NodeVisitor* nv)

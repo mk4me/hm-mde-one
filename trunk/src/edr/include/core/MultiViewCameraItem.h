@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/12/13
 	created:  13:12:2010   12:58
 	filename: MultiViewCameraItem.h
@@ -21,7 +21,7 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Item s³u¿¹cy do podgl¹du kamery. 
+ *	Item sÅ‚uÅ¼Ä…cy do podglÄ…du kamery. 
  */
 class MultiViewCameraItem : public core::MultiViewItem
 {
@@ -30,11 +30,11 @@ private:
     osg::ref_ptr<osg::Camera> camera;
     //!
     osg::observer_ptr<osg::View> view;
-    //! Wspó³czynnik proporcji.
+    //! WspÃ³Å‚czynnik proporcji.
     osgWidget::point_type aspectRatio;
     //! Indeks w grupie (rodzicu).
     unsigned childIdx;
-    //! Rodzic wêz³a.
+    //! Rodzic wÄ™zÅ‚a.
     osg::ref_ptr<osg::Group> parent;
 
 public:
@@ -50,19 +50,19 @@ public:
     //! \return Nazwa widgetu.
     virtual const std::string& getName() const;
 
-    //! \return Wspó³czynnik proporcji.
+    //! \return WspÃ³Å‚czynnik proporcji.
     virtual osgWidget::point_type getAspectRatio();
-    //! \param aspectRatio Wspó³czynnik proporcji.
+    //! \param aspectRatio WspÃ³Å‚czynnik proporcji.
     void setDefaultAspectRatio(osgWidget::point_type aspectRatio);
 
-    //! \return Widok na podstawie którego okreœlany jest wspó³czynnik proporcji. Gdy NULL
-    //!         to brany jest pod uwagê wspó³czynnik podawany jawnie.
+    //! \return Widok na podstawie ktÃ³rego okreÅ›lany jest wspÃ³Å‚czynnik proporcji. Gdy NULL
+    //!         to brany jest pod uwagÄ™ wspÃ³Å‚czynnik podawany jawnie.
     osg::View* getView()
     { 
         return view.get();
     }
-    //! \param view Widok na podstawie którego okreœlany jest wspó³czynnik proporcji. Gdy NULL
-    //!             to brany jest pod uwagê wspó³czynnik podawany jawnie.
+    //! \param view Widok na podstawie ktÃ³rego okreÅ›lany jest wspÃ³Å‚czynnik proporcji. Gdy NULL
+    //!             to brany jest pod uwagÄ™ wspÃ³Å‚czynnik podawany jawnie.
     void setView(osg::View* view) 
     { 
         this->view = view; 
@@ -74,9 +74,9 @@ public:
         osgWidget::point_type w, osgWidget::point_type h);
 
 
-    //! Dodaje b¹dŸ usuwa widget podgl¹du ze sceny.
+    //! Dodaje bÄ…dÅº usuwa widget podglÄ…du ze sceny.
     virtual void setVisible(bool visible);
-    //! Pomocnicza metoda do okreœlania widocznoœci.
+    //! Pomocnicza metoda do okreÅ›lania widocznoÅ›ci.
     bool isVisible() const;
 
 };

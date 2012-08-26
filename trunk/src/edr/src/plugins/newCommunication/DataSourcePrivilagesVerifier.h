@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/03
     created:  3:2:2012   17:14
     filename: CommunicationDataSourcePrivilagesVerifier.h
@@ -15,42 +15,42 @@
 
 #include "DataSourceShallowCopy.h"
 
-//! Klasa veryfikuj¹ca prawa dostêpu do danych
+//! Klasa veryfikujÄ…ca prawa dostÄ™pu do danych
 class PrivilagesVerifier
 {
 public:
 
     ////! \param disorder Schorzenie do weryfikacji
-    ////! \param user U¿ytkownik wzglêdem praw którego weryfikujemy dostêp do danych
-    ////! \return true je¿eli schorzenie pomyœlnie przesz³o weryfikacjê
+    ////! \param user UÅ¼ytkownik wzglÄ™dem praw ktÃ³rego weryfikujemy dostÄ™p do danych
+    ////! \return true jeÅ¼eli schorzenie pomyÅ›lnie przeszÅ‚o weryfikacjÄ™
     //static const bool verifyDisorder(const IDisorderAccessor * disorder, const User * user);
-    ////! \param disorderOccurence  Wyst¹pienie schorzenia do weryfikacji
-    ////! \param user U¿ytkownik wzglêdem praw którego weryfikujemy dostêp do danych
-    ////! \return true je¿eli schorzenie pomyœlnie przesz³o weryfikacjê
+    ////! \param disorderOccurence  WystÄ…pienie schorzenia do weryfikacji
+    ////! \param user UÅ¼ytkownik wzglÄ™dem praw ktÃ³rego weryfikujemy dostÄ™p do danych
+    ////! \return true jeÅ¼eli schorzenie pomyÅ›lnie przeszÅ‚o weryfikacjÄ™
     //static const bool verifyDisorderOccurence(const IDisorderOccurenceAccessor * disorderOccurence, const User * user);
     ////! \param patient Pacjent do weryfikacji
-    ////! \param user U¿ytkownik wzglêdem praw którego weryfikujemy dostêp do danych
-    ////! \return true je¿eli pacjent pomyœlnie przeszed³ weryfikacjê
+    ////! \param user UÅ¼ytkownik wzglÄ™dem praw ktÃ³rego weryfikujemy dostÄ™p do danych
+    ////! \return true jeÅ¼eli pacjent pomyÅ›lnie przeszedÅ‚ weryfikacjÄ™
     //static const bool verifyPatient(const IPatientAccessor * patient, const User * user);
     ////! \param subject Subject do weryfikacji
-    ////! \param user U¿ytkownik wzglêdem praw którego weryfikujemy dostêp do danych
-    ////! \return true je¿eli subject pomyœlnie przeszed³ weryfikacjê
+    ////! \param user UÅ¼ytkownik wzglÄ™dem praw ktÃ³rego weryfikujemy dostÄ™p do danych
+    ////! \return true jeÅ¼eli subject pomyÅ›lnie przeszedÅ‚ weryfikacjÄ™
     //static const bool verifySubject(const ISubjectAccessor * subject, const User * user);
     ////! \param lab Laboratorium do weryfikacji
-    ////! \param user U¿ytkownik wzglêdem praw którego weryfikujemy dostêp do danych
-    ////! \return true je¿eli laboratorium pomyœlnie przesz³o weryfikacjê
+    ////! \param user UÅ¼ytkownik wzglÄ™dem praw ktÃ³rego weryfikujemy dostÄ™p do danych
+    ////! \return true jeÅ¼eli laboratorium pomyÅ›lnie przeszÅ‚o weryfikacjÄ™
     //static const bool verifyLab(const ILabAccessor * lab, const User * user);
     ////! \param session Sesja do weryfikacji
-    ////! \param user U¿ytkownik wzglêdem praw którego weryfikujemy dostêp do danych
-    ////! \return true je¿eli sesja pomyœlnie przesz³a weryfikacjê
+    ////! \param user UÅ¼ytkownik wzglÄ™dem praw ktÃ³rego weryfikujemy dostÄ™p do danych
+    ////! \return true jeÅ¼eli sesja pomyÅ›lnie przeszÅ‚a weryfikacjÄ™
     //static const bool verifySession(const ISessionAccessor * session, const User * user);
     ////! \param motion Motion do weryfikacji
-    ////! \param user U¿ytkownik wzglêdem praw którego weryfikujemy dostêp do danych
-    ////! \return true je¿eli motion pomyœlnie przeszed³ weryfikacjê
+    ////! \param user UÅ¼ytkownik wzglÄ™dem praw ktÃ³rego weryfikujemy dostÄ™p do danych
+    ////! \return true jeÅ¼eli motion pomyÅ›lnie przeszedÅ‚ weryfikacjÄ™
     //static const bool verifyMotion(const IMotionAccessors * motion, const User * user);
     ////! \param file Plik do weryfikacji
-    ////! \param user U¿ytkownik wzglêdem praw którego weryfikujemy dostêp do danych
-    ////! \return true je¿eli plik pomyœlnie przeszed³ weryfikacjê
+    ////! \param user UÅ¼ytkownik wzglÄ™dem praw ktÃ³rego weryfikujemy dostÄ™p do danych
+    ////! \return true jeÅ¼eli plik pomyÅ›lnie przeszedÅ‚ weryfikacjÄ™
     //static const bool verifyFile(const IFileAccessor * file, const User * user);
 };
 

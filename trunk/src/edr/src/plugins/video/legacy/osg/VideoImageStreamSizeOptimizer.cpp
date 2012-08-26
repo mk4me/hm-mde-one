@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+Ôªø#include "../VideoPCH.h"
 #include <boost/foreach.hpp>
 #include <core/Log.h>
 #include <core/OsgWidgetUtils.h>
@@ -23,7 +23,7 @@ void VideoImageStreamSizeOptimizer::refreshSize()
     UTILS_ASSERT(image);
     int prevWidth = image->s();
     int prevHeight = image->t();
-    // okreúlenie maksymalnej szerokoúci
+    // okre≈õlenie maksymalnej szeroko≈õci
     float maxWidth = 0;
     for ( size_t i = 0; i < clients.size(); ++i ) {
         Client* client = clients[i];
@@ -32,9 +32,9 @@ void VideoImageStreamSizeOptimizer::refreshSize()
         }
     }
     
-    // TODO: przenieúÊ do metody wirtualnej?
+    // TODO: przenie≈õƒá do metody wirtualnej?
     if ( video::osgPlugin::VideoImageStream* videoImageStream = dynamic_cast<video::osgPlugin::VideoImageStream*>(image.get()) ) {
-        // aktualizacja wymiarÛw
+        // aktualizacja wymiar√≥w
         videoImageStream->setMaxWidth( int(ceil(maxWidth)) );
     }
 

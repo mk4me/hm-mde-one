@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_KINEMATICMODEL__LOGGER_H__
+﻿#ifndef HEADER_GUARD_KINEMATICMODEL__LOGGER_H__
 #define HEADER_GUARD_KINEMATICMODEL__LOGGER_H__
 
 #include <string>
@@ -11,7 +11,7 @@ namespace kinematic {
                            if (Logger::getInstance().getLogCallback() && (severity) >= Logger::getInstance().getOutSeverity()) { \
                                Logger::getInstance().log((severity), (basicMessage)); \
                            }
-//! Klasa, kt�ra jest odpowiedzialna za logowanie informacji.
+//! Klasa, która jest odpowiedzialna za logowanie informacji.
 class Logger
 {
 public:

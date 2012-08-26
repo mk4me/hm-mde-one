@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__MODEL_H__
+ï»¿#ifndef HEADER_GUARD__MODEL_H__
 #define HEADER_GUARD__MODEL_H__
 
 #include <utils/Synchronized.h>
@@ -17,23 +17,23 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa opisujaca model logiczny data flow. Pozwala na jego edycjê - dodawanie, usuwanie wêz³ów oraz ³¹czenie/roz³anczanie pinów wg œciœle okreœlonych zasad.
+//! Klasa opisujaca model logiczny data flow. Pozwala na jego edycjÄ™ - dodawanie, usuwanie wÄ™zÅ‚Ã³w oraz Å‚Ä…czenie/rozÅ‚anczanie pinÃ³w wg Å›ciÅ›le okreÅ›lonych zasad.
 class Model : public boost::enable_shared_from_this<Model>, public utils::Observable<Model>
 {
 public:
-    //! Typ opisuj¹cy pêtle/cykle w po³aczeniach
+    //! Typ opisujÄ…cy pÄ™tle/cykle w poÅ‚aczeniach
 	typedef std::vector<ConnPtr> CyclePath;
 
-    //! Typreprezentuj¹cy zbiór wêz³ów
+    //! TypreprezentujÄ…cy zbiÃ³r wÄ™zÅ‚Ã³w
 	typedef std::set<NPtr> Nodes;
 
-    //! Typ opisuj¹cy zbiór po³¹czeñ
+    //! Typ opisujÄ…cy zbiÃ³r poÅ‚Ä…czeÅ„
 	typedef std::set<ConnPtr> Connections;
 
-    //! Typ opisuj¹cy zbiór pinów
+    //! Typ opisujÄ…cy zbiÃ³r pinÃ³w
     typedef std::set<PinPtr> PinsSet;
 
-    //! Typ przechowuj¹cy lokalne niezgodnoœci modelu logicznego z wytyczonymi zasadami jego tworzenia
+    //! Typ przechowujÄ…cy lokalne niezgodnoÅ›ci modelu logicznego z wytyczonymi zasadami jego tworzenia
 	typedef std::map<NPtr, PinsSet > RequiringConnection;
 
 protected:
@@ -42,161 +42,161 @@ protected:
 
 private:
 
-    //! Struktura pomocnicza przy analizie pêtli (cyklów) w modelu
+    //! Struktura pomocnicza przy analizie pÄ™tli (cyklÃ³w) w modelu
     typedef struct PathEntry{
-        //! Aktualny wêze³
+        //! Aktualny wÄ™zeÅ‚
         NPtr node;
         //! Aktualny pin
         //Node::Pins::const_iterator pinIT;
         int pinIndex;
 
-        //! Aktualne po³¹czenie
+        //! Aktualne poÅ‚Ä…czenie
         //Connections::const_iterator connIT;
         int connectionIndex;
 
-        //! Operator porównania
+        //! Operator porÃ³wnania
         bool operator==(const PathEntry & pe) const;
     }PathEntry;
 
 public:
 
-    //! Konstruktor zeruj¹cy
+    //! Konstruktor zerujÄ…cy
 	Model(void);
 
     //! Wirtualny destruktor
 	virtual ~Model(void);
 
-    //! \param node Wêze³ którego kompatybilnoœæ z modelem sprawdzamy
-    //! \return Czy wêze³ jest wspierany przez model
+    //! \param node WÄ™zeÅ‚ ktÃ³rego kompatybilnoÅ›Ä‡ z modelem sprawdzamy
+    //! \return Czy wÄ™zeÅ‚ jest wspierany przez model
     virtual bool isNodeSupported(const NPtr & node) const;
 
-    //! \return Czy model poprawnie skonfigurowany - pod k¹tem po³¹czeñ i wêz³ów
+    //! \return Czy model poprawnie skonfigurowany - pod kÄ…tem poÅ‚Ä…czeÅ„ i wÄ™zÅ‚Ã³w
     bool isModelValid() const;
 
-    //! \param node Wêze³ do dodania
+    //! \param node WÄ™zeÅ‚ do dodania
     void addNode(const NPtr & node);
 
-    //! \param node Wêze³ do usuniêcia
+    //! \param node WÄ™zeÅ‚ do usuniÄ™cia
     void removeNode(const NPtr & node);
 
-    //! Usuwa wszystkie wêz³y i po³¹czenia z modelu
+    //! Usuwa wszystkie wÄ™zÅ‚y i poÅ‚Ä…czenia z modelu
 	void clearNodes();
 
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
-    //! \return Czy mo¿na po³aczyæ piny ze wzglêdu na obowi¹zuj¹ce regu³y
+    //! \param src Pin ÅºrÃ³dÅ‚owy (wyjÅ›ciowy)
+    //! \param src Pin docelowy (wejÅ›ciowy)
+    //! \return Czy moÅ¼na poÅ‚aczyÄ‡ piny ze wzglÄ™du na obowiÄ…zujÄ…ce reguÅ‚y
 	bool canConnect(const CPinPtr & src, const CPinPtr & dest) const;
 
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
-    //! \return Czy po³¹czenie tych pinów wprowadzi cykl (pêtle) w modelu
+    //! \param src Pin ÅºrÃ³dÅ‚owy (wyjÅ›ciowy)
+    //! \param src Pin docelowy (wejÅ›ciowy)
+    //! \return Czy poÅ‚Ä…czenie tych pinÃ³w wprowadzi cykl (pÄ™tle) w modelu
 	bool createCycle(const CPinPtr & src, const CPinPtr & dest) const;
 
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
-    //! \return Opis cyklu (œciezki) jaki powstanie przez po³¹czenie tych dwóch pinów
+    //! \param src Pin ÅºrÃ³dÅ‚owy (wyjÅ›ciowy)
+    //! \param src Pin docelowy (wejÅ›ciowy)
+    //! \return Opis cyklu (Å›ciezki) jaki powstanie przez poÅ‚Ä…czenie tych dwÃ³ch pinÃ³w
 	CyclePath getCycle(const CPinPtr & src, const CPinPtr & dest) const;
 
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
-    //! \return Po³¹czenie utworzone pomiêdzy zadanymi pinami
+    //! \param src Pin ÅºrÃ³dÅ‚owy (wyjÅ›ciowy)
+    //! \param src Pin docelowy (wejÅ›ciowy)
+    //! \return PoÅ‚Ä…czenie utworzone pomiÄ™dzy zadanymi pinami
 	ConnPtr connect(const PinPtr & src, const PinPtr & dest);
 
-    //! \param connection Po³¹czenie do usuniêcia
+    //! \param connection PoÅ‚Ä…czenie do usuniÄ™cia
     void removeConnection(const ConnPtr & connection);
 
-    //! \param Weze³ do rozlaczenia - wszystke jego po³aczenia zostaj¹ usuniete
+    //! \param WezeÅ‚ do rozlaczenia - wszystke jego poÅ‚aczenia zostajÄ… usuniete
     void disconnectNode(const NPtr & node);
 
-    //! Usuwa wszystkie po³¹czenia w modelu
+    //! Usuwa wszystkie poÅ‚Ä…czenia w modelu
 	void clearConnections();
 
-    //! \return Wszystkie wêz³y modelu
+    //! \return Wszystkie wÄ™zÅ‚y modelu
 	const Nodes & getNodes() const;
 
-    //! \return Wszystkie po³¹czenia w modelu
+    //! \return Wszystkie poÅ‚Ä…czenia w modelu
 	const Connections & getConnections() const;
 
-    //! \return Zwraca wêz³y wymagaj¹ce interwencji by model by³ poprawny
+    //! \return Zwraca wÄ™zÅ‚y wymagajÄ…ce interwencji by model byÅ‚ poprawny
 	const RequiringConnection & getRequiringConnections() const;
 
-    //! \return Zwraca kolekcjê liœci - elementów które posiadaj¹ wejscia ale nie posiadaj¹ wyjœæ lub maj¹ wyjœcia niepod³¹czone
+    //! \return Zwraca kolekcjÄ™ liÅ›ci - elementÃ³w ktÃ³re posiadajÄ… wejscia ale nie posiadajÄ… wyjÅ›Ä‡ lub majÄ… wyjÅ›cia niepodÅ‚Ä…czone
     const Nodes & getLeafNodes() const;
 
-    //! \param node Wêze³ któremu nazwê zmieniamy
-    //! \param name Nowa nazwa wêz³a
+    //! \param node WÄ™zeÅ‚ ktÃ³remu nazwÄ™ zmieniamy
+    //! \param name Nowa nazwa wÄ™zÅ‚a
     void setNodeName(const NPtr & node, const std::string & name);
 
-    //! \param pin Pin któremu nazwê zmieniamy
+    //! \param pin Pin ktÃ³remu nazwÄ™ zmieniamy
     //! \param name Nowa nazwa pinu
     void setPinName(const PinPtr & pin, const std::string & name);
 	
  protected:
     
-     //! \return true jeœli mo¿na dokonaæ zmiany modelu, inaczej false lub wyj¹tek
+     //! \return true jeÅ›li moÅ¼na dokonaÄ‡ zmiany modelu, inaczej false lub wyjÄ…tek
      virtual bool isModelChangeAllowed() const;
 
-     //! \param src Pin Ÿród³owy (wyjœciowy)
-     //! \param src Pin docelowy (wejœciowy)
-     //! \return Czy mozna po³¹czyæ piny
+     //! \param src Pin ÅºrÃ³dÅ‚owy (wyjÅ›ciowy)
+     //! \param src Pin docelowy (wejÅ›ciowy)
+     //! \return Czy mozna poÅ‚Ä…czyÄ‡ piny
      virtual bool additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) const;
 
-     //! \return true jeœli model jest poprawny
+     //! \return true jeÅ›li model jest poprawny
      virtual bool additionalModelValidation() const;
 
-    //! \param node Wêze³ do dodania
+    //! \param node WÄ™zeÅ‚ do dodania
     virtual void afterNodeAdd(const NPtr & node);
 
-    //! \param node Wêze³ do usuniêcia
+    //! \param node WÄ™zeÅ‚ do usuniÄ™cia
     virtual void beforeNodeRemove(const NPtr & node);
 
-    //! \param connection Po³aczenie do usuniecia z modelu
+    //! \param connection PoÅ‚aczenie do usuniecia z modelu
     virtual void beforeRemoveConnection(const ConnPtr & connection);
 
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
+    //! \param src Pin ÅºrÃ³dÅ‚owy (wyjÅ›ciowy)
+    //! \param src Pin docelowy (wejÅ›ciowy)
     virtual void afterConnect(const ConnPtr & connection);
 
-    //! \param nodes Lista wêz³ów uznana za sprawdzone - tutaj mog¹ siê podpinaæ klasy pochodne z szersz¹ wiedz¹ na temat wêz³ów
-    //! W ten sposób mog¹ przyspieszyæ wykrywanie cykli
+    //! \param nodes Lista wÄ™zÅ‚Ã³w uznana za sprawdzone - tutaj mogÄ… siÄ™ podpinaÄ‡ klasy pochodne z szerszÄ… wiedzÄ… na temat wÄ™zÅ‚Ã³w
+    //! W ten sposÃ³b mogÄ… przyspieszyÄ‡ wykrywanie cykli
     virtual void initCycleCheckedNodes(Nodes & nodes) const;
 
-    //! \param node Wêze³ który sta³ siê w³aœnie liœciem
+    //! \param node WÄ™zeÅ‚ ktÃ³ry staÅ‚ siÄ™ wÅ‚aÅ›nie liÅ›ciem
     virtual void afterLeafAdd(const NPtr & node);
 
-    //! \param node Wêze³ który przestaje byæ liœciem
+    //! \param node WÄ™zeÅ‚ ktÃ³ry przestaje byÄ‡ liÅ›ciem
     virtual void beforeLeafRemove(const NPtr & node);
 
 private:
 
     bool isLockedNonBlocking() const;
 
-    //! \param node Wêze³ który roz³anczamy
+    //! \param node WÄ™zeÅ‚ ktÃ³ry rozÅ‚anczamy
     void quickDisconnectNode(const NPtr & node);
 
-    //! \param connection Po³¹czenie które usuwamy
+    //! \param connection PoÅ‚Ä…czenie ktÃ³re usuwamy
     void quickRemoveConnection(const Connections::iterator & connection);
 
-    //! \param nodeIt Iterator wêz³a który usuwamy
+    //! \param nodeIt Iterator wÄ™zÅ‚a ktÃ³ry usuwamy
     void quickRemoveNode(const Nodes::iterator & nodeIt);
 
-    //! \param node Weze³ dla którego tworzymy strukture opisujaca kolejnosc analizowania polaczen dla sprawdzania cykli
+    //! \param node WezeÅ‚ dla ktÃ³rego tworzymy strukture opisujaca kolejnosc analizowania polaczen dla sprawdzania cykli
     //! \return Aktualny stan analizowanych polaczen
     static PathEntry getFirstNodeOutputConnection(const NPtr & node);
 
-    //! \param pathEntry Element opisujacy kolejnosc przegladania po³¹czeñ w wêŸle - jej aktualny stan
+    //! \param pathEntry Element opisujacy kolejnosc przegladania poÅ‚Ä…czeÅ„ w wÄ™Åºle - jej aktualny stan
     //! \return Kolejny stan analizowanych polaczen
     static PathEntry getNextNodeOutputConnection(const PathEntry & pathEntry);
 
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
-    //! \return Po³¹czenie pomiêdzy danymi pinami lub nullptr w przypadku braku po³¹czenia
+    //! \param src Pin ÅºrÃ³dÅ‚owy (wyjÅ›ciowy)
+    //! \param src Pin docelowy (wejÅ›ciowy)
+    //! \return PoÅ‚Ä…czenie pomiÄ™dzy danymi pinami lub nullptr w przypadku braku poÅ‚Ä…czenia
     ConnPtr findConnection(CPinPtr src, CPinPtr dest) const;
 
-    //! \param node Wêze³ który staje siê liœciem
+    //! \param node WÄ™zeÅ‚ ktÃ³ry staje siÄ™ liÅ›ciem
     void addLeaf(const NPtr & node);
 
-    //! \param node Wêze³ który przestaje byæ liœciem
+    //! \param node WÄ™zeÅ‚ ktÃ³ry przestaje byÄ‡ liÅ›ciem
     void removeLeaf(const NPtr & node);
 
 protected:
@@ -212,16 +212,16 @@ protected:
 
 private:
 
-    //! Zbiór wszystkich wezlow modelu
+    //! ZbiÃ³r wszystkich wezlow modelu
 	Nodes nodes;
 
-    //! Zbiór wszystkich po³¹czeñ modelu
+    //! ZbiÃ³r wszystkich poÅ‚Ä…czeÅ„ modelu
 	Connections connections;
 
-    //! Mapa wêz³ów wymagaj¹cych interwencji aby model by³ poprawnie zbudowany
+    //! Mapa wÄ™zÅ‚Ã³w wymagajÄ…cych interwencji aby model byÅ‚ poprawnie zbudowany
 	RequiringConnection pinsRequiringConnections;
 
-    //! Zbiór wêz³ów liœci
+    //! ZbiÃ³r wÄ™zÅ‚Ã³w liÅ›ci
     Nodes leafNodes;
 
     //! mutex dla zmiany stanu modelu

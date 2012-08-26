@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+ï»¿#include "../VideoPCH.h"
 /* -*-c++-*- OpenSceneGraph - Copyright (C) 1998-2006 Robert Osfield 
  *
  * This library is open source and may be redistributed and/or modified under  
@@ -50,8 +50,8 @@ public:
     supportsExtension("sdp",    "MPEG-4");
     supportsExtension("m1v",    "MPEG-1");
 
-    // teoretycznie to powinno znaleŸæ siê gdzieœ w kodzie FFmpegVideoStream,
-    // ale nie mam pomys³u, jak to tam umieœciæ
+    // teoretycznie to powinno znaleÅºÄ‡ siÄ™ gdzieÅ› w kodzie FFmpegVideoStream,
+    // ale nie mam pomysÅ‚u, jak to tam umieÅ›ciÄ‡
     video::FFmpegVideoStream::setLockManager(lockManager);
     video::FFmpegVideoStream::setLogCallback(logCallback);
   }
@@ -173,7 +173,7 @@ private:
             break;
 
         default:
-            UTILS_ASSERT(false, "Nieznany poziom FFmpeg. Wiadomoœæ: %s", msg);
+            UTILS_ASSERT(false, "Nieznany poziom FFmpeg. WiadomoÅ›Ä‡: %s", msg);
             break;
     }
   }

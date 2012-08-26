@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   9:10
 	filename: 	IWorkflowItemBase.h
@@ -18,7 +18,7 @@
 
 namespace core {
 
-//! Interfejs podstawowych elementów logicznych aplikacji maj¹cych operowaæ na danych b¹dŸ dostarczaæ danych
+//! Interfejs podstawowych elementÃ³w logicznych aplikacji majÄ…cych operowaÄ‡ na danych bÄ…dÅº dostarczaÄ‡ danych
 class IWorkflowItemBase : 
     public IClonable<IWorkflowItemBase>, public ISerializable, public IIdentifiable, public IConfigurable
 {
@@ -31,15 +31,15 @@ public:
 public:
     //! \return Nazwa elementu logicznego
     virtual const std::string & getName() const = 0;
-    //! Defaultowo serializacja nic nie robi, kiedyœ to wytniemy i bêdzie trzeba doimplementowaæ!!
+    //! Defaultowo serializacja nic nie robi, kiedyÅ› to wytniemy i bÄ™dzie trzeba doimplementowaÄ‡!!
     virtual void serialize( std::ostream& output ) { }
-    //! Defaultowo deserializacja nic nie robi, kiedyœ to wytniemy i bêdzie trzeba doimplementowaæ!!
+    //! Defaultowo deserializacja nic nie robi, kiedyÅ› to wytniemy i bÄ™dzie trzeba doimplementowaÄ‡!!
     virtual void deserialize( std::istream& istream ) { }
-    //! Defaultowo nie mamy widgeta konfiguracyjnego, kiedyœ to wytniemy i bêdzie trzeba doimplementowaæ!!
+    //! Defaultowo nie mamy widgeta konfiguracyjnego, kiedyÅ› to wytniemy i bÄ™dzie trzeba doimplementowaÄ‡!!
     virtual QWidget* getConfigurationWidget() { return nullptr; }
-    //! Metoda resetuj¹ca stan elementu po stycznoœci z jedn¹ porcj¹ danych
+    //! Metoda resetujÄ…ca stan elementu po stycznoÅ›ci z jednÄ… porcjÄ… danych
     //TODO
-    //przejrzec ta metode - inne zachowanie dla Ÿróde³ i inne dla wizualizatorów
+    //przejrzec ta metode - inne zachowanie dla ÅºrÃ³deÅ‚ i inne dla wizualizatorÃ³w
     virtual void reset() = 0;
 
 };

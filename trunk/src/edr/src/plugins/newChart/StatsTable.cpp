@@ -1,4 +1,4 @@
-#include "NewChartPCH.h"
+﻿#include "NewChartPCH.h"
 #include "StatsTable.h"
 
 StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/ ) :

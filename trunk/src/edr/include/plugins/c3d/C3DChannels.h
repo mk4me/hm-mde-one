@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2011/02/17
 	created:  17:2:2011   14:06
 	filename: C3DChannels.h
@@ -24,54 +24,54 @@
 
 //! interfejs do odczytu czasu timera
 typedef utils::ITimerReader<float>::TimerReaderType TimerReader;
-//! wskaŸnik do interfejsu do odczytu czasu timera
+//! wskaÅºnik do interfejsu do odczytu czasu timera
 typedef utils::ITimerReader<float>::TimerReaderPtr TimerReaderPtr;
-//! niemodyfikowalny wskaŸnik do interfejsu do odczytu czasu timera
+//! niemodyfikowalny wskaÅºnik do interfejsu do odczytu czasu timera
 typedef utils::ITimerReader<float>::TimerReaderConstPtr TimerReaderConstPtr;
 
-//! akcesor umo¿liwiajacy dostanie siê do danych w sposób ci¹g³y
+//! akcesor umoÅ¼liwiajacy dostanie siÄ™ do danych w sposÃ³b ciÄ…gÅ‚y
 typedef utils::DataChannelTimeAccessor<float, float> ScalarContiniousTimeAccessor;
-//! interfejs, dziêki któremu mo¿na zmodyfikowaæ kana³
+//! interfejs, dziÄ™ki ktÃ³remu moÅ¼na zmodyfikowaÄ‡ kanaÅ‚
 typedef utils::ChannelAutoModifier<float, float> ScalarModifier;
 
-//! kana³ przechowuj¹cy liczby zmiennoprzecinkowe
+//! kanaÅ‚ przechowujÄ…cy liczby zmiennoprzecinkowe
 typedef utils::Channel<float> ScalarChannel;
-//! interfejs umo¿liwiaj¹cy odczyt kana³u
+//! interfejs umoÅ¼liwiajÄ…cy odczyt kanaÅ‚u
 typedef ScalarChannel::Interface ScalarChannelReaderInterface;
-//! wkaŸnik na interfejs umo¿liwiaj¹cy odczyt kana³u
+//! wkaÅºnik na interfejs umoÅ¼liwiajÄ…cy odczyt kanaÅ‚u
 typedef core::shared_ptr<ScalarChannelReaderInterface> ScalarChannelReaderInterfacePtr;
-//! wkaŸnik na niemodyfikowalny interfejs umo¿liwiaj¹cy odczyt kana³u
+//! wkaÅºnik na niemodyfikowalny interfejs umoÅ¼liwiajÄ…cy odczyt kanaÅ‚u
 typedef core::shared_ptr<const ScalarChannelReaderInterface> ScalarChannelReaderInterfaceConstPtr;
 
-//! kana³ przechowuj¹cy wektory trójwymiarowe
+//! kanaÅ‚ przechowujÄ…cy wektory trÃ³jwymiarowe
 typedef utils::Channel<osg::Vec3f> VectorChannel;
-//! interfejs umo¿liwiaj¹cy odczyt kana³u
+//! interfejs umoÅ¼liwiajÄ…cy odczyt kanaÅ‚u
 typedef VectorChannel::Interface VectorChannelReaderInterface;
-//! akcesor umo¿liwiajacy dostanie siê do wektorów w sposób ci¹g³y
+//! akcesor umoÅ¼liwiajacy dostanie siÄ™ do wektorÃ³w w sposÃ³b ciÄ…gÅ‚y
 typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> VectorContiniousTimeAccessor;
-//! interfejs, dziêki któremu mo¿na zmodyfikowaæ kana³ z wektorami
+//! interfejs, dziÄ™ki ktÃ³remu moÅ¼na zmodyfikowaÄ‡ kanaÅ‚ z wektorami
 typedef utils::ChannelAutoModifier<osg::Vec3f, float> VectorModifier;
-//! wskaŸnik na kana³ przechowuj¹cy wektory trójwymiarowe
+//! wskaÅºnik na kanaÅ‚ przechowujÄ…cy wektory trÃ³jwymiarowe
 typedef core::shared_ptr<VectorChannel> VectorChannelPtr;
-//! niemodyfikowalny wskaŸnik na kana³ przechowuj¹cy wektory trójwymiarowe
+//! niemodyfikowalny wskaÅºnik na kanaÅ‚ przechowujÄ…cy wektory trÃ³jwymiarowe
 typedef core::shared_ptr<const VectorChannel> VectorChannelConstPtr;
-//! wkaŸnik na interfejs umo¿liwiaj¹cy odczyt kana³u
+//! wkaÅºnik na interfejs umoÅ¼liwiajÄ…cy odczyt kanaÅ‚u
 typedef core::shared_ptr<VectorChannelReaderInterface> VectorChannelReaderInterfacePtr;
-//! wkaŸnik na niemodyfikowalny interfejs umo¿liwiaj¹cy odczyt kana³u
+//! wkaÅºnik na niemodyfikowalny interfejs umoÅ¼liwiajÄ…cy odczyt kanaÅ‚u
 typedef core::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
 
-//! Adaptor, dziêki któremu mo¿na obs³u¿yæ kana³ z wektorem trójwymiarowym tak jak skalarny
+//! Adaptor, dziÄ™ki ktÃ³remu moÅ¼na obsÅ‚uÅ¼yÄ‡ kanaÅ‚ z wektorem trÃ³jwymiarowym tak jak skalarny
 class VectorToScalarAdaptor : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
 {
 protected:
-    //! konstruktor kopiuj¹cy
+    //! konstruktor kopiujÄ…cy
     VectorToScalarAdaptor(const VectorToScalarAdaptor & adaptor) : descriptor(adaptor.descriptor), vector(adaptor.vector), index(adaptor.index), name(adaptor.name) {}
 
 public:
     //! konstruktor
-    //! \param vector adaptowany kana³ z wektorem
-    //! \param idx indeks kana³u z wektorem, ta czêœæ bêdzie widziana jako skalar
-    //! \param name nazwa kana³u
+    //! \param vector adaptowany kanaÅ‚ z wektorem
+    //! \param idx indeks kanaÅ‚u z wektorem, ta czÄ™Å›Ä‡ bÄ™dzie widziana jako skalar
+    //! \param name nazwa kanaÅ‚u
     VectorToScalarAdaptor(const VectorChannelReaderInterfaceConstPtr & vector, size_type idx, const std::string & name = std::string())
         : descriptor(*vector), vector(vector), index(idx), name(name)
     {
@@ -80,55 +80,55 @@ public:
     virtual ~VectorToScalarAdaptor() {}
 
 public:
-    //! \return zwraca nazwê kana³u
+    //! \return zwraca nazwÄ™ kanaÅ‚u
     virtual const std::string& getName() const
     {
         return name;
     }
-	//! Ustawia nazwê kana³u
+	//! Ustawia nazwÄ™ kanaÅ‚u
 	//! \param name nowa nazwa
 	void setName(const std::string& name)
 	{
 		this->name = name;
 	}
-    //! \return zwraca kopiê obiektu, któr¹ trzeba samemu usun¹æ
+    //! \return zwraca kopiÄ™ obiektu, ktÃ³rÄ… trzeba samemu usunÄ…Ä‡
     virtual VectorToScalarAdaptor * clone() const
     {
         return new VectorToScalarAdaptor(*this);
     }
-    //! \return Czas trwania kana³u
+    //! \return Czas trwania kanaÅ‚u
     virtual time_type getLength() const
     {
         return vector->getLength();
     }
-    //! \param idx Indeks próbki
-    //! \return Wartoœæ czasu dla danego indeksu
+    //! \param idx Indeks prÃ³bki
+    //! \return WartoÅ›Ä‡ czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
         return vector->argument(idx);
     }
-    //! \param idx Indeks próbki
-    //! \return Wartoœæ próbki dla danego indeksu
+    //! \param idx Indeks prÃ³bki
+    //! \return WartoÅ›Ä‡ prÃ³bki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         return vector->value(idx)[index];
     }
-    //! \return Iloœæ próbek w kanale
+    //! \return IloÅ›Ä‡ prÃ³bek w kanale
     virtual size_type size() const
     {
         return vector->size();
     }
-    //! \return Czy kana³ nie zawiera danych
+    //! \return Czy kanaÅ‚ nie zawiera danych
     virtual bool empty() const
     {
         return vector->empty();
     }
-    //! \return liczba próbek na sekundê
+    //! \return liczba prÃ³bek na sekundÄ™
     virtual float getSamplesPerSecond() const
     {
         return vector->getSamplesPerSecond();
     }
-    //! \return czas trwania pojedynczej próbki
+    //! \return czas trwania pojedynczej prÃ³bki
     virtual float getSampleDuration() const
     {
         return vector->getSampleDuration();
@@ -143,35 +143,35 @@ public:
 	{
 		return descriptor.getTimeScaleFactor();
 	}
-    //! \return nazwa jednostki wartoœci
+    //! \return nazwa jednostki wartoÅ›ci
 	virtual const std::string& getValueBaseUnit() const
 	{
 		return descriptor.getValueBaseUnit();
 	}
-	//! \return skala wartoœci
+	//! \return skala wartoÅ›ci
 	virtual float getValueScaleFactor() const
 	{
 		return descriptor.getValueScaleFactor();
 	}
-    //! ustawia nazwê jednostki czasu
+    //! ustawia nazwÄ™ jednostki czasu
 	//! \param timeBaseUnit nowa nazwa
 	virtual void setTimeBaseUnit(const std::string& timeBaseUnit)
 	{
 		descriptor.setTimeBaseUnit(timeBaseUnit);
 	}
-    //! ustawia skalê czasu
+    //! ustawia skalÄ™ czasu
 	//! \param timeScaleFactor nowa nazwa
 	virtual void setTimeScaleFactor(float timeScaleFactor)
 	{
 		descriptor.setTimeScaleFactor(timeScaleFactor);
 	}
-    //! ustawia nazwê jednostki wartoœci
+    //! ustawia nazwÄ™ jednostki wartoÅ›ci
 	//! \param valueBaseUnit nowa nazwa
     virtual void setValueBaseUnit(const std::string& valueBaseUnit)
 	{
 		descriptor.setValueBaseUnit(valueBaseUnit);
 	}
-    //! ustawia skalê dla wartoœci
+    //! ustawia skalÄ™ dla wartoÅ›ci
 	//! \param valueScaleFactor nowa skala
 	virtual void setValueScaleFactor(float valueScaleFactor)
 	{
@@ -179,28 +179,28 @@ public:
 	}
 
 private:
-    //! adaptowany kana³ z wektorem
+    //! adaptowany kanaÅ‚ z wektorem
     VectorChannelReaderInterfaceConstPtr vector;
-    //! indeks wektora, który ma byæ widoczny jako skalar
+    //! indeks wektora, ktÃ³ry ma byÄ‡ widoczny jako skalar
     size_type index;
-    //! nazwa kana³u
+    //! nazwa kanaÅ‚u
     std::string name;
-    //! standardowy deskryptor kana³u
+    //! standardowy deskryptor kanaÅ‚u
 	utils::ChannelDescriptor descriptor;
 };
 
-//! modyfikator, który pobiera wycinek kana³u podstawowego i normalizuje go (0 - 100%)
+//! modyfikator, ktÃ³ry pobiera wycinek kanaÅ‚u podstawowego i normalizuje go (0 - 100%)
 class ScalarWithTimeSegment : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
 {
 protected:
-    //! konstruktor kopiuj¹cy
+    //! konstruktor kopiujÄ…cy
     ScalarWithTimeSegment(const ScalarWithTimeSegment & adaptor) : descriptor(adaptor.descriptor), startIndex(adaptor.startIndex), endIndex(adaptor.endIndex) {}
 
 public:
     //! konstruktor
-    //! \param channel kana³, który ma byæ opakowany w modyfikator
-    //! \param start pocz¹tek przedzia³u czasowego
-    //! \param end koniec przedzia³u czasowego
+    //! \param channel kanaÅ‚, ktÃ³ry ma byÄ‡ opakowany w modyfikator
+    //! \param start poczÄ…tek przedziaÅ‚u czasowego
+    //! \param end koniec przedziaÅ‚u czasowego
     ScalarWithTimeSegment(const ScalarChannelReaderInterfaceConstPtr & channel, time_type start, time_type end)
         : descriptor(*channel),	reader(channel)
     {
@@ -209,7 +209,7 @@ public:
     }
     //! 
     virtual ~ScalarWithTimeSegment() {}
-    //! \return nazwa kana³u
+    //! \return nazwa kanaÅ‚u
     virtual const std::string& getName() const
     {
         return reader->getName();
@@ -219,7 +219,7 @@ public:
     {
         return new ScalarWithTimeSegment(*this);
     }
-    //! \return Czas trwania kana³u
+    //! \return Czas trwania kanaÅ‚u
     virtual time_type getLength() const
     {
         return static_cast<time_type>(100);
@@ -233,34 +233,34 @@ public:
         float x = static_cast<float>(idx) / size();
         return static_cast<size_type>(startIndex * (1.0f - x) + endIndex * x);
     }
-    //! \param idx Indeks próbki
-    //! \return Wartoœæ czasu dla danego indeksu
+    //! \param idx Indeks prÃ³bki
+    //! \return WartoÅ›Ä‡ czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
         return static_cast<time_type>(idx * 100) / size();
     }
-    //! \param idx Indeks próbki
-    //! \return Wartoœæ próbki dla danego indeksu
+    //! \param idx Indeks prÃ³bki
+    //! \return WartoÅ›Ä‡ prÃ³bki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         return reader->value(transformIndex(idx));
     }
-    //! \return Iloœæ próbek w kanale
+    //! \return IloÅ›Ä‡ prÃ³bek w kanale
     virtual size_type size() const
     {
         return endIndex - startIndex;
     }
-    //! \return Czy kana³ nie zawiera danych
+    //! \return Czy kanaÅ‚ nie zawiera danych
     virtual bool empty() const
     {
         return reader->empty();
     }
-    //! \return liczba próbek na sekundê
+    //! \return liczba prÃ³bek na sekundÄ™
     virtual float getSamplesPerSecond() const
     {
         return size() / getLength();
     }
-    //! \return czas trwania próbki
+    //! \return czas trwania prÃ³bki
     virtual float getSampleDuration() const
     {
         if (size()) {
@@ -279,35 +279,35 @@ public:
     {
         return descriptor.getTimeScaleFactor();
     }
-    //! \return nazwa jednostki wartoœci
+    //! \return nazwa jednostki wartoÅ›ci
     virtual const std::string& getValueBaseUnit() const
     {
         return descriptor.getValueBaseUnit();
     }
-    //! \return skala wartoœci
+    //! \return skala wartoÅ›ci
     virtual float getValueScaleFactor() const
     {
         return descriptor.getValueScaleFactor();
     }
-    //! ustawia nazwê jednostki czasu
+    //! ustawia nazwÄ™ jednostki czasu
     //! \param timeBaseUnit nowa nazwa
     virtual void setTimeBaseUnit(const std::string& timeBaseUnit)
     {
         descriptor.setTimeBaseUnit(timeBaseUnit);
     }
-    //! ustawia skalê czasu
+    //! ustawia skalÄ™ czasu
     //! \param timeScaleFactor nowa nazwa
     virtual void setTimeScaleFactor(float timeScaleFactor)
     {
         descriptor.setTimeScaleFactor(timeScaleFactor);
     }
-    //! ustawia nazwê jednostki wartoœci
+    //! ustawia nazwÄ™ jednostki wartoÅ›ci
     //! \param valueBaseUnit nowa nazwa
     virtual void setValueBaseUnit(const std::string& valueBaseUnit)
     {
         descriptor.setValueBaseUnit(valueBaseUnit);
     }
-    //! ustawia skalê dla wartoœci
+    //! ustawia skalÄ™ dla wartoÅ›ci
     //! \param valueScaleFactor nowa skala
     virtual void setValueScaleFactor(float valueScaleFactor)
     {
@@ -315,39 +315,39 @@ public:
     }
 
 private:
-    //! opakowywany kana³
+    //! opakowywany kanaÅ‚
     ScalarChannelReaderInterfaceConstPtr reader;
-    //! indeks pocz¹tkowej próbki
+    //! indeks poczÄ…tkowej prÃ³bki
     int startIndex;
-    //! indeks koñcowej próbki
+    //! indeks koÅ„cowej prÃ³bki
     int endIndex;
-    //! standardowy deskryptor kana³u
+    //! standardowy deskryptor kanaÅ‚u
 	utils::ChannelDescriptor descriptor;
 };
-//! wskaŸnik do kana³u z danymi skalarnymi
+//! wskaÅºnik do kanaÅ‚u z danymi skalarnymi
 typedef core::shared_ptr<ScalarChannel> ScalarChannelPtr;
-//! niemodyfikowalny skaŸnik do kana³u z danymi skalarnymi
+//! niemodyfikowalny skaÅºnik do kanaÅ‚u z danymi skalarnymi
 typedef core::shared_ptr<const ScalarChannel> ScalarChannelConstPtr;
-//! obiekt ze statystykami do kana³u z danymi skalarnymi
+//! obiekt ze statystykami do kanaÅ‚u z danymi skalarnymi
 typedef utils::ChannelStats<ScalarChannel::point_type, ScalarChannel::time_type> ScalarChannelStats;
-//! wskaŸnik obiektu ze statystykami do kana³u z danymi skalarnymi
+//! wskaÅºnik obiektu ze statystykami do kanaÅ‚u z danymi skalarnymi
 typedef core::shared_ptr<ScalarChannelStats> ScalarChannelStatsPtr;
-//! niemodyfikowalny wskaŸnik obiektu ze statystykami do kana³u z danymi skalarnymi
+//! niemodyfikowalny wskaÅºnik obiektu ze statystykami do kanaÅ‚u z danymi skalarnymi
 typedef core::shared_ptr<const ScalarChannelStats> ScalarChannelStatsConstPtr;
 
-//! Modyfikator, który normalizuje kana³
+//! Modyfikator, ktÃ³ry normalizuje kanaÅ‚
 class ScalarChannelNormalizer
 {
 public:
-    //! funktor odpowiada za modyfikacjê kopii kana³u 
-    //! \param modifierInterface writer dla zmodyfikowanego kana³u
-    //! \param observedChannel modyfikowany kana³a
-    //! \param myChannel kana³ wynikowy
+    //! funktor odpowiada za modyfikacjÄ™ kopii kanaÅ‚u 
+    //! \param modifierInterface writer dla zmodyfikowanego kanaÅ‚u
+    //! \param observedChannel modyfikowany kanaÅ‚a
+    //! \param myChannel kanaÅ‚ wynikowy
     void operator()(ScalarChannelReaderInterface::_MyExtendedWriter & modifierInterface,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
-        //uzupe³nij brakuj¹ce prboki
+        //uzupeÅ‚nij brakujÄ…ce prboki
         if(myChannel.size() < observedChannel.size()){
             for(auto idx = myChannel.size(); idx < observedChannel.size(); ++idx){
                 modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
@@ -373,7 +373,7 @@ public:
         ScalarChannelReaderInterface::point_type diff = maxVal - minVal;
 
         if(diff != 0){
-            //aktualizacja próbek
+            //aktualizacja prÃ³bek
             for(ScalarChannelReaderInterface::size_type idx = 0; idx < myChannel.size(); ++idx){
                 modifierInterface.setIndexData(idx, (observedChannel.value(idx) - minVal) / diff);
             }
@@ -382,13 +382,13 @@ public:
 };
 
 
-//! Podstawa dla kana³u analogowego zapisanego w pliku c3d
+//! Podstawa dla kanaÅ‚u analogowego zapisanego w pliku c3d
 class C3DAnalogChannel : public ScalarChannel
 {
 protected:
     //! konstruktor
     //! \param c3dData przeparsowane dane z pliku c3d
-    //! \param channelNo numer kana³u w pliku c3d
+    //! \param channelNo numer kanaÅ‚u w pliku c3d
     C3DAnalogChannel( const c3dlib::C3DParser& c3dData, int channelNo ) :
          ScalarChannel( static_cast<int>(c3dData.getNumberAnalogSamplePerFrame() * c3dData.getPointFrequency()) )
          {
@@ -408,41 +408,41 @@ protected:
              setTimeBaseUnit("s");
          }
     //! konstruktor 
-    //! \param samplesPerSec liczba próbek na sekundê
+    //! \param samplesPerSec liczba prÃ³bek na sekundÄ™
     C3DAnalogChannel( int samplesPerSec ) :
     ScalarChannel(samplesPerSec)
     {}
-    //! konstruktor kopiuj¹cy
-    //! \param channel kopiowany kana³
+    //! konstruktor kopiujÄ…cy
+    //! \param channel kopiowany kanaÅ‚
     C3DAnalogChannel( const C3DAnalogChannel& channel ) :
     ScalarChannel(channel)
     {}
 };
 typedef boost::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
 
-//! kana³ EMG
+//! kanaÅ‚ EMG
 class EMGChannel : public C3DAnalogChannel
 {
 public:
     //! konstruktor 
-    //! \param samplesPerSec liczba próbek na sekundê
+    //! \param samplesPerSec liczba prÃ³bek na sekundÄ™
     explicit EMGChannel(int samplesPerSec) :
     C3DAnalogChannel(samplesPerSec)
     {}
-    //! konstruktor kopiuj¹cy
-    //! \param channel kopiowany kana³
+    //! konstruktor kopiujÄ…cy
+    //! \param channel kopiowany kanaÅ‚
     EMGChannel(const EMGChannel& channel) :
     C3DAnalogChannel(channel)
     {}
     //! konstruktor
     //! \param c3dData przeparsowane dane z pliku c3d
-    //! \param channelNo numer kana³u w pliku c3d
+    //! \param channelNo numer kanaÅ‚u w pliku c3d
     EMGChannel(const c3dlib::C3DParser& data, int channelNo) :
     C3DAnalogChannel(data, channelNo)
     {}
 
 public:
-    //! \return zwraca kopiê obiektu, któr¹ trzeba samemu usun¹æ
+    //! \return zwraca kopiÄ™ obiektu, ktÃ³rÄ… trzeba samemu usunÄ…Ä‡
     virtual EMGChannel* clone() const
     {
         return new EMGChannel(*this);
@@ -451,33 +451,33 @@ public:
 typedef boost::shared_ptr<EMGChannel> EMGChannelPtr;
 typedef boost::shared_ptr<const EMGChannel> EMGChannelConstPtr;
 
-//! kana³ GRF
+//! kanaÅ‚ GRF
 class GRFChannel : public VectorChannel
 {
 friend class C3DParser;
 public:
-    //! rodzaj kana³u GRF
+    //! rodzaj kanaÅ‚u GRF
 	enum Type { Unknown, F1, M1, F2, M2 };
 
 public:
     //! konstruktor 
-    //! \param samplesPerSec liczba próbek na sekundê
-    //! \param treshold próg dla którego warto analizowaæ dane z p³yty GRF
+    //! \param samplesPerSec liczba prÃ³bek na sekundÄ™
+    //! \param treshold prÃ³g dla ktÃ³rego warto analizowaÄ‡ dane z pÅ‚yty GRF
     explicit GRFChannel(int samplesPerSec, float treshold = 100.0f) :
         VectorChannel(samplesPerSec) ,
         type(Unknown),
         treshold(treshold)
     {}
-    //! konstruktor kopiuj¹cy
-    //! \param channel kopiowany kana³
+    //! konstruktor kopiujÄ…cy
+    //! \param channel kopiowany kanaÅ‚
     GRFChannel(const GRFChannel& channel) :
     VectorChannel(channel),
 	type(channel.type)
     {}
     //! konstruktor
     //! \param c3dData przeparsowane dane z pliku c3d
-    //! \param channelNo numer kana³u w pliku c3d
-    //! \param treshold próg dla którego warto analizowaæ dane z p³yty GRF
+    //! \param channelNo numer kanaÅ‚u w pliku c3d
+    //! \param treshold prÃ³g dla ktÃ³rego warto analizowaÄ‡ dane z pÅ‚yty GRF
     GRFChannel( const c3dlib::C3DParser& data, int channelNo, float treshold = 200.0f) :
     VectorChannel(static_cast<int>(data.getNumberAnalogSamplePerFrame() * data.getPointFrequency())),
         type(Unknown),
@@ -529,7 +529,7 @@ public:
         //std::string name = x->getLabel().erase( remove( str.begin(), str.end(), 'x' ), str.end() );
         setName(name);
         setValueBaseUnit(x->getUnit());
-        //? w pliku c3d nie pojawia siê cos takiego jak jednostka czasu, dlatego mo¿na przyj¹æ sekundy
+        //? w pliku c3d nie pojawia siÄ™ cos takiego jak jednostka czasu, dlatego moÅ¼na przyjÄ…Ä‡ sekundy
         setTimeBaseUnit("s");
 
         if (dataStartSet) {
@@ -549,38 +549,38 @@ public:
     }
 
 public:
-    //! \return zwraca kopiê obiektu, któr¹ trzeba samemu usun¹æ
+    //! \return zwraca kopiÄ™ obiektu, ktÃ³rÄ… trzeba samemu usunÄ…Ä‡
     virtual GRFChannel* clone() const
     {
         return new GRFChannel(*this);
     }
-    //! \return rodzaj kana³u GRF
+    //! \return rodzaj kanaÅ‚u GRF
 	GRFChannel::Type getType() const { return type; }
-	//! \return czy kana³ ma wykryty peak, zwi¹zanych z naciskiem na p³ytê
+	//! \return czy kanaÅ‚ ma wykryty peak, zwiÄ…zanych z naciskiem na pÅ‚ytÄ™
 	bool hasStartEndData() const { return dataStart >= 0.0f && dataEnd >= 0.0f; }
-	//! \return pocz¹tek danych, zwi¹zanych z naciskiem na p³ytê
+	//! \return poczÄ…tek danych, zwiÄ…zanych z naciskiem na pÅ‚ytÄ™
 	float getDataStartTime() const { UTILS_ASSERT(dataStart >= 0.0f); return dataStart; }
-	//! \return koniec danych, zwi¹zanych z naciskiem na p³yê
+	//! \return koniec danych, zwiÄ…zanych z naciskiem na pÅ‚yÄ™
 	float getDataEndTime() const { UTILS_ASSERT(dataEnd >= 0.0f); return dataEnd; }
 	
 private:
     Type type;
-    //! próg dla którego warto analizowaæ dane z p³yty GRF
+    //! prÃ³g dla ktÃ³rego warto analizowaÄ‡ dane z pÅ‚yty GRF
     float treshold;
-    //! pocz¹tek danych, zwi¹zanych z naciskiem na p³ytê
+    //! poczÄ…tek danych, zwiÄ…zanych z naciskiem na pÅ‚ytÄ™
 	float dataStart;
-    //! koniec danych, zwi¹zanych z naciskiem na p³ytê
+    //! koniec danych, zwiÄ…zanych z naciskiem na pÅ‚ytÄ™
     float dataEnd;
 };
 typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
 typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
-//! kana³ zawiera dane o jednym markerze
+//! kanaÅ‚ zawiera dane o jednym markerze
 class MarkerChannel : public VectorChannel
 {
 public:
     //! konstruktor 
-    //! \param samplesPerSec liczba próbek na sekundê
+    //! \param samplesPerSec liczba prÃ³bek na sekundÄ™
     MarkerChannel(int samplesPerSec) : VectorChannel(samplesPerSec) {}
 
     MarkerChannel(const MarkerChannel& channel) :
@@ -589,7 +589,7 @@ public:
 
     //! konstruktor
     //! \param c3dData przeparsowane dane z pliku c3d
-    //! \param channelNo numer kana³u w pliku c3d
+    //! \param channelNo numer kanaÅ‚u w pliku c3d
     MarkerChannel(const c3dlib::C3DParser& data, int channelNo ) :
         VectorChannel( data.getPointFrequency())
         {
@@ -606,7 +606,7 @@ public:
             setTimeBaseUnit("s");
         }
 public:
-    //! \return zwraca kopiê obiektu, któr¹ trzeba samemu usun¹æ
+    //! \return zwraca kopiÄ™ obiektu, ktÃ³rÄ… trzeba samemu usunÄ…Ä‡
     virtual MarkerChannel* clone() const
     {
         return new MarkerChannel(*this);

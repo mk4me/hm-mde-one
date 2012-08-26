@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:  2010/08/06
 	created:  6:8:2010   18:30
 	filename: VideoManager.h
@@ -25,7 +25,7 @@ private:
   static VideoManager* instance;
   //! Preferowany format piksela.
   PixelFormat prefferedFormat;
-  //! Czy buforowanie ma by� aktywne?
+  //! Czy buforowanie ma być aktywne?
   bool enableBuffering;
 
 private:

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   11:23
 	filename: 	InputDescription.h
@@ -45,21 +45,21 @@ public:
         return source->getSlotName(idx);
     }
 
-    //! Dodaje niezmienny obiekt na wejœcie.
+    //! Dodaje niezmienny obiekt na wejÅ›cie.
     //! \param slot
     //! \param object
     void setObjects(int slot, const core::ObjectWrapperCollectionConstPtr& objects)
     {
         source->setObjects(slot, objects);
     }
-    //! Dodaje zmienny obiekt na wejœcie.
+    //! Dodaje zmienny obiekt na wejÅ›cie.
     //! \param slot
     //! \param object
     void setObjects(int slot, const core::ObjectWrapperCollectionPtr& objects)
     {
         source->setObjects(slot, objects);
     }
-    //! \return Liczba obiektów.
+    //! \return Liczba obiektÃ³w.
     int getNumInputs() const
     {
         return source->getNumSources();

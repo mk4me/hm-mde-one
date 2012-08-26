@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include "LocalDataSource.h"
 #include "LocalDataSourceWidget.h"
 #include <core/IObjectOutput.h>

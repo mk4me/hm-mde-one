@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/28
     created:  28:2:2012   22:33
     filename: IAuthorizationWS.h
@@ -15,35 +15,35 @@
 namespace webservices
 {
 
-//! Interfejs us³ugi autoryzacji u¿ytkowników, zarz¹dzania ich prawami do danych
+//! Interfejs usÅ‚ugi autoryzacji uÅ¼ytkownikÃ³w, zarzÄ…dzania ich prawami do danych
 class IAuthorizationWS : public IWebService
 {
 public:
     //! Wirtualny destruktor
     virtual ~IAuthorizationWS() {}
 
-    //! \return Zwraca prawdê je¿eli u¿ytkownik tej us³ugi wystêpuje w bazie danych
+    //! \return Zwraca prawdÄ™ jeÅ¼eli uÅ¼ytkownik tej usÅ‚ugi wystÄ™puje w bazie danych
     virtual const bool checkMyLogin() const = 0;
-    //! \param name Nazwa u¿ytkownika do utworzenia
+    //! \param name Nazwa uÅ¼ytkownika do utworzenia
     //! \param surname Nazwisko uzytkownika do utworzenia
     virtual void createUserAccount(const std::string & name, const std::string & surname) = 0;
-    //! \return Zarejestrowani u¿ytkownicy
+    //! \return Zarejestrowani uÅ¼ytkownicy
     virtual void listUsers() const = 0;
     
-    //! \param sessionID Identyikator sesji dla którego pobieram listê praw dostêpu
-    //! \return Lista praw dostêpu do zadanej sesji
+    //! \param sessionID Identyikator sesji dla ktÃ³rego pobieram listÄ™ praw dostÄ™pu
+    //! \return Lista praw dostÄ™pu do zadanej sesji
     virtual void listSessionPrivileges(int sessionID) const = 0;
 
-    //! \param grantedUserLogin Login u¿ytkownika którego prawa modyfikujemy
-    //! \param sessionID Identyfikator sesji której dostêpnoœæ modyfikujemy
-    //! \param write Czy u¿ytkownik ma prawo modyfikowaæ sesjê
+    //! \param grantedUserLogin Login uÅ¼ytkownika ktÃ³rego prawa modyfikujemy
+    //! \param sessionID Identyfikator sesji ktÃ³rej dostÄ™pnoÅ›Ä‡ modyfikujemy
+    //! \param write Czy uÅ¼ytkownik ma prawo modyfikowaÄ‡ sesjÄ™
     virtual void grantSessionPrivileges(const std::string & grantedUserLogin, int sessionID, bool write) = 0;
-    //! \param grantedUserLogin Login u¿ytkownika którego prawa ograniczamy
-    //! \param sessionID Identyfikator sesji której dostêpnoœæ modyfikujemy
+    //! \param grantedUserLogin Login uÅ¼ytkownika ktÃ³rego prawa ograniczamy
+    //! \param sessionID Identyfikator sesji ktÃ³rej dostÄ™pnoÅ›Ä‡ modyfikujemy
     virtual void removeSessionPrivileges(const std::string & grantedUserLogin, int sessionID) = 0;
-    //! \param sessionID Identyfikator sesji której dostêpnoœæ modyfikujemy
-    //! \param isPublic Czy sesja jest publicznie dostepna ka¿demu
-    //! \param isWritable Czy ka¿dy mo¿e modyfikowaæ zadan¹ sesjê
+    //! \param sessionID Identyfikator sesji ktÃ³rej dostÄ™pnoÅ›Ä‡ modyfikujemy
+    //! \param isPublic Czy sesja jest publicznie dostepna kaÅ¼demu
+    //! \param isWritable Czy kaÅ¼dy moÅ¼e modyfikowaÄ‡ zadanÄ… sesjÄ™
     virtual void alterSessionVisibility(int sessionID, bool isPublic, bool isWritable) = 0;
 };
 

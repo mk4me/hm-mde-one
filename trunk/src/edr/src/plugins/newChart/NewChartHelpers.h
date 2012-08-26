@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/02/22
 	created:	22:2:2012   13:14
 	filename: 	NewChartHelpers.h
@@ -23,8 +23,8 @@ public:
     //! \param parent rodzic widgeta
     //! \param label tekst etykiety
     //! \param singleStep krok dla spinboxa
-    //! \param minimum minimalna wartoœæ spinboxa
-    //! \param maximum maksymalna wartoœæ spinboxa
+    //! \param minimum minimalna wartoÅ›Ä‡ spinboxa
+    //! \param maximum maksymalna wartoÅ›Ä‡ spinboxa
     //! \return krotka z utworzonymi widgetami (kontener, etykieta, spinbox)
     static boost::tuple<QWidget*, QLabel*, QDoubleSpinBox*> 
         create(QWidget* parent, const QString& label, double singleStep, double minimum, double maximum);

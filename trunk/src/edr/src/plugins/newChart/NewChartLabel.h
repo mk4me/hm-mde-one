@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/05/28
 	created:	28:5:2012   21:10
 	filename: 	NewChartLabel.h
@@ -13,21 +13,21 @@
 #include <plugins/c3d/C3DChannels.h>
 #include "NewChartDot.h"
 
-//! Klasa reprezentuje etykietê na wykresie
+//! Klasa reprezentuje etykietÄ™ na wykresie
 class NewChartLabel : public QwtPlotItem
 {
 public:
-    //! styl po³¹czeñ miêdzy wskazywanymi punktami a etykiet¹
+    //! styl poÅ‚Ä…czeÅ„ miÄ™dzy wskazywanymi punktami a etykietÄ…
     enum ConnectionStyle
     {
-        Simple,       //!< proste strza³ki
-        Horizontal,   //!< strza³ki ³amane, najpierw poziome
-        Vertical      //!< strza³ki ³amane, najpierw pionowe
+        Simple,       //!< proste strzaÅ‚ki
+        Horizontal,   //!< strzaÅ‚ki Å‚amane, najpierw poziome
+        Vertical      //!< strzaÅ‚ki Å‚amane, najpierw pionowe
     };
 public:
     //! Konstruktor
     //! \param text tekst etykiety
-    //! \param shift domyœlne przesuniêcie (miêdzy wsk. punktem i etykiet¹)
+    //! \param shift domyÅ›lne przesuniÄ™cie (miÄ™dzy wsk. punktem i etykietÄ…)
     //! \param size rozmiar etykiety
     NewChartLabel(const QString& text = QString(""), const QPoint& shift = QPoint(20, 20), const QPoint& size = QPoint(80, 35));
 
@@ -38,74 +38,74 @@ public:
     //! \param yMap transformacja Y
     //! \param canvasRect obszar do rysowania
     virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
-    //! Sprawdza, czy punkt znajduje siê wewn¹trz etykiety
+    //! Sprawdza, czy punkt znajduje siÄ™ wewnÄ…trz etykiety
     //! \param transformedPoint przetransformowany punkt
-    //! \param curve krzywa, wykorzystuje siê jej transformacjê
+    //! \param curve krzywa, wykorzystuje siÄ™ jej transformacjÄ™
     bool isInsideLabel(const QPoint& transformedPoint, const QwtPlotCurve* curve) const;
     //! \return tekst etykiety
     const QString& getText() const { return text; }
     //! ustawia tekst etykiety
     //! \param val nowy tekst
     void setText(const QString& val) { text = val; }
-    //! \return przeusniecie miêdzy wskazywanym punktem, a etykiet¹
+    //! \return przeusniecie miÄ™dzy wskazywanym punktem, a etykietÄ…
     const QPoint& getShift() const { return shift; }
-    //! ustawia przeusniecie miêdzy wskazywanym punktem, a etykiet¹
-    //! \param val nowe przesuniêcie
+    //! ustawia przeusniecie miÄ™dzy wskazywanym punktem, a etykietÄ…
+    //! \param val nowe przesuniÄ™cie
     void setShift(const QPoint& val) { shift = val; }
-    //! \return pierwszy punkt podpiêty pod etykietê
+    //! \return pierwszy punkt podpiÄ™ty pod etykietÄ™
     NewChartDotConstPtr getPoint1() const { return point1; }
-    //! \return przetransformowana ju¿ na podstawie krzywej pozycja pierwszego punktu
+    //! \return przetransformowana juÅ¼ na podstawie krzywej pozycja pierwszego punktu
     QPoint getPoint1Transformed(const QwtPlotCurve* curve) const;
-    //! ustawia pierwszy punkt podpiêty pod etykietê
+    //! ustawia pierwszy punkt podpiÄ™ty pod etykietÄ™
     //! \param val ustawiany punkt
     void setPoint1(NewChartDotConstPtr val) { point1 = val; }
-    //! \return drugi punkt podpiêty pod etykietê (mo¿e byæ nullptr)
+    //! \return drugi punkt podpiÄ™ty pod etykietÄ™ (moÅ¼e byÄ‡ nullptr)
     NewChartDotConstPtr getPoint2() const { return point2; }
-    //! \return przetransformowana ju¿ na podstawie krzywej pozycja drugiego punktu
+    //! \return przetransformowana juÅ¼ na podstawie krzywej pozycja drugiego punktu
     QPoint getPoint2Transformed(const QwtPlotCurve* curve) const;
-    //! ustawia drugi punkt podpiêty pod etykietê 
-    //! \param val drugi punkt (mo¿e byæ nullptr)
+    //! ustawia drugi punkt podpiÄ™ty pod etykietÄ™ 
+    //! \param val drugi punkt (moÅ¼e byÄ‡ nullptr)
     void setPoint2(NewChartDotConstPtr val) { point2 = val; }
-    //! \return pêdzel, który jest u¿ywany do rysowania etykiety
+    //! \return pÄ™dzel, ktÃ³ry jest uÅ¼ywany do rysowania etykiety
     const QBrush& getBrush() const { return brush; }
-    //! ustawia pêdzel
-    //! \param val pêdzel, który bêdzie u¿ywany do rysowania etykiety
+    //! ustawia pÄ™dzel
+    //! \param val pÄ™dzel, ktÃ³ry bÄ™dzie uÅ¼ywany do rysowania etykiety
     void setBrush(const QBrush& val) { brush = val; }
-    //! \return pióro, który jest u¿ywane do rysowania etykiety
+    //! \return piÃ³ro, ktÃ³ry jest uÅ¼ywane do rysowania etykiety
     const QPen& getPen() const { return pen; }
-    //! ustawia pióro
-    //! \param val pióro, który bêdzie u¿ywane do rysowania etykiety
+    //! ustawia piÃ³ro
+    //! \param val piÃ³ro, ktÃ³ry bÄ™dzie uÅ¼ywane do rysowania etykiety
     void setPen(const QPen& val) { pen = val; }
     //! Emulacja rtti wykorzystywana przez Qwt
     virtual int rtti() const { return QwtPlotItem::Rtti_PlotUserItem; }
-    //! ³¹czy punkt z etykiet¹
-    //! \param dot pod³¹czany punkt
-    //! \param style styl po³¹czenia
+    //! Å‚Ä…czy punkt z etykietÄ…
+    //! \param dot podÅ‚Ä…czany punkt
+    //! \param style styl poÅ‚Ä…czenia
     void connectDot(NewChartDotConstPtr dot, ConnectionStyle style = Simple);
-    //! ³¹czy dwa punkty z etykiet¹
-    //! \param point1 pierwszy pod³¹czany punkt
-    //! \param point2 drugi pod³¹czany punkt
-    //! \param style styl po³¹czenia
+    //! Å‚Ä…czy dwa punkty z etykietÄ…
+    //! \param point1 pierwszy podÅ‚Ä…czany punkt
+    //! \param point2 drugi podÅ‚Ä…czany punkt
+    //! \param style styl poÅ‚Ä…czenia
     void connectDots(NewChartDotConstPtr point1, NewChartDotConstPtr point2, ConnectionStyle style );
-    //! tworzy a nastepnie ³¹czy dwa punkty z etykiet¹
-    //! \param point1 pierwszy pod³¹czany punkt
-    //! \param point2 drugi pod³¹czany punkt
-    //! \param style styl po³¹czenia
+    //! tworzy a nastepnie Å‚Ä…czy dwa punkty z etykietÄ…
+    //! \param point1 pierwszy podÅ‚Ä…czany punkt
+    //! \param point2 drugi podÅ‚Ä…czany punkt
+    //! \param style styl poÅ‚Ä…czenia
     void connectDots(const QPointF& point1, const QPointF& point2, ConnectionStyle style);
 
 private:
-    //! Rysowanie po³¹czenia
+    //! Rysowanie poÅ‚Ä…czenia
     //! \param painter obiekt paintera
-    //! \param box obszar zajmowany przez etykietê
-    //! \param transformedTo ju¿ przetransformowany punkt, który ma byæ przy³¹czony
-    //! \param style styl ³¹czenia (prosty, horyzontalny, ...)
-    //! \param arrowOutside czy strza³ki maj¹ byæ do wewn¹trz, czy na zewn¹trz
+    //! \param box obszar zajmowany przez etykietÄ™
+    //! \param transformedTo juÅ¼ przetransformowany punkt, ktÃ³ry ma byÄ‡ przyÅ‚Ä…czony
+    //! \param style styl Å‚Ä…czenia (prosty, horyzontalny, ...)
+    //! \param arrowOutside czy strzaÅ‚ki majÄ… byÄ‡ do wewnÄ…trz, czy na zewnÄ…trz
     void drawConnection(QPainter* painter, const QRect& box, const QPoint& transformedTo, ConnectionStyle style, bool arrowOutside = false) const;
-    //! Rysowanie strza³ki
+    //! Rysowanie strzaÅ‚ki
     //! \param painter obiekt paintera
-    //! \param transformedFrom ju¿ przetransformowany punkt, z którego wychodzi strza³ka
-    //! \param transformedTo ju¿ przetransformowany punkt, do którego prowadzi strza³ka
-    //! \param outside czy strza³ki maj¹ byæ do wewn¹trz, czy na zewn¹trz
+    //! \param transformedFrom juÅ¼ przetransformowany punkt, z ktÃ³rego wychodzi strzaÅ‚ka
+    //! \param transformedTo juÅ¼ przetransformowany punkt, do ktÃ³rego prowadzi strzaÅ‚ka
+    //! \param outside czy strzaÅ‚ki majÄ… byÄ‡ do wewnÄ…trz, czy na zewnÄ…trz
     void drawArrow(QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo, bool outside = false) const;
 
 private:
@@ -113,17 +113,17 @@ private:
     QString text;
     //! rozmiar etykiety
     QPoint size;
-    //! przesuniêcie miêdzy wskazywanym punktem a etykiet¹
+    //! przesuniÄ™cie miÄ™dzy wskazywanym punktem a etykietÄ…
     QPoint shift;
-    //! pióro 
+    //! piÃ³ro 
     QPen pen;
-    //! pêdzel 
+    //! pÄ™dzel 
     QBrush brush;
-    //! pierwszy podpiêty punkt
+    //! pierwszy podpiÄ™ty punkt
     NewChartDotConstPtr point1;
-    //! drugi podpiêty punkt (mo¿e byæ nullptr)
+    //! drugi podpiÄ™ty punkt (moÅ¼e byÄ‡ nullptr)
     NewChartDotConstPtr point2;
-    //! styl ³¹czenia etykiety z punktami
+    //! styl Å‚Ä…czenia etykiety z punktami
     ConnectionStyle connectionStyle;
 };
 typedef NewChartLabel* NewChartLabelPtr;

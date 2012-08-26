@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/05/25
     created:  25:5:2012   11:52
     filename: ServerStatusManager.h
@@ -14,51 +14,51 @@
 #include <OpenThreads/Thread>
 #include <webserviceslib/DateTime.h>
 
-//! Struktura opisuj¹ca status pingu
+//! Struktura opisujÄ…ca status pingu
 struct ServerStatus
 {
 	//! Adres do pingowania
 	std::string serverUrl;
 	//! Status serwera
 	bool online;
-	//! B³¹d pingowania jeœli by³
+	//! BÅ‚Ä…d pingowania jeÅ›li byÅ‚
 	std::string error;
 	//! Czas ostatniego pinga
 	webservices::DateTime time;
 };
 
-//! Manager zarz¹dzaj¹cy odœwie¿aniem statusu serwerów poprzez ich pingowanie
+//! Manager zarzÄ…dzajÄ…cy odÅ›wieÅ¼aniem statusu serwerÃ³w poprzez ich pingowanie
 class ServerStatusManager : public OpenThreads::ReentrantMutex
 {
 private:
 
-	//! Klasa realizuj¹ca okresowe sprawdzanie statusu serwerów
-	//! Jeœli poprzednie zlecenie nie dobieg³o koñca w ca³oœci to kolejne nie bêdzie realizowane
+	//! Klasa realizujÄ…ca okresowe sprawdzanie statusu serwerÃ³w
+	//! JeÅ›li poprzednie zlecenie nie dobiegÅ‚o koÅ„ca w caÅ‚oÅ›ci to kolejne nie bÄ™dzie realizowane
 	class StatusChecker : public OpenThreads::Thread
 	{
 	public:
 		//! Konstruktor
-		//! \param manager ServersStatusManager którego serwery testujemy
+		//! \param manager ServersStatusManager ktÃ³rego serwery testujemy
 		StatusChecker(ServerStatusManager * manager);
 		//! Destruktor wirtualny
 		virtual ~StatusChecker();
 
-		//! Metoda periodycznie odœwie¿aj¹ca statusy serwerów
+		//! Metoda periodycznie odÅ›wieÅ¼ajÄ…ca statusy serwerÃ³w
 		virtual void run();
-		//! Ka¿emy zakoñczyæ odœwie¿anie statusów przy najbli¿szym przejœciu pêtli
-		//! Po tym wywo³aniu najpewniej zrobiê join i bêdê czeka³ na zakoñczenie!!
+		//! KaÅ¼emy zakoÅ„czyÄ‡ odÅ›wieÅ¼anie statusÃ³w przy najbliÅ¼szym przejÅ›ciu pÄ™tli
+		//! Po tym wywoÅ‚aniu najpewniej zrobiÄ™ join i bÄ™dÄ™ czekaÅ‚ na zakoÅ„czenie!!
 		void finish();
 
-		//! \param ms OpóŸnienie po sprawdzeniu statusów serwerów
+		//! \param ms OpÃ³Åºnienie po sprawdzeniu statusÃ³w serwerÃ³w
 		void setCheckDelay(unsigned int ms);
 		unsigned int checkDelay();
 
 	private:
-		//! ServerStatusManager dla którego odœwie¿amy statusy serwerów
+		//! ServerStatusManager dla ktÃ³rego odÅ›wieÅ¼amy statusy serwerÃ³w
 		ServerStatusManager * manager;
-		//! Przerwa w milisekundach pomiêdzy kolejnymi sprawdzeniami - jeœli poprzednie zlecenia nie zosta³y skoñczone kolejne nie bêd¹ generowane
+		//! Przerwa w milisekundach pomiÄ™dzy kolejnymi sprawdzeniami - jeÅ›li poprzednie zlecenia nie zostaÅ‚y skoÅ„czone kolejne nie bÄ™dÄ… generowane
 		unsigned int checkDelay_;
-		//! Czy koñczyæ odœwie¿anie i zabijaæ w¹tek?
+		//! Czy koÅ„czyÄ‡ odÅ›wieÅ¼anie i zabijaÄ‡ wÄ…tek?
 		bool finish_;
 	};
 
@@ -66,52 +66,52 @@ private:
 
 public:
 	//! Konstruktor
-	//! \param manager Communication Manager przez którego wszystko jest realizowane
+	//! \param manager Communication Manager przez ktÃ³rego wszystko jest realizowane
 	ServerStatusManager(CommunicationManager * manager);
 	//! Destruktor
 	~ServerStatusManager();
 
 	//! \param url Adres serwera do testowania do dodania
 	void addServer(const std::string & url);
-	//! \param url Adres serwera do usuniêcia
+	//! \param url Adres serwera do usuniÄ™cia
 	void removeServer(const std::string & url);
 
-	//! \param url Adres serwera dla któego pobieramy status
+	//! \param url Adres serwera dla ktÃ³ego pobieramy status
 	//! \return Status serwera
 	ServerStatus serverStatus(const std::string & url) const;
-	//! \param i Indeks serwera którego status chcemy dostaæ !!UWAGA!! indeks mo¿e siê zmianiaæ dla serwerów !!
+	//! \param i Indeks serwera ktÃ³rego status chcemy dostaÄ‡ !!UWAGA!! indeks moÅ¼e siÄ™ zmianiaÄ‡ dla serwerÃ³w !!
 	//! \return Status serwera
 	ServerStatus serverStatus(unsigned int i) const;
-	//! \return Iloœæ serweró do testowania
+	//! \return IloÅ›Ä‡ serwerÃ³ do testowania
 	unsigned int serversCount() const;
-	//! \return Czy s¹ jakieœ serwery do testowania?
+	//! \return Czy sÄ… jakieÅ› serwery do testowania?
 	bool empty() const;
-	//! \param ms Przerwa pomiêdzy kolejnymi sprawdzeniami
+	//! \param ms Przerwa pomiÄ™dzy kolejnymi sprawdzeniami
 	void setCheckDelay(unsigned int ms);
-	//! \return przerwa pomiêdzy kolejnymi sprawdzeniami
+	//! \return przerwa pomiÄ™dzy kolejnymi sprawdzeniami
 	unsigned int checkDelay() const;
-	//! \return Czy jeszcze odœwie¿amy status serwerów
+	//! \return Czy jeszcze odÅ›wieÅ¼amy status serwerÃ³w
 	bool refreshingServers() const;
 
 
 private:
-	//! Metoda wywo³ywana w momencie zakoñczenia poprawnego pingowania
+	//! Metoda wywoÅ‚ywana w momencie zakoÅ„czenia poprawnego pingowania
 	void onPingEnd(const CommunicationManager::BasicRequestPtr & request);
-	//! Metoda wywo³ana w momencie b³edu pingowania
+	//! Metoda wywoÅ‚ana w momencie bÅ‚edu pingowania
 	void onPingError(const CommunicationManager::BasicRequestPtr & request, const std::string & error);
 
 private:
-	//! Synchronizacja operacji na grupie serwerów
+	//! Synchronizacja operacji na grupie serwerÃ³w
 	mutable ServerStatusManager * mThis;
-	//! Serwery dla których odœwie¿amy statusy
+	//! Serwery dla ktÃ³rych odÅ›wieÅ¼amy statusy
 	std::map<std::string, ServerStatus> serverStatuses;
-	//! Communication manager przez którego realizujemy statusy serwerów
+	//! Communication manager przez ktÃ³rego realizujemy statusy serwerÃ³w
 	CommunicationManager * manager;
-	//! Callbacki dla requestów pinga
+	//! Callbacki dla requestÃ³w pinga
 	CommunicationManager::RequestCallbacks pingCallbacks;
-	//! Iloœæ serwerów do odœwie¿enia
+	//! IloÅ›Ä‡ serwerÃ³w do odÅ›wieÅ¼enia
 	unsigned int toCheck;
-	//! W¹tek odœwie¿aj¹cy statusy
+	//! WÄ…tek odÅ›wieÅ¼ajÄ…cy statusy
 	core::shared_ptr<StatusChecker> statusChecker;
 };
 

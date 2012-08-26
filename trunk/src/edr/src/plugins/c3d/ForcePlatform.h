@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/03/24
 	created:	24:3:2012   13:12
 	filename: 	ForcePlatform.h
@@ -27,37 +27,37 @@ public:
     //! akcesor do danych zapisanych w DataChannel z markerem
 	typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> TimeAccessor;
 
-    //! Reprezentacja wykrytego kroku na p³ycie pomiarowej.
-    //! W tym przypadku jako krok, bierze siê moment, w którym ca³a stopa spoczywa na p³ycie pomiarowej
+    //! Reprezentacja wykrytego kroku na pÅ‚ycie pomiarowej.
+    //! W tym przypadku jako krok, bierze siÄ™ moment, w ktÃ³rym caÅ‚a stopa spoczywa na pÅ‚ycie pomiarowej
     class Step : public IStep
     {
     public:
-        //! domyœlny konstruktor, krok bêdzie nie zainicjalizowany
+        //! domyÅ›lny konstruktor, krok bÄ™dzie nie zainicjalizowany
         Step() : startTime(-1.0f), endTime(-1.0f), context(ForcePlatform::IEvent::General) {}
-        //! Kontruktor, który tworzy zainicjalizowana instancje kroku
-        //! \param t1 czas rozpoczêcia kroku
-        //! \param t2 czas zakoñczenia kroku
+        //! Kontruktor, ktÃ³ry tworzy zainicjalizowana instancje kroku
+        //! \param t1 czas rozpoczÄ™cia kroku
+        //! \param t2 czas zakoÅ„czenia kroku
         //! \param c konkekst kroku (lewy , prawy)
         Step(float t1, float t2, ForcePlatform::Context c) : startTime(t1), endTime(t2), context(c) {}
 
     public:
-        //! \return czas rozpoczêcia kroku
+        //! \return czas rozpoczÄ™cia kroku
         virtual float getStartTime() const { return startTime; }
-        //! \param val czas rozpoczêcia kroku
+        //! \param val czas rozpoczÄ™cia kroku
         virtual void setStartTime(float val) { startTime = val; }
-        //! \return czas zakoñczenia kroku
+        //! \return czas zakoÅ„czenia kroku
         virtual float getEndTime() const { return endTime; }
-        //! \param val czas zakoñczenia kroku
+        //! \param val czas zakoÅ„czenia kroku
         virtual void setEndTime(float val) { endTime = val; }
-        //! \return punkt, w którym znajduje siê koniec stopy (piêta)
+        //! \return punkt, w ktÃ³rym znajduje siÄ™ koniec stopy (piÄ™ta)
         virtual osg::Vec3 getStartPoint() const { return startPoint; }
-        //! \param val punkt, w którym znajduje siê koniec stopy (piêta)
+        //! \param val punkt, w ktÃ³rym znajduje siÄ™ koniec stopy (piÄ™ta)
         virtual void setStartPoint(const osg::Vec3& val) { startPoint = val; }
-        //! \return punkt, w którym znajduje siê pocz¹tek stopy (palce)
+        //! \return punkt, w ktÃ³rym znajduje siÄ™ poczÄ…tek stopy (palce)
         virtual osg::Vec3 getEndPoint() const { return endPoint; }
-        //! \param val punkt, w którym znajduje siê pocz¹tek stopy (palce)
+        //! \param val punkt, w ktÃ³rym znajduje siÄ™ poczÄ…tek stopy (palce)
         virtual void setEndPoint(const osg::Vec3& val) { endPoint = val; }
-        //! \return czy dane zawarte w klasie s¹ poprawne
+        //! \return czy dane zawarte w klasie sÄ… poprawne
         virtual bool isValid() const { return startTime >= 0.0f && endTime >= 0.0f; }
         //! \return konkekst kroku (lewy , prawy)
         ForcePlatform::Context getContext() const { return context; }
@@ -65,64 +65,64 @@ public:
         void setContext(ForcePlatform::Context val) { context = val; }
 
     private:
-        //! czas rozpoczêcia kroku
+        //! czas rozpoczÄ™cia kroku
         float startTime;
-        //! czas zakoñczenia kroku
+        //! czas zakoÅ„czenia kroku
         float endTime;
-        //! punkt, w którym znajduje siê koniec stopy (piêta)
+        //! punkt, w ktÃ³rym znajduje siÄ™ koniec stopy (piÄ™ta)
         osg::Vec3 startPoint;
-        //! punkt, w którym znajduje siê pocz¹tek stopy (palce)
+        //! punkt, w ktÃ³rym znajduje siÄ™ poczÄ…tek stopy (palce)
         osg::Vec3 endPoint;
         //! konkekst kroku (lewy , prawy)
         Context context;
     };
 
 public:
-    //! Konstruktor, inicjalizuje klasê na podstawie surowych danych platformy
+    //! Konstruktor, inicjalizuje klasÄ™ na podstawie surowych danych platformy
     //! \param platform platforma dostarczona przez parser c3d
     ForcePlatform(c3dlib::ForcePlatformPtr platform);
 
 public:
     //! \return wykryte kroki (w rozumieniu IStep)
     virtual StepsConstRange getSteps() const;
-    //! \return œrodek p³yty pomiarowej
+    //! \return Å›rodek pÅ‚yty pomiarowej
     virtual osg::Vec3 getCenter() const;
-    //! \return szerokoœæ p³yty pomiarowej
+    //! \return szerokoÅ›Ä‡ pÅ‚yty pomiarowej
     virtual float getWidth() const;
-    //! \return d³ugoœæ p³yty pomiarowej
+    //! \return dÅ‚ugoÅ›Ä‡ pÅ‚yty pomiarowej
     virtual float getLength() const;
-    //! Metoda pozwala okreœliæ orientacjê p³yty pomiarowej
-    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (lewy prawy = 1, prawy lewy = -1)
+    //! Metoda pozwala okreÅ›liÄ‡ orientacjÄ™ pÅ‚yty pomiarowej
+    //! \return kolejnoÅ›Ä‡ wystÄ…pienia wierzchoÅ‚kÃ³w (lewy prawy = 1, prawy lewy = -1)
     virtual float getSignX() const;
-    //! Metoda pozwala okreœliæ orientacjê p³yty pomiarowej
-    //! \return kolejnoœæ wyst¹pienia wierzcho³ków (góra dol = 1, dol góra = -1)
+    //! Metoda pozwala okreÅ›liÄ‡ orientacjÄ™ pÅ‚yty pomiarowej
+    //! \return kolejnoÅ›Ä‡ wystÄ…pienia wierzchoÅ‚kÃ³w (gÃ³ra dol = 1, dol gÃ³ra = -1)
     virtual float getSignY() const;
-    //! Algorytm stara siê wykryæ wszystkie kroki(w rozumieniu Step) zwiazene z p³yta GRF
-    //! \param markers kolekcja z markerami, potrzebna aby pobraæ markery zwi¹zane ze stop¹
-    //! \param events kolekcja ze zdarzeniami, pomocne przy wykrywaniu kroków 
+    //! Algorytm stara siÄ™ wykryÄ‡ wszystkie kroki(w rozumieniu Step) zwiazene z pÅ‚yta GRF
+    //! \param markers kolekcja z markerami, potrzebna aby pobraÄ‡ markery zwiÄ…zane ze stopÄ…
+    //! \param events kolekcja ze zdarzeniami, pomocne przy wykrywaniu krokÃ³w 
     void computeSteps( MarkerCollectionPtr markers, EventsCollectionConstPtr events );
-    //! \return kana³ z odpowiadaj¹ca p³ycie si³¹
+    //! \return kanaÅ‚ z odpowiadajÄ…ca pÅ‚ycie siÅ‚Ä…
     virtual GRFChannelConstPtr getForceChannel() const;
-    //! \return kana³ z odpowiadaj¹ca p³ycie momentem si³y
+    //! \return kanaÅ‚ z odpowiadajÄ…ca pÅ‚ycie momentem siÅ‚y
     virtual GRFChannelConstPtr getMomentChannel() const;
-    //! ustawia kana³ z odpowiadaj¹ca p³ycie si³¹
+    //! ustawia kanaÅ‚ z odpowiadajÄ…ca pÅ‚ycie siÅ‚Ä…
     virtual void setForceChannel(GRFChannelConstPtr val)  { force = val; }
-    //! ustawia kana³ z odpowiadaj¹ca p³ycie momentem si³y
+    //! ustawia kanaÅ‚ z odpowiadajÄ…ca pÅ‚ycie momentem siÅ‚y
     virtual void setMomentChannel(GRFChannelConstPtr val) { moment = val; }
 
 private:
-    //! Sprawdza czy punkt znajduje siê w obrêbie p³yty (wysokoœæ nie ma znaczenia)
+    //! Sprawdza czy punkt znajduje siÄ™ w obrÄ™bie pÅ‚yty (wysokoÅ›Ä‡ nie ma znaczenia)
     //! \param v sprawdzany punkt
     bool isInsideXY( const osg::Vec3& v) const;
 
 private:
-    //! obiekt pochodz¹cy wprost z parsera c3d, surowe dane platformy
+    //! obiekt pochodzÄ…cy wprost z parsera c3d, surowe dane platformy
     c3dlib::ForcePlatform platform;
     //! kolekcja z krokami (w rozumieniu klasy Step)
     Steps steps;
-    //! kana³ z odpowiadaj¹ca p³ycie si³a
+    //! kanaÅ‚ z odpowiadajÄ…ca pÅ‚ycie siÅ‚a
     GRFChannelConstPtr force;
-    //! kana³ z odpowiadaj¹ca p³ycie momentem si³y
+    //! kanaÅ‚ z odpowiadajÄ…ca pÅ‚ycie momentem siÅ‚y
     GRFChannelConstPtr moment;
 };
 typedef core::shared_ptr<ForcePlatform> ForcePlatformPtr;

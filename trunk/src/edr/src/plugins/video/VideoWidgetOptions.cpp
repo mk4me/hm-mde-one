@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+﻿#include "VideoPCH.h"
 #include "VideoWidgetOptions.h"
 #include <plugins/video/VideoService.h>
 #include <vidlib/PixelFormat.h>

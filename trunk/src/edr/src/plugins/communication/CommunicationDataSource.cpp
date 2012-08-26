@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "CommunicationDataSource.h"
 #include <QtGui/QLayout>
 #include <QtGui/QMenu>
@@ -1836,7 +1836,7 @@ PatientItem * MedicalView::createPatientItemTree(const communication::MedicalSha
 
     if(groupedByDateSessions.size() == 2){
 
-        //tworzymy grupy badañ - przed i po zabiegu
+        //tworzymy grupy badaÅ„ - przed i po zabiegu
         auto & sessionGroups = groupedByDateSessions.begin()->second;
 
         UTILS_ASSERT(sessionGroups.size() == 2);
@@ -1962,7 +1962,7 @@ void MedicalView::doUIRefresh()
     if(motionShallowCopy != nullptr && medicalShallowCopy != nullptr){
         unsigned int i = 0;
 
-        //budujemy drzewo i tabelê pacjentów na potrzeby kart
+        //budujemy drzewo i tabelÄ™ pacjentÃ³w na potrzeby kart
         for(auto patientIT = medicalShallowCopy->patients.begin(); patientIT != medicalShallowCopy->patients.end(); patientIT++){
             createPatientItemTree(patientIT->second);
             i++;
@@ -2121,7 +2121,7 @@ CommunicationDataSource::~CommunicationDataSource()
 QWidget * CommunicationDataSource::getOrCreateView()
 {
     if(widget == nullptr){
-        //inicjalizujemy zak³¹dki naszego okienka
+        //inicjalizujemy zakÅ‚Ä…dki naszego okienka
         widget = new QWidget();
         widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -2132,7 +2132,7 @@ QWidget * CommunicationDataSource::getOrCreateView()
         widget->setLayout(layout);
 
         //pacjenci
-        //dodajemy jako domyœlny widget
+        //dodajemy jako domyÅ›lny widget
 
         //currentView = new MotionView(this);
         currentView = new MedicalView(this);
@@ -2240,8 +2240,8 @@ void CommunicationDataSource::init(core::IMemoryDataManager * memoryDataManager,
     }
     
     if(requests.empty() == false){
-        //dorzucamy pakiet zleceñ dla CM
-        //na zakoñæzenie musi odœwie¿yæ ui
+        //dorzucamy pakiet zleceÅ„ dla CM
+        //na zakoÅ„Ä‡zenie musi odÅ›wieÅ¼yÄ‡ ui
         communication::CommunicationManager::CompleteRequest req;
         req.request = communicationManager->createRequestComplex(requests);         
         req.callbacks.onEndCallback = boost::bind(&CommunicationDataSource::onDataDownloadComplete, this, _1);
@@ -2250,10 +2250,10 @@ void CommunicationDataSource::init(core::IMemoryDataManager * memoryDataManager,
 
     }else{
     
-        //parsujemy pliki i odœwie¿amy schematy
+        //parsujemy pliki i odÅ›wieÅ¼amy schematy
         readMotionDbSchemas(localMotionShallowCopyPath.string(), localMotionMetadataPath.string());
         readMedicalDbSchemas(localMedicalShallowCopyPath.string(), localMedicalMetadataPath.string());
-        //mamy dane - œci¹gamy zdjêcia pacjentów
+        //mamy dane - Å›ciÄ…gamy zdjÄ™cia pacjentÃ³w
         retrivePatientPhotos();
     }
 }
@@ -2843,7 +2843,7 @@ bool CommunicationDataSource::downloadFiles(const std::vector<const communicatio
 {
     bool ret = true;
     if(files.size() > 10){
-        //warning - sporo plików, czy kontynuowaæ
+        //warning - sporo plikÃ³w, czy kontynuowaÄ‡
         QString info;
         info += tr("You are about to start the download of ") + QString::number(files.size()) + tr(" files. Are you sure there is enough space on disk and you can wait some longer time?");
         QMessageBox message(QMessageBox::Warning, tr("Attempt to download large amount of files"), info, QMessageBox::Ok | QMessageBox::Cancel);
@@ -2855,13 +2855,13 @@ bool CommunicationDataSource::downloadFiles(const std::vector<const communicatio
         }
     }
 
-    //utorzone œcie¿ki dla rollbacka jeœli coœ siê nie uda
+    //utorzone Å›cieÅ¼ki dla rollbacka jeÅ›li coÅ› siÄ™ nie uda
     std::set<core::Filesystem::Path> createdDirectories;
     
     std::map<int, std::string> toDownload;
     std::set<const communication::MotionShallowCopy::Session *> sessions;
 
-    //przygotowujemy pliki do œci¹gania w formie transakcji która automatycznie siê rollbackuje
+    //przygotowujemy pliki do Å›ciÄ…gania w formie transakcji ktÃ³ra automatycznie siÄ™ rollbackuje
     for(auto it = files.begin(); it != files.end(); it++){
         toDownload[(*it)->fileID] = getFilePath(*it).string();
         sessions.insert((*it)->isSessionFile() == true ? (*it)->session : (*it)->trial->session);
@@ -2928,7 +2928,7 @@ void CommunicationDataSource::ensureSessionDirectories(const std::set<const comm
         }
 
     }catch(...){
-        //próbujemy sprz¹taæ
+        //prÃ³bujemy sprzÄ…taÄ‡
         try{
             for(auto it = paths.begin(); it != paths.end(); it++){
                 core::Filesystem::deleteDirectory(*it);
@@ -2936,7 +2936,7 @@ void CommunicationDataSource::ensureSessionDirectories(const std::set<const comm
         }catch(...){
 
         }
-        //rzucamy dalej wyj¹tkiem
+        //rzucamy dalej wyjÄ…tkiem
         throw;
     }
 }

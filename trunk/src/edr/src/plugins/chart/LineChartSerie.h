@@ -1,4 +1,4 @@
-///********************************************************************
+Ôªø///********************************************************************
 //created:  2010/09/21
 //filename: LineChartSerie.h
 //author:	  Michal Szafarski
@@ -17,17 +17,17 @@
 class LineChartSerie : public ChartSerie
 {
 private:
-    //! Tablica kolorÛw.
+    //! Tablica kolor√≥w.
     osg::ref_ptr<osg::Vec4Array> colors;
-    //! Tablica wierzcho≥kÛw.
+    //! Tablica wierzcho≈Çk√≥w.
     osg::ref_ptr<osg::Vec3Array> vertices;
-    //! Obs≥uga czasu serii danych
+    //! Obs≈Çuga czasu serii danych
     ScalarChannelReaderInterfaceConstPtr channel;
-    //! Obs≥uga czasu kana≥u
+    //! Obs≈Çuga czasu kana≈Çu
     GeneralTimer::TimerPtr timer;
-    //! Obs≥uga statystyk kana≥u
+    //! Obs≈Çuga statystyk kana≈Çu
     ScalarChannelStatsPtr stats;
-    //! Znormalizowany kana≥
+    //! Znormalizowany kana≈Ç
     boost::shared_ptr<ScalarModifier> normalizedChannel;
 
     boost::shared_ptr<ScalarContiniousTimeAccessor> accessor;
@@ -55,12 +55,12 @@ public:
 
 // ChartSerie
 public:
-    //! Odúwieøa wykres. RÍczne wywowy≥awanie nie jest potrzebne, jeøeli
+    //! Od≈õwie≈ºa wykres. Rƒôczne wywowy≈Çawanie nie jest potrzebne, je≈ºeli
     //! flaga autoRefresh jest zapalona.
     virtual void refresh();
-    //! \return Zakres wartoúci dla osi X.
+    //! \return Zakres warto≈õci dla osi X.
     virtual std::pair<float, float> getXRange() const;
-    //! \return Zakres wartoúci dla osi Y.
+    //! \return Zakres warto≈õci dla osi Y.
     virtual std::pair<float, float> getYRange() const;
     //! \return Jednostka dla osi X.
     virtual const std::string& getXUnit() const;

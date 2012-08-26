@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include <utils/Debug.h>
 #include <core/MultiViewManipulatorItem.h>
 #include <core/ILog.h>
@@ -37,7 +37,7 @@ void MultiViewManipulatorItem::setVisible( bool visible )
     UTILS_ASSERT(view.valid());
     if ( !visible ) {
         if ( thumbnailCamera->getReferenceFrame() != osg::Transform::ABSOLUTE_RF ) {
-            // wy³¹czenie powi¹zania miêdzy kamerami
+            // wyÅ‚Ä…czenie powiÄ…zania miÄ™dzy kamerami
             thumbnailCamera->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
             thumbnailCamera->setViewMatrix( view->getCamera()->getViewMatrix() );
             thumbnailCamera->setProjectionMatrix( view->getCamera()->getProjectionMatrix() );
@@ -45,7 +45,7 @@ void MultiViewManipulatorItem::setVisible( bool visible )
         }
     } else {
         if ( thumbnailCamera->getReferenceFrame() != osg::Transform::RELATIVE_RF ) {
-            // powi¹zanie kamery miniaturki z kamer¹ g³ówn¹
+            // powiÄ…zanie kamery miniaturki z kamerÄ… gÅ‚Ã³wnÄ…
             thumbnailCamera->setReferenceFrame( osg::Transform::RELATIVE_RF );
             thumbnailCamera->setViewMatrix( osg::Matrixd::identity() );
             thumbnailCamera->setProjectionMatrix( osg::Matrixd::identity() );

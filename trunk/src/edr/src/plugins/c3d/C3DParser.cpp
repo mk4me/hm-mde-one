@@ -1,4 +1,4 @@
-#include "C3DPCH.h"
+Ôªø#include "C3DPCH.h"
 #include "C3DParser.h"
 
 #include <string>
@@ -12,7 +12,7 @@
 
 C3DParser::C3DParser()
 {
-    // sztywne stworzenie obiektÛw, zachowanie kompatybilnoúci
+    // sztywne stworzenie obiekt√≥w, zachowanie kompatybilno≈õci
 	for(int i = 0; i < 4; ++i){
 		GRFChannels.push_back(core::ObjectWrapper::create<GRFChannel>());
 	}
@@ -20,10 +20,10 @@ C3DParser::C3DParser()
 		EMGChannels.push_back(core::ObjectWrapper::create<EMGChannel>());
 	}
 
-    // GRF i EMG sπ dosepne tez poprzez standardowe kolekcje
+    // GRF i EMG sƒÖ dosepne tez poprzez standardowe kolekcje
 	GRFs = core::ObjectWrapper::create<GRFCollection>();
 	EMGs = core::ObjectWrapper::create<EMGCollection>();
-    // reszta kolekcji juø bez udziwnien
+    // reszta kolekcji ju≈º bez udziwnien
 	markerChannels = core::ObjectWrapper::create<MarkerCollection>();
 	forceChannels  = core::ObjectWrapper::create<ForceCollection>();
 	angleChannels  = core::ObjectWrapper::create<AngleCollection>();
@@ -73,7 +73,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         EMGs->setSource(path.string());
     }
 
-    // wczytanie eventÛw
+    // wczytanie event√≥w
 	int count = parser->getNumEvents();
     EventsCollectionPtr allEventsCollection(new C3DEventsCollection());
 	for (int i = 0; i < count; ++i) {
@@ -83,7 +83,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 	}
     this->allEvents->set(allEventsCollection, path.filename().string(), path.string());
 
-    // wczytanie plikÛw *vsk, ktÛre dostarczaja opis do markerÛw
+    // wczytanie plik√≥w *vsk, kt√≥re dostarczaja opis do marker√≥w
     core::Filesystem::Path dir = path.parent_path();
     std::vector<std::string> vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
     kinematic::VskParserPtr vsk;

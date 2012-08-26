@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/06
     created:  6:2:2012   9:23
     filename: IDataSourceStatusManager.h
@@ -17,7 +17,7 @@
 namespace communication
 {
 
-//! Interfejs zapewniaj¹cy dostêp do statusu danych
+//! Interfejs zapewniajÄ…cy dostÄ™p do statusu danych
 class IDataSourceStatusManager
 {
 public:

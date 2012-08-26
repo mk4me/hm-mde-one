@@ -1,4 +1,4 @@
-#include <core/Parameters.h>
+﻿#include <core/Parameters.h>
 #include <plugins/chart/ProcessorReader.h>
 
 Parameters::Parameters(ProcessorReader* proc) {

@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/17
     created:  17:2:2012   9:05
     filename: IFilesHelper.h
@@ -20,32 +20,32 @@ public:
     virtual ~IFilesHelper() {}
 
     //! \param disorderID Identyfikator schorzenia
-    //! \param files [out] ZbiÛr plikÛw dla zadanego schorzenia
+    //! \param files [out] Zbi√≥r plik√≥w dla zadanego schorzenia
     virtual void getDisorderFiles(int disorderID, std::set<int> & files) const = 0;
     //! \param patientID Identyfikator pacjenta
-    //! \param files [out] ZbiÛr plikÛw dla zadanego pacjenta
+    //! \param files [out] Zbi√≥r plik√≥w dla zadanego pacjenta
     virtual void getPatientFiles(int patientID, std::set<int> & files) const = 0;
     //! \param subjectID Identyfikator subjecta
-    //! \param files [out] ZbiÛr plikÛw dla zadanego subjecta
+    //! \param files [out] Zbi√≥r plik√≥w dla zadanego subjecta
     virtual void getSubjectFiles(int subjectID, std::set<int> & files) const = 0;
     //! \param sessionID Identyfikator sesji
-    //! \param files [out] ZbiÛr plikÛw dla zadanej sesji
+    //! \param files [out] Zbi√≥r plik√≥w dla zadanej sesji
     virtual void getSessionFiles(int sessionID, std::set<int> & files) const = 0;
     //! \param motionID Identyfikator motiona
-    //! \param files [out] ZbiÛr plikÛw dla zadanego motiona
+    //! \param files [out] Zbi√≥r plik√≥w dla zadanego motiona
     virtual void getMotionFiles(int motionID, std::set<int> & files) const = 0;
 
-    //! \param src ZbiÛr plikÛw wejsciowych do przefiltrowania
-    //! \param dest [out] ZbiÛr przefiltrowanych plikÛw za≥adowanych do DataManagera
+    //! \param src Zbi√≥r plik√≥w wejsciowych do przefiltrowania
+    //! \param dest [out] Zbi√≥r przefiltrowanych plik√≥w za≈Çadowanych do DataManagera
     virtual void filterLoadedFiles(const std::set<int> & src, std::set<int> & dest) const = 0;
-    //! \param src ZbiÛr plikÛw wejsciowych do przefiltrowania
-    //! \param dest [out] ZbiÛr przefiltrowanych plikÛw nieza≥adowanych do DataManagera
+    //! \param src Zbi√≥r plik√≥w wejsciowych do przefiltrowania
+    //! \param dest [out] Zbi√≥r przefiltrowanych plik√≥w nieza≈Çadowanych do DataManagera
     virtual void filterUnloadedFiles(const std::set<int> & src, std::set<int> & dest) const = 0;
-    //! \param src ZbiÛr plikÛw wejsciowych do przefiltrowania
-    //! \param dest [out] ZbiÛr przefiltrowanych plikÛw lokalnych
+    //! \param src Zbi√≥r plik√≥w wejsciowych do przefiltrowania
+    //! \param dest [out] Zbi√≥r przefiltrowanych plik√≥w lokalnych
     virtual void filterLocalFiles(const std::set<int> & src, std::set<int> & dest) const = 0;
-    //! \param src ZbiÛr plikÛw wejsciowych do przefiltrowania
-    //! \param dest [out] ZbiÛr przefiltrowanych plikÛw zdalnych
+    //! \param src Zbi√≥r plik√≥w wejsciowych do przefiltrowania
+    //! \param dest [out] Zbi√≥r przefiltrowanych plik√≥w zdalnych
     virtual void filterRemoteFiles(const std::set<int> & src, std::set<int> & dest) const = 0;
 };
 

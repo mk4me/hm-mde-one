@@ -1,4 +1,4 @@
-#include "TimelinePCH.h"
+ï»¿#include "TimelinePCH.h"
 
 #include <QtGui/QIcon>
 #include <QtGui/QCheckBox>
@@ -117,10 +117,10 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     //scaleSpinBox->setMaximum(100);
     //scaleSpinBox->setSingleStep(0.2);
 
-    //po³¹czenie sygna³ów i slotów
+    //poÅ‚Ä…czenie sygnaÅ‚Ã³w i slotÃ³w
     //connect(scaleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
 
-    ////po³¹czenie sygna³ów i slotów
+    ////poÅ‚Ä…czenie sygnaÅ‚Ã³w i slotÃ³w
     connect(playbackDirectionAction, SIGNAL(triggered(bool)), this, SLOT(playbackDirectionChanged(bool)));
 
     //elementy widgeta
@@ -139,7 +139,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     //nowy slider
 
-    // rev - zmieni³o siê troche API, nie ma ju¿ TopScale
+    // rev - zmieniÅ‚o siÄ™ troche API, nie ma juÅ¼ TopScale
     //slider->setScalePosition(QwtSlider::TopScale);
     slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     slider->setHandleSize(QSize(45,10));
@@ -161,7 +161,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     channelsWidget->header()->setResizeMode(0, QHeaderView::ResizeToContents);
     channelsWidget->header()->hide();
 
-    // menu kontekstowe dla drzewa kana³ów z akcj¹ usuwaj¹c¹ zaznaczone kana³y
+    // menu kontekstowe dla drzewa kanaÅ‚Ã³w z akcjÄ… usuwajÄ…cÄ… zaznaczone kanaÅ‚y
     removeChannelsMenu->addAction(actionRemoveChannels);
 
     QHBoxLayout * layout = new QHBoxLayout();
@@ -196,7 +196,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     timelineTabs->setLayout(layout);
 
     //HACK
-    //to powinno byæ stylowane za pomoc¹ CSS, niestety Qwt operuje tylko na paletach
+    //to powinno byÄ‡ stylowane za pomocÄ… CSS, niestety Qwt operuje tylko na paletach
     QPalette sliderPalette(this->palette());
     sliderPalette.setBrush(QPalette::Light, QBrush(QColor(135, 177, 255)));
     sliderPalette.setBrush(QPalette::Mid, QBrush(QColor(255,0,0)));
@@ -293,7 +293,7 @@ void TimelineWidget::update(const State * state)
 
 void TimelineWidget::refresh()
 {
-    //blokujemy sygna³y modyfikowanych komponenrów
+    //blokujemy sygnaÅ‚y modyfikowanych komponenrÃ³w
     preciseTimeWidget->blockSignals(true);
     //scaleSpinBox->blockSignals(true);
     slider->blockSignals(true);
@@ -336,20 +336,20 @@ void TimelineWidget::removeSelectedChannels()
 
     ++it;
     while(it != orderedPathsToDelete.end()){
-        // jeœli to nie moje dziecko w modelu
+        // jeÅ›li to nie moje dziecko w modelu
         std::string::size_type pos = it->first.find(lastNode);
         if(pos == 0){
-            //usuwamy podkana³, zostanie usuniêty wraz ze swoim rodzicem
+            //usuwamy podkanaÅ‚, zostanie usuniÄ™ty wraz ze swoim rodzicem
             it = orderedPathsToDelete.erase(it);
         }else{
-            //zapamietaj ostatni wêze³ by weryfikowaæ jego dzieci
+            //zapamietaj ostatni wÄ™zeÅ‚ by weryfikowaÄ‡ jego dzieci
             lastNode = it->first;
             toDelete.insert(lastNode);
             ++it;
         }
     }
 
-    //w³aœciwe usuniêcie z drzewa UI
+    //wÅ‚aÅ›ciwe usuniÄ™cie z drzewa UI
     for(auto it = orderedPathsToDelete.begin(); it != orderedPathsToDelete.end(); ++it){
         it->second->parent()->removeChild(it->second);
         delete it->second;
@@ -361,7 +361,7 @@ void TimelineWidget::removeSelectedChannels()
         }*/
     }
 
-    //w³aœciwe usuniêcie z modelu
+    //wÅ‚aÅ›ciwe usuniÄ™cie z modelu
     getController()->removeChannels(toDelete);
 }
 
@@ -496,7 +496,7 @@ void TimelineWidget::recursiveRefreshChannels(QTreeWidgetItem* uiNode)
 
 void TimelineWidget::refreshPlayerStatus()
 {
-    //jeœli nie mamy pustego timeline (s¹ kana³y) to umo¿liwiamy odtwarzanie i zatrzymywanie
+    //jeÅ›li nie mamy pustego timeline (sÄ… kanaÅ‚y) to umoÅ¼liwiamy odtwarzanie i zatrzymywanie
     if(getController()->getModel()->sizeChannels() > 0){
         playPauseAction->setEnabled(true);
         stopAction->setEnabled(true);
@@ -534,7 +534,7 @@ void TimelineWidget::refreshPlayerStatus()
     //ustaw czas maxymalny
     preciseTimeWidget->setMaximumTime(convertToQTime(getController()->getModel()->getEndTime()));
 
-    //ustaw skalê czasu
+    //ustaw skalÄ™ czasu
     //scaleSpinBox->setValue(getController()->getTimeScale());
 
     //kierunek odtwarzania

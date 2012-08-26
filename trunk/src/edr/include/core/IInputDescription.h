@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2011/05/12
 	created:	12:5:2011   9:12
 	filename: 	IInputDescription.h
@@ -22,25 +22,25 @@ public:
     {
     }
 
-    //! Struktura opisujπca typy danych wejúciowe.
+    //! Struktura opisujƒÖca typy danych wej≈õciowe.
     struct InputInfo
     {
-        //! Nazwa wejúcia.
+        //! Nazwa wej≈õcia.
         std::string name;
-        //! Typy wspierane przez wejúcie.
+        //! Typy wspierane przez wej≈õcie.
         TypeInfo type;
-        //! Czy wejúciew wymagane
+        //! Czy wej≈õciew wymagane
         bool required;
-        //! Czy dane na wejsciu bÍdza modyfikowane
+        //! Czy dane na wejsciu bƒôdza modyfikowane
         bool modify;
     };
 
 public:
-    //! Pobiera informacje o wejúciu. Gdy danego wejúcia nie ma wynikowa lista typÛw powinna
-    //! byÊ pusta.
-    //! \param inputNo Numer wejúcia. 
-    //! \param name Nazwa wejúcia.
-    //! \param type Typy wspierane na danym wejúciu.
+    //! Pobiera informacje o wej≈õciu. Gdy danego wej≈õcia nie ma wynikowa lista typ√≥w powinna
+    //! byƒá pusta.
+    //! \param inputNo Numer wej≈õcia. 
+    //! \param name Nazwa wej≈õcia.
+    //! \param type Typy wspierane na danym wej≈õciu.
     virtual void getInputInfo(std::vector<InputInfo>& info) = 0;
 };
 

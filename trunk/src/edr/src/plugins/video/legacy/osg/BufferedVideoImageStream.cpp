@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+ï»¿#include "../VideoPCH.h"
 #include <iostream>
 
 #include <osg/Notify>
@@ -33,12 +33,12 @@ BufferedVideoImageStream::~BufferedVideoImageStream()
 
 bool BufferedVideoImageStream::open( const std::string & filename )
 {
-  // czy uda³o siê otworzyæ strumieñ?
+  // czy udaÅ‚o siÄ™ otworzyÄ‡ strumieÅ„?
   if ( !VideoImageStream::open(filename) ) {
     return false;
   }
-  // inicjalizacja buforów
-  // mieœcimy indeksy sekund
+  // inicjalizacja buforÃ³w
+  // mieÅ›cimy indeksy sekund
   //thumbnailsMap.resize( static_cast<size_t>((*innerStream)->getDuration()) + 1, -1);
   
 

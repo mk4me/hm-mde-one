@@ -1,4 +1,4 @@
-#include "SubjectPCH.h"
+﻿#include "SubjectPCH.h"
 #include <OpenThreads/Mutex>
 #include <OpenThreads/ScopedLock>
 #include "SubjectService.h"
@@ -13,7 +13,7 @@ Motion::Motion(PluginSubject::SubjectID motionID, const PluginSubject::SessionCo
     PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
 	: motionID(motionID), session(session), localMotionID(localMotionID), wrappers(wrappers)
 {
-    //generujemy nazw�
+    //generujemy nazwę
 
     std::stringstream ss;
     ss.fill('0');

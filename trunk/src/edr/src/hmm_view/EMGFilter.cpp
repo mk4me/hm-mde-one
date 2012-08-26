@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+ï»¿#include "hmmPCH.h"
 #include "EMGFilter.h"
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartSerie.h>
@@ -62,33 +62,33 @@ public:
         return channel->getLength();
     }
 
-    //! \param idx Indeks próbki
-    //! \return Wartoœæ czasu dla danego indeksu
+    //! \param idx Indeks prÃ³bki
+    //! \return WartoÅ›Ä‡ czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
         return channel->argument(idx);
     }
 
-    //! \param idx Indeks próbki
-    //! \return Wartoœæ próbki dla danego indeksu
+    //! \param idx Indeks prÃ³bki
+    //! \return WartoÅ›Ä‡ prÃ³bki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         return modify(channel->value(idx));
     }
 
-    //! \return Iloœæ próbek w kanale
+    //! \return IloÅ›Ä‡ prÃ³bek w kanale
     virtual size_type size() const
     {
         return channel->size();
     }
 
-    //! \return Czy kana³ nie zawiera danych
+    //! \return Czy kanaÅ‚ nie zawiera danych
     virtual bool empty() const
     {
         return channel->empty();
     }
-    //! \param time Czas dla którego chemy uzyskac dwie najbli¿sze próbki
-    //! \return para indeksów, pierwszy wskazujke próbkê o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje próbkê o czasie wiekszym lub rownym zadanemu
+    //! \param time Czas dla ktÃ³rego chemy uzyskac dwie najbliÅ¼sze prÃ³bki
+    //! \return para indeksÃ³w, pierwszy wskazujke prÃ³bkÄ™ o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje prÃ³bkÄ™ o czasie wiekszym lub rownym zadanemu
     virtual std::pair<size_type, size_type> getValueHelper(time_type time) const
     {
         return channel->getValueHelper(time);
@@ -116,7 +116,7 @@ protected:
 //        const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
 //        const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
 //    {
-//        //uzupe³nij brakuj¹ce prboki
+//        //uzupeÅ‚nij brakujÄ…ce prboki
 //        if(myChannel.size() < observedChannel.size()){
 //            for(auto idx = myChannel.size(); idx < observedChannel.size(); idx++){
 //                modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
@@ -124,13 +124,13 @@ protected:
 //        }
 //
 //        ScalarChannelReaderInterface::point_type sum = 0;
-//        //œrednia
+//        //Å›rednia
 //        for(ScalarChannelReaderInterface::size_type idx = 0; idx < myChannel.size(); idx++){
 //            sum += observedChannel.value(idx);
 //        }
 //
 //        ScalarChannelReaderInterface::point_type mean = sum / myChannel.size();
-//        //aktualizacja próbek
+//        //aktualizacja prÃ³bek
 //        for(ScalarChannelReaderInterface::size_type idx = 0; idx < myChannel.size(); idx++){
 //            auto point = observedChannel.value(idx);
 //            modifierInterface.setIndexData(idx, point > mean ? point : -point);
@@ -148,13 +148,13 @@ public:
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
-        //uzupe³nij brakuj¹ce próbki
+        //uzupeÅ‚nij brakujÄ…ce prÃ³bki
         if(myChannel.size() < observedChannel.size()){
             for(auto idx = myChannel.size(); idx < observedChannel.size(); ++idx){
                 modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
             }
         }
-        //aktualizacja próbek
+        //aktualizacja prÃ³bek
 
         sizeT meanR = 250;
         sizeT count = myChannel.size() - meanR;
@@ -168,7 +168,7 @@ public:
             sum = sqrt(sum);
             modifierInterface.setIndexData(l_idx, sum);
         }
-        // w³aœciwa interpolacja
+        // wÅ‚aÅ›ciwa interpolacja
         for(sizeT idx = meanR; idx < count; ++idx) {
             pointT sum = 0;
             for (sizeT i = idx - meanR; i < idx + meanR + 1; ++i) {
@@ -206,7 +206,7 @@ public:
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
-        ////uzupe³nij brakuj¹ce próbki : co dziesiata...
+        ////uzupeÅ‚nij brakujÄ…ce prÃ³bki : co dziesiata...
         sizeT skipN = 10;
         if(myChannel.size() * skipN < observedChannel.size()){
             for(auto idx = myChannel.size() * skipN; idx < observedChannel.size(); idx += skipN){
@@ -219,7 +219,7 @@ public:
                 modifierInterface.addPoint(observedChannel.argument(idx), sum / skipN);
             }
         }
-        //aktualizacja próbek
+        //aktualizacja prÃ³bek
 
         sizeT meanR = 10;
         sizeT count = myChannel.size() - meanR;
@@ -234,7 +234,7 @@ public:
                 sum /= (l_idx + meanR);
                 modifierInterface.setIndexData(l_idx, sum);
             }
-            // w³aœciwa interpolacja
+            // wÅ‚aÅ›ciwa interpolacja
             for(sizeT idx = meanR; idx < count; ++idx) {
                 pointT sum = 0;
                 for (sizeT i = idx - meanR; i < idx + meanR + 1; ++i) {
@@ -275,7 +275,7 @@ public:
 //    virtual void initialize()
 //    {
 //        point_type sum = 0;
-//        //œrednia
+//        //Å›rednia
 //        size_type count = channel->size();
 //        for(size_type idx = 0; idx < channel->size(); idx++){
 //            sum += channel->value(idx);
@@ -334,7 +334,7 @@ public:
         point_type max4 = max / 4;
 
         point_type sum = 0;
-        //œrednia
+        //Å›rednia
         for(size_type idx = 0; idx < count; ++idx) {
             point_type val = this->channel->value(idx);
             if (val > max4) {

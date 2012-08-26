@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include "DataSourcePerspective.h"
 #include <QtGui/QMouseEvent>
 
@@ -92,7 +92,7 @@ void DataSourcePatientPerspective::rebuildPerspective(QTreeWidget * treeWidget, 
 	auto subjectsITEnd = shallowCopy.motionShallowCopy->performers.end();
 	for(auto subjectIT = shallowCopy.motionShallowCopy->performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
 
-		//je�li pusty pacjent to go pomijamy
+		//jeśli pusty pacjent to go pomijamy
 		if(subjectIT->second->performerConfs.empty() == true){
 			continue;
 		}

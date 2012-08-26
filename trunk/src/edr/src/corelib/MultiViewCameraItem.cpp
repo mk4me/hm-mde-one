@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+Ôªø#include "CorePCH.h"
 #include <utils/Debug.h>
 #include <core/MultiViewCameraItem.h>
 
@@ -23,12 +23,12 @@ camera(camera), aspectRatio(aspectRatio), childIdx(-1), parent(parent)
 bool MultiViewCameraItem::isVisible() const
 {
     if ( parent->getChildIndex(camera) != parent->getNumChildren() ) {
-        // gdy mamy swticha dziecko moøe byÊ wy≥πczone
+        // gdy mamy swticha dziecko mo≈ºe byƒá wy≈ÇƒÖczone
         if ( osg::Switch* sw = parent->asSwitch() ) {
-            // dziecko moøe byÊ wy≥πczone
+            // dziecko mo≈ºe byƒá wy≈ÇƒÖczone
             return sw->getChildValue(camera);
         } else {
-            // gdy jest zwyk≥a grupa na pewno dzieko jest widoczne
+            // gdy jest zwyk≈Ça grupa na pewno dzieko jest widoczne
             return true;
         }
     }
@@ -40,10 +40,10 @@ void MultiViewCameraItem::setVisible( bool visible )
     if ( visible ) {
         if ( !isVisible() ) {
             if ( childIdx < 0 ) {
-                // rozpoczyna≥ jako niewidoczny
+                // rozpoczyna≈Ç jako niewidoczny
                 parent->addChild(camera);
             } else {
-                // wczeúniej wy≥πczyliúmy
+                // wcze≈õniej wy≈ÇƒÖczyli≈õmy
                 if ( parent->asSwitch() ) {
                     parent->asSwitch()->setValue(childIdx, true);
                 } else {

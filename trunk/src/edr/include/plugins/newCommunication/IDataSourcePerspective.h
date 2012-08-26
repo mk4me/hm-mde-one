@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/16
     created:  16:2:2012   13:47
     filename: IDataSourcePerspective.h
@@ -27,27 +27,27 @@ public:
     virtual ~IDataSourcePerspective() {}
 	//! Nazwa perspektywy
     virtual const std::string name() const = 0;
-	//! \param treeWidget Drzewo danych dla którego budujemy perspektywê
-	//! \param shallowCopy P³ytka kopia danych dla której generujemy perspektywê
+	//! \param treeWidget Drzewo danych dla ktÃ³rego budujemy perspektywÄ™
+	//! \param shallowCopy PÅ‚ytka kopia danych dla ktÃ³rej generujemy perspektywÄ™
     virtual void rebuildPerspective(QTreeWidget * treeWidget, const ShallowCopy & shallowCopy) = 0;
 
-	//! Pusta implementacja funkcjonalnoœci contentu - perspektywa mo¿e generowaæ w³asne itemy-agregaty danych o których content nic nie wie
+	//! Pusta implementacja funkcjonalnoÅ›ci contentu - perspektywa moÅ¼e generowaÄ‡ wÅ‚asne itemy-agregaty danych o ktÃ³rych content nic nie wie
 
-	//! \param item Element który wype³niamy zawartoœci¹
-	//! \param shallowCopy P³ytka kopia na bazie której wype³niamy item
-	//! \return Czy wype³nilismy item
+	//! \param item Element ktÃ³ry wypeÅ‚niamy zawartoÅ›ciÄ…
+	//! \param shallowCopy PÅ‚ytka kopia na bazie ktÃ³rej wypeÅ‚niamy item
+	//! \return Czy wypeÅ‚nilismy item
 	virtual bool fillContent(QTreeWidgetItem * item, const communication::ShallowCopy & shallowCopy) const { return false; }
-	//! \param item Element dla którego chcemy pobraæ nag³ówek
-	//! \param headers [out] Nag³owek dla zadanego elementu
-	//! \return Czy wype³nilismy nag³ówek
+	//! \param item Element dla ktÃ³rego chcemy pobraÄ‡ nagÅ‚Ã³wek
+	//! \param headers [out] NagÅ‚owek dla zadanego elementu
+	//! \return Czy wypeÅ‚nilismy nagÅ‚Ã³wek
 	virtual bool headers(const QTreeWidgetItem * item, QStringList & headers) const { return false; }
-	//! \param item Element dla którego chcemy pobraæ pole w którym zamieœcimy jego status
+	//! \param item Element dla ktÃ³rego chcemy pobraÄ‡ pole w ktÃ³rym zamieÅ›cimy jego status
 	//! \reuturn Numer pola ze statusem
 	virtual int statusField(const QTreeWidgetItem * item) const { return -1; }
-	//! \param item Element dla którego chcemy pobraæ pole w którym zamieœcimy info o aktualnym pobieraniu
+	//! \param item Element dla ktÃ³rego chcemy pobraÄ‡ pole w ktÃ³rym zamieÅ›cimy info o aktualnym pobieraniu
 	//! \reuturn Numer pola z info o pobieraniu
 	virtual int downloadField(const QTreeWidgetItem * item) const { return -1; }
-	//! Czyœcimy dane contentu (np. bo zmieniamy perspektywê)
+	//! CzyÅ›cimy dane contentu (np. bo zmieniamy perspektywÄ™)
 	virtual void release() {}
 };
 

@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+﻿#include "hmmPCH.h"
 #include "TreeItemHelper.h"
 #include "VisualizerManager.h"
 #include <plugins/newChart/INewChartVisualizer.h>
@@ -313,7 +313,7 @@ void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString&
 {
     createSeries(visualizer, path, series);
 
-	//filtrujemy serie -> przechodza tylko te r�ne od nullptr
+	//filtrujemy serie -> przechodza tylko te różne od nullptr
 	auto it = series.begin();
 	while(it != series.end()){
 		if(*it == nullptr){

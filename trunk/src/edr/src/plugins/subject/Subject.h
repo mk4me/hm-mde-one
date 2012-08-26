@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/07/14
 	created:	14:7:2011   9:34
 	filename: 	Subject.h
@@ -14,7 +14,7 @@
 
 class SubjectService;
 
-//! Reprezentacja subjecta. Z jednym subjectem zwi¹zane s¹ sytemy (np. miesniowy, szkieletowy) oraz jeden ruch (motion)
+//! Reprezentacja subjecta. Z jednym subjectem zwiÄ…zane sÄ… sytemy (np. miesniowy, szkieletowy) oraz jeden ruch (motion)
 class Subject : public PluginSubject::ISubject
 {
     friend class SubjectService;

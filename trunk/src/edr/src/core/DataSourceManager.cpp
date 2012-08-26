@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include <QtGui/QMessageBox>
 #include "DataSourceManager.h"
 
@@ -14,7 +14,7 @@ DataSourceManager::DataSourceManager()
 
 DataSourceManager::~DataSourceManager()
 {
-    UTILS_ASSERT(dataSources.empty(), "Wszystkie Ÿród³a powinny byæ zniszczone.");
+    UTILS_ASSERT(dataSources.empty(), "Wszystkie ÅºrÃ³dÅ‚a powinny byÄ‡ zniszczone.");
 }
 
 IDataSourceConstPtr DataSourceManager::getPrototype( UniqueID id ) const
@@ -57,7 +57,7 @@ DataSourcePtr DataSourceManager::createDataSource( const IDataSourceConstPtr& pr
         }
     }
 
-    //test czy jakieœ dane wyjsciowe dostêpne
+    //test czy jakieÅ› dane wyjsciowe dostÄ™pne
     std::vector<core::IOutputDescription::OutputInfo> output;
     src->getOutputInfo(output);
 

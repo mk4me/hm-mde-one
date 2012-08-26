@@ -1,6 +1,6 @@
-/**
+Ôªø/**
 @author Marek Daniluk
-@brief Klasa WsdlConnection implementuje technologiÍ WSDL przy pomocy biblioteki wsdlpull.
+@brief Klasa WsdlConnection implementuje technologiƒô WSDL przy pomocy biblioteki wsdlpull.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_WSDL_WSDLPULL_H__
@@ -14,15 +14,15 @@ namespace communication
     {
     protected:
         /**
-        Pole klasy przechowujπce nazwÍ uøytkownika.
+        Pole klasy przechowujƒÖce nazwƒô u≈ºytkownika.
         */
         std::string usr;
         /**
-        Pole klasy przechowujπce has≥o uøytkownika.
+        Pole klasy przechowujƒÖce has≈Ço u≈ºytkownika.
         */
         std::string pswd;
         /**
-        Pole klasy przechowujπce URI do definicji operacji.
+        Pole klasy przechowujƒÖce URI do definicji operacji.
         */
         std::string uri;
 
@@ -31,7 +31,7 @@ namespace communication
         */
         core::shared_ptr<WsdlPull::WsdlInvoker> invoker;
         /**
-        Metoda konfigurujπca obiekt invoker przed wykonaniem operacji web serwisowych.
+        Metoda konfigurujƒÖca obiekt invoker przed wykonaniem operacji web serwisowych.
         */
         void initializeInvoker();
     public:
@@ -42,8 +42,8 @@ namespace communication
         /**
         Konstruktor klasy WsdlConnection.
         @param uri URI do dokumentu definicji operacji sieciowych
-        @param usr nazwa uøytkownika
-        @param pswd has≥o uøytkownika
+        @param usr nazwa u≈ºytkownika
+        @param pswd has≈Ço u≈ºytkownika
         */
         WsdlConnection(const std::string& uri, const std::string& usr, const std::string& pswd/*, bool verifyPeer = false, const std::string & caPath = std::string(), WsdlPull::WsdlInvoker::HostVerification verifyHost = WsdlPull::WsdlInvoker::CNAny*/);
         /**
@@ -58,62 +58,62 @@ namespace communication
 
         //void setSecurity(bool verifyPeer, const std::string & caPath, WsdlPull::WsdlInvoker::HostVerification verifyHost);
         /**
-        Metoda setUser ustala nazwÍ uøytkownika wykorzystywana do logowania.
-        @param usr nazwa uøytkownika
+        Metoda setUser ustala nazwƒô u≈ºytkownika wykorzystywana do logowania.
+        @param usr nazwa u≈ºytkownika
         */
         virtual void setUser(const std::string& usr);
         /**
-        Metoda setPassword ustala has≥o uøytkownika wykorzystywane do logowania.
-        @param pswd has≥o uøytkownika 
+        Metoda setPassword ustala has≈Ço u≈ºytkownika wykorzystywane do logowania.
+        @param pswd has≈Ço u≈ºytkownika 
         */
         virtual void setPassword(const std::string& pswd);
         /**
-        Metoda setCredentials ustala dane uøytkownika wykorzystywane do logowania takie jak host,
-        nazwa i has≥o uøytkownika.
+        Metoda setCredentials ustala dane u≈ºytkownika wykorzystywane do logowania takie jak host,
+        nazwa i has≈Ço u≈ºytkownika.
         @param uri adres zasobu
-        @param usr nazwa uøytkownika
-        @param pswd has≥o uøytkownika
+        @param usr nazwa u≈ºytkownika
+        @param pswd has≈Ço u≈ºytkownika
         */
         virtual void setCredentials(const std::string& uri, const std::string& usr, const std::string& pswd);
         /**
-        Metoda zwraca nazwÍ hosta lub adres ip (w zaleznosci co zostalo podane) uzywana dla danego polaczenia.
+        Metoda zwraca nazwƒô hosta lub adres ip (w zaleznosci co zostalo podane) uzywana dla danego polaczenia.
         @return URI do definicji operacji sieciowych
         */
         virtual const std::string& getUri() const;
         /**
-        Metoda zwraca login uøytkownika uøywany dla danego po≥πczenia.
-        @return login uøytkownika
+        Metoda zwraca login u≈ºytkownika u≈ºywany dla danego po≈ÇƒÖczenia.
+        @return login u≈ºytkownika
         */
         virtual const std::string& getUser() const;
         /**
-        Metoda zwraca has≥o uøytkownika uøywane dla danego po≥πczenia.
-        @return has≥o uøytkownika
+        Metoda zwraca has≈Ço u≈ºytkownika u≈ºywane dla danego po≈ÇƒÖczenia.
+        @return has≈Ço u≈ºytkownika
         */
         virtual const std::string& getPassword() const;
         /**
-        Metoda ustala operacje web serwisowπ jaka ma zostaÊ wykonana.
-        @param name nazwa operacji ktÛra ma zostaÊ wykonana
+        Metoda ustala operacje web serwisowƒÖ jaka ma zostaƒá wykonana.
+        @param name nazwa operacji kt√≥ra ma zostaƒá wykonana
         */
         void setOperation(const std::string& name);
         /**
-        Metoda podaje wartoúÊ parametru operacji.
+        Metoda podaje warto≈õƒá parametru operacji.
         @param param nazwa parametru operacji
-        @param value wartoúÊ parametru operacji
+        @param value warto≈õƒá parametru operacji
         */
         void setValue(const std::string& param, const std::string& value);
         /**
-        Metoda wywo≥uje operacje web serwisowπ.
+        Metoda wywo≈Çuje operacje web serwisowƒÖ.
         */
         void invokeOperation();
         /**
-        Metoda zwraca odpowiedü serwera w formie XML.
-        @return odpowiedü serwera na operacje w formie XML
+        Metoda zwraca odpowied≈∫ serwera w formie XML.
+        @return odpowied≈∫ serwera na operacje w formie XML
         */
         std::string getXMLResponse();
         /**
-        Metoda zamieniajπca liczbÍ na string
+        Metoda zamieniajƒÖca liczbƒô na string
         @param value liczba do zamiany na string
-        @return wartoúÊ value zapisana jako string
+        @return warto≈õƒá value zapisana jako string
         */
         template <typename T> static std::string toString(T& value) 
         {

@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:  2010/10/06
 	created:  6:10:2010   15:36
 	filename: VideoWidgetQt.h
@@ -21,7 +21,7 @@ class VideoWidgetQt : public QWidget, public Ui::VideoWidgetQt
 private:
     //! Strumienie video.
     std::vector<video::VideoStream*> streams;
-    //! Bitmapki na grafik� ze strumeni.
+    //! Bitmapki na grafikę ze strumeni.
     std::vector<QImage*> images;
     //! Bufory na dane ze srumieni.
     std::vector<video::Picture> buffers;

@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include "VidLibPrivate.h"
 #include <vidlib/FileSequenceVideoStream.h>
 
@@ -16,7 +16,7 @@ namespace vidlib
         if ( loader ) {
             delete loader;
         }
-        // loader powinien sam zwolniæ pamiêæ
+        // loader powinien sam zwolniÄ‡ pamiÄ™Ä‡
         // frame.free();
     }
 
@@ -28,10 +28,10 @@ namespace vidlib
         if ( files.empty() ) {
             VIDLIB_ERROR(VideoError("files.empty()"));
         }
-        // kopiujemy nazwy plików
+        // kopiujemy nazwy plikÃ³w
         this->files.assign(files.begin(), files.end());
 
-        // wczytanie pierwszej ramki i okreœlenie w³asnoœci strumienia
+        // wczytanie pierwszej ramki i okreÅ›lenie wÅ‚asnoÅ›ci strumienia
         currentFrame = 0;
         wantedTime = 0;
         if (!loader->readImage(*files.begin(), frame)) {
@@ -53,7 +53,7 @@ namespace vidlib
 
     double FileSequenceVideoStream::getNextFrameTimestamp() const
     {
-        // TODO: byæ mo¿e trzeba bêdzie poprawiæ
+        // TODO: byÄ‡ moÅ¼e trzeba bÄ™dzie poprawiÄ‡
         UTILS_ASSERT(!files.empty());
         return (currentFrame < 0 || currentFrame >= int(files.size()-1)) ? INVALID_TIMESTAMP : (currentFrame+1) * getFrameDuration();
     }
@@ -72,7 +72,7 @@ namespace vidlib
 
         int requiredFrame = static_cast<int>(time * getFramerate());
         if ( requiredFrame == currentFrame ) {
-            // nic nie trzeba robiæ
+            // nic nie trzeba robiÄ‡
             return true;
         } else {
             UTILS_ASSERT(requiredFrame <= int(files.size()));
@@ -88,7 +88,7 @@ namespace vidlib
                     newFrame.dataWidth != frame.dataWidth || newFrame.dataHeight != frame.dataHeight) {
                         VIDLIB_ERROR(VideoError(std::string("Picture loaded from ") + path + " differs from stream format."));
                 }
-                // wszystko siê uda³o
+                // wszystko siÄ™ udaÅ‚o
                 wantedTime = time;
                 currentFrame = requiredFrame;
                 frame = newFrame;

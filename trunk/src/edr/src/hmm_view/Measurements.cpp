@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+ï»¿#include "hmmPCH.h"
 #include <iostream>
 #include <tinyxml.h>
 #include "Measurements.h"
@@ -15,11 +15,11 @@ void MeasurementsParser::parse( const std::string& filename )
     TiXmlDocument doc(filename);
     bool loadOkay = doc.LoadFile();
     TiXmlElement* rootElement = nullptr;
-    // jeœli plik jest plikiem *xml ...
+    // jeÅ›li plik jest plikiem *xml ...
     if (loadOkay) {
         TiXmlElement* docElement = doc.FirstChildElement();
         while (docElement) {
-            // szukanie g³ównego elementu - "MeasurementConfs"
+            // szukanie gÅ‚Ã³wnego elementu - "MeasurementConfs"
             if (strcmp(docElement->Value(), "MeasurementConfs") == 0) {
                 rootElement = docElement;
                 break;
@@ -27,11 +27,11 @@ void MeasurementsParser::parse( const std::string& filename )
             docElement = docElement->NextSiblingElement();
         }
     } else {
-        // oczyt nie udal siê z jakiegoœ powodu
+        // oczyt nie udal siÄ™ z jakiegoÅ› powodu
         throw std::runtime_error(std::string("Unable to load : ") + filename);
     }
 
-    // jeœli plik zawiera odpowiedni korzen (root)
+    // jeÅ›li plik zawiera odpowiedni korzen (root)
     if (rootElement) {
         for (TiXmlElement* element = rootElement->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
             if (element && strcmp(element->Value(), "MeasurementConf") == 0) {

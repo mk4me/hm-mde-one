@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/22
     created:  22:4:2011   10:05
     filename: Push.h
@@ -12,15 +12,15 @@
 namespace utils 
 {
     /**
-     *	U¿ytkowa klasa, u¿ywana tam, gdzie mêcz¹ca jest zmiana wartoœci jakiejœ zmiennej
-     *  a nastêpnie rêczne jej przywracanie; jest to uci¹¿liwe zw³aszcza gdy funkcja ma
-     *  wiele punktów wyjœcia.
+     *	UÅ¼ytkowa klasa, uÅ¼ywana tam, gdzie mÄ™czÄ…ca jest zmiana wartoÅ›ci jakiejÅ› zmiennej
+     *  a nastÄ™pnie rÄ™czne jej przywracanie; jest to uciÄ…Å¼liwe zwÅ‚aszcza gdy funkcja ma
+     *  wiele punktÃ³w wyjÅ›cia.
      */
     template <class T>
     class Push
     {
     private:
-        //! Poprzednia wartoœæ.
+        //! Poprzednia wartoÅ›Ä‡.
         T oldValue;
         //! Zmienna.
         T& variable;
@@ -43,10 +43,10 @@ namespace utils
             variable = oldValue;
         }
     private:
-        //! Ukrycie konstruktora kopiuj¹cego.
+        //! Ukrycie konstruktora kopiujÄ…cego.
         Push(const Push& push);
         /**
-         *	Prze³adowania operatorów new-delete. Prywatne, aby niemo¿liwe by³o
+         *	PrzeÅ‚adowania operatorÃ³w new-delete. Prywatne, aby niemoÅ¼liwe byÅ‚o
          *  tworzenie instancji typu na stercie.
          */     
         void *operator new(size_t bytes);

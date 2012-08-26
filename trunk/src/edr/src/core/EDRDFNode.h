@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/05/20
     created:  20:5:2011   11:43
     filename: EDRDFNode.h
@@ -21,7 +21,7 @@ public:
 
     const WorkflowItemPtr & getWorkflowItem() const;
 
-    //! Metoda pozwalaj¹ca podpi¹æ metody konfiguracji wêz³a
+    //! Metoda pozwalajÄ…ca podpiÄ…Ä‡ metody konfiguracji wÄ™zÅ‚a
     virtual void configure();
 
     virtual void reset();
@@ -31,7 +31,7 @@ protected:
     //! Inicjalizacja do implementacji przez klienta
     virtual void doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder);
 
-    //! Przetwarza dane w³aœciwe
+    //! Przetwarza dane wÅ‚aÅ›ciwe
     virtual void processData();
 
 private:

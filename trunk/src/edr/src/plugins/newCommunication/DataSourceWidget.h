@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/03/09
     created:  9:3:2012   11:06
     filename: DataSourceWidget.h
@@ -63,19 +63,19 @@ class DataSourceWidget : public QTabWidget, private Ui::DataSourceWidget, privat
 
 private:
 
-	//! Obiekt ≥apiπcy klawisz ENTER w oknie logowania i wyzwalajπcy logowanie/wylogowywanie
+	//! Obiekt ≈ÇapiƒÖcy klawisz ENTER w oknie logowania i wyzwalajƒÖcy logowanie/wylogowywanie
 	class LoginEventFilter : public QObject
 	{
 	public:
 		//! Konstruktor
-		//! \param sourceWidget Widget obs≥ugujπcy ürÛd≥o, przez ktÛy loguje/wylogowuje
+		//! \param sourceWidget Widget obs≈ÇugujƒÖcy ≈∫r√≥d≈Ço, przez kt√≥y loguje/wylogowuje
 		//! \param parent Rodzic tego obiektu
 		LoginEventFilter(DataSourceWidget * sourceWidget, QObject *parent = nullptr);
 
 		virtual bool eventFilter(QObject * watched, QEvent * event);
 
 	private:
-		//! Widget obs≥ugujπcy ürÛd≥o danych
+		//! Widget obs≈ÇugujƒÖcy ≈∫r√≥d≈Ço danych
 		DataSourceWidget * sourceWidget;
 	};
 
@@ -97,12 +97,12 @@ public slots:
 	
 private slots:
 
-	//! Zmieniamy metode dzia≥ania - online lub offline
+	//! Zmieniamy metode dzia≈Çania - online lub offline
 	void connectionModeChanged();
 
-    //! odúwieøa status danych
+    //! od≈õwie≈ºa status danych
     void refreshStatus();
-    //! Odúwieøa status po úciπganiu danych
+    //! Od≈õwie≈ºa status po ≈õciƒÖganiu danych
     void refreshStatusAfterDownload();
 
     //! Zimana aktualnego filtra
@@ -111,7 +111,7 @@ private slots:
     void onFilterEdit();
     //! Dodanie filtra
     void onFilterAdd();
-    //! UsunuÍcie filtra
+    //! Usunuƒôcie filtra
     void onFilterRemove();
 
     void onLogin();
@@ -121,7 +121,7 @@ private slots:
 
     //! Zmiana perspektywy
     void onPerspectiveChange(int idx);
-    //! Zmiana profilu zawartoúci
+    //! Zmiana profilu zawarto≈õci
     void onContentChange(int idx);
 
     void perspectiveContextMenu(const QPoint & pos);
@@ -136,11 +136,11 @@ private slots:
     void onLoad();
 	void onUnload();
 
-    //! Wywo≥ywany po stronie wπtku UI update
+    //! Wywo≈Çywany po stronie wƒÖtku UI update
     void onUpdateDownloadRequest();
-    //! PrÛba schowania widgeta
+    //! Pr√≥ba schowania widgeta
     void tryHideStatusWidget();
-    //! Odúwieøa progress pobierania
+    //! Od≈õwie≈ºa progress pobierania
     void refreshDownloadProgress();
 
     void onPerspectiveSelectionChanged();
@@ -175,7 +175,7 @@ private:
 	void unloadSubjectHierarchy();
 
     void refreshStatus(const std::set<int> & filesIDs);
-    //! Odúwieøa zawartoúÊ aktualnej perspektywy dla aktualnego contentu - g≥Ûwnie dla statusÛw
+    //! Od≈õwie≈ºa zawarto≈õƒá aktualnej perspektywy dla aktualnego contentu - g≈Ç√≥wnie dla status√≥w
     void refreshCurrentPerspectiveContent();
 
     static void getItemsFiles(QTreeWidgetItem * item, std::set<int> & filesIDs, const communication::ShallowCopy & shallowCopy);
@@ -208,7 +208,7 @@ private:
     void processDataDownload(QTreeWidgetItem * item, const CommunicationDataSource::DownloadRequestPtr & request);
     void processDownload(const CommunicationDataSource::DownloadRequestPtr & request);
 
-    //! \param reqest Pobieranie ktÛrego dotyczy update
+    //! \param reqest Pobieranie kt√≥rego dotyczy update
     virtual void update(const communication::IDownloadRequest * request);
 
     //! Resetuje stan widgeta - status pobierania
@@ -220,30 +220,30 @@ private:
 	void addPatientObject(const webservices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID);
 
 private:
-	//! Event filter do obs≥ugi ENTER przy logowaniu/wylogownaiu
+	//! Event filter do obs≈Çugi ENTER przy logowaniu/wylogownaiu
 	LoginEventFilter * loginEventFilter;
 
     //! Aktualnie ustawiony content perspektyw
     std::map<QTreeWidget*, int> perspectivesContent;
 
-    //! Przefiltrowana p≥ytka kopia bazy danych
+    //! Przefiltrowana p≈Çytka kopia bazy danych
     communication::ShallowCopy filteredShallowCopy;
 
-    //! Manager statusÛw przefiltrowanej p≥ytkiej kopi
+    //! Manager status√≥w przefiltrowanej p≈Çytkiej kopi
     core::shared_ptr<DataSourceStatusManager> filteredShallowCopyStatus;
 
     //! Manager karty pacjenta
     PatientCardManager patientCardManager;
 
-    //! Manager filtrÛw danych
+    //! Manager filtr√≥w danych
     DataSourceFilterManager filterManager;
 
-    //! Manager filtrÛw danych
+    //! Manager filtr√≥w danych
     DataSourcePerspectiveManager perspectiveManager;
 
     QTreeWidgetItem * currentPerspectiveItem;
 
-    //Manager zawartoúci
+    //Manager zawarto≈õci
     DataSourceContentManager contentManager;
 
     CommunicationDataSource * dataSource;
@@ -251,37 +251,37 @@ private:
 
     //! Aktualne pobieranie
     CommunicationDataSource::DownloadRequestPtr currentDownloadRequest;
-    //! Request do synchronizacji p≥ytkiej kopii
+    //! Request do synchronizacji p≈Çytkiej kopii
     CommunicationDataSource::DownloadRequestPtr shallowCopyRequest;	
 
     std::map<void*, CommunicationDataSource::DownloadRequestPtr> registeredRequests;
 
-    //! Timer do odúwieøania statusu pobierania
+    //! Timer do od≈õwie≈ºania statusu pobierania
     QTimer downloadRefreshTimer;
 
-    //! Pliki úciπgniÍte dla danego requesta - bÍda potem ≥adowane do localStorage
+    //! Pliki ≈õciƒÖgniƒôte dla danego requesta - bƒôda potem ≈Çadowane do localStorage
     std::vector<std::string> downloadedFiles;
 
     //! Czy pobieranie przerwane
     bool downloadCanceled;
-    //! Czy pobieranie zakoÒczy≥o siÍ niepowodzeniem
+    //! Czy pobieranie zako≈Ñczy≈Ço siƒô niepowodzeniem
     bool downloadCrashed;
     //! Informacja o niepowodzeniu
     QString downloadError;
 
     core::shared_ptr<LocalDataLoader> localDataLoader;
 
-    //! Pliki zaangaøowane w operacje uøytkownika - úciπgnij / ≥aduj / wy≥aduj
+    //! Pliki zaanga≈ºowane w operacje u≈ºytkownika - ≈õciƒÖgnij / ≈Çaduj / wy≈Çaduj
     //! Wyznaczmy je przy realizacji menu kontekstowego
-    //! Potem muszπ zostaÊ zresetowane!!
-    //! Pliki do za≥adowania
+    //! Potem muszƒÖ zostaƒá zresetowane!!
+    //! Pliki do za≈Çadowania
     std::set<int> filesToLoad;
-    //! Pliki do wy≥adowania - EXPEREIMENTAL!!
+    //! Pliki do wy≈Çadowania - EXPEREIMENTAL!!
     std::set<int> filesToUnload;
-    //! Pliki do úciπgniÍcia
+    //! Pliki do ≈õciƒÖgniƒôcia
     std::set<int> filesToDownload;
 
-	//! Pliki aktualnie za≥adowane do DM
+	//! Pliki aktualnie za≈Çadowane do DM
 	std::set<int> filesLoadedToDM;
 
 	//! ------------ Logika danych w DM (ObjectWrappers) ----------------

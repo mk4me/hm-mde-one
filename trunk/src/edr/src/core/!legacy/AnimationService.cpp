@@ -1,4 +1,4 @@
-#include "AnimationService.h"
+ï»¿#include "AnimationService.h"
 
 #include <iostream>
 #include <osgViewer/Scene>
@@ -371,7 +371,7 @@ void AnimationService::UpdateMesh()
                     int boneID = vertice->bones[b].boneID;
                     if(m_pActualBones[boneID].hasChild)
                     {
-                        boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
+                        boneID++;  // rotacje bierzemy z dziecka. Z konca koÅ›ci ktÃ³ra jest poczÄ…tkiem nastÄ™pnej.
                     }
 
                     _tempVectors[b][POSITION] =	m_pActualBones[boneID].rotation 

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/10/21
 	created:	21:10:2011   11:09
 	filename: 	AnalisisWidget.h
@@ -16,7 +16,7 @@
 
 class AnalisisTreeWidget;
 
-//! Klasa jest odpowiedzialna za widok zak³adki analiz
+//! Klasa jest odpowiedzialna za widok zakÅ‚adki analiz
 class AnalisisWidget : public QWidget, public Ui::AnalisisWidget
 {
     Q_OBJECT;
@@ -24,7 +24,7 @@ public:
     //! Konstruktor
     //! \param parent rodzic widgeta
     //! \param hmm obiekt widoku HMM 
-    //! \param margin margines dla filtrów
+    //! \param margin margines dla filtrÃ³w
     //! \param flags flagi Qt
     AnalisisWidget(QWidget* parent, HmmMainWindow* hmm, int margin = 2, Qt::WindowFlags flags = 0);
 	virtual ~AnalisisWidget() {}
@@ -32,7 +32,7 @@ public:
 public:
     //! \return drzewo danych
     QTreeWidget* getTreeWidget();
-    //! \return widget przechowuj¹cy miniaturki do raportów
+    //! \return widget przechowujÄ…cy miniaturki do raportÃ³w
     QWidget* getRaportsThumbnailList();
     //! dodaje widget z filtrami
     //! \param filter dodawany widget
@@ -41,32 +41,32 @@ public:
     QWidget* getArea() { return analisisArea; }
 
 private slots:
-    //! zmienia widocznoœæ filtrów
+    //! zmienia widocznoÅ›Ä‡ filtrÃ³w
     //! \param expand chowa/pokazuje filtry
     void setFiltersExpanded(bool expand);
-    //! klikniêto w filtr
-    //! \param filter klikniêty
+    //! klikniÄ™to w filtr
+    //! \param filter klikniÄ™ty
     void filterClicked(FilterEntryWidget* filter);
-    //! Klikniêto zatwierdŸ w graficznym konfiguratorze
+    //! KlikniÄ™to zatwierdÅº w graficznym konfiguratorze
     void applyClicked();
-    //! proste przejœcie do pierwszej zak³adki (z drzewem danych)
+    //! proste przejÅ›cie do pierwszej zakÅ‚adki (z drzewem danych)
     void switchToFirstTab();
     //! odtwarza drzewo danych 
-    //! \param currentFilter filtr, na podstawie którego odtworzone zostanie drzewo
+    //! \param currentFilter filtr, na podstawie ktÃ³rego odtworzone zostanie drzewo
     void recreateTree(FilterEntryWidget* currentFilter);
 
 private:
-    //! szerokoœæ filtru w zak³adce
+    //! szerokoÅ›Ä‡ filtru w zakÅ‚adce
     int filterWidth;
-    //! wysokoœæ filtru w zak³adce
+    //! wysokoÅ›Ä‡ filtru w zakÅ‚adce
     int filterHeight;
-    //! margines dla filtrów w zak³adce
+    //! margines dla filtrÃ³w w zakÅ‚adce
     int margin;
     //! drzewo danych
     AnalisisTreeWidget* treeWidget;
     //! widok HMM
     HmmMainWindow* hmm;
-    //TODO potrzebne tylko, aby przekazac info miêdzy elementami.
+    //TODO potrzebne tylko, aby przekazac info miÄ™dzy elementami.
     FilterEntryWidget* currentFilter;
 };
 

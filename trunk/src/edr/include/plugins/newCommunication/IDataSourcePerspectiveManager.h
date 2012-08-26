@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
     created:  2012/03/14
     created:  14:3:2012   16:57
     filename: IDataSourcePerspectiveManager.h
@@ -26,7 +26,7 @@ public:
 
 	//! \param perspective Perspektywa do zarejestrowania
 	virtual int registerPerspective(IDataSourcePerspective * perspective) = 0;
-	//! \return ilo�c zarejestrowanych perspektyw
+	//! \return ilośc zarejestrowanych perspektyw
 	virtual int perspectivesCount() const = 0;
 	//! \param idx Index aktualnej perspektywy
 	virtual void setCurrentPerspective(int idx) = 0;

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/11/22
 	created:	22:11:2011   12:30
 	filename: 	NewChartMarker.h
@@ -12,34 +12,34 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
-//! Marker pokazuj¹cy aktualny czas i wartoœæ krzywej
-//! Wykorzystuje ju¿ istniej¹cy obiekt z Qwt
-//! Dodatkowo wprowadza opóŸnienie przesuwania
+//! Marker pokazujÄ…cy aktualny czas i wartoÅ›Ä‡ krzywej
+//! Wykorzystuje juÅ¼ istniejÄ…cy obiekt z Qwt
+//! Dodatkowo wprowadza opÃ³Åºnienie przesuwania
 class NewChartMarker : public QwtPlotMarker
 {
 public:
-    //! konstruktor z podpiêtymi danymi
+    //! konstruktor z podpiÄ™tymi danymi
     explicit NewChartMarker(ScalarChannelReaderInterfaceConstPtr reader);
     explicit NewChartMarker();
 	virtual ~NewChartMarker() {}
 
 protected:
-    //! dziedziczona z QwtPlotMarker. Odrysowanie liniii wskazuj¹cych punkt
+    //! dziedziczona z QwtPlotMarker. Odrysowanie liniii wskazujÄ…cych punkt
     virtual void drawLines( QPainter *, const QRectF &, const QPointF & ) const;
     //! dziedziczona z QwtPlotMarker. Odrysowanie etykiety
     virtual void drawLabel( QPainter *, const QRectF &, const QPointF & ) const;
 
 public:
-    //! rysuje punkt o okreœlonym rozmiarze
+    //! rysuje punkt o okreÅ›lonym rozmiarze
     static void drawDot( QPainter * painter, const QPointF & point, int size = 5 );
-    //! resetuje 'ped'. Pozycja etykiety wynika z punktu i przesuniêcia
+    //! resetuje 'ped'. Pozycja etykiety wynika z punktu i przesuniÄ™cia
     void resetMomentum() const { positionSet = false; }
-    //! ustawia wspoczynniki opóŸnienia
-    //! \param x wspó³czynnik poziomy
-    //! \param y wspó³czynnik pionowy
+    //! ustawia wspoczynniki opÃ³Åºnienia
+    //! \param x wspÃ³Å‚czynnik poziomy
+    //! \param y wspÃ³Å‚czynnik pionowy
     void setLerpRatios(float x, float y) { lerpX = x; lerpY = y; }
-    //! ustawia jednolity wspó³czynnik opóŸnienia
-    //! \param lerp wspó³czynnik dla pionu i poziomu
+    //! ustawia jednolity wspÃ³Å‚czynnik opÃ³Åºnienia
+    //! \param lerp wspÃ³Å‚czynnik dla pionu i poziomu
     void setLerpRatios(float lerp) { lerpX = lerp; lerpY = lerp; }
 
 private:
@@ -47,11 +47,11 @@ private:
     ScalarChannelReaderInterfaceConstPtr reader;
     //! aktualna pozycja etykiety
     mutable QPointF position;
-    //! umo¿liwia opoznione ustawienie pozycji
+    //! umoÅ¼liwia opoznione ustawienie pozycji
     mutable bool positionSet;
-    //! poziomy wspoczynniki opóŸnienia
+    //! poziomy wspoczynniki opÃ³Åºnienia
     float lerpX;
-    //! pionowy wspoczynniki opóŸnienia
+    //! pionowy wspoczynniki opÃ³Åºnienia
     float lerpY;
 };
 typedef core::shared_ptr<NewChartMarker> NewChartMarkerPtr;

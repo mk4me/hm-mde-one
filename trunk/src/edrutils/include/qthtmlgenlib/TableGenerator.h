@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/01
     created:  1:3:2012   9:25
     filename: TableGenerator.h
@@ -19,7 +19,7 @@
 
 namespace htmlGen {
 
-//! Wzorzec klasy z danymi do wyœwietlania - najczêœciej s¹ to ci¹gi znaków: stD::String lub QString
+//! Wzorzec klasy z danymi do wyÅ›wietlania - najczÄ™Å›ciej sÄ… to ciÄ…gi znakÃ³w: stD::String lub QString
 template<class T>
 class DataTable
 {
@@ -29,19 +29,19 @@ public:
     typedef std::vector<T> Row;
     //! Typ wpisu kolumny
     typedef Row Column;
-    //! Zawartoœæ tabeli
+    //! ZawartoÅ›Ä‡ tabeli
     typedef std::vector<Row> TableContent;
 
 public:
-	//! Konstruktor domyœlny
+	//! Konstruktor domyÅ›lny
     DataTable() : rows_(0), columns_(0)
     {
 
     }
 
 	//! Konstruktor
-	//! \param rows Iloœc wierszy tabeli danych
-	//! \param column Iloœæ kolumn tabeli danych
+	//! \param rows IloÅ›c wierszy tabeli danych
+	//! \param column IloÅ›Ä‡ kolumn tabeli danych
     DataTable(int rows, int columns) : rows_(rows), columns_(columns)
     {
         UTILS_ASSERT(rows > 0, "Wrong rows count");
@@ -49,7 +49,7 @@ public:
         rebuildContent();
     }
 
-	//! Konstruktor kopiuj¹cy
+	//! Konstruktor kopiujÄ…cy
 	//! \param htmlTableContent Tabela do skopiowania
     DataTable(const DataTable & htmlTableContent) : rows_(htmlTableContent.rows_), columns_(htmlTableContent.columns_), content_(htmlTableContent.content_)
     {
@@ -59,7 +59,7 @@ public:
 	//! Destruktor
     ~DataTable() {}
 
-	//! \param rows Iloœæ wierszy tabeli
+	//! \param rows IloÅ›Ä‡ wierszy tabeli
     void setRows(int rows)
     {
         UTILS_ASSERT(rows > 0, "Wrong rows count");
@@ -67,7 +67,7 @@ public:
         rebuildContent();
     }
 
-	//! \param columns Iloœæ kolumn tabeli
+	//! \param columns IloÅ›Ä‡ kolumn tabeli
     void setColumns(int columns)
     {
         UTILS_ASSERT(columns > 0, "Wrong columns count");
@@ -77,8 +77,8 @@ public:
         }
     }
 
-	//! \param rows Iloœæ wierszy tabeli
-	//! \param columns Iloœæ kolumn tabeli
+	//! \param rows IloÅ›Ä‡ wierszy tabeli
+	//! \param columns IloÅ›Ä‡ kolumn tabeli
     void setDimensions(int rows, int columns)
     {
         UTILS_ASSERT(rows > 0, "Wrong rows count");
@@ -90,27 +90,27 @@ public:
         rebuildContent();
     }
 
-	//! \return Iloœæ wierszy tabeli
+	//! \return IloÅ›Ä‡ wierszy tabeli
     int rows() const
     {
         return rows_;
     }
-	//! \return Iloœæ kolumn tabeli
+	//! \return IloÅ›Ä‡ kolumn tabeli
     int columns() const
     {
         return columns_;
     }
 
-	//! \param row Wiersz który ustawiamy
-	//! \param rowContent Zawartoœæ wiersza któr¹ ustawiamy
+	//! \param row Wiersz ktÃ³ry ustawiamy
+	//! \param rowContent ZawartoÅ›Ä‡ wiersza ktÃ³rÄ… ustawiamy
     void setRow(int row, const Row & rowContent)
     {
         UTILS_DEBUG(row >= 0 && row < rows_, "Row out of range");
         int columnsToCopy = std::max(columns_, rowContent.size());
         std::copy(rowContent.begin(), rowContent.begin() + columnsToCopy, content_[row].begin());
     }
-	//! \param column Kolumna który ustawiamy
-	//! \param columnContent Zawartoœæ kolumny któr¹ ustawiamy
+	//! \param column Kolumna ktÃ³ry ustawiamy
+	//! \param columnContent ZawartoÅ›Ä‡ kolumny ktÃ³rÄ… ustawiamy
     void setColumn(int column, const Column & columnContent)
     {
         UTILS_DEBUG(column >= 0 && column < columns_, "Column out of range");
@@ -120,15 +120,15 @@ public:
         }
     }
 
-	//! \param row Wiersz który czyœcimy
-	//! \param val Wartoœæ któr¹ ustawiamy w ca³ym wierszu
+	//! \param row Wiersz ktÃ³ry czyÅ›cimy
+	//! \param val WartoÅ›Ä‡ ktÃ³rÄ… ustawiamy w caÅ‚ym wierszu
     void clearRow(int row, const T & val = T())
     {
         UTILS_DEBUG(row >= 0 && row < rows_, "Row out of range");
         std::fill(content_[row].begin(), content_[row].end(), val);
     }
-	//! \param column Kolumna któr¹ czyœcimy
-	//! \param val Wartoœæ któr¹ ustawiamy w ca³ej kolumnie
+	//! \param column Kolumna ktÃ³rÄ… czyÅ›cimy
+	//! \param val WartoÅ›Ä‡ ktÃ³rÄ… ustawiamy w caÅ‚ej kolumnie
     void clearColumn(int column, const T & val = T())
     {
         UTILS_DEBUG(column >= 0 && column < columns_, "Column out of range");
@@ -139,7 +139,7 @@ public:
 
 	//! \param row Wiersz
 	//! \param column Kolumna
-	//! \return Wartoœæ komórki o zadanych wspó³rzêdnych
+	//! \return WartoÅ›Ä‡ komÃ³rki o zadanych wspÃ³Å‚rzÄ™dnych
     const T & cell(int row, int column) const
     {
         UTILS_ASSERT(row >= 0 && row < rows_, "Row out of range");
@@ -148,7 +148,7 @@ public:
     }
 	//! \param row Wiersz
 	//! \param column Kolumna
-	//! \return Wartoœæ komórki o zadanych wspó³rzêdnych
+	//! \return WartoÅ›Ä‡ komÃ³rki o zadanych wspÃ³Å‚rzÄ™dnych
     T & cell(int row, int column)
     {
         UTILS_ASSERT(row >= 0 && row < rows_, "Row out of range");
@@ -157,7 +157,7 @@ public:
     }
 	//! \param row Wiersz
 	//! \param column Kolumna
-	//! \param cellContent Zawartoœæ komórki do ustawienia
+	//! \param cellContent ZawartoÅ›Ä‡ komÃ³rki do ustawienia
     void setCell(int row, int column, const T & cellContent)
     {
         UTILS_ASSERT(row >= 0 && row < rows_, "Row out of range");
@@ -167,7 +167,7 @@ public:
 
 	//! \param row Wiersz
 	//! \param column Kolumna
-	//! \param val Wartoœæ któr¹ czyœcimy komórke
+	//! \param val WartoÅ›Ä‡ ktÃ³rÄ… czyÅ›cimy komÃ³rke
     void clearCell(int row, int column, const T & val = T())
     {
         UTILS_ASSERT(row >= 0 && row < rows_, "Row out of range");
@@ -176,14 +176,14 @@ public:
     }
 
 	//! \param row Wiersz
-	//! \return Zawartoœæ wiersza
+	//! \return ZawartoÅ›Ä‡ wiersza
     const Row & row(int row) const
     {
         UTILS_ASSERT(row >= 0 && row < rows_, "Row out of range");
         return content_[row];
     }
 	//! \param column Kolumna
-	//! \return Zawartoœæ kolumny
+	//! \return ZawartoÅ›Ä‡ kolumny
     const Column column(int column) const
     {
         UTILS_ASSERT(column >= 0 && column < columns_, "Column out of range");
@@ -195,7 +195,7 @@ public:
 
         return col;
     }
-	//! \return Zawartoœæ tabeli danych
+	//! \return ZawartoÅ›Ä‡ tabeli danych
     const TableContent & content() const
     {
         return content_;
@@ -212,20 +212,20 @@ private:
     }
 
 private:
-    //! Iloœæ wierszy
+    //! IloÅ›Ä‡ wierszy
     int rows_;
-    //! Iloœæ kolumn
+    //! IloÅ›Ä‡ kolumn
     int columns_;
-    //! Zawartoœæ tabeli
+    //! ZawartoÅ›Ä‡ tabeli
     TableContent content_;
 };
 
 typedef DataTable<QString> HtmlDataTableContent;
 
-//! Typ do rozszerzania komórek
+//! Typ do rozszerzania komÃ³rek
 typedef int CellSpan;
 
-//! Typ wyrównania zawartoœci komórek w poziomie
+//! Typ wyrÃ³wnania zawartoÅ›ci komÃ³rek w poziomie
 enum HAlign {
     HALeft,
     HARight,
@@ -233,92 +233,92 @@ enum HAlign {
     HAJustify
 };
 
-//! Typ wyrównania zawartoœci komórek w pionie
+//! Typ wyrÃ³wnania zawartoÅ›ci komÃ³rek w pionie
 enum VAlign {
     VATop,
     VAMiddle,
     VABottom
 };
 
-//! Typ opisuj¹cy rodzaj zadawania wymiarów
+//! Typ opisujÄ…cy rodzaj zadawania wymiarÃ³w
 enum HtmlWidthType {
     WRelative,
     WAbsolute
 };
 
-//! Typ opisuj¹cy wymiary
+//! Typ opisujÄ…cy wymiary
 struct HtmlWidth
 {
 	//! Wymiar
     float width;
-	//! Sposób zadawania wymiaru
+	//! SposÃ³b zadawania wymiaru
     HtmlWidthType type;
 };
 
-//! Lista atrybutów komórki
+//! Lista atrybutÃ³w komÃ³rki
 enum HtmlCellAttribute {
-    CellWidth,      //! Szerokoœæ
-    CellBgColor,    //! Kolor t³a
-    CellColSpan,    //! Na ile komórek w pionie rozszerzamy
-    CellRowSpan,    //! Na ile komórek w poziomie rozszerzamy
-    CellHAlign,     //! Wyrównanie tekstu komórki w poziomie
-    CellVAlign,     //! Wyrównanie tekstu w pionie
+    CellWidth,      //! SzerokoÅ›Ä‡
+    CellBgColor,    //! Kolor tÅ‚a
+    CellColSpan,    //! Na ile komÃ³rek w pionie rozszerzamy
+    CellRowSpan,    //! Na ile komÃ³rek w poziomie rozszerzamy
+    CellHAlign,     //! WyrÃ³wnanie tekstu komÃ³rki w poziomie
+    CellVAlign,     //! WyrÃ³wnanie tekstu w pionie
 };
 
-//! Klasa do zarz¹dzania atrybutami komórek tabeli HTML
+//! Klasa do zarzÄ…dzania atrybutami komÃ³rek tabeli HTML
 class HtmlCellAttributes
 {
 public:
-	//! Konstruktor domyœlny
+	//! Konstruktor domyÅ›lny
     HtmlCellAttributes();
 	//! Destruktor
     ~HtmlCellAttributes();
 
 public:
-	//! \param html [out]Dokument do którego generujemy atrybut w postaci tagów HTML
+	//! \param html [out]Dokument do ktÃ³rego generujemy atrybut w postaci tagÃ³w HTML
     void generateHtmlAttributes(QString & html) const;
 	//! \param width Rozmiar elementu
-	//! \param typ Sposób zadawania rozmiaru
+	//! \param typ SposÃ³b zadawania rozmiaru
     void setWidth(float width, HtmlWidthType type);
-	//! Czyœci atrybut wymiaru
+	//! CzyÅ›ci atrybut wymiaru
     void clearWidth();
-	//! \param bgColor Kolor t³a komórki
+	//! \param bgColor Kolor tÅ‚a komÃ³rki
     void setBgColor(const QString & bgColor);
-	//! Czyœci atrybut koloru t³a
+	//! CzyÅ›ci atrybut koloru tÅ‚a
     void clearBgColor();
-	//! \param colSpan Iloœæ kolumn na które komórka bêdzie rozszerzana
+	//! \param colSpan IloÅ›Ä‡ kolumn na ktÃ³re komÃ³rka bÄ™dzie rozszerzana
     void setColSpan(CellSpan colSpan);
-	//! Czyœci atrybut iloœci kolumn na które komórka bêdzie rozszerzana
+	//! CzyÅ›ci atrybut iloÅ›ci kolumn na ktÃ³re komÃ³rka bÄ™dzie rozszerzana
     void clearColSpan();
-	//! \param rowSpan Iloœæ wierszy na które komórka bêdzie rozszerzana
+	//! \param rowSpan IloÅ›Ä‡ wierszy na ktÃ³re komÃ³rka bÄ™dzie rozszerzana
     void setRowSpan(CellSpan rowSpan);
-	//! Czyœci atrybut iloœci wierszy na które komórka bêdzie rozszerzana
+	//! CzyÅ›ci atrybut iloÅ›ci wierszy na ktÃ³re komÃ³rka bÄ™dzie rozszerzana
     void clearRowSpan();
-	//! \param hAlign Wyrównanie zawartoœci komórki w poziomie
+	//! \param hAlign WyrÃ³wnanie zawartoÅ›ci komÃ³rki w poziomie
     void setHAlign(HAlign hAlign);
-	//! Czyœci atrybut wyrównania zawartoœci komórki w poziomie
+	//! CzyÅ›ci atrybut wyrÃ³wnania zawartoÅ›ci komÃ³rki w poziomie
     void clearHAlign();
-	//! \param vAlign Wyrównanie zawartoœci komórki w pionie
+	//! \param vAlign WyrÃ³wnanie zawartoÅ›ci komÃ³rki w pionie
     void setVAlign(VAlign vAlign);
-	//! Czyœci atrybut wyrównania zawartoœci komórki w pionie
+	//! CzyÅ›ci atrybut wyrÃ³wnania zawartoÅ›ci komÃ³rki w pionie
     void clearVAlign();
 
 private:
-	//! Mapa atrubutów
+	//! Mapa atrubutÃ³w
     std::map<HtmlCellAttribute, boost::any> attributes;
 };
 
-//! Lista atrybutów tabeli
+//! Lista atrybutÃ³w tabeli
 enum HtmlTableAttribute {
-    TableWidth,			//! Szerokoœæ
-	TableHeight,		//! Wysokoœæ
-	TableBorder,		//! Gruboœæ ramki
-    TableBgColor,		//! Kolor t³a
-    TableCellSpacing,	//! Odstêp pomiêdzy komórkami
-    TableCellPadding    //! Padding komórek
+    TableWidth,			//! SzerokoÅ›Ä‡
+	TableHeight,		//! WysokoÅ›Ä‡
+	TableBorder,		//! GruboÅ›Ä‡ ramki
+    TableBgColor,		//! Kolor tÅ‚a
+    TableCellSpacing,	//! OdstÄ™p pomiÄ™dzy komÃ³rkami
+    TableCellPadding    //! Padding komÃ³rek
 };
 
-//! Klasa obs³uguj¹ca atrybuty tabeli
+//! Klasa obsÅ‚ugujÄ…ca atrybuty tabeli
 class HtmlTableAttributes
 {
 public:
@@ -327,66 +327,66 @@ public:
     ~HtmlTableAttributes();
 
 public:
-	//! \param html [out]Dokument do którego generujemy atrybut w postaci tagów HTML
+	//! \param html [out]Dokument do ktÃ³rego generujemy atrybut w postaci tagÃ³w HTML
     void generateHtmlAttributes(QString & html) const;
-	//! \param width Szerokoœæ tabeli
-	//! \param typ Sposób zadawania rozmiaru
+	//! \param width SzerokoÅ›Ä‡ tabeli
+	//! \param typ SposÃ³b zadawania rozmiaru
     void setWidth(float width, HtmlWidthType type);
-	//! Czyœci atrybut szerokoœci
+	//! CzyÅ›ci atrybut szerokoÅ›ci
     void clearWidth();
-	//! \param height Wysokoœc tabeli
-	//! \param typ Sposób zadawania rozmiaru
+	//! \param height WysokoÅ›c tabeli
+	//! \param typ SposÃ³b zadawania rozmiaru
 	void setHeight(float height, HtmlWidthType type);
-	//! Czyœci atrybut wysokoœci
+	//! CzyÅ›ci atrybut wysokoÅ›ci
     void clearHeight();
-	//! \param bgColor Kolor t³a tabeli
+	//! \param bgColor Kolor tÅ‚a tabeli
     void setBgColor(const QString & bgColor);
-	//! Czyœci atrybut koloru t³a
+	//! CzyÅ›ci atrybut koloru tÅ‚a
     void clearBgColor();
-	//! \param border Szerokoœæ ramki tabeli i komóek
+	//! \param border SzerokoÅ›Ä‡ ramki tabeli i komÃ³ek
 	void setBorder(int border);
-	//! Czyœci atrybut szerokoœci ramki tabeli i komóek
+	//! CzyÅ›ci atrybut szerokoÅ›ci ramki tabeli i komÃ³ek
     void clearBorder();
-	//! \param spacing Dodatkowa iloœæ pixeli wokó³ w³aœciwej zawartoœci komórki
+	//! \param spacing Dodatkowa iloÅ›Ä‡ pixeli wokÃ³Å‚ wÅ‚aÅ›ciwej zawartoÅ›ci komÃ³rki
     void setCellSpacing(int spacing);
-	//! Czyœci atrybut dodatkowej iloœci pixeli wokó³ w³aœciwej zawartoœci komórki
+	//! CzyÅ›ci atrybut dodatkowej iloÅ›ci pixeli wokÃ³Å‚ wÅ‚aÅ›ciwej zawartoÅ›ci komÃ³rki
     void clearCellSpacing();
-	//! \param spacing Odstêp pomiêdzy komórkami w tabeli
+	//! \param spacing OdstÄ™p pomiÄ™dzy komÃ³rkami w tabeli
     void setCellPadding(int padding);
-	//! Czyœci atrybut odstêpu pomiêdzy komórkami w tabeli
+	//! CzyÅ›ci atrybut odstÄ™pu pomiÄ™dzy komÃ³rkami w tabeli
     void clearCellPadding();
 
 private:
-	//! Mapa atrybutów tabeli
+	//! Mapa atrybutÃ³w tabeli
     std::map<HtmlTableAttribute, boost::any> attributes;
 };
 
-//! Typ tabeli opisuj¹cej atrybuty komórek tabeli HTML
+//! Typ tabeli opisujÄ…cej atrybuty komÃ³rek tabeli HTML
 typedef DataTable<HtmlCellAttributes> HtmlDataTableCellAttributes;
 
-//! Typ elementu tabeli - wiersza, kolumny, komórki
+//! Typ elementu tabeli - wiersza, kolumny, komÃ³rki
 enum StyleStatus {
     Single  = 0, //! Pojedynczy element
     First   = 1, //! Pierwszy element
-    Middle  = 2, //! Œrodkowy element
+    Middle  = 2, //! Åšrodkowy element
     Last    = 3  //! Ostatni element
 };
 
-//! \param value wartoœæ dla której wyznaczmy typ
-//! \param min Minimalna wartoœæ zakresu
-//! \param max Maksymalna wartoœc zakresu
+//! \param value wartoÅ›Ä‡ dla ktÃ³rej wyznaczmy typ
+//! \param min Minimalna wartoÅ›Ä‡ zakresu
+//! \param max Maksymalna wartoÅ›c zakresu
 //! \return Typ elementu: Single -> min = max = value, First -> value = min, min != max, Middle -> value != min, value != max, min != max, Last -> value = max, min != max
 StyleStatus styleStatus(int value, int min, int max);
 
-//! Typ opisuj¹cy style wierszy dla ich statusów
+//! Typ opisujÄ…cy style wierszy dla ich statusÃ³w
 typedef QString HtmlRowStyles[4];
-//! Typ opisuj¹cy style kolumn dla ich statusów
+//! Typ opisujÄ…cy style kolumn dla ich statusÃ³w
 typedef QString HtmlColumnStyles[4];
 
-//! Typ opisuj¹cy style komórek zale¿nie od ich statusów
+//! Typ opisujÄ…cy style komÃ³rek zaleÅ¼nie od ich statusÃ³w
 typedef QString HtmlStyles[4][4];
 
-//! Agregat styli komórek
+//! Agregat styli komÃ³rek
 struct HtmlDataTableStyles
 {
     //! Styl tabeli
@@ -395,82 +395,82 @@ struct HtmlDataTableStyles
 	//! Atrybuty tabeli
 	HtmlTableAttributes tableAttributes;
 
-    //! Styl wierszy gdy poziome na³ówki
+    //! Styl wierszy gdy poziome naÅ‚Ã³wki
     HtmlRowStyles headerRowStyle_;
 
     //! Style wierszy danych
     HtmlRowStyles contentRowStyle_;
 
-    //! Macierz styli komórek nag³ówków
+    //! Macierz styli komÃ³rek nagÅ‚Ã³wkÃ³w
     HtmlStyles headersStyles;
 
-    //! Macierz styli komórek danych
+    //! Macierz styli komÃ³rek danych
     HtmlStyles contentStyles;
 };
 
-//Opisuje strukturê nag³ówków tabeli
+//Opisuje strukturÄ™ nagÅ‚Ã³wkÃ³w tabeli
 struct TableHeadersStructureDescriptor {
-    //! Iloœæ wierszy nag³ówkowych
+    //! IloÅ›Ä‡ wierszy nagÅ‚Ã³wkowych
     int headerRows;
-    //! Ilosæ kolumn nag³ówkowych
+    //! IlosÄ‡ kolumn nagÅ‚Ã³wkowych
     int headerColumns;
 };
 
-//! Klasa generuj¹ca tabele HTML z danymi
+//! Klasa generujÄ…ca tabele HTML z danymi
 class HtmlDataTableGenerator
 {
 public:
-    //! \param content Zawartoœæ tabeli wiersz-kolumna
+    //! \param content ZawartoÅ›Ä‡ tabeli wiersz-kolumna
     //! \param structure Struktura tabeli
-    //! \param styles Style poszczególnycvh komórek
-    //! \param rows Ca³kowita iloœæ wierszy tabeli (utniemy lub dodamy jeœli bêdzie trzeba
-    //! \param columns Ca³kowita iloœæ kolumn tabeli (utniemy lub dodamy jeœli bêdzie trzeba
+    //! \param styles Style poszczegÃ³lnycvh komÃ³rek
+    //! \param rows CaÅ‚kowita iloÅ›Ä‡ wierszy tabeli (utniemy lub dodamy jeÅ›li bÄ™dzie trzeba
+    //! \param columns CaÅ‚kowita iloÅ›Ä‡ kolumn tabeli (utniemy lub dodamy jeÅ›li bÄ™dzie trzeba
     static void generateHtmlTable(QString & table, const HtmlDataTableContent & content, TableHeadersStructureDescriptor structure,
         const HtmlDataTableCellAttributes & cellAttributes = HtmlDataTableCellAttributes(), const HtmlDataTableStyles & styles = HtmlDataTableStyles(), int rows = 0, int columns = 0);
 
 private:
-	//! Metoda generuje/wype³nia/styluje nag³ówki tabeli
-	//! \param content Zawartoœc tabeli któr¹ uzupe³niamy
-	//! \param cellAttributes Atrybuty komórek
+	//! Metoda generuje/wypeÅ‚nia/styluje nagÅ‚Ã³wki tabeli
+	//! \param content ZawartoÅ›c tabeli ktÃ³rÄ… uzupeÅ‚niamy
+	//! \param cellAttributes Atrybuty komÃ³rek
 	//! \param rowsData Dane wiersza
-	//! \param structure Uk³ad tabeli - iloœc nag³ówków...
+	//! \param structure UkÅ‚ad tabeli - iloÅ›c nagÅ‚Ã³wkÃ³w...
 	//! \param styles Style tabeli
-	//! \param rows Iloœæ wierszy które bêd¹ brane pod uwagê
-	//! \param columns Iloœæ kolumn które bêd¹ brane pod uwagê
+	//! \param rows IloÅ›Ä‡ wierszy ktÃ³re bÄ™dÄ… brane pod uwagÄ™
+	//! \param columns IloÅ›Ä‡ kolumn ktÃ³re bÄ™dÄ… brane pod uwagÄ™
     static void buildHeaders(HtmlDataTableContent & content, const HtmlDataTableCellAttributes & cellAttributes,
         HtmlDataTableContent::Column & rowsData, const TableHeadersStructureDescriptor & structure,
         const HtmlDataTableStyles & styles, int rows, int columns);
 
-	//! Metoda generuje zawartoœæ komórki tabeli
-	//! \param content [out] Zawartoœæ komórki
-	//! \param style Styl komórki
-	//! \param cellAttributes Atrybuty komórki
+	//! Metoda generuje zawartoÅ›Ä‡ komÃ³rki tabeli
+	//! \param content [out] ZawartoÅ›Ä‡ komÃ³rki
+	//! \param style Styl komÃ³rki
+	//! \param cellAttributes Atrybuty komÃ³rki
     static void buildCell(QString & content, const QString & style = QString(), const QString & cellAtributes = QString());
 
-	//! Metoda generuje zawartoœæ tabeli (dane, nie nag³ówki)
+	//! Metoda generuje zawartoÅ›Ä‡ tabeli (dane, nie nagÅ‚Ã³wki)
     static void buildContent(HtmlDataTableContent & content, const HtmlDataTableCellAttributes & cellAttributes,
         const TableHeadersStructureDescriptor & structure, const HtmlDataTableStyles & styles, int rows, int columns);
 
 	//! Metoda otwiera znaczniki HTML tabeli
-	//! \param table [out] Dokument HTML do którego generujemy tabelê
+	//! \param table [out] Dokument HTML do ktÃ³rego generujemy tabelÄ™
 	//! \param style Styl tabeli
 	//! \param attributes Atrybuty tabeli
     static void openTable(QString & table, const QString & style, const HtmlTableAttributes & attributes);
 	//! Metodad zamyka znaczniki HTML tabeli
-	//! \param table [out] Dokument HTML do którego generujemy tabelê
+	//! \param table [out] Dokument HTML do ktÃ³rego generujemy tabelÄ™
     static void closeTable(QString & table);
 	//! Metoda otwiera znaczniki HTML wiersza tabeli
-	//! \param table [out] Dokument HTML do którego generujemy tabelê
+	//! \param table [out] Dokument HTML do ktÃ³rego generujemy tabelÄ™
 	//! \param style Styl wiersza
     static void openRow(QString & table, const QString & style);
 	//! Metodad zamyka znaczniki HTML wiersza tabeli
-	//! \param table [out] Dokument HTML do którego generujemy tabelê
+	//! \param table [out] Dokument HTML do ktÃ³rego generujemy tabelÄ™
     static void closeRow(QString & table);
 };
 
 typedef boost::array<boost::array<std::pair<QTextTableCellFormat, QTextBlockFormat>,4>,4> TableCellsFormat;
 
-//! Kalsa pomocnicza przy wype³nianiu tabeli wg standardów Qt
+//! Kalsa pomocnicza przy wypeÅ‚nianiu tabeli wg standardÃ³w Qt
 class QTextTableViewHelper
 {
 public:

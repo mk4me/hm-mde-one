@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+ï»¿#include "../VideoPCH.h"
 #include "VMPrivate.h"
 #include "VideoBufferChunk.h"
 
@@ -16,20 +16,20 @@ VideoBufferChunk::VideoBufferChunk()
 VideoBufferChunk::const_iterator VideoBufferChunk::findFrame( double time ) const
 {
   VM_FUNCTION_PROLOG;
-  // zatrzymujemy siê na pierszym wpisie maj¹cym czas wiêkszy od zadanego
+  // zatrzymujemy siÄ™ na pierszym wpisie majÄ…cym czas wiÄ™kszy od zadanego
   const_iterator found = framesMap.upper_bound(time);
   if ( found == framesMap.begin() ) {
-    // nie ma ¿adnego, zbyt ma³y timestamp
+    // nie ma Å¼adnego, zbyt maÅ‚y timestamp
     return framesMap.end();
   } else {
-    // tak naprawdê potrzebujemy poprzedniej ramki
+    // tak naprawdÄ™ potrzebujemy poprzedniej ramki
     const_iterator result = --found;
     // sprawdzamy, czy to na pewno dobra ramka
     if ( result->second.first > time ) {
-      // mieœci siê w czasie przed zakoñczeniem znalezionej ramki
+      // mieÅ›ci siÄ™ w czasie przed zakoÅ„czeniem znalezionej ramki
       return result;
     } else {
-      // po prostu dostaliœmy ostatni element
+      // po prostu dostaliÅ›my ostatni element
       return framesMap.end();
     }
   }
@@ -38,20 +38,20 @@ VideoBufferChunk::const_iterator VideoBufferChunk::findFrame( double time ) cons
 VideoBufferChunk::iterator VideoBufferChunk::findFrame( double time )
 {
   VM_FUNCTION_PROLOG;
-  // zatrzymujemy siê na pierszym wpisie maj¹cym czas wiêkszy od zadanego
+  // zatrzymujemy siÄ™ na pierszym wpisie majÄ…cym czas wiÄ™kszy od zadanego
   iterator found = framesMap.upper_bound(time);
   if ( found == framesMap.begin() ) {
-    // nie ma ¿adnego, zbyt ma³y timestamp
+    // nie ma Å¼adnego, zbyt maÅ‚y timestamp
     return framesMap.end();
   } else {
-    // tak naprawdê potrzebujemy poprzedniej ramki
+    // tak naprawdÄ™ potrzebujemy poprzedniej ramki
     iterator result = --found;
     // sprawdzamy, czy to na pewno dobra ramka
     if ( result->second.first > time ) {
-      // mieœci siê w czasie przed zakoñczeniem znalezionej ramki
+      // mieÅ›ci siÄ™ w czasie przed zakoÅ„czeniem znalezionej ramki
       return result;
     } else {
-      // po prostu dostaliœmy ostatni element
+      // po prostu dostaliÅ›my ostatni element
       return framesMap.end();
     }
   }
@@ -127,7 +127,7 @@ void VideoBufferChunk::append( Picture * picture, double startTime, double endTi
   VM_FUNCTION_PROLOG;
   UTILS_ASSERT(startTime < endTime);
   if ( !framesMap.empty() ) {
-    // czy jest sens wrzucaæ?
+    // czy jest sens wrzucaÄ‡?
     if (startTime == getEndTime()) {
       stop = endTime;
     } else if ( endTime == getStartTime() ) {
@@ -140,7 +140,7 @@ void VideoBufferChunk::append( Picture * picture, double startTime, double endTi
     start = startTime;
     stop = endTime;
   }
-  // czy ju¿ by³o?
+  // czy juÅ¼ byÅ‚o?
   if (!framesMap.insert(std::make_pair(startTime, std::make_pair(endTime, picture))).second) {
     throw new std::runtime_error("Frame already in buffer.");
   }

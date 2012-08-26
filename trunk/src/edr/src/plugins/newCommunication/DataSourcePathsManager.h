@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/03/15
     created:  15:3:2012   13:19
     filename: DataSourcePathsManager.h
@@ -14,17 +14,17 @@
 #include <OpenThreads/ReentrantMutex>
 #include "DataSourceUser.h"
 
-//! Klasa zarzπdzajπca po≥oøeniem danych naszego ürÛd≥a.
-//! Inicjalizacja wymaga podania úcieøek do sk≥adowania dancyh ruchu i p≥ytkiej kopii danych.
-//! Reszta ga≥Ízi jest zaszyta wewnπtrz - moøna pobraÊ odpowiednie úcieøki i generowaÊ úcieøki plikÛw danych, p≥ytkiej kopii, metadanych oraz zdjÍÊ pacjentÛw.
+//! Klasa zarzƒÖdzajƒÖca po≈Ço≈ºeniem danych naszego ≈∫r√≥d≈Ça.
+//! Inicjalizacja wymaga podania ≈õcie≈ºek do sk≈Çadowania dancyh ruchu i p≈Çytkiej kopii danych.
+//! Reszta ga≈Çƒôzi jest zaszyta wewnƒÖtrz - mo≈ºna pobraƒá odpowiednie ≈õcie≈ºki i generowaƒá ≈õcie≈ºki plik√≥w danych, p≈Çytkiej kopii, metadanych oraz zdjƒôƒá pacjent√≥w.
 class DataSourcePathsManager : public OpenThreads::ReentrantMutex
 {
 private:
 
-	//! Domyúlny konstruktor
-	//! Wszystkie úciezki powinny byÊ ukryte/niedostÍpne dla uøytkownikÛw - szyfrowanie?
-	//! \param schemasPath åcieøka do p≥ytkich kopii danych
-	//! \param userDataPath åcieøka do wypakowania danych uøytkownika
+	//! Domy≈õlny konstruktor
+	//! Wszystkie ≈õciezki powinny byƒá ukryte/niedostƒôpne dla u≈ºytkownik√≥w - szyfrowanie?
+	//! \param schemasPath ≈öcie≈ºka do p≈Çytkich kopii danych
+	//! \param userDataPath ≈öcie≈ºka do wypakowania danych u≈ºytkownika
 	DataSourcePathsManager(const core::Filesystem::Path & usersDataPath = "./");
 
 	//! Destruktor
@@ -36,97 +36,97 @@ public:
 	static void destroy();
 	static DataSourcePathsManager * instance();
 
-	//! \param userDataPath åcieøka do rozpakowanych danych uøytkownika
+	//! \param userDataPath ≈öcie≈ºka do rozpakowanych danych u≈ºytkownika
 	void setUsersDataPath(const core::Filesystem::Path & usersDataPath);
-	//! \param user Uøytkownik ktÛrego úcieøki aktualnie obs≥ugujemy
+	//! \param user U≈ºytkownik kt√≥rego ≈õcie≈ºki aktualnie obs≈Çugujemy
 	void setUser(const User & user);
-	//! Tworzy niezbÍdne úcieøki uøytkownika w roocie - usersDataPath
+	//! Tworzy niezbƒôdne ≈õcie≈ºki u≈ºytkownika w roocie - usersDataPath
 	void createUserDataPaths() const;
-	//! Czyúci lokalny storage usera
+	//! Czy≈õci lokalny storage usera
 	void removeUserDataPaths() const;
 
-    //! \return åcieøka do danych ruchu úciπganych z serwera (bazy danych)
+    //! \return ≈öcie≈ºka do danych ruchu ≈õciƒÖganych z serwera (bazy danych)
     const core::Filesystem::Path & motionDataPath() const;
-    //! \return åcieøka do p≥ytkich kopii bazy danych
+    //! \return ≈öcie≈ºka do p≈Çytkich kopii bazy danych
     const core::Filesystem::Path & schemasPath() const;
-	//! \return åcieøka do roota rozpakowanych danych uøytkownika
+	//! \return ≈öcie≈ºka do roota rozpakowanych danych u≈ºytkownika
 	const core::Filesystem::Path & usersDataPath() const;
-	//! \return åcieøka do rozpakowanych danych ustawionego uøytkownika
+	//! \return ≈öcie≈ºka do rozpakowanych danych ustawionego u≈ºytkownika
 	const core::Filesystem::Path & userDataPath() const;
-    //! \return åcieøka do plikÛw zdjÍÊ pacjentÛw
+    //! \return ≈öcie≈ºka do plik√≥w zdjƒôƒá pacjent√≥w
     const core::Filesystem::Path & photosPath() const;
-	//! \return Hash aktualnego uøytkownika
+	//! \return Hash aktualnego u≈ºytkownika
 	const std::string & userHash() const;
 
-	//! \param user Uzytkownik dla ktÛrego pobieramy hash
-	//! \return Hash uøytkownika
+	//! \param user Uzytkownik dla kt√≥rego pobieramy hash
+	//! \return Hash u≈ºytkownika
 	static std::string generateUserHash(const User & user);
 
-    //! \param sessionName Nazwa sesji dla ktÛrej generujemy úcieøkÍ (ostatni cz≥on úcieøki to nazwa sesji)
-    //! \return åcieøka do sesji o podanej nazwie
+    //! \param sessionName Nazwa sesji dla kt√≥rej generujemy ≈õcie≈ºkƒô (ostatni cz≈Çon ≈õcie≈ºki to nazwa sesji)
+    //! \return ≈öcie≈ºka do sesji o podanej nazwie
     const core::Filesystem::Path sessionPath(const std::string & sessionName) const;
-    //! \param fileName Nazwa pliku dla ktÛrego generujemy úcieøkÍ (ostatni cz≥on úcieøki to nazwa pliku)
-    //! \param sessionName Nazwa sesji do ktÛrej naleøy zadany plik
-    //! \return åcieøka do pliku o podanej nazwie naleøπcego do zadanej sesji
+    //! \param fileName Nazwa pliku dla kt√≥rego generujemy ≈õcie≈ºkƒô (ostatni cz≈Çon ≈õcie≈ºki to nazwa pliku)
+    //! \param sessionName Nazwa sesji do kt√≥rej nale≈ºy zadany plik
+    //! \return ≈öcie≈ºka do pliku o podanej nazwie nale≈ºƒÖcego do zadanej sesji
     const core::Filesystem::Path filePath(const std::string & fileName, const std::string & sessionName) const;
-    //! \param photoName Nazwa zdjÍcia dla ktÛrego generujemy úcieøkÍ
-    //! \return åcieøka do zdjÍcia o podanej nazwie
+    //! \param photoName Nazwa zdjƒôcia dla kt√≥rego generujemy ≈õcie≈ºkƒô
+    //! \return ≈öcie≈ºka do zdjƒôcia o podanej nazwie
     const core::Filesystem::Path photoPath(const std::string & photoname) const;
 
-    //! \param åcieøka ktÛrπ zarzπdza DataSourceLocalStorage
-    //! \return Czy úcieøka faktycznie istnieje - katalog lub plik sπ fizycznie dostÍpne
+    //! \param ≈öcie≈ºka kt√≥rƒÖ zarzƒÖdza DataSourceLocalStorage
+    //! \return Czy ≈õcie≈ºka faktycznie istnieje - katalog lub plik sƒÖ fizycznie dostƒôpne
     static bool pathExists(const core::Filesystem::Path & path);
 
-	//! \return åcieøka do p≥ytkiej kopii bazy danych ruchu
+	//! \return ≈öcie≈ºka do p≈Çytkiej kopii bazy danych ruchu
 	const core::Filesystem::Path & projectsPath() const;
 
-    //! \return åcieøka do p≥ytkiej kopii bazy danych ruchu
+    //! \return ≈öcie≈ºka do p≈Çytkiej kopii bazy danych ruchu
     const core::Filesystem::Path & motionShallowCopyPath() const;
-    //! \return åcieøka do metadanych ruchu
+    //! \return ≈öcie≈ºka do metadanych ruchu
     const core::Filesystem::Path & motionMetadataPath() const;
-    //! \return åcieøka do p≥ytkiej kopii bazy danych medycznych
+    //! \return ≈öcie≈ºka do p≈Çytkiej kopii bazy danych medycznych
     const core::Filesystem::Path & medicalShallowCopyPath() const;
-    //! \return åcieøka do metadanych medycznych
+    //! \return ≈öcie≈ºka do metadanych medycznych
     const core::Filesystem::Path & medicalMetadataPath() const;
-    //! \para path åcieøka dla ktÛrej pobieramy iloúÊ wolnego miejsca
-    //! \return Iloúc wolnego miejsca dla zadanej úcieøki
+    //! \para path ≈öcie≈ºka dla kt√≥rej pobieramy ilo≈õƒá wolnego miejsca
+    //! \return Ilo≈õc wolnego miejsca dla zadanej ≈õcie≈ºki
     static unsigned long long freeSpace(const core::Filesystem::Path & path);
 
 private:
-	//! Odbudowywyjue wszystkie sciezki uøytkownika
+	//! Odbudowywyjue wszystkie sciezki u≈ºytkownika
 	void rebuildUserPaths();
-	//! Resetuje úcieøki uøytkownika do domyúlnych wartoúci
+	//! Resetuje ≈õcie≈ºki u≈ºytkownika do domy≈õlnych warto≈õci
 	void clearUserPaths();
 
 private:
-    //! -------------------- LOKALNE åCIEØKI DANYCH --------------------------
-    //! åcieøka do miejsca sk≥adowania danych úciπganych za pomocπ CommunicationManager
+    //! -------------------- LOKALNE ≈öCIE≈ªKI DANYCH --------------------------
+    //! ≈öcie≈ºka do miejsca sk≈Çadowania danych ≈õciƒÖganych za pomocƒÖ CommunicationManager
     core::Filesystem::Path localDataPath;
-    //! åcieøka do schematÛw baz dancyh
+    //! ≈öcie≈ºka do schemat√≥w baz dancyh
     core::Filesystem::Path localSchemasPath;
-	//! åcieøka do rozpakowanych dancyh uøytkownika
+	//! ≈öcie≈ºka do rozpakowanych dancyh u≈ºytkownika
 	core::Filesystem::Path localUsersDataPath;
-	//! åcieøka do rozpakowanych dancyh uøytkownika
+	//! ≈öcie≈ºka do rozpakowanych dancyh u≈ºytkownika
 	core::Filesystem::Path localUserDataPath;
-	//! åcieøka do pliku z projektami uøytkownika
+	//! ≈öcie≈ºka do pliku z projektami u≈ºytkownika
 	core::Filesystem::Path localProjectsPath;
-    //! åciezka do schematu bazy danych ruchu
+    //! ≈öciezka do schematu bazy danych ruchu
     core::Filesystem::Path localMotionSchemasPath;
-    //! åciezka do schematu bazy danych pacjentÛw
+    //! ≈öciezka do schematu bazy danych pacjent√≥w
     core::Filesystem::Path localMedicalSchemasPath;
-    //! åciezka do katalogu ze zdjÍciami pacjentÛw (nazwa pliku = id pacjenta => id performera)
+    //! ≈öciezka do katalogu ze zdjƒôciami pacjent√≥w (nazwa pliku = id pacjenta => id performera)
     core::Filesystem::Path localPatientPhotosPath;
-    //! åcieøka do pliku p≥ytkiej kopii bazy danych ruchu
+    //! ≈öcie≈ºka do pliku p≈Çytkiej kopii bazy danych ruchu
     core::Filesystem::Path localMotionShallowCopyPath;
-    //! åcieøka do pliku metadanych dla ruchu
+    //! ≈öcie≈ºka do pliku metadanych dla ruchu
     core::Filesystem::Path localMotionMetadataPath;
-    //! åcieøka do pliku p≥ytkiej kopii bazy danych pacjentÛw
+    //! ≈öcie≈ºka do pliku p≈Çytkiej kopii bazy danych pacjent√≥w
     core::Filesystem::Path localMedicalShallowCopyPath;
-    //! åcieøka do pliku metadancyh dla pacjentÛw
+    //! ≈öcie≈ºka do pliku metadancyh dla pacjent√≥w
     core::Filesystem::Path localMedicalMetadataPath;
-	//! Uøytkownik kÛtrego úcieøki obs≥ugujemy
+	//! U≈ºytkownik k√≥trego ≈õcie≈ºki obs≈Çugujemy
 	User user_;
-	//! Hash uøytkownika uøywany przy tworzeniu unikalnej przestrzeni dyskowej na dane
+	//! Hash u≈ºytkownika u≈ºywany przy tworzeniu unikalnej przestrzeni dyskowej na dane
 	std::string userHash_;
 
 	static DataSourcePathsManager * instance_;

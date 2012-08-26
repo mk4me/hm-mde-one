@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/03/14
     created:  14:3:2011   16:38
     filename: IObjectSource.h
@@ -18,7 +18,7 @@
 
 namespace core 
 {
-    //! Interfejs dajπcy dostÍp do danych wejsciowych. Nie ma gwarancji øe dane sπ dostÍpne i zainicjalizowane - naleøe to kaødorazowo sprawdzaÊ.
+    //! Interfejs dajƒÖcy dostƒôp do danych wejsciowych. Nie ma gwarancji ≈ºe dane sƒÖ dostƒôpne i zainicjalizowane - nale≈ºe to ka≈ºdorazowo sprawdzaƒá.
     class IObjectSource
     {
     public:
@@ -29,25 +29,25 @@ namespace core
         typedef core::weak_ptr<InputObjectsCollection> InputObjectsCollectionWeakPtr;
         typedef core::weak_ptr<const InputObjectsCollection> InputObjectsCollectionConstWeakPtr;
 
-        //! Klasa proxy przykrywajπca moøliwoúÊ przechowywania ObjecWrapperÛw przez ObjecWrapperCollection. Umoøliwia jedynie pobieranie niemodyfikowalnych danych z kolekcji.
-        //! Dane pobierane sπ w rozpakowanej juø formie do rzeczywistych typÛw (wyciπgniÍte z ObjectWrapperÛw). Sπ to smart pointery na const obiekty.
+        //! Klasa proxy przykrywajƒÖca mo≈ºliwo≈õƒá przechowywania ObjecWrapper√≥w przez ObjecWrapperCollection. Umo≈ºliwia jedynie pobieranie niemodyfikowalnych danych z kolekcji.
+        //! Dane pobierane sƒÖ w rozpakowanej ju≈º formie do rzeczywistych typ√≥w (wyciƒÖgniƒôte z ObjectWrapper√≥w). SƒÖ to smart pointery na const obiekty.
         class InputObjectsCollection
         {
         public:
-            //! Return type resolver - poprzez operator konwersji pozwala kompilatorowi rozpoznaÊ typ zwracany i wykonaÊ dla niego konwersjÍ
+            //! Return type resolver - poprzez operator konwersji pozwala kompilatorowi rozpoznaƒá typ zwracany i wykonaƒá dla niego konwersjƒô
             struct get_t
             {
             public:
-                //! const ObjectWrapperPtr ktÛy bÍdziemy ropzakowywaÊ
+                //! const ObjectWrapperPtr kt√≥y bƒôdziemy ropzakowywaƒá
                 const ObjectWrapperConstPtr & constObjectWrapperPtr;
-                //! Czy typ musi byÊ dok≥adnie taki sam jaki przechowuje ObjectWraper czy moøe to byÊ jakiú typ niøej w hierarchi dziedziczenia
+                //! Czy typ musi byƒá dok≈Çadnie taki sam jaki przechowuje ObjectWraper czy mo≈ºe to byƒá jaki≈õ typ ni≈ºej w hierarchi dziedziczenia
                 bool exact;
 
-                //! Konstruktor inicjujπcy RtR
+                //! Konstruktor inicjujƒÖcy RtR
                 get_t(const ObjectWrapperConstPtr & constObjectWrapperPtr, bool exact)
                     : constObjectWrapperPtr(constObjectWrapperPtr), exact(exact) {}
 
-                //! Operator konwersji w formie wzorca robiπcy ca≥a magiÍ
+                //! Operator konwersji w formie wzorca robiƒÖcy ca≈Ça magiƒô
                 template<class SmartConstPtr>
                 inline operator SmartConstPtr() const
                 {
@@ -56,7 +56,7 @@ namespace core
                     return ret;
                 }
 
-				//! Operator konwersji w formie wzorca robiπcy ca≥a magiÍ
+				//! Operator konwersji w formie wzorca robiƒÖcy ca≈Ça magiƒô
 				inline operator ObjectWrapperConstPtr() const
 				{
 					return constObjectWrapperPtr;
@@ -65,7 +65,7 @@ namespace core
 
         public:
 
-            //! Konstruktor inicjujπcy proxy kolekcjπ object wrapperÛw
+            //! Konstruktor inicjujƒÖcy proxy kolekcjƒÖ object wrapper√≥w
             InputObjectsCollection(const ObjectWrapperCollectionConstPtr & collection = ObjectWrapperCollectionConstPtr())
                 : collection(collection)
             {
@@ -93,7 +93,7 @@ namespace core
                 return ret;
             }
 
-            //! \return Czy kolekcja pusta (lub niezainicjowana - tak teø siÍ moøe zdaøyÊ dla wejscia
+            //! \return Czy kolekcja pusta (lub niezainicjowana - tak te≈º siƒô mo≈ºe zda≈ºyƒá dla wejscia
             bool empty() const
             {
                 if(collection == nullptr){
@@ -103,7 +103,7 @@ namespace core
                 return collection->empty();
             }
 
-            //! \return Rozmiar kolekcji danych - 0 jeúli pusta lub niezainicjowana
+            //! \return Rozmiar kolekcji danych - 0 je≈õli pusta lub niezainicjowana
             int size() const
             {
                 if(empty() == true){
@@ -115,7 +115,7 @@ namespace core
 
 
         private:
-            //! Kolekcja danych ktÛrπ przykrywamy tym proxy
+            //! Kolekcja danych kt√≥rƒÖ przykrywamy tym proxy
             ObjectWrapperCollectionConstPtr collection;
         };
 
@@ -124,28 +124,28 @@ namespace core
         //! Pusty polimorficzny destruktor.
         virtual ~IObjectSource() {}
 
-        //! \return Liczba ürÛde≥ danych.
+        //! \return Liczba ≈∫r√≥de≈Ç danych.
         virtual int getNumSources() const = 0;
 
-        //! Wy≥uskanie wskaünika na obiekt domenowy ze ürÛd≥a przy za≥oøeniu jego niezmiennoúci.
+        //! Wy≈Çuskanie wska≈∫nika na obiekt domenowy ze ≈∫r√≥d≈Ça przy za≈Ço≈ºeniu jego niezmienno≈õci.
         virtual InputObjectsCollection getObjects(int idx) const = 0;
 
-    // pomocnicze metody inline bπdü szablony
+    // pomocnicze metody inline bƒÖd≈∫ szablony
     //public:
-    //    //! Zastosowanie idiomu "Return Type Resolver" do unikania podwÛjnego okreúlania typu
+    //    //! Zastosowanie idiomu "Return Type Resolver" do unikania podw√≥jnego okre≈õlania typu
     //    //! elementu kolekcji
     //    //! \see http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Return_Type_Resolver
     //    struct getObjects_t
     //    {
-    //        //! èrÛd≥o danych.
+    //        //! ≈πr√≥d≈Ço danych.
     //        IObjectSource* source;
-    //        //! Indeks ürÛd≥a.
+    //        //! Indeks ≈∫r√≥d≈Ça.
     //        int idx;
-    //        //! \param source èrÛd≥o danych.
+    //        //! \param source ≈πr√≥d≈Ço danych.
     //        inline getObjects_t(IObjectSource* source, int idx) :
     //        source(source), idx(idx)
     //        {}
-    //        //! \return Kolekcja wskaünikÛw.
+    //        //! \return Kolekcja wska≈∫nik√≥w.
     //        template <class SmartPtr>
     //        inline operator SmartPtr()
     //        {
@@ -159,7 +159,7 @@ namespace core
     //        return getObjects_t(this, index);
     //    }
 
-    //    //! \param idx Indeks ürÛd≥a danych.
+    //    //! \param idx Indeks ≈∫r√≥d≈Ça danych.
     //    //! \return Dane pod zadanym indeksem.
     //    template <class SmartPtr>
     //    inline SmartPtr getObjects(int idx, SmartPtr* /*dummy*/ = nullptr)
@@ -168,7 +168,7 @@ namespace core
     //        return __getObjectsPtrResolver<SmartPtr>(idx, boost::is_pointer<SmartPtr>());
     //    }
 
-    //    //! \param idx Indeks ürÛd≥a danych.
+    //    //! \param idx Indeks ≈∫r√≥d≈Ça danych.
     //    //! \return Dane pod zadanym indeksem.
     //    template <class SmartPtr>
     //    inline void getObjects(SmartPtr& result, int idx)
@@ -177,13 +177,13 @@ namespace core
     //    }
 
 
-    //    //! \param idx Indeks ürÛd≥a.
+    //    //! \param idx Indeks ≈∫r√≥d≈Ça.
     //    //! \param result Dane pod zadanym indeksem.
-    //    //! \return Czy uda≥o siÍ pobraÊ zadany typ?
+    //    //! \return Czy uda≈Ço siƒô pobraƒá zadany typ?
     //    template <class SmartPtr>
     //    bool tryGetObjects(SmartPtr& result, int idx)
     //    {
-    //        // TODO: zrobiÊ wersjÍ, ktÛra nie bÍdzie bazowa≥a na wyjπtkach
+    //        // TODO: zrobiƒá wersjƒô, kt√≥ra nie bƒôdzie bazowa≈Ça na wyjƒÖtkach
     //        try {
     //            result = getObjects<SmartPtr>(idx);
     //            return true;
@@ -194,26 +194,26 @@ namespace core
     //    }
 
     //private:
-    //    //! \param idx Indeks ürÛd≥a danych.
+    //    //! \param idx Indeks ≈∫r√≥d≈Ça danych.
     //    //! \return Dane pod zadanym indeksem.
     //    template <class RawPtr>
     //    RawPtr __getObjectsPtrResolver(int idx, boost::true_type, RawPtr* /*dummy*/ = nullptr)
     //    {
-    //        UTILS_STATIC_ASSERT(false, "Do obiektÛw domenowych naleøy uøywaÊ inteligentnych wskaznikÛw.");
+    //        UTILS_STATIC_ASSERT(false, "Do obiekt√≥w domenowych nale≈ºy u≈ºywaƒá inteligentnych wskaznik√≥w.");
     //        return nullptr;
     //    }
 
-    //    //! \param idx Indeks ürÛd≥a danych.
+    //    //! \param idx Indeks ≈∫r√≥d≈Ça danych.
     //    //! \return Dane pod zadanym indeksem.
     //    template <class SmartPtr>
     //    SmartPtr __getObjectsPtrResolver(int idx, boost::false_type, SmartPtr* /*dummy*/ = nullptr)
     //    {
     //        typedef typename SmartPtr::element_type Type;
-    //        // pobieramy wskaünik na wrapper const albo mutable
+    //        // pobieramy wska≈∫nik na wrapper const albo mutable
     //        auto collection = getObjects(idx, boost::is_const<Type>());
     //        return collection;
     //        //if ( collection && !wrapper->isNull() ) {
-    //        //    // z niego pobieramy obiekt w≥aúciwy
+    //        //    // z niego pobieramy obiekt w≈Ça≈õciwy
     //        //    return wrapper->get();
     //        //} else {
     //        //    throw std::runtime_error("Source not available.");

@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__CONTEXTMENU_H__
+ï»¿#ifndef HEADER_GUARD__CONTEXTMENU_H__
 #define HEADER_GUARD__CONTEXTMENU_H__
 
 #include <osgui/Grid.h>
@@ -18,21 +18,21 @@ namespace osgui {
 
 /**
  *	Klasa do tworzenia i zarzadzania menu kontekstowym w OSG
- *  Idea jej dzia³ania jest i¿ w œrodku tworz¹ siê klasy tego samego typu, jednak nie widac
+ *  Idea jej dziaÅ‚ania jest iÅ¼ w Å›rodku tworzÄ… siÄ™ klasy tego samego typu, jednak nie widac
  *  ich na zewnatrz.
  */
 
 class ContextMenu :	public osgui::Grid
 {
 public:
-    //! Sygnatura callbacka wywo³ywana przy klikniêciu w opcjê menu.
-    //! Pierwszy parametr to pe³na œcie¿ka do opcji, druga to flaga logiczna okreœlaj¹ca,
+    //! Sygnatura callbacka wywoÅ‚ywana przy klikniÄ™ciu w opcjÄ™ menu.
+    //! Pierwszy parametr to peÅ‚na Å›cieÅ¼ka do opcji, druga to flaga logiczna okreÅ›lajÄ…ca,
     //! jaki jest stan opcji (checked/unchecked)
 	typedef boost::function<void(const std::string&, bool)> OnClickCallback;
-    //! Sygnatura callbacka wywo³ywanego gdy menu zostaje zamkniête.
+    //! Sygnatura callbacka wywoÅ‚ywanego gdy menu zostaje zamkniÄ™te.
 	typedef boost::function<void(ContextMenu*)> OnCloseCallback;
-	//! Sygnatura callbacka wywo³ywana przy najechaniu na opcjê menu.
-    //! Pierwszy parametr to pe³na œcie¿ka do opcji, druga to flaga logiczna okreœlaj¹ca,
+	//! Sygnatura callbacka wywoÅ‚ywana przy najechaniu na opcjÄ™ menu.
+    //! Pierwszy parametr to peÅ‚na Å›cieÅ¼ka do opcji, druga to flaga logiczna okreÅ›lajÄ…ca,
     //! czy wjechano/zjechano z opcji.
 	typedef OnClickCallback OnHoverCallback;
 
@@ -70,7 +70,7 @@ public:
 	bool setMenuItemChecked(const std::string & path, bool checked);
 
     //! string - sciezka do elementu menu, ktory chcemy modyfikowac
-    //! OnClickCallback - nowa akcja usera na klikniêcie elementu
+    //! OnClickCallback - nowa akcja usera na klikniÄ™cie elementu
 	bool setMenuItemOnClickCallback(const std::string & path, const OnClickCallback & callback);
 
     //! string - sciezka do elementu menu, ktory chcemy modyfikowac
@@ -352,7 +352,7 @@ protected:
     //! submenu na dnym poziomie
 	Submenus submenus;
 
-    //! Znaki bêd¹ce separatorami.
+    //! Znaki bÄ™dÄ…ce separatorami.
     boost::shared_ptr<std::string> pathSeparator;
 
     //! OnCloseCallback akcja uzytkownika na zamkniecie danego menu

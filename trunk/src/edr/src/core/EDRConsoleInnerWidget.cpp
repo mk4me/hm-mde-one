@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include "EDRConsoleInnerWidget.h"
 
 EDRConsoleInnerWidget::EDRConsoleInnerWidget(QWidget * parent)

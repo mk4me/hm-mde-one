@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+Ôªø#include "CommunicationPCH.h"
 #include "DownloadRequest.h"
 #include <boost/bind.hpp>
 
@@ -7,13 +7,13 @@ using namespace communication;
 //! Prywatny konstruktor
 DownloadRequest::DownloadRequest() : state_(Created), currentTransferID(0), totalSize_(0), currentSize(0)
 {
-	//inicjalizacja callbackÛw pojedynczego pobierania
+	//inicjalizacja callback√≥w pojedynczego pobierania
 	singleTransferCallbacks.onBeginCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onDownloadBegin, this, _1);
 	singleTransferCallbacks.onEndCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onDownloadComplete, this, _1);
 	singleTransferCallbacks.onCancelCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onDownloadCancel, this, _1);
 	singleTransferCallbacks.onErrorCallback = (CommunicationManager::RequestErrorCallback)boost::bind(&DownloadRequest::onDownloadError, this, _1, _2);
 
-	//inicjalizacja callbackÛw ca≥ego pakietu transferÛw
+	//inicjalizacja callback√≥w ca≈Çego pakietu transfer√≥w
 	complexTransferCallbacks.onBeginCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onFullDownloadStart, this, _1);
 	complexTransferCallbacks.onEndCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onFullDownloadComplete, this, _1);
 	complexTransferCallbacks.onCancelCallback = singleTransferCallbacks.onCancelCallback;

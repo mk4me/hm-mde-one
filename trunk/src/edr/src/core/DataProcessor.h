@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/19
     created:  19:4:2011   16:45
     filename: DataProcessor.h
@@ -19,7 +19,7 @@ class DataProcessor : public InputOutputItem<core::IDataProcessor>
 {
 
 public:
-    //! \param impl Obiekt przejmowany na w³asnoœæ.
+    //! \param impl Obiekt przejmowany na wÅ‚asnoÅ›Ä‡.
     DataProcessor(core::IDataProcessor* impl);
     ~DataProcessor();
 

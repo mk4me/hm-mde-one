@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/11/12
 	created:	12:11:2011   15:12
 	filename: 	ChartVisualizer.h
@@ -38,7 +38,7 @@ class StatsTable;
 class NewChartLegend;
 class PercentScaleDraw;
 
-//! Wizualizator wykresów, oparty o QWT
+//! Wizualizator wykresÃ³w, oparty o QWT
 class NewChartVisualizer : public QObject, public INewChartVisualizer
 {
     friend class NewChartSerie;
@@ -50,11 +50,11 @@ public:
 	virtual ~NewChartVisualizer();
 
 public:
-      //! \return wykres QWT, który jest sercem wizualizatora
+      //! \return wykres QWT, ktÃ³ry jest sercem wizualizatora
       QwtPlot* getPlot();
-      //! \return aktualnie aktywna seria lub nullptr, jeœli takiej nie ma
+      //! \return aktualnie aktywna seria lub nullptr, jeÅ›li takiej nie ma
       const NewChartSerie* tryGetCurrentSerie() const;
-      //! \return aktualnie aktywna seria lub nullptr, jeœli takiej nie ma
+      //! \return aktualnie aktywna seria lub nullptr, jeÅ›li takiej nie ma
       NewChartSerie* tryGetCurrentSerie();
       //! \return pusty obiekt wizualizatora
       virtual IVisualizer* createClone() const;
@@ -65,12 +65,12 @@ public:
       //! \param name nazwa tworzonej serii danych
       //! \return utworzona seria
       core::IVisualizer::SerieBase *createSerie(const core::ObjectWrapperConstPtr& data, const std::string& name);
-      // \return metoda nie jest obs³ugiwana, nullptr
+      // \return metoda nie jest obsÅ‚ugiwana, nullptr
       core::IVisualizer::SerieBase *createSerie(const core::IVisualizer::SerieBase * serie);
       //! Usuwa serie z wizualizatora
-      //! \param serie seria do usuniêcia, musi nale¿eæ do wizualizatora i musi byæ przez niego stworzona
+      //! \param serie seria do usuniÄ™cia, musi naleÅ¼eÄ‡ do wizualizatora i musi byÄ‡ przez niego stworzona
       virtual void removeSerie(core::IVisualizer::SerieBase *serie);
-      //! Tworzy g³ówny widget wizualizatora
+      //! Tworzy gÅ‚Ã³wny widget wizualizatora
       //! \param manager Manager z akcjami do flexi bara
       //! \return utworzony widget
       virtual QWidget* createWidget(core::IActionsGroupManager * manager);
@@ -81,77 +81,77 @@ public:
       //! Zwraca info o wspieranych typach (tylko ScalarChannelReaderInterface)
       //! \param info zwracana struktura z opisami
       virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info);
-      //! Metoda wywo³ywana w momencie dostarczenia nowych danych do przetwarzania, nie wykorzystywana
-      //! \param source Ÿród³o danych
+      //! Metoda wywoÅ‚ywana w momencie dostarczenia nowych danych do przetwarzania, nie wykorzystywana
+      //! \param source ÅºrÃ³dÅ‚o danych
       virtual void setUp(core::IObjectSource* source);
-      //! Metoda wywo³ywana cyklicznie pozwala odœwie¿yæ stan wizualizatora
-      //! \param deltaTime czas od ostatniego wywo³ania metody
+      //! Metoda wywoÅ‚ywana cyklicznie pozwala odÅ›wieÅ¼yÄ‡ stan wizualizatora
+      //! \param deltaTime czas od ostatniego wywoÅ‚ania metody
       virtual void update(double deltaTime);
-      //! metoda, na podstawie stanu wizualizatora, ustawia widoczne przedzia³y wykresu
+      //! metoda, na podstawie stanu wizualizatora, ustawia widoczne przedziaÅ‚y wykresu
       void setScale();
-      //! resetuje stan wizualizatora, nie obs³ugiwane
+      //! resetuje stan wizualizatora, nie obsÅ‚ugiwane
       virtual void reset();
-      //! ustawia sformatowwany tytu³ wizualizatora
+      //! ustawia sformatowwany tytuÅ‚ wizualizatora
       virtual void setTitle( const QString& title ) { qwtPlot->setTitle(title); }
-      //! \return sformatowany tytu³ wizualizatora
+      //! \return sformatowany tytuÅ‚ wizualizatora
       virtual QString getTitle() const { return qwtPlot->title().text(); }
-      //! Umo¿liwia manipulowanie wykresem, przesuwanie , zbli¿anie
-      //! \param val w³¹cza / wy³¹cza mo¿liwoœæ manipulacji
+      //! UmoÅ¼liwia manipulowanie wykresem, przesuwanie , zbliÅ¼anie
+      //! \param val wÅ‚Ä…cza / wyÅ‚Ä…cza moÅ¼liwoÅ›Ä‡ manipulacji
       void setManipulation(bool val);
-      //! \return czy pokazywaæ legendê
+      //! \return czy pokazywaÄ‡ legendÄ™
       bool isShowLegend() const { return showLegend; }
-      //! \param val w³¹cza/wy³¹cza rysowanie legendy
+      //! \param val wÅ‚Ä…cza/wyÅ‚Ä…cza rysowanie legendy
       void setShowLegend(bool val);
-      //! Filtrowanie eventów Qt, przekazywane do obiektu obs³uguj¹cego stan wizualizatora
+      //! Filtrowanie eventÃ³w Qt, przekazywane do obiektu obsÅ‚ugujÄ…cego stan wizualizatora
       //! \param object
       //! \param event
       bool eventFilter( QObject *object, QEvent *event );
-      //! \return wszystkie serie aktualnie obs³ugiwane przez wizualizator
+      //! \return wszystkie serie aktualnie obsÅ‚ugiwane przez wizualizator
       boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> getSeries() const;
-      //! \return czy wizualizator jest w trybie wizualizacji eventów
+      //! \return czy wizualizator jest w trybie wizualizacji eventÃ³w
       bool isEventMode() const { return context != C3DEventsCollection::IEvent::General; }
       //! Zrzut wizualizatora do pixmapy
       virtual QPixmap print() const;
 
 private:
-      //! Dodanie krzywej do wykresu, aktualizacja podzia³ek
+      //! Dodanie krzywej do wykresu, aktualizacja podziaÅ‚ek
       //! \param curve dodawana krzywa
       //! \param scales ekstrema dodawanego wykresu
       void addPlotCurve(QwtPlotCurve* curve, const Scales& scales);
-      //! Odtwarza podzia³ki na podstawie widocznych krzywych
+      //! Odtwarza podziaÅ‚ki na podstawie widocznych krzywych
       void recreateScales();
-      //! Ustawia zdarzenia C3D zwi¹zane z próba pomiarowa
-      //! \param serie seria, której dotycza eventy
+      //! Ustawia zdarzenia C3D zwiÄ…zane z prÃ³ba pomiarowa
+      //! \param serie seria, ktÃ³rej dotycza eventy
       //! \param val kolekcja ze zdarzeniami
       void setEvents(NewChartSerie* serie, EventsCollectionConstPtr val );
       //! Tworzy drzewo ze statystykami
-      //! \param stats statystyki, dla których utworzone zostanie drzewo
+      //! \param stats statystyki, dla ktÃ³rych utworzone zostanie drzewo
       void recreateStats(ScalarChannelStatsConstPtr stats = ScalarChannelStatsConstPtr());
-      //! odœwie¿a widzialne serie, przypisanie wspó³rzêdnej Z (przykrywanie)
+      //! odÅ›wieÅ¼a widzialne serie, przypisanie wspÃ³Å‚rzÄ™dnej Z (przykrywanie)
       void refreshSerieLayers();
-      //! odœwie¿a spinboxy zawieraj¹ce przesuniêcie i skale aktywnej serii
+      //! odÅ›wieÅ¼a spinboxy zawierajÄ…ce przesuniÄ™cie i skale aktywnej serii
       void refreshSpinBoxes();
-      //! Ustawia podzia³ki wykresu
-      //! \param scaleToActive czy skalowanie ma byæ wzglêdem aktywnej serii czy ca³oœci
+      //! Ustawia podziaÅ‚ki wykresu
+      //! \param scaleToActive czy skalowanie ma byÄ‡ wzglÄ™dem aktywnej serii czy caÅ‚oÅ›ci
       //! \param eventMode czy jest aktywny eventMode
       void setScale(bool scaleToActive, bool eventMode);
-      //! Ustawia podzia³ki wykresu, czesciowo na podstawie stanu wizualizatora
-      //! \param scaleToActive czy skalowanie ma byæ wzglêdem aktywnej serii czy ca³oœci
+      //! Ustawia podziaÅ‚ki wykresu, czesciowo na podstawie stanu wizualizatora
+      //! \param scaleToActive czy skalowanie ma byÄ‡ wzglÄ™dem aktywnej serii czy caÅ‚oÅ›ci
       void setGlobalScales(bool scaleToActive);
-      //! Dostosowywuje krok, z którym mo¿na przesuwaæ wykres (adaptacyjne spinboxy)
+      //! Dostosowywuje krok, z ktÃ³rym moÅ¼na przesuwaÄ‡ wykres (adaptacyjne spinboxy)
       //! \param spinBox modyfikowany spinbox
-      //! \param axis os, na podstawie której ma byæ obliczony nowy krok
+      //! \param axis os, na podstawie ktÃ³rej ma byÄ‡ obliczony nowy krok
       void adjustOffsetStep(QDoubleSpinBox* spinBox, QwtPlot::Axis axis);
-      //! Czy krzywa nale¿y do jakiejs serii czy mo¿e jest krzywa dodatkowa
+      //! Czy krzywa naleÅ¼y do jakiejs serii czy moÅ¼e jest krzywa dodatkowa
       //! \param curve badana krzywa
       bool isCurveFromSerie(const QwtPlotCurve* curve) const;
-      //! Metoda wywo³ywana kiedy zmieni siê stan wykresów
+      //! Metoda wywoÅ‚ywana kiedy zmieni siÄ™ stan wykresÃ³w
       void plotChanged();
-      //! odœwie¿a dodatkowe krzywe
+      //! odÅ›wieÅ¼a dodatkowe krzywe
       void refreshBounds();
       //! chowa lub pokazuje wszystkie etykiety
       void setLabelsVisible(bool);
-      //! Tworzy krocz¹c¹ œredni¹ dla wykresu
+      //! Tworzy kroczÄ…cÄ… Å›redniÄ… dla wykresu
       //! \param startIdx
       //! \param endIdx
       //! \param inReal
@@ -161,7 +161,7 @@ private:
       //! \param outReal
       void simpleMovingAverage(int startIdx, int endIdx, const std::vector<float> & inReal,
           int optInTimePeriod, int & outBegIdx, int & outNBElement, std::vector<float> & outReal);
-      //! tworzy ograniczenia - górne i dolne krzywych
+      //! tworzy ograniczenia - gÃ³rne i dolne krzywych
       //! \param startIdx
       //! \param endIdx
       //! \param inReal
@@ -193,145 +193,145 @@ private:
           std::vector<float> & output);
 
 private slots:
-      //! Ustawia aktywn¹ seriê danych
+      //! Ustawia aktywnÄ… seriÄ™ danych
       //! \param idx indeks w comboboxie
       void setActiveSerie(int idx);
-      //! Wywo³ane przez picker, ustawia aktywn¹ seriê
+      //! WywoÅ‚ane przez picker, ustawia aktywnÄ… seriÄ™
       //! \param item krzywa zwiazana z seria
       void onSerieSelected(QwtPlotItem* item);
-      //! Zaznacza aktywn¹ seria, metoda wywo³ywana przez legendê
+      //! Zaznacza aktywnÄ… seria, metoda wywoÅ‚ywana przez legendÄ™
       //! \param dataSerie krzywa zwiazana z seria
-      //! \param on stan przycisku legendy (on = uczyñ aktywn¹)
+      //! \param on stan przycisku legendy (on = uczyÅ„ aktywnÄ…)
       //! \param idx niewykorzystywane
       void onSerieSelected(QwtPlotItem* dataSerie, bool on, int idx);
-      //! Zmienia widocznoœæ aktywnej serii, metoda wywo³ywana przez legendê
+      //! Zmienia widocznoÅ›Ä‡ aktywnej serii, metoda wywoÅ‚ywana przez legendÄ™
       //! \param dataSerie krzywa zwiazana z seria
-      //! \param visible czy seria ma byæ widoczna czy ukryta
+      //! \param visible czy seria ma byÄ‡ widoczna czy ukryta
       void onSerieVisible(const QwtPlotItem* dataSerie, bool visible);
-      //! wybrano zmianê stanu wizualizatora
+      //! wybrano zmianÄ™ stanu wizualizatora
       void onStateAction();
-      //! zmiana kontekstu eventów, czyli sposobu rysowania wykresu
-      //! \param  okresla czy wykres ma obs³ugiwac zdarzenia, a jeœli tak to czy lewe, czy prawe
+      //! zmiana kontekstu eventÃ³w, czyli sposobu rysowania wykresu
+      //! \param  okresla czy wykres ma obsÅ‚ugiwac zdarzenia, a jeÅ›li tak to czy lewe, czy prawe
       void onEventContext(int);
-      //! zarz¹dza widocznoœci¹ statystyk
-      //! \param visible poka¿ / ukryj
+      //! zarzÄ…dza widocznoÅ›ciÄ… statystyk
+      //! \param visible pokaÅ¼ / ukryj
       void showStatistics(bool visible);
-      //! \return czy czas aktywnej serii jest wewn¹trz jakiegoœ eventu zwi¹zanego z prób¹ pomiarow¹
+      //! \return czy czas aktywnej serii jest wewnÄ…trz jakiegoÅ› eventu zwiÄ…zanego z prÃ³bÄ… pomiarowÄ…
       bool timeInsideEvent();
-      //! zmiana podzia³ki
-      //! \param czy skalowanie powinno byæ do aktywnej serii czy do ca³ego wykresu
+      //! zmiana podziaÅ‚ki
+      //! \param czy skalowanie powinno byÄ‡ do aktywnej serii czy do caÅ‚ego wykresu
       void scaleToActiveSerie(bool);
-      //! Zmieniono przesuniêcie aktywnej serii
-      //! \param d przesuniêcie wzglêdem osi X
+      //! Zmieniono przesuniÄ™cie aktywnej serii
+      //! \param d przesuniÄ™cie wzglÄ™dem osi X
       void onShiftX(double d);
-      //! Zmieniono przesuniêcie aktywnej serii
-      //! \param d przesuniêcie wzglêdem osi Y
+      //! Zmieniono przesuniÄ™cie aktywnej serii
+      //! \param d przesuniÄ™cie wzglÄ™dem osi Y
       void onShiftY(double d);
       //! Zmieniono skale aktywnej serii
-      //! \param d skala wzglêdem osi X
+      //! \param d skala wzglÄ™dem osi X
       void onScaleX(double d);
       //! Zmieniono skala aktywnej serii
-      //! \param d skale wzglêdem osi Y
+      //! \param d skale wzglÄ™dem osi Y
       void onScaleY(double d);
-      //! zmiana widocznoœci obwiedni
-      //! \param show pokazaæ / ukryæ obwiednie
+      //! zmiana widocznoÅ›ci obwiedni
+      //! \param show pokazaÄ‡ / ukryÄ‡ obwiednie
       void showBands(bool show);
-      //! Wstêgi wokó³ serii danych - zbiorcze dla wszystkich serii na wykresie
+      //! WstÄ™gi wokÃ³Å‚ serii danych - zbiorcze dla wszystkich serii na wykresie
       void showDataBounds(bool show);
-      //! Œrednia danych
+      //! Åšrednia danych
       void showMovingAverageCurve(bool show);
-      //! Auto odœwie¿anie wstêg
+      //! Auto odÅ›wieÅ¼anie wstÄ™g
       void setAutoRefreshDataBounds(bool autorefresh);
-      //! Okno czasowe dla œredniej krocz¹cej
+      //! Okno czasowe dla Å›redniej kroczÄ…cej
       void setMovingAverageTimeWindow(double timeWindow);
 
 private:
-    //! dodatkowa krzywa - górne ograniczenie serii danych
+    //! dodatkowa krzywa - gÃ³rne ograniczenie serii danych
     QwtPlotCurve* upperBoundCurve;
     //! dodatkowa krzywa - dolne ograniczenie serii danych
     QwtPlotCurve* lowerBoundCurve;
-    //! dodatkowa krzywa - œrednia kroczaca
+    //! dodatkowa krzywa - Å›rednia kroczaca
     QwtPlotCurve* averageCurve;
-    //! wektor z operacjami do wykonania na póŸniej (w update) pozwala wyeliminowaæ problemy z watkami
+    //! wektor z operacjami do wykonania na pÃ³Åºniej (w update) pozwala wyeliminowaÄ‡ problemy z watkami
     std::vector< boost::function<void ()> > updateFIFO;
-    //! automatyczne odœwie¿anie dodatkowych krzywych
+    //! automatyczne odÅ›wieÅ¼anie dodatkowych krzywych
     bool boundsAutoRefresh;
-    //! dodatkowe krzywe powinny zostac odœwie¿one
+    //! dodatkowe krzywe powinny zostac odÅ›wieÅ¼one
     bool boundsToRefresh;
-    //! zakres czasowy dla krocz¹cej krzywej
+    //! zakres czasowy dla kroczÄ…cej krzywej
     double movingAverageTimeWindow;
-    //! liczba punktów przypadaj¹cych na zakres czasowy (okno) krzywej krocz¹cej
+    //! liczba punktÃ³w przypadajÄ…cych na zakres czasowy (okno) krzywej kroczÄ…cej
     int pointsPerWindow;
     //! Obiekt wykresu z Qwt, serce wizualizatora
     QwtPlot* qwtPlot;
-    //! Legenda, która zosta³a wzbogacona w customowe widgety
+    //! Legenda, ktÃ³ra zostaÅ‚a wzbogacona w customowe widgety
     NewChartLegend* legend;
-    //! Marker obrazuj¹cy aktualna wartoœæ na wykresie
+    //! Marker obrazujÄ…cy aktualna wartoÅ›Ä‡ na wykresie
     QwtPlotMarker* qwtMarker;
     //! "kratka" na wykresie
     core::shared_ptr<QwtPlotGrid> grid;
-    //! obiekt przechwuj¹cy ekstrema krzywych
+    //! obiekt przechwujÄ…cy ekstrema krzywych
     Scales plotScales;
     //! combo z lista serii danych
     QComboBox* activeSerieCombo;
     //! kolekcja z wszystkimi seriami danych
     std::vector<NewChartSerie*> series;
-    //! mapa przypisuj¹ca akcje do stanu wykresu
+    //! mapa przypisujÄ…ca akcje do stanu wykresu
     std::map<QAction*, NewChartStatePtr> statesMap;
     //! flaga mowiaca o tym, czy legenda jest widoczna
     bool showLegend;
-    //! aktualny stan wykresu, nie mo¿e byæ nullem
+    //! aktualny stan wykresu, nie moÅ¼e byÄ‡ nullem
     NewChartStatePtr currentState;
     //! indeks aktualnej serii
     int currentSerie;
 
     // TODO porzadek z manipulatorami
-    //! Manipulator ca³ego wykresu
+    //! Manipulator caÅ‚ego wykresu
     core::shared_ptr<QwtPlotZoomer> zoomer;
-    //! Manipulator ca³ego wykresu
+    //! Manipulator caÅ‚ego wykresu
     QwtPlotPanner* plotPanner;
-    //! Manipulator ca³ego wykresu
+    //! Manipulator caÅ‚ego wykresu
     QwtPlotMagnifier* plotMagnifier;
 
     //! Tabela statystyk
     StatsTable* statsTable;
-    //! czy wykres powinno siê skalowaæ do aktywnego
+    //! czy wykres powinno siÄ™ skalowaÄ‡ do aktywnego
     bool scaleToActive;
-    //! obiekt umo¿liwiaj¹cy rysowanie podzia³ki z procentami
+    //! obiekt umoÅ¼liwiajÄ…cy rysowanie podziaÅ‚ki z procentami
     PercentScaleDraw* percentDraw;
-    //! widget z menu eventów
+    //! widget z menu eventÃ³w
     QWidget* eventsContextWidget;
-    //! menu eventów (general, left, right)
+    //! menu eventÃ³w (general, left, right)
     QComboBox * eventsMenu;
-    //! akcja wywo³uj¹ca stan 'picker'
+    //! akcja wywoÅ‚ujÄ…ca stan 'picker'
     QAction* pickerAction;
-    //! akcja wywo³uj¹ca stan zaznaczania wartoœci na wykresie
+    //! akcja wywoÅ‚ujÄ…ca stan zaznaczania wartoÅ›ci na wykresie
     QAction* valueMarkerAction;
-    //! akcja wywo³uj¹ca stan zaznaczania roznicy wartoœci na wykresie
+    //! akcja wywoÅ‚ujÄ…ca stan zaznaczania roznicy wartoÅ›ci na wykresie
     QAction* vMarkerAction;
-    //! akcja wywo³uj¹ca stan zaznaczania roznicy argumentów na wykresie
+    //! akcja wywoÅ‚ujÄ…ca stan zaznaczania roznicy argumentÃ³w na wykresie
     QAction* hMarkerAction;
-    //! akcja wywo³uj¹ca skalowanie do aktywnej serii
+    //! akcja wywoÅ‚ujÄ…ca skalowanie do aktywnej serii
     QAction* scaleAction;
-    //! akcja wywo³uj¹ca pokazanie/chowanie dodatkowych krzywych
+    //! akcja wywoÅ‚ujÄ…ca pokazanie/chowanie dodatkowych krzywych
     QAction* bandsAction;
-    //! spinbox z aktualnym przesuniêciem w X aktywnej serii
+    //! spinbox z aktualnym przesuniÄ™ciem w X aktywnej serii
     QDoubleSpinBox* shiftSpinX;
-    //! spinbox z aktualnym przesuniêciem w Y aktywnej serii
+    //! spinbox z aktualnym przesuniÄ™ciem w Y aktywnej serii
     QDoubleSpinBox* shiftSpinY;
     //! spinbox z aktualna skala w X aktywnej serii
     QDoubleSpinBox* scaleSpinX;
     //! spinbox z aktualna skala w T aktywnej serii
     QDoubleSpinBox* scaleSpinY;
-    //! aktualny kontekst eventów (general, left, right)
+    //! aktualny kontekst eventÃ³w (general, left, right)
     C3DEventsCollection::Context context;
-    //! pomocnicze, do ustalenia czy zmieni³ siê aktualnie obrazowany event
+    //! pomocnicze, do ustalenia czy zmieniÅ‚ siÄ™ aktualnie obrazowany event
     EventsHelper::SegmentConstPtr oldSegment;
-    //! stan wizualizatora, picker - umo¿liwia wybieranie aktywnej serii klikaj¹c na nia
+    //! stan wizualizatora, picker - umoÅ¼liwia wybieranie aktywnej serii klikajÄ…c na nia
     NewChartPickerPtr picker;
     //! czas aktywnej serii
     float currentSerieTime;
-    //! aktualna wartoœæ dla serii
+    //! aktualna wartoÅ›Ä‡ dla serii
     float currentSerieValue;
 };
 typedef core::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;

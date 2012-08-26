@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 @author Marek Daniluk
 */
 
@@ -565,7 +565,7 @@ FtpsConnection::OperationStatus CommunicationManager::processPing(const Complete
 
 void CommunicationManager::run()
 {
-    //inicjujemy po³¹czenia dla us³ugi plików i zapytañ
+    //inicjujemy poÅ‚Ä…czenia dla usÅ‚ugi plikÃ³w i zapytaÅ„
     init();
 
     while(finish == false){
@@ -655,7 +655,7 @@ void CommunicationManager::run()
         }
     }
 
-    //zwalniamy zasoby po³¹czeñ dla us³ugi plików i prostych zapytañ
+    //zwalniamy zasoby poÅ‚Ä…czeÅ„ dla usÅ‚ugi plikÃ³w i prostych zapytaÅ„
     deinit();
 }
 

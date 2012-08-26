@@ -1,4 +1,4 @@
-#include <dfmlib/DFModel.h>
+Ôªø#include <dfmlib/DFModel.h>
 #include <dfmlib/DFSourceNode.h>
 #include <dfmlib/Connection.h>
 #include <algorithm>
@@ -181,7 +181,7 @@ void DFModel::leafHasProcessedData()
         ++finishedLeafes %= innerGetLeafNodes().size();
     }
     
-    //sprawdü czy wszystkie liúcie przetworzy≥y dane
+    //sprawd≈∫ czy wszystkie li≈õcie przetworzy≈Çy dane
 	if( finishedLeafes == 0 ){
         ScopedLock _lock(runningMutex);
         if(stopPending == true){

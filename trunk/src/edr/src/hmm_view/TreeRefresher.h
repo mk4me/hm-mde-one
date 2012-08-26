@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:	2012/05/31
 	created:	31:5:2012   12:23
 	filename: 	TreeRefresher.h
@@ -12,8 +12,8 @@
 
 #include <plugins/subject/Types.h>
 
-//! klasa s≥uøy do odúwieøania drzewa danych, 
-//! dodaje moøliwoúÊ zablokowania, drzewo zostanie odúwieøone dopiero, gdy bÍdzie to moøliwe
+//! klasa s≈Çu≈ºy do od≈õwie≈ºania drzewa danych, 
+//! dodaje mo≈ºliwo≈õƒá zablokowania, drzewo zostanie od≈õwie≈ºone dopiero, gdy bƒôdzie to mo≈ºliwe
 class TreeRefresher
 {
 public:
@@ -23,27 +23,27 @@ public:
     virtual ~TreeRefresher() {}
 
 public:
-    //! \return czy moøna odúwieøaÊ drzewo
+    //! \return czy mo≈ºna od≈õwie≈ºaƒá drzewo
     bool getPreventRefresh() const { return preventRefresh; }
-    //! ustawia moøliwoúÊ odúwieøania drzewa
+    //! ustawia mo≈ºliwo≈õƒá od≈õwie≈ºania drzewa
     //! \param val 
     void setPreventRefresh(bool val);
-    //! odúwieøy drzewo, jeúli jest to moøliwe, jeúli nie drzewo zostanie odúwieøone kiedy blokada zostanie zdjeta.
-    //! \param tree drzewo do odúwieøenia
+    //! od≈õwie≈ºy drzewo, je≈õli jest to mo≈ºliwe, je≈õli nie drzewo zostanie od≈õwie≈ºone kiedy blokada zostanie zdjeta.
+    //! \param tree drzewo do od≈õwie≈ºenia
     void refresh(QTreeWidget* tree);
 
 private:
-    //! w≥aúciwe odúwieøenie drzewa
-    //! \param tree drzewo do odúwieøenia
-    //! \param sessions sesje, na podstawie ktÛrych budowane bÍdzie drzewo
+    //! w≈Ça≈õciwe od≈õwie≈ºenie drzewa
+    //! \param tree drzewo do od≈õwie≈ºenia
+    //! \param sessions sesje, na podstawie kt√≥rych budowane bƒôdzie drzewo
     void actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions);
 
 private:
-    //! true - odúwieøanie zablokowane
+    //! true - od≈õwie≈ºanie zablokowane
     bool preventRefresh;
-    //! true - odúwieøanie bylo zablokowane kiedy przyszlo polecenia odúwieøenia
+    //! true - od≈õwie≈ºanie bylo zablokowane kiedy przyszlo polecenia od≈õwie≈ºenia
     bool needRefresh;
-    //! drzewo, ktÛre trzeba odúwieøyÊ
+    //! drzewo, kt√≥re trzeba od≈õwie≈ºyƒá
     QTreeWidget* tree;
 };
 

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/05/20
     created:  20:5:2011   11:33
     filename: EDRDataFlow.h
@@ -26,17 +26,17 @@ public:
 
     ~EDRDataFlow();
 
-    //! \param node Wêze³ którego kompatybilnoœæ z modelem sprawdzamy
-    //! \return Czy wêze³ jest wspierany przez model
+    //! \param node WÄ™zeÅ‚ ktÃ³rego kompatybilnoÅ›Ä‡ z modelem sprawdzamy
+    //! \return Czy wÄ™zeÅ‚ jest wspierany przez model
     virtual bool isNodeSupported(const dflm::NPtr & node) const;
 
 protected:
 
-    //! \param connection Po³aczenie do usuniêcia z modelu
+    //! \param connection PoÅ‚aczenie do usuniÄ™cia z modelu
     virtual void beforeRemoveConnection(const dflm::ConnPtr & connection);
 
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
+    //! \param src Pin ÅºrÃ³dÅ‚owy (wyjÅ›ciowy)
+    //! \param src Pin docelowy (wejÅ›ciowy)
     virtual void afterConnect(const dflm::ConnPtr & connection);
 
 };

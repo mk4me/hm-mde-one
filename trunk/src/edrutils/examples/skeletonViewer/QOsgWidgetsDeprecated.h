@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/10/15
 	created:  15:10:2010   15:04
 	filename: QOsgDeprecatedWidget.h
@@ -20,7 +20,7 @@ namespace core {
 
 
 /**
- *	Adapter pozwalaj¹cy na w³¹czenie widgetów z Qt do logiki Osg.
+ *	Adapter pozwalajÄ…cy na wÅ‚Ä…czenie widgetÃ³w z Qt do logiki Osg.
  */
 class QOsgDeprecatedWidget : public QGLWidget
 {
@@ -29,7 +29,7 @@ protected:
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> graphicsWindow;
 
 public:
-    //! Konstruktor w postaci w³aœciwej Qt.
+    //! Konstruktor w postaci wÅ‚aÅ›ciwej Qt.
     QOsgDeprecatedWidget( QWidget * parent = 0, const char * name = 0, 
         const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0 );
 
@@ -71,7 +71,7 @@ public:
 
     virtual ~QOsgDeprecatedViewer();
 
-    //! Metoda usprawniaj¹ca testowanie ró¿nych wariantów ³¹czenia OSG/QT.
+    //! Metoda usprawniajÄ…ca testowanie rÃ³Å¼nych wariantÃ³w Å‚Ä…czenia OSG/QT.
     void onInit(osgViewer::CompositeViewer* composite)
     {
     }

@@ -1,4 +1,4 @@
-#include "TestClientChannel.h"
+﻿#include "TestClientChannel.h"
 #include <utils/Debug.h>
 
 namespace timeline{

@@ -1,11 +1,11 @@
-#ifndef __AVINOUT_FFMPEGEXCEPTION_H__
+ï»¿#ifndef __AVINOUT_FFMPEGEXCEPTION_H__
 #define __AVINOUT_FFMPEGEXCEPTION_H__
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace video {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Wyj¹tek u¿ywany przez bibliotekê.
+//! WyjÄ…tek uÅ¼ywany przez bibliotekÄ™.
 class FFmpegError : public VideoError
 {
 public:

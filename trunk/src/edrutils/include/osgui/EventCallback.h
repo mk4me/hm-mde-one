@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/03/24
     created:  24:3:2011   16:23
     filename: EventCallback.h
@@ -17,7 +17,7 @@ UTILS_POP_WARNINGS
 
 namespace osgui 
 {
-    //! Uniwersalny event callback dla wêz³ów OSG.
+    //! Uniwersalny event callback dla wÄ™zÅ‚Ã³w OSG.
     template <class Func>
     class EventCallback : public osg::NodeCallback
     {
@@ -50,7 +50,7 @@ namespace osgui
         }
     };
 
-    //! Metoda fabryczna u³atwiaj¹ca tworzenie callbacków.
+    //! Metoda fabryczna uÅ‚atwiajÄ…ca tworzenie callbackÃ³w.
     template <class Func>
     EventCallback<Func>* createEventCallback(osgGA::GUIEventAdapter::EventType eventType, const Func& func)
     {

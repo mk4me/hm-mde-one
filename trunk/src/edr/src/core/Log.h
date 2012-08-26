@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/10/21
 	created:  21:10:2010   10:28
 	filename: Log.h
@@ -10,7 +10,7 @@
 #define __HEADER_GUARD__CORE_LOG_H__
 
 
-// tymczasowe rozwi¹zanie: u¿ywamy strumieni OSG
+// tymczasowe rozwiÄ…zanie: uÅ¼ywamy strumieni OSG
 #include <core/Config.h>
 #include <string>
 
@@ -21,8 +21,8 @@
 
 #include <log4cxx/logger.h>
 #include <core/PluginCommon.h>
-//! Tutaj dzieje siê magia. Binarka kliencka za³¹czaj¹c corelib (bibliotekê statyczn¹)
-//! musi gdzieœ stworzyæ tê zmienn¹, bo inaczej bêd¹ b³êdy linkera.
+//! Tutaj dzieje siÄ™ magia. Binarka kliencka zaÅ‚Ä…czajÄ…c corelib (bibliotekÄ™ statycznÄ…)
+//! musi gdzieÅ› stworzyÄ‡ tÄ™ zmiennÄ…, bo inaczej bÄ™dÄ… bÅ‚Ä™dy linkera.
 extern log4cxx::LoggerPtr __logger;
 
 #define __LOG_STATIC_HELPER(operation, path, msg) do {                              \
@@ -46,14 +46,14 @@ extern log4cxx::LoggerPtr __logger;
 //#define LOG_INFO(msg)     OSG_NOTICE<<__loggerPath<<": "<<msg<<std::endl
 //#define LOG_WARNING(msg)  OSG_WARN<<__loggerPath<<": "<<msg<<std::endl
 //
-//// Makra do logowania z u¿yciem loggera o zadanej œcie¿ce
+//// Makra do logowania z uÅ¼yciem loggera o zadanej Å›cieÅ¼ce
 //#define LOG_DEBUG_NAMED(path, msg)      OSG_DEBUG<<path<<": "<<msg<<std::endl
 //#define LOG_ERROR_NAMED(path, msg)      OSG_FATAL<<path<<": "<<msg<<std::endl
 //#define LOG_INFO_NAMED(path, msg)       OSG_NOTICE<<path<<": "<<msg<<std::endl
 //#define LOG_WARNING_NAMED(path, msg)    OSG_WARN<<path<<": "<<msg<<std::endl
 //
-//// Zoptymalizowane makra do logowania z u¿yciem loggera o zadanej œcie¿e. Parametr "path" musi byæ
-//// zawsze sta³y.
+//// Zoptymalizowane makra do logowania z uÅ¼yciem loggera o zadanej Å›cieÅ¼e. Parametr "path" musi byÄ‡
+//// zawsze staÅ‚y.
 //#define LOG_DEBUG_STATIC_NAMED(path, msg)   LOG_DEBUG_NAMED(path, msg)
 //#define LOG_ERROR_STATIC_NAMED(path, msg)   LOG_ERROR_NAMED(path, msg)
 //#define LOG_INFO_STATIC_NAMED(path, msg)    LOG_INFO_NAMED(path, msg)

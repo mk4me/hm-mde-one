@@ -1,4 +1,4 @@
-#include "TimelineWidget.h"
+﻿#include "TimelineWidget.h"
 #include <QtGui/QCheckBox>
 #include <QtGui/QResizeEvent>
 #include <QtGui/QPainter>

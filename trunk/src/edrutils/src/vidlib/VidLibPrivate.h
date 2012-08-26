@@ -1,13 +1,13 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2010/02/11
 	created:	11:2:2010   13:05
 	filename:   VidLibPrivate.h
 	author:		Piotr Gwiazdowski
 
-	purpose:	Nag³ówek u¿ywany przez wszystkie pliki niew³¹czone do
-            publicznego interfejsu biblioteki. Aby nie zaœmiecaæ
-            publicznego namespace'a i unikaæ konfliktów tutaj powinna
-            znajdowaæ siê wiêkszoœæ makr
+	purpose:	NagÅ‚Ã³wek uÅ¼ywany przez wszystkie pliki niewÅ‚Ä…czone do
+            publicznego interfejsu biblioteki. Aby nie zaÅ›miecaÄ‡
+            publicznego namespace'a i unikaÄ‡ konfliktÃ³w tutaj powinna
+            znajdowaÄ‡ siÄ™ wiÄ™kszoÅ›Ä‡ makr
 *********************************************************************/
 
 #ifndef HEADER_GUARD_VIDLIB__VIDLIBPRIVATE_H__
@@ -33,7 +33,7 @@
 
 //------------------------------------------------------------------------------
 
-//! Do jakiej wartoœci dane maj¹ byæ alignowane?
+//! Do jakiej wartoÅ›ci dane majÄ… byÄ‡ alignowane?
 #define VIDLIB_FFMPEG_ALIGN_BYTES 4
 
 //------------------------------------------------------------------------------

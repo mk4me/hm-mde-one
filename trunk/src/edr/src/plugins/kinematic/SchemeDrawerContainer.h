@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_SCHEMEDRAWERCONTAINER_H__
+ï»¿#ifndef HEADER_GUARD_SCHEMEDRAWERCONTAINER_H__
 #define HEADER_GUARD_SCHEMEDRAWERCONTAINER_H__
 #include <osg/Geode>
 #include <vector>
@@ -7,17 +7,17 @@
 #include "OsgSchemeDrawer.h"
 
 //! Klasa realizuje wzorzec 'kompozyt'
-//! pozwala przechowywaæ wiecej drawerów pod sob¹
+//! pozwala przechowywaÄ‡ wiecej drawerÃ³w pod sobÄ…
 class SchemeDrawerContainer : public OsgSchemeDrawer
 {
 public:
-    //! pozwala przechodziæ i modyfikowaæ kolekcjê drawerów
+    //! pozwala przechodziÄ‡ i modyfikowaÄ‡ kolekcjÄ™ drawerÃ³w
     typedef std::vector<OsgSchemeDrawerPtr>::iterator iterator;
-    //! pozwala przechodziæ kolekcjê drawerów
+    //! pozwala przechodziÄ‡ kolekcjÄ™ drawerÃ³w
     typedef std::vector<OsgSchemeDrawerPtr>::const_iterator const_iterator;
-    //! modyfikowalny zakres drawerów
+    //! modyfikowalny zakres drawerÃ³w
     typedef boost::iterator_range<iterator> range;
-    //! niemodyfikowalny zakres drawerów
+    //! niemodyfikowalny zakres drawerÃ³w
     typedef boost::iterator_range<const_iterator> const_range;
 
 public:
@@ -25,24 +25,24 @@ public:
     SchemeDrawerContainer();
 
 public:
-    //! return wêze³ do którego podpinane s¹ liœcie
+    //! return wÄ™zeÅ‚ do ktÃ³rego podpinane sÄ… liÅ›cie
     virtual osg::ref_ptr<osg::Node> getNode();
     //! inicjalizacja drawera
     //! \param scheme schemat wizualizacji z danymi
     virtual void init(VisualizationSchemeConstPtr scheme);
-    //! wywo³ywane przed zakoñczeniem pracy schematu wizulalizacji
+    //! wywoÅ‚ywane przed zakoÅ„czeniem pracy schematu wizulalizacji
     virtual void deinit();
-    //! wywo³ywane cyklicznie odrysowanie (nie u¿ywane)
+    //! wywoÅ‚ywane cyklicznie odrysowanie (nie uÅ¼ywane)
     virtual void draw();
-    //! wywo³ywane, gdy schemat zmieni³ swój stan
+    //! wywoÅ‚ywane, gdy schemat zmieniÅ‚ swÃ³j stan
     virtual void update();
 
 public:
-    //! Dodanie kolejnego drawera do kolecji, nie mo¿e on ju¿ w tej kolekcji figurowaæ
-    //! \param drawer dodawany drawer, jeœli ju¿ istnieje to wywo³a siê asercja
+    //! Dodanie kolejnego drawera do kolecji, nie moÅ¼e on juÅ¼ w tej kolekcji figurowaÄ‡
+    //! \param drawer dodawany drawer, jeÅ›li juÅ¼ istnieje to wywoÅ‚a siÄ™ asercja
     void addDrawer(OsgSchemeDrawerPtr drawer);
-    //! Usuniêcie drawera z kolekcji, drawer musi w kolekcji istnieæ
-    //! \param drawer usuwany drawer, jeœli go nie ma to wywo³ana zostnie asercja
+    //! UsuniÄ™cie drawera z kolekcji, drawer musi w kolekcji istnieÄ‡
+    //! \param drawer usuwany drawer, jeÅ›li go nie ma to wywoÅ‚ana zostnie asercja
     void removeDrawer(OsgSchemeDrawerPtr drawer);
     //! \return zwraca wszystkie potomne drawery
     range getDrawers();
@@ -52,9 +52,9 @@ public:
 private:
     //! kolekcja z drawerami
     std::vector<OsgSchemeDrawerPtr> drawers;
-    //! grupa, pod któr¹ podpiête zostan¹ wêz³y drawerów
+    //! grupa, pod ktÃ³rÄ… podpiÄ™te zostanÄ… wÄ™zÅ‚y drawerÃ³w
     osg::ref_ptr<osg::Group> nodes;
-    //! czy ju¿ zainicjalizowano
+    //! czy juÅ¼ zainicjalizowano
     bool wasInit;
 };
 

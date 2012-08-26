@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+﻿#include "../VideoPCH.h"
 #include <utils/Enum.h>
 #include <plugins/video/core/PixelFormat.h>
 

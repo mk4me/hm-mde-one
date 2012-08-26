@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/08/08
     created:  8:8:2011   8:05
     filename: TimelineService.h
@@ -46,11 +46,11 @@ public:
     virtual const std::string& getName() const;
 
 public:
-    //! \param stream Strumieñ do dodania.
+    //! \param stream StrumieÅ„ do dodania.
     virtual void addChannel(const std::string & path, const timeline::IChannelPtr & channel);
 
     virtual void removeChannel(const std::string & path);
-    //! \return true je¿eli timeline sam siê odtwarza.
+    //! \return true jeÅ¼eli timeline sam siÄ™ odtwarza.
     virtual bool isPlaying() const;
     //!
     virtual void setPlaying(bool playing);

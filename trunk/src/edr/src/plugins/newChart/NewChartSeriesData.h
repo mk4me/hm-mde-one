@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/02/22
 	created:	22:2:2012   10:14
 	filename: 	NewChartSeriesData.h
@@ -12,51 +12,51 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
-//! Klasa rozszerza podstawowy kontener próbek z Qwt
-//! dziêki niej mo¿na zasiliæ wykres bez koniecznoœci kopiowania danych
-//! Dodatkowo dodana zosta³a mo¿liwoœæ transformacji wykresu (offset + skala)
+//! Klasa rozszerza podstawowy kontener prÃ³bek z Qwt
+//! dziÄ™ki niej moÅ¼na zasiliÄ‡ wykres bez koniecznoÅ›ci kopiowania danych
+//! Dodatkowo dodana zostaÅ‚a moÅ¼liwoÅ›Ä‡ transformacji wykresu (offset + skala)
 class NewChartSeriesData : public QwtSeriesData<QPointF>
 {
 public:
-    //! Konstruktor, trzeba dostarczyæ dane do wykresu
-    //! \param channel DataChannel, bêdzie przechowywany na w³asnoœæ
-    //! \param offset pocz¹tkowe przesuniêcie (domyœlnie = (0,0))
-    //! \param scaleX pocz¹tkowa skala w poziomie (domyœlnie 1)
-    //! \param scaleY pocz¹tkowa skala w pionie (domyœlnie 1)
+    //! Konstruktor, trzeba dostarczyÄ‡ dane do wykresu
+    //! \param channel DataChannel, bÄ™dzie przechowywany na wÅ‚asnoÅ›Ä‡
+    //! \param offset poczÄ…tkowe przesuniÄ™cie (domyÅ›lnie = (0,0))
+    //! \param scaleX poczÄ…tkowa skala w poziomie (domyÅ›lnie 1)
+    //! \param scaleY poczÄ…tkowa skala w pionie (domyÅ›lnie 1)
     NewChartSeriesData(ScalarChannelReaderInterfaceConstPtr channel, 
         QPointF offset = QPointF(), double scaleX = 1.0, double scaleY = 1.0);
 
 public:
-    //! \return liczba próbek
+    //! \return liczba prÃ³bek
     virtual size_t size() const;
-    //! Konwertuje próbkê z DataChannel na format obs³ugiwany przez Qwt
-    //! \param i numer próbki
-    //! \return wartoœæ konkretnej próbki
+    //! Konwertuje prÃ³bkÄ™ z DataChannel na format obsÅ‚ugiwany przez Qwt
+    //! \param i numer prÃ³bki
+    //! \return wartoÅ›Ä‡ konkretnej prÃ³bki
     virtual QPointF sample( size_t i ) const;
-    //! \return wielkoœæ obszaru zajmowanego przez krzywa
+    //! \return wielkoÅ›Ä‡ obszaru zajmowanego przez krzywa
     virtual QRectF boundingRect() const;
 
 public:
-    //! \return przesuniêcie wykresu
+    //! \return przesuniÄ™cie wykresu
     QPointF getOffset() const { return offset; }
-    //! ustawia przesuniêcie wykresu
-    //! \param val nowe przesuniêcie
+    //! ustawia przesuniÄ™cie wykresu
+    //! \param val nowe przesuniÄ™cie
     void setOffset(QPointF val) { offset = val; }
-    //! \return skala dla wartoœci
+    //! \return skala dla wartoÅ›ci
     double getScaleY() const { return scaleY; }
-    //! ustawia skalê dla wartoœci
-    //! \param val nowa skala, nie mo¿e byæ równa 0
+    //! ustawia skalÄ™ dla wartoÅ›ci
+    //! \param val nowa skala, nie moÅ¼e byÄ‡ rÃ³wna 0
     void setScaleY(double val) { scaleY = val; }
-    //! \return skala dla argumentów
+    //! \return skala dla argumentÃ³w
     double getScaleX() const { return scaleX; }
-    //! ustawia skalê dla argumentów
-    //! \param val nowa skala, nie mo¿e byæ równa 0
+    //! ustawia skalÄ™ dla argumentÃ³w
+    //! \param val nowa skala, nie moÅ¼e byÄ‡ rÃ³wna 0
     void setScaleX(double val) { scaleX = val; }
 
 private:
     //! DataChannel z danymi
     ScalarChannelReaderInterfaceConstPtr channel;
-    //! ustawione przesuniêcie
+    //! ustawione przesuniÄ™cie
     QPointF offset;
     //! ustawiona skala pozioma
     double scaleX;

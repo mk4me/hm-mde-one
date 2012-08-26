@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:  2010/12/15
 	created:  15:12:2010   10:50
 	filename: OsgSceneDump.h
@@ -25,9 +25,9 @@ namespace core {
 class OsgSceneDumpString : public osg::NodeVisitor
 {
 private:
-    //! Poziom zagnieødøenia.
+    //! Poziom zagnie≈ºd≈ºenia.
     std::string identation;
-    //! StrumieÒ wyjúciowy.
+    //! Strumie≈Ñ wyj≈õciowy.
     std::ostringstream stream;
 
 public:
@@ -71,7 +71,7 @@ public:
 class OsgSceneDumpQtTree : public osg::NodeVisitor
 {
 private:
-    //! Bieøπcy rodzic.
+    //! Bie≈ºƒÖcy rodzic.
     QTreeWidgetItem* currentParent;
     //! Widget.
     QTreeWidget* widget;

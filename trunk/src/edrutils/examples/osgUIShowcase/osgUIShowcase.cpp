@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 
 #include <boost/foreach.hpp>
 
@@ -286,7 +286,7 @@ void createExample(osgViewer::View& view, int w, int h)
         ContextMenu* contextMenu = new ContextMenu();
         contextMenu->addMenuItem(std::string("Plik/Otworz"), false, osgui::ContextMenu::OnClickCallback());
         contextMenu->addMenuItem(std::string("Plik/Zapisz"), false, osgui::ContextMenu::OnClickCallback());
-        contextMenu->addMenuItem(std::string("Zako�cz"), false, osgui::ContextMenu::OnClickCallback());
+        contextMenu->addMenuItem(std::string("Zakończ"), false, osgui::ContextMenu::OnClickCallback());
 
         wm->addChild(contextMenu);
         //! add styles to context menu

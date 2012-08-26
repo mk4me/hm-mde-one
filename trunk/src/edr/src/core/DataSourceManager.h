@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/05/30
     created:  30:5:2011   8:40
     filename: DataSourceManager.h
@@ -18,7 +18,7 @@ class DataSourceManager : public core::IDataSourceManager, public utils::Observa
 {
     friend class DataSource;
 public:
-    //! Lista ürÛde≥ danych.
+    //! Lista ≈∫r√≥de≈Ç danych.
     typedef std::vector<core::IDataSourcePtr> IDataSources;
     //! 
     typedef boost::iterator_range<IDataSources::const_iterator> IDataSourcesConstRange;
@@ -27,9 +27,9 @@ public:
 
 private:
 
-    //! Prototypy ürÛde≥ danych.
+    //! Prototypy ≈∫r√≥de≈Ç danych.
     IDataSources prototypes;
-    //! Lista úledzπca ürÛd≥a danych.
+    //! Lista ≈õledzƒÖca ≈∫r√≥d≈Ça danych.
     DataSources dataSources;
 
 public:
@@ -43,38 +43,38 @@ public:
     //! \param dataSource
     virtual void registerDataSource(const core::IDataSourcePtr & dataSource);
 
-    //! \return Wyliczenie prototypÛw.
+    //! \return Wyliczenie prototyp√≥w.
     inline IDataSourcesConstRange enumPrototypes() const
     {
         return boost::make_iterator_range(prototypes.begin(), prototypes.end());
     }
-    //! \return Liczba zarejestrowanych prototypÛw.
+    //! \return Liczba zarejestrowanych prototyp√≥w.
     inline int getNumPrototypes() const
     {
         return static_cast<int>(prototypes.size());
     }
-    //! \param i Indeks ürÛd≥a.
+    //! \param i Indeks ≈∫r√≥d≈Ça.
     inline core::IDataSourceConstPtr getPrototype(int i) const
     {
         UTILS_ASSERT(i < getNumPrototypes());
         return prototypes[i];
     }
 
-    //! \param id ID ürÛd≥a.
+    //! \param id ID ≈∫r√≥d≈Ça.
     core::IDataSourceConstPtr getPrototype(UniqueID id) const;
 
-    //! Tworzy instancjÍ ürÛd≥a.
-    //! \param id id ürÛd≥a.
-    //! \return Instancja ürÛd≥a.
+    //! Tworzy instancjƒô ≈∫r√≥d≈Ça.
+    //! \param id id ≈∫r√≥d≈Ça.
+    //! \return Instancja ≈∫r√≥d≈Ça.
     DataSourcePtr createDataSource(UniqueID id);
 
-    //! \return Liczba instancji ürÛde≥ danego typu.
+    //! \return Liczba instancji ≈∫r√≥de≈Ç danego typu.
     int getNumInstances(UniqueID id);
 
 private:
-    //! Tworzy instancjÍ ürÛd≥a.
-    //! \param id id ürÛd≥a.
-    //! \return Instancja ürÛ≥a.
+    //! Tworzy instancjƒô ≈∫r√≥d≈Ça.
+    //! \param id id ≈∫r√≥d≈Ça.
+    //! \return Instancja ≈∫r√≥≈Ça.
     DataSourcePtr createDataSource(const core::IDataSourceConstPtr& prototype);
     //! 
     DataSourcePtr createDataSource(const DataSource& prototype);

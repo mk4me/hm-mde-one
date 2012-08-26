@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+Ôªø#include "StdAfx.h"
 #include <vdfmlib/osgVDFNode.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -236,14 +236,14 @@ void osgVDFNode::lockForEditing(bool lock)
 
         //TODO
         //load new textures!!
-        //albo podepnij inne eventy z info øe to teraz nie dzia≥a
+        //albo podepnij inne eventy z info ≈ºe to teraz nie dzia≈Ça
     }else{
         m_pConfigure->setEventMask(osgWidget::EVENT_MOUSE_PUSH);
         m_pDelete->setEventMask(osgWidget::EVENT_MOUSE_PUSH);
 
         //TODO
         //load new textures!!
-        //ewentualnie podepnij w≥aúciwe eventy
+        //ewentualnie podepnij w≈Ça≈õciwe eventy
     }
 }
 
@@ -598,7 +598,7 @@ void osgVDFNode::_resizeImplementation(osgWidget::point_type diffWidth, osgWidge
 			repositionInPins();
 		}
 
-		//update pozycji out pins jeúli sπ
+		//update pozycji out pins je≈õli sƒÖ
 		if(outPins.empty() == false){
 			repositionOutPins();
 		}

@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include "KinematicSerie.h"
 
 KinematicSerie::KinematicSerie() :
@@ -6,17 +6,17 @@ transformNode(new osg::PositionAttitudeTransform()),
     matrixTransform(new osg::MatrixTransform()),
     time(0.0)
 {
-    // wêze³ obs³ugiwany przez manipulatory jest parentem dla wezja wewnetrznego serii
+    // wÄ™zeÅ‚ obsÅ‚ugiwany przez manipulatory jest parentem dla wezja wewnetrznego serii
     matrixTransform->addChild(transformNode);
 }
 
 void KinematicSerie::resetTransform()
 {
-    // zerowanie pracy manipulatorów
+    // zerowanie pracy manipulatorÃ³w
     MatrixTransformPtr transform = getMatrixTransformNode();
     // pobieramy podstawowa macierz (dla czasu 0)
     transform->setMatrix(getInitialMatrix());
-    // ustawienie czasu (powinno odœwie¿yæ)
+    // ustawienie czasu (powinno odÅ›wieÅ¼yÄ‡)
     setLocalTime(getTime());
 }
 
@@ -30,7 +30,7 @@ void KinematicSerie::setTime( double val )
 osg::Vec3 KinematicSerie::getPivot() const
 {
     // w najprostszym wariancie, pivot pobieramy od razu z macierzy
-    // klasy pochodne moga to robic w inny sposób
+    // klasy pochodne moga to robic w inny sposÃ³b
     auto matrix = matrixTransform->getMatrix();
     auto t1 = matrix.getTrans();
     return t1;

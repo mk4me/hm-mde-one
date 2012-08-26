@@ -1,13 +1,13 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include "GRFSerie.h"
 
 using namespace osg;
 using namespace boost;
 using namespace std;
 
-//! skala strza³ki ukazuj¹cej si³ê nacisku
+//! skala strzaÅ‚ki ukazujÄ…cej siÅ‚Ä™ nacisku
 const osg::Vec3 arrowScale(0.01f, 0.01f, 1.0f);
-//! prog dla którego sensowne jest wizualizowanie odczytów GRF
+//! prog dla ktÃ³rego sensowne jest wizualizowanie odczytÃ³w GRF
 const float treshold = 0.01f;
 
 osg::ref_ptr<osg::Texture2D> GRFSerie::texture1;

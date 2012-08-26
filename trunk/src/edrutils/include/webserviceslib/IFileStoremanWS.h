@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/28
     created:  28:2:2012   22:38
     filename: IFileStoremanWS.h
@@ -15,7 +15,7 @@
 
 namespace webservices
 {
-//! Podstawowy interfejs przygotowuj¹cy pliki do œci¹gniêcia i czyszcz¹cy po zakoñczeniu komunikacji
+//! Podstawowy interfejs przygotowujÄ…cy pliki do Å›ciÄ…gniÄ™cia i czyszczÄ…cy po zakoÅ„czeniu komunikacji
 class IBasicStoremanWS : public virtual IWebService
 {
 public:
@@ -23,16 +23,16 @@ public:
     virtual ~IBasicStoremanWS() {}
 
     /**
-	Potwierdza ukoñczenie pobierania. Stanowi zarazem sygna³ dla us³ugi, aby uprzatn¹c plik z serwera ftp.
+	Potwierdza ukoÅ„czenie pobierania. Stanowi zarazem sygnaÅ‚ dla usÅ‚ugi, aby uprzatnÄ…c plik z serwera ftp.
 	@param id ID pliku do pobrania
-	@param path œcie¿ka wzglêdna do pliku na serwerze podana w rezultacie operacji RetrieveFile
+	@param path Å›cieÅ¼ka wzglÄ™dna do pliku na serwerze podana w rezultacie operacji RetrieveFile
 	*/
 	virtual void downloadComplete(int id, const std::string & path) = 0;
 
     /**
 	Wydobywanie pliku z bazy danych o podanym ID do uri zwracanego przez metode.
 	@param id ID pliku do pobrania
-	@return œcie¿ka wzglêdna do pliku wraz z nazwa pliku
+	@return Å›cieÅ¼ka wzglÄ™dna do pliku wraz z nazwa pliku
 	*/
 	virtual const std::string retrieve(int id) = 0;
 };
@@ -40,7 +40,7 @@ public:
 typedef boost::shared_ptr<IBasicStoremanWS> BasicStoremanWSPtr;
 typedef boost::shared_ptr<const IBasicStoremanWS> BasicStoremanWSConstPtr;
 
-//! Interfejs us³ugi zarz¹dzaj¹cej pobieraniem/wysy³aniem plików do serwera
+//! Interfejs usÅ‚ugi zarzÄ…dzajÄ…cej pobieraniem/wysyÅ‚aniem plikÃ³w do serwera
 class IShallowStoremanWS : public virtual IWebService
 {
 public:
@@ -48,14 +48,14 @@ public:
     virtual ~IShallowStoremanWS() {}
 
     /**
-	P³ytka kopia bazy danych.
-	@return œcie¿ka do pliku xml z kopi¹ db na serwerze ftp.
+	PÅ‚ytka kopia bazy danych.
+	@return Å›cieÅ¼ka do pliku xml z kopiÄ… db na serwerze ftp.
 	*/
 	virtual const std::string getShallowCopy() = 0;
 
 	/**
 	Metadane z bazy danych.
-	@return œcie¿ka do pliku xml z metadanymi na serwerze ftp.
+	@return Å›cieÅ¼ka do pliku xml z metadanymi na serwerze ftp.
 	*/
 	virtual const std::string getMetadata() = 0;
 
@@ -81,54 +81,54 @@ public:
 
     virtual ~IMotionFileStoremanWS() {}
 
-    //! \param datTime Czas od którego potrzebujemy zmian jakie zasz³y w bazie danych
-    //! \return Œcie¿ka na serwerze ftp do ró¿nicowej kopii danych ruchu pocz¹wszy od czasu jaki zadaliœmy
+    //! \param datTime Czas od ktÃ³rego potrzebujemy zmian jakie zaszÅ‚y w bazie danych
+    //! \return ÅšcieÅ¼ka na serwerze ftp do rÃ³Å¼nicowej kopii danych ruchu poczÄ…wszy od czasu jaki zadaliÅ›my
     virtual const std::string getShallowCopyIncrement(const DateTime & dateTime) = 0;
 
     /**
-	Realizuje wprowadzenie pojedynczego pliku przez performera pod kontrolê bazy danych.
+	Realizuje wprowadzenie pojedynczego pliku przez performera pod kontrolÄ™ bazy danych.
 	@param performerID id performera
-	@param path wzglêdna œcie¿ka do pliku na dysku serwera w stosunku do korzenia obszaru Us³ugi Transportu Plików
+	@param path wzglÄ™dna Å›cieÅ¼ka do pliku na dysku serwera w stosunku do korzenia obszaru UsÅ‚ugi Transportu PlikÃ³w
 	@param description opis pliku
 	@param filename nazwa pliku
 	@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 	*/
 	virtual const int storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename) = 0;
 	/**
-	Realizuje wprowadzenie plików pod kontrolê bazy danych.
+	Realizuje wprowadzenie plikÃ³w pod kontrolÄ™ bazy danych.
 	@param performerID id performera
-	@param path œcie¿ka do katalogu z plikami do wgrania na serwer
+	@param path Å›cieÅ¼ka do katalogu z plikami do wgrania na serwer
 	*/
 	virtual void storePerformerFiles(int performerID, const std::string& path) = 0;
 	/**
-	Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolê bazy danych.
-	@param sessionID id sesji która wczeœniej zosta³a juz umieszczona w bazie danych
-	@param path wzglêdna œcie¿ka do pliku na dysku serwera w stosunku do korzenia obszaru Us³ugi Transportu Plików
+	Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolÄ™ bazy danych.
+	@param sessionID id sesji ktÃ³ra wczeÅ›niej zostaÅ‚a juz umieszczona w bazie danych
+	@param path wzglÄ™dna Å›cieÅ¼ka do pliku na dysku serwera w stosunku do korzenia obszaru UsÅ‚ugi Transportu PlikÃ³w
 	@param description opis pliku
 	@param filename nazwa pliku
 	@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 	*/
 	virtual const int storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename) = 0;
 	/**
-	Realizuje wprowadzenie plików pod kontrolê bazy danych.
-	@param sessionID id sesji która wczeœniej zosta³a juz umieszczona w bazie danych
-	@param path œcie¿ka do katalogu z plikami do wgrania na serwer
+	Realizuje wprowadzenie plikÃ³w pod kontrolÄ™ bazy danych.
+	@param sessionID id sesji ktÃ³ra wczeÅ›niej zostaÅ‚a juz umieszczona w bazie danych
+	@param path Å›cieÅ¼ka do katalogu z plikami do wgrania na serwer
 	@param description
 	*/
 	virtual const int storeSessionFiles(int sessionID, const std::string& path, const std::string& description) = 0;
 	/**
-	Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolê bazy danych.
+	Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolÄ™ bazy danych.
 	@param trialID id trial
-	@param path wzglêdna œcie¿ka do pliku na dysku serwera w stosunku do korzenia obszaru Us³ugi Transportu Plików
+	@param path wzglÄ™dna Å›cieÅ¼ka do pliku na dysku serwera w stosunku do korzenia obszaru UsÅ‚ugi Transportu PlikÃ³w
 	@param description opis pliku
 	@param filename nazwa pliku
 	@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 	*/
 	virtual const int storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename) = 0;
 	/**
-	Realizuje wprowadzenie plików pod kontrolê bazy danych.
+	Realizuje wprowadzenie plikÃ³w pod kontrolÄ™ bazy danych.
 	@param trialID id trial
-	@param path œcie¿ka do katalogu z plikami do wgrania na serwer
+	@param path Å›cieÅ¼ka do katalogu z plikami do wgrania na serwer
 	*/
 	virtual void storeTrialFiles(int trialID, const std::string& path) = 0;
 };

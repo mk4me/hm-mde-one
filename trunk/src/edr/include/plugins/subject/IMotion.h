@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/11/03
     created:  3:11:2011   10:02
     filename: IMotion.h
@@ -16,7 +16,7 @@
 
 namespace PluginSubject{
 
-//! Abstrakcyjna klasa reprezentuj¹ca pojedynczy ruch obiektu w ramach sesji
+//! Abstrakcyjna klasa reprezentujÄ…ca pojedynczy ruch obiektu w ramach sesji
 class IMotion
 {
 public:
@@ -27,7 +27,7 @@ public:
     virtual SubjectID getID() const = 0;
     //! \return Lokalny, unikalny ID w ramach sesji
     virtual SubjectID getLocalID() const = 0;
-    //! \return Sesja z któr¹ zwi¹zany jest ten ruch
+    //! \return Sesja z ktÃ³rÄ… zwiÄ…zany jest ten ruch
     virtual const SessionConstPtr & getSession() const = 0;
 
     //! \return Globalna nazwa ruchu
@@ -35,9 +35,9 @@ public:
     //! \return Lokalna nazwa ruchu w ramach sesji
     virtual const std::string & getLocalName() const = 0;
 
-    //! \return Iloœæ obiektów domenowych Motiona
+    //! \return IloÅ›Ä‡ obiektÃ³w domenowych Motiona
     virtual int size() const = 0;
-    //! \param i Indeks obiektu domenowego który chcemy pobraæ [0 - (size() - 1)]
+    //! \param i Indeks obiektu domenowego ktÃ³ry chcemy pobraÄ‡ [0 - (size() - 1)]
     //! \return Obiekt domenowy
     virtual const core::ObjectWrapperConstPtr & get(int i) const = 0;
 

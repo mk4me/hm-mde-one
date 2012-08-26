@@ -1,4 +1,4 @@
-#include "../PCH.h"
+﻿#include "../PCH.h"
 #include "../VidLibPrivate.h"
 #include <vidlib/osg/OsgAdapter.h>
 #include <boost/foreach.hpp>

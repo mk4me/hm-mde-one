@@ -1,4 +1,4 @@
-/*******************************************************************
+ï»¿/*******************************************************************
 	created:  2010/06/09
 	created:  9:6:2010   18:04
 	filename: HorizontalScrollBar.h
@@ -13,8 +13,8 @@
 #include <osgWidget/Canvas>
 
 // TODO
-// Jeœli wrzuci siê ten kod do osobnej biblioteki te includy trzeba
-// bêdzie przerobiæ na bezwzglêdne (nawiasy ostre)
+// JeÅ›li wrzuci siÄ™ ten kod do osobnej biblioteki te includy trzeba
+// bÄ™dzie przerobiÄ‡ na bezwzglÄ™dne (nawiasy ostre)
 #include <core/Buttonized.h>
 #include "NestedNodeCallback.h"
 #include "Callback.h"
@@ -109,7 +109,7 @@ public:
     return currentValue;
   }
 
-  //! \param value Znormalizowana wartoœæ.
+  //! \param value Znormalizowana wartoÅ›Ä‡.
   void setValue(double value);
 
   //! \return Rozszerzenie obszaru tracka.
@@ -149,22 +149,22 @@ public:
   }
 
 protected:
-  //! Operator aktualizucj¹cy.
+  //! Operator aktualizucjÄ…cy.
   //! \param node
   //! \param nv
   void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
-  //! Pomocnicza funkcja do ustawiania wartoœci.
-  //! \param value Znormalizowana wartoœæ.
+  //! Pomocnicza funkcja do ustawiania wartoÅ›ci.
+  //! \param value Znormalizowana wartoÅ›Ä‡.
   void setCursorValue(double value);
-  //! Pomocnicza funkcja pobierania wartoœci.
-  //! \return Znormalizowana wartoœæ.
+  //! Pomocnicza funkcja pobierania wartoÅ›ci.
+  //! \return Znormalizowana wartoÅ›Ä‡.
   double getCursorValue() const;
-  //! Pomocnicza funkcja tworz¹ca widget t³a z domyœlnymi parametrami.
+  //! Pomocnicza funkcja tworzÄ…ca widget tÅ‚a z domyÅ›lnymi parametrami.
   //! \param name
   //! \param canFill
   osgWidget::Widget * createBackgroundWidget(const std::string& name, bool canFill = false);
-  //! \return Ramka okreœlaj¹ca po³o¿enie, w jakim mo¿e znajdowaæ siê kursor. Zale¿y od
+  //! \return Ramka okreÅ›lajÄ…ca poÅ‚oÅ¼enie, w jakim moÅ¼e znajdowaÄ‡ siÄ™ kursor. ZaleÅ¼y od
   //!         rozmiaru tracka oraz od property trackExtension.
   osgWidget::Quad getCursorBounds() const;
 

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2011/01/07
 	created:  7:1:2011   16:26
 	filename: DisableableRenderer.h
@@ -27,12 +27,12 @@ public:
     {
     }
 
-    //! \return Czy renderowanie jest dostêpne?
+    //! \return Czy renderowanie jest dostÄ™pne?
     bool isRenderingEnabled() const
     { 
         return renderEnabled;
     }
-    //! \param renderEnabled Czy renderowanie jest dostêpne?
+    //! \param renderEnabled Czy renderowanie jest dostÄ™pne?
     void setRenderingEnabled(bool renderEnabled) 
     { 
         this->renderEnabled = renderEnabled; 

@@ -1,11 +1,11 @@
-#include <webserviceslib/DateTime.h>
+ï»¿#include <webserviceslib/DateTime.h>
 #include <time.h>
 
 namespace webservices
 {
-	//! \param time Czas w formie stringu który chcemy rozpakowaæ do naszgo formatu czasu
+	//! \param time Czas w formie stringu ktÃ³ry chcemy rozpakowaÄ‡ do naszgo formatu czasu
 	const DateTime toTime(const std::string & time);
 
-	//! \param time Czas któy konwertujemy do ci¹gu znaków w formacie UTC
+	//! \param time Czas ktÃ³y konwertujemy do ciÄ…gu znakÃ³w w formacie UTC
 	const std::string toString(const struct tm & time);
 }

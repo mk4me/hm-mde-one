@@ -1,4 +1,4 @@
-#ifndef USER_INTERFACE_SERVICE_H
+Ôªø#ifndef USER_INTERFACE_SERVICE_H
 #define USER_INTERFACE_SERVICE_H
 
 #include <string>
@@ -13,7 +13,7 @@ public:
     virtual ~UserInterfaceService();
 
 public:
-    //! \param mainWindow Wskaünik na g≥Ûwne okno.
+    //! \param mainWindow Wska≈∫nik na g≈Ç√≥wne okno.
     void setMainWindow(core::Window* mainWindow);
 
 // IService
@@ -25,13 +25,13 @@ public:
 
 // IUserInterface
 public:
-    //! \return Wskaünik na g≥Ûwne okno.
+    //! \return Wska≈∫nik na g≈Ç√≥wne okno.
     virtual core::Window* getMainWindow();
 
 private: 
-    //! Wskaünik na g≥Ûwne okno.
+    //! Wska≈∫nik na g≈Ç√≥wne okno.
     core::Window* mainWindow;
-    //! Nazwa us≥ugi.
+    //! Nazwa us≈Çugi.
     std::string name;
 };
 

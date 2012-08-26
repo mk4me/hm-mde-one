@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/11/17
 	created:  17:11:2010   17:16
 	filename: LabeledView.h
@@ -21,7 +21,7 @@
 namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
-// TODO: zamieniæ na bez szablonu
+// TODO: zamieniÄ‡ na bez szablonu
 
 template <class Overlay = Buttonized< Borderized<osgWidget::Widget>, BorderStylePolicy<DefaultStylePolicy> > >
 class LabeledView : public osgWidget::Window
@@ -110,7 +110,7 @@ public:
     }
 
 protected:
-    //! Prze³adowanie metody rozmieszczaj¹cej elementy.
+    //! PrzeÅ‚adowanie metody rozmieszczajÄ…cej elementy.
     //! \param diffWidth
     //! \param diffHeight
     virtual void _resizeImplementation( osgWidget::point_type diffWidth, osgWidget::point_type diffHeight )
@@ -128,7 +128,7 @@ protected:
         label->setOrigin( margin, height - label->getHeight() - margin);
     }
 
-    //! Prze³adowanie metody obliczaj¹cej rozmiar.
+    //! PrzeÅ‚adowanie metody obliczajÄ…cej rozmiar.
     virtual osgWidget::Window::Sizes _getWidthImplementation() const
     {
         osgWidget::Window::Sizes result;
@@ -136,7 +136,7 @@ protected:
         result.current = result.minimum > getOverlay()->getWidth() ? result.minimum : getOverlay()->getWidth();
         return result;
     }
-    //! Prze³adowanie metody obliczaj¹cej rozmiar.
+    //! PrzeÅ‚adowanie metody obliczajÄ…cej rozmiar.
     virtual osgWidget::Window::Sizes _getHeightImplementation() const
     {
         osgWidget::Window::Sizes result;

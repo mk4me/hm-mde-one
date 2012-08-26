@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/05/24
     created:  24:5:2011   14:06
     filename: WorkflowManager.h
@@ -24,7 +24,7 @@ public:
 
 private:
 
-    //! Lista œledz¹ca wizualizatory.
+    //! Lista Å›ledzÄ…ca wizualizatory.
     Workflows workflows;
 
 public:
@@ -39,7 +39,7 @@ public:
         return static_cast<WorkflowManager*>(core::getWorkflowManager());
     }
 
-    //! Tworzy instancjê wizualizatora.
+    //! Tworzy instancjÄ™ wizualizatora.
     //! \param id id wizualizatora.
     //! \return Instancja wizualizatora.
     WorkflowPtr createWorkflow();

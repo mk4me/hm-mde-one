@@ -1,4 +1,4 @@
-#include "ChartPCH.h"
+﻿#include "ChartPCH.h"
 #include <core/Plugin.h>
 #include "ChartVisualizer.h"
 

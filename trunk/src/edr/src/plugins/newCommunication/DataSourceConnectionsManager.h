@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/07
     created:  7:3:2012   13:29
     filename: DataSourceConnectionsManager.h
@@ -12,49 +12,49 @@
 #include "WSConnection.h"
 #include <webserviceslib/FtpsConnection.h>
 
-//! Klasa agreguj¹ca po³¹czenia webservices - singletone
+//! Klasa agregujÄ…ca poÅ‚Ä…czenia webservices - singletone
 class DataSourceConnectionManager
 {
 public:
-	//! \return Tworzy innstancjê managera po³¹czeñ
+	//! \return Tworzy innstancjÄ™ managera poÅ‚Ä…czeÅ„
 	static DataSourceConnectionManager * create();
-	//! Niszczy instancje managera po³¹czeñ
+	//! Niszczy instancje managera poÅ‚Ä…czeÅ„
 	static void destroy();
 
-	//! \return Instancja managera po³¹czeñ
+	//! \return Instancja managera poÅ‚Ä…czeÅ„
 	static DataSourceConnectionManager * instance();
 
-	//! \return Po³¹czenie z us³ug¹ FileStoremanWS dla danych ruchu
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… FileStoremanWS dla danych ruchu
 	const WSConnectionPtr & motionFileStoremanWSConnection() const;
-	//! \return Po³¹czenie z us³ug¹ BasicQueriesWS dla danych ruchu
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… BasicQueriesWS dla danych ruchu
 	const WSConnectionPtr & motionBasicQueriesWSConnection() const;
-	//! \return Po³¹czenie z us³ug¹ BasicUpdatesWS dla danych ruchu
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… BasicUpdatesWS dla danych ruchu
 	const WSConnectionPtr & motionBasicUpdatesWSConnection() const;
 
-	//! \return Po³¹czenie z us³ug¹ FileStoremanWS dla danych medycznych
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… FileStoremanWS dla danych medycznych
 	const WSConnectionPtr & medicalFileStoremanWSConnection() const;
-	//! \return Po³¹czenie z us³ug¹ BasicQueriesWS dla danych medycznych
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… BasicQueriesWS dla danych medycznych
 	const WSConnectionPtr & medicalBasicQueriesWSConnection() const;
-	//! \return Po³¹czenie z us³ug¹ BasicUpdatesWS dla danych medycznych
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… BasicUpdatesWS dla danych medycznych
 	const WSConnectionPtr & medicalBasicUpdatesWSConnection() const;
 
 
-	//! \return Po³¹czenie z us³ug¹ AcvcountFactoryWS
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… AcvcountFactoryWS
 	const WSConnectionPtr & accountFactoryWSConnection() const;
-	//! \return Po³¹czenie z us³ug¹ UserPersonalSpaceWS
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… UserPersonalSpaceWS
 	const WSConnectionPtr & userPersonalSpaceWSConnection() const;
-	//! \return Po³¹czenie z us³ug¹ AdministrationWS
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… AdministrationWS
 	const WSConnectionPtr & administrationWSConnection() const;
-	//! \return Po³¹czenie z us³ug¹ AuthorizationWS
+	//! \return PoÅ‚Ä…czenie z usÅ‚ugÄ… AuthorizationWS
 	const WSConnectionPtr & authorizationWSConnection() const;
 
-	//! \return Po³¹czenie ftps z danymi ruchu
+	//! \return PoÅ‚Ä…czenie ftps z danymi ruchu
 	const webservices::FtpsConnectionPtr & motionFtps() const;
-	//! \return Po³¹czenie ftps z danymi medycznymi
+	//! \return PoÅ‚Ä…czenie ftps z danymi medycznymi
 	const webservices::FtpsConnectionPtr & medicalFtps() const;
 
 private:
-	//! Prywatny domyœlny konstruktor
+	//! Prywatny domyÅ›lny konstruktor
 	DataSourceConnectionManager();
 	//! Prywatny destruktor
 	~DataSourceConnectionManager();

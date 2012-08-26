@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2011/01/26
 	created:  26:1:2011   15:35
 	filename: VideoImageStream.h
@@ -14,9 +14,9 @@
 
 #include <set>
 
-// POPa zrobimy na koñcu, bo inaczej powstan¹ warningi zwi¹zane z tym, ¿e
-// osg::ref_ptr nie ma DLL interface; OSG domyœlnie wy³¹cza te warningi w
-// nag³ówkach, wiêc zdajemy siê na ichnie rozwi¹zania
+// POPa zrobimy na koÅ„cu, bo inaczej powstanÄ… warningi zwiÄ…zane z tym, Å¼e
+// osg::ref_ptr nie ma DLL interface; OSG domyÅ›lnie wyÅ‚Ä…cza te warningi w
+// nagÅ‚Ã³wkach, wiÄ™c zdajemy siÄ™ na ichnie rozwiÄ…zania
 UTILS_PUSH_WARNINGS
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
@@ -39,19 +39,19 @@ UTILS_PUSH_WARNINGS
 UTILS_DISABLE_DLL_INTERFACE_WARNING
 
 /**
- *	Strumieñ wideo.
+ *	StrumieÅ„ wideo.
  */
 class VIDLIB_EXPORT VideoImageStream : public osg::ImageStream, public OpenThreads::Thread
 {
 public:
-    /** Domyœlne implementacje */
+    /** DomyÅ›lne implementacje */
     META_Object(vidlib, VideoImageStream);
 
-    //! Domyœlny format.
+    //! DomyÅ›lny format.
     static const PixelFormat defaultFormat = PixelFormatBGRA;
 
 protected:
-    //! Wrapper na surowy strumieñ.
+    //! Wrapper na surowy strumieÅ„.
     typedef utils::PtrWrapper<VideoStream, utils::PtrPolicyOSG> Stream;
     //! Wrapper na mutex.
     typedef utils::Adapter<OpenThreads::Mutex, utils::PtrPolicyOSG> Mutex;
@@ -59,10 +59,10 @@ protected:
     typedef utils::Adapter<osg::Timer, utils::PtrPolicyOSG> Timer;
     //! Typ blokady opartej na muteksie.
     typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
-    //! Typ p³ytkich kopii strumienia.
+    //! Typ pÅ‚ytkich kopii strumienia.
     typedef utils::Adapter<std::set<osg::observer_ptr<VideoImageStream> >, utils::PtrPolicyOSG > Copies;
 
-    //! Wewnêtrzy strumieñ.
+    //! WewnÄ™trzy strumieÅ„.
     osg::ref_ptr<Stream> innerStream; 
     /** Mutex */
     osg::ref_ptr<Mutex> mutex;
@@ -77,22 +77,22 @@ protected:
     double prevTimestamp;
     /** Format piksela */
     PixelFormat targetFormat;
-    //! Maksymalna szerokoœæ.
+    //! Maksymalna szerokoÅ›Ä‡.
     int maxWidth;
-    /** Bufor na bie¿¹c¹ ramkê */
+    /** Bufor na bieÅ¼Ä…cÄ… ramkÄ™ */
     Picture currentPicture;
 
 public:
-    /** Konstruktor zeruj¹cy */
+    /** Konstruktor zerujÄ…cy */
     VideoImageStream();
-    /** Konstruktor kopiuj¹cy */
+    /** Konstruktor kopiujÄ…cy */
     VideoImageStream(const VideoImageStream & image, const osg::CopyOp & copyop = osg::CopyOp::SHALLOW_COPY);
     /** */
     virtual ~VideoImageStream();
 
-    //! Otwiera strumieñ
-    //! \param filename Œcie¿ka do pliku.
-    //! \param dummy Pozostawiæ wartoœæ domyœln¹.
+    //! Otwiera strumieÅ„
+    //! \param filename ÅšcieÅ¼ka do pliku.
+    //! \param dummy PozostawiÄ‡ wartoÅ›Ä‡ domyÅ›lnÄ….
     template <class VideoStreamImpl>
     bool open(const std::string & filename, VideoStreamImpl* = 0)
     {
@@ -105,22 +105,22 @@ public:
         }
     }
 
-    /** Odtwarzanie strumienia (nowy w¹tek!) */
+    /** Odtwarzanie strumienia (nowy wÄ…tek!) */
     virtual void play();
     /** Zatrzymanie strumienia */
     virtual void pause();
-    /** Odtwarzanie "do ty³u" */
+    /** Odtwarzanie "do tyÅ‚u" */
     virtual void rewind();
     /** Wyszukiwanie w strumieniu */
     virtual void seek(double time);
-    /** Zamkniêcie strumienia */
+    /** ZamkniÄ™cie strumienia */
     virtual void quit(bool waitForThreadToExit = true);
 
     /** Czas utworzenia */
     virtual double getCreationTime() const;
-    /** D³ugoœæ strumienia */
+    /** DÅ‚ugoÅ›Ä‡ strumienia */
     virtual double getLength() const;
-    /** Liczba klatek na sekundê */
+    /** Liczba klatek na sekundÄ™ */
     virtual double getFrameRate() const;
     /** Czas w strumieniu */
     virtual double getReferenceTime() const;
@@ -130,7 +130,7 @@ public:
     virtual void setTimeMultiplier(double timescale);
     /** Skala czasowa */
     virtual double getTimeMultiplier() const;
-    /** Czy wideo ma kana³ alpha? */
+    /** Czy wideo ma kanaÅ‚ alpha? */
     virtual bool isImageTranslucent() const;
 
 
@@ -144,47 +144,47 @@ public:
     //!
     virtual void update(osg::NodeVisitor* nv);
 
-    //! \return Format do którego film jest konwertowany.
+    //! \return Format do ktÃ³rego film jest konwertowany.
     inline PixelFormat getTargetFormat() const
     {
         return targetFormat;
     }
-    //! \param targetFormat Format do którego film jest konwertowany.
+    //! \param targetFormat Format do ktÃ³rego film jest konwertowany.
     void setTargetFormat(PixelFormat targetFormat); 
 
-    //! \return Maksymalna szerokoœæ konwertowanego strumienia.
+    //! \return Maksymalna szerokoÅ›Ä‡ konwertowanego strumienia.
     inline int getMaxWidth() const
     { 
         return maxWidth;
     }
-    //! \param maxWidth Maksymalna szerokoœæ konwertowanego strumienia.
+    //! \param maxWidth Maksymalna szerokoÅ›Ä‡ konwertowanego strumienia.
     void setMaxWidth(int maxWidth);
 
 protected:
 
-    /** W¹tek odtwarzaj¹cy */
+    /** WÄ…tek odtwarzajÄ…cy */
     virtual void run();
-    /** Tryb zapêtlania */
+    /** Tryb zapÄ™tlania */
     virtual void applyLoopingMode();
-    /** Ustawia bie¿¹c¹ ramkê (jeœli jest nowsza ni¿ poprzednia)*/
+    /** Ustawia bieÅ¼Ä…cÄ… ramkÄ™ (jeÅ›li jest nowsza niÅ¼ poprzednia)*/
     virtual void publishFrameAndNotify();
-    /** Ustawia bie¿¹c¹ ramkê (jeœli jest nowsza ni¿ poprzednia)*/
+    /** Ustawia bieÅ¼Ä…cÄ… ramkÄ™ (jeÅ›li jest nowsza niÅ¼ poprzednia)*/
     virtual void publishFrame();
-    /** Ustawia bie¿¹cy czas */
+    /** Ustawia bieÅ¼Ä…cy czas */
     virtual void setStreamTime( double time );
-    /** Ustawia bie¿¹c¹ ramkê */
+    /** Ustawia bieÅ¼Ä…cÄ… ramkÄ™ */
     void reloadImage(Picture& picture);
 
 
-    //! \param stream Wewnêtrzny strumieñ.
+    //! \param stream WewnÄ™trzny strumieÅ„.
     void setStream( VideoStream* stream );
 
-    //! \return Wewnêtrzny strumieñ.
+    //! \return WewnÄ™trzny strumieÅ„.
     inline VideoStream* getStream()
     {
         return *(innerStream.get());
     }
-    //! \return Wewnêtrzny strumieñ.
+    //! \return WewnÄ™trzny strumieÅ„.
     inline const VideoStream* getStream() const
     {
         return *(innerStream.get());

@@ -1,6 +1,6 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Klasa MotionBasicQueriesService dziedzicz¹ca po WsdlConnection wykonuj¹ca operacje dokumentu MotionBasicQueriesService.motionWsdl.
+@brief Klasa MotionBasicQueriesService dziedziczÄ…ca po WsdlConnection wykonujÄ…ca operacje dokumentu MotionBasicQueriesService.motionWsdl.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_BASICQUERIESSERVICE_H__
@@ -24,11 +24,11 @@ namespace webservices
 		*/
 		virtual ~GeneralBasicQueriesWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
         virtual const DateTime dataModificationTime();
@@ -54,39 +54,39 @@ namespace webservices
 		*/
 		virtual ~MotionBasicQueriesWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
 		/**
-		Listuje próby pomiarowe sesji.
-		@param sessionID id sesji której próby pomiarowe maj¹ zostaæ wylistowane
-		@return zbiór prób pomiarowych dla wybranej sesji
+		Listuje prÃ³by pomiarowe sesji.
+		@param sessionID id sesji ktÃ³rej prÃ³by pomiarowe majÄ… zostaÄ‡ wylistowane
+		@return zbiÃ³r prÃ³b pomiarowych dla wybranej sesji
 		*/
 		virtual const std::vector<motionWsdl::Trial> listSessionTrials(int sessionID);
        
 		/**
 		Listuje sesje dla danego laboratorium.
-		@param labID id labu którego sesje maj¹ zostaæ wylistowane
-		@return zbiór sesji dla wybranego labu
+		@param labID id labu ktÃ³rego sesje majÄ… zostaÄ‡ wylistowane
+		@return zbiÃ³r sesji dla wybranego labu
 		*/
 		virtual const std::vector<motionWsdl::Session> listLabSessionsWithAttributes(int labID);
         
 		/**
 		Listuje pliki dla encji typu subjectType i id ID.
-		@param ID id encji dla której maj¹ zostaæ wylistowane pliki
-		@param subjectType typ encji dla której maj¹ zostaæ wylistowane pliki
-		@return zbiór plików dla wybranej encji
+		@param ID id encji dla ktÃ³rej majÄ… zostaÄ‡ wylistowane pliki
+		@param subjectType typ encji dla ktÃ³rej majÄ… zostaÄ‡ wylistowane pliki
+		@return zbiÃ³r plikÃ³w dla wybranej encji
 		*/
 		virtual const std::vector<motionWsdl::File> listFiles(int ID, const std::string& subjectType);
         
 		/**
-		TODO: Listuje encje bazodanowe, sesje, podleg³e sesjom próby pomiarowe i
-		informacje o plikach poszczególnych sesji i prób pomiarowych.
-		@return lista prób pomiarowych, w przysz³oœci powinno znaleŸæ siê drzewko zale¿noœci miêdzy encjami
+		TODO: Listuje encje bazodanowe, sesje, podlegÅ‚e sesjom prÃ³by pomiarowe i
+		informacje o plikach poszczegÃ³lnych sesji i prÃ³b pomiarowych.
+		@return lista prÃ³b pomiarowych, w przyszÅ‚oÅ›ci powinno znaleÅºÄ‡ siÄ™ drzewko zaleÅ¼noÅ›ci miÄ™dzy encjami
 		*/
 		virtual const std::vector<motionWsdl::Trial> listSessionContents();
         
@@ -117,11 +117,11 @@ namespace webservices
 		*/
 		virtual ~MedicalBasicQueriesWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
         virtual const DateTime dataModificationTime();

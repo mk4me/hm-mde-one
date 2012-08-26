@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_CORE_IPARSER_H__
+ï»¿#ifndef HEADER_GUARD_CORE_IPARSER_H__
 #define HEADER_GUARD_CORE_IPARSER_H__
 
 #include <map>
@@ -11,23 +11,23 @@ namespace core
 {
     class IDataManager;
 
-    //! Parser danych. Parser stanowi pomost pomiêdzy plikiem a odwzorowaniem pliku
-    //! w programie. Cykl na cyjl ¿ycia parsera sk³ada siê stworzenie (metod¹ clone),
-    //! przypisanie do pliku (parse), odwo³ania do obiektu danych (getObject),
-    //! zniszczenie (destruktor). W tym cyklu nigdy nie nastêpuj¹ zmiany, poza sytuacj¹,
-    //! gdy parser z jakiegoœ powodu po utworzeniu nie jest przypisany do pliku, tylko
+    //! Parser danych. Parser stanowi pomost pomiÄ™dzy plikiem a odwzorowaniem pliku
+    //! w programie. Cykl na cyjl Å¼ycia parsera skÅ‚ada siÄ™ stworzenie (metodÄ… clone),
+    //! przypisanie do pliku (parse), odwoÅ‚ania do obiektu danych (getObject),
+    //! zniszczenie (destruktor). W tym cyklu nigdy nie nastÄ™pujÄ… zmiany, poza sytuacjÄ…,
+    //! gdy parser z jakiegoÅ› powodu po utworzeniu nie jest przypisany do pliku, tylko
     //! od razu niszczony.
     class IParser : public IIdentifiable
     {
     public:
-        //! Typ opisuj¹cy rozszerzenie
+        //! Typ opisujÄ…cy rozszerzenie
         struct ExtensionDescription
         {
             std::string description;
             std::set<TypeInfo> types;
         };
 
-        //! S³ownik rozszerzeñ wpsieranych przez parser z ich opisem
+        //! SÅ‚ownik rozszerzeÅ„ wpsieranych przez parser z ich opisem
         typedef std::map<std::string, ExtensionDescription> Extensions;
 
     public:
@@ -35,12 +35,12 @@ namespace core
         virtual ~IParser() {}
         //! \return Instancja tego samego typu.
         virtual IParser* create() = 0;
-        //! Przyporz¹dkowanie parsera do konkretnego pliku.
-        //! Na ka¿dej instancji parsera ta metoda wywo³ywana jest maksymalnie jeden raz.
-        //! \param path Œcie¿ka do pliku.
+        //! PrzyporzÄ…dkowanie parsera do konkretnego pliku.
+        //! Na kaÅ¼dej instancji parsera ta metoda wywoÅ‚ywana jest maksymalnie jeden raz.
+        //! \param path ÅšcieÅ¼ka do pliku.
         virtual void parseFile(const Filesystem::Path& path) = 0;
-        //! \retrun Lista rozszerzeñ, które parser obs³uguje. Musz¹ byæ oddzielone œrednikiem.
-        //!         Obs³ugiwany format rozszerzenia: [ { *. | . } ]ext
+        //! \retrun Lista rozszerzeÅ„, ktÃ³re parser obsÅ‚uguje. MuszÄ… byÄ‡ oddzielone Å›rednikiem.
+        //!         ObsÅ‚ugiwany format rozszerzenia: [ { *. | . } ]ext
         virtual void getSupportedExtensions(Extensions & extensions) const = 0;
 
         //! \return Obiekt danych parsera.

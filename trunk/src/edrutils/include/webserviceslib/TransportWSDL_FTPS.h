@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 @author Marek Daniluk
 @brief Klasa MotionTransportWSDL_FTPS jest klasa fasadowa dla obslugi wysylania plikow przy pomocy protokolu ftp oraz technologii wsdl.
 Klasa implementuje interfejs ITransportable.
@@ -31,7 +31,7 @@ namespace communication
 
             virtual ~SafeWSDL_FTPManagerBase()
             {
-                //hack na potrzeby zwalniania zasobów bazy medycznej - aktualnie nie wspierane przez bazê
+                //hack na potrzeby zwalniania zasobÃ³w bazy medycznej - aktualnie nie wspierane przez bazÄ™
                 try{
                     relaseResourcesCallback();
                 }catch(...){
@@ -48,12 +48,12 @@ namespace communication
         std::string errorMessage;
 
         /**
-		Szyfrowane po³¹czenie FTP.
+		Szyfrowane poÅ‚Ä…czenie FTP.
 		*/
         core::shared_ptr<FtpsConnection> ftp;
 
         /**
-		Funkcjonalnoœæ web serwisu MotionFileStoremanService.
+		FunkcjonalnoÅ›Ä‡ web serwisu MotionFileStoremanService.
 		*/
 		core::shared_ptr<FileStoremanServiceBase> wsdl;
 
@@ -100,13 +100,13 @@ namespace communication
 
 		void abort();
 		/**
-		P³ytka kopia bazy danych ruchu.
-		@return œcie¿ka do pliku xml z kopi¹ db ruchu.
+		PÅ‚ytka kopia bazy danych ruchu.
+		@return Å›cieÅ¼ka do pliku xml z kopiÄ… db ruchu.
 		*/
 		FtpsConnection::OperationStatus getShallowCopy(const std::string & path, communication::FtpsConnection::IProgress * progress = nullptr);
 		/**
 		Metadane z bazy danych ruchu.
-		@return œcie¿ka do pliku xml z metadanymi ruchu.
+		@return Å›cieÅ¼ka do pliku xml z metadanymi ruchu.
 		*/
 		FtpsConnection::OperationStatus getMetadata(const std::string & path, communication::FtpsConnection::IProgress * progress = nullptr);
 
@@ -118,7 +118,7 @@ namespace communication
 	protected:
 		
 		/**
-		Funkcjonalnoœæ web serwisu MotionFileStoremanService.
+		FunkcjonalnoÅ›Ä‡ web serwisu MotionFileStoremanService.
 		*/
 		core::shared_ptr<MotionFileStoremanService> motionWsdl;
 
@@ -188,7 +188,7 @@ namespace communication
 
     protected:
 		/**
-		Funkcjonalnoœæ web serwisu MotionFileStoremanService.
+		FunkcjonalnoÅ›Ä‡ web serwisu MotionFileStoremanService.
 		*/
 		core::shared_ptr<MedicalFileStoremanService> medicalWsdl;
     };

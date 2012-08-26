@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/11/23
 	created:  23:11:2010   13:45
 	filename: Grid.h
@@ -20,8 +20,8 @@ namespace osgui {
 /**
  *	Usprawnienia w stosunku do osgWidget::Table:
  *  - zmienne wymiary
- *  - definiowane wagi wierszy/kolumn, dziêki którym mo¿na konfigurowaæ
- *    sposób zmiany rozmiaru
+ *  - definiowane wagi wierszy/kolumn, dziÄ™ki ktÃ³rym moÅ¼na konfigurowaÄ‡
+ *    sposÃ³b zmiany rozmiaru
  */
 class Grid : public osgWidget::Table
 {
@@ -43,8 +43,8 @@ public:
 
 public:
 
-    //! \return Wymiary grida jak najbardziej zblio¿one do kwadratu dla zadanej liczby
-    //!         elementów.
+    //! \return Wymiary grida jak najbardziej zblioÅ¼one do kwadratu dla zadanej liczby
+    //!         elementÃ³w.
     static osg::Vec2s getDimensionsAsSquare(unsigned numItems);
 
     //! \param row
@@ -83,17 +83,17 @@ public:
     //! \param columns Liczba kolumn.
     void setDimensions(unsigned rows, unsigned columns);
 
-    //! Nadaje wszystkim komórkom z flag¹ canFill zerowy rozmiar, na nastêpnie wywo³uje resize().
+    //! Nadaje wszystkim komÃ³rkom z flagÄ… canFill zerowy rozmiar, na nastÄ™pnie wywoÅ‚uje resize().
     void resetFillables();
    
-    //! Dopasowuje rozmiar komórek tak, aby zgodnie z zadanym wspó³czynnikiem proporcji
-    //! komórki zajmowa³y jak najwiêkszy obszar.
-    //! Wype³nia jedynkami rows/columnsWeights!
+    //! Dopasowuje rozmiar komÃ³rek tak, aby zgodnie z zadanym wspÃ³Å‚czynnikiem proporcji
+    //! komÃ³rki zajmowaÅ‚y jak najwiÄ™kszy obszar.
+    //! WypeÅ‚nia jedynkami rows/columnsWeights!
     void adjustDimensions(osgWidget::point_type width, osgWidget::point_type height, const std::vector<osgWidget::point_type>& aspectRatios);
 
-    //! Wype³nia puste komórki grida przekazanym widgetem.
-    //! \param blank Widget do wype³niania. NULL spowoduje stworzenie w³asnego widgeta o zerowym rozmiarze z flag¹ canFill. Gdy nie jest NULL
-    //!        do grida dok³adanego s¹ jego klony (dlatego wskaŸnik jest ref_ptr)
+    //! WypeÅ‚nia puste komÃ³rki grida przekazanym widgetem.
+    //! \param blank Widget do wypeÅ‚niania. NULL spowoduje stworzenie wÅ‚asnego widgeta o zerowym rozmiarze z flagÄ… canFill. Gdy nie jest NULL
+    //!        do grida dokÅ‚adanego sÄ… jego klony (dlatego wskaÅºnik jest ref_ptr)
     void fillEmpty( osg::ref_ptr<osgWidget::Widget> prototype = osg::ref_ptr<osgWidget::Widget>() );
 
     //! Ustawia wszystkie widgety
@@ -112,13 +112,13 @@ public:
     //! Usuwa wiersz.
     //! \param row
     bool removeRow(unsigned row);
-    //! Usuwa kolumnê.
+    //! Usuwa kolumnÄ™.
     //! \param column
     bool removeColumn(unsigned column);
     //! Wstawia wiersz.
     //! \param row
     bool insertRow(unsigned row);
-    //! Wstawia kolumnê. 
+    //! Wstawia kolumnÄ™. 
     //! \param column
     bool insertColumn(unsigned column);
 

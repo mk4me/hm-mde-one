@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:    2010/08/11
 	created:    11:8:2010     11:06
 	filename: System.h
@@ -28,12 +28,12 @@ namespace __system {
 
 #ifdef __WIN32__
 
-//! Typ tykniêcia zegara.
+//! Typ tykniÄ™cia zegara.
 typedef long long Tick;
-//! ID w¹tku.
+//! ID wÄ…tku.
 typedef unsigned ThreadID;
 
-//! \return Tykniêcia zegara o wysokiej czêstotliwoœci.
+//! \return TykniÄ™cia zegara o wysokiej czÄ™stotliwoÅ›ci.
 inline Tick getTick()
 {
     LARGE_INTEGER nCurrTime;
@@ -41,7 +41,7 @@ inline Tick getTick()
     return nCurrTime.QuadPart;
 }
 
-//! \return Tykniêcia zegara wyra¿one w sekundach.
+//! \return TykniÄ™cia zegara wyraÅ¼one w sekundach.
 inline double tickToSeconds(Tick value)
 {
     static LARGE_INTEGER frequency;
@@ -88,12 +88,12 @@ private:
 
 #else
 
-//! Typ tykniêcia zegara.
+//! Typ tykniÄ™cia zegara.
 typedef long long Tick;
-//! ID w¹tku.
+//! ID wÄ…tku.
 typedef pthread_t ThreadID;
 
-//! \return Tykniêcia zegara o wysokiej czêstotliwoœci.
+//! \return TykniÄ™cia zegara o wysokiej czÄ™stotliwoÅ›ci.
 inline Tick getTick()
 {
     struct timespec tp;
@@ -104,7 +104,7 @@ inline Tick getTick()
     return result;
 }
 
-//! \return Tykniêcia zegara wyra¿one w sekundach.
+//! \return TykniÄ™cia zegara wyraÅ¼one w sekundach.
 inline double tickToSeconds(Tick value)
 {
     return value / 1000000.0;

@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include <QtGui/QTableView>
 #include "TrajectoriesDialog.h"
 #include "SchemeDrawerContainer.h"
@@ -242,7 +242,7 @@ void TrajectoriesDialog::treeItemChanged( QTreeWidgetItem * current, QTreeWidget
 {
 	std::string name = current->text(1).toStdString();
     currentTrajectories = item2Trajectories[current];
-    // w drzewie moga istnieæ elementy, nie odnoszace siê bezpoœrednio do trajektorii.
+    // w drzewie moga istnieÄ‡ elementy, nie odnoszace siÄ™ bezpoÅ›rednio do trajektorii.
     if (!currentTrajectories) {
         return;         // <----------   return !
     }

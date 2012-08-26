@@ -1,4 +1,4 @@
-#include "VdfQtModel.h"
+﻿#include "VdfQtModel.h"
 #include "DeleteConnectionContextMenu.h"
 #include <QtGui/QWidget>
 

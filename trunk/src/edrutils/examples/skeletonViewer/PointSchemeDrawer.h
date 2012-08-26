@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_POINTSCHEMEDRAWER_H__
+﻿#ifndef HEADER_GUARD_POINTSCHEMEDRAWER_H__
 #define HEADER_GUARD_POINTSCHEMEDRAWER_H__
 #include <osg/Geode>
 #include "skeletalVisualizationScheme.h"

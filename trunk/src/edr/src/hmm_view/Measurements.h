@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/03/30
 	created:	30:3:2012   12:11
 	filename: 	Measurements.h
@@ -27,16 +27,16 @@ public:
     virtual ~MeasurementConfig() {}
 
 public:
-    //! tlumaczenie wpisu w podobny sposób, jak to robi Qt
+    //! tlumaczenie wpisu w podobny sposÃ³b, jak to robi Qt
     //! \param text tekst do przetlumaczenia
-    //! \return przetlumaczony tekst lub tekst wejsciowy, jeœli nie znaleziono wpisu
+    //! \return przetlumaczony tekst lub tekst wejsciowy, jeÅ›li nie znaleziono wpisu
     QString tr(const QString& text) const;
     //! czy konfigurator ma wpis
     //! \param text wpis do sprawdzenia
-    //! \return true, jeœli znaleziono
+    //! \return true, jeÅ›li znaleziono
     bool hasEntry(const QString& text) const;
     //! pobiera id (identyfikator miesnia, potrzebny np. w graficznym konfiguratorze EMG)
-    //! \param name nieprzetlumaczona nazwa, dla którego pobieramy id
+    //! \param name nieprzetlumaczona nazwa, dla ktÃ³rego pobieramy id
     //! \return znalezione id lub pusy string
     QString getIdByName(const QString& name) const;
     //! \return nazwa konfigu
@@ -47,7 +47,7 @@ public:
 private:
     //! nazwa obrazka, unikalny identyfikator elementu
     struct EntryData { QString name; QString id; };
-    //! mapa [element konfiguracji (np. elektroda) -> wpis z odpowiadaj¹c¹ nazw¹ + ew. nazw¹ obrazka]
+    //! mapa [element konfiguracji (np. elektroda) -> wpis z odpowiadajÄ…cÄ… nazwÄ… + ew. nazwÄ… obrazka]
     typedef std::pair<QString, EntryData> MapEntry;
 	
 private:
@@ -61,7 +61,7 @@ private:
 typedef core::shared_ptr<MeasurementConfig> MeasurementConfigPtr;
 typedef core::shared_ptr<const MeasurementConfig> MeasurementConfigConstPtr;
 
-//! klasa przechowuje wszystkie konfigi oraz u³atwia dostêp do nich
+//! klasa przechowuje wszystkie konfigi oraz uÅ‚atwia dostÄ™p do nich
 class Measurements
 {
 public:
@@ -76,16 +76,16 @@ public:
     void addConfig(MeasurementConfigPtr config);
     //! pobiera konfig na podstawie jego nazwy
     //! \param name nazwa konfiga
-    //! \return konfig lub wyj¹tek, gdy nie znaleziono
+    //! \return konfig lub wyjÄ…tek, gdy nie znaleziono
     MeasurementConfigConstPtr getConfig(const QString& name) const;
     //! pobiera konfig na podstawie jego numeru
     //! \param number numer konfiga
-    //! \return konfig lub wyj¹tek, gdy nie znaleziono
+    //! \return konfig lub wyjÄ…tek, gdy nie znaleziono
     MeasurementConfigConstPtr getConfig(int number) const;
-    //! probuje pobraæ konfig na podstawie jego nazwy
+    //! probuje pobraÄ‡ konfig na podstawie jego nazwy
     //! \param name 
     MeasurementConfigConstPtr tryGetConfig(const QString& name) const;
-    //! probuje pobraæ konfig na podstawie jego numeru
+    //! probuje pobraÄ‡ konfig na podstawie jego numeru
     //! \param number 
     MeasurementConfigConstPtr tryGetConfig(int number) const;
     //! czy dodano wpis o podanej nazwie
@@ -120,7 +120,7 @@ public:
     //! parsowanie xmla z konfiguracjami
     //! \param filename 
     void parse(const std::string& filename);
-    //! \return czy dane zosta³y ju¿ poprawnie zaladowane
+    //! \return czy dane zostaÅ‚y juÅ¼ poprawnie zaladowane
     bool isLoaded() const { return loaded; }
     //! \return kolecja z konfigami EMG
     MeasurementsConstPtr getMeasurments();
@@ -136,7 +136,7 @@ private:
     void readAttribute(TiXmlElement* A, MeasurementConfig::MapEntry& entry); 
 
 private:
-    //! czy dane zosta³y ju¿ poprawnie zaladowane
+    //! czy dane zostaÅ‚y juÅ¼ poprawnie zaladowane
     bool loaded;
     //! kolekcja z konfigami EMG
     MeasurementsPtr measurments;

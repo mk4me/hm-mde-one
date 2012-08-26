@@ -1,4 +1,4 @@
-#include <core/Plugin.h>
+﻿#include <core/Plugin.h>
 #include <plugins/c3d/C3DCollections.h>
 #include "C3DParser.h"
 

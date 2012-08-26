@@ -1,4 +1,4 @@
-#include "ChannelsTreeHeaderWidget.h"
+﻿#include "ChannelsTreeHeaderWidget.h"
 #include <QtGui/QPainter>
 #include <utils/Debug.h>
 

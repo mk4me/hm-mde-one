@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__DFSOURCENODE_H__
+ï»¿#ifndef HEADER_GUARD__DFSOURCENODE_H__
 #define HEADER_GUARD__DFSOURCENODE_H__
 
 #include <dfmlib/DFNode.h>
@@ -7,13 +7,13 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa rozszerzaj¹ca wêze³ DFNode o wêz³y Ÿród³owe - nie maj¹ one pinów wejœciowych , oferuj¹ informacjê o dostepnoœci kolejnych danych na wyjœciach
+//! Klasa rozszerzajÄ…ca wÄ™zeÅ‚ DFNode o wÄ™zÅ‚y ÅºrÃ³dÅ‚owe - nie majÄ… one pinÃ³w wejÅ›ciowych , oferujÄ… informacjÄ™ o dostepnoÅ›ci kolejnych danych na wyjÅ›ciach
 class DFSourceNode :
 	public virtual DFNode
 {
 public:
 
-    //! \param name Nazwa wêz³a
+    //! \param name Nazwa wÄ™zÅ‚a
     //! \param processingAllowed Czy przetwarzanie danych jest dozwolone
     //! \param propagatingAllowed Czy propagowanie danych jest dozwolone
     DFSourceNode(const std::string & name = std::string()/*, bool processingAllowed = true,
@@ -22,8 +22,8 @@ public:
     //! Wirtualny destruktor
 	virtual ~DFSourceNode(void);
 
-    //! Czysto wirtualna funkcja informuj¹ca o dostêpnoœci kolejnych danych w wêŸle
-    //! \return Czy wêze³ mo¿e zaoferowaæ kolejn¹ porcjê danych
+    //! Czysto wirtualna funkcja informujÄ…ca o dostÄ™pnoÅ›ci kolejnych danych w wÄ™Åºle
+    //! \return Czy wÄ™zeÅ‚ moÅ¼e zaoferowaÄ‡ kolejnÄ… porcjÄ™ danych
 	virtual bool hasMoreData() const = 0;
 
 protected:
@@ -36,7 +36,7 @@ protected:
 
 private:
 
-    //! Wywolanie tej metody zrzuca wyj¹tek - nie jest dozwolone dodawanie pinów wejœciowych do Ÿróde³
+    //! Wywolanie tej metody zrzuca wyjÄ…tek - nie jest dozwolone dodawanie pinÃ³w wejÅ›ciowych do ÅºrÃ³deÅ‚
     //! \param newPin Pin wejsciowy do dodania
     virtual void addInPin(const PinPtr & pin);
 };

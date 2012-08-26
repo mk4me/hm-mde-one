@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/07/22
 	created:  22:7:2010   10:25
 	filename: BufferedImageStream.h
@@ -18,21 +18,21 @@ namespace osgPlugin {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Strumieñ obrazków z z buforowaniem.
+ *	StrumieÅ„ obrazkÃ³w z z buforowaniem.
  */
 class BufferedVideoImageStream : public VideoImageStream
 {
 private:
-  //! W¹tek buforuj¹cy.
+  //! WÄ…tek buforujÄ…cy.
   class Bufferer : public OpenThreads::Thread
   {
   private:
-    //! Strumieñ buforowany.
+    //! StrumieÅ„ buforowany.
     osg::observer_ptr<BufferedVideoImageStream> stream;
   public:
     //! Konstruktor.
     Bufferer(BufferedVideoImageStream * stream);
-    //! Funkcja buforuj¹ca.
+    //! Funkcja buforujÄ…ca.
     virtual void run();
   };
   //! Wrapper bufora ramek.
@@ -45,14 +45,14 @@ private:
   double wantedTime;
 
 public:
-  /** Konstruktor zeruj¹cy */
+  /** Konstruktor zerujÄ…cy */
   BufferedVideoImageStream();
-  /** Konstruktor kopiuj¹cy */
+  /** Konstruktor kopiujÄ…cy */
   BufferedVideoImageStream(const BufferedVideoImageStream & image, const osg::CopyOp & copyop = osg::CopyOp::SHALLOW_COPY);
-  /** Domyœlne implementacje */
+  /** DomyÅ›lne implementacje */
   META_Object(osgPlugin, BufferedVideoImageStream);
 
-  /** Otwiera strumieñ */
+  /** Otwiera strumieÅ„ */
   virtual bool open(const std::string & filename);
 
 protected:
@@ -64,9 +64,9 @@ public:
   virtual double getReferenceTime() const;
 
 
-  /** Ustawia bie¿¹c¹ ramkê (jeœli jest nowsza ni¿ poprzednia)*/
+  /** Ustawia bieÅ¼Ä…cÄ… ramkÄ™ (jeÅ›li jest nowsza niÅ¼ poprzednia)*/
   virtual void publishFrame();
-  /** Ustawia bie¿¹cy czas */
+  /** Ustawia bieÅ¼Ä…cy czas */
   virtual void setStreamTime( double time );
 
 

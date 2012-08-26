@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/07/29
 	created:	29:7:2011   10:41
 	filename: 	AppInitializer.h
@@ -59,21 +59,21 @@ class AppInitializer
 {
 public:
 
-    //! Metoda uruchamiaj¹ca aplikacje, pobiera jako parametr wzorca widok który bêdzie uruchomiony, widok powinien dziedziczyæ po MainWindow
+    //! Metoda uruchamiajÄ…ca aplikacje, pobiera jako parametr wzorca widok ktÃ³ry bÄ™dzie uruchomiony, widok powinien dziedziczyÄ‡ po MainWindow
 	template<class FrontpageWidget>
 	static int start(int argc, char *argv[])
 	{
 		using namespace core;
 	    // rev - statyczna
-        //UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyæ po klasie MainWindow");
+        //UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyÄ‡ po klasie MainWindow");
 
-        //! Wewnêtrzna klasa tworz¹ca wszystkie managery aplikacji i udostêpniaj¹ca je widokom oraz serwisom
+        //! WewnÄ™trzna klasa tworzÄ…ca wszystkie managery aplikacji i udostÄ™pniajÄ…ca je widokom oraz serwisom
         class AppManagers : public IManagersAccessor
         {
         public:
 
-            //! Domyœlny konstruktor inicjuje wrazenie singletona dla kazdego managera
-            //! dziêki temu w kodzie po stronie EDR mamy wrazenie ze pracujemy z singletonami i mamy globalnie dostêp do managerów!!
+            //! DomyÅ›lny konstruktor inicjuje wrazenie singletona dla kazdego managera
+            //! dziÄ™ki temu w kodzie po stronie EDR mamy wrazenie ze pracujemy z singletonami i mamy globalnie dostÄ™p do managerÃ³w!!
             AppManagers()
             {
                 __instanceInfo.dataManagerReader = dataManager.manager = &dataManager;
@@ -84,7 +84,7 @@ public:
                 __instanceInfo.dataSourceManager = dataSourceManager.manager = &dataSourceManager;
             }
 
-            //! Destruktor deinicjalizuje wrazenie singletona managerów
+            //! Destruktor deinicjalizuje wrazenie singletona managerÃ³w
             ~AppManagers()
             {
                 __instanceInfo.dataManagerReader = dataManager.manager = nullptr;
@@ -186,7 +186,7 @@ public:
             }
 
         private:
-            //SEKCJA WSZYSTKICH MANAGERÓW W APLIKACJI - TUTAJ POWINNY SIÊ ZNAJDOWAÆ ICH JEDYNE INSTANJCE!!
+            //SEKCJA WSZYSTKICH MANAGERÃ“W W APLIKACJI - TUTAJ POWINNY SIÄ˜ ZNAJDOWAÄ† ICH JEDYNE INSTANJCE!!
 
             DataManager dataManager;
             VisualizerManager visualizerManager;
@@ -202,14 +202,14 @@ public:
 		arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename");
 		arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display this information");
 
-		// czy wyœwietlamy pomoc?
+		// czy wyÅ›wietlamy pomoc?
 		if (arguments.read("-h") || arguments.read("--help"))
 		{
 			arguments.getApplicationUsage()->write(std::cout);
 			return 1;
 		}
 
-		// nazwa pliku do za³adowania
+		// nazwa pliku do zaÅ‚adowania
 		std::string filePath;
 		for (int i=1; i<arguments.argc() && filePath.empty(); ++i)
 		{
@@ -224,7 +224,7 @@ public:
 			// ustawienia aplikacji
 			MyApplication application(argc, argv);
 
-			//tutaj mamy œciezki - potrzebujê je od razu
+			//tutaj mamy Å›ciezki - potrzebujÄ™ je od razu
 			EDRConfig edrConfig;
 			EDRConfig::setPaths(edrConfig);
 
@@ -232,7 +232,7 @@ public:
             application.setApplicationName("EDR");
 			application.setOrganizationName("PJWSTK");
 
-			//t³umaczenia
+			//tÅ‚umaczenia
 			QString locale = QLocale::system().name();
 
 			auto langPath = QString((edrConfig.getResourcesPath() / "lang").string().c_str());
@@ -242,7 +242,7 @@ public:
 			if(appTranslator.load("lang_" + locale, langPath) == false) {
 				appTranslator.load(QString("lang_pl_PL"), langPath);
 				//TODO
-				//jak tego siê nie uda za³adowaæ to mamy tylko angielski jêzyk - trzeba poinformowaæ
+				//jak tego siÄ™ nie uda zaÅ‚adowaÄ‡ to mamy tylko angielski jÄ™zyk - trzeba poinformowaÄ‡
 			}
 
 			qApp->installTranslator(&appTranslator);
@@ -252,24 +252,24 @@ public:
 			if(qtTranslator.load("qt_" + QLocale::languageToString(QLocale::system().language()), langPath) == false) {
 				qtTranslator.load(QString("qt_pl"), langPath);
 				//TODO
-				//jak tego siê nie uda za³adowaæ to mamy tylko angielski jêzyk - trzeba poinformowaæ
+				//jak tego siÄ™ nie uda zaÅ‚adowaÄ‡ to mamy tylko angielski jÄ™zyk - trzeba poinformowaÄ‡
 			}
 
 			qApp->installTranslator(&qtTranslator);
 
 			QSettings::setDefaultFormat(QSettings::IniFormat);
 
-            //Tworzymy tempa jeœli brakuje
+            //Tworzymy tempa jeÅ›li brakuje
             edrConfig.ensureTempDirectory();
 
 			core::Filesystem::Path p = edrConfig.getApplicationDataPath() / "resources" / "settings" / "log.ini";
 
-			// UWAGA - obiekty udostêpniane klientom poprzez interfejsy musz¹ mieæ przywracane (zerowane) wartoœci na tym samym
-			// poziomie na którym zosta³y stworzone. Dlatego tutaj mamy Push dla logera i konfiguracji.
-			// Dodatkowo trzeba pamiêtaæ o kolejnoœci niszczenia obiektów po zakoñczeniu czasu ich ¿ycia - jest to odwrotna kolejnoœæ
-			// w stosunku do tej w jakiej zosta³y zdeklarowane w kodzie.
+			// UWAGA - obiekty udostÄ™pniane klientom poprzez interfejsy muszÄ… mieÄ‡ przywracane (zerowane) wartoÅ›ci na tym samym
+			// poziomie na ktÃ³rym zostaÅ‚y stworzone. Dlatego tutaj mamy Push dla logera i konfiguracji.
+			// Dodatkowo trzeba pamiÄ™taÄ‡ o kolejnoÅ›ci niszczenia obiektÃ³w po zakoÅ„czeniu czasu ich Å¼ycia - jest to odwrotna kolejnoÅ›Ä‡
+			// w stosunku do tej w jakiej zostaÅ‚y zdeklarowane w kodzie.
 
-			// MUSI TAK BY ABY LOGGER WIDZIA£ ŒCIE¯KI
+			// MUSI TAK BY ABY LOGGER WIDZIAÅ ÅšCIEÅ»KI
 			utils::Push<IPath*> pushedDI(__instanceInfo.pathInterface, &edrConfig);
 
             try{
@@ -280,25 +280,25 @@ public:
 
 			    PluginLoader pluginLoader;
 			    {
-                    //Inicjalizacja managerów
+                    //Inicjalizacja managerÃ³w
                     AppManagers appManagers;
 
-				    // tworzenie managerów
-				    // tworzenie/niszczenie managerów w ToolboxMain jest niebezpieczne
-				    // z punktu widzenia destruktora - widgety mog¹ w jakimœ stopniu
-				    // zale¿eæ od managerów, a wówczas wskaŸniki wskazywa³yby œmieci
-				    // podobnie ¿ywotnoœæ do³adowanych bibliotek musi przekraczaæ zakoñczenie
-				    // siê destruktora
+				    // tworzenie managerÃ³w
+				    // tworzenie/niszczenie managerÃ³w w ToolboxMain jest niebezpieczne
+				    // z punktu widzenia destruktora - widgety mogÄ… w jakimÅ› stopniu
+				    // zaleÅ¼eÄ‡ od managerÃ³w, a wÃ³wczas wskaÅºniki wskazywaÅ‚yby Å›mieci
+				    // podobnie Å¼ywotnoÅ›Ä‡ doÅ‚adowanych bibliotek musi przekraczaÄ‡ zakoÅ„czenie
+				    // siÄ™ destruktora
 
 				    {
 						{
-							//HACK - wymuszamy statyczne linkowanie z bibliotek¹ osgQt.
+							//HACK - wymuszamy statyczne linkowanie z bibliotekÄ… osgQt.
 							// to gwarantuje poprawne zainicjowanie obiektu HeartBeat odpowiedzialnego
-							// za obs³ugê scen OpenGL po stronie widgetów OSG.
-							// Choæ niekoniecznie w tym w¹tku z tego kozystamy ( nie musimy mieæ tworzonych na starcie ¿adnych widgetów OSG)
-							// jest to niezbêdne dla prawid³owej deinicjalizacji tego obiektu - czasu ¿ycia jego zasobów.
-							// W przeciwnym wypadku powstanie kilka instancji tego obiektu - po jednej dla ka¿dego pluginu dostarczaj¹cego widgetów OSG
-							// Bardzo niebezpieczne!! Powodowa³o crash aplikacji przy inicjalizacji a potem przy zamykaniu
+							// za obsÅ‚ugÄ™ scen OpenGL po stronie widgetÃ³w OSG.
+							// ChoÄ‡ niekoniecznie w tym wÄ…tku z tego kozystamy ( nie musimy mieÄ‡ tworzonych na starcie Å¼adnych widgetÃ³w OSG)
+							// jest to niezbÄ™dne dla prawidÅ‚owej deinicjalizacji tego obiektu - czasu Å¼ycia jego zasobÃ³w.
+							// W przeciwnym wypadku powstanie kilka instancji tego obiektu - po jednej dla kaÅ¼dego pluginu dostarczajÄ…cego widgetÃ³w OSG
+							// Bardzo niebezpieczne!! PowodowaÅ‚o crash aplikacji przy inicjalizacji a potem przy zamykaniu
 							boost::shared_ptr<QWidget> w(new osgQt::GLWidget());
 						}
 
@@ -307,7 +307,7 @@ public:
 						widget.setWindowIcon(QPixmap(QString::fromUtf8(":/resources/icons/appIcon.png")));
                         //inicjalizujemy widok
 					    widget.init(&pluginLoader, &appManagers);
-                        //inicjalizujemy konsolê logowania
+                        //inicjalizujemy konsolÄ™ logowania
 					    logger.setConsoleWidget( widget.getConsole() );
                         //pokazujemy widok
 					    widget.show();
@@ -316,9 +316,9 @@ public:
 						    widget.openFile(filePath);
 					    }
 
-                        //uruchamiamy aplikacjê - kontekst UI z QT
+                        //uruchamiamy aplikacjÄ™ - kontekst UI z QT
 					    result = application.exec();
-                        //resetujemy konsolê po zakoñczeniu aplikacji
+                        //resetujemy konsolÄ™ po zakoÅ„czeniu aplikacji
 					    logger.setConsoleWidget(NULL);
 				    }
 			    }

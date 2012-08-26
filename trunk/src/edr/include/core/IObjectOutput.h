@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/19
     created:  19:4:2011   15:39
     filename: IObjectOutput.h
@@ -20,7 +20,7 @@
 
 namespace core
 {
-    //! Interfejs zapewniaj¹cy dostêp do zapisu danych wyjœciowych z elementów przetwarzaj¹cych, które bêd¹ przekazane nastepnikom
+    //! Interfejs zapewniajÄ…cy dostÄ™p do zapisu danych wyjÅ›ciowych z elementÃ³w przetwarzajÄ…cych, ktÃ³re bÄ™dÄ… przekazane nastepnikom
     class IObjectOutput
     {
     public:
@@ -30,7 +30,7 @@ namespace core
         typedef core::weak_ptr<OutputObjectsCollection> OutputObjectsCollectionWeakPtr;
         typedef core::weak_ptr<const OutputObjectsCollection> OutputObjectsCollectionConstWeakPtr;
 
-        //! Klasa proxy przykrywaj¹ca mo¿liwoœci ObjectWrapperCollection. Pozwala ³adowaæ dane do kolekcji w formie smart pointerów do typów domenowych lub ObjectWrapperPtr.
+        //! Klasa proxy przykrywajÄ…ca moÅ¼liwoÅ›ci ObjectWrapperCollection. Pozwala Å‚adowaÄ‡ dane do kolekcji w formie smart pointerÃ³w do typÃ³w domenowych lub ObjectWrapperPtr.
         class OutputObjectsCollection
         {
         public:
@@ -45,7 +45,7 @@ namespace core
 				return *this;
 			}
 
-            //! Konstruktor inicjuj¹cy proxy kolekcj¹ object wrapperów
+            //! Konstruktor inicjujÄ…cy proxy kolekcjÄ… object wrapperÃ³w
             OutputObjectsCollection(const ObjectWrapperCollectionPtr & collection = ObjectWrapperCollectionPtr())
                 : collection(collection)
             {
@@ -72,7 +72,7 @@ namespace core
                 collection->addObject(object);
             }
 
-            //! Wzorzec metody addObject akceptuj¹cy smart pointery do typów domenowych. Wewnêtrznie opakowuje dane w odpowiedni ObjectWrapperPtr i dodaje do kolekcji
+            //! Wzorzec metody addObject akceptujÄ…cy smart pointery do typÃ³w domenowych. WewnÄ™trznie opakowuje dane w odpowiedni ObjectWrapperPtr i dodaje do kolekcji
             template<class T>
             void addObject(const T & object, const std::string & name, const std::string & source)
             {
@@ -89,7 +89,7 @@ namespace core
             ObjectWrapperPtr __setObjectPointerResolver(const T& object, boost::true_type)
             {
                 // rev
-                //UTILS_STATIC_ASSERT(false, "Do obiektów domenowych nale¿y u¿ywaæ inteligentnych wskazników.");
+                //UTILS_STATIC_ASSERT(false, "Do obiektÃ³w domenowych naleÅ¼y uÅ¼ywaÄ‡ inteligentnych wskaznikÃ³w.");
                 return ObjectWrapperPtr();
             }
 
@@ -111,10 +111,10 @@ namespace core
             ObjectWrapperPtr __setObjectPODResolver(const SmartPtr& object, const std::string & name, const std::string & source, boost::false_type)
             {
                 typedef typename SmartPtr::element_type Type;
-                // je¿eli tutaj jest b³¹d oznacza to, ¿e przekazany typ nie jest ani POD, ani inteligentnym wskaŸnikiem.
+                // jeÅ¼eli tutaj jest bÅ‚Ä…d oznacza to, Å¼e przekazany typ nie jest ani POD, ani inteligentnym wskaÅºnikiem.
                 // rev
                 //UTILS_STATIC_ASSERT(ObjectWrapperTraits<Type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-                //UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaŸnikowi odbs³uguj¹cemu zadany typ");
+                //UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaÅºnikowi odbsÅ‚ugujÄ…cemu zadany typ");
 
                 if(object == nullptr){
                     throw std::runtime_error("Could not create wprapper for nullptr");
@@ -126,7 +126,7 @@ namespace core
             }
 
         private:
-            //! Kolekcja danych któr¹ wype³niamy przez to proxy
+            //! Kolekcja danych ktÃ³rÄ… wypeÅ‚niamy przez to proxy
             ObjectWrapperCollectionPtr collection;
         };
 
@@ -134,10 +134,10 @@ namespace core
         //! Pusty polimorficzny destruktor.
         virtual ~IObjectOutput() {}
 
-        //! \return Liczba slotów wyjœciowych.
+        //! \return Liczba slotÃ³w wyjÅ›ciowych.
         virtual int getNumOutputs() const = 0;
 
-        //! Zwraca ObjectWrapper dla zadanego wejœcia.
+        //! Zwraca ObjectWrapper dla zadanego wejÅ›cia.
         virtual OutputObjectsCollection getObjects(int idx) = 0;
     };
 

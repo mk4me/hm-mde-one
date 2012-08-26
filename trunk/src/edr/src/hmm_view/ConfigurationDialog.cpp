@@ -1,4 +1,4 @@
-#include "ConfigurationDialog.h"
+﻿#include "ConfigurationDialog.h"
 #include <core/PluginCommon.h>
 #include <QtCore/QFileInfo>
 #include <QtGui/QListWidgetItem>

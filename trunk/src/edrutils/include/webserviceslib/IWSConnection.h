@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/03/02
     created:  2:3:2012   13:40
     filename: IWSConnection.h
@@ -17,10 +17,10 @@
 namespace webservices
 {
 
-	//! WAØNA UWAGA DO WYJ•TK”W !! POWINNY BY RZUCANE TYLKO I WY£•CZNIE PODCZAS WYWO£YWANIA INVOKE W ZALEØNOåCI CO SI  NIE POWIEDZIE !!
-	//! MA TO NA CELU WPROWADZENIE LENIWEJ INICJALIZACJI US£UG - PO£•CZENIE JEST NAWI•ZYWANE FAKTYCZNIE W MOMENCIE UØYCIA
+	//! WA≈ªNA UWAGA DO WYJƒÑTK√ìW !! POWINNY BY RZUCANE TYLKO I WY≈ÅƒÑCZNIE PODCZAS WYWO≈ÅYWANIA INVOKE W ZALE≈ªNO≈öCI CO SIƒò NIE POWIEDZIE !!
+	//! MA TO NA CELU WPROWADZENIE LENIWEJ INICJALIZACJI US≈ÅUG - PO≈ÅƒÑCZENIE JEST NAWIƒÑZYWANE FAKTYCZNIE W MOMENCIE U≈ªYCIA
 
-	//! Wyjπtek zwiπzany z wo≥aniem us≥ug (invoke na connection) do ktÛrych nie mamy praw
+	//! WyjƒÖtek zwiƒÖzany z wo≈Çaniem us≈Çug (invoke na connection) do kt√≥rych nie mamy praw
 	class WSConnectionSecurityException : public std::runtime_error
 	{
 	public:
@@ -29,7 +29,7 @@ namespace webservices
 		WSConnectionSecurityException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
-	//! Wyjπtek zwiπzany z ustawianiem us≥ugi - us≥uga nie oferuje takiej operacji
+	//! WyjƒÖtek zwiƒÖzany z ustawianiem us≈Çugi - us≈Çuga nie oferuje takiej operacji
 	class WSConnectionOperationException : public std::runtime_error
 	{
 	public:
@@ -38,7 +38,7 @@ namespace webservices
 		WSConnectionOperationException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
-	//! Wyjπtek zwiπzany z ustawianiem us≥ugi - metoda us≥ugi nie przyjmuje wartoúci o zadanej nazwie
+	//! WyjƒÖtek zwiƒÖzany z ustawianiem us≈Çugi - metoda us≈Çugi nie przyjmuje warto≈õci o zadanej nazwie
 	class WSConnectionOperationValueException : public std::runtime_error
 	{
 	public:
@@ -47,7 +47,7 @@ namespace webservices
 		WSConnectionOperationValueException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
-	//! Wyjπtek zwiπzany z inicjalizacjπ us≥ugi - moøe siÍ pojawiÊ kiedy úciπgamy definicjÍ us≥ugi i jπ parsujemy
+	//! WyjƒÖtek zwiƒÖzany z inicjalizacjƒÖ us≈Çugi - mo≈ºe siƒô pojawiƒá kiedy ≈õciƒÖgamy definicjƒô us≈Çugi i jƒÖ parsujemy
 	class WSConnectionInitializationException : public std::runtime_error
 	{
 	public:
@@ -56,7 +56,7 @@ namespace webservices
 		WSConnectionInitializationException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
-	//! Wyjπtek zwiπzany z realizacjπ us≥ugi przez web serwis
+	//! WyjƒÖtek zwiƒÖzany z realizacjƒÖ us≈Çugi przez web serwis
 	class WSConnectionResponseException : public std::runtime_error
 	{
 	public:
@@ -65,7 +65,7 @@ namespace webservices
 		WSConnectionResponseException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
-	//! Wyjπtek zwiπzany z wo≥aniem us≥ugi - kiedy prÛbujemy juø faktycznie wywo≥aÊ us≥ugÍ, kiedy parsujemy jej odpowiedü i coú idzie nie tak
+	//! WyjƒÖtek zwiƒÖzany z wo≈Çaniem us≈Çugi - kiedy pr√≥bujemy ju≈º faktycznie wywo≈Çaƒá us≈Çugƒô, kiedy parsujemy jej odpowied≈∫ i co≈õ idzie nie tak
 	class WSConnectionInvokeException : public std::runtime_error
 	{
 	public:
@@ -74,7 +74,7 @@ namespace webservices
 		WSConnectionInvokeException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
-    //! Interfejs realizujπcy po≥πczenie z serwisami webowymi - metody powinny rzucac wyjπtkiem w razie jakiegokolwiek niepowodzenia
+    //! Interfejs realizujƒÖcy po≈ÇƒÖczenie z serwisami webowymi - metody powinny rzucac wyjƒÖtkiem w razie jakiegokolwiek niepowodzenia
     class IWSConnection : public IWSCredentials
     {
     public:
@@ -86,29 +86,29 @@ namespace webservices
         //! \return adres serwisu
         virtual const std::string & url() const = 0;
 
-        //! \param operation Metoda serwisu do wywo≥ania
+        //! \param operation Metoda serwisu do wywo≈Çania
         virtual void setOperation(const std::string & operation) = 0;
-        //! \param name Nazwa wartoúci do ustawienia
-        //! \param value WartoúÊ zmiennej
+        //! \param name Nazwa warto≈õci do ustawienia
+        //! \param value Warto≈õƒá zmiennej
         virtual void setValue(const std::string & name, const std::string & value) = 0;
-        //! Wykonuje operacjÍ na serwisie webowym
-		//! \param process Czy odpowiedü ma byÊ przetworzona i moøna o rezultaty pytaÊ metodami getValue
-		//! W przeciwnym wypadku naleøy samemu parsowaÊ odpowiedü
+        //! Wykonuje operacjƒô na serwisie webowym
+		//! \param process Czy odpowied≈∫ ma byƒá przetworzona i mo≈ºna o rezultaty pytaƒá metodami getValue
+		//! W przeciwnym wypadku nale≈ºy samemu parsowaƒá odpowied≈∫
         virtual void invoke(bool process = false) = 0;
-        //! \param name Nazwa wartoúci ktÛrπ chcemy pobraÊ
-        //! \return Wskaünik do wartoúci, nullptr jeúli nie ma takiej wartoúci, wskaxnik pozostaje pod kontrolπ implementacji IWSConnection
+        //! \param name Nazwa warto≈õci kt√≥rƒÖ chcemy pobraƒá
+        //! \return Wska≈∫nik do warto≈õci, nullptr je≈õli nie ma takiej warto≈õci, wskaxnik pozostaje pod kontrolƒÖ implementacji IWSConnection
         virtual void * getValue(const std::string & name) = 0;
 
-		//! \param param Nazwa parametru dla ktÛrego ustawiamy wartoúÊ wywo≥ania
-		//! \param value Wartoúc dla zadanego parametru
+		//! \param param Nazwa parametru dla kt√≥rego ustawiamy warto≈õƒá wywo≈Çania
+		//! \param value Warto≈õc dla zadanego parametru
         template<class T>
         void setValue(const std::string& param, const T& value)
         {
             setValue(param, boost::lexical_cast<std::string>(value));
         }
 
-		//! \param param Nazwa parametru dla ktÛrego pobieramy wartoúÊ jeúli wykonywaliúmy zapytanie z parsowanie
-		//! \param value [out] Wartoúc dla zadanego parametru
+		//! \param param Nazwa parametru dla kt√≥rego pobieramy warto≈õƒá je≈õli wykonywali≈õmy zapytanie z parsowanie
+		//! \param value [out] Warto≈õc dla zadanego parametru
         template<class T>
         void getValue(const std::string & name, T & value)
         {
@@ -120,7 +120,7 @@ namespace webservices
 			}
         }
 
-        //! \return Pe≥na odpowiedü serwisu webowego w formacie html/xml
+        //! \return Pe≈Çna odpowied≈∫ serwisu webowego w formacie html/xml
         virtual const std::string xmlResponse() = 0;
     };
 

@@ -1,4 +1,4 @@
-#include <dfmlib/Node.h>
+ï»¿#include <dfmlib/Node.h>
 #include <dfmlib/Pin.h>
 #include <utils/Debug.h>
 #include <iterator>
@@ -129,7 +129,7 @@ Node::iterator Node::endIn() const
 
 const PinPtr & Node::getInPin(int idx) const
 {
-    UTILS_ASSERT((idx >=0 && idx < static_cast<int>(inPins.size())), "B³êdny indeks pinu wejœciowego");
+    UTILS_ASSERT((idx >=0 && idx < static_cast<int>(inPins.size())), "BÅ‚Ä™dny indeks pinu wejÅ›ciowego");
     return inPins[idx];
 }
 
@@ -161,7 +161,7 @@ Node::iterator Node::endOut() const
 
 const PinPtr & Node::getOutPin(int idx) const
 {
-    UTILS_ASSERT((idx >=0 && idx < static_cast<int>(outPins.size())), "B³êdny indeks pinu wyjœciowego");
+    UTILS_ASSERT((idx >=0 && idx < static_cast<int>(outPins.size())), "BÅ‚Ä™dny indeks pinu wyjÅ›ciowego");
     return outPins[idx];
 }
 

@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include "KinematicVisualizer.h"
 #include <core/IActionsGroupManager.h>
 #include "GRFSerie.h"
@@ -174,7 +174,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     cameraManipulator = new osgGA::OrbitManipulator();
     widget->setCameraManipulator(cameraManipulator);
 	setLeft();
-    // stworzenie i dodanie œwiat³a przyczepionego do kamery
+    // stworzenie i dodanie Å›wiatÅ‚a przyczepionego do kamery
     osg::ref_ptr<osg::Light> light = new osg::Light;
     light->setLightNum(1);
     light->setPosition(osg::Vec4(0.0,0.0,0.0,1.0f));
@@ -395,7 +395,7 @@ osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
 	colors->push_back(osg::Vec4(0.05f, 0.05f, 0.3f, 1.0f));
 
     GeodePtr geode = new osg::Geode();
-    // todo sparametryzowaæ
+    // todo sparametryzowaÄ‡
     osg::ref_ptr<osg::Geometry> linesGeom = new osg::Geometry();
 
 	float length = 3.5f;

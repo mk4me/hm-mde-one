@@ -1,4 +1,4 @@
-/**
+﻿/**
 @author Marek Daniluk
 @brief Klasa LocalTrial reprezentuje probe pomiarowa lokalnie na dysku uzytkownika.
 */

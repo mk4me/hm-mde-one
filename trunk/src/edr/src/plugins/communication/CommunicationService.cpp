@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include <plugins/communication/CommunicationService.h>
 #include <core/IPath.h>
 #include <plugins/dataExplorer/DataExplorerService.h>

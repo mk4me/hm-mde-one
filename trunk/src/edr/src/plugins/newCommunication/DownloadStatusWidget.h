@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/03/18
     created:  18:3:2012   23:20
     filename: DownloadStatusWidget.h
@@ -11,13 +11,13 @@
 
 #include "ui_DownloadStatusWidget.h"
 
-//! Klasa widgeta obs≥ugujπcego progress pobierania
+//! Klasa widgeta obs≈ÇugujƒÖcego progress pobierania
 class DownloadStatusWidget : public QWidget, public Ui::DownloadStatusWidget
 {
 	Q_OBJECT
 
 public:
-	//! domyúlny konstruktor
+	//! domy≈õlny konstruktor
 	DownloadStatusWidget(QWidget * parent = nullptr);
 	//! Wirtualny destruktor
 	virtual ~DownloadStatusWidget();

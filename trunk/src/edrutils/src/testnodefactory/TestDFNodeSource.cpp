@@ -1,4 +1,4 @@
-#include <testnodefactory/TestDFNodeSource.h>
+﻿#include <testnodefactory/TestDFNodeSource.h>
 
 
 TestDFNodeSource::TestDFNodeSource(const std::string & nodeName, int outPins) : DFNode(nodeName), DFSourceNode(nodeName), TestDFNodeProcessing(nodeName, 0, 0, outPins, false), availableData(0)

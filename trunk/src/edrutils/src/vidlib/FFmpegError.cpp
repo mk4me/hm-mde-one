@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include <vidlib/FFmpegError.h>
 #include <utils/Utils.h>
 
@@ -22,7 +22,7 @@ extern "C" {
 }
 
 #ifdef _MSC_VER
-// wy³¹czamy warning bo wiemy co robimy
+// wyÅ‚Ä…czamy warning bo wiemy co robimy
 #pragma warning(disable: 4996)
 #endif
 
@@ -69,11 +69,11 @@ void FFmpegError::setMessage( const char* msg, size_t length )
 
     ErrorCode errorCode = static_cast<ErrorCode>(id);
     if ( id != UnknownID ) {
-        // t³umaczymy b³¹d
+        // tÅ‚umaczymy bÅ‚Ä…d
         char buffer[512];
         const size_t maxLength = utils::length(buffer) - 1;
         buffer[maxLength] = '\0';
-        // najpierw kopiujemy star¹ wiadomoœæ
+        // najpierw kopiujemy starÄ… wiadomoÅ›Ä‡
         if ( msg ) {
             strncpy(buffer, msg, maxLength);
             length = strlen(buffer);
@@ -82,7 +82,7 @@ void FFmpegError::setMessage( const char* msg, size_t length )
         } else {
             length = 0;
         }
-        // Dodajemy komunikat o b³êdzie:
+        // Dodajemy komunikat o bÅ‚Ä™dzie:
         strncpy(buffer + length, "Internal FFmpeg error: ", length < maxLength ? maxLength - length : 0);
         length = strlen(buffer);
         av_strerror(static_cast<int>(errorCode), buffer+length, length < maxLength ? maxLength - length : 0);

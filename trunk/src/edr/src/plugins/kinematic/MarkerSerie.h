@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/09/02
 	created:	2:9:2011   9:28
 	filename: 	MarkerSerie.h
@@ -15,19 +15,19 @@
 #include "KinematicVisualizer.h"
 #include "MarkersVisualizationScheme.h"
 
-//! Seria danych wizualizatora 3D wizualizuj¹ca markery z pliku C3D
+//! Seria danych wizualizatora 3D wizualizujÄ…ca markery z pliku C3D
 class MarkerSerie : public QObject, public KinematicSerie
 {
 	Q_OBJECT;
 public:
-    //! wskaŸnik na wêze³ przechowuj¹cy geometriê
+    //! wskaÅºnik na wÄ™zeÅ‚ przechowujÄ…cy geometriÄ™
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;
-    //! wskaŸnik na wêze³ przechowuj¹cy grupê innych wêz³ów
+    //! wskaÅºnik na wÄ™zeÅ‚ przechowujÄ…cy grupÄ™ innych wÄ™zÅ‚Ã³w
 	typedef osg::ref_ptr<osg::Group> GroupPtr;
 
 public:
     //! Konstuktor
-    //! \param visualizer wizualizator, który stworzy³ serie danych
+    //! \param visualizer wizualizator, ktÃ³ry stworzyÅ‚ serie danych
 	MarkerSerie(KinematicVisualizer * visualizer) : 
 	  visualizer(visualizer),
 	  markersDrawer(new SchemeDrawerContainer())
@@ -36,7 +36,7 @@ public:
 	  }
 
 public:
-    //! Ustawia nowa nazwê serii
+    //! Ustawia nowa nazwÄ™ serii
     virtual void setName(const std::string & name);
     //! \return nazwa serii
     virtual const std::string & getName() const;
@@ -45,29 +45,29 @@ public:
 	virtual void setData(const core::ObjectWrapperConstPtr & data);
     //! \return ustawione dane
     virtual const core::ObjectWrapperConstPtr & getData() const;
-	//! \return d³ugoœæ kana³u w sekundach
+	//! \return dÅ‚ugoÅ›Ä‡ kanaÅ‚u w sekundach
 	virtual double getLength() const;
-    //! \return macierz serii z transformacj¹, która nie zosta³a zmieniona przez manipulatory
+    //! \return macierz serii z transformacjÄ…, ktÃ³ra nie zostaÅ‚a zmieniona przez manipulatory
     virtual osg::Matrix getInitialMatrix() const;
-	//! Czas zawiera siê miêdzy 0 a getLength()
-	//! \param time Aktualny, lokalny czas kana³u w sekundach
+	//! Czas zawiera siÄ™ miÄ™dzy 0 a getLength()
+	//! \param time Aktualny, lokalny czas kanaÅ‚u w sekundach
 	virtual void setLocalTime(double time);
 
 private slots:
-    //! Pokauje/chowa ghosta, który ukazuje charakterystykê ruchu na przestrzeni czasu, tworzy ghosta jeœli jest to konieczne
+    //! Pokauje/chowa ghosta, ktÃ³ry ukazuje charakterystykÄ™ ruchu na przestrzeni czasu, tworzy ghosta jeÅ›li jest to konieczne
     //! \param visible czy widoczny
     void showGhost(bool visible);
 	
 private:
-    //! Wizualizator, który utworzy³ serie
+    //! Wizualizator, ktÃ³ry utworzyÅ‚ serie
 	KinematicVisualizer * visualizer;
-    //! Po³¹cznie miêdzy markerami z C3D a ich wizualizacj¹
+    //! PoÅ‚Ä…cznie miÄ™dzy markerami z C3D a ich wizualizacjÄ…
     MarkersVisualizationSchemePtr scheme;
     //! drawer schematu
 	SchemeDrawerContainerPtr markersDrawer;
-    //! drawer trajektorii markerów
+    //! drawer trajektorii markerÃ³w
 	TrajectoryDrawerPtr trajectoryDrawer;
-    //! wêze³, w którym przechowywany jest ghost
+    //! wÄ™zeÅ‚, w ktÃ³rym przechowywany jest ghost
     osg::ref_ptr<osg::PositionAttitudeTransform> ghostNode;
     //! wrapper przekazany serii
     core::ObjectWrapperConstPtr data;

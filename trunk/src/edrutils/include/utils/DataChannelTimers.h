@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/04/26
     created:  26:4:2012   23:56
     filename: DataChannelTimers.h
@@ -31,7 +31,7 @@ public:
 	virtual TimeType getTime() const = 0;
 };
 
-//! Interfejs timera dla kana≥u - ustawia czas i czyta czas
+//! Interfejs timera dla kana≈Çu - ustawia czas i czyta czas
 template<class TimeType>
 class ITimer : public ITimerReader<TimeType> 
 {
@@ -50,16 +50,16 @@ template<class TimeType>
 class Timer : public ITimer<TimeType>
 {
 public:
-	//! Konstruktor domyúlny
+	//! Konstruktor domy≈õlny
 	Timer() : time() {}
 
 	//! Konstruktor
-	//! \param timer Timer z ktÛrego kopiujemy czas
+	//! \param timer Timer z kt√≥rego kopiujemy czas
 	template<class U>
 	Timer(const ITimer<U> & timer) : time(timer.getTime()) {}
 
 	//! Konstruktor
-	//! \param timer Timer z ktÛrego kopiujemy czas
+	//! \param timer Timer z kt√≥rego kopiujemy czas
 	template<class U>
 	Timer(const Timer<U> & timer) : time(timer.time) {}
 
@@ -88,7 +88,7 @@ private:
 	TimeType time;
 };
 
-//! Obiekt wyciπgajπcy aktualnπ wartoúc kana≥u dla czasu wyznaczanego przez timer i obiektu wyciπgajπcego wartoúci kana≥u dla zadanego czasu
+//! Obiekt wyciƒÖgajƒÖcy aktualnƒÖ warto≈õc kana≈Çu dla czasu wyznaczanego przez timer i obiektu wyciƒÖgajƒÖcego warto≈õci kana≈Çu dla zadanego czasu
 template<class PointType, class TimeType>
 class CurrentValueExtractor
 {

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/04/30
 	created:	30:4:2012   13:19
 	filename: 	INewChartSerie.h
@@ -12,9 +12,9 @@
 
 #include <plugins/c3d/EventSerieBase.h>
 
-//! Niektóre elementy serii danych wizualizatora wykresów s¹ edytowane z zewn¹trz, 
-//! dlatego nale¿y interfejsowaæ serie danych, aby daæ dostêp do obiektu bez koniecznoœci linkowania siê z pluginem
-//! tak¹ funkcjonalnoœæ w obrêbie serii zapewnia w³aœnie ten interfejs
+//! NiektÃ³re elementy serii danych wizualizatora wykresÃ³w sÄ… edytowane z zewnÄ…trz, 
+//! dlatego naleÅ¼y interfejsowaÄ‡ serie danych, aby daÄ‡ dostÄ™p do obiektu bez koniecznoÅ›ci linkowania siÄ™ z pluginem
+//! takÄ… funkcjonalnoÅ›Ä‡ w obrÄ™bie serii zapewnia wÅ‚aÅ›nie ten interfejs
 class INewChartSerie : public EventSerieBase
 {
 public:

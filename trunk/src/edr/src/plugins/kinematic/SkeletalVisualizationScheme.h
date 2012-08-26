@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/04/23
 	created:	23:4:2012   12:45
 	filename: 	skeletalVisualizationScheme.h
@@ -12,11 +12,11 @@
 
 #include "VisualizationScheme.h"
 
-//! Klasa stanowi po³¹czenie miêdzy jointami a ich wizualizacja
+//! Klasa stanowi poÅ‚Ä…czenie miÄ™dzy jointami a ich wizualizacja
 class SkeletalVisualizationScheme : public VisualizationScheme
 {
 public:
-    //! Konstruktor ustawia domyœlne wartoœci w tym kolory
+    //! Konstruktor ustawia domyÅ›lne wartoÅ›ci w tym kolory
     SkeletalVisualizationScheme();
 	
 public:
@@ -27,53 +27,53 @@ public:
     void setJoints(kinematic::JointAnglesCollectionConstPtr val);
     //! \return liczba klatek animacji
     virtual int getNumFrames() const;
-    //! \return d³ugoœæ trwania jednej klatki
+    //! \return dÅ‚ugoÅ›Ä‡ trwania jednej klatki
     double getFrameTime() const;
     //! \return czas trwania animacji
     virtual double getDuration() const;
     //! czy schemat jest poprawnie zainicjalizowany
     virtual bool hasData() const { return joints.get(); }
-    //! \return œrodek geometryczny
+    //! \return Å›rodek geometryczny
     virtual osg::Vec3 getCurrentPosition() const { return currentPosition; }
-    //! Zwraca pozycje dla g³ównego wêz³a animacji
-    //! \param time czas, dla którego jest pobierana pozycja
+    //! Zwraca pozycje dla gÅ‚Ã³wnego wÄ™zÅ‚a animacji
+    //! \param time czas, dla ktÃ³rego jest pobierana pozycja
     //! \return pozycja roota
     osg::Vec3 getRootPosition(double time);
 
 protected:
     //! aktualizacja schematu
-    //! \param time czas, dla którego ma byæ zaktualizowany schemat
+    //! \param time czas, dla ktÃ³rego ma byÄ‡ zaktualizowany schemat
     virtual void update( double time );
 
 private:
-    //! odœwie¿enie informacji o jointach
+    //! odÅ›wieÅ¼enie informacji o jointach
     void updateJoints();
-    //! obliczenie transformacji szkieletu. Metoda wywo³uje rekurencje
-    //! \param time czas, dla którego maja byæ liczone transformacje
+    //! obliczenie transformacji szkieletu. Metoda wywoÅ‚uje rekurencje
+    //! \param time czas, dla ktÃ³rego maja byÄ‡ liczone transformacje
     void updateJointTransforms(double time);
     //! obliczenie transformacji dla podanego czasu
-    //! \param rotations rotacje jointów dla konkretnej klatki
+    //! \param rotations rotacje jointÃ³w dla konkretnej klatki
     //! \param joint przetwarzany staw
     //! \param parentRot rotacja rodzica
     //! \param parentPos pozycja rodzica
     void updateJointTransforms(const std::vector<osg::Quat>& rotations, kinematic::hAnimJointPtr joint, 
         osg::Quat parentRot, osg::Vec3 parentPos);
-    //! Metoda wywo³ywana rekurencyjnie, tworzy po³¹czenia miêdzy jointami
+    //! Metoda wywoÅ‚ywana rekurencyjnie, tworzy poÅ‚Ä…czenia miÄ™dzy jointami
     //! \param joint aktualnie przetwarzany joint
     void createSkeletonConnections(kinematic::hAnimJointPtr joint);
 
 private:
-    //! u³atwia ineksowanie jointów
+    //! uÅ‚atwia ineksowanie jointÃ³w
     std::map<kinematic::hAnimJointPtr, int> visJoints;
     //! ustawiona struktura z jointami
 	kinematic::JointAnglesCollectionConstPtr joints;
-    //! pomocne przy zape³nianiu kolekcji jointów
+    //! pomocne przy zapeÅ‚nianiu kolekcji jointÃ³w
     int counterHelper;
-    //! aktualny œrodek geometryczny
+    //! aktualny Å›rodek geometryczny
     osg::Vec3 currentPosition;
-    //! kolor po³¹czen
+    //! kolor poÅ‚Ä…czen
     osg::Vec4 connectionColor;
-    //! kolor markerów
+    //! kolor markerÃ³w
     osg::Vec4 dotColor;
 };
 typedef core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;

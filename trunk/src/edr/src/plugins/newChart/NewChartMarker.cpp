@@ -1,4 +1,4 @@
-#include "NewChartPCH.h"
+﻿#include "NewChartPCH.h"
 #include "NewChartMarker.h"
 #include <utils/Utils.h>
 #include <QtGui/QPainter>

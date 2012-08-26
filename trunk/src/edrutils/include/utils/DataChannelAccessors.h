@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/04/26
     created:  26:4:2012   23:47
     filename: DataChannelAccessors.h
@@ -25,24 +25,24 @@ public:
 public:
 	//! Wirtualny destruktor
 	virtual ~IDataChannelTimeAccessor() {}
-	//! \param time Czas dla którego chemy pobraæ wartoœæ
-	//! \return Wartoœæ kana³u dla zadanego czasu
+	//! \param time Czas dla ktÃ³rego chemy pobraÄ‡ wartoÅ›Ä‡
+	//! \return WartoÅ›Ä‡ kanaÅ‚u dla zadanego czasu
 	virtual PointType getValue(TimeType time) const = 0;
-	//! \param time Czas dla którego chemy pobraæ wartoœæ
-	//! \return Wartoœæ kana³u dla zadanego czasu
+	//! \param time Czas dla ktÃ³rego chemy pobraÄ‡ wartoÅ›Ä‡
+	//! \return WartoÅ›Ä‡ kanaÅ‚u dla zadanego czasu
 	PointType operator[](TimeType time) const
 	{
 		return getValue(time);
 	}
 
-	//! \return Kana³ dla którego tworzymy wra¿enie ci¹g³oœci
+	//! \return KanaÅ‚ dla ktÃ³rego tworzymy wraÅ¼enie ciÄ…gÅ‚oÅ›ci
 	virtual const typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr & getChannel() const = 0;
-	//! \param channel Kana³ dla którego chcemy utworzyæ wra¿enie ci¹g³oœci
+	//! \param channel KanaÅ‚ dla ktÃ³rego chcemy utworzyÄ‡ wraÅ¼enie ciÄ…gÅ‚oÅ›ci
 	virtual void setChannel(const typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr & channel) = 0;
 };
 
-//! Obiekt obsuguj¹cy zapytania o wartoœci kana³u dla czasu spoza zakresu pokrytego przez kana³
-//! Rzuca wyj¹tkami
+//! Obiekt obsugujÄ…cy zapytania o wartoÅ›ci kanaÅ‚u dla czasu spoza zakresu pokrytego przez kanaÅ‚
+//! Rzuca wyjÄ…tkami
 template <	class PointType,
 			class TimeType,
 			template<typename Point, typename Time> class Interpolator,
@@ -51,7 +51,7 @@ class ExceptionExtrapolator
 {
 public:
     typedef IRawGeneralDataChannelReader<PointType, TimeType> ChannelReader;
-	//! Domyœ³ny konstruktor
+	//! DomyÅ›Å‚ny konstruktor
 	ExceptionExtrapolator() {}
 
 	//! Konstruktor kopiujacy
@@ -77,8 +77,8 @@ public:
 	}
 };
 
-//! Obiekt obsuguj¹cy zapytania o wartoœci kana³u dla czasu spoza zakresu pokrytego przez kana³
-//! Wprowadza wra¿enie okresowoœci kana³u
+//! Obiekt obsugujÄ…cy zapytania o wartoÅ›ci kanaÅ‚u dla czasu spoza zakresu pokrytego przez kanaÅ‚
+//! Wprowadza wraÅ¼enie okresowoÅ›ci kanaÅ‚u
 template <	class PointType,
 			class TimeType,
 			template<typename Point, typename Time> class Interpolator,
@@ -86,7 +86,7 @@ template <	class PointType,
 class PeriodicExtrapolator
 {
 public:
-	//! Domyœ³ny konstruktor
+	//! DomyÅ›Å‚ny konstruktor
 	PeriodicExtrapolator() {}
 
 	//! Konstruktor kopiujacy
@@ -114,8 +114,8 @@ public:
 	}
 };
 
-//! Obiekt obsuguj¹cy zapytania o wartoœci kana³u dla czasu spoza zakresu pokrytego przez kana³
-//! Powiela skrajne próbki
+//! Obiekt obsugujÄ…cy zapytania o wartoÅ›ci kanaÅ‚u dla czasu spoza zakresu pokrytego przez kanaÅ‚
+//! Powiela skrajne prÃ³bki
 template <	class PointType,
 			class TimeType,
 			template<typename Point, typename Time> class Interpolator,
@@ -123,7 +123,7 @@ template <	class PointType,
 class BorderExtrapolator
 {
 public:
-	//! Domyœ³ny konstruktor
+	//! DomyÅ›Å‚ny konstruktor
 	BorderExtrapolator() {}
 
 	//! Konstruktor kopiujacy
@@ -155,8 +155,8 @@ struct InterpolatorHelper
 {
 public:
 
-	//! \param time Czas dla któego chcemy interpolowaæ wartoœc kana³u
-	//! \param channel Kana³ dla którego interpolujemy
+	//! \param time Czas dla ktÃ³ego chcemy interpolowaÄ‡ wartoÅ›c kanaÅ‚u
+	//! \param channel KanaÅ‚ dla ktÃ³rego interpolujemy
 
 	static PointType extractValue(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
@@ -171,7 +171,7 @@ public:
 	}
 };
 
-//! Manipulator danych bazuj¹cy na operatorach typu. Interpoluje liniowo.
+//! Manipulator danych bazujÄ…cy na operatorach typu. Interpoluje liniowo.
 template <class PointType, class TimeType>
 struct LerpInterpolator
 {
@@ -198,7 +198,7 @@ public:
 	EpsilonManager(const EpsilonManager & manager) : epsilon(manager.epsilon), smallerIfEqual(manager.smallerIfEqual) {}
 	EpsilonManager(T epsilon, bool smallerIfEqual) : epsilon(epsilon), smallerIfEqual(smallerIfEqual) {}
 
-	//! \return Domyœlny epsilon dla czasu
+	//! \return DomyÅ›lny epsilon dla czasu
 	T getEpsilon() const
 	{
 		return epsilon;
@@ -210,7 +210,7 @@ public:
 		this->epsilon = epsilon;
 	}
 
-	//! \return Czy brana bêdzie mniejsza próbka jeœli równe
+	//! \return Czy brana bÄ™dzie mniejsza prÃ³bka jeÅ›li rÃ³wne
 	bool getSmallerIfEqualPolicy() const
 	{
 		return smallerIfEqual;
@@ -224,13 +224,13 @@ public:
 	}
 
 private:
-	//! Wartoœæ otoczenia
+	//! WartoÅ›Ä‡ otoczenia
 	T epsilon;
-	//! Któr¹ próbkê braæ jeœli równoodleg³e
+	//! KtÃ³rÄ… prÃ³bkÄ™ braÄ‡ jeÅ›li rÃ³wnoodlegÅ‚e
 	bool smallerIfEqual;
 };
 
-//! Interpolator dyskretny z obs³ug¹ otoczenia
+//! Interpolator dyskretny z obsÅ‚ugÄ… otoczenia
 template <class PointType, class TimeType>
 struct DiscreteInterpolator : public EpsilonManager<TimeType>
 {
@@ -259,7 +259,7 @@ struct DiscreteInterpolator : public EpsilonManager<TimeType>
 	}
 };
 
-//! Obiekt realizuj¹cy funkcjonalnoœæ ci¹g³oœci czasu w kanale - wewn¹trz i na zewn¹trz kana³u
+//! Obiekt realizujÄ…cy funkcjonalnoÅ›Ä‡ ciÄ…gÅ‚oÅ›ci czasu w kanale - wewnÄ…trz i na zewnÄ…trz kanaÅ‚u
 template<	class PointType,
 			class TimeType,
 			template<typename Point, typename Time> class Interpolator = LerpInterpolator,
@@ -274,18 +274,18 @@ public:
 	typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr ConstChannelPtr;
 
 private:
-	//! Kana³ dla którego realizujemy ci¹g³oœæ
+	//! KanaÅ‚ dla ktÃ³rego realizujemy ciÄ…gÅ‚oÅ›Ä‡
 	ConstChannelPtr constChannel;
 
 public:
-	//! Konstruktor domyœlny
+	//! Konstruktor domyÅ›lny
 	DataChannelTimeAccessor() {}
 	//! Konstruktor
-	//! \prama Kana³ dla którego tworzymy wra¿enie ci¹g³oœci
+	//! \prama KanaÅ‚ dla ktÃ³rego tworzymy wraÅ¼enie ciÄ…gÅ‚oÅ›ci
 	DataChannelTimeAccessor(const ConstChannelPtr & channel) : constChannel(channel) {}
 	//! Destruktor wirtualny
 	virtual ~DataChannelTimeAccessor() {}
-	//! \return Kana³ dla którego tworzymy wra¿enie ci¹g³oœci
+	//! \return KanaÅ‚ dla ktÃ³rego tworzymy wraÅ¼enie ciÄ…gÅ‚oÅ›ci
 	virtual const ConstChannelPtr & getChannel() const
 	{
 		return constChannel;
@@ -296,15 +296,15 @@ public:
 	//	return channel;
 	//}
 
-	//! \param channel Kana³ dla którego tworzymy wra¿enie ci¹g³oœci
+	//! \param channel KanaÅ‚ dla ktÃ³rego tworzymy wraÅ¼enie ciÄ…gÅ‚oÅ›ci
 	virtual void setChannel(const ConstChannelPtr & channel)
 	{
 		constChannel = channel;
 	}
 
-	//! \param time Czas dla którego chcemy pobraæ wartoœæ
-	//! \param channel Kana³ z którego chcemy pobraæ wartoœæ
-	//! \return Wartoœæ kana³u dla zadanego czasu uwzglêdniaj¹ca extrapolatro i interpolator (mo¿e w szczególnoœci rzucaæ wyj¹tkami!!!)
+	//! \param time Czas dla ktÃ³rego chcemy pobraÄ‡ wartoÅ›Ä‡
+	//! \param channel KanaÅ‚ z ktÃ³rego chcemy pobraÄ‡ wartoÅ›Ä‡
+	//! \return WartoÅ›Ä‡ kanaÅ‚u dla zadanego czasu uwzglÄ™dniajÄ…ca extrapolatro i interpolator (moÅ¼e w szczegÃ³lnoÅ›ci rzucaÄ‡ wyjÄ…tkami!!!)
 	static PointType getValue(TimeType time, const Channel & channel)
 	{
 		if(channel.empty() == true){
@@ -319,8 +319,8 @@ public:
 			return InterpolatorHelper<PointType, TimeType, Interpolator>::extractValue(time, channel);
 		}
 	}
-	//! \param time Czas dla którego chcemy pobraæ wartoœæ
-	//! \return Wartoœæ kana³u dla zadanego czasu uwzglêdniaj¹ca extrapolatro i interpolator (mo¿e w szczególnoœci rzucaæ wyj¹tkami!!!)
+	//! \param time Czas dla ktÃ³rego chcemy pobraÄ‡ wartoÅ›Ä‡
+	//! \return WartoÅ›Ä‡ kanaÅ‚u dla zadanego czasu uwzglÄ™dniajÄ…ca extrapolatro i interpolator (moÅ¼e w szczegÃ³lnoÅ›ci rzucaÄ‡ wyjÄ…tkami!!!)
 	virtual PointType getValue(TimeType time) const
 	{
 		if(constChannel == nullptr){

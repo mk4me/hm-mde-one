@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/04
     created:  4:2:2012   22:41
     filename: DataSourceUserData.h
@@ -11,7 +11,7 @@
 
 #include <plugins/newCommunication/IDataSourceUserData.h>
 
-//! Implementacja zawieraj¹ca specyficzne dla u¿ytkownika dane
+//! Implementacja zawierajÄ…ca specyficzne dla uÅ¼ytkownika dane
 class UserData : public communication::IUserData
 {
 public:

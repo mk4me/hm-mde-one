@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/04/06
     created:  6:4:2012   8:54
     filename: AccountFactoryWS.h
@@ -13,18 +13,18 @@
 
 namespace webservices{
 
-	//! Klasa tworz¹ca konto po stronie bazy danych
+	//! Klasa tworzÄ…ca konto po stronie bazy danych
 	class SingleAccountFactoryWS : public ISingleAccountFactoryWS
 	{
 	public:
 		SingleAccountFactoryWS(const WSConnectionPtr & connection = WSConnectionPtr());
 		virtual ~SingleAccountFactoryWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
 		virtual void createUserAccount(const std::string & login, const std::string & email, const std::string & password,
@@ -38,18 +38,18 @@ namespace webservices{
 		WSConnectionConstPtr constConnection_;
 	};
 
-	//! Klasa tworz¹ca konto po stronie bazy danych (medycznej i ruchu)
+	//! Klasa tworzÄ…ca konto po stronie bazy danych (medycznej i ruchu)
 	class MultiAccountFactoryWS : public IMultiAccountFactoryWS
 	{
 	public:
 		MultiAccountFactoryWS(const WSConnectionPtr & connection = WSConnectionPtr());
 		virtual ~MultiAccountFactoryWS();
 
-		//! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+		//! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
 		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionPtr & connection();
-		//! \return Po³¹czenie przez które jest realizowany serwis
+		//! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
 		virtual const WSConnectionConstPtr & connection() const;
 
 		virtual void createUserAccount(const std::string & login, const std::string & email, const std::string & password,

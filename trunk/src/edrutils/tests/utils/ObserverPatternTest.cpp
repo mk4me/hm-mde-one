@@ -1,11 +1,11 @@
-#include <vector>
+ï»¿#include <vector>
 #include <utils/ObserverPattern.h>
 #include "ObserverPatternTest.h"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( ObserverPatternTest );
 
-//! Prosty typ który zwiêksza wartoœæ wewnêtrznego licznika.
+//! Prosty typ ktÃ³ry zwiÄ™ksza wartoÅ›Ä‡ wewnÄ™trznego licznika.
 class Subject : public utils::Observable<Subject>
 {
 public:
@@ -21,7 +21,7 @@ public:
 };
 
 
-//! Prosty obserwator kopiuj¹cy wartoœæ licznika.
+//! Prosty obserwator kopiujÄ…cy wartoÅ›Ä‡ licznika.
 struct Observer : public utils::Observer<Subject>
 {
   int changeCount;
@@ -54,14 +54,14 @@ void ObserverPatternTest::testAttach()
   subject.attach(&observer);
   CPPUNIT_ASSERT_EQUAL(true, subject.isAttached(&observer));
 
-  // dodanie kilku obserwatorów
+  // dodanie kilku obserwatorÃ³w
   Observer observer1, observer2;
   subject.attach(&observer1);
   subject.attach(&observer2);
   CPPUNIT_ASSERT_EQUAL(true, subject.isAttached(&observer1));
   CPPUNIT_ASSERT_EQUAL(true, subject.isAttached(&observer2));
 
-  // teraz powinniœmy dostaæ wyj¹tek
+  // teraz powinniÅ›my dostaÄ‡ wyjÄ…tek
   subject.attach(&observer);
 }
 
@@ -76,7 +76,7 @@ void ObserverPatternTest::testDetach()
   subject.detach(&observer);
   CPPUNIT_ASSERT_EQUAL(false, subject.isAttached(&observer));
 
-  // dodanie kilku i odpiêcie jednego
+  // dodanie kilku i odpiÄ™cie jednego
   Observer observer1, observer2;
   subject.attach(&observer);
   subject.attach(&observer1);
@@ -84,14 +84,14 @@ void ObserverPatternTest::testDetach()
   subject.detach(&observer);
   CPPUNIT_ASSERT_EQUAL(false, subject.isAttached(&observer));
 
-  // odpiêcie wszystkich
+  // odpiÄ™cie wszystkich
   subject.attach(&observer);
   subject.detachAll();
   CPPUNIT_ASSERT_EQUAL(false, subject.isAttached(&observer));
   CPPUNIT_ASSERT_EQUAL(false, subject.isAttached(&observer1));
   CPPUNIT_ASSERT_EQUAL(false, subject.isAttached(&observer2));
 
-  // teraz powinniœmy dostaæ wyj¹tek
+  // teraz powinniÅ›my dostaÄ‡ wyjÄ…tek
   subject.detach(&observer);
 }
 
@@ -122,14 +122,14 @@ void ObserverPatternTest::testNotify()
   CPPUNIT_ASSERT_EQUAL(std::distance(begin, begin), std::distance(begin, found.first));
   CPPUNIT_ASSERT_EQUAL(std::distance(begin, end), std::distance(begin, found.second));
 
-  // wy³¹czamy dowi¹zanie w pierwszym
+  // wyÅ‚Ä…czamy dowiÄ…zanie w pierwszym
   subject.detach(&observers[0]);
   subject.changeState();
   found = std::equal_range(begin, end, Observer(subject.changeCount));
   CPPUNIT_ASSERT_EQUAL(std::distance(begin, begin+1), std::distance(begin, found.first));
   CPPUNIT_ASSERT_EQUAL(std::distance(begin, end), std::distance(begin, found.second));
 
-  // wy³¹czamy dowi¹zanie w kilku kolejnych
+  // wyÅ‚Ä…czamy dowiÄ…zanie w kilku kolejnych
   subject.detach(&observers[1]);
   subject.detach(&observers[5]);
   subject.detach(&observers[8]);
@@ -139,7 +139,7 @@ void ObserverPatternTest::testNotify()
   CPPUNIT_ASSERT_EQUAL(std::distance(begin, begin+4), std::distance(begin, found.first));
   CPPUNIT_ASSERT_EQUAL(std::distance(begin, end), std::distance(begin, found.second));
 
-  // wy³¹czamy wszystko
+  // wyÅ‚Ä…czamy wszystko
   subject.detachAll();
   subject.changeState();
   found = std::equal_range(begin, end, Observer(subject.changeCount));

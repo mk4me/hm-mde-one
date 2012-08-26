@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/07/08
 	created:  8:7:2010   13:33
 	filename: StreamsViewOSGWidget.h
@@ -24,18 +24,18 @@ public:
         virtual ~Client() {}
         //! \return Rozmiar obrazka.
         virtual osg::Vec2 getDesiredImageSize() = 0;
-        //! Reakcja na zmianê rozmiaru obrazka.
+        //! Reakcja na zmianÄ™ rozmiaru obrazka.
         virtual void onImageResized(VideoImageStreamSizeOptimizer* optimizer, int prevS, int prevT) = 0;
-        //! \return Czy mo¿na jeszcze korzystaæ z tego callbacka?
+        //! \return Czy moÅ¼na jeszcze korzystaÄ‡ z tego callbacka?
         virtual bool isValid() = 0;
     };
 
 private:
-    //! Lista kontrolowanych widgetów.
+    //! Lista kontrolowanych widgetÃ³w.
     std::vector<osg::ref_ptr<Client> > clients;
-    //! Kontrolowany strumieñ.
+    //! Kontrolowany strumieÅ„.
     osg::ref_ptr<osg::Image> image;
-    //! Zmienna któr¹ mo¿na podpi¹æ do shaderów; zawsze bêdzie mia³a aktualny rozmiar.
+    //! Zmienna ktÃ³rÄ… moÅ¼na podpiÄ…Ä‡ do shaderÃ³w; zawsze bÄ™dzie miaÅ‚a aktualny rozmiar.
     osg::ref_ptr<osg::Uniform> imageSize;
 
 public:
@@ -65,12 +65,12 @@ public:
     //!
     void setImage(osg::Image* image);
 
-    //! Odœwie¿a rozmiar strumienia.
+    //! OdÅ›wieÅ¼a rozmiar strumienia.
     void refreshSize();
 
 // osg::NodeCallback
 public:
-    //! Wywo³uje refreshSize.
+    //! WywoÅ‚uje refreshSize.
     virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 };
 

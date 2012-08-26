@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+﻿#include "CorePCH.h"
 #include <core/ILog.h>
 #include <core/PluginCommon.h>
 #include "ObjectSlots.h"

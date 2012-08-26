@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/19
     created:  19:4:2011   7:56
     filename: VdfWidget.h
@@ -24,7 +24,7 @@ private:
     typedef std::set<osg::ref_ptr<osgui::StyleEx> > StylesSet;
 
 private:
-    //! Us³uga tworz¹ca widget.
+    //! UsÅ‚uga tworzÄ…ca widget.
     VdfService* service;
 
     QWidget* actualWidget;

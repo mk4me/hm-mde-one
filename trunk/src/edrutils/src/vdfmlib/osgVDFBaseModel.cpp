@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 
 #include <osgViewer/ViewerEventHandlers>
 #include <vdfmlib/osgVDFBaseModel.h>
@@ -55,7 +55,7 @@ void osgVDFBaseModel::setModel(const dflm::MPtr & model, const NodesPositions & 
         return;
     }
 
-    UTILS_ASSERT((model != nullptr), "Nieprawid³owy model!");
+    UTILS_ASSERT((model != nullptr), "NieprawidÅ‚owy model!");
 
     //logicModel->unlock();
 
@@ -74,7 +74,7 @@ void osgVDFBaseModel::setModel(const dflm::MPtr & model, const NodesPositions & 
     //}
 }
 
-//! \param lock Czy zablokowac do edycji logiki i w³aœciwoœci modelu - tylko wizualna zmiana layoutu mo¿liwa
+//! \param lock Czy zablokowac do edycji logiki i wÅ‚aÅ›ciwoÅ›ci modelu - tylko wizualna zmiana layoutu moÅ¼liwa
 void osgVDFBaseModel::lockForModelEdition(bool lock)
 {
 
@@ -388,7 +388,7 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
 	}
 
 	if(clearEvent){
-		// wyczyszczenie _lastEvent oraz flag przycisków
+		// wyczyszczenie _lastEvent oraz flag przyciskÃ³w
 		pointerMove(-FLT_MAX, -FLT_MAX);
 		// wyczyszczenie _lastPush
 		mouseReleasedLeft(0, 0);
@@ -722,7 +722,7 @@ osg::BoundingBox osgVDFBaseModel::getNodesBoundingBox( const dflm::Model::Nodes 
 
     if(nodes.empty() == false){
 
-        //przeciêcie podanych wêz³ów i wêz³ów z modelu - tylko pokrywaj¹ce siê wêz³y wezm¹ udzia³ w tworzeniu obszaru
+        //przeciÄ™cie podanych wÄ™zÅ‚Ã³w i wÄ™zÅ‚Ã³w z modelu - tylko pokrywajÄ…ce siÄ™ wÄ™zÅ‚y wezmÄ… udziaÅ‚ w tworzeniu obszaru
 
         dflm::Model::Nodes correctNodes(filterNodes(nodes));
 
@@ -1630,7 +1630,7 @@ bool osgVDFBaseModel::onPinRelease(osgWidget::Event& ev)
 
                     dflm::ConnPtr conn = logicModel->connect(connectingStartPin->getModelPin(), connectingCurrentPin->getModelPin());
 
-                    //aktuzlizuj piny, dodaj po³¹czenie do map
+                    //aktuzlizuj piny, dodaj poÅ‚Ä…czenie do map
                     addConnectionToPin(connectingStartPin, visualConnection, connectingCurrentPin);
                     addConnectionToPin(connectingCurrentPin, visualConnection, connectingStartPin);
 
@@ -1777,10 +1777,10 @@ std::vector<std::string> osgVDFBaseModel::getPinErrors(const dflm::PinPtr & pin)
 
 	if(pin->getType() == dflm::Pin::IN){
 		if(pin->isRequired() == true && pin->empty() == true){
-			ret.push_back("Pin wymagany - musi byæ pod³¹czony!");
+			ret.push_back("Pin wymagany - musi byÄ‡ podÅ‚Ä…czony!");
 		}
 	}else if(pin->getType() == dflm::Pin::OUT && pin->empty() == false && pin->isComplete() == false){
-		std::string message("Pin wyjsciowy jest polaczony i zale¿ny od pinów wejœciowych:");
+		std::string message("Pin wyjsciowy jest polaczony i zaleÅ¼ny od pinÃ³w wejÅ›ciowych:");
 		auto dependant = pin->getDependantPins();
 		for(auto it = dependant.begin(); it != dependant.end(); ++it){
 			if((*it).lock()->empty() == true){
@@ -1977,7 +1977,7 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
     }
 
     if(model->clickNodeAction.empty() == false && gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && gea.getEventType() == osgGA::GUIEventAdapter::PUSH){
-        //pobierz wêz³y pod t¹ pozycj¹
+        //pobierz wÄ™zÅ‚y pod tÄ… pozycjÄ…
         osgWidget::XYCoord pos(gea.getX(), gea.getY());
         const osgVDFBaseNode* node = getTopNodeInPoint(pos);
 

@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include "DataSourceWebServicesManager.h"
 #include <webserviceslib/AdministrationWS.h>
 #include <webserviceslib/AuthorizationWS.h>

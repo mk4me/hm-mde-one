@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/11/24
 	created:  24:11:2010   13:21
 	filename: MultiView.h
@@ -20,32 +20,32 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Item który mo¿na umieœciæ na p³aszczyŸnie.
+//! Item ktÃ³ry moÅ¼na umieÅ›ciÄ‡ na pÅ‚aszczyÅºnie.
 class MultiViewItem : public osg::Referenced
 {
 public:
     //! \return Etykieta skojarzona z itemem.
     virtual const std::string& getName() const = 0;
 
-    //! \param x Koordynat x na p³aszczyŸnie.
-    //! \param y Koordynat y na p³aszczyŸnie.
-    //! \param w Szerokoœæ na p³aszczyŸnie.
-    //! \param h Wysokoœæ na p³aszczyŸnie.
+    //! \param x Koordynat x na pÅ‚aszczyÅºnie.
+    //! \param y Koordynat y na pÅ‚aszczyÅºnie.
+    //! \param w SzerokoÅ›Ä‡ na pÅ‚aszczyÅºnie.
+    //! \param h WysokoÅ›Ä‡ na pÅ‚aszczyÅºnie.
     virtual void setLocation(osgWidget::point_type x, osgWidget::point_type y,
         osgWidget::point_type w, osgWidget::point_type h) = 0;
-    //! \param position Pozycja na p³aszcznie.
-    //! \param size Rozmiar na p³aszczyŸnie.
+    //! \param position Pozycja na pÅ‚aszcznie.
+    //! \param size Rozmiar na pÅ‚aszczyÅºnie.
     void setLocation(osgWidget::XYCoord position, osgWidget::XYCoord size)
     {
         setLocation(position.x(), position.y(), size.x(), size.y());
     }
-    //! \param location Wymiary na p³aszczyŸnie.
+    //! \param location Wymiary na pÅ‚aszczyÅºnie.
     void setLocation(osgWidget::Quad location)
     {
         setLocation(location.x(), location.y(), location.z(), location.w());
     }
 
-    //! \return Wspó³czynnik proporcji.
+    //! \return WspÃ³Å‚czynnik proporcji.
     virtual osgWidget::point_type getAspectRatio() = 0;
 
     //! \param visible Czy item jest widoczny?
@@ -62,15 +62,15 @@ public:
         TemplatesLabeledViewBased
     };
 
-    //! Adapter widgetów. Pozwala na wykonania abstrakcyjnych czynnoœci na
-    //! widgetach nie znaj¹c przy tym ich typów.
+    //! Adapter widgetÃ³w. Pozwala na wykonania abstrakcyjnych czynnoÅ›ci na
+    //! widgetach nie znajÄ…c przy tym ich typÃ³w.
     class WidgetAdapter : public osg::Referenced
     {
     public:
         //!
         virtual ~WidgetAdapter() {}
-        //! Klonowanie. Trzeba pamiêtaæ, ¿e klasa ta u¿ywana jest jako prototyp i w zwi¹zku
-        //! przed przypisaniem do itema trzeba go skopiowaæ.
+        //! Klonowanie. Trzeba pamiÄ™taÄ‡, Å¼e klasa ta uÅ¼ywana jest jako prototyp i w zwiÄ…zku
+        //! przed przypisaniem do itema trzeba go skopiowaÄ‡.
         virtual WidgetAdapter* clone() = 0;
         //! \param widget
         virtual osgWidget::EventInterface* getEventSource(osgWidget::Widget* widget) = 0;
@@ -88,15 +88,15 @@ public:
     typedef MultiViewItem Item;
 
 private:
-    //! WskaŸnik na item.
+    //! WskaÅºnik na item.
     typedef osg::ref_ptr<Item> ItemPtr;
 
-    //! Wpis wewnêtrznie u¿ywany.
+    //! Wpis wewnÄ™trznie uÅ¼ywany.
     struct Entry
     {
         //! Item (miniaturka).
         ItemPtr thumbnail;
-        //! Preview (du¿y widok).
+        //! Preview (duÅ¼y widok).
         ItemPtr preview;
         //! Widget.
         osg::ref_ptr<osgWidget::Widget> widget;
@@ -104,26 +104,26 @@ private:
         osg::ref_ptr<WidgetAdapter> adapter;
         //! Czy thumbnail jest zaznaczony?
         bool toggled;
-        //! Okienko s³u¿¹ce do trzymania wspó³czynnika proporcji.
+        //! Okienko sÅ‚uÅ¼Ä…ce do trzymania wspÃ³Å‚czynnika proporcji.
         osg::ref_ptr<osgui::AspectRatioKeeper> keeper;
     };
 
-    //! W³aœciwa lista itemów.
+    //! WÅ‚aÅ›ciwa lista itemÃ³w.
     typedef std::vector< Entry > Items;
 
-    //! Lista itemów.
+    //! Lista itemÃ³w.
     Items items;
     //! Grid z miniaturkami.
     osg::ref_ptr<osgui::Grid> thumbnails;
     //! Okienko z guzikami.
     osg::ref_ptr<osgWidget::Box> buttons;
-    //! Szerokoœæ (b¹dŸ wysokoœæ) panelu z miniaturkami.
+    //! SzerokoÅ›Ä‡ (bÄ…dÅº wysokoÅ›Ä‡) panelu z miniaturkami.
     osgWidget::point_type thumbnailsPaneWidth;
 
-    //! Czy widoczny jest podgl¹d?
+    //! Czy widoczny jest podglÄ…d?
     bool previewVisible;
 
-    //! Bie¿¹cy thumbnail
+    //! BieÅ¼Ä…cy thumbnail
     ItemPtr selectedItem;
 
     //! Szablon dla miniaturek.
@@ -133,7 +133,7 @@ private:
 
     //!
     ItemPtr prevSelectedItem;
-    //! Wspó³rzêdne lewego dolnego rogu.
+    //! WspÃ³Å‚rzÄ™dne lewego dolnego rogu.
     //osgWidget::XYCoord origin;
     //! Rozmiar multiwidoku;
     //osgWidget::XYCoord size;
@@ -148,7 +148,7 @@ public:
 
     //! Dodaje item na koniec kolekcji.
     //! \param item Item do dodania. Miniaturka.
-    //! \param preview Opcjonalny item, który bêdzie pokazywany/chowany, gdy miniaturka zostanie wybrana.
+    //! \param preview Opcjonalny item, ktÃ³ry bÄ™dzie pokazywany/chowany, gdy miniaturka zostanie wybrana.
     bool addItem(Item* thumbnail, Item* preview = NULL);
 
     //! Usuwa item z kolekcji.
@@ -169,7 +169,7 @@ public:
     unsigned getSelectedIndex() const;
     //! \param idx Indeks wybranego itema.
     void setSelectedByIndex(unsigned idx);
-    //! \return Liczba itemów.
+    //! \return Liczba itemÃ³w.
     unsigned getNumItems() const;
 
     //! \return Prototyp
@@ -196,43 +196,43 @@ public:
 
     //! \param thumbnailsPaneWidth
     void setThumbnailsPaneWidth(osgWidget::point_type thumbnailsPaneWidth);
-    //! Odœwie¿a roz³o¿enie elementów.
+    //! OdÅ›wieÅ¼a rozÅ‚oÅ¼enie elementÃ³w.
     void refreshLayout();
 
-    //! \param visible Czy miniaturki maj¹ byæ widoczne?
+    //! \param visible Czy miniaturki majÄ… byÄ‡ widoczne?
     void setThumbnailsVisible(bool visible);
-    //! Byk ortograficzny zamierzony (powinno byæ: areThumbnailsVisible).
-    //! \return Czy miniaturki maj¹ byæ widoczne?
+    //! Byk ortograficzny zamierzony (powinno byÄ‡: areThumbnailsVisible).
+    //! \return Czy miniaturki majÄ… byÄ‡ widoczne?
     bool isThumbnailsVisible() const;
 
-    //! \param visible Czy podgl¹d jest widoczny?
+    //! \param visible Czy podglÄ…d jest widoczny?
     void setPreviewVisible(bool visible);
-    //! \return Czy podgl¹d jest widoczny?
+    //! \return Czy podglÄ…d jest widoczny?
     bool isPreviewVisible() const;
 
 private:
 
     void setSelectedByEntry(Entry* selected);
 
-    //! Callback wywo³ywany gdy wybierze siê jakiœ item.
+    //! Callback wywoÅ‚ywany gdy wybierze siÄ™ jakiÅ› item.
     bool onItemClicked(osgWidget::Event& ev);
-    //! Callback wywo³ywany gdy kliknie siê w przycisk mini/maksymalizacji.
+    //! Callback wywoÅ‚ywany gdy kliknie siÄ™ w przycisk mini/maksymalizacji.
     bool onShowHideButtonClicked(osgWidget::Event& ev);
 
     void setEntrySelected( Entry &entry, bool selected );
 
-    //! Pomocnicza funkcja wyszukuj¹ca.
+    //! Pomocnicza funkcja wyszukujÄ…ca.
     Items::iterator getIterator(const Item* item);
-    //! Pomocnicza funkcja wyszukuj¹ca.
+    //! Pomocnicza funkcja wyszukujÄ…ca.
     Items::iterator getIterator(const osgWidget::Widget* widget);
-    //! Pomocnicza funkcja wyszukuj¹ca.
+    //! Pomocnicza funkcja wyszukujÄ…ca.
     Items::const_iterator getIterator(const Item* item) const;
-    //! Pomocnicza funkcja wyszukuj¹ca.
+    //! Pomocnicza funkcja wyszukujÄ…ca.
     Items::const_iterator getIterator(const osgWidget::Widget* widget) const;
 
-    //! Pomocnicza funkcja sprawdzaj¹ca zakres iteratora.
+    //! Pomocnicza funkcja sprawdzajÄ…ca zakres iteratora.
     Items::iterator& checked(Items::iterator& it);
-    //! Pomocnicza funkcja sprawdzaj¹ca zakres iteratora.
+    //! Pomocnicza funkcja sprawdzajÄ…ca zakres iteratora.
     Items::const_iterator& checked(Items::const_iterator& it) const;
 };
 

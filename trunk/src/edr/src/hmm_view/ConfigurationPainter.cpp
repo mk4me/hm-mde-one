@@ -1,4 +1,4 @@
-#include "ConfigurationPainter.h"
+ï»¿#include "ConfigurationPainter.h"
 #include <QtGui/QMouseEvent>
 #include <stdexcept>
 #include <utils/Debug.h>
@@ -88,15 +88,15 @@ IAreaPtr ConfigurationPainter::getArea( int x, int y )
             int h2 = (*it)->getHeight() / 2;
             int distX = x - ((*it)->getX() + w2);
             int distY = y - ((*it)->getY() + h2);
-            // obs³uga przypadku, gdy klikniêto wiecej niz jeden obszar
-            // wykorzystywana jest odleg³oœæ kursora od srodka (metryka kwadratowa bo jest szybsza)
+            // obsÅ‚uga przypadku, gdy klikniÄ™to wiecej niz jeden obszar
+            // wykorzystywana jest odlegÅ‚oÅ›Ä‡ kursora od srodka (metryka kwadratowa bo jest szybsza)
             clickedAreas.push_back(std::make_pair(*it, distX * distX + distY * distY));
         }
     }
 
     if (clickedAreas.empty() == false) {
-        // jeœli s¹ jakieœ obszary, na które klikniêto, to zwracany jest ten,
-        // którego œrodek jest bli¿ej kursora
+        // jeÅ›li sÄ… jakieÅ› obszary, na ktÃ³re klikniÄ™to, to zwracany jest ten,
+        // ktÃ³rego Å›rodek jest bliÅ¼ej kursora
         auto lambda_sort = [&](const pair& left, const pair& right)
         {
             return left.second < right.second;

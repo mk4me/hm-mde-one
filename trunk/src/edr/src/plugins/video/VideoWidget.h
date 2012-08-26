@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:  2010/09/28
 	created:  28:9:2010   14:46
 	filename: VideoWidget.h
@@ -30,30 +30,30 @@ public:
     typedef std::vector<osg::ref_ptr<osg::Image> > ImagesList;
 
 private:
-    //! Obrazki pogrupowane wg. po≥oøenia.
+    //! Obrazki pogrupowane wg. po≈Ço≈ºenia.
     ImagesList images;
     //! Multi view.
     osg::ref_ptr<core::MultiView> multiView;
     
-    //! Lista optymatozatorÛw odpowiadajπcych za wybieranie optymalnego rozmiaru dekodowanego obrazka.
+    //! Lista optymatozator√≥w odpowiadajƒÖcych za wybieranie optymalnego rozmiaru dekodowanego obrazka.
     std::vector< osg::ref_ptr<vidlib::VideoImageStreamSizeOptimizer> > optimizers;
 
-    //! Shader odpowiedzialny za konwersjÍ yuv->rgb.
+    //! Shader odpowiedzialny za konwersjƒô yuv->rgb.
     osg::ref_ptr<osg::Shader> yuvTextureRectShader;
-    //! Shader odpowiedzialny za konwersjÍ yuv->rgb.
+    //! Shader odpowiedzialny za konwersjƒô yuv->rgb.
     osg::ref_ptr<osg::Shader> yuvTexture2DShader;
-    //! Czy ma byÊ uøywane rozszerzenie texture_rectangle.
+    //! Czy ma byƒá u≈ºywane rozszerzenie texture_rectangle.
     bool useTextureRect;
     //! Format video.
     vidlib::PixelFormat format;
     //! Nazwa samplera w obu shaderach YUV.
     std::string yuvSamplerName;
-    //! Nazwa zmiennej trzymajπcej rozmiar obrazka w obu shaderach YUV. W zasadzie
-    //! uøywane tylko dla texture_rectangle
+    //! Nazwa zmiennej trzymajƒÖcej rozmiar obrazka w obu shaderach YUV. W zasadzie
+    //! u≈ºywane tylko dla texture_rectangle
     std::string yuvImageSizeName;
 
 public:
-    //! Konstruktor inicjalizujπcy UI.
+    //! Konstruktor inicjalizujƒÖcy UI.
     VideoWidget();
 
     virtual ~VideoWidget();
@@ -103,11 +103,11 @@ public:
         this->yuvImageSizeName = yuvImageSizeName; 
     }
 
-    //! £aduje shadery.
+    //! ≈Åaduje shadery.
     //! \param yuvTextureRect
     //! \param yuvTexture2D
     void loadShaders(const std::string& yuvTextureRect, const std::string& yuvTexture2D);
-    //! Prze≥adowuje shadery.
+    //! Prze≈Çadowuje shadery.
     void loadShaders();
 
 public slots:
@@ -137,9 +137,9 @@ private:
     //! \param imageSize
     osgWidget::Widget* createStreamWidget(osg::Image* image, osg::Uniform* sampler, osg::Uniform* imageSize );
 
-    //! Tworzy scenÍ.
+    //! Tworzy scenƒô.
     void createScene();
-    //! Czyúci scenÍ.
+    //! Czy≈õci scenƒô.
     void clearScene();
 };
 

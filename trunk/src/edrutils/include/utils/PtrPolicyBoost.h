@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:    2010/04/07
 	created:    7:4:2010     18:08
 	filename: PolciesBoost.h
@@ -18,18 +18,18 @@ namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
-*	Domyúlna implementacja dla wskaünikÛw boost::shared_ptr.
+*	Domy≈õlna implementacja dla wska≈∫nik√≥w boost::shared_ptr.
 */
 struct PtrPolicyBoost
 {
-    //! Typ wskaünika.
+    //! Typ wska≈∫nika.
     template <class T> struct Ptr 
     {
         typedef boost::shared_ptr<T> Type;
     };
-    //! Tylko deklaracja, specjalizacja wyciπga wskaünik!
+    //! Tylko deklaracja, specjalizacja wyciƒÖga wska≈∫nik!
     template <class T> struct Pointed;
-    //! Specjalizacja wyciπgajπca wskaünik.
+    //! Specjalizacja wyciƒÖgajƒÖca wska≈∫nik.
     template <class T> struct Pointed< boost::shared_ptr<T> >
     {
         typedef typename boost::shared_ptr<T>::element_type Type;
@@ -38,13 +38,13 @@ struct PtrPolicyBoost
     //! Klasa bazowa.
     typedef NullType Base;
 
-    //! Zerowanie wskaünika.
+    //! Zerowanie wska≈∫nika.
     //! \param ptr
     template <class T>
     void initPtr( T & ptr ) const
     {}
 
-    //! Ustawienie wartoúci wskaünika surowymi danymi.
+    //! Ustawienie warto≈õci wska≈∫nika surowymi danymi.
     //! \param ptr
     //! \param data
     template<class T>
@@ -53,7 +53,7 @@ struct PtrPolicyBoost
         ptr.reset(data);
     }
 
-    //! Ustawienie wartoúci wskaünika poprzes kopiowanie z innego mπdrego wskaünika.
+    //! Ustawienie warto≈õci wska≈∫nika poprzes kopiowanie z innego mƒÖdrego wska≈∫nika.
     //! \param ptr
     //! \param data
     template<class T>
@@ -62,7 +62,7 @@ struct PtrPolicyBoost
         ptr = data;
     }
 
-    //! Zwraca surowy wskaünik
+    //! Zwraca surowy wska≈∫nik
     //! \param ptr
     template<class T>
     void* getRawPtr(const boost::shared_ptr<T> & ptr)
@@ -70,7 +70,7 @@ struct PtrPolicyBoost
         return ptr.get();
     }
 
-    //! Zwraca surowy wskaünik
+    //! Zwraca surowy wska≈∫nik
     //! \param ptr
     template<class T>
     const void* getRawPtr(const boost::shared_ptr<T> & ptr) const
@@ -78,7 +78,7 @@ struct PtrPolicyBoost
         return ptr.get();
     }
 
-    //! Czy wskaünik jest unikatowy?
+    //! Czy wska≈∫nik jest unikatowy?
     //! \param ptr
     template<class T>
     bool isUnique(boost::shared_ptr<T> & ptr) const

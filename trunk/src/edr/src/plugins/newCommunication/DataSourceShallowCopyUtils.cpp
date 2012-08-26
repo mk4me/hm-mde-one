@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "DataSourceShallowCopyUtils.h"
 
 #include <webserviceslib/ShallowCopyParser.h>
@@ -24,7 +24,7 @@ void DataSourceShallowCopyUtils::createShallowCopy(ShallowCopy & shallowCopy, co
     MotionMetadataParser::parseFile(motionMetadata.string(), tmpShallowCopy.motionMetaData);
     MedicalMetadataParser::parseFile(medicalMetadata.string(), tmpShallowCopy.medicalMetaData);
 
-	//mamy teoretycznie wszystko - teraz próbuje po³¹czyæ obie bazy
+	//mamy teoretycznie wszystko - teraz prÃ³buje poÅ‚Ä…czyÄ‡ obie bazy
 	auto subjectsITEnd = tmpShallowCopy.motionShallowCopy->performers.end();
 	auto patientsITEnd = tmpShallowCopy.medicalShallowCopy->patients.end();
 	for(auto patientIT = tmpShallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
@@ -35,14 +35,14 @@ void DataSourceShallowCopyUtils::createShallowCopy(ShallowCopy & shallowCopy, co
 		}
 	}
 
-	// jeœli wszystko siê powiod³o podmieniamy wartoœci
+	// jeÅ›li wszystko siÄ™ powiodÅ‚o podmieniamy wartoÅ›ci
 	std::swap(shallowCopy, tmpShallowCopy);
 }
 
 bool DataSourceShallowCopyUtils::checkShallowCopyIntegrity(const ShallowCopy & shallowCopy)
 {
     //TODO
-    //sprawdzaæ integralnoœæ danych w p³ytkiej kopii bazy danych
+    //sprawdzaÄ‡ integralnoÅ›Ä‡ danych w pÅ‚ytkiej kopii bazy danych
     return true;
 }
 

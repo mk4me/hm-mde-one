@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/08/04
 	created:  4:8:2010   14:44
 	filename: VideoBufferChunk.h
@@ -14,43 +14,43 @@
 namespace video {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Ci¹g³y fragment bufora.
+//! CiÄ…gÅ‚y fragment bufora.
 class VideoBufferChunk
 {
 public:
-  // TODO: zamieniæ na deque
-  //! Mapa u¿ycia bufora.
+  // TODO: zamieniÄ‡ na deque
+  //! Mapa uÅ¼ycia bufora.
   typedef std::map<double, std::pair<double, Picture*> > UsedMap;
   //! Iterator.
   typedef UsedMap::iterator iterator;
-  //! Sta³y iterator.
+  //! StaÅ‚y iterator.
   typedef UsedMap::const_iterator const_iterator;
 
 private:
-  //! Czas rozpoczêcia.
+  //! Czas rozpoczÄ™cia.
   double start;
-  //! Czas zakoñczenia.
+  //! Czas zakoÅ„czenia.
   double stop;
-  //! Mapa u¿ycia bufora.
+  //! Mapa uÅ¼ycia bufora.
   UsedMap framesMap;
 
 public:
 
-  //! Konstruktor zeruj¹cy.
+  //! Konstruktor zerujÄ…cy.
   VideoBufferChunk();
 
-  //! \return Pocz¹tek obejmowanego przedzia³u (domkniêty).
+  //! \return PoczÄ…tek obejmowanego przedziaÅ‚u (domkniÄ™ty).
   inline double getStartTime() const
   {
     return start;
   }
-  //! \return Koniec obejmowanego przedzia³u (otwarty)
+  //! \return Koniec obejmowanego przedziaÅ‚u (otwarty)
   inline double getEndTime() const
   {
     return stop;
   }
 
-  //! \return Pocz¹tek.
+  //! \return PoczÄ…tek.
   inline iterator begin()
   {
     return framesMap.begin();
@@ -60,7 +60,7 @@ public:
   {
     return framesMap.end();
   }
-  //! \return Pocz¹tek.
+  //! \return PoczÄ…tek.
   inline const_iterator begin() const
   {
     return framesMap.begin();
@@ -70,7 +70,7 @@ public:
   {
     return framesMap.end();
   }
-  //! Czy coœ jest?
+  //! Czy coÅ› jest?
   inline bool empty() const
   {
     return framesMap.empty();
@@ -83,7 +83,7 @@ public:
   }
   //! \param startTime
   //! \param endTime
-  //! \return Czy mo¿na uzupe³niæ bufor?
+  //! \return Czy moÅ¼na uzupeÅ‚niÄ‡ bufor?
   inline bool canAppend(double startTime, double endTime) const
   {
     return startTime == getEndTime() || endTime == getStartTime();
@@ -106,33 +106,33 @@ public:
   //! \throws std::runtime_error
   void append(Picture * picture, double startTime, double endTime);
 
-  //! \return Usuniêty element z koñca bufora.
+  //! \return UsuniÄ™ty element z koÅ„ca bufora.
   Picture* popBack();
 
   //!
   void erase(iterator from, iterator to);
 
-  //! \return Usuniêty element z pocz¹tku bufora.
+  //! \return UsuniÄ™ty element z poczÄ…tku bufora.
   Picture* popFront();
 
   //! \param time
   //! \param startTime
   //! \param endTime
-  //! \return Zbuforowana ramka dla zdanego czasu b¹dŸ NULL, je¿eli nie jest zbuforowana.
+  //! \return Zbuforowana ramka dla zdanego czasu bÄ…dÅº NULL, jeÅ¼eli nie jest zbuforowana.
   inline const Picture * getFrame(double time, double * startTime = NULL, double * endTime = NULL) const
   {
     return getHelper( findFrame(time), startTime, endTime );
   }
   //! \param startTime
   //! \param endTime
-  //! \return Zbuforowana ramka dla zdanego czasu b¹dŸ NULL, je¿eli nie jest zbuforowana.
+  //! \return Zbuforowana ramka dla zdanego czasu bÄ…dÅº NULL, jeÅ¼eli nie jest zbuforowana.
   inline const Picture * getFirstFrame(double * startTime = NULL, double * endTime = NULL) const
   {
     return getHelper( framesMap.begin(), startTime, endTime );
   }
   //! \param startTime
   //! \param endTime
-  //! \return Zbuforowana ramka dla zdanego czasu b¹dŸ NULL, je¿eli nie jest zbuforowana.
+  //! \return Zbuforowana ramka dla zdanego czasu bÄ…dÅº NULL, jeÅ¼eli nie jest zbuforowana.
   inline const Picture * getLastFrame(double * startTime = NULL, double * endTime = NULL) const
   {
     return getHelper( framesMap.empty() ? framesMap.end() : --framesMap.end(), startTime, endTime );
@@ -140,11 +140,11 @@ public:
 
   //!
   //! \param time
-  //! \return Zbuforowana ramka dla zdanego czasu b¹dŸ end(), je¿eli nie jest zbuforowana.
+  //! \return Zbuforowana ramka dla zdanego czasu bÄ…dÅº end(), jeÅ¼eli nie jest zbuforowana.
   const_iterator findFrame(double time) const;
     //!
   //! \param time
-  //! \return Zbuforowana ramka dla zdanego czasu b¹dŸ end(), je¿eli nie jest zbuforowana.
+  //! \return Zbuforowana ramka dla zdanego czasu bÄ…dÅº end(), jeÅ¼eli nie jest zbuforowana.
   iterator findFrame(double time);
 
 private:

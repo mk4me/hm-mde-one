@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__VDFBASEPIN_H__
+ï»¿#ifndef HEADER_GUARD__VDFBASEPIN_H__
 #define HEADER_GUARD__VDFBASEPIN_H__
 
 #include <osgWidget/Widget>
@@ -25,17 +25,17 @@ private:
 
 public:
 
-    //! Typ reprezentuj¹cy wizualny stan pinu - aktywny i statyczny stan
+    //! Typ reprezentujÄ…cy wizualny stan pinu - aktywny i statyczny stan
 	enum VisualStatus{
-        OK,             //! z pinem wszystko ok, ewentualnie mo¿na ³¹czyc piny
+        OK,             //! z pinem wszystko ok, ewentualnie moÅ¼na Å‚Ä…czyc piny
 		ACTIVE,         //! pin aktualnie aktywny, aktualnie wskazywany
-		INCOMPATIBLE,   //! pin niekompatybilny podczas ³¹czenia
+		INCOMPATIBLE,   //! pin niekompatybilny podczas Å‚Ä…czenia
 		REQUIRED,       //! pin wymagany
-		CONNECTED,      //! pin pod³¹czony
-		INCOMPLETE      //! pin, którego zale¿noœci nie zostas³y w pe³ni spe³nione
+		CONNECTED,      //! pin podÅ‚Ä…czony
+		INCOMPLETE      //! pin, ktÃ³rego zaleÅ¼noÅ›ci nie zostasÅ‚y w peÅ‚ni speÅ‚nione
     };
 
-    //! Mapa ³¹cz¹ca wizualne po³¹czenie z pinami wizualnymi po drugiej stornie tych po³¹czeñ
+    //! Mapa Å‚Ä…czÄ…ca wizualne poÅ‚Ä…czenie z pinami wizualnymi po drugiej stornie tych poÅ‚Ä…czeÅ„
 	typedef std::map<osg::Geode*, osgVDFBasePin*> Connections;
 
 public:
@@ -49,32 +49,32 @@ public:
     //!
     virtual void positioned();
 
-    //! \param wm WindowManager który nami zarz¹dza
+    //! \param wm WindowManager ktÃ³ry nami zarzÄ…dza
 	virtual void managed(osgWidget::WindowManager* wm);
 
-    //! \return Pin logiczny który reprezentujemy
+    //! \return Pin logiczny ktÃ³ry reprezentujemy
 	const dflm::PinPtr & getModelPin() const;
 
-    //! \return Wizualny wêze³ bêd¹cy naszym rodzicem
+    //! \return Wizualny wÄ™zeÅ‚ bÄ™dÄ…cy naszym rodzicem
 	osgVDFBaseNode * getVisualNode() const;
 
     //! \return Aktualny statyczny stantus
 	VisualStatus getStaticVisualStatus() const;
 
-    //! \param refPin Pin wzglêdem którego sprawdzxamy nasz dynamiczny status
-    //! \param model Model logiczny wzglêdem którego sprawdzamy nasz stan
+    //! \param refPin Pin wzglÄ™dem ktÃ³rego sprawdzxamy nasz dynamiczny status
+    //! \param model Model logiczny wzglÄ™dem ktÃ³rego sprawdzamy nasz stan
 	VisualStatus getDynamicVisualStatus(const dflm::PinPtr & refPin, const dflm::MPtr & model) const;
 
-    //! \param refPin Pin wzglêdem którego sprawdzxamy nasz dynamiczny status
-    //! \param model Model logiczny wzglêdem którego sprawdzamy nasz stan
+    //! \param refPin Pin wzglÄ™dem ktÃ³rego sprawdzxamy nasz dynamiczny status
+    //! \param model Model logiczny wzglÄ™dem ktÃ³rego sprawdzamy nasz stan
 	VisualStatus getDynamicVisualStatus(osgVDFBasePin * refPin, const dflm::MPtr & model) const;
 
-    //! \return Centralny punkt pinu z punktu widzenia przy³anczania po³¹czeñ
+    //! \return Centralny punkt pinu z punktu widzenia przyÅ‚anczania poÅ‚Ä…czeÅ„
 	virtual const osgWidget::XYCoord & getCenterPosition();
-    //! \return Centralny punkt pinu z punktu widzenia przy³anczania po³¹czeñ
+    //! \return Centralny punkt pinu z punktu widzenia przyÅ‚anczania poÅ‚Ä…czeÅ„
 	virtual osgWidget::XYCoord getCenterPosition() const;
 	
-    //! \return Mapa po³¹czeñ wizualnych pinu
+    //! \return Mapa poÅ‚Ä…czeÅ„ wizualnych pinu
 	const Connections & getConnections() const;
 
     //! \return Zwraca aktualny wizualny status pinu
@@ -82,44 +82,44 @@ public:
 
 private:
 
-    //! \param pinVisualStatus Wizualny status pinu oparty na podjêtych na nim akcjach b¹dŸ jego statycznemu statusowi
+    //! \param pinVisualStatus Wizualny status pinu oparty na podjÄ™tych na nim akcjach bÄ…dÅº jego statycznemu statusowi
     virtual void graphSetStatus(VisualStatus pinVisualStatus) = 0;
 
     //! \param pinVisualStatus Nowy wizualny status pinu,
-    //! wi¹¿e siê ze zmian¹ wygl¹du pinu przez dostepn¹ metodê wirtualn¹ implementowan¹ przez konkretn¹ reprezentacjê wizualn¹ pinu
+    //! wiÄ…Å¼e siÄ™ ze zmianÄ… wyglÄ…du pinu przez dostepnÄ… metodÄ™ wirtualnÄ… implementowanÄ… przez konkretnÄ… reprezentacjÄ™ wizualnÄ… pinu
     void setVisualStatus(VisualStatus pinVisualStatus);
 
-    //! \param connection Po³¹czenie wizualne które dodajemy
-    //! \param other Pin wizualny po drugiej stronie po³¹czenia
+    //! \param connection PoÅ‚Ä…czenie wizualne ktÃ³re dodajemy
+    //! \param other Pin wizualny po drugiej stronie poÅ‚Ä…czenia
 	void addConnection(osg::Geode * connection, osgVDFBasePin * other);
 
-    //! \param connection Po³¹czenie wizualne, które usuwamy
+    //! \param connection PoÅ‚Ä…czenie wizualne, ktÃ³re usuwamy
 	void removeConnection(osg::Geode * connection);
 
 private:
 
-    //! modelPin logiczny, którego ta wizualna reprezentacja dotyczy
+    //! modelPin logiczny, ktÃ³rego ta wizualna reprezentacja dotyczy
 	dflm::PinPtr modelPin;
 
-    //! Mapa po³¹czeñ i poinów po drugiej stornie po³¹czenia
+    //! Mapa poÅ‚Ä…czeÅ„ i poinÃ³w po drugiej stornie poÅ‚Ä…czenia
 	Connections connections;
 
-    //! Wizualny wêze³ w którym wystêpuje ten wizulany modelPin
+    //! Wizualny wÄ™zeÅ‚ w ktÃ³rym wystÄ™puje ten wizulany modelPin
 	osgVDFBaseNode * visualParentNode;
 
-    //! Wizualny model w kontekœcie którego wystêpuje ten wizualny modelPin
+    //! Wizualny model w kontekÅ›cie ktÃ³rego wystÄ™puje ten wizualny modelPin
 	osgVDFBaseModel * visualModel;
 
     //! Wiazualny status tego pinu
 	VisualStatus visualStatus;
 
-    //! Pozycja œroka pinu potrzebna przy realizacji wizualnych po³¹czeñ
+    //! Pozycja Å›roka pinu potrzebna przy realizacji wizualnych poÅ‚Ä…czeÅ„
 	osgWidget::XYCoord centerPosition;
 
-    //! Czy pozycjê centraln¹ trzeba ponownie wyznaczyæ, bo modelPin zmieni³ pozycjê
+    //! Czy pozycjÄ™ centralnÄ… trzeba ponownie wyznaczyÄ‡, bo modelPin zmieniÅ‚ pozycjÄ™
 	bool centerChanged;
 
-    //! Funktor nadany przez model do aktualizacji po³¹czeñ vizualnych
+    //! Funktor nadany przez model do aktualizacji poÅ‚Ä…czeÅ„ vizualnych
     VisualConnectionsUpdater connectionsUpdater;
 };
 

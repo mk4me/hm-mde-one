@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/05/28
 	created:	28:5:2012   13:23
 	filename: 	NewChartLegendItem.h
@@ -23,7 +23,7 @@ class NewChartLegendItem : public QWidget
 {
     Q_OBJECT;
 public:
-    //! Konstruktor, wywo³ywany przez Qwt przy tworzeniu legendy
+    //! Konstruktor, wywoÅ‚ywany przez Qwt przy tworzeniu legendy
     //! \param data dane elementu (np. kolor, nazwa)
     //! \param parent parent elementu
     NewChartLegendItem(const QwtLegendData & data, QWidget* parent = nullptr);
@@ -31,21 +31,21 @@ public:
 public:
     //! Czy seria danych jest widoczna (stan check boxa)
     bool isItemVisible();
-    //! Ustawia widocznoœæ serii (i check boxa)
+    //! Ustawia widocznoÅ›Ä‡ serii (i check boxa)
     //! \param active krzywa widoczna / ukryta
     void setItemVisible(bool active);
-    //! Ustawia check box zmieniaj¹cy widocznoœæ serii
+    //! Ustawia check box zmieniajÄ…cy widocznoÅ›Ä‡ serii
     //! \param enabled edytowalny / nieedytowalny
     void setItemVisibleEnabled(bool enabled);
     //! \return czy seria danych jest aktywna
     bool isItemActive() const;
-    //! ustawia aktywnoœæ serii danych (i stan przycisku)
+    //! ustawia aktywnoÅ›Ä‡ serii danych (i stan przycisku)
     //! \param checked seria aktywna / nieaktywna
     void setItemActive(bool checked);
-    //! Ustawia przysik zmieniaj¹cy aktywnoœæ serii
+    //! Ustawia przysik zmieniajÄ…cy aktywnoÅ›Ä‡ serii
     //! \param enabled edytowalny / nieedytowalny
     void setItemActiveEnabled(bool enabled);
-    //! Zmienia dane legendy (kolor, tytu³ itp.) wywo³ywane przez qwt
+    //! Zmienia dane legendy (kolor, tytuÅ‚ itp.) wywoÅ‚ywane przez qwt
     //! \param data dane elementu
     void setData( const QwtLegendData& data );
     //! Ustawia opis elementu
@@ -53,20 +53,20 @@ public:
     void setTooltip( const QString& val );
 
 signals:
-    //! klikniêto przycisk, po wcisnieciu którego seria staje siê aktywna
+    //! klikniÄ™to przycisk, po wcisnieciu ktÃ³rego seria staje siÄ™ aktywna
     void buttonClicked(bool);
-    //! zmieniono check box zarz¹dza widocznoœci¹ serii danych
+    //! zmieniono check box zarzÄ…dza widocznoÅ›ciÄ… serii danych
     //! \param widoczny / ukryty 
     void checkClicked(bool);
 
 private slots:
-    //! Przechwytuje sygna³ i przesy³a go dalej
+    //! Przechwytuje sygnaÅ‚ i przesyÅ‚a go dalej
     void onClick(bool);
 
 private:
-    //! check box zarz¹dza widocznoœci¹ serii danych
+    //! check box zarzÄ…dza widocznoÅ›ciÄ… serii danych
     QCheckBox* check;
-    //! przycisk, po wcisnieciu którego seria staje siê aktywna, tylko jeden mo¿e byæ wcisniety
+    //! przycisk, po wcisnieciu ktÃ³rego seria staje siÄ™ aktywna, tylko jeden moÅ¼e byÄ‡ wcisniety
     QPushButton* button;
 };
 

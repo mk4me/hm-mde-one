@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+ï»¿#include "hmmPCH.h"
 #include "EDRDockWidgetSet.h"
 #include "EDRTitleBar.h"
 
@@ -75,7 +75,7 @@ void EDRDockWidgetSet::blockAddition( bool additionPossible )
 void EDRDockWidgetSet::onDockWidgetClosed( QObject* object )
 { 
     emit dockClosed();
-    // konwersja wystarczaj¹ca, poniewaz chcemy tylko usun¹æ obiekt z listy
+    // konwersja wystarczajÄ…ca, poniewaz chcemy tylko usunÄ…Ä‡ obiekt z listy
     EDRDockWidget* widget = reinterpret_cast<EDRDockWidget*>(object);
     widgetsList.remove(widget);
     if(widgetsList.empty() == true){
@@ -86,9 +86,9 @@ void EDRDockWidgetSet::onDockWidgetClosed( QObject* object )
 void EDRDockWidgetSet::onDockWidgetLocationChanged(Qt::DockWidgetArea area)
 {
     //HACK!!
-    //TO POWINNO SIÊ DAæ STYLOWAæ - NIESTETY JEST TO UKRYTE PRZEZ QT
-    //TYLKO TAK MO¯NA USUN¥æ ODSTÊP POMIÊDZY QTabBar a Widgetem zwi¹zanym z aktualnym Tabem
-    //patrz równie¿: http://developer.qt.nokia.com/doc/qt-4.8/qstyleoptiontabbarbase.html
+    //TO POWINNO SIÄ˜ DAÄ‡ STYLOWAÄ‡ - NIESTETY JEST TO UKRYTE PRZEZ QT
+    //TYLKO TAK MOÅ»NA USUNÄ„Ä‡ ODSTÄ˜P POMIÄ˜DZY QTabBar a Widgetem zwiÄ…zanym z aktualnym Tabem
+    //patrz rÃ³wnieÅ¼: http://developer.qt.nokia.com/doc/qt-4.8/qstyleoptiontabbarbase.html
     // http://developer.qt.nokia.com/doc/qt-4.8/qstyleoptiontabbarbasev2.html#details
     // http://developer.qt.nokia.com/doc/qt-4.8/qstyle.html
     // http://developer.qt.nokia.com/doc/qt-4.8/qtabbar.html
@@ -102,7 +102,7 @@ void EDRDockWidgetSet::onDockWidgetLocationChanged(Qt::DockWidgetArea area)
         }
     }
 
-    //odswie¿amy tytu³ okna - konieczne by style tabów poprawnie dzia³a³ay (text siê dobrze renderowa³)
+    //odswieÅ¼amy tytuÅ‚ okna - konieczne by style tabÃ³w poprawnie dziaÅ‚aÅ‚ay (text siÄ™ dobrze renderowaÅ‚)
     if(changedDock->windowTitle().isEmpty() == false){
         QString originalTitle(changedDock->windowTitle());
         changedDock->setWindowTitle(originalTitle + QString(" "));

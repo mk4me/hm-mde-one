@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <sstream>
 #include <utils/Debug.h>
 #include <algorithm>
@@ -20,7 +20,7 @@ namespace utils {
 __system::Mutex* mutex = NULL;
 //! Instancja.
 Profiler Profiler::instance;
-//! Domyœlna nazwa.
+//! DomyÅ›lna nazwa.
 const char defaultName[] = "::global";
 
 //------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ private:
     __system::Mutex* lock;
 
 public:
-    //! \param Mechanizm blokuj¹cy. Gdy NULL nic siê nie dzieje.
+    //! \param Mechanizm blokujÄ…cy. Gdy NULL nic siÄ™ nie dzieje.
     ScopedLock(__system::Mutex* lock)
     {
         if ( (this->lock = lock) != NULL ) {
@@ -40,7 +40,7 @@ public:
         }
     }
 
-    //! Zwalnia blokadê.
+    //! Zwalnia blokadÄ™.
     ~ScopedLock()
     {
         if (lock) {
@@ -58,7 +58,7 @@ private:
 
 //------------------------------------------------------------------------------
 
-// Funkcje pomocnicze: zwracaj¹ indeks listy stanów badaj¹c id bez isntrukcji
+// Funkcje pomocnicze: zwracajÄ… indeks listy stanÃ³w badajÄ…c id bez isntrukcji
 // warunkowych (po kompilacji)
 
 inline Profiler::threadID getListIndex( Profiler::threadID id, const Profiler::ThreadEntry ((&list)[1] ) )
@@ -102,13 +102,13 @@ inline Profiler::threadID getListIndex( Profiler::threadID id, const Profiler::T
 
 //------------------------------------------------------------------------------
 
-// Funktory dzia³aj¹ce na stanach w¹tków
+// Funktory dziaÅ‚ajÄ…ce na stanach wÄ…tkÃ³w
 
 struct ThreadEntryToCSV
 {
-    //! Strumieñ docelowy.
+    //! StrumieÅ„ docelowy.
     std::ostringstream * output;
-    //! Czy zapisywaæ kolumnê z ID w¹tku?
+    //! Czy zapisywaÄ‡ kolumnÄ™ z ID wÄ…tku?
     bool threadColumn;
     //!
     void operator()(const Profiler::ThreadEntry& entry)
@@ -166,7 +166,7 @@ Profiler::Profiler()
 
 Profiler::~Profiler()
 {
-    // wy³¹czenie
+    // wyÅ‚Ä…czenie
     duration = getTick() - start;
     setEnabled(false);
 
@@ -177,7 +177,7 @@ Profiler::~Profiler()
     }
 
     // zwolnienie danych
-    UTILS_ASSERT(threadCount == 0, "Nie powinno byæ aktywnych w¹tków!");
+    UTILS_ASSERT(threadCount == 0, "Nie powinno byÄ‡ aktywnych wÄ…tkÃ³w!");
     DeleteState func;
     forEachThread(func);
 
@@ -187,7 +187,7 @@ Profiler::~Profiler()
 void Profiler::setEnabled( bool enabled )
 {
     if ( enabled && !instance.enabled ) {
-        // rozpoczêcie
+        // rozpoczÄ™cie
         instance.enabledStart = getTick();
     } else if (!enabled && instance.enabled) {
         // koniec
@@ -260,7 +260,7 @@ std::string Profiler::createCSV()
 {
     std::ostringstream output;
 
-    // pobranie bie¿¹cego czasu
+    // pobranie bieÅ¼Ä…cego czasu
     time_t rawtime;
     time ( &rawtime );
 #ifdef __WIN32__
@@ -284,7 +284,7 @@ std::string Profiler::createCSV()
         ThreadEntryToCSV func = { &output, true };
         forEachThread(func);
     } else {
-        // ³¹czymy dane
+        // Å‚Ä…czymy dane
         State* combinedState = new State();
         zero(*combinedState);
         ThreadCombiner combiner = { combinedState };
@@ -300,12 +300,12 @@ std::string Profiler::createCSV()
 
 void Profiler::addEntry( ProfilerEntry * entry )
 {
-    // tutaj mo¿e wyst¹piæ zjawisko wyœcigu, ale nie mo¿na zastosowaæ muteksów,
-    // gdy¿ nie ma pewnoœci, które zmienne globalne zosta³y zainicjalizowane
-    // jeœli zajdzie wyœcig nie bêdzie bardzo niebezpieczny; tutaj pewne ryzyko
-    // jest podjête w celu optymalizacji czasowej
+    // tutaj moÅ¼e wystÄ…piÄ‡ zjawisko wyÅ›cigu, ale nie moÅ¼na zastosowaÄ‡ muteksÃ³w,
+    // gdyÅ¼ nie ma pewnoÅ›ci, ktÃ³re zmienne globalne zostaÅ‚y zainicjalizowane
+    // jeÅ›li zajdzie wyÅ›cig nie bÄ™dzie bardzo niebezpieczny; tutaj pewne ryzyko
+    // jest podjÄ™te w celu optymalizacji czasowej
     if ( entry->id == ProfilerEntry::InvalidID ) {
-        // czemu nie instance.nextID++? poniewa¿ tutaj jest mniejsze prawdopodobieñstwo b³êdu.
+        // czemu nie instance.nextID++? poniewaÅ¼ tutaj jest mniejsze prawdopodobieÅ„stwo bÅ‚Ä™du.
 #if __WIN32__
         entry->id = InterlockedIncrement(&instance.nextID) - 1;
 #else
@@ -371,10 +371,10 @@ bool Profiler::isThreadEnabled()
 
 void Profiler::enableThread(threadID thread)
 {
-    // czy trzeba przenieœæ do mapy?
+    // czy trzeba przenieÅ›Ä‡ do mapy?
     if ( threadCount == UTILS_PROFILER_LIST_SIZE ) {
         threadMap.insert(threadList, threadList+UTILS_PROFILER_LIST_SIZE);
-        // usuwamy œmieci
+        // usuwamy Å›mieci
         std::fill(threadList, threadList+UTILS_PROFILER_LIST_SIZE, ThreadEntry(0, nullptr));
     }
 
@@ -411,9 +411,9 @@ void Profiler::disableThread(threadID thread)
             UTILS_ASSERT(inserted.second);
             // usuwamy ze starych
             threadMap.erase(found);
-            // czy mo¿na wróciæ do listy?
+            // czy moÅ¼na wrÃ³ciÄ‡ do listy?
             if ( --threadCount == UTILS_PROFILER_LIST_SIZE ) {
-                // mo¿na, kopiujemy
+                // moÅ¼na, kopiujemy
                 std::copy(threadMap.begin(), threadMap.end(), threadList);
                 // i zwalniamy
                 threadMap.clear();
@@ -431,7 +431,7 @@ void Profiler::disableThread(threadID thread)
             toRemove->second->start = -1;
             std::pair<ThreadMap::iterator, bool> inserted = inactiveThreads.insert(*toRemove);
             UTILS_ASSERT(inserted.second);
-            // usuwamy zbêdne
+            // usuwamy zbÄ™dne
             ThreadEntry* last = std::remove(threadList, threadList+UTILS_PROFILER_LIST_SIZE, *toRemove);
             std::fill(last, threadList+UTILS_PROFILER_LIST_SIZE, ThreadEntry(0, nullptr));
             --threadCount;
@@ -445,11 +445,11 @@ void Profiler::stateToCSV( const State& state, std::ostream& output, const threa
         // tylko niepuste pomiary!
         const Measurement* measurement = state.measurements + i;
         if ( measurement->entrances ) {
-            // bezpieczny dostêp nawet w warunkach wyœcigu
+            // bezpieczny dostÄ™p nawet w warunkach wyÅ›cigu
             ProfilerEntry* entry = entires[i];
             int nameLength;
             const char* typeName = entry->getTypeName(nameLength);
-            // opcjonalna kolumna z id w¹tku
+            // opcjonalna kolumna z id wÄ…tku
             if ( id ) {
                 output << *id << '\t';
             }
@@ -471,7 +471,7 @@ ProfilerEntry::ProfilerEntry( const char * signature, const char * function, con
 signature(signature), function(function), file(file), line(line), id(InvalidID)
 {
     //UTILS_DEBUG_PRINT("%x\t%s", signature, signature);
-    // bez akcesora, ¿eby w debug nie powodowaæ opóŸnieñ
+    // bez akcesora, Å¼eby w debug nie powodowaÄ‡ opÃ³ÅºnieÅ„
     Profiler::addEntry(this);
 }
 
@@ -482,7 +482,7 @@ ProfilerEntry::~ProfilerEntry()
 
 const char* ProfilerEntry::getTypeName(int& length) const
 {
-    // pocz¹tek bloku argumentów
+    // poczÄ…tek bloku argumentÃ³w
     int parasynthesisDepth = 0;
     const char * end = signature + strlen(signature);
     while ( --end >= signature ) {
@@ -496,7 +496,7 @@ const char* ProfilerEntry::getTypeName(int& length) const
     }
     UTILS_ASSERT(end>=signature);
 
-    // wyszukanie koñca zakresu
+    // wyszukanie koÅ„ca zakresu
     int templateDepth = 0;
     while ( --end >= signature ) {
         if ( *end == '>' ) {
@@ -517,7 +517,7 @@ const char* ProfilerEntry::getTypeName(int& length) const
         length = sizeof(defaultName) - 1;
         return defaultName;
     } else {
-        // wszyszukanie pocz¹tku zakresu
+        // wszyszukanie poczÄ…tku zakresu
         const char* start = end;
         while ( --start >= signature && *start != ' ') {}
         ++start;

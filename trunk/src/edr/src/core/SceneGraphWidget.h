@@ -1,4 +1,4 @@
-#ifndef GRID_WIDGET_H
+Ôªø#ifndef GRID_WIDGET_H
 #define GRID_WIDGET_H
 
 #include <osg/Node>
@@ -20,7 +20,7 @@ public:
     //! Usuwa wizualizator z listy.
     void removeVisualizer(Visualizer* visualizer);
 
-    //! Wype≥nia drzewo sceny na podstawie zadanego korzenia.
+    //! Wype≈Çnia drzewo sceny na podstawie zadanego korzenia.
     //! \param root
     void setSceneGraph(osg::Node* root); 
     
@@ -29,9 +29,9 @@ public slots:
     void refreshButtonClicked();
 
 private:
-//     //! Ustawia drzewo sceny na podstawie wybranej us≥ugi.
+//     //! Ustawia drzewo sceny na podstawie wybranej us≈Çugi.
 //     void setCurrentService( int index );
-    //! Czyúci zawartoúÊ drzewa sceny.
+    //! Czy≈õci zawarto≈õƒá drzewa sceny.
     void clearTreeWidget(); 
 };
 

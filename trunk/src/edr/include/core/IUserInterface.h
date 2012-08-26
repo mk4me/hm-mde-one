@@ -1,4 +1,4 @@
-#ifndef IUSERINTERFACE_H
+Ôªø#ifndef IUSERINTERFACE_H
 #define IUSERINTERFACE_H
 
 #include <core/Window.h>
@@ -8,7 +8,7 @@ class IUserInterface
 public:
     //!
     virtual ~IUserInterface() {}
-    //! \return Wskaünik na g≥Ûwne okno.
+    //! \return Wska≈∫nik na g≈Ç√≥wne okno.
     virtual core::Window* getMainWindow() = 0;
 };
 

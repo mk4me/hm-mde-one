@@ -1,8 +1,8 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/05/23
 	created:	23:5:2011   23:14
 	filename: 	ObjectWrapperCollection.h
-	author:		Wojciech Knieæ
+	author:		Wojciech KnieÄ‡
 
 	purpose:
 *********************************************************************/
@@ -28,7 +28,7 @@ typedef const shared_ptr<const ObjectWrapperCollection> ConstObjectWrapperCollec
 typedef weak_ptr<ObjectWrapperCollection> ObjectWrapperCollectionWeakPtr;
 typedef weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeakPtr;
 
-//! Klasa s³u¿y do agregowania obiektów domenowych tego samego typu lub pocohdnych od tego samego typu
+//! Klasa sÅ‚uÅ¼y do agregowania obiektÃ³w domenowych tego samego typu lub pocohdnych od tego samego typu
 class ObjectWrapperCollection
 {
     friend class DataManager;
@@ -45,18 +45,18 @@ private:
 
     //! przechowuje stale, niemodyfikowalne obiekty
     ConstObjects constObjects;
-    //! typ przechowywanych obiektów
+    //! typ przechowywanych obiektÃ³w
     TypeInfo typeInfo;
-    //! Czy kolekcja przechowyje elementy wylacznie danego typu czy równie¿ pochodne mu
+    //! Czy kolekcja przechowyje elementy wylacznie danego typu czy rÃ³wnieÅ¼ pochodne mu
     bool exact;
 
 // rev - zmiana na public, bo z tej metody korzysta DataManager
 // gcc jakos nie widzi slowa friend wczesniej !?
 public:
 
-    //! Metoda dedykowana DataManager do szybkiego ³adowania kolekcji bez sprawdzania typów ladowanych danych - powinno byæ ju¿ sprawdzone i zagwarantowane
-    //! \param begin Iterator pocz¹tku zakresu ObjectWrapperPtr
-    //! \param begin Iterator koñca zakresu ObjectWrapperPtr
+    //! Metoda dedykowana DataManager do szybkiego Å‚adowania kolekcji bez sprawdzania typÃ³w ladowanych danych - powinno byÄ‡ juÅ¼ sprawdzone i zagwarantowane
+    //! \param begin Iterator poczÄ…tku zakresu ObjectWrapperPtr
+    //! \param begin Iterator koÅ„ca zakresu ObjectWrapperPtr
     template<class Iter>
     void loadCollectionWithData(Iter begin, Iter end)
     {
@@ -65,8 +65,8 @@ public:
 
 public:
 
-    //! Chroniony konstruktor, klasa pochodna powinna zdeklarowaæ przechowywany typ
-    //! \param info typ przechowywanych obiektów
+    //! Chroniony konstruktor, klasa pochodna powinna zdeklarowaÄ‡ przechowywany typ
+    //! \param info typ przechowywanych obiektÃ³w
     ObjectWrapperCollection(TypeInfo info, bool exact = true) :
       typeInfo(info), exact(exact) {}
 
@@ -77,20 +77,20 @@ public:
 
 public:
 
-    //! \return Najni¿szy typ w hierarchi dziedziczenia który kolekcja mo¿e przechowaæ
+    //! \return NajniÅ¼szy typ w hierarchi dziedziczenia ktÃ³ry kolekcja moÅ¼e przechowaÄ‡
     const TypeInfo & getTypeInfo() const
     {
         return typeInfo;
     }
 
-    //! \return Czy dane musza byæ dok³¹dnie tego samego typu dla którego utworzono kolekcjê czy mog¹ te¿ byæ pochodne od niego
+    //! \return Czy dane musza byÄ‡ dokÅ‚Ä…dnie tego samego typu dla ktÃ³rego utworzono kolekcjÄ™ czy mogÄ… teÅ¼ byÄ‡ pochodne od niego
     bool exactTypes() const
     {
         return exact;
     }
 
-    //! \param exact Czy dane maj¹ byæ dok³adnie tego typu dla którego utworzono kolekcjê
-    //! \param clear Czy czyœciæ dane niezgodne z typem kolekcji - pochodne mu
+    //! \param exact Czy dane majÄ… byÄ‡ dokÅ‚adnie tego typu dla ktÃ³rego utworzono kolekcjÄ™
+    //! \param clear Czy czyÅ›ciÄ‡ dane niezgodne z typem kolekcji - pochodne mu
     void setExactTypes(bool exact)
     {
         this->exact = exact;
@@ -100,10 +100,10 @@ public:
         }
     }
 
-    //! Czyœci dane innego typu ni¿ ten dla którego utworozno kolekcjê
+    //! CzyÅ›ci dane innego typu niÅ¼ ten dla ktÃ³rego utworozno kolekcjÄ™
     void removeDerivedTypes()
     {
-        //iteruj po kolekcji i usun te typy które nie s¹ dok³adnie typu kolekcji
+        //iteruj po kolekcji i usun te typy ktÃ³re nie sÄ… dokÅ‚adnie typu kolekcji
         auto cIT = constObjects.begin();
         while( cIT != constObjects.end() ) {
             if((*cIT)->getTypeInfo() != typeInfo){
@@ -114,25 +114,25 @@ public:
         }
     }
 
-    //! return Iterator pocz¹tku kolekcji
+    //! return Iterator poczÄ…tku kolekcji
     iterator begin()
     {
         return constObjects.begin();
     }
 
-    //! return Iterator koñca kolekcji
+    //! return Iterator koÅ„ca kolekcji
     iterator end()
     {
         return constObjects.end();
     }
 
-    //! return Const iterator pocz¹tku kolekcji
+    //! return Const iterator poczÄ…tku kolekcji
     const_iterator begin() const
     {
         return constObjects.begin();
     }
 
-    //! return Const iterator koñca kolekcji
+    //! return Const iterator koÅ„ca kolekcji
     const_iterator end() const
     {
         return constObjects.end();
@@ -144,24 +144,24 @@ public:
             return constObjects.empty();
     }
 
-    //! \return Iloœæ elementów w kolekcji
+    //! \return IloÅ›Ä‡ elementÃ³w w kolekcji
     size_type size() const
     {
         return constObjects.size();
     }
 
-    //! Czyœci wszystkie elementy kolekcji
+    //! CzyÅ›ci wszystkie elementy kolekcji
     void clear()
     {
         ConstObjects().swap(constObjects);
     }
 
-    //! Metoda udostêpnia obiekt domenowy z agregatu
+    //! Metoda udostÄ™pnia obiekt domenowy z agregatu
     //! \param index indesk pobieranego elementu
     //! \return Niemodyfikowalny obiekt domenowy
     const ObjectWrapperConstPtr & getObject(int index) const
     {
-        // wyj¹tek zamiast asercji (na wypadek trybu release)
+        // wyjÄ…tek zamiast asercji (na wypadek trybu release)
         if (!(index < static_cast<int>(size()) && index >= 0)) {
             throw std::runtime_error("ObjectWrapperCollection::getObject - wrong index");
         }
@@ -169,7 +169,7 @@ public:
         return constObjects[index];
     }
 
-    //! \param idx Indeks który usuwamy z kolekcji
+    //! \param idx Indeks ktÃ³ry usuwamy z kolekcji
     void removeObject(int idx)
     {
         auto cIT = constObjects.begin();
@@ -178,15 +178,15 @@ public:
     }
 
     //! Dodanie obiektu do agregatu
-    //! \param object wskaŸnik do niemodyfikowalnego obiektu domenowego
+    //! \param object wskaÅºnik do niemodyfikowalnego obiektu domenowego
     void addObject(const ObjectWrapperConstPtr & object)
     {
-        // sprawdzenie poprawnoœci typu
+        // sprawdzenie poprawnoÅ›ci typu
         if (exact == true){
             if(object->isTypeEqual(typeInfo) == true) {
                 constObjects.push_back(object);
             } else {
-                // bad_cast nie pobiera parametrów
+                // bad_cast nie pobiera parametrÃ³w
                 //throw std::bad_cast("Type of object not equal to type of collection");
                 throw std::bad_cast();
             }

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/05
     created:  5:3:2012   21:29
     filename: IDownloadHelper.h
@@ -22,11 +22,11 @@ namespace webservices
 		virtual ~IDownloadHelper() {}
 		//! Pobiera plik
 		virtual IFtpsConnection::OperationStatus get(IFtpsConnection::IProgress * progress = nullptr) = 0;
-		//! \return Postêp pobieranie w przedziale [0-100]
+		//! \return PostÄ™p pobieranie w przedziale [0-100]
 		virtual const int progress() = 0;
 		//! Przerywa aktualne pobieranie
 		virtual void abort() = 0;
-		//! \return Informacja o b³êdzie
+		//! \return Informacja o bÅ‚Ä™dzie
 		virtual const std::string errorMessage() = 0;
 	};
 

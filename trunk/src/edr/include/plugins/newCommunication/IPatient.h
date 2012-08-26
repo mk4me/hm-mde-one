@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/10/28
     created:  28:10:2011   14:10
     filename: IPatient.h
@@ -26,7 +26,7 @@ struct Disorder
     std::string name;
 	//! Data diagnzy
     std::string diagnosisDate;
-	//! Istotnoœæ schorzenia
+	//! IstotnoÅ›Ä‡ schorzenia
     std::string focus;
 	//! Komentarze
     std::string comments;
@@ -37,7 +37,7 @@ struct Disorder
 //! Dane antropometryczne
 struct AntropometricData
 {
-	//! Typ przechowuj¹cy wartoœæ i jednostkê (skalar + text)
+	//! Typ przechowujÄ…cy wartoÅ›Ä‡ i jednostkÄ™ (skalar + text)
     typedef std::pair<float, std::string> value_type;
 
 
@@ -73,7 +73,7 @@ class IPatient
 {
 
 public:
-	//! Typ p³ci
+	//! Typ pÅ‚ci
 	enum Gender {
 		Male,
 		Female,
@@ -87,18 +87,18 @@ public:
 	//! \return Identyfikator pacjenta - zgodny z identyfikatorem subjecta
     virtual PluginSubject::SubjectID getID() const = 0;
 
-	//! \return Imiê/Nazwa pacjenta
+	//! \return ImiÄ™/Nazwa pacjenta
     virtual const std::string & getName() const = 0;
 	//! \return Nazwisko pacjenta
     virtual const std::string & getSurname() const = 0;
 	//! \return Data urodzenia pacjenta
     virtual const std::string & getBirthday() const = 0;
-	//! \return P³eæ pacjenta
+	//! \return PÅ‚eÄ‡ pacjenta
     virtual Gender getGender() const = 0;
-	//! \return Zdjêcie pacjenta
+	//! \return ZdjÄ™cie pacjenta
     virtual const core::shared_ptr<const QPixmap> & getPhoto() const = 0;
 
-	//! \return Iloœæ schorzeñ
+	//! \return IloÅ›Ä‡ schorzeÅ„
     virtual unsigned int disordersCount() const = 0;
 	//! \param idx Indeks schorzenia
 	//! \return Opis schorzenia

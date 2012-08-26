@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/07/29
 	created:  29:7:2010   1:03
 	filename: Converter.h
@@ -27,19 +27,19 @@ private:
   //! Opis konwersji.
   struct Description 
   {
-    //! Szerokoœæ Ÿród³owego obrazka.
+    //! SzerokoÅ›Ä‡ ÅºrÃ³dÅ‚owego obrazka.
     int srcWidth;
-    //! Wysokoœæ Ÿród³owgo obrazka.
+    //! WysokoÅ›Ä‡ ÅºrÃ³dÅ‚owgo obrazka.
     int srcHeight;
-    //! Format Ÿród³owego obrazka
+    //! Format ÅºrÃ³dÅ‚owego obrazka
     PixelFormat srcFormat;
-    //! Szerokoœæ docelowego obrazka.
+    //! SzerokoÅ›Ä‡ docelowego obrazka.
     int dstWidth;
-    //! Wysokoœæ docelowego obrazka.
+    //! WysokoÅ›Ä‡ docelowego obrazka.
     int dstHeight;
     //! Format docelowego obrazka
     PixelFormat dstFormat;
-    //! Operator mniejszoœci, wykorzystywany w kontenerze std::map
+    //! Operator mniejszoÅ›ci, wykorzystywany w kontenerze std::map
     bool operator<(const Description& rhs) const
     {
       return ::memcmp(this, &rhs, sizeof(*this)) < 0;
@@ -47,7 +47,7 @@ private:
   };
 
 private:
-  //! Cache kontekstów konwersji.
+  //! Cache kontekstÃ³w konwersji.
   std::map<Description, SwsContext*> cache;
 
 public:

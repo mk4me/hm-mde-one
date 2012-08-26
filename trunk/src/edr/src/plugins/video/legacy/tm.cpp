@@ -1,4 +1,4 @@
-#include "VideoPCH.h"
+﻿#include "VideoPCH.h"
 #include <stdexcept>
 #include <utils/Utils.h>
 #include "tm.h"
@@ -13,7 +13,7 @@ TimelineManager * TimelineManager::createInstance()
 {
   if ( instance == NULL ) {
     instance = new TimelineManager();
-    // TUTAJ INICJUJEMY ZALE�NE SINGLETONY
+    // TUTAJ INICJUJEMY ZALEŻNE SINGLETONY
     return instance;
   } else {
     throw new std::runtime_error("Instance already exists.");

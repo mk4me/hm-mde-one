@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/12/11
 	created:	11:12:2011   19:39
 	filename: 	EMGFilter.h
@@ -12,7 +12,7 @@
 
 #include "TreeItemHelper.h"
 
-//! Klasa tworzy wizualizator wykresów, i wype³ni¹ go przefiltrowanymi danymi EMG
+//! Klasa tworzy wizualizator wykresÃ³w, i wypeÅ‚niÄ… go przefiltrowanymi danymi EMG
 class EMGFilterHelper : public NewChartItemHelper
 {
 public:
@@ -25,8 +25,8 @@ public:
     //! \return wizualizator stworzony dla dostarczonego wrappera
     virtual VisualizerPtr createVisualizer();
     //! tworzy serie ze zmodyfikowanym EMG na podstawiawie dostarczonego wrappera
-    //! \param visualizer wizualizator, który bêdzie tworzy³ serie
-    //! \param path œcie¿ka dla timeline'a
+    //! \param visualizer wizualizator, ktÃ³ry bÄ™dzie tworzyÅ‚ serie
+    //! \param path Å›cieÅ¼ka dla timeline'a
     //! \param series zwracana seria 
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
 };

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/09
     created:  9:3:2012   11:31
     filename: IPatientCard.h
@@ -26,12 +26,12 @@ namespace communication
 
 		//! \return Nazwa schematu karty pacjenta
 		virtual const std::string name() = 0;
-		//! \return Widget z kart¹ pacjenta
+		//! \return Widget z kartÄ… pacjenta
 		virtual QWidget * widget() = 0;
-		//! \param patient Pacjent którego nale¿y sformatowaæ w karcie pacjenta - dla nullptr nale¿y zresetowaæ kartê pacjenta
-		//! \param subject Subject którego sesje bêdziemy czytaæ
-		//! \param photo Zdjêcie pacjenta
-		//! \param userData Dane u¿ytkownika (na potrzeby notatek!!)
+		//! \param patient Pacjent ktÃ³rego naleÅ¼y sformatowaÄ‡ w karcie pacjenta - dla nullptr naleÅ¼y zresetowaÄ‡ kartÄ™ pacjenta
+		//! \param subject Subject ktÃ³rego sesje bÄ™dziemy czytaÄ‡
+		//! \param photo ZdjÄ™cie pacjenta
+		//! \param userData Dane uÅ¼ytkownika (na potrzeby notatek!!)
 		virtual void setPatient(const webservices::MedicalShallowCopy::Patient * patient = nullptr,
 			const webservices::MotionShallowCopy::Performer * subject = nullptr,
 			const QPixmap & photo = QPixmap(), const IUserData & userData = IUserData()) = 0;

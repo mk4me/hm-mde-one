@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/05
     created:  5:2:2012   17:01
     filename: IDataSourceUserPrivilages.h
@@ -12,7 +12,7 @@
 namespace communication
 {
 
-//! Interfejs zapewniaj¹cy dostêp do praw u¿ytkownika wzglêdem danych w bazie danych
+//! Interfejs zapewniajÄ…cy dostÄ™p do praw uÅ¼ytkownika wzglÄ™dem danych w bazie danych
 class IUserPrivilages
 {
 public:

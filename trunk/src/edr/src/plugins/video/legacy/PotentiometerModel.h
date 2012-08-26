@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/07/12
 	created:  12:7:2010   14:27
 	filename: PotentiometerModel.h
@@ -13,26 +13,26 @@
 
 struct PotentiometerModelData
 {
-  //! Moment bezw³adnoœci. Zastêpuje promieñ i masê.
-  /** Moment bezw³adnoœci walca to 0.5 * m * r^2 */
+  //! Moment bezwÅ‚adnoÅ›ci. ZastÄ™puje promieÅ„ i masÄ™.
+  /** Moment bezwÅ‚adnoÅ›ci walca to 0.5 * m * r^2 */
   float momentOfInteria;
-  //! Ostatnia delta k¹tu obrotu. W radianach.
+  //! Ostatnia delta kÄ…tu obrotu. W radianach.
   float delta;
-  //! Przy³o¿ona si³a.
+  //! PrzyÅ‚oÅ¼ona siÅ‚a.
   float forcedMoment;
   //! Moment tarcia powietrza.
   float airFriction;
   //! Moment tarcia dotyku.
   float clickFriction;
-  //! Prêdkoœæ k¹towa.
+  //! PrÄ™dkoÅ›Ä‡ kÄ…towa.
   float angularVelocity;
   //! Czy jest dotykany?
   bool pushed;
-  //! Maksymalna wartoœæ obrotu (radiany).
+  //! Maksymalna wartoÅ›Ä‡ obrotu (radiany).
   float maxValue;
-  //! Minimalna wartoœæ obrotu (radiany).
+  //! Minimalna wartoÅ›Ä‡ obrotu (radiany).
   float minValue;
-  //! Bie¿¹ca wartoœæ (radiany).
+  //! BieÅ¼Ä…ca wartoÅ›Ä‡ (radiany).
   float value;
 };
 
@@ -42,13 +42,13 @@ struct PotentiometerModelData
 class PotentiometerModel : public utils::Observable<PotentiometerModel>, private PotentiometerModelData
 {
 public:
-  //! Konstruktor zeruj¹cy.
+  //! Konstruktor zerujÄ…cy.
   PotentiometerModel();
-  //! Konstruktor kopiuj¹cy.
+  //! Konstruktor kopiujÄ…cy.
   PotentiometerModel(const PotentiometerModel& src);
 
   //! Aktualizacja modelu fizycznego.
-  //! \param deltaTime Ile czasu up³ynê³o.
+  //! \param deltaTime Ile czasu upÅ‚ynÄ™Å‚o.
   void update(float deltaTime);
 
   //! \return Delta obrotu (radiany).
@@ -67,12 +67,12 @@ public:
     this->forcedMoment = moment; 
     notify();
   }
-  //! Przyk³ada si³ê (impuls) do modelu.
+  //! PrzykÅ‚ada siÅ‚Ä™ (impuls) do modelu.
   /**
-   *	Stosujemy uproszczony model. Poniewa¿ zak³adadamy, ¿e potencjometr ma promieñ równy 1
-   *  oraz si³e przyk³ada siê zawsze do zewnêtrzych œcianek wektorem prostopad³ym do osi symetrii
-   *  forcedMoment obrotowy staje siê równy sumie przy³o¿onych si³.
-   *  \param magnitude D³ugoœæ wektora si³y.
+   *	Stosujemy uproszczony model. PoniewaÅ¼ zakÅ‚adadamy, Å¼e potencjometr ma promieÅ„ rÃ³wny 1
+   *  oraz siÅ‚e przykÅ‚ada siÄ™ zawsze do zewnÄ™trzych Å›cianek wektorem prostopadÅ‚ym do osi symetrii
+   *  forcedMoment obrotowy staje siÄ™ rÃ³wny sumie przyÅ‚oÅ¼onych siÅ‚.
+   *  \param magnitude DÅ‚ugoÅ›Ä‡ wektora siÅ‚y.
    */
   inline void addMoment(float magnitude)
   {
@@ -139,7 +139,7 @@ public:
   { 
     return value;
   }
-  //! Do ustawienia wartoœci z zewn¹rz. Zeruje model fizyczny.
+  //! Do ustawienia wartoÅ›ci z zewnÄ…rz. Zeruje model fizyczny.
   //! \param value
   inline void setValue(float value) 
   { 
@@ -168,7 +168,7 @@ public:
   { 
     setValue((1 - value) * minValue + value * maxValue);
   }
-  //! Zeruje fizykê.
+  //! Zeruje fizykÄ™.
   inline void zeroPhysics()
   {
     angularVelocity = 0.0f;

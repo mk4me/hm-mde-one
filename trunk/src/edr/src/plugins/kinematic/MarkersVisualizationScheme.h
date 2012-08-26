@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/04/23
 	created:	23:4:2012   12:47
 	filename: 	MarkersVisualizationScheme.h
@@ -12,7 +12,7 @@
 
 #include "VisualizationScheme.h"
 
-//! po³¹czenie miêdzy kolekcj¹ markerów a ich wizualizacj¹
+//! poÅ‚Ä…czenie miÄ™dzy kolekcjÄ… markerÃ³w a ich wizualizacjÄ…
 class MarkersVisualizationScheme : public VisualizationScheme
 {
 public:
@@ -20,40 +20,40 @@ public:
     MarkerCollectionConstPtr getMarkers() const;
     //! \return czas trwania animacji
     virtual double getDuration() const;
-    //! \return czy poprawne dane zosta³y dostarczone?
+    //! \return czy poprawne dane zostaÅ‚y dostarczone?
     virtual bool hasData() const;
-    //! \return œrodek geometryczny
+    //! \return Å›rodek geometryczny
     virtual osg::Vec3 getCurrentPosition() const;
-    //! \return œrodek geometryczny
-    //! \param time czas, dla którego zwracamy œrodek geometryczny
+    //! \return Å›rodek geometryczny
+    //! \param time czas, dla ktÃ³rego zwracamy Å›rodek geometryczny
     osg::Vec3 getRootPosition(double time) const;
     //! ustawienie kolekcji z markerami
     //! \param val obiekt z markerami
     void setMarkers(MarkerCollectionConstPtr val);
-    //! ustawienie po³¹czeñ i ich kolorów
-    //! \param vsk parser z wczytanymi danymi nt. po³¹czeñ markerów
+    //! ustawienie poÅ‚Ä…czeÅ„ i ich kolorÃ³w
+    //! \param vsk parser z wczytanymi danymi nt. poÅ‚Ä…czeÅ„ markerÃ³w
     void setMarkersDataFromVsk(kinematic::VskParserConstPtr vsk);
 
 protected:
     //! aktualizacja schematu
-    //! \param time czas, dla którego dokonywana jest aktualizacja
+    //! \param time czas, dla ktÃ³rego dokonywana jest aktualizacja
     virtual void update( double time );
 
 private:
-    //! odœwie¿enie informacji o markerach
-    //! \param time czas, dla którego dokonywana jest aktualizacja
+    //! odÅ›wieÅ¼enie informacji o markerach
+    //! \param time czas, dla ktÃ³rego dokonywana jest aktualizacja
     void updateMarkers(double time);
-    //! Oblicza typowa d³ugoœæ pomiêdzy dwoma markerami, odleg³oœci liczone s¹ 100 razy dla animacji, tworzony jest histogram
+    //! Oblicza typowa dÅ‚ugoÅ›Ä‡ pomiÄ™dzy dwoma markerami, odlegÅ‚oÅ›ci liczone sÄ… 100 razy dla animacji, tworzony jest histogram
     //! \param channel1 pierwszy marker
     //! \param channel2 drugi marker
-    //! \param epsilon przedzia³ histogramu
-    //! \return typowa d³ugoœæ miêdzy markerami
+    //! \param epsilon przedziaÅ‚ histogramu
+    //! \return typowa dÅ‚ugoÅ›Ä‡ miÄ™dzy markerami
     float getStickLength( VectorChannelConstPtr channel1, VectorChannelConstPtr channel2, float epsilon = 0.001f );
 
 private:
     //! kolekcja z markerami
     MarkerCollectionConstPtr markers;
-    //! aktualny œrodek geometryczny
+    //! aktualny Å›rodek geometryczny
     osg::Vec3 currentPosition;
 };
 typedef core::shared_ptr<MarkersVisualizationScheme> MarkersVisualizationSchemePtr;

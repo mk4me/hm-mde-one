@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/05/23
     created:  23:5:2011   18:26
     filename: WorkflowWidget.h
@@ -75,7 +75,7 @@ private:
     typedef boost::function<WorkflowItemPtr(void)> workflowItemBuilder;
 
 private:
-    //! Us³uga tworz¹ca widget.
+    //! UsÅ‚uga tworzÄ…ca widget.
     WorkflowService* service;
 
     //! Widget z widokiem OSG.

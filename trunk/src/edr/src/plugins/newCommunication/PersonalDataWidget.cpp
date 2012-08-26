@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include "PersonalDataWidget.h"
 
 PersonalDataWidget::PersonalDataWidget(QWidget * parent) : QFrame(parent)

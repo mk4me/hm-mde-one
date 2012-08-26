@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/29
     created:  29:4:2011   10:10
     filename: ObjectSlots.h
@@ -13,10 +13,10 @@
 #include <set>
 #include <core/ObjectWrapperCollection.h>
 /**
- *	Reprezentuje pewn¹ kolekcjê obiektów domenowych. Odwo³ania do nich
- *  wystêpuj¹ pod postaci¹ zmiennych i/lub niezmiennych wskaŸników. 
- *  Obiekty przypisane s¹ do slotów, które charakteryzuj¹ siê nazwami
- *  oraz list¹ wspieranych przez nie typów.
+ *	Reprezentuje pewnÄ… kolekcjÄ™ obiektÃ³w domenowych. OdwoÅ‚ania do nich
+ *  wystÄ™pujÄ… pod postaciÄ… zmiennych i/lub niezmiennych wskaÅºnikÃ³w. 
+ *  Obiekty przypisane sÄ… do slotÃ³w, ktÃ³re charakteryzujÄ… siÄ™ nazwami
+ *  oraz listÄ… wspieranych przez nie typÃ³w.
  */
 class ObjectSlots
 {
@@ -24,20 +24,20 @@ public:
     //! Typ opisu slotu.
     struct SlotInfo
     {
-        //! Typ kolekcji slotow zaleznych (ich indeksów)
+        //! Typ kolekcji slotow zaleznych (ich indeksÃ³w)
         typedef std::set<int> DependentSlots;
 
         //! Nazwa slotu.
         std::string name;
         //! Typy wspierane w slocie.
         core::TypeInfo type;
-        //! Czy dane z wejœcia bêda modyfikowane
+        //! Czy dane z wejÅ›cia bÄ™da modyfikowane
         bool modify;
-        //! Czy slot musi byæ pod³¹czony
+        //! Czy slot musi byÄ‡ podÅ‚Ä…czony
         bool required;
-        //! Zbiór slotów wymaganych
+        //! ZbiÃ³r slotÃ³w wymaganych
         DependentSlots dependentSlots;
-        //! Pomocnicza metoda, optymalizuj¹ca podmianê.
+        //! Pomocnicza metoda, optymalizujÄ…ca podmianÄ™.
         void swap(SlotInfo& slotInfo)
         {
             if ( &slotInfo != this ) {
@@ -54,7 +54,7 @@ public:
     typedef SlotInfo::DependentSlots DependentSlots;
 
 private:
-    //! W³aœciwy slot.
+    //! WÅ‚aÅ›ciwy slot.
     struct Slot
     {
         //! Obiekt w wariancie zmiennym.
@@ -65,7 +65,7 @@ private:
     //! Sloty.
     std::vector<Slot> objects;
     //! Informacje o slotach.
-    //! TODO: referencja albo wskaŸnik, jedna instancja danych. Spojrzeæ
+    //! TODO: referencja albo wskaÅºnik, jedna instancja danych. SpojrzeÄ‡
     //!       jak to jest zrobione w wizualizatorach.
     SlotsInfo info;
 
@@ -74,11 +74,11 @@ public:
     ObjectSlots( const SlotsInfo& info );
     //! \param info Informacje o slotach.
     ObjectSlots( SlotsInfo&& info );
-    //! Konstruktor kopiuj¹cy.
+    //! Konstruktor kopiujÄ…cy.
     ObjectSlots( const ObjectSlots& objectSlots );
 
 public:
-    //! \return Liczba slotów.
+    //! \return Liczba slotÃ³w.
     int getNumSlots() const
     {
         return info.size();
@@ -99,13 +99,13 @@ public:
         return info[slotNo];
     }
 
-    //! Czy dany obiekt mo¿na przypisaæ danemu Ÿród³u?
+    //! Czy dany obiekt moÅ¼na przypisaÄ‡ danemu ÅºrÃ³dÅ‚u?
     bool isAssignable(int slotNo, const core::TypeInfo & type) const;
 
-    //! Dodaje zmienny obiekt. Ustawia równie¿ wskaŸnik z niezmiennego obiektu.
+    //! Dodaje zmienny obiekt. Ustawia rÃ³wnieÅ¼ wskaÅºnik z niezmiennego obiektu.
     void setObjects(int slotNo, const core::ObjectWrapperCollectionPtr& objects);
 
-    //! Dodanie niezmiennego obiektu. Zeruje wskaŸnik zmiennego obiektu.
+    //! Dodanie niezmiennego obiektu. Zeruje wskaÅºnik zmiennego obiektu.
     void setObjects(int slotNo, const core::ObjectWrapperCollectionConstPtr& objects);
 
     //! \return Obiekt w zmiennym wariancie.
@@ -113,7 +113,7 @@ public:
     {
         return objects[slotNo].objects;
     }
-    //! \return Obiekt w sta³ym wariancie.
+    //! \return Obiekt w staÅ‚ym wariancie.
     const core::ObjectWrapperCollectionConstPtr& getConstObjects(int slotNo) const
     {
         return objects[slotNo].constObjects;

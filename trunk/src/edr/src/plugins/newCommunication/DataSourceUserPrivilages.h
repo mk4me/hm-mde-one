@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/04
     created:  4:2:2012   22:42
     filename: DataSourceUserPrivilages.h
@@ -11,7 +11,7 @@
 
 #include <plugins/newCommunication/IDataSourceUserPrivilages.h>
 
-//! Implementacja opisuj¹ca uprawnienia u¿ytkownika
+//! Implementacja opisujÄ…ca uprawnienia uÅ¼ytkownika
 class UserPrivilages : public communication::IUserPrivilages
 {
 public:

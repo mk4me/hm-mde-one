@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include <osgViewer/Renderer>
 #include <osgui/QOsgWidgets.h>
 #include <osgui/DisableableRenderer.h>
@@ -22,11 +22,11 @@ osgQt::GLWidget( translateFormat( traits ? *traits : osg::GraphicsContext::Trait
     UTILS_ASSERT(t->inheritedWindowData == NULL);
     t->inheritedWindowData = new osgQt::GraphicsWindowQt::WindowData( this );
 
-    // wygl¹da dziwnie, ale w kontruktorze ustawiana jest zmienna _gw
+    // wyglÄ…da dziwnie, ale w kontruktorze ustawiana jest zmienna _gw
     osgQt::GraphicsWindowQt* temp = new osgQt::GraphicsWindowQt(t);
     UTILS_ASSERT(temp == _gw);
 
-    // wy³¹czenie odrysowywanie t³a
+    // wyÅ‚Ä…czenie odrysowywanie tÅ‚a
     setAttribute( Qt::WA_OpaquePaintEvent );
 }
 

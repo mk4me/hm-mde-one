@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include "SkeletalVisualizationScheme.h"
 #include "UniqueCollection.h"
 #include "ISchemeDrawer.h"
@@ -19,7 +19,7 @@ SkeletalVisualizationScheme::SkeletalVisualizationScheme() :
 
 void SkeletalVisualizationScheme::updateJointTransforms(const std::vector<osg::Quat>& rotations, hAnimJointPtr joint, Quat parentRot, Vec3 parentPos)
 {
-    // zapewnienie zgodnoœci indeksów (miêdzy tablicami connections i states)
+    // zapewnienie zgodnoÅ›ci indeksÃ³w (miÄ™dzy tablicami connections i states)
     int i = visJoints[joint];
     Quat ident;
     Vec3 shift = joint->getLocalShift();

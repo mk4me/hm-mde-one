@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "AntropometricDataWidget.h"
 #include <qthtmlgenlib/DocumentGenerator.h>
 
@@ -254,11 +254,11 @@ void AntropometricDataWidget::initAntropometricContent()
 	antropometricGeneralTable.antropometricContent.setDimensions(4, 3);
 	antropometricLeftRightTable.antropometricContent.setDimensions(12, 4);
 
-	//zawartoœæ tabeli z danymi ogólnymi
-	//! wiersz nag³ówkowy - pierwsza komórka pusta - ³¹cznik z nag³ówkiem pionowym
+	//zawartoÅ›Ä‡ tabeli z danymi ogÃ³lnymi
+	//! wiersz nagÅ‚Ã³wkowy - pierwsza komÃ³rka pusta - Å‚Ä…cznik z nagÅ‚Ã³wkiem pionowym
 	antropometricGeneralTable.antropometricContent.setCell(0, 1, tr("Unit"));
 	antropometricGeneralTable.antropometricContent.setCell(0, 2, tr("Value"));
-	//! kolumna nag³ówkowa - pierwsza komórka pusta - ³¹cznik z nag³ówkiem poziomym
+	//! kolumna nagÅ‚Ã³wkowa - pierwsza komÃ³rka pusta - Å‚Ä…cznik z nagÅ‚Ã³wkiem poziomym
 	antropometricGeneralTable.antropometricContent.setCell(1, 0, tr("Body Mass"));
 	antropometricGeneralTable.antropometricContent.setCell(2, 0, tr("Height"));
 	antropometricGeneralTable.antropometricContent.setCell(3, 0, tr("ASIS-ASIS"));
@@ -267,12 +267,12 @@ void AntropometricDataWidget::initAntropometricContent()
 	antropometricGeneralTable.antropometricContent.setCell(2, 1, "[" + tr("mm") + "]");
 	antropometricGeneralTable.antropometricContent.setCell(3, 1, "[" + tr("mm") + "]");
 
-	//zawartoœæ tabeli z danymi szczegó³owymi dla lewej i prawej storny
-	//! wiersz nag³ówkowy - pierwsza komórka pusta - ³¹cznik z nag³ówkiem pionowym
+	//zawartoÅ›Ä‡ tabeli z danymi szczegÃ³Å‚owymi dla lewej i prawej storny
+	//! wiersz nagÅ‚Ã³wkowy - pierwsza komÃ³rka pusta - Å‚Ä…cznik z nagÅ‚Ã³wkiem pionowym
 	antropometricLeftRightTable.antropometricContent.setCell(0, 1, tr("Unit"));
 	antropometricLeftRightTable.antropometricContent.setCell(0, 2, tr("Left Value"));
 	antropometricLeftRightTable.antropometricContent.setCell(0, 3, tr("Right Value"));
-	//! kolumna nag³ówkowa - pierwsza komórka pusta - ³¹cznik z nag³ówkiem poziomym
+	//! kolumna nagÅ‚Ã³wkowa - pierwsza komÃ³rka pusta - Å‚Ä…cznik z nagÅ‚Ã³wkiem poziomym
 	antropometricLeftRightTable.antropometricContent.setCell(1, 0, tr("Leg Length"));
 	antropometricLeftRightTable.antropometricContent.setCell(2, 0, tr("Knee Width"));
 	antropometricLeftRightTable.antropometricContent.setCell(3, 0, tr("Anckle Width"));
@@ -316,21 +316,21 @@ void AntropometricDataWidget::initAntropometricStyles()
 	antropometricGeneralTable.antropometricStyles.tableStyle_ = "border-color: rgb(0, 0, 0);";
 	antropometricGeneralTable.antropometricStyles.headerRowStyle_[htmlGen::Single] = "color: white; background: rgb(41, 41, 41);";
 
-	//wiersz nag³ówkowy
+	//wiersz nagÅ‚Ã³wkowy
 	antropometricGeneralTable.antropometricStyles.headersStyles[htmlGen::Single][htmlGen::Middle] = "color: white; border-style: none; border-color: white;";
-	// kolumna nag³ówkowa - musze dodaæ kolor, nie da siê kolumnom przypisywaæ w³aœciwoœci
+	// kolumna nagÅ‚Ã³wkowa - musze dodaÄ‡ kolor, nie da siÄ™ kolumnom przypisywaÄ‡ wÅ‚aÅ›ciwoÅ›ci
 	antropometricGeneralTable.antropometricStyles.headersStyles[htmlGen::Middle][htmlGen::Single] = "color: white; border-style: none; border-color: white; background: rgb(41, 41, 41);";
-	// ostatni element kolumny nag³ówkowej - tylko kolor
+	// ostatni element kolumny nagÅ‚Ã³wkowej - tylko kolor
 	antropometricGeneralTable.antropometricStyles.headersStyles[htmlGen::Last][htmlGen::Single] = "color: white; background: rgb(41, 41, 41);";
 
-	//style contentu - tutaj chcemy uzyskaæ efekt kratownicy bez ramki
+	//style contentu - tutaj chcemy uzyskaÄ‡ efekt kratownicy bez ramki
 	antropometricGeneralTable.antropometricStyles.contentStyles[htmlGen::First][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
 	antropometricGeneralTable.antropometricStyles.contentStyles[htmlGen::Last][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
 	antropometricGeneralTable.antropometricStyles.contentStyles[htmlGen::Last][htmlGen::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
 
-	// kopiujemy wiêkszoœæ ustawieñ
+	// kopiujemy wiÄ™kszoÅ›Ä‡ ustawieÅ„
 	antropometricLeftRightTable.antropometricStyles = antropometricGeneralTable.antropometricStyles;
-	//poprawiamy style contentu - wiêcej mo¿liwoœci
+	//poprawiamy style contentu - wiÄ™cej moÅ¼liwoÅ›ci
 	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::First][htmlGen::First] = "border-style: none; border-color: rgb(41, 41, 41);";
 	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::First][htmlGen::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
 	antropometricLeftRightTable.antropometricStyles.contentStyles[htmlGen::First][htmlGen::Last] = QString();

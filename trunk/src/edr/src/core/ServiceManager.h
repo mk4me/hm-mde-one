@@ -1,4 +1,4 @@
-#ifndef SERVICE_MANAGER_H
+Ôªø#ifndef SERVICE_MANAGER_H
 #define SERVICE_MANAGER_H
 
 #include <map>
@@ -12,15 +12,15 @@
 class ServiceManager: public core::IServiceManager, public ManagerHelper<ServiceManager>
 {
 public:
-    //! S≥ownik us≥ug.
+    //! S≈Çownik us≈Çug.
     typedef std::map<UniqueID, core::IServicePtr> ServicesMap;
-    //! Sekwencja us≥ug.
+    //! Sekwencja us≈Çug.
     typedef std::vector<core::IServicePtr> ServicesList;
 
 private:
-    //! S≥ownik us≥ug.
+    //! S≈Çownik us≈Çug.
     ServicesMap servicesMap; 
-    //! Sekwencja us≥ug.
+    //! Sekwencja us≈Çug.
     ServicesList servicesList;
 
 public:
@@ -31,21 +31,21 @@ public:
 
     void update(double deltaTime);
 
-    //! Metoda finalizujπca wszystkie serwisy  wywo≥ywana przed niszczeniem managera
+    //! Metoda finalizujƒÖca wszystkie serwisy  wywo≈Çywana przed niszczeniem managera
     void finalizeServices();
 
 // IServiceManager
 public:
-    //! Rejestruje us≥ugÍ. Us≥ugi muszπ mieÊ unikatowe ID!
-    //! \param service Us≥guga do rejestracji.
+    //! Rejestruje us≈Çugƒô. Us≈Çugi muszƒÖ mieƒá unikatowe ID!
+    //! \param service Us≈Çguga do rejestracji.
     virtual void registerService(core::IServicePtr service);
-    //! \return Liczba us≥ug.
+    //! \return Liczba us≈Çug.
     virtual int getNumServices() const;
-    //! \param idx Indeks us≥ugi.
-    //! \return Us≥uga o zadanym indeksie.
+    //! \param idx Indeks us≈Çugi.
+    //! \return Us≈Çuga o zadanym indeksie.
     virtual core::IServicePtr getService(int idx);
-    //! \param id ID us≥ugi do wyszukania.
-    //! \return Odnaleziona us≥uga bπdü NULL.
+    //! \param id ID us≈Çugi do wyszukania.
+    //! \return Odnaleziona us≈Çuga bƒÖd≈∫ NULL.
     virtual core::IServicePtr getService(UniqueID id);
 };
 

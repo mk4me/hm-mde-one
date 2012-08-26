@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_KINEMATICMODEL__DEGREEOFFREEDOM_H__
+Ôªø#ifndef HEADER_GUARD_KINEMATICMODEL__DEGREEOFFREEDOM_H__
 #define HEADER_GUARD_KINEMATICMODEL__DEGREEOFFREEDOM_H__
 
 #include <vector>
@@ -64,9 +64,9 @@ namespace kinematic
             }
 
         /// \brief  Zwraca indeks (w tablicy wartosci kanalow dla pojedynczej klatki kosci)
-        /// \param  Kana≥ dla ktorego powinnien byc zwrocony indeks 
+        /// \param  Kana≈Ç dla ktorego powinnien byc zwrocony indeks 
         /// \param  dofs lista ze stopniami swobody (na jej podstawie ustalany jest indeks)
-        /// \return Indeks kana≥u lub -1 jesli kanalu nie znaleziono
+        /// \return Indeks kana≈Çu lub -1 jesli kanalu nie znaleziono
         static int getChannelIndex(DegreeOfFreedom::Channel channel, const std::vector<DegreeOfFreedom>& dofs);
         /// \brief  Zwraca kanal na podstawie nazwy.
         /// 		Jesli kanal nie zostanie znaleziony to rzucany jest wyjatek 

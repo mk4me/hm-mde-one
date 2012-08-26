@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/28
     created:  28:2:2012   22:26
     filename: MetadataParser.h
@@ -19,8 +19,8 @@ namespace webservices
 class MotionMetadataParser
 {
 public:    
-    //! \param path åcieøka do pliku do przeparsowania
-    //! \param metadata [out] Struktura metadanych do wype≥nienia
+    //! \param path ≈öcie≈ºka do pliku do przeparsowania
+    //! \param metadata [out] Struktura metadanych do wype≈Çnienia
     static void parseFile(const std::string & path, MotionMetaData::MetaData & metadata);
 };
 
@@ -28,8 +28,8 @@ public:
 class MedicalMetadataParser
 {
 public:
-    //! \param path åcieøka do pliku do przeparsowania
-    //! \param metadata [out] Struktura metadanych do wype≥nienia
+    //! \param path ≈öcie≈ºka do pliku do przeparsowania
+    //! \param metadata [out] Struktura metadanych do wype≈Çnienia
     static void parseFile(const std::string & path, MedicalMetaData::MetaData & metadata);
 };
 

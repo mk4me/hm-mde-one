@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__SKELETALVISAULIZATIONSCHEME_H__
+ï»¿#ifndef HEADER_GUARD__SKELETALVISAULIZATIONSCHEME_H__
 #define HEADER_GUARD__SKELETALVISAULIZATIONSCHEME_H__
 
 #include <map>
@@ -37,7 +37,7 @@ public:
         int index1;         
         //! indeks drugiego stawu/markera (zgodny z przekazywana tablica JointState)
         int index2;
-        //! kolor po³¹czenia (RGBA <0,1>)
+        //! kolor poÅ‚Ä…czenia (RGBA <0,1>)
         osg::Vec4 color;
     };
 

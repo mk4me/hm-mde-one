@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+ï»¿#include "hmmPCH.h"
 #include "AnalisisWidget.h"
 #include "SummaryWindow.h"
 #include "AnalisisTreeWidget.h"
@@ -78,7 +78,7 @@ void AnalisisWidget::filterClicked( FilterEntryWidget* filter )
         if (configurationWidget->layout()) {
             delete configurationWidget->layout();
         }
-        // TODO zrobic to w lepszy sposób...
+        // TODO zrobic to w lepszy sposÃ³b...
         const QObjectList& childList = configurationWidget->children();
         for (int i = childList.size() - 1; i >= 0; --i) {
             QWidget* w = qobject_cast<QWidget*>(childList.at(i));
@@ -122,7 +122,7 @@ void AnalisisWidget::recreateTree(FilterEntryWidget* filter)
 
 void AnalisisWidget::switchToFirstTab()
 {
-    // Hack - to rozwiazanie nie jest odporne na zmiane kolejnoœci tabów
+    // Hack - to rozwiazanie nie jest odporne na zmiane kolejnoÅ›ci tabÃ³w
     tabWidget->setCurrentIndex(0);
 }
 

@@ -1,4 +1,4 @@
-#include "PCH.h"
+Ôªø#include "PCH.h"
 #include "UniqueCollection.h"
 #include "SchemeDrawerContainer.h"
 
@@ -34,8 +34,8 @@ void SchemeDrawerContainer::addDrawer( OsgSchemeDrawerPtr drawer )
 void SchemeDrawerContainer::removeDrawer( OsgSchemeDrawerPtr drawer )
 {
     UTILS_ASSERT(false);
-    // TODO jeúli byl init to usun z kolekcji i noda
-    //      jeúli nie to tylko z kolekcji
+    // TODO je≈õli byl init to usun z kolekcji i noda
+    //      je≈õli nie to tylko z kolekcji
     removeFromVector(drawers, drawer);
 }
 

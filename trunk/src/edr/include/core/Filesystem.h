@@ -1,6 +1,6 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Klasa Filesystem z podstawowymi operacjami na plikach. Do uzupe³nienia.
+@brief Klasa Filesystem z podstawowymi operacjami na plikach. Do uzupeÅ‚nienia.
 */
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
@@ -19,7 +19,7 @@ namespace core {
 class Filesystem
 {
 public:
-    //! Typy do obs³ugi œcie¿ek
+    //! Typy do obsÅ‚ugi Å›cieÅ¼ek
     typedef boost::filesystem::path Path;
     typedef boost::filesystem::directory_entry DirectoryEntry;
     typedef boost::filesystem::directory_iterator Iterator;
@@ -27,118 +27,118 @@ public:
 
 public:
 	/*
-	Tworzy foldery z podanej œcie¿ki.
-	@param path œcie¿ka z której maj¹ byæ utworzone foldery
+	Tworzy foldery z podanej Å›cieÅ¼ki.
+	@param path Å›cieÅ¼ka z ktÃ³rej majÄ… byÄ‡ utworzone foldery
 	*/
 	static void createDirectory(const std::string& path);
     static void createDirectory(const Path& path);
 	/*
-	Usuwa folder z podanej œcie¿ki wraz z zawatoœci¹.
-	@param path œcie¿ka do folderu który zostanie usuniêty
+	Usuwa folder z podanej Å›cieÅ¼ki wraz z zawatoÅ›ciÄ….
+	@param path Å›cieÅ¼ka do folderu ktÃ³ry zostanie usuniÄ™ty
 	*/
 	static void deleteDirectory(const std::string& path);
     static void deleteDirectory(const Path& path);
 	/*
 	Usuwa pojedynczy plik.
-	@param path œcie¿ka do pliku który zostanie usuniêty
+	@param path Å›cieÅ¼ka do pliku ktÃ³ry zostanie usuniÄ™ty
 	*/
 	static void deleteFile(const std::string& path);
     static void deleteFile(const Path& path);
 	/*
-	Przesuwa plik lub folder wraz z zawartoœci¹ o podanej œcie¿ce. W przypadku istnienia
-	w miejscu docelowym pliku o tej samej nazwie plik siê nadpisze, w przypadku folderów nie (trzeba to naprawiæ).
-	@param pathOldFile œcie¿ka do pliku lub folderu który ma byæ przesuniêty
-	@param pathNewFile œcie¿ka docelowa przesuniêcia
+	Przesuwa plik lub folder wraz z zawartoÅ›ciÄ… o podanej Å›cieÅ¼ce. W przypadku istnienia
+	w miejscu docelowym pliku o tej samej nazwie plik siÄ™ nadpisze, w przypadku folderÃ³w nie (trzeba to naprawiÄ‡).
+	@param pathOldFile Å›cieÅ¼ka do pliku lub folderu ktÃ³ry ma byÄ‡ przesuniÄ™ty
+	@param pathNewFile Å›cieÅ¼ka docelowa przesuniÄ™cia
 	*/
 	static void move(const std::string& pathOld, const std::string& pathNew);
     static void move(const Path& pathOld, const Path& pathNew);
 
 	/*
-	Kopiuje plik lub folder wraz z zawartoœci¹ o podanej œcie¿ce. W przypadku istnienia
-	w miejscu docelowym pliku o tej samej nazwie plik siê nadpisze, w przypadku folderów nie (trzeba to naprawiæ).
-	@param pathOldFile œcie¿ka do pliku lub folderu który ma byæ kopiowany
-	@param pathNewFile œcie¿ka docelowa kopiowania
+	Kopiuje plik lub folder wraz z zawartoÅ›ciÄ… o podanej Å›cieÅ¼ce. W przypadku istnienia
+	w miejscu docelowym pliku o tej samej nazwie plik siÄ™ nadpisze, w przypadku folderÃ³w nie (trzeba to naprawiÄ‡).
+	@param pathOldFile Å›cieÅ¼ka do pliku lub folderu ktÃ³ry ma byÄ‡ kopiowany
+	@param pathNewFile Å›cieÅ¼ka docelowa kopiowania
 	*/
     static void copy(const std::string& pathOld, const std::string& pathNew);
     static void copy(const Path& pathOld, const Path& pathNew);
 
     /*
-	Listuje wszystkie pliki danego folderu spe³niaj¹ce kryterium maski.
-	@param path œcie¿ka do folderu który ma byæ przeszukany
-	@param recursive czy szukaæ plików w podfolderach
-	@return lista wszystkich plików wraz ze œcie¿k¹
+	Listuje wszystkie pliki danego folderu speÅ‚niajÄ…ce kryterium maski.
+	@param path Å›cieÅ¼ka do folderu ktÃ³ry ma byÄ‡ przeszukany
+	@param recursive czy szukaÄ‡ plikÃ³w w podfolderach
+	@return lista wszystkich plikÃ³w wraz ze Å›cieÅ¼kÄ…
 	*/
     static std::vector<std::string> listFiles(const std::string& path, bool recursive = false);
     static std::vector<std::string> listFiles(const Path& path, bool recursive = false);
 	/*
-	Listuje wszystkie pliki danego folderu spe³niaj¹ce kryterium maski.
-	@param path œcie¿ka do folderu który ma byæ przeszukany
-	@param recursive czy szukaæ plików w podfolderach
+	Listuje wszystkie pliki danego folderu speÅ‚niajÄ…ce kryterium maski.
+	@param path Å›cieÅ¼ka do folderu ktÃ³ry ma byÄ‡ przeszukany
+	@param recursive czy szukaÄ‡ plikÃ³w w podfolderach
 	@param mask rozszerzenie pliku, np. ".avi"
-	@return lista wszystkich plików wraz ze œcie¿k¹
+	@return lista wszystkich plikÃ³w wraz ze Å›cieÅ¼kÄ…
 	*/
 	static std::vector<std::string> listFiles(const std::string& path, bool recursive, const std::string& mask);
     static std::vector<std::string> listFiles(const Path& path, bool recursive, const std::string& mask);
 	/*
-	Listuje wszystkie pliki danego folderu spe³niaj¹ce kryterium masek.
-	@param path œcie¿ka do folderu który ma byæ przeszukany
-	@param recursive czy szukaæ plików w podfolderach
+	Listuje wszystkie pliki danego folderu speÅ‚niajÄ…ce kryterium masek.
+	@param path Å›cieÅ¼ka do folderu ktÃ³ry ma byÄ‡ przeszukany
+	@param recursive czy szukaÄ‡ plikÃ³w w podfolderach
 	@param mask wektor z rozszerzeniami szukanych plikow
-	@return lista wszystkich plików wraz ze œcie¿k¹
+	@return lista wszystkich plikÃ³w wraz ze Å›cieÅ¼kÄ…
 	*/
 	static std::vector<std::string> listFiles(const std::string& path, bool recursive, const std::vector<std::string>& masks);
     static std::vector<std::string> listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks);
 	/*
 	Listuje wszystkie podfoldery danego folderu.
-	@param path œcie¿ka do folderu który ma byæ przeszukany
-	@return lista wszystkich podfolderów wraz ze œcie¿k¹
+	@param path Å›cieÅ¼ka do folderu ktÃ³ry ma byÄ‡ przeszukany
+	@return lista wszystkich podfolderÃ³w wraz ze Å›cieÅ¼kÄ…
 	*/
 	static std::vector<std::string> listSubdirectories(const std::string& path);
     static std::vector<std::string> listSubdirectories(const Path& path);
     /*
-	Sprawdza czy podana scie¿ka wskazuje zwyk³y plik
-	@param path œcie¿ka do sprawdzenia
-	@return true jeœli œcie¿ka wskazuje zwyk³y plik
+	Sprawdza czy podana scieÅ¼ka wskazuje zwykÅ‚y plik
+	@param path Å›cieÅ¼ka do sprawdzenia
+	@return true jeÅ›li Å›cieÅ¼ka wskazuje zwykÅ‚y plik
 	*/
     static bool isRegularFile(const std::string & path);
     static bool isRegularFile(const Path & path);
     /*
-	Sprawdza czy podana scie¿ka wskazuje link symboliczny
-	@param path œcie¿ka do sprawdzenia
-	@return true jeœli œcie¿ka wskazuje link symboliczny
+	Sprawdza czy podana scieÅ¼ka wskazuje link symboliczny
+	@param path Å›cieÅ¼ka do sprawdzenia
+	@return true jeÅ›li Å›cieÅ¼ka wskazuje link symboliczny
 	*/
     static bool isSymbolicLink(const std::string & path);
     static bool isSymbolicLink(const Path & path);
     /*
-	Sprawdza czy podana scie¿ka wskazuje katalog
-	@param path œcie¿ka do sprawdzenia
-	@return true jeœli œcie¿ka wskazuje katalog
+	Sprawdza czy podana scieÅ¼ka wskazuje katalog
+	@param path Å›cieÅ¼ka do sprawdzenia
+	@return true jeÅ›li Å›cieÅ¼ka wskazuje katalog
 	*/
     static bool isDirectory(const std::string & path);
     static bool isDirectory(const Path & path);
     /*
-	Sprawdza czy podana scie¿ka istnieje
-	@param path œcie¿ka do sprawdzenia
-	@return true jeœli œcie¿ka istnieje
+	Sprawdza czy podana scieÅ¼ka istnieje
+	@param path Å›cieÅ¼ka do sprawdzenia
+	@return true jeÅ›li Å›cieÅ¼ka istnieje
 	*/
     static bool pathExists(const std::string & path);
     static bool pathExists(const Path & path);
     /*
-	Wyci¹ga rozszerzenie pliku ze œciezki
-	@param path œcie¿ka pliku
+	WyciÄ…ga rozszerzenie pliku ze Å›ciezki
+	@param path Å›cieÅ¼ka pliku
 	@return rozszerzenie pliku
 	*/
     static std::string fileExtension(const std::string & path);
     static std::string fileExtension(const Path & path);
 
 private:
-    //! Prywatny konstruktor uniemo¿liwiaj¹cy tworzenie instancji typu.
+    //! Prywatny konstruktor uniemoÅ¼liwiajÄ…cy tworzenie instancji typu.
     Filesystem() {}
 };
 
-// Zbiór œcie¿ek
+// ZbiÃ³r Å›cieÅ¼ek
 typedef std::set<Filesystem::Path> Paths;
-// Zbiór plików
+// ZbiÃ³r plikÃ³w
 typedef Paths Files;
 
 

@@ -1,6 +1,6 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Dokument z prostymi typami, najczêœciej encjami bazodanowymi powi¹zanymi z ró¿nymi technologiami.
+@brief Dokument z prostymi typami, najczÄ™Å›ciej encjami bazodanowymi powiÄ…zanymi z rÃ³Å¼nymi technologiami.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_ENTITY_H__
@@ -76,7 +76,7 @@ namespace webservices
     }
     
     /**
-    Encje bazodanowe z operacji p³ytkiej kopii bazy danych. Schemat MotionMetaData.
+    Encje bazodanowe z operacji pÅ‚ytkiej kopii bazy danych. Schemat MotionMetaData.
     */
     namespace MotionMetaData
     {
@@ -163,7 +163,7 @@ namespace webservices
     }
     
     /**
-    Encje bazodanowe z operacji p³ytkiej kopii bazy danych. Schemat MotionShallowCopy.
+    Encje bazodanowe z operacji pÅ‚ytkiej kopii bazy danych. Schemat MotionShallowCopy.
     */
     namespace MotionShallowCopy
     {

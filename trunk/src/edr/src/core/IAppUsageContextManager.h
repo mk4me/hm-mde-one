@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/12/16
     created:  16:12:2011   8:59
     filename: IAppUsageContextManager.h
@@ -224,7 +224,7 @@ public:
     void setCurrentContext(QWidget * contextWidget)
     {
         if(contextWidget == nullptr){
-            //chowamy caly ³añcuch kontekstów
+            //chowamy caly Å‚aÅ„cuch kontekstÃ³w
             if(currentContextChain.empty() == false){
                 limitCurrentChainToPosition(-1);
                 ContextChain().swap(currentContextChain);
@@ -263,24 +263,24 @@ private:
     {
 
         if(context == nullptr){
-            //chowamy caly ³añcuch kontekstów
+            //chowamy caly Å‚aÅ„cuch kontekstÃ³w
             if(currentContextChain.empty() == false){
                 limitCurrentChainToPosition(-1);
                 ContextChain().swap(currentContextChain);
             }
         }else{
-            //sprawdzamy czy kontekst nie jest ju¿ aktywny - jeœli tak to wszystkie nizsze od niego s¹ dezaktywowane
+            //sprawdzamy czy kontekst nie jest juÅ¼ aktywny - jeÅ›li tak to wszystkie nizsze od niego sÄ… dezaktywowane
             int pos = contextPositionInCurrentChain(context);
 
             if(pos > -1){
                 limitCurrentChainToPosition(pos);
 
-                //prze³adowanie kontekstu / odœwie¿enie, dla widgetów które zmieniaj¹ stan ale nie ze wzglêdu na inne widgety dzieci (np. QTreeWidget na zmianê aktualnego wiersza)
+                //przeÅ‚adowanie kontekstu / odÅ›wieÅ¼enie, dla widgetÃ³w ktÃ³re zmieniajÄ… stan ale nie ze wzglÄ™du na inne widgety dzieci (np. QTreeWidget na zmianÄ™ aktualnego wiersza)
                 refreshContext(currentContextChain.back(), contextWidget);
             }else{
-                //nowy kontest wydaje siê niezalezny od aktualnie aktywnych - szukamy zaleznoœci
+                //nowy kontest wydaje siÄ™ niezalezny od aktualnie aktywnych - szukamy zaleznoÅ›ci
 
-                //szukamy zaleznoœci wzglêdem aktualnego lancucha idac w gore od zadanego kontekstu
+                //szukamy zaleznoÅ›ci wzglÄ™dem aktualnego lancucha idac w gore od zadanego kontekstu
                 auto parent = context->parentContext();
                 ContextChain newContextChain;
                 newContextChain.push_back(context);
@@ -299,7 +299,7 @@ private:
                     //ograniczamy aktualny lancuch do punktu przeciecia
                     limitCurrentChainToPosition(contextPositionInCurrentChain(parent));
 
-                    //jeœli ostatni ma widget to musimy go przel¹czyæ
+                    //jeÅ›li ostatni ma widget to musimy go przelÄ…czyÄ‡
                     auto tmpCurrent = currentContextChain.back();
                     if(tmpCurrent->getCurrentContextWidget() != nullptr){
 

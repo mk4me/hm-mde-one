@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/27
     created:  27:4:2011   14:58
     filename: ObjectWrapperFactory.h
@@ -15,7 +15,7 @@
 
 namespace core
 {
-    //! Abstrakcyjna fabryka obiektów.
+    //! Abstrakcyjna fabryka obiektÃ³w.
     class IObjectWrapperFactory
     {
     public:
@@ -34,8 +34,8 @@ namespace core
 
     typedef shared_ptr<IObjectWrapperFactory> IObjectWrapperFactoryPtr;
 
-    //! Domyœlna implementacja interfejsu. ¯eby dzia³aæ musi widzieæ
-    //! definicjê CORE_DEFINE_WRAPPER lub pochodnych.
+    //! DomyÅ›lna implementacja interfejsu. Å»eby dziaÅ‚aÄ‡ musi widzieÄ‡
+    //! definicjÄ™ CORE_DEFINE_WRAPPER lub pochodnych.
     template <class T>
     class ObjectWrapperFactory : public IObjectWrapperFactory
     {

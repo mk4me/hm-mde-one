@@ -1,11 +1,11 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "DataSourceLocalStorage.h"
 #include <OpenThreads/Mutex>
 #include <OpenThreads/ScopedLock>
 #include <fstream>
 #include <boost/format.hpp>
 #include <boost/smart_ptr.hpp>
-// rev - hack, z jakiegoœ wzglêdu nie bylo widac tej deklaracji
+// rev - hack, z jakiegoÅ› wzglÄ™du nie bylo widac tej deklaracji
 //#define SQLITE_HAS_CODEC
 //#include <sqlite3.h>
 extern int sqlite3_key(
@@ -62,13 +62,13 @@ void DataSourceLocalStorage::setLocalStorageDataPath(const core::Filesystem::Pat
 
 	if (rc != SQLITE_OK){
 		//TODO
-		//obs³uga kodów b³êdu sqlite
+		//obsÅ‚uga kodÃ³w bÅ‚Ä™du sqlite
 
 		sqlite3_close(db);
 		throw std::runtime_error("Could not initialize local storage in specified path");
 	}else {
 
-		//uda³o siê otworzyæ/stworzyæ bazê
+		//udaÅ‚o siÄ™ otworzyÄ‡/stworzyÄ‡ bazÄ™
 
 		//sprawdzam czy baza zaszyfrowana
 		if(checkIfEncrypted() == false){
@@ -89,7 +89,7 @@ bool DataSourceLocalStorage::checkIfEncrypted()
 
 	if (rc != SQLITE_OK){
 		//TODO
-		//obs³uga kodów b³êdu sqlite
+		//obsÅ‚uga kodÃ³w bÅ‚Ä™du sqlite
 
 		sqlite3_close(db);
 		throw std::runtime_error("Could not decrypt local storage");
@@ -163,21 +163,21 @@ void DataSourceLocalStorage::encrypt(const core::Filesystem::Path & localStorage
 		throw std::runtime_error("Could not encrypt DB");
 	}
 
-	//zamykam aktualne po³¹czenie - zwalniam uchwyt do pliku - bêdê go kasowa³
+	//zamykam aktualne poÅ‚Ä…czenie - zwalniam uchwyt do pliku - bÄ™dÄ™ go kasowaÅ‚
 	sqlite3_close(db);
 
-	//uda³o siê zaszyfrowaæ - usuwam star¹ bazê
+	//udaÅ‚o siÄ™ zaszyfrowaÄ‡ - usuwam starÄ… bazÄ™
 	core::Filesystem::deleteFile(localStorageDataPath);
-	// na jej miejsce kopiujê now¹
+	// na jej miejsce kopiujÄ™ nowÄ…
 	core::Filesystem::copy(tmpDB, localStorageDataPath);
-	// usuwam tymczasow¹
+	// usuwam tymczasowÄ…
 	core::Filesystem::deleteFile(tmpDB);
-	//otwieram nowe po³¹czenie z now¹, zaszyfrowan¹ ju¿ baz¹
+	//otwieram nowe poÅ‚Ä…czenie z nowÄ…, zaszyfrowanÄ… juÅ¼ bazÄ…
 	rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE, nullptr);
 
 	if (rc != SQLITE_OK){
 		//TODO
-		//obs³uga kodów b³êdu sqlite
+		//obsÅ‚uga kodÃ³w bÅ‚Ä™du sqlite
 
 		sqlite3_close(db);
 		throw std::runtime_error("Could not initialize local storage in specified path");
@@ -219,12 +219,12 @@ void DataSourceLocalStorage::loadFile(const core::Filesystem::Path & path, const
 {
 	std::string uniqueName(fileUniqueName);
 
-	//jeœli nie podano unikalnej nazwy pliku do zapisu przyjmujemy ¿e to nazwa pliku + jego rozszerzenie
+	//jeÅ›li nie podano unikalnej nazwy pliku do zapisu przyjmujemy Å¼e to nazwa pliku + jego rozszerzenie
 	if(fileUniqueName.empty() == true){
 		uniqueName = path.filename().string();
 	}
 
-	//czytamy zawartoœc pliku
+	//czytamy zawartoÅ›c pliku
 	std::ifstream file (path.string().c_str(), std::ios::in|std::ios::binary);
 	if (file.is_open())
 	{
@@ -274,7 +274,7 @@ void DataSourceLocalStorage::loadFile(const core::Filesystem::Path & path, const
 
 void DataSourceLocalStorage::extractFile(const std::string & fileName, const core::Filesystem::Path & destPath)
 {
-	//próbujemy strworzyæ plik do zapisu
+	//prÃ³bujemy strworzyÄ‡ plik do zapisu
 
 	std::ofstream file (destPath.string().c_str(), std::ios::out|std::ios::binary);
 	if (file.is_open())
@@ -293,8 +293,8 @@ void DataSourceLocalStorage::extractFile(const std::string & fileName, const cor
 
 		if(sqlite3_step(res) == SQLITE_ROW){
 			auto fContent = sqlite3_column_blob(res, 0);
-			//mamy to w sumie ju¿ w jednej kolumnie zapisane!!
-			//nie moge u¿yc column_bytes bo to tylko int!!
+			//mamy to w sumie juÅ¼ w jednej kolumnie zapisane!!
+			//nie moge uÅ¼yc column_bytes bo to tylko int!!
 			unsigned long long size = sqlite3_column_int64(res, 1);
 
 			//zapis do pliku
@@ -303,7 +303,7 @@ void DataSourceLocalStorage::extractFile(const std::string & fileName, const cor
 				file.close();
 			}catch(...){
 
-				//próbuje zamkn¹æ plik
+				//prÃ³buje zamknÄ…Ä‡ plik
 				try{
 					if(file.is_open()){
 						file.close();
@@ -311,7 +311,7 @@ void DataSourceLocalStorage::extractFile(const std::string & fileName, const cor
 				}catch(...){
 
 				}
-				//próbuje usun¹æ plik
+				//prÃ³buje usunÄ…Ä‡ plik
 				try{
 					core::Filesystem::deleteFile(destPath);
 				}catch(...){

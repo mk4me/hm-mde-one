@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/03
     created:  3:2:2012   17:27
     filename: CommunicationDataSourceStorage.h
@@ -14,18 +14,18 @@
 #include "DataSourceUser.h"
 #include <sqlite3.h>
 
-//! Klasa zarzπdzajπca po≥oøeniem danych naszego ürÛd≥a.
-//! Inicjalizacja wymaga podania úcieøki do sk≥adowania lokanego ürÛd≥a danych.
+//! Klasa zarzƒÖdzajƒÖca po≈Ço≈ºeniem danych naszego ≈∫r√≥d≈Ça.
+//! Inicjalizacja wymaga podania ≈õcie≈ºki do sk≈Çadowania lokanego ≈∫r√≥d≈Ça danych.
 
-//! èrÛd≥o to oparte jest na bazie danych - SQLite3.
-//! Aktualnie operuje na jednej tabeli - files_table ktÛra ma 2 kolumny:
-//! fileName - unikalna nazwa pliku (TEXT - wymaga tworzenia unikalnych nazw dla p≥ytkich kopii uøytkownikÛw)
-//! file - zawartoúÊ pliku (BLOB)
+//! ≈πr√≥d≈Ço to oparte jest na bazie danych - SQLite3.
+//! Aktualnie operuje na jednej tabeli - files_table kt√≥ra ma 2 kolumny:
+//! fileName - unikalna nazwa pliku (TEXT - wymaga tworzenia unikalnych nazw dla p≈Çytkich kopii u≈ºytkownik√≥w)
+//! file - zawarto≈õƒá pliku (BLOB)
 class DataSourceLocalStorage
 {
 private:
-    //! Domyúlny konstruktor
-    //! Wszystkie úciezki powinny byÊ ukryte/niedostÍpne dla uøytkownikÛw - szyfrowanie?
+    //! Domy≈õlny konstruktor
+    //! Wszystkie ≈õciezki powinny byƒá ukryte/niedostƒôpne dla u≈ºytkownik√≥w - szyfrowanie?
     DataSourceLocalStorage();
 
     //! Destruktor
@@ -33,49 +33,49 @@ private:
 
 public:
 
-    //! \param motionDataPath åcieøka danych ruchu
-    //! \param schemasPath åcieøka p≥ytkich kopii danych
+    //! \param motionDataPath ≈öcie≈ºka danych ruchu
+    //! \param schemasPath ≈öcie≈ºka p≈Çytkich kopii danych
     //! \return Instancja DataSourceLocalStorage
-	//! \param userDataPath åcieøka do wypakowania danych uøytkownika
+	//! \param userDataPath ≈öcie≈ºka do wypakowania danych u≈ºytkownika
     static DataSourceLocalStorage * create();
 
-    //! Niszczy instacjÍ obiektu DataSourceLocalStorage
+    //! Niszczy instacjƒô obiektu DataSourceLocalStorage
     static void destroy();
-	//! \param localStorageDataPath åcieøka do pliku z danymi - jeúli brak to tworzymy nowπ
+	//! \param localStorageDataPath ≈öcie≈ºka do pliku z danymi - je≈õli brak to tworzymy nowƒÖ
 	void setLocalStorageDataPath(const core::Filesystem::Path & localStorageDataPath);
-	//! \return åcieøka do pliku z danymi
+	//! \return ≈öcie≈ºka do pliku z danymi
 	const core::Filesystem::Path & localStorageDataPath() const;
 
     //! \return Instancja local storage
     static DataSourceLocalStorage * instance();
 
-	//! \param fileName Unikalna nazwa pliku o ktÛry pytamy czy jest dostÍpny lokalnie
-	//! \return Czy plik jest dostÍpny lokalnie
+	//! \param fileName Unikalna nazwa pliku o kt√≥ry pytamy czy jest dostƒôpny lokalnie
+	//! \return Czy plik jest dostƒôpny lokalnie
 	bool fileIsLocal(const std::string & fileName) const;
 
-	//! \param path åcieøka do pliku ktÛry dodajemy do ogÛlnej puli plikÛw
-	//! \param fileUniqueName Unikalna nazwa pliku pod ktÛrym widzimy plik w puli
+	//! \param path ≈öcie≈ºka do pliku kt√≥ry dodajemy do og√≥lnej puli plik√≥w
+	//! \param fileUniqueName Unikalna nazwa pliku pod kt√≥rym widzimy plik w puli
 	void loadFile(const core::Filesystem::Path & path, const std::string & fileUniqueName = std::string());
 
-	//! \param fileName Nazwa pliku ktÛry pobieramy z ogÛlnej puli plikÛw
-	//! \param destPath åcieøka gdzie zapisujemy zadany plik
+	//! \param fileName Nazwa pliku kt√≥ry pobieramy z og√≥lnej puli plik√≥w
+	//! \param destPath ≈öcie≈ºka gdzie zapisujemy zadany plik
 	void extractFile(const std::string & fileName, const core::Filesystem::Path & destPath);
 
-	//! \param fileName Nazwa pliku ktÛry pobieramy z ogÛlnej puli plikÛw
+	//! \param fileName Nazwa pliku kt√≥ry pobieramy z og√≥lnej puli plik√≥w
 	void removeFile(const std::string & fileName);
 
 private:
 	//! Sprawdza czy baza jest zaszyfrowana po wykonaniu key
 	bool checkIfEncrypted();
-	//! Sprawdzam czy zainicjowano bazÍ danych
+	//! Sprawdzam czy zainicjowano bazƒô danych
 	bool checkIfInitialized();
 	//! Inicjuje baze danych
 	void initialize();
-	//! Szyfruje bazÍ danych
+	//! Szyfruje bazƒô danych
 	void encrypt(const core::Filesystem::Path & localStorageDataPath);
 
 private:
-	//! åcieøka do pliku bazy danych
+	//! ≈öcie≈ºka do pliku bazy danych
 	core::Filesystem::Path localStorageDataPath_;
     //! Instancja obiektu
     static DataSourceLocalStorage * instance_;

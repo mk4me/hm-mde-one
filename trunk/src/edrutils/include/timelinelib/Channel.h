@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__TIMELINESTREAM_H__
+ï»¿#ifndef HEADER_GUARD__TIMELINESTREAM_H__
 #define HEADER_GUARD__TIMELINESTREAM_H__
 
 #include <timelinelib/Types.h>
@@ -44,11 +44,11 @@ private:
     //! Offset czasu wzgledem 0
     double globalOffset;
 
-    //! Skala z jaka przetwarzamy kanal, lokalna, trzaba uwzglêdniæ lokaln¹ skalê rodzica
+    //! Skala z jaka przetwarzamy kanal, lokalna, trzaba uwzglÄ™dniÄ‡ lokalnÄ… skalÄ™ rodzica
     //! 1 - oryginalny czas, > 1 szybciej, < 1 wolniej
     double localScale;
 
-    //! Skala z jaka przetwarzamy kanal, globalna po uwzglêdnieniu rodzica
+    //! Skala z jaka przetwarzamy kanal, globalna po uwzglÄ™dnieniu rodzica
     //! 1 - oryginalny czas, > 1 szybciej, < 1 wolniej
     double globalScale;
 
@@ -89,8 +89,8 @@ public:
     //! \param time Globalny czas
     bool timeInChannel(double time) const;
 
-    //! \param time Czas który chcemy ustawiæ w kanale
-    //! \return Poprawny czas w kanale - ograniczony do zakresu kana³u wraz z maska
+    //! \param time Czas ktÃ³ry chcemy ustawiÄ‡ w kanale
+    //! \return Poprawny czas w kanale - ograniczony do zakresu kanaÅ‚u wraz z maska
     double makeTimeInChannel(double time) const;
 
     //! \param channel Kanal zdefiniowany przez uzytkownika i opakowany przez nasza klase

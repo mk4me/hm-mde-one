@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/05/24
     created:  24:5:2011   14:24
     filename: Workflow.h
@@ -28,14 +28,14 @@ public:
     ~Workflow();
 
 public:
-    //! \return Lista akcji ogólnych wizualizatora.
+    //! \return Lista akcji ogÃ³lnych wizualizatora.
     const std::vector<QObject*>& getGenericActions() const;
-    //! \return Lista akcji ogólnych wizualizatora.
+    //! \return Lista akcji ogÃ³lnych wizualizatora.
     const std::vector<QObject*>& getOrCreateGenericActions();
 
     //! \return Widget wizualizatora.
     QWidget* getOrCreateWidget();
-    //! \return Widget wizualizatora. Mo¿e byæ nullptr, je¿eli jeszcze nie jest stworzony.
+    //! \return Widget wizualizatora. MoÅ¼e byÄ‡ nullptr, jeÅ¼eli jeszcze nie jest stworzony.
     QWidget* getWidget();
 
 };

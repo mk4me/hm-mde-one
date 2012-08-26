@@ -1,17 +1,17 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/02/04
     created:  4:2:2012   11:15
     filename: IDataSourceFilter.h
     author:   Mateusz Janiak
     
-    purpose:  Interfejs filtrÛw danych
+    purpose:  Interfejs filtr√≥w danych
 *********************************************************************/
 #ifndef HEADER_GUARD___DATASOURCEFILTER_H__
 #define HEADER_GUARD___DATASOURCEFILTER_H__
 
 #include <webserviceslib/Entity.h>
 
-//! Interfejs filtrÛw danych
+//! Interfejs filtr√≥w danych
 class DataSourceFilter
 {
 public:
@@ -26,39 +26,39 @@ public:
 	}
 
     //! \param disorder Schorzenie do weryfikacji
-    //! \return true jeøeli schorzenie pomyúlnie przesz≥o weryfikacjÍ
+    //! \return true je≈ºeli schorzenie pomy≈õlnie przesz≈Ço weryfikacjƒô
     virtual bool filterDisorder(const webservices::MedicalShallowCopy::Disorder* disorder) const
     {
         return true;
     }
-    //! Pacjent uzaleøniony jest od weryfikacji subjecta!!
+    //! Pacjent uzale≈ºniony jest od weryfikacji subjecta!!
     //! \param patient Pacjent do weryfikacji
-    //! \return true jeøeli pacjent pomyúlnie przeszed≥ weryfikacjÍ
+    //! \return true je≈ºeli pacjent pomy≈õlnie przeszed≈Ç weryfikacjƒô
     virtual bool filterPatient(const webservices::MedicalShallowCopy::Patient* patient) const
     {
         return true;
     }
 
     //! \param subject Subject do weryfikacji
-    //! \return true jeøeli subject pomyúlnie przeszed≥ weryfikacjÍ
+    //! \return true je≈ºeli subject pomy≈õlnie przeszed≈Ç weryfikacjƒô
     virtual bool filterSubject(const webservices::MotionShallowCopy::Performer* subject) const
     {
         return true;
     }
     //! \param session Sesja do weryfikacji
-    //! \return true jeøeli sesja pomyúlnie przesz≥a weryfikacjÍ
+    //! \return true je≈ºeli sesja pomy≈õlnie przesz≈Ça weryfikacjƒô
     virtual bool filterSession(const webservices::MotionShallowCopy::Session* session) const
     {
         return true;
     }
     //! \param motion Motion do weryfikacji
-    //! \return true jeøeli motion pomyúlnie przeszed≥ weryfikacjÍ
+    //! \return true je≈ºeli motion pomy≈õlnie przeszed≈Ç weryfikacjƒô
     virtual bool filterMotion(const webservices::MotionShallowCopy::Trial* motion) const
     {
         return true;
     }
     //! \param file Plik do weryfikacji
-    //! \return true jeøeli plik pomyúlnie przeszed≥ weryfikacjÍ
+    //! \return true je≈ºeli plik pomy≈õlnie przeszed≈Ç weryfikacjƒô
     virtual bool filterFile(const webservices::MotionShallowCopy::File* file) const
     {
         return true;

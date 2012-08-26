@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include "DataManager.h"
 
 #include "Log.h"
@@ -11,32 +11,32 @@
 using namespace core;
 using namespace std;
 
-//! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
+//! WewnÄ™trzna reprezentacja parsera uÅ¼ywana przez DataManagera.
 class DataManager::Parser
 {
 private:
-    //! Prawdziwy wewnêtrzny parser.
+    //! Prawdziwy wewnÄ™trzny parser.
     const IParserPtr parser;
     //! Parsowany plik.
     const Filesystem::Path filePath;
     //! Czy przeparsowano plik?
     bool parsed;
-    //! Czy u¿yto parsera do przeparsowania?
+    //! Czy uÅ¼yto parsera do przeparsowania?
     bool used;
-    //! Czy w³aœnie parsujemy?
+    //! Czy wÅ‚aÅ›nie parsujemy?
     bool parsing;
 
 public:
     //! \param parser Faktyczny parser. To ten obiekt kontroluje jego
-    //!     czas ¿ycia.
-    //! \param resource Czy parser jest zwi¹zany z zasobami sta³ymi?
+    //!     czas Å¼ycia.
+    //! \param resource Czy parser jest zwiÄ…zany z zasobami staÅ‚ymi?
     Parser(IParser* parser, const Filesystem::Path& path) :
       parser(parser), parsed(false), used(false), filePath(path), parsing(false)
       {
           UTILS_ASSERT(parser);
           UTILS_ASSERT(!filePath.empty());
       }
-      //! Destruktor drukuj¹cy wiadomoœæ o wy³adowaniu pliku.
+      //! Destruktor drukujÄ…cy wiadomoÅ›Ä‡ o wyÅ‚adowaniu pliku.
       ~Parser()
       {
           if ( isParsed() ) {
@@ -49,12 +49,12 @@ public:
       }
 
 public:
-    //! \return Czy u¿yto tego parsera?
+    //! \return Czy uÅ¼yto tego parsera?
     inline bool isUsed() const
     {
         return used;
     }
-    //! \return Czy uda³o siê przeparsowaæ plik?
+    //! \return Czy udaÅ‚o siÄ™ przeparsowaÄ‡ plik?
     inline bool isParsed() const
     {
         return parsed;
@@ -72,7 +72,7 @@ public:
         return parsing;
     }
 
-    //! \return Œcie¿ka do pliku.
+    //! \return ÅšcieÅ¼ka do pliku.
     inline const Filesystem::Path& getPath() const
     {
         return filePath;
@@ -83,7 +83,7 @@ public:
         return parser;
     }
 
-    //! Mo¿e rzucaæ wyj¹tkami!
+    //! MoÅ¼e rzucaÄ‡ wyjÄ…tkami!
     void parseFile()
     {
         UTILS_ASSERT(!isUsed());
@@ -94,8 +94,8 @@ public:
         parser->parseFile(filePath.string());
         parsed = true;
     }
-    //! Nie rzuca wyj¹tkami.
-    //! \return Czy uda³o siê przeparsowaæ?
+    //! Nie rzuca wyjÄ…tkami.
+    //! \return Czy udaÅ‚o siÄ™ przeparsowaÄ‡?
     bool tryParse()
     {
         try {
@@ -106,8 +106,8 @@ public:
             return false;
         }
     }
-    //! \param objects Lista wrappowanych obiektów, zainicjowanych (przeparsowany parser)
-    //!         b¹dŸ nie.
+    //! \param objects Lista wrappowanych obiektÃ³w, zainicjowanych (przeparsowany parser)
+    //!         bÄ…dÅº nie.
     inline void getObjects(core::Objects& objects)
     {
         parser->getObjects(objects);
@@ -314,9 +314,9 @@ void DataManager::registerParser(const core::IParserPtr & parser)
 {
     //unikalne ID parsera
     if(registeredParsers.find(parser->getID()) == registeredParsers.end()) {
-        // uzupe³nienie s³ownika rozszerzeñ
+        // uzupeÅ‚nienie sÅ‚ownika rozszerzeÅ„
         core::IParser::Extensions extensions;
-        // pobranie s³ownika rozszerzeñ z parsera
+        // pobranie sÅ‚ownika rozszerzeÅ„ z parsera
         parser->getSupportedExtensions(extensions);
 
         if(extensions.empty() == true){
@@ -325,7 +325,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
             throw std::runtime_error(str.str());
         }
 
-        //weryfikacja rozszerzeñ
+        //weryfikacja rozszerzeÅ„
         for(auto it = extensions.begin(); it != extensions.end(); ++it){
 
             if(it->first.empty() == true){
@@ -345,7 +345,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
         }
 
         for(auto it = extensions.begin(); it != extensions.end(); ++it){
-            //w³aœciwe rozszerzenie
+            //wÅ‚aÅ›ciwe rozszerzenie
             std::string extension(it->first);
 
             prepareExtension(extension);
@@ -362,7 +362,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
 
             // aktualizujemy parsery dla danego rozszerzenia
             extIT->second.parsers.insert(parser);
-            //prubujemy aktualizaowaæ opisy tego rozszerzenia
+            //prubujemy aktualizaowaÄ‡ opisy tego rozszerzenia
             if(it->second.description.empty() == false){
                 extIT->second.descriptions.push_back(it->second.description);
             }
@@ -371,7 +371,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
 
             LOG_INFO("Parser for extension " << extension << " registered. Parser ID: " << parser->getID());
         }
-        // uzupe³nienie pozosta³ych kolekcji
+        // uzupeÅ‚nienie pozostaÅ‚ych kolekcji
         registeredParsers.insert(std::make_pair(parser->getID(), parser));
     } else {
         throw std::runtime_error("Parser with this ID already registered.");
@@ -415,7 +415,7 @@ void DataManager::initializeData(core::ObjectWrapperPtr & data)
 
     UTILS_ASSERT((data != nullptr), "Niezainicjowany ObjectWrapper");
     if(data->isNull() == true){
-        //szukamy inicjalizatora - mamy go w spisie obiektów
+        //szukamy inicjalizatora - mamy go w spisie obiektÃ³w
         auto initializerIT = objectsWithInitializers.find(data);
 
         if(initializerIT->second == nullptr){
@@ -437,7 +437,7 @@ bool DataManager::isInitializable(const core::ObjectWrapperPtr & data) const
 {
     ScopedLock lock(stateMutex);
 
-    //szukamy inicjalizatora - mamy go w spisie obiektów
+    //szukamy inicjalizatora - mamy go w spisie obiektÃ³w
     auto initializerIT = objectsWithInitializers.find(data);
 
     if(initializerIT == objectsWithInitializers.end() || initializerIT->second == nullptr){
@@ -453,7 +453,7 @@ void DataManager::deinitializeData(core::ObjectWrapperPtr & data)
     ScopedLock lock(stateMutex);
 
     if(data->isNull() == false){
-        //szukamy inicjalizatora - mamy go w spisie obiektów
+        //szukamy inicjalizatora - mamy go w spisie obiektÃ³w
         auto initializerIT = objectsWithInitializers.find(data);
 
         if(initializerIT == objectsWithInitializers.end() || initializerIT->second == nullptr){
@@ -633,17 +633,17 @@ void DataManager::nonNotifyAddFile(const core::Filesystem::Path & file, std::vec
     Parsers parsers;
     Objects totalObjects;
 
-    //jeœli pliku nie ma dodaj go, stwórz parsery i rozszerz dostêpne dane wraz z ich opisem
+    //jeÅ›li pliku nie ma dodaj go, stwÃ³rz parsery i rozszerz dostÄ™pne dane wraz z ich opisem
     for(auto parserIT = extIT->second.parsers.begin(); parserIT != extIT->second.parsers.end(); ++parserIT){
-        //twworzymy w³asne opakowanie parsera klienckiego
+        //twworzymy wÅ‚asne opakowanie parsera klienckiego
         ParserPtr parser(new Parser((*parserIT)->create(), file));
         Objects objects;
-        //pobieramy udostêpniane obiekty
+        //pobieramy udostÄ™pniane obiekty
         parser->getObjects(objects);
 
         Objects verifiedObjects;
 
-        //zarejestrowanie obiektów i ich zwi¹zku z parserem i typami danych
+        //zarejestrowanie obiektÃ³w i ich zwiÄ…zku z parserem i typami danych
         for(auto objectIT = objects.begin(); objectIT != objects.end(); ++objectIT){
 
             if(*objectIT == nullptr){
@@ -672,13 +672,13 @@ void DataManager::nonNotifyAddFile(const core::Filesystem::Path & file, std::vec
                 nonNotifyAddData(obj, core::DataInitializerPtr(new ParserInitializer(parser)));
 
                 //UWAGA!!
-                //mapowanie surowego wskaŸnika do ObjectWrappera jest robione podczas parsowania!!
-                //teraz mamy leniw¹ inicjalizacjê
+                //mapowanie surowego wskaÅºnika do ObjectWrappera jest robione podczas parsowania!!
+                //teraz mamy leniwÄ… inicjalizacjÄ™
             }
         }
 
         if(verifiedObjects.empty() == false){
-            //pomocnicza zmienna - ¿ebyt nie czytaæ mapy za ka¿dym razem dla tego samego argumentu
+            //pomocnicza zmienna - Å¼ebyt nie czytaÄ‡ mapy za kaÅ¼dym razem dla tego samego argumentu
             objectsByParsers[parser].insert(verifiedObjects.begin(), verifiedObjects.end());
             //kojarzymy nowy parser z plikiem
             parsers.insert(parser);
@@ -710,7 +710,7 @@ void DataManager::nonNotifyRemoveFile(const core::Filesystem::Path & file)
 
     Objects totalObjects;
 
-    //zwalniamy zasoby parserów ¿eby potem zwolniæ same parsery
+    //zwalniamy zasoby parserÃ³w Å¼eby potem zwolniÄ‡ same parsery
     for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); ++parserIT){
         auto objectsByParserIT = objectsByParsers.find(*parserIT);
 
@@ -745,13 +745,13 @@ void DataManager::initializeFile(const core::Filesystem::Path & file)
         initializeData(*objectIT);
 
         if((*objectIT)->isNull()){
-            //nie powiod³a siê inicjalizacja - albo parser rzucil bledem podczas parsowania, albo w danych nie bylo tego czego szukamy i co deklarowal parser
+            //nie powiodÅ‚a siÄ™ inicjalizacja - albo parser rzucil bledem podczas parsowania, albo w danych nie bylo tego czego szukamy i co deklarowal parser
             invalid.insert(*objectIT);
             LOG_DEBUG("Failed to initialize data type " << (*objectIT)->getTypeInfo().name() << " for file " << file);
         }
     }
 
-    // usuniêcie niew³aœciwych wpisów
+    // usuniÄ™cie niewÅ‚aÅ›ciwych wpisÃ³w
     if ( invalid.empty() == false ) {
 
 		NotifyBlocker<core::IMemoryDataManager> blocker(*this);
@@ -913,7 +913,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
 				initializeData(wrapper);
 
 				if(wrapper->isNull() == true){
-					//jeœli nadal nie udalo siê zainicjalizowaæ danych to trzeba je usun¹æ
+					//jeÅ›li nadal nie udalo siÄ™ zainicjalizowaÄ‡ danych to trzeba je usunÄ…Ä‡
 					invalid.insert(wrapper);
 				}else{
 					objects.push_back(wrapper);
@@ -959,19 +959,19 @@ void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & 
         LOG_ERROR("Factory for " << type.name() << " already exists.");
     }else{
 
-        //zapamiêtyjemy fabrykê
+        //zapamiÄ™tyjemy fabrykÄ™
         objectFactories[type] = factory;
 
-        //tworzymy prototyp by mieæ dostêp do informacji o wspieranych typach
+        //tworzymy prototyp by mieÄ‡ dostÄ™p do informacji o wspieranych typach
         core::ObjectWrapperConstPtr proto(factory->createWrapper());
 
         //rejestrujemy typ i jego prototyp
         registeredTypesPrototypes.insert(std::make_pair(type, proto));
 
-        //aktualizujemy hierarchiê typów
+        //aktualizujemy hierarchiÄ™ typÃ³w
         registeredTypes.insert(type);
 
-        //hierarchia typów
+        //hierarchia typÃ³w
         core::TypeInfoList types;
         proto->getSupportedTypes(types);
 

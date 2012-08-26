@@ -1,4 +1,4 @@
-#include "../VideoPCH.h"
+ï»¿#include "../VideoPCH.h"
 #include <algorithm>
 #include <math.h>
 #include <float.h>
@@ -22,7 +22,7 @@ innerStream(innerStream), maxBufferSize(maxBufferSize),
 wantedTime(0.0)
 {
     VM_FUNCTION_PROLOG;
-    // skalowanie do potêgi dwójki
+    // skalowanie do potÄ™gi dwÃ³jki
     //int width = innerStream->getWidth();
  // int height = innerStream->getHeight();
 
@@ -31,7 +31,7 @@ wantedTime(0.0)
         innerStream->getFramerate(),
         innerStream->getDuration(),
         innerStream->getPixelFormat(),
-        // rozmiar musi byæ potêg¹ dwójki - jeœli nie jest jest zmniejszany do najbli¿ej odpowiedniej wartoœci
+        // rozmiar musi byÄ‡ potÄ™gÄ… dwÃ³jki - jeÅ›li nie jest jest zmniejszany do najbliÅ¼ej odpowiedniej wartoÅ›ci
         utils::align(innerStream->getWidth() / FACTOR - 1, 2),
         utils::align(innerStream->getHeight() / FACTOR - 1, 2),
         innerStream->getAspectRatio());
@@ -45,7 +45,7 @@ wantedTime(0.0)
 BufferedVideoStream::~BufferedVideoStream()
 {
     VM_FUNCTION_PROLOG;
-    // zwolnienie wskaŸnika
+    // zwolnienie wskaÅºnika
     utils::deletePtr(convertedFrames);
     utils::deletePtr(pendingFrames);
     utils::deletePtr(innerStream);
@@ -86,24 +86,24 @@ bool BufferedVideoStream::setTime( double time )
 
     // czy ramka jest przekonwertowana?
     if ( !convertedFrames->getFrame(time) ) {
-        // mo¿e jest w oczekuj¹cym buforze?
+        // moÅ¼e jest w oczekujÄ…cym buforze?
         double startTime, endTime;
         Picture* target = NULL;
         if ( const Picture * pending = pendingFrames->getFrame(time, &startTime, &endTime) ) {
-            // konwertujemy ramkê
+            // konwertujemy ramkÄ™
             target = popBuffer(time);
             converter->convert(*pending, *target);
-            // zwalniamy z bufora oczekuj¹cego
+            // zwalniamy z bufora oczekujÄ…cego
             pendingFrames->freeFrame(time);
         } else {
-            // nie ma, trzeba zmieniæ czas strumienia
+            // nie ma, trzeba zmieniÄ‡ czas strumienia
             innerStream->setTime(time);
             startTime = innerStream->getFrameTimestamp();
             endTime = innerStream->getNextFrameTimestamp();
-            // ustawianie czasu dla niektórych strumieni mo¿e siê nie powieœæ, dlatego trzeba
-            // jeszcze raz sprawdziæ
+            // ustawianie czasu dla niektÃ³rych strumieni moÅ¼e siÄ™ nie powieÅ›Ä‡, dlatego trzeba
+            // jeszcze raz sprawdziÄ‡
             if ( !convertedFrames->getFrame(startTime) ) {
-                // pobieramy ramkê
+                // pobieramy ramkÄ™
                 target = popBuffer(time);
                 innerStream->getFrame( *target );
             } else {
@@ -111,7 +111,7 @@ bool BufferedVideoStream::setTime( double time )
             }
         }
 
-        // zaznaczamy u¿ycie
+        // zaznaczamy uÅ¼ycie
         if ( target ) {
             convertedFrames->notifyUsed( target, startTime, endTime == getDuration() ? DBL_MAX : endTime );
         }
@@ -130,7 +130,7 @@ bool BufferedVideoStream::getData( Picture & dst )
         dst = *data;
         return true;
     } else {
-        // czyœcimy ramkê
+        // czyÅ›cimy ramkÄ™
         data = convertedFrames->getNearestFrame(wantedTime);
         if ( data ) {
             dst = *data;
@@ -138,9 +138,9 @@ bool BufferedVideoStream::getData( Picture & dst )
         }
 
         //TODO:
-        //obs³uga
+        //obsÅ‚uga
 
-        // musimy zaktualizowaæ bufor
+        // musimy zaktualizowaÄ‡ bufor
 //         Picture * frame = convertedFrames->pop();
 //         if ( !frame ) {
 //             convertedFrames->freeFirstFrame();
@@ -182,10 +182,10 @@ void BufferedVideoStream::frameRead( Picture * picture, PictureLayered * layers,
     VM_FUNCTION_PROLOG;
     //return;
     if ( wantedTime >= timestamp && wantedTime < endTimestamp ) {
-        // nie ma sensu, zaraz j¹ sobie odczytamy inaczej
+        // nie ma sensu, zaraz jÄ… sobie odczytamy inaczej
         return;
     } else if ( pendingFrames->getFrame(timestamp) || convertedFrames->getFrame(timestamp) ) {
-        // ramka ju¿ jest odczytana
+        // ramka juÅ¼ jest odczytana
         return;
     }
         
@@ -194,7 +194,7 @@ void BufferedVideoStream::frameRead( Picture * picture, PictureLayered * layers,
     // ramka z bufora
     Picture * target = pendingFrames->pop();
     if ( !target ) {
-        // usuwamy najstarsz¹ ramkê
+        // usuwamy najstarszÄ… ramkÄ™
         pendingFrames->freeFirstFrame();
         target = pendingFrames->pop();
     }
@@ -207,10 +207,10 @@ void BufferedVideoStream::frameRead( Picture * picture, PictureLayered * layers,
 Picture* BufferedVideoStream::popBuffer( double time )
 {
     VM_FUNCTION_PROLOG;
-    // czy da siê po prostu pobraæ?
+    // czy da siÄ™ po prostu pobraÄ‡?
     Picture * frame = convertedFrames->pop();
     if ( !frame ) {
-        // bufor pe³ny, trzeba zwolniæ któr¹œ ramkê
+        // bufor peÅ‚ny, trzeba zwolniÄ‡ ktÃ³rÄ…Å› ramkÄ™
         double latest, oldest;
         convertedFrames->getLastFrame(&latest);
         convertedFrames->getFirstFrame(&oldest);

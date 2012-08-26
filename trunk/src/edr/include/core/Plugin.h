@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
 	created:  2010/10/04
 	created:  4:10:2010   15:30
 	filename: Plugin.h
@@ -33,11 +33,11 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Deklaracja wersji nag≥Ûwka w Pluginie
-//! NIEZWYKLE ISTOTNE - przy kaødej zmianie w Pluginach wersja ta bÍdzie siÍ zmieniaÊ, pluginy nieprzebudowane z nowym nag≥owiekm
-//! nie bÍdπ ≥adowane do aplikacji!!
+//! Deklaracja wersji nag≈Ç√≥wka w Pluginie
+//! NIEZWYKLE ISTOTNE - przy ka≈ºdej zmianie w Pluginach wersja ta bƒôdzie siƒô zmieniaƒá, pluginy nieprzebudowane z nowym nag≈Çowiekm
+//! nie bƒôdƒÖ ≈Çadowane do aplikacji!!
 
-//! Sami musimy modyfikowaÊ ta wersjÍ!!
+//! Sami musimy modyfikowaƒá ta wersjƒô!!
 #define CORE_PLUGIN_INTERFACE_VERSION 5
 
 //! Weryfikacja typu bilda pluginu
@@ -53,16 +53,16 @@ namespace core {
 #define CORE_CPPLIB_VER -1
 #endif
 
-//! Nazwa funkcji pobierajπcej numer wersji pluginu.
+//! Nazwa funkcji pobierajƒÖcej numer wersji pluginu.
 #define CORE_GET_PLUGIN_VERSION_FUNCTION_NAME CoreGetPluginInterfaceVersion
 
 #define CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME CoreGetPluginBuildType
-//! Nazwa funkcji tworzπcej plugin.
+//! Nazwa funkcji tworzƒÖcej plugin.
 #define CORE_CREATE_PLUGIN_FUNCTION_NAME CoreCreatePluginInstance
 //! 
 #define CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME CoreGetLibrariesVersions
 
-//! Rozpoczyna rejestracjÍ pluginu.
+//! Rozpoczyna rejestracjƒô pluginu.
 //! \param name Nazwa pluginu.
 //! \param id ID pluginu.
 #define CORE_PLUGIN_BEGIN(name, id)                                     \
@@ -88,16 +88,16 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
     core::__instanceInfo = *data;                                       \
     core::Plugin* instance = new core::Plugin((name), (id));            
 
-//! KoÒczy rejestracjÍ pluginu.
+//! Ko≈Ñczy rejestracjƒô pluginu.
 #define CORE_PLUGIN_END                                                 \
     return instance;                                                    \
 }
 
-//! Dodaje us≥ugÍ zadanego typu do pluginu.
+//! Dodaje us≈Çugƒô zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_SERVICE(className)                              \
     instance->addService( core::IServicePtr(new className) );
 
-    //! Dodaje ürÛd≥o danych DM zadanego typu do pluginu.
+    //! Dodaje ≈∫r√≥d≈Ço danych DM zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_SOURCE(className)                              \
     instance->addSource( core::ISourcePtr(new className) );
 
@@ -109,11 +109,11 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
 #define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
     instance->addVisualizer( core::IVisualizerPtr(new className) );
 
-//! Dodaje elementu przetwarzajπcego zadanego typu do pluginu.
+//! Dodaje elementu przetwarzajƒÖcego zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_DATA_PROCESSOR(className)                           \
     instance->addDataProcessor( core::IDataProcessorPtr(new className) );
 
-//! Dodaje ürÛd≥o zadanego typu do pluginu.
+//! Dodaje ≈∫r√≥d≈Ço zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_DATA_SOURCE(className)                           \
     instance->addDataSource( core::IDataSourcePtr(new className) );
 
@@ -122,88 +122,88 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
     instance->addObjectWrapperFactory<className>();
 
 
-//! Interfejs pluginu przez ktÛry dostarczane sπ us≥ugi (serwisy) i prototypy elementÛw przetwarzajπcych dane
+//! Interfejs pluginu przez kt√≥ry dostarczane sƒÖ us≈Çugi (serwisy) i prototypy element√≥w przetwarzajƒÖcych dane
 class IPlugin : IIdentifiable
 {
 public:
     //! Pusty polimorficzny destruktor.
     virtual ~IPlugin() {}
-    //! \return Liczba us≥ug.
+    //! \return Liczba us≈Çug.
     virtual int getNumServices() const = 0;
-    //! \return Us≥uga.
+    //! \return Us≈Çuga.
     virtual IService* getService(int idx) = 0;
-    //! \return Liczba ürÛde≥ danych DM.
+    //! \return Liczba ≈∫r√≥de≈Ç danych DM.
     virtual int getNumSources() const = 0;
-    //! \return èrÛd≥o danych DM.
+    //! \return ≈πr√≥d≈Ço danych DM.
     virtual ISource* getSource(int idx) = 0;
-    //! \return Liczba parserÛw.
+    //! \return Liczba parser√≥w.
     virtual int getNumParsers() const = 0;
     //! \return Parser.
     virtual IParser* getParser(int idx) = 0;
-    //! \return Liczba wizualizatorÛw.
+    //! \return Liczba wizualizator√≥w.
     virtual int getNumVisualizers() const = 0;
     //! \return Wizualizator.
     virtual IVisualizer* getVisualizer(int idx) = 0;
-    //! \return Liczba elementÛw przetwarzajπcych.
+    //! \return Liczba element√≥w przetwarzajƒÖcych.
     virtual int getNumDataProcesors() const = 0;
-    //! \return Element przetwarzajπcy.
+    //! \return Element przetwarzajƒÖcy.
     virtual IDataProcessor* getDataProcessor(int idx) = 0;
-    //! \return Liczba ürÛde≥ danych workflow.
+    //! \return Liczba ≈∫r√≥de≈Ç danych workflow.
     virtual int getNumDataSources() const = 0;
-    //! \return èrÛd≥o danych workflow.
+    //! \return ≈πr√≥d≈Ço danych workflow.
     virtual IDataSource* getDataSource(int idx) = 0;
 };
 
 /**
- *	Kontener na us≥ugi.
+ *	Kontener na us≈Çugi.
  */
 class Plugin : IIdentifiable
 {
 public:
-    //! Typ funkcji tworzπcej plugin.
+    //! Typ funkcji tworzƒÖcej plugin.
     typedef Plugin* (*CreateFunction)(InstanceInfo* data);
-    //! Typ funkcji pobierajπcej wersjÍ pluginu.
+    //! Typ funkcji pobierajƒÖcej wersjƒô pluginu.
     typedef int (*GetVersionFunction)();
-    //! Typ funkcji pobierajπcej typ builda pluginu
+    //! Typ funkcji pobierajƒÖcej typ builda pluginu
     typedef int (*GetBuildTypeFunction)();
     //!
     typedef int (*GetLibrariesVersionFunction)(int* boostVersion, int* qtVersion, int* stlVersion);
-    //! Typ listy us≥ug.
+    //! Typ listy us≈Çug.
     typedef std::vector<IServicePtr> Services;
-    //! Typ listy ürÛde≥ danych DM.
+    //! Typ listy ≈∫r√≥de≈Ç danych DM.
     typedef std::vector<ISourcePtr> Sources;
-    //! Typ listy parserÛw.
+    //! Typ listy parser√≥w.
     typedef std::vector<IParserPtr> Parsers;
-    //! Typ listy wizualizatorÛw.
+    //! Typ listy wizualizator√≥w.
     typedef std::vector<IVisualizerPtr> Visualizers;
-    //! Typ listy elementÛw przetwarzajπcych.
+    //! Typ listy element√≥w przetwarzajƒÖcych.
     typedef std::vector<IDataProcessorPtr> DataProcessors;
-    //! Typ listy ürÛde≥ danych workflow.
+    //! Typ listy ≈∫r√≥de≈Ç danych workflow.
     typedef std::vector<IDataSourcePtr> DataSources;
-    //! Typ listy wrapperÛw.
+    //! Typ listy wrapper√≥w.
     typedef std::vector<IObjectWrapperFactoryPtr> ObjectWrapperFactories;
 
 private:
-    //! Lista us≥ug pluginu.
+    //! Lista us≈Çug pluginu.
     Services services;
-    //! Lista ürÛdÍ≥ danych DM pluginu.
+    //! Lista ≈∫r√≥dƒô≈Ç danych DM pluginu.
     Sources sources;
-    //! Lista parserÛw pluginu.
+    //! Lista parser√≥w pluginu.
 	Parsers parsers;
-    //! Lista wizualizatorÛw pluginu.
+    //! Lista wizualizator√≥w pluginu.
     Visualizers visualizers;
-    //! Lista elementÛw przetwarzajπcych pluginu.
+    //! Lista element√≥w przetwarzajƒÖcych pluginu.
     DataProcessors dataProcessors;
-    //! Lista ürÛde≥ danych workflow pluginu.
+    //! Lista ≈∫r√≥de≈Ç danych workflow pluginu.
     DataSources dataSources;
-    //! Lista fabryk wrapperÛw.
+    //! Lista fabryk wrapper√≥w.
     ObjectWrapperFactories factories;
 
     //! Nazwa pluginu.
     std::string name;
     //! ID pluginu.
     UniqueID id;
-    //! åcieøka do pluginu.
+    //! ≈öcie≈ºka do pluginu.
     std::string path;
 
 public:
@@ -242,12 +242,12 @@ public:
         this->path = path; 
     }
 
-    //! \service Us≥uga do dodania do pluginu.
+    //! \service Us≈Çuga do dodania do pluginu.
     void addService(const IServicePtr & service)
     {
         services.push_back(service);
     }
-    //! \return Liczba us≥ug dostarczanych przez plugin.
+    //! \return Liczba us≈Çug dostarczanych przez plugin.
     int getNumServices() const
     {
         return static_cast<int>(services.size());
@@ -258,12 +258,12 @@ public:
         return services[i];
     }
 
-    //! \service èrÛd≥o DM do dodania do pluginu.
+    //! \service ≈πr√≥d≈Ço DM do dodania do pluginu.
     void addSource(const ISourcePtr & source)
     {
         sources.push_back(source);
     }
-    //! \return Liczba ürÛde≥ DM dostarczanych przez plugin.
+    //! \return Liczba ≈∫r√≥de≈Ç DM dostarczanych przez plugin.
     int getNumSources() const
     {
         return static_cast<int>(sources.size());
@@ -279,7 +279,7 @@ public:
     {
         this->parsers.push_back(parser);
     }
-    //! \return Liczba parserÛw dostarczanych przez plugin.
+    //! \return Liczba parser√≥w dostarczanych przez plugin.
     int getNumParsers() const
     {
 		return static_cast<int>(this->parsers.size());
@@ -295,7 +295,7 @@ public:
     {
         this->visualizers.push_back(visualizer);
     }
-    //! \return Liczba visualizerÛw dostarczanych przez plugin.
+    //! \return Liczba visualizer√≥w dostarczanych przez plugin.
     int getNumVisualizers() const
     {
         return static_cast<int>(this->visualizers.size());
@@ -310,7 +310,7 @@ public:
     {
         this->dataProcessors.push_back(dataProcessor);
     }
-    //! \return Liczba elementÛw przetwarzajπcych dostarczanych przez plugin.
+    //! \return Liczba element√≥w przetwarzajƒÖcych dostarczanych przez plugin.
     int getNumDataProcessors() const
     {
         return static_cast<int>(this->dataProcessors.size());
@@ -321,12 +321,12 @@ public:
         return this->dataProcessors[i];
     }
 
-    //! \param dataSource èrÛd≥o danych workflow do dodania do pluginu.
+    //! \param dataSource ≈πr√≥d≈Ço danych workflow do dodania do pluginu.
     void addDataSource(const IDataSourcePtr & dataSource)
     {
         this->dataSources.push_back(dataSource);
     }
-    //! \return Liczba ürÛde≥ danych workflow dostarczanych przez plugin.
+    //! \return Liczba ≈∫r√≥de≈Ç danych workflow dostarczanych przez plugin.
     int getNumDataSources() const
     {
         return static_cast<int>(this->dataSources.size());
@@ -362,7 +362,7 @@ public:
     }
 };
 
-//! Definicja wskaünika.
+//! Definicja wska≈∫nika.
 typedef shared_ptr<Plugin> PluginPtr;
 typedef shared_ptr<const Plugin> PluginConstPtr;
 

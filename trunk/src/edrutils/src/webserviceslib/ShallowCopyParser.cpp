@@ -1,4 +1,4 @@
-#include <webserviceslib/ShallowCopyParser.h>
+ï»¿#include <webserviceslib/ShallowCopyParser.h>
 #include <utils/Debug.h>
 #include <tinyxml.h>
 #include <webserviceslib/DateTimeUtils.h>
@@ -24,7 +24,7 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
     }
     hParent = TiXmlHandle(_element);
 
-	//data utworzenia p³ytkiej kopii
+	//data utworzenia pÅ‚ytkiej kopii
 
 	std::string date;
 	_element->QueryStringAttribute("LastModified", &date);
@@ -367,7 +367,7 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
     }
     hParent = TiXmlHandle(_element);
 
-    //S³owniki
+    //SÅ‚owniki
     TiXmlElement* dictionary_elements = hParent.FirstChild("Dictionaries").ToElement();
     if(dictionary_elements != nullptr){
         //Disorders

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2011/10/18
 	created:	18:10:2011   8:55
 	filename: 	ConfigurationDialog.h
@@ -27,35 +27,35 @@ public:
     //! ustawia opis konfiguratora
     //! \param text ustawiany tekst
     void setText(const QString& text);
-    //! wczytuje pliki z rozmieszczeniem obszarów konfiguratora
+    //! wczytuje pliki z rozmieszczeniem obszarÃ³w konfiguratora
     //! \param frontXml plik z obszarami dla przodu postaci
     //! \param backXml plik z obszarami dla tylu postaci
-    //! \param names mapa [nazwa elementu - > nazwa do wyœwietlenia]
+    //! \param names mapa [nazwa elementu - > nazwa do wyÅ›wietlenia]
     void loadConfigurations(const QString& frontXml, const QString& backXml, const  std::map<QString, std::pair<QString, QString>>& names);
-    //! Ustawia widocznoœæ elementów w konfiguratorze
-    //! \param visibles mapa [nazwa -> czy element ma byæ widoczny]
+    //! Ustawia widocznoÅ›Ä‡ elementÃ³w w konfiguratorze
+    //! \param visibles mapa [nazwa -> czy element ma byÄ‡ widoczny]
     void setVisibles(const std::map<QString, bool>& visibles);
 
 signals:
-    //! klikniêto w element
+    //! klikniÄ™to w element
     //! \param name nazwa elementu
     //! \param  
     void itemSelected(const QString& name, bool);
-    //! Element zosta³ najechany myszk¹
+    //! Element zostaÅ‚ najechany myszkÄ…
     //! \param name nazwa elementu
     //! \param selected 
     void elementHovered(const QString& name, bool selected);
 
 private slots:
-    //! element zosta³ najechany przez myszkê
+    //! element zostaÅ‚ najechany przez myszkÄ™
     //! \param name nazwa elementu
     //! \param selected
     void onElementHovered(const QString& name, bool selected);
-    //! klikniêto w element
+    //! klikniÄ™to w element
     //! \param name nazwa elementu
     //! \param selected 
     void onItemSelected(const QString& name, bool selected);
-    //! nacisnieto przycisk odwracaj¹cy postac
+    //! nacisnieto przycisk odwracajÄ…cy postac
     void onSwitchButton();
 
 private:   
@@ -68,11 +68,11 @@ private:
     //! \param name nazwa pliku do wczytania
     //! \param x pozycja x
     //! \param y pozycja y
-    //! \param alwaysVisible czy obrazek ma byæ widoczny zawsze
+    //! \param alwaysVisible czy obrazek ma byÄ‡ widoczny zawsze
     void loadPicture(ConfigurationPainter& painter, const QString& name, int x, int y, bool alwaysVisible = false);
-    //! laduje plik xml z zapisanymi obszarami w postaci markerów lub obrazków
+    //! laduje plik xml z zapisanymi obszarami w postaci markerÃ³w lub obrazkÃ³w
     //! \param painter konfigurowany painter, tam trafia wczytane obszary
-    //! \param filename œcie¿ka do pliku
+    //! \param filename Å›cieÅ¼ka do pliku
     void loadXml(ConfigurationPainter& painter, const QString& filename);
     //! Tworzy pojedynczy marker i dodaje go do paintera
     //! \param painter tam trafi tworzony marker
@@ -80,26 +80,26 @@ private:
     //! \param x pozycja x
     //! \param y pozycja y
     void createMarker(ConfigurationPainter &painter, const QString& name, int x, int y);
-    //! pokazuje przód postaci
+    //! pokazuje przÃ³d postaci
     void showFront();
-    //! pokazuje ty³ postaci
+    //! pokazuje tyÅ‚ postaci
     void showBack();
-    //! Ustawia obrazek z t³em
+    //! Ustawia obrazek z tÅ‚em
     //! \param painter modyfikowany painter
     //! \param name nazwa widoku
-    //! \param pixmap obrazek t³a
+    //! \param pixmap obrazek tÅ‚a
     void setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap);
 
 private:
-    //! painter, który rysuje przód podstaci
+    //! painter, ktÃ³ry rysuje przÃ³d podstaci
     ConfigurationPainter painterFront;
-    //! painter, który rysuje ty³ podstaci
+    //! painter, ktÃ³ry rysuje tyÅ‚ podstaci
     ConfigurationPainter painterBack;
     //! aktualny painter
     ConfigurationPainter* currentPainter;
-    //! layout ze scrollem (jeœli widget nie mieœci siê w wyznaczonym miejscu)
+    //! layout ze scrollem (jeÅ›li widget nie mieÅ›ci siÄ™ w wyznaczonym miejscu)
     QHBoxLayout scrollLayout;
-    //! czy konfigurator aktualnie pokazuje przód postaci
+    //! czy konfigurator aktualnie pokazuje przÃ³d postaci
     bool isFront;
 };
 

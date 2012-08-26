@@ -1,4 +1,4 @@
-#include "VdfPCH.h"
+ï»¿#include "VdfPCH.h"
 #include "VdfWidget.h"
 //#include <vdfmlib/osgVDFNode.h>
 //#include <vdfmlib/osgVDFPin.h>
@@ -102,7 +102,7 @@ VdfWidget::VdfWidget(VdfService* service)
     vdfQWidget = new VdfCustomQOsgWidget(this);
     vdfQWidget->setMouseTracking(true);
 
-    //dla lapania pozycji kursora na menu kontekstowe poniewa¿ z poziomu OSG tracê czêœciowo t¹ informacjê
+    //dla lapania pozycji kursora na menu kontekstowe poniewaÅ¼ z poziomu OSG tracÄ™ czÄ™Å›ciowo tÄ… informacjÄ™
     vdfQWidget->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
 
     const osg::GraphicsContext::Traits* traits = vdfQWidget->getCamera()->getGraphicsContext()->getTraits();
@@ -189,7 +189,7 @@ VdfWidget::StylesSet VdfWidget::generateRequiredStyles()
     styleSet.insert(new osgui::StyleEx("vdf.pin.in.required", "rect_image_cache \"" +  path + "in_required." + graphExt + "\""));
 
     //NODE STYLES
-    //obwódka, cieñ
+    //obwÃ³dka, cieÅ„
     //normal
     styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.normal", "rect_image_cache \"" +  path + "normal_board_TL." + graphExt + "\""));
     styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.normal", "rect_image_cache \"" +  path + "normal_board_TM." + graphExt + "\""));
@@ -221,7 +221,7 @@ VdfWidget::StylesSet VdfWidget::generateRequiredStyles()
     styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.active", "rect_image_cache \"" +  path + "selected_board_BR." + graphExt + "\""));
 
 
-    //cia³o wêz³a
+    //ciaÅ‚o wÄ™zÅ‚a
     //normal
     //top
     styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.normal", "rect_image_cache \"" +  path + "normal_body_TL." + graphExt + "\""));

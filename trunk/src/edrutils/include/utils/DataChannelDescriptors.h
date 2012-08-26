@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/04/26
     created:  26:4:2012   23:59
     filename: DataChannelDescriptors.h
@@ -13,7 +13,7 @@
 
 namespace utils {
 
-	//! Interfejs do czytania opisu kana≥u - osi x i y oraz nazwy kana≥u.
+	//! Interfejs do czytania opisu kana≈Çu - osi x i y oraz nazwy kana≈Çu.
 	class IChannelDescriptorReader
 	{
 	public:
@@ -30,7 +30,7 @@ namespace utils {
 		virtual float getValueScaleFactor() const = 0;
 	};
 
-	//! Interfejs do modyfikacji opisu kana≥u - osi x i y oraz nazwy kana≥u.
+	//! Interfejs do modyfikacji opisu kana≈Çu - osi x i y oraz nazwy kana≈Çu.
 	class IChannelDescriptorWriter
 	{
 	public:
@@ -63,9 +63,9 @@ namespace utils {
 		float timeScaleFactor;
 		//! Jednostka czasu
 		std::string timeBaseUnit;
-		//! Skala wartoúci
+		//! Skala warto≈õci
 		float valueScaleFactor;
-		//! Jendostka wartoúci
+		//! Jendostka warto≈õci
 		std::string valueBaseUnit;
 
 	public:
@@ -153,7 +153,7 @@ namespace utils {
 	};
 
 
-	//! Klasa rozszerzajaca podstawowe kana≥y o opis ich danych
+	//! Klasa rozszerzajaca podstawowe kana≈Çy o opis ich danych
 	template<class Channel>
 	class ChannelWithDescriptor : public Channel, public ChannelDescriptor
 	{
@@ -188,7 +188,7 @@ namespace utils {
 	};
 
 
-	//! Obiekt realizujπcy interfejs do czytania zawartoúci kana≥u ogÛlnego wraz z jego opisem
+	//! Obiekt realizujƒÖcy interfejs do czytania zawarto≈õci kana≈Çu og√≥lnego wraz z jego opisem
 	template<class PointType, class TimeType, bool>
 	class IChannelReader : public utils::IRawGeneralDataChannelReader<PointType, TimeType>, public virtual IChannelDescriptorReader
 	{
@@ -198,7 +198,7 @@ namespace utils {
 		typedef utils::RawGeneralDataChannel<PointType, TimeType> RawChannel;
 		typedef utils::ChannelWithDescriptor<RawChannel> DefaultImplementation;
 	};
-	//! Obiekt realizujπcy interfejs do czytania zawartoúci kana≥u z rÛwnoroz≥oøonymi prÛbkami wraz z jego opisem
+	//! Obiekt realizujƒÖcy interfejs do czytania zawarto≈õci kana≈Çu z r√≥wnoroz≈Ço≈ºonymi pr√≥bkami wraz z jego opisem
 	template<class PointType, class TimeType>
 	class IChannelReader<PointType, TimeType, true> : public utils::IRawUniformDataChannelReader<PointType, TimeType>, public virtual  IChannelDescriptorReader
 	{
@@ -210,7 +210,7 @@ namespace utils {
 	};
 
 
-	//! Klasa realizujπca kana≥ z opisem
+	//! Klasa realizujƒÖca kana≈Ç z opisem
 	template<class PointType, class TimeType = float, bool uniform = true>
 	class Channel : public IChannelReader<PointType, TimeType, uniform>, public IRawDataChannelBasicWriter<PointType, TimeType>, public IChannelDescriptor
 	{
@@ -249,7 +249,7 @@ namespace utils {
 			return new Channel(*entity);
 		}
 
-		//! \return Nazwa kana≥u
+		//! \return Nazwa kana≈Çu
 		virtual const std::string& getName() const
 		{
 			return impl.getName();
@@ -260,7 +260,7 @@ namespace utils {
 			impl.setName(name);
 		}
 
-		//! \return Czas trwania kana≥u
+		//! \return Czas trwania kana≈Çu
 		virtual time_type getLength() const
 		{
 			return impl.getLength();
@@ -280,20 +280,20 @@ namespace utils {
 			return impl.value(idx);
 		}
 
-		//! \return IloúÊ prÛbek w kanale
+		//! \return Ilo≈õƒá pr√≥bek w kanale
 		virtual size_type size() const
 		{
 			return impl.size();
 		}
 
-		//! \return Czy kana≥ nie zawiera danych
+		//! \return Czy kana≈Ç nie zawiera danych
 		virtual bool empty() const
 		{
 			return impl.empty();
 		}
 		//! \param time Czas dla ktorego chemy uzyskac dwie najblizsze probki
 		//! \return Para indeksow, pierwszy wskazujke probke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje probke o czasie wiekszym lub rownym zadanemu
-		//! Ta implementacja dzia≥a w czasie O(log(N)) - podzia≥ binarny bo dane sa u≥oøone chronologicznie
+		//! Ta implementacja dzia≈Ça w czasie O(log(N)) - podzia≈Ç binarny bo dane sa u≈Ço≈ºone chronologicznie
 		virtual data_range getValueHelper(time_type time) const
 		{
 			return impl.getValueHelper(time);

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include <kinematiclib/hAnimJoint.h>
 
 using namespace std;

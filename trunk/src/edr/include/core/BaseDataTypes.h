@@ -1,4 +1,4 @@
-#ifndef BASE_DATA_TYPES_H
+ï»¿#ifndef BASE_DATA_TYPES_H
 #define BASE_DATA_TYPES_H
 
 #include <stdint.h>
@@ -12,16 +12,16 @@
 //! Typ unikalnego identyfikatora
 typedef boost::uuids::uuid UniqueID;
 
-//! Klasa generuj¹ca unikalne identyfikatory dla ¿¹danych ci¹gów znaków
-//! zapewnia jednoznaczne przyporz¹dkowanie ci¹g znaków <-> id,
-//! dla tego samego ci¹gu znaków zwraca ten sam id. Wymagane jest wiêc dostarczanie z zewn¹trz
-//! unikalnych ci¹gów znaków - polecamy jakiœ GUID generator (np. z Visual Studio)
-//! Ta klasa i definicja typu dla identyfikatora normalizuj¹ ró¿ne mo¿liwe podejœcia do unikalnych identyfikatorów w aplikacji
+//! Klasa generujÄ…ca unikalne identyfikatory dla Å¼Ä…danych ciÄ…gÃ³w znakÃ³w
+//! zapewnia jednoznaczne przyporzÄ…dkowanie ciÄ…g znakÃ³w <-> id,
+//! dla tego samego ciÄ…gu znakÃ³w zwraca ten sam id. Wymagane jest wiÄ™c dostarczanie z zewnÄ…trz
+//! unikalnych ciÄ…gÃ³w znakÃ³w - polecamy jakiÅ› GUID generator (np. z Visual Studio)
+//! Ta klasa i definicja typu dla identyfikatora normalizujÄ… rÃ³Å¼ne moÅ¼liwe podejÅ›cia do unikalnych identyfikatorÃ³w w aplikacji
 class UID 
 {
 public:
 //! Statyczna metoda
-//! \param uuid Ci¹g znaków dla którego generujemy unikalny identyfikator
+//! \param uuid CiÄ…g znakÃ³w dla ktÃ³rego generujemy unikalny identyfikator
 //! \return Unikalny identyfikator
 static UniqueID GenerateUniqueID(const std::string& uuid) 
 {

@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/10/28
     created:  28:10:2011   13:11
     filename: CommunicationDataSource.h
@@ -26,58 +26,58 @@ class DataSourceStatusManager;
 class DataSourceLoginManager;
 class DataSourceWidget;
 
-//! èrÛd≥o danych EDR typu communication - dostarcza dancyh z Bazy Danych Ruchu
+//! ≈πr√≥d≈Ço danych EDR typu communication - dostarcza dancyh z Bazy Danych Ruchu
 class CommunicationDataSource : public communication::ICommunicationDataSource, public core::ISource
 {
     UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}","Communication Data Source");
 
-	//! Zaprzyjaüniona klasa realizujπca widok danych
+	//! Zaprzyja≈∫niona klasa realizujƒÖca widok danych
 	friend class DataSourceWidget;
 
 private:
-	//! Typ smart pointera do requesta úciπgania danych
+	//! Typ smart pointera do requesta ≈õciƒÖgania danych
 	typedef core::shared_ptr<DownloadRequest> DownloadRequestPtr;
 
-	//! Struktura opisujπca stan danego po≥πczenia z WebService
+	//! Struktura opisujƒÖca stan danego po≈ÇƒÖczenia z WebService
 	struct ConnectionStatus
 	{
-		//! Czy po≥πczenie by≥o juø inicjalizowane
+		//! Czy po≈ÇƒÖczenie by≈Ço ju≈º inicjalizowane
 		bool initialized;
-		//! Adres us≥ugi danego po≥πczenia
+		//! Adres us≈Çugi danego po≈ÇƒÖczenia
 		std::string webServiceURL;
 	};
 
 public:
-	//! Domyúlny konstruktor
+	//! Domy≈õlny konstruktor
     CommunicationDataSource();
 	//! Destruktor
     virtual ~CommunicationDataSource();
 
-    //! Inicjalizacja ürÛd≥a. NastÍpuje juø po wczytaniu pluginÛw i skonstruowaniu
-    //! (nie zainicjalizowaniu!) wszystkich ürÛde≥.
+    //! Inicjalizacja ≈∫r√≥d≈Ça. Nastƒôpuje ju≈º po wczytaniu plugin√≥w i skonstruowaniu
+    //! (nie zainicjalizowaniu!) wszystkich ≈∫r√≥de≈Ç.
     virtual void init(core::IMemoryDataManager * memoryDM, core::IFileDataManager * fileDM, core::IServiceManager * serviceManager);
 
-    //! èrÛd≥o nie musi mieÊ wizualnej reprezentacji.
-    //! \return Widget tworzony przez ürÛd≥o bπdü NULL.
+    //! ≈πr√≥d≈Ço nie musi mieƒá wizualnej reprezentacji.
+    //! \return Widget tworzony przez ≈∫r√≥d≈Ço bƒÖd≈∫ NULL.
     virtual QWidget* getWidget(core::IActionsGroupManager * actionsGroupManager);
 
-    //! \return Nazwa ürÛd≥a.
+    //! \return Nazwa ≈∫r√≥d≈Ça.
     virtual std::string getName() const;
 
-	//! \param offline Czy ürÛd≥o danych ma dzia≥aÊ w trybie offline?
+	//! \param offline Czy ≈∫r√≥d≈Ço danych ma dzia≈Çaƒá w trybie offline?
 	void setOfflineMode(bool offline = true);
-	//! \return Czy ürÛd≥o dzia≥a w trybie offline
+	//! \return Czy ≈∫r√≥d≈Ço dzia≈Ça w trybie offline
 	bool offlineMode() const;
 
-    //! \param user Nazwa uøytkownika
-    //! \param password Has≥o uøytkownika
+    //! \param user Nazwa u≈ºytkownika
+    //! \param password Has≈Ço u≈ºytkownika
     virtual void login(const std::string & user, const std::string & password);
-    //! Wylogowuje uøytkownika
+    //! Wylogowuje u≈ºytkownika
     virtual void logout();
-    //! \return prawda jeúli uøytkownik zalogowany
+    //! \return prawda je≈õli u≈ºytkownik zalogowany
     virtual bool isLogged() const;
 
-    //! \return Dane aktualnego uøytkownika ( w szczegÛlnoúci pusty obiekt jeúli niezalogowano)
+    //! \return Dane aktualnego u≈ºytkownika ( w szczeg√≥lno≈õci pusty obiekt je≈õli niezalogowano)
     virtual const User * currentUser() const;
 
 	//! Implementacja interfejsu communication::ICommunicationDataSource
@@ -87,105 +87,105 @@ public:
 
 private:
 
-	//! \param connection Po≥πczenie z webService ktÛre inicjalizujÍ - ustawiam adres jeøeli jest inny niø aktualnie ustawiony w po≥πczeniu
-	//! Ta metoda w przypadku zmiany adresu us≥ugi powinna úciπgnπc jej definicjÍ, sparsowaÊ jπ i przygotowaÊ po≥aczenie do dalszej pracy
-	//! Jest to leniwa inicjalizacja, kiedy nie chcemy od razu nawiazaywaÊ po≥πczenia poniewaø user moøe sobie zarzyczyÊ trybu offline
+	//! \param connection Po≈ÇƒÖczenie z webService kt√≥re inicjalizujƒô - ustawiam adres je≈ºeli jest inny ni≈º aktualnie ustawiony w po≈ÇƒÖczeniu
+	//! Ta metoda w przypadku zmiany adresu us≈Çugi powinna ≈õciƒÖgnƒÖc jej definicjƒô, sparsowaƒá jƒÖ i przygotowaƒá po≈Çaczenie do dalszej pracy
+	//! Jest to leniwa inicjalizacja, kiedy nie chcemy od razu nawiazaywaƒá po≈ÇƒÖczenia poniewa≈º user mo≈ºe sobie zarzyczyƒá trybu offline
 	void ensureConnection(const webservices::WSConnectionPtr & connection);
 
-	//! \param login Login ktÛry prÛbujemy aktywowaÊ po stronie bazy danych
+	//! \param login Login kt√≥ry pr√≥bujemy aktywowaƒá po stronie bazy danych
 	//! \param activationCode Kod aktywacyjny otrzymany w mailu
-	//! \return Czy uda≥o siÍ aktywowaÊ konto
+	//! \return Czy uda≈Ço siƒô aktywowaƒá konto
 	bool tryActivateAccount(const std::string & login, const std::string & activationCode);
 
-	//! Metoda zak≥ada konto uøytkownika w obu bazach danych - medycznej i ruchu
-	//! \param login Login uøytkownika
-	//! \param email Email uøytkownika
-	//! \param password Has≥o uøytkownika
-	//! \param firstName ImiÍ uøytkownika
-	//! \param lastName Nazwisko uøytkownika
-	//! \return true jeúli uda≥o siÍ za≥oøyÊ konto
+	//! Metoda zak≈Çada konto u≈ºytkownika w obu bazach danych - medycznej i ruchu
+	//! \param login Login u≈ºytkownika
+	//! \param email Email u≈ºytkownika
+	//! \param password Has≈Ço u≈ºytkownika
+	//! \param firstName Imiƒô u≈ºytkownika
+	//! \param lastName Nazwisko u≈ºytkownika
+	//! \return true je≈õli uda≈Ço siƒô za≈Ço≈ºyƒá konto
 	bool registerUser(const std::string & login, const std::string & email, const std::string & password,
 		const std::string & firstName, const std::string & lastName);
 
-	//! Odúwieøa fileManager w kontekúcie nowej p≥ytkiej kopii bazy danych - moøe dosz≥y jakieú nowe pliki?
+	//! Od≈õwie≈ºa fileManager w kontek≈õcie nowej p≈Çytkiej kopii bazy danych - mo≈ºe dosz≈Çy jakie≈õ nowe pliki?
 	void refreshFileManager();
 
-	//! \param user Aktualny uøytkownik zalogowany do bazy danych
+	//! \param user Aktualny u≈ºytkownik zalogowany do bazy danych
 	void setCurrentUser(const User & user);
 
-	//! \param user Uøytkownik wg ktÛrego ustawiany po≥πczenia
+	//! \param user U≈ºytkownik wg kt√≥rego ustawiany po≈ÇƒÖczenia
 	static void setConnectionsCredentials(const User & user);
 
-	//! \param certPath åcieøka certyfikatu serwera dla po≥πczeÒ https
+	//! \param certPath ≈öcie≈ºka certyfikatu serwera dla po≈ÇƒÖcze≈Ñ https
 	static void setConnectionsSerwerCertificatePath(const core::Filesystem::Path & certPath);
 
-	//! \param shallowCopy Nowa p≥ytka kopia bazy danych do ustawienia
+	//! \param shallowCopy Nowa p≈Çytka kopia bazy danych do ustawienia
 	void setShallowCopy(const communication::ShallowCopy & shallowCopy);
-	//! Odúwieøa dane po ustawieniu nowej p≥ytkiej kopii bazy danych - stosuje filtr jeúli wymagane i odúwieøa widok
+	//! Od≈õwie≈ºa dane po ustawieniu nowej p≈Çytkiej kopii bazy danych - stosuje filtr je≈õli wymagane i od≈õwie≈ºa widok
 	void refreshFilteredData();
 
-	//! Czyúci lokalne dane uøytkownika po wylogowaniu
+	//! Czy≈õci lokalne dane u≈ºytkownika po wylogowaniu
 	void clearUserLocalSpace();
-	//! Tworzy lokalne dane uøytkownika przy logowaniu
+	//! Tworzy lokalne dane u≈ºytkownika przy logowaniu
 	void createUserLocalSpace();
 
-	//! \return Czy p≥ytka kopia bazy danych jest kompletna
+	//! \return Czy p≈Çytka kopia bazy danych jest kompletna
 	bool isShallowCopyComplete() const;
-	//! \return Czy p≥ytka kopia bazy danych jest aktualna
+	//! \return Czy p≈Çytka kopia bazy danych jest aktualna
 	bool isShallowCopyCurrent();
 
-	//! Odúwieøa p≥ytkπ kopiÍ bazy danych : pobiera nieaktualne/brakujπce, tworzy, waliduje,  ≥aduje do localStorage, odúwieøa filtry i perspektywy
-	//! \return Obiekt pomocniczy przy pobieraniu danych - pozwala odczytywaÊ informacje o statusie pobierania
+	//! Od≈õwie≈ºa p≈ÇytkƒÖ kopiƒô bazy danych : pobiera nieaktualne/brakujƒÖce, tworzy, waliduje,  ≈Çaduje do localStorage, od≈õwie≈ºa filtry i perspektywy
+	//! \return Obiekt pomocniczy przy pobieraniu danych - pozwala odczytywaƒá informacje o statusie pobierania
 	DownloadRequestPtr generateDownloadShallowCopyRequestToLocalUserSpace();
 
-	//! Wyciπgamy dane z lokalnego storage (SQLite/SQLCipher - szyfrowany SQLite) - tylko przy logowaniu
+	//! WyciƒÖgamy dane z lokalnego storage (SQLite/SQLCipher - szyfrowany SQLite) - tylko przy logowaniu
 	void extractDataFromLocalStorageToUserSpace();
-	//! \param file Plik ktÛry chcemy wypakowaÊ z lokalnego storage
-	//! \param sessionName Nazwa sesji z ktÛrej pochodzi plik
+	//! \param file Plik kt√≥ry chcemy wypakowaƒá z lokalnego storage
+	//! \param sessionName Nazwa sesji z kt√≥rej pochodzi plik
 	void extractFileFromLocalStorageToUserSpace(const webservices::MotionShallowCopy::File * file, const std::string & sessionName);
 
-	//! \param oldShallowCopy Poprzednia p≥ytka kopia dla ktÛrej wypakowywano dane
-	//! \param newShallowCopy Nowa p≥ytka kopia dla ktÛrej wypakowywujemy dane
-	//! Algorytm opiera siÍ na rÛønicy zbioru plikÛw do ktÛrych uøytkownik ma dostÍp zdefiniowany p≥ytkπ kopiπ bazy danych
-	//! Usuwamy to do czego nei mamy juø dostÍpu i wyciπgamy to co jest i do czego mamy juø dostÍp
-	//! Ewentualnie odúwieøamy to co siÍ zgadza
+	//! \param oldShallowCopy Poprzednia p≈Çytka kopia dla kt√≥rej wypakowywano dane
+	//! \param newShallowCopy Nowa p≈Çytka kopia dla kt√≥rej wypakowywujemy dane
+	//! Algorytm opiera siƒô na r√≥≈ºnicy zbioru plik√≥w do kt√≥rych u≈ºytkownik ma dostƒôp zdefiniowany p≈ÇytkƒÖ kopiƒÖ bazy danych
+	//! Usuwamy to do czego nei mamy ju≈º dostƒôpu i wyciƒÖgamy to co jest i do czego mamy ju≈º dostƒôp
+	//! Ewentualnie od≈õwie≈ºamy to co siƒô zgadza
 	void extractDataFromLocalStorageToUserSpace(const communication::ShallowCopy & prevShallowCopy, const communication::ShallowCopy & newShallowCopy);
 
-	//! Wyciπgamy p≥ytkπ kopiÍ bazy danych z lokalnego storage (SQLite)
+	//! WyciƒÖgamy p≈ÇytkƒÖ kopiƒô bazy danych z lokalnego storage (SQLite)
 	void extractShallowCopyFromLocalStorageToUserSpace();
-	//! \param shallowCopy P≥ytka kopia bazy danych wyciπgniÍta z local user space
-	//! \return Czy uda≥o siÍ stworzyÊ poprawnπ p≥ytkπ kopiÍ (parsowanie ok, spÛjnoúÊ ok)
+	//! \param shallowCopy P≈Çytka kopia bazy danych wyciƒÖgniƒôta z local user space
+	//! \return Czy uda≈Ço siƒô stworzyƒá poprawnƒÖ p≈ÇytkƒÖ kopiƒô (parsowanie ok, sp√≥jno≈õƒá ok)
 	bool buildShallowCopyFromLocalUserSpace(communication::ShallowCopy & shallowCopy);
-	//! Zapisujemy p≥ytkπ kopiÍ bazy danych z local user space do local storage dla aktualnego uøytkownika
+	//! Zapisujemy p≈ÇytkƒÖ kopiƒô bazy danych z local user space do local storage dla aktualnego u≈ºytkownika
 	void saveShallowCopyInLocalStorage();
-	//! Usuwamy p≥ytkπ kopie bazy danych z local user space
+	//! Usuwamy p≈ÇytkƒÖ kopie bazy danych z local user space
 	void removeShallowCopyFromUserSpace();
-	//! Usuwamy p≥ytkπ kopie bazy danych z local storage dla aktualnego uøytkownika
+	//! Usuwamy p≈ÇytkƒÖ kopie bazy danych z local storage dla aktualnego u≈ºytkownika
 	void removeShallowCopyFromLocalStorage();
 
 	void extractFileFromLocalStorage(const std::string & fileName, const core::Filesystem::Path & destPath, std::vector<core::Filesystem::Path> & extractedFilesPaths);
 
-	//! \param fileID Idnetyfikator pliku ktÛry ≥aduje do DM
+	//! \param fileID Idnetyfikator pliku kt√≥ry ≈Çaduje do DM
 	DownloadRequestPtr generateDownloadFileRequest(int fileID);
-	//! \param fileIDs ZbiÛr idnetyfikatorÛw plikÛw ktÛre ≥aduje do DM
+	//! \param fileIDs Zbi√≥r idnetyfikator√≥w plik√≥w kt√≥re ≈Çaduje do DM
 	DownloadRequestPtr generateDownloadFilesRequest(const std::set<int> & fileIDs);
 
-	//! Na potrzeby obs≥ugi rozpakowywania plikÛw VSK z archiwum zip
+	//! Na potrzeby obs≈Çugi rozpakowywania plik√≥w VSK z archiwum zip
 	//! \param inFile Dane wejsciowe - spakowany plik zip, albo plik z archiwum zip
 	//! \param outFile Gdzie zapisujemy dane z rozpakowanego pliku zip
 	static bool copyData(QIODevice &inFile, QIODevice &outFile);
 
 private:
     // ------------------------ LOGIKA -------------------------------
-	//! Aktualny uøytkownik
+	//! Aktualny u≈ºytkownik
 	User currentUser_;
-    //! Manager logowania - zawiera uøytkownika
+    //! Manager logowania - zawiera u≈ºytkownika
     DataSourceLoginManager * loginManager;
 
-    //! Pe≥na p≥ytka kopia bazy danych
+    //! Pe≈Çna p≈Çytka kopia bazy danych
     communication::ShallowCopy fullShallowCopy;
 
-    //! Manager statusu plikÛw
+    //! Manager statusu plik√≥w
     core::shared_ptr<FileStatusManager> fileStatusManager;
 
 	//! Manager danych lokalnych
@@ -194,21 +194,21 @@ private:
     //! Manager danych lokalnych
     DataSourceLocalStorage * localStorage;
 
-    //! Manager statusÛw pe≥nej p≥ytkiej kopi
+    //! Manager status√≥w pe≈Çnej p≈Çytkiej kopi
     core::shared_ptr<DataSourceStatusManager> fullShallowCopyStatus;
 
-	//! ------------------------------- Obs≥uga DM ------------------------------
+	//! ------------------------------- Obs≈Çuga DM ------------------------------
 
-	//! Manager surowych danych w pamiÍci
+	//! Manager surowych danych w pamiƒôci
 	core::IMemoryDataManager * memoryDM;
 
-	//! Manager plikÛw
+	//! Manager plik√≥w
 	core::IFileDataManager * fileDM;
 
-	//! Manager serwisÛw - tylko i wy≥πcznie na potrzeby PluginSubject!!
+	//! Manager serwis√≥w - tylko i wy≈ÇƒÖcznie na potrzeby PluginSubject!!
 	core::IServiceManager * serviceManager;
 
-	//! ---------------------------Obs≥uga plugin subject ------------------------
+	//! ---------------------------Obs≈Çuga plugin subject ------------------------
 
 	std::map<int, core::ObjectWrapperPtr> sSubjects;
 	std::map<int, core::ObjectWrapperPtr> sSessions;
@@ -216,27 +216,27 @@ private:
 
 	//! ------------------------------- Web Services -----------------------------
 
-	//! Czy user zaøπda≥ trybu offline?
+	//! Czy user za≈ºƒÖda≈Ç trybu offline?
 	bool offlineMode_;
-	//! Mapa po≥πczeÒ i ich statusÛw
+	//! Mapa po≈ÇƒÖcze≈Ñ i ich status√≥w
 	std::map<webservices::WSConnectionPtr, ConnectionStatus> connectionsStatus;
-	//! Adres serwera ktÛry pingujemy
+	//! Adres serwera kt√≥ry pingujemy
 	std::string serwerPingUrl;
-	//! Po≥πczenie z web services dla danych ruchu
+	//! Po≈ÇƒÖczenie z web services dla danych ruchu
 	WSConnectionPtr motionFileStoremanWSConnection;
-	//! Po≥πczenie z web services dla danych medycznych
+	//! Po≈ÇƒÖczenie z web services dla danych medycznych
 	WSConnectionPtr medicalFileStoremanConnection;
 
 	//! ------------------------------- FTPS -----------------------------
 
-	//! Po≥πczenie ftps z bazπ danych ruchu
+	//! Po≈ÇƒÖczenie ftps z bazƒÖ danych ruchu
 	webservices::FtpsConnectionPtr motionFtps_;
 
-	//! Po≥πczenie ftps z bazπ danych medycznych
+	//! Po≈ÇƒÖczenie ftps z bazƒÖ danych medycznych
 	webservices::FtpsConnectionPtr medicalFtps_;
 
     // -------------------------- UI ------------------------------------
-	//! Widget ürÛd≥a danych
+	//! Widget ≈∫r√≥d≈Ça danych
 	DataSourceWidget * dataSourceWidget;
 
 };

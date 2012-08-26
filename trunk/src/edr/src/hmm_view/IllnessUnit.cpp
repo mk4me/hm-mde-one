@@ -1,4 +1,4 @@
-#include "hmmPCH.h"
+Ôªø#include "hmmPCH.h"
 #include "IllnessUnit.h"
 #include "TreeItemHelper.h"
 
@@ -270,9 +270,9 @@ QTreeWidgetItem* Stroke::createTreeBranch( const QString& rootItemName, const st
 
 void Spine::createEMGBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
 {
-    //1. miÍsieÒ prostownik grzbietu (najd≥uøszy) (na wys. T12)  (UB > L4 i R12)
-    //2. miÍsieÒ kapturowy (powyøej C3) (UB > L1 i R9)
-    //3. miÍsieÒ poúladkowy wielki (LB > L7 i R15)
+    //1. miƒôsie≈Ñ prostownik grzbietu (najd≈Çu≈ºszy) (na wys. T12)  (UB > L4 i R12)
+    //2. miƒôsie≈Ñ kapturowy (powy≈ºej C3) (UB > L1 i R9)
+    //3. miƒôsie≈Ñ po≈õladkowy wielki (LB > L7 i R15)
 
     {
         DataFilterPtr lprev = createCustomEMGFilter(false, "L1");
@@ -303,11 +303,11 @@ void Spine::createEMGBranch( QTreeWidgetItem* root, const std::vector<SessionCon
 void Spine::createKineticBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
 {
     // Force
-    // 4. Si≥a w talii w p≥aszczyünie strza≥kowej X w osi poprzecznej
-    // 5. si≥a w talii w p≥aszczyünie czo≥owej Y (w osi strza≥kowej)
+    // 4. Si≈Ça w talii w p≈Çaszczy≈∫nie strza≈Çkowej X w osi poprzecznej
+    // 5. si≈Ça w talii w p≈Çaszczy≈∫nie czo≈Çowej Y (w osi strza≈Çkowej)
 
-    // 8. moment si≥y w talii w p≥aszczyünie strza≥kowej X
-    // 9. moment si≥y w talii w p≥aszczyünie czo≥owej Y
+    // 8. moment si≈Çy w talii w p≈Çaszczy≈∫nie strza≈Çkowej X
+    // 9. moment si≈Çy w talii w p≈Çaszczy≈∫nie czo≈Çowej Y
 
     DataFilterPtr leftPrev =  createCustomV3Filter<MomentCollection>(false, "LWaistMoment");
     DataFilterPtr rightPrev = createCustomV3Filter<MomentCollection>(false, "RWaistMoment");
@@ -327,8 +327,8 @@ void Spine::createKineticBranch( QTreeWidgetItem* root, const std::vector<Sessio
 void Spine::createAngleBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
 {
     //
-    // 6. kπt krÍgos≥upa w p≥aszczyünie strza≥kowej X
-    // 7. kπt krÍgos≥upa w p≥aszczyünie czo≥owej Y
+    // 6. kƒÖt krƒôgos≈Çupa w p≈Çaszczy≈∫nie strza≈Çkowej X
+    // 7. kƒÖt krƒôgos≈Çupa w p≈Çaszczy≈∫nie czo≈Çowej Y
 
     DataFilterPtr leftPrevA =  createCustomV3Filter<AngleCollection>(false, "LSpineAngles");
     DataFilterPtr rightPrevA = createCustomV3Filter<AngleCollection>(false, "RSpineAngles");

@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_CORE_IDATAMANAGER_H__
+ï»¿#ifndef HEADER_GUARD_CORE_IDATAMANAGER_H__
 #define HEADER_GUARD_CORE_IDATAMANAGER_H__
 
 #include <vector>
@@ -34,9 +34,9 @@ namespace core {
 		//! Wirtualny destruktor
 		virtual ~Metadata() {}
 
-		//! \param key Klucz dla którego poszukujemy wartoœci
-		//! \param value [out] Wartoœc dla poszukiweanego klucza
-		//! \return Prawda jeœli uda³o siê znaleŸæ poszukiwany klucz
+		//! \param key Klucz dla ktÃ³rego poszukujemy wartoÅ›ci
+		//! \param value [out] WartoÅ›c dla poszukiweanego klucza
+		//! \return Prawda jeÅ›li udaÅ‚o siÄ™ znaleÅºÄ‡ poszukiwany klucz
 		bool value(const std::string & key, std::string & value) const
 		{
 			bool ret = false;
@@ -48,31 +48,31 @@ namespace core {
 
 			return ret;
 		}
-		//! \param i Indeks wartoœci z zakresu [0-size()-1]
-		//! \return Wartoœc dla zadanego indeksu
+		//! \param i Indeks wartoÅ›ci z zakresu [0-size()-1]
+		//! \return WartoÅ›c dla zadanego indeksu
 		const std::string & value(int i) const
 		{
-			UTILS_ASSERT(i > -1 && i < size(), "B³êdny indeks");
+			UTILS_ASSERT(i > -1 && i < size(), "BÅ‚Ä™dny indeks");
 			auto it = descriptor_.begin();
 			std::advance(it, i);
 			return it->second;
 		}
-		//! \param i Indeks klucza o który pytamy
-		//! \return Wartoœæ klucza dla zadanego indeksu
+		//! \param i Indeks klucza o ktÃ³ry pytamy
+		//! \return WartoÅ›Ä‡ klucza dla zadanego indeksu
 		const std::string & key(int i) const
 		{
-			UTILS_ASSERT(i > -1 && i < size(), "B³êdny indeks");
+			UTILS_ASSERT(i > -1 && i < size(), "BÅ‚Ä™dny indeks");
 			auto it = descriptor_.begin();
 			std::advance(it, i);
 			return it->first;
 		}
-		//! \param key Klucz który sprawdzamy czy opisuje obiekt
-		//! \return Prawda jeœli klucz istnieje
+		//! \param key Klucz ktÃ³ry sprawdzamy czy opisuje obiekt
+		//! \return Prawda jeÅ›li klucz istnieje
 		bool hasKey(const std::string & key) const
 		{
 			return descriptor_.find(key) != descriptor_.end();
 		}
-		//! \return Iloœæ par klucz->wartoœc opisuj¹cych obiekt
+		//! \return IloÅ›Ä‡ par klucz->wartoÅ›c opisujÄ…cych obiekt
 		int size() const
 		{
 			return descriptor_.size();
@@ -93,13 +93,13 @@ namespace core {
 			descriptor_.erase(key);
 		}
 
-		//! \return Obiekt opisywany - s³aby smart_ptr -> usuwamy opisy w momencie usuniêcia obiektu
+		//! \return Obiekt opisywany - sÅ‚aby smart_ptr -> usuwamy opisy w momencie usuniÄ™cia obiektu
 		const ObjectWrapperWeakPtr & object()
 		{
 			return object_;
 		}
 
-		//! \return Obiekt opisywany - s³aby smart_ptr -> usuwamy opisy w momencie usuniêcia obiektu
+		//! \return Obiekt opisywany - sÅ‚aby smart_ptr -> usuwamy opisy w momencie usuniÄ™cia obiektu
 		const ObjectWrapperConstWeakPtr & object() const
 		{
 			return constObject_;
@@ -119,7 +119,7 @@ namespace core {
 	typedef weak_ptr<Metadata> MetadataWeakPtr;
 	typedef weak_ptr<const Metadata> MetadataWeakConstPtr;
 
-    //! Interfejs s³u¿¹ca do inicjalizacji/deinicjalizacji obiektów domenowych
+    //! Interfejs sÅ‚uÅ¼Ä…ca do inicjalizacji/deinicjalizacji obiektÃ³w domenowych
     class IDataInitializer
     {
     public:
@@ -131,8 +131,8 @@ namespace core {
         //! \param object Obiekt do deinicjalizacji
         void deinitialize(ObjectWrapperPtr & object)
         {
-            //wywo³ujemy metode klienta do deinicjalizacji
-            //nie musi bezpoœrednio resetowaæ wskaŸnika - zrobimy to tutaj sami jeœli trzeba
+            //wywoÅ‚ujemy metode klienta do deinicjalizacji
+            //nie musi bezpoÅ›rednio resetowaÄ‡ wskaÅºnika - zrobimy to tutaj sami jeÅ›li trzeba
             doDeinitialize(object);
             if(object->isNull() == false){
                 object->reset();
@@ -140,7 +140,7 @@ namespace core {
         }
 
     protected:
-        //! Metoda implementowana w kodzie klienckim, jeœli tam wskaŸnik nie zostanie wyzerowany zrobimy to my
+        //! Metoda implementowana w kodzie klienckim, jeÅ›li tam wskaÅºnik nie zostanie wyzerowany zrobimy to my
         //! \param object Obiekt do deinicjalizacji
         virtual void doDeinitialize(ObjectWrapperPtr & object) {}
 
@@ -148,7 +148,7 @@ namespace core {
 
     typedef shared_ptr<IDataInitializer> DataInitializerPtr;
 
-    //! Podstawowe operacje zwi¹zane z danymi - pobieranie danych, informacje o hierarchi typów danych, informacje o wspieranych typach danych
+    //! Podstawowe operacje zwiÄ…zane z danymi - pobieranie danych, informacje o hierarchi typÃ³w danych, informacje o wspieranych typach danych
     class IDataManagerReader
     {
     public:
@@ -156,13 +156,13 @@ namespace core {
 
         //virtual ObjectWrapperPtr createWrapper(const TypeInfo & typeInfo) const = 0;
 
-		//! \param objects [out] Obiekty pasuj¹ce do zapytania
-		//! \param type Typ obniektów o które pytamy
-		//! \param exact Czy typ musi byæ zgodny czy moga to byæ tez typy pochodne
-		//! \param initialzie Czy automatycznie zainicjalizowaæ wszystkie obiekty? UWAGA - te, których siê nie uda³o zainicjalizowaæ nie zostan¹ zwrócone - DM usunie je jako popsute dane
+		//! \param objects [out] Obiekty pasujÄ…ce do zapytania
+		//! \param type Typ obniektÃ³w o ktÃ³re pytamy
+		//! \param exact Czy typ musi byÄ‡ zgodny czy moga to byÄ‡ tez typy pochodne
+		//! \param initialzie Czy automatycznie zainicjalizowaÄ‡ wszystkie obiekty? UWAGA - te, ktÃ³rych siÄ™ nie udaÅ‚o zainicjalizowaÄ‡ nie zostanÄ… zwrÃ³cone - DM usunie je jako popsute dane
         virtual void getObjects(std::vector<ObjectWrapperConstPtr> & objects, const TypeInfo & type, bool exact = true, bool initialize = true) = 0;
-		//! \param objects [out] Obiekty zarz¹dzane przez DM
-		//! \param initialzie Czy automatycznie zainicjalizowaæ wszystkie obiekty? UWAGA - te, których siê nie uda³o zainicjalizowaæ nie zostan¹ zwrócone - DM usunie je jako popsute dane
+		//! \param objects [out] Obiekty zarzÄ…dzane przez DM
+		//! \param initialzie Czy automatycznie zainicjalizowaÄ‡ wszystkie obiekty? UWAGA - te, ktÃ³rych siÄ™ nie udaÅ‚o zainicjalizowaÄ‡ nie zostanÄ… zwrÃ³cone - DM usunie je jako popsute dane
         virtual void getObjects(ObjectWrapperCollection& objects, bool initialize = true) = 0;
 
 		virtual bool isManaged(const ObjectWrapperConstPtr & object) const = 0;
@@ -175,7 +175,7 @@ namespace core {
 			return manager->objectIsManaged(data.get());
 		}
 
-		//! \param object Obiekt dla którego pobieram metadane
+		//! \param object Obiekt dla ktÃ³rego pobieram metadane
 		//! \param metadataCollection [out] Kolekcja metadanych dla zadanego obiektu
 		virtual void getMetadataForObject(const ObjectWrapperConstPtr & object, std::vector<ObjectWrapperConstPtr> & metadataCollection) const = 0;
 
@@ -183,48 +183,48 @@ namespace core {
 		static void getMetadataForObject(const IDataManagerReader * manager, const SmartPtr & data, std::vector<ObjectWrapperConstPtr> & metadataCollection)
 		{
 			UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename boost::remove_const<SmartPtr::element_type>::type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-			//UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer siê nie zgadza");
+			//UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer siÄ™ nie zgadza");
 
 			manager->getMetadataForObject(manager->getObjectWrapperForRawPtr(data.get()), metadataCollection);
 		}
 
-		//! \param typeInfo Typ danych dla których chcemy pobraæ wszystkie metadane
+		//! \param typeInfo Typ danych dla ktÃ³rych chcemy pobraÄ‡ wszystkie metadane
 		//! \param metadataCollection [out] Kolekcja metadanych dla zadanego obiektu
-		//! \param exact Czy mamy do³anczaæ metadane typów pochodnych
+		//! \param exact Czy mamy doÅ‚anczaÄ‡ metadane typÃ³w pochodnych
 		virtual void getMetadataForType(const TypeInfo & typeInfo, std::vector<ObjectWrapperConstPtr> & metadataCollection, bool exact = true) const = 0;
 
-        //! \param rawPtr Surowy wskaŸnik do danych
-        //! \return ObjectWrapperConstPtr opakowuj¹cy ten wskaŸnik lub pusty ObjectWrapperPtr jeœli nie ma takich danych w DataManager
+        //! \param rawPtr Surowy wskaÅºnik do danych
+        //! \return ObjectWrapperConstPtr opakowujÄ…cy ten wskaÅºnik lub pusty ObjectWrapperPtr jeÅ›li nie ma takich danych w DataManager
         //virtual ObjectWrapperConstPtr getWrapper(void * rawPtr) const = 0;
 
         //! \return Zarejestrowane w aplikacji typy danych
         virtual const TypeInfoSet & getSupportedTypes() const = 0;
 
-        //! \return Hierarchia typów danych - jakie operacje moge realizowaæ, po czym dziedzicze
+        //! \return Hierarchia typÃ³w danych - jakie operacje moge realizowaÄ‡, po czym dziedzicze
         virtual const TypeInfoSet & getTypeBaseTypes(const TypeInfo & type) const = 0;
 
-        //! \return Hierarchia typów danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
+        //! \return Hierarchia typÃ³w danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i moÅ¼e byÄ‡ downcastowany na mnie
         virtual const TypeInfoSet & getTypeDerrivedTypes(const TypeInfo & type) const = 0;
 
-		//! \param ptr Surowy wskaŸnik, dla którego sprawdzamy czy jest ju¿ za¿adzany przez DM
-		//! \return prawda jeœli wskaŸnik jest zarz¹dzany prze DM i opakowano go w OW
+		//! \param ptr Surowy wskaÅºnik, dla ktÃ³rego sprawdzamy czy jest juÅ¼ zaÅ¼adzany przez DM
+		//! \return prawda jeÅ›li wskaÅºnik jest zarzÄ…dzany prze DM i opakowano go w OW
 		virtual bool objectIsManaged(const void * ptr) const = 0;
 
-		//! \param ptr Surowy wskaŸnik, dla którego sprawdzamy czy jest ju¿ za¿adzany przez DM
-		//! \return OW opakowuj¹cy dany wskaŸnik
+		//! \param ptr Surowy wskaÅºnik, dla ktÃ³rego sprawdzamy czy jest juÅ¼ zaÅ¼adzany przez DM
+		//! \return OW opakowujÄ…cy dany wskaÅºnik
 		virtual const ObjectWrapperPtr & getObjectWrapperForRawPtr(const void * ptr) const = 0;
     };
 
-    //! Zbiór typów
+    //! ZbiÃ³r typÃ³w
     typedef std::set<TypeInfo> Types;
 
-    //! Interfejs najni¿szego poziomu DataManager - pozwala zarz¹dzaæ pojedynczymi ObjectWrapperami: dodawaæ je do puli danych, usuwaæ, inicjalizowaæ, deinicjalizowaæ.
+    //! Interfejs najniÅ¼szego poziomu DataManager - pozwala zarzÄ…dzaÄ‡ pojedynczymi ObjectWrapperami: dodawaÄ‡ je do puli danych, usuwaÄ‡, inicjalizowaÄ‡, deinicjalizowaÄ‡.
     //!
     class IMemoryDataManager : public utils::Observable<IMemoryDataManager>, virtual public IDataManagerReader
     {
 
     public:
-		//! Konstruktor domyœlny
+		//! Konstruktor domyÅ›lny
 		IMemoryDataManager() : blockNotify_(false), changed(false)
 		{
 
@@ -234,7 +234,7 @@ namespace core {
 		static ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr())
 		{
 			UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-			//UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer siê nie zgadza");
+			//UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer siÄ™ nie zgadza");
 
 			if(manager->objectIsManaged(data.get()) == true){
 				throw std::runtime_error("Object already managed by DataManager");
@@ -252,31 +252,31 @@ namespace core {
 		static void removeData(IMemoryDataManager * manager, const SmartPtr & data)
 		{
 			UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-			//UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer siê nie zgadza");
+			//UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer siÄ™ nie zgadza");
 			manager->removeData(manager->getObjectWrapperForRawPtr(data.get()));
 		}
 
         virtual ~IMemoryDataManager() {};
 
-        //! \param Obiekt który chcemy inicjalizowaæ
+        //! \param Obiekt ktÃ³ry chcemy inicjalizowaÄ‡
         virtual void initializeData(ObjectWrapperPtr & data) = 0;
 
-        //! \param Obiekt dla którego chcemy wykonaæ deinicjalizacje
-        //! \return Prawda jeœli obiekt posiada inicjalizator
+        //! \param Obiekt dla ktÃ³rego chcemy wykonaÄ‡ deinicjalizacje
+        //! \return Prawda jeÅ›li obiekt posiada inicjalizator
         virtual bool isInitializable(const ObjectWrapperPtr & data) const = 0;
 
-        //! \param Obiekt który chcemy deinicjalizowaæ - dalej jest w DataManager ale nie zawiera danych - trzeba potem inicjalizowaæ
+        //! \param Obiekt ktÃ³ry chcemy deinicjalizowaÄ‡ - dalej jest w DataManager ale nie zawiera danych - trzeba potem inicjalizowaÄ‡
         virtual void deinitializeData(ObjectWrapperPtr & data) = 0;
 
 		//! Ta metoda notyfikuje o zmianie stanu DM!!
-        //! \param Obiekt który zostanie usuniêty jeœli zarz¹dza nim DataManager
+        //! \param Obiekt ktÃ³ry zostanie usuniÄ™ty jeÅ›li zarzÄ…dza nim DataManager
         void removeData(const ObjectWrapperPtr & data)
 		{
 			nonNotifyRemoveData(data);
 			tryNotify();
 		}
 
-		//! \param block Czy blokowaæ notyfikacje przy zarz¹dzaniu danymi DM
+		//! \param block Czy blokowaÄ‡ notyfikacje przy zarzÄ…dzaniu danymi DM
 		void blockNotify(bool block)
 		{
 			blockNotify_ = block;
@@ -286,14 +286,14 @@ namespace core {
 				notify();
 			}
 		}
-		//! \return Czy s¹ blokowane aktualnie notyfikacje o zmianie stanu DM
+		//! \return Czy sÄ… blokowane aktualnie notyfikacje o zmianie stanu DM
 		bool isNotifyBlocked() const
 		{
 			return blockNotify_;
 		}
 
     private:
-		//! Wewnêtrzna próba realizacji notyfikacji jeœli nast¹pi³a zmiana i s¹ w³¹czone notyfikacje
+		//! WewnÄ™trzna prÃ³ba realizacji notyfikacji jeÅ›li nastÄ…piÅ‚a zmiana i sÄ… wÅ‚Ä…czone notyfikacje
 		void tryNotify()
 		{
 			if(blockNotify_ == false){
@@ -303,34 +303,34 @@ namespace core {
 			}
 		}
 
-		//! Schowane bo DM wprowadza w³asn¹ implementacjê OW z auto i nicjalizacj¹ zasobów przy pierwszym pobraniu!! Nie upubliczniamy tego w ¿aden sposób!!
-		//! U¿ywamy tylko metod statycznych. Ta metoda nie notyfikuje o zmianie!!
-        //! \param Obiekt który zostanie utrwalony w DataManager i bêdzie dostêpny przy zapytaniach, nie mo¿e byæ niezainicjowany - isNull musi byæ false!!
+		//! Schowane bo DM wprowadza wÅ‚asnÄ… implementacjÄ™ OW z auto i nicjalizacjÄ… zasobÃ³w przy pierwszym pobraniu!! Nie upubliczniamy tego w Å¼aden sposÃ³b!!
+		//! UÅ¼ywamy tylko metod statycznych. Ta metoda nie notyfikuje o zmianie!!
+        //! \param Obiekt ktÃ³ry zostanie utrwalony w DataManager i bÄ™dzie dostÄ™pny przy zapytaniach, nie moÅ¼e byÄ‡ niezainicjowany - isNull musi byÄ‡ false!!
         virtual void nonNotifyAddData(const ObjectWrapperPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr()) = 0;
 
-		//! Metoda faktycznie usuwaj¹ca dane z DM ale nie notyfikuj¹ca o jego zmianie
+		//! Metoda faktycznie usuwajÄ…ca dane z DM ale nie notyfikujÄ…ca o jego zmianie
 		virtual void nonNotifyRemoveData(const ObjectWrapperPtr & data) = 0;
 
-        //! \param type Typ dla którego tworzymy specyficzny dla DM ObjectWrapper
+        //! \param type Typ dla ktÃ³rego tworzymy specyficzny dla DM ObjectWrapper
         //! \return OW dla zadanego typu
         virtual ObjectWrapperPtr createObjectWrapper(const TypeInfo & type) const = 0;
 
 	private:
 		//! Czy blokujemy notyfikacje
 		bool blockNotify_;
-		//! Czy nast¹pi³a zmiana w DM
+		//! Czy nastÄ…piÅ‚a zmiana w DM
 		bool changed;
 
     };
 
-    //! Interfejs dostêpu do danych i ³adowania danych w aplikacji
+    //! Interfejs dostÄ™pu do danych i Å‚adowania danych w aplikacji
 	class IFileDataManager : public utils::Observable<IFileDataManager>, virtual public IDataManagerReader
 	{
 	public:
-        //! Zbiór rozszerzeñ
+        //! ZbiÃ³r rozszerzeÅ„
         typedef std::set<std::string> Extensions;
 
-        //! Opis rozszerzeñ
+        //! Opis rozszerzeÅ„
         struct ExtensionDescription
         {
             //! Zarejestrowane opisy
@@ -338,7 +338,7 @@ namespace core {
             //! Zarejestrowane typy
             Types types;
         };
-        //! Konstruktor domyœlny
+        //! Konstruktor domyÅ›lny
 		IFileDataManager() : blockNotify_(false), changed(false)
 		{
 
@@ -347,15 +347,15 @@ namespace core {
 		//! Wirtualny destruktor.
 		virtual ~IFileDataManager() {};
 
-        //! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
+        //! \param files ZbiÃ³r plikÃ³w ktrymi aktualnie zarzÄ…dza ten DataManager
         virtual void getManagedFiles(Files & files) const = 0;
 
-        //! \param file Plik kótry weryfikujemy czy jest zarz¹dzany przez DM
-        //! \return Prawda jeœli plik jest zarz¹dzany przez ten DM
+        //! \param file Plik kÃ³try weryfikujemy czy jest zarzÄ…dzany przez DM
+        //! \return Prawda jeÅ›li plik jest zarzÄ…dzany przez ten DM
         virtual bool isFileManaged(const Filesystem::Path & file) const = 0;
 
-        //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
-        //! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
+        //! \param files Lista plikÃ³w dla ktÃ³rych zostanÄ… utworzone parsery i z ktÃ³rych wyciÄ…gniÄ™te dane
+        //! bÄ™da dostÄ™pne poprzez DataMangera LENIWA INICJALIZACJA
 		void addFile(const Filesystem::Path & file)
 		{
 		    std::vector<ObjectWrapperPtr> temp;
@@ -363,39 +363,39 @@ namespace core {
 			tryNotify();
 		}
 
-        //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
-		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery
-        //! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
+        //! \param files Lista plikÃ³w dla ktÃ³rych zostanÄ… utworzone parsery i z ktÃ³rych wyciÄ…gniÄ™te dane
+		//! \param objects [out] Agregat obiektÃ³w wyciÄ…gniÄ™tych z danego pliku przez parsery
+        //! bÄ™da dostÄ™pne poprzez DataMangera LENIWA INICJALIZACJA
 		void addFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects)
 		{
 			nonNotifyAddFile(file, objects);
 			tryNotify();
 		}
 
-        //! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
+        //! \param files Lista plikÃ³w ktÃ³re zostanÄ… usuniÄ™te z aplikacji a wraz z nimi skojarzone parsery i dane
 		void removeFile(const Filesystem::Path & file)
 		{
 			nonNotifyRemoveFile(file);
 			tryNotify();
 		}
 
-        //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) WYMUSZAMY PARSOWANIE I INICJALIZACJE
+        //! \param path Åšciezka pliku ktÃ³ry chemy zaÅ‚adowaÄ‡ (parsowaÄ‡) WYMUSZAMY PARSOWANIE I INICJALIZACJE
         virtual void initializeFile(const Filesystem::Path & file) = 0;
 
-        //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) ZWALNIAMY ZASOBY, ALE ZEZWALAMY PONOWNIE NA LENIWA INICJALIZACJE
+        //! \param path Åšciezka pliku ktÃ³ry chemy zaÅ‚adowaÄ‡ (parsowaÄ‡) ZWALNIAMY ZASOBY, ALE ZEZWALAMY PONOWNIE NA LENIWA INICJALIZACJE
         virtual void deinitializeFile(const Filesystem::Path & file) = 0;
 
-        //! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-        //! \return Mapa obiektów wzglêdem plików z których pochodza
+        //! \param files Zbior plikÃ³w dla ktÃ³rych chcemy pobraÄ‡ listÄ™ obiektÃ³w
+        //! \return Mapa obiektÃ³w wzglÄ™dem plikÃ³w z ktÃ³rych pochodza
         virtual void getObjectsForFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects) const = 0;
 
-        //! \return Zbior obs³ugiwanych rozszerzen plików wraz z ich opisem
+        //! \return Zbior obsÅ‚ugiwanych rozszerzen plikÃ³w wraz z ich opisem
         virtual const Extensions & getSupportedFilesExtensions() const = 0;
 
-        //! \return true jeœli rozszerznie jest wspierane przez DataManager, w przeciwnym wypadku false
+        //! \return true jeÅ›li rozszerznie jest wspierane przez DataManager, w przeciwnym wypadku false
         virtual bool isExtensionSupported(const std::string & extension) const = 0;
 
-        //! \param extension Rozszerzenie dla którego pytamy o opis
+        //! \param extension Rozszerzenie dla ktÃ³rego pytamy o opis
         //! \return Opis rozszerzenia
         virtual const ExtensionDescription & getExtensionDescription(const std::string & extension) const = 0;
 
@@ -429,13 +429,13 @@ namespace core {
 
         // rev - prywatna i czysto wirtualna?
 		//! Ta metoda nie notyfikuje o zmianie stanu DM!!
-		//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
-		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery
-		//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
+		//! \param files Lista plikÃ³w dla ktÃ³rych zostanÄ… utworzone parsery i z ktÃ³rych wyciÄ…gniÄ™te dane
+		//! \param objects [out] Agregat obiektÃ³w wyciÄ…gniÄ™tych z danego pliku przez parsery
+		//! bÄ™da dostÄ™pne poprzez DataMangera LENIWA INICJALIZACJA
 		virtual void nonNotifyAddFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects) = 0;
 
 		//! Ta metoda nie notyfikuje o zmianie stanu DM!!
-		//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
+		//! \param files Lista plikÃ³w ktÃ³re zostanÄ… usuniÄ™te z aplikacji a wraz z nimi skojarzone parsery i dane
 		virtual void nonNotifyRemoveFile(const Filesystem::Path & file) = 0;
 
 	private:
@@ -450,7 +450,7 @@ namespace core {
 	{
 	public:
 		//! Konstruktor
-		//! \param t Obiekt którego notyfikacje chcemy lokalnie wy³¹czyæ, ich stan zostanie przywrócony w momencie niszczenia tego obiektu
+		//! \param t Obiekt ktÃ³rego notyfikacje chcemy lokalnie wyÅ‚Ä…czyÄ‡, ich stan zostanie przywrÃ³cony w momencie niszczenia tego obiektu
 		NotifyBlocker(T & t) : t(&t), prevBlockingState(t.isNotifyBlocked())
 		{
 			t.blockNotify(true);
@@ -463,7 +463,7 @@ namespace core {
 		}
 
 	private:
-		//! Obs³ugiwany obiekt
+		//! ObsÅ‚ugiwany obiekt
 		T * t;
 		//! Poprzedni stan blokowania notyfikacji
 		bool prevBlockingState;

@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2010/06/11
 	created:  11:6:2010   11:25
 	filename: WidgetFunctors.h
@@ -19,24 +19,24 @@
 class WidgetColorer : public osg::Drawable::UpdateCallback
 {
 public:
-  //! Bie¿¹cy kolor.
+  //! BieÅ¼Ä…cy kolor.
   osgWidget::Color current;
   //! Kolor normalny.
   osgWidget::Color normal;
   //! Kolor przy najechaniu.
   osgWidget::Color hoover;
-  //! Kolor podczas klikniêcia.
+  //! Kolor podczas klikniÄ™cia.
   osgWidget::Color clicked;
 
   //! Kontruktor z jawnie podanymi parametrami.
   //! \param normal Normalny kolor.
   //! \param hoover Kolor przy najechaniu.
-  //! \param clicked Kolor przy klikniêciu.
+  //! \param clicked Kolor przy klikniÄ™ciu.
   WidgetColorer(osgWidget::Color normal, osgWidget::Color hoover, osgWidget::Color clicked)
     : normal(normal), hoover(hoover), clicked(clicked), current(normal)
   {}
 
-  //! Konstruktor domyœlny.
+  //! Konstruktor domyÅ›lny.
   WidgetColorer()
     : normal(osgWidget::Color(0.5f, 0.5f, 0.5f, 1.0f)), hoover(osgWidget::Color(0.75f, 0.75f, 0.75f, 1.0f)),
     clicked(osgWidget::Color(1.0f, 1.0f, 1.0f, 1.0f)), current(normal)
@@ -46,8 +46,8 @@ public:
   virtual ~WidgetColorer()
   {}
 
-  //! Pomocnicza funkcja ustawiaj¹ca kolor.
-  //! \return false (po to, aby nastêpuj¹ce callbacki tego samego eventa by³y wywo³ywane)
+  //! Pomocnicza funkcja ustawiajÄ…ca kolor.
+  //! \return false (po to, aby nastÄ™pujÄ…ce callbacki tego samego eventa byÅ‚y wywoÅ‚ywane)
   bool setColor(osgWidget::Color color)
   {
     current = color;
@@ -63,12 +63,12 @@ public:
   {
     return setColor(normal);
   }
-  //! Klikniêcie.
+  //! KlikniÄ™cie.
   bool onClick(osgWidget::Event&)
   {
     return setColor(clicked);
   }
-  //! Zwolnienie klikniêcia.
+  //! Zwolnienie klikniÄ™cia.
   bool onRelease(osgWidget::Event&)
   {
     return setColor(hoover);
@@ -111,12 +111,12 @@ public:
   //! Kontruktor z jawnie podanymi parametrami.
   //! \param normal Normalny kolor.
   //! \param hoover Kolor przy najechaniu.
-  //! \param clicked Kolor przy klikniêciu.
+  //! \param clicked Kolor przy klikniÄ™ciu.
   WidgetDragger(osgWidget::Color normal, osgWidget::Color hoover, osgWidget::Color clicked)
     : WidgetColorer(normal, hoover, clicked), x(0.0f)
   {}
 
-  //! Konstruktor domyœlny.
+  //! Konstruktor domyÅ›lny.
   WidgetDragger() : x(0.0f)
   {}
 
@@ -131,7 +131,7 @@ public:
     widget->addCallback(new osgWidget::Callback(&WidgetDragger::onDrag, this, osgWidget::EVENT_MOUSE_DRAG));
   }
 
-  //! Zwolnienie klikniêcia.
+  //! Zwolnienie klikniÄ™cia.
   bool onDrag(osgWidget::Event& event)
   {
     x += static_cast<float>(event.x);

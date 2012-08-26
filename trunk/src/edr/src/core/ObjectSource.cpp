@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include "ObjectSource.h"
 #include "VisualizerManager.h"
 
@@ -19,7 +19,7 @@ using namespace core;
 // {
 //     sources.resize(sourcesTypes.size());
 // //     UTILS_ASSERT(visualizer);
-// //     // pobranie listy wspieranych typów
+// //     // pobranie listy wspieranych typÃ³w
 // //     SourcesTypes::value_type info;
 // //     for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
 // //         info.first.clear();
@@ -28,7 +28,7 @@ using namespace core;
 // //         if ( info.second.empty() ) {
 // //             break;
 // //         } else {
-// //             // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...
+// //             // zamiast push_backa moÅ¼na zrobiÄ‡ bardziej optymalnie i nie kopiowaÄ‡ wektora...
 // //             // sourcesTypes.push_back(info);
 // //             sourcesTypes.insert(sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
 // //         }
@@ -62,7 +62,7 @@ using namespace core;
 // {
 //     Source& source = sources[idx];
 //     if ( !source.first ) {
-//         // hmmm nie ma zmiennego, trzeba wiêc sklonowaæ niezmienny obiekt
+//         // hmmm nie ma zmiennego, trzeba wiÄ™c sklonowaÄ‡ niezmienny obiekt
 //         throw std::runtime_error("Cloning not implemented yet.");
 //     }
 //     return source.first;

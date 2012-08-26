@@ -1,4 +1,4 @@
-#include <webserviceslib/DateTimeUtils.h>
+ï»¿#include <webserviceslib/DateTimeUtils.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -12,7 +12,7 @@ const DateTime toTime(const std::string & time)
 
 	DateTime ret;
 
-	//musimy poci¹æ datê na kawa³ki        
+	//musimy pociÄ…Ä‡ datÄ™ na kawaÅ‚ki        
 	tokenizer tokens(time, sep);
 	tokenizer::iterator it = tokens.begin();
 	ret.setYear(boost::lexical_cast<int>(*it)); ++it;

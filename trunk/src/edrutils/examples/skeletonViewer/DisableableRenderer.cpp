@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include "DisableableRenderer.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@ void DisableableRenderer::operator()( osg::GraphicsContext* ctx )
         if ( !sceneView || _done /*|| _graphicsThreadDoesCull*/ )
             return;
 
-        // te wywo³ania s¹ potrzebne, inaczej np. statystyki siê przewracaj¹.
+        // te wywoÅ‚ania sÄ… potrzebne, inaczej np. statystyki siÄ™ przewracajÄ….
         updateSceneView( sceneView );
         osgViewer::View* view = dynamic_cast<osgViewer::View*>( _camera->getView() );
         if ( view ) {

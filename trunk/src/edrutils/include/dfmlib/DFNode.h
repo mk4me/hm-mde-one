@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__DFNODE_H__
+Ôªø#ifndef HEADER_GUARD__DFNODE_H__
 #define HEADER_GUARD__DFNODE_H__
 
 #include <dfmlib/Node.h>
@@ -11,7 +11,7 @@ namespace dflm{
 
 class DFModel;
 
-//! Klasa reprezentujπca wÍze≥ z moøliwoúcia przetwarzania i przekazywania danych na bazie DFPinÛw w DFModel
+//! Klasa reprezentujƒÖca wƒôze≈Ç z mo≈ºliwo≈õcia przetwarzania i przekazywania danych na bazie DFPin√≥w w DFModel
 class DFNode :
 	public Node, public DFInterface
 {
@@ -24,7 +24,7 @@ private:
 
 public:
 
-    //! \param nodeName Nazwa wÍz≥a
+    //! \param nodeName Nazwa wƒôz≈Ça
     //! \param processingAllowed Czy przetwarzanie danych aktywne
     //! \param propagatingAllowed Czy propagowanie danych aktywne
     DFNode(const std::string & nodeName = std::string()/*, bool processingAllowed = true,
@@ -45,8 +45,8 @@ public:
     //! \return Czy propagowanie danych dalej jest dozwolone
 	bool isPropagatingAllowed() const;
 
-    //! \param node WÍze≥ podstawowy do "podniesienia" na DFNode
-    //! \return DFNode dla danego wÍz≥a jeúli jest jego pochodnπ lub nullptr jeúli konwersja niemoøliwa
+    //! \param node Wƒôze≈Ç podstawowy do "podniesienia" na DFNode
+    //! \return DFNode dla danego wƒôz≈Ça je≈õli jest jego pochodnƒÖ lub nullptr je≈õli konwersja niemo≈ºliwa
 	static DFNPtr getDFNode(const NPtr & node);
 
 protected:
@@ -57,16 +57,16 @@ protected:
 
     //! ---------------- DFNode -------------------------------------------
 
-    //! \return Czy piny wejúciowe majπ za≥adowane dane poprawnie
+    //! \return Czy piny wej≈õciowe majƒÖ za≈Çadowane dane poprawnie
 	virtual bool checkInputPins() const;
 
-    //! Aktualizuje status pinÛw wyjúciowych - notify()
+    //! Aktualizuje status pin√≥w wyj≈õciowych - notify()
 	virtual void updateOutputPins();
 
-    //! Ustawia dane pinÛw wyjúciowych po przetworzeniu danych
+    //! Ustawia dane pin√≥w wyj≈õciowych po przetworzeniu danych
     virtual void setOutputData();
 
-    //! Przetwarza dane w≥aúciwe
+    //! Przetwarza dane w≈Ça≈õciwe
     virtual void processData();
 
 private:
@@ -77,7 +77,7 @@ private:
     //! Czy Propagowanie danych aktywne
 	bool propagatingAllowed;
 
-    //! Akcja wywo≥ywana na rzecz modelu przez wÍze≥ liúÊ
+    //! Akcja wywo≈Çywana na rzecz modelu przez wƒôze≈Ç li≈õƒá
     OnLeafProcessedCallback onLeafProcessedCallback;
 };
 

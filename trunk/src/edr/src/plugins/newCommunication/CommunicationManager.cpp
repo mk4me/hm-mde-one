@@ -1,4 +1,4 @@
-/**
+﻿/**
 @author Marek Daniluk
 */
 
@@ -430,7 +430,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processCompl
         }
 
         //sprawdz czy anulowano lub blad
-        //je�li nie to kontynuj
+        //jeśli nie to kontynuj
         if(ret != webservices::IFtpsConnection::Complete){
             break;
         }

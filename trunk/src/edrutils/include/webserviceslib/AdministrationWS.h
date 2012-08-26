@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/02
     created:  2:3:2012   14:30
     filename: AdministrationWS.h
@@ -20,11 +20,11 @@ namespace webservices
 		AdministrationWS(const WSConnectionPtr & connection = WSConnectionPtr());
 		virtual ~AdministrationWS();
 
-        //! \param connection Po³¹czenie przez które bêdzie realizowany serwis
+        //! \param connection PoÅ‚Ä…czenie przez ktÃ³re bÄ™dzie realizowany serwis
         virtual void setConnection(const WSConnectionPtr & connection);
-        //! \return Po³¹czenie przez które jest realizowany serwis
+        //! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
         virtual const WSConnectionPtr & connection();
-        //! \return Po³¹czenie przez które jest realizowany serwis
+        //! \return PoÅ‚Ä…czenie przez ktÃ³re jest realizowany serwis
         virtual const WSConnectionConstPtr & connection() const;
 
         virtual void defineAttributeGroup(const std::string & groupName, const std::string & entity);

@@ -1,9 +1,9 @@
-/**
+ï»¿/**
 @author Marek Daniluk
-@brief Klasa CommunicationService dostarcza funkcjonalnoœci interfejsu ICommunication do edytora EDR. Dziedziczy równie¿
-po interfejsie IService dziêki czemu jest Communication Service jest dodawany jako plugin. Pe³ni funkcjê kontrolera dla
-ca³ego serwisu korzystaj¹cego z MVC. Dostarcza widoku do³¹czanego jako dokowany panel do edytora i model odpowiedzialny za
-implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
+@brief Klasa CommunicationService dostarcza funkcjonalnoÅ›ci interfejsu ICommunication do edytora EDR. Dziedziczy rÃ³wnieÅ¼
+po interfejsie IService dziÄ™ki czemu jest Communication Service jest dodawany jako plugin. PeÅ‚ni funkcjÄ™ kontrolera dla
+caÅ‚ego serwisu korzystajÄ…cego z MVC. Dostarcza widoku doÅ‚Ä…czanego jako dokowany panel do edytora i model odpowiedzialny za
+implementacjÄ™ funkcjonalnoÅ›ci wymaganych przez serwis komunikacji.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_COMMUNICATIONSERVICE_H__
@@ -45,7 +45,7 @@ private:
     //communication::CommunicationManager::State previousState;
 
     /************************************************************************/
-    /* Czy zakoñczyæ w³asny w¹tek                                                                     */
+    /* Czy zakoÅ„czyÄ‡ wÅ‚asny wÄ…tek                                                                     */
     /************************************************************************/
     bool finish;
     ///************************************************************************/
@@ -53,11 +53,11 @@ private:
     ///************************************************************************/
     //communication::CommunicationManager::RequestCallbacks callbacks;
     /************************************************************************/
-    /* Czas spania w³asnego w¹tku aktualizuj¹cego ping                                                                     */
+    /* Czas spania wÅ‚asnego wÄ…tku aktualizujÄ…cego ping                                                                     */
     /************************************************************************/
     unsigned int sleepTime;
     ///************************************************************************/
-    ///* Czy aktualizowaæ stan œci¹gania plików                                                                     */
+    ///* Czy aktualizowaÄ‡ stan Å›ciÄ…gania plikÃ³w                                                                     */
     ///************************************************************************/
     //bool refreshProgress;
     ///************************************************************************/
@@ -122,10 +122,10 @@ public:
 
     //IService
     /**
-    Metoda z interfejsu IService. Inicjalizacja us³ugi.
-    @param serviceManager Manager us³ug.
-    @param root Korzeñ wspólnej sceny 3D.
-    @param dataManager Manager zasobów.
+    Metoda z interfejsu IService. Inicjalizacja usÅ‚ugi.
+    @param serviceManager Manager usÅ‚ug.
+    @param root KorzeÅ„ wspÃ³lnej sceny 3D.
+    @param dataManager Manager zasobÃ³w.
     */
     virtual void init(core::IManagersAccessor * managersAccessor);
 
@@ -142,16 +142,16 @@ public:
     virtual void update(double deltaTime);
     
     /**
-    Metoda z interfejsu IService. Us³uga nie musi mieæ wizualnej reprezentacji.
-    @return Widget tworzony przez us³ugê b¹dŸ NULL.
+    Metoda z interfejsu IService. UsÅ‚uga nie musi mieÄ‡ wizualnej reprezentacji.
+    @return Widget tworzony przez usÅ‚ugÄ™ bÄ…dÅº NULL.
     */
     virtual QWidget* getWidget(core::IActionsGroupManager * actions)
     {
         return nullptr;
     }
     /**
-    Metoda z interfejsu IService. Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
-    @return Widget tworzony przez us³ugê b¹dŸ NULL.
+    Metoda z interfejsu IService. Widget dostarczajÄ…cy opcji zwiÄ…zanych z usÅ‚ugÄ…/usÅ‚ugami zaleÅ¼nymi.
+    @return Widget tworzony przez usÅ‚ugÄ™ bÄ…dÅº NULL.
     */
     virtual QWidget* getSettingsWidget(core::IActionsGroupManager * actions)
     {
@@ -159,8 +159,8 @@ public:
         return nullptr;
     }
     /**
-    Metoda z interfejsu IService. Nazwa us³ugi.
-    @return nazwa us³ugi
+    Metoda z interfejsu IService. Nazwa usÅ‚ugi.
+    @return nazwa usÅ‚ugi
     */
     virtual const std::string& getName() const
     {
@@ -168,14 +168,14 @@ public:
     }
  //   //ICommunication
 	///**
-	//Metoda z interfejsu ICommunication. P³ytka kopia bazy danych.
+	//Metoda z interfejsu ICommunication. PÅ‚ytka kopia bazy danych.
 	//*/
 	//virtual void copyMotionDbData();
 
  //   void copyMedicalDbData();
  //   /**
- //   Metoda z interfejsu ICommunication. Pobieranie wszystkich plików próby pomiarowej.
- //   @param trialID id triala w bazie danych którego pliki maj¹ byæ pobrane
+ //   Metoda z interfejsu ICommunication. Pobieranie wszystkich plikÃ³w prÃ³by pomiarowej.
+ //   @param trialID id triala w bazie danych ktÃ³rego pliki majÄ… byÄ‡ pobrane
  //   */
  //   virtual void downloadTrial(unsigned int trialID);
 
@@ -185,7 +185,7 @@ public:
 
  //   /**
  //   Metoda z interfejsu ICommunication. Pobieranie pojedynczego pliku.
- //   @param fileID id pliku w bazie danych który ma byæ pobrany
+ //   @param fileID id pliku w bazie danych ktÃ³ry ma byÄ‡ pobrany
  //   */
  //   virtual void downloadFile(unsigned int fileID);
  //   

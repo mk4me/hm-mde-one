@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/03/09
     created:  9:3:2012   11:41
     filename: PatientCardManager.h
@@ -35,7 +35,7 @@ public:
 
 	virtual ~PatientCardManager();
 
-	//! \param patientCard Schemat karty pacjenta do zarejestrowania, staje siê w³asnoœci¹ managera
+	//! \param patientCard Schemat karty pacjenta do zarejestrowania, staje siÄ™ wÅ‚asnoÅ›ciÄ… managera
 	virtual int registerPatientCard(communication::IPatientCard * patientCard);
 	//! \return Aktualna karty pacjenta
 	virtual communication::IPatientCard * currentPatientCard() const;
@@ -43,13 +43,13 @@ public:
 	virtual int currentPatientCardIndex() const;
 	//! \param idx Index karty pacjenta do ustawienia
 	virtual void setPatientCard(int idx);
-	//! \param idx Index karty pacjenta dla której chcemy uzyskaæ widget
+	//! \param idx Index karty pacjenta dla ktÃ³rej chcemy uzyskaÄ‡ widget
 	//! \return Widget danej karty pacjenta
 	virtual QWidget * patientCardWidget(int idx) const;
-	//! \param idx Index karty pacjenta której nazwê chcemy pobraæ
+	//! \param idx Index karty pacjenta ktÃ³rej nazwÄ™ chcemy pobraÄ‡
 	//! \return Nazwa karty pacjenta
 	virtual const std::string & patientCardName(int idx) const;
-	//! \return Iloœc zarejestrowanych kart pacjenta
+	//! \return IloÅ›c zarejestrowanych kart pacjenta
 	virtual int patientCardsCount() const;
 
 private:

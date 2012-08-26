@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/17
     created:  17:2:2012   10:42
     filename: DownloadRequest.h
@@ -16,7 +16,7 @@
 #include <OpenThreads/ReentrantMutex>
 #include <OpenThreads/ScopedLock>
 
-//! Kalsa wpieraj¹ca pobieranie plików z bazy danych
+//! Kalsa wpierajÄ…ca pobieranie plikÃ³w z bazy danych
 class DownloadRequest : public communication::IDownloadRequest
 {
 
@@ -28,16 +28,16 @@ private:
     typedef OpenThreads::ScopedLock<ReentrantMutex> ScopedLock;
 
 public:
-    //! Struktura opisuj¹ca pliki metadanych
+    //! Struktura opisujÄ…ca pliki metadanych
     struct ShallowCopyDescriptor
     {
-        //! Œcie¿ka zapisu pliku
+        //! ÅšcieÅ¼ka zapisu pliku
         std::string destPath;
         //! Rozmiar pliku
         long size;
     };
 
-    //! Struktura opisuj¹ca plik
+    //! Struktura opisujÄ…ca plik
     struct FileDescriptor : public ShallowCopyDescriptor
     {
         //! Identyfikator pliku
@@ -52,20 +52,20 @@ private:
 
 public:
 
-    //! \param filesToDownload Mapa identyfikatorów plików i deskryptorów do œci¹gniêcia
-    //! \return zlecenie transferu plików
+    //! \param filesToDownload Mapa identyfikatorÃ³w plikÃ³w i deskryptorÃ³w do Å›ciÄ…gniÄ™cia
+    //! \return zlecenie transferu plikÃ³w
     static DownloadRequest * createFilesRequest(const std::map<int, FileDescriptor> & filesToDownload);
-    //! \param photosToDownload Mapa identyfikatorów zdjêæ i deskryptorów do œci¹gniêcia
-    //! \return zlecenie transferu zdjêæ
+    //! \param photosToDownload Mapa identyfikatorÃ³w zdjÄ™Ä‡ i deskryptorÃ³w do Å›ciÄ…gniÄ™cia
+    //! \return zlecenie transferu zdjÄ™Ä‡
     static DownloadRequest * createPhotosRequest(const std::map<int, FileDescriptor> & photosToDownload);
 
-    //! \param filesToDownload Mapa identyfikatorów plików i deskryptorów do œci¹gniêcia
-    //! \param photosToDownload Mapa identyfikatorów zdjêæ i deskryptorów do œci¹gniêcia
+    //! \param filesToDownload Mapa identyfikatorÃ³w plikÃ³w i deskryptorÃ³w do Å›ciÄ…gniÄ™cia
+    //! \param photosToDownload Mapa identyfikatorÃ³w zdjÄ™Ä‡ i deskryptorÃ³w do Å›ciÄ…gniÄ™cia
     //! \return Zlecenie transferu
     static DownloadRequest * createFilesAndPhotosRequest(const std::map<int, FileDescriptor> & filesToDownload,
         const std::map<int, FileDescriptor> & photosToDownload);
 
-    //! \param Mapa typów requestów wraz z ich deskryptorami
+    //! \param Mapa typÃ³w requestÃ³w wraz z ich deskryptorami
     //! \return Zlecenie transferu
     static DownloadRequest * createShallowCopyRequest(const std::map<CommunicationManager::Request, ShallowCopyDescriptor> & shallowCopiesToDownload);
 
@@ -75,10 +75,10 @@ public:
     //! \return Aktualny status zlecenia
     virtual const State state() const;
 
-    //! \return Informacja o b³êdzie
+    //! \return Informacja o bÅ‚Ä™dzie
     virtual const std::string & error() const;
 
-    //! \return Zwraca request w³aœciwy dla CommunicationManagera
+    //! \return Zwraca request wÅ‚aÅ›ciwy dla CommunicationManagera
     const CommunicationManager::ComplexRequestPtr & request() const;
 
     //! Anuluje zlecenie
@@ -87,104 +87,104 @@ public:
 	//! Rozpocznij zlecenie
 	virtual void start();
 
-    //! \return Ca³kowity postêp œci¹gania w przedziale [0-100]
+    //! \return CaÅ‚kowity postÄ™p Å›ciÄ…gania w przedziale [0-100]
     virtual const float totalProgress() const;
-    //! \return Postêp œci¹gania aktualnego pliku
+    //! \return PostÄ™p Å›ciÄ…gania aktualnego pliku
     virtual const float currentFileProgress() const;
 	//! \return Nazwa aktualnie pobieranego pliku
 	virtual std::string currentFileName() const;
-	//! \return Œcie¿ka zapisu aktualnie pobieranego pliku
+	//! \return ÅšcieÅ¼ka zapisu aktualnie pobieranego pliku
 	std::string currentFilePath() const;
 
-    //! \return Ca³kowita iloœæ danych do œci¹gniêcia w bajtach
+    //! \return CaÅ‚kowita iloÅ›Ä‡ danych do Å›ciÄ…gniÄ™cia w bajtach
     virtual const long totalSize() const;
     //! \return Rozmiar aktualnego pliku
     virtual const long currentFileSize() const;
 
-    //! \return Sumaryczna iloœc plików do œci¹gniêcia
+    //! \return Sumaryczna iloÅ›c plikÃ³w do Å›ciÄ…gniÄ™cia
     virtual const int totalFilesToDownload() const;
-    //! \retrurn Iloœc plików ju¿ œci¹gniêtych
+    //! \retrurn IloÅ›c plikÃ³w juÅ¼ Å›ciÄ…gniÄ™tych
     virtual const int filesDownloaded() const;
-    //! \return Aktualnie œci¹gany plik (numeracja nie ID)
+    //! \return Aktualnie Å›ciÄ…gany plik (numeracja nie ID)
     virtual const int currentFile() const;
 
 private:
-    //! \param request Zadanie dla kotrego chcemy pobraæ rozmiar œci¹ganego pliku
-    //! \return Rozmiar pliku zwi¹zanego z zadaniem
+    //! \param request Zadanie dla kotrego chcemy pobraÄ‡ rozmiar Å›ciÄ…ganego pliku
+    //! \return Rozmiar pliku zwiÄ…zanego z zadaniem
     const long getRequestSize(const CommunicationManager::BasicRequestPtr & request) const;
 
-    //! \param fileID Identyfikator pliku do œci¹gniêcia
-    //! \param destPath Œcie¿ka zapisu pliku
-    //! \param fileSize Wielkoœæ pliku w bajtach
-    //! \param callbacks Callbacki dla zmiany statusu requestów
+    //! \param fileID Identyfikator pliku do Å›ciÄ…gniÄ™cia
+    //! \param destPath ÅšcieÅ¼ka zapisu pliku
+    //! \param fileSize WielkoÅ›Ä‡ pliku w bajtach
+    //! \param callbacks Callbacki dla zmiany statusu requestÃ³w
     void addFileRequest(int fileID, const std::string & destPath, long fileSize, const CommunicationManager::RequestCallbacks & callbacks = CommunicationManager::RequestCallbacks());
-    //! \param fileID Identyfikator zdjêcia do œci¹gniêcia
-    //! \param destPath Œcie¿ka zapisu zdjêcia
-    //! \param fileSize Wielkoœæ zdjêcia w bajtach
-    //! \param callbacks Callbacki dla zmiany statusu requestów
+    //! \param fileID Identyfikator zdjÄ™cia do Å›ciÄ…gniÄ™cia
+    //! \param destPath ÅšcieÅ¼ka zapisu zdjÄ™cia
+    //! \param fileSize WielkoÅ›Ä‡ zdjÄ™cia w bajtach
+    //! \param callbacks Callbacki dla zmiany statusu requestÃ³w
     void addPhotoRequest(int photoID, const std::string & destPath, long fileSize, const CommunicationManager::RequestCallbacks & callbacks = CommunicationManager::RequestCallbacks());
-    //! \param metadataType Identyfikator requesta: musi byæ jedna z wartoœci [CopyMotionShallowCopy, CopyMotionMetadata, CopyMedicalShallowCopy, CopyMedicalMetadata]
-    //! \param destPath Œcie¿ka zapisu metadanych
-    //! \param fileSize Wielkoœæ pliku w bajtach
-    //! \param callbacks Callbacki dla zmiany statusu requestów
+    //! \param metadataType Identyfikator requesta: musi byÄ‡ jedna z wartoÅ›ci [CopyMotionShallowCopy, CopyMotionMetadata, CopyMedicalShallowCopy, CopyMedicalMetadata]
+    //! \param destPath ÅšcieÅ¼ka zapisu metadanych
+    //! \param fileSize WielkoÅ›Ä‡ pliku w bajtach
+    //! \param callbacks Callbacki dla zmiany statusu requestÃ³w
     void addMetadataRequest(CommunicationManager::Request metadataType, const std::string & destPath, long fileSize, const CommunicationManager::RequestCallbacks & callbacks = CommunicationManager::RequestCallbacks());
 
-    //! ------------------------- Metody ustaiwaj¹ stan zlecenia i dane konieczne do obs³ugi postêpu -------------------------------------
+    //! ------------------------- Metody ustaiwajÄ… stan zlecenia i dane konieczne do obsÅ‚ugi postÄ™pu -------------------------------------
 
-    //! Metoda wywo³ywana kiedy zaczynamy obs³ugiwaæ ca³e zlecenie
-    //! \param request Zlecenie którego dotyczy callback
+    //! Metoda wywoÅ‚ywana kiedy zaczynamy obsÅ‚ugiwaÄ‡ caÅ‚e zlecenie
+    //! \param request Zlecenie ktÃ³rego dotyczy callback
     void onFullDownloadStart(const CommunicationManager::BasicRequestPtr & request);
 
-    //! Metoda wywo³ywana kiedy koñczymy pomyœlnie obs³ugiwaæ ca³e zlecenie
-    //! \param request Zlecenie którego dotyczy callback
+    //! Metoda wywoÅ‚ywana kiedy koÅ„czymy pomyÅ›lnie obsÅ‚ugiwaÄ‡ caÅ‚e zlecenie
+    //! \param request Zlecenie ktÃ³rego dotyczy callback
     void onFullDownloadComplete(const CommunicationManager::BasicRequestPtr & request);
 
-    //! Metoda wywo³ywana kiedy pojedyczny plik rozpoczyna œci¹ganie
-    //! \param request Zlecenie którego dotyczy callback
+    //! Metoda wywoÅ‚ywana kiedy pojedyczny plik rozpoczyna Å›ciÄ…ganie
+    //! \param request Zlecenie ktÃ³rego dotyczy callback
     void onDownloadBegin(const CommunicationManager::BasicRequestPtr & request);
 
-    //! Metoda wywo³ywana kiedy zadanie jest anulowane
-    //! \param request Zlecenie którego dotyczy callback
+    //! Metoda wywoÅ‚ywana kiedy zadanie jest anulowane
+    //! \param request Zlecenie ktÃ³rego dotyczy callback
     void onDownloadCancel(const CommunicationManager::BasicRequestPtr & request);
 
-    //! Metoda wywo³ywana kiedy pojedyczny plik zostanie œci¹gniêty
-    //! \param request Zlecenie którego dotyczy callback
+    //! Metoda wywoÅ‚ywana kiedy pojedyczny plik zostanie Å›ciÄ…gniÄ™ty
+    //! \param request Zlecenie ktÃ³rego dotyczy callback
     void onDownloadComplete(const CommunicationManager::BasicRequestPtr & request);
 
-    //! Metoda wywo³ywana kiedy zadanie koñczy siê b³êdem
-    //! \param request Zlecenie którego dotyczy callback
+    //! Metoda wywoÅ‚ywana kiedy zadanie koÅ„czy siÄ™ bÅ‚Ä™dem
+    //! \param request Zlecenie ktÃ³rego dotyczy callback
     void onDownloadError(const CommunicationManager::BasicRequestPtr & request, const std::string & error);
 
 private:
     //! Aktualny stan zlecenia
     State state_;
-    //! Komunikat b³êdu
+    //! Komunikat bÅ‚Ä™du
     std::string error_;
-    //! W³aœciwe zlecenie CommunicationManagera
+    //! WÅ‚aÅ›ciwe zlecenie CommunicationManagera
     CommunicationManager::ComplexRequestPtr request_;
     //! Aktualny pojedynczy transfer
     CommunicationManager::BasicRequestPtr currentTransfer;
-    //! Numer aktualnie œci¹ganego pliku
+    //! Numer aktualnie Å›ciÄ…ganego pliku
     int currentTransferID;
-    //! Rozmiar ca³kowity do œci¹gniêcia
+    //! Rozmiar caÅ‚kowity do Å›ciÄ…gniÄ™cia
     long totalSize_;
-    //! Rozmiar aktualnie œci¹ganego pliku
+    //! Rozmiar aktualnie Å›ciÄ…ganego pliku
     long currentSize;
-    //! Zbiór callbacków realizuj¹cych obs³ugê stanu zlecenia pojedynczego œci¹gania
+    //! ZbiÃ³r callbackÃ³w realizujÄ…cych obsÅ‚ugÄ™ stanu zlecenia pojedynczego Å›ciÄ…gania
     CommunicationManager::RequestCallbacks singleTransferCallbacks;
 
-    //! Zbiór callbacków realizuj¹cych obs³ugê stanu ca³ego pakietu zleceñ
+    //! ZbiÃ³r callbackÃ³w realizujÄ…cych obsÅ‚ugÄ™ stanu caÅ‚ego pakietu zleceÅ„
     CommunicationManager::RequestCallbacks complexTransferCallbacks;
 
-    //! Mapa plików do œci¹gniêcia wraz z ich rozmiarem
+    //! Mapa plikÃ³w do Å›ciÄ…gniÄ™cia wraz z ich rozmiarem
     std::map<int, long> filesSizes;
-    //! Mapa zdjêæ do œci¹gniêcia wraz z ich rozmiarem
+    //! Mapa zdjÄ™Ä‡ do Å›ciÄ…gniÄ™cia wraz z ich rozmiarem
     std::map<int, long> photosSizes;
-    //! Mapa plików p³ytkiej kopii do œci¹gniêcia wraz z ich rozmiarem
+    //! Mapa plikÃ³w pÅ‚ytkiej kopii do Å›ciÄ…gniÄ™cia wraz z ich rozmiarem
     std::map<CommunicationManager::Request, long> shallowSizes;
-    //! Mutex synchrnizuj¹cy operacje na obiekcie
+    //! Mutex synchrnizujÄ…cy operacje na obiekcie
     mutable ReentrantMutex stateMutex;
-	//! Mutex synchrnizuj¹cy operacje na obiekcie
+	//! Mutex synchrnizujÄ…cy operacje na obiekcie
 	mutable ReentrantMutex cancelMutex;
 };
 

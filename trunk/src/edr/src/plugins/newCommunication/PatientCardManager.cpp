@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+﻿#include "CommunicationPCH.h"
 #include "PatientCardManager.h"
 #include <utils/Debug.h>
 

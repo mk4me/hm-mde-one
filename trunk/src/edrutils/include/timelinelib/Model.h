@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD__TIMELINEMODEL_H__
+ï»¿#ifndef HEADER_GUARD__TIMELINEMODEL_H__
 #define HEADER_GUARD__TIMELINEMODEL_H__
 
 #include <utils/NamedTree.h>
@@ -26,7 +26,7 @@ public:
     typedef boost::weak_ptr<TChannel> TChannelWPtr;
     typedef boost::weak_ptr<const TChannel> TChannelConstWPtr;
 
-    //! Klasa wprowadzaj¹ca hierarchiê kana³ów, kolejnoœæ, obs³ugê œcie¿ek
+    //! Klasa wprowadzajÄ…ca hierarchiÄ™ kanaÅ‚Ã³w, kolejnoÅ›Ä‡, obsÅ‚ugÄ™ Å›cieÅ¼ek
     class TChannel : public NamedTree<Channel, utils::PtrPolicyBoost>
     {
         public:
@@ -59,12 +59,12 @@ private:
 
     typedef Tags::iterator tag_iterator;
     
-    //! Mapowanie Kana³ów do kana³ów z obs³uga œcie¿ek i hierarchi¹
+    //! Mapowanie KanaÅ‚Ã³w do kanaÅ‚Ã³w z obsÅ‚uga Å›cieÅ¼ek i hierarchiÄ…
     typedef std::map<ChannelConstPtr, TChannelConstPtr> ChannelToTChannel;
 
     typedef std::vector<ChannelConstPtr> ConstChannels;
 
-    //! Typ œcie¿ki w formacie œcie¿ka/liœæ
+    //! Typ Å›cieÅ¼ki w formacie Å›cieÅ¼ka/liÅ›Ä‡
     typedef std::pair<std::string, std::string> ExtPath;
 
     typedef std::set<IChannelPtr> IChannels;
@@ -89,7 +89,7 @@ private:
     //! Aktualny stan modelu
     State state;
 
-    ////! Ostatnie zmiany w modelu dla których wywo³ano notify - wa¿ne tylko podczas notify, potem s¹ resetowane!!
+    ////! Ostatnie zmiany w modelu dla ktÃ³rych wywoÅ‚ano notify - waÅ¼ne tylko podczas notify, potem sÄ… resetowane!!
     //int latestChanges;
 
     IChannels iChannels;
@@ -131,7 +131,7 @@ public:
     //! \return Czas poczatku w timeline
     double getBeginTime() const;
 
-    //! \return Czas koñca w timeline
+    //! \return Czas koÅ„ca w timeline
     double getEndTime() const;
 
     //! \return Aktualny czas kanalu
@@ -221,13 +221,13 @@ public:
     //! \param channel fatyczny kanal dotarczony przez klienta
     void addChannel(const std::string & path, const IChannelPtr & channel);
 
-    //! \param channels Kana³y do dodawnia w formie œciezka -> kana³, kana³ nie powiniem byæ nullptr
+    //! \param channels KanaÅ‚y do dodawnia w formie Å›ciezka -> kanaÅ‚, kanaÅ‚ nie powiniem byÄ‡ nullptr
     void addChannels(const std::map<std::string, IChannelPtr> & channels);
 
     //! \param path Sciezka kanalu do usuniecia
     void removeChannel(const std::string & path);
 
-    //! \param paths Sciezki kanalów do usuniecia
+    //! \param paths Sciezki kanalÃ³w do usuniecia
     void removeChannels(const std::set<std::string> & paths);
 
     //! \return Pierwszy kanal timeline

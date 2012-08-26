@@ -1,4 +1,4 @@
-#include "CorePCH.h"
+ï»¿#include "CorePCH.h"
 #include "LogInitializer.h"
 #include "Log.h"
 #include <QtCore/QThread>
@@ -24,7 +24,7 @@ void QtMessageHandler(QtMsgType type, const char *msg)
             LOG_WARNING_STATIC_NAMED("qt", msg);
             break;
         default:
-            // pozosta³e poziomy komunikatu s¹ ju¿ to¿same errorowi
+            // pozostaÅ‚e poziomy komunikatu sÄ… juÅ¼ toÅ¼same errorowi
             LOG_ERROR_STATIC_NAMED("qt", msg);
             break;
     }
@@ -44,7 +44,7 @@ using namespace log4cxx;
 
 //------------------------------------------------------------------------------
 
-/** Strumieñ przekierowywuj¹cy logowania do log4cxx */
+/** StrumieÅ„ przekierowywujÄ…cy logowania do log4cxx */
 class OsgNotifyHandlerLog4cxx : public osg::NotifyHandler
 {
 private:
@@ -60,7 +60,7 @@ public:
     //! \param message
     void notify(osg::NotifySeverity severity, const char *message)
     {
-        // z wiadomoœci usuwamy zbêdne znaki (osg zawsze na koniec daje now¹ liniê)
+        // z wiadomoÅ›ci usuwamy zbÄ™dne znaki (osg zawsze na koniec daje nowÄ… liniÄ™)
         std::string msg = message;
         boost::trim(msg);
         switch (severity) {
@@ -82,7 +82,7 @@ public:
                 LOG4CXX_DEBUG(logger, msg);
                 break;
             default:
-                UTILS_ASSERT(false, "Nieznany poziom osg. Wiadomoœæ: %s", message);
+                UTILS_ASSERT(false, "Nieznany poziom osg. WiadomoÅ›Ä‡: %s", message);
                 break;
         }
     }
@@ -93,9 +93,9 @@ public:
 class ConsoleWidgetAppender : public AppenderSkeleton
 {
 private:
-    //! Konsola w³aœciwa.
+    //! Konsola wÅ‚aÅ›ciwa.
     EDRConsoleWidget* console;
-    //! Kolejka wiadomoœci dla konsoli. U¿ywana, gdy pojawiaj¹ siê zdarzenia logowania,
+    //! Kolejka wiadomoÅ›ci dla konsoli. UÅ¼ywana, gdy pojawiajÄ… siÄ™ zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
     std::queue<EDRConsoleWidgetEntryPtr> queuedEntries;
 
@@ -107,14 +107,14 @@ public:
     END_LOG4CXX_CAST_MAP()
 
 public:
-    //! Zeruj¹cy konstruktor
+    //! ZerujÄ…cy konstruktor
     ConsoleWidgetAppender() :
     console(NULL)
     {}
     //!
     virtual ~ConsoleWidgetAppender()
     {
-        UTILS_ASSERT(console == NULL, "WskaŸnik powinien zostaæ jawnie wyzerowany metod¹ setConsole!");
+        UTILS_ASSERT(console == NULL, "WskaÅºnik powinien zostaÄ‡ jawnie wyzerowany metodÄ… setConsole!");
     }
 
 public:
@@ -124,7 +124,7 @@ public:
         // korzytamy z muteksa z klasy bazowej !
         helpers::synchronized sync(mutex);
         this->console = console;
-        // opró¿niamy kolejkê komunikatów
+        // oprÃ³Å¼niamy kolejkÄ™ komunikatÃ³w
         if ( console ) {
             for ( ; !queuedEntries.empty(); queuedEntries.pop() ) {
                 console->logOrQueueEntry(queuedEntries.front());
@@ -162,7 +162,7 @@ protected:
         }
 
         // rev - jakie flagi/ustawienia powoduja roznice? trzeba znalezc uniwersalne rozwiazanie
-        // jeœli Utf16 jest ustawiane w konfiguracji, to nie mo¿na tego tak zahardcodowaæ
+        // jeÅ›li Utf16 jest ustawiane w konfiguracji, to nie moÅ¼na tego tak zahardcodowaÄ‡
         #ifdef __WIN32__
             entry->message = QString::fromUtf16( reinterpret_cast<const ushort*>(buf.c_str()) );
         #else
@@ -173,7 +173,7 @@ protected:
         entry->timestamp = QDate::currentDate();
         entry->theadId = QThread::currentThreadId();
         if ( console ) {
-            // mamy konsolê - wys³amy jej komunikat
+            // mamy konsolÄ™ - wysÅ‚amy jej komunikat
             console->logOrQueueEntry(entry);
         } else {
             // nie ma konsoli - kolejkujemy
@@ -190,7 +190,7 @@ typedef log4cxx::helpers::ObjectPtrT<ConsoleWidgetAppender> ConsoleWidgetAppende
 LogInitializer::LogInitializer( const char* configPath )
 {
     ConsoleWidgetAppender::registerClass();
-    // za³adowanie parametów logowania
+    // zaÅ‚adowanie parametÃ³w logowania
     PropertyConfigurator::configure(configPath);
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(Logger::getLogger( "osg" ) ));
     qInstallMsgHandler(QtMessageHandler);
@@ -198,13 +198,13 @@ LogInitializer::LogInitializer( const char* configPath )
 
 LogInitializer::~LogInitializer()
 {
-    // koniecznie trzeba przywróciæ, inaczej bêdzie b³¹d
+    // koniecznie trzeba przywrÃ³ciÄ‡, inaczej bÄ™dzie bÅ‚Ä…d
     osg::setNotifyHandler( new osg::StandardNotifyHandler() );
 }
 
 void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
 {
-    // pobranie wszystkich appenderów dla konsoli
+    // pobranie wszystkich appenderÃ³w dla konsoli
     LoggerList loggers;
     Logger::getRootLogger()->getLoggerRepository()->getCurrentLoggers().swap(loggers);
     loggers.push_back( Logger::getRootLogger() );
@@ -227,15 +227,15 @@ void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
 #else // fallback do logowania OSG
 
 
-/** Strumieñ przekierowywuj¹cy logowania do konsoli */
+/** StrumieÅ„ przekierowywujÄ…cy logowania do konsoli */
 class OsgNotifyHandlerConsoleWidget : public osg::NotifyHandler
 {
 private:
-    //! Konsola w³aœciwa.
+    //! Konsola wÅ‚aÅ›ciwa.
     EDRConsoleWidget* console;
     //!
     osg::ref_ptr<osg::NotifyHandler> defaultHandler;
-    //! Kolejka wiadomoœci dla konsoli. U¿ywana, gdy pojawiaj¹ siê zdarzenia logowania,
+    //! Kolejka wiadomoÅ›ci dla konsoli. UÅ¼ywana, gdy pojawiajÄ… siÄ™ zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
     std::queue<EDRConsoleWidgetEntryPtr> queuedEntries;
     typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
@@ -247,7 +247,7 @@ public:
     console(NULL), defaultHandler(handler)
     {}
 
-    //! \return Domyœlny handler.
+    //! \return DomyÅ›lny handler.
     osg::NotifyHandler* getDefaultHandler()
     {
         return defaultHandler.get();
@@ -257,7 +257,7 @@ public:
     void setConsole(EDRConsoleWidget* console)
     {
         this->console = console;
-        // opró¿niamy kolejkê komunikatów
+        // oprÃ³Å¼niamy kolejkÄ™ komunikatÃ³w
         if ( console ) {
             ScopedLock lock(queueMutex);
             for ( ; !queuedEntries.empty(); queuedEntries.pop() ) {
@@ -273,7 +273,7 @@ public:
         // standardowe drukowanie
         defaultHandler->notify(severity, message);
 
-        // z wiadomoœci usuwamy zbêdne znaki (osg zawsze na koniec daje now¹ liniê)
+        // z wiadomoÅ›ci usuwamy zbÄ™dne znaki (osg zawsze na koniec daje nowÄ… liniÄ™)
         std::string msg = message;
         boost::trim(msg);
 
@@ -292,7 +292,7 @@ public:
         entry->timestamp = QDate::currentDate();
         entry->theadId = QThread::currentThreadId();
         if ( console ) {
-            // mamy konsolê - wys³amy jej komunikat
+            // mamy konsolÄ™ - wysÅ‚amy jej komunikat
             console->logOrQueueEntry(entry);
         } else {
             // nie ma konsoli - kolejkujemy

@@ -1,4 +1,4 @@
-#include "PCH.h"
+ï»¿#include "PCH.h"
 #include "SkeletonSerie.h"
 #include "MarkersVisualizationScheme.h"
 
@@ -80,7 +80,7 @@ MarkerCollectionConstPtr SkeletonSerie::createTrajectories( kinematic::JointAngl
             scheme.setTime(time);
             auto rootPos = scheme.getCurrentPosition();
             const std::vector<VisualizationScheme::State>& states = scheme.getStates();
-            // czy kolejnoœæ jest zapewniona? 
+            // czy kolejnoÅ›Ä‡ jest zapewniona? 
             int size = states.size();
             for (int i = 0; i < size; ++i) {
                 VectorChannelPtr marker = markers->getChannel(i);

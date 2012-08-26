@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/01/18
 	created:	18:1:2012   11:35
 	filename: 	HmmContexts.h
@@ -17,7 +17,7 @@
 #include "FlexiTabWidget.h"
 #include "IAppUsageContextManager.h"
 
-//! Kontekst bazowy dla kontekstów aplikacji medycznej
+//! Kontekst bazowy dla kontekstÃ³w aplikacji medycznej
 class HMMEmptyContext : public IAppUsageContext
 {
 public:
@@ -25,10 +25,10 @@ public:
 	virtual ~HMMEmptyContext() {}
 
 public:
-	//! wywo³ywane, po aktywowaniu siê kontekstu
-	//! \param contextWidget wiget, który wywo³a³ kontekst
+	//! wywoÅ‚ywane, po aktywowaniu siÄ™ kontekstu
+	//! \param contextWidget wiget, ktÃ³ry wywoÅ‚aÅ‚ kontekst
 	virtual void activateContext(QWidget * contextWidget) {}
-	//! wywo³ywane, gdy kontekst przestaje byæ aktywny
+	//! wywoÅ‚ywane, gdy kontekst przestaje byÄ‡ aktywny
 	//! \param nextContextWidget 
 	//! \param refresh 
 	virtual void deactivateContext(QWidget * nextContextWidget, bool refresh) {}
@@ -41,56 +41,56 @@ class HMMDataContext : public HMMEmptyContext
 };
 
 class TreeRefresher;
-//! kontekst wywo³ywany dla zak³adki analiz
+//! kontekst wywoÅ‚ywany dla zakÅ‚adki analiz
 class HMMAnalysisContext : public IAppUsageContext
 {
 public:
 	//! konstruktor
-	//! \param refresher klasa s³u¿y do odœwie¿ania drzewa danych
+	//! \param refresher klasa sÅ‚uÅ¼y do odÅ›wieÅ¼ania drzewa danych
 	HMMAnalysisContext(TreeRefresher * refresher);
-	//! kontekst staje siê aktywny, jeœli jest taka potrzeba, to odœwie¿ane jest drzewo danych
+	//! kontekst staje siÄ™ aktywny, jeÅ›li jest taka potrzeba, to odÅ›wieÅ¼ane jest drzewo danych
 	//! \param contextWidget 
 	virtual void activateContext(QWidget * contextWidget);
-	//! kontekst jest deaktywowany, nie ma potrzeby odœwie¿aæ drzewa analiz -> zostaje to zablokowane
+	//! kontekst jest deaktywowany, nie ma potrzeby odÅ›wieÅ¼aÄ‡ drzewa analiz -> zostaje to zablokowane
 	//! \param nextContextWidget 
 	//! \param refresh 
 	virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
 
 private:
-    //! klasa s³u¿y do odœwie¿ania drzewa danych
+    //! klasa sÅ‚uÅ¼y do odÅ›wieÅ¼ania drzewa danych
 	TreeRefresher * refresher;
 };
 
-//! placeholder dla kontekstu raportów
+//! placeholder dla kontekstu raportÃ³w
 class HMMReportContext : public HMMEmptyContext
 {
 
 };
 
-//! kontekst dla wizualizatorów
+//! kontekst dla wizualizatorÃ³w
 class HMMVisualizerUsageContext : public IAppUsageContext
 {
 public:
     HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget);
 public:
-    //! wywo³ywane, po aktywowaniu siê kontekstu
-    //! \param contextWidget wiget, który wywo³a³ kontekst
+    //! wywoÅ‚ywane, po aktywowaniu siÄ™ kontekstu
+    //! \param contextWidget wiget, ktÃ³ry wywoÅ‚aÅ‚ kontekst
     virtual void activateContext(QWidget * contextWidget);
-    //! wywo³ywane, gdy kontekst przestaje byæ aktywny
+    //! wywoÅ‚ywane, gdy kontekst przestaje byÄ‡ aktywny
     //! \param nextContextWidget 
     //! \param refresh
     virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
     //! wizualizator jest rejestrowany, tworzony jest flexi tabdla niego
     virtual void onRegisterContextWidget(QWidget * contextWidget);
-    //! wizualizator jest zamkniêty, usuwany jest flexitab dla niego
+    //! wizualizator jest zamkniÄ™ty, usuwany jest flexitab dla niego
     virtual void onUnregisterContextWidget(QWidget * contextWidget);
 
 private:
     //! flexi tab z akcjami
     FlexiTabWidget * flexiTabWidget;
-    //! identyfikator grupy dla wizualizatorów
+    //! identyfikator grupy dla wizualizatorÃ³w
     FlexiTabWidget::GUIID visualizerGroupID;
-    //! zbiór sekcji
+    //! zbiÃ³r sekcji
     std::set<FlexiTabWidget::GUIID> visualizerSectionsIDs;
     //! mapa [widget kontekstu - > [nazwa grupy -> widget flexi]]
     std::map<QWidget*, std::map<QString, QWidget *>> visualizersData;
@@ -110,11 +110,11 @@ public:
     //! \param hmm 
     HMMTreeItemUsageContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
 public:
-    //! wywo³ywane, po aktywowaniu siê kontekstu, do flexi bara trafi¹ akcje zwi¹zane z drzewem analiz
-    //! \param contextWidget wiget, który wywo³a³ kontekst
+    //! wywoÅ‚ywane, po aktywowaniu siÄ™ kontekstu, do flexi bara trafiÄ… akcje zwiÄ…zane z drzewem analiz
+    //! \param contextWidget wiget, ktÃ³ry wywoÅ‚aÅ‚ kontekst
     virtual void activateContext(QWidget * contextWidget);
-    //! wywo³ywane, gdy kontekst przestaje byæ aktywny
-    //! z flexibara znikaj¹ akcje zwi¹zane z drzewem analiz
+    //! wywoÅ‚ywane, gdy kontekst przestaje byÄ‡ aktywny
+    //! z flexibara znikajÄ… akcje zwiÄ…zane z drzewem analiz
     virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
     //! rejestracja drzewa analiz
     virtual void onRegisterContextWidget(QWidget * contextWidget);
@@ -122,11 +122,11 @@ public:
     virtual void onUnregisterContextWidget(QWidget * contextWidget);
 
 public slots:
-    //! na podstawie aktualnego stanu drzewa odœwie¿a flexiwidget
+    //! na podstawie aktualnego stanu drzewa odÅ›wieÅ¼a flexiwidget
     void refresh();
 
 private slots:
-    //! zmieni³ siê zaznaczony element drzewa analiz, nale¿y zmieniæ flexi widget
+    //! zmieniÅ‚ siÄ™ zaznaczony element drzewa analiz, naleÅ¼y zmieniÄ‡ flexi widget
     //! \param current aktualny element drzewa
     //! \param previous poprzedni element drzewa
     void itemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
@@ -140,105 +140,105 @@ private:
 private:
     //! flexi widget
     FlexiTabWidget * flexiTabWidget;
-    //! sekcja obs³ugiwanego flexi widgeta
+    //! sekcja obsÅ‚ugiwanego flexi widgeta
     QWidget* flexiSection;
     //! identyfikator grupy dla drzewa
     FlexiTabWidget::GUIID groupID;
-    //! g³ówne okno aplikacji
+    //! gÅ‚Ã³wne okno aplikacji
     HmmMainWindow* hmm;
 };
 typedef core::shared_ptr<HMMTreeItemUsageContext> HMMTreeItemUsageContextPtr;
 typedef core::shared_ptr<const HMMTreeItemUsageContext> HMMTreeItemUsageContextConstPtr;
 
-//! kontekst dla zak³adki z miniaturkami obrazów do raportu
+//! kontekst dla zakÅ‚adki z miniaturkami obrazÃ³w do raportu
 class RaportsThumbnailsContext : public QObject, public IAppUsageContext
 {
     Q_OBJECT;
 public:
     //! konstruktor
     //! \param flexiTabWidget flexi widget kontekstu
-    //! \param hmm g³ówne okno aplikacji
+    //! \param hmm gÅ‚Ã³wne okno aplikacji
     RaportsThumbnailsContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
 public:
-    //! wywo³ywane, po aktywowaniu siê kontekstu, do flexi bara trafi¹ akcje zwi¹zane z tworzeniem raportów
-    //! \param contextWidget wiget, który wywo³a³ kontekst
+    //! wywoÅ‚ywane, po aktywowaniu siÄ™ kontekstu, do flexi bara trafiÄ… akcje zwiÄ…zane z tworzeniem raportÃ³w
+    //! \param contextWidget wiget, ktÃ³ry wywoÅ‚aÅ‚ kontekst
     virtual void activateContext(QWidget * contextWidget);
-    //! wywo³ywane, gdy kontekst przestaje byæ aktywny
-    //! z flexibara znikaj¹ akcje zwi¹zane z tworzeniem raportów
+    //! wywoÅ‚ywane, gdy kontekst przestaje byÄ‡ aktywny
+    //! z flexibara znikajÄ… akcje zwiÄ…zane z tworzeniem raportÃ³w
     virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
-    //! rejestracja widgeta z miniaturkami raportów
+    //! rejestracja widgeta z miniaturkami raportÃ³w
     virtual void onRegisterContextWidget(QWidget * contextWidget);
-    //! wyrejstrowanie widgeta z miniaturkami raportów
+    //! wyrejstrowanie widgeta z miniaturkami raportÃ³w
     virtual void onUnregisterContextWidget(QWidget * contextWidget);
 
 private slots:
-    //! Utworzenie raportu na podstawie szablonu i stylu, z do³¹czonymi obrazami
+    //! Utworzenie raportu na podstawie szablonu i stylu, z doÅ‚Ä…czonymi obrazami
     void createRaport();
 
 private:
     //! flexi widget
     FlexiTabWidget * flexiTabWidget;
-    //! sekcja obs³ugiwanego flexi widgeta
+    //! sekcja obsÅ‚ugiwanego flexi widgeta
     QWidget* flexiSection;
-    //! identyfikator grupy dla miniatur raportów
+    //! identyfikator grupy dla miniatur raportÃ³w
     FlexiTabWidget::GUIID groupID;
-    //! g³ówne okno aplikacji
+    //! gÅ‚Ã³wne okno aplikacji
     HmmMainWindow* hmm;
     //! nazwa tworzonego raportu
     QPlainTextEdit* projectName;
-    //! kombo box, z szablonami raportów
+    //! kombo box, z szablonami raportÃ³w
     QComboBox* projectTemplate;
-    //! kombo box ze stylami raportów
+    //! kombo box ze stylami raportÃ³w
     QComboBox* cssCombo;
 };
 typedef core::shared_ptr<RaportsThumbnailsContext> RaportsThumbnailsContextPtr;
 typedef core::shared_ptr<const RaportsThumbnailsContext> RaportsThumbnailsContextConstPtr;
 
-//! kontekst dla zak³adki z raportami
+//! kontekst dla zakÅ‚adki z raportami
 class RaportsTabContext : public QObject, public IAppUsageContext
 {
     Q_OBJECT;
 public:
     //! konstruktor
     //! \param flexiTabWidget flexi widget kontekstu
-    //! \param hmm g³ówne okno aplikacji
+    //! \param hmm gÅ‚Ã³wne okno aplikacji
     RaportsTabContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
 
 public:
-    //! wywo³ywane, po aktywowaniu siê kontekstu, do flexi bara trafi¹ akcje zwi¹zane z oknem raportów
-    //! \param contextWidget wiget, który wywo³a³ kontekst
+    //! wywoÅ‚ywane, po aktywowaniu siÄ™ kontekstu, do flexi bara trafiÄ… akcje zwiÄ…zane z oknem raportÃ³w
+    //! \param contextWidget wiget, ktÃ³ry wywoÅ‚aÅ‚ kontekst
     virtual void activateContext(QWidget * contextWidget);
-    //! wywo³ywane, gdy kontekst przestaje byæ aktywny
-    //! z flexibara znikaj¹ akcje zwi¹zane z oknem raportów
+    //! wywoÅ‚ywane, gdy kontekst przestaje byÄ‡ aktywny
+    //! z flexibara znikajÄ… akcje zwiÄ…zane z oknem raportÃ³w
     virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
-    //! rejestracja okna raportów
+    //! rejestracja okna raportÃ³w
     virtual void onRegisterContextWidget(QWidget * contextWidget);
-    //! wyrejstrowanie okna raportów
+    //! wyrejstrowanie okna raportÃ³w
     virtual void onUnregisterContextWidget(QWidget * contextWidget);
 
 private:
-    //! tworzy zbiorczy widget, który jest kontenerem dla dwóch wierszy widgetów potomnych
-    //! \return krotka z utworzonym widgetem oraz layoutami dla wiersza górnego i dolnego
+    //! tworzy zbiorczy widget, ktÃ³ry jest kontenerem dla dwÃ³ch wierszy widgetÃ³w potomnych
+    //! \return krotka z utworzonym widgetem oraz layoutami dla wiersza gÃ³rnego i dolnego
     boost::tuple<QWidget*, QLayout*, QLayout*> createTwoLineWidget();
-    //! automatycznie rozmieszcza widgety w dwóch wierszach
+    //! automatycznie rozmieszcza widgety w dwÃ³ch wierszach
     //! \param editList lista z akcjami i obiektami
     //! \param lowerLayout dolny wiersz
-    //! \param upperLayout górny wiersz
-    //! \param actionsOnTop czy akcje powinny byæ w górnym wierszu, czy bez znaczenia
+    //! \param upperLayout gÃ³rny wiersz
+    //! \param actionsOnTop czy akcje powinny byÄ‡ w gÃ³rnym wierszu, czy bez znaczenia
     void placeObjects( const QList<QObject*> &editList, QLayout* lowerLayout, QLayout* upperLayout, bool actionsOnTop = false );
 
 private:
     //! flexi widget
     FlexiTabWidget * flexiTabWidget;
-    //! sekcja z akcjami zwi¹zanymi z edycja dokumentu
+    //! sekcja z akcjami zwiÄ…zanymi z edycja dokumentu
     QWidget* editSection;
-    //! sekcja z akcjami zwi¹zanymi z uk³adem tekstu dokumentu
+    //! sekcja z akcjami zwiÄ…zanymi z ukÅ‚adem tekstu dokumentu
     QWidget* textSection;
-    //! sekcja z akcjami zwi¹zanymi z zapisem, odczytem dokumentu
+    //! sekcja z akcjami zwiÄ…zanymi z zapisem, odczytem dokumentu
     QWidget* fileSection;
-    //! identyfikator grupy dla miniatur raportów
+    //! identyfikator grupy dla miniatur raportÃ³w
     FlexiTabWidget::GUIID groupID;
-    //! g³ówne okno aplikacji
+    //! gÅ‚Ã³wne okno aplikacji
     HmmMainWindow* hmm;
 };
 typedef core::shared_ptr<RaportsTabContext> RaportsTabContextPtr;

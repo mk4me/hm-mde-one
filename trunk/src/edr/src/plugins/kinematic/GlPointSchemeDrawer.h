@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_GLPOINTSCHEMEDRAWER_H__
+ï»¿#ifndef HEADER_GUARD_GLPOINTSCHEMEDRAWER_H__
 #define HEADER_GUARD_GLPOINTSCHEMEDRAWER_H__
 #include <map>
 #include <osg/Geode>
@@ -6,40 +6,40 @@
 #include <plugins/kinematic/SkeletalVisualizationScheme.h>
 #include "OsgSchemeDrawer.h"
 
-//! Schemat odrysowywuj¹cy punkty
+//! Schemat odrysowywujÄ…cy punkty
 class GlPointSchemeDrawer : public OsgSchemeDrawer
 {
 public:
     //! Konstruktor
-    //! \param sphereComplex z³o¿onoœæ pojedynczej sfery
-    //! \param sphereRadius promieñ sfery
+    //! \param sphereComplex zÅ‚oÅ¼onoÅ›Ä‡ pojedynczej sfery
+    //! \param sphereRadius promieÅ„ sfery
     GlPointSchemeDrawer(int sphereComplex, float sphereRadius);
     //! Konstruktor
-    //! \param sphereComplex z³o¿onoœæ sfery
-    //! \param sphereRadius promieñ sfery
-    //! \param color kolor zdefiniowany przez u¿ytkownika
+    //! \param sphereComplex zÅ‚oÅ¼onoÅ›Ä‡ sfery
+    //! \param sphereRadius promieÅ„ sfery
+    //! \param color kolor zdefiniowany przez uÅ¼ytkownika
     GlPointSchemeDrawer(int sphereComplex, float sphereRadius, const osg::Vec4& color);
 
 public:
-    //! Realizacja metody abstrakcyjnej (nieu¿ywana)
+    //! Realizacja metody abstrakcyjnej (nieuÅ¼ywana)
     virtual void draw();
-    //! wywo³ywane, gdy schemat zosta³ zmieniony i jego wizualizacja wymaga odœwie¿enia
+    //! wywoÅ‚ywane, gdy schemat zostaÅ‚ zmieniony i jego wizualizacja wymaga odÅ›wieÅ¼enia
     virtual void update();
-    //! Inicjalizacja drawera, tworzone s¹ wêz³y
+    //! Inicjalizacja drawera, tworzone sÄ… wÄ™zÅ‚y
     //! \param scheme Dostarczany schemat wizualizacji
     virtual void init(VisualizationSchemeConstPtr scheme);
-    //! wywo³ywane przy zakoñczeniu dzia³ania, sprz¹tniêcie obiektów ze sceny
+    //! wywoÅ‚ywane przy zakoÅ„czeniu dziaÅ‚ania, sprzÄ…tniÄ™cie obiektÃ³w ze sceny
     virtual void deinit();
-    //! \return zwraca wêze³ ze stworzonymi po³¹czeniami
+    //! \return zwraca wÄ™zeÅ‚ ze stworzonymi poÅ‚Ä…czeniami
     virtual osg::ref_ptr<osg::Node> getNode() { return node; }
 
 
 private:
-    //! wskaŸnik do wêz³a przechowywuj¹cego geometriê
+    //! wskaÅºnik do wÄ™zÅ‚a przechowywujÄ…cego geometriÄ™
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
-    //! wskaŸnik do geometrii, która trafia do wêz³a
+    //! wskaÅºnik do geometrii, ktÃ³ra trafia do wÄ™zÅ‚a
     typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
-    //! wskaŸnik do wêz³a zawieraj¹cego transformacjê
+    //! wskaÅºnik do wÄ™zÅ‚a zawierajÄ…cego transformacjÄ™
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
     //! aktualny stan markera (kolor, pozycja, ...)
     typedef VisualizationScheme::State MarkerState;
@@ -48,41 +48,41 @@ private:
     //! Tworzy wszystkie punkty ze schematu wizualizcji
     //! \param markers kolekcja z markerami
     void createMarkersCrowd(const std::vector<MarkerState>& markers);
-    //! Tworzy geode markera (jeœli istnieje sfera o danym kolorze to nie tworzy nowej geometrii)
-    //! \param color ¿¹dany kolor
+    //! Tworzy geode markera (jeÅ›li istnieje sfera o danym kolorze to nie tworzy nowej geometrii)
+    //! \param color Å¼Ä…dany kolor
     //! \param scale skala sfery
-    //! \return wskaŸnik do stworzonej geody
+    //! \return wskaÅºnik do stworzonej geody
     GeodePtr createMarker(osg::Vec4 color, float scale = 1.0f);
-    //! Tworzy wêze³ markera i ustawia mu odpowiednia transformacjê
-    //! \param point punkt w przestrzeni, gdzie ma byæ umieszczony wêze³
-    //! \param color ¿¹dany kolor
-    //! \param name nazwa wêz³a
-    //! \return wêze³ ze stowrzonym markerem
+    //! Tworzy wÄ™zeÅ‚ markera i ustawia mu odpowiednia transformacjÄ™
+    //! \param point punkt w przestrzeni, gdzie ma byÄ‡ umieszczony wÄ™zeÅ‚
+    //! \param color Å¼Ä…dany kolor
+    //! \param name nazwa wÄ™zÅ‚a
+    //! \return wÄ™zeÅ‚ ze stowrzonym markerem
     TransformPtr addPoint(const osg::Vec3& point, const osg::Vec4& color, const std::string& name = std::string());
-    //! Tworzy geometriê ze sfera
-    //! \param complex z³o¿onoœæ sfery
+    //! Tworzy geometriÄ™ ze sfera
+    //! \param complex zÅ‚oÅ¼onoÅ›Ä‡ sfery
     //! \param color kolor sfery
-    //! \return wskaŸnik do stworzonej geometrii
+    //! \return wskaÅºnik do stworzonej geometrii
     GeometryPtr createCustomSphere(int complex, osg::Vec4 color) const;
-    //! Zmienia kolor, jeœli kolor geometrii jest inny niz kolor markera. jeœli jest taka potrzeba tworzona jest nowa geometria
-    //! \param point wêze³ z markerem
-    //! \param state marker pochodz¹cy ze schematu wizualizacji
+    //! Zmienia kolor, jeÅ›li kolor geometrii jest inny niz kolor markera. jeÅ›li jest taka potrzeba tworzona jest nowa geometria
+    //! \param point wÄ™zeÅ‚ z markerem
+    //! \param state marker pochodzÄ…cy ze schematu wizualizacji
     void changeColorIfNecessary(TransformPtr point, const VisualizationScheme::State& state);
 
 private:
-    //! wêze³ ze stworzonymi markerami
+    //! wÄ™zeÅ‚ ze stworzonymi markerami
     osg::ref_ptr<osg::Group> node;
-    //! struktura ze stworzonymi wêz³ami markerów
+    //! struktura ze stworzonymi wÄ™zÅ‚ami markerÃ³w
     std::vector<TransformPtr> points;
     //! mapa kolor -> geometria, stworzona w celu optymalizacji
     std::map<osg::Vec4f, GeometryPtr> spheresByColor;
-    //! domyœlna z³o¿onoœæ sfery
+    //! domyÅ›lna zÅ‚oÅ¼onoÅ›Ä‡ sfery
     int complex;
-    //! domyœlny promieñ sfery
+    //! domyÅ›lny promieÅ„ sfery
     float radius;
-    //! domyœlny kolor sfery
+    //! domyÅ›lny kolor sfery
     osg::Vec4 customColor;
-    //! flaga okreœlaj¹ca, czy u¿ywaæ koloru zdefiniowanego przez u¿ytkownika
+    //! flaga okreÅ›lajÄ…ca, czy uÅ¼ywaÄ‡ koloru zdefiniowanego przez uÅ¼ytkownika
     bool useCustomColor;
 };
 typedef core::shared_ptr<GlPointSchemeDrawer> GlPointSchemeDrawerPtr;

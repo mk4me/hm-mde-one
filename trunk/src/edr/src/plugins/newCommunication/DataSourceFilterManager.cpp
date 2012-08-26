@@ -1,4 +1,4 @@
-#include "CommunicationPCH.h"
+ï»¿#include "CommunicationPCH.h"
 #include "DataSourceFilterManager.h"
 #include <utils/Debug.h>
 
@@ -108,11 +108,11 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 					patient->gender = patientIT->second->gender;
 					patient->birthDate = patientIT->second->birthDate;
 
-					//póŸniej trzeba poprawiæ o dostêpny zakres i nowe instancje patient->disorders
+					//pÃ³Åºniej trzeba poprawiÄ‡ o dostÄ™pny zakres i nowe instancje patient->disorders
 
 					//zapisuje pacjenta
 					outShallow.medicalShallowCopy->patients.insert(MedicalShallowCopy::Patients::value_type(patient->patientID, patient));
-					//aktualizuje grupowanie pacjentów po schorzeniu
+					//aktualizuje grupowanie pacjentÃ³w po schorzeniu
 					patients.insert(patient);
 
 					if(filter->filterSubject(patientIT->second->performer) == true){
@@ -173,7 +173,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 
 										//zapisz plik
 										outShallow.motionShallowCopy->files.insert(MotionShallowCopy::Files::value_type(file->fileID, file));
-										//aktualizuj sesjê
+										//aktualizuj sesjÄ™
 										session->files.insert(MotionShallowCopy::Files::value_type(file->fileID, file));
 									}
 								}
@@ -193,7 +193,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 
 										//zapisz plik
 										outShallow.motionShallowCopy->trials.insert(MotionShallowCopy::Trials::value_type(motion->trialID, motion));
-										//aktualizuj sesjê
+										//aktualizuj sesjÄ™
 										session->trials.insert(MotionShallowCopy::Trials::value_type(motion->trialID, motion));
 
 										//filtrujemy pliki motiona
@@ -212,7 +212,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 
 												//zapisz plik
 												outShallow.motionShallowCopy->files.insert(MotionShallowCopy::Files::value_type(file->fileID, file));
-												//aktualizuj sesjê
+												//aktualizuj sesjÄ™
 												motion->files.insert(MotionShallowCopy::Files::value_type(file->fileID, file));
 											}
 										}
@@ -230,7 +230,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 		}
 	}
 
-	//uzupe³niamy choroby pacjenta
+	//uzupeÅ‚niamy choroby pacjenta
 	auto outPatientsITEnd = outShallow.medicalShallowCopy->patients.end();
 	for(auto patientIT = outShallow.medicalShallowCopy->patients.begin(); patientIT != outPatientsITEnd; ++patientIT){
 		

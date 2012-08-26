@@ -1,4 +1,4 @@
-#include "NewChartPCH.h"
+ï»¿#include "NewChartPCH.h"
 #include "NewChartEvents.h"
 #include "NewChartSeriesData.h"
 #include "NewChartEventStateData.h"
@@ -81,7 +81,7 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
 
 void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEventsCollection::Context context)
 {
-    // te translacje, u¿ywane s¹ póŸniej, w trakcie rysowania
+    // te translacje, uÅ¼ywane sÄ… pÃ³Åºniej, w trakcie rysowania
     // nazwy te pochodza z pliku c3d
     QObject::tr("Foot Strike");
     QObject::tr("Foot Off"   );

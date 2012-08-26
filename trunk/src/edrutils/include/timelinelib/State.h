@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/08/01
     created:  1:8:2011   13:31
     filename: State.h
@@ -19,7 +19,7 @@ public:
 
     //! Czas.
     double time;
-    //! D³ugoœæ strumienia. 
+    //! DÅ‚ugoÅ›Ä‡ strumienia. 
     double length;
     //! Znormalizowany czas.
     double normalizedTime;

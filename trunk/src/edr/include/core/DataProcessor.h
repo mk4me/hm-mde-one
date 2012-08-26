@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/04/19
     created:  19:4:2011   16:45
     filename: DataProcessor.h
@@ -20,15 +20,15 @@ public:
     typedef ObjectSlots::SlotInfo InputInfo;
     typedef ObjectSlots::SlotInfo OutputInfo;
 private:
-    //! Faktyczna implementacja elementu przetwarzaj¹cego.
+    //! Faktyczna implementacja elementu przetwarzajÄ…cego.
     core::scoped_ptr<core::IDataProcessor> impl;
-    //! Dane wejœciowe.
+    //! Dane wejÅ›ciowe.
     core::scoped_ptr<ObjectSource> source;
-    //! Dane wyjœciowe.
+    //! Dane wyjÅ›ciowe.
     core::scoped_ptr<ObjectOutput> output;
 
 public:
-    //! \param impl Obiekt przejmowany na w³asnoœæ.
+    //! \param impl Obiekt przejmowany na wÅ‚asnoÅ›Ä‡.
     DataProcessor(core::IDataProcessor* impl);
 
 public:
@@ -44,64 +44,64 @@ public:
         return *output;
     }
 
-    //! \return Liczba wejœæ.
+    //! \return Liczba wejÅ›Ä‡.
     int getNumInput() const
     {
         return source->getNumObjects();
     }
 
-    //! \return Liczba wyjœæ.
+    //! \return Liczba wyjÅ›Ä‡.
     int getNumOutput() const
     {
         return output->getNumObjects();
     }
 
-    //! \return Informacja o i-tym wejœciu.
+    //! \return Informacja o i-tym wejÅ›ciu.
     const InputInfo& getInputInfo(int i) const
     {
         return source->getSlotInfo(i);
     }
 
-    //! \return Informacja o i-tym wyjœciu.
+    //! \return Informacja o i-tym wyjÅ›ciu.
     const OutputInfo& getOutputInfo(int i) const
     {
         return output->getSlotInfo(i);
     }
 
-    //! \param outputNo Numer wyjœcia.
-    //! \return Obiekt na wyjœciu.
+    //! \param outputNo Numer wyjÅ›cia.
+    //! \return Obiekt na wyjÅ›ciu.
     core::ObjectWrapperPtr getOutputObject(int outputNo)
     {
         return output->getWrapper(outputNo);
     }
-    //! Gdy wyjœcie/wejœcie s¹ niedopasowane zostanie rzucony wyj¹tek.
-    //! \param inputNo Numer wejœcia.
-    //! \param object Obiekt na wejœciu.
+    //! Gdy wyjÅ›cie/wejÅ›cie sÄ… niedopasowane zostanie rzucony wyjÄ…tek.
+    //! \param inputNo Numer wejÅ›cia.
+    //! \param object Obiekt na wejÅ›ciu.
     void setInputObject(int inputNo, const core::ObjectWrapperPtr& object)
     {
         source->setObject(inputNo, object);
     }
-    //! Gdy wyjœcie/wejœcie s¹ niedopasowane zostanie rzucony wyj¹tek.
-    //! \param inputNo Numer wejœcia.
-    //! \param object Obiekt na wejœciu.
+    //! Gdy wyjÅ›cie/wejÅ›cie sÄ… niedopasowane zostanie rzucony wyjÄ…tek.
+    //! \param inputNo Numer wejÅ›cia.
+    //! \param object Obiekt na wejÅ›ciu.
     void setInputObject(int inputNo, const core::ObjectWrapperConstPtr& object)
     {
         source->setObject(inputNo, object);
     }
 
-    //! \return WskaŸnik do implementacji.
+    //! \return WskaÅºnik do implementacji.
     const core::IDataProcessor* getProcessor() const
     {
         return impl.get();
     }
 
-    //! Przetwarza wejœcia i ustawia wyjœcia. Mo¿e rzucaæ wyj¹tkami.
+    //! Przetwarza wejÅ›cia i ustawia wyjÅ›cia. MoÅ¼e rzucaÄ‡ wyjÄ…tkami.
     void process()
     {
         impl->process(source.get(), output.get());
     }
 
-    //! \return false je¿eli przetwarzanie zakoñczy³o siê b³êdem (wyj¹tkiem)
+    //! \return false jeÅ¼eli przetwarzanie zakoÅ„czyÅ‚o siÄ™ bÅ‚Ä™dem (wyjÄ…tkiem)
     bool tryProcess()
     {
         try {

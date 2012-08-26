@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2012/02/17
     created:  17:2:2012   10:25
     filename: IDownloadRequest.h
@@ -16,7 +16,7 @@
 namespace communication
 {
 
-//! Interfejs dostarczaj¹cy informacji o postepie œci¹gania plików
+//! Interfejs dostarczajÄ…cy informacji o postepie Å›ciÄ…gania plikÃ³w
 class IDownloadRequest : public utils::Observable<IDownloadRequest>
 {
 public:
@@ -24,12 +24,12 @@ public:
     //! Stan zlecenia
     enum State {
 		Created,		//! Zadanie stworzono, nie dodano do przetwarzania
-        Pending,        //! Dodano do przetwarzania - Oczekuje na rozpoczêcie
-        Started,        //! Rozpoczêto
-        SingleFinished, //! Zakoñczono pojedynczy transfer
-        FinishedOK,     //! Zakoñczono powodzeniem
-        FinishedCancel, //! Zakoñczono - przerwano
-        FinishedError   //! Zakoñczono z b³edêm
+        Pending,        //! Dodano do przetwarzania - Oczekuje na rozpoczÄ™cie
+        Started,        //! RozpoczÄ™to
+        SingleFinished, //! ZakoÅ„czono pojedynczy transfer
+        FinishedOK,     //! ZakoÅ„czono powodzeniem
+        FinishedCancel, //! ZakoÅ„czono - przerwano
+        FinishedError   //! ZakoÅ„czono z bÅ‚edÄ™m
     };
 
     //! Wirtualny destruktor
@@ -38,7 +38,7 @@ public:
     //! \return Aktualny status zlecenia
     virtual const State state() const = 0;
 
-    //! \return Informacja o b³êdzie
+    //! \return Informacja o bÅ‚Ä™dzie
     virtual const std::string & error() const = 0;
 
     //! Anyluje zlecenie
@@ -47,23 +47,23 @@ public:
 	//! Rozpocznij zlecenie
 	virtual void start() = 0;
 
-    //! \return Ca³kowity postêp œci¹gania w przedziale [0-100]
+    //! \return CaÅ‚kowity postÄ™p Å›ciÄ…gania w przedziale [0-100]
     virtual const float totalProgress() const = 0;
-    //! \return Postêp œci¹gania aktualnego pliku
+    //! \return PostÄ™p Å›ciÄ…gania aktualnego pliku
     virtual const float currentFileProgress() const = 0;
 	//! \return Nazwa aktualnie pobieranego pliku
 	virtual std::string currentFileName() const = 0;
 
-    //! \return Ca³kowita iloœæ danych do œci¹gniêcia w bajtach
+    //! \return CaÅ‚kowita iloÅ›Ä‡ danych do Å›ciÄ…gniÄ™cia w bajtach
     virtual const long totalSize() const = 0;
     //! \return Rozmiar aktualnego pliku
     virtual const long currentFileSize() const = 0;
 
-    //! \return Sumaryczna iloœc plików do œci¹gniêcia
+    //! \return Sumaryczna iloÅ›c plikÃ³w do Å›ciÄ…gniÄ™cia
     virtual const int totalFilesToDownload() const = 0;
-    //! \retrurn Iloœc plików ju¿ œci¹gniêtych
+    //! \retrurn IloÅ›c plikÃ³w juÅ¼ Å›ciÄ…gniÄ™tych
     virtual const int filesDownloaded() const = 0;
-    //! \return Aktualnie œci¹gany plik (numeracja nie ID)
+    //! \return Aktualnie Å›ciÄ…gany plik (numeracja nie ID)
     virtual const int currentFile() const = 0;
 };
 

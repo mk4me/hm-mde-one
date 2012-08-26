@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2012/04/06
     created:  6:4:2012   8:49
     filename: IAccountFactoryWS.h
@@ -13,7 +13,7 @@
 
 namespace webservices
 {
-	//! Interfejs serwisu do rejestracji i aktywacji kont w jednej us≥udze - Med lub Motion
+	//! Interfejs serwisu do rejestracji i aktywacji kont w jednej us≈Çudze - Med lub Motion
 	class ISingleAccountFactoryWS : public IWebService
 	{
 	public:
@@ -21,23 +21,23 @@ namespace webservices
 		virtual ~ISingleAccountFactoryWS() {}
 
 		//! \param login Login nowego konta
-		//! \param email Skojarzone konto email (np. kod aktywacyjny, odzyskanie has≥a)
-		//! \param password Has≥o dla nowego konta
-		//! \param firstName ImiÍ uøytkownika
-		//! \param lastName Nazwisko uøytkownika
+		//! \param email Skojarzone konto email (np. kod aktywacyjny, odzyskanie has≈Ça)
+		//! \param password Has≈Ço dla nowego konta
+		//! \param firstName Imiƒô u≈ºytkownika
+		//! \param lastName Nazwisko u≈ºytkownika
 		virtual void createUserAccount(const std::string & login, const std::string & email, const std::string & password,
 			const std::string & firstName, const std::string & lastName) = 0;
 
-		//! \param login Login ktÛry chcemy aktywowaÊ
-		//! \param activationCode Kod aktywacyjny ktÛrym aktywujemy - przysdzed≥ na zarejestrowany email
-		//! \return Prawda jeúli poprawnie aktywowano
+		//! \param login Login kt√≥ry chcemy aktywowaƒá
+		//! \param activationCode Kod aktywacyjny kt√≥rym aktywujemy - przysdzed≈Ç na zarejestrowany email
+		//! \return Prawda je≈õli poprawnie aktywowano
 		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode) = 0;
 	};
 
 	typedef boost::shared_ptr<ISingleAccountFactoryWS> SingleAccountFactoryWSPtr;
 	typedef boost::shared_ptr<const ISingleAccountFactoryWS> SingleAccountFactoryWSConstPtr;
 
-	//! Interfejs serwisu do rejestracji i aktywacji kont w obu us≥ugach - Med i Motion
+	//! Interfejs serwisu do rejestracji i aktywacji kont w obu us≈Çugach - Med i Motion
 	class IMultiAccountFactoryWS : public IWebService
 	{
 	public:
@@ -45,18 +45,18 @@ namespace webservices
 		virtual ~IMultiAccountFactoryWS() {}
 
 		//! \param login Login nowego konta
-		//! \param email Skojarzone konto email (np. kod aktywacyjny, odzyskanie has≥a)
-		//! \param password Has≥o dla nowego konta
-		//! \param firstName ImiÍ uøytkownika
-		//! \param lastName Nazwisko uøytkownika
-		//! \param propagateToHMDB Informacja czy utworzyÊ automatycznie konta w obu us≥ugach
+		//! \param email Skojarzone konto email (np. kod aktywacyjny, odzyskanie has≈Ça)
+		//! \param password Has≈Ço dla nowego konta
+		//! \param firstName Imiƒô u≈ºytkownika
+		//! \param lastName Nazwisko u≈ºytkownika
+		//! \param propagateToHMDB Informacja czy utworzyƒá automatycznie konta w obu us≈Çugach
 		virtual void createUserAccount(const std::string & login, const std::string & email, const std::string & password,
 			const std::string & firstName, const std::string & lastName, bool propagateToHMDB = false) = 0;
 
-		//! \param login Login ktÛry chcemy aktywowaÊ
-		//! \param activationCode Kod aktywacyjny ktÛrym aktywujemy - przysdzed≥ na zarejestrowany email
-		//! \param propagateToHMDB Informacja czy aktywowaÊ automatycznie konta w obu us≥ugach
-		//! \return Prawda jeúli poprawnie aktywowano
+		//! \param login Login kt√≥ry chcemy aktywowaƒá
+		//! \param activationCode Kod aktywacyjny kt√≥rym aktywujemy - przysdzed≈Ç na zarejestrowany email
+		//! \param propagateToHMDB Informacja czy aktywowaƒá automatycznie konta w obu us≈Çugach
+		//! \return Prawda je≈õli poprawnie aktywowano
 		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode,
 			bool propagateToHMDB = false) = 0;
 	};

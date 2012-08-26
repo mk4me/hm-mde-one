@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <list>
 #include <string>
 #include <boost/type_traits.hpp>
@@ -15,14 +15,14 @@ using namespace std;
 struct NullType {};
 struct PtrPolicyBoost
 {
-    //! Typ wskaŸnika.
+    //! Typ wskaÅºnika.
     template <class T> struct Ptr 
     {
         typedef boost::shared_ptr<T> Type;
     };
-    //! Tylko deklaracja, specjalizacja wyci¹ga wskaŸnik!
+    //! Tylko deklaracja, specjalizacja wyciÄ…ga wskaÅºnik!
     template <class T> struct Pointed;
-    //! Specjalizacja wyci¹gaj¹ca wskaŸnik.
+    //! Specjalizacja wyciÄ…gajÄ…ca wskaÅºnik.
     template <class T> struct Pointed< boost::shared_ptr<T> >
     {
         typedef typename boost::shared_ptr<T>::element_type Type;
@@ -31,13 +31,13 @@ struct PtrPolicyBoost
     //! Klasa bazowa.
     typedef NullType Base;
 
-    //! Zerowanie wskaŸnika.
+    //! Zerowanie wskaÅºnika.
     //! \param ptr
     template <class T>
     void initPtr( T & ptr ) const
     {}
 
-    //! Ustawienie wartoœci wskaŸnika surowymi danymi.
+    //! Ustawienie wartoÅ›ci wskaÅºnika surowymi danymi.
     //! \param ptr
     //! \param data
     template<class T>
@@ -46,7 +46,7 @@ struct PtrPolicyBoost
         ptr.reset(data);
     }
 
-    //! Ustawienie wartoœci wskaŸnika poprzes kopiowanie z innego m¹drego wskaŸnika.
+    //! Ustawienie wartoÅ›ci wskaÅºnika poprzes kopiowanie z innego mÄ…drego wskaÅºnika.
     //! \param ptr
     //! \param data
     template<class T>
@@ -55,7 +55,7 @@ struct PtrPolicyBoost
         ptr = data;
     }
 
-    //! Czy wskaŸnik jest unikatowy?
+    //! Czy wskaÅºnik jest unikatowy?
     //! \param ptr
     template<class T>
     bool isUnique(boost::shared_ptr<T> & ptr) const
@@ -87,7 +87,7 @@ public:
     {
         return !(*this == rhs);
     }
-    //! Wewnêtrzna informacja o typie.
+    //! WewnÄ™trzna informacja o typie.
     const std::type_info& typeinfo;
     //! Jawny operator rzutowania na type_info.
     inline operator const std::type_info&() const
@@ -101,8 +101,8 @@ public:
     }
 };
 
-//! Deklaracja typu. Trzeba go specjalizowaæ za pomoc¹ makr. Ta wersja bêdzie
-//! rzucaæ statyczn¹ asercj¹.
+//! Deklaracja typu. Trzeba go specjalizowaÄ‡ za pomocÄ… makr. Ta wersja bÄ™dzie
+//! rzucaÄ‡ statycznÄ… asercjÄ….
 template <class T>
 class ObjectWrapperT : public ObjectWrapper
 {
@@ -119,23 +119,23 @@ public:
     }
 };
 
-//! Baza dla typu wrapuj¹cego jakiœ obiekt. Poza trzymaniem metadanych klasy pochodne
-//! trzymaj¹ referencje do obiektów.
+//! Baza dla typu wrapujÄ…cego jakiÅ› obiekt. Poza trzymaniem metadanych klasy pochodne
+//! trzymajÄ… referencje do obiektÃ³w.
 class ObjectWrapper
 {
 public:
-    //! Lista typów.
+    //! Lista typÃ³w.
     typedef std::list<TypeInfo> Types;
 protected:
     //! Nazwa instancji.
     std::string name;
     //! Nazwa typu.
     std::string className;
-    //! Hash identyfikuj¹cy typ.
+    //! Hash identyfikujÄ…cy typ.
     std::size_t classID;
-    //! Opis Ÿród³a.
+    //! Opis ÅºrÃ³dÅ‚a.
     std::string source;
-    //! Czy obiekt uleg³ zmianie?
+    //! Czy obiekt ulegÅ‚ zmianie?
     bool changed;
     //! Return type resolver
     struct get_t
@@ -199,10 +199,10 @@ public:
 
 public:
 
-    //! Próba pobrania obiektu z wrappera.
+    //! PrÃ³ba pobrania obiektu z wrappera.
     //! \param object Rezultat.
-    //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-    //! \return Sukces/pora¿ka.
+    //! \param exact Czy ma byÄ‡ tylko i wyÅ‚Ä…cznie ten typ czy teÅ¼ moÅ¼e byÄ‡ rzutowanie w dÃ³Å‚?
+    //! \return Sukces/poraÅ¼ka.
     template <class Ptr>
     bool tryGet(Ptr& object, bool exact = false)
     {
@@ -219,10 +219,10 @@ public:
         }
     }
 
-    //! Próba pobrania obiektu z wrappera.
+    //! PrÃ³ba pobrania obiektu z wrappera.
     //! \param object Rezultat.
-    //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-    //! \return Sukces/pora¿ka.
+    //! \param exact Czy ma byÄ‡ tylko i wyÅ‚Ä…cznie ten typ czy teÅ¼ moÅ¼e byÄ‡ rzutowanie w dÃ³Å‚?
+    //! \return Sukces/poraÅ¼ka.
     template <class Ptr>
     bool tryGet(Ptr& object, bool exact = false) const
     {
@@ -239,8 +239,8 @@ public:
         }
     }
 
-    //! Pobiera obiekt z wrappera. W razie b³êdu rzuca bad_castem.
-    //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
+    //! Pobiera obiekt z wrappera. W razie bÅ‚Ä™du rzuca bad_castem.
+    //! \param exact Czy ma byÄ‡ tylko i wyÅ‚Ä…cznie ten typ czy teÅ¼ moÅ¼e byÄ‡ rzutowanie w dÃ³Å‚?
     //! \return Return Type Resolver
     get_t get(bool exact = false)
     {
@@ -248,8 +248,8 @@ public:
         return result;
     }
 
-    //! \param dummy Pozostawiæ pusty.
-    //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
+    //! \param dummy PozostawiÄ‡ pusty.
+    //! \return Wrappowany obiekt. Gdy wrapper jest innego typu niÅ¼ parametr szablonu rzucany jest wyjÄ…tek.
     template <class T>
     typename ObjectWrapperT<T>::Ptr get(T* /*dummy*/ = nullptr)
     {   
@@ -257,8 +257,8 @@ public:
         return static_cast<Wrapper::Ptr>(get());
     }
 
-    //! Pobiera obiekt z wrappera. W razie b³êdu rzuca bad_castem.
-    //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
+    //! Pobiera obiekt z wrappera. W razie bÅ‚Ä™du rzuca bad_castem.
+    //! \param exact Czy ma byÄ‡ tylko i wyÅ‚Ä…cznie ten typ czy teÅ¼ moÅ¼e byÄ‡ rzutowanie w dÃ³Å‚?
     //! \return Return Type Resolver
     const get_t get(bool exact = false) const
     {
@@ -266,7 +266,7 @@ public:
         return result;
     }
 
-    //! Ustawia obiekt wrappera. W razie b³êdu rzuca bad_castem.
+    //! Ustawia obiekt wrappera. W razie bÅ‚Ä™du rzuca bad_castem.
     //! \param object Obiekt.
     template <class Ptr>
     void set(Ptr& object)
@@ -278,7 +278,7 @@ public:
 
     //! Ustawia obiekt wrappera.
     //! \param object Obiekt.
-    //! \return Sukces/pora¿ka.
+    //! \return Sukces/poraÅ¼ka.
     template <class Ptr>
     bool trySet(Ptr& object)
     {
@@ -341,19 +341,19 @@ public:
 
 
     //! \param type 
-    //! \return Czy obiekt wspiera okreœlony typ?
+    //! \return Czy obiekt wspiera okreÅ›lony typ?
     virtual bool isSupported(const TypeInfo& type) const = 0;
-    //! \param type Typ inteligentnego wskaŸnika.
-    //! \return true je¿eli do z obiektu mo¿na wy³uskaæ dany wskaŸnik.
+    //! \param type Typ inteligentnego wskaÅºnika.
+    //! \return true jeÅ¼eli do z obiektu moÅ¼na wyÅ‚uskaÄ‡ dany wskaÅºnik.
     virtual bool isPtrSupported(const TypeInfo& type) const = 0;
 
     //! \return Informacje o typie.
     virtual TypeInfo getTypeInfo() const = 0;
 
-    //! \return Informacje o typie odpowiednio normalnego i sta³ego wskaŸnika.
+    //! \return Informacje o typie odpowiednio normalnego i staÅ‚ego wskaÅºnika.
     virtual std::pair<TypeInfo, TypeInfo> getPtrTypeInfo() const = 0;
 
-    //! \param supported Lista wspieranych rozszerzeñ.
+    //! \param supported Lista wspieranych rozszerzeÅ„.
     virtual void getSupportedTypes(Types& supported) const = 0;
 
     //! \return Czy wrappowany obiekt jest wyzerowany?
@@ -361,7 +361,7 @@ public:
 
 private:
 
-    //! \return Czy uda³o siê ustawiæ m¹dry wskaŸnik?
+    //! \return Czy udaÅ‚o siÄ™ ustawiÄ‡ mÄ…dry wskaÅºnik?
     virtual bool getSmartPtr(void* ptr, const TypeInfo& type) const = 0;
 
     virtual bool setSmartPtr(void* ptr, const TypeInfo& type) = 0;
@@ -371,8 +371,8 @@ typedef shared_ptr<ObjectWrapper> ObjectWrapperPtr;
 typedef shared_ptr<const ObjectWrapper> ObjectWrapperConstPtr;
 typedef weak_ptr<ObjectWrapper> ObjectWrapperWeakPtr;
 
-//! Pomocniczy typ bazowy, zarz¹dzaj¹cy obiektem za pomoc¹ parametru
-//! PtrPolicy. Tego typu nigdy nie u¿ywa siê wprost.
+//! Pomocniczy typ bazowy, zarzÄ…dzajÄ…cy obiektem za pomocÄ… parametru
+//! PtrPolicy. Tego typu nigdy nie uÅ¼ywa siÄ™ wprost.
 template <class T, class PtrPolicy>
 class __ObjectWrapperT : public ObjectWrapper, protected PtrPolicy
 {
@@ -384,7 +384,7 @@ public:
     typedef PtrPolicy Base;
     //! Wrappowany obiekt.
     typedef typename Base::Ptr<T>::Type Ptr;
-    //! Sta³y wrappowany obiekt
+    //! StaÅ‚y wrappowany obiekt
     typedef typename Base::Ptr<const T>::Type ConstPtr;
 
 protected:
@@ -416,7 +416,7 @@ public:
     }
 
     //! \param type 
-    //! \return Czy obiekt wspiera okreœlony typ?
+    //! \return Czy obiekt wspiera okreÅ›lony typ?
     virtual bool isSupported(const TypeInfo& type) const
     {
         return type == typeid(T);
@@ -426,7 +426,7 @@ public:
     {
         supported.push_back(typeid(T));
     }
-    //! \return Czy wewnêtrzny wskaŸnik jest wyzerowany?
+    //! \return Czy wewnÄ™trzny wskaÅºnik jest wyzerowany?
     virtual bool isNull() const
     {
         return wrapped ? false : true;
@@ -466,9 +466,9 @@ public:
 //public:
 //    //! Wrappowany obiekt.
 //    typedef ObjectWrapperT<B> Base;
-//    //! U¿ycie PtrPolicy typu bazowego.
+//    //! UÅ¼ycie PtrPolicy typu bazowego.
 //    typedef typename Base::PtrPolicy PtrPolicy;
-//    //! U¿ywany wskaŸnik.
+//    //! UÅ¼ywany wskaÅºnik.
 //    typedef typename PtrPolicy::Ptr<T>::Type Ptr;
 //    //! 
 //    typedef typename PtrPolicy::Ptr<const T>::Type ConstPtr;
@@ -485,7 +485,7 @@ public:
 //    }
 //
 //    //! \param type 
-//    //! \return Czy obiekt wspira okreœlony typ?
+//    //! \return Czy obiekt wspira okreÅ›lony typ?
 //    virtual bool isSupported(const TypeInfo& type) const
 //    {
 //        if ( type == typeid(T) ) {
@@ -537,9 +537,9 @@ public:
 //
 //};
 
-//! Typ wyznaczaj¹cy bazê dla wrapperów chc¹cych dziedzyczyæ po:
+//! Typ wyznaczajÄ…cy bazÄ™ dla wrapperÃ³w chcÄ…cych dziedzyczyÄ‡ po:
 //! 1) PtrPolicy (ten wariant)
-//! 2) Wrapperach dla typów (specjalizacje w makrze)
+//! 2) Wrapperach dla typÃ³w (specjalizacje w makrze)
 template <class T> 
 struct __ObjectWrapperBaseSelector
 {

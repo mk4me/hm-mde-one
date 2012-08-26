@@ -1,4 +1,4 @@
-/********************************************************************
+Ôªø/********************************************************************
     created:  2011/03/29
     created:  29:3:2011   14:22
     filename: VideoImage.h
@@ -34,9 +34,9 @@ namespace vidlib
         typedef std::map<osg::observer_ptr<osg::Referenced>, int> SizeClients;
         //! Klienci maksymalnego rozmiaru.
         SizeClients sizes;
-        //! Minimalna szerokoúÊ.
+        //! Minimalna szeroko≈õƒá.
         int minWidth;
-        //! StrumieÒ video.
+        //! Strumie≈Ñ video.
         VideoStream* stream;
         //! Obrazek.
         Picture currentPicture;
@@ -56,17 +56,17 @@ namespace vidlib
         { 
             return currentPicture.format;
         }
-        //! \return WewnÍtrzny strumieÒ video.
+        //! \return Wewnƒôtrzny strumie≈Ñ video.
         inline VideoStream* getStream()
         { 
             return stream;
         }
-        //! \return WewnÍtrzny strumieÒ video.
+        //! \return Wewnƒôtrzny strumie≈Ñ video.
         inline const VideoStream* getStream() const
         { 
             return stream;
         }
-        //! \return Minimalna szerokoúÊ.
+        //! \return Minimalna szeroko≈õƒá.
         inline int getMinWidth() const
         { 
             return minWidth;
@@ -78,29 +78,29 @@ namespace vidlib
         }
 
 
-        //! \param minWidth Minimalna szerokoúÊ. (>= 2)
+        //! \param minWidth Minimalna szeroko≈õƒá. (>= 2)
         void setMinWidth(int minWidth);
-        //! Usuwa klienta maksymalnej szerokoúci.
+        //! Usuwa klienta maksymalnej szeroko≈õci.
         bool removeMaxWidth(osg::Referenced* source);
-        //! Dodaje klienta maksymalnej szerokoúci.
-        //! \param source èrÛd≥o.
-        //! \param maxWidth SzerokoúÊ.
+        //! Dodaje klienta maksymalnej szeroko≈õci.
+        //! \param source ≈πr√≥d≈Ço.
+        //! \param maxWidth Szeroko≈õƒá.
         void setMaxWidth(osg::Referenced* source, int maxWidth);
 
         
-        //! \return Bieøπca maksymalna szerokoúÊ.
+        //! \return Bie≈ºƒÖca maksymalna szeroko≈õƒá.
         int getMaxWidth();
-        //! Odúwieøa obrazek.
+        //! Od≈õwie≈ºa obrazek.
         void refresh();
 
     private:
-        //! Prze≥adowuje obrazek.
+        //! Prze≈Çadowuje obrazek.
         void reloadImage(Picture & picture);
         //!
         bool applyMaxWidth( int maxWidth );
     };
     
-    //! Uzupe≥nienie poprzedniego 
+    //! Uzupe≈Çnienie poprzedniego 
     template <class T, class PtrPolicy>
     class VideoImageSafe : public VideoImage, public PtrPolicy
     {

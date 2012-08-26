@@ -1,4 +1,4 @@
-
+ï»¿
 /********************************************************************
 	created:	2011/11/18
 	created:	18:11:2011   11:21
@@ -21,27 +21,27 @@ class QwtPlotItem;
 #include "NewChartSerie.h"
 #include "NewChartState.h"
 
-//! klasa reprezentuje stan wizualizatora pozwalaj¹cy wybor aktywnej serii danych
+//! klasa reprezentuje stan wizualizatora pozwalajÄ…cy wybor aktywnej serii danych
 class NewChartPicker: public NewChartState
 {
     Q_OBJECT
 public:
-    //! Konstruktor pobiera wizualizator, na którym stan bêdzie operowa³
+    //! Konstruktor pobiera wizualizator, na ktÃ³rym stan bÄ™dzie operowaÅ‚
     NewChartPicker( NewChartVisualizer* visualizer );
 	virtual ~NewChartPicker() {}
 
 public:
-    //! filtrowanie eventów Qt, obs³uga myszki
+    //! filtrowanie eventÃ³w Qt, obsÅ‚uga myszki
     virtual bool stateEventFilter( QObject *, QEvent * );
-    //! picker nie musi siê odrysowywaæ
+    //! picker nie musi siÄ™ odrysowywaÄ‡
     virtual void draw(QPainter* painter) {} 
-    //! rozpoczêcie stanu, zmiana kursora
+    //! rozpoczÄ™cie stanu, zmiana kursora
     virtual void stateBegin();
-    //! nic nie trzeba robic po zakoñczeniu stanu
+    //! nic nie trzeba robic po zakoÅ„czeniu stanu
     virtual void stateEnd() {}
-    //! \return tolerancja w pikselach wg której zaliczane jest klikniecie na krzywa
+    //! \return tolerancja w pikselach wg ktÃ³rej zaliczane jest klikniecie na krzywa
     int getPixelTolerance() const { return pixelTolerance; }
-    //! ustawia tolerancje wg której zaliczane jest klikniecie na krzywa
+    //! ustawia tolerancje wg ktÃ³rej zaliczane jest klikniecie na krzywa
     //! \param val nowa tolerancja w pikselach
     void setPixelTolerance(int val) { pixelTolerance = val; }
     //! ustawia aktualnie aktywna krzywa, klikniecia na nia beda ignorowane
@@ -49,23 +49,23 @@ public:
     void setCurrentCurve(QwtPlotCurve * curve);
 
 signals:
-    //! sygna³ emitowany, gdy klikniêta zostanie krzywa
-    //! \param curve klikniêta krzywa
+    //! sygnaÅ‚ emitowany, gdy klikniÄ™ta zostanie krzywa
+    //! \param curve klikniÄ™ta krzywa
     void serieSelected(QwtPlotItem* curve);
 
 private:
-    //! metoda obs³uguje klikniêcie w wykres, sprawdza, czy klikniêto w krzyw¹ i ewentualnie ja zaznacza
-    //! \param pos klikniêta pozycja
+    //! metoda obsÅ‚uguje klikniÄ™cie w wykres, sprawdza, czy klikniÄ™to w krzywÄ… i ewentualnie ja zaznacza
+    //! \param pos klikniÄ™ta pozycja
     bool select( const QPoint & pos);
 
 private:
-    //! p³ótno wykresu
+    //! pÅ‚Ã³tno wykresu
     QwtPlotCanvas* canvas;
-    //! tolerancja, czyli maksymalna odleg³oœæ od krzywej zaliczaj¹ca klikniêcie w ni¹
+    //! tolerancja, czyli maksymalna odlegÅ‚oÅ›Ä‡ od krzywej zaliczajÄ…ca klikniÄ™cie w niÄ…
     int pixelTolerance;
-    //! aktualnie wybrana krzywa, klikniêcie w ni¹ bêdzie ignorowane
+    //! aktualnie wybrana krzywa, klikniÄ™cie w niÄ… bÄ™dzie ignorowane
     QwtPlotCurve* currentCurve;
-    //! flaga okreœlaj¹ca, czy kursor siê porusza, jeœli tak, to nie mo¿na wykonaæ wszystkich akcji pickera
+    //! flaga okreÅ›lajÄ…ca, czy kursor siÄ™ porusza, jeÅ›li tak, to nie moÅ¼na wykonaÄ‡ wszystkich akcji pickera
     bool move;
 };
 typedef core::shared_ptr<NewChartPicker> NewChartPickerPtr;

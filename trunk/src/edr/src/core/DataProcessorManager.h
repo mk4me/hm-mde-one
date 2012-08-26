@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/05/23
     created:  23:5:2011   9:12
     filename: DataProcessorManager.h
@@ -18,7 +18,7 @@ class DataProcessorManager : public core::IDataProcessorManager, public utils::O
 {
     friend class DataProcessor;
 public:
-    //! Lista elementów przetwarzaj¹cych.
+    //! Lista elementÃ³w przetwarzajÄ…cych.
     typedef std::vector<core::IDataProcessorPtr> IDataProcessors;
     //! 
     typedef boost::iterator_range<IDataProcessors::const_iterator> IDataProcessorsConstRange;
@@ -27,9 +27,9 @@ public:
 
 private:
 
-    //! Prototypy elementów przetwarzaj¹cych.
+    //! Prototypy elementÃ³w przetwarzajÄ…cych.
     IDataProcessors prototypes;
-    //! Lista œledz¹ca elementy przwtwarzaj¹ce.
+    //! Lista Å›ledzÄ…ca elementy przwtwarzajÄ…ce.
     DataProcessors dataProcessors;
 
 public:
@@ -43,38 +43,38 @@ public:
     //! \param dataProcessor
     virtual void registerDataProcessor(const core::IDataProcessorPtr & dataProcessor);
 
-    //! \return Wyliczenie prototypów.
+    //! \return Wyliczenie prototypÃ³w.
     inline IDataProcessorsConstRange enumPrototypes() const
     {
         return boost::make_iterator_range(prototypes.begin(), prototypes.end());
     }
-    //! \return Liczba zarejestrowanych prototypów.
+    //! \return Liczba zarejestrowanych prototypÃ³w.
     inline int getNumPrototypes() const
     {
         return static_cast<int>(prototypes.size());
     }
-    //! \param i Indeks elementu przetwarzaj¹cego.
+    //! \param i Indeks elementu przetwarzajÄ…cego.
     inline core::IDataProcessorConstPtr getPrototype(int i) const
     {
         UTILS_ASSERT(i < getNumPrototypes());
         return prototypes[i];
     }
 
-    //! \param id ID elementu przetwarzaj¹cego.
+    //! \param id ID elementu przetwarzajÄ…cego.
     core::IDataProcessorConstPtr getPrototype(UniqueID id) const;
 
-    //! Tworzy instancjê elementu przetwarzaj¹cego.
-    //! \param id id elementu przetwarzaj¹cego.
-    //! \return Instancja elementu przetwarzaj¹cego.
+    //! Tworzy instancjÄ™ elementu przetwarzajÄ…cego.
+    //! \param id id elementu przetwarzajÄ…cego.
+    //! \return Instancja elementu przetwarzajÄ…cego.
     DataProcessorPtr createDataProcessor(UniqueID id);
 
-    //! \return Liczba instancji elementów przetwarzaj¹cych danego typu.
+    //! \return Liczba instancji elementÃ³w przetwarzajÄ…cych danego typu.
     int getNumInstances(UniqueID id);
 
 private:
-    //! Tworzy instancjê elementu przetwarzaj¹cego.
-    //! \param id id elementu przetwarzaj¹cego.
-    //! \return Instancja elementu przetwarzaj¹cego.
+    //! Tworzy instancjÄ™ elementu przetwarzajÄ…cego.
+    //! \param id id elementu przetwarzajÄ…cego.
+    //! \return Instancja elementu przetwarzajÄ…cego.
     DataProcessorPtr createDataProcessor(const core::IDataProcessorConstPtr& prototype);
     //! 
     DataProcessorPtr createDataProcessor(const DataProcessor& prototype);

@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:  2011/02/04
 	created:  4:2:2011   15:01
 	filename: VideoParser.h
@@ -15,7 +15,7 @@ class VideoParser : public core::IParser
 {
     UNIQUE_ID("{E81ED99E-6682-4FE7-9E52-0BBCABC8BCBC}","Video Parser");
 private:
-    //! Obiekt wewn�trzny.
+    //! Obiekt wewnętrzny.
     core::ObjectWrapperPtr adapter;
 	core::ObjectWrapperPtr channelWrapper;
     

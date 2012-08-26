@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2011/03/29
     created:  29:3:2011   14:12
     filename: OsgAdapter.h
@@ -32,27 +32,27 @@ namespace vidlib
 
     UTILS_PUSH_WARNINGS
     UTILS_DISABLE_DLL_INTERFACE_WARNING
-    //! Adapter strumienia z vidliba dla potrzeb OSG. Potrafi optymalizowaæ dostêp do obrazków.
+    //! Adapter strumienia z vidliba dla potrzeb OSG. Potrafi optymalizowaÄ‡ dostÄ™p do obrazkÃ³w.
     class VIDLIB_EXPORT __OsgAdapter
     {
         friend class OsgStream;
     private:
-        //! Informacje dotycz¹ce u¿ycia strumienia.
+        //! Informacje dotyczÄ…ce uÅ¼ycia strumienia.
         struct Entry
         {
             osg::observer_ptr<VideoImage> image;
             osg::observer_ptr<osg::Texture2D> texture2D;
             osg::observer_ptr<osg::TextureRectangle> textureRect;
         };
-        //! Obrazki powsta³e na bazie strumienia.
+        //! Obrazki powstaÅ‚e na bazie strumienia.
         typedef std::map< PixelFormat, Entry> Images;
-        //! Obrazki powsta³e na bazie strumienia.
+        //! Obrazki powstaÅ‚e na bazie strumienia.
         mutable Images images;
         //!
         mutable VideoStream* stream;
 
     protected:
-        //! Konstruktor zeruj¹cy.
+        //! Konstruktor zerujÄ…cy.
         __OsgAdapter();
         //! Pusty polimorficzny destruktor.
         virtual ~__OsgAdapter();
@@ -70,7 +70,7 @@ namespace vidlib
 
 
     protected:
-        //! Odœwie¿a obrazki korzystaj¹ce z danego strumienia.
+        //! OdÅ›wieÅ¼a obrazki korzystajÄ…ce z danego strumienia.
         void refreshImages();
 
         virtual osg::ref_ptr<VideoImage> createImage(PixelFormat format) const;
@@ -87,15 +87,15 @@ namespace vidlib
 
     UTILS_PUSH_WARNINGS
     UTILS_DISABLE_DLL_INTERFACE_WARNING
-    //! Metody z premedytacj¹ nie s¹ wirtualne tak, aby odwo³ania do nich (znaj¹c typ OsgStream)
-    //! mog³y byæ wydajniejsze. Oczywiœcie NIE powinno siê dziedziczyæ po tym typie.
+    //! Metody z premedytacjÄ… nie sÄ… wirtualne tak, aby odwoÅ‚ania do nich (znajÄ…c typ OsgStream)
+    //! mogÅ‚y byÄ‡ wydajniejsze. OczywiÅ›cie NIE powinno siÄ™ dziedziczyÄ‡ po tym typie.
     class VIDLIB_EXPORT OsgStream : public VideoStreamAdapter, public __OsgAdapter, public osg::Referenced
     {
     private:
         double currentTimestamp;
 
     public:
-        //! \param innerStream Strumieñ przejmowany na w³asnoœæ.
+        //! \param innerStream StrumieÅ„ przejmowany na wÅ‚asnoÅ›Ä‡.
         OsgStream(VideoStream* innerStream);
         //!
         virtual ~OsgStream();
@@ -108,7 +108,7 @@ namespace vidlib
     public:
         //!
         virtual VideoStream* clone() const;
-        //! \param time Pozycja w Ÿródle
+        //! \param time Pozycja w ÅºrÃ³dle
         bool setTime(double time);
 
     protected:
@@ -128,7 +128,7 @@ namespace vidlib
         virtual ~OsgAdapter()
         {}
 
-        //! Aktualizuje obrazki korzystaj¹ce ze strumienia.
+        //! Aktualizuje obrazki korzystajÄ…ce ze strumienia.
         virtual bool setTime(double time)
         {
             double prevTimestamp = getFrameTimestamp();
