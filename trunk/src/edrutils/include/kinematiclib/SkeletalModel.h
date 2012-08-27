@@ -10,7 +10,7 @@
 
 namespace kinematic 
 {
-    /// \brief  Klasa zawiera wspolna reprezentacje animacji dla parserow acclaim i biovision. 
+    /// \brief  Klasa zawiera wspólną reprezentację animacji dla parserów acclaim i biovision. 
     class SkeletalModel : boost::noncopyable
     {
     public:
@@ -18,13 +18,13 @@ namespace kinematic
             degrees,
             radians
         };
-        /// \brief  mapa nazwa kosci -> kosc
+        /// \brief  mapa nazwa kości -> kość
         typedef std::map<std::string, JointPtr> JointMap;
-        /// \brief  mapa identyfikator kosci -> kosc
+        /// \brief  mapa identyfikator kości -> kość
         typedef std::map<int, JointPtr> JointIdMap;
 		
     public:
-        /// \brief  konstruktor wraz z domyslnymi parametrami
+        /// \brief  konstruktor wraz z domyślnymi parametrami
         SkeletalModel() :
             version("1.10"),         
             name("unknown"),            
@@ -37,52 +37,66 @@ namespace kinematic
         }
 
     public:
-
+        //! \return głęboka kopia obiektu
 		virtual SkeletalModel* clone() const;
-
-        /** Zwraca kosc na podstawie nazwy */
+        /** Zwraca kość na podstawie nazwy */
         JointPtr getJointByName(const std::string& name);
-		/** Zwraca kosc na podstawie nazwy */
+		/** Zwraca kość na podstawie nazwy */
 		JointConstPtr getJointByName(const std::string& name) const;
-        /** Zwraca kosc na podstawie identyfikatora */
+        /** Zwraca kość na podstawie identyfikatora */
         JointPtr getJointByID(int id) { return jointsIds[id]; }
         /** Zwraca szkielet modelu */
         Skeleton& getSkeleton() { return *skeleton; }
 		const Skeleton& getSkeleton() const { return *skeleton; }
-        /** Zwraca referencje do mapy : nazwa kosci -> kosc*/
+        /** Zwraca referencje do mapy : nazwa kości -> kość*/
         JointMap& getJointMap() { return jointsMap; }
 		const JointMap& getJointMap() const { return jointsMap; }
-        /** Zwraca referencje do mapy : identyfikator kosci -> kosc*/
+        /** Zwraca referencje do mapy : identyfikator kości -> kość*/
         JointIdMap& getJointIDMap() { return jointsIds; }
-        // akcesory
+        //! \return  czy dane sa w stopniach czy radianach
         Angle getAngle() const { return angle; }
+        //!  określa, czy dane sa w stopniach czy radianach
         void setAngle(Angle angle) { this->angle = angle;}
+        //! \return globalny modyfikator masy
         double getMass() const { return mass; }
+        //! ustawia globalny modyfikator masy
         void setMass(double val) { mass = val; }
+        //! \return globalny modyfikator długości kości
         double getLength() const { return length; }
+        //! ustawia globalny modyfikator długości kości
         void setLength(double val) { length = val; }
+        //! \return wersja, wg której został zapisany plik
         std::string getVersion() const { return version; }
+        //! ustawia wersję, wg której został zapisany plik
         void setVersion(const std::string& val) { version = val; }
+        //! \return nazwę, która została zapisana w pliku
         std::string getName() const { return name; }
+        //! ustawia nazwa zapisana w pliku
         void setName(const std::string& val) { name = val; }
+        //! \return komentarz do modelu
         std::string getDocumentation() const { return documentation; }
+        //! ustawia komentarz do modelu
         void setDocumentation(const std::string& val) { documentation = val; }
 
 	private:
+        //! tworzy pomocnicze struktury, ułatwiające znalezienie stawu
+		//! \param skeleton rozpatrywany szkielet
+		//! \param jointMap mapa nazwa stawu -> staw
+		//! \param jointIDMap mapa identyfikator stawu -> staw
 		static void createMaps(JointPtr skeleton, JointMap& jointMap, JointIdMap& jointIDMap);
 
     protected:										 
-		//! wersja wg ktorej zostal zapisany plik
+		//! wersja wg której został zapisany plik
         std::string version;        
 		//! nazwa zapisana w pliku
         std::string name;           
 		//! komentarz do modelu
         std::string documentation;  
-		//! globalny modyfikator dlugosci kosci
+		//! globalny modyfikator długości kości
         double length;         
 		//! globalny modyfikator masy
         double mass;           
-		//! okresla, czy dane sa w stopniach czy radianach
+		//! określa, czy dane sa w stopniach czy radianach
         Angle angle;          
 		//! mapa nazwa stawu -> staw
         JointMap jointsMap;      

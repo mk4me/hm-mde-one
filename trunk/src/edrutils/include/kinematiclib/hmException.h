@@ -5,54 +5,54 @@
 
 namespace kinematic
 {
-    /// \brief  Ogolny wyjatek dla parserow.
+    /// \brief  Ogolny wyjątek dla parserow.
     class Exception : public std::exception
     {
     public:
         /// \brief  Konstruktor.
-        /// \param  Dodatkowa tresc komunikatu
+        /// \param  Dodatkowa treść komunikatu
         Exception(const std::string& message);
         virtual ~Exception() throw() {}
     public:
-        /// \brief Metoda zwraca tresc komunikatu.
+        /// \brief Metoda zwraca treść komunikatu.
         ///  Pochodzi z std::exception
         virtual const char* what() const throw();
 
     protected:
-        std::string basicMessage; //!< Tresc
+        std::string basicMessage; //!< treść
         mutable std::string exceptionMessage; //!< Zwrace przez metode what() z dodana informacja z RTTI
     };
 
-    /// \brief  Wyjatek rzucany, gdy probuje sie wykonac operacje
-    ///         na danych ktore powinny byc a nie zostaly wczytane
+    /// \brief  wyjątek rzucany, gdy próbuje się wykonać operacje
+    ///         na danych które powinny być a nie zostały wczytane
     class AcclaimDataNotLoaded : public Exception
     {
     public:
         AcclaimDataNotLoaded(const std::string& message);
     };
 
-    /// \brief  Wyjatek rzucany, gdy nie udalo sie otworzyc pliku
+    /// \brief  wyjątek rzucany, gdy nie udało się otworzyć pliku
     class UnableToOpenFileException : public Exception
     {
     public:
         UnableToOpenFileException(const std::string& message);
     };
 
-    /// \brief  Wyjatek rzucany, gdy plik zawiera niepoprawna tresc dla parsera
+    /// \brief  wyjątek rzucany, gdy plik zawiera niepoprawna treść dla parsera
     class WrongFileException : public Exception
     {
     public:
         WrongFileException(const std::string& message);
     };
 
-    /// \brief  Wyjatek rzucany, gdy probuje sie wykonac niezaimplementowana czesc kodu
+    /// \brief  wyjątek rzucany, gdy próbuje się wykonać niezaimplementowana część kodu
     class NotYetImplemented : public Exception
     {
     public:
         NotYetImplemented(const std::string& message) : Exception(message) { };
     };
 
-
+    /// \brief  wyjątek rzucany w przypadku błędnego modelu kinematycznego
     class KinematicModelException : public Exception
     {
         public:
@@ -60,6 +60,7 @@ namespace kinematic
             virtual ~KinematicModelException() throw() {}
     };
 
+    /// \brief  wyjątek rzucany, gdy nie ma się mapować nazwy stawu na standard hAnim
     class UnableToMapJointException : public KinematicModelException
     {
         std::string unmappedJoint;
@@ -78,6 +79,7 @@ namespace kinematic
           virtual ~UnableToMapJointException() throw() {}
     };
 
+    /// \brief  wyjątek rzucany, gdy nie ma dostępnego słownika mapującego nazwy do standardu hAnim
     class DictionaryNotLoadedException : public KinematicModelException
     {
     public:
@@ -85,6 +87,7 @@ namespace kinematic
             KinematicModelException(message) {}
     };
 
+    /// \brief  wyjątek rzucany, gdy staw nie spełnia standardu hAnim
     class NotHAnimJointException : public KinematicModelException
     {
         std::string notFoundJoint;

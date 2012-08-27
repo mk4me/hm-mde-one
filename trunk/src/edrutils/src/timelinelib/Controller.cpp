@@ -68,8 +68,8 @@ double Controller::getAbsoluteLength(double normalizedLength) const
 
 std::pair<double, double> Controller::getAbsoluteRange(double begin, double length) const
 {
-    UTILS_ASSERT((begin >= 0.0 && begin <= 1.0), "Błędny czas poczatku - poza zakresem 0-1");
-    UTILS_ASSERT((length >= 0.0 && length <= 1.0), "Błędna dlugość - poza zakresem 0-1");
+    UTILS_ASSERT((begin >= 0.0 && begin <= 1.0), "Błędny czas początku - poza zakresem 0-1");
+    UTILS_ASSERT((length >= 0.0 && length <= 1.0), "Błędna długość - poza zakresem 0-1");
     
     std::pair<double, double> ret(0,0);
         

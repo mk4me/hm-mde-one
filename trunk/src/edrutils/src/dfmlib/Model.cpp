@@ -145,7 +145,7 @@ void Model::addNode(const NPtr & node)
             //zainicjuj brakujące piny
             pinsRequiringConnections[node].insert(requiredPins.begin(), requiredPins.end());
         }else{
-            //oznacz węzeł jako niepodłaczony, bo żadne wejscie nie ma połączenia
+            //oznacz węzeł jako niepodłaczony, bo żadne wejście nie ma połączenia
             pinsRequiringConnections[node] = PinsSet();
         }
 

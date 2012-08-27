@@ -150,7 +150,7 @@ private:
     //! Licznik ilości węzłów liści które przetworzyły dane
 	unsigned int finishedLeafes;
 
-    //! mutex do kontroli wątku notyfikujacego źródła
+    //! mutex do kontroli wątku notyfikującego źródła
     //OpenThreads::Mutex pauseMutex;
 
     //! mutex do synchronizacji aktualizacji ilości liści które przetworzyły dane

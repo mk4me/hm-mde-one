@@ -13,7 +13,7 @@ namespace dflm{
 
 //class EditableNode;
 
-//! Klasa reprezentujaca wezeł w modelu data flow. Zarządza on pinami wejściowymi i wyjściowymi oraz
+//! Klasa reprezentująca wezeł w modelu data flow. Zarządza on pinami wejściowymi i wyjściowymi oraz
 class Node : public boost::enable_shared_from_this<Node>
 {
 
@@ -113,13 +113,13 @@ public:
 
     MPtr getModel() const;
 
-    //! \return Iterator początku kolekcji pinów wejsciowych
+    //! \return Iterator początku kolekcji pinów wejściowych
     iterator beginIn() const;
 
-    //! \return Iterator końca kolekcji pinów wejsciowych
+    //! \return Iterator końca kolekcji pinów wejściowych
     iterator endIn() const;
 
-    //! \param idx Indeks pinu wejsciowego, zgłasza wyjątek jeśli niepoprawny index
+    //! \param idx Indeks pinu wejściowego, zgłasza wyjątek jeśli niepoprawny index
     //! \return Pin wejściowy spod wskazanego indeksu
     const PinPtr & getInPin(int idx) const;
 
@@ -148,7 +148,7 @@ public:
     size_type sizeOut() const;
 
     //! \param node Węzeł któremu sprawdza się poprawność połączeń pinów wejściowych
-    //! \return Prawda jeśli połączenia pinów wejsciowych są poprawne
+    //! \return Prawda jeśli połączenia pinów wejściowych są poprawne
 	static bool validInPinsConnection(const CNPtr & node);
 
     //! \param node Węzeł któremu sprawdza się poprawność połączeń pinów wyjściowych
@@ -160,7 +160,7 @@ public:
 	static bool validConnection(const CNPtr & node);
 
     //! \param node Węzeł któremu sprawdza się czy jakikolwiek pin wejściowy został podłączony
-    //! \return Prawda jeśli conajmniej jeden pin wejsciowy jest podłączony
+    //! \return Prawda jeśli conajmniej jeden pin wejściowy jest podłączony
 	static bool anyInPinConnected(const CNPtr & node);
 
     //! \param node Węzeł któremu sprawdza się czy jakikolwiek pin wyjściowy został podłączony
@@ -190,7 +190,7 @@ private:
     //! \param name Nowa nazwa węzła
     void setName(const std::string & name);
 
-    //! \param pin Pin do dodania do pinów wejsciowych
+    //! \param pin Pin do dodania do pinów wejściowych
     virtual void addInPin(const PinPtr & pin);
 
     //! \param pin Pin do dodania do pinów wyjsciowych
@@ -221,7 +221,7 @@ private:
     //! Czy węzeł zainicjalizowano
     bool initialized;
 
-    //! Model do ktorego należy węzeł
+    //! Model do którego należy węzeł
     WMPtr model;
 
     //! Obiekt na potrzby inicjalizacji węzła
@@ -249,7 +249,7 @@ private:
 //    virtual void onOutPinAdd(const PinPtr & pin);
 //
 //private:
-//    //! \param newPin Pin do dodania do pinów wejsciowych
+//    //! \param newPin Pin do dodania do pinów wejściowych
 //    void addInPin(const PinPtr & pin)
 //    {
 //        addPin(inPins, pin);
@@ -263,7 +263,7 @@ private:
 //        onOutPinAdd(pin);
 //    }
 //
-//    //! \param newPin Pin do dodania do pinów wejsciowych
+//    //! \param newPin Pin do dodania do pinów wejściowych
 //    void removeInPin(const PinPtr & pin)
 //    {
 //        removePin(inPins, pin);

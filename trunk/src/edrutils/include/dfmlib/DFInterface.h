@@ -10,18 +10,18 @@ class DFInterface
 {
 public:
 
-    //! Konstruktor domyslny
-    //! \param enable Czy obiekt moze przetwarzac dane podczas notyfikacji
+    //! Konstruktor domyślny
+    //! \param enable Czy obiekt moze przetwarzać dane podczas notyfikacji
 	DFInterface(bool enable = true);
 
     //! Wirtualny destruktor
 	virtual ~DFInterface(void);
 
-    //! \param enable Czy obiekt moze przetwarzac dane w momencie notyfikacji
+    //! \param enable Czy obiekt moze przetwarzać dane w momencie notyfikacji
     //! false blokuje przetwarzanie danych
     void setEnable(bool enable);
 
-    //! \return Czy obiekt moze przetwarzac informacje
+    //! \return Czy obiekt moze przetwarzać informacje
 	bool isEnable() const;
 
     //! Metoda resetująca stan obiektu - wywoływana po każdym pełnym cyklu danych

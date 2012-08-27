@@ -20,17 +20,14 @@
 
 namespace kinematic 
 {
-	
-//! Klasa reprezentuje kanal dla pojedynczego stawu, przechowuje rotacje wzgledne w postaci kwaternionow
-//typedef utils::BaseChannel<osg::Quat, float, QuaternionManipulatorSlerp> JointAngleChannel;
-
+//! Klasa reprezentuje kanał dla pojedynczego stawu, przechowuje rotacje względne w postaci kwaternionów
 typedef utils::Channel<osg::Quat> JointAngleChannel;
 
 typedef boost::shared_ptr<JointAngleChannel> JointAngleChannelPtr;
 typedef boost::shared_ptr<const JointAngleChannel> JointAngleChannelConstPtr;
 
-/// \brief  Klasa dostarcza reprezentacje wewnetrzna szkieletu.
-/// \details Zawiera znormalizowane dane : rotacje jako kwaterniony, dlugosc kosci z zakresu <0,1>, nazewnictwo h-anim
+/// \brief  Klasa dostarcza reprezentacje wewnętrzną szkieletu.
+/// \details Zawiera znormalizowane dane : rotacje jako kwaterniony, długość kości z zakresu <0,1>, nazewnictwo h-anim
 class JointAnglesCollection : public utils::DataChannelCollection<JointAngleChannel>
 {
 public:
@@ -38,13 +35,10 @@ public:
 	virtual ~JointAnglesCollection() {}
 
 public:
+    //! \return głęboka kopia obiektu
 	virtual JointAnglesCollection* clone() const;
 	
 public:
-    /// \brief  Zwraca surowe dane z parsera
-    //kinematic::SkeletalModelConstPtr getSkeletalModel() const { return skeletalModel; }
-	//! Tworzy dane zgodne z parserami na podstawie reprezentacji wewnetrznej
-	//kinematic::SkeletalModelPtr createSkeletalData() const;
     /// \brief  Ustawia dane z parsera
     /// \details W tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
     /// \param  skeletalModel   The skeletal model. 
@@ -53,57 +47,70 @@ public:
     //! \brief zwraca szkielet zgodny z h-anim
     const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }
 	
-    //bool hasSkeleton() const {
-    //    return (skeletalModel);
-    //}
-
+   	//! zwraca indeks kanału lub rzuca wyjątkiem w przypadku niepowodzenia
+   	//! \param name nazwa szukanego kanału
+    //! \return indeks kanału
    	int getIndex(const std::string& name) const;
+    //! zwraca indeks kanału lub -1 wyjątkiem w przypadku niepowodzenia
+    //! \param name nazwa szukanego kanału
+    //! \return indeks kanału
 	int tryGetIndex(const std::string& name) const;
-
+    //! zwraca pozycję roota
+    //! \param frame klatka, dla której ma być zwrócona pozycja
+    //! \return pozycja  
     osg::Vec3 getRootPosition(int frame) const;
+    //! zwraca pozycję roota
+    //! \param time czas, dla którego ma być zwrócona pozycja
+    //! \return pozycja  
     osg::Vec3 getRootPosition(double time) const;
+    //! \return zwraca kolekcję z wszystkimi pozycjami roota na przestrzeni czasu
     const std::vector<osg::Vec3>& getRootPositions() const { return rootPositions; }
-
-    //osg::Vec4 getPreferedDotColor() const { return preferedDotColor; }
-    //void setPreferedDotColor(osg::Vec4 val) { preferedDotColor = val; }
-    //osg::Vec4 getPreferedConnectionColor() const { return preferedConnectionColor; }
-    //void setPreferedConnectionColor(osg::Vec4 val) { preferedConnectionColor = val; }
-
+    //! \return długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
 	double getLengthRatio() const { return lengthRatio; }
+    //! ustawia długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
 	void setLengthRatio(double val) { lengthRatio = val; }
 
-
 private:
-    /// \brief  Na podstawie danych z parsera tworzy tablice z kwaternionami
+    /// \brief  Na podstawie danych z parsera tworzy tablicę z kwaternionami
     void createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel, SkeletalDataConstPtr & skeletalData);
-    /// \brief  Wyszukuje i zwraca dlugosc najdluzszej z kosci w szkielecie
+    /// \brief  Wyszukuje i zwraca długość najdłuższej z kości w szkielecie
     /// \param  skeleton  Przeszukiwany szkielet
-    /// \return Dlugosc najdluzszej z kosci. 
+    /// \return długość najdłuższej z kości. 
     double getMaxBoneLength(const Skeleton& skeleton) const;
-    /// \brief  Gets a maximum length.
-    /// \param  joint       The joint. 
-    /// \param  maxLength   Length of the maximum. 
-    /// \return The maximum length. 
+    /// \brief zwraca maksymalną długość kości
+    /// \param  joint staw, dostarczający hierarchię 
+    /// \param  maxLength dotychczasowa, najdłuższa kość
+    /// \return wyliczona długość. 
     double getMaxLength(const JointConstPtr & joint, double maxLength) const;
-
+    //! obraca wektor o kąty eulera
+    //! \param v obracany wektor
+    //! \param rX kąt X
+    //! \param rY kąt Y
+    //! \param rZ kąt Z
+    //! \return obliczony wektor
     osg::Vec3 vectorRotation( osg::Vec3 v, double rX, double rY, double rZ);
+    //! zwraca rotację względną pozmiędzy rodzicem a dzieckiem
+    //! \param parent rodzic, dla którego liczona jest rotacja
+    //! \param child dziecko, dla którego liczona jest rotacja
+    //! \return kwaternion z obliczoną rotacją
     osg::Quat rotationParentChild(hAnimJointPtr parent, hAnimJointPtr child);
+    //! Tworzy rotację na podstawie kątów
+    //! \param rX kąt X
+    //! \param rY kąt Y
+    //! \param rZ kąt Z
+    //! \param order kolejność kątów
+    //! \return wyliczony kwaternion
     osg::Quat createRotation(const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order);
 	
 private:
-	////! dane z parsera acclaim / biovision
-    //kinematic::SkeletalModelConstPtr skeletalModel;
-	////! dane z parsera acclaim / biovision
-	//kinematic::SkeletalDataConstPtr skeletalData;
-	//! pelny szkielet h-anim                          
+	//! pełny szkielet h-anim                          
     kinematic::hAnimSkeletonPtr haSkeleton;
 	//! pozycje dla roota
     std::vector<osg::Vec3> rootPositions;
-	//! dlugosc przez ktora nalezy pomnozyc aby uzyskac poczatkowe dlugosci kosci            
+	//! długość przez którą należy pomnożyc aby uzyskać początkowe długości kości            
     double lengthRatio;
+    //! czy obiekt jest już zainicjalizowany
     bool initialized;
-    //osg::Vec4 preferedDotColor;
-    //osg::Vec4 preferedConnectionColor;
 }; 
 
 typedef boost::shared_ptr<JointAnglesCollection> JointAnglesCollectionPtr;

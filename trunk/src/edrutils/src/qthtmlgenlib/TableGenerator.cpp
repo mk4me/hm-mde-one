@@ -364,7 +364,7 @@ void HtmlDataTableGenerator::generateHtmlTable(QString & table, const HtmlDataTa
 
     // budujemy nagłowki tabeli
     buildHeaders(c, a, rowsData, structure, styles, rows, columns);
-    // budujemy wnetrze tabeli - dane
+    // budujemy wnętrze tabeli - dane
     buildContent(c, a, structure, styles, rows, columns);
 
     // generujemy tabele

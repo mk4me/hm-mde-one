@@ -169,7 +169,7 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalMo
 //    skeleton.setRoot(newRoot);
 //
 //    model->setName("HumanModel");
-//    UTILS_ASSERT(false, "testowo zmienila sie struktura ramek w parserach!");
+//    UTILS_ASSERT(false, "testowo zmienila się struktura ramek w parserach!");
 //    //model->getFrames() = frames;
 //    model->RecreateMaps();
 //    return model;

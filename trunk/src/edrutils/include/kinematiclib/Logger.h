@@ -6,7 +6,7 @@
 
 namespace kinematic {
     
-    /// \brief Makro, dzieki ktoremu nie wykona sie niepotrzebne skladanie wiadomosci (message)
+    /// \brief Makro, dzięki któremu nie wykona się niepotrzebne składanie wiadomości (message)
     #define LOGGER(severity, basicMessage) \
                            if (Logger::getInstance().getLogCallback() && (severity) >= Logger::getInstance().getOutSeverity()) { \
                                Logger::getInstance().log((severity), (basicMessage)); \
@@ -15,33 +15,36 @@ namespace kinematic {
 class Logger
 {
 public:
-    //! Poziom waznosci komunikatow.
+    //! poziom ważności komunikatów.
     enum LogSeverity {
         Debug,
         Info,
         Warning,
         Error,
     };
-    //! wskaznik na funkcje do ktorej trafiaja komunikaty
+    //! wskaźnik na funkcję do której trafiają komunikaty
     typedef void (*LogCallback)(LogSeverity severity, const std::string& msg);
 
 private:
+    //! prywatny konstruktor, zabronione jest kopiowanie, ustawia domyślne wartości
     Logger() {
         setOutSeverity(Logger::Debug);      
         setLogCallback(Logger::logConsole);
     }
+    //! prywatny konstruktor kopiujący, zabronione jest kopiowanie
     Logger(const Logger &);
+    //! prywatny operator przypisania, zabronione jest kopiowanie
     Logger& operator=(const Logger&);
 public:
-    //! zwraca instancje logera
+    //! zwraca instancję logera
     static Logger& getInstance() {
         static Logger instance;
         return instance;
     }
 
 public:
-    //! Metoda, dzieki ktorej wysyla sie komunikaty
-    //! \param severity
+    //! Metoda, dzięki której wysyla się komunikaty
+    //! \param severity 
     //! \param msg
     void log(LogSeverity severity, const std::string& msg) {
         if (callback && severity >= outSeverity) {
@@ -49,21 +52,24 @@ public:
         }
     }
 
-    //! Metoda zmienia wskaznik na funkcje logujaca (domyslnie jest konsola)
-    //! \param _callback wskaznik na nowa funkcje (moze byc NULL)
+    //! Metoda zmienia wskaźnik na funkcje logującą (domyślnie jest konsola)
+    //! \param _callback wskaźnik na nowa funkcję (moze być NULL)
     void setLogCallback(LogCallback _callback) { callback = _callback; }
+    //! \return wskaźnik na funkcje logującą (domyślnie jest konsola)
     LogCallback getLogCallback() { return callback; }
+    //! ustawia poziom ważności komunikatów
     void setOutSeverity(LogSeverity severity) {
         this->outSeverity = severity;
     }
+    //! \return poziom ważności komunikatów
     LogSeverity getOutSeverity() {
         return this->outSeverity;
     }
 
 private:
     //! Metoda wypisuje informacje prosto do konsoli
-    //! \param severity waznosc komunikatu
-    //! \param msg tresc wiadomosci
+    //! \param severity ważność komunikatu
+    //! \param msg treść wiadomości
     static void logConsole(LogSeverity severity, const std::string& msg) {
         switch (severity) {
             case Debug:     std::cout << "DEBUG: ";     break;
@@ -76,9 +82,9 @@ private:
 
 
 private:
-    //! Wskaznik na funkcje logujaca
+    //! wskaźnik na funkcje logująca
     LogCallback callback;
-    //! obecny poziom logowania (wiadomosci o nizszym poziomie nie beda logowane)
+    //! obecny poziom logowania (wiadomości o nizszym poziomie nie beda logowane)
     LogSeverity outSeverity;
 };
 } 

@@ -5,7 +5,7 @@
 #include <kinematiclib/SkeletalModel.h>
 namespace kinematic
 {
-    /// \brief Klasa realizuje zapis i odczyt plikow *.amc
+    /// \brief Klasa realizuje zapis i odczyt plików *.amc
     class AmcParser
     {
     public:
@@ -14,19 +14,20 @@ namespace kinematic
 
     public:
         /// \brief  Parsuje podany plik. 
-        /// \param  model reprezentacja wewnetrzna animacji
+        /// \param  model reprezentacja wewnętrzna animacji
         /// \param  filename  Nazwa pliku do parsowania. 
         void parse(SkeletalDataPtr data, const std::string& filename);
         /// \brief  Zapisuje dane z modelu do pliku *.amc
-        /// \param  model reprezentacja wewnetrzna animacji
-        /// \param  filename nazwa pliku do ktorego zostana zapisane dane
+        /// \param  model reprezentacja wewnętrzna animacji
+        /// \param  filename nazwa pliku do którego zostaną zapisane dane
         void save (const SkeletalModelConstPtr model, const SkeletalDataConstPtr data, const std::string& filename);
-
+        /// \return czy jest wymuszenie kolejności rotacji roota (zapewnia zgodność z niektórymi parserami)
         bool isForceRootXYZ() { return forceRootXYZ; }
+        /// \brief ustawia wymuszenie kolejności rotacji roota (zapewnia zgodność z niektórymi parserami)
         void setForceRootXYZ(bool value) { forceRootXYZ = value; }
 
     private:
-        bool forceRootXYZ; //!< wymuszenie kolejnosci rotacji roota (zapewnia zgodnosc z niektorymi parserami)
+        bool forceRootXYZ; //!< wymuszenie kolejności rotacji roota (zapewnia zgodność z niektórymi parserami)
     };
 }
 

@@ -6,40 +6,41 @@
 #include "DegreeOfFreedom.h"
 namespace kinematic
 {
-    /// \brief  Klasa przechowuje hierarchie kosci 
+    /// \brief  Klasa przechowuje hierarchie kości 
     class Skeleton : boost::noncopyable
     {
     public:
         Skeleton();
 
     public: 
-        /// \brief  Zwraca korzen, czyli kosc od ktorej zaczyna sie hierarchia. 
-        /// \return Wskaznik do kosci. 
+        /// \brief  Zwraca korzeń, czyli kość od której zaczyna się hierarchia. 
+        /// \return wskaźnik do kości. 
         JointConstPtr getRoot() const { return this->root; }
 		JointPtr getRoot() { return this->root; }
-        /// \brief  Ustawia korzen, czyli kosc od ktorej zaczyna sie hierarchia. 
-        /// \param  root  Wskaznik do kosci roota. 
+        /// \brief  Ustawia korzeń, czyli kość od której zaczyna się hierarchia. 
+        /// \param  root  wskaźnik do kości roota. 
         void setRoot(JointPtr root) { this->root = root; }
-        /// \brief  Zwraca nazwe korzenia
+        /// \brief  Zwraca nazwę korzenia
         const std::string& getRootName() const { return this->rootName; };
-        /// \brief  Ustawia nazwe korzenia
+        /// \brief  Ustawia nazwę korzenia
         void setRootName(const std::string& name) { this->rootName = name; }
-        /// \brief  zwraca poczatkowa pozycje w globalnym ukladzie odniesienia
+        /// \brief  zwraca początkowa pozycje w globalnym układzie odniesienia
         osg::Vec3d getPosition() const { return this->position; }
-        /// \brief  ustawia poczatkowa pozycje w globalnym ukladzie odniesienia
+        /// \brief  ustawia początkowa pozycje w globalnym układzie odniesienia
         void setPosition(osg::Vec3d position) { this->position = position; }
-        /// \brief  zwraca poczatkowa orientacje w globalnym ukladzie odniesienia
+        /// \brief  zwraca początkowa orientacje w globalnym układzie odniesienia
         osg::Vec3d getOrientation() const { return this->orientation; }
-        /// \brief  ustawia poczatkowa orientacje w globalnym ukladzie odniesienia
+        /// \brief  ustawia początkowa orientacje w globalnym układzie odniesienia
         void setOrientation(osg::Vec3d orientation) { this->orientation = orientation; }
-        /// \brief  zwraca kolejnosc rotacji
+        /// \brief  zwraca kolejność rotacji (sekcja axis)
         Axis::Order getAxis() const { return this->axisOrder; }
-        /// \brief  ustawia kolejnosc rotacji
+        /// \brief  ustawia kolejność rotacji (sekcja axis)
         void setAxis(Axis::Order order) {this->axisOrder = order; }
-
+        /// \brief  zwraca kolejność rotacji (sekcja order)
         Axis::Order getOrder() const { return this->dataOrder; }
+        /// \brief  ustawia kolejność rotacji (sekcja order)
         void setOrder(Axis::Order order) {this->dataOrder = order; }
-
+        /// \return głęboka kopia obiektu
 		virtual Skeleton* clone() const
 		{
 			Skeleton* clone = new Skeleton();      
@@ -53,6 +54,8 @@ namespace kinematic
 		}
 
 	private:
+        /// \brief metoda pomocniczna przy tworzeniu głębokiej kopii
+        /// \return kopia hierarchii poniżej roota
 		JointPtr cloneHierarchy(JointConstPtr root) const {
 			JointPtr current(new Joint());
 			Joint::copyContent(*root, *current);
@@ -61,7 +64,8 @@ namespace kinematic
 			}
 			return current;
 		}
-
+        /// \brief metoda pomocniczna przy tworzeniu głębokiej kopii
+        /// \return kopia całej hierarchii 
 		void cloneHierarchy(JointConstPtr currentSourceJoint, JointPtr destinationParent) const
 		{
 			JointPtr current(new Joint());
@@ -77,15 +81,15 @@ namespace kinematic
 		}
 
     private:							
-		//! korzen, czyli kosc od ktorej zaczyna sie hierarchia. 
+		//! korzeń, czyli kość od której zaczyna się hierarchia. 
         JointPtr root;          
-		//! poczatkowa pozycja w globalnym ukladzie odniesienia
+		//! początkowa pozycja w globalnym układzie odniesienia
         osg::Vec3d position;      
-		//! poczatkowa orientacja w globalnym ukladzie odniesienia
+		//! początkowa orientacja w globalnym układzie odniesienia
         osg::Vec3d orientation;   
-		//! kolejnosc rotacji (sekcja axis)
+		//! kolejność rotacji (sekcja axis)
         Axis::Order axisOrder;     
-		//! kolejnosc rotacji (sekcja order)
+		//! kolejność rotacji (sekcja order)
         Axis::Order dataOrder;     
 		//! nazwa korzenia (w bvh)
         std::string rootName;      

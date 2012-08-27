@@ -37,7 +37,7 @@ void Grid::setDimensions( unsigned rows, unsigned columns )
     unsigned oldRows = getNumRows();
     unsigned oldColumns = getNumColumns();
     oldObjects.swap(_objects);
-    // wypelnienie tablicy na nowo
+    // wypełnienie tablicy na nowo
     _objects.resize( rows * columns );
     for ( unsigned y = 0; y < rows && y < oldRows; ++y ) {
         // skopiowanie tych samych

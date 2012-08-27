@@ -27,7 +27,7 @@ public:
 
     //! Typ reprezentujący wizualny stan pinu - aktywny i statyczny stan
 	enum VisualStatus{
-        OK,             //! z pinem wszystko ok, ewentualnie można łączyc piny
+        OK,             //! z pinem wszystko ok, ewentualnie można łączyć piny
 		ACTIVE,         //! pin aktualnie aktywny, aktualnie wskazywany
 		INCOMPATIBLE,   //! pin niekompatybilny podczas łączenia
 		REQUIRED,       //! pin wymagany

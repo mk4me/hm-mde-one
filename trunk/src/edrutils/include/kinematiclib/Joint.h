@@ -21,23 +21,23 @@ struct Joint : boost::noncopyable
    int id;                              
    //! nazwa stawu
    std::string name;                    
-   //! kierunek kosci w globalnym ukladzie odniesienia
+   //! kierunek kości w globalnym układzie odniesienia
    osg::Vec3d direction;                
-   //! dlugosc kosci
+   //! długość kości
    double length;                       
-   //! okresla poczatkowa orientacje dla kosci
+   //! określa początkową orientację dla kości
    osg::Vec3d axis;                     
-   //! okresla kolejnosc rotacji
+   //! określa kolejność rotacji
    Axis::Order order;                   
-   //! wskaznik do rodzica
+   //! wskaźnik do rodzica
    JointWeakPtr parent;                      
-   //! wskazniki do wszyskich dzieci w hierarchi
+   //! wskaźniki do wszyskich dzieci w hierarchi
    std::vector<JointPtr> children;      
-   //! stopnie swobody dla kosci (razem z limitami)
+   //! stopnie swobody dla kości (razem z limitami)
    std::vector<DegreeOfFreedom> dofs;   
-   //! masa ciala zwiazana z ta koscia
+   //! masa ciała związana z tą kością
    double bodymass;                     
-   //! pozycja srodka ciezkosci wzgledem kosci
+   //! pozycja środka cieżkości względem kości
    double cofmass;                      
 
    Joint() :
@@ -51,6 +51,7 @@ struct Joint : boost::noncopyable
     cofmass(std::numeric_limits<double>::infinity())
    {}
 
+    //! kopiowanie zawartości jointa
 	static void copyContent(const Joint& source, Joint& destination) 
 	{
 		destination.id = source.id;                              

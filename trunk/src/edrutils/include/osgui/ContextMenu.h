@@ -57,27 +57,27 @@ public:
 
     //! string - sciezka do elementu menu
     //! bool - checked, czy element jest zaznaczony (jak checkbox)
-    //! onClickCallback - akcja useraa na klikniecie elementu
-    //! onHoverCallback - akcja useraa na najechanie elementu menu, domyslnie pusta
+    //! onClickCallback - akcja useraa na kliknięcie elementu
+    //! onHoverCallback - akcja useraa na najechanie elementu menu, domyślnie pusta
 	bool addMenuItem(const std::string & path, bool checked, const OnClickCallback & onClickCallback,
         const OnHoverCallback & onHoverCallback = OnHoverCallback());
 
-    //! string - sciezka do elementu menu, ktory chcemy usunac
+    //! string - sciezka do elementu menu, który chcemy usunac
     bool removeMenuItem(const std::string & path);
 	
-    //! string - sciezka do elementu menu, ktory chcemy modyfikowac
+    //! string - sciezka do elementu menu, który chcemy modyfikowac
     //! bool - checked, stan zaznaczenia danego elementu
 	bool setMenuItemChecked(const std::string & path, bool checked);
 
-    //! string - sciezka do elementu menu, ktory chcemy modyfikowac
+    //! string - sciezka do elementu menu, który chcemy modyfikowac
     //! OnClickCallback - nowa akcja usera na kliknięcie elementu
 	bool setMenuItemOnClickCallback(const std::string & path, const OnClickCallback & callback);
 
-    //! string - sciezka do elementu menu, ktory chcemy modyfikowac
+    //! string - sciezka do elementu menu, który chcemy modyfikowac
     //! OnHoverCallback - nowa akcja usera na najechanie elementu
 	bool setMenuItemOnHoverCallback(const std::string & path, const OnHoverCallback & callback);
 
-    //! string - sciezka do submenu, ktory chcemy modyfikowac
+    //! string - sciezka do submenu, który chcemy modyfikowac
     //! OnCloseCallback - nowa akcja usera po zamknieciu danego poziomu menu
 	bool setMenuOnCloseCallback(const std::string & path, const OnCloseCallback & callback);
 
@@ -113,7 +113,7 @@ protected:
     //! definicja tokenizera opartego o boost
 	typedef boost::tokenizer<boost::char_separator<char> > Tokenizer;
 
-    //! struktura opisujaca element menu
+    //! struktura opisująca element menu
 	typedef struct MenuItem{
     public:
         MenuItem() : checked(false){};
@@ -127,15 +127,15 @@ protected:
         //! informacja czy dany element jest zaznaczony czy nie
 		bool checked;
 
-        //! akcja zadana przez uzytkownika na klikniecie elementu
+        //! akcja zadana przez użytkownika na kliknięcie elementu
 		OnClickCallback onClickCallback;
 
-        //! akcja zadana przez uzytkownika na najechanie elementu
+        //! akcja zadana przez użytkownika na najechanie elementu
 		OnHoverCallback onHoverCallback;
 
 	}MenuItem;
 
-    //! struktura opisujaca submenu
+    //! struktura opisująca submenu
 	typedef struct MenuSubmenu{
 
         //! reprezentacja submenu w menu
@@ -144,15 +144,15 @@ protected:
         //! submenu
 		osg::ref_ptr<ContextMenu> submenu;
 
-        //! atrapa checkboxa, zaslepka wzgledem elementu menu
+        //! atrapa checkboxa, zaslepka względem elementu menu
 		osg::ref_ptr<osgWidget::Widget> emptyWidget;
 
 	}MenuSubmenu;
 
-    //! mapa nazwy submenu z obiektem opisujacym submenu
+    //! mapa nazwy submenu z obiektem opisującym submenu
 	typedef std::map<std::string, MenuSubmenu> Submenus;
 
-    //! mapa nazwy elementu z obiektem opisujacym element menu
+    //! mapa nazwy elementu z obiektem opisującym element menu
 	typedef std::map<std::string, MenuItem> Items;
 
 protected:
@@ -167,7 +167,7 @@ protected:
 	bool onSubmenuEnter(osgWidget::Event& ev);
 	bool onSubmenuLeave(osgWidget::Event& ev);
 
-    //! sprawdza po ktorej stronie wzgledem rodzica powinno pojawic sie submenu
+    //! sprawdza po której stronie względem rodzica powinno pojawic się submenu
 	bool isSubmenuDirectionRight() const;
 
     //! string - sciezka do elementu menu
@@ -185,7 +185,7 @@ protected:
     //! string - sciezka do elementu menu
 	std::vector<std::string> parseNextMenuItems(const std::string & path) const;
 
-    //! MenuItem - opis elementu menu, ktory odswiezamy
+    //! MenuItem - opis elementu menu, który odswiezamy
     //! bool - informacja o tym czy myszka nad elementem
 	void refreshMenuItemCheckedStyle(const MenuItem & menuItem, bool hovered = false);
 
@@ -194,71 +194,71 @@ private:
 
     //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! bool - checked, czy element jest zaznaczony (jak checkbox)
-    //! onClickCallback - akcja useraa na klikniecie elementu
-    //! onHoverCallback - akcja useraa na najechanie elementu menu, domyslnie pusta
+    //! onClickCallback - akcja useraa na kliknięcie elementu
+    //! onHoverCallback - akcja useraa na najechanie elementu menu, domyślnie pusta
 	template<class Collection>
 	bool addMenuItem(const Collection & path, bool checked, const OnClickCallback & onClickCallback,
         const OnHoverCallback & onHoverCallback = OnHoverCallback());
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! bool - checked, czy element jest zaznaczony (jak checkbox)
-    //! onClickCallback - akcja useraa na klikniecie elementu
-    //! onHoverCallback - akcja useraa na najechanie elementu menu, domyslnie pusta
+    //! onClickCallback - akcja useraa na kliknięcie elementu
+    //! onHoverCallback - akcja useraa na najechanie elementu menu, domyślnie pusta
 	template<class Iter>
 	bool addMenuItem(Iter begin, Iter end, bool checked, const OnClickCallback & onClickCallback,
         const OnHoverCallback & onHoverCallback = OnHoverCallback());
 
-    //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), ktory chemy usunac
+    //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), który chemy usunac
 	template<class Collection>
 	bool removeMenuItem(const Collection & path);
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
 	template<class Iter>
 	bool removeMenuItem(Iter begin, Iter end);
 
-    //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), ktory chemy usunac
+    //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), który chemy usunac
     //! bool checked, nowy stan danego elementu
 	template<class Collection>
 	bool setMenuItemChecked(const Collection & path, bool checked);
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! bool checked, nowy stan danego elementu
 	template<class Iter>
 	bool setMenuItemChecked(Iter begin, Iter end, bool checked);
 
-    //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), ktory chemy usunac
-    //! OnClickCallback nowa akcja uzytkownika po kliknieciu danego elementu
+    //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), który chemy usunac
+    //! OnClickCallback nowa akcja użytkownika po kliknieciu danego elementu
 	template<class Collection>
 	bool setMenuItemOnClickCallback(const Collection & path, const OnClickCallback & callback);
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
-    //! OnClickCallback nowa akcja uzytkownika po kliknieciu danego elementu
+    //! OnClickCallback nowa akcja użytkownika po kliknieciu danego elementu
 	template<class Iter>
 	bool setMenuItemOnClickCallback(Iter begin, Iter end, const OnClickCallback & callback);
 
-    //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), ktory chemy usunac
-    //! OnHoverCallback nowa akcja uzytkownika po najechaniu myszka danego elementu
+    //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), który chemy usunac
+    //! OnHoverCallback nowa akcja użytkownika po najechaniu myszka danego elementu
 	template<class Collection>
 	bool setMenuItemOnHoverCallback(const Collection & path, const OnHoverCallback & callback);
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
-    //! OnHoverCallback nowa akcja uzytkownika po najechaniu myszka danego elementu
+    //! OnHoverCallback nowa akcja użytkownika po najechaniu myszka danego elementu
 	template<class Iter>
 	bool setMenuItemOnHoverCallback(Iter begin, Iter end, const OnHoverCallback & callback);
 
     //! Collection - kolekajca z kolejnymi poziomami submenu
-    //! OnCloseCallback nowa akcja uzytkownika na zamkniecie danego submenu
+    //! OnCloseCallback nowa akcja użytkownika na zamknięcie danego submenu
 	template<class Collection>
 	bool setMenuOnCloseCallback(const Collection & path, const OnCloseCallback & callback);
 
-    //! Iter begin - poczatek kolekcji z kolejnymi submenu
+    //! Iter begin - początek kolekcji z kolejnymi submenu
     //! Iter end - koniec kolekcji z kolejnymi submenu
-    //! OnCloseCallback nowa akcja uzytkownika na zamkniecie danego submenu
+    //! OnCloseCallback nowa akcja użytkownika na zamknięcie danego submenu
 	template<class Iter>
 	bool setMenuOnCloseCallback(Iter begin, Iter end, const OnCloseCallback & callback);
 
@@ -266,7 +266,7 @@ private:
 	template<class Collection>
 	const OnClickCallback & getMenuItemOnClickCallback(const Collection & path) const;
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
 	template<class Iter>
 	const OnClickCallback & getMenuItemOnClickCallback(Iter begin, Iter end) const;
@@ -275,7 +275,7 @@ private:
 	template<class Collection>
 	const OnHoverCallback & getMenuItemOnHoverCallback(const Collection & path) const;
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
 	template<class Iter>
 	const OnHoverCallback & getMenuItemOnHoverCallback(Iter begin, Iter end) const;
@@ -284,7 +284,7 @@ private:
 	template<class Collection>
 	const OnCloseCallback & getMenuOnCloseCallback(const Collection & path) const;
 
-    //! Iter begin - poczatek kolekcji z kolejnymi submenu
+    //! Iter begin - początek kolekcji z kolejnymi submenu
     //! Iter end - koniec kolekcji z kolejnymi submenu
 	template<class Iter>
 	const OnCloseCallback & getMenuOnCloseCallback(Iter begin, Iter end) const;
@@ -293,7 +293,7 @@ private:
 	template<class Collection>
 	bool getMenuItemChecked(const Collection & path) const;
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
 	template<class Iter>
 	bool getMenuItemChecked(Iter begin, Iter end) const;
@@ -302,7 +302,7 @@ private:
 	template<class Collection>
 	MenuItem & findMenuItem(const Collection & path);
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
 	template<class Iter>
 	MenuItem & findMenuItem(Iter begin, Iter end);
@@ -311,7 +311,7 @@ private:
 	template<class Collection>
 	const MenuItem & findMenuItem(const Collection & path) const;
 
-    //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
+    //! Iter begin - początek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
 	template<class Iter>
 	const MenuItem & findMenuItem(Iter begin, Iter end) const;
@@ -320,7 +320,7 @@ private:
 	template<class Collection>
 	MenuSubmenu & findMenu(const Collection & path);
 
-    //! Iter begin - poczatek kolekcji z kolejnymi submenu
+    //! Iter begin - początek kolekcji z kolejnymi submenu
     //! Iter end - koniec kolekcji z kolejnymi submenu
 	template<class Iter>
 	MenuSubmenu & findMenu(Iter begin, Iter end);
@@ -329,18 +329,18 @@ private:
 	template<class Collection>
 	const MenuSubmenu & findMenu(const Collection & path) const;
 
-    //! Iter begin - poczatek kolekcji z kolejnymi submenu
+    //! Iter begin - początek kolekcji z kolejnymi submenu
     //! Iter end - koniec kolekcji z kolejnymi submenu
 	template<class Iter>
 	const MenuSubmenu & findMenu(Iter begin, Iter end) const;
 
 protected:
 
-    //! osg::observer_ptr<osgui::ContextMenu> glowa hierarchi menu kontekstowego, menu najwyzszego poziomu
-    //! przez nie user ma dostep do calego menu
+    //! osg::observer_ptr<osgui::ContextMenu> głowa hierarchi menu kontekstowego, menu najwyższego poziomu
+    //! przez nie user ma dostep do całego menu
 	osg::observer_ptr<osgui::ContextMenu> rootMenu;
     
-    //! osg::observer_ptr<osgui::ContextMenu> rodzic aktualnego menu, dla ktorego jest to menu submenu
+    //! osg::observer_ptr<osgui::ContextMenu> rodzic aktualnego menu, dla którego jest to menu submenu
 	osg::observer_ptr<osgui::ContextMenu> parentMenu;
 
     //! osg::observer_ptr<osgui::ContextMenu> aktualnie aktywne submenu
@@ -355,7 +355,7 @@ protected:
     //! Znaki będące separatorami.
     boost::shared_ptr<std::string> pathSeparator;
 
-    //! OnCloseCallback akcja uzytkownika na zamkniecie danego menu
+    //! OnCloseCallback akcja użytkownika na zamknięcie danego menu
 	OnCloseCallback closeMenuCallback;
 
 	static const MenuItem constEmptyMenuItem;

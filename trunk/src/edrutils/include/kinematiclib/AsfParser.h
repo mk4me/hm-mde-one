@@ -6,12 +6,12 @@ namespace kinematic
     class Skeleton;
 
     /*! 
-     * \brief Dzieki tej klasie mozliwe jest wczytanie plikow *.asf
+     * \brief dzięki tej klasie możliwe jest wczytanie plików *.asf
      */
     class AsfParser
     {
     public:
-        /** Inteligentny wskaznik do klasy */
+        /** Inteligentny wskaźnik do klasy */
         typedef boost::shared_ptr<AsfParser> Ptr;
 
     public:
@@ -26,14 +26,14 @@ namespace kinematic
             \param filename Nazwa pliku do wczytania */
         void save(const SkeletalModelPtr model, const std::string& filename);
 
-        //! Niektore parsery wymagaja, aby rotacje roota byly w kolejnosci XYZ
-        //! Jesli flaga jest ustawiona, to taka kolejnosc bedzie wymuszona przy zapisie
-        //! \param flag czy wymuszac kolejnosc rotacji XYZ przy zapisie
+        //! Niektóre parsery wymagają, aby rotacje roota byly w kolejności XYZ
+        //! jeśli flaga jest ustawiona, to taka kolejność będzie wymuszona przy zapisie
+        //! \param flag czy wymuszać kolejność rotacji XYZ przy zapisie
         void setForceXYZRoot(bool flag) {forceRootXYZ = flag;}
 
     protected:
-        /** Dzieli wejsciowy plik na poszczegolne sekcje. 
-            \param asf lancuch z calym plikiem asf*/
+        /** Dzieli wejściowy plik na poszczegolne sekcje. 
+            \param asf lancuch z całym plikiem asf*/
         bool splitAsf(const std::string& asf);
         /** Parsuje sekcje z jednostkami */
         bool parseUnits(const std::string& units);
@@ -41,19 +41,19 @@ namespace kinematic
         bool parseJoints(const std::string& bones);
         /** Parsuje pojedynczy staw */
         bool parseSingleJoint(const std::string& singleBone, Joint& bone);
-        /** Parsuje glowna kosc*/
+        /** Parsuje główną kość*/
         bool parseRoot(const std::string& root, Skeleton& skeleton);
-        /** Tworzy hierarchie kosci */
+        /** Tworzy hierarchię kości */
         bool parseHierarchy(const std::string& hierarchy, Skeleton& skeleton);
-        /** Usuwa komentarze z calego pliku asf. */
+        /** Usuwa komentarze z całego pliku asf. */
         std::string removeComments(const std::string& txt);
         /** Zapisuje sekcje root do pliku asf*/
         void saveRoot(std::ostream& out) const;
         /** Zapisuje sekcje units do pliku asf*/
         void saveUnits(std::ostream& out) const;
-        /** Zapisuje wszystkie kosci do pliku asf*/
+        /** Zapisuje wszystkie kości do pliku asf*/
         void saveBones(std::ostream& out) const;
-        /** Zapisuje pojedyncza kosc*/
+        /** Zapisuje pojedyncza kość*/
         void saveSingleBone(std::ostream& out, const Joint& bone) const;
         /** Zapisuje hierarchie do pliku asf*/
         void saveHierarchy(std::ostream& out) const;
@@ -63,24 +63,27 @@ namespace kinematic
         /** Parsuje linijke z limitami dla stopnia swobody. 
             Dopisuje wynik do wektora limitValues*/
         void parseLimit(const std::string& token, std::vector<double>& limitValues ); 
+		//! Odpowiada za zapis kości
+		//! \param out strumień wyjściowy
+		//! \param joint zapisywana hierarchia
 		void saveBoneInHierarchy(std::ostream& out, kinematic::JointConstPtr joint) const;
         
 
     protected:
-        std::string                     version;        //!< wersja wg ktorej zostal zapisany plik
+        std::string                     version;        //!< wersja wg której został zapisany plik
         std::string                     name;           //!< nazwa zapisana w pliku
         std::string                     documentation;  //!< komentarz do modelu
         std::string                     units;          //!< sekcja z jednostkami
         std::string                     root;           //!< sekcja z rootem
-        std::string                     bonedata;       //!< sekcja z wszystkimi kosci
+        std::string                     bonedata;       //!< sekcja z wszystkimi kości
         std::string                     hierarchy;      //!< sekcja z hierarchia
         std::string                     unknown;        //!< nieznane / nieobslugiwane tokeny
-        std::vector<DegreeOfFreedom::Channel> channels; //!< kanaly zapisane w sekcji root
+        std::vector<DegreeOfFreedom::Channel> channels; //!< kanały zapisane w sekcji root
 
     private:
         SkeletalModelPtr               model;          //!< przechowuje model ze szkieletem
-        bool                             forceRootXYZ;   //!< wymuszenie kolejnosci rotacji roota (zapewnia zgodnosc z niektorymi parserami)
-        int                              idCounter;      //!< wymusza tworzenie, identyfikatorow kosci od nowa
+        bool                             forceRootXYZ;   //!< wymuszenie kolejności rotacji roota (zapewnia zgodność z niektórymi parserami)
+        int                              idCounter;      //!< wymusza tworzenie, identyfikatorów kości od nowa
        
      };
 }

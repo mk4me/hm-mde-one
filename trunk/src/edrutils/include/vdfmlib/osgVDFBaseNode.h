@@ -55,7 +55,7 @@ public:
     //! \return Wizualny model, z którym skojarzony jest ten wizualny węzeł
 	osgVDFBaseModel * getVisualModel() const;
 
-    //! \return Kolekcja wizualnych pinów wejsciowych
+    //! \return Kolekcja wizualnych pinów wejściowych
 	const Pins & getInPins() const;
 
     //! \return Kolekcja wizualnych pinów wyjściowych
@@ -78,8 +78,8 @@ public:
 
 private:
 
-    //! \param inPin Wizualny pin wejsciowy do dodania
-    //! \param pinName Nazwa dodawanego wizualnego pina wejsciowego
+    //! \param inPin Wizualny pin wejściowy do dodania
+    //! \param pinName Nazwa dodawanego wizualnego pina wejściowego
     void addInPin(osgVDFBasePin * inPin, const std::string & pinName = std::string());
 
     //! \param outPin Wizualny pin wyjsciowy do dodania
@@ -133,7 +133,7 @@ private:
     //! Obszar węzła
     osgWidget::point_type area;
 
-    //! Wizualne wezly z ktorymi aktualnie jest w kolizji
+    //! Wizualne węzły z którymi aktualnie jest w kolizji
     VNodes collisionNodes;
 };
 

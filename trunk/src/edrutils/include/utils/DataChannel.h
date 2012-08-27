@@ -45,11 +45,11 @@ namespace utils {
     template<class PointType, class TimeType>
     class ChannelAutoModifier;
 
-	//! Interfejs na potrzeby kanalow sledzacych, umozliwia zmiane wartosci probek dla danego indesku
+	//! Interfejs na potrzeby kanałów sledzacych, umozliwia zmiane wartości próbek dla danego indesku
 	template<class PointType, class TimeType>
 	class IRawDataChannelExtendedWriter;
 
-    //! Interfejs zapewniajacy odczyt surowych danych po indexach probek - czas probek w kolejnosci chronologicznej, uniezaleznia od sposobu przechowywania danych(vector, map, ...)
+    //! Interfejs zapewniający odczyt surowych danych po indexach próbek - czas próbek w kolejności chronologicznej, uniezaleznia od sposobu przechowywania danych(vector, map, ...)
     //! Mozna obserwowac
     template<class PointType, class TimeType>
     class IRawGeneralDataChannelReader : public Observable<IRawGeneralDataChannelReader<PointType, TimeType>>
@@ -78,7 +78,7 @@ namespace utils {
 
         //! Typ obserwatora dla kanału o podanym interfejsie ( typach danych)
         typedef Observer<_MyRawChannelReaderType> _MyObserverType;
-        //! Typ dajacy się obserwować dla kanału o podanym interfejsie ( typach danych)
+        //! Typ dający się obserwować dla kanału o podanym interfejsie ( typach danych)
         typedef Observable<_MyRawChannelReaderType> _MyObservableType;
         //! Timer dla danego kanału danych
 
@@ -108,12 +108,12 @@ namespace utils {
         //! \return Czas trwania kanału
         virtual time_type getLength() const = 0;
 
-        //! \param idx Indeks probki
-        //! \return Wartosc czasu dla danego indeksu
+        //! \param idx Indeks próbki
+        //! \return Wartość czasu dla danego indeksu
         virtual time_type argument(size_type idx) const = 0;
 
-        //! \param idx Indeks probki
-        //! \return Wartosc probki dla danego indeksu
+        //! \param idx Indeks próbki
+        //! \return Wartość próbki dla danego indeksu
         virtual point_type_const_reference value(size_type idx) const = 0;
 
         //! \return Ilość próbek w kanale
@@ -121,8 +121,8 @@ namespace utils {
 
         //! \return Czy kanał nie zawiera danych
         virtual bool empty() const = 0;
-        //! \param time Czas dla ktorego chemy uzyskac dwie najblizsze probki
-        //! \return Para indeksow, pierwszy wskazujke probke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje probke o czasie wiekszym lub rownym zadanemu
+        //! \param time Czas dla którego chemy uzyskać dwie najblizsze próbki
+        //! \return Para indeksow, pierwszy wskazujke próbke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje próbkę o czasie wiekszym lub rownym zadanemu
 		//! Ta implementacja działa w czasie O(log(N)) - podział binarny bo dane sa ułożone chronologicznie
         virtual data_range getValueHelper(time_type time) const
         {
@@ -154,7 +154,7 @@ namespace utils {
     class IRawUniformDataChannelReader : public IRawGeneralDataChannelReader<PointType, TimeType>
     {
     public:
-        // TODO znalezc lepszy sposob na dostanie sie do tych typow (pod gcc)
+        // TODO znalezc lepszy sposob na dostanie się do tych typów (pod gcc)
         typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::data_range data_range;
         typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::time_type time_type;
         typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type size_type;
@@ -186,7 +186,7 @@ namespace utils {
         }
     };
 
-	//! Interfejs umozliwia dodawanie probek do kanalu w sposob chronologiczny
+	//! Interfejs umozliwia dodawanie próbek do kanału w sposob chronologiczny
     template<class PointType, class TimeType>
     class IRawDataChannelBasicWriter
     {
@@ -200,7 +200,7 @@ namespace utils {
         virtual void addPoint(typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
     };
 
-	//! Interfejs na potrzeby kanalow sledzacych, umozliwia zmiane wartosci probek dla danego indesku
+	//! Interfejs na potrzeby kanałów sledzacych, umozliwia zmiane wartości próbek dla danego indesku
     template<class PointType, class TimeType>
     class IRawDataChannelExtendedWriter : public virtual IRawDataChannelBasicWriter<PointType, TimeType>
     {
@@ -244,7 +244,7 @@ namespace utils {
 
 	public:
 
-		//! Konstruktor domyslny
+		//! Konstruktor domyślny
 		ChannelStorage() {};
 		//! Konstruktor kopiujący
 		//! \param storage Storage do skopiowania
@@ -264,7 +264,7 @@ namespace utils {
 			return timeData.back();
 		}
 
-		//! \return Iteraotr poczatku
+		//! \return Iteraotr początku
 		const_iterator begin() const
 		{
 			return timeData.begin();
@@ -298,22 +298,22 @@ namespace utils {
 			return l;
 		}
 
-		//! \param idx Indeks probki
-		//! \return Wartosc czasu dla danego indeksu
+		//! \param idx Indeks próbki
+		//! \return Wartość czasu dla danego indeksu
 		TimeType argument(size_type idx) const
 		{
 			return timeData[idx].first;
 		}
 
-		//! \param idx Indeks probki
-		//! \return Wartosc probki dla danego indeksu
+		//! \param idx Indeks próbki
+		//! \return Wartość próbki dla danego indeksu
 		point_type_const_reference value(size_type idx) const
 		{
 			return timeData[idx].second;
 		}
 
-		//! \param idx Indeks probki
-		//! \return Wartosc czasu dla danego indeksu
+		//! \param idx Indeks próbki
+		//! \return Wartość czasu dla danego indeksu
 		const_reference pair(size_type idx) const
 		{
 			return timeData[idx];

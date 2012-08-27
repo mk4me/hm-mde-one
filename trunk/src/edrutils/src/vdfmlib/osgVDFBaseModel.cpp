@@ -74,7 +74,7 @@ void osgVDFBaseModel::setModel(const dflm::MPtr & model, const NodesPositions & 
     //}
 }
 
-//! \param lock Czy zablokowac do edycji logiki i właściwości modelu - tylko wizualna zmiana layoutu możliwa
+//! \param lock Czy zablokować do edycji logiki i właściwości modelu - tylko wizualna zmiana layoutu możliwa
 void osgVDFBaseModel::lockForModelEdition(bool lock)
 {
 
@@ -86,7 +86,7 @@ bool osgVDFBaseModel::isLockedForModelEdition() const
     return false;
 }
 
-//! \param lock Czy zablokowac do jakiejkolwiek edycji
+//! \param lock Czy zablokować do jakiejkolwiek edycji
 void osgVDFBaseModel::lockForVisualEdition(bool lock)
 {
 
@@ -179,7 +179,7 @@ void osgVDFBaseModel::addNode(const dflm::NPtr & node, osg::ref_ptr<osg::Image> 
 
     VPinsCompatibility tmpPinsCompatibility;
 
-    //piny wejsciowe
+    //piny wejściowe
     for(auto it = node->beginIn(); it != node->endIn(); ++it){
         osgVDFBasePin * pin = createVisualPin((*it)->getName());
         pin->modelPin = *it;
@@ -397,7 +397,7 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
     VNodes collisionNodes = vnode->getCollisionNodes();
     vnode->setCollisionNodes(VNodes());
 
-    //aktualizuj statusy kolizji pozostalych wezlow
+    //aktualizuj statusy kolizji pozostałych węzłów
     for(auto it = collisionNodes.begin(); it != collisionNodes.end(); ++it){
         if((*it)->getVisualStatus() == osgVDFBaseNode::COLLISION && (*it)->getCollisionNodes().empty() == true){
             (*it)->setVisualStatus(osgVDFBaseNode::OK);
@@ -1780,7 +1780,7 @@ std::vector<std::string> osgVDFBaseModel::getPinErrors(const dflm::PinPtr & pin)
 			ret.push_back("Pin wymagany - musi być podłączony!");
 		}
 	}else if(pin->getType() == dflm::Pin::OUT && pin->empty() == false && pin->isComplete() == false){
-		std::string message("Pin wyjsciowy jest polaczony i zależny od pinów wejściowych:");
+		std::string message("Pin wyjsciowy jest połączony i zależny od pinów wejściowych:");
 		auto dependant = pin->getDependantPins();
 		for(auto it = dependant.begin(); it != dependant.end(); ++it){
 			if((*it).lock()->empty() == true){
@@ -1788,7 +1788,7 @@ std::vector<std::string> osgVDFBaseModel::getPinErrors(const dflm::PinPtr & pin)
 			}
 		}
 
-		message += ". Podlacz te piny!";
+		message += ". Podłącz te piny!";
 		ret.push_back(message);
 	}
 
@@ -1802,13 +1802,13 @@ std::vector<std::string> osgVDFBaseModel::getNodeErrors(const dflm::NPtr & node)
 	if(boost::dynamic_pointer_cast<dflm::DFSourceNode>(node) == 0){
 		if(node->beginIn() != node->endIn()){
 			if(dflm::Node::anyInPinConnected(node) == false){
-				ret.push_back("Wezel musi miec podlaczony minimum jeden pin wejsciowy");
+				ret.push_back("Wezel musi mieć podłączony minimum jeden pin wejściowy");
 			}
 
 			//const dflm::Node::Pins & pinsSet = node->getInPins();
 			for(auto it = node->beginIn(); it != node->endIn(); ++it){
 				if(getPinErrors(*it).empty() == false){
-					ret.push_back("Problem z pinami wejsciowymi - sprawdz piny wejsciowe");
+					ret.push_back("Problem z pinami wejściowymi - sprawdz piny wejściowe");
 					break;
 				}
 			}
@@ -2009,7 +2009,7 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 		static int nodeCounter = 0;
 
 		if(model->toolbarVisible == true && model->modelBoundingBox.contains(osg::Vec3f(gea.getX(), gea.getY(), 0)) == false){
-			//jesli klik w toolbar to nic nie robimy!!
+			//jeśli klik w toolbar to nic nie robimy!!
 			return false;
 		}
 

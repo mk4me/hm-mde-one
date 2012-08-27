@@ -10,21 +10,21 @@
 
 namespace kinematic
 {
-/// \brief Klasa realizuje odczyt plikow *.vsk
+/// \brief Klasa realizuje odczyt plików *.vsk
 class VskParser
 {
 public:
-    //! Struktura opisuje polaczenie miedzy markerami
+    //! Struktura opisuje połączenie miedzy markerami
     struct Stick {
         std::string name1;  //<! nazwa pierwszego markera
         std::string name2;  //<! nazwa drugiego markera
-        osg::Vec4 color;    //<! kolor polaczenia
+        osg::Vec4 color;    //<! kolor połączenia
     };
 
     //! Struktura opisuje pojedynczy marker
     struct Marker {
         std::string name;   //<! nazwa markera
-        double radius;      //<! promien markera
+        double radius;      //<! promień markera
         osg::Vec4 color;    //<! kolor markera
     };
 
@@ -37,25 +37,27 @@ public:
     /// \brief  Parsuje podany plik.
     /// \param  filename  Nazwa pliku do parsowania.
     virtual void parse(const std::string& filename );
-
+    //! \return wczytane połączenia (para niemodyfikowalnych iteratorów)
     stickIterators getSticks() const;
+    //! \return wczytane markery (para niemodyfikowalnych iteratorów)
     markerIterators getMarkers() const;
-
+    //! \return czy plik jest już załadowany
 	bool isLoaded() const { return loaded; }
 
 
 private:
-    //! Wczytanie polaczen miedzy markerami
-    //! \param sticks Element pliku vsk zawierajacy polaczenia
+    //! Wczytanie połączeń miedzy markerami
+    //! \param sticks Element pliku vsk zawierający połączenia
     void readSticks(TiXmlElement* sticks);
 
     //! wczytanie danych markerow
-    //! \param markers Element pliku vsk zawierajacy dane markerow
+    //! \param markers Element pliku vsk zawierający dane markerow
     void readMarkers(TiXmlElement* markers);
 
 private:
+    //! czy plik został wczytany
     bool loaded;
-    //! wczytane polaczenia
+    //! wczytane połączenia
     std::vector<Stick> sticks;
     //! wczytane markery
     std::vector<Marker> markers;

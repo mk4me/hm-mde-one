@@ -25,7 +25,7 @@ public:
     //! \return Zwraca prawdę jeżeli użytkownik tej usługi występuje w bazie danych
     virtual const bool checkMyLogin() const = 0;
     //! \param name Nazwa użytkownika do utworzenia
-    //! \param surname Nazwisko uzytkownika do utworzenia
+    //! \param surname Nazwisko użytkownika do utworzenia
     virtual void createUserAccount(const std::string & name, const std::string & surname) = 0;
     //! \return Zarejestrowani użytkownicy
     virtual void listUsers() const = 0;

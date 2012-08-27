@@ -68,7 +68,7 @@ namespace webservices
         */
         virtual const int progress() const = 0;
         /**
-        Anuluje obecnie wykonywaną operację. Czyści zasoby uzyte na jej potrzeby (np. utworzone pliki)
+        Anuluje obecnie wykonywaną operację. Czyści zasoby użyte na jej potrzeby (np. utworzone pliki)
         */
         virtual void abort() = 0;
         //! \return Informacja o ostatnim błędzie

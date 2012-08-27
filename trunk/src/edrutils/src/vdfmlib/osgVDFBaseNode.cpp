@@ -26,7 +26,7 @@ osgWidget::point_type osgVDFBaseNode::getArea() const
 
 void osgVDFBaseNode::setArea(float area)
 {
-    UTILS_ASSERT((area > 0), "Nieprawidlowa powierzchnia wezla");
+    UTILS_ASSERT((area > 0), "Nieprawidlowa powierzchnia węzła");
     this->area = area;
 }
 

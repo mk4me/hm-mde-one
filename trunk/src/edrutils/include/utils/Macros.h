@@ -48,12 +48,12 @@ purpose:
 //------------------------------------------------------------------------------
 
 #ifdef __GNUC__
-// Makro zwracajace liczbe parametrow. Obecnie dzialajacy zakres to 0-63
+// Makro zwracające liczbę parametrow. Obecnie dzialający zakres to 0-63
 #define NARG(...) __NARG(__VA_ARGS__, __NARG_RSEQ_N())
 #define __NARG(...) __NARG_ARG_N(__VA_ARGS__)
 
-// Parametry. Makro dziala w ten sposob, ze przekazujac mu __VA_ARGS__ oraz
-// indeksy w odwrotnej kolejnosci dostaniemy licznosc tych pierwszych.
+// Parametry. Makro dziala w ten sposob, ze przekazując mu __VA_ARGS__ oraz
+// indeksy w odwrotnej kolejności dostaniemy liczność tych pierwszych.
 #define __NARG_ARG_N( \
     _1, _2, _3, _4, _5, _6, _7, _8, _9,_10, \
     _11,_12,_13,_14,_15,_16,_17,_18,_19,_20, \
@@ -63,7 +63,7 @@ purpose:
     _51,_52,_53,_54,_55,_56,_57,_58,_59,_60, \
     _61,_62,_63,N,...) N
 
-// Parametry w odwrotnej kolejnosci
+// Parametry w odwrotnej kolejności
 #define __NARG_RSEQ_N() \
     63,62,61,60,                   \
     59,58,57,56,55,54,53,52,51,50, \
@@ -78,12 +78,12 @@ purpose:
 
 #ifdef __GNUC__
 
-// Makro wywołujące makro what dla kazdego z parametrow w __VA_ARGS__.
+// Makro wywołujące makro what dla każdego z parametrów w __VA_ARGS__.
 // Obecnie wspiera od 1 do 63 parametrów
 #define __FOR_EACH(what, separator, ...) __FOR_EACH_N(NARG(__VA_ARGS__), what, separator, __VA_ARGS__)
 #define __FOR_EACH_N(N, what, separator, x, ...) CONCATENATE(__FOR_EACH_, N)(what, separator, x, __VA_ARGS__)
 
-// Makrodefinicje "rozbijajace" parametry na pojedyncze wartosci
+// Makrodefinicje "rozbijające" parametry na pojedyncze wartości
 #define __FOR_EACH_1(what, separator, x, ...)  what(x)
 #define __FOR_EACH_2(what, separator, x, ...)  what(x) separator __FOR_EACH_1(what, separator, __VA_ARGS__);
 #define __FOR_EACH_3(what, separator, x, ...)  what(x) separator __FOR_EACH_2(what, separator, __VA_ARGS__);

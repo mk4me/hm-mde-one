@@ -16,17 +16,17 @@ AsfParser::~AsfParser()
 {
 }
 
-// glowna metoda parsujaca
+// główna metoda parsująca
 void AsfParser::parse(SkeletalModelPtr model, const string& filename)
 {
-    // wskaznik trzymany, aby metody nie musialy go przekazywac
+    // wskaźnik trzymany, aby metody nie musialy go przekazywac
     this->model = model;
     ifstream in(filename.c_str(), ios_base::in);
-    // czy plik zostal poprawnie otwarty?
+    // czy plik został poprawnie otwarty?
     if (!in) {
        throw UnableToOpenFileException(filename);
     }
-    // skopiowanie zawartosci pliku do pojedynczego stringa
+    // skopiowanie zawartości pliku do pojedynczego stringa
     string storage;
     // nie omijaj bialych znakow
     in.unsetf(ios::skipws); 
@@ -51,7 +51,7 @@ void AsfParser::parse(SkeletalModelPtr model, const string& filename)
     }
 }
 
-// Dzieli wejsciowy plik na poszczegolne sekcje
+// Dzieli wejściowy plik na poszczegolne sekcje
 bool AsfParser::splitAsf (const string& asf) 
 {
     istringstream is(asf);
@@ -131,7 +131,7 @@ bool AsfParser::parseSingleJoint(const string& singleBone, Joint& bone) {
     while (is >> token)    {
         if (token.compare("id") == 0) {
             is >> bone.id;
-            // niektore pliki maja powtorzony unikalny id..
+            // niektóre pliki maja powtorzony unikalny id..
             bone.id = ++idCounter;
         } else if (token.compare("name") == 0) {
             is >> bone.name;

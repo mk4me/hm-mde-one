@@ -53,7 +53,7 @@ template <class T> struct AlignType {
 
 //! Typ wyrównujący adres przy zadanym wyrównaniu
 template <int Addr, int AlignBytes> struct AlignTo {
-    // Liczba bajtów musi byc potega dwójki!
+    // Liczba bajtów musi być potega dwójki!
     UTILS_STATIC_ASSERT((AlignBytes & (AlignBytes-1)) == 0, "Power of 2 error");
     //! Warunek: jeżeli ostatnie bajty nie są wyzerowane to je zeruję i dodaję bajty alignu;
     //! w przeciwnym wypadku wartość jest już wyalignowana.

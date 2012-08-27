@@ -58,7 +58,7 @@ void DFModel::run()
     ScopedLock lock(runningMutex);
     editMutex.lock();
 
-    //wznow odtwarzanie po pause
+    //wznów odtwarzanie po pause
     if(paused == true){
         paused = false;
         notifySources();

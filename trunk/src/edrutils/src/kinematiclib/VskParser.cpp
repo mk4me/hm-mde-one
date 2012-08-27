@@ -18,11 +18,11 @@ namespace kinematic
         TiXmlDocument doc(filename.c_str());
         bool loadOkay = doc.LoadFile();
         TiXmlElement* rootElement = nullptr;
-        // jesli plik jest plikiem *xml ...
+        // jeśli plik jest plikiem *xml ...
         if (loadOkay) {
             TiXmlElement* docElement = doc.FirstChildElement();
             while (docElement) {
-                // szukanie glownego elementu - "KinematicModel"
+                // szukanie głównego elementu - "KinematicModel"
                 if (strcmp(docElement->Value(), "KinematicModel") == 0) {
                     rootElement = docElement;
                     break;
@@ -30,14 +30,14 @@ namespace kinematic
                 docElement = docElement->NextSiblingElement();
             }
         } else {
-            // oczyt nie udal sie z jakiegos powodu
+            // oczyt nie udał się z jakiegos powodu
             throw UnableToOpenFileException(filename);
         }
         
-        // jesli plik zawiera odpowiedni korzen (root)
+        // jeśli plik zawiera odpowiedni korzeń (root)
         if (rootElement) {
             for (TiXmlElement* element = rootElement->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
-                    // element Markers set zawiera dane dla polaczen i pojedynczych markerow
+                    // element Markers set zawiera dane dla połączeń i pojedynczych markerow
                     if (element && strcmp(element->Value(), "MarkerSet") == 0) {
                         for (
                             TiXmlElement* markersElement = element->FirstChildElement(); 
@@ -46,7 +46,7 @@ namespace kinematic
                                     // znaleziono element z markerami!
                                     readMarkers(markersElement);
                                 } else if (markersElement && strcmp(markersElement->Value(), "Sticks") == 0) {
-                                    // znaleziono element z polaczeniami markerow
+                                    // znaleziono element z połączeniami markerow
                                     readSticks(markersElement);
                                 }
                         }
@@ -65,7 +65,7 @@ namespace kinematic
 
     void VskParser::readSticks( TiXmlElement* sticksElement )
     {
-        // odczyt wczystkich polaczen
+        // odczyt wczystkich połączeń
         for (TiXmlElement* child = sticksElement->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
             if (child && strcmp(child->Value(), "Stick") == 0) {
                 Stick s;

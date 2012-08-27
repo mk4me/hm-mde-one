@@ -68,13 +68,13 @@ namespace webservices
         */
         virtual void setCredentials(const std::string & user, const std::string & password);
         /**
-        Metoda zwraca nazwę hosta lub adres ip (w zależnosci co zostało podane) używana dla danego połączenia.
+        Metoda zwraca nazwę hosta lub adres ip (w zależności co zostało podane) używana dla danego połączenia.
         @return uri do serwera FTPS
         */
         virtual const std::string url() const;
         /**
         Metoda zwraca login użytkownika używany dla danego połączenia.
-        @return login uzytkownika
+        @return login użytkownika
         */
         virtual const std::string user() const;
         /**
@@ -102,7 +102,7 @@ namespace webservices
         */
         virtual const int progress() const;
         /**
-        Anuluje obecnie wykonywaną operację. Czyści zasoby uzyte na jej potrzeby (np. utworzone pliki)
+        Anuluje obecnie wykonywaną operację. Czyści zasoby użyte na jej potrzeby (np. utworzone pliki)
         */
         virtual void abort();
         //! \return Informacja o ostatnim błędzie

@@ -17,7 +17,7 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa opisujaca model logiczny data flow. Pozwala na jego edycję - dodawanie, usuwanie węzłów oraz łączenie/rozłanczanie pinów wg ściśle określonych zasad.
+//! Klasa opisująca model logiczny data flow. Pozwala na jego edycję - dodawanie, usuwanie węzłów oraz łączenie/rozłanczanie pinów wg ściśle określonych zasad.
 class Model : public boost::enable_shared_from_this<Model>, public utils::Observable<Model>
 {
 public:
@@ -105,7 +105,7 @@ public:
     //! \param connection Połączenie do usunięcia
     void removeConnection(const ConnPtr & connection);
 
-    //! \param Wezeł do rozlaczenia - wszystke jego połaczenia zostają usuniete
+    //! \param Wezeł do rozłączenia - wszystke jego połaczenia zostają usuniete
     void disconnectNode(const NPtr & node);
 
     //! Usuwa wszystkie połączenia w modelu
@@ -120,7 +120,7 @@ public:
     //! \return Zwraca węzły wymagające interwencji by model był poprawny
 	const RequiringConnection & getRequiringConnections() const;
 
-    //! \return Zwraca kolekcję liści - elementów które posiadają wejscia ale nie posiadają wyjść lub mają wyjścia niepodłączone
+    //! \return Zwraca kolekcję liści - elementów które posiadają wejścia ale nie posiadają wyjść lub mają wyjścia niepodłączone
     const Nodes & getLeafNodes() const;
 
     //! \param node Węzeł któremu nazwę zmieniamy
@@ -180,12 +180,12 @@ private:
     //! \param nodeIt Iterator węzła który usuwamy
     void quickRemoveNode(const Nodes::iterator & nodeIt);
 
-    //! \param node Wezeł dla którego tworzymy strukture opisujaca kolejnosc analizowania polaczen dla sprawdzania cykli
-    //! \return Aktualny stan analizowanych polaczen
+    //! \param node Wezeł dla którego tworzymy strukture opisująca kolejność analizowania połączen dla sprawdzania cykli
+    //! \return Aktualny stan analizowanych połączen
     static PathEntry getFirstNodeOutputConnection(const NPtr & node);
 
-    //! \param pathEntry Element opisujacy kolejnosc przegladania połączeń w węźle - jej aktualny stan
-    //! \return Kolejny stan analizowanych polaczen
+    //! \param pathEntry Element opisujący kolejność przegladania połączeń w węźle - jej aktualny stan
+    //! \return Kolejny stan analizowanych połączen
     static PathEntry getNextNodeOutputConnection(const PathEntry & pathEntry);
 
     //! \param src Pin źródłowy (wyjściowy)
@@ -212,7 +212,7 @@ protected:
 
 private:
 
-    //! Zbiór wszystkich wezlow modelu
+    //! Zbiór wszystkich węzłów modelu
 	Nodes nodes;
 
     //! Zbiór wszystkich połączeń modelu

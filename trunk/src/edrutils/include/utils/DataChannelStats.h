@@ -34,7 +34,7 @@ namespace boost {
 
     namespace impl
     {
-        //! Implementacja akumulatora wyszukujacego minimum oraz indeks, dla ktorego minimum wystapilo
+        //! Implementacja akumulatora wyszukującego minimum oraz indeks, dla którego minimum wystąpiło
         template <typename Sample>
         struct min_with_idex_impl
             : accumulator_base
@@ -49,7 +49,7 @@ namespace boost {
             {
             }
 
-            //! wywolywane po dadanu kolejnej probki
+            //! wywoływane po dadanu kolejnej próbki
             template<typename Args>
             void operator ()(Args const &args)
             {
@@ -65,22 +65,22 @@ namespace boost {
 
             //! Odpytanie o aktualny stan akumulatora
             //! \param  brak
-            //! \return para zawierajaca minimum i index dla niego
+            //! \return para zawierająca minimum i index dla niego
             result_type result(dont_care) const
             {
                 return std::make_pair(this->minimum, this->index);
             }
 
         private:
-            //! aktualne minimum dla podanych probek
+            //! aktualne minimum dla podanych próbek
             Sample minimum;
-            //! indeks, dla ktorego wystapilo aktualne minimum
+            //! indeks, dla którego wystąpiło aktualne minimum
             std::size_t index;
-            //! liczba podanych probek (potrzebne by wyliczyc indeks)
+            //! liczba podanych próbek (potrzebne by wyliczyć indeks)
             std::size_t count;
         };
 
-        //! Implementacja akumulatora wyszukujacego maksimum oraz indeks, dla ktorego maksimum wystapilo
+        //! Implementacja akumulatora wyszukującego maksimum oraz indeks, dla którego maksimum wystąpiło
         //! implementacja analogiczna do min_with_index_impl
         template <typename Sample>
         struct max_with_idex_impl
@@ -119,7 +119,7 @@ namespace boost {
 
     } // namespace impl
 
-    // tagi, pozwalajace umieszczac akumulatory w accumulator_set
+    // tagi, pozwalające umieszczać akumulatory w accumulator_set
     namespace tag
     {
         //! tag dla akumulatora minimum z indeksem
@@ -256,25 +256,25 @@ public:
         return maximum().first;
     }
 
-    //! \return Indeks dla minimalnej wartosci danych kanalu
+    //! \return Indeks dla minimalnej wartości danych kanału
     std::size_t minIndex() const
     {
         return minimum().second;
     }
 
-    //! \return Indeks dla maksymalnej wartosci danych kanalu
+    //! \return Indeks dla maksymalnej wartości danych kanału
     std::size_t maxIndex() const
     {
         return maximum().second;
     }
 
-    //! \return Argument dla minimalnej wartosci danych kanalu
+    //! \return Argument dla minimalnej wartości danych kanału
     PointType minArgument() const
     {
         return constChannel->argument(minimum().second);
     }
 
-    //! \return Argument dla maksymalnej wartosci danych kanalu
+    //! \return Argument dla maksymalnej wartości danych kanału
     PointType maxArgument() const
     {
         return constChannel->argument(maximum().second);
@@ -303,13 +303,13 @@ public:
         return constChannel;
     }
 
-    //! \return czas, od ktorego liczone sa statystyki
+    //! \return czas, od którego liczone sa statystyki
     TimeType getDefinedFrom() const
     {
         return definedFrom;
     }
 
-    //! \return czas, do ktorego liczone sa statystyki
+    //! \return czas, do którego liczone sa statystyki
     TimeType getDefinedTo() const
     {
         return definedTo;
@@ -353,7 +353,7 @@ protected:
         size_t to;
 
         if (useDefinedTimes) {
-            // w jaki sposob brac probki?
+            // w jaki sposob brać próbki?
             from = channel->getValueHelper(definedFrom).first;
             to = channel->getValueHelper(definedTo).second;
         } else {

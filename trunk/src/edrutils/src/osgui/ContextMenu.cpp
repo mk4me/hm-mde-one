@@ -523,7 +523,7 @@ bool ContextMenu::setMenuItemOnClickCallback(const Collection & path, const OnCl
 template<class Iter>
 bool ContextMenu::setMenuItemOnClickCallback(Iter begin, Iter end, const OnClickCallback & callback){
 	MenuItem & menuItem = findMenuItem(begin, end);
-    // rev - nie da sie porownywac funkcji!
+    // rev - nie da się porównywać funkcji!
 	if(menuItem.menuItem == nullptr ) { //|| menuItem.onClickCallback == callback){
 		return false;
 	}
@@ -542,7 +542,7 @@ template<class Iter>
 bool ContextMenu::setMenuItemOnHoverCallback(Iter begin, Iter end, const OnHoverCallback & callback){
 	MenuItem & menuItem = findMenuItem(begin, end);
 
-    // rev - nie da sie porownywac funkcji!
+    // rev - nie da się porownywać funkcji!
 	if(menuItem.menuItem == nullptr) { // || menuItem.onHoverCallback == callback){
 		return false;
 	}

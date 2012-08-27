@@ -18,7 +18,7 @@ public:
 
     //! Typ określający typ pinu
 	enum PinType {
-        IN, //! Pin wejsciowy
+        IN, //! Pin wejściowy
         OUT, //! Pin wyjściowy
         UNSET //! Pin niezdefiniowany
     };
@@ -69,7 +69,7 @@ public:
 
     //! Konstruktor domyślny
     //! \param name nazwa pinu
-    //! \param required Czy pin wymagany (dotyczy tylko pinów wejsciowych)
+    //! \param required Czy pin wymagany (dotyczy tylko pinów wejściowych)
     //! \param requiredPins Piny od których jest zależny aktualny pin (dotyczy pinów wyjściowych)
 	Pin(const std::string & name = std::string(),
 		bool required = false, const ReqPinsSet & requiredPins = ReqPinsSet());
@@ -106,9 +106,9 @@ public:
     //! \return Statyczny status pinu
 	StaticStatus getStaticStatus() const;
 
-    //! \param refPin Pin wzgledem ktorego badamy stan dynamiczny pinu (podczas łączenia)
+    //! \param refPin Pin względem którego badamy stan dynamiczny pinu (podczas łączenia)
     //! \param model Model w obrębie którego się poruszamy definiując status dynamiczny
-    //! \return Status dynamiczny pinu przed probą połączenia
+    //! \return Status dynamiczny pinu przed próbą połączenia
 	DynamicStatus getDynamicStatus(const PinPtr & refPin, const MPtr & model) const;
 
     //! \param pin Pin którego kompatybilnośc testujemy

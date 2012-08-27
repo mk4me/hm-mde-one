@@ -94,49 +94,49 @@ public:
 
     //------------------------------- Operacje na timeline -----------------------------------
 
-    //! \return Dlugosc kanalu w sekundach, uwzgledniajac skale
+    //! \return długość kanału w sekundach, uwzględniając skale
     virtual double getLength() const = 0;
 
-    //! \return Aktualny czas kanalu
+    //! \return Aktualny czas kanału
     virtual double getTime() const = 0;
 
     //! \return Znormalizowany czas timeline
     virtual double getNormalizedTime() const = 0;
 
-    //! \return Skala czasu kanalu
+    //! \return Skala czasu kanału
     virtual double getTimeScale() const = 0;
 
     //! \param timeScale Nowa skala czasowa
     virtual void setTimeScale(double timeScale) = 0;
 
-    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! propaguje zmiane na wszystkie aktywne podkanały
     //! sprawdza maske i offset
     //! \param time Aktualny czas timeline, 0 <= time <= length
-    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    //! \param lockHolder Obiekt chcacy aktualizować czas, trzymający blokade
     virtual void setTime(double time) = 0;
 
-    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! propaguje zmiane na wszystkie aktywne podkanały
     //! sprawdza maske i offset
     //! \param normTime Aktualny czas timeline, 0 <= time <= length
-    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    //! \param lockHolder Obiekt chcacy aktualizować czas, trzymający blokade
     virtual void setNormalizedTime(double normTime) = 0;
 
-    //! \param path Sciezka nowego kanalu
-    //! \param channel fatyczny kanal dotarczony przez klienta
+    //! \param path Sciezka nowego kanału
+    //! \param channel fatyczny kanał dotarczony przez klienta
     virtual void addChannel(const std::string & path, const IChannelPtr & channel) = 0;
 
     //! \param channels Kanały do dodawnia w formie ściezka -> kanał, kanał nie powiniem być nullptr
     virtual void addChannels(const std::map<std::string, IChannelPtr> & channels) = 0;
 
-    //! \param path Sciezka kanalu do usuniecia
+    //! \param path Sciezka kanału do usuniecia
     virtual void removeChannel(const std::string & path) = 0;
 
     virtual void removeChannels(const std::set<std::string> & paths) = 0;
 
     virtual void setChannelActive(const std::string & path, bool active) = 0;
 
-    //! \param path Sciezka do szukanego kanalu
-    //! \return Wskaznik do szukanego kanalu lub pusty wskaznik jesli nie znaleziono
+    //! \param path Sciezka do szukanego kanału
+    //! \return wskaźnik do szukanego kanału lub pusty wskaźnik jeśli nie znaleziono
     virtual Model::TChannelConstPtr findChannel(const std::string & path) const = 0;
 
 };
@@ -310,51 +310,51 @@ public:
 
     //------------------------------- Operacje na timeline -----------------------------------
 
-    //! \return Dlugosc kanalu w sekundach, uwzgledniajac skale
+    //! \return długość kanału w sekundach, uwzględniając skale
     virtual double getLength() const;
 
-    //! \return Aktualny czas kanalu
+    //! \return Aktualny czas kanału
     virtual double getTime() const;
 
     //! \return Znormalizowany czas timeline
     virtual double getNormalizedTime() const;
 
-    //! \return Skala czasu kanalu
+    //! \return Skala czasu kanału
     virtual double getTimeScale() const;
 
     //! \param timeScale Nowa skala czasowa
     virtual void setTimeScale(double timeScale);
 
-    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! propaguje zmiane na wszystkie aktywne podkanały
     //! sprawdza maske i offset
     //! \param time Aktualny czas timeline, 0 <= time <= length
-    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    //! \param lockHolder Obiekt chcacy aktualizować czas, trzymający blokade
     virtual void setTime(double time);
 
-    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! propaguje zmiane na wszystkie aktywne podkanały
     //! sprawdza maske i offset
     //! \param normTime Aktualny czas timeline, 0 <= time <= length
-    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    //! \param lockHolder Obiekt chcacy aktualizować czas, trzymający blokade
     virtual void setNormalizedTime(double normTime);
 
-    //! \param path Sciezka nowego kanalu
-    //! \param channel fatyczny kanal dotarczony przez klienta
+    //! \param path Sciezka nowego kanału
+    //! \param channel fatyczny kanał dotarczony przez klienta
     virtual void addChannel(const std::string & path, const IChannelPtr & channel);
 
     //! \param channels Kanały do dodawnia w formie ściezka -> kanał, kanał nie powiniem być nullptr
     virtual void addChannels(const std::map<std::string, IChannelPtr> & channels);
 
-    //! \param path Sciezka kanalu do usuniecia
+    //! \param path Sciezka kanału do usuniecia
     virtual void removeChannel(const std::string & path);
 
     virtual void removeChannels(const std::set<std::string> & paths);
 
-    //! \param path Sciezka do kanalu
-    //! \param active Czy kanal jest aktywny podczas operacji czasowych (odtwarzanie timeline)
+    //! \param path Sciezka do kanału
+    //! \param active Czy kanał jest aktywny podczas operacji czasowych (odtwarzanie timeline)
     virtual void setChannelActive(const std::string & path, bool active);
 
-    //! \param path Sciezka do szukanego kanalu
-    //! \return Wskaznik do szukanego kanalu lub pusty wskaznik jesli nie znaleziono
+    //! \param path Sciezka do szukanego kanału
+    //! \return wskaźnik do szukanego kanału lub pusty wskaźnik jeśli nie znaleziono
     virtual Model::TChannelConstPtr findChannel(const std::string & path) const;
 
 private:

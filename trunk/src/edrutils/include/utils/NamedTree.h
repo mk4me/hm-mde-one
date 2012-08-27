@@ -37,7 +37,7 @@ public:
     typedef ConstChildren::size_type size_type;
 
 private:
-    //! mapa dzieci ktore mozna modyfikowac
+    //! mapa dzieci które mozna modyfikowac
     typedef std::vector<NamedTreeBasePtr> Children;
     typedef Children::iterator iterator;
 
@@ -49,16 +49,16 @@ private:
 
     static const Separator separator;
 
-    //! Nazwa wezla
+    //! Nazwa węzła
     std::string name;
 
     //! Absolutna sciezka w hierarchi
     std::string absolutePath;
 
-    //! \return Rodzic wezla
+    //! \return Rodzic węzła
     NamedTreeBaseWPtr parent;
 
-    //! \return Rodzic wezla
+    //! \return Rodzic węzła
     NamedTreeBaseConstWPtr constParent;
 
     //! Dzieci
@@ -69,25 +69,25 @@ private:
 
 public:
 
-    //! Domyslny konstruktor
-    //! \param name Nazwa wezla
+    //! Domyślny konstruktor
+    //! \param name Nazwa węzła
     NamedTreeBase(const std::string & name = "UnnamedNode");
 
-    //! Konstruktor kopiujacy
+    //! Konstruktor kopiujący
     //! \param child Wezel zrodlowy do skopiowania
-    //! \param deep Glebokosc kopiowania - true = glebokie, false plytkie
+    //! \param deep Glebokość kopiowania - true = glebokie, false płytkie
     NamedTreeBase(const NamedTreeBase & child, bool deep = true);
 
     virtual ~NamedTreeBase(void);
 
-    //! \return Nazwa wezla
+    //! \return Nazwa węzła
     const std::string & getName() const;
 
     //! root ma sciezke absolutna ./
-    //! \return Absolutna sciezka poczynajac od roota
+    //! \return Absolutna sciezka poczynając od roota
     const std::string & getAbsolutePath() const;
 
-    //! \param name Nazwa wezla
+    //! \param name Nazwa węzła
     void setName(std::string name);
 
     //! \return Pierwsze dziecko
@@ -96,10 +96,10 @@ public:
     //! \return Koniec dzieci
     const_iterator end() const;
 
-    //! return Rodzic aktualnego wezla
+    //! return Rodzic aktualnego węzła
     NamedTreeBaseConstPtr getParent() const;
 
-    //! return Rodzic aktualnego wezla
+    //! return Rodzic aktualnego węzła
     NamedTreeBasePtr getParent();
 
     //! \param idx Indeks dziecka
@@ -107,7 +107,7 @@ public:
     const NamedTreeBasePtr & getChild(size_type idx);
 
     //! \param name Sciezka dziecka
-    //! \return Dziecko o zadanej sciezce wzgledem aktualnego wezla
+    //! \return Dziecko o zadanej sciezce względem aktualnego węzła
     const NamedTreeBasePtr & getChild(const std::string & path);
 
     //! \param idx Indeks dziecka
@@ -115,17 +115,17 @@ public:
     const NamedTreeBaseConstPtr & getChild(size_type idx) const;
 
     //! \param name Sciezka dziecka
-    //! \return Dziecko o zadanej sciezce wzgledem aktualnego wezla
+    //! \return Dziecko o zadanej sciezce względem aktualnego węzła
     const NamedTreeBaseConstPtr & getChild(const std::string & path) const;
 
-    //! return Ilosc dzieci
+    //! return Ilość dzieci
     size_type size() const;
 
     //! \param child Dziecko do dodania
     void addChild(const NamedTreeBasePtr & child);
 
     //! \param child Dziecka do dodania
-    //! \param idx Pozycja na ktorej chcemy dodac dziecko
+    //! \param idx Pozycja na której chcemy dodać dziecko
     void addChild(const NamedTreeBasePtr & child, size_type idx);
 
     //! \param path Sciezka do wstawienia dziecka
@@ -158,14 +158,14 @@ public:
             throw std::runtime_error("Child with the given name already exist!");
         }
 
-        ////wyznaczam ostatni poziom, bedacy nazwa dla mojego nowego wezla
+        ////wyznaczam ostatni poziom, bedacy nazwa dla mojego nowego węzła
         auto itEnd = tok.begin();
         auto itTmp = tok.begin();
         while(++itTmp != tok.end()){
             ++itEnd;
         }
 
-        //stworz drzewo do itEnd, a pod itEnd mamy juz nazwe naszego wezsla
+        //stworz drzewo do itEnd, a pod itEnd mamy juz nazwę naszego wezsla
         while(it != itEnd){
             NamedTreeBasePtr nodeChild(new Derrived(*it));
             pos->addChild(nodeChild);
@@ -207,9 +207,9 @@ public:
 
 protected:
 
-    //! Konstruktor na potrzeby tworzenia hierarchi, niedostepny dla uzytkownika
-    //! \param parent Rodzic wezla - na wewnetrzne potrzeby hierarchi
-    //! \param name Nazwa wezla
+    //! Konstruktor na potrzeby tworzenia hierarchi, niedostepny dla użytkownika
+    //! \param parent Rodzic węzła - na wewnętrzne potrzeby hierarchi
+    //! \param name Nazwa węzła
     NamedTreeBase(const NamedTreeBasePtr & parent, const std::string & name);
 
     //! \return Pierwsze dziecko
@@ -234,7 +234,7 @@ protected:
         while(begin != end) {
             if((*begin).empty() == false){
                 if(*begin == ".."){
-                    //jesli rodzic to znaczy ze chcemy wyjsc poza hierarchie!
+                    //jeśli rodzic to znaczy ze chcemy wyjsc poza hierarchie!
                     if(ret->isRoot() == true){
                         throw std::runtime_error("Want to go higher than root in hierarchy!");
                     }
@@ -270,7 +270,7 @@ protected:
         return std::find_if(begin, end, [&](NamedTreeBaseConstPtr child){ return child->getName() == name; });
     }
 
-    //! Aktualizuje absolutna sciezke wezla
+    //! Aktualizuje absolutna sciezke węzła
     void updateAbsolutePath();
 
 };
@@ -285,7 +285,7 @@ public:
     //typedef typename PtrPolicy PtrPolicy;
     //!
     typedef PtrPolicy Base;
-    //! Wskaznik do danych
+    //! wskaźnik do danych
     typedef typename Base::template Ptr<Data>::Type Ptr;
     typedef typename Base::template Ptr<const Data>::Type ConstPtr;
     typedef NamedTree<Data, PtrPolicy> NamedTreeType;
@@ -299,9 +299,9 @@ private:
 
 public:
 
-    //! Domyslny konstruktor
-    //! \param name Nazwa wezla
-    //! \param data Dane do przechowania w wezle, domyslnie brak danych
+    //! Domyślny konstruktor
+    //! \param name Nazwa węzła
+    //! \param data Dane do przechowania w węzłe, domyślnie brak danych
     NamedTree(const std::string & name = "UnnamedNode", const Ptr & data = Ptr())
         : NamedTreeBase(name)
     {
@@ -313,8 +313,8 @@ public:
         }
     }
 
-    //! Konstruktor kopiujacy
-    //! \param name Nazwa wezla
+    //! Konstruktor kopiujący
+    //! \param name Nazwa węzła
     //! \param deep Czy glebokie kopiowanie
     NamedTree(const NamedTree & child, bool deep = true)
         : NamedTreeBase(child, deep)
@@ -342,7 +342,7 @@ public:
         return constData;
     }
 
-    //! \param data Dane do przechowania w wezle
+    //! \param data Dane do przechowania w węźle
     void setData(const Ptr & data)
     {
         PtrPolicy::template setPtr<Data>(this->data, data);

@@ -6,8 +6,8 @@
 #include <vector>
 #include <map>
 
-/* Naglowek z deklaracjami typow - deklaracje wyprzedzajace dla klas
-* oraz odpowiednie typy kolekcji i wskaznikow dla nich
+/* Nagłówek z deklaracjami typow - deklaracje wyprzedzajace dla klas
+* oraz odpowiednie typy kolekcji i wskaźnikow dla nich
 */
 
 ////////////////////////////////////////////////////////////////////////////////

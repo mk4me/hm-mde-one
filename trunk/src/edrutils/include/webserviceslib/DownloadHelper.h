@@ -14,7 +14,7 @@
 
 namespace webservices
 {
-	//! Klasa pomagająca pobierac pliki i zdjęcia
+	//! Klasa pomagająca pobierać pliki i zdjęcia
 	class BasicDownloadHelper : public IDownloadHelper
 	{
 	public:

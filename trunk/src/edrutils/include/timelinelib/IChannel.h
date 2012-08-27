@@ -3,8 +3,8 @@
 
 namespace timeline
 {
-    /** Klasa bazowa dla kanalow obslugiwanych przez timeline, definiuje ich podstawowe
-    * wlasciwosi i operacje. Klient nie powinien modyfikować wartości swojego kanału po zmianie skali lub offsetu.
+    /** Klasa bazowa dla kanałów obslugiwanych przez timeline, definiuje ich podstawowe
+    * właściwosi i operacje. Klient nie powinien modyfikować wartości swojego kanału po zmianie skali lub offsetu.
     * Zmiany te mają jedynie charakter informacyjny - wszystkim zarządza sam timeline i kanały w które obudowuje timeline kanały dostarczane przez klienta.
     */
     class IChannel
@@ -16,11 +16,11 @@ namespace timeline
         //! \return Sklonowany kanał
         virtual IChannel * clone() const = 0;
 
-        //! \return Dlugosc kanalu w sekundach
+        //! \return długość kanału w sekundach
         virtual double getLength() const = 0;
 
         //! Czas zawiera się między 0 a getLength()
-        //! \param time Aktualny, lokalny czas kanalu w sekundach
+        //! \param time Aktualny, lokalny czas kanału w sekundach
         virtual void setTime(double time) = 0;
 
 

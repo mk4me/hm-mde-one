@@ -74,7 +74,7 @@ namespace webservices
 		WSConnectionInvokeException(const char * exception) throw() : std::runtime_error(exception) {}
 	};
 
-    //! Interfejs realizujący połączenie z serwisami webowymi - metody powinny rzucac wyjątkiem w razie jakiegokolwiek niepowodzenia
+    //! Interfejs realizujący połączenie z serwisami webowymi - metody powinny rzucać wyjątkiem w razie jakiegokolwiek niepowodzenia
     class IWSConnection : public IWSCredentials
     {
     public:

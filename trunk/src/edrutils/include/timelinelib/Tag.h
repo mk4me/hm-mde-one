@@ -9,7 +9,7 @@ namespace timeline{
 
 class Model;
 
-//! Klasa zaznaczajaca na osi czasu pewne zdarzenia/sytuacje dla strumieni.
+//! Klasa zaznaczająca na osi czasu pewne zdarzenia/sytuacje dla strumieni.
 class Tag
 {
     friend class Channel;
@@ -20,16 +20,16 @@ private:
     //! Nazwa tagu
     std::string name;
 
-    //! Pozycja początku w czasie tagu wzgledem jego strumienia
+    //! Pozycja początku w czasie tagu względem jego strumienia
     double begin;
 
-    //! Czas trwania taga - dlugosc
+    //! Czas trwania taga - długość
     double length;
 
-    //! Strumien ktorego dotyczy tag i jego czas wystapienia
+    //! strumień którego dotyczy tag i jego czas wystapienia
     ChannelWPtr channel;
 
-    //! Strumien ktorego dotyczy tag i jego czas wystapienia
+    //! strumień którego dotyczy tag i jego czas wystapienia
     ChannelConstWPtr constChannel;
 
 public:
@@ -37,7 +37,7 @@ public:
     //! \return Nazwa tagu
     const std::string & getName() const;
 
-    //! \return Channel ktory jest tagowany
+    //! \return Channel który jest tagowany
     const ChannelConstWPtr & getChannel() const;
 
     //! \return Czas wystapienia tagu
@@ -49,18 +49,18 @@ public:
 protected:
 
     //! Konstruktor
-    //! \param channel Kanal dla ktorego tworzy sie dany tag
+    //! \param channel kanał dla którego tworzy się dany tag
     //! \param time Czas wystapienia taga w kanale
     //! \param name Nazwa taga
     Tag(const ChannelPtr & channel, const std::string & name = std::string("UnnamedTag"), double begin = 0, double length = 0);
 
-    //! \return Channel ktory jest tagowany
+    //! \return Channel który jest tagowany
     const ChannelWPtr & getChannel();
 
-    //! \param dTime Przesuniesie taga wzgledem jego obecnej pozycji tak aby po zastosowaniu begin >= 0 && begin + length <= channel->length
+    //! \param dTime Przesuniesie taga względem jego obecnej pozycji tak aby po zastosowaniu begin >= 0 && begin + length <= channel->length
     void shiftTag(double dTime);
 
-    //! resetuje kanal podczass usuwania go
+    //! resetuje kanał podczass usuwania go
     void resetChannel();
 
     //! \param name Nazwa tagu

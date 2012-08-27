@@ -6,9 +6,9 @@ const NamedTreeBase::Separator NamedTreeBase::separator("/");
 NamedTreeBase::NamedTreeBase(const std::string & name)
     : name(name)
 {
-    UTILS_ASSERT((name.empty() == false), "Nazwa wezla nie moze byc pusta");
-    UTILS_ASSERT((name.find("/") == std::string::npos), "Nazwa wezla nie moze zawierac separatora!");
-    UTILS_ASSERT((name != "." && name != ".."), "Nazwa wezla nie moze byc ciagiem zastrzezonym!!");
+    UTILS_ASSERT((name.empty() == false), "Nazwa węzła nie moze byc pusta");
+    UTILS_ASSERT((name.find("/") == std::string::npos), "Nazwa węzła nie moze zawierac separatora!");
+    UTILS_ASSERT((name != "." && name != ".."), "Nazwa węzła nie moze byc ciagiem zastrzezonym!!");
 }
 
 NamedTreeBase::NamedTreeBase(const NamedTreeBase & child, bool deep)
@@ -17,7 +17,7 @@ NamedTreeBase::NamedTreeBase(const NamedTreeBase & child, bool deep)
     //zawsze po kopii mamy roota
     if(deep == false){
         for(auto it = child.children.begin(); it != child.children.end(); ++it){            
-            //plytkie kopiowanie
+            //płytkie kopiowanie
             addChild(*it);
         }
     }else{
@@ -32,7 +32,7 @@ NamedTreeBase::NamedTreeBase(const NamedTreeBase & child, bool deep)
 NamedTreeBase::NamedTreeBase(const NamedTreeBasePtr & parent, const std::string & name)
     : parent(parent), name(name)
 {
-    UTILS_ASSERT((parent != nullptr), "Nieprawidlowy rodzic aktualnego wezla");
+    UTILS_ASSERT((parent != nullptr), "Nieprawidlowy rodzic aktualnego węzła");
     updateAbsolutePath();
 }
 
@@ -83,9 +83,9 @@ void NamedTreeBase::updateAbsolutePath()
 
 void NamedTreeBase::setName(std::string name) 
 {
-    UTILS_ASSERT((name.empty() == false), "Nazwa wezla nie moze byc pusta");
-    UTILS_ASSERT((name.find("/") == std::string::npos), "Nazwa wezla nie moze zawierac separatora!");
-    UTILS_ASSERT((name != "." && name != ".."), "Nazwa wezla nie moze byc ciagiem zastrzezonym!!");
+    UTILS_ASSERT((name.empty() == false), "Nazwa węzła nie moze byc pusta");
+    UTILS_ASSERT((name.find("/") == std::string::npos), "Nazwa węzła nie moze zawierac separatora!");
+    UTILS_ASSERT((name != "." && name != ".."), "Nazwa węzła nie moze byc ciagiem zastrzezonym!!");
 
     if(this->name == name){
         return;

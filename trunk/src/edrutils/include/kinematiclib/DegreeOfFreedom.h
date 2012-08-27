@@ -6,12 +6,12 @@
 namespace kinematic
 {
      /*! 
-     * \brief Struktura pelni funkcje przestrzeni nazw dla 
-              wyliczenia Order i metod z tym zwiazanych
+     * \brief Struktura pełni funkcje przestrzeni nazw dla 
+              wyliczenia Order i metod z tym związanych
      */
     struct Axis {
         /*!
-         * Okresla kolejnosc rotacji
+         * określa kolejność rotacji
          */
         enum Order {
             UnknownAxisOrder,
@@ -23,22 +23,22 @@ namespace kinematic
             ZYX,
         };
         
-        /// \brief  Zwraca kolejnosc rotacji na podstawie nazwy. 
-        /// \param  axis Napis okreslajacy kolejnosc rotacji. 
-        /// \return Kolejnosc rotacji. 
+        /// \brief  Zwraca kolejność rotacji na podstawie nazwy. 
+        /// \param  axis Napis określający kolejność rotacji. 
+        /// \return Kolejność rotacji. 
         static Order getAxisOrder(const std::string& axis);
 
-        /// \brief  Zwracja nazwe okreslajaca kolejnosc rotacji. 
-        /// \param  order kolejnosc rotacji 
+        /// \brief  Zwraca nazwę określająca kolejność rotacji. 
+        /// \param  order kolejność rotacji 
         /// \return The axis order name. 
         static std::string getAxisOrderName(Order order);
     };
 
-    /// \brief  Struktura przechowuje pojedynczy stopien swobody dla kosci.
+    /// \brief  Struktura przechowuje pojedynczy stopien swobody dla kości.
     struct DegreeOfFreedom
     {
-        /// \brief Wyliczenie zawiera wszystkie mozlwie kanaly animacji. 
-        /// T oznacza translacje, R rotacje, L przesuniecie zgodne z kierunkiem kosci
+        /// \brief Wyliczenie zawiera wszystkie mozlwie kanały animacji. 
+        /// T oznacza translacje, R rotacje, L przesunięcie zgodne z kierunkiem kości
         enum Channel
         {
             Unknown,
@@ -51,9 +51,9 @@ namespace kinematic
             L
         };
 
-        Channel channel; //<! kanal, dla ktorego definiowany jest stopien swobody
-        double minLimit; //<! minimalna wartosc dla kanalu (domyslnie -nieskonczonosc)
-        double maxLimit; //<! maksymalna wartosc dla kanalu (domyslnie nieskonczonosc)
+        Channel channel; //<! kanał, dla którego definiowany jest stopien swobody
+        double minLimit; //<! minimalna wartość dla kanału (domyślnie -nieskonczoność)
+        double maxLimit; //<! maksymalna wartość dla kanału (domyślnie nieskonczoność)
 
         // konstruktor
         DegreeOfFreedom() :
@@ -63,20 +63,20 @@ namespace kinematic
             {
             }
 
-        /// \brief  Zwraca indeks (w tablicy wartosci kanalow dla pojedynczej klatki kosci)
-        /// \param  Kanał dla ktorego powinnien byc zwrocony indeks 
+        /// \brief  Zwraca indeks (w tablicy wartości kanałów dla pojedynczej klatki kości)
+        /// \param  Kanał dla którego powinnien być zwrócony indeks 
         /// \param  dofs lista ze stopniami swobody (na jej podstawie ustalany jest indeks)
-        /// \return Indeks kanału lub -1 jesli kanalu nie znaleziono
+        /// \return Indeks kanału lub -1 jeśli kanału nie znaleziono
         static int getChannelIndex(DegreeOfFreedom::Channel channel, const std::vector<DegreeOfFreedom>& dofs);
-        /// \brief  Zwraca kanal na podstawie nazwy.
-        /// 		Jesli kanal nie zostanie znaleziony to rzucany jest wyjatek 
-        /// \param  channel nazwa kanalu. 
-        /// \return otrzymany kanal. 
+        /// \brief  Zwraca kanał na podstawie nazwy.
+        /// 		jeśli kanał nie zostanie znaleziony to rzucany jest wyjątek 
+        /// \param  channel nazwa kanału. 
+        /// \return otrzymany kanał. 
         static Channel getChannel(const std::string& channel);
-        /// \brief  Zwraca nazwe kanalu na postawie wyliczenia. 
-        /// \param  channel Kanal dla ktorego bedzie zwrocona nazwa. 
-        /// \param  uppercase Okresla czy zwracana nazwa ma miec duze, czy male litery. 
-        /// \return Nazwa kanalu. 
+        /// \brief  Zwraca nazwę kanału na postawie wyliczenia. 
+        /// \param  channel kanał dla którego będzie zwrócona nazwa. 
+        /// \param  uppercase określa czy zwracana nazwa ma mieć duże, czy male litery. 
+        /// \return Nazwa kanału. 
         static std::string getChannelName(DegreeOfFreedom::Channel channel, bool uppercase = false);
     };
 }

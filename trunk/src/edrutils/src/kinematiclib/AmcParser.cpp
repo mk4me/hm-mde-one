@@ -68,9 +68,9 @@ void AmcParser::parse(SkeletalDataPtr data, const std::string& filename )
 
     std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
 
-    // HACK: z braku dokladnej dokumentacji nie wiem jakie moga wystapic naglowki pliku *.amc
-    // wszystkie do tej pory spotkane pliki konczyly naglowek linijka :DEGREES,
-	// rozwiazanie stosowane jest w innych parserach
+    // HACK: z braku dokładnej dokumentacji nie wiem jakie moga wystapic nagłówki pliku *.amc
+    // wszystkie do tej pory spotkane pliki konczyly nagłówek linijka :DEGREES,
+	// rozwiązanie stosowane jest w innych parserach
     while (getline(ifs, line)) {
         loc = line.find(":DEGREES");
         if (loc != std::string::npos) {

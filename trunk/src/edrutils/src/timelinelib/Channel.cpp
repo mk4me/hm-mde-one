@@ -19,7 +19,7 @@ Channel::Channel(const IChannelPtr & channel) : length(0),
 Channel::Channel(const Channel & channel, bool deep)
 {
     //TODO
-    //kopiowanie propertow kanalu
+    //kopiowanie propertów kanału
 }
 
 Channel::~Channel()
@@ -76,7 +76,7 @@ const Channel::Mask & Channel::getMask() const
 
 void Channel::setMask(const Channel::Mask & mask)
 {
-    UTILS_ASSERT((mask.first >= 0 && mask.second >= 0 && mask.first + mask.second <= getLength()), "Nieprawidlowa maska dla kanalu");
+    UTILS_ASSERT((mask.first >= 0 && mask.second >= 0 && mask.first + mask.second <= getLength()), "Nieprawidlowa maska dla kanału");
     this->mask = mask;
     if(innerChannel != nullptr){
         innerChannel->maskChanged(mask.first, mask.second);
@@ -90,7 +90,7 @@ double Channel::getMaskBegin() const
 
 void Channel::setMaskBegin(double maskBegin)
 {
-    UTILS_ASSERT((maskBegin >= 0 && maskBegin + mask.second <= getLength()), "Poczatek maski sprawi ze maska wyjdzie poza kanal");
+    UTILS_ASSERT((maskBegin >= 0 && maskBegin + mask.second <= getLength()), "początek maski sprawi ze maska wyjdzie poza kanał");
     Mask mask = getMask();
     mask.first = maskBegin;
     setMask(mask);
@@ -103,7 +103,7 @@ double Channel::getMaskLength() const
 
 void Channel::setMaskLength(double maskLength)
 {
-    UTILS_ASSERT((maskLength >= 0 && maskLength <= getLength() && mask.first + maskLength <= getLength()), "Dlugosc maski sprawi ze maska wyjdzie poza kanal");
+    UTILS_ASSERT((maskLength >= 0 && maskLength <= getLength() && mask.first + maskLength <= getLength()), "Dlugosc maski sprawi ze maska wyjdzie poza kanał");
     Mask mask = getMask();
     mask.second = maskLength;
     setMask(mask);
@@ -116,7 +116,7 @@ double Channel::getMaskEnd() const
 
 void Channel::setMaskEnd(double maskEnd)
 {
-    UTILS_ASSERT((maskEnd <= getLength() && maskEnd >= mask.first), "Koniec maski dla kanalu musi byc w przedziale maskBegin-length");
+    UTILS_ASSERT((maskEnd <= getLength() && maskEnd >= mask.first), "Koniec maski dla kanału musi byc w przedziale maskBegin-length");
     setMaskLength(maskEnd - mask.first);
 }
 
@@ -269,7 +269,7 @@ void Channel::setActive(bool active)
 
 void Channel::addTag(const TagPtr & tag)
 {
-    UTILS_ASSERT((tag->getBeginTime() >= 0 && tag->getBeginTime() + tag->getLength() <= getLength()), "Tag nie miesci sie w kanale");
+    UTILS_ASSERT((tag->getBeginTime() >= 0 && tag->getBeginTime() + tag->getLength() <= getLength()), "Tag nie miesci się w kanale");
     if(std::find(tags.begin(), tags.end(), tag) == tags.end()){
         tags.push_back(tag);
         constTags.push_back(tag);

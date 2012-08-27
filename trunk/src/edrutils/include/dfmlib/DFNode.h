@@ -11,7 +11,7 @@ namespace dflm{
 
 class DFModel;
 
-//! Klasa reprezentująca węzeł z możliwościa przetwarzania i przekazywania danych na bazie DFPinów w DFModel
+//! Klasa reprezentująca węzeł z możliwością przetwarzania i przekazywania danych na bazie DFPinów w DFModel
 class DFNode :
 	public Node, public DFInterface
 {

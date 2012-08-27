@@ -37,7 +37,7 @@ public:
     virtual const _ModifierType & getModifier() const = 0;
 
     // Metody pochodza posrednio z IChannelReader, ich implementacja troche burzy koncept interfejsu,
-    // z drugiej zas strony pokryje to 90% zastosowan i bedzie duzo bardziej
+    // z drugiej zas strony pokryje to 90% zastosowan i będzie duzo bardziej
     // IChannelDescriptorReader
     virtual const std::string& getTimeBaseUnit() const { return getDesc()->getTimeBaseUnit(); }
     virtual float getTimeScaleFactor() const { return getDesc()->getTimeScaleFactor(); }
@@ -127,7 +127,7 @@ public:
         this->channel = channel;
         channel->attach(notifier.get());
 
-        //sprawdzić czy są jakieś dane? jesli tak odpalić modifier
+        //sprawdzić czy są jakieś dane? jeśli tak odpalić modifier
         if(channel->empty() == false){
             update();
         }else{
@@ -153,7 +153,7 @@ public:
         notifier->setModifier(this);
         channel->attach(notifier.get());
 
-        //sprawdzić czy są jakieś dane? jesli tak odpalić modifier
+        //sprawdzić czy są jakieś dane? jeśli tak odpalić modifier
         if(channel->empty() == false){
             update();
         }
@@ -179,15 +179,15 @@ public:
         return impl.getLength();
     }
 
-    //! \param idx Indeks probki
-    //! \return Wartosc czasu dla danego indeksu
+    //! \param idx Indeks próbki
+    //! \return Wartość czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
         return impl.argument(idx);
     }
 
-    //! \param idx Indeks probki
-    //! \return Wartosc probki dla danego indeksu
+    //! \param idx Indeks próbki
+    //! \return Wartość próbki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
         return impl.value(idx);
@@ -204,8 +204,8 @@ public:
     {
         return impl.empty();
     }
-    //! \param time Czas dla ktorego chemy uzyskac dwie najblizsze probki
-    //! \return para indeksow, pierwszy wskazujke probke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje probke o czasie wiekszym lub rownym zadanemu
+    //! \param time Czas dla którego chemy uzyskać dwie najblizsze próbki
+    //! \return para indeksow, pierwszy wskazuje próbkę o czasie mniejszym lub równym zadanemu czasowi, drugi wskazuje próbkę o czasie wiekszym lub rownym zadanemu
     virtual data_range getValueHelper(time_type time) const
     {
         return impl.getValueHelper(time);

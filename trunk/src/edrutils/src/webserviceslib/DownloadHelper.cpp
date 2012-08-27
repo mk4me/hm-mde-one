@@ -28,7 +28,7 @@ IFtpsConnection::OperationStatus BasicDownloadHelper::get(IFtpsConnection::IProg
 	webservices::IFtpsConnection::ScopedLock lock2(*ftpsConnection);
 
 	// Tutaj może się nie powieść całe pobieranie jeśli na ftp po stornie bazy nie uda się przygotować pliku do pobrania
-	// Lub usługa sie wywróci
+	// Lub usługa się wywróci
 	try{
 		remotePath = basicStoremanWS->retrieve(fileID);
 	}catch(std::exception & e){

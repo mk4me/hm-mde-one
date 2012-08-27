@@ -21,7 +21,7 @@
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa agreguje klasy DataChannel, wszystkie dodawane kanaly powinny miec tyle samo wpisow
+//! Klasa agreguje klasy DataChannel, wszystkie dodawane kanały powinny mieć tyle samo wpisow
 //template <class Channel, template<typename Point, typename Time> class Interpolator = LerpInterpolator>
 template <class Channel, class TimeAccessor = DataChannelTimeAccessor<typename Channel::point_type, typename Channel::time_type>>
 class DataChannelCollection
@@ -103,7 +103,7 @@ public:
 	}
 
 
-	//! \return dlugosc kanalu w sekundach; gdy nie ma danych zwracane jest zero, jest to odejscie od konwecji, ale dzialanie calkiem naturalne.
+	//! \return długość kanału w sekundach; gdy nie ma danych zwracane jest zero, jest to odejście od konwecji, ale dzialanie całkiem naturalne.
 	TimeType getLength() const
 	{
 		if (channels.size() == 0) {
@@ -113,8 +113,8 @@ public:
 		}
 	}
 
-	//! \param time czas, dla ktorego pobieramy wartosci
-	//! \return wartosci wszystkich kanalow dla konkretnego czasu
+	//! \param time czas, dla którego pobieramy wartości
+	//! \return wartości wszystkich kanałów dla konkretnego czasu
 	std::vector<PointType> getValues(TimeType time) const
 	{
 		int count = static_cast<int>(channels.size());
@@ -137,15 +137,15 @@ public:
 		configurationID = id;
 	}
 
-	//! \param index indeks kanalu, dla ktorego pobieramy wartosc
-	//! \param time czas, dla ktorego bedzie zwrocona wartosc
-	//! \return wartosc kanalu
+	//! \param index indeks kanału, dla którego pobieramy wartość
+	//! \param time czas, dla którego będzie zwrócona wartość
+	//! \return wartość kanału
 	PointType getValue(int index, TimeType time) const
 	{
 		return TimeAccessor::getValue(time, *getChannel(index));
 	}
 
-	//! \return maksymalna wartosc w calej dziedzinie dla wszystkich kanalow
+	//! \return maksymalna wartość w calej dziedzinie dla wszystkich kanałów
 	boost::tuple<PointType, TimeType, int> getMaxValue() const
 	{
 		int index = _getIndex(
@@ -156,7 +156,7 @@ public:
 		PointType val = channels[index]->getMaxValue();
 		return make_tuple(val, time, index);
 	}
-	//! \return minimalna wartosc w calej dziedzinie dla wszystkich kanalow
+	//! \return minimalna wartość w calej dziedzinie dla wszystkich kanałów
 	boost::tuple<PointType, TimeType, int> getMinValue() const
 	{
 		int index = _getIndex(

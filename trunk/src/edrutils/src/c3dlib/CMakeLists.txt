@@ -3,10 +3,10 @@ project(c3dlib)
 set(TARGET_TARGETNAME c3dlib)
 
 # nag³ówki prywatne
-set(PRIVATE_H
-	#stdafx.h
-)
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
+# set(PRIVATE_H
+# 	#stdafx.h
+# )
+# source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})

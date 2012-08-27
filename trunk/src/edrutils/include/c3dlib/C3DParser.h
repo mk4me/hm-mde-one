@@ -24,13 +24,13 @@ namespace c3dlib {
 //! Opis platformy GRF
 struct C3DLIB_EXPORT ForcePlatform
 {
-	//! wierzcholki pojedynczej plyty
+	//! wierzchołki pojedynczej płyty
 	osg::Vec3 corners[4];
-	//! przesuniecie plyty w ukladzie odniesienia zgodnym z markerami
+	//! przesunięcie płyty w układzie odniesienia zgodnym z markerami
 	osg::Vec3 origin;
-    //! typ plyty, w aplikacji obslugiwany jest 2
+    //! typ płyty, w aplikacji obslugiwany jest 2
     int type;
-    //! lista indeksow kanalow analogowych podpietych do plyty (np. F1 i M1 to kanaly 1-6)
+    //! lista indeksów kanałów analogowych podpiętych do płyty (np. F1 i M1 to kanały 1-6)
     std::set<std::string> channelLabels;
 };
 typedef ForcePlatform* ForcePlatformPtr;
@@ -38,11 +38,11 @@ typedef const ForcePlatform* ForcePlatformConstPtr;
 typedef const std::vector<ForcePlatformConstPtr>& ForcePlatformConstCollection;
 typedef std::vector<ForcePlatformPtr> ForcePlatformCollection;
 
-//! Klasa sluzy do pobierania informacji z pliku C3D, przykrywa biblioteke btk
+//! Klasa służy do pobierania informacji z pliku C3D, przykrywa biblioteke btk
 class C3DLIB_EXPORT C3DParser
 {
 public:
-	//! Interfejs dostarcza opisu dla danych akwizycji (jest to czesc wspolna dla danych analogowych, punktow i zdarzen)
+	//! Interfejs dostarcza opisu dla danych akwizycji (jest to część wspólna dla danych analogowych, punktów i zdarzeń)
 	class IAquisitionEntry
 	{
 	public:
@@ -67,49 +67,51 @@ public:
         virtual Type getType() const = 0;
         //! \return jednostka dla danych analogowych (np. mm)
 		virtual const std::string& getUnit() const = 0;
-		//! \param index nr probki
-        //! \return wartość probki
+		//! \param index nr próbki
+        //! \return wartość próbki
 		virtual osg::Vec3 getValue(int index) const = 0;
     };
 	typedef IPoint* IPointPtr;
 	typedef const IPoint* IPointConstPtr;
 
-	//! Dostarcza danych dla kanalu analogowego
+	//! Dostarcza danych dla kanału analogowego
     class IAnalog : public IAquisitionEntry
     {
 	public:
         //! \return jednostka dla danych analogowych (np. mm)
 		virtual const std::string& getUnit() const = 0;
-        //! \return uzyta skala w pliku C3D
+        //! \return użyta skala w pliku C3D
 		virtual double getScale() const = 0;
-		//! \param index nr probki
-		//! pobiera wartosc probki
+		//! \param index nr próbki
+		//! pobiera wartość próbki
 		virtual double getValue(int index) const = 0;
 	};
 	typedef IAnalog* IAnalogPtr;
 	typedef const IAnalog* IAnalogConstPtr;
-
-
-
-	//! dostarcza danych o zdarzeniu zapisanym w c3d (np. dotkniecie stopa podlogi)
+    
+	//! dostarcza danych o zdarzeniu zapisanym w c3d (np. dotknięcie stopą podłogi)
     class IEvent : public IAquisitionEntry
     {
     public:
+        //! konteksty dla zdarzenia
         enum Context
         {
+            //! zdarzenie nie związane z żadną stroną
             General,
+            //! zdarzenia związane z lewą stroną
             Left,
+            //! zdarzenia związane z prawą stroną
             Right
         };
 
 	public:
         //! return kontekst zdarzenia (lewy, prawy)
         virtual Context getContext() const = 0;
-        //! return dodatkowa informacja - nazwa badanego
+        //! return dodatkowa informacja - nazwa badanej osoby
         virtual std::string getSubject() const = 0;
-        //! return czas, dla ktorego wystapilo zdarzenie
+        //! return czas, dla którego wystąpiło zdarzenie
         virtual double getTime() const = 0;
-		//! zwraca kopie obiektu, kopia musi byc pozniej zwolniona !
+		//! zwraca kopię obiektu, kopia musi być później zwolniona !
 		virtual IEvent* clone() const = 0;
     };
 	typedef IEvent* IEventPtr;
@@ -127,57 +129,57 @@ public:
     //! \param filename
     void save(const std::string& filename);
 
-    //! Wczytanie plikow
-    //! \param filenames kolekcja z nazwami plikow
-    //! \param importWarnings zwraca warningi podczas wczytywania plikow
+    //! Wczytanie plików
+    //! \param filenames kolekcja z nazwami plików
+    //! \param importWarnings zwraca warningi podczas wczytywania plików
     void importFrom(const std::vector<std::string>& filenames, std::string& importWarnings);
 
 public:
-	//! \return czestotliwosc dla wszystkich danych analogowych
+	//! \return czestotliwość dla wszystkich danych analogowych
 	double getAnalogFrequency() const;
-	//! \param indeks w kolekcji pobieranego kanalu analogowego
-	//! \return kanal analogowy
+	//! \param indeks w kolekcji pobieranego kanału analogowego
+	//! \return kanał analogowy
 	IAnalogConstPtr getAnalog(int index) const;
-	//! \return liczba kanalow analogowych
+	//! \return liczba kanałów analogowych
 	int getNumAnalogs() const;
-	//! \return liczba pojedynczych probek w kanalach analogowych
+	//! \return liczba pojedynczych próbek w kanałach analogowych
 	int getNumAnalogFrames() const;
-	//! \return liczba probek analogowych przypadajacych na probe punktu
+	//! \return liczba próbek analogowych przypadających na próbę punktu
 	int getNumberAnalogSamplePerFrame() const;
 	//! \param index indeks w kolekcji pobieranego punktu
 	//! \return punkt z c3d
 	IPointConstPtr getPoint(int index) const;
-	//! \return liczba punktow w kolekcji
+	//! \return liczba punktów w kolekcji
 	int getNumPoints() const;
-	//! \return liczba zapisanych probek dla punktow
+	//! \return liczba zapisanych próbek dla punktow
 	int getNumPointFrames() const;
-	//! \return czestotliwosc zapisu danych dla punktow
+	//! \return czestotliwość zapisu danych dla punktow
     double getPointFrequency() const;
-    //! \return liczba eventow wczytanych z pliku c3d
+    //! \return liczba eventów wczytanych z pliku c3d
 	int getNumEvents() const;
-    //! \return event o konkrentym indeksie (zgodnie z kolejnoscia w c3d)
+    //! \return event o konkrentym indeksie (zgodnie z kolejnością w c3d)
 	IEventPtr getEvent(int index) const;
-
+    //! \return kolekcja z informacjami o platformach pomiarowych zapisanych w pliku 
 	ForcePlatformCollection getForcePlatforms() { return forcePlatforms; }
 
 private:
     //! realizacja idiomu "Cashire cat"
     //! http://en.wikipedia.org/wiki/Opaque_pointer
     class __data;
-    //! Wskaznik do danych, ktore zostana calkowicie ukryte
-    //! przed uzytkownikami biblioteki.
+    //! wskaźnik do danych, które zostaną całkowicie ukryte
+    //! przed użytkownikami biblioteki.
     __data* data;
-	//! kolekcja punktow c3d
+	//! kolekcja punktów c3d
     std::vector<IPointPtr> points;
-	//! kolekcja kanalow analogowych
+	//! kolekcja kanałów analogowych
     std::vector<IAnalogPtr> analogs;
-	//! kolekcja zdarzen
+	//! kolekcja zdarzeń
     std::vector<IEventPtr> events;
-	//! plyty GRF
+	//! płyty GRF
 	ForcePlatformCollection forcePlatforms;
 
 private:
-	//! Zapewnia wlasciwe wczytywanie danych akwizycji
+	//! Zapewnia właściwe wczytywanie danych akwizycji
     void loadAcquisition();
 	//! zwraca mnożnik, dzięki któremu można przekonwertować wartość do SI
 	float getUnitScale(const std::string& unit) const;

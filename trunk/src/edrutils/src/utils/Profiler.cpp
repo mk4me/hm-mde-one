@@ -28,7 +28,7 @@ const char defaultName[] = "::global";
 class ScopedLock
 {
 private:
-    //! Faktyczny mechanizm blokujacy.
+    //! Faktyczny mechanizm blokujący.
     __system::Mutex* lock;
 
 public:

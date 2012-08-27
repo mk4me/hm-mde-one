@@ -31,7 +31,7 @@ public:
 	void update();
 
     //! \param pin Pin do sprawdzenia czy jest typu DFPin
-    //! \return Prawda jesli pin jest typu DFPin, inaczej false
+    //! \return Prawda jeśli pin jest typu DFPin, inaczej false
 	static bool isDFPin(const CPinPtr & pin);
 
     //! \param pin Pin do konwertowania do typu DFPin
@@ -51,7 +51,7 @@ protected:
 
     //! Metoda pozwalająca kopiować dane pomiędzy węzłami - kopiowanie inicjuje węzeł wyjsciowy i wywołuje tą metodę na węźle wejściowym
     //! Mechanizm ten przenosi odpowiedzialność kopiowania danych na węzeł wejściowy który może miesz szerszą funkcjonalność (kompatybilność typów) niż węzeł wyjściowy
-    //! \param pin Pin z którego węzeł wejsciowy powinien skopiować dane
+    //! \param pin Pin z którego węzeł wejściowy powinien skopiować dane
 	virtual void copyDataFromPin(const DFPinPtr & pin);
 
 private:

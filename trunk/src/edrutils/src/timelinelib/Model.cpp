@@ -7,7 +7,7 @@
 namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Konstruktor zerujacy
+//! Konstruktor zerujący
 Model::Model(const std::string & name) : root(new TChannel(name)), constRoot(root) //, latestChange(NoChange)
 {
 
@@ -105,7 +105,7 @@ void Model::setTime(double time)
 {
     double t = time;// + getOffset();
 
-    //zapewnia ze root zawsze ma ostatni czas dla ktorego aktualizowano model, dzieci niekoniecznie sa z nim zgodne
+    //zapewnia ze root zawsze ma ostatni czas dla którego aktualizowano model, dzieci niekoniecznie sa z nim zgodne
     //root->getData()->setTime(t);
 
     std::stack<TChannelConstPtr> path;
@@ -241,7 +241,7 @@ Model::tag_size_type Model::sizeAllTags() const
 
 void Model::addChannel(const std::string & path, const IChannelPtr & channel)
 { 
-    UTILS_ASSERT((channel != nullptr && channel->getLength() >= 0), "Nieprawidlowy kanal");
+    UTILS_ASSERT((channel != nullptr && channel->getLength() >= 0), "Nieprawidlowy kanał");
 
     //TODO
     //aktualizacja czasu w dół ściezki aż do dodawanego kanału
@@ -614,7 +614,7 @@ void Model::updateForScaleRatio(const ChannelPtr & channel, double ratio)
     channel->setMaskBegin(channel->getMaskBegin() * ratio);
     channel->setMaskEnd(channel->getMaskEnd() * ratio);
 
-    //aktualizuj zaznaczenia - czesc automatycznie zaktualizuje tagi
+    //aktualizuj zaznaczenia - część automatycznie zaktualizuje tagi
     //tutaj zapamierujemy te tagi by ich ponownie nie modyfikowac
 
     std::vector<TagConstPtr> updatedTags;
@@ -630,9 +630,9 @@ void Model::updateForScaleRatio(const ChannelPtr & channel, double ratio)
 void Model::updateParentLength(const Model::TChannelConstPtr & parent, const TChannelConstPtr & child)
 {
     bool goUp = false;
-    //czy dziecko dluzsze od rodzica
+    //czy dziecko dłuższe od rodzica
     if(child->getData()->getLocalOffset() + child->getData()->getLength() > parent->getData()->getLength()){
-        //rozszerz rodzica, idz wyzej
+        //rozszerz rodzica, idz wyżej
         bool maskUpdate = false;
         if(parent->getData()->getLength() == parent->getData()->getMaskEnd()){
             maskUpdate = true;
@@ -701,13 +701,13 @@ void Model::updateParentOffset(const Model::TChannelConstPtr & parent, const Mod
     }
 
     //rodzic
-    //moglismy przesunac jego dziecko najdalsze, ale koniec oparl sie na kolejnym
+    //moglismy przesunać jego dziecko najdalsze, ale koniec oparl się na kolejnym
     refreshChannelLength(parent);
     wParent->setLocalOffset(wParent->getLocalOffset() + offset);
     wParent->setGlobalOffset(wParent->getGlobalOffset() + offset);
 
-    //specjalny przypadek - dziecko ktore spowodowalo przesuniecie
-    //nie moze sie zaczynac wczesniej niz rodzic
+    //specjalny przypadek - dziecko które spowodowalo przesunięcie
+    //nie moze się zaczynać wczesniej niz rodzic
     wChild->setGlobalOffset(wParent->getGlobalOffset());
 
     if(parent->isRoot() == false && wParent->getLocalOffset() < 0){
@@ -756,7 +756,7 @@ void Model::innerSetChannelLocalOffset(const TChannelConstPtr & channel, double 
             wChannel->setLocalOffset(offset);
             wChannel->setGlobalOffset(wChannel->getGlobalOffset() + d);
 
-            //aktualizuj dlugosc rodzica
+            //aktualizuj długość rodzica
             updateParentLength(parent, channel);
 
             state.length = getLength();
@@ -777,13 +777,13 @@ void Model::innerSetChannelLocalTimeScale(const TChannelConstPtr & channel, doub
 {
     ChannelPtr wChannel(getWritableChannel(channel));
 
-    //ile zmianila sie skala
+    //ile zmianila się skala
     double scaleRatio = scale / wChannel->getLocalTimeScale();
 
     //aktualizuj lokalna skale
     wChannel->setLocalTimeScale(scale);
 
-    //aktualizuj dlugosc kanalu
+    //aktualizuj długość kanału
     wChannel->setLength(wChannel->getLength() * scaleRatio);
 
     //aktualizuj globalna skale
@@ -794,11 +794,11 @@ void Model::innerSetChannelLocalTimeScale(const TChannelConstPtr & channel, doub
 
         wChannel->setGlobalTimeScale(wChannel->getGlobalTimeScale() * scaleRatio);
 
-        //aktualizuj rodzica ze wzgledu na dlugosc
+        //aktualizuj rodzica ze względu na długość
         updateParentLength(toTChannel(channel->getParent()), channel);
     }
 
-    //Aktrualizuj pozycje Tagow i Selekcji!!
+    //Aktrualizuj pozycje Tagów i Selekcji!!
     //Aktualizuj maske!!
     updateForScaleRatio(wChannel, scaleRatio);
 
@@ -810,15 +810,15 @@ void Model::innerSetChannelLocalTimeScale(const TChannelConstPtr & channel, doub
 
 void Model::innerRemoveChannel(const TChannelConstPtr & channel)
 {
-    //Usunac ten kanal z rodzica oraz z mapowania!!
+    // usunąć ten kanał z rodzica oraz z mapowania!!
     TChannelPtr parent(getWritableTChannel(channel->getParent()));
     parent->removeChild(getWritableTChannel(channel));
     
     ConstTags tags;
     ConstChannels channels;
 
-    //Zebrac dzieci, tagi i zaznaczenia kanalu i jego dzieci
-    //usunac je z list wszystkich tagow, zaznaczen i mapowania kanalow
+    //Zebrać dzieci, tagi i zaznaczenia kanału i jego dzieci
+    //usunąć je z list wszystkich tagow, zaznaczen i mapowania kanałów
     getAllChildrenData(channel, tags, channels);
 
     for(auto it = tags.begin(); it != tags.end(); ++it) {

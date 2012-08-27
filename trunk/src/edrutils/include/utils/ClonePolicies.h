@@ -4,13 +4,13 @@
 #include <exception>
 #include <osg/CopyOp>
 #include <osg/Object>
-//Plik zawiera podstawowe zasady kopiowania obiektow domenowych
+//Plik zawiera podstawowe zasady kopiowania obiektów domenowych
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
-    //! Klonowanie odbywa sie za pomoca konstruktora kopiujacego
+    //! Klonowanie odbywa się za pomoca konstruktora kopiującego
     struct ClonePolicyCopyConstructor
     {
         template <typename T>
@@ -19,7 +19,7 @@ namespace utils {
         }
     };
 
-    //! Klonowanie odbywa sie za pomoca metody clone()
+    //! Klonowanie odbywa się za pomoca metody clone()
     struct ClonePolicyVirtualCloneMethod
     {
         template <typename T>
@@ -31,7 +31,7 @@ namespace utils {
         }
     };
 
-    //! Klonowanie odbywa sie za pomoca metody clone()
+    //! Klonowanie odbywa się za pomoca metody clone()
     struct ClonePolicyOsgCloneMethod
     {
         template <typename T>
@@ -43,7 +43,7 @@ namespace utils {
         }
     };
 
-    //! Powinno podawac sie ta zasade, jesli klonowanie z jakiegos powodu jest zabronione
+    //! Powinno podawać się ta zasade, jeśli klonowanie z jakiegos powodu jest zabronione
     struct ClonePolicyForbidden
     {
         template <typename T>

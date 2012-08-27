@@ -9,7 +9,7 @@ namespace timeline{
 Tag::Tag(const ChannelPtr & channel, const std::string & name, double begin, double length)
     : name(name), channel(channel), constChannel(channel), begin(begin), length(length)
 {
-    UTILS_ASSERT((channel != nullptr), "Niepoprawny kanal taga");
+    UTILS_ASSERT((channel != nullptr), "Niepoprawny kanał taga");
     UTILS_ASSERT((begin >= 0 && length >= 0 && begin + length <= channel->getLength()), "Niepoprawna konfiguracja czasowa taga");
 }
 

@@ -37,7 +37,7 @@ protected:
 private:
 
     //! Wywolanie tej metody zrzuca wyjątek - nie jest dozwolone dodawanie pinów wejściowych do źródeł
-    //! \param newPin Pin wejsciowy do dodania
+    //! \param newPin Pin wejściowy do dodania
     virtual void addInPin(const PinPtr & pin);
 };
 

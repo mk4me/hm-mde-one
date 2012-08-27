@@ -32,7 +32,7 @@ namespace webservices
 
     public:
 
-        //! Konstruktor domyslny
+        //! Konstruktor domyślny
         Date();
         //! Konstruktor kopiujący
         Date(const Date & date);
@@ -119,7 +119,7 @@ namespace webservices
         //! Konstruktor kopiujący
         //! \param time Czas do skopiowania
         Time(const Time & time);
-        //! Konstruktor domyslny
+        //! Konstruktor domyślny
         //! \param hour Godzina
         //! \param minutes Minuty
         //! \param seconds Sekundy

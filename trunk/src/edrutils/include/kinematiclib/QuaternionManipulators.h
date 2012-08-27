@@ -12,33 +12,56 @@
 
 namespace kinematic {
 
+    //! Klasa bazowa dla manipulatorów używanych w kanałach zawierających kwaterniony.
+    //! implementuje standardowe metody manipulatorów
 	class QuaternionManipulator
 	{
 	public:
+		//! powielony operator z osg, można polemizować nad jego sensem
+		//! \param q1 pierwszy porównywany kwaternion
+		//! \param q2 drugi porównywany kwaternion
 		virtual bool isLower(const osg::Quat& q1, const osg::Quat& q2)
 		{
 			return q1 < q2;
 		}
+		//! normalizacja zabroniona
 		virtual osg::Quat normalize(const osg::Quat& q, const osg::Quat& min, const osg::Quat& max) const
 		{
 			UTILS_ASSERT("Unable to normalize quaternion");
 			throw std::runtime_error("Unable to normalize quaternion");
 		}
+		//! metoda abstrakcyjna, zapewnia interpolację między kwaternionami
+		//! \param ret zwracany, wyinterpolowany kwaternion
+		//! \param q1 dolny zakres
+		//! \param q2 górny zakres
+		//! \param t współczynnik interpolacji
 		virtual void interpolate(osg::Quat& ret, const osg::Quat& q1, const osg::Quat& q2, float t) const = 0;
 	};
 
+    //! Manipulator dostarczający interpolacji sferycznej kwaternionów
 	class QuaternionManipulatorSlerp : public QuaternionManipulator
 	{
 	public:
+        //! interpolacja sferyczna między kwaternionami
+        //! \param ret zwracany, wyinterpolowany kwaternion
+        //! \param q1 dolny zakres
+        //! \param q2 górny zakres
+        //! \param t współczynnik interpolacji
 		virtual void interpolate(osg::Quat& ret, const osg::Quat& q1, const osg::Quat& q2, float t ) const
 		{
             ret.slerp(t, q1, q2);
 		}
 	};
 
+    //! Manipulator dostarczający interpolacji liniowej kwaternionów
 	class QuaternionManipulatorLerp : public QuaternionManipulator
 	{
 	public:
+        //! interpolacja liniowa między kwaternionami
+        //! \param ret zwracany, wyinterpolowany kwaternion
+        //! \param q1 dolny zakres
+        //! \param q2 górny zakres
+        //! \param t współczynnik interpolacji
 		virtual void interpolate(osg::Quat& ret, const osg::Quat& q1, const osg::Quat& q2, float t ) const
 		{
 			ret._v[0] = q1._v[0] * (1.0f - t)  + q2._v[0] * t;

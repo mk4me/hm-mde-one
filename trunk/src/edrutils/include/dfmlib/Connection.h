@@ -33,7 +33,7 @@ public:
     //! \return Wezeł docelowy
 	PinPtr getDest() const;
 
-    //! \return drugi węzeł biorący udział w połączeniu lub wyjątek jesli węzeł nie bierze udziału w tym połączeniu
+    //! \return drugi węzeł biorący udział w połączeniu lub wyjątek jeśli węzeł nie bierze udziału w tym połączeniu
 	PinPtr getOther(const CWPinPtr & pin) const;
 
     //! \return Nazwa połaczenia

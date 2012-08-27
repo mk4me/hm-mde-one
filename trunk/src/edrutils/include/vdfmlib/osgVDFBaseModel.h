@@ -51,7 +51,7 @@ public:
     //! Typ akcji węzła
     typedef boost::function<void(const osgVDFBaseNode *, const osgWidget::XYCoord &)> NodeAction;
 
-    //! Akcja usuwajaca wezel
+    //! Akcja usuwająca wezel
     typedef boost::function<void(const osgVDFBaseNode *)> NodeDeleteAction;
 
 protected:
@@ -179,13 +179,13 @@ public:
     //! \param dewscriptor Klasa opisująca typ węzła dodawanego do defualtowego toolbara
     void registerNodeType(osgVDFNodeTypeDescriptor * descriptor);
 
-    //! \param lock Czy zablokowac do edycji logiki i właściwości modelu - tylko wizualna zmiana layoutu możliwa
+    //! \param lock Czy zablokować do edycji logiki i właściwości modelu - tylko wizualna zmiana layoutu możliwa
     void lockForModelEdition(bool lock);
 
     //! \return Czy zablokowano do edycji logiki
     bool isLockedForModelEdition() const;
 
-    //! \param lock Czy zablokowac do jakiejkolwiek edycji
+    //! \param lock Czy zablokować do jakiejkolwiek edycji
     void lockForVisualEdition(bool lock);
 
     //! \return Czy zablokowano do jakiejkolwiek edycji
@@ -241,7 +241,7 @@ public:
     //! \node Węzeł do zaznaczenia
 	void selectNode(const dflm::NPtr & node);
 
-    //! \param rect Obszar w ktorym zaznaczamy wszystkie wezly
+    //! \param rect Obszar w którym zaznaczamy wszystkie węzły
     void selectNodes(const osg::BoundingBox & rect);
 
     //! Zaznacza wszystkie węzłyu
@@ -250,7 +250,7 @@ public:
     //! \param node Węzeł do odznaczenia
 	void deselectNode(const dflm::NPtr & node);
 
-    //! \param Obszar w ktorym odznaczamy wszystkie wezly
+    //! \param Obszar w którym odznaczamy wszystkie węzły
     void deselectNodes(const osg::BoundingBox & rect);
     
     //! Odznacza wszystkie węzły
@@ -302,8 +302,8 @@ public:
     //! \param show Czy pokazywać domyślny toolbar
 	void showDefaultToolbar(bool show);
 
-    //! \return Minimalny obszar wezla jaki trzeba zaznaczyc aby wezel był uznany za zaznaczony/odznaczony
-    //! wartosc procentowa powierzchni wezła z przedzialu [0..1], gdzie 0 oznacza zaznaczenie na kontakt z węzłem a 1 wymaga objęcia całego węzła
+    //! \return Minimalny obszar węzła jaki trzeba zaznaczyć aby wezel był uznany za zaznaczony/odznaczony
+    //! wartość procentowa powierzchni wezła z przedzialu [0..1], gdzie 0 oznacza zaznaczenie na kontakt z węzłem a 1 wymaga objęcia całego węzła
 	osgWidget::point_type getMinSelectedNodeAreaRatioToSelect() const;
 
     //! \param areaRatio Procentowy obszar węzła jaki należy objąć by zaznaczyć/odznaczyć węzeł

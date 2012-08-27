@@ -153,7 +153,7 @@ namespace utils {
 	};
 
 
-	//! Klasa rozszerzajaca podstawowe kanały o opis ich danych
+	//! Klasa rozszerzająca podstawowe kanały o opis ich danych
 	template<class Channel>
 	class ChannelWithDescriptor : public Channel, public ChannelDescriptor
 	{
@@ -266,15 +266,15 @@ namespace utils {
 			return impl.getLength();
 		}
 
-		//! \param idx Indeks probki
-		//! \return Wartosc czasu dla danego indeksu
+		//! \param idx Indeks próbki
+		//! \return Wartość czasu dla danego indeksu
 		virtual time_type argument(size_type idx) const
 		{
 			return impl.argument(idx);
 		}
 
-		//! \param idx Indeks probki
-		//! \return Wartosc probki dla danego indeksu
+		//! \param idx Indeks próbki
+		//! \return Wartość próbki dla danego indeksu
 		virtual point_type_const_reference value(size_type idx) const
 		{
 			return impl.value(idx);
@@ -291,8 +291,8 @@ namespace utils {
 		{
 			return impl.empty();
 		}
-		//! \param time Czas dla ktorego chemy uzyskac dwie najblizsze probki
-		//! \return Para indeksow, pierwszy wskazujke probke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje probke o czasie wiekszym lub rownym zadanemu
+		//! \param time Czas dla którego chemy uzyskać dwie najblizsze próbki
+		//! \return Para indeksow, pierwszy wskazujke próbkę o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje próbkę o czasie wiekszym lub rownym zadanemu
 		//! Ta implementacja działa w czasie O(log(N)) - podział binarny bo dane sa ułożone chronologicznie
 		virtual data_range getValueHelper(time_type time) const
 		{

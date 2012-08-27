@@ -14,7 +14,7 @@
 
 namespace utils {
 
-//! Klasa zapewniajaca dostep do danych w sposob ciagly (sposob realizacji "wrazenia" ciaglasci zalezny od implementacji)
+//! Klasa zapewniajaca dost�p do danych w sposob ciagly (sposob realizacji "wrazenia" ciaglasci zalezny od implementacji)
 template<class PointType, class TimeType>
 class IDataChannelTimeAccessor
 {
@@ -54,22 +54,22 @@ public:
 	//! Domyśłny konstruktor
 	ExceptionExtrapolator() {}
 
-	//! Konstruktor kopiujacy
+	//! Konstruktor kopiujący
 	ExceptionExtrapolator(const ExceptionExtrapolator & resolver) {}
 	//! Destruktor polimorficzny
 	~ExceptionExtrapolator() {}
 
 public:
-	//! \param time Czas ponizej zera
-	//! \param point Zwracana wartosc
+	//! \param time Czas poniżej zera
+	//! \param point Zwracana wartość
 	static PointType timeUnderflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		throw std::runtime_error("Time value less than 0");
 		return PointType();
 	}
 
-	//! \param time Czas poza dlugoscia kanalu
-	//! \param point Zwracana wartosc
+	//! \param time Czas poza długością kanału
+	//! \param point Zwracana wartość
 	static PointType timeOverflow(TimeType time, const ChannelReader & channel)
 	{
 		throw std::runtime_error("Time value greater than channel length");
@@ -89,14 +89,14 @@ public:
 	//! Domyśłny konstruktor
 	PeriodicExtrapolator() {}
 
-	//! Konstruktor kopiujacy
+	//! Konstruktor kopiujący
 	PeriodicExtrapolator(const PeriodicExtrapolator & resolver) {}
 	//! Destruktor polimorficzny
 	~PeriodicExtrapolator() {}
 
 public:
-	//! \param time Czas ponizej zera
-	//! \param point Zwracana wartosc
+	//! \param time Czas poniżej zera
+	//! \param point Zwracana wartość
 	static PointType timeUnderflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		auto l = channel.getLength();
@@ -104,8 +104,8 @@ public:
 		return Interpolator<PointType, TimeType>::extractValue(time, channel);
 	}
 
-	//! \param time Czas poza dlugoscia kanalu
-	//! \param point Zwracana wartosc
+	//! \param time Czas poza długością kanału
+	//! \param point Zwracana wartość
 	static PointType timeOverflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		auto l = channel.getLength();
@@ -126,21 +126,21 @@ public:
 	//! Domyśłny konstruktor
 	BorderExtrapolator() {}
 
-	//! Konstruktor kopiujacy
+	//! Konstruktor kopiujący
 	BorderExtrapolator(const BorderExtrapolator & resolver) {}
 	//! Destruktor polimorficzny
 	~BorderExtrapolator() {}
 
 public:
-	//! \param time Czas ponizej zera
-	//! \param point Zwracana wartosc
+	//! \param time Czas poniżej zera
+	//! \param point Zwracana wartość
 	static PointType timeUnderflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		return channel.value(0);
 	}
 
-	//! \param time Czas poza dlugoscia kanalu
-	//! \param point Zwracana wartosc
+	//! \param time Czas poza długością kanału
+	//! \param point Zwracana wartość
 	static PointType timeOverflow(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		return channel.value(channel.size() - 1);
@@ -177,10 +177,10 @@ struct LerpInterpolator
 {
 	typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type IndexType;
 
-	//! \param point Zwracana interpolowana wartosc
-	//! \param p1 Probka dla czasu ponizej lub identycznego
-	//! \param Probka dla czasu powyzej lub identycznego
-	//! \param time Wartosc okreslajaca procent przesuniecia wzgledem probki ponizej
+	//! \param point Zwracana interpolowana wartość
+	//! \param p1 próbka dla czasu poniżej lub identycznego
+	//! \param próbka dla czasu powyzej lub identycznego
+	//! \param time Wartość określająca procent przesuniecia względem próbki poniżej
 	static PointType extractValue(IndexType idxA, IndexType idxB, TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		//// lerp
@@ -236,10 +236,10 @@ struct DiscreteInterpolator : public EpsilonManager<TimeType>
 {
 	typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type IndexType;
 
-	//! \param point Zwracana interpolowana wartosc
-	//! \param p1 Probka dla czasu ponizej lub identycznego
-	//! \param Probka dla czasu powyzej lub identycznego
-	//! \param time Wartosc okreslajaca procent przesuniecia wzgledem probki ponizej
+	//! \param point Zwracana interpolowana wartość
+	//! \param p1 próbka dla czasu poniżej lub identycznego
+	//! \param próbka dla czasu powyzej lub identycznego
+	//! \param time Wartość określająca procent przesuniecia względem próbki poniżej
 	static PointType extractValue(IndexType idxA, IndexType idxB, TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel)
 	{
 		TimeType diffA = time - channel.argument(idxA);
