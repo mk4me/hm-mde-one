@@ -39,7 +39,7 @@ namespace kinematic {
 		hAnimJointPtr getRoot() const { return root; }
         //! ustawia korzeń drzewa h-anim (powinien być zawsze "Humanoid Root")
 		void setRoot(hAnimJointPtr val) { root = val; }
-		//! towrzy powiązania pomiedzy aktywnymi jointami
+		//! tworzy powiązania pomiędzy aktywnymi jointami
 		void createActiveHierarchy();
 
         // TODO zmienic ten dostęp
@@ -95,7 +95,7 @@ namespace kinematic {
 		//! czysci wszystkie informacje o powiązaniu aktywnych jointow
 		//! \param parent 
 		void clearActiveHierarchy(hAnimJointPtr parent);
-		//! tworzy powiązania pomiedzy aktywnymi jointami
+		//! tworzy powiązania pomiędzy aktywnymi jointami
 		//! \param parent 
 		//! \param lastActive 
 		void createActiveHierarchy(hAnimJointPtr parent, hAnimJointPtr lastActive);

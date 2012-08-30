@@ -14,7 +14,7 @@ namespace kinematic
 class VskParser
 {
 public:
-    //! Struktura opisuje połączenie miedzy markerami
+    //! Struktura opisuje połączenie między markerami
     struct Stick {
         std::string name1;  //<! nazwa pierwszego markera
         std::string name2;  //<! nazwa drugiego markera
@@ -46,7 +46,7 @@ public:
 
 
 private:
-    //! Wczytanie połączeń miedzy markerami
+    //! Wczytanie połączeń między markerami
     //! \param sticks Element pliku vsk zawierający połączenia
     void readSticks(TiXmlElement* sticks);
 

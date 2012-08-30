@@ -38,11 +38,15 @@ public:
     //! \return głęboka kopia obiektu
 	virtual JointAnglesCollection* clone() const;
 	
-public:
-    /// \brief  Ustawia dane z parsera
-    /// \details W tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
-    /// \param  skeletalModel   The skeletal model. 
+public: 
+    //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
+    //! \param skeletalModel struktura szkieletu
+    //! \param skeletalData dane szkieletu
     void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData);
+    //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
+    //! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
+    //! \param rootPositions kolekcja danych pozycji korzenia szkieletu
+    //! \param channels kolekcja z danymi w postaci DataChannel
     void setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const std::vector<JointAngleChannelPtr>& channels);
     //! \brief zwraca szkielet zgodny z h-anim
     const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }

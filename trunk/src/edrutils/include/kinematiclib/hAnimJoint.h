@@ -25,14 +25,22 @@ class hAnimJoint : boost::noncopyable
 {
 	friend class JointAnglesCollection;
 private :
-	Joint joint;                               //!< staw
-	hAnimBoneWeak parentBone;                  //!< kość, z której wychodzi staw
-	std::vector<hAnimBonePtr> childrenBones;   //!< do jednego stawu moze być podłączone wiele kości
-	bool active;                               //!< określa, czy staw jest aktywny (jeśli model ma jakies stawy nieaktywne, to mamy do czynienia z niekompletnym szkieletem h-anim 1.1)
-	osg::Vec3 localShift;                      //!< przesunięcie względem rodzica
-	osg::Quat childParentRotation;             //!< rotacja względem rodzica
-	hAnimJointWeak activeParent;               //!< najbliższy, aktywny parent
-	std::vector<hAnimJointPtr> activeJointChildren; //!< najbliższe aktywne childy
+    //! staw
+	Joint joint;                              
+    //! kość, z której wychodzi staw 
+	hAnimBoneWeak parentBone;                 
+    //! do jednego stawu moze być podłączone wiele kości 
+	std::vector<hAnimBonePtr> childrenBones;  
+    //! określa, czy staw jest aktywny (jeśli model ma jakies stawy nieaktywne, to mamy do czynienia z niekompletnym szkieletem h-anim 1.1) 
+	bool active;                              
+    //! przesunięcie względem rodzica 
+	osg::Vec3 localShift;                     
+    //! rotacja względem rodzica 
+	osg::Quat childParentRotation;            
+    //! najbliższy, aktywny parent 
+	hAnimJointWeak activeParent;              
+    //! najbliższe aktywne childy 
+	std::vector<hAnimJointPtr> activeJointChildren;
 	
 public:
 	/// \brief  Domyslny konstruktor, wszystkie stawy sa nieaktywne, dopiero podanie danych z parsera moze zmienic ten stan
