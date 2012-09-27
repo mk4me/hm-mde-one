@@ -146,7 +146,7 @@ public:
 
 private:
     //! tworzy mapę z elementami konfiguratora
-    //! \param collection kolekcja, która będzie konfigurowana 
+    //! \param collection kolekcja, która będzie konfigurowana
     void createNameDictionary(const CollectionConstPtr & collection)
     {
         int count = collection->getNumChannels();
@@ -436,7 +436,7 @@ public:
 
 private:
     //! tworzy mapę z elementami konfiguratora
-    //! \param collection kolekcja, która będzie konfigurowana 
+    //! \param collection kolekcja, która będzie konfigurowana
     void createNameDictionary(const CollectionConstPtr & collection)
     {
         int count = collection->getNumChannels();
@@ -520,7 +520,7 @@ private:
     //! ścieżka do pliku z rozmieszczeniem elemnetów
     QString backXml;
     //! konfigurator
-    ConfigurationWidget* configurationDialog;
+    ConfigurationWidget* dialog;
 };
 
 
