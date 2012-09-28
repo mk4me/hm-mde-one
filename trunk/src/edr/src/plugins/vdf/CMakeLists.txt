@@ -5,7 +5,7 @@ set(TARGET_TARGETNAME plugin_vdf)
 set(QT_USE_QTOPENGL TRUE)
 include(${QT_USE_FILE})
 
-add_definitions(-D__LIBRARY_DYNAMIC__)
+# add_definitions(-D__LIBRARY_DYNAMIC__)
 
 #------------------------------------------------------------------------------
 

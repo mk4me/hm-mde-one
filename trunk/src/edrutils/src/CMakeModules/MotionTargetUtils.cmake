@@ -5,14 +5,18 @@ macro(ON_PROJECT_ADDED name)
 	
 	# ustawiamy nazwe dla artefaktow wersji debug tak aby do nazwy na koniec by³o doklejane d, dla release bez zmian
 	set_target_properties(${TARGET_TARGETNAME} PROPERTIES DEBUG_POSTFIX "d")
+	
+	# ustawiamy flagi projektu wynikaj¹ce z flag jego zale¿noœci
+	list(REMOVE_DUPLICATES ${name}_COMPILER_DEFINITIONS)
+	set_target_properties(${TARGET_TARGETNAME} PROPERTIES COMPILE_DEFINITIONS "${${name}_COMPILER_DEFINITIONS}")
 
 	# flaga aby mozna bylo uzyc projektu w makrach
 	set(${name}_FOUND 1 PARENT_SCOPE)
 	# kopiujemy includy
-	#list(APPEND ${DEFAULT_PROJECT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR})
-	#set(${name}_INCLUDE_DIR ${DEFAULT_PROJECT_INCLUDES} CACHE STRING INTERNAL FORCE)
-	set(${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
-	#list(APPEND ${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+	list(APPEND ${DEFAULT_PROJECT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR})
+	set(${name}_INCLUDE_DIR ${DEFAULT_PROJECT_INCLUDES} CACHE STRING INTERNAL FORCE)
+	#set(${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+	list(APPEND ${name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 	# co budujemy?
 	get_target_property(BUILD_TYPE ${name} TYPE)
 	
@@ -33,7 +37,8 @@ macro(ON_PROJECT_ADDED name)
 		foreach(value ${DEFAULT_PROJECT_DEPENDENCIES})
 			list(APPEND ${name}_LIBRARIES_PROXY ${${value}_LIBRARIES})
 		endforeach()
-		#set(${name}_LIBRARIES ${${name}_LIBRARIES_PROXY} PARENT_SCOPE)
+		# // rev - przywrocona linijka ponizej
+		set(${name}_LIBRARIES ${${name}_LIBRARIES_PROXY} PARENT_SCOPE)
 	endif()
 	
 	
@@ -81,6 +86,7 @@ endmacro(GENERATE_UNIX_EXECUTABLE_SCRIPT)
 macro(ADD_PROJECT name dependencies)
 	set(ADD_PROJECT_FAILED 0)
 	set(ADD_PROJECT_MESSAGE "")
+	set(${name}_COMPILER_DEFINITIONS "")
 	# szukamy wszystkich brakuj¹cych zale¿noœci
 	foreach (value ${dependencies})
 		if (NOT ${value}_FOUND)
@@ -93,9 +99,6 @@ macro(ADD_PROJECT name dependencies)
 	if (ADD_PROJECT_FAILED)
 		message(${name} " not included because dependencies are missing: " ${ADD_PROJECT_MESSAGE})
 	else()
-		if (MSVC)
-			add_definitions(/MP -D_SCL_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_WARNINGS)
-		endif()
 		#message("${name}: ${dependencies}")
 		set (DEFAULT_PROJECT_DEPENDENCIES ${dependencies})
 		set (DEFAULT_PROJECT_LIBS)
@@ -127,7 +130,8 @@ macro(ADD_PROJECT name dependencies)
 			
 			if ( ${value}_CUSTOM_COMPILER_DEFINITIONS )
 				#foreach (value4 ${value}_CUSTOM_COMPILER_DEFINITIONS})
-					add_definitions(${${value}_CUSTOM_COMPILER_DEFINITIONS})
+					#add_definitions(${${value}_CUSTOM_COMPILER_DEFINITIONS})
+					list(APPEND ${name}_COMPILER_DEFINITIONS ${${value}_CUSTOM_COMPILER_DEFINITIONS})
 				#endforeach()
 			endif()
 			
@@ -158,7 +162,8 @@ MACRO(SET_PRECOMPILED_HEADER header source sources)
 			PROPERTIES COMPILE_FLAGS "/Yu\"${_binary}\" /FI\"${_binary}\" /Fp\"${_binary}\""
 			OBJECT_DEPENDS "${_binary}")  
 	else()
-		add_definitions(-DDISABLE_PRECOMPILED_HEADERS)
+		list(APPEND ${PROJECT_NAME}_COMPILER_DEFINITIONS DISABLE_PRECOMPILED_HEADERS)
+		#add_definitions(-DDISABLE_PRECOMPILED_HEADERS)
 	endif()
 ENDMACRO(SET_PRECOMPILED_HEADER)
 

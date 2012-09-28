@@ -80,6 +80,7 @@ set(FIND_PLATFORM ${PROJECT_LIBRARIES_PLATFORM})
 
 # Szukamy bibliotek
 find_package(Boost)
+find_package(Eigen3)
 find_package(FFmpeg)
 find_package(OSG)
 find_package(Stdint)

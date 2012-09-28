@@ -4,9 +4,8 @@ FIND_INIT(QWT qwt)
 # szukanie
 FIND_SHARED(QWT "qwt" "qwt")
 
-if (WIN32)
-	set(QWT_CUSTOM_COMPILER_DEFINITIONS "/D \"QWT_DLL\"")
-endif()
+set(QWT_CUSTOM_COMPILER_DEFINITIONS QWT_DLL)
+
 # skopiowanie
 FIND_FINISH(QWT)
 

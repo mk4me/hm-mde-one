@@ -51,8 +51,9 @@ set(boost_ver "-${BOOST_VERSION}")
 FIND_FINISH(BOOST)
 
 # Wy³¹czamy automatyczne linkowanie boosta
-add_definitions(-DBOOST_ALL_NO_LIB)
-add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
+set(BOOST_CUSTOM_COMPILER_DEFINITIONS BOOST_ALL_NO_LIB BOOST_PROGRAM_OPTIONS_DYN_LINK)
+#add_definitions(-DBOOST_ALL_NO_LIB)
+#add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
 
 # sprawdzenie
 if (BOOST_SYSTEM_FOUND AND

@@ -10,5 +10,4 @@ endif()
 # koniec
 FIND_FINISH(TINYXML)
 
-# Wy³¹czamy automatyczne linkowanie boosta
-add_definitions(-DTIXML_USE_STL)
+set(TINYXML_CUSTOM_COMPILER_DEFINITIONS TIXML_USE_STL)
