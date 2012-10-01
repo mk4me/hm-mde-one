@@ -35,12 +35,18 @@
 
 CORE_DEFINE_INSTANCE_INFO;
 
-//namespace core {
+//WAŻNE!!
+//tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest taką biblioteką i jego resourcy musza być jawnie inicjalizowane
+//Nazwa resourców musi być unikalna ponieważ Qt "miesza" nazwy metod z nazwamy plików resourców które chcemy inicjalizować tworząc unikalne statyczne funkcje na potrzeby inicjalizacji
+//link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dół stronki
+inline void initCoreResources() { Q_INIT_RESOURCE(CoreIcons); }
+
+namespace core {
 
 class MyApplication : public QApplication
 {
 public:
-    MyApplication(int argc, char *argv[]) : QApplication(argc, argv) {}
+    MyApplication(int & argc, char *argv[]) : QApplication(argc, argv) {}
 
     virtual bool notify(QObject* receiver, QEvent* event)
     {
@@ -61,9 +67,11 @@ public:
 
     //! Metoda uruchamiająca aplikacje, pobiera jako parametr wzorca widok który będzie uruchomiony, widok powinien dziedziczyć po MainWindow
 	template<class FrontpageWidget>
-	static int start(int argc, char *argv[])
+	static int start(int & argc, char *argv[])
 	{
-		using namespace core;
+		initCoreResources();
+
+		//using namespace core;
 	    // rev - statyczna
         //UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyć po klasie MainWindow");
 
@@ -336,5 +344,5 @@ public:
 		return result;
 	}
 };
-//}
+}
 #endif
