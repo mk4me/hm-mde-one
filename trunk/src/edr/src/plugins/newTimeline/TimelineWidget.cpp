@@ -520,7 +520,8 @@ void TimelineWidget::refreshPlayerStatus()
     if(getController()->getLength() > 0){
         // rev - zmiana api
         //slider->setRange(getController()->getModel()->getBeginTime(), getController()->getModel()->getEndTime(), 0.001);
-        slider->setScale(getController()->getModel()->getBeginTime(), getController()->getModel()->getEndTime(), 0.001);
+        //slider->setScale(getController()->getModel()->getBeginTime(), getController()->getModel()->getEndTime(), 0.001);
+		slider->setScale(getController()->getModel()->getBeginTime(), getController()->getModel()->getEndTime());
         slider->setValue(getController()->getTime());
     }else{
         // rev - zmiana api
