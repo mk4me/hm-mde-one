@@ -220,7 +220,7 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
         throw std::runtime_error("Already logged in");
     }
 
-    /*bool connError = false;
+    bool connError = false;
 
 	if(offlineMode_ == false){
 
@@ -270,7 +270,7 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
         pathsManager->createUserDataPaths();
         //informuj wszystkich o zalogowaniu
         notify();
-    }*/
+    }
 }
 
 void CommunicationDataSource::logout()
@@ -365,7 +365,7 @@ bool CommunicationDataSource::isShallowCopyComplete() const
     bool ret = false;
     {
         OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*pathsManager);
-        /*try{
+        try{
             if(localStorage->fileIsLocal(pathsManager->motionShallowCopyPath().filename().string()) &&
                 localStorage->fileIsLocal(pathsManager->motionMetadataPath().filename().string()) &&
                 localStorage->fileIsLocal(pathsManager->medicalShallowCopyPath().filename().string()) &&
@@ -375,7 +375,7 @@ bool CommunicationDataSource::isShallowCopyComplete() const
             }
         }catch(...){
 
-        }*/
+        }
     }
     return ret;
 }

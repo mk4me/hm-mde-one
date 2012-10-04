@@ -29,7 +29,8 @@ public:
 
     virtual QwtText label( double value) const
     {
-        return QwtText(convertToQTime(value).toString(QString("mm:ss:zzz")));
+		static const QString labelFormat("mm:ss:zzz");
+        return QwtText(convertToQTime(value).toString(labelFormat));
     }
 };
 

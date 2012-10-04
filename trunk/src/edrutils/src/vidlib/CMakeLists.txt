@@ -86,12 +86,11 @@ endif()
 
 #------------------------------------------------------------------------------
 # konfiguracja
-
+set(CONFIG_INPUT_FILE Config.h.in)
 # Kopiujemy konfiguracja
-configure_file( "Config.h.in" "${PROJECT_BINARY_DIR}/Config.h" )
-set(TARGET_H ${TARGET_H} "${PROJECT_BINARY_DIR}/Config.h" Config.h.in)
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES Config.h.in)
-source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/Config.h")
+configure_file( ${CONFIG_INPUT_FILE} "${PROJECT_BINARY_DIR}/Config.h" )
+source_group("Configuration template" FILES ${CONFIG_INPUT_FILE})
+source_group("Local configuration" FILES "${PROJECT_BINARY_DIR}/Config.h")
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek

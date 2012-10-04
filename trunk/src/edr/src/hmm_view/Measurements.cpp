@@ -169,7 +169,7 @@ MeasurementsConstPtr Measurements::measurements;
 MeasurementsConstPtr Measurements::get()
 {
     if (!measurements) {
-        std::string p = core::getResourceString("schemas\\measurementconfs.xml");
+        std::string p = core::getResourceString("schemas/measurementconfs.xml");
         try {
             MeasurementsParser parser;
             parser.parse(p);

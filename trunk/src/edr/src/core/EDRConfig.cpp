@@ -138,15 +138,15 @@ bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 
 bool EDRConfig::trySetDefaultPaths( EDRConfig& directoriesInfo )
 {
-	core::Filesystem::Path userPath = toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
+	core::Filesystem::Path userPath(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString());
 	userPath /= "PJWSTK";
 	userPath /= "EDR";
 	directoriesInfo.setUserDataPath(userPath);
 
-	core::Filesystem::Path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
+	core::Filesystem::Path appDataPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).toStdString());
 	directoriesInfo.setApplicationDataPath(appDataPath);
 
-	core::Filesystem::Path resourcesPath(core::toStdString(QDir::currentPath()));
+	core::Filesystem::Path resourcesPath(QDir::currentPath().toStdString());
 	resourcesPath /= "resources";
 	directoriesInfo.setResourcesPath(resourcesPath);
 	return true;
