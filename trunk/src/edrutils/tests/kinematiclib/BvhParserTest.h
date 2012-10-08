@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD_BVHPARSERTEST_H__
+#ifndef HEADER_GUARD_BVHPARSERTEST_H__
 #define HEADER_GUARD_BVHPARSERTEST_H__
 
 #include <cppunit/extensions/HelperMacros.h>

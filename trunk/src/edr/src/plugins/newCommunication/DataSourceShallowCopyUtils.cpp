@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DataSourceShallowCopyUtils.h"
 
 #include <webserviceslib/ShallowCopyParser.h>

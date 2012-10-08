@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/MetadataParser.h>
+#include <webserviceslib/MetadataParser.h>
 #include <utils/Debug.h>
 #include <tinyxml.h>
 

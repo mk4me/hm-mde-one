@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa MotionTransportWSDL_FTPS jest klasa fasadowa dla obslugi wysylania plikow przy pomocy protokolu ftp oraz technologii wsdl.
 Klasa implementuje interfejs ITransportable.

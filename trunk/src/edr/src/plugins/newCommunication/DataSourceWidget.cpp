@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DataSourceWidget.h"
 #include "DownloadStatusWidget.h"
 #include "DataSource.h"

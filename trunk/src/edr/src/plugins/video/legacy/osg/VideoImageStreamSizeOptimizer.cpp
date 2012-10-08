@@ -1,4 +1,4 @@
-﻿#include "../VideoPCH.h"
+#include "../VideoPCH.h"
 #include <boost/foreach.hpp>
 #include <core/Log.h>
 #include <core/OsgWidgetUtils.h>

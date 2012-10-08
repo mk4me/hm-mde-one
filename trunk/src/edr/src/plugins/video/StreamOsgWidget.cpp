@@ -1,4 +1,4 @@
-﻿#include "VideoPCH.h"
+#include "VideoPCH.h"
 #include "StreamOsgWidget.h"
 #include <vidlib/osg/VideoImageStream.h>
 #include <core/PluginCommon.h>

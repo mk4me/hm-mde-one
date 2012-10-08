@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__UNIQUECOLLECTION_H__
+#ifndef HEADER_GUARD__UNIQUECOLLECTION_H__
 #define HEADER_GUARD__UNIQUECOLLECTION_H__
 
 #include <utils/Utils.h>

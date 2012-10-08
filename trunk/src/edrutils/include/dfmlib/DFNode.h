@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__DFNODE_H__
+#ifndef HEADER_GUARD__DFNODE_H__
 #define HEADER_GUARD__DFNODE_H__
 
 #include <dfmlib/Node.h>

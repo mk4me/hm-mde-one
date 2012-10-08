@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include <plugins/communication/ShallowCopyParser.h>
 #include <core/IDataManager.h>
 

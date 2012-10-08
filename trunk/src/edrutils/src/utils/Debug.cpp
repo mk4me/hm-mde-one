@@ -1,4 +1,4 @@
-﻿#include <stdarg.h>
+#include <stdarg.h>
 #include <utils/Debug.h>
 
 #ifdef __WIN32__

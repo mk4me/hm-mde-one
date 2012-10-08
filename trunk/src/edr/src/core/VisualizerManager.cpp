@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "VisualizerManager.h"
 #include <plugins/newTimeline/ITimelineService.h>
 #include "ServiceManager.h"

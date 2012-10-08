@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DataSourcePerspectiveManager.h"
 #include <utils/Debug.h>
 

@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include "PickHandler.h"
 #include <QtGui/QMessageBox>
 #include <set>

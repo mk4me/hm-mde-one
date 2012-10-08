@@ -1,4 +1,4 @@
-﻿#include "VdfPCH.h"
+#include "VdfPCH.h"
 #include <core/IServiceManager.h>
 #include <plugins/vdf/VdfService.h>
 #include "VdfWidget.h"

@@ -1,4 +1,4 @@
-﻿#include "TimelinePCH.h"
+#include "TimelinePCH.h"
 #include "ChannelCheckbox.h"
 
 ChannelCheckBox::ChannelCheckBox(const timeline::Model::TChannelConstPtr & channel) : channel(channel)

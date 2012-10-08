@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "FlexiTabSectionWidget.h"
 
 FlexiTabSectionWidget::FlexiTabSectionWidget(const QString & sectionName, const QPicture * picture,

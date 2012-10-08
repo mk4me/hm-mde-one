@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "DataSource.h"
 
 DataSource::DataSource(core::IDataSource * impl)

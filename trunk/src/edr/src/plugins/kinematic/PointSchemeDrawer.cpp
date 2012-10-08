@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include "PointSchemeDrawer.h"
 
 using namespace osg;

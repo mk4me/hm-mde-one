@@ -1,4 +1,4 @@
-﻿#include "ConfigurationPainter.h"
+#include "ConfigurationPainter.h"
 #include <QtGui/QMouseEvent>
 #include <stdexcept>
 #include <utils/Debug.h>

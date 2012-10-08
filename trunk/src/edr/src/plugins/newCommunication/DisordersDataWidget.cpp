@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DisordersDataWidget.h"
 #include <qthtmlgenlib/DocumentGenerator.h>
 #include <qthtmlgenlib/TableGenerator.h>

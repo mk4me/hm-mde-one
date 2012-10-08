@@ -1,4 +1,4 @@
-﻿<MeasurementConfs>
+<MeasurementConfs>
    <MeasurementConf MeasurementConfID="3" Name="EMG_LB_1">
       <Attrs>
         <A Name="L1" Value="m. prosty uda [L]" Id="prosty_uda_l" />

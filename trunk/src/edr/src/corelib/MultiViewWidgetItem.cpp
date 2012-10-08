@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include <utils/Debug.h>
 #include <core/MultiViewWidgetItem.h>
 

@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #if defined(__WIN32__)
 #include <windows.h>
 #elif defined(__UNIX__)

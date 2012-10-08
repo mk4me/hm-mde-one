@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "CommunicationDataSource.h"
 #include <QtGui/QLayout>
 #include <QtGui/QMenu>

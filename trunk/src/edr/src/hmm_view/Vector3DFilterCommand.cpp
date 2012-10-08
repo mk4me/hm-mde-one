@@ -1,4 +1,4 @@
-﻿#include "hmmPCH.h"
+#include "hmmPCH.h"
 #include "Vector3DFilterCommand.h"
 
 __Helper::__Helper( boost::function<void (const QString&, int)> function ) :

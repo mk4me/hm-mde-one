@@ -1,4 +1,4 @@
-﻿#ifndef I_C3DMODEL_H
+#ifndef I_C3DMODEL_H
 #define I_C3DMODEL_H
 
 #include <osg/Geode>

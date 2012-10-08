@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include <QtGui/QDialog>
 #include <QtGui/QLayout>
 #include "EDRDFNode.h"

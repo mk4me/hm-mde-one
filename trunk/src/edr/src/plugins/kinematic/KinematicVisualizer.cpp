@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include "KinematicVisualizer.h"
 #include <core/IActionsGroupManager.h>
 #include "GRFSerie.h"

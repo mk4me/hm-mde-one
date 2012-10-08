@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__TIMELINEMODEL_H__
+#ifndef HEADER_GUARD__TIMELINEMODEL_H__
 #define HEADER_GUARD__TIMELINEMODEL_H__
 
 #include <utils/NamedTree.h>

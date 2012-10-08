@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include <core/ILog.h>
 #include <core/PluginCommon.h>
 #include <plugins/newCommunication/WSConnection.h>

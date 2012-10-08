@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <kinematiclib/SkeletalParsers.h>
 #include <kinematiclib/KinematicModel.h>
 #include <QtGUI/QTreeWidgetItem>

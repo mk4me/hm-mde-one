@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__VDFBASEMODEL_H__
+#ifndef HEADER_GUARD__VDFBASEMODEL_H__
 #define HEADER_GUARD__VDFBASEMODEL_H__
 
 #include <OpenThreads/ReentrantMutex>

@@ -1,4 +1,4 @@
-﻿#include "hmmPCH.h"
+#include "hmmPCH.h"
 
 #include <core/IManagersAccessor.h>
 #include <QtGui/QMenu>

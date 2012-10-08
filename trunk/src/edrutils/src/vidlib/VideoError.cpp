@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <vidlib/VideoError.h>
 #include <utils/Debug.h>
 

@@ -1,4 +1,4 @@
-﻿#ifndef BASE_DATA_TYPES_H
+#ifndef BASE_DATA_TYPES_H
 #define BASE_DATA_TYPES_H
 
 #include <stdint.h>

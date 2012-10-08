@@ -1,4 +1,4 @@
-﻿#ifndef SERVICE_MANAGER_H
+#ifndef SERVICE_MANAGER_H
 #define SERVICE_MANAGER_H
 
 #include <map>

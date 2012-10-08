@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/BasicUpdatesWS.h>
+#include <webserviceslib/BasicUpdatesWS.h>
 
 namespace webservices
 {

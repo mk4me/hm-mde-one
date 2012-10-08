@@ -1,4 +1,4 @@
-﻿#include "VideoPCH.h"
+#include "VideoPCH.h"
 #include "VideoService.h"
 
 using namespace core;

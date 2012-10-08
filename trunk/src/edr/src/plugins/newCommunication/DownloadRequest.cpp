@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DownloadRequest.h"
 #include <boost/bind.hpp>
 

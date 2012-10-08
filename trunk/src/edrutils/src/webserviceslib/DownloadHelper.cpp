@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/DownloadHelper.h>
+#include <webserviceslib/DownloadHelper.h>
 
 namespace webservices
 {

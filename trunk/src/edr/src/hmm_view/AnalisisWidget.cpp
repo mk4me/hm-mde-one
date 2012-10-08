@@ -1,4 +1,4 @@
-﻿#include "hmmPCH.h"
+#include "hmmPCH.h"
 #include "AnalisisWidget.h"
 #include "SummaryWindow.h"
 #include "AnalisisTreeWidget.h"

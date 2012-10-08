@@ -1,4 +1,4 @@
-﻿#include "VideoPCH.h"
+#include "VideoPCH.h"
 #undef M_PI
 #define _USE_MATH_DEFINES
 #include <math.h>

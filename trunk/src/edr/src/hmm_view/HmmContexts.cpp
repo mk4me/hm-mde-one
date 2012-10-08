@@ -1,4 +1,4 @@
-﻿#include "hmmPCH.h"
+#include "hmmPCH.h"
 #include <boost/tuple/tuple.hpp>
 #include <QtGui/QToolBar>
 #include <QtGui/QMenu>

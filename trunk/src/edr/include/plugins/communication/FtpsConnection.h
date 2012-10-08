@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa FtpsConnection opiera się o bibliotekę LibCurl i protokół FTPS. Metody czytania i odbierania pakietów
 zostały zaimplementowane w sposób zapobiegający blokowania się nawzajem klienta i serwera. Klasa implementuje

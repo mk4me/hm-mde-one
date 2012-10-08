@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <osgui/Utils2D.h>
 #include <cmath>
 

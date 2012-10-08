@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include "Manipulators.h"
 
 void DraggerContainer::traverse( osg::NodeVisitor& nv )

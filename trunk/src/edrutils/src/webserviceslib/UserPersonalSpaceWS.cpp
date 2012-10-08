@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/UserPersonalSpaceWS.h>
+#include <webserviceslib/UserPersonalSpaceWS.h>
 
 namespace webservices
 {

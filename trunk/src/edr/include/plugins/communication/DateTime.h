@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa DateTime reprezentuje wartosc typu DateTime. Jest jednym z typow prostych dla 
 dokumentow WSDL, dokladny opis znajduje sie pod adresem http://www.w3.org/TR/xmlschema-2/#dateTime.

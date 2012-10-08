@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__TIMELINETYPES_H__
+#ifndef HEADER_GUARD__TIMELINETYPES_H__
 #define HEADER_GUARD__TIMELINETYPES_H__
 
 #include <boost/shared_ptr.hpp>

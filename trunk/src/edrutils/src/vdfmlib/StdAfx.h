@@ -1,4 +1,4 @@
-﻿#include <utils/Utils.h>
+#include <utils/Utils.h>
 #include <utils/Debug.h>
 #include <utils/Enum.h>
 

@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__TOOLTIP_H__
+#ifndef HEADER_GUARD__TOOLTIP_H__
 #define HEADER_GUARD__TOOLTIP_H__
 
 #include <osgWidget/Box>

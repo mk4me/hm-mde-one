@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "QMultiToolBox.h"
 
 QMultiToolBox::Page *QMultiToolBox::page(QWidget *widget) const

@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DataSourceLoginManager.h"
 #include "DataSourceWebServicesManager.h"
 

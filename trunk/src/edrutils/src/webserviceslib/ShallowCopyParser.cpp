@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/ShallowCopyParser.h>
+#include <webserviceslib/ShallowCopyParser.h>
 #include <utils/Debug.h>
 #include <tinyxml.h>
 #include <webserviceslib/DateTimeUtils.h>

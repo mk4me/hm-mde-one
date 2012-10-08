@@ -1,4 +1,4 @@
-﻿#include <utils/Pool.h>
+#include <utils/Pool.h>
 #include "PoolTest.h"
 
 using namespace utils;

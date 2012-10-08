@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include "SkeletonSerie.h"
 #include "MarkersVisualizationScheme.h"
 

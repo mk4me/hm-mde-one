@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/AdministrationWS.h>
+#include <webserviceslib/AdministrationWS.h>
 
 namespace webservices
 {

@@ -1,4 +1,4 @@
-﻿#include "ModelOperationsTest.h"
+#include "ModelOperationsTest.h"
 #include <testnodefactory/TestNode.h>
 #include <testnodefactory/TestNodeFactory.h>
 

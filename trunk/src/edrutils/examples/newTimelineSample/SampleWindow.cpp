@@ -1,4 +1,4 @@
-﻿#include "SampleWindow.h"
+#include "SampleWindow.h"
 #include "QtGui/QMessageBox"
 
 

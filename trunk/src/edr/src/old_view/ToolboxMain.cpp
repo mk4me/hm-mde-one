@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "ToolboxMain.h"
 #include <utils/Push.h>
 #include <core/TypeInfo.h>

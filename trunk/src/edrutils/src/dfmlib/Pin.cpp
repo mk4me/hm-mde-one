@@ -1,4 +1,4 @@
-﻿#include <dfmlib/Pin.h>
+#include <dfmlib/Pin.h>
 #include <dfmlib/Connection.h>
 #include <dfmlib/Node.h>
 #include <dfmlib/Model.h>

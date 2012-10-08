@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <osgui/StyleEx.h>
 #include <osgui/Buttonized.h>
 #include <osg/Image>

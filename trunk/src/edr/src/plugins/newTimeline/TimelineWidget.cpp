@@ -1,4 +1,4 @@
-﻿#include "TimelinePCH.h"
+#include "TimelinePCH.h"
 
 #include <QtGui/QIcon>
 #include <QtGui/QCheckBox>

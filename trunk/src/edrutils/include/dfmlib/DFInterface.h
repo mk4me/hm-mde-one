@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__DFINTERFACE_H__
+#ifndef HEADER_GUARD__DFINTERFACE_H__
 #define HEADER_GUARD__DFINTERFACE_H__
 
 ////////////////////////////////////////////////////////////////////////////////

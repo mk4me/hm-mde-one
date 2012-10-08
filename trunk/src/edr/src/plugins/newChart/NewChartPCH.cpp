@@ -1,1 +1,1 @@
-﻿#include "NewChartPCH.h"
+#include "NewChartPCH.h"

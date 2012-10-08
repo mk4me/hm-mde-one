@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__NODE_H__
+#ifndef HEADER_GUARD__NODE_H__
 #define HEADER_GUARD__NODE_H__
 
 #include <dfmlib/DFLMTypes.h>

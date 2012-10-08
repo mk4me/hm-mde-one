@@ -1,4 +1,4 @@
-﻿#include "SynchronizedTest.h"
+#include "SynchronizedTest.h"
 #include <boost/type_traits.hpp>
 using namespace utils;
 

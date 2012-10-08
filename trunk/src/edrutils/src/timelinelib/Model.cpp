@@ -1,4 +1,4 @@
-﻿#include <timelinelib/Model.h>
+#include <timelinelib/Model.h>
 #include <timelinelib/Channel.h>
 #include <timelinelib/Tag.h>
 #include <stack>

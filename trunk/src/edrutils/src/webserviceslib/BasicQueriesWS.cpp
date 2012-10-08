@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/BasicQueriesWS.h>
+#include <webserviceslib/BasicQueriesWS.h>
 #include <webserviceslib/DateTimeUtils.h>
 #include <utils/Debug.h>
 #include <tinyxml.h>

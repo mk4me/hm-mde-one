@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include "KinematicVisualizer.h"
 #include <utils/DataChannel.h>
 #include "OsgSchemeDrawer.h"

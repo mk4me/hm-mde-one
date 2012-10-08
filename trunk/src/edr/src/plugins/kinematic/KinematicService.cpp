@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 
 //#include <plugins/timeline/Stream.h>
 //#include <plugins/timeline/ITimeline.h>

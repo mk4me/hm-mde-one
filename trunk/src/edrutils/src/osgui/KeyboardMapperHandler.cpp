@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <osgui/KeyboardMapperHandler.h>
 #include <osgui/KeyboardMapper.h>
 #include <utils/Debug.h>

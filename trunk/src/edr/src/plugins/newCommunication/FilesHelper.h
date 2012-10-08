@@ -1,4 +1,4 @@
-﻿//Login i hasło dla nowego testowego użytkownika: applet_user / aplet4Motion
+//Login i hasło dla nowego testowego użytkownika: applet_user / aplet4Motion
 
 /********************************************************************
     created:  2012/02/23

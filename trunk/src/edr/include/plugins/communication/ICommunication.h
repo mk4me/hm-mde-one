@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Interfejs ICommunication dostarcza metod związanych z komunikacją klient - serwer. Za jego pomocą
 możliwe jest pobieranie informacji o próbach pomiarowych przechowywanych na serwerze, oraz pobieranie ich

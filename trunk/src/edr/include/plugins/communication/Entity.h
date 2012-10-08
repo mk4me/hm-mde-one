@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Dokument z prostymi typami, najczęściej encjami bazodanowymi powiązanymi z różnymi technologiami.
 */

@@ -1,4 +1,4 @@
-﻿#include <dfmlib/DFModel.h>
+#include <dfmlib/DFModel.h>
 #include <dfmlib/DFSourceNode.h>
 #include <dfmlib/Connection.h>
 #include <algorithm>

@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD_GLLINESCHEMEDRAWER_H__
+#ifndef HEADER_GUARD_GLLINESCHEMEDRAWER_H__
 #define HEADER_GUARD_GLLINESCHEMEDRAWER_H__
 #include <map>
 #include <osg/Geode>

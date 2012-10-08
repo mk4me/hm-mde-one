@@ -1,4 +1,4 @@
-﻿#include "TestEDRWidget.h"
+#include "TestEDRWidget.h"
 #include <utils/Debug.h>
 
 TestEDRWidget::TestEDRWidget(EDRTitleBar * titleBar, QWidget * parent /* = nullptr */)

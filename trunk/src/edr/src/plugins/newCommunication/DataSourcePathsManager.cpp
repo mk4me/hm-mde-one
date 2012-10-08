@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DataSourcePathsManager.h"
 #include <OpenThreads/Mutex>
 #include <OpenThreads/ScopedLock>

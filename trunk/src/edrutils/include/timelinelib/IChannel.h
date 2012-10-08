@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD_TIMELINE__ICHANNEL_H__
+#ifndef HEADER_GUARD_TIMELINE__ICHANNEL_H__
 #define HEADER_GUARD_TIMELINE__ICHANNEL_H__
 
 namespace timeline

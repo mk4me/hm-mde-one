@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD_SKELETON_VIEWER__PCH_H__
+#ifndef HEADER_GUARD_SKELETON_VIEWER__PCH_H__
 #define HEADER_GUARD_SKELETON_VIEWER__PCH_H__
 #include <vector>
 #include <map>

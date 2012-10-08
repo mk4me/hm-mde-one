@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__MODEL_H__
+#ifndef HEADER_GUARD__MODEL_H__
 #define HEADER_GUARD__MODEL_H__
 
 #include <utils/Synchronized.h>

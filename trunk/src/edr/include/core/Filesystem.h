@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa Filesystem z podstawowymi operacjami na plikach. Do uzupełnienia.
 */

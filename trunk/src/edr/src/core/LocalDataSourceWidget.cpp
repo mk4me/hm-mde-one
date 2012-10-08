@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "LocalDataSourceWidget.h"
 #include "LocalDataSource.h"
 #include "DataManager.h"

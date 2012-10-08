@@ -1,4 +1,4 @@
-﻿#include "DataExplorerPCH.h"
+#include "DataExplorerPCH.h"
 #include "DataExplorerService.h"
 #include <boost/algorithm/string.hpp>
 #include <QtGui/QToolButton>

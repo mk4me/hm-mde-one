@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa DataManager implementuje interfejs core::IDataManager. Służy do zarządzania zasobami edytora, które dzielą się na dane
 konfiguracyjne i próby pomiarowe. Zasoby ładowane są z odpowiednich ścieżek, domyślnie zasoby stałe powinny znajdować się w

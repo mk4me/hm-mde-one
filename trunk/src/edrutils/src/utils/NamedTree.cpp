@@ -1,4 +1,4 @@
-﻿#include <utils/NamedTree.h>
+#include <utils/NamedTree.h>
 #include <utils/Debug.h>
 
 const NamedTreeBase::Separator NamedTreeBase::separator("/");

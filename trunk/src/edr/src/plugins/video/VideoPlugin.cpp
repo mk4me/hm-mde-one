@@ -1,4 +1,4 @@
-﻿#include "VideoPCH.h"
+#include "VideoPCH.h"
 #include <core/Plugin.h>
 #include "VideoParser.h"
 #include <vidlib/osg/FFmpegImageStream.h>

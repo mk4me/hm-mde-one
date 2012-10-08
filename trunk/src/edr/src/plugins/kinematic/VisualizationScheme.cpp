@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include "VisualizationScheme.h"
 #include "UniqueCollection.h"
 #include "ISchemeDrawer.h"

@@ -1,4 +1,4 @@
-﻿#ifndef GRID_WIDGET_H
+#ifndef GRID_WIDGET_H
 #define GRID_WIDGET_H
 
 #include <osg/Node>

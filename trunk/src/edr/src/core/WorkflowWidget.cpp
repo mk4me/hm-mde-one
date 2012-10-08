@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "WorkflowWidget.h"
 #include "WorkflowVDFModel.h"
 #include "EDRDataFlow.h"

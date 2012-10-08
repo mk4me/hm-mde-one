@@ -1,4 +1,4 @@
-﻿#include "TimelinePCH.h"
+#include "TimelinePCH.h"
 #include "ChannelWidget.h"
 #include <timelinelib/Tag.h>
 #include <timelinelib/Controller.h>

@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/FileStoremanWS.h>
+#include <webserviceslib/FileStoremanWS.h>
 #include <webserviceslib/Entity.h>
 #include <webserviceslib/DateTimeUtils.h>
 #include <time.h>

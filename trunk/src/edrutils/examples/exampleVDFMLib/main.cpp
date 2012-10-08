@@ -1,4 +1,4 @@
-﻿#include <osgWidget/Widget>
+#include <osgWidget/Widget>
 #include <osgWidget/Window>
 #include <osgWidget/Label>
 #include <osgWidget/Box>

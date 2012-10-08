@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "SourceManager.h"
 
 #include <core/ILog.h>

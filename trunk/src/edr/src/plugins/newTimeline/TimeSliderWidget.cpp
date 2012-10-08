@@ -1,4 +1,4 @@
-﻿#include "TimelinePCH.h"
+#include "TimelinePCH.h"
 //#include <qwt/qwt_scale_draw.h>
 #include <plugins/newTimeline/TimeSliderWidget.h>
 

@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "AntropometricDataWidget.h"
 #include <qthtmlgenlib/DocumentGenerator.h>
 

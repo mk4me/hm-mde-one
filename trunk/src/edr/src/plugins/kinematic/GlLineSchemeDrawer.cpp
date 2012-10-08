@@ -1,4 +1,4 @@
-﻿#include "PCH.h"	
+#include "PCH.h"	
 #include "GlLineSchemeDrawer.h"
 using namespace osg;
 using namespace boost;

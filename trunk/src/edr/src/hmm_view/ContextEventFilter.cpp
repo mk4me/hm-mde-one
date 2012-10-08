@@ -1,4 +1,4 @@
-﻿#include "hmmPCH.h"
+#include "hmmPCH.h"
 #include "ContextEventFilter.h"
 #include "HmmMainWindow.h"
 

@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <QtGui/QApplication>
 #include <kinematiclib/KinematicModel.h>
 #include "uniqueCollection.h"

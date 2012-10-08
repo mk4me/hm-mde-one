@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <osg/LineWidth>
 #include "UniqueCollection.h"
 #include "TrajectoriesDrawer.h"

@@ -1,4 +1,4 @@
-﻿#include "VdfPCH.h"
+#include "VdfPCH.h"
 #include "VdfWidget.h"
 //#include <vdfmlib/osgVDFNode.h>
 //#include <vdfmlib/osgVDFPin.h>

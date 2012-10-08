@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa MotionQueryWSDL implementuje funkcjonalność interfejsu IQueryable przy pomocy web serwisów.
 */

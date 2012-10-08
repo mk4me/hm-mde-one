@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DataSourcePerspective.h"
 #include <QtGui/QMouseEvent>
 

@@ -1,4 +1,4 @@
-﻿#include "NodeCreationTest.h"
+#include "NodeCreationTest.h"
 #include <testnodefactory/TestNodeFactory.h>
 #include <dfmlib/DFPin.h>
 

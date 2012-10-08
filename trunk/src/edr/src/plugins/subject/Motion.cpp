@@ -1,4 +1,4 @@
-﻿#include "SubjectPCH.h"
+#include "SubjectPCH.h"
 #include <OpenThreads/Mutex>
 #include <OpenThreads/ScopedLock>
 #include "SubjectService.h"

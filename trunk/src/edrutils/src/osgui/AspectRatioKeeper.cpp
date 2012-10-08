@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <osgui/AspectRatioKeeper.h>
 #include <utils/Debug.h>
 

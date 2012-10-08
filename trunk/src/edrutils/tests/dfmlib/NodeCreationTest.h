@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__DFMTEST_NODE_H__
+#ifndef HEADER_GUARD__DFMTEST_NODE_H__
 #define HEADER_GUARD__DFMTEST_NODE_H__
 
 #include <testnodefactory/TestDFNodeProcessing.h>

@@ -1,4 +1,4 @@
-﻿#include "hmmPCH.h"
+#include "hmmPCH.h"
 #include "TreeBuilder.h"
 #include "HmmMainWindow.h"
 #include "EMGFilter.h"

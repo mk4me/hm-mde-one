@@ -1,4 +1,4 @@
-﻿#include "hmmPCH.h"
+#include "hmmPCH.h"
 #include "EMGFilter.h"
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartSerie.h>

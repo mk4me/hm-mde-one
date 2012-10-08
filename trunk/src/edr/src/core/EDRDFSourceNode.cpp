@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "EDRDFSourceNode.h"
 #include "EDRDFPin.h"
 #include "OutputDescription.h"

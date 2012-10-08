@@ -1,4 +1,4 @@
-﻿#include "Animation.h"
+#include "Animation.h"
 
 #include "ServiceManager.h"
 #include "AnimationService.h"

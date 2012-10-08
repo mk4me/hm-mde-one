@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include <kinematiclib/SkeletalParsers.h>
 #define PARSER_VERSION "0.11"
 

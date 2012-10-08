@@ -1,4 +1,4 @@
-﻿#include "VideoPCH.h"
+#include "VideoPCH.h"
 #include "VideoVisualizer.h"
 
 #include <osgWidget/Widget>

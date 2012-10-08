@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa MotionBasicQueriesService dziedzicząca po WsdlConnection wykonująca operacje dokumentu MotionBasicQueriesService.motionWsdl.
 */

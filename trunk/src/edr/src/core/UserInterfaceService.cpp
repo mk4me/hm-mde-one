@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "UserInterfaceService.h"
 #include <iostream>
 

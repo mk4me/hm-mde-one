@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "WorkflowService.h"
 #include "WorkflowWidget.h"
 #include "DataProcessorManager.h"

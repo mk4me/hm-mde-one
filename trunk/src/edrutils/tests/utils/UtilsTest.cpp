@@ -1,4 +1,4 @@
-﻿#include <string>
+#include <string>
 #include <utils/Macros.h>
 #include <utils/Utils.h>
 #include "UtilsTest.h"

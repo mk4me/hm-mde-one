@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include <osgWidget/ViewerEventHandlers>
 #include <core/MultiView.h>
 #include <osgui/AspectRatioKeeper.h>

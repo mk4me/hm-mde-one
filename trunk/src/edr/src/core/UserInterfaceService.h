@@ -1,4 +1,4 @@
-﻿#ifndef USER_INTERFACE_SERVICE_H
+#ifndef USER_INTERFACE_SERVICE_H
 #define USER_INTERFACE_SERVICE_H
 
 #include <string>

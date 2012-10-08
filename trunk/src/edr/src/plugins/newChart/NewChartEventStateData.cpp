@@ -1,4 +1,4 @@
-﻿#include "NewChartPCH.h"
+#include "NewChartPCH.h"
 #include "NewChartEventStateData.h"
 
 NewChartEventStateData::NewChartEventStateData( ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime ) :

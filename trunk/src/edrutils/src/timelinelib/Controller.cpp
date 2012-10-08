@@ -1,4 +1,4 @@
-﻿#include <timelinelib/Controller.h>
+#include <timelinelib/Controller.h>
 
 namespace timeline {
 

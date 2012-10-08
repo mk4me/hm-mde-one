@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "LogInitializer.h"
 #include "Log.h"
 #include <QtCore/QThread>

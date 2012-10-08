@@ -1,4 +1,4 @@
-﻿#include <vidlib/FFmpegVideoStream.h>
+#include <vidlib/FFmpegVideoStream.h>
 #include "FFmpegVideoStreamTest.h"
 #include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>

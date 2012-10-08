@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 #include <vdfmlib/osgVDFBaseNode.h>
 #include <vdfmlib/osgVDFBaseModel.h>
 #include <osgui/Utils2D.h>

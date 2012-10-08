@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa CommunicationManager wykorzystująca wzorce projektowe fasada oraz singleton do zarządzania połączeniem
 z bazą danych i przesyłania/odbierania plików między serwerem i klientem. Obecnie implementacja opiera się o protokół FTP

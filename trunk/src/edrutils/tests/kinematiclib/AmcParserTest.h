@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD_AMCPARSERTEST_H__
+#ifndef HEADER_GUARD_AMCPARSERTEST_H__
 #define HEADER_GUARD_AMCPARSERTEST_H__
 
 #include <cppunit/extensions/HelperMacros.h>

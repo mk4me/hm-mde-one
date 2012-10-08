@@ -1,4 +1,4 @@
-﻿#include <dfmlib/DFNode.h>
+#include <dfmlib/DFNode.h>
 #include <dfmlib/Pin.h>
 #include <dfmlib/DFPin.h>
 #include <dfmlib/Connection.h>

@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "VisualizerChannel.h"
 #include "VisualizerManager.h"
 

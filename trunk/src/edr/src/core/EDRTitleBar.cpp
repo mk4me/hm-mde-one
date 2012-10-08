@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include <stdexcept>
 #include <QtGui/QMenu>
 #include <QtGui/QPainter>

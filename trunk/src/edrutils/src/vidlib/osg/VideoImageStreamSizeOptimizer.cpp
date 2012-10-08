@@ -1,4 +1,4 @@
-﻿#include "../PCH.h"
+#include "../PCH.h"
 #include <vidlib/osg/VideoImageStreamSizeOptimizer.h>
 #include <boost/foreach.hpp>
 UTILS_PUSH_WARNINGS

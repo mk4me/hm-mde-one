@@ -1,4 +1,4 @@
-﻿#include "ChannelsTree.h"
+#include "ChannelsTree.h"
 #include "TimeChannelWidget.h"
 #include <QtGui/QCheckBox>
 

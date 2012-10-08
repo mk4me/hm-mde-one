@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DataSourceConnectionsManager.h"
 
 DataSourceConnectionManager * DataSourceConnectionManager::instance_ = nullptr;

@@ -1,4 +1,4 @@
-﻿#ifndef __HEADER_GUARD__MACROHACKS_H__
+#ifndef __HEADER_GUARD__MACROHACKS_H__
 #define __HEADER_GUARD__MACROHACKS_H__
 
 #define META_Widget(library, name) \

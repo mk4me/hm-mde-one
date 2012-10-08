@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/AuthorizationWS.h>
+#include <webserviceslib/AuthorizationWS.h>
 #include <utils/Debug.h>
 #include <tinyxml.h>
 

@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__STYLEEX_H__
+#ifndef HEADER_GUARD__STYLEEX_H__
 #define HEADER_GUARD__STYLEEX_H__
 
 #include <osgWidget/StyleManager>

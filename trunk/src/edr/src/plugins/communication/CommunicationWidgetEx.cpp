@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "CommunicationWidgetEx.h"
 #include <plugins/communication/CommunicationService.h>
 #include <core/StringTools.h>

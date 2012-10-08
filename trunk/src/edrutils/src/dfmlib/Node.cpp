@@ -1,4 +1,4 @@
-﻿#include <dfmlib/Node.h>
+#include <dfmlib/Node.h>
 #include <dfmlib/Pin.h>
 #include <utils/Debug.h>
 #include <iterator>

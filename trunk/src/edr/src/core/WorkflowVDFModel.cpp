@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "WorkflowVDFModel.h"
 #include "WorkflowVDFConnDelContextMenu.h"
 #include <QtGui/QWidget>

@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include <osg/MatrixTransform>
 #include <osg/Transform>
 #include <osg/Math>

@@ -1,4 +1,4 @@
-﻿#ifndef IUSERINTERFACE_H
+#ifndef IUSERINTERFACE_H
 #define IUSERINTERFACE_H
 
 #include <core/Window.h>

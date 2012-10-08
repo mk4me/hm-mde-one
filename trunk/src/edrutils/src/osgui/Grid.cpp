@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <osgui/Grid.h>
 #include <boost/foreach.hpp>
 #include <utils/Debug.h>

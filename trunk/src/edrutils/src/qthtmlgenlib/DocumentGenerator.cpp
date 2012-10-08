@@ -1,4 +1,4 @@
-﻿#include <qthtmlgenlib/DocumentGenerator.h>
+#include <qthtmlgenlib/DocumentGenerator.h>
 
 namespace htmlGen {
 

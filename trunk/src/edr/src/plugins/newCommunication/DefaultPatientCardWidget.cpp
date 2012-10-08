@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "DefaultPatientCardWidget.h"
 #include "DataSourceUserData.h"
 #include <QtGui/QFormLayout>

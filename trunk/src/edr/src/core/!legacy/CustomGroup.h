@@ -1,4 +1,4 @@
-﻿#ifndef CUSTOM_GROUP_H
+#ifndef CUSTOM_GROUP_H
 #define CUSTOM_GROUP_H
 
 // TODO:

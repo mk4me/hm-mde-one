@@ -1,4 +1,4 @@
-﻿#include "TimeChannelWidget.h"
+#include "TimeChannelWidget.h"
 #include <QtGui/QPainter>
 
 TimeChannelWidget::TimeChannelWidget(QWidget* parent, Qt::WindowFlags f, double begin, double end, double current) : QFrame(parent, f), begin(begin), end(end), current(current), currentTimeHalfWidth(0.01)

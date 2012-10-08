@@ -1,4 +1,4 @@
-﻿#ifndef __AVINOUT_FFMPEGEXCEPTION_H__
+#ifndef __AVINOUT_FFMPEGEXCEPTION_H__
 #define __AVINOUT_FFMPEGEXCEPTION_H__
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "SceneGraphWidget.h"
 #include <core/OsgSceneDump.h>
 #include <core/StringTools.h>

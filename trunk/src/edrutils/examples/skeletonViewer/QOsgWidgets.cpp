@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 
 #include <osgViewer/Renderer>
 #include "DisableableRenderer.h"

@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include "UniqueCollection.h"
 #include "SchemeDrawerContainer.h"
 

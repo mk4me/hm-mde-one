@@ -1,4 +1,4 @@
-﻿#include <qthtmlgenlib/TableGenerator.h>
+#include <qthtmlgenlib/TableGenerator.h>
 #include <QtGui/QTextCursor>
 
 namespace htmlGen {

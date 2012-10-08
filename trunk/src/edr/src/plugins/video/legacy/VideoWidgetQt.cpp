@@ -1,4 +1,4 @@
-﻿#include "VideoPCH.h"
+#include "VideoPCH.h"
 #include <stdint.h>
 #include "VideoWidgetQt.h"
 

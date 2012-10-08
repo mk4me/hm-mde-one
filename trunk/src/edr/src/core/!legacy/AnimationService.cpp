@@ -1,4 +1,4 @@
-﻿#include "AnimationService.h"
+#include "AnimationService.h"
 
 #include <iostream>
 #include <osgViewer/Scene>

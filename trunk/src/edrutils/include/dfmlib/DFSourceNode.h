@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__DFSOURCENODE_H__
+#ifndef HEADER_GUARD__DFSOURCENODE_H__
 #define HEADER_GUARD__DFSOURCENODE_H__
 
 #include <dfmlib/DFNode.h>

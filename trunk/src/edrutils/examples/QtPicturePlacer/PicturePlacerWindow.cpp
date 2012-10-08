@@ -1,4 +1,4 @@
-﻿#include "PicturePlacerWindow.h"
+#include "PicturePlacerWindow.h"
 #include <string>
 #include <boost/lexical_cast.hpp>
 #include <tinyxml.h>

@@ -1,4 +1,4 @@
-﻿#include "hmmPCH.h"
+#include "hmmPCH.h"
 #include "TreeItemHelper.h"
 #include "VisualizerManager.h"
 #include <plugins/newChart/INewChartVisualizer.h>

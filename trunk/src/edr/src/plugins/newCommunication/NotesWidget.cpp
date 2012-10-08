@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "NotesWidget.h"
 #include <utils/Debug.h>
 

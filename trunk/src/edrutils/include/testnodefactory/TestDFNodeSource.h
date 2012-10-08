@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__DFM_TESTSOURCENODE_H__
+#ifndef HEADER_GUARD__DFM_TESTSOURCENODE_H__
 #define HEADER_GUARD__DFM_TESTSOURCENODE_H__
 
 #include <dfmlib/DFSourceNode.h>

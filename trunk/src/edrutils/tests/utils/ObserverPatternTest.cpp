@@ -1,4 +1,4 @@
-﻿#include <vector>
+#include <vector>
 #include <utils/ObserverPattern.h>
 #include "ObserverPatternTest.h"
 

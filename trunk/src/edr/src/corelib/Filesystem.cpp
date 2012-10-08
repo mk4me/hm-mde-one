@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include <boost/foreach.hpp>
 #include <core/Filesystem.h>
 

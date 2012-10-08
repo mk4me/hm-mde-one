@@ -1,4 +1,4 @@
-﻿#include "SampleWindow.h"
+#include "SampleWindow.h"
 
 int main(int argc, char *argv[])
 {

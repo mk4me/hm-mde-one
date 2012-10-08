@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD_CORE_IPARSER_H__
+#ifndef HEADER_GUARD_CORE_IPARSER_H__
 #define HEADER_GUARD_CORE_IPARSER_H__
 
 #include <map>

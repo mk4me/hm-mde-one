@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include <plugins/communication/MetadataParser.h>
 
 MotionMetadataParser::MotionMetadataParser() : metadata(new communication::MotionMetaData::MetaData()),

@@ -1,4 +1,4 @@
-﻿#include <testnodefactory/TestNodeFactory.h>
+#include <testnodefactory/TestNodeFactory.h>
 #include <testnodefactory/TestDFPin.h>
 
 #include <dfmlib/DFPin.h>

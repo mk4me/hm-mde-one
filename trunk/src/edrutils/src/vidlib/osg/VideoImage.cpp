@@ -1,4 +1,4 @@
-﻿#include "../PCH.h"
+#include "../PCH.h"
 #include <vidlib/osg/VideoImage.h>
 #include <utils/Align.h>
 

@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__TIMELINESTREAM_H__
+#ifndef HEADER_GUARD__TIMELINESTREAM_H__
 #define HEADER_GUARD__TIMELINESTREAM_H__
 
 #include <timelinelib/Types.h>

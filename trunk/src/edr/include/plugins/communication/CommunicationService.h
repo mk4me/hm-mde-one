@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa CommunicationService dostarcza funkcjonalności interfejsu ICommunication do edytora EDR. Dziedziczy również
 po interfejsie IService dzięki czemu jest Communication Service jest dodawany jako plugin. Pełni funkcję kontrolera dla

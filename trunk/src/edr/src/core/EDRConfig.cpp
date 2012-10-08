@@ -1,4 +1,4 @@
-﻿#include "CorePCH.h"
+#include "CorePCH.h"
 #include "EDRConfig.h"
 #include <core/PluginCommon.h>
 #include <utils/Debug.h>

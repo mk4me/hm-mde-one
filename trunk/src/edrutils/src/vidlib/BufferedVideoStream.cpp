@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <algorithm>
 #include <math.h>
 #include <float.h>

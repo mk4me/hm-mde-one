@@ -1,4 +1,4 @@
-﻿#include "C3DPCH.h"
+#include "C3DPCH.h"
 #include "ForcePlatform.h"
 
 #include <plugins/c3d/IForcePlatform.h>

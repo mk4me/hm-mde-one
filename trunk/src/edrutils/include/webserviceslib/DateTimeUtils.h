@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/DateTime.h>
+#include <webserviceslib/DateTime.h>
 #include <time.h>
 
 namespace webservices

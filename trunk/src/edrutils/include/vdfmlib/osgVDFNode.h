@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD__VDFNODE_H__
+#ifndef HEADER_GUARD__VDFNODE_H__
 #define HEADER_GUARD__VDFNODE_H__
 
 //#include <osgText/Text>

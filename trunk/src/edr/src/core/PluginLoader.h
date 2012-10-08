@@ -1,4 +1,4 @@
-﻿#ifndef PLUGIN_SERVICE_H
+#ifndef PLUGIN_SERVICE_H
 #define PLUGIN_SERVICE_H
 
 #include <vector>

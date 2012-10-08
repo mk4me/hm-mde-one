@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include "VideoBufferChunk.h"
 #include "VidLibPrivate.h"
 #include <vidlib/VideoStream.h>

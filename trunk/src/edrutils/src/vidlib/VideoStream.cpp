@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <math.h>
 #include <utils/Debug.h>
 #include <utils/Profiler.h>

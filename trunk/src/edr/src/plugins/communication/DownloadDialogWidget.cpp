@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include <boost/bind.hpp>
 #include "DownloadDialogWidget.h"
 #include <QtGui/QMessageBox>

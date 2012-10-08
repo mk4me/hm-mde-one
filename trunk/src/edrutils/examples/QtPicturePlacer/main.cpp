@@ -1,4 +1,4 @@
-﻿#include "PicturePlacerWindow.h"
+#include "PicturePlacerWindow.h"
 
 int main(int argc, char *argv[])
 {

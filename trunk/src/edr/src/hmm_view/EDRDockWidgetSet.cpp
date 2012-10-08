@@ -1,4 +1,4 @@
-﻿#include "hmmPCH.h"
+#include "hmmPCH.h"
 #include "EDRDockWidgetSet.h"
 #include "EDRTitleBar.h"
 

@@ -1,4 +1,4 @@
-﻿#include <testnodefactory/TestNode.h>
+#include <testnodefactory/TestNode.h>
 
 TestNode::TestNode(const std::string & nodeName) : Node(nodeName)
 {

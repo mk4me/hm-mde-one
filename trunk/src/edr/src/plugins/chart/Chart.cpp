@@ -1,4 +1,4 @@
-﻿#include "ChartPCH.h"
+#include "ChartPCH.h"
 #include <osg/LineStipple>
 #include <boost/foreach.hpp>
 #include <math.h>

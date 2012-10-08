@@ -1,4 +1,4 @@
-﻿#ifndef HMM_TOOLBOXMAIN_H
+#ifndef HMM_TOOLBOXMAIN_H
 #define HMM_TOOLBOXMAIN_H
 
 #include <stack>

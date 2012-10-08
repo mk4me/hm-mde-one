@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 
 #include <osgViewer/ViewerEventHandlers>
 #include <vdfmlib/osgVDFBaseModel.h>

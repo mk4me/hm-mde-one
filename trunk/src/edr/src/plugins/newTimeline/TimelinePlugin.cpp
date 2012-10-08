@@ -1,4 +1,4 @@
-﻿#include "TimelinePCH.h"
+#include "TimelinePCH.h"
 #include <plugins/newTimeline/TimelineService.h>
 
 CORE_PLUGIN_BEGIN("newTimeline", UID::GenerateUniqueID("{AF1BD93D-1C14-4461-8E2B-1934486B98A3}"))

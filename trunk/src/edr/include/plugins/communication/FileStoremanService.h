@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa MotionFileStoremanService dziedzicząca po WsdlConnection wykonująca operacje dokumentu MotionFileStoremanService.wsdl.
 */

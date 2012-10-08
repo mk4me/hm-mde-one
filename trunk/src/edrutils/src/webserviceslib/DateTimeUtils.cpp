@@ -1,4 +1,4 @@
-﻿#include <webserviceslib/DateTimeUtils.h>
+#include <webserviceslib/DateTimeUtils.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 

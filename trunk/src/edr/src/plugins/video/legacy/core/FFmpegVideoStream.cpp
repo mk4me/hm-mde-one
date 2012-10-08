@@ -1,4 +1,4 @@
-﻿#include "../VideoPCH.h"
+#include "../VideoPCH.h"
 #include "VMPrivate.h"
 #include "FFmpegError.h"
 #include "FFmpegVideoStream.h"

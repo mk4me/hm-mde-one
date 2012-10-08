@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD_ISCHEMEDRAWER_H__
+#ifndef HEADER_GUARD_ISCHEMEDRAWER_H__
 #define HEADER_GUARD_ISCHEMEDRAWER_H__
 
 #include <boost/utility.hpp>

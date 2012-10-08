@@ -1,4 +1,4 @@
-﻿#ifndef TOOLBOXMAIN_H
+#ifndef TOOLBOXMAIN_H
 #define TOOLBOXMAIN_H
 
 #include <utils/Debug.h>

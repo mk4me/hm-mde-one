@@ -1,4 +1,4 @@
-﻿#include "../VideoPCH.h"
+#include "../VideoPCH.h"
 /* -*-c++-*- OpenSceneGraph - Copyright (C) 1998-2006 Robert Osfield 
  *
  * This library is open source and may be redistributed and/or modified under  

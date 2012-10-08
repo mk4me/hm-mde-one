@@ -1,4 +1,4 @@
-﻿#include "CommunicationPCH.h"
+#include "CommunicationPCH.h"
 #include "Patient.h"
 
 Patient::Patient(PluginSubject::SubjectID id, const std::string & name, const std::string & surname, const std::string & birthday,

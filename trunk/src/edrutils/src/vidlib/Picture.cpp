@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <vidlib/Picture.h>
 #include "VidLibPrivate.h"
 

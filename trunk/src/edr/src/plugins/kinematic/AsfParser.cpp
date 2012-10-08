@@ -1,4 +1,4 @@
-﻿#include "PCH.h"
+#include "PCH.h"
 #include <core/Filesystem.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <kinematiclib/SkeletalModel.h>

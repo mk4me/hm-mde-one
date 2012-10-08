@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
+#ifndef HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
 #define HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
 
 #include <vidlib/VideoError.h>

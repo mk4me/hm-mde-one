@@ -1,4 +1,4 @@
-﻿/**
+/**
 @author Marek Daniluk
 @brief Klasa WsdlConnection implementuje technologię WSDL przy pomocy biblioteki wsdlpull.
 */

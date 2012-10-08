@@ -1,4 +1,4 @@
-﻿#include "SampleWindow.h"
+#include "SampleWindow.h"
 #include "TimeChannelWidget.h"
 #include <QtGui/QDockWidget>
 #include <QtGui/QLayout>
