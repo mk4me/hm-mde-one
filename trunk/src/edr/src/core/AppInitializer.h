@@ -230,8 +230,9 @@ public:
 		int result = 0;
 		{
 			// ustawienia aplikacji
-			MyApplication application(argc, argv);
-
+            MyApplication application(argc, argv);
+            QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath()+"/plugins");
+            
 			//tutaj mamy ściezki - potrzebuję je od razu
 			EDRConfig edrConfig;
 			EDRConfig::setPaths(edrConfig);
