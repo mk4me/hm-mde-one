@@ -209,7 +209,8 @@ public:
 		arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" example usage of EDR.");
 		arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename");
 		arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display this information");
-
+		arguments.getApplicationUsage()->addCommandLineOption("--plugins <path>","Additional plugins directory");
+		 
 		// czy wyświetlamy pomoc?
 		if (arguments.read("-h") || arguments.read("--help"))
 		{
@@ -217,15 +218,17 @@ public:
 			return 1;
 		}
 
+
+
 		// nazwa pliku do załadowania
 		std::string filePath;
-		for (int i=1; i<arguments.argc() && filePath.empty(); ++i)
+		/*for (int i=1; i<arguments.argc() && filePath.empty(); ++i)
 		{
 			if (arguments.isString(i))
 			{
 				filePath = arguments[i];
 			}
-		}
+		}*/
 
 		int result = 0;
 		{
@@ -288,6 +291,12 @@ public:
 			    utils::Push<ILog*> pushedIL(__instanceInfo.logInterface, &logger);
 
 			    PluginLoader pluginLoader;
+		            std::string additionalPluginDirPath;
+                            if (arguments.read("--plugins",additionalPluginDirPath))
+			    {
+				pluginLoader.addPath(additionalPluginDirPath);
+				LOG_INFO("Plugin path added: " << additionalPluginDirPath);
+			    }
 			    {
                     //Inicjalizacja managerów
                     AppManagers appManagers;
