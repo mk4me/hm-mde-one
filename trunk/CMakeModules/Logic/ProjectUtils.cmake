@@ -116,6 +116,8 @@ macro(INITIALIZE_SOLUTION)
 			message(STATUS "Szukam ${value}")
 			find_package(${value})
 		endforeach()
+		# zmienna z wszystkimi nazwami bibliotek, uzywana do generowania skryptow uruchomieniowych pod Linuxa
+		set(ALL_LIBRARIES ${ARGV0} CACHE INTERNAL "")
 	endif()
 	
 	option(GENERATE_TESTS "Czy do³¹czyæ testy do projektu?" OFF )

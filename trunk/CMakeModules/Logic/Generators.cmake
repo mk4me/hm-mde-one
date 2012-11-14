@@ -25,7 +25,7 @@ macro(GENERATE_UNIX_EXECUTABLE_SCRIPT)
 	if (UNIX)
 		set (scriptT "\#!/bin/sh\nexport LD_LIBRARY_PATH=")
 		  
-		foreach(value ${DEFAULT_PROJECT_DEPENDENCIES})
+		foreach(value ${ALL_LIBRARIES})
 			set(dir "${${value}_LIBRARY_DIR_RELEASE}")
 			set (scriptT "${scriptT}${dir}:")
 		endforeach()

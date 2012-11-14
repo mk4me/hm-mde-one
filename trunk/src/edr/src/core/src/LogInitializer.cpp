@@ -8,7 +8,7 @@
 #include <utils/Debug.h>
 #include "EDRConsoleWidget.h"
 #include <core/StringTools.h>
-
+#include <osg/ref_ptr>
 #include <core/IPath.h>
 
 using namespace core;
