@@ -1,5 +1,0 @@
-<RCC>
-  <qresource prefix="resources/icons">
-    <file alias="charts.png">../../../../resources/embedded/icons/charts.png</file>
-  </qresource>
-</RCC>

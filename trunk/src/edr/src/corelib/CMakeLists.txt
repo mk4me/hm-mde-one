@@ -1,49 +1,20 @@
-project(corelib)
-# nazwa
-set(TARGET_TARGETNAME
-	corelib
+BEGIN_PROJECT("static")
+
+# SET_PUBLIC_HEADERS(
+	# MultiView.h
+	# MultiViewWidgetItem.h
+	# MultiViewFunctorWidgetAdapter.h
+	# MultiViewCameraItem.h
+	# MultiViewManipulatorItem.h
+	# OsgSceneDump.h
+# )
+
+SET_CONFIGURATION_INPUT_FILES(
+	"Config.h.in"
 )
+configure_file( "configuration/Config.h.in" "${PROJECT_BINARY_DIR}/core/Config.h" )
 
-# UWAGA: poniewa¿ u¿ywamy "source_group", ka¿dy nag³ówek/Ÿród³o musi do którejœ
-# trafiæ; w przeciwnym wypadku CMake generuje b³êdny projekt
-
-#------------------------------------------------------------------------------
-
-# nag³ówki prywatne
-set(PRIVATE_H
-	#private headers
-)
-#source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
-
-# nag³ówki publiczne
-#message("string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})")
-#string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
-set(HEADER_PATH ${PROJECT_INCLUDE_ROOT}/core)
-set(PUBLIC_H
-	${HEADER_PATH}/MultiView.h
-	${HEADER_PATH}/MultiViewWidgetItem.h
-	${HEADER_PATH}/MultiViewFunctorWidgetAdapter.h
-	${HEADER_PATH}/MultiViewCameraItem.h
-	${HEADER_PATH}/MultiViewManipulatorItem.h
-	${HEADER_PATH}/OsgSceneDump.h
-)
-source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
-set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
-
-#------------------------------------------------------------------------------
-# konfiguracja
-
-# Kopiujemy konfiguracja
-# Uwaga: normalnie powinno byæ bez /../core !!!
-configure_file( "Config.h.in" "${PROJECT_BINARY_DIR}/../core/Config.h" )
-set(TARGET_H ${TARGET_H} "${PROJECT_BINARY_DIR}/../core/Config.h" Config.h.in )
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES Config.h.in)
-source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/../core/Config.h")
-
-#------------------------------------------------------------------------------
-
-# Ÿród³a
-set(TARGET_SRC
+SET_SOURCE_FILES(
 	Window.cpp
 	MultiView.cpp
 	MultiViewWidgetItem.cpp
@@ -52,62 +23,15 @@ set(TARGET_SRC
 	MultiViewCameraItem.cpp
 	MultiViewManipulatorItem.cpp
 	OsgSceneDump.cpp
+	CorePCH.cpp
 )
-source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
-# metadane generowane przez MOC
-SET(TARGET_MOC_H
-	${HEADER_PATH}/MultiViewWidgetItem.h
+# SET_MOC_FILES(
+	# MultiViewWidgetItem.h
+# )
+
+SET_PRIVATE_HEADERS(
+	CorePCH.h
 )
-#QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
-#source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 
-#------------------------------------------------------------------------------
-# UI
-set(TARGET_UI
-)
-#QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
-#source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
-set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
-
-#------------------------------------------------------------------------------
-# CONFIG
-set(CONFIG_H
-)
-#source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\config" FILES ${CONFIG_H})
-set(TARGET_H ${TARGET_H} ${CONFIG_H})
-
-set(CONFIG_SRC
-)
-#source_group("${SOURCEGROUP_SOURCES}\\config" FILES ${CONFIG_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${CONFIG_SRC})
-
-#------------------------------------------------------------------------------
-# prekompilowany nag³ówek
-set(PRECOMPILED_H CorePCH.h)
-set(PRECOMPILED_SRC CorePCH.cpp)
-SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
-set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
-source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
-
-#------------------------------------------------------------------------------
-# tworzenie
-
-# obsluga OpenGL
-set(QT_USE_QTOPENGL TRUE) 
-include(${QT_USE_FILE})
-
-# kompilacja do wspó³dzielonej biblioteki
-add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})
-#instalacja
-install(TARGETS ${TARGET_TARGETNAME} LIBRARY DESTINATION lib/${PROJECT_NAME} ARCHIVE DESTINATION lib/${PROJECT_NAME} COMPONENT ${PROJECT_NAME}_dev)
-install(FILES ${PUBLIC_H} DESTINATION include/${PROJECT_NAME} COMPONENT ${PROJECT_NAME}_dev)
-# nag³ówki
-include_directories(${DEFAULT_PROJECT_INCLUDES})
-# biblioteki
-target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})	
-
-ON_PROJECT_ADDED(corelib)
+END_PROJECT()

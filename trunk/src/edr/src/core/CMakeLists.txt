@@ -1,16 +1,6 @@
-project(core)
-# nazwa
-set(TARGET_TARGETNAME
-	core
-)
+BEGIN_PROJECT("static")
 
-# UWAGA: poniewa¿ u¿ywamy "source_group", ka¿dy nag³ówek/Ÿród³o musi do którejœ
-# trafiæ; w przeciwnym wypadku CMake generuje b³êdny projekt
-
-#------------------------------------------------------------------------------
-
-# nag³ówki prywatne
-set(PRIVATE_H
+SET_PRIVATE_HEADERS(
 	VisualizerChannel.h
 	SourceManager.h
 	ActionsGroupManager.h
@@ -61,62 +51,64 @@ set(PRIVATE_H
 	DataSourceManager.h
 	Log.h
 	PluginLoader.h
+	CorePCH.h
 )
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
-# nag³ówki publiczne
-string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
-set(PUBLIC_H
-	${HEADER_PATH}/StringTools.h
-	${HEADER_PATH}/ISource.h
-	${HEADER_PATH}/ISourceManager.h
-	${HEADER_PATH}/IActionsGroupManager.h
-	${HEADER_PATH}/IManagersAccessor.h
-	${HEADER_PATH}/DataAccessors.h
-	${HEADER_PATH}/BaseDataTypes.h
-	${HEADER_PATH}/Filesystem.h
-	${HEADER_PATH}/IService.h
-	${HEADER_PATH}/IIdentifiable.h
-	${HEADER_PATH}/IDataManager.h
-	${HEADER_PATH}/IParser.h
-	${HEADER_PATH}/IServiceManager.h
-	${HEADER_PATH}/Window.h
-	${HEADER_PATH}/IUserInterface.h
-	${HEADER_PATH}/Plugin.h
-	${HEADER_PATH}/Export.h
-	${HEADER_PATH}/SmartPtr.h
-	${HEADER_PATH}/ILog.h
-	${HEADER_PATH}/ObjectWrapper.h
-	${HEADER_PATH}/ObjectWrapperCollection.h
-	${HEADER_PATH}/IObjectSource.h
-	${HEADER_PATH}/IVisualizer.h
-	${HEADER_PATH}/IVisualizerManager.h
-	${HEADER_PATH}/IDataProcessor.h
-	${HEADER_PATH}/IObjectOutput.h
-	${HEADER_PATH}/PluginCommon.h
-	${HEADER_PATH}/ObjectWrapperFactory.h
-	${HEADER_PATH}/TypeInfo.h
-	${HEADER_PATH}/IEDRTitleBar.h
-	${HEADER_PATH}/IInputDescription.h 
-	${HEADER_PATH}/IOutputDescription.h
-	${HEADER_PATH}/IInputProcessItem.h
-	${HEADER_PATH}/IOutputProcessItem.h
-	${HEADER_PATH}/IInputOutputProcessItem.h
-	${HEADER_PATH}/IConfigurable.h
-	${HEADER_PATH}/IWorkflowItemBase.h
-	${HEADER_PATH}/IClonable.h
-	${HEADER_PATH}/ISerializable.h
-	${HEADER_PATH}/IPath.h
-	${HEADER_PATH}/IDataProcessorManager.h
-	${HEADER_PATH}/IDataSource.h
-	${HEADER_PATH}/IDataSourceManager.h)
-source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
-set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
+SET_PUBLIC_HEADERS (
+	StringTools.h
+	ISource.h
+	ISourceManager.h
+	IActionsGroupManager.h
+	IManagersAccessor.h
+	DataAccessors.h
+	BaseDataTypes.h
+	Filesystem.h
+	IService.h
+	IIdentifiable.h
+	IDataManager.h
+	IParser.h
+	IServiceManager.h
+	Window.h
+	IUserInterface.h
+	Plugin.h
+	Export.h
+	SmartPtr.h
+	ILog.h
+	ObjectWrapper.h
+	ObjectWrapperCollection.h
+	IObjectSource.h
+	IVisualizer.h
+	IVisualizerManager.h
+	IDataProcessor.h
+	IObjectOutput.h
+	PluginCommon.h
+	ObjectWrapperFactory.h
+	TypeInfo.h
+	IEDRTitleBar.h
+	IInputDescription.h 
+	IOutputDescription.h
+	IInputProcessItem.h
+	IOutputProcessItem.h
+	IInputOutputProcessItem.h
+	IConfigurable.h
+	IWorkflowItemBase.h
+	IClonable.h
+	ISerializable.h
+	IPath.h
+	IDataProcessorManager.h
+	IDataSource.h
+	IDataSourceManager.h
+	##################################
+	# 			z corelib			 #
+	MultiView.h
+	MultiViewWidgetItem.h
+	MultiViewFunctorWidgetAdapter.h
+	MultiViewCameraItem.h
+	MultiViewManipulatorItem.h
+	OsgSceneDump.h
+)
 
-#------------------------------------------------------------------------------
-
-# Ÿród³a
-set(TARGET_SRC
+SET_SOURCE_FILES(
 	VisualizerChannel.cpp
 	SourceManager.cpp
 	ActionsGroupManager.cpp
@@ -154,11 +146,10 @@ set(TARGET_SRC
 	LocalDataSourceWidget.cpp
 	DataSource.cpp
 	DataSourceManager.cpp
+	CorePCH.cpp
 )
-source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
-# metadane generowane przez MOC
-SET(TARGET_MOC_H
+SET_MOC_FILES(
 	FlexiWidgetTabContentWidget.h
 	FlexiTabWidget.h
 	FlexiTabSectionWidget.h
@@ -174,89 +165,28 @@ SET(TARGET_MOC_H
 	WorkflowVDFConnDelContextMenu.h
 	LocalDataSourceWidget.h
 	Visualizer.h
+	##################################
+	# 			z corelib			 #
+	MultiViewWidgetItem.h
 )
-QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
-source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
-
-#------------------------------------------------------------------------------
-# UI
-set(TARGET_UI
-	ui/FlexiWidgetTabContentWidget.ui
-	ui/FlexiTabWidget.ui
-	ui/FlexiTabSectionWidget.ui
+SET_UI_FILES(
+	FlexiWidgetTabContentWidget.ui
+	FlexiTabWidget.ui
+	FlexiTabSectionWidget.ui
 	#ui/SceneGraphWidget.ui
 	#ui/OsgWidget.ui
 	#ui/VisualizerWidget.ui
-	ui/EDRTitleBar.ui
-	ui/EDRConsoleInnerWidget.ui
-	ui/WorkflowWidget.ui
-	ui/LocalDataSourceWidget.ui
+	EDRTitleBar.ui
+	EDRConsoleInnerWidget.ui
+	WorkflowWidget.ui
+	LocalDataSourceWidget.ui
 )
-QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
-source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
-set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 
-#------------------------------------------------------------------------------
-# RC
-set(TARGET_RC
+SET_RC_FILES (
 	#ui/ConsoleWidget.qrc
-	ui/CoreIcons.qrc
+	CoreIcons.qrc
 )
-QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
-source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
 
-# #------------------------------------------------------------------------------
-# # CONFIG
-# set(CONFIG_H
-	# config/ConfigBuffer.h
-	# config/ConfigurationGroup.h
-	# config/FileReader.h
-	# config/IConfigManager.h
-	# config/ConfigParameter.h
-# )
-# source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\config" FILES ${CONFIG_H})
-# set(TARGET_H ${TARGET_H} ${CONFIG_H})
+SET_PRECOMPILED_HEADER (CorePCH.h CorePCH.cpp)
 
-# set(CONFIG_SRC
-	# config/ConfigBuffer.cpp
-	# config/ConfigurationGroup.cpp
-	# config/FileReader.cpp
-	# config/ConfigParameter.cpp
-# )
-# source_group("${SOURCEGROUP_SOURCES}\\config" FILES ${CONFIG_SRC})
-# set(TARGET_SRC ${TARGET_SRC} ${CONFIG_SRC})
-
-#------------------------------------------------------------------------------
-# prekompilowany nag³ówek
-set(PRECOMPILED_H CorePCH.h)
-set(PRECOMPILED_SRC CorePCH.cpp)
-SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
-set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
-source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
-
-
-#------------------------------------------------------------------------------
-# tworzenie
-
-# obsluga OpenGL
-set(QT_USE_QTOPENGL TRUE) 
-include(${QT_USE_FILE})
-
-# kompilacja do exe
-option(EDR_WIN32_ENABLE_CONSOLE "Enable console on Win32?" OFF)
-
-add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})
-
-#instalacja plików nag³ówkowych
-install(TARGETS ${TARGET_TARGETNAME} LIBRARY DESTINATION lib/${PROJECT_NAME} ARCHIVE DESTINATION lib/${PROJECT_NAME} COMPONENT ${PROJECT_NAME}_dev)
-install(FILES ${PUBLIC_H} DESTINATION include/${PROJECT_NAME} COMPONENT ${PROJECT_NAME}_dev)
-# nag³ówki
-include_directories(${DEFAULT_PROJECT_INCLUDES})
-# biblioteki
-target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})	
-
-ON_PROJECT_ADDED(core)
+END_PROJECT()

@@ -12,7 +12,7 @@
 
 #include <string>
 #include <sstream>
-
+#include <core/PluginCommon.h>
 namespace core
 {
 	//! Poziom ważności wiadomości.
