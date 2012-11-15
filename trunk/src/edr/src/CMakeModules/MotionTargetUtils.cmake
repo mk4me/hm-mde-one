@@ -108,7 +108,6 @@ macro(ADD_PROJECT name dependencies)
 			#	message("(${name}) RAW ${value} libraries: ${${value}_LIBRARIES}")
 			#endif()
 			TARGET_NOTIFY(${name} "RAW DEPENDENCY ${value} libraries: ${${value}_LIBRARIES}")
-			
 			foreach (value2 ${${value}_LIBRARIES})
 			#message("(${name})Current library: ${value2} : ${${value2}} : ")
 				if (NOT ${createDependency})
