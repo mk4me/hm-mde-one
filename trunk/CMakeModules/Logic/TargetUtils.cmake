@@ -174,7 +174,6 @@ macro(ADD_TEST_PROJECT name dependencies)
 	set(newName "test_${name}")
 	set(ORIGINAL_PROJECT_NAME_${newName} ${name} PARENT_SCOPE)
 	ADD_PROJECT(${newName} "${dependencies}" ${ARGN})
-
 endmacro(ADD_TEST_PROJECT)
 
 ###############################################################################
@@ -911,6 +910,11 @@ macro(END_PROJECT)
 	target_link_libraries(${TARGET_TARGETNAME} ${${PROJECT_NAME}_LIBRARIES} ${${PROJECT_NAME}_LIBRARIES})
 	# info ze poprawnie zakonczylismy dodawanie projektu
 	set(PROJECT_ADD_FINISHED 1 PARENT_SCOPE)
+	
+	if(DEFINED PROJECT_IS_TEST)
+		add_test(NAME ${ORIGINAL_PROJECT_NAME_${PROJECT_NAME}} COMMAND ${TARGET_TARGETNAME})
+		set(PROJECT_IS_TEST)
+	endif()
 	
 endmacro(END_PROJECT)
 

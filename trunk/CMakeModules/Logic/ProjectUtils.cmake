@@ -151,12 +151,7 @@ macro(INITIALIZE_SOLUTION)
 	#---------------------------------------------------
 	# Szukamy bibliotek
 	if(${ARGC} GREATER 0)
-		foreach(value ${ARGV0})
-			message(STATUS "Szukam ${value}")
-			find_package(${value})
-		endforeach()
-		# zmienna z wszystkimi nazwami bibliotek, uzywana do generowania skryptow uruchomieniowych pod Linuxa
-		set(ALL_LIBRARIES ${ARGV0} CACHE INTERNAL "")
+		set(PROJECT_DEPENDENCIES ${ARGV0})
 	endif()
 	
 	option(GENERATE_TESTS "Czy do³¹czyæ testy do projektu?" OFF )
@@ -166,6 +161,19 @@ endmacro(INITIALIZE_SOLUTION)
 # makro koñcz¹ce konfiguracjê solucji
 macro(FINALIZE_SOLUTION)
 
+	if(DEFINED PROJECT_DEPENDENCIES)
+		# zaczynamy od szukania bibliotek
+		foreach(value ${PROJECT_DEPENDENCIES})
+			message(STATUS "Szukam ${value}")
+			find_package(${value})
+		endforeach()
+		# zmienna z wszystkimi nazwami bibliotek, uzywana do generowania skryptow uruchomieniowych pod Linuxa
+		set(ALL_LIBRARIES ${PROJECT_DEPENDENCIES} CACHE INTERNAL "")
+	endif()
+
+	# wci¹gamy podprojekty
+	add_subdirectory(src)
+	
 	#---------------------------------------------------
 	# obs³uga modu³ów (.dll/.so)
 	option(PROJECT_COPY_MODULES "Copy runtime modules into bin folder?" ON)
@@ -184,15 +192,17 @@ macro(FINALIZE_SOLUTION)
 		FIND_REBUILD_DEPENDENCIES("${PROJECT_REBUILD_DEPENDENCIES_DST}")
 		message("Rebuiling dependencies finished. You should turn off option PROJECT_REBUILD_DEPENDENCIES.")
 	endif()
-
-	# wci¹gamy podprojekty
-	add_subdirectory(src)
 	
 	# do³anczamy testy jeœli tak skonfigurowano projekt
 	if(${GENERATE_TESTS})
-		#TODO - trzeba to poprawic zmienna globalna - CACHE INTERNAL
-		set(PROJECT_ADD_FINISHED)
-		add_subdirectory(tests)
+		if(EXISTS "${CMAKE_SOURCE_DIR}/tests")
+			#TODO - trzeba to poprawic zmienna globalna - CACHE INTERNAL
+			set(PROJECT_ADD_FINISHED)
+			enable_testing()
+			add_subdirectory(tests)
+		else()
+			message("User requested to generate tests but tests folder does not exist")
+		endif()
 	endif()
 	
 	
