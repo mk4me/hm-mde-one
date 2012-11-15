@@ -35,6 +35,7 @@ SET_PRIVATE_HEADERS(
 	DataSourcePerspective.h
 	DataSourcePerspectiveManager.h
 	ServerStatusManager.h
+	CommunicationPCH.h
 )
 
 SET_PUBLIC_HEADERS (
@@ -56,7 +57,6 @@ SET_PUBLIC_HEADERS (
 	IDataSourcePerspectiveManager.h
 	IDataSourceStatus.h
 	IDataSourceStatusManager.h
-	CommunicationPCH.h
 )
 
 #------------------------------------------------------------------------------
