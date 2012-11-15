@@ -346,7 +346,7 @@ macro(ADD_LIBRARY_SINGLE variable names debugNames static)
 			FIND_MESSAGE("Debug version of ${variable} not found, using Release version.")
 		endif()
 
-		list( APPEND FIND_MODULES_TO_COPY_RELEASE ${${variable}_LIBRARY_RELEASE} )
+		#list( APPEND FIND_MODULES_TO_COPY_RELEASE ${${variable}_LIBRARY_RELEASE} )
 
 		# znaleŸliœmy
 		set(${variable}_FOUND 1 CACHE INTERNAL "Czy znaleziono bibliotekê ${variable}")
