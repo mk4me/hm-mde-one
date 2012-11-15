@@ -3,6 +3,7 @@
 # Inicjuje konfiguracjê solucji
 # Parametry:
 	# [zewnêtrzne biblioteki potrzebne w solucji]
+	# [dodatkowe katalogi dla CMakeModules poza CustomCMakeModules - ten jest automatycznie dodawany]
 	# [dodatkowe definicje preprocesora dla ca³ej solucji]
 	# [dodatkowe flagi kompilatora dla ca³ej solucji]
 macro(INITIALIZE_SOLUTION)
@@ -24,13 +25,51 @@ macro(INITIALIZE_SOLUTION)
 	set(CMAKE_USE_RELATIVE_PATHS TRUE)
 	#zapamiêtujê oryginalne module path na potrzeby niektórych finderów (np. OpenGL) ¿ebym móg³ ich u¿yc w naszych nadpisanych finderach
 	set(CMAKE_ORIGINAL_MODULE_PATH ${CMAKE_MODULE_PATH})
+	# dodatkowe œcie¿ki dla modu³ów
 	
-	# œcie¿ki do dodatkowych modu³ów
-	set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../../CMakeModules;${CMAKE_SOURCE_DIR}/../../CMakeModules/Finders;${CMAKE_MODULE_PATH}")
+	set(FINDERS_PATHS "CustomCMakeModules")
+	
+	if(${ARGC} GREATER 1)
+		list(APPEND FINDERS_PATHS ${ARGV1})
+	endif()
+	
+	list(APPEND CMAKE_MODULE_PATH ${FINDERS_PATHS})
 	# dodatkowe modu³y pomagaj¹ce szukaæ biblioteki zewnêtrzne w naszej strukturze oraz konfigurowaæ projekty
+	foreach(path ${FINDERS_PATHS})
+		if(EXISTS "${CMAKE_SOURCE_DIR}/${path}")
+		
+			file(GLOB fu "${CMAKE_SOURCE_DIR}/${path}/Logic/*FindUtils.cmake")
+			file(GLOB tu "${CMAKE_SOURCE_DIR}/${path}/Logic/*TargetUtils.cmake")
+			file(GLOB pu "${CMAKE_SOURCE_DIR}/${path}/Logic/*ProjectUtils.cmake")
+	
+			foreach(fuFile ${fu})
+				include(${fuFile})
+			endforeach()
+	
+			foreach(tuFile ${tu})
+				include(${tuFile})
+			endforeach()
+		
+			foreach(puFile ${pu})
+				include(${puFile})
+			endforeach()
+		
+			list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/${path}")
+			
+			if(EXISTS "${CMAKE_SOURCE_DIR}/${path}/Finders")
+				list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/${path}/Finders")
+			endif()
+		else()			
+			message(STATUS "Additional CMAKE_MODULE_PATH ${path} does not exist as ancessor of ${CMAKE_SOURCE_DIR}. Skipping this additional CMakeModule path")
+		endif()
+	endforeach()
+	
+	# œcie¿ki do globalnych dodatkowych modu³ów
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../../CMakeModules;${CMAKE_SOURCE_DIR}/../../CMakeModules/Finders")
+	include(Logic/Generators)
 	include(Logic/FindUtils)
 	include(Logic/TargetUtils)
-	include(Logic/Generators)
+	
 	#---------------------------------------------------
 	# blok definicji dla CMake'a
 	# œcie¿ki do bibliotek zewnêtrznych
@@ -76,14 +115,14 @@ macro(INITIALIZE_SOLUTION)
 	endif()
 	
 	# dodatkowe definicje
-	if(${ARGC} GREATER 1)
-		add_definitions(${ARGV1})
+	if(${ARGC} GREATER 2)
+		add_definitions(${ARGV2})
 	endif()
 	
 	# dodatkowe flagi
-	if(${ARGC} GREATER 2)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARGV2}")
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARGV2}")
+	if(${ARGC} GREATER 3)
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARGV3}")
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARGV3}")
 	endif()
 
 	#------------------------------------------------------------------------------

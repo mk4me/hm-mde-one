@@ -120,18 +120,6 @@ macro(FIND_INIT_CUSTOM_MODULE variable dirName moduleIncludeRoot moduleBuildRoot
 	
 endmacro(FIND_INIT_CUSTOM_MODULE)
 
-# Wyszukuje elementy edrutils dla edr
-macro(FIND_INIT_EDRUTILS_MODULE variable dirName)
-	if(NOT DEFINED EDRUTILS_INCLUDE_ROOT OR NOT DEFINED EDRUTILS_BUILD_ROOT)
-		message(WARNING "Nie ustawiono sciezek dla EDRUTILS, nie mozna dodac ${variable}")
-	else()
-		FIND_INIT_CUSTOM_MODULE(${variable} ${dirName} ${EDRUTILS_INCLUDE_ROOT} ${EDRUTILS_BUILD_ROOT})
-		#FIND_INIT2(${variable} ${dirName} "${EDRUTILS_INCLUDE_ROOT}" "${EDRUTILS_BUILD_ROOT}/bin/Debug" "${EDRUTILS_BUILD_ROOT}/bin/Release")
-		#FIND_INCLUDE_PLATFORM_HEADERS2(${variable} ${dirName} "${EDRUTILS_BUILD_ROOT}/src")
-	endif()
-endmacro(FIND_INIT_EDRUTILS_MODULE)
-
-
 ###############################################################################
 
 # Makro wyszukuje bibliotek statycznych lub plików lib dla wspó³dzielonych bibliotek (windows).
@@ -162,20 +150,20 @@ macro(FIND_LIBS_PATTERN variable releasePattern debugPattern extensions)
 	CREATE_NAMES_LIST("<?,lib>${debugPattern}${extensions}" _lib_names)
 
 	FIND_NOTIFY(${variable} "FIND_LIBS: debug pattern ${debugPattern} unrolled to ${_lib_names}")
-	#message(${FIND_DIR_DEBUG})
+	message(${FIND_DIR_DEBUG})
 	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
 		# szukamy wersji release, najpierw w wyznaczonym miejscu
 		find_library(${variable}_LIBRARY_DEBUG
 			NAMES ${_lib_names}
 			PATHS ${FIND_DIR_DEBUG}
-			DOC "Location of release version of ${_lib_names}"
+			DOC "Location of debug version of ${_lib_names}"
 			NO_DEFAULT_PATH
 		)
 	endif()
 	# potem w ca³ym systemie
 	find_library(${variable}_LIBRARY_DEBUG
 		NAMES ${_lib_names}
-		DOC "Location of release version of ${_lib_names}"
+		DOC "Location of debug version of ${_lib_names}"
 	)
 
 
