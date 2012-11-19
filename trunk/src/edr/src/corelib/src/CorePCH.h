@@ -13,7 +13,6 @@
 // do momentu obsłużenia nagłówków prekompilowanych na innych platformach
 // mechanizm ten musi być wyłączony, inaczej może negatywnie wpłynąć na
 // czas kompilacji
-
 #include <vector>
 #include <map>
 #include <string>

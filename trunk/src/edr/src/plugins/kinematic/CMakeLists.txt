@@ -1,5 +1,10 @@
 BEGIN_PROJECT("dynamic")
 
+
+SET_UI_FILES (
+	TrajectoriesDialog.ui
+)
+
 SET_PRIVATE_HEADERS(
 	KinematicParser.h
 	AsfParser.h
@@ -64,9 +69,6 @@ SET_MOC_FILES(
 	SchemeDialog.h
 )
 
-SET_UI_FILES (
-	TrajectoriesDialog.ui
-)
 
 SET_RC_FILES (
 	kinematicIcons.qrc

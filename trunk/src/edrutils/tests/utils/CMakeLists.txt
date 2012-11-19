@@ -1,8 +1,6 @@
-# nazwa
-set(TARGET_TARGETNAME utils_test)
+BEGIN_PROJECT("executable")
 
-# Ÿród³a
-set(TARGET_SRC 
+SET_SOURCE_FILES( 
 	test.cpp
 	AlignTest.cpp
 	PoolTest.cpp
@@ -14,8 +12,7 @@ set(TARGET_SRC
 	DataChannelTest.cpp
 )
 
-# nag³ówki
-set(TARGET_H
+SET_PRIVATE_HEADERS(
 	AlignTest.h
 	PoolTest.h
 	UtilsTest.h
@@ -26,11 +23,4 @@ set(TARGET_H
 	DataChannelTest.h
 )
 
-# kompilacja do wspó³dzielonej biblioteki
-add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
-# nag³ówki
-include_directories( ${DEFAULT_PROJECT_INCLUDES} )
-# biblioteki
-target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})	
-# labelka
-set_target_properties(${TARGET_TARGETNAME} PROPERTIES PROJECT_LABEL "Test of utils")	
+END_PROJECT()
