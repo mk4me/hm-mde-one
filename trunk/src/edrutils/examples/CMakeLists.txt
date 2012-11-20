@@ -1,5 +1,5 @@
-project(Examples)
-set(PROJECTS_NAME Examples)
+SET_PROJECTS_GROUP("przyklady")
+
 
 if (CONFIG_VIDLIB_ENABLE_OSG)
 	ADD_PROJECT(videoPlayerOSG "vidlib;OSG")
