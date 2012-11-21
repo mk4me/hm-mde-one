@@ -14,6 +14,7 @@ CONFIG_OPTION(CORE_ENABLE_LEAK_DETECTION "Enable leak detection?" OFF)
 #---------------------------------------------------
 # Dodatkowa konfiguracja CPack dla instalatora
 set(CPACK_INSTALLER_RESOURCES "${PROJECT_SOURCE_DIR}/../../../installer_resources" CACHE PATH "Location of installer resources.")
+set(PROJECT_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/resources")
 set(CPACK_PROJECT_SVN_RESOURCES_ROOT ${PROJECT_SVN_RESOURCES_ROOT})
 #---------------------------------------------------
 # CPack
