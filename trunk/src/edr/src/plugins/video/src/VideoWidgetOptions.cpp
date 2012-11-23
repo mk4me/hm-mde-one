@@ -3,7 +3,7 @@
 #include "VideoService.h"
 #include <vidlib/PixelFormat.h>
 
-Q_DECLARE_METATYPE(vidlib::PixelFormat);
+Q_DECLARE_METATYPE(vidlib::VIDLIB_PixelFormat);
 
 VideoWidgetOptions::VideoWidgetOptions( VideoService* service ) : service(service)
 {

@@ -64,7 +64,7 @@ bool StreamOsgWidget::isUsingTextureRectangle() const
     }
 }
 
-void StreamOsgWidget::refreshShaders( bool useTextureRect, vidlib::PixelFormat format )
+void StreamOsgWidget::refreshShaders( bool useTextureRect, vidlib::VIDLIB_PixelFormat format )
 {
     if ( format == vidlib::PixelFormatYV12 ) {
         // usunięcie shaderów z programu
@@ -92,7 +92,7 @@ void StreamOsgWidget::refreshShaders( bool useTextureRect, vidlib::PixelFormat f
             state->removeAttribute(yuvProgram);
         }
     } else {
-        LOG_ERROR("Nieobsługiwany format: "<<utils::Enum<vidlib::PixelFormat>::getName(format));
+        LOG_ERROR("Nieobsługiwany format: "<<utils::Enum<vidlib::VIDLIB_PixelFormat>::getName(format));
     }
 }
 
@@ -101,13 +101,13 @@ void StreamOsgWidget::refreshShaders()
     refreshShaders( isUsingTextureRectangle(), format );
 }
 
-void StreamOsgWidget::setPixelFormat( vidlib::PixelFormat format )
+void StreamOsgWidget::setPixelFormat( vidlib::VIDLIB_PixelFormat format )
 {
     this->format = format;
     refreshShaders();
 }
 
-vidlib::PixelFormat StreamOsgWidget::getPixelFormat() const
+vidlib::VIDLIB_PixelFormat StreamOsgWidget::getPixelFormat() const
 {
     return format;
 }

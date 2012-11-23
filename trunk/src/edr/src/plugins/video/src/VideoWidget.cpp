@@ -156,7 +156,7 @@ void VideoWidget::init( std::vector<osg::ref_ptr<vidlib::VideoImageStream> > &st
     createScene();
 }
 
-void VideoWidget::setPixelFormat( PixelFormat format )
+void VideoWidget::setPixelFormat( vidlib::VIDLIB_PixelFormat format )
 {
     // ustawienie formatu strumieni
     BOOST_FOREACH( osg::Image* image, images ) {

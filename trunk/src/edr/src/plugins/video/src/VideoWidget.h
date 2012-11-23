@@ -45,7 +45,7 @@ private:
     //! Czy ma być używane rozszerzenie texture_rectangle.
     bool useTextureRect;
     //! Format video.
-    vidlib::PixelFormat format;
+    vidlib::VIDLIB_PixelFormat format;
     //! Nazwa samplera w obu shaderach YUV.
     std::string yuvSamplerName;
     //! Nazwa zmiennej trzymającej rozmiar obrazka w obu shaderach YUV. W zasadzie
@@ -67,7 +67,7 @@ public:
 
 public:
 
-    void setPixelFormat(vidlib::PixelFormat format);
+    void setPixelFormat(vidlib::VIDLIB_PixelFormat format);
     void setUseTextureRect(bool useTextureRect);
 
     //! \return

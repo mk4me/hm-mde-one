@@ -44,9 +44,9 @@ private:
 
 public:
     //! \return Format używany przy rysowaniu.
-    vidlib::PixelFormat getOutputFormat();
+    vidlib::VIDLIB_PixelFormat getOutputFormat();
     //! \param format Format używany przy rysowaniu.
-    void setOutputFormat(vidlib::PixelFormat format);
+    void setOutputFormat(vidlib::VIDLIB_PixelFormat format);
     //! \return Czy używa rozszerzenia TEXTURE_RECT?
     bool isUsingTextureRectangle();
     //! \param useTextureRectangle Czy używa rozszerzenia TEXTURE_RECT?

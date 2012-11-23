@@ -31,7 +31,7 @@ class StreamOsgWidget : public osgWidget::Widget
     //! Shader używany dla texture2D.
     osg::ref_ptr<osg::Shader> yuvTexture2DShader;
     //! Format pikseli.
-    vidlib::PixelFormat format;
+    vidlib::VIDLIB_PixelFormat format;
 
 public: 
     //! \param name Nazwa widgetu.
@@ -41,9 +41,9 @@ public:
 
 public:
     //! \return
-    vidlib::PixelFormat getPixelFormat() const;
+    vidlib::VIDLIB_PixelFormat getPixelFormat() const;
     //! \param format
-    void setPixelFormat(vidlib::PixelFormat format);
+    void setPixelFormat(vidlib::VIDLIB_PixelFormat format);
     //! \return Czy używany jest texture_rectangle
     bool isUsingTextureRectangle() const;
     //! \return
@@ -60,7 +60,7 @@ public:
 private:
     //! \param useTextureRect
     //! \param format
-    void refreshShaders(bool useTextureRect, vidlib::PixelFormat format);
+    void refreshShaders(bool useTextureRect, vidlib::VIDLIB_PixelFormat format);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

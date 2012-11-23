@@ -10,13 +10,13 @@ VideoService::VideoService()
 
 }
 
-vidlib::PixelFormat VideoService::getOutputFormat()
+vidlib::VIDLIB_PixelFormat VideoService::getOutputFormat()
 {
     return vidlib::PixelFormatUndefined;
 }
 
 
-void VideoService::setOutputFormat( vidlib::PixelFormat format )
+void VideoService::setOutputFormat( vidlib::VIDLIB_PixelFormat format )
 {
 
 }
