@@ -335,7 +335,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     // parametry strumienia
     double frameRate = av_q2d(videoStream->r_frame_rate);
     double durationSec = static_cast<double>(videoStream->duration) * videoStream->time_base.num / videoStream->time_base.den;
-    PixelFormat format = static_cast<PixelFormat>(codecContext->pix_fmt);
+    VIDLIB_PixelFormat format = static_cast<VIDLIB_PixelFormat>(codecContext->pix_fmt);
 
     // format
     double aspectRatio = 0.0f;
@@ -740,7 +740,7 @@ bool FFmpegVideoStream::getData( PictureLayered & dst ) const
 {
     VIDLIB_FUNCTION_PROLOG;
     utils::zero(dst);
-    dst.format = static_cast<PixelFormat>(codecContext->pix_fmt);
+    dst.format = static_cast<VIDLIB_PixelFormat>(codecContext->pix_fmt);
     dst.width = codecContext->width;
     dst.height = codecContext->height;
     //

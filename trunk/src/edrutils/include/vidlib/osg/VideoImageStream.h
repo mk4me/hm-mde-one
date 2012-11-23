@@ -48,7 +48,7 @@ public:
     META_Object(vidlib, VideoImageStream);
 
     //! Domyślny format.
-    static const PixelFormat defaultFormat = PixelFormatBGRA;
+    static const VIDLIB_PixelFormat defaultFormat = PixelFormatBGRA;
 
 protected:
     //! Wrapper na surowy strumień.
@@ -76,7 +76,7 @@ protected:
     /** Poprzednia pozycja w strumieniu */
     double prevTimestamp;
     /** Format piksela */
-    PixelFormat targetFormat;
+    VIDLIB_PixelFormat targetFormat;
     //! Maksymalna szerokość.
     int maxWidth;
     /** Bufor na bieżącą ramkę */
@@ -145,12 +145,12 @@ public:
     virtual void update(osg::NodeVisitor* nv);
 
     //! \return Format do którego film jest konwertowany.
-    inline PixelFormat getTargetFormat() const
+    inline VIDLIB_PixelFormat getTargetFormat() const
     {
         return targetFormat;
     }
     //! \param targetFormat Format do którego film jest konwertowany.
-    void setTargetFormat(PixelFormat targetFormat); 
+    void setTargetFormat(VIDLIB_PixelFormat targetFormat); 
 
     //! \return Maksymalna szerokość konwertowanego strumienia.
     inline int getMaxWidth() const

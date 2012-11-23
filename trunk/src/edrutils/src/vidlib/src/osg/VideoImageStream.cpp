@@ -334,7 +334,7 @@ void VideoImageStream::reloadImage(Picture & picture)
     }
 }
 
-void VideoImageStream::setTargetFormat( PixelFormat targetFormat )
+void VideoImageStream::setTargetFormat( VIDLIB_PixelFormat targetFormat )
 {
     if ( targetFormat != this->targetFormat ) {
 
@@ -377,8 +377,8 @@ void VideoImageStream::setStream( VideoStream* stream )
 
     // info
     OSG_DEBUG<<"open("<<stream->getSource()<<") size("<<s()<<", "<<t()<<") aspect ratio "<<getPixelAspectRatio()<<std::endl;
-    OSG_DEBUG<<"\tinner format: "<<utils::Enum<PixelFormat>::getName(getStream()->getPixelFormat())<<std::endl;
-    OSG_DEBUG<<"\tstream format: "<<utils::Enum<PixelFormat>::getName(targetFormat)<<std::endl;
+    OSG_DEBUG<<"\tinner format: "<<utils::Enum<VIDLIB_PixelFormat>::getName(getStream()->getPixelFormat())<<std::endl;
+    OSG_DEBUG<<"\tstream format: "<<utils::Enum<VIDLIB_PixelFormat>::getName(targetFormat)<<std::endl;
 
     // domylnie pauzujemy
     _status = PAUSED;

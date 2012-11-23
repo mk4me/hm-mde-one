@@ -133,7 +133,7 @@ const PictureContext * PictureCommon::getContext() const
 
 //------------------------------------------------------------------------------
 
-Picture Picture::create( int width, int height, PixelFormat format )
+Picture Picture::create( int width, int height, VIDLIB_PixelFormat format )
 {
   VIDLIB_FUNCTION_PROLOG;
   // tworzenie obrazka
@@ -147,7 +147,7 @@ Picture Picture::create( int width, int height, PixelFormat format )
 }
 
 
-int Picture::getAllocSize( int width, int height, PixelFormat format )
+int Picture::getAllocSize( int width, int height, VIDLIB_PixelFormat format )
 {
   VIDLIB_FUNCTION_PROLOG;
   Picture temp;

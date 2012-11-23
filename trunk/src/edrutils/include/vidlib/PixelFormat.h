@@ -18,7 +18,7 @@ namespace vidlib {
   PixelFormatUndefined
 
 //! Format danych.
-enum PixelFormat {
+enum VIDLIB_PixelFormat {
   VIDLIB_PIXELFORMAT_DEFINITION
 };
 
@@ -26,6 +26,6 @@ enum PixelFormat {
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////
 
-DECLARE_ENUM_ENCHANCEMENT(vidlib::PixelFormat, VIDLIB_PIXELFORMAT_DEFINITION)
+DECLARE_ENUM_ENCHANCEMENT(vidlib::VIDLIB_PixelFormat, VIDLIB_PIXELFORMAT_DEFINITION)
 
 #endif  // HEADER_GUARD_VIDLIB__PIXELFORMAT_H__

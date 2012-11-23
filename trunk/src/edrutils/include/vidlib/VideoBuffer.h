@@ -32,12 +32,12 @@ public:
     //! \param width
     //! \param height
     //! \param format
-    VideoBuffer(int maxSize, int width, int height, PixelFormat format);
+    VideoBuffer(int maxSize, int width, int height, VIDLIB_PixelFormat format);
     //! Destruktor, zwalnia cały bufor.
     ~VideoBuffer();
 
     //! \return
-    PixelFormat getFormat() const;
+    VIDLIB_PixelFormat getFormat() const;
 
     //! \return Wskaźnik na bufor ramki albo NULL, jeżeli wyczerpało się miejsce w buforze.
     Picture * pop();

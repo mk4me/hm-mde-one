@@ -46,13 +46,13 @@ namespace vidlib
     public:
         //! \param stream
         //! \param format
-        VideoImage(VideoStream* stream, PixelFormat format);
+        VideoImage(VideoStream* stream, VIDLIB_PixelFormat format);
         //!
         virtual ~VideoImage();
 
     public:
         //! \return Format strumienia.
-        inline const PixelFormat getFormat() const
+        inline const VIDLIB_PixelFormat getFormat() const
         { 
             return currentPicture.format;
         }
@@ -111,7 +111,7 @@ namespace vidlib
         Ptr referenceHolder;
         
     public:
-        VideoImageSafe(const Ptr& ptr, PixelFormat format) : 
+        VideoImageSafe(const Ptr& ptr, VIDLIB_PixelFormat format) : 
         VideoImage( &*ptr, format ), referenceHolder(ptr)
         {}
 

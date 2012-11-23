@@ -45,7 +45,7 @@ namespace vidlib
             osg::observer_ptr<osg::TextureRectangle> textureRect;
         };
         //! Obrazki powstałe na bazie strumienia.
-        typedef std::map< PixelFormat, Entry> Images;
+        typedef std::map< VIDLIB_PixelFormat, Entry> Images;
         //! Obrazki powstałe na bazie strumienia.
         mutable Images images;
         //!
@@ -59,27 +59,27 @@ namespace vidlib
 
     public:
         //! \return Obrazek dla zadanego formatu.
-        osg::ref_ptr<VideoImage> getImage(PixelFormat format) const;
+        osg::ref_ptr<VideoImage> getImage(VIDLIB_PixelFormat format) const;
 
         //!
-        osg::ref_ptr<osg::Texture> getTexture(PixelFormat format, bool textureRect) const;
+        osg::ref_ptr<osg::Texture> getTexture(VIDLIB_PixelFormat format, bool textureRect) const;
         //! \return Obrazek dla zadanego formatu.
-        osg::ref_ptr<osg::Texture2D> getTexture2D(PixelFormat format) const;
+        osg::ref_ptr<osg::Texture2D> getTexture2D(VIDLIB_PixelFormat format) const;
         //! \return Obrazek dla zadanego formatu.
-        osg::ref_ptr<osg::TextureRectangle> getTextureRect(PixelFormat format) const;
+        osg::ref_ptr<osg::TextureRectangle> getTextureRect(VIDLIB_PixelFormat format) const;
 
 
     protected:
         //! Odświeża obrazki korzystające z danego strumienia.
         void refreshImages();
 
-        virtual osg::ref_ptr<VideoImage> createImage(PixelFormat format) const;
+        virtual osg::ref_ptr<VideoImage> createImage(VIDLIB_PixelFormat format) const;
 
     private:
         //!
-        Entry& getEntry(PixelFormat format) const;
+        Entry& getEntry(VIDLIB_PixelFormat format) const;
         //!
-        osg::ref_ptr<VideoImage> getImage( Entry &entry, PixelFormat format ) const;
+        osg::ref_ptr<VideoImage> getImage( Entry &entry, VIDLIB_PixelFormat format ) const;
         //!
         VideoStream* asStream() const;
     };
@@ -112,7 +112,7 @@ namespace vidlib
         bool setTime(double time);
 
     protected:
-        virtual osg::ref_ptr<VideoImage> createImage(PixelFormat format) const;
+        virtual osg::ref_ptr<VideoImage> createImage(VIDLIB_PixelFormat format) const;
     };
 
     //! Adapter strumienia z vidliba dla potrzeb OSG.

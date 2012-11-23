@@ -24,7 +24,7 @@ struct PictureContext;
 struct VIDLIB_EXPORT PictureCommon
 {
   //! Kontekst zdjęcia.
-  PixelFormat format;
+  VIDLIB_PixelFormat format;
   //! Szerokość (tekstele).
   int width;
   //! Wysokość (tekstele).
@@ -71,12 +71,12 @@ struct VIDLIB_EXPORT Picture : public PictureCommon
   //! \param width Szerokość.
   //! \param height Wysokość.
   //! \param format Format.
-  static Picture create(int width, int height, PixelFormat format);
+  static Picture create(int width, int height, VIDLIB_PixelFormat format);
   //! 
   //! \param width
   //! \param height
   //! \param format
-  static int getAllocSize(int width, int height, PixelFormat format);
+  static int getAllocSize(int width, int height, VIDLIB_PixelFormat format);
 
   //! Określa rozmiar potrzebnych danych oraz alokuje.
   void alloc();
@@ -120,7 +120,7 @@ struct VIDLIB_EXPORT ScopedPicture : public Picture
     //! \param width
     //! \param height
     //! \param format
-    ScopedPicture(int width, int height, PixelFormat format)
+    ScopedPicture(int width, int height, VIDLIB_PixelFormat format)
     {
         reinterpret_cast<Picture&>(*this) = create(width, height, format);
     }

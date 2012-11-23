@@ -60,7 +60,7 @@ bool VideoStream::notifyError( const VideoError& error )
 }
 
 
-bool VideoStream::onAfterInit( const std::string& source, double frameRate, double duration, PixelFormat format, int width, int height, double aspectRatio )
+bool VideoStream::onAfterInit( const std::string& source, double frameRate, double duration, VIDLIB_PixelFormat format, int width, int height, double aspectRatio )
 {
     VIDLIB_FUNCTION_PROLOG;
     if ( frameRate <= 0.0 ) {

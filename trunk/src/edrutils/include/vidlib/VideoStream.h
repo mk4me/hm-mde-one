@@ -65,7 +65,7 @@ private:
     //!
     double aspectRatio;
     //! Format piksela.
-    PixelFormat format;
+    VIDLIB_PixelFormat format;
     //! Wysokość ramki.
     int width;
     //! Szerokość ramki.
@@ -144,7 +144,7 @@ public:
         return height;
     }
     //! \return Format strumienia.
-    inline PixelFormat getPixelFormat() const
+    inline VIDLIB_PixelFormat getPixelFormat() const
     {
         return format;
     }
@@ -211,7 +211,7 @@ protected:
     //! Metoda którą należy wywołać po inicjalizacji strumienia w klasie pochodnej.
     //! \param source Źródło.
     bool onAfterInit(const std::string& source, double frameRate, double duration, 
-      PixelFormat format, int width, int height, double aspectRatio);
+      VIDLIB_PixelFormat format, int width, int height, double aspectRatio);
 
     //!
     bool notifyError( const VideoError& error );

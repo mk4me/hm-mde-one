@@ -4,7 +4,7 @@
 
 namespace vidlib 
 {
-    VideoImage::VideoImage( VideoStream* stream, PixelFormat format ) :
+    VideoImage::VideoImage( VideoStream* stream, VIDLIB_PixelFormat format ) :
     stream(stream), minWidth(2), timestamp(-1)
     {
         UTILS_ASSERT(stream);
@@ -141,7 +141,7 @@ namespace vidlib
         // resize obrazka
         if ( currentPicture.width != width ) {
             OSG_NOTICE<<"VideoImage: Resizing from "<<currentPicture.width<<" to "<<width<<std::endl;
-            PixelFormat format = currentPicture.format;
+            VIDLIB_PixelFormat format = currentPicture.format;
             currentPicture.free();
             currentPicture = Picture::create(width, height, format);
             reloadImage(currentPicture);

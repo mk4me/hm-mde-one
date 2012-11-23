@@ -104,7 +104,7 @@ private:
     //! Ile ramek maksymalnie można zbuforować?
     size_t maxBufferSize;
     //! Format ramki
-    PixelFormat format;
+    VIDLIB_PixelFormat format;
 
 public:
     //! 
@@ -112,12 +112,12 @@ public:
     //! \param width
     //! \param height
     //! \param format
-    VideoBufferImpl(int maxSize, int width, int height, PixelFormat format);
+    VideoBufferImpl(int maxSize, int width, int height, VIDLIB_PixelFormat format);
     //! Destruktor, zwalnia cały bufor.
     ~VideoBufferImpl();
 
     //! \return
-    inline PixelFormat getFormat() const
+    inline VIDLIB_PixelFormat getFormat() const
     { 
         return format;
     }
@@ -171,7 +171,7 @@ private:
 
 //------------------------------------------------------------------------------
 
-VideoBufferImpl::VideoBufferImpl(int maxSize, int width, int height, PixelFormat format)
+VideoBufferImpl::VideoBufferImpl(int maxSize, int width, int height, VIDLIB_PixelFormat format)
   : maxSize(maxSize), width(width), height(height), format(format)
 {
   VIDLIB_FUNCTION_PROLOG;
@@ -461,7 +461,7 @@ const Picture * VideoBufferImpl::getFirstFrame( double * timestamp /*= NULL*/, d
 //   }
 // }
 
-VideoBuffer::VideoBuffer( int maxSize, int width, int height, PixelFormat format )
+VideoBuffer::VideoBuffer( int maxSize, int width, int height, VIDLIB_PixelFormat format )
 : impl(new VideoBufferImpl(maxSize, width, height, format))
 {
 
@@ -472,7 +472,7 @@ VideoBuffer::~VideoBuffer()
     utils::deletePtr(impl);
 }
 
-PixelFormat VideoBuffer::getFormat() const
+VIDLIB_PixelFormat VideoBuffer::getFormat() const
 {
     return impl->getFormat();
 }

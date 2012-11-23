@@ -32,13 +32,13 @@ private:
     //! Wysokość źródłowgo obrazka.
     int srcHeight;
     //! Format źródłowego obrazka
-    PixelFormat srcFormat;
+    VIDLIB_PixelFormat srcFormat;
     //! Szerokość docelowego obrazka.
     int dstWidth;
     //! Wysokość docelowego obrazka.
     int dstHeight;
     //! Format docelowego obrazka
-    PixelFormat dstFormat;
+    VIDLIB_PixelFormat dstFormat;
     //! Operator mniejszości, wykorzystywany w kontenerze std::map
     bool operator<(const Description& rhs) const
     {

@@ -26,13 +26,13 @@ namespace vidlib
         }
     }
 
-    osg::ref_ptr<VideoImage> __OsgAdapter::getImage( PixelFormat format ) const
+    osg::ref_ptr<VideoImage> __OsgAdapter::getImage( VIDLIB_PixelFormat format ) const
     {
         Entry& entry = getEntry(format);
         return getImage(entry, format);
     }
 
-    osg::ref_ptr<osg::Texture2D> __OsgAdapter::getTexture2D( PixelFormat format ) const
+    osg::ref_ptr<osg::Texture2D> __OsgAdapter::getTexture2D( VIDLIB_PixelFormat format ) const
     {
         Entry& entry = getEntry(format);
         osg::ref_ptr<osg::Texture2D> texture;
@@ -46,7 +46,7 @@ namespace vidlib
         }
     }
 
-    osg::ref_ptr<osg::Texture> __OsgAdapter::getTexture( PixelFormat format, bool textureRect ) const
+    osg::ref_ptr<osg::Texture> __OsgAdapter::getTexture( VIDLIB_PixelFormat format, bool textureRect ) const
     {
         if ( textureRect ) {
             return getTextureRect(format);
@@ -55,7 +55,7 @@ namespace vidlib
         }
     }
 
-    osg::ref_ptr<osg::TextureRectangle> __OsgAdapter::getTextureRect( PixelFormat format ) const
+    osg::ref_ptr<osg::TextureRectangle> __OsgAdapter::getTextureRect( VIDLIB_PixelFormat format ) const
     {
         Entry& entry = getEntry(format);
         osg::ref_ptr<osg::TextureRectangle> texture;
@@ -68,12 +68,12 @@ namespace vidlib
         }
     }
 
-    __OsgAdapter::Entry& __OsgAdapter::getEntry( PixelFormat format ) const
+    __OsgAdapter::Entry& __OsgAdapter::getEntry( VIDLIB_PixelFormat format ) const
     {
         return images[format];
     }
 
-    osg::ref_ptr<VideoImage> __OsgAdapter::getImage( Entry &entry, PixelFormat format ) const
+    osg::ref_ptr<VideoImage> __OsgAdapter::getImage( Entry &entry, VIDLIB_PixelFormat format ) const
     {
         osg::ref_ptr<VideoImage> image;
         if ( entry.image.lock(image) ) {
@@ -94,7 +94,7 @@ namespace vidlib
         return stream;
     }
 
-    osg::ref_ptr<VideoImage> __OsgAdapter::createImage( PixelFormat format ) const
+    osg::ref_ptr<VideoImage> __OsgAdapter::createImage( VIDLIB_PixelFormat format ) const
     {
         return new VideoImage(asStream(), format);
     }
@@ -132,7 +132,7 @@ namespace vidlib
         }
     }
 
-    osg::ref_ptr<VideoImage> OsgStream::createImage( PixelFormat format ) const
+    osg::ref_ptr<VideoImage> OsgStream::createImage( VIDLIB_PixelFormat format ) const
     {
         osg::ref_ptr<OsgStream> ptr(const_cast<OsgStream*>(this));
         return new VideoImageSafe<OsgStream, utils::PtrPolicyOSG>(ptr, format);
