@@ -51,7 +51,7 @@ set(CPACK_COMPONENT_CORE_DISPLAY_NAME "Main application")
 set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Runtime libraries")
 set(CPACK_COMPONENT_CORE_REQUIRED ON)
 set(CPACK_COMPONENT_LIBRARIES_REQUIRED ON)
-set(CPACK_COMPONENTS_ALL plugin_newCommunication plugin_c3d core plugin_newChart plugin_video plugin_newtimeline plugin_kinematic plugin_subject libraries)
+set(CPACK_COMPONENTS_ALL plugin_newCommunication plugin_c3d core plugin_newChart plugin_video plugin_newTimeline plugin_kinematic plugin_subject libraries)
 option(ENABLE_CPACK "Set on to enable CPack" OFF)
 option(ENABLE_CTEST "Set on to enable CTest" OFF)
 
