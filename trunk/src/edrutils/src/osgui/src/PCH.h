@@ -2,7 +2,7 @@
 #define HEADER_GUARD_VIDLIB__PCH_H__
 #ifndef DISABLE_PRECOMPILED_HEADERS
 
-#include <vidlib/Config.h>
+//#include <vidlib/Config.h>
 
 #include <vector>
 #include <map>

@@ -20,6 +20,7 @@
 #include "DefaultThreadFactory.h"
 #include <dflib/IDFLogger.h>
 #include <QtCore/QThread>
+#include <QtCore/QWaitCondition>
 
 namespace df{
 
@@ -77,7 +78,8 @@ private:
 		virtual const bool dataflow() = 0;
 
 	protected:
-
+		unsigned int i;
+		unsigned int stage;
 		df::IDFLogger * logger_;
 		DFModelRunnerImpl * runner_;
 
@@ -195,8 +197,10 @@ private:
 	const bool sourcesHaveMore() const;
 
 	//! Meldujemy zakoñczenie pracy elementu nie bêd¹cego Ÿród³em
-	void waitForAllSources();
+	void waitForAllSourcesStart();
+	void waitForAllSourcesFinish();
 	void sourceFinished();
+	void sourceStarted();
 	void nonSourceFinished();
 
 	void finishDataflow();
@@ -219,8 +223,10 @@ private:
 private:
 	StrictSyncPolicy failureMessageSync;
 
-	StrictSyncPolicy sourcesSync;
-	StrictSyncPolicy sourcesWait;
+	StrictSyncPolicy sourcesFinishSync;
+	StrictSyncPolicy sourcesFinishWait;
+	StrictSyncPolicy sourcesStartSync;
+	StrictSyncPolicy sourcesStartWait;
 	StrictSyncPolicy dataflowPauseSync;
 	StrictSyncPolicy nonSourcesSync;
 	StrictSyncPolicy dataToProcessSync;
@@ -239,6 +245,7 @@ private:
 	unsigned int dataToProcess;
 	unsigned int nonSourceElements;
 	unsigned int sourcesFinished_;
+	unsigned int sourcesStarted_;
 	unsigned int nonSourcesFinished_;
 
 	volatile bool sourcesEmpty_;

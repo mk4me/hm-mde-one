@@ -27,7 +27,6 @@ public:
 
 	virtual void process()
 	{
-		std::cout << "Processor " << name << " processing" << std::endl;
 		outPinA->value(func(inPinA->value(), inPinB->value()));
 	}
 

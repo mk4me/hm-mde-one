@@ -24,7 +24,6 @@ public:
 	
 	virtual void produce()
 	{
-		std::cout << "Source " << name  <<" producing " << idx << std::endl;
 		outPinA->value(data[idx++]);
 	}
 

@@ -18,7 +18,7 @@ df::DFModelRunner::DFModelRunnerImpl::DFModelRunnerImpl()
 	dataflowFinisher.setRunner(this);
 }
 
-df::DFModelRunner::DFModelRunnerImpl::INodeRunner::INodeRunner(DFModelRunnerImpl * runner, df::IDFLogger * logger) : runner_(runner), logger_(logger)
+df::DFModelRunner::DFModelRunnerImpl::INodeRunner::INodeRunner(DFModelRunnerImpl * runner, df::IDFLogger * logger) : runner_(runner), logger_(logger), i(0)
 {
 
 }
@@ -29,8 +29,12 @@ void df::DFModelRunner::DFModelRunnerImpl::INodeRunner::run()
 	bool error = false;
 	std::string errorMessage;
 
+	i = 0;
+
 	while(error == false && next == true){
 		try{
+			++i;
+			stage = 0;
 			next = dataflow();
 		}catch(std::exception & e){
 			error = true;
@@ -55,21 +59,26 @@ const bool df::DFModelRunner::DFModelRunnerImpl::SourceNodeRunner::dataflow()
 {
 	node_->lockSrcProcessing();
 
+	stage++;
 	if(runner_->dataflowFinished() == true)
 	{
 		return false;
 	}
 
+	runner_->sourceStarted();
+	stage++;
+	runner_->waitForAllSourcesStart();
+	stage++;
 	node_->tryPause();
-
+	stage++;
 	runner_->tryPause();
-
+	stage++;
 	node_->process();
-
+	stage++;
 	runner_->sourceFinished();
-
-	runner_->waitForAllSources();
-
+	stage++;
+	runner_->waitForAllSourcesFinish();
+	stage++;
 	return true;
 }
 
@@ -81,20 +90,20 @@ df::DFModelRunner::DFModelRunnerImpl::SinkNodeRunner::SinkNodeRunner(IMRSinkNode
 const bool df::DFModelRunner::DFModelRunnerImpl::SinkNodeRunner::dataflow()
 {
 	node_->lockSnkProcessing();
-
+	stage++;
 	if(runner_->dataflowFinished() == true)
 	{
 		return false;
 	}
 
 	node_->tryPause();
-
+	stage++;
 	runner_->tryPause();
-
+	stage++;
 	node_->process();
-
+	stage++;
 	runner_->nonSourceFinished();
-
+	stage++;
 	return true;
 }
 
@@ -106,7 +115,9 @@ df::DFModelRunner::DFModelRunnerImpl::ProcessingNodeRunner::ProcessingNodeRunner
 const bool df::DFModelRunner::DFModelRunnerImpl::ProcessingNodeRunner::dataflow()
 {
 	node_->lockSnkProcessing();
+	stage++;
 	node_->lockSrcProcessing();
+	stage++;
 
 	if(runner_->dataflowFinished() == true)
 	{
@@ -114,13 +125,13 @@ const bool df::DFModelRunner::DFModelRunnerImpl::ProcessingNodeRunner::dataflow(
 	}
 
 	node_->tryPause();
-
+	stage++;
 	runner_->tryPause();
-
+	stage++;
 	node_->process();
-
+	stage++;
 	runner_->nonSourceFinished();
-
+	stage++;
 	return true;
 }
 
@@ -179,20 +190,19 @@ void df::DFModelRunner::DFModelRunnerImpl::decreaseDataToProcess()
 	--dataToProcess;
 }
 
-//! Meldujemy zakoñczenie pracy elementu nie bêd¹cego Ÿród³em
-void df::DFModelRunner::DFModelRunnerImpl::waitForAllSources()
+void df::DFModelRunner::DFModelRunnerImpl::waitForAllSourcesFinish()
 {
-	StrictScopedLock lock(sourcesWait);
+	StrictScopedLock lock(sourcesFinishWait);
+}
+
+void df::DFModelRunner::DFModelRunnerImpl::waitForAllSourcesStart()
+{
+	StrictScopedLock lock(sourcesStartWait);
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::sourceFinished()
 {
-	StrictScopedLock lock(sourcesSync);
-
-	if(sourcesFinished_ == 0){
-		increaseDataToProcess();
-		sourcesWait.lock();
-	}
+	StrictScopedLock lock(sourcesFinishSync);
 
 	++sourcesFinished_;
 
@@ -200,7 +210,8 @@ void df::DFModelRunner::DFModelRunnerImpl::sourceFinished()
 	{
 		if(sourcesHaveMore() == true){
 			sourcesFinished_ = 0;
-			sourcesWait.unlock();
+			sourcesStartWait.lock();
+			sourcesFinishWait.unlock();
 		}else{
 			//Ÿród³a skoñczy³y przetwarzaæ - czekamy na innych ¿eby zakoñczyæ dataflow
 			sourcesEmpty_ = true;
@@ -208,6 +219,21 @@ void df::DFModelRunner::DFModelRunnerImpl::sourceFinished()
 				stopDataflow();
 			}
 		}
+	}
+}
+
+void df::DFModelRunner::DFModelRunnerImpl::sourceStarted()
+{
+	StrictScopedLock lock(sourcesStartSync);
+
+	++sourcesStarted_;
+
+	if(sourcesStarted_ == sources_.size())
+	{
+		sourcesStarted_ = 0;
+		increaseDataToProcess();
+		sourcesFinishWait.lock();
+		sourcesStartWait.unlock();
 	}
 }
 
@@ -249,7 +275,7 @@ void df::DFModelRunner::DFModelRunnerImpl::stopDataflow()
 		(*it).node->unlockSrcProcessing();
 	}
 
-	sourcesWait.unlock();
+	sourcesFinishWait.unlock();
 
 	for(auto it = sinks_.begin(); it != sinks_.end(); ++it)
 	{
@@ -528,11 +554,13 @@ void df::DFModelRunner::DFModelRunnerImpl::resetDataflowStatus()
 	dataToProcess = 0;
 	nonSourceElements = 0;
 	sourcesFinished_ = 0;
+	sourcesStarted_ = 0;
 	nonSourcesFinished_ = 0;
 	sourcesEmpty_ = false;
 	failure_ = false;
 	dataflowFinished_ = false;
 	paused_ = false;
+	sourcesStartWait.lock();
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::resetDataflowElements()

@@ -4,10 +4,8 @@
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( DataChannelTest );
 
-typedef utils::DiscreteDataChannel<float> FDChannel;
-typedef utils::ContiniousDataChannel<float> FCChannel;
-
-typedef utils::UniformTimeDataChannel<FDChannel> FUTDCChannel;
+typedef utils::RawUniformDataChannel<float, float> FDChannel;
+typedef utils::RawGeneralDataChannel<float, float> FCChannel;
 
 class DataChannelChangesCounter : public FCChannel::_MyObserverType
 {

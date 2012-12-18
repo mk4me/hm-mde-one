@@ -21,7 +21,6 @@ public:
 
 	virtual void consume()
 	{
-		std::cout << "Sink " << name << " consuming" << std::endl;
 		data_.push_back(inPinA->value());
 	}
 

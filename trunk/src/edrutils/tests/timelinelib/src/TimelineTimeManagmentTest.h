@@ -20,9 +20,9 @@ public:
 
     }
 
-    virtual timeline::IChannelPtr clone() const
+    virtual timeline::IChannel * clone() const
     {
-        return timeline::IChannelPtr(new TestClientChannel(*this));
+        return new TestClientChannel(*this);
     }
 
     virtual double getLength() const

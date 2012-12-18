@@ -41,8 +41,8 @@ void FFmpegVideoStreamTest::testConvert()
     StreamPtr stream(new FFmpegVideoStream(FILE_PATH));
     stream->setTime(0);
 
-    PixelFormat formats[] = { PixelFormatYV12, PixelFormatRGB24, PixelFormatBGRA };
-    BOOST_FOREACH(PixelFormat format, formats) {
+    VIDLIB_PixelFormat formats[] = { PixelFormatYV12, PixelFormatRGB24, PixelFormatBGRA };
+    BOOST_FOREACH(VIDLIB_PixelFormat format, formats) {
         ScopedPicture pict(stream->getWidth(), stream->getHeight(), format);
         stream->getFrame(pict);
     }

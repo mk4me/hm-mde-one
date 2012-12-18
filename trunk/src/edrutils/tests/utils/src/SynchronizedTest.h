@@ -36,7 +36,7 @@ private:
 
     public:
 
-        TestClass(utils::Synchronized<T> & obj) : object(&obj),
+        TestClass(utils::Synchronized<T, utils::StrictSyncPolicy> & obj) : object(&obj),
             triedLock(false), locked(false) {}
 
         ~TestClass() {}
@@ -55,16 +55,16 @@ private:
         {
             triedLock = false;
             locked = false;
-            TRY_LOCK(*object){
-                locked = true;
-            }
+            //TRY_LOCK(*object){
+            //    locked = true;
+            //}
 
             triedLock = true;
         }
 
     private:
 
-        utils::Synchronized<T> * object;
+        utils::Synchronized<T, utils::StrictSyncPolicy> * object;
         bool triedLock;
         bool locked;
     };
