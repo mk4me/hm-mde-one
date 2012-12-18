@@ -59,9 +59,10 @@ namespace utils
         }
     };
 
-    template<class T>
+	template<class T>
     class _Locker {
     public:
+		
         _Locker(T& m) : m_(m) { m_.lock(); run_ = true; }
         _Locker(T& m, int) : m_(m) { run_ = m_.try_lock(); }
         ~_Locker() { m_.unlock(); }

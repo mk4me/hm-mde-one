@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 project(EDR_UTILS)
 include("../../CMakeModules/Logic/ProjectUtils.cmake")
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CustomCMakeModules;${CMAKE_MODULE_PATH}")
-
 INITIALIZE_SOLUTION("BOOST;TINYXML;OSG;FFMPEG;STDINT;QT;EIGEN3;BTK;CURL;CPPUNIT;OPENTHREADS")
 
 # Czy skopiowaæ modu³y (niezlinkowane .so oraz .dll)?

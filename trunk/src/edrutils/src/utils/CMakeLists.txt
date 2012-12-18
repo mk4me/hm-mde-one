@@ -18,6 +18,8 @@ SET_PUBLIC_HEADERS(
 	DataChannelStats.h
 	Pool.h
 	Enum.h
+	IJob.h
+	IJobManager.h
 	NamedTree.h
 	PtrPolicyRaw.h
 	PtrPolicyBoost.h
@@ -32,11 +34,12 @@ SET_PUBLIC_HEADERS(
 	System.h
 	LeakDetection.h
 	Push.h
+	Serializable.h
 	Synchronized.h
 	SynchronizationPolicies.h
+	IThread.h
+	IThreadFactory.h
 )
-
-configure_file(configuration/Config.h.in  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/Config.h" )
 
 #------------------------------------------------------------------------------
 # Ÿród³a
@@ -46,5 +49,11 @@ SET_SOURCE_FILES(
 	NamedTree.cpp
 	Profiler.cpp
 )
+
+SET_CONFIGURATION_INPUT_FILES(
+	"Config.h.in"
+)
+
+CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")
 
 END_PROJECT()

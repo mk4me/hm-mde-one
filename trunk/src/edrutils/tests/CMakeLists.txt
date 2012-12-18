@@ -1,7 +1,5 @@
-SET_PROJECTS_GROUP("testy")
-
-ADD_TEST_PROJECT(vidlib "utils;vidlib;BOOST;CPPUNIT" "vidlib")
-ADD_TEST_PROJECT(kinematiclib "utils;kinematiclib;CPPUNIT" "kinematiclib")
-ADD_TEST_PROJECT(dfmlib "utils;testnodefactory;dfmlib;BOOST;CPPUNIT" "dfmlib")
-ADD_TEST_PROJECT(timelinelib "utils;timelinelib;BOOST;CPPUNIT" "timelinelib")
-ADD_TEST_PROJECT(utils "OSG;utils;CPPUNIT" "utils")
+ADD_TEST_PROJECT(vidlib "vidlib;BOOST")
+ADD_TEST_PROJECT(utils "OSG;utils")
+ADD_TEST_PROJECT(kinematiclib "kinematiclib")
+ADD_TEST_PROJECT(dflib "dflib;BOOST;QT;OSG")
+ADD_TEST_PROJECT(timelinelib "timelinelib;utils;BOOST")

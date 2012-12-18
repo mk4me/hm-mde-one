@@ -75,26 +75,11 @@ SET_PUBLIC_HEADERS(
 SET_SOURCE_FILES(
 	${SOURCE}
 )
-#------------------------------------------------------------------------------
-# konfiguracja
-#SET_CONFIGURATION_INPUT_FILES( Config.h.in )
-#set(CONFIG_INPUT_FILE Config.h.in)
-configure_file(configuration/Config.h.in  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/Config.h" )
-# Kopiujemy konfiguracja
-#configure_file( ${CONFIG_INPUT_FILE} "${PROJECT_BINARY_DIR}/Config.h" )
-#source_group("Configuration template" FILES ${CONFIG_INPUT_FILE})
-#source_group("Local configuration" FILES "${PROJECT_BINARY_DIR}/Config.h")
 
+SET_CONFIGURATION_INPUT_FILES(
+	"Config.h.in"
+)
 
-
-# # kompilacja do wspó³dzielonej biblioteki
-# if (CONFIG_VIDLIB_LIBRARY_STATIC)
-	# add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})
-# else()
-	# add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
-	# if(WIN32)
-		# install(TARGETS ${TARGET_TARGETNAME} RUNTIME DESTINATION bin COMPONENT ${PROJECT_NAME})
-	# endif(WIN32)
-# endif()
+CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")
 
 END_PROJECT()
