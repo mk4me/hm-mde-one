@@ -12,7 +12,7 @@
 #include <QtGui/QApplication>
 #include <core/src/PluginLoader.h>
 #include "Log.h"
-#include <core/Config.h>
+#include <corelib/Config.h>
 #include "LogInitializer.h"
 #include <core/ObjectWrapperCollection.h>
 #include <QtCore/QSettings>

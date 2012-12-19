@@ -12,7 +12,9 @@ BEGIN_PROJECT("static")
 SET_CONFIGURATION_INPUT_FILES(
 	"Config.h.in"
 )
-configure_file( "configuration/Config.h.in" "${PROJECT_BINARY_DIR}/core/Config.h" )
+
+CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")
+
 
 SET_SOURCE_FILES(
 	Window.cpp

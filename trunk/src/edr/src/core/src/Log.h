@@ -11,7 +11,7 @@
 
 
 // tymczasowe rozwiązanie: używamy strumieni OSG
-#include <core/Config.h>
+#include <corelib/Config.h>
 #include <string>
 
 #include <core/ILog.h>
