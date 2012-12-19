@@ -55,10 +55,6 @@ set(CPACK_COMPONENTS_ALL plugin_newCommunication plugin_c3d core plugin_newChart
 option(ENABLE_CPACK "Set on to enable CPack" OFF)
 option(ENABLE_CTEST "Set on to enable CTest" OFF)
 
-if(ENABLE_CTEST)
-	#wlaczamy CTest
-	include(CTest)
-endif()
 if(ENABLE_CPACK) 
 	#konfigurujemy cpacka w zaleznosci od systemu operacyjnego
 	if(WIN32)
