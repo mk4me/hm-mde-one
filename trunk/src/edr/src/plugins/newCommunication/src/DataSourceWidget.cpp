@@ -979,6 +979,36 @@ void DataSourceWidget::onActivate()
 	}
 }
 
+void DataSourceWidget::onPasswordReset()
+{
+	if(emailResetEdit->text().isEmpty() == true){
+		QMessageBox messageBox(this);
+		messageBox.setWindowTitle(tr("Password reset validation"));
+		messageBox.setText(tr("E-mail field must be filled correctly for password reset procedure."));
+		messageBox.setIcon(QMessageBox::Warning);
+		messageBox.setStandardButtons(QMessageBox::Ok);
+		messageBox.setDefaultButton(QMessageBox::Ok);
+		messageBox.exec();
+	}else if(dataSource->tryResetPassword(emailResetEdit->text().toStdString())){
+		QMessageBox messageBox(this);
+		messageBox.setWindowTitle(tr("Password reset successful"));
+		messageBox.setText(tr("For the given email address further instructions about password reset procedure have been sent. Check your email in several minutes. Check your spam if no email have been received. Contact application administrator if email was not received in more than 2 hours."));
+		messageBox.setIcon(QMessageBox::Information);
+		messageBox.setStandardButtons(QMessageBox::Ok);
+		messageBox.setDefaultButton(QMessageBox::Ok);
+		messageBox.exec();
+		setCurrentIndex(0);
+	}else{
+		QMessageBox messageBox(this);
+		messageBox.setWindowTitle(tr("Password reset failed"));
+		messageBox.setText(tr("Either given email was not registered or there is some problem with database and connection. Try again in several minutes. If problem continues contact application administrator."));
+		messageBox.setIcon(QMessageBox::Critical);
+		messageBox.setStandardButtons(QMessageBox::Ok);
+		messageBox.setDefaultButton(QMessageBox::Ok);
+		messageBox.exec();
+	}
+}
+
 void DataSourceWidget::onPerspectiveChange(int idx)
 {
 	auto currentPW = perspectiveManager.currentPerspectiveWidget();

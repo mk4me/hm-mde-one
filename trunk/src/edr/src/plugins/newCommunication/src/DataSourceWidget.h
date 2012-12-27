@@ -118,6 +118,7 @@ private slots:
     void onLoginRecovery();
     void onRegistration();
 	void onActivate();
+	void onPasswordReset();
 
     //! Zmiana perspektywy
     void onPerspectiveChange(int idx);

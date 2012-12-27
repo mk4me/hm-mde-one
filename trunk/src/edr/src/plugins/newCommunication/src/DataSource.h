@@ -97,6 +97,10 @@ private:
 	//! \return Czy udało się aktywować konto
 	bool tryActivateAccount(const std::string & login, const std::string & activationCode);
 
+	//! \param email Konto pocztowe związane z naszym użytkownikiem, dla którego chcemy zmienić hasło
+	//! \return Czy poprawnie zresetowano hasło
+	bool tryResetPassword(const std::string & email);
+
 	//! Metoda zakłada konto użytkownika w obu bazach danych - medycznej i ruchu
 	//! \param login Login użytkownika
 	//! \param email Email użytkownika

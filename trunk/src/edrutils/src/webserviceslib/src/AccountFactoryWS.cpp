@@ -57,6 +57,19 @@ bool SingleAccountFactoryWS::activateUserAccount(const std::string & login, cons
 	return ret;
 }
 
+bool SingleAccountFactoryWS::resetPassword(const std::string & email)
+{
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
+	webservices::IWSConnection::ScopedLock lockConn(*connection_);
+	connection_->setOperation("ResetPassword");
+	connection_->setValue("email", email);
+	connection_->invoke(true);
+	bool ret = false;
+	connection_->getValue("ResetPasswordResult", ret);
+
+	return ret;
+}
+
 //Multi
 
 MultiAccountFactoryWS::MultiAccountFactoryWS(const WSConnectionPtr & connection) : connection_(connection), constConnection_(connection)
@@ -112,6 +125,20 @@ bool MultiAccountFactoryWS::activateUserAccount(const std::string & login, const
 	connection_->invoke(true);
 	bool ret = false;
 	connection_->getValue("ActivateUserAccountResult", ret);
+
+	return ret;
+}
+
+bool MultiAccountFactoryWS::resetPassword(const std::string & email, bool propagateToHMDB)
+{
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
+	webservices::IWSConnection::ScopedLock lockConn(*connection_);
+	connection_->setOperation("ResetPassword");
+	connection_->setValue("propagateToHMDB", propagateToHMDB);
+	connection_->setValue("email", email);
+	connection_->invoke(true);
+	bool ret = false;
+	connection_->getValue("ResetPasswordResult", ret);
 
 	return ret;
 }

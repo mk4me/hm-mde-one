@@ -778,6 +778,20 @@ bool CommunicationDataSource::tryActivateAccount(const std::string & login, cons
 	return ret;
 }
 
+bool CommunicationDataSource::tryResetPassword(const std::string & email)
+{
+	bool ret = false;
+	try{
+		ret = DataSourceWebServicesManager::instance()->accountFactoryService()->resetPassword(email, true);
+	}catch(std::exception & ){
+
+	}catch(...){
+
+	}
+
+	return ret;
+}
+
 bool CommunicationDataSource::registerUser(const std::string & login, const std::string & email, const std::string & password,
 	const std::string & firstName, const std::string & lastName)
 {

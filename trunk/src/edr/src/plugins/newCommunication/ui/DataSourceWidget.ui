@@ -109,7 +109,7 @@
   </widget>
   <widget class="QWidget" name="userDataTab">
    <attribute name="icon">
-    <iconset resource="Icons.qrc">
+    <iconset resource="newCommunicationIcons.qrc">
      <normaloff>:/resources/icons/osobowe.png</normaloff>:/resources/icons/osobowe.png</iconset>
    </attribute>
    <attribute name="title">
@@ -118,7 +118,7 @@
   </widget>
   <widget class="QWidget" name="configTab">
    <attribute name="icon">
-    <iconset resource="../../../hmm_view/ui/Icons.qrc">
+    <iconset resource="../../../hmm_view/ui/hmmViewIcons.qrc">
      <normaloff>:/resources/icons/OperacjeP.png</normaloff>:/resources/icons/OperacjeP.png</iconset>
    </attribute>
    <attribute name="title">
@@ -187,7 +187,7 @@
             <x>0</x>
             <y>0</y>
             <width>245</width>
-            <height>219</height>
+            <height>192</height>
            </rect>
           </property>
           <attribute name="label">
@@ -601,6 +601,72 @@
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="passwordResetPage">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>245</width>
+            <height>192</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>Password Reset</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <widget class="QLabel" name="emailResetLabel">
+               <property name="text">
+                <string>E-mail:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="emailResetEdit"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QPushButton" name="resetButton">
+               <property name="text">
+                <string>Reset</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>112</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
        <item>
@@ -634,8 +700,8 @@
  </widget>
  <resources>
   <include location="../../../core/ui/CoreIcons.qrc"/>
-  <include location="Icons.qrc"/>
-  <include location="../../../hmm_view/ui/Icons.qrc"/>
+  <include location="newCommunicationIcons.qrc"/>
+  <include location="../../../hmm_view/ui/hmmViewIcons.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -750,6 +816,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>resetButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DataSourceWidget</receiver>
+   <slot>onPasswordReset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>67</x>
+     <y>197</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onLogin()</slot>
@@ -763,5 +845,6 @@
   <slot>perspectiveContextMenu(QPoint)</slot>
   <slot>onActivate()</slot>
   <slot>connectionModeChanged()</slot>
+  <slot>onPasswordReset()</slot>
  </slots>
 </ui>

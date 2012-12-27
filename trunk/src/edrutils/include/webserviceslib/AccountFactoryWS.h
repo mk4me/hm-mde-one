@@ -32,6 +32,8 @@ namespace webservices{
 
 		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode);
 
+		virtual bool resetPassword(const std::string & email);
+
 	private:
 		mutable OpenThreads::ReentrantMutex * mutex;
 		WSConnectionPtr connection_;
@@ -57,6 +59,8 @@ namespace webservices{
 
 		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode,
 			bool propagateToHMDB);
+
+		virtual bool resetPassword(const std::string & email, bool propagateToHMDB);
 
 	private:
 		mutable OpenThreads::ReentrantMutex * mutex;

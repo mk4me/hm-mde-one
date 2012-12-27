@@ -32,6 +32,10 @@ namespace webservices
 		//! \param activationCode Kod aktywacyjny którym aktywujemy - przysdzedł na zarejestrowany email
 		//! \return Prawda jeśli poprawnie aktywowano
 		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode) = 0;
+
+		//! \param email Konto pocztowe związane z naszym użytkownikiem, dla którego chcemy zmienić hasło
+		//! \return Czy poprawnie zresetowano hasło
+		virtual bool resetPassword(const std::string & email) = 0;
 	};
 
 	typedef boost::shared_ptr<ISingleAccountFactoryWS> SingleAccountFactoryWSPtr;
@@ -51,14 +55,19 @@ namespace webservices
 		//! \param lastName Nazwisko użytkownika
 		//! \param propagateToHMDB Informacja czy utworzyć automatycznie konta w obu usługach
 		virtual void createUserAccount(const std::string & login, const std::string & email, const std::string & password,
-			const std::string & firstName, const std::string & lastName, bool propagateToHMDB = false) = 0;
+			const std::string & firstName, const std::string & lastName, bool propagateToHMDB) = 0;
 
 		//! \param login Login który chcemy aktywować
 		//! \param activationCode Kod aktywacyjny którym aktywujemy - przysdzedł na zarejestrowany email
 		//! \param propagateToHMDB Informacja czy aktywować automatycznie konta w obu usługach
 		//! \return Prawda jeśli poprawnie aktywowano
 		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode,
-			bool propagateToHMDB = false) = 0;
+			bool propagateToHMDB) = 0;
+
+		//! \param email Konto pocztowe związane z naszym użytkownikiem, dla którego chcemy zmienić hasło
+		//! \param propagateToHMDB Informacja czy aktywować automatycznie konta w obu usługach
+		//! \return Czy poprawnie zresetowano hasło
+		virtual bool resetPassword(const std::string & email, bool propagateToHMDB) = 0;
 	};
 
 	typedef boost::shared_ptr<IMultiAccountFactoryWS> MultiAccountFactoryWSPtr;
