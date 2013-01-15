@@ -56,11 +56,10 @@
 
 #include "EDRDockWidget.h"
 #include <QtCore/QFile>
-#include "WorkflowService.h"
-#include "WorkflowWidget.h"
 #include "LocalDataSource.h"
+#include "CustomApplication.h"
 
-DEFINE_DEFAULT_LOGGER("edr.core");
+//DEFINE_DEFAULT_LOGGER("edr.core");
 
 using namespace core;
 
@@ -152,30 +151,26 @@ void MainWindow::showSplashScreenMessage(const QString & message, int alignment,
     QCoreApplication::processEvents();
 }
 
-void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAccessor)
+void MainWindow::init(PluginLoader* pluginLoader, ExtendedCustomApplication * coreApplication)
 {
     instance = this;
 	this->pluginLoader = pluginLoader;
-    this->managersAccessor = managersAccessor;
-    //setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
+    this->coreApplication = coreApplication;
 
     splashScreen_->setVisible(true);
     QCoreApplication::processEvents();
-
-    showSplashScreenMessage(tr("Preparing application core managers"));
-
-    DataManager* dataManager = DataManager::getInstance();
-    ServiceManager* serviceManager = ServiceManager::getInstance();
-	SourceManager * sourceManager = SourceManager::getInstance();
-	EDRConfig* directoriesInfo = EDRConfig::getInstance();
 
     showSplashScreenMessage(tr("Registering application core data sources"));
 
     registerCoreDataSources();
 
+	showSplashScreenMessage(tr("Registering application core domain types"));
+
+	registerCoreDomainTypes();
+
     showSplashScreenMessage(tr("Registering plugins"));
 
-	Filesystem::Path pluginPath = getApplicationDataPath() / "plugins";
+	Filesystem::Path pluginPath = core::getPluginPath();
 
 	if(Filesystem::pathExists(pluginPath) == true) {
         Filesystem::Iterator endIT;
@@ -187,41 +182,23 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 	}
     pluginLoader->load();
 
-    showSplashScreenMessage(tr("Registering plugins data types"));
+	for(int i = 0; i < pluginLoader->getNumPlugins(); ++i)
+	{
+		unpackPlugin(pluginLoader->getPlugin(i));
+	}
 
-    registerPluginsWrapperFactories();
-
-    showSplashScreenMessage(tr("Registering plugins services"));
-
-    registerPluginsServices();
-
-	showSplashScreenMessage(tr("Registering plugins sources"));
-
-	registerPluginsSources();
-
-    showSplashScreenMessage(tr("Registering plugins parsers"));
-
-	registerPluginsParsers();
-
-    showSplashScreenMessage(tr("Registering plugins visualizers"));
-
-    registerPluginsVisualizers();
-
-    showSplashScreenMessage(tr("Registering plugins data processors"));
-
-    registerPluginsDataProcessors();
-
-    showSplashScreenMessage(tr("Registering plugins data sources"));
-
-    registerPluginsDataSources();
-
-	findResources(directoriesInfo->getResourcesPath().string());
+	findResources(core::getResourcesPath().string());
 
 	showSplashScreenMessage(tr("Initializing services"));
 
+	auto serviceManager = core::getServiceManager();
+
 	// inicjalizacja usług
 	for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-		serviceManager->getService(i)->init(managersAccessor);
+		serviceManager->getService(i)->init(coreApplication->sourceManager(),
+			coreApplication->dataSourceManager(), coreApplication->dataProcessorManager(),
+			nullptr, coreApplication->visualizerManager(),
+			coreApplication->dataManager(), coreApplication->dataManager());
 	}
 
 	// inicjalizacja usług
@@ -231,15 +208,12 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 
 	showSplashScreenMessage(tr("Initializing sources"));
 
+	auto sourceManager = coreApplication->sourceManager();
+
 	// inicjalizacja źródeł
 	for (int i = 0; i < sourceManager->getNumSources(); ++i) {
-		sourceManager->getSource(i)->init(dataManager, dataManager, serviceManager);
+		sourceManager->getSource(i)->init(coreApplication->dataManager(), coreApplication->dataManager(), serviceManager);
 	}
-
-    //initializeConsole();          // Console Widget
-    //InitializeControlWidget();          // Control Widget + TimeLine
-    //visualizerManager->setDebugWidget(widgetSceneGraph);
-
 
     readSettings(QSettings(), true);
 
@@ -247,8 +221,6 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
     connect(&serviceTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
 	visualizerTimer.start(20);
     serviceTimer.start(20);
-
-
 
     splashScreen_->setVisible(false);
     QCoreApplication::processEvents();
@@ -376,7 +348,7 @@ void MainWindow::safeRegisterService(const IServicePtr & service)
 {
     try{
 
-        ServiceManager::getInstance()->registerService(service);
+        coreApplication->serviceManager()->registerService(service);
 
     }catch(std::exception & e){
         LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
@@ -392,7 +364,7 @@ void MainWindow::safeRegisterSource(const ISourcePtr & source)
 {
 	try{
 
-		SourceManager::getInstance()->registerSource(source);
+		coreApplication->sourceManager()->registerSource(source);
 
 	}catch(std::exception & e){
 		LOG_WARNING("Source " << source->getName() << " with ID " << source->getID() <<
@@ -420,18 +392,18 @@ void MainWindow::safeRegisterParser(const IParserPtr & parser)
     }
 }
 
-void MainWindow::safeRegisterObjectFactory(const IObjectWrapperFactoryPtr & factory)
+void MainWindow::safeRegisterObjectWrapperPrototype(const ObjectWrapperConstPtr & prototype)
 {
     try{
 
-        DataManager::getInstance()->registerObjectFactory(factory);
+        DataManager::getInstance()->registerObjectWrapperPrototype(prototype);
 
     }catch(std::exception & e){
-        LOG_WARNING("Object factory for type " << factory->getType().name() << " has caused an error during registration: "
+        LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an error during registration: "
             << e.what() << ". Object type NOT registered in application!" );
     }
     catch(...){
-        LOG_WARNING("Object factory for type " << factory->getType().name() << " has caused an UNKNOWN error during registration. Object type NOT registered in application!" );
+        LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an UNKNOWN error during registration. Object type NOT registered in application!" );
     }
 }
 
@@ -485,82 +457,67 @@ void MainWindow::safeRegisterDataSource(const IDataSourcePtr & dataSource)
 
 void MainWindow::registerCoreDataSources()
 {
-    DataSourceManager::getInstance()->registerDataSource(IDataSourcePtr(new LocalDataSource()));
+    safeRegisterDataSource(IDataSourcePtr(new LocalDataSource()));
 }
 
-void MainWindow::registerPluginsServices()
+void MainWindow::registerCoreDomainTypes()
 {
-    for ( int i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
-        PluginPtr plugin = pluginLoader->getPlugin(i);
-        for ( int j = 0; j < plugin->getNumServices(); ++j ) {
-            safeRegisterService(plugin->getService(j));
-        }
-    }
+	safeRegisterObjectWrapperPrototype(ObjectWrapper::create<int>());
+	safeRegisterObjectWrapperPrototype(ObjectWrapper::create<double>());
 }
 
-void MainWindow::registerPluginsSources()
+void MainWindow::unpackPlugin(const core::PluginPtr & plugin)
 {
-	for ( int i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
-		PluginPtr plugin = pluginLoader->getPlugin(i);
-		for ( int j = 0; j < plugin->getNumSources(); ++j ) {
-			safeRegisterSource(plugin->getSource(j));
-		}
+	auto message = tr("Loading plugin %1 content: %2").arg(QString::fromStdString(plugin->getName()));
+	
+	showSplashScreenMessage(message.arg(tr("services")));
+	
+	for ( int j = 0; j < plugin->getNumServices(); ++j ) {
+		safeRegisterService(plugin->getService(j));
 	}
+
+	showSplashScreenMessage(message.arg(tr("sources")));
+
+	for ( int j = 0; j < plugin->getNumSources(); ++j ) {
+		safeRegisterSource(plugin->getSource(j));
+	}
+
+	showSplashScreenMessage(message.arg(tr("parsers")));
+
+	for(int j = 0; j < plugin->getNumParsers(); ++j) {
+		safeRegisterParser(plugin->getParser(j));
+	}
+
+	showSplashScreenMessage(message.arg(tr("domain objects")));
+
+	for(int j = 0; j < plugin->getNumObjectWrapperPrototypes(); ++j) {
+		safeRegisterObjectWrapperPrototype(plugin->getObjectWrapperPrototype(j));
+	}
+
+	showSplashScreenMessage(message.arg(tr("visualizers")));
+
+	for(int j = 0; j < plugin->getNumVisualizers(); ++j) {
+		safeRegisterVisualizer(plugin->getVisualizer(j));
+	}
+
+	showSplashScreenMessage(message.arg(tr("data sources")));
+
+	for(int j = 0; j < plugin->getNumDataSources(); ++j) {
+		safeRegisterDataSource(plugin->getDataSource(j));
+	}
+
+	showSplashScreenMessage(message.arg(tr("data processors")));
+
+	for(int j = 0; j < plugin->getNumDataProcessors(); ++j) {
+		safeRegisterDataProcessor(plugin->getDataProcessor(j));
+	}
+
+	showSplashScreenMessage(message.arg(tr("data sinks")));
+
+	//TODO
+	//ładowanie sinków
+
 }
-
-void MainWindow::registerPluginsParsers()
-{
-    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
-        PluginPtr plugin = pluginLoader->getPlugin(i);
-        for(int j = 0; j < plugin->getNumParsers(); ++j) {
-            safeRegisterParser(plugin->getParser(j));
-        }
-    }
-
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<int>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<double>()) );
-}
-
-void MainWindow::registerPluginsWrapperFactories()
-{
-    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
-        PluginPtr plugin = pluginLoader->getPlugin(i);
-        for(int j = 0; j < plugin->getNumWrapperFactories(); ++j) {
-            safeRegisterObjectFactory(plugin->getWrapperFactory(j));
-        }
-    }
-}
-
-void MainWindow::registerPluginsVisualizers()
-{
-    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
-        PluginPtr plugin = pluginLoader->getPlugin(i);
-        for(int j = 0; j < plugin->getNumVisualizers(); ++j) {
-            safeRegisterVisualizer(plugin->getVisualizer(j));
-        }
-    }
-}
-
-void MainWindow::registerPluginsDataProcessors()
-{
-    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
-        PluginPtr plugin = pluginLoader->getPlugin(i);
-        for(int j = 0; j < plugin->getNumDataProcessors(); ++j) {
-            safeRegisterDataProcessor(plugin->getDataProcessor(j));
-        }
-    }
-}
-
-void MainWindow::registerPluginsDataSources()
-{
-    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
-        PluginPtr plugin = pluginLoader->getPlugin(i);
-        for(int j = 0; j < plugin->getNumDataSources(); ++j) {
-            safeRegisterDataSource(plugin->getDataSource(j));
-        }
-    }
-}
-
 
 QDockWidget* MainWindow::embeddWidget( QWidget* widget, const ActionsGroupManager & widgetActions, const QString& name, const QString& style, const QString& sufix,
     Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)

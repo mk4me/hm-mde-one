@@ -14,13 +14,15 @@
 #include "InputItem.h"
 #include "ActionsGroupManager.h"
 
+namespace core {
+
 //! Wizualizator. Jego zadaniem jest stworzyć widget (gdzie on będzie osadzony - nie jego sprawa),
 //! zadeklarować ile źródeł i jakiego typu jest w stanie obsłużyć oraz przyjąć źródła danych.
-class Visualizer : public QObject, public InputItem<core::IVisualizer>
+class Visualizer : public QObject, public InputItem<plugin::IVisualizer>
 {
         Q_OBJECT;
 public:
-    typedef std::set<core::VisualizerSeriePtr> DataSeries;
+    typedef std::set<plugin::VisualizerSeriePtr> DataSeries;
 
 private:
     //! Faktyczny widget.
@@ -36,7 +38,7 @@ private:
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na własność.
-    Visualizer( core::IVisualizer* impl );
+    Visualizer( plugin::IVisualizer* impl );
     //! Konstuktor kopiujący - głęboka kopia. Nie kopiuje widgeta.
     Visualizer( const Visualizer& visualizer );
     //! Niepolimorficzny (!) destruktor 
@@ -68,11 +70,11 @@ public:
 
     const DataSeries & getDataSeries() const;
 
-    const core::VisualizerSeriePtr & createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name);
+    const plugin::VisualizerSeriePtr & createSerie(const ObjectWrapperConstPtr & data, const std::string & name);
 
-    const core::VisualizerSeriePtr & createSerie(const core::VisualizerSerieConstPtr & serie);
+    const plugin::VisualizerSeriePtr & createSerie(const plugin::VisualizerSerieConstPtr & serie);
 
-    void removeSerie(const core::VisualizerSeriePtr & serie);
+    void removeSerie(const plugin::VisualizerSeriePtr & serie);
 
     void clearAllSeries();
 
@@ -89,5 +91,7 @@ typedef core::shared_ptr<Visualizer> VisualizerPtr;
 typedef core::shared_ptr<const Visualizer> VisualizerConstPtr;
 typedef core::weak_ptr<Visualizer> VisualizerWeakPtr;
 typedef core::weak_ptr<const Visualizer> VisualizerConstWeakPtr;
+
+}
 
 #endif  // HEADER_GUARD_CORE__VISUALIZER_H__

@@ -9,36 +9,38 @@
 #ifndef HEADER_GUARD_CORE__OUTPUTITEM_H__
 #define HEADER_GUARD_CORE__OUTPUTITEM_H__
 
-#include "WorkflowItemEncapsulator.h"
 #include "OutputDescription.h"
 #include <core/IInputProcessItem.h>
 #include <core/IOutputProcessItem.h>
 
+namespace core {
+
 template<class T>
-class OutputItem : public WorkflowItemEncapsulator<T> , public OutputDescription
+class OutputItem : public OutputDescription
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<core::IOutputProcessItem, T>::value), "Template class should inherit from core::IOutputProcessItem");
+    UTILS_STATIC_ASSERT((boost::is_base_of<IOutputProcessItem, T>::value), "Template class should inherit from core::IOutputProcessItem");
 public:
     OutputItem(T* implementation, const ObjectOutput& output) :
-      WorkflowItemEncapsulator<T>(implementation),
+      //WorkflowItemEncapsulator<T>(implementation),
           OutputDescription(output)
       {}
 
       OutputItem(const OutputItem& item) :
-      WorkflowItemEncapsulator<T>(item),
+      //WorkflowItemEncapsulator<T>(item),
           OutputDescription(createOutput())
       {}
 
       OutputItem( T* implementation ) :
-      WorkflowItemEncapsulator<T>(implementation),
+      //WorkflowItemEncapsulator<T>(implementation),
           OutputDescription(createOutput())
       {}
 public:
     virtual void run()
     {
-        getImplementation()->generate(getOutput());
+        //getImplementation()->generate(getOutput());
     }
 };
 
+}
 
 #endif

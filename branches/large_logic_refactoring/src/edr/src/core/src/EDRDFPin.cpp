@@ -1,6 +1,5 @@
 #include "CorePCH.h"
 #include "EDRDFPin.h"
-#include "DataManager.h"
 
 EDRDFPin::EDRDFPin(ObjectSlots * objectSlots, int slotNo, const dflm::Pin::ReqPinsSet & requiredPins)
     : dflm::DFPin(objectSlots->getSlotInfo(slotNo).name, objectSlots->getSlotInfo(slotNo).required, requiredPins), slotNo(slotNo),

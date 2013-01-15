@@ -9,13 +9,15 @@
 
 #include "ManagerHelper.h"
 
-class ServiceManager: public core::IServiceManager, public ManagerHelper<ServiceManager>
+namespace core {
+
+class ServiceManager: public plugin::IServiceManager, public ManagerHelper<ServiceManager>
 {
 public:
     //! Słownik usług.
-    typedef std::map<UniqueID, core::IServicePtr> ServicesMap;
+    typedef std::map<UniqueID, plugin::IServicePtr> ServicesMap;
     //! Sekwencja usług.
-    typedef std::vector<core::IServicePtr> ServicesList;
+    typedef std::vector<plugin::IServicePtr> ServicesList;
 
 private:
     //! Słownik usług.
@@ -38,15 +40,17 @@ public:
 public:
     //! Rejestruje usługę. Usługi muszą mieć unikatowe ID!
     //! \param service Usłguga do rejestracji.
-    virtual void registerService(core::IServicePtr service);
+    virtual void registerService(plugin::IServicePtr service);
     //! \return Liczba usług.
     virtual int getNumServices() const;
     //! \param idx Indeks usługi.
     //! \return Usługa o zadanym indeksie.
-    virtual core::IServicePtr getService(int idx);
+    virtual plugin::IServicePtr getService(int idx);
     //! \param id ID usługi do wyszukania.
     //! \return Odnaleziona usługa bądź NULL.
-    virtual core::IServicePtr getService(UniqueID id);
+    virtual plugin::IServicePtr getService(UniqueID id);
 };
+
+}
 
 #endif //SERVICE_MANAGER_H

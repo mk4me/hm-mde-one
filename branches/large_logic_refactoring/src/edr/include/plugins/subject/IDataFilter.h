@@ -24,8 +24,9 @@ class IFilteredDataFactory
 public:
     virtual ~IFilteredDataFactory() {}
 
-    virtual MotionPtr createFilteredMotion(const MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const = 0;
-    virtual SessionPtr createFilteredSession(const SessionConstPtr & originalSession, const std::vector<MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const = 0;
+    virtual core::ObjectWrapperPtr createFilteredMotion(const core::ObjectWrapperConstPtr & originalMotion, const core::ConstObjectsList & wrappers) const = 0;
+    virtual core::ObjectWrapperPtr createFilteredSession(const core::ObjectWrapperConstPtr & originalSession, const core::ConstObjectsList & motions, const core::ConstObjectsList & wrappers) const = 0;
+	virtual core::ObjectWrapperPtr createFilteredSubject(const core::ObjectWrapperConstPtr & originalSubject, const core::ConstObjectsList & sessions) const = 0;
 };
 
 //! klasa stanowi interfejs dla wszystkich filtrow sesji
@@ -42,22 +43,22 @@ public:
 
     virtual ~IDataFilter() {}
 public:
-    SessionPtr filterData(const SessionConstPtr & session) const
+    core::ObjectWrapperPtr filterData(const core::ObjectWrapperConstPtr & session) const
     {
         if(!filteredDataFactory || !session){
-            return SessionPtr();
+            return core::ObjectWrapper::create<ISession>();
         }
 
         return doDataFiltering(session);
     }
 
-    std::vector<SessionPtr> filterData(const std::vector<SessionConstPtr>& sessions) const
+    core::ConstObjectsList filterData(const core::ConstObjectsList& sessions) const
     {
         if(filteredDataFactory == nullptr){
-            return std::vector<SessionPtr>();
+            return core::ConstObjectsList();
         }
 
-        std::vector<SessionPtr> ret;
+        core::ConstObjectsList ret;
         for (auto it = sessions.begin(); it != sessions.end(); ++it) {
             auto filtered = doDataFiltering(*it);
             if (filtered) {
@@ -70,38 +71,40 @@ public:
 
 protected:
 
-    virtual SessionPtr doDataFiltering(const SessionConstPtr & session) const = 0;
+    virtual core::ObjectWrapperPtr doDataFiltering(const core::ObjectWrapperConstPtr & session) const = 0;
 
-    SessionPtr cloneSession(const SessionConstPtr & session) const
+    core::ObjectWrapperPtr cloneSession(const core::ObjectWrapperConstPtr & sessionOW) const
     {
-        Motions motions;
+        core::ConstObjectsList motions;
+		PluginSubject::SessionConstPtr session = sessionOW->get();
         session->getMotions(motions);
 
-        std::vector<MotionPtr> newMotions;
+        core::ConstObjectsList newMotions;
 
         for(auto it = motions.begin(); it != motions.end(); ++it){
             newMotions.push_back(cloneMotion(*it));
         }
 
-        std::vector<core::ObjectWrapperConstPtr> objects;
+        core::ConstObjectsList objects;
         session->getWrappers(objects);
 
-        return createFilteredSession(session, newMotions, objects);
+        return createFilteredSession(sessionOW, newMotions, objects);
     }
 
-    MotionPtr cloneMotion(const MotionConstPtr & motion) const
+    core::ObjectWrapperPtr cloneMotion(const core::ObjectWrapperConstPtr & motionOW) const
     {
-        std::vector<core::ObjectWrapperConstPtr> objects;
+        core::ConstObjectsList objects;
+		PluginSubject::MotionConstPtr motion = motionOW->get();
         motion->getWrappers(objects);
-        return createFilteredMotion(motion, objects);
+        return createFilteredMotion(motionOW, objects);
     }
 
-    virtual MotionPtr createFilteredMotion(const MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const
+    virtual core::ObjectWrapperPtr createFilteredMotion(const core::ObjectWrapperConstPtr & originalMotion, const core::ConstObjectsList & wrappers) const
     {
         return filteredDataFactory->createFilteredMotion(originalMotion, wrappers);
     }
 
-    virtual SessionPtr createFilteredSession(const SessionConstPtr & originalSession, const std::vector<MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const
+    virtual core::ObjectWrapperPtr createFilteredSession(const core::ObjectWrapperConstPtr & originalSession, const core::ConstObjectsList & motions, const core::ConstObjectsList & wrappers) const
     {
         return filteredDataFactory->createFilteredSession(originalSession, motions, wrappers);
     }

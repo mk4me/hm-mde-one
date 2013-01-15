@@ -2,8 +2,6 @@
 #define PLUGIN_SERVICE_H
 
 #include <vector>
-#include <string>
-#include <deque>
 #include <core/Plugin.h>
 #include <core/SmartPtr.h>
 #include <utils/Debug.h>
@@ -25,19 +23,30 @@ class PluginLoader
 {
 public:
     //! Ścieżki wyszukiwania.
-    typedef std::deque<std::string> Paths;
+    typedef std::list<Filesystem::Path> Paths;
 
 private:
 
-    typedef std::pair<PluginPtr, PluginConstPtr> PluginPair;
+	//! Struktura opisująca załadowany plugin
+	struct PluginData {
+		//! Wskaźnik do pluginu
+		PluginPtr plugin;
+		//! Wskaźnik do const pluginu
+		PluginConstPtr constPlugin;
+		//! Wskaźnik do dedykowanej implementacji interfejcu core::IApplication
+		core::shared_ptr<core::IApplication> coreApplication;
+		//! Uchwyt do biblioteki
+		HMODULE handle;
+		//! Dedykowany loger
+		core::shared_ptr<core::ILog> logger;
+		//! Dedykowane ściezki
+		core::shared_ptr<core::IPath> path;
+	};
+
     //! Załadowane pluginy.
-    typedef std::vector<PluginPair> Plugins;
-    //! Uchwyty do bibliotek dynamicznie ładowanych.
-    typedef std::vector<HMODULE> Handles;
+    typedef std::vector<PluginData> Plugins;
 
 private:
-    //! Uchwyty do bibliotek dynamicznie ładowanych.
-    Handles libraries;
     //! Załadowane pluginy.
     Plugins plugins;
     //! Ścieżki wyszukiwania.
@@ -55,7 +64,7 @@ public:
     //! Ładuje pluginy.
     void load();
 
-	void addPath(const std::string& path)
+	void addPath(const Filesystem::Path& path)
 	{
 		this->paths.push_back(path);
 	}
@@ -69,13 +78,13 @@ public:
     //! \param idx
     const PluginPtr & getPlugin(int idx)
     {
-        return plugins[idx].first;
+        return plugins[idx].plugin;
     }
     //!
     //! \param idx
     const PluginConstPtr & getPlugin(int idx) const
     {
-        return plugins[idx].second;
+        return plugins[idx].constPlugin;
     }
     //! \return
     const Paths& getPaths() const
@@ -112,32 +121,26 @@ public:
 private:
     //!
     //! \param path
-    bool addPlugIn(const std::string& path);
+    bool addPlugIn(const Filesystem::Path& path);
 
     //!
     //! \param library
     //! \param path
-    bool checkPluginVersion( HMODULE library, const std::string& path );
+    bool checkPluginVersion( HMODULE library, const Filesystem::Path& path );
 
     //!
     //! \param library
     //! \param path
-    bool checkPluginBuildType( HMODULE library, const std::string& path );
+    bool checkPluginBuildType( HMODULE library, const Filesystem::Path& path );
     //!
     //! \param library
     //! \param path
-    bool checkLibrariesVersions( HMODULE library, const std::string& path );
+    bool checkLibrariesVersions( HMODULE library, const Filesystem::Path& path );
     //!
     //! \param path
     //! \param library
     //! \param createFunction
-    bool onAddPlugin(const std::string& path, HMODULE library, Plugin::CreateFunction createFunction);
-    //!
-    //! \param fileName
-    std::string getFileName(const std::string& fileName);
-
-    //! Zwalnia biblioteki. Można to wywołać dopiero po zniszczeniu głównego okna.
-    void freeLibraries();
+    bool onAddPlugin(const Filesystem::Path& path, HMODULE library, Plugin::CreateFunction createFunction);
 };
 
 typedef shared_ptr<PluginLoader> PluginLoaderPtr;

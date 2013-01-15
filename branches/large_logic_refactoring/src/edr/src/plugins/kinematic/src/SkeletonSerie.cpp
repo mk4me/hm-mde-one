@@ -35,8 +35,12 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
     skeletonNode->addChild(skeletonDrawers->getNode());
     //skeletonNode->addChild(trajectoryDrawer->getNode());
     
-    visualizer->trajectoriesDialog->setDrawer(skeletonDrawers, QString::fromStdString(data->getName()));
-    visualizer->schemeDialog->setDrawer(skeletonDrawers, QString::fromStdString(data->getName()));
+	//TODO
+	//metadane
+	visualizer->trajectoriesDialog->setDrawer(skeletonDrawers, QString::fromStdString("UNKNOWN"));
+	visualizer->schemeDialog->setDrawer(skeletonDrawers, QString::fromStdString("UNKNOWN"));
+    //visualizer->trajectoriesDialog->setDrawer(skeletonDrawers, QString::fromStdString(data->getName()));
+    //visualizer->schemeDialog->setDrawer(skeletonDrawers, QString::fromStdString(data->getName()));
     transformNode->addChild(skeletonNode);
 	//visualizer->transformNode->addChild(skeletonNode);
 	setAxis(true);

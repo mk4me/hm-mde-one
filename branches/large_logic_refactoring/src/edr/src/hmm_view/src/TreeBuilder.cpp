@@ -27,9 +27,7 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
 
 			QString label(QString::fromUtf8(motion->getLocalName().c_str()));
 
-			//próbuje pobrać metadane
 			try{
-				std::vector<core::ObjectWrapperConstPtr> metadata;
 
 				//najpierw pobieram wszystkie motiony z DM, potem znajduję ten którego id równa się mojemu motionowi i dla niego pobieram metadane
 				std::vector<PluginSubject::MotionConstPtr> dmMotions;
@@ -163,18 +161,16 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     motion->getWrappers(emgs, typeid(EMGChannel));
     int count = emgs.size();			
     for (int i = 0; i < count; ++i) {	
-        EMGChannelPtr c = emgs[i]->get();	
+        EMGChannelConstPtr c = emgs[i]->get();	
         if (c) {
-			//TODO tłumaczenia
-			//tak się tego nie powinno wołać - musi być w tr const wartość niezmienna w czasie działania aplikacji -> switch?
-            //QString n = QString::fromStdString(emgs[i]->getName());
-            //n = config ? config->tr(n) : n;
-            QString n = QObject::tr(emgs[i]->getName().c_str());
+			std::string l("UNKNOWN");
+			emgs[i]->tryGetMeta("name", l);
+
             EMGFilterHelperPtr channelHelper(new EMGFilterHelper(emgs[i]));
             channelHelper->setMotion(motion);
             HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);
             channelItem->setIcon(0, itemIcon);
-            channelItem->setItemAndHelperText(n);
+            channelItem->setItemAndHelperText(l);
             emgItem->addChild(channelItem);			
         }
     }
@@ -196,11 +192,13 @@ QTreeWidgetItem*  TreeBuilder::createGRFBranch( const MotionConstPtr & motion, c
     for (int i = 0; i < count; ++i) {
         GRFChannelConstPtr c = grfs[i]->get();
         if (c) {
+			std::string l("UNKNOWN");
+			grfs[i]->tryGetMeta("name", l);
             TreeItemHelperPtr channelHelper(new NewVector3ItemHelper(grfs[i]));
             channelHelper->setMotion(motion);
             HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);	
             channelItem->setIcon(0, itemIcon);						
-            channelItem->setItemAndHelperText(c->getName().c_str());	
+            channelItem->setItemAndHelperText(l);	
             grfItem->addChild(channelItem);			
         }
     }
@@ -220,7 +218,9 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
         channelHelper->setMotion(motion);
         HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);	
         channelItem->setIcon(0, itemIcon);						
-        channelItem->setItemAndHelperText(videos[i]->getName().c_str());			
+		std::string l("UNKNOWN");
+		grfs[i]->tryGetMeta("name", l);		
+		channelItem->setItemAndHelperText(l);
         videoItem->addChild(channelItem);
     }
 

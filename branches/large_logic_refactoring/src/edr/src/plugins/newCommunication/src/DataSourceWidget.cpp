@@ -10,6 +10,7 @@
 #include <QtGui/QKeyEvent>
 
 #include <boost/tokenizer.hpp>
+#include <boost/bind.hpp>
 
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/ISubject.h>
@@ -1594,29 +1595,19 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	typedef std::map<int, SessionFiles> SubjectFiles;
 
 
-	class JointsInitializer : public core::IDataInitializer
+	class JointsInitializer
 	{
 	public:
-		JointsInitializer(const core::ObjectWrapperConstPtr & dataWrapper, const core::ObjectWrapperConstPtr & modelWrapper) :
-		  dataWrapper(dataWrapper), modelWrapper(modelWrapper)
+		  static void initialize(core::ObjectWrapper & object, const core::ObjectWrapperConstPtr & dataWrapper, const core::ObjectWrapperConstPtr & modelWrapper)
 		  {
-
-		  }
-
-		  virtual void initialize(core::ObjectWrapperPtr & object)
-		  {
-			  kinematic::SkeletalDataPtr data;
-			  kinematic::SkeletalModelPtr model;
+			  kinematic::SkeletalDataConstPtr data;
+			  kinematic::SkeletalModelConstPtr model;
 			  if(dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
 				  kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
 				  joints->setSkeletal(model, data);
-				  object->trySet(joints);
+				  object.trySet(joints);
 			  }
 		  }
-
-	private:
-		core::ObjectWrapperConstPtr dataWrapper;
-		core::ObjectWrapperConstPtr modelWrapper;
 	};
 
 
@@ -1680,10 +1671,11 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		}else{
 			//tworzę subjecta
 			subPtr = subjectService->createSubject();
-			//dodaję do DM
-			auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, subPtr);
+			//tworze ow dla subjecta
+			auto subOW = core::ObjectWrapper::create<PluginSubject::ISubject>();
+			subOW->set(subPtr);
+			
 
-			core::MetadataPtr meta(new core::Metadata(ow));
 			std::stringstream label;
 
 			auto pIT = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first);
@@ -1695,13 +1687,14 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				addPatientObject(pIT->second, subPtr->getID());
 			}
 
-			//auto s = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first)->second;
-			meta->setValue("label", label.str());
+			(*subOW)["label"] = label.str();
 
-			core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
+
+			//dodaję do DM
+			dataSource->memoryDM->addData(subOW);
 
 			//zapamiętuję mapowanie
-			subjectsMapping[subjectIT->first].first = ow;
+			subjectsMapping[subjectIT->first].first = subOW;
 		}
 
 		//mam subjecta, mogę iść dalej do sesji
@@ -1730,31 +1723,33 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 				//dane antropometryczne
 				auto antro = createAntropometricData(s->performerConf->attrs);
-				auto antroOW = core::IMemoryDataManager::addData(dataSource->memoryDM, antro);
+				//tworze OW dla danych antropometrycznych
+				auto antroOW = core::ObjectWrapper::create<communication::AntropometricData>();
+				antroOW->set(antro);
+
 				sessionObjects.push_back(antroOW);
 				sessionsMapping[sessionIT->first].second.push_back(antroOW);
 
 				sPtr = subjectService->createSession(subPtr, sessionObjects);
-				//dodaję do DM
-				auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, sPtr);
+				auto sOW = core::ObjectWrapper::create<PluginSubject::ISession>();
+				sOW->set(sPtr);
 
-				core::MetadataPtr meta(new core::Metadata(ow));
-
-				meta->setValue("label", s->sessionName);
-				meta->setValue("EMGConf", boost::lexical_cast<std::string>(s->emgConf));
-				meta->setValue("data", s->sessionDate);
+				(*sOW)["label"] = s->sessionName;
+				(*sOW)["EMGConf"] = boost::lexical_cast<std::string>(s->emgConf);
+				(*sOW)["data"] = s->sessionDate;
 				if(s->groupAssigment != nullptr){
-					meta->setValue("groupID", boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID));
+					(*sOW)["groupID"] = boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID);
 					auto sgIT = filteredShallowCopy.motionMetaData.sessionGroups.find(s->groupAssigment->sessionGroupID);
 					if(sgIT != filteredShallowCopy.motionMetaData.sessionGroups.end()){
-						meta->setValue("groupName", sgIT->second.sessionGroupName);
+						(*sOW)["groupName"] = sgIT->second.sessionGroupName;
 					}
 				}
 
-				core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
+				dataSource->memoryDM->addData(antroOW);
+				dataSource->memoryDM->addData(sOW);
 
 				//zapamiętuję mapowanie
-				sessionsMapping[sessionIT->first].first = ow;
+				sessionsMapping[sessionIT->first].first = sOW;
 			}
 
 			//mam sesję - mogę iść dalej z motionami!!
@@ -1781,6 +1776,8 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 						}
 					}
 
+					auto m = filteredShallowCopy.motionShallowCopy->trials.find(motionIT->first)->second;
+
 
 					//sprawdzamy joint angles - jeśli nie ma budujemy i dodajemy do DM
 					core::ObjectWrapperConstPtr dataWrapper;
@@ -1797,29 +1794,30 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					modelWrapper = sPtr->getWrapperOfType(typeid(kinematic::SkeletalModel));
 					core::ObjectWrapperPtr jointsWrapper;
 					if (dataWrapper && modelWrapper) {
-						jointsWrapper = core::IMemoryDataManager::addData(dataSource->memoryDM, kinematic::JointAnglesCollectionPtr(), core::DataInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));
+						jointsWrapper = core::ObjectWrapper::create<kinematic::JointAnglesCollection>();
+						jointsWrapper->set(core::ObjectWrapper::LazyInitializer(boost::bind(&JointsInitializer::initialize, _1, dataWrapper, modelWrapper)));
 						motionObjects.push_back(jointsWrapper);
 						motionsMapping[motionIT->first].second.push_back(jointsWrapper);
+						dataSource->memoryDM->addData(jointsWrapper);
 					}
 
 					mPtr = subjectService->createMotion(sPtr,motionObjects);
 
+					auto mOW = core::ObjectWrapper::create<PluginSubject::IMotion>();
+					mOW->set(mPtr);
+
 					if(jointsWrapper != nullptr){
-						jointsWrapper->setName(mPtr->getLocalName() + " joints");
-						jointsWrapper->setSource("newCommunication->motion->" + mPtr->getLocalName());
+						//metadane
+						(*jointsWrapper)["name"] = mPtr->getLocalName() + " joints";
+						(*jointsWrapper)["source"] = "newCommunication->motion->" + mPtr->getLocalName();
 					}
+					
+					(*mOW)["label"] = m->trialName;
 
-					//dodaję do DM
-					auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, mPtr);
-
-					core::MetadataPtr meta(new core::Metadata(ow));
-					auto s = filteredShallowCopy.motionShallowCopy->trials.find(motionIT->first)->second;
-					meta->setValue("label", s->trialName);
-
-					core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
+					dataSource->memoryDM->addData(mOW);
 
 					//zapamiętuję mapowanie
-					motionsMapping[motionIT->first].first = ow;
+					motionsMapping[motionIT->first].first = mOW;
 				}
 			}
 		}
@@ -1845,10 +1843,13 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 		Patient::decodeGender(patient->gender), core::shared_ptr<const QPixmap>(), disorders));
 
 	//dodaję do DM
-	auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, pPtr);
+	auto pOW = core::ObjectWrapper::create<communication::IPatient>();
+	pOW->set(pPtr);
+
+	dataSource->memoryDM->addData(pOW);
 
 	//zapamiętuje
-	patientsMapping[patient->patientID].first = ow;
+	patientsMapping[patient->patientID].first = pOW;
 }
 
 core::shared_ptr<communication::AntropometricData> DataSourceWidget::createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs)

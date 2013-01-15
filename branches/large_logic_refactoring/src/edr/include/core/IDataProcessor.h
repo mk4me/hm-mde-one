@@ -12,13 +12,13 @@
 #include <core/SmartPtr.h>
 #include <core/IInputOutputProcessItem.h>
 
-namespace core 
+namespace plugin 
 {
     //! Definicja typu elementu przetwarzającego
-    typedef IInputOutputProcessItem IDataProcessor;
+    typedef core::IInputOutputProcessItem IDataProcessor;
 
-    typedef shared_ptr<IDataProcessor> IDataProcessorPtr;
-    typedef shared_ptr<const IDataProcessor> IDataProcessorConstPtr;
+    typedef core::shared_ptr<IDataProcessor> IDataProcessorPtr;
+    typedef core::shared_ptr<const IDataProcessor> IDataProcessorConstPtr;
 } // namespace core
 
 

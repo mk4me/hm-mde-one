@@ -12,6 +12,9 @@
 #include <vector>
 #include <set>
 #include <core/ObjectWrapperCollection.h>
+
+namespace core {
+
 /**
  *	Reprezentuje pewną kolekcję obiektów domenowych. Odwołania do nich
  *  występują pod postacią zmiennych i/lub niezmiennych wskaźników. 
@@ -30,7 +33,7 @@ public:
         //! Nazwa slotu.
         std::string name;
         //! Typy wspierane w slocie.
-        core::TypeInfo type;
+        TypeInfo type;
         //! Czy dane z wejścia będa modyfikowane
         bool modify;
         //! Czy slot musi być podłączony
@@ -58,9 +61,9 @@ private:
     struct Slot
     {
         //! Obiekt w wariancie zmiennym.
-        core::ObjectWrapperCollectionPtr objects;
+        ObjectWrapperCollectionPtr objects;
         //! Obiekt w wariancie niezmiennym.
-        core::ObjectWrapperCollectionConstPtr constObjects;
+        ObjectWrapperCollectionConstPtr constObjects;
     };
     //! Sloty.
     std::vector<Slot> objects;
@@ -89,7 +92,7 @@ public:
         return info[slotNo].name;
     }
     //! \return Typy wspierane przez slot.
-    const core::TypeInfo& getSlotType(int slotNo) const
+    const TypeInfo& getSlotType(int slotNo) const
     {
         return info[slotNo].type;
     }
@@ -100,25 +103,26 @@ public:
     }
 
     //! Czy dany obiekt można przypisać danemu źródłu?
-    bool isAssignable(int slotNo, const core::TypeInfo & type) const;
+    bool isAssignable(int slotNo, const TypeInfo & type) const;
 
     //! Dodaje zmienny obiekt. Ustawia również wskaźnik z niezmiennego obiektu.
-    void setObjects(int slotNo, const core::ObjectWrapperCollectionPtr& objects);
+    void setObjects(int slotNo, const ObjectWrapperCollectionPtr& objects);
 
     //! Dodanie niezmiennego obiektu. Zeruje wskaźnik zmiennego obiektu.
-    void setObjects(int slotNo, const core::ObjectWrapperCollectionConstPtr& objects);
+    void setObjects(int slotNo, const ObjectWrapperCollectionConstPtr& objects);
 
     //! \return Obiekt w zmiennym wariancie.
-    const core::ObjectWrapperCollectionPtr& getObjects(int slotNo) const
+    const ObjectWrapperCollectionPtr& getObjects(int slotNo) const
     {
         return objects[slotNo].objects;
     }
     //! \return Obiekt w stałym wariancie.
-    const core::ObjectWrapperCollectionConstPtr& getConstObjects(int slotNo) const
+    const ObjectWrapperCollectionConstPtr& getConstObjects(int slotNo) const
     {
         return objects[slotNo].constObjects;
     }
 };
 
+}
 
 #endif  // HEADER_GUARD_CORE__OBJECTSLOTS_H__

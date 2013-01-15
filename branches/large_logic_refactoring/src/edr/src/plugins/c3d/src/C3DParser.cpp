@@ -54,23 +54,34 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         for (int i = 0; i < 4; ++i) {
             GRFChannelPtr ptr(new GRFChannel(*parser , i));
             GRFChannels[i]->set(ptr);
-            GRFChannels[i]->setName(ptr->getName());
-            GRFChannels[i]->setSource(path.string());
+            //TODO
+			//metadane
+			//GRFChannels[i]->setName(ptr->getName());
+            //GRFChannels[i]->setSource(path.string());
             grfs->addChannel(ptr);
         }
 
-        GRFs->set(grfs, path.filename().string(), path.string());
-        GRFs->setSource(path.string());
+		//TODO
+		//metadane
+        //GRFs->set(grfs, path.filename().string(), path.string());
+        //GRFs->setSource(path.string());
+		GRFs->set(grfs);
 
         for (int i = 12; i < 28; ++i) {
             EMGChannelPtr ptr(new EMGChannel(*parser , i));
             EMGChannels[i-12]->set(ptr);
-            EMGChannels[i-12]->setName(ptr->getName());
-            EMGChannels[i-12]->setSource(path.string());
+			//TODO
+			//metadane
+			//EMGChannels[i-12]->setName(ptr->getName());
+            //EMGChannels[i-12]->setSource(path.string());
             e->addChannel(ptr);
         }
-        EMGs->set(e, path.filename().string(), path.string());
-        EMGs->setSource(path.string());
+        
+		//TODO
+		//metadane
+		//EMGs->set(e, path.filename().string(), path.string());
+        //EMGs->setSource(path.string());
+		EMGs->set(e);
     }
 
     // wczytanie eventów
@@ -81,7 +92,11 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         C3DEventsCollection::EventPtr e(event->clone());
         allEventsCollection->addEvent(e);
 	}
-    this->allEvents->set(allEventsCollection, path.filename().string(), path.string());
+    
+	//TODO
+	//metadane
+	//this->allEvents->set(allEventsCollection, path.filename().string(), path.string());
+	this->allEvents->set(allEventsCollection);
 
     // wczytanie plików *vsk, które dostarczaja opis do markerów
     core::Filesystem::Path dir = path.parent_path();
@@ -122,11 +137,20 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
             } break;
 		}
 	}
-	markerChannels->set(markers, path.filename().string(), path.string());
+
+	//TODO
+	//metadane
+	/*markerChannels->set(markers, path.filename().string(), path.string());
 	forceChannels->set(forces, path.filename().string(), path.string());
 	angleChannels->set(angles, path.filename().string(), path.string());
 	momentChannels->set(moments, path.filename().string(), path.string());
-	powerChannels->set(powers, path.filename().string(), path.string());
+	powerChannels->set(powers, path.filename().string(), path.string());*/
+
+	markerChannels->set(markers);
+	forceChannels->set(forces);
+	angleChannels->set(angles);
+	momentChannels->set(moments);
+	powerChannels->set(powers);
 
     try {
         IForcePlatformCollection platforms;

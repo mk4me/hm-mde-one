@@ -11,6 +11,8 @@
 
 #include "ObjectOutput.h"
 
+namespace core {
+
 class OutputDescription
 {
 
@@ -21,6 +23,11 @@ public:
 private:
     boost::scoped_ptr<ObjectOutput> output;
 public:
+
+	//TODO
+	//do usunięcia
+	OutputDescription() {}
+
     OutputDescription(const OutputDescription& outputDescription) : 
       output(new ObjectOutput(*outputDescription.output))
       {}
@@ -35,7 +42,7 @@ public:
     const ObjectOutput* getOutput() const { return output.get(); }
     ObjectOutput* getOutput() { return output.get(); }
 
-    inline const core::TypeInfo& getOutputTypes(int outputNo) const
+    inline const TypeInfo& getOutputTypes(int outputNo) const
     {
         return output->getSlotType(outputNo);
     }
@@ -53,7 +60,7 @@ public:
 
     //! \param outputNo Numer wyjścia.
     //! \return Obiekt na wyjściu.
-    const core::ObjectWrapperCollectionPtr & getOutputObjects(int outputNo)
+    const ObjectWrapperCollectionPtr & getOutputObjects(int outputNo)
     {
         return output->ObjectSlots::getObjects(outputNo);
     }
@@ -64,5 +71,6 @@ public:
     }
 };
 
+}
 
 #endif

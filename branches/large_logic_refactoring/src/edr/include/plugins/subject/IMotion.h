@@ -28,7 +28,8 @@ public:
     //! \return Lokalny, unikalny ID w ramach sesji
     virtual SubjectID getLocalID() const = 0;
     //! \return Sesja z którą związany jest ten ruch
-    virtual const SessionConstPtr & getSession() const = 0;
+    virtual const core::ObjectWrapperConstPtr & getSession() const = 0;
+	virtual const SessionConstPtr & getUnpackedSession() const = 0;
 
     //! \return Globalna nazwa ruchu
     virtual const std::string & getName() const = 0;
@@ -102,7 +103,7 @@ public:
         throw std::runtime_error("Object type not stored in Motion");
     }
 
-    virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const
+    virtual void getWrappers(core::ConstObjectsList & wrappers) const
     {
         auto s = size();
         for(int i = 0; i < s; ++i){
@@ -110,7 +111,7 @@ public:
         }
     }
 
-    virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers, const core::TypeInfo& type, bool exact = false) const
+    virtual void getWrappers(core::ConstObjectsList & wrappers, const core::TypeInfo& type, bool exact = false) const
     {
         auto s = size();
         for(int i = 0; i < s; ++i){

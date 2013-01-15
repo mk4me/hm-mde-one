@@ -1,13 +1,17 @@
 #include "CorePCH.h"
 #include "DataSource.h"
 
-DataSource::DataSource(core::IDataSource * impl)
-    : OutputItem<core::IDataSource>(impl)
+namespace core {
+
+DataSource::DataSource(plugin::IDataSource * impl)
+    : OutputItem<plugin::IDataSource>(impl)
 {
 
 }
 
 DataSource::~DataSource()
 {
+
+}
 
 }

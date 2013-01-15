@@ -9,128 +9,137 @@
 #ifndef HEADER_GUARD_CORE__PLUGINCOMMON_H__
 #define HEADER_GUARD_CORE__PLUGINCOMMON_H__
 
-//#include <core/IWorkflowManager.h>
-#include <core/StringTools.h>
+#include <core/Filesystem.h>
+#include <core/IApplication.h>
 #include <core/IPath.h>
+#include <core/ILog.h>
 
-namespace core 
+namespace plugin 
 {
-
-	class ILog;
-	class IDataManagerReader;
-	class IVisualizerManager;
-	class IServiceManager;
-	class ISourceManager;
-	class IDataProcessorManager;
-	class IDataSourceManager;
-
-    //! Struktura przechowująca informacje o managerach. Tylko do wewnętrznego użytku.
-    struct InstanceInfo
-    {
-        IDataManagerReader* dataManagerReader;
-        IVisualizerManager* visualizerManager;
-        IServiceManager* serviceManager;
-		ISourceManager* sourceManager;
-		IPath* pathInterface;
-		ILog* logInterface;
-        IDataProcessorManager* dataProcessorManager;
-        IDataSourceManager* dataSourceManager;
-        //IWorkflowManager* workflowManager;
-    };
-
     //! Zmienna defininowana przez makro tworzące pluginy. Tylko do użytku wewnętrznego.
-    extern InstanceInfo __instanceInfo;
+    extern IApplication * __coreApplication;
 
     //! Makro definiujące zmienną przechowującą managery. Automatycznie używane w pluginach.
-    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr/*, nullptr*/ }; }
+    #define PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR namespace plugin { IApplication * __coreApplication = nullptr; }
 
     //! \return Bieżąca instancja data managera readera. Rozwiązanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nagłówków funkcji i schowania definicji, pozwala
     //! na rozwijanie, więc jest potencjalnie szybsze.
     inline IDataManagerReader* getDataManagerReader()
     {
-        return __instanceInfo.dataManagerReader;
+        return __coreApplication->dataManagerReader();
     }
+
+	inline IServiceManager* getServiceManager()
+	{
+		return __coreApplication->serviceManager();
+	}
 
     //! \return Interfejs dostępu do ścieżek aplikacji
 	inline IPath* getPathInterface()
 	{
-		return __instanceInfo.pathInterface;
+		return __coreApplication->pathInterface();
 	}
 
     //! \return Interfejs logowania informacji
-	inline ILog* getLogInterface()
+	inline core::ILog* getLogInterface()
 	{
-		return __instanceInfo.logInterface;
+		return __coreApplication->log();
 	}
 
-    ////!
-    //inline IVisualizerManager* getVisualizerManager()
-    //{
-    //    return __instanceInfo.visualizerManager;
-    //}
-
-    //!
-    inline IServiceManager* getServiceManager()
-    {
-        return __instanceInfo.serviceManager;
-    }
-
-    ////!
-    //inline IDataProcessorManager* getDataProcessorManager()
-    //{
-    //    return __instanceInfo.dataProcessorManager;
-    //}
-
-    ////!
-    //inline IDataSourceManager* getDataSourceManager()
-    //{
-    //    return __instanceInfo.dataSourceManager;
-    //}
-
-    ////!
-    //inline IWorkflowManager* getWorkflowManager()
-    //{
-    //    return __instanceInfo.workflowManager;
-    //}
-
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
-    inline const Filesystem::Path& getResourcesPath()
+    inline const core::Filesystem::Path& getResourcesPath()
     {
         return getPathInterface()->getResourcesPath();
     }
 
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
-    inline const Filesystem::Path& getApplicationDataPath()
+    inline const core::Filesystem::Path& getApplicationDataPath()
     {
         return getPathInterface()->getApplicationDataPath();
     }
 
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
-    inline const Filesystem::Path& getUserDataPath()
+    inline const core::Filesystem::Path& getUserDataPath()
     {
         return getPathInterface()->getUserDataPath();
     }
 
     //! \return Pomocnicza metoda do pobierania ścieżek.
-    inline toString_t getResourceString(const std::string& str)
+    inline core::Filesystem::Path getResourcePath(const core::Filesystem::Path& path)
     {
-        return toString_t(toStdString(getResourcesPath()/str));
+        return getResourcesPath()/path;
     }
 
     //! \return Pomocnicza metoda do pobierania ścieżek.
-    inline toString_t getApplicationDataString(const std::string& str)
+    inline core::Filesystem::Path getApplicationDataPath(const core::Filesystem::Path& path)
     {
-        return toString_t(toStdString(getApplicationDataPath()/str));
+        return getApplicationDataPath()/path;
     }
 
     //! \return Pomocnicza metoda do pobierania ścieżek.
-    inline toString_t getUserDataString(const std::string& str)
+    inline core::Filesystem::Path getUserDataPath(const core::Filesystem::Path& path)
     {
-        return toString_t(toStdString(getUserDataPath()/str));
+        return getUserDataPath()/path;
     }
+
+	//! \return Pomocnicza metoda do pobierania ścieżek.
+	inline const core::Filesystem::Path & getPluginPath()
+	{
+		return getPathInterface()->getPluginPath();
+	}
+
+	//! \return Pomocnicza metoda do pobierania ścieżek.
+	inline core::Filesystem::Path getPluginPath(const core::Filesystem::Path & path)
+	{
+		return getPluginPath()/path;
+	}
 
 } // namespace core
+
+#ifdef _MSC_VER
+
+//! Makro logujące informację testową
+#define PLUGIN_LOG_DEBUG(msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->log(plugin::ILog::LogSeverityDebug, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+//! Makro logujące błąd
+#define PLUGIN_LOG_ERROR(msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->log(plugin::ILog::LogSeverityError, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+//! Makro logujące informację
+#define PLUGIN_LOG_INFO(msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->log(plugin::ILog::LogSeverityInfo, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+//! Makro logujące ostrzeżenia
+#define PLUGIN_LOG_WARNING(msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->log(plugin::ILog::LogSeverityWarning, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+
+//! Makro logujące informację testową
+#define PLUGIN_LOG_NAMED_DEBUG(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->subLog(name)->log(plugin::ILog::LogSeverityDebug, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+//! Makro logujące błąd
+#define PLUGIN_LOG_NAMED_ERROR(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->subLog(name)->log(plugin::ILog::LogSeverityError, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+//! Makro logujące informację
+#define PLUGIN_LOG_NAMED_INFO(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->subLog(name)->log(plugin::ILog::LogSeverityInfo, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+//! Makro logujące ostrzeżenia
+#define PLUGIN_LOG_NAMED_WARNING(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->subLog(name)->log(plugin::ILog::LogSeverityWarning, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+
+#endif
+
+#ifdef __GNUC__
+
+//! Makro logujące informację testową
+#define PLUGIN_LOG_DEBUG(msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->log(plugin::ILog::LogSeverityDebug, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
+//! Makro logujące błąd
+#define PLUGIN_LOG_ERROR(msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->log(plugin::ILog::LogSeverityError, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
+//! Makro logujące informację
+#define PLUGIN_LOG_INFO(msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->log(plugin::ILog::LogSeverityInfo, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
+//! Makro logujące ostrzeżenia
+#define PLUGIN_LOG_WARNING(msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->log(plugin::ILog::LogSeverityWarning, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
+
+//! Makro logujące informację testową
+#define PLUGIN_LOG_NAMED_DEBUG(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->subLog(name)->log(plugin::ILog::LogSeverityDebug, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
+//! Makro logujące błąd
+#define PLUGIN_LOG_NAMED_ERROR(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->subLog(name)->log(plugin::ILog::LogSeverityError, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
+//! Makro logujące informację
+#define PLUGIN_LOG_NAMED_INFO(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->subLog(name)->log(plugin::ILog::LogSeverityInfo, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
+//! Makro logujące ostrzeżenia
+#define PLUGIN_LOG_NAMED_WARNING(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg << std::endl; plugin::getLogInterface()->subLog(name)->log(plugin::ILog::LogSeverityWarning, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
+
+#endif
 
 
 #endif  // HEADER_GUARD_CORE__PLUGINCOMMON_H__

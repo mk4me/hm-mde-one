@@ -10,11 +10,12 @@
 #define HEADER_GUARD___IDATASOURCE_H__
 
 #include <core/IOutputProcessItem.h>
+#include <core/SmartPtr.h>
 
 //! Forward declaration
 class QIcon;
 
-namespace core {
+namespace plugin {
 
 //! Interfejs do implemntacji źródeł danych
 class IDataSource : public core::IOutputProcessItem
@@ -28,8 +29,8 @@ public:
     virtual QIcon* getIcon() const = 0;
 };
 
-typedef shared_ptr<IDataSource> IDataSourcePtr;
-typedef shared_ptr<const IDataSource> IDataSourceConstPtr;
+typedef core::shared_ptr<IDataSource> IDataSourcePtr;
+typedef core::shared_ptr<const IDataSource> IDataSourceConstPtr;
 
 }
 

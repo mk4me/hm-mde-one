@@ -183,7 +183,7 @@ WorkflowWidget::StylesSet WorkflowWidget::generateRequiredStyles()
 {
     StylesSet styleSet;
 
-    std::string path = core::getResourceString("icons\\vdf\\");
+    auto path = core::getResourcePath("icons\\vdf\\").string();
     std::string graphExt = "png";
 
     //PIN STYLES
@@ -674,7 +674,7 @@ EDRWorkflowWidget::StylesSet EDRWorkflowWidget::generateRequiredStyles()
 {
     StylesSet styleSet;
 
-    std::string path = core::getResourceString("icons\\vdf\\");
+    std::string path = core::getResourcePath("icons\\vdf\\").string();
     std::string graphExt = "png";
 
     //PIN STYLES

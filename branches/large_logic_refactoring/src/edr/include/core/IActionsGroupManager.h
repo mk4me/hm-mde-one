@@ -13,7 +13,7 @@
 
 class QObject;
 
-namespace core {
+namespace plugin {
 
     class IActionsGroupManager
     {

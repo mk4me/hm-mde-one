@@ -45,7 +45,7 @@ branchFunction(function),
     rootIcon(rootIcon)
 { }
 
-QTreeWidgetItem* BuilderFilterCommand::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
+QTreeWidgetItem* BuilderFilterCommand::createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions ) 
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
@@ -61,7 +61,7 @@ QTreeWidgetItem* BuilderFilterCommand::createTreeBranch( const QString& rootItem
     return root;
 }
 
-QTreeWidgetItem* JointsCommand::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions )
+QTreeWidgetItem* JointsCommand::createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions )
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
@@ -83,14 +83,14 @@ BuilderConfiguredFilterCommand(function, namesDictionary, frontXml, backXml, roo
 {
 }
 
-QTreeWidgetItem* EMGCommand::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
+QTreeWidgetItem* EMGCommand::createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions ) 
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
     root->setIcon(0, rootIcon);
     BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
 
-        MeasurementConfigConstPtr config = getMeta(session);
+        MeasurementConfigConstPtr config = getSessionMeta(session);
         PluginSubject::Motions motions;
         session->getMotions(motions);
         BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
@@ -113,22 +113,15 @@ QTreeWidgetItem* EMGCommand::createTreeBranch( const QString& rootItemName, cons
     return root;
 }
 
-MeasurementConfigConstPtr EMGCommand::getMeta( PluginSubject::SessionConstPtr session ) 
+MeasurementConfigConstPtr EMGCommand::getSessionMeta( const core::ObjectWrapperConstPtr & session ) 
 {
     MeasurementConfigConstPtr config;
     //próbuje pobrać metadane
     try{
         auto measurements = Measurements::get();
-        std::vector<core::ObjectWrapperConstPtr> metadata;        
-        core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), session, metadata);
-        auto metaITEnd = metadata.end();
-        for(auto metaIT = metadata.begin(); metaIT != metaITEnd; ++metaIT){
-            core::MetadataConstPtr meta = (*metaIT)->get(false);
-            std::string l;
-
-            if(measurements != nullptr && meta != nullptr && meta->value("EMGConf", l) == true) {
-                config = measurements->getConfig(("EMG_" + l).c_str());
-            }
+		std::string l;
+        if(measurements != nullptr && session->tryGetMeta("EMGConf", l) == true) {
+            config = measurements->getConfig(("EMG_" + l).c_str());
         }
     }catch(...){
 

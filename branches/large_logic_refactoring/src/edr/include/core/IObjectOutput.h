@@ -18,7 +18,7 @@
 #include <core/ILog.h>
 #include <core/DataAccessors.h>
 
-namespace core
+namespace plugin
 {
     //! Interfejs zapewniający dostęp do zapisu danych wyjściowych z elementów przetwarzających, które będą przekazane nastepnikom
     class IObjectOutput
@@ -46,7 +46,7 @@ namespace core
 			}
 
             //! Konstruktor inicjujący proxy kolekcją object wrapperów
-            OutputObjectsCollection(const ObjectWrapperCollectionPtr & collection = ObjectWrapperCollectionPtr())
+            OutputObjectsCollection(const core::ObjectWrapperCollectionPtr & collection = core::ObjectWrapperCollectionPtr())
                 : collection(collection)
             {
 
@@ -59,17 +59,17 @@ namespace core
             }
 
             //! \param object ObjectWrapperPtr z obiektem domenowym dodawany do kolekcji
-            void addObject(const ObjectWrapperPtr & object)
+            void addObject(const core::ObjectWrapperPtr & object)
             {
                 UTILS_ASSERT((collection != nullptr), "Bledna kolekcja w proxy dla wejscia");
-                collection->addObject(object);
+                collection->push_back(object);
             }
 
             //! \param object ObjectWrapperPtr z obiektem domenowym dodawany do kolekcji
-            void addObject(const ObjectWrapperConstPtr & object)
+            void addObject(const core::ObjectWrapperConstPtr & object)
             {
                 UTILS_ASSERT((collection != nullptr), "Bledna kolekcja w proxy dla wejscia");
-                collection->addObject(object);
+                collection->push_back(object);
             }
 
             //! Wzorzec metody addObject akceptujący smart pointery do typów domenowych. Wewnętrznie opakowuje dane w odpowiedni ObjectWrapperPtr i dodaje do kolekcji
@@ -80,35 +80,35 @@ namespace core
 
                 ObjectWrapperPtr obj = __setObjectPointerResolver(object, name, source, boost::is_pointer<T>());
 
-                collection->addObject(obj);
+                collection->push_back(obj);
             }
 
         private:
 
             template <class T>
-            ObjectWrapperPtr __setObjectPointerResolver(const T& object, boost::true_type)
+            core::ObjectWrapperPtr __setObjectPointerResolver(const T& object, boost::true_type)
             {
                 // rev
                 //UTILS_STATIC_ASSERT(false, "Do obiektów domenowych należy używać inteligentnych wskazników.");
-                return ObjectWrapperPtr();
+                return core::ObjectWrapperPtr();
             }
 
             template <class T>
-            ObjectWrapperPtr __setObjectPointerResolver(const T& object, const std::string & name, const std::string & source, boost::false_type)
+            core::ObjectWrapperPtr __setObjectPointerResolver(const T& object, const std::string & name, const std::string & source, boost::false_type)
             {
                 return __setObjectPODResolver(object, name, source, boost::is_pod<T>());
             }
 
             template <class T>
-            ObjectWrapperPtr __setObjectPODResolver(const T& object, const std::string & name, const std::string & source, boost::true_type)
+            core::ObjectWrapperPtr __setObjectPODResolver(const T& object, const std::string & name, const std::string & source, boost::true_type)
             {
                 // rev
                 //UTILS_STATIC_ASSERT(false, "Niezaimplementowane");
-                return ObjectWrapperPtr();
+                return core::ObjectWrapperPtr();
             }
 
             template <class SmartPtr>
-            ObjectWrapperPtr __setObjectPODResolver(const SmartPtr& object, const std::string & name, const std::string & source, boost::false_type)
+            core::ObjectWrapperPtr __setObjectPODResolver(const SmartPtr& object, const std::string & name, const std::string & source, boost::false_type)
             {
                 typedef typename SmartPtr::element_type Type;
                 // jeżeli tutaj jest błąd oznacza to, że przekazany typ nie jest ani POD, ani inteligentnym wskaźnikiem.
@@ -120,14 +120,14 @@ namespace core
                     throw std::runtime_error("Could not create wprapper for nullptr");
                 }
 
-                ObjectWrapperPtr ret(core::ObjectWrapper::create<Type>());
+                core::ObjectWrapperPtr ret(core::ObjectWrapper::create<Type>());
                 ret->set(object, name, source);
                 return ret;
             }
 
         private:
             //! Kolekcja danych którą wypełniamy przez to proxy
-            ObjectWrapperCollectionPtr collection;
+            core::ObjectWrapperCollectionPtr collection;
         };
 
     public:
@@ -141,7 +141,7 @@ namespace core
         virtual OutputObjectsCollection getObjects(int idx) = 0;
     };
 
-    typedef shared_ptr<IObjectOutput> IObjectOutputPtr;
+    typedef core::shared_ptr<IObjectOutput> IObjectOutputPtr;
 
 } // namespace core
 

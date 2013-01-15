@@ -10,11 +10,7 @@
 #ifndef HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__
 #define HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__
 
-#include <OpenThreads/Mutex>
-
-//#include <core/IDataManager.h>
 #include <core/IService.h>
-//#include <core/PluginCommon.h>
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/IDataFilter.h>
 
@@ -24,8 +20,9 @@ public:
     FilteredDataFacory();
     virtual ~FilteredDataFacory();
 
-    virtual PluginSubject::MotionPtr createFilteredMotion(const PluginSubject::MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const;
-    virtual PluginSubject::SessionPtr createFilteredSession(const PluginSubject::SessionConstPtr & originalSession, const std::vector<PluginSubject::MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const;
+    virtual core::ObjectWrapperPtr createFilteredMotion(const core::ObjectWrapperConstPtr & originalMotion, const core::ConstObjectsList & wrappers) const;
+    virtual core::ObjectWrapperPtr createFilteredSession(const core::ObjectWrapperConstPtr & originalSession, const core::ConstObjectsList & motions, const core::ConstObjectsList & wrappers) const;
+	virtual core::ObjectWrapperPtr createFilteredSubject(const core::ObjectWrapperConstPtr & originalSubject, const core::ConstObjectsList & sessions) const;
 };
 
 
@@ -41,9 +38,13 @@ public:
 //core::IService
 public:
 
-    virtual void init(core::IManagersAccessor * managersAccessor);
-
-    //virtual void createOrUpdateSession(int year, int month, int day, int body, int session, int motion, const core::Objects & objects);
+	virtual void init(core::ISourceManager * sourceManager,
+		core::IDataSourceManager * dataSourceManager,
+		core::IDataProcessorManager *dataProcessorManager,
+		core::IDataSinkManager * dataSinkManager,
+		core::IVisualizerManager * visualizerManager,
+		core::IMemoryDataManager * memoryDataManager,
+		core::IFileDataManager * fileDataManager);
 
 	//! 
 	//! \param actions 
@@ -60,12 +61,12 @@ public:
 //ISubjectService
 public:
 
-    virtual PluginSubject::SubjectPtr createSubject();
+    core::ObjectWrapperPtr createSubject();
 
-    virtual PluginSubject::SessionPtr createSession(const PluginSubject::SubjectConstPtr & subject, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    core::ObjectWrapperPtr createSession(const core::ObjectWrapperConstPtr & subject, const core::ConstObjectsList & wrappers);
 
-    virtual PluginSubject::MotionPtr createMotion(const PluginSubject::SessionConstPtr & session,
-        const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    core::ObjectWrapperPtr createMotion(const core::ObjectWrapperConstPtr & session,
+        const core::ConstObjectsList & wrappers);
 
 private:
 
@@ -75,16 +76,9 @@ private:
 
     PluginSubject::FilteredDataFacoryPtr filteredDataFactory;
 
-    OpenThreads::Mutex subjectCreationMutex;
-    OpenThreads::Mutex sessionCreationMutex;
-    OpenThreads::Mutex motionCreationMutex;
-
     PluginSubject::SubjectID currentSubjectID;
     PluginSubject::SubjectID currentSessionID;
     PluginSubject::SubjectID currentMotionID;
-
-    std::map<PluginSubject::SubjectConstPtr, PluginSubject::SubjectID> localSessionIDs;
-    std::map<PluginSubject::SessionConstPtr, PluginSubject::SubjectID> localMotionIDs;
 };
 
 #endif //   HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__

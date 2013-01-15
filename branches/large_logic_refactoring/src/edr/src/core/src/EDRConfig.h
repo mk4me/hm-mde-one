@@ -14,7 +14,7 @@
 
 namespace core {
 
-class EDRConfig : public IPath
+class EDRConfig : public plugin::IPath
 {
 public:
 	//! ustawia pelna sciezke do folderu "MyDocuments\EDR"

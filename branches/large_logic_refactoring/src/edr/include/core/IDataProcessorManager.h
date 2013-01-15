@@ -12,7 +12,7 @@
 #include <core/IDataProcessor.h>
 #include <utils/Debug.h>
 
-namespace core{
+namespace plugin {
 
     class IDataProcessorManager
     {
@@ -21,10 +21,10 @@ namespace core{
 
     };
 
-    typedef shared_ptr<IDataProcessorManager> IDataProcessorManagerPtr;
-    typedef shared_ptr<const IDataProcessorManager> IDataProcessorManagerConstPtr;
-    typedef weak_ptr<IDataProcessorManager> IDataProcessorManagerWeakPtr;
-    typedef weak_ptr<const IDataProcessorManager> IDataProcessorManagerWeakConstPtr;
+    typedef core::shared_ptr<IDataProcessorManager> IDataProcessorManagerPtr;
+    typedef core::shared_ptr<const IDataProcessorManager> IDataProcessorManagerConstPtr;
+    typedef core::weak_ptr<IDataProcessorManager> IDataProcessorManagerWeakPtr;
+    typedef core::weak_ptr<const IDataProcessorManager> IDataProcessorManagerWeakConstPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

@@ -18,7 +18,6 @@
 #include <QtCore/QSettings>
 #include "ServiceManager.h"
 #include "SourceManager.h"
-#include "DataManager.h"
 #include "VisualizerManager.h"
 #include "EDRConfig.h"
 #include "DataProcessorManager.h"
@@ -28,12 +27,13 @@
 #include <osgQt/GraphicsWindowQt>
 #include <osg/ArgumentParser>
 #include <QtCore/QTranslator>
+#include "CustomApplication.h"
 
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
 #endif
 
-CORE_DEFINE_INSTANCE_INFO;
+PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR;
 
 //WAŻNE!!
 //tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest taką biblioteką i jego resourcy musza być jawnie inicjalizowane
@@ -75,134 +75,12 @@ public:
 	    // rev - statyczna
         //UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyć po klasie MainWindow");
 
-        //! Wewnętrzna klasa tworząca wszystkie managery aplikacji i udostępniająca je widokom oraz serwisom
-        class AppManagers : public IManagersAccessor
-        {
-        public:
-
-            //! Domyślny konstruktor inicjuje wrazenie singletona dla kazdego managera
-            //! dzięki temu w kodzie po stronie EDR mamy wrazenie ze pracujemy z singletonami i mamy globalnie dostęp do managerów!!
-            AppManagers()
-            {
-                __instanceInfo.dataManagerReader = dataManager.manager = &dataManager;
-                __instanceInfo.serviceManager = serviceManager.manager = &serviceManager;
-				__instanceInfo.sourceManager = sourceManager.manager = &sourceManager;
-                __instanceInfo.visualizerManager = visualizerManager.manager = &visualizerManager;
-                __instanceInfo.dataProcessorManager = dataProcessorManager.manager = &dataProcessorManager;
-                __instanceInfo.dataSourceManager = dataSourceManager.manager = &dataSourceManager;
-            }
-
-            //! Destruktor deinicjalizuje wrazenie singletona managerów
-            ~AppManagers()
-            {
-                __instanceInfo.dataManagerReader = dataManager.manager = nullptr;
-                __instanceInfo.serviceManager = serviceManager.manager = nullptr;
-				__instanceInfo.sourceManager = sourceManager.manager = nullptr;
-                __instanceInfo.visualizerManager = visualizerManager.manager = nullptr;
-                __instanceInfo.dataProcessorManager = dataProcessorManager.manager = nullptr;
-                __instanceInfo.dataSourceManager = dataSourceManager.manager = nullptr;
-            }
-
-            virtual IDataManagerReader * getDataManagerReader()
-            {
-                return &dataManager;
-            }
-
-            virtual const IDataManagerReader * getDataManagerReader() const
-            {
-                return &dataManager;
-            }
-
-            virtual IFileDataManager * getFileDataManager()
-            {
-                return &dataManager;
-            }
-
-            virtual const IFileDataManager * getFileDataManager() const
-            {
-                return &dataManager;
-            }
-
-            virtual IMemoryDataManager * getMemoryDataManager()
-            {
-                return &dataManager;
-            }
-
-            virtual const IMemoryDataManager * getMemoryDataManager() const
-            {
-                return &dataManager;
-            }
-
-            virtual DataManager * getDataManager()
-            {
-                return &dataManager;
-            }
-
-            virtual const DataManager * getDataManager() const
-            {
-                return &dataManager;
-            }
-
-            virtual ServiceManager * getServiceManager()
-            {
-                return &serviceManager;
-            }
-
-            virtual const ServiceManager * getServiceManager() const
-            {
-                return &serviceManager;
-            }
-
-			virtual ISourceManager * getSourceManager()
-			{
-				return &sourceManager;
-			}
-
-			virtual const ISourceManager * getSourceManager() const
-			{
-				return &sourceManager;
-			}
-
-            virtual VisualizerManager * getVisualizerManager()
-            {
-                return &visualizerManager;
-            }
-
-            virtual const VisualizerManager * getVisualizerManager() const
-            {
-                return &visualizerManager;
-            }
-
-            virtual DataProcessorManager * getDataProcessorManager()
-            {
-                return &dataProcessorManager;
-            }
-
-            virtual const DataProcessorManager * getDataProcessorManager() const
-            {
-                return &dataProcessorManager;
-            }
-
-            virtual DataSourceManager * getDataSourceManager()
-            {
-                return &dataSourceManager;
-            }
-
-            virtual const DataSourceManager * getDataSourceManager() const
-            {
-                return &dataSourceManager;
-            }
-
-        private:
-            //SEKCJA WSZYSTKICH MANAGERÓW W APLIKACJI - TUTAJ POWINNY SIĘ ZNAJDOWAĆ ICH JEDYNE INSTANJCE!!
-
-            DataManager dataManager;
-            VisualizerManager visualizerManager;
-            DataProcessorManager dataProcessorManager;
-            DataSourceManager dataSourceManager;
-            ServiceManager serviceManager;
-			SourceManager sourceManager;
-        };
+        DataManager dataManager;
+        VisualizerManager visualizerManager;
+        DataProcessorManager dataProcessorManager;
+        DataSourceManager dataSourceManager;
+        ServiceManager serviceManager;
+		SourceManager sourceManager;        
 
 		osg::ArgumentParser arguments(&argc,argv);
 		arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
@@ -218,17 +96,6 @@ public:
 			return 1;
 		}
 
-
-
-		// nazwa pliku do załadowania
-		std::string filePath;
-		/*for (int i=1; i<arguments.argc() && filePath.empty(); ++i)
-		{
-			if (arguments.isString(i))
-			{
-				filePath = arguments[i];
-			}
-		}*/
 
 		int result = 0;
 		{
@@ -282,13 +149,13 @@ public:
 			// w stosunku do tej w jakiej zostały zdeklarowane w kodzie.
 
 			// MUSI TAK BY ABY LOGGER WIDZIAŁ ŚCIEŻKI
-			utils::Push<IPath*> pushedDI(__instanceInfo.pathInterface, &edrConfig);
+			//utils::Push<IPath*> pushedDI(__instanceInfo.pathInterface, &edrConfig);
 
             try{
 
 			    EDRLog logger(p.string());
 
-			    utils::Push<ILog*> pushedIL(__instanceInfo.logInterface, &logger);
+			    //utils::Push<ILog*> pushedIL(__instanceInfo.logInterface, &logger);
 
 			    PluginLoader pluginLoader;
 		            std::string additionalPluginDirPath;
@@ -298,8 +165,8 @@ public:
 				LOG_INFO("Plugin path added: " << additionalPluginDirPath);
 			    }
 			    {
-                    //Inicjalizacja managerów
-                    AppManagers appManagers;
+                    ExtendedCustomApplication coreApplication(&edrConfig, &dataManager, nullptr, &logger, &serviceManager,
+						&sourceManager, &dataSourceManager, &dataProcessorManager, nullptr);
 
 				    // tworzenie managerów
 				    // tworzenie/niszczenie managerów w ToolboxMain jest niebezpieczne
@@ -324,7 +191,7 @@ public:
 					    FrontpageWidget widget;
 						widget.setWindowIcon(QPixmap(QString::fromUtf8(":/resources/icons/appIcon.png")));
                         //inicjalizujemy widok
-					    widget.init(&pluginLoader, &appManagers);
+					    widget.init(&pluginLoader, &coreApplication);
                         //inicjalizujemy konsolę logowania
 					    logger.setConsoleWidget( widget.getConsole() );
                         //pokazujemy widok

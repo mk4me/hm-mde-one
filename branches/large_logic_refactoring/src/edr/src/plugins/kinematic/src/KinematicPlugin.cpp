@@ -25,18 +25,20 @@ using namespace kinematic;
 //! \param msg przekazywana informacja
 void logCallback(Logger::LogSeverity severity, const std::string& msg)
 {
+	static core::NamedLog log = core::NamedLog(core::getLogInterface(), "kinematic");
+	static core::ILog * logger = &log;
     switch ( severity ) {
         case Logger::Error:
-            LOG_ERROR_STATIC_NAMED("kinematic", msg);
+            LOG_CUSTOM_ERROR(logger,msg);
             break;
         case Logger::Warning:    
-            LOG_WARNING_STATIC_NAMED("kinematic", msg);
+            LOG_CUSTOM_WARNING(logger, msg);
             break;
         case Logger::Info:
-            LOG_INFO_STATIC_NAMED("kinematic", msg);
+            LOG_CUSTOM_INFO(logger, msg);
             break;
         case Logger::Debug:
-            LOG_DEBUG_STATIC_NAMED("kinematic", msg);
+            LOG_CUSTOM_DEBUG(logger, msg);
             break;
         default:
             UTILS_ASSERT(false, "Nieznany poziom logowania. Wiadomość: %s", msg);

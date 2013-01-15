@@ -486,7 +486,11 @@ void VisualizerWidget::fillSourcesMenu()
                 if(currentData.insert(*it).second == true){
 
                     std::ostringstream str;
-                    str << (*it)->getName() << " (from " << (*it)->getSource() << ")";
+
+					//TODO
+					//przeniesc name i source do metadanych
+					str << "Unknown data";
+                    //str << (*it)->getName() << " (from " << (*it)->getSource() << ")";
 
 					std::string s(str.str());
 					if(s.size() > 80){
@@ -514,8 +518,12 @@ void VisualizerWidget::fillSourcesMenu()
 
                 for(auto it = iT->second.begin(); it != iT->second.end(); ++it){
 
-                    std::ostringstream str;
-                    str << (*it)->getName() << " (from " << (*it)->getSource() << ")";
+
+					 std::ostringstream str;
+					//TODO
+					//przeniesc name i source do metadanych
+					str << "Unknown data";
+					//str << (*it)->getName() << " (from " << (*it)->getSource() << ")";
 
 					std::string s(str.str());
 					if(s.size() > 80){
@@ -686,9 +694,14 @@ std::string VisualizerWidget::getLabel( const ObjectWrapperConstPtr& object, boo
     if ( !object ) {
         return std::string("none");
     }else if ( noSource ) {
-        return object->getName();
+        //return object->getName();
+		//TODO
+		//matadane
+		return std::string("none");
     } else {
         // TODO: uzupełnić
-        return object->getName();
+		//TODO
+		//matadane
+		return std::string("none");
     }
 }

@@ -14,12 +14,14 @@
 #include "DataProcessor.h"
 #include "ManagerHelper.h"
 
-class DataProcessorManager : public core::IDataProcessorManager, public utils::Observable<DataProcessorManager>, public ManagerHelper<DataProcessorManager>
+namespace core {
+
+class DataProcessorManager : public plugin::IDataProcessorManager, public utils::Observable<DataProcessorManager>, public ManagerHelper<DataProcessorManager>
 {
     friend class DataProcessor;
 public:
     //! Lista elementów przetwarzających.
-    typedef std::vector<core::IDataProcessorPtr> IDataProcessors;
+    typedef std::vector<plugin::IDataProcessorPtr> IDataProcessors;
     //! 
     typedef boost::iterator_range<IDataProcessors::const_iterator> IDataProcessorsConstRange;
     //!
@@ -41,7 +43,7 @@ public:
 public:
 
     //! \param dataProcessor
-    virtual void registerDataProcessor(const core::IDataProcessorPtr & dataProcessor);
+    virtual void registerDataProcessor(const plugin::IDataProcessorPtr & dataProcessor);
 
     //! \return Wyliczenie prototypów.
     inline IDataProcessorsConstRange enumPrototypes() const
@@ -54,14 +56,14 @@ public:
         return static_cast<int>(prototypes.size());
     }
     //! \param i Indeks elementu przetwarzającego.
-    inline core::IDataProcessorConstPtr getPrototype(int i) const
+    inline plugin::IDataProcessorConstPtr getPrototype(int i) const
     {
         UTILS_ASSERT(i < getNumPrototypes());
         return prototypes[i];
     }
 
     //! \param id ID elementu przetwarzającego.
-    core::IDataProcessorConstPtr getPrototype(UniqueID id) const;
+    plugin::IDataProcessorConstPtr getPrototype(UniqueID id) const;
 
     //! Tworzy instancję elementu przetwarzającego.
     //! \param id id elementu przetwarzającego.
@@ -75,7 +77,7 @@ private:
     //! Tworzy instancję elementu przetwarzającego.
     //! \param id id elementu przetwarzającego.
     //! \return Instancja elementu przetwarzającego.
-    DataProcessorPtr createDataProcessor(const core::IDataProcessorConstPtr& prototype);
+    DataProcessorPtr createDataProcessor(const plugin::IDataProcessorConstPtr& prototype);
     //! 
     DataProcessorPtr createDataProcessor(const DataProcessor& prototype);
 
@@ -86,6 +88,8 @@ private:
     void notifyCreated(DataProcessor* dataProcessor);
     void notifyDestroyed(DataProcessor* dataProcessor);
 };
+
+}
 
 #endif  //    HEADER_GUARD___DATAPROCESSORMANAGER_H__
 

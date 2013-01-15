@@ -32,7 +32,13 @@ public:
 // IService
 public:
 
-    virtual void init(core::IManagersAccessor * managersAccessor)
+	virtual void init(core::ISourceManager * sourceManager,
+		core::IDataSourceManager * dataSourceManager,
+		core::IDataProcessorManager *dataProcessorManager,
+		core::IDataSinkManager * dataSinkManager,
+		core::IVisualizerManager * visualizerManager,
+		core::IMemoryDataManager * memoryDataManager,
+		core::IFileDataManager * fileDataManager)
     {
 
     }

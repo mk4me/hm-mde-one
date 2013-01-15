@@ -13,7 +13,9 @@
 //#include <core/ObjectWrapperCollection.h>
 #include "ObjectSlots.h"
 
-class ObjectSource : public ObjectSlots, public core::IObjectSource
+namespace core {
+
+class ObjectSource : public ObjectSlots, public plugin::IObjectSource
 {
 
 public:
@@ -33,11 +35,13 @@ public:
         return ObjectSlots::getNumSlots();
     }
 
-    virtual core::IObjectSource::InputObjectsCollection getObjects(int inputNo) const
+    virtual plugin::IObjectSource::InputObjectsCollection getObjects(int inputNo) const
     {
         UTILS_ASSERT((inputNo >= 0 && inputNo < getNumSources()), "Bledny indeks wejscia");
-        return core::IObjectSource::InputObjectsCollection(ObjectSlots::getConstObjects(inputNo));
+        return plugin::IObjectSource::InputObjectsCollection(ObjectSlots::getConstObjects(inputNo));
     }
 };
+
+}
 
 #endif  // HEADER_GUARD_CORE__OBJECTSOURCE_H__

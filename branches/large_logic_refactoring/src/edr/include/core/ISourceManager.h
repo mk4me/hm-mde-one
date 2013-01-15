@@ -14,7 +14,7 @@
 #include <vector>
 #include <utils/Debug.h>
 
-namespace core {
+namespace plugin {
 
     //! Interfejs zarządzający/agregujący źródła danych aplikacji
     class ISourceManager
@@ -36,20 +36,20 @@ namespace core {
         virtual ISourcePtr getSource(UniqueID id) = 0;
     };
 
-    typedef shared_ptr<ISourceManager> ISourceManagerPtr;
-    typedef shared_ptr<const ISourceManager> ISourceManagerConstPtr;
-    typedef weak_ptr<ISourceManager> ISourceManagerWeakPtr;
-    typedef weak_ptr<const ISourceManager> ISourceManagerWeakConstPtr;
+    typedef core::shared_ptr<ISourceManager> ISourceManagerPtr;
+    typedef core::shared_ptr<const ISourceManager> ISourceManagerConstPtr;
+    typedef core::weak_ptr<ISourceManager> ISourceManagerWeakPtr;
+    typedef core::weak_ptr<const ISourceManager> ISourceManagerWeakConstPtr;
 
     //! Metoda wyszukująca wszystkie źródła danego typu (np. implementujące
     //! dany interfejs).
     template <class T>
-    shared_ptr<T> querySource(ISourceManager* manager, T* dummy = nullptr)
+    core::shared_ptr<T> querySource(ISourceManager* manager, T* dummy = nullptr)
     {
-        std::vector<shared_ptr<T>> result;
+        std::vector<core::shared_ptr<T>> result;
         querySources(manager, result);
         if ( result.empty() ) {
-            return shared_ptr<T>();
+            return core::shared_ptr<T>();
         } else {
             UTILS_ASSERT(result.size()==1, "Multiple sources found.");
             return result[0];
@@ -59,11 +59,11 @@ namespace core {
     //! Metoda wyszukująca wszystkie źródła danego typu (np. implementujące
     //! dany interfejs).
     template <class T>
-    void querySources(ISourceManager* manager, std::vector<shared_ptr<T>>& target)
+    void querySources(ISourceManager* manager, std::vector<core::shared_ptr<T>>& target)
     {
         for ( int i = 0; i < manager->getNumSources(); ++i ) {
             ISourcePtr service = manager->getSource(i);
-            shared_ptr<T> casted = dynamic_pointer_cast<T>(service);
+            core::shared_ptr<T> casted = core::dynamic_pointer_cast<T>(service);
             if ( casted ) {
                 target.push_back(casted);
             }

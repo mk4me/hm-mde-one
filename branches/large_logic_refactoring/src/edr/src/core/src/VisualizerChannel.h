@@ -13,6 +13,8 @@
 #include "Visualizer.h"
 #include <timelinelib/IChannel.h>
 
+namespace core {
+
 class IVisualizerChannel : public timeline::IChannel
 {
 public:
@@ -24,7 +26,7 @@ class VisualizerChannel : public IVisualizerChannel
 {
 public:
 
-	VisualizerChannel(const core::VisualizerTimeSeriePtr & serie);
+	VisualizerChannel(const plugin::VisualizerTimeSeriePtr & serie);
 
 	virtual ~VisualizerChannel();
 
@@ -38,14 +40,14 @@ public:
 	//! \param time Aktualny, lokalny czas kanału w sekundach
 	virtual void setTime(double time);
 
-	const core::VisualizerTimeSeriePtr & getSerie();
+	const plugin::VisualizerTimeSeriePtr & getSerie();
 
-	const core::VisualizerTimeSerieConstPtr & getSerie() const;
+	const plugin::VisualizerTimeSerieConstPtr & getSerie() const;
 
 private:
 
-	core::VisualizerTimeSeriePtr serie;
-	core::VisualizerTimeSerieConstPtr constSerie;
+	plugin::VisualizerTimeSeriePtr serie;
+	plugin::VisualizerTimeSerieConstPtr constSerie;
 };
 
 
@@ -53,7 +55,7 @@ class VisualizerMultiChannel : public IVisualizerChannel
 {
 public:
 
-	VisualizerMultiChannel(const std::vector<core::VisualizerTimeSeriePtr> & channelSeries);
+	VisualizerMultiChannel(const std::vector<plugin::VisualizerTimeSeriePtr> & channelSeries);
 
 	virtual ~VisualizerMultiChannel();
 
@@ -67,14 +69,16 @@ public:
 	//! \param time Aktualny, lokalny czas kanału w sekundach
 	virtual void setTime(double time);
 
-	const std::vector<core::VisualizerTimeSeriePtr> & channelSeries() const;
+	const std::vector<plugin::VisualizerTimeSeriePtr> & channelSeries() const;
 
 private:
 
-	std::vector<core::VisualizerTimeSeriePtr> channelSeries_;
+	std::vector<plugin::VisualizerTimeSeriePtr> channelSeries_;
 };
 
-typedef boost::shared_ptr<IVisualizerChannel> VisualizerChannelPtr;
-typedef boost::shared_ptr<const IVisualizerChannel> VisualizerChannelConstPtr;
+typedef shared_ptr<IVisualizerChannel> VisualizerChannelPtr;
+typedef shared_ptr<const IVisualizerChannel> VisualizerChannelConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___VISUALIZERCHANNEL_H__

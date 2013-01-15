@@ -23,7 +23,11 @@ class Motion : public PluginSubject::IMotion
 
 private:
 	
-    Motion(PluginSubject::SubjectID motionID, const PluginSubject::SessionConstPtr & session, PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    Motion(const core::ObjectWrapperConstPtr & session, const PluginSubject::SessionConstPtr & unpackedSession, PluginSubject::SubjectID localMotionID, const core::ConstObjectsList & wrappers);
+
+	static void generateName(std::string & name, std::string & localName, PluginSubject::SubjectID motionID, PluginSubject::SubjectID motionLocalID, const std::string & sessionLocalName);
+
+	static PluginSubject::SubjectID nextGlobalID();
 
 public:
 
@@ -37,33 +41,36 @@ public:
     virtual PluginSubject::SubjectID getID() const;
     virtual PluginSubject::SubjectID getLocalID() const;
     //const std::string & getName() const;
-    const PluginSubject::SessionConstPtr & getSession() const;
+    virtual const core::ObjectWrapperConstPtr & getSession() const;
+	virtual const PluginSubject::SessionConstPtr & getUnpackedSession() const;
 
     virtual int size() const;
     virtual const core::ObjectWrapperConstPtr & get(int i) const;
 
     virtual bool isSupported( const core::TypeInfo& typeToCheck ) const;
 
-    virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const;    
+    virtual void getWrappers(core::ConstObjectsList & wrappers) const;    
 
 private:
-	std::vector<core::ObjectWrapperConstPtr> wrappers;
+	core::ConstObjectsList wrappers;
 	std::vector<core::TypeInfo> types;
-	//std::string name;
     PluginSubject::SubjectID motionID;
     PluginSubject::SubjectID localMotionID;
 
-    PluginSubject::SessionConstPtr session;
+    core::ObjectWrapperConstPtr session;
+	PluginSubject::SessionConstPtr unpackedSession;
 
     std::string name;
     std::string localName;
+
+	static PluginSubject::SubjectID globalID;
 };
 
 class FilteredMotion : public PluginSubject::IMotion
 {
 public:
 
-    FilteredMotion(const PluginSubject::MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    FilteredMotion(const core::ObjectWrapperConstPtr & originalMotion, const PluginSubject::MotionConstPtr & originalUnpackedMotion, const core::ConstObjectsList & wrappers);
     virtual ~FilteredMotion();
 
     virtual const std::string & getName() const;
@@ -72,20 +79,24 @@ public:
     virtual PluginSubject::SubjectID getID() const;
     virtual PluginSubject::SubjectID getLocalID() const;
     //const std::string & getName() const;
-    virtual const PluginSubject::SessionConstPtr & getSession() const;
+    virtual const core::ObjectWrapperConstPtr & getSession() const;
+	virtual const PluginSubject::SessionConstPtr & getUnpackedSession() const;
 
     virtual int size() const;
     virtual const core::ObjectWrapperConstPtr & get(int i) const;
 
 
-    void setSession(const PluginSubject::SessionConstPtr & session);
+    void setSession(const core::ObjectWrapperConstPtr & session, const PluginSubject::SessionConstPtr & unpackedSession);
 
-    const PluginSubject::MotionConstPtr & getOriginalMotion() const;
+    const core::ObjectWrapperConstPtr & getOriginalMotion() const;
+	const PluginSubject::MotionConstPtr & getOriginalUnpackedMotion() const;
 
 private:
-    PluginSubject::SessionConstPtr session;
-    PluginSubject::MotionConstPtr originalMotion;
-    std::vector<core::ObjectWrapperConstPtr> wrappers;
+    core::ObjectWrapperConstPtr session;
+	PluginSubject::SessionConstPtr unpackedSession;
+    core::ObjectWrapperConstPtr originalMotion;
+	PluginSubject::MotionConstPtr originalUnpackedMotion;
+    core::ConstObjectsList wrappers;
 };
 
 #endif

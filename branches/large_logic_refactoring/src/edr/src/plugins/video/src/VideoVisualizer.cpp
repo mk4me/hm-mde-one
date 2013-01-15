@@ -76,11 +76,11 @@ void VideoVisualizer::VideoSerie::setData(const core::ObjectWrapperConstPtr & da
 	visualizer->reset();
 	bool success = false;
 	if (data->isSupported(typeid(VideoStreamPtr))) {
-		success = data->tryGet(visualizer->stream);
+		success = data->clone()->tryGet(visualizer->stream);
 	} else if (data->isSupported(typeid(VideoChannel))) {
-		VideoChannelConstPtr channel = data->get();
+		VideoChannelPtr channel = data->clone()->get();
 		if (channel) {
-			visualizer->stream = osg::const_pointer_cast<VideoStream>(channel->getVideoStream());
+			visualizer->stream = channel->getVideoStream();
 			success = visualizer->stream != nullptr;
 		}
 	}
@@ -303,7 +303,7 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
 
     // dodanie obszaru roboczego
     workspace = new osgWidget::Box();
-    workspace->getBackground()->setImage(getResourceString("images/transparent_background.png"), false, false);
+    workspace->getBackground()->setImage(getResourcePath("images/transparent_background.png").string(), false, false);
     osg::Texture* texture = osgui::getTexture(workspace->getBackground());
 	if (texture) {
 		texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);

@@ -12,12 +12,10 @@
 #include <map>
 #include "Visualizer.h"
 #include "EDRDockWidget.h"
+#include <core/IEDRTitleBar.h>
 
 class QLabel;
 class QComboBox;
-
-
-#include <core/IEDRTitleBar.h>
 
 //! Widget wizualizacyjny.
 class VisualizerWidget : public EDRDockWidget
@@ -26,19 +24,19 @@ class VisualizerWidget : public EDRDockWidget
 
 public:
 
-    typedef std::pair<QObject*, IEDRTitleBar::SideType> VisualizerTitleBarElement;
+    typedef std::pair<QObject*, plugin::IEDRTitleBar::SideType> VisualizerTitleBarElement;
     typedef std::vector<VisualizerTitleBarElement> VisualizerTitleBarElements;
 
 private:
 
     struct InnerVisualizerElement
     {
-        InnerVisualizerElement() : visible(false), object(nullptr), side(IEDRTitleBar::Left)
+        InnerVisualizerElement() : visible(false), object(nullptr), side(plugin::IEDRTitleBar::Left)
         {
 
         }
 
-        InnerVisualizerElement(bool visible, QObject* object, IEDRTitleBar::SideType side)
+        InnerVisualizerElement(bool visible, QObject* object, plugin::IEDRTitleBar::SideType side)
             : visible(visible), object(object), side(side)
         {
 
@@ -46,7 +44,7 @@ private:
 
         bool visible;
         QObject* object;
-        IEDRTitleBar::SideType side;
+        plugin::IEDRTitleBar::SideType side;
     };
 
     //typedef std::map<core::VisualizerTimeSeriePtr, VisualizerChannelPtr> TimelineChannels;
@@ -60,7 +58,7 @@ private:
     QComboBox *comboType;
 
     //! Bieżący wizualizator.
-    VisualizerPtr visualizer;
+    core::VisualizerPtr visualizer;
     //customowe elementu titlebara dla danego wizualizatora
     InnerVisualizerElements visualizerCommonElements;
     ActionsGroupManager visualizerCommonElementsOrder;
@@ -75,7 +73,7 @@ private:
 
     //TimelineChannels timelineChannels;
 
-    std::map<core::ObjectWrapperConstPtr, core::VisualizerSeriePtr > currentSeriesData;
+    std::map<core::ObjectWrapperConstPtr, plugin::VisualizerSeriePtr > currentSeriesData;
     std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> > groupedSeriesData;
 
     std::pair<QAction*, core::ObjectWrapperConstPtr> lastSerie;
@@ -91,7 +89,7 @@ public:
     //!
     VisualizerWidget(UniqueID visualizerID, QWidget* parent = nullptr, Qt::WindowFlags flags = 0, bool autoRefreshInputs = true);
     //!
-    VisualizerWidget(const VisualizerPtr& source, QWidget* parent = nullptr, Qt::WindowFlags flags = 0, bool autoRefreshInputs = true);
+    VisualizerWidget(const core::VisualizerPtr& source, QWidget* parent = nullptr, Qt::WindowFlags flags = 0, bool autoRefreshInputs = true);
         
             
     //! Zapewnia możliwość kasowanie widgeta wizualizatora przez jego implementację.
@@ -114,7 +112,7 @@ public:
     void clearCurrentVisualizer();
 
     //! \return Bieżący wizualizator.
-    inline VisualizerPtr getCurrentVisualizer()
+    inline core::VisualizerPtr getCurrentVisualizer()
     {
         return visualizer;
     }
@@ -153,7 +151,7 @@ private slots:
     //! \param id Id bieżącego wizualizatora.
     void setCurrentVisualizer(UniqueID id);
     //! \param visualizer Bieżący wizualizator.
-    void setCurrentVisualizer(const VisualizerPtr& visualizer);
+    void setCurrentVisualizer(const core::VisualizerPtr& visualizer);
     //! \param idx Indeks bieżącego wizualizatora.
     void setCurrentVisualizer(int idx);
 

@@ -78,14 +78,14 @@ class MultiChartCommand : public IFilterCommand
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions );
 };
 
 //! tworzy gałąź drzewa z przefiltrowanymi danymi
 //! \param rootItemName nazwa korzenia
 //! \param sessions sesje do przefiltrowania
 template <class Type, class TypePtr>
-QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions )
+QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions )
 {
     QTreeWidgetItem* rootItem = new QTreeWidgetItem();
     rootItem->setText(0, rootItemName);
@@ -101,7 +101,7 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
             item->setText(0, motion->getLocalName().c_str());
             if (motion->hasObjectOfType(typeid(Type))) {
                 core::ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(Type));
-                TypePtr collection = wrapper->get();
+                TypePtr collection = wrapper->clone()->get();
                 std::vector<core::ObjectWrapperConstPtr> xWrappers;
                 std::vector<core::ObjectWrapperConstPtr> yWrappers;
                 std::vector<core::ObjectWrapperConstPtr> zWrappers;
@@ -122,12 +122,14 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
                     static int number = 0;
                     // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
                     std::string suffix = boost::lexical_cast<std::string>(number++);
-                    wrapperX->setName("X_" + suffix);
-                    wrapperX->setSource("X_" + suffix);
-                    wrapperY->setName("Y_" + suffix);
-                    wrapperY->setSource("Y_" + suffix);
-                    wrapperZ->setName("Z_" + suffix);
-                    wrapperZ->setSource("Z_" + suffix);
+					//TODO
+					//metadane
+					/*wrapperX->setName("X_" + suffix);
+					wrapperX->setSource("X_" + suffix);
+					wrapperY->setName("Y_" + suffix);
+					wrapperY->setSource("Y_" + suffix);
+					wrapperZ->setName("Z_" + suffix);
+					wrapperZ->setSource("Z_" + suffix);*/
 
                     xWrappers.push_back(wrapperX);
                     yWrappers.push_back(wrapperY);

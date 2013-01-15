@@ -15,60 +15,7 @@
 
 namespace core
 {
-    //! Abstrakcyjna fabryka obiektów.
-    class IObjectWrapperFactory
-    {
-    public:
-        //! Pusty polimorficzny destruktor.
-        virtual ~IObjectWrapperFactory() {}
-
-        //!
-        virtual const TypeInfo & getType() const = 0;
-
-        //!
-        virtual ObjectWrapper* createWrapper() = 0;
-        //!
-        virtual ObjectWrapperCollection* createWrapperCollection() = 0;
-
-    };
-
-    typedef shared_ptr<IObjectWrapperFactory> IObjectWrapperFactoryPtr;
-
-    //! Domyślna implementacja interfejsu. Żeby działać musi widzieć
-    //! definicję CORE_DEFINE_WRAPPER lub pochodnych.
-    template <class T>
-    class ObjectWrapperFactory : public IObjectWrapperFactory
-    {
-        // rev - statyczna asercja
-        //UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-
-    public:
-
-		ObjectWrapperFactory() : typeInfo(typeid(T))
-		{
-
-		}
-
-        virtual const core::TypeInfo & getType() const
-        {
-            return typeInfo;
-        }
-
-        virtual ObjectWrapper* createWrapper()
-        {
-            //UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-            return new ObjectWrapperT<T>();
-        }
-
-        virtual ObjectWrapperCollection* createWrapperCollection()
-        {
-            //UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-            return new ObjectWrapperCollection(typeid(T));
-        }
-
-    private:
-        core::TypeInfo typeInfo;
-    };
+    
 
 } // namespace core
 

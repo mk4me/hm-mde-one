@@ -1,6 +1,17 @@
 BEGIN_PROJECT("static")
 
 SET_PRIVATE_HEADERS(
+	Path.h
+	Application.h
+	ParserManager.h
+	ApplicationCommon.h
+	DataHierarchyManager.h
+	MemoryDataManager.h
+	FileDataManager.h
+	MemoryDataManagerTransaction.h
+	FileDataManagerTransaction.h
+	CustomApplication.h
+	CustomPath.h
 	VisualizerChannel.h
 	SourceManager.h
 	ActionsGroupManager.h
@@ -15,7 +26,6 @@ SET_PRIVATE_HEADERS(
 	MainWindow.h
 	EDRConsoleWidget.h
 	EDRConsoleInnerWidget.h
-	DataManager.h
 	#SceneGraphWidget.h
 	LogInitializer.h
 	ServiceManager.h
@@ -29,22 +39,22 @@ SET_PRIVATE_HEADERS(
 	ObjectSlots.h
 	EDRTitleBar.h
 	EDRDockWidget.h
-	WorkflowItemEncapsulator.h
+	#WorkflowItemEncapsulator.h
 	InputItem.h
 	InputDescription.h
 	OutputDescription.h
 	OutputItem.h
 	InputOutputItem.h
 	EDRConfig.h
-	EDRDFNode.h
-	EDRDFSourceNode.h
-	EDRDFPin.h
-	EDRDataFlow.h
+	#EDRDFNode.h
+	#EDRDFSourceNode.h
+	#EDRDFPin.h
+	#EDRDataFlow.h
 	DataProcessorManager.h
-	WorkflowService.h
-	WorkflowWidget.h
-	WorkflowVDFModel.h
-	WorkflowVDFConnDelContextMenu.h
+	#WorkflowService.h
+	#WorkflowWidget.h
+	#WorkflowVDFModel.h
+	#WorkflowVDFConnDelContextMenu.h
 	LocalDataSource.h
 	LocalDataSourceWidget.h
 	DataSource.h
@@ -55,6 +65,16 @@ SET_PRIVATE_HEADERS(
 )
 
 SET_PUBLIC_HEADERS (
+	IParserManagerReader.h
+	IDataHierarchyManagerReader.h
+	IExtensionManagerReader.h
+	IStreamManagerReader.h
+	IStreamDataManager.h
+	IFileManagerReader.h
+	IDataManagerReader.h
+	IMemoryDataManager.h
+	IFileDataManager.h
+	IApplication.h
 	StringTools.h
 	ISource.h
 	ISourceManager.h
@@ -91,7 +111,7 @@ SET_PUBLIC_HEADERS (
 	IOutputProcessItem.h
 	IInputOutputProcessItem.h
 	IConfigurable.h
-	IWorkflowItemBase.h
+	#IWorkflowItemBase.h
 	IClonable.h
 	ISerializable.h
 	IPath.h
@@ -109,6 +129,18 @@ SET_PUBLIC_HEADERS (
 )
 
 SET_SOURCE_FILES(
+	Path.cpp
+	Application.cpp
+	Window.cpp
+	ParserManager.cpp
+	Log.cpp
+	DataHierarchyManager.cpp
+	MemoryDataManager.cpp
+	FileDataManager.cpp
+	MemoryDataManagerTransaction.cpp
+	FileDataManagerTransaction.cpp
+	CustomApplication.cpp
+	CustomPath.cpp
 	VisualizerChannel.cpp
 	SourceManager.cpp
 	ActionsGroupManager.cpp
@@ -119,7 +151,6 @@ SET_SOURCE_FILES(
 	MainWindow.cpp
 	EDRConsoleWidget.cpp
 	EDRConsoleInnerWidget.cpp
-	DataManager.cpp
 	#SceneGraphWidget.cpp
 	LogInitializer.cpp
 	PluginLoader.cpp
@@ -133,15 +164,15 @@ SET_SOURCE_FILES(
 	EDRTitleBar.cpp
 	EDRDockWidget.cpp
 	EDRConfig.cpp
-	EDRDFNode.cpp
-	EDRDFSourceNode.cpp
-	EDRDFPin.cpp
-	EDRDataFlow.cpp
+	#EDRDFNode.cpp
+	#EDRDFSourceNode.cpp
+	#EDRDFPin.cpp
+	#EDRDataFlow.cpp
 	DataProcessorManager.cpp
-	WorkflowWidget.cpp
-	WorkflowService.cpp
-	WorkflowVDFModel.cpp
-	WorkflowVDFConnDelContextMenu.cpp
+	#WorkflowWidget.cpp
+	#WorkflowService.cpp
+	#WorkflowVDFModel.cpp
+	#WorkflowVDFConnDelContextMenu.cpp
 	LocalDataSource.cpp
 	LocalDataSourceWidget.cpp
 	DataSource.cpp
@@ -160,9 +191,9 @@ SET_MOC_FILES(
 	VisualizerWidget.h
 	EDRTitleBar.h
 	EDRDockWidget.h	
-	WorkflowWidget.h
-	WorkflowVDFModel.h
-	WorkflowVDFConnDelContextMenu.h
+	#WorkflowWidget.h
+	#WorkflowVDFModel.h
+	#WorkflowVDFConnDelContextMenu.h
 	LocalDataSourceWidget.h
 	Visualizer.h
 	##################################
@@ -178,7 +209,7 @@ SET_UI_FILES(
 	#ui/VisualizerWidget.ui
 	EDRTitleBar.ui
 	EDRConsoleInnerWidget.ui
-	WorkflowWidget.ui
+	#WorkflowWidget.ui
 	LocalDataSourceWidget.ui
 )
 

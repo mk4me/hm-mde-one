@@ -96,7 +96,7 @@ public:
     //! \param managersAccessor obiekt przekazywany klasie bazowej (inicjalizacja pluginow i managerów)
     virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
     //! \return aktualnie zaladowane sesje pomiarowe
-    const std::vector<PluginSubject::SessionConstPtr>& getCurrentSessions();
+    const core::ObjectWrapperCollection& getCurrentSessions();
     //! dodanie głównego elementu (topItem) do drzewa danych w analizach
     //! \param item dodawany element
     void addItemToTree(QTreeWidgetItem* item);

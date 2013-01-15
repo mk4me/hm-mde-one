@@ -23,12 +23,12 @@ class ISubjectService
 public:
     virtual ~ISubjectService() {}
 
-    virtual SubjectPtr createSubject() = 0;
+    virtual core::ObjectWrapperPtr createSubject() = 0;
 
-    virtual SessionPtr createSession(const SubjectConstPtr & subject, const std::vector<core::ObjectWrapperConstPtr> & wrappers) = 0;
+    virtual core::ObjectWrapperPtr createSession(const core::ObjectWrapperConstPtr & subject, const core::ConstObjectsList & wrappers) = 0;
 
-    virtual MotionPtr createMotion(const SessionConstPtr & session,
-        const std::vector<core::ObjectWrapperConstPtr> & wrappers) = 0;    
+    virtual core::ObjectWrapperPtr createMotion(const core::ObjectWrapperConstPtr & session,
+        const core::ConstObjectsList & wrappers) = 0;    
 
 private:
 

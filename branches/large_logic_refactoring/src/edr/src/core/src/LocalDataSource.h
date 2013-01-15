@@ -12,10 +12,12 @@
 #include <map>
 #include <core/IDataSource.h>
 #include <core/ObjectWrapperCollection.h>
+#include <core/IObjectOutput.h>
+#include "OutputDescription.h"
 
 class LocalDataSourceWidget;
 
-class LocalDataSource : public core::IDataSource
+class LocalDataSource : public plugin::IDataSource
 {
     friend class LocalDataSourceWidget;
 
@@ -38,12 +40,14 @@ public:
 
     virtual LocalDataSource* createClone() const;
 
-    virtual void getOutputInfo( OutputDescription& info );
+    virtual void getOutputInfo( core::OutputDescription& info );
+	virtual void getOutputInfo( std::vector<OutputInfo> & output ) = 0;
+
 
     virtual QWidget* getConfigurationWidget();
 
     virtual QDialog * getOutputConfigurationDialog();
-    virtual void generate(core::IObjectOutput* output);
+    virtual void generate(plugin::IObjectOutput* output);
     virtual bool empty() const;
     virtual QIcon* getIcon() const;
 
@@ -53,7 +57,7 @@ private:
     static std::string name;
     std::string trialPath;
 
-    OutputDescription outputDescription;
+    core::OutputDescription outputDescription;
 
     Data data;
 

@@ -12,15 +12,18 @@
 #include "OutputItem.h"
 #include <core/IDataSource.h>
 
-class DataSource : public OutputItem<core::IDataSource>
+namespace core {
+
+class DataSource : public OutputItem<plugin::IDataSource>
 {
 public:
-    DataSource(core::IDataSource * impl);
+    DataSource(plugin::IDataSource * impl);
     ~DataSource();
 };
 
-typedef core::shared_ptr<DataSource> DataSourcePtr;
-typedef core::shared_ptr<const DataSource> DataSourceConstPtr;
+typedef shared_ptr<DataSource> DataSourcePtr;
+typedef shared_ptr<const DataSource> DataSourceConstPtr;
 
+}
 
 #endif  //  HEADER_GUARD___DATASOURCE_H__

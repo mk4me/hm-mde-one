@@ -26,19 +26,21 @@
 #include <core/IVisualizerManager.h>
 #include <core/IManagersAccessor.h>
 #include "ManagerHelper.h"
+#include <utils/ObserverPattern.h>
 
 Q_DECLARE_METATYPE(UniqueID);
 
 //class SceneGraphWidget;
-class DataManager;
 
-class VisualizerManager : public core::IVisualizerManager, public utils::Observable<VisualizerManager>, public ManagerHelper<VisualizerManager>
+namespace core {
+
+class VisualizerManager : public plugin::IVisualizerManager, public utils::Observable<VisualizerManager>, public ManagerHelper<VisualizerManager>
 {
     friend class Visualizer;
 	friend class IVisualizerChannel;
 public:
     //! Lista wizualizatorów.
-    typedef std::vector<core::IVisualizerPtr> IVisualizers;
+    typedef std::vector<plugin::IVisualizerPtr> IVisualizers;
     //! 
     typedef boost::iterator_range<IVisualizers::const_iterator> IVisualizersConstRange;
 
@@ -61,7 +63,7 @@ private:
 	//! Dane związane z obsługa kanałów timeline
 	struct ChannelData {
 		Visualizer * visualzier;
-		std::set<core::VisualizerTimeSeriePtr> series;
+		std::set<plugin::VisualizerTimeSeriePtr> series;
 		std::string path;
 		bool managed;
 		bool synchRemove;
@@ -95,7 +97,7 @@ public:
 public:
 
     //! \param visualizer
-    void registerVisualizer(core::IVisualizerPtr visualizer);
+    void registerVisualizer(plugin::IVisualizerPtr visualizer);
 
     //! Aktualizacja wizualizatorów.
     void update();
@@ -116,7 +118,7 @@ public:
         return static_cast<int>(prototypes.size());
     }
     //! \param i Indeks wizualizatora.
-    inline core::IVisualizerConstPtr getPrototype(int i) const
+    inline plugin::IVisualizerConstPtr getPrototype(int i) const
     {
         UTILS_ASSERT(i < getNumPrototypes());
         return prototypes[i];
@@ -127,18 +129,20 @@ public:
     //! \return Instancja wizualizatora lub wyjątek jeśli nie można utworzyć (bo nie istnieje + inne błędy)
     inline bool existVisualizerForType(const core::TypeInfo & type) const
     {
-        DataManager* dataManager = DataManager::getInstance();
-        for (auto it = mapType2ID.begin(); it != mapType2ID.end(); ++it) {
-            if (dataManager->isTypeCompatible(type, it->first)) {
-                return true;
-            }
-        }
+		/*DataManager* dataManager = DataManager::getInstance();
+		for (auto it = mapType2ID.begin(); it != mapType2ID.end(); ++it) {
+		if (dataManager->isTypeCompatible(type, it->first)) {
+		return true;
+		}
+		}
 
-        return mapType2ID.find(type) != mapType2ID.end();
+		return mapType2ID.find(type) != mapType2ID.end();*/
+		UTILS_ASSERT(false, "Poprawić");
+		return false;
     }
 
     //! \param id ID wizualizatora.
-    core::IVisualizerConstPtr getPrototype(UniqueID id) const;
+    plugin::IVisualizerConstPtr getPrototype(UniqueID id) const;
 
     //! Tworzy instancję wizualizatora.
     //! \param id id wizualizatora.
@@ -153,13 +157,13 @@ public:
 	//! \param path Ścieżka w timeline gdzie próbujemy dodać kanał
 	//! \param synchRemove Czy usunięcie kanału z timeline powinno skutkować usunięciem jego serii danych z wizualizatora
 	//! \return Wskaźnik typu const void * identyfikujący utworzony kanał, wartość nullptr oznacza że kanału nie utworzono
-	const void * createChannel(const core::VisualizerTimeSeriePtr & serie, Visualizer * visualizer, const std::string & path = std::string(), bool synchRemove = true);
+	const void * createChannel(const plugin::VisualizerTimeSeriePtr & serie, Visualizer * visualizer, const std::string & path = std::string(), bool synchRemove = true);
 	//! \param series Serie danych, które opakowujemy w kanał i dodajemy do timeline
 	//! \param visualizer Wizualizator którego serie te dotyczy
 	//! \param path Ścieżka w timeline gdzie próbujemy dodać kanał
 	//! \param synchRemove Czy usunięcie kanału z timeline powinno skutkować usunięciem jego serii danych z wizualizatora
 	//! \return Wskaźnik typu const void * identyfikujący utworzony kanał, wartość nullptr oznacza że kanału nie utworzono
-	const void * createChannel(const std::vector<core::VisualizerTimeSeriePtr> & series, Visualizer * visualizer, const std::string & path, bool synchRemove = true);
+	const void * createChannel(const std::vector<plugin::VisualizerTimeSeriePtr> & series, Visualizer * visualizer, const std::string & path, bool synchRemove = true);
 	//! \param channel Wskaźnik typu const void * identyfikujący kanał dla serii danych utworzony dla timeline
 	void removeChannel(const void * channel);
 	//! \param channel Wskaźnik typu const void * identyfikujący kanał dla serii danych utworzony dla timeline
@@ -180,7 +184,7 @@ private:
     //! Tworzy instancję wizualizatora.
     //! \param id id wizualizatora.
     //! \return Instancja wizualizatora.
-    VisualizerPtr createVisualizer(const core::IVisualizerConstPtr& prototype);
+    VisualizerPtr createVisualizer(const plugin::IVisualizerConstPtr& prototype);
     //! 
     VisualizerPtr createVisualizer(const Visualizer& prototype);
 
@@ -194,7 +198,7 @@ public:
 	//! Tworzy instancję wizualizatora.
 	//! \param typeInfo typ, który będzie wyświetlany w wizualizatorze.
 	//! \return Instancja wizualizatora.
-	VisualizerPtr createVisualizer(const core::TypeInfo& typeInfo);
+	VisualizerPtr createVisualizer(const TypeInfo& typeInfo);
 
 private:
     //! \return Indeks prototypu.
@@ -204,6 +208,6 @@ private:
     void notifyDestroyed(Visualizer* visualizer);
 };
 
-
+}
 
 #endif  // HEADER_GUARD_CORE__VISUALIZERMANAGER_H__

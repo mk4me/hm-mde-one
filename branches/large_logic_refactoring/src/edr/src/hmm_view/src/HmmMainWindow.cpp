@@ -35,6 +35,17 @@ using namespace core;
 
 using namespace PluginSubject;
 
+void unpackSessions(const core::ObjectWrapperCollection & owc, std::vector<SessionConstPtr> & dest)
+{
+	for(auto it = owc.begin(); it != owc.end(); ++it){
+		SessionConstPtr val;
+		bool ok = (*it)->tryGet(val, false);
+		if(ok && val != nullptr){
+			dest.push_back(val);
+		}
+	}
+}
+
 HmmMainWindow::HmmMainWindow() :
     MainWindow(),
     currentVisualizer(nullptr),
@@ -53,7 +64,7 @@ HmmMainWindow::HmmMainWindow() :
     setupUi(this);
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 
-    splashScreen()->setPixmap(QPixmap(":/resources/splashscreen/spplash.png"));
+    splashScreen()->setPixmap(QPixmap(":/resources/splashscreen/splash.png"));
 
     visualizerUsageContext.reset(new HMMVisualizerUsageContext(flexiTabWidget));
     treeUsageContext.reset(new HMMTreeItemUsageContext(flexiTabWidget, this));
@@ -804,9 +815,11 @@ void HmmMainWindow::createFilterTab2()
     this->analisis->addDataFilterWidget(filter4);
 }
 
-const std::vector<SessionConstPtr>& HmmMainWindow::getCurrentSessions()
+const core::ObjectWrapperCollection& HmmMainWindow::getCurrentSessions()
 {
-    currentSessions = core::queryDataPtr(DataManager::getInstance());
+    //currentSessions = core::queryDataPtr(DataManager::getInstance());
+	currentSessions.clear();
+	DataManager::getInstance()->getObjects(currentSessions);
     return currentSessions;
 }
 
@@ -1266,9 +1279,11 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              }
 
              for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
-                 if ((*it)->getName() == helper->getWrapper()->getName()) {
+				 //TODO
+				 //metadane
+                 //if ((*it)->getName() == helper->getWrapper()->getName()) {
                      toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(*it, events, *itMotion));
-                 }
+                 //}
              }
          }
          NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
@@ -1377,8 +1392,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                         wrapper->set(reader);
                         int no = toVisualize.size();
                         std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
-                        wrapper->setName  (prefix + boost::lexical_cast<std::string>(no));
-                        wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
+						//TODO
+						//metadane
+                        //wrapper->setName  (prefix + boost::lexical_cast<std::string>(no));
+                        //wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
                         toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, *itMotion));
                      }
 
@@ -1415,8 +1432,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              int no = toVisualize.size();
              std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
              colorMap[wrapper] = channelNo == 0 ? QColor(255, 0, 0) : (channelNo == 1 ? QColor(0, 255, 0) : QColor(0, 0, 255));
-             wrapper->setName  (prefix + ":" + boost::lexical_cast<std::string>(j));
-             wrapper->setSource(helper->getWrapper()->getSource() + boost::lexical_cast<std::string>(no));
+			 //TODO
+			 //metadane
+             //wrapper->setName  (prefix + ":" + boost::lexical_cast<std::string>(j));
+             //wrapper->setSource(helper->getWrapper()->getSource() + boost::lexical_cast<std::string>(no));
              toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, motion));
          }
      }
@@ -1472,8 +1491,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                              colorMap[wrapper] = channelNo == 0 ? colorX : (channelNo == 1 ? colorY : colorZ);
                              int no = toVisualize.size();
                              std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
-                             wrapper->setName  (prefix + boost::lexical_cast<std::string>(i) + ":" + boost::lexical_cast<std::string>(j));
-                             wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
+							 //TODO
+							 //metadane
+                             //wrapper->setName  (prefix + boost::lexical_cast<std::string>(i) + ":" + boost::lexical_cast<std::string>(j));
+                             //wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
                              toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, *itMotion));
                          }
                      }

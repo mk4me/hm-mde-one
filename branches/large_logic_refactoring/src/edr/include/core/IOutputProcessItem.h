@@ -10,7 +10,6 @@
 #define HEADER_GUARD_CORE__IOUTPUTPROCESSITEM_H__
 
 #include <core/IOutputDescription.h>
-#include <core/IWorkflowItemBase.h>
 
 //! Forward declaration
 class QDialog;
@@ -21,7 +20,7 @@ namespace core {
 
 //! Interfejs elementów dostarczających danych do aplikacji (workflow).
 //! Zapewnia opis danych wyjściowych i podstawowe informacje i właściwości elementów logicznych aplikacji operujących na danych
-class IOutputProcessItem : public IOutputDescription, public IWorkflowItemBase
+class IOutputProcessItem : public IOutputDescription
 {
 public:
     //! Metoda dostarczająca kolejną porcję danych podczas przetwarzania

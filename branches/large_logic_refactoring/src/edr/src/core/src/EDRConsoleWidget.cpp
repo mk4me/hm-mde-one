@@ -57,19 +57,19 @@ void EDRConsoleWidget::init()
 
     toggleWordWrapButton->setChecked( consoleWidget->textEdit->lineWrapMode() != QTextEdit::NoWrap );
 
-    titleBar->addObject(clearButton, IEDRTitleBar::Left);
-    titleBar->addObject(toggleWordWrapButton, IEDRTitleBar::Left);
+    titleBar->addObject(clearButton, plugin::IEDRTitleBar::Left);
+    titleBar->addObject(toggleWordWrapButton, plugin::IEDRTitleBar::Left);
 }
 
 void EDRConsoleWidget::logEntry( const EDRConsoleWidgetEntry& entry )
 {
     QTextCharFormat fmt;
 
-    if ( entry.severity == core::LogSeverityInfo ) {
+    if ( entry.severity == core::ILog::LogSeverityInfo ) {
         fmt.setForeground( QColor(0, 0, 0, 255) );
-    } else if ( entry.severity == core::LogSeverityWarning ) {
+    } else if ( entry.severity == core::ILog::LogSeverityWarning ) {
         fmt.setForeground( QColor(255, 130, 0, 255) );
-    } else if ( entry.severity == core::LogSeverityError ) {
+    } else if ( entry.severity == core::ILog::LogSeverityError ) {
         fmt.setForeground( QColor(255, 0, 0, 255) );
     } else {
         fmt.setForeground( QColor(100, 150, 50, 255) );

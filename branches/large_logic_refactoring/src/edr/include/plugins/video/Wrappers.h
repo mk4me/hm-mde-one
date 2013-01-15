@@ -102,6 +102,10 @@ public:
         return ret = videoStream->getImage(vidlib::PixelFormatARGB);
     }
 
+	VideoStreamPtr getVideoStream() {
+		return videoStream;
+	}
+
 	VideoStreamConstPtr getVideoStream() const {
 		return videoStream;
 	}

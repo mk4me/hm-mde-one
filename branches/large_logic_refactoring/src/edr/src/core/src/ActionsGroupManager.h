@@ -45,7 +45,7 @@ private:
 
 };
 
-class ActionsGroupManager : public core::IActionsGroupManager
+class ActionsGroupManager : public plugin::IActionsGroupManager
 {
 public:
     typedef std::vector<ActionsGroup> Groups;

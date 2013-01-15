@@ -16,19 +16,31 @@
 class QObject;
 class QWidget;
 
-namespace core 
+namespace plugin 
 {
-	class IManagersAccessor;
+	class ISourceManager;
+	class IDataSourceManager;
+	class IDataProcessorManager;
+	class IDataSinkManager;
+	class IVisualizerManager;
+	class IMemoryDataManager;
+	class IFileDataManager;
 	class IActionsGroupManager;
 
-    class IService : public IIdentifiable
+    class IService : public core::IIdentifiable
     {
     public:
         virtual ~IService() {}
  
         //! Inicjalizacja usługi. Następuje już po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich usług.
-        virtual void init(IManagersAccessor * managersAccessor) = 0;
+		virtual void init(ISourceManager * sourceManager,
+			IDataSourceManager * dataSourceManager,
+			IDataProcessorManager *dataProcessorManager,
+			IDataSinkManager * dataSinkManager,
+			IVisualizerManager * visualizerManager,
+			IMemoryDataManager * memoryDataManager,
+			IFileDataManager * fileDataManager) = 0;
 
         //! Póxna inicjalizacja usług, następuje po wczytaniu i inicjalizacji wszystkich usług
         virtual void lateInit()
@@ -72,9 +84,9 @@ namespace core
 
     };
 
-    typedef shared_ptr<IService> IServicePtr;
-    typedef shared_ptr<const IService> IServiceConstPtr;
-    typedef weak_ptr<IService> IServiceWeakPtr;
+    typedef core::shared_ptr<IService> IServicePtr;
+    typedef core::shared_ptr<const IService> IServiceConstPtr;
+    typedef core::weak_ptr<IService> IServiceWeakPtr;
 
 }
 

@@ -27,7 +27,7 @@ public:
     //! \return "Przyjazna" lub "naturalna" nazwa obiektu.
     virtual const std::string & getName() const = 0;
     //! \param sessions Lista sesji związanych z tym obiektem - dynamicznie pobierana z DM!!
-    virtual void getSessions(Sessions & sessions) const = 0;
+    virtual void getSessions(core::ConstObjectsList & sessions) const = 0;
 };
 
 }

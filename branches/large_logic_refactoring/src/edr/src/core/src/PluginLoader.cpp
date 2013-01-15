@@ -12,6 +12,8 @@
 #include "PluginLoader.h"
 #include <core/Plugin.h>
 #include <core/PluginCommon.h>
+#include "CustomPath.h"
+#include "CustomApplication.h"
 #include <regex>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,15 +36,19 @@ void PluginLoader::clear()
     // wyczyszczenie ścieżek
     Paths().swap(paths);
 
-    //wyczyszczenie pluginów
-    Plugins().swap(plugins);
+	for(auto it = plugins.begin(); it != plugins.end(); ++it)
+	{
+		(*it).plugin.reset();
+		(*it).constPlugin.reset();
+		(*it).coreApplication.reset();
+		unloadSharedLibrary((*it).handle);
+	}
 }
 
 void PluginLoader::unloadPlugins()
 {
     try{
         clear();
-        freeLibraries();
     }
     catch(std::runtime_error& e){
         LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
@@ -115,7 +121,6 @@ void PluginLoader::load()
 #endif
 
 	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {
-        //std::unique_ptr<std::string> pathIT(new std::string("/home/wojtek/programming/WORK/EDR/_out/edrCB/bin"));
 		std::vector<std::string> localFiles = core::Filesystem::listFiles(*pathIT, true);
 
 		for(auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
@@ -181,9 +186,9 @@ const std::string PluginLoader::lastLoadSharedLibraryError()
 #endif
 }
 
-bool PluginLoader::addPlugIn( const std::string& path )
+bool PluginLoader::addPlugIn( const Filesystem::Path& path )
 {
-    HMODULE library = loadSharedLibrary(path);
+    HMODULE library = loadSharedLibrary(path.string());
     if ( library ) {
         try{
             if (checkPluginVersion(library, path) && checkLibrariesVersions(library, path) && checkPluginBuildType(library, path) ) {
@@ -210,15 +215,20 @@ bool PluginLoader::addPlugIn( const std::string& path )
     return false;
 }
 
-bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin::CreateFunction createFunction )
+bool PluginLoader::onAddPlugin( const Filesystem::Path& path, HMODULE library, Plugin::CreateFunction createFunction )
 {
-    Plugin* plugin = NULL;
-
+	PluginData pData;
     LOG_INFO("Loading plugin " << path);
 
     // próba załadowania
     try {
-        plugin = createFunction(&__instanceInfo);
+		pData.path.reset(new CustomPath(core::getPathInterface(), path.filename().string()));
+		pData.logger.reset(new NamedLog(core::getLogInterface(), path.filename().string()));
+		pData.coreApplication.reset(new CustomApplication(pData.path.get(), core::getDataManagerReader(),
+			nullptr, pData.logger.get(), core::getServiceManager()));
+        pData.plugin.reset(createFunction(pData.coreApplication.get()));
+		pData.constPlugin = pData.plugin;
+		pData.handle = library;
     } catch ( std::exception& ex ) {
         LOG_ERROR("Error loading plugin "<<path<<": "<<ex.what());
         return false;
@@ -228,7 +238,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin
     }
 
     // czy udało się wczytać?
-    if ( !plugin ) {
+    if ( !pData.plugin ) {
         LOG_ERROR("Error loading plugin "<<path<<": Plugin not created");
         return false;
     }
@@ -238,44 +248,29 @@ bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin
     core::PluginPtr collidingPlugin;
     //szukamy pluginu o podanym ID - jeśli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
     for(auto it = plugins.begin(); it != plugins.end(); ++it){
-        if( (*it).first->getID() == plugin->getID()){
+        if( (*it).plugin->getID() == pData.plugin->getID()){
             pluginIDFound = true;
-            collidingPlugin = (*it).first;
+            collidingPlugin = (*it).plugin;
             break;
         }
     }
 
     if(pluginIDFound == false){
 
-        plugin->setPath(path);
+        pData.plugin->setPath(path.string());		
 
-        // musi tak być, inaczej dwa smart pointery do jendego obiektu!!
-        PluginPair p;
-        p.first.reset(plugin);
-        p.second = p.first;
-
-        plugins.push_back( p );
-        libraries.push_back(library);
+        plugins.push_back( pData );
 
         LOG_INFO("Successfully loaded plugin " << path);
 
     }else{
-        LOG_WARNING("Plugin with given ID " << plugin->getID() << " already exist. Plugin " << path << " NOT loaded to application! Collision with plugin loaded from: " << collidingPlugin->getPath() );
+        LOG_WARNING("Plugin with given ID " << pData.plugin->getID() << " already exist. Plugin " << path << " NOT loaded to application! Collision with plugin loaded from: " << collidingPlugin->getPath() );
     }
 
     return !pluginIDFound;
 }
 
-void PluginLoader::freeLibraries()
-{
-    for (size_t i = 0; i < libraries.size(); ++i)
-    {
-		unloadSharedLibrary(libraries[i]);
-    }
-    libraries.clear();
-}
-
-bool PluginLoader::checkLibrariesVersions( HMODULE library, const std::string& path )
+bool PluginLoader::checkLibrariesVersions( HMODULE library, const Filesystem::Path& path )
 {
     // pobranie wersji bibliotek
     auto libsVerProc = loadProcedure<Plugin::GetLibrariesVersionFunction>(library, STRINGIZE(CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME));
@@ -310,7 +305,7 @@ bool PluginLoader::checkLibrariesVersions( HMODULE library, const std::string& p
     }
 }
 
-bool PluginLoader::checkPluginVersion( HMODULE library, const std::string& path )
+bool PluginLoader::checkPluginVersion( HMODULE library, const Filesystem::Path& path )
 {
 	auto versionProc = loadProcedure<Plugin::GetVersionFunction>(library, STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME));
 	if ( versionProc ) {
@@ -327,7 +322,7 @@ bool PluginLoader::checkPluginVersion( HMODULE library, const std::string& path 
 	}
 }
 
-bool PluginLoader::checkPluginBuildType( HMODULE library, const std::string& path )
+bool PluginLoader::checkPluginBuildType( HMODULE library, const Filesystem::Path& path )
 {
     auto buildTypeProc = loadProcedure<Plugin::GetBuildTypeFunction>(library, STRINGIZE(CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME));
     if ( buildTypeProc ) {

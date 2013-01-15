@@ -23,8 +23,12 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
     trajectoryDrawer = TrajectoryDrawerPtr(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.33f), 300));
 	markersDrawer->addDrawer(trajectoryDrawer);
 	markersDrawer->init(scheme);
-    visualizer->trajectoriesDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
-    visualizer->schemeDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
+	//TODO
+	//metadane
+    //visualizer->trajectoriesDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
+	//visualizer->schemeDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
+	visualizer->trajectoriesDialog->setDrawer(markersDrawer, QString("UNKNOWN"));
+	visualizer->schemeDialog->setDrawer(markersDrawer, QString("UNKNOWN"));
 
 	transformNode->addChild(markersDrawer->getNode());
     matrixTransform->setMatrix(getInitialMatrix());

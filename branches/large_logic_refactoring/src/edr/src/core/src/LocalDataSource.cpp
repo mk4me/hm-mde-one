@@ -52,7 +52,7 @@ QDialog * LocalDataSource::getOutputConfigurationDialog()
     return ret;
 }
 
-void LocalDataSource::generate(core::IObjectOutput* output)
+void LocalDataSource::generate(plugin::IObjectOutput* output)
 {
     for(unsigned int i = 0; i < outputDescription.size(); ++i){
         auto out = output->getObjects(i);

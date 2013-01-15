@@ -9,7 +9,6 @@
 #ifndef HEADER_GUARD_CORE__IINPUTOUTPUTPROCESSITEM_H__
 #define HEADER_GUARD_CORE__IINPUTOUTPUTPROCESSITEM_H__
 
-#include <core/IWorkflowItemBase.h>
 #include <core/IInputDescription.h>
 #include <core/IOutputDescription.h>
 
@@ -20,7 +19,7 @@ namespace core {
 
 //! Interfejs dla elementów przetwarzających.
 //! Zawiera opis wejśc i wyjść, podstawowe informacje i właściwości elementów logicznych aplikacji operujących na danych
-class IInputOutputProcessItem : public IWorkflowItemBase, public IInputDescription, public IOutputDescription
+class IInputOutputProcessItem : public IInputDescription, public IOutputDescription
 {
 public:
 

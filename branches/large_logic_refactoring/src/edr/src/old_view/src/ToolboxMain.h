@@ -7,7 +7,6 @@
 
 #include <core/src/PluginLoader.h>
 #include <core/Window.h>
-#include <core/src/DataManager.h>
 
 #include "ui_toolboxmaindeffile.h"
 #include <core/Filesystem.h>

@@ -149,9 +149,9 @@ public:
                 wrapper->set(core::const_pointer_cast<VectorChannel>(boost::dynamic_pointer_cast<const VectorChannel>(collection->getChannel(i))));
 
                 static int number = 0;
-                std::string name = "Serie_" + boost::lexical_cast<std::string>(number);
-                wrapper->setName(name);
-                wrapper->setSource(name);
+                std::string();
+                (*wrapper)["name"] = "Serie_" + boost::lexical_cast<std::string>(number);
+                (*wrapper)["source"] = "TreeBuilder";
                 wrappers.push_back(wrapper);
             }
             QTreeWidgetItem* collectionItem;

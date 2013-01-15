@@ -11,31 +11,33 @@
 
 #include <core/IDataProcessor.h>
 #include <core/ObjectWrapper.h>
-#include "WorkflowItemEncapsulator.h"
 #include "InputOutputItem.h"
 #include "ObjectOutput.h"
 
-class DataProcessor : public InputOutputItem<core::IDataProcessor>
+namespace core {
+
+class DataProcessor : public InputOutputItem<plugin::IDataProcessor>
 {
 
 public:
     //! \param impl Obiekt przejmowany na własność.
-    DataProcessor(core::IDataProcessor* impl);
+    DataProcessor(plugin::IDataProcessor* impl);
     ~DataProcessor();
 
 public:
 
     virtual void run() 
     {
-        getImplementation()->process(getSource(), getOutput());
+        //getImplementation()->process(getSource(), getOutput());
     }
 
     //static void test();
 
 };
 
-typedef boost::shared_ptr<DataProcessor> DataProcessorPtr;
-typedef boost::shared_ptr<const DataProcessor> DataProcessorConstPtr;
+typedef shared_ptr<DataProcessor> DataProcessorPtr;
+typedef shared_ptr<const DataProcessor> DataProcessorConstPtr;
 
+}
 
 #endif  // HEADER_GUARD_CORE__DATAPROCESSOR_H__

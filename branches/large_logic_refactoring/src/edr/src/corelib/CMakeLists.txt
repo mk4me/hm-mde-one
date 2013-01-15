@@ -2,12 +2,12 @@ BEGIN_PROJECT("static")
 
 # SET_PUBLIC_HEADERS(
 	# MultiView.h
-	# MultiViewWidgetItem.h
-	# MultiViewFunctorWidgetAdapter.h
 	# MultiViewCameraItem.h
 	# MultiViewManipulatorItem.h
 	# OsgSceneDump.h
-# )
+# )	# MultiViewWidgetItem.h
+	# MultiViewFunctorWidgetAdapter.h
+
 
 SET_CONFIGURATION_INPUT_FILES(
 	"Config.h.in"
@@ -17,7 +17,6 @@ CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")
 
 
 SET_SOURCE_FILES(
-	Window.cpp
 	MultiView.cpp
 	MultiViewWidgetItem.cpp
 	Filesystem.cpp

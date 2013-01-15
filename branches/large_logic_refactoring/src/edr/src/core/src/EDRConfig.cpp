@@ -72,7 +72,9 @@ void EDRConfig::setPaths( EDRConfig& directoriesInfo )
 
 EDRConfig* EDRConfig::getInstance()
 {
-	return static_cast<EDRConfig*>(getPathInterface());
+	//TODO
+	//return static_cast<EDRConfig*>(getPathInterface());
+	return nullptr;
 }
 
 //! sprawdza czy katalog dla danych tymczasowych istnieje, jeśli nie tworzy go

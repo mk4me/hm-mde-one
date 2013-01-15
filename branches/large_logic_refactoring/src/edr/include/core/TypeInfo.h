@@ -26,7 +26,7 @@ namespace core {
 
     public:
         //! \param typeinfo
-        TypeInfo() : typeinfo(&typeid(TypeInfo))
+       TypeInfo() : typeinfo(&typeid(void))
         {
 
         }

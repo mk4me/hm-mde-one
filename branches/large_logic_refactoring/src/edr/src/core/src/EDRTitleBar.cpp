@@ -199,7 +199,7 @@ EDRTitleBar * supplyWithEDRTitleBar(EDRDockWidget * dockWidget, bool refresh)
     }
 
     if(dockWidget->titleBarWidget() != nullptr){
-        LOG_WARNING("DockWidget already has a titlebar!!");
+        CORE_LOG_WARNING("DockWidget already has a titlebar!!");
         return nullptr;
     }
 

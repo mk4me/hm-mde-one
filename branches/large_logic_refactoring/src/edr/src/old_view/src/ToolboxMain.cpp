@@ -55,7 +55,6 @@
 #include <core/src/EDRDockWidget.h>
 #include <core/src/EDRTitleBar.h>
 
-#include <core/src/WorkflowService.h>
 #include <core/src/WorkflowWidget.h>
 #include <core/src/LocalDataSource.h>
 

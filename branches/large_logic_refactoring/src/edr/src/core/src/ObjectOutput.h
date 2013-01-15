@@ -12,7 +12,9 @@
 #include "ObjectSlots.h"
 #include <core/IObjectOutput.h>
 
-class ObjectOutput : public ObjectSlots, public core::IObjectOutput
+namespace core {
+
+class ObjectOutput : public ObjectSlots, public plugin::IObjectOutput
 {
 public:
     //! \param info Informacje o slotach.
@@ -26,9 +28,9 @@ public:
 
       // core::IObjectOutput
 public:
-    virtual core::IObjectOutput::OutputObjectsCollection getObjects(int idx)
+    virtual plugin::IObjectOutput::OutputObjectsCollection getObjects(int idx)
     {
-        return core::IObjectOutput::OutputObjectsCollection(ObjectSlots::getObjects(idx));
+        return plugin::IObjectOutput::OutputObjectsCollection(ObjectSlots::getObjects(idx));
     }
 
     //! \return Liczba slotów wyjściowych.
@@ -38,5 +40,7 @@ public:
     }
 
 };
+
+}
 
 #endif  //  HEADER_GUARD_CORE__OBJECTOUTPUT_H__

@@ -10,22 +10,23 @@
 
 using namespace core;
 
-Visualizer::Visualizer( IVisualizer* impl ) :
-    InputItem<IVisualizer>(impl, VisualizerManager::getInstance()->getSourcesTypes(impl->getID())),
+Visualizer::Visualizer( plugin::IVisualizer* impl ) :
+    InputItem<plugin::IVisualizer>(impl, VisualizerManager::getInstance()->getSourcesTypes(impl->getID())),
     widget(nullptr)
 {
     VisualizerManager::getInstance()->notifyCreated(this);
-    uiName = toString(getName());
+	//TODO
+    //uiName = QString::fromStdString(getName());
 }
 
-Visualizer::Visualizer( const Visualizer& visualizer ) :
- InputItem<core::IVisualizer>(
-     dynamic_cast<IVisualizer*> (visualizer.getImplementation()->createClone()),
-     VisualizerManager::getInstance()->getSourcesTypes(getImplementation()->getID())),
- widget(nullptr)
+Visualizer::Visualizer( const Visualizer& visualizer )
+	//TODO
+	//: InputItem<plugin::IVisualizer>(dynamic_cast<plugin::IVisualizer*> (visualizer.getImplementation()->createClone()),VisualizerManager::getInstance()->getSourcesTypes(getImplementation()->getID())),
+  : widget(nullptr)
 {
     VisualizerManager::getInstance()->notifyCreated(this);
-    uiName = toString(getName());
+	//TODO
+    //uiName = QString::fromStdString(getName());
 }
 
 Visualizer::~Visualizer()
@@ -36,10 +37,12 @@ Visualizer::~Visualizer()
 QWidget* Visualizer::getOrCreateWidget()
 {
     if (!widget) {
-        LOG_DEBUG("Visualizer " << getImplementation()->getName() << " widget created");
+		//TODO
+        //CORE_LOG_DEBUG("Visualizer " << getImplementation()->getName() << " widget created");
+		CORE_LOG_DEBUG("Visualizer " <<  " widget created");
 
-        widget = getImplementation()->createWidget(&genericActions);
-        //PrintWidgetAction* print = new PrintWidgetAction(widget, "Print visualizer", widget);
+		//TODO
+        //widget = getImplementation()->createWidget(&genericActions);
         QAction* print = new QAction("Print visualizer", widget);
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/resources/icons/screenshot-b.png"), QSize(), QIcon::Normal, QIcon::Off);
@@ -47,10 +50,10 @@ QWidget* Visualizer::getOrCreateWidget()
         print->setIcon(icon);
         connect(print, SIGNAL(triggered()), this, SLOT(printActionPressed()));
 
-        core::IActionsGroupManager::GroupID id = genericActions.createGroup(tr("Common"));
+        plugin::IActionsGroupManager::GroupID id = genericActions.createGroup(tr("Common"));
         genericActions.addGroupAction(id, print);
 
-        tryRun();
+        //tryRun();
         UTILS_ASSERT(widget, "Nie udało się stworzyć widgeta.");
     }
     return widget;
@@ -58,7 +61,10 @@ QWidget* Visualizer::getOrCreateWidget()
 
 const QIcon& Visualizer::getIcon() const
 {
-    return VisualizerManager::getInstance()->getIcon(getID());
+	//TODO
+	static QIcon icon = QIcon();
+	return icon;
+    //return VisualizerManager::getInstance()->getIcon(getID());
 }
 
 const ActionsGroupManager& Visualizer::getGenericActions() const
@@ -91,17 +97,22 @@ QWidget* Visualizer::getWidget()
 
 void Visualizer::update(double deltaTime)
 {
-    getImplementation()->update(deltaTime);
+	//TODO
+    //getImplementation()->update(deltaTime);
 }
 
 int Visualizer::getMaxSeries() const
 {
-    return getImplementation()->getMaxDataSeries();
+	//TODO
+    //return getImplementation()->getMaxDataSeries();
+	return 0;
 }
 
-const core::VisualizerSeriePtr & Visualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
+const plugin::VisualizerSeriePtr & Visualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
 {
-    core::VisualizerSeriePtr serie(getImplementation()->createSerie(data, name));
+	//TODO
+	plugin::VisualizerSeriePtr serie;
+    //plugin::VisualizerSeriePtr serie(getImplementation()->createSerie(data, name));
 
     if(serie->getName().empty() == true){
         serie->setName(name);
@@ -112,16 +123,18 @@ const core::VisualizerSeriePtr & Visualizer::createSerie(const core::ObjectWrapp
     return *it;
 }
 
-void Visualizer::removeSerie(const core::VisualizerSeriePtr & serie)
+void Visualizer::removeSerie(const plugin::VisualizerSeriePtr & serie)
 {
-    getImplementation()->removeSerie(serie.get());
+	//TODO
+    //getImplementation()->removeSerie(serie.get());
     dataSeries.erase(serie);
 }
 
 void Visualizer::clearAllSeries()
 {
     while(dataSeries.empty() == false){
-        getImplementation()->removeSerie((*dataSeries.begin()).get());
+		//TODO
+        //getImplementation()->removeSerie((*dataSeries.begin()).get());
         dataSeries.erase(dataSeries.begin());
     }
 
@@ -140,6 +153,8 @@ void Visualizer::reset()
 
 void Visualizer::printActionPressed()
 {
-    QPixmap p = getImplementation()->print();
+	//TODO
+    //QPixmap p = getImplementation()->print();
+	QPixmap p;
     emit this->printTriggered(p);
 }

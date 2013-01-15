@@ -145,7 +145,7 @@ VisualizerPtr NewChartItemHelper::createVisualizer()
         LOG_ERROR("Wrong visualizer type!");
     } else {
         std::string title;
-        ScalarChannelReaderInterfacePtr scalar = wrapper->get();
+        ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
         title += scalar->getName();
         title += " [";
         title += scalar->getValueBaseUnit();
@@ -186,7 +186,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer()
         LOG_ERROR("Wrong visualizer type!");
     } else {
         std::string title;
-        VectorChannelPtr vectorChannel = wrapper->get();
+        VectorChannelConstPtr vectorChannel = wrapper->get();
         title += vectorChannel->getName();
         title += " [";
         title += vectorChannel->getValueBaseUnit();
@@ -214,17 +214,24 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
     std::string suffix = boost::lexical_cast<std::string>(number++);
     std::string p = path.toStdString();
-    wrapperX->setName  ("X_" + suffix);
-    wrapperY->setName  ("Y_" + suffix);
-    wrapperZ->setName  ("Z_" + suffix);
-    wrapperX->setSource(p + "/X_" + suffix);
-    wrapperY->setSource(p + "/Y_" + suffix);
-    wrapperZ->setSource(p + "/Z_" + suffix);
+
+	//TODO
+	//metadata
+    //wrapperX->setName  ("X_" + suffix);
+    //wrapperY->setName  ("Y_" + suffix);
+    //wrapperZ->setName  ("Z_" + suffix);
+    //wrapperX->setSource(p + "/X_" + suffix);
+    //wrapperY->setSource(p + "/Y_" + suffix);
+    //wrapperZ->setSource(p + "/Z_" + suffix);
     visualizer->getOrCreateWidget();
 
-    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getName());
-    auto serieY = visualizer->createSerie(wrapperY, wrapperY->getName());
-    auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getName());
+	/*auto serieX = visualizer->createSerie(wrapperX, wrapperX->getName());
+	auto serieY = visualizer->createSerie(wrapperY, wrapperY->getName());
+	auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getName());*/
+
+	auto serieX = visualizer->createSerie(wrapperX, "UNKNOWN");
+	auto serieY = visualizer->createSerie(wrapperY, "UNKNOWN");
+	auto serieZ = visualizer->createSerie(wrapperZ, "UNKNOWN");
 
     INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
     INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY.get());
@@ -256,7 +263,10 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
     int count = wrappers.size();
     for (int i = 0; i < count; ++i) {
         auto wrapper = wrappers[i].wrapper;
-        auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
+		//TODO
+		//metadane
+        //auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
+		auto serieX = visualizer->createSerie(wrapper, "UNKNOWN");
         if (wrappers[i].events) {
             EventSerieBasePtr eventSerie = core::dynamic_pointer_cast<EventSerieBase>(serieX);
             eventSerie->setEvents(wrappers[i].events);

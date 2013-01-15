@@ -20,27 +20,22 @@ class QSplashScreen;
 #include <QtCore/QTimer>
 #include <QtCore/QSettings>
 #include <QtGui/QMainWindow>
+#include <core/Window.h>
+#include <core/Filesystem.h>
+#include "ActionsGroupManager.h"
 
-//#include <utils/Debug.h>
 namespace core {
 
 	class PluginLoader;
-	class IManagersAccessor;
-}
 
-#include <core/Window.h>
-#include <core/Filesystem.h>
+	class ExtendedCustomApplication;
 
-#include "ActionsGroupManager.h"
-
-class UserInterfaceService;
-class ServiceManager;
-class EDRConsoleWidget;
-class VisualizerManager;
-class DataProcessorManager;
-class VisualizerWidget;
-
-namespace core {
+	class UserInterfaceService;
+	class ServiceManager;
+	class EDRConsoleWidget;
+	class VisualizerManager;
+	class DataProcessorManager;
+	class VisualizerWidget;
 
     template<class T>
     T* createNamedObject(const QString & objectName) {
@@ -72,7 +67,7 @@ namespace core {
 		//! Pluginy.
 		core::PluginLoader* pluginLoader;
         //! Dostęp do managerów aplikacji.
-        core::IManagersAccessor* managersAccessor;
+        ExtendedCustomApplication * coreApplication;
 
         //! Lista zasobów.
         std::vector<std::string> resourcesPaths;
@@ -94,7 +89,7 @@ namespace core {
 		MainWindow();
 		virtual ~MainWindow();
 
-		virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
+		virtual void init( core::PluginLoader* pluginLoader, ExtendedCustomApplication * coreApplication );
 
 		static MainWindow * getInstance()
         {
@@ -133,31 +128,12 @@ namespace core {
 
 	protected:
 
-        template<class T>
-        void registerCustomWrapperFactory(const T * dummy = nullptr)
-        {
-            safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<T>()) );
-        }
-
 		//! Rejestruje wbudowane usługi.
 		void registerCoreServices();
 		//! Rejestruje wbudowane źródła danych.
 		void registerCoreDataSources();
-
-		//! Rejestruje usługi pochodzące z pluginów.
-		void registerPluginsServices();
-		//! Rejestruje źródła pochodzące z pluginów.
-		void registerPluginsSources();
-		//! Rejestruje parsery pochodzące z pluginów.
-		void registerPluginsParsers();
-		//!
-		void registerPluginsVisualizers();
-		//!
-		void registerPluginsDataProcessors();
-
-		void registerPluginsDataSources();
-
-		void registerPluginsWrapperFactories();
+		//! Rejestruje wbudowane typy domenowe
+		void registerCoreDomainTypes();
 
         //! Szuka na dysku zasobów.
         void findResources(const std::string& resourcesPath);
@@ -179,14 +155,16 @@ namespace core {
 		//! \param area
 		QDockWidget* embeddWidget(QWidget* widget, const ActionsGroupManager& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
+		void unpackPlugin(const core::PluginPtr & plugin);
+
 		void safeRegisterPlugin(const core::PluginPtr & plugin);
-		void safeRegisterService(const core::IServicePtr & service);
-		void safeRegisterSource(const core::ISourcePtr & source);
-		void safeRegisterParser(const core::IParserPtr & parser);
-		void safeRegisterObjectFactory(const core::IObjectWrapperFactoryPtr & factory);
-		void safeRegisterVisualizer(const core::IVisualizerPtr & visualizer);
-		void safeRegisterDataProcessor(const core::IDataProcessorPtr & dataProcessor);
-		void safeRegisterDataSource(const core::IDataSourcePtr & dataSource);
+		void safeRegisterService(const plugin::IServicePtr & service);
+		void safeRegisterSource(const plugin::ISourcePtr & source);
+		void safeRegisterParser(const plugin::IParserPtr & parser);
+		void safeRegisterObjectWrapperPrototype(const core::ObjectWrapperConstPtr & prototype);
+		void safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer);
+		void safeRegisterDataProcessor(const plugin::IDataProcessorPtr & dataProcessor);
+		void safeRegisterDataSource(const plugin::IDataSourcePtr & dataSource);
 
 		// QWidget
 	protected:

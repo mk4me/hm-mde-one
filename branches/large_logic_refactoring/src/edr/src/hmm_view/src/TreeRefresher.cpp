@@ -58,7 +58,8 @@ void TreeRefresher::refresh( QTreeWidget* tree )
         this->tree = tree;
         needRefresh = true;
     } else {
-        std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance(), false);
+        core::ObjectWrapperCollection sessions(typeid(PluginSubject::ISession), false);
+		DataManager::getInstance()->getObjects(sessions);
         actualRefresh(tree, sessions);
     }
 }
@@ -69,7 +70,8 @@ void TreeRefresher::setPreventRefresh( bool val )
     if (!val && needRefresh) {
         UTILS_ASSERT(tree);
         needRefresh = false;
-        std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance(), false);
+		core::ObjectWrapperCollection sessions(typeid(PluginSubject::ISession), false);
+		DataManager::getInstance()->getObjects(sessions);
         actualRefresh(tree, sessions);
         tree = nullptr;
     }

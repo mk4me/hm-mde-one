@@ -30,7 +30,7 @@
 #include <core/ObjectWrapperFactory.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace core {
+namespace plugin {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Deklaracja wersji nagłówka w Pluginie
@@ -66,8 +66,7 @@ namespace core {
 //! \param name Nazwa pluginu.
 //! \param id ID pluginu.
 #define CORE_PLUGIN_BEGIN(name, id)                                     \
-CORE_DEFINE_INSTANCE_INFO                                               \
-DEFINE_DEFAULT_LOGGER("edr." name)                                      \
+PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR                                 \
 extern "C" CORE_EXPORT unsigned CORE_GET_PLUGIN_VERSION_FUNCTION_NAME() \
 {                                                                       \
     return CORE_PLUGIN_INTERFACE_VERSION;                               \
@@ -83,9 +82,9 @@ extern "C" CORE_EXPORT void CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME(  \
     *qtVersion = QT_VERSION;                                            \
     *stlVersion = CORE_CPPLIB_VER;                                      \
 }                                                                       \
-extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::InstanceInfo* data) \
+extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(IApplication* coreApplication) \
 {                                                                       \
-    core::__instanceInfo = *data;                                       \
+    __coreApplication = coreApplication;                                       \
     core::Plugin* instance = new core::Plugin((name), (id));            
 
 //! Kończy rejestrację pluginu.
@@ -95,35 +94,35 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
 
 //! Dodaje usługę zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_SERVICE(className)                              \
-    instance->addService( core::IServicePtr(new className) );
+    instance->addService( plugin::IServicePtr(new className) );
 
     //! Dodaje źródło danych DM zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_SOURCE(className)                              \
-    instance->addSource( core::ISourcePtr(new className) );
+    instance->addSource( plugin::ISourcePtr(new className) );
 
 //! Dodaje parser zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_PARSER(className)                               \
-    instance->addParser( core::IParserPtr(new className) );
+    instance->addParser( plugin::IParserPtr(new className) );
 
 //! Dodaje wizualizator zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
-    instance->addVisualizer( core::IVisualizerPtr(new className) );
+    instance->addVisualizer( plugin::IVisualizerPtr(new className) );
 
 //! Dodaje elementu przetwarzającego zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_DATA_PROCESSOR(className)                           \
-    instance->addDataProcessor( core::IDataProcessorPtr(new className) );
+    instance->addDataProcessor( plugin::IDataProcessorPtr(new className) );
 
 //! Dodaje źródło zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_DATA_SOURCE(className)                           \
-    instance->addDataSource( core::IDataSourcePtr(new className) );
+    instance->addDataSource( plugin::IDataSourcePtr(new className) );
 
 //! Dodanie nowego typu domenowego poprzez utworzenie dla niego ObjectWrapperFactory
 #define CORE_PLUGIN_ADD_OBJECT_WRAPPER(className)               \
-    instance->addObjectWrapperFactory<className>();
+    instance->addObjectWrapperPrototype<className>();
 
 
 //! Interfejs pluginu przez który dostarczane są usługi (serwisy) i prototypy elementów przetwarzających dane
-class IPlugin : IIdentifiable
+class IPlugin : core::IIdentifiable
 {
 public:
     //! Pusty polimorficzny destruktor.
@@ -154,6 +153,9 @@ public:
     virtual IDataSource* getDataSource(int idx) = 0;
 };
 
+}
+
+namespace core {
 /**
  *	Kontener na usługi.
  */
@@ -161,7 +163,7 @@ class Plugin : IIdentifiable
 {
 public:
     //! Typ funkcji tworzącej plugin.
-    typedef Plugin* (*CreateFunction)(InstanceInfo* data);
+    typedef Plugin* (*CreateFunction)(plugin::IApplication* coreApplication);
     //! Typ funkcji pobierającej wersję pluginu.
     typedef int (*GetVersionFunction)();
     //! Typ funkcji pobierającej typ builda pluginu
@@ -169,19 +171,19 @@ public:
     //!
     typedef int (*GetLibrariesVersionFunction)(int* boostVersion, int* qtVersion, int* stlVersion);
     //! Typ listy usług.
-    typedef std::vector<IServicePtr> Services;
+    typedef std::vector<plugin::IServicePtr> Services;
     //! Typ listy źródeł danych DM.
-    typedef std::vector<ISourcePtr> Sources;
+    typedef std::vector<plugin::ISourcePtr> Sources;
     //! Typ listy parserów.
-    typedef std::vector<IParserPtr> Parsers;
+    typedef std::vector<plugin::IParserPtr> Parsers;
     //! Typ listy wizualizatorów.
-    typedef std::vector<IVisualizerPtr> Visualizers;
+    typedef std::vector<plugin::IVisualizerPtr> Visualizers;
     //! Typ listy elementów przetwarzających.
-    typedef std::vector<IDataProcessorPtr> DataProcessors;
+    typedef std::vector<plugin::IDataProcessorPtr> DataProcessors;
     //! Typ listy źródeł danych workflow.
-    typedef std::vector<IDataSourcePtr> DataSources;
+    typedef std::vector<plugin::IDataSourcePtr> DataSources;
     //! Typ listy wrapperów.
-    typedef std::vector<IObjectWrapperFactoryPtr> ObjectWrapperFactories;
+    typedef std::vector<ObjectWrapperConstPtr> ObjectWrapperPrototypes;
 
 private:
     //! Lista usług pluginu.
@@ -196,8 +198,8 @@ private:
     DataProcessors dataProcessors;
     //! Lista źródeł danych workflow pluginu.
     DataSources dataSources;
-    //! Lista fabryk wrapperów.
-    ObjectWrapperFactories factories;
+    //! Zbiór wprowadzanych OW do aplikacji
+    ObjectWrapperPrototypes objectWrapperPrototypes;
 
     //! Nazwa pluginu.
     std::string name;
@@ -243,7 +245,7 @@ public:
     }
 
     //! \service Usługa do dodania do pluginu.
-    void addService(const IServicePtr & service)
+    void addService(const plugin::IServicePtr & service)
     {
         services.push_back(service);
     }
@@ -253,13 +255,13 @@ public:
         return static_cast<int>(services.size());
     }
     //! \param i
-    const IServicePtr & getService(int i)
+    const plugin::IServicePtr & getService(int i)
     {
         return services[i];
     }
 
     //! \service Źródło DM do dodania do pluginu.
-    void addSource(const ISourcePtr & source)
+    void addSource(const plugin::ISourcePtr & source)
     {
         sources.push_back(source);
     }
@@ -269,13 +271,13 @@ public:
         return static_cast<int>(sources.size());
     }
     //! \param i
-    const ISourcePtr & getSource(int i)
+    const plugin::ISourcePtr & getSource(int i)
     {
         return sources[i];
     }
 	
     //! \parser Parser do dodania do pluginu.
-	void addParser(const IParserPtr & parser)
+	void addParser(const plugin::IParserPtr & parser)
     {
         this->parsers.push_back(parser);
     }
@@ -285,13 +287,13 @@ public:
 		return static_cast<int>(this->parsers.size());
     }
     //! \param i
-	const IParserPtr & getParser(int i)
+	const plugin::IParserPtr & getParser(int i)
     {
         return this->parsers[i];
     }
 
     //! \visualizer Visualizer do dodania do pluginu.
-    void addVisualizer(const IVisualizerPtr & visualizer)
+    void addVisualizer(const plugin::IVisualizerPtr & visualizer)
     {
         this->visualizers.push_back(visualizer);
     }
@@ -301,12 +303,12 @@ public:
         return static_cast<int>(this->visualizers.size());
     }
     //! \param i
-    const IVisualizerPtr & getVisualizer(int i)
+    const plugin::IVisualizerPtr & getVisualizer(int i)
     {
         return this->visualizers[i];
     }
     //! \param dataProcessor IDataProcessor do dodania do pluginu.
-    void addDataProcessor(const IDataProcessorPtr & dataProcessor)
+    void addDataProcessor(const plugin::IDataProcessorPtr & dataProcessor)
     {
         this->dataProcessors.push_back(dataProcessor);
     }
@@ -316,13 +318,13 @@ public:
         return static_cast<int>(this->dataProcessors.size());
     }
     //! \param i
-    const IDataProcessorPtr & getDataProcessor(int i)
+    const plugin::IDataProcessorPtr & getDataProcessor(int i)
     {
         return this->dataProcessors[i];
     }
 
     //! \param dataSource Źródło danych workflow do dodania do pluginu.
-    void addDataSource(const IDataSourcePtr & dataSource)
+    void addDataSource(const plugin::IDataSourcePtr & dataSource)
     {
         this->dataSources.push_back(dataSource);
     }
@@ -332,33 +334,27 @@ public:
         return static_cast<int>(this->dataSources.size());
     }
     //! \param i
-    const IDataSourcePtr & getDataSource(int i)
+    const plugin::IDataSourcePtr & getDataSource(int i)
     {
         return this->dataSources[i];
     }
 
     //! \param factory
     template<class T>
-    void addObjectWrapperFactory(const T * dummy = nullptr/*const IObjectWrapperFactoryPtr & factory*/)
+    void addObjectWrapperPrototype(const T * dummy = nullptr/*const IObjectWrapperFactoryPtr & factory*/)
     {
-        //this->factories.push_back(factory);
-        this->factories.push_back(IObjectWrapperFactoryPtr(new ObjectWrapperFactory<T>()));
+        this->objectWrapperPrototypes.push_back(ObjectWrapper::create<T>());
     }
-
-	void addObjectWrapperFactory(const IObjectWrapperFactoryPtr & factory)
-	{
-		this->factories.push_back(factory);
-	}
 
     //! \return
-    int getNumWrapperFactories() const
+    int getNumObjectWrapperPrototypes() const
     {
-        return static_cast<int>(this->factories.size());
+        return static_cast<int>(this->objectWrapperPrototypes.size());
     }
     //! \param i
-    const IObjectWrapperFactoryPtr & getWrapperFactory(int i)
+    const ObjectWrapperConstPtr & getObjectWrapperPrototype(int i)
     {
-        return this->factories[i];
+        return this->objectWrapperPrototypes[i];
     }
 };
 

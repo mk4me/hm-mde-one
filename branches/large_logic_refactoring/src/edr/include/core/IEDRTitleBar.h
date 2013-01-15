@@ -11,6 +11,8 @@
 
 class QObject;
 
+namespace plugin {
+
 class IEDRTitleBar
 {
 public:
@@ -24,8 +26,8 @@ public:
 
     virtual void clearSide(SideType side) = 0;
     virtual void clear() = 0;
-
-
 };
+
+}
 
 #endif  //  HEADER_GUARD_CORE__IEDRTITLEBAR_H__

@@ -14,38 +14,46 @@
 
 namespace utils {
 
-class NoSyncPolicy
+class LockingPolicy
 {
 public:
-    void lock() {}
-    void unlock() {}
-    const bool tryLock() { return true; }
+	virtual void lock() = 0;
+	virtual void unlock() = 0;
+	virtual const bool tryLock() = 0;
 };
 
-class RecursiveSyncPolicy
+class NoSyncPolicy : public LockingPolicy
+{
+public:
+    virtual void lock() {}
+    virtual void unlock() {}
+    virtual const bool tryLock() { return true; }
+};
+
+class RecursiveSyncPolicy : public LockingPolicy
 {
 public:
 
 	RecursiveSyncPolicy() : recMutex(QMutex::Recursive) {}
 
-    void lock() { recMutex.lock(); }
-    void unlock() { recMutex.unlock(); }
-    const bool tryLock() { return recMutex.tryLock(); }
+    virtual void lock() { recMutex.lock(); }
+    virtual void unlock() { recMutex.unlock(); }
+    virtual const bool tryLock() { return recMutex.tryLock(); }
 
 private:
     //OpenThreads::ReentrantMutex recMutex;
 	QMutex recMutex;
 };
 
-class StrictSyncPolicy
+class StrictSyncPolicy : public LockingPolicy
 {
 public:
 
 	StrictSyncPolicy() : mut(QMutex::NonRecursive) {}
 
-    void lock() { mut.lock(); }
-    void unlock() { mut.unlock(); }
-    const bool tryLock() { return mut.tryLock(); }
+    virtual void lock() { mut.lock(); }
+    virtual void unlock() { mut.unlock(); }
+    virtual const bool tryLock() { return mut.tryLock(); }
 
 private:
     //OpenThreads::Mutex mut;
@@ -59,7 +67,7 @@ public:
 
 	EmptyScopedLock(SyncPolicy & mux) {}
 
-	~EmptyScopedLock() {}
+	virtual ~EmptyScopedLock() {}
 };
 
 
@@ -73,7 +81,7 @@ public:
 		mux.lock();
 	}
 
-	~ScopedLock()
+	virtual ~ScopedLock()
 	{
 		mux.unlock();
 	}

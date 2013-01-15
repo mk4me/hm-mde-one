@@ -27,28 +27,34 @@ std::pair<HmmTreeItem*, TreeHelperPtr> createHelperItem(const QString& name, con
     return std::make_pair(item, helper);
 }
 
-std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromVector( const std::vector<SessionConstPtr>& sessions, int scalarIndex = 0 )
+std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromVector( const std::vector<PluginSubject::SessionPtr>& sessions, int scalarIndex = 0 )
 {
     std::vector<core::ObjectWrapperConstPtr> xWrappers;
-    BOOST_FOREACH(SessionConstPtr session, sessions)
+    BOOST_FOREACH(SessionPtr session, sessions)
     {
-        Motions motions;
-        session->getMotions(motions);
-        BOOST_FOREACH(MotionConstPtr motion, motions) {
-            if (motion->hasObjectOfType(typeid(VectorChannel))) {
-                core::ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(VectorChannel));
-                VectorChannelConstPtr moment = wrapper->get();
-                ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(moment, scalarIndex));
+		Motions motions;
+		session->getMotions(motions);
+		BOOST_FOREACH(MotionConstPtr motion, motions) {
+			if (motion->hasObjectOfType(typeid(VectorChannel))) {
+				core::ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(VectorChannel));
+				if(wrapper != nullptr){
+					VectorChannelConstPtr moment;
+					bool ok = wrapper->tryGet(moment);
+					if(ok && moment != nullptr){
+						ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(moment, scalarIndex));
 
-                core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-                wrapperX->set(x);
-                static int number = 0;
-                std::string suffix = boost::lexical_cast<std::string>(number++);
-                wrapperX->setName("Wrapper_" + suffix);
-                wrapperX->setSource("Wrapper_" + suffix);
-                xWrappers.push_back(wrapperX);
-            }
-        }
+						core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+						wrapperX->set(x);
+						static int number = 0;
+						std::string suffix = boost::lexical_cast<std::string>(number++);
+
+						(*wrapperX)["name"] = "Wrapper_" + suffix;
+						(*wrapperX)["source"] = "IlnessUnit";
+						xWrappers.push_back(wrapperX);
+					}
+				}
+			}
+		}
     }
 
     return xWrappers;
@@ -123,17 +129,17 @@ DataFilterPtr Endo::createCustomEMGFilter(bool post, const std::string& name )
     return DataFilterPtr(new CustomFilter(filters));
 }
 
-std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromEMG(const std::vector<SessionConstPtr>& sessions)
+std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromEMG(const std::vector<SessionPtr>& sessions)
 {
     std::vector<core::ObjectWrapperConstPtr> ret;
-    BOOST_FOREACH(SessionConstPtr session, sessions) {
-        Motions motions;
-        session->getMotions(motions);
-        BOOST_FOREACH(MotionConstPtr motion, motions) {
-            std::vector<core::ObjectWrapperConstPtr> emgs;
-            motion->getWrappers(emgs, typeid(EMGChannel));
-            ret.insert(ret.end(), emgs.begin(), emgs.end());
-        }
+    BOOST_FOREACH(SessionPtr session, sessions) {
+		Motions motions;
+		session->getMotions(motions);
+		BOOST_FOREACH(MotionConstPtr motion, motions) {
+			std::vector<core::ObjectWrapperConstPtr> emgs;
+			motion->getWrappers(emgs, typeid(EMGChannel));
+			ret.insert(ret.end(), emgs.begin(), emgs.end());
+		}
     }
     return ret;
 }
@@ -164,13 +170,13 @@ void Endo::createEMGEntry(QTreeWidgetItem* root, const std::vector<SessionConstP
     DataFilterPtr leftPrev, DataFilterPtr rightPrev, DataFilterPtr leftPost, DataFilterPtr rightPost)
 {
     std::vector<SessionPtr> filtered = leftPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
+    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromEMG(filtered);
     filtered = rightPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
+    std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromEMG(filtered);
     filtered = leftPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
+    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromEMG(filtered);
     filtered = rightPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
+    std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromEMG(filtered);
 
     std::vector<core::ObjectWrapperConstPtr> wrpX12 = wrpX1; wrpX12.insert(wrpX12.end(), wrpX2.begin(), wrpX2.end());
     std::vector<core::ObjectWrapperConstPtr> wrpX34 = wrpX3; wrpX34.insert(wrpX34.end(), wrpX4.begin(), wrpX4.end());
@@ -205,13 +211,13 @@ void Endo::createVectorEntry(QTreeWidgetItem* root, const std::vector<SessionCon
     DataFilterPtr leftPrev, DataFilterPtr rightPrev, DataFilterPtr leftPost, DataFilterPtr rightPost, int index)
 {
     std::vector<SessionPtr> filtered = leftPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
+    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromVector(filtered, index);
     filtered = rightPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
+    std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromVector(filtered, index);
     filtered = leftPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
+    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromVector(filtered, index);
     filtered = rightPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
+    std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromVector(filtered, index);
 
     std::vector<core::ObjectWrapperConstPtr> wrpX12 = wrpX1; wrpX12.insert(wrpX12.end(), wrpX2.begin(), wrpX2.end());
     std::vector<core::ObjectWrapperConstPtr> wrpX34 = wrpX3; wrpX34.insert(wrpX34.end(), wrpX4.begin(), wrpX4.end());

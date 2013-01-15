@@ -11,15 +11,18 @@
 
 #include <utils/ObserverPattern.h>
 #include <core/IDataSourceManager.h>
+#include <core/IDataSource.h>
 #include "DataSource.h"
 #include "ManagerHelper.h"
 
-class DataSourceManager : public core::IDataSourceManager, public utils::Observable<DataSourceManager>, public ManagerHelper<DataSourceManager>
+namespace core {
+
+class DataSourceManager : public plugin::IDataSourceManager, public utils::Observable<DataSourceManager>, public ManagerHelper<DataSourceManager>
 {
     friend class DataSource;
 public:
     //! Lista źródeł danych.
-    typedef std::vector<core::IDataSourcePtr> IDataSources;
+    typedef std::vector<plugin::IDataSourcePtr> IDataSources;
     //! 
     typedef boost::iterator_range<IDataSources::const_iterator> IDataSourcesConstRange;
     //!
@@ -41,7 +44,7 @@ public:
 public:
 
     //! \param dataSource
-    virtual void registerDataSource(const core::IDataSourcePtr & dataSource);
+    virtual void registerDataSource(const plugin::IDataSourcePtr & dataSource);
 
     //! \return Wyliczenie prototypów.
     inline IDataSourcesConstRange enumPrototypes() const
@@ -54,14 +57,14 @@ public:
         return static_cast<int>(prototypes.size());
     }
     //! \param i Indeks źródła.
-    inline core::IDataSourceConstPtr getPrototype(int i) const
+    inline plugin::IDataSourceConstPtr getPrototype(int i) const
     {
         UTILS_ASSERT(i < getNumPrototypes());
         return prototypes[i];
     }
 
     //! \param id ID źródła.
-    core::IDataSourceConstPtr getPrototype(UniqueID id) const;
+    plugin::IDataSourceConstPtr getPrototype(UniqueID id) const;
 
     //! Tworzy instancję źródła.
     //! \param id id źródła.
@@ -75,7 +78,7 @@ private:
     //! Tworzy instancję źródła.
     //! \param id id źródła.
     //! \return Instancja źróła.
-    DataSourcePtr createDataSource(const core::IDataSourceConstPtr& prototype);
+    DataSourcePtr createDataSource(const plugin::IDataSourceConstPtr& prototype);
     //! 
     DataSourcePtr createDataSource(const DataSource& prototype);
 
@@ -85,6 +88,8 @@ private:
     void notifyCreated(DataSource* dataSource);
     void notifyDestroyed(DataSource* dataSource);
 };
+
+}
 
 #endif  //  HEADER_GUARD___DATASOURCEMANAGER_H__
 

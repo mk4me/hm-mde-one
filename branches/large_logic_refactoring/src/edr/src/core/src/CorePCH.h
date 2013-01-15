@@ -31,7 +31,6 @@
 
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
-//#include <QtOpenGL/QtOpenGL>
 
 UTILS_PUSH_WARNINGS
 #include <osg/Node>
@@ -61,8 +60,6 @@ UTILS_PUSH_WARNINGS
 #include <osgGA/StateSetManipulator>
 UTILS_POP_WARNINGS
 
-
-
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -73,9 +70,7 @@ UTILS_POP_WARNINGS
 
 #include <core/TypeInfo.h>
 #include <core/SmartPtr.h>
-#include <core/ILog.h>
-#include "Log.h"
-#include <core/IDataManager.h>
+#include "ApplicationCommon.h"
 #include <core/IDataProcessorManager.h>
 #include <core/IDataSourceManager.h>
 #include <core/IServiceManager.h>
@@ -95,8 +90,8 @@ UTILS_POP_WARNINGS
 #   pragma warning( default : 4511 )
 #endif
 
-using std::min;
-using std::max;
+//using std::min;
+//using std::max;
 
 #endif  // DISABLE_PRECOMPILED_HEADERS
 #endif  // __HEADER_GUARD__COREPCH_H__

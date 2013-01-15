@@ -26,10 +26,11 @@ public:
     //! \return Unikalne, lokalne ID sesji w obrębie sesji tego samego obiektu wykonującego ruch. Podobnie jak globalne - po usunięci i ponownym dodaniu ID może ulec zmianie!
     virtual SubjectID getLocalID() const = 0;
     //! \param motions Zbiór wypełniany konkretnymi ruchami danego obiektu w ramach aktualnej sesji
-    virtual void getMotions(Motions & motions) const = 0;
+    virtual void getMotions(core::ConstObjectsList & motions) const = 0;
 
     //! \return Obiekt z którym związana jest ta sesja
-    virtual const SubjectConstPtr & getSubject() const = 0;
+    virtual const core::ObjectWrapperConstPtr & getSubject() const = 0;
+	virtual const SubjectConstPtr & getUnpackedSubject() const = 0;
 
     //! \return Globalna nazwa sesji
     virtual const std::string & getName() const = 0;
@@ -37,11 +38,11 @@ public:
     virtual const std::string & getLocalName() const = 0;
 
     //! \param wrappers Zbiór OW związanych z tą sesją (ale nie z Motions)
-    virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const = 0;
+    virtual void getWrappers(core::ConstObjectsList & wrappers) const = 0;
 
     virtual core::ObjectWrapperConstPtr getWrapperOfType(const core::TypeInfo& type, bool exact = false) const
     {
-        std::vector<core::ObjectWrapperConstPtr> wrappers;
+        core::ConstObjectsList wrappers;
         getWrappers(wrappers);
         for(auto it = wrappers.begin(); it != wrappers.end(); ++it){
             if((*it)->getTypeInfo() == type || (exact == false && (*it)->isSupported(type))){
@@ -55,7 +56,7 @@ public:
 
     virtual bool hasObjectOfType(const core::TypeInfo& type, bool exact = false) const
     {
-        std::vector<core::ObjectWrapperConstPtr> wrappers;
+        core::ConstObjectsList wrappers;
         getWrappers(wrappers);
 
         for(auto it = wrappers.begin(); it != wrappers.end(); ++it){

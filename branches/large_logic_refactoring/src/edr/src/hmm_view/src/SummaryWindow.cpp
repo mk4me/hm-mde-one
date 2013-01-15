@@ -41,7 +41,10 @@ void SummaryWindow::display( const std::vector<TreeItemHelperPtr>& helpers )
                 for (auto it = desc.begin(); it != desc.end(); ++it) {
                     auto motion = it->motion;
                     if (motion) {
-                        QString text = QString::fromStdString(it->wrapper->getName()) + createDescription(it->motion);
+						//TODO
+						//metadane
+                        //QString text = QString::fromStdString(it->wrapper->getName()) + createDescription(it->motion);
+						QString text = QString::fromStdString("UNKNOWN") + createDescription(it->motion);
                         addItem(text, root);
                     }
                 }
@@ -102,7 +105,7 @@ QString SummaryWindow::createDescription( PluginSubject::MotionConstPtr motion) 
     }
 
     if (session->hasObjectOfType(typeid(communication::AntropometricData))) {
-        core::shared_ptr<communication::AntropometricData> antro = session->getWrapperOfType(typeid(communication::AntropometricData))->get();
+        core::shared_ptr<const communication::AntropometricData> antro = session->getWrapperOfType(typeid(communication::AntropometricData))->get();
         text += " ";
         text += QObject::tr("Weight: ") + QString("%1 ").arg(antro->bodyMass.first) + QString::fromStdString(antro->bodyMass.second) + "\n";
     }

@@ -9,30 +9,36 @@
 #ifndef HEADER_GUARD_CORE__INPUTITEM_H__
 #define HEADER_GUARD_CORE__INPUTITEM_H__
 
-#include "WorkflowItemEncapsulator.h"
 #include <core/IInputProcessItem.h>
 #include "InputDescription.h"
 
+namespace core {
 
 template<class T>
-class InputItem : public WorkflowItemEncapsulator<T> , public InputDescription
+class InputItem : public InputDescription
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<core::IInputProcessItem, T>::value), "Template class should inherit from core::IInputProcessItem");
+    UTILS_STATIC_ASSERT((boost::is_base_of<IInputProcessItem, T>::value), "Template class should inherit from core::IInputProcessItem");
 public:
+
+	//TODO
+	//do usuniêcia
+	InputItem() {}
+
     InputItem(T* implementation, const ObjectSource& source) : 
-      WorkflowItemEncapsulator<T>(implementation),
+      //WorkflowItemEncapsulator<T>(implementation),
       InputDescription(source)
       {}
     InputItem(const InputItem& item) : 
-      WorkflowItemEncapsulator<T>(item),
+      //WorkflowItemEncapsulator<T>(item),
       InputDescription(item) 
     {}
 public:
     virtual void run()
     {
-        getImplementation()->setUp(getSource());
+        //getImplementation()->setUp(getSource());
     }
 };
 
+}
 
 #endif

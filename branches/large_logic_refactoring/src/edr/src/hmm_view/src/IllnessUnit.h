@@ -47,8 +47,10 @@ public:
                        auto channel = c->getChannel(i);
                        core::ObjectWrapperPtr cw = core::ObjectWrapper::create<Channel>();
                        cw->set(core::const_pointer_cast<Channel>(channel));
-                       cw->setName(channel->getName());
-                       cw->setSource(channel->getName());
+					   //TODO
+					   //metadane
+                       //cw->setName(channel->getName());
+                       //cw->setSource(channel->getName());
                        newMotionObjects.push_back(cw);
                     }
                 }
@@ -138,10 +140,12 @@ public:
 
             for(auto objectIT = objects.begin(); objectIT != objects.end(); ++objectIT){
                 for (auto it = names.begin(); it != names.end(); ++it) {
-                    if ((*objectIT)->getName() == *it) {
+                    //TODO
+					//metadata					
+					//if ((*objectIT)->getName() == *it) {
                         validObjects.push_back(*objectIT);
                         break;
-                    }
+                    //}
                 }
             }
 
@@ -207,13 +211,13 @@ protected:
     //! \param post po lub przed zabiegiem
     //! \param name nazwa filtrowanych elementów
     PluginSubject::DataFilterPtr createCustomEMGFilter(bool post, const std::string& name);
-    std::vector<core::ObjectWrapperConstPtr> extractWrappersFromEMG(const std::vector<PluginSubject::SessionConstPtr>& sessions);
+    std::vector<core::ObjectWrapperConstPtr> extractWrappersFromEMG(const std::vector<PluginSubject::SessionPtr>& sessions);
     //! tworzy obiekt, który filtruje elementy z wektorem po nazwie i czasie zabiegu
     //! \param post po lub przed zabiegiem
     //! \param name nazwa filtrowanych elementów
     template<class CollectionPtr>
     PluginSubject::DataFilterPtr createCustomV3Filter(bool post, const std::string& name);
-    std::vector<core::ObjectWrapperConstPtr> extractWrappersFromVector( const std::vector<PluginSubject::SessionConstPtr>& sessions, int scalarIndex );
+    std::vector<core::ObjectWrapperConstPtr> extractWrappersFromVector( const std::vector<PluginSubject::SessionPtr>& sessions, int scalarIndex );
 };
 
 //! klasa tworzy drzewo analiz z danymi istotnymi dla analizy zmian po wylewie

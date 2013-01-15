@@ -31,47 +31,42 @@ typedef weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeak
 //! Klasa służy do agregowania obiektów domenowych tego samego typu lub pocohdnych od tego samego typu
 class ObjectWrapperCollection
 {
-    friend class DataManager;
+    friend class MemoryDataManager;
 
 public:
-    typedef std::vector<ObjectWrapperConstPtr>::size_type size_type;
-    typedef std::vector<ObjectWrapperConstPtr>::const_iterator const_iterator;
-    typedef std::vector<ObjectWrapperConstPtr>::iterator iterator;
+    typedef ConstObjectsList::size_type size_type;
+    typedef ConstObjectsList::const_iterator const_iterator;
+    typedef ConstObjectsList::iterator iterator;
+	typedef ConstObjectsList::reverse_iterator reverse_iterator;
+	typedef ConstObjectsList::const_reverse_iterator const_reverse_iterator;
+	typedef ConstObjectsList::reference reference;
+	typedef ConstObjectsList::const_reference const_reference;
 
 private:
-    typedef std::vector<ObjectWrapperConstPtr> ConstObjects;
-
-private:
-
-    //! przechowuje stale, niemodyfikowalne obiekty
-    ConstObjects constObjects;
-    //! typ przechowywanych obiektów
-    TypeInfo typeInfo;
     //! Czy kolekcja przechowyje elementy wylacznie danego typu czy również pochodne mu
     bool exact;
+	//! Dane
+	ConstObjectsList data;
+	//! Typ danych
+	TypeInfo typeInfo;
 
-// rev - zmiana na public, bo z tej metody korzysta DataManager
-// gcc jakos nie widzi slowa friend wczesniej !?
+private:
+
+	template<class InputIterator>
+	void nonCheckInsert(iterator position, InputIterator first, InputIterator last)
+	{
+		data.insert(position, first, last);
+	}
+
 public:
 
-    //! Metoda dedykowana DataManager do szybkiego ładowania kolekcji bez sprawdzania typów ladowanych danych - powinno być już sprawdzone i zagwarantowane
-    //! \param begin Iterator początku zakresu ObjectWrapperPtr
-    //! \param begin Iterator końca zakresu ObjectWrapperPtr
-    template<class Iter>
-    void loadCollectionWithData(Iter begin, Iter end)
-    {
-        constObjects.insert(constObjects.end(), begin, end);
-    };
+	template<class T>
+	ObjectWrapperCollection(bool exact = true) : typeInfo(typeid(T)), exact(exact) {}
 
-public:
-
-    //! Chroniony konstruktor, klasa pochodna powinna zdeklarować przechowywany typ
     //! \param info typ przechowywanych obiektów
-    ObjectWrapperCollection(TypeInfo info, bool exact = true) :
-      typeInfo(info), exact(exact) {}
+    ObjectWrapperCollection(const TypeInfo & typeInfo, bool exact = true) : typeInfo(typeInfo), exact(exact) {}
 
-      ObjectWrapperCollection(const ObjectWrapperCollection & owc) : typeInfo(owc.typeInfo),
-          constObjects(owc.constObjects), exact(owc.exact) {}
+    ObjectWrapperCollection(const ObjectWrapperCollection & owc) : data(owc.data), typeInfo(owc.typeInfo), exact(owc.exact) {}
 
     virtual ~ObjectWrapperCollection() {}
 
@@ -79,12 +74,12 @@ public:
 
     //! \return Najniższy typ w hierarchi dziedziczenia który kolekcja może przechować
     const TypeInfo & getTypeInfo() const
-    {
-        return typeInfo;
-    }
+	{
+		return typeInfo;
+	}
 
     //! \return Czy dane musza być dokłądnie tego samego typu dla którego utworzono kolekcję czy mogą też być pochodne od niego
-    bool exactTypes() const
+    const bool exactTypes() const
     {
         return exact;
     }
@@ -100,102 +95,207 @@ public:
         }
     }
 
+	iterator begin()
+	{
+		return data.begin();
+	}
+
+	iterator end()
+	{
+		return data.end();
+	}
+
+	const_iterator begin() const
+	{
+		return data.begin();
+	}
+
+	const_iterator end() const
+	{
+		return data.end();
+	}
+
+	reverse_iterator rbegin()
+	{
+		return data.rbegin();
+	}
+
+	reverse_iterator rend()
+	{
+		return data.rend();
+	}
+
+	const_reverse_iterator crbegin() const
+	{
+		return data.crbegin();
+	}
+
+	const_reverse_iterator crend() const
+	{
+		return data.crend();
+	}
+
+	const bool empty() const
+	{
+		return data.empty();
+	}
+
+	const size_type size() const
+	{
+		return data.size();
+	}
+
+	void erase(const const_iterator & it)
+	{
+		data.erase(it);
+	}
+
+	void erase(const const_iterator & itS, const const_iterator & itE)
+	{
+		data.erase(itS, itE);
+	}
+
+	void push_front(const ObjectWrapperConstPtr & obj)
+	{
+		insert(data.begin(), obj);
+	}
+
+	void pop_front()
+	{
+		data.pop_front();
+	}
+
+	void push_back(const ObjectWrapperConstPtr & obj)
+	{
+		insert(data.end(), obj);
+	}
+
+	void pop_back()
+	{
+		data.pop_back();
+	}
+
+	reference front()
+	{
+		return data.front();
+	}
+
+	const_reference front() const
+	{
+		return data.front();
+	}
+
+	reference back()
+	{
+		return data.back();
+	}
+
+	const_reference back() const
+	{
+		return data.back();
+	}
+
+	iterator insert(iterator position, const ObjectWrapperConstPtr& val)
+	{
+		// sprawdzenie poprawności typu
+		if (exact == true){
+			if(val->getTypeInfo() != getTypeInfo()) {
+				// bad_cast nie pobiera parametrów
+				//throw std::bad_cast("Type of object not equal to type of collection");
+				throw std::bad_cast();
+			}
+		}else if(val->isSupported(typeInfo) == false){
+			//throw std::bad_cast("Type of object not supported by collection");
+			throw std::bad_cast();
+		}
+
+		return data.insert(position, val);
+	}
+
+	template<class InputIterator>
+	void insert(iterator position, InputIterator first, InputIterator last)
+	{
+		ConstObjectsList tmp(first, last);
+
+		for(auto it = tmp.begin(); it != tmp.end(); ++it){
+			if( (exact == true && (*it)->getTypeInfo() != typeInfo) || (*it)->isSupported(typeInfo) == false ) {
+				throw std::bad_cast();
+			}
+		}
+
+		data.insert(position, tmp.begin(), tmp.end());
+	}
+
+	iterator erase(iterator position)
+	{
+		return data.erase(position);
+	}
+
+	iterator erase(iterator first, iterator last)
+	{
+		return data.erase(first, last);
+	}
+
+	void swap(ObjectWrapperCollection & owc)
+	{
+		data.swap(owc.data);
+		std::swap(typeInfo, owc.typeInfo);
+	}
+
+	void clear()
+	{
+		data.clear();
+	}
+
+	void remove (const ObjectWrapperConstPtr& val)
+	{
+		data.remove(val);
+	}
+	
+	template <class Predicate>
+	void remove_if (Predicate pred)
+	{
+		data.remove_if(pred);
+	}
+
+	void unique()
+	{
+		data.unique();
+	}
+
+	template<class BinaryPredicate>
+	void unique (BinaryPredicate binary_pred)
+	{
+		data.unique(binary_pred);
+	}
+
+	void sort()
+	{
+		data.sort();
+	}
+
+	template<class Compare>
+	void sort (Compare comp)
+	{
+		data.sort(comp);
+	}
+
+	void reverse()
+	{
+		data.reverse();
+	}
+
     //! Czyści dane innego typu niż ten dla którego utworozno kolekcję
     void removeDerivedTypes()
     {
         //iteruj po kolekcji i usun te typy które nie są dokładnie typu kolekcji
-        auto cIT = constObjects.begin();
-        while( cIT != constObjects.end() ) {
+        auto cIT = begin();
+        while( cIT != end() ) {
             if((*cIT)->getTypeInfo() != typeInfo){
-                cIT = constObjects.erase(cIT);
+                cIT = data.erase(cIT);
             }else{
                 ++cIT;
             }
-        }
-    }
-
-    //! return Iterator początku kolekcji
-    iterator begin()
-    {
-        return constObjects.begin();
-    }
-
-    //! return Iterator końca kolekcji
-    iterator end()
-    {
-        return constObjects.end();
-    }
-
-    //! return Const iterator początku kolekcji
-    const_iterator begin() const
-    {
-        return constObjects.begin();
-    }
-
-    //! return Const iterator końca kolekcji
-    const_iterator end() const
-    {
-        return constObjects.end();
-    }
-
-    //! \return Czy kolekcja jest pusta
-    bool empty() const
-    {
-            return constObjects.empty();
-    }
-
-    //! \return Ilość elementów w kolekcji
-    size_type size() const
-    {
-        return constObjects.size();
-    }
-
-    //! Czyści wszystkie elementy kolekcji
-    void clear()
-    {
-        ConstObjects().swap(constObjects);
-    }
-
-    //! Metoda udostępnia obiekt domenowy z agregatu
-    //! \param index indesk pobieranego elementu
-    //! \return Niemodyfikowalny obiekt domenowy
-    const ObjectWrapperConstPtr & getObject(int index) const
-    {
-        // wyjątek zamiast asercji (na wypadek trybu release)
-        if (!(index < static_cast<int>(size()) && index >= 0)) {
-            throw std::runtime_error("ObjectWrapperCollection::getObject - wrong index");
-        }
-
-        return constObjects[index];
-    }
-
-    //! \param idx Indeks który usuwamy z kolekcji
-    void removeObject(int idx)
-    {
-        auto cIT = constObjects.begin();
-        std::advance(cIT, idx);
-        constObjects.erase(cIT);
-    }
-
-    //! Dodanie obiektu do agregatu
-    //! \param object wskaźnik do niemodyfikowalnego obiektu domenowego
-    void addObject(const ObjectWrapperConstPtr & object)
-    {
-        // sprawdzenie poprawności typu
-        if (exact == true){
-            if(object->isTypeEqual(typeInfo) == true) {
-                constObjects.push_back(object);
-            } else {
-                // bad_cast nie pobiera parametrów
-                //throw std::bad_cast("Type of object not equal to type of collection");
-                throw std::bad_cast();
-            }
-        }else if(object->isSupported(typeInfo) == true){
-            constObjects.push_back(object);
-        } else {
-            // rev jw
-            //throw std::bad_cast("Type of object not supported by collection");
-            throw std::bad_cast();
         }
     }
 };

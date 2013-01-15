@@ -1,7 +1,6 @@
 #include "CorePCH.h"
 #include "LocalDataSourceWidget.h"
 #include "LocalDataSource.h"
-#include "DataManager.h"
 
 #include <QtGui/QFileDialog>
 #include <QtCore/QString>
@@ -82,7 +81,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                             dataIT = data.insert(std::make_pair(typeInfo, core::ObjectWrapperCollectionPtr(new core::ObjectWrapperCollection(typeInfo)))).first;
                         }
 
-                        dataIT->second->addObject(*it);
+                        dataIT->second->push_back(*it);
                     }
 
                     if(data.empty() == false){
@@ -102,7 +101,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
 
                                 //inicjalizuje pierwsze dane
                                 localDataSource->data.insert(std::make_pair(it->first, it->second));
-                                localDataSource->outputDescription.push_back(core::IOutputDescription::OutputInfo(it->second->getObject(0)->getClassName(), it->first));
+                                localDataSource->outputDescription.push_back(core::IOutputDescription::OutputInfo(it->second->front()->getClassName(), it->first));
                             }else{
                                 chkBox->setChecked(false);
                             }
@@ -111,7 +110,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                             connect(chkBox, SIGNAL(stateChanged(int)), this, SLOT(onCheckChange(int)));
 
                             tableWidget->setCellWidget(i, 0, chkBox);
-                            tableWidget->setItem(i, 1, new QTableWidgetItem(it->second->getObject(0)->getClassName().c_str()));
+                            tableWidget->setItem(i, 1, new QTableWidgetItem(it->second->front()->getClassName().c_str()));
                             checked = false;
                             ++i;
                         }
@@ -174,7 +173,7 @@ void LocalDataSourceWidget::onCheckChange(int state)
     LocalDataSource::OutputDescription().swap(localDataSource->outputDescription);
     for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); ++it){
         if(it->first->isChecked() == true){
-            localDataSource->outputDescription.push_back(core::IOutputDescription::OutputInfo(data.find(it->second)->second->getObject(0)->getClassName(), it->second));
+            localDataSource->outputDescription.push_back(core::IOutputDescription::OutputInfo(data.find(it->second)->second->front()->getClassName(), it->second));
         }
     }
 }

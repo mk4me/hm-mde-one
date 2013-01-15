@@ -12,7 +12,7 @@
 #include <core/IDataSource.h>
 #include <utils/Debug.h>
 
-namespace core{
+namespace plugin {
 
     class IDataSourceManager
     {
@@ -21,10 +21,10 @@ namespace core{
 
     };
 
-    typedef shared_ptr<IDataSourceManager> IDataSourceManagerPtr;
-    typedef shared_ptr<const IDataSourceManager> IDataSourceManagerConstPtr;
-    typedef weak_ptr<IDataSourceManager> IDataSourceManagerWeakPtr;
-    typedef weak_ptr<const IDataSourceManager> IDataSourceManagerWeakConstPtr;
+    typedef core::shared_ptr<IDataSourceManager> IDataSourceManagerPtr;
+    typedef core::shared_ptr<const IDataSourceManager> IDataSourceManagerConstPtr;
+    typedef core::weak_ptr<IDataSourceManager> IDataSourceManagerWeakPtr;
+    typedef core::weak_ptr<const IDataSourceManager> IDataSourceManagerWeakConstPtr;
 
     ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

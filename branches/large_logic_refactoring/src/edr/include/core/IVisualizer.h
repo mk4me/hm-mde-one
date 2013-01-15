@@ -18,12 +18,12 @@ class QObject;
 class QWidget;
 class QIcon;
 
-namespace core 
+namespace plugin 
 {
 	class IActionsGroupManager;
 
     //! Interfejs wizualizatorów dla typów danych zarejestrowanych w aplikacji
-    class IVisualizer :  public IInputProcessItem
+    class IVisualizer :  public core::IInputProcessItem
     {
     public:
 
@@ -42,10 +42,10 @@ namespace core
 
             //! \param data Dane do ustawienia w serii danych. ObjecWrappery pozwalają nam uniknąć potrzeby generowania wielu metod dla różnych argumentów.
             //! Znacząco uprasza interfejs, w przeciwnym wypadku musielibyśmy skorzystać z template
-            virtual void setData(const ObjectWrapperConstPtr & data) = 0;
+            virtual void setData(const core::ObjectWrapperConstPtr & data) = 0;
 
             //! \return Dane serii
-            virtual const ObjectWrapperConstPtr & getData() const = 0;
+            virtual const core::ObjectWrapperConstPtr & getData() const = 0;
         };
 
         class TimeSerieBase : public SerieBase
@@ -99,7 +99,7 @@ namespace core
         virtual int getMaxDataSeries() const = 0;
 
         //! \return Seria danych która można ustawiac - nazwa i dane, nie zarządza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
-        virtual SerieBase* createSerie(const ObjectWrapperConstPtr & data, const std::string & name = std::string()) = 0;
+        virtual SerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string()) = 0;
 
         virtual SerieBase* createSerie(const SerieBase* serie) = 0;
 
@@ -107,18 +107,18 @@ namespace core
         virtual void removeSerie(SerieBase* serie) = 0;
     };
 
-    typedef shared_ptr<IVisualizer> IVisualizerPtr;
-    typedef shared_ptr<const IVisualizer> IVisualizerConstPtr;
-    typedef weak_ptr<IVisualizer> IVisualizerWeakPtr;
-    typedef weak_ptr<const IVisualizer> IVisualizerConstWeakPtr;
+    typedef core::shared_ptr<IVisualizer> IVisualizerPtr;
+    typedef core::shared_ptr<const IVisualizer> IVisualizerConstPtr;
+    typedef core::weak_ptr<IVisualizer> IVisualizerWeakPtr;
+    typedef core::weak_ptr<const IVisualizer> IVisualizerConstWeakPtr;
 
-    typedef shared_ptr<IVisualizer::SerieBase> VisualizerSeriePtr;
-    typedef shared_ptr<const IVisualizer::SerieBase> VisualizerSerieConstPtr;
+    typedef core::shared_ptr<IVisualizer::SerieBase> VisualizerSeriePtr;
+    typedef core::shared_ptr<const IVisualizer::SerieBase> VisualizerSerieConstPtr;
 
-    typedef shared_ptr<IVisualizer::TimeSerieBase> VisualizerTimeSeriePtr;
-    typedef shared_ptr<const IVisualizer::TimeSerieBase> VisualizerTimeSerieConstPtr;
-    typedef weak_ptr<IVisualizer::TimeSerieBase> VisualizerTimeSerieWeakPtr;
-    typedef weak_ptr<const IVisualizer::TimeSerieBase> VisualizerTimeSerieConstWeakPtr;
+    typedef core::shared_ptr<IVisualizer::TimeSerieBase> VisualizerTimeSeriePtr;
+    typedef core::shared_ptr<const IVisualizer::TimeSerieBase> VisualizerTimeSerieConstPtr;
+    typedef core::weak_ptr<IVisualizer::TimeSerieBase> VisualizerTimeSerieWeakPtr;
+    typedef core::weak_ptr<const IVisualizer::TimeSerieBase> VisualizerTimeSerieConstWeakPtr;
 
 } // namespace core
 

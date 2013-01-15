@@ -21,7 +21,7 @@
 //! Wpis do konsoli.
 struct EDRConsoleWidgetEntry {
     //! Poziom ważności komuniaktu.
-    core::LogSeverity severity;
+    core::ILog::LogSeverity severity;
     //! Wiadomość.
     QString message;
     //! Plik źródłowy.

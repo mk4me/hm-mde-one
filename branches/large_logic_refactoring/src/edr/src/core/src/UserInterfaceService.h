@@ -5,7 +5,7 @@
 #include <core/IService.h>
 #include <core/IUserInterface.h>
 
-class UserInterfaceService: public core::IService, public IUserInterface
+class UserInterfaceService: public plugin::IService, public IUserInterface
 {
     UNIQUE_ID("{DACF9F0D-0B78-438C-B369-5F8EE087BF8C}", "User Interface Service");
 public:

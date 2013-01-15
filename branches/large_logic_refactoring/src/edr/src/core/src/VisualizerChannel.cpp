@@ -2,6 +2,8 @@
 #include "VisualizerChannel.h"
 #include "VisualizerManager.h"
 
+namespace core {
+
 IVisualizerChannel::IVisualizerChannel()
 {
 
@@ -12,7 +14,7 @@ IVisualizerChannel::~IVisualizerChannel()
 	VisualizerManager::getInstance()->notifyDestroyed(this);
 }
 
-VisualizerChannel::VisualizerChannel(const core::VisualizerTimeSeriePtr & serie)
+VisualizerChannel::VisualizerChannel(const plugin::VisualizerTimeSeriePtr & serie)
     : serie(serie), constSerie(serie)
 {
 
@@ -41,17 +43,17 @@ VisualizerChannel * VisualizerChannel::clone() const
     return nullptr;
 }
 
-const core::VisualizerTimeSeriePtr & VisualizerChannel::getSerie()
+const plugin::VisualizerTimeSeriePtr & VisualizerChannel::getSerie()
 {
     return serie;
 }
 
-const core::VisualizerTimeSerieConstPtr & VisualizerChannel::getSerie() const
+const plugin::VisualizerTimeSerieConstPtr & VisualizerChannel::getSerie() const
 {
     return constSerie;
 }
 
-VisualizerMultiChannel::VisualizerMultiChannel(const std::vector<core::VisualizerTimeSeriePtr> & channelSeries)
+VisualizerMultiChannel::VisualizerMultiChannel(const std::vector<plugin::VisualizerTimeSeriePtr> & channelSeries)
     : channelSeries_(channelSeries)
 {
     UTILS_ASSERT((channelSeries.empty() == false), "Nie podano żadnych serii dla kanalu");
@@ -92,7 +94,9 @@ VisualizerMultiChannel * VisualizerMultiChannel::clone() const
     return nullptr;
 }
 
-const std::vector<core::VisualizerTimeSeriePtr> & VisualizerMultiChannel::channelSeries() const
+const std::vector<plugin::VisualizerTimeSeriePtr> & VisualizerMultiChannel::channelSeries() const
 {
     return channelSeries_;
+}
+
 }

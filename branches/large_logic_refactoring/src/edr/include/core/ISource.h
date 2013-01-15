@@ -16,7 +16,7 @@
 class QObject;
 class QWidget;
 
-namespace core
+namespace plugin
 {
 
 	class IMemoryDataManager;
@@ -25,7 +25,7 @@ namespace core
 	class IActionsGroupManager;
 
     //! Interfejs źródła danych. Powinien to być jedeny obiekt inicjowany i mający dostęp do MemoryDM i FIleDM
-    class ISource : public IIdentifiable
+    class ISource : public core::IIdentifiable
     {
     public:
         virtual ~ISource() {}
@@ -71,9 +71,9 @@ namespace core
 
     };
 
-    typedef shared_ptr<ISource> ISourcePtr;
-    typedef shared_ptr<const ISource> ISourceConstPtr;
-    typedef weak_ptr<ISource> ISourceWeakPtr;
+    typedef core::shared_ptr<ISource> ISourcePtr;
+    typedef core::shared_ptr<const ISource> ISourceConstPtr;
+    typedef core::weak_ptr<ISource> ISourceWeakPtr;
 
 }
 

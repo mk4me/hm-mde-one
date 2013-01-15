@@ -17,7 +17,7 @@
 
 class EDRDockWidget;
 
-class EDRTitleBar : public QWidget, public Ui::EDRTitleBar, public IEDRTitleBar
+class EDRTitleBar : public QWidget, public Ui::EDRTitleBar, public plugin::IEDRTitleBar
 {
     Q_OBJECT
 

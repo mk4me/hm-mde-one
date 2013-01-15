@@ -11,6 +11,8 @@
 
 #include "ObjectSource.h"
 
+namespace core {
+
 class InputDescription
 {
 
@@ -20,6 +22,11 @@ public:
 private:
     boost::scoped_ptr<ObjectSource> source;
 public:
+
+	//TODO
+	//do usunięcia
+	InputDescription() {}
+
     InputDescription(const InputDescription& inputDescription) : 
         source(new ObjectSource(*inputDescription.source))
      {}
@@ -35,7 +42,7 @@ public:
     const ObjectSource* getSource() const { return source.get(); }
     ObjectSource* getSource() { return source.get(); }
 
-    inline const core::TypeInfo& getInputType(int idx) const
+    inline const TypeInfo& getInputType(int idx) const
     {
         return source->getSlotType(idx);
     }
@@ -48,14 +55,14 @@ public:
     //! Dodaje niezmienny obiekt na wejście.
     //! \param slot
     //! \param object
-    void setObjects(int slot, const core::ObjectWrapperCollectionConstPtr& objects)
+    void setObjects(int slot, const ObjectWrapperCollectionConstPtr& objects)
     {
         source->setObjects(slot, objects);
     }
     //! Dodaje zmienny obiekt na wejście.
     //! \param slot
     //! \param object
-    void setObjects(int slot, const core::ObjectWrapperCollectionPtr& objects)
+    void setObjects(int slot, const ObjectWrapperCollectionPtr& objects)
     {
         source->setObjects(slot, objects);
     }
@@ -65,7 +72,7 @@ public:
         return source->getNumSources();
     }
     //!
-    const core::ObjectWrapperCollectionPtr & getObjects(int slot) const
+    const ObjectWrapperCollectionPtr & getObjects(int slot) const
     {
         return source->ObjectSlots::getObjects(slot);
     }
@@ -76,5 +83,7 @@ public:
     }
 
 };
+
+}
 
 #endif
