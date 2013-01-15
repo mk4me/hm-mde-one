@@ -17,6 +17,8 @@
 class QLabel;
 class QComboBox;
 
+namespace core {
+
 //! Widget wizualizacyjny.
 class VisualizerWidget : public EDRDockWidget
 {
@@ -179,5 +181,7 @@ private:
 
     void addSourceDefaultAction();
 };
+
+}
 
 #endif  // HEADER_GUARD_CORE__VISUALIZERWIDGET_H__

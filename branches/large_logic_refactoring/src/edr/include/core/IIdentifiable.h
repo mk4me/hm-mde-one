@@ -15,7 +15,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <core/BaseDataTypes.h>
 
-namespace core {
+namespace plugin {
 
 //! Interfejs reprezentujący obiekt możliwy do identyfikacji.
 class IIdentifiable
@@ -27,26 +27,35 @@ public:
 
     //! \return Unikalny identyfikator obiektu
     virtual UniqueID getID() const = 0;
-    //! \return Opis obiektu
+    //! \return Nazwa obiektu
+	virtual const std::string & getName() const = 0;
+	//! \return Opis obiektu
     virtual const std::string & getDescription() const = 0;
 };
 
 }
 
 //! Makro ułatwiające "wstrzykiwanie" metod interfejsu IIdentifable do klas implementujących go
-#define UNIQUE_ID(uuidStr, shortDescription)                            \
+#define UNIQUE_ID(uuidStr, shortName, shortDescription)                 \
  public:                                                                \
-    static boost::uuids::uuid getClassID()                              \
+    inline static const boost::uuids::uuid getClassID()                 \
     {                                                                   \
-        static std::string s(uuidStr);                                  \
+        static const std::string s(uuidStr);                            \
         static boost::uuids::string_generator gen;                      \
-        return gen(s);                                                  \
+		static const boost::uuids::uuid ret(gen(s));					\
+        return ret;														\
     }                                                                   \
                                                                         \
     virtual boost::uuids::uuid getID() const                            \
     {                                                                   \
         return getClassID();                                            \
     }                                                                   \
+																		\
+	virtual const std::string & getName() const							\
+    {                                                                   \
+        static const std::string name(shortName);						\
+        return name;													\
+    }																	\
                                                                         \
     virtual const std::string & getDescription() const                  \
     {                                                                   \

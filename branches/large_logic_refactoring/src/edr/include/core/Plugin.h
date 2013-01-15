@@ -122,7 +122,7 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(IApplicati
 
 
 //! Interfejs pluginu przez który dostarczane są usługi (serwisy) i prototypy elementów przetwarzających dane
-class IPlugin : core::IIdentifiable
+class IPlugin : public IIdentifiable
 {
 public:
     //! Pusty polimorficzny destruktor.
@@ -159,7 +159,7 @@ namespace core {
 /**
  *	Kontener na usługi.
  */
-class Plugin : IIdentifiable
+class Plugin : plugin::IIdentifiable
 {
 public:
     //! Typ funkcji tworzącej plugin.

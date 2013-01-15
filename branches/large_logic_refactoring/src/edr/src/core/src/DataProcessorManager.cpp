@@ -23,7 +23,11 @@ DataProcessorManager::~DataProcessorManager()
 plugin::IDataProcessorConstPtr DataProcessorManager::getPrototype( UniqueID id ) const
 {
     IDataProcessors::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
-        [=](const plugin::IDataProcessorConstPtr& ptr) { return ptr->getID() == id; }
+        [=](const plugin::IDataProcessorConstPtr& ptr) {
+			//TODO
+			//return ptr->getID() == id;
+			return false;
+		}
     );
     if ( found != prototypes.end() ) {
         return plugin::IDataProcessorConstPtr(*found);
@@ -45,13 +49,17 @@ DataProcessorPtr DataProcessorManager::createDataProcessor( UniqueID id )
 int DataProcessorManager::getNumInstances( UniqueID id )
 {
     return std::count_if( dataProcessors.begin(), dataProcessors.end(), [=](DataProcessor* ptr) {
-        return ptr->getID() == id;
+        //TODO
+		//return ptr->getID() == id;
+		return false;
     });
 }
 
 DataProcessorPtr DataProcessorManager::createDataProcessor( const plugin::IDataProcessorConstPtr& prototype )
 {
-    DataProcessorPtr result(new DataProcessor(dynamic_cast<plugin::IDataProcessor*>(prototype->createClone())));
+	//TODO
+    //DataProcessorPtr result(new DataProcessor(dynamic_cast<plugin::IDataProcessor*>(prototype->createClone())));
+	DataProcessorPtr result;
     return result;
 }
 
@@ -63,19 +71,24 @@ DataProcessorPtr DataProcessorManager::createDataProcessor( const DataProcessor&
 
 void DataProcessorManager::registerDataProcessor(const plugin::IDataProcessorPtr & dataProcesor )
 {
-    if (!getPrototype(dataProcesor->getID())) {
-        prototypes.push_back(dataProcesor);
-        notify();
+	//TODO
+	/*if (!getPrototype(dataProcesor->getID())) {
+	prototypes.push_back(dataProcesor);
+	notify();
 
-    } else {
-        throw std::runtime_error("DataProcessor with this ID already registered.");
-    }
+	} else {
+	throw std::runtime_error("DataProcessor with this ID already registered.");
+	}*/
 }
 
 int DataProcessorManager::getPrototypeIdx( UniqueID id ) const
 {
     IDataProcessors::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
-        [=](const plugin::IDataProcessorPtr& ptr) { return ptr->getID() == id; }
+        [=](const plugin::IDataProcessorPtr& ptr) {
+			//TODO
+			//return ptr->getID() == id;
+			return false;
+		}
     );
     if ( found != prototypes.end() ) {
         return static_cast<int>(std::distance(prototypes.begin(), found));
@@ -86,13 +99,17 @@ int DataProcessorManager::getPrototypeIdx( UniqueID id ) const
 
 void DataProcessorManager::notifyCreated( DataProcessor* dataProcessor )
 {
-    CORE_LOG_DEBUG("DataProcessor " << dataProcessor->getName() << " created");
+	//TODO
+    //CORE_LOG_DEBUG("DataProcessor " << dataProcessor->getName() << " created");
+	CORE_LOG_DEBUG("DataProcessor " << " created");
     dataProcessors.push_back(dataProcessor);
 }
 
 void DataProcessorManager::notifyDestroyed( DataProcessor* dataProcessor )
 {
-    CORE_LOG_DEBUG("DataProcessor " << dataProcessor->getName() << " destroyed.");
+	//TODO
+    //CORE_LOG_DEBUG("DataProcessor " << dataProcessor->getName() << " destroyed.");
+	CORE_LOG_DEBUG("DataProcessor " << " destroyed.");
     dataProcessors.remove(dataProcessor);
 }
 

@@ -7,7 +7,7 @@
 
 class UserInterfaceService: public plugin::IService, public IUserInterface
 {
-    UNIQUE_ID("{DACF9F0D-0B78-438C-B369-5F8EE087BF8C}", "User Interface Service");
+    UNIQUE_ID("{DACF9F0D-0B78-438C-B369-5F8EE087BF8C}", "UserInterfaceService", "User Interface Service");
 public:
     UserInterfaceService();
     virtual ~UserInterfaceService();
@@ -19,7 +19,6 @@ public:
 // IService
 public:
     virtual QWidget* getWidget(std::vector<QObject*>& actions);
-    virtual const std::string& getName() const;
 
     virtual void finalize() {};
 
@@ -31,8 +30,6 @@ public:
 private: 
     //! Wskaźnik na główne okno.
     core::Window* mainWindow;
-    //! Nazwa usługi.
-    std::string name;
 };
 
 

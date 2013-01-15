@@ -4,7 +4,7 @@
 
 //--------------------------------------------------------------------------------------------------
 UserInterfaceService::UserInterfaceService()
-	: mainWindow(nullptr), name("UserInterface")
+	: mainWindow(nullptr)
 {
 }
 
@@ -16,11 +16,6 @@ UserInterfaceService::~UserInterfaceService()
 QWidget* UserInterfaceService::getWidget(std::vector<QObject*>& actions)
 {
     return nullptr;
-}
-
-const std::string& UserInterfaceService::getName() const
-{
-    return name;
 }
 
 core::Window* UserInterfaceService::getMainWindow()

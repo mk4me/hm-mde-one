@@ -14,13 +14,13 @@
 //! Forward declaration
 class QDialog;
 
-namespace core {
+namespace plugin {
 
 	class IObjectOutput;
 
 //! Interfejs elementów dostarczających danych do aplikacji (workflow).
 //! Zapewnia opis danych wyjściowych i podstawowe informacje i właściwości elementów logicznych aplikacji operujących na danych
-class IOutputProcessItem : public IOutputDescription
+class IOutputProcessItem : public IIdentifiable, public IOutputDescription
 {
 public:
     //! Metoda dostarczająca kolejną porcję danych podczas przetwarzania

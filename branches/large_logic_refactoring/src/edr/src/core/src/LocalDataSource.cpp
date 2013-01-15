@@ -34,7 +34,13 @@ LocalDataSource* LocalDataSource::createClone() const
 
 void LocalDataSource::getOutputInfo( OutputDescription& info )
 {
-    info = outputDescription;
+	//TODO
+    //info = outputDescription;
+}
+
+void LocalDataSource::getOutputInfo( std::vector<OutputInfo> & output )
+{
+
 }
 
 QWidget* LocalDataSource::getConfigurationWidget()
@@ -54,18 +60,19 @@ QDialog * LocalDataSource::getOutputConfigurationDialog()
 
 void LocalDataSource::generate(plugin::IObjectOutput* output)
 {
-    for(unsigned int i = 0; i < outputDescription.size(); ++i){
-        auto out = output->getObjects(i);
-        const auto& in = data[outputDescription[i].type];
+	//TODO
+	/*for(unsigned int i = 0; i < outputDescription.size(); ++i){
+	auto out = output->getObjects(i);
+	const auto& in = data[outputDescription[i].type];
 
-        for(auto it = in->begin(); it != in->end(); ++it){
-            try{
-                out.addObject(*it);
-            }catch(...){
+	for(auto it = in->begin(); it != in->end(); ++it){
+	try{
+	out.addObject(*it);
+	}catch(...){
 
-            }
-        }
-    }
+	}
+	}
+	}*/
 }
 
 const std::string & LocalDataSource::getName() const

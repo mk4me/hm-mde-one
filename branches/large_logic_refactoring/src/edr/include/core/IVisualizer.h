@@ -11,7 +11,8 @@
 
 #include <string>
 #include <core/ObjectWrapper.h>
-#include <core/IInputProcessItem.h>
+#include <core/IIdentifiable.h>
+#include <core/IInputDescription.h>
 #include <QtGui/QPixmap>
 
 class QObject;
@@ -23,7 +24,7 @@ namespace plugin
 	class IActionsGroupManager;
 
     //! Interfejs wizualizatorów dla typów danych zarejestrowanych w aplikacji
-    class IVisualizer :  public core::IInputProcessItem
+    class IVisualizer :  public IIdentifiable, public IInputDescription
     {
     public:
 

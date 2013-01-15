@@ -13,7 +13,7 @@
 #include <vector>
 #include <string>
 
-namespace core {
+namespace plugin {
 
 class IInputDescription
 {
@@ -28,7 +28,7 @@ public:
         //! Nazwa wejścia.
         std::string name;
         //! Typy wspierane przez wejście.
-        TypeInfo type;
+        core::TypeInfo type;
         //! Czy wejściew wymagane
         bool required;
         //! Czy dane na wejsciu będza modyfikowane

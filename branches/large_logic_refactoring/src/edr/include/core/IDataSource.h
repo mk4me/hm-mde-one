@@ -18,13 +18,13 @@ class QIcon;
 namespace plugin {
 
 //! Interfejs do implemntacji źródeł danych
-class IDataSource : public core::IOutputProcessItem
+class IDataSource : public IOutputProcessItem
 {
 public:
     //! \return Dialog konfigurujący opis wyjścia źródła danych
     virtual QDialog * getOutputConfigurationDialog() = 0;
     //! \return Czy źródło może jeszcze generować kolejne dane
-    virtual bool empty() const = 0;
+    virtual const bool empty() const = 0;
     //! \return Ikona źródła
     virtual QIcon* getIcon() const = 0;
 };

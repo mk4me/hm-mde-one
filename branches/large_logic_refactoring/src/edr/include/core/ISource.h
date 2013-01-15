@@ -25,7 +25,7 @@ namespace plugin
 	class IActionsGroupManager;
 
     //! Interfejs źródła danych. Powinien to być jedeny obiekt inicjowany i mający dostęp do MemoryDM i FIleDM
-    class ISource : public core::IIdentifiable
+    class ISource : public IIdentifiable
     {
     public:
         virtual ~ISource() {}
@@ -64,11 +64,7 @@ namespace plugin
         virtual QWidget* getConfigurationWidget(IActionsGroupManager * actionsGroupManager)
         {
             return nullptr;
-        }
-
-        //! \return Nazwa źródła.
-        virtual std::string getName() const = 0;
-
+		}
     };
 
     typedef core::shared_ptr<ISource> ISourcePtr;

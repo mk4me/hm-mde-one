@@ -9,17 +9,18 @@
 #ifndef HEADER_GUARD_CORE__IINPUTOUTPUTPROCESSITEM_H__
 #define HEADER_GUARD_CORE__IINPUTOUTPUTPROCESSITEM_H__
 
+#include <core/IIdentifiable.h>
 #include <core/IInputDescription.h>
 #include <core/IOutputDescription.h>
 
-namespace core {
+namespace plugin {
 
 	class IObjectSource;
 	class IObjectOutput;
 
 //! Interfejs dla elementów przetwarzających.
 //! Zawiera opis wejśc i wyjść, podstawowe informacje i właściwości elementów logicznych aplikacji operujących na danych
-class IInputOutputProcessItem : public IInputDescription, public IOutputDescription
+class IInputOutputProcessItem : public IIdentifiable, public IInputDescription, public IOutputDescription
 {
 public:
 

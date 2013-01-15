@@ -12,13 +12,14 @@
 
 #include <core/DataAccessors.h>
 #include "MainWindow.h"
+#include "MemoryDataManager.h"
 #include <core/DataAccessors.h>
 #include "ServiceManager.h"
 #include <plugins/newTimeline/ITimelineService.h>
 
 using namespace core;
 
-typedef std::pair<core::TypeInfo, core::ObjectWrapperConstPtr> TypeData;
+typedef std::pair<TypeInfo, ObjectWrapperConstPtr> TypeData;
 
 Q_DECLARE_METATYPE(TypeData);
 
@@ -26,8 +27,9 @@ VisualizerWidget::VisualizerWidget(QWidget* parent /*= nullptr*/, Qt::WindowFlag
 {
     init();
     // dodajemy wizualizatory
-    BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
-        addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
+    BOOST_FOREACH(const plugin::IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
+		//TODO
+        //addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
     }
 }
 
@@ -37,8 +39,9 @@ VisualizerWidget::VisualizerWidget( UniqueID visualizerID, QWidget* parent /*= n
     // blokujemy sygnały
     comboType->blockSignals(true);
     // dodajemy wizualizatory
-    BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
-        addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
+    BOOST_FOREACH(const plugin::IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
+		//TODO
+        //addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
     }
     // ustawiamy wizualizator
     comboType->blockSignals(false);
@@ -51,8 +54,9 @@ VisualizerWidget::VisualizerWidget( const VisualizerPtr& source, QWidget* parent
     // blokujemy sygnały
     comboType->blockSignals(true);
     // dodajemy wizualizatory
-    BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
-        addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
+    BOOST_FOREACH(const plugin::IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
+		//TODO
+        //addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
     }
     // ustawiamy wizualizator
     comboType->blockSignals(false);
@@ -83,14 +87,11 @@ void VisualizerWidget::clearCurrentVisualizerWidget()
         return;
     }
 
-    //if(){
-        //setWidget(nullptr);
-		visualizerWidget->setVisible(false);
-		visualizerWidgetContainer->layout()->removeWidget(visualizerWidget);
-        visualizerWidget->setParent(nullptr);
-        visualizerWidget = nullptr;
-		setMinimumSize(0,0);
-    //}
+	visualizerWidget->setVisible(false);
+	visualizerWidgetContainer->layout()->removeWidget(visualizerWidget);
+    visualizerWidget->setParent(nullptr);
+    visualizerWidget = nullptr;
+	setMinimumSize(0,0);
 }
 
 void VisualizerWidget::init()
@@ -110,14 +111,14 @@ void VisualizerWidget::init()
     label->setObjectName(QString::fromUtf8("label"));
     label->setPixmap(QPixmap(QString::fromUtf8(":/resources/icons/wizualizacja2.png")));
 
-    visualizerCommonElements[label] = InnerVisualizerElement(true, label, IEDRTitleBar::Left);
+    visualizerCommonElements[label] = InnerVisualizerElement(true, label, plugin::IEDRTitleBar::Left);
 
     //combo do przechowywania typów wizualizatorów
     comboType = new QComboBox();
     comboType->setObjectName(QString::fromUtf8("comboType"));
     comboType->setInsertPolicy(QComboBox::InsertAlphabetically);
 
-    visualizerCommonElements[comboType] = InnerVisualizerElement(true, comboType, IEDRTitleBar::Left);
+    visualizerCommonElements[comboType] = InnerVisualizerElement(true, comboType, plugin::IEDRTitleBar::Left);
 
     //ustawienie zdarzeń na zmiane pozycji w combo (zmiana wizualizatora)
     connect(comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(setCurrentVisualizer(int)));
@@ -131,7 +132,7 @@ void VisualizerWidget::init()
     icon2.addFile(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png"), QSize(), QIcon::Normal, QIcon::Off);
     menuSource->setIcon(icon2);
 
-    visualizerCommonElements[menuSource] = InnerVisualizerElement(true, menuSource, IEDRTitleBar::Left);
+    visualizerCommonElements[menuSource] = InnerVisualizerElement(true, menuSource, plugin::IEDRTitleBar::Left);
 
     //dynamiczne ładowanie menu źródeł na ich rozwinięcie
     connect(menuSource, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
@@ -214,7 +215,8 @@ void VisualizerWidget::split( Qt::Orientation orientation )
     UTILS_ASSERT(mainWindow);
 
     if ( visualizer ) {
-        dockWidget = new VisualizerWidget(VisualizerManager::getInstance()->createVisualizer(visualizer->getID()), mainWindow, windowFlags(), autoRefreshInputs_);
+		//TODO
+        //dockWidget = new VisualizerWidget(VisualizerManager::getInstance()->createVisualizer(visualizer->getID()), mainWindow, windowFlags(), autoRefreshInputs_);
     } else {
         dockWidget = new VisualizerWidget(mainWindow, windowFlags(), autoRefreshInputs_);
     }
@@ -257,7 +259,7 @@ void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements 
                     titleBarElements.push_back(VisualizerTitleBarElement(elementIT->second.object, elementIT->second.side));
                 }
             }else{
-                titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, IEDRTitleBar::Left));
+                titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, plugin::IEDRTitleBar::Left));
             }
         }
     }
@@ -267,7 +269,7 @@ void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements 
         (*groupIT).getAllObjects(allGroupObjects);
 
         for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); ++actionIT){
-            titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, IEDRTitleBar::Left));
+            titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, plugin::IEDRTitleBar::Left));
         }
     }
 }
@@ -296,13 +298,15 @@ void VisualizerWidget::clearCurrentVisualizer()
 
 void VisualizerWidget::clearDataSeries()
 {
-    std::map<core::ObjectWrapperConstPtr, core::VisualizerSeriePtr >().swap(currentSeriesData);
-    std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> >().swap(groupedSeriesData);
+	std::map<ObjectWrapperConstPtr, plugin::VisualizerSeriePtr >().swap(currentSeriesData);
+	std::map<TypeInfo, std::set<ObjectWrapperConstPtr> >().swap(groupedSeriesData);
 }
 
 void VisualizerWidget::setCurrentVisualizer( UniqueID id )
 {
-    if ( !visualizer || visualizer->getID() != id ) {
+	//TODO
+    //if ( !visualizer || visualizer->getID() != id ) {
+	if ( !visualizer ) {
         setCurrentVisualizer( VisualizerManager::getInstance()->createVisualizer(id) );
     }
 }
@@ -327,9 +331,9 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 					//pobieram dane
 
 					//stworz nowy OWC, odświeżający dane z DM ObjectWrapperCollection
-					core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), exact));
+					ObjectWrapperCollectionPtr collection(new ObjectWrapperCollection(visualizer->getInputType(i), exact));
 
-					DataManager::getInstance()->getObjects(*collection);
+					getMemoryDataManager()->getObjects(*collection);
 
 					visualizer->setObjects(i, collection);
 				}
@@ -338,7 +342,10 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
             // czy indeks się zgadza?
             // tradycyjne wyszukiwanie nie działa przy copy by value
             int idx = -1;
-            UniqueID id = visualizer->getID();
+
+			//TODO
+            //UniqueID id = visualizer->getID();
+			UniqueID id;
             for ( int i = 0; i < comboType->count(); ++i ) {
                 if ( id == comboType->itemData(i).value<UniqueID>() ) {
                     idx = i;
@@ -611,9 +618,9 @@ void VisualizerWidget::sourceSelected()
             lastSerie.second = td.second;
 
             //dodaj nowa serię
-            VisualizerSeriePtr serie(visualizer->createSerie(lastSerie.second, getLabel(lastSerie.second, true)));
+            plugin::VisualizerSeriePtr serie(visualizer->createSerie(lastSerie.second, getLabel(lastSerie.second, true)));
 
-            VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie));
+            plugin::VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<plugin::IVisualizer::TimeSerieBase>(serie));
 
             if(timeSerie != nullptr){
                 const void * tChannel = VisualizerManager::getInstance()->createChannel(timeSerie, visualizer.get());

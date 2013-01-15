@@ -41,13 +41,12 @@ public:
     virtual LocalDataSource* createClone() const;
 
     virtual void getOutputInfo( core::OutputDescription& info );
-	virtual void getOutputInfo( std::vector<OutputInfo> & output ) = 0;
-
+	virtual void getOutputInfo( std::vector<OutputInfo> & output );
+	virtual void generate(plugin::IObjectOutput* output);
 
     virtual QWidget* getConfigurationWidget();
 
     virtual QDialog * getOutputConfigurationDialog();
-    virtual void generate(plugin::IObjectOutput* output);
     virtual bool empty() const;
     virtual QIcon* getIcon() const;
 

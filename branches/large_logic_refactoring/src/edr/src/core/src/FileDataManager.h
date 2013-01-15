@@ -76,6 +76,8 @@ private:
 
 	void rawGetObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const;
 
+	void rawGetObjects(const Filesystem::Path & file, ObjectsList & objects);
+
 	void initializeParsers(const plugin::IParserManagerReader::ParserPrototypes & parsers, const std::string & source, const ParserInitializer & parserInitializer, ObjectsList & objects);
 
 public:
@@ -90,7 +92,7 @@ public:
 	//! \return Nowa transakcja
 	virtual const TransactionPtr transaction();
 	//! \return Nowa transakcja
-	virtual const TransactionPtr transaction(const TransactionPtr & memoryTransaction);
+	virtual const TransactionPtr transaction(const plugin::IMemoryDataManager::TransactionPtr & memoryTransaction);
 
 public:
 

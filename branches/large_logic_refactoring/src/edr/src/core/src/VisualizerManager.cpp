@@ -180,14 +180,18 @@ int VisualizerManager::getPrototypeIdx( UniqueID id ) const
 void VisualizerManager::notifyCreated( Visualizer* visualizer )
 {
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
-    CORE_LOG_DEBUG("Visualizer " << visualizer->getName() << " created");
+	//TODO
+    //CORE_LOG_DEBUG("Visualizer " << visualizer->getName() << " created");
+	CORE_LOG_DEBUG("Visualizer " <<  " created");
     visualizers.push_back(visualizer);
 }
 
 void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
 {
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
-    CORE_LOG_DEBUG("Visualizer " << visualizer->getName() << " destroyed.");
+	//TODO
+	//CORE_LOG_DEBUG("Visualizer " << visualizer->getName() << " destroyed.");
+    CORE_LOG_DEBUG("Visualizer " << " destroyed.");
     visualizers.remove(visualizer);
 }
 
@@ -339,14 +343,14 @@ void VisualizerManager::removeAllChannels()
 		}
 	}
 
-	std::map<plugin::IVisualizerChannel *, ChannelData>().swap(channels);
-	std::map<Visualizer *, std::set<plugin::IVisualizerChannel *>>().swap(visualizerChannels);
+	std::map<IVisualizerChannel *, ChannelData>().swap(channels);
+	std::map<Visualizer *, std::set<IVisualizerChannel *>>().swap(visualizerChannels);
 }
 
 void VisualizerManager::markAsRemovedFromVisualizer(const void * channel)
 {
 	//sprawdzam czy jest taki kanał
-	auto channelIT = channels.find((plugin::IVisualizerChannel*)channel);
+	auto channelIT = channels.find((IVisualizerChannel*)channel);
 	if(channelIT == channels.end()){
 		//jeśli nie ma to wychodzimy
 		return;

@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include "FileDataManager.h"
+#include "MemoryDataManager.h"
 #include "ApplicationCommon.h"
 #include "ParserManager.h"
 
@@ -183,9 +184,9 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file)
 	}
 
 	plugin::IParserManagerReader::ParserPrototypes sourceParsers;
-	getParserManager()->sourceParsers(sourceParsers, file.string());
+	getParserManager()->sourceParsers(file.string(), sourceParsers);
 	plugin::IParserManagerReader::ParserPrototypes streamParsers;
-	getParserManager()->streamParsers(streamParsers, file.string());
+	getParserManager()->streamParsers(file.string(), streamParsers);
 
 	//Z listy strumieniowych usuwam te które s¹ na liœcie z w³asnym I/O - wierze ¿e zrobia to lepiej
 	std::set<plugin::IParserConstPtr> sourceParsersSet;
@@ -204,48 +205,6 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file)
 
 	initializeParsers(sourcesLeft, , objects);
 
-	//jeœli pliku nie ma dodaj go, stwórz parsery i rozszerz dostêpne dane wraz z ich opisem
-	for(auto parserIT = sourcesLeft.begin(); parserIT != sourcesLeft.end(); ++parserIT){
-		//twworzymy w³asne opakowanie parsera klienckiego
-		ParserPtr parser(new Parser((*parserIT)->create(), file.string()));
-		Objects objectsToVerify;
-		//pobieramy udostêpniane obiekty - powinno dawaæ tylko obiekty zarejestrowane w DM
-		parser->getObjects(objectsToVerify);
-
-		Objects verifiedObjects;
-
-		//zarejestrowanie obiektów i ich zwi¹zku z parserem i typami danych
-		for(auto objectIT = objectsToVerify.begin(); objectIT != objectsToVerify.end(); ++objectIT){
-
-			if(*objectIT == nullptr){
-
-				CORE_LOG_DEBUG("Unitialized object " << parser->getPath() << " for parser ID " << parser->getParser()->getID());
-
-			}else{
-				//dodac inicjalizator, jesli jest to warning!!
-				if((*objectIT)->initializer().empty() == false){
-					CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded with custom initializer. Supplying with compound initializer");
-					//inicjalizator na bazie inicjalizatora:)
-					(*objectIT)->set(boost::bind(&FileDataManager::initializeDataWithExternalInitializer, this, _1, (*objectIT)->initializer()));
-				}else{
-					if((*objectIT)->getRawPtr() != nullptr ){
-						CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded already initialized. Reseting object and supplying initializer");
-					}
-
-					//inicjalizator na bazie parsera
-					(*objectIT)->set(boost::bind(&FileDataManager::initializeDataWithSourceParser, this, _1, parser));
-				}
-
-				//ObjectByParsers
-				objects.insert(*objectIT);
-
-				//UWAGA!!
-				//mapowanie surowego wskaŸnika do ObjectWrappera jest robione podczas parsowania!!
-				//teraz mamy leniw¹ inicjalizacjê
-			}
-		}
-	}
-
 	if(objects.empty() == true){
 		CORE_LOG_DEBUG("Any of known parsers did not provide any valid data for file: " << file);
 	}else{
@@ -256,10 +215,10 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file)
 
 const bool FileDataManager::rawIsManaged(const Filesystem::Path & file) const
 {
-	return parsersByFiles.find(file) != parsersByFiles.end();
+	return objectsByFiles.find(file) != objectsByFiles.end();
 }
 
-void FileDataManager::rawGetFiles(Filesystem::Files & files) const
+void FileDataManager::rawGetFiles(Files & files) const
 {
 	for(auto it = objectsByFiles.begin(); it != objectsByFiles.end(); ++it){
 		files.insert(it->first);
@@ -270,9 +229,18 @@ void FileDataManager::rawGetObjects(const Filesystem::Path & file, ConstObjectsL
 {
 	auto it = objectsByFiles.find(file);
 
-	for(auto objectIT = it->second.begin(); objectIT != it->second.end(); ++objectIT){
+	objects.insert(objects.end(), it->second.begin(), it->second.end());
+
+	/*for(auto objectIT = it->second.begin(); objectIT != it->second.end(); ++objectIT){
 		objects.push_back(*objectIT);
-	}
+	}*/
+}
+
+void FileDataManager::rawGetObjects(const Filesystem::Path & file, ObjectsList & objects)
+{
+	auto it = objectsByFiles.find(file);
+
+	objects.insert(objects.end(), it->second.begin(), it->second.end());
 }
 
 void FileDataManager::rawGetObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const
@@ -346,7 +314,7 @@ void FileDataManager::addFile(const Filesystem::Path & file)
 	//dodaj plik
 	rawAddFile(file);
 	//pobierz obiekty dla pliku
-	ConstObjectsList toAdd;
+	ObjectsList toAdd;
 	rawGetObjects(file, toAdd);
 	//dodaj obiekty do Memory DM w transakcji
 	{
@@ -368,12 +336,14 @@ void FileDataManager::addFile(const Filesystem::Path & file)
 
 const FileDataManager::TransactionPtr FileDataManager::transaction()
 {
-
+	//TODO
+	return FileDataManager::TransactionPtr();
 }
 
 const FileDataManager::TransactionPtr FileDataManager::transaction(const plugin::IMemoryDataManager::TransactionPtr & memoryTransaction)
 {
-
+	//TODO
+	return FileDataManager::TransactionPtr();
 }
 
 void FileDataManager::addObserver(const FileObserverPtr & fileWatcher)

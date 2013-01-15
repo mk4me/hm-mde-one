@@ -34,13 +34,13 @@ private:
 		//! Wskaźnik do const pluginu
 		PluginConstPtr constPlugin;
 		//! Wskaźnik do dedykowanej implementacji interfejcu core::IApplication
-		core::shared_ptr<core::IApplication> coreApplication;
+		shared_ptr<plugin::IApplication> coreApplication;
 		//! Uchwyt do biblioteki
 		HMODULE handle;
 		//! Dedykowany loger
-		core::shared_ptr<core::ILog> logger;
+		shared_ptr<core::ILog> logger;
 		//! Dedykowane ściezki
-		core::shared_ptr<core::IPath> path;
+		shared_ptr<plugin::IPath> path;
 	};
 
     //! Załadowane pluginy.

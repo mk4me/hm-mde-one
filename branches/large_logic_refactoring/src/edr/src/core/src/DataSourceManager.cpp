@@ -17,15 +17,15 @@ DataSourceManager::~DataSourceManager()
     UTILS_ASSERT(dataSources.empty(), "Wszystkie źródła powinny być zniszczone.");
 }
 
-IDataSourceConstPtr DataSourceManager::getPrototype( UniqueID id ) const
+plugin::IDataSourceConstPtr DataSourceManager::getPrototype( UniqueID id ) const
 {
     IDataSources::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
-        [=](const IDataSourceConstPtr& ptr) { return ptr->getID() == id; }
+        [=](const plugin::IDataSourceConstPtr& ptr) { return ptr->getID() == id; }
     );
     if ( found != prototypes.end() ) {
-        return IDataSourceConstPtr(*found);
+        return plugin::IDataSourceConstPtr(*found);
     } else {
-        return IDataSourceConstPtr();
+        return plugin::IDataSourceConstPtr();
     }
 }
 
@@ -46,7 +46,7 @@ int DataSourceManager::getNumInstances( UniqueID id )
     });
 }
 
-DataSourcePtr DataSourceManager::createDataSource( const IDataSourceConstPtr& prototype )
+DataSourcePtr DataSourceManager::createDataSource( const plugin::IDataSourceConstPtr& prototype )
 {
     IDataSource* src = dynamic_cast<IDataSource*>(prototype->createClone());
     QDialog * dialog = src->getOutputConfigurationDialog();
@@ -58,7 +58,7 @@ DataSourcePtr DataSourceManager::createDataSource( const IDataSourceConstPtr& pr
     }
 
     //test czy jakieś dane wyjsciowe dostępne
-    std::vector<core::IOutputDescription::OutputInfo> output;
+    std::vector<plugin::IOutputDescription::OutputInfo> output;
     src->getOutputInfo(output);
 
     if(output.empty() == true){
@@ -76,7 +76,7 @@ DataSourcePtr DataSourceManager::createDataSource( const DataSource& prototype )
     return result;
 }
 
-void DataSourceManager::registerDataSource(const IDataSourcePtr & dataProcesor )
+void DataSourceManager::registerDataSource(const plugin::IDataSourcePtr & dataProcesor )
 {
     if (!getPrototype(dataProcesor->getID())) {
         prototypes.push_back(dataProcesor);
@@ -89,7 +89,7 @@ void DataSourceManager::registerDataSource(const IDataSourcePtr & dataProcesor )
 int DataSourceManager::getPrototypeIdx( UniqueID id ) const
 {
     IDataSources::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
-        [=](const IDataSourcePtr& ptr) { return ptr->getID() == id; }
+        [=](const plugin::IDataSourcePtr& ptr) { return ptr->getID() == id; }
     );
     if ( found != prototypes.end() ) {
         return static_cast<int>(std::distance(prototypes.begin(), found));
@@ -100,13 +100,13 @@ int DataSourceManager::getPrototypeIdx( UniqueID id ) const
 
 void DataSourceManager::notifyCreated( DataSource* dataSource )
 {
-    LOG_DEBUG("DataSource " << dataSource->getName() << " created");
+    CORE_LOG_DEBUG("DataSource " << dataSource->getName() << " created");
     dataSources.push_back(dataSource);
 }
 
 void DataSourceManager::notifyDestroyed( DataSource* dataSource )
 {
-    LOG_DEBUG("DataSource " << dataSource->getName() << " destroyed.");
+    CORE_LOG_DEBUG("DataSource " << dataSource->getName() << " destroyed.");
     dataSources.remove(dataSource);
 }
 

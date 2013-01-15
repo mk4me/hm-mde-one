@@ -10,11 +10,11 @@
 #define HEADER_GUARD_CORE__IOUTPUTDESCRIPTION_H__
 
 #include <set>
-#include <core/TypeInfo.h>
 #include <vector>
 #include <string>
+#include <core/TypeInfo.h>
 
-namespace core {
+namespace plugin {
 
 //! Interfejs służący do opisu typów danych wyjściowcyh oferowanych przez element przetwarzający.
 class IOutputDescription
@@ -28,7 +28,7 @@ public:
         //! Nazwa wyjścia.
         std::string name;
         //! Typ wyjścia.
-        TypeInfo type;
+        core::TypeInfo type;
         //! Zależne wejścia
         DependentInput dependentInput;
 
@@ -36,7 +36,7 @@ public:
         OutputInfo() {}
 
         //!
-        OutputInfo(const std::string& name, const TypeInfo& type, const DependentInput & dependentInput = DependentInput()) :
+        OutputInfo(const std::string& name, const core::TypeInfo& type, const DependentInput & dependentInput = DependentInput()) :
         name(name), type(type), dependentInput(dependentInput)
         {}
 

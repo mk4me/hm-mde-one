@@ -17,7 +17,7 @@ namespace core {
 template<class T>
 class InputItem : public InputDescription
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<IInputProcessItem, T>::value), "Template class should inherit from core::IInputProcessItem");
+    UTILS_STATIC_ASSERT((boost::is_base_of<plugin::IInputProcessItem, T>::value), "Template class should inherit from plugin::IInputProcessItem");
 public:
 
 	//TODO
