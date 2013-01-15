@@ -18,7 +18,7 @@ namespace core {
 template<class T>
 class OutputItem : public OutputDescription
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<IOutputProcessItem, T>::value), "Template class should inherit from core::IOutputProcessItem");
+    UTILS_STATIC_ASSERT((boost::is_base_of<plugin::IOutputDescription, T>::value), "Template class should inherit from plugin::IOutputDescription");
 public:
     OutputItem(T* implementation, const ObjectOutput& output) :
       //WorkflowItemEncapsulator<T>(implementation),

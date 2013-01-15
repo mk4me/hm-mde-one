@@ -31,6 +31,16 @@ inline MemoryDataManager* getMemoryDataManager()
 	return __application->memoryDataManager();
 }
 
+inline StreamDataManager* getStreamDataManager()
+{
+	return __application->streamDataManager();
+}
+
+inline FileDataManager* getFileDataManager()
+{
+	return __application->fileDataManager();
+}
+
 inline DataHierarchyManager* getDataHierarchyManager()
 {
 	return __application->dataHierarchyManager();

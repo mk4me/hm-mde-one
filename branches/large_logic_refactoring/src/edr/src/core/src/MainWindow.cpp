@@ -1,5 +1,9 @@
 #include "CorePCH.h"
 #include "MainWindow.h"
+#include "ApplicationCommon.h"
+#include "FileDataManager.h"
+#include "ParserManager.h"
+#include "DataHierarchyManager.h"
 
 #include <iostream>
 
@@ -194,11 +198,12 @@ void MainWindow::init(PluginLoader* pluginLoader, ExtendedCustomApplication * co
 	auto serviceManager = core::getServiceManager();
 
 	// inicjalizacja usług
+	//TODO
 	for (int i = 0; i < serviceManager->getNumServices(); ++i) {
 		serviceManager->getService(i)->init(coreApplication->sourceManager(),
 			coreApplication->dataSourceManager(), coreApplication->dataProcessorManager(),
 			nullptr, coreApplication->visualizerManager(),
-			coreApplication->dataManager(), coreApplication->dataManager());
+			getMemoryDataManager(), nullptr);
 	}
 
 	// inicjalizacja usług
@@ -211,8 +216,9 @@ void MainWindow::init(PluginLoader* pluginLoader, ExtendedCustomApplication * co
 	auto sourceManager = coreApplication->sourceManager();
 
 	// inicjalizacja źródeł
+	//TODO
 	for (int i = 0; i < sourceManager->getNumSources(); ++i) {
-		sourceManager->getSource(i)->init(coreApplication->dataManager(), coreApplication->dataManager(), serviceManager);
+		sourceManager->getSource(i)->init(getMemoryDataManager(), nullptr, serviceManager);
 	}
 
     readSettings(QSettings(), true);
@@ -257,24 +263,19 @@ void MainWindow::findResources(const std::string& resourcesPath)
         temp = Filesystem::listFiles(resourcesPath, true, ".qss");
         applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
     } catch(std::exception& e) {
-        LOG_INFO("Finding resources exception: " << e.what());
+        CORE_LOG_INFO("Finding resources exception: " << e.what());
     }
 }
 
 void MainWindow::openFile( const std::string& path )
 {
-	LOG_INFO("Opening file: " << path);
+	CORE_LOG_INFO("Opening file: " << path);
 	std::vector<Filesystem::Path> paths;
 	paths.push_back(path);
-    DataManager * dataManager = DataManager::getInstance();
+    auto fdmTrans = getFileDataManager()->transaction();
     for(auto it = paths.begin(); it != paths.end(); ++it){
-        try{
-            dataManager->addFile(*it);
-        }catch(...){
-
-        }
+        fdmTrans->tryAddFile(*it);
     }
-
 }
 
 void MainWindow::readSettings( const QSettings& settings, bool readGeometry )
@@ -318,7 +319,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::initializeConsole()
 {
-    widgetConsole = new EDRConsoleWidget(tr("Console"), this, Qt::WindowTitleHint);
+    widgetConsole = new ::EDRConsoleWidget(tr("Console"), this, Qt::WindowTitleHint);
     widgetConsole->setObjectName("Console");
     widgetConsole->setAllowedAreas(Qt::BottomDockWidgetArea);
     widgetConsole->setPermanent(true);
@@ -344,120 +345,120 @@ void MainWindow::safeRegisterPlugin(const PluginPtr & plugin)
 
 }
 
-void MainWindow::safeRegisterService(const IServicePtr & service)
+void MainWindow::safeRegisterService(const plugin::IServicePtr & service)
 {
     try{
 
         coreApplication->serviceManager()->registerService(service);
 
     }catch(std::exception & e){
-        LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
+        CORE_LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
             " has caused an error during registration: " << e.what() << ". Service NOT registered in application!" );
     }
     catch(...){
-        LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
+        CORE_LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
             " has caused an UNKNOWN error during registration. Service NOT registered in application!" );
     }
 }
 
-void MainWindow::safeRegisterSource(const ISourcePtr & source)
+void MainWindow::safeRegisterSource(const plugin::ISourcePtr & source)
 {
 	try{
 
 		coreApplication->sourceManager()->registerSource(source);
 
 	}catch(std::exception & e){
-		LOG_WARNING("Source " << source->getName() << " with ID " << source->getID() <<
+		CORE_LOG_WARNING("Source " << source->getName() << " with ID " << source->getID() <<
 			" has caused an error during registration: " << e.what() << ". Source NOT registered in application!" );
 	}
 	catch(...){
-		LOG_WARNING("Source " << source->getName() << " with ID " << source->getID() <<
+		CORE_LOG_WARNING("Source " << source->getName() << " with ID " << source->getID() <<
 			" has caused an UNKNOWN error during registration. Source NOT registered in application!" );
 	}
 }
 
-void MainWindow::safeRegisterParser(const IParserPtr & parser)
+void MainWindow::safeRegisterParser(const plugin::IParserPtr & parser)
 {
     try{
 
-        DataManager::getInstance()->registerParser(parser);
+        getParserManager()->registerParser(parser);
 
     }catch(std::exception & e){
-        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
+        CORE_LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
             " has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
     }
     catch(...){
-        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
+        CORE_LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
             " has caused an UNKNOWN error during registration. Parser NOT registered in application!" );
     }
 }
 
-void MainWindow::safeRegisterObjectWrapperPrototype(const ObjectWrapperConstPtr & prototype)
+void MainWindow::safeRegisterObjectWrapperPrototype(const ObjectWrapperPtr & prototype)
 {
     try{
 
-        DataManager::getInstance()->registerObjectWrapperPrototype(prototype);
+        getDataHierarchyManager()->registerObjectWrapperPrototype(prototype);
 
     }catch(std::exception & e){
-        LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an error during registration: "
+        CORE_LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an error during registration: "
             << e.what() << ". Object type NOT registered in application!" );
     }
     catch(...){
-        LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an UNKNOWN error during registration. Object type NOT registered in application!" );
+        CORE_LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an UNKNOWN error during registration. Object type NOT registered in application!" );
     }
 }
 
-void MainWindow::safeRegisterVisualizer(const IVisualizerPtr & visualizer)
+void MainWindow::safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer)
 {
     try{
 
         VisualizerManager::getInstance()->registerVisualizer(visualizer);
 
     }catch(std::exception & e){
-        LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
+        CORE_LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
             << " has caused an error during registration: " << e.what() << ". Visualizer NOT registered in application!" );
     }
     catch(...){
-        LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
+        CORE_LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
             << " has caused an UNKNOWN error during registration. Visualizer NOT registered in application!" );
     }
 }
 
-void MainWindow::safeRegisterDataProcessor(const IDataProcessorPtr & dataProcessor)
+void MainWindow::safeRegisterDataProcessor(const plugin::IDataProcessorPtr & dataProcessor)
 {
     try{
 
         DataProcessorManager::getInstance()->registerDataProcessor(dataProcessor);
 
     }catch(std::exception & e){
-        LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
+        CORE_LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
             << " has caused an error during registration: " << e.what() << ". DataProcessor NOT registered in application!" );
     }
     catch(...){
-        LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
+        CORE_LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
             << " has caused an UNKNOWN error during registration. DataProcessor NOT registered in application!" );
     }
 }
 
-void MainWindow::safeRegisterDataSource(const IDataSourcePtr & dataSource)
+void MainWindow::safeRegisterDataSource(const plugin::IDataSourcePtr & dataSource)
 {
     try{
 
         DataSourceManager::getInstance()->registerDataSource(dataSource);
 
     }catch(std::exception & e){
-        LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
+        CORE_LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
             << " has caused an error during registration: " << e.what() << ". DataSource NOT registered in application!" );
     }
     catch(...){
-        LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
+        CORE_LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
             << " has caused an UNKNOWN error during registration. DataSource NOT registered in application!" );
     }
 }
 
 void MainWindow::registerCoreDataSources()
 {
-    safeRegisterDataSource(IDataSourcePtr(new LocalDataSource()));
+    safeRegisterDataSource(plugin::IDataSourcePtr(new LocalDataSource()));
 }
 
 void MainWindow::registerCoreDomainTypes()
@@ -537,7 +538,7 @@ QDockWidget* MainWindow::embeddWidget( QWidget* widget, const ActionsGroupManage
         std::map<int, QObject *> allObjects;
         (*groupIT).getAllObjects(allObjects);
         for(auto objectIT = allObjects.begin(); objectIT != allObjects.end(); ++objectIT){
-            titleBar->addObject(objectIT->second, IEDRTitleBar::Left);
+            titleBar->addObject(objectIT->second, plugin::IEDRTitleBar::Left);
         }
     }
 

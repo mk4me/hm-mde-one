@@ -161,7 +161,7 @@ namespace core {
 		void safeRegisterService(const plugin::IServicePtr & service);
 		void safeRegisterSource(const plugin::ISourcePtr & source);
 		void safeRegisterParser(const plugin::IParserPtr & parser);
-		void safeRegisterObjectWrapperPrototype(const core::ObjectWrapperConstPtr & prototype);
+		void safeRegisterObjectWrapperPrototype(const core::ObjectWrapperPtr & prototype);
 		void safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer);
 		void safeRegisterDataProcessor(const plugin::IDataProcessorPtr & dataProcessor);
 		void safeRegisterDataSource(const plugin::IDataSourcePtr & dataSource);

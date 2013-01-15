@@ -156,7 +156,7 @@ void FileDataManager::initializeParsers(const plugin::IParserManagerReader::Pars
 				if((*objectIT)->initializer().empty() == false){
 					CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded with custom initializer. Supplying with compound initializer");
 					//inicjalizator na bazie inicjalizatora:)
-					(*objectIT)->set(boost::bind(&FileDataManager::initializeDataWithExternalInitializer, this, _1, (*objectIT)->initializer()));
+					(*objectIT)->set(ObjectWrapper::LazyInitializer(boost::bind(&FileDataManager::initializeDataWithExternalInitializer, this, _1, (*objectIT)->initializer())));
 				}else{
 					if((*objectIT)->getRawPtr() != nullptr ){
 						CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded already initialized. Reseting object and supplying initializer");
@@ -201,9 +201,9 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file)
 	//Czêœciowo zachowuje siê jak manager strumieni - sam nimi zarz¹dzam dla plików
 	ObjectsList objects;
 
-	initializeParsers(streamParsers, , objects);
-
-	initializeParsers(sourcesLeft, , objects);
+	//TODO
+	//initializeParsers(streamParsers, , objects);
+	//initializeParsers(sourcesLeft, , objects);
 
 	if(objects.empty() == true){
 		CORE_LOG_DEBUG("Any of known parsers did not provide any valid data for file: " << file);

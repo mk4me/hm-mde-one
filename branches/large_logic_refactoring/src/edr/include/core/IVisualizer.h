@@ -24,7 +24,7 @@ namespace plugin
 	class IActionsGroupManager;
 
     //! Interfejs wizualizatorów dla typów danych zarejestrowanych w aplikacji
-    class IVisualizer :  public IIdentifiable, public IInputDescription
+    class IVisualizer :  public ICoreElement, public IInputDescription
     {
     public:
 

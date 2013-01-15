@@ -9,6 +9,7 @@
 #ifndef HEADER_GUARD___IDATASOURCE_H__
 #define HEADER_GUARD___IDATASOURCE_H__
 
+#include <core/IIdentifiable.h>
 #include <core/IOutputProcessItem.h>
 #include <core/SmartPtr.h>
 
@@ -18,7 +19,7 @@ class QIcon;
 namespace plugin {
 
 //! Interfejs do implemntacji źródeł danych
-class IDataSource : public IOutputProcessItem
+class IDataSource : public ICoreElement, public IOutputProcessItem
 {
 public:
     //! \return Dialog konfigurujący opis wyjścia źródła danych

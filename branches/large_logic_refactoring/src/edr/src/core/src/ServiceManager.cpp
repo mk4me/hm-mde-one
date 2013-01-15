@@ -3,7 +3,6 @@
 #include "Log.h"
 #include "ServiceManager.h"
 #include "ManagerHelper.h"
-#include <core/IDataManager.h>
 
 template<>
 core::ServiceManager * ManagerHelper<core::ServiceManager>::manager = nullptr;

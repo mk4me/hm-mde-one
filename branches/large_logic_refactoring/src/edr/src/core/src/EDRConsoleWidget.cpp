@@ -3,6 +3,8 @@
 #include "EDRConsoleWidget.h"
 #include "EDRTitleBar.h"
 
+using namespace core;
+
 EDRConsoleWidget::EDRConsoleWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)
     : EDRDockWidget(title, parent, flags), consoleWidget(new EDRConsoleInnerWidget())
 {

@@ -85,7 +85,6 @@ SET_PUBLIC_HEADERS (
 	Filesystem.h
 	IService.h
 	IIdentifiable.h
-	IDataManager.h
 	IParser.h
 	IServiceManager.h
 	Window.h

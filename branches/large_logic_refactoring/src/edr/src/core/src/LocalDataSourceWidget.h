@@ -15,6 +15,8 @@
 #include <core/TypeInfo.h>
 #include "LocalDataSource.h"
 
+namespace core {
+
 class LocalDataSourceWidget : public QWidget, public Ui::LocalDataSourceWidget
 {
     Q_OBJECT
@@ -32,11 +34,12 @@ private slots:
     void onCheckChange(int state);
 
 private:
-    std::map<QCheckBox*, core::TypeInfo> checkBoxToTypeMapping;
+    std::map<QCheckBox*, TypeInfo> checkBoxToTypeMapping;
     LocalDataSource * localDataSource;
     LocalDataSource::Data data;
 
 };
 
+}
 
 #endif  //  HEADER_GUARD___LOCALDATASOURCEWIDGET_H__

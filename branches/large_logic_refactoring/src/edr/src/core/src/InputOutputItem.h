@@ -9,7 +9,8 @@
 #ifndef HEADER_GUARD_CORE__INPUTOUTPUTITEM_H__
 #define HEADER_GUARD_CORE__INPUTOUTPUTITEM_H__
 
-#include <core/IInputOutputProcessItem.h>
+#include <core/IInputDescription.h>
+#include <core/IOutputDescription.h>
 #include "InputDescription.h"
 #include "OutputDescription.h"
 
@@ -18,7 +19,8 @@ namespace core {
 template<class T>
 class InputOutputItem : public InputDescription, public OutputDescription
 {
-        UTILS_STATIC_ASSERT((boost::is_base_of<IInputOutputProcessItem, T>::value), "Template class should inherit from core::IInputOutputProcessItem");
+        UTILS_STATIC_ASSERT((boost::is_base_of<plugin::IOutputDescription, T>::value), "Template class should inherit from plugin::IOutputDescription");
+		UTILS_STATIC_ASSERT((boost::is_base_of<plugin::IInputDescription, T>::value), "Template class should inherit from plugin::IInputDescription");
 
 public:
 

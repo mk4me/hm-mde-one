@@ -25,7 +25,7 @@ namespace plugin
 	class IActionsGroupManager;
 
     //! Interfejs źródła danych. Powinien to być jedeny obiekt inicjowany i mający dostęp do MemoryDM i FIleDM
-    class ISource : public IIdentifiable
+    class ISource : public ICoreElement
     {
     public:
         virtual ~ISource() {}

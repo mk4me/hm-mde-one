@@ -15,7 +15,10 @@
 namespace plugin 
 {
     //! Definicja typu elementu przetwarzającego
-    typedef IInputOutputProcessItem IDataProcessor;
+    class IDataProcessor : public ICoreElement, public IInputOutputProcessItem
+	{
+
+	};
 
     typedef core::shared_ptr<IDataProcessor> IDataProcessorPtr;
     typedef core::shared_ptr<const IDataProcessor> IDataProcessorConstPtr;

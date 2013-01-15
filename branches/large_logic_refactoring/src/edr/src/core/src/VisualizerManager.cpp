@@ -76,7 +76,7 @@ int VisualizerManager::getNumInstances( UniqueID id )
 
 VisualizerPtr VisualizerManager::createVisualizer( const plugin::IVisualizerConstPtr& prototype )
 {
-    VisualizerPtr result(new Visualizer(dynamic_cast<plugin::IVisualizer*>(prototype->createClone())));
+    VisualizerPtr result(new Visualizer(dynamic_cast<plugin::IVisualizer*>(prototype->create())));
     return result;
 }
 
@@ -113,7 +113,7 @@ void VisualizerManager::registerVisualizer( plugin::IVisualizerPtr visualizer )
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     if (!getPrototype(visualizer->getID())) {
 
-        std::vector<IInputDescription::InputInfo> visualizerInputInfo;
+        std::vector<plugin::IInputDescription::InputInfo> visualizerInputInfo;
 
         visualizer->getInputInfo(visualizerInputInfo);
 

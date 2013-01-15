@@ -21,22 +21,28 @@ namespace plugin {
 class IIdentifiable
 {
 public:
-    virtual ~IIdentifiable() 
-    { 
-    }
-
     //! \return Unikalny identyfikator obiektu
     virtual UniqueID getID() const = 0;
-    //! \return Nazwa obiektu
+};
+
+class IDescription
+{
+public:
 	virtual const std::string & getName() const = 0;
-	//! \return Opis obiektu
-    virtual const std::string & getDescription() const = 0;
+	virtual const std::string  getDescription() const = 0;
+};
+
+class ICoreElement : public IIdentifiable, public IDescription
+{
+public:
+
+	virtual ICoreElement * create() const = 0;
 };
 
 }
 
 //! Makro ułatwiające "wstrzykiwanie" metod interfejsu IIdentifable do klas implementujących go
-#define UNIQUE_ID(uuidStr, shortName, shortDescription)                 \
+#define UNIQUE_ID(uuidStr)                 \
  public:                                                                \
     inline static const boost::uuids::uuid getClassID()                 \
     {                                                                   \
@@ -49,18 +55,6 @@ public:
     virtual boost::uuids::uuid getID() const                            \
     {                                                                   \
         return getClassID();                                            \
-    }                                                                   \
-																		\
-	virtual const std::string & getName() const							\
-    {                                                                   \
-        static const std::string name(shortName);						\
-        return name;													\
-    }																	\
-                                                                        \
-    virtual const std::string & getDescription() const                  \
-    {                                                                   \
-        static const std::string description(shortDescription);         \
-        return description;                                             \
     }                                                                   \
 private:
 

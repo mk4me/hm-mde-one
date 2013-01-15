@@ -6,10 +6,6 @@ else()
 endif()
 ADD_PROJECT(core "BOOST;UTILS;OSG;QT;TINYXML;corelib;LOG4CXX;OPENGL;DFMLIB;VDFMLIB")
 
-SET_PROJECTS_GROUP("view")
-ADD_PROJECT(old_view "BOOST;LOG4CXX;UTILS;OSG;QT;TINYXML;core;corelib;OPENGL;DFMLIB;VDFMLIB;C3DLIB")
-ADD_PROJECT(hmm_view "BOOST;LOG4CXX;UTILS;OSG;QT;TINYXML;core;corelib;OPENGL;DFMLIB;VDFMLIB;C3DLIB;QWT;VIDLIB;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic")
-
 SET_PROJECTS_GROUP("plugins")
 ADD_PROJECT(plugin_c3d "BOOST;corelib;C3DLIB" "plugins/c3d")
 ADD_PROJECT(plugin_video "OSG;QT;VIDLIB;FFMPEG;TINYXML;corelib" "plugins/video")
@@ -19,3 +15,8 @@ ADD_PROJECT(plugin_kinematic "QT;BOOST;corelib;KINEMATICLIB;OSG;C3DLIB" "plugins
 ADD_PROJECT(plugin_newChart "BOOST;OSG;QT;QWT;corelib;C3DLIB" "plugins/newChart")
 ADD_PROJECT(plugin_subject "BOOST;OSG;QT;corelib;C3DLIB;KINEMATICLIB" "plugins/subject")
 #ADD_PROJECT(plugin_python "BOOST;QT;corelib" "plugins/python")
+
+SET_PROJECTS_GROUP("view")
+ADD_PROJECT(old_view "BOOST;LOG4CXX;UTILS;OSG;QT;TINYXML;core;corelib;OPENGL;DFMLIB;VDFMLIB;C3DLIB")
+ADD_PROJECT(hmm_view "BOOST;LOG4CXX;UTILS;OSG;QT;TINYXML;core;corelib;OPENGL;DFMLIB;VDFMLIB;C3DLIB;QWT;VIDLIB;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic")
+

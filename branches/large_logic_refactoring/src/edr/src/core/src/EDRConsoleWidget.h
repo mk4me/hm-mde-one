@@ -18,10 +18,12 @@
 #include <QtCore/QDate>
 #include <QtCore/QMutex>
 
+namespace core {
+
 //! Wpis do konsoli.
 struct EDRConsoleWidgetEntry {
     //! Poziom ważności komuniaktu.
-    core::ILog::LogSeverity severity;
+    ILog::LogSeverity severity;
     //! Wiadomość.
     QString message;
     //! Plik źródłowy.
@@ -34,7 +36,7 @@ struct EDRConsoleWidgetEntry {
     Qt::HANDLE theadId;
 };
 
-typedef core::shared_ptr<EDRConsoleWidgetEntry> EDRConsoleWidgetEntryPtr;
+typedef shared_ptr<EDRConsoleWidgetEntry> EDRConsoleWidgetEntryPtr;
 
 Q_DECLARE_METATYPE(EDRConsoleWidgetEntryPtr);
 Q_DECLARE_METATYPE(EDRConsoleWidgetEntry);
@@ -79,6 +81,7 @@ private:
     QMutex queueMutex;
 };
 
+}
 
 #endif  //  HEADER_GUARD_CORE__EDRCONSOLEWIDGET_H__
 

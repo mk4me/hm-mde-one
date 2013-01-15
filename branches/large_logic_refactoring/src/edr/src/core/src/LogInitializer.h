@@ -13,6 +13,8 @@
 #include <core/ILog.h>
 #include <core/Filesystem.h>
 
+namespace core {
+
 class EDRConsoleWidget;
 
 //! Obiekt logu. Powinien być tworzony w głównej binarce na samym początku maina.
@@ -43,4 +45,6 @@ private:
     void operator delete[](void* p);
 };
 
-#endif  // HEADER_GUARD_CORE__LOGINITIALIZER_H__
+}
+
+#endif  // HEADER_GUARD_CORE__LOGINITIALIZER_H__111

@@ -19,7 +19,7 @@ namespace plugin
     //! gdy parser z jakiegoś powodu po utworzeniu nie jest przypisany do pliku, tylko
     //! od razu niszczony.
 	//! Musi dziedziczyć po ISourceParserCapabilities lub IStreamParserCapabilities
-    class IParser : public IIdentifiable
+    class IParser : public ICoreElement
     {
 	public:
 		//! Typ opisujący wyrażenie

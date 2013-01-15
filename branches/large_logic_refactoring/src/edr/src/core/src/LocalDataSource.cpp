@@ -1,9 +1,12 @@
 #include "CorePCH.h"
+#include "CorePCH.h"
 #include "LocalDataSource.h"
 #include "LocalDataSourceWidget.h"
 #include <core/IObjectOutput.h>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QDialog>
+
+using namespace core;
 
 std::string LocalDataSource::name = "LocalDataSource";
 
@@ -36,11 +39,6 @@ void LocalDataSource::getOutputInfo( OutputDescription& info )
 {
 	//TODO
     //info = outputDescription;
-}
-
-void LocalDataSource::getOutputInfo( std::vector<OutputInfo> & output )
-{
-
 }
 
 QWidget* LocalDataSource::getConfigurationWidget()
@@ -80,7 +78,7 @@ const std::string & LocalDataSource::getName() const
     return name;
 }
 
-bool LocalDataSource::empty() const
+const bool LocalDataSource::empty() const
 {
     if(hasMoreData == true){
         hasMoreData = false;

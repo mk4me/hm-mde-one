@@ -1,12 +1,16 @@
 #include "CorePCH.h"
 #include "LocalDataSourceWidget.h"
 #include "LocalDataSource.h"
+#include "ParserManager.h"
+#include "FileDataManager.h"
 
 #include <QtGui/QFileDialog>
 #include <QtCore/QString>
 #include <QtGui/QMessageBox>
 #include <core/PluginCommon.h>
 #include <map>
+
+using namespace core;
 
 LocalDataSourceWidget::LocalDataSourceWidget(LocalDataSource * dataSource, QWidget * parent)
     : QWidget(parent), localDataSource(dataSource)
@@ -50,10 +54,10 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                 core::Filesystem::Iterator it(p);
                 core::Filesystem::Iterator endIT;
 
-                DataManager* dataManager = DataManager::getInstance();
+                auto parserManager = getParserManager();
 
                 for( ; it != endIT; ++it){
-                    if(core::Filesystem::isRegularFile((*it).path()) == true && dataManager->isExtensionSupported(core::Filesystem::fileExtension(*it)) == true){
+					if(core::Filesystem::isRegularFile((*it).path()) == true && parserManager->sourceIsAccepted((*it).path().string()) == true){
                         files.push_back((*it).path());
                     }
                 }
@@ -64,14 +68,13 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                     std::set<core::TypeInfo> dataTypes;
                     std::vector<core::ObjectWrapperPtr> objects;
 
-                    for(auto it = files.begin(); it != files.end(); ++it){
-                        try{
-                            dataManager->addFile(*it);
-                            //dataManager->initializeData(*it);
-                            dataManager->getObjectsForFile(*it, objects);
-                        }catch(...){
+					auto fdm = getFileDataManager();
+					auto fdmTransaction = fdm->transaction();
 
-                        }
+                    for(auto it = files.begin(); it != files.end(); ++it){
+						if(fdmTransaction->tryAddFile(*it) == true){
+							fdm->getObjects(*it, objects);
+						}
                     }
 
                     for(auto it = objects.begin(); it != objects.end(); ++it){

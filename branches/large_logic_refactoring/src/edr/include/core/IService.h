@@ -27,7 +27,7 @@ namespace plugin
 	class IFileDataManager;
 	class IActionsGroupManager;
 
-    class IService : public IIdentifiable
+    class IService : public ICoreElement
     {
     public:
         virtual ~IService() {}

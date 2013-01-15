@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__INPUTITEM_H__
 #define HEADER_GUARD_CORE__INPUTITEM_H__
 
-#include <core/IInputProcessItem.h>
+#include <core/IInputDescription.h>
 #include "InputDescription.h"
 
 namespace core {
@@ -17,7 +17,7 @@ namespace core {
 template<class T>
 class InputItem : public InputDescription
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<plugin::IInputProcessItem, T>::value), "Template class should inherit from plugin::IInputProcessItem");
+    UTILS_STATIC_ASSERT((boost::is_base_of<plugin::IInputDescription, T>::value), "Template class should inherit from plugin::IInputDescription");
 public:
 
 	//TODO

@@ -15,19 +15,21 @@
 #include <core/IObjectOutput.h>
 #include "OutputDescription.h"
 
+namespace core {
+
 class LocalDataSourceWidget;
 
 class LocalDataSource : public plugin::IDataSource
 {
     friend class LocalDataSourceWidget;
 
-    UNIQUE_ID("{54792DC1-D78C-4126-9CA8-643F9F6EF35A}", "LocalDataSource");
+    UNIQUE_ID("{54792DC1-D78C-4126-9CA8-643F9F6EF35A}", "LocalDataSource", "Local Data Source");
 
 public:
-    typedef std::vector<core::IOutputDescription::OutputInfo> OutputDescription;
+    typedef std::vector<plugin::IOutputDescription::OutputInfo> OutputDescription;
 
 private:
-    typedef std::map<core::TypeInfo, core::ObjectWrapperCollectionPtr> Data;
+    typedef std::map<TypeInfo, ObjectWrapperCollectionPtr> Data;
 
 public:
     LocalDataSource();
@@ -40,14 +42,13 @@ public:
 
     virtual LocalDataSource* createClone() const;
 
-    virtual void getOutputInfo( core::OutputDescription& info );
-	virtual void getOutputInfo( std::vector<OutputInfo> & output );
+    virtual void getOutputInfo( OutputDescription& info );
 	virtual void generate(plugin::IObjectOutput* output);
 
     virtual QWidget* getConfigurationWidget();
 
     virtual QDialog * getOutputConfigurationDialog();
-    virtual bool empty() const;
+    virtual const bool empty() const;
     virtual QIcon* getIcon() const;
 
     virtual void reset();
@@ -56,12 +57,13 @@ private:
     static std::string name;
     std::string trialPath;
 
-    core::OutputDescription outputDescription;
+    OutputDescription outputDescription;
 
     Data data;
 
     mutable bool hasMoreData;
 };
 
+}
 
 #endif  //  HEADER_GUARD___LOCALDATASOURCE_H__

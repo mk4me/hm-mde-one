@@ -183,7 +183,7 @@ public:
     //! Typ listy źródeł danych workflow.
     typedef std::vector<plugin::IDataSourcePtr> DataSources;
     //! Typ listy wrapperów.
-    typedef std::vector<ObjectWrapperConstPtr> ObjectWrapperPrototypes;
+    typedef std::vector<ObjectWrapperPtr> ObjectWrapperPrototypes;
 
 private:
     //! Lista usług pluginu.
@@ -352,7 +352,7 @@ public:
         return static_cast<int>(this->objectWrapperPrototypes.size());
     }
     //! \param i
-    const ObjectWrapperConstPtr & getObjectWrapperPrototype(int i)
+    const ObjectWrapperPtr & getObjectWrapperPrototype(int i)
     {
         return this->objectWrapperPrototypes[i];
     }

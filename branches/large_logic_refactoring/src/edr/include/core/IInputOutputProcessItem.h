@@ -20,7 +20,7 @@ namespace plugin {
 
 //! Interfejs dla elementów przetwarzających.
 //! Zawiera opis wejśc i wyjść, podstawowe informacje i właściwości elementów logicznych aplikacji operujących na danych
-class IInputOutputProcessItem : public IIdentifiable, public IInputDescription, public IOutputDescription
+class IInputOutputProcessItem : public IInputDescription, public IOutputDescription
 {
 public:
 
