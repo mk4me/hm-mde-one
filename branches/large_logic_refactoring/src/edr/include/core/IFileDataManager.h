@@ -9,9 +9,8 @@
 #ifndef HEADER_GUARD___IFILEDATAMANAGER_H__
 #define HEADER_GUARD___IFILEDATAMANAGER_H__
 
-#include <vector>
-#include <set>
-
+#include <core/ITransaction.h>
+#include <core/IFileManagerReader.h>
 #include <core/IMemoryDataManager.h>
 #include <core/ObjectWrapper.h>
 #include <core/Filesystem.h>
@@ -29,41 +28,25 @@ namespace plugin {
 		//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
 		virtual void addFile(const core::Filesystem::Path & file) = 0;
 
-		const bool tryAddFile(const core::Filesystem::Path & file)
-		{
-			bool ret = true;
-			try{
-				addFile(file);
-			}catch(...){
-				ret = false;
-			}
+		virtual const bool tryAddFile(const core::Filesystem::Path & file) = 0;
 
-			return ret;
-		}
-
-		const bool tryRemoveFile(const core::Filesystem::Path & file)
-		{
-			bool ret = true;
-			try{
-				removeFile(file);
-			}catch(...){
-				ret = false;
-			}
-
-			return ret;
-		}
+		virtual const bool tryRemoveFile(const core::Filesystem::Path & file) = 0;
 	};
 
 	//! Interfejs dostêpu do danych plikowych i ³adowania danych w aplikacji
 	class IFileDataManager : public IFileDataManagerOperations
 	{
 	public:
+
+		class IFileDataManagerTransaction : public ITransaction, public IFileDataManagerOperations, public IFileManagerReaderOperations
+		{
+
+		};
+
 		//! Typ transakcji - dzia³a jak RAII -> przy niszczeniu próbuje "commitowaæ" zmiany jeœli nie by³o wczeœniej ¿adnych b³êdów
-		typedef core::shared_ptr<IFileDataManagerOperations> TransactionPtr;
+		typedef core::shared_ptr<IFileDataManagerTransaction> TransactionPtr;
 		//! \return Nowa transakcja
-		virtual const TransactionPtr transaction() = 0;
-		//! \return Nowa transakcja
-		virtual const TransactionPtr transaction(const IMemoryDataManager::TransactionPtr & memoryTransaction) = 0;
+		virtual TransactionPtr transaction() = 0;
 	};
 
 }

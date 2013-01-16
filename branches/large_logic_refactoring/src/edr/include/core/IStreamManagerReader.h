@@ -19,6 +19,24 @@ namespace std
 
 namespace plugin {
 
+	class IStreamManagerReaderOperations
+	{
+	public:
+		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
+		virtual void getStreams(StreamsList & streams) const = 0;
+
+		//! \param file Plik kótry weryfikujemy czy jest zarz¹dzany przez DM
+		//! \return Prawda jeœli plik jest zarz¹dzany przez ten DM
+		virtual const bool isManaged(const std::ifstream * stream) const = 0;
+		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
+		//! \return Mapa obiektów wzglêdem plików z których pochodza
+		virtual void getObjects(const std::ifstream * stream, core::ConstObjectsList & objects) const = 0;
+
+		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
+		//! \return Mapa obiektów wzglêdem plików z których pochodza
+		virtual void getObjects(const std::ifstream * stream, core::ObjectWrapperCollection & objects) const = 0;
+	};
+
 	//! Interfejs zapewniaj¹cy dostêp do danych strumieniowych zarzazanych przez aplikacjê
 	class IStreamManagerReader
 	{
@@ -63,25 +81,15 @@ namespace plugin {
 		//! WskaŸnik na obiek obserwuj¹cy zmiany
 		typedef core::shared_ptr<IStreamObserver> StreamObserverPtr;
 
+		typedef core::shared_ptr<IStreamManagerReaderOperations> TransactionPtr;
+
 	public:
 		//! \param streamWatcher Rejestrowany obiekt obserwuj¹cy zmiany managera strumieni
 		virtual void addObserver(const StreamObserverPtr & streamWatcher) = 0;
 		//! \param streamWatcher Wyrejestrowywany obiekt obserwuj¹cy zmiany managera strumieni
 		virtual void removeObserver(const StreamObserverPtr & streamWatcher) = 0;
 
-		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
-		virtual void getStreams(StreamsList & streams) const = 0;
-
-		//! \param file Plik kótry weryfikujemy czy jest zarz¹dzany przez DM
-		//! \return Prawda jeœli plik jest zarz¹dzany przez ten DM
-		virtual const bool isManaged(const std::ifstream * stream) const = 0;
-		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::ifstream * stream, core::ConstObjectsList & objects) const = 0;
-
-		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::ifstream * stream, core::ObjectWrapperCollection & objects) const = 0;
+		virtual TransactionPtr transaction() const = 0;
 	};
 
 }

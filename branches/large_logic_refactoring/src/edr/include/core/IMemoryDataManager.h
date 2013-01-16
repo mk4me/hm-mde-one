@@ -9,6 +9,8 @@
 #ifndef HEADER_GUARD___IMEMORYDATAMANAGER_H__
 #define HEADER_GUARD___IMEMORYDATAMANAGER_H__
 
+#include <core/ITransaction.h>
+#include <core/IDataManagerReader.h>
 #include <core/ObjectWrapper.h>
 #include <utils/SynchronizationPolicies.h>
 
@@ -37,12 +39,18 @@ namespace plugin {
 	class IMemoryDataManager : public IMemoryDataManagerOperations
 	{
 	public:
+
+		class IMemoryDataTransaction : public ITransaction, public IMemoryDataManagerOperations, public IDataManagerReaderOperations
+		{
+
+		};
+
 		//! Typ transakcji na danych domenowych - dzia³a w oparciu o RAII -> próbuje "commitowaæ" zmiany przy koñcu trwania ¿ycia obiektu transakcji
-		typedef core::shared_ptr<IMemoryDataManagerOperations> TransactionPtr;
+		typedef core::shared_ptr<IMemoryDataTransaction> TransactionPtr;
 
 	public:
 		//! \return Nowa transakcja danych domenowych
-		virtual const TransactionPtr transaction() = 0;
+		virtual TransactionPtr transaction() = 0;
 	};
 
 }

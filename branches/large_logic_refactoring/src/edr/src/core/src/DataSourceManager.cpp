@@ -31,7 +31,7 @@ plugin::IDataSourceConstPtr DataSourceManager::getPrototype( UniqueID id ) const
 
 DataSourcePtr DataSourceManager::createDataSource( UniqueID id )
 {
-    IDataSourceConstPtr dataSource = getPrototype(id);
+    plugin::IDataSourceConstPtr dataSource = getPrototype(id);
     if ( dataSource ) {
         return createDataSource(dataSource);
     } else {
@@ -48,7 +48,7 @@ int DataSourceManager::getNumInstances( UniqueID id )
 
 DataSourcePtr DataSourceManager::createDataSource( const plugin::IDataSourceConstPtr& prototype )
 {
-    IDataSource* src = dynamic_cast<IDataSource*>(prototype->createClone());
+    plugin::IDataSource* src = dynamic_cast<plugin::IDataSource*>(prototype->create());
     QDialog * dialog = src->getOutputConfigurationDialog();
     if(dialog != nullptr){
         QMessageBox::StandardButton ret = (QMessageBox::StandardButton)dialog->exec();

@@ -18,17 +18,23 @@
 
 namespace core {
 
-class FileTransaction;
-
 class FileDataManager : public plugin::IFileDataManager, public plugin::IFileManagerReader
 {
+private:
 
+	class FileTransaction;
 	friend class FileTransaction;
 
-private:
+	class FileReaderTransaction;
+	friend class FileReaderTransaction;
 
 	//! Deklaracja wewnêtrznej reprezentacji parsera, obudowauj¹cej core::IParser
 	class Parser;
+	class FileParser;
+	class StreameFileParser;
+
+	friend class FileParser;
+	friend class StreameFileParser;
 
 	//! WskaŸnik na parser.
 	typedef shared_ptr<Parser> ParserPtr;
@@ -40,7 +46,7 @@ private:
 	typedef utils::RecursiveSyncPolicy SyncPolicy;
 	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
 
-	typedef boost::function<ObjectWrapper::LazyInitializer(const ParserPtr &)> ParserInitializer;
+	typedef boost::function<ParserPtr(plugin::IParser*, const Filesystem::Path &)> ParserCreator;
 
 private:
 
@@ -53,18 +59,21 @@ private:
 	//! Obiekty obserwuj¹ce stan DM
 	std::list<FileObserverPtr> observers;
 
+	const static ParserCreator streamParserCreator;
+	const static ParserCreator sourceParserCreator;
+
 private:
 
-	core::ObjectWrapper::LazyInitializer initStreamParser(const ParserPtr & streamParser);
-	core::ObjectWrapper::LazyInitializer initSourceParser(const ParserPtr & sourceParser);
+	static ParserPtr createSourceParser(plugin::IParser * parser, const Filesystem::Path & path);
+	static ParserPtr createStreamParser(plugin::IParser * parser, const Filesystem::Path & path);
 
-	void initializeDataWithStreamParser(ObjectWrapper & object, const ParserPtr & parser, plugin::IStreamParserCapabilities * streamCapabilities);
-	void initializeDataWithSourceParser(ObjectWrapper & object, const ParserPtr & parser, plugin::ISourceParserCapabilities * sourceCapabilities);
-	void initializeDataWithExternalInitializer(ObjectWrapper & object, const ObjectWrapper::LazyInitializer & li);
+	void initializeDataWithParser(ObjectWrapper & object, const ParserPtr & parser);
+	void initializeDataWithExternalInitializer(ObjectWrapper & object, const ObjectWrapper::LazyInitializer & li, const ParserPtr & parser);
+	void verifyAndRemoveUninitializedParserObjects(const ParserPtr & parser);
 
-	void rawRemoveFile(const Filesystem::Path & file);
+	void rawRemoveFile(const Filesystem::Path & file, const plugin::IMemoryDataManager::TransactionPtr & memTransaction);
 
-	void rawAddFile(const Filesystem::Path & file);
+	void rawAddFile(const Filesystem::Path & file, const plugin::IMemoryDataManager::TransactionPtr & memTransaction);
 
 	const bool rawIsManaged(const Filesystem::Path & file) const;
 
@@ -78,7 +87,7 @@ private:
 
 	void rawGetObjects(const Filesystem::Path & file, ObjectsList & objects);
 
-	void initializeParsers(const plugin::IParserManagerReader::ParserPrototypes & parsers, const std::string & source, const ParserInitializer & parserInitializer, ObjectsList & objects);
+	void initializeParsers(const plugin::IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator, ObjectsList & objects);
 
 public:
 	//IFileDataManager API
@@ -90,9 +99,7 @@ public:
 	//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
 	virtual void addFile(const Filesystem::Path & file);
 	//! \return Nowa transakcja
-	virtual const TransactionPtr transaction();
-	//! \return Nowa transakcja
-	virtual const TransactionPtr transaction(const plugin::IMemoryDataManager::TransactionPtr & memoryTransaction);
+	virtual plugin::IFileDataManager::TransactionPtr transaction();
 
 public:
 
@@ -115,6 +122,8 @@ public:
 	//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 	//! \return Mapa obiektów wzglêdem plików z których pochodza
 	virtual void getObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const;
+
+	virtual plugin::IFileManagerReader::TransactionPtr transaction() const;
 };
 
 }

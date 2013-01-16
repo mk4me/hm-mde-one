@@ -10,6 +10,8 @@
 #define HEADER_GUARD___ISTREAMDATAMANAGER_H__
 
 #include <core/SmartPtr.h>
+#include <core/ITransaction.h>
+#include <core/IStreamManagerReader.h>
 #include <core/IMemoryDataManager.h>
 
 namespace std {
@@ -29,43 +31,27 @@ namespace plugin {
 		//! Dane usuwane z DM
 		virtual void removeStream(const std::istream * stream) = 0;
 
-		const bool tryAddData(std::istream * stream)
-		{
-			bool ret = true;
-			try{
-				addStream(stream);
-			}catch(...){
-				ret = false;
-			}
+		virtual const bool tryAddData(std::istream * stream) = 0;
 
-			return ret;
-		}
-
-		const bool tryRemoveStream(const std::istream * stream)
-		{
-			bool ret = true;
-			try{
-				removeStream(stream);
-			}catch(...){
-				ret = false;
-			}
-
-			return ret;
-		}
+		virtual const bool tryRemoveStream(const std::istream * stream) = 0;
 	};
 
 	//! Manager udostêpniaj¹cy operacje na strumieniach zarz¹dzanych przez DM w oparciu o zarejestrowane parsery i rozszerzenia
 	class IStreamDataManager : public IStreamDataManagerOperations
 	{
 	public:
+
+		class IStreamDataManagerTransaction : public ITransaction, public IStreamDataManagerOperations, public IStreamManagerReaderOperations
+		{
+
+		};
+
 		//! Typ transkacji na strumieniach - dzia³a w oparciu o RAII -> próbuje "commitowaæ" zmiany przy niszczeniu obiektu transakcji
-		typedef core::shared_ptr<IStreamDataManagerOperations> TransactionPtr;
+		typedef core::shared_ptr<IStreamDataManagerTransaction> TransactionPtr;
 
 	public:
 		//! \return Transakcja na strumieniach
 		virtual const TransactionPtr transaction() = 0;
-		//! \return Transakcja na strumieniach
-		virtual const TransactionPtr transaction(const IMemoryDataManager::TransactionPtr & memoryTransaction) = 0;
 	};
 
 }

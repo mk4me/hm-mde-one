@@ -1,6 +1,8 @@
 BEGIN_PROJECT("static")
 
 SET_PRIVATE_HEADERS(
+	FileParser.h
+	StreamParser.h
 	Path.h
 	Application.h
 	ParserManager.h
@@ -65,6 +67,7 @@ SET_PRIVATE_HEADERS(
 )
 
 SET_PUBLIC_HEADERS (
+	ITransaction.h
 	IParserManagerReader.h
 	IDataHierarchyManagerReader.h
 	IExtensionManagerReader.h
@@ -128,6 +131,8 @@ SET_PUBLIC_HEADERS (
 )
 
 SET_SOURCE_FILES(
+	FileParser.cpp
+	StreamParser.cpp
 	Path.cpp
 	Application.cpp
 	Window.cpp

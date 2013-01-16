@@ -23,6 +23,9 @@ private:
 	class MemoryTransaction;
 	friend class MemoryTransaction;
 
+	class MemoryReaderTransaction;
+	friend class MemoryReaderTransaction;
+
 	//! Typ mapy obiektów.
 	typedef std::map< TypeInfo, Objects > ObjectsByTypes;
 
@@ -47,15 +50,19 @@ public:
 	//! \param objectWatcher Obserwator DM do wyrejestrowania
 	virtual void removeObserver(const ObjectObserverPtr & objectWatcher);
 
+
+	virtual void getObjects(core::ConstObjectsList & objects) const;
 	//! \param objects [out] Obiekty pasuj¹ce do zapytania
 	//! \param type Typ obniektów o które pytamy
 	//! \param exact Czy typ musi byæ zgodny czy moga to byæ tez typy pochodne
-	virtual void getObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact);
+	virtual void getObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact) const;
 	
 	//! \param objects [out] Obiekty zarz¹dzane przez DM
-	virtual void getObjects(ObjectWrapperCollection& objects);
+	virtual void getObjects(ObjectWrapperCollection& objects) const;
 
 	virtual const bool isManaged(const ObjectWrapperConstPtr & object) const;
+
+	virtual plugin::IDataManagerReader::TransactionPtr transaction() const;
 
 public:
 	// IMemoryDataManager API
@@ -76,9 +83,9 @@ public:
 
 	virtual const bool tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData);
 
-	virtual const TransactionPtr transaction();
+	virtual plugin::IMemoryDataManager::TransactionPtr transaction();
 
-private:
+private:	
 
 	void rawAddData(const ObjectWrapperPtr & data);
 
@@ -87,6 +94,12 @@ private:
 	void rawUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData);
 
 	const bool rawIsManaged(const ObjectWrapperConstPtr & object) const;
+
+	void rawGetObjects(core::ConstObjectsList & objects) const;
+
+	void rawGetObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact) const;
+
+	void rawGetObjects(ObjectWrapperCollection& objects) const;	
 
 	void updateObservers(const ChangeList & changes );
 

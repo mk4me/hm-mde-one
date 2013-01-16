@@ -8,8 +8,26 @@
 namespace plugin {
 ////////////////////////////////////////////////////////////////////////////////
 
-    //! Podstawowe operacje związane z danymi - pobieranie danych, informacje o hierarchi typów danych, informacje o wspieranych typach danych
-    class IDataManagerReader
+    class IDataManagerReaderOperations
+	{
+	public:
+		//! \param objects [out] Wszystkie obiekty DM
+		virtual void getObjects(core::ConstObjectsList & objects) const = 0;
+		//! \param objects [out] Obiekty pasujące do zapytania
+		//! \param type Typ obniektów o które pytamy
+		//! \param exact Czy typ musi być zgodny czy moga to być tez typy pochodne
+		//! \param initialzie Czy automatycznie zainicjalizować wszystkie obiekty? UWAGA - te, których się nie udało zainicjalizować nie zostaną zwrócone - DM usunie je jako popsute dane
+		virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact = true) const = 0;
+		//! \param objects [out] Obiekty zarządzane przez DM
+		//! \param initialzie Czy automatycznie zainicjalizować wszystkie obiekty? UWAGA - te, których się nie udało zainicjalizować nie zostaną zwrócone - DM usunie je jako popsute dane
+		virtual void getObjects(core::ObjectWrapperCollection& objects) const = 0;
+		//! \param object Obiekt który sprawdzamy pod kątem zarządzania przez DM
+		//! \return Prawda jesli dany OW jest zarządzany przez DM
+		virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const = 0;
+	};
+	
+	//! Podstawowe operacje związane z danymi - pobieranie danych, informacje o hierarchi typów danych, informacje o wspieranych typach danych
+    class IDataManagerReader : public IDataManagerReaderOperations
     {
 	public:
 		//! Typ zmian danych w managerze
@@ -45,6 +63,8 @@ namespace plugin {
 		//! Wskaźnik na obiek obserwujący zmiany
 		typedef core::shared_ptr<IObjectObserver> ObjectObserverPtr;
 
+		typedef core::shared_ptr<IDataManagerReaderOperations> TransactionPtr;
+
     public:
 		//! Dodaje obserwatora DM
 		//! \param objectWatcher Obiekt obserwujący DM
@@ -52,18 +72,8 @@ namespace plugin {
 		//! Usuwa obserwatora DM
 		//! \param objectWatcher Obiekt obserwujący DM
 		virtual void removeObserver(const ObjectObserverPtr & objectWatcher) = 0;
-
-		//! \param objects [out] Obiekty pasujące do zapytania
-		//! \param type Typ obniektów o które pytamy
-		//! \param exact Czy typ musi być zgodny czy moga to być tez typy pochodne
-		//! \param initialzie Czy automatycznie zainicjalizować wszystkie obiekty? UWAGA - te, których się nie udało zainicjalizować nie zostaną zwrócone - DM usunie je jako popsute dane
-        virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact = true) const = 0;
-		//! \param objects [out] Obiekty zarządzane przez DM
-		//! \param initialzie Czy automatycznie zainicjalizować wszystkie obiekty? UWAGA - te, których się nie udało zainicjalizować nie zostaną zwrócone - DM usunie je jako popsute dane
-        virtual void getObjects(core::ObjectWrapperCollection& objects) const = 0;
-		//! \param object Obiekt który sprawdzamy pod kątem zarządzania przez DM
-		//! \return Prawda jesli dany OW jest zarządzany przez DM
-		virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const = 0;
+		//! \return Transakcja odczytu danych
+		virtual TransactionPtr transaction() const = 0;
     };
 
 ////////////////////////////////////////////////////////////////////////////////

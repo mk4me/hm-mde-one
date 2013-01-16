@@ -66,7 +66,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                     //ladujemy pliki!!
                     std::set<core::ObjectWrapperPtr> initialisedData;
                     std::set<core::TypeInfo> dataTypes;
-                    std::vector<core::ObjectWrapperPtr> objects;
+                    ConstObjectsList objects;
 
 					auto fdm = getFileDataManager();
 					auto fdmTransaction = fdm->transaction();
@@ -104,7 +104,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
 
                                 //inicjalizuje pierwsze dane
                                 localDataSource->data.insert(std::make_pair(it->first, it->second));
-                                localDataSource->outputDescription.push_back(core::IOutputDescription::OutputInfo(it->second->front()->getClassName(), it->first));
+                                localDataSource->outputDescription.push_back(plugin::IOutputDescription::OutputInfo(it->second->front()->getClassName(), it->first));
                             }else{
                                 chkBox->setChecked(false);
                             }
@@ -176,7 +176,7 @@ void LocalDataSourceWidget::onCheckChange(int state)
     LocalDataSource::OutputDescription().swap(localDataSource->outputDescription);
     for(auto it = checkBoxToTypeMapping.begin(); it != checkBoxToTypeMapping.end(); ++it){
         if(it->first->isChecked() == true){
-            localDataSource->outputDescription.push_back(core::IOutputDescription::OutputInfo(data.find(it->second)->second->front()->getClassName(), it->second));
+            localDataSource->outputDescription.push_back(plugin::IOutputDescription::OutputInfo(data.find(it->second)->second->front()->getClassName(), it->second));
         }
     }
 }
