@@ -9,7 +9,7 @@ using namespace core;
 const FileDataManager::ParserCreator FileDataManager::streamParserCreator = boost::bind(&FileDataManager::createStreamParser, _1, _2);
 const FileDataManager::ParserCreator FileDataManager::sourceParserCreator = boost::bind(&FileDataManager::createSourceParser, _1, _2);
 
-class FileDataManager::FileTransaction : public plugin::IFileDataManagerOperations
+class FileDataManager::FileTransaction : public plugin::IFileDataManager::IFileDataManagerTransaction
 {
 private:
 
@@ -145,6 +145,42 @@ public:
 		rawRemoveFile(file);
 
 		return true;
+	}
+
+	virtual void getFiles(core::Files & files) const
+	{
+		if(transactionRolledback == true){
+			throw std::runtime_error("File transaction already rolled-back");
+		}
+
+		fdm->rawGetFiles(files);
+	}
+
+	virtual const bool isManaged(const core::Filesystem::Path & file) const
+	{
+		if(transactionRolledback == true){
+			throw std::runtime_error("File transaction already rolled-back");
+		}
+
+		return fdm->isManaged(file);
+	}
+
+	virtual void getObjects(const core::Filesystem::Path & file, core::ConstObjectsList & objects) const
+	{
+		if(transactionRolledback == true){
+			throw std::runtime_error("File transaction already rolled-back");
+		}
+
+		fdm->getObjects(file, objects);
+	}
+
+	virtual void getObjects(const core::Filesystem::Path & file, core::ObjectWrapperCollection & objects) const
+	{
+		if(transactionRolledback == true){
+			throw std::runtime_error("File transaction already rolled-back");
+		}
+
+		fdm->getObjects(file, objects);
 	}
 
 private:
@@ -411,7 +447,7 @@ void FileDataManager::verifyAndRemoveUninitializedParserObjects(const ParserPtr 
 		std::set<ObjectWrapperPtr> parsersObjectSet(parserObjects.begin(), parserObjects.end());
 		std::set<ObjectWrapperPtr> fileObjectSet(it->second.begin(), it->second.end());
 		std::vector<ObjectWrapperPtr> toVerify(std::min(parserObjects.size(), it->second.size()));
-		std::set_intersection(parsersObjectSet.begin(), parsersObjectSet.end(), fileObjectSet.begin(), fileObjectSet.end(), toVerify);
+		std::set_intersection(parsersObjectSet.begin(), parsersObjectSet.end(), fileObjectSet.begin(), fileObjectSet.end(), toVerify.begin());
 
 		if(toVerify.empty() == false){
 
@@ -495,7 +531,7 @@ void FileDataManager::initializeParsers(const plugin::IParserManagerReader::Pars
 				if((*objectIT)->initializer().empty() == false){
 					CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded with custom initializer. Supplying with compound initializer");
 					//inicjalizator na bazie inicjalizatora:)
-					(*objectIT)->set(ObjectWrapper::LazyInitializer(boost::bind(&FileDataManager::initializeDataWithExternalInitializer, this, _1, (*objectIT)->initializer())));
+					(*objectIT)->set(ObjectWrapper::LazyInitializer(boost::bind(&FileDataManager::initializeDataWithExternalInitializer, this, _1, (*objectIT)->initializer(), parser)));
 				}else{
 					if((*objectIT)->getRawPtr() != nullptr ){
 						CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded already initialized. Reseting object and supplying initializer");
@@ -687,7 +723,7 @@ void FileDataManager::getFiles(Files & files) const
 {
 	ScopedLock lock(sync);
 	for(auto it = objectsByFiles.begin(); it != objectsByFiles.end(); ++it){
-		files.insert(*it);
+		files.insert(it->first);
 	}
 }
 

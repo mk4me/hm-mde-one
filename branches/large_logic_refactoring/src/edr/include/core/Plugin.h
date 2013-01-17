@@ -27,7 +27,6 @@
 #include <core/IDataProcessor.h>
 #include <core/IDataSource.h>
 #include <core/Export.h>
-#include <core/ObjectWrapperFactory.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace plugin {

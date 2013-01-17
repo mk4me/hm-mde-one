@@ -48,26 +48,20 @@ namespace plugin
             //! \return Dane serii
             virtual const core::ObjectWrapperConstPtr & getData() const = 0;
         };
-
+		//! Seria o charakterze czasowym - pozwala manipulować czasem w serii danych
         class TimeSerieBase : public SerieBase
         {
         public:
 
             virtual ~TimeSerieBase() {}
-
+			//! \param time Aktualny czas serii - najprawdopodobniej timeline będzie go ustawiał
             virtual void setTime(double time) = 0;
-
+			//! \return Czas trwania serii
             virtual double getLength() const = 0;
-
-            virtual void setOffset(double offset)
-            {
-
-            }
-
-            virtual void setScale(double scale)
-            {
-
-            }
+			//! \param offset Przesunięcie serii względem aktualnego stanu (pierwsze względem 0)
+            virtual void setOffset(double offset) = 0;
+			//! \param scale Zmienia skalę serii danych
+            virtual void setScale(double scale) = 0;
         };
 
     public:
@@ -86,10 +80,11 @@ namespace plugin
         //! Tworzy ikonę dla zadanego wizualizatora. Może zwracać nullptr, chociaż to niewskazane.
         //! W odgróżnieniu od createWidget ikona przejmowana jest na własność.
         virtual QIcon* createIcon() = 0;
-
+		//! \return Screenshot z wizualizatora
         virtual QPixmap print() const = 0;
 
         //! Aktualizacja wyświetlania. NIE aktualizacja stanu wyświetlanych danych.
+		//! \param deltaTime Zmiana czasu od ostatniego update
         virtual void update(double deltaTime) = 0;
 
         //----------------- Obsługa serii danych ---------------------
@@ -101,7 +96,8 @@ namespace plugin
 
         //! \return Seria danych która można ustawiac - nazwa i dane, nie zarządza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
         virtual SerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string()) = 0;
-
+		//! \param serie Seria bazowa którą powielamy
+		//! \return Nowa seria danych na bazie zadanej serii - powiela odwołąnie do danych
         virtual SerieBase* createSerie(const SerieBase* serie) = 0;
 
         //! \param serie Seria danych do usunięcia, nie powinien usuwać tej serii! Zarządzamy nią my!!

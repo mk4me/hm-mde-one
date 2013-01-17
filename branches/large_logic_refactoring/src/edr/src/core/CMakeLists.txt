@@ -1,8 +1,6 @@
 BEGIN_PROJECT("static")
 
 SET_PRIVATE_HEADERS(
-	FileParser.h
-	StreamParser.h
 	Path.h
 	Application.h
 	ParserManager.h
@@ -10,8 +8,6 @@ SET_PRIVATE_HEADERS(
 	DataHierarchyManager.h
 	MemoryDataManager.h
 	FileDataManager.h
-	MemoryDataManagerTransaction.h
-	FileDataManagerTransaction.h
 	CustomApplication.h
 	CustomPath.h
 	VisualizerChannel.h
@@ -104,7 +100,6 @@ SET_PUBLIC_HEADERS (
 	IDataProcessor.h
 	IObjectOutput.h
 	PluginCommon.h
-	ObjectWrapperFactory.h
 	TypeInfo.h
 	IEDRTitleBar.h
 	IInputDescription.h 
@@ -131,8 +126,6 @@ SET_PUBLIC_HEADERS (
 )
 
 SET_SOURCE_FILES(
-	FileParser.cpp
-	StreamParser.cpp
 	Path.cpp
 	Application.cpp
 	Window.cpp
@@ -141,8 +134,6 @@ SET_SOURCE_FILES(
 	DataHierarchyManager.cpp
 	MemoryDataManager.cpp
 	FileDataManager.cpp
-	MemoryDataManagerTransaction.cpp
-	FileDataManagerTransaction.cpp
 	CustomApplication.cpp
 	CustomPath.cpp
 	VisualizerChannel.cpp

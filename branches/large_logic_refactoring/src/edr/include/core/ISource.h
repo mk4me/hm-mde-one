@@ -18,9 +18,9 @@ class QWidget;
 
 namespace plugin
 {
-
 	class IMemoryDataManager;
 	class IFileDataManager;
+	class IStreamDataManager;
 	class IServiceManager;
 	class IActionsGroupManager;
 
@@ -32,28 +32,21 @@ namespace plugin
 
         //! Inicjalizacja źródła. Następuje już po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich źródeł.
-        virtual void init(IMemoryDataManager * memoryDM, IFileDataManager * fileDM, IServiceManager * serviceManager) = 0;
+        virtual void init(IMemoryDataManager * memoryDM,
+			IStreamDataManager * streamDM,
+			IFileDataManager * fileDM) = 0;
 
         //! Późna inicjalizacja źródła, następuje po wczytaniu i inicjalizacji wszystkich innych źródeł
-        virtual void lateInit()
-        {
-
-        }
+        virtual void lateInit() = 0;
 
 		//! Metoda powinna w bezpieczny sposób zwalniac zasoby, mając na uwadze że niekoniecznie wszystkie usługi i zasoby pobrane z zewnątrz są jeszcze dostępne.
         //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomił serwis, może tez zwalniac pamieć przydzieloną dynamicznie
         //! Generalnie to taki bezpieczny destruktor uniezależniający dana usługę od pozostałych usług i przygotowujący ja na usunięcie
-        virtual void finalize()
-        {
-
-        }
+        virtual void finalize() = 0;
 
         //! Metoda aktualizująca pochodzi z wątku UI! Powinny tu być realizowane lekkie operacje odświeżania widgetów!!
         //! Jako parametr dostajemy przyrost czasu jaki minał od poprzedniego wywołania
-        virtual void update(double deltaTime)
-        {
-
-        }
+        virtual void update(double deltaTime) = 0;
 
         //! Źródło nie musi mieć wizualnej reprezentacji.
         //! \return Widget tworzony przez źródło bądź NULL.
@@ -61,10 +54,7 @@ namespace plugin
 
         //! Źródło nie musi mieć widgeta konfigurującego.
         //! \return Widget tworzony przez źródło bądź NULL.
-        virtual QWidget* getConfigurationWidget(IActionsGroupManager * actionsGroupManager)
-        {
-            return nullptr;
-		}
+        virtual QWidget* getConfigurationWidget(IActionsGroupManager * actionsGroupManager) = 0;
     };
 
     typedef core::shared_ptr<ISource> ISourcePtr;

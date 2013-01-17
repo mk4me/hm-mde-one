@@ -24,6 +24,7 @@ namespace plugin
 	class IDataSinkManager;
 	class IVisualizerManager;
 	class IMemoryDataManager;
+	class IStreamDataManager;
 	class IFileDataManager;
 	class IActionsGroupManager;
 
@@ -40,48 +41,30 @@ namespace plugin
 			IDataSinkManager * dataSinkManager,
 			IVisualizerManager * visualizerManager,
 			IMemoryDataManager * memoryDataManager,
+			IStreamDataManager * streamDataManager,
 			IFileDataManager * fileDataManager) = 0;
 
         //! Póxna inicjalizacja usług, następuje po wczytaniu i inicjalizacji wszystkich usług
-        virtual void lateInit()
-        {
-
-        }
+        virtual void lateInit() = 0;
 
         //! Metoda powinna w bezpieczny sposób zwalniac zasoby, mając na uwadze że niekoniecznie wszystkie usługi i zasoby pobrane z zewnątrz są jeszcze dostępne.
         //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomił serwis, może tez zwalniac pamieć przydzieloną dynamicznie
         //! Generalnie to taki bezpieczny destruktor uniezależniający dana usługę od pozostałych usług i przygotowujący ja na usunięcie
-        virtual void finalize()
-        {
-
-        }
+        virtual void finalize() = 0;
 
         //! Metoda aktualizująca pochodzi z wątku UI! Powinny tu być realizowane lekkie operacje odświeżania widgetów!!
         //! Jako parametr dostajemy przyrost czasu jaki minał od poprzedniego wywołania
-        virtual void update(double deltaTime)
-        {
-       
-        }
+        virtual void update(double deltaTime) = 0;
 
         //! Usługa nie musi mieć wizualnej reprezentacji.
         //! \return Widget tworzony przez usługę bądź NULL.
         virtual QWidget* getWidget(IActionsGroupManager * actionsManager) = 0;
         
         //! \return Widget kontrolujący zachowanie usługi/usług zależnych.
-        virtual QWidget* getControlWidget(IActionsGroupManager * actionsManager)
-        {
-            return nullptr;
-        }
+        virtual QWidget* getControlWidget(IActionsGroupManager * actionsManager) = 0;
 
         //! \return Widget dostarczający opcji związanych z usługą/usługami zależnymi.
-        virtual QWidget* getSettingsWidget(IActionsGroupManager * actionsManager)
-        {
-            return nullptr;
-        }
-
-        //! \return Nazwa usługi.
-        virtual const std::string& getName() const = 0;
-
+        virtual QWidget* getSettingsWidget(IActionsGroupManager * actionsManager) = 0;
     };
 
     typedef core::shared_ptr<IService> IServicePtr;

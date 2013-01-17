@@ -12,7 +12,6 @@
 #include "PluginLoader.h"
 #include <core/IManagersAccessor.h>
 #include <core/TypeInfo.h>
-#include <core/ObjectWrapperFactory.h>
 #include <core/StringTools.h>
 #include "Visualizer.h"
 
@@ -203,7 +202,7 @@ void MainWindow::init(PluginLoader* pluginLoader, ExtendedCustomApplication * co
 		serviceManager->getService(i)->init(coreApplication->sourceManager(),
 			coreApplication->dataSourceManager(), coreApplication->dataProcessorManager(),
 			nullptr, coreApplication->visualizerManager(),
-			getMemoryDataManager(), nullptr);
+			getMemoryDataManager(), nullptr, getFileDataManager());
 	}
 
 	// inicjalizacja usług
@@ -218,7 +217,7 @@ void MainWindow::init(PluginLoader* pluginLoader, ExtendedCustomApplication * co
 	// inicjalizacja źródeł
 	//TODO
 	for (int i = 0; i < sourceManager->getNumSources(); ++i) {
-		sourceManager->getSource(i)->init(getMemoryDataManager(), nullptr, serviceManager);
+		sourceManager->getSource(i)->init(getMemoryDataManager(), nullptr, getFileDataManager());
 	}
 
     readSettings(QSettings(), true);
