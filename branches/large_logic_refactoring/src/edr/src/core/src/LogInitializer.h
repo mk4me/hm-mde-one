@@ -22,7 +22,7 @@ class LogInitializer
 {
 public:
     //! \param configPath Ścieżka do pliku konfiguracyjnego.
-    LogInitializer(const core::Filesystem::Path & configFile);
+    LogInitializer(const Filesystem::Path & configFile);
     //!
     ~LogInitializer();
 
@@ -30,19 +30,6 @@ public:
     //! \param console Widget konsoli.
     //void setConsoleWidget(ConsoleWidget* widget);
     void setConsoleWidget(EDRConsoleWidget* widget);
-
-private:
-    /**
-     *	Przeładowania operatorów new-delete. Prywatne, aby niemożliwe było
-     *  tworzenie instancji typu na stercie.
-     */
-    void *operator new(std::size_t bytes);
-    //! \see LogInitializer::operator new
-    void *operator new[](std::size_t bytes);
-    //! \see LogInitializer::operator new
-    void operator delete(void* p);
-    //! \see LogInitializer::operator new
-    void operator delete[](void* p);
 };
 
 }

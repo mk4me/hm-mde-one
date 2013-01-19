@@ -16,7 +16,7 @@
 
 namespace core {
 
-class MemoryDataManager : public plugin::IDataManagerReader, public plugin::IMemoryDataManager
+class MemoryDataManager : public IDataManagerReader, public IMemoryDataManager
 {
 private:
 
@@ -62,7 +62,7 @@ public:
 
 	virtual const bool isManaged(const ObjectWrapperConstPtr & object) const;
 
-	virtual plugin::IDataManagerReader::TransactionPtr transaction() const;
+	virtual IDataManagerReader::TransactionPtr transaction() const;
 
 public:
 	// IMemoryDataManager API
@@ -83,7 +83,7 @@ public:
 
 	virtual const bool tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData);
 
-	virtual plugin::IMemoryDataManager::TransactionPtr transaction();
+	virtual IMemoryDataManager::TransactionPtr transaction();
 
 private:	
 

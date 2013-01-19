@@ -24,8 +24,6 @@
 #include <core/ISource.h>
 #include <core/IParser.h>
 #include <core/IVisualizer.h>
-#include <core/IDataProcessor.h>
-#include <core/IDataSource.h>
 #include <core/Export.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,9 +79,9 @@ extern "C" CORE_EXPORT void CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME(  \
     *qtVersion = QT_VERSION;                                            \
     *stlVersion = CORE_CPPLIB_VER;                                      \
 }                                                                       \
-extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(IApplication* coreApplication) \
+extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::IApplication* coreApplication) \
 {                                                                       \
-    __coreApplication = coreApplication;                                       \
+    plugin::__coreApplication = coreApplication;                                       \
     core::Plugin* instance = new core::Plugin((name), (id));            
 
 //! Kończy rejestrację pluginu.
@@ -107,21 +105,13 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(IApplicati
 #define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
     instance->addVisualizer( plugin::IVisualizerPtr(new className) );
 
-//! Dodaje elementu przetwarzającego zadanego typu do pluginu.
-#define CORE_PLUGIN_ADD_DATA_PROCESSOR(className)                           \
-    instance->addDataProcessor( plugin::IDataProcessorPtr(new className) );
-
-//! Dodaje źródło zadanego typu do pluginu.
-#define CORE_PLUGIN_ADD_DATA_SOURCE(className)                           \
-    instance->addDataSource( plugin::IDataSourcePtr(new className) );
-
 //! Dodanie nowego typu domenowego poprzez utworzenie dla niego ObjectWrapperFactory
 #define CORE_PLUGIN_ADD_OBJECT_WRAPPER(className)               \
     instance->addObjectWrapperPrototype<className>();
 
 
 //! Interfejs pluginu przez który dostarczane są usługi (serwisy) i prototypy elementów przetwarzających dane
-class IPlugin : public IIdentifiable
+class IPlugin : public ICoreElement
 {
 public:
     //! Pusty polimorficzny destruktor.
@@ -142,14 +132,6 @@ public:
     virtual int getNumVisualizers() const = 0;
     //! \return Wizualizator.
     virtual IVisualizer* getVisualizer(int idx) = 0;
-    //! \return Liczba elementów przetwarzających.
-    virtual int getNumDataProcesors() const = 0;
-    //! \return Element przetwarzający.
-    virtual IDataProcessor* getDataProcessor(int idx) = 0;
-    //! \return Liczba źródeł danych workflow.
-    virtual int getNumDataSources() const = 0;
-    //! \return Źródło danych workflow.
-    virtual IDataSource* getDataSource(int idx) = 0;
 };
 
 }
@@ -158,11 +140,11 @@ namespace core {
 /**
  *	Kontener na usługi.
  */
-class Plugin : plugin::IIdentifiable
+class Plugin : plugin::ICoreElement
 {
 public:
     //! Typ funkcji tworzącej plugin.
-    typedef Plugin* (*CreateFunction)(plugin::IApplication* coreApplication);
+    typedef Plugin* (*CreateFunction)(core::IApplication* coreApplication);
     //! Typ funkcji pobierającej wersję pluginu.
     typedef int (*GetVersionFunction)();
     //! Typ funkcji pobierającej typ builda pluginu
@@ -177,10 +159,6 @@ public:
     typedef std::vector<plugin::IParserPtr> Parsers;
     //! Typ listy wizualizatorów.
     typedef std::vector<plugin::IVisualizerPtr> Visualizers;
-    //! Typ listy elementów przetwarzających.
-    typedef std::vector<plugin::IDataProcessorPtr> DataProcessors;
-    //! Typ listy źródeł danych workflow.
-    typedef std::vector<plugin::IDataSourcePtr> DataSources;
     //! Typ listy wrapperów.
     typedef std::vector<ObjectWrapperPtr> ObjectWrapperPrototypes;
 
@@ -193,10 +171,6 @@ private:
 	Parsers parsers;
     //! Lista wizualizatorów pluginu.
     Visualizers visualizers;
-    //! Lista elementów przetwarzających pluginu.
-    DataProcessors dataProcessors;
-    //! Lista źródeł danych workflow pluginu.
-    DataSources dataSources;
     //! Zbiór wprowadzanych OW do aplikacji
     ObjectWrapperPrototypes objectWrapperPrototypes;
 
@@ -222,7 +196,7 @@ public:
     }     
 
     //! \return nazwa pluginu
-    virtual const std::string & getDescription() const
+    virtual const std::string getDescription() const
     {
         return name;
     }
@@ -305,37 +279,6 @@ public:
     const plugin::IVisualizerPtr & getVisualizer(int i)
     {
         return this->visualizers[i];
-    }
-    //! \param dataProcessor IDataProcessor do dodania do pluginu.
-    void addDataProcessor(const plugin::IDataProcessorPtr & dataProcessor)
-    {
-        this->dataProcessors.push_back(dataProcessor);
-    }
-    //! \return Liczba elementów przetwarzających dostarczanych przez plugin.
-    int getNumDataProcessors() const
-    {
-        return static_cast<int>(this->dataProcessors.size());
-    }
-    //! \param i
-    const plugin::IDataProcessorPtr & getDataProcessor(int i)
-    {
-        return this->dataProcessors[i];
-    }
-
-    //! \param dataSource Źródło danych workflow do dodania do pluginu.
-    void addDataSource(const plugin::IDataSourcePtr & dataSource)
-    {
-        this->dataSources.push_back(dataSource);
-    }
-    //! \return Liczba źródeł danych workflow dostarczanych przez plugin.
-    int getNumDataSources() const
-    {
-        return static_cast<int>(this->dataSources.size());
-    }
-    //! \param i
-    const plugin::IDataSourcePtr & getDataSource(int i)
-    {
-        return this->dataSources[i];
     }
 
     //! \param factory

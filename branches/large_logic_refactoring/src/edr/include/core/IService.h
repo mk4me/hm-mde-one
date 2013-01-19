@@ -16,18 +16,19 @@
 class QObject;
 class QWidget;
 
-namespace plugin 
-{
+namespace core {
+
 	class ISourceManager;
-	class IDataSourceManager;
-	class IDataProcessorManager;
-	class IDataSinkManager;
 	class IVisualizerManager;
 	class IMemoryDataManager;
 	class IStreamDataManager;
 	class IFileDataManager;
 	class IActionsGroupManager;
 
+}
+
+namespace plugin 
+{
     class IService : public ICoreElement
     {
     public:
@@ -35,14 +36,11 @@ namespace plugin
  
         //! Inicjalizacja usługi. Następuje już po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich usług.
-		virtual void init(ISourceManager * sourceManager,
-			IDataSourceManager * dataSourceManager,
-			IDataProcessorManager *dataProcessorManager,
-			IDataSinkManager * dataSinkManager,
-			IVisualizerManager * visualizerManager,
-			IMemoryDataManager * memoryDataManager,
-			IStreamDataManager * streamDataManager,
-			IFileDataManager * fileDataManager) = 0;
+		virtual void init(core::ISourceManager * sourceManager,
+			core::IVisualizerManager * visualizerManager,
+			core::IMemoryDataManager * memoryDataManager,
+			core::IStreamDataManager * streamDataManager,
+			core::IFileDataManager * fileDataManager) = 0;
 
         //! Póxna inicjalizacja usług, następuje po wczytaniu i inicjalizacji wszystkich usług
         virtual void lateInit() = 0;
@@ -58,13 +56,13 @@ namespace plugin
 
         //! Usługa nie musi mieć wizualnej reprezentacji.
         //! \return Widget tworzony przez usługę bądź NULL.
-        virtual QWidget* getWidget(IActionsGroupManager * actionsManager) = 0;
+        virtual QWidget* getWidget(core::IActionsGroupManager * actionsManager) = 0;
         
         //! \return Widget kontrolujący zachowanie usługi/usług zależnych.
-        virtual QWidget* getControlWidget(IActionsGroupManager * actionsManager) = 0;
+        virtual QWidget* getControlWidget(core::IActionsGroupManager * actionsManager) = 0;
 
         //! \return Widget dostarczający opcji związanych z usługą/usługami zależnymi.
-        virtual QWidget* getSettingsWidget(IActionsGroupManager * actionsManager) = 0;
+        virtual QWidget* getSettingsWidget(core::IActionsGroupManager * actionsManager) = 0;
     };
 
     typedef core::shared_ptr<IService> IServicePtr;

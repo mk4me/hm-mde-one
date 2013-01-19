@@ -7,6 +7,8 @@
 #include <QtGui/QMenu>
 #include <stdexcept>
 
+using namespace core;
+
 ActionsGroup::ActionsGroup(const QString & name) : name_(name)
 {
 

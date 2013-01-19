@@ -13,25 +13,25 @@
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
 
-namespace plugin {
+namespace core {
 
 	class IFileManagerReaderOperations
 	{
 	public:
 		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
-		virtual void getFiles(core::Files & files) const = 0;
+		virtual void getFiles(Files & files) const = 0;
 
 		//! \param file Plik kótry weryfikujemy czy jest zarz¹dzany przez DM
 		//! \return Prawda jeœli plik jest zarz¹dzany przez ten DM
-		virtual const bool isManaged(const core::Filesystem::Path & file) const = 0;
+		virtual const bool isManaged(const Filesystem::Path & file) const = 0;
 
 		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const core::Filesystem::Path & file, core::ConstObjectsList & objects) const = 0;
+		virtual void getObjects(const Filesystem::Path & file, ConstObjectsList & objects) const = 0;
 
 		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const core::Filesystem::Path & file, core::ObjectWrapperCollection & objects) const = 0;
+		virtual void getObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const = 0;
 	};
 
 	//! Zapewnia dostêp do danych plikowych aplikacji, pozwala obserwowaæ zmiany z nimi zwi¹zane
@@ -48,7 +48,7 @@ namespace plugin {
 		//! Obiekt opisuj¹cy zmianê w DM
 		struct FileChange
 		{
-			core::Filesystem::Path filePath;		//! Plik który zmieniamy
+			Filesystem::Path filePath;		//! Plik który zmieniamy
 			ModificationType modyfication;	//! Typ zmiany na plikach
 		};
 

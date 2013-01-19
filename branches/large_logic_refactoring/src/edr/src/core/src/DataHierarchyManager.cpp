@@ -22,6 +22,23 @@ const TypeInfoSet DataHierarchyManager::getRegisteredTypes() const
 	return ret;
 }
 
+const bool DataHierarchyManager::isRegistered(const core::TypeInfo & typeInfo) const
+{
+	auto it = typesHierarchy.find(typeInfo);
+	if(it == typesHierarchy.end() || it->second.prototype == nullptr) {
+		return false;
+	}
+
+	return true;
+}
+
+const bool DataHierarchyManager::isTypeCompatible(const TypeInfo & base, const TypeInfo & derrived) const
+{
+	const auto & baseSet = findOrThrow(base);
+	const auto & derrivedSet = findOrThrow(derrived);
+	return derrivedSet.baseTypes.find(base) != derrivedSet.baseTypes.end();
+}
+
 const TypeInfoSet DataHierarchyManager::getTypeBaseTypes(const TypeInfo & type) const
 {
 	return findOrThrow(type).baseTypes;

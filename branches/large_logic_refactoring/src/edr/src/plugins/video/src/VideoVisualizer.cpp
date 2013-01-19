@@ -131,14 +131,14 @@ const std::string& VideoVisualizer::getName() const
     return name;
 }
 
-core::IVisualizer* VideoVisualizer::createClone() const
+plugin::IVisualizer* VideoVisualizer::create() const
 {
     return new VideoVisualizer();
 }
 
-void VideoVisualizer::getInputInfo( std::vector<core::IInputDescription::InputInfo>& info )
+void VideoVisualizer::getInputInfo( std::vector<plugin::IInputDescription::InputInfo>& info )
 {
-    core::IInputDescription::InputInfo input;
+    plugin::IInputDescription::InputInfo input;
 
     input.name = "videoStream";
     input.type = typeid(VideoStream);
@@ -303,7 +303,7 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
 
     // dodanie obszaru roboczego
     workspace = new osgWidget::Box();
-    workspace->getBackground()->setImage(getResourcePath("images/transparent_background.png").string(), false, false);
+    workspace->getBackground()->setImage(plugin::getResourcePath("images/transparent_background.png").string(), false, false);
     osg::Texture* texture = osgui::getTexture(workspace->getBackground());
 	if (texture) {
 		texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
@@ -339,11 +339,6 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
     return viewer;
 }
 
-void VideoVisualizer::setUp( core::IObjectSource* source )
-{
-    reset();
-}
-
 QIcon* VideoVisualizer::createIcon()
 {
     return new QIcon(QString::fromUtf8(":/resources/icons/video.png"));
@@ -354,7 +349,7 @@ int VideoVisualizer::getMaxDataSeries() const
     return 1;
 }
 
-core::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
+plugin::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
 {
     VideoSerie* ret = new VideoSerie(this);
 
@@ -364,12 +359,12 @@ core::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const ObjectWrapp
     return ret;
 }
 
-core::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const core::IVisualizer::SerieBase * serie)
+plugin::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const plugin::IVisualizer::SerieBase * serie)
 {
     return nullptr;
 }
 
-void VideoVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)
+void VideoVisualizer::removeSerie(plugin::IVisualizer::SerieBase* serie)
 {
     reset();
 }

@@ -14,7 +14,7 @@
 #include <vector>
 #include <utils/Debug.h>
 
-namespace plugin {
+namespace core {
 
     //! Interfejs zarządzający/agregujący źródła danych aplikacji
     class ISourceManager
@@ -24,22 +24,22 @@ namespace plugin {
 
         //! Rejestruje zadaną usługę.
         //! \param newService
-        virtual void registerSource(const ISourcePtr & newSource) = 0;
+        virtual void registerSource(const plugin::ISourcePtr & newSource) = 0;
 
         //! \return Liczba źródeł.
         virtual int getNumSources() const = 0;
         //! \param idx Indeks źródła.
         //! \return Źródło o zadanym indeksie.
-        virtual ISourcePtr getSource(int idx) = 0;
+        virtual plugin::ISourcePtr getSource(int idx) = 0;
         //! \param id ID źródła do wyszukania.
         //! \return Odnalezione źródło bądź NULL.
-        virtual ISourcePtr getSource(UniqueID id) = 0;
+        virtual plugin::ISourcePtr getSource(UniqueID id) = 0;
     };
 
-    typedef core::shared_ptr<ISourceManager> ISourceManagerPtr;
-    typedef core::shared_ptr<const ISourceManager> ISourceManagerConstPtr;
-    typedef core::weak_ptr<ISourceManager> ISourceManagerWeakPtr;
-    typedef core::weak_ptr<const ISourceManager> ISourceManagerWeakConstPtr;
+    typedef shared_ptr<ISourceManager> ISourceManagerPtr;
+    typedef shared_ptr<const ISourceManager> ISourceManagerConstPtr;
+    typedef weak_ptr<ISourceManager> ISourceManagerWeakPtr;
+    typedef weak_ptr<const ISourceManager> ISourceManagerWeakConstPtr;
 
     //! Metoda wyszukująca wszystkie źródła danego typu (np. implementujące
     //! dany interfejs).

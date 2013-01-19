@@ -71,13 +71,11 @@ SubjectService::~SubjectService()
 
 }
 
-void SubjectService::init(core::ISourceManager * sourceManager,
-	core::IDataSourceManager * dataSourceManager,
-	core::IDataProcessorManager *dataProcessorManager,
-	core::IDataSinkManager * dataSinkManager,
-	core::IVisualizerManager * visualizerManager,
-	core::IMemoryDataManager * memoryDataManager,
-	core::IFileDataManager * fileDataManager)
+void SubjectService::init(plugin::ISourceManager * sourceManager,
+	plugin::IVisualizerManager * visualizerManager,
+	plugin::IMemoryDataManager * memoryDataManager,
+	plugin::IFileDataManager * fileDataManager,
+	plugin::IActionsGroupManager * actionsManager)
 {
 
 }

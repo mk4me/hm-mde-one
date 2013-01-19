@@ -26,19 +26,19 @@ class VisualizerWidget : public EDRDockWidget
 
 public:
 
-    typedef std::pair<QObject*, plugin::IEDRTitleBar::SideType> VisualizerTitleBarElement;
+    typedef std::pair<QObject*, IEDRTitleBar::SideType> VisualizerTitleBarElement;
     typedef std::vector<VisualizerTitleBarElement> VisualizerTitleBarElements;
 
 private:
 
     struct InnerVisualizerElement
     {
-        InnerVisualizerElement() : visible(false), object(nullptr), side(plugin::IEDRTitleBar::Left)
+        InnerVisualizerElement() : visible(false), object(nullptr), side(IEDRTitleBar::Left)
         {
 
         }
 
-        InnerVisualizerElement(bool visible, QObject* object, plugin::IEDRTitleBar::SideType side)
+        InnerVisualizerElement(bool visible, QObject* object, IEDRTitleBar::SideType side)
             : visible(visible), object(object), side(side)
         {
 
@@ -46,7 +46,7 @@ private:
 
         bool visible;
         QObject* object;
-        plugin::IEDRTitleBar::SideType side;
+        IEDRTitleBar::SideType side;
     };
 
     //typedef std::map<core::VisualizerTimeSeriePtr, VisualizerChannelPtr> TimelineChannels;

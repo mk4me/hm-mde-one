@@ -12,29 +12,17 @@
 
 #include <core/SmartPtr.h>
 #include <core/Plugin.h>
-
-class QObject;
-class QSplashScreen;
-
 #include <QtCore/QObject>
-#include <QtCore/QTimer>
 #include <QtCore/QSettings>
 #include <QtGui/QMainWindow>
 #include <core/Window.h>
 #include <core/Filesystem.h>
-#include "ActionsGroupManager.h"
+
+class QSplashScreen;
 
 namespace core {
 
-	class PluginLoader;
-
-	class ExtendedCustomApplication;
-
-	class UserInterfaceService;
-	class ServiceManager;
 	class EDRConsoleWidget;
-	class VisualizerManager;
-	class DataProcessorManager;
 	class VisualizerWidget;
 
     template<class T>
@@ -50,103 +38,69 @@ namespace core {
 	{
 		Q_OBJECT
 
-	protected:
-
-        static MainWindow * instance;
+	private:
 
 		//! Widget ze sceną jakiegoś grafu OSG.
 		//SceneGraphWidget* widgetSceneGraph;
 		//! Widget konsoli.
 		EDRConsoleWidget* widgetConsole;
-		//! Czy update jest włączony?
-		bool updateEnabled;
-		//! Timer wyznaczający update'y wizualizatorów.
-		QTimer visualizerTimer;
-        //! Timer wyznaczający updaty dla serwisów
-		QTimer serviceTimer;
-		//! Pluginy.
-		core::PluginLoader* pluginLoader;
-        //! Dostęp do managerów aplikacji.
-        ExtendedCustomApplication * coreApplication;
-
         //! Lista zasobów.
         std::vector<std::string> resourcesPaths;
-
         //! Lista skórek dla UI
-        std::vector<core::Filesystem::Path> applicationSkinsPaths;
-
+        std::vector<Filesystem::Path> applicationSkinsPaths;
+		//! SplashScreenAplikacji
         QSplashScreen * splashScreen_;
+		//! Ścieżka do screenshotów z aplikacji
+		Filesystem::Path screenshotsPath_;
 
-	protected:
-		const QTimer& getVisualizerTimer() const { return visualizerTimer; }
-		QTimer& getVisualizerTimer() { return visualizerTimer; }
+	private:
 
-        QSplashScreen * splashScreen();
-
-        void showSplashScreenMessage(const QString & message, int alignment = Qt::AlignLeft, const QColor & color = Qt::black);
+		//! \return Customizowany splash screen dla danego widoku aplikacji, jeśli null to domyslny splash screen
+		virtual QSplashScreen * createSplashScreen() = 0;
+		virtual void customViewInit(QWidget * console) = 0;
 
 	public:
+
 		MainWindow();
 		virtual ~MainWindow();
 
-		virtual void init( core::PluginLoader* pluginLoader, ExtendedCustomApplication * coreApplication );
+		//! Dostarcza splash screen na potrzeby inicjalizacji aplikacji
+		QSplashScreen * splashScreen();
+		//! Inicjalizuje aplikację
+		void init();
 
-		static MainWindow * getInstance()
-        {
-            return instance;
-        }
+		//! \param path Ścieżka stylu
+		void setStyle(const Filesystem::Path& path);
+		//! \param path Ścieżka stylu
+		//! \return Czy udało się załadowac styl
+		bool trySetStyle(const Filesystem::Path& path);
+		//! \param styleName Nazwa stylu
+		void setStyleByName(const std::string& styleName);
+		//! \param styleName Nazwa stylu
+		//! \return Czy udało się załadować styl o podanej nazwie
+		bool trySetStyleByName(const std::string& styleName);
+
+		//! Metoda obsługująca akcje wizualizatorów
+		//! \param visWidget Widget wizualizatora
+		virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget) = 0;
+
+		//! \return Widget konsoli, który przechodzi pod kontrolę obiektu dziedziczącego - musi jakoś obsłużyć konsolę a na koniec ją usunąć
+		EDRConsoleWidget* getConsole();
+
+		virtual void showSplashScreenMessage(const QString & message);
+
 	public slots:
-		//! Aktualizacja wizualizatorów.
-		void updateVisualizers();
-        void updateServices();
-
+		//! \param pixmap Screenshot aplikacji do zapisu
 		void saveScreen(const QPixmap & pixmap);
 
-	public:
-		void initializeConsole();
-		//void InitializeControlWidget();
-
-        void setStyle(const core::Filesystem::Path& path);
-        bool trySetStyle(const core::Filesystem::Path& path);
-        void setStyleByName(const std::string& styleName);
-        bool trySetStyleByName(const std::string& styleName);
-
-        virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget) = 0;
-
-
-	public:
-
-		void loadData();
-
-		EDRConsoleWidget* getConsole()
-		{
-			return widgetConsole;
-		}
-
-	public:
-		void openFile( const std::string& path );
-
-	protected:
-
-		//! Rejestruje wbudowane usługi.
-		void registerCoreServices();
-		//! Rejestruje wbudowane źródła danych.
-		void registerCoreDataSources();
-		//! Rejestruje wbudowane typy domenowe
-		void registerCoreDomainTypes();
+	private:
 
         //! Szuka na dysku zasobów.
-        void findResources(const std::string& resourcesPath);
+        void findResources(const Filesystem::Path & resourcesPath);
 
-        const core::Filesystem::Path& getApplicationSkinsFilePath(int i)
-        {
-            return applicationSkinsPaths[i];
-        }
+        const Filesystem::Path & getApplicationSkinsFilePath(int i);
 
-        int getApplicationSkinsFilePathCount()
-        {
-            return applicationSkinsPaths.size();
-        }
+        int getApplicationSkinsFilePathCount();
 
 		//! Opakowuje zadany widget QDockWidgetem.
 		//! \param widget
@@ -154,17 +108,6 @@ namespace core {
 		//! \param style
 		//! \param area
 		QDockWidget* embeddWidget(QWidget* widget, const ActionsGroupManager& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
-
-		void unpackPlugin(const core::PluginPtr & plugin);
-
-		void safeRegisterPlugin(const core::PluginPtr & plugin);
-		void safeRegisterService(const plugin::IServicePtr & service);
-		void safeRegisterSource(const plugin::ISourcePtr & source);
-		void safeRegisterParser(const plugin::IParserPtr & parser);
-		void safeRegisterObjectWrapperPrototype(const core::ObjectWrapperPtr & prototype);
-		void safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer);
-		void safeRegisterDataProcessor(const plugin::IDataProcessorPtr & dataProcessor);
-		void safeRegisterDataSource(const plugin::IDataSourcePtr & dataSource);
 
 		// QWidget
 	protected:
@@ -179,10 +122,6 @@ namespace core {
 		//! Zapisuje ustawienia aplikacji.
 		void writeSettings();
 	};
-
-typedef core::shared_ptr<MainWindow> MainWindowPtr;
-typedef core::shared_ptr<const MainWindow> MainWindowConstPtr;
-
 }
 
 #endif

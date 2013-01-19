@@ -10,15 +10,12 @@
 #define HEADER_GUARD___IAPPLICATION_H__
 
 namespace core {
+
 	class ILog;
-}
-
-namespace plugin {
-
 	class IPath;
 	class IDataManagerReader;
-	class IStreamDataManagerReader;
-	class IFileDataManagerReader;
+	class IStreamManagerReader;
+	class IFileManagerReader;
 	class IDataHierarchyManagerReader;
 	class IExtensionManagerReader;	
 	class IPluginStorage;
@@ -38,13 +35,13 @@ namespace plugin {
 		//! \return Interfejs œcie¿ek aplikacji
 		virtual IPath * pathInterface() = 0;
 		//! \return Interfejs do logowania
-		virtual core::ILog * log() = 0;
+		virtual ILog * log() = 0;
 		//! \return Interfejs do czytania danych
 		virtual IDataManagerReader * dataManagerReader() = 0;
 		//! \return Interfejs do czytania danych strumieniowych
-		virtual IStreamDataManagerReader * streamDataManagerReader() = 0;
+		virtual IStreamManagerReader * streamDataManagerReader() = 0;
 		//! \return Interfejs do czytania danych strumieniowych
-		virtual IFileDataManagerReader * fileDataManagerReader() = 0;
+		virtual IFileManagerReader * fileDataManagerReader() = 0;
 		//! \return Interfejs do czytania opisu zarejestrowanych danych
 		virtual IDataHierarchyManagerReader * dataHierarchyManagerReader() = 0;
 		//! \return Interfejs do czytania opisu zarejestrowanych rozszerzeñ plików przez parsery

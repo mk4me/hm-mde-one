@@ -92,7 +92,7 @@ void VideoParser::parseFile(const core::Filesystem::Path& path)
                 errbuff << "Missing framerate attribute";
                 throw std::runtime_error(errbuff.str());
             }
-            LOG_INFO(directory << " " << framerate);
+            PLUGIN_LOG_INFO(directory << " " << framerate);
 
 
             // ustawienie ścieżki do katalogu
@@ -148,7 +148,7 @@ void VideoParser::parseFile(const core::Filesystem::Path& path)
     }
 }
 
-core::IParser* VideoParser::create()
+plugin::IParser* VideoParser::create()
 {
     return new VideoParser();
 }

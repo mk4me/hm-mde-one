@@ -1,19 +1,13 @@
 #include "CorePCH.h"
 #include <QtCore/QThread>
+#include <QtGui/QAction>
 #include "EDRConsoleWidget.h"
-#include "EDRTitleBar.h"
 
 using namespace core;
 
-EDRConsoleWidget::EDRConsoleWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)
-    : EDRDockWidget(title, parent, flags), consoleWidget(new EDRConsoleInnerWidget())
+EDRConsoleWidget::EDRConsoleWidget(QWidget *parent, Qt::WindowFlags flags) : QWidget(parent, flags)
 {
-    init();
-}
-
-EDRConsoleWidget::EDRConsoleWidget(QWidget *parent, Qt::WindowFlags flags)
-    : EDRDockWidget(parent, flags), consoleWidget(new EDRConsoleInnerWidget())
-{
+	setupUi(this);
     init();
 }
 
@@ -27,40 +21,7 @@ void EDRConsoleWidget::init()
     qRegisterMetaType<EDRConsoleWidgetEntry>("EDRConsoleWidgetEntry");
     qRegisterMetaType<EDRConsoleWidgetEntryPtr>("EDRConsoleWidgetEntryPtr");
 
-    EDRTitleBar * titleBar = supplyWithEDRTitleBar(this);
-
-    setWidget(consoleWidget);
-    setWindowTitle(consoleWidget->windowTitle());
-
-    QToolButton *clearButton;
-    QToolButton *toggleWordWrapButton;
-
-    clearButton = new QToolButton(titleBar);
-    clearButton->setObjectName(QString::fromUtf8("clearButton"));
-    QIcon icon;
-    icon.addFile(QString::fromUtf8(":/resources/icons/clear_console.png"), QSize(), QIcon::Normal, QIcon::Off);
-    clearButton->setIcon(icon);
-    clearButton->setIconSize(QSize(16, 16));
-
-    toggleWordWrapButton = new QToolButton(titleBar);
-    toggleWordWrapButton->setObjectName(QString::fromUtf8("toggleWordWrapButton"));
-    QIcon icon1;
-    icon1.addFile(QString::fromUtf8(":/resources/icons/word_wrap_16x16.png"), QSize(), QIcon::Normal, QIcon::Off);
-    toggleWordWrapButton->setIcon(icon1);
-    toggleWordWrapButton->setCheckable(true);
-
-    clearButton->setText(QApplication::translate("ConsoleWidget", "clear", 0, QApplication::UnicodeUTF8));
-    toggleWordWrapButton->setText(QApplication::translate("ConsoleWidget", "toggle word wrap", 0, QApplication::UnicodeUTF8));
-
-    QObject::connect(clearButton, SIGNAL(clicked()), consoleWidget->textEdit, SLOT(clear()));
-    QObject::connect(toggleWordWrapButton, SIGNAL(toggled(bool)), this, SLOT(setWordWrap(bool)));
-
-    QMetaObject::connectSlotsByName(this);
-
-    toggleWordWrapButton->setChecked( consoleWidget->textEdit->lineWrapMode() != QTextEdit::NoWrap );
-
-    titleBar->addObject(clearButton, plugin::IEDRTitleBar::Left);
-    titleBar->addObject(toggleWordWrapButton, plugin::IEDRTitleBar::Left);
+	setWindowTitle(tr("Console"));
 }
 
 void EDRConsoleWidget::logEntry( const EDRConsoleWidgetEntry& entry )
@@ -77,8 +38,8 @@ void EDRConsoleWidget::logEntry( const EDRConsoleWidgetEntry& entry )
         fmt.setForeground( QColor(100, 150, 50, 255) );
     }
 
-    consoleWidget->textEdit->setCurrentCharFormat(fmt);
-    consoleWidget->textEdit->append( entry.message );
+    textEdit->setCurrentCharFormat(fmt);
+    textEdit->append( entry.message );
 }
 
 void EDRConsoleWidget::logEntry( EDRConsoleWidgetEntryPtr entry )
@@ -114,5 +75,5 @@ void EDRConsoleWidget::logOrQueueEntry( EDRConsoleWidgetEntryPtr entry )
 
 void EDRConsoleWidget::setWordWrap( bool wrap )
 {
-    consoleWidget->textEdit->setWordWrapMode( wrap ? QTextOption::WrapAtWordBoundaryOrAnywhere : QTextOption::NoWrap );
+    textEdit->setWordWrapMode( wrap ? QTextOption::WrapAtWordBoundaryOrAnywhere : QTextOption::NoWrap );
 }

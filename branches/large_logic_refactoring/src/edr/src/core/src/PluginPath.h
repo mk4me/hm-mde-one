@@ -13,10 +13,10 @@
 
 namespace core {
 
-class CustomPath : public plugin::IPath
+class PluginPath : public IPath
 {
 public:
-	CustomPath(plugin::IPath * path, const std::string & folderName);
+	PluginPath(const std::string & pluginName);
 
 	//! \return Zwraca pelna sciezke do folderu "MyDocuments\EDR"
 	virtual const Filesystem::Path& getUserDataPath() const;
@@ -30,7 +30,6 @@ public:
 	virtual const Filesystem::Path& getPluginPath() const;
 
 private:
-	plugin::IPath * path;
 	const Filesystem::Path pluginPath;
 	const Filesystem::Path pluginTmpPath;
 };

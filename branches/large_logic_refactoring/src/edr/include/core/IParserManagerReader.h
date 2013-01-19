@@ -12,14 +12,14 @@
 #include <list>
 #include <core/IParser.h>
 
-namespace plugin {
+namespace core {
 
 	//! Interfejs daj¹cy dostêp do zarejestrowanych w aplikacji parserów
 	class IParserManagerReader
 	{
 	public:
 		//! Typ agreguj¹cy prototypy parserów
-		typedef std::list<IParserConstPtr> ParserPrototypes;
+		typedef std::list<plugin::IParserConstPtr> ParserPrototypes;
 
 	public:
 		//! \param parserPrototypes [out] Kolekcja wype³niania aktualnie znanymi prototypami parserów
@@ -40,7 +40,7 @@ namespace plugin {
 		virtual const bool sourceIsAccepted(const std::string & source) const = 0;
 		//! \param source Œcie¿ka Ÿród³a danych dla której spradzamy mo¿liwe do uzyskania typy danych
 		//! \param types [out] Zbiór mo¿liwych do uzyskania z danego Ÿród³a typów danych
-		virtual void sourcePossibleTypes(const std::string & source, core::TypeInfoSet & types) const = 0;
+		virtual void sourcePossibleTypes(const std::string & source, TypeInfoSet & types) const = 0;
 	};
 }
 

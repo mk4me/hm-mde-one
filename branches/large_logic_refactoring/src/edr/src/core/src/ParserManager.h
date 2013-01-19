@@ -14,7 +14,7 @@
 
 namespace core {
 
-class ParserManager : public plugin::IParserManagerReader
+class ParserManager : public IParserManagerReader
 {
 private:
 
@@ -61,7 +61,7 @@ public:
 	virtual const bool sourceIsAccepted(const std::string & source) const;
 	//! \param source Ścieżka źródła danych dla której spradzamy możliwe do uzyskania typy danych
 	//! \param types [out] Zbiór możliwych do uzyskania z danego źródła typów danych
-	virtual void sourcePossibleTypes(const std::string & source, core::TypeInfoSet & types) const;
+	virtual void sourcePossibleTypes(const std::string & source, TypeInfoSet & types) const;
 
 	//! \param parser Rejestrowany parser
 	void registerParser(const plugin::IParserPtr & parser);

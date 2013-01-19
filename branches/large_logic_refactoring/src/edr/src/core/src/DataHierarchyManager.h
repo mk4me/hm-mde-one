@@ -14,7 +14,7 @@
 
 namespace core {
 
-class DataHierarchyManager : public plugin::IDataHierarchyManagerReader
+class DataHierarchyManager : public IDataHierarchyManagerReader
 {
 private:
 	//! Opis hierarchi typu
@@ -37,11 +37,18 @@ public:
 	//! \return Zarejestrowane w aplikacji typy danych
 	virtual const TypeInfoSet getRegisteredTypes() const;
 
+	virtual const bool isRegistered(const core::TypeInfo &) const;
+
 	//! \return Hierarchia typów danych - jakie operacje moge realizowaæ, po czym dziedzicze
 	virtual const TypeInfoSet getTypeBaseTypes(const TypeInfo & type) const;
 
 	//! \return Hierarchia typów danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
 	virtual const TypeInfoSet getTypeDerrivedTypes(const TypeInfo & type) const;
+
+	//! \param base Typ bazowy którego kompatybilnoœc sprawdzamy
+	//! \param derrived Typ pochodny wzglêdem kótrego sprawdzamy kompatybilnoœc typu bazowego
+	//! \return Prawda kiedy typ bazowy jest faktycznie wspierany przez typ pochodny
+	virtual const bool isTypeCompatible(const TypeInfo & base, const TypeInfo & derrived) const;
 
 	//! \param owp Rejestrowany ObjectWrapper, które niesie informacjê o typach danych
 	void registerObjectWrapperPrototype(const ObjectWrapperPtr & owp);

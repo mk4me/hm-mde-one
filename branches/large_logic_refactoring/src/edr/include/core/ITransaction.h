@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___ITRANSACTION_H__
 #define HEADER_GUARD___ITRANSACTION_H__
 
-namespace plugin {
+namespace core {
 
 	//! Interfejs transakcji dla managerów. Powinien dzia³aæ w oparciu o RAII - jak ScopedLock,
 	//! czyli przy tworzeniu próbujemy blokowaæ zasoby potrzebny do zapewnienia izolacji transakcji,

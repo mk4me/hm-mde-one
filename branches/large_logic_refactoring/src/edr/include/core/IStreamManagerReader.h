@@ -9,40 +9,18 @@
 #ifndef HEADER_GUARD___ISTREAMMANAGERREADER_H__
 #define HEADER_GUARD___ISTREAMMANAGERREADER_H__
 
+#include <iostream>
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
 
-namespace std
-{
-	class ifstream;
-}
-
-namespace plugin {
+namespace core {
 
 	class IStreamManagerReaderOperations
 	{
 	public:
-		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
-		virtual void getStreams(StreamsList & streams) const = 0;
-
-		//! \param file Plik kótry weryfikujemy czy jest zarz¹dzany przez DM
-		//! \return Prawda jeœli plik jest zarz¹dzany przez ten DM
-		virtual const bool isManaged(const std::ifstream * stream) const = 0;
-		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::ifstream * stream, core::ConstObjectsList & objects) const = 0;
-
-		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::ifstream * stream, core::ObjectWrapperCollection & objects) const = 0;
-	};
-
-	//! Interfejs zapewniaj¹cy dostêp do danych strumieniowych zarzazanych przez aplikacjê
-	class IStreamManagerReader
-	{
-	public:
 		//! Typ wskaŸnika na strumieñ
-		typedef core::shared_ptr<const std::istream> StreamConstPtr;
+		typedef shared_ptr<const std::istream> StreamConstPtr;
+
 		//! Opis strumienia
 		struct StreamData
 		{
@@ -53,6 +31,26 @@ namespace plugin {
 		//! Lista danych strumieni
 		typedef std::list<StreamData> StreamsList;
 
+	public:
+		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
+		virtual void getStreams(StreamsList & streams) const = 0;
+
+		//! \param file Plik kótry weryfikujemy czy jest zarz¹dzany przez DM
+		//! \return Prawda jeœli plik jest zarz¹dzany przez ten DM
+		virtual const bool isManaged(const std::istream * stream) const = 0;
+		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
+		//! \return Mapa obiektów wzglêdem plików z których pochodza
+		virtual void getObjects(const std::istream * stream, ConstObjectsList & objects) const = 0;
+
+		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
+		//! \return Mapa obiektów wzglêdem plików z których pochodza
+		virtual void getObjects(const std::istream * stream, ObjectWrapperCollection & objects) const = 0;
+	};
+
+	//! Interfejs zapewniaj¹cy dostêp do danych strumieniowych zarzazanych przez aplikacjê
+	class IStreamManagerReader : public IStreamManagerReaderOperations
+	{
+	public:
 		//! Typ zmian danych w managerze
 		enum ModificationType {
 			ADD_STREAM,		//! Dodajemy strumieñ do DM
@@ -79,9 +77,9 @@ namespace plugin {
 		};
 
 		//! WskaŸnik na obiek obserwuj¹cy zmiany
-		typedef core::shared_ptr<IStreamObserver> StreamObserverPtr;
+		typedef shared_ptr<IStreamObserver> StreamObserverPtr;
 
-		typedef core::shared_ptr<IStreamManagerReaderOperations> TransactionPtr;
+		typedef shared_ptr<IStreamManagerReaderOperations> TransactionPtr;
 
 	public:
 		//! \param streamWatcher Rejestrowany obiekt obserwuj¹cy zmiany managera strumieni

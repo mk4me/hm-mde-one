@@ -11,7 +11,7 @@
 
 namespace core {
 
-class ServiceManager: public plugin::IServiceManager, public ManagerHelper<ServiceManager>
+class ServiceManager: public IServiceManager, public ManagerHelper<ServiceManager>
 {
 public:
     //! Słownik usług.

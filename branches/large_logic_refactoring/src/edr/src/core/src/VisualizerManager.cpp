@@ -7,10 +7,6 @@
 #include <OpenThreads/ScopedLock>
 #include "DataHierarchyManager.h"
 
-
-template<>
-core::VisualizerManager * ManagerHelper<core::VisualizerManager>::manager = nullptr;
-
 using namespace core;
 
 VisualizerManager::VisualizerManager() //:
@@ -43,7 +39,6 @@ VisualizerManager::~VisualizerManager()
 
 plugin::IVisualizerConstPtr VisualizerManager::getPrototype( UniqueID id ) const
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     IVisualizers::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
         [=](const plugin::IVisualizerPtr& ptr) { return ptr->getID() == id; }
     );
@@ -99,7 +94,6 @@ VisualizerPtr VisualizerManager::createVisualizer( const TypeInfo& typeInfo )
 
 void VisualizerManager::update()
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     Visualizers::iterator it = visualizers.begin();
     Visualizers::iterator last = visualizers.end();
     while ( it != last ) {
@@ -110,7 +104,6 @@ void VisualizerManager::update()
 
 void VisualizerManager::registerVisualizer( plugin::IVisualizerPtr visualizer )
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     if (!getPrototype(visualizer->getID())) {
 
         std::vector<plugin::IInputDescription::InputInfo> visualizerInputInfo;
@@ -166,7 +159,6 @@ const VisualizerManager::SourcesTypes& VisualizerManager::getSourcesTypes( Uniqu
 
 int VisualizerManager::getPrototypeIdx( UniqueID id ) const
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     IVisualizers::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(),
         [=](const plugin::IVisualizerPtr& ptr) { return ptr->getID() == id; }
     );
@@ -209,7 +201,7 @@ void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
 		for(auto it = channelIT->second.series.begin(); it != seriesITEnd; ++it){
 			try{
 				channelIT->second.visualzier->removeSerie(*it);
-			}catch(std::exception & e){
+			}catch(std::exception &){
 
 			}catch(...){
 

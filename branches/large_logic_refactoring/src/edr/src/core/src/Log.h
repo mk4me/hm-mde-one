@@ -27,7 +27,7 @@ public:
 
 	virtual void log(LogSeverity severity, const std::string& message);
 
-	virtual core::LogPtr subLog(const std::string & name);
+	virtual core::LogPtr subLog(const std::string & name) const;
 
 private:
 	core::LogPtr logImpl;

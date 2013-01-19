@@ -17,7 +17,7 @@
 
 namespace core {
 
-class SourceManager: public plugin::ISourceManager, public ManagerHelper<SourceManager>
+class SourceManager: public ISourceManager, public ManagerHelper<SourceManager>
 {
 public:
 	//! Słownik usług.

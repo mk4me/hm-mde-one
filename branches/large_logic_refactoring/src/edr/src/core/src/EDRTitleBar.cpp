@@ -7,6 +7,8 @@
 #include "EDRTitleBar.h"
 #include "EDRDockWidget.h"
 
+using namespace core;
+
 EDRTitleBar::EDRTitleBar(QWidget* parent) : QWidget(parent)
 {
     setupUi(this);

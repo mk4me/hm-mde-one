@@ -34,7 +34,7 @@ namespace vidlib {
 #include <plugins/video/Wrappers.h>
 
 //! Wizualizator wykresów.
-class VideoVisualizer : public core::IVisualizer
+class VideoVisualizer : public plugin::IVisualizer
 {
     struct Refresher;
     struct WidgetUpdater;
@@ -71,7 +71,7 @@ private:
 
 	bool getImage();
 
-    class VideoSerie : public core::IVisualizer::TimeSerieBase
+    class VideoSerie : public plugin::IVisualizer::TimeSerieBase
     {
     public:
         VideoSerie(VideoVisualizer * visualizer);
@@ -119,9 +119,9 @@ public:
     //! \see IVisualizer::getName
     virtual const std::string& getName() const;
     //! \see IVisualizer::create
-    virtual core::IVisualizer* createClone() const;
+    virtual plugin::IVisualizer* create() const;
     //! \see IVisualizer::getSlotInfo
-    virtual void getInputInfo(std::vector<core::IInputDescription::InputInfo>& info);
+    virtual void getInputInfo(std::vector<plugin::IInputDescription::InputInfo>& info);
     //! Nic nie robi.
     //! \see IVisualizer::update
     virtual void update(double deltaTime);
@@ -130,18 +130,16 @@ public:
     //! \see IVisualizer::createIcon
     virtual QIcon* createIcon();
     virtual QPixmap print() const;
-    //! \see IVisualizer::setUp
-    virtual void setUp(core::IObjectSource* source);
 
     virtual int getMaxDataSeries() const;
 
     //! \return Seria danych która można ustawiac - nazwa i dane, nie zarządza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
-    virtual core::IVisualizer::TimeSerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+    virtual plugin::IVisualizer::TimeSerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
 
-    virtual core::IVisualizer::TimeSerieBase* createSerie(const core::IVisualizer::SerieBase * serie);
+    virtual plugin::IVisualizer::TimeSerieBase* createSerie(const plugin::IVisualizer::SerieBase * serie);
 
     //! \param serie Seria danych do usunięcia, nie powinien usuwać tej serii! Zarządzamy nią my!!
-    virtual void removeSerie(core::IVisualizer::SerieBase* serie);
+    virtual void removeSerie(plugin::IVisualizer::SerieBase* serie);
 
     virtual void reset();
 };

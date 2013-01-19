@@ -70,14 +70,17 @@ UTILS_POP_WARNINGS
 
 #include <core/TypeInfo.h>
 #include <core/SmartPtr.h>
+#include "ServiceManager.h"
+#include "MemoryDataManager.h"
+#include "ParserManager.h"
+#include "StreamDataManager.h"
+#include "FileDataManager.h"
+#include "DataHierarchyManager.h"
+#include "SourceManager.h"
+#include "VisualizerManager.h"
 #include "ApplicationCommon.h"
-#include <core/IDataProcessorManager.h>
-#include <core/IDataSourceManager.h>
-#include <core/IServiceManager.h>
 #include <core/IActionsGroupManager.h>
 #include "IAppUsageContextManager.h"
-#include <core/ISourceManager.h>
-#include <core/IVisualizerManager.h>
 
 // przywrócenie warningów wyłączonych przez OSG
 #if defined(_MSC_VER)

@@ -13,23 +13,34 @@
 
 namespace core {
 
-	class Path : public plugin::IPath
+	class Path : public IPath
 	{
 	public:
-		Path();
+		Path(const Filesystem::Path & userDataPath,
+		const Filesystem::Path & applicationDataPath,
+		const Filesystem::Path & resourcesPath,
+		const Filesystem::Path & tmpPath,
+		const Filesystem::Path & pluginPath);
 		virtual ~Path();
 
 	public:
 		//! \return Zwraca pelna sciezke do folderu "MyDocuments\EDR"
-		virtual const core::Filesystem::Path& getUserDataPath() const;
+		virtual const Filesystem::Path& getUserDataPath() const;
 		//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"
-		virtual const core::Filesystem::Path& getApplicationDataPath() const;
+		virtual const Filesystem::Path& getApplicationDataPath() const;
 		//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
-		virtual const core::Filesystem::Path& getResourcesPath() const;
+		virtual const Filesystem::Path& getResourcesPath() const;
 		//! \return Zwraca pe³n¹ œcie¿kê do tymczasowego folderu, który jest czyszczony podczas ka¿dego zamykania aplikacji
-		virtual const core::Filesystem::Path& getTmpPath() const;
+		virtual const Filesystem::Path& getTmpPath() const;
 		//! \return Zwraca pe³n¹ œcie¿kê do folderu pluginu
-		virtual const core::Filesystem::Path& getPluginPath() const;
+		virtual const Filesystem::Path& getPluginPath() const;
+
+	private:
+		Filesystem::Path userDataPath_;
+		Filesystem::Path applicationDataPath_;
+		Filesystem::Path resourcesPath_;
+		Filesystem::Path tmpPath_;
+		Filesystem::Path pluginPath_;
 	};
 }
 

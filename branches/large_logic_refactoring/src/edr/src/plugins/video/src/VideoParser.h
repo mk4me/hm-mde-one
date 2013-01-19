@@ -11,7 +11,7 @@
 
 #include <core/IParser.h>
 
-class VideoParser : public core::IParser
+class VideoParser : public plugin::IParser
 {
     UNIQUE_ID("{E81ED99E-6682-4FE7-9E52-0BBCABC8BCBC}","Video Parser");
 private:
@@ -25,7 +25,7 @@ public:
 // IParser
 public:
     virtual void parseFile(const core::Filesystem::Path& path);
-    virtual core::IParser* create();
+    virtual plugin::IParser* create();
     virtual void getSupportedExtensions(Extensions & extensions) const;    
     virtual void getObjects(core::Objects& objects);
 };

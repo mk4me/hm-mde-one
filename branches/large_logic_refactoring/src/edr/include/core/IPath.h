@@ -12,7 +12,7 @@
 
 #include <core/Filesystem.h>
 
-namespace plugin {
+namespace core {
 
 //! Interfejs dostarczający informacji o strukturze plików obsługiwanej przez aplikację.
 class IPath
@@ -23,15 +23,15 @@ public:
 
 public:
 	//! \return Zwraca pelna sciezke do folderu "MyDocuments\EDR"
-	virtual const core::Filesystem::Path& getUserDataPath() const = 0;
+	virtual const Filesystem::Path& getUserDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"
-	virtual const core::Filesystem::Path& getApplicationDataPath() const = 0;
+	virtual const Filesystem::Path& getApplicationDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
-	virtual const core::Filesystem::Path& getResourcesPath() const = 0;
+	virtual const Filesystem::Path& getResourcesPath() const = 0;
     //! \return Zwraca pełną ścieżkę do tymczasowego folderu, który jest czyszczony podczas każdego zamykania aplikacji
-    virtual const core::Filesystem::Path& getTmpPath() const = 0;
+    virtual const Filesystem::Path& getTmpPath() const = 0;
 	//! \return Zwraca pełną ścieżkę do folderu pluginu
-	virtual const core::Filesystem::Path& getPluginPath() const = 0;
+	virtual const Filesystem::Path& getPluginPath() const = 0;
 };
 
 }

@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__IVISUALIZERMANAGER_H__
 
 
-namespace plugin 
+namespace core 
 {
     class IVisualizerManager
     {

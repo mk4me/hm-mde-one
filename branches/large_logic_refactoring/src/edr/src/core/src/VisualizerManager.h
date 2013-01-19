@@ -24,7 +24,6 @@
 #include "VisualizerChannel.h"
 
 #include <core/IVisualizerManager.h>
-#include <core/IManagersAccessor.h>
 #include "ManagerHelper.h"
 #include <utils/ObserverPattern.h>
 
@@ -34,7 +33,7 @@ Q_DECLARE_METATYPE(UniqueID);
 
 namespace core {
 
-class VisualizerManager : public plugin::IVisualizerManager, public utils::Observable<VisualizerManager>, public ManagerHelper<VisualizerManager>
+class VisualizerManager : public IVisualizerManager, public utils::Observable<VisualizerManager>, public ManagerHelper<VisualizerManager>
 {
     friend class Visualizer;
 	friend class IVisualizerChannel;

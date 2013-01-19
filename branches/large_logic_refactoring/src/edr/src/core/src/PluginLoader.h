@@ -34,13 +34,9 @@ private:
 		//! Wskaźnik do const pluginu
 		PluginConstPtr constPlugin;
 		//! Wskaźnik do dedykowanej implementacji interfejcu core::IApplication
-		shared_ptr<plugin::IApplication> coreApplication;
+		shared_ptr<IApplication> coreApplication;
 		//! Uchwyt do biblioteki
 		HMODULE handle;
-		//! Dedykowany loger
-		shared_ptr<core::ILog> logger;
-		//! Dedykowane ściezki
-		shared_ptr<plugin::IPath> path;
 	};
 
     //! Załadowane pluginy.
@@ -53,14 +49,12 @@ private:
     Paths paths;
 
 public:
-    PluginLoader();
+    PluginLoader(const Filesystem::Path & pluginsPath);
     virtual ~PluginLoader();
 
 public:
     //!
     void clear();
-    //!
-    void addDefaultPaths();
     //! Ładuje pluginy.
     void load();
 

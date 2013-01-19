@@ -13,7 +13,7 @@
 #include <vector>
 #include <utils/Debug.h>
 
-namespace plugin {
+namespace core {
 
     class IServiceManager
     {
@@ -22,22 +22,22 @@ namespace plugin {
 
         //! Rejestruje zadaną usługę.
         //! \param newService
-        virtual void registerService(IServicePtr newService) = 0;
+        virtual void registerService(plugin::IServicePtr newService) = 0;
 
         //! \return Liczba usług.
         virtual int getNumServices() const = 0;
         //! \param idx Indeks usługi.
         //! \return Usługa o zadanym indeksie.
-        virtual IServicePtr getService(int idx) = 0;
+        virtual plugin::IServicePtr getService(int idx) = 0;
         //! \param id ID usługi do wyszukania.
         //! \return Odnaleziona usługa bądź NULL.
-        virtual IServicePtr getService(UniqueID id) = 0;
+        virtual plugin::IServicePtr getService(UniqueID id) = 0;
     };
 
-    typedef core::shared_ptr<IServiceManager> IServiceManagerPtr;
-    typedef core::shared_ptr<const IServiceManager> IServiceManagerConstPtr;
-    typedef core::weak_ptr<IServiceManager> IServiceManagerWeakPtr;
-    typedef core::weak_ptr<const IServiceManager> IServiceManagerWeakConstPtr;
+    typedef shared_ptr<IServiceManager> IServiceManagerPtr;
+    typedef shared_ptr<const IServiceManager> IServiceManagerConstPtr;
+    typedef weak_ptr<IServiceManager> IServiceManagerWeakPtr;
+    typedef weak_ptr<const IServiceManager> IServiceManagerWeakConstPtr;
 
 }
 
@@ -46,7 +46,7 @@ namespace core {
     //! Metoda wyszukująca wszystkie usługi danego typu (np. implementujące
     //! dany interfejs).
     template <class T>
-    shared_ptr<T> queryServices(plugin::IServiceManager* manager, T* dummy = nullptr)
+    shared_ptr<T> queryServices(IServiceManager* manager, T* dummy = nullptr)
     {
         std::vector<shared_ptr<T>> result;
         queryServices(manager, result);
@@ -61,7 +61,7 @@ namespace core {
     //! Metoda wyszukująca wszystkie usługi danego typu (np. implementujące
     //! dany interfejs).
     template <class T>
-    void queryServices(plugin::IServiceManager* manager, std::vector<shared_ptr<T>>& target)
+    void queryServices(IServiceManager* manager, std::vector<shared_ptr<T>>& target)
     {
         for ( int i = 0; i < manager->getNumServices(); ++i ) {
             plugin::IServicePtr service = manager->getService(i);

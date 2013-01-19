@@ -11,30 +11,30 @@
 
 #include <core/ObjectWrapper.h>
 
-namespace plugin {
+namespace core {
 
 	class IDataHierarchyManagerReader {
 
 	public:
 		//! \param typeInfo Typ zarejestrowany w DM dla któego chemy utworzyæ OW
 		//! \return Pusty OW dla zadanego typu lub wyj¹tek/nullptr gdy typ niezarejestrowany
-		virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo & typeInfo) const = 0;
+		virtual ObjectWrapperPtr createWrapper(const TypeInfo & typeInfo) const = 0;
 
 		//! \return Zarejestrowane w aplikacji typy danych
-		virtual const core::TypeInfoSet getRegisteredTypes() const = 0;
+		virtual const TypeInfoSet getRegisteredTypes() const = 0;
 		//! \return Zarejestrowane w aplikacji typy danych
-		virtual const bool isRegistered(const core::TypeInfo & type) const = 0;
+		virtual const bool isRegistered(const TypeInfo & type) const = 0;
 
 		//! \return Hierarchia typów danych - jakie operacje moge realizowaæ, po czym dziedzicze
-		virtual const core::TypeInfoSet getTypeBaseTypes(const core::TypeInfo & type) const = 0;
+		virtual const TypeInfoSet getTypeBaseTypes(const TypeInfo & type) const = 0;
 
 		//! \return Hierarchia typów danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
-		virtual const core::TypeInfoSet getTypeDerrivedTypes(const core::TypeInfo & type) const = 0;
+		virtual const TypeInfoSet getTypeDerrivedTypes(const TypeInfo & type) const = 0;
 
 		//! \param base Typ bazowy którego kompatybilnoœc sprawdzamy
 		//! \param derrived Typ pochodny wzglêdem kótrego sprawdzamy kompatybilnoœc typu bazowego
 		//! \return Prawda kiedy typ bazowy jest faktycznie wspierany przez typ pochodny
-		virtual const bool isTypeCompatible(const core::TypeInfo & base, const core::TypeInfo & derrived) const = 0;
+		virtual const bool isTypeCompatible(const TypeInfo & base, const TypeInfo & derrived) const = 0;
 	};
 }
 

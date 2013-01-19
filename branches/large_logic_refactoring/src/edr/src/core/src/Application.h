@@ -10,6 +10,15 @@
 #define HEADER_GUARD___APPLICATION_H__
 
 #include <core/SmartPtr.h>
+#include <core/ObjectWrapper.h>
+#include <core/ILog.h>
+#include <core/IVisualizer.h>
+#include <core/ISource.h>
+#include <core/IService.h>
+#include <core/IParser.h>
+#include <core/Plugin.h>
+
+class QSplashScreen;
 
 namespace core {
 
@@ -21,51 +30,69 @@ namespace core {
 	class DataHierarchyManager;
 	class ParserManager;
 	class VisualizerManager;
-	class DataSourceManager;
-	class DataSinkManager;
-	class DataProcessorManager;
 	class ServiceManager;
 	class SourceManager;
+	class LogInitializer;
+	class UIApplication;
+	class MainWindow;
+	class PluginLoader;
 
 	class Application
 	{
+		friend class UIApplication;
+
 	private:
+		shared_ptr<Path> paths_;
+		shared_ptr<LogInitializer> logInitializer_;
+		LogPtr loggerPrototype_;
+		LogPtr logger_;
+		shared_ptr<PluginLoader> pluginLoader_;
+		shared_ptr<DataHierarchyManager> dataHierarchyManager_;
 		shared_ptr<MemoryDataManager> memoryDataManager_;
+		shared_ptr<ParserManager> parserManager_;
 		shared_ptr<StreamDataManager> streamDataManager_;
 		shared_ptr<FileDataManager> fileDataManager_;
-		shared_ptr<Log> logger_;
-		shared_ptr<Log> loggerPrototype_;
-		shared_ptr<Path> paths_;
-		shared_ptr<DataHierarchyManager> dataHierarchyManager_;
-		shared_ptr<ParserManager> parserManager_;
-		shared_ptr<VisualizerManager> visualizerManager_;
-		shared_ptr<DataSourceManager> dataSourceManager_;
-		shared_ptr<DataSinkManager> dataSinkManager_;
-		shared_ptr<DataProcessorManager> dataProcessorManager_;
+		shared_ptr<UIApplication> uiApplication_;
 		shared_ptr<ServiceManager> serviceManager_;
 		shared_ptr<SourceManager> sourceManager_;
+		shared_ptr<VisualizerManager> visualizerManager_;
+
+	private:
+
+		static bool trySetPathsFromRegistry(shared_ptr<Path> & path);
+		static void setDefaultPaths(shared_ptr<Path> & path);
+		static void showSplashScreenMessage(QSplashScreen * splashScreen, const QString & message);
+
+		void safeRegisterService(const plugin::IServicePtr & service);
+		void safeRegisterSource(const plugin::ISourcePtr & source);
+		void safeRegisterParser(const plugin::IParserPtr & parser);
+		void safeRegisterObjectWrapperPrototype(const ObjectWrapperPtr & prototype);
+		void safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer);
+		void registerCoreDomainTypes();
+		void unpackPlugin(QSplashScreen * splashScreen, const PluginPtr & plugin);
 
 	public:
 		Application();
 		~Application();
 
+		int initUI(int & argc, char *argv[]);
+
+		void initWithUI(MainWindow * mainWindow);
+
+		int run();
+
 		MemoryDataManager* memoryDataManager();
 		StreamDataManager* streamDataManager();
 		FileDataManager* fileDataManager();
-		Log* logger();
-		Log* loggerPrototype();
+		ILog* logger();
+		ILog* loggerPrototype();
 		Path* paths();
 		DataHierarchyManager* dataHierarchyManager();
 		ParserManager* parserManager();
 		VisualizerManager* visualizerManager();
-		DataSourceManager* dataSourceManager();
-		DataSinkManager* dataSinkManager();
-		DataProcessorManager* dataProcessorManager();
 		ServiceManager* serviceManager();
 		SourceManager* sourceManager();
-	
 	};
-
 }
 
 #endif	//	HEADER_GUARD___APPLICATION_H__

@@ -12,18 +12,16 @@
 #include "PluginLoader.h"
 #include <core/Plugin.h>
 #include <core/PluginCommon.h>
-#include "CustomPath.h"
-#include "CustomApplication.h"
+#include "PluginApplication.h"
 #include <regex>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-PluginLoader::PluginLoader()
+PluginLoader::PluginLoader(const Filesystem::Path & pluginsPath)
 {
-    // dodaje domyślne ścieżki
-    addDefaultPaths();
+    paths.push_back(pluginsPath);
 }
 
 PluginLoader::~PluginLoader()
@@ -63,52 +61,6 @@ void PluginLoader::unloadPlugins()
         CORE_LOG_ERROR("PluginLoader: Error unloading plugins ");
     }
 }
-
-void PluginLoader::addDefaultPaths()
-{
-#if defined(__WIN32__)
-	// katalog uruchomieniowy
-	DWORD retval = 0;
-	const DWORD size = MAX_PATH;
-	char path[size];
-	std::string executableDir;
-
-	retval = ::GetModuleFileName(NULL, path, size);
-	if (retval != 0 && retval < size)
-	{
-		std::string pathstr(path);
-		executableDir = std::string( pathstr, 0, pathstr.find_last_of("\\/") );
-		paths.push_back(executableDir);
-	}
-	else
-	{
-		CORE_LOG_ERROR("Could not get application directory "
-			"using Win32 API. It will not be searched.");
-	}
-
-	// katalog plugins
-	if (!executableDir.empty())
-	{
-		boost::filesystem::path dirpath(executableDir);
-		dirpath /= "plugins";
-		paths.push_back(dirpath.string());
-	}
-	else
-	{
-		CORE_LOG_ERROR("Could not get application directory -- plugins folder"
-			"using Win32 API. It will not be searched.");
-	}
-#elif defined(__UNIX__)
-	// katalog uruchomieniowy
-	std::string dir = std::string(".");
-	paths.push_back(dir);
-
-	// zagnieżdżony katalog plugins
-	dir = std::string("plugins/.");
-	paths.push_back(dir);
-#endif
-}
-
 
 void PluginLoader::load()
 {
@@ -222,24 +174,21 @@ bool PluginLoader::onAddPlugin( const Filesystem::Path& path, HMODULE library, P
 
     // próba załadowania
     try {
-		pData.path.reset(new CustomPath(core::getPathInterface(), path.filename().string()));
-		pData.logger = getPrototypeLogInterface()->subLog("plugin." + path.filename().string());
-		pData.coreApplication.reset(new CustomApplication(pData.path.get(), core::getMemoryDataManager(),
-			nullptr, pData.logger.get(), core::getServiceManager()));
+		pData.coreApplication.reset(new PluginApplication(path.filename().string()));
         pData.plugin.reset(createFunction(pData.coreApplication.get()));
 		pData.constPlugin = pData.plugin;
 		pData.handle = library;
     } catch ( std::exception& ex ) {
-        CORE_LOG_ERROR("Error loading plugin "<<path<<": "<<ex.what());
+        CORE_LOG_ERROR("Error loading plugin " << path << ": " << ex.what());
         return false;
     } catch ( ... ) {
-        CORE_LOG_ERROR("Error loading plugin "<<path<<": Unknown");
+        CORE_LOG_ERROR("Error loading plugin " << path << ": Unknown");
         return false;
     }
 
     // czy udało się wczytać?
     if ( !pData.plugin ) {
-        CORE_LOG_ERROR("Error loading plugin "<<path<<": Plugin not created");
+        CORE_LOG_ERROR("Error loading plugin " << path << ": Plugin not created");
         return false;
     }
 

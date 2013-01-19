@@ -5,25 +5,25 @@
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
 ////////////////////////////////////////////////////////////////////////////////
-namespace plugin {
+namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
     class IDataManagerReaderOperations
 	{
 	public:
 		//! \param objects [out] Wszystkie obiekty DM
-		virtual void getObjects(core::ConstObjectsList & objects) const = 0;
+		virtual void getObjects(ConstObjectsList & objects) const = 0;
 		//! \param objects [out] Obiekty pasujące do zapytania
 		//! \param type Typ obniektów o które pytamy
 		//! \param exact Czy typ musi być zgodny czy moga to być tez typy pochodne
 		//! \param initialzie Czy automatycznie zainicjalizować wszystkie obiekty? UWAGA - te, których się nie udało zainicjalizować nie zostaną zwrócone - DM usunie je jako popsute dane
-		virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact = true) const = 0;
+		virtual void getObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact) const = 0;
 		//! \param objects [out] Obiekty zarządzane przez DM
 		//! \param initialzie Czy automatycznie zainicjalizować wszystkie obiekty? UWAGA - te, których się nie udało zainicjalizować nie zostaną zwrócone - DM usunie je jako popsute dane
-		virtual void getObjects(core::ObjectWrapperCollection& objects) const = 0;
+		virtual void getObjects(ObjectWrapperCollection& objects) const = 0;
 		//! \param object Obiekt który sprawdzamy pod kątem zarządzania przez DM
 		//! \return Prawda jesli dany OW jest zarządzany przez DM
-		virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const = 0;
+		virtual const bool isManaged(const ObjectWrapperConstPtr & object) const = 0;
 	};
 	
 	//! Podstawowe operacje związane z danymi - pobieranie danych, informacje o hierarchi typów danych, informacje o wspieranych typach danych
@@ -40,9 +40,9 @@ namespace plugin {
 		//! Obiekt opisujący zmianę w DM
 		struct ObjectChange
 		{
-			core::ObjectWrapperConstPtr previousValue;	//! Kopia OW przed zmianą, nie jest zarejestrowana w DM
-			core::ObjectWrapperConstPtr currentVal;		//! Aktualny OW zarejestrowany w DM
-			core::TypeInfo type;							//! Typ OW
+			ObjectWrapperConstPtr previousValue;	//! Kopia OW przed zmianą, nie jest zarejestrowana w DM
+			ObjectWrapperConstPtr currentVal;		//! Aktualny OW zarejestrowany w DM
+			TypeInfo type;							//! Typ OW
 			ModificationType modyfication;			//! Typ zmiany na OW
 		};
 
@@ -61,9 +61,9 @@ namespace plugin {
 		};
 
 		//! Wskaźnik na obiek obserwujący zmiany
-		typedef core::shared_ptr<IObjectObserver> ObjectObserverPtr;
+		typedef shared_ptr<IObjectObserver> ObjectObserverPtr;
 
-		typedef core::shared_ptr<IDataManagerReaderOperations> TransactionPtr;
+		typedef shared_ptr<IDataManagerReaderOperations> TransactionPtr;
 
     public:
 		//! Dodaje obserwatora DM

@@ -17,7 +17,9 @@
 
 class EDRDockWidget;
 
-class EDRTitleBar : public QWidget, public Ui::EDRTitleBar, public plugin::IEDRTitleBar
+namespace core {
+
+class EDRTitleBar : public QWidget, public Ui::EDRTitleBar, public IEDRTitleBar
 {
     Q_OBJECT
 
@@ -64,5 +66,7 @@ private:
 };
 
 EDRTitleBar * supplyWithEDRTitleBar(EDRDockWidget * dockWidget, bool refresh = true);
+
+}
 
 #endif  //  HEADER_GUARD_CORE__EDRTITLEBAR_H__

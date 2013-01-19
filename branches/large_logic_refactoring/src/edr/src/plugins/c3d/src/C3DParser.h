@@ -17,7 +17,7 @@
 
 
 //! Klasa wykorzystuje c3dlib do zasilenia systemu w obiekty domenowe pochodzące z plików C3D
-class C3DParser : public core::IParser
+class C3DParser : public plugin::IParser
 {
     UNIQUE_ID("{D7801231-BACA-42C6-9A8E-706F561A563F}", "C3D parser");
 	typedef core::shared_ptr<c3dlib::C3DParser> ParserPtr;
@@ -54,7 +54,7 @@ public:
     //! \param path poprawna ścieżka do pliku
     virtual void parseFile(const core::Filesystem::Path& path);
     //! \return pusty obiekt nowego parsera
-    virtual core::IParser* create();
+    virtual plugin::IParser* create();
     //! Zwraca obiekty dostarczone przez parser
     //! \param objects kolekcja z obiektami (set)
     virtual void getObjects(core::Objects& objects);

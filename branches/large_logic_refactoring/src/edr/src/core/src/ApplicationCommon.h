@@ -63,13 +63,13 @@ inline Path* getPathInterface()
 }
 
 //! \return Interfejs logowania informacji
-inline Log* getLogInterface()
+inline ILog* getLogInterface()
 {
 	return __application->logger();
 }
 
 //! \return Interfejs logowania informacji
-inline Log* getPrototypeLogInterface()
+inline ILog* getPrototypeLogInterface()
 {
 	return __application->loggerPrototype();
 }

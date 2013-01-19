@@ -16,14 +16,18 @@
 class QObject;
 class QWidget;
 
-namespace plugin
-{
+namespace core {
+
 	class IMemoryDataManager;
 	class IFileDataManager;
 	class IStreamDataManager;
 	class IServiceManager;
 	class IActionsGroupManager;
 
+}
+
+namespace plugin
+{
     //! Interfejs źródła danych. Powinien to być jedeny obiekt inicjowany i mający dostęp do MemoryDM i FIleDM
     class ISource : public ICoreElement
     {
@@ -32,9 +36,9 @@ namespace plugin
 
         //! Inicjalizacja źródła. Następuje już po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich źródeł.
-        virtual void init(IMemoryDataManager * memoryDM,
-			IStreamDataManager * streamDM,
-			IFileDataManager * fileDM) = 0;
+        virtual void init(core::IMemoryDataManager * memoryDM,
+			core::IStreamDataManager * streamDM,
+			core::IFileDataManager * fileDM) = 0;
 
         //! Późna inicjalizacja źródła, następuje po wczytaniu i inicjalizacji wszystkich innych źródeł
         virtual void lateInit() = 0;
@@ -50,16 +54,16 @@ namespace plugin
 
         //! Źródło nie musi mieć wizualnej reprezentacji.
         //! \return Widget tworzony przez źródło bądź NULL.
-        virtual QWidget* getWidget(IActionsGroupManager * actionsGroupManager) = 0;
+        virtual QWidget* getWidget(core::IActionsGroupManager * actionsGroupManager) = 0;
 
         //! Źródło nie musi mieć widgeta konfigurującego.
         //! \return Widget tworzony przez źródło bądź NULL.
-        virtual QWidget* getConfigurationWidget(IActionsGroupManager * actionsGroupManager) = 0;
+        virtual QWidget* getConfigurationWidget(core::IActionsGroupManager * actionsGroupManager) = 0;
     };
 
-    typedef core::shared_ptr<ISource> ISourcePtr;
-    typedef core::shared_ptr<const ISource> ISourceConstPtr;
-    typedef core::weak_ptr<ISource> ISourceWeakPtr;
+	typedef core::shared_ptr<ISource> ISourcePtr;
+	typedef core::shared_ptr<const ISource> ISourceConstPtr;
+	typedef core::weak_ptr<ISource> ISourceWeakPtr;
 
 }
 

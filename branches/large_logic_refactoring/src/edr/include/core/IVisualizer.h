@@ -19,10 +19,14 @@ class QObject;
 class QWidget;
 class QIcon;
 
-namespace plugin 
-{
+namespace core {
+
 	class IActionsGroupManager;
 
+}
+
+namespace plugin 
+{
     //! Interfejs wizualizatorów dla typów danych zarejestrowanych w aplikacji
     class IVisualizer :  public ICoreElement, public IInputDescription
     {
@@ -44,6 +48,9 @@ namespace plugin
             //! \param data Dane do ustawienia w serii danych. ObjecWrappery pozwalają nam uniknąć potrzeby generowania wielu metod dla różnych argumentów.
             //! Znacząco uprasza interfejs, w przeciwnym wypadku musielibyśmy skorzystać z template
             virtual void setData(const core::ObjectWrapperConstPtr & data) = 0;
+
+			//! Metoda wywoływana na seri danych kiedy dane się zmienią
+			virtual void update() = 0;
 
             //! \return Dane serii
             virtual const core::ObjectWrapperConstPtr & getData() const = 0;
@@ -75,7 +82,7 @@ namespace plugin
         //! \param action Akcje które należy dodać do paska tytułowego. Każdym elementem może być
         //! albo QAction, QMenu z zagniedżonymi akcjami, albo cały QWidget. Rodzice tych elementów nie są zmieniani!
         //! \return Widget będący korzeniem wizualizacji. Musi mieć slot setActiveSource(int).
-        virtual QWidget* createWidget(IActionsGroupManager * manager) = 0;
+        virtual QWidget* createWidget(core::IActionsGroupManager * manager) = 0;
 
         //! Tworzy ikonę dla zadanego wizualizatora. Może zwracać nullptr, chociaż to niewskazane.
         //! W odgróżnieniu od createWidget ikona przejmowana jest na własność.

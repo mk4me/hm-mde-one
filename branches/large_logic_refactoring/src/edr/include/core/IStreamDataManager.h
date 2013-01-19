@@ -14,13 +14,7 @@
 #include <core/IStreamManagerReader.h>
 #include <core/IMemoryDataManager.h>
 
-namespace std {
-
-	class istream;
-
-}
-
-namespace plugin {
+namespace core {
 
 	//! Zbiór operacji na strumieniach obs³ugiwanych przez aplikacjê
 	class IStreamDataManagerOperations
@@ -47,7 +41,7 @@ namespace plugin {
 		};
 
 		//! Typ transkacji na strumieniach - dzia³a w oparciu o RAII -> próbuje "commitowaæ" zmiany przy niszczeniu obiektu transakcji
-		typedef core::shared_ptr<IStreamDataManagerTransaction> TransactionPtr;
+		typedef shared_ptr<IStreamDataManagerTransaction> TransactionPtr;
 
 	public:
 		//! \return Transakcja na strumieniach

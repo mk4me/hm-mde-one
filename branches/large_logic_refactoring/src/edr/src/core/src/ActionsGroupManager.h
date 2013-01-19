@@ -20,6 +20,8 @@ class QWidget;
 class QMenu;
 class QAction;
 
+namespace core {
+
 class ActionsGroup
 {
 public:
@@ -45,7 +47,7 @@ private:
 
 };
 
-class ActionsGroupManager : public plugin::IActionsGroupManager
+class ActionsGroupManager : public IActionsGroupManager
 {
 public:
     typedef std::vector<ActionsGroup> Groups;
@@ -76,5 +78,7 @@ private:
     std::map<QString, int> nameToPos;
 
 };
+
+}
 
 #endif

@@ -50,7 +50,7 @@ QWidget* Visualizer::getOrCreateWidget()
         print->setIcon(icon);
         connect(print, SIGNAL(triggered()), this, SLOT(printActionPressed()));
 
-        plugin::IActionsGroupManager::GroupID id = genericActions.createGroup(tr("Common"));
+        IActionsGroupManager::GroupID id = genericActions.createGroup(tr("Common"));
         genericActions.addGroupAction(id, print);
 
         //tryRun();

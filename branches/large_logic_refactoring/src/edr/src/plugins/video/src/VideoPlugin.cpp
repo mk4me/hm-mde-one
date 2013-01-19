@@ -19,8 +19,6 @@ CORE_PLUGIN_END;
 //! \param parent
 void logCallback(vidlib::FFmpegVideoStream::LogSeverity severity, const char* msg, vidlib::FFmpegVideoStream::FFmpegClass* item, vidlib::FFmpegVideoStream::FFmpegClass* parent)
 {
-	static core::NamedLog log = core::NamedLog(core::getLogInterface(), "ffmpeg");
-	static core::ILog * logger = &log;
     using namespace vidlib;
     switch ( severity ) {
         case FFmpegVideoStream::LogSeverityQuiet:
@@ -29,20 +27,20 @@ void logCallback(vidlib::FFmpegVideoStream::LogSeverity severity, const char* ms
         case FFmpegVideoStream::LogSeverityPanic:
         case FFmpegVideoStream::LogSeverityFatal:
         case FFmpegVideoStream::LogSeverityError:
-            LOG_CUSTOM_ERROR(logger, msg);
+            PLUGIN_LOG_NAMED_ERROR("ffmpeg", msg);
             break;
 
         case FFmpegVideoStream::LogSeverityWarning:
-            LOG_CUSTOM_WARNING(logger, msg);
+            PLUGIN_LOG_NAMED_WARNING("ffmpeg", msg);
             break;
 
         case FFmpegVideoStream::LogSeverityInfo:
         case FFmpegVideoStream::LogSeverityVerbose:
-            LOG_CUSTOM_INFO(logger, msg);
+            PLUGIN_LOG_NAMED_INFO("ffmpeg", msg);
             break;
 
         case FFmpegVideoStream::LogSeverityDebug:
-            LOG_CUSTOM_DEBUG(logger, msg);
+            PLUGIN_LOG_NAMED_DEBUG("ffmpeg", msg);
             break;
 
         default:

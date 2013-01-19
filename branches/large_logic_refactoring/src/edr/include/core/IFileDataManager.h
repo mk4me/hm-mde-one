@@ -15,22 +15,22 @@
 #include <core/ObjectWrapper.h>
 #include <core/Filesystem.h>
 
-namespace plugin {
+namespace core {
 
 	//! Zbiór operacji na plikach
 	class IFileDataManagerOperations
 	{
 	public:
 		//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
-		virtual void removeFile(const core::Filesystem::Path & file) = 0;
+		virtual void removeFile(const Filesystem::Path & file) = 0;
 
 		//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 		//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
-		virtual void addFile(const core::Filesystem::Path & file) = 0;
+		virtual void addFile(const Filesystem::Path & file) = 0;
 
-		virtual const bool tryAddFile(const core::Filesystem::Path & file) = 0;
+		virtual const bool tryAddFile(const Filesystem::Path & file) = 0;
 
-		virtual const bool tryRemoveFile(const core::Filesystem::Path & file) = 0;
+		virtual const bool tryRemoveFile(const Filesystem::Path & file) = 0;
 	};
 
 	//! Interfejs dostêpu do danych plikowych i ³adowania danych w aplikacji

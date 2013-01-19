@@ -18,7 +18,7 @@
 
 namespace core {
 
-class FileDataManager : public plugin::IFileDataManager, public plugin::IFileManagerReader
+class FileDataManager : public IFileDataManager, public IFileManagerReader
 {
 private:
 
@@ -71,9 +71,9 @@ private:
 	void initializeDataWithExternalInitializer(ObjectWrapper & object, const ObjectWrapper::LazyInitializer & li, const ParserPtr & parser);
 	void verifyAndRemoveUninitializedParserObjects(const ParserPtr & parser);
 
-	void rawRemoveFile(const Filesystem::Path & file, const plugin::IMemoryDataManager::TransactionPtr & memTransaction);
+	void rawRemoveFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction);
 
-	void rawAddFile(const Filesystem::Path & file, const plugin::IMemoryDataManager::TransactionPtr & memTransaction);
+	void rawAddFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction);
 
 	const bool rawIsManaged(const Filesystem::Path & file) const;
 
@@ -87,7 +87,7 @@ private:
 
 	void rawGetObjects(const Filesystem::Path & file, ObjectsList & objects);
 
-	void initializeParsers(const plugin::IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator, ObjectsList & objects);
+	void initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator, ObjectsList & objects);
 
 public:
 	//IFileDataManager API
@@ -98,8 +98,13 @@ public:
 	//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 	//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
 	virtual void addFile(const Filesystem::Path & file);
+
+	virtual const bool core::IFileDataManagerOperations::tryAddFile(const core::Filesystem::Path & file);
+
+	virtual const bool core::IFileDataManagerOperations::tryRemoveFile(const core::Filesystem::Path & file);
+
 	//! \return Nowa transakcja
-	virtual plugin::IFileDataManager::TransactionPtr transaction();
+	virtual IFileDataManager::TransactionPtr transaction();
 
 public:
 
@@ -123,7 +128,7 @@ public:
 	//! \return Mapa obiektów wzglêdem plików z których pochodza
 	virtual void getObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const;
 
-	virtual plugin::IFileManagerReader::TransactionPtr transaction() const;
+	virtual IFileManagerReader::TransactionPtr transaction() const;
 };
 
 }

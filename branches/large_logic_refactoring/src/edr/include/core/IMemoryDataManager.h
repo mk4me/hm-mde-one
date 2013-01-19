@@ -14,25 +14,25 @@
 #include <core/ObjectWrapper.h>
 #include <utils/SynchronizationPolicies.h>
 
-namespace plugin {
+namespace core {
 
 	//! Operacje zwi¹zane z zarz¹dzaniem danymi domenowymi aplikacji
 	class IMemoryDataManagerOperations
 	{
 	public:
 		//! \data Dane wchodz¹ce pod kontrolê DM
-		virtual void addData(const core::ObjectWrapperPtr & data) = 0;
+		virtual void addData(const ObjectWrapperPtr & data) = 0;
 		//! Dane usuwane z DM
-		virtual void removeData(const core::ObjectWrapperConstPtr & data) = 0;
+		virtual void removeData(const ObjectWrapperConstPtr & data) = 0;
 		//! \param data Aktualizowane dane
 		//! \param newData Nowa wartoœæ danych
-		virtual void updateData(const core::ObjectWrapperConstPtr & data, const core::ObjectWrapperConstPtr & newData) = 0;
+		virtual void updateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData) = 0;
 
-		virtual const bool tryAddData(const core::ObjectWrapperPtr & data) = 0;
+		virtual const bool tryAddData(const ObjectWrapperPtr & data) = 0;
 
-		virtual const bool tryRemoveData(const core::ObjectWrapperConstPtr & data) = 0;
+		virtual const bool tryRemoveData(const ObjectWrapperConstPtr & data) = 0;
 
-		virtual const bool tryUpdateData(const core::ObjectWrapperConstPtr & data, const core::ObjectWrapperConstPtr & newData) = 0;
+		virtual const bool tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData) = 0;
 	};
 
 	//! Interfejs do danych domenowych i zarz¹dzania nimi w aplikacji

@@ -9,14 +9,14 @@
 #ifndef HEADER_GUARD_CORE__EDRCONSOLEWIDGET_H__
 #define HEADER_GUARD_CORE__EDRCONSOLEWIDGET_H__
 
-#include "EDRConsoleInnerWidget.h"
-#include "EDRDockWidget.h"
-
-#include "Log.h"
+#include "ui_EDRConsoleWidget.h"
 #include <core/SmartPtr.h>
+#include <core/ILog.h>
 #include <queue>
 #include <QtCore/QDate>
 #include <QtCore/QMutex>
+
+class QAction;
 
 namespace core {
 
@@ -41,12 +41,11 @@ typedef shared_ptr<EDRConsoleWidgetEntry> EDRConsoleWidgetEntryPtr;
 Q_DECLARE_METATYPE(EDRConsoleWidgetEntryPtr);
 Q_DECLARE_METATYPE(EDRConsoleWidgetEntry);
 
-class EDRConsoleWidget : public EDRDockWidget
+class EDRConsoleWidget : public QWidget, private Ui::EDRConsoleWidget
 {
     Q_OBJECT
 
 public:
-    EDRConsoleWidget(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     EDRConsoleWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
 
     ~EDRConsoleWidget();
@@ -73,8 +72,6 @@ public slots:
     void setWordWrap(bool wrap);
 
 private:
-    EDRConsoleInnerWidget * consoleWidget;
-
     //! Zakolejkowane wpisy.
     std::queue< EDRConsoleWidgetEntryPtr > queuedEntries;
     //! Muteks do kontroli kolejki wpisów.

@@ -9,20 +9,20 @@ using namespace core;
 const FileDataManager::ParserCreator FileDataManager::streamParserCreator = boost::bind(&FileDataManager::createStreamParser, _1, _2);
 const FileDataManager::ParserCreator FileDataManager::sourceParserCreator = boost::bind(&FileDataManager::createSourceParser, _1, _2);
 
-class FileDataManager::FileTransaction : public plugin::IFileDataManager::IFileDataManagerTransaction
+class FileDataManager::FileTransaction : public IFileDataManager::IFileDataManagerTransaction
 {
 private:
 
 	struct Modyfication
 	{
-		plugin::IFileManagerReader::ModificationType modyfication;
+		IFileManagerReader::ModificationType modyfication;
 		ObjectsList objects;
 	};
 
 	typedef std::map<Filesystem::Path, Modyfication> FileModyfications;
 
 private:
-	plugin::IMemoryDataManager::TransactionPtr mdmTransaction;
+	IMemoryDataManager::TransactionPtr mdmTransaction;
 	FileDataManager * fdm;
 	FileModyfications modyfications;
 	bool transactionRolledback;
@@ -71,11 +71,11 @@ public:
 
 		for(auto it = modyfications.begin(); it != modyfications.end(); ++it){
 			switch(it->second.modyfication){
-			case plugin::IFileManagerReader::ADD_FILE:
+			case IFileManagerReader::ADD_FILE:
 				fdm->objectsByFiles.erase(it->first);
 				break;
 
-			case plugin::IFileManagerReader::REMOVE_FILE:
+			case IFileManagerReader::REMOVE_FILE:
 				{
 					auto insRes = fdm->objectsByFiles.insert(FileDataManager::ObjectsByFiles::value_type(it->first, it->second.objects));
 					if(insRes.second == false){
@@ -91,7 +91,7 @@ public:
 
 	//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 	//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
-	virtual void addFile(const core::Filesystem::Path & file)
+	virtual void addFile(const Filesystem::Path & file)
 	{
 		if(transactionRolledback == true){
 			throw std::runtime_error("File transaction already rolled-back");
@@ -111,7 +111,7 @@ public:
 	}
 
 	//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
-	virtual void removeFile(const core::Filesystem::Path & file)
+	virtual void removeFile(const Filesystem::Path & file)
 	{
 		if(transactionRolledback == true){
 			throw std::runtime_error("File transaction already rolled-back");
@@ -125,7 +125,7 @@ public:
 		rawRemoveFile(file);
 	}
 
-	virtual const bool tryAddFile(const core::Filesystem::Path & file)
+	virtual const bool tryAddFile(const Filesystem::Path & file)
 	{
 		if(transactionRolledback == true || fdm->rawIsManaged(file) == true || !Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)){
 			return false;
@@ -136,7 +136,7 @@ public:
 		return true;
 	}
 
-	virtual const bool tryRemoveFile(const core::Filesystem::Path & file)
+	virtual const bool tryRemoveFile(const Filesystem::Path & file)
 	{
 		if(transactionRolledback == true || fdm->rawIsManaged(file) == false){
 			return false;
@@ -147,7 +147,7 @@ public:
 		return true;
 	}
 
-	virtual void getFiles(core::Files & files) const
+	virtual void getFiles(Files & files) const
 	{
 		if(transactionRolledback == true){
 			throw std::runtime_error("File transaction already rolled-back");
@@ -156,7 +156,7 @@ public:
 		fdm->rawGetFiles(files);
 	}
 
-	virtual const bool isManaged(const core::Filesystem::Path & file) const
+	virtual const bool isManaged(const Filesystem::Path & file) const
 	{
 		if(transactionRolledback == true){
 			throw std::runtime_error("File transaction already rolled-back");
@@ -165,7 +165,7 @@ public:
 		return fdm->isManaged(file);
 	}
 
-	virtual void getObjects(const core::Filesystem::Path & file, core::ConstObjectsList & objects) const
+	virtual void getObjects(const Filesystem::Path & file, ConstObjectsList & objects) const
 	{
 		if(transactionRolledback == true){
 			throw std::runtime_error("File transaction already rolled-back");
@@ -174,7 +174,7 @@ public:
 		fdm->getObjects(file, objects);
 	}
 
-	virtual void getObjects(const core::Filesystem::Path & file, core::ObjectWrapperCollection & objects) const
+	virtual void getObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const
 	{
 		if(transactionRolledback == true){
 			throw std::runtime_error("File transaction already rolled-back");
@@ -191,14 +191,14 @@ private:
 		fdm->rawAddFile(file, mdmTransaction);
 		//aktualizujemy liste zmian
 		Modyfication mod;
-		mod.modyfication = plugin::IFileManagerReader::ADD_FILE;
+		mod.modyfication = IFileManagerReader::ADD_FILE;
 		modyfications.insert(FileModyfications::value_type(file,mod));
 	}
 
 	void rawRemoveFile(const Filesystem::Path & file)
 	{
 		Modyfication mod;
-		mod.modyfication = plugin::IFileManagerReader::REMOVE_FILE;
+		mod.modyfication = IFileManagerReader::REMOVE_FILE;
 		fdm->rawGetObjects(file, mod.objects);
 		//dodajemy dane do dm
 		fdm->rawRemoveFile(file, mdmTransaction);
@@ -207,7 +207,7 @@ private:
 	}
 };
 
-class FileDataManager::FileReaderTransaction : public plugin::IFileManagerReaderOperations
+class FileDataManager::FileReaderTransaction : public IFileManagerReaderOperations
 {
 public:
 	FileReaderTransaction(FileDataManager * fdm) : fdm(fdm)
@@ -222,22 +222,22 @@ public:
 
 public:
 
-	virtual void getFiles(core::Files & files) const
+	virtual void getFiles(Files & files) const
 	{
 		fdm->rawGetFiles(files);
 	}
 
-	virtual const bool isManaged(const core::Filesystem::Path & file) const
+	virtual const bool isManaged(const Filesystem::Path & file) const
 	{
 		return fdm->isManaged(file);
 	}
 
-	virtual void getObjects(const core::Filesystem::Path & file, core::ConstObjectsList & objects) const
+	virtual void getObjects(const Filesystem::Path & file, ConstObjectsList & objects) const
 	{
 		fdm->getObjects(file, objects);
 	}
 
-	virtual void getObjects(const core::Filesystem::Path & file, core::ObjectWrapperCollection & objects) const
+	virtual void getObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const
 	{
 		fdm->getObjects(file, objects);
 	}
@@ -476,7 +476,7 @@ void FileDataManager::verifyAndRemoveUninitializedParserObjects(const ParserPtr 
 				ChangeList changes;
 				FileChange change;
 				change.filePath = it->first;
-				change.modyfication = plugin::IFileManagerReader::REMOVE_UNUSED_FILE;
+				change.modyfication = IFileManagerReader::REMOVE_UNUSED_FILE;
 				changes.push_back(change);
 
 				objectsByFiles.erase(it);
@@ -487,7 +487,7 @@ void FileDataManager::verifyAndRemoveUninitializedParserObjects(const ParserPtr 
 	}	
 }
 
-void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const plugin::IMemoryDataManager::TransactionPtr & memTransaction)
+void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction)
 {
 	bool ok = true;
 	ObjectsList toRemove;
@@ -509,7 +509,7 @@ void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const plugin:
 	}
 }
 
-void FileDataManager::initializeParsers(const plugin::IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator, ObjectsList & objects)
+void FileDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator, ObjectsList & objects)
 {
 	//jeœli pliku nie ma dodaj go, stwórz parsery i rozszerz dostêpne dane wraz z ich opisem
 	for(auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT){
@@ -547,13 +547,13 @@ void FileDataManager::initializeParsers(const plugin::IParserManagerReader::Pars
 	}
 }
 
-void FileDataManager::rawAddFile(const Filesystem::Path & file, const plugin::IMemoryDataManager::TransactionPtr & memTransaction)
+void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction)
 {
 	ObjectsList objects;
 
-	plugin::IParserManagerReader::ParserPrototypes sourceParsers;
+	IParserManagerReader::ParserPrototypes sourceParsers;
 	getParserManager()->sourceParsers(file.string(), sourceParsers);
-	plugin::IParserManagerReader::ParserPrototypes streamParsers;
+	IParserManagerReader::ParserPrototypes streamParsers;
 	getParserManager()->streamParsers(file.string(), streamParsers);
 
 	//Z listy strumieniowych usuwam te które s¹ na liœcie z w³asnym I/O - wierze ¿e zrobia to lepiej
@@ -562,7 +562,7 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const plugin::IM
 
 	sourceParsersSet.insert(sourceParsers.begin(), sourceParsers.end());
 	streamParsersSet.insert(streamParsers.begin(), streamParsers.end());
-	plugin::IParserManagerReader::ParserPrototypes sourcesLeft;
+	IParserManagerReader::ParserPrototypes sourcesLeft;
 
 	std::set_difference(sourceParsersSet.begin(), sourceParsersSet.end(), streamParsersSet.begin(), streamParsersSet.end(), sourcesLeft.end());
 
@@ -659,7 +659,7 @@ void FileDataManager::removeFile(const Filesystem::Path & file)
 	ChangeList changes;
 	FileChange change;
 	change.filePath = file;
-	change.modyfication = plugin::IFileManagerReader::REMOVE_FILE;
+	change.modyfication = IFileManagerReader::REMOVE_FILE;
 	changes.push_back(change);
 	updateObservers(changes);
 }
@@ -683,19 +683,43 @@ void FileDataManager::addFile(const Filesystem::Path & file)
 	ChangeList changes;
 	FileChange change;
 	change.filePath = file;
-	change.modyfication = plugin::IFileManagerReader::ADD_FILE;
+	change.modyfication = IFileManagerReader::ADD_FILE;
 	changes.push_back(change);
 	updateObservers(changes);
 }
 
-plugin::IFileDataManager::TransactionPtr FileDataManager::transaction()
+const bool FileDataManager::tryAddFile(const core::Filesystem::Path & file)
 {
-	return plugin::IFileDataManager::TransactionPtr(new FileTransaction(this));
+	bool ret = true;
+	try{
+		addFile(file);
+	}catch(...){
+		ret = false;
+	}
+
+	return ret;
 }
 
-plugin::IFileManagerReader::TransactionPtr FileDataManager::transaction() const
+const bool FileDataManager::tryRemoveFile(const core::Filesystem::Path & file)
 {
-	return plugin::IFileManagerReader::TransactionPtr(new FileReaderTransaction(const_cast<FileDataManager*>(this)));
+	bool ret = true;
+	try{
+		removeFile(file);
+	}catch(...){
+		ret = false;
+	}
+
+	return ret;
+}
+
+IFileDataManager::TransactionPtr FileDataManager::transaction()
+{
+	return IFileDataManager::TransactionPtr(new FileTransaction(this));
+}
+
+IFileManagerReader::TransactionPtr FileDataManager::transaction() const
+{
+	return IFileManagerReader::TransactionPtr(new FileReaderTransaction(const_cast<FileDataManager*>(this)));
 }
 
 void FileDataManager::addObserver(const FileObserverPtr & fileWatcher)

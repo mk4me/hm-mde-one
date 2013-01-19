@@ -134,7 +134,7 @@ public:
 		}		
 	}
 
-	virtual core::LogPtr subLog(const std::string & name)
+	virtual core::LogPtr subLog(const std::string & name) const
 	{
 		return core::LogPtr(new LogImpl(this->name.empty() == true ? name : this->name + "." + name));
 	}
@@ -168,7 +168,7 @@ void Log::log(LogSeverity severity, const std::string& message)
 	logImpl->log(severity, message);
 }
 
-core::LogPtr Log::subLog(const std::string & name)
+core::LogPtr Log::subLog(const std::string & name) const
 {
 	return logImpl->subLog(name);
 }
@@ -192,7 +192,7 @@ void Log::log(LogSeverity severity, const std::string& message)
 		
 }
 
-core::LogPtr Log::subLog(const std::string & name)
+core::LogPtr Log::subLog(const std::string & name) const
 {
 	static const core::LogPtr ret = core::LogPtr(new Log);
 	return ret;

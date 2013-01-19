@@ -14,7 +14,7 @@
 #include <string>
 #include <core/TypeInfo.h>
 
-namespace plugin {
+namespace core {
 
 	//! Manager zarejestrowanych rozszerzeñ plików w aplikacji, które aplikacja potrafi obs³u¿yæ przez parsery
 	class IExtensionManagerReader
@@ -29,7 +29,7 @@ namespace plugin {
 			//! Zarejestrowane opisy
 			std::vector<std::string> descriptions;
 			//! Zarejestrowane typy
-			core::TypeInfoList types;
+			TypeInfoList types;
 		};
 
 	public:

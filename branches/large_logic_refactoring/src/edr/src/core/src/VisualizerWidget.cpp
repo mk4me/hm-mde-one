@@ -111,14 +111,14 @@ void VisualizerWidget::init()
     label->setObjectName(QString::fromUtf8("label"));
     label->setPixmap(QPixmap(QString::fromUtf8(":/resources/icons/wizualizacja2.png")));
 
-    visualizerCommonElements[label] = InnerVisualizerElement(true, label, plugin::IEDRTitleBar::Left);
+    visualizerCommonElements[label] = InnerVisualizerElement(true, label, IEDRTitleBar::Left);
 
     //combo do przechowywania typów wizualizatorów
     comboType = new QComboBox();
     comboType->setObjectName(QString::fromUtf8("comboType"));
     comboType->setInsertPolicy(QComboBox::InsertAlphabetically);
 
-    visualizerCommonElements[comboType] = InnerVisualizerElement(true, comboType, plugin::IEDRTitleBar::Left);
+    visualizerCommonElements[comboType] = InnerVisualizerElement(true, comboType, IEDRTitleBar::Left);
 
     //ustawienie zdarzeń na zmiane pozycji w combo (zmiana wizualizatora)
     connect(comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(setCurrentVisualizer(int)));
@@ -132,7 +132,7 @@ void VisualizerWidget::init()
     icon2.addFile(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png"), QSize(), QIcon::Normal, QIcon::Off);
     menuSource->setIcon(icon2);
 
-    visualizerCommonElements[menuSource] = InnerVisualizerElement(true, menuSource, plugin::IEDRTitleBar::Left);
+    visualizerCommonElements[menuSource] = InnerVisualizerElement(true, menuSource, IEDRTitleBar::Left);
 
     //dynamiczne ładowanie menu źródeł na ich rozwinięcie
     connect(menuSource, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
@@ -259,7 +259,7 @@ void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements 
                     titleBarElements.push_back(VisualizerTitleBarElement(elementIT->second.object, elementIT->second.side));
                 }
             }else{
-                titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, plugin::IEDRTitleBar::Left));
+                titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, IEDRTitleBar::Left));
             }
         }
     }
@@ -269,7 +269,7 @@ void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements 
         (*groupIT).getAllObjects(allGroupObjects);
 
         for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); ++actionIT){
-            titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, plugin::IEDRTitleBar::Left));
+            titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, IEDRTitleBar::Left));
         }
     }
 }

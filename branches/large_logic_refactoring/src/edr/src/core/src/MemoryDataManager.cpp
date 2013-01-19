@@ -4,7 +4,7 @@
 
 using namespace core;
 
-class MemoryDataManager::MemoryTransaction : public plugin::IMemoryDataManager::IMemoryDataTransaction
+class MemoryDataManager::MemoryTransaction : public IMemoryDataManager::IMemoryDataTransaction
 {
 private:
 	MemoryDataManager * mdm;
@@ -42,7 +42,7 @@ public:
 
 		//szybkie cofanie edycji - tylko pierwotna jest przywracana
 		for(auto it = modyfications.begin(); it != modyfications.end(); ++it){
-			if((*it).modyfication == plugin::IDataManagerReader::UPDATE_OBJECT && firstChanges.find((*it).currentVal) == firstChanges.end())
+			if((*it).modyfication == IDataManagerReader::UPDATE_OBJECT && firstChanges.find((*it).currentVal) == firstChanges.end())
 			{
 				firstChanges.insert((*it).currentVal);
 				mdm->rawUpdateData((*it).currentVal, (*it).previousValue);
@@ -53,11 +53,11 @@ public:
 		for(auto it = modyfications.rbegin(); it != modyfications.rend(); ++it){
 			switch((*it).modyfication){
 
-			case plugin::IDataManagerReader::ADD_OBJECT:
+			case IDataManagerReader::ADD_OBJECT:
 				mdm->rawRemoveData((*it).currentVal);
 				break;
 
-			case plugin::IDataManagerReader::REMOVE_OBJECT:
+			case IDataManagerReader::REMOVE_OBJECT:
 				mdm->rawAddData(core::const_pointer_cast<ObjectWrapper>((*it).previousValue));
 				break;
 			}
@@ -207,7 +207,7 @@ private:
 		//aktualizujemy liste zmian
 		ObjectChange change;
 		change.currentVal = data;
-		change.modyfication = plugin::IDataManagerReader::ADD_OBJECT;
+		change.modyfication = IDataManagerReader::ADD_OBJECT;
 		change.type = data->getTypeInfo();
 		modyfications.push_back(change);
 	}
@@ -219,7 +219,7 @@ private:
 		//aktualizujemy liste zmian
 		ObjectChange change;
 		change.previousValue = data;
-		change.modyfication = plugin::IDataManagerReader::REMOVE_OBJECT;
+		change.modyfication = IDataManagerReader::REMOVE_OBJECT;
 		change.type = data->getTypeInfo();
 		modyfications.push_back(change);
 	}
@@ -232,13 +232,13 @@ private:
 		mdm->rawUpdateData(data, newData);
 		//aktualizujemy liste zmian
 		change.currentVal = data;
-		change.modyfication = plugin::IDataManagerReader::UPDATE_OBJECT;
+		change.modyfication = IDataManagerReader::UPDATE_OBJECT;
 		change.type = data->getTypeInfo();
 		modyfications.push_back(change);
 	}
 };
 
-class MemoryDataManager::MemoryReaderTransaction : public plugin::IDataManagerReaderOperations
+class MemoryDataManager::MemoryReaderTransaction : public IDataManagerReaderOperations
 {
 public:
 	MemoryReaderTransaction(MemoryDataManager * mdm) : mdm(mdm)
@@ -335,7 +335,7 @@ void MemoryDataManager::addData(const ObjectWrapperPtr & data)
 	ChangeList changes;
 	ObjectChange change;
 	change.currentVal = data;
-	change.modyfication = plugin::IDataManagerReader::ADD_OBJECT;
+	change.modyfication = IDataManagerReader::ADD_OBJECT;
 	change.type = data->getTypeInfo();
 	changes.push_back(change);
 	updateObservers(changes);
@@ -363,14 +363,14 @@ void MemoryDataManager::updateData(const ObjectWrapperConstPtr & data, const Obj
 	rawUpdateData(data, newData);
 }
 
-plugin::IMemoryDataManager::TransactionPtr MemoryDataManager::transaction()
+IMemoryDataManager::TransactionPtr MemoryDataManager::transaction()
 {	
-	return plugin::IMemoryDataManager::TransactionPtr(new MemoryTransaction(this));
+	return IMemoryDataManager::TransactionPtr(new MemoryTransaction(this));
 }
 
-plugin::IDataManagerReader::TransactionPtr MemoryDataManager::transaction() const
+IDataManagerReader::TransactionPtr MemoryDataManager::transaction() const
 {	
-	return plugin::IDataManagerReader::TransactionPtr(new MemoryReaderTransaction(const_cast<MemoryDataManager*>(this)));
+	return IDataManagerReader::TransactionPtr(new MemoryReaderTransaction(const_cast<MemoryDataManager*>(this)));
 }
 
 void MemoryDataManager::rawGetObjects(core::ConstObjectsList & objects) const

@@ -8,8 +8,9 @@ SET_PRIVATE_HEADERS(
 	DataHierarchyManager.h
 	MemoryDataManager.h
 	FileDataManager.h
-	CustomApplication.h
-	CustomPath.h
+	StreamDataManager.h
+	PluginApplication.h
+	PluginPath.h
 	VisualizerChannel.h
 	SourceManager.h
 	ActionsGroupManager.h
@@ -23,7 +24,6 @@ SET_PRIVATE_HEADERS(
 	AppInitializer.h
 	MainWindow.h
 	EDRConsoleWidget.h
-	EDRConsoleInnerWidget.h
 	#SceneGraphWidget.h
 	LogInitializer.h
 	ServiceManager.h
@@ -33,36 +33,23 @@ SET_PRIVATE_HEADERS(
 	ObjectOutput.h
 	ObjectSource.h
 	Visualizer.h
-	SampleProcessor.h
 	ObjectSlots.h
 	EDRTitleBar.h
 	EDRDockWidget.h
-	#WorkflowItemEncapsulator.h
 	InputItem.h
 	InputDescription.h
 	OutputDescription.h
 	OutputItem.h
 	InputOutputItem.h
-	EDRConfig.h
-	#EDRDFNode.h
-	#EDRDFSourceNode.h
-	#EDRDFPin.h
-	#EDRDataFlow.h
-	DataProcessorManager.h
-	#WorkflowService.h
-	#WorkflowWidget.h
-	#WorkflowVDFModel.h
-	#WorkflowVDFConnDelContextMenu.h
-	LocalDataSource.h
-	LocalDataSourceWidget.h
-	DataSource.h
-	DataSourceManager.h
 	Log.h
 	PluginLoader.h
 	CorePCH.h
 )
 
 SET_PUBLIC_HEADERS (
+	CoreActionSide.h
+	CoreAction.h
+	CoreWidgetAction.h
 	ITransaction.h
 	IParserManagerReader.h
 	IDataHierarchyManagerReader.h
@@ -78,7 +65,6 @@ SET_PUBLIC_HEADERS (
 	ISource.h
 	ISourceManager.h
 	IActionsGroupManager.h
-	IManagersAccessor.h
 	DataAccessors.h
 	BaseDataTypes.h
 	Filesystem.h
@@ -97,35 +83,24 @@ SET_PUBLIC_HEADERS (
 	IObjectSource.h
 	IVisualizer.h
 	IVisualizerManager.h
-	IDataProcessor.h
 	IObjectOutput.h
 	PluginCommon.h
 	TypeInfo.h
-	IEDRTitleBar.h
 	IInputDescription.h 
 	IOutputDescription.h
-	IInputProcessItem.h
-	IOutputProcessItem.h
-	IInputOutputProcessItem.h
 	IConfigurable.h
-	#IWorkflowItemBase.h
 	IClonable.h
 	ISerializable.h
 	IPath.h
-	IDataProcessorManager.h
-	IDataSource.h
-	IDataSourceManager.h
 	##################################
 	# 			z corelib			 #
-	MultiView.h
-	MultiViewWidgetItem.h
-	MultiViewFunctorWidgetAdapter.h
-	MultiViewCameraItem.h
-	MultiViewManipulatorItem.h
-	OsgSceneDump.h
+	#OsgSceneDump.h
 )
 
 SET_SOURCE_FILES(
+	CoreActionSide.cpp
+	CoreAction.cpp
+	CoreWidgetAction.cpp
 	Path.cpp
 	Application.cpp
 	Window.cpp
@@ -134,8 +109,9 @@ SET_SOURCE_FILES(
 	DataHierarchyManager.cpp
 	MemoryDataManager.cpp
 	FileDataManager.cpp
-	CustomApplication.cpp
-	CustomPath.cpp
+	StreamDataManager.cpp
+	PluginApplication.cpp
+	PluginPath.cpp
 	VisualizerChannel.cpp
 	SourceManager.cpp
 	ActionsGroupManager.cpp
@@ -145,7 +121,6 @@ SET_SOURCE_FILES(
 	SubjectDataFilters.cpp
 	MainWindow.cpp
 	EDRConsoleWidget.cpp
-	EDRConsoleInnerWidget.cpp
 	#SceneGraphWidget.cpp
 	LogInitializer.cpp
 	PluginLoader.cpp
@@ -155,23 +130,8 @@ SET_SOURCE_FILES(
 	VisualizerManager.cpp
 	Visualizer.cpp
 	ObjectSlots.cpp
-	DataProcessor.cpp
 	EDRTitleBar.cpp
 	EDRDockWidget.cpp
-	EDRConfig.cpp
-	#EDRDFNode.cpp
-	#EDRDFSourceNode.cpp
-	#EDRDFPin.cpp
-	#EDRDataFlow.cpp
-	DataProcessorManager.cpp
-	#WorkflowWidget.cpp
-	#WorkflowService.cpp
-	#WorkflowVDFModel.cpp
-	#WorkflowVDFConnDelContextMenu.cpp
-	LocalDataSource.cpp
-	LocalDataSourceWidget.cpp
-	DataSource.cpp
-	DataSourceManager.cpp
 	CorePCH.cpp
 )
 
@@ -180,36 +140,26 @@ SET_MOC_FILES(
 	FlexiTabWidget.h
 	FlexiTabSectionWidget.h
 	EDRConsoleWidget.h
-	EDRConsoleInnerWidget.h
     MainWindow.h
 	#SceneGraphWidget.h
 	VisualizerWidget.h
 	EDRTitleBar.h
 	EDRDockWidget.h	
-	#WorkflowWidget.h
-	#WorkflowVDFModel.h
-	#WorkflowVDFConnDelContextMenu.h
-	LocalDataSourceWidget.h
 	Visualizer.h
 	##################################
 	# 			z corelib			 #
-	MultiViewWidgetItem.h
 )
 SET_UI_FILES(
 	FlexiWidgetTabContentWidget.ui
 	FlexiTabWidget.ui
 	FlexiTabSectionWidget.ui
-	#ui/SceneGraphWidget.ui
-	#ui/OsgWidget.ui
-	#ui/VisualizerWidget.ui
+	#SceneGraphWidget.ui
+	#OsgWidget.ui
 	EDRTitleBar.ui
-	EDRConsoleInnerWidget.ui
-	#WorkflowWidget.ui
-	LocalDataSourceWidget.ui
+	EDRConsoleWidget.ui
 )
 
 SET_RC_FILES (
-	#ui/ConsoleWidget.qrc
 	CoreIcons.qrc
 )
 

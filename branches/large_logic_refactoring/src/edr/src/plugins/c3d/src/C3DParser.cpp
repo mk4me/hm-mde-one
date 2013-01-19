@@ -168,7 +168,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 	} catch(...) {}
 }
 
-core::IParser* C3DParser::create()
+plugin::IParser* C3DParser::create()
 {
     return new C3DParser();
 }

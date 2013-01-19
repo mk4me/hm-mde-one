@@ -75,13 +75,13 @@ void StreamOsgWidget::refreshShaders( bool useTextureRect, vidlib::VIDLIB_PixelF
             if (yuvTextureRectShader) {
                 yuvProgram->addShader(yuvTextureRectShader);
             } else {
-                LOG_ERROR("Missing yuv texture_rect shader. As a result image may be incorrect.");
+                PLUGIN_LOG_ERROR("Missing yuv texture_rect shader. As a result image may be incorrect.");
             }
         } else {
             if (yuvTexture2DShader) {
                 yuvProgram->addShader(yuvTexture2DShader);
             } else {
-                LOG_ERROR("Missing yuv texture2D shader. As a result image may be incorrect.");
+                PLUGIN_LOG_ERROR("Missing yuv texture2D shader. As a result image may be incorrect.");
             }
         }
         // TODO: sprawdzić czy wielokrotnie nie dodajemy
@@ -92,7 +92,7 @@ void StreamOsgWidget::refreshShaders( bool useTextureRect, vidlib::VIDLIB_PixelF
             state->removeAttribute(yuvProgram);
         }
     } else {
-        LOG_ERROR("Nieobsługiwany format: "<<utils::Enum<vidlib::VIDLIB_PixelFormat>::getName(format));
+        PLUGIN_LOG_ERROR("Nieobsługiwany format: "<<utils::Enum<vidlib::VIDLIB_PixelFormat>::getName(format));
     }
 }
 
