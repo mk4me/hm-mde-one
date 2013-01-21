@@ -501,7 +501,7 @@ void HmmMainWindow::showTimeline()
                 ActionsGroupManager settingsWidgetActions;
                 QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
 
-                EDRDockWidget * widget = new EDRDockWidget();
+                CoreDockWidget * widget = new CoreDockWidget();
                 widget->setTitleBarWidget(new QWidget());
                 widget->setFeatures(QDockWidget::NoDockWidgetFeatures);
                 widget->setWidget(controlWidget);
@@ -918,7 +918,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     visualizerDockWidget->setVisualizerSwitchVisible(false);
     visualizerDockWidget->setSourceVisible(false);
 
-    EDRTitleBar * titleBar = supplyWithEDRTitleBar(visualizerDockWidget, true);
+    CoreTitleBar * titleBar = supplyWithCoreTitleBar(visualizerDockWidget, true);
     registerVisualizerContext(titleBar, visualizerDockWidget, visualizer);
     visualizerDockWidget->setMinimumSize((std::max)(50, visualizerDockWidget->minimumWidth()), (std::max)(50, visualizerDockWidget->minimumHeight()));
     return visualizerDockWidget;
@@ -1054,7 +1054,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
          QMenu* group = new QMenu(set->windowTitle(), menu);
 
-         BOOST_FOREACH(EDRDockWidget* dock, set->getDockWidgets()) {
+         BOOST_FOREACH(CoreDockWidget* dock, set->getDockWidgets()) {
              VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(dock);
              if (vw ) {
                  VisualizerPtr visualizer = vw->getCurrentVisualizer();
@@ -1515,7 +1515,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
  }
 
- void HmmMainWindow::registerVisualizerContext( EDRTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer )
+ void HmmMainWindow::registerVisualizerContext( CoreTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer )
  {
      contextEventFilter->registerClosableContextWidget(titleBar);
      titleBar->installEventFilter(contextEventFilter);

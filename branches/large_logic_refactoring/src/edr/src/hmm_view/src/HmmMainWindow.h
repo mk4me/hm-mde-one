@@ -206,7 +206,7 @@ private:
     //! \param titleBar 
     //! \param visualizerDockWidget 
     //! \param visualizer 
-    void registerVisualizerContext( EDRTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer );	
+    void registerVisualizerContext( CoreTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer );	
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
     //! \param item wybrany item, na podstwie którego tworzony jest wizualizator
     //! \param dockSet set, do którego ma być dodany element, jeśli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce

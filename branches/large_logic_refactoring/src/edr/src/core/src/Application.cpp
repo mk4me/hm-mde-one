@@ -11,6 +11,7 @@
 #include <corelib/Config.h>
 #include "MainWindow.h"
 #include <QtGui/QSplashScreen>
+#include <QtGui/QMessageBox>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -33,32 +34,33 @@ inline void initCoreResources() { Q_INIT_RESOURCE(CoreIcons); }
 CORE_DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 CORE_DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
-namespace core {
+namespace coreUI {
 
 class UIApplication : public QApplication
 {
 	Q_OBJECT;
 public:
-	UIApplication(int & argc, char *argv[], Application * coreApplication) : QApplication(argc, argv), coreApplication(coreApplication) {}
+	UIApplication(int & argc, char *argv[], core::Application * coreApplication) : QApplication(argc, argv), coreApplication(coreApplication) {}
 
 	virtual bool notify(QObject* receiver, QEvent* event)
 	{
 		try {
 			return QApplication::notify(receiver, event);
 		} catch (std::exception &e) {
-			CORE_LOG_ERROR("Error occured: " << e.what());
+			CORE_LOG_ERROR("Error occured in UI during user operation execution: " << e.what());
 		} catch (...) {
-			CORE_LOG_ERROR("Unknown error occured");
+			CORE_LOG_ERROR("Unknown error occured in UI during user operation execution");
 		}
 		return false;
 	}
 
 private:
-	Application * coreApplication;
+	core::Application * coreApplication;
 };
 
 }
 
+using namespace coreUI;
 using namespace core;
 
 Application::Application()
@@ -83,12 +85,18 @@ int Application::initUI(int & argc, char *argv[])
 		return 1;
 	}
 
+	// pdczytujemy czy jest podana dodatkowa œcie¿ka dla pluginów
+	std::string path;
+	arguments.read("--plugins",path);
+	if(path.empty() == false){
+		additionalPluginsPath = path;
+	}
 
 	// inicjalizacja UI, wszystkich potrzebnych zasobów
 	{
 		initCoreResources();
 
-		uiApplication_.reset(new UIApplication(argc, argv));
+		uiApplication_.reset(new coreUI::UIApplication(argc, argv, this));
 		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath()+"/plugins");
 
 		//ustawienia aplikacji
@@ -103,7 +111,7 @@ int Application::initUI(int & argc, char *argv[])
 void Application::initWithUI(MainWindow * mainWindow)
 {
 	mainWindow->splashScreen();
-	mainWindow->showSplashScreenMessage(tr("Initializing application paths"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing application paths"));
 	QCoreApplication::processEvents();
 	//inicjalizacja œcie¿ek aplikacji, katalogów tymczasowych itp, u¿ywane do ³adowania t³umaczeñ
 	{
@@ -117,7 +125,7 @@ void Application::initWithUI(MainWindow * mainWindow)
 		}
 	}
 
-	mainWindow->showSplashScreenMessage(tr("Initializing logger"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing logger"));
 	QCoreApplication::processEvents();
 
 	//Mam œcie¿kê do konfiguracji loggera, nie wiem czy to OSG, Log4cxx czy pusty albo coœ jeszcze innego - initializer powinien to zrobiæ za mnie
@@ -129,7 +137,7 @@ void Application::initWithUI(MainWindow * mainWindow)
 		logger_ = loggerPrototype_->subLog("core");
 	}
 
-	mainWindow->showSplashScreenMessage(tr("Initializing directories"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing directories"));
 	QCoreApplication::processEvents();
 
 	//probujemy tmp katalog zapewniæ
@@ -140,7 +148,7 @@ void Application::initWithUI(MainWindow * mainWindow)
 		throw;
 	}
 
-	mainWindow->showSplashScreenMessage(tr("Initializing translations"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing translations"));
 	QCoreApplication::processEvents();
 
 	//t³umaczenia aplikacji
@@ -170,38 +178,7 @@ void Application::initWithUI(MainWindow * mainWindow)
 		uiApplication_->installTranslator(&qtTranslator);
 	}
 
-	mainWindow->showSplashScreenMessage(tr("Initializing plugins loader"));
-	QCoreApplication::processEvents();
-
-	//inicjalizacja obiektu ³aduj¹cego pluginy
-	pluginLoader_.reset(new PluginLoader(Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
-
-	//obsluga dodatkowej sciezki z pluginami zewnetrznymi
-	{
-		std::string additionalPluginDirPath;
-		if (arguments.read("--plugins",additionalPluginDirPath))
-		{
-			Filesystem::Path path(additionalPluginDirPath);
-			if(Filesystem::pathExists(path) == true) {
-				Filesystem::Iterator endIT;
-				std::for_each(Filesystem::Iterator(path), endIT, [=](const Filesystem::Path & p) {
-					if (Filesystem::isDirectory(p)) {
-						pluginLoader_->addPath(p);
-						CORE_LOG_INFO("Plugin path added: " << p);
-					}
-				});
-			}
-			
-		}
-	}
-
-	mainWindow->showSplashScreenMessage(tr("Loading plugins"));
-	QCoreApplication::processEvents();
-
-	//³adujemy pluginy
-	pluginLoader_->load();
-
-	mainWindow->showSplashScreenMessage(tr("Initializing 3D context"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing 3D context"));
 	QCoreApplication::processEvents();
 
 	{
@@ -213,9 +190,9 @@ void Application::initWithUI(MainWindow * mainWindow)
 		// W przeciwnym wypadku powstanie kilka instancji tego obiektu - po jednej dla ka¿dego pluginu dostarczaj¹cego widgetów OSG
 		// Bardzo niebezpieczne!! Powodowa³o crash aplikacji przy inicjalizacji a potem przy zamykaniu
 		boost::shared_ptr<QWidget> w(new osgQt::GLWidget());
-	}
+	}	
 
-	mainWindow->showSplashScreenMessage(tr("Initializing core managers"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing core managers"));
 	QCoreApplication::processEvents();
 
 	dataHierarchyManager_.reset(new DataHierarchyManager());
@@ -227,18 +204,42 @@ void Application::initWithUI(MainWindow * mainWindow)
 	sourceManager_.reset(new SourceManager());
 	visualizerManager_.reset(new VisualizerManager());	
 
-	mainWindow->showSplashScreenMessage(tr("Registering application core domain types"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Registering application core domain types"));
 	QCoreApplication::processEvents();
 
 	registerCoreDomainTypes();
 
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing plugins loader"));
+	QCoreApplication::processEvents();
+
+	//inicjalizacja obiektu ³aduj¹cego pluginy
+	pluginLoader_.reset(new PluginLoader(Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
+
+	//obsluga dodatkowej sciezki z pluginami zewnetrznymi
+	if(additionalPluginsPath.empty() == false && Filesystem::pathExists(additionalPluginsPath) == true)
+	{
+		Filesystem::Iterator endIT;
+		std::for_each(Filesystem::Iterator(additionalPluginsPath), endIT, [=](const Filesystem::Path & p) {
+			if (Filesystem::isDirectory(p)) {
+				pluginLoader_->addPath(p);
+				CORE_LOG_INFO("Plugin path added: " << p);
+			}
+		});			
+	}
+
+	mainWindow->showSplashScreenMessage(QObject::tr("Loading plugins"));
+	QCoreApplication::processEvents();
+
+	//³adujemy pluginy
+	pluginLoader_->load();
+
 	for(int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
-		unpackPlugin(splashScreen, pluginLoader_->getPlugin(i));
+		unpackPlugin(mainWindow, pluginLoader_->getPlugin(i));
 	}
 
 	//findResources(core::getResourcesPath().string());
 
-	mainWindow->showSplashScreenMessage(tr("Initializing services"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing services"));
 	QCoreApplication::processEvents();
 
 	// inicjalizacja us³ug
@@ -252,7 +253,7 @@ void Application::initWithUI(MainWindow * mainWindow)
 		serviceManager_->getService(i)->lateInit();
 	}
 
-	mainWindow->showSplashScreenMessage(tr("Initializing sources"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing sources"));
 	QCoreApplication::processEvents();
 
 	// inicjalizacja Ÿróde³	
@@ -260,13 +261,14 @@ void Application::initWithUI(MainWindow * mainWindow)
 		sourceManager_->getSource(i)->init(memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
 	}
 
-	mainWindow->showSplashScreenMessage(tr("Initializing console"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing console"));
 	QCoreApplication::processEvents();
 	logInitializer_->setConsoleWidget(mainWindow->getConsole());
 
-	mainWindow->showSplashScreenMessage(tr("Initializing main view"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing main view"));
 	QCoreApplication::processEvents();
 	mainWindow->init();
+	mainWindow->setCloseUpOperations(boost::bind(&Application::finalizeUI, this));
 
 	mainWindow->show();
 
@@ -503,44 +505,61 @@ void Application::showSplashScreenMessage(QSplashScreen * splashScreen, const QS
 	QCoreApplication::processEvents();
 }
 
-void Application::unpackPlugin(QSplashScreen * splashScreen, const core::PluginPtr & plugin)
+void Application::unpackPlugin(MainWindow * mainWindow, const core::PluginPtr & plugin)
 {
 	auto message = QObject::tr("Loading plugin %1 content: %2").arg(QString::fromStdString(plugin->getName()));
 
-	showSplashScreenMessage(splashScreen, message.arg(QObject::tr("services")));
-
-	for ( int j = 0; j < plugin->getNumServices(); ++j ) {
-		safeRegisterService(plugin->getService(j));
-	}
-
-	showSplashScreenMessage(splashScreen, message.arg(QObject::tr("sources")));
-
-	for ( int j = 0; j < plugin->getNumSources(); ++j ) {
-		safeRegisterSource(plugin->getSource(j));
-	}
-
-	showSplashScreenMessage(splashScreen, message.arg(QObject::tr("parsers")));
-
-	for(int j = 0; j < plugin->getNumParsers(); ++j) {
-		safeRegisterParser(plugin->getParser(j));
-	}
-
-	showSplashScreenMessage(splashScreen, message.arg(QObject::tr("domain objects")));
+	mainWindow->showSplashScreenMessage(message.arg(QObject::tr("domain objects")));
+	QCoreApplication::processEvents();
 
 	for(int j = 0; j < plugin->getNumObjectWrapperPrototypes(); ++j) {
 		safeRegisterObjectWrapperPrototype(plugin->getObjectWrapperPrototype(j));
 	}
 
-	showSplashScreenMessage(splashScreen, message.arg(QObject::tr("visualizers")));
+	mainWindow->showSplashScreenMessage(message.arg(QObject::tr("services")));
+	QCoreApplication::processEvents();
+
+	for ( int j = 0; j < plugin->getNumServices(); ++j ) {
+		safeRegisterService(plugin->getService(j));
+	}
+
+	mainWindow->showSplashScreenMessage(message.arg(QObject::tr("sources")));
+	QCoreApplication::processEvents();
+
+	for ( int j = 0; j < plugin->getNumSources(); ++j ) {
+		safeRegisterSource(plugin->getSource(j));
+	}
+
+	mainWindow->showSplashScreenMessage(message.arg(QObject::tr("parsers")));
+	QCoreApplication::processEvents();
+
+	for(int j = 0; j < plugin->getNumParsers(); ++j) {
+		safeRegisterParser(plugin->getParser(j));
+	}
+	
+	mainWindow->showSplashScreenMessage(message.arg(QObject::tr("visualizers")));
+	QCoreApplication::processEvents();
 
 	for(int j = 0; j < plugin->getNumVisualizers(); ++j) {
 		safeRegisterVisualizer(plugin->getVisualizer(j));
 	}
 }
 
-//¿¹danie od³¹czenia siê serwisów od widgetów i elementów UI oraz innych serwisów czy zasobów aplikacji
-ServiceManager::getInstance()->finalizeServices();
+void Application::finalizeUI(){
 
-//    VisualizerManager::getInstance()->setDebugWidget(nullptr);
-VisualizerManager::getInstance()->markAllChannelsAsRemoved();
-VisualizerManager::getInstance()->removeAllChannels();
+	try{
+		sourceManager_->finalizeSources();
+		serviceManager_->finalizeServices();
+	}catch(std::exception & e){
+		CORE_LOG_ERROR("Error while closing UI during sources and services finalization: " << e.what());
+	}catch(...){
+		CORE_LOG_ERROR("UNKNOWN error while closing UI during sources and services finalization");
+	}
+}
+
+////¿¹danie od³¹czenia siê serwisów od widgetów i elementów UI oraz innych serwisów czy zasobów aplikacji
+//ServiceManager::getInstance()->finalizeServices();
+//
+////    VisualizerManager::getInstance()->setDebugWidget(nullptr);
+//VisualizerManager::getInstance()->markAllChannelsAsRemoved();
+//VisualizerManager::getInstance()->removeAllChannels();

@@ -16,12 +16,12 @@
 #include <core/src/EDRDockWidget.h>
 
 //! Klasa obsługuje grupę dock widgetów, sama będąc dock widgetem
-class EDRDockWidgetSet : public EDRDockWidget
+class EDRDockWidgetSet : public CoreDockWidget
 {
 	Q_OBJECT;
 public:
     //! niemodyfikowalny zakres wszystkich podległych widgetów zakładki
-    typedef boost::iterator_range<std::list<EDRDockWidget*>::const_iterator> const_range;
+    typedef boost::iterator_range<std::list<CoreDockWidget*>::const_iterator> const_range;
 
 public:
 	//! Konstruktor
@@ -40,16 +40,16 @@ public:
     //! \param widget dodawany dock widget
     //! \param area obszar okna (lewy, prawy, góra, dol)
     //! \param orientation orientacja (dzielenie w pionie lub poziomie)
-    void addDockWidget(EDRDockWidget* widget, Qt::DockWidgetArea area, Qt::Orientation orientation);
+    void addDockWidget(CoreDockWidget* widget, Qt::DockWidgetArea area, Qt::Orientation orientation);
     //! Dodaje dock widget do grupy, jeśli nie ma na niego miejsca rzucany jest wyjątek
     //! \param widget dodawany dock widget
     //! \param orientation orientacja (dzielenie w pionie lub poziomie)
-	void addDockWidget(EDRDockWidget* widget, Qt::Orientation orientation);
+	void addDockWidget(CoreDockWidget* widget, Qt::Orientation orientation);
     //! Dodaje dock widget do grupy, jeśli nie ma na niego miejsca rzucany jest wyjątek
     //! \param widget dodawany dock widget
-    void addDockWidget(EDRDockWidget* widget);
+    void addDockWidget(CoreDockWidget* widget);
 	//! \return czy można jeszcze dodać dock widget do grpy
-	bool isAdditionPossible(EDRDockWidget* widget = nullptr) const;
+	bool isAdditionPossible(CoreDockWidget* widget = nullptr) const;
 	//! blokuje lub odblokowuje możliwość dodawania widgetów
 	//! \param additionPossible można / nie można dodać nowego widgeta
 	void blockAddition(bool additionPossible);
@@ -79,7 +79,7 @@ private:
     //! kontener dodawanych dock widgetów
 	QMainWindow* mainWindow;
     //! dodane do grupy dock widgety
-	std::list<EDRDockWidget*> widgetsList;
+	std::list<CoreDockWidget*> widgetsList;
     //! maksymalna liczba dock widgetów w grupie
 	int maxWidgetsNumber;
     //! czy możliwe jest dalsze dodawanie widgetów (niezalezne od maksymalnej liczby dock widgetów)

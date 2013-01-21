@@ -15,14 +15,21 @@
 #include <QtCore/QObject>
 #include <QtCore/QSettings>
 #include <QtGui/QMainWindow>
-#include <core/Window.h>
+//#include <core/Window.h>
 #include <core/Filesystem.h>
+#include <boost/function.hpp>
 
 class QSplashScreen;
 
 namespace core {
 
-	class EDRConsoleWidget;
+	class Application;
+
+};
+
+namespace coreUI {
+
+	class CoreConsoleWidget;
 	class VisualizerWidget;
 
     template<class T>
@@ -34,30 +41,40 @@ namespace core {
         return ret;
     }
 
-	class MainWindow : public QMainWindow, public core::Window
+	class MainWindow : public QMainWindow//, public core::Window
 	{
 		Q_OBJECT
+
+		friend class core::Application;
+
+	public:
+
+		typedef boost::function<void()> CloseUpOperations;
 
 	private:
 
 		//! Widget ze sceną jakiegoś grafu OSG.
 		//SceneGraphWidget* widgetSceneGraph;
 		//! Widget konsoli.
-		EDRConsoleWidget* widgetConsole;
+		CoreConsoleWidget* widgetConsole;
         //! Lista zasobów.
         std::vector<std::string> resourcesPaths;
         //! Lista skórek dla UI
-        std::vector<Filesystem::Path> applicationSkinsPaths;
+        std::vector<core::Filesystem::Path> applicationSkinsPaths;
 		//! SplashScreenAplikacji
         QSplashScreen * splashScreen_;
 		//! Ścieżka do screenshotów z aplikacji
-		Filesystem::Path screenshotsPath_;
+		core::Filesystem::Path screenshotsPath_;
+
+		CloseUpOperations closeUpOperations_;
 
 	private:
 
 		//! \return Customizowany splash screen dla danego widoku aplikacji, jeśli null to domyslny splash screen
 		virtual QSplashScreen * createSplashScreen() = 0;
 		virtual void customViewInit(QWidget * console) = 0;
+
+		void setCloseUpOperations(const CloseUpOperations & closeUp);
 
 	public:
 
@@ -70,10 +87,10 @@ namespace core {
 		void init();
 
 		//! \param path Ścieżka stylu
-		void setStyle(const Filesystem::Path& path);
+		void setStyle(const core::Filesystem::Path& path);
 		//! \param path Ścieżka stylu
 		//! \return Czy udało się załadowac styl
-		bool trySetStyle(const Filesystem::Path& path);
+		bool trySetStyle(const core::Filesystem::Path& path);
 		//! \param styleName Nazwa stylu
 		void setStyleByName(const std::string& styleName);
 		//! \param styleName Nazwa stylu
@@ -85,7 +102,7 @@ namespace core {
 		virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget) = 0;
 
 		//! \return Widget konsoli, który przechodzi pod kontrolę obiektu dziedziczącego - musi jakoś obsłużyć konsolę a na koniec ją usunąć
-		EDRConsoleWidget* getConsole();
+		CoreConsoleWidget* getConsole();
 
 		virtual void showSplashScreenMessage(const QString & message);
 
@@ -96,9 +113,9 @@ namespace core {
 	private:
 
         //! Szuka na dysku zasobów.
-        void findResources(const Filesystem::Path & resourcesPath);
+        void findResources(const core::Filesystem::Path & resourcesPath);
 
-        const Filesystem::Path & getApplicationSkinsFilePath(int i);
+        const core::Filesystem::Path & getApplicationSkinsFilePath(int i);
 
         int getApplicationSkinsFilePathCount();
 
@@ -107,7 +124,7 @@ namespace core {
 		//! \param name
 		//! \param style
 		//! \param area
-		QDockWidget* embeddWidget(QWidget* widget, const ActionsGroupManager& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
+		QDockWidget* embeddWidget(QWidget* widget, const core::ActionsGroupManager& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
 		// QWidget
 	protected:

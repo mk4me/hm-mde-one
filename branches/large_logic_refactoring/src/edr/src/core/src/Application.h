@@ -20,6 +20,13 @@
 
 class QSplashScreen;
 
+namespace coreUI {
+
+	class UIApplication;
+	class MainWindow;
+	
+}
+
 namespace core {
 
 	class MemoryDataManager;
@@ -33,8 +40,6 @@ namespace core {
 	class ServiceManager;
 	class SourceManager;
 	class LogInitializer;
-	class UIApplication;
-	class MainWindow;
 	class PluginLoader;
 
 	class Application
@@ -52,10 +57,12 @@ namespace core {
 		shared_ptr<ParserManager> parserManager_;
 		shared_ptr<StreamDataManager> streamDataManager_;
 		shared_ptr<FileDataManager> fileDataManager_;
-		shared_ptr<UIApplication> uiApplication_;
+		shared_ptr<coreUI::UIApplication> uiApplication_;
 		shared_ptr<ServiceManager> serviceManager_;
 		shared_ptr<SourceManager> sourceManager_;
 		shared_ptr<VisualizerManager> visualizerManager_;
+
+		Filesystem::Path additionalPluginsPath;
 
 	private:
 
@@ -63,13 +70,15 @@ namespace core {
 		static void setDefaultPaths(shared_ptr<Path> & path);
 		static void showSplashScreenMessage(QSplashScreen * splashScreen, const QString & message);
 
+		void finalizeUI();
+
 		void safeRegisterService(const plugin::IServicePtr & service);
 		void safeRegisterSource(const plugin::ISourcePtr & source);
 		void safeRegisterParser(const plugin::IParserPtr & parser);
 		void safeRegisterObjectWrapperPrototype(const ObjectWrapperPtr & prototype);
 		void safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer);
 		void registerCoreDomainTypes();
-		void unpackPlugin(QSplashScreen * splashScreen, const PluginPtr & plugin);
+		void unpackPlugin(coreUI::MainWindow * splashScreen, const PluginPtr & plugin);
 
 	public:
 		Application();
@@ -77,7 +86,7 @@ namespace core {
 
 		int initUI(int & argc, char *argv[]);
 
-		void initWithUI(MainWindow * mainWindow);
+		void initWithUI(coreUI::MainWindow * mainWindow);
 
 		int run();
 

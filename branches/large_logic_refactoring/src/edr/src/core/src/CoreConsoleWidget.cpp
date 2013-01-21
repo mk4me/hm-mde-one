@@ -1,38 +1,38 @@
 #include "CorePCH.h"
 #include <QtCore/QThread>
-#include <QtGui/QAction>
-#include "EDRConsoleWidget.h"
+#include "CoreConsoleWidget.h"
 
+using namespace coreUI;
 using namespace core;
 
-EDRConsoleWidget::EDRConsoleWidget(QWidget *parent, Qt::WindowFlags flags) : QWidget(parent, flags)
+CoreConsoleWidget::CoreConsoleWidget(QWidget *parent, Qt::WindowFlags flags) : QWidget(parent, flags)
 {
 	setupUi(this);
     init();
 }
 
-EDRConsoleWidget::~EDRConsoleWidget()
+CoreConsoleWidget::~CoreConsoleWidget()
 {
 
 }
 
-void EDRConsoleWidget::init()
+void CoreConsoleWidget::init()
 {
-    qRegisterMetaType<EDRConsoleWidgetEntry>("EDRConsoleWidgetEntry");
-    qRegisterMetaType<EDRConsoleWidgetEntryPtr>("EDRConsoleWidgetEntryPtr");
+    qRegisterMetaType<CoreConsoleWidgetEntry>("CoreConsoleWidgetEntry");
+    qRegisterMetaType<CoreConsoleWidgetEntryPtr>("CoreConsoleWidgetEntryPtr");
 
 	setWindowTitle(tr("Console"));
 }
 
-void EDRConsoleWidget::logEntry( const EDRConsoleWidgetEntry& entry )
+void CoreConsoleWidget::logEntry( const CoreConsoleWidgetEntry& entry )
 {
     QTextCharFormat fmt;
 
-    if ( entry.severity == core::ILog::LogSeverityInfo ) {
+    if ( entry.severity == ILog::LogSeverityInfo ) {
         fmt.setForeground( QColor(0, 0, 0, 255) );
-    } else if ( entry.severity == core::ILog::LogSeverityWarning ) {
+    } else if ( entry.severity == ILog::LogSeverityWarning ) {
         fmt.setForeground( QColor(255, 130, 0, 255) );
-    } else if ( entry.severity == core::ILog::LogSeverityError ) {
+    } else if ( entry.severity == ILog::LogSeverityError ) {
         fmt.setForeground( QColor(255, 0, 0, 255) );
     } else {
         fmt.setForeground( QColor(100, 150, 50, 255) );
@@ -42,12 +42,12 @@ void EDRConsoleWidget::logEntry( const EDRConsoleWidgetEntry& entry )
     textEdit->append( entry.message );
 }
 
-void EDRConsoleWidget::logEntry( EDRConsoleWidgetEntryPtr entry )
+void CoreConsoleWidget::logEntry( CoreConsoleWidgetEntryPtr entry )
 {
     logEntry(*entry);
 }
 
-void EDRConsoleWidget::flushQueue()
+void CoreConsoleWidget::flushQueue()
 {
     QMutexLocker locker(&queueMutex);
     while ( !queuedEntries.empty() ) {
@@ -56,13 +56,13 @@ void EDRConsoleWidget::flushQueue()
     }
 }
 
-void EDRConsoleWidget::queueEntry( EDRConsoleWidgetEntryPtr entry )
+void CoreConsoleWidget::queueEntry( CoreConsoleWidgetEntryPtr entry )
 {
     QMutexLocker locker(&queueMutex);
     queuedEntries.push(entry);
 }
 
-void EDRConsoleWidget::logOrQueueEntry( EDRConsoleWidgetEntryPtr entry )
+void CoreConsoleWidget::logOrQueueEntry( CoreConsoleWidgetEntryPtr entry )
 {
 	QThread* widgetThread = this->thread();
 	QThread* currentThred = QThread::currentThread();
@@ -73,7 +73,7 @@ void EDRConsoleWidget::logOrQueueEntry( EDRConsoleWidgetEntryPtr entry )
     }
 }
 
-void EDRConsoleWidget::setWordWrap( bool wrap )
+void CoreConsoleWidget::setWordWrap( bool wrap )
 {
     textEdit->setWordWrapMode( wrap ? QTextOption::WrapAtWordBoundaryOrAnywhere : QTextOption::NoWrap );
 }

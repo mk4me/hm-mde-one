@@ -14,7 +14,7 @@
 class UserInterfaceService;
 class ServiceManager;
 //class SceneGraphWidget;
-class EDRConsoleWidget;
+class CoreConsoleWidget;
 class VisualizerManager;
 class DataProcessorManager;
 class VisualizerWidget;

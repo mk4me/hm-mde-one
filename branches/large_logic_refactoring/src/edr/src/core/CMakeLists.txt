@@ -23,7 +23,7 @@ SET_PRIVATE_HEADERS(
 	ManagerHelper.h
 	AppInitializer.h
 	MainWindow.h
-	EDRConsoleWidget.h
+	CoreConsoleWidget.h
 	#SceneGraphWidget.h
 	LogInitializer.h
 	ServiceManager.h
@@ -34,8 +34,8 @@ SET_PRIVATE_HEADERS(
 	ObjectSource.h
 	Visualizer.h
 	ObjectSlots.h
-	EDRTitleBar.h
-	EDRDockWidget.h
+	CoreTitleBar.h
+	CoreDockWidget.h
 	InputItem.h
 	InputDescription.h
 	OutputDescription.h
@@ -120,7 +120,7 @@ SET_SOURCE_FILES(
 	FlexiTabSectionWidget.cpp
 	SubjectDataFilters.cpp
 	MainWindow.cpp
-	EDRConsoleWidget.cpp
+	CoreConsoleWidget.cpp
 	#SceneGraphWidget.cpp
 	LogInitializer.cpp
 	PluginLoader.cpp
@@ -130,8 +130,8 @@ SET_SOURCE_FILES(
 	VisualizerManager.cpp
 	Visualizer.cpp
 	ObjectSlots.cpp
-	EDRTitleBar.cpp
-	EDRDockWidget.cpp
+	CoreTitleBar.cpp
+	CoreDockWidget.cpp
 	CorePCH.cpp
 )
 
@@ -139,12 +139,12 @@ SET_MOC_FILES(
 	FlexiWidgetTabContentWidget.h
 	FlexiTabWidget.h
 	FlexiTabSectionWidget.h
-	EDRConsoleWidget.h
+	CoreConsoleWidget.h
     MainWindow.h
 	#SceneGraphWidget.h
 	VisualizerWidget.h
-	EDRTitleBar.h
-	EDRDockWidget.h	
+	CoreTitleBar.h
+	CoreDockWidget.h	
 	Visualizer.h
 	##################################
 	# 			z corelib			 #
@@ -155,8 +155,8 @@ SET_UI_FILES(
 	FlexiTabSectionWidget.ui
 	#SceneGraphWidget.ui
 	#OsgWidget.ui
-	EDRTitleBar.ui
-	EDRConsoleWidget.ui
+	CoreTitleBar.ui
+	CoreConsoleWidget.ui
 )
 
 SET_RC_FILES (

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EDRTitleBar</class>
- <widget class="QWidget" name="EDRTitleBar">
+ <class>CoreTitleBar</class>
+ <widget class="QWidget" name="CoreTitleBar">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>387</width>
-    <height>21</height>
+    <height>22</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,7 +32,7 @@
    <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>EDRTitleBar</string>
+   <string>CoreTitleBar</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -54,20 +54,18 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QLabel" name="titleLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <widget class="QFrame" name="titlePlaceholder">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
      </property>
-     <property name="text">
-      <string>Widget Title</string>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
      </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="leftFrame">
+    <widget class="QFrame" name="leftToolbarPlaceholder">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -110,7 +108,7 @@
     </spacer>
    </item>
    <item>
-    <widget class="QFrame" name="rightFrame">
+    <widget class="QFrame" name="rightToolbarPlaceholder">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -150,17 +148,31 @@
        <height>16777215</height>
       </size>
      </property>
+     <property name="toolTip">
+      <string>Dock | Undock</string>
+     </property>
      <property name="styleSheet">
       <string notr="true"/>
      </property>
      <property name="text">
       <string>o</string>
      </property>
+     <property name="icon">
+      <iconset resource="CoreIcons.qrc">
+       <normaloff>:/resources/icons/oddokowywanie.png</normaloff>
+       <normalon>:/resources/icons/dokowanie.png</normalon>:/resources/icons/oddokowywanie.png</iconset>
+     </property>
      <property name="iconSize">
       <size>
        <width>16</width>
        <height>16</height>
       </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="arrowType">
+      <enum>Qt::NoArrow</enum>
      </property>
     </widget>
    </item>
@@ -172,11 +184,18 @@
        <height>16777215</height>
       </size>
      </property>
+     <property name="toolTip">
+      <string>Close</string>
+     </property>
      <property name="styleSheet">
       <string notr="true"/>
      </property>
      <property name="text">
       <string>x</string>
+     </property>
+     <property name="icon">
+      <iconset resource="CoreIcons.qrc">
+       <normaloff>:/resources/icons/x-alpha.png</normaloff>:/resources/icons/x-alpha.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -187,40 +206,29 @@
     </widget>
    </item>
   </layout>
-  <action name="actionFloat">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>:/resources/icons/oddokowywanie.png</normaloff>
-     <normalon>:/resources/icons/dokowanie.png</normalon>:/resources/icons/oddokowywanie.png</iconset>
-   </property>
-   <property name="text">
-    <string>Float</string>
-   </property>
-   <property name="toolTip">
-    <string>Float</string>
-   </property>
-  </action>
-  <action name="actionClose">
-   <property name="icon">
-    <iconset>
-     <normaloff>:/resources/icons/x-alpha.png</normaloff>:/resources/icons/x-alpha.png</iconset>
-   </property>
-   <property name="text">
-    <string>Close</string>
-   </property>
-   <property name="toolTip">
-    <string>Close</string>
-   </property>
-  </action>
  </widget>
  <resources>
   <include location="CoreIcons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonFloat</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>CoreTitleBar</receiver>
+   <slot>toggleFloating(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>348</x>
+     <y>10</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>193</x>
+     <y>10</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
-  <slot>setWordWrap(bool)</slot>
+  <slot>toggleFloating(bool)</slot>
  </slots>
 </ui>

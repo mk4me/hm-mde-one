@@ -1,29 +1,27 @@
 /********************************************************************
     created:  2011/05/04
     created:  4:5:2011   8:42
-    filename: EDRConsoleWidget.h
+    filename: CoreConsoleWidget.h
     author:   Mateusz Janiak
 
     purpose:
 *********************************************************************/
-#ifndef HEADER_GUARD_CORE__EDRCONSOLEWIDGET_H__
-#define HEADER_GUARD_CORE__EDRCONSOLEWIDGET_H__
+#ifndef HEADER_GUARD_CORE__CORECONSOLEWIDGET_H__
+#define HEADER_GUARD_CORE__CORECONSOLEWIDGET_H__
 
-#include "ui_EDRConsoleWidget.h"
+#include "ui_CoreConsoleWidget.h"
 #include <core/SmartPtr.h>
 #include <core/ILog.h>
 #include <queue>
 #include <QtCore/QDate>
 #include <QtCore/QMutex>
 
-class QAction;
-
-namespace core {
+namespace coreUI {
 
 //! Wpis do konsoli.
-struct EDRConsoleWidgetEntry {
+struct CoreConsoleWidgetEntry {
     //! Poziom ważności komuniaktu.
-    ILog::LogSeverity severity;
+    core::ILog::LogSeverity severity;
     //! Wiadomość.
     QString message;
     //! Plik źródłowy.
@@ -36,28 +34,28 @@ struct EDRConsoleWidgetEntry {
     Qt::HANDLE theadId;
 };
 
-typedef shared_ptr<EDRConsoleWidgetEntry> EDRConsoleWidgetEntryPtr;
+typedef core::shared_ptr<CoreConsoleWidgetEntry> CoreConsoleWidgetEntryPtr;
 
-Q_DECLARE_METATYPE(EDRConsoleWidgetEntryPtr);
-Q_DECLARE_METATYPE(EDRConsoleWidgetEntry);
+Q_DECLARE_METATYPE(CoreConsoleWidgetEntryPtr);
+Q_DECLARE_METATYPE(CoreConsoleWidgetEntry);
 
-class EDRConsoleWidget : public QWidget, private Ui::EDRConsoleWidget
+class CoreConsoleWidget : public QWidget, private Ui::CoreConsoleWidget
 {
     Q_OBJECT
 
 public:
-    EDRConsoleWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
+    CoreConsoleWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
 
-    ~EDRConsoleWidget();
+    ~CoreConsoleWidget();
 
 public:
     //! \param entry Komunikat do zakolejkowania bądź natychmiastowego zalogowania,
     //! w zależności od tego, czy mamy do czynienia z wątkiem właściwym konsoli.
-    void logOrQueueEntry(EDRConsoleWidgetEntryPtr entry);
+    void logOrQueueEntry(CoreConsoleWidgetEntryPtr entry);
     //! \param entry Komunikat do natychmiastowgo zalogowania.
-    void logEntry(EDRConsoleWidgetEntryPtr entry);
+    void logEntry(CoreConsoleWidgetEntryPtr entry);
     //! \param entry Komunikat do zakolejkowania.
-    void queueEntry(EDRConsoleWidgetEntryPtr entry);
+    void queueEntry(CoreConsoleWidgetEntryPtr entry);
 
 private:
     void init();
@@ -65,7 +63,7 @@ private:
 public slots:
 
     //! \param entry Komunikat do natychmiastowgo zalogowania.
-    void logEntry(const EDRConsoleWidgetEntry& entry);
+    void logEntry(const CoreConsoleWidgetEntry& entry);
     //! Opróżnia kolejkę komunikatów.
     void flushQueue();
     //! \param wrap Czy zawijać tekst?
@@ -73,12 +71,12 @@ public slots:
 
 private:
     //! Zakolejkowane wpisy.
-    std::queue< EDRConsoleWidgetEntryPtr > queuedEntries;
+    std::queue< CoreConsoleWidgetEntryPtr > queuedEntries;
     //! Muteks do kontroli kolejki wpisów.
     QMutex queueMutex;
 };
 
 }
 
-#endif  //  HEADER_GUARD_CORE__EDRCONSOLEWIDGET_H__
+#endif  //  HEADER_GUARD_CORE__CORECONSOLEWIDGET_H__
 

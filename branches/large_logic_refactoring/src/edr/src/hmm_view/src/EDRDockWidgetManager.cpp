@@ -51,7 +51,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
     //setTabNames();
 }
 
-void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
+void EDRDockWidgetManager::autoAddDockWidget( CoreDockWidget* widget )
 {
 	for (auto it = generatedList.begin(); it != generatedList.end(); ++it) {
 		if ((*it)->isAdditionPossible(widget)) {
@@ -106,10 +106,10 @@ void EDRDockWidgetManager::raiseSet( EDRDockWidgetSet* set )
     set->raise();
 }
 
-EDRDockWidgetSet* EDRDockWidgetManager::tryGetDockSet( EDRDockWidget* widget )
+EDRDockWidgetSet* EDRDockWidgetManager::tryGetDockSet( CoreDockWidget* widget )
 {
     for (auto it = dockList.begin(); it != dockList.end(); ++it) {
-        BOOST_FOREACH(const EDRDockWidget* dock, (*it)->getDockWidgets()) {
+        BOOST_FOREACH(const CoreDockWidget* dock, (*it)->getDockWidgets()) {
             if (dock == widget) {
                 return *it;
             }

@@ -87,10 +87,10 @@ void ToolboxMain::setCurrentVisualizerActions(VisualizerWidget * visWidget)
 
     visWidget->getVisualizerTitleBarElements(titleBarElements);
 
-    EDRTitleBar * titleBar = nullptr;
+    CoreTitleBar * titleBar = nullptr;
 
     if(visWidget->titleBarWidget() == nullptr){
-        titleBar = supplyWithEDRTitleBar(visWidget);
+        titleBar = supplyWithCoreTitleBar(visWidget);
     }
 
     if(titleBar == nullptr){

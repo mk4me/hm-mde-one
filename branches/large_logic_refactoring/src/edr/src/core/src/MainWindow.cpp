@@ -2,15 +2,15 @@
 #include "MainWindow.h"
 #include "ApplicationCommon.h"
 #include <QtGui/QSplashScreen>
-#include "EDRConsoleWidget.h"
-#include "EDRDockWidget.h"
+#include "CoreConsoleWidget.h"
+#include "CoreDockWidget.h"
 #include <QtCore/QFile>
 #include <QtCore/QSettings>
 
-
+using namespace coreUI;
 using namespace core;
 
-void MainWindow::setStyle( const core::Filesystem::Path& path )
+void MainWindow::setStyle( const Filesystem::Path& path )
 {
     QFile file(QString::fromUtf8(path.string().c_str()));
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -24,7 +24,7 @@ void MainWindow::setStyle( const core::Filesystem::Path& path )
 }
 
 
-bool MainWindow::trySetStyle( const core::Filesystem::Path& path )
+bool MainWindow::trySetStyle( const Filesystem::Path& path )
 {
     try {
         setStyle(path);
@@ -75,7 +75,7 @@ bool MainWindow::trySetStyleByName( const std::string& styleName )
 //Q_DECLARE_METATYPE ( Filesystem::Path );
 
 MainWindow::MainWindow(): QMainWindow(nullptr), splashScreen_(nullptr), screenshotsPath_(getPathInterface()->getUserDataPath() / "screenshots"),
-	widgetConsole(new EDRConsoleWidget())
+	widgetConsole(new CoreConsoleWidget())
 {
     if(Filesystem::pathExists(screenshotsPath_) == false){
 		Filesystem::createDirectory(screenshotsPath_);
@@ -105,7 +105,7 @@ void MainWindow::showSplashScreenMessage(const QString & message)
 	splashScreen()->showMessage(message);
 }
 
-EDRConsoleWidget* MainWindow::getConsole()
+CoreConsoleWidget* MainWindow::getConsole()
 {
 	return widgetConsole;
 }
@@ -172,17 +172,37 @@ void MainWindow::writeSettings()
     settings.setValue("WindowState", saveState());
 }
 
+void MainWindow::setCloseUpOperations(const CloseUpOperations & closeUp)
+{
+	closeUpOperations_ = closeUp;
+}
+
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    writeSettings();
-    QMainWindow::closeEvent(event);
+	if(QMessageBox::question( nullptr, tr("Confirm exit"), tr("Are You sure You want to exit application?"),
+		QMessageBox::Yes | QMessageBox::Abort, QMessageBox::Abort ) == QMessageBox::Yes){
+	
+		writeSettings();
+
+		if(closeUpOperations_.empty() == false){
+			try{
+				closeUpOperations_();
+			}catch(...){
+
+			}
+		}
+
+		event->accept();
+	} else {
+		event->ignore();
+	}
 }
 
 QDockWidget* MainWindow::embeddWidget( QWidget* widget, const ActionsGroupManager & widgetActions, const QString& name, const QString& style, const QString& sufix,
     Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)
 {
     // dodajemy widget dokowalny
-    EDRDockWidget* dock = new EDRDockWidget( name, this, Qt::WindowTitleHint);
+    CoreDockWidget* dock = new CoreDockWidget( name, this, Qt::WindowTitleHint);
     dock->setAllowedAreas(area);
     dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
     dock->setStyleSheet(style);

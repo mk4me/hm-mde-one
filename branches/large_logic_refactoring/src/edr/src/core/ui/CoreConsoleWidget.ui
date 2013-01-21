@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EDRConsoleWidget</class>
- <widget class="QWidget" name="EDRConsoleWidget">
+ <class>CoreConsoleWidget</class>
+ <widget class="QWidget" name="CoreConsoleWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -79,7 +79,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>actionToogle_word_wrap</sender>
    <signal>toggled(bool)</signal>
-   <receiver>EDRConsoleWidget</receiver>
+   <receiver>CoreConsoleWidget</receiver>
    <slot>setWordWrap(bool)</slot>
    <hints>
     <hint type="sourcelabel">

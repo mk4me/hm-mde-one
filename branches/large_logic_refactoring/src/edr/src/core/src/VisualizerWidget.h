@@ -11,34 +11,34 @@
 
 #include <map>
 #include "Visualizer.h"
-#include "EDRDockWidget.h"
-#include <core/IEDRTitleBar.h>
+#include "CoreDockWidget.h"
+#include "CoreTitleBar.h"
 
 class QLabel;
 class QComboBox;
 
-namespace core {
+namespace coreUI {
 
 //! Widget wizualizacyjny.
-class VisualizerWidget : public EDRDockWidget
+class VisualizerWidget : public CoreDockWidget
 {
     Q_OBJECT
 
 public:
 
-    typedef std::pair<QObject*, IEDRTitleBar::SideType> VisualizerTitleBarElement;
+    typedef std::pair<QObject*, CoreTitleBar::SideType> VisualizerTitleBarElement;
     typedef std::vector<VisualizerTitleBarElement> VisualizerTitleBarElements;
 
 private:
 
     struct InnerVisualizerElement
     {
-        InnerVisualizerElement() : visible(false), object(nullptr), side(IEDRTitleBar::Left)
+        InnerVisualizerElement() : visible(false), object(nullptr), side(CoreTitleBar::Left)
         {
 
         }
 
-        InnerVisualizerElement(bool visible, QObject* object, IEDRTitleBar::SideType side)
+        InnerVisualizerElement(bool visible, QObject* object, CoreTitleBar::SideType side)
             : visible(visible), object(object), side(side)
         {
 
@@ -46,7 +46,7 @@ private:
 
         bool visible;
         QObject* object;
-        IEDRTitleBar::SideType side;
+        CoreTitleBar::SideType side;
     };
 
     //typedef std::map<core::VisualizerTimeSeriePtr, VisualizerChannelPtr> TimelineChannels;
@@ -63,8 +63,8 @@ private:
     core::VisualizerPtr visualizer;
     //customowe elementu titlebara dla danego wizualizatora
     InnerVisualizerElements visualizerCommonElements;
-    ActionsGroupManager visualizerCommonElementsOrder;
-    ActionsGroupManager visualizerImplementationCustomElements;
+    core::ActionsGroupManager visualizerCommonElementsOrder;
+    core::ActionsGroupManager visualizerImplementationCustomElements;
 
     //! Menu do wyboru źródeł.
     QMenu* menuSource;
@@ -143,8 +143,8 @@ public:
     bool isVisualizerSwichVisible() const;
 
     void getVisualizerTitleBarElements(VisualizerTitleBarElements & titleBarElements) const;
-    const ActionsGroupManager & getVisualizerActionsManager() const;
-    const ActionsGroupManager & getGenericVisualizerActionsManager() const;
+    const core::ActionsGroupManager & getVisualizerActionsManager() const;
+    const core::ActionsGroupManager & getGenericVisualizerActionsManager() const;
         
 private slots:
 

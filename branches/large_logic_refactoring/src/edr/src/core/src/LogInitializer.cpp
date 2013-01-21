@@ -4,9 +4,10 @@
 #include <osg/Notify>
 #include <boost/algorithm/string.hpp>
 #include <utils/Debug.h>
-#include "EDRConsoleWidget.h"
+#include "CoreConsoleWidget.h"
 
 using namespace core;
+using namespace coreUI;
 
 #ifndef CORE_DISABLE_LOGGING
 //------------------------------------------------------------------------------
@@ -77,10 +78,10 @@ class ConsoleWidgetAppender : public AppenderSkeleton
 {
 private:
     //! Konsola właściwa.
-    EDRConsoleWidget* console;
+    CoreConsoleWidget* console;
     //! Kolejka wiadomości dla konsoli. Używana, gdy pojawiają się zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
-    std::queue<EDRConsoleWidgetEntryPtr> queuedEntries;
+    std::queue<CoreConsoleWidgetEntryPtr> queuedEntries;
 
 public:
     DECLARE_LOG4CXX_OBJECT(ConsoleWidgetAppender)
@@ -102,7 +103,7 @@ public:
 
 public:
     //! \param console Widget konsoli.
-    void setConsole(EDRConsoleWidget* console)
+    void setConsole(CoreConsoleWidget* console)
     {
         // korzytamy z muteksa z klasy bazowej !
         helpers::synchronized sync(mutex);
@@ -134,7 +135,7 @@ protected:
         LogString buf;
         layout->format(buf, event, p);
 
-        EDRConsoleWidgetEntryPtr entry(new EDRConsoleWidgetEntry());
+        CoreConsoleWidgetEntryPtr entry(new CoreConsoleWidgetEntry());
         int level = event->getLevel()->toInt();
         if ( level <= Level::DEBUG_INT ) {
             entry->severity = core::LogSeverityDebug;
@@ -215,7 +216,7 @@ LogInitializer::~LogInitializer()
     osg::setNotifyHandler( new osg::StandardNotifyHandler() );
 }
 
-void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
+void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
 {
     // pobranie wszystkich appenderów dla konsoli
     LoggerList loggers;
@@ -264,12 +265,12 @@ class OsgNotifyHandlerConsoleWidget : public osg::NotifyHandler
 {
 private:
     //! Konsola właściwa.
-    EDRConsoleWidget* console;
+    CoreConsoleWidget* console;
 
 	osg::ref_ptr<osg::NotifyHandler> defaultHandler;
     //! Kolejka wiadomości dla konsoli. Używana, gdy pojawiają się zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
-    std::queue<EDRConsoleWidgetEntryPtr> queuedEntries;
+    std::queue<CoreConsoleWidgetEntryPtr> queuedEntries;
     typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
     OpenThreads::Mutex queueMutex;
 
@@ -286,7 +287,7 @@ public:
 	}
 
     //! \param console
-    void setConsole(EDRConsoleWidget* console)
+    void setConsole(CoreConsoleWidget* console)
     {
         this->console = console;
         // opróżniamy kolejkę komunikatów
@@ -309,7 +310,7 @@ public:
         std::string msg(message);
         boost::trim(msg);
 
-        EDRConsoleWidgetEntryPtr entry(new EDRConsoleWidgetEntry());
+        CoreConsoleWidgetEntryPtr entry(new CoreConsoleWidgetEntry());
         if ( severity >= osg::DEBUG_INFO ) {
             entry->severity = core::ILog::LogSeverityDebug;
         } else if ( severity >= osg::NOTICE ) {
@@ -349,7 +350,7 @@ LogInitializer::~LogInitializer()
 }
 
 
-void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
+void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
 {
     OsgNotifyHandlerConsoleWidget* handler = dynamic_cast<OsgNotifyHandlerConsoleWidget*>(osg::getNotifyHandler());
     UTILS_ASSERT(handler);
@@ -395,7 +396,7 @@ LogInitializer::~LogInitializer()
 }
 
 
-void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
+void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
 {
 	
 }

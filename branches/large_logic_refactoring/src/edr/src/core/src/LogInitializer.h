@@ -13,9 +13,13 @@
 #include <core/ILog.h>
 #include <core/Filesystem.h>
 
-namespace core {
+namespace coreUI {
 
-class EDRConsoleWidget;
+class CoreConsoleWidget;
+
+}
+
+namespace core {
 
 //! Obiekt logu. Powinien być tworzony w głównej binarce na samym początku maina.
 class LogInitializer
@@ -29,7 +33,7 @@ public:
 public:
     //! \param console Widget konsoli.
     //void setConsoleWidget(ConsoleWidget* widget);
-    void setConsoleWidget(EDRConsoleWidget* widget);
+    void setConsoleWidget(coreUI::CoreConsoleWidget* widget);
 };
 
 }

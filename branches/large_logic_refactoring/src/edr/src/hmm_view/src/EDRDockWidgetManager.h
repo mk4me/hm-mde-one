@@ -14,7 +14,7 @@
 #include <QtGui/QWidget>
 #include <QtGui/QMainWindow>
 
-class EDRDockWidget;
+class CoreDockWidget;
 class EDRDockWidgetSet;
 
 //! Klasa zarządza calymi grupami dock widgetów, laczac je w sety
@@ -43,7 +43,7 @@ public:
     void raiseSet( EDRDockWidgetSet* set );
     //! Dodaje widget do grupy, która ma na niego miejsce, jeśli takiej nie ma to tworzona jest nowa
     //! \param widget dodawany dock widget
-    void autoAddDockWidget(EDRDockWidget* widget);
+    void autoAddDockWidget(CoreDockWidget* widget);
     //! ustawia pozycje belki z tabami
     //! \param tabPosition pozycja N,S,W,E
     void setTabsPosition(QTabWidget::TabPosition tabPosition);
@@ -54,7 +54,7 @@ public:
     //! Na podstawie dock widgeta pobierana jest grupa, do której należy
     //! \param widget badany dock widget
     //! \return odnaleziona grupa lub nullptr
-    EDRDockWidgetSet* tryGetDockSet(EDRDockWidget* widget);
+    EDRDockWidgetSet* tryGetDockSet(CoreDockWidget* widget);
 
 private:
     //! iteruje po wszystkich grupach zmieniając im nazwy
