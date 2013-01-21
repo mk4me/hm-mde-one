@@ -13,34 +13,24 @@ SET_PRIVATE_HEADERS(
 	PluginPath.h
 	VisualizerChannel.h
 	SourceManager.h
-	ActionsGroupManager.h
 	IAppUsageContext.h
 	IAppUsageContextManager.h
 	FlexiWidgetTabContentWidget.h
 	FlexiTabWidget.h
 	FlexiTabSectionWidget.h
 	SubjectDataFilters.h
-	ManagerHelper.h
 	AppInitializer.h
 	MainWindow.h
 	CoreConsoleWidget.h
 	#SceneGraphWidget.h
 	LogInitializer.h
 	ServiceManager.h
-	UserInterfaceService.h
 	VisualizerWidget.h
 	VisualizerManager.h
-	ObjectOutput.h
-	ObjectSource.h
 	Visualizer.h
-	ObjectSlots.h
 	CoreTitleBar.h
 	CoreDockWidget.h
-	InputItem.h
 	InputDescription.h
-	OutputDescription.h
-	OutputItem.h
-	InputOutputItem.h
 	Log.h
 	PluginLoader.h
 	CorePCH.h
@@ -64,7 +54,6 @@ SET_PUBLIC_HEADERS (
 	StringTools.h
 	ISource.h
 	ISourceManager.h
-	IActionsGroupManager.h
 	DataAccessors.h
 	BaseDataTypes.h
 	Filesystem.h
@@ -73,22 +62,17 @@ SET_PUBLIC_HEADERS (
 	IParser.h
 	IServiceManager.h
 	Window.h
-	IUserInterface.h
 	Plugin.h
 	Export.h
 	SmartPtr.h
 	ILog.h
 	ObjectWrapper.h
 	ObjectWrapperCollection.h
-	IObjectSource.h
 	IVisualizer.h
 	IVisualizerManager.h
-	IObjectOutput.h
 	PluginCommon.h
 	TypeInfo.h
-	IInputDescription.h 
-	IOutputDescription.h
-	IConfigurable.h
+	IInputDescription.h
 	IClonable.h
 	ISerializable.h
 	IPath.h
@@ -114,7 +98,6 @@ SET_SOURCE_FILES(
 	PluginPath.cpp
 	VisualizerChannel.cpp
 	SourceManager.cpp
-	ActionsGroupManager.cpp
 	FlexiWidgetTabContentWidget.cpp
 	FlexiTabWidget.cpp
 	FlexiTabSectionWidget.cpp
@@ -125,11 +108,9 @@ SET_SOURCE_FILES(
 	LogInitializer.cpp
 	PluginLoader.cpp
 	ServiceManager.cpp
-	UserInterfaceService.cpp
 	VisualizerWidget.cpp
 	VisualizerManager.cpp
 	Visualizer.cpp
-	ObjectSlots.cpp
 	CoreTitleBar.cpp
 	CoreDockWidget.cpp
 	CorePCH.cpp

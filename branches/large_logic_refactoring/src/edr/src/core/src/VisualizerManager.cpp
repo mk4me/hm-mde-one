@@ -150,12 +150,13 @@ const QIcon& VisualizerManager::getIcon( UniqueID id ) const
     return visualizersData[idx]->icon;
 }
 
-const VisualizerManager::SourcesTypes& VisualizerManager::getSourcesTypes( UniqueID id ) const
-{
-    int idx = getPrototypeIdx(id);
-    UTILS_ASSERT(idx >= 0);
-    return visualizersData[idx]->sourcesTypes;
-}
+//TODO
+//const VisualizerManager::SourcesTypes& VisualizerManager::getSourcesTypes( UniqueID id ) const
+//{
+//    int idx = getPrototypeIdx(id);
+//    UTILS_ASSERT(idx >= 0);
+//    return visualizersData[idx]->sourcesTypes;
+//}
 
 int VisualizerManager::getPrototypeIdx( UniqueID id ) const
 {
@@ -221,7 +222,7 @@ void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
 
 const void * VisualizerManager::createChannel(const plugin::VisualizerTimeSeriePtr & serie, Visualizer * visualizer, const std::string & path, bool synchRemove)
 {
-	TimelinePtr timeline = queryServices<ITimelineService>(ServiceManager::getInstance());
+	TimelinePtr timeline = queryServices<ITimelineService>(core::getServiceManager());
 	if(timeline != nullptr) {
 
 		VisualizerChannelPtr channel(new VisualizerChannel(serie));
@@ -254,7 +255,7 @@ const void * VisualizerManager::createChannel(const plugin::VisualizerTimeSerieP
 
 const void * VisualizerManager::createChannel(const std::vector<plugin::VisualizerTimeSeriePtr> & series, Visualizer * visualizer, const std::string & path, bool synchRemove)
 {
-	TimelinePtr timeline = queryServices<ITimelineService>(ServiceManager::getInstance());
+	TimelinePtr timeline = queryServices<ITimelineService>(core::getServiceManager());
 	if(timeline != nullptr) {
 
 		VisualizerChannelPtr channel(new VisualizerMultiChannel(series));
@@ -292,7 +293,7 @@ void VisualizerManager::removeChannel(const void * channel)
 	}
 
 	//właściwa próba usunięcia kanału z wizualizatora i timeline
-	TimelinePtr timeline = queryServices<ITimelineService>(ServiceManager::getInstance());
+	TimelinePtr timeline = queryServices<ITimelineService>(core::getServiceManager());
 	bool removed = false;
 	if(timeline != nullptr) {
 
@@ -321,7 +322,7 @@ void VisualizerManager::removeChannel(const void * channel)
 void VisualizerManager::removeAllChannels()
 {
 	//właściwa próba usunięcia kanału z wizualizatora i timeline
-	TimelinePtr timeline = queryServices<ITimelineService>(ServiceManager::getInstance());
+	TimelinePtr timeline = queryServices<ITimelineService>(core::getServiceManager());
 	if(timeline != nullptr) {
 		for(auto channelIT = channels.begin(); channelIT != channels.end(); ++channelIT){
 			try{

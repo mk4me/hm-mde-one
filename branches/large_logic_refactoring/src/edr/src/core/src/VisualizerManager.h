@@ -24,7 +24,6 @@
 #include "VisualizerChannel.h"
 
 #include <core/IVisualizerManager.h>
-#include "ManagerHelper.h"
 #include <utils/ObserverPattern.h>
 
 Q_DECLARE_METATYPE(UniqueID);
@@ -33,7 +32,7 @@ Q_DECLARE_METATYPE(UniqueID);
 
 namespace core {
 
-class VisualizerManager : public IVisualizerManager, public utils::Observable<VisualizerManager>, public ManagerHelper<VisualizerManager>
+class VisualizerManager : public IVisualizerManager, public utils::Observable<VisualizerManager>
 {
     friend class Visualizer;
 	friend class IVisualizerChannel;
@@ -46,7 +45,8 @@ public:
     typedef std::list<Visualizer*> Visualizers;
 
     //! Lista typów kolejnych źródeł.
-    typedef ObjectSlots::SlotsInfo SourcesTypes;
+	//TODO
+    //typedef ObjectSlots::SlotsInfo SourcesTypes;
 
 private:
 
@@ -55,8 +55,9 @@ private:
     {
         //! Ikona.
         QIcon icon;
+		//TODO
         //! Lista typów kolejnych źródeł.
-        SourcesTypes sourcesTypes;
+        //SourcesTypes sourcesTypes;
     };
 
 	//! Dane związane z obsługa kanałów timeline
@@ -103,8 +104,9 @@ public:
 
     //! \return Ikona dla danego wizualizatora.
     const QIcon& getIcon(UniqueID id) const;
+	//TODO
     //! \return Informacje o wejściu dla danego wizualizatora.
-    const SourcesTypes& getSourcesTypes(UniqueID id) const;
+    //const SourcesTypes& getSourcesTypes(UniqueID id) const;
 
     //! \return Wyliczenie prototypów.
     inline IVisualizersConstRange enumPrototypes() const

@@ -11,14 +11,12 @@
 
 #include <core/SmartPtr.h>
 #include <core/IVisualizer.h>
-#include "InputItem.h"
-#include "ActionsGroupManager.h"
 
 namespace core {
 
 //! Wizualizator. Jego zadaniem jest stworzyć widget (gdzie on będzie osadzony - nie jego sprawa),
 //! zadeklarować ile źródeł i jakiego typu jest w stanie obsłużyć oraz przyjąć źródła danych.
-class Visualizer : public QObject, public InputItem<plugin::IVisualizer>
+class Visualizer : public QObject
 {
         Q_OBJECT;
 public:
@@ -28,8 +26,9 @@ private:
     //! Faktyczny widget.
     QWidget* widget;
 
+	//TODO
     //! Akcje wizualizatora.
-    ActionsGroupManager genericActions;
+    
     //! Nazwa uzupełniona o przyrostek.
     QString uiName;
 
@@ -45,10 +44,7 @@ public:
     ~Visualizer();
 
 public:
-    //! \return Lista akcji ogólnych wizualizatora.
-    const ActionsGroupManager& getGenericActions() const;
-    //! \return Lista akcji ogólnych wizualizatora.
-    const ActionsGroupManager& getOrCreateGenericActions();
+    //TODO akcje
 
     //! \return Widget wizualizatora.
     QWidget* getOrCreateWidget();

@@ -7,11 +7,9 @@
 #include <core/IServiceManager.h>
 #include <core/IService.h>
 
-#include "ManagerHelper.h"
-
 namespace core {
 
-class ServiceManager: public IServiceManager, public ManagerHelper<ServiceManager>
+class ServiceManager: public IServiceManager
 {
 public:
     //! Słownik usług.

@@ -71,15 +71,17 @@ bool MainWindow::trySetStyleByName( const std::string& styleName )
     return true;
 }
 
-
-//Q_DECLARE_METATYPE ( Filesystem::Path );
-
 MainWindow::MainWindow(): QMainWindow(nullptr), splashScreen_(nullptr), screenshotsPath_(getPathInterface()->getUserDataPath() / "screenshots"),
 	widgetConsole(new CoreConsoleWidget())
 {
     if(Filesystem::pathExists(screenshotsPath_) == false){
 		Filesystem::createDirectory(screenshotsPath_);
 	}
+
+	//TODO
+	//szukaj styli qt
+	//temp = Filesystem::listFiles(resourcesPath, true, ".qss");
+	//applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
 }
 
 QSplashScreen * MainWindow::splashScreen()
@@ -121,28 +123,6 @@ MainWindow::~MainWindow()
 	if(splashScreen_ != nullptr){
 		delete splashScreen_;
 	}
-}
-
-void MainWindow::findResources(const Filesystem::Path & resourcesPath)
-{
-    // TODO : potrzebna rewizja tego kodu...
-    resourcesPaths.clear();
-    //szukaj shaderów
-    std::vector<std::string> ext;
-    ext.push_back(".frag");
-    ext.push_back(".vert");
-    try {
-        std::vector<std::string> temp = Filesystem::listFiles(resourcesPath, true, ext);
-        resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
-        //szukaj mesh
-        temp = Filesystem::listFiles(resourcesPath, true, ".fmesh");
-        resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
-        //szukaj styli qt
-        temp = Filesystem::listFiles(resourcesPath, true, ".qss");
-        applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
-    } catch(std::exception& e) {
-        CORE_LOG_INFO("Finding resources exception: " << e.what());
-    }
 }
 
 const Filesystem::Path & MainWindow::getApplicationSkinsFilePath(int i)
@@ -198,29 +178,29 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	}
 }
 
-QDockWidget* MainWindow::embeddWidget( QWidget* widget, const ActionsGroupManager & widgetActions, const QString& name, const QString& style, const QString& sufix,
-    Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)
-{
-    // dodajemy widget dokowalny
-    CoreDockWidget* dock = new CoreDockWidget( name, this, Qt::WindowTitleHint);
-    dock->setAllowedAreas(area);
-    dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
-    dock->setStyleSheet(style);
-    dock->setWidget(widget);
-    dock->setPermanent(true);
-    QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
-
-	//TODO
-
-	/*EDRTitleBar * titleBar = supplyWithEDRTitleBar(dock);
-
-	for(auto groupIT = widgetActions.begin(); groupIT != widgetActions.end(); ++groupIT){
-	std::map<int, QObject *> allObjects;
-	(*groupIT).getAllObjects(allObjects);
-	for(auto objectIT = allObjects.begin(); objectIT != allObjects.end(); ++objectIT){
-	titleBar->addObject(objectIT->second, IEDRTitleBar::Left);
-	}
-	}*/
-
-    return dock;
-}
+//QDockWidget* MainWindow::embeddWidget( QWidget* widget, const ActionsGroupManager & widgetActions, const QString& name, const QString& style, const QString& sufix,
+//    Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)
+//{
+//    // dodajemy widget dokowalny
+//    CoreDockWidget* dock = new CoreDockWidget( name, this, Qt::WindowTitleHint);
+//    dock->setAllowedAreas(area);
+//    dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
+//    dock->setStyleSheet(style);
+//    dock->setWidget(widget);
+//    dock->setPermanent(true);
+//    QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
+//
+//	//TODO
+//
+//	/*EDRTitleBar * titleBar = supplyWithEDRTitleBar(dock);
+//
+//	for(auto groupIT = widgetActions.begin(); groupIT != widgetActions.end(); ++groupIT){
+//	std::map<int, QObject *> allObjects;
+//	(*groupIT).getAllObjects(allObjects);
+//	for(auto objectIT = allObjects.begin(); objectIT != allObjects.end(); ++objectIT){
+//	titleBar->addObject(objectIT->second, IEDRTitleBar::Left);
+//	}
+//	}*/
+//
+//    return dock;
+//}

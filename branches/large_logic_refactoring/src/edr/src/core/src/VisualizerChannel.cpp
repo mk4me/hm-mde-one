@@ -11,7 +11,8 @@ IVisualizerChannel::IVisualizerChannel()
 
 IVisualizerChannel::~IVisualizerChannel()
 {
-	VisualizerManager::getInstance()->notifyDestroyed(this);
+	//TODO
+	//VisualizerManager::getInstance()->notifyDestroyed(this);
 }
 
 VisualizerChannel::VisualizerChannel(const plugin::VisualizerTimeSeriePtr & serie)

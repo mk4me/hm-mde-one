@@ -40,7 +40,7 @@ class UIApplication : public QApplication
 {
 	Q_OBJECT;
 public:
-	UIApplication(int & argc, char *argv[], core::Application * coreApplication) : QApplication(argc, argv), coreApplication(coreApplication) {}
+	UIApplication(int & argc, char *argv[]) : QApplication(argc, argv) {}
 
 	virtual bool notify(QObject* receiver, QEvent* event)
 	{
@@ -53,9 +53,6 @@ public:
 		}
 		return false;
 	}
-
-private:
-	core::Application * coreApplication;
 };
 
 }
@@ -68,7 +65,7 @@ Application::Application()
 
 }
 
-int Application::initUI(int & argc, char *argv[])
+int Application::initUIContext(int & argc, char *argv[])
 {
 	//obs³uga argumentów i opisu uzycia aplikacji z konsoli
 	osg::ArgumentParser arguments(&argc,argv);
@@ -96,11 +93,12 @@ int Application::initUI(int & argc, char *argv[])
 	{
 		initCoreResources();
 
-		uiApplication_.reset(new coreUI::UIApplication(argc, argv, this));
+		uiApplication_.reset(new coreUI::UIApplication(argc, argv));
 		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath()+"/plugins");
 
 		//ustawienia aplikacji
-		uiApplication_->setApplicationName("EDR");
+		//TODO - do widoków
+		//uiApplication_->setApplicationName("EDR");
 		uiApplication_->setOrganizationName("PJWSTK");
 		QSettings::setDefaultFormat(QSettings::IniFormat);
 	}
@@ -204,10 +202,10 @@ void Application::initWithUI(MainWindow * mainWindow)
 	sourceManager_.reset(new SourceManager());
 	visualizerManager_.reset(new VisualizerManager());	
 
-	mainWindow->showSplashScreenMessage(QObject::tr("Registering application core domain types"));
+	/*mainWindow->showSplashScreenMessage(QObject::tr("Registering application core domain types"));
 	QCoreApplication::processEvents();
 
-	registerCoreDomainTypes();
+	registerCoreDomainTypes();*/
 
 	mainWindow->showSplashScreenMessage(QObject::tr("Initializing plugins loader"));
 	QCoreApplication::processEvents();
@@ -237,8 +235,6 @@ void Application::initWithUI(MainWindow * mainWindow)
 		unpackPlugin(mainWindow, pluginLoader_->getPlugin(i));
 	}
 
-	//findResources(core::getResourcesPath().string());
-
 	mainWindow->showSplashScreenMessage(QObject::tr("Initializing services"));
 	QCoreApplication::processEvents();
 
@@ -263,6 +259,7 @@ void Application::initWithUI(MainWindow * mainWindow)
 
 	mainWindow->showSplashScreenMessage(QObject::tr("Initializing console"));
 	QCoreApplication::processEvents();
+
 	logInitializer_->setConsoleWidget(mainWindow->getConsole());
 
 	mainWindow->showSplashScreenMessage(QObject::tr("Initializing main view"));
@@ -272,13 +269,8 @@ void Application::initWithUI(MainWindow * mainWindow)
 
 	mainWindow->show();
 
-	//widget.setWindowIcon(QPixmap(QString::fromUtf8(":/resources/icons/appIcon.png")));
 	//TODO
-	//co to ma robiæ?!
-	/*if (!filePath.empty())
-	{
-	widget.openFile(filePath);
-	}*/
+	//widget.setWindowIcon(QPixmap(QString::fromUtf8(":/resources/icons/appIcon.png")));
 }
 
 int Application::run()
@@ -407,6 +399,8 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 
 void Application::setDefaultPaths(shared_ptr<Path> & path)
 {
+	//TODO
+	//mieæ na uwadze nazwê aplikacji i PJWSTK
 	auto userPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString()) / "PJWSTK" / "EDR";
 	auto appDataPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DataLocation).toStdString());
 	auto resourcesPath = Filesystem::Path(QDir::currentPath().toStdString()) / "resources";
@@ -493,17 +487,11 @@ void Application::safeRegisterVisualizer(const plugin::IVisualizerPtr & visualiz
 	}
 }
 
-void Application::registerCoreDomainTypes()
-{
-	safeRegisterObjectWrapperPrototype(ObjectWrapper::create<int>());
-	safeRegisterObjectWrapperPrototype(ObjectWrapper::create<double>());
-}
-
-void Application::showSplashScreenMessage(QSplashScreen * splashScreen, const QString & message)
-{
-	splashScreen->showMessage(message);
-	QCoreApplication::processEvents();
-}
+//void Application::registerCoreDomainTypes()
+//{
+//	safeRegisterObjectWrapperPrototype(ObjectWrapper::create<int>());
+//	safeRegisterObjectWrapperPrototype(ObjectWrapper::create<double>());
+//}
 
 void Application::unpackPlugin(MainWindow * mainWindow, const core::PluginPtr & plugin)
 {
@@ -556,10 +544,3 @@ void Application::finalizeUI(){
 		CORE_LOG_ERROR("UNKNOWN error while closing UI during sources and services finalization");
 	}
 }
-
-////¿¹danie od³¹czenia siê serwisów od widgetów i elementów UI oraz innych serwisów czy zasobów aplikacji
-//ServiceManager::getInstance()->finalizeServices();
-//
-////    VisualizerManager::getInstance()->setDebugWidget(nullptr);
-//VisualizerManager::getInstance()->markAllChannelsAsRemoved();
-//VisualizerManager::getInstance()->removeAllChannels();

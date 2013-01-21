@@ -28,7 +28,7 @@ VisualizerWidget::VisualizerWidget(QWidget* parent /*= nullptr*/, Qt::WindowFlag
 {
     init();
     // dodajemy wizualizatory
-    BOOST_FOREACH(const plugin::IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
+    BOOST_FOREACH(const plugin::IVisualizerConstPtr& vis, core::getVisualizerManager()->enumPrototypes()) {
 		//TODO
         //addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
     }
@@ -40,7 +40,7 @@ VisualizerWidget::VisualizerWidget( UniqueID visualizerID, QWidget* parent /*= n
     // blokujemy sygnały
     comboType->blockSignals(true);
     // dodajemy wizualizatory
-    BOOST_FOREACH(const plugin::IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
+    BOOST_FOREACH(const plugin::IVisualizerConstPtr& vis, core::getVisualizerManager()->enumPrototypes()) {
 		//TODO
         //addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
     }

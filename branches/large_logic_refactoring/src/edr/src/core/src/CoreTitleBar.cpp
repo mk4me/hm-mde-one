@@ -91,58 +91,58 @@ bool CoreTitleBar::event(QEvent * event)
 	return QWidget::event(event);
 }
 
-void CoreTitleBar::resizeEvent(QResizeEvent * event)
-{
-	if(parentWidget() != nullptr){
-		QDockWidget *dockWidget = qobject_cast<QDockWidget*>(parentWidget());
-		if(dockWidget != nullptr) {
-			bool vertical = (dockWidget->features() & QDockWidget::DockWidgetVerticalTitleBar);
-			if(vertical != verticalOrientation_) {
-				verticalOrientation_ = vertical;
-				// pobieramy wszystkie widgety - ikonę, tytuł, lewy toolbar, prawy toolbar i buttony
-				auto widgets = layout()->children();
-				// będziemy je dodawać do nowego layoutu, stary usuniemy
-				QLayout * newLayout = nullptr;
-				if(verticalOrientation_ == true){
-					// I need to be vertical
-					newLayout = new QVBoxLayout(this);
-				} else {
-					// I need to be horizontal
-					newLayout = new QHBoxLayout(this);
-				}
+//void CoreTitleBar::resizeEvent(QResizeEvent * event)
+//{
+//	if(parentWidget() != nullptr){
+//		QDockWidget *dockWidget = qobject_cast<QDockWidget*>(parentWidget());
+//		if(dockWidget != nullptr) {
+//			bool vertical = (dockWidget->features() & QDockWidget::DockWidgetVerticalTitleBar);
+//			if(vertical != verticalOrientation_) {
+//				verticalOrientation_ = vertical;
+//				// pobieramy wszystkie widgety - ikonę, tytuł, lewy toolbar, prawy toolbar i buttony
+//				auto widgets = layout()->children();
+//				// będziemy je dodawać do nowego layoutu, stary usuniemy
+//				QLayout * newLayout = nullptr;
+//				if(verticalOrientation_ == true){
+//					// I need to be vertical
+//					newLayout = new QVBoxLayout(this);
+//				} else {
+//					// I need to be horizontal
+//					newLayout = new QHBoxLayout(this);
+//				}
+//
+//				for(int i = widgets.size(); i > 0; --i){
+//					newLayout->addItem(layout()->takeAt(i));
+//				}
+//
+//				delete layout();
+//
+//				//TODO
+//				//kierunek tytułu okna
+//				//QLabel* label = QLabel("Y axis"); 
+//				//QGraphicsScene scene;
+//				//QGraphicsProxyWidget  * proxy = scene.addWidget(label);
+//				//proxy->rotate(-45);
+//				//QGraphicsView view(&scene);
+//				
+//				//lub na bazie qxt
+//				
+//				//albo własna implementacja z pionowym textem
+//				updateTitleOrientation();
+//
+//
+//				leftToolbar->setOrientation(verticalOrientation_ == true ? Qt::Vertical : Qt::Horizontal);
+//				rightToolbar->setOrientation(verticalOrientation_ == true ? Qt::Vertical : Qt::Horizontal);
+//
+//				setLayout(newLayout);
+//			}
+//		}
+//	}
+//
+//	QWidget::resizeEvent(event);
+//}
 
-				for(int i = widgets.size(); i > 0; --i){
-					newLayout->addItem(layout()->takeAt(i));
-				}
-
-				delete layout();
-
-				//TODO
-				//kierunek tytułu okna
-				//QLabel* label = QLabel("Y axis"); 
-				//QGraphicsScene scene;
-				//QGraphicsProxyWidget  * proxy = scene.addWidget(label);
-				//proxy->rotate(-45);
-				//QGraphicsView view(&scene);
-				
-				//lub na bazie qxt
-				
-				//albo własna implementacja z pionowym textem
-				updateTitleOrientation();
-
-
-				leftToolbar->setOrientation(verticalOrientation_ == true ? Qt::Vertical : Qt::Horizontal);
-				rightToolbar->setOrientation(verticalOrientation_ == true ? Qt::Vertical : Qt::Horizontal);
-
-				setLayout(newLayout);
-			}
-		}
-	}
-
-	QWidget::resizeEvent(event);
-}
-
-void CoreTitleBar::setTitleVerticalMode(TitleVerticalMode titleVerticalMode)
+void CoreTitleBar::setTitleVerticalMode(TitleTextVerticalMode titleVerticalMode)
 {
 	if(titleVerticalMode != titleVerticalMode_)
 	{
@@ -153,7 +153,7 @@ void CoreTitleBar::setTitleVerticalMode(TitleVerticalMode titleVerticalMode)
 	}
 }
 
-CoreTitleBar::TitleVerticalMode CoreTitleBar::titleVerticalMode() const
+CoreTitleBar::TitleTextVerticalMode CoreTitleBar::titleVerticalMode() const
 {
 	return titleVerticalMode_;
 }
@@ -179,6 +179,7 @@ void CoreTitleBar::updateTitleOrientation()
 			break;
 		}
 	}else{
+		titleProxy->rotate(0);
 		titleLabel->setText(windowTitle());
 	}
 }
@@ -474,6 +475,46 @@ void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
     }else{
         setEnabled(false);
     }
+
+	bool vertical = features & QDockWidget::DockWidgetVerticalTitleBar;
+	if(vertical != verticalOrientation_) {
+		verticalOrientation_ = vertical;
+		// pobieramy wszystkie widgety - ikonę, tytuł, lewy toolbar, prawy toolbar i buttony
+		auto widgets = layout()->children();
+		// będziemy je dodawać do nowego layoutu, stary usuniemy
+		QLayout * newLayout = nullptr;
+		if(verticalOrientation_ == true){
+			// I need to be vertical
+			newLayout = new QVBoxLayout(this);
+		} else {
+			// I need to be horizontal
+			newLayout = new QHBoxLayout(this);
+		}
+
+		for(int i = widgets.size(); i > 0; --i){
+			newLayout->addItem(layout()->takeAt(i));
+		}
+
+		delete layout();
+
+		//TODO
+		//kierunek tytułu okna
+		//QLabel* label = QLabel("Y axis"); 
+		//QGraphicsScene scene;
+		//QGraphicsProxyWidget  * proxy = scene.addWidget(label);
+		//proxy->rotate(-45);
+		//QGraphicsView view(&scene);
+
+		//lub na bazie qxt
+
+		//albo własna implementacja z pionowym textem
+		updateTitleOrientation();
+
+		leftToolbar->setOrientation(verticalOrientation_ == true ? Qt::Vertical : Qt::Horizontal);
+		rightToolbar->setOrientation(verticalOrientation_ == true ? Qt::Vertical : Qt::Horizontal);
+
+		setLayout(newLayout);
+	}
 }
 
 CoreTitleBar * CoreTitleBar::supplyWithCoreTitleBar(QDockWidget * dockWidget)

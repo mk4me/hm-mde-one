@@ -21,17 +21,27 @@ class QDockWidget;
 
 namespace coreUI {
 
+
+//! Obiekt UI reprezentuj¹cy tytu³ dla okna. Pozwala wyœwietlaæ jego nazwê, zamykanie,
+//! prze³anczanie pomiêdzy trybami dokowania/oddokowania. Ponadto oferuje mo¿liwoœæ
+//! przechowywania akcji po lewej i po prawej stronie zorganizowanych w 2 toolbarach.
+//! Mo¿e te¿ pracowaæ w wersji pionowej - experymentalna opcja:)
 class CoreTitleBar : public QWidget, public Ui::CoreTitleBar
 {
     Q_OBJECT
 
 public:
-
+	//! Typ opisuj¹cy stronê do której ma trafiæ dana akcja
 	enum SideType {Left, Right};
-	enum TitleVerticalMode { Rotated, Vertical};
+	//! Typ opisuj¹cy sposób realizacji obrotu tytu³u okna
+	enum TitleTextVerticalMode{
+		Rotated,	//! Obrócony tytu³ o -45 stopnii - trzeba go czytaæ bokiem
+		Vertical	//! Tytu³ napisany w pionie
+	};
 
 private:
 
+	//! Typ œledz¹cy rozmieszczenie akcji wg stron
 	typedef std::map<QObject *, SideType> ObjectsSides;
 
 public:
@@ -44,8 +54,8 @@ public:
 
 	virtual bool eventFilter(QObject * watched, QEvent * event);
 
-	void setTitleVerticalMode(TitleVerticalMode titleVerticalMode);
-	TitleVerticalMode titleVerticalMode() const;
+	void setTitleVerticalMode(TitleTextVerticalMode titleVerticalMode);
+	TitleTextVerticalMode titleVerticalMode() const;
 	QAction * actionAt(const QPoint & p) const;
 	QAction * actionAt(int x, int y) const;
 	void addAction(QAction * action, SideType side);
@@ -94,7 +104,7 @@ protected:
     //virtual void paintEvent(QPaintEvent *paintEvent);
 	virtual void changeEvent(QEvent * event);
 	virtual bool event(QEvent * event);
-	virtual void resizeEvent(QResizeEvent * event);
+	//virtual void resizeEvent(QResizeEvent * event);
 
 private:
 	CoreTitleBar(bool floating = false, QWidget * parent = nullptr);
@@ -109,7 +119,7 @@ private:
 	QToolBar * leftToolbar;
 	QToolBar * rightToolbar;
 	bool verticalOrientation_;
-	TitleVerticalMode titleVerticalMode_;
+	TitleTextVerticalMode titleVerticalMode_;
 	QAction * toogleViewAction_;
 	bool floating_;
 };

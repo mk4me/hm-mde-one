@@ -124,7 +124,7 @@ namespace coreUI {
 		//! \param name
 		//! \param style
 		//! \param area
-		QDockWidget* embeddWidget(QWidget* widget, const core::ActionsGroupManager& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
+		//QDockWidget* embeddWidget(QWidget* widget, const core::ActionsGroupManager& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
 		// QWidget
 	protected:

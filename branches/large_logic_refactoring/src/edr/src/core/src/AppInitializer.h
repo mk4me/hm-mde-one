@@ -34,7 +34,7 @@ public:
 		utils::Push<Application*> app(__application, coreApplication.get());
 
 		try{
-			if(coreApplication->initUI(argc, argv) == 0){
+			if(coreApplication->initUIContext(argc, argv) == 0){
 
 				try{				    
 					// tworzymy widok

@@ -11,10 +11,12 @@
 using namespace core;
 
 Visualizer::Visualizer( plugin::IVisualizer* impl ) :
-    InputItem<plugin::IVisualizer>(impl, VisualizerManager::getInstance()->getSourcesTypes(impl->getID())),
+	//TODO
+    //InputItem<plugin::IVisualizer>(impl, VisualizerManager::getInstance()->getSourcesTypes(impl->getID())),
     widget(nullptr)
 {
-    VisualizerManager::getInstance()->notifyCreated(this);
+	//TODO
+    //VisualizerManager::getInstance()->notifyCreated(this);
 	//TODO
     //uiName = QString::fromStdString(getName());
 }
@@ -24,14 +26,16 @@ Visualizer::Visualizer( const Visualizer& visualizer )
 	//: InputItem<plugin::IVisualizer>(dynamic_cast<plugin::IVisualizer*> (visualizer.getImplementation()->createClone()),VisualizerManager::getInstance()->getSourcesTypes(getImplementation()->getID())),
   : widget(nullptr)
 {
-    VisualizerManager::getInstance()->notifyCreated(this);
+	//TODO
+    //VisualizerManager::getInstance()->notifyCreated(this);
 	//TODO
     //uiName = QString::fromStdString(getName());
 }
 
 Visualizer::~Visualizer()
 {
-    VisualizerManager::getInstance()->notifyDestroyed(this);
+	//TODO
+    //VisualizerManager::getInstance()->notifyDestroyed(this);
 }
 
 QWidget* Visualizer::getOrCreateWidget()
@@ -50,8 +54,9 @@ QWidget* Visualizer::getOrCreateWidget()
         print->setIcon(icon);
         connect(print, SIGNAL(triggered()), this, SLOT(printActionPressed()));
 
-        IActionsGroupManager::GroupID id = genericActions.createGroup(tr("Common"));
-        genericActions.addGroupAction(id, print);
+		//TODO
+        //IActionsGroupManager::GroupID id = genericActions.createGroup(tr("Common"));
+        //genericActions.addGroupAction(id, print);
 
         //tryRun();
         UTILS_ASSERT(widget, "Nie udało się stworzyć widgeta.");
@@ -67,23 +72,24 @@ const QIcon& Visualizer::getIcon() const
     //return VisualizerManager::getInstance()->getIcon(getID());
 }
 
-const ActionsGroupManager& Visualizer::getGenericActions() const
-{
-    return genericActions;
-}
-
-const ActionsGroupManager& Visualizer::getOrCreateGenericActions()
-{
-    if ( !widget ) {
-        getOrCreateWidget();
-    }
-    return genericActions;
-}
-
-void Visualizer::setUIName( const QString& uiName )
-{
-    this->uiName = uiName;
-}
+//TODO
+//const ActionsGroupManager& Visualizer::getGenericActions() const
+//{
+//    return genericActions;
+//}
+//
+//const ActionsGroupManager& Visualizer::getOrCreateGenericActions()
+//{
+//    if ( !widget ) {
+//        getOrCreateWidget();
+//    }
+//    return genericActions;
+//}
+//
+//void Visualizer::setUIName( const QString& uiName )
+//{
+//    this->uiName = uiName;
+//}
 
 const QString& Visualizer::getUIName() const
 {

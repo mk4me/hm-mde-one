@@ -124,6 +124,9 @@ inline core::Filesystem::Path getPluginPath(const core::Filesystem::Path & path)
 
 }
 
+//TODO
+//w³asna funkcja wyci¹gaj¹ca nazwê aktualnie wywo³ywanej funkcji dla GNU i MSVC
+
 #ifdef _MSC_VER
 
 //! Makro loguj¹ce informacjê testow¹

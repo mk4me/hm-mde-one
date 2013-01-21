@@ -4,9 +4,6 @@
 #include <core/ILog.h>
 #include <core/PluginCommon.h>
 
-template<>
-core::SourceManager * ManagerHelper<core::SourceManager>::manager = nullptr;
-
 namespace core{
 
 SourceManager::SourceManager()

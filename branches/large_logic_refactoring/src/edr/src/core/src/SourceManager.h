@@ -13,11 +13,10 @@
 #include <core/ISource.h>
 #include <map>
 #include <vector>
-#include "ManagerHelper.h"
 
 namespace core {
 
-class SourceManager: public ISourceManager, public ManagerHelper<SourceManager>
+class SourceManager: public ISourceManager
 {
 public:
 	//! Słownik usług.

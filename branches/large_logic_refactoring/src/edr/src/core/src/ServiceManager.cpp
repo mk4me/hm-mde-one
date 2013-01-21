@@ -2,10 +2,6 @@
 #include <core/ILog.h>
 #include "Log.h"
 #include "ServiceManager.h"
-#include "ManagerHelper.h"
-
-template<>
-core::ServiceManager * ManagerHelper<core::ServiceManager>::manager = nullptr;
 
 namespace core {
 

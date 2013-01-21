@@ -77,14 +77,14 @@ namespace core {
 		void safeRegisterParser(const plugin::IParserPtr & parser);
 		void safeRegisterObjectWrapperPrototype(const ObjectWrapperPtr & prototype);
 		void safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer);
-		void registerCoreDomainTypes();
+		//void registerCoreDomainTypes();
 		void unpackPlugin(coreUI::MainWindow * splashScreen, const PluginPtr & plugin);
 
 	public:
 		Application();
 		~Application();
 
-		int initUI(int & argc, char *argv[]);
+		int initUIContext(int & argc, char *argv[]);
 
 		void initWithUI(coreUI::MainWindow * mainWindow);
 
