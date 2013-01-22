@@ -55,7 +55,7 @@ VisualizerWidget::VisualizerWidget( const VisualizerPtr& source, QWidget* parent
     // blokujemy sygnały
     comboType->blockSignals(true);
     // dodajemy wizualizatory
-    BOOST_FOREACH(const plugin::IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
+    BOOST_FOREACH(const plugin::IVisualizerConstPtr& vis, core::getVisualizerManager()->enumPrototypes()) {
 		//TODO
         //addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
     }
@@ -141,12 +141,13 @@ void VisualizerWidget::init()
     //wyczyszczenie wizualizatorów, inicjalizacja wszystkich kontrolek z tym zwiazanych
     clearCurrentVisualizer();
 
-    ActionsGroupManager::GroupID id = visualizerCommonElementsOrder.createGroup("Decoration");
-    visualizerCommonElementsOrder.addGroupAction(id, label);
+	//TODO akcje
+    //ActionsGroupManager::GroupID id = visualizerCommonElementsOrder.createGroup("Decoration");
+    //visualizerCommonElementsOrder.addGroupAction(id, label);
 
-    id = visualizerCommonElementsOrder.createGroup("Data");
-    visualizerCommonElementsOrder.addGroupAction(id, comboType);
-    visualizerCommonElementsOrder.addGroupAction(id, menuSource);
+    //id = visualizerCommonElementsOrder.createGroup("Data");
+    //visualizerCommonElementsOrder.addGroupAction(id, comboType);
+    //visualizerCommonElementsOrder.addGroupAction(id, menuSource);
 
     //ALL old visualizer elements
     QMetaObject::connectSlotsByName(this);
@@ -236,44 +237,44 @@ void VisualizerWidget::addVisualizer( const QIcon& icon, const QString& label, U
     comboType->addItem( icon, label, qVariantFromValue(id) );
 }
 
-const ActionsGroupManager & VisualizerWidget::getVisualizerActionsManager() const
-{
-    return visualizerImplementationCustomElements;
-}
+//const ActionsGroupManager & VisualizerWidget::getVisualizerActionsManager() const
+//{
+//    return visualizerImplementationCustomElements;
+//}
+//
+//const ActionsGroupManager & VisualizerWidget::getGenericVisualizerActionsManager() const
+//{
+//    return visualizerCommonElementsOrder;
+//}
 
-const ActionsGroupManager & VisualizerWidget::getGenericVisualizerActionsManager() const
-{
-    return visualizerCommonElementsOrder;
-}
-
-void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements & titleBarElements) const
-{
-    for(auto groupIT = visualizerCommonElementsOrder.begin(); groupIT != visualizerCommonElementsOrder.end(); ++groupIT){
-
-        std::map<int, QObject *> allGroupObjects;
-        (*groupIT).getAllObjects(allGroupObjects);
-
-        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); ++actionIT){
-            auto elementIT = visualizerCommonElements.find(actionIT->second);
-            if(elementIT != visualizerCommonElements.end()){
-                if(elementIT->second.visible == true){
-                    titleBarElements.push_back(VisualizerTitleBarElement(elementIT->second.object, elementIT->second.side));
-                }
-            }else{
-                titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, CoreTitleBar::Left));
-            }
-        }
-    }
-
-    for(auto groupIT = visualizerImplementationCustomElements.begin(); groupIT != visualizerImplementationCustomElements.end(); ++groupIT){
-        std::map<int, QObject *> allGroupObjects;
-        (*groupIT).getAllObjects(allGroupObjects);
-
-        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); ++actionIT){
-            titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, CoreTitleBar::Left));
-        }
-    }
-}
+//void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements & titleBarElements) const
+//{
+//    for(auto groupIT = visualizerCommonElementsOrder.begin(); groupIT != visualizerCommonElementsOrder.end(); ++groupIT){
+//
+//        std::map<int, QObject *> allGroupObjects;
+//        (*groupIT).getAllObjects(allGroupObjects);
+//
+//        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); ++actionIT){
+//            auto elementIT = visualizerCommonElements.find(actionIT->second);
+//            if(elementIT != visualizerCommonElements.end()){
+//                if(elementIT->second.visible == true){
+//                    titleBarElements.push_back(VisualizerTitleBarElement(elementIT->second.object, elementIT->second.side));
+//                }
+//            }else{
+//                titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, CoreTitleBar::Left));
+//            }
+//        }
+//    }
+//
+//    for(auto groupIT = visualizerImplementationCustomElements.begin(); groupIT != visualizerImplementationCustomElements.end(); ++groupIT){
+//        std::map<int, QObject *> allGroupObjects;
+//        (*groupIT).getAllObjects(allGroupObjects);
+//
+//        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); ++actionIT){
+//            titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, CoreTitleBar::Left));
+//        }
+//    }
+//}
 
 void VisualizerWidget::clearCurrentVisualizer()
 {
@@ -281,8 +282,8 @@ void VisualizerWidget::clearCurrentVisualizer()
         return;
     }
 
-	VisualizerManager::getInstance()->markAllChannelsAsRemovedFromVisualizer(visualizer.get());
-	VisualizerManager::getInstance()->removeAllChannelsFromVisualizer(visualizer.get());
+	core::getVisualizerManager()->markAllChannelsAsRemovedFromVisualizer(visualizer.get());
+	core::getVisualizerManager()->removeAllChannelsFromVisualizer(visualizer.get());
 
     //wyczyść menu wyboru źródeł i kanałów
     clearSources();
@@ -308,7 +309,7 @@ void VisualizerWidget::setCurrentVisualizer( UniqueID id )
 	//TODO
     //if ( !visualizer || visualizer->getID() != id ) {
 	if ( !visualizer ) {
-        setCurrentVisualizer( VisualizerManager::getInstance()->createVisualizer(id) );
+        setCurrentVisualizer( core::getVisualizerManager()->createVisualizer(id) );
     }
 }
 
@@ -357,8 +358,8 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
             comboType->setCurrentIndex(idx);
 
             visualizerWidget = visualizer->getOrCreateWidget();
-
-            visualizerImplementationCustomElements = visualizer->getGenericActions();
+			//TODO akcje
+            //visualizerImplementationCustomElements = visualizer->getGenericActions();
             if(visualizerWidget != nullptr){
                 //visualizerWidget->setObjectName(QString::fromUtf8("visualizerWidget"));
                 //setWidget(visualizerWidget);

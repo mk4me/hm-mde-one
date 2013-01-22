@@ -56,6 +56,11 @@ inline ServiceManager* getServiceManager()
 	return __application->serviceManager();
 }
 
+inline VisualizerManager* getVisualizerManager()
+{
+	return __application->visualizerManager();
+}
+
 //! \return Interfejs dostêpu do œcie¿ek aplikacji
 inline Path* getPathInterface()
 {

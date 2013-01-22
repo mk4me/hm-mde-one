@@ -15,7 +15,6 @@
 DEFINE_CORE_APPLICATION_ACCESSOR;
 
 namespace core {
-
 class AppInitializer
 {
 public:
@@ -26,17 +25,16 @@ public:
 	{
 		//using namespace core;
 	    // rev - statyczna
-        //UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyć po klasie MainWindow");   
+        //UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyć po klasie MainWindow");
 
 		int result = 0;
-		
+
 		shared_ptr<Application> coreApplication(new Application());
 		utils::Push<Application*> app(__application, coreApplication.get());
 
 		try{
 			if(coreApplication->initUIContext(argc, argv) == 0){
-
-				try{				    
+				try{
 					// tworzymy widok
 					FrontpageWidget widget;
 					//inicjalizujemy widok

@@ -9,26 +9,26 @@
 #ifndef HEADER_GUARD___COREACTIONSIDE_H__
 #define HEADER_GUARD___COREACTIONSIDE_H__
 
-class CoreActionSide
+#include "CoreTitleBar.h"
+
+namespace plugin {
+
+class ICoreTitleBarSide
 {
 public:
 
-	enum SideType {Left, Right};
+	virtual const CoreTitleBar::SideType side() const = 0;
 
-private:
+};
 
-	SideType side_;
-
-protected:
-
-	CoreActionSide(SideType side);
+class IFlexiTabBarGroup {
 
 public:
 
-	virtual ~CoreActionSide();
-
-	const SideType side() const;
+	virtual const QString group() const = 0;
 
 };
+
+}
 
 #endif	//	HEADER_GUARD___COREACTIONSIDE_H__
