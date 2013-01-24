@@ -3,8 +3,8 @@ BEGIN_PROJECT("executable")
 SET_PRIVATE_HEADERS(
 	AboutDialog.h
 	HmmMainWindow.h
-	EDRDockWidgetSet.h
-	EDRDockWidgetManager.h
+	CoreDockWidgetSet.h
+	CoreDockWidgetManager.h
 	TreeItemHelper.h
 	EMGFilter.h
 	DataFilterWidget.h
@@ -33,8 +33,8 @@ SET_SOURCE_FILES (
 	AboutDialog.cpp
 	main.cpp
 	HmmMainWindow.cpp
-	EDRDockWidgetSet.cpp
-	EDRDockWidgetManager.cpp
+	CoreDockWidgetSet.cpp
+	CoreDockWidgetManager.cpp
 	TreeItemHelper.cpp
 	EMGFilter.cpp
 	DataFilterWidget.cpp
@@ -63,8 +63,8 @@ SET_MOC_FILES(
 	#PseudoLoginWidget.h
 	ContextAction.h
     HmmMainWindow.h
-	EDRDockWidgetSet.h
-	EDRDockWidgetManager.h
+	CoreDockWidgetSet.h
+	CoreDockWidgetManager.h
 	DataFilterWidget.h
 	AnalisisTreeWidget.h
 	FilterEntryWidget.h

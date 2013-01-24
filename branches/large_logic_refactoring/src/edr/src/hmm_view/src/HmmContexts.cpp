@@ -28,7 +28,7 @@ void HMMAnalysisContext::deactivateContext(QWidget * nextContextWidget, bool ref
 }
 
 
-HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
+HMMVisualizerUsageContext::HMMVisualizerUsageContext(CoreFlexiToolBar * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
 {
 
 }
@@ -87,7 +87,7 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
     if(visualizerGroupID != -1){
         flexiTabWidget->removeGroup(visualizerGroupID);
         visualizerGroupID = -1;
-        std::set<FlexiTabWidget::GUIID>().swap(visualizerSectionsIDs);
+        std::set<CoreFlexiToolBar::GUIID>().swap(visualizerSectionsIDs);
     }
 }
 
@@ -281,7 +281,7 @@ void HMMVisualizerUsageContext::onUnregisterContextWidget(QWidget * contextWidge
 }
 
 
-HMMTreeItemUsageContext::HMMTreeItemUsageContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
+HMMTreeItemUsageContext::HMMTreeItemUsageContext( CoreFlexiToolBar * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
 	flexiSection(new QWidget()),
     groupID(-1),
@@ -400,7 +400,7 @@ void HMMTreeItemUsageContext::refresh()
 }
 
 
-RaportsThumbnailsContext::RaportsThumbnailsContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
+RaportsThumbnailsContext::RaportsThumbnailsContext( CoreFlexiToolBar * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
 	flexiSection(new QWidget()),
     groupID(-1),
@@ -568,7 +568,7 @@ void RaportsThumbnailsContext::createRaport()
     hmm->createRaport(html);
 }
 
-RaportsTabContext::RaportsTabContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
+RaportsTabContext::RaportsTabContext( CoreFlexiToolBar * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
 	editSection(nullptr),
     groupID(-1),

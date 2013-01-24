@@ -42,10 +42,10 @@ public:
 
 		//szybkie cofanie edycji - tylko pierwotna jest przywracana
 		for(auto it = modyfications.begin(); it != modyfications.end(); ++it){
-			if((*it).modyfication == IDataManagerReader::UPDATE_OBJECT && firstChanges.find((*it).currentVal) == firstChanges.end())
+			if((*it).modyfication == IDataManagerReader::UPDATE_OBJECT && firstChanges.find((*it).currentValue) == firstChanges.end())
 			{
-				firstChanges.insert((*it).currentVal);
-				mdm->rawUpdateData((*it).currentVal, (*it).previousValue);
+				firstChanges.insert((*it).currentValue);
+				mdm->rawUpdateData((*it).currentValue, (*it).previousValue);
 			}
 		}
 
@@ -54,7 +54,7 @@ public:
 			switch((*it).modyfication){
 
 			case IDataManagerReader::ADD_OBJECT:
-				mdm->rawRemoveData((*it).currentVal);
+				mdm->rawRemoveData((*it).currentValue);
 				break;
 
 			case IDataManagerReader::REMOVE_OBJECT:
@@ -206,7 +206,7 @@ private:
 		mdm->rawAddData(data);
 		//aktualizujemy liste zmian
 		ObjectChange change;
-		change.currentVal = data;
+		change.currentValue = data;
 		change.modyfication = IDataManagerReader::ADD_OBJECT;
 		change.type = data->getTypeInfo();
 		modyfications.push_back(change);
@@ -231,7 +231,7 @@ private:
 		//dodajemy dane do dm
 		mdm->rawUpdateData(data, newData);
 		//aktualizujemy liste zmian
-		change.currentVal = data;
+		change.currentValue = data;
 		change.modyfication = IDataManagerReader::UPDATE_OBJECT;
 		change.type = data->getTypeInfo();
 		modyfications.push_back(change);
@@ -334,7 +334,7 @@ void MemoryDataManager::addData(const ObjectWrapperPtr & data)
 	rawAddData(data);
 	ChangeList changes;
 	ObjectChange change;
-	change.currentVal = data;
+	change.currentValue = data;
 	change.modyfication = IDataManagerReader::ADD_OBJECT;
 	change.type = data->getTypeInfo();
 	changes.push_back(change);
@@ -386,7 +386,8 @@ void MemoryDataManager::rawGetObjects(ConstObjectsList & objects, const TypeInfo
 	types.insert(type);
 
 	if(exact == false){
-		const auto & derrivedTypes = getDataHierarchyManager()->getTypeDerrivedTypes(type);
+		TypeInfoSet derrivedTypes;
+		getDataHierarchyManager()->getTypeDerrivedTypes(type, derrivedTypes);
 		types.insert(derrivedTypes.begin(), derrivedTypes.end());
 	}
 

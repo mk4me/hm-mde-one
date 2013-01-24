@@ -55,7 +55,7 @@ HmmMainWindow::HmmMainWindow() :
     data(nullptr),
     operations(nullptr),
 	raports(nullptr),
-	flexiTabWidget(new FlexiTabWidget()),
+	flexiTabWidget(new CoreFlexiToolBar()),
 	currentButton(nullptr),
     dataObserver(new DataObserver(this)),
     summaryWindow(new SummaryWindow(this)),
@@ -179,7 +179,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&)));
     QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), summaryWindowController, SLOT(onTreeItemSelected(QTreeWidgetItem* , int)));
 
-    topMainWindow = new EDRDockWidgetManager();
+    topMainWindow = new CoreDockWidgetManager();
     topMainWindow->setTabsPosition(QTabWidget::South);
     topMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     bottomMainWindow = new QMainWindow();
@@ -363,7 +363,7 @@ void HmmMainWindow::createNewVisualizer()
     }
 }
 
-void HmmMainWindow::createNewVisualizer( HmmTreeItem* item, EDRDockWidgetSet* dockSet )
+void HmmMainWindow::createNewVisualizer( HmmTreeItem* item, CoreDockWidgetSet* dockSet )
 {
     showTimeline();
     createAndAddDockVisualizer(item, dockSet);
@@ -376,7 +376,7 @@ void HmmMainWindow::createVisualizerInNewSet()
     if (action) {
         showTimeline();
 
-        EDRDockWidgetSet* set = new EDRDockWidgetSet(topMainWindow);
+        CoreDockWidgetSet* set = new CoreDockWidgetSet(topMainWindow);
         topMainWindow->addDockWidgetSet(set);
 
         VisualizerWidget* w = createAndAddDockVisualizer(action->getTreeItem(), set);
@@ -405,7 +405,7 @@ void HmmMainWindow::highlightVisualizer(const VisualizerPtr& visualizer )
         DataItemDescription desc = it->second;
         if (desc.visualizer.lock() == visualizer) {
             // todo: optymalniej!
-            EDRDockWidgetSet* set = topMainWindow->tryGetDockSet(desc.visualizerWidget);
+            CoreDockWidgetSet* set = topMainWindow->tryGetDockSet(desc.visualizerWidget);
             if (set) {
                 topMainWindow->raiseSet(set);
             }
@@ -924,7 +924,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     return visualizerDockWidget;
 }
 
- VisualizerWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, EDRDockWidgetSet* dockSet)
+ VisualizerWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, CoreDockWidgetSet* dockSet)
  {
      std::stack<QString> pathStack;
      QTreeWidgetItem * pomItem = hmmItem;
@@ -1051,7 +1051,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      QMenu* addTo = new QMenu(tr("Add to:"), menu);
      connect(addTo, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
      connect(addTo, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
-     BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
+     BOOST_FOREACH(CoreDockWidgetSet* set, topMainWindow->getDockSet()) {
          QMenu* group = new QMenu(set->windowTitle(), menu);
 
          BOOST_FOREACH(CoreDockWidget* dock, set->getDockWidgets()) {
@@ -1119,7 +1119,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      }
 
      QMenu* createIn = new QMenu(tr("Create in:"), menu);
-     BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
+     BOOST_FOREACH(CoreDockWidgetSet* set, topMainWindow->getDockSet()) {
          if (set->isAdditionPossible()) {
              QAction* action = new ContextAction(item, menu, VisualizerPtr(), set);
              action->setText(set->windowTitle());

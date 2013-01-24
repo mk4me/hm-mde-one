@@ -349,7 +349,7 @@ int VideoVisualizer::getMaxDataSeries() const
     return 1;
 }
 
-plugin::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
+plugin::IVisualizer::ITimeSerieFeatures* VideoVisualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
 {
     VideoSerie* ret = new VideoSerie(this);
 
@@ -359,12 +359,12 @@ plugin::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const ObjectWra
     return ret;
 }
 
-plugin::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const plugin::IVisualizer::SerieBase * serie)
+plugin::IVisualizer::ITimeSerieFeatures* VideoVisualizer::createSerie(const plugin::IVisualizer::ISerie * serie)
 {
     return nullptr;
 }
 
-void VideoVisualizer::removeSerie(plugin::IVisualizer::SerieBase* serie)
+void VideoVisualizer::removeSerie(plugin::IVisualizer::ISerie* serie)
 {
     reset();
 }

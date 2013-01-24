@@ -382,7 +382,7 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     //wrapperX->setSource(wrapper->getSource());
     visualizer->getOrCreateWidget();
 
-    //series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(wrapperX, wrapperX->getName())));
+    //series.push_back(core::dynamic_pointer_cast<core::IVisualizer::ITimeSerie>(visualizer->createSerie(wrapperX, wrapperX->getName())));
 	series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(wrapperX, "UNKNOWN")));
 }
 

@@ -71,7 +71,7 @@ private:
 
 	bool getImage();
 
-    class VideoSerie : public plugin::IVisualizer::TimeSerieBase
+    class VideoSerie : public plugin::IVisualizer::ITimeSerieFeatures
     {
     public:
         VideoSerie(VideoVisualizer * visualizer);
@@ -134,12 +134,12 @@ public:
     virtual int getMaxDataSeries() const;
 
     //! \return Seria danych która można ustawiac - nazwa i dane, nie zarządza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
-    virtual plugin::IVisualizer::TimeSerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+    virtual plugin::IVisualizer::ITimeSerieFeatures* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
 
-    virtual plugin::IVisualizer::TimeSerieBase* createSerie(const plugin::IVisualizer::SerieBase * serie);
+    virtual plugin::IVisualizer::ITimeSerieFeatures* createSerie(const plugin::IVisualizer::ISerie * serie);
 
     //! \param serie Seria danych do usunięcia, nie powinien usuwać tej serii! Zarządzamy nią my!!
-    virtual void removeSerie(plugin::IVisualizer::SerieBase* serie);
+    virtual void removeSerie(plugin::IVisualizer::ISerie* serie);
 
     virtual void reset();
 };

@@ -1,46 +1,45 @@
 /********************************************************************
 	created:	2011/09/20
 	created:	20:9:2011   8:37
-	filename: 	EDRDockWidgetManager.h
+	filename: 	CoreDockWidgetManager.h
 	author:		Wojciech Kniec
 	
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_HMM__EDRDOCKWIDGETMANAGER_H__
-#define HEADER_GUARD_HMM__EDRDOCKWIDGETMANAGER_H__
+#ifndef HEADER_GUARD_CORE__DOCKWIDGETMANAGER_H__
+#define HEADER_GUARD_CORE__DOCKWIDGETMANAGER_H__
 
 #include <boost/range.hpp>
 #include <QtGui/QWidget>
 #include <QtGui/QMainWindow>
 
-class CoreDockWidget;
-class EDRDockWidgetSet;
+class CoreDockWidgetSet;
 
 //! Klasa zarządza calymi grupami dock widgetów, laczac je w sety
-class EDRDockWidgetManager : public QMainWindow
+class CoreDockWidgetManager : public QMainWindow
 {
     Q_OBJECT;
 public:
     //! niemodyfikowalny zakres wszystkich podległych grup zakładek aplikacji
-    typedef boost::iterator_range<std::list<EDRDockWidgetSet*>::iterator> range;
+    typedef boost::iterator_range<std::list<CoreDockWidgetSet*>::iterator> range;
     //! zakres wszystkich podległych grup zakładek aplikacji
-    typedef boost::iterator_range<std::list<EDRDockWidgetSet*>::const_iterator> const_range;
+    typedef boost::iterator_range<std::list<CoreDockWidgetSet*>::const_iterator> const_range;
 
 public:
 	//! typowy konstruktor Qt 
 	//! \param parent 
 	//! \param flags 
-	explicit EDRDockWidgetManager(QWidget *parent = 0, Qt::WindowFlags flags = 0);
-	virtual ~EDRDockWidgetManager() {}
+	explicit CoreDockWidgetManager(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	virtual ~CoreDockWidgetManager() {}
 
 public:
 	//! Dodaj grupę dock widgetów
 	//! \param set dodawana grupa
-	void addDockWidgetSet(EDRDockWidgetSet* set);
+	void addDockWidgetSet(CoreDockWidgetSet* set);
     //! Grupa dock widgetów stanie się aktywna (widoczna)
     //! \param set 
-    void raiseSet( EDRDockWidgetSet* set );
+    void raiseSet( CoreDockWidgetSet* set );
     //! Dodaje widget do grupy, która ma na niego miejsce, jeśli takiej nie ma to tworzona jest nowa
     //! \param widget dodawany dock widget
     void autoAddDockWidget(CoreDockWidget* widget);
@@ -54,7 +53,7 @@ public:
     //! Na podstawie dock widgeta pobierana jest grupa, do której należy
     //! \param widget badany dock widget
     //! \return odnaleziona grupa lub nullptr
-    EDRDockWidgetSet* tryGetDockSet(CoreDockWidget* widget);
+    CoreDockWidgetSet* tryGetDockSet(CoreDockWidget* widget);
 
 private:
     //! iteruje po wszystkich grupach zmieniając im nazwy
@@ -73,9 +72,9 @@ private Q_SLOTS:
 
 private:
     //! lista wszystkich grup managera
-	std::list<EDRDockWidgetSet*> dockList;
+	std::list<CoreDockWidgetSet*> dockList;
     //! lista grup, który zostały stworzone przez manager
-	std::list<EDRDockWidgetSet*> generatedList;
+	std::list<CoreDockWidgetSet*> generatedList;
 };
 
 #endif

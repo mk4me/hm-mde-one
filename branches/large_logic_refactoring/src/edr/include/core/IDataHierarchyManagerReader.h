@@ -21,15 +21,15 @@ namespace core {
 		virtual ObjectWrapperPtr createWrapper(const TypeInfo & typeInfo) const = 0;
 
 		//! \return Zarejestrowane w aplikacji typy danych
-		virtual const TypeInfoSet getRegisteredTypes() const = 0;
+		virtual void getRegisteredTypes(TypeInfoSet & registeredTypes) const = 0;
 		//! \return Zarejestrowane w aplikacji typy danych
 		virtual const bool isRegistered(const TypeInfo & type) const = 0;
 
 		//! \return Hierarchia typów danych - jakie operacje moge realizowaæ, po czym dziedzicze
-		virtual const TypeInfoSet getTypeBaseTypes(const TypeInfo & type) const = 0;
+		virtual void getTypeBaseTypes(const TypeInfo & type, TypeInfoSet & baseTypes) const = 0;
 
 		//! \return Hierarchia typów danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
-		virtual const TypeInfoSet getTypeDerrivedTypes(const TypeInfo & type) const = 0;
+		virtual void getTypeDerrivedTypes(const TypeInfo & type, TypeInfoSet & derrivedTypes) const = 0;
 
 		//! \param base Typ bazowy którego kompatybilnoœc sprawdzamy
 		//! \param derrived Typ pochodny wzglêdem kótrego sprawdzamy kompatybilnoœc typu bazowego

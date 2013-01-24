@@ -28,10 +28,10 @@
 #include "HmmContexts.h"
 #include "TreeRefresher.h"
 
-class EDRDockWidgetManager;
+class CoreDockWidgetManager;
 class DataFilterWidget;
 class AnalisisWidget;
-class EDRDockWidgetSet;
+class CoreDockWidgetSet;
 class FilterEntryWidget;
 class TextEdit;
 class ContextEventFilter;
@@ -190,7 +190,7 @@ private:
     //! \param hmmItem wybrany item, na podstwie którego tworzony jest wizualizator
     //! \param dockSet set, do którego ma być dodany element, jeśli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
     //! \return utworzony dockWidget z wizualizatorem
-    VisualizerWidget* createAndAddDockVisualizer( HmmTreeItem* hmmItem, EDRDockWidgetSet* dockSet);
+    VisualizerWidget* createAndAddDockVisualizer( HmmTreeItem* hmmItem, CoreDockWidgetSet* dockSet);
     //! wywoływane, gdy jakis widget dostaje focusa.
     //! wykorzystywane na potrzeby kontekstów flexi bara
     //! Hack - dodatkowo podpina się pod to okienko summary
@@ -210,7 +210,7 @@ private:
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
     //! \param item wybrany item, na podstwie którego tworzony jest wizualizator
     //! \param dockSet set, do którego ma być dodany element, jeśli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
-    void createNewVisualizer( HmmTreeItem* item, EDRDockWidgetSet* dockSet = nullptr );
+    void createNewVisualizer( HmmTreeItem* item, CoreDockWidgetSet* dockSet = nullptr );
     //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepującymi w sesji, które zostały znormalizowane w kontekscie kroków
     //! \param helper element, dla którego zostanie utworzony wizualizator
     //! \param context kontekst kroków (lewy, prawy)
@@ -240,7 +240,7 @@ private:
     // TODO, tu jest blad, obiekt jest zawsze nullem
     VisualizerWidget* currentVisualizer;    
     //! górny widget aplikacji gdzie trafiaja dock Widgety
-    EDRDockWidgetManager* topMainWindow;
+    CoreDockWidgetManager* topMainWindow;
     //! dolny widget aplikacji na timeline
     QMainWindow* bottomMainWindow;
     //! widget, gdzie trafiaja filtry analiz
@@ -256,9 +256,9 @@ private:
     //! zakładka z raportami
     TextEdit* raports;
     //! 
-    FlexiTabWidget * flexiTabWidget;
+    CoreFlexiToolBar * flexiTabWidget;
     //!
-    //FlexiTabWidget::GUIID visualizerGroupID;
+    //CoreFlexiToolBar::GUIID visualizerGroupID;
     //! mapa [przycisk -> zakładka]
     std::map<QWidget*, QWidget*> button2TabWindow;
     //!

@@ -1,8 +1,4 @@
 #include "CorePCH.h"
-#include "Application.h"
-#include "Log.h"
-#include "LogInitializer.h"
-#include "PluginLoader.h"
 #include <QtGui/QApplication>
 #include <osgQt/GraphicsWindowQt>
 #include <osg/ArgumentParser>
@@ -200,12 +196,8 @@ void Application::initWithUI(MainWindow * mainWindow)
 	fileDataManager_.reset(new FileDataManager());
 	serviceManager_.reset(new ServiceManager());
 	sourceManager_.reset(new SourceManager());
-	visualizerManager_.reset(new VisualizerManager());	
-
-	/*mainWindow->showSplashScreenMessage(QObject::tr("Registering application core domain types"));
-	QCoreApplication::processEvents();
-
-	registerCoreDomainTypes();*/
+	//TODO
+	//visualizerManager_.reset(new VisualizerManager());	
 
 	mainWindow->showSplashScreenMessage(QObject::tr("Initializing plugins loader"));
 	QCoreApplication::processEvents();
@@ -264,7 +256,8 @@ void Application::initWithUI(MainWindow * mainWindow)
 
 	mainWindow->showSplashScreenMessage(QObject::tr("Initializing main view"));
 	QCoreApplication::processEvents();
-	mainWindow->init();
+	//TODO
+	//mainWindow->init();
 	mainWindow->setCloseUpOperations(boost::bind(&Application::finalizeUI, this));
 
 	mainWindow->show();
@@ -475,7 +468,7 @@ void Application::safeRegisterVisualizer(const plugin::IVisualizerPtr & visualiz
 {
 	try{
 
-		visualizerManager_->registerVisualizer(visualizer);
+		visualizerManager_->registerVisualizerPrototype(visualizer);
 
 	}catch(std::exception & e){
 		CORE_LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()

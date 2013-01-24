@@ -9,15 +9,21 @@
 #ifndef HEADER_GUARD_CORE__CORETITLEBAR_H__
 #define HEADER_GUARD_CORE__CORETITLEBAR_H__
 
-#include <core/ui_CoreTitleBar.h>
 #include <QtGui/QWidget>
 #include <QtGui/QDockWidget>
 #include <map>
 
 class QToolBar;
 class QAction;
-class QAction;
+class QLabel;
+class QGraphicsScene;
+class QGraphicsProxyWidget;
+class QGraphicsView;
 class QDockWidget;
+
+namespace Ui {
+	class CoreTitleBar;
+}
 
 namespace coreUI {
 
@@ -26,7 +32,7 @@ namespace coreUI {
 //! prze³anczanie pomiêdzy trybami dokowania/oddokowania. Ponadto oferuje mo¿liwoœæ
 //! przechowywania akcji po lewej i po prawej stronie zorganizowanych w 2 toolbarach.
 //! Mo¿e te¿ pracowaæ w wersji pionowej - experymentalna opcja:)
-class CoreTitleBar : public QWidget, public Ui::CoreTitleBar
+class CoreTitleBar : public QWidget
 {
     Q_OBJECT
 
@@ -37,6 +43,14 @@ public:
 	enum TitleTextVerticalMode{
 		Rotated,	//! Obrócony tytu³ o -45 stopnii - trzeba go czytaæ bokiem
 		Vertical	//! Tytu³ napisany w pionie
+	};
+
+	//! Interfejs akcji chc¹cych potencjalnie dzia³aæ z corowym titlebarem
+	class ICoreTitleBarAction
+	{
+	public:
+		//! \return Strona po której ma siê pojawiæ akcja
+		virtual SideType side() const = 0;
 	};
 
 private:
@@ -58,21 +72,24 @@ public:
 	TitleTextVerticalMode titleVerticalMode() const;
 	QAction * actionAt(const QPoint & p) const;
 	QAction * actionAt(int x, int y) const;
-	void addAction(QAction * action, SideType side);
-	QAction * addAction(const QString & text, SideType side);
-	QAction * addAction(const QIcon & icon, const QString & text, SideType side);
-	QAction * addAction(const QString & text, const QObject * receiver, const char * member, SideType side);
-	QAction * addAction(const QIcon & icon, const QString & text, const QObject * receiver, const char * member, SideType side);
-	QAction * addSeparator(SideType side);
-	QAction * addWidget(QWidget * widget, SideType side);
+	void addAction(QAction * action);
+	void addAction(QAction * action, SideType side = Left);
+	QAction * addAction(const QString & text, SideType side = Left);
+	QAction * addAction(const QIcon & icon, const QString & text, SideType side = Left);
+	QAction * addAction(const QString & text, const QObject * receiver, const char * member, SideType side = Left);
+	QAction * addAction(const QIcon & icon, const QString & text, const QObject * receiver, const char * member, SideType side = Left);
+	QAction * addSeparator(SideType side = Left);
+	QAction * addWidget(QWidget * widget, SideType side = Left);
 	void clearAll();
-	void clearSide(SideType side);
+	void clearSide(SideType side = Left);
 	QSize iconSize () const;
 	QAction * insertSeparator(QAction * before);
 	QAction * insertWidget(QAction * before, QWidget * widget);
 	QAction * toggleViewAction() const;
 	Qt::ToolButtonStyle titlebarButtonStyle() const;
 	QWidget * widgetForAction(QAction * action) const;
+
+	void setIcon(const QPixmap & icon);
 
     bool isTitleVisible() const;
     
@@ -111,6 +128,7 @@ private:
 	void updateTitleOrientation();
 
 private:
+	Ui::CoreTitleBar * ui;
 	QLabel * titleLabel;
 	QGraphicsScene * titleScene;
 	QGraphicsProxyWidget * titleProxy;

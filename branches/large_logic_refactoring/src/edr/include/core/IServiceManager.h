@@ -18,12 +18,6 @@ namespace core {
     class IServiceManager
     {
     public:
-        virtual ~IServiceManager() {}
-
-        //! Rejestruje zadaną usługę.
-        //! \param newService
-        virtual void registerService(plugin::IServicePtr newService) = 0;
-
         //! \return Liczba usług.
         virtual int getNumServices() const = 0;
         //! \param idx Indeks usługi.

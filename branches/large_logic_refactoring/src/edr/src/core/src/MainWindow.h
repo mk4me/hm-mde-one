@@ -12,10 +12,8 @@
 
 #include <core/SmartPtr.h>
 #include <core/Plugin.h>
-#include <QtCore/QObject>
 #include <QtCore/QSettings>
 #include <QtGui/QMainWindow>
-//#include <core/Window.h>
 #include <core/Filesystem.h>
 #include <boost/function.hpp>
 
@@ -23,14 +21,13 @@ class QSplashScreen;
 
 namespace core {
 
-	class Application;
+	class IApplication;
 
 };
 
 namespace coreUI {
 
 	class CoreConsoleWidget;
-	class VisualizerWidget;
 
     template<class T>
     T* createNamedObject(const QString & objectName) {
@@ -41,7 +38,7 @@ namespace coreUI {
         return ret;
     }
 
-	class MainWindow : public QMainWindow//, public core::Window
+	class MainWindow : public QMainWindow
 	{
 		Q_OBJECT
 
@@ -63,8 +60,6 @@ namespace coreUI {
         std::vector<core::Filesystem::Path> applicationSkinsPaths;
 		//! SplashScreenAplikacji
         QSplashScreen * splashScreen_;
-		//! Ścieżka do screenshotów z aplikacji
-		core::Filesystem::Path screenshotsPath_;
 
 		CloseUpOperations closeUpOperations_;
 
@@ -76,15 +71,18 @@ namespace coreUI {
 
 		void setCloseUpOperations(const CloseUpOperations & closeUp);
 
-	public:
+	protected:
 
 		MainWindow();
+
+	public:
+
 		virtual ~MainWindow();
 
 		//! Dostarcza splash screen na potrzeby inicjalizacji aplikacji
 		QSplashScreen * splashScreen();
 		//! Inicjalizuje aplikację
-		void init();
+		void init(core::IApplication * coreApplication);
 
 		//! \param path Ścieżka stylu
 		void setStyle(const core::Filesystem::Path& path);
@@ -97,35 +95,14 @@ namespace coreUI {
 		//! \return Czy udało się załadować styl o podanej nazwie
 		bool trySetStyleByName(const std::string& styleName);
 
-		//! Metoda obsługująca akcje wizualizatorów
-		//! \param visWidget Widget wizualizatora
-		virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget) = 0;
-
 		//! \return Widget konsoli, który przechodzi pod kontrolę obiektu dziedziczącego - musi jakoś obsłużyć konsolę a na koniec ją usunąć
 		CoreConsoleWidget* getConsole();
 
 		virtual void showSplashScreenMessage(const QString & message);
 
-	public slots:
-		//! \param pixmap Screenshot aplikacji do zapisu
-		void saveScreen(const QPixmap & pixmap);
-
-	private:
-
-        //! Szuka na dysku zasobów.
-        void findResources(const core::Filesystem::Path & resourcesPath);
-
         const core::Filesystem::Path & getApplicationSkinsFilePath(int i);
 
         int getApplicationSkinsFilePathCount();
-
-		//! Opakowuje zadany widget QDockWidgetem.
-		//! \param widget
-		//! \param name
-		//! \param style
-		//! \param area
-		//QDockWidget* embeddWidget(QWidget* widget, const core::ActionsGroupManager& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
-
 		// QWidget
 	protected:
 		//!
@@ -135,9 +112,9 @@ namespace coreUI {
 		//! Odczytuje ustawienia aplikacji.
 		//! \param settings
 		//! \param readGeometry
-		void readSettings(const QSettings& settings, bool readGeometry);
+		virtual void readSettings(const QSettings& settings, bool readGeometry);
 		//! Zapisuje ustawienia aplikacji.
-		void writeSettings();
+		virtual void writeSettings();
 	};
 }
 

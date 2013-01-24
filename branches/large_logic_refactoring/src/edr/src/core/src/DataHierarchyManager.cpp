@@ -6,20 +6,21 @@ namespace core {
 
 ObjectWrapperPtr DataHierarchyManager::createWrapper(const TypeInfo & typeInfo) const
 {
-	return findOrThrow(typeInfo).prototype->create();
-}
-
-const TypeInfoSet DataHierarchyManager::getRegisteredTypes() const
-{
-	TypeInfoSet ret;
-
-	for(auto it = typesHierarchy.begin(); it != typesHierarchy.end(); ++it){
-		if(it->second.prototype != nullptr){
-			ret.insert(it->first);
-		}
+	auto it = typesHierarchy.find(typeInfo);
+	if(it != typesHierarchy.end() && it->second.prototype != nullptr) {
+		return it->second.prototype->create();
 	}
 
-	return ret;
+	return ObjectWrapperPtr();
+}
+
+void DataHierarchyManager::getRegisteredTypes(TypeInfoSet & registeredTypes) const
+{
+	for(auto it = typesHierarchy.begin(); it != typesHierarchy.end(); ++it){
+		if(it->second.prototype != nullptr){
+			registeredTypes.insert(it->first);
+		}
+	}
 }
 
 const bool DataHierarchyManager::isRegistered(const core::TypeInfo & typeInfo) const
@@ -34,19 +35,30 @@ const bool DataHierarchyManager::isRegistered(const core::TypeInfo & typeInfo) c
 
 const bool DataHierarchyManager::isTypeCompatible(const TypeInfo & base, const TypeInfo & derrived) const
 {
-	const auto & baseSet = findOrThrow(base);
-	const auto & derrivedSet = findOrThrow(derrived);
-	return derrivedSet.baseTypes.find(base) != derrivedSet.baseTypes.end();
+	auto baseIT = typesHierarchy.find(base);
+	auto derrivedIT = typesHierarchy.find(derrived);
+
+	if(baseIT == typesHierarchy.end() || derrivedIT == typesHierarchy.end() || baseIT->second.prototype == nullptr || derrivedIT->second.prototype == nullptr){
+		return false;
+	}
+
+	return derrivedIT->second.baseTypes.find(base) != derrivedIT->second.baseTypes.end();
 }
 
-const TypeInfoSet DataHierarchyManager::getTypeBaseTypes(const TypeInfo & type) const
+void DataHierarchyManager::getTypeBaseTypes(const TypeInfo & type, TypeInfoSet & baseTypes) const
 {
-	return findOrThrow(type).baseTypes;
+	auto it = typesHierarchy.find(type);
+	if(it == typesHierarchy.end() || it->second.prototype == nullptr) {
+		baseTypes.insert(it->second.baseTypes.begin(), it->second.baseTypes.end());
+	}
 }
 
-const TypeInfoSet DataHierarchyManager::getTypeDerrivedTypes(const TypeInfo & type) const
+void DataHierarchyManager::getTypeDerrivedTypes(const TypeInfo & type, TypeInfoSet & derrivedTypes) const
 {
-	return findOrThrow(type).derrivedTypes;
+	auto it = typesHierarchy.find(type);
+	if(it == typesHierarchy.end() || it->second.prototype == nullptr) {
+		derrivedTypes.insert(it->second.derrivedTypes.begin(), it->second.derrivedTypes.end());
+	}
 }
 
 void DataHierarchyManager::registerObjectWrapperPrototype(const ObjectWrapperPtr & owp)
@@ -84,16 +96,6 @@ void DataHierarchyManager::registerObjectWrapperPrototype(const ObjectWrapperPtr
 			thIT->second.derrivedTypes.insert(typeInfo);
 		}
 	}
-}
-
-const DataHierarchyManager::TypeHierarchy & DataHierarchyManager::findOrThrow(const TypeInfo & typeInfo) const
-{
-	auto it = typesHierarchy.find(typeInfo);
-	if(it == typesHierarchy.end() || it->second.prototype == nullptr) {
-		throw std::runtime_error("Type not registered");
-	}
-
-	return it->second;
 }
 
 }

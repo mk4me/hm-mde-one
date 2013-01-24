@@ -12,7 +12,7 @@
 
 #include <core/src/Visualizer.h>
 #include <QtGui/QAction>
-class EDRDockWidgetSet;
+class CoreDockWidgetSet;
 class HmmTreeItem;
 
 //! akcja obsługiwana w obrębie drzewa danych w analizach
@@ -26,7 +26,7 @@ public:
     //! \param parent rodzic akcji
     //! \param vis wizualizator związany z akcja
     //! \param set set, do którego ma trafic wizualizator
-    ContextAction(HmmTreeItem* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), EDRDockWidgetSet* set = nullptr) :
+    ContextAction(HmmTreeItem* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), CoreDockWidgetSet* set = nullptr) :
       item(itemHelper), QAction(parent), visualizer(vis), set(set){}
 
 public:
@@ -35,7 +35,7 @@ public:
     //! \return wizualizator związany z akcja
     VisualizerPtr getVisualizer() const { return visualizer.lock(); }
     //! \return set, do którego ma trafic wizualizator lub nullptr jeśli nie jest to sprecyzowane
-    EDRDockWidgetSet* getDockSet() const { return set; }
+    CoreDockWidgetSet* getDockSet() const { return set; }
 
 private:
     //!  helper przypiasany do elementu drzewa
@@ -43,7 +43,7 @@ private:
     //! wizualizator związany z akcja
     VisualizerWeakPtr visualizer;
     //! set, do którego ma trafic wizualizator lub nullptr jeśli nie jest to sprecyzowane
-    EDRDockWidgetSet* set;
+    CoreDockWidgetSet* set;
 };
 
 

@@ -37,7 +37,7 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -54,6 +54,13 @@
     <number>0</number>
    </property>
    <item>
+    <widget class="QLabel" name="iconPlaceholder">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QFrame" name="titlePlaceholder">
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -67,7 +74,7 @@
    <item>
     <widget class="QFrame" name="leftToolbarPlaceholder">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -110,7 +117,7 @@
    <item>
     <widget class="QFrame" name="rightToolbarPlaceholder">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>

@@ -1,12 +1,26 @@
 #include "CorePCH.h"
 #include <core/CoreAction.h>
 
-CoreAction::CoreAction(const QString &text, QObject* parent, CoreActionSide::SideType side) : QAction(text, parent), CoreActionSide(side)
+using namespace coreUI;
+
+CoreAction::CoreAction(const QString & sectionName, const QString &text, QObject* parent, CoreTitleBar::SideType side)
+	: QAction(text, parent), side_(side), sectionName_(sectionName)
 {
 
 }
 
-CoreAction::CoreAction(const QIcon &icon, const QString &text, QObject* parent, CoreActionSide::SideType side) : QAction(icon, text, parent), CoreActionSide(side)
+CoreAction::CoreAction(const QString & sectionName, const QIcon &icon, const QString &text, QObject* parent, CoreTitleBar::SideType side)
+	: QAction(icon, text, parent), side_(side), sectionName_(sectionName)
 {
 
+}
+
+CoreTitleBar::SideType CoreAction::side() const
+{
+	return side_;
+}
+
+const QString CoreAction::section() const
+{
+	return sectionName_;
 }

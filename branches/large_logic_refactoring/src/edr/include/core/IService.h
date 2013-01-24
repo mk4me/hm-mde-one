@@ -23,7 +23,6 @@ namespace core {
 	class IMemoryDataManager;
 	class IStreamDataManager;
 	class IFileDataManager;
-	class IActionsGroupManager;
 
 }
 
@@ -32,7 +31,6 @@ namespace plugin
     class IService : public ICoreElement
     {
     public:
-        virtual ~IService() {}
  
         //! Inicjalizacja usługi. Następuje już po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich usług.
@@ -42,8 +40,10 @@ namespace plugin
 			core::IStreamDataManager * streamDataManager,
 			core::IFileDataManager * fileDataManager) = 0;
 
-        //! Póxna inicjalizacja usług, następuje po wczytaniu i inicjalizacji wszystkich usług
-        virtual void lateInit() = 0;
+        //! Późna inicjalizacja usług, następuje po wczytaniu i inicjalizacji wszystkich usług
+		//! \return Czy usługa poprawnie zainicjalizowana czy nie - może brakuje innych usług zależnych i sama nie ma jak działać
+		//! Dla false usługa zostanie wyładowana
+        virtual const bool lateInit() = 0;
 
         //! Metoda powinna w bezpieczny sposób zwalniac zasoby, mając na uwadze że niekoniecznie wszystkie usługi i zasoby pobrane z zewnątrz są jeszcze dostępne.
         //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomił serwis, może tez zwalniac pamieć przydzieloną dynamicznie
@@ -56,13 +56,13 @@ namespace plugin
 
         //! Usługa nie musi mieć wizualnej reprezentacji.
         //! \return Widget tworzony przez usługę bądź NULL.
-        virtual QWidget* getWidget(core::IActionsGroupManager * actionsManager) = 0;
+        virtual QWidget* getWidget() = 0;
         
         //! \return Widget kontrolujący zachowanie usługi/usług zależnych.
-        virtual QWidget* getControlWidget(core::IActionsGroupManager * actionsManager) = 0;
+        virtual QWidget* getControlWidget() = 0;
 
         //! \return Widget dostarczający opcji związanych z usługą/usługami zależnymi.
-        virtual QWidget* getSettingsWidget(core::IActionsGroupManager * actionsManager) = 0;
+        virtual QWidget* getSettingsWidget() = 0;
     };
 
     typedef core::shared_ptr<IService> IServicePtr;

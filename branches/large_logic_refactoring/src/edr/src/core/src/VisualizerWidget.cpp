@@ -623,7 +623,7 @@ void VisualizerWidget::sourceSelected()
             //dodaj nowa serię
             plugin::VisualizerSeriePtr serie(visualizer->createSerie(lastSerie.second, getLabel(lastSerie.second, true)));
 
-            plugin::VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<plugin::IVisualizer::TimeSerieBase>(serie));
+            plugin::VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<plugin::IVisualizer::ITimeSerieFeatures>(serie));
 
             if(timeSerie != nullptr){
                 const void * tChannel = VisualizerManager::getInstance()->createChannel(timeSerie, visualizer.get());

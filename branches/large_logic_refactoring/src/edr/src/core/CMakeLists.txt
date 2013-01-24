@@ -15,9 +15,8 @@ SET_PRIVATE_HEADERS(
 	SourceManager.h
 	IAppUsageContext.h
 	IAppUsageContextManager.h
-	FlexiWidgetTabContentWidget.h
-	FlexiTabWidget.h
-	FlexiTabSectionWidget.h
+	CoreFlexiToolBar.h
+	CoreFlexiToolBarSection.h
 	SubjectDataFilters.h
 	AppInitializer.h
 	MainWindow.h
@@ -30,14 +29,14 @@ SET_PRIVATE_HEADERS(
 	Visualizer.h
 	CoreTitleBar.h
 	CoreDockWidget.h
-	InputDescription.h
 	Log.h
 	PluginLoader.h
 	CorePCH.h
 )
 
 SET_PUBLIC_HEADERS (
-	CoreActionSide.h
+	ICoreFlexiTabSection.h
+	ICoreActionSection.h
 	CoreAction.h
 	CoreWidgetAction.h
 	ITransaction.h
@@ -72,7 +71,6 @@ SET_PUBLIC_HEADERS (
 	IVisualizerManager.h
 	PluginCommon.h
 	TypeInfo.h
-	IInputDescription.h
 	IClonable.h
 	ISerializable.h
 	IPath.h
@@ -82,7 +80,6 @@ SET_PUBLIC_HEADERS (
 )
 
 SET_SOURCE_FILES(
-	CoreActionSide.cpp
 	CoreAction.cpp
 	CoreWidgetAction.cpp
 	Path.cpp
@@ -98,9 +95,8 @@ SET_SOURCE_FILES(
 	PluginPath.cpp
 	VisualizerChannel.cpp
 	SourceManager.cpp
-	FlexiWidgetTabContentWidget.cpp
-	FlexiTabWidget.cpp
-	FlexiTabSectionWidget.cpp
+	CoreFlexiToolBar.cpp
+	CoreFlexiToolBarSection.cpp
 	SubjectDataFilters.cpp
 	MainWindow.cpp
 	CoreConsoleWidget.cpp
@@ -117,9 +113,8 @@ SET_SOURCE_FILES(
 )
 
 SET_MOC_FILES(
-	FlexiWidgetTabContentWidget.h
-	FlexiTabWidget.h
-	FlexiTabSectionWidget.h
+	CoreFlexiToolBar.h
+	CoreFlexiToolBarSection.h
 	CoreConsoleWidget.h
     MainWindow.h
 	#SceneGraphWidget.h
@@ -131,9 +126,7 @@ SET_MOC_FILES(
 	# 			z corelib			 #
 )
 SET_UI_FILES(
-	FlexiWidgetTabContentWidget.ui
-	FlexiTabWidget.ui
-	FlexiTabSectionWidget.ui
+	CoreFlexiToolBarSection.ui
 	#SceneGraphWidget.ui
 	#OsgWidget.ui
 	CoreTitleBar.ui

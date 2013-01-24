@@ -10,12 +10,24 @@
 #define HEADER_GUARD___COREWIDGETACTION_H__
 
 #include <QtGui/QWidgetAction>
-#include <core/CoreActionSide.h>
+#include "CoreTitleBar.h"
+#include <core/ICoreActionSection.h>
 
-class CoreWidgetAction : public QWidgetAction, public CoreActionSide
+namespace coreUI {
+
+class CoreWidgetAction : public QWidgetAction, public CoreTitleBar::ICoreTitleBarAction, public ICoreActionSection
 {
 public:
-	explicit CoreWidgetAction(QObject *parent, CoreActionSide::SideType side = CoreActionSide::Left);
+	explicit CoreWidgetAction(QObject *parent, const QString & sectionName, CoreTitleBar::SideType side = CoreTitleBar::Left);
+
+	virtual CoreTitleBar::SideType side() const;
+	virtual const QString section() const;
+
+private:
+	CoreTitleBar::SideType side_;
+	QString sectionName_;
 };
+
+}
 
 #endif	//	HEADER_GUARD___COREWIDGETACTION_H__

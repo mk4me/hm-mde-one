@@ -9,11 +9,9 @@
 #ifndef HEADER_GUARD_CORE__ISOURCE_H__
 #define HEADER_GUARD_CORE__ISOURCE_H__
 
-#include <string>
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
 
-class QObject;
 class QWidget;
 
 namespace core {
@@ -22,7 +20,6 @@ namespace core {
 	class IFileDataManager;
 	class IStreamDataManager;
 	class IServiceManager;
-	class IActionsGroupManager;
 
 }
 
@@ -32,16 +29,15 @@ namespace plugin
     class ISource : public ICoreElement
     {
     public:
-        virtual ~ISource() {}
-
         //! Inicjalizacja źródła. Następuje już po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich źródeł.
         virtual void init(core::IMemoryDataManager * memoryDM,
 			core::IStreamDataManager * streamDM,
 			core::IFileDataManager * fileDM) = 0;
 
+		//! Zobacz podobną metode dla IService
         //! Późna inicjalizacja źródła, następuje po wczytaniu i inicjalizacji wszystkich innych źródeł
-        virtual void lateInit() = 0;
+        virtual bool lateInit() = 0;
 
 		//! Metoda powinna w bezpieczny sposób zwalniac zasoby, mając na uwadze że niekoniecznie wszystkie usługi i zasoby pobrane z zewnątrz są jeszcze dostępne.
         //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomił serwis, może tez zwalniac pamieć przydzieloną dynamicznie
@@ -54,11 +50,13 @@ namespace plugin
 
         //! Źródło nie musi mieć wizualnej reprezentacji.
         //! \return Widget tworzony przez źródło bądź NULL.
-        virtual QWidget* getWidget(core::IActionsGroupManager * actionsGroupManager) = 0;
-
-        //! Źródło nie musi mieć widgeta konfigurującego.
-        //! \return Widget tworzony przez źródło bądź NULL.
-        virtual QWidget* getConfigurationWidget(core::IActionsGroupManager * actionsGroupManager) = 0;
+        virtual QWidget* getWidget() = 0;
+		//! \return Widget kontrolujący zachowanie usługi/usług zależnych.
+		virtual QWidget* getControlWidget() = 0;
+		//! \return Widget dostarczający opcji związanych z usługą/usługami zależnymi.
+		virtual QWidget* getSettingsWidget() = 0;
+		//! \param offeredTypes Typy oferowane przez to źródło
+		virtual void getOfferedTypes(core::TypeInfoList & offeredTypes) const = 0;
     };
 
 	typedef core::shared_ptr<ISource> ISourcePtr;

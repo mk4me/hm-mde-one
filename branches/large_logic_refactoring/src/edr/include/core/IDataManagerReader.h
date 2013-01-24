@@ -41,7 +41,7 @@ namespace core {
 		struct ObjectChange
 		{
 			ObjectWrapperConstPtr previousValue;	//! Kopia OW przed zmianą, nie jest zarejestrowana w DM
-			ObjectWrapperConstPtr currentVal;		//! Aktualny OW zarejestrowany w DM
+			ObjectWrapperConstPtr currentValue;		//! Aktualny OW zarejestrowany w DM
 			TypeInfo type;							//! Typ OW
 			ModificationType modyfication;			//! Typ zmiany na OW
 		};

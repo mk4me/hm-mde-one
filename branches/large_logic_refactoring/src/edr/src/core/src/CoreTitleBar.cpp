@@ -5,21 +5,22 @@
 #include <core/ILog.h>
 #include <core/PluginCommon.h>
 #include "CoreTitleBar.h"
+#include "ui_CoreTitleBar.h"
 #include "CoreDockWidget.h"
 
 using namespace coreUI;
 
-CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), titleLabel(new QLabel()),
-	titleScene(new QGraphicsScene()), titleView(new QGraphicsView()), floating_(floating),
-	leftToolbar(new QToolBar), rightToolbar(new QToolBar), toogleViewAction_(new QAction(nullptr)),
-	verticalOrientation_(false), titleVerticalMode_(Rotated)
+CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ui(new Ui::CoreTitleBar),
+	titleLabel(new QLabel()), titleScene(new QGraphicsScene()), titleView(new QGraphicsView()),
+	floating_(floating), leftToolbar(new QToolBar), rightToolbar(new QToolBar),
+	toogleViewAction_(new QAction(nullptr)), verticalOrientation_(false), titleVerticalMode_(Rotated)
 {
-    setupUi(this);
-	buttonFloat->setChecked(floating);
-	leftToolbar->setParent(leftToolbarPlaceholder);
-	rightToolbar->setParent(rightToolbarPlaceholder);
-	leftToolbarPlaceholder->layout()->addWidget(leftToolbar);
-	rightToolbarPlaceholder->layout()->addWidget(rightToolbar);
+    ui->setupUi(this);
+	ui->buttonFloat->setChecked(floating);
+	leftToolbar->setParent(ui->leftToolbarPlaceholder);
+	rightToolbar->setParent(ui->rightToolbarPlaceholder);
+	ui->leftToolbarPlaceholder->layout()->addWidget(leftToolbar);
+	ui->rightToolbarPlaceholder->layout()->addWidget(rightToolbar);
 
 	connect(leftToolbar, SIGNAL(actionTriggered(QAction*)), this, SLOT(onActionTriggeredLeft(QAction*)));
 	connect(rightToolbar, SIGNAL(actionTriggered(QAction*)), this, SLOT(onActionTriggeredRight(QAction*)));
@@ -35,13 +36,18 @@ CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ti
 	titleProxy = titleScene->addWidget(titleLabel);
 	titleScene->setParent(titleView);
 	titleView->setScene(titleScene);
-	titleView->setParent(titlePlaceholder);
-	titlePlaceholder->layout()->addWidget(titleView);
+	titleView->setParent(ui->titlePlaceholder);
+	ui->titlePlaceholder->layout()->addWidget(titleView);
 }
 
 CoreTitleBar::~CoreTitleBar()
 {
 
+}
+
+void CoreTitleBar::setIcon(const QPixmap & icon)
+{
+	ui->iconPlaceholder->setPixmap(icon);
 }
 
 void CoreTitleBar::toggleFloating(bool floating)
@@ -212,6 +218,17 @@ QAction * CoreTitleBar::actionAt(int x, int y) const
 	}
 
 	return ret;
+}
+
+void CoreTitleBar::addAction(QAction * action)
+{
+	SideType side = Left;
+	auto a = dynamic_cast<ICoreTitleBarAction*>(action);
+	if(a != nullptr){
+		side = a->side();
+	}
+
+	addAction(action, side);
 }
 
 void CoreTitleBar::addAction(QAction * action, SideType side)
@@ -459,15 +476,15 @@ void CoreTitleBar::setTitleVisible(bool visible)
 void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
 {
     if(features & QDockWidget::DockWidgetClosable){
-        buttonClose->setVisible(true);
+        ui->buttonClose->setVisible(true);
     }else{
-        buttonClose->setVisible(false);
+        ui->buttonClose->setVisible(false);
     }
 
     if(features & QDockWidget::DockWidgetFloatable){
-        buttonFloat->setVisible(true);
+        ui->buttonFloat->setVisible(true);
     }else{
-        buttonFloat->setVisible(false);
+        ui->buttonFloat->setVisible(false);
     }
 
     if(features & QDockWidget::DockWidgetMovable){
@@ -497,16 +514,6 @@ void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
 
 		delete layout();
 
-		//TODO
-		//kierunek tytułu okna
-		//QLabel* label = QLabel("Y axis"); 
-		//QGraphicsScene scene;
-		//QGraphicsProxyWidget  * proxy = scene.addWidget(label);
-		//proxy->rotate(-45);
-		//QGraphicsView view(&scene);
-
-		//lub na bazie qxt
-
 		//albo własna implementacja z pionowym textem
 		updateTitleOrientation();
 
@@ -533,7 +540,7 @@ CoreTitleBar * CoreTitleBar::supplyWithCoreTitleBar(QDockWidget * dockWidget)
 	//obserwujemy zmiany cech okna
     QObject::connect(dockWidget, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), titleBar, SLOT(refreshFeatures(QDockWidget::DockWidgetFeatures)));
 	//akcje na zamkniecie okna
-    QObject::connect(titleBar->buttonClose, SIGNAL(triggered()), dockWidget, SLOT(close()));
+    QObject::connect(titleBar->ui->buttonClose, SIGNAL(triggered()), dockWidget, SLOT(close()));
 
     return titleBar;
 }

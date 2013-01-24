@@ -1,9 +1,9 @@
 #include "hmmPCH.h"
-#include "EDRDockWidgetSet.h"
-#include "EDRDockWidgetManager.h"
+#include "CoreDockWidgetSet.h"
+#include "CoreDockWidgetManager.h"
 #include <QtGui/QTabWidget>
 
-EDRDockWidgetManager::EDRDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
+CoreDockWidgetManager::CoreDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
 	QMainWindow(parent, flags)
 {
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -11,7 +11,7 @@ EDRDockWidgetManager::EDRDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowF
     setCentralWidget(nullptr);
 }
 
-void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
+void CoreDockWidgetManager::addDockWidgetSet( CoreDockWidgetSet* set )
 {
 	this->addDockWidget(Qt::TopDockWidgetArea, set, Qt::Horizontal);
 	dockList.push_back(set);
@@ -48,10 +48,9 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
     }
     set->setWindowTitle(QString(tr("Group %1")).arg(dockList.size()));
     set->setPermanent(false);
-    //setTabNames();
 }
 
-void EDRDockWidgetManager::autoAddDockWidget( CoreDockWidget* widget )
+void CoreDockWidgetManager::autoAddDockWidget( CoreDockWidget* widget )
 {
 	for (auto it = generatedList.begin(); it != generatedList.end(); ++it) {
 		if ((*it)->isAdditionPossible(widget)) {
@@ -60,38 +59,32 @@ void EDRDockWidgetManager::autoAddDockWidget( CoreDockWidget* widget )
 		}
 	}
 
-	EDRDockWidgetSet* set = new EDRDockWidgetSet();
+	CoreDockWidgetSet* set = new CoreDockWidgetSet();
     connect(set, SIGNAL(dockClosed()), this, SLOT(dockClosed()));
-	//if (set->isAdditionPossible(widget)) {
-		set->addDockWidget(widget);
-		addDockWidgetSet(set);
-		generatedList.push_back(set);
-	//} else {
-		//throw std::runtime_error("Unable to add widget");
-	//}
-	//QWidget::setUpdatesEnabled(true);
+	set->addDockWidget(widget);
+	addDockWidgetSet(set);
+	generatedList.push_back(set);
     set->setPermanent(false);
-    //setTabNames();
 }
 
 
-void EDRDockWidgetManager::onSetClosed( QObject* object )
+void CoreDockWidgetManager::onSetClosed( QObject* object )
 {
     // edr dock widget już nie isnieje, ale potrzebny jest nam tylko wskaźnik,
     // zeby usunąć obiekt z listy
-    EDRDockWidgetSet* set = reinterpret_cast<EDRDockWidgetSet*>(object);
+    CoreDockWidgetSet* set = reinterpret_cast<CoreDockWidgetSet*>(object);
     dockList.remove(set);
     generatedList.remove(set);
     setTabNames();
     Q_EMIT changed();
 }
 
-void EDRDockWidgetManager::setTabsPosition( QTabWidget::TabPosition tabPosition )
+void CoreDockWidgetManager::setTabsPosition( QTabWidget::TabPosition tabPosition )
 {
     setTabPosition(Qt::AllDockWidgetAreas, tabPosition);
 }
 
-void EDRDockWidgetManager::setTabNames()
+void CoreDockWidgetManager::setTabNames()
 {
     int i = 0;
     for (auto it = dockList.begin(); it != dockList.end(); ++it) {
@@ -99,14 +92,14 @@ void EDRDockWidgetManager::setTabNames()
     }
 }
 
-void EDRDockWidgetManager::raiseSet( EDRDockWidgetSet* set )
+void CoreDockWidgetManager::raiseSet( CoreDockWidgetSet* set )
 {
     set->setVisible(true);
     set->setFocus();
     set->raise();
 }
 
-EDRDockWidgetSet* EDRDockWidgetManager::tryGetDockSet( CoreDockWidget* widget )
+CoreDockWidgetSet* CoreDockWidgetManager::tryGetDockSet( CoreDockWidget* widget )
 {
     for (auto it = dockList.begin(); it != dockList.end(); ++it) {
         BOOST_FOREACH(const CoreDockWidget* dock, (*it)->getDockWidgets()) {
@@ -121,7 +114,7 @@ EDRDockWidgetSet* EDRDockWidgetManager::tryGetDockSet( CoreDockWidget* widget )
 }
 
 
-void EDRDockWidgetManager::dockClosed()
+void CoreDockWidgetManager::dockClosed()
 {
     Q_EMIT changed();
 }

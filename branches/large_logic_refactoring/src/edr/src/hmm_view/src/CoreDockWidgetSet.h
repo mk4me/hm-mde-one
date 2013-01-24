@@ -1,55 +1,59 @@
 /********************************************************************
 	created:	2011/09/19
 	created:	19:9:2011   14:55
-	filename: 	EDRDockWidgetSet.h
+	filename: 	CoreDockWidgetSet.h
 	author:		Wojciech Kniec
 	
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_HMM__EDRDOCKWIDGETSET_H__
-#define HEADER_GUARD_HMM__EDRDOCKWIDGETSET_H__
+#ifndef HEADER_GUARD_CORE__DOCKWIDGETSET_H__
+#define HEADER_GUARD_CORE__DOCKWIDGETSET_H__
 
 #include <boost/range.hpp>
 #include <QtCore/QString>
 #include <QtGui/QMainWindow>
-#include <core/src/EDRDockWidget.h>
+#include <core/src/CoreDockWidget.h>
+
+class QDockWidget;
+
+namespace coreUI {
 
 //! Klasa obsługuje grupę dock widgetów, sama będąc dock widgetem
-class EDRDockWidgetSet : public CoreDockWidget
+class CoreDockWidgetSet : public CoreDockWidget
 {
 	Q_OBJECT;
 public:
     //! niemodyfikowalny zakres wszystkich podległych widgetów zakładki
-    typedef boost::iterator_range<std::list<CoreDockWidget*>::const_iterator> const_range;
+    typedef boost::iterator_range<std::list<QDockWidget*>::const_iterator> const_range;
 
 public:
 	//! Konstruktor
 	//! \param title wyświetlana w tabie nazwa grupy
 	//! \param parent 
 	//! \param flags 
-	explicit EDRDockWidgetSet(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	explicit CoreDockWidgetSet(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	//! Typowy konstruktor Qt
 	//! \param parent 
 	//! \param flags 
-	explicit EDRDockWidgetSet(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
-	virtual ~EDRDockWidgetSet() {}
+	explicit CoreDockWidgetSet(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
+	virtual ~CoreDockWidgetSet() {}
 
 public:
     //! Dodaje dock widget do grupy, jeśli nie ma na niego miejsca rzucany jest wyjątek
     //! \param widget dodawany dock widget
     //! \param area obszar okna (lewy, prawy, góra, dol)
     //! \param orientation orientacja (dzielenie w pionie lub poziomie)
-    void addDockWidget(CoreDockWidget* widget, Qt::DockWidgetArea area, Qt::Orientation orientation);
+    void addDockWidget(QDockWidget* widget, Qt::DockWidgetArea area, Qt::Orientation orientation);
     //! Dodaje dock widget do grupy, jeśli nie ma na niego miejsca rzucany jest wyjątek
     //! \param widget dodawany dock widget
     //! \param orientation orientacja (dzielenie w pionie lub poziomie)
-	void addDockWidget(CoreDockWidget* widget, Qt::Orientation orientation);
+	void addDockWidget(QDockWidget* widget, Qt::Orientation orientation);
     //! Dodaje dock widget do grupy, jeśli nie ma na niego miejsca rzucany jest wyjątek
     //! \param widget dodawany dock widget
-    void addDockWidget(CoreDockWidget* widget);
-	//! \return czy można jeszcze dodać dock widget do grpy
-	bool isAdditionPossible(CoreDockWidget* widget = nullptr) const;
+    void addDockWidget(QDockWidget* widget);
+	//! \return czy można jeszcze dodać dock widget do grupy
+	bool isAdditionPossible(QDockWidget* widget = nullptr) const;
 	//! blokuje lub odblokowuje możliwość dodawania widgetów
 	//! \param additionPossible można / nie można dodać nowego widgeta
 	void blockAddition(bool additionPossible);
@@ -79,11 +83,13 @@ private:
     //! kontener dodawanych dock widgetów
 	QMainWindow* mainWindow;
     //! dodane do grupy dock widgety
-	std::list<CoreDockWidget*> widgetsList;
+	std::list<QDockWidget*> widgetsList;
     //! maksymalna liczba dock widgetów w grupie
 	int maxWidgetsNumber;
     //! czy możliwe jest dalsze dodawanie widgetów (niezalezne od maksymalnej liczby dock widgetów)
 	bool additionPossible;
 };
+
+}
 
 #endif

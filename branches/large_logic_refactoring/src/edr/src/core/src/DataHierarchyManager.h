@@ -35,15 +35,15 @@ public:
 	virtual ObjectWrapperPtr createWrapper(const TypeInfo & typeInfo) const;
 
 	//! \return Zarejestrowane w aplikacji typy danych
-	virtual const TypeInfoSet getRegisteredTypes() const;
+	virtual void getRegisteredTypes(TypeInfoSet & registeredTypes) const;
 
 	virtual const bool isRegistered(const core::TypeInfo &) const;
 
 	//! \return Hierarchia typów danych - jakie operacje moge realizowaæ, po czym dziedzicze
-	virtual const TypeInfoSet getTypeBaseTypes(const TypeInfo & type) const;
+	virtual void getTypeBaseTypes(const TypeInfo & type, TypeInfoSet & baseTypes) const;
 
 	//! \return Hierarchia typów danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
-	virtual const TypeInfoSet getTypeDerrivedTypes(const TypeInfo & type) const;
+	virtual void getTypeDerrivedTypes(const TypeInfo & type, TypeInfoSet & derrivedTypes) const;
 
 	//! \param base Typ bazowy którego kompatybilnoœc sprawdzamy
 	//! \param derrived Typ pochodny wzglêdem kótrego sprawdzamy kompatybilnoœc typu bazowego
@@ -52,12 +52,6 @@ public:
 
 	//! \param owp Rejestrowany ObjectWrapper, które niesie informacjê o typach danych
 	void registerObjectWrapperPrototype(const ObjectWrapperPtr & owp);
-
-private:
-	//! Szuka typu lub rzuca wyj¹tkiem
-	//! \param typeInfo Poszukiwany typ
-	//! \return Opis hierarchi typu
-	const TypeHierarchy & findOrThrow(const TypeInfo & typeInfo) const;
 
 private:
 	//! Opis hierarchi wszystkich zarejestrowanych typów

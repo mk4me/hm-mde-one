@@ -70,6 +70,7 @@ UTILS_POP_WARNINGS
 
 #include <core/TypeInfo.h>
 #include <core/SmartPtr.h>
+#include "Application.h"
 #include "ServiceManager.h"
 #include "MemoryDataManager.h"
 #include "ParserManager.h"
@@ -79,8 +80,18 @@ UTILS_POP_WARNINGS
 #include "SourceManager.h"
 #include "VisualizerManager.h"
 #include "ApplicationCommon.h"
-#include <core/IActionsGroupManager.h>
 #include "IAppUsageContextManager.h"
+#include "Log.h"
+#include "LogInitializer.h"
+#include "PluginLoader.h"
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
 
 // przywrócenie warningów wyłączonych przez OSG
 #if defined(_MSC_VER)

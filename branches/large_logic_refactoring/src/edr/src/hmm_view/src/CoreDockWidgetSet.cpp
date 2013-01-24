@@ -1,42 +1,42 @@
 #include "hmmPCH.h"
-#include "EDRDockWidgetSet.h"
-#include <core/src/EDRTitleBar.h>
+#include "CoreDockWidgetSet.h"
+#include <QtGui/QDockWidget>
+
+using namespace coreUI;
 
 const int maxWidgets = 5;
 
 
-EDRDockWidgetSet::EDRDockWidgetSet( const QString &title, QWidget *parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
+CoreDockWidgetSet::CoreDockWidgetSet( const QString &title, QWidget *parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
 	CoreDockWidget(title, parent, flags),
 	maxWidgetsNumber(maxWidgets),
 	additionPossible(true)
 {
-    supplyWithCoreTitleBar(this);
-
 	mainWindow = new QMainWindow();
     mainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	mainWindow->setDockOptions(QMainWindow::AllowNestedDocks);
     mainWindow->setContentsMargins(7,7,7,7);
     setWidget(mainWindow);
 }
 
-EDRDockWidgetSet::EDRDockWidgetSet( QWidget *parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/ ) :
+CoreDockWidgetSet::CoreDockWidgetSet( QWidget *parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/ ) :
 	CoreDockWidget(parent, flags),
 	maxWidgetsNumber(maxWidgets), 
 	additionPossible(true)
 {
-    supplyWithCoreTitleBar(this);
-
 	mainWindow = new QMainWindow();
 	mainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	mainWindow->setDockOptions(QMainWindow::AllowNestedDocks);
     mainWindow->setContentsMargins(7,7,7,7);
     setWidget(mainWindow);
 }
 
-bool EDRDockWidgetSet::isAdditionPossible(CoreDockWidget* widget) const
+bool CoreDockWidgetSet::isAdditionPossible(QDockWidget* widget) const
 {
 	return (additionPossible && (getNumWidgets() < getMaxWidgetsNumber()));
 }
 
-void EDRDockWidgetSet::addDockWidget(CoreDockWidget* widget, Qt::DockWidgetArea area, Qt::Orientation orientation)
+void CoreDockWidgetSet::addDockWidget(QDockWidget* widget, Qt::DockWidgetArea area, Qt::Orientation orientation)
 {
     QWidget::setUpdatesEnabled(false);
     if (isAdditionPossible(widget)) {
@@ -52,38 +52,38 @@ void EDRDockWidgetSet::addDockWidget(CoreDockWidget* widget, Qt::DockWidgetArea 
     raise();
 }
 
-void EDRDockWidgetSet::addDockWidget( CoreDockWidget* widget, Qt::Orientation orientation )
+void CoreDockWidgetSet::addDockWidget( QDockWidget* widget, Qt::Orientation orientation )
 {
 	addDockWidget(widget, Qt::TopDockWidgetArea, orientation);
 }
 
-void EDRDockWidgetSet::addDockWidget( CoreDockWidget* widget )
+void CoreDockWidgetSet::addDockWidget( QDockWidget* widget )
 {
     addDockWidget(widget, ((getNumWidgets() % 2) == 1) ? Qt::Horizontal : Qt::Vertical);
 }
 
-int EDRDockWidgetSet::getNumWidgets() const 
+int CoreDockWidgetSet::getNumWidgets() const 
 {
 	return widgetsList.size();
 }
 
-void EDRDockWidgetSet::blockAddition( bool additionPossible )
+void CoreDockWidgetSet::blockAddition( bool additionPossible )
 {
 	this->additionPossible = additionPossible;
 }
 
-void EDRDockWidgetSet::onDockWidgetClosed( QObject* object )
+void CoreDockWidgetSet::onDockWidgetClosed( QObject* object )
 { 
     Q_EMIT dockClosed();
     // konwersja wystarczająca, poniewaz chcemy tylko usunąć obiekt z listy
-    CoreDockWidget* widget = reinterpret_cast<CoreDockWidget*>(object);
+    QDockWidget* widget = reinterpret_cast<QDockWidget*>(object);
     widgetsList.remove(widget);
     if(widgetsList.empty() == true){
         close();
     }
 }
 
-void EDRDockWidgetSet::onDockWidgetLocationChanged(Qt::DockWidgetArea area)
+void CoreDockWidgetSet::onDockWidgetLocationChanged(Qt::DockWidgetArea area)
 {
     //HACK!!
     //TO POWINNO SIĘ DAć STYLOWAć - NIESTETY JEST TO UKRYTE PRZEZ QT

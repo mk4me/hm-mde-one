@@ -20,12 +20,6 @@ namespace core {
     class ISourceManager
     {
     public:
-        virtual ~ISourceManager() {};
-
-        //! Rejestruje zadaną usługę.
-        //! \param newService
-        virtual void registerSource(const plugin::ISourcePtr & newSource) = 0;
-
         //! \return Liczba źródeł.
         virtual int getNumSources() const = 0;
         //! \param idx Indeks źródła.

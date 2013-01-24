@@ -1,99 +1,88 @@
 #include "CorePCH.h"
 #include <QtGui/QAction>
 #include "Visualizer.h"
-#include "VisualizerManager.h"
-#include "VisualizerChannel.h"
-#include "VisualizerWidget.h"
-
+#include <core/IDataManagerReader.h>
 #include <core/ObjectWrapper.h>
-#include <plugins/newTimeline/ITimelineService.h>
+#include <core/CoreAction.h>
 
 using namespace core;
+using namespace coreUI;
+using namespace plugin;
 
-Visualizer::Visualizer( plugin::IVisualizer* impl ) :
-	//TODO
-    //InputItem<plugin::IVisualizer>(impl, VisualizerManager::getInstance()->getSourcesTypes(impl->getID())),
+class Visualizer::VisualizerHelper : public IDataManagerReader::IObjectObserver
+{
+public:
+	VisualizerHelper(Visualizer * visualizer) : visualizer_(visualizer) {}
+
+	virtual void observe(const IDataManagerReader::ChangeList & changes)
+	{
+		for(auto it = changes.begin(); it != changes.end(); ++it){
+			if((*it).modyfication == IDataManagerReader::UPDATE_OBJECT){
+				for(auto serieIT = visualizer_->dataSeries.begin(); serieIT != visualizer_->dataSeries.end(); ++serieIT){
+					if( (*serieIT)->serie()->getData() == (*it).currentValue ){
+						(*serieIT)->serie()->update();
+						return;
+					}
+				}
+			}
+		}
+	}
+
+private:
+	Visualizer * visualizer_;
+	QAction * screenshotAction_;
+};
+
+Visualizer::Visualizer( const plugin::IVisualizer* proto ) :
+	visualizer_(proto->create()),
     widget(nullptr)
 {
-	//TODO
-    //VisualizerManager::getInstance()->notifyCreated(this);
-	//TODO
-    //uiName = QString::fromStdString(getName());
+	init();
 }
 
-Visualizer::Visualizer( const Visualizer& visualizer )
-	//TODO
-	//: InputItem<plugin::IVisualizer>(dynamic_cast<plugin::IVisualizer*> (visualizer.getImplementation()->createClone()),VisualizerManager::getInstance()->getSourcesTypes(getImplementation()->getID())),
-  : widget(nullptr)
+Visualizer::Visualizer( const Visualizer& visualizer ) :
+	visualizer_(visualizer.visualizer_->create()), 
+	widget(nullptr)
 {
-	//TODO
-    //VisualizerManager::getInstance()->notifyCreated(this);
-	//TODO
-    //uiName = QString::fromStdString(getName());
+	init();
+}
+
+void Visualizer::init()
+{
+	{
+		scoped_ptr<QIcon> i(visualizer_->createIcon());
+		icon = *i;
+	}
+
+	TypeInfoList types;
+	visualizer_->getSupportedTypes(types);
+	supportedTypes.insert(types.begin(),types.end());
+
+	visualizerHelper_.reset(new VisualizerHelper(this));
+	getMemoryDataManager()->addObserver(visualizerHelper_);
+	
+	getVisualizerManager()->registerForUpdate(visualizer_.get());
 }
 
 Visualizer::~Visualizer()
 {
-	//TODO
-    //VisualizerManager::getInstance()->notifyDestroyed(this);
+	getVisualizerManager()->unregisterForUpdate(visualizer_.get());
+	destroyAllSeries();
 }
 
 QWidget* Visualizer::getOrCreateWidget()
 {
     if (!widget) {
-		//TODO
-        //CORE_LOG_DEBUG("Visualizer " << getImplementation()->getName() << " widget created");
-		CORE_LOG_DEBUG("Visualizer " <<  " widget created");
-
-		//TODO
-        //widget = getImplementation()->createWidget(&genericActions);
-        QAction* print = new QAction("Print visualizer", widget);
-        QIcon icon;
-        icon.addFile(QString::fromUtf8(":/resources/icons/screenshot-b.png"), QSize(), QIcon::Normal, QIcon::Off);
-        icon.addFile(QString::fromUtf8(":/resources/icons/screenshot-a.png"), QSize(), QIcon::Normal, QIcon::On);
-        print->setIcon(icon);
-        connect(print, SIGNAL(triggered()), this, SLOT(printActionPressed()));
-
-		//TODO
-        //IActionsGroupManager::GroupID id = genericActions.createGroup(tr("Common"));
-        //genericActions.addGroupAction(id, print);
-
-        //tryRun();
+		PLUGIN_LOG_DEBUG("Creating Visualizer " << visualizer_->getName() <<  " widget");
+		widget = visualizer_->createWidget();
         UTILS_ASSERT(widget, "Nie udało się stworzyć widgeta.");
     }
     return widget;
 }
 
-const QIcon& Visualizer::getIcon() const
+const QIcon Visualizer::getIcon() const
 {
-	//TODO
-	static QIcon icon = QIcon();
 	return icon;
-    //return VisualizerManager::getInstance()->getIcon(getID());
-}
-
-//TODO
-//const ActionsGroupManager& Visualizer::getGenericActions() const
-//{
-//    return genericActions;
-//}
-//
-//const ActionsGroupManager& Visualizer::getOrCreateGenericActions()
-//{
-//    if ( !widget ) {
-//        getOrCreateWidget();
-//    }
-//    return genericActions;
-//}
-//
-//void Visualizer::setUIName( const QString& uiName )
-//{
-//    this->uiName = uiName;
-//}
-
-const QString& Visualizer::getUIName() const
-{
-    return uiName;
 }
 
 QWidget* Visualizer::getWidget()
@@ -101,66 +90,145 @@ QWidget* Visualizer::getWidget()
     return widget;
 }
 
-void Visualizer::update(double deltaTime)
+const QString Visualizer::getName() const
 {
-	//TODO
-    //getImplementation()->update(deltaTime);
+	return QString::fromUtf8(visualizer_->getName().c_str());
 }
 
-int Visualizer::getMaxSeries() const
+const int Visualizer::getMaxSeries() const
 {
-	//TODO
-    //return getImplementation()->getMaxDataSeries();
-	return 0;
+	return visualizer_->getMaxDataSeries();
 }
 
-const plugin::VisualizerSeriePtr & Visualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
+const TypeInfoSet & Visualizer::getSupportedTypes() const
 {
-	//TODO
-	plugin::VisualizerSeriePtr serie;
-    //plugin::VisualizerSeriePtr serie(getImplementation()->createSerie(data, name));
-
-    if(serie->getName().empty() == true){
-        serie->setName(name);
-    }
-
-    auto it = dataSeries.insert(serie).first;
-
-    return *it;
+	return supportedTypes;
 }
 
-void Visualizer::removeSerie(const plugin::VisualizerSeriePtr & serie)
+Visualizer::VisualizerSerie * Visualizer::createSerie(const ObjectWrapperConstPtr & data)
 {
-	//TODO
-    //getImplementation()->removeSerie(serie.get());
-    dataSeries.erase(serie);
+	VisualizerSerie * serie = nullptr;
+    auto s = visualizer_->createSerie(data);
+	if(s != nullptr){
+		serie = new VisualizerSerie(this, s, dynamic_cast<IVisualizer::ITimeSerieFeatures*>(s));
+		dataSeries.insert(serie);
+		notifyChange(serie, ADD_SERIE);
+	}
+
+	return serie;
 }
 
-void Visualizer::clearAllSeries()
+Visualizer::VisualizerSerie * Visualizer::createSerie(VisualizerSerie * serie)
+{
+	VisualizerSerie * retserie = nullptr;
+	if(serie->visualizer_ == this){
+		auto s = visualizer_->createSerie(serie->serie());
+		if(s != nullptr){
+			retserie = new VisualizerSerie(this, s, serie->timeSerieFeatures() != nullptr ? dynamic_cast<IVisualizer::ITimeSerieFeatures*>(s) : nullptr);
+			dataSeries.insert(retserie);
+			notifyChange(serie, ADD_SERIE);
+		}
+	}
+
+	return retserie;
+}
+
+void Visualizer::destroySerie(VisualizerSerie * serie)
+{
+	if(serie->visualizer_ == this){
+		notifyChange(serie, REMOVE_SERIE);
+		dataSeries.erase(serie);
+		delete serie;
+	}
+}
+
+void Visualizer::notifyChange(VisualizerSerie * serie, SerieModyfication modyfication)
+{
+	for(auto it = observers_.begin(); it != observers_.end(); ++it){
+		(*it)->update(serie, modyfication);
+	}
+}
+
+void Visualizer::destroyAllSeries()
 {
     while(dataSeries.empty() == false){
-		//TODO
-        //getImplementation()->removeSerie((*dataSeries.begin()).get());
-        dataSeries.erase(dataSeries.begin());
+		destroySerie(*(dataSeries.begin()));
     }
 
     DataSeries().swap(dataSeries);
 }
 
-const Visualizer::DataSeries & Visualizer::getDataSeries() const
+void Visualizer::addObserver(IVisualizerObserver * observer)
 {
-    return dataSeries;
+	observers_.push_back(observer);
 }
 
-void Visualizer::reset()
+void Visualizer::removeObserver(IVisualizerObserver * observer)
 {
-    clearAllSeries();
+	observers_.remove(observer);
 }
 
-void Visualizer::printActionPressed()
+void Visualizer::onScreenshotTrigger()
 {
-	//TODO
-    //QPixmap p = getImplementation()->print();
-	QPixmap p;
-    emit this->printTriggered(p);
+	if(widget != nullptr){
+		emit screenshotTaken(visualizer_->takeScreenshot());
+	}
+}
+
+//! \param impl Implementacja wizualizatora. Obiekt przejmowany na własność.
+BrowserVisualizer::BrowserVisualizer( const plugin::IVisualizer* proto ) : Visualizer(proto)
+{
+
+}
+
+//! Konstuktor kopiujący - głęboka kopia. Nie kopiuje widgeta.
+BrowserVisualizer::BrowserVisualizer( const BrowserVisualizer& visualizer ) : Visualizer(visualizer)
+{
+
+}
+
+void BrowserVisualizer::getData(const TypeInfo & type, ConstObjectsList & objects) const
+{
+	if(getSupportedTypes().find(type) != getSupportedTypes().end()){
+		getDataManagerReader()->getObjects(objects, type, false);
+	}
+}
+
+//! \param impl Implementacja wizualizatora. Obiekt przejmowany na własność.
+DataManagebleVisualizer::DataManagebleVisualizer(const plugin::IVisualizer* proto ) : Visualizer(proto)
+{
+
+}
+//! Konstuktor kopiujący - głęboka kopia. Nie kopiuje widgeta.
+DataManagebleVisualizer::DataManagebleVisualizer( const DataManagebleVisualizer& visualizer ) : Visualizer(visualizer)
+{
+
+}
+
+void DataManagebleVisualizer::getData(const TypeInfo & type, ConstObjectsList & objects) const
+{
+	auto it = data_.find(type);
+	if(it != data_.end()){
+		objects.insert(objects.end(), it->second.begin(), it->second.end());
+	}
+}
+
+void DataManagebleVisualizer::addData(ObjectWrapperCollection & data)
+{
+	if(getSupportedTypes().find(data.getTypeInfo()) != getSupportedTypes().end()){
+		data_[data.getTypeInfo()].insert(data.begin(), data.end());
+	}
+}
+
+void DataManagebleVisualizer::removeData(const TypeInfo & type)
+{
+	data_.erase(type);
+}
+
+void DataManagebleVisualizer::removeData(const TypeInfo & type, ObjectWrapperConstPtr data)
+{
+	auto it = data_.find(type);
+	if(it != data_.end()){
+		it->second.erase(data);
+	}
 }

@@ -36,7 +36,7 @@
 #include "KinematicSerie.h"
 
 /*! Klasa dostarcza scenę 3d i zarządza obiektami na niej */
-class KinematicVisualizer :  public QObject, public core::IVisualizer
+class KinematicVisualizer :  private QObject, public core::IVisualizer
 {
 	// wszystkie możliwe serie przeniesione do osobnego pliku
 	//friend class GRFSerie;

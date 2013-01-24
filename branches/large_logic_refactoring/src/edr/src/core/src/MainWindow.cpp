@@ -1,11 +1,13 @@
 #include "CorePCH.h"
 #include "MainWindow.h"
-#include "ApplicationCommon.h"
+#include <core/PluginCommon.h>
 #include <QtGui/QSplashScreen>
 #include "CoreConsoleWidget.h"
 #include "CoreDockWidget.h"
 #include <QtCore/QFile>
 #include <QtCore/QSettings>
+
+PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR
 
 using namespace coreUI;
 using namespace core;
@@ -50,16 +52,6 @@ void MainWindow::setStyleByName( const std::string& styleName )
     throw std::runtime_error(std::string("Unable to set style : ") + styleName);
 }
 
-void MainWindow::saveScreen(const QPixmap & pixmap)
-{
-	try{
-		pixmap.save(QString((screenshotsPath_ / "screen_%1.png").string().c_str()).arg(QDateTime::currentDateTime().toString()));
-	}catch(...){
-
-	}
-}
-
-
 bool MainWindow::trySetStyleByName( const std::string& styleName )
 {
     try {
@@ -71,13 +63,8 @@ bool MainWindow::trySetStyleByName( const std::string& styleName )
     return true;
 }
 
-MainWindow::MainWindow(): QMainWindow(nullptr), splashScreen_(nullptr), screenshotsPath_(getPathInterface()->getUserDataPath() / "screenshots"),
-	widgetConsole(new CoreConsoleWidget())
+MainWindow::MainWindow(): QMainWindow(nullptr), splashScreen_(nullptr),	widgetConsole(new CoreConsoleWidget())
 {
-    if(Filesystem::pathExists(screenshotsPath_) == false){
-		Filesystem::createDirectory(screenshotsPath_);
-	}
-
 	//TODO
 	//szukaj styli qt
 	//temp = Filesystem::listFiles(resourcesPath, true, ".qss");
@@ -112,8 +99,9 @@ CoreConsoleWidget* MainWindow::getConsole()
 	return widgetConsole;
 }
 
-void MainWindow::init()
+void MainWindow::init(core::IApplication * coreApplication)
 {
+	plugin::__coreApplication = coreApplication;
     readSettings(QSettings(), true);
 	customViewInit(widgetConsole);
 }
@@ -177,30 +165,3 @@ void MainWindow::closeEvent(QCloseEvent* event)
 		event->ignore();
 	}
 }
-
-//QDockWidget* MainWindow::embeddWidget( QWidget* widget, const ActionsGroupManager & widgetActions, const QString& name, const QString& style, const QString& sufix,
-//    Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)
-//{
-//    // dodajemy widget dokowalny
-//    CoreDockWidget* dock = new CoreDockWidget( name, this, Qt::WindowTitleHint);
-//    dock->setAllowedAreas(area);
-//    dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
-//    dock->setStyleSheet(style);
-//    dock->setWidget(widget);
-//    dock->setPermanent(true);
-//    QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
-//
-//	//TODO
-//
-//	/*EDRTitleBar * titleBar = supplyWithEDRTitleBar(dock);
-//
-//	for(auto groupIT = widgetActions.begin(); groupIT != widgetActions.end(); ++groupIT){
-//	std::map<int, QObject *> allObjects;
-//	(*groupIT).getAllObjects(allObjects);
-//	for(auto objectIT = allObjects.begin(); objectIT != allObjects.end(); ++objectIT){
-//	titleBar->addObject(objectIT->second, IEDRTitleBar::Left);
-//	}
-//	}*/
-//
-//    return dock;
-//}
