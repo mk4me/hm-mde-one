@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___PARSERMANAGER_H__
 #define HEADER_GUARD___PARSERMANAGER_H__
 
-#include <core/IParserManagerReader.h>
+#include <corelib/IParserManagerReader.h>
 #include <boost/regex.hpp>
 
 namespace core {

@@ -10,8 +10,8 @@
 #define HEADER_GUARD_CORE__LOGINITIALIZER_H__
 
 #include <cstddef>
-#include <core/ILog.h>
-#include <core/Filesystem.h>
+#include <corelib/ILog.h>
+#include <corelib/Filesystem.h>
 
 namespace coreUI {
 

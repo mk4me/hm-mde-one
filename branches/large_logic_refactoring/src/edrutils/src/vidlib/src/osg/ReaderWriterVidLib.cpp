@@ -114,7 +114,7 @@ public:
 
 REGISTER_OSGPLUGIN(vidlib, ReaderWriterVidLib)
 
-VIDLIB_EXPORT void osgdb_vidlib_init( void )
+UTILS_EXPORT void osgdb_vidlib_init( void )
 {
     osgdb_vidlib();
 }

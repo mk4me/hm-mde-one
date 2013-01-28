@@ -15,7 +15,5 @@ SET_MOC_FILES(
 SET_UI_FILES(
 	toolboxmaindeffile.ui
 )
-set(CORE_PRIVATES ${PROJECT_ROOT}/src)
-include_directories(${CORE_PRIVATES})
 
 END_PROJECT()

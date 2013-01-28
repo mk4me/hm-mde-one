@@ -10,12 +10,12 @@
 #define HEADER_GUARD___IDATAFILTER_H__
 
 #include <plugins/subject/Types.h>
-#include <core/SmartPtr.h>
-#include <core/IServiceManager.h>
+#include <corelib/SmartPtr.h>
+#include <corelib/IServiceManager.h>
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>
-#include <core/PluginCommon.h>
+#include <corelib/PluginCommon.h>
 
 namespace PluginSubject {
 
@@ -35,10 +35,10 @@ class IDataFilter : protected IFilteredDataFactory
 public:
     IDataFilter()
     {
-        auto subjectService = core::queryServices<ISubjectService>(core::getServiceManager());
+        /*auto subjectService = core::queryServices<ISubjectService>(core::getServiceManager());
         if(subjectService != nullptr){
             filteredDataFactory = subjectService->getFilteredDataFacotry();
-        }
+        }*/
     }
 
     virtual ~IDataFilter() {}

@@ -10,8 +10,8 @@
 #define HEADER_GUARD___MEMORYDATAMANAGER_H__
 
 #include <list>
-#include <core/IDataManagerReader.h>
-#include <core/IMemoryDataManager.h>
+#include <corelib/IDataManagerReader.h>
+#include <corelib/IMemoryDataManager.h>
 #include <utils/SynchronizationPolicies.h>
 
 namespace core {

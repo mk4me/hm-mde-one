@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___STREAMDATAMANAGER_H__
 #define HEADER_GUARD___STREAMDATAMANAGER_H__
 
-#include <core/IStreamDataManager.h>
+#include <corelib/IStreamDataManager.h>
 
 namespace core {
 

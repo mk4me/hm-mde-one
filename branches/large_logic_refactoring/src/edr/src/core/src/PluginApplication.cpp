@@ -51,7 +51,7 @@ IDataHierarchyManagerReader * PluginApplication::dataHierarchyManagerReader()
 	return getDataHierarchyManager();
 }
 
-IExtensionManagerReader * PluginApplication::dataExtensionManagerReader()
+IVisualizerManager * PluginApplication::visualizerManager()
 {
-	return nullptr;
+	return getVisualizerManager();
 }

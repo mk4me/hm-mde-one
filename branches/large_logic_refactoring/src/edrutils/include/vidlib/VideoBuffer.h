@@ -11,7 +11,7 @@
 
 #include <list>
 #include <vector>
-#include <vidlib/Export.h>
+#include <utils/Export.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ namespace vidlib {
 class VideoBufferChunk;
 
 //! Bufor ramek o maksymalnym zadanym rozmiarze.
-class VIDLIB_EXPORT VideoBuffer
+class UTILS_EXPORT VideoBuffer
 {
 private:
     //! Zastosowany wzorzec "Pimpl" (żeby usunąć warningi przy budowie DLL)

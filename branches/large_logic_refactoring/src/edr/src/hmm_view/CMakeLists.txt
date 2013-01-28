@@ -3,8 +3,6 @@ BEGIN_PROJECT("executable")
 SET_PRIVATE_HEADERS(
 	AboutDialog.h
 	HmmMainWindow.h
-	CoreDockWidgetSet.h
-	CoreDockWidgetManager.h
 	TreeItemHelper.h
 	EMGFilter.h
 	DataFilterWidget.h
@@ -33,8 +31,6 @@ SET_SOURCE_FILES (
 	AboutDialog.cpp
 	main.cpp
 	HmmMainWindow.cpp
-	CoreDockWidgetSet.cpp
-	CoreDockWidgetManager.cpp
 	TreeItemHelper.cpp
 	EMGFilter.cpp
 	DataFilterWidget.cpp
@@ -63,8 +59,6 @@ SET_MOC_FILES(
 	#PseudoLoginWidget.h
 	ContextAction.h
     HmmMainWindow.h
-	CoreDockWidgetSet.h
-	CoreDockWidgetManager.h
 	DataFilterWidget.h
 	AnalisisTreeWidget.h
 	FilterEntryWidget.h
@@ -94,8 +88,6 @@ SET_RC_FILES (
 
 SET_PRECOMPILED_HEADER(hmmPCH.h hmmPCH.cpp)
 
-set(CORE_PRIVATES ${PROJECT_ROOT}/src)
-include_directories(${CORE_PRIVATES})
 #------------------------------------------------------------------------------
 # DEFINICJE WYNIKAJ¥CE Z KONFLIKTU QT - BOOST (foreach)
 # wy³anczamy s³owa kluczowe qt, zastêpujemy je makrami

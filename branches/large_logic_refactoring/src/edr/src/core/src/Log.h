@@ -10,7 +10,7 @@
 #define __HEADER_GUARD__CORE_LOG_H__
 
 #include <string>
-#include <core/ILog.h>
+#include <corelib/ILog.h>
 
 namespace core {
 

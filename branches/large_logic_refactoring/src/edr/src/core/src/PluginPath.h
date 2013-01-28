@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___CUSTOMPATH_H__
 #define HEADER_GUARD___CUSTOMPATH_H__
 
-#include <core/IPath.h>
+#include <corelib/IPath.h>
 
 namespace core {
 

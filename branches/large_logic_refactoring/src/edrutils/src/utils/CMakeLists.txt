@@ -39,6 +39,9 @@ SET_PUBLIC_HEADERS(
 	SynchronizationPolicies.h
 	IThread.h
 	IThreadFactory.h
+	TypeInfo.h
+	ObjectWrapper.h
+	Export.h
 )
 
 #------------------------------------------------------------------------------
@@ -48,6 +51,8 @@ SET_SOURCE_FILES(
 	Debug.cpp
 	NamedTree.cpp
 	Profiler.cpp
+	TypeInfo.cpp
+	ObjectWrapper.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(

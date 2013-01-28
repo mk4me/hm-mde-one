@@ -43,7 +43,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
     //TODO zapisać styl widgeta, dokleić nasz styl i ustawić a nie nadpisywać
 
     contextWidget->setStyleSheet(QString::fromUtf8(
-        "VisualizerWidget > .QWidget, VisualizerWidget > .QWidget:focus:hover {" \
+        "CoreVisualizerWidget > .QWidget, CoreVisualizerWidget > .QWidget:focus:hover {" \
             "border: 2px solid orange;"\
         "}"
     ));
@@ -55,7 +55,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
     }
 
     if(it->second.empty() == false){
-        auto visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
+        auto visWidget = qobject_cast<CoreVisualizerWidget*>(contextWidget);
         auto vis = visWidget->getCurrentVisualizer();
         //tworzymy grupę dla wizualizatora
         visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer") + QString(" - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
@@ -93,7 +93,7 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
 
 void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 {
-    VisualizerWidget * visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
+    CoreVisualizerWidget * visWidget = qobject_cast<CoreVisualizerWidget*>(contextWidget);
 
     auto actionsManager = visWidget->getVisualizerActionsManager();
 

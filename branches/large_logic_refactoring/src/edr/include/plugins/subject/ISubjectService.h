@@ -11,8 +11,7 @@
 
 #include <vector>
 #include <plugins/subject/Types.h>
-#include <core/TypeInfo.h>
-#include <core/ObjectWrapper.h>
+#include <corelib/BaseDataTypes.h>
 
 namespace PluginSubject {
 

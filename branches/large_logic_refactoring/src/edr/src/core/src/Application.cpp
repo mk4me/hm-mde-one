@@ -4,8 +4,8 @@
 #include <osg/ArgumentParser>
 #include <QtCore/QTranslator>
 #include <QtCore/QSettings>
-#include <corelib/Config.h>
-#include "MainWindow.h"
+#include "Config.h"
+#include <coreui/CoreMainWindow.h>
 #include <QtGui/QSplashScreen>
 #include <QtGui/QMessageBox>
 
@@ -27,8 +27,8 @@
 //link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dó³ stronki
 inline void initCoreResources() { Q_INIT_RESOURCE(CoreIcons); }
 
-CORE_DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
-CORE_DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
 namespace coreUI {
 
@@ -102,7 +102,7 @@ int Application::initUIContext(int & argc, char *argv[])
 	return 0;
 }
 
-void Application::initWithUI(MainWindow * mainWindow)
+void Application::initWithUI(CoreMainWindow * mainWindow)
 {
 	mainWindow->splashScreen();
 	mainWindow->showSplashScreenMessage(QObject::tr("Initializing application paths"));
@@ -258,7 +258,6 @@ void Application::initWithUI(MainWindow * mainWindow)
 	QCoreApplication::processEvents();
 	//TODO
 	//mainWindow->init();
-	mainWindow->setCloseUpOperations(boost::bind(&Application::finalizeUI, this));
 
 	mainWindow->show();
 
@@ -486,7 +485,7 @@ void Application::safeRegisterVisualizer(const plugin::IVisualizerPtr & visualiz
 //	safeRegisterObjectWrapperPrototype(ObjectWrapper::create<double>());
 //}
 
-void Application::unpackPlugin(MainWindow * mainWindow, const core::PluginPtr & plugin)
+void Application::unpackPlugin(CoreMainWindow * mainWindow, const core::PluginPtr & plugin)
 {
 	auto message = QObject::tr("Loading plugin %1 content: %2").arg(QString::fromStdString(plugin->getName()));
 
@@ -514,15 +513,15 @@ void Application::unpackPlugin(MainWindow * mainWindow, const core::PluginPtr & 
 	mainWindow->showSplashScreenMessage(message.arg(QObject::tr("parsers")));
 	QCoreApplication::processEvents();
 
-	for(int j = 0; j < plugin->getNumParsers(); ++j) {
-		safeRegisterParser(plugin->getParser(j));
+	for(int j = 0; j < plugin->getNumParsersPrototypes(); ++j) {
+		safeRegisterParser(plugin->getParserPrototype(j));
 	}
 	
 	mainWindow->showSplashScreenMessage(message.arg(QObject::tr("visualizers")));
 	QCoreApplication::processEvents();
 
-	for(int j = 0; j < plugin->getNumVisualizers(); ++j) {
-		safeRegisterVisualizer(plugin->getVisualizer(j));
+	for(int j = 0; j < plugin->getNumVisualizerPrototypes(); ++j) {
+		safeRegisterVisualizer(plugin->getVisualizerPrototype(j));
 	}
 }
 

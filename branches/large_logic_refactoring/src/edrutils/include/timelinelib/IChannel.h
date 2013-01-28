@@ -23,7 +23,6 @@ namespace timeline
         //! \param time Aktualny, lokalny czas kanału w sekundach
         virtual void setTime(double time) = 0;
 
-
         //! \param newOffset Nowy offset ustawiony kanałowi
         virtual void offsetChanged(double newOffset)
         {

@@ -12,7 +12,7 @@
 #include <string>
 #include "Log.h"
 #include "Path.h"
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 #include "Application.h"
 
 namespace core {

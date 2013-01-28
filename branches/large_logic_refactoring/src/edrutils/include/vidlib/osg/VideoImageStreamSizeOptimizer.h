@@ -16,7 +16,7 @@ UTILS_PUSH_WARNINGS
 #include <osg/Referenced>
 #include <osg/Image>
 UTILS_POP_WARNINGS
-#include <vidlib/Export.h>
+#include <utils/Export.h>
 #include "VideoImageStream.h"
 
 
@@ -26,7 +26,7 @@ namespace vidlib {
 UTILS_PUSH_WARNINGS
 UTILS_DISABLE_DLL_INTERFACE_WARNING
 
-class VIDLIB_EXPORT VideoImageStreamSizeOptimizer : public osg::NodeCallback
+class UTILS_EXPORT VideoImageStreamSizeOptimizer : public osg::NodeCallback
 {
 public:
     class Client : public osg::Referenced

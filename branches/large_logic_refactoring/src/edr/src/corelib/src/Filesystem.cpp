@@ -1,6 +1,6 @@
-#include "CorePCH.h"
+#include "CoreLibPCH.h"
 #include <boost/foreach.hpp>
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {

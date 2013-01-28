@@ -21,7 +21,7 @@ UTILS_PUSH_WARNINGS
 UTILS_POP_WARNINGS
 
 #include <vidlib/VideoStream.h>
-#include <vidlib/Export.h>
+#include <utils/Export.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/osg/VideoImage.h>
 #include <vidlib/VideoStreamAdapter.h>
@@ -33,7 +33,7 @@ namespace vidlib
     UTILS_PUSH_WARNINGS
     UTILS_DISABLE_DLL_INTERFACE_WARNING
     //! Adapter strumienia z vidliba dla potrzeb OSG. Potrafi optymalizować dostęp do obrazków.
-    class VIDLIB_EXPORT __OsgAdapter
+    class UTILS_EXPORT __OsgAdapter
     {
         friend class OsgStream;
     private:
@@ -89,7 +89,7 @@ namespace vidlib
     UTILS_DISABLE_DLL_INTERFACE_WARNING
     //! Metody z premedytacją nie są wirtualne tak, aby odwołania do nich (znając typ OsgStream)
     //! mogły być wydajniejsze. Oczywiście NIE powinno się dziedziczyć po tym typie.
-    class VIDLIB_EXPORT OsgStream : public VideoStreamAdapter, public __OsgAdapter, public osg::Referenced
+    class UTILS_EXPORT OsgStream : public VideoStreamAdapter, public __OsgAdapter, public osg::Referenced
     {
     private:
         double currentTimestamp;

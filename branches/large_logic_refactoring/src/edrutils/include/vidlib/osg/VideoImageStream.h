@@ -28,7 +28,7 @@ UTILS_POP_WARNINGS
 #include <utils/PtrWrapper.h>
 #include <utils/PtrPolicyOSG.h>
 
-#include <vidlib/Export.h>
+#include <utils/Export.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/VideoStream.h>
 
@@ -41,7 +41,7 @@ UTILS_DISABLE_DLL_INTERFACE_WARNING
 /**
  *	Strumień wideo.
  */
-class VIDLIB_EXPORT VideoImageStream : public osg::ImageStream, public OpenThreads::Thread
+class UTILS_EXPORT VideoImageStream : public osg::ImageStream, public OpenThreads::Thread
 {
 public:
     /** Domyślne implementacje */

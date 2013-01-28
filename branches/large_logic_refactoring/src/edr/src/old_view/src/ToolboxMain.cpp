@@ -70,7 +70,7 @@ struct SortActionsByNames
 
 void ToolboxMain::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
-	MainWindow::init(pluginLoader, managersAccessor);
+	CoreMainWindow::init(pluginLoader, managersAccessor);
 	initializeUI();
 	setupUi(this);
 	connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
@@ -79,11 +79,11 @@ void ToolboxMain::init( core::PluginLoader* pluginLoader, core::IManagersAccesso
 	populateVisualizersMenu(menuCreateVisualizer);
 }
 
-void ToolboxMain::setCurrentVisualizerActions(VisualizerWidget * visWidget)
+void ToolboxMain::setCurrentVisualizerActions(CoreVisualizerWidget * visWidget)
 {
     auto vis = visWidget->getCurrentVisualizer();
 
-    VisualizerWidget::VisualizerTitleBarElements titleBarElements;
+    CoreVisualizerWidget::VisualizerTitleBarElements titleBarElements;
 
     visWidget->getVisualizerTitleBarElements(titleBarElements);
 
@@ -315,7 +315,7 @@ void ToolboxMain::populateVisualizersMenu()
 void ToolboxMain::actionCreateVisualizer()
 {
 	QAction* action = qobject_cast<QAction*>(sender());
-	VisualizerWidget* widget = new VisualizerWidget(action->data().value<UniqueID>(), this, Qt::WindowTitleHint);
+	CoreVisualizerWidget* widget = new CoreVisualizerWidget(action->data().value<UniqueID>(), this, Qt::WindowTitleHint);
 	widget->setAllowedAreas(Qt::RightDockWidgetArea);
 	widget->setStyleSheet(styleSheet());
 	addDockWidget(Qt::RightDockWidgetArea, widget);

@@ -15,7 +15,7 @@ namespace vidlib
 {
     //! Adapter strumienia, umożliwiający zunifikowany dostęp do strumieni
     //! kontrolujących inne strumienie (bufory, osg)
-    class VIDLIB_EXPORT VideoStreamAdapter : public VideoStream
+    class UTILS_EXPORT VideoStreamAdapter : public VideoStream
     {
     private:
         //! Wewnętrzny strumień.

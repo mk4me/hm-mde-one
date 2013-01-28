@@ -1,7 +1,7 @@
 #include "CorePCH.h"
 #include "Log.h"
 
-#include <corelib/Config.h>
+#include "Config.h"
 
 #ifndef CORE_DISABLE_LOGGING
 //------------------------------------------------------------------------------

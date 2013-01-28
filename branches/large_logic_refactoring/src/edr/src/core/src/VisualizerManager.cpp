@@ -1,10 +1,11 @@
 #include "CorePCH.h"
 #include "VisualizerManager.h"
 #include "DataHierarchyManager.h"
+#include <utils/Push.h>
 
 using namespace core;
 
-VisualizerManager::VisualizerManager()
+VisualizerManager::VisualizerManager() : skipNotify(false)
 {
 
 }
@@ -17,17 +18,17 @@ VisualizerManager::~VisualizerManager()
 void VisualizerManager::visualizerPrototypes(IVisualizerManager::VisualizerPrototypes & prototypes)
 {
 	for(auto it = visualizerPrototypes_.begin(); it != visualizerPrototypes_.end(); ++it){
-		prototypes.push_back(it->second.visualizerPrototype.get());
+		prototypes.push_back(it->second.visualizerPrototype);
 	}
 }
 
-const plugin::IVisualizer * VisualizerManager::getVisualizerPrototype(UniqueID id)
+VisualizerConstPtr VisualizerManager::getVisualizerPrototype(UniqueID id)
 {
 	auto it = visualizerPrototypes_.find(id);
 	if(it == visualizerPrototypes_.end()){
-		return nullptr;
+		return VisualizerConstPtr();
 	}else{
-		return it->second.visualizerPrototype.get();
+		return it->second.visualizerPrototype;
 	}
 }
 
@@ -35,23 +36,27 @@ void VisualizerManager::getVisualizerPrototypesForType(core::TypeInfo & type, IV
 {
 	for(auto it = visualizerPrototypes_.begin(); it != visualizerPrototypes_.end(); ++it){
 		if(it->second.basicSupportedTypes.find(type) != it->second.basicSupportedTypes.end()){
-			prototypes.push_back(it->second.visualizerPrototype.get());
+			prototypes.push_back(it->second.visualizerPrototype);
 		}else if(exact == false && it->second.derrivedSupportedTypes.find(type) != it->second.derrivedSupportedTypes.end()){
-			prototypes.push_back(it->second.visualizerPrototype.get());
+			prototypes.push_back(it->second.visualizerPrototype);
 		}		
 	}
 }
 
-void VisualizerManager::registerForUpdate(plugin::IVisualizer * visualizer)
+void VisualizerManager::registerVisualizer(Visualizer* visualizerImpl, plugin::IVisualizer * visualizer)
 {
-	ScopedLock lock(updateSync);
-	updateVisualizers_.insert(visualizer);
+	ScopedLock lockUpdate(updateSync);
+	ScopedLock lockObserver(observerSync);
+	visualizerInstances_[visualizerImpl] = visualizer;
+	notify(visualizerImpl, IVisualizerManager::Creation);
 }
 
-void VisualizerManager::unregisterForUpdate(plugin::IVisualizer * visualizer)
+void VisualizerManager::unregisterVisualizer(Visualizer* visualizer)
 {
-	ScopedLock lock(updateSync);
-	updateVisualizers_.erase(visualizer);
+	ScopedLock lockUpdate(updateSync);
+	ScopedLock lockObserver(observerSync);
+	visualizerInstances_.erase(visualizer);
+	notify(visualizer, IVisualizerManager::Destruction);
 }
 
 void VisualizerManager::registerObserver(IVisualizerManagerObserver * observer)
@@ -66,19 +71,13 @@ void VisualizerManager::unregisterObserver(IVisualizerManagerObserver * observer
 	observers_.erase(observer);
 }
 
-void VisualizerManager::notifyCreation(plugin::IVisualizer * visualizer)
-{
-	notify(visualizer, Creation);
-}
-
-void VisualizerManager::notifyDestruction(plugin::IVisualizer * visualizer)
-{
-	notify(visualizer, Destruction);
-}
-
-void VisualizerManager::notify(plugin::IVisualizer * visualizer, VisuzalizerOperation modyfication)
+void VisualizerManager::notify(Visualizer * visualizer, VisuzalizerOperation modyfication)
 {
 	ScopedLock lock(observerSync);
+	if(skipNotify == true){
+		return;
+	}
+
 	for(auto it = observers_.begin(); it != observers_.end(); ++it){
 		try{			
 			(*it)->update(modyfication, visualizer);
@@ -87,12 +86,6 @@ void VisualizerManager::notify(plugin::IVisualizer * visualizer, VisuzalizerOper
 		}catch(...){
 			CORE_LOG_ERROR("Unknown error while updating visualizer observer");
 		}
-	}
-
-	if(modyfication == IVisualizerManager::Creation){
-		visualizerInstances_.insert(visualizer);
-	}else{
-		visualizerInstances_.erase(visualizer);
 	}
 }
 
@@ -103,7 +96,10 @@ void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visua
 	}
 
 	VisualizerPrototypeData protoData;
-	protoData.visualizerPrototype = visualizerPrototype;
+	{
+		utils::Push<bool> localSkipNotify(skipNotify, true);
+		protoData.visualizerPrototype.reset(new Visualizer(visualizerPrototype.get(), getMemoryDataManager(), this));
+	}
 
 	auto dhm = getDataHierarchyManager();
 
@@ -120,13 +116,13 @@ void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visua
 void VisualizerManager::update(double deltaTime)
 {
 	ScopedLock lock(updateSync);
-	for(auto it = updateVisualizers_.begin(); it != updateVisualizers_.end(); ++it){
+	for(auto it = visualizerInstances_.begin(); it != visualizerInstances_.end(); ++it){
 		try{
-			(*it)->update(deltaTime);
+			it->second->update(deltaTime);
 		}catch(std::exception & e){
-			CORE_LOG_ERROR("Error while updating visualizer " << (*it)->getName() << " (ID: " << (*it)->getID() << "): " << e.what());
+			CORE_LOG_ERROR("Error while updating visualizer " << it->second->getName() << " (ID: " << it->second->getID() << "): " << e.what());
 		}catch(...){
-			CORE_LOG_ERROR("Unknown error while updating visualizer " << (*it)->getName() << " (ID: " << (*it)->getID() << ")");
+			CORE_LOG_ERROR("Unknown error while updating visualizer " << it->second->getName() << " (ID: " << it->second->getID() << ")");
 		}
 	}
 }

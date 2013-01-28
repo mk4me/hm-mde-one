@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___PLUGINAPPLICATION_H__
 #define HEADER_GUARD___PLUGINAPPLICATION_H__
 
-#include <core/IApplication.h>
+#include <corelib/IApplication.h>
 #include "VisualizerManager.h"
 #include "ServiceManager.h"
 #include "SourceManager.h"
@@ -37,12 +37,12 @@ public:
 	virtual IFileManagerReader * fileDataManagerReader();
 	//! \return Interfejs do czytania opisu zarejestrowanych danych
 	virtual IDataHierarchyManagerReader * dataHierarchyManagerReader();
-	//! \return Interfejs do czytania opisu zarejestrowanych rozszerzeñ plików przez parsery
-	virtual IExtensionManagerReader * dataExtensionManagerReader();
 	//! \return Interfejs do dedykowanej przestrzeni sk³¹dowania danych
 	virtual IPluginStorage * pluginStorage();
 	//! \return Interfejs dostêpu do serwisów
 	virtual IServiceManager * serviceManager();
+	//! \return Interfejs managera wizualizatorów
+	virtual IVisualizerManager * visualizerManager();
 
 private:
 

@@ -9,21 +9,21 @@
 #ifndef HEADER_GUARD___APPLICATION_H__
 #define HEADER_GUARD___APPLICATION_H__
 
-#include <core/SmartPtr.h>
-#include <core/ObjectWrapper.h>
-#include <core/ILog.h>
-#include <core/IVisualizer.h>
-#include <core/ISource.h>
-#include <core/IService.h>
-#include <core/IParser.h>
-#include <core/Plugin.h>
+#include <corelib/SmartPtr.h>
+#include <corelib/BaseDataTypes.h>
+#include <corelib/ILog.h>
+#include <corelib/IVisualizer.h>
+#include <corelib/ISource.h>
+#include <corelib/IService.h>
+#include <corelib/IParser.h>
+#include "Plugin.h"
 
 class QSplashScreen;
 
 namespace coreUI {
 
 	class UIApplication;
-	class MainWindow;
+	class CoreMainWindow;
 	
 }
 
@@ -70,15 +70,13 @@ namespace core {
 		static void setDefaultPaths(shared_ptr<Path> & path);
 		static void showSplashScreenMessage(QSplashScreen * splashScreen, const QString & message);
 
-		void finalizeUI();
-
 		void safeRegisterService(const plugin::IServicePtr & service);
 		void safeRegisterSource(const plugin::ISourcePtr & source);
 		void safeRegisterParser(const plugin::IParserPtr & parser);
 		void safeRegisterObjectWrapperPrototype(const ObjectWrapperPtr & prototype);
 		void safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer);
 		//void registerCoreDomainTypes();
-		void unpackPlugin(coreUI::MainWindow * splashScreen, const PluginPtr & plugin);
+		void unpackPlugin(coreUI::CoreMainWindow * splashScreen, const PluginPtr & plugin);
 
 	public:
 		Application();
@@ -86,7 +84,7 @@ namespace core {
 
 		int initUIContext(int & argc, char *argv[]);
 
-		void initWithUI(coreUI::MainWindow * mainWindow);
+		void initWithUI(coreUI::CoreMainWindow * mainWindow);
 
 		int run();
 
@@ -101,6 +99,8 @@ namespace core {
 		VisualizerManager* visualizerManager();
 		ServiceManager* serviceManager();
 		SourceManager* sourceManager();
+
+		void finalizeUI();
 	};
 }
 

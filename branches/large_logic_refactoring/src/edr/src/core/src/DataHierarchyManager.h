@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___DATAHIERARCHYMANAGER_H__
 #define HEADER_GUARD___DATAHIERARCHYMANAGER_H__
 
-#include <core/IDataHierarchyManagerReader.h>
+#include <corelib/IDataHierarchyManagerReader.h>
 #include <map>
 
 namespace core {

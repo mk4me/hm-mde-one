@@ -9,8 +9,8 @@
 #ifndef HEADER_GUARD___SOURCEMANAGER_H__
 #define HEADER_GUARD___SOURCEMANAGER_H__
 
-#include <core/ISourceManager.h>
-#include <core/ISource.h>
+#include <corelib/ISourceManager.h>
+#include <corelib/ISource.h>
 #include <map>
 #include <vector>
 

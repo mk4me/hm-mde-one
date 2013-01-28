@@ -1,21 +1,52 @@
-BEGIN_PROJECT("static")
+BEGIN_PROJECT("dynamic")
 
-SET_CONFIGURATION_INPUT_FILES(
-	"Config.h.in"
+SET_PUBLIC_HEADERS(
+	BaseDataTypes.h
+	DataAccessors.h
+	Filesystem.h
+	SmartPtr.h
+	StringTools.h
+	Visualizer.h
+	SubjectDataFilters.h
+	ObjectWrapperCollection.h
+	PluginCommon.h
+	IPlugin.h
+	IVisualizerManager.h
+	IVisualizer.h
+	ITransaction.h
+	IStreamManagerReader.h
+	IStreamDataManager.h
+	ISourceManager.h
+	ISource.h
+	IServiceManager.h
+	IService.h
+	ISerializable.h
+	IPath.h
+	IParserManagerReader.h
+	IParser.h
+	IMemoryDataManager.h
+	ILog.h
+	IIdentifiable.h
+	IFileManagerReader.h
+	IFileDataManager.h
+	IDataManagerReader.h
+	IDataHierarchyManagerReader.h
+	IClonable.h
+	IApplication.h
 )
-
-CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")
 
 SET_SOURCE_FILES(
 	Filesystem.cpp
-	#OsgSceneDump.cpp
-	CorePCH.cpp
+	Visualizer.cpp
+	SubjectDataFilters.cpp
+	CoreLibPCH.cpp
+	ObjectWrapperCollection.cpp
 )
 
 SET_PRIVATE_HEADERS(
-	CorePCH.h
+	CoreLibPCH.h
 )
 
-SET_PRECOMPILED_HEADER (CorePCH.h CorePCH.cpp)
+SET_PRECOMPILED_HEADER (CoreLibPCH.h CoreLibPCH.cpp)
 
 END_PROJECT()

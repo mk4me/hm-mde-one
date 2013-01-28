@@ -11,10 +11,9 @@
 
 #include <set>
 #include <map>
-//#include <QtGui/QWidget>
 #include <stdexcept>
 
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 
 class QWidget;

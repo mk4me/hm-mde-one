@@ -2,11 +2,8 @@
 #define PLUGIN_SERVICE_H
 
 #include <vector>
-#include <core/Plugin.h>
-#include <core/SmartPtr.h>
-#include <utils/Debug.h>
-#include <type_traits>
-
+#include "Plugin.h"
+#include <corelib/SmartPtr.h>
 
 // rev
 #ifdef WIN32
@@ -31,8 +28,6 @@ private:
 	struct PluginData {
 		//! Wskaźnik do pluginu
 		PluginPtr plugin;
-		//! Wskaźnik do const pluginu
-		PluginConstPtr constPlugin;
 		//! Wskaźnik do dedykowanej implementacji interfejcu core::IApplication
 		shared_ptr<IApplication> coreApplication;
 		//! Uchwyt do biblioteki
@@ -70,15 +65,15 @@ public:
     }
     //!
     //! \param idx
-    const PluginPtr & getPlugin(int idx)
+    PluginPtr getPlugin(int idx)
     {
         return plugins[idx].plugin;
     }
     //!
     //! \param idx
-    const PluginConstPtr & getPlugin(int idx) const
+    PluginConstPtr getPlugin(int idx) const
     {
-        return plugins[idx].constPlugin;
+        return plugins[idx].plugin;
     }
     //! \return
     const Paths& getPaths() const
@@ -93,7 +88,7 @@ public:
 
     void unloadPlugins();
 
-	static HMODULE loadSharedLibrary(const std::string & path);
+	static HMODULE loadSharedLibrary(const Filesystem::Path & path);
 	static void unloadSharedLibrary(HMODULE library);
 	static const std::string lastLoadSharedLibraryError();
 
@@ -134,7 +129,7 @@ private:
     //! \param path
     //! \param library
     //! \param createFunction
-    bool onAddPlugin(const Filesystem::Path& path, HMODULE library, Plugin::CreateFunction createFunction);
+    bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::FillFunction fillFunction);
 };
 
 typedef shared_ptr<PluginLoader> PluginLoaderPtr;

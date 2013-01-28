@@ -2,14 +2,14 @@
 #define HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
 
 #include <vidlib/VideoError.h>
-#include <vidlib/Export.h>
+#include <utils/Export.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Wyjątek używany przez bibliotekę.
-class VIDLIB_EXPORT FFmpegError : public VideoError
+class UTILS_EXPORT FFmpegError : public VideoError
 {
 public:
     enum {

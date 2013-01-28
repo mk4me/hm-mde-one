@@ -72,13 +72,13 @@ private:
         //! \param visualizer 
         //! \param series 
         //! \param widget 
-        DataItemDescription(VisualizerWeakPtr visualizer, const std::vector<core::VisualizerTimeSeriePtr>& series, VisualizerWidget* widget);
+        DataItemDescription(VisualizerWeakPtr visualizer, const std::vector<core::VisualizerTimeSeriePtr>& series, CoreVisualizerWidget* widget);
         //! serie danych podpięte pod wizualizator, slaby wskaźnik zapobiega "trzymaniu danych"
         std::vector<core::VisualizerTimeSerieWeakPtr> series;
         //! wizualizator z seriami, slaby wskaźnik zapobiega "trzymaniu danych"
         VisualizerWeakPtr visualizer;
         //! widget, w który reprezentuje wizualizator
-        VisualizerWidget* visualizerWidget;
+        CoreVisualizerWidget* visualizerWidget;
     };
 
 public:
@@ -114,7 +114,7 @@ public:
     void createRaport( const QString& html );
     //! Ustawienie kontekstu na konkretny wizualizator
     //! \param visWidget wizualizator, dla którego aktywuje się kontekst
-    virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
+    virtual void setCurrentVisualizerActions(CoreVisualizerWidget * visWidget);
 
 public Q_SLOTS:
     //! odświeżenie drzewa danych z zakładki analiz
@@ -190,7 +190,7 @@ private:
     //! \param hmmItem wybrany item, na podstwie którego tworzony jest wizualizator
     //! \param dockSet set, do którego ma być dodany element, jeśli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
     //! \return utworzony dockWidget z wizualizatorem
-    VisualizerWidget* createAndAddDockVisualizer( HmmTreeItem* hmmItem, CoreDockWidgetSet* dockSet);
+    CoreVisualizerWidget* createAndAddDockVisualizer( HmmTreeItem* hmmItem, CoreDockWidgetSet* dockSet);
     //! wywoływane, gdy jakis widget dostaje focusa.
     //! wykorzystywane na potrzeby kontekstów flexi bara
     //! Hack - dodatkowo podpina się pod to okienko summary
@@ -201,12 +201,12 @@ private:
     void deactivateContext(QWidget * widget);
     //! Opakowuje wizualizator w DockWidget
     //! \param visualizer wizualizator do opakowania
-    VisualizerWidget* createDockVisualizer(const VisualizerPtr & visualizer);
+    CoreVisualizerWidget* createDockVisualizer(const VisualizerPtr & visualizer);
     //! Rejestruje widget w kontekstach
     //! \param titleBar 
     //! \param visualizerDockWidget 
     //! \param visualizer 
-    void registerVisualizerContext( CoreTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer );	
+    void registerVisualizerContext( CoreTitleBar * titleBar, CoreVisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer );	
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
     //! \param item wybrany item, na podstwie którego tworzony jest wizualizator
     //! \param dockSet set, do którego ma być dodany element, jeśli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
@@ -238,7 +238,7 @@ private:
     //! kolekcja z aktualnie obsługiwanymi sesjami
     std::vector<PluginSubject::SessionConstPtr> currentSessions;
     // TODO, tu jest blad, obiekt jest zawsze nullem
-    VisualizerWidget* currentVisualizer;    
+    CoreVisualizerWidget* currentVisualizer;    
     //! górny widget aplikacji gdzie trafiaja dock Widgety
     CoreDockWidgetManager* topMainWindow;
     //! dolny widget aplikacji na timeline

@@ -4,6 +4,7 @@ SET_PUBLIC_HEADERS(
 	ITimelineService.h
 	TimeSliderWidget.h
 	TimelineControlsWidget.h
+	VisualizerSerieTimelineChannel.h
 )
 
 SET_PRIVATE_HEADERS(
@@ -25,6 +26,7 @@ SET_SOURCE_FILES (
 	TimeSliderWidget.cpp
 	TimelineControlsWidget.cpp
 	TimelinePCH.cpp
+	VisualizerSerieTimelineChannel.cpp
 )
 
 SET_MOC_FILES (

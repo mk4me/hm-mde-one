@@ -1,5 +1,11 @@
 BEGIN_PROJECT("static")
 
+SET_CONFIGURATION_INPUT_FILES(
+	"Config.h.in"
+)
+
+CONFIGURE_PRIVATE_HEADER("Config.h.in" "Config.h")
+
 SET_PRIVATE_HEADERS(
 	Path.h
 	Application.h
@@ -11,80 +17,26 @@ SET_PRIVATE_HEADERS(
 	StreamDataManager.h
 	PluginApplication.h
 	PluginPath.h
-	VisualizerChannel.h
 	SourceManager.h
 	IAppUsageContext.h
 	IAppUsageContextManager.h
-	CoreFlexiToolBar.h
-	CoreFlexiToolBarSection.h
-	SubjectDataFilters.h
-	AppInitializer.h
-	MainWindow.h
-	CoreConsoleWidget.h
-	#SceneGraphWidget.h
 	LogInitializer.h
 	ServiceManager.h
-	VisualizerWidget.h
 	VisualizerManager.h
-	Visualizer.h
-	CoreTitleBar.h
-	CoreDockWidget.h
 	Log.h
 	PluginLoader.h
 	CorePCH.h
+	Plugin.h
 )
 
 SET_PUBLIC_HEADERS (
-	ICoreFlexiTabSection.h
-	ICoreActionSection.h
-	CoreAction.h
-	CoreWidgetAction.h
-	ITransaction.h
-	IParserManagerReader.h
-	IDataHierarchyManagerReader.h
-	IExtensionManagerReader.h
-	IStreamManagerReader.h
-	IStreamDataManager.h
-	IFileManagerReader.h
-	IDataManagerReader.h
-	IMemoryDataManager.h
-	IFileDataManager.h
-	IApplication.h
-	StringTools.h
-	ISource.h
-	ISourceManager.h
-	DataAccessors.h
-	BaseDataTypes.h
-	Filesystem.h
-	IService.h
-	IIdentifiable.h
-	IParser.h
-	IServiceManager.h
-	Window.h
-	Plugin.h
-	Export.h
-	SmartPtr.h
-	ILog.h
-	ObjectWrapper.h
-	ObjectWrapperCollection.h
-	IVisualizer.h
-	IVisualizerManager.h
-	PluginCommon.h
-	TypeInfo.h
-	IClonable.h
-	ISerializable.h
-	IPath.h
-	##################################
-	# 			z corelib			 #
-	#OsgSceneDump.h
+	AppInitializer.h
 )
 
 SET_SOURCE_FILES(
-	CoreAction.cpp
-	CoreWidgetAction.cpp
+	AppInitializer.cpp
 	Path.cpp
 	Application.cpp
-	Window.cpp
 	ParserManager.cpp
 	Log.cpp
 	DataHierarchyManager.cpp
@@ -93,48 +45,13 @@ SET_SOURCE_FILES(
 	StreamDataManager.cpp
 	PluginApplication.cpp
 	PluginPath.cpp
-	VisualizerChannel.cpp
 	SourceManager.cpp
-	CoreFlexiToolBar.cpp
-	CoreFlexiToolBarSection.cpp
-	SubjectDataFilters.cpp
-	MainWindow.cpp
-	CoreConsoleWidget.cpp
-	#SceneGraphWidget.cpp
 	LogInitializer.cpp
 	PluginLoader.cpp
 	ServiceManager.cpp
-	VisualizerWidget.cpp
 	VisualizerManager.cpp
-	Visualizer.cpp
-	CoreTitleBar.cpp
-	CoreDockWidget.cpp
 	CorePCH.cpp
-)
-
-SET_MOC_FILES(
-	CoreFlexiToolBar.h
-	CoreFlexiToolBarSection.h
-	CoreConsoleWidget.h
-    MainWindow.h
-	#SceneGraphWidget.h
-	VisualizerWidget.h
-	CoreTitleBar.h
-	CoreDockWidget.h	
-	Visualizer.h
-	##################################
-	# 			z corelib			 #
-)
-SET_UI_FILES(
-	CoreFlexiToolBarSection.ui
-	#SceneGraphWidget.ui
-	#OsgWidget.ui
-	CoreTitleBar.ui
-	CoreConsoleWidget.ui
-)
-
-SET_RC_FILES (
-	CoreIcons.qrc
+	Plugin.cpp
 )
 
 SET_PRECOMPILED_HEADER (CorePCH.h CorePCH.cpp)

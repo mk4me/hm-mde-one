@@ -4,8 +4,8 @@
 #include <map>
 #include <vector>
 
-#include <core/IServiceManager.h>
-#include <core/IService.h>
+#include <corelib/IServiceManager.h>
+#include <corelib/IService.h>
 
 namespace core {
 

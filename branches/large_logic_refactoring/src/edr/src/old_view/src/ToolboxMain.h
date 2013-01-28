@@ -17,7 +17,7 @@ class ServiceManager;
 class CoreConsoleWidget;
 class VisualizerManager;
 class DataProcessorManager;
-class VisualizerWidget;
+class CoreVisualizerWidget;
 
 
 class ToolboxMain : public core::MainWindow, private Ui::EDRMain
@@ -25,7 +25,7 @@ class ToolboxMain : public core::MainWindow, private Ui::EDRMain
 public:
 	Q_OBJECT
 public:
-	ToolboxMain() : MainWindow() {}
+	ToolboxMain() : CoreMainWindow() {}
 	virtual ~ToolboxMain()
 	{
 
@@ -33,7 +33,7 @@ public:
 
 public:
 	virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
-    virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
+    virtual void setCurrentVisualizerActions(CoreVisualizerWidget * visWidget);
 
 public slots:
 	

@@ -47,7 +47,7 @@ void unpackSessions(const core::ObjectWrapperCollection & owc, std::vector<Sessi
 }
 
 HmmMainWindow::HmmMainWindow() :
-    MainWindow(),
+    CoreMainWindow(),
     currentVisualizer(nullptr),
     topMainWindow(nullptr),
 	bottomMainWindow(nullptr),
@@ -100,7 +100,7 @@ void HmmMainWindow::activateContext(QWidget * widget)
 
     // hack - nie da się zinstalować dwoch filtrow eventów dla jednego widgeta,
     // obecne rozwiazanie jest specyficzne dla kontekstów
-    VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(toSet);
+    CoreVisualizerWidget* vw = dynamic_cast<CoreVisualizerWidget*>(toSet);
     if (vw) {
         summaryWindowController->onVisualizator(vw);
     }
@@ -318,7 +318,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     this->data->show();
 }
 
-void HmmMainWindow::setCurrentVisualizerActions(VisualizerWidget * visWidget)
+void HmmMainWindow::setCurrentVisualizerActions(CoreVisualizerWidget * visWidget)
 {
     if(currentVisualizer != visWidget){
         return;
@@ -379,7 +379,7 @@ void HmmMainWindow::createVisualizerInNewSet()
         CoreDockWidgetSet* set = new CoreDockWidgetSet(topMainWindow);
         topMainWindow->addDockWidgetSet(set);
 
-        VisualizerWidget* w = createAndAddDockVisualizer(action->getTreeItem(), set);
+        CoreVisualizerWidget* w = createAndAddDockVisualizer(action->getTreeItem(), set);
         auto vis = w->getCurrentVisualizer();
         if(vis){
             set->setWindowTitle(vis->getUIName());
@@ -410,7 +410,7 @@ void HmmMainWindow::highlightVisualizer(const VisualizerPtr& visualizer )
                 topMainWindow->raiseSet(set);
             }
             desc.visualizerWidget->setStyleSheet(QString::fromUtf8(
-                "VisualizerWidget > .QWidget {" \
+                "CoreVisualizerWidget > .QWidget {" \
                 "border: 2px solid red;"\
                 "}"));
         } else {
@@ -441,7 +441,7 @@ void HmmMainWindow::addToVisualizer()
             VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
             //addSeriesToTimeline(series, path, visualizer);
 
-            VisualizerWidget* vw = nullptr;
+            CoreVisualizerWidget* vw = nullptr;
             for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
                 DataItemDescription& d = it->second;
                 if (d.visualizer.lock() == visualizer) {
@@ -905,12 +905,12 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     plainContextWidgets.erase(w);
 }
 
- VisualizerWidget* HmmMainWindow::createDockVisualizer(const VisualizerPtr & visualizer)
+ CoreVisualizerWidget* HmmMainWindow::createDockVisualizer(const VisualizerPtr & visualizer)
 {
     visualizer->getOrCreateWidget();
     // todo : zastanowic się nad bezpieczenstwem tej operacji
     connect(visualizer.get(), SIGNAL(printTriggered(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
-    VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer, nullptr, 0, false);
+    CoreVisualizerWidget* visualizerDockWidget = new CoreVisualizerWidget(visualizer, nullptr, 0, false);
     visualizerDockWidget->setPermanent(false);
     visualizerDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     visualizerDockWidget->setVisualizerIconVisible(false);
@@ -924,7 +924,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     return visualizerDockWidget;
 }
 
- VisualizerWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, CoreDockWidgetSet* dockSet)
+ CoreVisualizerWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, CoreDockWidgetSet* dockSet)
  {
      std::stack<QString> pathStack;
      QTreeWidgetItem * pomItem = hmmItem;
@@ -1055,7 +1055,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          QMenu* group = new QMenu(set->windowTitle(), menu);
 
          BOOST_FOREACH(CoreDockWidget* dock, set->getDockWidgets()) {
-             VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(dock);
+             CoreVisualizerWidget* vw = dynamic_cast<CoreVisualizerWidget*>(dock);
              if (vw ) {
                  VisualizerPtr visualizer = vw->getCurrentVisualizer();
                  DataManager* dataManager = DataManager::getInstance();
@@ -1515,7 +1515,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
  }
 
- void HmmMainWindow::registerVisualizerContext( CoreTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer )
+ void HmmMainWindow::registerVisualizerContext( CoreTitleBar * titleBar, CoreVisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer )
  {
      contextEventFilter->registerClosableContextWidget(titleBar);
      titleBar->installEventFilter(contextEventFilter);
@@ -1562,7 +1562,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  }
 
  HmmMainWindow::DataItemDescription::DataItemDescription
-     ( VisualizerWeakPtr visualizer, const std::vector<core::VisualizerTimeSeriePtr>& series, VisualizerWidget* widget ) :
+     ( VisualizerWeakPtr visualizer, const std::vector<core::VisualizerTimeSeriePtr>& series, CoreVisualizerWidget* widget ) :
         visualizer(visualizer),
         visualizerWidget(widget)
  {

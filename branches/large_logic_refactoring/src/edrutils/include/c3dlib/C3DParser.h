@@ -16,13 +16,13 @@
 #include <set>
 #include <boost/noncopyable.hpp>
 #include <osg/Vec3>
-#include <c3dlib/Export.h>
+#include <utils/Export.h>
 
 namespace c3dlib {
 
 
 //! Opis platformy GRF
-struct C3DLIB_EXPORT ForcePlatform
+struct UTILS_EXPORT ForcePlatform
 {
 	//! wierzchołki pojedynczej płyty
 	osg::Vec3 corners[4];
@@ -39,7 +39,7 @@ typedef const std::vector<ForcePlatformConstPtr>& ForcePlatformConstCollection;
 typedef std::vector<ForcePlatformPtr> ForcePlatformCollection;
 
 //! Klasa służy do pobierania informacji z pliku C3D, przykrywa biblioteke btk
-class C3DLIB_EXPORT C3DParser
+class UTILS_EXPORT C3DParser
 {
 public:
 	//! Interfejs dostarcza opisu dla danych akwizycji (jest to część wspólna dla danych analogowych, punktów i zdarzeń)

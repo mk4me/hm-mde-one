@@ -11,7 +11,7 @@
 #define HEADER_GUARD_HMM__SUMMARYWINDOW_H__
 
 class HmmMainWindow;
-class VisualizerWidget;
+class CoreVisualizerWidget;
 
 #include <plugins/subject/ISubject.h>
 #include "TreeItemHelper.h"
@@ -70,7 +70,7 @@ public slots:
     void onTreeItemSelected(QTreeWidgetItem* item, int column);
     //! pobiera dane na podstawie elementów zawartych w wizualizatorze i przesyła je do okna podsumowań
     //! \param visualizatorWidget wizualizator, który uzyskał focus
-    void onVisualizator(VisualizerWidget* visualizatorWidget);
+    void onVisualizator(CoreVisualizerWidget* visualizatorWidget);
 
 private:
     //! główne okno aplikacji

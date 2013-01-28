@@ -137,7 +137,7 @@ void SummaryWindowController::onTreeItemSelected( QTreeWidgetItem* item, int col
     summary->display(collection);
 }
 
-void SummaryWindowController::onVisualizator( VisualizerWidget* visualizatorWidget )
+void SummaryWindowController::onVisualizator( CoreVisualizerWidget* visualizatorWidget )
 {
     VisualizerPtr visualizer = visualizatorWidget->getCurrentVisualizer();
     

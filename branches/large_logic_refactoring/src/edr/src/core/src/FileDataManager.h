@@ -11,10 +11,10 @@
 
 #include <map>
 #include <list>
-#include <core/IFileManagerReader.h>
-#include <core/IFileDataManager.h>
+#include <corelib/IFileManagerReader.h>
+#include <corelib/IFileDataManager.h>
 #include <utils/SynchronizationPolicies.h>
-#include <core/IParserManagerReader.h>
+#include <corelib/IParserManagerReader.h>
 
 namespace core {
 

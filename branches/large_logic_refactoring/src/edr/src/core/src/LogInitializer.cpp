@@ -4,7 +4,7 @@
 #include <osg/Notify>
 #include <boost/algorithm/string.hpp>
 #include <utils/Debug.h>
-#include "CoreConsoleWidget.h"
+#include <coreui/CoreConsoleWidget.h>
 
 using namespace core;
 using namespace coreUI;

@@ -68,8 +68,8 @@ UTILS_POP_WARNINGS
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
 
-#include <core/TypeInfo.h>
-#include <core/SmartPtr.h>
+#include <corelib/BaseDataTypes.h>
+#include <corelib/SmartPtr.h>
 #include "Application.h"
 #include "ServiceManager.h"
 #include "MemoryDataManager.h"
@@ -83,6 +83,7 @@ UTILS_POP_WARNINGS
 #include "IAppUsageContextManager.h"
 #include "Log.h"
 #include "LogInitializer.h"
+#include "Plugin.h"
 #include "PluginLoader.h"
 
 #ifdef min
