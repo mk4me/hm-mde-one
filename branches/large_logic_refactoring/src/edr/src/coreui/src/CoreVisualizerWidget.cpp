@@ -19,6 +19,7 @@ using namespace core;
 typedef std::pair<TypeInfo, ObjectWrapperConstPtr> TypeData;
 
 Q_DECLARE_METATYPE(TypeData);
+Q_DECLARE_METATYPE(core::VisualizerPtr);
 
 CoreVisualizerWidget::CoreVisualizerWidget(QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/, bool autoRefreshInputs  /*= true*/) : CoreDockWidget(parent, flags), autoRefreshInputs_(autoRefreshInputs)
 {
@@ -66,16 +67,6 @@ CoreVisualizerWidget::~CoreVisualizerWidget()
     // usunięcie widgeta
 	visualizerWidgetContainer = nullptr;
     clearCurrentVisualizer();
-}
-
-void CoreVisualizerWidget::setAutoRefreshInputs(bool autoRefresh)
-{
-	autoRefreshInputs_ = autoRefresh;
-}
-
-bool CoreVisualizerWidget::autoRefreshInputs() const
-{
-	return autoRefreshInputs_;
 }
 
 void CoreVisualizerWidget::clearCurrentVisualizerWidget()
@@ -147,49 +138,6 @@ void CoreVisualizerWidget::init()
 
     //ALL old visualizer elements
     QMetaObject::connectSlotsByName(this);
-}
-
-void CoreVisualizerWidget::setSourceVisible(bool visible)
-{
-    menuSource->setVisible(visible);
-    visualizerCommonElements[menuSource].visible = visible;
-}
-
-bool CoreVisualizerWidget::isSourceVisible() const
-{
-    return menuSource->isVisible();
-}
-
-void CoreVisualizerWidget::setVisualizerIconVisible(bool visible)
-{
-    label->setVisible(visible);
-    visualizerCommonElements[label].visible = visible;
-}
-
-bool CoreVisualizerWidget::isVisualizerIconVisible() const
-{
-    return label->isVisible();
-}
-
-void CoreVisualizerWidget::setVisualizerSwitchEnable(bool active)
-{
-    comboType->setEnabled(active);
-}
-
-bool CoreVisualizerWidget::isVisualizerSwichEnable() const
-{
-    return comboType->isEnabled();
-}
-
-void CoreVisualizerWidget::setVisualizerSwitchVisible(bool visible)
-{
-    comboType->setVisible(visible);
-    visualizerCommonElements[comboType].visible = visible;
-}
-
-bool CoreVisualizerWidget::isVisualizerSwichVisible() const
-{
-    return comboType->isVisible();
 }
 
 void CoreVisualizerWidget::splitHorizontally()
@@ -710,4 +658,161 @@ std::string CoreVisualizerWidget::getLabel( const ObjectWrapperConstPtr& object,
 		//matadane
 		return std::string("none");
     }
+}
+
+
+//! NOWA IMPLEMENTACJA
+
+
+//! Zerujący konstruktor.
+//! \param parent
+//! \param flags
+CoreVisualizerWidget::CoreVisualizerWidget(QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags)
+{
+
+}
+
+CoreVisualizerWidget::CoreVisualizerWidget(const CoreVisualizerWidget & visualizer) : QWidget()
+{
+
+}
+
+//! Zapewnia możliwość kasowanie widgeta wizualizatora przez jego implementację.
+CoreVisualizerWidget::~CoreVisualizerWidget()
+{
+
+}
+
+
+void CoreVisualizerWidget::addVisualizer(core::VisualizerPtr visualizer, const QString & name)
+{
+	auto it = std::find(visualizers_.begin(), visualizers_.end(), visualizer);
+
+	if(it != visualizers_.end()){
+		throw std::runtime_error("Visualizer already managed by CoreVisualizerWidget");
+	}
+
+	QString locName = name;
+	if(locName.isEmpty() == true){
+		locName = QString::fromStdString(visualizer->getName());
+	}
+
+	bool needRefresh = false;
+
+	if(visualizers_.empty() == true){
+		needRefresh = true;
+	}
+
+	visualizerSwitch->addItem(visualizer->getIcon(), locName, QVariant(visualizer));
+	visualizers_.push_back(visualizer);
+	
+	if(needRefresh == true){
+		visualizerSwitch->setCurrentIndex(0);
+	}
+}
+
+void CoreVisualizerWidget::removeVisualizer(core::VisualizerPtr visualizer)
+{
+	auto it = std::find(visualizers_.begin(), visualizers_.end(), visualizer);
+
+	if(it == visualizers_.end()){
+		throw std::runtime_error("Visualizer not managed by CoreVisualizerWidget");
+	}
+
+	auto idx = visualizerSwitch->findData(QVariant(visualzier));
+
+	if(currentVisualizer_ == visualizer){
+		if(idx == 0){
+			visualizerSwitch->setCurrentIndex(1);
+		}else{
+			visualizerSwitch->setCurrentIndex(idx-1);
+		}
+	}
+
+	visualizerSwitch->removeItem(idx);
+	visualizers_.erase(visualizer);
+}
+
+int CoreVisualizerWidget::getNumVisualizers() const
+{
+	return visualizers_.size();
+}
+
+core::VisualizerPtr CoreVisualizerWidget::getVisualizer(int idx)
+{
+	auto it = visualizers_.begin();
+	std::advance(it, idx);
+	return *it;
+}
+
+core::VisualizerConstPtr CoreVisualizerWidget::getVisualizer(int idx) const
+{
+	auto it = visualizers_.begin();
+	std::advance(it, idx);
+	return *it;
+}
+
+void CoreVisualizerWidget::removeAllVisualizers()
+{
+
+}
+
+void CoreVisualizerWidget::clearCurrentVisualizer()
+{
+
+}
+
+core::VisualizerPtr CoreVisualizerWidget::getCurrentVisualizer()
+{
+	return currentVisualizer_;
+}
+
+void CoreVisualizerWidget::removeAllSeries()
+{
+
+}
+
+void CoreVisualizerWidget::setCurrentVisualizer(int idx)
+{
+
+}
+
+void CoreVisualizerWidget::fillSourcesMenu()
+{
+
+}
+
+void CoreVisualizerWidget::sourceSelected()
+{
+
+}
+
+void CoreVisualizerWidget::innerRemoveAllSeries()
+{
+
+}
+
+void CoreVisualizerWidget::clearDataSeries()
+{
+
+}
+
+void CoreVisualizerWidget::init()
+{
+
+}
+
+void CoreVisualizerWidget::clearSources()
+{
+
+}
+
+void CoreVisualizerWidget::clearCurrentVisualizerWidget()
+{
+
+}
+
+void CoreVisualizerWidget::addSourceDefaultAction()
+{
+
 }

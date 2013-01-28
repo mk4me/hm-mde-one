@@ -19,32 +19,32 @@ class QComboBox;
 
 namespace coreUI {
 
+	class CoreWidgetAction;
+
 //! Widget wizualizacyjny.
 class CoreVisualizerWidget : public QWidget
 {
     Q_OBJECT
 
-private:    
+private:
 
-    //-------------------------- Old VisualizerTitleBar fields -------------------------------------------
-    QAction *actionNone;
-    QLabel *label;
-    QComboBox *comboType;
+	//! Akcja z ikoną wizualizatora - nic nie robi, zwykła labelka -> visualizerIcon
+	CoreWidgetAction * iconLabelAction;
+	//! Akcja zmieniająca aktualny wizualizator (QComboBox) -> visualizerSwitch
+	CoreWidgetAction * visualizerSwitchAction;
+	//! Akcja odpowiedzialna za wybór danych aktualnego wizualizatora (QMenu) -> dataSelect
+	CoreWidgetAction * dataSelectAction;
+	//! Akcja odpowiedzialna za wybór danych aktualnego wizualizatora (QMenu) -> dataSelect
+	CoreWidgetAction * activeDataSelectAction;
+	//! Akcja czyszcząca wszystkie dane aktualnego wizualizatora
+	QAction * dataDeselectAll;
+
+	QComboBox * visualizerSwitch;
 
     //! Bieżący wizualizator.
-    core::VisualizerPtr visualizer;
-
-    //! Menu do wyboru źródeł.
-    QMenu* menuSource;
-
-    QWidget * visualizerWidget;
-	QWidget * visualizerWidgetContainer;
-
-    std::map<core::ObjectWrapperConstPtr, plugin::VisualizerSeriePtr > currentSeriesData;
-    std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> > groupedSeriesData;
-
-    std::pair<QAction*, core::ObjectWrapperConstPtr> lastSerie;
-	std::map<core::ObjectWrapperConstPtr, const void *> timelineChannels;
+    core::VisualizerPtr currentVisualizer_;
+	//! Lista wszystkich zarejestrowanych wizualizatorów
+	std::list<core::VisualizerPtr> visualizers_;
 
 public:
     //! Zerujący konstruktor.
@@ -60,13 +60,18 @@ public:
 public:
 
     //! Dodaje wizualizator do listy obsługiwanych.
-    void addVisualizer(core::VisualizerPtr visualizer);
+    void addVisualizer(core::VisualizerPtr visualizer, const QString & name = QString());
 
 	//! Dodaje wizualizator do listy obsługiwanych.
 	void removeVisualizer(core::VisualizerPtr visualizer);
 
     //! \return Liczba zarejestrowanych wizualizatorów.
     int getNumVisualizers() const;
+
+	core::VisualizerPtr getVisualizer(int idx);
+
+	core::VisualizerConstPtr getVisualizer(int idx) const;
+
     //! Usuwa wszystkie wizualizatory.
     void removeAllVisualizers();
 
@@ -76,25 +81,10 @@ public:
     //! \return Bieżący wizualizator.
     core::VisualizerPtr getCurrentVisualizer();
 
-public slots:
+signals:
 
-    void splitHorizontally();
-    //!
-    void splitVertically();
-    //!
-    void split(Qt::Orientation orientation);
+	void currentVisualizerChanged();
 
-    void setSourceVisible(bool visible);
-    void setVisualizerIconVisible(bool visible);
-    void setVisualizerSwitchEnable(bool enable);
-    void setVisualizerSwitchVisible(bool visible);
-
-public:
-
-    bool isSourceVisible() const;  
-    bool isVisualizerIconVisible() const;    
-    bool isVisualizerSwichEnable() const;    
-    bool isVisualizerSwichVisible() const;
         
 private slots:
 
