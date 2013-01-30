@@ -1,4 +1,5 @@
 #include "CoreLibPCH.h"
+#include <utils/SynchronizationPolicies.h>
 
 using namespace core;
 using namespace plugin;
@@ -6,25 +7,72 @@ using namespace plugin;
 class Visualizer::VisualizerHelper : public IDataManagerReader::IObjectObserver
 {
 public:
-	VisualizerHelper(Visualizer * visualizer) : visualizer_(visualizer) {}
+	VisualizerHelper(Visualizer * visualizer) : visualizer_(visualizer), liveObserve(false) {}
 
 	virtual void observe(const IDataManagerReader::ChangeList & changes)
 	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
 		for(auto it = changes.begin(); it != changes.end(); ++it){
 			if((*it).modyfication == IDataManagerReader::UPDATE_OBJECT){
-				for(auto serieIT = visualizer_->dataSeries.begin(); serieIT != visualizer_->dataSeries.end(); ++serieIT){
-					if( (*serieIT)->serie()->getData() == (*it).currentValue ){
-						(*serieIT)->serie()->update();
-						return;
-					}
+				auto dataIT = dataSeriesToObserve.find((*it).currentValue);
+				if(dataIT != dataSeriesToObserve.end()){
+					dataToUpdate.insert(*dataIT);
 				}
 			}
+		}
+
+		tryUpdate();
+	}
+
+	void setLiveObserveActive(bool active)
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+		liveObserve = active;
+		tryUpdate();
+		
+	}
+	
+	const bool isLiveObserveActive() const
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+		return liveObserve;
+	}
+
+	void addSerieToObserve(Visualizer::VisualizerSerie* serie)
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+		dataSeriesToObserve[serie->serie()->getData()].push_back(serie);
+	}
+
+	void removeSerieToObserve(Visualizer::VisualizerSerie* serie)
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+		dataSeriesToObserve[serie->serie()->getData()].remove(serie);
+		dataToUpdate[serie->serie()->getData()].remove(serie);
+	}
+
+private:
+
+	void tryUpdate()
+	{
+		if(liveObserve == true && dataToUpdate.empty() == false){
+			for(auto dataIT = dataToUpdate.begin(); dataIT != dataToUpdate.end(); ++dataIT){
+				for(auto serieIT = dataIT->second.begin(); serieIT != dataIT->second.end(); ++serieIT){
+					(*serieIT)->serie()->update();
+				}
+			}
+
+			std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>>().swap(dataToUpdate);
 		}
 	}
 
 private:
+	mutable utils::StrictSyncPolicy sync;
 	Visualizer * visualizer_;
-	QAction * screenshotAction_;
+	//! Czy live observe jest aktywne
+	bool liveObserve; 
+	std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataSeriesToObserve;
+	std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataToUpdate;
 };
 
 Visualizer::VisualizerSerie::VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase, plugin::IVisualizer::ITimeSerieFeatures * timeSerieFeatures)
@@ -51,7 +99,8 @@ plugin::IVisualizer::ITimeSerieFeatures * Visualizer::VisualizerSerie::timeSerie
 Visualizer::Visualizer( const plugin::IVisualizer* proto, IDataManagerReader * dmr, IVisualizerManager * visManager ) :
 	visualizer_(proto->create()),
     widget(nullptr),
-	dmr(dmr), visManager(visManager)
+	dmr(dmr), visManager(visManager),
+	activeSerie(nullptr)
 {
 	init();
 }
@@ -62,6 +111,8 @@ Visualizer::Visualizer( const Visualizer& visualizer ) :
 	dmr(visualizer.dmr), visManager(visualizer.visManager)
 {
 	init();
+
+	setLiveObserveActive(visualizer.isLiveObserveActive());
 }
 
 void Visualizer::init()
@@ -82,6 +133,7 @@ void Visualizer::init()
 
 Visualizer::~Visualizer()
 {
+	dmr->removeObserver(visualizerHelper_);
 	visManager->unregisterVisualizer(this);
 	destroyAllSeries();
 }
@@ -138,13 +190,14 @@ void Visualizer::getSupportedTypes(TypeInfoSet & supportedTypes) const
 	supportedTypes.insert(list.begin(), list.end());
 }
 
-Visualizer::VisualizerSerie * Visualizer::createSerie(const ObjectWrapperConstPtr & data)
+Visualizer::VisualizerSerie * Visualizer::createSerie(const TypeInfo & requestedType, const ObjectWrapperConstPtr & data)
 {
 	VisualizerSerie * serie = nullptr;
-    auto s = visualizer_->createSerie(data);
+    auto s = visualizer_->createSerie(requestedType, data);
 	if(s != nullptr){
 		serie = new VisualizerSerie(this, s, dynamic_cast<IVisualizer::ITimeSerieFeatures*>(s));
-		dataSeries.insert(serie);
+		dataSeries.push_back(serie);
+		visualizerHelper_->addSerieToObserve(serie);
 		notifyChange(serie, ADD_SERIE);
 	}
 
@@ -158,7 +211,8 @@ Visualizer::VisualizerSerie * Visualizer::createSerie(VisualizerSerie * serie)
 		auto s = visualizer_->createSerie(serie->serie());
 		if(s != nullptr){
 			retserie = new VisualizerSerie(this, s, serie->timeSerieFeatures() != nullptr ? dynamic_cast<IVisualizer::ITimeSerieFeatures*>(s) : nullptr);
-			dataSeries.insert(retserie);
+			dataSeries.push_back(retserie);
+			visualizerHelper_->addSerieToObserve(serie);
 			notifyChange(serie, ADD_SERIE);
 		}
 	}
@@ -170,7 +224,8 @@ void Visualizer::destroySerie(VisualizerSerie * serie)
 {
 	if(serie->visualizer_ == this){
 		notifyChange(serie, REMOVE_SERIE);
-		dataSeries.erase(serie);
+		dataSeries.remove(serie);
+		visualizerHelper_->removeSerieToObserve(serie);
 		delete serie;
 	}
 }
@@ -208,12 +263,12 @@ void Visualizer::onScreenshotTrigger()
 	}
 }
 
-void Visualizer::getData(const TypeInfo & type, ConstObjectsList & objects)
+void Visualizer::getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
 {
 	ConstObjectsList locObjects;
 	for(auto it = sources_.begin(); it != sources_.end(); ++it){
 		try{
-			(*it)->getData(type, locObjects);
+			(*it)->getData(type, locObjects, exact);
 		}catch(...){
 
 		}
@@ -221,4 +276,57 @@ void Visualizer::getData(const TypeInfo & type, ConstObjectsList & objects)
 
 	ConstObjects uniqueObjects(locObjects.begin(), locObjects.end());
 	objects.insert(objects.end(), uniqueObjects.begin(), uniqueObjects.end());
+}
+
+void Visualizer::setLiveObserveActive(bool active)
+{
+	visualizerHelper_->setLiveObserveActive(active);
+}
+
+const bool Visualizer::isLiveObserveActive() const
+{
+	return visualizerHelper_->isLiveObserveActive();
+}
+
+const int Visualizer::getNumSeries() const
+{
+	return dataSeries.size();
+}
+
+Visualizer::VisualizerSerie * Visualizer::getSerie(int idx)
+{
+	auto it = dataSeries.begin();
+	std::advance(it, idx);
+	return *it;
+}
+
+const int Visualizer::serieIdx(VisualizerSerie * serie) const
+{
+	auto it = std::find(dataSeries.begin(), dataSeries.end(), serie);
+	if(it == dataSeries.end()){
+		return -1;
+	}
+
+	return std::distance(dataSeries.begin(), it);
+}
+
+void Visualizer::setActiveSerie(VisualizerSerie * serie)
+{
+	if(serie == nullptr){
+		visualizer_->setActiveSerie(nullptr);
+	}else{
+		visualizer_->setActiveSerie(serie->serie());
+	}
+
+	activeSerie = serie;
+}
+
+const Visualizer::VisualizerSerie * Visualizer::getActiveSerie() const
+{
+	return activeSerie;
+}
+
+Visualizer::VisualizerSerie * Visualizer::getActiveSerie()
+{
+	return activeSerie;
 }

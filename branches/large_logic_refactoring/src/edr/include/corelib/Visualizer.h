@@ -31,6 +31,7 @@ class UTILS_EXPORT Visualizer : public QObject
 private:
 	//! Forward declaration obiektu pomocniczego dla vizualizatora, przykrywa część implementacji
 	class VisualizerHelper;
+	friend class VisualizerHelper;
 
 public:
 
@@ -65,11 +66,11 @@ public:
 	class VisualizerDataSource
 	{
 	public:
-		virtual void getData(const TypeInfo & type, ConstObjectsList & objects) const;
+		virtual void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact = false) const;
 	};
 
 	//! Agregat aktualnie istniejących serii danych
-    typedef std::set<VisualizerSerie*> DataSeries;
+    typedef std::list<VisualizerSerie*> DataSeries;
 
 	//! Opis zmian w seriach danych
 	enum SerieModyfication {
@@ -106,8 +107,12 @@ private:
 	//! Lista źródeł danych wizualizatora
 	std::list<VisualizerDataSource*> sources_;
 
+	//! DataManagerReader
 	IDataManagerReader * dmr;
+	//! VisualizerManager
 	IVisualizerManager * visManager;
+	//! Aktywna seria
+	VisualizerSerie * activeSerie;
 
 private:
 	//! Inicjalizacja wizualizatora przy tworzeniu
@@ -118,7 +123,7 @@ private:
 	void notifyChange(VisualizerSerie * serie, SerieModyfication modyfication);
 
 signals:
-
+	//! \param screenshot Screen z wizualizatora
 	void screenshotTaken(QPixmap & screenshot);
 
 public slots:
@@ -143,6 +148,11 @@ public:
 
 	Visualizer * create() const;
 
+	//! \param Czy vizualizator powinien sam automatycznie obserwować zmiany po stronie dataManagera dla danych związanych z seriami danych
+	void setLiveObserveActive(bool active);
+	//! \return Czy vizualizator powinien sam automatycznie obserwować zmiany po stronie dataManagera dla danych związanych z seriami danych
+	const bool isLiveObserveActive() const;
+
     //! \return Widget wizualizatora.
     QWidget* getOrCreateWidget();
     //! \return Widget wizualizatora. Może być nullptr, jeżeli jeszcze nie jest stworzony.
@@ -154,13 +164,30 @@ public:
 	//! \param data Dane na bazie których ma powstać seria, muszą być wspierane przez wizualizator,
 	//! w przeciwnym wypadku seria nie zostanie stworozna i dostaniemy nullptr, podobna reakcja będzie miała miejsce
 	//! gdy osiągneliśmy już maksymalną ilość seri jaką wspiera wizualizator i chcemy utworzyć nową
-    VisualizerSerie * createSerie(const ObjectWrapperConstPtr & data);
+    VisualizerSerie * createSerie(const TypeInfo & requestedType, const ObjectWrapperConstPtr & data);
 	//! \param serie Seria na bazie której ma powstać nowa seria, musi pochodzić od tego wizualizatora,
 	//! w przeciwnym wypadku seria nie zostanie stworzozna i dostaniemy nullptr, podobna reakcja będzie miała miejsce
 	//! gdy osiągneliśmy już maksymalną ilość seri jaką wspiera wizualizator i chcemy utworzyć nową
     VisualizerSerie * createSerie(VisualizerSerie * serie);
 	//! \param serie Seria do zniszczenia, musi pochodzić z tego wizualizatora
     void destroySerie(VisualizerSerie * serie);
+	//! \return Ilośc serii w wizualizatorze
+	const int getNumSeries() const;
+	//! \param idx Indeks serii
+	//! \return Seria dla zadanego indeksu
+	VisualizerSerie * getSerie(int idx);
+	//! \param serie Seria danych wizualizatora
+	//! \return Aktualny indeks serii danych
+	const int serieIdx(VisualizerSerie * serie) const;
+
+	//! Ustawia daną serię aktywną
+	void setActiveSerie(VisualizerSerie * serie);
+	//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
+	const VisualizerSerie * getActiveSerie() const;
+	//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
+	VisualizerSerie * getActiveSerie();
+
+
 	//! \return Zbiór wspieranych typów przez wizualizator (od nich można też brać pochodne, któe je wspierają -> iść w górę ścieżki typów)
 	void getSupportedTypes(TypeInfoSet & supportedTypes) const;
 	//! Usuwa wszystkie serie
@@ -176,7 +203,7 @@ public:
 	//! \param datSource Źródło danych wizualizatora do usunięcia
 	void removeDataSource(VisualizerDataSource * dataSource);
 
-	void getData(const TypeInfo & type, ConstObjectsList & objects);
+	void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact);
 };
 
 typedef core::shared_ptr<Visualizer> VisualizerPtr;

@@ -30,22 +30,18 @@ namespace plugin
         {
         public:
             //! \param name Nazwa serii danych do ustawienia
-            virtual void setName(const QString & name) = 0;
+            virtual void setName(const std::string & name) = 0;
             //! \return Nazwa serii danych
-            virtual const QString getName() const = 0;
+            virtual const std::string getName() const = 0;
             //! \param data Dane do ustawienia w serii danych. ObjecWrappery pozwalają nam uniknąć potrzeby generowania wielu metod dla różnych argumentów.
             //! Znacząco uprasza interfejs, w przeciwnym wypadku musielibyśmy skorzystać z template
-            virtual void setData(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data) = 0;
+            virtual void setData(const core::TypeInfo & requestedDataType, const core::ObjectWrapperConstPtr & data) = 0;
 			//! Metoda wywoływana na seri danych kiedy dane się zmienią
 			virtual void update() = 0;
             //! \return Dane serii
             virtual const core::ObjectWrapperConstPtr & getData() const = 0;
 			//! \return Typ, jak mają być traktowane dane - może chcę pokazać dane z niższego typu
-			virtual const core::TypeInfo & requestedType() const = 0;
-			//! Ustawia daną serię aktywną
-			virtual void setActive() = 0;
-			//! \return Czy dana seria jest aktywna
-			virtual const bool isActive() const = 0;
+			virtual const core::TypeInfo & getRequestedDataType() const = 0;
         };
 		//! Seria o charakterze czasowym - pozwala manipulować czasem w serii danych
 		//! setTime może być wołane poza watkiem UI - trzeba to uwzględniać przy update
@@ -80,13 +76,18 @@ namespace plugin
 		//! \param deltaTime Zmiana czasu od ostatniego update
         virtual void update(double deltaTime) = 0;
 		//! \return Seria danych która można ustawiac - nazwa i dane, nie zarządza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
-		virtual ISerie* createSerie(const core::ObjectWrapperConstPtr & data) = 0;
+		virtual ISerie* createSerie(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data) = 0;
 		//! \param serie Seria bazowa którą powielamy
 		//! \return Nowa seria danych na bazie zadanej serii - powiela odwołąnie do danych
 		virtual ISerie* createSerie(const ISerie* serie) = 0;
 
 		//! \param serie Seria danych do usunięcia, nie powinien usuwać tej serii! Zarządzamy nią my!!
 		virtual void removeSerie(ISerie* serie) = 0;
+
+		//! Ustawia daną serię aktywną
+		virtual void setActiveSerie(const ISerie * serie) = 0;
+		//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
+		virtual const ISerie * getActiveSerie() const = 0;
 
 		//! \param supportedTypes [out] Lista typów wspieranych przez dany wizualizator, z których potrafi stworzyć serię danych
 		virtual void getSupportedTypes(core::TypeInfoList & supportedTypes) const = 0;
@@ -102,7 +103,7 @@ namespace plugin
     typedef core::weak_ptr<IVisualizer> IVisualizerWeakPtr;
     typedef core::weak_ptr<const IVisualizer> IVisualizerConstWeakPtr;
 
-} // namespace core
+} // namespace plugin
 
 
 #endif  // HEADER_GUARD_CORE__IVISUALIZER_H__
