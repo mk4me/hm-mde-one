@@ -1,5 +1,6 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreDockWidget.h>
+#include <coreui/CoreAction.h>
 
 using namespace coreUI;
 
@@ -17,7 +18,7 @@ CoreDockWidget::CoreDockWidget(QWidget * parent, Qt::WindowFlags flags)
 
 CoreDockWidget::~CoreDockWidget()
 {
-
+	
 }
 
 const bool CoreDockWidget::isDockWidgetPermanent(const QDockWidget * dockWidget)

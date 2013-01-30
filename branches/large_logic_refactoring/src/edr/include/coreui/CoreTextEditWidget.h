@@ -39,8 +39,16 @@
 **
 ****************************************************************************/
 
-#ifndef TEXTEDIT_H
-#define TEXTEDIT_H
+/********************************************************************
+    created:  2013/01/30
+    created:  30:1:2013   12:25
+    filename: CoreTextEditWidget.h
+    author:   Wojciech Knieć
+    
+    purpose:  
+*********************************************************************/
+#ifndef HEADER_GUARD___CORETEXTEDITWIDGET_H__
+#define HEADER_GUARD___CORETEXTEDITWIDGET_H__
 
 #include <QtGui/QMainWindow>
 #include <QtCore/QMap>
@@ -54,8 +62,10 @@ QT_FORWARD_DECLARE_CLASS(QTextEdit)
 QT_FORWARD_DECLARE_CLASS(QTextCharFormat)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 
+namespace coreUI {
+
 //! Kontrolka zawiera edytor tekstu rich format
-class TextEdit : public QMainWindow
+class CoreTextEditWidget : public QMainWindow
 {
     Q_OBJECT
     //! możliwe formaty zapisu
@@ -67,7 +77,7 @@ class TextEdit : public QMainWindow
 public:
     //! konstruktor
     //! \param parent 
-    TextEdit(QWidget *parent = 0);
+    CoreTextEditWidget(QWidget *parent = 0);
 
 public:
     //! zasila kontrolkę w kod html
@@ -248,4 +258,6 @@ private:
     
 };
 
-#endif
+}
+
+#endif	//	HEADER_GUARD___CORETEXTEDITWIDGET_H__

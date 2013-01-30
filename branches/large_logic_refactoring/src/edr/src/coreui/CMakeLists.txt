@@ -7,12 +7,15 @@ SET_PUBLIC_HEADERS(
 	CoreMainWindow.h	
 	CoreAction.h
 	CoreDockWidget.h
+	CoreSplitableDockWidget.h
 	CoreFlexiToolBar.h
 	CoreFlexiToolBarSection.h
 	CoreTitleBar.h
 	CoreWidgetAction.h
 	CoreVisualizerWidget.h
 	ICoreActionSection.h
+	CoreCompoundVisualizerWidget.h
+	CoreTextEditWidget.h
 )
 
 SET_SOURCE_FILES(
@@ -23,11 +26,14 @@ SET_SOURCE_FILES(
 	CoreConsoleWidget.cpp
 	CoreAction.cpp
 	CoreDockWidget.cpp
+	CoreSplitableDockWidget.cpp
 	CoreFlexiToolBar.cpp
 	CoreFlexiToolBarSection.cpp
 	CoreTitleBar.cpp
 	CoreWidgetAction.cpp
 	CoreUiPCH.cpp
+	CoreCompoundVisualizerWidget.cpp
+	CoreTextEditWidget.cpp
 )
 
 SET_PRIVATE_HEADERS(

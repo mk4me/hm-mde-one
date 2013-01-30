@@ -24,7 +24,7 @@ public:
     explicit CoreDockWidget(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     explicit CoreDockWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
 
-    ~CoreDockWidget();
+    virtual ~CoreDockWidget();
 
 	static const bool isDockWidgetPermanent(const QDockWidget * dockWidget);
 	static void setDockWidgetPermament(QDockWidget * dockWidget, bool permanent);

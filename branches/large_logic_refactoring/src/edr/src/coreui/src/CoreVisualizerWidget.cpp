@@ -47,18 +47,20 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	setLayout(layout);
 	layout->addWidget(visWidget);
 
-	//ikona + text
-	iconLabelAction = new CoreWidgetAction(nullptr, tr("Decoration"), CoreTitleBar::Left);
-	QLabel * iconLabel = new QLabel;
-	iconLabel->setPixmap(QPixmap(QString::fromUtf8(":/resources/icons/wizualizacja2.png")));
-	QLabel * textLabel = new QLabel;
-	textLabel->setText(tr("Visualizer"));
-	QWidget * iconLabelWidget = new QWidget;
-	iconLabelWidget->setLayout(new QHBoxLayout);
-	iconLabelWidget->layout()->addWidget(iconLabel);
-	iconLabelWidget->layout()->addWidget(textLabel);
-	iconLabelAction->setDefaultWidget(iconLabelWidget);
-	addAction(iconLabelAction);
+	////ikona + text
+	//TODO
+	//to robimy na zewnątrz jak wiemy że będzie np. titlebar
+	//iconLabelAction = new CoreWidgetAction(nullptr, tr("Decoration"), CoreTitleBar::Left);
+	//QLabel * iconLabel = new QLabel;
+	//iconLabel->setPixmap(QPixmap(QString::fromUtf8(":/resources/icons/wizualizacja2.png")));
+	//QLabel * textLabel = new QLabel;
+	//textLabel->setText(tr("Visualizer"));
+	//QWidget * iconLabelWidget = new QWidget;
+	//iconLabelWidget->setLayout(new QHBoxLayout);
+	//iconLabelWidget->layout()->addWidget(iconLabel);
+	//iconLabelWidget->layout()->addWidget(textLabel);
+	//iconLabelAction->setDefaultWidget(iconLabelWidget);
+	//addAction(iconLabelAction);
 
 	//wybór danych
 	QMenu * dataSelectioMenu = new QMenu(tr("Data"));

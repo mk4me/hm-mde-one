@@ -29,9 +29,6 @@ class CoreVisualizerWidget : public QWidget
     Q_OBJECT
 
 private:
-
-	//! Akcja z ikoną wizualizatora - nic nie robi, zwykła labelka -> visualizerIcon
-	CoreWidgetAction * iconLabelAction;
 	//! Akcja odpowiedzialna za wybór danych aktualnego wizualizatora (QMenu) -> dataSelect
 	CoreWidgetAction * dataSelectAction;
 	//! Akcja odpowiedzialna za wybór danych aktualnego wizualizatora (QMenu) -> dataSelect

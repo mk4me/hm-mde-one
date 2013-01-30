@@ -39,9 +39,10 @@
 **
 ****************************************************************************/
 
-#include "textedit.h"
+#include "CoreUiPCH.h"
+#include <coreui/CoreTextEditWidget.h>
 #include <utils/Debug.h>
-#include <core/PluginCommon.h>
+#include <corelib/PluginCommon.h>
 #include <boost/foreach.hpp>
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
@@ -76,7 +77,9 @@
 
 const QString rsrcPath = ":/resources/icons/textedit";
 
-TextEdit::TextEdit(QWidget *parent):
+using namespace coreUI;
+
+CoreTextEditWidget::CoreTextEditWidget(QWidget *parent):
     QMainWindow(parent)
 {
     textEdit = new QTextEdit(this);
@@ -107,7 +110,7 @@ TextEdit::TextEdit(QWidget *parent):
 
 }
 
-void TextEdit::createFileActions()
+void CoreTextEditWidget::createFileActions()
 {
     UTILS_ASSERT(textEdit);
     QAction *a;
@@ -164,7 +167,7 @@ void TextEdit::createFileActions()
     fileList.push_back(a);*/
 }
 
-void TextEdit::createEditActions()
+void CoreTextEditWidget::createEditActions()
 {
     QAction *a;
     a = actionUndo = new QAction(QIcon::fromTheme("edit-undo", QIcon(rsrcPath + "/editundo.png")), tr("&Undo"), this);
@@ -218,7 +221,7 @@ void TextEdit::createEditActions()
     connect(textEdit->document(), SIGNAL(redoAvailable(bool)), actionRedo, SLOT(setEnabled(bool)));
 }
 
-void TextEdit::createTextActions()
+void CoreTextEditWidget::createTextActions()
 {
     actionTextBold = new QAction(QIcon::fromTheme("format-text-bold", QIcon(rsrcPath + "/textbold.png")), tr("&Bold"), this);
     actionTextBold->setShortcut(Qt::CTRL + Qt::Key_B);
@@ -325,7 +328,7 @@ void TextEdit::createTextActions()
     textList.push_back(comboSize);
 }
 
-bool TextEdit::load(const QString &f)
+bool CoreTextEditWidget::load(const QString &f)
 {
     if (!QFile::exists(f))
         return false;
@@ -347,7 +350,7 @@ bool TextEdit::load(const QString &f)
     return true;
 }
 
-bool TextEdit::maybeSave()
+bool CoreTextEditWidget::maybeSave()
 {
     if (!textEdit->document()->isModified())
         return true;
@@ -366,7 +369,7 @@ bool TextEdit::maybeSave()
     return true;
 }
 
-void TextEdit::setCurrentFileName(const QString &fileName)
+void CoreTextEditWidget::setCurrentFileName(const QString &fileName)
 {
     this->fileName = fileName;
     textEdit->document()->setModified(false);
@@ -381,7 +384,7 @@ void TextEdit::setCurrentFileName(const QString &fileName)
     setWindowModified(false);
 }
 
-void TextEdit::fileNew()
+void CoreTextEditWidget::fileNew()
 {
     if (maybeSave()) {
         textEdit->clear();
@@ -389,7 +392,7 @@ void TextEdit::fileNew()
     }
 }
 
-void TextEdit::fileOpen()
+void CoreTextEditWidget::fileOpen()
 {
     QString fn = QFileDialog::getOpenFileName(this, tr("Open File..."),
                                               QString(), tr("HTML-Files (*.htm *.html);;All Files (*)"));
@@ -397,7 +400,7 @@ void TextEdit::fileOpen()
         load(fn);
 }
 
-bool TextEdit::fileSave()
+bool CoreTextEditWidget::fileSave()
 {
     if (fileName.isEmpty())
         return fileSaveAs();
@@ -419,7 +422,7 @@ bool TextEdit::fileSave()
     return success;
 }
 
-bool TextEdit::fileSaveAs()
+bool CoreTextEditWidget::fileSaveAs()
 {
     QString fn = QFileDialog::getSaveFileName(this, tr("Save as..."),
                                               QString(), tr("ODF files (*.odt);;HTML-Files (*.htm *.html);;All Files (*)"));
@@ -431,7 +434,7 @@ bool TextEdit::fileSaveAs()
     return fileSave();
 }
 
-void TextEdit::filePrint()
+void CoreTextEditWidget::filePrint()
 {
 #ifndef QT_NO_PRINTER
     QPrinter printer(QPrinter::HighResolution);
@@ -448,7 +451,7 @@ void TextEdit::filePrint()
 #endif
 }
 
-void TextEdit::filePrintPreview()
+void CoreTextEditWidget::filePrintPreview()
 {
 #ifndef QT_NO_PRINTER
     QPrinter printer(QPrinter::HighResolution);
@@ -460,7 +463,7 @@ void TextEdit::filePrintPreview()
 #endif
 }
 
-void TextEdit::printPreview(QPrinter *printer)
+void CoreTextEditWidget::printPreview(QPrinter *printer)
 {
 #ifdef QT_NO_PRINTER
     Q_UNUSED(printer);
@@ -470,7 +473,7 @@ void TextEdit::printPreview(QPrinter *printer)
 }
 
 
-void TextEdit::filePrintPdf()
+void CoreTextEditWidget::filePrintPdf()
 {
 #ifndef QT_NO_PRINTER
 //! [0]
@@ -489,35 +492,35 @@ void TextEdit::filePrintPdf()
 #endif
 }
 
-void TextEdit::textBold()
+void CoreTextEditWidget::textBold()
 {
     QTextCharFormat fmt;
     fmt.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
     mergeFormatOnWordOrSelection(fmt);
 }
 
-void TextEdit::textUnderline()
+void CoreTextEditWidget::textUnderline()
 {
     QTextCharFormat fmt;
     fmt.setFontUnderline(actionTextUnderline->isChecked());
     mergeFormatOnWordOrSelection(fmt);
 }
 
-void TextEdit::textItalic()
+void CoreTextEditWidget::textItalic()
 {
     QTextCharFormat fmt;
     fmt.setFontItalic(actionTextItalic->isChecked());
     mergeFormatOnWordOrSelection(fmt);
 }
 
-void TextEdit::textFamily(const QString &f)
+void CoreTextEditWidget::textFamily(const QString &f)
 {
     QTextCharFormat fmt;
     fmt.setFontFamily(f);
     mergeFormatOnWordOrSelection(fmt);
 }
 
-void TextEdit::textSize(const QString &p)
+void CoreTextEditWidget::textSize(const QString &p)
 {
     qreal pointSize = p.toFloat();
     if (p.toFloat() > 0) {
@@ -527,7 +530,7 @@ void TextEdit::textSize(const QString &p)
     }
 }
 
-void TextEdit::textStyle(int styleIndex)
+void CoreTextEditWidget::textStyle(int styleIndex)
 {
     QTextCursor cursor = textEdit->textCursor();
 
@@ -589,7 +592,7 @@ void TextEdit::textStyle(int styleIndex)
     }
 }
 
-void TextEdit::textColor()
+void CoreTextEditWidget::textColor()
 {
     QColor col = QColorDialog::getColor(textEdit->textColor(), this);
     if (!col.isValid())
@@ -600,7 +603,7 @@ void TextEdit::textColor()
     colorChanged(col);
 }
 
-void TextEdit::textAlign(QAction *a)
+void CoreTextEditWidget::textAlign(QAction *a)
 {
     if (a == actionAlignLeft)
         textEdit->setAlignment(Qt::AlignLeft | Qt::AlignAbsolute);
@@ -612,18 +615,18 @@ void TextEdit::textAlign(QAction *a)
         textEdit->setAlignment(Qt::AlignJustify);
 }
 
-void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
+void CoreTextEditWidget::currentCharFormatChanged(const QTextCharFormat &format)
 {
     fontChanged(format.font());
     colorChanged(format.foreground().color());
 }
 
-void TextEdit::cursorPositionChanged()
+void CoreTextEditWidget::cursorPositionChanged()
 {
     alignmentChanged(textEdit->alignment());
 }
 
-void TextEdit::clipboardDataChanged()
+void CoreTextEditWidget::clipboardDataChanged()
 {
 #ifndef QT_NO_CLIPBOARD
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
@@ -631,14 +634,14 @@ void TextEdit::clipboardDataChanged()
 #endif
 }
 
-void TextEdit::about()
+void CoreTextEditWidget::about()
 {
     QMessageBox::about(this, tr("About"), tr("This example demonstrates Qt's "
         "rich text editing facilities in action, providing an example "
         "document for you to experiment with."));
 }
 
-void TextEdit::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
+void CoreTextEditWidget::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
 {
     QTextCursor cursor = textEdit->textCursor();
     if (!cursor.hasSelection())
@@ -647,7 +650,7 @@ void TextEdit::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
     textEdit->mergeCurrentCharFormat(format);
 }
 
-void TextEdit::fontChanged(const QFont &f)
+void CoreTextEditWidget::fontChanged(const QFont &f)
 {
     comboFont->setCurrentIndex(comboFont->findText(QFontInfo(f).family()));
     comboSize->setCurrentIndex(comboSize->findText(QString::number(f.pointSize())));
@@ -656,14 +659,14 @@ void TextEdit::fontChanged(const QFont &f)
     actionTextUnderline->setChecked(f.underline());
 }
 
-void TextEdit::colorChanged(const QColor &c)
+void CoreTextEditWidget::colorChanged(const QColor &c)
 {
     QPixmap pix(16, 16);
     pix.fill(c);
     actionTextColor->setIcon(pix);
 }
 
-void TextEdit::alignmentChanged(Qt::Alignment a)
+void CoreTextEditWidget::alignmentChanged(Qt::Alignment a)
 {
     if (a & Qt::AlignLeft) {
         actionAlignLeft->setChecked(true);
@@ -676,7 +679,7 @@ void TextEdit::alignmentChanged(Qt::Alignment a)
     }
 }
 
-void TextEdit::setHtml( const QString& html )
+void CoreTextEditWidget::setHtml( const QString& html )
 {
     textEdit->clear();
     textEdit->ensureCursorVisible();
@@ -688,7 +691,7 @@ void TextEdit::setHtml( const QString& html )
     changeLinksToBase64(textEdit->document()->rootFrame(), textEdit->document());
 }
 
-void TextEdit::processFrame( QTextFrame * frame, QTextDocument* document, SaveMode saveMode )
+void CoreTextEditWidget::processFrame( QTextFrame * frame, QTextDocument* document, SaveMode saveMode )
 {
     for (auto rootIt = frame->begin(); !(rootIt.atEnd()); ++rootIt) {
         QTextBlock block = rootIt.currentBlock();
@@ -730,7 +733,7 @@ void TextEdit::processFrame( QTextFrame * frame, QTextDocument* document, SaveMo
 
 }
 
-QString TextEdit::base64ToResource(QTextDocument* document, const QString& encrypted ) const
+QString CoreTextEditWidget::base64ToResource(QTextDocument* document, const QString& encrypted ) const
 {
     QByteArray ba = QByteArray::fromBase64(encrypted.toAscii());
     QImage image;
@@ -742,7 +745,7 @@ QString TextEdit::base64ToResource(QTextDocument* document, const QString& encry
     return name;
 }
 
-QString TextEdit::resourceToBase64( QTextDocument* document, const QString& resource ) const
+QString CoreTextEditWidget::resourceToBase64( QTextDocument* document, const QString& resource ) const
 {
     QImage img = qvariant_cast<QImage>(document->resource(QTextDocument::ImageResource, QUrl(resource.toAscii())));
 
@@ -751,7 +754,7 @@ QString TextEdit::resourceToBase64( QTextDocument* document, const QString& reso
     return buffer.buffer().toBase64();
 }
 
-void TextEdit::changeLinksToBase64( QTextFrame * root, QTextDocument* document )
+void CoreTextEditWidget::changeLinksToBase64( QTextFrame * root, QTextDocument* document )
 {
     for (auto rootIt = root->begin(); !(rootIt.atEnd()); ++rootIt) {
         QTextBlock block = rootIt.currentBlock();
@@ -788,9 +791,13 @@ void TextEdit::changeLinksToBase64( QTextFrame * root, QTextDocument* document )
     }
 }
 
-bool TextEdit::tryChangeLinkToBase64( QString& result, const QString& link ) const
+bool CoreTextEditWidget::tryChangeLinkToBase64( QString& result, const QString& link ) const
 {
-    QString templateDir = core::getResourceString("templates\\");
+	//TODO
+	//QString templateDir = core::getResourceString("templates\\");
+
+	QString templateDir = "templates\\";
+    
     QString imgPath = templateDir + link;
     if (QFile::exists(imgPath)) {
         QPixmap file(imgPath);

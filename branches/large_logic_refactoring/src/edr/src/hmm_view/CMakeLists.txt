@@ -18,7 +18,6 @@ SET_PRIVATE_HEADERS(
 	IllnessUnit.h
 	SummaryWindow.h
 	HmmContexts.h
-	textedit.h
 	Measurements.h
 	MultiserieColorStrategy.h
 	TreeRefresher.h
@@ -45,7 +44,6 @@ SET_SOURCE_FILES (
 	AnalisisWidget.cpp
 	HmmContexts.cpp
 	SummaryWindow.cpp
-	textedit.cpp
 	TreeRefresher.cpp
 	Measurements.cpp
 	ContextEventFilter.cpp
@@ -66,7 +64,6 @@ SET_MOC_FILES(
 	ConfigurationPainter.h
 	ConfigurationDialog.h
 	AnalisisWidget.h
-	textedit.h
 	HmmContexts.h
 	SummaryWindow.h
 )
