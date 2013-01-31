@@ -74,6 +74,11 @@ CoreMainWindow::CoreMainWindow(const CloseUpOperations & closeUpOperations): QMa
 	//applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
 }
 
+QSplashScreen * CoreMainWindow::createSplashScreen()
+{
+	return new QSplashScreen();
+}
+
 QSplashScreen * CoreMainWindow::splashScreen()
 {
 	if(splashScreen_ == nullptr){
@@ -81,7 +86,7 @@ QSplashScreen * CoreMainWindow::splashScreen()
 		splashScreen_ = createSplashScreen();
 
 		if(splashScreen_ == nullptr){
-			splashScreen_ = new QSplashScreen();
+			splashScreen_ = CoreMainWindow::createSplashScreen();
 		}
 
 		splashScreen_->show();

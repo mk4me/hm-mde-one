@@ -10,9 +10,10 @@
 #ifndef HEADER_GUARD_CORE__DOCKWIDGETMANAGER_H__
 #define HEADER_GUARD_CORE__DOCKWIDGETMANAGER_H__
 
-#include <utils/Export.h>
+#include <coreui/Export.h>
 #include <boost/range.hpp>
 #include <QtGui/QWidget>
+#include <QtGui/QTabWidget>
 
 class QTabWidget;
 class QDockWidget;
@@ -22,7 +23,7 @@ namespace coreUI {
 	class CoreDockWidgetSet;
 
 //! Klasa zarządza calymi grupami dock widgetów, laczac je w sety
-class UTILS_EXPORT CoreDockWidgetManager : public QWidget
+class COREUI_EXPORT CoreDockWidgetManager : public QWidget
 {
     Q_OBJECT;
 public:
@@ -109,7 +110,7 @@ Q_SIGNALS:
     //! stan dock widgetów zmienił się
 	//TODO - znaleźć gdzie ten sygnal jest uzywany i zmienić na currentChanged
     //void changed();
-	void currentChanged(int index);
+	void currentSetChanged(int index);
 	void setCloseRequested(int index);
 
 public Q_SLOTS:
@@ -117,6 +118,11 @@ public Q_SLOTS:
 	void setCurrentSet(int idx);
 	//! \param set
 	void setCurrentSet(CoreDockWidgetSet * set);
+
+private Q_SLOTS:
+
+	void onTabWidgetChange(int idx);
+	void onTabCloseRequest(int idx);
 
 private:
 	QTabWidget * tabWidget;

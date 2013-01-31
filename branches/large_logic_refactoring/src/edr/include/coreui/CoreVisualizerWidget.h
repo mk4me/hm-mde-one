@@ -9,6 +9,7 @@
 #ifndef HEADER_GUARD_CORE__VISUALIZERWIDGET_H__
 #define HEADER_GUARD_CORE__VISUALIZERWIDGET_H__
 
+#include <coreui/Export.h>
 #include <map>
 #include <corelib/Visualizer.h>
 #include <QtGui/QWidget>
@@ -24,7 +25,7 @@ namespace coreUI {
 	class CoreAction;
 
 //! Widget wizualizacyjny.
-class CoreVisualizerWidget : public QWidget
+class COREUI_EXPORT CoreVisualizerWidget : public QWidget
 {
     Q_OBJECT
 

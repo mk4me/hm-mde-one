@@ -9,16 +9,27 @@
 #ifndef __HEADER_GUARD__UTILS_EXPORT_H__
 #define __HEADER_GUARD__UTILS_EXPORT_H__
 
-#if defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__) || defined( __BCPLUSPLUS__)  || defined( __MWERKS__)
-#   if defined( __LIBRARY_STATIC__ ) 
-#       define UTILS_EXPORT
-#   elif defined( __LIBRARY_DYNAMIC__ ) || defined(_WINDLL)
-#       define UTILS_EXPORT   __declspec(dllexport)
-#   else
-#       define UTILS_EXPORT   __declspec(dllimport)
-#   endif
-#else
-#   define UTILS_EXPORT
+//! Te definy pochodz¹ z CMake - dodajemy je w Logic/ProjectUtils.cmake w zlae¿noœci od platformy
+#ifndef UTILS_DECL_EXPORT
+#  if defined(__WIN32__)
+#    define UTILS_DECL_EXPORT __declspec(dllexport)
+#  elif defined(__UNIX__)
+#    define UTILS_DECL_EXPORT __attribute__((visibility("default")))
+#    define UTILS_DECL_HIDDEN __attribute__((visibility("hidden")))
+#  endif
+#  ifndef UTILS_DECL_EXPORT
+#    define UTILS_DECL_EXPORT
+#  endif
+#endif
+#ifndef UTILS_DECL_IMPORT
+#  if defined(__WIN32__)
+#    define UTILS_DECL_IMPORT __declspec(dllimport)
+#  else
+#    define UTILS_DECL_IMPORT
+#  endif
+#endif
+#ifndef UTILS_DECL_HIDDEN
+#  define UTILS_DECL_HIDDEN
 #endif
 
 #endif  // __HEADER_GUARD__UTILS_EXPORT_H__

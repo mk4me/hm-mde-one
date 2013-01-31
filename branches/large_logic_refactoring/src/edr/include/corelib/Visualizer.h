@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__VISUALIZER_H__
 #define HEADER_GUARD_CORE__VISUALIZER_H__
 
-#include <utils/Export.h>
+#include <corelib/Export.h>
 #include <corelib/SmartPtr.h>
 #include <corelib/ObjectWrapperCollection.h>
 #include <corelib/IVisualizer.h>
@@ -24,7 +24,7 @@ namespace core {
 //! Wizualizator. Jego zadaniem jest stworzyć widget (gdzie on będzie osadzony - nie jego sprawa),
 //! zarządzać seriami danych wizualizatora, informować o dodaniu/usunięciu serii danych, automatycznie
 	//! aktualizować serie danych w momencie edycji związanych z nimi danych w DM
-class UTILS_EXPORT Visualizer : public QObject
+class CORELIB_EXPORT Visualizer : public QObject
 {
 	Q_OBJECT;
 
@@ -36,7 +36,7 @@ private:
 public:
 
 	//! Seria vizualizatora
-	class VisualizerSerie
+	class CORELIB_EXPORT VisualizerSerie
 	{
 		friend class Visualizer;
 	private:
@@ -63,11 +63,20 @@ public:
 		plugin::IVisualizer::ITimeSerieFeatures * timeSerieFeatures_;
 	};
 
+	//! Interfejs źródła danych wizualizatora
 	class VisualizerDataSource
 	{
 	public:
+		//! \param type Typdanych jaki nas interesuje
+		//! \param objects [out] Lista obiektów zadanego typu
+		//! \param exact Czy typ ma się zgadzać czy może być też typ pochodny
 		virtual void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact = false) const;
 	};
+
+	//! Smart pointer do źródła
+	typedef shared_ptr<VisualizerDataSource> VisualizerDataSourcePtr;
+	//! Agregat źródeł danych
+	typedef std::list<VisualizerDataSourcePtr> DataSources;
 
 	//! Agregat aktualnie istniejących serii danych
     typedef std::list<VisualizerSerie*> DataSeries;
@@ -104,8 +113,6 @@ private:
     DataSeries dataSeries;
 	//! Lista obserwujących
 	std::list<IVisualizerObserver*> observers_;
-	//! Lista źródeł danych wizualizatora
-	std::list<VisualizerDataSource*> sources_;
 
 	//! DataManagerReader
 	IDataManagerReader * dmr;
@@ -142,10 +149,11 @@ public:
 
 	//! \return Unikalny identyfikator obiektu
 	core::UniqueID getID() const;
-
+	//! \return nazwa wizualizatora
 	const std::string getName() const;
+	//! \return Opis wizualizatora
 	const std::string  getDescription() const;
-
+	//! \return Klon wizualizatora poza konfiguracją sesji
 	Visualizer * create() const;
 
 	//! \param Czy vizualizator powinien sam automatycznie obserwować zmiany po stronie dataManagera dla danych związanych z seriami danych
@@ -199,10 +207,17 @@ public:
 	void removeObserver(IVisualizerObserver * observer);
 
 	//! \param datSource Źródło danych wizualizatora do dodania
-	void addDataSource(VisualizerDataSource * dataSource);
+	void addDataSource(VisualizerDataSourcePtr dataSource);
 	//! \param datSource Źródło danych wizualizatora do usunięcia
-	void removeDataSource(VisualizerDataSource * dataSource);
+	void removeDataSource(VisualizerDataSourcePtr dataSource);
+	//! \return ilość źródeł
+	const int getNumDataSources() const;
+	//! \param idx Indeks źródła które chcemy pobrać
+	VisualizerDataSourcePtr getDataSource(int idx);
 
+	//! \param type Typ danych jaki chcemy pobrać
+	//! \param objects [out] Lista obiektów z danymi zadanego typu
+	//! \param exact Czy interesują nas tylko typy zgodne czy mogą być też pochodne
 	void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact);
 };
 

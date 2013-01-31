@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_CORE__DOCKWIDGETSET_H__
 #define HEADER_GUARD_CORE__DOCKWIDGETSET_H__
 
-#include <utils/Export.h>
+#include <coreui/Export.h>
 #include <boost/range.hpp>
 #include <QtCore/QString>
 #include <QtGui/QWidget>
@@ -21,7 +21,7 @@ class QDockWidget;
 namespace coreUI {
 
 //! Klasa obsługuje grupę dock widgetów, sama będąc dock widgetem
-class UTILS_EXPORT CoreDockWidgetSet : public QWidget
+class COREUI_EXPORT CoreDockWidgetSet : public QWidget
 {
 	Q_OBJECT;
 public:

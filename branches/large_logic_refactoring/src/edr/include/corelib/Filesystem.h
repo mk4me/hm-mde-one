@@ -5,7 +5,7 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
-#include <utils/Export.h>
+#include <corelib/Export.h>
 #include <vector>
 #include <set>
 #include <string>
@@ -16,7 +16,7 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-class UTILS_EXPORT Filesystem
+class CORELIB_EXPORT Filesystem
 {
 public:
     //! Typy do obsługi ścieżek

@@ -42,3 +42,15 @@ void CoreSplitableDockWidget::splitHorizontaly()
 {
 	split(Qt::Horizontal);
 }
+
+void CoreSplitableDockWidget::split(Qt::Orientation orientation)
+{
+	QMainWindow* mainWindow = qobject_cast<QMainWindow*>(parent());
+	UTILS_ASSERT(mainWindow);
+
+	auto clonedWidget = clone();
+
+	mainWindow->splitDockWidget(this, clonedWidget, orientation);
+
+	emit splited(clonedWidget, orientation);
+}

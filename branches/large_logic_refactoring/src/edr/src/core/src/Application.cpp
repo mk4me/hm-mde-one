@@ -93,9 +93,6 @@ int Application::initUIContext(int & argc, char *argv[])
 		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath()+"/plugins");
 
 		//ustawienia aplikacji
-		//TODO - do widoków
-		//uiApplication_->setApplicationName("EDR");
-		uiApplication_->setOrganizationName("PJWSTK");
 		QSettings::setDefaultFormat(QSettings::IniFormat);
 	}
 
@@ -196,8 +193,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	fileDataManager_.reset(new FileDataManager());
 	serviceManager_.reset(new ServiceManager());
 	sourceManager_.reset(new SourceManager());
-	//TODO
-	//visualizerManager_.reset(new VisualizerManager());	
+	visualizerManager_.reset(new VisualizerManager());	
 
 	mainWindow->showSplashScreenMessage(QObject::tr("Initializing plugins loader"));
 	QCoreApplication::processEvents();

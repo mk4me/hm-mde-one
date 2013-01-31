@@ -51,6 +51,47 @@ public:
 		dataToUpdate[serie->serie()->getData()].remove(serie);
 	}
 
+	void addDataSource(VisualizerDataSourcePtr dataSource)
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
+		sources_.push_back(dataSource);
+	}
+
+	void removeDataSource(VisualizerDataSourcePtr dataSource)
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
+		sources_.remove(dataSource);
+	}
+
+	const int getNumDataSources() const
+	{
+		return sources_.size();
+	}
+
+	VisualizerDataSourcePtr getDataSource(int idx)
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
+		auto it = sources_.begin();
+		std::advance(it, idx);
+		return *it;
+	}
+
+	void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
+		ConstObjectsList locObjects;
+		for(auto it = sources_.begin(); it != sources_.end(); ++it){
+			try{
+				(*it)->getData(type, locObjects, exact);
+			}catch(...){
+
+			}
+		}
+
+		ConstObjects uniqueObjects(locObjects.begin(), locObjects.end());
+		objects.insert(objects.end(), uniqueObjects.begin(), uniqueObjects.end());
+	}
+
 private:
 
 	void tryUpdate()
@@ -68,6 +109,9 @@ private:
 
 private:
 	mutable utils::StrictSyncPolicy sync;
+	mutable utils::StrictSyncPolicy sourcesSync;
+	//! Lista źródeł danych wizualizatora
+	DataSources sources_;
 	Visualizer * visualizer_;
 	//! Czy live observe jest aktywne
 	bool liveObserve; 
@@ -263,19 +307,29 @@ void Visualizer::onScreenshotTrigger()
 	}
 }
 
+void Visualizer::addDataSource(VisualizerDataSourcePtr dataSource)
+{
+	visualizerHelper_->addDataSource(dataSource);
+}
+
+void Visualizer::removeDataSource(VisualizerDataSourcePtr dataSource)
+{
+	visualizerHelper_->removeDataSource(dataSource);
+}
+
+const int Visualizer::getNumDataSources() const
+{
+	return visualizerHelper_->getNumDataSources();
+}
+
+Visualizer::VisualizerDataSourcePtr Visualizer::getDataSource(int idx)
+{
+	return visualizerHelper_->getDataSource(idx);
+}
+
 void Visualizer::getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
 {
-	ConstObjectsList locObjects;
-	for(auto it = sources_.begin(); it != sources_.end(); ++it){
-		try{
-			(*it)->getData(type, locObjects, exact);
-		}catch(...){
-
-		}
-	}
-
-	ConstObjects uniqueObjects(locObjects.begin(), locObjects.end());
-	objects.insert(objects.end(), uniqueObjects.begin(), uniqueObjects.end());
+	visualizerHelper_->getData(type, objects, exact);
 }
 
 void Visualizer::setLiveObserveActive(bool active)

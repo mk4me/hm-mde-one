@@ -20,9 +20,6 @@
 #include <utils/SynchronizationPolicies.h>
 
 
-//#include <QtCore/QMetaType>
-//Q_DECLARE_METATYPE(UniqueID);
-
 //class SceneGraphWidget;
 
 namespace core {
@@ -79,7 +76,7 @@ public:
 	virtual VisualizerConstPtr getVisualizerPrototype(UniqueID id);
 	//! \param type Typ dla którego poszukujeemy wizualizatorów
 	//! \param prototypes [out] Prototypy wizualizatorów potrafiących obsłużyć zadany typ
-	virtual void getVisualizerPrototypesForType(core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact);
+	virtual void getVisualizerPrototypes(core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact);
 	
 	//! \param observer Obserwator tworzonych wizualziatorów włączony do obserwacji
 	virtual void registerObserver(IVisualizerManagerObserver * observer);
@@ -88,8 +85,8 @@ public:
 
 private:
 
-	virtual void registerVisualizer(Visualizer* visualizerImpl, plugin::IVisualizer * visualizer) = 0;
-	virtual void unregisterVisualizer(Visualizer* visualizer) = 0;
+	virtual void registerVisualizer(Visualizer* visualizerImpl, plugin::IVisualizer * visualizer);
+	virtual void unregisterVisualizer(Visualizer* visualizer);
 
 public:
 

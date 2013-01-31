@@ -18,6 +18,9 @@ CoreDockWidgetManager::CoreDockWidgetManager( QWidget *parent /*= 0*/, Qt::Windo
 	tabWidget->setMovable(true);
 	tabWidget->setTabsClosable(true);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(onTabWidgetChange(int)));
+	connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(onTabCloseRequest(int)));
 }
 
 CoreDockWidgetManager::~CoreDockWidgetManager()
@@ -337,4 +340,24 @@ bool CoreDockWidgetManager::setsClosable() const
 bool CoreDockWidgetManager::usesScrollButtons() const
 {
 	return tabWidget->usesScrollButtons();
+}
+
+void CoreDockWidgetManager::setCurrentSet(int idx)
+{
+	tabWidget->setCurrentIndex(idx);
+}
+
+void CoreDockWidgetManager::setCurrentSet(CoreDockWidgetSet * set)
+{
+	tabWidget->setCurrentWidget(set);
+}
+
+void CoreDockWidgetManager::onTabWidgetChange(int idx)
+{
+	emit currentSetChanged(idx);
+}
+
+void CoreDockWidgetManager::onTabCloseRequest(int idx)
+{
+	emit setCloseRequested(idx);
 }

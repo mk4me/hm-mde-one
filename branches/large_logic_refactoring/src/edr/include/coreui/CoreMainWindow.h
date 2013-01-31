@@ -10,6 +10,7 @@
 #ifndef HEADER_GUARD_CORE__MAINWINDOW_H__
 #define HEADER_GUARD_CORE__MAINWINDOW_H__
 
+#include <coreui/Export.h>
 #include <corelib/SmartPtr.h>
 #include <corelib/IPlugin.h>
 #include <QtCore/QSettings>
@@ -38,7 +39,7 @@ namespace coreUI {
         return ret;
     }
 
-	class CoreMainWindow : public QMainWindow
+	class COREUI_EXPORT CoreMainWindow : public QMainWindow
 	{
 		Q_OBJECT
 
@@ -66,7 +67,7 @@ namespace coreUI {
 	private:
 
 		//! \return Customizowany splash screen dla danego widoku aplikacji, jeśli null to domyslny splash screen
-		virtual QSplashScreen * createSplashScreen() = 0;
+		virtual QSplashScreen * createSplashScreen();
 		virtual void customViewInit(QWidget * console) = 0;
 
 	protected:

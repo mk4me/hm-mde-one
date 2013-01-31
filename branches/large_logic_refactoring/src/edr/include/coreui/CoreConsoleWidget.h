@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__CORECONSOLEWIDGET_H__
 #define HEADER_GUARD_CORE__CORECONSOLEWIDGET_H__
 
-#include <utils/Export.h>
+#include <coreui/Export.h>
 #include <corelib/SmartPtr.h>
 #include <corelib/ILog.h>
 #include <queue>
@@ -27,7 +27,7 @@ namespace Ui {
 namespace coreUI {
 
 //! Wpis do konsoli.
-struct UTILS_EXPORT CoreConsoleWidgetEntry {
+struct COREUI_EXPORT CoreConsoleWidgetEntry {
     //! Poziom ważności komuniaktu.
     core::ILog::LogSeverity severity;
     //! Wiadomość.
@@ -44,10 +44,10 @@ struct UTILS_EXPORT CoreConsoleWidgetEntry {
 
 typedef core::shared_ptr<CoreConsoleWidgetEntry> CoreConsoleWidgetEntryPtr;
 
-Q_DECLARE_METATYPE(CoreConsoleWidgetEntryPtr);
+//Q_DECLARE_METATYPE(CoreConsoleWidgetEntryPtr);
 Q_DECLARE_METATYPE(CoreConsoleWidgetEntry);
 
-class UTILS_EXPORT CoreConsoleWidget : public QWidget
+class COREUI_EXPORT CoreConsoleWidget : public QWidget
 {
     Q_OBJECT
 

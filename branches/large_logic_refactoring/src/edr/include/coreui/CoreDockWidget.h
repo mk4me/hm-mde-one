@@ -9,14 +9,14 @@
 #ifndef HEADER_GUARD_CORE__COREDOCKWIDGET_H__
 #define HEADER_GUARD_CORE__COREDOCKWIDGET_H__
 
-#include <utils/Export.h>
+#include <coreui/Export.h>
 #include <QtGui/QDockWidget>
 
 namespace coreUI {
 
 //! Klasa rozszerza klasycznego QDockWidget o możliwosć przełanczania trybu oddokowywania na przeciwny,
 //! ustawaiania okna jako "niesmiertelnego" przy zamykaniu go oraz modyfikacji jego flag przy oddokowywaniu
-class UTILS_EXPORT CoreDockWidget : public QDockWidget
+class COREUI_EXPORT CoreDockWidget : public QDockWidget
 {
     Q_OBJECT
 

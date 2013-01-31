@@ -8,6 +8,7 @@ SET_PUBLIC_HEADERS(
 	CoreAction.h
 	CoreDockWidget.h
 	CoreSplitableDockWidget.h
+	CoreSplitableDockWidgetT.h
 	CoreFlexiToolBar.h
 	CoreFlexiToolBarSection.h
 	CoreTitleBar.h
@@ -16,6 +17,7 @@ SET_PUBLIC_HEADERS(
 	ICoreActionSection.h
 	CoreCompoundVisualizerWidget.h
 	CoreTextEditWidget.h
+	Export.h
 )
 
 SET_SOURCE_FILES(
@@ -41,6 +43,10 @@ SET_PRIVATE_HEADERS(
 )
 
 SET_MOC_FILES(
+	CoreTextEditWidget.h
+	CoreCompoundVisualizerWidget.h
+	CoreVisualizerWidget.h
+	CoreSplitableDockWidget.h
 	CoreDockWidgetSet.h
 	CoreDockWidgetManager.h
 	CoreConsoleWidget.h

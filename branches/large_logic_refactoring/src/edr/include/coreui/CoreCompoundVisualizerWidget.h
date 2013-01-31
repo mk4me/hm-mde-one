@@ -9,6 +9,7 @@
 #ifndef HEADER_GUARD___CORECOMPOUNDVISUALIZERWIDGET_H__
 #define HEADER_GUARD___CORECOMPOUNDVISUALIZERWIDGET_H__
 
+#include <coreui/Export.h>
 #include <corelib/Visualizer.h>
 #include <QtGui/QWidget>
 #include <QtGui/QComboBox>
@@ -18,7 +19,7 @@ namespace coreUI{
 	class CoreWidgetAction;
 	class CoreVisualizerWidget;
 
-	class CoreCompoundVisualizerWidget : public QWidget
+	class COREUI_EXPORT CoreCompoundVisualizerWidget : public QWidget
 	{
 		Q_OBJECT
 

@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__CORETITLEBAR_H__
 #define HEADER_GUARD_CORE__CORETITLEBAR_H__
 
-#include <utils/Export.h>
+#include <coreui/Export.h>
 #include <QtGui/QWidget>
 #include <QtGui/QDockWidget>
 #include <map>
@@ -33,7 +33,7 @@ namespace coreUI {
 //! prze³anczanie pomiêdzy trybami dokowania/oddokowania. Ponadto oferuje mo¿liwoœæ
 //! przechowywania akcji po lewej i po prawej stronie zorganizowanych w 2 toolbarach.
 //! Mo¿e te¿ pracowaæ w wersji pionowej - experymentalna opcja:)
-class UTILS_EXPORT CoreTitleBar : public QWidget
+class COREUI_EXPORT CoreTitleBar : public QWidget
 {
     Q_OBJECT
 
@@ -65,6 +65,7 @@ public:
 public:
 
 	static CoreTitleBar * supplyWithCoreTitleBar(QDockWidget * dockWidget);
+	static void supplyCoreTitleBarWithActions(CoreTitleBar * titleBar, const QList<QAction *> & actions);
 	static void supplyCoreTitleBarWithActions(CoreTitleBar * titleBar, QWidget * widget);
 
 	virtual bool eventFilter(QObject * watched, QEvent * event);
@@ -74,7 +75,7 @@ public:
 	QAction * actionAt(const QPoint & p) const;
 	QAction * actionAt(int x, int y) const;
 	void addAction(QAction * action);
-	void addAction(QAction * action, SideType side = Left);
+	void addAction(QAction * action, SideType side);
 	QAction * addAction(const QString & text, SideType side = Left);
 	QAction * addAction(const QIcon & icon, const QString & text, SideType side = Left);
 	QAction * addAction(const QString & text, const QObject * receiver, const char * member, SideType side = Left);
@@ -125,7 +126,7 @@ protected:
 	//virtual void resizeEvent(QResizeEvent * event);
 
 private:
-	CoreTitleBar(bool floating = false, QWidget * parent = nullptr);
+	CoreTitleBar(QWidget * parent = nullptr);
 	void updateTitleOrientation();
 
 private:
@@ -139,7 +140,6 @@ private:
 	QToolBar * rightToolbar;
 	bool verticalOrientation_;
 	TitleTextVerticalMode titleVerticalMode_;
-	QAction * toogleViewAction_;
 	bool floating_;
 };
 

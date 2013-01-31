@@ -7,7 +7,7 @@ SET_PUBLIC_HEADERS(
 	SmartPtr.h
 	StringTools.h
 	Visualizer.h
-	SubjectDataFilters.h
+	# SubjectDataFilters.h
 	ObjectWrapperCollection.h
 	PluginCommon.h
 	IPlugin.h
@@ -33,18 +33,23 @@ SET_PUBLIC_HEADERS(
 	IDataHierarchyManagerReader.h
 	IClonable.h
 	IApplication.h
+	Export.h
 )
 
 SET_SOURCE_FILES(
 	Filesystem.cpp
 	Visualizer.cpp
-	SubjectDataFilters.cpp
+	# SubjectDataFilters.cpp
 	CoreLibPCH.cpp
 	ObjectWrapperCollection.cpp
 )
 
 SET_PRIVATE_HEADERS(
 	CoreLibPCH.h
+)
+
+SET_MOC_FILES(
+	Visualizer.h
 )
 
 SET_PRECOMPILED_HEADER (CoreLibPCH.h CoreLibPCH.cpp)

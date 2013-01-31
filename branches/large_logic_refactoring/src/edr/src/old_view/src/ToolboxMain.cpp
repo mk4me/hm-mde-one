@@ -1,16 +1,11 @@
-#include "CorePCH.h"
 #include "ToolboxMain.h"
 #include <utils/Push.h>
-#include <core/TypeInfo.h>
-#include <core/ObjectWrapperFactory.h>
-#include <core/src/MainWindow.h>
+#include <corelib/BaseDataTypes.h>
 #include <osgui/QOsgWidgets.h>
 //#include "SceneGraphWidget.h"
-#include <core/src/VisualizerManager.h>
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <osg/PositionAttitudeTransform>
-#include <core/src/SourceManager.h>
 
 #include <osgViewer/GraphicsWindow>
 #include <osgText/Text>
@@ -18,14 +13,6 @@
 #include <osgViewer/Scene>
 #include <iostream>
 #include <osgGA/TerrainManipulator>
-
-#include <core/src/EDRConsoleWidget.h>
-
-#include <core/src/ServiceManager.h>
-#include <core/src/DataProcessorManager.h>
-#include <core/src/DataSourceManager.h>
-#include <core/src/UserInterfaceService.h>
-#include <core/src/EDRConfig.h>
 
 #include <iostream>
 
@@ -35,12 +22,11 @@
 #include <boost/bind.hpp>
 #include <functional>
 
-#include <core/src/Log.h>
-#include <core/StringTools.h>
+#include <corelib/StringTools.h>
 #include <boost/foreach.hpp>
-#include <core/src/VisualizerWidget.h>
+#include <coreui/CoreVisualizerWidget.h>
 
-#include <core/src/Visualizer.h>
+#include <corelib/Visualizer.h>
 #include <osgWidget/ViewerEventHandlers>
 
 #include <osgui/EventCallback.h>
@@ -50,14 +36,11 @@
 #include <boost/random.hpp>
 
 #include <utils/Push.h>
-#include <core/src/DataProcessor.h>
 
-#include <core/src/EDRDockWidget.h>
-#include <core/src/EDRTitleBar.h>
+#include <coreui/CoreDockWidget.h>
+#include <coreui/CoreTitleBar.h>
 
-#include <core/src/WorkflowWidget.h>
-#include <core/src/LocalDataSource.h>
-
+using namespace coreUI;
 using namespace core;
 
 struct SortActionsByNames 
@@ -68,45 +51,35 @@ struct SortActionsByNames
 	}
 };
 
-void ToolboxMain::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
+ToolboxMain::ToolboxMain(const CloseUpOperations & closeUpOperations) : CoreMainWindow(closeUpOperations)
 {
-	CoreMainWindow::init(pluginLoader, managersAccessor);
+
+}
+
+ToolboxMain::~ToolboxMain()
+{
+
+}
+
+void ToolboxMain::customViewInit(QWidget * console)
+{
 	initializeUI();
 	setupUi(this);
 	connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
-    initializeConsole();
-    addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
+	CoreDockWidget * consoleDockWidget = new CoreDockWidget(console->windowTitle().isEmpty() == true ? tr("Console") : console->windowTitle());
+	consoleDockWidget->setWidget(console);
+
+	auto consoleTitleBar = CoreTitleBar::supplyWithCoreTitleBar(consoleDockWidget);
+	CoreTitleBar::supplyCoreTitleBarWithActions(consoleTitleBar, console);
+	
+	addDockWidget(Qt::BottomDockWidgetArea, consoleDockWidget);
 	populateVisualizersMenu(menuCreateVisualizer);
 }
 
-void ToolboxMain::setCurrentVisualizerActions(CoreVisualizerWidget * visWidget)
-{
-    auto vis = visWidget->getCurrentVisualizer();
-
-    CoreVisualizerWidget::VisualizerTitleBarElements titleBarElements;
-
-    visWidget->getVisualizerTitleBarElements(titleBarElements);
-
-    CoreTitleBar * titleBar = nullptr;
-
-    if(visWidget->titleBarWidget() == nullptr){
-        titleBar = supplyWithCoreTitleBar(visWidget);
-    }
-
-    if(titleBar == nullptr){
-        LOG_WARNING("Could not load visualizer toolbar elements - TitleBar uninitialized");
-    }else{
-
-        titleBar->clear();
-
-        for(auto it = titleBarElements.begin(); it != titleBarElements.end(); ++it){
-            titleBar->addObject((*it).first, (*it).second);
-        }
-    }
-}
 
 void ToolboxMain::initializeUI()
 {
+	qApp->setApplicationName("EDR");
     trySetStyleByName("dark");
     QString style = this->styleSheet();
 	setDockOptions( AllowNestedDocks | AllowTabbedDocks );
@@ -189,114 +162,9 @@ void ToolboxMain::initializeUI()
 		Qt::RightDockWidgetArea));
 }
 
-
-void ToolboxMain::onOpen()
-{
-	utils::Push<bool> pushed(updateEnabled, false);
-	Filesystem::Path initPath = getUserDataPath() / "trial";
-	const QString directory = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
-	if (!directory.isEmpty()) 
-	{
-		//std::vector<Filesystem::Path> paths;
-		Filesystem::Path dirPath(directory.toStdString());
-		Filesystem::Iterator itEnd;
-
-		for( Filesystem::Iterator it(dirPath); it != itEnd; ++it){
-			if(Filesystem::isRegularFile(*it) == true){
-				//paths.push_back(it->path());
-                try{
-                    DataManager::getInstance()->addFile(*it);
-                }catch(...){
-
-                }
-			}
-		}        
-	}
-}
-
 void ToolboxMain::onExit()
 {
 	close();
-}
-
-void ToolboxMain::createWorkflow()
-{
-	EDRWorkflowWidget* widget = new EDRWorkflowWidget();
-	widget->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-	QObject::connect( widget, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
-
-	addDockWidget(Qt::LeftDockWidgetArea, widget);
-}
-
-void ToolboxMain::onCustomAction()
-{
-	QObject* obj = QObject::sender();
-	std::string path = toStdString(obj->objectName());
-	this->triggerMenuItem(path, false);
-}
-
-void ToolboxMain::onCustomAction( bool triggered )
-{
-	QObject* obj = QObject::sender();
-	std::string path = toStdString(obj->objectName());
-	this->triggerMenuItem(path, triggered);
-}
-
-void ToolboxMain::onRemoveMenuItem( const std::string& path )
-{
-	// TODO: rekurencyjne usuwanie niepotrzebnych podmenu
-	QAction* action = findChild<QAction*>(toQString(path));
-	if ( action ) 
-	{
-		delete action;
-	}
-}
-
-
-
-void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool initialState )
-{
-	
-}
-
-void ToolboxMain::onDockWidgetVisiblityChanged( bool visible )
-{
-
-}
-void ToolboxMain::openLayout( const QString& path )
-{
-	readSettings(QSettings(path, QSettings::IniFormat), false);
-}
-
-void ToolboxMain::onOpenLayout()
-{
-	// TODO: czy na pewno ma wychodzić gdy nie uda się sprawdzić, czy katalog istnieje?
-	Filesystem::Path dir = getPathInterface()->getUserDataPath() / "layouts";
-	utils::Push<bool> pushed(updateEnabled, false);
-	const QString fileName = QFileDialog::getOpenFileName(this, 0, dir.string().c_str(), "*.layout");
-	if ( !fileName.isEmpty() ) {
-		openLayout(fileName);
-	}
-}
-
-void ToolboxMain::onShowSavedLayouts()
-{
-	// usunięcie starych akcji
-	menuLoad_layout->clear();
-	menuLoad_layout->addAction(actionLayoutOpen);
-
-	// layouty wbudowane
-	Filesystem::Path dir = getPathInterface()->getResourcesPath() / "layouts";
-	addLayoutsToMenu(dir);
-	// layouty zdefiniowane przez użytkownika
-	dir = getPathInterface()->getUserDataPath() / "layouts";
-	addLayoutsToMenu(dir);
-}
-
-void ToolboxMain::addLayoutsToMenu( const Filesystem::Path &dir )
-{
-	
 }
 
 void ToolboxMain::populateWindowMenu()
@@ -312,6 +180,7 @@ void ToolboxMain::populateVisualizersMenu()
 	menuCreateVisualizer->clear();
 	populateVisualizersMenu(menuCreateVisualizer);
 }
+
 void ToolboxMain::actionCreateVisualizer()
 {
 	QAction* action = qobject_cast<QAction*>(sender());
@@ -367,32 +236,5 @@ void ToolboxMain::populateWindowMenu( QMenu* menu )
 		BOOST_FOREACH(QAction* action, sortedActions) {
 			menu->addAction(action);
 		}
-	}
-}
-
-void ToolboxMain::onLayoutTriggered()
-{
-	
-}
-
-void ToolboxMain::onSaveLayout()
-{
-	// TODO: czy na pewno ma wychodzić gdy nie uda się sprawdzić, czy katalog istnieje?
-	Filesystem::Path dir = getPathInterface()->getUserDataPath() / "layouts";
-
-	//jeśli nie istnieje spróbuj utworzyć
-	if(Filesystem::pathExists(dir) == false) {
-		Filesystem::createDirectory(dir);
-	}
-
-	if(Filesystem::pathExists(dir) == true) {        
-		const QString fileName = QFileDialog::getSaveFileName(this, 0, dir.string().c_str(), "*.layout");
-		if ( !fileName.isEmpty() ) {
-			QSettings settings(fileName, QSettings::IniFormat);
-			settings.setValue("Geometry", saveGeometry());
-			settings.setValue("WindowState", saveState());
-		}
-	} else {
-		LOG_ERROR("Could not create directory: "<<toStdString(dir));
 	}
 }

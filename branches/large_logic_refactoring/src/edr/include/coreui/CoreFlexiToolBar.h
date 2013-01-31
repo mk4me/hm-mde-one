@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_COREFLEXITOOLBAR_H__
 #define HEADER_GUARD_COREFLEXITOOLBAR_H__
 
-#include <utils/Export.h>
+#include <coreui/Export.h>
 #include <map>
 #include <QtGui/QWidget>
 
@@ -20,7 +20,7 @@ namespace coreUI {
 
 	class CoreFlexiToolBarSection;
 
-class UTILS_EXPORT CoreFlexiToolBar : public QWidget
+class COREUI_EXPORT CoreFlexiToolBar : public QWidget
 {
     Q_OBJECT;
 

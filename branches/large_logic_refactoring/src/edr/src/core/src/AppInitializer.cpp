@@ -32,7 +32,8 @@ public:
 			try{
 				//inicjalizujemy widok
 				coreApplication->initWithUI(mainWindow);
-
+				//ustawiamy tutaj ¿eby nadpisaæ ewentualne zmiany z widoków
+				qApp->setOrganizationName("PJWSTK");
 				try{
 					//faktycznie blokowane wywo³anie
 					//uruchamia kontekst Qt

@@ -50,6 +50,7 @@
 #ifndef HEADER_GUARD___CORETEXTEDITWIDGET_H__
 #define HEADER_GUARD___CORETEXTEDITWIDGET_H__
 
+#include <coreui/Export.h>
 #include <QtGui/QMainWindow>
 #include <QtCore/QMap>
 #include <QtCore/QPointer>
@@ -64,8 +65,11 @@ QT_FORWARD_DECLARE_CLASS(QMenu)
 
 namespace coreUI {
 
+//TODO
+//Czy to musi być QMainWIndow?
+
 //! Kontrolka zawiera edytor tekstu rich format
-class CoreTextEditWidget : public QMainWindow
+class COREUI_EXPORT CoreTextEditWidget : public QMainWindow
 {
     Q_OBJECT
     //! możliwe formaty zapisu

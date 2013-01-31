@@ -1,7 +1,7 @@
 #ifndef BASE_DATA_TYPES_H
 #define BASE_DATA_TYPES_H
 
-#include <utils/Export.h>
+#include <corelib/Export.h>
 #include <stdint.h>
 #include <string>
 #include <ostream>
@@ -23,7 +23,7 @@ typedef boost::uuids::uuid UniqueID;
 //! dla tego samego ciągu znaków zwraca ten sam id. Wymagane jest więc dostarczanie z zewnątrz
 //! unikalnych ciągów znaków - polecamy jakiś GUID generator (np. z Visual Studio)
 //! Ta klasa i definicja typu dla identyfikatora normalizują różne możliwe podejścia do unikalnych identyfikatorów w aplikacji
-class UTILS_EXPORT UID 
+class CORELIB_EXPORT UID 
 {
 public:
 //! Statyczna metoda

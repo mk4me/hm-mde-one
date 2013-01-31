@@ -9,14 +9,14 @@
 #ifndef HEADER_GUARD___COREACTION_H__
 #define HEADER_GUARD___COREACTION_H__
 
-#include <utils/Export.h>
+#include <coreui/Export.h>
 #include <QtGui/QAction>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/ICoreActionSection.h>
 
 namespace coreUI {
 
-class UTILS_EXPORT CoreAction : public QAction, public CoreTitleBar::ICoreTitleBarAction, public ICoreActionSection
+class COREUI_EXPORT CoreAction : public QAction, public CoreTitleBar::ICoreTitleBarAction, public ICoreActionSection
 {
 public:
 	CoreAction(const QString & sectionName, const QString &text, QObject* parent, CoreTitleBar::SideType side = CoreTitleBar::Left);

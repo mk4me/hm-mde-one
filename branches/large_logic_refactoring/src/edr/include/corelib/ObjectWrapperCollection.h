@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_CORE__OBJECTWRAPPERCOLLECTION_H__
 #define HEADER_GUARD_CORE__OBJECTWRAPPERCOLLECTION_H__
 
-#include <utils/Export.h>
+#include <corelib/Export.h>
 #include <vector>
 #include <stdexcept>
 #include <corelib/SmartPtr.h>
@@ -21,7 +21,7 @@ namespace core {
 class MemoryDataManager;
 
 //! Klasa służy do agregowania obiektów domenowych tego samego typu lub pocohdnych od tego samego typu
-class UTILS_EXPORT ObjectWrapperCollection
+class CORELIB_EXPORT ObjectWrapperCollection
 {
     friend class MemoryDataManager;
 

@@ -97,7 +97,6 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 //! Zapewnia możliwość kasowanie widgeta wizualizatora przez jego implementację.
 CoreVisualizerWidget::~CoreVisualizerWidget()
 {
-	delete iconLabelAction;
 	delete dataSelectAction;
 	if(activeDataSelectAction != nullptr){
 		delete activeDataSelectAction;

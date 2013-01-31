@@ -9,15 +9,18 @@
 #ifndef HEADER_GUARD___COREWIDGETACTION_H__
 #define HEADER_GUARD___COREWIDGETACTION_H__
 
-#include <utils/Export.h>
+#include <coreui/Export.h>
 #include <QtGui/QWidgetAction>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/ICoreActionSection.h>
 
 namespace coreUI {
 
-class UTILS_EXPORT CoreWidgetAction : public QWidgetAction, public CoreTitleBar::ICoreTitleBarAction, public ICoreActionSection
+class COREUI_EXPORT CoreWidgetAction : public QWidgetAction, public CoreTitleBar::ICoreTitleBarAction, public ICoreActionSection
 {
+
+	Q_OBJECT
+
 public:
 	explicit CoreWidgetAction(QObject *parent, const QString & sectionName, CoreTitleBar::SideType side = CoreTitleBar::Left);
 

@@ -550,5 +550,12 @@ CoreTitleBar * CoreTitleBar::supplyWithCoreTitleBar(QDockWidget * dockWidget)
 
 void CoreTitleBar::supplyCoreTitleBarWithActions(CoreTitleBar * titleBar, QWidget * widget)
 {
+	supplyCoreTitleBarWithActions(titleBar, widget->actions());
+}
 
+void CoreTitleBar::supplyCoreTitleBarWithActions(CoreTitleBar * titleBar, const QList<QAction *> & actions)
+{
+	for(auto it = actions.begin(); it != actions.end(); ++it){
+		titleBar->addAction(*it);
+	}
 }
