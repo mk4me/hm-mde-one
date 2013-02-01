@@ -54,6 +54,13 @@ void CoreTitleBar::setIcon(const QPixmap & icon)
 	ui->iconPlaceholder->setPixmap(icon);
 }
 
+void CoreTitleBar::onTopLevelChanged(bool floating)
+{
+	ui->buttonFloat->blockSignal(true);
+	ui->buttonFloat->setChecked(floating);
+	ui->buttonFloat->blockSignal(false);
+}
+
 void CoreTitleBar::toggleFloating(bool floating)
 {
 	if(parentWidget() != nullptr){
@@ -497,7 +504,7 @@ void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
         setEnabled(false);
     }
 
-	bool vertical = features & QDockWidget::DockWidgetVerticalTitleBar;
+	bool vertical = (features & QDockWidget::DockWidgetVerticalTitleBar;)
 	if(vertical != verticalOrientation_) {
 		verticalOrientation_ = vertical;
 		// pobieramy wszystkie widgety - ikonę, tytuł, lewy toolbar, prawy toolbar i buttony
@@ -544,6 +551,8 @@ CoreTitleBar * CoreTitleBar::supplyWithCoreTitleBar(QDockWidget * dockWidget)
     QObject::connect(dockWidget, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), titleBar, SLOT(refreshFeatures(QDockWidget::DockWidgetFeatures)));
 	//akcje na zamkniecie okna
     QObject::connect(titleBar->ui->buttonClose, SIGNAL(triggered()), dockWidget, SLOT(close()));
+	//zmiana dokowania po stronie dockWidgeta z pominięciem titlebara
+	QObject::connect(dockWidget, SIGNAL(topLevelChanged(bool)), titleBar, SLOT(onTopLevelChanged(bool)));
 
     return titleBar;
 }

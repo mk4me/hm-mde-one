@@ -1,19 +1,18 @@
 #ifndef TOOLBOXMAIN_H
 #define TOOLBOXMAIN_H
 
-#include <utils/Debug.h>
-#include <osgViewer/CompositeViewer>
-#include <QtCore/QVector>
-
 #include <coreui/CoreMainWindow.h>
 
-#include "ui_toolboxmaindeffile.h"
-#include <corelib/Filesystem.h>
+class QMenu;
 
-class ToolboxMain : public coreUI::CoreMainWindow, private Ui::EDRMain
+namespace Ui {
+	class EDRMain;
+}
+
+class ToolboxMain : public coreUI::CoreMainWindow
 {
-public:
 	Q_OBJECT
+
 public:
 	ToolboxMain(const CloseUpOperations & closeUpOperations);
 	virtual ~ToolboxMain();
@@ -43,6 +42,9 @@ private:
 
 	void initializeUI();
 	
+private:
+
+	Ui::EDRMain * ui;
 };
 
 #endif // TOOLBOXMAIN_H

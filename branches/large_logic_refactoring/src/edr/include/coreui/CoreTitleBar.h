@@ -113,6 +113,8 @@ private slots:
 	void onActionTriggeredRight(QAction * action);
 	void onToogleView(bool b);
 
+	void onTopLevelChanged(bool floating);
+
 signals:
 	void actionTriggered(QAction * action, SideType side);
 	void iconSizeChanged(const QSize & iconSize);
@@ -126,10 +128,11 @@ protected:
 	//virtual void resizeEvent(QResizeEvent * event);
 
 private:
-	CoreTitleBar(QWidget * parent = nullptr);
+	CoreTitleBar(bool floating, QWidget * parent = nullptr);
 	void updateTitleOrientation();
 
 private:
+	QAction * toogleViewAction_;
 	Ui::CoreTitleBar * ui;
 	QLabel * titleLabel;
 	QGraphicsScene * titleScene;

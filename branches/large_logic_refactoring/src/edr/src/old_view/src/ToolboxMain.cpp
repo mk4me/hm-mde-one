@@ -1,41 +1,17 @@
 #include "ToolboxMain.h"
+#include "ui_toolboxmaindeffile.h"
 #include <utils/Push.h>
 #include <corelib/BaseDataTypes.h>
-#include <osgui/QOsgWidgets.h>
-//#include "SceneGraphWidget.h"
-#include <osg/Vec3d>
-#include <osg/Quat>
-#include <osg/PositionAttitudeTransform>
-
-#include <osgViewer/GraphicsWindow>
-#include <osgText/Text>
-#include <osg/ShapeDrawable>
-#include <osgViewer/Scene>
-#include <iostream>
-#include <osgGA/TerrainManipulator>
-
+#include <QtGui/QAction>
 #include <iostream>
 
 #include <utils/Debug.h>
-
-#include <boost/tokenizer.hpp>
-#include <boost/bind.hpp>
-#include <functional>
 
 #include <corelib/StringTools.h>
 #include <boost/foreach.hpp>
 #include <coreui/CoreVisualizerWidget.h>
 
 #include <corelib/Visualizer.h>
-#include <osgWidget/ViewerEventHandlers>
-
-#include <osgui/EventCallback.h>
-#include <osg/BlendFunc>
-#include <osg/LineWidth>
-
-#include <boost/random.hpp>
-
-#include <utils/Push.h>
 
 #include <coreui/CoreDockWidget.h>
 #include <coreui/CoreTitleBar.h>
@@ -51,7 +27,7 @@ struct SortActionsByNames
 	}
 };
 
-ToolboxMain::ToolboxMain(const CloseUpOperations & closeUpOperations) : CoreMainWindow(closeUpOperations)
+ToolboxMain::ToolboxMain(const CloseUpOperations & closeUpOperations) : CoreMainWindow(closeUpOperations), ui(new Ui::EDRMain)
 {
 
 }
@@ -64,8 +40,8 @@ ToolboxMain::~ToolboxMain()
 void ToolboxMain::customViewInit(QWidget * console)
 {
 	initializeUI();
-	setupUi(this);
-	connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
+	ui->setupUi(this);
+	connect(ui->menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
 	CoreDockWidget * consoleDockWidget = new CoreDockWidget(console->windowTitle().isEmpty() == true ? tr("Console") : console->windowTitle());
 	consoleDockWidget->setWidget(console);
 
@@ -73,7 +49,7 @@ void ToolboxMain::customViewInit(QWidget * console)
 	CoreTitleBar::supplyCoreTitleBarWithActions(consoleTitleBar, console);
 	
 	addDockWidget(Qt::BottomDockWidgetArea, consoleDockWidget);
-	populateVisualizersMenu(menuCreateVisualizer);
+	populateVisualizersMenu(ui->menuCreateVisualizer);
 }
 
 
@@ -171,14 +147,14 @@ void ToolboxMain::populateWindowMenu()
 {
 	// uwaga: nie musimy usuwać starych akcji, ponieważ QMenu pilnuje,
 	// aby nie był dodane dwie jednakowe instancje
-	populateWindowMenu(menuWindow);
+	populateWindowMenu(ui->menuWindow);
 }
 
 void ToolboxMain::populateVisualizersMenu()
 {
 	// czyścimy menu
-	menuCreateVisualizer->clear();
-	populateVisualizersMenu(menuCreateVisualizer);
+	ui->menuCreateVisualizer->clear();
+	populateVisualizersMenu(ui->menuCreateVisualizer);
 }
 
 void ToolboxMain::actionCreateVisualizer()

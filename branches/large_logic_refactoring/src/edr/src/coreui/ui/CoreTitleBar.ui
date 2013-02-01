@@ -217,7 +217,24 @@
  <resources>
   <include location="CoreIcons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonFloat</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>CoreTitleBar</receiver>
+   <slot>toggleFloating(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>348</x>
+     <y>10</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>193</x>
+     <y>10</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>toggleFloating(bool)</slot>
  </slots>
