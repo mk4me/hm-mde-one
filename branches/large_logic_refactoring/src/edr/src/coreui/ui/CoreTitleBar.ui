@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -61,17 +61,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="titlePlaceholder">
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-    </widget>
-   </item>
-   <item>
     <widget class="QFrame" name="leftToolbarPlaceholder">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -99,6 +88,16 @@
        <number>0</number>
       </property>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="titleLabel">
+     <property name="text">
+      <string>WindowTitle</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
     </widget>
    </item>
    <item>
@@ -164,19 +163,11 @@
      <property name="text">
       <string>o</string>
      </property>
-     <property name="icon">
-      <iconset resource="CoreIcons.qrc">
-       <normaloff>:/resources/icons/oddokowywanie.png</normaloff>
-       <normalon>:/resources/icons/dokowanie.png</normalon>:/resources/icons/oddokowywanie.png</iconset>
-     </property>
      <property name="iconSize">
       <size>
        <width>16</width>
        <height>16</height>
       </size>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
      </property>
      <property name="arrowType">
       <enum>Qt::NoArrow</enum>
@@ -200,10 +191,6 @@
      <property name="text">
       <string>x</string>
      </property>
-     <property name="icon">
-      <iconset resource="CoreIcons.qrc">
-       <normaloff>:/resources/icons/x-alpha.png</normaloff>:/resources/icons/x-alpha.png</iconset>
-     </property>
      <property name="iconSize">
       <size>
        <width>16</width>
@@ -213,20 +200,64 @@
     </widget>
    </item>
   </layout>
+  <action name="actionClose">
+   <property name="icon">
+    <iconset resource="CoreIcons.qrc">
+     <normaloff>:/resources/icons/x-alpha.png</normaloff>:/resources/icons/x-alpha.png</iconset>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="toolTip">
+    <string>Close window</string>
+   </property>
+  </action>
+  <action name="actionDock_Undock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="CoreIcons.qrc">
+     <normaloff>:/resources/icons/oddokowywanie.png</normaloff>
+     <normalon>:/resources/icons/dokowanie.png</normalon>:/resources/icons/oddokowywanie.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dock/Undock</string>
+   </property>
+   <property name="toolTip">
+    <string>Change widndow docking</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="CoreIcons.qrc"/>
  </resources>
  <connections>
   <connection>
-   <sender>buttonFloat</sender>
+   <sender>actionDock_Undock</sender>
    <signal>toggled(bool)</signal>
    <receiver>CoreTitleBar</receiver>
    <slot>toggleFloating(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>348</x>
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>193</x>
      <y>10</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionClose</sender>
+   <signal>triggered()</signal>
+   <receiver>CoreTitleBar</receiver>
+   <slot>closeWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>193</x>
@@ -237,5 +268,6 @@
  </connections>
  <slots>
   <slot>toggleFloating(bool)</slot>
+  <slot>closeWindow()</slot>
  </slots>
 </ui>

@@ -1,7 +1,6 @@
 #include "CorePCH.h"
 #include "ParserManager.h"
 #include "DataHierarchyManager.h"
-#include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 
 using namespace core;
@@ -17,8 +16,8 @@ void ParserManager::parsers(const std::string & source, ParserPrototypes & parse
 {
 	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		for(auto eIT = it->second.expressions.begin(); eIT != it->second.expressions.end(); ++eIT){
-			boost::cmatch what;
-			if(boost::regex_match(source.c_str(), what, eIT->second.regularExpression)){
+			std::cmatch what;
+			if(std::regex_match(source.c_str(), what, eIT->second.regularExpression)){
 				parserPrototypes.push_back(it->first);
 				break;
 			}
@@ -31,8 +30,8 @@ void ParserManager::sourceParsers(const std::string & source, ParserPrototypes &
 	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		if(it->second.sourceParser){
 			for(auto eIT = it->second.expressions.begin(); eIT != it->second.expressions.end(); ++eIT){
-				boost::cmatch what;
-				if(boost::regex_match(source.c_str(), what, eIT->second.regularExpression)){
+				std::cmatch what;
+				if(std::regex_match(source.c_str(), what, eIT->second.regularExpression)){
 					parserPrototypes.push_back(it->first);
 					break;
 				}
@@ -46,8 +45,8 @@ void ParserManager::streamParsers(const std::string & source, ParserPrototypes &
 	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		if(it->second.streamParser){
 			for(auto eIT = it->second.expressions.begin(); eIT != it->second.expressions.end(); ++eIT){
-				boost::cmatch what;
-				if(boost::regex_match(source.c_str(), what, eIT->second.regularExpression)){
+				std::cmatch what;
+				if(std::regex_match(source.c_str(), what, eIT->second.regularExpression)){
 					parserPrototypes.push_back(it->first);
 					break;
 				}
@@ -60,8 +59,8 @@ const bool ParserManager::sourceIsAccepted(const std::string & source) const
 {
 	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		for(auto eIT = it->second.expressions.begin(); eIT != it->second.expressions.end(); ++eIT){
-			boost::cmatch what;
-			if(boost::regex_match(source.c_str(), what, eIT->second.regularExpression)){
+			std::cmatch what;
+			if(std::regex_match(source.c_str(), what, eIT->second.regularExpression)){
 				return true;
 			}
 		}
@@ -74,8 +73,8 @@ void ParserManager::sourcePossibleTypes(const std::string & source, core::TypeIn
 {
 	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		for(auto eIT = it->second.expressions.begin(); eIT != it->second.expressions.end(); ++eIT){
-			boost::cmatch what;
-			if(boost::regex_match(source.c_str(), what, eIT->second.regularExpression)){
+			std::cmatch what;
+			if(std::regex_match(source.c_str(), what, eIT->second.regularExpression)){
 				types.insert(eIT->second.types.begin(), eIT->second.types.end());
 			}
 		}
@@ -127,7 +126,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 			CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->getID()) + " not offers any known types for expression: " + it->first);
 		}else{
 			desc.description = it->second.description;
-			desc.regularExpression = boost::regex(it->first);
+			desc.regularExpression = std::regex(it->first);
 			pData.expressions.insert(Expressions::value_type(it->first, desc));
 		}
 	}

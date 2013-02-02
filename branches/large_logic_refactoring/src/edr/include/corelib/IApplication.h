@@ -19,6 +19,7 @@ namespace core {
 	class IDataHierarchyManagerReader;
 	class IPluginStorage;
 	class IServiceManager;	
+	class ISourceManager;
 	class IVisualizerManager;
 
 	//! Interfejs klasy dostarczaj¹cej pluginom ogólnych zasobów aplikacji:
@@ -48,6 +49,8 @@ namespace core {
 		virtual IPluginStorage * pluginStorage() = 0;
 		//! \return Interfejs dostêpu do serwisów
 		virtual IServiceManager * serviceManager() = 0;
+		//! \return Interfejs dostêpu do Ÿróde³
+		virtual ISourceManager * sourceManager() = 0;
 		//! \return Interfejs managera wizualizatorów
 		virtual IVisualizerManager * visualizerManager() = 0;
 	};

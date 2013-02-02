@@ -2,7 +2,7 @@
 #include "Session.h"
 #include <plugins/subject/IMotion.h>
 #include <plugins/subject/ISubject.h>
-#include <core/DataAccessors.h>
+#include <corelib/DataAccessors.h>
 
 using namespace PluginSubject;
 

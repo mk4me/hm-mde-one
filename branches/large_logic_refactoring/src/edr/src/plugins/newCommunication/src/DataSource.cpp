@@ -1,6 +1,6 @@
 #include "CommunicationPCH.h"
-#include <core/ILog.h>
-#include <core/PluginCommon.h>
+#include <corelib/ILog.h>
+#include <corelib/PluginCommon.h>
 #include "DataSource.h"
 #include <quazip/quazip.h>
 #include <quazip/quazipfile.h>

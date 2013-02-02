@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include "Config.h"
 #include "LogInitializer.h"
 #include <QtCore/QThread>
 #include <osg/Notify>
@@ -26,16 +27,17 @@ using namespace log4cxx;
 
 void QtMessageHandler(QtMsgType type, const char *msg)
 {
+	const static auto qtLogger = Logger::getLogger("qt");
     switch (type) {
         case QtDebugMsg:
-            LOG4CXX_DEBUG("qt", msg);
+            LOG4CXX_DEBUG(qtLogger, msg);
             break;
         case QtWarningMsg:
-            LOG4CXX_WARN("qt", msg);
+            LOG4CXX_WARN(qtLogger, msg);
             break;
         default:
             // pozostałe poziomy komunikatu są już tożsame errorowi
-            LOG4CXX_ERROR("qt", msg);
+            LOG4CXX_ERROR(qtLogger, msg);
             break;
     }
 }
@@ -48,24 +50,25 @@ public:
 	  //! \param message
 	  virtual void notify(osg::NotifySeverity severity, const char *message)
 	  {
+		  const static auto osgLogger = Logger::getLogger("osg");
 		  // z wiadomości usuwamy zbędne znaki (osg zawsze na koniec daje nową linię)
 		  std::string msg(message);
 		  boost::trim(msg);
 		  switch (severity) {
 		  case osg::FATAL:
-			  LOG4CXX_ERROR("osg", message);
+			  LOG4CXX_ERROR(osgLogger, message);
 			  break;
 		  case osg::WARN:
-			  LOG4CXX_WARN("osg", message);
+			  LOG4CXX_WARN(osgLogger, message);
 			  break;
 		  case osg::ALWAYS:
 		  case osg::NOTICE:
 		  case osg::INFO:
-			  LOG4CXX_INFO("osg", message);
+			  LOG4CXX_INFO(osgLogger, message);
 			  break;
 		  case osg::DEBUG_INFO:
 		  case osg::DEBUG_FP:
-			  LOG4CXX_DEBUG("osg", message);
+			  LOG4CXX_DEBUG(osgLogger, message);
 			  break;
 		  default:
 			  UTILS_ASSERT(false, "Nieznany poziom osg. Wiadomość: %s", message);
@@ -138,13 +141,13 @@ protected:
         CoreConsoleWidgetEntryPtr entry(new CoreConsoleWidgetEntry());
         int level = event->getLevel()->toInt();
         if ( level <= Level::DEBUG_INT ) {
-            entry->severity = core::LogSeverityDebug;
+            entry->severity = core::ILog::LogSeverityDebug;
         } else if ( level <= Level::INFO_INT ) {
-            entry->severity = core::LogSeverityInfo;
+            entry->severity = core::ILog::LogSeverityInfo;
         } else if ( level <= Level::WARN_INT ) {
-            entry->severity = core::LogSeverityWarning;
+            entry->severity = core::ILog::LogSeverityWarning;
         } else {
-            entry->severity = core::LogSeverityError;
+            entry->severity = core::ILog::LogSeverityError;
         }
 
         // rev - jakie flagi/ustawienia powoduja roznice? trzeba znalezc uniwersalne rozwiazanie

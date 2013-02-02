@@ -1,7 +1,7 @@
 #include "TimelinePCH.h"
 
 
-#include <core/PluginCommon.h>
+#include <corelib/PluginCommon.h>
 #include "TimelineService.h"
 #include "TimelineWidget.h"
 

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_KINEMATIC__MARKERSERIE_H__
 #define HEADER_GUARD_KINEMATIC__MARKERSERIE_H__
 
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
 #include "MarkersVisualizationScheme.h"

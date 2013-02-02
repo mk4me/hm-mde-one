@@ -54,7 +54,7 @@ UTILS_POP_WARNINGS
 #include <utils/Debug.h>
 #include <utils/Enum.h>
 
-#include <core/Plugin.h>
+#include <corelib/IPlugin.h>
 
 // przywrócenie warningów wyłączonych przez OSG
 #if defined(_MSC_VER)

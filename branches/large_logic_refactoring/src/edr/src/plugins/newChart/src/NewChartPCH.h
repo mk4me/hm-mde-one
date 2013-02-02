@@ -42,7 +42,7 @@
 #include <QtGui/QWidget>
 #include <QtGui/QMouseEvent>
 
-#include <core/Plugin.h>
-#include <core/SmartPtr.h>
+#include <corelib/IPlugin.h>
+#include <corelib/SmartPtr.h>
 
 #endif

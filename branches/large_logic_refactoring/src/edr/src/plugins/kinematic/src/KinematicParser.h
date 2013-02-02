@@ -1,8 +1,8 @@
 #ifndef __HEADER_GUARD_KINEMATIC__KINEMATICPARSER_H__
 #define __HEADER_GUARD_KINEMATIC__KINEMATICPARSER_H__
 
-#include <core/IParser.h>
-#include <core/IDataManager.h>
+#include <corelib/IParser.h>
+#include <corelib/IDataManagerReader.h>
 
 //! klasa wykorzystuje bibliotekę kinematiclib w celu wczytania danych animacji szkieletowej
 class KinematicParser : public core::IParser

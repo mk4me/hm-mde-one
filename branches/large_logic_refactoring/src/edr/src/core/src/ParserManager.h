@@ -10,7 +10,7 @@
 #define HEADER_GUARD___PARSERMANAGER_H__
 
 #include <corelib/IParserManagerReader.h>
-#include <boost/regex.hpp>
+#include <regex>
 
 namespace core {
 
@@ -21,7 +21,7 @@ private:
 	//! Struktura rozszerzająca opis wyrażenia o wyrażenie regularne uzywane do weryfikacji ścieżki źródła
 	struct ExpressionDescription : public plugin::IParser::ExpressionDescription
 	{
-		boost::regex regularExpression;
+		std::regex regularExpression;
 	};
 
 	typedef std::map<std::string, ExpressionDescription> Expressions;

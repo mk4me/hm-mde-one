@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__
 #define HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__
 
-#include <core/IService.h>
+#include <corelib/IService.h>
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/IDataFilter.h>
 

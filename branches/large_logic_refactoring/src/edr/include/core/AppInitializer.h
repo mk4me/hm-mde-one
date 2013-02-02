@@ -10,8 +10,6 @@
 #ifndef HEADER_GUARD_CORE__APPINITIALIZER_H__
 #define HEADER_GUARD_CORE__APPINITIALIZER_H__
 
-DEFINE_CORE_APPLICATION_ACCESSOR;
-
 #include <corelib/SmartPtr.h>
 #include <boost/type_traits.hpp>
 #include <coreui/CoreMainWindow.h>
@@ -43,7 +41,7 @@ public:
 			//we create application UI context and initialize everything
 			AppInitializer application(argc, argv);
 			//now it is safe to create view widget
-			FrontPageWidget widget(cleanUp());
+			FrontPageWidget widget(boost::bind(&AppInitializer::cleanUp, &application));
 			//we run application
 			return application.start(&widget);
 		}catch(...){

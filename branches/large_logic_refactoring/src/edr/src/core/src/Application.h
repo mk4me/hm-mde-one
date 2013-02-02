@@ -36,11 +36,11 @@ namespace core {
 	class Path;
 	class DataHierarchyManager;
 	class ParserManager;
-	class VisualizerManager;
-	class ServiceManager;
-	class SourceManager;
 	class LogInitializer;
 	class PluginLoader;
+	class VisualizerManager;
+	class SourceManager;
+	class ServiceManager;
 
 	class Application
 	{
@@ -102,6 +102,8 @@ namespace core {
 
 		void finalizeUI();
 	};
+
+
 }
 
 #endif	//	HEADER_GUARD___APPLICATION_H__

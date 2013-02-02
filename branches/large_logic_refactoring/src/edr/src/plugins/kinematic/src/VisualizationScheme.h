@@ -21,8 +21,8 @@ UTILS_PUSH_WARNINGS
 #include <osg/Node>
 UTILS_POP_WARNINGS
 
-#include <core/SmartPtr.h>
-#include <core/PluginCommon.h>
+#include <corelib/SmartPtr.h>
+#include <corelib/PluginCommon.h>
 #include <boost/utility.hpp>
 #include <boost/function.hpp>
 #include <kinematiclib/VskParser.h>

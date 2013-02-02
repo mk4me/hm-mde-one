@@ -2,6 +2,9 @@
 #include <core/AppInitializer.h>
 #include <utils/SynchronizationPolicies.h>
 
+DEFINE_CORE_APPLICATION_ACCESSOR;
+PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR;
+
 using namespace core;
 using namespace coreUI;
 
@@ -13,6 +16,7 @@ public:
 	{
 		cleanUp_ = boost::bind(&Application::finalizeUI, coreApplication.get());
 		__application = coreApplication.get();
+		plugin::__coreApplication = &mainViewApplication;
 		initUIContextRes = coreApplication->initUIContext(argc, argv);
 	}
 
@@ -32,6 +36,8 @@ public:
 			try{
 				//inicjalizujemy widok
 				coreApplication->initWithUI(mainWindow);
+
+				mainWindow->init(plugin::__coreApplication);
 				//ustawiamy tutaj ¿eby nadpisaæ ewentualne zmiany z widoków
 				qApp->setOrganizationName("PJWSTK");
 				try{
@@ -67,6 +73,7 @@ public:
 private:
 
 	shared_ptr<Application> coreApplication;
+	MainViewApplication mainViewApplication;
 	int initUIContextRes;
 	coreUI::CoreMainWindow::CloseUpOperations cleanUp_;
 

@@ -9,12 +9,12 @@
 #ifndef HEADER_GUARD___COMMUNICATIONDATASOURCE_H__
 #define HEADER_GUARD___COMMUNICATIONDATASOURCE_H__
 
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 #include <plugins/newCommunication/ICommunicationDataSource.h>
 #include <plugins/newCommunication/DataSourceShallowCopy.h>
 #include <webserviceslib/IFtpsConnection.h>
 #include "DataSourceUser.h"
-#include <core/ISource.h>
+#include <corelib/ISource.h>
 #include "WSConnection.h"
 
 //! Forward declarations

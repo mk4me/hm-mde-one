@@ -94,6 +94,11 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	connect(dataDeselectAll, SIGNAL(triggered()), this, SLOT(clearAllData()));
 }
 
+CoreVisualizerWidget::CoreVisualizerWidget(const CoreVisualizerWidget & visualizer)
+{
+	//TODO
+}
+
 //! Zapewnia możliwość kasowanie widgeta wizualizatora przez jego implementację.
 CoreVisualizerWidget::~CoreVisualizerWidget()
 {

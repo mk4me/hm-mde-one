@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEW_CHART__NEWCHARTSTATE_H__
 
 #include <QtCore/QObject>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 class NewChartVisualizer;
 class QwtPlot;

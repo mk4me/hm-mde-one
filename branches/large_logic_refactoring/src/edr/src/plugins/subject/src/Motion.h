@@ -11,8 +11,8 @@
 #define HEADER_GUARD_SUBJECT__MOTION_TESTETESTEH__
 
 #include <plugins/subject/IMotion.h>
-#include <core/ObjectWrapper.h>
-#include <core/TypeInfo.h>
+#include <corelib/BaseDataTypes.h>
+#include <corelib/BaseDataTypes.h>
 
 class SubjectService;
 

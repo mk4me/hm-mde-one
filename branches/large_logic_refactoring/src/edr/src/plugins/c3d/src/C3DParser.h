@@ -10,9 +10,9 @@
 #ifndef HEADER_GUARD_PLUGINC3D__C3DPARSER_H__
 #define HEADER_GUARD_PLUGINC3D__C3DPARSER_H__
 
-#include <core/SmartPtr.h>
-#include <core/Filesystem.h>
-#include <core/IParser.h>
+#include <corelib/SmartPtr.h>
+#include <corelib/Filesystem.h>
+#include <corelib/IParser.h>
 #include <c3dlib/C3DParser.h>
 
 

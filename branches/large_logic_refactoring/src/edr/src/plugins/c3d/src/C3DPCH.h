@@ -15,7 +15,6 @@
 #include <string>
 #include <iostream>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
 #include <boost/foreach.hpp>
 #include <boost/type_traits.hpp>
@@ -23,7 +22,8 @@
 #include <utils/Utils.h>
 #include <utils/Debug.h>
 
-#include <core/Plugin.h>
+#include <corelib/IPlugin.h>
+#include <corelib/SmartPtr.h>
 
 //UTILS_PUSH_WARNINGS
 

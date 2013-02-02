@@ -13,7 +13,7 @@
 #include <string>
 #include <map>
 #include <plugins/subject/ISubject.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 
 namespace communication

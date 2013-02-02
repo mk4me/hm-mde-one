@@ -31,6 +31,11 @@ ILog * PluginApplication::log()
 	return log_.get();
 }
 
+ISourceManager * PluginApplication::sourceManager()
+{
+	return getSourceManager();
+}
+
 IServiceManager * PluginApplication::serviceManager()
 {
 	return getServiceManager();
@@ -52,6 +57,58 @@ IDataHierarchyManagerReader * PluginApplication::dataHierarchyManagerReader()
 }
 
 IVisualizerManager * PluginApplication::visualizerManager()
+{
+	return getVisualizerManager();
+}
+
+
+
+IPath * MainViewApplication::pathInterface()
+{
+	return getPathInterface();
+}
+
+IDataManagerReader * MainViewApplication::dataManagerReader()
+{
+	return getMemoryDataManager();
+}
+
+IPluginStorage * MainViewApplication::pluginStorage()
+{
+	return nullptr;
+}
+
+ILog * MainViewApplication::log()
+{
+	return getLogInterface();
+}
+
+ISourceManager * MainViewApplication::sourceManager()
+{
+	return getSourceManager();
+}
+
+IServiceManager * MainViewApplication::serviceManager()
+{
+	return getServiceManager();
+}
+
+IStreamManagerReader * MainViewApplication::streamDataManagerReader()
+{
+	return getStreamDataManager();
+}
+
+IFileManagerReader * MainViewApplication::fileDataManagerReader()
+{
+	return getFileDataManager();
+}
+
+IDataHierarchyManagerReader * MainViewApplication::dataHierarchyManagerReader()
+{
+	return getDataHierarchyManager();
+}
+
+IVisualizerManager * MainViewApplication::visualizerManager()
 {
 	return getVisualizerManager();
 }

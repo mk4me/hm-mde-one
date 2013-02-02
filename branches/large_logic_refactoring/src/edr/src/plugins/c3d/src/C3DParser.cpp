@@ -5,7 +5,7 @@
 #include <vector>
 #include <boost/tuple/tuple.hpp>
 #include <c3dlib/C3DParser.h>
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 #include <plugins/c3d/C3DChannels.h>
 #include "C3DParser.h"
 #include "ForcePlatform.h"

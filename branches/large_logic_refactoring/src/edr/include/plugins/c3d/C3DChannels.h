@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD_C3D__C3DCHANNELS_H__
 #define __HEADER_GUARD_C3D__C3DCHANNELS_H__
 
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 #include <stdexcept>
 #include <utils/Debug.h>
 #include <utils/DataChannel.h>
@@ -19,7 +19,7 @@
 #include <utils/DataChannelAccessors.h>
 #include <utils/DataChannelTimers.h>
 #include <utils/PtrPolicyBoost.h>
-#include <core/ObjectWrapper.h>
+#include <corelib/BaseDataTypes.h>
 #include <c3dlib/C3DParser.h>
 
 //! interfejs do odczytu czasu timera

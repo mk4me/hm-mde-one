@@ -9,8 +9,8 @@ i web serwisy wsdl.
 #define HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
 
 #include "WSConnection.h"
-#include <core/IDataManager.h>
-#include <core/IServiceManager.h>
+#include <corelib/IDataManagerReader.h>
+#include <corelib/IServiceManager.h>
 #include <webserviceslib/Entity.h>
 #include <webserviceslib/IFtpsConnection.h>
 #include <webserviceslib/IFileStoremanWS.h>

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_C3DPLUGIN__EVENTSERIEBASE_H__
 #define HEADER_GUARD_C3DPLUGIN__EVENTSERIEBASE_H__
 
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DCollections.h>
 
 //! klasa dostarcza eventów do podstawowej serii danych.

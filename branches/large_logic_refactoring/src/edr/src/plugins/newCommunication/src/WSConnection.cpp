@@ -1,6 +1,6 @@
 #include "CommunicationPCH.h"
-#include <core/ILog.h>
-#include <core/PluginCommon.h>
+#include <corelib/ILog.h>
+#include <corelib/PluginCommon.h>
 #include "WSConnection.h"
 #include <wsdlparser/WsdlInvoker.h>
 #include <boost/type_traits.hpp>

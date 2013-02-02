@@ -10,7 +10,7 @@
 #define HEADER_GUARD___DATASOURCESHALLOWCOPY_H__
 
 #include <webserviceslib/Entity.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 namespace communication
 {

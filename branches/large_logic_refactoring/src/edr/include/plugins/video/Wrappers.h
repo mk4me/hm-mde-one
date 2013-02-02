@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD_VIDEO__WRAPPERS_H__
 #define __HEADER_GUARD_VIDEO__WRAPPERS_H__
 
-#include <core/ObjectWrapper.h>
+#include <corelib/BaseDataTypes.h>
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/osg/OsgAdapter.h>
 #include <vidlib/FFmpegVideoStream.h>

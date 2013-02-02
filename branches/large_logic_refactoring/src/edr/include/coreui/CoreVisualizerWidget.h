@@ -60,7 +60,7 @@ public:
     //! \param flags
     CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidget* parent = nullptr, Qt::WindowFlags flags = 0);        
 
-	//CoreVisualizerWidget(const CoreVisualizerWidget & visualizer);  
+	CoreVisualizerWidget(const CoreVisualizerWidget & visualizer);  
             
     //! Zapewnia możliwość kasowanie widgeta wizualizatora przez jego implementację.
     ~CoreVisualizerWidget();

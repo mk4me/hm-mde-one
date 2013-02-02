@@ -5,14 +5,7 @@
 #include <fstream>
 #include <boost/format.hpp>
 #include <boost/smart_ptr.hpp>
-// rev - hack, z jakiegoś względu nie bylo widac tej deklaracji
-//#define SQLITE_HAS_CODEC
-//#include <sqlite3.h>
-extern int sqlite3_key(
-  sqlite3 *db,                   /* Database to be rekeyed */
-  const void *pKey, int nKey     /* The key */
-);
-#include <core/PluginCommon.h>
+#include <corelib/PluginCommon.h>
 
 static const char magicKey[] = "P,j.W/s<T>k2:0\"1;2";
 

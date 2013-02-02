@@ -11,7 +11,7 @@
 #define HEADER_GUARD_SCHEME_DIALOG__SchemeDialog_H__
 
 
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <osg/Geode>
 #include <boost/tuple/tuple.hpp>
 #include "TrajectoriesDrawer.h"

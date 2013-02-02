@@ -5,7 +5,7 @@
 #include "Session.h"
 #include "Subject.h"
 #include "Motion.h"
-#include <core/PluginCommon.h>
+#include <corelib/PluginCommon.h>
 
 using namespace PluginSubject;
 

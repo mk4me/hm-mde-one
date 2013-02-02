@@ -11,7 +11,7 @@
 #define HEADER_GUARD_KINEMATIC__GRFSERIE_H__
 
 #include <list>
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <utils/DataChannel.h>
 #include <plugins/c3d/IForcePlatform.h>
 #include <osg/Geode>

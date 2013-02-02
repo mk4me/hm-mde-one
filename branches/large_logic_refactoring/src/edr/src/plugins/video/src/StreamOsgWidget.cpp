@@ -1,8 +1,8 @@
 #include "VideoPCH.h"
 #include "StreamOsgWidget.h"
 #include <vidlib/osg/VideoImageStream.h>
-#include <core/PluginCommon.h>
-#include <core/ILog.h>
+#include <corelib/PluginCommon.h>
+#include <corelib/ILog.h>
 #include <osg/TextureRectangle>
 
 ////////////////////////////////////////////////////////////////////////////////

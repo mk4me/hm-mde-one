@@ -23,8 +23,7 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_magnifier.h>
-#include <core/IVisualizer.h>
-#include <core/IObjectSource.h>
+#include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/newChart/INewChartSerie.h>

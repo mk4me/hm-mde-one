@@ -10,8 +10,7 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTSERIE_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTSERIE_H__
 
-#include <core/IVisualizer.h>
-#include <core/IObjectSource.h>
+#include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DCollections.h>
 #include <plugins/c3d/EventSerieBase.h>
 #include <plugins/newChart/INewChartSerie.h>

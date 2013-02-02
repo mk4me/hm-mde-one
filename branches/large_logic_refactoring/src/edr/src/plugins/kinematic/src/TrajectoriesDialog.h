@@ -11,7 +11,7 @@
 #define HEADER_GUARD_TRAJECTORIES_DIALOG__TRAJECTORIESDIALOG_H__
 
 
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <osg/Geode>
 #include "TrajectoriesDrawer.h"
 #include "ui_TrajectoriesDialog.h"

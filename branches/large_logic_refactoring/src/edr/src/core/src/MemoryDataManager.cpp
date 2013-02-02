@@ -363,6 +363,45 @@ void MemoryDataManager::updateData(const ObjectWrapperConstPtr & data, const Obj
 	rawUpdateData(data, newData);
 }
 
+const bool MemoryDataManager::tryAddData(const ObjectWrapperPtr & data)
+{
+	bool ret = true;
+
+	try{
+		addData(data);
+	}catch(...){
+		ret = false;
+	}
+
+	return ret;
+}
+
+const bool MemoryDataManager::tryRemoveData(const ObjectWrapperConstPtr & data)
+{
+	bool ret = true;
+
+	try{
+		removeData(data);
+	}catch(...){
+		ret = false;
+	}
+
+	return ret;
+}
+
+const bool MemoryDataManager::tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData)
+{
+	bool ret = true;
+
+	try{
+		updateData(data, newData);
+	}catch(...){
+		ret = false;
+	}
+
+	return ret;
+}
+
 IMemoryDataManager::TransactionPtr MemoryDataManager::transaction()
 {	
 	return IMemoryDataManager::TransactionPtr(new MemoryTransaction(this));

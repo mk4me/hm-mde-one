@@ -11,7 +11,7 @@
 
 #include <string>
 #include <utils/ObserverPattern.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 namespace communication
 {

@@ -21,12 +21,6 @@
 #include <utils/LeakDetection.h>
 #endif
 
-//WA¯NE!!
-//tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest tak¹ bibliotek¹ i jego resourcy musza byæ jawnie inicjalizowane
-//Nazwa resourców musi byæ unikalna poniewa¿ Qt "miesza" nazwy metod z nazwamy plików resourców które chcemy inicjalizowaæ tworz¹c unikalne statyczne funkcje na potrzeby inicjalizacji
-//link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dó³ stronki
-inline void initCoreResources() { Q_INIT_RESOURCE(CoreIcons); }
-
 DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
@@ -34,7 +28,6 @@ namespace coreUI {
 
 class UIApplication : public QApplication
 {
-	Q_OBJECT;
 public:
 	UIApplication(int & argc, char *argv[]) : QApplication(argc, argv) {}
 
@@ -87,8 +80,6 @@ int Application::initUIContext(int & argc, char *argv[])
 
 	// inicjalizacja UI, wszystkich potrzebnych zasobów
 	{
-		initCoreResources();
-
 		uiApplication_.reset(new coreUI::UIApplication(argc, argv));
 		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath()+"/plugins");
 
@@ -102,7 +93,7 @@ int Application::initUIContext(int & argc, char *argv[])
 void Application::initWithUI(CoreMainWindow * mainWindow)
 {
 	mainWindow->splashScreen();
-	mainWindow->showSplashScreenMessage(QObject::tr("Initializing application paths"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing application pathInterface"));
 	QCoreApplication::processEvents();
 	//inicjalizacja œcie¿ek aplikacji, katalogów tymczasowych itp, u¿ywane do ³adowania t³umaczeñ
 	{
@@ -112,11 +103,11 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 		//sprawdzamy czy uda³o siê wygenerowac poprawne sciezki alikacji
 		if(paths_ == nullptr){
-			throw std::runtime_error("Could not initialize application paths");
+			throw std::runtime_error("Could not initialize application pathInterface");
 		}
 	}
 
-	mainWindow->showSplashScreenMessage(QObject::tr("Initializing logger"));
+	mainWindow->showSplashScreenMessage(QObject::tr("Initializing log"));
 	QCoreApplication::processEvents();
 
 	//Mam œcie¿kê do konfiguracji loggera, nie wiem czy to OSG, Log4cxx czy pusty albo coœ jeszcze innego - initializer powinien to zrobiæ za mnie
@@ -256,9 +247,6 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	//mainWindow->init();
 
 	mainWindow->show();
-
-	//TODO
-	//widget.setWindowIcon(QPixmap(QString::fromUtf8(":/resources/icons/appIcon.png")));
 }
 
 int Application::run()
@@ -268,6 +256,9 @@ int Application::run()
 
 Application::~Application()
 {
+	//zeruje ju¿ konsole - wiêcej z niej nie bêdê korzysta³
+	logInitializer_->setConsoleWidget(nullptr);
+
 	//TODO
 	CORE_LOG_INFO("Closing core application");
 	CORE_LOG_INFO("Releasing sources");
@@ -275,7 +266,7 @@ Application::~Application()
 	CORE_LOG_INFO("Cleaning tmp files");
 	CORE_LOG_INFO("Closing core managers");
 	CORE_LOG_INFO("Releasing plugins");
-	CORE_LOG_INFO("Closing logger");
+	CORE_LOG_INFO("Closing log");
 }
 
 MemoryDataManager* Application::memoryDataManager()

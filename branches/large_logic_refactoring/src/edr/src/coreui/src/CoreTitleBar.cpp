@@ -15,14 +15,17 @@
 using namespace coreUI;
 
 CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ui(new Ui::CoreTitleBar),
-	titleLabel(new QLabel()), titleScene(new QGraphicsScene(nullptr)), titleView(new QGraphicsView()),
 	floating_(floating), leftToolbar(new QToolBar), rightToolbar(new QToolBar),
-	toogleViewAction_(new QAction(nullptr)), verticalOrientation_(false), titleVerticalMode_(Rotated)
+	toogleViewAction_(new QAction(nullptr)), verticalOrientation_(false)
 {
     ui->setupUi(this);
-	ui->buttonFloat->setChecked(floating);
+	ui->actionDock_Undock->setChecked(floating);
+	ui->buttonFloat->setDefaultAction(ui->actionDock_Undock);
+	ui->buttonClose->setDefaultAction(ui->actionClose);
 	leftToolbar->setParent(ui->leftToolbarPlaceholder);
+	leftToolbar->setVisible(false);
 	rightToolbar->setParent(ui->rightToolbarPlaceholder);
+	rightToolbar->setVisible(false);
 	ui->leftToolbarPlaceholder->layout()->addWidget(leftToolbar);
 	ui->rightToolbarPlaceholder->layout()->addWidget(rightToolbar);
 
@@ -32,16 +35,6 @@ CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ui
 	toogleViewAction_->setParent(this);
 	toogleViewAction_->setCheckable(true);
 	connect(toogleViewAction_, SIGNAL(triggered(bool)), this, SLOT(onToogleView(bool)));
-
-	//obsługa tytułu
-	//ustawiam to aby można było wrzucać tagi html - dla pionowych napisów
-	titleLabel->setTextFormat(Qt::RichText);
-	titleLabel->setParent(titleView);
-	titleProxy = titleScene->addWidget(titleLabel);
-	titleScene->setParent(titleView);
-	titleView->setScene(titleScene);
-	titleView->setParent(ui->titlePlaceholder);
-	ui->titlePlaceholder->layout()->addWidget(titleView);
 }
 
 CoreTitleBar::~CoreTitleBar()
@@ -56,9 +49,9 @@ void CoreTitleBar::setIcon(const QPixmap & icon)
 
 void CoreTitleBar::onTopLevelChanged(bool floating)
 {
-	ui->buttonFloat->blockSignal(true);
+	ui->buttonFloat->blockSignals(true);
 	ui->buttonFloat->setChecked(floating);
-	ui->buttonFloat->blockSignal(false);
+	ui->buttonFloat->blockSignals(false);
 }
 
 void CoreTitleBar::toggleFloating(bool floating)
@@ -71,12 +64,25 @@ void CoreTitleBar::toggleFloating(bool floating)
 	}
 }
 
+void CoreTitleBar::closeWindow()
+{
+	if(parentWidget() != nullptr){
+		QDockWidget *dockWidget = qobject_cast<QDockWidget*>(parentWidget());
+		if(dockWidget != nullptr) {
+			dockWidget->close();
+			return;
+		}
+	}
+
+	this->close();
+}
+
 bool CoreTitleBar::eventFilter(QObject * watched, QEvent * event)
 {
 	if(event->type() == QEvent::WindowTitleChange){
 		auto w = qobject_cast<QWidget *>(watched);
 		toogleViewAction_->setText(w->windowTitle());
-		titleLabel->setText(w->windowTitle());
+		updateTitleOrientation();
 	}
 
 	return QWidget::eventFilter(watched, event);
@@ -86,7 +92,7 @@ void CoreTitleBar::changeEvent(QEvent * event)
 {
 	if(event->type() == QEvent::WindowTitleChange){
 		toogleViewAction_->setText(windowTitle());
-		titleLabel->setText(windowTitle());		
+		updateTitleOrientation();	
 	}
 
 	QWidget::changeEvent(event);
@@ -159,45 +165,18 @@ bool CoreTitleBar::event(QEvent * event)
 //	QWidget::resizeEvent(event);
 //}
 
-void CoreTitleBar::setTitleVerticalMode(TitleTextVerticalMode titleVerticalMode)
-{
-	if(titleVerticalMode != titleVerticalMode_)
-	{
-		titleVerticalMode_ = titleVerticalMode;
-		if(verticalOrientation_ == true){
-			updateTitleOrientation();
-		}
-	}
-}
-
-CoreTitleBar::TitleTextVerticalMode CoreTitleBar::titleVerticalMode() const
-{
-	return titleVerticalMode_;
-}
-
 void CoreTitleBar::updateTitleOrientation()
 {
 	if(verticalOrientation_ == true){
-		switch(titleVerticalMode_){
-		case Rotated:
-			titleLabel->setText(windowTitle());
-			titleProxy->rotate(-45);
-			break;
-
-		case Vertical:
-			{
-				QString newTitle(windowTitle());
-				for(auto i = newTitle.size() - 2; i > 0; --i){
-					newTitle.insert(i, "<BR>");
-				}
-
-				titleLabel->setText("<html>" + newTitle + "</html>");
-			}
-			break;
+		
+		QString newTitle(windowTitle());
+		for(auto i = newTitle.size() - 1; i > 0; --i){
+			newTitle.insert(i, "<BR>");
 		}
+
+		ui->titleLabel->setText("<html>" + newTitle + "</html>");
 	}else{
-		titleProxy->rotate(0);
-		titleLabel->setText(windowTitle());
+		ui->titleLabel->setText(windowTitle());
 	}
 }
 
@@ -247,10 +226,12 @@ void CoreTitleBar::addAction(QAction * action, SideType side)
 	switch(side){
 	case Left:
 		leftToolbar->addAction(action);
+		leftToolbar->setVisible(true);
 		break;
 
 	case Right:
 		rightToolbar->addAction(action);
+		rightToolbar->setVisible(true);
 		break;
 	}
 }
@@ -261,10 +242,12 @@ QAction * CoreTitleBar::addAction(const QString & text, SideType side)
 	switch(side){
 	case Left:
 		ret = leftToolbar->addAction(text);
+		leftToolbar->setVisible(true);
 		break;
 
 	case Right:
 		ret = rightToolbar->addAction(text);
+		rightToolbar->setVisible(true);
 		break;
 	}
 
@@ -277,10 +260,12 @@ QAction * CoreTitleBar::addAction(const QIcon & icon, const QString & text, Side
 	switch(side){
 	case Left:
 		ret = leftToolbar->addAction(icon, text);
+		leftToolbar->setVisible(true);
 		break;
 
 	case Right:
 		ret = rightToolbar->addAction(icon, text);
+		rightToolbar->setVisible(true);
 		break;
 	}
 
@@ -293,10 +278,12 @@ QAction * CoreTitleBar::addAction(const QString & text, const QObject * receiver
 	switch(side){
 	case Left:
 		ret = leftToolbar->addAction(text, receiver, member);
+		leftToolbar->setVisible(true);
 		break;
 
 	case Right:
 		ret = rightToolbar->addAction(text, receiver, member);
+		rightToolbar->setVisible(true);
 		break;
 	}
 
@@ -309,10 +296,12 @@ QAction * CoreTitleBar::addAction(const QIcon & icon, const QString & text, cons
 	switch(side){
 	case Left:
 		ret = leftToolbar->addAction(icon, text, receiver, member);
+		leftToolbar->setVisible(true);
 		break;
 
 	case Right:
 		ret = rightToolbar->addAction(icon, text, receiver, member);
+		rightToolbar->setVisible(true);
 		break;
 	}
 
@@ -325,10 +314,12 @@ QAction * CoreTitleBar::addSeparator(SideType side)
 	switch(side){
 	case Left:
 		ret = leftToolbar->addSeparator();
+		leftToolbar->setVisible(true);
 		break;
 
 	case Right:
 		ret = rightToolbar->addSeparator();
+		rightToolbar->setVisible(true);
 		break;
 	}
 
@@ -341,10 +332,12 @@ QAction * CoreTitleBar::addWidget(QWidget * widget, SideType side)
 	switch(side){
 	case Left:
 		ret = leftToolbar->addWidget(widget);
+		leftToolbar->setVisible(true);
 		break;
 
 	case Right:
 		ret = rightToolbar->addWidget(widget);
+		rightToolbar->setVisible(true);
 		break;
 	}
 
@@ -362,10 +355,12 @@ void CoreTitleBar::clearSide(SideType side)
 	switch(side){
 	case Left:
 		leftToolbar->clear();
+		leftToolbar->setVisible(false);
 		break;
 
 	case Right:
 		rightToolbar->clear();
+		rightToolbar->setVisible(false);
 		break;
 	}
 }
@@ -383,10 +378,12 @@ QAction * CoreTitleBar::insertSeparator(QAction * before)
 		switch(it->second){
 		case Left:
 			ret = leftToolbar->insertSeparator(before);
+			leftToolbar->setVisible(true);
 			break;
 
 		case Right:
 			ret = rightToolbar->insertSeparator(before);
+			rightToolbar->setVisible(true);
 			break;
 		}
 	}
@@ -402,10 +399,12 @@ QAction * CoreTitleBar::insertWidget(QAction * before, QWidget * widget)
 		switch(it->second){
 		case Left:
 			ret = leftToolbar->insertWidget(before, widget);
+			leftToolbar->setVisible(true);
 			break;
 
 		case Right:
 			ret = rightToolbar->insertWidget(before, widget);
+			rightToolbar->setVisible(true);
 			break;
 		}
 	}
@@ -417,9 +416,9 @@ void CoreTitleBar::onToogleView(bool b)
 {
 	if (b == isHidden()) {
 		if (b)
-			show();
+			setVisible(true);
 		else
-			close();
+			setVisible(false);
 	}
 }
 
@@ -474,13 +473,13 @@ void CoreTitleBar::setTitlebarButtonStyle(Qt::ToolButtonStyle titlebarButtonStyl
 
 bool CoreTitleBar::isTitleVisible() const
 {
-    return titleLabel->isVisible();
+    return ui->titleLabel->isVisible();
 }
 
 
 void CoreTitleBar::setTitleVisible(bool visible)
 {
-    titleLabel->setVisible(visible);
+    ui->titleLabel->setVisible(visible);
 }
 
 
@@ -500,27 +499,40 @@ void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
 
     if(features & QDockWidget::DockWidgetMovable){
         setEnabled(true);
+		//blockSignals(true);
     }else{
         setEnabled(false);
+		//blockSignals(false);
     }
 
-	bool vertical = (features & QDockWidget::DockWidgetVerticalTitleBar;)
+	bool vertical = (features & QDockWidget::DockWidgetVerticalTitleBar);
 	if(vertical != verticalOrientation_) {
 		verticalOrientation_ = vertical;
-		// pobieramy wszystkie widgety - ikonę, tytuł, lewy toolbar, prawy toolbar i buttony
-		auto widgets = layout()->children();
+
 		// będziemy je dodawać do nowego layoutu, stary usuniemy
-		QLayout * newLayout = nullptr;
+		QBoxLayout * newLayout = nullptr;
 		if(verticalOrientation_ == true){
 			// I need to be vertical
-			newLayout = new QVBoxLayout(this);
+			newLayout = new QVBoxLayout();
+			ui->titleLabel->setAlignment(Qt::AlignCenter);
 		} else {
 			// I need to be horizontal
-			newLayout = new QHBoxLayout(this);
+			newLayout = new QHBoxLayout();
+			ui->titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 		}
 
-		for(int i = widgets.size(); i > 0; --i){
-			newLayout->addItem(layout()->takeAt(i));
+		// pobieramy wszystkie widgety - ikonę, tytuł, lewy toolbar, prawy toolbar i button		
+		while(layout()->isEmpty() == false){
+			auto item = layout()->takeAt(layout()->count()-1);
+			if(item->widget() != nullptr){
+				newLayout->addWidget(item->widget());
+			}else if(item->spacerItem()){
+				newLayout->addStretch();
+			}else {
+				newLayout->addLayout(item->layout());
+			}
+
+			delete item;
 		}
 
 		delete layout();
@@ -544,13 +556,13 @@ CoreTitleBar * CoreTitleBar::supplyWithCoreTitleBar(QDockWidget * dockWidget)
     auto titleBar = new CoreTitleBar(dockWidget->isFloating(), dockWidget);
     dockWidget->setTitleBarWidget(titleBar);
 	titleBar->setWindowTitle(dockWidget->windowTitle());
+	titleBar->refreshFeatures(dockWidget->features());
+
 
 	// obserwujemy zmiany tytulu okna
 	dockWidget->installEventFilter(titleBar);
 	//obserwujemy zmiany cech okna
     QObject::connect(dockWidget, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), titleBar, SLOT(refreshFeatures(QDockWidget::DockWidgetFeatures)));
-	//akcje na zamkniecie okna
-    QObject::connect(titleBar->ui->buttonClose, SIGNAL(triggered()), dockWidget, SLOT(close()));
 	//zmiana dokowania po stronie dockWidgeta z pominięciem titlebara
 	QObject::connect(dockWidget, SIGNAL(topLevelChanged(bool)), titleBar, SLOT(onTopLevelChanged(bool)));
 

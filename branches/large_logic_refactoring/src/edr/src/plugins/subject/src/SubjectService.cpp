@@ -4,7 +4,7 @@
 #include <limits>
 #include <OpenThreads/Mutex>
 #include <OpenThreads/ScopedLock>
-#include <core/ObjectWrapper.h>
+#include <corelib/BaseDataTypes.h>
 #include "Session.h"
 #include "Subject.h"
 #include "Motion.h"

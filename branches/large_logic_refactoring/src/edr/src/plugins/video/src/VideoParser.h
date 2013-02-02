@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD_VIDEO__VIDEOPARSER_H__
 #define __HEADER_GUARD_VIDEO__VIDEOPARSER_H__
 
-#include <core/IParser.h>
+#include <corelib/IParser.h>
 
 class VideoParser : public plugin::IParser
 {

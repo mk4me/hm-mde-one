@@ -1,1 +1,1 @@
-#include <core/Plugin.h>
+#include <corelib/IPlugin.h>

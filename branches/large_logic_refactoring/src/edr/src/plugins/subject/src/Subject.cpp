@@ -1,7 +1,10 @@
 #include "SubjectPCH.h"
 #include "Subject.h"
-#include <core/DataAccessors.h>
+#include <corelib/DataAccessors.h>
 #include <plugins/subject/ISession.h>
+
+using namespace core;
+using namespace plugin;
 
 PluginSubject::SubjectID Subject::globalID = 0;
 
@@ -48,7 +51,7 @@ void Subject::getSessions(core::ConstObjectsList & sessions) const
 {
 	static const core::TypeInfo type = core::TypeInfo(typeid(PluginSubject::ISession));
     core::ConstObjectsList toFilter;
-    core::getDataManagerReader()->getObjects(toFilter, type, false);
+    plugin::getDataManagerReader()->getObjects(toFilter, type, false);
 
     for(auto it = toFilter.begin(); it != toFilter.end(); ++it){
 		PluginSubject::SessionConstPtr session;

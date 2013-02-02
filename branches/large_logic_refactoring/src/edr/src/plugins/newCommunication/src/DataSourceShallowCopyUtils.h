@@ -10,7 +10,7 @@
 #define HEADER_GUARD___DATASOURCESHALLOWCOPYUTILS_H__
 
 #include <plugins/newCommunication/DataSourceShallowCopy.h>
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 
 //! Klasa pomagająca tworzyć/zarządzać płytkimi kopiami danych
 class DataSourceShallowCopyUtils

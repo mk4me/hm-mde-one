@@ -11,7 +11,7 @@
 
 #include <QtCore/QObject>
 
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <osg/Geode>
 #include <osgGA/OrbitManipulator>
 #include <osgManipulator/Dragger>

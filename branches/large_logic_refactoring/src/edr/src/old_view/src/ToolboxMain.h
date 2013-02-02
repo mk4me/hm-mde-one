@@ -9,6 +9,10 @@ namespace Ui {
 	class EDRMain;
 }
 
+namespace coreUI {
+	class CoreDockWidget;
+}
+
 class ToolboxMain : public coreUI::CoreMainWindow
 {
 	Q_OBJECT
@@ -41,9 +45,11 @@ private:
 	void populateVisualizersMenu( QMenu* menu );
 
 	void initializeUI();
+
+	static coreUI::CoreDockWidget * embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);
 	
 private:
-
+	QMainWindow * visualizersPlaceholder;
 	Ui::EDRMain * ui;
 };
 

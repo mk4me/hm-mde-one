@@ -768,3 +768,13 @@ void FileDataManager::getObjects(const Filesystem::Path & file, ObjectWrapperCol
 	ScopedLock lock(sync);
 	rawGetObjects(file, objects);
 }
+
+FileDataManager::ParserPtr FileDataManager::createSourceParser(plugin::IParser * parser, const Filesystem::Path & path)
+{
+	return ParserPtr(new FileParser(parser, path));
+}
+
+FileDataManager::ParserPtr FileDataManager::createStreamParser(plugin::IParser * parser, const Filesystem::Path & path)
+{
+	return ParserPtr(new StreameFileParser(parser, path));
+}

@@ -30,7 +30,7 @@ namespace vidlib {
 
 }
 
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <plugins/video/Wrappers.h>
 
 //! Wizualizator wykresów.

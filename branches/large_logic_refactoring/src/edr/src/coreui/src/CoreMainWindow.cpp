@@ -11,6 +11,12 @@
 
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR
 
+//WA¯NE!!
+//tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest tak¹ bibliotek¹ i jego resourcy musza byæ jawnie inicjalizowane
+//Nazwa resourców musi byæ unikalna poniewa¿ Qt "miesza" nazwy metod z nazwamy plików resourców które chcemy inicjalizowaæ tworz¹c unikalne statyczne funkcje na potrzeby inicjalizacji
+//link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dó³ stronki
+inline void initCoreResources() { Q_INIT_RESOURCE(CoreIcons); }
+
 using namespace coreUI;
 using namespace core;
 
@@ -68,6 +74,7 @@ bool CoreMainWindow::trySetStyleByName( const std::string& styleName )
 CoreMainWindow::CoreMainWindow(const CloseUpOperations & closeUpOperations): QMainWindow(nullptr), splashScreen_(nullptr),
 	widgetConsole(new CoreConsoleWidget()), closeUpOperations_(closeUpOperations)
 {
+	initCoreResources();
 	//TODO
 	//szukaj styli qt
 	//temp = Filesystem::listFiles(resourcesPath, true, ".qss");

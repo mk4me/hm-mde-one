@@ -36,7 +36,7 @@ namespace coreUI {
 
 	private:
 
-		virtual CoreSplitableDockWidget clone() const
+		virtual CoreSplitableDockWidget * clone() const
 		{
 			CoreSplitableDockWidgetT * newDockWidget = new CoreSplitableDockWidgetT(windowTitle(), nullptr, windowFlags());
 
@@ -56,6 +56,7 @@ namespace coreUI {
 
 		UTILS_STATIC_ASSERT((boost::is_base_of<QWidget, Widget>::value), "Widget class should inherit from QWidget");
 
+	public:
 		static QWidget * cloneWidget(QWidget * widget)
 		{
 			Widget * w = qobject_cast<Widget*>(widget);

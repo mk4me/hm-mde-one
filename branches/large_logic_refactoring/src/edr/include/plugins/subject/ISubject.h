@@ -10,7 +10,7 @@
 #define HEADER_GUARD___ISUBJECT_H__
 
 #include <plugins/subject/Types.h>
-#include <core/ObjectWrapper.h>
+#include <corelib/BaseDataTypes.h>
 
 namespace PluginSubject {
 

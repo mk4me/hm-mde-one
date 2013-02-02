@@ -16,7 +16,7 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QTextEdit>
 #include <QtCore/QDateTime>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 class NotesWidget : public QFrame, private Ui::NotesWidget
 {

@@ -16,10 +16,6 @@
 
 class QToolBar;
 class QAction;
-class QLabel;
-class QGraphicsScene;
-class QGraphicsProxyWidget;
-class QGraphicsView;
 class QDockWidget;
 
 namespace Ui {
@@ -40,12 +36,6 @@ class COREUI_EXPORT CoreTitleBar : public QWidget
 public:
 	//! Typ opisuj¹cy stronê do której ma trafiæ dana akcja
 	enum SideType {Left, Right};
-	//! Typ opisuj¹cy sposób realizacji obrotu tytu³u okna
-	enum TitleTextVerticalMode{
-		Rotated,	//! Obrócony tytu³ o -45 stopnii - trzeba go czytaæ bokiem
-		Vertical	//! Tytu³ napisany w pionie
-	};
-
 	//! Interfejs akcji chc¹cych potencjalnie dzia³aæ z corowym titlebarem
 	class ICoreTitleBarAction
 	{
@@ -70,8 +60,6 @@ public:
 
 	virtual bool eventFilter(QObject * watched, QEvent * event);
 
-	void setTitleVerticalMode(TitleTextVerticalMode titleVerticalMode);
-	TitleTextVerticalMode titleVerticalMode() const;
 	QAction * actionAt(const QPoint & p) const;
 	QAction * actionAt(int x, int y) const;
 	void addAction(QAction * action);
@@ -115,6 +103,8 @@ private slots:
 
 	void onTopLevelChanged(bool floating);
 
+	void closeWindow();
+
 signals:
 	void actionTriggered(QAction * action, SideType side);
 	void iconSizeChanged(const QSize & iconSize);
@@ -134,15 +124,10 @@ private:
 private:
 	QAction * toogleViewAction_;
 	Ui::CoreTitleBar * ui;
-	QLabel * titleLabel;
-	QGraphicsScene * titleScene;
-	QGraphicsProxyWidget * titleProxy;
-	QGraphicsView * titleView;
     ObjectsSides objectsSides_;
 	QToolBar * leftToolbar;
 	QToolBar * rightToolbar;
 	bool verticalOrientation_;
-	TitleTextVerticalMode titleVerticalMode_;
 	bool floating_;
 };
 
