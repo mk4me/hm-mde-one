@@ -14,22 +14,22 @@ VisualizerSerieTimelineChannel::~VisualizerSerieTimelineChannel()
 
 void VisualizerSerieTimelineChannel::setTime(double time)
 {
-    serie->timeSerieFeatures()->setTime(time);
+    serie->timeAvareSerieFeatures()->setTime(time);
 }
 
 double VisualizerSerieTimelineChannel::getLength() const
 {
-    return serie->timeSerieFeatures()->getLength();
+    return serie->timeAvareSerieFeatures()->getLength();
 }
 
 void VisualizerSerieTimelineChannel::offsetChanged(double newOffset)
 {
-	serie->timeSerieFeatures()->setOffset(newOffset);
+	serie->timeAvareSerieFeatures()->setOffset(newOffset);
 }
 
 void VisualizerSerieTimelineChannel::scaleChanged(double newScale)
 {
-	serie->timeSerieFeatures()->setScale(newScale);
+	serie->timeAvareSerieFeatures()->setScale(newScale);
 }
 
 VisualizerSerieTimelineChannel * VisualizerSerieTimelineChannel::clone() const

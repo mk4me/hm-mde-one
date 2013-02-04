@@ -26,10 +26,6 @@
 #include <corelib/IVisualizer.h>
 #include <utils/Export.h>
 
-////////////////////////////////////////////////////////////////////////////////
-namespace plugin {
-////////////////////////////////////////////////////////////////////////////////
-
 //! Deklaracja wersji nagłówka w Pluginie
 //! NIEZWYKLE ISTOTNE - przy każdej zmianie w Pluginach wersja ta będzie się zmieniać, pluginy nieprzebudowane z nowym nagłowiekm
 //! nie będą ładowane do aplikacji!!
@@ -66,26 +62,26 @@ namespace plugin {
 //! \param id ID pluginu.
 #define CORE_PLUGIN_BEGIN(name, id)                                     \
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR                                 \
-extern "C" UTILS_EXPORT unsigned CORE_GET_PLUGIN_INTERFACE_VERSION_FUNCTION_NAME() \
+extern "C" UTILS_DECL_EXPORT unsigned CORE_GET_PLUGIN_INTERFACE_VERSION_FUNCTION_NAME() \
 {                                                                       \
     return CORE_PLUGIN_INTERFACE_VERSION;                               \
 }                                                                       \
-extern "C" UTILS_EXPORT unsigned CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME() \
+extern "C" UTILS_DECL_EXPORT unsigned CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME() \
 {                                                                       \
     return CORE_PLUGIN_BUILD_TYPE;                                      \
 }                                                                       \
-extern "C" UTILS_EXPORT void CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME(  \
+extern "C" UTILS_DECL_EXPORT void CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME(  \
     int* boostVersion, int* qtVersion, int* stlVersion)                 \
 {                                                                       \
     *boostVersion = BOOST_VERSION;                                      \
     *qtVersion = QT_VERSION;                                            \
     *stlVersion = CORE_CPPLIB_VER;                                      \
 }                                                                       \
-extern "C" UTILS_EXPORT void CORE_SET_PLUGIN_ID_FUNCTION_NAME(core::IPlugin * plugin) {	\
+extern "C" UTILS_DECL_EXPORT void CORE_SET_PLUGIN_ID_FUNCTION_NAME(core::IPlugin * plugin) {	\
 	plugin->setName(name);												\
 	plugin->setID(id);													\
 }																		\
-extern "C" UTILS_EXPORT void CORE_FILL_PLUGIN_FUNCTION_NAME(core::IPlugin * plugin, \
+extern "C" UTILS_DECL_EXPORT void CORE_FILL_PLUGIN_FUNCTION_NAME(core::IPlugin * plugin, \
 	core::IApplication* coreApplication) \
 {                                                                       \
     plugin::__coreApplication = coreApplication;                                       \
@@ -104,19 +100,23 @@ extern "C" UTILS_EXPORT void CORE_FILL_PLUGIN_FUNCTION_NAME(core::IPlugin * plug
 
 //! Dodaje parser zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_PARSER(className)                               \
-    plugin->addParser( plugin::IParserPtr(new className) );
+    plugin->addParserPrototype( plugin::IParserPtr(new className) );
 
 //! Dodaje wizualizator zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
-    plugin->addVisualizer( plugin::IVisualizerPtr(new className) );
+    plugin->addVisualizerPrototype( plugin::IVisualizerPtr(new className) );
 
 //! Dodanie nowego typu domenowego poprzez utworzenie dla niego ObjectWrapperFactory
 #define CORE_PLUGIN_ADD_OBJECT_WRAPPER(className)               \
     plugin->addObjectWrapperPrototype<className>();
 
 
+////////////////////////////////////////////////////////////////////////////////
+namespace core {
+	////////////////////////////////////////////////////////////////////////////////
+
 //! Interfejs pluginu przez który dostarczane są usługi (serwisy) i prototypy elementów przetwarzających dane
-class IPlugin : public IIdentifiable, public IDescription
+class IPlugin : public plugin::IIdentifiable, public plugin::IDescription
 {
 public:
 	//! \param name Nazwa pluginu
@@ -146,7 +146,7 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace plugin
+} // namespace core
 ////////////////////////////////////////////////////////////////////////////////
 
 

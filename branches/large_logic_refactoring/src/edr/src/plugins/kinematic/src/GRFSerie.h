@@ -41,12 +41,16 @@ public:
 	//! \param name ustawiana nazwa 
 	virtual void setName(const std::string & name);
     //! \return nazwa serii
-    virtual const std::string & getName() const;
+    virtual const std::string getName() const;
 	//! Ustawienie danych, inicjalizacja 
 	//! \param data dane typu GRFCollection
-	virtual void setData(const core::ObjectWrapperConstPtr & data);
+	virtual void setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+
+	virtual void update();
     //! \return ustawione dane
     virtual const core::ObjectWrapperConstPtr & getData() const;
+
+	virtual const utils::TypeInfo & getRequestedDataType() const;
 	//! \return długość kanału w sekundach
 	virtual double getLength() const;
 	//! Czas zawiera się między 0 a getLength()
@@ -166,6 +170,8 @@ private:
     static osg::ref_ptr<osg::Texture2D> texture2;
     //! wrapper przekazany serii
     core::ObjectWrapperConstPtr data;
+
+	utils::TypeInfo requestedType;
     //! nazwa serii
     std::string name;
     //! mapa, która ułatwia pobranie geometrii na postawie platformy z C3D

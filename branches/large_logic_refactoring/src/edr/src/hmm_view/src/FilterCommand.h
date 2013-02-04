@@ -122,14 +122,12 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
                     static int number = 0;
                     // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
                     std::string suffix = boost::lexical_cast<std::string>(number++);
-					//TODO
-					//metadane
-					/*wrapperX->setName("X_" + suffix);
-					wrapperX->setSource("X_" + suffix);
-					wrapperY->setName("Y_" + suffix);
-					wrapperY->setSource("Y_" + suffix);
-					wrapperZ->setName("Z_" + suffix);
-					wrapperZ->setSource("Z_" + suffix);*/
+					(*wrapperX)["core/name"] = "X_" + suffix;
+					(*wrapperX)["core/source"] = "X_" + suffix;
+					(*wrapperY)["core/name"] = "Y_" + suffix;
+					(*wrapperY)["core/source"] = "Y_" + suffix;
+					(*wrapperZ)["core/name"] = "Z_" + suffix;
+					(*wrapperZ)["core/source"] = "Z_" + suffix;
 
                     xWrappers.push_back(wrapperX);
                     yWrappers.push_back(wrapperY);

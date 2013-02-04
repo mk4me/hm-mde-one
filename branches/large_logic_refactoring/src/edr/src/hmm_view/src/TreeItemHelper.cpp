@@ -215,23 +215,17 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     std::string suffix = boost::lexical_cast<std::string>(number++);
     std::string p = path.toStdString();
 
-	//TODO
-	//metadata
-    //wrapperX->setName  ("X_" + suffix);
-    //wrapperY->setName  ("Y_" + suffix);
-    //wrapperZ->setName  ("Z_" + suffix);
-    //wrapperX->setSource(p + "/X_" + suffix);
-    //wrapperY->setSource(p + "/Y_" + suffix);
-    //wrapperZ->setSource(p + "/Z_" + suffix);
+	(*wrapperX)["core/name"] = "X_" + suffix;
+	(*wrapperY)["core/name"] = "Y_" + suffix;
+	(*wrapperZ)["core/name"] = "Z_" + suffix;
+	(*wrapperX)["core/source"] = p + "/X_" + suffix;
+	(*wrapperY)["core/source"] = p + "/Y_" + suffix;
+	(*wrapperZ)["core/source"] = p + "/Z_" + suffix;
     visualizer->getOrCreateWidget();
 
-	/*auto serieX = visualizer->createSerie(wrapperX, wrapperX->getName());
-	auto serieY = visualizer->createSerie(wrapperY, wrapperY->getName());
-	auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getName());*/
-
-	auto serieX = visualizer->createSerie(wrapperX, "UNKNOWN");
-	auto serieY = visualizer->createSerie(wrapperY, "UNKNOWN");
-	auto serieZ = visualizer->createSerie(wrapperZ, "UNKNOWN");
+	auto serieX = visualizer->createSerie(wrapperX, "X_" + suffix);
+	auto serieY = visualizer->createSerie(wrapperY, "Y_" + suffix);
+	auto serieZ = visualizer->createSerie(wrapperZ, "Z_" + suffix);
 
     INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
     INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY.get());
@@ -263,10 +257,9 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
     int count = wrappers.size();
     for (int i = 0; i < count; ++i) {
         auto wrapper = wrappers[i].wrapper;
-		//TODO
-		//metadane
-        //auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
-		auto serieX = visualizer->createSerie(wrapper, "UNKNOWN");
+		std::string source;
+		wrapper->tryGetMeta("core/source", source);
+        auto serieX = visualizer->createSerie(wrapper, source);
         if (wrappers[i].events) {
             EventSerieBasePtr eventSerie = core::dynamic_pointer_cast<EventSerieBase>(serieX);
             eventSerie->setEvents(wrappers[i].events);

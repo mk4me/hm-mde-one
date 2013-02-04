@@ -25,6 +25,8 @@ namespace coreUI{
 
 	private:
 		QComboBox * visualizerSwitch;
+
+		//TODO
 		CoreWidgetAction * switchVisualizerAction;
 
 	private:

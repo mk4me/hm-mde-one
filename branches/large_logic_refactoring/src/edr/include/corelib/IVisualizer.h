@@ -45,18 +45,24 @@ namespace plugin
         };
 		//! Seria o charakterze czasowym - pozwala manipulować czasem w serii danych
 		//! setTime może być wołane poza watkiem UI - trzeba to uwzględniać przy update
-        class ITimeSerieFeatures
+        class ITimeAvareSerieFeatures
         {
         public:
 			//! \param time Aktualny czas serii - najprawdopodobniej timeline będzie go ustawiał
             virtual void setTime(double time) = 0;
 			//! \return Czas trwania serii
             virtual double getLength() const = 0;
-			//! \param offset Przesunięcie serii względem aktualnego stanu (pierwsze względem 0)
-            virtual void setOffset(double offset) = 0;
-			//! \param scale Zmienia skalę serii danych
-            virtual void setScale(double scale) = 0;
         };
+
+		//! Dla serii o charakterze czasowym - czy można edytować skalę czasu i offset
+		class ITimeEditableSerieFeatures
+		{
+		public:
+			//! \param offset Przesunięcie serii względem aktualnego stanu (pierwsze względem 0)
+			virtual void setOffset(double offset) = 0;
+			//! \param scale Zmienia skalę serii danych
+			virtual void setScale(double scale) = 0;
+		};
 
     public:
 		//! Przeładowana

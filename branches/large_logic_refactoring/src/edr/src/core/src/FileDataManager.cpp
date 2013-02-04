@@ -410,8 +410,6 @@ private:
 
 void FileDataManager::initializeDataWithParser(ObjectWrapper & object, const ParserPtr & parser)
 {
-	//TODO
-	//synchronizacja przy inicjalizaci po stronie ObjectWrappera!!
 	ScopedLock lock(sync);
 	if(parser->isUsed() == false){
 		if(parser->tryParse() == false){
@@ -424,8 +422,6 @@ void FileDataManager::initializeDataWithParser(ObjectWrapper & object, const Par
 
 void FileDataManager::initializeDataWithExternalInitializer(ObjectWrapper & object, const ObjectWrapper::LazyInitializer & li, const ParserPtr & parser)
 {
-	//TODO
-	//synchronizacja przy inicjalizaci po stronie ObjectWrappera!!
 	ScopedLock lock(sync);
 	try{
 		li(object);

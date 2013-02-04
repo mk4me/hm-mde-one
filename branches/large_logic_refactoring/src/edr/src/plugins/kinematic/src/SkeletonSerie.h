@@ -40,12 +40,16 @@ public:
     //! \param name nowa nazwa
     virtual void setName(const std::string & name);
     //! \return nazwa serii
-    virtual const std::string & getName() const;
+    virtual const std::string getName() const;
     //! Ustawienie danych, inicjalizacja 
     //! \param data dane typu JointAnglesCollection
-	virtual void setData(const core::ObjectWrapperConstPtr & data);
+	virtual void setData(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
     //! \return ustawione dane
     virtual const core::ObjectWrapperConstPtr & getData() const;
+
+	virtual void update();
+
+	virtual const utils::TypeInfo & getRequestedDataType() const;
 	//! \return długość kanału w sekundach
 	virtual double getLength() const;
 	//! Czas zawiera się między 0 a getLength()
@@ -73,6 +77,8 @@ private:
 	SchemeDrawerContainerPtr skeletonDrawers;
     //! wrapper przekazany serii
     core::ObjectWrapperConstPtr data;
+
+	utils::TypeInfo requestedType;
     //! nazwa serii
     std::string name;
     //! główny wezej animacji

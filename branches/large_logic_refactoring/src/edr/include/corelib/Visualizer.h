@@ -44,7 +44,7 @@ public:
 		//! \param visualizer Wizualizator który stworzył ta serię
 		//! \param serieBase Faktyczna seria zaimplementowana przez opakowany wizualizator
 		//! \param timeSerieFeatures Możliwości serii pod kątem zarządzania czasem - nie muszą być implementowane -> wtedy nullptr
-		VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase, plugin::IVisualizer::ITimeSerieFeatures * timeSerieFeatures);
+		VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase);
 		//! Prywatny destruktor - tylko wizualizator może niszczyć serie danych
 		~VisualizerSerie();
 
@@ -52,7 +52,9 @@ public:
 		//! \return Podstawowy interfejs serii danych
 		plugin::IVisualizer::ISerie * serie() const;
 		//! \return Czasowy interfejs serii danych - nie musi być implementowany przez serię, wtedy nullptr
-		plugin::IVisualizer::ITimeSerieFeatures * timeSerieFeatures() const;
+		plugin::IVisualizer::ITimeAvareSerieFeatures * timeAvareSerieFeatures() const;
+		//! \return Czasowy interfejs serii pozwalajacy zmieniać jej skalę czasu i offset
+		plugin::IVisualizer::ITimeEditableSerieFeatures * timeEditableSerieFeatures() const;
 
 	private:
 		//! Wizualizator który utworzył tę serię danych
@@ -60,7 +62,9 @@ public:
 		//! Podstawowy interfejs serii danych
 		plugin::IVisualizer::ISerie * serie_;
 		//! Czasowy interfejs serii danych - nie musi być implementowany przez serię, wtedy nullptr
-		plugin::IVisualizer::ITimeSerieFeatures * timeSerieFeatures_;
+		plugin::IVisualizer::ITimeAvareSerieFeatures * timeAvareSerieFeatures_;
+		//! Czasowy interfejs serii danych obsługujących skalowanie i zmianę offsetu
+		plugin::IVisualizer::ITimeEditableSerieFeatures * timeEditableSerieFeatures_;
 	};
 
 	//! Interfejs źródła danych wizualizatora

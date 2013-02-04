@@ -30,22 +30,12 @@ class COREUI_EXPORT CoreVisualizerWidget : public QWidget
     Q_OBJECT
 
 private:
-	//! Akcja odpowiedzialna za wybór danych aktualnego wizualizatora (QMenu) -> dataSelect
-	CoreWidgetAction * dataSelectAction;
-	//! Akcja odpowiedzialna za wybór danych aktualnego wizualizatora (QMenu) -> dataSelect
-	CoreWidgetAction * activeDataSelectAction;
-	//! Akcja odpowiedzialna za screenshot
-	CoreAction * screenshotAction;
-
-	//! Akcja odpowiedzialna za przełanczanie pomiędzy aktywnym obserwowaniem dataManagera w przyapdku zmian danych związanych z seriami danych
-	CoreAction * liveObserveDataAction;
-
+	//! Wybór aktywnej serii
+	QComboBox * activeSerieSwitch;
 	//! Akcja czyszcząca wszystkie dane aktualnego wizualizatora
 	QAction * dataDeselectAll;
 	//! Zbiór typów danych wspieranych przez wizualizator
 	core::TypeInfoSet supportedDataTypes;
-	//! Zmiana aktywnej serii danych
-	QComboBox * activeSerieSwitch;
     //! Bieżący wizualizator.
     core::VisualizerPtr visualizer_;
 	//! Użyte indeksy dla danych bez opisu
@@ -99,6 +89,9 @@ private slots:
 
     //! Zmiana aktywnej serii
     void serieSelected(int idx);
+
+	//! Czy na bieżąco obserwować zmiany i aktualizować
+	void onLiveObserveChange(bool observe);
 };
 
 }

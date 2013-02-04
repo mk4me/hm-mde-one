@@ -22,10 +22,10 @@ visualizer(visualizer),
 void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
     this->data = data;
-	//TODO
-	//metadane
-    //curve = new NewChartCurve(data->getName().c_str());
-	curve = new NewChartCurve("UNKNOWN");
+	std::string name;
+	data->tryGetMeta("core/name", name);
+
+    curve = new NewChartCurve(name.c_str());	
     reader = data->get();
     accessor.reset(new ScalarContiniousTimeAccessor(reader));
     ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));

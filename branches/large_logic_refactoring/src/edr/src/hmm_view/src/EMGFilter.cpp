@@ -376,10 +376,8 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 
     core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
     wrapperX->set(core::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
-	//TODO
-	//metadane
-    //wrapperX->setName  (wrapper->getName());
-    //wrapperX->setSource(wrapper->getSource());
+	(*wrapperX)["core/name"] = wrapper->getName();
+    (*wrapperX)["core/source"] = wrapper->getSource();
     visualizer->getOrCreateWidget();
 
     //series.push_back(core::dynamic_pointer_cast<core::IVisualizer::ITimeSerie>(visualizer->createSerie(wrapperX, wrapperX->getName())));

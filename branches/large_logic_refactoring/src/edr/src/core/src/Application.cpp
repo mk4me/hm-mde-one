@@ -243,8 +243,6 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 	mainWindow->showSplashScreenMessage(QObject::tr("Initializing main view"));
 	QCoreApplication::processEvents();
-	//TODO
-	//mainWindow->init();
 
 	mainWindow->show();
 }
@@ -257,16 +255,34 @@ int Application::run()
 Application::~Application()
 {
 	//zeruje ju¿ konsole - wiêcej z niej nie bêdê korzysta³
-	logInitializer_->setConsoleWidget(nullptr);
-
-	//TODO
 	CORE_LOG_INFO("Closing core application");
+
 	CORE_LOG_INFO("Releasing sources");
-	CORE_LOG_INFO("Stopping services");
-	CORE_LOG_INFO("Cleaning tmp files");
-	CORE_LOG_INFO("Closing core managers");
+	sourceManager_.reset();
+	CORE_LOG_INFO("Releasing services");
+	serviceManager_.reset();
+
+	CORE_LOG_INFO("Releasing core managers");
+	CORE_LOG_INFO("Releasing stream data manager");
+	streamDataManager_.reset();
+	CORE_LOG_INFO("Releasing file data manager");
+	fileDataManager_.reset();
+	CORE_LOG_INFO("Releasing memory data manager");
+	memoryDataManager_.reset();
+
 	CORE_LOG_INFO("Releasing plugins");
-	CORE_LOG_INFO("Closing log");
+
+	CORE_LOG_INFO("Cleaning tmp files");
+	Filesystem::deleteDirectory(getPathInterface()->getTmpPath());
+
+	CORE_LOG_INFO("Releasing logs - reseting to default loggers");
+	logInitializer_.reset();
+
+	CORE_LOG_INFO("Releasing log prototype");
+	loggerPrototype_.reset();
+
+	CORE_LOG_INFO("Releasing core log");
+	logger_.reset();
 }
 
 MemoryDataManager* Application::memoryDataManager()
@@ -466,12 +482,6 @@ void Application::safeRegisterVisualizer(const plugin::IVisualizerPtr & visualiz
 	}
 }
 
-//void Application::registerCoreDomainTypes()
-//{
-//	safeRegisterObjectWrapperPrototype(ObjectWrapper::create<int>());
-//	safeRegisterObjectWrapperPrototype(ObjectWrapper::create<double>());
-//}
-
 void Application::unpackPlugin(CoreMainWindow * mainWindow, const core::PluginPtr & plugin)
 {
 	auto message = QObject::tr("Loading plugin %1 content: %2").arg(QString::fromStdString(plugin->getName()));
@@ -515,7 +525,13 @@ void Application::unpackPlugin(CoreMainWindow * mainWindow, const core::PluginPt
 void Application::finalizeUI(){
 
 	try{
+		CORE_LOG_INFO("Closing log widget console");
+		logInitializer_->setConsoleWidget(nullptr);
+		
+		CORE_LOG_INFO("Finalizing sources");
 		sourceManager_->finalizeSources();
+
+		CORE_LOG_INFO("Finalizing services");
 		serviceManager_->finalizeServices();
 	}catch(std::exception & e){
 		CORE_LOG_ERROR("Error while closing UI during sources and services finalization: " << e.what());

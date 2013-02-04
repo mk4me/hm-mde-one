@@ -43,18 +43,18 @@ kinematic::VskParserConstPtr Vsk::get( MarkersCount count )
     {
     case MarkersCount16:
         if (!Count16->isLoaded()) {
-            Count16->parse(core::getResourcePath("trial/CZD.vsk").string());
+            Count16->parse(plugin::getResourcePath("trial/CZD.vsk").string());
         }
         return Count16;
     case MarkersCount39:
         if (!Count39->isLoaded()) {
-            Count39->parse(core::getResourcePath("trial/M39.vsk").string());
+            Count39->parse(plugin::getResourcePath("trial/M39.vsk").string());
         }
         return Count39;
 
     case MarkersCount53:
         if (!Count53->isLoaded()) {
-            Count53->parse(core::getResourcePath("trial/M53.vsk").string());
+            Count53->parse(plugin::getResourcePath("trial/M53.vsk").string());
         }
         return Count53;
 

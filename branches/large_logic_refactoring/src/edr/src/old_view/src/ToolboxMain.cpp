@@ -41,7 +41,6 @@ ToolboxMain::ToolboxMain(const CloseUpOperations & closeUpOperations) : CoreMain
 {
 	ui->setupUi(this);
 	qApp->setApplicationName("EDR");
-	trySetStyleByName("dark");
 	QString style = this->styleSheet();
 	setDockOptions( AllowNestedDocks | AllowTabbedDocks );
 	setTabPosition( Qt::RightDockWidgetArea, QTabWidget::North );
@@ -57,6 +56,7 @@ ToolboxMain::~ToolboxMain()
 
 void ToolboxMain::customViewInit(QWidget * console)
 {
+	trySetStyleByName("dark");
 	connect(ui->menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));	
 	auto dockConsole = embeddWidget(console, tr("Console"), Qt::BottomDockWidgetArea, true);
 	addDockWidget(Qt::BottomDockWidgetArea, dockConsole);

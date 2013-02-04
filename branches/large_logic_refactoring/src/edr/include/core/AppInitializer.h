@@ -41,7 +41,7 @@ public:
 			//we create application UI context and initialize everything
 			AppInitializer application(argc, argv);
 			//now it is safe to create view widget
-			FrontPageWidget widget(boost::bind(&AppInitializer::cleanUp, &application));
+			FrontPageWidget widget(application.cleanUp());
 			//we run application
 			return application.start(&widget);
 		}catch(...){

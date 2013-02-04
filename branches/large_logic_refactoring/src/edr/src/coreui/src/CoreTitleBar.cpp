@@ -19,6 +19,8 @@ CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ui
 	toogleViewAction_(new QAction(nullptr)), verticalOrientation_(false)
 {
     ui->setupUi(this);
+	ui->titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+	ui->iconPlaceholder->setVisible(false);
 	ui->actionDock_Undock->setChecked(floating);
 	ui->buttonFloat->setDefaultAction(ui->actionDock_Undock);
 	ui->buttonClose->setDefaultAction(ui->actionClose);
@@ -35,6 +37,7 @@ CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ui
 	toogleViewAction_->setParent(this);
 	toogleViewAction_->setCheckable(true);
 	connect(toogleViewAction_, SIGNAL(triggered(bool)), this, SLOT(onToogleView(bool)));
+	setIconSize(QSize(16,16));
 }
 
 CoreTitleBar::~CoreTitleBar()
@@ -45,6 +48,17 @@ CoreTitleBar::~CoreTitleBar()
 void CoreTitleBar::setIcon(const QPixmap & icon)
 {
 	ui->iconPlaceholder->setPixmap(icon);
+
+	if(icon.isNull() == true){
+		ui->iconPlaceholder->setVisible(false);
+	}else{
+		ui->iconPlaceholder->setVisible(true);
+	}
+}
+
+const QPixmap & CoreTitleBar::getIcon() const
+{
+	return *(ui->iconPlaceholder->pixmap());
 }
 
 void CoreTitleBar::onTopLevelChanged(bool floating)
@@ -113,57 +127,6 @@ bool CoreTitleBar::event(QEvent * event)
 
 	return QWidget::event(event);
 }
-
-//void CoreTitleBar::resizeEvent(QResizeEvent * event)
-//{
-//	if(parentWidget() != nullptr){
-//		QDockWidget *dockWidget = qobject_cast<QDockWidget*>(parentWidget());
-//		if(dockWidget != nullptr) {
-//			bool vertical = (dockWidget->features() & QDockWidget::DockWidgetVerticalTitleBar);
-//			if(vertical != verticalOrientation_) {
-//				verticalOrientation_ = vertical;
-//				// pobieramy wszystkie widgety - ikonę, tytuł, lewy toolbar, prawy toolbar i buttony
-//				auto widgets = layout()->children();
-//				// będziemy je dodawać do nowego layoutu, stary usuniemy
-//				QLayout * newLayout = nullptr;
-//				if(verticalOrientation_ == true){
-//					// I need to be vertical
-//					newLayout = new QVBoxLayout(this);
-//				} else {
-//					// I need to be horizontal
-//					newLayout = new QHBoxLayout(this);
-//				}
-//
-//				for(int i = widgets.size(); i > 0; --i){
-//					newLayout->addItem(layout()->takeAt(i));
-//				}
-//
-//				delete layout();
-//
-//				//TODO
-//				//kierunek tytułu okna
-//				//QLabel* label = QLabel("Y axis"); 
-//				//QGraphicsScene scene;
-//				//QGraphicsProxyWidget  * proxy = scene.addWidget(label);
-//				//proxy->rotate(-45);
-//				//QGraphicsView view(&scene);
-//				
-//				//lub na bazie qxt
-//				
-//				//albo własna implementacja z pionowym textem
-//				updateTitleOrientation();
-//
-//
-//				leftToolbar->setOrientation(verticalOrientation_ == true ? Qt::Vertical : Qt::Horizontal);
-//				rightToolbar->setOrientation(verticalOrientation_ == true ? Qt::Vertical : Qt::Horizontal);
-//
-//				setLayout(newLayout);
-//			}
-//		}
-//	}
-//
-//	QWidget::resizeEvent(event);
-//}
 
 void CoreTitleBar::updateTitleOrientation()
 {
@@ -515,10 +478,12 @@ void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
 			// I need to be vertical
 			newLayout = new QVBoxLayout();
 			ui->titleLabel->setAlignment(Qt::AlignCenter);
+			setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 		} else {
 			// I need to be horizontal
 			newLayout = new QHBoxLayout();
 			ui->titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 		}
 
 		// pobieramy wszystkie widgety - ikonę, tytuł, lewy toolbar, prawy toolbar i button		

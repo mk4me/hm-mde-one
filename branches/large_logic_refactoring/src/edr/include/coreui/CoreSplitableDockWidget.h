@@ -11,21 +11,13 @@
 
 #include <coreui/Export.h>
 #include <coreui/CoreDockWidget.h>
-#include <QtGui/QMainWindow>
-#include <boost/type_traits.hpp>
-#include <utils/Debug.h>
+//#include <QtGui/QMainWindow>
 
 namespace coreUI {
-
-	class CoreAction;
 
 class COREUI_EXPORT CoreSplitableDockWidget : public CoreDockWidget
 {
 	Q_OBJECT
-
-private:
-	CoreAction * splitVerticalyAction;
-	CoreAction * splitHorizontalyAction;
 
 private:
 

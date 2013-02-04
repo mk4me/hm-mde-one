@@ -36,8 +36,10 @@ C3DParser::~C3DParser()
 {
 }
 
-void C3DParser::parseFile( const core::Filesystem::Path& path )
+void C3DParser::parse( const std::string & source  )
 {
+	core::Filesystem::Path path(source);
+
 	ParserPtr parser(new c3dlib::C3DParser());
 	parserPtr = parser;
 
@@ -54,34 +56,24 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         for (int i = 0; i < 4; ++i) {
             GRFChannelPtr ptr(new GRFChannel(*parser , i));
             GRFChannels[i]->set(ptr);
-            //TODO
-			//metadane
-			//GRFChannels[i]->setName(ptr->getName());
-            //GRFChannels[i]->setSource(path.string());
+			(*(GRFChannels[i]))["core/name"]  = ptr->getName();
+            (*(GRFChannels[i]))["core/source"] = path.string();
             grfs->addChannel(ptr);
         }
 
-		//TODO
-		//metadane
-        //GRFs->set(grfs, path.filename().string(), path.string());
-        //GRFs->setSource(path.string());
 		GRFs->set(grfs);
+        (*GRFs)["core/source"] = path.string();
 
         for (int i = 12; i < 28; ++i) {
             EMGChannelPtr ptr(new EMGChannel(*parser , i));
             EMGChannels[i-12]->set(ptr);
-			//TODO
-			//metadane
-			//EMGChannels[i-12]->setName(ptr->getName());
-            //EMGChannels[i-12]->setSource(path.string());
+			(*(EMGChannels[i-12]))["core/name"]  = ptr->getName();
+			(*(EMGChannels[i-12]))["core/source"]  = path.string();
             e->addChannel(ptr);
         }
         
-		//TODO
-		//metadane
-		//EMGs->set(e, path.filename().string(), path.string());
-        //EMGs->setSource(path.string());
 		EMGs->set(e);
+        (*EMGs)["core/name"] = path.string();
     }
 
     // wczytanie eventów
@@ -93,11 +85,8 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         allEventsCollection->addEvent(e);
 	}
     
-	//TODO
-	//metadane
-	//this->allEvents->set(allEventsCollection, path.filename().string(), path.string());
 	this->allEvents->set(allEventsCollection);
-
+	(*(this->allEvents))["core/source"] = path.string();
     // wczytanie plików *vsk, które dostarczaja opis do markerów
     core::Filesystem::Path dir = path.parent_path();
     std::vector<std::string> vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
@@ -138,19 +127,16 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 		}
 	}
 
-	//TODO
-	//metadane
-	/*markerChannels->set(markers, path.filename().string(), path.string());
-	forceChannels->set(forces, path.filename().string(), path.string());
-	angleChannels->set(angles, path.filename().string(), path.string());
-	momentChannels->set(moments, path.filename().string(), path.string());
-	powerChannels->set(powers, path.filename().string(), path.string());*/
-
 	markerChannels->set(markers);
+	(*markerChannels)["core/source"] = path.string();
 	forceChannels->set(forces);
+	(*forceChannels)["core/source"] = path.string();
 	angleChannels->set(angles);
+	(*angleChannels)["core/source"] = path.string();
 	momentChannels->set(moments);
+	(*momentChannels)["core/source"] = path.string();
 	powerChannels->set(powers);
+	(*powerChannels)["core/source"] = path.string();
 
     try {
         IForcePlatformCollection platforms;
@@ -168,28 +154,28 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 	} catch(...) {}
 }
 
-plugin::IParser* C3DParser::create()
+plugin::IParser* C3DParser::create() const
 {
     return new C3DParser();
 }
 
-void C3DParser::getSupportedExtensions(core::IParser::Extensions & extensions) const
+void C3DParser::acceptedExpressions(Expressions & expressions) const
 {
-    core::IParser::ExtensionDescription extDesc;
-    extDesc.description = "C3D format";
+    ExpressionDescription expDesc;
+    expDesc.description = "C3D format";
 
-    extDesc.types.insert(typeid(GRFChannel));
-    extDesc.types.insert(typeid(EMGChannel));
-    extDesc.types.insert(typeid(GRFCollection));
-    extDesc.types.insert(typeid(EMGCollection));
-    extDesc.types.insert(typeid(MarkerCollection));
-    extDesc.types.insert(typeid(ForceCollection));
-    extDesc.types.insert(typeid(AngleCollection));
-    extDesc.types.insert(typeid(MomentCollection));
-    extDesc.types.insert(typeid(PowerCollection));
-    extDesc.types.insert(typeid(C3DEventsCollection));
+    expDesc.types.insert(typeid(GRFChannel));
+    expDesc.types.insert(typeid(EMGChannel));
+    expDesc.types.insert(typeid(GRFCollection));
+    expDesc.types.insert(typeid(EMGCollection));
+    expDesc.types.insert(typeid(MarkerCollection));
+    expDesc.types.insert(typeid(ForceCollection));
+    expDesc.types.insert(typeid(AngleCollection));
+    expDesc.types.insert(typeid(MomentCollection));
+    expDesc.types.insert(typeid(PowerCollection));
+    expDesc.types.insert(typeid(C3DEventsCollection));
 
-    extensions["c3d"] = extDesc;
+    expressions.insert(Expressions::value_type(".*\.c3d$", expDesc));
 }
 
 void C3DParser::getObjects( core::Objects& objects )

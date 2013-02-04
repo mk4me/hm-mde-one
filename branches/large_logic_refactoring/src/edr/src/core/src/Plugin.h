@@ -16,13 +16,13 @@ namespace core {
 /**
  *	Kontener na us³ugi.
  */
-class Plugin : public plugin::IPlugin
+class Plugin : public IPlugin
 {
 public:
     //! Typ funkcji tworz¹cej plugin.
-    typedef void (*FillFunction)(plugin::IPlugin * plugin, core::IApplication* coreApplication);
+    typedef void (*FillFunction)(IPlugin * plugin, IApplication* coreApplication);
 	//! Typ funkcji tworz¹cej plugin.
-	typedef void (*SetIDNameFunction)(plugin::IPlugin * plugin);
+	typedef void (*SetIDNameFunction)(IPlugin * plugin);
     //! Typ funkcji pobieraj¹cej wersjê pluginu.
     typedef int (*GetInterfaceVersionFunction)();
     //! Typ funkcji pobieraj¹cej typ builda pluginu

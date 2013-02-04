@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD_C3D__C3DCHANNELS_H__
 #define __HEADER_GUARD_C3D__C3DCHANNELS_H__
 
+#include <plugins/c3d/Export.h>
 #include <corelib/SmartPtr.h>
 #include <stdexcept>
 #include <utils/Debug.h>
@@ -61,7 +62,7 @@ typedef core::shared_ptr<VectorChannelReaderInterface> VectorChannelReaderInterf
 typedef core::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
 
 //! Adaptor, dzięki któremu można obsłużyć kanał z wektorem trójwymiarowym tak jak skalarny
-class VectorToScalarAdaptor : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
+class PLUGINC3D_EXPORT VectorToScalarAdaptor : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
 {
 protected:
     //! konstruktor kopiujący
@@ -190,7 +191,7 @@ private:
 };
 
 //! modyfikator, który pobiera wycinek kanału podstawowego i normalizuje go (0 - 100%)
-class ScalarWithTimeSegment : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
+class PLUGINC3D_EXPORT ScalarWithTimeSegment : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
 {
 protected:
     //! konstruktor kopiujący
@@ -336,7 +337,7 @@ typedef core::shared_ptr<ScalarChannelStats> ScalarChannelStatsPtr;
 typedef core::shared_ptr<const ScalarChannelStats> ScalarChannelStatsConstPtr;
 
 //! Modyfikator, który normalizuje kanał
-class ScalarChannelNormalizer
+class PLUGINC3D_EXPORT ScalarChannelNormalizer
 {
 public:
     //! funktor odpowiada za modyfikację kopii kanału 
@@ -383,7 +384,7 @@ public:
 
 
 //! Podstawa dla kanału analogowego zapisanego w pliku c3d
-class C3DAnalogChannel : public ScalarChannel
+class PLUGINC3D_EXPORT C3DAnalogChannel : public ScalarChannel
 {
 protected:
     //! konstruktor
@@ -421,7 +422,7 @@ protected:
 typedef boost::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
 
 //! kanał EMG
-class EMGChannel : public C3DAnalogChannel
+class PLUGINC3D_EXPORT EMGChannel : public C3DAnalogChannel
 {
 public:
     //! konstruktor 
@@ -452,7 +453,7 @@ typedef boost::shared_ptr<EMGChannel> EMGChannelPtr;
 typedef boost::shared_ptr<const EMGChannel> EMGChannelConstPtr;
 
 //! kanał GRF
-class GRFChannel : public VectorChannel
+class PLUGINC3D_EXPORT GRFChannel : public VectorChannel
 {
 friend class C3DParser;
 public:
@@ -576,7 +577,7 @@ typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
 typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
 //! kanał zawiera dane o jednym markerze
-class MarkerChannel : public VectorChannel
+class PLUGINC3D_EXPORT MarkerChannel : public VectorChannel
 {
 public:
     //! konstruktor 
@@ -616,10 +617,8 @@ typedef boost::shared_ptr<MarkerChannel> MarkerChannelPtr;
 typedef boost::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 
 
-
-
 #define DEFINE_CHANNEL(name)																	 \
-	class name##Channel : public VectorChannel 													 \
+	class PLUGINC3D_EXPORT name##Channel : public VectorChannel 													 \
 	{																							 \
 	private:																					 \
 		name##Channel(int samplesPerSec) : VectorChannel(samplesPerSec) {}						 \
@@ -655,20 +654,18 @@ DEFINE_CHANNEL(Moment);
 DEFINE_CHANNEL(Angle);
 DEFINE_CHANNEL(Power);
 
-CORE_DEFINE_WRAPPER(VectorChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER_INHERITANCE(VectorChannel, VectorChannelReaderInterface);
-CORE_DEFINE_WRAPPER_INHERITANCE(MarkerChannel,VectorChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(MomentChannel,VectorChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(AngleChannel, VectorChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(PowerChannel, VectorChannel);
-CORE_DEFINE_WRAPPER(ScalarChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER_INHERITANCE(ScalarChannel, ScalarChannelReaderInterface);
-CORE_DEFINE_WRAPPER_INHERITANCE(VectorToScalarAdaptor, ScalarChannelReaderInterface);
-CORE_DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);
-
-
+DEFINE_WRAPPER(VectorChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER_INHERITANCE(VectorChannel, VectorChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(MarkerChannel,VectorChannel);
+DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);
+DEFINE_WRAPPER_INHERITANCE(MomentChannel,VectorChannel);
+DEFINE_WRAPPER_INHERITANCE(AngleChannel, VectorChannel);
+DEFINE_WRAPPER_INHERITANCE(PowerChannel, VectorChannel);
+DEFINE_WRAPPER(ScalarChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER_INHERITANCE(ScalarChannel, ScalarChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(VectorToScalarAdaptor, ScalarChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
+DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
+DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);
 
 #endif  // __HEADER_GUARD_CORE__C3DCHANNELS_H__

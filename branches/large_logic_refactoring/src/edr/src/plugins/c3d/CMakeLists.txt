@@ -5,6 +5,7 @@ SET_PUBLIC_HEADERS (
 	IForcePlatform.h
 	C3DCollections.h
 	EventSerieBase.h
+	Export.h
 )
 
 SET_PRIVATE_HEADERS (

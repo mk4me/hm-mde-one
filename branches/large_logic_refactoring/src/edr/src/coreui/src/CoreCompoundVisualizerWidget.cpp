@@ -15,6 +15,7 @@ CoreCompoundVisualizerWidget::CoreCompoundVisualizerWidget(CoreCompoundVisualize
 
 CoreCompoundVisualizerWidget::CoreCompoundVisualizerWidget() : visualizerSwitch(new QComboBox)
 {
+	visualizerSwitch->setParent(this);
 	setLayout(new QHBoxLayout);
 	visualizerSwitch->setEditText(tr("No visualizer"));
 }
@@ -26,7 +27,7 @@ CoreCompoundVisualizerWidget::~CoreCompoundVisualizerWidget()
 
 void CoreCompoundVisualizerWidget::addVisualizer(VisualizerPtr visualizer, const QString & visualizerName)
 {
-	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer);
+	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
 	if(visualizerSwitch->count() == 0){
 		visualizerWidget->setVisible(true);
 	}else{
@@ -42,7 +43,7 @@ void CoreCompoundVisualizerWidget::addVisualizer(VisualizerPtr visualizer, const
 
 void CoreCompoundVisualizerWidget::addVisualizer(const QIcon & icon, VisualizerPtr visualizer, const QString & visualizerName)
 {
-	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer);
+	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
 	if(visualizerSwitch->count() == 0){
 		visualizerWidget->setVisible(true);
 	}else{
@@ -112,7 +113,7 @@ int CoreCompoundVisualizerWidget::findVisualizer(const QString & visualizerName)
 
 void CoreCompoundVisualizerWidget::insertVisualizer(int index, core::VisualizerPtr visualizer, const QString & visualizerName)
 {
-	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer);
+	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
 	if(visualizerSwitch->count() == 0){
 		visualizerWidget->setVisible(true);
 	}else{
@@ -128,7 +129,7 @@ void CoreCompoundVisualizerWidget::insertVisualizer(int index, core::VisualizerP
 
 void CoreCompoundVisualizerWidget::insertVisualizer(int index, const QIcon & icon, core::VisualizerPtr visualizer, const QString & visualizerName)
 {
-	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer);
+	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
 	if(visualizerSwitch->count() == 0){
 		visualizerWidget->setVisible(true);
 	}else{

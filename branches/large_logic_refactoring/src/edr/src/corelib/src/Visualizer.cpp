@@ -119,10 +119,10 @@ private:
 	std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataToUpdate;
 };
 
-Visualizer::VisualizerSerie::VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase, plugin::IVisualizer::ITimeSerieFeatures * timeSerieFeatures)
-	: visualizer_(visualizer), serie_(serieBase), timeSerieFeatures_(timeSerieFeatures)
+Visualizer::VisualizerSerie::VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase)
+	: visualizer_(visualizer), serie_(serieBase), timeAvareSerieFeatures_(dynamic_cast<IVisualizer::ITimeAvareSerieFeatures*>(serieBase))
 {
-
+	timeEditableSerieFeatures_ = (timeAvareSerieFeatures_ != nullptr ? dynamic_cast<IVisualizer::ITimeEditableSerieFeatures*>(serieBase) : nullptr);
 }
 
 Visualizer::VisualizerSerie::~VisualizerSerie()
@@ -135,9 +135,14 @@ plugin::IVisualizer::ISerie * Visualizer::VisualizerSerie::serie() const
 	return serie_;
 }
 
-plugin::IVisualizer::ITimeSerieFeatures * Visualizer::VisualizerSerie::timeSerieFeatures() const
+plugin::IVisualizer::ITimeAvareSerieFeatures * Visualizer::VisualizerSerie::timeAvareSerieFeatures() const
 {
-	return timeSerieFeatures_;
+	return timeAvareSerieFeatures_;
+}
+
+plugin::IVisualizer::ITimeEditableSerieFeatures * Visualizer::VisualizerSerie::timeEditableSerieFeatures() const
+{
+	return timeEditableSerieFeatures_;
 }
 
 Visualizer::Visualizer( const plugin::IVisualizer* proto, IDataManagerReader * dmr, IVisualizerManager * visManager ) :
@@ -239,7 +244,7 @@ Visualizer::VisualizerSerie * Visualizer::createSerie(const TypeInfo & requested
 	VisualizerSerie * serie = nullptr;
     auto s = visualizer_->createSerie(requestedType, data);
 	if(s != nullptr){
-		serie = new VisualizerSerie(this, s, dynamic_cast<IVisualizer::ITimeSerieFeatures*>(s));
+		serie = new VisualizerSerie(this, s);
 		dataSeries.push_back(serie);
 		visualizerHelper_->addSerieToObserve(serie);
 		notifyChange(serie, ADD_SERIE);
@@ -254,7 +259,7 @@ Visualizer::VisualizerSerie * Visualizer::createSerie(VisualizerSerie * serie)
 	if(serie->visualizer_ == this){
 		auto s = visualizer_->createSerie(serie->serie());
 		if(s != nullptr){
-			retserie = new VisualizerSerie(this, s, serie->timeSerieFeatures() != nullptr ? dynamic_cast<IVisualizer::ITimeSerieFeatures*>(s) : nullptr);
+			retserie = new VisualizerSerie(this, s);
 			dataSeries.push_back(retserie);
 			visualizerHelper_->addSerieToObserve(serie);
 			notifyChange(serie, ADD_SERIE);

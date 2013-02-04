@@ -58,4 +58,28 @@ public:
     }                                                                   \
 private:
 
+//! Makro ułatwiające "wstrzykiwanie" metod interfejsu IIdentifable do klas implementujących go
+#define CLASS_DESCRIPTION(shortName, description)                  \
+ public:                                                            \
+	inline static const std::string getClassName()                  \
+	{                                                               \
+		return std::string(shortName);								\
+	}                                                               \
+																	\
+	inline static const std::string getClassDescription()           \
+	{                                                               \
+		return std::string(description);							\
+	}																\
+																	\
+	virtual const std::string getName() const                       \
+	{                                                               \
+		return getClassName();                                      \
+	}                                                               \
+																	\
+	virtual const std::string  getDescription() const				\
+	{                                                               \
+		return getClassDescription();                               \
+	}                                                               \
+private:
+
 #endif  // __HEADER_GUARD__IIDENTIFIABLE_H__

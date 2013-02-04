@@ -189,13 +189,18 @@ protected:
         entry->line = event->getLocationInformation().getLineNumber();
         entry->timestamp = QDate::currentDate();
         entry->theadId = QThread::currentThreadId();
-        if ( console ) {
-            // mamy konsolę - wysłamy jej komunikat
-            console->logOrQueueEntry(entry);
-        } else {
-            // nie ma konsoli - kolejkujemy
-            queuedEntries.push(entry);
-        }
+		{
+			// korzytamy z muteksa z klasy bazowej !
+			helpers::synchronized sync(mutex);
+
+			if ( console ) {
+				// mamy konsolę - wysłamy jej komunikat
+				console->logOrQueueEntry(entry);
+			} else {
+				// nie ma konsoli - kolejkujemy
+				queuedEntries.push(entry);
+			}
+		}
     }
 };
 
@@ -292,10 +297,12 @@ public:
     //! \param console
     void setConsole(CoreConsoleWidget* console)
     {
+		// nie ma konsoli - kolejkujemy
+		ScopedLock lock(queueMutex);
+
         this->console = console;
         // opróżniamy kolejkę komunikatów
         if ( console ) {
-            ScopedLock lock(queueMutex);
             for ( ; !queuedEntries.empty(); queuedEntries.pop() ) {
                 console->logOrQueueEntry(queuedEntries.front());
             }
@@ -327,14 +334,15 @@ public:
         entry->line = -1;
         entry->timestamp = QDate::currentDate();
         entry->theadId = QThread::currentThreadId();
-        if ( console ) {
-            // mamy konsolę - wysłamy jej komunikat
-            console->logOrQueueEntry(entry);
-        } else {
-            // nie ma konsoli - kolejkujemy
-            ScopedLock lock(queueMutex);
-            queuedEntries.push(entry);
-        }
+		{
+			ScopedLock lock(queueMutex);
+			if ( console ) {
+				// mamy konsolę - wysłamy jej komunikat
+				console->logOrQueueEntry(entry);
+			} else {
+				queuedEntries.push(entry);
+			}
+		}
     }
 };
 

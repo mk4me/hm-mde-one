@@ -558,12 +558,12 @@ namespace utils {
 
 		RawUniformDataChannel(const IRawUniformDataChannelReader<PointType, TimeType> & channel) :
             name(channel.getName()),
-            samplesPerSecond(channel.samplesPerSecond),
-            invSamplesPerSecond(channel.invSamplesPerSecond)
+            samplesPerSecond(channel.getSamplesPerSecond()),
+            invSamplesPerSecond(channel.getSampleDuration())
 		{
 			//kopiuję zawartość
 			for(size_type i = 0; i < channel.size(); ++i){
-				storage.addPoint(channel.value(i));
+				storage.addPoint(channel.argument(i), channel.value(i));
 			}
 		}
 

@@ -465,10 +465,11 @@ GRFSerie::ArrowPtr GRFSerie::createArrow()
 	return a;
 }
 
-void GRFSerie::setData( const core::ObjectWrapperConstPtr & data )
+void GRFSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(GRFCollection));
     this->data = data;
+	this->requestedType = requestedType;
 	grfCollection = data->clone()->get();
     
     const IForcePlatformCollection& platforms = grfCollection->getPlatforms();
@@ -549,7 +550,7 @@ osg::ref_ptr<osg::Texture2D> GRFSerie::getTexture( int number )
 		if (!texture1) {
 			osg::Texture2D* t = new osg::Texture2D;
 			t->setDataVariance(osg::Object::DYNAMIC); 
-			osg::Image* i = osgDB::readImageFile(core::getResourcePath("images/1.png").string());
+			osg::Image* i = osgDB::readImageFile(plugin::getResourcePath("images/1.png").string());
 			if (!i) {
 				throw std::runtime_error("Unable to load texture: images/1.png");
 			}
@@ -563,7 +564,7 @@ osg::ref_ptr<osg::Texture2D> GRFSerie::getTexture( int number )
 		if (!texture2) {
 			osg::Texture2D* t = new osg::Texture2D;
 			t->setDataVariance(osg::Object::DYNAMIC); 
-			osg::Image* i = osgDB::readImageFile(core::getResourcePath("images/2.png").string());
+			osg::Image* i = osgDB::readImageFile(plugin::getResourcePath("images/2.png").string());
 			if (!i) {
 				throw std::runtime_error("Unable to load texture: images/2.png");
 			}
@@ -595,7 +596,7 @@ void GRFSerie::setName( const std::string & name )
     this->name = name;
 }
 
-const std::string & GRFSerie::getName() const
+const std::string GRFSerie::getName() const
 {
     return name;
 }

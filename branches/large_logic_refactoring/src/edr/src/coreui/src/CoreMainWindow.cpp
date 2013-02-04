@@ -75,10 +75,6 @@ CoreMainWindow::CoreMainWindow(const CloseUpOperations & closeUpOperations): QMa
 	widgetConsole(new CoreConsoleWidget()), closeUpOperations_(closeUpOperations)
 {
 	initCoreResources();
-	//TODO
-	//szukaj styli qt
-	//temp = Filesystem::listFiles(resourcesPath, true, ".qss");
-	//applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
 }
 
 QSplashScreen * CoreMainWindow::createSplashScreen()
@@ -117,6 +113,11 @@ CoreConsoleWidget* CoreMainWindow::getConsole()
 void CoreMainWindow::init(core::IApplication * coreApplication)
 {
 	plugin::__coreApplication = coreApplication;
+
+	//szukaj styli qt
+	auto temp = Filesystem::listFiles(plugin::getResourcesPath() / "app_skins", true, ".qss");
+	applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
+
     readSettings(QSettings(), true);
 	customViewInit(widgetConsole);
 }

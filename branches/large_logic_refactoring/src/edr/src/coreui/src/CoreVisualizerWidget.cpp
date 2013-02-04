@@ -33,7 +33,8 @@ Q_DECLARE_METATYPE(Visualizer::VisualizerSerie*);
 //! Zerujący konstruktor.
 //! \param parent
 //! \param flags
-CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags), visualizer_(visualizer)
+CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags),
+	visualizer_(visualizer), activeSerieSwitch(nullptr)
 {
 	auto visWidget = visualizer->getOrCreateWidget();
 
@@ -67,31 +68,36 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	dataSelectioMenu->setIcon(QIcon(QPixmap(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png"))));
 	connect(dataSelectioMenu, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
 	connect(dataSelectioMenu, SIGNAL(aboutToHide()), this, SLOT(clearSourcesMenu()));
-	dataSelectAction = new CoreWidgetAction(nullptr, tr("Settings"), CoreTitleBar::Left);
+	CoreWidgetAction * dataSelectAction = new CoreWidgetAction(this, tr("Settings"), CoreTitleBar::Left);
 	dataSelectAction->setDefaultWidget(dataSelectioMenu);
 	addAction(dataSelectAction);
 
 	//ustawianie aktualnej serii danych
 	if(visualizer_->getMaxSeries() != 1){
-		activeSerieSwitch = new QComboBox;
+		activeSerieSwitch = new QComboBox(visWidget);
 		activeSerieSwitch->addItem(tr("No active session"));
 		connect(activeSerieSwitch, SIGNAL(currentIndexChanged(int)), this, SLOT(serieSelected(int)));
-		activeDataSelectAction = new CoreWidgetAction(nullptr, tr("Settings"), CoreTitleBar::Left);
+		CoreWidgetAction * activeDataSelectAction = new CoreWidgetAction(this, tr("Settings"), CoreTitleBar::Left);
 		activeDataSelectAction->setDefaultWidget(activeSerieSwitch);
 		addAction(activeDataSelectAction);
-	}else{
-		activeDataSelectAction = nullptr;
-		activeSerieSwitch = nullptr;
 	}
 
 	//screenshot
-	screenshotAction = new CoreAction(tr("Utils"), tr("Screenshot"), this, CoreTitleBar::Right);
+	CoreAction * screenshotAction = new CoreAction(tr("Utils"), tr("Screenshot"), this, CoreTitleBar::Right);
 	connect(screenshotAction, SIGNAL(triggered()), visualizer.get(), SLOT(onScreenshotTrigger()));
 	addAction(screenshotAction);
 
 	//akcja czyszcząca wszystkie dane wizualizatora
 	dataDeselectAll = new QAction(tr("Clear all"), this);
 	connect(dataDeselectAll, SIGNAL(triggered()), this, SLOT(clearAllData()));
+
+	//! Akcja odpowiedzialna za przełanczanie pomiędzy aktywnym obserwowaniem dataManagera w przyapdku zmian danych związanych z seriami danych
+	CoreAction * liveObserveDataAction = new CoreAction(tr("Utils"), QIcon(), tr("Live data update"), this, CoreTitleBar::Right);
+	liveObserveDataAction->setCheckable(true);
+	liveObserveDataAction->setChecked(true);
+	connect(liveObserveDataAction, SIGNAL(triggered(bool)), this, SLOT(onLiveObserveChange(bool)));
+
+	addAction(liveObserveDataAction);
 }
 
 CoreVisualizerWidget::CoreVisualizerWidget(const CoreVisualizerWidget & visualizer)
@@ -102,12 +108,7 @@ CoreVisualizerWidget::CoreVisualizerWidget(const CoreVisualizerWidget & visualiz
 //! Zapewnia możliwość kasowanie widgeta wizualizatora przez jego implementację.
 CoreVisualizerWidget::~CoreVisualizerWidget()
 {
-	delete dataSelectAction;
-	if(activeDataSelectAction != nullptr){
-		delete activeDataSelectAction;
-	}
-	delete screenshotAction;
-	delete dataDeselectAll;
+	
 }
 
 core::VisualizerPtr CoreVisualizerWidget::getVisualizer()
@@ -238,11 +239,13 @@ void CoreVisualizerWidget::clearSourcesMenu()
 }
 
 void CoreVisualizerWidget::removeAllSeries()
-{
+{	
 	visualizer_->setActiveSerie(nullptr);
-	activeSerieSwitch->blockSignals(true);
-	activeSerieSwitch->clear();
-	activeSerieSwitch->blockSignals(false);
+	if(activeSerieSwitch != nullptr){
+		activeSerieSwitch->blockSignals(true);
+		activeSerieSwitch->clear();
+		activeSerieSwitch->blockSignals(false);
+	}
 	std::set<int>().swap(usedLocalNameIndexes);
 	std::map<core::TypeInfo, std::map<core::ObjectWrapperConstPtr, core::Visualizer::VisualizerSerie*>>().swap(activeData);
 	std::map<core::Visualizer::VisualizerSerie*, int>().swap(serieLocalIdx);
@@ -270,12 +273,14 @@ void CoreVisualizerWidget::addSerie()
 		usedLocalNameIndexes.insert(data.localIdx);
 	}
 
-	QVariant serieData;
-	serieData.setValue(serie);
-	activeSerieSwitch->addItem(QString::fromStdString(data.serieName), serieData);
-	activeSerieSwitch->setEnabled(true);
-	if(activeSerieSwitch->count() == 2){
-		activeSerieSwitch->setCurrentIndex(1);
+	if(activeSerieSwitch != nullptr){
+		QVariant serieData;
+		serieData.setValue(serie);
+		activeSerieSwitch->addItem(QString::fromStdString(data.serieName), serieData);
+		activeSerieSwitch->setEnabled(true);
+		if(activeSerieSwitch->count() == 2){
+			activeSerieSwitch->setCurrentIndex(1);
+		}
 	}
 }
 
@@ -299,24 +304,27 @@ void CoreVisualizerWidget::removeSerie()
 		serieLocalIdx.erase(it);
 	}
 
-	QVariant serieData;
-	serieData.setValue(serie);
+	if(activeSerieSwitch != nullptr){
 
-	int idx = activeSerieSwitch->findData(serieData);
-	if(activeSerieSwitch->currentIndex() == idx){
-		int newIdx = 0;
-		if(activeData.empty() == false){
-			if(idx == 1){
-				newIdx = 2;
-			}else{
-				newIdx = idx -1;
+		QVariant serieData;
+		serieData.setValue(serie);
+
+		int idx = activeSerieSwitch->findData(serieData);
+		if(activeSerieSwitch->currentIndex() == idx){
+			int newIdx = 0;
+			if(activeData.empty() == false){
+				if(idx == 1){
+					newIdx = 2;
+				}else{
+					newIdx = idx -1;
+				}
 			}
-		}
 
-		activeSerieSwitch->setCurrentIndex(newIdx);
-		activeSerieSwitch->removeItem(idx);
-		if(activeSerieSwitch->count() == 1){
-			activeSerieSwitch->setEnabled(false);
+			activeSerieSwitch->setCurrentIndex(newIdx);
+			activeSerieSwitch->removeItem(idx);
+			if(activeSerieSwitch->count() == 1){
+				activeSerieSwitch->setEnabled(false);
+			}
 		}
 	}
 
@@ -333,4 +341,9 @@ const bool CoreVisualizerWidget::getDataName(core::ObjectWrapperConstPtr data, s
 const bool CoreVisualizerWidget::getDataSource(core::ObjectWrapperConstPtr data, std::string & dataSource)
 {
 	return data->tryGetMeta("core/source", dataSource);
+}
+
+void CoreVisualizerWidget::onLiveObserveChange(bool observe)
+{
+	visualizer_->setLiveObserveActive(observe);
 }

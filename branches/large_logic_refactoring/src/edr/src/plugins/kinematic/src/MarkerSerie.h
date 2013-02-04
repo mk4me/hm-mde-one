@@ -39,12 +39,16 @@ public:
     //! Ustawia nowa nazwę serii
     virtual void setName(const std::string & name);
     //! \return nazwa serii
-    virtual const std::string & getName() const;
+    virtual const std::string getName() const;
     //! Ustawienie danych, inicjalizacja 
     //! \param data dane typu JointAnglesCollection
-	virtual void setData(const core::ObjectWrapperConstPtr & data);
+	virtual void setData(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
     //! \return ustawione dane
     virtual const core::ObjectWrapperConstPtr & getData() const;
+
+	virtual void update();
+
+	virtual const utils::TypeInfo & getRequestedDataType() const;
 	//! \return długość kanału w sekundach
 	virtual double getLength() const;
     //! \return macierz serii z transformacją, która nie została zmieniona przez manipulatory
@@ -71,6 +75,8 @@ private:
     osg::ref_ptr<osg::PositionAttitudeTransform> ghostNode;
     //! wrapper przekazany serii
     core::ObjectWrapperConstPtr data;
+
+	utils::TypeInfo requestedType;
     //! nazwa serii
     std::string name;
 };

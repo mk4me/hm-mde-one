@@ -1,6 +1,8 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreSplitableDockWidget.h>
 #include <coreui/CoreAction.h>
+#include <utils/Debug.h>
+#include <QtGui/QMainWindow>
 
 using namespace coreUI;
 
@@ -18,19 +20,21 @@ CoreSplitableDockWidget::CoreSplitableDockWidget(QWidget *parent, Qt::WindowFlag
 
 void CoreSplitableDockWidget::init()
 {
-	splitVerticalyAction = new CoreAction(tr("Utils"), QIcon(QString::fromUtf8(":/resources/icons/vertical.png")), tr("Split verticaly"), this, CoreTitleBar::Right);
+	CoreAction * splitVerticalyAction = new CoreAction(tr("Utils"), QIcon(QString::fromUtf8(":/resources/icons/vertical.png")), tr("Split vertically"), this, CoreTitleBar::Right);
 
 	connect(splitVerticalyAction, SIGNAL(triggered()), this, SLOT(splitVerticaly()));
 
-	splitHorizontalyAction = new CoreAction(tr("Utils"), QIcon(QString::fromUtf8(":/resources/icons/horizontal.png")), tr("Split horizontaly"), this, CoreTitleBar::Right);
+	CoreAction * splitHorizontalyAction = new CoreAction(tr("Utils"), QIcon(QString::fromUtf8(":/resources/icons/horizontal.png")), tr("Split horizontally"), this, CoreTitleBar::Right);
 
 	connect(splitHorizontalyAction, SIGNAL(triggered()), this, SLOT(splitHorizontaly()));
+
+	addAction(splitHorizontalyAction);
+	addAction(splitVerticalyAction);
 }
 
 CoreSplitableDockWidget::~CoreSplitableDockWidget()
 {
-	delete splitVerticalyAction;
-	delete splitHorizontalyAction;
+
 }
 
 void CoreSplitableDockWidget::splitVerticaly()

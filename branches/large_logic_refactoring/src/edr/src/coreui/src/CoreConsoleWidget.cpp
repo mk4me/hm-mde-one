@@ -6,6 +6,9 @@
 using namespace coreUI;
 using namespace core;
 
+//qRegisterMetaType<CoreConsoleWidgetEntry>("CoreConsoleWidgetEntry");
+//qRegisterMetaType<CoreConsoleWidgetEntryPtr>("CoreConsoleWidgetEntryPtr");
+
 CoreConsoleWidget::CoreConsoleWidget(QWidget *parent, Qt::WindowFlags flags) : QWidget(parent, flags), ui(new Ui::CoreConsoleWidget)
 {
 	ui->setupUi(this);
@@ -19,9 +22,8 @@ CoreConsoleWidget::~CoreConsoleWidget()
 
 void CoreConsoleWidget::init()
 {
-    qRegisterMetaType<CoreConsoleWidgetEntry>("CoreConsoleWidgetEntry");
-    qRegisterMetaType<CoreConsoleWidgetEntryPtr>("CoreConsoleWidgetEntryPtr");
-
+    addAction(ui->actionToogle_word_wrap);
+	addAction(ui->actionClear_console);
 	setWindowTitle(tr("Console"));
 }
 

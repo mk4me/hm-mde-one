@@ -74,6 +74,7 @@
 #include <QtCore/QUrl>
 #include <QtCore/QBuffer>
 #include <QtGui/QToolButton>
+#include <corelib/PluginCommon.h>
 
 const QString rsrcPath = ":/resources/icons/textedit";
 
@@ -793,12 +794,9 @@ void CoreTextEditWidget::changeLinksToBase64( QTextFrame * root, QTextDocument* 
 
 bool CoreTextEditWidget::tryChangeLinkToBase64( QString& result, const QString& link ) const
 {
-	//TODO
-	//QString templateDir = core::getResourceString("templates\\");
-
-	QString templateDir = "templates\\";
+	auto templateDir = plugin::getResourcePath("templates\\");
     
-    QString imgPath = templateDir + link;
+    QString imgPath(QString::fromStdString((plugin::getResourcePath("templates") / link.toStdString()).string()));
     if (QFile::exists(imgPath)) {
         QPixmap file(imgPath);
         QLabel* l = new QLabel;

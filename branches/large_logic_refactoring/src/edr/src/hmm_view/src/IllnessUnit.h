@@ -47,10 +47,8 @@ public:
                        auto channel = c->getChannel(i);
                        core::ObjectWrapperPtr cw = core::ObjectWrapper::create<Channel>();
                        cw->set(core::const_pointer_cast<Channel>(channel));
-					   //TODO
-					   //metadane
-                       //cw->setName(channel->getName());
-                       //cw->setSource(channel->getName());
+					   (*cw)["core/name"] = channel->getName();
+					   (*cw)["core/source"] = channel->getName();                       
                        newMotionObjects.push_back(cw);
                     }
                 }
@@ -140,12 +138,11 @@ public:
 
             for(auto objectIT = objects.begin(); objectIT != objects.end(); ++objectIT){
                 for (auto it = names.begin(); it != names.end(); ++it) {
-                    //TODO
-					//metadata					
-					//if ((*objectIT)->getName() == *it) {
+					std::string name;
+					if((*objectIT)->tryGetMeta("core/name", name) == true && name == *it)
                         validObjects.push_back(*objectIT);
                         break;
-                    //}
+                    }
                 }
             }
 

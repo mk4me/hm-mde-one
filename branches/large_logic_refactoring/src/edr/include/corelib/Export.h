@@ -11,7 +11,7 @@
 
 #include <utils/Export.h>
 
-#if defined(corelib_EXPORTS)
+#if defined (corelib_EXPORTS)
 #  define CORELIB_EXPORT UTILS_DECL_EXPORT
 #else
 #  define CORELIB_EXPORT UTILS_DECL_IMPORT

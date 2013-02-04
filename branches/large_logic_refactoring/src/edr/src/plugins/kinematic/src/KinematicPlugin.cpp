@@ -8,7 +8,7 @@
 #include "AsfParser.h"
 #include <plugins/kinematic/Wrappers.h>
 
-CORE_PLUGIN_BEGIN("kinematic", UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-A5FE-52AA182E1279}"));
+CORE_PLUGIN_BEGIN("kinematic", core::UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-A5FE-52AA182E1279}"));
     CORE_PLUGIN_ADD_PARSER(KinematicParser);
     CORE_PLUGIN_ADD_PARSER(AsfParser);
     CORE_PLUGIN_ADD_VISUALIZER(KinematicVisualizer);
@@ -25,20 +25,18 @@ using namespace kinematic;
 //! \param msg przekazywana informacja
 void logCallback(Logger::LogSeverity severity, const std::string& msg)
 {
-	static core::NamedLog log = core::NamedLog(core::getLogInterface(), "kinematic");
-	static core::ILog * logger = &log;
     switch ( severity ) {
         case Logger::Error:
-            LOG_CUSTOM_ERROR(logger,msg);
+            PLUGIN_LOG_NAMED_ERROR("kinematic",msg);
             break;
         case Logger::Warning:    
-            LOG_CUSTOM_WARNING(logger, msg);
+			PLUGIN_LOG_NAMED_WARNING("kinematic",msg);
             break;
         case Logger::Info:
-            LOG_CUSTOM_INFO(logger, msg);
+			PLUGIN_LOG_NAMED_INFO("kinematic",msg);
             break;
         case Logger::Debug:
-            LOG_CUSTOM_DEBUG(logger, msg);
+			PLUGIN_LOG_NAMED_DEBUG("kinematic",msg);
             break;
         default:
             UTILS_ASSERT(false, "Nieznany poziom logowania. Wiadomość: %s", msg);

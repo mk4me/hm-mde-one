@@ -10,11 +10,11 @@ ADD_PROJECT(corelib "BOOST;UTILS;OSG;OPENTHREADS;OSGUI;QT;TINYXML")
 ADD_PROJECT(coreui "BOOST;UTILS;QT;TINYXML;corelib;OPENGL;corelib")
 
 SET_PROJECTS_GROUP("plugins")
-ADD_PROJECT(plugin_c3d "BOOST;corelib;C3DLIB" "plugins/c3d")
+ADD_PROJECT(plugin_c3d "BOOST;corelib;C3DLIB;KINEMATICLIB" "plugins/c3d")
 ADD_PROJECT(plugin_video "OSG;QT;VIDLIB;FFMPEG;TINYXML;corelib" "plugins/video")
 ADD_PROJECT(plugin_newTimeline "BOOST;QT;QWT;corelib;TIMELINELIB;OPENTHREADS" "plugins/newTimeline")
 ADD_PROJECT(plugin_newCommunication "QT;CURL;WSDLPULL;TINYXML;corelib;WEBSERVICESLIB;QTHTMLGENLIB;SQLCIPHER;QuaZip;" "plugins/newCommunication")
-ADD_PROJECT(plugin_kinematic "QT;BOOST;corelib;KINEMATICLIB;OSG;C3DLIB" "plugins/kinematic")
+ADD_PROJECT(plugin_kinematic "QT;BOOST;corelib;coreui;KINEMATICLIB;OSG;C3DLIB" "plugins/kinematic")
 ADD_PROJECT(plugin_newChart "BOOST;OSG;QT;QWT;corelib;C3DLIB" "plugins/newChart")
 ADD_PROJECT(plugin_subject "BOOST;OSG;QT;corelib;C3DLIB;KINEMATICLIB" "plugins/subject")
 #ADD_PROJECT(plugin_python "BOOST;QT;corelib" "plugins/python")
@@ -22,4 +22,3 @@ ADD_PROJECT(plugin_subject "BOOST;OSG;QT;corelib;C3DLIB;KINEMATICLIB" "plugins/s
 SET_PROJECTS_GROUP("view")
 ADD_PROJECT(old_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;OPENGL;C3DLIB")
 ADD_PROJECT(hmm_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;C3DLIB;QWT;VIDLIB;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic")
-

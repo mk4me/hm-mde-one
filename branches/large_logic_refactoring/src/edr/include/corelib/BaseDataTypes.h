@@ -31,9 +31,7 @@ public:
 //! \return Unikalny identyfikator
 static UniqueID GenerateUniqueID(const std::string& uuid) 
 {
-    boost::uuids::string_generator gen;
-    boost::uuids::uuid id = gen(uuid);
-    return id;
+    return boost::uuids::string_generator()(uuid);
 }
 };
 

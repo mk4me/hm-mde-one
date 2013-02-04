@@ -305,10 +305,9 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     activeSerieCombo->setEnabled(true);
     NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
 	if(legendLabel != nullptr){	
-		//TODO
-		//metadane
-		//legendLabel->setToolTip(data->getSource().c_str());
-		legendLabel->setToolTip("UNKNOWN");
+		std::string source;
+		data->tryGetMeta("core/source", source);
+		legendLabel->setToolTip(source.c_str());		
 		if(series.size() == 1){    
 			if(legendLabel->isItemActive() == false){
 				legend->blockSignals(true);

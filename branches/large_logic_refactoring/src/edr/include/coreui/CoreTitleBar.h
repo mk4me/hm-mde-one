@@ -80,6 +80,7 @@ public:
 	QWidget * widgetForAction(QAction * action) const;
 
 	void setIcon(const QPixmap & icon);
+	const QPixmap & getIcon() const;
 
     bool isTitleVisible() const;
     
@@ -115,7 +116,6 @@ protected:
     //virtual void paintEvent(QPaintEvent *paintEvent);
 	virtual void changeEvent(QEvent * event);
 	virtual bool event(QEvent * event);
-	//virtual void resizeEvent(QResizeEvent * event);
 
 private:
 	CoreTitleBar(bool floating, QWidget * parent = nullptr);

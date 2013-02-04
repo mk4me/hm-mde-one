@@ -279,14 +279,14 @@ DEFINE_CHANNEL_COLLECTION(Angle);
 DEFINE_CHANNEL_COLLECTION(Power);
 
 
-CORE_DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
-CORE_DEFINE_WRAPPER(VectorChannelCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER_INHERITANCE(ForceCollection,  VectorChannelCollection);
-CORE_DEFINE_WRAPPER_INHERITANCE(AngleCollection,  VectorChannelCollection);
-CORE_DEFINE_WRAPPER_INHERITANCE(PowerCollection,  VectorChannelCollection);
-CORE_DEFINE_WRAPPER_INHERITANCE(MomentCollection, VectorChannelCollection);
-CORE_DEFINE_WRAPPER_INHERITANCE(MarkerCollection, VectorChannelCollection);
-CORE_DEFINE_WRAPPER_INHERITANCE(GRFCollection, VectorChannelCollection);
+DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(VectorChannelCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER_INHERITANCE(ForceCollection,  VectorChannelCollection);
+DEFINE_WRAPPER_INHERITANCE(AngleCollection,  VectorChannelCollection);
+DEFINE_WRAPPER_INHERITANCE(PowerCollection,  VectorChannelCollection);
+DEFINE_WRAPPER_INHERITANCE(MomentCollection, VectorChannelCollection);
+DEFINE_WRAPPER_INHERITANCE(MarkerCollection, VectorChannelCollection);
+DEFINE_WRAPPER_INHERITANCE(GRFCollection, VectorChannelCollection);
 
 #endif

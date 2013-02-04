@@ -41,10 +41,9 @@ void SummaryWindow::display( const std::vector<TreeItemHelperPtr>& helpers )
                 for (auto it = desc.begin(); it != desc.end(); ++it) {
                     auto motion = it->motion;
                     if (motion) {
-						//TODO
-						//metadane
-                        //QString text = QString::fromStdString(it->wrapper->getName()) + createDescription(it->motion);
-						QString text = QString::fromStdString("UNKNOWN") + createDescription(it->motion);
+						std::string name;
+						it->wrapper->tryGetMeta("core/name", name);
+                        QString text = QString::fromStdString(name) + createDescription(it->motion);
                         addItem(text, root);
                     }
                 }

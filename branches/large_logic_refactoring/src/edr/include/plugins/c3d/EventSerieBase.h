@@ -15,7 +15,7 @@
 
 //! klasa dostarcza eventów do podstawowej serii danych.
 //! jeśli seria danych ma je obsługiwać, powinna dziedziczyć po tej klasie
-class EventSerieBase : public core::IVisualizer::TimeSerieBase
+class EventSerieBase : public plugin::IVisualizer::ISerie, public plugin::IVisualizer::ITimeAvareSerieFeatures
 {
 public:
     //! Abstraktycja metoda, seria danych po jej wywołaniu powinna zainicjalizować sobie obsługę eventów

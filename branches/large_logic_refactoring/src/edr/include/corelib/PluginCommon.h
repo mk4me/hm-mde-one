@@ -13,6 +13,7 @@
 #include <corelib/IApplication.h>
 #include <corelib/IPath.h>
 #include <corelib/ILog.h>
+#include <utils/Macros.h>
 
 namespace plugin 
 {
@@ -108,49 +109,22 @@ namespace plugin
 
 } // namespace core
 
-#ifdef _MSC_VER
+//! Makro logujące informację testową
+#define PLUGIN_LOG_DEBUG(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+//! Makro logujące błąd
+#define PLUGIN_LOG_ERROR(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityError, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+//! Makro logujące informację
+#define PLUGIN_LOG_INFO(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+//! Makro logujące ostrzeżenia
+#define PLUGIN_LOG_WARNING(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
 
 //! Makro logujące informację testową
-#define PLUGIN_LOG_DEBUG(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_NAMED_DEBUG(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
 //! Makro logujące błąd
-#define PLUGIN_LOG_ERROR(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityError, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_NAMED_ERROR(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityError, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
 //! Makro logujące informację
-#define PLUGIN_LOG_INFO(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_NAMED_INFO(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
 //! Makro logujące ostrzeżenia
-#define PLUGIN_LOG_WARNING(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
-
-//! Makro logujące informację testową
-#define PLUGIN_LOG_NAMED_DEBUG(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
-//! Makro logujące błąd
-#define PLUGIN_LOG_NAMED_ERROR(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityError, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
-//! Makro logujące informację
-#define PLUGIN_LOG_NAMED_INFO(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
-//! Makro logujące ostrzeżenia
-#define PLUGIN_LOG_NAMED_WARNING(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __FUNCTION__, __FILE__, __LINE__); } while (0)
-
-#endif
-
-#ifdef __GNUC__
-
-//! Makro logujące informację testową
-#define PLUGIN_LOG_DEBUG(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
-//! Makro logujące błąd
-#define PLUGIN_LOG_ERROR(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityError, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
-//! Makro logujące informację
-#define PLUGIN_LOG_INFO(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
-//! Makro logujące ostrzeżenia
-#define PLUGIN_LOG_WARNING(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
-
-//! Makro logujące informację testową
-#define PLUGIN_LOG_NAMED_DEBUG(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
-//! Makro logujące błąd
-#define PLUGIN_LOG_NAMED_ERROR(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityError, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
-//! Makro logujące informację
-#define PLUGIN_LOG_NAMED_INFO(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
-//! Makro logujące ostrzeżenia
-#define PLUGIN_LOG_NAMED_WARNING(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __func__, __FILE__, __LINE__); } while (0)
-
-#endif
-
+#define PLUGIN_LOG_NAMED_WARNING(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
 
 #endif  // HEADER_GUARD_CORE__PLUGINCOMMON_H__
