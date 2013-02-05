@@ -10,12 +10,12 @@
 #define HEADER_GUARD_VIDLIB__VIDEOERROR_H__
 
 #include <stdexcept>
-#include <utils/Export.h>
+#include <vidlib/Config.h>
 
 namespace vidlib {
 
 //! Wyjątek używany przez bibliotekę.
-class UTILS_EXPORT VideoError : public std::exception
+class VIDLIB_EXPORT VideoError : public std::exception
 {
 private:
     //! Wg. standradu std::exception NIE ma konstruktora przyjmującego

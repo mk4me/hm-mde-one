@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_VIDLIB__PICTURE_H__
 #define HEADER_GUARD_VIDLIB__PICTURE_H__
 
-#include <utils/Export.h>
+#include <vidlib/Config.h>
 #include <vidlib/PixelFormat.h>
 #include <utils/Utils.h>
 
@@ -21,7 +21,7 @@ namespace vidlib {
 struct PictureContext;
 
 //! Wspólne dane wszystkich obrazków.
-struct UTILS_EXPORT PictureCommon
+struct VIDLIB_EXPORT PictureCommon
 {
   //! Kontekst zdjęcia.
   VIDLIB_PixelFormat format;
@@ -35,7 +35,7 @@ struct UTILS_EXPORT PictureCommon
 };
 
 //! Obrazek z wieloma warstwami.
-struct UTILS_EXPORT PictureLayered : public PictureCommon
+struct VIDLIB_EXPORT PictureLayered : public PictureCommon
 {
   //! Dane warstw.
   unsigned char * data[4];
@@ -56,7 +56,7 @@ struct UTILS_EXPORT PictureLayered : public PictureCommon
 };
 
 //! Obrazek z jedną warstwą (lub ze spakowanymi danymi).
-struct UTILS_EXPORT Picture : public PictureCommon
+struct VIDLIB_EXPORT Picture : public PictureCommon
 {
   //! Szerokość wiersza (w bajtach). W przypadku spakowanych danych
   //! może odbiegać od szerokości obrazka.
@@ -98,7 +98,7 @@ struct UTILS_EXPORT Picture : public PictureCommon
   void copyTo(Picture & dst) const;
 };
 
-struct UTILS_EXPORT PictureRGB : public Picture
+struct VIDLIB_EXPORT PictureRGB : public Picture
 {
     //! Tworzy instancję obrazka.
     //! \param width Szerokość.
@@ -114,7 +114,7 @@ struct UTILS_EXPORT PictureRGB : public Picture
 
 //! Obrazek z destruktorem; nadaje się tam, gdzie kod ma wiele punktów wyjścia
 //! i ręczne zwalnianie może być problemem.
-struct UTILS_EXPORT ScopedPicture : public Picture
+struct VIDLIB_EXPORT ScopedPicture : public Picture
 {
     //! 
     //! \param width
@@ -139,7 +139,7 @@ private:
 
 //! Obrazek z destruktorem; nadaje się tam, gdzie kod ma wiele punktów wyjścia
 //! i ręczne zwalnianie może być problemem.
-struct UTILS_EXPORT ScopedPictureRGB : public PictureRGB
+struct VIDLIB_EXPORT ScopedPictureRGB : public PictureRGB
 {
 public:
     ScopedPictureRGB()

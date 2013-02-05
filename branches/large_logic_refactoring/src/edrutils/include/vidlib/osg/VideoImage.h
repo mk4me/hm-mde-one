@@ -17,7 +17,6 @@ UTILS_PUSH_WARNINGS
 #include <osg/observer_ptr>
 #include <osg/Image>
 UTILS_POP_WARNINGS
-#include <utils/Export.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/VideoStream.h>
 #include <vidlib/Picture.h>
@@ -27,7 +26,7 @@ namespace vidlib
     UTILS_PUSH_WARNINGS
     UTILS_DISABLE_DLL_INTERFACE_WARNING
 
-    class UTILS_EXPORT VideoImage : public osg::Image
+    class VIDLIB_EXPORT VideoImage : public osg::Image
     {
     private:
         //! Klienci maksymalnego rozmiaru.

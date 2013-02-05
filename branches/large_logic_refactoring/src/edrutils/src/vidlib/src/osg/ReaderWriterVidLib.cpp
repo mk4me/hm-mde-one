@@ -1,4 +1,4 @@
-#include "../PCH.h"
+#include "PCH.h"
 #include <vidlib/Config.h>
 
 /* -*-c++-*- OpenSceneGraph - Copyright (C) 1998-2006 Robert Osfield 
@@ -114,7 +114,7 @@ public:
 
 REGISTER_OSGPLUGIN(vidlib, ReaderWriterVidLib)
 
-UTILS_EXPORT void osgdb_vidlib_init( void )
+VIDLIB_EXPORT void osgdb_vidlib_init( void )
 {
     osgdb_vidlib();
 }

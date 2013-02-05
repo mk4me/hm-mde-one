@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 #include <utils/Utils.h>
-#include <utils/Export.h>
+#include <vidlib/Config.h>
 #include <vidlib/VideoStream.h>
 
 namespace vidlib 
@@ -21,7 +21,7 @@ namespace vidlib
     UTILS_DISABLE_DLL_INTERFACE_WARNING
 
     //! Strumień video oparty o fizyczny pliki. Do wczytywania plików używa obiektu ILoader
-    class UTILS_EXPORT FileSequenceVideoStream : public VideoStream
+    class VIDLIB_EXPORT FileSequenceVideoStream : public VideoStream
     {
     public:
         //!

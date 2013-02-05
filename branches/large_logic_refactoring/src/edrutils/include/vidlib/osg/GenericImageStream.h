@@ -9,8 +9,6 @@
 #ifndef HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__
 #define HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__
 
-
-
 #include <vidlib/osg/VideoImageStream.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +17,7 @@ namespace vidlib {
 
 //! ImageStream korzystający z FFmpegVideoStream
 template <class InnerStream>
-class UTILS_EXPORT GenericImageStream : public VideoImageStream
+class VIDLIB_EXPORT GenericImageStream : public VideoImageStream
 {
 public:
     /** Domyślne implementacje */

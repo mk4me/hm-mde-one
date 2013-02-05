@@ -18,7 +18,6 @@ extern "C" {
 }
 
 #include <vidlib/VideoStream.h>
-#include <utils/Export.h>
 
 struct AVFormatContext;
 struct AVCodecContext;
@@ -35,7 +34,7 @@ namespace vidlib {
 /**
  *	Strumień wejściowy video kontorlowany przez bibliotekę ffmpeg.
  */
-class UTILS_EXPORT FFmpegVideoStream : public VideoStream
+class VIDLIB_EXPORT FFmpegVideoStream : public VideoStream
 {
 public:
     //! Operacje na muteksach.

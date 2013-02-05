@@ -16,7 +16,7 @@
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
 
-class UTILS_EXPORT FFmpegImageStream : public GenericImageStream<FFmpegVideoStream>
+class VIDLIB_EXPORT FFmpegImageStream : public GenericImageStream<FFmpegVideoStream>
 {
 public:
     /** Domyślne implementacje */

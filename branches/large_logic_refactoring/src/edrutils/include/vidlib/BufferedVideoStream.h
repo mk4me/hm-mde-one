@@ -9,7 +9,6 @@
 #ifndef HEADER_GUARD_VIDLIB__BUFFEREDVIDEOSTREAM_H__
 #define HEADER_GUARD_VIDLIB__BUFFEREDVIDEOSTREAM_H__
 
-#include <utils/Export.h>
 #include <vidlib/VideoStream.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,7 +17,7 @@ namespace vidlib {
 
 class VideoBuffer;
 
-class UTILS_EXPORT BufferedVideoStream : public VideoStream, public VideoStream::Callback
+class VIDLIB_EXPORT BufferedVideoStream : public VideoStream, public VideoStream::Callback
 {
 private:
     //! Bufor na ramki

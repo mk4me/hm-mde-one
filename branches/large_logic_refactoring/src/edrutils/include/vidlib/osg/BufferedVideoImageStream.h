@@ -15,7 +15,7 @@ UTILS_PUSH_WARNINGS
 UTILS_POP_WARNINGS
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/VideoBuffer.h>
-#include <utils/Export.h>
+#include <vidlib/Config.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {
@@ -26,7 +26,7 @@ UTILS_DISABLE_DLL_INTERFACE_WARNING
 /**
  *	Strumień obrazków z z buforowaniem.
  */
-class UTILS_EXPORT BufferedVideoImageStream : public VideoImageStream
+class VIDLIB_EXPORT BufferedVideoImageStream : public VideoImageStream
 {
 private:
   //! Wątek buforujący.

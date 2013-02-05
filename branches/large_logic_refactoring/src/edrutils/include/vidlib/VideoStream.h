@@ -10,7 +10,7 @@
 #define HEADER_GUARD_VIDLIB__VIDEOSTREAM_H__
 
 #include <string>
-#include <utils/Export.h>
+#include <vidlib/Config.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/Picture.h>
 #include <vidlib/VideoError.h>
@@ -30,11 +30,11 @@ enum {
 /**
  *	Abstrakcyjna klasa dla wejścia wideo.
  */
-class UTILS_EXPORT VideoStream
+class VIDLIB_EXPORT VideoStream
 {
 public:
     //! Sygnatura callbacka.
-    class UTILS_EXPORT Callback {
+    class VIDLIB_EXPORT Callback {
     protected:
         //! Chroniony destruktor - aby zaznaczyć, że strumień nie przemuje callbacka
         //! na własność (wskaźnika nie można skasować)
