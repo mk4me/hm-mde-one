@@ -162,4 +162,14 @@ double SkeletonSerie::getLength() const
     return scheme->getDuration();
 }
 
+void SkeletonSerie::update()
+{
+
+}
+
+const utils::TypeInfo & SkeletonSerie::getRequestedDataType() const
+{
+	return requestedType;
+}
+
 

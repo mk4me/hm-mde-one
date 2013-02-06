@@ -20,6 +20,9 @@ namespace core {
 	class IMemoryDataManagerOperations
 	{
 	public:
+
+		virtual ~IMemoryDataManagerOperations() {}
+
 		//! \data Dane wchodz¹ce pod kontrolê DM
 		virtual void addData(const ObjectWrapperPtr & data) = 0;
 		//! Dane usuwane z DM
@@ -42,13 +45,17 @@ namespace core {
 
 		class IMemoryDataTransaction : public ITransaction, public IMemoryDataManagerOperations, public IDataManagerReaderOperations
 		{
-
+		public:
+			virtual ~IMemoryDataTransaction() {}
 		};
 
 		//! Typ transakcji na danych domenowych - dzia³a w oparciu o RAII -> próbuje "commitowaæ" zmiany przy koñcu trwania ¿ycia obiektu transakcji
 		typedef core::shared_ptr<IMemoryDataTransaction> TransactionPtr;
 
 	public:
+
+		virtual ~IMemoryDataManager() {}
+
 		//! \return Nowa transakcja danych domenowych
 		virtual TransactionPtr transaction() = 0;
 	};

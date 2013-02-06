@@ -38,6 +38,9 @@ namespace core
 		};
 
     public:
+
+		virtual ~IVisualizerManager() {}
+
 		//! \param prototypes [out] Wszystkie prototypy wizualizatorów
 		virtual void visualizerPrototypes(VisualizerPrototypes & prototypes) = 0;
 		//! \param id ID Ÿród³a do wyszukania.

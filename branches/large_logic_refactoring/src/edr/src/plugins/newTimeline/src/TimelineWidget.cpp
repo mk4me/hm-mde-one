@@ -276,11 +276,6 @@ const TimelineService::UIChannelAction & TimelineWidget::getOnChannelRemove() co
     return onItemRemoveAction;
 }
 
-void TimelineWidget::loadToolbarElements(core::IActionsGroupManager * actionsManager) const
-{
-
-}
-
 TimelineWidget::~TimelineWidget()
 {
     delete removeChannelsMenu;

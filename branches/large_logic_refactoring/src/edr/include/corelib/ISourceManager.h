@@ -20,6 +20,9 @@ namespace core {
     class ISourceManager
     {
     public:
+
+		virtual ~ISourceManager() {}
+
         //! \return Liczba źródeł.
         virtual int getNumSources() const = 0;
         //! \param idx Indeks źródła.

@@ -136,8 +136,8 @@ class VideoCollection : public utils::DataChannelCollection<VideoChannel, utils:
 typedef boost::shared_ptr<VideoCollection> VideoCollectionPtr;
 typedef boost::shared_ptr<const VideoCollection> VideoCollectionConstPtr;
 
-CORE_DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
-CORE_DEFINE_WRAPPER(VideoStream, utils::PtrPolicyOSG, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(VideoStream, utils::PtrPolicyOSG, utils::ClonePolicyVirtualCloneMethod);
 
 #endif  // __HEADER_GUARD_VIDEO__WRAPPERS_H__

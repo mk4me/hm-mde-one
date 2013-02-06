@@ -22,6 +22,9 @@ namespace core {
 		typedef std::list<plugin::IParserConstPtr> ParserPrototypes;
 
 	public:
+
+		virtual ~IParserManagerReader() {}
+
 		//! \param parserPrototypes [out] Kolekcja wype³niania aktualnie znanymi prototypami parserów
 		virtual void parsers(ParserPrototypes & parserPrototypes) const = 0;
 		//! \param source Œcie¿ka Ÿród³a danych

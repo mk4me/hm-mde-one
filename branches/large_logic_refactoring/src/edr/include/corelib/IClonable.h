@@ -21,9 +21,7 @@ public:
     //! \return Klon obiektu
     virtual T* createClone() const = 0;
 
-    virtual ~IClonable() 
-    {
-    }
+    virtual ~IClonable() {}
 };
 
 }

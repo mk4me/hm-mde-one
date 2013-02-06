@@ -139,11 +139,14 @@ void ToolboxMain::actionCreateVisualizer()
 	auto visProto = getVisualizerManager()->getVisualizerPrototype(action->data().value<UniqueID>());
 	VisualizerWidget * dockWidget = new VisualizerWidget();
 	CoreVisualizerWidget* widget = new CoreVisualizerWidget(VisualizerPtr(visProto->create()), this, Qt::WindowTitleHint);
-	QList<QAction*> actions = widget->actions();
+	QList<QAction*> actions = widget->getVisualizer()->getOrCreateWidget()->actions();
+	actions.append(widget->actions());
 	actions.append(dockWidget->actions());
-	actions.append(widget->getVisualizer()->getOrCreateWidget()->actions());
 
 	dockWidget->setWidget(widget);
+
+	auto visualizerTitleBar = CoreTitleBar::supplyWithCoreTitleBar(dockWidget);
+	CoreTitleBar::supplyCoreTitleBarWithActions(visualizerTitleBar, actions);
 	
 	visualizersPlaceholder->addDockWidget(Qt::RightDockWidgetArea, dockWidget);
 }

@@ -145,8 +145,8 @@ plugin::IVisualizer::ITimeEditableSerieFeatures * Visualizer::VisualizerSerie::t
 	return timeEditableSerieFeatures_;
 }
 
-Visualizer::Visualizer( const plugin::IVisualizer* proto, IDataManagerReader * dmr, IVisualizerManager * visManager ) :
-	visualizer_(proto->create()),
+Visualizer::Visualizer(plugin::IVisualizerPtr vis, IDataManagerReader * dmr, IVisualizerManager * visManager ) :
+	visualizer_(vis),
     widget(nullptr),
 	dmr(dmr), visManager(visManager),
 	activeSerie(nullptr)

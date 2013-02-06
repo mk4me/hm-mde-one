@@ -20,6 +20,9 @@ namespace core {
 	class IStreamDataManagerOperations
 	{
 	public:
+
+		virtual ~IStreamDataManagerOperations() {}
+
 		//! \data Dane wchodz¹ce pod kontrolê DM
 		virtual void addStream(std::istream * stream) = 0;
 		//! Dane usuwane z DM
@@ -37,13 +40,17 @@ namespace core {
 
 		class IStreamDataManagerTransaction : public ITransaction, public IStreamDataManagerOperations, public IStreamManagerReaderOperations
 		{
-
+		public:
+			virtual ~IStreamDataManagerTransaction() {}
 		};
 
 		//! Typ transkacji na strumieniach - dzia³a w oparciu o RAII -> próbuje "commitowaæ" zmiany przy niszczeniu obiektu transakcji
 		typedef shared_ptr<IStreamDataManagerTransaction> TransactionPtr;
 
 	public:
+
+		virtual ~IStreamDataManager() {}
+
 		//! \return Transakcja na strumieniach
 		virtual const TransactionPtr transaction() = 0;
 	};

@@ -11,6 +11,9 @@ namespace core {
     class IDataManagerReaderOperations
 	{
 	public:
+
+		virtual ~IDataManagerReaderOperations() {}
+
 		//! \param objects [out] Wszystkie obiekty DM
 		virtual void getObjects(ConstObjectsList & objects) const = 0;
 		//! \param objects [out] Obiekty pasujące do zapytania
@@ -53,6 +56,9 @@ namespace core {
 		class IObjectObserver
 		{
 		public:
+
+			virtual ~IObjectObserver() {}
+
 			//! \param previousValue 
 			//! \param currentVal 
 			//! \param type 
@@ -66,6 +72,9 @@ namespace core {
 		typedef shared_ptr<IDataManagerReaderOperations> TransactionPtr;
 
     public:
+
+		virtual ~IDataManagerReader() {}
+
 		//! Dodaje obserwatora DM
 		//! \param objectWatcher Obiekt obserwujący DM
 		virtual void addObserver(const ObjectObserverPtr & objectWatcher) = 0;

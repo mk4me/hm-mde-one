@@ -37,8 +37,8 @@ void PluginLoader::clear()
 	for(auto it = plugins.begin(); it != plugins.end(); ++it)
 	{
 		(*it).plugin.reset();
-		(*it).coreApplication.reset();
 		unloadSharedLibrary((*it).handle);
+		(*it).coreApplication.reset();
 	}
 }
 
@@ -46,12 +46,6 @@ void PluginLoader::unloadPlugins()
 {
     try{
         clear();
-    }
-    catch(std::runtime_error& e){
-        CORE_LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
-    }
-    catch(std::invalid_argument& e){
-        CORE_LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
     catch(std::exception& e){
         CORE_LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());

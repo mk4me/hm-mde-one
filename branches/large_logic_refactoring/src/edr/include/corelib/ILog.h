@@ -30,6 +30,9 @@ namespace core
 		};
 
 	public:
+
+		virtual ~ILog() {}
+
         //! Metoda do logowania informacji
         //! \param severity Poziom istotności logowanej informacji
         //! \param message Treść logowanej informacji (wraz ze znakami formatującymi)

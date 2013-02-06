@@ -21,6 +21,9 @@ namespace core {
 	class IFileDataManagerOperations
 	{
 	public:
+
+		virtual ~IFileDataManagerOperations() {}
+
 		//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
 		virtual void removeFile(const Filesystem::Path & file) = 0;
 
@@ -40,8 +43,11 @@ namespace core {
 
 		class IFileDataManagerTransaction : public ITransaction, public IFileDataManagerOperations, public IFileManagerReaderOperations
 		{
-
+		public:
+			virtual ~IFileDataManagerTransaction() {}
 		};
+
+		virtual ~IFileDataManager() {}
 
 		//! Typ transakcji - dzia³a jak RAII -> przy niszczeniu próbuje "commitowaæ" zmiany jeœli nie by³o wczeœniej ¿adnych b³êdów
 		typedef core::shared_ptr<IFileDataManagerTransaction> TransactionPtr;

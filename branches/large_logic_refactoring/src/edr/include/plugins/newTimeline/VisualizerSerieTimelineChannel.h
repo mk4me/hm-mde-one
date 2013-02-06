@@ -9,16 +9,16 @@
 #ifndef HEADER_GUARD___VISUALIZERCHANNEL_H__
 #define HEADER_GUARD___VISUALIZERCHANNEL_H__
 
-#include <utils/Export.h>
+#include <plugins/newTimeline/Export.h>
 #include <string>
 #include <corelib/Visualizer.h>
 #include <timelinelib/IChannel.h>
 
-class UTILS_EXPORT VisualizerSerieTimelineChannel : public timeline::IChannel
+class PLUGINTIMELINE_EXPORT VisualizerSerieTimelineChannel : public timeline::IChannel
 {
 public:
 
-	VisualizerSerieTimelineChannel(Visualizer * visualizer, Visualizer::VisualizerSerie * serie);
+	VisualizerSerieTimelineChannel(core::Visualizer * visualizer, core::Visualizer::VisualizerSerie * serie);
 
 	virtual ~VisualizerSerieTimelineChannel();
 
@@ -38,23 +38,23 @@ public:
 	//! \param newScale Nowa skala ustawiona kanałowi
 	virtual void scaleChanged(double newScale);
 
-	const Visualizer::VisualizerSerie * getSerie() const;
+	const core::Visualizer::VisualizerSerie * getSerie() const;
 
-	const Visualizer * getVisualizer() const;
+	const core::Visualizer * getVisualizer() const;
 
 private:
 
-	Visualizer * visualizer;
-	Visualizer::VisualizerSerie * serie;
+	core::Visualizer * visualizer;
+	core::Visualizer::VisualizerSerie * serie;
 };
 
 
-class UTILS_EXPORT VisualizerSerieTimelineMultiChannel : public timeline::IChannel
+class PLUGINTIMELINE_EXPORT VisualizerSerieTimelineMultiChannel : public timeline::IChannel
 {
 public:
 
-	typedef std::list<Visualizer::VisualizerSerie*> VisualizerSeries;
-	typedef std::map<Visualizer*, VisualizerSeries> VisualizersSeries;
+	typedef std::list<core::Visualizer::VisualizerSerie*> VisualizerSeries;
+	typedef std::map<core::Visualizer*, VisualizerSeries> VisualizersSeries;
 
 public:
 

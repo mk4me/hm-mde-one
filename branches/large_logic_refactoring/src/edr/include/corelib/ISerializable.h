@@ -18,9 +18,7 @@ namespace core {
 class ISerializable
 {
 public:
-    virtual ~ISerializable() 
-    {
-    }
+    virtual ~ISerializable() {}
     //! \param output Strumień wyjściowy do którego robimy zrzut zserializowanego obiektu
     virtual void serialize(std::ostream& output) = 0;
     //! \param input Strumień z którego dokonujemy deserializacji obiektu

@@ -12,7 +12,11 @@ VisualizerManager::VisualizerManager() : skipNotify(false)
 
 VisualizerManager::~VisualizerManager()
 {
+	if(visualizerInstances_.empty() == false){
+		CORE_LOG_DEBUG("Some visualizer instances still alive");
+	}
 
+	skipNotify = true;
 }
 
 void VisualizerManager::visualizerPrototypes(IVisualizerManager::VisualizerPrototypes & prototypes)
@@ -45,6 +49,10 @@ void VisualizerManager::getVisualizerPrototypes(core::TypeInfo & type, IVisualiz
 
 void VisualizerManager::registerVisualizer(Visualizer* visualizerImpl, plugin::IVisualizer * visualizer)
 {
+	if(skipNotify == true){
+		return;
+	}
+
 	ScopedLock lockUpdate(updateSync);
 	ScopedLock lockObserver(observerSync);
 	visualizerInstances_[visualizerImpl] = visualizer;
@@ -53,6 +61,10 @@ void VisualizerManager::registerVisualizer(Visualizer* visualizerImpl, plugin::I
 
 void VisualizerManager::unregisterVisualizer(Visualizer* visualizer)
 {
+	if(skipNotify == true){
+		return;
+	}
+
 	ScopedLock lockUpdate(updateSync);
 	ScopedLock lockObserver(observerSync);
 	visualizerInstances_.erase(visualizer);
@@ -67,16 +79,21 @@ void VisualizerManager::registerObserver(IVisualizerManagerObserver * observer)
 
 void VisualizerManager::unregisterObserver(IVisualizerManagerObserver * observer)
 {
+	if(skipNotify == true){
+		return;
+	}
+
 	ScopedLock lock(observerSync);
 	observers_.erase(observer);
 }
 
 void VisualizerManager::notify(Visualizer * visualizer, VisuzalizerOperation modyfication)
 {
-	ScopedLock lock(observerSync);
 	if(skipNotify == true){
 		return;
 	}
+
+	ScopedLock lock(observerSync);
 
 	for(auto it = observers_.begin(); it != observers_.end(); ++it){
 		try{			
@@ -98,7 +115,7 @@ void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visua
 	VisualizerPrototypeData protoData;
 	{
 		utils::Push<bool> localSkipNotify(skipNotify, true);
-		protoData.visualizerPrototype.reset(new Visualizer(visualizerPrototype.get(), getMemoryDataManager(), this));
+		protoData.visualizerPrototype.reset(new Visualizer(visualizerPrototype, getMemoryDataManager(), this));
 	}
 
 	auto dhm = getDataHierarchyManager();

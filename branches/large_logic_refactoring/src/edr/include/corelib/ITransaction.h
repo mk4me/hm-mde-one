@@ -18,6 +18,9 @@ namespace core {
 	class ITransaction
 	{
 	public:
+
+		virtual ~ITransaction() {}
+
 		//! Cofa zmiany w ramach transakcji
 		virtual void rollback() = 0;
 		//! \return Czy transakcja zosta³a wycofana np. w wyniku b³êdu jednej z operacji transakcji lub

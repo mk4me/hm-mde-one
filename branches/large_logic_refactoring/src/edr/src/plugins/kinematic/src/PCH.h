@@ -1,5 +1,6 @@
 #ifndef HEADER_GUARD_KINEMATICEDR__PCH_H__
 #define HEADER_GUARD_KINEMATICEDR__PCH_H__
+
 #include <vector>
 #include <map>
 #include <string>

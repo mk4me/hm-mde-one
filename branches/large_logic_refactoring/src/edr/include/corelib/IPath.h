@@ -21,7 +21,6 @@ public:
 	//! Destruktor wirtualny
 	virtual ~IPath() {}
 
-public:
 	//! \return Zwraca pelna sciezke do folderu "MyDocuments\EDR"
 	virtual const Filesystem::Path& getUserDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"

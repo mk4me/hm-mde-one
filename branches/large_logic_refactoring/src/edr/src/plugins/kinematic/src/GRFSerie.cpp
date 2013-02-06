@@ -690,3 +690,13 @@ void GRFSerie::GhostStack::update()
         }
     }
 }
+
+void GRFSerie::update()
+{
+
+}
+
+const utils::TypeInfo & GRFSerie::getRequestedDataType() const
+{
+	return requestedType;
+}

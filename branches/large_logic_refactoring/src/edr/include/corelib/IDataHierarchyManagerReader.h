@@ -16,6 +16,9 @@ namespace core {
 	class IDataHierarchyManagerReader {
 
 	public:
+
+		virtual ~IDataHierarchyManagerReader() {}
+
 		//! \param typeInfo Typ zarejestrowany w DM dla któego chemy utworzyæ OW
 		//! \return Pusty OW dla zadanego typu lub wyj¹tek/nullptr gdy typ niezarejestrowany
 		virtual ObjectWrapperPtr createWrapper(const TypeInfo & typeInfo) const = 0;

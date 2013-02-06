@@ -26,9 +26,12 @@ namespace core {
 namespace plugin
 {
     //! Interfejs źródła danych. Powinien to być jedeny obiekt inicjowany i mający dostęp do MemoryDM i FIleDM
-    class ISource : public ICoreElement
+    class ISource : public IIdentifiable, public IDescription
     {
     public:
+
+		virtual ~ISource() {}
+
         //! Inicjalizacja źródła. Następuje już po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich źródeł.
         virtual void init(core::IMemoryDataManager * memoryDM,

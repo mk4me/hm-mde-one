@@ -71,12 +71,17 @@ public:
     //! \param name nowa nazwa krzywej
     virtual void setName(const std::string & name);
     //! \return nazwa krzywej
-    virtual const std::string & getName() const;
+    virtual const std::string getName() const;
     //! dostarcza ObjectWrapper z danymi
     //! \param data ObjectWrapper przechowujący interfejs ScalarChannelReaderInterface
-    virtual void setData(const core::ObjectWrapperConstPtr & data);
+    virtual void setData(const utils::TypeInfo & requestedData, const core::ObjectWrapperConstPtr & data);
     //! \return ObjectWrapper przechowujący interfejs ScalarChannelReaderInterface
     virtual const core::ObjectWrapperConstPtr & getData() const;
+
+	virtual const utils::TypeInfo & getRequestedDataType() const;
+
+	virtual void update();
+
     //! \return ekstrema krzywej
     Scales getScales() const;
     //! \return czy krzywa jest aktywna
@@ -135,6 +140,8 @@ private:
     std::string name;
     //! OW z danymi
     core::ObjectWrapperConstPtr data;
+
+	utils::TypeInfo requestedType;
     //! wizualizowana krzywa
     NewChartCurve* curve;
     //! obiekt ze statystykami

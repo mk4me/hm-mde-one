@@ -15,10 +15,13 @@ SET_PRIVATE_HEADERS (
 )
 
 SET_SOURCE_FILES(
+	C3DChannels.cpp
+	EventSerieBase.cpp
 	C3DPlugin.cpp
 	C3DParser.cpp
 	ForcePlatform.cpp
 	C3DPCH.cpp
+	C3DCollections.cpp
 )
 
 #------------------------------------------------------------------------------

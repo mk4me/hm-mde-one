@@ -1,10 +1,12 @@
 #include "TimelinePCH.h"
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
 
-VisualizerSerieTimelineChannel::VisualizerSerieTimelineChannel(Visualizer * visualizer, Visualizer::VisualizerSerie * serie)
+VisualizerSerieTimelineChannel::VisualizerSerieTimelineChannel(core::Visualizer * visualizer, core::Visualizer::VisualizerSerie * serie)
     : visualizer(visualizer), serie(serie)
 {
-
+	if(serie->timeAvareSerieFeatures() == nullptr){
+		throw std::runtime_error("Serie not aware of time");
+	}
 }
 
 VisualizerSerieTimelineChannel::~VisualizerSerieTimelineChannel()
@@ -24,12 +26,16 @@ double VisualizerSerieTimelineChannel::getLength() const
 
 void VisualizerSerieTimelineChannel::offsetChanged(double newOffset)
 {
-	serie->timeAvareSerieFeatures()->setOffset(newOffset);
+	if(serie->timeEditableSerieFeatures()){
+		serie->timeEditableSerieFeatures()->setOffset(newOffset);
+	}
 }
 
 void VisualizerSerieTimelineChannel::scaleChanged(double newScale)
 {
-	serie->timeAvareSerieFeatures()->setScale(newScale);
+	if(serie->timeEditableSerieFeatures()){
+		serie->timeEditableSerieFeatures()->setScale(newScale);
+	}	
 }
 
 VisualizerSerieTimelineChannel * VisualizerSerieTimelineChannel::clone() const
@@ -40,12 +46,12 @@ VisualizerSerieTimelineChannel * VisualizerSerieTimelineChannel::clone() const
     return nullptr;
 }
 
-const Visualizer::VisualizerSerie * VisualizerSerieTimelineChannel::getSerie() const
+const core::Visualizer::VisualizerSerie * VisualizerSerieTimelineChannel::getSerie() const
 {
     return serie;
 }
 
-const Visualizer * VisualizerSerieTimelineChannel::getVisualizer() const
+const core::Visualizer * VisualizerSerieTimelineChannel::getVisualizer() const
 {
     return visualizer;
 }
@@ -54,6 +60,13 @@ VisualizerSerieTimelineMultiChannel::VisualizerSerieTimelineMultiChannel(const V
     : visualizersSeries(visualizersSeries)
 {
     UTILS_ASSERT((visualizersSeries.empty() == false), "Nie podano żadnych serii dla kanalu");
+	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
+		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
+			if((*serieIT)->timeAvareSerieFeatures() == nullptr){
+				throw std::runtime_error("Serie not aware of time");
+			}
+		}
+	}
 }
 
 VisualizerSerieTimelineMultiChannel::~VisualizerSerieTimelineMultiChannel()
@@ -65,7 +78,7 @@ void VisualizerSerieTimelineMultiChannel::setTime(double time)
 {
     for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
 		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
-			(*serieIT)->timeSerieFeatures()->setTime(time > (*serieIT)->timeSerieFeatures()->getLength() ? (*serieIT)->timeSerieFeatures()->getLength() : time);
+			(*serieIT)->timeAvareSerieFeatures()->setTime(time > (*serieIT)->timeAvareSerieFeatures()->getLength() ? (*serieIT)->timeAvareSerieFeatures()->getLength() : time);
 		}
     }
 }
@@ -76,7 +89,7 @@ double VisualizerSerieTimelineMultiChannel::getLength() const
 
 	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
 		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
-			length = std::max(length, (*serieIT)->timeSerieFeatures()->getLength());
+			length = std::max(length, (*serieIT)->timeAvareSerieFeatures()->getLength());
 		}
 	}
 
@@ -94,4 +107,26 @@ VisualizerSerieTimelineMultiChannel * VisualizerSerieTimelineMultiChannel::clone
 const VisualizerSerieTimelineMultiChannel::VisualizersSeries & VisualizerSerieTimelineMultiChannel::getVisualizersSeries() const
 {
     return visualizersSeries;
+}
+
+void VisualizerSerieTimelineMultiChannel::offsetChanged(double newOffset)
+{
+	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
+		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
+			if((*serieIT)->timeEditableSerieFeatures()){
+				(*serieIT)->timeEditableSerieFeatures()->setOffset(newOffset);
+			}
+		}
+	}
+}
+
+void VisualizerSerieTimelineMultiChannel::scaleChanged(double newScale)
+{
+	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
+		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
+			if((*serieIT)->timeEditableSerieFeatures()){
+				(*serieIT)->timeEditableSerieFeatures()->setScale(newScale);
+			}
+		}
+	}
 }

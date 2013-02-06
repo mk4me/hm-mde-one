@@ -105,7 +105,7 @@ private:
 	//! Reszta będzie robiona w widgetach na odpowiednie akcje (czy dane są jeszcze w DM)
 	shared_ptr<VisualizerHelper> visualizerHelper_;
 	//! Faktyczny wizualizator dla danych
-	scoped_ptr<plugin::IVisualizer> visualizer_;
+	shared_ptr<plugin::IVisualizer> visualizer_;
 
     //! Faktyczny widget.
     QWidget* widget;
@@ -144,7 +144,7 @@ public slots:
 public:
 
 	//! \param impl Implementacja wizualizatora. Obiekt przejmowany na własność.
-	Visualizer( const plugin::IVisualizer* proto, IDataManagerReader * dmr, IVisualizerManager * visManager );
+	Visualizer( plugin::IVisualizerPtr vis, IDataManagerReader * dmr, IVisualizerManager * visManager );
 	//! Konstuktor kopiujący - głęboka kopia. Nie kopiuje widgeta, źródeł danych, obserwatorów
 	Visualizer( const Visualizer& visualizer );
 

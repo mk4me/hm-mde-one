@@ -263,14 +263,21 @@ Application::~Application()
 	serviceManager_.reset();
 
 	CORE_LOG_INFO("Releasing core managers");
+	CORE_LOG_INFO("Releasing visualizer manager");
+	visualizerManager_.reset();
 	CORE_LOG_INFO("Releasing stream data manager");
 	streamDataManager_.reset();
 	CORE_LOG_INFO("Releasing file data manager");
 	fileDataManager_.reset();
+	CORE_LOG_INFO("Releasing parsers manager");
+	parserManager_.reset();
 	CORE_LOG_INFO("Releasing memory data manager");
 	memoryDataManager_.reset();
+	CORE_LOG_INFO("Releasing hierarchy data manager");
+	dataHierarchyManager_.reset();
 
 	CORE_LOG_INFO("Releasing plugins");
+	pluginLoader_.reset();
 
 	CORE_LOG_INFO("Cleaning tmp files");
 	Filesystem::deleteDirectory(getPathInterface()->getTmpPath());
@@ -525,14 +532,16 @@ void Application::unpackPlugin(CoreMainWindow * mainWindow, const core::PluginPt
 void Application::finalizeUI(){
 
 	try{
-		CORE_LOG_INFO("Closing log widget console");
-		logInitializer_->setConsoleWidget(nullptr);
-		
 		CORE_LOG_INFO("Finalizing sources");
 		sourceManager_->finalizeSources();
 
 		CORE_LOG_INFO("Finalizing services");
 		serviceManager_->finalizeServices();
+
+		CORE_LOG_INFO("Closing log widget console");
+		logInitializer_->setConsoleWidget(nullptr);
+		
+		
 	}catch(std::exception & e){
 		CORE_LOG_ERROR("Error while closing UI during sources and services finalization: " << e.what());
 	}catch(...){

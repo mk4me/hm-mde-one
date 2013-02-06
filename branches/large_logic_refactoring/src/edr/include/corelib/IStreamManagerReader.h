@@ -32,6 +32,9 @@ namespace core {
 		typedef std::list<StreamData> StreamsList;
 
 	public:
+
+		virtual ~IStreamManagerReaderOperations() {}
+
 		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
 		virtual void getStreams(StreamsList & streams) const = 0;
 

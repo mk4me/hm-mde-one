@@ -18,6 +18,9 @@ namespace core {
 	class IFileManagerReaderOperations
 	{
 	public:
+
+		virtual ~IFileManagerReaderOperations() {}
+
 		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
 		virtual void getFiles(Files & files) const = 0;
 
@@ -61,6 +64,8 @@ namespace core {
 		public:
 			//! \param changes Lista zmian na plikach
 			virtual void observe(const ChangeList & changes) = 0;
+
+			virtual ~IFileObserver() {}
 		};
 
 		//! WskaŸnik na obiek obserwuj¹cy zmiany
@@ -69,6 +74,8 @@ namespace core {
 		typedef core::shared_ptr<IFileManagerReaderOperations> TransactionPtr;
 
 	public:
+
+		virtual ~IFileManagerReader() {}
 
 		virtual void addObserver(const FileObserverPtr & fileWatcher) = 0;
 		virtual void removeObserver(const FileObserverPtr & fileWatcher) = 0;

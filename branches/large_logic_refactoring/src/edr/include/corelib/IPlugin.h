@@ -119,6 +119,9 @@ namespace core {
 class IPlugin : public plugin::IIdentifiable, public plugin::IDescription
 {
 public:
+
+	virtual ~IPlugin() {}
+
 	//! \param name Nazwa pluginu
 	virtual void setName(const std::string & name) = 0;
 	//! \param  description Opis pluginu

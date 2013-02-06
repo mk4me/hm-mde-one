@@ -116,3 +116,13 @@ void MarkerSerie::setName( const std::string & name )
     this->name = name;
 }
 
+void MarkerSerie::update()
+{
+
+}
+
+const utils::TypeInfo & MarkerSerie::getRequestedDataType() const
+{
+	return requestedType;
+}
+

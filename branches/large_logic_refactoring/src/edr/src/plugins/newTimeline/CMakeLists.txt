@@ -5,6 +5,7 @@ SET_PUBLIC_HEADERS(
 	TimeSliderWidget.h
 	TimelineControlsWidget.h
 	VisualizerSerieTimelineChannel.h
+	Export.h
 )
 
 SET_PRIVATE_HEADERS(

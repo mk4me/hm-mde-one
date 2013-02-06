@@ -5,8 +5,8 @@
 #include <vidlib/FileSequenceVideoStream.h>
 #include <vidlib/FFmpegVideoStream.h>
 #include <tinyxml.h>
-#include <core/PluginCommon.h>
-#include <core/ILog.h>
+#include <corelib/PluginCommon.h>
+#include <corelib/ILog.h>
 #include <osg/ImageSequence>
 #include <osgDB/ReadFile>
 
@@ -66,8 +66,9 @@ VideoParser::~VideoParser()
 {
 }
 
-void VideoParser::parseFile(const core::Filesystem::Path& path)
+void VideoParser::parse(const std::string & source)
 {
+	core::Filesystem::Path path(source);
     if ( core::Filesystem::fileExtension(path).compare(".imgsequence") == 0 ) {
 
         std::ostringstream errbuff;
@@ -148,32 +149,27 @@ void VideoParser::parseFile(const core::Filesystem::Path& path)
     }
 }
 
-plugin::IParser* VideoParser::create()
+plugin::IParser* VideoParser::create() const
 {
     return new VideoParser();
 }
 
-void VideoParser::getSupportedExtensions(Extensions & extensions) const
+void VideoParser::acceptedExpressions(Expressions & expressions) const
 {
-    core::IParser::ExtensionDescription extDesc;
-    extDesc.description = "Audio Video Interleaved format";
+	ExpressionDescription expDesc;
+	expDesc.description = "Audio Video Interleaved format";
+	expDesc.types.insert(typeid(VideoChannel));
+	expressions.insert(Expressions::value_type(".*\.avi$", expDesc));
 
-    extDesc.types.insert(typeid(VideoChannel));
+	expDesc.description = "Moving Picture Experts Group format";
+	expressions.insert(Expressions::value_type(".*\.mpg$", expDesc));
+	expressions.insert(Expressions::value_type(".*\.mpeg$", expDesc));
 
-    extensions["avi"] = extDesc;
 
-    extDesc.description = "Moving Picture Experts Group format";
-
-    extensions["mpg"] = extDesc;
-
-    extensions["mpeg"] = extDesc;
-
-    extDesc.description = "Custom image sequence format (XML based)";
-
-    extDesc.types.clear();
-    extDesc.types.insert(typeid(::VideoStream));
-
-    extensions["imgsequence"] = extDesc;
+	expDesc.description = "Custom image sequence format (XML based)";
+	expDesc.types.clear();
+	expDesc.types.insert(typeid(::VideoStream));
+	expressions.insert(Expressions::value_type(".*\.imgsequence$", expDesc));
 }
 
 void VideoParser::getObjects( core::Objects& objects )

@@ -23,6 +23,8 @@ class IIdentifiable
 public:
     //! \return Unikalny identyfikator obiektu
     virtual core::UniqueID getID() const = 0;
+
+	virtual ~IIdentifiable() {}
 };
 
 class IDescription
@@ -30,6 +32,8 @@ class IDescription
 public:
 	virtual const std::string getName() const = 0;
 	virtual const std::string  getDescription() const = 0;
+
+	virtual ~IDescription() {}
 };
 
 class ICoreElement : public IIdentifiable, public IDescription
@@ -37,6 +41,8 @@ class ICoreElement : public IIdentifiable, public IDescription
 public:
 
 	virtual ICoreElement * create() const = 0;
+
+	virtual ~ICoreElement() {}
 };
 
 }

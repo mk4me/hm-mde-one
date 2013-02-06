@@ -28,9 +28,11 @@ namespace core {
 
 namespace plugin 
 {
-    class IService : public ICoreElement
+    class IService : public IIdentifiable, public IDescription
     {
     public:
+
+		virtual ~IService() {}
  
         //! Inicjalizacja usługi. Następuje już po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich usług.

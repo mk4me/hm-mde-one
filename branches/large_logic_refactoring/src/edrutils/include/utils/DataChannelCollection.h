@@ -21,6 +21,9 @@
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
+//TODO
+//cała ta klasa do rev -> ciężko ją było skompilować budując np. plugin_c3d w edr!!
+
 //! Klasa agreguje klasy DataChannel, wszystkie dodawane kanały powinny mieć tyle samo wpisow
 //template <class Channel, template<typename Point, typename Time> class Interpolator = LerpInterpolator>
 template <class Channel, class TimeAccessor = DataChannelTimeAccessor<typename Channel::point_type, typename Channel::time_type>>
@@ -36,6 +39,7 @@ public:
 	typedef boost::shared_ptr<const ChannelType> ChannelConstPtr;
 	typedef std::vector<ChannelPtr> Collection;
 	typedef typename Collection::iterator iterator;
+	typedef typename Collection::const_iterator const_iterator;
 protected:
 	Collection channels;
 	//! numer konfiguracji
@@ -148,24 +152,45 @@ public:
 	//! \return maksymalna wartość w calej dziedzinie dla wszystkich kanałów
 	boost::tuple<PointType, TimeType, int> getMaxValue() const
 	{
-		int index = _getIndex(
-			[&](int i) { return channels[i]->getMaxValue(); },
-			[&](iterator b, iterator e) -> int { return std::max_element(channels.begin(), channels.end()); }
+		int index = _getIndex<const_iterator>(
+			[&](int i) -> PointType { 
+				PointType max = channels[i]->value(0);
+				for(int idx = 1; i < channels[i]->size(); ++idx){
+					max = std::max(max, channels[i]->value(idx));
+				}
+
+				return max;
+			},
+			[&](const_iterator b, const_iterator e) -> const_iterator { return std::max_element(channels.begin(), channels.end()); }
 		);
-		TimeType time = channels[index]->getMaxValueTime();
-		PointType val = channels[index]->getMaxValue();
-		return make_tuple(val, time, index);
+
+		TimeType time = channels[index]->argument(channels[index]->size()-1);
+		PointType val = channels[index]->value(0);
+		for(int i = 1; i < channels[index]->size(); ++i){
+			val = std::max(val, channels[index]->value(i));
+		}
+		return boost::make_tuple(val, time, index);
 	}
 	//! \return minimalna wartość w calej dziedzinie dla wszystkich kanałów
 	boost::tuple<PointType, TimeType, int> getMinValue() const
 	{
-		int index = _getIndex(
-			[&](int i) { return channels[i]->getMinValue(); },
-			[&](iterator b, iterator e) -> int { return std::min_element(channels.begin(), channels.end()); }
+		int index = _getIndex<const_iterator>(
+			[&](int i) -> PointType { 
+				PointType min = channels[i]->value(0);
+				for(int i = 1; i < channels[i]->size(); ++i){
+					min  = std::min(min, channels[i]->value(i));
+				}
+
+				return min;
+			},
+			[&](const_iterator b, const_iterator e) -> const_iterator { return std::min_element(channels.begin(), channels.end()); }
 		);
-		TimeType time = channels[index]->getMinValueTime();
-		PointType val = channels[index]->getMinValue();
-		return make_tuple(val, time, index);
+		TimeType time = channels[index]->argument(0);
+		PointType val = channels[index]->value(0);
+		for(int i = 1; i < channels[index]->size(); ++i){
+			val = std::min(val, channels[index]->value(i));
+		}
+		return boost::make_tuple(val, time, index);
 	}
 
 	//!
@@ -174,18 +199,23 @@ public:
 	{
 		// todo
 		UTILS_ASSERT(false);
+		return boost::tuple<PointType, int>();
 	}
 
 private:
 	template <class _FwdIt>
-	int _getIndex(std::function<PointType (int)> fillColletion, std::function<_FwdIt (_FwdIt, _FwdIt)> indexGetter) {
+	int _getIndex(std::function<PointType (int)> fillCollection, std::function<_FwdIt (_FwdIt, _FwdIt)> indexGetter) const {
 		UTILS_ASSERT(channels.size());
-		int count = static_cast<int>(channels.size());
-		std::vector<PointType> m(count);
-		for (int i = 0; i < count; ++i) {
-			m[i] = fillCollection(i);
-		}
-		return static_cast<int>(std::distance(m.begin(), indexGetter(m.begin(), m.end())));
+		//TODO
+		//to kiedyś działało?
+		//int count = static_cast<int>(channels.size());
+		//std::vector<PointType> m(count);
+		//for (int i = 0; i < count; ++i) {
+		//	m[i] = fillCollection(i);
+		//}
+		//const std::vector<PointType> & cm = m;
+		//return static_cast<int>(std::distance(cm.begin(), indexGetter(cm.begin(), cm.end())));
+		return 0;
 	}
 };
 ////////////////////////////////////////////////////////////////////////////////

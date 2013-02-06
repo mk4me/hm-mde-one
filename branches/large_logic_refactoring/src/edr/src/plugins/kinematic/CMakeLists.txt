@@ -3,6 +3,7 @@ BEGIN_PROJECT("dynamic")
 
 SET_UI_FILES (
 	TrajectoriesDialog.ui
+	LabeledDoubleSpinBox.ui
 )
 
 SET_PRIVATE_HEADERS(
@@ -30,6 +31,7 @@ SET_PRIVATE_HEADERS(
 	VisualizationScheme.h
 	MarkersVisualizationScheme.h
 	PCH.h
+	LabeledDoubleSpinBox.h
 )
 
 SET_PUBLIC_HEADERS (
@@ -59,6 +61,7 @@ SET_SOURCE_FILES(
 	VisualizationScheme.cpp
 	MarkersVisualizationScheme.cpp
 	PCH.cpp
+	LabeledDoubleSpinBox.cpp
 )
 
 SET_MOC_FILES(
@@ -67,6 +70,7 @@ SET_MOC_FILES(
 	MarkerSerie.h
 	TrajectoriesDialog.h
 	SchemeDialog.h
+	LabeledDoubleSpinBox.h
 )
 
 

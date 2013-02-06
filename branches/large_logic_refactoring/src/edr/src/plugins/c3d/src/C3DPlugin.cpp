@@ -1,3 +1,4 @@
+#include "C3DPCH.h"
 #include <corelib/IPlugin.h>
 #include <plugins/c3d/C3DCollections.h>
 #include "C3DParser.h"
@@ -8,6 +9,7 @@ CORE_PLUGIN_BEGIN("c3d", core::UID::GenerateUniqueID("{15AC5928-AAE3-4AB3-BFDB-4
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(ScalarChannelReaderInterface);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(ScalarChannel);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(VectorChannelReaderInterface);
+	CORE_PLUGIN_ADD_OBJECT_WRAPPER(VectorChannelCollection);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(VectorChannel);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(C3DAnalogChannel);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(EMGChannel);

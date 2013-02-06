@@ -35,9 +35,12 @@
 #include "SchemeDialog.h"
 #include "KinematicSerie.h"
 
+#include <coreUI/CoreWidgetAction.h>
+
+class LabeledDoubleSpinBox;
+
 namespace coreUI {
 	class CoreAction;
-	class CoreWidgetAction;
 }
 
 /*! Klasa dostarcza scenę 3d i zarządza obiektami na niej */
@@ -75,7 +78,7 @@ public:
     virtual void removeSerie(plugin::IVisualizer::ISerie *serie);
 
 	//! Ustawia daną serię aktywną
-	virtual void setActiveSerie(const plugin::IVisualizer::ISerie *serie);
+	virtual void setActiveSerie(plugin::IVisualizer::ISerie *serie);
 	//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
 	virtual const plugin::IVisualizer::ISerie * getActiveSerie() const;
 
@@ -125,7 +128,7 @@ private:
     //! \param step krok dla strzałek
     //! \param visible czy ma być widoczny po utworzeniu
     //! \return para (widget, spinbox) widget jest rodzicem spinboxa
-    std::pair<QWidget*, QSpinBox*> createSpinWidget( QWidget* parent, QString name, double step = 0.1);
+    LabeledDoubleSpinBox * createSpinWidget(QString name, double step = 0.1);
     //! Wymusza zmiane węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param m macierz z transformacja, która ma zostac ustawiona w wezle
@@ -171,17 +174,17 @@ private:
     //! Odwieza spinboxy skali, jeśli ulegly one zmianie
     void refreshScaleSpinboxes();
 
+	static coreUI::CoreWidgetAction * createWidgetAction(QWidget * widget, QObject * parent, const QString & sectionName, coreUI::CoreTitleBar::SideType side);
+
+	//! ustawienie aktywnej serii
+	//! \param idx indeks serii, która ma stac się aktywna. Musi być z zakresu <0, liczbaSerii)
+	void setActiveSerie(int idx);
+
 private slots:
     //! Dialog z ustawieniami trajektorii stanie się widoczny
     void showTrajectoriesDialog();
     //! Dialog z ustawieniami widoczności węzłów stanie się widoczny
     void showSchemeDialog();
-    //! ustawienie aktywnej serii
-    //! \param idx indeks serii, która ma stac się aktywna. Musi być z zakresu <0, liczbaSerii)
-    void setActiveSerie(int idx);
-    //! ustawienie aktywnej serii
-    //! \param serie seria, która ma stac się aktywna
-    void setActiveSerie(KinematicSerie* serie);
     //! Pobiera aktywna serie i zminia jej węzeł przeznaczony dla manipulatorów
     //! \param d wartość X nowej translacji
     void shiftX(double d);
@@ -261,24 +264,26 @@ private:
     SchemeDialog* schemeDialog;
     //! kolecja z seriami danych podpiętymi pod wizualizator
     std::vector<KinematicSerie*> series;
+
+	int currentSerie;
     //! spinbox pokazujący translacje X
-    QDoubleSpinBox * translateSpinWidgetX;
+    LabeledDoubleSpinBox * translateSpinWidgetX;
     //! spinbox pokazujący translacje Y
-    QDoubleSpinBox * translateSpinWidgetY;
+    LabeledDoubleSpinBox * translateSpinWidgetY;
     //! spinbox pokazujący translacje Z
-    QDoubleSpinBox * translateSpinWidgetZ;
+    LabeledDoubleSpinBox * translateSpinWidgetZ;
     //! spinbox pokazujący rotacje X
-    QDoubleSpinBox * rotateSpinWidgetX;
+    LabeledDoubleSpinBox * rotateSpinWidgetX;
     //! spinbox pokazujący rotacje Y
-    QDoubleSpinBox * rotateSpinWidgetY;
+    LabeledDoubleSpinBox * rotateSpinWidgetY;
     //! spinbox pokazujący rotacje Z
-    QDoubleSpinBox * rotateSpinWidgetZ;
+    LabeledDoubleSpinBox * rotateSpinWidgetZ;
     //! spinbox pokazujący skale X
-    QDoubleSpinBox * scaleSpinWidgetX;
+    LabeledDoubleSpinBox * scaleSpinWidgetX;
     //! spinbox pokazujący skale Y
-    QDoubleSpinBox * scaleSpinWidgetY;
+    LabeledDoubleSpinBox * scaleSpinWidgetY;
     //! spinbox pokazujący skale Z
-    QDoubleSpinBox * scaleSpinWidgetZ;
+    LabeledDoubleSpinBox * scaleSpinWidgetZ;
     //! manipulator translacji
     DraggerContainerPtr translateDragger;
     //! manipulator rotacji

@@ -18,6 +18,9 @@ namespace core {
     class IServiceManager
     {
     public:
+
+		virtual ~IServiceManager() {}
+
         //! \return Liczba usług.
         virtual int getNumServices() const = 0;
         //! \param idx Indeks usługi.

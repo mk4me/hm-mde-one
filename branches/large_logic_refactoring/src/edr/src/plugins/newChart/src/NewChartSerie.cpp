@@ -19,9 +19,10 @@ visualizer(visualizer),
 
 }
 
-void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
+void NewChartSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
 {
     this->data = data;
+	this->requestedType = requestedType;
 	std::string name;
 	data->tryGetMeta("core/name", name);
 
@@ -45,6 +46,16 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
 
     _zBase = curve->z();
     curve->setZ(_zBase + _z);
+}
+
+const utils::TypeInfo & NewChartSerie::getRequestedDataType() const
+{
+	return requestedType;
+}
+
+void NewChartSerie::update()
+{
+
 }
 
 void NewChartSerie::setTime( double time )
@@ -214,7 +225,7 @@ void NewChartSerie::setName( const std::string & name )
     this->name = name;
 }
 
-const std::string & NewChartSerie::getName() const
+const std::string NewChartSerie::getName() const
 {
     return name;
 }

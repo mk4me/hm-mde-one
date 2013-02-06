@@ -19,6 +19,9 @@
 #include "NewChartLegendItem.h"
 #include <limits>
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
+#include <coreui/CoreAction.h>
+#include <coreui/CoreWidgetAction.h>
 
 
 NewChartVisualizer::NewChartVisualizer() :
@@ -46,7 +49,6 @@ NewChartVisualizer::NewChartVisualizer() :
 	legend(nullptr),
 	boundsToRefresh(false),
 	qwtMarker(nullptr),
-	activeSerieCombo(nullptr),
 	pickerAction(nullptr),
 	valueMarkerAction(nullptr),
 	vMarkerAction(nullptr),
@@ -62,18 +64,13 @@ NewChartVisualizer::NewChartVisualizer() :
 
 NewChartVisualizer::~NewChartVisualizer()
 {
-    //przejrzec niszczenie dynamicznie tworzonych zasobów
-    if(eventsContextWidget != nullptr){
-        delete eventsContextWidget;
-    }
-
     delete upperBoundCurve;
     delete lowerBoundCurve;
     delete averageCurve;
 }
 
 
-QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager )
+QWidget* NewChartVisualizer::createWidget()
 {
     QWidget* widget = new QWidget();
     widget->setObjectName(QString::fromUtf8("newChartVisualizerWidget"));
@@ -96,74 +93,64 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     qobject_cast<QwtPlotCanvas *>(qwtPlot->canvas())->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
     qwtPlot->canvas()->installEventFilter(this);
 
-    activeSerieCombo = new QComboBox();
-    activeSerieCombo->addItem(tr("No active serie"));
-    activeSerieCombo->setEnabled(false);
-    connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
 
-    eventsContextWidget = new QWidget();
-    QVBoxLayout* eventsLayout = new QVBoxLayout();
-    eventsLayout->setMargin(0);
-    eventsLayout->setContentsMargins(0, 0, 0, 0);
-
-
-    eventsMenu = new QComboBox(eventsContextWidget);
+    QComboBox * eventsMenu = new QComboBox(eventsContextWidget);
     eventsMenu->setToolTip(tr("Events context"));
-    connect(eventsMenu, SIGNAL(activated(int)), this, SLOT(onEventContext(int)));
-    eventsLayout->addWidget(eventsMenu);
-    eventsContextWidget->setLayout(eventsLayout);
 
     QIcon eventsIcon(":/resources/icons/normalizacja1.png");
     eventsMenu->addItem(eventsIcon, tr("None events") , QVariant(C3DEventsCollection::IEvent::General));
     eventsMenu->addItem(eventsIcon, tr("Left events") , QVariant(C3DEventsCollection::IEvent::Left));
     eventsMenu->addItem(eventsIcon, tr("Right events"), QVariant(C3DEventsCollection::IEvent::Right));
+	connect(eventsMenu, SIGNAL(activated(int)), this, SLOT(onEventContext(int)));
 
-    picker.reset(new NewChartPicker(this));
+	coreUI::CoreWidgetAction * eventsAction = new coreUI::CoreWidgetAction(widget, tr("Events"), coreUI::CoreTitleBar::Right);
+	eventsAction->setDefaultWidget(eventsMenu);
+	widget->addAction(eventsAction);
+
+
+	picker.reset(new NewChartPicker(this));
     connect(picker.get(), SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
 
-    QIcon icon1;
-    icon1.addFile(QString::fromUtf8(":/resources/icons/picker.png"), QSize(), QIcon::Normal, QIcon::Off);
-    pickerAction = new QAction(tr("Picker"), this);
-    pickerAction->setIcon(icon1);
+    coreUI::CoreAction * pickerAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/resources/icons/picker.png"), tr("Picker"), widget, coreUI::CoreTitleBar::Left);
     statesMap[pickerAction] = picker;
     connect(pickerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
+	widget->addAction(pickerAction);
     
-    QIcon icon2;
-    icon2.addFile(QString::fromUtf8(":/resources/icons/value_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
-    valueMarkerAction = new QAction(tr("Value Marker"), this);
-    valueMarkerAction->setIcon(icon2);
+
+    coreUI::CoreAction * valueMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/resources/icons/value_tag.png"), tr("Value Marker"), widget, coreUI::CoreTitleBar::Left);
     statesMap[valueMarkerAction] =  NewChartStatePtr(new NewChartValueMarker(this));
     connect(valueMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
+	widget->addAction(valueMarkerAction);
 
-    QIcon icon3;
-    icon3.addFile(QString::fromUtf8(":/resources/icons/vertical_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
-    hMarkerAction = new QAction(tr("Horizontal Marker"), this);
-    hMarkerAction->setIcon(icon3);
+
+	coreUI::CoreAction * hMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/resources/icons/vertical_tag.png"), tr("Horizontal Marker"), widget, coreUI::CoreTitleBar::Left);
     statesMap[hMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Horizontal));
     connect(hMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
+	widget->addAction(hMarkerAction);
 
-    QIcon icon4;
-    icon4.addFile(QString::fromUtf8(":/resources/icons/horizontal_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
-    vMarkerAction = new QAction(tr("Vertical Marker"), this);
-    vMarkerAction->setIcon(icon4);
+
+	coreUI::CoreAction * vMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/resources/icons/horizontal_tag.png"), tr("Vertical Marker"), widget, coreUI::CoreTitleBar::Left);
     statesMap[vMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Vertical));
     connect(vMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
+	widget->addAction(vMarkerAction);
 
-    scaleAction = new QAction(tr("Scale to active"), this);
+
+	coreUI::CoreAction * scaleAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/resources/icons/pomiary.png"), tr("Scale to active"), widget, coreUI::CoreTitleBar::Left);
     scaleAction->setCheckable(true);
     scaleAction->setChecked(scaleToActive);
-    scaleAction->setIcon(QIcon(QString::fromUtf8(":/resources/icons/pomiary.png")));
     connect(scaleAction, SIGNAL(triggered(bool)), this, SLOT(scaleToActiveSerie(bool)));
+	widget->addAction(scaleAction);
 
 
-    QAction* showStats = new QAction(tr("Statistics"), widget);
+	QIcon iconStats;
+	iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-a.png"), QSize(), QIcon::Normal, QIcon::Off);
+	iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-b.png"), QSize(), QIcon::Normal, QIcon::On);
+	coreUI::CoreAction * showStats = new coreUI::CoreAction(tr("Operations"), iconStats, tr("Statistics"), widget, coreUI::CoreTitleBar::Left);
     showStats->setCheckable(true);
     showStats->setChecked(false);
-    QIcon iconStats;
-    iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-a.png"), QSize(), QIcon::Normal, QIcon::Off);
-    iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-b.png"), QSize(), QIcon::Normal, QIcon::On);
-    showStats->setIcon(iconStats);
     connect(showStats, SIGNAL(triggered(bool)), this, SLOT(showStatistics(bool)));
+	widget->addAction(showStats);
+
 
     for ( int i = 0; i < QwtPlot::axisCnt; ++i )    {
         QwtScaleWidget *scaleWidget = qwtPlot->axisWidget( i );
@@ -207,27 +194,44 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     statsTable->setVisible(false);
     widget->setLayout(layout);
 
-    auto shiftX = LabeledSpinbox::create(widget, tr("X:"), 0.03, -(std::numeric_limits<double>::max)(), (std::numeric_limits<double>::max)());
-    auto shiftY = LabeledSpinbox::create(widget, tr("Y:"), 0.03, -(std::numeric_limits<double>::max)(), (std::numeric_limits<double>::max)());
-    connect(shiftX.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftX(double)));
-    connect(shiftY.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftY(double)));
-    shiftSpinX = shiftX.get<2>();
-    shiftSpinY = shiftY.get<2>();
+    auto shiftX = LabeledSpinbox::create(tr("X:"), 0.03, -(std::numeric_limits<double>::max)(), (std::numeric_limits<double>::max)());
+    auto shiftY = LabeledSpinbox::create(tr("Y:"), 0.03, -(std::numeric_limits<double>::max)(), (std::numeric_limits<double>::max)());
+    connect(shiftX.second, SIGNAL(valueChanged(double)), this, SLOT(onShiftX(double)));
+    connect(shiftY.second, SIGNAL(valueChanged(double)), this, SLOT(onShiftY(double)));
+    shiftSpinX = shiftX.second;
+    shiftSpinY = shiftY.second;
 
-    auto scaleX = LabeledSpinbox::create(widget, tr("SX:"), 0.01, -5.0, 5.0);
-    auto scaleY = LabeledSpinbox::create(widget, tr("SY:"), 0.01, -5.0, 5.0);
-    connect(scaleX.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onScaleX(double)));
-    connect(scaleY.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onScaleY(double)));
-    scaleSpinX = scaleX.get<2>();
-    scaleSpinY = scaleY.get<2>();
+	coreUI::CoreWidgetAction * shiftSpinXAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
+	shiftSpinXAction->setDefaultWidget(shiftSpinX);
+	widget->addAction(shiftSpinXAction);
+
+	coreUI::CoreWidgetAction * shiftSpinYAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
+	shiftSpinXAction->setDefaultWidget(shiftSpinY);
+	widget->addAction(shiftSpinYAction);
+
+
+    auto scaleX = LabeledSpinbox::create(tr("SX:"), 0.01, -5.0, 5.0);
+    auto scaleY = LabeledSpinbox::create(tr("SY:"), 0.01, -5.0, 5.0);
+    connect(scaleX.second, SIGNAL(valueChanged(double)), this, SLOT(onScaleX(double)));
+    connect(scaleY.second, SIGNAL(valueChanged(double)), this, SLOT(onScaleY(double)));
+    scaleSpinX = scaleX.second;
+    scaleSpinY = scaleY.second;
+
+	coreUI::CoreWidgetAction * scaleSpinXAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
+	shiftSpinXAction->setDefaultWidget(scaleSpinX);
+	widget->addAction(scaleSpinXAction);
+
+	coreUI::CoreWidgetAction * scaleSpinYAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
+	shiftSpinXAction->setDefaultWidget(scaleSpinY);
+	widget->addAction(scaleSpinYAction);
     
-    bandsAction = new QAction("Bands", this);
-    QIcon iconBands;
-    iconBands.addFile(QString::fromUtf8(":/resources/icons/charts.png"), QSize(), QIcon::Normal, QIcon::Off);
-    bandsAction->setIcon(iconBands);
+    
+	coreUI::CoreAction * bandsAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/resources/icons/charts.png"), tr("Bands"), widget, coreUI::CoreTitleBar::Left);
     bandsAction->setCheckable(true);
     bandsAction->setChecked(false);
     connect(bandsAction, SIGNAL(triggered(bool)), this, SLOT(showBands(bool)));
+	widget->addAction(bandsAction);
+
 
     upperBoundCurve = new QwtPlotCurve(tr("Upper bound"));
     lowerBoundCurve = new QwtPlotCurve(tr("Lower bound"));
@@ -243,66 +247,27 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     upperBoundCurve->setVisible(false);
     lowerBoundCurve->setVisible(false);
     averageCurve->setVisible(false);
-    
-    core::IActionsGroupManager::GroupID id = manager->createGroup(tr("Operations"));
-    manager->addGroupAction(id, activeSerieCombo);
-    manager->addGroupAction(id, pickerAction);
-    manager->addGroupAction(id, showStats);
-    manager->addGroupAction(id, scaleAction);
-    manager->addGroupAction(id, bandsAction);
-
-    id = manager->createGroup(tr("Events"));
-    manager->addGroupAction(id, eventsContextWidget);
-
-    id = manager->createGroup(tr("Tags"));
-    manager->addGroupAction(id, valueMarkerAction);
-    manager->addGroupAction(id, hMarkerAction);
-    manager->addGroupAction(id, vMarkerAction);
-
-    id = manager->createGroup(tr("Active Data Series"));
-    manager->addGroupAction(id, shiftX.get<0>());
-    manager->addGroupAction(id, shiftY.get<0>());
-    manager->addGroupAction(id, scaleX.get<0>());
-    manager->addGroupAction(id, scaleY.get<0>());
+   
     return widget;
 }
 
-
-void NewChartVisualizer::getInputInfo( std::vector<core::IInputDescription::InputInfo>& info )
+void NewChartVisualizer::getSupportedTypes(core::TypeInfoList & supportedTypes) const
 {
-    core::IInputDescription::InputInfo input;
-
-    input.type = typeid(ScalarChannelReaderInterface);
-    input.name = "Scalar";
-    input.modify = false;
-    input.required = false;
-
-    info.push_back(input);
+    supportedTypes.push_back(typeid(ScalarChannelReaderInterface));
 }
 
-core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::ObjectWrapperConstPtr& data, const std::string& name )
+plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data)
 {
     NewChartSerie * ret = new NewChartSerie(this);
-    ret->setName(name);
-    ret->setData(data);
+	auto name = "Serie " + boost::lexical_cast<std::string>(series.size());
+    ret->setName( name);
+    ret->setData(requestedType, data);
     series.push_back(ret);
 
     plotChanged();
 
     statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), ret->getStats());
 
-    if(series.size() == 1){
-        activeSerieCombo->blockSignals(true);
-        activeSerieCombo->clear();
-        activeSerieCombo->addItem(name.c_str());
-        activeSerieCombo->setCurrentIndex(0);
-        activeSerieCombo->blockSignals(false);
-        setActiveSerie(0);
-    }else{
-        activeSerieCombo->addItem(name.c_str());
-    }
-
-    activeSerieCombo->setEnabled(true);
     NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
 	if(legendLabel != nullptr){	
 		std::string source;
@@ -324,7 +289,7 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     return ret;
 }
 
-core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::IVisualizer::SerieBase * serie )
+plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie( const plugin::IVisualizer::ISerie * serie )
 {
     return nullptr;
 }
@@ -338,7 +303,7 @@ void NewChartVisualizer::addPlotCurve( QwtPlotCurve* curve, const Scales& scales
     curve->attach(qwtPlot);
 }
 
-void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
+void NewChartVisualizer::removeSerie( plugin::IVisualizer::ISerie *serie )
 {
     NewChartSerie* chSerie = dynamic_cast<NewChartSerie*>(serie);
 
@@ -351,33 +316,35 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
         throw std::runtime_error("Given serie dos not belong to this visualizer!");
     }
 
-    activeSerieCombo->blockSignals(true);
     updateFIFO.push_back(boost::bind( &NewChartSerie::removeItemsFromPlot, *it ));
     updateFIFO.push_back(boost::bind( &QwtPlot::replot, qwtPlot));
     series.erase(it);
-    
-    if(series.empty() == true){
-        activeSerieCombo->addItem(tr("No active serie"));
-        activeSerieCombo->setCurrentIndex(0);
-        activeSerieCombo->setEnabled(false);
-    }else{
-        activeSerieCombo->clear();
-        int active = 0;
-        int count = series.size();
-        for (int i = 0; i < count; ++i) {
-            NewChartSerie* serie = series[i];
-            activeSerieCombo->addItem(serie->getName().c_str());
-            if (serie->isActive()) {
-                active = i;
-            }
-        }
-    
-        activeSerieCombo->setCurrentIndex(active);
-    }
-    
-    activeSerieCombo->blockSignals(false);
 
     plotChanged();
+}
+
+void NewChartVisualizer::setActiveSerie(plugin::IVisualizer::ISerie * serie)
+{
+	if(serie == nullptr){
+		setActiveSerie(-1);
+	}else{
+		for(int i = 0; i < series.size(); ++i){
+			if(series[i] == serie){
+				setActiveSerie(i);
+			}
+		}
+	}
+}
+
+const plugin::IVisualizer::ISerie * NewChartVisualizer::getActiveSerie() const
+{
+	for(int i = 0; i < series.size(); ++i){
+		if(series[i]->isActive() == true){
+			return series[i];
+		}
+	}
+
+	return nullptr;
 }
 
 void NewChartVisualizer::setActiveSerie( int idx )
@@ -472,7 +439,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
                 NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->curve));
                 if (series[i]->curve == curve) {
                     // powinno wywołać sygnał, który ustawi aktywną serię
-                    activeSerieCombo->setCurrentIndex(i);
+                    setActiveSerie(i);
                     legendLabel->setItemVisible(true);
                     series[i]->setVisible(true);
                     legendLabel->setItemVisibleEnabled(false);
@@ -597,13 +564,7 @@ void NewChartVisualizer::setShowLegend( bool val )
     showLegend = val;
 }
 
-const std::string& NewChartVisualizer::getName() const
-{
-    static std::string name = "Visualizer 2D";
-    return name;
-}
-
-core::IVisualizer* NewChartVisualizer::createClone() const
+plugin::IVisualizer* NewChartVisualizer::create() const
 {
     return new NewChartVisualizer();
 }
@@ -611,17 +572,6 @@ core::IVisualizer* NewChartVisualizer::createClone() const
 QIcon* NewChartVisualizer::createIcon()
 {
     return new QIcon(QString::fromUtf8(":/resources/icons/2D.png"));
-}
-
-
-void NewChartVisualizer::reset()
-{
-
-}
-
-void NewChartVisualizer::setUp( core::IObjectSource* source )
-{
-
 }
 
 int NewChartVisualizer::getMaxDataSeries( void ) const
@@ -1260,7 +1210,7 @@ boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> NewChartVisua
     return boost::make_iterator_range(series.cbegin(), series.cend());
 }
 
-QPixmap NewChartVisualizer::print() const 
+QPixmap NewChartVisualizer::takeScreenshot() const 
 {
     return QPixmap::grabWidget(qwtPlot);
 }

@@ -88,8 +88,8 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	addAction(screenshotAction);
 
 	//akcja czyszcząca wszystkie dane wizualizatora
-	dataDeselectAll = new QAction(tr("Clear all"), this);
-	connect(dataDeselectAll, SIGNAL(triggered()), this, SLOT(clearAllData()));
+	dataDeselectAll = new QAction(tr("Remove all"), this);
+	connect(dataDeselectAll, SIGNAL(triggered()), this, SLOT(removeAllSeries()));
 
 	//! Akcja odpowiedzialna za przełanczanie pomiędzy aktywnym obserwowaniem dataManagera w przyapdku zmian danych związanych z seriami danych
 	CoreAction * liveObserveDataAction = new CoreAction(tr("Utils"), QIcon(), tr("Live data update"), this, CoreTitleBar::Right);

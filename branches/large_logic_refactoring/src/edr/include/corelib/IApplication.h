@@ -33,6 +33,8 @@ namespace core {
 
 	public:
 
+		virtual ~IApplication() {}
+
 		//! \return Interfejs œcie¿ek aplikacji
 		virtual IPath * pathInterface() = 0;
 		//! \return Interfejs do logowania

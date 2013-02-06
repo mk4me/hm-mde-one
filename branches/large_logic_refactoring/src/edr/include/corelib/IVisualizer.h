@@ -10,6 +10,7 @@
 #define HEADER_GUARD_CORE__IVISUALIZER_H__
 
 #include <string>
+#include <corelib/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IIdentifiable.h>
 #include <QtGui/QPixmap>
@@ -65,6 +66,9 @@ namespace plugin
 		};
 
     public:
+
+		virtual ~IVisualizer() {}
+
 		//! Przeładowana
 		virtual IVisualizer * create() const = 0;
 
@@ -91,7 +95,7 @@ namespace plugin
 		virtual void removeSerie(ISerie* serie) = 0;
 
 		//! Ustawia daną serię aktywną
-		virtual void setActiveSerie(const ISerie * serie) = 0;
+		virtual void setActiveSerie(ISerie * serie) = 0;
 		//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
 		virtual const ISerie * getActiveSerie() const = 0;
 

@@ -36,17 +36,55 @@ namespace vidlib {
 //! Wizualizator wykresów.
 class VideoVisualizer : public plugin::IVisualizer
 {
-    struct Refresher;
-    struct WidgetUpdater;
+    UNIQUE_ID("{82978BE1-6A5F-4CE8-9CCE-302F82256A20}");
+	CLASS_DESCRIPTION("Video Visualizer", "Video Visualizer");
 
-    UNIQUE_ID("{82978BE1-6A5F-4CE8-9CCE-302F82256A20}", "Video Visualizer");
 private:
-    //! Nazwa wizualizatora.
-    std::string name;
+
+	struct Refresher;
+	struct WidgetUpdater;
+
+	class VideoSerie : public plugin::IVisualizer::ISerie, public plugin::IVisualizer::ITimeAvareSerieFeatures
+	{
+	public:
+		VideoSerie(VideoVisualizer * visualizer);
+
+		virtual ~VideoSerie();
+
+		virtual void setName(const std::string & name);
+
+		virtual const std::string getName() const;
+
+		virtual void setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+
+		virtual const core::ObjectWrapperConstPtr & getData() const;
+
+		virtual const utils::TypeInfo & getRequestedDataType() const;
+
+		virtual void update();
+
+		//! \return długość kanału w sekundach
+		virtual double getLength() const;
+
+		//! Czas zawiera się między 0 a getLength()
+		//! \param time Aktualny, lokalny czas kanału w sekundach
+		virtual void setTime(double time);
+
+		VideoStreamPtr stream();
+
+	private:
+		VideoVisualizer * visualizer;
+		std::string name;
+		core::ObjectWrapperConstPtr data;
+		utils::TypeInfo requestedType;
+	};
+
+	friend class VideoSerie;
+
+private:
     //! Viewer osg.
     osg::ref_ptr<osgui::QOsgDefaultWidget> viewer;
-    //!
-    VideoStreamPtr stream;
+    
     //! Czy używać textureRect?
     bool useTextureRect;
     //!
@@ -64,42 +102,16 @@ private:
     osg::ref_ptr<osgWidget::Widget> widget;
     //! Bieżący obrazek.
     osg::ref_ptr<vidlib::VideoImage> streamImage;
+	//!
+	VideoStreamPtr stream;
+
+	ISerie * currentSerie_;
 
 private:
 
 	void refreshImage();
 
 	bool getImage();
-
-    class VideoSerie : public plugin::IVisualizer::ITimeAvareSerieFeatures
-    {
-    public:
-        VideoSerie(VideoVisualizer * visualizer);
-
-		virtual ~VideoSerie();
-
-        virtual void setName(const std::string & name);
-
-        virtual const std::string & getName() const;
-
-        virtual void setData(const core::ObjectWrapperConstPtr & data);
-
-        virtual const core::ObjectWrapperConstPtr & getData() const;
-
-        //! \return długość kanału w sekundach
-        virtual double getLength() const;
-
-        //! Czas zawiera się między 0 a getLength()
-        //! \param time Aktualny, lokalny czas kanału w sekundach
-        virtual void setTime(double time);
-
-    private:
-        VideoVisualizer * visualizer;
-        std::string name;
-        core::ObjectWrapperConstPtr data;
-    };
-
-    friend class VideoSerie;
 
 public:
     //!
@@ -116,32 +128,36 @@ public:
     void updateWidget();
 
 public:
-    //! \see IVisualizer::getName
-    virtual const std::string& getName() const;
     //! \see IVisualizer::create
     virtual plugin::IVisualizer* create() const;
     //! \see IVisualizer::getSlotInfo
-    virtual void getInputInfo(std::vector<plugin::IInputDescription::InputInfo>& info);
+    virtual void getSupportedTypes(core::TypeInfoList & supportedTypes) const;
     //! Nic nie robi.
     //! \see IVisualizer::update
     virtual void update(double deltaTime);
     //! \see IVisualizer::createWidget
-    virtual QWidget* createWidget(core::IActionsGroupManager * manager);
+    virtual QWidget* createWidget();
     //! \see IVisualizer::createIcon
     virtual QIcon* createIcon();
-    virtual QPixmap print() const;
+    virtual QPixmap takeScreenshot() const;
 
     virtual int getMaxDataSeries() const;
 
     //! \return Seria danych która można ustawiac - nazwa i dane, nie zarządza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
-    virtual plugin::IVisualizer::ITimeAvareSerieFeatures* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+    virtual plugin::IVisualizer::ISerie* createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
 
-    virtual plugin::IVisualizer::ITimeAvareSerieFeatures* createSerie(const plugin::IVisualizer::ISerie * serie);
+    virtual plugin::IVisualizer::ISerie* createSerie(const plugin::IVisualizer::ISerie * serie);
 
     //! \param serie Seria danych do usunięcia, nie powinien usuwać tej serii! Zarządzamy nią my!!
     virtual void removeSerie(plugin::IVisualizer::ISerie* serie);
 
-    virtual void reset();
+	virtual void setActiveSerie(plugin::IVisualizer::ISerie * serie);
+
+	virtual const plugin::IVisualizer::ISerie * getActiveSerie() const;
+
+private:
+
+	void clear();
 };
 
 

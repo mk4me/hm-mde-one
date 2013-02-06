@@ -10,6 +10,7 @@ SET_PRIVATE_HEADERS(
 	Converter.h
 	VideoBufferChunk.h
 	VidLibPrivate.h
+	PCH.h
 )
 
 set (PUBLIC 
@@ -37,6 +38,7 @@ set(SOURCE
 	VideoError.cpp
 	FileSequenceVideoStream.cpp
 	VideoStreamAdapter.cpp
+	PCH.cpp
 	)
 
 if (CONFIG_VIDLIB_ENABLE_OSG)
@@ -76,5 +78,7 @@ SET_CONFIGURATION_INPUT_FILES(
 )
 
 CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")
+
+SET_PRECOMPILED_HEADER( PCH.h PCH.cpp)
 
 END_PROJECT()

@@ -33,6 +33,9 @@ namespace plugin
 		typedef std::map<std::string, ExpressionDescription> Expressions;
 
 	public:
+
+		virtual ~IParser() {}
+
 		//! \retrun Lista rozszerzeń, które parser obsługuje. Muszą być oddzielone średnikiem.
 		//! Obsługiwany format rozszerzenia: [ { *. | . } ]ext
 		virtual void acceptedExpressions(Expressions & expressions) const = 0;
@@ -52,6 +55,9 @@ namespace plugin
 	class ISourceParserCapabilities
 	{
 	public:
+
+		virtual ~ISourceParserCapabilities() {}
+
 		//! Przyporządkowanie parsera do konkretnego pliku.
         //! Na każdej instancji parsera ta metoda wywoływana jest maksymalnie jeden raz.
         //! \param source Ścieżka do źródła danych - plik, url, id urządzenia, ...
@@ -64,6 +70,9 @@ namespace plugin
 	class IStreamParserCapabilities
 	{
 	public:
+
+		virtual ~IStreamParserCapabilities() {}
+
 		//! \param stream Strumień wejściowy z którego dostarczamy danych
 		//! \param source Ścieżka źródła identyfikująca zawartość strumienia - np. rozszerzenie, protokół, adres
 		virtual void parse(const std::istream * stream, const std::string & source) = 0;
