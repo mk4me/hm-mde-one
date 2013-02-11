@@ -20,5 +20,5 @@ ADD_PROJECT(plugin_subject "BOOST;OSG;QT;corelib;UTILS;C3DLIB;KINEMATICLIB" "plu
 #ADD_PROJECT(plugin_python "BOOST;QT;corelib" "plugins/python")
 
 SET_PROJECTS_GROUP("view")
-ADD_PROJECT(old_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;OPENGL;C3DLIB")
+ADD_PROJECT(old_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;plugin_newTimeline;OPENGL;C3DLIB")
 ADD_PROJECT(hmm_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;C3DLIB;QWT;VIDLIB;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic")

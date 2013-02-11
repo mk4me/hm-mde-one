@@ -17,6 +17,8 @@
 #include <corelib/IService.h>
 #include <corelib/IParser.h>
 #include "Plugin.h"
+#include <QtCore/QObject>
+#include <QtCore/QTimer>
 
 class QSplashScreen;
 
@@ -42,8 +44,11 @@ namespace core {
 	class SourceManager;
 	class ServiceManager;
 
-	class Application
+	class Application : private QObject
 	{
+		Q_OBJECT;
+
+
 		friend class UIApplication;
 
 	private:
@@ -64,6 +69,12 @@ namespace core {
 
 		Filesystem::Path additionalPluginsPath;
 
+		QTimer visualizerUpdateTimer;
+		QTimer servicesUpdateTimer;
+
+		double visualizerTimeDelta;
+		double servicesTimeDelta;
+
 	private:
 
 		static bool trySetPathsFromRegistry(shared_ptr<Path> & path);
@@ -77,6 +88,12 @@ namespace core {
 		void safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer);
 		//void registerCoreDomainTypes();
 		void unpackPlugin(coreUI::CoreMainWindow * splashScreen, const PluginPtr & plugin);
+
+	private slots:
+
+		void updateServices();
+
+		void updateVisualizers();
 
 	public:
 		Application();

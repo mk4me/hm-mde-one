@@ -130,6 +130,11 @@ Visualizer::VisualizerSerie::~VisualizerSerie()
 	delete serie_;
 }
 
+Visualizer * Visualizer::VisualizerSerie::visualizer() const
+{
+	return visualizer_;
+}
+
 plugin::IVisualizer::ISerie * Visualizer::VisualizerSerie::serie() const
 {
 	return serie_;

@@ -49,6 +49,7 @@ public:
 		~VisualizerSerie();
 
 	public:
+		Visualizer * visualizer() const;
 		//! \return Podstawowy interfejs serii danych
 		plugin::IVisualizer::ISerie * serie() const;
 		//! \return Czasowy interfejs serii danych - nie musi być implementowany przez serię, wtedy nullptr

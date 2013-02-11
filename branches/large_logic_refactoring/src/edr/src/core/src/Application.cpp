@@ -49,9 +49,20 @@ public:
 using namespace coreUI;
 using namespace core;
 
-Application::Application()
+void Application::updateVisualizers()
 {
+	visualizerManager_->update(visualizerTimeDelta);
+}
 
+void Application::updateServices()
+{
+	serviceManager_->update(servicesTimeDelta);
+}
+
+Application::Application() : visualizerTimeDelta(0), servicesTimeDelta(0)
+{
+	connect(&visualizerUpdateTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
+	connect(&servicesUpdateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
 }
 
 int Application::initUIContext(int & argc, char *argv[])
@@ -249,6 +260,10 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 int Application::run()
 {
+	servicesTimeDelta = visualizerTimeDelta = 1000.0/25.0;
+
+	visualizerUpdateTimer.start(visualizerTimeDelta);
+	servicesUpdateTimer.start(servicesTimeDelta);	
 	return uiApplication_->exec();
 }
 

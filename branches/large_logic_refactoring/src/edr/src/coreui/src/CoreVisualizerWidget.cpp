@@ -271,6 +271,8 @@ void CoreVisualizerWidget::addSerie()
 		if(activeSerieSwitch->count() == 2){
 			activeSerieSwitch->setCurrentIndex(1);
 		}
+	}else{
+		visualizer_->setActiveSerie(serie);
 	}
 }
 
@@ -316,6 +318,8 @@ void CoreVisualizerWidget::removeSerie()
 				activeSerieSwitch->setEnabled(false);
 			}
 		}
+	}else{
+		visualizer_->setActiveSerie(nullptr);
 	}
 
 	visualizer_->destroySerie(serie);

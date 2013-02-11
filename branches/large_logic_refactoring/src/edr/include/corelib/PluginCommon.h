@@ -41,7 +41,7 @@ namespace plugin
 		 return __coreApplication->fileDataManagerReader();
 	 }
 
-	inline core::IDataHierarchyManagerReader* getDataHierachuManagerReader()
+	inline core::IDataHierarchyManagerReader* getDataHierachyManagerReader()
 	{
 		return __coreApplication->dataHierarchyManagerReader();
 	}

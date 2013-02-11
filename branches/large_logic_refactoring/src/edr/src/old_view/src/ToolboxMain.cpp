@@ -20,6 +20,10 @@
 #include <coreui/CoreDockWidget.h>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/CoreSplitableDockWidgetT.h>
+#include <timelinelib/IChannel.h>
+#include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
+#include <plugins/newTimeline/ITimelineService.h>
+
 
 using namespace coreUI;
 using namespace core;
@@ -140,6 +144,9 @@ void ToolboxMain::actionCreateVisualizer()
 	VisualizerWidget * dockWidget = new VisualizerWidget();
 	CoreVisualizerWidget* widget = new CoreVisualizerWidget(VisualizerPtr(visProto->create()), this, Qt::WindowTitleHint);
 	widget->getVisualizer()->addDataSource(core::Visualizer::VisualizerDataSourcePtr(new core::VisualizerMemoryDataSource(plugin::getDataManagerReader())));
+
+	widget->getVisualizer()->addObserver(this);
+
 	QList<QAction*> actions = widget->getVisualizer()->getOrCreateWidget()->actions();
 	actions.append(widget->actions());
 	actions.append(dockWidget->actions());
@@ -214,4 +221,27 @@ CoreDockWidget * ToolboxMain::embeddWidget(QWidget * widget, const QString & win
 	CoreTitleBar::supplyCoreTitleBarWithActions(consoleTitleBar, widget);
 
 	return embeddedDockWidget;
+}
+
+void ToolboxMain::update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication )
+{
+	static int idx = 0;
+	auto timeline = queryServices<ITimelineService>(getServiceManager());
+	if(timeline != nullptr){
+		if(modyfication == Visualizer::ADD_SERIE){
+			//utwórz kanał
+			auto channel = core::shared_ptr<timeline::IChannel>(new VisualizerSerieTimelineChannel(serie->visualizer(), serie));
+			//dodaj do timeline
+			timeline->addChannel(boost::lexical_cast<std::string>(idx), channel);
+			//zapamiętaj
+			seriesToChannels[serie] = std::make_pair(idx++, channel);
+		}else{
+			//usuń kanał
+			auto it = seriesToChannels.find(serie);
+			if(it != seriesToChannels.end()){
+				timeline->removeChannel(boost::lexical_cast<std::string>(it->second.first));
+				seriesToChannels.erase(serie);
+			}
+		}
+	}
 }

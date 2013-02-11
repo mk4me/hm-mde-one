@@ -54,6 +54,10 @@ SET_SOURCE_FILES(
 	Plugin.cpp
 )
 
+SET_MOC_FILES(
+	Application.h
+)
+
 SET_PRECOMPILED_HEADER (CorePCH.h CorePCH.cpp)
 
 END_PROJECT()
