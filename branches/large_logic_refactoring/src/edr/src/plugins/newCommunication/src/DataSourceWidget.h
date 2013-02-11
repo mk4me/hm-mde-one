@@ -171,7 +171,7 @@ private:
 
 	static bool isItemLoadable(const QTreeWidgetItem * item);
 
-	void loadSubjectHierarchy(const std::map<int, std::vector<core::ObjectWrapperPtr>> & loadedFilesObjects);
+	void loadSubjectHierarchy(const std::map<int, std::vector<core::ObjectWrapperConstPtr>> & loadedFilesObjects);
 	void unloadSubjectHierarchy(const std::set<int> & filesIDs);
 	void unloadSubjectHierarchy();
 

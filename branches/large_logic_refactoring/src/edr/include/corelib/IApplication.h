@@ -14,6 +14,7 @@ namespace core {
 	class ILog;
 	class IPath;
 	class IDataManagerReader;
+	class IParserManagerReader;
 	class IStreamManagerReader;
 	class IFileManagerReader;
 	class IDataHierarchyManagerReader;
@@ -41,6 +42,8 @@ namespace core {
 		virtual ILog * log() = 0;
 		//! \return Interfejs do czytania danych
 		virtual IDataManagerReader * dataManagerReader() = 0;
+		//! \return Interfejs do czytania informacji o parserach
+		virtual IParserManagerReader * parserManagerReader() = 0;
 		//! \return Interfejs do czytania danych strumieniowych
 		virtual IStreamManagerReader * streamDataManagerReader() = 0;
 		//! \return Interfejs do czytania danych strumieniowych

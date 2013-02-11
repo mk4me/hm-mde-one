@@ -279,6 +279,9 @@ Application::~Application()
 	CORE_LOG_INFO("Releasing plugins");
 	pluginLoader_.reset();
 
+	CORE_LOG_INFO("Cleaning UI context");
+	uiApplication_.reset();
+
 	CORE_LOG_INFO("Cleaning tmp files");
 	Filesystem::deleteDirectory(getPathInterface()->getTmpPath());
 

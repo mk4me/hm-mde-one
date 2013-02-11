@@ -14,6 +14,9 @@ VisualizerManager::~VisualizerManager()
 {
 	if(visualizerInstances_.empty() == false){
 		CORE_LOG_DEBUG("Some visualizer instances still alive");
+		for(auto it = visualizerInstances_.begin(); it != visualizerInstances_.end(); ++it){
+			(*it).first->destroyAllSeries();
+		}
 	}
 
 	skipNotify = true;

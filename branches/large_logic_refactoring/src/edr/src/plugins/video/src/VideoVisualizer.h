@@ -70,8 +70,6 @@ private:
 		//! \param time Aktualny, lokalny czas kanału w sekundach
 		virtual void setTime(double time);
 
-		VideoStreamPtr stream();
-
 	private:
 		VideoVisualizer * visualizer;
 		std::string name;
@@ -84,6 +82,7 @@ private:
 private:
     //! Viewer osg.
     osg::ref_ptr<osgui::QOsgDefaultWidget> viewer;
+	//osgui::QOsgDefaultWidget * viewer;
     
     //! Czy używać textureRect?
     bool useTextureRect;
@@ -96,10 +95,13 @@ private:
 
     //! Obiekt pilnujący współczynników proporcji widgetów.
     osg::ref_ptr<osgui::AspectRatioKeeper> ratioKeeper;
+	//osgui::AspectRatioKeeper * ratioKeeper;
     //! Obszar roboczy.
     osg::ref_ptr<osgWidget::Box> workspace;
+	//osgWidget::Box * workspace;
     //! Widget w którym rysujemy.
-    osg::ref_ptr<osgWidget::Widget> widget;
+    //osg::ref_ptr<osgWidget::Widget> widget;
+	osgWidget::Widget * widget;
     //! Bieżący obrazek.
     osg::ref_ptr<vidlib::VideoImage> streamImage;
 	//!

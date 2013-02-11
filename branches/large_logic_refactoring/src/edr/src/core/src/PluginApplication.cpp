@@ -41,6 +41,11 @@ IServiceManager * PluginApplication::serviceManager()
 	return getServiceManager();
 }
 
+IParserManagerReader * PluginApplication::parserManagerReader()
+{
+	return getParserManager();
+}
+
 IStreamManagerReader * PluginApplication::streamDataManagerReader()
 {
 	return getStreamDataManager();
@@ -91,6 +96,11 @@ ISourceManager * MainViewApplication::sourceManager()
 IServiceManager * MainViewApplication::serviceManager()
 {
 	return getServiceManager();
+}
+
+IParserManagerReader * MainViewApplication::parserManagerReader()
+{
+	return getParserManager();
 }
 
 IStreamManagerReader * MainViewApplication::streamDataManagerReader()

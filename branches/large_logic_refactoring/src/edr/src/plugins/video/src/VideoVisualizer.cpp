@@ -74,16 +74,18 @@ void VideoVisualizer::VideoSerie::setData(const utils::TypeInfo & requestedType,
 {
 	bool success = false;
 	if (data->isSupported(typeid(VideoStreamPtr))) {
-		success = data->clone()->tryGet(visualizer->stream);
+		auto clonedData = data->clone();
+		visualizer->clear();
+		success = clonedData->tryGet(visualizer->stream);
 	} else if (data->isSupported(typeid(VideoChannel))) {
-		VideoChannelPtr channel = data->clone()->get();
+		auto clonedData = data->clone();
+		VideoChannelPtr channel = clonedData->get();
 		if (channel) {
+			visualizer->clear();
 			visualizer->stream = channel->getVideoStream();
-			success = visualizer->stream != nullptr;
+			success = (visualizer->stream != nullptr);
 		}
 	}
-
-	visualizer->clear();
 
 	this->data = data;
 	this->requestedType = requestedType;
@@ -131,14 +133,14 @@ void VideoVisualizer::VideoSerie::setTime(double time)
 }
 
 VideoVisualizer::VideoVisualizer() :
-useTextureRect(true), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1)
+useTextureRect(true), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1), currentSerie_(nullptr)
 {
 
 }
 
 VideoVisualizer::~VideoVisualizer()
 {
-    viewer = nullptr;
+
 }
 
 plugin::IVisualizer* VideoVisualizer::create() const

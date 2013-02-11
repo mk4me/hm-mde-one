@@ -2,13 +2,13 @@ BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
 	ITimelineService.h
-	TimeSliderWidget.h
-	TimelineControlsWidget.h
 	VisualizerSerieTimelineChannel.h
 	Export.h
 )
 
 SET_PRIVATE_HEADERS(
+	TimeSliderWidget.h
+	TimelineControlsWidget.h
 	TimelineService.h
 	TimelineWidget.h
 	ChannelWidget.h

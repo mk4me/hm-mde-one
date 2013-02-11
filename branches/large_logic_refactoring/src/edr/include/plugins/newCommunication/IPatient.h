@@ -110,7 +110,7 @@ typedef core::shared_ptr<const IPatient> PatientConstPtr;
 
 }
 
-CORE_DEFINE_WRAPPER(communication::IPatient, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
-CORE_DEFINE_WRAPPER(communication::AntropometricData, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(communication::IPatient, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(communication::AntropometricData, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
 #endif HEADER_GUARD___IPATIENT_H__

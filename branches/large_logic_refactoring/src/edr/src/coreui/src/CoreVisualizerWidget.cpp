@@ -5,6 +5,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QComboBox>
 #include <QtGui/QMenu>
+#include <QtGui/QToolButton>
 #include <iterator>
 #include <corelib/StringTools.h>
 #include <boost/foreach.hpp>
@@ -48,28 +49,17 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	setLayout(layout);
 	layout->addWidget(visWidget);
 
-	////ikona + text
-	//TODO
-	//to robimy na zewnątrz jak wiemy że będzie np. titlebar
-	//iconLabelAction = new CoreWidgetAction(nullptr, tr("Decoration"), CoreTitleBar::Left);
-	//QLabel * iconLabel = new QLabel;
-	//iconLabel->setPixmap(QPixmap(QString::fromUtf8(":/resources/icons/wizualizacja2.png")));
-	//QLabel * textLabel = new QLabel;
-	//textLabel->setText(tr("Visualizer"));
-	//QWidget * iconLabelWidget = new QWidget;
-	//iconLabelWidget->setLayout(new QHBoxLayout);
-	//iconLabelWidget->layout()->addWidget(iconLabel);
-	//iconLabelWidget->layout()->addWidget(textLabel);
-	//iconLabelAction->setDefaultWidget(iconLabelWidget);
-	//addAction(iconLabelAction);
-
 	//wybór danych
-	QMenu * dataSelectioMenu = new QMenu(tr("Data"));
-	dataSelectioMenu->setIcon(QIcon(QPixmap(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png"))));
+	QMenu * dataSelectioMenu = new QMenu(tr("Data"), visWidget);
+	dataSelectioMenu->setIcon(QIcon(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png")));
 	connect(dataSelectioMenu, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
 	connect(dataSelectioMenu, SIGNAL(aboutToHide()), this, SLOT(clearSourcesMenu()));
 	CoreWidgetAction * dataSelectAction = new CoreWidgetAction(this, tr("Settings"), CoreTitleBar::Left);
-	dataSelectAction->setDefaultWidget(dataSelectioMenu);
+	QToolButton * dataSelectionButton = new QToolButton(visWidget);
+	dataSelectionButton->setText(tr("Data"));
+	dataSelectionButton->setIcon(QIcon(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png")));
+	dataSelectionButton->setMenu(dataSelectioMenu);
+	dataSelectAction->setDefaultWidget(dataSelectionButton);
 	addAction(dataSelectAction);
 
 	//ustawianie aktualnej serii danych

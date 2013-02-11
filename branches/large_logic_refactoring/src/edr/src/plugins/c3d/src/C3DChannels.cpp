@@ -4,6 +4,25 @@
 #include <stdexcept>
 #include <utils/Debug.h>
 
+#define DEFINE_CHANNEL(name)																\
+	name##Channel::name##Channel(int samplesPerSec) : VectorChannel(samplesPerSec) {}		\
+	        																				\
+	name##Channel::name##Channel(const name##Channel& channel) : VectorChannel(channel) {}	\
+																							\
+	name##Channel::name##Channel(const c3dlib::C3DParser& data, int channelNo )				\
+	: VectorChannel( data.getPointFrequency()) {											\
+		  c3dlib::C3DParser::IPointConstPtr point = data.getPoint(channelNo);				\
+		  int numSamples = data.getNumPointFrames();										\
+		  for(int i = 0; i < numSamples; ++i) { addPoint(point->getValue(i)); }				\
+		  setName(point->getLabel());														\
+		  setValueBaseUnit(point->getUnit()); }												\
+																							 \
+	name##Channel* name##Channel::clone() const { return new name##Channel(*this); }
+
+DEFINE_CHANNEL(Force);
+DEFINE_CHANNEL(Moment);
+DEFINE_CHANNEL(Angle);
+DEFINE_CHANNEL(Power);
 
 VectorToScalarAdaptor::VectorToScalarAdaptor(const VectorChannelReaderInterfaceConstPtr & vector, size_type idx, const std::string & name)
 	: descriptor(*vector), vector(vector), index(idx), name(name)
@@ -454,26 +473,3 @@ MarkerChannel * MarkerChannel::clone() const
 	return new MarkerChannel(*this);
 }
 
-#define IMPLEMENT_CHANNEL(name)																	 \
-	name##Channel::name##Channel(int samplesPerSec) : VectorChannel(samplesPerSec) {}			 \
-	\
-	name##Channel::name##Channel(const name##Channel& channel) : VectorChannel(channel) {}		 \
-	\
-	name##Channel::name##Channel(const c3dlib::C3DParser& data, int channelNo ) :				 \
-	VectorChannel( data.getPointFrequency())													 \
-{																							 \
-	c3dlib::C3DParser::IPointConstPtr point = data.getPoint(channelNo);						 \
-	\
-	int numSamples = data.getNumPointFrames();												 \
-	\
-	for (int i = 0; i < numSamples; ++i) {	addPoint(point->getValue(i)); }					 \
-	setName(point->getLabel());																 \
-	setValueBaseUnit(point->getUnit());														 \
-}																							 \
-	\
-	name##Channel* name##Channel::clone() const {  return new name##Channel(*this); }			
-
-IMPLEMENT_CHANNEL(Force);
-IMPLEMENT_CHANNEL(Moment);
-IMPLEMENT_CHANNEL(Angle);
-IMPLEMENT_CHANNEL(Power);

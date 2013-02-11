@@ -24,14 +24,9 @@ public:
 
     virtual core::ObjectWrapperPtr createSubject() = 0;
 
-    virtual core::ObjectWrapperPtr createSession(const core::ObjectWrapperConstPtr & subject, const core::ConstObjectsList & wrappers) = 0;
+    virtual core::ObjectWrapperPtr createSession(const core::ObjectWrapperConstPtr & subject) = 0;
 
-    virtual core::ObjectWrapperPtr createMotion(const core::ObjectWrapperConstPtr & session,
-        const core::ConstObjectsList & wrappers) = 0;    
-
-private:
-
-    virtual const FilteredDataFacoryPtr & getFilteredDataFacotry() const = 0;
+    virtual core::ObjectWrapperPtr createMotion(const core::ObjectWrapperConstPtr & session) = 0;
 };
 
 }

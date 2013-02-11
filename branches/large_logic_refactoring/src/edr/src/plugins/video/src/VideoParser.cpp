@@ -132,7 +132,7 @@ void VideoParser::parse(const std::string & source)
             realStream->setTime(0);
 
 
-            adapter->set(realStream);
+            //adapter->set(realStream);
 			//TODO
 			//metadane
             //adapter->setName(path.filename().string());

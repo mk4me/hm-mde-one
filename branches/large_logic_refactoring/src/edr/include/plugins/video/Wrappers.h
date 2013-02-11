@@ -43,7 +43,7 @@ public:
 
 	virtual VideoChannel* clone() const
 	{
-		VideoStreamPtr v(new VideoStream(videoStream)); //videoStream->clone();
+		VideoStreamPtr v(new VideoStream(videoStream));
 		return new VideoChannel(v,name);
 	}
 

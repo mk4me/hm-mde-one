@@ -32,4 +32,6 @@
 #  define UTILS_DECL_HIDDEN
 #endif
 
+# define UTILS_EXTERN_DECL extern
+
 #endif  // __HEADER_GUARD__UTILS_EXPORT_H__

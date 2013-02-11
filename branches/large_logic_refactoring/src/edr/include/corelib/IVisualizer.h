@@ -30,6 +30,9 @@ namespace plugin
         class ISerie
         {
         public:
+
+			virtual ~ISerie() {}
+
             //! \param name Nazwa serii danych do ustawienia
             virtual void setName(const std::string & name) = 0;
             //! \return Nazwa serii danych
@@ -49,6 +52,9 @@ namespace plugin
         class ITimeAvareSerieFeatures
         {
         public:
+
+			virtual ~ITimeAvareSerieFeatures() {}
+
 			//! \param time Aktualny czas serii - najprawdopodobniej timeline będzie go ustawiał
             virtual void setTime(double time) = 0;
 			//! \return Czas trwania serii
@@ -59,6 +65,9 @@ namespace plugin
 		class ITimeEditableSerieFeatures
 		{
 		public:
+
+			virtual ~ITimeEditableSerieFeatures() {}
+
 			//! \param offset Przesunięcie serii względem aktualnego stanu (pierwsze względem 0)
 			virtual void setOffset(double offset) = 0;
 			//! \param scale Zmienia skalę serii danych

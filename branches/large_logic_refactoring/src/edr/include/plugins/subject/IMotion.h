@@ -13,11 +13,12 @@
 #include <plugins/subject/Types.h>
 #include <corelib/BaseDataTypes.h>
 #include <plugins/subject/ISession.h>
+#include <corelib/IMemoryDataManager.h>
 
 namespace PluginSubject{
 
 //! Abstrakcyjna klasa reprezentująca pojedynczy ruch obiektu w ramach sesji
-class IMotion
+class IMotion : public core::IDataManagerReaderOperations
 {
 public:
 
@@ -36,96 +37,28 @@ public:
     //! \return Lokalna nazwa ruchu w ramach sesji
     virtual const std::string & getLocalName() const = 0;
 
-    //! \return Ilość obiektów domenowych Motiona
-    virtual int size() const = 0;
-    //! \param i Indeks obiektu domenowego który chcemy pobrać [0 - (size() - 1)]
-    //! \return Obiekt domenowy
-    virtual const core::ObjectWrapperConstPtr & get(int i) const = 0;
+	//! \data Dane wchodzące pod kontrolę DM
+	virtual void addData(const core::ObjectWrapperConstPtr & data) = 0;
+	//! Dane usuwane z DM
+	virtual void removeData(const core::ObjectWrapperConstPtr & data) = 0;
 
-    template <class Ptr>
-    bool tryGet(Ptr& object, bool exact = false) const
-    {
-        auto s = size();
-        for(int i = 0; i < s; ++i){
-            if (get(i)->tryGet(object, exact)) {
-                return true;
-            }
-        }
+	virtual const bool tryAddData(const core::ObjectWrapperConstPtr & data) = 0;
 
-        return false;
-    }
+	virtual const bool tryRemoveData(const core::ObjectWrapperConstPtr & data) = 0;
 
-    template<class Channel, class Collection>
-    void getWrappersFromCollection(const Collection& collection, std::vector<core::ObjectWrapperConstPtr> & channels) const
-    {
-        Collection& tempCollection = const_cast<Collection&>(collection);
-        int count = tempCollection.getNumChannels();
-        auto s = size();
-        for (int i = 0; i < count; ++i) {
-            Channel c = boost::dynamic_pointer_cast<Channel::element_type>(tempCollection.getChannel(i));
-            for(auto j = 0; j < s ; ++j){
-                Channel wc;
-                auto obj = get(j);
-                if (obj->tryGet(wc)) {
-                    if (wc == c) {
-                        channels.push_back(obj);
-                    }
-                }
-            }
-        }
-    }
+	virtual void getObjects(core::ConstObjectsList & objects) const = 0;
 
-    virtual bool hasObjectOfType(const core::TypeInfo& type, bool exact = false) const
-    {
-        auto s = size();
-        for(int i = 0; i < s; ++i){
-            auto obj = get(i);
+	virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const = 0;
 
-            if(obj->getTypeInfo() == type || (exact == false && obj->isSupported(type))){
-                return true;
-            }
-        }
+	virtual void getObjects(core::ObjectWrapperCollection& objects) const = 0;
 
-        return false;
-    }
+	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const = 0;
 
-    virtual core::ObjectWrapperConstPtr getWrapperOfType(const core::TypeInfo& type, bool exact = false) const
-    {
-        auto s = size();
-        for(int i = 0; i < s; ++i){
-            auto obj = get(i);
-
-            if(obj->getTypeInfo() == type || (exact == false && obj->isSupported(type))){
-                return obj;
-            }
-        }
-
-        throw std::runtime_error("Object type not stored in Motion");
-    }
-
-    virtual void getWrappers(core::ConstObjectsList & wrappers) const
-    {
-        auto s = size();
-        for(int i = 0; i < s; ++i){
-            wrappers.push_back(get(i));
-        }
-    }
-
-    virtual void getWrappers(core::ConstObjectsList & wrappers, const core::TypeInfo& type, bool exact = false) const
-    {
-        auto s = size();
-        for(int i = 0; i < s; ++i){
-            auto obj = get(i);
-
-            if(obj->getTypeInfo() == type || (exact == false && obj->isSupported(type))){
-                wrappers.push_back(obj);
-            }
-        }
-    }
+	virtual const bool hasObject(const core::TypeInfo & type, bool exact) const = 0;
 };
 
 }
 
-CORE_DEFINE_WRAPPER(PluginSubject::IMotion, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(PluginSubject::IMotion, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 #endif //   HEADER_GUARD___IMOTION_H__

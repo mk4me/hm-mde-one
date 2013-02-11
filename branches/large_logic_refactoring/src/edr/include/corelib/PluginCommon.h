@@ -35,10 +35,25 @@ namespace plugin
 	{
 		return __coreApplication->serviceManager();
 	}
+	 
+	 inline core::IFileManagerReader * getFileDataManagerReader()
+	 {
+		 return __coreApplication->fileDataManagerReader();
+	 }
+
+	inline core::IDataHierarchyManagerReader* getDataHierachuManagerReader()
+	{
+		return __coreApplication->dataHierarchyManagerReader();
+	}
 
 	inline core::ISourceManager* getSourceManager()
 	{
 		return __coreApplication->sourceManager();
+	}
+
+	inline core::IParserManagerReader* getParserManagerReader()
+	{
+		return __coreApplication->parserManagerReader();
 	}
 
     //! \return Interfejs dostępu do ścieżek aplikacji

@@ -213,12 +213,12 @@ private:
 			invoker_.reset(new Invoker());
 			invoker_->setVerbose(true);
 			setInvoker(boost::is_base_of<WsdlPull::CustomSSLWsdlInvoker, Invoker>());
-			LOG_INFO("Created Invoker " << typeid(Invoker).name());
+			PLUGIN_LOG_INFO("Created Invoker " << typeid(Invoker).name());
 		}catch(std::exception & e){
-			LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with error: " << e.what());
+			PLUGIN_LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with error: " << e.what());
 			throw webservices::WSConnectionInitializationException(e.what());
 		}catch(...){
-			LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with unknown error");
+			PLUGIN_LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with unknown error");
 			throw webservices::WSConnectionInitializationException("Unknown connection initialization error");
 		}
 	}

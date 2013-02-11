@@ -119,6 +119,12 @@ void ObjectWrapper::initialize() const
 	}
 }
 
+const ObjectWrapperPtr ObjectWrapper::clone() const
+{
+	initialize();
+	return __clone();
+}
+
 void ObjectWrapper::reset()
 {
 	__reset();

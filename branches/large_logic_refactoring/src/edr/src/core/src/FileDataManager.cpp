@@ -558,9 +558,11 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 
 	sourceParsersSet.insert(sourceParsers.begin(), sourceParsers.end());
 	streamParsersSet.insert(streamParsers.begin(), streamParsers.end());
-	IParserManagerReader::ParserPrototypes sourcesLeft;
+	IParserManagerReader::ParserPrototypes sourcesLeft(sourceParsersSet.size());
 
-	std::set_difference(sourceParsersSet.begin(), sourceParsersSet.end(), streamParsersSet.begin(), streamParsersSet.end(), sourcesLeft.end());
+	auto lastIT = std::set_difference(sourceParsersSet.begin(), sourceParsersSet.end(), streamParsersSet.begin(), streamParsersSet.end(), sourcesLeft.begin());
+
+	sourcesLeft.erase(lastIT, sourcesLeft.end());
 
 	//preferuje uzycie parserów z w³asn¹ obs³ug¹ I/O - wierze ¿e zrobi¹ to maksymalnie wydajnie wg w³asnych zasad
 	initializeParsers(streamParsers, file, streamParserCreator, objects);

@@ -36,15 +36,15 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
 #if (defined _WIN32) || (defined _WIN64)
 	//konfiguracja wsdlpulla żeby pisać pliki tymczasowe tam gdzie mamy prawo zapisu
 	//pod windows
-	XmlUtils::TMPFILESDIR = core::getPathInterface()->getTmpPath().string();
+	XmlUtils::TMPFILESDIR = plugin::getPathInterface()->getTmpPath().string();
     // rev - zeby to przeszlo, w nagłówku musial być wywalony warunek na WIN32
-    WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();
+    WsdlPull::SCHEMADIR = (plugin::getPathInterface()->getResourcesPath() / "schemas/").string();
 #endif
     WsdlPull::WsdlParser::useLocalSchema_ = false;
     //konfigurujemy ustawienia połączeń - adresy serwisów i ftp
     auto connectionsManager = DataSourceConnectionManager::create();
 
-    setConnectionsSerwerCertificatePath(core::getPathInterface()->getResourcesPath() / "v21.pjwstk.edu.pl.crt");
+    setConnectionsSerwerCertificatePath(plugin::getPathInterface()->getResourcesPath() / "v21.pjwstk.edu.pl.crt");
 
 	connectionsManager->accountFactoryWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDBMed/AccountFactoryWS.svc?wsdl");
     connectionsManager->administrationWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AdministrationWS.svc?wsdl");
@@ -105,7 +105,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     localStorage = DataSourceLocalStorage::create();
 
     //inicjuję managera danych dla użytkowników ścieżką do wswólnej bazy danych
-    localStorage->setLocalStorageDataPath(core::getPathInterface()->getApplicationDataPath() / "db" / "localStorage.db");
+    localStorage->setLocalStorageDataPath(plugin::getPathInterface()->getApplicationDataPath() / "db" / "localStorage.db");
 
     //Zeruje aktualnego użytkownika
     currentUser_.setID(-1);
@@ -113,7 +113,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     //tworze instancje obiektu zarządzającego ścieżkami danych użytkowników
     pathsManager = DataSourcePathsManager::create();
     //inicjuję roota danych użytkowników podczas działania aplikacji (rozpakowywana z localStorage na bazie shallowCopy)
-    pathsManager->setUsersDataPath(core::getPathInterface()->getTmpPath() / "data");
+    pathsManager->setUsersDataPath(plugin::getPathInterface()->getTmpPath() / "data");
     pathsManager->setUser(currentUser_);
 }
 
@@ -134,6 +134,11 @@ CommunicationDataSource::~CommunicationDataSource()
     DataSourceConnectionManager::destroy();
     DataSourcePathsManager::destroy();
     DataSourceLocalStorage::destroy();
+}
+
+void CommunicationDataSource::getOfferedTypes(utils::TypeInfoList & offeredTypes) const
+{
+
 }
 
 void CommunicationDataSource::setConnectionsSerwerCertificatePath(const core::Filesystem::Path & certPath)
@@ -178,11 +183,10 @@ void CommunicationDataSource::setConnectionsCredentials(const User & user)
 }
 
 
-void CommunicationDataSource::init(core::IMemoryDataManager * memoryDM, core::IFileDataManager * fileDM, core::IServiceManager * serviceManager)
+void CommunicationDataSource::init(core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamManager, core::IFileDataManager * fileDM)
 {
     this->memoryDM = memoryDM;
     this->fileDM = fileDM;
-    this->serviceManager = serviceManager;
 
     fileStatusManager.reset(new FileStatusManager(fileDM));
     fullShallowCopyStatus.reset(new DataSourceStatusManager(fileStatusManager.get()));
@@ -191,18 +195,13 @@ void CommunicationDataSource::init(core::IMemoryDataManager * memoryDM, core::IF
     UTILS_ASSERT(fileDM != nullptr, "Niezainicjowany DM");
 }
 
-QWidget* CommunicationDataSource::getWidget(core::IActionsGroupManager * actionsGroupManager)
+QWidget* CommunicationDataSource::getWidget()
 {
     if(dataSourceWidget == nullptr){
         dataSourceWidget = new DataSourceWidget(this);
     }
 
     return dataSourceWidget;
-}
-
-std::string CommunicationDataSource::getName() const
-{
-    return "Communication Data Source";
 }
 
 void CommunicationDataSource::setCurrentUser(const User & user)
@@ -228,10 +227,10 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
 			loginManager->login(user, password);
 		}catch(std::exception & e){
 			connError = true;
-			LOG_ERROR("Error during login: " << e.what());
+			PLUGIN_LOG_ERROR("Error during login: " << e.what());
 		}catch(...){
 			connError = true;
-			LOG_ERROR("Unknown error during login");
+			PLUGIN_LOG_ERROR("Unknown error during login");
 		}
 
 	}

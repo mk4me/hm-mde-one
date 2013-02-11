@@ -27,9 +27,10 @@ class DataSourceLoginManager;
 class DataSourceWidget;
 
 //! Źródło danych EDR typu communication - dostarcza dancyh z Bazy Danych Ruchu
-class CommunicationDataSource : public communication::ICommunicationDataSource, public core::ISource
+class CommunicationDataSource : public communication::ICommunicationDataSource, public plugin::ISource
 {
-    UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}","Communication Data Source");
+    UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}");
+	CLASS_DESCRIPTION("Communication Data Source", "Communication Data Source");
 
 	//! Zaprzyjaźniona klasa realizująca widok danych
 	friend class DataSourceWidget;
@@ -55,14 +56,18 @@ public:
 
     //! Inicjalizacja źródła. Następuje już po wczytaniu pluginów i skonstruowaniu
     //! (nie zainicjalizowaniu!) wszystkich źródeł.
-    virtual void init(core::IMemoryDataManager * memoryDM, core::IFileDataManager * fileDM, core::IServiceManager * serviceManager);
+    virtual void init(core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamManager, core::IFileDataManager * fileDM);
+
+	virtual bool lateInit() { return true; }
+	virtual void finalize() {}
+	virtual void update(double) {}
+	virtual QWidget * getControlWidget() { return nullptr; }
+	virtual QWidget * getSettingsWidget() { return nullptr; }
+	virtual void getOfferedTypes(utils::TypeInfoList & offeredTypes) const;
 
     //! Źródło nie musi mieć wizualnej reprezentacji.
     //! \return Widget tworzony przez źródło bądź NULL.
-    virtual QWidget* getWidget(core::IActionsGroupManager * actionsGroupManager);
-
-    //! \return Nazwa źródła.
-    virtual std::string getName() const;
+    virtual QWidget* getWidget();
 
 	//! \param offline Czy źródło danych ma działać w trybie offline?
 	void setOfflineMode(bool offline = true);
@@ -208,9 +213,6 @@ private:
 
 	//! Manager plików
 	core::IFileDataManager * fileDM;
-
-	//! Manager serwisów - tylko i wyłącznie na potrzeby PluginSubject!!
-	core::IServiceManager * serviceManager;
 
 	//! ---------------------------Obsługa plugin subject ------------------------
 

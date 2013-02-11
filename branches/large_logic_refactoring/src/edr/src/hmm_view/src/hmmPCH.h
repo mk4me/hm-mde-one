@@ -60,19 +60,18 @@
 //#include <osg/Referenced>
 //#include <osg/Vec3>
 //UTILS_POP_WARNINGS
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <utils/Push.h>
 #include <timelinelib/IChannel.h>
 
-#include <core/ObjectWrapper.h>
-#include <core/src/ServiceManager.h>
-#include <core/IService.h>
-#include <core/PluginCommon.h>
-#include <core/IDataManager.h>
-#include <core/Filesystem.h>
+#include <corelib/BaseDataTypes.h>
+#include <corelib/IService.h>
+#include <corelib/PluginCommon.h>
+#include <corelib/IDataManagerReader.h>
+#include <corelib/Filesystem.h>
 
-#include <core/Plugin.h>
+#include <corelib/IPlugin.h>
 
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>

@@ -15,53 +15,7 @@ OpenThreads::Mutex motionCreationMutex;
 
 using namespace PluginSubject;
 
-FilteredDataFacory::FilteredDataFacory()
-{
-
-}
-
-FilteredDataFacory::~FilteredDataFacory()
-{
-
-}
-
-core::ObjectWrapperPtr FilteredDataFacory::createFilteredMotion(const core::ObjectWrapperConstPtr & originalMotion, const core::ConstObjectsList & wrappers) const
-{
-	core::ObjectWrapperPtr ret;
-	PluginSubject::MotionConstPtr motion;
-	bool ok = originalMotion->tryGet(motion, false);
-	if(ok && motion != nullptr){
-		auto filteredMotion = core::dynamic_pointer_cast<const FilteredMotion>(motion);
-
-		ret = core::ObjectWrapper::create<PluginSubject::IMotion>();
-		ret->copyMeta(*originalMotion);
-		ret->set(MotionPtr(new FilteredMotion(filteredMotion != nullptr ? filteredMotion->getOriginalMotion() : originalMotion, filteredMotion != nullptr ? filteredMotion->getOriginalUnpackedMotion() : motion, wrappers)));
-	}
-	return ret;
-}
-
-core::ObjectWrapperPtr FilteredDataFacory::createFilteredSession(const core::ObjectWrapperConstPtr & originalSession, const core::ConstObjectsList & motions, const core::ConstObjectsList & wrappers) const
-{
-	core::ObjectWrapperPtr ret;
-	PluginSubject::SessionConstPtr session;
-	bool ok = originalSession->tryGet(session, false);
-	if(ok && session != nullptr){
-		auto filteredSession = core::dynamic_pointer_cast<const FilteredSession>(session);
-
-		ret = core::ObjectWrapper::create<PluginSubject::ISession>();
-		ret->copyMeta(*originalSession);
-		ret->set(SessionPtr(new FilteredSession(filteredSession != nullptr ? filteredSession->getOriginalSession() : originalSession,
-			filteredSession != nullptr ? filteredSession->getOriginalUnpackedSession() : session, motions, wrappers)));
-
-		//TODO
-		//ustawic sesje motionów
-
-	}
-    
-    return ret;
-}
-
-SubjectService::SubjectService() : filteredDataFactory(new FilteredDataFacory)
+SubjectService::SubjectService()
 {
 
 }
@@ -71,32 +25,26 @@ SubjectService::~SubjectService()
 
 }
 
-void SubjectService::init(plugin::ISourceManager * sourceManager,
-	plugin::IVisualizerManager * visualizerManager,
-	plugin::IMemoryDataManager * memoryDataManager,
-	plugin::IFileDataManager * fileDataManager,
-	plugin::IActionsGroupManager * actionsManager)
+void SubjectService::init(core::ISourceManager * sourceManager,
+	core::IVisualizerManager * visualizerManager,
+	core::IMemoryDataManager * memoryDataManager,
+	core::IStreamDataManager * streamDataManager,
+	core::IFileDataManager * fileDataManager)
 {
 
 }
 
-QWidget* SubjectService::getWidget( core::IActionsGroupManager * actionsManager )
-{
-	return nullptr;
-}
-
-QWidget* SubjectService::getSettingsWidget( core::IActionsGroupManager * actionsManager )
+QWidget* SubjectService::getWidget()
 {
 	return nullptr;
 }
 
-const std::string& SubjectService::getName() const
+QWidget* SubjectService::getSettingsWidget()
 {
-	static std::string s = "SubjectService";
-	return s;
+	return nullptr;
 }
 
-QWidget* SubjectService::getControlWidget( core::IActionsGroupManager * actionsManager )
+QWidget* SubjectService::getControlWidget()
 {
 	return nullptr;
 }
@@ -109,7 +57,7 @@ core::ObjectWrapperPtr SubjectService::createSubject()
     return ret;
 }
 
-core::ObjectWrapperPtr SubjectService::createSession(const core::ObjectWrapperConstPtr & subject, const core::ConstObjectsList & wrappers)
+core::ObjectWrapperPtr SubjectService::createSession(const core::ObjectWrapperConstPtr & subject)
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(sessionCreationMutex);	
 
@@ -131,15 +79,14 @@ core::ObjectWrapperPtr SubjectService::createSession(const core::ObjectWrapperCo
 	}
 
 	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::ISession>();
-	SessionPtr session(new Session(subject,unpackedSubject, subImpl->nextSessionID(), wrappers));
+	SessionPtr session(new Session(subject,unpackedSubject, subImpl->nextSessionID()));
 	ret->set(session);
 	(*ret)["name"] = session->getName();
 
     return ret;
 }
 
-core::ObjectWrapperPtr SubjectService::createMotion(const core::ObjectWrapperConstPtr & session,
-    const core::ConstObjectsList & wrappers)
+core::ObjectWrapperPtr SubjectService::createMotion(const core::ObjectWrapperConstPtr & session)
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(motionCreationMutex);
 
@@ -161,14 +108,9 @@ core::ObjectWrapperPtr SubjectService::createMotion(const core::ObjectWrapperCon
 	}
 
 	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::IMotion>();
-	MotionPtr motion(new Motion(session,unpackedSession, sessionImpl->nextMotionID(), wrappers));
+	MotionPtr motion(new Motion(session,unpackedSession, sessionImpl->nextMotionID()));
 	ret->set(motion);
 	(*ret)["name"] = motion->getName();
 
 	return ret;
-}
-
-const FilteredDataFacoryPtr & SubjectService::getFilteredDataFacotry() const
-{
-    return filteredDataFactory;
 }

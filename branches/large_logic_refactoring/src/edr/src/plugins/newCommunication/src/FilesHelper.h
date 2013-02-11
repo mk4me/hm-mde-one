@@ -61,15 +61,9 @@ public:
 	//! \param filesStatusManager Manager statusu plików
     static void filterFiles(const std::set<int> & inFiles, const DataStatus & status, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager);
 	//! \param inFiles Zbiór plików które chcemy filtrować
-	//! \param filesExtensions Rozszerzenia plików względem których filtrujemy pliki
 	//! \param filteredFiles [out] Wyjściowy zbiór przefiltrowanych plików
 	//! \param filesStatusManager Manager statusu plików
-	static void filterFiles(const std::set<int> & inFiles, const std::set<std::string> & filesExtensions, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager);
-	//! \param inFiles Zbiór plików które chcemy filtrować
-	//! \param filesExtension Rozszerzenie plików względem którego filtrujemy pliki
-	//! \param filteredFiles [out] Wyjściowy zbiór przefiltrowanych plików
-	//! \param filesStatusManager Manager statusu plików
-	static void filterFiles(const std::set<int> & inFiles, const std::string & filesExtension, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager);
+	static void filterFiles(const std::set<int> & inFiles, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager);
 
     //! \param disorderID Identyfikator schorzenia dla którego chcemy pobrać pliki
     //! \param shallowCopy Płytka kopia danych

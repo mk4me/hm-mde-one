@@ -27,6 +27,10 @@ namespace core {
 		//! \param object Obiekt który sprawdzamy pod kątem zarządzania przez DM
 		//! \return Prawda jesli dany OW jest zarządzany przez DM
 		virtual const bool isManaged(const ObjectWrapperConstPtr & object) const = 0;
+		//! \param type Czy DM aktualnie zarządza jakimkolwiek obiektem danego typu
+		//! \param exact Czy typ musi się zgadzać czy może być pochodny
+		//! \return Prawda jesli obiekt danego typu jest zarządzany przez DM
+		virtual const bool hasObject(const TypeInfo & type, bool exact) const = 0;
 	};
 	
 	//! Podstawowe operacje związane z danymi - pobieranie danych, informacje o hierarchi typów danych, informacje o wspieranych typach danych

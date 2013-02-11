@@ -16,24 +16,32 @@
 
 namespace core {
 
-	//! Operacje zwi¹zane z zarz¹dzaniem danymi domenowymi aplikacji
-	class IMemoryDataManagerOperations
+	class IMemoryDataManagerBasicOperations
 	{
 	public:
 
-		virtual ~IMemoryDataManagerOperations() {}
+		virtual ~IMemoryDataManagerBasicOperations() {}
 
 		//! \data Dane wchodz¹ce pod kontrolê DM
 		virtual void addData(const ObjectWrapperPtr & data) = 0;
 		//! Dane usuwane z DM
 		virtual void removeData(const ObjectWrapperConstPtr & data) = 0;
-		//! \param data Aktualizowane dane
-		//! \param newData Nowa wartoœæ danych
-		virtual void updateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData) = 0;
 
 		virtual const bool tryAddData(const ObjectWrapperPtr & data) = 0;
 
 		virtual const bool tryRemoveData(const ObjectWrapperConstPtr & data) = 0;
+	};
+
+	//! Operacje zwi¹zane z zarz¹dzaniem danymi domenowymi aplikacji
+	class IMemoryDataManagerOperations : public IMemoryDataManagerBasicOperations
+	{
+	public:
+
+		virtual ~IMemoryDataManagerOperations() {}
+		
+		//! \param data Aktualizowane dane
+		//! \param newData Nowa wartoœæ danych
+		virtual void updateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData) = 0;
 
 		virtual const bool tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData) = 0;
 	};

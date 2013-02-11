@@ -12,91 +12,68 @@
 
 #include <plugins/subject/IMotion.h>
 #include <corelib/BaseDataTypes.h>
-#include <corelib/BaseDataTypes.h>
+#include "BasicDataStorage.h"
 
 class SubjectService;
 
 //! Klasa reprezentuje pojedyncza próbę pomiarowa w ramach konkretnej sesji.
 class Motion : public PluginSubject::IMotion
 {
-    friend class SubjectService;
+public:
 
-private:
-	
-    Motion(const core::ObjectWrapperConstPtr & session, const PluginSubject::SessionConstPtr & unpackedSession, PluginSubject::SubjectID localMotionID, const core::ConstObjectsList & wrappers);
+	Motion(const core::ObjectWrapperConstPtr & session, const PluginSubject::SessionConstPtr & unpackedSession, PluginSubject::SubjectID localMotionID);
 
-	static void generateName(std::string & name, std::string & localName, PluginSubject::SubjectID motionID, PluginSubject::SubjectID motionLocalID, const std::string & sessionLocalName);
+	virtual ~Motion();
+
+	static std::string generateName(PluginSubject::SubjectID motionID);
+	static std::string generateLocalName(PluginSubject::SubjectID motionLocalID, const std::string & sessionLocalName);
 
 	static PluginSubject::SubjectID nextGlobalID();
 
 public:
 
-	virtual ~Motion();
-
-public:
-
     virtual const std::string & getName() const;
     virtual const std::string & getLocalName() const;
 
     virtual PluginSubject::SubjectID getID() const;
     virtual PluginSubject::SubjectID getLocalID() const;
-    //const std::string & getName() const;
+
     virtual const core::ObjectWrapperConstPtr & getSession() const;
 	virtual const PluginSubject::SessionConstPtr & getUnpackedSession() const;
 
-    virtual int size() const;
-    virtual const core::ObjectWrapperConstPtr & get(int i) const;
+	//! \data Dane wchodzące pod kontrolę DM
+	virtual void addData(const core::ObjectWrapperConstPtr & data);
+	//! Dane usuwane z DM
+	virtual void removeData(const core::ObjectWrapperConstPtr & data);
 
-    virtual bool isSupported( const core::TypeInfo& typeToCheck ) const;
+	virtual const bool tryAddData(const core::ObjectWrapperConstPtr & data);
 
-    virtual void getWrappers(core::ConstObjectsList & wrappers) const;    
+	virtual const bool tryRemoveData(const core::ObjectWrapperConstPtr & data);
+	
+	virtual void getObjects(core::ConstObjectsList & objects) const;
+	
+	virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const;
+	
+	virtual void getObjects(core::ObjectWrapperCollection& objects) const;
+	
+	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const;
+	
+	virtual const bool hasObject(const core::TypeInfo & type, bool exact) const;
 
 private:
-	core::ConstObjectsList wrappers;
-	std::vector<core::TypeInfo> types;
-    PluginSubject::SubjectID motionID;
-    PluginSubject::SubjectID localMotionID;
 
-    core::ObjectWrapperConstPtr session;
-	PluginSubject::SessionConstPtr unpackedSession;
+	BasicDataStorage storage;
 
-    std::string name;
-    std::string localName;
+    const PluginSubject::SubjectID motionID;
+    const PluginSubject::SubjectID localMotionID;
+
+    const core::ObjectWrapperConstPtr session;
+	const PluginSubject::SessionConstPtr unpackedSession;
+
+    const std::string name;
+    const std::string localName;
 
 	static PluginSubject::SubjectID globalID;
-};
-
-class FilteredMotion : public PluginSubject::IMotion
-{
-public:
-
-    FilteredMotion(const core::ObjectWrapperConstPtr & originalMotion, const PluginSubject::MotionConstPtr & originalUnpackedMotion, const core::ConstObjectsList & wrappers);
-    virtual ~FilteredMotion();
-
-    virtual const std::string & getName() const;
-    virtual const std::string & getLocalName() const;
-
-    virtual PluginSubject::SubjectID getID() const;
-    virtual PluginSubject::SubjectID getLocalID() const;
-    //const std::string & getName() const;
-    virtual const core::ObjectWrapperConstPtr & getSession() const;
-	virtual const PluginSubject::SessionConstPtr & getUnpackedSession() const;
-
-    virtual int size() const;
-    virtual const core::ObjectWrapperConstPtr & get(int i) const;
-
-
-    void setSession(const core::ObjectWrapperConstPtr & session, const PluginSubject::SessionConstPtr & unpackedSession);
-
-    const core::ObjectWrapperConstPtr & getOriginalMotion() const;
-	const PluginSubject::MotionConstPtr & getOriginalUnpackedMotion() const;
-
-private:
-    core::ObjectWrapperConstPtr session;
-	PluginSubject::SessionConstPtr unpackedSession;
-    core::ObjectWrapperConstPtr originalMotion;
-	PluginSubject::MotionConstPtr originalUnpackedMotion;
-    core::ConstObjectsList wrappers;
 };
 
 #endif

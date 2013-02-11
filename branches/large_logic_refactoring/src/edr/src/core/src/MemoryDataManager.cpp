@@ -198,6 +198,15 @@ public:
 		return mdm->rawIsManaged(object);
 	}
 
+	virtual const bool hasObject(const TypeInfo & type, bool exact) const
+	{
+		if(transactionRollbacked == true){
+			throw std::runtime_error("Memory transaction rolled-back");
+		}
+
+		return mdm->rawHasObject(type, exact);
+	}
+
 private:
 
 	void rawAddData(const ObjectWrapperPtr & data)
@@ -271,6 +280,11 @@ public:
 	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const
 	{
 		return mdm->rawIsManaged(object);
+	}
+
+	virtual const bool hasObject(const TypeInfo & type, bool exact) const
+	{
+		return mdm->rawHasObject(type, exact);
 	}
 
 
@@ -422,13 +436,7 @@ void MemoryDataManager::rawGetObjects(core::ConstObjectsList & objects) const
 void MemoryDataManager::rawGetObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact) const
 {
 	TypeInfoSet types;
-	types.insert(type);
-
-	if(exact == false){
-		TypeInfoSet derrivedTypes;
-		getDataHierarchyManager()->getTypeDerrivedTypes(type, derrivedTypes);
-		types.insert(derrivedTypes.begin(), derrivedTypes.end());
-	}
+	requestedTypes(type, exact, types);
 
 	for(auto it = types.begin(); it != types.end(); ++it)
 	{
@@ -487,5 +495,40 @@ void MemoryDataManager::updateObservers(const ChangeList & changes )
 			//(osobne interfejsy readerów dla ka¿dego elemnentu ³adowanego do aplikacji - service, source, datasink, itp)
 			CORE_LOG_WARNING("Error while updating memory data manager observer");
 		}
+	}
+}
+
+const bool MemoryDataManager::hasObject(const TypeInfo & type, bool exact) const
+{
+	ScopedLock lock(sync);
+	return rawHasObject(type, exact);
+};
+
+
+const bool MemoryDataManager::rawHasObject(const TypeInfo & type, bool exact) const
+{
+	bool ret = false;
+
+	TypeInfoSet types;
+	requestedTypes(type, exact, types);
+
+	for(auto it = types.begin(); it != types.end(); ++it)
+	{
+		auto dataIT = objectsByTypes.find(*it);
+		if(dataIT != objectsByTypes.end() && dataIT->second.empty() == false){
+			ret = true;
+			break;
+		}
+	}
+
+	return ret;
+}
+
+void MemoryDataManager::requestedTypes( const TypeInfo & type, bool exact, TypeInfoSet & types )
+{
+	types.insert(type);
+
+	if(exact == false){		
+		getDataHierarchyManager()->getTypeDerrivedTypes(type, types);
 	}
 }

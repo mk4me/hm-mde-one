@@ -106,7 +106,7 @@ namespace vidlib
     // VideoStream
     public:
         //!
-        virtual VideoStream* clone() const;
+        virtual OsgStream* clone() const;
         //! \param time Pozycja w źródle
         bool setTime(double time);
 

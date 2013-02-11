@@ -31,6 +31,8 @@ public:
 	virtual ILog * log();
 	//! \return Interfejs do czytania danych
 	virtual IDataManagerReader * dataManagerReader();
+	//! \return Interfejs do czytania informacji o parserach
+	virtual IParserManagerReader * parserManagerReader();
 	//! \return Interfejs do czytania danych strumieniowych
 	virtual IStreamManagerReader * streamDataManagerReader();
 	//! \return Interfejs do czytania danych strumieniowych
@@ -61,6 +63,8 @@ public:
 	virtual ILog * log();
 	//! \return Interfejs do czytania danych
 	virtual IDataManagerReader * dataManagerReader();
+	//! \return Interfejs do czytania informacji o parserach
+	virtual IParserManagerReader * parserManagerReader();
 	//! \return Interfejs do czytania danych strumieniowych
 	virtual IStreamManagerReader * streamDataManagerReader();
 	//! \return Interfejs do czytania danych strumieniowych

@@ -1,6 +1,6 @@
 #include "TimelinePCH.h"
 
-#include <plugins/newTimeline/TimelineControlsWidget.h>
+#include "TimelineControlsWidget.h"
 
 TimelineControlsWidget::TimelineControlsWidget(QWidget * parent) : QWidget(parent)
 {

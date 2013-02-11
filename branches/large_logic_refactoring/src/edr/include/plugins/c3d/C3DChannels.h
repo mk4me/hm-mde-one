@@ -242,7 +242,8 @@ protected:
     //! \param channel kopiowany kanał
     C3DAnalogChannel( const C3DAnalogChannel& channel );
 };
-typedef boost::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
+typedef core::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
+typedef core::shared_ptr<const C3DAnalogChannel> C3DAnalogChannelConstPtr;
 
 //! kanał EMG
 class PLUGINC3D_EXPORT EMGChannel : public C3DAnalogChannel
@@ -263,8 +264,8 @@ public:
     //! \return zwraca kopię obiektu, którą trzeba samemu usunąć
     virtual EMGChannel* clone() const;
 };
-typedef boost::shared_ptr<EMGChannel> EMGChannelPtr;
-typedef boost::shared_ptr<const EMGChannel> EMGChannelConstPtr;
+typedef core::shared_ptr<EMGChannel> EMGChannelPtr;
+typedef core::shared_ptr<const EMGChannel> EMGChannelConstPtr;
 
 //! kanał GRF
 class PLUGINC3D_EXPORT GRFChannel : public VectorChannel
@@ -310,8 +311,8 @@ private:
     //! koniec danych, związanych z naciskiem na płytę
     float dataEnd;
 };
-typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
-typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
+typedef core::shared_ptr<GRFChannel> GRFChannelPtr;
+typedef core::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
 //! kanał zawiera dane o jednym markerze
 class PLUGINC3D_EXPORT MarkerChannel : public VectorChannel
@@ -332,10 +333,10 @@ public:
     //! \return zwraca kopię obiektu, którą trzeba samemu usunąć
     virtual MarkerChannel* clone() const;
 };
-typedef boost::shared_ptr<MarkerChannel> MarkerChannelPtr;
-typedef boost::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
+typedef core::shared_ptr<MarkerChannel> MarkerChannelPtr;
+typedef core::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 
-#define DEFINE_CHANNEL(name)																	 \
+#define DECLARE_CHANNEL(name)																	 \
 	class PLUGINC3D_EXPORT name##Channel : public VectorChannel 								 \
 	{																							 \
 	private:																					 \
@@ -352,11 +353,10 @@ typedef boost::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 	typedef core::shared_ptr<name##Channel> name##ChannelPtr;									 \
 	typedef core::shared_ptr<const name##Channel> name##ChannelConstPtr;
 
-
-DEFINE_CHANNEL(Force);
-DEFINE_CHANNEL(Moment);
-DEFINE_CHANNEL(Angle);
-DEFINE_CHANNEL(Power);
+DECLARE_CHANNEL(Force);
+DECLARE_CHANNEL(Moment);
+DECLARE_CHANNEL(Angle);
+DECLARE_CHANNEL(Power);
 
 DEFINE_WRAPPER(VectorChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER_INHERITANCE(VectorChannel, VectorChannelReaderInterface);

@@ -113,7 +113,7 @@ namespace vidlib
     {
     }
 
-    VideoStream* OsgStream::clone() const
+    OsgStream* OsgStream::clone() const
     {
         return new OsgStream(*this);
     }

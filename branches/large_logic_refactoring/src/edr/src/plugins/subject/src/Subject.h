@@ -11,6 +11,7 @@
 #define HEADER_GUARD_SUBJECT__SUBJECT_H__
 
 #include <plugins/subject/ISubject.h>
+#include "BasicDataStorage.h"
 
 class SubjectService;
 
@@ -25,7 +26,10 @@ private:
     mutable PluginSubject::SubjectID currentSessionID;
 	static PluginSubject::SubjectID globalID;
 
-protected:
+	BasicDataStorage dataStorage;
+	BasicDataStorage sessionStorage;
+
+public:
 
 	static void generateName(std::string & name, PluginSubject::SubjectID subjectID);
 
@@ -41,27 +45,29 @@ public:
     virtual PluginSubject::SubjectID getID() const;
 
     virtual void getSessions(core::ConstObjectsList & sessions) const;
+	virtual void addSession(const core::ObjectWrapperConstPtr & session);
+	virtual void removeSession(const core::ObjectWrapperConstPtr & session);
 
 	PluginSubject::SubjectID nextSessionID() const;
-};
 
-class FilteredSubject : public PluginSubject::ISubject
-{
-public:
+	//! \data Dane wchodzące pod kontrolę DM
+	virtual void addData(const core::ObjectWrapperConstPtr & data);
+	//! Dane usuwane z DM
+	virtual void removeData(const core::ObjectWrapperConstPtr & data);
 
-	FilteredSubject(const core::ObjectWrapperPtr & originalSubject, const PluginSubject::SubjectConstPtr & originalUnpackedSubject, const core::ConstObjectsList & sessions);
-	virtual ~FilteredSubject();
+	virtual const bool tryAddData(const core::ObjectWrapperConstPtr & data);
 
-	virtual const std::string & getName() const;
+	virtual const bool tryRemoveData(const core::ObjectWrapperConstPtr & data);
 
-	virtual PluginSubject::SubjectID getID() const;
+	virtual void getObjects(core::ConstObjectsList & objects) const;
 
-	virtual void getSessions(core::ConstObjectsList & sessions) const;
+	virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const;
 
-private:
-	core::ObjectWrapperPtr originalSubject;
-	PluginSubject::SubjectConstPtr originalUnpackedSubject;
-	core::ConstObjectsList sessions;
+	virtual void getObjects(core::ObjectWrapperCollection& objects) const;
+
+	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const;
+
+	virtual const bool hasObject(const core::TypeInfo & type, bool exact) const;
 };
 
 #endif

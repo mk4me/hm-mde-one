@@ -2,6 +2,9 @@
 #include "Subject.h"
 #include <corelib/DataAccessors.h>
 #include <plugins/subject/ISession.h>
+#include <corelib/BaseDataTypes.h>
+#include <corelib/ObjectWrapperCollection.h>
+#include <algorithm>
 
 using namespace core;
 using namespace plugin;
@@ -47,49 +50,73 @@ PluginSubject::SubjectID Subject::getID() const
     return subjectID;
 }
 
-void Subject::getSessions(core::ConstObjectsList & sessions) const
-{
-	static const core::TypeInfo type = core::TypeInfo(typeid(PluginSubject::ISession));
-    core::ConstObjectsList toFilter;
-    plugin::getDataManagerReader()->getObjects(toFilter, type, false);
-
-    for(auto it = toFilter.begin(); it != toFilter.end(); ++it){
-		PluginSubject::SessionConstPtr session;
-		bool ok = (*it)->tryGet(session, false);
-		if(ok && session != nullptr && session->getUnpackedSubject()->getID() == subjectID ){
-            sessions.push_back(*it);
-        }
-    }
-}
-
 PluginSubject::SubjectID Subject::nextSessionID() const
 {
 	return currentSessionID++;
 }
 
-FilteredSubject::FilteredSubject(const core::ObjectWrapperPtr & originalSubject, const PluginSubject::SubjectConstPtr & originalUnpackedSubject, const core::ConstObjectsList & sessions)
-	: originalSubject(originalSubject), originalUnpackedSubject(originalUnpackedSubject), sessions(sessions)
+void Subject::getSessions(core::ConstObjectsList & sessions) const
 {
-
+	sessionStorage.getObjects(sessions, typeid(PluginSubject::ISession), false);
 }
 
-FilteredSubject::~FilteredSubject()
+void Subject::addSession(const core::ObjectWrapperConstPtr & session)
 {
+	utils::TypeInfoList types;
+	session->getSupportedTypes(types);
+	if(std::find(types.begin(), types.end(), typeid(PluginSubject::ISession)) == types.end()){
+		throw std::runtime_error("Data type does not support PluginSubject::ISession type");
+	}
 
+	sessionStorage.addData(session);
 }
 
-const std::string & FilteredSubject::getName() const
+void Subject::removeSession(const core::ObjectWrapperConstPtr & session)
 {
-	return originalUnpackedSubject->getName();
+	sessionStorage.removeData(session);
 }
 
-PluginSubject::SubjectID FilteredSubject::getID() const
+void Subject::addData(const core::ObjectWrapperConstPtr & data)
 {
-	return originalUnpackedSubject->getID();
+	dataStorage.addData(data);
 }
 
-void FilteredSubject::getSessions(core::ConstObjectsList & sessions) const
+void Subject::removeData(const core::ObjectWrapperConstPtr & data)
 {
-	sessions.insert(sessions.end(), this->sessions.begin(), this->sessions.end());
+	dataStorage.removeData(data);
 }
 
+const bool Subject::tryAddData(const core::ObjectWrapperConstPtr & data)
+{
+	return dataStorage.tryAddData(data);
+}
+
+const bool Subject::tryRemoveData(const core::ObjectWrapperConstPtr & data)
+{
+	return dataStorage.tryRemoveData(data);
+}
+
+void Subject::getObjects(core::ConstObjectsList & objects) const
+{
+	dataStorage.getObjects(objects);
+}
+
+void Subject::getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const
+{
+	dataStorage.getObjects(objects, type, exact);
+}
+
+void Subject::getObjects(core::ObjectWrapperCollection& objects) const
+{
+	dataStorage.getObjects(objects);
+}
+
+const bool Subject::isManaged(const core::ObjectWrapperConstPtr & object) const
+{
+	return dataStorage.isManaged(object);
+}
+
+const bool Subject::hasObject(const core::TypeInfo & type, bool exact) const
+{
+	return dataStorage.hasObject(type, exact);
+}

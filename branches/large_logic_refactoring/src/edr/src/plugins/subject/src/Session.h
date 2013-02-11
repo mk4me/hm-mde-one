@@ -15,41 +15,39 @@
 #include <vector>
 #include <corelib/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
+#include "BasicDataStorage.h"
 
 class SubjectService;
 
 class Session : public PluginSubject::ISession
 {
-    friend class SubjectService;
-
 private:
-    PluginSubject::SubjectID sessionID;
+    const PluginSubject::SubjectID sessionID;
 
-    PluginSubject::SubjectID localSessionID;
+    const PluginSubject::SubjectID localSessionID;
 
     mutable PluginSubject::SubjectID currentMotionID;
-    core::ObjectWrapperConstPtr subject;
-	PluginSubject::SubjectConstPtr unpackedSubject;
+    const core::ObjectWrapperConstPtr subject;
+	const PluginSubject::SubjectConstPtr unpackedSubject;    
 
-    core::ConstObjectsList wrappers;
-
-    std::string name;
-    std::string localName;
+    const std::string name;
+    const std::string localName;
 
 	static PluginSubject::SubjectID globalID;
+
+	BasicDataStorage dataStorage;
+	BasicDataStorage motionStorage;
 	
-private:
+public:
 
 	static PluginSubject::SubjectID nextGlobalID();
 
-    Session(const core::ObjectWrapperConstPtr & subject,
-		const PluginSubject::SubjectConstPtr & unpackedSubject,	PluginSubject::SubjectID localSessionID,
-		const core::ConstObjectsList & wrappers);
+	static std::string generateName(PluginSubject::SubjectID sessionID);
 
-	static void generateNames(std::string & localName, std::string & globalName, PluginSubject::SubjectID subjectID,
-		PluginSubject::SubjectID localSessionID, PluginSubject::SubjectID sessionID);
+	static std::string generateLocalName(PluginSubject::SubjectID localSessionID, const std::string & subjectName);
 
-public:
+	Session(const core::ObjectWrapperConstPtr & subject,
+		const PluginSubject::SubjectConstPtr & unpackedSubject,	PluginSubject::SubjectID localSessionID);
 
 	virtual ~Session();
 
@@ -60,51 +58,34 @@ public:
 
     virtual PluginSubject::SubjectID getID() const;
     virtual PluginSubject::SubjectID getLocalID() const;
+
     virtual void getMotions(core::ConstObjectsList & motions) const;
+	virtual void addMotion(core::ObjectWrapperConstPtr & motion);
+	virtual void removeMotion(core::ObjectWrapperConstPtr & motion);
 
     virtual const core::ObjectWrapperConstPtr & getSubject() const;
 	virtual const PluginSubject::SubjectConstPtr & getUnpackedSubject() const;
-
-    virtual void getWrappers(core::ConstObjectsList & wrappers) const;
-
-    virtual bool hasObjectOfType(const core::TypeInfo& type) const;
 
 	PluginSubject::SubjectID nextMotionID() const;
-};
 
-class FilteredSession : public PluginSubject::ISession
-{
-public:
+	//! \data Dane wchodz¹ce pod kontrolê DM
+	virtual void addData(const core::ObjectWrapperConstPtr & data);
+	//! Dane usuwane z DM
+	virtual void removeData(const core::ObjectWrapperConstPtr & data);
 
-    FilteredSession(const core::ObjectWrapperConstPtr & originalSession, const PluginSubject::SessionConstPtr & originalUnpackedSession, const core::ConstObjectsList & motions, const core::ConstObjectsList & wrappers);
-    virtual ~FilteredSession();
+	virtual const bool tryAddData(const core::ObjectWrapperConstPtr & data);
 
-    virtual const std::string & getName() const;
-    virtual const std::string & getLocalName() const;
+	virtual const bool tryRemoveData(const core::ObjectWrapperConstPtr & data);
 
-    virtual PluginSubject::SubjectID getID() const;
-    virtual PluginSubject::SubjectID getLocalID() const;
-    virtual void getMotions(core::ConstObjectsList & motions) const;
+	virtual void getObjects(core::ConstObjectsList & objects) const;
 
-    virtual const core::ObjectWrapperConstPtr & getSubject() const;
-	virtual const PluginSubject::SubjectConstPtr & getUnpackedSubject() const;
+	virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const;
 
-    virtual void getWrappers(core::ConstObjectsList & wrappers) const;
+	virtual void getObjects(core::ObjectWrapperCollection& objects) const;
 
-    const core::ObjectWrapperConstPtr & getOriginalSession() const;
-	const PluginSubject::SessionConstPtr & getOriginalUnpackedSession() const;
+	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const;
 
-	void setSubject(const core::ObjectWrapperConstPtr & subject, const PluginSubject::SubjectConstPtr & unpackedSubject);
-
-private:
-    core::ObjectWrapperConstPtr originalSession;
-	PluginSubject::SessionConstPtr originalUnpackedSession;
-	core::ObjectWrapperConstPtr subject;
-	PluginSubject::SubjectConstPtr unpackedSubject;
-    core::ConstObjectsList motions;
-    core::ConstObjectsList wrappers;
-    std::string name;
-    std::string localName;
+	virtual const bool hasObject(const core::TypeInfo & type, bool exact) const;
 };
 
 #endif

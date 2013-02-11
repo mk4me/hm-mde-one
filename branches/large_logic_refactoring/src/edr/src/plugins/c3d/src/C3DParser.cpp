@@ -40,21 +40,20 @@ void C3DParser::parse( const std::string & source  )
 {
 	core::Filesystem::Path path(source);
 
-	ParserPtr parser(new c3dlib::C3DParser());
-	parserPtr = parser;
+	parserPtr.reset(new c3dlib::C3DParser());
 
     std::vector<std::string> files;
     files.push_back(path.string());
 	std::string importWarnings;
-    parser->importFrom(files, importWarnings);
+    parserPtr->importFrom(files, importWarnings);
 
     // wczytanie danych analogowych
     GRFCollectionPtr grfs(new GRFCollection());
     EMGCollectionPtr e(new EMGCollection());
-    if (parser->getNumAnalogs() == 28)
+    if (parserPtr->getNumAnalogs() == 28)
     {
         for (int i = 0; i < 4; ++i) {
-            GRFChannelPtr ptr(new GRFChannel(*parser , i));
+            GRFChannelPtr ptr(new GRFChannel(*parserPtr , i));
             GRFChannels[i]->set(ptr);
 			(*(GRFChannels[i]))["core/name"]  = ptr->getName();
             (*(GRFChannels[i]))["core/source"] = path.string();
@@ -65,7 +64,7 @@ void C3DParser::parse( const std::string & source  )
         (*GRFs)["core/source"] = path.string();
 
         for (int i = 12; i < 28; ++i) {
-            EMGChannelPtr ptr(new EMGChannel(*parser , i));
+            EMGChannelPtr ptr(new EMGChannel(*parserPtr , i));
             EMGChannels[i-12]->set(ptr);
 			(*(EMGChannels[i-12]))["core/name"]  = ptr->getName();
 			(*(EMGChannels[i-12]))["core/source"]  = path.string();
@@ -77,16 +76,16 @@ void C3DParser::parse( const std::string & source  )
     }
 
     // wczytanie eventów
-	int count = parser->getNumEvents();
+	int count = parserPtr->getNumEvents();
     EventsCollectionPtr allEventsCollection(new C3DEventsCollection());
 	for (int i = 0; i < count; ++i) {
-		c3dlib::C3DParser::IEventPtr event = parser->getEvent(i);
+		c3dlib::C3DParser::IEventPtr event = parserPtr->getEvent(i);
         C3DEventsCollection::EventPtr e(event->clone());
         allEventsCollection->addEvent(e);
 	}
     
-	this->allEvents->set(allEventsCollection);
-	(*(this->allEvents))["core/source"] = path.string();
+	allEvents->set(allEventsCollection);
+	(*allEvents)["core/source"] = path.string();
     // wczytanie plików *vsk, które dostarczaja opis do markerów
     core::Filesystem::Path dir = path.parent_path();
     std::vector<std::string> vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
@@ -101,31 +100,8 @@ void C3DParser::parse( const std::string & source  )
 	MomentCollectionPtr moments(new MomentCollection);
 	PowerCollectionPtr powers(new PowerCollection);
 
-	int markersCount = parser->getNumPoints();
-	for (int i = 0; i < markersCount; ++i) {
-		switch (parser->getPoint(i)->getType()) {
-			case c3dlib::C3DParser::IPoint::Angle: {
-                AngleChannelPtr ptr(new AngleChannel(*parser, i));
-                angles->addChannel(ptr);
-            } break;
-            case c3dlib::C3DParser::IPoint::Marker: {
-                MarkerChannelPtr ptr(new MarkerChannel(*parser, i));
-                markers->addChannel(ptr);
-            } break;
-            case c3dlib::C3DParser::IPoint::Force: {
-                ForceChannelPtr ptr(new ForceChannel(*parser, i));
-                forces->addChannel(ptr);
-            } break;
-            case c3dlib::C3DParser::IPoint::Moment: {
-                MomentChannelPtr ptr(new MomentChannel(*parser, i));
-                moments->addChannel(ptr);
-            } break;
-            case c3dlib::C3DParser::IPoint::Power: {
-                PowerChannelPtr ptr(new PowerChannel(*parser, i));
-                powers->addChannel(ptr);
-            } break;
-		}
-	}
+	powerChannels->set(powers);
+	(*powerChannels)["core/source"] = path.string();
 
 	markerChannels->set(markers);
 	(*markerChannels)["core/source"] = path.string();
@@ -135,12 +111,36 @@ void C3DParser::parse( const std::string & source  )
 	(*angleChannels)["core/source"] = path.string();
 	momentChannels->set(moments);
 	(*momentChannels)["core/source"] = path.string();
-	powerChannels->set(powers);
-	(*powerChannels)["core/source"] = path.string();
+
+	int markersCount = parserPtr->getNumPoints();
+	for (int i = 0; i < markersCount; ++i) {
+		switch (parserPtr->getPoint(i)->getType()) {
+			case c3dlib::C3DParser::IPoint::Angle: {
+                AngleChannelPtr ptr(new AngleChannel(*parserPtr, i));
+                angles->addChannel(ptr);
+            } break;
+            case c3dlib::C3DParser::IPoint::Marker: {
+                MarkerChannelPtr ptr(new MarkerChannel(*parserPtr, i));
+                markers->addChannel(ptr);
+            } break;
+            case c3dlib::C3DParser::IPoint::Force: {
+                ForceChannelPtr ptr(new ForceChannel(*parserPtr, i));
+                forces->addChannel(ptr);
+            } break;
+            case c3dlib::C3DParser::IPoint::Moment: {
+                MomentChannelPtr ptr(new MomentChannel(*parserPtr, i));
+                moments->addChannel(ptr);
+            } break;
+            case c3dlib::C3DParser::IPoint::Power: {
+                PowerChannelPtr ptr(new PowerChannel(*parserPtr, i));
+                powers->addChannel(ptr);
+            } break;
+		}
+	}
 
     try {
         IForcePlatformCollection platforms;
-        auto parsedPlatforms = parser->getForcePlatforms();
+        auto parsedPlatforms = parserPtr->getForcePlatforms();
         int count = static_cast<int>(parsedPlatforms.size());
         for (int i = 0; i < count;  ++i) {
             ForcePlatformPtr fp(new ForcePlatform(parsedPlatforms[i]));

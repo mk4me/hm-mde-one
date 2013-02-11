@@ -127,7 +127,7 @@ Visualizer::VisualizerSerie::VisualizerSerie(Visualizer * visualizer, plugin::IV
 
 Visualizer::VisualizerSerie::~VisualizerSerie()
 {
-
+	delete serie_;
 }
 
 plugin::IVisualizer::ISerie * Visualizer::VisualizerSerie::serie() const
@@ -275,6 +275,7 @@ void Visualizer::destroySerie(VisualizerSerie * serie)
 		notifyChange(serie, REMOVE_SERIE);
 		dataSeries.remove(serie);
 		visualizerHelper_->removeSerieToObserve(serie);
+		visualizer_->removeSerie(serie->serie());
 		delete serie;
 	}
 }
@@ -388,4 +389,14 @@ const Visualizer::VisualizerSerie * Visualizer::getActiveSerie() const
 Visualizer::VisualizerSerie * Visualizer::getActiveSerie()
 {
 	return activeSerie;
+}
+
+VisualizerMemoryDataSource::VisualizerMemoryDataSource(core::IDataManagerReader * dmr) :dmr(dmr)
+{
+
+}
+
+void VisualizerMemoryDataSource::getData(const TypeInfo & type, ConstObjectsList & objects, bool exact) const
+{
+	dmr->getObjects(objects, type, exact);
 }

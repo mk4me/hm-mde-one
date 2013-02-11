@@ -74,7 +74,7 @@ public:
 		//! \param type Typdanych jaki nas interesuje
 		//! \param objects [out] Lista obiektów zadanego typu
 		//! \param exact Czy typ ma się zgadzać czy może być też typ pochodny
-		virtual void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact = false) const;
+		virtual void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact = false) const = 0;
 	};
 
 	//! Smart pointer do źródła
@@ -229,6 +229,18 @@ typedef core::shared_ptr<Visualizer> VisualizerPtr;
 typedef core::shared_ptr<const Visualizer> VisualizerConstPtr;
 typedef core::weak_ptr<Visualizer> VisualizerWeakPtr;
 typedef core::weak_ptr<const Visualizer> VisualizerConstWeakPtr;
+
+class CORELIB_EXPORT VisualizerMemoryDataSource : public Visualizer::VisualizerDataSource
+{
+public:
+
+	VisualizerMemoryDataSource(core::IDataManagerReader * dmr);
+
+	virtual void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact = false) const;
+
+private:
+	core::IDataManagerReader * dmr;
+};
 
 }
 

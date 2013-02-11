@@ -159,7 +159,6 @@ DEFINE_CHANNEL_COLLECTION(Moment);
 DEFINE_CHANNEL_COLLECTION(Angle);
 DEFINE_CHANNEL_COLLECTION(Power);
 
-
 DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(VectorChannelCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);

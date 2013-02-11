@@ -27,8 +27,8 @@
 #include <timelinelib/Model.h>
 
 #include "TimelineService.h"
-#include <plugins/newTimeline/TimeSliderWidget.h>
-#include <plugins/newTimeline/TimelineControlsWidget.h>
+#include "TimeSliderWidget.h"
+#include "TimelineControlsWidget.h"
 #include "ChannelsTreeItem.h"
 
 

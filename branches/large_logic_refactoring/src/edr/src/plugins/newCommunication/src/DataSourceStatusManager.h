@@ -21,6 +21,8 @@
 #include "DataSourceLocalStorage.h"
 #include <QtGui/QIcon>
 
+#include <corelib/IFileDataManager.h>
+
 //! Kalsa zarządzająca statusem plików. Ma charakter singletona
 class FileStatusManager
 {

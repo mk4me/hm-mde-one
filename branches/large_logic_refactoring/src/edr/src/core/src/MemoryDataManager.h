@@ -62,6 +62,8 @@ public:
 
 	virtual const bool isManaged(const ObjectWrapperConstPtr & object) const;
 
+	virtual const bool hasObject(const TypeInfo & type, bool exact) const;
+
 	virtual IDataManagerReader::TransactionPtr transaction() const;
 
 public:
@@ -87,6 +89,8 @@ public:
 
 private:	
 
+	const bool rawHasObject(const TypeInfo & type, bool exact) const;
+
 	void rawAddData(const ObjectWrapperPtr & data);
 
 	void rawRemoveData(const ObjectWrapperConstPtr & data);
@@ -102,6 +106,8 @@ private:
 	void rawGetObjects(ObjectWrapperCollection& objects) const;	
 
 	void updateObservers(const ChangeList & changes );
+
+	static void requestedTypes(const TypeInfo & type, bool exact, TypeInfoSet & types);
 
 };
 

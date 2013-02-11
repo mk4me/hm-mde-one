@@ -12,24 +12,12 @@
 
 #include <corelib/IService.h>
 #include <plugins/subject/ISubjectService.h>
-#include <plugins/subject/IDataFilter.h>
 
-class FilteredDataFacory : public PluginSubject::IFilteredDataFactory
+
+class SubjectService : public plugin::IService, public PluginSubject::ISubjectService
 {
-public:
-    FilteredDataFacory();
-    virtual ~FilteredDataFacory();
-
-    virtual core::ObjectWrapperPtr createFilteredMotion(const core::ObjectWrapperConstPtr & originalMotion, const core::ConstObjectsList & wrappers) const;
-    virtual core::ObjectWrapperPtr createFilteredSession(const core::ObjectWrapperConstPtr & originalSession, const core::ConstObjectsList & motions, const core::ConstObjectsList & wrappers) const;
-	virtual core::ObjectWrapperPtr createFilteredSubject(const core::ObjectWrapperConstPtr & originalSubject, const core::ConstObjectsList & sessions) const;
-};
-
-
-
-class SubjectService : public core::IService, public PluginSubject::ISubjectService
-{
-	UNIQUE_ID("{F39418DE-4BCB-46C1-8D84-93F435641C63}", "Subject Service");
+	UNIQUE_ID("{F39418DE-4BCB-46C1-8D84-93F435641C63}");
+	CLASS_DESCRIPTION("Subject Service", "Subject Service");
 
 public:
 	SubjectService();
@@ -38,41 +26,37 @@ public:
 //core::IService
 public:
 
-	virtual void init(plugin::ISourceManager * sourceManager,
-		plugin::IVisualizerManager * visualizerManager,
-		plugin::IMemoryDataManager * memoryDataManager,
-		plugin::IFileDataManager * fileDataManager,
-		plugin::IActionsGroupManager * actionsManager);
+	virtual void init(core::ISourceManager * sourceManager,
+		core::IVisualizerManager * visualizerManager,
+		core::IMemoryDataManager * memoryDataManager,
+		core::IStreamDataManager * streamDataManager,
+		core::IFileDataManager * fileDataManager);
 
 	//! 
 	//! \param actions 
-	virtual QWidget* getWidget( core::IActionsGroupManager * actionsManager );
+	virtual QWidget* getWidget();
 	//! 
 	//! \param actions 
-	virtual QWidget* getSettingsWidget( core::IActionsGroupManager * actionsManager );
-	//! 
-	virtual const std::string& getName() const;
+	virtual QWidget* getSettingsWidget();
 	//! 
 	//! \param actions 
-	virtual QWidget* getControlWidget( core::IActionsGroupManager * actionsManager );
+	virtual QWidget* getControlWidget();
+
+	virtual const bool lateInit() { return true; }
+	virtual void finalize() {}
+	virtual void update(double) {}
+
 
 //ISubjectService
 public:
 
     core::ObjectWrapperPtr createSubject();
 
-    core::ObjectWrapperPtr createSession(const core::ObjectWrapperConstPtr & subject, const core::ConstObjectsList & wrappers);
+    core::ObjectWrapperPtr createSession(const core::ObjectWrapperConstPtr & subject);
 
-    core::ObjectWrapperPtr createMotion(const core::ObjectWrapperConstPtr & session,
-        const core::ConstObjectsList & wrappers);
-
-private:
-
-    virtual const PluginSubject::FilteredDataFacoryPtr & getFilteredDataFacotry() const;
+    core::ObjectWrapperPtr createMotion(const core::ObjectWrapperConstPtr & session);
 
 private:
-
-    PluginSubject::FilteredDataFacoryPtr filteredDataFactory;
 
     PluginSubject::SubjectID currentSubjectID;
     PluginSubject::SubjectID currentSessionID;
