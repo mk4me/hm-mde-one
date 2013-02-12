@@ -258,6 +258,9 @@ QWidget* KinematicVisualizer::createWidget()
     rotationDragger->getDragger()->addDraggerCallback(new KinematicDraggerCallback(this));
     scaleDragger->getDragger()->addDraggerCallback(new KinematicDraggerCallback(this));
 
+
+	resetScene();
+
     return widget;
 }
 
