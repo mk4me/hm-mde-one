@@ -12,7 +12,7 @@
 
 #include <QtCore/QString>
 #include <vector>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 #include <boost/bimap.hpp>
 
 //! W klasie przechowywana jest konkretna konfiguracja EMG

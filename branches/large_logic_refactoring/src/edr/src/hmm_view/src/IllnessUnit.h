@@ -125,16 +125,19 @@ public:
     {
         PluginSubject::SessionPtr ret;
         std::vector<PluginSubject::MotionPtr> newMotions;
-        std::vector<core::ObjectWrapperConstPtr> objects;
-        session->getWrappers(objects);
+        core::ConstObjectsList objects;
+        session->getObjects(objects);
 
-        PluginSubject::Motions motions;
+        core::ConstObjectsList motions;
         session->getMotions(motions);
 
         for(auto motionIT = motions.begin(); motionIT != motions.end(); ++motionIT){
-            std::vector<core::ObjectWrapperConstPtr> objects;
-            std::vector<core::ObjectWrapperConstPtr> validObjects;
-            (*motionIT)->getWrappers(objects);
+
+			PluginSubject::MotionPtr motion = (*motionIT)->get();
+
+            core::ConstObjectsList objects;
+            core::ConstObjectsList validObjects;
+            motion->getObjects(objects);
 
             for(auto objectIT = objects.begin(); objectIT != objects.end(); ++objectIT){
                 for (auto it = names.begin(); it != names.end(); ++it) {

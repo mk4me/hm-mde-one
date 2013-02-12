@@ -4,12 +4,9 @@
 #include <QtGui/QToolBar>
 #include <QtGui/QMenu>
 #include <QtCore/QBuffer>
-#include <core/PluginCommon.h>
-#include <core/src/VisualizerManager.h>
-#include <core/src/VisualizerWidget.h>
+#include <corelib/PluginCommon.h>
 #include "HmmContexts.h"
 #include "HmmMainWindow.h"
-#include "textedit.h"
 #include "AnalisisWidget.h"
 
 HMMAnalysisContext::HMMAnalysisContext(TreeRefresher * refresher) :
@@ -28,7 +25,7 @@ void HMMAnalysisContext::deactivateContext(QWidget * nextContextWidget, bool ref
 }
 
 
-HMMVisualizerUsageContext::HMMVisualizerUsageContext(CoreFlexiToolBar * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
+HMMVisualizerUsageContext::HMMVisualizerUsageContext(coreUI::CoreFlexiToolBar * flexiTabWidget) : flexiTabWidget(flexiTabWidget)
 {
 
 }
@@ -56,7 +53,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
 
     if(it->second.empty() == false){
         auto visWidget = qobject_cast<CoreVisualizerWidget*>(contextWidget);
-        auto vis = visWidget->getCurrentVisualizer();
+        auto vis = visWidget->getVisualizer();
         //tworzymy grupę dla wizualizatora
         visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer") + QString(" - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
 

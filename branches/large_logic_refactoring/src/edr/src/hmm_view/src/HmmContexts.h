@@ -13,9 +13,9 @@
 #include <QtGui/QPlainTextEdit>
 #include <QtGui/QComboBox>
 #include <QtGui/QTreeWidget>
-#include <core/src/FlexiTabWidget.h>
-#include <core/src/IAppUsageContextManager.h>
 #include <boost/tuple/tuple.hpp>
+#include "IAppUsageContext.h"
+#include <coreui/CoreFlexiToolBar.h>
 
 //! Kontekst bazowy dla kontekstów aplikacji medycznej
 class HMMEmptyContext : public IAppUsageContext
@@ -71,7 +71,7 @@ class HMMReportContext : public HMMEmptyContext
 class HMMVisualizerUsageContext : public IAppUsageContext
 {
 public:
-    HMMVisualizerUsageContext(CoreFlexiToolBar * flexiTabWidget);
+    HMMVisualizerUsageContext(coreUI::CoreFlexiToolBar * flexiTabWidget);
 public:
     //! wywoływane, po aktywowaniu się kontekstu
     //! \param contextWidget wiget, który wywołał kontekst
@@ -87,11 +87,11 @@ public:
 
 private:
     //! flexi tab z akcjami
-    CoreFlexiToolBar * flexiTabWidget;
+    coreUI::CoreFlexiToolBar * flexiTabWidget;
     //! identyfikator grupy dla wizualizatorów
-    CoreFlexiToolBar::GUIID visualizerGroupID;
+    int visualizerGroupIDX;
     //! zbiór sekcji
-    std::set<CoreFlexiToolBar::GUIID> visualizerSectionsIDs;
+    std::list<coreUI::CoreFlexiToolBarSection*> visualizerSections;
     //! mapa [widget kontekstu - > [nazwa grupy -> widget flexi]]
     std::map<QWidget*, std::map<QString, QWidget *>> visualizersData;
 
@@ -108,7 +108,7 @@ public:
     //! konstruktor
     //! \param flexiTabWidget 
     //! \param hmm 
-    HMMTreeItemUsageContext(CoreFlexiToolBar * flexiTabWidget, HmmMainWindow* hmm);
+    HMMTreeItemUsageContext(coreUI::CoreFlexiToolBar * flexiTabWidget, HmmMainWindow* hmm);
 public:
     //! wywoływane, po aktywowaniu się kontekstu, do flexi bara trafią akcje związane z drzewem analiz
     //! \param contextWidget wiget, który wywołał kontekst
@@ -139,11 +139,11 @@ private:
 
 private:
     //! flexi widget
-    CoreFlexiToolBar * flexiTabWidget;
+    coreUI::CoreFlexiToolBar * flexiTabWidget;
     //! sekcja obsługiwanego flexi widgeta
     QWidget* flexiSection;
     //! identyfikator grupy dla drzewa
-    CoreFlexiToolBar::GUIID groupID;
+    int groupID;
     //! główne okno aplikacji
     HmmMainWindow* hmm;
 };
@@ -158,7 +158,7 @@ public:
     //! konstruktor
     //! \param flexiTabWidget flexi widget kontekstu
     //! \param hmm główne okno aplikacji
-    RaportsThumbnailsContext(CoreFlexiToolBar * flexiTabWidget, HmmMainWindow* hmm);
+    RaportsThumbnailsContext(coreUI::CoreFlexiToolBar * flexiTabWidget, HmmMainWindow* hmm);
 public:
     //! wywoływane, po aktywowaniu się kontekstu, do flexi bara trafią akcje związane z tworzeniem raportów
     //! \param contextWidget wiget, który wywołał kontekst
@@ -177,11 +177,11 @@ private Q_SLOTS:
 
 private:
     //! flexi widget
-    CoreFlexiToolBar * flexiTabWidget;
+    coreUI::CoreFlexiToolBar * flexiTabWidget;
     //! sekcja obsługiwanego flexi widgeta
     QWidget* flexiSection;
     //! identyfikator grupy dla miniatur raportów
-    CoreFlexiToolBar::GUIID groupID;
+    int groupID;
     //! główne okno aplikacji
     HmmMainWindow* hmm;
     //! nazwa tworzonego raportu
@@ -202,7 +202,7 @@ public:
     //! konstruktor
     //! \param flexiTabWidget flexi widget kontekstu
     //! \param hmm główne okno aplikacji
-    RaportsTabContext(CoreFlexiToolBar * flexiTabWidget, HmmMainWindow* hmm);
+    RaportsTabContext(coreUI::CoreFlexiToolBar * flexiTabWidget, HmmMainWindow* hmm);
 
 public:
     //! wywoływane, po aktywowaniu się kontekstu, do flexi bara trafią akcje związane z oknem raportów
@@ -229,7 +229,7 @@ private:
 
 private:
     //! flexi widget
-    CoreFlexiToolBar * flexiTabWidget;
+    coreUI::CoreFlexiToolBar * flexiTabWidget;
     //! sekcja z akcjami związanymi z edycja dokumentu
     QWidget* editSection;
     //! sekcja z akcjami związanymi z układem tekstu dokumentu
@@ -237,7 +237,7 @@ private:
     //! sekcja z akcjami związanymi z zapisem, odczytem dokumentu
     QWidget* fileSection;
     //! identyfikator grupy dla miniatur raportów
-    CoreFlexiToolBar::GUIID groupID;
+    int groupID;
     //! główne okno aplikacji
     HmmMainWindow* hmm;
 };

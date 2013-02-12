@@ -224,6 +224,10 @@ public:
 	//! \param objects [out] Lista obiektów z danymi zadanego typu
 	//! \param exact Czy interesują nas tylko typy zgodne czy mogą być też pochodne
 	void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact);
+
+	plugin::IVisualizer * visualizer();
+
+	const plugin::IVisualizer * visualizer() const;
 };
 
 typedef core::shared_ptr<Visualizer> VisualizerPtr;

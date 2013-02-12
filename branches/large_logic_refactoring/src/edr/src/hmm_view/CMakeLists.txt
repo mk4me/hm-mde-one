@@ -1,6 +1,8 @@
 BEGIN_PROJECT("executable")
 
 SET_PRIVATE_HEADERS(
+	IAppUsageContext.h
+	IAppUsageContextManager.h
 	AboutDialog.h
 	HmmMainWindow.h
 	TreeItemHelper.h

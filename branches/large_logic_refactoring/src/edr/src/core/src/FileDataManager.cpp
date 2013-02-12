@@ -573,6 +573,9 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 		CORE_LOG_DEBUG("Any of known parsers did not provide any valid data for file: " << file);
 	}else{
 
+		//TODO
+		//metadane: name i source -> dodaæ jeœli brakuje
+
 		ObjectsList objectsAdded;
 
 		for(auto it = objects.begin(); it != objects.end(); ++it){

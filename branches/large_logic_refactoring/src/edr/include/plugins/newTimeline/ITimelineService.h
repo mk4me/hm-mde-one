@@ -16,7 +16,7 @@
 
 class TimelineWidget;
 
-class ITimelineService : public plugin::IService
+class ITimelineService
 {
 public:
 

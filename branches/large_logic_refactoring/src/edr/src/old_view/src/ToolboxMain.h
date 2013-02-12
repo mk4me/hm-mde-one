@@ -3,6 +3,7 @@
 
 #include <coreui/CoreMainWindow.h>
 #include <corelib/Visualizer.h>
+#include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
 
 namespace timeline {
 
@@ -20,7 +21,7 @@ namespace coreUI {
 	class CoreDockWidget;
 }
 
-class ToolboxMain : public coreUI::CoreMainWindow, private core::Visualizer::IVisualizerObserver
+class ToolboxMain : public coreUI::CoreMainWindow
 {
 	Q_OBJECT
 
@@ -53,14 +54,12 @@ private:
 
 	void initializeUI();
 
-	static coreUI::CoreDockWidget * embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);
-
-	virtual void update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication );
+	static coreUI::CoreDockWidget * embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);	
 	
 private:
 	QMainWindow * visualizersPlaceholder;
 	Ui::EDRMain * ui;
-	std::map<core::Visualizer::VisualizerSerie *, std::pair<int, core::shared_ptr<timeline::IChannel>>> seriesToChannels;
+	VisualizerTimelineHelper * helper;
 };
 
 #endif // TOOLBOXMAIN_H

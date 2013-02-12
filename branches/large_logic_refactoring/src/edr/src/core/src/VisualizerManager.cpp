@@ -39,7 +39,7 @@ VisualizerConstPtr VisualizerManager::getVisualizerPrototype(UniqueID id)
 	}
 }
 
-void VisualizerManager::getVisualizerPrototypes(core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact)
+void VisualizerManager::getVisualizerPrototypes(const core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact)
 {
 	for(auto it = visualizerPrototypes_.begin(); it != visualizerPrototypes_.end(); ++it){
 		if(it->second.basicSupportedTypes.find(type) != it->second.basicSupportedTypes.end()){

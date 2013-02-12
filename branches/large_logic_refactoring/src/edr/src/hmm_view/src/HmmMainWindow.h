@@ -4,29 +4,29 @@
 #include <stack>
 #include <boost/bimap.hpp>
 #include <boost/bimap/multiset_of.hpp>
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <QtGui/QMessageBox>
 #include <QtGui/QFrame>
 #include <QtGui/QToolBox>
 #include <timelinelib/IChannel.h>
-#include <core/PluginCommon.h>
-#include <core/src/EDRTitleBar.h>
-#include <core/src/SubjectDataFilters.h>
+#include <corelib/PluginCommon.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/kinematic/Wrappers.h>
-#include <core/src/MainWindow.h>
+#include <coreui/CoreMainWindow.h>
 #include "TreeItemHelper.h"
-#include <core/src/VisualizerWidget.h>
 #include "ui_toolboxmaindeffile.h"
-#include <core/src/FlexiTabWidget.h>
-#include <core/src/IAppUsageContextManager.h>
 #include "TreeBuilder.h"
 #include "SummaryWindow.h"
 #include "HmmContexts.h"
 #include "TreeRefresher.h"
+#include "IAppUsageContextManager.h"
+#include <coreui/CoreTitleBar.h>
+#include <coreui/CoreDockWidgetSet.h>
+#include <coreui/CoreDockWidgetManager.h>
+#include <coreui/CoreVisualizerWidget.h>
 
 class CoreDockWidgetManager;
 class DataFilterWidget;
@@ -39,9 +39,10 @@ class ContextAction;
 
 //! Klasa realizuje widok aplikacji dla medyków
 //! Z czasem klasa zaczela się rozrastac, wymaga glebszej refaktoryzacji
-class HmmMainWindow : public core::MainWindow, private Ui::HMMMain, protected IAppUsageContextManager
+class HmmMainWindow : public coreUI::CoreMainWindow, private Ui::HMMMain, protected IAppUsageContextManager
 {
     Q_OBJECT
+
 private:
 	friend class ContextEventFilter;
     friend class SummaryWindowController; //tymczasowo
@@ -72,11 +73,11 @@ private:
         //! \param visualizer 
         //! \param series 
         //! \param widget 
-        DataItemDescription(VisualizerWeakPtr visualizer, const std::vector<core::VisualizerTimeSeriePtr>& series, CoreVisualizerWidget* widget);
+        DataItemDescription(core::VisualizerWeakPtr visualizer, const std::vector<core::Visualizer::VisualizerSerie*>& series, CoreVisualizerWidget* widget);
         //! serie danych podpięte pod wizualizator, slaby wskaźnik zapobiega "trzymaniu danych"
-        std::vector<core::VisualizerTimeSerieWeakPtr> series;
+        std::vector<core::Visualizer::VisualizerSerie*> series;
         //! wizualizator z seriami, slaby wskaźnik zapobiega "trzymaniu danych"
-        VisualizerWeakPtr visualizer;
+        core::VisualizerWeakPtr visualizer;
         //! widget, w który reprezentuje wizualizator
         CoreVisualizerWidget* visualizerWidget;
     };
@@ -87,14 +88,13 @@ public:
     virtual ~HmmMainWindow();
 
 public:
+
+	virtual void showSplashScreenMessage(const QString & message);
+
     //! Natywne dodanie opcji do menu.
     virtual void onAddMenuItem( const std::string& path, bool checkable, bool initialState ) {}
     //! Natywne usunięcie opcji z menu.
     virtual void onRemoveMenuItem( const std::string& path ) {}
-    //! Szeroko rozumiana inicjalizacja (managery, pluginy, konteksty, style, widgety...)
-    //! \param pluginLoader obiekt przekazywany klasie bazowej (inicjalizacja pluginow i managerów)
-    //! \param managersAccessor obiekt przekazywany klasie bazowej (inicjalizacja pluginow i managerów)
-    virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
     //! \return aktualnie zaladowane sesje pomiarowe
     const core::ObjectWrapperCollection& getCurrentSessions();
     //! dodanie głównego elementu (topItem) do drzewa danych w analizach
@@ -171,6 +171,11 @@ private Q_SLOTS:
     void onToolButton(bool checked);
 
 private:
+
+	virtual QSplashScreen * createSplashScreen();
+
+	virtual void customViewInit(QWidget * console);
+
     //! Timeline staje się widoczny, o ile już nie jest
     void showTimeline();
     //! Czy pod element drzewa podpięte są jakieś dane
@@ -201,16 +206,16 @@ private:
     void deactivateContext(QWidget * widget);
     //! Opakowuje wizualizator w DockWidget
     //! \param visualizer wizualizator do opakowania
-    CoreVisualizerWidget* createDockVisualizer(const VisualizerPtr & visualizer);
+    CoreVisualizerWidget* createDockVisualizer(const core::VisualizerPtr & visualizer);
     //! Rejestruje widget w kontekstach
     //! \param titleBar 
     //! \param visualizerDockWidget 
     //! \param visualizer 
-    void registerVisualizerContext( CoreTitleBar * titleBar, CoreVisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer );	
+    void registerVisualizerContext( coreUI::CoreTitleBar * titleBar, CoreVisualizerWidget* visualizerDockWidget, const core::VisualizerPtr & visualizer );	
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
     //! \param item wybrany item, na podstwie którego tworzony jest wizualizator
     //! \param dockSet set, do którego ma być dodany element, jeśli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
-    void createNewVisualizer( HmmTreeItem* item, CoreDockWidgetSet* dockSet = nullptr );
+    void createNewVisualizer( HmmTreeItem* item, coreUI::CoreDockWidgetSet* dockSet = nullptr );
     //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepującymi w sesji, które zostały znormalizowane w kontekscie kroków
     //! \param helper element, dla którego zostanie utworzony wizualizator
     //! \param context kontekst kroków (lewy, prawy)
@@ -229,7 +234,7 @@ private:
     void removeFromVisualizers( ContextAction* action, bool once );
     //! podswietla wizualizator zolta ramka, inne traca podswietlenie
     //! \param visualizer wizualizator do podswietlenia
-    void highlightVisualizer( const VisualizerPtr& visualizer  );
+    void highlightVisualizer( const core::VisualizerPtr& visualizer  );
     
 	typedef boost::bimap<QWidget*, boost::bimaps::multiset_of<QWidget*>> DerrivedContextWidgets;
 	typedef std::pair<AppUsageContextPtr, QWidget*> ContextState;
@@ -238,9 +243,9 @@ private:
     //! kolekcja z aktualnie obsługiwanymi sesjami
     std::vector<PluginSubject::SessionConstPtr> currentSessions;
     // TODO, tu jest blad, obiekt jest zawsze nullem
-    CoreVisualizerWidget* currentVisualizer;    
+    coreUI::CoreVisualizerWidget* currentVisualizer;    
     //! górny widget aplikacji gdzie trafiaja dock Widgety
-    CoreDockWidgetManager* topMainWindow;
+    coreUI::CoreDockWidgetManager* topMainWindow;
     //! dolny widget aplikacji na timeline
     QMainWindow* bottomMainWindow;
     //! widget, gdzie trafiaja filtry analiz
@@ -256,7 +261,7 @@ private:
     //! zakładka z raportami
     TextEdit* raports;
     //! 
-    CoreFlexiToolBar * flexiTabWidget;
+    coreUI::CoreFlexiToolBar * flexiTabWidget;
     //!
     //CoreFlexiToolBar::GUIID visualizerGroupID;
     //! mapa [przycisk -> zakładka]

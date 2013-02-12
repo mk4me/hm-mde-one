@@ -1,5 +1,6 @@
 #include "TimelinePCH.h"
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
+#include <plugins/newTimeline/ITimelineService.h>
 
 VisualizerSerieTimelineChannel::VisualizerSerieTimelineChannel(core::Visualizer * visualizer, core::Visualizer::VisualizerSerie * serie)
     : visualizer(visualizer), serie(serie)
@@ -128,5 +129,36 @@ void VisualizerSerieTimelineMultiChannel::scaleChanged(double newScale)
 				(*serieIT)->timeEditableSerieFeatures()->setScale(newScale);
 			}
 		}
+	}
+}
+
+VisualizerTimelineHelper::VisualizerTimelineHelper(ITimelineService * timeline) : timeline(timeline)
+{
+
+}
+
+VisualizerTimelineHelper::~VisualizerTimelineHelper()
+{
+	for(auto it = seriesToChannels.begin(); it != seriesToChannels.end(); ++it){
+		timeline->removeChannel(boost::lexical_cast<std::string>(it->second.first));
+		it->first->visualizer()->removeObserver(this);
+	}
+}
+
+void VisualizerTimelineHelper::update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication)
+{
+	static int idx = 0;
+	if(modyfication == core::Visualizer::ADD_SERIE){
+		//utwórz kanał
+		auto channel = core::shared_ptr<timeline::IChannel>(new VisualizerSerieTimelineChannel(serie->visualizer(), serie));
+		//dodaj do timeline
+		timeline->addChannel(boost::lexical_cast<std::string>(idx), channel);
+		//zapamiętaj
+		seriesToChannels[serie] = std::make_pair(idx++, channel);
+	}else{
+		//usuń kanał
+		auto it = seriesToChannels.find(serie);
+		timeline->removeChannel(boost::lexical_cast<std::string>(it->second.first));
+		seriesToChannels.erase(serie);
 	}
 }

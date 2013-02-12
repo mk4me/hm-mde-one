@@ -1,9 +1,8 @@
 #include "hmmPCH.h"
 #include "TreeRefresher.h"
 #include <QtGui/QMessageBox>
-#include <core/PluginCommon.h>
-#include <core/DataAccessors.h>
-#include <core/src/DataManager.h>
+#include <corelib/PluginCommon.h>
+#include <corelib/DataAccessors.h>
 #include <plugins/subject/ISession.h>
 #include "TreeBuilder.h"
 
@@ -13,7 +12,7 @@ preventRefresh(false),
     tree(nullptr)
 {}
 
-void TreeRefresher::actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions) {
+void TreeRefresher::actualRefresh(QTreeWidget* tree, const core::ObjectWrapperCollection& sessions) {
 
     QMessageBox message;
     message.setWindowTitle(QObject::tr("Refreshing analysis data"));
@@ -59,7 +58,7 @@ void TreeRefresher::refresh( QTreeWidget* tree )
         needRefresh = true;
     } else {
         core::ObjectWrapperCollection sessions(typeid(PluginSubject::ISession), false);
-		DataManager::getInstance()->getObjects(sessions);
+		plugin::getDataManagerReader()->getObjects(sessions);
         actualRefresh(tree, sessions);
     }
 }
@@ -71,7 +70,7 @@ void TreeRefresher::setPreventRefresh( bool val )
         UTILS_ASSERT(tree);
         needRefresh = false;
 		core::ObjectWrapperCollection sessions(typeid(PluginSubject::ISession), false);
-		DataManager::getInstance()->getObjects(sessions);
+		plugin::getDataManagerReader()->getObjects(sessions);
         actualRefresh(tree, sessions);
         tree = nullptr;
     }

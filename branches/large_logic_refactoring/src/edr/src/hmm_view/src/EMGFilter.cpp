@@ -3,6 +3,8 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartSerie.h>
 
+using namespace core;
+
 template<class PointType, class TimeType>
 class ChannelNoCopyModifier : public utils::IChannelAutoModifier<PointType, TimeType>
 {
@@ -364,7 +366,7 @@ VisualizerPtr EMGFilterHelper::createVisualizer()
     return NewChartItemHelper::createVisualizer();
 }
 
-void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
 {
     ScalarChannelReaderInterfacePtr channel = wrapper->clone()->get();
 
@@ -376,12 +378,15 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 
     core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
     wrapperX->set(core::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
-	(*wrapperX)["core/name"] = wrapper->getName();
-    (*wrapperX)["core/source"] = wrapper->getSource();
+	(*wrapperX).copyMeta(*wrapper);
     visualizer->getOrCreateWidget();
 
-    //series.push_back(core::dynamic_pointer_cast<core::IVisualizer::ITimeSerie>(visualizer->createSerie(wrapperX, wrapperX->getName())));
-	series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(wrapperX, "UNKNOWN")));
+	std::string name("UNKNOWN");
+	wrapperX->tryGetMeta("core/name", name);    
+	auto s = visualizer->createSerie(typeid(ScalarChannelReaderInterface),wrapperX);
+	s->serie()->setName(name);
+	series.push_back(s);
+
 }
 
 

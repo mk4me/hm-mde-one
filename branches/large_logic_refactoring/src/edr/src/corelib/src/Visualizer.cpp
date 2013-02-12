@@ -169,6 +169,16 @@ Visualizer::Visualizer( const Visualizer& visualizer ) :
 	setLiveObserveActive(visualizer.isLiveObserveActive());
 }
 
+plugin::IVisualizer * Visualizer::visualizer()
+{
+	return visualizer_.get();
+}
+
+const plugin::IVisualizer * Visualizer::visualizer() const
+{
+	return visualizer_.get();
+}
+
 void Visualizer::init()
 {
 	{

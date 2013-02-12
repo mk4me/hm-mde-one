@@ -23,7 +23,7 @@
 
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 #include <plugins/subject/ISubjectService.h>
 

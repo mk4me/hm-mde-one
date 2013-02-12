@@ -328,8 +328,8 @@ void CoreVisualizerWidget::removeSerie()
 
 const bool CoreVisualizerWidget::getDataName(core::ObjectWrapperConstPtr data, std::string & dataName)
 {
-	return (data->tryGetMeta("core/uiUserName", dataName) == false && data->tryGetMeta("core/uiName", dataName) == false
-		&& data->tryGetMeta("core/name", dataName) == false);
+	return (data->tryGetMeta("core/uiUserName", dataName) == true || data->tryGetMeta("core/uiName", dataName) == true
+		|| data->tryGetMeta("core/name", dataName) == true);
 }
 
 const bool CoreVisualizerWidget::getDataSource(core::ObjectWrapperConstPtr data, std::string & dataSource)

@@ -23,12 +23,12 @@ public:
 
 public:
     //! \return wizualizator stworzony dla dostarczonego wrappera
-    virtual VisualizerPtr createVisualizer();
+    virtual core::VisualizerPtr createVisualizer();
     //! tworzy serie ze zmodyfikowanym EMG na podstawiawie dostarczonego wrappera
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline'a
     //! \param series zwracana seria 
-    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
 };
 typedef core::shared_ptr<EMGFilterHelper> EMGFilterHelperPtr;
 typedef core::shared_ptr<const EMGFilterHelper> EMGFilterHelperConstPtr;

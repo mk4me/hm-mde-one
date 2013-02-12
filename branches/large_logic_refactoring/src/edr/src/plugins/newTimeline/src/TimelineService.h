@@ -13,7 +13,7 @@
 
 class TimelineWidget;
 
-class TimelineService : public ITimelineService
+class TimelineService : public ITimelineService, public plugin::IService
 {
     UNIQUE_ID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}");
 	CLASS_DESCRIPTION("New Timeline Service", "newTimeline Service");

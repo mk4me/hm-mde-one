@@ -14,6 +14,8 @@
 #include <corelib/Visualizer.h>
 #include <timelinelib/IChannel.h>
 
+class ITimelineService;
+
 class PLUGINTIMELINE_EXPORT VisualizerSerieTimelineChannel : public timeline::IChannel
 {
 public:
@@ -83,6 +85,20 @@ public:
 private:
 
 	VisualizersSeries visualizersSeries;
+};
+
+class PLUGINTIMELINE_EXPORT VisualizerTimelineHelper : public core::Visualizer::IVisualizerObserver
+{
+public:
+	VisualizerTimelineHelper(ITimelineService * timeline);
+	virtual ~VisualizerTimelineHelper();
+
+public:
+	virtual void update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication);
+
+private:
+	ITimelineService * timeline;
+	std::map<core::Visualizer::VisualizerSerie *, std::pair<int, core::shared_ptr<timeline::IChannel>>> seriesToChannels;
 };
 
 #endif	//	HEADER_GUARD___VISUALIZERCHANNEL_H__

@@ -81,7 +81,6 @@ UTILS_POP_WARNINGS
 #include "VisualizerManager.h"
 #include "ApplicationCommon.h"
 #include "PluginApplication.h"
-#include "IAppUsageContextManager.h"
 #include "Log.h"
 #include "LogInitializer.h"
 #include "Plugin.h"

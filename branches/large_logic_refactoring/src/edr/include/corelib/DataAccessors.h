@@ -14,7 +14,7 @@
 #include <utils/Debug.h>
 #include <corelib/IDataManagerReader.h>
 
-namespace core{
+namespace core {
 
     //! Przekierowanie z queryData dla poprawnych danych.
     template <class T, class Ptr>

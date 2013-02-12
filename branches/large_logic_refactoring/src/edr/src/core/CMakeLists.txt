@@ -18,8 +18,6 @@ SET_PRIVATE_HEADERS(
 	PluginApplication.h
 	PluginPath.h
 	SourceManager.h
-	IAppUsageContext.h
-	IAppUsageContextManager.h
 	LogInitializer.h
 	ServiceManager.h
 	VisualizerManager.h

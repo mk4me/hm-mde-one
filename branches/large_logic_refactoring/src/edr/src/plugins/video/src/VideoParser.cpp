@@ -116,10 +116,8 @@ void VideoParser::parse(const std::string & source)
 
             realStream->setTime(0);
             adapter->set(realStream);
-			//TODO
 			//metadane
-            //adapter->setName(realStream->getSource());
-            //adapter->setSource(directory);
+            (*adapter)["core/source"] = realStream->getSource();
         }
     } else {
         {
@@ -134,17 +132,10 @@ void VideoParser::parse(const std::string & source)
 
             //adapter->set(realStream);
 			//TODO
-			//metadane
-            //adapter->setName(path.filename().string());
-            //adapter->setSource(path.string());
 
 			VideoChannelPtr channel(new VideoChannel(realStream));
 			channel->setName(path.filename().string());
-			channelWrapper->set(channel);
-			//TODO
-			//metadane
-			//channelWrapper->setName(path.filename().string());
-			//channelWrapper->setSource(path.string());
+			channelWrapper->set(channel);			
         }
     }
 }

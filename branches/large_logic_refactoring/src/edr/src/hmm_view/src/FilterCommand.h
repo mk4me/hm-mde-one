@@ -12,9 +12,8 @@
 
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
-#include <core/src/SubjectDataFilters.h>
 #include <plugins/subject/Types.h>
 #include "TreeBuilder.h"
 
@@ -37,7 +36,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) = 0;
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ObjectWrapperCollection& sessions) = 0;
     //! resetuje ustawienia konfiguratora
     virtual void reset() {}
     //! \return widget z konfiguratorem lub nullptr jeśli nie jest on dostarczany
@@ -58,7 +57,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ObjectWrapperCollection& sessions)
     {
         return TreeBuilder::createTree(rootItemName, sessions, dataFilter);
     }

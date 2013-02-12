@@ -21,13 +21,13 @@ public:
     //! \param rootItemName nazwa korzenia
     //! \param sessions dostarczone sesje
     //! \return stworzony element
-    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions);
+    static QTreeWidgetItem* createTree(const QString& rootItemName, const core::ObjectWrapperCollection& sessions);
     //! Tworzy drzewo na podstawie dostarczony sesji
     //! \param rootItemName nazwa korzenia
     //! \param sessions dostarczone sesje
     //! \param dataFilter obiekt filtrujący sesje
     //! \return stworzony element
-    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions, const PluginSubject::DataFilterPtr & dataFilter);
+    static QTreeWidgetItem* createTree(const QString& rootItemName, const core::ObjectWrapperCollection& sessions, const PluginSubject::DataFilterPtr & dataFilter);
     //! Tworzy gałąź dla markerów
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
@@ -57,7 +57,7 @@ public:
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liści
-    static QTreeWidgetItem* createEMGBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
+    static QTreeWidgetItem* createEMGBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIconconst, const std::string & conf );
     //! Tworzy gałąź dla 
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów

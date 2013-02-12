@@ -1,5 +1,5 @@
 #include "ConfigurationDialog.h"
-#include <core/PluginCommon.h>
+#include <corelib/PluginCommon.h>
 #include <QtCore/QFileInfo>
 #include <QtGui/QListWidgetItem>
 #include <utils/Debug.h>
@@ -74,10 +74,8 @@ void ConfigurationWidget::loadConfigurations(const QString& frontXml, const QStr
     painterFront.intersectNames(names);
     painterBack.intersectNames(names);
 
-    QString path1 = core::getResourceString("images/przod.png");
-    QString path2 = core::getResourceString("images/tyl.png");
-    loadPicture(painterFront, path1, 0, 0, true);
-    loadPicture(painterBack, path2, 0, 0, true);
+    loadPicture(painterFront, QString::fromStdString(plugin::getResourcePath("images/przod.png").string()), 0, 0, true);
+    loadPicture(painterBack, QString::fromStdString(plugin::getResourcePath("images/tyl.png").string()), 0, 0, true);
 }
 
 

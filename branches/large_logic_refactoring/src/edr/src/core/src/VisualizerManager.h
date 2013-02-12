@@ -76,7 +76,7 @@ public:
 	virtual VisualizerConstPtr getVisualizerPrototype(UniqueID id);
 	//! \param type Typ dla którego poszukujeemy wizualizatorów
 	//! \param prototypes [out] Prototypy wizualizatorów potrafiących obsłużyć zadany typ
-	virtual void getVisualizerPrototypes(core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact);
+	virtual void getVisualizerPrototypes(const core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact);
 	
 	//! \param observer Obserwator tworzonych wizualziatorów włączony do obserwacji
 	virtual void registerObserver(IVisualizerManagerObserver * observer);

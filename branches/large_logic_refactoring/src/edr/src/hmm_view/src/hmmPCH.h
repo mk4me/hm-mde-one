@@ -64,6 +64,7 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <utils/Push.h>
 #include <timelinelib/IChannel.h>
+#include "IAppUsageContextManager.h"
 
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IService.h>

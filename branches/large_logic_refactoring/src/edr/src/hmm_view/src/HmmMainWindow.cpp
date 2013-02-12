@@ -1,19 +1,10 @@
 #include "hmmPCH.h"
 
-#include <core/IManagersAccessor.h>
 #include <QtGui/QMenu>
 #include <QtGui/QSplashScreen>
 #include <cmath>
 #include <utils/Debug.h>
-#include <core/src/VisualizerManager.h>
 #include "HmmMainWindow.h"
-#include <core/src/SourceManager.h>
-#include <core/src/VisualizerWidget.h>
-#include <core/src/WorkflowWidget.h>
-#include <core/src/EDRConsoleInnerWidget.h>
-#include <core/src/EDRConsoleWidget.h>
-#include "EDRDockWidgetSet.h"
-#include "EDRDockWidgetManager.h"
 #include "DataFilterWidget.h"
 #include "TreeBuilder.h"
 #include "Vector3DFilterCommand.h"
@@ -23,7 +14,6 @@
 #include <plugins/newChart/INewChartVisualizer.h>
 #include "IllnessUnit.h"
 #include "EMGFilter.h"
-#include <core/src/EDRTitleBar.h>
 #include "textedit.h"
 #include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
@@ -121,8 +111,6 @@ void HmmMainWindow::deactivateContext(QWidget * widget)
 
 void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
-    core::MainWindow::init(pluginLoader, managersAccessor);
-
     addContext(dataContext);
     addContext(analisisContext);
     addContext(reportsContext);
