@@ -170,9 +170,7 @@ namespace utils {
 		const typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
-			typedef ObjectWrapperT<T> Wrapper;
-			typedef typename Wrapper::Ptr Ptr;
-			return static_cast<Ptr>(get());
+			return static_cast<ObjectWrapperT<T>::Ptr>(get());
 		}
 
 		//! \param dummy Pozostawić pusty.
@@ -181,9 +179,7 @@ namespace utils {
 		const typename ObjectWrapperT<T>::ConstPtr get(T* dummy = nullptr) const
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
-			typedef ObjectWrapperT<T> Wrapper;
-			typedef typename Wrapper::ConstPtr ConstPtr;
-			return static_cast<ConstPtr>(get());
+			return static_cast<ObjectWrapperT<T>::ConstPtr>(get());
 		}
 
 		//! Pobiera obiekt z wrappera. W razie błędu rzuca bad_castem.
@@ -194,9 +190,9 @@ namespace utils {
 		//! Ustawia obiekt wrappera. W razie błędu rzuca bad_castem.
 		//! \param object Obiekt.
 		template <class Ptr>
-		void set(const Ptr& object, const LazyInitializer & initializer = LazyInitializer())
+		void set(const Ptr& object)
 		{
-			if ( !trySet(object, initializer) ) {
+			if ( !trySet(object) ) {
 				throw std::bad_cast();
 			}
 		}
@@ -207,9 +203,9 @@ namespace utils {
 		//! \param object Obiekt.
 		//! \return Sukces/porażka.
 		template <class Ptr>
-		const bool trySet(const Ptr& object, const LazyInitializer & initializer = LazyInitializer())
+		const bool trySet(const Ptr& object)
 		{
-			return __trySetRawPtr(object, initializer, boost::is_pointer<Ptr>());
+			return __trySetRawPtr(object, boost::is_pointer<Ptr>());
 		}
 
     private:
@@ -220,28 +216,26 @@ namespace utils {
 
 		ObjectWrapper(const ObjectWrapper & wrapper);
 
-		void setData(const void * object, const LazyInitializer & initializer);
-
 		//! Ustawia obiekt wrappera.
 		//! \param object Obiekt.
 		//! \return Sukces/porażka.
 		template <class Ptr>
-		const bool __trySetRawPtr(const Ptr& object, const LazyInitializer & initializer, boost::true_type)
+		const bool __trySetRawPtr(const Ptr& object, boost::true_type)
 		{
 			UTILS_STATIC_ASSERT((!boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Nalezy zapisywac dane bez modyfikatora const");
 			if(getPtrTypeInfo().first == typeid(Ptr)){
-				setData(&object, initializer);
+				__setData(&object);
 				return true;
 			}
 			return false;
 		}
 
 		template <class Ptr>
-		const bool __trySetRawPtr(const Ptr& object, const LazyInitializer & initializer, boost::false_type)
+		const bool __trySetRawPtr(const Ptr& object, boost::false_type)
 		{
 			UTILS_STATIC_ASSERT((!boost::is_const<typename Ptr::element_type>::value), "Nalezy zapisywac dane bez modyfikatora const");
 			if(getPtrTypeInfo().first == typeid(Ptr)){
-				setData(&object, initializer);
+				__setData(&object);
 				return true;
 			}
 			return false;
@@ -304,11 +298,9 @@ namespace utils {
 
 		const bool __tryUnpackData(void * object, const TypeInfo & ptrType);
 
-
 		const bool __tryUnpackData(void * object, const TypeInfo & ptrType) const;
 
 		const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType);
-
 
 		const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType) const;
 
@@ -320,7 +312,7 @@ namespace utils {
         virtual const std::string& getClassName() const = 0;
 
 		//! \return Informacje o typie.
-		virtual const TypeInfo getTypeInfo() const = 0;
+		virtual const TypeInfo & getTypeInfo() const = 0;
 
 		//! \param type 
 		//! \return Czy obiekt wspiera określony typ?
@@ -346,7 +338,7 @@ namespace utils {
 		virtual void* getRawPtr() = 0;
 
 		//! \return Informacje o typie odpowiednio normalnego i stałego wskaźnika.
-		virtual const std::pair<TypeInfo, TypeInfo> getPtrTypeInfo() const = 0;
+		virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const = 0;
 
 		virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const = 0;
 
@@ -356,7 +348,7 @@ namespace utils {
 
 	private:
 
-		virtual const ObjectWrapperPtr __clone() const = 0;
+		virtual void __clone(const ObjectWrapperPtr & dest) const = 0;
 
 		//! \param ow Object wrapper z ktorym zamieniamy zawartość
 		//! Ważne!! To może rzucać wyjątkiem!!
@@ -463,8 +455,7 @@ namespace utils {
 
 		static void __setData(const void * object, Ptr & wrapped)
 		{
-			Ptr ptr(*(static_cast<const Ptr *>(object)));
-			PtrPolicy::setPtr(wrapped, ptr);
+			PtrPolicy::setPtr(wrapped, *(static_cast<const Ptr *>(object)));
 		}
 
 		template<class PtrIn>
@@ -512,9 +503,10 @@ namespace utils {
 			return ptrTypeSupported(ptrInfo);
 		}
 
-		static const std::pair<TypeInfo, TypeInfo> ptrTypeInfo()
+		static const std::pair<TypeInfo, TypeInfo> & ptrTypeInfo()
 		{
-			return std::make_pair(TypeInfo(typeid(Ptr)), TypeInfo(typeid(ConstPtr)));
+			static const std::pair<TypeInfo, TypeInfo> ptrTypeInfo_ = std::make_pair(TypeInfo(typeid(Ptr)), TypeInfo(typeid(ConstPtr)));
+			return ptrTypeInfo_;
 		}
 
 		static const bool ptrTypeSupported(const TypeInfo & ptrInfo)
@@ -532,14 +524,15 @@ namespace utils {
 			types.push_back(typeInfo());
 		}
 
-		virtual const std::pair<TypeInfo, TypeInfo> getPtrTypeInfo() const
+		virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const
 		{
 			return ptrTypeInfo();
 		}
 
-		static const TypeInfo typeInfo()
-		{			
-			return TypeInfo(typeid(T));
+		static const TypeInfo & typeInfo()
+		{
+			static const TypeInfo typeInfo_ = TypeInfo(typeid(T));
+			return typeInfo_;
 		}
 
 		//! \return Nazwa typu.
@@ -549,21 +542,17 @@ namespace utils {
 		}
 
 		//! \return Informacje o typie.
-		virtual const TypeInfo getTypeInfo() const
+		virtual const TypeInfo & getTypeInfo() const
 		{
 			return typeInfo();
 		}
 
-        virtual const ObjectWrapperPtr __clone() const {
-            std::auto_ptr<ObjectWrapperT<T>> cloned(new ObjectWrapperT<T>());
-			if(wrapped_ != nullptr){
-				// rev czy na pewno nie trzeba <T> przy clone?
-				T* newPtr = ClonePolicy::clone(&*wrapped_);
-				Ptr temp;
-				PtrPolicy::setPtr(temp, newPtr);
-				cloned->wrapped_ = temp;
-			}
-            return ObjectWrapperPtr(cloned.release());
+        virtual void __clone(const ObjectWrapperPtr & dest) const {
+			T* newPtr = ClonePolicy::clone(&*wrapped_);
+			Ptr temp;
+			PtrPolicy::setPtr(temp, newPtr);
+			auto cloned = boost::dynamic_pointer_cast<ImplType>(dest);
+			cloned->wrapped_ = temp;
         }
 
         virtual const ObjectWrapperPtr create() const {
@@ -664,10 +653,11 @@ public:
 	}
 
 	//! \return Informacje o typie.
-	virtual const TypeInfo getTypeInfo() const
-	{		
+	virtual const TypeInfo & getTypeInfo() const
+	{
+		static const TypeInfo typeInfo_ = TypeInfo();
 		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return TypeInfo();
+		return typeInfo_;
 	}
 
 	//! \return Klon bieżącego obiektu. Wewnętrzny wskaźnik również jest kopiowany.
@@ -696,10 +686,11 @@ public:
 	}
 
 	//! \return Informacje o typie odpowiednio normalnego i stałego wskaźnika.
-	virtual const std::pair<TypeInfo, TypeInfo> getPtrTypeInfo() const
+	virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const
 	{
+		static const std::pair<TypeInfo, TypeInfo> ptrTypeInfo_ = std::pair<TypeInfo, TypeInfo>();
 		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");		
-		return std::pair<TypeInfo, TypeInfo>();
+		return ptrTypeInfo_;
 	}
 
 	virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const

@@ -50,13 +50,6 @@ ObjectWrapper::ObjectWrapper(const ObjectWrapper & wrapper) : initialized(false)
 
 }
 
-void ObjectWrapper::setData(const void * object, const LazyInitializer & initializer)
-{
-	__setData(object);
-	initializer_ = initializer;
-	initialized = false;
-}
-
 const bool ObjectWrapper::__tryUnpackData(void * object, const TypeInfo & ptrType)
 {
 	initialize();
@@ -122,7 +115,12 @@ void ObjectWrapper::initialize() const
 const ObjectWrapperPtr ObjectWrapper::clone() const
 {
 	initialize();
-	return __clone();
+	auto ret = create();
+	if(getRawPtr() != nullptr){
+		__clone(ret);
+	}
+	
+	return ret;
 }
 
 void ObjectWrapper::reset()
