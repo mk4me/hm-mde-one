@@ -470,8 +470,8 @@ void GRFSerie::setData(const utils::TypeInfo & requestedType, const core::Object
 	UTILS_ASSERT(data->getTypeInfo() == typeid(GRFCollection));
     this->data = data;
 	this->requestedType = requestedType;
-	grfCollection = data->clone()->get();
-    
+	grfCollection = data->get();
+	    
     const IForcePlatformCollection& platforms = grfCollection->getPlatforms();
     transformNode->addChild(createPlatformsGroup(platforms));
 	transformNode->addChild(createButterfly(grfCollection, this->maxLength));

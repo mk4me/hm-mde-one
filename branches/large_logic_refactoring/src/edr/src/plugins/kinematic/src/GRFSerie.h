@@ -159,7 +159,7 @@ private:
     //! Wizualizator, który utworzył serie
 	KinematicVisualizer * visualizer;
     //! Dane GRF dostarczone serii
-	GRFCollectionPtr grfCollection;
+	GRFCollectionConstPtr grfCollection;
     //! maksymalna długość siły, pomocne przy kolorowaniu wektora
 	float maxLength;
     //! mapa (krok -> (strzałka, jej ghost) pomocne przy rysowaniu i odświeżaniu wizualizacji

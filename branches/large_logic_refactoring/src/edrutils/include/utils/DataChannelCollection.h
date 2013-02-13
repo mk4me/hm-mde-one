@@ -40,6 +40,7 @@ public:
 	typedef std::vector<ChannelPtr> Collection;
 	typedef typename Collection::iterator iterator;
 	typedef typename Collection::const_iterator const_iterator;
+	typedef boost::tuple<PointType, TimeType, int> PointTimeIndex;
 protected:
 	Collection channels;
 	//! numer konfiguracji
@@ -47,18 +48,16 @@ protected:
 
 public:
 	DataChannelCollection() {}
-	virtual ~DataChannelCollection() {}
-public:
-	virtual DataChannelCollection* clone()
+	DataChannelCollection(const DataChannelCollection& dc) 
 	{
-		DataChannelCollection* obj = new DataChannelCollection();
-		int count = static_cast<int>(channels.size());
-		obj->channels.resize(count);
+		int count = static_cast<int>(dc.channels.size());
+		channels.resize(count);
 		for (int i = 0; i < count; ++i) {
-			obj->channels[i] = ChannelPtr(this->channels[i]->clone());
+			channels[i] = ChannelPtr(dc.channels[i]->clone());
 		}
-		return obj;
 	}
+	virtual ~DataChannelCollection() {}
+
 public:
 	void addChannel(const ChannelPtr & ptr)
 	{
@@ -99,14 +98,7 @@ public:
 	{
 		return channels.size();
 	}
-
-	double getFrequency()
-	{
-		UTILS_ASSERT(channels.size());
-		return channels[0]->size();
-	}
-
-
+	
 	//! \return długość kanału w sekundach; gdy nie ma danych zwracane jest zero, jest to odejście od konwecji, ale dzialanie całkiem naturalne.
 	TimeType getLength() const
 	{
@@ -148,75 +140,57 @@ public:
 	{
 		return TimeAccessor::getValue(time, *getChannel(index));
 	}
-
-	//! \return maksymalna wartość w calej dziedzinie dla wszystkich kanałów
-	boost::tuple<PointType, TimeType, int> getMaxValue() const
+	
+	//! \return krotka z maksymalną wartością, jej czasem i indeksem kanału w calej dziedzinie dla wszystkich kanałów
+	template<class _Fun>
+	PointTimeIndex getValue(_Fun f) const
 	{
-		int index = _getIndex<const_iterator>(
-			[&](int i) -> PointType { 
-				PointType max = channels[i]->value(0);
-				for(int idx = 1; i < channels[i]->size(); ++idx){
-					max = std::max(max, channels[i]->value(idx));
+		std::vector<PointTimeIndex> values;
+
+		int channelsCount = getNumChannels();
+		for (int channelIdx = 0; channelIdx < channelsCount; ++channelIdx) {
+			PointType chosenVal = channels[channelIdx]->value(0);
+			int chosenIdx = 0;
+			int count = channels[channelIdx]->size();
+			for(int i = 1; i < count; ++i) {
+				auto val = channels[channelIdx]->value(i);
+				if (f(chosenVal, val)) {
+					chosenVal = val;
+					chosenIdx = i;
 				}
-
-				return max;
-			},
-			[&](const_iterator b, const_iterator e) -> const_iterator { return std::max_element(channels.begin(), channels.end()); }
-		);
-
-		TimeType time = channels[index]->argument(channels[index]->size()-1);
-		PointType val = channels[index]->value(0);
-		for(int i = 1; i < channels[index]->size(); ++i){
-			val = std::max(val, channels[index]->value(i));
+			}
+			values.push_back(boost::make_tuple(
+				channels[channelIdx]->value(chosenIdx),
+				channels[channelIdx]->argument(chosenIdx),
+				channelIdx));
 		}
-		return boost::make_tuple(val, time, index);
-	}
-	//! \return minimalna wartość w calej dziedzinie dla wszystkich kanałów
-	boost::tuple<PointType, TimeType, int> getMinValue() const
-	{
-		int index = _getIndex<const_iterator>(
-			[&](int i) -> PointType { 
-				PointType min = channels[i]->value(0);
-				for(int i = 1; i < channels[i]->size(); ++i){
-					min  = std::min(min, channels[i]->value(i));
-				}
-
-				return min;
-			},
-			[&](const_iterator b, const_iterator e) -> const_iterator { return std::min_element(channels.begin(), channels.end()); }
-		);
-		TimeType time = channels[index]->argument(0);
-		PointType val = channels[index]->value(0);
-		for(int i = 1; i < channels[index]->size(); ++i){
-			val = std::min(val, channels[index]->value(i));
+		
+		int count = values.size();
+		auto chosenVal = values[0].get<0>();
+		int chosenIdx = 0;
+		for (int i = 1; i < count; ++i) {
+			auto val = values[i].get<0>();
+			if (f(chosenVal, val)) {
+				chosenIdx = i;
+				chosenVal = val;
+			}
 		}
-		return boost::make_tuple(val, time, index);
+
+		return values[chosenIdx];
 	}
 
-	//!
-	//! \param t
-	boost::tuple<PointType, int> getMaxValue(TimeType t) const
+	//! \return krotka z minimalną wartością, jej czasem i indeksem kanału w calej dziedzinie dla wszystkich kanałów
+	PointTimeIndex getMinValue() const
 	{
-		// todo
-		UTILS_ASSERT(false);
-		return boost::tuple<PointType, int>();
+		return getValue([&](const PointType& p1, const PointType& p2) { return p2 < p1; });
 	}
 
-private:
-	template <class _FwdIt>
-	int _getIndex(std::function<PointType (int)> fillCollection, std::function<_FwdIt (_FwdIt, _FwdIt)> indexGetter) const {
-		UTILS_ASSERT(channels.size());
-		//TODO
-		//to kiedyś działało?
-		//int count = static_cast<int>(channels.size());
-		//std::vector<PointType> m(count);
-		//for (int i = 0; i < count; ++i) {
-		//	m[i] = fillCollection(i);
-		//}
-		//const std::vector<PointType> & cm = m;
-		//return static_cast<int>(std::distance(cm.begin(), indexGetter(cm.begin(), cm.end())));
-		return 0;
+	//! \return krotka z maksymalną wartością, jej czasem i indeksem kanału w calej dziedzinie dla wszystkich kanałów
+	PointTimeIndex getMaxValue() const
+	{
+		return getValue([&](const PointType& p1, const PointType& p2) { return p1 < p2; });
 	}
+
 };
 ////////////////////////////////////////////////////////////////////////////////
 } //namespace utils
