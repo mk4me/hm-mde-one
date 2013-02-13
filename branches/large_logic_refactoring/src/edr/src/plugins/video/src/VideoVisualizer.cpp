@@ -92,8 +92,8 @@ void VideoVisualizer::VideoSerie::setData(const utils::TypeInfo & requestedType,
 
 	// pobranie obrazka
 	if ( success  == true && visualizer->stream != nullptr ) {
-		visualizer->ratioKeeper->setTarget(visualizer->widget);
 		if(visualizer->getImage() == true){
+			visualizer->widget->setColor(1.0, 1.0, 1.0, 1.0);
 			visualizer->refreshImage();
 			//! Fix pierwszej ramki - wymuszam poprawny resize okienek OSG!!
 			visualizer->viewer->getEventQueue()->windowResize(0, 0, visualizer->viewer->width(), visualizer->viewer->height());
@@ -293,11 +293,12 @@ QWidget* VideoVisualizer::createWidget()
     // dodanie widgetu
     widget = new Widget("video");
     widget->setUpdateCallback( new WidgetUpdater(this) );
-
     // ratio keeper
     ratioKeeper = new AspectRatioKeeper(widget, 1);
     workspace->addWidget(ratioKeeper);
 	widget->setMinimumSize(50, 50);
+
+	//ratioKeeper->setTarget(widget);
 
     Refresher refresher = { this };
     workspace->addEventCallback(createEventCallback(osgGA::GUIEventAdapter::RESIZE, refresher));
@@ -353,7 +354,8 @@ void VideoVisualizer::clear()
 {
 	streamImage = nullptr;
 	stream = nullptr;
-	ratioKeeper->setTarget(nullptr);
+	//ratioKeeper->setTarget(nullptr);
+	widget->setColor(0, 0, 0, 0); 
 
 	prevStreamTime = currentStreamTime = -1;
 

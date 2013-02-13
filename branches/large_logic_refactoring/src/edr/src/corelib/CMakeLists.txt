@@ -1,7 +1,6 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
-	SubjectDataFilters.h
 	BaseDataTypes.h
 	DataAccessors.h
 	Filesystem.h
@@ -43,7 +42,6 @@ SET_SOURCE_FILES(
 	# SubjectDataFilters.cpp
 	CoreLibPCH.cpp
 	ObjectWrapperCollection.cpp
-	SubjectDataFilters.cpp
 )
 
 SET_PRIVATE_HEADERS(

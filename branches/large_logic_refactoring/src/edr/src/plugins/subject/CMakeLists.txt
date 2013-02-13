@@ -1,6 +1,8 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
+	Export.h
+	SubjectDataFilters.h
 	ISubject.h
 	ISession.h
 	IMotion.h
@@ -31,6 +33,7 @@ SET_SOURCE_FILES (
 	SubjectService.cpp
 	SubjectPlugin.cpp
 	SubjectPCH.cpp
+	SubjectDataFilters.cpp
 )
 
 SET_PRECOMPILED_HEADER( SubjectPCH.h SubjectPCH.cpp)

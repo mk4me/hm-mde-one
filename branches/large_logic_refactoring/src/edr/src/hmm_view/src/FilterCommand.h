@@ -91,15 +91,17 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
     for (auto it = sessions.begin(); it != sessions.end(); ++it)
     {
         auto session = *it;
-        std::vector<PluginSubject::MotionConstPtr> motions;
+        core::ConstObjectsList motions;
         session->getMotions(motions);
         for (auto it = motions.begin(); it != motions.end(); ++it) {
-            auto motion = *it;
+            PluginSubject::MotionConstPtr motion = (*it)->get();
             QTreeWidgetItem* item = new QTreeWidgetItem();
             rootItem->addChild(item);
             item->setText(0, motion->getLocalName().c_str());
-            if (motion->hasObjectOfType(typeid(Type))) {
-                core::ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(Type));
+            if (motion->hasObject(typeid(Type), false)) {
+				core::ConstObjectsList wrappers;
+				motion->getObjects(wrappers, typeid(Type), false);
+                core::ObjectWrapperConstPtr wrapper = wrappers.front();
                 TypePtr collection = wrapper->clone()->get();
                 std::vector<core::ObjectWrapperConstPtr> xWrappers;
                 std::vector<core::ObjectWrapperConstPtr> yWrappers;

@@ -399,31 +399,32 @@ void KinematicVisualizer::showTrajectoriesDialog()
 
 void KinematicVisualizer::setActiveSerie( int idx )
 {
+	if (currentSerie >= 0) {
+		series[currentSerie]->getMatrixTransformNode()->removeChild(indicatorNode);
+		if (currentDragger) {
+			Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), currentDragger);
+		}
+	}
+
     if (idx >= 0 && idx < static_cast<int>(series.size())) {
-        if (currentSerie >= 0) {
-            series[currentSerie]->getMatrixTransformNode()->removeChild(indicatorNode);
-            if (currentDragger) {
-                Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), currentDragger);
-            }
-        }
         currentSerie = idx;
         refreshSpinboxes();
         series[currentSerie]->getMatrixTransformNode()->addChild(indicatorNode);
-    } else {
-        UTILS_ASSERT(false);
-        throw std::runtime_error("Wrong serie index");
     }
 }
 
 void KinematicVisualizer::setActiveSerie( plugin::IVisualizer::ISerie *serie )
 {
+	int idx = -1;
+
     for (unsigned int i = 0; i < series.size(); ++i) {
         if (series[i] == serie) {
-            setActiveSerie(i);
-            return;
+            idx = i;
+            break;
         }
     }
-    UTILS_ASSERT(false);
+    
+	setActiveSerie(idx);
 }
 
 const plugin::IVisualizer::ISerie * KinematicVisualizer::getActiveSerie() const

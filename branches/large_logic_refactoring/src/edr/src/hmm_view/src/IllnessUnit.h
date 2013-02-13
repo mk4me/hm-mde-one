@@ -10,16 +10,34 @@
 #ifndef HEADER_GUARD_HMM__ILLNESSUNIT_H__
 #define HEADER_GUARD_HMM__ILLNESSUNIT_H__
 
+#include <plugins/subject/SubjectDataFilters.h>
 #include "FilterCommand.h"
 #include "TreeItemHelper.h"
 
 //! klasa zapewnia filtrowanie po typie przekazanym w szablonie
 template<class Collection>
-class ChannelExtractorFilter : public PluginSubject::IDataFilter
+class ChannelExtractorFilter : public SubjectHierarchyEmptyFilter
 {
 public:
     //! konstruktor
     ChannelExtractorFilter() {}
+
+	virtual void filterSubjects(const core::ConstObjectsList & inputSubjects, core::ConstObjectsList & outputSubjects) const;
+
+	virtual void filterSubjectData(const core::ObjectWrapperConstPtr & subject, core::ConstObjectsList & outputSubjectData) const;
+
+	virtual void filterSubjectSessions(const core::ObjectWrapperConstPtr & subject, core::ConstObjectsList & outputSubjectSessions) const;
+
+	virtual void filterSessions(const core::ConstObjectsList & inputSessions, core::ConstObjectsList & outputSessions) const;
+
+	virtual void filterSessionData(const core::ObjectWrapperConstPtr & session, core::ConstObjectsList & outputSessionData) const;
+
+	virtual void filterSessionMotions(const core::ObjectWrapperConstPtr & session, core::ConstObjectsList & outputSessionMotions) const;
+
+	virtual void filterMotions(const core::ConstObjectsList & inputMotion, core::ConstObjectsList & outputMotions) const;
+
+	virtual void filterMotionData(const core::ObjectWrapperConstPtr & motion, core::ConstObjectsList & outputMotionData) const;
+
     //! wywołuje filtrowanie sesji po typie przekazanym w szablonie
     //! \param session filtrowane sesje
     //! \return sesje zawierające tylko konkretny typ
@@ -36,7 +54,7 @@ public:
 
         session->getMotions(motions);
         BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
-            if (motion->hasObjectOfType(typeid(Collection))) {
+            if (motion->hasObject(typeid(Collection), false)) {
                 std::vector<core::ObjectWrapperConstPtr> newMotionObjects;
                 //m->setName(motion->getName());
                 std::vector<core::ObjectWrapperConstPtr> objects;
@@ -65,7 +83,7 @@ public:
 };
 
 //! klasa zapewnia filtrowanie po numerze sesji pomiarowej
-class SessionNumberFilter : public PluginSubject::IDataFilter
+class SessionNumberFilter : public SubjectHierarchyEmptyFilter
 {
 public:
     //! konstruktor, który umożliwia filtrowanie po jednym nr sesji
@@ -107,7 +125,7 @@ private:
 };
 
 //! klasa zapewnia filtrowanie po nazwach obiektów
-class NameFilter : public PluginSubject::IDataFilter
+class NameFilter : public SubjectHierarchyEmptyFilter
 {
 public:
     //! konstruktor zapewniający filtrowanie obiektów o konkretnej nazwie

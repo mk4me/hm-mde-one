@@ -66,10 +66,12 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	if(visualizer_->getMaxSeries() != 1){
 		activeSerieSwitch = new QComboBox(visWidget);
 		activeSerieSwitch->addItem(tr("No active session"));
+		activeSerieSwitch->setEnabled(false);
 		connect(activeSerieSwitch, SIGNAL(currentIndexChanged(int)), this, SLOT(serieSelected(int)));
 		CoreWidgetAction * activeDataSelectAction = new CoreWidgetAction(this, tr("Settings"), CoreTitleBar::Left);
 		activeDataSelectAction->setDefaultWidget(activeSerieSwitch);
 		addAction(activeDataSelectAction);
+		
 	}
 
 	//screenshot
@@ -121,8 +123,9 @@ void CoreVisualizerWidget::fillSourcesMenu()
 
 	if(activeData.empty() == true){
 		dataDeselectAll->setEnabled(false);
+		activeDataSubmenu->setEnabled(false);
 	}else{
-
+		dataDeselectAll->setEnabled(true);
 		//TODO
 		//oznaczyć serie które są w wizualizatorze ale nie ma ich już w samych danych wizualizatora!!
 
@@ -142,26 +145,26 @@ void CoreVisualizerWidget::fillSourcesMenu()
 				action->setData(data);
 				connect(action, SIGNAL(triggered()), this, SLOT(removeSerie()));
 			}
-		}
+		}		
 	}
 
 	//teraz wszystkie dane
-
-	if(visualizer_->getNumSeries() == visualizer_->getMaxSeries()){
-		allDataSubmenu->setEnabled(false);
-	}
-
 	//lokalny index danych jeśli nie mają nazwy
 	int localDataIndex = 0;
 
 	//TODO
 	//oznaczyć serie które są w wizualizatorze ale nie ma ich już w samych danych wizualizatora!!
 
+	bool dataExists = false;
+
 	//wszystkie dane wg typów jakie obsługuje wizualizator
 	for(auto typeIT = supportedDataTypes.begin(); typeIT != supportedDataTypes.end(); ++typeIT){
 		core::ConstObjectsList data;
 		visualizer_->getData(*typeIT, data, false);
 		if(data.empty() == false){
+
+			dataExists = true;
+
 			auto activeTypeIT = activeData.find(*typeIT);
 			auto subDataManu = allDataSubmenu->addMenu(QString::fromUtf8((*typeIT).name()));
 			for(auto dataIT = data.begin(); dataIT != data.end(); ++dataIT){
@@ -207,6 +210,11 @@ void CoreVisualizerWidget::fillSourcesMenu()
 			}
 		}
 	}
+
+	//jesli mamy juz max serii danych
+	if(dataExists == false || visualizer_->getNumSeries() == visualizer_->getMaxSeries()){
+		allDataSubmenu->setEnabled(false);
+	}
 }
 
 const int CoreVisualizerWidget::nextValidLocalSerieIdx(int startIdx) const
@@ -234,6 +242,8 @@ void CoreVisualizerWidget::removeAllSeries()
 	if(activeSerieSwitch != nullptr){
 		activeSerieSwitch->blockSignals(true);
 		activeSerieSwitch->clear();
+		activeSerieSwitch->addItem(tr("No active session"));
+		activeSerieSwitch->setEnabled(false);
 		activeSerieSwitch->blockSignals(false);
 	}
 	std::set<int>().swap(usedLocalNameIndexes);
