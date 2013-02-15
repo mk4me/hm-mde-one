@@ -60,8 +60,8 @@ public:
     virtual PluginSubject::SubjectID getLocalID() const;
 
     virtual void getMotions(core::ConstObjectsList & motions) const;
-	virtual void addMotion(core::ObjectWrapperConstPtr & motion);
-	virtual void removeMotion(core::ObjectWrapperConstPtr & motion);
+	virtual void addMotion(const core::ObjectWrapperConstPtr & motion);
+	virtual void removeMotion(const core::ObjectWrapperConstPtr & motion);
 
     virtual const core::ObjectWrapperConstPtr & getSubject() const;
 	virtual const PluginSubject::SubjectConstPtr & getUnpackedSubject() const;

@@ -29,8 +29,8 @@ public:
     //! \param motions Zbiór wypełniany konkretnymi ruchami danego obiektu w ramach aktualnej sesji
     virtual void getMotions(core::ConstObjectsList & motions) const = 0;
 
-	virtual void addMotion(core::ObjectWrapperConstPtr & motion) = 0;
-	virtual void removeMotion(core::ObjectWrapperConstPtr & motion) = 0;
+	virtual void addMotion(const core::ObjectWrapperConstPtr & motion) = 0;
+	virtual void removeMotion(const core::ObjectWrapperConstPtr & motion) = 0;
 
     //! \return Obiekt z którym związana jest ta sesja
     virtual const core::ObjectWrapperConstPtr & getSubject() const = 0;

@@ -1750,6 +1750,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 				//zapamiętuję mapowanie
 				sessionsMapping[sessionIT->first].first = sOW;
+				subPtr->addSession(sOW);
 			}
 
 			//mam sesję - mogę iść dalej z motionami!!
@@ -1827,6 +1828,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 					//zapamiętuję mapowanie
 					motionsMapping[motionIT->first].first = mOW;
+					sPtr->addMotion(mOW);
 				}
 			}
 		}

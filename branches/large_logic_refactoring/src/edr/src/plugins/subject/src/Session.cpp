@@ -75,7 +75,7 @@ void Session::getMotions(core::ConstObjectsList & motions) const
 	motionStorage.getObjects(motions, typeid(PluginSubject::IMotion), false);
 }
 
-void Session::addMotion(core::ObjectWrapperConstPtr & motion)
+void Session::addMotion(const core::ObjectWrapperConstPtr & motion)
 {
 	core::ObjectWrapper::Types types;
 	motion->getSupportedTypes(types);
@@ -86,7 +86,7 @@ void Session::addMotion(core::ObjectWrapperConstPtr & motion)
 	motionStorage.addData(motion);
 }
 
-void Session::removeMotion(core::ObjectWrapperConstPtr & motion)
+void Session::removeMotion(const core::ObjectWrapperConstPtr & motion)
 {
 	motionStorage.removeData(motion);
 }

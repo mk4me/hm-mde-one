@@ -1172,7 +1172,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  void HmmMainWindow::dropUnusedElements( std::multimap<TreeItemHelperPtr, DataItemDescription>& multimap )
  {
      typedef std::multimap<TreeItemHelperPtr, DataItemDescription> mmap;
-     for (auto it = multimap.begin(); it != multimap.end(); ) {
+     for (auto it = multimap.begin(); it != multimap.end(); ++it) {
          DataItemDescription& desc = it->second;
          bool emptySerie = false;
 		 //TODO

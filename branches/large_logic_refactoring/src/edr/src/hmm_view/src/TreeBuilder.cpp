@@ -154,7 +154,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
         EMGChannelConstPtr c = (*it)->get();	
         if (c) {
 			std::string l("UNKNOWN");
-			(*it)->tryGetMeta("name", l);
+			(*it)->tryGetMeta("core/name", l);
 
             EMGFilterHelperPtr channelHelper(new EMGFilterHelper(*it));
             channelHelper->setMotion(motion);
@@ -182,7 +182,7 @@ QTreeWidgetItem*  TreeBuilder::createGRFBranch( const MotionConstPtr & motion, c
         GRFChannelConstPtr c = (*it)->get();
         if (c) {
 			std::string l("UNKNOWN");
-			(*it)->tryGetMeta("name", l);
+			(*it)->tryGetMeta("core/name", l);
             TreeItemHelperPtr channelHelper(new NewVector3ItemHelper(*it));
             channelHelper->setMotion(motion);
             HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);	
@@ -207,7 +207,7 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
         HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);	
         channelItem->setIcon(0, itemIcon);						
 		std::string l("UNKNOWN");
-		(*it)->tryGetMeta("name", l);		
+		(*it)->tryGetMeta("core/name", l);		
 		channelItem->setItemAndHelperText(QString::fromStdString(l));
         videoItem->addChild(channelItem);
     }
