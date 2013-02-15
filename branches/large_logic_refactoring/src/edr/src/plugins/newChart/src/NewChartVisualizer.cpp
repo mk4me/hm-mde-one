@@ -202,11 +202,11 @@ QWidget* NewChartVisualizer::createWidget()
     shiftSpinY = shiftY.second;
 
 	coreUI::CoreWidgetAction * shiftSpinXAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
-	shiftSpinXAction->setDefaultWidget(shiftSpinX);
+	shiftSpinXAction->setDefaultWidget(shiftX.first);
 	widget->addAction(shiftSpinXAction);
 
 	coreUI::CoreWidgetAction * shiftSpinYAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
-	shiftSpinXAction->setDefaultWidget(shiftSpinY);
+	shiftSpinXAction->setDefaultWidget(shiftY.first);
 	widget->addAction(shiftSpinYAction);
 
 
@@ -218,11 +218,11 @@ QWidget* NewChartVisualizer::createWidget()
     scaleSpinY = scaleY.second;
 
 	coreUI::CoreWidgetAction * scaleSpinXAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
-	shiftSpinXAction->setDefaultWidget(scaleSpinX);
+	scaleSpinXAction->setDefaultWidget(scaleX.first);
 	widget->addAction(scaleSpinXAction);
 
 	coreUI::CoreWidgetAction * scaleSpinYAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
-	shiftSpinXAction->setDefaultWidget(scaleSpinY);
+	scaleSpinYAction->setDefaultWidget(scaleY.first);
 	widget->addAction(scaleSpinYAction);
     
     

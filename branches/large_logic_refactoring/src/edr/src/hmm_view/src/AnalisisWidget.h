@@ -40,7 +40,7 @@ public:
     //! \return obszar, gdzie laduja wizualizatory i timeline
     QWidget* getArea() { return analisisArea; }
 
-private slots:
+private Q_SLOTS:
     //! zmienia widoczność filtrów
     //! \param expand chowa/pokazuje filtry
     void setFiltersExpanded(bool expand);

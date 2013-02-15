@@ -19,6 +19,7 @@ std::pair<QWidget*, QDoubleSpinBox*> LabeledSpinbox::create(const QString& label
     layout->addWidget(spin);
     layout->setMargin(0);
     layout->setContentsMargins(0, 0, 0, 0);
+	l->setBuddy(spin);
 	ret.second = spin;
     return ret;
 }

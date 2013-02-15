@@ -218,7 +218,7 @@ void HmmMainWindow::customViewInit(QWidget * console)
     topMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     bottomMainWindow = new QMainWindow();
     bottomMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    connect(topMainWindow, SIGNAL(changed()), treeUsageContext.get(), SLOT(refresh()));
+    connect(topMainWindow, SIGNAL(currentSetChanged(int)), treeUsageContext.get(), SLOT(refresh()));
     //TODO
     //trzeba wyzanaczać max wysokość tak aby nie "wypychało" nam timeline!!
     // powinno być mniej więcej coś takiego - wysokość dla aktualnej rozdzielczości - wysokośc timeline - wysokość górnego paska - przestrzeń wolna pomiędzy tymi elementami w pionie
@@ -241,8 +241,8 @@ void HmmMainWindow::customViewInit(QWidget * console)
     //trzeba to zgrać razem z max wysokością dla wizualizatorów
     bottomMainWindow->setMaximumHeight(120); // tymczasowo
     bottomMainWindow->setMinimumHeight(120); // tymczasowo
-    bottomMainWindow->layout()->setMargin(0);
-    bottomMainWindow->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
+    bottomMainWindow->layout()->setMargin(10);
+    //bottomMainWindow->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
     analisisArea->setLayout(v);
 
 
@@ -253,8 +253,8 @@ void HmmMainWindow::customViewInit(QWidget * console)
     for (int i = 0; i < plugin::getServiceManager()->getNumServices(); ++i) {
         plugin::IServicePtr service = plugin::getServiceManager()->getService(i);
 
-        const std::string& name = service->getName();
-        if (name == "newTimeline") {
+		auto timeline = core::dynamic_pointer_cast<ITimelineService>(service);
+        if(timeline != nullptr) {
             showTimeline();
         }else {
             QWidget* viewWidget = service->getWidget();
@@ -505,8 +505,8 @@ void HmmMainWindow::showTimeline()
         for (int i = 0; i < plugin::getServiceManager()->getNumServices(); ++i) {
             plugin::IServicePtr service = plugin::getServiceManager()->getService(i);
 
-            const std::string& name = service->getName();
-            if (name == "newTimeline") {
+            auto timeline = core::dynamic_pointer_cast<ITimelineService>(service);
+            if(timeline != nullptr) {
 
                 QWidget* viewWidget = service->getWidget();
 
@@ -514,11 +514,11 @@ void HmmMainWindow::showTimeline()
                 
                 QWidget* settingsWidget = service->getSettingsWidget();
 
-				auto widget = embeddWidget(controlWidget, tr("Timeline"), Qt::BottomDockWidgetArea, true);
-                widget->setFeatures(widget->features() | QDockWidget::NoDockWidgetFeatures);                
-                widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-                bottomMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+				//auto widget = embeddWidget(controlWidget, tr("Timeline"), Qt::BottomDockWidgetArea, true);
+                //widget->setFeatures(widget->features() | QDockWidget::NoDockWidgetFeatures);                
+                //widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+				//bottomMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+				bottomMainWindow->setCentralWidget(controlWidget);
                 timelineVisible = true;
             }
         }
@@ -915,7 +915,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 QDockWidget* HmmMainWindow::createDockVisualizer(const core::VisualizerPtr & visualizer)
 {
     // todo : zastanowic się nad bezpieczenstwem tej operacji
-    connect(visualizer.get(), SIGNAL(printTriggered(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
+    connect(visualizer.get(), SIGNAL(screenshotTaken(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
 
 	auto visWidget = new coreUI::CoreVisualizerWidget(visualizer);
 

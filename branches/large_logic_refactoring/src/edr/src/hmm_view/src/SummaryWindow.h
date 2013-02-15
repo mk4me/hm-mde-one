@@ -66,7 +66,7 @@ public:
     //! \param hmm główne okno aplikacji
     SummaryWindowController(SummaryWindowPtr sw, HmmMainWindow* hmm);
 
-public slots:
+public Q_SLOTS:
     //! pobiera dane z elementu i przesyła je do okna podsumowań
     //! \param item elmenet drzewa analiz
     //! \param column zaznaczona kolumna, ignorowane

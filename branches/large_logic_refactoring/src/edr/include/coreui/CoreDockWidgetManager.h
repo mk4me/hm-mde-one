@@ -108,8 +108,6 @@ public:
 
 Q_SIGNALS:
     //! stan dock widgetów zmienił się
-	//TODO - znaleźć gdzie ten sygnal jest uzywany i zmienić na currentChanged
-    //void changed();
 	void currentSetChanged(int index);
 	void setCloseRequested(int index);
 

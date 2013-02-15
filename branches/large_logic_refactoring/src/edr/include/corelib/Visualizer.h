@@ -134,11 +134,11 @@ private:
 	//! \param modyfication Typ modyfikacji serii
 	void notifyChange(VisualizerSerie * serie, SerieModyfication modyfication);
 
-signals:
+Q_SIGNALS:
 	//! \param screenshot Screen z wizualizatora
-	void screenshotTaken(QPixmap & screenshot);
+	void screenshotTaken(const QPixmap & screenshot);
 
-public slots:
+public Q_SLOTS:
 
 	void onScreenshotTrigger();
 

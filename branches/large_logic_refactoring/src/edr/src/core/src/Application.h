@@ -75,11 +75,13 @@ namespace core {
 		double visualizerTimeDelta;
 		double servicesTimeDelta;
 
+		coreUI::CoreMainWindow * mainWindow;
+
 	private:
 
 		static bool trySetPathsFromRegistry(shared_ptr<Path> & path);
 		static void setDefaultPaths(shared_ptr<Path> & path);
-		static void showSplashScreenMessage(QSplashScreen * splashScreen, const QString & message);
+		void showSplashScreenMessage(const QString & message);
 
 		void safeRegisterService(const plugin::IServicePtr & service);
 		void safeRegisterSource(const plugin::ISourcePtr & source);
