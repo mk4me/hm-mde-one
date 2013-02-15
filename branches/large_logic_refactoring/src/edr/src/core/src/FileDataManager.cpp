@@ -573,12 +573,20 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 		CORE_LOG_DEBUG("Any of known parsers did not provide any valid data for file: " << file);
 	}else{
 
-		//TODO
-		//metadane: name i source -> dodaæ jeœli brakuje
-
+		int idx = 0;
 		ObjectsList objectsAdded;
 
 		for(auto it = objects.begin(); it != objects.end(); ++it){
+			if((*it)->find("core/name") == (*it)->end()){
+				std::stringstream name;
+				name << file.filename().string() << "_" << idx++;
+				(*(*it))["core/name"] = name.str();
+			}
+
+			if((*it)->find("core/source") == (*it)->end()){
+				(*(*it))["core/source"] = file.filename().string();
+			}
+
 			if(memTransaction->isManaged(*it) == false){
 				memTransaction->addData(*it);
 				objectsAdded.push_back(*it);

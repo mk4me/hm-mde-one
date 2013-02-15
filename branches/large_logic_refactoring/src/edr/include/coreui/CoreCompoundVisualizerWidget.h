@@ -26,12 +26,10 @@ namespace coreUI{
 	private:
 		QComboBox * visualizerSwitch;
 
-		//TODO
-		CoreWidgetAction * switchVisualizerAction;
-
 	private:
 
 		void innerShowCurrentIndex(int idx);
+		void init();
 
 	public:
 		CoreCompoundVisualizerWidget(CoreCompoundVisualizerWidget & visualizer);

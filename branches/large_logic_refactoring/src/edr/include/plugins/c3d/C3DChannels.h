@@ -270,8 +270,6 @@ typedef core::shared_ptr<const EMGChannel> EMGChannelConstPtr;
 //! kanał GRF
 class PLUGINC3D_EXPORT GRFChannel : public VectorChannel
 {
-	//TODO
-//friend class C3DParser;
 public:
     //! rodzaj kanału GRF
 	enum Type { Unknown, F1, M1, F2, M2 };

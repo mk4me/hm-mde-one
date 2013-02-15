@@ -2,27 +2,37 @@
 #include <coreui/CoreCompoundVisualizerWidget.h>
 #include <coreui/CoreVisualizerWidget.h>
 #include <QtGui/QHBoxLayout>
+#include <coreui/CoreWidgetAction.h>
 
 using namespace coreUI;
 using namespace core;
 
 Q_DECLARE_METATYPE(CoreVisualizerWidget*);
 
-CoreCompoundVisualizerWidget::CoreCompoundVisualizerWidget(CoreCompoundVisualizerWidget & visualizer)
+CoreCompoundVisualizerWidget::CoreCompoundVisualizerWidget(CoreCompoundVisualizerWidget & visualizer) : visualizerSwitch(new QComboBox)
 {
-
+	init();
 }
 
 CoreCompoundVisualizerWidget::CoreCompoundVisualizerWidget() : visualizerSwitch(new QComboBox)
 {
-	visualizerSwitch->setParent(this);
-	setLayout(new QHBoxLayout);
-	visualizerSwitch->setEditText(tr("No visualizer"));
+	
 }
 
 CoreCompoundVisualizerWidget::~CoreCompoundVisualizerWidget()
 {
 
+}
+
+void CoreCompoundVisualizerWidget::init()
+{
+	visualizerSwitch->setParent(this);
+	setLayout(new QHBoxLayout);
+	visualizerSwitch->setEditText(tr("No visualizer"));
+
+	CoreWidgetAction * switchVisualizerAction = new CoreWidgetAction(this, tr("Utils"), CoreTitleBar::Left);
+	switchVisualizerAction->setDefaultWidget(visualizerSwitch);
+	addAction(switchVisualizerAction);
 }
 
 void CoreCompoundVisualizerWidget::addVisualizer(VisualizerPtr visualizer, const QString & visualizerName)
@@ -255,7 +265,9 @@ void CoreCompoundVisualizerWidget::setCurrentIndex(int index)
 		currentVisWidget->setVisible(false);
 	}
 
+	visualizerSwitch->blockSignals(true);
 	visualizerSwitch->setCurrentIndex(index);
+	visualizerSwitch->blockSignals(false);
 
 	innerShowCurrentIndex(index);
 }

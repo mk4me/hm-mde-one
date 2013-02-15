@@ -75,11 +75,18 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
     setupUi(this);
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 
-    visualizerUsageContext.reset(new HMMVisualizerUsageContext(flexiTabWidget));
-    treeUsageContext.reset(new HMMTreeItemUsageContext(flexiTabWidget, this));
-    raportsThumbnailsContext.reset(new RaportsThumbnailsContext(flexiTabWidget, this));
-    raportsTabContext.reset(new RaportsTabContext(flexiTabWidget, this));
-    tabPlaceholder->layout()->addWidget(flexiTabWidget);
+	contextPlaceholder = new QTabWidget(this);
+	contextPlaceholder->setTabsClosable(false);
+	contextPlaceholder->setMovable(false);
+	contextPlaceholder->setVisible(false);
+
+	connect(contextPlaceholder, SIGNAL(currentChanged(int)), this, SLOT(onContextChange(int)));
+
+    visualizerUsageContext.reset(new HMMVisualizerUsageContext(contextPlaceholder));
+    treeUsageContext.reset(new HMMTreeItemUsageContext(contextPlaceholder, this));
+    raportsThumbnailsContext.reset(new RaportsThumbnailsContext(contextPlaceholder, this));
+    raportsTabContext.reset(new RaportsTabContext(contextPlaceholder, this));
+    tabPlaceholder->layout()->addWidget(contextPlaceholder);
 
     dataContext.reset(new HMMDataContext());
     analisisContext.reset(new HMMAnalysisContext(&treeRefresher));
@@ -88,6 +95,15 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
     this->setWindowFlags(Qt::FramelessWindowHint);
     setMouseTracking(true);
     contextEventFilter = new ContextEventFilter(this);
+}
+
+void HmmMainWindow::onContextChange(int idx)
+{
+	if(contextPlaceholder->count() == 0){
+		contextPlaceholder->setVisible(false);
+	}else{
+		contextPlaceholder->setVisible(true);
+	}
 }
 
 void HmmMainWindow::initializeSplashScreen(QSplashScreen * splashScreen)

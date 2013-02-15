@@ -143,20 +143,11 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
 				config = measurements->getConfig(confName);
 			}
 		}
-
-
-		/*if(measurements != nullptr && meta != nullptr && meta->value("EMGConf", l) == true) {
-		QString confName = QString("EMG_") + QString::fromStdString(l);
-		if (measurements->hasConfig(confName)) {
-		config = measurements->getConfig(confName);
-		}
-		}*/
     } catch(...) {
         PLUGIN_LOG_WARNING("Problem with setting EMG names");
     }
 
-	//TODO
-	//emgs.clear()
+	core::ConstObjectsList().swap(emgs);
 
     motion->getObjects(emgs, typeid(EMGChannel), false);		
     for(auto it = emgs.begin(); it != emgs.end(); ++it) {	

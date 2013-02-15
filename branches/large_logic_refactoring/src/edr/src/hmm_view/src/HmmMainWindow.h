@@ -174,6 +174,8 @@ private Q_SLOTS:
     //! \param checked 
     void onToolButton(bool checked);
 
+	void onContextChange(int idx);
+
 private:	
 
 	virtual void update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication );
@@ -307,6 +309,8 @@ private:
     TreeRefresher treeRefresher;
 
 	std::map<core::Visualizer::VisualizerSerie*, timeline::ChannelPtr> seriesToChannels;
+
+	QTabWidget * contextPlaceholder;
 };
 
 
