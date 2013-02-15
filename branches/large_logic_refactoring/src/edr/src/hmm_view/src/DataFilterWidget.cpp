@@ -32,7 +32,7 @@ bool DataFilterWidget::eventFilter(QObject *object, QEvent *event)
     return false;
 }
 
-void DataFilterWidget::addFilter(const QString& bigLabelText, DataFilterPtr dataFilter, const QPixmap* icon)
+void DataFilterWidget::addFilter(const QString& bigLabelText, SubjectHierarchyFilterPtr dataFilter, const QPixmap* icon)
 {
     SimpleFilterCommandPtr simple(new SimpleFilterCommand(dataFilter));
     addFilter(bigLabelText, simple, icon);

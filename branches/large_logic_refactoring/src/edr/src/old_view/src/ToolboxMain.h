@@ -47,6 +47,9 @@ private slots:
 	void actionCreateVisualizer();
 
 private:
+
+	virtual void initializeSplashScreen(QSplashScreen * splashScreen);
+
 	//!
 	void populateWindowMenu( QMenu* menu );
 	//!

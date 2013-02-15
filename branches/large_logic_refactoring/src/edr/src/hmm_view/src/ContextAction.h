@@ -10,9 +10,15 @@
 #ifndef HEADER_GUARD_HMM__CONTEXTACTION_H__
 #define HEADER_GUARD_HMM__CONTEXTACTION_H__
 
-#include <core/src/Visualizer.h>
+#include <corelib/Visualizer.h>
 #include <QtGui/QAction>
+
+namespace coreUI {
+
 class CoreDockWidgetSet;
+
+}
+
 class HmmTreeItem;
 
 //! akcja obsługiwana w obrębie drzewa danych w analizach
@@ -26,24 +32,24 @@ public:
     //! \param parent rodzic akcji
     //! \param vis wizualizator związany z akcja
     //! \param set set, do którego ma trafic wizualizator
-    ContextAction(HmmTreeItem* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), CoreDockWidgetSet* set = nullptr) :
+    ContextAction(HmmTreeItem* itemHelper, QObject* parent, core::VisualizerPtr vis = core::VisualizerPtr(), coreUI::CoreDockWidgetSet* set = nullptr) :
       item(itemHelper), QAction(parent), visualizer(vis), set(set){}
 
 public:
     //! \return helper przypiasany do elementu drzewa
     HmmTreeItem* getTreeItem() const { return item; }
     //! \return wizualizator związany z akcja
-    VisualizerPtr getVisualizer() const { return visualizer.lock(); }
+    core::VisualizerPtr getVisualizer() const { return visualizer.lock(); }
     //! \return set, do którego ma trafic wizualizator lub nullptr jeśli nie jest to sprecyzowane
-    CoreDockWidgetSet* getDockSet() const { return set; }
+    coreUI::CoreDockWidgetSet* getDockSet() const { return set; }
 
 private:
     //!  helper przypiasany do elementu drzewa
     HmmTreeItem* item;
     //! wizualizator związany z akcja
-    VisualizerWeakPtr visualizer;
+    core::VisualizerWeakPtr visualizer;
     //! set, do którego ma trafic wizualizator lub nullptr jeśli nie jest to sprecyzowane
-    CoreDockWidgetSet* set;
+    coreUI::CoreDockWidgetSet* set;
 };
 
 

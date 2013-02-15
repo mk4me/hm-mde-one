@@ -1,4 +1,5 @@
-#include <corelib/SubjectDataFilters.h>
+#include "SubjectPCH.h"
+#include <plugins/subject/SubjectDataFilters.h>
 #include <plugins/subject/IMotion.h>
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/ISubject.h>
@@ -27,7 +28,9 @@ void SubjectHierarchyEmptyFilter::filterSubjectData(const core::ObjectWrapperCon
 void SubjectHierarchyEmptyFilter::filterSubjectSessions(const core::ObjectWrapperConstPtr & subject, core::ConstObjectsList & outputSubjectSessions) const
 {
 	PluginSubject::SubjectConstPtr s = subject->get();
-	s->getSessions(outputSubjectSessions);
+	core::ConstObjectsList sessions;
+	s->getSessions(sessions);
+	filterSessions(sessions, outputSubjectSessions);
 }
 
 void SubjectHierarchyEmptyFilter::filterSessions(const core::ConstObjectsList & inputSessions, core::ConstObjectsList & outputSessions) const
@@ -44,7 +47,9 @@ void SubjectHierarchyEmptyFilter::filterSessionData(const core::ObjectWrapperCon
 void SubjectHierarchyEmptyFilter::filterSessionMotions(const core::ObjectWrapperConstPtr & session, core::ConstObjectsList & outputSessionMotions) const
 {
 	PluginSubject::SessionConstPtr s = session->get();
-	s->getMotions(outputSessionMotions);
+	core::ConstObjectsList motions;
+	s->getMotions(motions);
+	filterMotions(motions, outputSessionMotions);
 }
 
 void SubjectHierarchyEmptyFilter::filterMotions(const core::ConstObjectsList & inputMotion, core::ConstObjectsList & outputMotions) const
@@ -215,4 +220,100 @@ void SubjectHierarchyCompoundFilter::filterMotionData(const core::ObjectWrapperC
 	}
 
 	outputMotionData.insert(outputMotionData.end(), localInputSet.begin(), localInputSet.end());
+}
+
+SubjectHierarchyTypeFilter::SubjectHierarchyTypeFilter(const core::TypeInfo & type)
+{
+	types.insert(type);
+}
+
+SubjectHierarchyTypeFilter::SubjectHierarchyTypeFilter(const core::TypeInfoList & types) : types(types.begin(), types.end())
+{
+
+}
+
+SubjectHierarchyTypeFilter::~SubjectHierarchyTypeFilter()
+{
+
+}
+
+void SubjectHierarchyTypeFilter::filterSubjects(const core::ConstObjectsList & inputSubjects, core::ConstObjectsList & outputSubjects) const
+{
+	for(auto subjectIT = inputSubjects.begin(); subjectIT != inputSubjects.end(); ++subjectIT){
+		PluginSubject::SubjectConstPtr s = (*subjectIT)->get();
+		core::ConstObjectsList sessions;
+		bool found = false;
+		for(auto sessionIT = sessions.begin(); sessionIT != sessions.end(); ++sessionIT){
+			PluginSubject::SessionConstPtr s = (*sessionIT)->get();
+			core::ConstObjectsList motions;
+			s->getMotions(motions);
+			for(auto motionIT = motions.begin(); motionIT != motions.end(); ++motionIT){
+				PluginSubject::MotionConstPtr m = (*motionIT)->get();
+				for(auto it = types.begin(); it != types.end(); ++it){
+					if(m->hasObject(*it, false) == true){
+						outputSubjects.push_back(*subjectIT);
+						found = true;
+						break;
+					}
+				}
+
+				if(found == true){
+					break;
+				}
+			}
+
+			if(found == true){
+				break;
+			}
+		}
+	}
+}
+
+void SubjectHierarchyTypeFilter::filterSessions(const core::ConstObjectsList & inputSessions, core::ConstObjectsList & outputSessions) const
+{
+	for(auto sessionIT = inputSessions.begin(); sessionIT != inputSessions.end(); ++sessionIT){
+		PluginSubject::SessionConstPtr s = (*sessionIT)->get();
+		core::ConstObjectsList motions;
+		s->getMotions(motions);
+		bool found = false;
+		for(auto motionIT = motions.begin(); motionIT != motions.end(); ++motionIT){
+			PluginSubject::MotionConstPtr m = (*motionIT)->get();
+			for(auto it = types.begin(); it != types.end(); ++it){
+				if(m->hasObject(*it, false) == true){
+					outputSessions.push_back(*sessionIT);
+					found = true;
+					break;
+				}
+			}
+
+			if(found == true){
+				break;
+			}
+		}
+	}
+}
+
+void SubjectHierarchyTypeFilter::filterMotions(const core::ConstObjectsList & inputMotion, core::ConstObjectsList & outputMotions) const
+{
+	for(auto motionIT = inputMotion.begin(); motionIT != inputMotion.end(); ++motionIT){
+		PluginSubject::MotionConstPtr m = (*motionIT)->get();
+		for(auto it = types.begin(); it != types.end(); ++it){
+			if(m->hasObject(*it, false) == true){
+				outputMotions.push_back(*motionIT);
+				break;
+			}
+		}
+	}
+}
+
+void SubjectHierarchyTypeFilter::filterMotionData(const core::ObjectWrapperConstPtr & motion, core::ConstObjectsList & outputMotionData) const
+{
+	core::ConstObjectsList data;
+	PluginSubject::MotionConstPtr m = motion->get();
+	for(auto it = types.begin(); it != types.end(); ++it){
+		m->getObjects(data, *it, false);
+	}
+
+	core::ConstObjects dataSet(data.begin(), data.end());
+	outputMotionData.insert(outputMotionData.end(), dataSet.begin(), dataSet.end());
 }

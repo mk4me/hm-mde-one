@@ -58,6 +58,11 @@ ToolboxMain::~ToolboxMain()
 	delete helper;
 }
 
+void ToolboxMain::initializeSplashScreen(QSplashScreen * splashScreen)
+{
+
+}
+
 void ToolboxMain::customViewInit(QWidget * console)
 {
 	trySetStyleByName("dark");

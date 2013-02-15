@@ -62,10 +62,8 @@ VisualizerSerieTimelineMultiChannel::VisualizerSerieTimelineMultiChannel(const V
 {
     UTILS_ASSERT((visualizersSeries.empty() == false), "Nie podano żadnych serii dla kanalu");
 	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
-			if((*serieIT)->timeAvareSerieFeatures() == nullptr){
-				throw std::runtime_error("Serie not aware of time");
-			}
+		if((*it)->timeAvareSerieFeatures() == nullptr){
+			throw std::runtime_error("Serie not aware of time");
 		}
 	}
 }
@@ -78,9 +76,7 @@ VisualizerSerieTimelineMultiChannel::~VisualizerSerieTimelineMultiChannel()
 void VisualizerSerieTimelineMultiChannel::setTime(double time)
 {
     for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
-			(*serieIT)->timeAvareSerieFeatures()->setTime(time > (*serieIT)->timeAvareSerieFeatures()->getLength() ? (*serieIT)->timeAvareSerieFeatures()->getLength() : time);
-		}
+		(*it)->timeAvareSerieFeatures()->setTime(time > (*it)->timeAvareSerieFeatures()->getLength() ? (*it)->timeAvareSerieFeatures()->getLength() : time);
     }
 }
 
@@ -89,9 +85,7 @@ double VisualizerSerieTimelineMultiChannel::getLength() const
 	double length = 0;
 
 	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
-			length = std::max(length, (*serieIT)->timeAvareSerieFeatures()->getLength());
-		}
+		length = std::max(length, (*it)->timeAvareSerieFeatures()->getLength());
 	}
 
 	return length;
@@ -113,10 +107,8 @@ const VisualizerSerieTimelineMultiChannel::VisualizersSeries & VisualizerSerieTi
 void VisualizerSerieTimelineMultiChannel::offsetChanged(double newOffset)
 {
 	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
-			if((*serieIT)->timeEditableSerieFeatures()){
-				(*serieIT)->timeEditableSerieFeatures()->setOffset(newOffset);
-			}
+		if((*it)->timeEditableSerieFeatures()){
+			(*it)->timeEditableSerieFeatures()->setOffset(newOffset);
 		}
 	}
 }
@@ -124,10 +116,8 @@ void VisualizerSerieTimelineMultiChannel::offsetChanged(double newOffset)
 void VisualizerSerieTimelineMultiChannel::scaleChanged(double newScale)
 {
 	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		for(auto serieIT = it->second.begin(); serieIT != it->second.end(); ++serieIT){
-			if((*serieIT)->timeEditableSerieFeatures()){
-				(*serieIT)->timeEditableSerieFeatures()->setScale(newScale);
-			}
+		if((*it)->timeEditableSerieFeatures()){
+			(*it)->timeEditableSerieFeatures()->setScale(newScale);
 		}
 	}
 }

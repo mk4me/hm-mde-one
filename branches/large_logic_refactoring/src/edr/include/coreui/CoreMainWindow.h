@@ -67,7 +67,7 @@ namespace coreUI {
 	private:
 
 		//! \return Customizowany splash screen dla danego widoku aplikacji, jeśli null to domyslny splash screen
-		virtual QSplashScreen * createSplashScreen();
+		virtual void initializeSplashScreen(QSplashScreen * splashScreen) = 0;
 		virtual void customViewInit(QWidget * console) = 0;
 
 	protected:

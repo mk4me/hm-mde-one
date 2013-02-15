@@ -77,25 +77,17 @@ CoreMainWindow::CoreMainWindow(const CloseUpOperations & closeUpOperations): QMa
 	initCoreResources();
 }
 
-QSplashScreen * CoreMainWindow::createSplashScreen()
-{
-	return new QSplashScreen();
-}
-
 QSplashScreen * CoreMainWindow::splashScreen()
 {
 	if(splashScreen_ == nullptr){
     
-		splashScreen_ = createSplashScreen();
+		splashScreen_ = new QSplashScreen(this);
 
-		if(splashScreen_ == nullptr){
-			splashScreen_ = CoreMainWindow::createSplashScreen();
-		}
+		initializeSplashScreen(splashScreen_);
 
+		splashScreen_->finish(this);
 		splashScreen_->show();
-	}
-
-	splashScreen_->finish(this);
+	}	
 
 	return splashScreen_;
 }

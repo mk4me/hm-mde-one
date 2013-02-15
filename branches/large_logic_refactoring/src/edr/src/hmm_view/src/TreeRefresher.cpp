@@ -12,7 +12,7 @@ preventRefresh(false),
     tree(nullptr)
 {}
 
-void TreeRefresher::actualRefresh(QTreeWidget* tree, const core::ObjectWrapperCollection& sessions) {
+void TreeRefresher::actualRefresh(QTreeWidget* tree, const core::ConstObjectsList& sessions) {
 
     QMessageBox message;
     message.setWindowTitle(QObject::tr("Refreshing analysis data"));
@@ -57,8 +57,8 @@ void TreeRefresher::refresh( QTreeWidget* tree )
         this->tree = tree;
         needRefresh = true;
     } else {
-        core::ObjectWrapperCollection sessions(typeid(PluginSubject::ISession), false);
-		plugin::getDataManagerReader()->getObjects(sessions);
+        core::ConstObjectsList sessions;
+		plugin::getDataManagerReader()->getObjects(sessions, typeid(PluginSubject::ISession), false);
         actualRefresh(tree, sessions);
     }
 }
@@ -69,8 +69,8 @@ void TreeRefresher::setPreventRefresh( bool val )
     if (!val && needRefresh) {
         UTILS_ASSERT(tree);
         needRefresh = false;
-		core::ObjectWrapperCollection sessions(typeid(PluginSubject::ISession), false);
-		plugin::getDataManagerReader()->getObjects(sessions);
+		core::ConstObjectsList sessions;
+		plugin::getDataManagerReader()->getObjects(sessions,typeid(PluginSubject::ISession), false);
         actualRefresh(tree, sessions);
         tree = nullptr;
     }

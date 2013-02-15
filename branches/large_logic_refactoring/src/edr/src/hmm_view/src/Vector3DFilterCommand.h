@@ -39,7 +39,7 @@ typedef std::map<QString, std::pair<QString,QString> > NamesDictionary;
 class BuilderFilterCommand : public IFilterCommand
 {
 public:
-    typedef boost::function<QTreeWidgetItem* (const PluginSubject::MotionConstPtr&, const QString&, const QIcon&, const QIcon&)> BranchFunction;
+    typedef boost::function<QTreeWidgetItem* (const PluginSubject::MotionConstPtr&, const QString&, const QIcon&, const QIcon&, const std::string &)> BranchFunction;
 public:
     //! Konstruktor
     //! \param function funkcja, która zostanie wykorzystana do stworzenia elementu drzewa
@@ -51,7 +51,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions );
 
 protected:
     //! funkcja, która zostanie wykorzystana do stworzenia elementu drzewa
@@ -70,7 +70,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions );
 };
 
 //! klasa, dzięki której możliwe jest korzystanie z sygnałow i slotów w klasie szablonowej.
@@ -221,7 +221,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ObjectWrapperCollection& sessions)
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ConstObjectsList& sessions)
     {
         QTreeWidgetItem* root = BuilderFilterCommand::createTreeBranch(rootItemName, sessions);
         filterTree(root);

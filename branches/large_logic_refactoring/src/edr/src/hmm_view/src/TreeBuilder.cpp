@@ -8,24 +8,39 @@
 
 using namespace PluginSubject;
 
-QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const core::ObjectWrapperCollection& sessions)
+QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const core::ConstObjectsList& sessions)
 {
-    DataFilterPtr nullFilter;
+    SubjectHierarchyFilterPtr nullFilter;
     return TreeBuilder::createTree(rootItemName, sessions, nullFilter);
 }
 
-QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const core::ObjectWrapperCollection& sessions, const DataFilterPtr & dataFilter)
+QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const core::ConstObjectsList& sessions, const SubjectHierarchyFilterPtr & dataFilter)
 {
     QTreeWidgetItem* rootItem = new QTreeWidgetItem();
     rootItem->setText(0, rootItemName);
-    for (auto it = sessions.crbegin(); it != sessions.crend(); ++it) {
+
+	//SessionConstPtr session = dataFilter ? dataFilter->filterData(*it) : *it;
+	core::ConstObjectsList filteredSessions;
+	if(dataFilter != nullptr){
+		dataFilter->filterSessions(sessions, filteredSessions);
+	}else {
+		filteredSessions = sessions;
+	}
+
+    for (auto it = filteredSessions.crbegin(); it != filteredSessions.crend(); ++it) {
 		std::string emgConfigName;
 		(*it)->tryGetMeta("EMGConf", emgConfigName);
-        SessionConstPtr session = dataFilter ? dataFilter->filterData(*it) : *it;
 
-        core::ConstObjectsList motions;
-        session->getMotions(motions);
-        BOOST_FOREACH(core::ObjectWrapperConstPtr motionOW, motions) {	
+        core::ConstObjectsList filteredMotions;
+
+		if(dataFilter != nullptr){
+			dataFilter->filterSessionMotions(*it, filteredMotions);
+		}else {
+			PluginSubject::SessionConstPtr s = (*it)->get();
+			s->getMotions(filteredMotions);
+		}
+        
+        BOOST_FOREACH(core::ObjectWrapperConstPtr motionOW, filteredMotions) {	
 
 			PluginSubject::MotionConstPtr motion = motionOW->get();
 
@@ -51,7 +66,7 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const core
                 }	         
                              
                 if (hasGrf) {
-                    analogItem->addChild(createGRFBranch(motion, QObject::tr("GRF"), getRootGRFIcon(), getGRFIcon()));
+                    analogItem->addChild(createGRFBranch(motion, QObject::tr("GRF"), getRootGRFIcon(), getGRFIcon(), std::string()));
                 }
             }
 
@@ -66,14 +81,14 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const core
                 core::ConstObjectsList powers;
                 motion->getObjects(powers, typeid(PowerCollection), false);
                 if (!forces.empty()) {
-                    kineticItem->addChild(createForcesBranch(motion, QObject::tr("Forces"), getRootForcesIcon(), getForcesIcon()));
+                    kineticItem->addChild(createForcesBranch(motion, QObject::tr("Forces"), getRootForcesIcon(), getForcesIcon(), std::string()));
                 }
                 if (!moments.empty()) {
-                    kineticItem->addChild(createMomentsBranch(motion, QObject::tr("Moments"), getRootMomentsIcon(), getMomentsIcon()));
+                    kineticItem->addChild(createMomentsBranch(motion, QObject::tr("Moments"), getRootMomentsIcon(), getMomentsIcon(), std::string()));
                 }
                 // do rozwiniecia - potrzeba parsować pliki vsk i interpretować strukture kinamatyczna tak jak to robi Vicon
                 if (!powers.empty()) {
-                    kineticItem->addChild(createPowersBranch(motion, QObject::tr("Powers"), getRootPowersIcon(), getPowersIcon()));
+                    kineticItem->addChild(createPowersBranch(motion, QObject::tr("Powers"), getRootPowersIcon(), getPowersIcon(), std::string()));
                 }
             }
 
@@ -91,16 +106,16 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const core
                 kinematicItem->setText(0, QObject::tr("Kinematic data"));
                 motionItem->addChild(kinematicItem);
                 if (hasMarkers) {
-                    kinematicItem->addChild(createMarkersBranch(motion, QObject::tr("Markers"), getRootMarkersIcon(), getMarkersIcon()));
+                    kinematicItem->addChild(createMarkersBranch(motion, QObject::tr("Markers"), getRootMarkersIcon(), getMarkersIcon(), std::string()));
 
                 }
                 if (hasAngles || hasJoints) {
-                    kinematicItem->addChild(createJointsBranch(motion, QObject::tr("Joints"), getRootJointsIcon(), getJointsIcon()));
+                    kinematicItem->addChild(createJointsBranch(motion, QObject::tr("Joints"), getRootJointsIcon(), getJointsIcon(), std::string()));
                 }
             }
 
             if (motion->hasObject(typeid(VideoChannel), false)) {
-                motionItem->addChild(createVideoBranch(motion, QObject::tr("Videos"), QIcon(), getVideoIcon()));
+                motionItem->addChild(createVideoBranch(motion, QObject::tr("Videos"), QIcon(), getVideoIcon(), std::string()));
             }
         }
     }
@@ -162,7 +177,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     return emgItem;
 }
 
-QTreeWidgetItem*  TreeBuilder::createGRFBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
+QTreeWidgetItem*  TreeBuilder::createGRFBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
     core::ConstObjectsList grfCollections;
     motion->getObjects(grfCollections, typeid(GRFCollection), false);
@@ -188,7 +203,7 @@ QTreeWidgetItem*  TreeBuilder::createGRFBranch( const MotionConstPtr & motion, c
     return grfItem;
 }
 
-QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
     QTreeWidgetItem* videoItem = new QTreeWidgetItem();
     videoItem->setText(0, rootName);
@@ -209,7 +224,7 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
     return videoItem;
 }
 
-QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
     bool hasJoints = motion->hasObject(typeid(kinematic::JointAnglesCollection), false);
     QTreeWidgetItem* skeletonItem = nullptr;
@@ -238,7 +253,7 @@ QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion,
     return skeletonItem;
 }
 
-QTreeWidgetItem* TreeBuilder::createMarkersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createMarkersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
 	core::ConstObjectsList mCollections;
 	motion->getObjects(mCollections, typeid(MarkerCollection), false);
@@ -255,17 +270,17 @@ QTreeWidgetItem* TreeBuilder::createMarkersBranch( const MotionConstPtr & motion
     return markersItem;
 }
 
-QTreeWidgetItem* TreeBuilder::createForcesBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createForcesBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
     return createTBranch<ForceCollection>(motion, rootName, rootIcon, itemIcon);
 }
 
-QTreeWidgetItem* TreeBuilder::createMomentsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createMomentsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
     return createTBranch<MomentCollection>(motion, rootName, rootIcon, itemIcon);
 }
 
-QTreeWidgetItem* TreeBuilder::createPowersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createPowersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
     return createTBranch<PowerCollection>(motion, rootName, rootIcon, itemIcon);
 }

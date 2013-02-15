@@ -38,7 +38,7 @@ public:
     IFilterCommandPtr getFilterCommand() const { return filterCommand; }
     //! wyzwala akcję filtrującą i tworzy element drzewa
     //! \return gotowy element drzewa, z przefiltrowanymi danymi
-    QTreeWidgetItem* createTreeEntry(const core::ObjectWrapperCollection& sessions);
+    QTreeWidgetItem* createTreeEntry(const core::ConstObjectsList& sessions);
     //! \return konfigurator filtru lub nullptr jeśli takiego nie dostarczono
     QWidget* getConfigurator() const { return filterCommand->getConfigurationWidget(); }
     //! \return nazwa filtru

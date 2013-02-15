@@ -45,7 +45,7 @@ branchFunction(function),
     rootIcon(rootIcon)
 { }
 
-QTreeWidgetItem* BuilderFilterCommand::createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions ) 
+QTreeWidgetItem* BuilderFilterCommand::createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions ) 
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
@@ -56,14 +56,14 @@ QTreeWidgetItem* BuilderFilterCommand::createTreeBranch( const QString& rootItem
         session->getMotions(motions);
         BOOST_FOREACH(core::ObjectWrapperConstPtr motionOW, motions) {
 			PluginSubject::MotionConstPtr motion = motionOW->get();
-            root->addChild(branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon));
+            root->addChild(branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon, std::string()));
         }
     }
 
     return root;
 }
 
-QTreeWidgetItem* JointsCommand::createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions )
+QTreeWidgetItem* JointsCommand::createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions )
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
@@ -73,7 +73,7 @@ QTreeWidgetItem* JointsCommand::createTreeBranch( const QString& rootItemName, c
 		session->getMotions(motions);
 		BOOST_FOREACH(core::ObjectWrapperConstPtr motionOW, motions) {
 			PluginSubject::MotionConstPtr motion = motionOW->get();
-			root->addChild(TreeBuilder::createJointsBranch(motion, motion->getLocalName().c_str(), TreeBuilder::getRootJointsIcon(), TreeBuilder::getJointsIcon()));
+			root->addChild(TreeBuilder::createJointsBranch(motion, motion->getLocalName().c_str(), TreeBuilder::getRootJointsIcon(), TreeBuilder::getJointsIcon(), std::string()));
 		}
 	}
 
@@ -100,7 +100,7 @@ QTreeWidgetItem* EMGCommand::createTreeBranch( const QString& rootItemName, cons
 		session->getMotions(motions);
 		BOOST_FOREACH(core::ObjectWrapperConstPtr motionOW, motions) {
 			PluginSubject::MotionConstPtr motion = motionOW->get();
-			QTreeWidgetItem* colItem = branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon);
+			QTreeWidgetItem* colItem = branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon, std::string());
 			if (config) {
 
 				for (int i = colItem->childCount() - 1; i >= 0; --i) {

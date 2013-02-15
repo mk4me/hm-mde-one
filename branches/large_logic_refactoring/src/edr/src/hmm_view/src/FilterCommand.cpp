@@ -6,7 +6,7 @@
 
 using namespace core;
 
-SimpleFilterCommand::SimpleFilterCommand( PluginSubject::DataFilterPtr dataFilter ) :
+SimpleFilterCommand::SimpleFilterCommand( SubjectHierarchyFilterPtr dataFilter ) :
     dataFilter(dataFilter)
 {
 }

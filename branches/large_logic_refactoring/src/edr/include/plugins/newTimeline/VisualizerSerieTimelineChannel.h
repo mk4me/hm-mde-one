@@ -55,8 +55,7 @@ class PLUGINTIMELINE_EXPORT VisualizerSerieTimelineMultiChannel : public timelin
 {
 public:
 
-	typedef std::list<core::Visualizer::VisualizerSerie*> VisualizerSeries;
-	typedef std::map<core::Visualizer*, VisualizerSeries> VisualizersSeries;
+	typedef std::list<core::Visualizer::VisualizerSerie*> VisualizersSeries;
 
 public:
 

@@ -15,6 +15,7 @@
 #include <corelib/SmartPtr.h>
 
 #include <plugins/subject/Types.h>
+#include <plugins/subject/SubjectDataFilters.h>
 #include "TreeBuilder.h"
 
 
@@ -36,7 +37,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ObjectWrapperCollection& sessions) = 0;
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ConstObjectsList& sessions) = 0;
     //! resetuje ustawienia konfiguratora
     virtual void reset() {}
     //! \return widget z konfiguratorem lub nullptr jeśli nie jest on dostarczany
@@ -51,20 +52,20 @@ class SimpleFilterCommand : public IFilterCommand
 public:
     //! Konstruktor
     //! \param dataFilter filtr danych, który będzie użyty do tworzenia drzewa
-    SimpleFilterCommand(PluginSubject::DataFilterPtr dataFilter);
+    SimpleFilterCommand(SubjectHierarchyFilterPtr dataFilter);
 
 public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ObjectWrapperCollection& sessions)
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ConstObjectsList& sessions)
     {
         return TreeBuilder::createTree(rootItemName, sessions, dataFilter);
     }
 
 private:
     //! filtr danych, który będzie użyty do tworzenia drzewa
-    PluginSubject::DataFilterPtr dataFilter;
+    SubjectHierarchyFilterPtr dataFilter;
 };
 typedef boost::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;
 typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr;
@@ -77,20 +78,20 @@ class MultiChartCommand : public IFilterCommand
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions );
 };
 
 //! tworzy gałąź drzewa z przefiltrowanymi danymi
 //! \param rootItemName nazwa korzenia
 //! \param sessions sesje do przefiltrowania
 template <class Type, class TypePtr>
-QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions )
+QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions )
 {
     QTreeWidgetItem* rootItem = new QTreeWidgetItem();
     rootItem->setText(0, rootItemName);
     for (auto it = sessions.begin(); it != sessions.end(); ++it)
     {
-        auto session = *it;
+        PluginSubject::SessionConstPtr session = (*it)->get();
         core::ConstObjectsList motions;
         session->getMotions(motions);
         for (auto it = motions.begin(); it != motions.end(); ++it) {

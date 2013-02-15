@@ -33,7 +33,7 @@ void FilterEntryWidget::onButton()
     Q_EMIT onFilterClicked(this);
 }
 
-QTreeWidgetItem* FilterEntryWidget::createTreeEntry(const core::ObjectWrapperCollection& sessions)
+QTreeWidgetItem* FilterEntryWidget::createTreeEntry(const core::ConstObjectsList& sessions)
 {
     QTreeWidgetItem* item = filterCommand->createTreeBranch(getName(), sessions);
     item->setExpanded(true);

@@ -1,6 +1,7 @@
 #include "hmmPCH.h"
 #include "IllnessUnit.h"
 #include "TreeItemHelper.h"
+#include <plugins/subject/SubjectDataFilters.h>
 
 using namespace PluginSubject;
 
@@ -27,16 +28,20 @@ std::pair<HmmTreeItem*, TreeHelperPtr> createHelperItem(const QString& name, con
     return std::make_pair(item, helper);
 }
 
-std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromVector( const std::vector<PluginSubject::SessionPtr>& sessions, int scalarIndex = 0 )
+std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromVector( const core::ConstObjectsList& sessions, int scalarIndex = 0 )
 {
     std::vector<core::ObjectWrapperConstPtr> xWrappers;
-    BOOST_FOREACH(SessionPtr session, sessions)
+    BOOST_FOREACH(core::ObjectWrapperConstPtr session, sessions)
     {
-		Motions motions;
-		session->getMotions(motions);
-		BOOST_FOREACH(MotionConstPtr motion, motions) {
-			if (motion->hasObjectOfType(typeid(VectorChannel))) {
-				core::ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(VectorChannel));
+		PluginSubject::SessionConstPtr s = session->get();
+		core::ConstObjectsList motions;
+		s->getMotions(motions);
+		BOOST_FOREACH(core::ObjectWrapperConstPtr motion, motions) {
+			PluginSubject::MotionConstPtr m = motion->get();
+			if (m->hasObject(typeid(VectorChannel), false)) {
+				core::ConstObjectsList wrappers;
+				m->getObjects(wrappers, typeid(VectorChannel), false);
+				core::ObjectWrapperConstPtr wrapper = wrappers.front();
 				if(wrapper != nullptr){
 					VectorChannelConstPtr moment;
 					bool ok = wrapper->tryGet(moment);
@@ -48,8 +53,8 @@ std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromVector( const 
 						static int number = 0;
 						std::string suffix = boost::lexical_cast<std::string>(number++);
 
-						(*wrapperX)["name"] = "Wrapper_" + suffix;
-						(*wrapperX)["source"] = "IlnessUnit";
+						(*wrapperX)["core/name"] = "Wrapper_" + suffix;
+						(*wrapperX)["core/source"] = "IlnessUnit";
 						xWrappers.push_back(wrapperX);
 					}
 				}
@@ -60,84 +65,86 @@ std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromVector( const 
     return xWrappers;
 }
 
-void Endo::createKineticBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
+void Endo::createKineticBranch( QTreeWidgetItem* root, const core::ConstObjectsList& sessions )
 {
-    DataFilterPtr leftPrev =  createCustomV3Filter<MomentCollection>(false, "LHipMoment");
-    DataFilterPtr rightPrev = createCustomV3Filter<MomentCollection>(false, "RHipMoment");
-    DataFilterPtr leftPost =  createCustomV3Filter<MomentCollection>(true, "LHipMoment");
-    DataFilterPtr rightPost = createCustomV3Filter<MomentCollection>(true, "RHipMoment");
+    SubjectHierarchyFilterPtr leftPrev =  createCustomV3Filter<MomentCollection>(false, "LHipMoment");
+    SubjectHierarchyFilterPtr rightPrev = createCustomV3Filter<MomentCollection>(false, "RHipMoment");
+    SubjectHierarchyFilterPtr leftPost =  createCustomV3Filter<MomentCollection>(true, "LHipMoment");
+    SubjectHierarchyFilterPtr rightPost = createCustomV3Filter<MomentCollection>(true, "RHipMoment");
     createVectorEntry(root, sessions, "Moment w stawie biodrowym", leftPrev, rightPrev, leftPost, rightPost, 0);
 
 
-    DataFilterPtr leftPrevF =  createCustomV3Filter<ForceCollection>(false, "LHipForce");
-    DataFilterPtr rightPrevF = createCustomV3Filter<ForceCollection>(false, "RHipForce");
-    DataFilterPtr leftPostF =  createCustomV3Filter<ForceCollection>(true, "LHipForce");
-    DataFilterPtr rightPostF = createCustomV3Filter<ForceCollection>(true, "RHipForce");
+    SubjectHierarchyFilterPtr leftPrevF =  createCustomV3Filter<ForceCollection>(false, "LHipForce");
+    SubjectHierarchyFilterPtr rightPrevF = createCustomV3Filter<ForceCollection>(false, "RHipForce");
+    SubjectHierarchyFilterPtr leftPostF =  createCustomV3Filter<ForceCollection>(true, "LHipForce");
+    SubjectHierarchyFilterPtr rightPostF = createCustomV3Filter<ForceCollection>(true, "RHipForce");
     createVectorEntry(root,sessions, "Sila w stawie biodrowym", leftPrevF, rightPrevF, leftPostF, rightPostF, 0);
 
-    DataFilterPtr leftPrevP =  createCustomV3Filter<PowerCollection>(false, "LHipPower");
-    DataFilterPtr rightPrevP = createCustomV3Filter<PowerCollection>(false, "RHipPower");
-    DataFilterPtr leftPostP =  createCustomV3Filter<PowerCollection>(true, "LHipPower");
-    DataFilterPtr rightPostP = createCustomV3Filter<PowerCollection>(true, "RHipPower");
+    SubjectHierarchyFilterPtr leftPrevP =  createCustomV3Filter<PowerCollection>(false, "LHipPower");
+    SubjectHierarchyFilterPtr rightPrevP = createCustomV3Filter<PowerCollection>(false, "RHipPower");
+    SubjectHierarchyFilterPtr leftPostP =  createCustomV3Filter<PowerCollection>(true, "LHipPower");
+    SubjectHierarchyFilterPtr rightPostP = createCustomV3Filter<PowerCollection>(true, "RHipPower");
     createVectorEntry(root, sessions, "Moc w stawie biodrowym", leftPrevP, rightPrevP, leftPostP, rightPostP, 0);
 }
 
 template<class Collection>
-DataFilterPtr Endo::createCustomV3Filter(bool post, const std::string& name )
+SubjectHierarchyFilterPtr Endo::createCustomV3Filter(bool post, const std::string& name )
 {
-    std::vector<DataFilterPtr> filters;
-    filters.push_back(DataFilterPtr(new SessionNumberFilter(post ? 3 : 1, post ? 4 : 2)));
-    filters.push_back(DataFilterPtr(new TypeFilter(typeid(Collection))));
-    filters.push_back(DataFilterPtr(new ChannelExtractorFilter<Collection>()));
-    filters.push_back(DataFilterPtr(new NameFilter(name)));
-    return DataFilterPtr(new CustomFilter(filters));
+    SubjectHierarchyCompoundFilter::Filters filters;
+    filters.push_back(SubjectHierarchyFilterPtr(new SessionNumberFilter(post ? 3 : 1, post ? 4 : 2)));
+    filters.push_back(SubjectHierarchyFilterPtr(new SubjectHierarchyTypeFilter(typeid(Collection))));
+    filters.push_back(SubjectHierarchyFilterPtr(new ChannelExtractorFilter<Collection>()));
+    filters.push_back(SubjectHierarchyFilterPtr(new NameFilter(name)));
+    return SubjectHierarchyFilterPtr(new SubjectHierarchyCompoundFilter(filters));
 }
 
-void Endo::createEMGBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
+void Endo::createEMGBranch( QTreeWidgetItem* root, const core::ConstObjectsList& sessions )
 {
     {
-        DataFilterPtr lprev = createCustomEMGFilter(false, "L1");
-        DataFilterPtr rprev = createCustomEMGFilter(false, "R9");
-        DataFilterPtr lpost = createCustomEMGFilter(true, "L1");
-        DataFilterPtr rpost = createCustomEMGFilter(true, "R9");
+        SubjectHierarchyFilterPtr lprev = createCustomEMGFilter(false, "L1");
+        SubjectHierarchyFilterPtr rprev = createCustomEMGFilter(false, "R9");
+        SubjectHierarchyFilterPtr lpost = createCustomEMGFilter(true, "L1");
+        SubjectHierarchyFilterPtr rpost = createCustomEMGFilter(true, "R9");
         createEMGEntry(root, sessions, "miesien prosty uda", lprev, rprev, lpost, rpost);
     }
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(false, "L5");
-        DataFilterPtr rprev = createCustomEMGFilter(false, "R13");
-        DataFilterPtr lpost = createCustomEMGFilter(true, "L5");
-        DataFilterPtr rpost = createCustomEMGFilter(true, "R13");
+        SubjectHierarchyFilterPtr lprev = createCustomEMGFilter(false, "L5");
+        SubjectHierarchyFilterPtr rprev = createCustomEMGFilter(false, "R13");
+        SubjectHierarchyFilterPtr lpost = createCustomEMGFilter(true, "L5");
+        SubjectHierarchyFilterPtr rpost = createCustomEMGFilter(true, "R13");
         createEMGEntry(root, sessions, "miesien posladkowy sredni", lprev, rprev, lpost, rpost);
     }
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(false, "L7");
-        DataFilterPtr rprev = createCustomEMGFilter(false, "R15");
-        DataFilterPtr lpost = createCustomEMGFilter(true, "L7");
-        DataFilterPtr rpost = createCustomEMGFilter(true, "R15");
+        SubjectHierarchyFilterPtr lprev = createCustomEMGFilter(false, "L7");
+        SubjectHierarchyFilterPtr rprev = createCustomEMGFilter(false, "R15");
+        SubjectHierarchyFilterPtr lpost = createCustomEMGFilter(true, "L7");
+        SubjectHierarchyFilterPtr rpost = createCustomEMGFilter(true, "R15");
         createEMGEntry(root, sessions, "Gluteus Maximus", lprev, rprev, lpost, rpost);
     }
 }
 
-DataFilterPtr Endo::createCustomEMGFilter(bool post, const std::string& name )
+SubjectHierarchyFilterPtr Endo::createCustomEMGFilter(bool post, const std::string& name )
 {
-    std::vector<DataFilterPtr> filters;
-    filters.push_back(DataFilterPtr(new SessionNumberFilter(post ? 3 : 1, post ? 4 : 2)));
-    filters.push_back(DataFilterPtr(new TypeFilter(typeid(EMGChannel))));
-    filters.push_back(DataFilterPtr(new NameFilter(name)));
-    return DataFilterPtr(new CustomFilter(filters));
+    SubjectHierarchyCompoundFilter::Filters filters;
+    filters.push_back(SubjectHierarchyFilterPtr(new SessionNumberFilter(post ? 3 : 1, post ? 4 : 2)));
+    filters.push_back(SubjectHierarchyFilterPtr(new SubjectHierarchyTypeFilter(typeid(EMGChannel))));
+    filters.push_back(SubjectHierarchyFilterPtr(new NameFilter(name)));
+    return SubjectHierarchyFilterPtr(new SubjectHierarchyCompoundFilter(filters));
 }
 
-std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromEMG(const std::vector<SessionPtr>& sessions)
+std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromEMG(const core::ConstObjectsList& sessions)
 {
     std::vector<core::ObjectWrapperConstPtr> ret;
-    BOOST_FOREACH(SessionPtr session, sessions) {
-		Motions motions;
-		session->getMotions(motions);
-		BOOST_FOREACH(MotionConstPtr motion, motions) {
-			std::vector<core::ObjectWrapperConstPtr> emgs;
-			motion->getWrappers(emgs, typeid(EMGChannel));
+    BOOST_FOREACH(core::ObjectWrapperConstPtr session, sessions) {
+		PluginSubject::SessionConstPtr s = session->get();
+		core::ConstObjectsList motions;
+		s->getMotions(motions);
+		BOOST_FOREACH(core::ObjectWrapperConstPtr motion, motions) {
+			PluginSubject::MotionConstPtr m = motion->get();
+			core::ConstObjectsList emgs;
+			m->getObjects(emgs, typeid(EMGChannel), false);
 			ret.insert(ret.end(), emgs.begin(), emgs.end());
 		}
     }
@@ -145,18 +152,18 @@ std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromEMG(const std:
 }
 
 
-void Endo::createAngleBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
+void Endo::createAngleBranch( QTreeWidgetItem* root, const core::ConstObjectsList& sessions )
 {
-    DataFilterPtr leftPrevA =  createCustomV3Filter<AngleCollection>(false, "LHipAngles");
-    DataFilterPtr rightPrevA = createCustomV3Filter<AngleCollection>(false, "RHipAngles");
-    DataFilterPtr leftPostA =  createCustomV3Filter<AngleCollection>(true, "LHipAngles");
-    DataFilterPtr rightPostA = createCustomV3Filter<AngleCollection>(true, "RHipAngles");
+    SubjectHierarchyFilterPtr leftPrevA =  createCustomV3Filter<AngleCollection>(false, "LHipAngles");
+    SubjectHierarchyFilterPtr rightPrevA = createCustomV3Filter<AngleCollection>(false, "RHipAngles");
+    SubjectHierarchyFilterPtr leftPostA =  createCustomV3Filter<AngleCollection>(true, "LHipAngles");
+    SubjectHierarchyFilterPtr rightPostA = createCustomV3Filter<AngleCollection>(true, "RHipAngles");
     createVectorEntry(root, sessions, "kat zgiecia stawu biodrowego w plaszczyznie strzalkowej", leftPrevA, rightPrevA, leftPostA, rightPostA, 0);
     createVectorEntry(root, sessions, "kat odwodzenia stawu biodrowego w plaszczyznie czolowej", leftPrevA, rightPrevA, leftPostA, rightPostA, 1);
     createVectorEntry(root, sessions, "kat rotacji biodra", leftPrevA, rightPrevA, leftPostA, rightPostA, 2);
 }
 
-QTreeWidgetItem* Endo::createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions )
+QTreeWidgetItem* Endo::createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions )
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
@@ -166,17 +173,21 @@ QTreeWidgetItem* Endo::createTreeBranch( const QString& rootItemName, const std:
     return root;
 }
 
-void Endo::createEMGEntry(QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions, const QString& name,
-    DataFilterPtr leftPrev, DataFilterPtr rightPrev, DataFilterPtr leftPost, DataFilterPtr rightPost)
+void Endo::createEMGEntry(QTreeWidgetItem* root, const core::ConstObjectsList& sessions, const QString& name,
+    SubjectHierarchyFilterPtr leftPrev, SubjectHierarchyFilterPtr rightPrev, SubjectHierarchyFilterPtr leftPost, SubjectHierarchyFilterPtr rightPost)
 {
-    std::vector<SessionPtr> filtered = leftPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromEMG(filtered);
-    filtered = rightPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromEMG(filtered);
-    filtered = leftPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromEMG(filtered);
-    filtered = rightPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromEMG(filtered);
+	core::ConstObjectsList filteredSessions;
+	leftPrev->filterSessions(sessions, filteredSessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromEMG(filteredSessions);
+	core::ConstObjectsList().swap(filteredSessions);
+    rightPrev->filterSessions(sessions, filteredSessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromEMG(filteredSessions);
+	core::ConstObjectsList().swap(filteredSessions);
+	leftPost->filterSessions(sessions, filteredSessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromEMG(filteredSessions);
+	core::ConstObjectsList().swap(filteredSessions);
+	rightPost->filterSessions(sessions, filteredSessions);    
+    std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromEMG(filteredSessions);
 
     std::vector<core::ObjectWrapperConstPtr> wrpX12 = wrpX1; wrpX12.insert(wrpX12.end(), wrpX2.begin(), wrpX2.end());
     std::vector<core::ObjectWrapperConstPtr> wrpX34 = wrpX3; wrpX34.insert(wrpX34.end(), wrpX4.begin(), wrpX4.end());
@@ -207,17 +218,21 @@ void Endo::createEMGEntry(QTreeWidgetItem* root, const std::vector<SessionConstP
     r2.second->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
 }
 
-void Endo::createVectorEntry(QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions, const QString& name,
-    DataFilterPtr leftPrev, DataFilterPtr rightPrev, DataFilterPtr leftPost, DataFilterPtr rightPost, int index)
+void Endo::createVectorEntry(QTreeWidgetItem* root, const core::ConstObjectsList& sessions, const QString& name,
+    SubjectHierarchyFilterPtr leftPrev, SubjectHierarchyFilterPtr rightPrev, SubjectHierarchyFilterPtr leftPost, SubjectHierarchyFilterPtr rightPost, int index)
 {
-    std::vector<SessionPtr> filtered = leftPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromVector(filtered, index);
-    filtered = rightPrev->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromVector(filtered, index);
-    filtered = leftPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromVector(filtered, index);
-    filtered = rightPost->filterData (sessions);
-    std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromVector(filtered, index);
+	core::ConstObjectsList filteredSessions;
+	leftPrev->filterSessions(sessions, filteredSessions);
+	std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromVector(filteredSessions);
+	core::ConstObjectsList().swap(filteredSessions);
+	rightPrev->filterSessions(sessions, filteredSessions);
+	std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromVector(filteredSessions);
+	core::ConstObjectsList().swap(filteredSessions);
+	leftPost->filterSessions(sessions, filteredSessions);
+	std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromVector(filteredSessions);
+	core::ConstObjectsList().swap(filteredSessions);
+	rightPost->filterSessions(sessions, filteredSessions);    
+	std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromVector(filteredSessions);
 
     std::vector<core::ObjectWrapperConstPtr> wrpX12 = wrpX1; wrpX12.insert(wrpX12.end(), wrpX2.begin(), wrpX2.end());
     std::vector<core::ObjectWrapperConstPtr> wrpX34 = wrpX3; wrpX34.insert(wrpX34.end(), wrpX4.begin(), wrpX4.end());
@@ -250,23 +265,23 @@ void Endo::createVectorEntry(QTreeWidgetItem* root, const std::vector<SessionCon
     rHelper2.second->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
 }
 
-QTreeWidgetItem* Stroke::createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions )
+QTreeWidgetItem* Stroke::createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions )
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
     {
-        DataFilterPtr lprev = createCustomEMGFilter(false, "L1");
-        DataFilterPtr rprev = createCustomEMGFilter(false, "R9");
-        DataFilterPtr lpost = createCustomEMGFilter(true, "L1");
-        DataFilterPtr rpost = createCustomEMGFilter(true, "R9");
+        SubjectHierarchyFilterPtr lprev = createCustomEMGFilter(false, "L1");
+        SubjectHierarchyFilterPtr rprev = createCustomEMGFilter(false, "R9");
+        SubjectHierarchyFilterPtr lpost = createCustomEMGFilter(true, "L1");
+        SubjectHierarchyFilterPtr rpost = createCustomEMGFilter(true, "R9");
         createEMGEntry(root, sessions, "miesien prosty uda", lprev, rprev, lpost, rpost);
     }
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(false, "L2");
-        DataFilterPtr rprev = createCustomEMGFilter(false, "R10");
-        DataFilterPtr lpost = createCustomEMGFilter(true, "L2");
-        DataFilterPtr rpost = createCustomEMGFilter(true, "R10");
+        SubjectHierarchyFilterPtr lprev = createCustomEMGFilter(false, "L2");
+        SubjectHierarchyFilterPtr rprev = createCustomEMGFilter(false, "R10");
+        SubjectHierarchyFilterPtr lpost = createCustomEMGFilter(true, "L2");
+        SubjectHierarchyFilterPtr rpost = createCustomEMGFilter(true, "R10");
         createEMGEntry(root, sessions, "miesien piszczelowy sredni (?)", lprev, rprev, lpost, rpost);
 
     }
@@ -274,39 +289,39 @@ QTreeWidgetItem* Stroke::createTreeBranch( const QString& rootItemName, const st
     return root;
 }
 
-void Spine::createEMGBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
+void Spine::createEMGBranch( QTreeWidgetItem* root, const core::ConstObjectsList& sessions )
 {
     //1. mięsień prostownik grzbietu (najdłuższy) (na wys. T12)  (UB > L4 i R12)
     //2. mięsień kapturowy (powyżej C3) (UB > L1 i R9)
     //3. mięsień pośladkowy wielki (LB > L7 i R15)
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(false, "L1");
-        DataFilterPtr rprev = createCustomEMGFilter(false, "R9");
-        DataFilterPtr lpost = createCustomEMGFilter(true, "L1");
-        DataFilterPtr rpost = createCustomEMGFilter(true, "R9");
+        SubjectHierarchyFilterPtr lprev = createCustomEMGFilter(false, "L1");
+        SubjectHierarchyFilterPtr rprev = createCustomEMGFilter(false, "R9");
+        SubjectHierarchyFilterPtr lpost = createCustomEMGFilter(true, "L1");
+        SubjectHierarchyFilterPtr rpost = createCustomEMGFilter(true, "R9");
         createEMGEntry(root, sessions, "miesien prosty uda", lprev, rprev, lpost, rpost);
     }
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(false, "L5");
-        DataFilterPtr rprev = createCustomEMGFilter(false, "R13");
-        DataFilterPtr lpost = createCustomEMGFilter(true, "L5");
-        DataFilterPtr rpost = createCustomEMGFilter(true, "R13");
+        SubjectHierarchyFilterPtr lprev = createCustomEMGFilter(false, "L5");
+        SubjectHierarchyFilterPtr rprev = createCustomEMGFilter(false, "R13");
+        SubjectHierarchyFilterPtr lpost = createCustomEMGFilter(true, "L5");
+        SubjectHierarchyFilterPtr rpost = createCustomEMGFilter(true, "R13");
         createEMGEntry(root, sessions, "miesien posladkowy sredni", lprev, rprev, lpost, rpost);
     }
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(false, "L7");
-        DataFilterPtr rprev = createCustomEMGFilter(false, "R15");
-        DataFilterPtr lpost = createCustomEMGFilter(true, "L7");
-        DataFilterPtr rpost = createCustomEMGFilter(true, "R15");
+        SubjectHierarchyFilterPtr lprev = createCustomEMGFilter(false, "L7");
+        SubjectHierarchyFilterPtr rprev = createCustomEMGFilter(false, "R15");
+        SubjectHierarchyFilterPtr lpost = createCustomEMGFilter(true, "L7");
+        SubjectHierarchyFilterPtr rpost = createCustomEMGFilter(true, "R15");
         createEMGEntry(root, sessions, "Gluteus Maximus", lprev, rprev, lpost, rpost);
 
     }
 }
 
-void Spine::createKineticBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
+void Spine::createKineticBranch( QTreeWidgetItem* root, const core::ConstObjectsList& sessions )
 {
     // Force
     // 4. Siła w talii w płaszczyźnie strzałkowej X w osi poprzecznej
@@ -315,36 +330,36 @@ void Spine::createKineticBranch( QTreeWidgetItem* root, const std::vector<Sessio
     // 8. moment siły w talii w płaszczyźnie strzałkowej X
     // 9. moment siły w talii w płaszczyźnie czołowej Y
 
-    DataFilterPtr leftPrev =  createCustomV3Filter<MomentCollection>(false, "LWaistMoment");
-    DataFilterPtr rightPrev = createCustomV3Filter<MomentCollection>(false, "RWaistMoment");
-    DataFilterPtr leftPost =  createCustomV3Filter<MomentCollection>(true,  "LWaistMoment");
-    DataFilterPtr rightPost = createCustomV3Filter<MomentCollection>(true,  "RWaistMoment");
+    SubjectHierarchyFilterPtr leftPrev =  createCustomV3Filter<MomentCollection>(false, "LWaistMoment");
+    SubjectHierarchyFilterPtr rightPrev = createCustomV3Filter<MomentCollection>(false, "RWaistMoment");
+    SubjectHierarchyFilterPtr leftPost =  createCustomV3Filter<MomentCollection>(true,  "LWaistMoment");
+    SubjectHierarchyFilterPtr rightPost = createCustomV3Filter<MomentCollection>(true,  "RWaistMoment");
     createVectorEntry(root, sessions, "Moment w talii (p. strzalkowa)", leftPrev, rightPrev, leftPost, rightPost, 0);
     createVectorEntry(root, sessions, "Moment w talii (p. czolowa)", leftPrev, rightPrev, leftPost, rightPost, 1);
 
-    DataFilterPtr leftPrevF =  createCustomV3Filter<ForceCollection>(false, "LWaistForce");
-    DataFilterPtr rightPrevF = createCustomV3Filter<ForceCollection>(false, "RWaistForce");
-    DataFilterPtr leftPostF =  createCustomV3Filter<ForceCollection>(true,  "LWaistForce");
-    DataFilterPtr rightPostF = createCustomV3Filter<ForceCollection>(true,  "RWaistForce");
+    SubjectHierarchyFilterPtr leftPrevF =  createCustomV3Filter<ForceCollection>(false, "LWaistForce");
+    SubjectHierarchyFilterPtr rightPrevF = createCustomV3Filter<ForceCollection>(false, "RWaistForce");
+    SubjectHierarchyFilterPtr leftPostF =  createCustomV3Filter<ForceCollection>(true,  "LWaistForce");
+    SubjectHierarchyFilterPtr rightPostF = createCustomV3Filter<ForceCollection>(true,  "RWaistForce");
     createVectorEntry(root, sessions, "Sila w talii (p. strzalkowa)", leftPrev, rightPrev, leftPost, rightPost, 0);
     createVectorEntry(root, sessions, "Sila w talii (p. czolowa)", leftPrev, rightPrev, leftPost, rightPost, 1);
 }
 
-void Spine::createAngleBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
+void Spine::createAngleBranch( QTreeWidgetItem* root, const core::ConstObjectsList& sessions )
 {
     //
     // 6. kąt kręgosłupa w płaszczyźnie strzałkowej X
     // 7. kąt kręgosłupa w płaszczyźnie czołowej Y
 
-    DataFilterPtr leftPrevA =  createCustomV3Filter<AngleCollection>(false, "LSpineAngles");
-    DataFilterPtr rightPrevA = createCustomV3Filter<AngleCollection>(false, "RSpineAngles");
-    DataFilterPtr leftPostA =  createCustomV3Filter<AngleCollection>(true, "LSpineAngles");
-    DataFilterPtr rightPostA = createCustomV3Filter<AngleCollection>(true, "RSpineAngles");
+    SubjectHierarchyFilterPtr leftPrevA =  createCustomV3Filter<AngleCollection>(false, "LSpineAngles");
+    SubjectHierarchyFilterPtr rightPrevA = createCustomV3Filter<AngleCollection>(false, "RSpineAngles");
+    SubjectHierarchyFilterPtr leftPostA =  createCustomV3Filter<AngleCollection>(true, "LSpineAngles");
+    SubjectHierarchyFilterPtr rightPostA = createCustomV3Filter<AngleCollection>(true, "RSpineAngles");
     createVectorEntry(root, sessions, "kat kregoslupa (p. strzalkowa)", leftPrevA, rightPrevA, leftPostA, rightPostA, 0);
     createVectorEntry(root, sessions, "kat kregoslupa (p. czolowa)", leftPrevA, rightPrevA, leftPostA, rightPostA, 1);
  }
 
-QTreeWidgetItem* Spine::createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions )
+QTreeWidgetItem* Spine::createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions )
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);

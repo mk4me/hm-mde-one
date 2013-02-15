@@ -36,7 +36,7 @@ private:
     //! właściwe odświeżenie drzewa
     //! \param tree drzewo do odświeżenia
     //! \param sessions sesje, na podstawie których budowane będzie drzewo
-    void actualRefresh(QTreeWidget* tree, const core::ObjectWrapperCollection& sessions);
+    void actualRefresh(QTreeWidget* tree, const core::ConstObjectsList& sessions);
 
 private:
     //! true - odświeżanie zablokowane

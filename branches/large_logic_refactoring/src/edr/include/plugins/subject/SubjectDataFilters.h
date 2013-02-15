@@ -92,4 +92,26 @@ private:
 	Filters filters;
 };
 
+class PLUGINSUBJECT_EXPORT SubjectHierarchyTypeFilter : public SubjectHierarchyEmptyFilter
+{
+public:
+
+	SubjectHierarchyTypeFilter(const core::TypeInfo & type);
+	SubjectHierarchyTypeFilter(const core::TypeInfoList & types);
+
+	virtual ~SubjectHierarchyTypeFilter();
+
+	virtual void filterSubjects(const core::ConstObjectsList & inputSubjects, core::ConstObjectsList & outputSubjects) const;
+
+	virtual void filterSessions(const core::ConstObjectsList & inputSessions, core::ConstObjectsList & outputSessions) const;
+
+	virtual void filterMotions(const core::ConstObjectsList & inputMotion, core::ConstObjectsList & outputMotions) const;
+
+	virtual void filterMotionData(const core::ObjectWrapperConstPtr & motion, core::ConstObjectsList & outputMotionData) const;
+
+private:
+
+	core::TypeInfoSet types;
+};
+
 #endif
