@@ -360,7 +360,7 @@ void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString&
 		}else{
 			++it;
 		}
-	}
+	}	
     
     if (motion && motion->hasObject(typeid(C3DEventsCollection), false)) {
 		ConstObjectsList m;
@@ -373,4 +373,8 @@ void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString&
             }
         }
     }
+
+	if(series.empty() == false && visualizer->getActiveSerie() == nullptr){
+		visualizer->setActiveSerie(series.front());
+	}
 }

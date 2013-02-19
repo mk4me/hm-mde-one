@@ -26,6 +26,6 @@
 #include <utils/Utils.h>
 
 
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 #endif  // HEADER_GUARD___VDFPCH_H__

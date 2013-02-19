@@ -10,12 +10,13 @@
 #ifndef HEADER_GUARD_NEWVDF__HACK_H__
 #define HEADER_GUARD_NEWVDF__HACK_H__
 
+#include <corelib/PluginCommon.h>
 #include <dflib/Pin.h>
 #include <dflib/IDFPin.h>
 #include <dflib/IDFNode.h>
 #include <dflib/Node.h>
 #include <boost/function.hpp>
-#include <core/ILog.h>
+#include <corelib/ILog.h>
 
 //HACK
 namespace utils {
@@ -82,7 +83,7 @@ public:
     virtual void consume()
     {
         data_.push_back(inPinA->value());
-		LOG_INFO("wynik: " << (inPinA->value()));
+		PLUGIN_LOG_INFO("wynik: " << (inPinA->value()));
     }
 
     const Data & data() const

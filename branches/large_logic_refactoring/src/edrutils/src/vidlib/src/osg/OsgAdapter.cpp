@@ -123,7 +123,7 @@ namespace vidlib
         if ( VideoStreamAdapter::setTime(time) ) {
             double timestamp = getFrameTimestamp();
             if (timestamp != currentTimestamp) {
-                currentTimestamp = timestamp;
+                currentTimestamp = timestamp;				
                 refreshImages();
             }
             return true;

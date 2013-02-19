@@ -11,7 +11,7 @@
 
 #include <QtCore/QUuid>
 #include <QtCore/QString>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 class IFactory
 {

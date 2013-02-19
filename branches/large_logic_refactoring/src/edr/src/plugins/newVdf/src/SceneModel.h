@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEWVDF__SCENEMODEL_H__
 #define HEADER_GUARD_NEWVDF__SCENEMODEL_H__
 
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 #include <CanvasStyleEditor.h>
 #include <boost/tuple/tuple.hpp>
 #include <dflib/IConnection.h>

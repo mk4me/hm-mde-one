@@ -162,7 +162,8 @@ Visualizer::Visualizer(plugin::IVisualizerPtr vis, IDataManagerReader * dmr, IVi
 Visualizer::Visualizer( const Visualizer& visualizer ) :
 	visualizer_(visualizer.visualizer_->create()), 
 	widget(nullptr),
-	dmr(visualizer.dmr), visManager(visualizer.visManager)
+	dmr(visualizer.dmr), visManager(visualizer.visManager),
+	activeSerie(nullptr)
 {
 	init();
 

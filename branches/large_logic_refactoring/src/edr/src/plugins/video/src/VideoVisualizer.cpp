@@ -217,14 +217,13 @@ void VideoVisualizer::update( double deltaTime )
 
 	if ( currentStreamTime != prevStreamTime ) {
 		prevStreamTime = currentStreamTime;
-		needsUpdate = true;
+		needsUpdate = true;		
 
-		stream->setTime(currentStreamTime);
+		stream->setTime(currentStreamTime);		
 		getImage();
 	}
 
-    if ( streamImage ) {
-
+    if ( streamImage ) {		
 		refreshImage();
 
         int width = streamImage->s();
@@ -235,7 +234,7 @@ void VideoVisualizer::update( double deltaTime )
         }
     }
 
-	if ( needsUpdate ) {
+	if ( needsUpdate ) {		
 		viewer->update();
 	}
 }

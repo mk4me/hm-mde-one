@@ -14,7 +14,7 @@
 #include <QtGui/QGraphicsView>
 #include <QtGui/QWheelEvent>
 
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 #include "SceneModel.h"
 
 class QGraphicsScene;

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEWVDF__IVISUALSTRATEGY_H__
 #define HEADER_GUARD_NEWVDF__IVISUALSTRATEGY_H__
 
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 #include <QtCore/QRect>
 
 class QPainter;

@@ -73,6 +73,8 @@ private:
     //! służy do przechowywania informacji o utworzonych wizualizatorach i ich seriach, używane w mapie itemHelper -> itemDesc
     struct DataItemDescription 
     {
+		DataItemDescription() {}
+
         //! Konstruktor wypełnia wszystkie pola struktury 
         //! \param visualizer 
         //! \param series 
@@ -82,6 +84,10 @@ private:
         coreUI::CoreVisualizerWidget* visualizerWidget;
 
 		QDockWidget * visualizerDockWidget;
+
+		core::shared_ptr<VisualizerSerieTimelineMultiChannel> channel;
+
+		std::string path;
     };
 
 public:
@@ -123,6 +129,8 @@ public Q_SLOTS:
     void refreshTree();
 
 private Q_SLOTS:
+
+	void onTabCloseRequest(int tab);
 
 	void onRefreshFiltersTree();
     //! wywoływane po nacisnieciu about
@@ -308,7 +316,7 @@ private:
     //! zarządza odświeżaniem drzewa danych w analizach
     TreeRefresher treeRefresher;
 
-	std::map<core::Visualizer::VisualizerSerie*, timeline::ChannelPtr> seriesToChannels;
+	std::map<core::Visualizer::VisualizerSerie*, std::string> seriesToChannels;
 
 	QTabWidget * contextPlaceholder;
 };

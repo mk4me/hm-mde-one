@@ -1,5 +1,5 @@
 #include "NewVdfPCH.h"
-#include <core/IServiceManager.h>
+#include <corelib/IServiceManager.h>
 #include <plugins/newVdf/NewVdfService.h>
 #include "NewVdfWidget.h"
 #include "TypesWindow.h"

@@ -46,13 +46,26 @@ void HmmMainWindow::update(core::Visualizer::VisualizerSerie * serie, core::Visu
 	if(modyfication = core::Visualizer::REMOVE_SERIE){
 		auto it = seriesToChannels.find(serie);
 		if(it != seriesToChannels.end()){
+			std::string path = it->second;
 			auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
 			if(timeline != nullptr){
-				//TODO
-				//timeline->removeChannel(it->second);
+				timeline->removeChannel(it->second);
 			}
 
 			seriesToChannels.erase(it);
+
+			//TODO
+			//przejrzec caly ten mechanizm bo bez sensu teraz jest to robione
+			//usunąć wpisy dla pozostałych serii bo kanal usuwamy tylko raz
+
+			auto tIT = seriesToChannels.begin();
+			while(tIT != seriesToChannels.end()){
+				if(tIT->second == path){
+					seriesToChannels.erase(tIT);
+				}
+
+				++tIT;
+			}
 		}
 	}
 }
@@ -219,6 +232,7 @@ void HmmMainWindow::customViewInit(QWidget * console)
     bottomMainWindow = new QMainWindow();
     bottomMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     connect(topMainWindow, SIGNAL(currentSetChanged(int)), treeUsageContext.get(), SLOT(refresh()));
+	connect(topMainWindow, SIGNAL(setCloseRequested(int)), this, SLOT(onTabCloseRequest(int)));
     //TODO
     //trzeba wyzanaczać max wysokość tak aby nie "wypychało" nam timeline!!
     // powinno być mniej więcej coś takiego - wysokość dla aktualnej rozdzielczości - wysokośc timeline - wysokość górnego paska - przestrzeń wolna pomiędzy tymi elementami w pionie
@@ -392,6 +406,11 @@ void HmmMainWindow::createVisualizerInNewSet()
     }
 }
 
+void HmmMainWindow::onTabCloseRequest(int tab)
+{
+	topMainWindow->removeSet(tab);
+}
+
 void HmmMainWindow::removeFromAll()
 {
     ContextAction* action = qobject_cast<ContextAction*>(sender());
@@ -446,27 +465,29 @@ void HmmMainWindow::addToVisualizer()
             helper->getSeries(visualizer, path, series);
             
 			//TODO - obsługa timeline
-			//auto channel = timeline::ChannelPtr(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end()));
-			//auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
-			//timeline->addChannel(channel, path);
-			//seriesToChannels[]
-            //addSeriesToTimeline(series, path, visualizer);
+			auto channel = core::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+			auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+			timeline->addChannel(path.toStdString(), channel);
 
-            coreUI::CoreVisualizerWidget* vw = nullptr;
+			coreUI::CoreVisualizerWidget* vw = nullptr;
 			QDockWidget* vd = nullptr;
-            for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
-                DataItemDescription& d = it->second;
-                if (d.visualizerWidget->getVisualizer() == visualizer) {
-                    vw = d.visualizerWidget;
+			for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
+				DataItemDescription& d = it->second;
+				if (d.visualizerWidget->getVisualizer() == visualizer) {
+					vw = d.visualizerWidget;
 					vd = d.visualizerDockWidget;
-                    break;
-                }
-            }
-            UTILS_ASSERT(vw);
-            DataItemDescription desc(vw, vd);
-            items2Descriptions.insert(std::make_pair(helper, desc));
+					break;
+				}
+			}
+			UTILS_ASSERT(vw);
+			DataItemDescription desc(vw, vd);
+			desc.channel = channel;
 
-			//visualizer->addObserver(helper);
+			for(auto it = series.begin(); it != series.end(); ++it){
+				seriesToChannels[*it] = path.toStdString();
+			}
+
+			items2Descriptions.insert(std::make_pair(helper, desc));			
 
         } catch (std::exception& e) {
             QString message("Unable to add data to visualizer");
@@ -514,10 +535,6 @@ void HmmMainWindow::showTimeline()
                 
                 QWidget* settingsWidget = service->getSettingsWidget();
 
-				//auto widget = embeddWidget(controlWidget, tr("Timeline"), Qt::BottomDockWidgetArea, true);
-                //widget->setFeatures(widget->features() | QDockWidget::NoDockWidgetFeatures);                
-                //widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-				//bottomMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
 				bottomMainWindow->setCentralWidget(controlWidget);
                 timelineVisible = true;
             }
@@ -923,6 +940,10 @@ QDockWidget* HmmMainWindow::createDockVisualizer(const core::VisualizerPtr & vis
 		Qt::AllDockWidgetAreas,
 		false);
 
+	/*auto dockVisWidget = embeddWidget(visualizer->getOrCreateWidget(), QString::fromStdString(visualizer->getName()),
+		Qt::AllDockWidgetAreas,
+		false);*/
+
     registerVisualizerContext(qobject_cast<coreUI::CoreTitleBar*>(dockVisWidget->titleBarWidget()), qobject_cast<coreUI::CoreVisualizerWidget*>(dockVisWidget->widget()), visualizer);
     dockVisWidget->setMinimumSize((std::max)(50, dockVisWidget->minimumWidth()), (std::max)(50, dockVisWidget->minimumHeight()));
     return dockVisWidget;
@@ -965,14 +986,22 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
      std::vector<core::Visualizer::VisualizerSerie*> series;
      helper->getSeries(visualizer, path, series);
      if (!series.empty()) {
-         DataItemDescription desc(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);
+         DataItemDescription desc(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);		 
          items2Descriptions.insert(std::make_pair(helper, desc));
-		 //TODO
-		 //timeline
-         //VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
+		 desc.channel = core::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+
+		 auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+		 timeline->addChannel(path.toStdString(), desc.channel);
+
+		 for(auto it = series.begin(); it != series.end(); ++it){
+			 seriesToChannels[*it] = path.toStdString();
+		 }
      } else {
          PLUGIN_LOG_WARNING("Problem adding series to visualizer");
      }
+
+	 visualizer->addObserver(this);
+
      return visualizerDockWidget;
  }
 
@@ -1248,23 +1277,46 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
              // to znaczy, ze chcemy usunąć dane z wszystkich wizualizatorw
              if (action->getVisualizer() == nullptr || desc.visualizerWidget->getVisualizer() == action->getVisualizer()) {
                  auto toErase = it; ++it;
-                 items2Descriptions.erase(toErase);
-				 //TODO
-				 /*for (unsigned int i = 0; i < desc.series.size(); ++i) {
-				 desc.visualizer.lock()->removeSerie(desc.series[i].lock());
-				 }*/
+				 
+				 //usuwamy kanał z timeline
+				 auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+				 if(timeline != nullptr){
+					 timeline->removeChannel(desc.path);
+
+					 auto tIT = seriesToChannels.begin();
+					 while(tIT != seriesToChannels.end()){
+						 if(tIT->second == desc.path){
+							 seriesToChannels.erase(tIT);
+						 }
+
+						 ++tIT;
+					 }
+
+				 }
+
+				 //teraz usuwamy serie
+				 auto series = desc.channel->getVisualizersSeries();
+
+				 for(auto it = series.begin(); it != series.end(); ++it){
+					 auto vis = (*it)->visualizer();
+					 vis->removeObserver(this);
+					 vis->destroySerie((*it));
+					 vis->addObserver(this);
+				 }
+
                  if (desc.visualizerWidget->getVisualizer()->getNumSeries() == 0) {
+					 desc.visualizerWidget->getVisualizer()->removeObserver(this);
                      desc.visualizerDockWidget->close();
                  }
-
 
                  if (once) {
                     break;
                  }
+
+				 items2Descriptions.erase(toErase);
              } else {
                  ++it;
              }
-
          }
      }
  }
@@ -1619,7 +1671,7 @@ coreUI::CoreDockWidget * HmmMainWindow::embeddWidget(QWidget * widget, const QSt
 	embeddedDockWidget->setPermanent(permanent);
 
 	auto consoleTitleBar = coreUI::CoreTitleBar::supplyWithCoreTitleBar(embeddedDockWidget);
-	coreUI::CoreTitleBar::supplyCoreTitleBarWithActions(consoleTitleBar, widget);
+	//coreUI::CoreTitleBar::supplyCoreTitleBarWithActions(consoleTitleBar, widget);
 
 	return embeddedDockWidget;
 }

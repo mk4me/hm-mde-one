@@ -13,9 +13,9 @@
 
 #include <QtGui/QWidget>
 #include <utils/ObserverPattern.h>
-#include <core/IDataProcessorManager.h>
-#include <core/IDataSinkManager.h>
-#include <core/IDataSourceManager.h>
+#include <corelib/IDataProcessorManager.h>
+#include <corelib/IDataSinkManager.h>
+#include <corelib/IDataSourceManager.h>
 
 #include "Command.h"
 #include "ui_TypesWindow.h"

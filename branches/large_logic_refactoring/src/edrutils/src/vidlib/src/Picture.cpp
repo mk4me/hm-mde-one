@@ -162,7 +162,7 @@ PictureLayered Picture::getLayers()
 {
   VIDLIB_FUNCTION_PROLOG;
   UTILS_ASSERT(getContext());
-  Picture pic = create(dataWidth, dataHeight, format);
+  //Picture pic = create(dataWidth, dataHeight, format);
   return getContext()->convertToLayers(*this);
 }
 

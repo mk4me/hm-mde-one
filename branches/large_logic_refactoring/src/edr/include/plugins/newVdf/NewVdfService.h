@@ -10,17 +10,18 @@
 #ifndef HEADER_GUARD_NEWVDF__NEWVDFSERVICE_H__
 #define HEADER_GUARD_NEWVDF__NEWVDFSERVICE_H__
 
-#include <core/IService.h>
-#include <core/IDataManager.h>
+#include <corelib/IService.h>
+#include <corelib/IDataManagerReader.h>
 #include "Command.h"
 
 class NewVdfWidget;
 class CanvasStyleEditorWidget;
 class TypesWindow;
 
-class NewVdfService : public core::IService
+class NewVdfService : public plugin::IService
 {
-    UNIQUE_ID("{DF5B5B15-C591-4BCF-A205-FD995D2398DB}", "Data Flow Service");
+    UNIQUE_ID("{DF5B5B15-C591-4BCF-A205-FD995D2398DB}")
+	CLASS_DESCRIPTION("Data Flow Service", "Data Flow Service");
 
 public:
     NewVdfService();
@@ -29,18 +30,24 @@ public:
 public:
     //! 
     //! \param managersAccessor 
-    virtual void init(core::IManagersAccessor * managersAccessor);
+	virtual void init(core::ISourceManager * sourceManager,
+		core::IVisualizerManager * visualizerManager,
+		core::IMemoryDataManager * memoryDataManager,
+		core::IStreamDataManager * streamDataManager,
+		core::IFileDataManager * fileDataManager);
     //! 
     //! \param actions 
-    virtual QWidget* getWidget( core::IActionsGroupManager * actionsManager );
+    virtual QWidget* getWidget();
     //! 
     //! \param actions 
-    virtual QWidget* getSettingsWidget( core::IActionsGroupManager * actionsManager );
-    //! 
-    virtual const std::string& getName() const;
+    virtual QWidget* getSettingsWidget();
     //! 
     //! \param actions 
-    virtual QWidget* getControlWidget( core::IActionsGroupManager * actionsManager );
+    virtual QWidget* getControlWidget();
+
+	virtual const bool lateInit();
+	virtual void finalize();
+	virtual void update(double time);
 
 private:
     std::string name;
