@@ -204,9 +204,6 @@ private:
     void createFilterTab1();
     //! Tworzy zakładke z filtrami (filtry dla jednostek chorobowych)
     void createFilterTab2();
-    //! metoda przechodzi przez całą kolekcje i usuwa te wpisy, których weak pointery przestały już istnieć
-    //! \param multimap sprawdzana kolekcja
-    void dropUnusedElements(std::multimap<TreeItemHelperPtr, DataItemDescription>& multimap);
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
     //! \param hmmItem wybrany item, na podstwie którego tworzony jest wizualizator
     //! \param dockSet set, do którego ma być dodany element, jeśli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce

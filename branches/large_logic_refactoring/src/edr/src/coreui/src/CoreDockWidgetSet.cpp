@@ -55,7 +55,6 @@ void CoreDockWidgetSet::addDockWidget(QDockWidget* widget, Qt::DockWidgetArea ar
         this->mainWindow->addDockWidget(area, widget, orientation);
         connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(onDockWidgetClosed(QObject*)));
         connect(widget, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea )), this, SLOT(onDockWidgetLocationChanged(Qt::DockWidgetArea)));
-        CoreDockWidget::setDockWidgetPermament(widget,false);
         widgetsList.push_back(widget);
     } else {
         throw std::runtime_error("Unable to add widget");
@@ -99,13 +98,9 @@ void CoreDockWidgetSet::blockAddition( bool additionPossible )
 
 void CoreDockWidgetSet::onDockWidgetClosed( QObject* object )
 { 
-    Q_EMIT dockClosed();
     // konwersja wystarczająca, poniewaz chcemy tylko usunąć obiekt z listy
     QDockWidget* widget = reinterpret_cast<QDockWidget*>(object);
     widgetsList.remove(widget);
-    if(widgetsList.empty() == true){
-        close();
-    }
 }
 
 void CoreDockWidgetSet::onDockWidgetLocationChanged(Qt::DockWidgetArea area)

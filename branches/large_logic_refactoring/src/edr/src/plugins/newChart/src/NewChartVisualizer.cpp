@@ -315,8 +315,11 @@ void NewChartVisualizer::removeSerie( plugin::IVisualizer::ISerie *serie )
         throw std::runtime_error("Given serie dos not belong to this visualizer!");
     }
 
-    updateFIFO.push_back(boost::bind( &NewChartSerie::removeItemsFromPlot, *it ));
-    updateFIFO.push_back(boost::bind( &QwtPlot::replot, qwtPlot));
+	(*it)->removeItemsFromPlot();
+	qwtPlot->replot();
+
+    //updateFIFO.push_back(boost::bind( &NewChartSerie::removeItemsFromPlot, *it ));
+    //updateFIFO.push_back(boost::bind( &QwtPlot::replot, qwtPlot));
     series.erase(it);
 
     plotChanged();
@@ -523,10 +526,10 @@ NewChartSerie* NewChartVisualizer::tryGetCurrentSerie()
 
 void NewChartVisualizer::update( double deltaTime )
 {
-    for (auto it = updateFIFO.begin(); it != updateFIFO.end(); ++it) {
+   /* for (auto it = updateFIFO.begin(); it != updateFIFO.end(); ++it) {
         (*it)();
     }
-    updateFIFO.clear();
+    updateFIFO.clear();*/
     if (currentSerie >= 0 && currentSerie < static_cast<int>(series.size())) {
         
         qwtMarker->setVisible(true);

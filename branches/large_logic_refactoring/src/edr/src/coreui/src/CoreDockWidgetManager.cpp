@@ -16,7 +16,7 @@ CoreDockWidgetManager::CoreDockWidgetManager( QWidget *parent /*= 0*/, Qt::Windo
 	tabWidget->setParent(this);
 	setLayout(layout);
 	tabWidget->setMovable(true);
-	tabWidget->setTabsClosable(true);
+	tabWidget->setTabsClosable(false);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(onTabWidgetChange(int)));
@@ -101,17 +101,21 @@ CoreDockWidgetSet* CoreDockWidgetManager::autoAddDockWidget( QDockWidget* widget
 
 CoreDockWidgetSet* CoreDockWidgetManager::autoAddDockWidget( QDockWidget* widget, const QString & label )
 {
+	CoreDockWidgetSet* set = nullptr;
 	for (auto it = dockList.begin(); it != dockList.end(); ++it) {
 		if ((*it)->isAdditionPossible() == true) {
-			(*it)->addDockWidget(widget);
-			setCurrentSet(*it);
-			return *it;
+			set = *it;
+			break;
 		}
 	}
 
-	CoreDockWidgetSet* set = new CoreDockWidgetSet();
+	if(set == nullptr){
+		set = new CoreDockWidgetSet();
+		addDockWidgetSet(set, label);
+	}
+
 	set->addDockWidget(widget);
-	addDockWidgetSet(set, label);
+
 	setCurrentSet(set);
 	return set;
 }

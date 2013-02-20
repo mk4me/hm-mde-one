@@ -70,10 +70,6 @@ public:
     //! \return const range wszystkich dock widgetów w grupie
     const_range getDockWidgets() const;
 
-Q_SIGNALS:
-    //! sygnał oznaczający, ze dock widget podpięty pod grupę został zamknięty
-    void dockClosed();
-
 private Q_SLOTS:
     //! dock widget podpięty pod grupę został zamknięty
     //! \param object 

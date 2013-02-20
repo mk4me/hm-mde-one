@@ -22,6 +22,7 @@ void CoreFlexiToolBar::addSection(CoreFlexiToolBarSection * section)
 {
 	QToolBar * toolbar = new QToolBar;
 	toolbar->addWidget(section);
+	toolbar->setFloatable(false);
 	toolbar->setMovable(true);
 	toolbar->setAllowedAreas(Qt::TopToolBarArea);
 	toolbar->setParent(innerToolBar_);

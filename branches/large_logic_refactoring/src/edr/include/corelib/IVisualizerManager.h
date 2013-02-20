@@ -57,7 +57,7 @@ namespace core
 
 	private:
 
-		virtual void registerVisualizer(Visualizer* visualizerImpl, plugin::IVisualizer * visualizer) = 0;
+		virtual void registerVisualizer(Visualizer* visualizer) = 0;
 		virtual void unregisterVisualizer(Visualizer* visualizer) = 0;
     };
 } // namespace core

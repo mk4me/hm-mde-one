@@ -30,7 +30,7 @@ void HMMAnalysisContext::deactivateContext(QWidget * nextContextWidget, bool ref
 }
 
 
-HMMVisualizerUsageContext::HMMVisualizerUsageContext(QTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget)
+HMMVisualizerUsageContext::HMMVisualizerUsageContext(QTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
 {
 
 }
@@ -57,6 +57,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
     }
 
 	visualizerGroupID = flexiTabWidget->addTab(it->second.widget , it->second.icon, it->second.name);
+	it->second.widget->setVisible(true);
 	flexiTabWidget->setCurrentIndex(visualizerGroupID);
 }
 
@@ -75,8 +76,9 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
     }
 	
     if(visualizerGroupID != -1){
+		flexiTabWidget->widget(visualizerGroupID)->setVisible(false);
         flexiTabWidget->removeTab(visualizerGroupID);
-        visualizerGroupID = -1;        
+        visualizerGroupID = -1;
     }
 }
 
@@ -92,6 +94,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
     }
     
 	coreUI::CoreFlexiToolBar * flexi = new coreUI::CoreFlexiToolBar(flexiTabWidget);
+	flexi->setVisible(false);
 
 	//grupujemy akcje wg sekcji
 	//jak nie potrafie wyciagnac sekcji to wrzucam do common
@@ -213,7 +216,7 @@ HMMTreeItemUsageContext::HMMTreeItemUsageContext( QTabWidget * flexiTabWidget, H
     groupID(-1),
     hmm(hmm)
 {
-
+	flexiSection->setVisible(false);
 }
 
 void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
@@ -240,6 +243,7 @@ void HMMTreeItemUsageContext::deactivateContext( QWidget * nextContextWidget, bo
     }
 
 	if(groupID != -1){
+		flexiSection->setVisible(false);
 		flexiTabWidget->removeTab(groupID);
 		groupID = -1;
 	}
@@ -326,14 +330,14 @@ void HMMTreeItemUsageContext::refresh()
 
 RaportsThumbnailsContext::RaportsThumbnailsContext( QTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
-	flexiSection(new QWidget()),
+	flexiSection(nullptr),
     groupID(-1),
     hmm(hmm),
     projectName(nullptr),
 	projectTemplate(nullptr),
 	cssCombo(nullptr)
 {
-
+	
 }
 
 void RaportsThumbnailsContext::activateContext( QWidget * contextWidget )
@@ -356,13 +360,15 @@ void RaportsThumbnailsContext::deactivateContext( QWidget * nextContextWidget, b
 	
 	if(groupID != -1){
 		flexiTabWidget->removeTab(groupID);
+		flexiSection->setVisible(false);
 		groupID = -1;
 	}
 }
 
 void RaportsThumbnailsContext::onRegisterContextWidget( QWidget * contextWidget )
 {
-    flexiSection = new QWidget();
+    flexiSection = new QWidget(flexiTabWidget);
+	flexiSection->setVisible(false);
     QVBoxLayout* l = new QVBoxLayout();
     l->setContentsMargins(0, 0, 0, 0);
     l->setSpacing(0);
@@ -510,7 +516,7 @@ void RaportsTabContext::activateContext( QWidget * contextWidget )
     }
 
 	groupID = flexiTabWidget->addTab(widget, QObject::tr("Raports Tab"));
-
+	widget->setVisible(true);
     flexiTabWidget->setCurrentIndex(groupID);
 }
 
@@ -521,6 +527,7 @@ void RaportsTabContext::deactivateContext( QWidget * nextContextWidget, bool ref
 	}
 
 	if(groupID != -1){
+		widget->setVisible(false);
 		flexiTabWidget->removeTab(groupID);
 		groupID = -1;
 	}
@@ -558,6 +565,7 @@ void RaportsTabContext::onRegisterContextWidget( QWidget * contextWidget )
 	section->setInnerWidget(textSection);
 
 	widget->addSection(section);
+	widget->setVisible(false);
 }
 
 void RaportsTabContext::onUnregisterContextWidget( QWidget * contextWidget )

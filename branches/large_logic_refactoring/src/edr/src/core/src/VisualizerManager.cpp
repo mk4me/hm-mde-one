@@ -15,7 +15,7 @@ VisualizerManager::~VisualizerManager()
 	if(visualizerInstances_.empty() == false){
 		CORE_LOG_DEBUG("Some visualizer instances still alive");
 		for(auto it = visualizerInstances_.begin(); it != visualizerInstances_.end(); ++it){
-			(*it).first->destroyAllSeries();
+			(*it)->destroyAllSeries();
 		}
 	}
 
@@ -50,7 +50,7 @@ void VisualizerManager::getVisualizerPrototypes(const core::TypeInfo & type, IVi
 	}
 }
 
-void VisualizerManager::registerVisualizer(Visualizer* visualizerImpl, plugin::IVisualizer * visualizer)
+void VisualizerManager::registerVisualizer(Visualizer* visualizer)
 {
 	if(skipNotify == true){
 		return;
@@ -58,8 +58,8 @@ void VisualizerManager::registerVisualizer(Visualizer* visualizerImpl, plugin::I
 
 	ScopedLock lockUpdate(updateSync);
 	ScopedLock lockObserver(observerSync);
-	visualizerInstances_[visualizerImpl] = visualizer;
-	notify(visualizerImpl, IVisualizerManager::Creation);
+	visualizerInstances_.push_back(visualizer);
+	notify(visualizer, IVisualizerManager::Creation);
 }
 
 void VisualizerManager::unregisterVisualizer(Visualizer* visualizer)
@@ -70,7 +70,7 @@ void VisualizerManager::unregisterVisualizer(Visualizer* visualizer)
 
 	ScopedLock lockUpdate(updateSync);
 	ScopedLock lockObserver(observerSync);
-	visualizerInstances_.erase(visualizer);
+	visualizerInstances_.remove(visualizer);
 	notify(visualizer, IVisualizerManager::Destruction);
 }
 
@@ -138,11 +138,11 @@ void VisualizerManager::update(double deltaTime)
 	ScopedLock lock(updateSync);
 	for(auto it = visualizerInstances_.begin(); it != visualizerInstances_.end(); ++it){
 		try{
-			it->second->update(deltaTime);
+			(*it)->update(deltaTime);
 		}catch(std::exception & e){
-			CORE_LOG_ERROR("Error while updating visualizer " << it->second->getName() << " (ID: " << it->second->getID() << "): " << e.what());
+			CORE_LOG_ERROR("Error while updating visualizer " << (*it)->getName() << " (ID: " << (*it)->getID() << "): " << e.what());
 		}catch(...){
-			CORE_LOG_ERROR("Unknown error while updating visualizer " << it->second->getName() << " (ID: " << it->second->getID() << ")");
+			CORE_LOG_ERROR("Unknown error while updating visualizer " << (*it)->getName() << " (ID: " << (*it)->getID() << ")");
 		}
 	}
 }

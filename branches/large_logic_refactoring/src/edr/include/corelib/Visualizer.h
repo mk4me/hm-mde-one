@@ -20,6 +20,7 @@ namespace core {
 
 	class IDataManagerReader;
 	class IVisualizerManager;
+	class VisualizerManager;
 
 //! Wizualizator. Jego zadaniem jest stworzyć widget (gdzie on będzie osadzony - nie jego sprawa),
 //! zarządzać seriami danych wizualizatora, informować o dodaniu/usunięciu serii danych, automatycznie
@@ -28,10 +29,11 @@ class CORELIB_EXPORT Visualizer : public QObject
 {
 	Q_OBJECT;
 
+	friend class VisualizerManager;
+
 private:
-	//! Forward declaration obiektu pomocniczego dla vizualizatora, przykrywa część implementacji
-	class VisualizerHelper;
-	friend class VisualizerHelper;
+	//! Forward declaration implementacji
+	class VisualizerImpl;
 
 public:
 
@@ -88,8 +90,9 @@ public:
 
 	//! Opis zmian w seriach danych
 	enum SerieModyfication {
-		ADD_SERIE,		//! Dodanie serii danych, notyfikacja wywoływana po dodaniu serii, przed return
-		REMOVE_SERIE	//! Usunięcie serii danych, notyfikacja wywoływana przed usunięciem serii
+		ADD_SERIE,				//! Dodanie serii danych, notyfikacja wywoływana po dodaniu serii, przed return
+		REMOVE_SERIE,			//! Usunięcie serii danych, notyfikacja wywoływana przed usunięciem serii
+		ACTIVE_SERIE_CHANGED	//! Zmiana aktywnej serii danych
 	};
 
 	//! Interfejs obiektu obserwującego zmiany w seriach danych wizualizatora
@@ -102,37 +105,8 @@ public:
 	};
 
 private:
-	//! Obiekt obserwujący dane w MemoryDM - tylko update nas interesuje aby odświeżać serię
-	//! Reszta będzie robiona w widgetach na odpowiednie akcje (czy dane są jeszcze w DM)
-	shared_ptr<VisualizerHelper> visualizerHelper_;
-	//! Faktyczny wizualizator dla danych
-	shared_ptr<plugin::IVisualizer> visualizer_;
 
-    //! Faktyczny widget.
-    QWidget* widget;
-	//! Ikona widgeta
-	QIcon icon;
-	//! Wspierane typy danych przez wizualizator
-	TypeInfoSet supportedTypes;
-    //! Serie danych utrworzone przez użytkownika
-    DataSeries dataSeries;
-	//! Lista obserwujących
-	std::list<IVisualizerObserver*> observers_;
-
-	//! DataManagerReader
-	IDataManagerReader * dmr;
-	//! VisualizerManager
-	IVisualizerManager * visManager;
-	//! Aktywna seria
-	VisualizerSerie * activeSerie;
-
-private:
-	//! Inicjalizacja wizualizatora przy tworzeniu
-	void init();
-	//! Notyfikacja o zmianie
-	//! \param serie Seria która ulega zmianie
-	//! \param modyfication Typ modyfikacji serii
-	void notifyChange(VisualizerSerie * serie, SerieModyfication modyfication);
+	core::shared_ptr<VisualizerImpl> visualizerImpl;
 
 Q_SIGNALS:
 	//! \param screenshot Screen z wizualizatora
@@ -228,6 +202,10 @@ public:
 	plugin::IVisualizer * visualizer();
 
 	const plugin::IVisualizer * visualizer() const;
+
+private:
+
+	void update(double deltaTime);
 };
 
 typedef core::shared_ptr<Visualizer> VisualizerPtr;

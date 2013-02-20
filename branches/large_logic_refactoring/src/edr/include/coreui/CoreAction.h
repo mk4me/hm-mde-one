@@ -21,6 +21,7 @@ class COREUI_EXPORT CoreAction : public QAction, public CoreTitleBar::ICoreTitle
 public:
 	CoreAction(const QString & sectionName, const QString &text, QObject* parent, CoreTitleBar::SideType side = CoreTitleBar::Left);
 	CoreAction(const QString & sectionName, const QIcon &icon, const QString &text, QObject* parent, CoreTitleBar::SideType side = CoreTitleBar::Left);
+	virtual ~CoreAction();
 
 	virtual CoreTitleBar::SideType side() const;
 	virtual const QString section() const;

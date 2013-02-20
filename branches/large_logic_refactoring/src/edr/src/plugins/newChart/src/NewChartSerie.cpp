@@ -88,6 +88,7 @@ NewChartSerie::~NewChartSerie()
 {
     //delete[] xvals;
     //delete[] yvals;
+	curve = nullptr;
 }
 
 void NewChartSerie::setEvents( EventsCollectionConstPtr val )

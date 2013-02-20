@@ -23,6 +23,7 @@ class COREUI_EXPORT CoreWidgetAction : public QWidgetAction, public CoreTitleBar
 
 public:
 	explicit CoreWidgetAction(QObject *parent, const QString & sectionName, CoreTitleBar::SideType side = CoreTitleBar::Left);
+	virtual ~CoreWidgetAction();
 
 	virtual CoreTitleBar::SideType side() const;
 	virtual const QString section() const;

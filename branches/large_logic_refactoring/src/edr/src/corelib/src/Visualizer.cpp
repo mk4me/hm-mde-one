@@ -4,119 +4,437 @@
 using namespace core;
 using namespace plugin;
 
-class Visualizer::VisualizerHelper : public IDataManagerReader::IObjectObserver
+class Visualizer::VisualizerImpl
 {
-public:
-	VisualizerHelper(Visualizer * visualizer) : visualizer_(visualizer), liveObserve(false) {}
 
-	virtual void observe(const IDataManagerReader::ChangeList & changes)
+private:
+
+	class VisualizerHelper : public IDataManagerReader::IObjectObserver
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
-		for(auto it = changes.begin(); it != changes.end(); ++it){
-			if((*it).modyfication == IDataManagerReader::UPDATE_OBJECT){
-				auto dataIT = dataSeriesToObserve.find((*it).currentValue);
-				if(dataIT != dataSeriesToObserve.end()){
-					dataToUpdate.insert(*dataIT);
+	public:
+		VisualizerHelper(VisualizerImpl * visualizer) : visualizer_(visualizer), liveObserve(false) {}
+
+		virtual void observe(const IDataManagerReader::ChangeList & changes)
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+			for(auto it = changes.begin(); it != changes.end(); ++it){
+				if((*it).modyfication == IDataManagerReader::UPDATE_OBJECT){
+					auto dataIT = dataSeriesToObserve.find((*it).currentValue);
+					if(dataIT != dataSeriesToObserve.end()){
+						dataToUpdate.insert(*dataIT);
+					}
 				}
+			}
+
+			tryUpdate();
+		}
+
+		void setLiveObserveActive(bool active)
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+			liveObserve = active;
+			tryUpdate();
+
+		}
+
+		const bool isLiveObserveActive() const
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+			return liveObserve;
+		}
+
+		void addSerieToObserve(Visualizer::VisualizerSerie* serie)
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+			dataSeriesToObserve[serie->serie()->getData()].push_back(serie);
+		}
+
+		void removeSerieToObserve(Visualizer::VisualizerSerie* serie)
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+			dataSeriesToObserve[serie->serie()->getData()].remove(serie);
+			dataToUpdate[serie->serie()->getData()].remove(serie);
+		}
+
+		void addDataSource(VisualizerDataSourcePtr dataSource)
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
+			sources_.push_back(dataSource);
+		}
+
+		void removeDataSource(VisualizerDataSourcePtr dataSource)
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
+			sources_.remove(dataSource);
+		}
+
+		const int getNumDataSources() const
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
+			return sources_.size();
+		}
+
+		VisualizerDataSourcePtr getDataSource(int idx)
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
+			auto it = sources_.begin();
+			std::advance(it, idx);
+			return *it;
+		}
+
+		void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
+		{
+			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
+			ConstObjectsList locObjects;
+			for(auto it = sources_.begin(); it != sources_.end(); ++it){
+				try{
+					(*it)->getData(type, locObjects, exact);
+				}catch(...){
+
+				}
+			}
+
+			ConstObjects uniqueObjects(locObjects.begin(), locObjects.end());
+			objects.insert(objects.end(), uniqueObjects.begin(), uniqueObjects.end());
+		}
+
+	private:
+
+		void tryUpdate()
+		{
+			if(liveObserve == true && dataToUpdate.empty() == false){
+				for(auto dataIT = dataToUpdate.begin(); dataIT != dataToUpdate.end(); ++dataIT){
+					for(auto serieIT = dataIT->second.begin(); serieIT != dataIT->second.end(); ++serieIT){
+						(*serieIT)->serie()->update();
+					}
+				}
+
+				std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>>().swap(dataToUpdate);
 			}
 		}
 
-		tryUpdate();
+	private:
+		mutable utils::StrictSyncPolicy sync;
+		mutable utils::StrictSyncPolicy sourcesSync;
+		//! Lista źródeł danych wizualizatora
+		DataSources sources_;
+		VisualizerImpl * visualizer_;
+		//! Czy live observe jest aktywne
+		bool liveObserve; 
+		std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataSeriesToObserve;
+		std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataToUpdate;
+	};
+
+	friend class VisualizerHelper;
+
+private:
+
+	void init()
+	{
+		{
+			scoped_ptr<QIcon> i(innerVisualizer_->createIcon());
+			icon = *i;
+		}
+
+		TypeInfoList types;
+		innerVisualizer_->getSupportedTypes(types);
+		supportedTypes.insert(types.begin(),types.end());
+
+		visualizerHelper_.reset(new VisualizerHelper(this));
+		dmr->addObserver(visualizerHelper_);
 	}
 
-	void setLiveObserveActive(bool active)
+public:
+	
+	VisualizerImpl( plugin::IVisualizerPtr vis, IDataManagerReader * dmr, IVisualizerManager * visManager ) :
+		visualizer_(nullptr),
+		innerVisualizer_(vis),
+		widget(nullptr),
+		dmr(dmr), visManager(visManager),
+		activeSerie(nullptr)
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
-		liveObserve = active;
-		tryUpdate();
-		
+		init();
 	}
 	
-	const bool isLiveObserveActive() const
+	VisualizerImpl( const VisualizerImpl& vis ) :
+		visualizer_(nullptr),
+		innerVisualizer_(vis.visualizer()->create()), 
+		widget(nullptr),
+		dmr(vis.dmr), visManager(vis.visManager),
+		activeSerie(nullptr)
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
-		return liveObserve;
+		init();
+
+		setLiveObserveActive(vis.isLiveObserveActive());
 	}
 
-	void addSerieToObserve(Visualizer::VisualizerSerie* serie)
+	void setVisualizer(Visualizer * visualizer)
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
-		dataSeriesToObserve[serie->serie()->getData()].push_back(serie);
+		visualizer_ = visualizer;
+		visManager->registerVisualizer(visualizer_);
+	}
+	
+	plugin::IVisualizer * visualizer()
+	{
+		return innerVisualizer_.get();
 	}
 
-	void removeSerieToObserve(Visualizer::VisualizerSerie* serie)
+	const plugin::IVisualizer * visualizer() const
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
-		dataSeriesToObserve[serie->serie()->getData()].remove(serie);
-		dataToUpdate[serie->serie()->getData()].remove(serie);
+		return innerVisualizer_.get();
+	}
+
+	VisualizerImpl::~VisualizerImpl()
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		//innerVisualizer_->setActiveSerie(nullptr);
+		dmr->removeObserver(visualizerHelper_);		
+		visManager->unregisterVisualizer(visualizer_);	
+		destroyAllSeries();
+	}
+
+	QWidget* getOrCreateWidget()
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		if (!widget) {
+			//PLUGIN_LOG_DEBUG("Creating Visualizer " << innerVisualizer_->getName() <<  " widget");
+			widget = innerVisualizer_->createWidget();
+			UTILS_ASSERT(widget, "Nie udało się stworzyć widgeta.");
+		}
+		return widget;
+	}
+
+	const QIcon getIcon() const
+	{
+		return icon;
+	}
+
+	QWidget* getWidget()
+	{
+		return widget;
+	}
+
+	const std::string getName() const
+	{
+		return innerVisualizer_->getName();
+	}
+
+	core::UniqueID getID() const
+	{
+		return innerVisualizer_->getID();
+	}
+
+	const std::string  getDescription() const
+	{
+		return innerVisualizer_->getDescription();
+	}
+
+	Visualizer * create() const
+	{
+		return new Visualizer(plugin::IVisualizerPtr(innerVisualizer_->create()), dmr, visManager);
+	}
+
+	const int getMaxSeries() const
+	{
+		return innerVisualizer_->getMaxDataSeries();
+	}
+
+	void getSupportedTypes(TypeInfoSet & supportedTypes) const
+	{
+		TypeInfoList list;
+		innerVisualizer_->getSupportedTypes(list);
+		supportedTypes.insert(list.begin(), list.end());
+	}
+
+	Visualizer::VisualizerSerie * createSerie(const TypeInfo & requestedType, const ObjectWrapperConstPtr & data)
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		VisualizerSerie * serie = nullptr;
+		auto s = innerVisualizer_->createSerie(requestedType, data);
+		if(s != nullptr){
+			serie = new VisualizerSerie(visualizer_, s);
+			dataSeries.push_back(serie);
+			visualizerHelper_->addSerieToObserve(serie);
+			notifyChange(serie, ADD_SERIE);
+		}
+
+		return serie;
+	}
+
+	Visualizer::VisualizerSerie * createSerie(VisualizerSerie * serie)
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		VisualizerSerie * retserie = nullptr;
+		if(serie->visualizer_ == visualizer_){
+			auto s = innerVisualizer_->createSerie(serie->serie());
+			if(s != nullptr){
+				retserie = new VisualizerSerie(visualizer_, s);
+				dataSeries.push_back(retserie);
+				visualizerHelper_->addSerieToObserve(serie);
+				notifyChange(serie, ADD_SERIE);
+			}
+		}
+
+		return retserie;
+	}
+
+	void destroySerie(VisualizerSerie * serie)
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		if(serie->visualizer_ == visualizer_){
+			notifyChange(serie, REMOVE_SERIE);
+			dataSeries.remove(serie);
+			visualizerHelper_->removeSerieToObserve(serie);
+			innerVisualizer_->removeSerie(serie->serie());
+			delete serie;
+		}
+	}
+
+	void notifyChange(VisualizerSerie * serie, SerieModyfication modyfication)
+	{
+		for(auto it = observers_.begin(); it != observers_.end(); ++it){
+			(*it)->update(serie, modyfication);
+		}
+	}
+
+	void destroyAllSeries()
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		while(dataSeries.empty() == false){
+			destroySerie(*(dataSeries.begin()));
+		}
+
+		DataSeries().swap(dataSeries);
+	}
+
+	void addObserver(IVisualizerObserver * observer)
+	{		
+		observers_.push_back(observer);
+	}
+
+	void removeObserver(IVisualizerObserver * observer)
+	{
+		observers_.remove(observer);
 	}
 
 	void addDataSource(VisualizerDataSourcePtr dataSource)
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
-		sources_.push_back(dataSource);
+		visualizerHelper_->addDataSource(dataSource);
 	}
 
 	void removeDataSource(VisualizerDataSourcePtr dataSource)
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
-		sources_.remove(dataSource);
+		visualizerHelper_->removeDataSource(dataSource);
 	}
 
 	const int getNumDataSources() const
 	{
-		return sources_.size();
+		return visualizerHelper_->getNumDataSources();
 	}
 
-	VisualizerDataSourcePtr getDataSource(int idx)
+	Visualizer::VisualizerDataSourcePtr getDataSource(int idx)
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
-		auto it = sources_.begin();
-		std::advance(it, idx);
-		return *it;
+		return visualizerHelper_->getDataSource(idx);
 	}
 
 	void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
-		ConstObjectsList locObjects;
-		for(auto it = sources_.begin(); it != sources_.end(); ++it){
-			try{
-				(*it)->getData(type, locObjects, exact);
-			}catch(...){
-
-			}
-		}
-
-		ConstObjects uniqueObjects(locObjects.begin(), locObjects.end());
-		objects.insert(objects.end(), uniqueObjects.begin(), uniqueObjects.end());
+		visualizerHelper_->getData(type, objects, exact);
 	}
 
-private:
-
-	void tryUpdate()
+	void setLiveObserveActive(bool active)
 	{
-		if(liveObserve == true && dataToUpdate.empty() == false){
-			for(auto dataIT = dataToUpdate.begin(); dataIT != dataToUpdate.end(); ++dataIT){
-				for(auto serieIT = dataIT->second.begin(); serieIT != dataIT->second.end(); ++serieIT){
-					(*serieIT)->serie()->update();
-				}
-			}
+		visualizerHelper_->setLiveObserveActive(active);
+	}
 
-			std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>>().swap(dataToUpdate);
+	const bool isLiveObserveActive() const
+	{
+		return visualizerHelper_->isLiveObserveActive();
+	}
+
+	const int getNumSeries() const
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		return dataSeries.size();
+	}
+
+	Visualizer::VisualizerSerie * getSerie(int idx)
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		auto it = dataSeries.begin();
+		std::advance(it, idx);
+		return *it;
+	}
+
+	const int serieIdx(VisualizerSerie * serie) const
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		auto it = std::find(dataSeries.begin(), dataSeries.end(), serie);
+		if(it == dataSeries.end()){
+			return -1;
 		}
+
+		return std::distance(dataSeries.begin(), it);
+	}
+
+	void setActiveSerie(VisualizerSerie * serie)
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		if(serie == nullptr){
+			innerVisualizer_->setActiveSerie(nullptr);
+		}else{
+			innerVisualizer_->setActiveSerie(serie->serie());
+		}
+
+		activeSerie = serie;
+	}
+
+	const Visualizer::VisualizerSerie * getActiveSerie() const
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		return activeSerie;
+	}
+
+	Visualizer::VisualizerSerie * getActiveSerie()
+	{		
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		return activeSerie;
+	}
+
+	void update(double deltaTime)
+	{
+		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+		innerVisualizer_->update(deltaTime);
 	}
 
 private:
-	mutable utils::StrictSyncPolicy sync;
-	mutable utils::StrictSyncPolicy sourcesSync;
-	//! Lista źródeł danych wizualizatora
-	DataSources sources_;
+	//! Obiekt obserwujący dane w MemoryDM - tylko update nas interesuje aby odświeżać serię
+	//! Reszta będzie robiona w widgetach na odpowiednie akcje (czy dane są jeszcze w DM)
+	shared_ptr<VisualizerHelper> visualizerHelper_;
+	//! Faktyczny wizualizator dla danych
+	shared_ptr<plugin::IVisualizer> innerVisualizer_;
+
+	//! Faktyczny widget.
+	QWidget* widget;
+	//! Ikona widgeta
+	QIcon icon;
+	//! Wspierane typy danych przez wizualizator
+	TypeInfoSet supportedTypes;
+	//! Serie danych utrworzone przez użytkownika
+	DataSeries dataSeries;
+	//! Lista obserwujących
+	std::list<IVisualizerObserver*> observers_;
+
+	//! DataManagerReader
+	IDataManagerReader * dmr;
+	//! VisualizerManager
+	IVisualizerManager * visManager;
+	//! Aktywna seria
+	VisualizerSerie * activeSerie;
+
+	mutable utils::RecursiveSyncPolicy sync;
+
 	Visualizer * visualizer_;
-	//! Czy live observe jest aktywne
-	bool liveObserve; 
-	std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataSeriesToObserve;
-	std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataToUpdate;
 };
 
 Visualizer::VisualizerSerie::VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase)
@@ -151,260 +469,182 @@ plugin::IVisualizer::ITimeEditableSerieFeatures * Visualizer::VisualizerSerie::t
 }
 
 Visualizer::Visualizer(plugin::IVisualizerPtr vis, IDataManagerReader * dmr, IVisualizerManager * visManager ) :
-	visualizer_(vis),
-    widget(nullptr),
-	dmr(dmr), visManager(visManager),
-	activeSerie(nullptr)
+	visualizerImpl(new VisualizerImpl(vis, dmr, visManager))
 {
-	init();
+	visualizerImpl->setVisualizer(this);
 }
 
 Visualizer::Visualizer( const Visualizer& visualizer ) :
-	visualizer_(visualizer.visualizer_->create()), 
-	widget(nullptr),
-	dmr(visualizer.dmr), visManager(visualizer.visManager),
-	activeSerie(nullptr)
+	visualizerImpl(new VisualizerImpl(*(visualizer.visualizerImpl)))
 {
-	init();
-
-	setLiveObserveActive(visualizer.isLiveObserveActive());
+	visualizerImpl->setVisualizer(this);
 }
 
 plugin::IVisualizer * Visualizer::visualizer()
 {
-	return visualizer_.get();
+	return visualizerImpl->visualizer();
 }
 
 const plugin::IVisualizer * Visualizer::visualizer() const
 {
-	return visualizer_.get();
-}
-
-void Visualizer::init()
-{
-	{
-		scoped_ptr<QIcon> i(visualizer_->createIcon());
-		icon = *i;
-	}
-
-	TypeInfoList types;
-	visualizer_->getSupportedTypes(types);
-	supportedTypes.insert(types.begin(),types.end());
-
-	visualizerHelper_.reset(new VisualizerHelper(this));
-	dmr->addObserver(visualizerHelper_);
-	visManager->registerVisualizer(this, visualizer_.get());
+	return visualizerImpl->visualizer();
 }
 
 Visualizer::~Visualizer()
 {
-	dmr->removeObserver(visualizerHelper_);
-	visManager->unregisterVisualizer(this);
-	destroyAllSeries();
+	
 }
 
 QWidget* Visualizer::getOrCreateWidget()
 {
-    if (!widget) {
-		//PLUGIN_LOG_DEBUG("Creating Visualizer " << visualizer_->getName() <<  " widget");
-		widget = visualizer_->createWidget();
-        UTILS_ASSERT(widget, "Nie udało się stworzyć widgeta.");
-    }
-    return widget;
+    return visualizerImpl->getOrCreateWidget();
 }
 
 const QIcon Visualizer::getIcon() const
 {
-	return icon;
+	return visualizerImpl->getIcon();
 }
 
 QWidget* Visualizer::getWidget()
 {
-    return widget;
+    return visualizerImpl->getWidget();
 }
 
 const std::string Visualizer::getName() const
 {
-	return visualizer_->getName();
+	return visualizerImpl->getName();
 }
 
 core::UniqueID Visualizer::getID() const
 {
-	return visualizer_->getID();
+	return visualizerImpl->getID();
 }
 
 const std::string  Visualizer::getDescription() const
 {
-	return visualizer_->getDescription();
+	return visualizerImpl->getDescription();
 }
 
 Visualizer * Visualizer::create() const
 {
-	return new Visualizer(*this);
+	return visualizerImpl->create();
 }
 
 const int Visualizer::getMaxSeries() const
 {
-	return visualizer_->getMaxDataSeries();
+	return visualizerImpl->getMaxSeries();
 }
 
 void Visualizer::getSupportedTypes(TypeInfoSet & supportedTypes) const
 {
-	TypeInfoList list;
-	visualizer_->getSupportedTypes(list);
-	supportedTypes.insert(list.begin(), list.end());
+	visualizerImpl->getSupportedTypes(supportedTypes);
 }
 
 Visualizer::VisualizerSerie * Visualizer::createSerie(const TypeInfo & requestedType, const ObjectWrapperConstPtr & data)
 {
-	VisualizerSerie * serie = nullptr;
-    auto s = visualizer_->createSerie(requestedType, data);
-	if(s != nullptr){
-		serie = new VisualizerSerie(this, s);
-		dataSeries.push_back(serie);
-		visualizerHelper_->addSerieToObserve(serie);
-		notifyChange(serie, ADD_SERIE);
-	}
-
-	return serie;
+	return visualizerImpl->createSerie(requestedType, data);
 }
 
 Visualizer::VisualizerSerie * Visualizer::createSerie(VisualizerSerie * serie)
 {
-	VisualizerSerie * retserie = nullptr;
-	if(serie->visualizer_ == this){
-		auto s = visualizer_->createSerie(serie->serie());
-		if(s != nullptr){
-			retserie = new VisualizerSerie(this, s);
-			dataSeries.push_back(retserie);
-			visualizerHelper_->addSerieToObserve(serie);
-			notifyChange(serie, ADD_SERIE);
-		}
-	}
-
-	return retserie;
+	return visualizerImpl->createSerie(serie);
 }
 
 void Visualizer::destroySerie(VisualizerSerie * serie)
 {
-	if(serie->visualizer_ == this){
-		notifyChange(serie, REMOVE_SERIE);
-		dataSeries.remove(serie);
-		visualizerHelper_->removeSerieToObserve(serie);
-		visualizer_->removeSerie(serie->serie());
-		delete serie;
-	}
-}
-
-void Visualizer::notifyChange(VisualizerSerie * serie, SerieModyfication modyfication)
-{
-	for(auto it = observers_.begin(); it != observers_.end(); ++it){
-		(*it)->update(serie, modyfication);
-	}
+	visualizerImpl->destroySerie(serie);
 }
 
 void Visualizer::destroyAllSeries()
 {
-    while(dataSeries.empty() == false){
-		destroySerie(*(dataSeries.begin()));
-    }
-
-    DataSeries().swap(dataSeries);
+    visualizerImpl->destroyAllSeries();
 }
 
 void Visualizer::addObserver(IVisualizerObserver * observer)
 {
-	observers_.push_back(observer);
+	visualizerImpl->addObserver(observer);
 }
 
 void Visualizer::removeObserver(IVisualizerObserver * observer)
 {
-	observers_.remove(observer);
+	visualizerImpl->removeObserver(observer);
 }
 
 void Visualizer::onScreenshotTrigger()
 {
-	if(widget != nullptr){
-		emit screenshotTaken(visualizer_->takeScreenshot());
+	if(visualizerImpl->getWidget() != nullptr){
+		emit screenshotTaken(visualizerImpl->visualizer()->takeScreenshot());
 	}
 }
 
 void Visualizer::addDataSource(VisualizerDataSourcePtr dataSource)
 {
-	visualizerHelper_->addDataSource(dataSource);
+	visualizerImpl->addDataSource(dataSource);
 }
 
 void Visualizer::removeDataSource(VisualizerDataSourcePtr dataSource)
 {
-	visualizerHelper_->removeDataSource(dataSource);
+	visualizerImpl->removeDataSource(dataSource);
 }
 
 const int Visualizer::getNumDataSources() const
 {
-	return visualizerHelper_->getNumDataSources();
+	return visualizerImpl->getNumDataSources();
 }
 
 Visualizer::VisualizerDataSourcePtr Visualizer::getDataSource(int idx)
 {
-	return visualizerHelper_->getDataSource(idx);
+	return visualizerImpl->getDataSource(idx);
 }
 
 void Visualizer::getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
 {
-	visualizerHelper_->getData(type, objects, exact);
+	visualizerImpl->getData(type, objects, exact);
 }
 
 void Visualizer::setLiveObserveActive(bool active)
 {
-	visualizerHelper_->setLiveObserveActive(active);
+	visualizerImpl->setLiveObserveActive(active);
 }
 
 const bool Visualizer::isLiveObserveActive() const
 {
-	return visualizerHelper_->isLiveObserveActive();
+	return visualizerImpl->isLiveObserveActive();
 }
 
 const int Visualizer::getNumSeries() const
 {
-	return dataSeries.size();
+	return visualizerImpl->getNumSeries();
 }
 
 Visualizer::VisualizerSerie * Visualizer::getSerie(int idx)
 {
-	auto it = dataSeries.begin();
-	std::advance(it, idx);
-	return *it;
+	return visualizerImpl->getSerie(idx);
 }
 
 const int Visualizer::serieIdx(VisualizerSerie * serie) const
 {
-	auto it = std::find(dataSeries.begin(), dataSeries.end(), serie);
-	if(it == dataSeries.end()){
-		return -1;
-	}
-
-	return std::distance(dataSeries.begin(), it);
+	return visualizerImpl->serieIdx(serie);
 }
 
 void Visualizer::setActiveSerie(VisualizerSerie * serie)
 {
-	if(serie == nullptr){
-		visualizer_->setActiveSerie(nullptr);
-	}else{
-		visualizer_->setActiveSerie(serie->serie());
-	}
-
-	activeSerie = serie;
+	visualizerImpl->setActiveSerie(serie);
 }
 
 const Visualizer::VisualizerSerie * Visualizer::getActiveSerie() const
 {
-	return activeSerie;
+	return visualizerImpl->getActiveSerie();
 }
 
 Visualizer::VisualizerSerie * Visualizer::getActiveSerie()
 {
-	return activeSerie;
+	return visualizerImpl->getActiveSerie();
+}
+
+void Visualizer::update(double deltaTime)
+{
+	visualizerImpl->update(deltaTime);
 }
 
 VisualizerMemoryDataSource::VisualizerMemoryDataSource(core::IDataManagerReader * dmr) :dmr(dmr)

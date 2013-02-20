@@ -15,6 +15,11 @@ CoreAction::CoreAction(const QString & sectionName, const QIcon &icon, const QSt
 
 }
 
+CoreAction::~CoreAction()
+{
+
+}
+
 CoreTitleBar::SideType CoreAction::side() const
 {
 	return side_;

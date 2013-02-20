@@ -42,7 +42,7 @@ private:
 	//! Typ listy obserwatorów
 	typedef std::set<IVisualizerManagerObserver*> Observers;
 	//! Typ listy aktualnie żyjącyh instancji
-	typedef std::map<Visualizer*, plugin::IVisualizer*> VisualizerInstances;
+	typedef std::list<Visualizer*> VisualizerInstances;
 	//! Obsługa synchronizacji
 	typedef utils::RecursiveSyncPolicy SyncPolicy;
 	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
@@ -85,7 +85,7 @@ public:
 
 private:
 
-	virtual void registerVisualizer(Visualizer* visualizerImpl, plugin::IVisualizer * visualizer);
+	virtual void registerVisualizer(Visualizer* visualizer);
 	virtual void unregisterVisualizer(Visualizer* visualizer);
 
 public:

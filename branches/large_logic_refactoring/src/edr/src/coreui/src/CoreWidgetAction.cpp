@@ -9,6 +9,11 @@ CoreWidgetAction::CoreWidgetAction(QObject *parent, const QString & sectionName,
 
 }
 
+CoreWidgetAction::~CoreWidgetAction()
+{
+
+}
+
 CoreTitleBar::SideType CoreWidgetAction::side() const
 {
 	return side_;
