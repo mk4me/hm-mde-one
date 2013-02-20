@@ -39,7 +39,6 @@ NewChartVisualizer::NewChartVisualizer() :
     statsTable(nullptr),
 	scaleToActive(false),
 	percentDraw(nullptr),
-	eventsContextWidget(nullptr),
     context(C3DEventsCollection::IEvent::General),
     eventsMenu(nullptr),
     shiftSpinX(nullptr),
@@ -94,7 +93,7 @@ QWidget* NewChartVisualizer::createWidget()
     qwtPlot->canvas()->installEventFilter(this);
 
 
-    QComboBox * eventsMenu = new QComboBox(eventsContextWidget);
+    eventsMenu = new QComboBox();
     eventsMenu->setToolTip(tr("Events context"));
 
     QIcon eventsIcon(":/resources/icons/normalizacja1.png");
@@ -206,7 +205,7 @@ QWidget* NewChartVisualizer::createWidget()
 	widget->addAction(shiftSpinXAction);
 
 	coreUI::CoreWidgetAction * shiftSpinYAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
-	shiftSpinXAction->setDefaultWidget(shiftY.first);
+	shiftSpinYAction->setDefaultWidget(shiftY.first);
 	widget->addAction(shiftSpinYAction);
 
 

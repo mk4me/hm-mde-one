@@ -294,8 +294,6 @@ private:
     bool scaleToActive;
     //! obiekt umożliwiający rysowanie podziałki z procentami
     PercentScaleDraw* percentDraw;
-    //! widget z menu eventów
-    QWidget* eventsContextWidget;
     //! menu eventów (general, left, right)
     QComboBox * eventsMenu;
     //! akcja wywołująca stan 'picker'
