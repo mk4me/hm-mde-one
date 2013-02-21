@@ -1806,7 +1806,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 							jointsWrapper->set(core::ObjectWrapper::LazyInitializer(boost::bind(&JointsInitializer::initialize, _1, dataWrapper, modelWrapper)));
 							motionObjects.push_back(jointsWrapper);
 							motionsMapping[motionIT->first].second.push_back(jointsWrapper);
-							dataSource->memoryDM->addData(jointsWrapper);
+							transaction->addData(jointsWrapper);
 						}
 					}
 

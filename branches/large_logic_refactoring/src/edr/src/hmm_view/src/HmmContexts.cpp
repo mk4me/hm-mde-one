@@ -87,7 +87,9 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
     coreUI::CoreVisualizerWidget * visWidget = qobject_cast<coreUI::CoreVisualizerWidget*>(contextWidget);
 
 	auto vis = visWidget->getVisualizer();
-    auto actions = vis->getOrCreateWidget()->actions();
+
+    auto actions = visWidget->actions();
+	actions.append(vis->getOrCreateWidget()->actions());
 
     if(actions.empty() == true){
         return;
@@ -212,11 +214,13 @@ void HMMVisualizerUsageContext::onUnregisterContextWidget(QWidget * contextWidge
 
 HMMTreeItemUsageContext::HMMTreeItemUsageContext( QTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
-	flexiSection(new QWidget()),
+	flexiContent(new QWidget()),
+	flexiSection(new coreUI::CoreFlexiToolBarSection()),
     groupID(-1),
     hmm(hmm)
 {
 	flexiSection->setVisible(false);
+	flexiSection->setInnerWidget(flexiContent);
 }
 
 void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
@@ -227,13 +231,13 @@ void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
     }
 
     QTreeWidget* tree = qobject_cast<QTreeWidget*>(contextWidget);
-    TreeItemHelper* item = dynamic_cast<TreeItemHelper*>(tree->currentItem());
-    if (item) {
-		recreateFlexiSectionWidget(flexiSection, dynamic_cast<HmmTreeItem*>(tree->currentItem()));
+    HmmTreeItem* item = dynamic_cast<HmmTreeItem*>(tree->currentItem());
+    //if (item) {
+		recreateFlexiSectionWidget(flexiContent, item);
 		groupID = flexiTabWidget->addTab(flexiSection, QObject::tr("Tree"));
 		flexiSection->setVisible(true);
 		flexiTabWidget->setCurrentIndex(groupID);
-    }
+    //}
 }
 
 void HMMTreeItemUsageContext::deactivateContext( QWidget * nextContextWidget, bool refresh )
@@ -261,13 +265,15 @@ void HMMTreeItemUsageContext::onUnregisterContextWidget( QWidget * contextWidget
 }
 
 
-void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, HmmTreeItem* helper)
+void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiContent, HmmTreeItem* helper)
 {
-   if (!flexiSection->layout()) {
-       flexiSection->setLayout(new QVBoxLayout());
+   if (!flexiContent->layout()) {
+       flexiContent->setLayout(new QVBoxLayout());
+	   flexiContent->layout()->setContentsMargins(0, 0, 0, 0);
+	   flexiContent->layout()->setSpacing(3);
    }
 
-    const QObjectList& children = flexiSection->children();
+    const QObjectList& children = flexiContent->children();
     for (int i = children.size() - 1; i >= 0; --i) {
         QWidget* w = qobject_cast<QWidget*>(children[i]);
         if (w) {
@@ -276,14 +282,10 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
     }
 
     if (helper) {
-        QLayout* l = flexiSection->layout() ? flexiSection->layout() : new QVBoxLayout(flexiSection);
-        l = flexiSection->layout();
-        l->setContentsMargins(0, 0, 0, 0);
-        l->setSpacing(3);
-        QLabel* label = new QLabel(helper->text(0));
-        l->addWidget(label);
+        QLayout* l = flexiContent->layout();
+        flexiSection->setName(helper->text(0));
         QMenu* menu = hmm->getContextMenu(nullptr, helper);
-        QWidget* horizontal = new QWidget(flexiSection);
+        QWidget* horizontal = new QWidget(flexiContent);
         l->addWidget(horizontal);
         QHBoxLayout* hl = new QHBoxLayout();
         hl->setContentsMargins(0, 0, 0, 0);
@@ -308,14 +310,13 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
                 hl->addWidget(actionButton);
             }
 
-        }
-        flexiSection->setLayout(l);
+        }        
     }
 }
 
 void HMMTreeItemUsageContext::itemChanged( QTreeWidgetItem* current, QTreeWidgetItem* previous )
 {
-    recreateFlexiSectionWidget(flexiSection, dynamic_cast<HmmTreeItem*>(current));
+    recreateFlexiSectionWidget(flexiContent, dynamic_cast<HmmTreeItem*>(current));
 }
 
 
@@ -323,7 +324,7 @@ void HMMTreeItemUsageContext::refresh()
 {
    QTreeWidget* tree = qobject_cast<QTreeWidget*>(getCurrentContextWidget());
    if (tree) {
-     recreateFlexiSectionWidget(flexiSection, dynamic_cast<HmmTreeItem*>(tree->currentItem()));
+     recreateFlexiSectionWidget(flexiContent, dynamic_cast<HmmTreeItem*>(tree->currentItem()));
    }
 }
 

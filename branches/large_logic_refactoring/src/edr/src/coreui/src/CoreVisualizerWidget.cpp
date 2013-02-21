@@ -74,8 +74,14 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 		
 	}
 
+	/*screenshot-a.png
+		screenshot-b.png*/
+
 	//screenshot
 	CoreAction * screenshotAction = new CoreAction(tr("Utils"), tr("Screenshot"), this, CoreTitleBar::Right);
+	/*QIcon sIcon;
+	sIcon.addPixmap()
+	screenshotAction->setIcon()*/
 	connect(screenshotAction, SIGNAL(triggered()), visualizer.get(), SLOT(onScreenshotTrigger()));
 	addAction(screenshotAction);
 

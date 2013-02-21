@@ -150,7 +150,9 @@ private:
     //! flexi widget
     QTabWidget * flexiTabWidget;
     //! sekcja obsługiwanego flexi widgeta
-    QWidget* flexiSection;
+    QWidget* flexiContent;
+
+	coreUI::CoreFlexiToolBarSection * flexiSection;
     //! identyfikator grupy dla drzewa
     int groupID;
     //! główne okno aplikacji
