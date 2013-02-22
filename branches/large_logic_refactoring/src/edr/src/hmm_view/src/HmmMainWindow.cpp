@@ -1320,7 +1320,8 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
          for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
 			 PluginSubject::MotionConstPtr m = (*itMotion)->get();
              core::ConstObjectsList wrappers;
-             m->getObjects(wrappers, typeid(ScalarChannel), false);
+             //m->getObjects(wrappers, typeid(ScalarChannel), false);
+			 m->getObjects(wrappers, typeid(ScalarChannelReaderInterface), false);
              EventsCollectionConstPtr events;
              if (m->hasObject(typeid(C3DEventsCollection), false)) {
 				 core::ConstObjectsList e;
@@ -1333,7 +1334,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
 
 				 for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
 					std::string localName;
-					if ((*it)->tryGetMeta("core/name", name) && localName == name) {
+					if ((*it)->tryGetMeta("core/name", localName) && localName == name) {
 						 toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(*it, events, m));
 					 }
 				 }
@@ -1341,8 +1342,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
          }
          NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
          HmmTreeItem item(multi);
-         createNewVisualizer(&item);
-         //delete multi;
+         createNewVisualizer(&item);         
      }
  }
 

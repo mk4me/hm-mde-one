@@ -74,9 +74,6 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 		
 	}
 
-	/*screenshot-a.png
-		screenshot-b.png*/
-
 	//screenshot
 	CoreAction * screenshotAction = new CoreAction(tr("Utils"), tr("Screenshot"), this, CoreTitleBar::Right);
 	screenshotAction->setIcon(QIcon(QString::fromUtf8(":resources/icons/screenshot-b.png")));

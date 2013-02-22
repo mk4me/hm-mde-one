@@ -48,7 +48,7 @@ const bool DataHierarchyManager::isTypeCompatible(const TypeInfo & base, const T
 void DataHierarchyManager::getTypeBaseTypes(const TypeInfo & type, TypeInfoSet & baseTypes) const
 {
 	auto it = typesHierarchy.find(type);
-	if(it == typesHierarchy.end() || it->second.prototype == nullptr) {
+	if(it != typesHierarchy.end() && it->second.prototype != nullptr) {
 		baseTypes.insert(it->second.baseTypes.begin(), it->second.baseTypes.end());
 	}
 }
@@ -56,7 +56,7 @@ void DataHierarchyManager::getTypeBaseTypes(const TypeInfo & type, TypeInfoSet &
 void DataHierarchyManager::getTypeDerrivedTypes(const TypeInfo & type, TypeInfoSet & derrivedTypes) const
 {
 	auto it = typesHierarchy.find(type);
-	if(it == typesHierarchy.end() || it->second.prototype == nullptr) {
+	if(it != typesHierarchy.end() && it->second.prototype != nullptr) {
 		derrivedTypes.insert(it->second.derrivedTypes.begin(), it->second.derrivedTypes.end());
 	}
 }
