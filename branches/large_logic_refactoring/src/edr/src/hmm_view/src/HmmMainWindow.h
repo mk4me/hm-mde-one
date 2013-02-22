@@ -269,6 +269,8 @@ private:
     std::multimap<TreeItemHelperPtr, DataItemDescription> items2Descriptions;
     //! widget z analizami
     AnalisisWidget* analisis;
+	//! zakładka z vdf
+	QWidget* vdf;
     //! zakładka z danymi
     QWidget* data;
     //! zakładka z operacjami (konsola)

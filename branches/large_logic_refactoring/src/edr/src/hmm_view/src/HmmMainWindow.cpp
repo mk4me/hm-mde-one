@@ -25,6 +25,7 @@
 #include <coreui/CoreDockWidget.h>
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
+#include <plugins/newVdf/NewVdfService.h>
 
 using namespace core;
 
@@ -88,6 +89,7 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
 	bottomMainWindow(nullptr),
     analisis(nullptr),
     data(nullptr),
+	vdf(nullptr),
     operations(nullptr),
 	raports(nullptr),
 	flexiTabWidget(new coreUI::CoreFlexiToolBar()),
@@ -217,6 +219,9 @@ void HmmMainWindow::customViewInit(QWidget * console)
     this->data->setContentsMargins(0,0,0,0);
     this->analisis->setContentsMargins(0,0,0,0);
 
+	QTabWidget * vdfTabWidget = coreUI::createNamedObject<QTabWidget>(QString::fromUtf8("VDF Widget"));
+	this->vdf = vdfTabWidget;
+
     this->operations = new QWidget();
     this->raports = new coreUI::CoreTextEditWidget();
     addContext(raportsTabContext, reportsContext);
@@ -227,6 +232,7 @@ void HmmMainWindow::customViewInit(QWidget * console)
     button2TabWindow[this->operationsButton] = this->operations;
     button2TabWindow[this->raportsButton] = this->raports;
     button2TabWindow[this->analisisButton] = this->analisis;
+	button2TabWindow[this->processingButton] = this->vdf;
     currentButton = dataButton;
 
 	contextStates[this->analisisButton] = ContextState(analisisContext, nullptr);
@@ -288,9 +294,28 @@ void HmmMainWindow::customViewInit(QWidget * console)
         plugin::IServicePtr service = plugin::getServiceManager()->getService(i);
 
 		auto timeline = core::dynamic_pointer_cast<ITimelineService>(service);
+		auto vdf = core::dynamic_pointer_cast<vdf::NewVdfService>(service);
         if(timeline != nullptr) {
             showTimeline();
-        }else {
+        } else if (vdf) {
+			QWidget* viewWidget = vdf->getWidget();
+			QWidget* controlWidget = vdf->getControlWidget();
+			QWidget* settingsWidget = vdf->getSettingsWidget();
+			controlWidget->setMaximumWidth(350);
+			viewWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+			controlWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+			settingsWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+			QVBoxLayout* vlayout = new QVBoxLayout();
+			vlayout->addWidget(viewWidget);
+			vlayout->addWidget(settingsWidget);
+			QWidget* widget = new QWidget();
+			widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+			widget->setLayout(vlayout);
+			QHBoxLayout* hlayout = new QHBoxLayout();
+			hlayout->addWidget(widget);
+			hlayout->addWidget(controlWidget);
+			vdfTabWidget->setLayout(hlayout);
+		} else {
             QWidget* viewWidget = service->getWidget();
             QWidget* controlWidget = service->getControlWidget();
             QWidget* settingsWidget = service->getSettingsWidget();
