@@ -3,6 +3,8 @@
 #include <plugins/newVdf/IVisualOutputPin.h>
 #include "SimpleItem.h"
 
+using namespace vdf;
+
 SimpleSourceNode::SimpleSourceNode() :
     simpleItem(new SimpleTextItem(0, 0))
 {

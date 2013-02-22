@@ -15,6 +15,8 @@
 #include <plugins/newVdf/IVisualSourceNode.h>
 #include <plugins/newVdf/INodeStrategy.h>
 
+namespace vdf {
+
 class StyleItem;
 class IVisualOutputPin;
 
@@ -52,5 +54,7 @@ private:
 	INodeStrategyPtr strategy;
 	QString name;
 };
+
+}
 
 #endif

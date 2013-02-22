@@ -18,6 +18,8 @@ class SimpleTextItem;
 class IVisualInputPin;
 class IVisualOutputPin;
 
+namespace vdf {
+
 class SimpleMergedNode : public IVisualProcessingNode
 {
 public:
@@ -48,5 +50,6 @@ private:
     std::vector<IVisualInputPin *> inputPins;
     std::vector<IVisualOutputPin *> outputPins;
 };
+}
 
 #endif

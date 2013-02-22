@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IVisualStrategy.h>
 
+namespace vdf {
+
 class IVisualPin;
 class IConnectionStrategy : public IVisualStrategy
 {
@@ -21,4 +23,5 @@ public:
 typedef core::shared_ptr<IConnectionStrategy> IConnectionStrategyPtr;
 typedef core::shared_ptr<const IConnectionStrategy> IConnectionStrategyConstPtr;
 
+}
 #endif

@@ -24,6 +24,21 @@ SET_PUBLIC_HEADERS(
 	IVisualPin.h
 	IVisualInputPin.h
 	IVisualOutputPin.h
+	IDataSource.h
+	IDataSourceManager.h
+	IDataSink.h
+	IDataSinkManager.h
+	IDataProcessor.h
+	IDataProcessorManager.h
+	IInputDescription.h
+	IOutputDescription.h
+	IWorkflowItemBase.h
+	ICommand.h
+	IDataFlowProvider.h
+	DataSource.h
+	DataSink.h
+	DataProcessor.h
+	ExampleItems.h
 )
 
 SET_PRIVATE_HEADERS(
@@ -48,7 +63,6 @@ SET_PRIVATE_HEADERS(
 	#ConnectionDescriptor.h
 	SceneBuilder.h
 	TypesWindow.h
-	HACK.h
 	PinsFactory.h
 	ConnectionsFactory.h
 	NodesFactory.h
@@ -77,6 +91,9 @@ SET_PRIVATE_HEADERS(
 	VdfView.h
 	VdfScene.h
 	NewVdfPCH.h
+	DataSourceManager.h
+	DataSinkManager.h
+	DataProcessorManager.h
 )
 
 SET_SOURCE_FILES (
@@ -131,12 +148,18 @@ SET_SOURCE_FILES (
 	VdfView.cpp
 	VdfScene.cpp
 	NewVdfPCH.cpp
+	DataSource.cpp
+	DataSourceManager.cpp
+	DataSink.cpp
+	DataSinkManager.cpp
+	DataProcessor.cpp
+	DataProcessorManager.cpp
 )
 
 SET_MOC_FILES(
 	NewVdfWidget.h
 	CanvasStyleEditorWidget.h
-	Command.h
+	ICommand.h
 	CommandStackDebug.h
 	TypesWindow.h
 	#ModelCanvasScene.h

@@ -2,7 +2,7 @@
 #include "DarkBackgroundStrategy.h"
 #include <QtGui/QPainter>
 
-
+using namespace vdf;
 
 void DarkBackgroundStrategy::paint( QPainter* painter, const QRectF& rect)
 {

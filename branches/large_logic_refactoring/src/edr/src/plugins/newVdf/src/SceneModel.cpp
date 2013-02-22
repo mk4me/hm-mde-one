@@ -9,6 +9,9 @@
 #include <dflib/Model.h>
 #include <dflib/DFModelRunner.h>
 #include <dflib/Connection.h>
+#include <dflib/Node.h>
+
+using namespace vdf;
 
 IVisualConnectionPtr SceneModel::addConnection(IVisualPinPtr pin1, IVisualPinPtr pin2)
 {

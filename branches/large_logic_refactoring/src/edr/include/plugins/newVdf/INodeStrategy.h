@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IVisualStrategy.h>
 
+namespace vdf {
+
 class IVisualNode;
 class INodeStrategy : public IVisualStrategy
 {
@@ -26,5 +28,7 @@ public:
 };
 typedef core::shared_ptr<INodeStrategy> INodeStrategyPtr;
 typedef core::shared_ptr<const INodeStrategy> INodeStrategyConstPtr;
+
+}
 
 #endif

@@ -1,10 +1,11 @@
 #include "NewVdfPCH.h"
 #include "DarkPinsFactory.h"
-//#include "StyleConnection.h"
 #include "DarkPinStrategy.h"
 #include "StyleInputPinNode.h"
 #include "StyleOutputPinNode.h"
 #include <plugins/newVdf/IVisualPin.h>
+
+using namespace vdf;
 
 IVisualInputPinPtr DarkPinsFactory::createInputPin() const
 {

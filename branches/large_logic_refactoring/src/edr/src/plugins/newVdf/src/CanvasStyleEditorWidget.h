@@ -13,7 +13,9 @@
 #include "ui_canvasStyleEditorWidget.h"
 //#include <utils/Serializable.h>
 #include "CanvasStyleEditor.h"
-#include "HACK.h"
+//#include "HACK.h"
+
+namespace vdf {
 
 class INodesFactory;
 class IPinsFactory;
@@ -67,5 +69,6 @@ private slots:
 private:
     CanvasStyleEditorPtr editor;
 };
+}
 
 #endif	//	HEADER_GUARD___CANVASSTYLEEDITORWIDGET_H__

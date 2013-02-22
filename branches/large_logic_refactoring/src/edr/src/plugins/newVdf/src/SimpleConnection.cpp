@@ -2,6 +2,8 @@
 #include "SimpleConnection.h"
 #include "SimpleItem.h"
 
+using namespace vdf;
+
 SimpleConnection::SimpleConnection() :
     item(new QGraphicsLineItem())
 {

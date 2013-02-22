@@ -7,6 +7,7 @@
 #include "SceneStateMachine.h"
 #include "VdfScene.h"
 
+using namespace vdf;
 
 void ConnectState::begin( ISceneStateConstPtr lastState )
 {

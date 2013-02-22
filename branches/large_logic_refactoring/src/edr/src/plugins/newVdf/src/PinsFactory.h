@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IPinsFactory.h>
 
+namespace vdf {
+
 class PinsFactory : public IPinsFactory
 {
 public:
@@ -27,26 +29,6 @@ public:
 typedef core::shared_ptr<PinsFactory> PinsFactoryPtr;
 typedef core::shared_ptr<const PinsFactory> PinsFactoryConstPtr;
 
-
-
-//class StylePinsFactory : public IPinsFactory
-//{
-//public:
-//	virtual ~StylePinsFactory() {}
-//
-//	virtual IVisualInputPin * createInputPin() const;
-//
-//	virtual IVisualOutputPin * createOutputPin() const;
-//
-//	virtual const QUuid id() const;
-//
-//	virtual const QString name() const;
-//
-//	virtual const QString description() const;
-//
-//};
-//typedef core::shared_ptr<StylePinsFactory> StylePinsFactoryPtr;
-//typedef core::shared_ptr<const StylePinsFactory> StylePinsFactoryConstPtr;
-
+}
 
 #endif

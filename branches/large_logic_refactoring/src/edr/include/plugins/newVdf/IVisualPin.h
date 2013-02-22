@@ -12,6 +12,8 @@
 //#include <dflib/Pin.h>
 #include <plugins/newVdf/IVisualItem.h>
 
+namespace vdf {
+
 class IVisualNode;
 class IVisualConnection;
 class IVisualPin : public IVisualItem
@@ -38,5 +40,7 @@ public:
 typedef core::shared_ptr<IVisualPin> IVisualPinPtr;
 typedef core::weak_ptr<IVisualPin> IVisualPinWeakPtr;
 typedef core::shared_ptr<const IVisualPin> IVisualPinConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___IVISUALPIN_H__

@@ -2,6 +2,8 @@
 #include "StyleOutputPinNode.h"
 #include "StyleItem.h"
 
+using namespace vdf;
+
 StyleOutputPinNode::StyleOutputPinNode() :
 	item(new StyleItem()),
 	index(-1)

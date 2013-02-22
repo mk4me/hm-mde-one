@@ -1,6 +1,8 @@
 #include "newVdfPCH.h"
 #include <CanvasStyleEditorWidget.h>
 
+using namespace vdf;
+
 CanvasStyleEditorWidget::CanvasStyleEditorWidget(CanvasStyleEditorPtr editor, QWidget* parent, Qt::WindowFlags f) :
     editor(editor),
     QWidget(parent, f)

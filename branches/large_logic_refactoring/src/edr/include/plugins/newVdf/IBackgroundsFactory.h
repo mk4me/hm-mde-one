@@ -13,6 +13,8 @@
 #include <plugins/newVdf/IFactory.h>
 #include <plugins/newVdf/IBackgroundStrategy.h>
 
+namespace vdf {
+
 class IBackgroundsFactory : public IFactory
 {	
 public:
@@ -22,6 +24,6 @@ public:
 };
 typedef core::shared_ptr<IBackgroundsFactory> IBackgroundsFactoryPtr;
 typedef core::shared_ptr<const IBackgroundsFactory> IBackgroundsFactoryConstPtr;
-
+}
 
 #endif

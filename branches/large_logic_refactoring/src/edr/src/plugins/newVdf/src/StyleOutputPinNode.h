@@ -18,6 +18,8 @@
 #include <plugins/newVdf/IVisualNode.h>
 #include <plugins/newVdf/IVisualConnection.h>
 
+namespace vdf {
+
 class StyleItem;
 
 class StyleOutputPinNode : public IVisualOutputPin
@@ -57,5 +59,7 @@ protected:
 	int index;
     StyleItem* item;
 };
+
+}
 
 #endif

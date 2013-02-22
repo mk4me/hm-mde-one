@@ -14,6 +14,8 @@
 #include <plugins/newVdf/IVisualNode.h>
 #include <plugins/newVdf/IVisualInputPin.h>
 
+namespace vdf {
+
 class IVisualSinkNode : public virtual IVisualNode
 {
 public:
@@ -28,5 +30,7 @@ public:
 };
 typedef core::shared_ptr<IVisualSinkNode> IVisualSinkNodePtr;
 typedef core::shared_ptr<const IVisualSinkNode> IVisualSinkNodeConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___IVISUALNODE_H__

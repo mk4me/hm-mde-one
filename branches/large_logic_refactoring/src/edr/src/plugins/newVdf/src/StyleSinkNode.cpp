@@ -2,6 +2,8 @@
 #include "StyleSinkNode.h"
 #include "StyleItem.h"
 
+using namespace vdf;
+
 StyleSinkNode::StyleSinkNode() : 
 	styleItem(new StyleItem)
 {

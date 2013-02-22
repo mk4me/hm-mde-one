@@ -23,7 +23,6 @@ namespace core {
 	class IMemoryDataManager;
 	class IStreamDataManager;
 	class IFileDataManager;
-
 }
 
 namespace plugin 

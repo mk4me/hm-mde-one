@@ -6,36 +6,7 @@
 #include "StyleSourceNode.h"
 #include "StyleProcessingNode.h"
 
-//IVisualSinkNode * NodesFactory::createSinkNode() const
-//{
-//    return new SimpleSinkNode();
-//}
-//
-//IVisualSourceNode * NodesFactory::createSourceNode() const
-//{
-//    return new SimpleSourceNode();
-//}
-//
-//IVisualProcessingNode * NodesFactory::createProcessingNode() const
-//{
-//    return new SimpleProcessingNode();
-//}
-//
-//const QUuid NodesFactory::id() const
-//{
-//    return QUuid::createUuid();
-//}
-//
-//const QString NodesFactory::name() const
-//{
-//    return "Simple node";
-//}
-//
-//const QString NodesFactory::description() const
-//{
-//    return "Simple node description";
-//}
-
+using namespace vdf;
 
 IVisualSinkNodePtr DarkNodesFactory::createSinkNode() const
 {

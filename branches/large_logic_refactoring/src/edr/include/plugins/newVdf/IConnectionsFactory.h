@@ -12,6 +12,8 @@
 #include <plugins/newVdf/IFactory.h>
 #include <plugins/newVdf/IVisualConnection.h>
 
+namespace vdf {
+
 class IConnectionsFactory : public IFactory
 {
 public:
@@ -19,5 +21,7 @@ public:
 };
 typedef core::shared_ptr<IConnectionsFactory> IConnectionsFactoryPtr;
 typedef core::shared_ptr<const IConnectionsFactory> IConnectionsFactoryConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___ICONNECTIONSFACTORY_H__

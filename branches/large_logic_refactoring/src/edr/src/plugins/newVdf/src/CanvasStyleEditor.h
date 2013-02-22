@@ -10,14 +10,16 @@
 #define HEADER_GUARD___CANVASSTYLEEDITOR_H__
 
 
-#include "HACK.h"
+//#include "HACK.h"
 #include <boost/range.hpp>
 #include <plugins/newVdf/INodesFactory.h>
 #include <plugins/newVdf/IPinsFactory.h>
 #include <plugins/newVdf/IConnectionsFactory.h>
 #include <plugins/newVdf/IBackgroundsFactory.h>
 
-class CanvasStyleEditor : public utils::Serializable
+namespace vdf {
+
+class CanvasStyleEditor 
 {
 public:
     typedef std::vector<INodesFactoryPtr> NodesFactoriesCollection;
@@ -91,5 +93,5 @@ private:
 };
 typedef core::shared_ptr<CanvasStyleEditor> CanvasStyleEditorPtr;
 typedef core::shared_ptr<const CanvasStyleEditor> CanvasStyleEditorConstPtr;
-
+}
 #endif	//	HEADER_GUARD___CANVASSTYLEEDITOR_H__

@@ -14,6 +14,7 @@
 #include <QtCore/QSize>
 #include <plugins/newVdf/IVisualNode.h>
 
+namespace vdf {
 //! 
 class SimpleItem : public QGraphicsItem
 {
@@ -63,5 +64,6 @@ public:
     virtual ~SimplePinItem() {}
 };
 
+}
 
 #endif

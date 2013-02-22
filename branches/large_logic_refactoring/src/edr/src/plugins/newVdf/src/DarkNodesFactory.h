@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/INodesFactory.h>
 
+namespace vdf {
+
 class DarkNodesFactory : public INodesFactory
 {
 public:
@@ -27,5 +29,5 @@ public:
 };
 typedef core::shared_ptr<DarkNodesFactory> DarkNodesFactoryPtr;
 typedef core::shared_ptr<const DarkNodesFactory> DarkNodesFactoryConstPtr;
-
+}
 #endif

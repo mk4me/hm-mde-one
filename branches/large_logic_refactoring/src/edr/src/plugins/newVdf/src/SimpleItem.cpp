@@ -1,6 +1,8 @@
 #include "NewVdfPCH.h"
 #include "SimpleItem.h"
 
+namespace vdf
+{
 
 QSizeF calculateNodeSize(int pins)
 {
@@ -142,4 +144,6 @@ void SimpleTextItem::paint( QPainter *painter, const QStyleOptionGraphicsItem *o
     QRectF rect = SimpleItem::boundingRect();
     painter->setPen(Qt::black);
     painter->drawText(rect.x() + 15, rect.y() + rect.height() + 15, text);
+}
+
 }

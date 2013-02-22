@@ -5,6 +5,8 @@
 #include <QtGui/QGraphicsView>
 #include <QtGui/QHBoxLayout>
 
+using namespace vdf;
+
 VdfView::VdfView( QGraphicsScene* scene ) : 
 QGraphicsView(scene), 
     viewScale(1.0)

@@ -20,6 +20,10 @@
 class QGraphicsScene;
 class IVisualItem;
 class QMouseEvent;
+
+
+namespace vdf {
+
 class SimplePinItem;
 class SceneStateMachine;
 class VdfScene;  
@@ -56,4 +60,5 @@ private:
 	core::shared_ptr<SceneStateMachine> stateMachine;
 };
 
+}
 #endif

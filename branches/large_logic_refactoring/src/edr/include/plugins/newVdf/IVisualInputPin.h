@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IVisualPin.h>
 
+namespace vdf {
+
 class IVisualInputPin : public IVisualPin
 {
 public:
@@ -24,5 +26,6 @@ typedef core::shared_ptr<IVisualInputPin> IVisualInputPinPtr;
 typedef core::weak_ptr<IVisualInputPin> IVisualInputPinWeakPtr;
 typedef core::shared_ptr<const IVisualInputPin> IVisualInputPinConstPtr;
 
+}
 
 #endif

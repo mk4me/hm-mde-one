@@ -2,7 +2,7 @@
 #include "StyleInputPinNode.h"
 #include "StyleItem.h"
 
-
+using namespace vdf;
 
 StyleInputPinNode::StyleInputPinNode() :
     item(new StyleItem()),

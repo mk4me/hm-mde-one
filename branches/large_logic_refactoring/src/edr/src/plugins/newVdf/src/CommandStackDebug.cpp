@@ -1,6 +1,8 @@
 #include "NewVdfPCH.h"
 #include "CommandStackDebug.h"
 
+using namespace vdf;
+
 CommandStackDebug::CommandStackDebug( CommandStackPtr stack, QWidget* parent ) :
 	QListWidget(parent),
 	commandStack(stack)

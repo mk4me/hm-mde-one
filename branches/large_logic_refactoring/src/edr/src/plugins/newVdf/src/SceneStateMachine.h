@@ -20,6 +20,8 @@
 #include "ConnectState.h"
 #include "Command.h"
 
+namespace vdf {
+
 class VdfScene;
 class NewVdfWidget;
 
@@ -69,5 +71,6 @@ private:
 typedef core::shared_ptr<SceneStateMachine> SceneStateMachinePtr;
 typedef core::shared_ptr<const SceneStateMachine> SceneStateMachineConstPtr;
 
+}
 
 #endif

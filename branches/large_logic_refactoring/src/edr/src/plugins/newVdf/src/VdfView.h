@@ -14,6 +14,7 @@
 #include <QtGui/QGraphicsView>
 #include <QtGui/QWheelEvent>
 
+namespace vdf {
 
 class VdfView : public QGraphicsView
 {
@@ -27,5 +28,7 @@ protected:
 private:
     qreal viewScale;
 };
+
+}
 
 #endif

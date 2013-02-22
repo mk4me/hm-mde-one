@@ -8,6 +8,7 @@
 #include "Command.h"
 #include "VdfView.h"
 
+using namespace vdf;
 
 NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
     sceneModel(sceneModel),
@@ -28,6 +29,8 @@ NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
 	QPushButton* und = new QPushButton("Undo");
 	QPushButton* red = new QPushButton("Redo");
 	QPushButton* mrg = new QPushButton("Merge");
+
+	mrg->setEnabled(false);
 
 	connect(nrm, SIGNAL(clicked()), scene, SLOT(normalPressed()));
 	connect(cnt, SIGNAL(clicked()), scene, SLOT(connectPressed()));

@@ -14,6 +14,8 @@
 #include <QtCore/QSize>
 #include <plugins/newVdf/IVisualProcessingNode.h>
 
+namespace vdf {
+
 class SimpleTextItem;
 class IVisualInputPin;
 class IVisualOutputPin;
@@ -59,5 +61,7 @@ private:
     std::vector<IVisualOutputPinPtr> outputPins;
 	QString name;
 };
+
+}
 
 #endif

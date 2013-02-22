@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IBackgroundsFactory.h>
 
+namespace vdf {
+
 template<class Strategy>
 class BackgroundsFactory : public IBackgroundsFactory
 {
@@ -34,6 +36,6 @@ private:
 	QString _desc;
 	QUuid _id;
 };
-
+}
 
 #endif

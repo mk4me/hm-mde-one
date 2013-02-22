@@ -3,6 +3,8 @@
 #include <plugins/newVdf/IConnectionStrategy.h>
 #include "StyleItem.h"
 
+using namespace vdf;
+
 StyleConnection::StyleConnection() :
     item(new StyleItem())
 {

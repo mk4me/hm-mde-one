@@ -6,6 +6,8 @@
 #include "StyleInputPinNode.h"
 #include "StyleOutputPinNode.h"
 
+using namespace vdf;
+
 IVisualInputPinPtr PinsFactory::createInputPin() const
 {
     return IVisualInputPinPtr(new SimpleInputPinNode());

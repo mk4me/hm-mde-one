@@ -17,6 +17,8 @@
 #include <plugins/newVdf/IVisualConnection.h>
 #include <plugins/newVdf/IVisualNode.h>
 
+namespace vdf {
+
 class StyleItem;
 
 class StyleInputPinNode : public IVisualInputPin
@@ -58,5 +60,6 @@ protected:
     StyleItem* item;
 };
 
+}
 
 #endif

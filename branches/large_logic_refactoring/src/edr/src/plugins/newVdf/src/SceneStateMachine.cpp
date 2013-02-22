@@ -8,6 +8,8 @@
 #include "SceneModel.h"
 #include "NewVdfWidget.h"
 
+using namespace vdf;
+
 SceneStateMachine::SceneStateMachine(NewVdfWidget* widget) : 
 	vdfWidget(widget)
  {

@@ -12,6 +12,8 @@
 
 #include "ISceneState.h"
 
+namespace vdf {
+
 //!
 class ConnectState : public ISceneState
 {
@@ -33,6 +35,6 @@ private:
 };
 typedef core::shared_ptr<ConnectState> ConnectStatePtr;
 typedef core::shared_ptr<const ConnectState> ConnectStateConstPtr;
-
+}
 
 #endif

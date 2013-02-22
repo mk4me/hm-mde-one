@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IVisualStrategy.h>
 
+namespace vdf {
+
 class IVisualPin;
 class IPinStrategy : public IVisualStrategy
 {
@@ -28,5 +30,6 @@ public:
 typedef core::shared_ptr<IPinStrategy> IPinStrategyPtr;
 typedef core::shared_ptr<const IPinStrategy> IPinStrategyConstPtr;
 
+}
 
 #endif

@@ -16,6 +16,8 @@
 #include <plugins/newVdf/IVisualConnection.h>
 #include <plugins/newVdf/IVisualNode.h>
 
+namespace vdf {
+
 class SimplePinItem;
 
 class SimpleOutputPinNode : public IVisualOutputPin
@@ -55,5 +57,7 @@ protected:
 private:
     SimplePinItem* item;
 };
+
+}
 
 #endif

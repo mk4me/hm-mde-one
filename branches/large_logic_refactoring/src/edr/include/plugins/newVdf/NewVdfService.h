@@ -12,17 +12,34 @@
 
 #include <corelib/IService.h>
 #include <corelib/IDataManagerReader.h>
-#include "Command.h"
+#include <corelib/BaseDataTypes.h>
+#include <plugins/newVdf/IDataProcessor.h>
+#include <plugins/newVdf/IDataSource.h>
+#include <plugins/newVdf/IDataSink.h>
+#include <plugins/newVdf/IDataProcessorManager.h>
+#include <plugins/newVdf/IDataSourceManager.h>
+#include <plugins/newVdf/IDataSinkManager.h>
+#include <plugins/newVdf/IDataFlowProvider.h>
+#include <plugins/newVdf/ICommand.h>
+#include <plugins/newVdf/ExampleItems.h>
+
+
+namespace vdf {
 
 class NewVdfWidget;
 class CanvasStyleEditorWidget;
 class TypesWindow;
 
-class NewVdfService : public plugin::IService
+class NewVdfService : public plugin::IService, public IDataFlowProvider
 {
     UNIQUE_ID("{DF5B5B15-C591-4BCF-A205-FD995D2398DB}")
 	CLASS_DESCRIPTION("Data Flow Service", "Data Flow Service");
-
+	VDF_BEGIN
+		VDF_ADD_DATA_SOURCE(IntSource, core::UID::GenerateUniqueID("{EF393C1F-2202-47DA-A1B9-D5DE868FDFFA}"))
+		VDF_ADD_DATA_PROCESSOR(IntProcessor, core::UID::GenerateUniqueID("{511A32C7-E82D-42FF-9BAA-2A74F83A5103}"))
+		VDF_ADD_DATA_SINK(IntSink, core::UID::GenerateUniqueID("{B4F05E79-80E7-46E7-97AE-FD81212C9AF7}"))
+	VDF_END
+	     
 public:
     NewVdfService();
     virtual ~NewVdfService();
@@ -54,9 +71,14 @@ private:
     NewVdfWidget* newVdfWidget;
     CanvasStyleEditorWidget* canvasStyleEditorWidget;
     TypesWindow* typesWindow;
-	QListWidget* commandStackDebug;
+	//QListWidget* commandStackDebug;
 	CommandStackPtr commandStack;
+	IDataProcessorManagerPtr dataProcessorManager;
+	IDataSourceManagerPtr dataSourceManager;
+	IDataSinkManagerPtr dataSinkManager;
 };
+
+}
 
 #endif  //HEADER_GUARD___VDFSERVICE_H__
 

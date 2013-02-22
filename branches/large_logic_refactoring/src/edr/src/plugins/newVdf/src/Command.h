@@ -13,47 +13,12 @@
 #include <corelib/SmartPtr.h>
 #include <QtCore/QObject>
 #include <QtCore/QPointF>
+#include <plugins/newVdf/ICommand.h>
 
 #include "SceneBuilder.h"
 #include "SceneModel.h"
 
-class ICommand
-{
-public:
-	virtual ~ICommand() {}
-    virtual void doIt() = 0;
-    virtual void undoIt() = 0;
-	virtual QString name() = 0; 
-};
-typedef core::shared_ptr<ICommand> ICommandPtr;
-typedef core::shared_ptr<const ICommand> ICommandConstPtr;
-
-class CommandStack : public QObject
-{
-	Q_OBJECT;
-	friend class CommandStackDebug;
-public:
-	typedef std::list<ICommandPtr> Commands;
-public:
-	CommandStack();
-    virtual ~CommandStack() {}
-
-public:
-    void addCommand(ICommandPtr command);
-	void undo();
-	void redo();
-	bool isUndoPossible() const;
-	bool isRedoPossible() const;
-
-signals:
-	void changed();
-
-private:
-    Commands commands;
-	Commands::iterator currentCommand;
-};
-typedef core::shared_ptr<CommandStack> CommandStackPtr;
-typedef core::shared_ptr<const CommandStack> CommandStackConstPtr;
+namespace vdf {
 
 class NullCommand : public ICommand
 {
@@ -141,6 +106,6 @@ private:
 	SceneModelPtr sceneModel;
 	std::list<IVisualConnectionPtr> removedConnections;
 };
-
+}
 
 #endif

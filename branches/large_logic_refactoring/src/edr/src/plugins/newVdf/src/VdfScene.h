@@ -21,7 +21,8 @@
 class QGraphicsScene;
 class IVisualItem;
 class QMouseEvent;
-class SimplePinItem;
+
+namespace vdf {
 class SceneStateMachine;
 
 class VdfScene : public QGraphicsScene
@@ -69,5 +70,7 @@ private:
 	bool moveBlocker;
 	IBackgroundStrategyPtr backgroundStrategy;
 };
+
+}
 
 #endif

@@ -15,6 +15,7 @@
 #include <plugins/newVdf/IVisualNode.h>
 #include <plugins/newVdf/IVisualStrategy.h>
 
+namespace vdf {
 //! 
 class StyleItem : public QGraphicsObject
 {
@@ -64,6 +65,7 @@ private:
 	QGraphicsProxyWidget* proxy;
 };
 
+}
 
 #endif
 

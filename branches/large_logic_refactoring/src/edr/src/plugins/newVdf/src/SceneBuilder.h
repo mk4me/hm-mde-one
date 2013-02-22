@@ -16,6 +16,8 @@
 #include <plugins/newVdf/IVisualNode.h>
 #include <boost/tuple/tuple.hpp>
 
+namespace vdf {
+
 class IVisualItem;
 
 class SceneBuilder
@@ -43,5 +45,6 @@ private:
     CanvasStyleEditorPtr factories;
 };
 
+}
 
 #endif

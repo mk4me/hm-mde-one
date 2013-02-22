@@ -12,6 +12,8 @@
 
 #include <corelib/SmartPtr.h>
 
+namespace vdf {
+
 class IBackgroundStrategy
 {
 public:
@@ -21,4 +23,5 @@ public:
 typedef core::shared_ptr<IBackgroundStrategy> IBackgroundStrategyPtr;
 typedef core::shared_ptr<const IBackgroundStrategy> IBackgroundStrategyConstPtr;
 
+}
 #endif

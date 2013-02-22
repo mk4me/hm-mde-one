@@ -15,6 +15,8 @@
 #include <plugins/newVdf/IVisualSinkNode.h>
 #include <plugins/newVdf/INodeStrategy.h>
 
+namespace vdf {
+
 class StyleItem;
 class IVisualInputPin;
 
@@ -53,5 +55,6 @@ private:
 	QString name;
 };
 
+}
 
 #endif

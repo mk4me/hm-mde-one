@@ -14,6 +14,8 @@
 #include <QtCore/QSize>
 #include <plugins/newVdf/IVisualSinkNode.h>
 
+namespace vdf {
+
 class SimpleTextItem;
 class IVisualInputPin;
 
@@ -50,5 +52,6 @@ private:
 	QString name;
 };
 
+}
 
 #endif

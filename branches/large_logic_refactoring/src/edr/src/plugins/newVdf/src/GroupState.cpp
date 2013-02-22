@@ -3,6 +3,7 @@
 #include "SceneStateMachine.h"
 #include "VdfScene.h"
 
+using namespace vdf;
 
 void PreGroupState::selectionChanged( const QList<QGraphicsItem*>& list )
 {

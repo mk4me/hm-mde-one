@@ -1,6 +1,8 @@
 #include "DarkConnectionStrategy.h"
 #include <plugins/newVdf/IVisualPin.h>
 
+using namespace vdf;
+
 DarkConnectionStrategy::DarkConnectionStrategy()
 {
 

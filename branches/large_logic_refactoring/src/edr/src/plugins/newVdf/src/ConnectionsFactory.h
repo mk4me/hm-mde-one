@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IConnectionsFactory.h>
 
+namespace vdf {
+
 class ConnectionsFactory : public IConnectionsFactory
 {
 public:
@@ -33,21 +35,6 @@ public:
 typedef core::shared_ptr<ConnectionsFactory> ConnectionFactoryPtr;
 typedef core::shared_ptr<const ConnectionsFactory> ConnectionFactoryConstPtr;
 
-//class StyleConnectionsFactory : public IConnectionsFactory
-//{
-//public:
-//	virtual ~StyleConnectionsFactory() {}
-//
-//	virtual IVisualConnection * createConnection() const;
-//
-//	virtual const QUuid id() const;
-//
-//	virtual const QString name() const;
-//
-//	virtual const QString description() const;
-//
-//};
-//typedef core::shared_ptr<StyleConnectionsFactory> StyleConnectionsFactoryPtr;
-//typedef core::shared_ptr<const StyleConnectionsFactory> StyleConnectionsFactoryConstPtr;
+}
 
 #endif

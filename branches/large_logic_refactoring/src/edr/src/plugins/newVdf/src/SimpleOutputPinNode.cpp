@@ -2,6 +2,8 @@
 #include "SimpleOutputPinNode.h"
 #include "SimpleItem.h"
 
+using namespace vdf;
+
 SimpleOutputPinNode::SimpleOutputPinNode() :
 	item(new SimplePinItem()),
 	index(-1)

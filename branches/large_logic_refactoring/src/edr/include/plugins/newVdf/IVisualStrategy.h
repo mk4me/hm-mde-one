@@ -17,6 +17,7 @@ class QPainter;
 class QStyleOptionGraphicsItem;
 class QWidget;
 
+namespace vdf {
 
 class IVisualItem;
 class IVisualStrategy
@@ -30,5 +31,7 @@ public:
 };
 typedef core::shared_ptr<IVisualStrategy> IVisualStrategyPtr;
 typedef core::shared_ptr<const IVisualStrategy> IVisualStrategyConstPtr;
+
+}
 
 #endif

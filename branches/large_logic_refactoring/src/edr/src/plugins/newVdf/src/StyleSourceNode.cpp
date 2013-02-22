@@ -4,6 +4,8 @@
 #include <plugins/newVdf/IVisualOutputPin.h>
 #include "StyleItem.h"
 
+using namespace vdf;
+
 StyleSourceNode::StyleSourceNode() :
     styleItem(new StyleItem())
 {

@@ -13,6 +13,8 @@
 #include <QtCore/QString>
 #include <corelib/SmartPtr.h>
 
+namespace vdf {
+
 class IFactory
 {
 protected:
@@ -28,5 +30,7 @@ public:
 };
 typedef core::shared_ptr<IFactory> IFactoryPtr;
 typedef core::shared_ptr<const IFactory> IFactoryConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___IFACTORY_H__

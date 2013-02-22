@@ -7,6 +7,8 @@
 #include <plugins/newVdf/IVisualInputPin.h>
 #include <plugins/newVdf/IVisualOutputPin.h>
 
+using namespace vdf;
+
 SceneBuilder::VisualNodeWithPins SceneBuilder::createProcessing(const QString& text, df::INode* prototype, int in, int out ) const
 {
     IVisualProcessingNodePtr node = factories->getCurrentNodesFactory()->createProcessingNode();

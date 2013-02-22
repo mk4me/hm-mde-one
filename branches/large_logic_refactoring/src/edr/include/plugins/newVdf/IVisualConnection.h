@@ -13,9 +13,11 @@
 #include <plugins/newVdf/IVisualPin.h>
 #include <utils/Debug.h>
 
+namespace df { class IConnection; }
+
+namespace vdf {
 
 class IVisualPin;
-namespace df { class IConnection; }
 
 class IVisualConnection : public IVisualItem
 {
@@ -42,5 +44,7 @@ private:
 typedef core::shared_ptr<IVisualConnection> IVisualConnectionPtr;
 typedef core::weak_ptr<IVisualConnection> IVisualConnectionWeakPtr;
 typedef core::shared_ptr<const IVisualConnection> IVisualConnectionConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___IVISUALCONNECTION_H__

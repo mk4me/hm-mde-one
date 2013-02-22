@@ -20,7 +20,9 @@
 class QGraphicsScene;
 class IVisualItem;
 class QMouseEvent;
-class SimplePinItem;
+
+namespace vdf {
+
 class SceneStateMachine;
 
 class ISceneState
@@ -52,5 +54,7 @@ protected:
 };
 typedef ISceneState::Ptr ISceneStatePtr;
 typedef ISceneState::ConstPtr ISceneStateConstPtr;
+
+}
 
 #endif

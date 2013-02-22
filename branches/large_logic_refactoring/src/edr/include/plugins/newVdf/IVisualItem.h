@@ -11,8 +11,9 @@
 
 #include <QtGui/QGraphicsItem>
 #include <plugins/newVdf/IVisualStrategy.h>
-#include "HACK.h"
+//#include "HACK.h"
 
+namespace vdf {
 
 class IVisualItem
 {
@@ -41,5 +42,7 @@ public:
 };
 typedef core::shared_ptr<IVisualItem> IVisualItemPtr;
 typedef core::shared_ptr<const IVisualItem> IVisualItemConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___IVISUALITEM_H__

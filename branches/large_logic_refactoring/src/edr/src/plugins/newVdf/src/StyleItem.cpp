@@ -1,7 +1,7 @@
 #include "NewVdfPCH.h"
 #include "StyleItem.h"
 
-
+using namespace vdf;
 
 void StyleItem::_StyleItem()
 {

@@ -14,6 +14,8 @@
 #include <plugins/newVdf/IVisualSourceNode.h>
 #include <plugins/newVdf/IVisualProcessingNode.h>
 
+namespace vdf {
+
 class INodesFactory : public IFactory
 {
 public:
@@ -23,5 +25,6 @@ public:
 };
 typedef core::shared_ptr<INodesFactory> INodesFactoryPtr;
 typedef core::shared_ptr<const INodesFactory> INodesFactoryConstPtr;
+}
 
 #endif	//	HEADER_GUARD___INODESFACTORY_H__

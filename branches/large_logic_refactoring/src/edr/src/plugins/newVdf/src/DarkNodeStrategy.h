@@ -13,6 +13,8 @@
 #include <plugins/newVdf/INodeStrategy.h>
 #include <QtCore/QRect>
 
+namespace vdf {
+
 class DarkNodeStrategy : public INodeStrategy
 {
 public:
@@ -40,5 +42,6 @@ private:
 typedef core::shared_ptr<DarkNodeStrategy> DarkNodeStrategyPtr;
 typedef core::shared_ptr<const DarkNodeStrategy> DarkNodeStrategyConstPtr;
 
+}
 
 #endif

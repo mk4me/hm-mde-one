@@ -15,6 +15,9 @@
 class QGraphicsScene;
 class IVisualItem;
 class QMouseEvent;
+
+namespace vdf {
+
 class SimplePinItem;
 class SceneStateMachine;
 
@@ -40,7 +43,6 @@ private:
 typedef core::shared_ptr<NormalState> NormalStatePtr;
 typedef core::shared_ptr<const NormalState> NormalStateConstPtr;
 
-
-
+}
 
 #endif

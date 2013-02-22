@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IConnectionsFactory.h>
 
+namespace vdf {
+
 class DarkConnectionsFactory : public IConnectionsFactory
 {
 public:
@@ -28,6 +30,6 @@ public:
 };
 typedef core::shared_ptr<DarkConnectionsFactory> DarkConnectionsFactoryPtr;
 typedef core::shared_ptr<const DarkConnectionsFactory> DarkConnectionsFactoryConstPtr;
-
+}
 
 #endif

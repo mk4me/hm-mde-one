@@ -2,6 +2,8 @@
 #include "Command.h"
 #include "VdfScene.h"
 
+using namespace vdf;
+
 void AddToSceneCommand::doIt()
 {
 	auto node = nodeWithPins.get<0>();

@@ -5,6 +5,7 @@
 #include <plugins/newVdf/INodeStrategy.h>
 #include "SimpleItem.h"
 
+using namespace vdf;
 
 SimpleProcessingNode::SimpleProcessingNode() :
     simpleItem(new SimpleTextItem(0,0))

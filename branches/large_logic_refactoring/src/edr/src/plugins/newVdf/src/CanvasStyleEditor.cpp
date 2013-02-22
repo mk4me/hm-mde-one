@@ -10,6 +10,8 @@
 #include "SimpleItem.h"
 #include "BackgroundsFactory.h"
 
+using namespace vdf;
+
 CanvasStyleEditor::CanvasStyleEditor()
 {
     registerConnectionsFactory(IConnectionsFactoryPtr(new ConnectionsFactory));

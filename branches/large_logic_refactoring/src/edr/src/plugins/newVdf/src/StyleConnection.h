@@ -13,6 +13,8 @@
 #include <plugins/newVdf/IVisualConnection.h>
 #include <plugins/newVdf/IVisualPin.h>
 
+namespace vdf {
+
 class StyleItem;
 class StyleConnection : public QObject, public IVisualConnection
 {
@@ -40,5 +42,6 @@ private:
     StyleItem* item;
 };
 
+}
 
 #endif

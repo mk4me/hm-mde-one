@@ -13,6 +13,8 @@
 #include <plugins/newVdf/IPinStrategy.h>
 #include <plugins/newVdf/IVisualPin.h>
 
+namespace vdf {
+
 class DarkPinStrategy : public IPinStrategy
 {
 public:
@@ -30,6 +32,6 @@ private:
 };
 typedef core::shared_ptr<DarkPinStrategy> DarkPinStrategyPtr;
 typedef core::shared_ptr<const DarkPinStrategy> DarkPinStrategyConstPtr;
-
+}
 
 #endif

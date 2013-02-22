@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IBackgroundStrategy.h>
 
+namespace vdf {
+
 class DarkBackgroundStrategy : public IBackgroundStrategy
 {
 public:
@@ -22,6 +24,6 @@ public:
 };
 typedef core::shared_ptr<DarkBackgroundStrategy> DarkBackgroundStrategyPtr;
 typedef core::shared_ptr<const DarkBackgroundStrategy> DarkBackgroundStrategyConstPtr;
-
+}
 
 #endif

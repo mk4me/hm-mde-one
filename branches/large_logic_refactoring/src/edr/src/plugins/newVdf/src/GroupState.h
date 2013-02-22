@@ -13,6 +13,8 @@
 
 #include "ISceneState.h"
 
+namespace vdf {
+
 class PreGroupState : public ISceneState
 {
 public:
@@ -73,5 +75,7 @@ private:
 };
 typedef core::shared_ptr<GroupSelectedState> GroupSelectedStatePtr;
 typedef core::shared_ptr<const GroupSelectedState> GroupSelectedStateConstPtr;
+
+}
 
 #endif

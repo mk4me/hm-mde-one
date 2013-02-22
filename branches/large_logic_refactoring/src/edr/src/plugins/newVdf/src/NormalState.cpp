@@ -4,6 +4,7 @@
 #include "SceneStateMachine.h"
 #include "VdfScene.h"
 
+using namespace vdf;
 
 void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
 {

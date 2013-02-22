@@ -3,6 +3,8 @@
 #include "DarkConnectionStrategy.h"
 #include "StyleConnection.h"
 
+using namespace vdf;
+
 IVisualConnectionPtr DarkConnectionsFactory::createConnection() const
 {
     auto connection = IVisualConnectionPtr(new StyleConnection());

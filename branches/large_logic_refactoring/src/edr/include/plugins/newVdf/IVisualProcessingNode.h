@@ -13,6 +13,8 @@
 #include <plugins/newVdf/IVisualSourceNode.h>
 #include <plugins/newVdf/IVisualSinkNode.h>
 
+namespace vdf {
+
 class IVisualProcessingNode : public IVisualSinkNode, public IVisualSourceNode
 {
 public:
@@ -21,5 +23,7 @@ public:
 };
 typedef core::shared_ptr<IVisualProcessingNode> IVisualProcessingNodePtr;
 typedef core::shared_ptr<const IVisualProcessingNode> IVisualProcessingNodeConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___IVISUALNODE_H__

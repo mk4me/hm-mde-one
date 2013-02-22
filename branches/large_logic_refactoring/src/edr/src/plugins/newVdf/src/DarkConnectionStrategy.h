@@ -12,6 +12,9 @@
 
 #include <plugins/newVdf/IConnectionStrategy.h>
 #include <plugins/newVdf/IVisualPin.h>
+
+namespace vdf {
+
 class IVisualOutputPin;
 class IVisualInputPin;
 class DarkConnectionStrategy : public IConnectionStrategy
@@ -31,6 +34,6 @@ private:
 
 typedef core::shared_ptr<DarkConnectionStrategy> DarkConnectionStrategyPtr;
 typedef core::shared_ptr<const DarkConnectionStrategy> DarkConnectionStrategyConstPtr;
-
+}
 
 #endif

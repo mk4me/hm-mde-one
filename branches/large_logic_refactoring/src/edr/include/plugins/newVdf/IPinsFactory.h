@@ -13,6 +13,8 @@
 #include <plugins/newVdf/IVisualInputPin.h>
 #include <plugins/newVdf/IVisualOutputPin.h>
 
+namespace vdf {
+
 class IPinsFactory : public IFactory
 {
 public:
@@ -21,5 +23,7 @@ public:
 };
 typedef core::shared_ptr<IPinsFactory> IPinsFactoryPtr;
 typedef core::shared_ptr<const IPinsFactory> IPinsFactoryConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___IPINSFACTORY_H__

@@ -2,6 +2,7 @@
 #include "SimpleInputPinNode.h"
 #include "SimpleItem.h"
 
+using namespace vdf;
 
 SimpleInputPinNode::SimpleInputPinNode() :
     item(new SimplePinItem()),

@@ -12,6 +12,7 @@
 
 #include <plugins/newVdf/IVisualConnection.h>
 
+namespace vdf {
 
 class SimpleConnection : public QObject, public IVisualConnection
 {
@@ -40,5 +41,6 @@ private:
     QGraphicsLineItem* item;
 };
 
+}
 
 #endif

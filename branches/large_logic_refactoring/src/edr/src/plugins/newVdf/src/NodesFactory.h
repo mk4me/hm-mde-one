@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/INodesFactory.h>
 
+namespace vdf {
+
 class NodesFactory : public INodesFactory
 {
 public:
@@ -27,25 +29,6 @@ public:
 typedef core::shared_ptr<NodesFactory> NodesFactoryPtr;
 typedef core::shared_ptr<const NodesFactory> NodesFactoryConstPtr;
 
-//class StyleNodesFactory : public INodesFactory
-//{
-//public:
-//	virtual ~StyleNodesFactory() {}
-//
-//	virtual IVisualSinkNode * createSinkNode() const;
-//
-//	virtual IVisualSourceNode * createSourceNode() const;
-//
-//	virtual IVisualProcessingNode * createProcessingNode() const;
-//
-//	virtual const QUuid id() const;
-//
-//	virtual const QString name() const;
-//
-//	virtual const QString description() const;
-//
-//};
-//typedef core::shared_ptr<StyleNodesFactory> StyleNodesFactoryPtr;
-//typedef core::shared_ptr<const StyleNodesFactory> StyleNodesFactoryConstPtr;
+}
 
 #endif

@@ -1,5 +1,7 @@
 #include "DarkPinStrategy.h"
 
+using namespace vdf;
+
 DarkPinStrategy::DarkPinStrategy()
 {
 	setState(IPinStrategy::Normal);

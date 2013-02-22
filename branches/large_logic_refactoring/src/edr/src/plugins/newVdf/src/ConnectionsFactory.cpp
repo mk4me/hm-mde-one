@@ -4,6 +4,8 @@
 #include "StyleConnection.h"
 #include <plugins/newVdf/IVisualPin.h>
 
+using namespace vdf;
+
 IVisualConnectionPtr ConnectionsFactory::createConnection() const
 {
     return IVisualConnectionPtr(new SimpleConnection());

@@ -13,6 +13,8 @@
 #include <QtGui/QListWidget>
 #include "Command.h"
 
+namespace vdf {
+
 class CommandStackDebug : public QListWidget
 {
 	Q_OBJECT;
@@ -28,6 +30,6 @@ private:
 };
 typedef core::shared_ptr<CommandStackDebug> CommandStackDebugPtr;
 typedef core::shared_ptr<const CommandStackDebug> CommandStackDebugConstPtr;
-
+}
 
 #endif

@@ -7,8 +7,8 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_NEWVDF__HACK_H__
-#define HEADER_GUARD_NEWVDF__HACK_H__
+#ifndef HEADER_GUARD_NEWVDF__EXAMPLEITEMS_H__
+#define HEADER_GUARD_NEWVDF__EXAMPLEITEMS_H__
 
 #include <corelib/PluginCommon.h>
 #include <dflib/Pin.h>
@@ -18,11 +18,7 @@
 #include <boost/function.hpp>
 #include <corelib/ILog.h>
 
-//HACK
-namespace utils {
-    class Serializable {};
-}
-
+namespace vdf {
 
 class IntOutputPin : public df::OutputPin, public df::IDFOutput
 {
@@ -83,7 +79,7 @@ public:
     virtual void consume()
     {
         data_.push_back(inPinA->value());
-		PLUGIN_LOG_INFO("wynik: " << (inPinA->value()));
+		//PLUGIN_LOG_INFO("wynik: " << (inPinA->value()));
     }
 
     const Data & data() const
@@ -154,5 +150,6 @@ private:
     int idx;
 };
 
+}
 
 #endif

@@ -5,6 +5,7 @@
 #include <plugins/newVdf/IVisualOutputPin.h>
 #include "StyleItem.h"
 
+using namespace vdf;
 
 StyleProcessingNode::StyleProcessingNode() :
     styleItem(new StyleItem())

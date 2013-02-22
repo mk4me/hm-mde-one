@@ -18,6 +18,8 @@
 #include "SceneBuilder.h"
 #include <boost/type_traits.hpp>
 
+namespace vdf {
+
 class IVisualItem;
 typedef boost::shared_ptr<df::IModel> IModelPtr;
 typedef boost::shared_ptr<df::IConnection> IConnectionPtr;
@@ -116,5 +118,6 @@ private:
 typedef core::shared_ptr<SceneModel> SceneModelPtr;
 typedef core::shared_ptr<const SceneModel> SceneModelConstPtr;
 
+}
 
 #endif

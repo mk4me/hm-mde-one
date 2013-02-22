@@ -3,6 +3,8 @@
 #include <plugins/newVdf/IVisualSourceNode.h>
 #include <plugins/newVdf/IVisualSinkNode.h>
 
+using namespace vdf;
+
 void DarkNodeStrategy::setNode( IVisualNodeWeakPtr item )
 {
 	node = item;

@@ -13,20 +13,22 @@
 
 #include <QtGui/QWidget>
 #include <utils/ObserverPattern.h>
-#include <corelib/IDataProcessorManager.h>
-#include <corelib/IDataSinkManager.h>
-#include <corelib/IDataSourceManager.h>
+#include <plugins/newVdf/IDataProcessorManager.h>
+#include <plugins/newVdf/IDataSinkManager.h>
+#include <plugins/newVdf/IDataSourceManager.h>
 
 #include "Command.h"
 #include "ui_TypesWindow.h"
 #include "CanvasStyleEditor.h"
 #include "SceneModel.h"
 
+namespace vdf {
+
 class NewVdfWidget;
 
 
 class TypesWindow : public QWidget, private Ui::TypesWindow,
-    public utils::Observer<core::IDataProcessorManager>, public utils::Observer<core::IDataSinkManager>, utils::Observer<core::IDataSourceManager>
+    public utils::Observer<vdf::IDataProcessorManager>, public utils::Observer<vdf::IDataSinkManager>, public utils::Observer<vdf::IDataSourceManager>
 {
     Q_OBJECT;
 public:
@@ -42,9 +44,9 @@ protected slots:
 	void run();
 
 protected:
-    void update(const core::IDataProcessorManager* pm);
-    void update(const core::IDataSourceManager* sm);
-    void update(const core::IDataSinkManager* sm);
+    void update(const IDataProcessorManager* pm);
+    void update(const IDataSourceManager* sm);
+    void update(const IDataSinkManager* sm);
 
 private:
     void addEntry(const QString& entry);
@@ -54,9 +56,9 @@ private:
     CanvasStyleEditorPtr canvas;
 	CommandStackPtr commmandStack;
     NewVdfWidget* newVdf;
-    std::map<QString, core::IWorkflowItemBasePtr> name2node;
+    std::map<QString, IWorkflowItemBasePtr> name2node;
 };
 
-
+}
 
 #endif

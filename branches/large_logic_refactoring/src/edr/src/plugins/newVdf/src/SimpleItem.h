@@ -14,6 +14,7 @@
 #include <QtCore/QSize>
 #include <plugins/newVdf/IVisualNode.h>
 
+namespace vdf {
 //! 
 class SimpleItem : public QGraphicsObject
 {
@@ -103,7 +104,7 @@ const int pin2 = pinHeight / 2;
 const int nodeWidth = 100;
 const int margin = 5;
 const int margin2 = margin * 2;
-
+}
 
 #endif
 

@@ -9,6 +9,8 @@
 #include "StyleSourceNode.h"
 #include "StyleProcessingNode.h"
 
+using namespace vdf;
+
 IVisualSinkNodePtr NodesFactory::createSinkNode() const
 {
     return IVisualSinkNodePtr(new SimpleSinkNode());

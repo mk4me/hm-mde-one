@@ -13,6 +13,8 @@
 #include <plugins/newVdf/IVisualNode.h>
 #include <plugins/newVdf/IVisualOutputPin.h>
 
+namespace vdf {
+
 class IVisualOutputPin;
 class IVisualInputPin;
 class IVisualSourceNode : public virtual IVisualNode
@@ -28,5 +30,7 @@ public:
 };
 typedef core::shared_ptr<IVisualSourceNode> IVisualSourceNodePtr;
 typedef core::shared_ptr<const IVisualSourceNode> IVisualSourceNodeConstPtr;
+
+}
 
 #endif	//	HEADER_GUARD___IVISUALNODE_H__

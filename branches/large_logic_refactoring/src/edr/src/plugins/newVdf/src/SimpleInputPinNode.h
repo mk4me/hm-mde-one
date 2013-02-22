@@ -16,6 +16,8 @@
 #include <plugins/newVdf/IVisualInputPin.h>
 #include <plugins/newVdf/IVisualConnection.h>
 
+namespace vdf {
+
 class SimplePinItem;
 
 class SimpleInputPinNode : public IVisualInputPin
@@ -55,6 +57,6 @@ protected:
 	int index;
     SimplePinItem* item;
 };
-
+}
 
 #endif

@@ -5,6 +5,9 @@
 #include <QtGui/QGraphicsView>
 #include <QtGui/QHBoxLayout>
 #include "TypesWindow.h"
+#include "DarkBackgroundStrategy.h"
+
+using namespace vdf;
 
 class SimpleBackground : public IBackgroundStrategy
 {
@@ -24,7 +27,8 @@ VdfScene::VdfScene(SceneStateMachinePtr machine, SceneModelPtr sceneModel, QObje
     connect(sceneModel.get(), SIGNAL(visualItemAdded(IVisualItemPtr)), this, SLOT(addVisualItem(IVisualItemPtr)));
 	connect(sceneModel.get(), SIGNAL(visualItemRemoved(IVisualItemPtr)), this, SLOT(removeVisualItem(IVisualItemPtr)));
 	connect(this, SIGNAL(selectionChanged()), stateMachine.get(), SLOT(selectionChanged()));
-	setBackgroundStrategy(IBackgroundStrategyPtr(new SimpleBackground()));
+	//setBackgroundStrategy(IBackgroundStrategyPtr(new SimpleBackground()));
+	setBackgroundStrategy(IBackgroundStrategyPtr(new DarkBackgroundStrategy));
 }
 
 void VdfScene::keyPressEvent(QKeyEvent *event)
