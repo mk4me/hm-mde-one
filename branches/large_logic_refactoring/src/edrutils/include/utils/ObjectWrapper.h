@@ -326,16 +326,14 @@ namespace utils {
 
 		const LazyInitializer & initializer() const;
 
-		void initialize() const;
-
 		//! \return Klon bieżącego obiektu. Wewnętrzny wskaźnik również jest kopiowany.
 		const ObjectWrapperPtr clone() const;
 
 		virtual const ObjectWrapperPtr create() const = 0;
 
-		virtual const void* getRawPtr() const = 0;
+		const void* getRawPtr() const;
 
-		virtual void* getRawPtr() = 0;
+		void* getRawPtr();
 
 		//! \return Informacje o typie odpowiednio normalnego i stałego wskaźnika.
 		virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const = 0;
@@ -347,6 +345,12 @@ namespace utils {
 		void swap(ObjectWrapper & ow);
 
 	private:
+
+		void initialize() const;
+
+		virtual const void* __getRawPtr() const = 0;
+
+		virtual void* __getRawPtr() = 0;
 
 		virtual void __clone(const ObjectWrapperPtr & dest) const = 0;
 
@@ -559,17 +563,17 @@ namespace utils {
             return ObjectWrapper::create<T>();
         }
 
-        virtual const void* getRawPtr() const
-        {
-            return PtrPolicy::getConstRawPtr(wrapped_);
-        }
-
-        virtual void* getRawPtr()
-        {
-            return PtrPolicy::getRawPtr(wrapped_);
-        }
-
 	private:
+
+		virtual const void* __getRawPtr() const
+		{
+			return PtrPolicy::getConstRawPtr(wrapped_);
+		}
+
+		virtual void* __getRawPtr()
+		{
+			return PtrPolicy::getRawPtr(wrapped_);
+		}
 
 		virtual void __swap(ObjectWrapper & ow)
 		{

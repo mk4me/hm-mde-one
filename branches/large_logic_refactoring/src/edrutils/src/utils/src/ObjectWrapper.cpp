@@ -76,6 +76,18 @@ const bool ObjectWrapper::__tryUnpackBaseData(void * object, const TypeInfo & pt
 	return __tryGetBaseData(object, ptrType);
 }
 
+const void* ObjectWrapper::getRawPtr() const
+{
+	initialize();
+	return __getRawPtr();
+}
+
+void* ObjectWrapper::getRawPtr()
+{
+	initialize();
+	return __getRawPtr();
+}
+
 ObjectWrapper::~ObjectWrapper()
 {
 
@@ -93,7 +105,7 @@ void ObjectWrapper::getSupportedTypes(Types& supported) const
 
 const bool ObjectWrapper::isNull() const
 {
-	return getRawPtr() == nullptr && (initializer_.empty() == true || (initializer_.empty() == false && initialized == true));
+	return __getRawPtr() == nullptr && (initializer_.empty() == true || (initializer_.empty() == false && initialized == true));
 }
 
 const ObjectWrapper::LazyInitializer & ObjectWrapper::initializer() const
