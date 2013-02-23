@@ -31,6 +31,8 @@ NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
 	QPushButton* mrg = new QPushButton("Merge");
 
 	mrg->setEnabled(false);
+	grp->setEnabled(false);
+	cnt->setEnabled(false);
 
 	connect(nrm, SIGNAL(clicked()), scene, SLOT(normalPressed()));
 	connect(cnt, SIGNAL(clicked()), scene, SLOT(connectPressed()));

@@ -8,7 +8,7 @@ StyleInputPinNode::StyleInputPinNode() :
     item(new StyleItem()),
 	index(-1)
 {
-
+	item->setFlag(QGraphicsItem::ItemIsMovable, false);
 }
 
 StyleInputPinNode::~StyleInputPinNode()

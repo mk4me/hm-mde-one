@@ -39,19 +39,20 @@ const QRectF& DarkConnectionStrategy::getRect()
 {
 	QPointF start = beginPin.lock()->visualItem()->scenePos(); 
 	QPointF finish = endPin.lock()->visualItem()->scenePos();
+	int margin = 100;
 	if (start.y() < finish.y()) {
-		rect.setTop(start.y() - 20);
-		rect.setBottom(finish.y() + 20);
+		rect.setTop(start.y() - margin);
+		rect.setBottom(finish.y() + margin);
 	} else {
-		rect.setTop(finish.y() - 20);
-		rect.setBottom(start.y() + 20);
+		rect.setTop(finish.y() - margin);
+		rect.setBottom(start.y() + margin);
 	}
 	if (start.x() < finish.x()) {
-		rect.setLeft(start.x() - 20);
-		rect.setRight(finish.x() + 20);
+		rect.setLeft(start.x() - margin);
+		rect.setRight(finish.x() + margin);
 	} else {
-		rect.setLeft(finish.x() - 20);
-		rect.setRight(start.x() + 20);
+		rect.setLeft(finish.x() - margin);
+		rect.setRight(start.x() + margin);
 	}
 	return rect;
 }

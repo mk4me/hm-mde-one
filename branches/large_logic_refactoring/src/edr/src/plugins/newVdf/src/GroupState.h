@@ -15,24 +15,24 @@
 
 namespace vdf {
 
-class PreGroupState : public ISceneState
-{
-public:
-	PreGroupState(SceneStateMachine* scene)  : ISceneState(scene) {}
-	virtual ~PreGroupState() {}
-
-public:
-	virtual void begin( ISceneStateConstPtr lastState );
-	virtual void end();
-	virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e);
-	virtual void selectionChanged(const QList<QGraphicsItem*>& list);
-
-	const QPointF& getStartPos() const { return startPos; }
-private:
-	QPointF startPos;
-};
-typedef core::shared_ptr<PreGroupState> PreGroupStatePtr;
-typedef core::shared_ptr<const PreGroupState> PreGroupStateConstPtr;
+//class PreGroupState : public ISceneState
+//{
+//public:
+//	PreGroupState(SceneStateMachine* scene)  : ISceneState(scene) {}
+//	virtual ~PreGroupState() {}
+//
+//public:
+//	virtual void begin( ISceneStateConstPtr lastState );
+//	virtual void end();
+//	virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e);
+//	virtual void selectionChanged(const QList<QGraphicsItem*>& list);
+//
+//	const QPointF& getStartPos() const { return startPos; }
+//private:
+//	QPointF startPos;
+//};
+//typedef core::shared_ptr<PreGroupState> PreGroupStatePtr;
+//typedef core::shared_ptr<const PreGroupState> PreGroupStateConstPtr;
 
 class GroupState : public ISceneState
 {
@@ -45,14 +45,16 @@ public:
 	virtual void end();
 	virtual bool mouseMoveEvent(QGraphicsSceneMouseEvent* e);
 	virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e);
+	virtual bool mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
 	const QList<IVisualNodePtr>& getSelectedNodes() const { return selectedNodes; }
 
 private:
 	QRectF getRect(const QPointF& startPos, const QPointF&  endPos );
 
 private:
+	typedef core::shared_ptr<QPointF> PointPtr;
 	QGraphicsRectItem* tempRect;
-	QPointF startPos;
+	PointPtr startPos;
 	QList<IVisualNodePtr> selectedNodes;
 };
 typedef core::shared_ptr<GroupState> GroupStatePtr;

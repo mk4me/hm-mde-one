@@ -52,13 +52,13 @@ QGraphicsItem * StyleSinkNode::visualItem() const
 
 void StyleSinkNode::addSelection()
 {
-    //styleItem->setSelected(true);
+    styleItem->setSelected(true);
 	strategy->setState(INodeStrategy::Selected);
 }
 
 void StyleSinkNode::removeSelection()
 {
-    //styleItem->setSelected(false);
+    styleItem->setSelected(false);
 	strategy->setState(INodeStrategy::Normal);
 }
 

@@ -29,6 +29,7 @@ VdfScene::VdfScene(SceneStateMachinePtr machine, SceneModelPtr sceneModel, QObje
 	connect(this, SIGNAL(selectionChanged()), stateMachine.get(), SLOT(selectionChanged()));
 	//setBackgroundStrategy(IBackgroundStrategyPtr(new SimpleBackground()));
 	setBackgroundStrategy(IBackgroundStrategyPtr(new DarkBackgroundStrategy));
+	setSceneRect(-400, -300, 800, 600);
 }
 
 void VdfScene::keyPressEvent(QKeyEvent *event)
@@ -145,7 +146,7 @@ void VdfScene::connectPressed()
 
 void VdfScene::groupPressed()
 {
-	stateMachine->setState(stateMachine->getPreGroupState());
+	//stateMachine->setState(stateMachine->getPreGroupState());
 }
 
 void VdfScene::changeCursor( Qt::CursorShape cursor )

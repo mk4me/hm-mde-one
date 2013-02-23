@@ -35,7 +35,6 @@ public:
 public:
     NormalStatePtr getNormalState();
     ConnectStatePtr getConnectState();
-	PreGroupStatePtr getPreGroupState();
 	GroupStatePtr getGroupState();
 	GroupSelectedStatePtr getGroupSelectedState();
 
@@ -63,7 +62,6 @@ private:
     NormalStatePtr normalState;
     ConnectStatePtr connectState;
     ISceneStatePtr currentState;
-	PreGroupStatePtr preGroupState;
 	GroupStatePtr groupState;
 	GroupSelectedStatePtr groupSelectedState;
 	NewVdfWidget* vdfWidget;

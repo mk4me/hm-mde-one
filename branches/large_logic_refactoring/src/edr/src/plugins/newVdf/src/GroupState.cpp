@@ -5,39 +5,38 @@
 
 using namespace vdf;
 
-void PreGroupState::selectionChanged( const QList<QGraphicsItem*>& list )
-{
-	stateMachine->setState(stateMachine->getNormalState());
-}
-
-bool PreGroupState::mousePressEvent( QGraphicsSceneMouseEvent* e )
-{
-	if (e->button() == Qt::LeftButton) {
-		startPos = e->scenePos();
-		stateMachine->setState(stateMachine->getGroupState());
-	} else {
-		stateMachine->setState(stateMachine->getNormalState());
-	}
-	return false;
-}
-
-void PreGroupState::begin( ISceneStateConstPtr lastState )
-{
-	stateMachine->getScene()->changeCursor(Qt::CrossCursor);
-}
-
-void PreGroupState::end()
-{
-	stateMachine->getScene()->changeCursor(Qt::ArrowCursor);
-}
+//void PreGroupState::selectionChanged( const QList<QGraphicsItem*>& list )
+//{
+//	stateMachine->setState(stateMachine->getNormalState());
+//}
+//
+//bool PreGroupState::mousePressEvent( QGraphicsSceneMouseEvent* e )
+//{
+//	if (e->button() == Qt::LeftButton) {
+//		startPos = e->scenePos();
+//		stateMachine->setState(stateMachine->getGroupState());
+//	} else {
+//		stateMachine->setState(stateMachine->getNormalState());
+//	}
+//	return false;
+//}
+//
+//void PreGroupState::begin( ISceneStateConstPtr lastState )
+//{
+//	stateMachine->getScene()->changeCursor(Qt::CrossCursor);
+//}
+//
+//void PreGroupState::end()
+//{
+//	stateMachine->getScene()->changeCursor(Qt::ArrowCursor);
+//}
 
 void GroupState::begin( ISceneStateConstPtr lastState )
 {
-	auto preGroup = stateMachine->getPreGroupState();
-	UTILS_ASSERT(preGroup == lastState);
-	stateMachine->getScene()->changeCursor(Qt::CrossCursor);
-	startPos = preGroup->getStartPos();
-	tempRect = stateMachine->getScene()->addRect(startPos.x(), startPos.y(), 1, 1);
+	//auto preGroup = stateMachine->getPreGroupState();
+	//UTILS_ASSERT(preGroup == lastState);
+	
+	startPos = PointPtr();
 }
 
 void GroupState::end()
@@ -49,25 +48,29 @@ void GroupState::end()
 
 bool GroupState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
 {
-	tempRect->setRect(getRect(startPos, e->scenePos()));
+	if (!startPos) {
+		startPos = PointPtr(new QPointF(e->scenePos()));
+		tempRect = stateMachine->getScene()->addRect(startPos->x(), startPos->y(), 1, 1);
+	}
+	tempRect->setRect(getRect(*startPos, e->scenePos()));
 	return true;
 }
 
 bool GroupState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
-	if (e->button() == Qt::LeftButton) {
-		QRectF rect = getRect(startPos, e->scenePos());
-		auto selected = stateMachine->getScene()->items(rect, Qt::ContainsItemBoundingRect, Qt::AscendingOrder);
-		selectedNodes = stateMachine->getScene()->getSceneModel()->getVisualItems<IVisualNodePtr>(selected);
-		if (selectedNodes.size() > 0) {
-			for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it) {
-				(*it)->addSelection();
-			}
-			//stateMachine->setState(stateMachine->getGroupSelectedState());
-			stateMachine->setState(stateMachine->getNormalState());
-			return true;
-		}
-	} 
+	//if (e->button() == Qt::LeftButton) {
+	//	QRectF rect = getRect(*startPos, e->scenePos());
+	//	auto selected = stateMachine->getScene()->items(rect, Qt::ContainsItemBoundingRect, Qt::AscendingOrder);
+	//	selectedNodes = stateMachine->getScene()->getSceneModel()->getVisualItems<IVisualNodePtr>(selected);
+	//	if (selectedNodes.size() > 0) {
+	//		for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it) {
+	//			(*it)->addSelection();
+	//		}
+	//		//stateMachine->setState(stateMachine->getGroupSelectedState());
+	//		stateMachine->setState(stateMachine->getNormalState());
+	//		return true;
+	//	}
+	//} 
 	
 	stateMachine->setState(stateMachine->getNormalState());
 	return true;
@@ -123,4 +126,22 @@ bool GroupSelectedState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
 bool GroupSelectedState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
 	return false;
+}
+
+bool vdf::GroupState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
+{
+	// gdy startPos jest puste, oznacza to, ze w normalnym stanie po prostu kliknieto w pusty obszar
+	if (startPos && e->button() == Qt::LeftButton) {
+		QRectF rect = getRect(*startPos, e->scenePos());
+		auto selected = stateMachine->getScene()->items(rect, Qt::ContainsItemBoundingRect, Qt::AscendingOrder);
+		selectedNodes = stateMachine->getScene()->getSceneModel()->getVisualItems<IVisualNodePtr>(selected);
+		if (!selectedNodes.empty()) {
+			for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it) {
+				(*it)->addSelection();
+			}
+		}
+	} 
+
+	stateMachine->setState(stateMachine->getNormalState());
+	return true;
 }

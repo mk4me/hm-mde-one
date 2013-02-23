@@ -307,7 +307,7 @@ void HmmMainWindow::customViewInit(QWidget * console)
 			settingsWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 			QVBoxLayout* vlayout = new QVBoxLayout();
 			vlayout->addWidget(viewWidget);
-			vlayout->addWidget(settingsWidget);
+			//vlayout->addWidget(settingsWidget);
 			QWidget* widget = new QWidget();
 			widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 			widget->setLayout(vlayout);

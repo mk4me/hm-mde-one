@@ -15,7 +15,6 @@ SceneStateMachine::SceneStateMachine(NewVdfWidget* widget) :
  {
     normalState = NormalStatePtr(new NormalState(this));
     connectState = ConnectStatePtr(new ConnectState(this));
-	preGroupState = PreGroupStatePtr(new PreGroupState(this));
 	groupState = GroupStatePtr(new GroupState(this));
 	groupSelectedState = GroupSelectedStatePtr(new GroupSelectedState(this));
     currentState = normalState;
@@ -86,10 +85,6 @@ void SceneStateMachine::selectionChanged()
     currentState->selectionChanged(getScene()->selectedItems());
 }
 
-PreGroupStatePtr SceneStateMachine::getPreGroupState()
-{
-	return preGroupState;
-}
 
 GroupStatePtr SceneStateMachine::getGroupState()
 {

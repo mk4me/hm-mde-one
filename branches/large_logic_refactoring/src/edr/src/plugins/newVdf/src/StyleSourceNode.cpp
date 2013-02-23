@@ -49,13 +49,13 @@ QGraphicsItem * StyleSourceNode::visualItem() const
 
 void StyleSourceNode::addSelection()
 {
-    //styleItem->setSelected(true);
+    styleItem->setSelected(true);
 	strategy->setState(INodeStrategy::Selected);
 }
 
 void StyleSourceNode::removeSelection()
 {
-    //styleItem->setSelected(false);
+    styleItem->setSelected(false);
 	strategy->setState(INodeStrategy::Normal);
 }
 

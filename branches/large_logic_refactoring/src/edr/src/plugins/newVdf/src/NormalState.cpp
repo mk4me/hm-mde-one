@@ -29,11 +29,16 @@ void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
 bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
 	if (e->button() == Qt::LeftButton) {
-		positions.clear();
-		auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>();
-		for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-			positions[*it] = (*it)->visualItem()->scenePos();
+		if (stateMachine->getScene()->itemAt(e->scenePos())) {
+			positions.clear();
+			auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>();
+			for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+				positions[*it] = (*it)->visualItem()->scenePos();
+			}
+		} else {
+			stateMachine->setState(stateMachine->getGroupState());
 		}
+		
 	}
 
 	// celowo zwracany jest false, nawet gdy obs³u¿yliœmy event (domyœlna obs³uga jest w tym przypadku porz¹dana)
