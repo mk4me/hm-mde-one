@@ -65,6 +65,8 @@ public:
 
 	IVisualItemPtr tryGetVisualItem(QGraphicsItem* item);
 
+	void clearScene();
+
 	template <class VisualItemT>
 	QList<VisualItemT> getVisualItems()
 	{
@@ -104,7 +106,11 @@ private:
 	df::IOutputPin* getOutputPin(df::INode* node, int index);
 	template<class VisualT, class DFNodeT>
 	void removeNode(IVisualItemPtr item);
-
+	template<class VisualPinT>
+	void removePin(IVisualItemPtr item);
+	void removeOutputPins(IVisualNodePtr node);
+	void removeInputPins(IVisualNodePtr node); 
+	
 private:
     std::map<QGraphicsItem*, IVisualItemPtr> graphics2Visual;
     SceneBuilder builder;
@@ -114,6 +120,8 @@ private:
 	mutable Connections pinsHelper;
 	std::vector<MergedItemPtr> mergedItems;
 };
+
+
 
 typedef core::shared_ptr<SceneModel> SceneModelPtr;
 typedef core::shared_ptr<const SceneModel> SceneModelConstPtr;

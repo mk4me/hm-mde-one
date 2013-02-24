@@ -69,7 +69,7 @@ bool NormalState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
 bool NormalState::keyReleaseEvent( QKeyEvent *event )
 {
 	if (event->key() == Qt::Key_Delete) {
-		auto selected = stateMachine->getScene()->selectedItems();
+		/*auto selected = stateMachine->getScene()->selectedItems();
 		auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>(selected);
 
 		std::vector<ICommandPtr> commands;
@@ -78,7 +78,10 @@ bool NormalState::keyReleaseEvent( QKeyEvent *event )
 		}
 		if (!commands.empty()) {
 			stateMachine->getCommandStack()->addCommand(ICommandPtr(new MultiCommand(commands)));
-		}
+		}*/
+		auto selected = stateMachine->getScene()->selectedItems();
+		auto command = ICommandPtr(new RemoveSelectedCommand(stateMachine->getSceneModel(), selected));
+		stateMachine->getCommandStack()->addCommand(command);
 		return true;
 	}
 

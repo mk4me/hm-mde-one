@@ -105,6 +105,21 @@ private:
 	IVisualItemPtr item;
 	SceneModelPtr sceneModel;
 	std::list<IVisualConnectionPtr> removedConnections;
+	std::list<IVisualPinPtr> removedPins;
+};
+
+class RemoveSelectedCommand : public ICommand
+{
+public:
+	RemoveSelectedCommand(SceneModelPtr scene, const QList<QGraphicsItem*> selectedItems);
+public:
+	virtual void doIt();
+	virtual void undoIt();
+	virtual QString name() { return QString(typeid(this).name()); }
+private:
+    QList<QGraphicsItem*> items;
+    SceneModelPtr sceneModel;
+    std::vector<ICommandPtr> commands;
 };
 }
 

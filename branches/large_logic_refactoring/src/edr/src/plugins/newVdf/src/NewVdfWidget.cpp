@@ -29,7 +29,10 @@ NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
 	QPushButton* und = new QPushButton("Undo");
 	QPushButton* red = new QPushButton("Redo");
 	QPushButton* mrg = new QPushButton("Merge");
+	QPushButton* clr = new QPushButton("Clear");
+	QPushButton* del = new QPushButton("Delete");
 
+	nrm->setEnabled(false);
 	mrg->setEnabled(false);
 	grp->setEnabled(false);
 	cnt->setEnabled(false);
@@ -40,6 +43,8 @@ NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
 	connect(und, SIGNAL(clicked()), this, SLOT(undo()));
 	connect(red, SIGNAL(clicked()), this, SLOT(redo()));
 	connect(mrg, SIGNAL(clicked()), this, SLOT(merge()));
+	connect(clr, SIGNAL(clicked()), this, SLOT(clearScene()));
+	connect(del, SIGNAL(clicked()), this, SLOT(deleteSelected()));
 
 	toolbar->addWidget(nrm);
 	toolbar->addWidget(cnt);
@@ -47,6 +52,8 @@ NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
 	toolbar->addWidget(und);
 	toolbar->addWidget(red);
 	toolbar->addWidget(mrg);
+	toolbar->addWidget(del);
+	toolbar->addWidget(clr);
 	layout->addWidget(toolbar);
 	
     layout->addWidget(view);
@@ -95,3 +102,21 @@ void NewVdfWidget::merge()
 //    scene->addItem(item->visualItem());
 //    item->visualItem()->setPos(scenePos);
 //}
+
+void vdf::NewVdfWidget::deleteSelected()
+{
+    auto selected = stateMachine->getScene()->selectedItems();
+    auto command = ICommandPtr(new RemoveSelectedCommand(stateMachine->getSceneModel(), selected));
+    stateMachine->getCommandStack()->addCommand(command);
+
+	//sceneModel->deleteSelected(scene->selectedItems());
+}
+
+void vdf::NewVdfWidget::clearScene()
+{
+    if(QMessageBox::question( nullptr, tr("Confirm operation"), tr("Are You sure You want to clear scene?"),
+        QMessageBox::Yes | QMessageBox::Abort, QMessageBox::Abort ) == QMessageBox::Yes) {
+    	sceneModel->clearScene();
+        stateMachine->getCommandStack()->clear();
+    }
+}

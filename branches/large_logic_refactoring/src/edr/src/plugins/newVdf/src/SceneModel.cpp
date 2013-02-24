@@ -10,6 +10,7 @@
 #include <dflib/DFModelRunner.h>
 #include <dflib/Connection.h>
 #include <dflib/Node.h>
+#include <type_traits>
 
 using namespace vdf;
 
@@ -193,6 +194,25 @@ const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr v
 	return pinsHelper;
 }
 
+template<class VisualPinT>
+void vdf::SceneModel::removePin( IVisualItemPtr item )
+{
+	auto pin = core::dynamic_pointer_cast<VisualPinT>(item);
+	UTILS_ASSERT(pin);
+	auto connection = pin->getConnection().lock();
+	if (connection) {
+		removeItem(connection);
+	}
+
+	if (std::is_same<VisualPinT, IVisualInputPin>::value) {
+		inputPins.remove(core::dynamic_pointer_cast<IVisualInputPin>(pin));
+	} else if (std::is_same<VisualPinT, IVisualOutputPin>::value) {
+		outputPins.remove(core::dynamic_pointer_cast<IVisualOutputPin>(pin));
+	} else {
+		UTILS_ASSERT(false);
+	}
+}
+
 template<class VisualT, class DFNodeT>
 void SceneModel::removeNode( IVisualItemPtr item )
 {
@@ -201,6 +221,14 @@ void SceneModel::removeNode( IVisualItemPtr item )
 	auto* ptr = dynamic_cast<DFNodeT*>(node->getModelNode());
 	UTILS_ASSERT(ptr);
 	model->removeNode(ptr);
+
+	if (std::is_same<VisualT, IVisualSourceNode>::value || std::is_base_of<IVisualSourceNode, VisualT>::value) {
+		removeOutputPins(node);
+	}
+
+	if (std::is_same<VisualT, IVisualSinkNode>::value || std::is_base_of<IVisualSinkNode, VisualT>::value) {
+		removeInputPins(node);
+	}
 }
 
 
@@ -226,18 +254,22 @@ void SceneModel::removeItem( IVisualItemPtr item )
 		break;
 
 	case (IVisualItem::InputPin):
-		inputPins.remove(core::dynamic_pointer_cast<IVisualInputPin>(item)); 
+		removePin<IVisualInputPin>(item);
 		break;
 
 	case (IVisualItem::OutputPin):
-		outputPins.remove(core::dynamic_pointer_cast<IVisualOutputPin>(item));
+		removePin<IVisualOutputPin>(item);
 		break;
 
 	case (IVisualItem::Connection):
 		IVisualConnectionPtr connection = core::dynamic_pointer_cast<IVisualConnection>(item);
 		connection->getBegin()->setConnection(IVisualConnectionWeakPtr());
 		connection->getEnd()->setConnection(IVisualConnectionWeakPtr());
-		model->removeConnection(connection->getModelConnection());
+		try {
+			model->removeConnection(connection->getModelConnection());
+		} catch (std::exception& e) {
+
+		}
 		break;
 	}
 }
@@ -315,3 +347,35 @@ void SceneModel::merge( const QList<QGraphicsItem*>& items )
 }
 
 
+void vdf::SceneModel::clearScene()
+{
+    auto nodes = getVisualItems<IVisualNodePtr>();
+	for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+        removeItem(*it);
+    }
+    UTILS_ASSERT(graphics2Visual.empty());
+    UTILS_ASSERT(inputPins.empty());
+    UTILS_ASSERT(outputPins.empty());
+}
+
+void vdf::SceneModel::removeInputPins(IVisualNodePtr node )
+{
+	IVisualSinkNodePtr sink = core::dynamic_pointer_cast<vdf::IVisualSinkNode>(node);
+	if (sink) {
+		int count = sink->getNumInputPins();
+		for (int i = 0; i < count; ++i) {
+			removeItem(sink->getInputPin(i));
+		}
+	}
+}
+
+void vdf::SceneModel::removeOutputPins(IVisualNodePtr node) 
+{
+	IVisualSourceNodePtr source = core::dynamic_pointer_cast<vdf::IVisualSourceNode>(node);
+	if (source) {
+		int count = source->getNumOutputPins();
+		for (int i = 0; i < count; ++i) {
+			removeItem(source->getOutputPin(i));
+		}
+	}
+}

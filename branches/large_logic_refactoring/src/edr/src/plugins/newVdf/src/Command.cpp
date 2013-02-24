@@ -81,6 +81,13 @@ void CommandStack::redo()
 	}
 }
 
+void CommandStack::clear()
+{
+    commands.clear();
+    currentCommand = commands.end();
+}
+
+
 bool CommandStack::isRedoPossible() const
 {
 	return	!commands.empty() && 
@@ -171,6 +178,7 @@ void RemoveCommand::doIt()
 		for (int i = 0; i < count; i++) {
 			IVisualPinPtr pin = source->getOutputPin(i);
 			removeConnectionFromPin(pin);
+			removedPins.push_back(pin);
 		}
 	}
 
@@ -180,6 +188,7 @@ void RemoveCommand::doIt()
 		for (int i = 0; i < count; i++) {
 			IVisualPinPtr pin = sink->getInputPin(i);
 			removeConnectionFromPin(pin);
+			removedPins.push_back(pin);
 		}
 	}
 
@@ -189,6 +198,10 @@ void RemoveCommand::doIt()
 void RemoveCommand::undoIt()
 {
 	sceneModel->addItem(item);
+	for (auto it = removedPins.begin(); it != removedPins.end(); ++it) {
+		sceneModel->addItem(*it);
+	}
+	removedPins.clear();
 	for (auto it = removedConnections.begin(); it != removedConnections.end(); ++it) {
 		sceneModel->addConnection((*it)->getBegin(), (*it)->getEnd());
 	}
@@ -202,4 +215,29 @@ void RemoveCommand::removeConnectionFromPin( IVisualPinPtr pin )
 		sceneModel->removeItem(connection);
 		removedConnections.push_back(connection);
 	}
+}
+
+vdf::RemoveSelectedCommand::RemoveSelectedCommand( SceneModelPtr scene, const QList<QGraphicsItem*> selectedItems ) :
+	items(selectedItems),
+    sceneModel(scene)
+{
+
+}
+
+void vdf::RemoveSelectedCommand::doIt()
+{
+	auto nodes = sceneModel->getVisualItems<IVisualNodePtr>(items);
+	for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+        auto command = ICommandPtr(new RemoveCommand(sceneModel, *it));
+        command->doIt();
+		commands.push_back(command);
+	}
+}
+
+void vdf::RemoveSelectedCommand::undoIt()
+{
+    for (auto it = commands.rbegin(); it != commands.rend(); ++it) {
+        (*it)->undoIt();
+    }
+    commands.clear();
 }

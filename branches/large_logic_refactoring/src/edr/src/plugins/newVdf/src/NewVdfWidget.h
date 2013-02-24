@@ -47,6 +47,8 @@ public slots:
 	void undo();
 	void redo();
 	void merge();
+	void deleteSelected();
+	void clearScene();
 
 protected:
     //virtual void wheelEvent(QWheelEvent *event);

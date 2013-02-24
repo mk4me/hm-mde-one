@@ -27,6 +27,7 @@ public:
 typedef core::shared_ptr<ICommand> ICommandPtr;
 typedef core::shared_ptr<const ICommand> ICommandConstPtr;
 
+// TODO : utworzyc interfejs
 class CommandStack : public QObject
 {
 	Q_OBJECT;
@@ -43,6 +44,7 @@ public:
 	void redo();
 	bool isUndoPossible() const;
 	bool isRedoPossible() const;
+    void clear();
 
 signals:
 	void changed();
@@ -51,6 +53,8 @@ private:
     Commands commands;
 	Commands::iterator currentCommand;
 };
+
+
 typedef core::shared_ptr<CommandStack> CommandStackPtr;
 typedef core::shared_ptr<const CommandStack> CommandStackConstPtr;
 
