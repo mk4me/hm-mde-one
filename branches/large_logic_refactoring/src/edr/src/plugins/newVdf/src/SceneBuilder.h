@@ -36,7 +36,7 @@ public:
     VisualNodeWithPins createSource(const QString& text, df::INode* prototype, int out) const;
     VisualNodeWithPins createSink(const QString& text, df::INode* prototype, int in) const;
     VisualNodeWithPins createProcessing(const QString& text, df::INode* prototype, int in, int out) const;
-
+    vdf::CanvasStyleEditorPtr getFactories() const { return factories; }
 private:
     Pins addInputPins(IVisualSinkNodePtr sink, int count) const;
     Pins addOutputPins(IVisualSourceNodePtr source, int count) const;

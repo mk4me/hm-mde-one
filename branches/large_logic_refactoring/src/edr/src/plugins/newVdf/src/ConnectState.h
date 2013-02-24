@@ -30,7 +30,11 @@ public:
 
 private:
     IVisualPinPtr firstPin;
-    QGraphicsLineItem* tempLine;
+    //QGraphicsLineItem* tempLine;
+    IVisualConnectionPtr connection;
+    IVisualPinPtr pin1;
+    IVisualPinPtr pin2;
+
 	SceneModel::Connections connections;
 };
 typedef core::shared_ptr<ConnectState> ConnectStatePtr;
