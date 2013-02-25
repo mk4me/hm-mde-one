@@ -47,14 +47,16 @@ public:
 	virtual void setIndex(int val) { index = val; }
 	IVisualNodeWeakPtr getParent() const { return parent; }
 	void setParent(IVisualNodeWeakPtr val) { parent = val; }
-	virtual void setConnection(IVisualConnectionWeakPtr connection) { this->connection = connection; }
-	virtual IVisualConnectionWeakPtr getConnection() const { return connection; }
+	virtual void addConnection(IVisualConnectionWeakPtr connection);
+    virtual void removeConnection(IVisualConnectionWeakPtr connection);
+	virtual IVisualConnectionWeakPtr getConnection(int idx) const { return connections[idx]; }
+    virtual int getNumConnections() const { return connections.size(); }
 
 	virtual void setVisualStrategy( IVisualStrategyPtr strategy );
 
 protected:
 	IVisualNodeWeakPtr parent;
-	IVisualConnectionWeakPtr connection;
+	std::vector<IVisualConnectionWeakPtr> connections;
 	IPinStrategyPtr strategy;
 	int index;
     StyleItem* item;

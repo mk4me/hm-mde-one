@@ -10,20 +10,20 @@ SimpleConnection::SimpleConnection() :
 
 }
 
-void SimpleConnection::setBegin( const IVisualPinPtr pin )
+void SimpleConnection::setInputPin( const IVisualInputPinPtr pin )
 {
-    UTILS_ASSERT(!begin);
-    begin = pin;
+    UTILS_ASSERT(!inputPin);
+    inputPin = pin;
     QGraphicsObject* object = dynamic_cast<QGraphicsObject*>(pin->visualItem());
     UTILS_ASSERT(object);
     QObject::connect(object, SIGNAL(transformChanged()), this, SLOT(update()));
     update();
 }
 
-void SimpleConnection::setEnd( const IVisualPinPtr pin )
+void SimpleConnection::setOutputPin( const IVisualOutputPinPtr pin )
 {
-    UTILS_ASSERT(!end);
-    end = pin;
+    UTILS_ASSERT(!outputPin);
+    outputPin = pin;
     connect(dynamic_cast<QGraphicsObject*>(pin->visualItem()), SIGNAL(transformChanged()), this, SLOT(update()));
     update();
 }
@@ -35,9 +35,9 @@ QGraphicsItem * SimpleConnection::visualItem() const
 
 void SimpleConnection::update()
 {
-    if (begin && end) {
-        auto p1 = begin->visualItem()->scenePos();
-        auto p2 = end->visualItem()->scenePos();
+    if (inputPin && outputPin) {
+        auto p1 = inputPin->visualItem()->scenePos();
+        auto p2 = outputPin->visualItem()->scenePos();
         item->setLine(p1.x(), p1.y(), p2.x(), p2.y());
         item->update();
     }
@@ -48,13 +48,23 @@ void SimpleConnection::setVisualStrategy( IVisualStrategyPtr strategy )
 	UTILS_ASSERT(false);
 }
 
-IVisualPinPtr SimpleConnection::getBegin()
+IVisualInputPinPtr SimpleConnection::getInputPin()
 {
-	return begin;
+	return inputPin;
 }
 
-IVisualPinPtr SimpleConnection::getEnd()
+IVisualOutputPinPtr SimpleConnection::getOutputPin()
 {
-	return end;
+	return outputPin;
 }
 
+
+bool vdf::SimpleConnection::isSelected() const
+{
+    return item->isSelected();
+}
+
+void vdf::SimpleConnection::setSelected( bool val )
+{
+    item->setSelected(val);
+}

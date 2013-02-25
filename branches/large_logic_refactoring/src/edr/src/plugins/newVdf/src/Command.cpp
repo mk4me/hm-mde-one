@@ -106,22 +106,27 @@ bool CommandStack::isUndoPossible() const
 		currentCommand != commands.begin();
 }
 
-AddConnectionCommand::AddConnectionCommand( SceneModelPtr scene, IVisualPinPtr p1, IVisualPinPtr p2 ) :
+AddConnectionCommand::AddConnectionCommand( SceneModelPtr scene, IVisualOutputPinPtr p1, IVisualInputPinPtr p2 ) :
 	sceneModel(scene),
-	pin1(p1),
-	pin2(p2)
+	outputPin(p1),
+	inputPin(p2)
 {
 
 }
 
 void AddConnectionCommand::doIt()
 {
-	sceneModel->addConnection(pin1, pin2);
+    if (!connection) {
+        connection = sceneModel->addConnection(outputPin, inputPin);
+    } else {
+        UTILS_ASSERT(connection->getInputPin() && connection->getOutputPin());
+        sceneModel->addItem(connection);
+    }
 }
 
 void AddConnectionCommand::undoIt()
 {
-	sceneModel->removeConnection(pin1, pin2);
+	sceneModel->removeItem(connection);
 }
 
 MultiCommand::MultiCommand( const std::vector<ICommandPtr>& c ) :
@@ -162,21 +167,21 @@ void MoveCommand::undoIt()
 	item->setPos(oldPosition);
 }
 
-RemoveCommand::RemoveCommand(SceneModelPtr scene, IVisualItemPtr toRemove ) : 
+RemoveNodeCommand::RemoveNodeCommand(SceneModelPtr scene, IVisualNodePtr toRemove ) : 
 	item(toRemove),
 	sceneModel(scene)
 {
 
 }
 
-void RemoveCommand::doIt()
+void RemoveNodeCommand::doIt()
 {
 	removedConnections.clear();
 	IVisualSourceNodePtr source = core::dynamic_pointer_cast<IVisualSourceNode>(item);
 	if (source) {
 		int count = source->getNumOutputPins();
 		for (int i = 0; i < count; i++) {
-			IVisualPinPtr pin = source->getOutputPin(i);
+			IVisualOutputPinPtr pin = source->getOutputPin(i);
 			removeConnectionFromPin(pin);
 			removedPins.push_back(pin);
 		}
@@ -186,7 +191,7 @@ void RemoveCommand::doIt()
 	if (sink) {
 		int count = sink->getNumInputPins();
 		for (int i = 0; i < count; i++) {
-			IVisualPinPtr pin = sink->getInputPin(i);
+			IVisualInputPinPtr pin = sink->getInputPin(i);
 			removeConnectionFromPin(pin);
 			removedPins.push_back(pin);
 		}
@@ -195,7 +200,7 @@ void RemoveCommand::doIt()
 	sceneModel->removeItem(item);
 }
 
-void RemoveCommand::undoIt()
+void RemoveNodeCommand::undoIt()
 {
 	sceneModel->addItem(item);
 	for (auto it = removedPins.begin(); it != removedPins.end(); ++it) {
@@ -203,18 +208,34 @@ void RemoveCommand::undoIt()
 	}
 	removedPins.clear();
 	for (auto it = removedConnections.begin(); it != removedConnections.end(); ++it) {
-		sceneModel->addConnection((*it)->getBegin(), (*it)->getEnd());
+		sceneModel->addConnection((*it)->getOutputPin(), (*it)->getInputPin());
 	}
 	removedConnections.clear();
 }
 
-void RemoveCommand::removeConnectionFromPin( IVisualPinPtr pin )
+void RemoveNodeCommand::removeConnection( IVisualConnectionPtr connection ) 
+{
+    if (connection) {
+        sceneModel->removeItem(connection);
+        removedConnections.push_back(connection);
+    }
+}
+
+void RemoveNodeCommand::removeConnectionFromPin( IVisualInputPinPtr pin )
 {
 	IVisualConnectionPtr connection = pin->getConnection().lock();
-	if (connection) {
-		sceneModel->removeItem(connection);
-		removedConnections.push_back(connection);
-	}
+    removeConnection(connection);
+
+}
+
+void vdf::RemoveNodeCommand::removeConnectionFromPin( IVisualOutputPinPtr pin )
+{
+    int count = pin->getNumConnections();
+    for (int i = 0; i < count; ++i) {
+        IVisualConnectionPtr connection = pin->getConnection(i).lock();
+        removeConnection(connection);
+    }
+    
 }
 
 vdf::RemoveSelectedCommand::RemoveSelectedCommand( SceneModelPtr scene, const QList<QGraphicsItem*> selectedItems ) :
@@ -228,10 +249,16 @@ void vdf::RemoveSelectedCommand::doIt()
 {
 	auto nodes = sceneModel->getVisualItems<IVisualNodePtr>(items);
 	for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-        auto command = ICommandPtr(new RemoveCommand(sceneModel, *it));
+        auto command = ICommandPtr(new RemoveNodeCommand(sceneModel, *it));
         command->doIt();
 		commands.push_back(command);
 	}
+    auto connections = sceneModel->getVisualItems<IVisualConnectionPtr>(items);
+    for (auto it = connections.begin(); it != connections.end(); ++it) {
+        auto command = ICommandPtr(new RemoveConnectionCommand(sceneModel, *it));
+        command->doIt();
+        commands.push_back(command);
+    }
 }
 
 void vdf::RemoveSelectedCommand::undoIt()
@@ -241,3 +268,25 @@ void vdf::RemoveSelectedCommand::undoIt()
     }
     commands.clear();
 }
+
+void vdf::RemoveConnectionCommand::doIt()
+{
+    sceneModel->removeItem(item);
+}
+
+void vdf::RemoveConnectionCommand::undoIt()
+{
+    //sceneModel->addConnection(item->getOutputPin(), item->getInputPin());
+    sceneModel->addItem(item);
+}
+
+vdf::RemoveConnectionCommand::RemoveConnectionCommand( SceneModelPtr scene, IVisualConnectionPtr toRemove ) :
+    item(toRemove),
+    sceneModel(scene)
+{
+
+}
+
+
+
+

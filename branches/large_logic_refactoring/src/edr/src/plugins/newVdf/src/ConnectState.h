@@ -32,8 +32,8 @@ private:
     IVisualPinPtr firstPin;
     //QGraphicsLineItem* tempLine;
     IVisualConnectionPtr connection;
-    IVisualPinPtr pin1;
-    IVisualPinPtr pin2;
+    IVisualInputPinPtr pin1;
+    IVisualOutputPinPtr pin2;
 
 	SceneModel::Connections connections;
 };

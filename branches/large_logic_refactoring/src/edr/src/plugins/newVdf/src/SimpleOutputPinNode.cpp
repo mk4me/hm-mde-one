@@ -94,3 +94,17 @@ void SimpleOutputPinNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
 	throw std::exception("The method or operation is not implemented.");
 }
+
+void vdf::SimpleOutputPinNode::removeConnection( core::weak_ptr<IVisualConnection> connection )
+{
+    auto c = connection.lock();
+    auto it = std::find_if(connections.begin(), connections.end(), 
+        [&](const IVisualConnectionWeakPtr& val)
+        { 
+            return val.lock() == c; 
+        }
+    );
+    if (it != connections.end()) {
+        connections.erase(it);
+    }
+}

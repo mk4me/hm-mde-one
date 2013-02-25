@@ -11,27 +11,23 @@ StyleConnection::StyleConnection() :
 
 }
 
-void StyleConnection::setBegin( const IVisualPinPtr pin )
+void StyleConnection::setInputPin( const IVisualInputPinPtr pin )
 {
-    UTILS_ASSERT(!begin);
-    begin = pin;
+    UTILS_ASSERT(!inputPin);
+    inputPin = pin;
     QGraphicsObject* object = dynamic_cast<QGraphicsObject*>(pin->visualItem());
     UTILS_ASSERT(object);
     QObject::connect(object, SIGNAL(transformChanged()), this, SLOT(update()));
     update();
 }
 
-void StyleConnection::setEnd( const IVisualPinPtr pin )
+void StyleConnection::setOutputPin( const IVisualOutputPinPtr pin )
 {
-    UTILS_ASSERT(!end);
-    end = pin;
+    UTILS_ASSERT(!outputPin);
+    outputPin = pin;
     QGraphicsObject* object = dynamic_cast<QGraphicsObject*>(pin->visualItem());
     UTILS_ASSERT(object);
     connect(object, SIGNAL(transformChanged()), this, SLOT(update()));
-	if (begin && end) {
-		IConnectionStrategyPtr pin = core::dynamic_pointer_cast<IConnectionStrategy>(item->getStrategy());
-		pin->setPins(IVisualPinWeakPtr(begin), IVisualPinWeakPtr(end));
-	}
     update();
 }
 
@@ -42,10 +38,7 @@ QGraphicsItem * StyleConnection::visualItem() const
 
 void StyleConnection::update()
 {
-    if (begin && end) {
-       //auto p1 = begin->visualItem()->scenePos();
-       //auto p2 = end->visualItem()->scenePos();
-       //item->setLine(p1.x(), p1.y(), p2.x(), p2.y());
+    if (inputPin && outputPin) {
         item->update();
     }
 }
@@ -55,13 +48,28 @@ void StyleConnection::setVisualStrategy( IVisualStrategyPtr strategy )
 	item->setStrategy(strategy);
 }
 
-IVisualPinPtr StyleConnection::getBegin()
+IVisualInputPinPtr StyleConnection::getInputPin()
 {
-	return begin;
+	return inputPin;
 }
 
-IVisualPinPtr StyleConnection::getEnd()
+IVisualOutputPinPtr StyleConnection::getOutputPin()
 {
-	return end;
+	return outputPin;
 }
 
+
+bool vdf::StyleConnection::isSelected() const
+{
+    return item->isSelected();
+}
+
+void vdf::StyleConnection::setSelected( bool val )
+{
+    item->setSelected(val);
+    if (val) {
+        item->setZValue(Z<IVisualItem::Connection, true>::value());
+    } else {                                
+        item->setZValue(Z<IVisualItem::Connection, false>::value());
+    }
+}

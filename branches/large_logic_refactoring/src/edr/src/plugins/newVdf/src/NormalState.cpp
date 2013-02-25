@@ -28,6 +28,14 @@ void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
 
 bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
+    //if (e->button() == Qt::RightButton) {
+    //    auto items = stateMachine->getScene()->items(e->scenePos(), Qt::ContainsItemShape, Qt::AscendingOrder);
+    //    auto connections = stateMachine->getSceneModel()->getVisualItems<IVisualConnectionPtr>(items);
+    //    if (!connections.empty()) {
+    //        IVisualConnectionPtr connection = *connections.begin();
+    //        connection->setSelected(true);
+    //    }
+    //}
 	if (e->button() == Qt::LeftButton) {
 		if (stateMachine->getScene()->itemAt(e->scenePos())) {
 			positions.clear();

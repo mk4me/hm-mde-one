@@ -8,7 +8,7 @@ StyleOutputPinNode::StyleOutputPinNode() :
 	item(new StyleItem()),
 	index(-1)
 {
-
+    item->setFlag(QGraphicsItem::ItemIsMovable, false);
 }
 
 StyleOutputPinNode::~StyleOutputPinNode()
@@ -94,4 +94,23 @@ void StyleOutputPinNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
 	this->strategy = core::dynamic_pointer_cast<IPinStrategy>(strategy);
 	item->setStrategy(strategy);
+}
+
+void vdf::StyleOutputPinNode::removeConnection( IVisualConnectionWeakPtr connection )
+{
+    auto c = connection.lock();
+    auto it = std::find_if(connections.begin(), connections.end(), 
+        [&](const IVisualConnectionWeakPtr& val)
+        { 
+            return val.lock() == c; 
+        }
+    );
+    if (it != connections.end()) {
+        connections.erase(it);
+    }
+}
+
+void vdf::StyleOutputPinNode::addConnection( IVisualConnectionWeakPtr connection )
+{
+    connections.push_back(connection);
 }

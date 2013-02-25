@@ -16,7 +16,7 @@ SceneBuilder::VisualNodeWithPins SceneBuilder::createProcessing(const QString& t
 	node->setModelNode(prototype);
     auto input = addInputPins(node, in);
     auto output = addOutputPins(node, out);
-	node->visualItem()->setZValue(0.0f);
+	node->visualItem()->setZValue(Z<IVisualItem::Node, false>::value());
     return boost::make_tuple(node, input, output);
 }
 
@@ -26,7 +26,7 @@ SceneBuilder::VisualNodeWithPins SceneBuilder::createSink(const QString& text, d
     node->setName(text);
 	node->setModelNode(prototype);
     auto input = addInputPins(node, in);
-	node->visualItem()->setZValue(0.0f);
+	node->visualItem()->setZValue(Z<IVisualItem::Node, false>::value());
     return boost::make_tuple(node, input, Pins());
 }
 
@@ -36,7 +36,7 @@ SceneBuilder::VisualNodeWithPins SceneBuilder::createSource(const QString& text,
     node->setName(text);
 	node->setModelNode(prototype);
     auto output = addOutputPins(node, out);
-	node->visualItem()->setZValue(0.0f);
+	node->visualItem()->setZValue(Z<IVisualItem::Node, false>::value());
     return boost::make_tuple(node, Pins(), output);
 }
 
@@ -45,7 +45,8 @@ SceneBuilder::Pins SceneBuilder::addInputPins( IVisualSinkNodePtr sink, int coun
     Pins pins;
     for (int i = 0; i < count; ++i) {
         IVisualInputPinPtr pin = factories->getCurrentPinsFactory()->createInputPin();
-		pin->visualItem()->setZValue(1.0f);
+        pin->visualItem()->setFlag(QGraphicsItem::ItemIsMovable, false);
+		pin->visualItem()->setZValue(Z<IVisualItem::Pin, false>::value());
 		pin->setParent(sink);
 		pin->setIndex(i);
         sink->addInputPin(pin);
@@ -59,7 +60,8 @@ SceneBuilder::Pins SceneBuilder::addOutputPins( IVisualSourceNodePtr source, int
     Pins pins;
     for (int i = 0; i < count; ++i) {
         IVisualOutputPinPtr pin = factories->getCurrentPinsFactory()->createOutputPin();
-		pin->visualItem()->setZValue(1.0f);
+        pin->visualItem()->setFlag(QGraphicsItem::ItemIsMovable, false);
+		pin->visualItem()->setZValue(Z<IVisualItem::Pin, false>::value());
 		pin->setParent(source);
 		pin->setIndex(i);
         source->addOutputPin(pin);
@@ -88,15 +90,14 @@ SceneBuilder::SceneBuilder( CanvasStyleEditorPtr factories ) :
 
 }
 
-IVisualConnectionPtr SceneBuilder::createConnection( IVisualPinPtr pin1, IVisualPinPtr pin2 )
+IVisualConnectionPtr SceneBuilder::createConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin)
 {
     IVisualConnectionPtr connection = factories->getCurrentConnectionsFactory()->createConnection();
-    connection->setBegin(pin1);
-    connection->setEnd(pin2);
-	connection->visualItem()->setZValue(0.5f);
+    connection->setInputPin(inputPin);
+    connection->setOutputPin(outputPin);
+	connection->visualItem()->setZValue(Z<IVisualItem::Connection, false>::value());
 	connection->visualItem()->setFlag(QGraphicsItem::ItemIsMovable, false);
-	connection->visualItem()->setFlag(QGraphicsItem::ItemIsSelectable,false);
-	pin1->setConnection(connection);
-	pin2->setConnection(connection);
+	//inputPin->setConnection(connection);
+	//outputPin->addConnection(connection);
     return connection;
 }

@@ -21,6 +21,10 @@ public:
 	virtual void markIncomplete() = 0;
 	virtual Type getType() const { return IVisualItem::OutputPin; }
 	virtual bool isType(Type t) const { return t == IVisualItem::OutputPin || t == IVisualItem::Pin; }
+    virtual int getNumConnections() const = 0;
+    virtual core::weak_ptr<IVisualConnection> getConnection(int idx) const = 0;
+    virtual void addConnection(core::weak_ptr<IVisualConnection> connection) = 0;
+    virtual void removeConnection(core::weak_ptr<IVisualConnection> connection) = 0;
 };
 typedef core::shared_ptr<IVisualOutputPin> IVisualOutputPinPtr;
 typedef core::weak_ptr<IVisualOutputPin> IVisualOutputPinWeakPtr;

@@ -34,8 +34,8 @@ public:
 	virtual void setIndex(int val) = 0;
 	virtual core::weak_ptr<IVisualNode> getParent() const = 0;
 	virtual void setParent(core::weak_ptr<IVisualNode> val) = 0;
-	virtual void setConnection(core::weak_ptr<IVisualConnection> connection) = 0;
-	virtual core::weak_ptr<IVisualConnection> getConnection() const = 0;
+	//virtual void setConnection(core::weak_ptr<IVisualConnection> connection) = 0;
+	//virtual core::weak_ptr<IVisualConnection> getConnection() const = 0;
 };
 typedef core::shared_ptr<IVisualPin> IVisualPinPtr;
 typedef core::weak_ptr<IVisualPin> IVisualPinWeakPtr;

@@ -30,7 +30,7 @@ public:
     SceneBuilder(CanvasStyleEditorPtr factories);
     virtual ~SceneBuilder() {}
 
-    IVisualConnectionPtr createConnection(IVisualPinPtr pin1, IVisualPinPtr pin2);
+    IVisualConnectionPtr createConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin);
 
     VisualNodeWithPins createType(const QString& text, df::INode* prototype, int in, int out) const;
     VisualNodeWithPins createSource(const QString& text, df::INode* prototype, int out) const;

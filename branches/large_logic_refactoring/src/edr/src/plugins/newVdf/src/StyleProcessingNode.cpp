@@ -60,12 +60,14 @@ void StyleProcessingNode::addSelection()
 {
 	strategy->setState(INodeStrategy::Selected);
     styleItem->setSelected(true);
+    styleItem->setZValue(Z<IVisualItem::Node, true>::value());
 }
 
 void StyleProcessingNode::removeSelection()
 {
 	strategy->setState(INodeStrategy::Normal);
-	styleItem->setSelected(false);
+    styleItem->setSelected(false);
+    styleItem->setZValue(Z<IVisualItem::Node, false>::value());
 }
 
 void StyleProcessingNode::addHover()

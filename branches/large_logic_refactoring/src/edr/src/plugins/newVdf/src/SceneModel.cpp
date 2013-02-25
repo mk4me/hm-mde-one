@@ -14,7 +14,7 @@
 
 using namespace vdf;
 
-IVisualConnectionPtr SceneModel::addConnection(IVisualPinPtr pin1, IVisualPinPtr pin2)
+IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr pin1, IVisualInputPinPtr pin2)
 {
    	UTILS_ASSERT(pin1 && pin2);
 
@@ -59,28 +59,37 @@ void SceneModel::addItem( IVisualItemPtr item )
 {
     auto* graphics = item->visualItem();
     graphics2Visual[graphics] = item;
-    // TODO : czy to zapewni, ze nie zostana dodane dwa te same elementy?
-    if (graphics2Visual.find(graphics->parentItem()) == graphics2Visual.end()) {
+
+    // nie trzeba tego robic dla elementow, ktore maja parenta
+    //if (graphics2Visual.find(graphics->parentItem()) == graphics2Visual.end()) {
+    if (!item->isType(IVisualItem::Pin)) {
         emit visualItemAdded(item);
 	}
 
 	if (item->isType(IVisualItem::Node)) {
 		IVisualNodePtr node = core::dynamic_pointer_cast<IVisualNode>(item);
 		addNode(node->getModelNode());
-	}
-	if (item->isType(IVisualItem::InputPin)) {
+	} else if (item->isType(IVisualItem::InputPin)) {
 		inputPins.push_back(core::dynamic_pointer_cast<IVisualInputPin>(item)); 
 	} else if (item->isType(IVisualItem::OutputPin)) {
 		outputPins.push_back(core::dynamic_pointer_cast<IVisualOutputPin>(item));
-	}
+	} else if (item->isType(IVisualItem::Connection)) {
+        auto c = core::dynamic_pointer_cast<IVisualConnection>(item);
+        c->getInputPin()->setConnection(c);
+        c->getOutputPin()->addConnection(c);
+    }
 }
 
-bool SceneModel::connectionPossible( IVisualPinPtr pin1, IVisualPinPtr pin2 ) const
+bool SceneModel::connectionPossible( IVisualPinPtr pin1, IVisualPinPtr pin2) const
 {
 	// todo : rozwinac
-	if (pin1 == pin2 || pin1->getType() == pin2->getType()) {
+	if (pin1->getType() == pin2->getType() || !pin1 || !pin2) {
 		return false;
 	} 
+    PinResolver p(pin1, pin2);
+    if (p.getInput()->getConnection().lock()) {
+        return false;
+    }
 	return true;
 }
 
@@ -199,15 +208,24 @@ void vdf::SceneModel::removePin( IVisualItemPtr item )
 {
 	auto pin = core::dynamic_pointer_cast<VisualPinT>(item);
 	UTILS_ASSERT(pin);
-	auto connection = pin->getConnection().lock();
-	if (connection) {
-		removeItem(connection);
-	}
-
+	
 	if (std::is_same<VisualPinT, IVisualInputPin>::value) {
-		inputPins.remove(core::dynamic_pointer_cast<IVisualInputPin>(pin));
+        auto inputPin = core::dynamic_pointer_cast<IVisualInputPin>(pin);
+        auto connection = inputPin->getConnection().lock();
+        if (connection) {
+            removeItem(connection);
+        }
+		inputPins.remove(inputPin);
 	} else if (std::is_same<VisualPinT, IVisualOutputPin>::value) {
-		outputPins.remove(core::dynamic_pointer_cast<IVisualOutputPin>(pin));
+        auto outputPin = core::dynamic_pointer_cast<IVisualOutputPin>(pin);
+        int count = outputPin->getNumConnections();
+        for (int i = count - 1; i >= 0 ; --i) {
+            auto connection = outputPin->getConnection(i).lock();
+            if (connection) {
+                removeItem(connection);
+            }
+        }
+		outputPins.remove(outputPin);
 	} else {
 		UTILS_ASSERT(false);
 	}
@@ -238,7 +256,10 @@ void SceneModel::removeItem( IVisualItemPtr item )
 	auto it = graphics2Visual.find(graphics);
 	UTILS_ASSERT(it != graphics2Visual.end());
 	graphics2Visual.erase(it);
-	emit visualItemRemoved(item);
+    //if (graphics2Visual.find(graphics->parentItem()) == graphics2Visual.end()) {
+    if (!item->isType(IVisualItem::Pin)) {
+	    emit visualItemRemoved(item);
+    }
 
 	switch(item->getType()) {
 	case IVisualItem::ProcessingNode:
@@ -263,8 +284,8 @@ void SceneModel::removeItem( IVisualItemPtr item )
 
 	case (IVisualItem::Connection):
 		IVisualConnectionPtr connection = core::dynamic_pointer_cast<IVisualConnection>(item);
-		connection->getBegin()->setConnection(IVisualConnectionWeakPtr());
-		connection->getEnd()->setConnection(IVisualConnectionWeakPtr());
+		connection->getInputPin()->setConnection(IVisualConnectionWeakPtr());
+		connection->getOutputPin()->removeConnection(connection);
 		try {
 			model->removeConnection(connection->getModelConnection());
 		} catch (std::exception& e) {
@@ -284,12 +305,14 @@ IVisualItemPtr SceneModel::tryGetVisualItem( QGraphicsItem* item )
 	return IVisualItemPtr();
 }
 
-void SceneModel::removeConnection( IVisualPinPtr pin1, IVisualPinPtr pin2 )
-{
-	UTILS_ASSERT(pin1->getConnection().lock() == pin2->getConnection().lock());
-	auto connection = pin1->getConnection().lock();
-	removeItem(connection);
-}
+//void SceneModel::removeConnection( IVisualPinPtr pin1, IVisualPinPtr pin2 )
+//{
+//	if(!(pin1->getConnection().lock() == pin2->getConnection().lock())) {
+//        return;
+//    }
+//	auto connection = pin1->getConnection().lock();
+//	removeItem(connection);
+//}
 
 void SceneModel::merge( const QList<QGraphicsItem*>& items )
 {
@@ -309,10 +332,14 @@ void SceneModel::merge( const QList<QGraphicsItem*>& items )
 			int count = source->getNumOutputPins();
 			for (int i = 0; i < count; ++i) {
 				IVisualOutputPinPtr opin = source->getOutputPin(i);
-				auto connection = opin->getConnection().lock();
-				if (connection) {
-					connection->visualItem()->setVisible(false);
-				}
+                
+                int numConnections = opin->getNumConnections();
+                for (int i = 0; i < numConnections; ++i) {
+                    auto connection = opin->getConnection(i).lock();
+                    if (connection) {
+                        connection->visualItem()->setVisible(false);
+                    }
+                }
 				opins.push_back(opin);
 			}
 		}

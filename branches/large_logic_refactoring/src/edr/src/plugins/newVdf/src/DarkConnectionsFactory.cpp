@@ -9,7 +9,9 @@ IVisualConnectionPtr DarkConnectionsFactory::createConnection() const
 {
     auto connection = IVisualConnectionPtr(new StyleConnection());
 	auto strategy = IConnectionStrategyPtr(new DarkConnectionStrategy());
+    strategy->setConnection(connection);
 	connection->setVisualStrategy(strategy);
+    connection->visualItem()->setFlag(QGraphicsItem::ItemIsSelectable);
 	return connection;
 }
 

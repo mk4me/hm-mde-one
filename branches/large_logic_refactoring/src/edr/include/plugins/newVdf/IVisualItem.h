@@ -43,6 +43,27 @@ public:
 typedef core::shared_ptr<IVisualItem> IVisualItemPtr;
 typedef core::shared_ptr<const IVisualItem> IVisualItemConstPtr;
 
+template<IVisualItem::Type T>
+struct _Z { static qreal value() { return 0.0f; } };
+
+template<> struct _Z<IVisualItem::Node>
+{ static qreal value() { return 0.0f; } };
+
+template<> struct _Z<IVisualItem::Connection>
+{ static qreal value() { return 1.0f; } };
+
+template<> struct _Z<IVisualItem::Pin>
+{ static qreal value() { return 2.0f; } };
+
+
+template <IVisualItem::Type T, bool focus>
+struct Z
+{
+    static qreal value() { return (focus ? 10.0f : 0.0f) + _Z<T>::value(); };
+};
+
+
+
 }
 
 #endif	//	HEADER_GUARD___IVISUALITEM_H__

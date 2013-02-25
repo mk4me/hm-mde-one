@@ -48,15 +48,16 @@ private:
 class AddConnectionCommand : public ICommand
 {
 public:
-	AddConnectionCommand(SceneModelPtr scene, IVisualPinPtr p1, IVisualPinPtr p2);
+	AddConnectionCommand(SceneModelPtr scene, IVisualOutputPinPtr p1, IVisualInputPinPtr p2);
 public:
 	virtual void doIt();
 	virtual void undoIt();
 	virtual QString name() { return QString(typeid(this).name()); }
 private:
 	SceneModelPtr sceneModel;
-	IVisualPinPtr pin1;
-	IVisualPinPtr pin2;
+	IVisualOutputPinPtr outputPin;
+	IVisualInputPinPtr inputPin;
+    IVisualConnectionPtr connection;
 };
 
 class MoveCommand : public ICommand
@@ -88,21 +89,39 @@ private:
 	std::vector<ICommandPtr> commands;
 };
 
-
-class RemoveCommand : public ICommand
+class RemoveConnectionCommand : public ICommand
 {
 public:
-	RemoveCommand(SceneModelPtr scene, IVisualItemPtr toRemove);
+    RemoveConnectionCommand(SceneModelPtr scene, IVisualConnectionPtr toRemove);
+public:
+    virtual void doIt();
+    virtual void undoIt();
+    virtual QString name() { return QString(typeid(this).name()); }
+
+private:
+    void removeConnectionFromPin( IVisualPinPtr pin );
+
+private:
+    IVisualConnectionPtr item;
+    SceneModelPtr sceneModel;
+};
+
+class RemoveNodeCommand : public ICommand
+{
+public:
+	RemoveNodeCommand(SceneModelPtr scene, IVisualNodePtr toRemove);
 public:
 	virtual void doIt();
 	virtual void undoIt();
 	virtual QString name() { return QString(typeid(this).name()); }
 
 private:
-	void removeConnectionFromPin( IVisualPinPtr pin );
+	void removeConnectionFromPin( IVisualInputPinPtr pin );
+    void removeConnectionFromPin( IVisualOutputPinPtr pin );
+    void removeConnection( IVisualConnectionPtr connection );
 
 private:
-	IVisualItemPtr item;
+	IVisualNodePtr item;
 	SceneModelPtr sceneModel;
 	std::list<IVisualConnectionPtr> removedConnections;
 	std::list<IVisualPinPtr> removedPins;

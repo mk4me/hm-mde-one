@@ -10,15 +10,14 @@
 #define HEADER_GUARD___IVISUALCONNECTION_H__
 
 #include <plugins/newVdf/IVisualItem.h>
-#include <plugins/newVdf/IVisualPin.h>
+#include <plugins/newVdf/IVisualOutputPin.h>
+#include <plugins/newVdf/IVisualInputPin.h>
 #include <utils/Debug.h>
 
 namespace df { class IConnection; }
 
 namespace vdf {
-
-class IVisualPin;
-
+    
 class IVisualConnection : public IVisualItem
 {
 public:
@@ -26,10 +25,10 @@ public:
 	virtual ~IVisualConnection() {}
 
 public:
-	virtual void setBegin(IVisualPinPtr pin) = 0;
-	virtual void setEnd(IVisualPinPtr pin) = 0;
-	virtual IVisualPinPtr getBegin() = 0;
-	virtual IVisualPinPtr getEnd() = 0;
+	virtual void setInputPin(IVisualInputPinPtr pin) = 0;
+	virtual void setOutputPin(IVisualOutputPinPtr pin) = 0;
+	virtual IVisualInputPinPtr getInputPin() = 0;
+	virtual IVisualOutputPinPtr getOutputPin() = 0;
 	// TODO: przeniesc implementacje
 	df::IConnection* getModelConnection() {  UTILS_ASSERT(_connection); return _connection; }
 	const df::IConnection* getModelConnection() const { UTILS_ASSERT(_connection); return _connection; }
@@ -37,6 +36,9 @@ public:
 
 	virtual IVisualItem::Type getType() const { return IVisualItem::Connection; }
 	virtual bool isType(IVisualItem::Type t) const { return t == IVisualItem::Connection; }
+
+    virtual bool isSelected() const = 0;
+    virtual void setSelected(bool val) = 0;
 
 private:
 	df::IConnection* _connection;

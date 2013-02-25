@@ -23,21 +23,25 @@ public:
 
     virtual QGraphicsItem * visualItem() const;
 
-    virtual void setBegin( IVisualPinPtr pin );
-	virtual void setEnd( IVisualPinPtr pin );
+    virtual void setInputPin( IVisualInputPinPtr pin );
+	virtual void setOutputPin( IVisualOutputPinPtr pin );
 
-	virtual IVisualPinPtr getBegin();
-	virtual IVisualPinPtr getEnd();
+	virtual IVisualInputPinPtr getInputPin();
+	virtual IVisualOutputPinPtr getOutputPin();
 
 	virtual void setVisualStrategy(IVisualStrategyPtr strategy);
 
 public slots:
     void update();
 
+    virtual bool isSelected() const;
+
+    virtual void setSelected( bool val );
+
 
 private:
-    IVisualPinPtr begin;
-    IVisualPinPtr end;
+    IVisualInputPinPtr inputPin;
+    IVisualOutputPinPtr outputPin;
     QGraphicsLineItem* item;
 };
 

@@ -24,6 +24,34 @@ class IVisualItem;
 typedef boost::shared_ptr<df::IModel> IModelPtr;
 typedef boost::shared_ptr<df::IConnection> IConnectionPtr;
 
+
+class PinResolver
+{
+public:
+    PinResolver(IVisualPinPtr p1, IVisualPinPtr p2)
+    {
+        if (p1->isType(IVisualItem::InputPin)) {
+            input = core::dynamic_pointer_cast<IVisualInputPin>(p1);
+            output = core::dynamic_pointer_cast<IVisualOutputPin>(p2);
+        } else {
+            input = core::dynamic_pointer_cast<IVisualInputPin>(p2);
+            output = core::dynamic_pointer_cast<IVisualOutputPin>(p1);
+        }
+
+        UTILS_ASSERT(input && output);
+    }
+
+    operator IVisualInputPinPtr() { return input; }
+    operator IVisualOutputPinPtr() { return output; }
+
+    vdf::IVisualOutputPinPtr getOutput() const { return output; }
+    vdf::IVisualInputPinPtr getInput() const { return input; }
+
+private:
+    IVisualInputPinPtr input;
+    IVisualOutputPinPtr output;
+};
+
 class SceneModel : public QObject
 {
     Q_OBJECT;
@@ -53,8 +81,8 @@ public slots:
 
 public:
     //IVisualConnection* addConnection(QGraphicsItem* item1, QGraphicsItem* item2);
-	IVisualConnectionPtr addConnection(IVisualPinPtr pin1, IVisualPinPtr pin2);
-	void removeConnection(IVisualPinPtr pin1, IVisualPinPtr pin2);
+	IVisualConnectionPtr addConnection(IVisualOutputPinPtr pin1, IVisualInputPinPtr pin2);
+	//void removeConnection(IVisualPinPtr pin1, IVisualPinPtr pin2);
     void addItem(IVisualItemPtr item);
 	void removeItem(IVisualItemPtr item);
     const SceneBuilder& getBuilder() const { return builder; }

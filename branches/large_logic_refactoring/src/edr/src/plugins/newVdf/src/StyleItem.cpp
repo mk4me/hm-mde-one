@@ -1,5 +1,6 @@
 #include "NewVdfPCH.h"
 #include "StyleItem.h"
+#include <plugins/newVdf/IConnectionStrategy.h>
 
 using namespace vdf;
 
@@ -97,3 +98,12 @@ QGraphicsProxyWidget* StyleItem::getOrCreateProxy()
 	return proxy;
 }
 
+
+QPainterPath vdf::StyleItem::shape() const
+{
+    IConnectionStrategyPtr connection = core::dynamic_pointer_cast<IConnectionStrategy>(this->strategy);
+    if (connection) {
+        return connection->shape();
+    }
+    return QGraphicsItem::shape();
+}
