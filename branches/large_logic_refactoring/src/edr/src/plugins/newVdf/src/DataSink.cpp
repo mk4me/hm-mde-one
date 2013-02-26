@@ -46,7 +46,7 @@ core::UniqueID DataSink::getID() const
 
 df::INode* DataSink::create() const
 {
-	return _creator();
+	return _creator(_impl);
 }
 
 df::INode* DataSink::getPrototype() const

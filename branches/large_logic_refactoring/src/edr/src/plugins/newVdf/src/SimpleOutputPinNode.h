@@ -52,6 +52,8 @@ public:
 
 	virtual void setVisualStrategy( IVisualStrategyPtr strategy );
 
+    virtual df::IOutputPin* getModelPin() const;
+
 protected:
 	IVisualNodeWeakPtr parent;
 	std::vector<IVisualConnectionWeakPtr> connections;

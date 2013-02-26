@@ -432,6 +432,230 @@ void HmmMainWindow::createNewVisualizer()
     }
 }
 
+
+
+class XOutputPin : public df::OutputPin, public df::IDFOutput
+{
+public:
+    XOutputPin(df::ISourceNode * node) : df::OutputPin(node) {}
+
+    const VectorChannelReaderInterfaceConstPtr value() const { return val; }
+    void value(VectorChannelReaderInterfaceConstPtr val) { this->val = val; }
+
+    virtual void reset()
+    {
+        val = VectorChannelReaderInterfaceConstPtr();
+    }
+
+private:
+    VectorChannelReaderInterfaceConstPtr val;
+};
+
+class XInputPin : public df::InputPin, public df::IDFInput
+{
+public:
+
+    XInputPin(df::ISinkNode * node) : df::InputPin(node) {}
+
+    virtual void copyData(const df::IDFOutput * pin)
+    {
+        val = dynamic_cast<const XOutputPin*>(pin)->value();
+    }
+
+    virtual void reset()
+    {
+        val = VectorChannelReaderInterfaceConstPtr();
+    }
+
+    const VectorChannelReaderInterfaceConstPtr value() const { return val; }
+
+private:
+    VectorChannelReaderInterfaceConstPtr val;
+};
+
+class XSink : public df::SinkNode, public df::IDFSink
+{
+public:
+
+    XSink() : 
+      hmm(nullptr)
+    {
+        _XSink();
+    }
+
+    XSink(HmmMainWindow* h) : 
+        hmm(h)
+    {
+        _XSink();
+    }
+
+    virtual void reset() { }
+
+    virtual void consume()
+    {
+        VectorChannelReaderInterfaceConstPtr c = inPinA->value();	
+        if (c) {
+            ObjectWrapperPtr wrp = core::ObjectWrapper::create<VectorChannelReaderInterface>();
+            wrp->set(core::const_pointer_cast<VectorChannelReaderInterface>(c));
+            NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrp));
+            
+            HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);
+            channelItem->setItemAndHelperText(QString::fromStdString("CREATED!"));
+            hmm->addItemToTree(channelItem);
+        }
+    }
+
+    HmmMainWindow* getHmm() const { return hmm; }
+    void setHmm(HmmMainWindow* val) { hmm = val; }
+
+
+private:
+    void _XSink() 
+    {
+        inPinA = new XInputPin(this);
+        addInputPin(inPinA);
+    }
+
+private:
+    HmmMainWindow* hmm;
+    XInputPin * inPinA;
+};
+
+
+class XProcessor : public df::ProcessingNode, public df::IDFProcessor
+{
+public:
+
+    XProcessor()
+    {
+        inPinA = new XInputPin(this);
+        inPinB = new XInputPin(this);
+        outPinA = new XOutputPin(this);
+        addInputPin(inPinA);
+        addInputPin(inPinB);
+        addOutputPin(outPinA);
+    }
+
+    virtual void reset() {}
+
+    virtual void process()
+    {
+        VectorChannelReaderInterfaceConstPtr signal1 = inPinA->value();
+        VectorChannelReaderInterfaceConstPtr signal2 = inPinB->value();
+
+        VectorChannelPtr channel(new VectorChannel(signal1->size() / signal1->getLength()));
+        size_type count = (std::min)(signal1->size(), signal2->size());
+
+        for (size_type i = 0; i < count; ++i) {
+            auto val = signal1->value(i) - signal2->value(i);
+            channel->addPoint(val);
+        }
+        outPinA->value(channel);
+    }
+
+private:
+    XInputPin * inPinA;
+    XInputPin * inPinB;
+    XOutputPin * outPinA;
+
+    std::string name;
+
+};
+
+
+class XSource : public df::SourceNode, public df::IDFSource
+{
+public:
+
+    XSource () 
+    {
+        _XSource();
+    }
+
+    XSource(VectorChannelReaderInterfaceConstPtr vector) :
+        channel(vector)
+    {
+        _XSource();
+    }
+
+    virtual void reset() { used = false; }
+
+    virtual const bool empty() const { return used; }
+
+    virtual void produce()
+    {
+        outPinA->value(channel);
+        used = true;
+    }
+
+    VectorChannelReaderInterfaceConstPtr getChannel() const { return channel; }
+    void setChannel(VectorChannelReaderInterfaceConstPtr val) { channel = val; }
+
+
+private:
+    void _XSource() 
+    {
+        outPinA = new XOutputPin(this);
+        addOutputPin(outPinA);
+        used = false;
+    }
+
+private:
+    XOutputPin * outPinA;
+    VectorChannelReaderInterfaceConstPtr channel;
+    bool used;
+};
+
+
+void HmmMainWindow::createSource()
+{
+    static boost::uuids::random_generator random_uuid;
+    static bool hack = false;
+    ContextAction* action = qobject_cast<ContextAction*>(sender());
+    try{
+        HmmTreeItem* treeItem = action->getTreeItem();
+        TreeWrappedItemHelperPtr wrapped = core::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
+
+        core::IServiceManager* manager = plugin::getServiceManager();
+        vdf::NewVdfServicePtr vdfService = core::dynamic_pointer_cast<vdf::NewVdfService>(manager->getService(vdf::NewVdfService::getClassID()));
+        VectorChannelReaderInterfaceConstPtr item = wrapped->getWrapper()->get();
+
+        vdfService->registerDataSource(vdf::IDataSourcePtr(new vdf::DataSource(new XSource(item), core::UniqueID(random_uuid()), wrapped->getText().toStdString(), 
+            [&](const df::ISourceNode* prototype) -> XSource*
+            { 
+                auto source = new XSource();
+                auto proto = dynamic_cast<const XSource*>(prototype);
+                source->setChannel(proto->getChannel());
+                return source; 
+            })));
+
+        if (!hack) {
+            hack = true;
+            vdfService->registerDataSink(vdf::IDataSinkPtr(new vdf::DataSink(new XSink(this), core::UniqueID(random_uuid()), "Vector -> Tree", 
+                [&](const df::ISinkNode* prototype) -> XSink*
+            { 
+                auto sink = new XSink();
+                auto proto = dynamic_cast<const XSink*>(prototype);
+                sink->setHmm(proto->getHmm());
+                return sink; 
+            })));
+
+            vdfService->registerDataProcessor(vdf::IDataProcessorPtr(new vdf::DataProcessor(new XProcessor(), core::UniqueID(random_uuid()), "Vector Differ", 
+                [&](const df::IProcessingNode* prototype) -> XProcessor*
+            { 
+                auto p = new XProcessor();
+                //auto proto = dynamic_cast<const XProcessor*>(prototype);
+                //source->setChannel(proto->getChannel());
+                return p; 
+            })));
+        }
+    }catch(std::exception& e ){
+        PLUGIN_LOG_ERROR("Error creating source: " << e.what());
+    } catch (...) {
+        PLUGIN_LOG_ERROR("Error creating source");
+    }
+}
+
 void HmmMainWindow::createNewVisualizer( HmmTreeItem* item, coreUI::CoreDockWidgetSet* dockSet )
 {    
     createAndAddDockVisualizer(item, dockSet);
@@ -1060,6 +1284,11 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
      menu->addSeparator();
      connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
      connect(addNew, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+
+     QAction* createSource = new ContextAction(item, menu);
+     menu->addAction(createSource);
+     createSource->setText("Create Source");
+     connect(createSource, SIGNAL(triggered()), this, SLOT(createSource()));
 
      if (core::dynamic_pointer_cast<NewChartItemHelper>(item->getHelper())) {
          QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);

@@ -14,34 +14,17 @@
 
 using namespace vdf;
 
-IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr pin1, IVisualInputPinPtr pin2)
+IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin)
 {
-   	UTILS_ASSERT(pin1 && pin2);
-
-	IVisualNodePtr parent1 = pin1->getParent().lock();
-	IVisualNodePtr parent2 = pin2->getParent().lock();
-
-	df::INode* modelNode1 = parent1->getModelNode();
-	df::INode* modelNode2 = parent2->getModelNode();
-
+   	UTILS_ASSERT(outputPin && inputPin);
+    	
+	auto modelInput = inputPin->getModelPin();
+	auto modelOutput = outputPin->getModelPin();
 	
-	df::IConnection* con;
-	if (pin1->isType(IVisualItem::InputPin) && pin2->isType(IVisualItem::OutputPin)) {
-		auto inputPin = getInputPin(modelNode1, pin1->getIndex());
-		auto outputPin = getOutputPin(modelNode2, pin2->getIndex());
-		con = new df::Connection(outputPin, inputPin);
-	} else if (pin1->isType(IVisualItem::OutputPin) && pin2->isType(IVisualItem::InputPin)) {
-		auto inputPin = getInputPin(modelNode2, pin2->getIndex());
-		auto outputPin = getOutputPin(modelNode1, pin1->getIndex());
-		con = new df::Connection(outputPin, inputPin);
-	} else {
-		UTILS_ASSERT(false);
-	}
-
+    df::IConnection* con = new df::Connection(modelOutput, modelInput);
 	model->addConnection(con);
-
-
-    IVisualConnectionPtr connection = builder.createConnection(pin1, pin2);
+    
+    IVisualConnectionPtr connection = builder.createConnection(outputPin, inputPin);
 	connection->setModelConnection(con);
     addItem(connection);
     return connection;
@@ -82,7 +65,6 @@ void SceneModel::addItem( IVisualItemPtr item )
 
 bool SceneModel::connectionPossible( IVisualPinPtr pin1, IVisualPinPtr pin2) const
 {
-	// todo : rozwinac
 	if (pin1->getType() == pin2->getType() || !pin1 || !pin2) {
 		return false;
 	} 
@@ -90,7 +72,10 @@ bool SceneModel::connectionPossible( IVisualPinPtr pin1, IVisualPinPtr pin2) con
     if (p.getInput()->getConnection().lock()) {
         return false;
     }
-	return true;
+    
+    auto modelInput = p.getInput()->getModelPin();
+    auto modelOutput = p.getOutput()->getModelPin();
+    model->canConnect(modelOutput, modelInput);
 }
 
 //bool SceneModel::connectionPossible( QGraphicsItem* pin1, QGraphicsItem* pin2 ) const
@@ -136,46 +121,46 @@ void SceneModel::run()
 	runner.start(model.get(), nullptr);
 	runner.join();
 }
-
-df::IInputPin* SceneModel::getInputPin( df::INode* node, int index )
-{
-	UTILS_ASSERT(node && index >= 0);
-
-	switch(node->type()) {
-		case df::INode::PROCESSING_NODE: {
-			df::IProcessingNode* processing = dynamic_cast<df::IProcessingNode*>(node);
-			return processing->inputPin(index);
-		}
-
-		case df::INode::SINK_NODE: {
-			df::ISinkNode* sink = dynamic_cast<df::ISinkNode*>(node);
-			return sink->inputPin(index);
-		}
-	}
-
-	UTILS_ASSERT(false);
-	return nullptr;
-}
-
-df::IOutputPin* SceneModel::getOutputPin( df::INode* node, int index )
-{
-	UTILS_ASSERT(node && index >= 0);
-
-	switch(node->type()) {
-		case df::INode::PROCESSING_NODE: {
-			df::IProcessingNode* processing = dynamic_cast<df::IProcessingNode*>(node);
-			return processing->outputPin(index);
-		}
-
-		case df::INode::SOURCE_NODE: {
-			df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(node);
-			return source->outputPin(index);
-		}
-	}
-
-	UTILS_ASSERT(false);
-	return nullptr;
-}
+//
+//df::IInputPin* SceneModel::getInputPin( df::INode* node, int index )
+//{
+//	UTILS_ASSERT(node && index >= 0);
+//
+//	switch(node->type()) {
+//		case df::INode::PROCESSING_NODE: {
+//			df::IProcessingNode* processing = dynamic_cast<df::IProcessingNode*>(node);
+//			return processing->inputPin(index);
+//		}
+//
+//		case df::INode::SINK_NODE: {
+//			df::ISinkNode* sink = dynamic_cast<df::ISinkNode*>(node);
+//			return sink->inputPin(index);
+//		}
+//	}
+//
+//	UTILS_ASSERT(false);
+//	return nullptr;
+//}
+//
+//df::IOutputPin* SceneModel::getOutputPin( df::INode* node, int index )
+//{
+//	UTILS_ASSERT(node && index >= 0);
+//
+//	switch(node->type()) {
+//		case df::INode::PROCESSING_NODE: {
+//			df::IProcessingNode* processing = dynamic_cast<df::IProcessingNode*>(node);
+//			return processing->outputPin(index);
+//		}
+//
+//		case df::INode::SOURCE_NODE: {
+//			df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(node);
+//			return source->outputPin(index);
+//		}
+//	}
+//
+//	UTILS_ASSERT(false);
+//	return nullptr;
+//}
 
 const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr vpin  ) 
 {

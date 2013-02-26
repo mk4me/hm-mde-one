@@ -22,7 +22,7 @@
 #include <plugins/newVdf/IDataFlowProvider.h>
 #include <plugins/newVdf/ICommand.h>
 #include <plugins/newVdf/ExampleItems.h>
-
+#include <plugins/newVdf/Export.h>
 
 namespace vdf {
 
@@ -30,7 +30,7 @@ class NewVdfWidget;
 class CanvasStyleEditorWidget;
 class TypesWindow;
 
-class NewVdfService : public plugin::IService, public IDataFlowProvider
+class PLUGIN_NEWVDF_EXPORT NewVdfService : public plugin::IService, public IDataFlowProvider
 {
     UNIQUE_ID("{DF5B5B15-C591-4BCF-A205-FD995D2398DB}")
 	CLASS_DESCRIPTION("Data Flow Service", "Data Flow Service");
@@ -66,6 +66,10 @@ public:
 	virtual void finalize();
 	virtual void update(double time);
 
+    void registerDataProcessor(const IDataProcessorPtr & dataProcessor);
+    void registerDataSink(const IDataSinkPtr & dataSink);
+    void registerDataSource(const IDataSourcePtr & dataSource);
+
 private:
     std::string name;
     NewVdfWidget* newVdfWidget;
@@ -74,10 +78,11 @@ private:
 	//QListWidget* commandStackDebug;
 	CommandStackPtr commandStack;
 	IDataProcessorManagerPtr dataProcessorManager;
-	IDataSourceManagerPtr dataSourceManager;
-	IDataSinkManagerPtr dataSinkManager;
+    IDataSourceManagerPtr dataSourceManager;
+    IDataSinkManagerPtr dataSinkManager;
 };
-
+typedef core::shared_ptr<NewVdfService> NewVdfServicePtr;
+typedef core::shared_ptr<const NewVdfService> NewVdfServiceConstPtr;
 }
 
 #endif  //HEADER_GUARD___VDFSERVICE_H__

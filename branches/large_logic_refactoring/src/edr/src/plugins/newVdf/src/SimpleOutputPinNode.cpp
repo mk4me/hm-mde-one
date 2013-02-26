@@ -1,6 +1,7 @@
 #include "NewVdfPCH.h"
 #include "SimpleOutputPinNode.h"
 #include "SimpleItem.h"
+#include <dflib/INode.h>
 
 using namespace vdf;
 
@@ -107,4 +108,16 @@ void vdf::SimpleOutputPinNode::removeConnection( core::weak_ptr<IVisualConnectio
     if (it != connections.end()) {
         connections.erase(it);
     }
+}
+
+df::IOutputPin* vdf::SimpleOutputPinNode::getModelPin() const
+{
+    IVisualNodePtr parent = getParent().lock();
+    UTILS_ASSERT(parent);
+
+    df::INode* modelNode = parent->getModelNode();
+    UTILS_ASSERT(modelNode && index >= 0);
+
+    df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(modelNode);
+    return source->outputPin(index);
 }

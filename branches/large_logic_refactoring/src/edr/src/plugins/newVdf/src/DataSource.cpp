@@ -46,7 +46,7 @@ void DataSource::getOutputInfo( std::vector<OutputInfo> & output ) const
 
 df::INode* DataSource::create() const
 {
-	return _creator();
+	return _creator(_impl);
 }
 
 df::INode* DataSource::getPrototype() const

@@ -11,15 +11,16 @@
 #define HEADER_GUARD_NEWVDF__DATASOURCE_H__
 
 #include <plugins/newVdf/IDataSource.h>
+#include <plugins/newVdf/Export.h>
 
 namespace df { class ISourceNode; }
 
 namespace vdf {
 
-class DataSource : public IDataSource
+class PLUGIN_NEWVDF_EXPORT DataSource : public IDataSource
 {
 public:
-	typedef boost::function<df::ISourceNode* (void)> Creator;
+	typedef boost::function<df::ISourceNode* (const df::ISourceNode*)> Creator;
 	DataSource(df::ISourceNode* impl, core::UniqueID id, const std::string& name, Creator creator);
 	//! \return Nazwa elementu logicznego
 	virtual const std::string getName() const;;

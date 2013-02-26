@@ -102,3 +102,15 @@ void SimpleInputPinNode::setVisualStrategy( IVisualStrategyPtr strategy )
 
 
 
+
+df::IInputPin* vdf::SimpleInputPinNode::getModelPin() const
+{
+    IVisualNodePtr parent = getParent().lock();
+    UTILS_ASSERT(parent);
+
+    df::INode* modelNode = parent->getModelNode();
+    UTILS_ASSERT(modelNode && index >= 0);
+
+    df::ISinkNode* sink = dynamic_cast<df::ISinkNode*>(modelNode);
+    return sink->inputPin(index);
+}

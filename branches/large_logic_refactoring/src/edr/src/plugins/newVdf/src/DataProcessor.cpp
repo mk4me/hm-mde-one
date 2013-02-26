@@ -16,7 +16,7 @@ void DataProcessor::getInputInfo( std::vector<InputInfo>& info ) const
 
 df::INode* DataProcessor::create() const
 {
-	return _creator();
+	return _creator(_impl);
 }
 
 df::INode* DataProcessor::getPrototype() const

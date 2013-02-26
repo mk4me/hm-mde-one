@@ -11,15 +11,16 @@
 #define HEADER_GUARD_NEWVDF__DATASINK_H__
 
 #include <plugins/newVdf/IDataSink.h>
+#include <plugins/newVdf/Export.h>
 
 namespace df { class ISinkNode; }
 
 namespace vdf {
 
-class DataSink : public IDataSink
+class PLUGIN_NEWVDF_EXPORT DataSink : public IDataSink
 {
 public:
-	typedef boost::function<df::ISinkNode* (void)> Creator;
+	typedef boost::function<df::ISinkNode* (const df::ISinkNode*)> Creator;
 	DataSink(df::ISinkNode* impl, core::UniqueID id, const std::string& name, Creator creator );
 	//! \return Nazwa elementu logicznego
 	virtual const std::string getName() const;;

@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IVisualPin.h>
 
+namespace df { class IInputPin; }
+
 namespace vdf {
 
 class IVisualInputPin : public IVisualPin
@@ -23,6 +25,7 @@ public:
 	virtual bool isType(Type t) const { return t == IVisualItem::InputPin || t == IVisualItem::Pin; }
     virtual core::weak_ptr<IVisualConnection> getConnection() const = 0;
     virtual void setConnection(core::weak_ptr<IVisualConnection> connection) = 0;
+    virtual df::IInputPin* getModelPin() const = 0;
 };
 typedef core::shared_ptr<IVisualInputPin> IVisualInputPinPtr;
 typedef core::weak_ptr<IVisualInputPin> IVisualInputPinWeakPtr;

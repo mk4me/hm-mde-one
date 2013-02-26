@@ -114,3 +114,15 @@ void vdf::StyleOutputPinNode::addConnection( IVisualConnectionWeakPtr connection
 {
     connections.push_back(connection);
 }
+
+df::IOutputPin* vdf::StyleOutputPinNode::getModelPin() const
+{
+    IVisualNodePtr parent = getParent().lock();
+    UTILS_ASSERT(parent);
+
+    df::INode* modelNode = parent->getModelNode();
+    UTILS_ASSERT(modelNode && index >= 0);
+
+    df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(modelNode);
+    return source->outputPin(index);
+}

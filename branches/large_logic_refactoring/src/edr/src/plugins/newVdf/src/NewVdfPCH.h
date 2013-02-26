@@ -25,6 +25,8 @@
 #include <utils/Enum.h>
 #include <utils/Utils.h>
 
+#include <dflib/INode.h>
+#include <dflib/IModel.h>
 
 #include <corelib/SmartPtr.h>
 

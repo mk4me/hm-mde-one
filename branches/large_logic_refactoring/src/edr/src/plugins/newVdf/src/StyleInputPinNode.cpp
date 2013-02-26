@@ -2,6 +2,7 @@
 #include "StyleInputPinNode.h"
 #include "StyleItem.h"
 
+
 using namespace vdf;
 
 StyleInputPinNode::StyleInputPinNode() :
@@ -105,3 +106,15 @@ void StyleInputPinNode::setVisualStrategy( IVisualStrategyPtr strategy )
 
 
 
+
+df::IInputPin* vdf::StyleInputPinNode::getModelPin() const
+{
+    IVisualNodePtr parent = getParent().lock();
+    UTILS_ASSERT(parent);
+
+    df::INode* modelNode = parent->getModelNode();
+    UTILS_ASSERT(modelNode && index >= 0);
+
+    df::ISinkNode* sink = dynamic_cast<df::ISinkNode*>(modelNode);
+    return sink->inputPin(index);
+}

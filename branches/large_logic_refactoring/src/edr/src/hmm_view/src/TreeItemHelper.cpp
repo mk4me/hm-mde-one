@@ -215,7 +215,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer()
         PLUGIN_LOG_ERROR("Wrong visualizer type!");
     } else {
         std::string title;
-        VectorChannelConstPtr vectorChannel = wrapper->get();
+        VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
         title += vectorChannel->getName();
         title += " [";
         title += vectorChannel->getValueBaseUnit();
@@ -227,7 +227,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer()
 
 void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
-    VectorChannelConstPtr vectorChannel = wrapper->get();
+    VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
     ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
     ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));

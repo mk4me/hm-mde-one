@@ -149,6 +149,8 @@ private Q_SLOTS:
     void addToRaports(const QPixmap& pixmap);
     //! tworzy nowy wizualizator na podstwie wywołanej akcji
     void createNewVisualizer();
+
+    void createSource();
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w nowej zakładce
     void createVisualizerInNewSet();
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu

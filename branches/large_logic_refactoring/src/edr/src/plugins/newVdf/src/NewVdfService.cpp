@@ -126,3 +126,21 @@ void NewVdfService::init( core::ISourceManager * sourceManager, core::IVisualize
 
 }
 
+
+void vdf::NewVdfService::registerDataSource( const IDataSourcePtr & dataSource )
+{
+    DataSourceManagerPtr sourceManager = core::dynamic_pointer_cast<DataSourceManager>(dataSourceManager);
+    sourceManager->registerDataSource(dataSource);
+}
+
+void vdf::NewVdfService::registerDataSink( const IDataSinkPtr & dataSink )
+{
+    DataSinkManagerPtr sinkManager = core::dynamic_pointer_cast<DataSinkManager>(dataSinkManager);
+    sinkManager->registerDataSink(dataSink);
+}
+
+void vdf::NewVdfService::registerDataProcessor( const IDataProcessorPtr & dataProcessor )
+{
+    DataProcessorManagerPtr processorManager = core::dynamic_pointer_cast<DataProcessorManager>(dataProcessorManager);
+    processorManager->registerDataProcessor(dataProcessor);
+}

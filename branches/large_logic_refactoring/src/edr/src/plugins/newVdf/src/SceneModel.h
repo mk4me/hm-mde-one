@@ -81,7 +81,7 @@ public slots:
 
 public:
     //IVisualConnection* addConnection(QGraphicsItem* item1, QGraphicsItem* item2);
-	IVisualConnectionPtr addConnection(IVisualOutputPinPtr pin1, IVisualInputPinPtr pin2);
+	IVisualConnectionPtr addConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin);
 	//void removeConnection(IVisualPinPtr pin1, IVisualPinPtr pin2);
     void addItem(IVisualItemPtr item);
 	void removeItem(IVisualItemPtr item);
@@ -130,8 +130,8 @@ signals:
 
 private:
 	void addNode(df::INode* node);
-	df::IInputPin* getInputPin(df::INode* node, int index);
-	df::IOutputPin* getOutputPin(df::INode* node, int index);
+	//df::IInputPin* getInputPin(df::INode* node, int index);
+	//df::IOutputPin* getOutputPin(df::INode* node, int index);
 	template<class VisualT, class DFNodeT>
 	void removeNode(IVisualItemPtr item);
 	template<class VisualPinT>

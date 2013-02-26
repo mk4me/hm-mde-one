@@ -11,15 +11,16 @@
 #define HEADER_GUARD_NEWVDF__DATAPROCESSOR_H__
 
 #include <plugins/newVdf/IDataProcessor.h>
+#include <plugins/newVdf/Export.h>
 
 namespace df { class IProcessingNode; }
 
 namespace vdf {
 
-class DataProcessor : public IDataProcessor
+class PLUGIN_NEWVDF_EXPORT DataProcessor : public IDataProcessor
 {
 public:
-	typedef boost::function<df::IProcessingNode* (void)> Creator;
+	typedef boost::function<df::IProcessingNode* (const df::IProcessingNode*)> Creator;
 	DataProcessor(df::IProcessingNode* impl, core::UniqueID id, const std::string& name, Creator creator);
 	//! \return Nazwa elementu logicznego
 	virtual const std::string getName() const;;

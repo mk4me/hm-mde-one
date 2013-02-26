@@ -39,6 +39,7 @@ SET_PUBLIC_HEADERS(
 	DataSink.h
 	DataProcessor.h
 	ExampleItems.h
+	Export.h
 )
 
 SET_PRIVATE_HEADERS(

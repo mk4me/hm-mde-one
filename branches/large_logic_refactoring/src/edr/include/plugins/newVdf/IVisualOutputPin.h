@@ -12,6 +12,8 @@
 
 #include <plugins/newVdf/IVisualPin.h>
 
+namespace df { class IOutputPin; }
+
 namespace vdf {
 
 class IVisualOutputPin : public IVisualPin
@@ -25,6 +27,7 @@ public:
     virtual core::weak_ptr<IVisualConnection> getConnection(int idx) const = 0;
     virtual void addConnection(core::weak_ptr<IVisualConnection> connection) = 0;
     virtual void removeConnection(core::weak_ptr<IVisualConnection> connection) = 0;
+    virtual df::IOutputPin* getModelPin() const = 0;
 };
 typedef core::shared_ptr<IVisualOutputPin> IVisualOutputPinPtr;
 typedef core::weak_ptr<IVisualOutputPin> IVisualOutputPinWeakPtr;
