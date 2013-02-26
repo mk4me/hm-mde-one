@@ -152,9 +152,9 @@ QWidget* KinematicVisualizer::createWidget()
 	widget->addAction(viewAction);
 
 
-    translateSpinWidgetX = createSpinWidget("TX: ", 0.3);
-    translateSpinWidgetY = createSpinWidget("TY: ", 0.3);
-    translateSpinWidgetZ = createSpinWidget("TZ: ", 0.3);
+    translateSpinWidgetX = createSpinWidget(tr("TX: "), 0.3);
+    translateSpinWidgetY = createSpinWidget(tr("TY: "), 0.3);
+    translateSpinWidgetZ = createSpinWidget(tr("TZ: "), 0.3);
 
     connect(translateSpinWidgetX->doubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(shiftX(double)));
     connect(translateSpinWidgetY->doubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(shiftY(double)));
@@ -165,17 +165,17 @@ QWidget* KinematicVisualizer::createWidget()
 	widget->addAction(createWidgetAction(translateSpinWidgetZ, widget, tr("Manipulators properties"), CoreTitleBar::Left));
 
 
-    rotateSpinWidgetX = createSpinWidget("RX: ", 5.0);
-    rotateSpinWidgetY = createSpinWidget("RY: ", 5.0);
-    rotateSpinWidgetZ = createSpinWidget("RZ: ", 5.0);
+    rotateSpinWidgetX = createSpinWidget(tr("RX: "), 5.0);
+    rotateSpinWidgetY = createSpinWidget(tr("RY: "), 5.0);
+    rotateSpinWidgetZ = createSpinWidget(tr("RZ: "), 5.0);
     
     connect(rotateSpinWidgetX->doubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(rotateX(double)));
     connect(rotateSpinWidgetY->doubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(rotateY(double)));
     connect(rotateSpinWidgetZ->doubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(rotateZ(double)));
 
-	widget->addAction(createWidgetAction(rotateSpinWidgetX, widget, tr("Manipulators properties"), CoreTitleBar::Left));
-	widget->addAction(createWidgetAction(rotateSpinWidgetY, widget, tr("Manipulators properties"), CoreTitleBar::Left));
-	widget->addAction(createWidgetAction(rotateSpinWidgetZ, widget, tr("Manipulators properties"), CoreTitleBar::Left));
+	widget->addAction(createWidgetAction(rotateSpinWidgetX, widget, tr("Manipulators properties"), CoreTitleBar::Right));
+	widget->addAction(createWidgetAction(rotateSpinWidgetY, widget, tr("Manipulators properties"), CoreTitleBar::Right));
+	widget->addAction(createWidgetAction(rotateSpinWidgetZ, widget, tr("Manipulators properties"), CoreTitleBar::Right));
 
     scaleSpinWidgetX = createSpinWidget("SX: ", 0.1);
     scaleSpinWidgetY = createSpinWidget("SY: ", 0.1);
@@ -603,9 +603,10 @@ void KinematicVisualizer::refreshTranslateSpinboxes()
     translateSpinWidgetZ->doubleSpinBox->blockSignals(false);
 }
 
-LabeledDoubleSpinBox * KinematicVisualizer::createSpinWidget(QString name, double step)
+LabeledDoubleSpinBox * KinematicVisualizer::createSpinWidget(const QString & name, double step)
 {
 	LabeledDoubleSpinBox * spinWidget = new LabeledDoubleSpinBox();
+	spinWidget->label->setText(name);
 	spinWidget->doubleSpinBox->setMaximum(1000.0);
     spinWidget->doubleSpinBox->setMinimum(-1000.0);
     spinWidget->doubleSpinBox->setSingleStep(step);

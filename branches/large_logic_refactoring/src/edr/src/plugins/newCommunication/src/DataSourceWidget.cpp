@@ -660,7 +660,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 		// poprawna komunikacja, użytkownik zweryfikowany || brak komunikacji i logowanie lokalne
 
-		if(dataSource->currentUser_.id() == -2){
+		if(dataSource->offlineMode() == true){
 			// jeżeli jestem zalogowany lokalnie to informuję o tym
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Login information"));
@@ -700,7 +700,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 				messageBox.setStandardButtons(QMessageBox::Ok);
 				messageBox.setDefaultButton(QMessageBox::Ok);
 				messageBox.exec();
-			}else{
+			}else if(dataSource->offlineMode() == false){
 
 				//pobierz datę ostatenij modyfikacji i porównaj
 				//jeśli nowsza to zaproponuj synchronizację
@@ -726,7 +726,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 				}
 			}
-		}else{
+		}else if(dataSource->offlineMode() == false){
 
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Synchronization required"));

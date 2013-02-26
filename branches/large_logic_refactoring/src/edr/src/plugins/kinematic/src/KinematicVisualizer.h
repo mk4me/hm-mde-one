@@ -128,7 +128,7 @@ private:
     //! \param step krok dla strzałek
     //! \param visible czy ma być widoczny po utworzeniu
     //! \return para (widget, spinbox) widget jest rodzicem spinboxa
-    LabeledDoubleSpinBox * createSpinWidget(QString name, double step = 0.1);
+    LabeledDoubleSpinBox * createSpinWidget(const QString & name, double step = 0.1);
     //! Wymusza zmiane węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param m macierz z transformacja, która ma zostac ustawiona w wezle

@@ -119,6 +119,12 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
 	//teraz tworze sekcje
 	for(auto it = sections.begin(); it != sections.end(); ++it){
+
+		//pomijam grupy które są tutaj niepotrzebne
+		if(it->first == QObject::tr("Settings")){
+			continue;
+		}
+
 		coreUI::CoreFlexiToolBarSection * section = new coreUI::CoreFlexiToolBarSection(it->first);
 		
 		//mam sekcje więc zasilam ją w akcje
@@ -167,8 +173,10 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 			//rabalansowanie akcji po lewej i prawej stronie
 		}
 
-		QMainWindow * sectionWidget = new QMainWindow(section);		
-
+		QWidget * sectionWidget = new QWidget;
+		auto vLayout = new QVBoxLayout;
+		vLayout->setContentsMargins(0,0,0,0);
+		vLayout->setSpacing(3);
 		if(leftActions.empty() == false){
 			QToolBar * upperBar = new QToolBar(section);
 			upperBar->setMovable(false);
@@ -177,7 +185,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 				upperBar->addAction(it->second);
 			}
 
-			sectionWidget->addToolBar(upperBar);
+			vLayout->addWidget(upperBar);
 		}
 
 		if(rightActions.empty() == false){
@@ -188,12 +196,10 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 				lowerBar->addAction(it->second);
 			}
 
-			if(leftActions.empty() == false){
-				sectionWidget->addToolBarBreak();
-			}
-
-			sectionWidget->addToolBar(lowerBar);
+			vLayout->addWidget(lowerBar);
 		}
+
+		sectionWidget->setLayout(vLayout);
 
 		section->setInnerWidget(sectionWidget);
 

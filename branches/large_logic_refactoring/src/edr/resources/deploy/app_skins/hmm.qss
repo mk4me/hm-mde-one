@@ -137,6 +137,10 @@ coreUI--CoreFlexiToolBarSection QLabel#sectionNameLabel {
 	min-width: 6ex;
 }
 
+coreUI--CoreFlexiToolBarSection .QLabel {
+	border: none;
+}
+
 /* EXPERIMENTAL */
 
 coreUI--CoreTitleBar {
@@ -154,8 +158,7 @@ QComboBox {
      border: 1px solid gray;
      border-radius: 4px;
      padding: 2px 18px 1px 4px;
-     min-width: 4em;
-	 max-width: 8em;
+     min-width: 2em;
  }
 
 QComboBox:hover {
@@ -190,7 +193,9 @@ QComboBox QListView::item:focus {
 
  /* pola edycji */
   QLineEdit {
-     border: 2px solid #888888;
+	margin: 0px;
+	padding: 0px;
+     border: 1px solid #888888;
      background: lightgray;
      border-radius: 4px;
      selection-background-color: darkgray;
@@ -238,28 +243,40 @@ QSlider::handle:horizontal {
 	margin-bottom: -2px;
 	border-radius: 4px;
 }
+
+QLabel {	 
+	margin: 0px;
+	padding: 0px;
+}
+
 /* spin box */
+
  QDoubleSpinBox {
+	margin: 0px;
+	padding: 0px;
      border: 1px solid #888888;
      background: lightgray;
      border-radius: 4px;
      selection-background-color: darkgray;
-	 max-width: 6em;
+	 max-width: 3em;
  }
  
+ 
  QDoubleSpinBox::up-button {
-     subcontrol-origin: border;
+     /*subcontrol-origin: border;
      subcontrol-position: top right;
+	 */
      border: 1px solid #888888;
      border-radius: 4px;
  }
-
+ /*
  QDoubleSpinBox::down-button {
      subcontrol-origin: border;
      subcontrol-position: bottom right;
      border: 1px solid #888888;
      border-radius: 4px;
  }
+ */
 
 QScrollBar:horizontal {											 
 	border: 1px ridge grey;											 

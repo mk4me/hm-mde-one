@@ -200,11 +200,11 @@ QWidget* NewChartVisualizer::createWidget()
     shiftSpinX = shiftX.second;
     shiftSpinY = shiftY.second;
 
-	coreUI::CoreWidgetAction * shiftSpinXAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
+	coreUI::CoreWidgetAction * shiftSpinXAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Left);
 	shiftSpinXAction->setDefaultWidget(shiftX.first);
 	widget->addAction(shiftSpinXAction);
 
-	coreUI::CoreWidgetAction * shiftSpinYAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Right);
+	coreUI::CoreWidgetAction * shiftSpinYAction = new coreUI::CoreWidgetAction(widget, tr("Active Data Series"), coreUI::CoreTitleBar::Left);
 	shiftSpinYAction->setDefaultWidget(shiftY.first);
 	widget->addAction(shiftSpinYAction);
 

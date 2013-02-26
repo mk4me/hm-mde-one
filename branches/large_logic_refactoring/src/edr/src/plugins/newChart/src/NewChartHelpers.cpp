@@ -6,8 +6,10 @@ std::pair<QWidget*, QDoubleSpinBox*> LabeledSpinbox::create(const QString& label
 {
 	std::pair<QWidget*, QDoubleSpinBox*> ret;
     ret.first = new QWidget();
-    ret.first->setLayout(new QHBoxLayout());
-	auto layout = ret.first->layout();
+	auto layout = new QHBoxLayout();
+	layout->setContentsMargins(3,0,3,0);
+	layout->setSpacing(3);
+    ret.first->setLayout(layout);
     QLabel* l = new QLabel(label);
     layout->addWidget(l);
     QDoubleSpinBox* spin = new QDoubleSpinBox();
@@ -17,8 +19,6 @@ std::pair<QWidget*, QDoubleSpinBox*> LabeledSpinbox::create(const QString& label
     spin->setSingleStep(singleStep);
     spin->setMaximumWidth(90);
     layout->addWidget(spin);
-    layout->setMargin(0);
-    layout->setContentsMargins(0, 0, 0, 0);
 	l->setBuddy(spin);
 	ret.second = spin;
     return ret;
