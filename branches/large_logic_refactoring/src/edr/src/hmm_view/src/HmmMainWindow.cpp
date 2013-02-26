@@ -92,7 +92,6 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
 	vdf(nullptr),
     operations(nullptr),
 	raports(nullptr),
-	flexiTabWidget(new coreUI::CoreFlexiToolBar()),
 	currentButton(nullptr),
     dataObserver(new DataObserver(this)),
     summaryWindow(new SummaryWindow(this)),
@@ -103,6 +102,7 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
 
 	contextPlaceholder = new QTabWidget(this);
 	contextPlaceholder->setTabsClosable(false);
+	//contextPlaceholder->setDocumentMode(true);
 	contextPlaceholder->setMovable(false);
 	contextPlaceholder->setVisible(false);
 
@@ -113,6 +113,8 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
     raportsThumbnailsContext.reset(new RaportsThumbnailsContext(contextPlaceholder, this));
     raportsTabContext.reset(new RaportsTabContext(contextPlaceholder, this));
     tabPlaceholder->layout()->addWidget(contextPlaceholder);
+
+	contextPlaceholder->findChild<QTabBar*>()->setDrawBase(false);
 
     dataContext.reset(new HMMDataContext());
     analisisContext.reset(new HMMAnalysisContext(&treeRefresher));
@@ -321,14 +323,17 @@ void HmmMainWindow::customViewInit(QWidget * console)
             QWidget* settingsWidget = service->getSettingsWidget();
 
             if(settingsWidget){
+				settingsWidget->setParent(operations);
                 layout->addWidget(settingsWidget);
             }
 
             if(viewWidget){
+				viewWidget->setParent(operations);
                 layout->addWidget(viewWidget);
             }
 
             if(controlWidget){
+				controlWidget->setParent(operations);
                 layout->addWidget(controlWidget);
             }
         }

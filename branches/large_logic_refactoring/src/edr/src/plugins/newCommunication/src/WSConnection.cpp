@@ -225,6 +225,15 @@ private:
 
 	void setInvoker(boost::true_type)
 	{
+		std::string hVer("None");
+
+		if(hostVerification_ == WsdlPull::CustomSSLWsdlInvoker::HVExist){
+			hVer = "Exist";
+		}else if( hostVerification_ == WsdlPull::CustomSSLWsdlInvoker::HVMatch){
+			hVer = "Match";
+		}
+
+		PLUGIN_LOG_INFO("Invoker WSDLUri: url -> " << url_ << " || caPath_ -> " << caPath_ << " || hostVerification_ -> " << hVer);
 		invoker_->setWSDLUri(url_, caPath_, hostVerification_);
 	}
 

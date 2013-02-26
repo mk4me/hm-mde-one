@@ -25,8 +25,14 @@ namespace coreUI{
 
 	private:
 		QComboBox * visualizerSwitch;
+		QComboBox * persistentVisualizerSwitch;
 
 	private:
+
+		QWidget * createVisualizerSwitch(QWidget * parent);
+		void tryRefreshVisualizerSwitchSettings();
+		void tryRefreshVisualizerSwitchContent();
+		void tryRefreshVisualizerSwitch();		
 
 		void innerShowCurrentIndex(int idx);
 		void init();
@@ -72,6 +78,9 @@ namespace coreUI{
 	public slots:
 		void clear();
 		void setCurrentIndex(int index);
+
+	private slots:
+		void switchDestroyed(QObject * visSwitch);
 
 	signals:
 		void currentIndexChanged(int index);

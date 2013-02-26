@@ -152,6 +152,8 @@ private:
     //! sekcja obsługiwanego flexi widgeta
     QWidget* flexiContent;
 
+	QWidget * contextWidgetActions;
+
 	coreUI::CoreFlexiToolBarSection * flexiSection;
     //! identyfikator grupy dla drzewa
     int groupID;

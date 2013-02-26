@@ -116,6 +116,7 @@ protected:
     //virtual void paintEvent(QPaintEvent *paintEvent);
 	virtual void changeEvent(QEvent * event);
 	virtual bool event(QEvent * event);
+	virtual void paintEvent(QPaintEvent * event);
 
 private:
 	CoreTitleBar(bool floating, QWidget * parent = nullptr);

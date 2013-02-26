@@ -254,6 +254,12 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	setCurrentWidget(motionDataTab);
 	setTabEnabled(indexOf(configTab), false);
 	setTabEnabled(indexOf(userDataTab), false);
+
+
+	/*setTabEnabled(indexOf(motionDataTab), false);
+	setTabEnabled(indexOf(userDataTab), false);
+
+	setCurrentWidget(configTab);*/
 }
 
 DataSourceWidget::~DataSourceWidget()

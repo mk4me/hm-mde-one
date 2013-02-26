@@ -13,6 +13,7 @@
 #include <QtGui/QWidgetAction>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/ICoreActionSection.h>
+#include <boost/function.hpp>
 
 namespace coreUI {
 
@@ -31,6 +32,32 @@ public:
 private:
 	CoreTitleBar::SideType side_;
 	QString sectionName_;
+};
+
+class COREUI_EXPORT CoreCustomWidgetAction : public QWidgetAction, public CoreTitleBar::ICoreTitleBarAction, public ICoreActionSection
+{
+	Q_OBJECT
+
+public:
+
+	typedef boost::function<QWidget*(QWidget*)> WidgetCreator;
+
+public:
+	explicit CoreCustomWidgetAction(QObject *parent, WidgetCreator widgetCreator, const QString & sectionName, CoreTitleBar::SideType side = CoreTitleBar::Left);
+	virtual ~CoreCustomWidgetAction();
+
+	virtual CoreTitleBar::SideType side() const;
+	virtual const QString section() const;
+
+protected:
+
+	virtual QWidget * createWidget(QWidget * parent);		
+	virtual void deleteWidget (QWidget * widget);
+
+private:
+	CoreTitleBar::SideType side_;
+	QString sectionName_;
+	WidgetCreator widgetCreator_;
 };
 
 }

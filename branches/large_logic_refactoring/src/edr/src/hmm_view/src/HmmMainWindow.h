@@ -279,7 +279,6 @@ private:
     coreUI::CoreTextEditWidget* raports;
     //! 
 	QTabWidget * tabWidget;
-    coreUI::CoreFlexiToolBar * flexiTabWidget;
     //! mapa [przycisk -> zakładka]
     std::map<QWidget*, QWidget*> button2TabWindow;
     //!

@@ -18,8 +18,9 @@ CoreDockWidgetSet::CoreDockWidgetSet( const QString &title, QWidget *parent /*= 
 	mainWindow = new QMainWindow();
     mainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	mainWindow->setDockOptions(QMainWindow::AllowNestedDocks);
-    mainWindow->setContentsMargins(7,7,7,7);
+    mainWindow->setContentsMargins(0,0,0,0);
 	auto layout = new QHBoxLayout;
+	layout->setContentsMargins(0,0,0,0);
 	layout->addWidget(mainWindow);
     setLayout(layout);
 }
@@ -32,8 +33,9 @@ CoreDockWidgetSet::CoreDockWidgetSet( QWidget *parent /*= nullptr*/, Qt::WindowF
 	mainWindow = new QMainWindow();
 	mainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	mainWindow->setDockOptions(QMainWindow::AllowNestedDocks);
-    mainWindow->setContentsMargins(7,7,7,7);
+	mainWindow->setContentsMargins(0,0,0,0);
 	auto layout = new QHBoxLayout;
+	layout->setContentsMargins(0,0,0,0);
 	layout->addWidget(mainWindow);
 	setLayout(layout);
 }

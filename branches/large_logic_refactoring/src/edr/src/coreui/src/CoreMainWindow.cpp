@@ -150,7 +150,7 @@ void CoreMainWindow::writeSettings()
 
 void CoreMainWindow::closeEvent(QCloseEvent* event)
 {
-	if(QMessageBox::question( nullptr, tr("Confirm exit"), tr("Are You sure You want to exit application?"),
+	if(QMessageBox::question( this, tr("Confirm exit"), tr("Are You sure You want to exit application?"),
 		QMessageBox::Yes | QMessageBox::Abort, QMessageBox::Abort ) == QMessageBox::Yes){
 	
 		writeSettings();

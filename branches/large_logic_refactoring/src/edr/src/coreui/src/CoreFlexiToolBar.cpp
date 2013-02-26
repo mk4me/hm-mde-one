@@ -10,7 +10,10 @@ using namespace coreUI;
 CoreFlexiToolBar::CoreFlexiToolBar(QWidget * parent, Qt::WindowFlags f) : QWidget(parent, f), innerToolBar_(new QMainWindow)
 {
 	setLayout(new QHBoxLayout);
+	layout()->setContentsMargins(0,0,0,0);
 	layout()->addWidget(innerToolBar_);
+	innerToolBar_->setCentralWidget(nullptr);
+	innerToolBar_->layout()->setContentsMargins(0,0,0,0);
 }
 
 CoreFlexiToolBar::~CoreFlexiToolBar()
@@ -20,12 +23,11 @@ CoreFlexiToolBar::~CoreFlexiToolBar()
 
 void CoreFlexiToolBar::addSection(CoreFlexiToolBarSection * section)
 {
-	QToolBar * toolbar = new QToolBar;
+	QToolBar * toolbar = new QToolBar(innerToolBar_);
 	toolbar->addWidget(section);
 	toolbar->setFloatable(false);
 	toolbar->setMovable(true);
 	toolbar->setAllowedAreas(Qt::TopToolBarArea);
-	toolbar->setParent(innerToolBar_);
 	innerToolBar_->addToolBar(toolbar);
 	sectionsToToolbars[section] = toolbar;
 }

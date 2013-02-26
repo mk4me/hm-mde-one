@@ -16,6 +16,7 @@
 #include <coreui/CoreTitleBar.h>
 #include <coreUI/CoreWidgetAction.h>
 #include <coreUI/CoreAction.h>
+#include <boost/bind.hpp>
 
 using namespace coreUI;
 using namespace core;
@@ -30,12 +31,108 @@ struct FutureSerieData {
 Q_DECLARE_METATYPE(FutureSerieData);
 Q_DECLARE_METATYPE(Visualizer::VisualizerSerie*);
 
+QWidget * CoreVisualizerWidget::createSourceMenuWidget(QWidget * parent)
+{
+	QToolButton * dataSelectionButton = new QToolButton(parent);
+	dataSelectionButton->setText(tr("Data"));
+	dataSelectionButton->setIcon(QIcon(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png")));
+	dataSelectionButton->setPopupMode(QToolButton::MenuButtonPopup);
+	//wybór danych
+	QMenu * dataSelectioMenu = new QMenu(tr("Data"), dataSelectionButton);
+	dataSelectioMenu->setIcon(QIcon(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png")));
+	connect(dataSelectioMenu, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
+	connect(dataSelectioMenu, SIGNAL(aboutToHide()), this, SLOT(clearSourcesMenu()));
+	dataSelectionButton->setMenu(dataSelectioMenu);
+	
+	return dataSelectionButton;
+}
+
+QWidget * CoreVisualizerWidget::createActiveSerieSwitch(QWidget * parent)
+{
+	QComboBox * activeSerieSwitch = new QComboBox(parent);
+	connect(activeSerieSwitch, SIGNAL(currentIndexChanged(int)), this, SLOT(serieSelected(int)));
+	connect(activeSerieSwitch, SIGNAL(destroyed(QObject*)), this, SLOT(activeSerieSwitchDestroyed(QObject*)));
+
+	refreshActiveSerieSwitch(activeSerieSwitch);
+	activeSerieSwitches.push_back(activeSerieSwitch);
+	return activeSerieSwitch;
+}
+
+void CoreVisualizerWidget::refreshActiveSerieSwitchSettings(QComboBox * activeSerieSwitch)
+{	
+	activeSerieSwitch->blockSignals(true);
+	activeSerieSwitch->setDuplicatesEnabled(persistentActiveSerieSwitch->duplicatesEnabled());
+	activeSerieSwitch->setInsertPolicy(persistentActiveSerieSwitch->insertPolicy());
+	activeSerieSwitch->setMaxCount(persistentActiveSerieSwitch->maxCount());
+	activeSerieSwitch->setMaxVisibleItems(persistentActiveSerieSwitch->maxVisibleItems());
+	activeSerieSwitch->setMinimumContentsLength(persistentActiveSerieSwitch->minimumContentsLength());
+	activeSerieSwitch->setIconSize(persistentActiveSerieSwitch->iconSize());				
+	activeSerieSwitch->setSizeAdjustPolicy(persistentActiveSerieSwitch->sizeAdjustPolicy());		
+	activeSerieSwitch->blockSignals(false);	
+}
+
+void CoreVisualizerWidget::refreshActiveSerieSwitchContent(QComboBox * activeSerieSwitch)
+{	
+	activeSerieSwitch->blockSignals(true);
+	activeSerieSwitch->clear();
+	for(auto i = 0; i < persistentActiveSerieSwitch->count(); ++i)
+	{
+		auto text = persistentActiveSerieSwitch->itemText(i);
+		auto icon = persistentActiveSerieSwitch->itemIcon(i);
+		if(text.isEmpty() == true && icon.isNull() == true){
+			activeSerieSwitch->insertSeparator(i);
+		}else{
+			activeSerieSwitch->addItem(icon, text);
+		}
+	}
+	activeSerieSwitch->setCurrentIndex(persistentActiveSerieSwitch->currentIndex());
+	activeSerieSwitch->setEditText(persistentActiveSerieSwitch->currentText());
+
+	if(persistentActiveSerieSwitch->count() > 1){
+		activeSerieSwitch->setEnabled(true);
+	}else{
+		activeSerieSwitch->setEnabled(false);
+	}
+
+	activeSerieSwitch->blockSignals(false);	
+}
+
+void CoreVisualizerWidget::refreshActiveSerieSwitch(QComboBox * activeSerieSwitch)
+{
+	refreshActiveSerieSwitchSettings(activeSerieSwitch);
+	refreshActiveSerieSwitchContent(activeSerieSwitch);
+}
+
+void CoreVisualizerWidget::tryRefreshActiveSerieSwitchesSettings()
+{
+	for(auto it = activeSerieSwitches.begin(); it != activeSerieSwitches.end(); ++it){
+		refreshActiveSerieSwitchSettings(*it);
+	}
+}
+
+void CoreVisualizerWidget::tryRefreshActiveSerieSwitchesContent()
+{
+	for(auto it = activeSerieSwitches.begin(); it != activeSerieSwitches.end(); ++it){
+		refreshActiveSerieSwitchContent(*it);
+	}
+}
+
+void CoreVisualizerWidget::tryRefreshActiveSerieSwitches()
+{
+	tryRefreshActiveSerieSwitchesSettings();
+	tryRefreshActiveSerieSwitchesContent();
+}
+
+void CoreVisualizerWidget::activeSerieSwitchDestroyed(QObject * activeSerieSwitch)
+{
+	activeSerieSwitches.remove(dynamic_cast<QComboBox*>(activeSerieSwitch));
+}
 
 //! Zerujący konstruktor.
 //! \param parent
 //! \param flags
-CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags),
-	visualizer_(visualizer), activeSerieSwitch(nullptr)
+CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidget* parent, Qt::WindowFlags flags) : QFrame(parent, flags),
+	visualizer_(visualizer), persistentActiveSerieSwitch(nullptr)
 {
 	auto visWidget = visualizer->getOrCreateWidget();
 
@@ -46,32 +143,31 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	visualizer_->getSupportedTypes(supportedDataTypes);
 
 	auto layout = new QHBoxLayout;
+	layout->setContentsMargins(0,0,0,0);
 	setLayout(layout);
 	layout->addWidget(visWidget);
 
-	//wybór danych
-	QMenu * dataSelectioMenu = new QMenu(tr("Data"), visWidget);
-	dataSelectioMenu->setIcon(QIcon(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png")));
-	connect(dataSelectioMenu, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
-	connect(dataSelectioMenu, SIGNAL(aboutToHide()), this, SLOT(clearSourcesMenu()));
-	CoreWidgetAction * dataSelectAction = new CoreWidgetAction(this, tr("Settings"), CoreTitleBar::Left);
-	QToolButton * dataSelectionButton = new QToolButton(visWidget);
-	dataSelectionButton->setText(tr("Data"));
-	dataSelectionButton->setIcon(QIcon(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png")));
-	dataSelectionButton->setMenu(dataSelectioMenu);
-	dataSelectAction->setDefaultWidget(dataSelectionButton);
+	CoreCustomWidgetAction * dataSelectAction = new CoreCustomWidgetAction(
+		this,
+		CoreCustomWidgetAction::WidgetCreator(boost::bind(&CoreVisualizerWidget::createSourceMenuWidget, this, _1)),
+		tr("Settings"),
+		CoreTitleBar::Left
+	);
+	
 	addAction(dataSelectAction);
 
 	//ustawianie aktualnej serii danych
 	if(visualizer_->getMaxSeries() != 1){
-		activeSerieSwitch = new QComboBox(visWidget);
-		activeSerieSwitch->addItem(tr("No active session"));
-		activeSerieSwitch->setEnabled(false);
-		connect(activeSerieSwitch, SIGNAL(currentIndexChanged(int)), this, SLOT(serieSelected(int)));
-		CoreWidgetAction * activeDataSelectAction = new CoreWidgetAction(this, tr("Settings"), CoreTitleBar::Left);
-		activeDataSelectAction->setDefaultWidget(activeSerieSwitch);
+		persistentActiveSerieSwitch = new QComboBox(visWidget);
+		persistentActiveSerieSwitch->setVisible(false);
+		persistentActiveSerieSwitch->addItem(tr("No active session"));		
+		CoreCustomWidgetAction * activeDataSelectAction = new CoreCustomWidgetAction(
+			this,
+			CoreCustomWidgetAction::WidgetCreator(boost::bind(&CoreVisualizerWidget::createActiveSerieSwitch, this, _1)),
+			tr("Settings"),
+			CoreTitleBar::Left
+		);
 		addAction(activeDataSelectAction);
-		
 	}
 
 	//screenshot
@@ -240,12 +336,12 @@ void CoreVisualizerWidget::clearSourcesMenu()
 void CoreVisualizerWidget::removeAllSeries()
 {	
 	visualizer_->setActiveSerie(nullptr);
-	if(activeSerieSwitch != nullptr){
-		activeSerieSwitch->blockSignals(true);
-		activeSerieSwitch->clear();
-		activeSerieSwitch->addItem(tr("No active session"));
-		activeSerieSwitch->setEnabled(false);
-		activeSerieSwitch->blockSignals(false);
+	if(persistentActiveSerieSwitch != nullptr){
+		persistentActiveSerieSwitch->blockSignals(true);
+		persistentActiveSerieSwitch->clear();
+		persistentActiveSerieSwitch->addItem(tr("No active session"));
+		persistentActiveSerieSwitch->blockSignals(false);
+		tryRefreshActiveSerieSwitchesContent();
 	}
 	std::set<int>().swap(usedLocalNameIndexes);
 	std::map<core::TypeInfo, std::map<core::ObjectWrapperConstPtr, core::Visualizer::VisualizerSerie*>>().swap(activeData);
@@ -258,7 +354,7 @@ void CoreVisualizerWidget::serieSelected(int idx)
 	if(idx == 0){
 		visualizer_->setActiveSerie(nullptr);
 	}else{
-		visualizer_->setActiveSerie(activeSerieSwitch->itemData(idx).value<Visualizer::VisualizerSerie*>());
+		visualizer_->setActiveSerie(persistentActiveSerieSwitch->itemData(idx).value<Visualizer::VisualizerSerie*>());
 	}
 }
 
@@ -274,14 +370,15 @@ void CoreVisualizerWidget::addSerie()
 		usedLocalNameIndexes.insert(data.localIdx);
 	}
 
-	if(activeSerieSwitch != nullptr){
+	if(persistentActiveSerieSwitch != nullptr){
 		QVariant serieData;
 		serieData.setValue(serie);
-		activeSerieSwitch->addItem(QString::fromStdString(data.serieName), serieData);
-		activeSerieSwitch->setEnabled(true);
-		if(activeSerieSwitch->count() == 2){
-			activeSerieSwitch->setCurrentIndex(1);
+		persistentActiveSerieSwitch->addItem(QString::fromStdString(data.serieName), serieData);
+		if(persistentActiveSerieSwitch->count() == 2){
+			persistentActiveSerieSwitch->setCurrentIndex(1);
 		}
+
+		tryRefreshActiveSerieSwitchesContent();
 	}else{
 		visualizer_->setActiveSerie(serie);
 	}
@@ -307,13 +404,13 @@ void CoreVisualizerWidget::removeSerie()
 		serieLocalIdx.erase(it);
 	}
 
-	if(activeSerieSwitch != nullptr){
+	if(persistentActiveSerieSwitch != nullptr){
 
 		QVariant serieData;
 		serieData.setValue(serie);
 
-		int idx = activeSerieSwitch->findData(serieData);
-		if(activeSerieSwitch->currentIndex() == idx){
+		int idx = persistentActiveSerieSwitch->findData(serieData);
+		if(persistentActiveSerieSwitch->currentIndex() == idx){
 			int newIdx = 0;
 			if(activeData.empty() == false){
 				if(idx == 1){
@@ -323,12 +420,12 @@ void CoreVisualizerWidget::removeSerie()
 				}
 			}
 
-			activeSerieSwitch->setCurrentIndex(newIdx);
-			activeSerieSwitch->removeItem(idx);
-			if(activeSerieSwitch->count() == 1){
-				activeSerieSwitch->setEnabled(false);
-			}
+			persistentActiveSerieSwitch->setCurrentIndex(newIdx);
+			persistentActiveSerieSwitch->removeItem(idx);
 		}
+
+		tryRefreshActiveSerieSwitchesContent();
+
 	}else{
 		visualizer_->setActiveSerie(nullptr);
 	}

@@ -10,7 +10,7 @@
 #define HEADER_GUARD_FLEXITOOLBARSECTION_H__
 
 #include <coreui/Export.h>
-#include <QtGui/QWidget>
+#include <QtGui/QFrame>
 
 class QAction;
 
@@ -20,7 +20,7 @@ namespace Ui {
 
 namespace coreUI {
 
-class COREUI_EXPORT CoreFlexiToolBarSection : public QWidget
+class COREUI_EXPORT CoreFlexiToolBarSection : public QFrame
 {
     Q_OBJECT;
 

@@ -3,78 +3,139 @@
 #include <coreui/CoreVisualizerWidget.h>
 #include <QtGui/QHBoxLayout>
 #include <coreui/CoreWidgetAction.h>
+#include <boost/bind.hpp>
 
 using namespace coreUI;
 using namespace core;
 
 Q_DECLARE_METATYPE(CoreVisualizerWidget*);
 
-CoreCompoundVisualizerWidget::CoreCompoundVisualizerWidget(CoreCompoundVisualizerWidget & visualizer) : visualizerSwitch(new QComboBox)
+CoreCompoundVisualizerWidget::CoreCompoundVisualizerWidget(CoreCompoundVisualizerWidget & visualizer) : visualizerSwitch(nullptr), persistentVisualizerSwitch(new QComboBox)
 {
+	persistentVisualizerSwitch->setVisible(false);
 	init();
 }
 
-CoreCompoundVisualizerWidget::CoreCompoundVisualizerWidget() : visualizerSwitch(new QComboBox)
+CoreCompoundVisualizerWidget::CoreCompoundVisualizerWidget() : visualizerSwitch(nullptr), persistentVisualizerSwitch(new QComboBox)
 {
-	
+	persistentVisualizerSwitch->setVisible(false);
 }
 
 CoreCompoundVisualizerWidget::~CoreCompoundVisualizerWidget()
 {
+	delete persistentVisualizerSwitch;
+}
 
+void CoreCompoundVisualizerWidget::tryRefreshVisualizerSwitchSettings()
+{
+	if(visualizerSwitch != nullptr){
+		visualizerSwitch->blockSignals(true);
+		visualizerSwitch->setDuplicatesEnabled(persistentVisualizerSwitch->duplicatesEnabled());
+		visualizerSwitch->setInsertPolicy(persistentVisualizerSwitch->insertPolicy());
+		visualizerSwitch->setMaxCount(persistentVisualizerSwitch->maxCount());
+		visualizerSwitch->setMaxVisibleItems(persistentVisualizerSwitch->maxVisibleItems());
+		visualizerSwitch->setMinimumContentsLength(persistentVisualizerSwitch->minimumContentsLength());
+		visualizerSwitch->setIconSize(persistentVisualizerSwitch->iconSize());				
+		visualizerSwitch->setSizeAdjustPolicy(persistentVisualizerSwitch->sizeAdjustPolicy());		
+		visualizerSwitch->blockSignals(false);
+	}
+}
+
+void CoreCompoundVisualizerWidget::tryRefreshVisualizerSwitchContent()
+{
+	if(visualizerSwitch != nullptr){
+		visualizerSwitch->blockSignals(true);
+		visualizerSwitch->clear();
+		for(auto i = 0; i < persistentVisualizerSwitch->count(); ++i)
+		{
+			auto text = persistentVisualizerSwitch->itemText(i);
+			auto icon = persistentVisualizerSwitch->itemIcon(i);
+			if(text.isEmpty() == true && icon.isNull() == true){
+				visualizerSwitch->insertSeparator(i);
+			}else{
+				visualizerSwitch->addItem(icon, text);
+			}
+		}
+		visualizerSwitch->setCurrentIndex(persistentVisualizerSwitch->currentIndex());
+		visualizerSwitch->setEditText(persistentVisualizerSwitch->currentText());
+
+		visualizerSwitch->blockSignals(false);
+	}
+}
+
+void CoreCompoundVisualizerWidget::tryRefreshVisualizerSwitch()
+{
+	tryRefreshVisualizerSwitchSettings();
+	tryRefreshVisualizerSwitchContent();
+}
+
+void CoreCompoundVisualizerWidget::switchDestroyed(QObject * visSwitch)
+{
+	visualizerSwitch = nullptr;
+}
+
+QWidget * CoreCompoundVisualizerWidget::createVisualizerSwitch(QWidget * parent)
+{
+	if(visualizerSwitch != nullptr){
+		throw std::runtime_error("Visualizer switch already exists");
+	}
+
+	visualizerSwitch = new QComboBox(parent);	
+	connect(visualizerSwitch, SIGNAL(currentIndexChanged(int)), this, SLOT(setCurrentIndex(int)));
+	connect(visualizerSwitch, SIGNAL(destroyed(QObject*)), this, SLOT(switchDestroyed(QObject*)));
+	tryRefreshVisualizerSwitch();
+	
+	return visualizerSwitch;
 }
 
 void CoreCompoundVisualizerWidget::init()
 {
-	visualizerSwitch->setParent(this);
+	persistentVisualizerSwitch->setEditText(tr("No visualizer"));
 	setLayout(new QHBoxLayout);
-	visualizerSwitch->setEditText(tr("No visualizer"));
+	CoreCustomWidgetAction * switchVisualizerAction = new CoreCustomWidgetAction(
+		this,
+		CoreCustomWidgetAction::WidgetCreator(boost::bind(&CoreCompoundVisualizerWidget::createVisualizerSwitch, this, _1)),
+		tr("Utils"),
+		CoreTitleBar::Left
+	);
 
-	CoreWidgetAction * switchVisualizerAction = new CoreWidgetAction(this, tr("Utils"), CoreTitleBar::Left);
-	switchVisualizerAction->setDefaultWidget(visualizerSwitch);
 	addAction(switchVisualizerAction);
 }
 
 void CoreCompoundVisualizerWidget::addVisualizer(VisualizerPtr visualizer, const QString & visualizerName)
 {
 	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
-	if(visualizerSwitch->count() == 0){
-		visualizerWidget->setVisible(true);
-	}else{
-		visualizerWidget->setVisible(false);
-	}
-
-	layout()->addWidget(visualizerWidget);
 
 	QVariant data;
 	data.setValue(visualizerWidget);
-	visualizerSwitch->addItem(visualizer->getIcon(), visualizerName, data);
+	persistentVisualizerSwitch->addItem(visualizer->getIcon(), visualizerName, data);
+
+	layout()->addWidget(visualizerWidget);
+
+	tryRefreshVisualizerSwitchContent();
 }
 
 void CoreCompoundVisualizerWidget::addVisualizer(const QIcon & icon, VisualizerPtr visualizer, const QString & visualizerName)
 {
 	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
-	if(visualizerSwitch->count() == 0){
-		visualizerWidget->setVisible(true);
-	}else{
-		visualizerWidget->setVisible(false);
-	}
+	
+	QVariant data;
+	data.setValue(visualizerWidget);
+	persistentVisualizerSwitch->addItem(icon, visualizerName, data);	
 
 	layout()->addWidget(visualizerWidget);
 
-	QVariant data;
-	data.setValue(visualizerWidget);
-	visualizerSwitch->addItem(icon, visualizerName, data);
+	tryRefreshVisualizerSwitchContent();
 }
 
 int CoreCompoundVisualizerWidget::count() const
 {
-	return visualizerSwitch->count();
+	return persistentVisualizerSwitch->count();
 }
 
 int CoreCompoundVisualizerWidget::currentIndex() const
 {
-	return visualizerSwitch->currentIndex();
+	return persistentVisualizerSwitch->currentIndex();
 }
 
 VisualizerPtr CoreCompoundVisualizerWidget::currentVisualizer() const
@@ -90,24 +151,24 @@ VisualizerPtr CoreCompoundVisualizerWidget::currentVisualizer() const
 
 CoreVisualizerWidget * CoreCompoundVisualizerWidget::currentVisualizerWidget() const
 {
-	if(visualizerSwitch->count() == 0){
+	if(persistentVisualizerSwitch->count() == 0){
 		return nullptr;
 	}
 
-	return visualizerSwitch->itemData(visualizerSwitch->currentIndex()).value<CoreVisualizerWidget*>();
+	return persistentVisualizerSwitch->itemData(visualizerSwitch->currentIndex()).value<CoreVisualizerWidget*>();
 }
 
 bool CoreCompoundVisualizerWidget::nameDuplicatesEnabled() const
 {
-	return visualizerSwitch->duplicatesEnabled();
+	return persistentVisualizerSwitch->duplicatesEnabled();
 }
 
 int CoreCompoundVisualizerWidget::findVisualizer(core::VisualizerPtr visualizer) const
 {
 	int ret = -1;
 
-	for(int i = 0; i < visualizerSwitch->count(); ++i){
-		if(visualizerSwitch->itemData(i).value<CoreVisualizerWidget*>()->getVisualizer() == visualizer){
+	for(int i = 0; i < persistentVisualizerSwitch->count(); ++i){
+		if(persistentVisualizerSwitch->itemData(i).value<CoreVisualizerWidget*>()->getVisualizer() == visualizer){
 			ret = i;
 			break;
 		}
@@ -118,143 +179,149 @@ int CoreCompoundVisualizerWidget::findVisualizer(core::VisualizerPtr visualizer)
 
 int CoreCompoundVisualizerWidget::findVisualizer(const QString & visualizerName) const
 {
-	return visualizerSwitch->findText(visualizerName);
+	return persistentVisualizerSwitch->findText(visualizerName);
 }
 
 void CoreCompoundVisualizerWidget::insertVisualizer(int index, core::VisualizerPtr visualizer, const QString & visualizerName)
 {
 	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
-	if(visualizerSwitch->count() == 0){
-		visualizerWidget->setVisible(true);
-	}else{
-		visualizerWidget->setVisible(false);
-	}
-
-	layout()->addWidget(visualizerWidget);
 
 	QVariant data;
 	data.setValue(visualizerWidget);
-	visualizerSwitch->insertItem(index, visualizer->getIcon(), visualizerName, data);
+	persistentVisualizerSwitch->insertItem(index, visualizer->getIcon(), visualizerName, data);
+
+	layout()->addWidget(visualizerWidget);
+
+	tryRefreshVisualizerSwitchContent();
 }
 
 void CoreCompoundVisualizerWidget::insertVisualizer(int index, const QIcon & icon, core::VisualizerPtr visualizer, const QString & visualizerName)
 {
-	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
-	if(visualizerSwitch->count() == 0){
-		visualizerWidget->setVisible(true);
-	}else{
-		visualizerWidget->setVisible(false);
-	}
-
-	layout()->addWidget(visualizerWidget);
+	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);	
 
 	QVariant data;
 	data.setValue(visualizerWidget);
-	visualizerSwitch->insertItem(index, icon, visualizerName, data);
+	persistentVisualizerSwitch->insertItem(index, icon, visualizerName, data);
+
+	layout()->addWidget(visualizerWidget);
+
+	tryRefreshVisualizerSwitchContent();
 }
 
 QComboBox::InsertPolicy CoreCompoundVisualizerWidget::insertPolicy() const
 {
-	return visualizerSwitch->insertPolicy();
+	return persistentVisualizerSwitch->insertPolicy();
 }
 
 void CoreCompoundVisualizerWidget::insertSeparator(int index)
 {
-	visualizerSwitch->insertSeparator(index);
+	persistentVisualizerSwitch->insertSeparator(index);
 }
 
 QIcon CoreCompoundVisualizerWidget::visualizerIcon(int index) const
 {
-	return visualizerSwitch->itemIcon(index);
+	return persistentVisualizerSwitch->itemIcon(index);
 }
 
 QString CoreCompoundVisualizerWidget::visualizerText(int index) const
 {
-	return visualizerSwitch->itemText(index);
+	return persistentVisualizerSwitch->itemText(index);
 }
 
 int CoreCompoundVisualizerWidget::maxCount() const
 {
-	return visualizerSwitch->maxCount();
+	return persistentVisualizerSwitch->maxCount();
 }
 
 int CoreCompoundVisualizerWidget::maxVisibleItems() const
 {
-	return visualizerSwitch->maxVisibleItems();
+	return persistentVisualizerSwitch->maxVisibleItems();
 }
 
 int CoreCompoundVisualizerWidget::minimumContentsLength() const
 {
-	return visualizerSwitch->minimumContentsLength();
+	return persistentVisualizerSwitch->minimumContentsLength();
 }
 
 void CoreCompoundVisualizerWidget::removeVisualizer(int index)
 {
-	CoreVisualizerWidget * visWidget = visualizerSwitch->itemData(index).value<CoreVisualizerWidget *>();
+	CoreVisualizerWidget * visWidget = persistentVisualizerSwitch->itemData(index).value<CoreVisualizerWidget *>();
 
 	if(index == currentIndex()){
 		visWidget->setVisible(false);
-		visualizerSwitch->removeItem(index);
+		persistentVisualizerSwitch->removeItem(index);
 		innerShowCurrentIndex(currentIndex());
 	}
 
 	layout()->removeWidget(visWidget);
 	delete visWidget;
+
+	tryRefreshVisualizerSwitchContent();
 }
 
 void CoreCompoundVisualizerWidget::setNameDuplicatesEnabled(bool enable)
 {
-	visualizerSwitch->setDuplicatesEnabled(enable);
+	persistentVisualizerSwitch->setDuplicatesEnabled(enable);
+	tryRefreshVisualizerSwitchSettings();
 }
 
 void CoreCompoundVisualizerWidget::setIconSize(const QSize & size)
 {
-	visualizerSwitch->setIconSize(size);
+	persistentVisualizerSwitch->setIconSize(size);
+	tryRefreshVisualizerSwitchSettings();
 }
 
 void CoreCompoundVisualizerWidget::setInsertPolicy(QComboBox::InsertPolicy policy)
 {
-	visualizerSwitch->setInsertPolicy(policy);
+	persistentVisualizerSwitch->setInsertPolicy(policy);
+	tryRefreshVisualizerSwitchSettings();
 }
 
 void CoreCompoundVisualizerWidget::setVisualizerIcon(int index, const QIcon & icon)
 {
-	visualizerSwitch->setItemIcon(index, icon);
+	persistentVisualizerSwitch->setItemIcon(index, icon);
+	tryRefreshVisualizerSwitchContent();
 }
 
 void CoreCompoundVisualizerWidget::setVisualizerText(int index, const QString & text)
 {
-	visualizerSwitch->setItemText(index, text);
+	persistentVisualizerSwitch->setItemText(index, text);
+	tryRefreshVisualizerSwitchContent();
 }
 
 void CoreCompoundVisualizerWidget::setMaxCount(int max)
 {
-	visualizerSwitch->setMaxCount(max);
+	persistentVisualizerSwitch->setMaxCount(max);
+	tryRefreshVisualizerSwitchSettings();
 }
 
 void CoreCompoundVisualizerWidget::setMaxVisibleVisualizers(int maxItems)
 {
-	visualizerSwitch->setMaxVisibleItems(maxItems);
+	persistentVisualizerSwitch->setMaxVisibleItems(maxItems);
+	tryRefreshVisualizerSwitchSettings();
 }
 
 void CoreCompoundVisualizerWidget::setMinimumContentsLength(int characters)
 {
-	visualizerSwitch->setMinimumContentsLength(characters);
+	persistentVisualizerSwitch->setMinimumContentsLength(characters);
+	tryRefreshVisualizerSwitchSettings();
 }
 
 void CoreCompoundVisualizerWidget::setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy policy)
 {
-	visualizerSwitch->setSizeAdjustPolicy(policy);
+	persistentVisualizerSwitch->setSizeAdjustPolicy(policy);
+	tryRefreshVisualizerSwitchSettings();
 }
 
 QComboBox::SizeAdjustPolicy CoreCompoundVisualizerWidget::sizeAdjustPolicy() const
 {
-	return visualizerSwitch->sizeAdjustPolicy();
+	return persistentVisualizerSwitch->sizeAdjustPolicy();
 }
 
 void CoreCompoundVisualizerWidget::clear()
 {
-	visualizerSwitch->clear();
+	persistentVisualizerSwitch->clear();
+	tryRefreshVisualizerSwitchContent();
 }
 
 void CoreCompoundVisualizerWidget::setCurrentIndex(int index)
@@ -265,9 +332,15 @@ void CoreCompoundVisualizerWidget::setCurrentIndex(int index)
 		currentVisWidget->setVisible(false);
 	}
 
-	visualizerSwitch->blockSignals(true);
-	visualizerSwitch->setCurrentIndex(index);
-	visualizerSwitch->blockSignals(false);
+	persistentVisualizerSwitch->blockSignals(true);
+	persistentVisualizerSwitch->setCurrentIndex(index);
+	persistentVisualizerSwitch->blockSignals(false);
+
+	if(visualizerSwitch != nullptr){
+		visualizerSwitch->blockSignals(true);
+		visualizerSwitch->setCurrentIndex(index);
+		visualizerSwitch->blockSignals(false);
+	}
 
 	innerShowCurrentIndex(index);
 }
@@ -275,9 +348,14 @@ void CoreCompoundVisualizerWidget::setCurrentIndex(int index)
 void CoreCompoundVisualizerWidget::innerShowCurrentIndex(int idx)
 {
 	if(idx == -1){
-		visualizerSwitch->setEditText(tr("No visualizers"));
+		persistentVisualizerSwitch->setEditText(tr("No visualizers"));
+		if(visualizerSwitch != nullptr){
+			visualizerSwitch->blockSignals(true);
+			visualizerSwitch->setEditText(tr("No visualizers"));
+			visualizerSwitch->blockSignals(false);
+		}
 	}else{
-		visualizerSwitch->itemData(idx).value<CoreVisualizerWidget *>()->setVisible(true);	
+		persistentVisualizerSwitch->itemData(idx).value<CoreVisualizerWidget *>()->setVisible(true);	
 	}
 
 	emit currentIndexChanged(idx);

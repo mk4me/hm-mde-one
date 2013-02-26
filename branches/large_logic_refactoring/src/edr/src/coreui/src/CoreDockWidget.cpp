@@ -7,13 +7,13 @@ using namespace coreUI;
 CoreDockWidget::CoreDockWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)
     : QDockWidget(title, parent, flags)
 {
-
+	setContentsMargins(0,0,0,0);
 }
 
 CoreDockWidget::CoreDockWidget(QWidget * parent, Qt::WindowFlags flags)
     : QDockWidget(parent, flags)
 {
-    
+    setContentsMargins(0,0,0,0);
 }
 
 CoreDockWidget::~CoreDockWidget()

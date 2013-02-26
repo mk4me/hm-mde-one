@@ -5,7 +5,8 @@
 using namespace coreUI;
 
 CoreFlexiToolBarSection::CoreFlexiToolBarSection(const QString & sectionName, const QPixmap & icon,
-	QAction * configAction, QWidget* parent, Qt::WindowFlags f) : ui(new Ui::CoreFlexiToolBarSection), innerWidget_(nullptr)
+	QAction * configAction, QWidget* parent, Qt::WindowFlags f) : QFrame(parent, f),
+	ui(new Ui::CoreFlexiToolBarSection), innerWidget_(nullptr)
 {
 	ui->setupUi(this);
 	setName(sectionName);

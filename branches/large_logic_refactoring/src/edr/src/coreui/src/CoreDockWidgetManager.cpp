@@ -12,6 +12,7 @@ CoreDockWidgetManager::CoreDockWidgetManager( QWidget *parent /*= 0*/, Qt::Windo
 	QWidget(parent, flags), tabWidget(new QTabWidget)
 {
 	auto layout = new QHBoxLayout;
+	layout->setContentsMargins(0,0,0,0);
 	layout->addWidget(tabWidget);
 	tabWidget->setParent(this);
 	setLayout(layout);

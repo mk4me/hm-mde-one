@@ -12,12 +12,13 @@
 #include <coreui/Export.h>
 #include <map>
 #include <corelib/Visualizer.h>
-#include <QtGui/QWidget>
+#include <QtGui/QFrame>
 
 class QAction;
 class QLabel;
 class QComboBox;
 class QCheckBox;
+class QMenu;
 
 namespace coreUI {
 
@@ -25,13 +26,16 @@ namespace coreUI {
 	class CoreAction;
 
 //! Widget wizualizacyjny.
-class COREUI_EXPORT CoreVisualizerWidget : public QWidget
+class COREUI_EXPORT CoreVisualizerWidget : public QFrame
 {
     Q_OBJECT
 
 private:
 	//! Wybór aktywnej serii
-	QComboBox * activeSerieSwitch;
+	QComboBox * persistentActiveSerieSwitch;
+
+	//! Wybór aktywnej serii
+	std::list<QComboBox*> activeSerieSwitches;
 	//! Akcja czyszcząca wszystkie dane aktualnego wizualizatora
 	QAction * dataDeselectAll;
 	//! Zbiór typów danych wspieranych przez wizualizator
@@ -59,6 +63,23 @@ public:
     core::VisualizerPtr getVisualizer();
 
 private:
+
+	QWidget * createActiveSerieSwitch(QWidget * parent);
+
+	QWidget * createSourceMenuWidget(QWidget * parent);
+
+	void refreshActiveSerieSwitchSettings(QComboBox * activeSerieSwitch);
+
+	void refreshActiveSerieSwitchContent(QComboBox * activeSerieSwitch);
+
+	void refreshActiveSerieSwitch(QComboBox * activeSerieSwitch);
+
+	void tryRefreshActiveSerieSwitchesSettings();
+
+	void tryRefreshActiveSerieSwitchesContent();
+
+	void tryRefreshActiveSerieSwitches();
+
 	//! Generuje kolejny wolny lokalny identyfikator - id nie zmiania się przez cały czas dostępności danych
 	//! \param startIdx Startowy identyfikator od którego zaczynamy szukać kolejnego wolnego - w szczególności będzie to on sam
 	//! \return Kolejny wolny lokalny identyfikator dla danych bez nazwy
@@ -73,6 +94,8 @@ private:
 	static const bool getDataSource(core::ObjectWrapperConstPtr data, std::string & dataSource);
         
 private slots:
+
+	void activeSerieSwitchDestroyed(QObject * activeSerieSwitch);
 
 	//! Usuwa wszystkie stworzone serie danych
     void removeAllSeries();  

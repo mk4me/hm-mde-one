@@ -21,7 +21,7 @@ CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ui
     ui->setupUi(this);
 	ui->titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents, true);
 	ui->iconPlaceholder->setVisible(false);
-	ui->actionDock_Undock->setChecked(floating);
+	ui->actionDock_Undock->setChecked(!floating);
 	ui->buttonFloat->setDefaultAction(ui->actionDock_Undock);
 	ui->buttonClose->setDefaultAction(ui->actionClose);
 	leftToolbar->setParent(ui->leftToolbarPlaceholder);
@@ -544,4 +544,12 @@ void CoreTitleBar::supplyCoreTitleBarWithActions(CoreTitleBar * titleBar, const 
 	for(auto it = actions.begin(); it != actions.end(); ++it){
 		titleBar->addAction(*it);
 	}
+}
+
+void CoreTitleBar::paintEvent(QPaintEvent * event)
+{
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
