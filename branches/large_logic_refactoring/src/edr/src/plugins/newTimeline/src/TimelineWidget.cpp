@@ -171,7 +171,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     QWidget * w = new QWidget();
     w->setObjectName(QString::fromUtf8("leftContainer"));
     QHBoxLayout * l = new QHBoxLayout();
-    l->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed));
+    l->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed));
     l->addWidget(leftTabButton);
     w->setLayout(l);
     layout->addWidget(w);
@@ -189,7 +189,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     w->setObjectName(QString::fromUtf8("rightContainer"));
     l = new QHBoxLayout();
     l->addWidget(rightTabButton);
-    l->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed));
+    l->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed));
     w->setLayout(l);
     layout->addWidget(w);
 
@@ -199,7 +199,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     //to powinno być stylowane za pomocą CSS, niestety Qwt operuje tylko na paletach
     QPalette sliderPalette(this->palette());
     sliderPalette.setBrush(QPalette::Light, QBrush(QColor(135, 177, 255)));
-    sliderPalette.setBrush(QPalette::Mid, QBrush(QColor(255,0,0)));
+    sliderPalette.setBrush(QPalette::Mid, QBrush(QColor(255,255,255)));
     sliderPalette.setBrush(QPalette::Dark, QBrush(QColor(135, 177, 255)));
     sliderPalette.setBrush(QPalette::Button, QBrush(QColor(0,0,0)));
     slider->setPalette(sliderPalette);
@@ -208,7 +208,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     widget->setObjectName("timelineControls");
     widget->setLayout(new QVBoxLayout());
     widget->layout()->setSpacing(4);
-    widget->layout()->setContentsMargins(1,0,1,0);
+    widget->layout()->setContentsMargins(0,0,0,0);
     widget->layout()->addWidget(slider);
     slider->setContentsMargins(4,0,4,0);
     widget->layout()->addWidget(timelineTabs);

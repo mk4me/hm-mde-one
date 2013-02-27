@@ -257,7 +257,10 @@ void HmmMainWindow::customViewInit(QWidget * console)
 	topMainWindow->setSetsClosable(true);
     topMainWindow->setTabPosition(QTabWidget::South);
     topMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    bottomMainWindow = new QMainWindow();
+    bottomMainWindow = new QFrame();
+	bottomMainWindow->setObjectName(QString("bottomMainWindow"));
+	bottomMainWindow->setLayout(new QVBoxLayout);
+	bottomMainWindow->layout()->setContentsMargins(0,0,0,0);
     bottomMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     connect(topMainWindow, SIGNAL(currentSetChanged(int)), treeUsageContext.get(), SLOT(refresh()));
 	connect(topMainWindow, SIGNAL(setCloseRequested(int)), this, SLOT(onTabCloseRequest(int)));
@@ -283,7 +286,7 @@ void HmmMainWindow::customViewInit(QWidget * console)
     //trzeba to zgrać razem z max wysokością dla wizualizatorów
     bottomMainWindow->setMaximumHeight(120); // tymczasowo
     bottomMainWindow->setMinimumHeight(120); // tymczasowo
-    bottomMainWindow->layout()->setMargin(10);
+    //bottomMainWindow->layout()->setMargin(10);
     //bottomMainWindow->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
     analisisArea->setLayout(v);
 
@@ -701,7 +704,7 @@ void HmmMainWindow::highlightVisualizer(const VisualizerPtr& visualizer )
                 topMainWindow->setCurrentSet(set);
             }
             desc.visualizerWidget->setStyleSheet(QString::fromUtf8(
-                "CoreVisualizerWidget > .QWidget {" \
+                "coreUI--CoreVisualizerWidget {" \
                 "border: 2px solid red;"\
                 "}"));
         } else {
@@ -799,8 +802,9 @@ void HmmMainWindow::showTimeline()
                 QWidget* controlWidget = service->getControlWidget();
                 
                 QWidget* settingsWidget = service->getSettingsWidget();
-
-				bottomMainWindow->setCentralWidget(controlWidget);
+				dynamic_cast<QVBoxLayout*>(bottomMainWindow->layout())->addStretch();
+				bottomMainWindow->layout()->addWidget(controlWidget);
+				dynamic_cast<QVBoxLayout*>(bottomMainWindow->layout())->addStretch();
                 timelineVisible = true;
             }
         }

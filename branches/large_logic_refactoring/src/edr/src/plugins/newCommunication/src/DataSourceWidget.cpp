@@ -248,18 +248,18 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	userEdit->installEventFilter(loginEventFilter);
 	passwordEdit->installEventFilter(loginEventFilter);
 
-	dataSource->setOfflineMode(true);
-	onLogin("matiegon", "Matiegon9");
-	//onLogin("bdrdemo", ";bdrdemo");
-	setCurrentWidget(motionDataTab);
-	setTabEnabled(indexOf(configTab), false);
+	//dataSource->setOfflineMode(true);
+	//onLogin("matiegon", "Matiegon9");
+	////onLogin("bdrdemo", ";bdrdemo");
+	//setCurrentWidget(motionDataTab);
+	//setTabEnabled(indexOf(configTab), false);
+	//setTabEnabled(indexOf(userDataTab), false);
+
+
+	setTabEnabled(indexOf(motionDataTab), false);
 	setTabEnabled(indexOf(userDataTab), false);
 
-
-	/*setTabEnabled(indexOf(motionDataTab), false);
-	setTabEnabled(indexOf(userDataTab), false);
-
-	setCurrentWidget(configTab);*/
+	setCurrentWidget(configTab);
 }
 
 DataSourceWidget::~DataSourceWidget()

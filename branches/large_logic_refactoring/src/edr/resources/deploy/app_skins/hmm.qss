@@ -141,6 +141,10 @@ coreUI--CoreFlexiToolBarSection .QLabel {
 	border: none;
 }
 
+coreUI--CoreVisualizerWidget:hover {
+	border: 2px solid rgb(135, 177, 255);
+}
+
 /* EXPERIMENTAL */
 
 coreUI--CoreTitleBar {
@@ -261,22 +265,28 @@ QLabel {
 	 max-width: 3em;
  }
  
- 
- QDoubleSpinBox::up-button {
-     /*subcontrol-origin: border;
-     subcontrol-position: top right;
-	 */
-     border: 1px solid #888888;
-     border-radius: 4px;
- }
  /*
+ QDoubleSpinBox::up-button {
+     subcontrol-origin: border;
+     subcontrol-position: top right;
+     border: none;
+	 background: white;
+	 padding-top: 2px;
+	 padding-right: 2px;
+	 image: url(:/resources/icons/trojkat-8x8-dogory.png);
+ }
+ 
  QDoubleSpinBox::down-button {
      subcontrol-origin: border;
      subcontrol-position: bottom right;
-     border: 1px solid #888888;
-     border-radius: 4px;
+     border: none;
+	 background: white;
+	 padding-bottom: 2px;
+	 padding-right: 2px;
+	 image: url(:/resources/icons/trojkat-8x8-dodolu.png);
  }
  */
+ 
 
 QScrollBar:horizontal {											 
 	border: 1px ridge grey;											 

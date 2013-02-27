@@ -45,7 +45,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
     //TODO zapisać styl widgeta, dokleić nasz styl i ustawić a nie nadpisywać
 
     contextWidget->setStyleSheet(QString::fromUtf8(
-        "CoreVisualizerWidget > .QWidget, CoreVisualizerWidget > .QWidget:focus:hover {" \
+        "coreUI--CoreVisualizerWidget, coreUI--CoreVisualizerWidget:focus:hover {" \
             "border: 2px solid orange;"\
         "}"
     ));

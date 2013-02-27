@@ -264,7 +264,7 @@ private:
     //! górny widget aplikacji gdzie trafiaja dock Widgety
     coreUI::CoreDockWidgetManager* topMainWindow;
     //! dolny widget aplikacji na timeline
-    QMainWindow* bottomMainWindow;
+    QFrame* bottomMainWindow;
     //! widget, gdzie trafiaja filtry analiz
     std::vector<DataFilterWidget*> dataFilterWidgets;
     //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z którego elementu powstały

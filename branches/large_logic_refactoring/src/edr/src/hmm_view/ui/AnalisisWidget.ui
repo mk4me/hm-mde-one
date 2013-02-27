@@ -550,6 +550,10 @@ coreUI--CoreVisualizerWidget * {
 color: black;
 }
 
+coreUI--CoreVisualizerWidget:hover {
+	border: 2px solid rgb(135, 177, 255);
+}
+
 /* styl titlebarów i ich dzieci */
 coreUI--CoreTitleBar {
  background: black;
@@ -635,8 +639,7 @@ QMainWindow::separator:horizontal:hover {
  margin: 0px;
  padding-left: 4px;
  padding-right: 4px;
- border-left: 1px solid black;
- border-right: 1px solid black;
+border: none;
 }
 
 #timelineControls QAbstractSpinBox{
@@ -657,15 +660,19 @@ QMainWindow::separator:horizontal:hover {
  spacing: 0px;
  margin: 0px;
  padding: 0px;
- background: rgb(101, 101, 101); 
+ background: rgb(91, 91, 91); 
 }
 
 #leftContainer, #centerContainer, #rightContainer {
  border: 2px solid rgb(135, 177, 255);
- background: rgb(101, 101, 101); 
+ background: rgb(91, 91, 91); 
  spacing: 0px;
  margin: 0px;
  padding: 0px;
+}
+
+TimeSliderWidget {
+	padding-top: 4px;
 }
 
 #leftContainer {
@@ -693,8 +700,6 @@ QMainWindow::separator:horizontal:hover {
  padding: 0px;
  background: transparent;
 }
-
-
 
 QTabBar {
  background: rgb(91, 91, 91);
@@ -726,6 +731,14 @@ color: white;
 
 QTabBar::tab:hover {
     background-color: #898989;
+}
+
+QFrame#bottomMainWindow {
+	background: rgb(91, 91, 91);
+	border: 1px solid black;
+	border-radius: 4px;
+	margin: 0px;
+	padding: 0px;
 }</string>
      </property>
     </widget>
