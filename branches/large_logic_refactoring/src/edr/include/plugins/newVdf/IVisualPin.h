@@ -32,6 +32,7 @@ public:
 	virtual void markConnected() = 0;
 	virtual int getIndex() const = 0;
 	virtual void setIndex(int val) = 0;
+    virtual QPointF getConnectionPosHint() = 0;
 	virtual core::weak_ptr<IVisualNode> getParent() const = 0;
 	virtual void setParent(core::weak_ptr<IVisualNode> val) = 0;
 	//virtual void setConnection(core::weak_ptr<IVisualConnection> connection) = 0;

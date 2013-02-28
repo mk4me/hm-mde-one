@@ -24,7 +24,7 @@ void ConnectState::begin( ISceneStateConstPtr lastState )
 	for (auto it = connections.impossible.begin(); it != connections.impossible.end(); ++it) {
 		(*it)->markUnconnective();
 	}
-    auto pos = firstPin->visualItem()->scenePos();
+    auto pos = firstPin->getConnectionPosHint();
     auto factories = stateMachine->getSceneModel()->getBuilder().getFactories();
     connection = factories->getCurrentConnectionsFactory()->createConnection();
     pin1 = factories->getCurrentPinsFactory()->createInputPin();
@@ -35,8 +35,6 @@ void ConnectState::begin( ISceneStateConstPtr lastState )
     pin1->visualItem()->setPos(pos);
     pin2->visualItem()->setPos(pos);
 
-    //tempLine = stateMachine->getScene()->addLine(pos.x(), pos.y(), pos.x(), pos.y());
-    //tempLine->setPen(QPen(Qt::red));
 }
 
 ConnectState::ConnectState( SceneStateMachine* scene ) : 
@@ -47,36 +45,25 @@ ConnectState::ConnectState( SceneStateMachine* scene ) :
 
 void ConnectState::selectionChanged( const QList<QGraphicsItem*>& list )
 {
-    //if (list.size() == 1) {
-    //    auto* item = list.first();
-	//	auto model = stateMachine->getScene()->getSceneModel();
-	//	IVisualPinPtr pin1 = firstPin;
-	//	IVisualPinPtr pin2 = core::dynamic_pointer_cast<IVisualPin>(model->tryGetVisualItem(item));
-    //    if (pin1 && pin2 && model->connectionPossible(pin1, pin2)) {
-	//		stateMachine->getCommandStack()->addCommand(ICommandPtr(new AddConnectionCommand(model, pin1, pin2)));
-    //        //model->addConnection(pin1, pin2);
-    //        stateMachine->setState(stateMachine->getNormalState());
-    //    }
-    //}
 }
 
 bool ConnectState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
 {
-    //UTILS_ASSERT(tempLine);
-
-    auto pos1 = firstPin->visualItem()->scenePos();
+    auto pos1 = firstPin->getConnectionPosHint();
     auto pos2 = e->scenePos();
-    //tempLine->setLine(pos1.x(), pos1.y(), pos2.x(), pos2.y());
-    //tempLine->update();
-    pin2->visualItem()->setPos(e->scenePos());
+
+    if (firstPin->isType(IVisualItem::InputPin)) {
+        pin2->visualItem()->setPos(e->scenePos());
+    } else {
+        pin1->visualItem()->setPos(e->scenePos());
+    }
+    
     connection->visualItem()->update();
     return true;
 }
 
 void ConnectState::end()
 {
-    //delete tempLine;
-    //tempLine = nullptr;
     stateMachine->getScene()->removeItem(connection->visualItem());
     connection = IVisualConnectionPtr();
     pin1 = IVisualInputPinPtr();
@@ -106,7 +93,6 @@ bool ConnectState::mousePressEvent( QGraphicsSceneMouseEvent* e )
                 if (model->connectionPossible(pin1, pin2)) {
                     PinResolver p(pin1, pin2);
                     stateMachine->getCommandStack()->addCommand(ICommandPtr(new AddConnectionCommand(model, p, p)));
-                    //model->addConnection(pin1, pin2);
                     break;
                 }
             }
@@ -116,6 +102,5 @@ bool ConnectState::mousePressEvent( QGraphicsSceneMouseEvent* e )
         return true;
     }
 
-	// tworzenie polaczenia - w selectionChanged...
 	return false;
 }

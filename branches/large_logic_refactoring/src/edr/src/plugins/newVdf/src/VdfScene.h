@@ -48,9 +48,6 @@ public:
 public slots:
     void addVisualItem(IVisualItemPtr item);
 	void removeVisualItem(IVisualItemPtr item);
-	void normalPressed();
-	void connectPressed();
-	void groupPressed();
 	void setBackgroundStrategy(IBackgroundStrategyPtr strategy);
 
 public:

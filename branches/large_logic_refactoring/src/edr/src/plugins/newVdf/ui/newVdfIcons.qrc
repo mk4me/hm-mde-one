@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="resources/icons/vdf">
+	<file alias="processor.png">../../../../resources/embedded/icons/vdf/processor.png</file>
+	<file alias="sink.png">../../../../resources/embedded/icons/vdf/sink.png</file>
+	<file alias="source.png">../../../../resources/embedded/icons/vdf/source.png</file>
+  </qresource>
+</RCC>

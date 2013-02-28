@@ -50,9 +50,6 @@ public slots:
 	void deleteSelected();
 	void clearScene();
 
-protected:
-    //virtual void wheelEvent(QWheelEvent *event);
-
 private:
     VdfScene* scene;  
     VdfView* view;

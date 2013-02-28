@@ -17,7 +17,7 @@ ADD_PROJECT(plugin_newCommunication "QT;CURL;WSDLPULL;TINYXML;corelib;WEBSERVICE
 ADD_PROJECT(plugin_kinematic "QT;BOOST;corelib;coreui;plugin_c3d;KINEMATICLIB;OSG;C3DLIB" "plugins/kinematic")
 ADD_PROJECT(plugin_newChart "BOOST;OSG;QT;QWT;corelib;coreui;plugin_c3d;C3DLIB" "plugins/newChart")
 ADD_PROJECT(plugin_subject "BOOST;OSG;QT;corelib;UTILS;C3DLIB;KINEMATICLIB" "plugins/subject")
-ADD_PROJECT(plugin_newVdf "BOOST;QT;DFLIB;corelib" "plugins/newVdf")
+ADD_PROJECT(plugin_newVdf "BOOST;QT;DFLIB;corelib;coreui" "plugins/newVdf")
 #ADD_PROJECT(plugin_python "BOOST;QT;corelib" "plugins/python")
 
 SET_PROJECTS_GROUP("view")

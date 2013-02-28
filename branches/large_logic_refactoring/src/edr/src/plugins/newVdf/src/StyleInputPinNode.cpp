@@ -118,3 +118,8 @@ df::IInputPin* vdf::StyleInputPinNode::getModelPin() const
     df::ISinkNode* sink = dynamic_cast<df::ISinkNode*>(modelNode);
     return sink->inputPin(index);
 }
+
+QPointF vdf::StyleInputPinNode::getConnectionPosHint()
+{
+    return visualItem()->scenePos() + strategy->getConnectionEndShift();
+}

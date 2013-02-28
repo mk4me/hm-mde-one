@@ -181,6 +181,10 @@ SET_UI_FILES (
 	TypesWindow.ui
 )
 
+SET_RC_FILES (
+	newVdfIcons.qrc
+)
+
 SET_PRECOMPILED_HEADER( NewVdfPCH.h NewVdfPCH.cpp )
 
 END_PROJECT()

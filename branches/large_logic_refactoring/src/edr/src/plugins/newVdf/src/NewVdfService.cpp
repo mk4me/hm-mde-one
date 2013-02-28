@@ -54,13 +54,7 @@ NewVdfService::~NewVdfService()
 
 QWidget* NewVdfService::getWidget() // core::IActionsGroupManager * actionsManager )
 {
-	QWidget* widget = new QWidget();
-	QLayout* layout = new QHBoxLayout(widget);
-//	layout->addWidget(commandStackDebug);
-//	commandStackDebug->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-	layout->addWidget(newVdfWidget);
-	widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    return widget;
+	return newVdfWidget;
 }
 
 QWidget* NewVdfService::getSettingsWidget() // core::IActionsGroupManager * actionsManager )

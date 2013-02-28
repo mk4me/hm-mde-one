@@ -134,21 +134,6 @@ void VdfScene::addVisualItem( IVisualItemPtr item )
     addItem(item->visualItem());
 }
 
-void VdfScene::normalPressed()
-{
-	stateMachine->setState(stateMachine->getNormalState());
-}
-
-void VdfScene::connectPressed()
-{
-	//stateMachine->setState(stateMachine->getNormalState());
-}
-
-void VdfScene::groupPressed()
-{
-	//stateMachine->setState(stateMachine->getPreGroupState());
-}
-
 void VdfScene::changeCursor( Qt::CursorShape cursor )
 {
 	QList<QGraphicsView*> viewList = views();

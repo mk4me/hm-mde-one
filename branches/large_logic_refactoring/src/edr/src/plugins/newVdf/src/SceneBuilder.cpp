@@ -45,11 +45,11 @@ SceneBuilder::Pins SceneBuilder::addInputPins( IVisualSinkNodePtr sink, int coun
     Pins pins;
     for (int i = 0; i < count; ++i) {
         IVisualInputPinPtr pin = factories->getCurrentPinsFactory()->createInputPin();
+        sink->addInputPin(pin);
+		pin->setParent(sink);
         pin->visualItem()->setFlag(QGraphicsItem::ItemIsMovable, false);
 		pin->visualItem()->setZValue(Z<IVisualItem::Pin, false>::value());
-		pin->setParent(sink);
 		pin->setIndex(i);
-        sink->addInputPin(pin);
         pins.push_back(pin);
     }
     return std::move(pins);
@@ -60,11 +60,11 @@ SceneBuilder::Pins SceneBuilder::addOutputPins( IVisualSourceNodePtr source, int
     Pins pins;
     for (int i = 0; i < count; ++i) {
         IVisualOutputPinPtr pin = factories->getCurrentPinsFactory()->createOutputPin();
+        source->addOutputPin(pin);
+		pin->setParent(source);
         pin->visualItem()->setFlag(QGraphicsItem::ItemIsMovable, false);
 		pin->visualItem()->setZValue(Z<IVisualItem::Pin, false>::value());
-		pin->setParent(source);
 		pin->setIndex(i);
-        source->addOutputPin(pin);
         pins.push_back(pin);
     }
     return std::move(pins);

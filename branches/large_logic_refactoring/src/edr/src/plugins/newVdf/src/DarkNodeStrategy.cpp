@@ -8,6 +8,23 @@ using namespace vdf;
 void DarkNodeStrategy::setNode( IVisualNodeWeakPtr item )
 {
 	node = item;
+    auto ptr = node.lock();
+    if (ptr) {
+        switch (ptr->getType()) {
+        case IVisualItem::ProcessingNode:
+            lowerFrame->setPixmap(QIcon(":/resources/icons/vdf/processor.png").pixmap(32, 32));
+            break;
+
+        case IVisualItem::SinkNode:
+            lowerFrame->setPixmap(QIcon(":/resources/icons/vdf/sink.png").pixmap(32, 32));
+            break;
+
+        case IVisualItem::SourceNode:
+            lowerFrame->setPixmap(QIcon(":/resources/icons/vdf/source.png").pixmap(32, 32));
+            break;
+        }
+    }
+    lowerFrame->setAlignment(Qt::AlignCenter);
 }
 
 DarkNodeStrategy::DarkNodeStrategy() : 
@@ -26,7 +43,7 @@ DarkNodeStrategy::DarkNodeStrategy() :
 		"}											  "
 		);
 
-	lowerFrame = new QFrame();
+	lowerFrame = new QLabel();
 	label->setBuddy(lowerFrame);
 	lowerFrame->setStyleSheet(
 		"QFrame{								"
@@ -66,7 +83,7 @@ const QRectF& DarkNodeStrategy::getRect()
 	auto snk = core::dynamic_pointer_cast<IVisualSinkNode>(node.lock());
 	maximum = src ? src->getNumOutputPins() : 0;
 	maximum = (std::max)(maximum, snk ? snk->getNumInputPins() : 0);
-	rect.setRect(0, 0, 100, 10 + maximum * 20 + labelHeight );
+	rect.setRect(0, 0, 100, (std::max)(10 + maximum * 20, 40) + labelHeight );
 	label->setMaximumHeight(labelHeight);
 	label->setMinimumHeight(labelHeight);
 	container->setMinimumSize(rect.width(), rect.height());
@@ -76,7 +93,7 @@ const QRectF& DarkNodeStrategy::getRect()
 
 QPointF DarkNodeStrategy::getPinPosition( int no, bool input )
 {
-	return QPointF(input ? -8 : 92, labelHeight + 5 + no * 20);
+	return QPointF(input ? -7 : 91, labelHeight + 5 + no * 20);
 }
 
 QWidget* DarkNodeStrategy::getWidget()

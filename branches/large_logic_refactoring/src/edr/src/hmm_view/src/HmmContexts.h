@@ -67,6 +67,43 @@ class HMMReportContext : public HMMEmptyContext
 
 };
 
+//! placeholder dla kontekstu vdf
+class HMMVdfContext : public HMMEmptyContext
+{
+
+};
+
+//! kontekst dla wizualizatorów
+class HMMVVdfUsageContext : public IAppUsageContext
+{
+public:
+    HMMVVdfUsageContext(QTabWidget * flexiTabWidget);
+public:
+    //! wywoływane, po aktywowaniu się kontekstu
+    //! \param contextWidget wiget, który wywołał kontekst
+    virtual void activateContext(QWidget * contextWidget);
+    //! wywoływane, gdy kontekst przestaje być aktywny
+    //! \param nextContextWidget 
+    //! \param refresh
+    virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
+    //! widget jest rejestrowany, tworzony jest flexi tabdla niego
+    virtual void onRegisterContextWidget(QWidget * contextWidget);
+    //! widget jest zamknięty, usuwany jest flexitab dla niego
+    virtual void onUnregisterContextWidget(QWidget * contextWidget);
+
+private:
+    //! flexi tab z akcjami
+    QTabWidget * flexiTabWidget;
+    //! zbiór sekcji
+
+    std::list<coreUI::CoreFlexiToolBarSection*> sections;
+
+    coreUI::CoreFlexiToolBar * widget;
+    //! identyfikator grupy dla miniatur raportów
+    int groupID;
+
+};
+
 //! kontekst dla wizualizatorów
 class HMMVisualizerUsageContext : public IAppUsageContext
 {

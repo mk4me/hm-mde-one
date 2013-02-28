@@ -34,7 +34,7 @@ private:
 	core::weak_ptr<IVisualNode> node;
 	QLabel* label;
 	QWidget* container;
-	QFrame* lowerFrame;
+	QLabel* lowerFrame;
 	QRectF rect;
 	int labelHeight;
 };

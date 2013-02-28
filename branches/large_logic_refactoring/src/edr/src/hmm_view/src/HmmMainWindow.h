@@ -303,6 +303,10 @@ private:
 	AppUsageContextPtr analisisContext;
     //! kontekst dla zakładki z raportami
 	AppUsageContextPtr reportsContext;
+    //! kontekst dla zakładki przetwarzania
+    AppUsageContextPtr vdfContext;
+    //! kontekst wizualizatorów
+    AppUsageContextPtr vdfUsageContext;
     //! grupuje konteksty zakładek
 	std::set<QWidget*> plainContextWidgets;
     //! 

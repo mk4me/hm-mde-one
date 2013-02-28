@@ -56,6 +56,8 @@ public:
 
     virtual df::IOutputPin* getModelPin() const;
 
+    virtual QPointF getConnectionPosHint();
+
 protected:
 	IVisualNodeWeakPtr parent;
 	std::vector<IVisualConnectionWeakPtr> connections;

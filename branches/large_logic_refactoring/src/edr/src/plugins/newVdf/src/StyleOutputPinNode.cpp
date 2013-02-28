@@ -126,3 +126,8 @@ df::IOutputPin* vdf::StyleOutputPinNode::getModelPin() const
     df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(modelNode);
     return source->outputPin(index);
 }
+
+QPointF vdf::StyleOutputPinNode::getConnectionPosHint()
+{
+    return visualItem()->scenePos() + strategy->getConnectionEndShift();
+}

@@ -1,5 +1,6 @@
 #include "DarkConnectionStrategy.h"
 #include <plugins/newVdf/IVisualPin.h>
+#include "SceneModel.h"
 
 using namespace vdf;
 
@@ -14,32 +15,21 @@ void DarkConnectionStrategy::paint( QPainter *painter, const QStyleOptionGraphic
 	if (c && hasPins()) {
         
 	    painter->setRenderHint(QPainter::Antialiasing, true);
-
-	    //QPainterPath path;
         path = QPainterPath();
-	    QPointF start = beginPin.lock()->visualItem()->scenePos(); 
-	    QPointF finish = endPin.lock()->visualItem()->scenePos();
+	    
+        PinResolver p(beginPin.lock(), endPin.lock());
+
+        QPointF start = p.getOutput()->getConnectionPosHint(); 
+	    QPointF finish = p.getInput()->getConnectionPosHint();
+
         int shift = 30;
-	    // HACK +8
-	    if (start.x() < finish.x()) {
-		    path.moveTo(QPointF(start.x() + 8, start.y() + 8));
-		    path.cubicTo(QPointF(start.x() + shift, start.y()), QPointF(finish.x() - shift, finish.y()), QPointF(finish.x() + 8, finish.y() + 8) );
-	    } else {
-		    path.moveTo(QPointF(start.x() + 8, start.y() + 8));
-		    path.cubicTo(QPointF(start.x() - shift, start.y()), QPointF(finish.x() + shift, finish.y()), QPointF(finish.x() + 8, finish.y() + 8) );
-	    }
-
-	    painter->setPen(QPen(QColor(128, 213, 220), c->isSelected() ? 4 : 2));
+	    path.moveTo(QPointF(start.x(), start.y()));
+		path.cubicTo(QPointF(start.x() + shift, start.y()), QPointF(finish.x() - shift, finish.y()), QPointF(finish.x(), finish.y()) );
+	    
+        painter->setPen(QPen(QColor(128, 213, 220), c->isSelected() ? 4 : 2));
 	    painter->drawPath(path);
-
     }
 }
-
-//void DarkConnectionStrategy::setPins(const IVisualPinWeakPtr pin1, const IVisualPinWeakPtr pin2 )
-//{
-//	this->beginPin = pin1;
-//	this->endPin = pin2;
-//}
 
 const QRectF& DarkConnectionStrategy::getRect()
 {

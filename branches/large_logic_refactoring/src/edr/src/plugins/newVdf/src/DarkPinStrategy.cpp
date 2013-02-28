@@ -21,13 +21,15 @@ void DarkPinStrategy::paint( QPainter *painter, const QStyleOptionGraphicsItem *
 	grad.setColorAt(0.5f, stateColor);
 	//painter->setBrush(QBrush(QColor(25, 170, 220)));
 	painter->setBrush(grad);
-	painter->setPen(QPen(QColor(100, 100, 100)));
+    QPen p(QColor(64, 64, 64));
+    p.setWidth(2);
+	painter->setPen(p);
 
 
-	float width = r.width() * 0.7f;
-	float height = r.height() * 0.7f;
-	float x = (r.width() - width) * 0.5f;
-	float y = (r.height() - height) * 0.5f;
+	float width = r.width() * 0.8f;
+	float height = r.height() * 0.8f;
+	float x = (r.width() - width) * 0.5f + 1;
+	float y = (r.height() - height) * 0.5f + 1;
 	painter->drawEllipse(x, y, width, height);
 }
 
@@ -67,3 +69,21 @@ void DarkPinStrategy::setState( State s )
 	}
 }
 
+
+QPointF vdf::DarkPinStrategy::getConnectionEndShift()
+{
+    auto pinptr = pin.lock();
+    if (pinptr) {
+        QPointF p;
+        p.setY(rect.height() / 2);
+        if (pinptr->isType(IVisualItem::InputPin)) {
+            p.setX(0.0f);
+        } else {
+            p.setX(rect.width());
+        }
+
+        return p;
+    }
+
+    return QPointF();
+}

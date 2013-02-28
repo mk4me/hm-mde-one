@@ -109,6 +109,7 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
 	connect(contextPlaceholder, SIGNAL(currentChanged(int)), this, SLOT(onContextChange(int)));
 
     visualizerUsageContext.reset(new HMMVisualizerUsageContext(contextPlaceholder));
+    vdfUsageContext.reset(new HMMVVdfUsageContext(contextPlaceholder));
     treeUsageContext.reset(new HMMTreeItemUsageContext(contextPlaceholder, this));
     raportsThumbnailsContext.reset(new RaportsThumbnailsContext(contextPlaceholder, this));
     raportsTabContext.reset(new RaportsTabContext(contextPlaceholder, this));
@@ -119,6 +120,7 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
     dataContext.reset(new HMMDataContext());
     analisisContext.reset(new HMMAnalysisContext(&treeRefresher));
     reportsContext.reset(new HMMReportContext());
+    vdfContext.reset(new HMMVdfContext());
 
     this->setWindowFlags(Qt::FramelessWindowHint);
     setMouseTracking(true);
@@ -196,6 +198,7 @@ void HmmMainWindow::customViewInit(QWidget * console)
     addContext(dataContext);
     addContext(analisisContext);
     addContext(reportsContext);
+    addContext(vdfContext);
     addContext(visualizerUsageContext, analisisContext);
 
     trySetStyleByName("hmm");
@@ -320,6 +323,18 @@ void HmmMainWindow::customViewInit(QWidget * console)
 			hlayout->addWidget(widget);
 			hlayout->addWidget(controlWidget);
 			vdfTabWidget->setLayout(hlayout);
+
+            addContext(vdfUsageContext, vdfContext);
+            addWidgetToContext(vdfUsageContext, viewWidget);
+            addWidgetToContext(vdfUsageContext, this->vdf);
+            addWidgetToContext(vdfUsageContext, controlWidget);
+            contextEventFilter->registerPermamentContextWidget(this->vdf);
+            plainContextWidgets.insert(this->vdf);
+
+            contextEventFilter->registerPermamentContextWidget(viewWidget);
+            plainContextWidgets.insert(viewWidget);
+
+            contextEventFilter->registerClosableContextWidget(viewWidget);
 		} else {
             QWidget* viewWidget = service->getWidget();
             QWidget* controlWidget = service->getControlWidget();

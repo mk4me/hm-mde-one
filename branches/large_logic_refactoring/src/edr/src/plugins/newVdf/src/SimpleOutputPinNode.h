@@ -53,6 +53,7 @@ public:
 	virtual void setVisualStrategy( IVisualStrategyPtr strategy );
 
     virtual df::IOutputPin* getModelPin() const;
+    virtual QPointF getConnectionPosHint();
 
 protected:
 	IVisualNodeWeakPtr parent;

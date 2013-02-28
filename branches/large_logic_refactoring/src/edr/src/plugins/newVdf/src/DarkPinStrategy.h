@@ -25,6 +25,8 @@ public:
 
 	virtual void setState( State s );
 
+    virtual QPointF getConnectionEndShift();
+
 private:
 	QRectF rect;
 	IVisualPinWeakPtr pin;
