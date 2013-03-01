@@ -18,7 +18,12 @@ namespace df {
 	class INode;
 }
 
+class QDialog;
+
 namespace vdf {
+
+
+// TODO : posprzatac tutaj
 
 //! Interfejs podstawowych elementów logicznych aplikacji mających operować na danych bądź dostarczać danych
 class IWorkflowItemBase // : public IClonable<IWorkflowItemBase>, public IIdentifiable

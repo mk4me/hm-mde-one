@@ -17,6 +17,8 @@
 #include <dflib/Node.h>
 #include <boost/function.hpp>
 #include <corelib/ILog.h>
+#include <plugins/newVdf/INodeConfiguration.h>
+#include <QtGui/QLabel>
 
 namespace vdf {
 
@@ -94,7 +96,7 @@ private:
 };
 
 
-class IntProcessor : public df::ProcessingNode, public df::IDFProcessor
+class IntProcessor : public df::ProcessingNode, public df::IDFProcessor, public INodeConfiguration
 {
 public:
 
@@ -106,7 +108,10 @@ public:
         addInputPin(inPinA);
         addInputPin(inPinB);
         addOutputPin(outPinA);
+        widget = new QLabel("The method or operation is not implemented.\nTrolololo");
     }
+
+    virtual ~IntProcessor() { delete widget; }
 
     virtual void reset() {}
 
@@ -115,13 +120,22 @@ public:
         outPinA->value(inPinA->value() + inPinB->value());
     }
 
+    virtual QWidget* getConfigurationWidget() const
+    {
+        return widget;
+    }
+
+    virtual void refreshConfiguration() 
+    {
+    }
+
 private:
     IntInputPin * inPinA;
     IntInputPin * inPinB;
     IntOutputPin * outPinA;
 
     std::string name;
-
+    QWidget* widget;
 };
 
 

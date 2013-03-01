@@ -2,11 +2,11 @@
 #include "TypesWindow.h"
 #include "CanvasStyleEditor.h"
 #include "NewVdfWidget.h"
-//#include "HACK.h"
 #include <plugins/newVdf/IDataSourceManager.h>
 #include <plugins/newVdf/IDataSinkManager.h>
 #include <plugins/newVdf/IDataProcessorManager.h>
 #include <plugins/newVdf/IDataSource.h>
+#include <plugins/newVdf/INodeConfiguration.h>
 #include <corelib/PluginCommon.h>
 
 using namespace vdf;
@@ -18,48 +18,51 @@ TypesWindow::TypesWindow(CommandStackPtr stack, CanvasStyleEditorPtr canvas, New
 	commmandStack(stack)
 {
     setupUi(this);
-    treeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-    treeWidget->setDragEnabled(true);
-    treeWidget->viewport()->setAcceptDrops(true);
-    treeWidget->setDropIndicatorShown(true);
-    connect(this->insertButton, SIGNAL(clicked()), this, SLOT(insert()));
+    //treeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    //treeWidget->setDragEnabled(true);
+    //treeWidget->viewport()->setAcceptDrops(true);
+    //treeWidget->setDropIndicatorShown(true);
 	connect(this->processButton, SIGNAL(clicked()), this, SLOT(run()));
 }
 
-void TypesWindow::insert()
-{
-    QTreeWidgetItem* current = treeWidget->currentItem();
-    if (current) {
-        insert(current->text(0), QPointF());
-    }
-}
+//void TypesWindow::insert()
+//{
+//    QTreeWidgetItem* current = treeWidget->currentItem();
+//    if (current) {
+//        insert(current->text(0), QPointF());
+//    }
+//}
 
 void TypesWindow::insert( const QString& name, const QPointF& scenePos )
 {
     auto item = createItemByEntry(name);
 	commmandStack->addCommand(ICommandPtr(new AddToSceneCommand(newVdf->getSceneModel(), item, scenePos)));
-    /*auto* node = item.get<0>();
-    auto* vis = node->visualItem();
-    vis->setPos(scenePos);
-
-    newVdf->getSceneModel()->addItem(node);
-
-    SceneBuilder::Pins pins = item.get<1>();
-    for (auto it = pins.begin(); it != pins.end(); ++it) {
-        newVdf->getSceneModel()->addItem(*it);
-    }
-
-    pins = item.get<2>();
-    for (auto it = pins.begin(); it != pins.end(); ++it) {
-        newVdf->getSceneModel()->addItem(*it);
-    }*/
 }
 
-void TypesWindow::addEntry( const QString& entry )
+void TypesWindow::addEntry( const QString& entry, IVisualItem::Type type )
 {
-    QTreeWidgetItem* item = new QTreeWidgetItem();
-    item->setText(0, entry);
-    treeWidget->addTopLevelItem(item);
+    QListWidgetItem* item = new QListWidgetItem();
+    item->setText(entry);
+    switch (type)  {
+    case IVisualItem::ProcessingNode:
+        item->setIcon(QIcon(":/resources/icons/vdf/processor.png"));
+        processorsList->addItem(item);
+        break;
+
+    case IVisualItem::SourceNode:
+        item->setIcon(QIcon(":/resources/icons/vdf/source.png"));
+        sourcesList->addItem(item);
+        break;
+
+    case IVisualItem::SinkNode:
+        item->setIcon(QIcon(":/resources/icons/vdf/sink.png"));
+        sinksList->addItem(item);
+        break;
+
+    default:
+        UTILS_ASSERT(false);
+    }
+    //treeWidget->addTopLevelItem(item);
 }
 
 SceneBuilder::VisualNodeWithPins TypesWindow::createItemByEntry( const QString& entry )
@@ -99,7 +102,7 @@ void TypesWindow::update( const IDataProcessorManager* pm )
         auto present = name2node.find(name);
         if (present == name2node.end()) {
             name2node[name] = *it;
-            addEntry(name);
+            addEntry(name, IVisualItem::ProcessingNode);
         }
     }
 }
@@ -113,7 +116,7 @@ void TypesWindow::update( const IDataSourceManager* sm )
         if (present == name2node.end()) {
 			IWorkflowItemBasePtr base = *it;
             name2node[name] = *it;
-            addEntry(name);
+            addEntry(name, IVisualItem::SourceNode);
         }
     }
 }
@@ -126,7 +129,7 @@ void TypesWindow::update( const IDataSinkManager* sm )
         auto present = name2node.find(name);
         if (present == name2node.end()) {
             name2node[name] = *it;
-            addEntry(name);
+            addEntry(name, IVisualItem::SinkNode);
         }
     }
 }
@@ -136,3 +139,35 @@ void TypesWindow::run()
 	this->newVdf->getSceneModel()->run();
 }
 
+
+void vdf::TypesWindow::onNodeSelected( IVisualNodePtr node )
+{
+    auto modelNode = node->getModelNode();
+    vdf::INodeConfiguration* conf = dynamic_cast<INodeConfiguration*>(modelNode);
+    
+    if (!propertiesTab->layout()) {
+        propertiesTab->setLayout(new QHBoxLayout());
+    } else {
+        auto list = propertiesTab->children();
+        for (auto it = list.begin(); it != list.end(); ++it) {
+            if ((*it)->isWidgetType()) {
+                auto widget = qobject_cast<QWidget*>(*it);
+                widget->setVisible(false);
+            }
+        }
+    }
+    if (conf) {
+        conf->refreshConfiguration();
+        auto widget = conf->getConfigurationWidget();
+        
+        if (widget->parent() == propertiesTab) {
+            widget->setVisible(true);
+        } else {
+            propertiesTab->layout()->addWidget(widget);
+        }
+        tabWidget->setCurrentIndex(1);
+    } else {
+        tabWidget->setCurrentIndex(0);
+    }
+    
+}

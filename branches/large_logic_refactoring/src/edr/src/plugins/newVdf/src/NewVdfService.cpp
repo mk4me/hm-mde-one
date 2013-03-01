@@ -30,6 +30,7 @@ NewVdfService::NewVdfService() :
 //	QObject::connect(commandStack.get(), SIGNAL(changed()), commandStackDebug, SLOT(refresh()));
 	commandStack->addCommand(ICommandPtr(new NullCommand()));
     typesWindow = new TypesWindow(commandStack, canvas, newVdfWidget);
+    QObject::connect(newVdfWidget, SIGNAL(singleNodeSelected(IVisualNodePtr)), typesWindow, SLOT(onNodeSelected(IVisualNodePtr)));
 	dataSourceManager->attach(typesWindow);
 	dataProcessorManager->attach(typesWindow);
 	dataSinkManager->attach(typesWindow);

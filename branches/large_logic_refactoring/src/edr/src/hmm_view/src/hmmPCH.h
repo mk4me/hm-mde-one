@@ -52,6 +52,7 @@
 #include <QtGui/QFrame>
 
 #include <utils/Utils.h>
+#include <utils/ObjectWrapper.h>
 //UTILS_PUSH_WARNINGS
 //#include <osg/Node>
 //#include <osg/Config>

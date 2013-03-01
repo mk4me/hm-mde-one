@@ -36,11 +36,12 @@ public:
 	virtual ~TypesWindow() {}
 
 public:
-   // void addType();
     void insert(const QString& name, const QPointF& scenePos);
 
+public slots:
+    void onNodeSelected(IVisualNodePtr node);
+
 protected slots:
-    void insert();
 	void run();
 
 protected:
@@ -49,7 +50,7 @@ protected:
     void update(const IDataSinkManager* sm);
 
 private:
-    void addEntry(const QString& entry);
+    void addEntry(const QString& entry, IVisualItem::Type type);
     SceneBuilder::VisualNodeWithPins createItemByEntry(const QString& entry);
 
 private:

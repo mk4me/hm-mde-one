@@ -58,6 +58,9 @@ public:
 public slots:
     void selectionChanged();
 
+signals:
+    void singleNodeSelected(IVisualNodePtr node);
+
 private:
     NormalStatePtr normalState;
     ConnectStatePtr connectState;

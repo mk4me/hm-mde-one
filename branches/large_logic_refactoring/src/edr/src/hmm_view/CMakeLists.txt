@@ -25,6 +25,11 @@ SET_PRIVATE_HEADERS(
 	TreeRefresher.h
 	ContextAction.h
 	ContextEventFilter.h
+	HmmVdf.h
+	HmmSources.h
+	HmmProcessors.h
+	HmmSinks.h
+	HmmPins.h
 	hmmPCH.h
 )
 
@@ -51,12 +56,16 @@ SET_SOURCE_FILES (
 	ContextEventFilter.cpp
 	Vector3DFilterCommand.cpp
 	hmmPCH.cpp
+	HmmVdf.cpp
+	HmmSources.cpp
+	HmmProcessors.cpp
+	HmmSinks.cpp
+	HmmPins.cpp
 )
 
 SET_MOC_FILES(
 	AboutDialog.h
 	ContextEventFilter.h
-	#PseudoLoginWidget.h
 	ContextAction.h
     HmmMainWindow.h
 	DataFilterWidget.h

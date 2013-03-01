@@ -82,7 +82,14 @@ VdfScene* SceneStateMachine::getScene() const
 
 void SceneStateMachine::selectionChanged()
 {
-    currentState->selectionChanged(getScene()->selectedItems());
+    auto items = getScene()->selectedItems();
+    currentState->selectionChanged(items);
+    if (items.size() == 1) {
+        auto node = getSceneModel()->tryGetVisualItem(*items.begin());
+        if (node && node->isType(IVisualItem::Node)) {
+            emit singleNodeSelected(core::dynamic_pointer_cast<IVisualNode>(node));
+        }
+    }
 }
 
 

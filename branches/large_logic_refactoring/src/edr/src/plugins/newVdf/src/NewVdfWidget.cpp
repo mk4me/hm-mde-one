@@ -23,7 +23,7 @@ NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
 	this->setLayout(layout);
 
 	stateMachine = SceneStateMachinePtr(new SceneStateMachine(this));
-
+    connect(stateMachine.get(), SIGNAL(singleNodeSelected(IVisualNodePtr)), this, SIGNAL(singleNodeSelected(IVisualNodePtr)));
 	scene = new VdfScene(stateMachine, sceneModel);
 	view = new VdfView(scene);
 

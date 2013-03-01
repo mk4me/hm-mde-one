@@ -2,6 +2,7 @@ BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
 	NewVdfService.h
+	INodeConfiguration.h
 	IConnectionsFactory.h
 	IFactory.h
 	IBackgroundsFactory.h

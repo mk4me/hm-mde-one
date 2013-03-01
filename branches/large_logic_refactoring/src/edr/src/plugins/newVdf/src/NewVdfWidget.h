@@ -18,7 +18,6 @@
 #include "Command.h"
 
 class QGraphicsScene;
-class IVisualItem;
 class QMouseEvent;
 
 
@@ -49,6 +48,9 @@ public slots:
 	void merge();
 	void deleteSelected();
 	void clearScene();
+
+signals:
+    void singleNodeSelected(IVisualNodePtr node);
 
 private:
     VdfScene* scene;  
