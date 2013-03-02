@@ -31,8 +31,9 @@ NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
     coreUI::CoreAction*  und = new coreUI::CoreAction(tr("Edit")  , QIcon(":/resources/icons/textedit/editundo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  red = new coreUI::CoreAction(tr("Edit")  , QIcon(":/resources/icons/textedit/editredo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  mrg = new coreUI::CoreAction(tr("Misc") , QIcon(":/resources/icons/skeletal_trace.png"), tr("Merge"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  clr = new coreUI::CoreAction(tr("Clear") , QIcon(":/resources/icons/manipulator-rotate.png"), tr("Scene"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  clr = new coreUI::CoreAction(tr("Clear") , QIcon(":/resources/icons/vdf/rubber.png"), tr("Scene"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  del = new coreUI::CoreAction(tr("Edit"), QIcon(":/resources/icons/x.png"), tr("Delete"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  run = new coreUI::CoreAction(tr("Run"), QIcon(":/resources/icons/videoSmall.png"), tr("Run"), this, coreUI::CoreTitleBar::Left);
 
 	mrg->setEnabled(false);
 	
@@ -41,12 +42,14 @@ NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
 	connect(mrg, SIGNAL(triggered()), this, SLOT(merge()));
 	connect(clr, SIGNAL(triggered()), this, SLOT(clearScene()));
 	connect(del, SIGNAL(triggered()), this, SLOT(deleteSelected()));
+    connect(run, SIGNAL(triggered()), this, SLOT(runDF()));
        
     this->addAction(und);
     this->addAction(red);
     this->addAction(mrg);
     this->addAction(del);
     this->addAction(clr);
+    this->addAction(run);
 	
     layout->addWidget(view);
     setMinimumSize(500, 400);
@@ -86,5 +89,16 @@ void vdf::NewVdfWidget::clearScene()
         QMessageBox::Yes | QMessageBox::Abort, QMessageBox::Abort ) == QMessageBox::Yes) {
     	sceneModel->clearScene();
         stateMachine->getCommandStack()->clear();
+    }
+}
+
+void vdf::NewVdfWidget::runDF()
+{
+    try {
+        sceneModel->run();
+    } catch (std::exception& e) {
+        QMessageBox::critical(this, tr("Error"), QString("Info: %1").arg(e.what()));
+    } catch (...) {
+        QMessageBox::critical(this, tr("Error"), tr("Unknown error"));
     }
 }

@@ -22,8 +22,7 @@ TypesWindow::TypesWindow(CommandStackPtr stack, CanvasStyleEditorPtr canvas, New
     //treeWidget->setDragEnabled(true);
     //treeWidget->viewport()->setAcceptDrops(true);
     //treeWidget->setDropIndicatorShown(true);
-	connect(this->processButton, SIGNAL(clicked()), this, SLOT(run()));
-
+	
     processorsList->setSelectionMode(QAbstractItemView::SingleSelection);
     processorsList->setDragEnabled(true);
 
@@ -142,12 +141,6 @@ void TypesWindow::update( const IDataSinkManager* sm )
         }
     }
 }
-
-void TypesWindow::run()
-{
-	this->newVdf->getSceneModel()->run();
-}
-
 
 void vdf::TypesWindow::onNodeSelected( IVisualNodePtr node )
 {

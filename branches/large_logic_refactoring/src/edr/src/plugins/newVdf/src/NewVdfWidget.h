@@ -48,6 +48,7 @@ public slots:
 	void merge();
 	void deleteSelected();
 	void clearScene();
+    void runDF();
 
 signals:
     void singleNodeSelected(IVisualNodePtr node);

@@ -37,6 +37,15 @@ void GroupState::begin( ISceneStateConstPtr lastState )
 	//UTILS_ASSERT(preGroup == lastState);
 	
 	startPos = PointPtr();
+    auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>();
+    for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+        (*it)->removeSelection();
+    }
+
+    auto connections = stateMachine->getSceneModel()->getVisualItems<IVisualConnectionPtr>();
+    for (auto it = connections.begin(); it != connections.end(); ++it) {
+        (*it)->setSelected(false);
+    }
 }
 
 void GroupState::end()

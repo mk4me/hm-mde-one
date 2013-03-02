@@ -28,97 +28,54 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QToolBox" name="toolBox">
-         <property name="currentIndex">
-          <number>0</number>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Sources</string>
          </property>
-         <property name="tabSpacing">
-          <number>2</number>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="sourcesList">
+         <property name="movement">
+          <enum>QListView::Static</enum>
          </property>
-         <widget class="QWidget" name="sourcesPage">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>374</width>
-            <height>167</height>
-           </rect>
-          </property>
-          <attribute name="label">
-           <string>Sources</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <property name="margin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QListWidget" name="sourcesList">
-             <property name="movement">
-              <enum>QListView::Static</enum>
-             </property>
-             <property name="viewMode">
-              <enum>QListView::IconMode</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="processorsPage">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>374</width>
-            <height>167</height>
-           </rect>
-          </property>
-          <attribute name="label">
-           <string>Processors</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <property name="margin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QListWidget" name="processorsList">
-             <property name="movement">
-              <enum>QListView::Static</enum>
-             </property>
-             <property name="viewMode">
-              <enum>QListView::IconMode</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="sinksPage">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>374</width>
-            <height>167</height>
-           </rect>
-          </property>
-          <attribute name="label">
-           <string>Sinks</string>
-          </attribute>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <property name="margin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QListWidget" name="sinksList">
-             <property name="movement">
-              <enum>QListView::Static</enum>
-             </property>
-             <property name="viewMode">
-              <enum>QListView::IconMode</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+         <property name="viewMode">
+          <enum>QListView::IconMode</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Processors</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="processorsList">
+         <property name="movement">
+          <enum>QListView::Static</enum>
+         </property>
+         <property name="viewMode">
+          <enum>QListView::IconMode</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Sinks</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="sinksList">
+         <property name="movement">
+          <enum>QListView::Static</enum>
+         </property>
+         <property name="viewMode">
+          <enum>QListView::IconMode</enum>
+         </property>
         </widget>
        </item>
       </layout>
@@ -128,13 +85,6 @@
        <string>Properties</string>
       </attribute>
      </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="processButton">
-     <property name="text">
-      <string>Process</string>
-     </property>
     </widget>
    </item>
   </layout>

@@ -108,6 +108,7 @@ public:
     //! dodanie głównego elementu (topItem) do drzewa danych w analizach
     //! \param item dodawany element
     void addItemToTree(QTreeWidgetItem* item);
+    void addItemToProcessedBranch(QTreeWidgetItem* item);
     //! czyszczenie drzewa danych w analizach
     void clearTree();
     //! Pobiera menu kontekstowe dla wybranego elementu drzewa analiz
@@ -123,6 +124,7 @@ public:
     //! Ustawienie kontekstu na konkretny wizualizator
     //! \param visWidget wizualizator, dla którego aktywuje się kontekst
     virtual void setCurrentVisualizerActions(coreUI::CoreVisualizerWidget * visWidget);
+    void switchToAnalysis();
 
 public Q_SLOTS:
     //! odświeżenie drzewa danych z zakładki analiz
@@ -321,6 +323,9 @@ private:
 	std::map<core::Visualizer::VisualizerSerie*, std::string> seriesToChannels;
 
 	QTabWidget * contextPlaceholder;
+
+    // TODO: nie moze to tak byc
+    QTreeWidgetItem* processedBranch;
 };
 
 

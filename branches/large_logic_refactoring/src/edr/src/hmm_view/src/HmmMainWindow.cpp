@@ -101,6 +101,12 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
     setupUi(this);
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 
+    {
+        processedBranch = new QTreeWidgetItem();
+        processedBranch->setText(0, tr("Processing"));
+        treeRefresher.setProcessed(processedBranch);
+    }
+
 	contextPlaceholder = new QTabWidget(this);
 	contextPlaceholder->setTabsClosable(false);
 	//contextPlaceholder->setDocumentMode(true);
@@ -665,6 +671,12 @@ void HmmMainWindow::clearTree()
 void HmmMainWindow::addItemToTree( QTreeWidgetItem* item )
 {
     analisis->getTreeWidget()->addTopLevelItem(item);
+}
+
+void HmmMainWindow::addItemToProcessedBranch(QTreeWidgetItem* item)
+{
+    processedBranch->addChild(item);
+    refreshTree();
 }
 
 void HmmMainWindow::createFilterTabs()
@@ -1755,4 +1767,12 @@ coreUI::CoreDockWidget * HmmMainWindow::embeddWidget(QWidget * widget, const QSt
 	//coreUI::CoreTitleBar::supplyCoreTitleBarWithActions(consoleTitleBar, widget);
 
 	return embeddedDockWidget;
+}
+
+void HmmMainWindow::switchToAnalysis()
+{
+    analisisButton->click();
+    analisis->setFocus();
+    refreshTree();
+    //analisis->getTreeWidget()->setFocus();
 }

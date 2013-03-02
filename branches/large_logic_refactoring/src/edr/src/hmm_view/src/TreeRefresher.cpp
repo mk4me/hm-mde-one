@@ -7,9 +7,10 @@
 #include "TreeBuilder.h"
 
 TreeRefresher::TreeRefresher() : 
-preventRefresh(false), 
+    preventRefresh(false), 
     needRefresh(false),
-    tree(nullptr)
+    tree(nullptr),
+    processed(nullptr)
 {}
 
 void TreeRefresher::actualRefresh(QTreeWidget* tree, const core::ConstObjectsList& sessions) {
@@ -26,14 +27,22 @@ void TreeRefresher::actualRefresh(QTreeWidget* tree, const core::ConstObjectsLis
     try{
 
         QTreeWidgetItem* item = TreeBuilder::createTree(QObject::tr("Active Data"), sessions);
-
+        if (tree->topLevelItemCount() == 2) {
+            QTreeWidgetItem* test = tree->takeTopLevelItem(1);
+        }
         tree->clear();
         tree->addTopLevelItem(item);
         item->setExpanded(true);
-
         QFont font = item->font(0);
         font.setPointSize(12);
         item->setFont(0, font);
+
+        if (processed->childCount()) {
+            processed->setFont(0, font);
+            tree->addTopLevelItem(processed);
+            processed->setExpanded(true);
+        }
+
 
         for (int i = 0; i < item->childCount(); ++i) {
             QTreeWidgetItem* child = item->child(i);
@@ -43,6 +52,7 @@ void TreeRefresher::actualRefresh(QTreeWidget* tree, const core::ConstObjectsLis
             font.setPointSize(14);
             item->setFont(0, font);
         }
+
 
     }catch(...){
 

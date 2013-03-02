@@ -32,15 +32,34 @@ const bool XSource::empty() const
     return used || !channel;
 }
 
+HmmTreeItem* getFirstTreeItem(QTreeWidgetItem* itm) 
+{
+    auto num = itm->childCount();
+    for (auto i = 0; i < num; ++i) {
+        auto child = getFirstTreeItem(itm->child(i));
+        if (child) {
+            return child;
+        }
+    }
+
+    HmmTreeItem* hti = dynamic_cast<HmmTreeItem*>(itm);
+    return hti;
+}
+
 void XSource::produce()
 {
     HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());
+    if (!treeItem && tree->topLevelItemCount()) {
+        treeItem = getFirstTreeItem(tree->topLevelItem(0));
+    }
     if (treeItem) {
         NewVector3ItemHelperPtr vectorItem = core::dynamic_pointer_cast<NewVector3ItemHelper>(treeItem->getHelper());
         auto wrp = vectorItem->getWrapper();
         channel = wrp->get();
         outPinA->value(channel);
         used = true;
+    } else {
+        throw std::runtime_error("Source is not set");
     }
 }
 

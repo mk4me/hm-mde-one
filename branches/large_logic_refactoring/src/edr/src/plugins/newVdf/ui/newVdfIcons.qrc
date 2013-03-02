@@ -13,5 +13,6 @@
 	<file alias="power.png">../../../../resources/embedded/icons/vdf/power.png</file>
 	<file alias="video.png">../../../../resources/embedded/icons/vdf/video.png</file>
 	<file alias="video2.png">../../../../resources/embedded/icons/vdf/video2.png</file>
+	<file alias="rubber.png">../../../../resources/embedded/icons/vdf/rubber.png</file>
   </qresource>
 </RCC>

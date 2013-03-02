@@ -31,6 +31,8 @@ public:
     //! odświeży drzewo, jeśli jest to możliwe, jeśli nie drzewo zostanie odświeżone kiedy blokada zostanie zdjeta.
     //! \param tree drzewo do odświeżenia
     void refresh(QTreeWidget* tree);
+    //HACK
+    void setProcessed(QTreeWidgetItem* val) { processed = val; }
 
 private:
     //! właściwe odświeżenie drzewa
@@ -45,6 +47,8 @@ private:
     bool needRefresh;
     //! drzewo, które trzeba odświeżyć
     QTreeWidget* tree;
+    // HACK!
+    QTreeWidgetItem* processed;
 };
 
 

@@ -40,10 +40,7 @@ public:
 
 public slots:
     void onNodeSelected(IVisualNodePtr node);
-
-protected slots:
-	void run();
-
+    
 protected:
     void update(const IDataProcessorManager* pm);
     void update(const IDataSourceManager* sm);

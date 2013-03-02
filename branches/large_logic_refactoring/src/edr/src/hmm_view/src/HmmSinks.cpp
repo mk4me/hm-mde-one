@@ -20,6 +20,7 @@ HmmMainWindow* XSink::getHmm() const
 
 void XSink::consume()
 {
+    static int count = 0;
     VectorChannelReaderInterfaceConstPtr c = inPinA->value();	
     if (c) {
         utils::ObjectWrapperPtr wrp = utils::ObjectWrapper::create<VectorChannelReaderInterface>();
@@ -27,8 +28,13 @@ void XSink::consume()
         NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrp));
 
         HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);
-        channelItem->setItemAndHelperText(QString::fromStdString("CREATED!"));
-        hmm->addItemToTree(channelItem);
+        QString name = QString("Result: %1").arg(++count);
+        channelItem->setItemAndHelperText(name);
+        wrp->insert(std::pair<std::string, std::string>("core/name", name.toStdString()));
+        hmm->addItemToProcessedBranch(channelItem);
+        hmm->switchToAnalysis();
+    } else {
+        throw std::exception("Sink could not insert item to tree");
     }
 }
 

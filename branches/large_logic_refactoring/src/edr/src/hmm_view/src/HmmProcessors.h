@@ -15,15 +15,12 @@
 class XProcessor : public df::ProcessingNode, public df::IDFProcessor, public vdf::INodeConfiguration
 {
 public:
-
     XProcessor();
 
+public:
     virtual void reset();
-
     virtual void process();
-
     virtual QWidget* getConfigurationWidget() const;
-
     virtual void refreshConfiguration();
 
 private:

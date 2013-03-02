@@ -9,6 +9,7 @@ void XProcessor::process()
 
     if (signal1 && signal2) {
         VectorChannelPtr channel(new VectorChannel(signal1->size() / signal1->getLength()));
+        channel->setName("Result");
         size_type count = (std::min)(signal1->size(), signal2->size());
 
         for (size_type i = 0; i < count; ++i) {
@@ -67,6 +68,7 @@ void VectorAdder::process()
 
     if (signal1 && signal2) {
         VectorChannelPtr channel(new VectorChannel(signal1->size() / signal1->getLength()));
+        channel->setName("Result");
         size_type count = (std::min)(signal1->size(), signal2->size());
 
         for (size_type i = 0; i < count; ++i) {
