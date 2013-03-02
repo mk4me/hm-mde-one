@@ -72,7 +72,7 @@ void HmmVdf::registerNodes(HmmMainWindow* hmm)
         return sink; 
     };
     HMM_REGISTER_DATA_SINK(
-        "Vector -> Tree", 
+        "Result sink", 
         "{57A82EDD-E890-4A6E-8DA9-03CF74F91E32}",
         QIcon(":/resources/icons/vdf/sink.png"), 
         xsink, 

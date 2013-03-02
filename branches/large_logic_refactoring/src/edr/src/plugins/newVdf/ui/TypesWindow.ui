@@ -47,7 +47,7 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Processors</string>
+          <string>Processing elements</string>
          </property>
         </widget>
        </item>
