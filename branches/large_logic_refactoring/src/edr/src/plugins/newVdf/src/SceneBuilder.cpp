@@ -9,9 +9,11 @@
 
 using namespace vdf;
 
-SceneBuilder::VisualNodeWithPins SceneBuilder::createProcessing(const QString& text, df::INode* prototype, int in, int out ) const
+SceneBuilder::VisualNodeWithPins SceneBuilder::createProcessing(const QString& text, const QIcon& icon, df::INode* prototype, int in, int out ) const
 {
     IVisualProcessingNodePtr node = factories->getCurrentNodesFactory()->createProcessingNode();
+    // hack! ikona nie jest doimplementowana i nie odswieza strategii (dopiero setName to robi)
+    node->setIcon(icon);
     node->setName(text);
 	node->setModelNode(prototype);
     auto input = addInputPins(node, in);
@@ -20,9 +22,11 @@ SceneBuilder::VisualNodeWithPins SceneBuilder::createProcessing(const QString& t
     return boost::make_tuple(node, input, output);
 }
 
-SceneBuilder::VisualNodeWithPins SceneBuilder::createSink(const QString& text, df::INode* prototype, int in ) const
+SceneBuilder::VisualNodeWithPins SceneBuilder::createSink(const QString& text, const QIcon& icon, df::INode* prototype, int in ) const
 {
     IVisualSinkNodePtr node = factories->getCurrentNodesFactory()->createSinkNode();
+    // hack! ikona nie jest doimplementowana i nie odswieza strategii (dopiero setName to robi)
+    node->setIcon(icon);
     node->setName(text);
 	node->setModelNode(prototype);
     auto input = addInputPins(node, in);
@@ -30,9 +34,11 @@ SceneBuilder::VisualNodeWithPins SceneBuilder::createSink(const QString& text, d
     return boost::make_tuple(node, input, Pins());
 }
 
-SceneBuilder::VisualNodeWithPins SceneBuilder::createSource(const QString& text, df::INode* prototype, int out ) const
+SceneBuilder::VisualNodeWithPins SceneBuilder::createSource(const QString& text, const QIcon& icon, df::INode* prototype, int out ) const
 {
     IVisualSourceNodePtr node = factories->getCurrentNodesFactory()->createSourceNode();
+    // hack! ikona nie jest doimplementowana i nie odswieza strategii (dopiero setName to robi)
+    node->setIcon(icon);
     node->setName(text);
 	node->setModelNode(prototype);
     auto output = addOutputPins(node, out);
@@ -70,14 +76,14 @@ SceneBuilder::Pins SceneBuilder::addOutputPins( IVisualSourceNodePtr source, int
     return std::move(pins);
 }
 
-SceneBuilder::VisualNodeWithPins  SceneBuilder::createType(const QString& text, df::INode* prototype, int in, int out) const
+SceneBuilder::VisualNodeWithPins  SceneBuilder::createType(const QString& text, const QIcon& icon, df::INode* prototype, int in, int out) const
 {
     if (in > 0 && out > 0) {
-        return createProcessing(text, prototype, in, out);
+        return createProcessing(text, icon, prototype, in, out);
     } else if (out > 0) {
-        return createSource(text, prototype, out);
+        return createSource(text, icon, prototype, out);
     } else if (in > 0) {
-        return createSink(text, prototype, in);
+        return createSink(text, icon, prototype, in);
     }
 
     UTILS_ASSERT(false);

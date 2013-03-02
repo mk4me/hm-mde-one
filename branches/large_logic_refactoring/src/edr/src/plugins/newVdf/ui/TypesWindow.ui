@@ -30,7 +30,7 @@
        <item>
         <widget class="QToolBox" name="toolBox">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <property name="tabSpacing">
           <number>2</number>
@@ -53,6 +53,9 @@
            </property>
            <item>
             <widget class="QListWidget" name="sourcesList">
+             <property name="movement">
+              <enum>QListView::Static</enum>
+             </property>
              <property name="viewMode">
               <enum>QListView::IconMode</enum>
              </property>
@@ -78,6 +81,9 @@
            </property>
            <item>
             <widget class="QListWidget" name="processorsList">
+             <property name="movement">
+              <enum>QListView::Static</enum>
+             </property>
              <property name="viewMode">
               <enum>QListView::IconMode</enum>
              </property>
@@ -103,6 +109,9 @@
            </property>
            <item>
             <widget class="QListWidget" name="sinksList">
+             <property name="movement">
+              <enum>QListView::Static</enum>
+             </property>
              <property name="viewMode">
               <enum>QListView::IconMode</enum>
              </property>

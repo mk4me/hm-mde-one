@@ -23,6 +23,15 @@ TypesWindow::TypesWindow(CommandStackPtr stack, CanvasStyleEditorPtr canvas, New
     //treeWidget->viewport()->setAcceptDrops(true);
     //treeWidget->setDropIndicatorShown(true);
 	connect(this->processButton, SIGNAL(clicked()), this, SLOT(run()));
+
+    processorsList->setSelectionMode(QAbstractItemView::SingleSelection);
+    processorsList->setDragEnabled(true);
+
+    sinksList->setSelectionMode(QAbstractItemView::SingleSelection);
+    sinksList->setDragEnabled(true);
+
+    sourcesList->setSelectionMode(QAbstractItemView::SingleSelection);
+    sourcesList->setDragEnabled(true);
 }
 
 //void TypesWindow::insert()
@@ -39,23 +48,23 @@ void TypesWindow::insert( const QString& name, const QPointF& scenePos )
 	commmandStack->addCommand(ICommandPtr(new AddToSceneCommand(newVdf->getSceneModel(), item, scenePos)));
 }
 
-void TypesWindow::addEntry( const QString& entry, IVisualItem::Type type )
+void TypesWindow::addEntry( const QString& entry, const QIcon& icon, IVisualItem::Type type )
 {
     QListWidgetItem* item = new QListWidgetItem();
     item->setText(entry);
     switch (type)  {
     case IVisualItem::ProcessingNode:
-        item->setIcon(QIcon(":/resources/icons/vdf/processor.png"));
+        item->setIcon(icon.isNull() ? QIcon(":/resources/icons/vdf/processor.png"): icon);
         processorsList->addItem(item);
         break;
 
     case IVisualItem::SourceNode:
-        item->setIcon(QIcon(":/resources/icons/vdf/source.png"));
+        item->setIcon(icon.isNull() ? QIcon(":/resources/icons/vdf/source.png") : icon);
         sourcesList->addItem(item);
         break;
 
     case IVisualItem::SinkNode:
-        item->setIcon(QIcon(":/resources/icons/vdf/sink.png"));
+        item->setIcon(icon.isNull() ? QIcon(":/resources/icons/vdf/sink.png") : icon);
         sinksList->addItem(item);
         break;
 
@@ -88,7 +97,7 @@ SceneBuilder::VisualNodeWithPins TypesWindow::createItemByEntry( const QString& 
 			input->getInputInfo(inputInfo);
 			in = inputInfo.size();
 		}
-        item = scene->getBuilder().createType(it->first, node->create(), in, out);
+        item = scene->getBuilder().createType(it->first, node->getIcon(), node->create(), in, out);
     }
     UTILS_ASSERT(item.get<0>() != nullptr);
     return item;
@@ -102,7 +111,7 @@ void TypesWindow::update( const IDataProcessorManager* pm )
         auto present = name2node.find(name);
         if (present == name2node.end()) {
             name2node[name] = *it;
-            addEntry(name, IVisualItem::ProcessingNode);
+            addEntry(name, (*it)->getIcon(), IVisualItem::ProcessingNode);
         }
     }
 }
@@ -116,7 +125,7 @@ void TypesWindow::update( const IDataSourceManager* sm )
         if (present == name2node.end()) {
 			IWorkflowItemBasePtr base = *it;
             name2node[name] = *it;
-            addEntry(name, IVisualItem::SourceNode);
+            addEntry(name, (*it)->getIcon(),IVisualItem::SourceNode);
         }
     }
 }
@@ -129,7 +138,7 @@ void TypesWindow::update( const IDataSinkManager* sm )
         auto present = name2node.find(name);
         if (present == name2node.end()) {
             name2node[name] = *it;
-            addEntry(name, IVisualItem::SinkNode);
+            addEntry(name, (*it)->getIcon(), IVisualItem::SinkNode);
         }
     }
 }

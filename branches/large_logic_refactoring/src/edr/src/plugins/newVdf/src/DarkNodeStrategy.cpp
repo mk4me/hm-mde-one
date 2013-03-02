@@ -8,7 +8,7 @@ using namespace vdf;
 void DarkNodeStrategy::setNode( IVisualNodeWeakPtr item )
 {
 	node = item;
-    auto ptr = node.lock();
+    /*auto ptr = node.lock();
     if (ptr) {
         switch (ptr->getType()) {
         case IVisualItem::ProcessingNode:
@@ -23,7 +23,7 @@ void DarkNodeStrategy::setNode( IVisualNodeWeakPtr item )
             lowerFrame->setPixmap(QIcon(":/resources/icons/vdf/source.png").pixmap(32, 32));
             break;
         }
-    }
+    }*/
     lowerFrame->setAlignment(Qt::AlignCenter);
 }
 
@@ -103,7 +103,14 @@ QWidget* DarkNodeStrategy::getWidget()
 
 void DarkNodeStrategy::update()
 {
-	label->setText(node.lock()->getName());
+    auto ptr = node.lock();
+    if (ptr) {
+	    label->setText(ptr->getName());
+        QIcon icon = ptr->getIcon();
+        if (!icon.isNull()) {
+            lowerFrame->setPixmap(icon.pixmap(32, 32));
+        }
+    }
 }
 
 void DarkNodeStrategy::setState( State state )

@@ -32,10 +32,10 @@ public:
 
     IVisualConnectionPtr createConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin);
 
-    VisualNodeWithPins createType(const QString& text, df::INode* prototype, int in, int out) const;
-    VisualNodeWithPins createSource(const QString& text, df::INode* prototype, int out) const;
-    VisualNodeWithPins createSink(const QString& text, df::INode* prototype, int in) const;
-    VisualNodeWithPins createProcessing(const QString& text, df::INode* prototype, int in, int out) const;
+    VisualNodeWithPins createType(const QString& text, const QIcon& icon, df::INode* prototype, int in, int out) const;
+    VisualNodeWithPins createSource(const QString& text, const QIcon& icon, df::INode* prototype, int out) const;
+    VisualNodeWithPins createSink(const QString& text, const QIcon& icon, df::INode* prototype, int in) const;
+    VisualNodeWithPins createProcessing(const QString& text, const QIcon& icon, df::INode* prototype, int in, int out) const;
     vdf::CanvasStyleEditorPtr getFactories() const { return factories; }
 private:
     Pins addInputPins(IVisualSinkNodePtr sink, int count) const;

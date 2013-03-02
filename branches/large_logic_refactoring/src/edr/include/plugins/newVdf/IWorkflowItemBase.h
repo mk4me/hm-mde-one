@@ -10,6 +10,7 @@
 #ifndef HEADER_GUARD_CORE__IWORKFLOWITEMBASE_H__
 #define HEADER_GUARD_CORE__IWORKFLOWITEMBASE_H__
 
+#include <QtGui/QIcon>
 #include <utils/Debug.h>
 #include <corelib/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
@@ -30,6 +31,7 @@ class IWorkflowItemBase // : public IClonable<IWorkflowItemBase>, public IIdenti
     //public IClonable<IWorkflowItemBase>, public ISerializable, public IIdentifiable, public IConfigurable
 {
 public:
+    IWorkflowItemBase() {}
     virtual ~IWorkflowItemBase() 
     {
     }
@@ -52,6 +54,11 @@ public:
 	virtual df::INode* create() const { UTILS_ASSERT(false); return nullptr; }
 	virtual core::UniqueID getID() const = 0;
 	//virtual IWorkflowItemBase* createClone() const = 0;
+
+    QIcon getIcon() const { return icon; }
+    void setIcon(const QIcon& val) { icon = val; }
+private:
+    QIcon icon;
 };
 
 typedef core::shared_ptr<IWorkflowItemBase> IWorkflowItemBasePtr;

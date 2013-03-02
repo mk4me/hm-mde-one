@@ -13,6 +13,9 @@
 #include <plugins/newVdf/NewVdfService.h>
 #include <corelib/IServiceManager.h>
 #include <dflib/INode.h>
+#include "HmmMainWindow.h"
+#include "FilterCommand.h"
+#include "Vector3DFilterCommand.h"
 
 
 #define _HMM_BEGIN_REGISTER \
@@ -25,17 +28,23 @@
 
 #define HMM_REGISTER_DATA_SOURCE(name, uid, icon, constructed, initializer) \
     _HMM_BEGIN_REGISTER\
-    _vdfService->registerDataSource(vdf::IDataSourcePtr(new vdf::DataSource(constructed, core::UID::GenerateUniqueID(uid),  name, initializer))); \
+    auto _source = vdf::IDataSourcePtr(new vdf::DataSource(constructed, core::UID::GenerateUniqueID(uid),  name, initializer));\
+    _source->setIcon(icon);\
+    _vdfService->registerDataSource(_source); \
     _HMM_END_REGISTER
 
 #define HMM_REGISTER_DATA_SINK(name, uid, icon, constructed, initializer) \
     _HMM_BEGIN_REGISTER\
-    _vdfService->registerDataSink(vdf::IDataSinkPtr(new vdf::DataSink(constructed, core::UID::GenerateUniqueID(uid),  name, initializer))); \
+    auto _sink = vdf::IDataSinkPtr(new vdf::DataSink(constructed, core::UID::GenerateUniqueID(uid),  name, initializer));\
+    _sink->setIcon(icon);\
+    _vdfService->registerDataSink(_sink); \
     _HMM_END_REGISTER
 
 #define HMM_REGISTER_DATA_PROCESSOR(name, uid, icon, constructed, initializer) \
     _HMM_BEGIN_REGISTER\
-    _vdfService->registerDataProcessor(vdf::IDataProcessorPtr(new vdf::DataProcessor(constructed, core::UID::GenerateUniqueID(uid), name, initializer))); \
+    auto _processing = vdf::IDataProcessorPtr(new vdf::DataProcessor(constructed, core::UID::GenerateUniqueID(uid), name, initializer));\
+    _processing->setIcon(icon);\
+    _vdfService->registerDataProcessor(_processing); \
     _HMM_END_REGISTER
 
 
@@ -49,6 +58,22 @@
     };                                                            \
     HMM_REGISTER_DATA_SOURCE(name, uid, icon, proto, init);       \
     } while(0);                                                     
+
+#define HMM_REGISTER_VECTOR_DATA_SOURCE(type, name, uid, icon, hmm)            \
+    do {                                                                       \
+    auto proto = new XSource(hmm, TreeBuilder::create##type##Branch,           \
+    TreeBuilder::getRoot##type##Icon(), TreeBuilder::get##type##Icon());       \
+                                                                               \
+    auto init =                                                                \
+    [&](const df::ISourceNode* prototype) -> XSource*                          \
+    {                                                                          \
+        auto proto = dynamic_cast<const XSource*>(prototype);                  \
+        auto source = new XSource(proto->getHmm(), proto->getBranchFunction(), \
+            proto->getRootIcon(), proto->getLeafIcon());                       \
+        return source;                                                         \
+    };                                                                         \
+    HMM_REGISTER_DATA_SOURCE(name, uid, icon, proto, init);                    \
+    } while(0);                        
 
 #define HMM_REGISTER_DATA_SINK_SIMPLE(type, uid, name, icon)      \
     do {                                                          \

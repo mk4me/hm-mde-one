@@ -13,20 +13,28 @@
 #include "HmmPins.h"
 #include <utils/ObjectWrapper.h>
 #include <QtGui/QTreeWidget>
+#include <QtGui/QIcon>
+#include "HmmMainWindow.h"
+#include "FilterCommand.h"
+#include "Vector3DFilterCommand.h"
+
 
 class XSource : public df::SourceNode, public df::IDFSource, public vdf::INodeConfiguration
 {
 public:
-    XSource ();
-    
+    XSource (HmmMainWindow* hmm, BuilderFilterCommand::BranchFunction fun, const QIcon& rootIcon, const QIcon& leafIcon);
+
 public:
     virtual void reset();
     virtual const bool empty() const;
     virtual void produce();
     virtual QWidget* getConfigurationWidget() const;
 
-public slots:
-    void itemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+public:
+    HmmMainWindow* getHmm() const { return hmm; }
+    const QIcon& getLeafIcon() const { return leafIcon; }
+    BuilderFilterCommand::BranchFunction getBranchFunction() const { return branchFunction; }
+    const QIcon& getRootIcon() const { return rootIcon; }
 
 private:
     virtual void refreshConfiguration();
@@ -36,36 +44,10 @@ private:
     QTreeWidget* tree;
     VectorChannelReaderInterfaceConstPtr channel;
     bool used;
-    std::map<QTreeWidgetItem*, utils::ObjectWrapperConstPtr> item2wrapper;
+    HmmMainWindow* hmm;
+    BuilderFilterCommand::BranchFunction branchFunction;
+    QIcon rootIcon;
+    QIcon leafIcon;
 };
-
-
-//class XSource : public df::SourceNode, public df::IDFSource
-//{
-//public:
-//
-//    XSource ();
-//
-//    XSource(VectorChannelReaderInterfaceConstPtr vector);
-//
-//    virtual void reset();
-//
-//    virtual const bool empty() const;
-//
-//    virtual void produce();
-//
-//    VectorChannelReaderInterfaceConstPtr getChannel() const;
-//    void setChannel(VectorChannelReaderInterfaceConstPtr val);
-//
-//
-//private:
-//    void _XSource();
-//
-//private:
-//    XOutputPin * outPinA;
-//    VectorChannelReaderInterfaceConstPtr channel;
-//    bool used;
-//};
-
 
 #endif

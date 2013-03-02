@@ -33,6 +33,9 @@ public:
 	// TODO: przeniesc implementacje
 	df::INode* getModelNode() {  UTILS_ASSERT(_node); return _node; }
 	const df::INode* getModelNode() const { UTILS_ASSERT(_node); return _node; }
+    const QIcon& getIcon() const { return icon; }
+    void setIcon(const QIcon& val) { icon = val; }
+
 	void setModelNode(df::INode* node) { _node = node; }
 
 	virtual void addSelection() = 0;
@@ -40,6 +43,7 @@ public:
 
 private:
 	df::INode* _node;
+    QIcon icon;
 };
 typedef core::shared_ptr<IVisualNode> IVisualNodePtr;
 typedef core::weak_ptr<IVisualNode> IVisualNodeWeakPtr;

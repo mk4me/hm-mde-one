@@ -30,9 +30,23 @@ private:
     XInputPin * inPinA;
     XInputPin * inPinB;
     XOutputPin * outPinA;
-
     std::string name;
+};
 
+class VectorAdder : public df::ProcessingNode, public df::IDFProcessor
+{
+public:
+    VectorAdder();
+
+public:
+    virtual void reset();
+    virtual void process();
+
+private:
+    XInputPin * inPinA;
+    XInputPin * inPinB;
+    XOutputPin * outPinA;
+    std::string name;
 };
 
 #endif

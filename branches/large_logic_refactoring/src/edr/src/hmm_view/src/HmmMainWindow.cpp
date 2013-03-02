@@ -454,54 +454,54 @@ void HmmMainWindow::createNewVisualizer()
     }
 }
 
-void HmmMainWindow::createSource()
-{
-    //static boost::uuids::random_generator random_uuid;
-    //static bool hack = false;
-    //ContextAction* action = qobject_cast<ContextAction*>(sender());
-    //try{
-    //    HmmTreeItem* treeItem = action->getTreeItem();
-    //    TreeWrappedItemHelperPtr wrapped = core::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
-
-    //    core::IServiceManager* manager = plugin::getServiceManager();
-    //    vdf::NewVdfServicePtr vdfService = core::dynamic_pointer_cast<vdf::NewVdfService>(manager->getService(vdf::NewVdfService::getClassID()));
-    //    VectorChannelReaderInterfaceConstPtr item = wrapped->getWrapper()->get();
-
-    //    vdfService->registerDataSource(vdf::IDataSourcePtr(new vdf::DataSource(new XSource(item), core::UniqueID(random_uuid()), wrapped->getText().toStdString(), 
-    //        [&](const df::ISourceNode* prototype) -> XSource*
-    //        { 
-    //            auto source = new XSource();
-    //            auto proto = dynamic_cast<const XSource*>(prototype);
-    //            source->setChannel(proto->getChannel());
-    //            return source; 
-    //        })));
-
-    //    if (!hack) {
-    //        hack = true;
-    //        vdfService->registerDataSink(vdf::IDataSinkPtr(new vdf::DataSink(new XSink(this), core::UniqueID(random_uuid()), "Vector -> Tree", 
-    //            [&](const df::ISinkNode* prototype) -> XSink*
-    //        { 
-    //            auto sink = new XSink();
-    //            auto proto = dynamic_cast<const XSink*>(prototype);
-    //            sink->setHmm(proto->getHmm());
-    //            return sink; 
-    //        })));
-
-    //        vdfService->registerDataProcessor(vdf::IDataProcessorPtr(new vdf::DataProcessor(new XProcessor(), core::UniqueID(random_uuid()), "Vector Differ", 
-    //            [&](const df::IProcessingNode* prototype) -> XProcessor*
-    //        { 
-    //            auto p = new XProcessor();
-    //            //auto proto = dynamic_cast<const XProcessor*>(prototype);
-    //            //source->setChannel(proto->getChannel());
-    //            return p; 
-    //        })));
-    //    }
-    //}catch(std::exception& e ){
-    //    PLUGIN_LOG_ERROR("Error creating source: " << e.what());
-    //} catch (...) {
-    //    PLUGIN_LOG_ERROR("Error creating source");
-    //}
-}
+//void HmmMainWindow::createSource()
+//{
+//    //static boost::uuids::random_generator random_uuid;
+//    //static bool hack = false;
+//    //ContextAction* action = qobject_cast<ContextAction*>(sender());
+//    //try{
+//    //    HmmTreeItem* treeItem = action->getTreeItem();
+//    //    TreeWrappedItemHelperPtr wrapped = core::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
+//
+//    //    core::IServiceManager* manager = plugin::getServiceManager();
+//    //    vdf::NewVdfServicePtr vdfService = core::dynamic_pointer_cast<vdf::NewVdfService>(manager->getService(vdf::NewVdfService::getClassID()));
+//    //    VectorChannelReaderInterfaceConstPtr item = wrapped->getWrapper()->get();
+//
+//    //    vdfService->registerDataSource(vdf::IDataSourcePtr(new vdf::DataSource(new XSource(item), core::UniqueID(random_uuid()), wrapped->getText().toStdString(), 
+//    //        [&](const df::ISourceNode* prototype) -> XSource*
+//    //        { 
+//    //            auto source = new XSource();
+//    //            auto proto = dynamic_cast<const XSource*>(prototype);
+//    //            source->setChannel(proto->getChannel());
+//    //            return source; 
+//    //        })));
+//
+//    //    if (!hack) {
+//    //        hack = true;
+//    //        vdfService->registerDataSink(vdf::IDataSinkPtr(new vdf::DataSink(new XSink(this), core::UniqueID(random_uuid()), "Vector -> Tree", 
+//    //            [&](const df::ISinkNode* prototype) -> XSink*
+//    //        { 
+//    //            auto sink = new XSink();
+//    //            auto proto = dynamic_cast<const XSink*>(prototype);
+//    //            sink->setHmm(proto->getHmm());
+//    //            return sink; 
+//    //        })));
+//
+//    //        vdfService->registerDataProcessor(vdf::IDataProcessorPtr(new vdf::DataProcessor(new XProcessor(), core::UniqueID(random_uuid()), "Vector Differ", 
+//    //            [&](const df::IProcessingNode* prototype) -> XProcessor*
+//    //        { 
+//    //            auto p = new XProcessor();
+//    //            //auto proto = dynamic_cast<const XProcessor*>(prototype);
+//    //            //source->setChannel(proto->getChannel());
+//    //            return p; 
+//    //        })));
+//    //    }
+//    //}catch(std::exception& e ){
+//    //    PLUGIN_LOG_ERROR("Error creating source: " << e.what());
+//    //} catch (...) {
+//    //    PLUGIN_LOG_ERROR("Error creating source");
+//    //}
+//}
 
 void HmmMainWindow::createNewVisualizer( HmmTreeItem* item, coreUI::CoreDockWidgetSet* dockSet )
 {    
@@ -1132,11 +1132,6 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
      menu->addSeparator();
      connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
      connect(addNew, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
-
-     QAction* createSource = new ContextAction(item, menu);
-     menu->addAction(createSource);
-     createSource->setText("Create Source");
-     connect(createSource, SIGNAL(triggered()), this, SLOT(createSource()));
 
      if (core::dynamic_pointer_cast<NewChartItemHelper>(item->getHelper())) {
          QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);

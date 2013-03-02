@@ -50,7 +50,7 @@ protected:
     void update(const IDataSinkManager* sm);
 
 private:
-    void addEntry(const QString& entry, IVisualItem::Type type);
+    void addEntry(const QString& entry, const QIcon& icon, IVisualItem::Type type);
     SceneBuilder::VisualNodeWithPins createItemByEntry(const QString& entry);
 
 private:
