@@ -329,8 +329,10 @@ void HmmMainWindow::customViewInit(QWidget * console)
             addWidgetToContext(vdfUsageContext, viewWidget);
             addWidgetToContext(vdfUsageContext, this->vdf);
             addWidgetToContext(vdfUsageContext, controlWidget);
-            contextEventFilter->registerPermamentContextWidget(this->vdf);
-            plainContextWidgets.insert(this->vdf);
+            addWidgetToContext(vdfUsageContext, processingButton);
+            contextEventFilter->registerPermamentContextWidget(this->processingButton);
+            plainContextWidgets.insert(this->processingButton);
+            contextEventFilter->registerClosableContextWidget(this->processingButton);
 
             contextEventFilter->registerPermamentContextWidget(viewWidget);
             plainContextWidgets.insert(viewWidget);

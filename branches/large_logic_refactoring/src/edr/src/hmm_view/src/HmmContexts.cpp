@@ -671,7 +671,7 @@ void HMMVVdfUsageContext::activateContext( QWidget * contextWidget )
         return;
     }
 
-    groupID = flexiTabWidget->addTab(widget, QObject::tr("Raports Tab"));
+    groupID = flexiTabWidget->addTab(widget, QObject::tr("Vdf Tab"));
     widget->setVisible(true);
     flexiTabWidget->setCurrentIndex(groupID);
 
