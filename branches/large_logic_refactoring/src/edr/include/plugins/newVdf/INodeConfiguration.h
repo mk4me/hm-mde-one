@@ -24,6 +24,16 @@ namespace vdf {
     typedef core::shared_ptr<INodeConfiguration> INodeConfigurationPtr;
     typedef core::shared_ptr<const INodeConfiguration> INodeConfigurationConstPtr;
 
+    class INodeValidation
+    {
+    public:
+        virtual ~INodeValidation() {}
+        virtual bool isNodeValid() = 0;
+        virtual QString getErrorMessage() = 0;
+    };
+    typedef core::shared_ptr<INodeValidation> INodeValidationPtr;
+    typedef core::shared_ptr<const INodeValidation> INodeValidationConstPtr;
+
 }
 
 #endif

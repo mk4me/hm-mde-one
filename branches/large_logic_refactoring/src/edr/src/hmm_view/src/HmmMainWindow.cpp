@@ -674,12 +674,6 @@ void HmmMainWindow::addItemToTree( QTreeWidgetItem* item )
     analisis->getTreeWidget()->addTopLevelItem(item);
 }
 
-void HmmMainWindow::addItemToProcessedBranch(QTreeWidgetItem* item)
-{
-    processedBranch->addChild(item);
-    refreshTree();
-}
-
 void HmmMainWindow::createFilterTabs()
 {
     analisis->getTreeWidget()->clear();
@@ -1142,6 +1136,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  {
      QMenu * menu = new QMenu(parent);
      QAction * addNew = new ContextAction(item, menu);
+
      addNew->setText(tr("Create new visualizer"));
      menu->addAction(addNew);
      menu->addSeparator();
@@ -1773,9 +1768,6 @@ coreUI::CoreDockWidget * HmmMainWindow::embeddWidget(QWidget * widget, const QSt
 void HmmMainWindow::switchToAnalysis()
 {
     emit onSwitchToAnalysis();
-    //safeSwitchToAnalysis();
-
-    //analisis->getTreeWidget()->setFocus();
 }
 
 void HmmMainWindow::safeSwitchToAnalysis()
@@ -1784,3 +1776,43 @@ void HmmMainWindow::safeSwitchToAnalysis()
     analisis->getTreeWidget()->setFocus();
     refreshTree();
 }
+
+//
+//void HmmMainWindow::processedBranchIncreaseWhenEqual( int sinkRunNo )
+//{
+//    ScopedLock lock(processedMutex);
+//    static int count = 0;
+//    if (sinkRunNo == count) {
+//        QString s;
+//        s.sprintf("Run %04d", ++count);
+//        QTreeWidgetItem* itm = new QTreeWidgetItem();
+//        itm->setText(0, s);
+//        processedBranch->addChild(itm);
+//    }
+//}
+
+int HmmMainWindow::getProcessedBranchCount()
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(processedMutex);
+    return processedBranch->childCount();
+}
+
+void HmmMainWindow::addItemToProcessedBranch(QTreeWidgetItem* item, int sinkRunNo)
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(processedMutex);
+    static int count = 0;
+    if (sinkRunNo == processedBranch->childCount()) {
+        QString s;
+        s.sprintf("Run %04d", ++count);
+        QTreeWidgetItem* itm = new QTreeWidgetItem();
+        itm->setText(0, s);
+        processedBranch->addChild(itm);
+    }
+    
+    int childCount = processedBranch->childCount();
+    UTILS_ASSERT(childCount);
+    auto child = processedBranch->child(childCount - 1);
+    child->addChild(item);
+    refreshTree();
+}
+

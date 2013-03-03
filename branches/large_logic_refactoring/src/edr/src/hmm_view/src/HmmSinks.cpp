@@ -4,8 +4,20 @@
 
 void XSink::_XSink()
 {
+    static int count = 0;
+    runNo = 0;
     inPinA = new XInputPin(this);
     addInputPin(inPinA);
+    widget = new QWidget();
+    QLayout* layout = new QHBoxLayout();
+    widget->setLayout(layout);
+
+    QLabel* label = new QLabel("Set name:");
+    line = new QLineEdit();
+    defaultName.sprintf("Sink: %04d", count++);
+    line->setText(defaultName);
+    layout->addWidget(label);
+    layout->addWidget(line);
 }
 
 void XSink::setHmm( HmmMainWindow* val )
@@ -20,7 +32,6 @@ HmmMainWindow* XSink::getHmm() const
 
 void XSink::consume()
 {
-    static int count = 0;
     VectorChannelReaderInterfaceConstPtr c = inPinA->value();	
     if (c) {
         utils::ObjectWrapperPtr wrp = utils::ObjectWrapper::create<VectorChannelReaderInterface>();
@@ -28,10 +39,15 @@ void XSink::consume()
         NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrp));
 
         HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);
-        QString name = QString("Result: %1").arg(++count);
+        QString name = line->text();
+        if (name.isEmpty()) {
+            name = defaultName;
+        }
         channelItem->setItemAndHelperText(name);
         wrp->insert(std::pair<std::string, std::string>("core/name", name.toStdString()));
-        hmm->addItemToProcessedBranch(channelItem);
+
+        
+        hmm->addItemToProcessedBranch(channelItem, runNo);
         hmm->switchToAnalysis();
     } else {
         throw std::exception("Sink could not insert item to tree");
@@ -40,7 +56,7 @@ void XSink::consume()
 
 void XSink::reset()
 {
-
+    runNo = hmm->getProcessedBranchCount();
 }
 
 XSink::XSink( HmmMainWindow* h ) : 
@@ -53,4 +69,14 @@ XSink::XSink() :
 hmm(nullptr)
 {
     _XSink();
+}
+
+QWidget* XSink::getConfigurationWidget() const
+{
+    return widget;    
+}
+
+void XSink::refreshConfiguration()
+{
+    
 }

@@ -41,6 +41,8 @@ void TreeRefresher::actualRefresh(QTreeWidget* tree, const core::ConstObjectsLis
             processed->setFont(0, font);
             tree->addTopLevelItem(processed);
             processed->setExpanded(true);
+
+            processed->child(processed->childCount() - 1)->setExpanded(true);
         }
 
 

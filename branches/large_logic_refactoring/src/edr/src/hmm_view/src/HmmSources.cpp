@@ -4,6 +4,8 @@
 #include "FilterCommand.h"
 #include "Vector3DFilterCommand.h"
 
+
+
 QWidget* XSource::getConfigurationWidget() const
 {
     return tree;
@@ -32,29 +34,9 @@ const bool XSource::empty() const
     return used || !channel;
 }
 
-HmmTreeItem* getFirstTreeItem(QTreeWidgetItem* itm) 
-{
-    auto num = itm->childCount();
-    for (auto i = 0; i < num; ++i) {
-        auto child = getFirstTreeItem(itm->child(i));
-        if (child) {
-            return child;
-        }
-    }
-
-    HmmTreeItem* hti = dynamic_cast<HmmTreeItem*>(itm);
-    return hti;
-}
-
 void XSource::produce()
 {
-    HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());    int count = tree->topLevelItemCount();
-    if (!treeItem) {
-        refreshConfiguration();
-        if (tree->topLevelItemCount()) {
-            treeItem = getFirstTreeItem(tree->topLevelItem(0));
-        }
-    }
+    HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());
     if (treeItem) {
         NewVector3ItemHelperPtr vectorItem = core::dynamic_pointer_cast<NewVector3ItemHelper>(treeItem->getHelper());
         auto wrp = vectorItem->getWrapper();
@@ -79,4 +61,14 @@ void XSource::refreshConfiguration()
 XSource::~XSource()
 {
     delete tree;
+}
+
+bool XSource::isNodeValid()
+{
+    return dynamic_cast<HmmTreeItem*>(tree->currentItem());
+}
+
+QString XSource::getErrorMessage()
+{
+    return QString("Source is not set");
 }

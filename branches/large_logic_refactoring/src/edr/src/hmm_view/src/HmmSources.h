@@ -19,7 +19,7 @@
 #include "Vector3DFilterCommand.h"
 
 
-class XSource : public df::SourceNode, public df::IDFSource, public vdf::INodeConfiguration
+class XSource : public df::SourceNode, public df::IDFSource, public vdf::INodeConfiguration, public vdf::INodeValidation
 {
 public:
     XSource (HmmMainWindow* hmm, BuilderFilterCommand::BranchFunction fun, const QIcon& rootIcon, const QIcon& leafIcon);
@@ -29,6 +29,9 @@ public:
     virtual const bool empty() const;
     virtual void produce();
     virtual QWidget* getConfigurationWidget() const;
+    virtual bool isNodeValid();
+    virtual QString getErrorMessage();
+
 
 public:
     HmmMainWindow* getHmm() const { return hmm; }

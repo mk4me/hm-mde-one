@@ -108,7 +108,12 @@ public:
     //! dodanie głównego elementu (topItem) do drzewa danych w analizach
     //! \param item dodawany element
     void addItemToTree(QTreeWidgetItem* item);
-    void addItemToProcessedBranch(QTreeWidgetItem* item);
+
+    // HACK, potrzebny jest madry sposob dodawania elementow przetworzonych...
+    void addItemToProcessedBranch(QTreeWidgetItem* item, int sinkRunNo);
+    //void processedBranchIncreaseWhenEqual(int sinkRunNo);
+    int getProcessedBranchCount();
+
     //! czyszczenie drzewa danych w analizach
     void clearTree();
     //! Pobiera menu kontekstowe dla wybranego elementu drzewa analiz
@@ -331,6 +336,7 @@ private:
 
     // TODO: nie moze to tak byc
     QTreeWidgetItem* processedBranch;
+    OpenThreads::Mutex processedMutex;
 };
 
 

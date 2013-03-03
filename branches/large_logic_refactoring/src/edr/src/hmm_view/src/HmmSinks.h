@@ -11,8 +11,9 @@
 #define HEADER_GUARD_HMM__HMMSINKS_H__
 
 #include "HmmPins.h"
+#include <QtGui/QLineEdit>
 
-class XSink : public df::SinkNode, public df::IDFSink
+class XSink : public df::SinkNode, public df::IDFSink, public vdf::INodeConfiguration
 {
 public:
     XSink();
@@ -23,12 +24,19 @@ public:
     HmmMainWindow* getHmm() const;
     void setHmm(HmmMainWindow* val);
 
+    virtual QWidget* getConfigurationWidget() const;
+    virtual void refreshConfiguration();
+
 private:
     void _XSink();
 
 private:
     HmmMainWindow* hmm;
     XInputPin * inPinA;
+    QWidget* widget;
+    QLineEdit* line;
+    QString defaultName;
+    int runNo;
 };
 
 

@@ -9,6 +9,7 @@
 #include "VdfScene.h"
 #include "Command.h"
 #include "VdfView.h"
+#include <plugins/newVdf/INodeConfiguration.h>
 
 
 using namespace vdf;
@@ -94,6 +95,16 @@ void vdf::NewVdfWidget::clearScene()
 
 void vdf::NewVdfWidget::runDF()
 {
+    auto nodes = sceneModel->getVisualItems<IVisualNodePtr>();
+    for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+        auto modelNode = (*it)->getModelNode();
+        INodeValidation* valid = dynamic_cast<INodeValidation*>(modelNode);
+        if (valid && !valid->isNodeValid()) {
+            QMessageBox::critical(this, tr("Error"), QString("Info: %1").arg(valid->getErrorMessage()));
+            return;
+        }
+    }
+
     try {
         sceneModel->run();
     } catch (std::exception& e) {
