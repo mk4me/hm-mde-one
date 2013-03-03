@@ -12,7 +12,7 @@
 
 #include "HmmPins.h"
 
-class XProcessor : public df::ProcessingNode, public df::IDFProcessor, public vdf::INodeConfiguration
+class XProcessor : public df::ProcessingNode, public df::IDFProcessor
 {
 public:
     XProcessor();
@@ -20,8 +20,6 @@ public:
 public:
     virtual void reset();
     virtual void process();
-    virtual QWidget* getConfigurationWidget() const;
-    virtual void refreshConfiguration();
 
 private:
     XInputPin * inPinA;

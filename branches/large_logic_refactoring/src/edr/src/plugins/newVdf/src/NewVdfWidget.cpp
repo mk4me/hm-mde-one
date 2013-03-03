@@ -87,8 +87,8 @@ void vdf::NewVdfWidget::clearScene()
 {
     if(QMessageBox::question( nullptr, tr("Confirm operation"), tr("Are You sure You want to clear scene?"),
         QMessageBox::Yes | QMessageBox::Abort, QMessageBox::Abort ) == QMessageBox::Yes) {
+        stateMachine->clear();
     	sceneModel->clearScene();
-        stateMachine->getCommandStack()->clear();
     }
 }
 

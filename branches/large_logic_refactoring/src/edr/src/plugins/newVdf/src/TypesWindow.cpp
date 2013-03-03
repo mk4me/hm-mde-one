@@ -144,6 +144,11 @@ void TypesWindow::update( const IDataSinkManager* sm )
 
 void vdf::TypesWindow::onNodeSelected( IVisualNodePtr node )
 {
+    if (!node) {
+        tabWidget->setCurrentIndex(0);
+        return;
+    }
+
     auto modelNode = node->getModelNode();
     vdf::INodeConfiguration* conf = dynamic_cast<INodeConfiguration*>(modelNode);
     

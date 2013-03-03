@@ -57,9 +57,13 @@ public:
 
 public slots:
     void selectionChanged();
+    void clear();
 
 signals:
     void singleNodeSelected(IVisualNodePtr node);
+
+private:
+    void resetStates();
 
 private:
     NormalStatePtr normalState;

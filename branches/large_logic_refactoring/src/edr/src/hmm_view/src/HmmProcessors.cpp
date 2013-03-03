@@ -37,15 +37,6 @@ XProcessor::XProcessor()
     addOutputPin(outPinA);
 }
 
-QWidget* XProcessor::getConfigurationWidget() const
-{
-    return new QLabel("Configuration");
-}
-
-void XProcessor::refreshConfiguration()
-{
-}
-
 VectorAdder::VectorAdder()
 {
     inPinA = new XInputPin(this);

@@ -125,6 +125,9 @@ public:
     //! \param visWidget wizualizator, dla którego aktywuje się kontekst
     virtual void setCurrentVisualizerActions(coreUI::CoreVisualizerWidget * visWidget);
     void switchToAnalysis();
+       
+Q_SIGNALS:
+    void onSwitchToAnalysis();
 
 public Q_SLOTS:
     //! odświeżenie drzewa danych z zakładki analiz
@@ -185,6 +188,8 @@ private Q_SLOTS:
     void onToolButton(bool checked);
 
 	void onContextChange(int idx);
+
+    void safeSwitchToAnalysis();
 
 private:	
 

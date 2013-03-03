@@ -26,7 +26,10 @@ public:
     virtual void end();
     virtual void selectionChanged(const QList<QGraphicsItem*>& list);
     virtual bool mouseMoveEvent(QGraphicsSceneMouseEvent* e);
-	virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e);
+    virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e);
+
+public:
+    void setFirstPin(vdf::IVisualPinPtr val) { firstPin = val; }
 
 private:
     IVisualPinPtr firstPin;

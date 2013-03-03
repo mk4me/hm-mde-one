@@ -68,11 +68,16 @@ bool SceneModel::connectionPossible( IVisualPinPtr pin1, IVisualPinPtr pin2) con
 	if (pin1->getType() == pin2->getType() || !pin1 || !pin2) {
 		return false;
 	} 
+
+    if (pin1->getParent().lock() == pin2->getParent().lock()) {
+        return false;
+    }
+
     PinResolver p(pin1, pin2);
     if (p.getInput()->getConnection().lock()) {
         return false;
     }
-    
+   
     auto modelInput = p.getInput()->getModelPin();
     auto modelOutput = p.getOutput()->getModelPin();
     return model->canConnect(modelOutput, modelInput);
@@ -198,7 +203,8 @@ void vdf::SceneModel::removePin( IVisualItemPtr item )
         auto inputPin = core::dynamic_pointer_cast<IVisualInputPin>(pin);
         auto connection = inputPin->getConnection().lock();
         if (connection) {
-            removeItem(connection);
+            //removeItem(connection);
+            removeConnection(connection);
         }
 		inputPins.remove(inputPin);
 	} else if (std::is_same<VisualPinT, IVisualOutputPin>::value) {
@@ -207,7 +213,8 @@ void vdf::SceneModel::removePin( IVisualItemPtr item )
         for (int i = count - 1; i >= 0 ; --i) {
             auto connection = outputPin->getConnection(i).lock();
             if (connection) {
-                removeItem(connection);
+                //removeItem(connection);
+                removeConnection(connection);
             }
         }
 		outputPins.remove(outputPin);
@@ -237,14 +244,9 @@ void SceneModel::removeNode( IVisualItemPtr item )
 
 void SceneModel::removeItem( IVisualItemPtr item )
 {
-	auto* graphics = item->visualItem();
-	auto it = graphics2Visual.find(graphics);
-	UTILS_ASSERT(it != graphics2Visual.end());
-	graphics2Visual.erase(it);
-    //if (graphics2Visual.find(graphics->parentItem()) == graphics2Visual.end()) {
-    if (!item->isType(IVisualItem::Pin)) {
-	    emit visualItemRemoved(item);
-    }
+    UTILS_ASSERT(!core::dynamic_pointer_cast<IVisualConnection>(item));
+    commonErase(item);
+
 
 	switch(item->getType()) {
 	case IVisualItem::ProcessingNode:
@@ -268,14 +270,14 @@ void SceneModel::removeItem( IVisualItemPtr item )
 		break;
 
 	case (IVisualItem::Connection):
-		IVisualConnectionPtr connection = core::dynamic_pointer_cast<IVisualConnection>(item);
+        UTILS_ASSERT(false);
+		/*IVisualConnectionPtr connection = core::dynamic_pointer_cast<IVisualConnection>(item);
 		connection->getInputPin()->setConnection(IVisualConnectionWeakPtr());
 		connection->getOutputPin()->removeConnection(connection);
 		try {
 			model->removeConnection(connection->getModelConnection());
 		} catch (std::exception& e) {
-
-		}
+		}*/
 		break;
 	}
 }
@@ -363,7 +365,11 @@ void vdf::SceneModel::clearScene()
 {
     auto nodes = getVisualItems<IVisualNodePtr>();
 	for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-        removeItem(*it);
+        if ((*it)->isType(IVisualItem::Connection)) {
+            removeConnection(*it);
+        } else {
+            removeItem(*it);
+        }
     }
     UTILS_ASSERT(graphics2Visual.empty());
     UTILS_ASSERT(inputPins.empty());
@@ -390,4 +396,52 @@ void vdf::SceneModel::removeOutputPins(IVisualNodePtr node)
 			removeItem(source->getOutputPin(i));
 		}
 	}
+}
+
+void vdf::SceneModel::commonErase( IVisualItemPtr item ) 
+{
+    auto* graphics = item->visualItem();
+    auto it = graphics2Visual.find(graphics);
+    UTILS_ASSERT(it != graphics2Visual.end());
+    graphics2Visual.erase(it);
+    //if (graphics2Visual.find(graphics->parentItem()) == graphics2Visual.end()) {
+    if (!item->isType(IVisualItem::Pin)) {
+        emit visualItemRemoved(item);
+    }
+}
+
+void vdf::SceneModel::removeConnection( IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin )
+{
+    auto connections = getVisualItems<IVisualConnectionPtr>();
+
+    for (auto it = connections.begin(); it != connections.end(); ++it) {
+        IVisualConnectionPtr c = *it;
+        if (c->getOutputPin() == outputPin && c->getInputPin() == inputPin) {
+            commonErase(c);
+            inputPin->setConnection(IVisualConnectionWeakPtr());
+            outputPin->removeConnection(c);
+            try {
+                model->removeConnection(c->getModelConnection());
+            } catch (std::exception& e) {
+                int a = 0;
+            }
+            return;
+        }
+    }
+
+    UTILS_ASSERT (false);
+    /*IVisualConnectionPtr connection = core::dynamic_pointer_cast<IVisualConnection>(item);
+    connection->getInputPin()->setConnection(IVisualConnectionWeakPtr());
+    connection->getOutputPin()->removeConnection(connection);
+    try {
+        model->removeConnection(connection->getModelConnection());
+    } catch (std::exception& e) {
+    }*/
+}
+
+void vdf::SceneModel::removeConnection( IVisualItemPtr item )
+{
+    auto c = core::dynamic_pointer_cast<IVisualConnection>(item);
+    UTILS_ASSERT(c);
+    removeConnection(c->getOutputPin(), c->getInputPin());
 }

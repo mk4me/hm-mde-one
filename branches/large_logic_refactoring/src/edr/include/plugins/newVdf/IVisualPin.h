@@ -22,7 +22,10 @@ protected:
 	IVisualPin() {}
 
 public:
-	virtual ~IVisualPin() {}
+	virtual ~IVisualPin() {
+
+        int a = 0;
+    }
 
 	virtual void markNormal() = 0;
 	virtual void markCompatible() = 0;

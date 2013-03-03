@@ -11,10 +11,8 @@ using namespace vdf;
 
 void ConnectState::begin( ISceneStateConstPtr lastState )
 {
-    auto normalState = stateMachine->getNormalState();
-    UTILS_ASSERT (normalState == lastState);
+    UTILS_ASSERT (firstPin);
     
-    firstPin = normalState->getSelectedPin();
 	auto sceneModel = stateMachine->getScene()->getSceneModel();
 	connections = sceneModel->getPossibleConections(firstPin);
 

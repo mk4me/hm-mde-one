@@ -48,9 +48,12 @@ HmmTreeItem* getFirstTreeItem(QTreeWidgetItem* itm)
 
 void XSource::produce()
 {
-    HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());
-    if (!treeItem && tree->topLevelItemCount()) {
-        treeItem = getFirstTreeItem(tree->topLevelItem(0));
+    HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());    int count = tree->topLevelItemCount();
+    if (!treeItem) {
+        refreshConfiguration();
+        if (tree->topLevelItemCount()) {
+            treeItem = getFirstTreeItem(tree->topLevelItem(0));
+        }
     }
     if (treeItem) {
         NewVector3ItemHelperPtr vectorItem = core::dynamic_pointer_cast<NewVector3ItemHelper>(treeItem->getHelper());
@@ -71,4 +74,9 @@ void XSource::refreshConfiguration()
     QTreeWidgetItem* item = forceFilter->createTreeBranch(QObject::tr("Elements"), hmm->getCurrentSessions());
     tree->addTopLevelItem(item);
     tree->expandAll();
+}
+
+XSource::~XSource()
+{
+    delete tree;
 }

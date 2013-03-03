@@ -29,15 +29,15 @@ public:
     virtual ~NormalState() {}
 public:
     virtual void selectionChanged(const QList<QGraphicsItem*>& list);
-    IVisualPinPtr getSelectedPin() const { return pin; }
 
 	virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e);
 	virtual bool mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
 
 	virtual bool keyReleaseEvent( QKeyEvent *event );
 
+    virtual void end();
+
 private: 
-    IVisualPinPtr pin;
 	std::map<IVisualNodePtr, QPointF> positions;
 };
 typedef core::shared_ptr<NormalState> NormalStatePtr;

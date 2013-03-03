@@ -13,11 +13,8 @@ using namespace vdf;
 SceneStateMachine::SceneStateMachine(NewVdfWidget* widget) : 
 	vdfWidget(widget)
  {
-    normalState = NormalStatePtr(new NormalState(this));
-    connectState = ConnectStatePtr(new ConnectState(this));
-	groupState = GroupStatePtr(new GroupState(this));
-	groupSelectedState = GroupSelectedStatePtr(new GroupSelectedState(this));
-    currentState = normalState;
+     resetStates();
+
  }
 
 NormalStatePtr SceneStateMachine::getNormalState()
@@ -88,8 +85,10 @@ void SceneStateMachine::selectionChanged()
         auto node = getSceneModel()->tryGetVisualItem(*items.begin());
         if (node && node->isType(IVisualItem::Node)) {
             emit singleNodeSelected(core::dynamic_pointer_cast<IVisualNode>(node));
+            return;
         }
     }
+    emit singleNodeSelected(IVisualNodePtr());
 }
 
 
@@ -112,4 +111,20 @@ SceneModelPtr SceneStateMachine::getSceneModel() const
 {
 	UTILS_ASSERT(getScene());
 	return getScene()->getSceneModel();
+}
+
+
+void vdf::SceneStateMachine::clear()
+{
+    getCommandStack()->clear();
+    resetStates();
+}
+
+void vdf::SceneStateMachine::resetStates() 
+{
+    normalState = NormalStatePtr(new NormalState(this));
+    connectState = ConnectStatePtr(new ConnectState(this));
+    groupState = GroupStatePtr(new GroupState(this));
+    groupSelectedState = GroupSelectedStatePtr(new GroupSelectedState(this));
+    currentState = normalState;
 }

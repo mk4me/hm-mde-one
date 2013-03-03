@@ -22,7 +22,11 @@ class IVisualConnection : public IVisualItem
 {
 public:
 	IVisualConnection() : _connection(nullptr) {}
-	virtual ~IVisualConnection() {}
+	virtual ~IVisualConnection() { 
+        if (_connection) {
+            delete _connection;
+        }
+    }
 
 public:
 	virtual void setInputPin(IVisualInputPinPtr pin) = 0;

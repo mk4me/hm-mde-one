@@ -23,7 +23,7 @@ class XSource : public df::SourceNode, public df::IDFSource, public vdf::INodeCo
 {
 public:
     XSource (HmmMainWindow* hmm, BuilderFilterCommand::BranchFunction fun, const QIcon& rootIcon, const QIcon& leafIcon);
-
+    virtual ~XSource();
 public:
     virtual void reset();
     virtual const bool empty() const;

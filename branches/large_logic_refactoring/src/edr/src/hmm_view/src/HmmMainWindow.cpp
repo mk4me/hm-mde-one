@@ -114,6 +114,7 @@ HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
 	contextPlaceholder->setVisible(false);
 
 	connect(contextPlaceholder, SIGNAL(currentChanged(int)), this, SLOT(onContextChange(int)));
+    connect(this, SIGNAL(onSwitchToAnalysis()), this, SLOT(safeSwitchToAnalysis()), Qt::QueuedConnection);
 
     visualizerUsageContext.reset(new HMMVisualizerUsageContext(contextPlaceholder));
     vdfUsageContext.reset(new HMMVVdfUsageContext(contextPlaceholder));
@@ -1771,8 +1772,15 @@ coreUI::CoreDockWidget * HmmMainWindow::embeddWidget(QWidget * widget, const QSt
 
 void HmmMainWindow::switchToAnalysis()
 {
-    analisisButton->click();
-    analisis->setFocus();
-    refreshTree();
+    emit onSwitchToAnalysis();
+    //safeSwitchToAnalysis();
+
     //analisis->getTreeWidget()->setFocus();
+}
+
+void HmmMainWindow::safeSwitchToAnalysis()
+{
+    analisisButton->click();
+    analisis->getTreeWidget()->setFocus();
+    refreshTree();
 }

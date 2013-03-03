@@ -12,18 +12,17 @@
 #include <plugins/newVdf/IVisualPin.h>
 #include <QtGui/QAbstractButton>
 #include <utils/Debug.h>
-
-namespace df { class INode; }
+#include <dflib/INode.h>
 
 namespace vdf {
 
 class IVisualNode : public IVisualItem
 {
 protected:
-	IVisualNode() : _node(nullptr) {}
+	IVisualNode() {}
 
 public:
-	virtual ~IVisualNode() {}
+	virtual ~IVisualNode() {  }
 
 public:
 	virtual void setName(const QString & name) = 0;
@@ -31,18 +30,18 @@ public:
 	virtual void setConfigButton(QAbstractButton * button) = 0;
 	virtual void setCloseButton(QAbstractButton * button) = 0;
 	// TODO: przeniesc implementacje
-	df::INode* getModelNode() {  UTILS_ASSERT(_node); return _node; }
-	const df::INode* getModelNode() const { UTILS_ASSERT(_node); return _node; }
+	df::INode* getModelNode() {  UTILS_ASSERT(_node); return _node.get(); }
+	const df::INode* getModelNode() const { UTILS_ASSERT(_node); return _node.get(); }
     const QIcon& getIcon() const { return icon; }
     void setIcon(const QIcon& val) { icon = val; }
 
-	void setModelNode(df::INode* node) { _node = node; }
+	void setModelNode(df::INode* node) { _node.reset(node); }
 
 	virtual void addSelection() = 0;
 	virtual void removeSelection() = 0;
 
 private:
-	df::INode* _node;
+	core::shared_ptr<df::INode> _node;
     QIcon icon;
 };
 typedef core::shared_ptr<IVisualNode> IVisualNodePtr;

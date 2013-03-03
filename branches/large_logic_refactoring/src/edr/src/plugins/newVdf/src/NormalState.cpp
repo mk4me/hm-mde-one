@@ -20,7 +20,9 @@ void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
     if (list.size() == 1) {
 		IVisualItemPtr item = stateMachine->getSceneModel()->tryGetVisualItem(list.first());
         if (item && item->isType(IVisualItem::Pin)) {
-            pin = core::dynamic_pointer_cast<IVisualPin>(item);
+            IVisualPinPtr pin = core::dynamic_pointer_cast<IVisualPin>(item);
+            ConnectStatePtr connectState = stateMachine->getConnectState();
+            connectState->setFirstPin(pin);
             stateMachine->setState(stateMachine->getConnectState());
         }
     }
@@ -96,3 +98,8 @@ bool NormalState::keyReleaseEvent( QKeyEvent *event )
 	return false;
 }
 
+
+void vdf::NormalState::end()
+{
+    positions.clear();
+}

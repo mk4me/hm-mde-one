@@ -80,9 +80,10 @@ public slots:
 	void merge(const QList<QGraphicsItem*>& items);
 
 public:
-    //IVisualConnection* addConnection(QGraphicsItem* item1, QGraphicsItem* item2);
 	IVisualConnectionPtr addConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin);
-	//void removeConnection(IVisualPinPtr pin1, IVisualPinPtr pin2);
+    void removeConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin);
+    void removeConnection(IVisualItemPtr item);
+
     void addItem(IVisualItemPtr item);
 	void removeItem(IVisualItemPtr item);
     const SceneBuilder& getBuilder() const { return builder; }
@@ -138,7 +139,8 @@ private:
 	void removePin(IVisualItemPtr item);
 	void removeOutputPins(IVisualNodePtr node);
 	void removeInputPins(IVisualNodePtr node); 
-	
+	void commonErase( IVisualItemPtr item );
+
 private:
     std::map<QGraphicsItem*, IVisualItemPtr> graphics2Visual;
     SceneBuilder builder;

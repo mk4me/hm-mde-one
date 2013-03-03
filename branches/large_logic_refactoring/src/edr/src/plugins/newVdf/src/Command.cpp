@@ -116,17 +116,18 @@ AddConnectionCommand::AddConnectionCommand( SceneModelPtr scene, IVisualOutputPi
 
 void AddConnectionCommand::doIt()
 {
-    if (!connection) {
+    //if (!connection) {
         connection = sceneModel->addConnection(outputPin, inputPin);
-    } else {
+    /*} else {
         UTILS_ASSERT(connection->getInputPin() && connection->getOutputPin());
         sceneModel->addItem(connection);
-    }
+    }*/
 }
 
 void AddConnectionCommand::undoIt()
 {
-	sceneModel->removeItem(connection);
+	///sceneModel->removeItem(connection);
+    sceneModel->removeConnection(connection);
 }
 
 MultiCommand::MultiCommand( const std::vector<ICommandPtr>& c ) :
@@ -216,7 +217,8 @@ void RemoveNodeCommand::undoIt()
 void RemoveNodeCommand::removeConnection( IVisualConnectionPtr connection ) 
 {
     if (connection) {
-        sceneModel->removeItem(connection);
+        //sceneModel->removeItem(connection);
+        sceneModel->removeConnection(connection);
         removedConnections.push_back(connection);
     }
 }
@@ -271,13 +273,13 @@ void vdf::RemoveSelectedCommand::undoIt()
 
 void vdf::RemoveConnectionCommand::doIt()
 {
-    sceneModel->removeItem(item);
+    sceneModel->removeConnection(item);
 }
 
 void vdf::RemoveConnectionCommand::undoIt()
 {
-    //sceneModel->addConnection(item->getOutputPin(), item->getInputPin());
-    sceneModel->addItem(item);
+    sceneModel->addConnection(item->getOutputPin(), item->getInputPin());
+    //sceneModel->addItem(item);
 }
 
 vdf::RemoveConnectionCommand::RemoveConnectionCommand( SceneModelPtr scene, IVisualConnectionPtr toRemove ) :
