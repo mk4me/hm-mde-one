@@ -75,7 +75,7 @@ bool SceneModel::connectionPossible( IVisualPinPtr pin1, IVisualPinPtr pin2) con
     
     auto modelInput = p.getInput()->getModelPin();
     auto modelOutput = p.getOutput()->getModelPin();
-    model->canConnect(modelOutput, modelInput);
+    return model->canConnect(modelOutput, modelInput);
 }
 
 //bool SceneModel::connectionPossible( QGraphicsItem* pin1, QGraphicsItem* pin2 ) const
