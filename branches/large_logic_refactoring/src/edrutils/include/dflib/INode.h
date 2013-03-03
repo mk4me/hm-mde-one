@@ -45,6 +45,9 @@ public:
 	typedef unsigned int size_type;
 
 public:
+    virtual ~INode() {}
+
+public:
 	//! \return Typ węzła
 	virtual const NodeType type() const = 0;
 	//! \return Ilośc podłączonych pinów
