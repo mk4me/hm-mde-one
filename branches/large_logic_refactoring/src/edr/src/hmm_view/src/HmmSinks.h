@@ -12,6 +12,7 @@
 
 #include "HmmPins.h"
 #include <QtGui/QLineEdit>
+#include "TreeItemHelper.h"
 
 class XSink : public df::SinkNode, public df::IDFSink, public vdf::INodeConfiguration
 {
@@ -21,6 +22,9 @@ public:
     
     virtual void reset();
     virtual void consume();
+
+    void insertToTree( TreeItemHelperPtr channelHelper, utils::ObjectWrapperPtr wrp );
+
     HmmMainWindow* getHmm() const;
     void setHmm(HmmMainWindow* val);
 
@@ -32,7 +36,7 @@ private:
 
 private:
     HmmMainWindow* hmm;
-    XInputPin * inPinA;
+    ChannelInputPin * inPinA;
     QWidget* widget;
     QLineEdit* line;
     QString defaultName;

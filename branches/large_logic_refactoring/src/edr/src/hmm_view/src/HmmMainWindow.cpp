@@ -1423,7 +1423,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
      NewChartItemHelperPtr helper = core::dynamic_pointer_cast<NewChartItemHelper>(a->getTreeItem()->getHelper());
      UTILS_ASSERT(helper);
 
-     if (helper) {
+     if (helper && helper->getMotion()) {
          NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
          SessionConstPtr s = helper->getMotion()->getUnpackedSession();
          core::ConstObjectsList motions;

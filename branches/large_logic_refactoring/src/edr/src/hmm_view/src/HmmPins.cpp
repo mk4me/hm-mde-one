@@ -2,42 +2,84 @@
 #include "HmmPins.h"
 #include "HmmMainWindow.h"
 
-void XOutputPin::reset()
+void VectorOutputPin::reset()
 {
     val = VectorChannelReaderInterfaceConstPtr();
 }
 
-void XOutputPin::value( VectorChannelReaderInterfaceConstPtr val )
+void VectorOutputPin::value( VectorChannelReaderInterfaceConstPtr val )
 {
     this->val = val;
 }
 
-const VectorChannelReaderInterfaceConstPtr XOutputPin::value() const
+const VectorChannelReaderInterfaceConstPtr VectorOutputPin::value() const
 {
     return val;
 }
 
-XOutputPin::XOutputPin( df::ISourceNode * node ) : df::OutputPin(node)
+VectorOutputPin::VectorOutputPin( df::ISourceNode * node ) : df::OutputPin(node)
 {
 
 }
 
-const VectorChannelReaderInterfaceConstPtr XInputPin::value() const
+const VectorChannelReaderInterfaceConstPtr VectorInputPin::value() const
 {
     return val;
 }
 
-void XInputPin::reset()
+void VectorInputPin::reset()
 {
     val = VectorChannelReaderInterfaceConstPtr();
 }
 
-void XInputPin::copyData( const df::IDFOutput * pin )
+void VectorInputPin::copyData( const df::IDFOutput * pin )
 {
-    val = dynamic_cast<const XOutputPin*>(pin)->value();
+    val = dynamic_cast<const VectorOutputPin*>(pin)->value();
 }
 
-XInputPin::XInputPin( df::ISinkNode * node ) : df::InputPin(node)
+VectorInputPin::VectorInputPin( df::ISinkNode * node ) : df::InputPin(node)
 {
 
+}
+
+const bool VectorInputPin::pinCompatible( const df::IOutputPin * pin ) const
+{
+    return dynamic_cast<const VectorOutputPin*>(pin);
+}
+
+//const ScalarChannelReaderInterfaceConstPtr ChannelInputPin::value() const
+//{
+//    return val;
+//}
+
+void ChannelInputPin::reset()
+{
+    scalar = ScalarChannelReaderInterfaceConstPtr(); 
+    vector = VectorChannelReaderInterfaceConstPtr();
+}
+
+void ChannelInputPin::copyData( const df::IDFOutput * pin )
+{
+  auto scalarPin = dynamic_cast<const ScalarOutputPin*>(pin);
+  if (scalarPin) {
+      scalar = scalarPin->value();
+  } else {
+      auto vectorPin = dynamic_cast<const VectorOutputPin*>(pin);
+      vector = vectorPin ? vectorPin->value() : VectorChannelReaderInterfaceConstPtr();
+  }
+}
+
+ChannelInputPin::ChannelInputPin( df::ISinkNode * node ) : df::InputPin(node)
+{
+
+}
+
+const bool ChannelInputPin::pinCompatible( const df::IOutputPin * pin ) const
+{
+    return dynamic_cast<const ScalarOutputPin*>(pin) || dynamic_cast<const VectorOutputPin*>(pin);
+}
+
+const bool ScalarInputPin::pinCompatible( const df::IOutputPin * pin ) const
+{
+    return dynamic_cast<const ScalarOutputPin*>(pin);
 }

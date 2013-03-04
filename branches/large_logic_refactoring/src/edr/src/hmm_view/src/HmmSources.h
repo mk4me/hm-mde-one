@@ -43,7 +43,7 @@ private:
     virtual void refreshConfiguration();
 
 private:
-    XOutputPin * outPinA;
+    VectorOutputPin * outPinA;
     QTreeWidget* tree;
     VectorChannelReaderInterfaceConstPtr channel;
     bool used;

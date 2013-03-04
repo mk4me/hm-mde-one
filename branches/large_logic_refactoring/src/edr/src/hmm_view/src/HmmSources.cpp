@@ -19,7 +19,7 @@ XSource::XSource(HmmMainWindow* hmm, BuilderFilterCommand::BranchFunction fun, c
 {
     tree = new QTreeWidget();
     tree->setHeaderHidden(true);
-    outPinA = new XOutputPin(this);
+    outPinA = new VectorOutputPin(this);
     addOutputPin(outPinA);
     used = false;
 }

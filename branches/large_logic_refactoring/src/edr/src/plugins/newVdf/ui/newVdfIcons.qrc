@@ -14,5 +14,12 @@
 	<file alias="video.png">../../../../resources/embedded/icons/vdf/video.png</file>
 	<file alias="video2.png">../../../../resources/embedded/icons/vdf/video2.png</file>
 	<file alias="rubber.png">../../../../resources/embedded/icons/vdf/rubber.png</file>
+	
+	<file alias="plusminus.png">../../../../resources/embedded/icons/vdf/plusminus.png</file>
+	<file alias="minusplus.png">../../../../resources/embedded/icons/vdf/minusplus.png</file>
+	<file alias="normalizeH.png">../../../../resources/embedded/icons/vdf/normalizeH.png</file>
+	<file alias="normalizeV.png">../../../../resources/embedded/icons/vdf/normalizeV.png</file>
+	<file alias="invert.png">../../../../resources/embedded/icons/vdf/invert.png</file>
+	<file alias="sum.png">../../../../resources/embedded/icons/vdf/sum.png</file>
   </qresource>
 </RCC>

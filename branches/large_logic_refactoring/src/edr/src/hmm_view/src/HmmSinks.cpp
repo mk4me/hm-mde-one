@@ -6,7 +6,7 @@ void XSink::_XSink()
 {
     static int count = 0;
     runNo = 0;
-    inPinA = new XInputPin(this);
+    inPinA = new ChannelInputPin(this);
     addInputPin(inPinA);
     widget = new QWidget();
     QLayout* layout = new QHBoxLayout();
@@ -32,25 +32,18 @@ HmmMainWindow* XSink::getHmm() const
 
 void XSink::consume()
 {
-    VectorChannelReaderInterfaceConstPtr c = inPinA->value();	
+    VectorChannelReaderInterfaceConstPtr c = inPinA->getVector();	
     if (c) {
         utils::ObjectWrapperPtr wrp = utils::ObjectWrapper::create<VectorChannelReaderInterface>();
         wrp->set(core::const_pointer_cast<VectorChannelReaderInterface>(c));
         NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrp));
-
-        HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);
-        QString name = line->text();
-        if (name.isEmpty()) {
-            name = defaultName;
-        }
-        channelItem->setItemAndHelperText(name);
-        wrp->insert(std::pair<std::string, std::string>("core/name", name.toStdString()));
-
-        
-        hmm->addItemToProcessedBranch(channelItem, runNo);
-        hmm->switchToAnalysis();
+        insertToTree(channelHelper, wrp);
     } else {
-        throw std::exception("Sink could not insert item to tree");
+        ScalarChannelReaderInterfaceConstPtr s = inPinA->getScalar();
+        utils::ObjectWrapperPtr wrp = utils::ObjectWrapper::create<ScalarChannelReaderInterface>();
+        wrp->set(core::const_pointer_cast<ScalarChannelReaderInterface>(s));
+        NewChartItemHelperPtr channelHelper(new NewChartItemHelper(wrp));
+        insertToTree(channelHelper, wrp);
     }
 }
 
@@ -79,4 +72,19 @@ QWidget* XSink::getConfigurationWidget() const
 void XSink::refreshConfiguration()
 {
     
+}
+
+void XSink::insertToTree( TreeItemHelperPtr channelHelper, utils::ObjectWrapperPtr wrp )
+{
+    HmmTreeItem* channelItem = new HmmTreeItem(channelHelper);
+    QString name = line->text();
+    if (name.isEmpty()) {
+        name = defaultName;
+    }
+    channelItem->setItemAndHelperText(name);
+    wrp->insert(std::pair<std::string, std::string>("core/name", name.toStdString()));
+
+
+    hmm->addItemToProcessedBranch(channelItem, runNo);
+    hmm->switchToAnalysis();
 }
