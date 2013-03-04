@@ -6,12 +6,12 @@
 
 
 
-QWidget* XSource::getConfigurationWidget() const
+QWidget* VectorSource::getConfigurationWidget() const
 {
     return tree;
 }
 
-XSource::XSource(HmmMainWindow* hmm, BuilderFilterCommand::BranchFunction fun, const QIcon& rootIcon, const QIcon& leafIcon) :
+VectorSource::VectorSource(HmmMainWindow* hmm, BuilderFilterCommand::BranchFunction fun, const QIcon& rootIcon, const QIcon& leafIcon) :
     branchFunction(fun),
     rootIcon(rootIcon),
     leafIcon(leafIcon),
@@ -24,17 +24,17 @@ XSource::XSource(HmmMainWindow* hmm, BuilderFilterCommand::BranchFunction fun, c
     used = false;
 }
 
-void XSource::reset()
+void VectorSource::reset()
 {
-    used = true;
+    used = false;
 }
 
-const bool XSource::empty() const
+const bool VectorSource::empty() const
 {
     return used || !channel;
 }
 
-void XSource::produce()
+void VectorSource::produce()
 {
     HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());
     if (treeItem) {
@@ -49,7 +49,7 @@ void XSource::produce()
 }
 
 
-void XSource::refreshConfiguration()
+void VectorSource::refreshConfiguration()
 {
     tree->clear();
     IFilterCommandPtr forceFilter(new BuilderFilterCommand(branchFunction, rootIcon, leafIcon));
@@ -58,17 +58,81 @@ void XSource::refreshConfiguration()
     tree->expandAll();
 }
 
-XSource::~XSource()
+VectorSource::~VectorSource()
 {
     delete tree;
 }
 
-bool XSource::isNodeValid()
+bool VectorSource::isNodeValid()
 {
     return dynamic_cast<HmmTreeItem*>(tree->currentItem());
 }
 
-QString XSource::getErrorMessage()
+QString VectorSource::getErrorMessage()
 {
     return QString("Source is not set");
+}
+
+EMGSource::EMGSource( HmmMainWindow* hmm) :
+    hmm(hmm)
+{
+    tree = new QTreeWidget();
+    tree->setHeaderHidden(true);
+    outPinA = new ScalarOutputPin(this);
+    addOutputPin(outPinA);
+    used = false;
+
+}
+
+EMGSource::~EMGSource()
+{
+    delete tree;
+}
+
+void EMGSource::reset()
+{
+    used = false;
+}
+
+const bool EMGSource::empty() const
+{
+   return used || !channel;
+}
+
+void EMGSource::produce()
+{
+    HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());
+    if (treeItem) {
+        TreeWrappedItemHelperPtr vectorItem = core::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
+        auto wrp = vectorItem->getWrapper();
+        channel = wrp->get();
+        outPinA->value(channel);
+        used = true;
+    } else {
+        throw std::runtime_error("Source is not set");
+    }
+}
+
+QWidget* EMGSource::getConfigurationWidget() const
+{
+    return tree;
+}
+
+bool EMGSource::isNodeValid()
+{
+    return dynamic_cast<HmmTreeItem*>(tree->currentItem());
+}
+
+QString EMGSource::getErrorMessage()
+{
+    return QString("EMG source is not set");
+}
+
+void EMGSource::refreshConfiguration()
+{
+    tree->clear();
+    IFilterCommandPtr forceFilter(new BuilderFilterCommand(TreeBuilder::createEMGBranch, TreeBuilder::getRootEMGIcon(), TreeBuilder::getEMGIcon()));
+    QTreeWidgetItem* item = forceFilter->createTreeBranch(QObject::tr("Elements"), hmm->getCurrentSessions());
+    tree->addTopLevelItem(item);
+    tree->expandAll();
 }

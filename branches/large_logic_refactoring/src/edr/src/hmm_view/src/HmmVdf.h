@@ -61,14 +61,14 @@
 
 #define HMM_REGISTER_VECTOR_DATA_SOURCE(type, name, uid, icon, hmm)            \
     do {                                                                       \
-    auto proto = new XSource(hmm, TreeBuilder::create##type##Branch,           \
+    auto proto = new VectorSource(hmm, TreeBuilder::create##type##Branch,           \
     TreeBuilder::getRoot##type##Icon(), TreeBuilder::get##type##Icon());       \
                                                                                \
     auto init =                                                                \
-    [&](const df::ISourceNode* prototype) -> XSource*                          \
+    [&](const df::ISourceNode* prototype) -> VectorSource*                          \
     {                                                                          \
-        auto proto = dynamic_cast<const XSource*>(prototype);                  \
-        auto source = new XSource(proto->getHmm(), proto->getBranchFunction(), \
+        auto proto = dynamic_cast<const VectorSource*>(prototype);                  \
+        auto source = new VectorSource(proto->getHmm(), proto->getBranchFunction(), \
             proto->getRootIcon(), proto->getLeafIcon());                       \
         return source;                                                         \
     };                                                                         \

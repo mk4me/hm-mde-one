@@ -191,6 +191,15 @@ public:
     }
 };
 
+class ScalarDummy : public UniversalScalar
+{
+public:
+    virtual float processSingleValue(const float& v1) 
+    {
+        return v1;
+    }
+};
+
 class VectorMul : public Universal2Vector
 {
 public:

@@ -19,11 +19,13 @@
 #include "Vector3DFilterCommand.h"
 
 
-class XSource : public df::SourceNode, public df::IDFSource, public vdf::INodeConfiguration, public vdf::INodeValidation
+// TODO : ujednolicic
+
+class VectorSource : public df::SourceNode, public df::IDFSource, public vdf::INodeConfiguration, public vdf::INodeValidation
 {
 public:
-    XSource (HmmMainWindow* hmm, BuilderFilterCommand::BranchFunction fun, const QIcon& rootIcon, const QIcon& leafIcon);
-    virtual ~XSource();
+    VectorSource (HmmMainWindow* hmm, BuilderFilterCommand::BranchFunction fun, const QIcon& rootIcon, const QIcon& leafIcon);
+    virtual ~VectorSource();
 public:
     virtual void reset();
     virtual const bool empty() const;
@@ -51,6 +53,35 @@ private:
     BuilderFilterCommand::BranchFunction branchFunction;
     QIcon rootIcon;
     QIcon leafIcon;
+};
+
+
+class EMGSource : public df::SourceNode, public df::IDFSource, public vdf::INodeConfiguration, public vdf::INodeValidation
+{
+public:
+    EMGSource (HmmMainWindow* hmm);
+    virtual ~EMGSource();
+public:
+    virtual void reset();
+    virtual const bool empty() const;
+    virtual void produce();
+    virtual QWidget* getConfigurationWidget() const;
+    virtual bool isNodeValid();
+    virtual QString getErrorMessage();
+
+
+public:
+    HmmMainWindow* getHmm() const { return hmm; }
+
+private:
+    virtual void refreshConfiguration();
+
+private:
+    ScalarOutputPin * outPinA;
+    QTreeWidget* tree;
+    ScalarChannelReaderInterfaceConstPtr channel;
+    bool used;
+    HmmMainWindow* hmm;
 };
 
 #endif
