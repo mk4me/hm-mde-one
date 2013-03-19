@@ -23,3 +23,6 @@ ADD_PROJECT(plugin_newVdf "BOOST;QT;DFLIB;corelib;coreui" "plugins/newVdf")
 SET_PROJECTS_GROUP("view")
 ADD_PROJECT(old_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;plugin_newTimeline;OPENGL;C3DLIB")
 ADD_PROJECT(hmm_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;C3DLIB;QWT;VIDLIB;plugin_newVdf;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject")
+
+#SET_PROJECTS_GROUP("custom")
+#ADD_PROJECT(laboratorium_gk "BOOST;UTILS;OSG;EIGEN3;")
