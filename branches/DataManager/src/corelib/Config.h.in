@@ -1,7 +1,0 @@
-#ifndef __CORELIB_CONFIG_H__
-#define __CORELIB_CONFIG_H__
-
-//! Czy ma byæ w³¹czone logowanie?
-#cmakedefine CORELIB_ENABLE_LOGGING
-
-#endif // __CORELIB_CONFIG_H__
