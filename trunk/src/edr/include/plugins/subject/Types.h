@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_SUBJECT__TYPES_H__
 #define HEADER_GUARD_SUBJECT__TYPES_H__
 
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 #include <vector>
 
 namespace PluginSubject {

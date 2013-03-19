@@ -15,7 +15,9 @@ namespace df{
 	// Interfejs obiektu, którego dzia³anie mo¿na wstrzywaæ/wznowiæ
 	class IDFPausable
 	{
-	public:
+    public:
+        virtual ~IDFPausable() {}
+
 		//! Pauzuj obiekt
 		virtual void pause() = 0;
 		//! Wznów obiekt
@@ -27,7 +29,9 @@ namespace df{
 	//! Interfejs obiektu do którego mo¿na siê do³¹czyæ czekaj¹c na zakoñczenie jego dzia³¹nia
 	class IDFJoinable
 	{
-	public:
+    public:
+        virtual ~IDFJoinable() {}
+
 		//! Do³¹cz do biektu i czekaj na zakoñczenie jego dzia³¹nia
 		virtual void join() = 0;
 	};
@@ -35,7 +39,9 @@ namespace df{
 	//! Interfejs obiektu którego przetwarzanie mo¿na anulowaæ
 	class IDFCancelable
 	{
-	public:
+    public:
+        virtual ~IDFCancelable() {}
+
 		//! Anuluj aktualne dzia³anie obiektu
 		virtual void cancel() = 0;
 	};
@@ -46,7 +52,9 @@ namespace df{
 	//! Interfejs obiektu który chce mieæ mozliwoœæ logowania swojego stanu
 	class IDFLoggable
 	{
-	public:
+	public:        
+        virtual ~IDFLoggable() {}
+
 		//! Ustawia obiekt przez któy mo¿na logowaæ
 		//! \param logger Obiekt przez który logujemy
 		virtual void initLogger(IDFLoggerHelper * logger) = 0;
@@ -56,6 +64,8 @@ namespace df{
 	class IDFResetable
 	{
 	public:
+        virtual ~IDFResetable() {}
+
 		//! Resetuj stan obiektu do inicjalnego
 		virtual void reset() = 0;
 	};

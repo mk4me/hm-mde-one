@@ -21,7 +21,7 @@
 #include <wsdlparser/WsdlInvoker.h>
 #pragma warning( default : 4251 )
 
-#include <core/Plugin.h>
+#include <corelib/IPlugin.h>
 
 #include <webserviceslib/ShallowCopyParser.h>
 #include <webserviceslib/MetadataParser.h>

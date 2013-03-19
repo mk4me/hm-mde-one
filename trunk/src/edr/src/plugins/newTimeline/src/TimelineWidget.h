@@ -27,8 +27,8 @@
 #include <timelinelib/Model.h>
 
 #include "TimelineService.h"
-#include <plugins/newTimeline/TimeSliderWidget.h>
-#include <plugins/newTimeline/TimelineControlsWidget.h>
+#include "TimeSliderWidget.h"
+#include "TimelineControlsWidget.h"
 #include "ChannelsTreeItem.h"
 
 
@@ -42,8 +42,6 @@ public:
     ~TimelineWidget();
 
     virtual void update(const State * state);
-
-    void loadToolbarElements(core::IActionsGroupManager * actionsManager) const;
 
     void setChannelTooltip(const std::string & path, const std::string & tooltip);
     std::string getChannelTooltip(const std::string & path) const;

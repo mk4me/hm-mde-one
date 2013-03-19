@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_VIDLIB__PICTURE_H__
 #define HEADER_GUARD_VIDLIB__PICTURE_H__
 
-#include <vidlib/Export.h>
+#include <vidlib/Config.h>
 #include <vidlib/PixelFormat.h>
 #include <utils/Utils.h>
 

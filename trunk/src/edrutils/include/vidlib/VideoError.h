@@ -10,7 +10,7 @@
 #define HEADER_GUARD_VIDLIB__VIDEOERROR_H__
 
 #include <stdexcept>
-#include <vidlib/Export.h>
+#include <vidlib/Config.h>
 
 namespace vidlib {
 

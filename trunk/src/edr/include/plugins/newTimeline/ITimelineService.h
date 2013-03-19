@@ -9,14 +9,14 @@
 #ifndef HEADER_GUARD_TIMELINE__ITIMELINESERVICE_H__
 #define HEADER_GUARD_TIMELINE__ITIMELINESERVICE_H__
 
-#include <core/IService.h>
+#include <corelib/IService.h>
 #include <timelinelib/IChannel.h>
 #include <timelinelib/Controller.h>
 #include <boost/function.hpp>
 
 class TimelineWidget;
 
-class ITimelineService : public core::IService
+class ITimelineService
 {
 public:
 

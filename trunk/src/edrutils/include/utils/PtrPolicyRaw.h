@@ -39,14 +39,14 @@ struct PtrPolicyRaw
 
     //! Zerowanie wartości wskaźnika.
     template <class T>
-    void initPtr( T *& ptr )
+    static void initPtr( T *& ptr )
     {
         ptr = nullptr;
     }
 
     //! Ustawienie nowej wartości.
     template <class T>
-    void setPtr( T *& ptr, T * data)
+    static void setPtr( T *& ptr, T * data)
     {
         if ( ptr != data ) {
             deletePtr(ptr);
@@ -54,10 +54,17 @@ struct PtrPolicyRaw
         }
     }
 
+	//! Ustawienie nowej wartości.
+	template <class T>
+	static void swapPtr( T *& ptr, T *& data)
+	{
+		std::swap(ptr, data);
+	}
+
     //! Zwraca surowy wskaźnik
     //! \param ptr
     template<class T>
-    void* getRawPtr(T* ptr)
+    static void* getRawPtr(T* ptr)
     {
         return ptr;
     }
@@ -65,14 +72,14 @@ struct PtrPolicyRaw
     //! Zwraca surowy wskaźnik
     //! \param ptr
     template<class T>
-    const void* getRawPtr(const T * ptr) const
+    static const void* getConstRawPtr(const T * ptr)
     {
         return ptr;
     }
 
     //! Czy wskaźnik jest unikatowy?
     template <class T>
-    bool isUnique( const T * ptr) const
+    static const bool isUnique( const T * ptr)
     {
         return false;
     }
@@ -87,7 +94,7 @@ struct PtrPolicyRawWeak : public PtrPolicyRaw
 {
     //! Ustawienie nowej wartości.
     template <class T>
-    void setPtr( T *& ptr, T * data)
+    static void setPtr( T *& ptr, T * data)
     {
         ptr = data;
     }

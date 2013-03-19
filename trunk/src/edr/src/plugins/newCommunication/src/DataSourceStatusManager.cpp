@@ -1,6 +1,7 @@
 #include "CommunicationPCH.h"
 #include "DataSourceStatusManager.h"
 #include <QtGui/QPainter>
+#include <corelib/IFileManagerReader.h>
 
 using namespace communication;
 
@@ -140,7 +141,7 @@ const DataStorage FileStatusManager::fileStorage(int fileID) const
 void FileStatusManager::refreshFilesStatus(const std::set<int> & files)
 {
     core::Files managedFiles;
-    fileDataManager->getManagedFiles(managedFiles);
+    plugin::getFileDataManagerReader()->getFiles(managedFiles);
 
     auto managedFilesITEnd = managedFiles.end();
 
@@ -169,7 +170,7 @@ void FileStatusManager::refreshFilesStatus(const std::set<int> & files)
 void FileStatusManager::refreshFilesStatus()
 {
     core::Files managedFiles;
-    fileDataManager->getManagedFiles(managedFiles);
+    plugin::getFileDataManagerReader()->getFiles(managedFiles);
 
     auto managedFilesITEnd = managedFiles.end();
 
@@ -201,7 +202,7 @@ void FileStatusManager::refreshFileStatus(int fileID)
 void FileStatusManager::refreshFileStatus(FileStatus & fileStatus)
 {
     DataStorage storage(core::Filesystem::pathExists(fileStatus.filePath) == true ? Local : Remote);
-    DataUsage usage(fileDataManager->isFileManaged(fileStatus.filePath) == true ? Loaded : Unloaded);
+    DataUsage usage(plugin::getFileDataManagerReader()->isManaged(fileStatus.filePath) == true ? Loaded : Unloaded);
 
     fileStatus.fileStatus.setStorage(storage);
     fileStatus.fileStatus.setUsage(usage);

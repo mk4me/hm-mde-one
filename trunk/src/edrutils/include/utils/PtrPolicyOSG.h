@@ -41,14 +41,14 @@ struct PtrPolicyOSG
     //! Inicjalizacja wartości.
     //! \param ptr
     template <class T>
-    void initPtr( T & ptr ) const
+    static void initPtr( T & ptr )
     {}
 
     //! Implemetnacja resetowania wskaźnika dla osg::ref_ptr.
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(osg::ref_ptr<T> & ptr, T * data) const
+    static void setPtr(osg::ref_ptr<T> & ptr, T * data)
     {
         ptr = data;
     }
@@ -57,15 +57,21 @@ struct PtrPolicyOSG
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(osg::ref_ptr<T> & ptr, const osg::ref_ptr<T> & data) const
+    static void setPtr(osg::ref_ptr<T> & ptr, const osg::ref_ptr<T> & data)
     {
         ptr = data;
     }
 
+	template<class T>
+	static void swapPtr(osg::ref_ptr<T> & ptr, osg::ref_ptr<T> & data)
+	{
+		std::swap(ptr, data);
+	}
+
     //! Zwraca surowy wskaźnik
     //! \param ptr
     template<class T>
-    void* getRawPtr(const osg::ref_ptr<T> & ptr)
+    static void* getRawPtr(const osg::ref_ptr<T> & ptr)
     {
         return ptr.get();
     }
@@ -73,7 +79,7 @@ struct PtrPolicyOSG
     //! Zwraca surowy wskaźnik
     //! \param ptr
     template<class T>
-    const void* getRawPtr(const osg::ref_ptr<T> & ptr) const
+    static const void* getConstRawPtr(const osg::ref_ptr<T> & ptr)
     {
         return ptr.get();
     }
@@ -81,7 +87,7 @@ struct PtrPolicyOSG
     //! Implementacja unikalności wskaźnika dla osg::ref_ptr.
     //! \param ptr
     template<class T>
-    bool isUnique(osg::ref_ptr<T> & ptr) const
+    static const bool isUnique(const osg::ref_ptr<T> & ptr)
     {
         return ptr->referenceCount() == 0;
     }

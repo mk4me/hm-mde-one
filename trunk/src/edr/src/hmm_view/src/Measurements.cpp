@@ -2,7 +2,7 @@
 #include <iostream>
 #include <tinyxml.h>
 #include "Measurements.h"
-#include <core/ILog.h>
+#include <corelib/ILog.h>
 
 MeasurementConfig::MeasurementConfig() : 
     number(-1)
@@ -169,13 +169,13 @@ MeasurementsConstPtr Measurements::measurements;
 MeasurementsConstPtr Measurements::get()
 {
     if (!measurements) {
-        std::string p = core::getResourceString("schemas/measurementconfs.xml");
+        std::string p = plugin::getResourcePath("schemas/measurementconfs.xml").string();
         try {
             MeasurementsParser parser;
             parser.parse(p);
             measurements = parser.getMeasurments();
         } catch (std::runtime_error& e) {
-            LOG_ERROR(e.what());
+            PLUGIN_LOG_ERROR(e.what());
         }
     }
 

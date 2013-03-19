@@ -4,102 +4,116 @@
 #include <stack>
 #include <boost/bimap.hpp>
 #include <boost/bimap/multiset_of.hpp>
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <QtGui/QMessageBox>
 #include <QtGui/QFrame>
 #include <QtGui/QToolBox>
 #include <timelinelib/IChannel.h>
-#include <core/PluginCommon.h>
-#include <core/src/EDRTitleBar.h>
-#include <core/src/SubjectDataFilters.h>
+#include <corelib/PluginCommon.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/kinematic/Wrappers.h>
-#include <core/src/MainWindow.h>
+#include <coreui/CoreMainWindow.h>
 #include "TreeItemHelper.h"
-#include <core/src/VisualizerWidget.h>
 #include "ui_toolboxmaindeffile.h"
-#include <core/src/FlexiTabWidget.h>
-#include <core/src/IAppUsageContextManager.h>
 #include "TreeBuilder.h"
 #include "SummaryWindow.h"
 #include "HmmContexts.h"
 #include "TreeRefresher.h"
+#include "IAppUsageContextManager.h"
+#include <coreui/CoreTitleBar.h>
+#include <coreui/CoreDockWidgetSet.h>
+#include <coreui/CoreDockWidgetManager.h>
+#include <coreui/CoreVisualizerWidget.h>
+#include <corelib/IDataManagerReader.h>
+#include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
 
-class EDRDockWidgetManager;
+class QTabWidget;
 class DataFilterWidget;
 class AnalisisWidget;
-class EDRDockWidgetSet;
 class FilterEntryWidget;
 class TextEdit;
 class ContextEventFilter;
 class ContextAction;
 
+namespace coreUI {
+	class CoreDockWidget;
+	class CoreTextEditWidget;
+}
+
 //! Klasa realizuje widok aplikacji dla medyków
 //! Z czasem klasa zaczela się rozrastac, wymaga glebszej refaktoryzacji
-class HmmMainWindow : public core::MainWindow, private Ui::HMMMain, protected IAppUsageContextManager
+class HmmMainWindow : public coreUI::CoreMainWindow, private Ui::HMMMain, protected IAppUsageContextManager, private core::Visualizer::IVisualizerObserver
 {
     Q_OBJECT
+
 private:
 	friend class ContextEventFilter;
     friend class SummaryWindowController; //tymczasowo
 
     //! Obserwuje Memory data manager. Jezeli dane się zmienia, to odświeżone zostanie drzewo.
-    class DataObserver : public utils::Observer<core::IMemoryDataManager>
+    class DataObserver : public core::IDataManagerReader::IObjectObserver
     {
     public:
         //! konstruktor 
         //! \param hmm dostarcza drzewo analiz
-        DataObserver(HmmMainWindow* hmm) : hmm(hmm), motionsCount(0) {}
+        DataObserver(HmmMainWindow* hmm) : hmm(hmm) {}
         //! wywoływane, gdy dane się zmieniaja, metoda odświeża drzewa analiz
         //! \param subject 
-        virtual void update( const core::IMemoryDataManager * subject );
+        virtual void observe(const core::IDataManagerReader::ChangeList & changes);
 
     private:
         //! obiekt, który będzie odświeżany po zmianie danych
         HmmMainWindow* hmm;
-        //! do okreslania zmiany stanu
-        int motionsCount;
     };
     typedef core::shared_ptr<DataObserver> DataObserverPtr;
 
     //! służy do przechowywania informacji o utworzonych wizualizatorach i ich seriach, używane w mapie itemHelper -> itemDesc
     struct DataItemDescription 
     {
+		DataItemDescription() {}
+
         //! Konstruktor wypełnia wszystkie pola struktury 
         //! \param visualizer 
         //! \param series 
         //! \param widget 
-        DataItemDescription(VisualizerWeakPtr visualizer, const std::vector<core::VisualizerTimeSeriePtr>& series, VisualizerWidget* widget);
-        //! serie danych podpięte pod wizualizator, slaby wskaźnik zapobiega "trzymaniu danych"
-        std::vector<core::VisualizerTimeSerieWeakPtr> series;
-        //! wizualizator z seriami, slaby wskaźnik zapobiega "trzymaniu danych"
-        VisualizerWeakPtr visualizer;
+        DataItemDescription(coreUI::CoreVisualizerWidget* widget, QDockWidget * dockWidget);
         //! widget, w który reprezentuje wizualizator
-        VisualizerWidget* visualizerWidget;
+        coreUI::CoreVisualizerWidget* visualizerWidget;
+
+		QDockWidget * visualizerDockWidget;
+
+		core::shared_ptr<VisualizerSerieTimelineMultiChannel> channel;
+
+		std::string path;
     };
 
 public:
     //! 
-    HmmMainWindow();
+    HmmMainWindow(const CloseUpOperations & closeUpOperations);
     virtual ~HmmMainWindow();
 
 public:
+
+	virtual void showSplashScreenMessage(const QString & message);
+
     //! Natywne dodanie opcji do menu.
     virtual void onAddMenuItem( const std::string& path, bool checkable, bool initialState ) {}
     //! Natywne usunięcie opcji z menu.
     virtual void onRemoveMenuItem( const std::string& path ) {}
-    //! Szeroko rozumiana inicjalizacja (managery, pluginy, konteksty, style, widgety...)
-    //! \param pluginLoader obiekt przekazywany klasie bazowej (inicjalizacja pluginow i managerów)
-    //! \param managersAccessor obiekt przekazywany klasie bazowej (inicjalizacja pluginow i managerów)
-    virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
     //! \return aktualnie zaladowane sesje pomiarowe
-    const std::vector<PluginSubject::SessionConstPtr>& getCurrentSessions();
+    const core::ConstObjectsList& getCurrentSessions();
     //! dodanie głównego elementu (topItem) do drzewa danych w analizach
     //! \param item dodawany element
     void addItemToTree(QTreeWidgetItem* item);
+
+    // HACK, potrzebny jest madry sposob dodawania elementow przetworzonych...
+    void addItemToProcessedBranch(QTreeWidgetItem* item, int sinkRunNo);
+    //void processedBranchIncreaseWhenEqual(int sinkRunNo);
+    int getProcessedBranchCount();
+
     //! czyszczenie drzewa danych w analizach
     void clearTree();
     //! Pobiera menu kontekstowe dla wybranego elementu drzewa analiz
@@ -114,13 +128,21 @@ public:
     void createRaport( const QString& html );
     //! Ustawienie kontekstu na konkretny wizualizator
     //! \param visWidget wizualizator, dla którego aktywuje się kontekst
-    virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
+    virtual void setCurrentVisualizerActions(coreUI::CoreVisualizerWidget * visWidget);
+    void switchToAnalysis();
+       
+Q_SIGNALS:
+    void onSwitchToAnalysis();
 
 public Q_SLOTS:
     //! odświeżenie drzewa danych z zakładki analiz
     void refreshTree();
 
 private Q_SLOTS:
+
+	void onTabCloseRequest(int tab);
+
+	void onRefreshFiltersTree();
     //! wywoływane po nacisnieciu about
     void onAbout();
     //! Po zniszczeniu wizualizatora trzeba go wyrejstrować z kontekstów
@@ -170,7 +192,18 @@ private Q_SLOTS:
     //! \param checked 
     void onToolButton(bool checked);
 
-private:
+	void onContextChange(int idx);
+
+    void safeSwitchToAnalysis();
+
+private:	
+
+	virtual void update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication );
+
+	virtual void initializeSplashScreen(QSplashScreen * splashScreen);
+
+	virtual void customViewInit(QWidget * console);
+
     //! Timeline staje się widoczny, o ile już nie jest
     void showTimeline();
     //! Czy pod element drzewa podpięte są jakieś dane
@@ -183,14 +216,11 @@ private:
     void createFilterTab1();
     //! Tworzy zakładke z filtrami (filtry dla jednostek chorobowych)
     void createFilterTab2();
-    //! metoda przechodzi przez całą kolekcje i usuwa te wpisy, których weak pointery przestały już istnieć
-    //! \param multimap sprawdzana kolekcja
-    void dropUnusedElements(std::multimap<TreeItemHelperPtr, DataItemDescription>& multimap);
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
     //! \param hmmItem wybrany item, na podstwie którego tworzony jest wizualizator
     //! \param dockSet set, do którego ma być dodany element, jeśli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
     //! \return utworzony dockWidget z wizualizatorem
-    VisualizerWidget* createAndAddDockVisualizer( HmmTreeItem* hmmItem, EDRDockWidgetSet* dockSet);
+    QDockWidget* createAndAddDockVisualizer( HmmTreeItem* hmmItem, coreUI::CoreDockWidgetSet* dockSet);
     //! wywoływane, gdy jakis widget dostaje focusa.
     //! wykorzystywane na potrzeby kontekstów flexi bara
     //! Hack - dodatkowo podpina się pod to okienko summary
@@ -201,16 +231,16 @@ private:
     void deactivateContext(QWidget * widget);
     //! Opakowuje wizualizator w DockWidget
     //! \param visualizer wizualizator do opakowania
-    VisualizerWidget* createDockVisualizer(const VisualizerPtr & visualizer);
+    QDockWidget* createDockVisualizer(const core::VisualizerPtr & visualizer);
     //! Rejestruje widget w kontekstach
     //! \param titleBar 
     //! \param visualizerDockWidget 
     //! \param visualizer 
-    void registerVisualizerContext( EDRTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer );	
+    void registerVisualizerContext( coreUI::CoreTitleBar * titleBar, coreUI::CoreVisualizerWidget* visualizerDockWidget, const core::VisualizerPtr & visualizer );	
     //! Na podstawie wybranego elementu drzewa analiz tworzy i dodaje wizualizator w ustalonym miejscu
     //! \param item wybrany item, na podstwie którego tworzony jest wizualizator
     //! \param dockSet set, do którego ma być dodany element, jeśli jest nullptr to wizualizator dodawany jest tam, gdzie jest miejsce
-    void createNewVisualizer( HmmTreeItem* item, EDRDockWidgetSet* dockSet = nullptr );
+    void createNewVisualizer( HmmTreeItem* item, coreUI::CoreDockWidgetSet* dockSet = nullptr );
     //! Tworzy wizualizator 2D z wszystkimi seriami(o konkretnej nazwie) wystepującymi w sesji, które zostały znormalizowane w kontekscie kroków
     //! \param helper element, dla którego zostanie utworzony wizualizator
     //! \param context kontekst kroków (lewy, prawy)
@@ -229,36 +259,38 @@ private:
     void removeFromVisualizers( ContextAction* action, bool once );
     //! podswietla wizualizator zolta ramka, inne traca podswietlenie
     //! \param visualizer wizualizator do podswietlenia
-    void highlightVisualizer( const VisualizerPtr& visualizer  );
+    void highlightVisualizer( const core::VisualizerPtr& visualizer  );
+
+	static coreUI::CoreDockWidget * embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);
     
 	typedef boost::bimap<QWidget*, boost::bimaps::multiset_of<QWidget*>> DerrivedContextWidgets;
 	typedef std::pair<AppUsageContextPtr, QWidget*> ContextState;
 
 private:
     //! kolekcja z aktualnie obsługiwanymi sesjami
-    std::vector<PluginSubject::SessionConstPtr> currentSessions;
+    core::ConstObjectsList currentSessions;
     // TODO, tu jest blad, obiekt jest zawsze nullem
-    VisualizerWidget* currentVisualizer;    
+    coreUI::CoreVisualizerWidget* currentVisualizer;    
     //! górny widget aplikacji gdzie trafiaja dock Widgety
-    EDRDockWidgetManager* topMainWindow;
+    coreUI::CoreDockWidgetManager* topMainWindow;
     //! dolny widget aplikacji na timeline
-    QMainWindow* bottomMainWindow;
+    QFrame* bottomMainWindow;
     //! widget, gdzie trafiaja filtry analiz
     std::vector<DataFilterWidget*> dataFilterWidgets;
     //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z którego elementu powstały
     std::multimap<TreeItemHelperPtr, DataItemDescription> items2Descriptions;
     //! widget z analizami
     AnalisisWidget* analisis;
+	//! zakładka z vdf
+	QWidget* vdf;
     //! zakładka z danymi
     QWidget* data;
     //! zakładka z operacjami (konsola)
     QWidget* operations;
     //! zakładka z raportami
-    TextEdit* raports;
+    coreUI::CoreTextEditWidget* raports;
     //! 
-    FlexiTabWidget * flexiTabWidget;
-    //!
-    //FlexiTabWidget::GUIID visualizerGroupID;
+	QTabWidget * tabWidget;
     //! mapa [przycisk -> zakładka]
     std::map<QWidget*, QWidget*> button2TabWindow;
     //!
@@ -281,6 +313,10 @@ private:
 	AppUsageContextPtr analisisContext;
     //! kontekst dla zakładki z raportami
 	AppUsageContextPtr reportsContext;
+    //! kontekst dla zakładki przetwarzania
+    AppUsageContextPtr vdfContext;
+    //! kontekst wizualizatorów
+    AppUsageContextPtr vdfUsageContext;
     //! grupuje konteksty zakładek
 	std::set<QWidget*> plainContextWidgets;
     //! 
@@ -293,6 +329,14 @@ private:
     SummaryWindowController* summaryWindowController;
     //! zarządza odświeżaniem drzewa danych w analizach
     TreeRefresher treeRefresher;
+
+	std::map<core::Visualizer::VisualizerSerie*, std::string> seriesToChannels;
+
+	QTabWidget * contextPlaceholder;
+
+    // TODO: nie moze to tak byc
+    QTreeWidgetItem* processedBranch;
+    OpenThreads::Mutex processedMutex;
 };
 
 

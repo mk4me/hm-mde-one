@@ -1,19 +1,10 @@
 #include "hmmPCH.h"
 
-#include <core/IManagersAccessor.h>
 #include <QtGui/QMenu>
 #include <QtGui/QSplashScreen>
 #include <cmath>
 #include <utils/Debug.h>
-#include <core/src/VisualizerManager.h>
 #include "HmmMainWindow.h"
-#include <core/src/SourceManager.h>
-#include <core/src/VisualizerWidget.h>
-#include <core/src/WorkflowWidget.h>
-#include <core/src/EDRConsoleInnerWidget.h>
-#include <core/src/EDRConsoleWidget.h>
-#include "EDRDockWidgetSet.h"
-#include "EDRDockWidgetManager.h"
 #include "DataFilterWidget.h"
 #include "TreeBuilder.h"
 #include "Vector3DFilterCommand.h"
@@ -23,28 +14,85 @@
 #include <plugins/newChart/INewChartVisualizer.h>
 #include "IllnessUnit.h"
 #include "EMGFilter.h"
-#include <core/src/EDRTitleBar.h>
-#include "textedit.h"
+#include <coreui/CoreTextEditWidget.h>
 #include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
 #include "AboutDialog.h"
 #include "ContextAction.h"
 #include "ContextEventFilter.h"
+#include <corelib/IServiceManager.h>
+#include <corelib/ISourceManager.h>
+#include <coreui/CoreDockWidget.h>
+#include <corelib/IDataHierarchyManagerReader.h>
+#include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
+#include <plugins/newVdf/NewVdfService.h>
+#include "HmmVdf.h"
 
 using namespace core;
 
 using namespace PluginSubject;
 
-HmmMainWindow::HmmMainWindow() :
-    MainWindow(),
+void unpackSessions(const core::ObjectWrapperCollection & owc, std::vector<SessionConstPtr> & dest)
+{
+	for(auto it = owc.begin(); it != owc.end(); ++it){
+		SessionConstPtr val;
+		bool ok = (*it)->tryGet(val, false);
+		if(ok && val != nullptr){
+			dest.push_back(val);
+		}
+	}
+}
+
+void HmmMainWindow::update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication )
+{
+	if(modyfication == core::Visualizer::REMOVE_SERIE){
+		auto it = seriesToChannels.find(serie);
+		if(it != seriesToChannels.end()){
+			std::string path = it->second;
+			auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+			if(timeline != nullptr){
+				timeline->removeChannel(it->second);
+			}
+
+			seriesToChannels.erase(it);
+
+			//TODO
+			//przejrzec caly ten mechanizm bo bez sensu teraz jest to robione
+			//usunąć wpisy dla pozostałych serii bo kanal usuwamy tylko raz
+
+			auto tIT = seriesToChannels.begin();
+			while(tIT != seriesToChannels.end()){
+				if(tIT->second == path){
+					auto toErase = tIT;
+					++tIT;
+					seriesToChannels.erase(toErase);
+				}else{
+					++tIT;
+				}
+			}
+
+			//teraz usuwam wpisy dla menu
+			for(auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it)
+			{
+				if(it->second.path == path){
+					items2Descriptions.erase(it);
+					break;
+				}
+			}
+		}
+	}
+}
+
+HmmMainWindow::HmmMainWindow(const CloseUpOperations & closeUpOperations) :
+    coreUI::CoreMainWindow(closeUpOperations),
     currentVisualizer(nullptr),
     topMainWindow(nullptr),
 	bottomMainWindow(nullptr),
     analisis(nullptr),
     data(nullptr),
+	vdf(nullptr),
     operations(nullptr),
 	raports(nullptr),
-	flexiTabWidget(new FlexiTabWidget()),
 	currentButton(nullptr),
     dataObserver(new DataObserver(this)),
     summaryWindow(new SummaryWindow(this)),
@@ -53,23 +101,57 @@ HmmMainWindow::HmmMainWindow() :
     setupUi(this);
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 
-    splashScreen()->setPixmap(QPixmap(":/resources/splashscreen/spplash.png"));
+    {
+        processedBranch = new QTreeWidgetItem();
+        processedBranch->setText(0, tr("Processing"));
+        treeRefresher.setProcessed(processedBranch);
+    }
 
-    visualizerUsageContext.reset(new HMMVisualizerUsageContext(flexiTabWidget));
-    treeUsageContext.reset(new HMMTreeItemUsageContext(flexiTabWidget, this));
-    raportsThumbnailsContext.reset(new RaportsThumbnailsContext(flexiTabWidget, this));
-    raportsTabContext.reset(new RaportsTabContext(flexiTabWidget, this));
-    tabPlaceholder->layout()->addWidget(flexiTabWidget);
+	contextPlaceholder = new QTabWidget(this);
+	contextPlaceholder->setTabsClosable(false);
+	//contextPlaceholder->setDocumentMode(true);
+	contextPlaceholder->setMovable(false);
+	contextPlaceholder->setVisible(false);
+
+	connect(contextPlaceholder, SIGNAL(currentChanged(int)), this, SLOT(onContextChange(int)));
+    connect(this, SIGNAL(onSwitchToAnalysis()), this, SLOT(safeSwitchToAnalysis()), Qt::QueuedConnection);
+
+    visualizerUsageContext.reset(new HMMVisualizerUsageContext(contextPlaceholder));
+    vdfUsageContext.reset(new HMMVVdfUsageContext(contextPlaceholder));
+    treeUsageContext.reset(new HMMTreeItemUsageContext(contextPlaceholder, this));
+    raportsThumbnailsContext.reset(new RaportsThumbnailsContext(contextPlaceholder, this));
+    raportsTabContext.reset(new RaportsTabContext(contextPlaceholder, this));
+    tabPlaceholder->layout()->addWidget(contextPlaceholder);
+
+	contextPlaceholder->findChild<QTabBar*>()->setDrawBase(false);
 
     dataContext.reset(new HMMDataContext());
     analisisContext.reset(new HMMAnalysisContext(&treeRefresher));
     reportsContext.reset(new HMMReportContext());
+    vdfContext.reset(new HMMVdfContext());
 
     this->setWindowFlags(Qt::FramelessWindowHint);
     setMouseTracking(true);
-    IMemoryDataManager* manager = DataManager::getInstance();
-    manager->attach(dataObserver.get());
     contextEventFilter = new ContextEventFilter(this);
+}
+
+void HmmMainWindow::onContextChange(int idx)
+{
+	if(contextPlaceholder->count() == 0){
+		contextPlaceholder->setVisible(false);
+	}else{
+		contextPlaceholder->setVisible(true);
+	}
+}
+
+void HmmMainWindow::initializeSplashScreen(QSplashScreen * splashScreen)
+{
+	splashScreen->setPixmap(QPixmap(":/resources/splashscreen/splash.png"));
+}
+
+void HmmMainWindow::showSplashScreenMessage(const QString & message)
+{
+	splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::white);
 }
 
 void HmmMainWindow::activateContext(QWidget * widget)
@@ -89,10 +171,14 @@ void HmmMainWindow::activateContext(QWidget * widget)
 
     // hack - nie da się zinstalować dwoch filtrow eventów dla jednego widgeta,
     // obecne rozwiazanie jest specyficzne dla kontekstów
-    VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(toSet);
+    coreUI::CoreVisualizerWidget* vw = dynamic_cast<coreUI::CoreVisualizerWidget*>(toSet);
     if (vw) {
         summaryWindowController->onVisualizator(vw);
     }
+
+	if(contextPlaceholder->count() > 0){
+		contextPlaceholder->setVisible(true);
+	}
 }
 
 void HmmMainWindow::deactivateContext(QWidget * widget)
@@ -105,16 +191,22 @@ void HmmMainWindow::deactivateContext(QWidget * widget)
             setCurrentContext((QWidget*)nullptr);
         }
     }
+
+	if(contextPlaceholder->count() == 0){
+		contextPlaceholder->setVisible(false);
+	}
 }
 
 
-void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
+void HmmMainWindow::customViewInit(QWidget * console)
 {
-    core::MainWindow::init(pluginLoader, managersAccessor);
+	auto memoryManager = plugin::getDataManagerReader();
+	memoryManager->addObserver(dataObserver);
 
     addContext(dataContext);
     addContext(analisisContext);
     addContext(reportsContext);
+    addContext(vdfContext);
     addContext(visualizerUsageContext, analisisContext);
 
     trySetStyleByName("hmm");
@@ -133,15 +225,18 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     plainContextWidgets.insert(analisis->scrollArea_3);
     contextEventFilter->registerPermamentContextWidget(analisis->scrollArea_3);
 
-    QTabWidget * dataTabWidget = createNamedObject<QTabWidget>(QString::fromUtf8("dataTabWidget"));
+    QTabWidget * dataTabWidget = coreUI::createNamedObject<QTabWidget>(QString::fromUtf8("dataTabWidget"));
 
     this->data = dataTabWidget;
 
     this->data->setContentsMargins(0,0,0,0);
     this->analisis->setContentsMargins(0,0,0,0);
 
+	QTabWidget * vdfTabWidget = coreUI::createNamedObject<QTabWidget>(QString::fromUtf8("VDF Widget"));
+	this->vdf = vdfTabWidget;
+
     this->operations = new QWidget();
-    this->raports = new TextEdit();
+    this->raports = new coreUI::CoreTextEditWidget();
     addContext(raportsTabContext, reportsContext);
     addWidgetToContext(raportsTabContext, this->raports);
     contextEventFilter->registerPermamentContextWidget(this->raports);
@@ -150,6 +245,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     button2TabWindow[this->operationsButton] = this->operations;
     button2TabWindow[this->raportsButton] = this->raports;
     button2TabWindow[this->analisisButton] = this->analisis;
+	button2TabWindow[this->processingButton] = this->vdf;
     currentButton = dataButton;
 
 	contextStates[this->analisisButton] = ContextState(analisisContext, nullptr);
@@ -168,12 +264,17 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&)));
     QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), summaryWindowController, SLOT(onTreeItemSelected(QTreeWidgetItem* , int)));
 
-    topMainWindow = new EDRDockWidgetManager();
-    topMainWindow->setTabsPosition(QTabWidget::South);
+    topMainWindow = new coreUI::CoreDockWidgetManager();
+	topMainWindow->setSetsClosable(true);
+    topMainWindow->setTabPosition(QTabWidget::South);
     topMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    bottomMainWindow = new QMainWindow();
+    bottomMainWindow = new QFrame();
+	bottomMainWindow->setObjectName(QString("bottomMainWindow"));
+	bottomMainWindow->setLayout(new QVBoxLayout);
+	bottomMainWindow->layout()->setContentsMargins(0,0,0,0);
     bottomMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    connect(topMainWindow, SIGNAL(changed()), treeUsageContext.get(), SLOT(refresh()));
+    connect(topMainWindow, SIGNAL(currentSetChanged(int)), treeUsageContext.get(), SLOT(refresh()));
+	connect(topMainWindow, SIGNAL(setCloseRequested(int)), this, SLOT(onTabCloseRequest(int)));
     //TODO
     //trzeba wyzanaczać max wysokość tak aby nie "wypychało" nam timeline!!
     // powinno być mniej więcej coś takiego - wysokość dla aktualnej rozdzielczości - wysokośc timeline - wysokość górnego paska - przestrzeń wolna pomiędzy tymi elementami w pionie
@@ -196,75 +297,93 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     //trzeba to zgrać razem z max wysokością dla wizualizatorów
     bottomMainWindow->setMaximumHeight(120); // tymczasowo
     bottomMainWindow->setMinimumHeight(120); // tymczasowo
-    bottomMainWindow->layout()->setMargin(0);
-    bottomMainWindow->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
+    //bottomMainWindow->layout()->setMargin(10);
+    //bottomMainWindow->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
     analisisArea->setLayout(v);
 
 
     // akcje - Workflow (VDF) i konsola <--- aktualnie śmietnik na inne serwisy i testy
     QMainWindow * actionsMainWindow = new QMainWindow(nullptr);
     QVBoxLayout* layout = new QVBoxLayout();
-    IServicePtr dataExplorer;
 
-    for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
-        IServicePtr service = ServiceManager::getInstance()->getService(i);
+    for (int i = 0; i < plugin::getServiceManager()->getNumServices(); ++i) {
+        plugin::IServicePtr service = plugin::getServiceManager()->getService(i);
 
-        const std::string& name = service->getName();
-        if (name == "newTimeline") {
+		auto timeline = core::dynamic_pointer_cast<ITimelineService>(service);
+		auto vdf = core::dynamic_pointer_cast<vdf::NewVdfService>(service);
+        if(timeline != nullptr) {
             showTimeline();
-        }else if(name != "DataExplorer") {
-            ActionsGroupManager mainWidgetActions;
-            QWidget* viewWidget = service->getWidget(&mainWidgetActions);
+        } else if (vdf) {
+			QWidget* viewWidget = vdf->getWidget();
+			QWidget* controlWidget = vdf->getControlWidget();
+			QWidget* settingsWidget = vdf->getSettingsWidget();
+			controlWidget->setMaximumWidth(350);
+			viewWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+			controlWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+			settingsWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+			QVBoxLayout* vlayout = new QVBoxLayout();
+			vlayout->addWidget(viewWidget);
+			//vlayout->addWidget(settingsWidget);
+			QWidget* widget = new QWidget();
+			widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+			widget->setLayout(vlayout);
+			QHBoxLayout* hlayout = new QHBoxLayout();
+			hlayout->addWidget(widget);
+			hlayout->addWidget(controlWidget);
+			vdfTabWidget->setLayout(hlayout);
 
-            ActionsGroupManager controlWidgetActions;
-            QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
+            addContext(vdfUsageContext, vdfContext);
+            addWidgetToContext(vdfUsageContext, viewWidget);
+            addWidgetToContext(vdfUsageContext, this->vdf);
+            addWidgetToContext(vdfUsageContext, controlWidget);
+            addWidgetToContext(vdfUsageContext, processingButton);
+            contextEventFilter->registerPermamentContextWidget(this->processingButton);
+            plainContextWidgets.insert(this->processingButton);
+            contextEventFilter->registerClosableContextWidget(this->processingButton);
 
-            ActionsGroupManager settingsWidgetActions;
-            QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
+            contextEventFilter->registerPermamentContextWidget(viewWidget);
+            plainContextWidgets.insert(viewWidget);
+
+            contextEventFilter->registerClosableContextWidget(viewWidget);
+
+            HmmVdf::registerNodes(this);
+
+		} else {
+            QWidget* viewWidget = service->getWidget();
+            QWidget* controlWidget = service->getControlWidget();
+            QWidget* settingsWidget = service->getSettingsWidget();
 
             if(settingsWidget){
+				settingsWidget->setParent(operations);
                 layout->addWidget(settingsWidget);
             }
 
             if(viewWidget){
+				viewWidget->setParent(operations);
                 layout->addWidget(viewWidget);
             }
 
             if(controlWidget){
+				controlWidget->setParent(operations);
                 layout->addWidget(controlWidget);
             }
-        }else{
-            //mam dataExplorer - zapamiętuje i potem go wrzuce do danych
-            dataExplorer = service;
         }
     }
 
-    // akcje - Workflow (VDF) i konsola
-    //tylko w debug
-#ifdef _DEBUG
-    EDRWorkflowWidget* widget = new EDRWorkflowWidget();
-    actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
-    widget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-#endif
-    initializeConsole();
-    actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
-    widgetConsole->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+	auto dockConsole = embeddWidget(console, tr("Console"), Qt::BottomDockWidgetArea, true);
+	actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, dockConsole);
+	dockConsole->setFeatures(dockConsole->features() | QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+	dockConsole->setObjectName(QString::fromUtf8("ConsoleWidget"));
     layout->addWidget(actionsMainWindow);
 
     operations->setLayout(layout);
 
-    for (int i = 0; i < SourceManager::getInstance()->getNumSources(); ++i) {
-        auto source = SourceManager::getInstance()->getSource(i);
+    for (int i = 0; i < plugin::getSourceManager()->getNumSources(); ++i) {
+        auto source = plugin::getSourceManager()->getSource(i);
 
-        ActionsGroupManager settingsWidgetActions;
-        dataTabWidget->addTab(source->getWidget(&settingsWidgetActions), QString::fromStdString(source->getName()));
+        dataTabWidget->addTab(source->getWidget(), QString::fromStdString(source->getName()));
         //TODO
         //obsłużyc konteksy źródeł
-    }
-
-    if(dataExplorer != nullptr){
-        ActionsGroupManager settingsWidgetActions;
-        dataTabWidget->addTab(dataExplorer->getWidget(&settingsWidgetActions), QString::fromStdString(dataExplorer->getName()));
     }
 
     //chowamy zakładki jeśli tylko jedno źródło
@@ -277,9 +396,6 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
             }
         }
     }
-
-    //inicjalizacja title bara
-    auto visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer"), QIcon(), false);
 
     //TODO
     //Tak dlugo jak nie mamy raportów chowamy je w wersji release
@@ -307,7 +423,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     this->data->show();
 }
 
-void HmmMainWindow::setCurrentVisualizerActions(VisualizerWidget * visWidget)
+void HmmMainWindow::setCurrentVisualizerActions(coreUI::CoreVisualizerWidget * visWidget)
 {
     if(currentVisualizer != visWidget){
         return;
@@ -337,43 +453,85 @@ bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
 
 void HmmMainWindow::createNewVisualizer()
 {
-    core::NotifyBlocker<core::IFileDataManager> blockerF(*DataManager::getInstance());
-    core::NotifyBlocker<core::IMemoryDataManager> blockerM(*DataManager::getInstance());
     ContextAction* action = qobject_cast<ContextAction*>(sender());
-    UTILS_ASSERT(action);
-    if (action) {
-        try{
-            createNewVisualizer(action->getTreeItem(), action->getDockSet());
-        }catch(std::exception& e ){
-            LOG_ERROR("Error creating visualizer: " << e.what());
-        } catch (...) {
-            LOG_ERROR("Error creating visualizer");
-        }
+    try{
+        createNewVisualizer(action->getTreeItem(), action->getDockSet());
+    }catch(std::exception& e ){
+        PLUGIN_LOG_ERROR("Error creating visualizer: " << e.what());
+    } catch (...) {
+        PLUGIN_LOG_ERROR("Error creating visualizer");
     }
 }
 
-void HmmMainWindow::createNewVisualizer( HmmTreeItem* item, EDRDockWidgetSet* dockSet )
-{
-    showTimeline();
+//void HmmMainWindow::createSource()
+//{
+//    //static boost::uuids::random_generator random_uuid;
+//    //static bool hack = false;
+//    //ContextAction* action = qobject_cast<ContextAction*>(sender());
+//    //try{
+//    //    HmmTreeItem* treeItem = action->getTreeItem();
+//    //    TreeWrappedItemHelperPtr wrapped = core::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
+//
+//    //    core::IServiceManager* manager = plugin::getServiceManager();
+//    //    vdf::NewVdfServicePtr vdfService = core::dynamic_pointer_cast<vdf::NewVdfService>(manager->getService(vdf::NewVdfService::getClassID()));
+//    //    VectorChannelReaderInterfaceConstPtr item = wrapped->getWrapper()->get();
+//
+//    //    vdfService->registerDataSource(vdf::IDataSourcePtr(new vdf::DataSource(new XSource(item), core::UniqueID(random_uuid()), wrapped->getText().toStdString(), 
+//    //        [&](const df::ISourceNode* prototype) -> XSource*
+//    //        { 
+//    //            auto source = new XSource();
+//    //            auto proto = dynamic_cast<const XSource*>(prototype);
+//    //            source->setChannel(proto->getChannel());
+//    //            return source; 
+//    //        })));
+//
+//    //    if (!hack) {
+//    //        hack = true;
+//    //        vdfService->registerDataSink(vdf::IDataSinkPtr(new vdf::DataSink(new XSink(this), core::UniqueID(random_uuid()), "Vector -> Tree", 
+//    //            [&](const df::ISinkNode* prototype) -> XSink*
+//    //        { 
+//    //            auto sink = new XSink();
+//    //            auto proto = dynamic_cast<const XSink*>(prototype);
+//    //            sink->setHmm(proto->getHmm());
+//    //            return sink; 
+//    //        })));
+//
+//    //        vdfService->registerDataProcessor(vdf::IDataProcessorPtr(new vdf::DataProcessor(new XProcessor(), core::UniqueID(random_uuid()), "Vector Differ", 
+//    //            [&](const df::IProcessingNode* prototype) -> XProcessor*
+//    //        { 
+//    //            auto p = new XProcessor();
+//    //            //auto proto = dynamic_cast<const XProcessor*>(prototype);
+//    //            //source->setChannel(proto->getChannel());
+//    //            return p; 
+//    //        })));
+//    //    }
+//    //}catch(std::exception& e ){
+//    //    PLUGIN_LOG_ERROR("Error creating source: " << e.what());
+//    //} catch (...) {
+//    //    PLUGIN_LOG_ERROR("Error creating source");
+//    //}
+//}
+
+void HmmMainWindow::createNewVisualizer( HmmTreeItem* item, coreUI::CoreDockWidgetSet* dockSet )
+{    
     createAndAddDockVisualizer(item, dockSet);
 }
 
 void HmmMainWindow::createVisualizerInNewSet()
 {
+	static const QString setName = tr("Group %1");
     ContextAction* action = qobject_cast<ContextAction*>(sender());
-    UTILS_ASSERT(action);
-    if (action) {
-        showTimeline();
+    coreUI::CoreDockWidgetSet* set = new coreUI::CoreDockWidgetSet(topMainWindow);
+    topMainWindow->addDockWidgetSet(set, setName.arg(topMainWindow->count()+1));
 
-        EDRDockWidgetSet* set = new EDRDockWidgetSet(topMainWindow);
-        topMainWindow->addDockWidgetSet(set);
+    createAndAddDockVisualizer(action->getTreeItem(), set);
+}
 
-        VisualizerWidget* w = createAndAddDockVisualizer(action->getTreeItem(), set);
-        auto vis = w->getCurrentVisualizer();
-        if(vis){
-            set->setWindowTitle(vis->getUIName());
-        }
-    }
+void HmmMainWindow::onTabCloseRequest(int tab)
+{
+	auto set = topMainWindow->set(tab);
+	topMainWindow->removeSet(tab);
+	delete set;
 }
 
 void HmmMainWindow::removeFromAll()
@@ -392,14 +550,14 @@ void HmmMainWindow::highlightVisualizer(const VisualizerPtr& visualizer )
 {
     for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
         DataItemDescription desc = it->second;
-        if (desc.visualizer.lock() == visualizer) {
+        if (desc.visualizerWidget->getVisualizer() == visualizer) {
             // todo: optymalniej!
-            EDRDockWidgetSet* set = topMainWindow->tryGetDockSet(desc.visualizerWidget);
+            coreUI::CoreDockWidgetSet* set = topMainWindow->tryGetDockSet(desc.visualizerDockWidget);
             if (set) {
-                topMainWindow->raiseSet(set);
+                topMainWindow->setCurrentSet(set);
             }
             desc.visualizerWidget->setStyleSheet(QString::fromUtf8(
-                "VisualizerWidget > .QWidget {" \
+                "coreUI--CoreVisualizerWidget {" \
                 "border: 2px solid red;"\
                 "}"));
         } else {
@@ -412,45 +570,55 @@ void HmmMainWindow::highlightVisualizer(const VisualizerPtr& visualizer )
 void HmmMainWindow::addToVisualizer()
 {
     ContextAction* action = qobject_cast<ContextAction*>(sender());
-    UTILS_ASSERT(action);
-    if (action) {
-        try {
-            VisualizerPtr visualizer = action->getVisualizer();
-            INewChartVisualizer* newChart = dynamic_cast<INewChartVisualizer*>(visualizer->getImplementation());
-            if (newChart) {
-                newChart->setTitle(tr("Multichart"));
-            }
-
-            HmmTreeItem* item = action->getTreeItem();
-            auto helper = item->getHelper();
-            static int counter = 0;
-            QString path = QString("Custom_addition...%1").arg(counter++);
-            std::vector<core::VisualizerTimeSeriePtr> series;
-            helper->getSeries(visualizer, path, series);
-            VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
-            //addSeriesToTimeline(series, path, visualizer);
-
-            VisualizerWidget* vw = nullptr;
-            for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
-                DataItemDescription& d = it->second;
-                if (d.visualizer.lock() == visualizer) {
-                    vw = d.visualizerWidget;
-                    break;
-                }
-            }
-            UTILS_ASSERT(vw);
-            DataItemDescription desc(visualizer, series, vw);
-            items2Descriptions.insert(std::make_pair(helper, desc));
-
-        } catch (std::exception& e) {
-            QString message("Unable to add data to visualizer");
-            message += "\n";
-            message += tr("reason: ");
-            message += tr(e.what());
-            QMessageBox::warning(this, tr("Warning"), message);
-        } catch (...) {
-            QMessageBox::warning(this, tr("Warning"), tr("Unable to add data to visualizer"));
+    try {
+        VisualizerPtr visualizer = action->getVisualizer();
+        INewChartVisualizer* newChart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
+        if (newChart) {
+            newChart->setTitle(tr("Multichart"));
         }
+
+        HmmTreeItem* item = action->getTreeItem();
+        auto helper = item->getHelper();
+        static int counter = 0;
+        QString path = QString("Custom_addition...%1").arg(counter++);
+
+        std::vector<core::Visualizer::VisualizerSerie*> series;
+        helper->getSeries(visualizer, path, series);
+            
+		//TODO - obsługa timeline
+		auto channel = core::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+		auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+		timeline->addChannel(path.toStdString(), channel);
+
+		coreUI::CoreVisualizerWidget* vw = nullptr;
+		QDockWidget* vd = nullptr;
+		for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
+			DataItemDescription& d = it->second;
+			if (d.visualizerWidget->getVisualizer() == visualizer) {
+				vw = d.visualizerWidget;
+				vd = d.visualizerDockWidget;
+				break;
+			}
+		}
+		UTILS_ASSERT(vw);
+		DataItemDescription desc(vw, vd);
+		desc.channel = channel;
+		desc.path = path.toStdString();
+
+		for(auto it = series.begin(); it != series.end(); ++it){
+			seriesToChannels[*it] = desc.path;
+		}
+
+		items2Descriptions.insert(std::make_pair(helper, desc));			
+
+    } catch (std::exception& e) {
+        QString message("Unable to add data to visualizer");
+        message += "\n";
+        message += tr("reason: ");
+        message += tr(e.what());
+        QMessageBox::warning(this, tr("Warning"), message);
+    } catch (...) {
+        QMessageBox::warning(this, tr("Warning"), tr("Unable to add data to visualizer"));
     }
 }
 
@@ -476,28 +644,20 @@ void HmmMainWindow::showTimeline()
 {
     static bool timelineVisible = false;
     if (timelineVisible == false) {
-        for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
-            IServicePtr service = ServiceManager::getInstance()->getService(i);
+        for (int i = 0; i < plugin::getServiceManager()->getNumServices(); ++i) {
+            plugin::IServicePtr service = plugin::getServiceManager()->getService(i);
 
-            const std::string& name = service->getName();
-            if (name == "newTimeline") {
-                ActionsGroupManager mainWidgetActions;
-                QWidget* viewWidget = service->getWidget(&mainWidgetActions);
+            auto timeline = core::dynamic_pointer_cast<ITimelineService>(service);
+            if(timeline != nullptr) {
 
-                ActionsGroupManager controlWidgetActions;
-                QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
+                QWidget* viewWidget = service->getWidget();
 
-                ActionsGroupManager settingsWidgetActions;
-                QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
-
-                EDRDockWidget * widget = new EDRDockWidget();
-                widget->setTitleBarWidget(new QWidget());
-                widget->setFeatures(QDockWidget::NoDockWidgetFeatures);
-                widget->setWidget(controlWidget);
-                widget->setAllowedAreas(Qt::BottomDockWidgetArea);
-                widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-                bottomMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+                QWidget* controlWidget = service->getControlWidget();
+                
+                QWidget* settingsWidget = service->getSettingsWidget();
+				dynamic_cast<QVBoxLayout*>(bottomMainWindow->layout())->addStretch();
+				bottomMainWindow->layout()->addWidget(controlWidget);
+				dynamic_cast<QVBoxLayout*>(bottomMainWindow->layout())->addStretch();
                 timelineVisible = true;
             }
         }
@@ -546,8 +706,8 @@ void HmmMainWindow::createFilterTab1()
     IFilterCommandPtr grfCommand(new BuilderFilterCommand(TreeBuilder::createGRFBranch, TreeBuilder::getRootGRFIcon(), TreeBuilder::getGRFIcon()));
     filter1->addFilter(tr("GRF"), grfCommand, &iconGRFSmall);
 
-    QString emgFront = core::getResourceString("images/muscular_front/muscular_front.xml");
-    QString emgBack = core::getResourceString("images/muscular_back/muscular_back.xml");
+    QString emgFront = QString::fromStdString(plugin::getResourcePath("images/muscular_front/muscular_front.xml").string());
+    QString emgBack = QString::fromStdString(plugin::getResourcePath("images/muscular_back/muscular_back.xml").string());
 
     NamesDictionary emgNames;
     emgNames["krawiecki_l"                ] = std::make_pair("krawiecki_l"                , "krawiecki_l"                );
@@ -598,17 +758,17 @@ void HmmMainWindow::createFilterTab1()
         emgNames, emgFront, emgBack, TreeBuilder::getRootEMGIcon(), TreeBuilder::getEMGIcon()));
     filter1->addFilter(tr("EMG"), emgCommand, &iconEmgSmall);
 
-    DataFilterPtr typeFilter3(new TypeFilter(typeid(ForceCollection)));
-    DataFilterPtr typeFilter4(new TypeFilter(typeid(MomentCollection)));
-    DataFilterPtr typeFilter5(new TypeFilter(typeid(PowerCollection)));
+    SubjectHierarchyFilterPtr typeFilter3(new SubjectHierarchyTypeFilter(typeid(ForceCollection)));
+    SubjectHierarchyFilterPtr typeFilter4(new SubjectHierarchyTypeFilter(typeid(MomentCollection)));
+    SubjectHierarchyFilterPtr typeFilter5(new SubjectHierarchyTypeFilter(typeid(PowerCollection)));
 
     typedef BuilderConfiguredFilterCommand<MomentCollection> MomentsCommand;
     typedef BuilderConfiguredFilterCommand<ForceCollection> ForcesCommand;
     typedef BuilderConfiguredFilterCommand<PowerCollection> PowerCommand;
     typedef BuilderConfiguredFilterCommand<MarkerCollection> MarkersCommand;
 
-    QString pathFront = core::getResourceString("images/skeleton_front/skeleton_front.xml");
-    QString pathBack = core::getResourceString("images/skeleton_back/skeleton_back.xml");
+    QString pathFront = QString::fromStdString(plugin::getResourcePath("images/skeleton_front/skeleton_front.xml").string());
+    QString pathBack = QString::fromStdString(plugin::getResourcePath("images/skeleton_back/skeleton_back.xml").string());
 
     NamesDictionary powersNames;
     powersNames["LAnkle"    ] = std::make_pair("LAnklePower",    "Left Ankle");
@@ -718,8 +878,8 @@ void HmmMainWindow::createFilterTab1()
     markersNames["RBAK"] = std::make_pair("RBAK", "Right back");
     markersNames["C7"  ] = std::make_pair("C7"  , "Cervical Vertebra");
     markersNames["T10" ] = std::make_pair("T10" , "Thoracic Vertebra");
-    QString markersFront = core::getResourceString("images/skeleton_front/skeleton_markers.xml");
-    QString markersBack = core::getResourceString("images/skeleton_back/skeleton_markers.xml");
+    QString markersFront = QString::fromStdString(plugin::getResourcePath("images/skeleton_front/skeleton_markers.xml").string());
+    QString markersBack = QString::fromStdString(plugin::getResourcePath("images/skeleton_back/skeleton_markers.xml").string());
 
     IFilterCommandPtr markersFilter(new MarkersCommand(TreeBuilder::createMarkersBranch,
         markersNames, markersFront, markersBack, TreeBuilder::getRootMarkersIcon(), TreeBuilder::getMarkersIcon()));
@@ -756,8 +916,6 @@ void HmmMainWindow::createFilterTab1()
 
 void HmmMainWindow::createFilterTab2()
 {
-    core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
-
     QPixmap iconKinetic(QString::fromUtf8(":/resources/icons/kineticBig.png"));
     QPixmap iconIllness(QString::fromUtf8(":/resources/icons/jed.chorobowe.png"));
     QPixmap iconEndo(QString::fromUtf8(":/resources/icons/po_endoplastyce.png"));
@@ -777,8 +935,8 @@ void HmmMainWindow::createFilterTab2()
     filter1->addFilter(tr("Stroke"), stroke, &iconStroke);
     filter1->addFilter(tr("Spine"), spine, &iconSpine);
 
-    DataFilterPtr typeFilter1(new TypeFilter(typeid(GRFChannel)));
-    DataFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
+    SubjectHierarchyFilterPtr typeFilter1(new SubjectHierarchyTypeFilter(typeid(GRFChannel)));
+    SubjectHierarchyFilterPtr typeFilter2(new SubjectHierarchyTypeFilter(typeid(EMGChannel)));
 
     IFilterCommandPtr multi1(new MultiChartCommand<ForceCollection>());
     IFilterCommandPtr multi2(new MultiChartCommand<MomentCollection>());
@@ -804,9 +962,10 @@ void HmmMainWindow::createFilterTab2()
     this->analisis->addDataFilterWidget(filter4);
 }
 
-const std::vector<SessionConstPtr>& HmmMainWindow::getCurrentSessions()
+const core::ConstObjectsList& HmmMainWindow::getCurrentSessions()
 {
-    currentSessions = core::queryDataPtr(DataManager::getInstance());
+	currentSessions.clear();
+	plugin::getDataManagerReader()->getObjects(currentSessions, typeid(PluginSubject::ISession), false);
     return currentSessions;
 }
 
@@ -892,26 +1051,23 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     plainContextWidgets.erase(w);
 }
 
- VisualizerWidget* HmmMainWindow::createDockVisualizer(const VisualizerPtr & visualizer)
+QDockWidget* HmmMainWindow::createDockVisualizer(const core::VisualizerPtr & visualizer)
 {
-    visualizer->getOrCreateWidget();
     // todo : zastanowic się nad bezpieczenstwem tej operacji
-    connect(visualizer.get(), SIGNAL(printTriggered(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
-    VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer, nullptr, 0, false);
-    visualizerDockWidget->setPermanent(false);
-    visualizerDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    visualizerDockWidget->setVisualizerIconVisible(false);
-    visualizerDockWidget->setVisualizerSwitchEnable(false);
-    visualizerDockWidget->setVisualizerSwitchVisible(false);
-    visualizerDockWidget->setSourceVisible(false);
+    connect(visualizer.get(), SIGNAL(screenshotTaken(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
 
-    EDRTitleBar * titleBar = supplyWithEDRTitleBar(visualizerDockWidget, true);
-    registerVisualizerContext(titleBar, visualizerDockWidget, visualizer);
-    visualizerDockWidget->setMinimumSize((std::max)(50, visualizerDockWidget->minimumWidth()), (std::max)(50, visualizerDockWidget->minimumHeight()));
-    return visualizerDockWidget;
+	auto visWidget = new coreUI::CoreVisualizerWidget(visualizer);
+
+	auto dockVisWidget = embeddWidget(visWidget, QString::fromStdString(visualizer->getName()),
+		Qt::AllDockWidgetAreas,
+		false);
+
+    registerVisualizerContext(qobject_cast<coreUI::CoreTitleBar*>(dockVisWidget->titleBarWidget()), qobject_cast<coreUI::CoreVisualizerWidget*>(dockVisWidget->widget()), visualizer);
+    dockVisWidget->setMinimumSize((std::max)(50, dockVisWidget->minimumWidth()), (std::max)(50, dockVisWidget->minimumHeight()));
+    return dockVisWidget;
 }
 
- VisualizerWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, EDRDockWidgetSet* dockSet)
+QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, coreUI::CoreDockWidgetSet* dockSet)
  {
      std::stack<QString> pathStack;
      QTreeWidgetItem * pomItem = hmmItem;
@@ -942,33 +1098,45 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      if (dockSet) {
          dockSet->addDockWidget(visualizerDockWidget);
      } else {
-         topMainWindow->autoAddDockWidget( visualizerDockWidget );
+         topMainWindow->autoAddDockWidget( visualizerDockWidget, tr("Group %1").arg(topMainWindow->count()+1) );
      }
 
-     std::vector<VisualizerTimeSeriePtr> series;
+     std::vector<core::Visualizer::VisualizerSerie*> series;
      helper->getSeries(visualizer, path, series);
      if (!series.empty()) {
-         DataItemDescription desc(visualizer, series, visualizerDockWidget);
+         DataItemDescription desc(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
+		 desc.channel = core::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+		 desc.path = path.toStdString();
          items2Descriptions.insert(std::make_pair(helper, desc));
-         VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
+
+		 auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+		 timeline->addChannel(desc.path, desc.channel);
+
+		 for(auto it = series.begin(); it != series.end(); ++it){
+			 seriesToChannels[*it] = desc.path;
+		 }
      } else {
-         LOG_WARNING("Problem adding series to visualizer");
+         PLUGIN_LOG_WARNING("Problem adding series to visualizer");
      }
+
+	 visualizer->addObserver(this);
+
      return visualizerDockWidget;
  }
 
  void HmmMainWindow::refreshTree()
  {
-     std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
+     core::ConstObjectsList sessions;
+	 plugin::getDataManagerReader()->getObjects(sessions, typeid(PluginSubject::ISession), false);
      currentSessions = sessions;
      treeRefresher.refresh(analisis->getTreeWidget());
  }
 
  QMenu* HmmMainWindow::getContextMenu( QWidget* parent, HmmTreeItem* item )
  {
-     dropUnusedElements(items2Descriptions);
      QMenu * menu = new QMenu(parent);
      QAction * addNew = new ContextAction(item, menu);
+
      addNew->setText(tr("Create new visualizer"));
      menu->addAction(addNew);
      menu->addSeparator();
@@ -1036,32 +1204,45 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      }
 
      QMenu* addTo = new QMenu(tr("Add to:"), menu);
+	 addTo->setEnabled(false);
      connect(addTo, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
      connect(addTo, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
-     BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
-         QMenu* group = new QMenu(set->windowTitle(), menu);
+     BOOST_FOREACH(coreUI::CoreDockWidgetSet* set, topMainWindow->getDockSet()) {
+         //QMenu* group = new QMenu(set->windowTitle(), menu);
+		 QMenu* group = new QMenu(topMainWindow->setText(topMainWindow->indexOf(set)), menu);
 
-         BOOST_FOREACH(EDRDockWidget* dock, set->getDockWidgets()) {
-             VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(dock);
+         BOOST_FOREACH(QDockWidget* dock, set->getDockWidgets()) {
+             coreUI::CoreVisualizerWidget* vw = dynamic_cast<coreUI::CoreVisualizerWidget*>(dock->widget());
              if (vw ) {
-                 VisualizerPtr visualizer = vw->getCurrentVisualizer();
-                 DataManager* dataManager = DataManager::getInstance();
+                 core::VisualizerPtr visualizer = vw->getVisualizer();
+                 auto hierarchyManager = plugin::getDataHierachyManagerReader();
                  bool compatibile = false;
-                 for (int idx = 0; idx < visualizer->getNumInputs(); ++idx) {
-                     std::vector<TypeInfo> types = item->getHelper()->getTypeInfos();
-                     for (unsigned int h = 0; h < types.size(); ++h) {
-                         if (dataManager->isTypeCompatible(visualizer->getInputType(idx), types[h])) {
-                             compatibile = true;
-                             break;
-                         }
-                     }
-                 }
+				 core::TypeInfoSet supportedTypes;
+				 visualizer->getSupportedTypes(supportedTypes);
+
+                 std::vector<TypeInfo> types = item->getHelper()->getTypeInfos();
+					for (unsigned int h = 0; h < types.size(); ++h) {
+						if(supportedTypes.find(types[h]) != supportedTypes.end()){
+							compatibile = true;
+						}else {
+							for(auto it = supportedTypes.begin(); it != supportedTypes.end(); ++it){
+								if(hierarchyManager->isTypeCompatible(*it, types[h]) == true){
+									compatibile = true;
+									break;
+								}
+							}
+						}
+
+						if(compatibile == true){
+							break;
+						}
+					}
 
                  if (compatibile) {
                      int maxSeries = visualizer->getMaxSeries();
-                     if (maxSeries == -1 || maxSeries > static_cast<int>(visualizer->getDataSeries().size())) {
+                     if (maxSeries == -1 || maxSeries > static_cast<int>(visualizer->getNumSeries())) {
                          QAction* addAction = new ContextAction(item, group, visualizer);
-                         addAction->setText(vw->windowTitle());
+                         addAction->setText(QString::fromStdString(visualizer->getName()));
                          connect(addAction, SIGNAL(triggered()), this, SLOT(addToVisualizer()));
                          connect(addAction, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
                          group->addAction(addAction);
@@ -1076,22 +1257,31 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              delete group;
          }
      }
+
+	 menu->addMenu(addTo);
+
      if (addTo->actions().size()) {
-         menu->addMenu(addTo);
+         addTo->setEnabled(true);
      }
+
+	 QMenu* removeFrom = new QMenu(tr("Remove from:"), menu);
+	 removeFrom->setEnabled(false);
+	 menu->addMenu(removeFrom);
+
+	 QMenu* createIn = new QMenu(tr("Create in:"), menu);
+	 createIn->setEnabled(false);
+	 menu->addMenu(createIn);
 
      TreeItemHelperPtr helper = item->getHelper();
      if(items2Descriptions.find(helper) != items2Descriptions.end()) {
-         QMenu* removeFrom = new QMenu(tr("Remove from:"), menu);
+         removeFrom->setEnabled(true);
          connect(removeFrom, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
          connect(removeFrom, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
-         menu->addMenu(removeFrom);
-
          auto range = items2Descriptions.equal_range(helper);
          for (auto it = range.first; it != range.second; it++) {
              DataItemDescription desc = it->second;
-             QAction * action = new ContextAction(item, menu, desc.visualizer.lock());
-             action->setText(desc.visualizer.lock()->getUIName());
+             QAction * action = new ContextAction(item, menu, desc.visualizerWidget->getVisualizer());
+             action->setText(QString::fromStdString(desc.visualizerWidget->getVisualizer()->getName()));
              connect(action, SIGNAL(triggered()), this, SLOT(removeFromVisualizer()));
              connect(action, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
              removeFrom->addAction(action);
@@ -1105,23 +1295,26 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          removeFrom->addAction(all);
      }
 
-     QMenu* createIn = new QMenu(tr("Create in:"), menu);
-     BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
+     
+     BOOST_FOREACH(coreUI::CoreDockWidgetSet* set, topMainWindow->getDockSet()) {
          if (set->isAdditionPossible()) {
              QAction* action = new ContextAction(item, menu, VisualizerPtr(), set);
-             action->setText(set->windowTitle());
+             action->setText(topMainWindow->setText(topMainWindow->indexOf(set)));
              createIn->addAction(action);
              connect(action, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
              connect(action, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
+			 //TODO
+			 //connect(action, SIGNAL(hovered(QAction*)), this, SLOT(menuShowGroup(QAction*)));
          }
      }
+
      QAction* newGroup = new ContextAction(item, menu);
      newGroup->setText(tr("New group"));
      createIn->addAction(newGroup);
      connect(newGroup, SIGNAL(triggered()), this, SLOT(createVisualizerInNewSet()));
      connect(newGroup, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
      if (createIn->actions().size()) {
-         menu->addMenu(createIn);
+         createIn->setEnabled(true);
      }
 
      return menu;
@@ -1135,29 +1328,6 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
      } else {
          highlightVisualizer(VisualizerPtr());
-     }
- }
-
- void HmmMainWindow::dropUnusedElements( std::multimap<TreeItemHelperPtr, DataItemDescription>& multimap )
- {
-     typedef std::multimap<TreeItemHelperPtr, DataItemDescription> mmap;
-     for (auto it = multimap.begin(); it != multimap.end(); ) {
-         DataItemDescription& desc = it->second;
-         bool emptySerie = false;
-         for (auto s = desc.series.begin(); s != desc.series.end(); ++s) {
-             if ((*s).use_count() == 0) {
-                 emptySerie = true;
-                 break;
-             }
-         }
-         if (emptySerie || desc.visualizer.use_count() == 0) {
-             auto toErase = it;
-             ++it;
-             multimap.erase(toErase);
-         } else {
-             ++it;
-         }
-
      }
  }
 
@@ -1208,31 +1378,34 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      if (action) {
          typedef std::multimap<TreeItemHelperPtr, DataItemDescription> mmap;
          std::list<mmap::iterator> toErase;
-         auto range = items2Descriptions.equal_range(action->getTreeItem()->getHelper());
-         for (auto it = range.first; it != range.second; ) {
+         auto it = items2Descriptions.find(action->getTreeItem()->getHelper());
+         while(it != items2Descriptions.end() ) {
              // na razie kopia, w przeciwnym razie jest problem z usuwaniem.
              DataItemDescription desc = it->second;
              // jeśli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
              // to znaczy, ze chcemy usunąć dane z wszystkich wizualizatorw
-             if (action->getVisualizer() == nullptr || desc.visualizer.lock() == action->getVisualizer()) {
-                 auto toErase = it; ++it;
-                 items2Descriptions.erase(toErase);
-                 for (unsigned int i = 0; i < desc.series.size(); ++i) {
-                     desc.visualizer.lock()->removeSerie(desc.series[i].lock());
-                 }
-                 if (desc.visualizer.lock()->getDataSeries().size() == 0) {
-                     desc.visualizerWidget->close();
-                     delete desc.visualizerWidget;
-                 }
+             if (action->getVisualizer() == nullptr || desc.visualizerWidget->getVisualizer() == action->getVisualizer()) {
 
+				 //teraz usuwamy serie
+				 auto series = desc.channel->getVisualizersSeries();
+
+				 for(auto it = series.begin(); it != series.end(); ++it){
+					 auto vis = (*it)->visualizer();
+					 vis->destroySerie((*it));					 
+				 }
+
+                 if (desc.visualizerWidget->getVisualizer()->getNumSeries() == 0) {
+                     desc.visualizerDockWidget->close();
+                 }
 
                  if (once) {
                     break;
                  }
-             } else {
-                 ++it;
-             }
 
+				 it = items2Descriptions.find(action->getTreeItem()->getHelper());
+             }else{
+				 ++it;
+			 }
          }
      }
  }
@@ -1250,31 +1423,38 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      NewChartItemHelperPtr helper = core::dynamic_pointer_cast<NewChartItemHelper>(a->getTreeItem()->getHelper());
      UTILS_ASSERT(helper);
 
-     if (helper) {
+     if (helper && helper->getMotion()) {
          NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
-         SessionConstPtr s = helper->getMotion()->getSession();
-         Motions motions;
+         SessionConstPtr s = helper->getMotion()->getUnpackedSession();
+         core::ConstObjectsList motions;
          s->getMotions(motions);
 
          for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
-             std::vector<core::ObjectWrapperConstPtr> wrappers;
-             (*itMotion)->getWrappers(wrappers, typeid(ScalarChannel), false);
+			 PluginSubject::MotionConstPtr m = (*itMotion)->get();
+             core::ConstObjectsList wrappers;
+             //m->getObjects(wrappers, typeid(ScalarChannel), false);
+			 m->getObjects(wrappers, typeid(ScalarChannelReaderInterface), false);
              EventsCollectionConstPtr events;
-             if ((*itMotion)->hasObjectOfType(typeid(C3DEventsCollection))) {
-                 auto w = (*itMotion)->getWrapperOfType(typeid(C3DEventsCollection));
-                 events = w->get();
+             if (m->hasObject(typeid(C3DEventsCollection), false)) {
+				 core::ConstObjectsList e;
+                 m->getObjects(e, typeid(C3DEventsCollection), false);
+                 events = e.front()->get();
              }
+			 std::string name;
 
-             for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
-                 if ((*it)->getName() == helper->getWrapper()->getName()) {
-                     toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(*it, events, *itMotion));
-                 }
-             }
+			 if(helper->getWrapper()->tryGetMeta("core/name", name) == true){
+
+				 for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
+					std::string localName;
+					if ((*it)->tryGetMeta("core/name", localName) && localName == name) {
+						 toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(*it, events, m));
+					 }
+				 }
+			 }
          }
          NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
          HmmTreeItem item(multi);
-         createNewVisualizer(&item);
-         //delete multi;
+         createNewVisualizer(&item);         
      }
  }
 
@@ -1351,18 +1531,20 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
      if (helper) {
          NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
-         SessionConstPtr s = helper->getMotion()->getSession();
-         Motions motions;
+         SessionConstPtr s = helper->getMotion()->getUnpackedSession();
+         core::ConstObjectsList motions;
          s->getMotions(motions);
 
          for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
-             std::vector<core::ObjectWrapperConstPtr> wrappers;
-             (*itMotion)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
+			 PluginSubject::MotionConstPtr m = (*itMotion)->get();
+             core::ConstObjectsList wrappers;
+             m->getObjects(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
 
              EventsCollectionConstPtr events;
-             if ((*itMotion)->hasObjectOfType(typeid(C3DEventsCollection))) {
-                 auto w = (*itMotion)->getWrapperOfType(typeid(C3DEventsCollection));
-                 events = w->get();
+             if (m->hasObject(typeid(C3DEventsCollection), false)) {
+				 core::ConstObjectsList e;
+                 m->getObjects(e, typeid(C3DEventsCollection), false);
+                 events = e.front()->get();
              }
 
              for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
@@ -1377,9 +1559,11 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                         wrapper->set(reader);
                         int no = toVisualize.size();
                         std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
-                        wrapper->setName  (prefix + boost::lexical_cast<std::string>(no));
-                        wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
-                        toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, *itMotion));
+						(*wrapper)["core/name"] = prefix + boost::lexical_cast<std::string>(no);
+						std::string src;
+						(*it)->tryGetMeta("core/source", src);
+                        (*wrapper)["core/source"] = src + boost::lexical_cast<std::string>(no);
+                        toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, m));
                      }
 
                  }
@@ -1398,9 +1582,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      MotionConstPtr motion = helper->getMotion();
      EventsCollectionConstPtr events;
      std::vector<FloatPairPtr> segments;
-     if (motion->hasObjectOfType(typeid(C3DEventsCollection))) {
-         auto w = motion->getWrapperOfType(typeid(C3DEventsCollection));
-         events = w->get();
+     if (motion->hasObject(typeid(C3DEventsCollection), false)) {
+		 core::ConstObjectsList wrappers;
+         motion->getObjects(wrappers, typeid(C3DEventsCollection), false);
+         events = wrappers.front()->get();
          segments = getTimeSegments(events, context);
      }
      std::map<ObjectWrapperConstPtr, QColor> colorMap;
@@ -1415,8 +1600,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              int no = toVisualize.size();
              std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
              colorMap[wrapper] = channelNo == 0 ? QColor(255, 0, 0) : (channelNo == 1 ? QColor(0, 255, 0) : QColor(0, 0, 255));
-             wrapper->setName  (prefix + ":" + boost::lexical_cast<std::string>(j));
-             wrapper->setSource(helper->getWrapper()->getSource() + boost::lexical_cast<std::string>(no));
+			 (*wrapper)["core/name"] = prefix + ":" + boost::lexical_cast<std::string>(j);
+			 std::string src;
+			 helper->getWrapper()->tryGetMeta("core/sources", src);
+             (*wrapper)["core/sources"] = src + boost::lexical_cast<std::string>(no);
              toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, motion));
          }
      }
@@ -1430,20 +1617,22 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  void HmmMainWindow::createNormalizedFromAll( NewVector3ItemHelperPtr helper, c3dlib::C3DParser::IEvent::Context context )
  {
      NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
-     SessionConstPtr s = helper->getMotion()->getSession();
-     Motions motions;
+     SessionConstPtr s = helper->getMotion()->getUnpackedSession();
+     core::ConstObjectsList motions;
      s->getMotions(motions);
 
      std::map<ObjectWrapperConstPtr, QColor> colorMap;
      for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
-         std::vector<core::ObjectWrapperConstPtr> wrappers;
-         (*itMotion)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
+		 PluginSubject::MotionConstPtr m = (*itMotion)->get();
+         core::ConstObjectsList wrappers;
+         m->getObjects(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
 
          EventsCollectionConstPtr events;
          std::vector<FloatPairPtr> segments;
-         if ((*itMotion)->hasObjectOfType(typeid(C3DEventsCollection))) {
-             auto w = (*itMotion)->getWrapperOfType(typeid(C3DEventsCollection));
-             events = w->get();
+         if (m->hasObject(typeid(C3DEventsCollection), false)) {
+			 core::ConstObjectsList e;
+             m->getObjects(e, typeid(C3DEventsCollection), false);
+             events = e.front()->get();
              segments = getTimeSegments(events, context);
          }
 
@@ -1472,9 +1661,11 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                              colorMap[wrapper] = channelNo == 0 ? colorX : (channelNo == 1 ? colorY : colorZ);
                              int no = toVisualize.size();
                              std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
-                             wrapper->setName  (prefix + boost::lexical_cast<std::string>(i) + ":" + boost::lexical_cast<std::string>(j));
-                             wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
-                             toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, *itMotion));
+							 (*wrapper)["core/name"] = prefix + boost::lexical_cast<std::string>(i) + ":" + boost::lexical_cast<std::string>(j);
+							 std::string src;
+							 (*it)->tryGetMeta("core/source", src);
+                             (*wrapper)["core/source"] = src + boost::lexical_cast<std::string>(no);
+                             toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, m));
                          }
                      }
                  }
@@ -1494,7 +1685,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
  }
 
- void HmmMainWindow::registerVisualizerContext( EDRTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer )
+ void HmmMainWindow::registerVisualizerContext( coreUI::CoreTitleBar * titleBar, coreUI::CoreVisualizerWidget* visualizerDockWidget, const core::VisualizerPtr & visualizer )
  {
      contextEventFilter->registerClosableContextWidget(titleBar);
      titleBar->installEventFilter(contextEventFilter);
@@ -1521,16 +1712,26 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
 
 
- void HmmMainWindow::DataObserver::update( const core::IMemoryDataManager * subject )
+ void HmmMainWindow::DataObserver::observe(const core::IDataManagerReader::ChangeList & changes)
  {
-     std::vector<MotionConstPtr> motions = core::queryDataPtr(DataManager::getInstance(), false);
-     int count = motions.size();
-     if(count > 0){
-         hmm->analisisButton->setEnabled(true);
-     }else{
-         hmm->analisisButton->setEnabled(false);
-     }
-     hmm->refreshTree();
+	 auto dhm = plugin::getDataHierachyManagerReader();
+	 for(auto it = changes.begin(); it != changes.end(); ++it){
+		 if((*it).type == typeid(PluginSubject::ISession) || dhm->isTypeCompatible(typeid(PluginSubject::ISession), (*it).type)){
+			QMetaObject::invokeMethod(hmm, "onRefreshFiltersTree");
+			break;
+		 }
+	 }
+ }
+
+ void HmmMainWindow::onRefreshFiltersTree()
+ {
+	 if(plugin::getDataManagerReader()->hasObject(typeid(PluginSubject::ISession), false)){
+		 analisisButton->setEnabled(true);
+	 }else{
+		 analisisButton->setEnabled(false);
+	 }
+
+	 refreshTree();
  }
 
  void HmmMainWindow::onAbout()
@@ -1541,12 +1742,77 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  }
 
  HmmMainWindow::DataItemDescription::DataItemDescription
-     ( VisualizerWeakPtr visualizer, const std::vector<core::VisualizerTimeSeriePtr>& series, VisualizerWidget* widget ) :
-        visualizer(visualizer),
-        visualizerWidget(widget)
+     ( coreUI::CoreVisualizerWidget* widget, QDockWidget * dockWidget) :
+        visualizerWidget(widget),
+        visualizerDockWidget(dockWidget)
  {
-     // konwersja na weak ptr.
-     for (auto it = series.begin(); it != series.end(); ++it) {
-         this->series.push_back(*it);
-     }
+     //// konwersja na weak ptr.
+     //for (auto it = series.begin(); it != series.end(); ++it) {
+     //    this->series.push_back(*it);
+     //}
  }
+
+coreUI::CoreDockWidget * HmmMainWindow::embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent)
+{
+	coreUI::CoreDockWidget * embeddedDockWidget = new coreUI::CoreDockWidget(windowTitle);
+	embeddedDockWidget->setWidget(widget);
+	embeddedDockWidget->setAllowedAreas(allowedAreas);
+	embeddedDockWidget->setPermanent(permanent);
+
+	auto consoleTitleBar = coreUI::CoreTitleBar::supplyWithCoreTitleBar(embeddedDockWidget);
+	//coreUI::CoreTitleBar::supplyCoreTitleBarWithActions(consoleTitleBar, widget);
+
+	return embeddedDockWidget;
+}
+
+void HmmMainWindow::switchToAnalysis()
+{
+    emit onSwitchToAnalysis();
+}
+
+void HmmMainWindow::safeSwitchToAnalysis()
+{
+    analisisButton->click();
+    analisis->getTreeWidget()->setFocus();
+    refreshTree();
+}
+
+//
+//void HmmMainWindow::processedBranchIncreaseWhenEqual( int sinkRunNo )
+//{
+//    ScopedLock lock(processedMutex);
+//    static int count = 0;
+//    if (sinkRunNo == count) {
+//        QString s;
+//        s.sprintf("Run %04d", ++count);
+//        QTreeWidgetItem* itm = new QTreeWidgetItem();
+//        itm->setText(0, s);
+//        processedBranch->addChild(itm);
+//    }
+//}
+
+int HmmMainWindow::getProcessedBranchCount()
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(processedMutex);
+    return processedBranch->childCount();
+}
+
+void HmmMainWindow::addItemToProcessedBranch(QTreeWidgetItem* item, int sinkRunNo)
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(processedMutex);
+    static int count = 0;
+    if (sinkRunNo == processedBranch->childCount()) {
+        QString s;
+        s.sprintf("Run %04d", ++count);
+        QTreeWidgetItem* itm = new QTreeWidgetItem();
+        itm->setText(0, s);
+        processedBranch->addChild(itm);
+    }
+    
+    int childCount = processedBranch->childCount();
+    UTILS_ASSERT(childCount);
+    auto child = processedBranch->child(childCount - 1);
+    child->addChild(item);
+    refreshTree();
+}
+

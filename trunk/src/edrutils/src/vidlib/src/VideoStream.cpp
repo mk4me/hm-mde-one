@@ -88,38 +88,19 @@ const VideoError * VideoStream::getLastError() const
 #endif  // VIDLIB_ENABLE_EXCEPTIONS
 }
 
-
-// bool VideoStream::getFrame( FrameData & dst )
-// {
-//   // najpierw próbujemy pobrać bieżącą ramkę
-//   FrameData src;
-//   if ( getCurrentFrameData(src) ) {
-//     return converter->convert( src, dst );
-//   } else {
-//     // jeżeli strumień nie jest w stanie upakować danych do ramki próbujemy
-//     // skonwertować obie ramki do postaci zdjęcia
-//     FrameLayered srcPicture, dstPicture;
-//     if ( getCurrentFrameData(srcPicture) && dst.translate(&dstPicture) ) {
-//       return converter->convert(srcPicture, dstPicture);
-//     } else {
-//       VIDLIB_ERROR( VideoError("Conversion not possible.") );
-//     }
-//   }
-// }
-
 bool VideoStream::getFrame( Picture & dst ) const
 {
-    VIDLIB_FUNCTION_PROLOG;
+    VIDLIB_FUNCTION_PROLOG;	
     if ( getTime() < 0.0 || getTime() > getDuration() ) {
         VIDLIB_ERROR( VideoError("Stream time is out of bounds.") );
     }
-    Picture src;
-    if ( getData(src) ) {
+    Picture src;	
+    if ( getData(src) ) {		
         return converter->convert( src, dst );
     } else {
         // jeżeli strumień nie jest w stanie upakować danych do ramki próbujemy
         // skonwertować obie ramki do postaci zdjęcia
-        PictureLayered layers = dst.getLayers();
+        PictureLayered layers = dst.getLayers();		
         return getFrame(layers);
     }
 }

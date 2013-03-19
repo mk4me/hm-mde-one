@@ -1,4 +1,4 @@
-#include "../PCH.h"
+#include "PCH.h"
 #include <vidlib/Config.h>
 
 /* -*-c++-*- OpenSceneGraph - Copyright (C) 1998-2006 Robert Osfield 

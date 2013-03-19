@@ -14,8 +14,8 @@
 
 #include <vidlib/osg/VideoImageStream.h>
 
-#include <core/StringTools.h>
-#include <core/PluginCommon.h>
+#include <corelib/StringTools.h>
+#include <corelib/PluginCommon.h>
 
 #include <QtGui/QIcon>
 
@@ -65,30 +65,35 @@ void VideoVisualizer::VideoSerie::setName(const std::string & name)
 	this->name = name;
 }
 
-const std::string & VideoVisualizer::VideoSerie::getName() const
+const std::string VideoVisualizer::VideoSerie::getName() const
 {
 	return name;
 }
 
-void VideoVisualizer::VideoSerie::setData(const core::ObjectWrapperConstPtr & data)
+void VideoVisualizer::VideoSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data)
 {
-	this->data = data;
-	visualizer->reset();
 	bool success = false;
 	if (data->isSupported(typeid(VideoStreamPtr))) {
-		success = data->tryGet(visualizer->stream);
+		auto clonedData = data->clone();
+		visualizer->clear();
+		success = clonedData->tryGet(visualizer->stream);
 	} else if (data->isSupported(typeid(VideoChannel))) {
-		VideoChannelConstPtr channel = data->get();
+		auto clonedData = data->clone();
+		VideoChannelPtr channel = clonedData->get();
 		if (channel) {
-			visualizer->stream = osg::const_pointer_cast<VideoStream>(channel->getVideoStream());
-			success = visualizer->stream != nullptr;
+			visualizer->clear();
+			visualizer->stream = channel->getVideoStream();
+			success = (visualizer->stream != nullptr);
 		}
 	}
 
+	this->data = data;
+	this->requestedType = requestedType;
+
 	// pobranie obrazka
 	if ( success  == true && visualizer->stream != nullptr ) {
-		visualizer->ratioKeeper->setTarget(visualizer->widget);
 		if(visualizer->getImage() == true){
+			visualizer->widget->setColor(1.0, 1.0, 1.0, 1.0);
 			visualizer->refreshImage();
 			//! Fix pierwszej ramki - wymuszam poprawny resize okienek OSG!!
 			visualizer->viewer->getEventQueue()->windowResize(0, 0, visualizer->viewer->width(), visualizer->viewer->height());
@@ -98,6 +103,18 @@ void VideoVisualizer::VideoSerie::setData(const core::ObjectWrapperConstPtr & da
 
 		visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
 	}
+}
+
+const utils::TypeInfo & VideoVisualizer::VideoSerie::getRequestedDataType() const
+{
+	return requestedType;
+}
+
+void VideoVisualizer::VideoSerie::update()
+{
+	VideoStreamConstPtr stream;
+	data->get(stream);
+	visualizer->currentStreamTime = stream->getTime();
 }
 
 const core::ObjectWrapperConstPtr & VideoVisualizer::VideoSerie::getData() const
@@ -116,45 +133,26 @@ void VideoVisualizer::VideoSerie::setTime(double time)
 }
 
 VideoVisualizer::VideoVisualizer() :
-name("Video"), useTextureRect(true), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1)
+useTextureRect(true), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1), currentSerie_(nullptr)
 {
 
 }
 
 VideoVisualizer::~VideoVisualizer()
 {
-    viewer = nullptr;
+
 }
 
-const std::string& VideoVisualizer::getName() const
-{
-    return name;
-}
-
-core::IVisualizer* VideoVisualizer::createClone() const
+plugin::IVisualizer* VideoVisualizer::create() const
 {
     return new VideoVisualizer();
 }
 
-void VideoVisualizer::getInputInfo( std::vector<core::IInputDescription::InputInfo>& info )
+void VideoVisualizer::getSupportedTypes(core::TypeInfoList & supportedTypes) const
 {
-    core::IInputDescription::InputInfo input;
-
-    input.name = "videoStream";
-    input.type = typeid(VideoStream);
-    input.modify = false;
-    input.required = false;
-
-    info.push_back(input);
-
-	input.name = "videoChannel";
-	input.type = typeid(VideoChannel);
-	info.push_back(input);
-
-    input.name = "picture";
-    input.type = typeid(vidlib::Picture);
-
-    info.push_back(input);
+    supportedTypes.push_back(typeid(VideoStream));
+	supportedTypes.push_back(typeid(VideoChannel));
+	supportedTypes.push_back(typeid(vidlib::Picture));
 }
 
 void VideoVisualizer::refresh( float width, float height )
@@ -197,31 +195,8 @@ void VideoVisualizer::updateWidget()
             float oldS = fabs( ll.x() - ur.x() );
             float oldT = fabs( ll.y() - ur.y() );
 
-			//float h = widget->getHeight();
-			//float w = widget->getWidth();
-
-			//float wR = w / h;
-			//float tR = s / t;
-
-			//float mul = wR / tR;
-
-			//float nextS = s;
-			//float nextT = t;
-			//if (mul > 1.0f) {
-				//nextT = s * h / w;
-			//} else {
-				//nextS = w * t / h;
-			//}
-
-			//float deltaS = (s - nextS) / 2.0f;
-			//float deltaT = (t - nextT) / 2.0f;
-
             // czy trzeba aktualizować?
             if ( oldS != s || oldT != t ) {
-                //widget->setTexCoord(0 + deltaS, t - deltaT, osgWidget::Widget::UPPER_LEFT);
-                //widget->setTexCoord(0 + deltaS, 0 + deltaT, osgWidget::Widget::LOWER_LEFT);
-                //widget->setTexCoord(s - deltaS, t - deltaT, osgWidget::Widget::UPPER_RIGHT);
-                //widget->setTexCoord(s - deltaS, 0 + deltaT, osgWidget::Widget::LOWER_RIGHT);
                 widget->setTexCoord(0, t , osgWidget::Widget::UPPER_LEFT);
                 widget->setTexCoord(0, 0 , osgWidget::Widget::LOWER_LEFT);
                 widget->setTexCoord(s, t , osgWidget::Widget::UPPER_RIGHT);
@@ -234,18 +209,21 @@ void VideoVisualizer::updateWidget()
 
 void VideoVisualizer::update( double deltaTime )
 {
+	if(currentSerie_ == nullptr){
+		return;
+	}
+
 	bool needsUpdate = false;
 
 	if ( currentStreamTime != prevStreamTime ) {
 		prevStreamTime = currentStreamTime;
-		needsUpdate = true;
+		needsUpdate = true;		
 
-		stream->setTime(currentStreamTime);
+		stream->setTime(currentStreamTime);		
 		getImage();
 	}
 
-    if ( streamImage ) {
-
+    if ( streamImage ) {		
 		refreshImage();
 
         int width = streamImage->s();
@@ -256,7 +234,7 @@ void VideoVisualizer::update( double deltaTime )
         }
     }
 
-	if ( needsUpdate ) {
+	if ( needsUpdate ) {		
 		viewer->update();
 	}
 }
@@ -274,7 +252,7 @@ void VideoVisualizer::refreshImage()
 	refresh(viewer->width(), viewer->height());
 }
 
-QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
+QWidget* VideoVisualizer::createWidget()
 {
     using namespace osg;
     using namespace osgWidget;
@@ -303,7 +281,7 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
 
     // dodanie obszaru roboczego
     workspace = new osgWidget::Box();
-    workspace->getBackground()->setImage(getResourceString("images/transparent_background.png"), false, false);
+    workspace->getBackground()->setImage(plugin::getResourcePath("images/transparent_background.png").string(), false, false);
     osg::Texture* texture = osgui::getTexture(workspace->getBackground());
 	if (texture) {
 		texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
@@ -314,11 +292,12 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
     // dodanie widgetu
     widget = new Widget("video");
     widget->setUpdateCallback( new WidgetUpdater(this) );
-
     // ratio keeper
     ratioKeeper = new AspectRatioKeeper(widget, 1);
     workspace->addWidget(ratioKeeper);
 	widget->setMinimumSize(50, 50);
+
+	//ratioKeeper->setTarget(widget);
 
     Refresher refresher = { this };
     workspace->addEventCallback(createEventCallback(osgGA::GUIEventAdapter::RESIZE, refresher));
@@ -339,11 +318,6 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
     return viewer;
 }
 
-void VideoVisualizer::setUp( core::IObjectSource* source )
-{
-    reset();
-}
-
 QIcon* VideoVisualizer::createIcon()
 {
     return new QIcon(QString::fromUtf8(":/resources/icons/video.png"));
@@ -354,31 +328,33 @@ int VideoVisualizer::getMaxDataSeries() const
     return 1;
 }
 
-core::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
+plugin::IVisualizer::ISerie* VideoVisualizer::createSerie(const utils::TypeInfo & requestedType, const ObjectWrapperConstPtr & data)
 {
     VideoSerie* ret = new VideoSerie(this);
 
-    ret->setName(name);
-    ret->setData(data);
+    ret->setName("Video");
+    ret->setData(requestedType, data);
 
     return ret;
 }
 
-core::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const core::IVisualizer::SerieBase * serie)
+plugin::IVisualizer::ISerie* VideoVisualizer::createSerie(const plugin::IVisualizer::ISerie * serie)
 {
     return nullptr;
 }
 
-void VideoVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)
+void VideoVisualizer::removeSerie(plugin::IVisualizer::ISerie* serie)
 {
-    reset();
+    clear();
+	currentSerie_ = nullptr;
 }
 
-void VideoVisualizer::reset()
+void VideoVisualizer::clear()
 {
 	streamImage = nullptr;
 	stream = nullptr;
-	ratioKeeper->setTarget(nullptr);
+	//ratioKeeper->setTarget(nullptr);
+	widget->setColor(0, 0, 0, 0); 
 
 	prevStreamTime = currentStreamTime = -1;
 
@@ -387,11 +363,17 @@ void VideoVisualizer::reset()
 	refresh(viewer->width(), viewer->height());
 }
 
-QPixmap VideoVisualizer::print() const
+QPixmap VideoVisualizer::takeScreenshot() const
 {
-	/*QPixmap pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
-	QRect widgetRect = viewer->geometry();
-	widgetRect.moveTopLeft(viewer->parentWidget()->mapToGlobal(widgetRect.topLeft()));
-	return pixmap.copy(widgetRect);*/
 	return QPixmap::fromImage(viewer->grabFrameBuffer(true));
+}
+
+void VideoVisualizer::setActiveSerie(plugin::IVisualizer::ISerie * serie)
+{
+	currentSerie_ = serie;
+}
+
+const plugin::IVisualizer::ISerie * VideoVisualizer::getActiveSerie() const
+{
+	return currentSerie_;
 }

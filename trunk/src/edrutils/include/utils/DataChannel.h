@@ -458,32 +458,32 @@ namespace utils {
 
         //! \param idx Indeks punktu.
         //! \return Wartość na podstawie indeksu punktu czasowego.
-        virtual const_reference operator[](size_type idx) const
+        const_reference operator[](size_type idx) const
         {
             UTILS_ASSERT((idx >= 0 && idx < size()), "Wrong index parameter");
             return storage.pair(idx);
         }
 
         //! \return
-        virtual const_iterator begin() const
+        const_iterator begin() const
         {
             return storage.begin();
         }
 
         //! \return
-        virtual const_iterator end() const
+        const_iterator end() const
         {
             return storage.end();
         }
 
         //! \return
-        virtual const_reverse_iterator rbegin() const
+        const_reverse_iterator rbegin() const
         {
             return storage.rbegin();
         }
 
         //! \return
-        virtual const_reverse_iterator rend() const
+        const_reverse_iterator rend() const
         {
             return storage.rend();
         }
@@ -558,12 +558,12 @@ namespace utils {
 
 		RawUniformDataChannel(const IRawUniformDataChannelReader<PointType, TimeType> & channel) :
             name(channel.getName()),
-            samplesPerSecond(channel.samplesPerSecond),
-            invSamplesPerSecond(channel.invSamplesPerSecond)
+            samplesPerSecond(channel.getSamplesPerSecond()),
+            invSamplesPerSecond(channel.getSampleDuration())
 		{
 			//kopiuję zawartość
 			for(size_type i = 0; i < channel.size(); ++i){
-				storage.addPoint(channel.value(i));
+				storage.addPoint(channel.argument(i), channel.value(i));
 			}
 		}
 
@@ -628,32 +628,32 @@ namespace utils {
 
 		//! \return Indeks punktu.
 		//! \return Wartość na podstawie indeksu punktu czasowego.
-		virtual const_reference operator[](size_type idx) const
+		const_reference operator[](size_type idx) const
 		{
 			UTILS_ASSERT((idx >= 0 && idx < size()), "Wrong index parameter");
 			return storage.pair(idx);
 		}
 
 		//! \return
-		virtual const_iterator begin() const
+		const_iterator begin() const
 		{
 			return storage.begin();
 		}
 
 		//! \return
-		virtual const_iterator end() const
+		const_iterator end() const
 		{
 			return storage.end();
 		}
 
 		//! \return
-		virtual const_reverse_iterator rbegin() const
+		const_reverse_iterator rbegin() const
 		{
 			return storage.rbegin();
 		}
 
 		//! \return
-		virtual const_reverse_iterator rend() const
+		const_reverse_iterator rend() const
 		{
 			return storage.rend();
 		}

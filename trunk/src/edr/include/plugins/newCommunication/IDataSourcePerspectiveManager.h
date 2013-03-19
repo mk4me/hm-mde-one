@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___IDATASOURCEPERSPECTIVEMANAGER_H__
 #define HEADER_GUARD___IDATASOURCEPERSPECTIVEMANAGER_H__
 
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 #include <plugins/newCommunication/IDataSourcePerspective.h>
 
 namespace communication

@@ -1,6 +1,7 @@
 BEGIN_PROJECT("static")
 
 SET_PUBLIC_HEADERS(
+	OsgSceneDump.h
 	AspectRatioKeeper.h
 	Borderized.h
 	Buttonized.h
@@ -26,6 +27,7 @@ SET_PUBLIC_HEADERS(
 SET_PRIVATE_HEADERS( PCH.h )
 
 SET_SOURCE_FILES(
+	OsgSceneDump.cpp
 	AspectRatioKeeper.cpp
 	ContextMenu.cpp
 	DisableableRenderer.cpp
@@ -44,7 +46,5 @@ SET_SOURCE_FILES(
 	PCH.cpp
 )
 SET_PRECOMPILED_HEADER(PCH.h PCH.cpp)
-
-				
 
 END_PROJECT()

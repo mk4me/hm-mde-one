@@ -10,7 +10,7 @@
 #define HEADER_GUARD___COMMUNICATIONDATASOURCESTORAGE_H__
 
 #include <string>
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 #include "DataSourceUser.h"
 #include <sqlite3.h>
 

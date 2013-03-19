@@ -1,19 +1,19 @@
 #include "hmmPCH.h"
 #include "TreeRefresher.h"
 #include <QtGui/QMessageBox>
-#include <core/PluginCommon.h>
-#include <core/DataAccessors.h>
-#include <core/src/DataManager.h>
+#include <corelib/PluginCommon.h>
+#include <corelib/DataAccessors.h>
 #include <plugins/subject/ISession.h>
 #include "TreeBuilder.h"
 
 TreeRefresher::TreeRefresher() : 
-preventRefresh(false), 
+    preventRefresh(false), 
     needRefresh(false),
-    tree(nullptr)
+    tree(nullptr),
+    processed(nullptr)
 {}
 
-void TreeRefresher::actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions) {
+void TreeRefresher::actualRefresh(QTreeWidget* tree, const core::ConstObjectsList& sessions) {
 
     QMessageBox message;
     message.setWindowTitle(QObject::tr("Refreshing analysis data"));
@@ -27,14 +27,24 @@ void TreeRefresher::actualRefresh(QTreeWidget* tree, const std::vector<PluginSub
     try{
 
         QTreeWidgetItem* item = TreeBuilder::createTree(QObject::tr("Active Data"), sessions);
-
+        if (tree->topLevelItemCount() == 2) {
+            QTreeWidgetItem* test = tree->takeTopLevelItem(1);
+        }
         tree->clear();
         tree->addTopLevelItem(item);
         item->setExpanded(true);
-
         QFont font = item->font(0);
         font.setPointSize(12);
         item->setFont(0, font);
+
+        if (processed->childCount()) {
+            processed->setFont(0, font);
+            tree->addTopLevelItem(processed);
+            processed->setExpanded(true);
+
+            processed->child(processed->childCount() - 1)->setExpanded(true);
+        }
+
 
         for (int i = 0; i < item->childCount(); ++i) {
             QTreeWidgetItem* child = item->child(i);
@@ -44,6 +54,7 @@ void TreeRefresher::actualRefresh(QTreeWidget* tree, const std::vector<PluginSub
             font.setPointSize(14);
             item->setFont(0, font);
         }
+
 
     }catch(...){
 
@@ -58,7 +69,8 @@ void TreeRefresher::refresh( QTreeWidget* tree )
         this->tree = tree;
         needRefresh = true;
     } else {
-        std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance(), false);
+        core::ConstObjectsList sessions;
+		plugin::getDataManagerReader()->getObjects(sessions, typeid(PluginSubject::ISession), false);
         actualRefresh(tree, sessions);
     }
 }
@@ -69,7 +81,8 @@ void TreeRefresher::setPreventRefresh( bool val )
     if (!val && needRefresh) {
         UTILS_ASSERT(tree);
         needRefresh = false;
-        std::vector<PluginSubject::SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance(), false);
+		core::ConstObjectsList sessions;
+		plugin::getDataManagerReader()->getObjects(sessions,typeid(PluginSubject::ISession), false);
         actualRefresh(tree, sessions);
         tree = nullptr;
     }

@@ -21,7 +21,6 @@ UTILS_PUSH_WARNINGS
 UTILS_POP_WARNINGS
 
 #include <vidlib/VideoStream.h>
-#include <vidlib/Export.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/osg/VideoImage.h>
 #include <vidlib/VideoStreamAdapter.h>
@@ -107,7 +106,7 @@ namespace vidlib
     // VideoStream
     public:
         //!
-        virtual VideoStream* clone() const;
+        virtual OsgStream* clone() const;
         //! \param time Pozycja w źródle
         bool setTime(double time);
 

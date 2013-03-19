@@ -2,46 +2,52 @@
 #include "Session.h"
 #include <plugins/subject/IMotion.h>
 #include <plugins/subject/ISubject.h>
-#include <core/DataAccessors.h>
+#include <corelib/DataAccessors.h>
 
 using namespace PluginSubject;
 
-Session::Session(SubjectID sessionID, const SubjectConstPtr & subject, SubjectID localSessionID,
-	const std::vector<core::ObjectWrapperConstPtr> & wrappers)
-    : sessionID(sessionID), subject(subject), localSessionID(localSessionID), wrappers(wrappers),
-     currentMotionID(0)
+PluginSubject::SubjectID Session::globalID = 0;
+
+PluginSubject::SubjectID Session::nextGlobalID()
 {
+	if(globalID == std::numeric_limits<PluginSubject::SubjectID>::max()){
+		throw std::runtime_error("Session overflow");
+	}
 
-    //nazwa subjecta
-    localName = "B";
+	return globalID++;
+}
 
-    std::stringstream ss1;
-    ss1.fill('0');
-    ss1.width(4);
-    ss1 << subject->getID();
-
-    localName += ss1.str() + "-S";
-
-    std::stringstream ss2;
-    ss2.fill('0');
-    ss2.width(2);
-    ss2 << localSessionID;
-
-    localName += ss2.str();
-    
-    name = "Session";
-
-    std::stringstream ss3;
-    ss3.fill('0');
-    ss3.width(4);
-    ss3 << sessionID;
-
-    name += ss3.str();
+Session::Session(const core::ObjectWrapperConstPtr & subject, const PluginSubject::SubjectConstPtr & unpackedSubject,
+	SubjectID localSessionID) : sessionID(nextGlobalID()), subject(subject), unpackedSubject(unpackedSubject),
+	localSessionID(localSessionID), currentMotionID(0), name(generateName(sessionID)),
+	localName(generateLocalName(localSessionID, unpackedSubject->getName()))
+{
+	
 }
 
 Session::~Session()
 {
 
+}
+
+std::string Session::generateName(PluginSubject::SubjectID sessionID)
+{
+	std::stringstream ss;
+	ss.fill('0');
+	ss.width(4);
+	ss << sessionID;
+
+	return "Session" + ss.str();
+}
+
+std::string Session::generateLocalName(PluginSubject::SubjectID localSessionID, const std::string & subjectName)
+{
+	std::stringstream ss;
+	ss.fill('0');
+	ss.width(4);
+	ss << localSessionID;
+
+	return subjectName + "-S" + ss.str();
 }
 
 const std::string & Session::getName() const
@@ -64,98 +70,83 @@ SubjectID Session::getLocalID() const
     return localSessionID;
 }
 
-void Session::getMotions(Motions & motions) const
+void Session::getMotions(core::ConstObjectsList & motions) const
 {
-    Motions toFiltering;
-    core::queryDataPtr(core::getDataManagerReader(), toFiltering, true);
-
-    for(auto it = toFiltering.begin(); it != toFiltering.end(); ++it){
-        if((*it)->getSession().get() == this){
-            motions.push_back(*it);
-        }
-    }
+	motionStorage.getObjects(motions, typeid(PluginSubject::IMotion), false);
 }
 
-const SubjectConstPtr & Session::getSubject() const
+void Session::addMotion(const core::ObjectWrapperConstPtr & motion)
+{
+	core::ObjectWrapper::Types types;
+	motion->getSupportedTypes(types);
+	if(std::find(types.begin(), types.end(), typeid(PluginSubject::IMotion)) == types.end()){
+		throw std::runtime_error("Data type does not support PluginSubject::IMotion type");
+	}
+
+	motionStorage.addData(motion);
+}
+
+void Session::removeMotion(const core::ObjectWrapperConstPtr & motion)
+{
+	motionStorage.removeData(motion);
+}
+
+const core::ObjectWrapperConstPtr & Session::getSubject() const
 {
     return subject;
 }
 
-bool Session::hasObjectOfType(const core::TypeInfo& type) const
+const PluginSubject::SubjectConstPtr & Session::getUnpackedSubject() const
 {
-    for(auto it = wrappers.begin(); it != wrappers.end(); ++it){
-
-        if((*it)->getTypeInfo() == type) {
-            return true;
-        }
-    }
-
-    Motions motions;
-    getMotions(motions);
-
-    for(auto it = motions.begin(); it != motions.end(); ++it){
-        if((*it)->hasObjectOfType(type) == true){
-            return true;
-        }
-    }
-
-    return false;
+	return unpackedSubject;
 }
 
-void Session::getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const
+PluginSubject::SubjectID Session::nextMotionID() const
 {
-    wrappers.insert(wrappers.end(), this->wrappers.begin(), this->wrappers.end());
+	return currentMotionID++;
 }
 
-FilteredSession::FilteredSession(const SessionConstPtr & originalSession, const std::vector<MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
-    : originalSession(originalSession), wrappers(wrappers)
+void Session::addData(const core::ObjectWrapperConstPtr & data)
 {
-    for(auto it = motions.begin(); it != motions.end(); ++it){
-        this->motions.push_back(*it);
-    }
+	dataStorage.addData(data);
 }
 
-FilteredSession::~FilteredSession()
+void Session::removeData(const core::ObjectWrapperConstPtr & data)
 {
-
+	dataStorage.removeData(data);
 }
 
-const std::string & FilteredSession::getName() const
+const bool Session::tryAddData(const core::ObjectWrapperConstPtr & data)
 {
-    return originalSession->getName();
+	return dataStorage.tryAddData(data);
 }
 
-const std::string & FilteredSession::getLocalName() const
+const bool Session::tryRemoveData(const core::ObjectWrapperConstPtr & data)
 {
-    return originalSession->getLocalName();
+	return dataStorage.tryRemoveData(data);
 }
 
-SubjectID FilteredSession::getID() const
+void Session::getObjects(core::ConstObjectsList & objects) const
 {
-    return originalSession->getID();
+	dataStorage.getObjects(objects);
 }
 
-SubjectID FilteredSession::getLocalID() const
+void Session::getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const
 {
-    return originalSession->getLocalID();
+	dataStorage.getObjects(objects, type, exact);
 }
 
-void FilteredSession::getMotions(Motions & motions) const
+void Session::getObjects(core::ObjectWrapperCollection& objects) const
 {
-    motions.insert(motions.end(), this->motions.begin(), this->motions.end());
+	dataStorage.getObjects(objects);
 }
 
-const SubjectConstPtr & FilteredSession::getSubject() const
+const bool Session::isManaged(const core::ObjectWrapperConstPtr & object) const
 {
-    return originalSession->getSubject();
+	return dataStorage.isManaged(object);
 }
 
-void FilteredSession::getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const
+const bool Session::hasObject(const core::TypeInfo & type, bool exact) const
 {
-    wrappers.insert(wrappers.end(), this->wrappers.begin(), this->wrappers.end());
-}
-
-const SessionConstPtr & FilteredSession::getOriginalSession() const
-{
-    return originalSession;
+	return dataStorage.hasObject(type, exact);
 }

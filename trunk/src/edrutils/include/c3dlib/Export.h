@@ -1,19 +1,20 @@
 /********************************************************************
-	created:	2011/06/26
-	created:	26:6:2011   12:15
-	filename: 	Export.h
-	author:		Wojciech Knieć
+	created:  2010/10/19
+	created:  19:10:2010   11:43
+	filename: Export.h
+	author:	  Piotr Gwiazdowski
 	
-	purpose:	
+	purpose:  
 *********************************************************************/
+#ifndef __HEADER_GUARD__C3DLIB_EXPORT_H__
+#define __HEADER_GUARD__C3DLIB_EXPORT_H__
 
-#ifndef HEADER_GUARD_C3DLIB__EXPORT_H__
-#define HEADER_GUARD_C3DLIB__EXPORT_H__
+#include <utils/Export.h>
 
-#if defined(_MSC_VER)
-#    define C3DLIB_EXPORT __declspec(dllexport)
-#else		
-#    define C3DLIB_EXPORT
+#if defined (c3dlib_EXPORTS)
+#  define C3DLIB_EXPORT UTILS_DECL_EXPORT
+#else
+#  define C3DLIB_EXPORT UTILS_DECL_IMPORT
 #endif
 
-#endif
+#endif  // __HEADER_GUARD__C3DLIB_EXPORT_H__

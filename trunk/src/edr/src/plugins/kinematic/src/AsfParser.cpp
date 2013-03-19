@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/SkeletalParsers.h>
@@ -19,27 +19,28 @@ AsfParser::~AsfParser()
 
 }
 
-void AsfParser::parseFile( const core::Filesystem::Path& path )
+void AsfParser::parse( const std::string & source )
 {
+	core::Filesystem::Path path(source);
     kinematic::SkeletalModelPtr modelPtr(new kinematic::SkeletalModel);
     kinematic::AsfParser asf;
     asf.parse(modelPtr, path.string());
     skeletalModel->set(modelPtr);
 }
 
-core::IParser* AsfParser::create()
+plugin::IParser* AsfParser::create() const
 {
     return new AsfParser();
 }
 
-void AsfParser::getSupportedExtensions(Extensions & extensions) const
+void AsfParser::acceptedExpressions(Expressions & expressions) const
 {
-    core::IParser::ExtensionDescription extDesc;
-    extDesc.description = "Acclaim Skeleton File format";
+    plugin::IParser::ExpressionDescription expDesc;
+    expDesc.description = "Acclaim Skeleton File format";
 
-    extDesc.types.insert(typeid(kinematic::SkeletalModel));
+    expDesc.types.insert(typeid(kinematic::SkeletalModel));
 
-    extensions["asf"] = extDesc;
+    expressions[".*\.asf$"] = expDesc;
 }
 
 void AsfParser::getObjects( core::Objects& objects )

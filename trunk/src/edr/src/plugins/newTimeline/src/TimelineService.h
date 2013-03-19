@@ -13,9 +13,10 @@
 
 class TimelineWidget;
 
-class TimelineService : public ITimelineService
+class TimelineService : public ITimelineService, public plugin::IService
 {
-    UNIQUE_ID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}", "newTimeline Service");
+    UNIQUE_ID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}");
+	CLASS_DESCRIPTION("New Timeline Service", "newTimeline Service");
 
 private:
     //! Widget.
@@ -32,18 +33,25 @@ public:
 // IService
 public:
 
-    virtual void init(core::IManagersAccessor * managersAccessor)
+	virtual void init(core::ISourceManager * sourceManager,
+		core::IVisualizerManager * visualizerManager,
+		core::IMemoryDataManager * memoryDataManager,
+		core::IStreamDataManager * streamDataManager,
+		core::IFileDataManager * fileDataManager)
     {
 
     }
 
     virtual void finalize();
     //!
-    virtual QWidget* getWidget(core::IActionsGroupManager * actionsManager);
+    virtual QWidget* getWidget();
     //!
-    virtual QWidget* getControlWidget(core::IActionsGroupManager * actionsManager);
-    //!
-    virtual const std::string& getName() const;
+    virtual QWidget* getControlWidget();
+
+	const bool lateInit() { return true; }
+	void update(double deltaTime) {}
+	QWidget * getSettingsWidget() { return nullptr; }
+
 
 public:
     //! \param stream Strumień do dodania.

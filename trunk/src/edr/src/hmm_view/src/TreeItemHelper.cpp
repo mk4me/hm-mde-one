@@ -1,10 +1,12 @@
 #include "hmmPCH.h"
 #include "TreeItemHelper.h"
-#include <core/src/VisualizerManager.h>
+#include <corelib/IVisualizerManager.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/c3d/EventSerieBase.h>
 #include <utils/Debug.h>
+#include <kinematiclib/JointAnglesCollection.h>
 
+using namespace core;
 
 HmmTreeItem::HmmTreeItem( TreeItemHelperPtr helper ) :
 helper(helper)
@@ -31,14 +33,17 @@ TreeWrappedItemHelper::TreeWrappedItemHelper( const core::ObjectWrapperConstPtr 
 VisualizerPtr TreeWrappedItemHelper::createVisualizer()
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
-    return VisualizerManager::getInstance()->createVisualizer(wrapper->getTypeInfo());
+	core::IVisualizerManager::VisualizerPrototypes prototypes;
+	plugin::getVisualizerManager()->getVisualizerPrototypes(wrapper->getTypeInfo(), prototypes, true);
+    return VisualizerPtr(prototypes.front()->create());
 }
 
-void TreeWrappedItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void TreeWrappedItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
-    auto serie = visualizer->createSerie(wrapper, path.toStdString());
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
+    auto serie = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
+	serie->serie()->setName(path.toStdString());
+    series.push_back(serie);
 }
 
 std::vector<core::TypeInfo> TreeWrappedItemHelper::getTypeInfos() const
@@ -48,31 +53,40 @@ std::vector<core::TypeInfo> TreeWrappedItemHelper::getTypeInfos() const
     return ret;
 }
 
-void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
-	std::vector<core::VisualizerTimeSeriePtr> tmpSeries;
+	std::vector<Visualizer::VisualizerSerie*> tmpSeries;
 
 	try{
-		if (motion->hasObjectOfType(typeid(MarkerCollection))) {
-			core::ObjectWrapperConstPtr m = motion->getWrapperOfType(typeid(MarkerCollection));
-			if(m->getRawPtr() != nullptr){
-				tmpSeries.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(m ,path.toStdString())));
+		if (motion->hasObject(typeid(MarkerCollection), false)) {
+			ConstObjectsList m;
+			motion->getObjects(m, typeid(MarkerCollection), false);
+			if(m.front()->getRawPtr() != nullptr){
+				auto s = visualizer->createSerie(typeid(MarkerCollection), m.front());
+				s->serie()->setName(path.toStdString());
+				tmpSeries.push_back(s);
 			}else{
 				throw std::runtime_error("Empty object - markers");
 			}
 		}
-		if (motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection))) {
-			core::ObjectWrapperConstPtr j = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
-			if(j->getRawPtr() != nullptr){
-				tmpSeries.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(j ,path.toStdString())));
+		if (motion->hasObject(typeid(kinematic::JointAnglesCollection), false)) {
+			ConstObjectsList m;
+			motion->getObjects(m, typeid(kinematic::JointAnglesCollection), false);
+			if(m.front()->getRawPtr() != nullptr){
+				auto s = visualizer->createSerie(typeid(kinematic::JointAnglesCollection), m.front());
+				s->serie()->setName(path.toStdString());
+				tmpSeries.push_back(s);
 			}else{
 				throw std::runtime_error("Empty object - joints");
 			}
 		}
-		if (motion->hasObjectOfType(typeid(GRFCollection))) {
-			core::ObjectWrapperConstPtr g = motion->getWrapperOfType(typeid(GRFCollection));
-			if(g->getRawPtr() != nullptr){
-				tmpSeries.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(g ,path.toStdString())));
+		if (motion->hasObject(typeid(GRFCollection), false)) {
+			ConstObjectsList m;
+			motion->getObjects(m, typeid(GRFCollection), false);
+			if(m.front()->getRawPtr() != nullptr){
+				auto s = visualizer->createSerie(typeid(GRFCollection), m.front());
+				s->serie()->setName(path.toStdString());
+				tmpSeries.push_back(s);
 			}else{
 				throw std::runtime_error("Empty object - grfs");
 			}
@@ -86,7 +100,9 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 
 VisualizerPtr Multiserie3D::createVisualizer()
 {
-    return VisualizerManager::getInstance()->createVisualizer(typeid(kinematic::JointAnglesCollection));
+	core::IVisualizerManager::VisualizerPrototypes prototypes;
+	plugin::getVisualizerManager()->getVisualizerPrototypes(typeid(kinematic::JointAnglesCollection), prototypes, true);
+	return VisualizerPtr(prototypes.front()->create());
 }
 
 std::vector<core::TypeInfo> Multiserie3D::getTypeInfos() const
@@ -106,14 +122,20 @@ Multiserie3D::Multiserie3D( const PluginSubject::MotionConstPtr & motion ) :
 
 VisualizerPtr JointsItemHelper::createVisualizer()
 {
-    return VisualizerManager::getInstance()->createVisualizer(typeid(kinematic::JointAnglesCollection));
+	core::IVisualizerManager::VisualizerPrototypes prototypes;
+	plugin::getVisualizerManager()->getVisualizerPrototypes(typeid(kinematic::JointAnglesCollection), prototypes, true);
+	return VisualizerPtr(prototypes.front()->create());
 }
 
-void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
-    core::ObjectWrapperConstPtr joints = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
+	ConstObjectsList m;
+	motion->getObjects(m, typeid(kinematic::JointAnglesCollection), false);
+    core::ObjectWrapperConstPtr joints = m.front();
     if (joints && joints->getRawPtr() != nullptr) {
-        series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(joints, path.toStdString())));
+		auto s = visualizer->createSerie(typeid(kinematic::JointAnglesCollection), joints);
+		s->serie()->setName(path.toStdString());
+        series.push_back(s);
     } else {
         //LOG_ERROR("Empty object - joints");
         //UTILS_ASSERT(false);
@@ -136,16 +158,19 @@ JointsItemHelper::JointsItemHelper( const PluginSubject::MotionConstPtr & motion
 
 VisualizerPtr NewChartItemHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannelReaderInterface));
+	core::IVisualizerManager::VisualizerPrototypes prototypes;
+	plugin::getVisualizerManager()->getVisualizerPrototypes(typeid(ScalarChannelReaderInterface), prototypes, true);
+	VisualizerPtr visualizer(prototypes.front()->create());
+
     QWidget * visWidget = visualizer->getOrCreateWidget();
     visWidget->layout()->setContentsMargins(2, 0, 2, 2);
-    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->getImplementation());
+    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
     if (!chart) {
         UTILS_ASSERT(false);
-        LOG_ERROR("Wrong visualizer type!");
+        PLUGIN_LOG_ERROR("Wrong visualizer type!");
     } else {
         std::string title;
-        ScalarChannelReaderInterfacePtr scalar = wrapper->get();
+        ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
         title += scalar->getName();
         title += " [";
         title += scalar->getValueBaseUnit();
@@ -157,10 +182,11 @@ VisualizerPtr NewChartItemHelper::createVisualizer()
 }
 
 
-void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
-    auto serie = visualizer->createSerie(wrapper, path.toStdString());
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
+    auto serie = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
+	serie->serie()->setName(path.toStdString());
+    series.push_back(serie);
 }
 
 std::vector<core::TypeInfo> NewChartItemHelper::getTypeInfos() const
@@ -177,16 +203,19 @@ NewChartItemHelper::NewChartItemHelper( const core::ObjectWrapperConstPtr& wrapp
 
 VisualizerPtr NewVector3ItemHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannelReaderInterface));
+	core::IVisualizerManager::VisualizerPrototypes prototypes;
+	plugin::getVisualizerManager()->getVisualizerPrototypes(typeid(ScalarChannelReaderInterface), prototypes, true);
+	VisualizerPtr visualizer(prototypes.front()->create());
+
     QWidget * visWidget = visualizer->getOrCreateWidget();
     visWidget->layout()->setContentsMargins(2, 0, 2, 2);
-    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->getImplementation());
+    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
     if (!chart) {
         UTILS_ASSERT(false);
-        LOG_ERROR("Wrong visualizer type!");
+        PLUGIN_LOG_ERROR("Wrong visualizer type!");
     } else {
         std::string title;
-        VectorChannelPtr vectorChannel = wrapper->get();
+        VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
         title += vectorChannel->getName();
         title += " [";
         title += vectorChannel->getValueBaseUnit();
@@ -196,9 +225,9 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer()
     return visualizer;
 }
 
-void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
-    VectorChannelConstPtr vectorChannel = wrapper->get();
+    VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
     ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
     ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
@@ -214,29 +243,33 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
     std::string suffix = boost::lexical_cast<std::string>(number++);
     std::string p = path.toStdString();
-    wrapperX->setName  ("X_" + suffix);
-    wrapperY->setName  ("Y_" + suffix);
-    wrapperZ->setName  ("Z_" + suffix);
-    wrapperX->setSource(p + "/X_" + suffix);
-    wrapperY->setSource(p + "/Y_" + suffix);
-    wrapperZ->setSource(p + "/Z_" + suffix);
+
+	(*wrapperX)["core/name"] = "X_" + suffix;
+	(*wrapperY)["core/name"] = "Y_" + suffix;
+	(*wrapperZ)["core/name"] = "Z_" + suffix;
+	(*wrapperX)["core/source"] = p + "/X_" + suffix;
+	(*wrapperY)["core/source"] = p + "/Y_" + suffix;
+	(*wrapperZ)["core/source"] = p + "/Z_" + suffix;
     visualizer->getOrCreateWidget();
 
-    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getName());
-    auto serieY = visualizer->createSerie(wrapperY, wrapperY->getName());
-    auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getName());
+	auto serieX = visualizer->createSerie(wrapperX->getTypeInfo(), wrapperX);
+	serieX->serie()->setName("X_" + suffix);
+	auto serieY = visualizer->createSerie(wrapperY->getTypeInfo(), wrapperY);
+	serieY->serie()->setName("Y_" + suffix);
+	auto serieZ = visualizer->createSerie(wrapperZ->getTypeInfo(), wrapperZ);
+	serieZ->serie()->setName("Z_" + suffix);
 
-    INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
-    INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY.get());
-    INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ.get());
+    INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
+    INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
+    INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->serie());
 
     chartSerieX->setColor(QColor(255, 0, 0));
     chartSerieY->setColor(QColor(0, 255, 0));
     chartSerieZ->setColor(QColor(0, 0, 255));
 
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieY));
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieZ));
+    series.push_back(serieX);
+    series.push_back(serieY);
+    series.push_back(serieZ);
 }
 
 NewVector3ItemHelper::NewVector3ItemHelper( const core::ObjectWrapperConstPtr& wrapper ) :
@@ -251,33 +284,39 @@ std::vector<core::TypeInfo> NewVector3ItemHelper::getTypeInfos() const
     return ret;
 }
 
-void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
     int count = wrappers.size();
     for (int i = 0; i < count; ++i) {
         auto wrapper = wrappers[i].wrapper;
-        auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
+		std::string source;
+		wrapper->tryGetMeta("core/source", source);
+        auto serieX = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
+		serieX->serie()->setName(source);
         if (wrappers[i].events) {
-            EventSerieBasePtr eventSerie = core::dynamic_pointer_cast<EventSerieBase>(serieX);
+            EventSerieBase * eventSerie = dynamic_cast<EventSerieBase*>(serieX->serie());
             eventSerie->setEvents(wrappers[i].events);
         }
-        INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
+        INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
 
         chartSerieX->setColor(colorStrategy->getColor(chartSerieX, wrapper));
-        series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
+        series.push_back(serieX);
     }
 }
 
 
 VisualizerPtr NewMultiserieHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannelReaderInterface));
+	core::IVisualizerManager::VisualizerPrototypes prototypes;
+	plugin::getVisualizerManager()->getVisualizerPrototypes(typeid(ScalarChannelReaderInterface), prototypes, true);
+	VisualizerPtr visualizer(prototypes.front()->create());
+
     QWidget * visWidget = visualizer->getOrCreateWidget();
     visWidget->layout()->setContentsMargins(2, 0, 2, 2);
-    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->getImplementation());
+    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
     if (!chart) {
         UTILS_ASSERT(false);
-        LOG_ERROR("Wrong visualizer type!");
+        PLUGIN_LOG_ERROR("Wrong visualizer type!");
     } else {
         chart->setTitle(title);
         //chart->setShowLegend(false);
@@ -309,7 +348,7 @@ NewMultiserieHelper::NewMultiserieHelper( const std::vector<core::ObjectWrapperC
     }
 }
 
-void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
     createSeries(visualizer, path, series);
 
@@ -321,16 +360,21 @@ void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString&
 		}else{
 			++it;
 		}
-	}
-
-    auto& type = typeid(C3DEventsCollection);
-    if (motion && motion->hasObjectOfType(type)) {
-        EventsCollectionConstPtr events = motion->getWrapperOfType(type)->get();
-        BOOST_FOREACH(core::VisualizerTimeSeriePtr ptr, series) {
-            EventSerieBasePtr eventPtr = boost::dynamic_pointer_cast<EventSerieBase>(ptr);
+	}	
+    
+    if (motion && motion->hasObject(typeid(C3DEventsCollection), false)) {
+		ConstObjectsList m;
+		motion->getObjects(m, typeid(C3DEventsCollection), false);
+        EventsCollectionConstPtr events = m.front()->get();
+        BOOST_FOREACH(core::Visualizer::VisualizerSerie * ptr, series) {
+            EventSerieBase * eventPtr = dynamic_cast<EventSerieBase*>(ptr->serie());
             if (eventPtr) {
                 eventPtr->setEvents(events);
             }
         }
     }
+
+	if(series.empty() == false && visualizer->getActiveSerie() == nullptr){
+		visualizer->setActiveSerie(series.front());
+	}
 }

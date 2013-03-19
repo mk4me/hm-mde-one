@@ -2,7 +2,6 @@
 #define HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
 
 #include <vidlib/VideoError.h>
-#include <vidlib/Export.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {

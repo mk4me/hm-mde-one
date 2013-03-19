@@ -23,8 +23,7 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_magnifier.h>
-#include <core/IVisualizer.h>
-#include <core/IObjectSource.h>
+#include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/newChart/INewChartSerie.h>
@@ -43,7 +42,8 @@ class NewChartVisualizer : public QObject, public INewChartVisualizer
 {
     friend class NewChartSerie;
     Q_OBJECT;
-    UNIQUE_ID("{1122BD8A-6056-4965-9AEA-502F99CA2433}", "New Chart Visualizer");
+    UNIQUE_ID("{1122BD8A-6056-4965-9AEA-502F99CA2433}");
+	CLASS_DESCRIPTION("New Chart Visualizer", "New Chart Visualizer");
 
 public:
     NewChartVisualizer();
@@ -57,40 +57,37 @@ public:
       //! \return aktualnie aktywna seria lub nullptr, jeśli takiej nie ma
       NewChartSerie* tryGetCurrentSerie();
       //! \return pusty obiekt wizualizatora
-      virtual IVisualizer* createClone() const;
-      //! \return nazwa wizualizatora
-      virtual const std::string& getName() const;
+      virtual IVisualizer* create() const;
+
       //! Tworzy obiekt typu NewChartSerie
       //! \param data ObjectWrapper z interfejsem do odczytu DataChannela
       //! \param name nazwa tworzonej serii danych
       //! \return utworzona seria
-      core::IVisualizer::SerieBase *createSerie(const core::ObjectWrapperConstPtr& data, const std::string& name);
+      plugin::IVisualizer::ISerie *createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data);
       // \return metoda nie jest obsługiwana, nullptr
-      core::IVisualizer::SerieBase *createSerie(const core::IVisualizer::SerieBase * serie);
+      plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie * serie);
       //! Usuwa serie z wizualizatora
       //! \param serie seria do usunięcia, musi należeć do wizualizatora i musi być przez niego stworzona
-      virtual void removeSerie(core::IVisualizer::SerieBase *serie);
+      virtual void removeSerie(plugin::IVisualizer::ISerie *serie);
+
+	  virtual void setActiveSerie(plugin::IVisualizer::ISerie * serie);
+	  virtual const plugin::IVisualizer::ISerie * getActiveSerie() const;
       //! Tworzy główny widget wizualizatora
       //! \param manager Manager z akcjami do flexi bara
       //! \return utworzony widget
-      virtual QWidget* createWidget(core::IActionsGroupManager * manager);
+      virtual QWidget* createWidget();
       //! \return ikona wizualizatora
       virtual QIcon* createIcon();
       //! \return makymalna liczba serii, -1 bo nie ma limitu
       virtual int getMaxDataSeries() const;
       //! Zwraca info o wspieranych typach (tylko ScalarChannelReaderInterface)
       //! \param info zwracana struktura z opisami
-      virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info);
-      //! Metoda wywoływana w momencie dostarczenia nowych danych do przetwarzania, nie wykorzystywana
-      //! \param source źródło danych
-      virtual void setUp(core::IObjectSource* source);
+      virtual void getSupportedTypes(core::TypeInfoList & supportedTypes) const;
       //! Metoda wywoływana cyklicznie pozwala odświeżyć stan wizualizatora
       //! \param deltaTime czas od ostatniego wywołania metody
       virtual void update(double deltaTime);
       //! metoda, na podstawie stanu wizualizatora, ustawia widoczne przedziały wykresu
       void setScale();
-      //! resetuje stan wizualizatora, nie obsługiwane
-      virtual void reset();
       //! ustawia sformatowwany tytuł wizualizatora
       virtual void setTitle( const QString& title ) { qwtPlot->setTitle(title); }
       //! \return sformatowany tytuł wizualizatora
@@ -111,7 +108,7 @@ public:
       //! \return czy wizualizator jest w trybie wizualizacji eventów
       bool isEventMode() const { return context != C3DEventsCollection::IEvent::General; }
       //! Zrzut wizualizatora do pixmapy
-      virtual QPixmap print() const;
+      virtual QPixmap takeScreenshot() const;
 
 private:
       //! Dodanie krzywej do wykresu, aktualizacja podziałek
@@ -272,8 +269,6 @@ private:
     core::shared_ptr<QwtPlotGrid> grid;
     //! obiekt przechwujący ekstrema krzywych
     Scales plotScales;
-    //! combo z lista serii danych
-    QComboBox* activeSerieCombo;
     //! kolekcja z wszystkimi seriami danych
     std::vector<NewChartSerie*> series;
     //! mapa przypisująca akcje do stanu wykresu
@@ -299,8 +294,6 @@ private:
     bool scaleToActive;
     //! obiekt umożliwiający rysowanie podziałki z procentami
     PercentScaleDraw* percentDraw;
-    //! widget z menu eventów
-    QWidget* eventsContextWidget;
     //! menu eventów (general, left, right)
     QComboBox * eventsMenu;
     //! akcja wywołująca stan 'picker'

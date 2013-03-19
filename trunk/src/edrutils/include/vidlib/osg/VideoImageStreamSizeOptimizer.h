@@ -16,7 +16,7 @@ UTILS_PUSH_WARNINGS
 #include <osg/Referenced>
 #include <osg/Image>
 UTILS_POP_WARNINGS
-#include <vidlib/Export.h>
+#include <vidlib/Config.h>
 #include "VideoImageStream.h"
 
 

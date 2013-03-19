@@ -10,6 +10,7 @@
 #include <QtGui/QKeyEvent>
 
 #include <boost/tokenizer.hpp>
+#include <boost/bind.hpp>
 
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/ISubject.h>
@@ -29,6 +30,9 @@
 #include <webserviceslib/DateTimeUtils.h>
 #include <QtGui/QInputDialog>
 #include <plugins/kinematic/Wrappers.h>
+#include <corelib/IFileDataManager.h>
+#include <corelib/IParserManagerReader.h>
+
 
 using namespace communication;
 using namespace webservices;
@@ -244,10 +248,18 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	userEdit->installEventFilter(loginEventFilter);
 	passwordEdit->installEventFilter(loginEventFilter);
 
-	//onLogin("bdrdemo", ";bdrdemo");
+	//dataSource->setOfflineMode(true);
+	//onLogin("matiegon", "Matiegon9");
+	////onLogin("bdrdemo", ";bdrdemo");
 	//setCurrentWidget(motionDataTab);
 	//setTabEnabled(indexOf(configTab), false);
 	//setTabEnabled(indexOf(userDataTab), false);
+
+
+	setTabEnabled(indexOf(motionDataTab), false);
+	setTabEnabled(indexOf(userDataTab), false);
+
+	setCurrentWidget(configTab);
 }
 
 DataSourceWidget::~DataSourceWidget()
@@ -648,7 +660,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 		// poprawna komunikacja, użytkownik zweryfikowany || brak komunikacji i logowanie lokalne
 
-		if(dataSource->currentUser_.id() == -2){
+		if(dataSource->offlineMode() == true){
 			// jeżeli jestem zalogowany lokalnie to informuję o tym
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Login information"));
@@ -688,7 +700,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 				messageBox.setStandardButtons(QMessageBox::Ok);
 				messageBox.setDefaultButton(QMessageBox::Ok);
 				messageBox.exec();
-			}else{
+			}else if(dataSource->offlineMode() == false){
 
 				//pobierz datę ostatenij modyfikacji i porównaj
 				//jeśli nowsza to zaproponuj synchronizację
@@ -714,7 +726,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 				}
 			}
-		}else{
+		}else if(dataSource->offlineMode() == false){
 
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Synchronization required"));
@@ -1149,7 +1161,6 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 		std::set<int> filesIDs;
 
 		auto selectedItems = perspective->selectedItems();
-		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
 
 		//sprawdzam czy to cos co mogę załadować?
 
@@ -1171,7 +1182,7 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 				std::set<int> dmOKFiles;
 
 				//filtruje pliki obsługiwane przez DM
-				FilesHelper::filterFiles(filesIDs, extensions, dmOKFiles, *(dataSource->fileStatusManager));
+				FilesHelper::filterFiles(filesIDs, dmOKFiles, *(dataSource->fileStatusManager));
 
 				//pliki do załadowania
 				FilesHelper::filterFiles(dmOKFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
@@ -1211,14 +1222,12 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 	//skoro coś ściągam muszę poczekać!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
 
-		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
-
 		std::set<int> allFiles;
 
 		filteredFiles(allFiles);
 
 		std::set<int> dmOkFiles;
-		FilesHelper::filterFiles(allFiles, extensions, dmOkFiles, *(dataSource->fileStatusManager));
+		FilesHelper::filterFiles(allFiles, dmOkFiles, *(dataSource->fileStatusManager));
 		//pliki do załadowania
 		FilesHelper::filterFiles(dmOkFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
 		//pliki do wyładowania
@@ -1587,56 +1596,37 @@ void DataSourceWidget::onLoad()
 	loadFiles(filesToLoad);
 }
 
-void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core::ObjectWrapperPtr>> & loadedFilesObjects)
+void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core::ObjectWrapperConstPtr>> & loadedFilesObjects)
 {
 	typedef std::map<int, std::set<int>> MotionFiles;
 	typedef std::map<int, std::pair<std::set<int>, MotionFiles>> SessionFiles;
 	typedef std::map<int, SessionFiles> SubjectFiles;
 
 
-	class JointsInitializer : public core::IDataInitializer
+	class JointsInitializer
 	{
 	public:
-		JointsInitializer(const core::ObjectWrapperConstPtr & dataWrapper, const core::ObjectWrapperConstPtr & modelWrapper) :
-		  dataWrapper(dataWrapper), modelWrapper(modelWrapper)
+		  static void initialize(core::ObjectWrapper & object, const core::ObjectWrapperConstPtr & dataWrapper, const core::ObjectWrapperConstPtr & modelWrapper)
 		  {
-
-		  }
-
-		  virtual void initialize(core::ObjectWrapperPtr & object)
-		  {
-			  kinematic::SkeletalDataPtr data;
-			  kinematic::SkeletalModelPtr model;
+			  kinematic::SkeletalDataConstPtr data;
+			  kinematic::SkeletalModelConstPtr model;
 			  if(dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
 				  kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
 				  joints->setSkeletal(model, data);
-				  object->trySet(joints);
+				  object.trySet(joints);
 			  }
 		  }
-
-	private:
-		core::ObjectWrapperConstPtr dataWrapper;
-		core::ObjectWrapperConstPtr modelWrapper;
 	};
 
-
-	//TODO
-	//zainicjować wskaźnik do serwisu!!
-
-	auto subjectService = core::queryServices<PluginSubject::ISubjectService>(dataSource->serviceManager);
+	auto subjectService = core::queryServices<PluginSubject::ISubjectService>(plugin::getServiceManager());
 
 	if(subjectService == nullptr){
 		return;
 	}
 
-	core::NotifyBlocker<core::IMemoryDataManager> blocker(*(dataSource->memoryDM));
-
 	//buduje mapę hierarchii subject -> session -> motion -> files
 	//na bazie tej mapy będę realizował hierarchię pluginu subject
 
-	//TODO
-	//zrewidować plugin subject!!
-	//obiekty tej hierarchii powinny być edytowalne po stronie źródła aby mogło elastyczniej nimi zarządzać!!
 	SubjectFiles subjectHierarchy;
 
 	auto itEND = loadedFilesObjects.end();
@@ -1668,22 +1658,25 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		}
 	}
 
+	auto transaction = dataSource->memoryDM->transaction();
+
 	for(auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
 		//tworzę subject jeśli to konieczne!!
 
 		PluginSubject::SubjectPtr subPtr;
+		core::ObjectWrapperPtr subOW;
 
 		auto subIT = subjectsMapping.find(subjectIT->first);
 		if(subIT != subjectsMapping.end()){
 			//mam subjecta - nie musze już nic robić
-			subPtr = subIT->second.first->get();
+			subOW = subIT->second.first;
+			subPtr = subOW->get();
 		}else{
 			//tworzę subjecta
-			subPtr = subjectService->createSubject();
-			//dodaję do DM
-			auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, subPtr);
-
-			core::MetadataPtr meta(new core::Metadata(ow));
+			subOW = subjectService->createSubject();
+			//tworze ow dla subjecta
+			subPtr = subOW->get();
+			
 			std::stringstream label;
 
 			auto pIT = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first);
@@ -1695,24 +1688,27 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				addPatientObject(pIT->second, subPtr->getID());
 			}
 
-			//auto s = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first)->second;
-			meta->setValue("label", label.str());
+			(*subOW)["label"] = label.str();
 
-			core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
+
+			//dodaję do DM
+			transaction->addData(subOW);
 
 			//zapamiętuję mapowanie
-			subjectsMapping[subjectIT->first].first = ow;
+			subjectsMapping[subjectIT->first].first = subOW;
 		}
 
 		//mam subjecta, mogę iść dalej do sesji
 		for(auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
 
 			PluginSubject::SessionPtr sPtr;
+			core::ObjectWrapperPtr sOW;
 
 			auto sIT = sessionsMapping.find(sessionIT->first);
 			if(sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze już nic robić
-				sPtr = sIT->second.first->get();
+				sOW = sIT->second.first;
+				sPtr = sOW->get();
 			}else{
 				//tworzę sesję
 				//generuję zbiór ow dla sesji
@@ -1730,31 +1726,37 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 				//dane antropometryczne
 				auto antro = createAntropometricData(s->performerConf->attrs);
-				auto antroOW = core::IMemoryDataManager::addData(dataSource->memoryDM, antro);
+				//tworze OW dla danych antropometrycznych
+				auto antroOW = core::ObjectWrapper::create<communication::AntropometricData>();
+				antroOW->set(antro);
+
 				sessionObjects.push_back(antroOW);
 				sessionsMapping[sessionIT->first].second.push_back(antroOW);
 
-				sPtr = subjectService->createSession(subPtr, sessionObjects);
-				//dodaję do DM
-				auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, sPtr);
 
-				core::MetadataPtr meta(new core::Metadata(ow));
+				sOW = subjectService->createSession(subOW);
+				sPtr = sOW->get();
+				for(auto it = sessionObjects.begin(); it != sessionObjects.end(); ++it){
+					sPtr->addData(*it);
+				}
 
-				meta->setValue("label", s->sessionName);
-				meta->setValue("EMGConf", boost::lexical_cast<std::string>(s->emgConf));
-				meta->setValue("data", s->sessionDate);
+				(*sOW)["label"] = s->sessionName;
+				(*sOW)["EMGConf"] = boost::lexical_cast<std::string>(s->emgConf);
+				(*sOW)["data"] = s->sessionDate;
 				if(s->groupAssigment != nullptr){
-					meta->setValue("groupID", boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID));
+					(*sOW)["groupID"] = boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID);
 					auto sgIT = filteredShallowCopy.motionMetaData.sessionGroups.find(s->groupAssigment->sessionGroupID);
 					if(sgIT != filteredShallowCopy.motionMetaData.sessionGroups.end()){
-						meta->setValue("groupName", sgIT->second.sessionGroupName);
+						(*sOW)["groupName"] = sgIT->second.sessionGroupName;
 					}
 				}
 
-				core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
+				transaction->addData(antroOW);
+				transaction->addData(sOW);
 
 				//zapamiętuję mapowanie
-				sessionsMapping[sessionIT->first].first = ow;
+				sessionsMapping[sessionIT->first].first = sOW;
+				subPtr->addSession(sOW);
 			}
 
 			//mam sesję - mogę iść dalej z motionami!!
@@ -1781,6 +1783,8 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 						}
 					}
 
+					auto m = filteredShallowCopy.motionShallowCopy->trials.find(motionIT->first)->second;
+
 
 					//sprawdzamy joint angles - jeśli nie ma budujemy i dodajemy do DM
 					core::ObjectWrapperConstPtr dataWrapper;
@@ -1794,32 +1798,43 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 						}
 					}
 
-					modelWrapper = sPtr->getWrapperOfType(typeid(kinematic::SkeletalModel));
+					core::ObjectWrapperCollection modelWrappers(typeid(kinematic::SkeletalModel), false);
+					sPtr->getObjects(modelWrappers);
+
 					core::ObjectWrapperPtr jointsWrapper;
-					if (dataWrapper && modelWrapper) {
-						jointsWrapper = core::IMemoryDataManager::addData(dataSource->memoryDM, kinematic::JointAnglesCollectionPtr(), core::DataInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));
-						motionObjects.push_back(jointsWrapper);
-						motionsMapping[motionIT->first].second.push_back(jointsWrapper);
+
+					if(modelWrappers.empty() == false){
+
+						modelWrapper = modelWrappers.front();
+						
+						if (dataWrapper && modelWrapper) {
+							jointsWrapper = core::ObjectWrapper::create<kinematic::JointAnglesCollection>();
+							jointsWrapper->set(core::ObjectWrapper::LazyInitializer(boost::bind(&JointsInitializer::initialize, _1, dataWrapper, modelWrapper)));
+							motionObjects.push_back(jointsWrapper);
+							motionsMapping[motionIT->first].second.push_back(jointsWrapper);
+							transaction->addData(jointsWrapper);
+						}
 					}
 
-					mPtr = subjectService->createMotion(sPtr,motionObjects);
+					auto mOW = subjectService->createMotion(sOW);
+					mPtr = mOW->get();
+					for(auto it = motionObjects.begin(); it != motionObjects.end(); ++it){
+						mPtr->addData(*it);
+					}
 
 					if(jointsWrapper != nullptr){
-						jointsWrapper->setName(mPtr->getLocalName() + " joints");
-						jointsWrapper->setSource("newCommunication->motion->" + mPtr->getLocalName());
+						//metadane
+						(*jointsWrapper)["name"] = mPtr->getLocalName() + " joints";
+						(*jointsWrapper)["source"] = "newCommunication->motion->" + mPtr->getLocalName();
 					}
+					
+					(*mOW)["label"] = m->trialName;
 
-					//dodaję do DM
-					auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, mPtr);
-
-					core::MetadataPtr meta(new core::Metadata(ow));
-					auto s = filteredShallowCopy.motionShallowCopy->trials.find(motionIT->first)->second;
-					meta->setValue("label", s->trialName);
-
-					core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
+					transaction->addData(mOW);
 
 					//zapamiętuję mapowanie
-					motionsMapping[motionIT->first].first = ow;
+					motionsMapping[motionIT->first].first = mOW;
+					sPtr->addMotion(mOW);
 				}
 			}
 		}
@@ -1845,10 +1860,13 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 		Patient::decodeGender(patient->gender), core::shared_ptr<const QPixmap>(), disorders));
 
 	//dodaję do DM
-	auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, pPtr);
+	auto pOW = core::ObjectWrapper::create<communication::IPatient>();
+	pOW->set(pPtr);
+
+	dataSource->memoryDM->addData(pOW);
 
 	//zapamiętuje
-	patientsMapping[patient->patientID].first = ow;
+	patientsMapping[patient->patientID].first = pOW;
 }
 
 core::shared_ptr<communication::AntropometricData> DataSourceWidget::createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs)
@@ -1917,20 +1935,17 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 
 	//zainicjować wskaźnik do serwisu!!
 
-	auto subjectService = core::queryServices<PluginSubject::ISubjectService>(dataSource->serviceManager);
+	auto subjectService = core::queryServices<PluginSubject::ISubjectService>(plugin::getServiceManager());
 
 	if(subjectService == nullptr){
 		return;
 	}
 
-	core::NotifyBlocker<core::IMemoryDataManager> blocker(*(dataSource->memoryDM));
+	auto transaction = dataSource->memoryDM->transaction();
 
 	//buduje mapę hierarchii subject -> session -> motion -> files
 	//na bazie tej mapy będę realizował hierarchię pluginu subject
 
-	//TODO
-	//zrewidować plugin subject!!
-	//obiekty tej hierarchii powinny być edytowalne po stronie źródła aby mogło elastyczniej nimi zarządzać!!
 	SubjectFiles subjectHierarchy;
 
 	auto itEND = unloadedFilesIDs.end();
@@ -1964,10 +1979,10 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 					if(diffIT == diff.begin()){
 						//to znaczy że usunąłem wszystkie pliki motiona -> mogę usuwać motiona
 						for(auto rIT = mIT->second.second.begin(); rIT != mIT->second.second.end(); ++rIT){
-							dataSource->memoryDM->removeData(*rIT);
+							transaction->removeData(*rIT);
 						}
 
-						dataSource->memoryDM->removeData(mIT->second.first);
+						transaction->removeData(mIT->second.first);
 
 						motionsMapping.erase(mIT);
 					}else{
@@ -1989,15 +2004,15 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 			if(sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze już nic robić
 				sPtr = sIT->second.first->get();
-				PluginSubject::Motions motions;
+				core::ConstObjectsList motions;
 				sPtr->getMotions(motions);
 				if(motions.empty() == true){
 					//sesja jest pusta - do usunięcia
 					for(auto rIT = sIT->second.second.begin(); rIT != sIT->second.second.end(); ++rIT){
-						dataSource->memoryDM->removeData(*rIT);
+						transaction->removeData(*rIT);
 					}
 
-					dataSource->memoryDM->removeData(sIT->second.first);
+					transaction->removeData(sIT->second.first);
 					sessionsMapping.erase(sIT);
 				}
 			}else{
@@ -2015,25 +2030,25 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 		if(subIT != subjectsMapping.end()){
 			//mam subjecta - nie musze już nic robić
 			subPtr = subIT->second.first->get();
-			PluginSubject::Sessions sessions;
+			core::ConstObjectsList sessions;
 			subPtr->getSessions(sessions);
 			if(sessions.empty() == true){
 
 				for(auto rIT = subIT->second.second.begin(); rIT != subIT->second.second.end(); ++rIT){
-					dataSource->memoryDM->removeData(*rIT);
+					transaction->removeData(*rIT);
 				}
 
-				dataSource->memoryDM->removeData(subIT->second.first);
+				transaction->removeData(subIT->second.first);
 
 				//musze jeszcze usunąć pacjenta jeśli mam!!
 				auto patientIT = patientsMapping.find(subIT->first);
 				if(patientIT != patientsMapping.end()){
 
 					for(auto rIT = patientIT->second.second.begin(); rIT != patientIT->second.second.end(); ++rIT){
-						dataSource->memoryDM->removeData(*rIT);
+						transaction->removeData(*rIT);
 					}
 
-					dataSource->memoryDM->removeData(patientIT->second.first);
+					transaction->removeData(patientIT->second.first);
 
 					patientsMapping.erase(patientIT);
 				}
@@ -2050,40 +2065,42 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 
 void DataSourceWidget::unloadSubjectHierarchy()
 {
+	auto transaction = dataSource->memoryDM->transaction();
+
 	for(auto it = motionsMapping.begin(); it != motionsMapping.end(); ++it){
 
 		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
-			dataSource->memoryDM->removeData(*rIT);
+			transaction->removeData(*rIT);
 		}
 
-		dataSource->memoryDM->removeData(it->second.first);
+		transaction->removeData(it->second.first);
 	}
 
 	for(auto it = sessionsMapping.begin(); it != sessionsMapping.end(); ++it){
 
 		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
-			dataSource->memoryDM->removeData(*rIT);
+			transaction->removeData(*rIT);
 		}
 
-		dataSource->memoryDM->removeData(it->second.first);
+		transaction->removeData(it->second.first);
 	}
 
 	for(auto it = subjectsMapping.begin(); it != subjectsMapping.end(); ++it){
 
 		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
-			dataSource->memoryDM->removeData(*rIT);
+			transaction->removeData(*rIT);
 		}
 
-		dataSource->memoryDM->removeData(it->second.first);
+		transaction->removeData(it->second.first);
 	}
 
 	for(auto it = patientsMapping.begin(); it != patientsMapping.end(); ++it){
 
 		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
-			dataSource->memoryDM->removeData(*rIT);
+			transaction->removeData(*rIT);
 		}
 
-		dataSource->memoryDM->removeData(it->second.first);
+		transaction->removeData(it->second.first);
 	}
 
 	std::map<int, MappingValue>().swap(patientsMapping);
@@ -2203,26 +2220,31 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 
-	core::NotifyBlocker<core::IFileDataManager> blocker(*(dataSource->fileDM));
-
 	//! Ładuje pliki do DM
 	std::set<int> loadedFiles;
-	std::map<int, std::vector<core::ObjectWrapperPtr>> loadedFilesObjects;
+	std::map<int, std::vector<core::ObjectWrapperConstPtr>> loadedFilesObjects;
 	std::map<int, std::string> loadingErrors;
 	std::vector<int> unknownErrors;
 
-	for(auto it = files.begin(); it != files.end(); ++it){
-		try{
-			std::vector<core::ObjectWrapperPtr> objects;
-			const auto & p = dataSource->fileStatusManager->filePath(*it);
-			dataSource->fileDM->addFile(p, objects);
-			loadedFiles.insert(*it);
-			loadedFilesObjects[*it] = objects;
-		}catch(std::exception & e){
-			loadingErrors[*it] = std::string(e.what());
-		}catch(...){
-			unknownErrors.push_back(*it);
+	{
+
+		auto transaction = dataSource->fileDM->transaction();
+
+		for(auto it = files.begin(); it != files.end(); ++it){
+			try{				
+				const auto & p = dataSource->fileStatusManager->filePath(*it);
+				transaction->addFile(p);
+				core::ConstObjectsList oList;
+				transaction->getObjects(p, oList);
+				loadedFiles.insert(*it);
+				loadedFilesObjects[*it] = std::vector<core::ObjectWrapperConstPtr>(oList.begin(), oList.end());
+			}catch(std::exception & e){
+				loadingErrors[*it] = std::string(e.what());
+			}catch(...){
+				unknownErrors.push_back(*it);
+			}
 		}
+
 	}
 
 	filesLoadedToDM.insert(loadedFiles.begin(), loadedFiles.end());
@@ -2233,7 +2255,6 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	//próbujemy teraz przez plugin subject realizować hierarchię danych
 
 	loadSubjectHierarchy(loadedFilesObjects);
-
 
 	if(loadingErrors.empty() == true && unknownErrors.empty() == true){
 		QMessageBox messageBox(this);
@@ -2277,8 +2298,6 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 
-	core::NotifyBlocker<core::IFileDataManager> blocker(*(dataSource->fileDM));
-
 	//próbujemy teraz przez plugin subject realizować hierarchię danych
 
 	unloadSubjectHierarchy(files);
@@ -2288,16 +2307,21 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 	std::map<int, std::string> unloadingErrors;
 	std::vector<int> unknownErrors;
 
-	for(auto it = files.begin(); it != files.end(); ++it){
-		try{
-			std::vector<core::ObjectWrapperPtr> objects;
-			const auto & p = dataSource->fileStatusManager->filePath(*it);
-			dataSource->fileDM->removeFile(p);
-			unloadedFiles.insert(*it);
-		}catch(std::exception & e){
-			unloadingErrors[*it] = std::string(e.what());
-		}catch(...){
-			unknownErrors.push_back(*it);
+	{
+
+		auto transaction = dataSource->fileDM->transaction();
+
+		for(auto it = files.begin(); it != files.end(); ++it){
+			try{
+				std::vector<core::ObjectWrapperPtr> objects;
+				const auto & p = dataSource->fileStatusManager->filePath(*it);
+				transaction->removeFile(p);
+				unloadedFiles.insert(*it);
+			}catch(std::exception & e){
+				unloadingErrors[*it] = std::string(e.what());
+			}catch(...){
+				unknownErrors.push_back(*it);
+			}
 		}
 	}
 
@@ -2393,8 +2417,7 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 	std::set<int> toVerify(accessibleFiles.begin(), accessibleFiles.end());
 	std::set<int> dmOKFiles;
 	//filtruje pliki obsługiwane przez DM
-	const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
-	FilesHelper::filterFiles(toVerify, extensions, dmOKFiles, *(dataSource->fileStatusManager));
+	FilesHelper::filterFiles(toVerify, dmOKFiles, *(dataSource->fileStatusManager));
 
 	std::set<int>().swap(filesToDownload);
 

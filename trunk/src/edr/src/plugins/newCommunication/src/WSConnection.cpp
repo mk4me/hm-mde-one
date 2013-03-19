@@ -1,6 +1,6 @@
 #include "CommunicationPCH.h"
-#include <core/ILog.h>
-#include <core/PluginCommon.h>
+#include <corelib/ILog.h>
+#include <corelib/PluginCommon.h>
 #include "WSConnection.h"
 #include <wsdlparser/WsdlInvoker.h>
 #include <boost/type_traits.hpp>
@@ -213,18 +213,27 @@ private:
 			invoker_.reset(new Invoker());
 			invoker_->setVerbose(true);
 			setInvoker(boost::is_base_of<WsdlPull::CustomSSLWsdlInvoker, Invoker>());
-			LOG_INFO("Created Invoker " << typeid(Invoker).name());
+			PLUGIN_LOG_INFO("Created Invoker " << typeid(Invoker).name());
 		}catch(std::exception & e){
-			LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with error: " << e.what());
+			PLUGIN_LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with error: " << e.what());
 			throw webservices::WSConnectionInitializationException(e.what());
 		}catch(...){
-			LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with unknown error");
+			PLUGIN_LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with unknown error");
 			throw webservices::WSConnectionInitializationException("Unknown connection initialization error");
 		}
 	}
 
 	void setInvoker(boost::true_type)
 	{
+		std::string hVer("None");
+
+		if(hostVerification_ == WsdlPull::CustomSSLWsdlInvoker::HVExist){
+			hVer = "Exist";
+		}else if( hostVerification_ == WsdlPull::CustomSSLWsdlInvoker::HVMatch){
+			hVer = "Match";
+		}
+
+		PLUGIN_LOG_INFO("Invoker WSDLUri: url -> " << url_ << " || caPath_ -> " << caPath_ << " || hostVerification_ -> " << hVer);
 		invoker_->setWSDLUri(url_, caPath_, hostVerification_);
 	}
 

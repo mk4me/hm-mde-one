@@ -11,12 +11,13 @@
 
 #include <stdexcept>
 #include <plugins/subject/Types.h>
-#include <core/ObjectWrapper.h>
+#include <corelib/BaseDataTypes.h>
+#include <corelib/IMemoryDataManager.h>
 
 namespace PluginSubject {
 
 //! Abstrakcyjna klasa reprezentująca zbiór ruchów w ramach jednego celu/badania/grupy
-class ISession
+class ISession : public core::IDataManagerReaderOperations
 {
 public:
     virtual ~ISession() {}
@@ -26,50 +27,42 @@ public:
     //! \return Unikalne, lokalne ID sesji w obrębie sesji tego samego obiektu wykonującego ruch. Podobnie jak globalne - po usunięci i ponownym dodaniu ID może ulec zmianie!
     virtual SubjectID getLocalID() const = 0;
     //! \param motions Zbiór wypełniany konkretnymi ruchami danego obiektu w ramach aktualnej sesji
-    virtual void getMotions(Motions & motions) const = 0;
+    virtual void getMotions(core::ConstObjectsList & motions) const = 0;
+
+	virtual void addMotion(const core::ObjectWrapperConstPtr & motion) = 0;
+	virtual void removeMotion(const core::ObjectWrapperConstPtr & motion) = 0;
 
     //! \return Obiekt z którym związana jest ta sesja
-    virtual const SubjectConstPtr & getSubject() const = 0;
+    virtual const core::ObjectWrapperConstPtr & getSubject() const = 0;
+	virtual const SubjectConstPtr & getUnpackedSubject() const = 0;
 
     //! \return Globalna nazwa sesji
     virtual const std::string & getName() const = 0;
     //! \return Lokalna nazwa sesji
     virtual const std::string & getLocalName() const = 0;
 
-    //! \param wrappers Zbiór OW związanych z tą sesją (ale nie z Motions)
-    virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const = 0;
+	//! \data Dane wchodzące pod kontrolę DM
+	virtual void addData(const core::ObjectWrapperConstPtr & data) = 0;
+	//! Dane usuwane z DM
+	virtual void removeData(const core::ObjectWrapperConstPtr & data) = 0;
 
-    virtual core::ObjectWrapperConstPtr getWrapperOfType(const core::TypeInfo& type, bool exact = false) const
-    {
-        std::vector<core::ObjectWrapperConstPtr> wrappers;
-        getWrappers(wrappers);
-        for(auto it = wrappers.begin(); it != wrappers.end(); ++it){
-            if((*it)->getTypeInfo() == type || (exact == false && (*it)->isSupported(type))){
-                return (*it);
-            }
-        }
+	virtual const bool tryAddData(const core::ObjectWrapperConstPtr & data) = 0;
 
-        //throw std::runtime_error("Object type not stored in Session");
-        return core::ObjectWrapperConstPtr();
-    }
+	virtual const bool tryRemoveData(const core::ObjectWrapperConstPtr & data) = 0;
 
-    virtual bool hasObjectOfType(const core::TypeInfo& type, bool exact = false) const
-    {
-        std::vector<core::ObjectWrapperConstPtr> wrappers;
-        getWrappers(wrappers);
+	virtual void getObjects(core::ConstObjectsList & objects) const = 0;
 
-        for(auto it = wrappers.begin(); it != wrappers.end(); ++it){
-            if((*it)->getTypeInfo() == type || (exact == false && (*it)->isSupported(type))){
-                return true;
-            }
-        }
+	virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const = 0;
 
-        return false;
-    }
+	virtual void getObjects(core::ObjectWrapperCollection& objects) const = 0;
+
+	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const = 0;
+
+	virtual const bool hasObject(const core::TypeInfo & type, bool exact) const = 0;
 };
 
 }
 
-CORE_DEFINE_WRAPPER(PluginSubject::ISession, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(PluginSubject::ISession, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 #endif //   HEADER_GUARD___ISESSION_H__

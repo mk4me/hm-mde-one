@@ -5,6 +5,7 @@
         <file alias="strzalka-dol.png">../../../resources/embedded/icons/strzalka-dol.png</file>
         <file alias="trojkat-8x8-naboku.png">../../../resources/embedded/icons/trojkat-8x8-naboku.png</file>
         <file alias="trojkat-8x8-dodolu.png">../../../resources/embedded/icons/trojkat-8x8-dodolu.png</file>
+        <file alias="trojkat-8x8-dogory.png">../../../resources/embedded/icons/trojkat-8x8-dogory.png</file>
         <file alias="header.png">../../../resources/embedded/icons/header.png</file>
         <file alias="Triangle.png">../../../resources/embedded/icons/triangle.png</file>
         <file alias="Analizy.png">../../../resources/embedded/icons/Analizy.png</file>
@@ -51,6 +52,6 @@
         <file alias="splitter-dots-vertical.png">../../../resources/embedded/icons/splitter-dots-vertical.png</file>
     </qresource>
     <qresource prefix="/resources/splashscreen">
-        <file alias="spplash.png">../../../resources/embedded/splashscreen/spplash.png</file>
+        <file alias="splash.png">../../../resources/embedded/splashscreen/splash.png</file>
     </qresource>
 </RCC>

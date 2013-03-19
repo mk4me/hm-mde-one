@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
 #define HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
 
-#include <vidlib/Export.h>
+#include <vidlib/Config.h>
 #include <utils/Utils.h>
 UTILS_PUSH_WARNINGS
 #include <osgDB/Registry>

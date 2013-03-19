@@ -5,7 +5,7 @@
 #include <vector>
 #include <boost/tuple/tuple.hpp>
 #include <c3dlib/C3DParser.h>
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 #include <plugins/c3d/C3DChannels.h>
 #include "C3DParser.h"
 #include "ForcePlatform.h"
@@ -36,53 +36,56 @@ C3DParser::~C3DParser()
 {
 }
 
-void C3DParser::parseFile( const core::Filesystem::Path& path )
+void C3DParser::parse( const std::string & source  )
 {
-	ParserPtr parser(new c3dlib::C3DParser());
-	parserPtr = parser;
+	core::Filesystem::Path path(source);
+
+	parserPtr.reset(new c3dlib::C3DParser());
 
     std::vector<std::string> files;
     files.push_back(path.string());
 	std::string importWarnings;
-    parser->importFrom(files, importWarnings);
+    parserPtr->importFrom(files, importWarnings);
 
     // wczytanie danych analogowych
     GRFCollectionPtr grfs(new GRFCollection());
     EMGCollectionPtr e(new EMGCollection());
-    if (parser->getNumAnalogs() == 28)
+    if (parserPtr->getNumAnalogs() == 28)
     {
         for (int i = 0; i < 4; ++i) {
-            GRFChannelPtr ptr(new GRFChannel(*parser , i));
+            GRFChannelPtr ptr(new GRFChannel(*parserPtr , i));
             GRFChannels[i]->set(ptr);
-            GRFChannels[i]->setName(ptr->getName());
-            GRFChannels[i]->setSource(path.string());
+			(*(GRFChannels[i]))["core/name"]  = ptr->getName();
+            (*(GRFChannels[i]))["core/source"] = path.string();
             grfs->addChannel(ptr);
         }
 
-        GRFs->set(grfs, path.filename().string(), path.string());
-        GRFs->setSource(path.string());
+		GRFs->set(grfs);
+        (*GRFs)["core/source"] = path.string();
 
         for (int i = 12; i < 28; ++i) {
-            EMGChannelPtr ptr(new EMGChannel(*parser , i));
+            EMGChannelPtr ptr(new EMGChannel(*parserPtr , i));
             EMGChannels[i-12]->set(ptr);
-            EMGChannels[i-12]->setName(ptr->getName());
-            EMGChannels[i-12]->setSource(path.string());
+			(*(EMGChannels[i-12]))["core/name"]  = ptr->getName();
+			(*(EMGChannels[i-12]))["core/source"]  = path.string();
             e->addChannel(ptr);
         }
-        EMGs->set(e, path.filename().string(), path.string());
-        EMGs->setSource(path.string());
+        
+		EMGs->set(e);
+        (*EMGs)["core/name"] = path.string();
     }
 
     // wczytanie eventów
-	int count = parser->getNumEvents();
+	int count = parserPtr->getNumEvents();
     EventsCollectionPtr allEventsCollection(new C3DEventsCollection());
 	for (int i = 0; i < count; ++i) {
-		c3dlib::C3DParser::IEventPtr event = parser->getEvent(i);
+		c3dlib::C3DParser::IEventPtr event = parserPtr->getEvent(i);
         C3DEventsCollection::EventPtr e(event->clone());
         allEventsCollection->addEvent(e);
 	}
-    this->allEvents->set(allEventsCollection, path.filename().string(), path.string());
-
+    
+	allEvents->set(allEventsCollection);
+	(*allEvents)["core/source"] = path.string();
     // wczytanie plików *vsk, które dostarczaja opis do markerów
     core::Filesystem::Path dir = path.parent_path();
     std::vector<std::string> vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
@@ -97,40 +100,47 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 	MomentCollectionPtr moments(new MomentCollection);
 	PowerCollectionPtr powers(new PowerCollection);
 
-	int markersCount = parser->getNumPoints();
+	powerChannels->set(powers);
+	(*powerChannels)["core/source"] = path.string();
+
+	markerChannels->set(markers);
+	(*markerChannels)["core/source"] = path.string();
+	forceChannels->set(forces);
+	(*forceChannels)["core/source"] = path.string();
+	angleChannels->set(angles);
+	(*angleChannels)["core/source"] = path.string();
+	momentChannels->set(moments);
+	(*momentChannels)["core/source"] = path.string();
+
+	int markersCount = parserPtr->getNumPoints();
 	for (int i = 0; i < markersCount; ++i) {
-		switch (parser->getPoint(i)->getType()) {
+		switch (parserPtr->getPoint(i)->getType()) {
 			case c3dlib::C3DParser::IPoint::Angle: {
-                AngleChannelPtr ptr(new AngleChannel(*parser, i));
+                AngleChannelPtr ptr(new AngleChannel(*parserPtr, i));
                 angles->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Marker: {
-                MarkerChannelPtr ptr(new MarkerChannel(*parser, i));
+                MarkerChannelPtr ptr(new MarkerChannel(*parserPtr, i));
                 markers->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Force: {
-                ForceChannelPtr ptr(new ForceChannel(*parser, i));
+                ForceChannelPtr ptr(new ForceChannel(*parserPtr, i));
                 forces->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Moment: {
-                MomentChannelPtr ptr(new MomentChannel(*parser, i));
+                MomentChannelPtr ptr(new MomentChannel(*parserPtr, i));
                 moments->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Power: {
-                PowerChannelPtr ptr(new PowerChannel(*parser, i));
+                PowerChannelPtr ptr(new PowerChannel(*parserPtr, i));
                 powers->addChannel(ptr);
             } break;
 		}
 	}
-	markerChannels->set(markers, path.filename().string(), path.string());
-	forceChannels->set(forces, path.filename().string(), path.string());
-	angleChannels->set(angles, path.filename().string(), path.string());
-	momentChannels->set(moments, path.filename().string(), path.string());
-	powerChannels->set(powers, path.filename().string(), path.string());
 
     try {
         IForcePlatformCollection platforms;
-        auto parsedPlatforms = parser->getForcePlatforms();
+        auto parsedPlatforms = parserPtr->getForcePlatforms();
         int count = static_cast<int>(parsedPlatforms.size());
         for (int i = 0; i < count;  ++i) {
             ForcePlatformPtr fp(new ForcePlatform(parsedPlatforms[i]));
@@ -144,28 +154,28 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
 	} catch(...) {}
 }
 
-core::IParser* C3DParser::create()
+plugin::IParser* C3DParser::create() const
 {
     return new C3DParser();
 }
 
-void C3DParser::getSupportedExtensions(core::IParser::Extensions & extensions) const
+void C3DParser::acceptedExpressions(Expressions & expressions) const
 {
-    core::IParser::ExtensionDescription extDesc;
-    extDesc.description = "C3D format";
+    ExpressionDescription expDesc;
+    expDesc.description = "C3D format";
 
-    extDesc.types.insert(typeid(GRFChannel));
-    extDesc.types.insert(typeid(EMGChannel));
-    extDesc.types.insert(typeid(GRFCollection));
-    extDesc.types.insert(typeid(EMGCollection));
-    extDesc.types.insert(typeid(MarkerCollection));
-    extDesc.types.insert(typeid(ForceCollection));
-    extDesc.types.insert(typeid(AngleCollection));
-    extDesc.types.insert(typeid(MomentCollection));
-    extDesc.types.insert(typeid(PowerCollection));
-    extDesc.types.insert(typeid(C3DEventsCollection));
+    expDesc.types.insert(typeid(GRFChannel));
+    expDesc.types.insert(typeid(EMGChannel));
+    expDesc.types.insert(typeid(GRFCollection));
+    expDesc.types.insert(typeid(EMGCollection));
+    expDesc.types.insert(typeid(MarkerCollection));
+    expDesc.types.insert(typeid(ForceCollection));
+    expDesc.types.insert(typeid(AngleCollection));
+    expDesc.types.insert(typeid(MomentCollection));
+    expDesc.types.insert(typeid(PowerCollection));
+    expDesc.types.insert(typeid(C3DEventsCollection));
 
-    extensions["c3d"] = extDesc;
+    expressions.insert(Expressions::value_type(".*\.c3d$", expDesc));
 }
 
 void C3DParser::getObjects( core::Objects& objects )

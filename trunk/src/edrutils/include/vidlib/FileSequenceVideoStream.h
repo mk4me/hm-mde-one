@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 #include <utils/Utils.h>
-#include <vidlib/Export.h>
+#include <vidlib/Config.h>
 #include <vidlib/VideoStream.h>
 
 namespace vidlib 

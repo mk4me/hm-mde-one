@@ -1,39 +1,57 @@
-BEGIN_PROJECT("static")
+BEGIN_PROJECT("dynamic")
 
-# SET_PUBLIC_HEADERS(
-	# MultiView.h
-	# MultiViewWidgetItem.h
-	# MultiViewFunctorWidgetAdapter.h
-	# MultiViewCameraItem.h
-	# MultiViewManipulatorItem.h
-	# OsgSceneDump.h
-# )
-
-SET_CONFIGURATION_INPUT_FILES(
-	"Config.h.in"
+SET_PUBLIC_HEADERS(
+	BaseDataTypes.h
+	DataAccessors.h
+	Filesystem.h
+	SmartPtr.h
+	StringTools.h
+	Visualizer.h
+	# SubjectDataFilters.h
+	ObjectWrapperCollection.h
+	PluginCommon.h
+	IPlugin.h
+	IVisualizerManager.h
+	IVisualizer.h
+	ITransaction.h
+	IStreamManagerReader.h
+	IStreamDataManager.h
+	ISourceManager.h
+	ISource.h
+	IServiceManager.h
+	IService.h
+	ISerializable.h
+	IPath.h
+	IParserManagerReader.h
+	IParser.h
+	IMemoryDataManager.h
+	ILog.h
+	IIdentifiable.h
+	IFileManagerReader.h
+	IFileDataManager.h
+	IDataManagerReader.h
+	IDataHierarchyManagerReader.h
+	IClonable.h
+	IApplication.h
+	Export.h
 )
-
-CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")
-
 
 SET_SOURCE_FILES(
-	Window.cpp
-	MultiView.cpp
-	MultiViewWidgetItem.cpp
 	Filesystem.cpp
-	MultiViewFunctorWidgetAdapter.cpp
-	MultiViewCameraItem.cpp
-	MultiViewManipulatorItem.cpp
-	OsgSceneDump.cpp
-	CorePCH.cpp
+	Visualizer.cpp
+	# SubjectDataFilters.cpp
+	CoreLibPCH.cpp
+	ObjectWrapperCollection.cpp
 )
-
-# SET_MOC_FILES(
-	# MultiViewWidgetItem.h
-# )
 
 SET_PRIVATE_HEADERS(
-	CorePCH.h
+	CoreLibPCH.h
 )
+
+SET_MOC_FILES(
+	Visualizer.h
+)
+
+SET_PRECOMPILED_HEADER (CoreLibPCH.h CoreLibPCH.cpp)
 
 END_PROJECT()

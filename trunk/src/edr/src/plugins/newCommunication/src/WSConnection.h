@@ -11,7 +11,7 @@
 
 #include <webserviceslib/IWSConnection.h>
 #include <wsdlparser/WsdlInvoker.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 //! Interfejs rozszerzający podstawowe połączenie webservices o zabezpieczenia
 class ISecureWSConnection : public webservices::IWSConnection

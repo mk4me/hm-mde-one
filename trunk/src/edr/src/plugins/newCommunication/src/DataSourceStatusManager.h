@@ -14,12 +14,14 @@
 #include <set>
 
 #include <plugins/newCommunication/IDataSourceStatusManager.h>
-#include <core/IDataManager.h>
+#include <corelib/IDataManagerReader.h>
 
 #include <plugins/newCommunication/DataSourceShallowCopy.h>
 #include "DataSourceStatus.h"
 #include "DataSourceLocalStorage.h"
 #include <QtGui/QIcon>
+
+#include <corelib/IFileDataManager.h>
 
 //! Kalsa zarządzająca statusem plików. Ma charakter singletona
 class FileStatusManager

@@ -1,0 +1,191 @@
+BEGIN_PROJECT("dynamic")
+
+SET_PUBLIC_HEADERS(
+	NewVdfService.h
+	INodeConfiguration.h
+	IConnectionsFactory.h
+	IFactory.h
+	IBackgroundsFactory.h
+	IBackgroundStrategy.h
+	#INodePrototype.h
+	#INodePrototypesViewer.h
+	INodesFactory.h
+	IPinsFactory.h
+	IVisualConnection.h
+	IVisualItem.h
+	IVisualNode.h
+	IVisualProcessingNode.h
+	IVisualSinkNode.h
+	IVisualSourceNode.h
+	IVisualStrategy.h
+	#IBackgroundStrategy.h
+	IConnectionStrategy.h
+	INodeStrategy.h
+	IPinStrategy.h
+	IVisualPin.h
+	IVisualInputPin.h
+	IVisualOutputPin.h
+	IDataSource.h
+	IDataSourceManager.h
+	IDataSink.h
+	IDataSinkManager.h
+	IDataProcessor.h
+	IDataProcessorManager.h
+	IInputDescription.h
+	IOutputDescription.h
+	IWorkflowItemBase.h
+	ICommand.h
+	IDataFlowProvider.h
+	DataSource.h
+	DataSink.h
+	DataProcessor.h
+	ExampleItems.h
+	Export.h
+)
+
+SET_PRIVATE_HEADERS(
+	NewVdfWidget.h
+	BackgroundsFactory.h
+	Command.h
+	CommandStackDebug.h
+	SceneModel.h
+	CanvasStyleEditor.h
+	CanvasStyleEditorWidget.h
+	DarkPinStrategy.h
+	DarkNodeStrategy.h
+	DarkConnectionStrategy.h
+	DarkBackgroundStrategy.h
+	DarkPinsFactory.h
+	DarkNodesFactory.h
+	DarkConnectionsFactory.h
+	#ModelCanvasScene.h
+	#ModelCanvasViewer.h
+	#NodeDescriptor.h
+	#PinDescriptor.h
+	#ConnectionDescriptor.h
+	SceneBuilder.h
+	TypesWindow.h
+	PinsFactory.h
+	ConnectionsFactory.h
+	NodesFactory.h
+	SimpleConnection.h
+	SimpleSourceNode.h
+	SimpleSinkNode.h
+	SimpleProcessingNode.h
+	SimpleMergedNode.h
+	SimpleOutputPinNode.h
+	SimpleInputPinNode.h
+	SimpleItem.h
+	StyleItem.h
+	StylePinItem.h
+	StyleConnection.h
+	StyleSourceNode.h
+	StyleSinkNode.h
+	StyleProcessingNode.h
+	StyleMergedNode.h
+	StyleOutputPinNode.h
+	StyleInputPinNode.h
+	SceneStateMachine.h
+	ISceneState.h
+	NormalState.h
+	ConnectState.h
+	GroupState.h
+	VdfView.h
+	VdfScene.h
+	NewVdfPCH.h
+	DataSourceManager.h
+	DataSinkManager.h
+	DataProcessorManager.h
+)
+
+SET_SOURCE_FILES (
+	NewVdfService.cpp
+	NewVdfPlugin.cpp
+	NewVdfWidget.cpp
+	BackgroundsFactory.cpp
+	DarkBackgroundStrategy.cpp
+	DarkPinsFactory.cpp
+	DarkNodesFactory.cpp
+	DarkConnectionsFactory.cpp
+	DarkPinStrategy.cpp
+	DarkNodeStrategy.cpp
+	DarkConnectionStrategy.cpp
+	Command.cpp
+	CommandStackDebug.cpp
+	SceneModel.cpp
+	SceneBuilder.cpp
+	TypesWindow.cpp
+	CanvasStyleEditor.cpp
+	CanvasStyleEditorWidget.cpp
+	NormalState.cpp
+	ConnectState.cpp
+	GroupState.cpp
+	#VisualItemsFactoriesManager.cpp
+	#ModelCanvasScene.cpp
+	#ModelCanvasViewer.cpp
+	#NodeDescriptor.cpp
+	#PinDescriptor.cpp
+	#ConnectionDescriptor.cpp
+	SimpleItem.cpp
+	StyleItem.cpp
+	PinsFactory.cpp
+	ConnectionsFactory.cpp
+	NodesFactory.cpp
+	SimpleConnection.cpp
+	SimpleSourceNode.cpp
+	SimpleSinkNode.cpp
+	SimpleProcessingNode.cpp
+	SimpleMergedNode.cpp
+	SimpleOutputPinNode.cpp
+	SimpleInputPinNode.cpp
+	StyleConnection.cpp
+	StyleSourceNode.cpp
+	StyleSinkNode.cpp
+	StyleProcessingNode.cpp
+	StyleMergedNode.cpp
+	StyleOutputPinNode.cpp
+	StyleInputPinNode.cpp
+	SceneStateMachine.cpp
+	ISceneState.cpp
+	VdfView.cpp
+	VdfScene.cpp
+	NewVdfPCH.cpp
+	DataSource.cpp
+	DataSourceManager.cpp
+	DataSink.cpp
+	DataSinkManager.cpp
+	DataProcessor.cpp
+	DataProcessorManager.cpp
+)
+
+SET_MOC_FILES(
+	NewVdfWidget.h
+	CanvasStyleEditorWidget.h
+	ICommand.h
+	CommandStackDebug.h
+	TypesWindow.h
+	#ModelCanvasScene.h
+	#ModelCanvasViewer.h
+	SimpleItem.h
+	SimpleConnection.h
+	StyleItem.h
+	StyleConnection.h
+	SceneStateMachine.h
+	VdfView.h
+	VdfScene.h
+	SceneModel.h
+)
+
+SET_UI_FILES (
+	NewVdfWidget.ui
+	canvasStyleEditorWidget.ui
+	TypesWindow.ui
+)
+
+SET_RC_FILES (
+	newVdfIcons.qrc
+)
+
+SET_PRECOMPILED_HEADER( NewVdfPCH.h NewVdfPCH.cpp )
+
+END_PROJECT()

@@ -45,33 +45,37 @@ branchFunction(function),
     rootIcon(rootIcon)
 { }
 
-QTreeWidgetItem* BuilderFilterCommand::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
+QTreeWidgetItem* BuilderFilterCommand::createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions ) 
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
     root->setIcon(0, rootIcon);
-    BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
-        PluginSubject::Motions motions;
+    BOOST_FOREACH(core::ObjectWrapperConstPtr sessionOW, sessions) {
+		PluginSubject::SessionConstPtr session = sessionOW->get();
+		core::ConstObjectsList motions;
         session->getMotions(motions);
-        BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
-            root->addChild(branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon));
+        BOOST_FOREACH(core::ObjectWrapperConstPtr motionOW, motions) {
+			PluginSubject::MotionConstPtr motion = motionOW->get();
+            root->addChild(branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon, std::string()));
         }
     }
 
     return root;
 }
 
-QTreeWidgetItem* JointsCommand::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions )
+QTreeWidgetItem* JointsCommand::createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions )
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
-    BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
-        PluginSubject::Motions motions;
-        session->getMotions(motions);
-        BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
-            root->addChild(TreeBuilder::createJointsBranch(motion, motion->getLocalName().c_str(), TreeBuilder::getRootJointsIcon(), TreeBuilder::getJointsIcon()));
-        }
-    }
+	BOOST_FOREACH(core::ObjectWrapperConstPtr sessionOW, sessions) {
+		PluginSubject::SessionConstPtr session = sessionOW->get();
+		core::ConstObjectsList motions;
+		session->getMotions(motions);
+		BOOST_FOREACH(core::ObjectWrapperConstPtr motionOW, motions) {
+			PluginSubject::MotionConstPtr motion = motionOW->get();
+			root->addChild(TreeBuilder::createJointsBranch(motion, motion->getLocalName().c_str(), TreeBuilder::getRootJointsIcon(), TreeBuilder::getJointsIcon(), std::string()));
+		}
+	}
 
     return root;
 }
@@ -83,52 +87,47 @@ BuilderConfiguredFilterCommand(function, namesDictionary, frontXml, backXml, roo
 {
 }
 
-QTreeWidgetItem* EMGCommand::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
+QTreeWidgetItem* EMGCommand::createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions ) 
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
     root->setIcon(0, rootIcon);
-    BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
 
-        MeasurementConfigConstPtr config = getMeta(session);
-        PluginSubject::Motions motions;
-        session->getMotions(motions);
-        BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
-            QTreeWidgetItem* colItem = branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon);
-            if (config) {
+	BOOST_FOREACH(core::ObjectWrapperConstPtr sessionOW, sessions) {
+		MeasurementConfigConstPtr config = getSessionMeta(sessionOW);
+		PluginSubject::SessionConstPtr session = sessionOW->get();
+		core::ConstObjectsList motions;
+		session->getMotions(motions);
+		BOOST_FOREACH(core::ObjectWrapperConstPtr motionOW, motions) {
+			PluginSubject::MotionConstPtr motion = motionOW->get();
+			QTreeWidgetItem* colItem = branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon, std::string());
+			if (config) {
 
-                for (int i = colItem->childCount() - 1; i >= 0; --i) {
-                    QTreeWidgetItem* item = colItem->child(i);
-                    QString name = item->text(0);
-                    auto entry = activeElements.find(config->getIdByName(name).toStdString());
-                    if (entry != activeElements.end() && !entry->second) {
-                        delete item;
-                    }
-                }
-            }
-            root->addChild(colItem);
-        }
-    }
+				for (int i = colItem->childCount() - 1; i >= 0; --i) {
+					QTreeWidgetItem* item = colItem->child(i);
+					QString name = item->text(0);
+					auto entry = activeElements.find(config->getIdByName(name).toStdString());
+					if (entry != activeElements.end() && !entry->second) {
+						delete item;
+					}
+				}
+			}
+			root->addChild(colItem);
+		}
+	}
 
     return root;
 }
 
-MeasurementConfigConstPtr EMGCommand::getMeta( PluginSubject::SessionConstPtr session ) 
+MeasurementConfigConstPtr EMGCommand::getSessionMeta( const core::ObjectWrapperConstPtr & session ) 
 {
     MeasurementConfigConstPtr config;
     //próbuje pobrać metadane
     try{
         auto measurements = Measurements::get();
-        std::vector<core::ObjectWrapperConstPtr> metadata;        
-        core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), session, metadata);
-        auto metaITEnd = metadata.end();
-        for(auto metaIT = metadata.begin(); metaIT != metaITEnd; ++metaIT){
-            core::MetadataConstPtr meta = (*metaIT)->get(false);
-            std::string l;
-
-            if(measurements != nullptr && meta != nullptr && meta->value("EMGConf", l) == true) {
-                config = measurements->getConfig(("EMG_" + l).c_str());
-            }
+		std::string l;
+        if(measurements != nullptr && session->tryGetMeta("EMGConf", l) == true) {
+            config = measurements->getConfig(("EMG_" + l).c_str());
         }
     }catch(...){
 

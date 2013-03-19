@@ -1,190 +1,59 @@
 BEGIN_PROJECT("static")
 
+SET_CONFIGURATION_INPUT_FILES(
+	"Config.h.in"
+)
+
+CONFIGURE_PRIVATE_HEADER("Config.h.in" "Config.h")
+
 SET_PRIVATE_HEADERS(
-	VisualizerChannel.h
+	Path.h
+	Application.h
+	ParserManager.h
+	ApplicationCommon.h
+	DataHierarchyManager.h
+	MemoryDataManager.h
+	FileDataManager.h
+	StreamDataManager.h
+	PluginApplication.h
+	PluginPath.h
 	SourceManager.h
-	ActionsGroupManager.h
-	IAppUsageContext.h
-	IAppUsageContextManager.h
-	FlexiWidgetTabContentWidget.h
-	FlexiTabWidget.h
-	FlexiTabSectionWidget.h
-	SubjectDataFilters.h
-	ManagerHelper.h
-	AppInitializer.h
-	MainWindow.h
-	EDRConsoleWidget.h
-	EDRConsoleInnerWidget.h
-	DataManager.h
-	#SceneGraphWidget.h
 	LogInitializer.h
 	ServiceManager.h
-	UserInterfaceService.h
-	VisualizerWidget.h
 	VisualizerManager.h
-	ObjectOutput.h
-	ObjectSource.h
-	Visualizer.h
-	SampleProcessor.h
-	ObjectSlots.h
-	EDRTitleBar.h
-	EDRDockWidget.h
-	WorkflowItemEncapsulator.h
-	InputItem.h
-	InputDescription.h
-	OutputDescription.h
-	OutputItem.h
-	InputOutputItem.h
-	EDRConfig.h
-	EDRDFNode.h
-	EDRDFSourceNode.h
-	EDRDFPin.h
-	EDRDataFlow.h
-	DataProcessorManager.h
-	WorkflowService.h
-	WorkflowWidget.h
-	WorkflowVDFModel.h
-	WorkflowVDFConnDelContextMenu.h
-	LocalDataSource.h
-	LocalDataSourceWidget.h
-	DataSource.h
-	DataSourceManager.h
 	Log.h
 	PluginLoader.h
 	CorePCH.h
+	Plugin.h
 )
 
 SET_PUBLIC_HEADERS (
-	StringTools.h
-	ISource.h
-	ISourceManager.h
-	IActionsGroupManager.h
-	IManagersAccessor.h
-	DataAccessors.h
-	BaseDataTypes.h
-	Filesystem.h
-	IService.h
-	IIdentifiable.h
-	IDataManager.h
-	IParser.h
-	IServiceManager.h
-	Window.h
-	IUserInterface.h
-	Plugin.h
-	Export.h
-	SmartPtr.h
-	ILog.h
-	ObjectWrapper.h
-	ObjectWrapperCollection.h
-	IObjectSource.h
-	IVisualizer.h
-	IVisualizerManager.h
-	IDataProcessor.h
-	IObjectOutput.h
-	PluginCommon.h
-	ObjectWrapperFactory.h
-	TypeInfo.h
-	IEDRTitleBar.h
-	IInputDescription.h 
-	IOutputDescription.h
-	IInputProcessItem.h
-	IOutputProcessItem.h
-	IInputOutputProcessItem.h
-	IConfigurable.h
-	IWorkflowItemBase.h
-	IClonable.h
-	ISerializable.h
-	IPath.h
-	IDataProcessorManager.h
-	IDataSource.h
-	IDataSourceManager.h
-	##################################
-	# 			z corelib			 #
-	MultiView.h
-	MultiViewWidgetItem.h
-	MultiViewFunctorWidgetAdapter.h
-	MultiViewCameraItem.h
-	MultiViewManipulatorItem.h
-	OsgSceneDump.h
+	AppInitializer.h
 )
 
 SET_SOURCE_FILES(
-	VisualizerChannel.cpp
+	AppInitializer.cpp
+	Path.cpp
+	Application.cpp
+	ParserManager.cpp
+	Log.cpp
+	DataHierarchyManager.cpp
+	MemoryDataManager.cpp
+	FileDataManager.cpp
+	StreamDataManager.cpp
+	PluginApplication.cpp
+	PluginPath.cpp
 	SourceManager.cpp
-	ActionsGroupManager.cpp
-	FlexiWidgetTabContentWidget.cpp
-	FlexiTabWidget.cpp
-	FlexiTabSectionWidget.cpp
-	SubjectDataFilters.cpp
-	MainWindow.cpp
-	EDRConsoleWidget.cpp
-	EDRConsoleInnerWidget.cpp
-	DataManager.cpp
-	#SceneGraphWidget.cpp
 	LogInitializer.cpp
 	PluginLoader.cpp
 	ServiceManager.cpp
-	UserInterfaceService.cpp
-	VisualizerWidget.cpp
 	VisualizerManager.cpp
-	Visualizer.cpp
-	ObjectSlots.cpp
-	DataProcessor.cpp
-	EDRTitleBar.cpp
-	EDRDockWidget.cpp
-	EDRConfig.cpp
-	EDRDFNode.cpp
-	EDRDFSourceNode.cpp
-	EDRDFPin.cpp
-	EDRDataFlow.cpp
-	DataProcessorManager.cpp
-	WorkflowWidget.cpp
-	WorkflowService.cpp
-	WorkflowVDFModel.cpp
-	WorkflowVDFConnDelContextMenu.cpp
-	LocalDataSource.cpp
-	LocalDataSourceWidget.cpp
-	DataSource.cpp
-	DataSourceManager.cpp
 	CorePCH.cpp
+	Plugin.cpp
 )
 
 SET_MOC_FILES(
-	FlexiWidgetTabContentWidget.h
-	FlexiTabWidget.h
-	FlexiTabSectionWidget.h
-	EDRConsoleWidget.h
-	EDRConsoleInnerWidget.h
-    MainWindow.h
-	#SceneGraphWidget.h
-	VisualizerWidget.h
-	EDRTitleBar.h
-	EDRDockWidget.h	
-	WorkflowWidget.h
-	WorkflowVDFModel.h
-	WorkflowVDFConnDelContextMenu.h
-	LocalDataSourceWidget.h
-	Visualizer.h
-	##################################
-	# 			z corelib			 #
-	MultiViewWidgetItem.h
-)
-SET_UI_FILES(
-	FlexiWidgetTabContentWidget.ui
-	FlexiTabWidget.ui
-	FlexiTabSectionWidget.ui
-	#ui/SceneGraphWidget.ui
-	#ui/OsgWidget.ui
-	#ui/VisualizerWidget.ui
-	EDRTitleBar.ui
-	EDRConsoleInnerWidget.ui
-	WorkflowWidget.ui
-	LocalDataSourceWidget.ui
-)
-
-SET_RC_FILES (
-	#ui/ConsoleWidget.qrc
-	CoreIcons.qrc
+	Application.h
 )
 
 SET_PRECOMPILED_HEADER (CorePCH.h CorePCH.cpp)

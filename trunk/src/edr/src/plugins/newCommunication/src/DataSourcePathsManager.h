@@ -10,7 +10,7 @@
 #define HEADER_GUARD___DATASOURCEPATHSMANAGER_H__
 
 #include <string>
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 #include <OpenThreads/ReentrantMutex>
 #include "DataSourceUser.h"
 

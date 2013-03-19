@@ -18,6 +18,17 @@ purpose:
 
 //------------------------------------------------------------------------------
 
+// Makro podstawiające nazwę aktualnej funkcji
+#if defined __GNUC__
+	#define __UTILS_PORTABLE_FUNCTION_NAME __func__
+#elif defined _MSC_VER
+	#define __UTILS_PORTABLE_FUNCTION_NAME __FUNCTION__
+#else
+	#error Provide macro name for retriving currently processed function name for current compiler!
+#endif
+
+//------------------------------------------------------------------------------
+
 #if defined(_DEBUG) || defined(DEBUG)
 #define UTILS_DEBUG
 #endif

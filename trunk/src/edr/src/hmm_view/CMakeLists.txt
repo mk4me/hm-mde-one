@@ -1,10 +1,10 @@
 BEGIN_PROJECT("executable")
 
 SET_PRIVATE_HEADERS(
+	IAppUsageContext.h
+	IAppUsageContextManager.h
 	AboutDialog.h
 	HmmMainWindow.h
-	EDRDockWidgetSet.h
-	EDRDockWidgetManager.h
 	TreeItemHelper.h
 	EMGFilter.h
 	DataFilterWidget.h
@@ -20,12 +20,16 @@ SET_PRIVATE_HEADERS(
 	IllnessUnit.h
 	SummaryWindow.h
 	HmmContexts.h
-	textedit.h
 	Measurements.h
 	MultiserieColorStrategy.h
 	TreeRefresher.h
 	ContextAction.h
 	ContextEventFilter.h
+	HmmVdf.h
+	HmmSources.h
+	HmmProcessors.h
+	HmmSinks.h
+	HmmPins.h
 	hmmPCH.h
 )
 
@@ -33,8 +37,6 @@ SET_SOURCE_FILES (
 	AboutDialog.cpp
 	main.cpp
 	HmmMainWindow.cpp
-	EDRDockWidgetSet.cpp
-	EDRDockWidgetManager.cpp
 	TreeItemHelper.cpp
 	EMGFilter.cpp
 	DataFilterWidget.cpp
@@ -49,22 +51,23 @@ SET_SOURCE_FILES (
 	AnalisisWidget.cpp
 	HmmContexts.cpp
 	SummaryWindow.cpp
-	textedit.cpp
 	TreeRefresher.cpp
 	Measurements.cpp
 	ContextEventFilter.cpp
 	Vector3DFilterCommand.cpp
 	hmmPCH.cpp
+	HmmVdf.cpp
+	HmmSources.cpp
+	HmmProcessors.cpp
+	HmmSinks.cpp
+	HmmPins.cpp
 )
 
 SET_MOC_FILES(
 	AboutDialog.h
 	ContextEventFilter.h
-	#PseudoLoginWidget.h
 	ContextAction.h
     HmmMainWindow.h
-	EDRDockWidgetSet.h
-	EDRDockWidgetManager.h
 	DataFilterWidget.h
 	AnalisisTreeWidget.h
 	FilterEntryWidget.h
@@ -72,7 +75,6 @@ SET_MOC_FILES(
 	ConfigurationPainter.h
 	ConfigurationDialog.h
 	AnalisisWidget.h
-	textedit.h
 	HmmContexts.h
 	SummaryWindow.h
 )
@@ -94,8 +96,6 @@ SET_RC_FILES (
 
 SET_PRECOMPILED_HEADER(hmmPCH.h hmmPCH.cpp)
 
-set(CORE_PRIVATES ${PROJECT_ROOT}/src)
-include_directories(${CORE_PRIVATES})
 #------------------------------------------------------------------------------
 # DEFINICJE WYNIKAJ¥CE Z KONFLIKTU QT - BOOST (foreach)
 # wy³anczamy s³owa kluczowe qt, zastêpujemy je makrami

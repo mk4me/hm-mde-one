@@ -31,12 +31,14 @@ public:
     //! odświeży drzewo, jeśli jest to możliwe, jeśli nie drzewo zostanie odświeżone kiedy blokada zostanie zdjeta.
     //! \param tree drzewo do odświeżenia
     void refresh(QTreeWidget* tree);
+    //HACK
+    void setProcessed(QTreeWidgetItem* val) { processed = val; }
 
 private:
     //! właściwe odświeżenie drzewa
     //! \param tree drzewo do odświeżenia
     //! \param sessions sesje, na podstawie których budowane będzie drzewo
-    void actualRefresh(QTreeWidget* tree, const std::vector<PluginSubject::SessionConstPtr>& sessions);
+    void actualRefresh(QTreeWidget* tree, const core::ConstObjectsList& sessions);
 
 private:
     //! true - odświeżanie zablokowane
@@ -45,6 +47,8 @@ private:
     bool needRefresh;
     //! drzewo, które trzeba odświeżyć
     QTreeWidget* tree;
+    // HACK!
+    QTreeWidgetItem* processed;
 };
 
 

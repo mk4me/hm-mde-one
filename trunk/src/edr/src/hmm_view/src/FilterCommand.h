@@ -12,10 +12,10 @@
 
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
-#include <core/src/SubjectDataFilters.h>
 #include <plugins/subject/Types.h>
+#include <plugins/subject/SubjectDataFilters.h>
 #include "TreeBuilder.h"
 
 
@@ -37,7 +37,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) = 0;
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ConstObjectsList& sessions) = 0;
     //! resetuje ustawienia konfiguratora
     virtual void reset() {}
     //! \return widget z konfiguratorem lub nullptr jeśli nie jest on dostarczany
@@ -52,20 +52,20 @@ class SimpleFilterCommand : public IFilterCommand
 public:
     //! Konstruktor
     //! \param dataFilter filtr danych, który będzie użyty do tworzenia drzewa
-    SimpleFilterCommand(PluginSubject::DataFilterPtr dataFilter);
+    SimpleFilterCommand(SubjectHierarchyFilterPtr dataFilter);
 
 public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ConstObjectsList& sessions)
     {
         return TreeBuilder::createTree(rootItemName, sessions, dataFilter);
     }
 
 private:
     //! filtr danych, który będzie użyty do tworzenia drzewa
-    PluginSubject::DataFilterPtr dataFilter;
+    SubjectHierarchyFilterPtr dataFilter;
 };
 typedef boost::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;
 typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr;
@@ -78,30 +78,32 @@ class MultiChartCommand : public IFilterCommand
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions );
 };
 
 //! tworzy gałąź drzewa z przefiltrowanymi danymi
 //! \param rootItemName nazwa korzenia
 //! \param sessions sesje do przefiltrowania
 template <class Type, class TypePtr>
-QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions )
+QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions )
 {
     QTreeWidgetItem* rootItem = new QTreeWidgetItem();
     rootItem->setText(0, rootItemName);
     for (auto it = sessions.begin(); it != sessions.end(); ++it)
     {
-        auto session = *it;
-        std::vector<PluginSubject::MotionConstPtr> motions;
+        PluginSubject::SessionConstPtr session = (*it)->get();
+        core::ConstObjectsList motions;
         session->getMotions(motions);
         for (auto it = motions.begin(); it != motions.end(); ++it) {
-            auto motion = *it;
+            PluginSubject::MotionConstPtr motion = (*it)->get();
             QTreeWidgetItem* item = new QTreeWidgetItem();
             rootItem->addChild(item);
             item->setText(0, motion->getLocalName().c_str());
-            if (motion->hasObjectOfType(typeid(Type))) {
-                core::ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(Type));
-                TypePtr collection = wrapper->get();
+            if (motion->hasObject(typeid(Type), false)) {
+				core::ConstObjectsList wrappers;
+				motion->getObjects(wrappers, typeid(Type), false);
+                core::ObjectWrapperConstPtr wrapper = wrappers.front();
+                TypePtr collection = wrapper->clone()->get();
                 std::vector<core::ObjectWrapperConstPtr> xWrappers;
                 std::vector<core::ObjectWrapperConstPtr> yWrappers;
                 std::vector<core::ObjectWrapperConstPtr> zWrappers;
@@ -122,12 +124,12 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
                     static int number = 0;
                     // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
                     std::string suffix = boost::lexical_cast<std::string>(number++);
-                    wrapperX->setName("X_" + suffix);
-                    wrapperX->setSource("X_" + suffix);
-                    wrapperY->setName("Y_" + suffix);
-                    wrapperY->setSource("Y_" + suffix);
-                    wrapperZ->setName("Z_" + suffix);
-                    wrapperZ->setSource("Z_" + suffix);
+					(*wrapperX)["core/name"] = "X_" + suffix;
+					(*wrapperX)["core/source"] = "X_" + suffix;
+					(*wrapperY)["core/name"] = "Y_" + suffix;
+					(*wrapperY)["core/source"] = "Y_" + suffix;
+					(*wrapperZ)["core/name"] = "Z_" + suffix;
+					(*wrapperZ)["core/source"] = "Z_" + suffix;
 
                     xWrappers.push_back(wrapperX);
                     yWrappers.push_back(wrapperY);

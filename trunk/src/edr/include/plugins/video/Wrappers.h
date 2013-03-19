@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD_VIDEO__WRAPPERS_H__
 #define __HEADER_GUARD_VIDEO__WRAPPERS_H__
 
-#include <core/ObjectWrapper.h>
+#include <corelib/BaseDataTypes.h>
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/osg/OsgAdapter.h>
 #include <vidlib/FFmpegVideoStream.h>
@@ -43,7 +43,7 @@ public:
 
 	virtual VideoChannel* clone() const
 	{
-		VideoStreamPtr v(new VideoStream(videoStream)); //videoStream->clone();
+		VideoStreamPtr v(new VideoStream(videoStream));
 		return new VideoChannel(v,name);
 	}
 
@@ -102,6 +102,10 @@ public:
         return ret = videoStream->getImage(vidlib::PixelFormatARGB);
     }
 
+	VideoStreamPtr getVideoStream() {
+		return videoStream;
+	}
+
 	VideoStreamConstPtr getVideoStream() const {
 		return videoStream;
 	}
@@ -132,8 +136,8 @@ class VideoCollection : public utils::DataChannelCollection<VideoChannel, utils:
 typedef boost::shared_ptr<VideoCollection> VideoCollectionPtr;
 typedef boost::shared_ptr<const VideoCollection> VideoCollectionConstPtr;
 
-CORE_DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
-CORE_DEFINE_WRAPPER(VideoStream, utils::PtrPolicyOSG, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(VideoStream, utils::PtrPolicyOSG, utils::ClonePolicyVirtualCloneMethod);
 
 #endif  // __HEADER_GUARD_VIDEO__WRAPPERS_H__

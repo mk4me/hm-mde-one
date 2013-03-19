@@ -14,196 +14,92 @@
 
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
-
-#include <QtCore/QMetaType>
 #include <QtGui/QIcon>
+#include <corelib/IVisualizerManager.h>
+#include <corelib/IVisualizer.h>
+#include <utils/SynchronizationPolicies.h>
 
-#include <OpenThreads/ReentrantMutex>
-
-#include "Visualizer.h"
-#include "VisualizerChannel.h"
-
-#include <core/IVisualizerManager.h>
-#include <core/IManagersAccessor.h>
-#include "ManagerHelper.h"
-
-Q_DECLARE_METATYPE(UniqueID);
 
 //class SceneGraphWidget;
-class DataManager;
 
-class VisualizerManager : public core::IVisualizerManager, public utils::Observable<VisualizerManager>, public ManagerHelper<VisualizerManager>
-{
-    friend class Visualizer;
-	friend class IVisualizerChannel;
-public:
-    //! Lista wizualizatorów.
-    typedef std::vector<core::IVisualizerPtr> IVisualizers;
-    //! 
-    typedef boost::iterator_range<IVisualizers::const_iterator> IVisualizersConstRange;
+namespace core {
 
-    typedef std::list<Visualizer*> Visualizers;
-
-    //! Lista typów kolejnych źródeł.
-    typedef ObjectSlots::SlotsInfo SourcesTypes;
+class VisualizerManager : public IVisualizerManager {
 
 private:
-
-    //! Niezmienne dane pobrane z wizualizatorów.
-    struct IVisualizerPersistantData
-    {
-        //! Ikona.
-        QIcon icon;
-        //! Lista typów kolejnych źródeł.
-        SourcesTypes sourcesTypes;
-    };
-
-	//! Dane związane z obsługa kanałów timeline
-	struct ChannelData {
-		Visualizer * visualzier;
-		std::set<core::VisualizerTimeSeriePtr> series;
-		std::string path;
-		bool managed;
-		bool synchRemove;
+	//! Struktura opisująca prototyp wizualizatora
+	struct VisualizerPrototypeData {
+		//! Prototyp wizualizatora
+		VisualizerPtr visualizerPrototype;
+		//! Zbiór wspieranych przez niego typów bezpośrednio
+		TypeInfoSet basicSupportedTypes;
+		//! Zbiór wspieranych przez niego typów
+		TypeInfoSet derrivedSupportedTypes;
 	};
 
-	//! pomocnicza mapa (typ obiektu domenowego) -> (identyfikator wizualizatora)
-	std::map<core::TypeInfo, UniqueID> mapType2ID;
-
-    //! Prototypy wizualizatorów.
-    IVisualizers prototypes;
-
-    Visualizers visualizers;
-
-    //! Stałe dane wizualizatorów.
-    std::vector< IVisualizerPersistantData* > visualizersData;
-    //! Widget do wizualizacji struktury sceny 3D. Do debuggowania.
-    //SceneGraphWidget* debugWidget;
-
-	//! Utworzone kanały
-	std::map<IVisualizerChannel *, ChannelData> channels;
-	std::map<Visualizer *, std::set<IVisualizerChannel *>> visualizerChannels;
-
-	mutable OpenThreads::ReentrantMutex visualizersMutex;
-
-public:
-    //! Tworzenie i niszczenie tylko przez metody singletonu.
-    VisualizerManager();
-    //! Tworzenie i niszczenie tylko przez metody singletonu.
-    ~VisualizerManager();
-
-public:
-
-    //! \param visualizer
-    void registerVisualizer(core::IVisualizerPtr visualizer);
-
-    //! Aktualizacja wizualizatorów.
-    void update();
-
-    //! \return Ikona dla danego wizualizatora.
-    const QIcon& getIcon(UniqueID id) const;
-    //! \return Informacje o wejściu dla danego wizualizatora.
-    const SourcesTypes& getSourcesTypes(UniqueID id) const;
-
-    //! \return Wyliczenie prototypów.
-    inline IVisualizersConstRange enumPrototypes() const
-    {
-        return boost::make_iterator_range(prototypes.begin(), prototypes.end());
-    }
-    //! \return Liczba zarejestrowanych prototypów.
-    inline int getNumPrototypes() const
-    {
-        return static_cast<int>(prototypes.size());
-    }
-    //! \param i Indeks wizualizatora.
-    inline core::IVisualizerConstPtr getPrototype(int i) const
-    {
-        UTILS_ASSERT(i < getNumPrototypes());
-        return prototypes[i];
-    }
-
-    //! Sprawdzenie czy dla danego typu danych istnieje wizualizator
-    //! \param type Typ danych dla którego chcemy uzyskać wizualizator
-    //! \return Instancja wizualizatora lub wyjątek jeśli nie można utworzyć (bo nie istnieje + inne błędy)
-    inline bool existVisualizerForType(const core::TypeInfo & type) const
-    {
-        DataManager* dataManager = DataManager::getInstance();
-        for (auto it = mapType2ID.begin(); it != mapType2ID.end(); ++it) {
-            if (dataManager->isTypeCompatible(type, it->first)) {
-                return true;
-            }
-        }
-
-        return mapType2ID.find(type) != mapType2ID.end();
-    }
-
-    //! \param id ID wizualizatora.
-    core::IVisualizerConstPtr getPrototype(UniqueID id) const;
-
-    //! Tworzy instancję wizualizatora.
-    //! \param id id wizualizatora.
-    //! \return Instancja wizualizatora.
-    VisualizerPtr createVisualizer(UniqueID id);
-
-    //! \return Liczba instancji wizualizatorów danego typu.
-    int getNumInstances(UniqueID id);
-
-	//! \param serie Seria danych, którą opakowujemy w kanał i dodajemy do timeline
-	//! \param visualizer Wizualizator którego seria ta dotyczy
-	//! \param path Ścieżka w timeline gdzie próbujemy dodać kanał
-	//! \param synchRemove Czy usunięcie kanału z timeline powinno skutkować usunięciem jego serii danych z wizualizatora
-	//! \return Wskaźnik typu const void * identyfikujący utworzony kanał, wartość nullptr oznacza że kanału nie utworzono
-	const void * createChannel(const core::VisualizerTimeSeriePtr & serie, Visualizer * visualizer, const std::string & path = std::string(), bool synchRemove = true);
-	//! \param series Serie danych, które opakowujemy w kanał i dodajemy do timeline
-	//! \param visualizer Wizualizator którego serie te dotyczy
-	//! \param path Ścieżka w timeline gdzie próbujemy dodać kanał
-	//! \param synchRemove Czy usunięcie kanału z timeline powinno skutkować usunięciem jego serii danych z wizualizatora
-	//! \return Wskaźnik typu const void * identyfikujący utworzony kanał, wartość nullptr oznacza że kanału nie utworzono
-	const void * createChannel(const std::vector<core::VisualizerTimeSeriePtr> & series, Visualizer * visualizer, const std::string & path, bool synchRemove = true);
-	//! \param channel Wskaźnik typu const void * identyfikujący kanał dla serii danych utworzony dla timeline
-	void removeChannel(const void * channel);
-	//! \param channel Wskaźnik typu const void * identyfikujący kanał dla serii danych utworzony dla timeline
-	//! Metoda oznacza że serie danych kanału zostały już usuniętę z wizualizatora
-	void markAsRemovedFromVisualizer(const void * channel);
-
-	//! \param visualizer Wizualizator dla którego oznaczamy ze wszystkie serie kanałów zostały już obsłużone - nie wymagaja usuwania
-	void markAllChannelsAsRemovedFromVisualizer(Visualizer * visualizer);
-	//! \param visualizer Wizualizator dla którego usuwamy wszystkie kanały
-	void removeAllChannelsFromVisualizer(Visualizer * visualizer);
-
-	//! Wszystkie kanały są oznaczone jako obsłużone przez wizualizaotry
-	void markAllChannelsAsRemoved();
-	//! Usuwa wszystkie kanały
-	void removeAllChannels();
+	//! Lista prototypów vizualizatorów
+	typedef std::map<UniqueID, VisualizerPrototypeData> VisualizerPrototypes;
+	//! Typ listy obserwatorów
+	typedef std::set<IVisualizerManagerObserver*> Observers;
+	//! Typ listy aktualnie żyjącyh instancji
+	typedef std::list<Visualizer*> VisualizerInstances;
+	//! Obsługa synchronizacji
+	typedef utils::RecursiveSyncPolicy SyncPolicy;
+	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
 
 private:
-    //! Tworzy instancję wizualizatora.
-    //! \param id id wizualizatora.
-    //! \return Instancja wizualizatora.
-    VisualizerPtr createVisualizer(const core::IVisualizerConstPtr& prototype);
-    //! 
-    VisualizerPtr createVisualizer(const Visualizer& prototype);
 
-	//! \param channel Kanał który właśnie jest usuwamy
-	//! Jedyny smart pointer jest trzymany przez timeline
-	//! Jeśli tam go usuwam to uruchamiam jego destruktor który realizuje czyszczenie w wizualizatorach
-	void notifyDestroyed(IVisualizerChannel * channel);
+	VisualizerPrototypes visualizerPrototypes_;
+	Observers observers_;
+	VisualizerInstances visualizerInstances_;
 
-// TODO: create publiczne bez friend Visualizer czy prywatne + jakis inny mechanizm dostępu?
+	//! Obiekt na potrzeby synchronizacji update
+	mutable SyncPolicy updateSync;
+	//! Obiekt na potrzeby synchronizacji obserwatorów
+	mutable SyncPolicy observerSync;
+
+	bool skipNotify;
+
 public:
-	//! Tworzy instancję wizualizatora.
-	//! \param typeInfo typ, który będzie wyświetlany w wizualizatorze.
-	//! \return Instancja wizualizatora.
-	VisualizerPtr createVisualizer(const core::TypeInfo& typeInfo);
+
+	VisualizerManager();
+	~VisualizerManager();
+
+public:
+
+	//! API IVisualizerManager
+
+	//! \param prototypes [out] Wszystkie prototypy wizualizatorów
+	virtual void visualizerPrototypes(IVisualizerManager::VisualizerPrototypes & prototypes);
+	//! \param id ID źródła do wyszukania.
+	//! \return Odnalezione źródło bądź NULL.
+	virtual VisualizerConstPtr getVisualizerPrototype(UniqueID id);
+	//! \param type Typ dla którego poszukujeemy wizualizatorów
+	//! \param prototypes [out] Prototypy wizualizatorów potrafiących obsłużyć zadany typ
+	virtual void getVisualizerPrototypes(const core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact);
+	
+	//! \param observer Obserwator tworzonych wizualziatorów włączony do obserwacji
+	virtual void registerObserver(IVisualizerManagerObserver * observer);
+	//! \param observer Obserwator tworzonych wizualziatorów wyłanczany z obserwacji
+	virtual void unregisterObserver(IVisualizerManagerObserver * observer);
 
 private:
-    //! \return Indeks prototypu.
-    int getPrototypeIdx(UniqueID id) const;
 
-    void notifyCreated(Visualizer* visualizer);
-    void notifyDestroyed(Visualizer* visualizer);
+	virtual void registerVisualizer(Visualizer* visualizer);
+	virtual void unregisterVisualizer(Visualizer* visualizer);
+
+public:
+
+	void registerVisualizerPrototype(plugin::IVisualizerPtr visualizerPrototype);
+
+	void update(double deltaTime);
+
+private:
+
+	void notify(Visualizer * visualizer, VisuzalizerOperation modyfication);
+
 };
 
-
+}
 
 #endif  // HEADER_GUARD_CORE__VISUALIZERMANAGER_H__

@@ -10,7 +10,7 @@
 #define HEADER_GUARD_VIDLIB__VIDEOSTREAM_H__
 
 #include <string>
-#include <vidlib/Export.h>
+#include <vidlib/Config.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/Picture.h>
 #include <vidlib/VideoError.h>

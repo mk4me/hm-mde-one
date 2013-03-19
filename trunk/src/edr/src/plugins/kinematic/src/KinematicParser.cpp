@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 #include "KinematicParser.h"
 #include <plugins/kinematic/Wrappers.h>
 #include <kinematiclib/SkeletalModel.h>
@@ -20,8 +20,9 @@ KinematicParser::~KinematicParser()
 
 }
 
-void KinematicParser::parseFile(const core::Filesystem::Path& path)
+void KinematicParser::parse( const std::string & source)
 {
+	core::Filesystem::Path path(source);
 	using namespace kinematic;
 	using kinematic::AsfParser;
 
@@ -43,21 +44,21 @@ void KinematicParser::parseFile(const core::Filesystem::Path& path)
 	}
 }
 
-core::IParser* KinematicParser::create()
+plugin::IParser* KinematicParser::create() const
 {
     return new KinematicParser();
 }
 
-void KinematicParser::getSupportedExtensions(Extensions & extensions) const
+void KinematicParser::acceptedExpressions(Expressions & extensions) const
 {
-    core::IParser::ExtensionDescription extDesc;
+    plugin::IParser::ExpressionDescription expDesc;
 
-    extDesc.description = "Acclaim Motion Capture format";
-    extDesc.types.insert(typeid(kinematic::SkeletalData));
-    extensions["amc"] = extDesc;
+    expDesc.description = "Acclaim Motion Capture format";
+    expDesc.types.insert(typeid(kinematic::SkeletalData));
+    extensions[".*\.amc$"] = expDesc;
 
-    //extDesc.description = "Biovision Hierarchical Data format";
-    //extensions["bvh"] = extDesc;
+    //expDesc.description = "Biovision Hierarchical Data format";
+    //extensions["bvh"] = expDesc;
 }
 
 void KinematicParser::getObjects( core::Objects& objects )

@@ -12,7 +12,7 @@
 
 #include <boost/range.hpp>
 #include <osg/Vec3>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 #include <plugins/c3d/C3DChannels.h>
 
 //! Interfejs platformy GRF, obiekty tego typu zasilają system

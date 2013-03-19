@@ -9,18 +9,19 @@
 #ifndef __HEADER_GUARD_C3D__C3DCHANNELS_H__
 #define __HEADER_GUARD_C3D__C3DCHANNELS_H__
 
-#include <core/SmartPtr.h>
-#include <stdexcept>
-#include <utils/Debug.h>
+#include <plugins/c3d/Export.h>
+#include <osg/Vec3>
 #include <utils/DataChannel.h>
 #include <utils/DataChannelModifiers.h>
 #include <utils/DataChannelStats.h>
 #include <utils/DataChannelCollection.h>
 #include <utils/DataChannelAccessors.h>
 #include <utils/DataChannelTimers.h>
-#include <utils/PtrPolicyBoost.h>
-#include <core/ObjectWrapper.h>
 #include <c3dlib/C3DParser.h>
+#include <corelib/SmartPtr.h>
+#include <utils/PtrPolicyBoost.h>
+#include <utils/ClonePolicies.h>
+#include <corelib/BaseDataTypes.h>
 
 //! interfejs do odczytu czasu timera
 typedef utils::ITimerReader<float>::TimerReaderType TimerReader;
@@ -61,122 +62,64 @@ typedef core::shared_ptr<VectorChannelReaderInterface> VectorChannelReaderInterf
 typedef core::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
 
 //! Adaptor, dzięki któremu można obsłużyć kanał z wektorem trójwymiarowym tak jak skalarny
-class VectorToScalarAdaptor : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
+class PLUGINC3D_EXPORT VectorToScalarAdaptor : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
 {
 protected:
     //! konstruktor kopiujący
-    VectorToScalarAdaptor(const VectorToScalarAdaptor & adaptor) : descriptor(adaptor.descriptor), vector(adaptor.vector), index(adaptor.index), name(adaptor.name) {}
+    VectorToScalarAdaptor(const VectorToScalarAdaptor & adaptor);
 
 public:
     //! konstruktor
     //! \param vector adaptowany kanał z wektorem
     //! \param idx indeks kanału z wektorem, ta część będzie widziana jako skalar
     //! \param name nazwa kanału
-    VectorToScalarAdaptor(const VectorChannelReaderInterfaceConstPtr & vector, size_type idx, const std::string & name = std::string())
-        : descriptor(*vector), vector(vector), index(idx), name(name)
-    {
-        UTILS_ASSERT((idx >= 0 && idx < 3), "Bledny index dla adaptera skalarnego kanalu wektorowego");
-    }
-    virtual ~VectorToScalarAdaptor() {}
+    VectorToScalarAdaptor(const VectorChannelReaderInterfaceConstPtr & vector, size_type idx, const std::string & name = std::string());
+    virtual ~VectorToScalarAdaptor();
 
 public:
     //! \return zwraca nazwę kanału
-    virtual const std::string& getName() const
-    {
-        return name;
-    }
+    virtual const std::string& getName() const;
 	//! Ustawia nazwę kanału
 	//! \param name nowa nazwa
-	void setName(const std::string& name)
-	{
-		this->name = name;
-	}
+	void setName(const std::string& name);
     //! \return zwraca kopię obiektu, którą trzeba samemu usunąć
-    virtual VectorToScalarAdaptor * clone() const
-    {
-        return new VectorToScalarAdaptor(*this);
-    }
+    virtual VectorToScalarAdaptor * clone() const;
     //! \return Czas trwania kanału
-    virtual time_type getLength() const
-    {
-        return vector->getLength();
-    }
+    virtual time_type getLength() const;
     //! \param idx Indeks próbki
     //! \return Wartość czasu dla danego indeksu
-    virtual time_type argument(size_type idx) const
-    {
-        return vector->argument(idx);
-    }
+    virtual time_type argument(size_type idx) const;
     //! \param idx Indeks próbki
     //! \return Wartość próbki dla danego indeksu
-    virtual point_type_const_reference value(size_type idx) const
-    {
-        return vector->value(idx)[index];
-    }
+    virtual point_type_const_reference value(size_type idx) const;
     //! \return Ilość próbek w kanale
-    virtual size_type size() const
-    {
-        return vector->size();
-    }
+    virtual size_type size() const;
     //! \return Czy kanał nie zawiera danych
-    virtual bool empty() const
-    {
-        return vector->empty();
-    }
+    virtual bool empty() const;
     //! \return liczba próbek na sekundę
-    virtual float getSamplesPerSecond() const
-    {
-        return vector->getSamplesPerSecond();
-    }
+    virtual float getSamplesPerSecond() const;
     //! \return czas trwania pojedynczej próbki
-    virtual float getSampleDuration() const
-    {
-        return vector->getSampleDuration();
-    }
+    virtual float getSampleDuration() const;
 	//! \return nazwa jednostki czasu
-	virtual const std::string& getTimeBaseUnit() const
-	{
-		return descriptor.getTimeBaseUnit();
-	}
+	virtual const std::string& getTimeBaseUnit() const;
 	//! \return skala czasu
-	virtual float getTimeScaleFactor() const
-	{
-		return descriptor.getTimeScaleFactor();
-	}
+	virtual float getTimeScaleFactor() const;
     //! \return nazwa jednostki wartości
-	virtual const std::string& getValueBaseUnit() const
-	{
-		return descriptor.getValueBaseUnit();
-	}
+	virtual const std::string& getValueBaseUnit() const;
 	//! \return skala wartości
-	virtual float getValueScaleFactor() const
-	{
-		return descriptor.getValueScaleFactor();
-	}
+	virtual float getValueScaleFactor() const;
     //! ustawia nazwę jednostki czasu
 	//! \param timeBaseUnit nowa nazwa
-	virtual void setTimeBaseUnit(const std::string& timeBaseUnit)
-	{
-		descriptor.setTimeBaseUnit(timeBaseUnit);
-	}
+	virtual void setTimeBaseUnit(const std::string& timeBaseUnit);
     //! ustawia skalę czasu
 	//! \param timeScaleFactor nowa nazwa
-	virtual void setTimeScaleFactor(float timeScaleFactor)
-	{
-		descriptor.setTimeScaleFactor(timeScaleFactor);
-	}
+	virtual void setTimeScaleFactor(float timeScaleFactor);
     //! ustawia nazwę jednostki wartości
 	//! \param valueBaseUnit nowa nazwa
-    virtual void setValueBaseUnit(const std::string& valueBaseUnit)
-	{
-		descriptor.setValueBaseUnit(valueBaseUnit);
-	}
+    virtual void setValueBaseUnit(const std::string& valueBaseUnit);
     //! ustawia skalę dla wartości
 	//! \param valueScaleFactor nowa skala
-	virtual void setValueScaleFactor(float valueScaleFactor)
-	{
-		descriptor.setValueScaleFactor(valueScaleFactor);
-	}
+	virtual void setValueScaleFactor(float valueScaleFactor);
 
 private:
     //! adaptowany kanał z wektorem
@@ -190,129 +133,64 @@ private:
 };
 
 //! modyfikator, który pobiera wycinek kanału podstawowego i normalizuje go (0 - 100%)
-class ScalarWithTimeSegment : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
+class PLUGINC3D_EXPORT ScalarWithTimeSegment : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
 {
 protected:
     //! konstruktor kopiujący
-    ScalarWithTimeSegment(const ScalarWithTimeSegment & adaptor) : descriptor(adaptor.descriptor), startIndex(adaptor.startIndex), endIndex(adaptor.endIndex) {}
+    ScalarWithTimeSegment(const ScalarWithTimeSegment & adaptor);
 
 public:
     //! konstruktor
     //! \param channel kanał, który ma być opakowany w modyfikator
     //! \param start początek przedziału czasowego
     //! \param end koniec przedziału czasowego
-    ScalarWithTimeSegment(const ScalarChannelReaderInterfaceConstPtr & channel, time_type start, time_type end)
-        : descriptor(*channel),	reader(channel)
-    {
-        startIndex = channel->getValueHelper(start).first;
-        endIndex = channel->getValueHelper(end).second;
-    }
+    ScalarWithTimeSegment(const ScalarChannelReaderInterfaceConstPtr & channel, time_type start, time_type end);
     //! 
-    virtual ~ScalarWithTimeSegment() {}
+    virtual ~ScalarWithTimeSegment();
     //! \return nazwa kanału
-    virtual const std::string& getName() const
-    {
-        return reader->getName();
-    }
+    virtual const std::string& getName() const;
     //! \return zwraca klon obiektu
-    virtual ScalarWithTimeSegment * clone() const
-    {
-        return new ScalarWithTimeSegment(*this);
-    }
+    virtual ScalarWithTimeSegment * clone() const;
     //! \return Czas trwania kanału
-    virtual time_type getLength() const
-    {
-        return static_cast<time_type>(100);
-    }
+    virtual time_type getLength() const;
     //! Transformuje zmodyfikowany indeks do indeksu oryginalnego
     //! \param idx zmodyfikowany indeks
     //! \return indeks oryginalny
-    size_type transformIndex(size_type idx) const
-    {
-        return startIndex + idx;
-        float x = static_cast<float>(idx) / size();
-        return static_cast<size_type>(startIndex * (1.0f - x) + endIndex * x);
-    }
+    size_type transformIndex(size_type idx) const;
     //! \param idx Indeks próbki
     //! \return Wartość czasu dla danego indeksu
-    virtual time_type argument(size_type idx) const
-    {
-        return static_cast<time_type>(idx * 100) / size();
-    }
+    virtual time_type argument(size_type idx) const;
     //! \param idx Indeks próbki
     //! \return Wartość próbki dla danego indeksu
-    virtual point_type_const_reference value(size_type idx) const
-    {
-        return reader->value(transformIndex(idx));
-    }
+    virtual point_type_const_reference value(size_type idx) const;
     //! \return Ilość próbek w kanale
-    virtual size_type size() const
-    {
-        return endIndex - startIndex;
-    }
+    virtual size_type size() const;
     //! \return Czy kanał nie zawiera danych
-    virtual bool empty() const
-    {
-        return reader->empty();
-    }
+    virtual bool empty() const;
     //! \return liczba próbek na sekundę
-    virtual float getSamplesPerSecond() const
-    {
-        return size() / getLength();
-    }
+    virtual float getSamplesPerSecond() const;
     //! \return czas trwania próbki
-    virtual float getSampleDuration() const
-    {
-        if (size()) {
-          return 1.0 / getSamplesPerSecond();
-        }
-
-        throw std::runtime_error("empty channel");
-    }
+    virtual float getSampleDuration() const;
     //! \return nazwa jednostki czasu
-    virtual const std::string& getTimeBaseUnit() const
-    {
-        return descriptor.getTimeBaseUnit();
-    }
+    virtual const std::string& getTimeBaseUnit() const;
     //! \return skala czasu
-    virtual float getTimeScaleFactor() const
-    {
-        return descriptor.getTimeScaleFactor();
-    }
+    virtual float getTimeScaleFactor() const;
     //! \return nazwa jednostki wartości
-    virtual const std::string& getValueBaseUnit() const
-    {
-        return descriptor.getValueBaseUnit();
-    }
+    virtual const std::string& getValueBaseUnit() const;
     //! \return skala wartości
-    virtual float getValueScaleFactor() const
-    {
-        return descriptor.getValueScaleFactor();
-    }
+    virtual float getValueScaleFactor() const;
     //! ustawia nazwę jednostki czasu
     //! \param timeBaseUnit nowa nazwa
-    virtual void setTimeBaseUnit(const std::string& timeBaseUnit)
-    {
-        descriptor.setTimeBaseUnit(timeBaseUnit);
-    }
+    virtual void setTimeBaseUnit(const std::string& timeBaseUnit);
     //! ustawia skalę czasu
     //! \param timeScaleFactor nowa nazwa
-    virtual void setTimeScaleFactor(float timeScaleFactor)
-    {
-        descriptor.setTimeScaleFactor(timeScaleFactor);
-    }
+    virtual void setTimeScaleFactor(float timeScaleFactor);
     //! ustawia nazwę jednostki wartości
     //! \param valueBaseUnit nowa nazwa
-    virtual void setValueBaseUnit(const std::string& valueBaseUnit)
-    {
-        descriptor.setValueBaseUnit(valueBaseUnit);
-    }
+    virtual void setValueBaseUnit(const std::string& valueBaseUnit);
     //! ustawia skalę dla wartości
     //! \param valueScaleFactor nowa skala
-    virtual void setValueScaleFactor(float valueScaleFactor)
-    {
-        descriptor.setValueScaleFactor(valueScaleFactor);
-    }
+    virtual void setValueScaleFactor(float valueScaleFactor);
 
 private:
     //! opakowywany kanał
@@ -336,7 +214,7 @@ typedef core::shared_ptr<ScalarChannelStats> ScalarChannelStatsPtr;
 typedef core::shared_ptr<const ScalarChannelStats> ScalarChannelStatsConstPtr;
 
 //! Modyfikator, który normalizuje kanał
-class ScalarChannelNormalizer
+class PLUGINC3D_EXPORT ScalarChannelNormalizer
 {
 public:
     //! funktor odpowiada za modyfikację kopii kanału 
@@ -345,116 +223,53 @@ public:
     //! \param myChannel kanał wynikowy
     void operator()(ScalarChannelReaderInterface::_MyExtendedWriter & modifierInterface,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
-        const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
-    {
-        //uzupełnij brakujące prboki
-        if(myChannel.size() < observedChannel.size()){
-            for(auto idx = myChannel.size(); idx < observedChannel.size(); ++idx){
-                modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
-            }
-        }
-
-        auto i = 0;
-
-        //min i max
-        auto minVal = observedChannel.value(0);
-        auto maxVal = minVal;
-
-        ++i;
-
-        for( ; i != observedChannel.size(); ++i){
-            if(observedChannel.value(i) < minVal){
-                minVal = observedChannel.value(i);
-            }else if(observedChannel.value(i) > maxVal){
-                maxVal = observedChannel.value(i);
-            }
-        }
-
-        ScalarChannelReaderInterface::point_type diff = maxVal - minVal;
-
-        if(diff != 0){
-            //aktualizacja próbek
-            for(ScalarChannelReaderInterface::size_type idx = 0; idx < myChannel.size(); ++idx){
-                modifierInterface.setIndexData(idx, (observedChannel.value(idx) - minVal) / diff);
-            }
-        }
-    }
+        const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel);
 };
 
 
 //! Podstawa dla kanału analogowego zapisanego w pliku c3d
-class C3DAnalogChannel : public ScalarChannel
+class PLUGINC3D_EXPORT C3DAnalogChannel : public ScalarChannel
 {
 protected:
     //! konstruktor
     //! \param c3dData przeparsowane dane z pliku c3d
     //! \param channelNo numer kanału w pliku c3d
-    C3DAnalogChannel( const c3dlib::C3DParser& c3dData, int channelNo ) :
-         ScalarChannel( static_cast<int>(c3dData.getNumberAnalogSamplePerFrame() * c3dData.getPointFrequency()) )
-         {
-             if ( c3dData.getNumAnalogFrames() == 0) {
-                 throw std::runtime_error("Incorrect number of frames.");
-             }
-
-             c3dlib::C3DParser::IAnalogConstPtr analog = c3dData.getAnalog(channelNo);
-
-             int numSamples = c3dData.getNumAnalogFrames();
-             for (int i = 0; i < numSamples; ++i) {
-                 addPoint(static_cast<float>(analog->getValue(i)));
-             }
-
-             setName(analog->getLabel());
-             setValueBaseUnit(analog->getUnit());
-             setTimeBaseUnit("s");
-         }
+    C3DAnalogChannel( const c3dlib::C3DParser& c3dData, int channelNo );
     //! konstruktor 
     //! \param samplesPerSec liczba próbek na sekundę
-    C3DAnalogChannel( int samplesPerSec ) :
-    ScalarChannel(samplesPerSec)
-    {}
+    C3DAnalogChannel( int samplesPerSec );
     //! konstruktor kopiujący
     //! \param channel kopiowany kanał
-    C3DAnalogChannel( const C3DAnalogChannel& channel ) :
-    ScalarChannel(channel)
-    {}
+    C3DAnalogChannel( const C3DAnalogChannel& channel );
 };
-typedef boost::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
+typedef core::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
+typedef core::shared_ptr<const C3DAnalogChannel> C3DAnalogChannelConstPtr;
 
 //! kanał EMG
-class EMGChannel : public C3DAnalogChannel
+class PLUGINC3D_EXPORT EMGChannel : public C3DAnalogChannel
 {
 public:
     //! konstruktor 
     //! \param samplesPerSec liczba próbek na sekundę
-    explicit EMGChannel(int samplesPerSec) :
-    C3DAnalogChannel(samplesPerSec)
-    {}
+    explicit EMGChannel(int samplesPerSec);
     //! konstruktor kopiujący
     //! \param channel kopiowany kanał
-    EMGChannel(const EMGChannel& channel) :
-    C3DAnalogChannel(channel)
-    {}
+    EMGChannel(const EMGChannel& channel);
     //! konstruktor
     //! \param c3dData przeparsowane dane z pliku c3d
     //! \param channelNo numer kanału w pliku c3d
-    EMGChannel(const c3dlib::C3DParser& data, int channelNo) :
-    C3DAnalogChannel(data, channelNo)
-    {}
+    EMGChannel(const c3dlib::C3DParser& data, int channelNo);
 
 public:
     //! \return zwraca kopię obiektu, którą trzeba samemu usunąć
-    virtual EMGChannel* clone() const
-    {
-        return new EMGChannel(*this);
-    }
+    virtual EMGChannel* clone() const;
 };
-typedef boost::shared_ptr<EMGChannel> EMGChannelPtr;
-typedef boost::shared_ptr<const EMGChannel> EMGChannelConstPtr;
+typedef core::shared_ptr<EMGChannel> EMGChannelPtr;
+typedef core::shared_ptr<const EMGChannel> EMGChannelConstPtr;
 
 //! kanał GRF
-class GRFChannel : public VectorChannel
+class PLUGINC3D_EXPORT GRFChannel : public VectorChannel
 {
-friend class C3DParser;
 public:
     //! rodzaj kanału GRF
 	enum Type { Unknown, F1, M1, F2, M2 };
@@ -463,105 +278,27 @@ public:
     //! konstruktor 
     //! \param samplesPerSec liczba próbek na sekundę
     //! \param treshold próg dla którego warto analizować dane z płyty GRF
-    explicit GRFChannel(int samplesPerSec, float treshold = 100.0f) :
-        VectorChannel(samplesPerSec) ,
-        type(Unknown),
-        treshold(treshold)
-    {}
+    explicit GRFChannel(int samplesPerSec, float treshold = 100.0f);
     //! konstruktor kopiujący
     //! \param channel kopiowany kanał
-    GRFChannel(const GRFChannel& channel) :
-    VectorChannel(channel),
-	type(channel.type)
-    {}
+    GRFChannel(const GRFChannel& channel);
     //! konstruktor
     //! \param c3dData przeparsowane dane z pliku c3d
     //! \param channelNo numer kanału w pliku c3d
     //! \param treshold próg dla którego warto analizować dane z płyty GRF
-    GRFChannel( const c3dlib::C3DParser& data, int channelNo, float treshold = 200.0f) :
-    VectorChannel(static_cast<int>(data.getNumberAnalogSamplePerFrame() * data.getPointFrequency())),
-        type(Unknown),
-        dataStart(-1.0f),
-        dataEnd(-1.0f)
-    {
-        if ( data.getNumAnalogFrames() == 0) {
-            throw std::runtime_error("Incorrect number of frames.");
-        }
-
-        float treshold2 = treshold * treshold;
-
-        c3dlib::C3DParser::IAnalogConstPtr x = data.getAnalog(3 * channelNo + 0);
-        c3dlib::C3DParser::IAnalogConstPtr y = data.getAnalog(3 * channelNo + 1);
-        c3dlib::C3DParser::IAnalogConstPtr z = data.getAnalog(3 * channelNo + 2);
-
-        bool dataStartSet = false;
-        bool dataEndSet = false;
-
-        int startIndex, endIndex;
-
-        int numSamples = data.getNumAnalogFrames();
-        for (int i = 0; i < numSamples; ++i) {
-            osg::Vec3 val = osg::Vec3(x->getValue(i), y->getValue(i), z->getValue(i));
-            if (val.length2() > treshold2) {
-                if (!dataStartSet) {
-                    dataStartSet = true;
-                    startIndex = i;
-                }
-            } else {
-                if (dataStartSet && !dataEndSet) {
-                    endIndex = i;
-                    dataEndSet = true;
-                }
-            }
-            addPoint(val);
-        }
-
-        std::string name = x->getLabel();
-        auto it = std::remove(name.begin(), name.end(), 'x');
-        if (it == name.end()) {
-            it = std::remove(name.begin(), name.end(), 'X');
-        }
-
-        if (it != name.end()) {
-            name.erase(it);
-        }
-
-        //std::string name = x->getLabel().erase( remove( str.begin(), str.end(), 'x' ), str.end() );
-        setName(name);
-        setValueBaseUnit(x->getUnit());
-        //? w pliku c3d nie pojawia się cos takiego jak jednostka czasu, dlatego można przyjąć sekundy
-        setTimeBaseUnit("s");
-
-        if (dataStartSet) {
-            dataStart = (startIndex / static_cast<float>(numSamples)) * getLength();
-        }
-        if (dataEndSet) {
-            dataEnd = (endIndex / static_cast<float>(numSamples)) * getLength();
-        }
-
-        switch (channelNo) {
-        case 0:		type = F1;		break;
-        case 1:		type = M1;		break;
-        case 2:		type = F2;		break;
-        case 3:		type = M2;		break;
-        default:	type = Unknown; break;
-        }
-    }
+    GRFChannel( const c3dlib::C3DParser& data, int channelNo, float treshold = 200.0f);
 
 public:
     //! \return zwraca kopię obiektu, którą trzeba samemu usunąć
-    virtual GRFChannel* clone() const
-    {
-        return new GRFChannel(*this);
-    }
+    virtual GRFChannel* clone() const;
     //! \return rodzaj kanału GRF
-	GRFChannel::Type getType() const { return type; }
+	GRFChannel::Type getType() const;
 	//! \return czy kanał ma wykryty peak, związanych z naciskiem na płytę
-	bool hasStartEndData() const { return dataStart >= 0.0f && dataEnd >= 0.0f; }
+	bool hasStartEndData() const;
 	//! \return początek danych, związanych z naciskiem na płytę
-	float getDataStartTime() const { UTILS_ASSERT(dataStart >= 0.0f); return dataStart; }
+	float getDataStartTime() const;
 	//! \return koniec danych, związanych z naciskiem na płyę
-	float getDataEndTime() const { UTILS_ASSERT(dataEnd >= 0.0f); return dataEnd; }
+	float getDataEndTime() const;
 	
 private:
     Type type;
@@ -572,103 +309,65 @@ private:
     //! koniec danych, związanych z naciskiem na płytę
     float dataEnd;
 };
-typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
-typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
+typedef core::shared_ptr<GRFChannel> GRFChannelPtr;
+typedef core::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
 //! kanał zawiera dane o jednym markerze
-class MarkerChannel : public VectorChannel
+class PLUGINC3D_EXPORT MarkerChannel : public VectorChannel
 {
 public:
     //! konstruktor 
     //! \param samplesPerSec liczba próbek na sekundę
-    MarkerChannel(int samplesPerSec) : VectorChannel(samplesPerSec) {}
+    MarkerChannel(int samplesPerSec);
 
-    MarkerChannel(const MarkerChannel& channel) :
-        VectorChannel(channel)
-        { }
+    MarkerChannel(const MarkerChannel& channel);
 
     //! konstruktor
     //! \param c3dData przeparsowane dane z pliku c3d
     //! \param channelNo numer kanału w pliku c3d
-    MarkerChannel(const c3dlib::C3DParser& data, int channelNo ) :
-        VectorChannel( data.getPointFrequency())
-        {
-            c3dlib::C3DParser::IPointConstPtr point = data.getPoint(channelNo);
+    MarkerChannel(const c3dlib::C3DParser& data, int channelNo );
 
-            int numSamples = data.getNumPointFrames();
-
-            for (int i = 0; i < numSamples; ++i) {
-                osg::Vec3 val = point->getValue(i);
-                addPoint(val);
-            }
-            setName(point->getLabel());
-            setValueBaseUnit(point->getUnit());
-            setTimeBaseUnit("s");
-        }
 public:
     //! \return zwraca kopię obiektu, którą trzeba samemu usunąć
-    virtual MarkerChannel* clone() const
-    {
-        return new MarkerChannel(*this);
-    }
+    virtual MarkerChannel* clone() const;
 };
-typedef boost::shared_ptr<MarkerChannel> MarkerChannelPtr;
-typedef boost::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
+typedef core::shared_ptr<MarkerChannel> MarkerChannelPtr;
+typedef core::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 
-
-
-
-#define DEFINE_CHANNEL(name)																	 \
-	class name##Channel : public VectorChannel 													 \
+#define DECLARE_CHANNEL(name)																	 \
+	class PLUGINC3D_EXPORT name##Channel : public VectorChannel 								 \
 	{																							 \
 	private:																					 \
-		name##Channel(int samplesPerSec) : VectorChannel(samplesPerSec) {}						 \
+		name##Channel(int samplesPerSec);														 \
 																								 \
 	public:        																				 \
-		name##Channel(const name##Channel& channel) :											 \
-		  VectorChannel(channel)																 \
-		  { }																					 \
+		name##Channel(const name##Channel& channel);											 \
 																								 \
-		  name##Channel(const c3dlib::C3DParser& data, int channelNo ) :						 \
-		  VectorChannel( data.getPointFrequency())												 \
-		  {																						 \
-			  c3dlib::C3DParser::IPointConstPtr point = data.getPoint(channelNo);				 \
-																								 \
-			  int numSamples = data.getNumPointFrames();										 \
-																								 \
-			  for (int i = 0; i < numSamples; ++i) {											 \
-				  addPoint(point->getValue(i));													 \
-			  }																					 \
-			  setName(point->getLabel());														 \
-              setValueBaseUnit(point->getUnit());                                                \
-		  }																						 \
+		  name##Channel(const c3dlib::C3DParser& data, int channelNo );							 \
 																								 \
 	public:																						 \
-		virtual name##Channel* clone() const {  return new name##Channel(*this); }				 \
+		virtual name##Channel* clone() const;													 \
 	};												 											 \
 	typedef core::shared_ptr<name##Channel> name##ChannelPtr;									 \
 	typedef core::shared_ptr<const name##Channel> name##ChannelConstPtr;
 
+DECLARE_CHANNEL(Force);
+DECLARE_CHANNEL(Moment);
+DECLARE_CHANNEL(Angle);
+DECLARE_CHANNEL(Power);
 
-DEFINE_CHANNEL(Force);
-DEFINE_CHANNEL(Moment);
-DEFINE_CHANNEL(Angle);
-DEFINE_CHANNEL(Power);
-
-CORE_DEFINE_WRAPPER(VectorChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER_INHERITANCE(VectorChannel, VectorChannelReaderInterface);
-CORE_DEFINE_WRAPPER_INHERITANCE(MarkerChannel,VectorChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(MomentChannel,VectorChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(AngleChannel, VectorChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(PowerChannel, VectorChannel);
-CORE_DEFINE_WRAPPER(ScalarChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER_INHERITANCE(ScalarChannel, ScalarChannelReaderInterface);
-CORE_DEFINE_WRAPPER_INHERITANCE(VectorToScalarAdaptor, ScalarChannelReaderInterface);
-CORE_DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);
-
-
+DEFINE_WRAPPER(VectorChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER_INHERITANCE(VectorChannel, VectorChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(MarkerChannel,VectorChannel);
+DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);
+DEFINE_WRAPPER_INHERITANCE(MomentChannel,VectorChannel);
+DEFINE_WRAPPER_INHERITANCE(AngleChannel, VectorChannel);
+DEFINE_WRAPPER_INHERITANCE(PowerChannel, VectorChannel);
+DEFINE_WRAPPER(ScalarChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER_INHERITANCE(ScalarChannel, ScalarChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(VectorToScalarAdaptor, ScalarChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
+DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
+DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);
 
 #endif  // __HEADER_GUARD_CORE__C3DCHANNELS_H__

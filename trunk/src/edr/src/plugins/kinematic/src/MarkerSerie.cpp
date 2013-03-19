@@ -2,12 +2,12 @@
 #include "MarkerSerie.h"
 #include <QtGui/QTableView>
 
-void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
+void MarkerSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(MarkerCollection));
     this->data = data;
-    visualizer->actionGhost->setVisible(true);
-    connect(visualizer->actionGhost, SIGNAL(triggered(bool)), this, SLOT(showGhost(bool)));
+	this->requestedType = requestedType;
+
 	MarkerCollectionConstPtr markersCollection = data->get();
 	scheme = MarkersVisualizationSchemePtr(new MarkersVisualizationScheme());
 	scheme->setMarkers(markersCollection);
@@ -23,8 +23,10 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
     trajectoryDrawer = TrajectoryDrawerPtr(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.33f), 300));
 	markersDrawer->addDrawer(trajectoryDrawer);
 	markersDrawer->init(scheme);
-    visualizer->trajectoriesDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
-    visualizer->schemeDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
+	std::string name;
+	data->tryGetMeta("core/name", name);
+	visualizer->trajectoriesDialog->setDrawer(markersDrawer, QString::fromStdString(name));
+	visualizer->schemeDialog->setDrawer(markersDrawer, QString::fromStdString(name));
 
 	transformNode->addChild(markersDrawer->getNode());
     matrixTransform->setMatrix(getInitialMatrix());
@@ -104,7 +106,7 @@ const core::ObjectWrapperConstPtr & MarkerSerie::getData() const
     return data;
 }
 
-const std::string & MarkerSerie::getName() const
+const std::string MarkerSerie::getName() const
 {
     return name;
 }
@@ -112,5 +114,15 @@ const std::string & MarkerSerie::getName() const
 void MarkerSerie::setName( const std::string & name )
 {
     this->name = name;
+}
+
+void MarkerSerie::update()
+{
+
+}
+
+const utils::TypeInfo & MarkerSerie::getRequestedDataType() const
+{
+	return requestedType;
 }
 

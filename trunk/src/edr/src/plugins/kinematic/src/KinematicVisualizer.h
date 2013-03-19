@@ -11,7 +11,7 @@
 
 #include <QtCore/QObject>
 
-#include <core/IVisualizer.h>
+#include <corelib/IVisualizer.h>
 #include <osg/Geode>
 #include <osgGA/OrbitManipulator>
 #include <osgManipulator/Dragger>
@@ -35,8 +35,16 @@
 #include "SchemeDialog.h"
 #include "KinematicSerie.h"
 
+#include <coreUI/CoreWidgetAction.h>
+
+class LabeledDoubleSpinBox;
+
+namespace coreUI {
+	class CoreAction;
+}
+
 /*! Klasa dostarcza scenę 3d i zarządza obiektami na niej */
-class KinematicVisualizer :  public QObject, public core::IVisualizer
+class KinematicVisualizer :  private QObject, public plugin::IVisualizer
 {
 	// wszystkie możliwe serie przeniesione do osobnego pliku
 	//friend class GRFSerie;
@@ -45,9 +53,9 @@ class KinematicVisualizer :  public QObject, public core::IVisualizer
     friend class KinematicDraggerCallback;
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
-    typedef std::pair<QWidget*, QDoubleSpinBox*> SpinPair;
     Q_OBJECT;
-    UNIQUE_ID("{E8B5DEB2-5C57-4323-937D-1FFD288B65B9}", "Kinematic visualizer");
+    UNIQUE_ID("{E8B5DEB2-5C57-4323-937D-1FFD288B65B9}")
+	CLASS_DESCRIPTION("Kinematic visualizer", "Kinematic visualizer")
 
 public:
     KinematicVisualizer();
@@ -56,37 +64,36 @@ public:
     //! Update wywoływany przez EDR, sprawdza, czy zmienił się czas serii, jeśli tak, to konieczne jest odświeżenie
     //! \param deltaTime czas od ostatniego update'u
     virtual void update( double deltaTime );
-    //! Setup wywołany przez system, resetuje scenę
-    //! \param source źródło danych
-    virtual void setUp( core::IObjectSource* source );
 	//! wizualizator nie ma ograniczeń w liczbie serii
 	virtual int getMaxDataSeries() const;
     //! Fabryka serii, na podstawie typu danych we wrapperze tworzona jest konkretna seria
     //! \param data Obiekt z danymi
     //! \param name Nazwa danych
-    virtual core::IVisualizer::TimeSerieBase *createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+    virtual plugin::IVisualizer::ISerie *createSerie(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
     //! Tworzenie serii na podstawie już istniejącej, nie zaimplementowane
     //! \param serie Kopiowana seria
-    virtual core::IVisualizer::TimeSerieBase *createSerie(const core::IVisualizer::SerieBase* serie);
+    virtual plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie* serie);
     //! Usuwa serie z wizualizatora
     //! \param serie seria do usunięcia
-    virtual void removeSerie(core::IVisualizer::SerieBase *serie);
+    virtual void removeSerie(plugin::IVisualizer::ISerie *serie);
+
+	//! Ustawia daną serię aktywną
+	virtual void setActiveSerie(plugin::IVisualizer::ISerie *serie);
+	//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
+	virtual const plugin::IVisualizer::ISerie * getActiveSerie() const;
+
 	//! Tworzy pusty wizualizator
-	virtual core::IVisualizer* createClone() const;
+	virtual plugin::IVisualizer* create() const;
     //! Zwraca informacje o obsługiwanych danych
     //! \param info kolecja z typami danych
-    virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info );
+    virtual void getSupportedTypes(utils::TypeInfoList & supportedTypes) const;
     //! Tworzy widget w którym znajduje się
     //! \param manager Manager Flexi Bara
-    virtual QWidget* createWidget(core::IActionsGroupManager * manager);
+    virtual QWidget* createWidget();
     //! Tworzy ikonę
     virtual QIcon* createIcon();
-    //! Nazwa wizualizatora
-    virtual const std::string& getName() const;
-    //! resetuje ustawienia sceny 3d
-    virtual void reset();
     //! Tworzy pixmapę z aktualnym widokiem wizualizatora
-    virtual QPixmap print() const;
+    virtual QPixmap takeScreenshot() const;
 	//! resetuje ustawienia sceny 3d
 	void resetScene();
 
@@ -104,24 +111,24 @@ private:
     //! Metoda pomocnicza, do konwersji zapisu rotacji
     //! \param q kwaternion z liczona rotacja
     //! \return wyliczone katy Eulera
-    osg::Vec3 getEulerFromQuat(const osg::Quat& q);
+    static osg::Vec3 getEulerFromQuat(const osg::Quat& q);
     //! Metoda pomocnicza, do konwersji zapisu rotacji
     //! \param heading
     //! \param attitude
     //! \param bank
     //! \return wyliczony kwaternion
-    osg::Quat getQuatFromEuler(double heading, double attitude, double bank);
+    static osg::Quat getQuatFromEuler(double heading, double attitude, double bank);
     //! Metoda pomocnicza, do konwersji zapisu rotacji
     //! \param euler katy eulera w postaci wektora
     //! \return wyliczony kwaternion
-    osg::Quat getQuatFromEuler(const osg::Vec3& euler);
+    static osg::Quat getQuatFromEuler(const osg::Vec3& euler);
     //! Metoda ułatwiająca tworzenie spinwidgetów z opisem. Tworzony jest widget rodzica zawierający spinbox i label z opisem
     //! \param parent rodzic, do którego zostanie towrzony widget
     //! \param name opis spinboxa
     //! \param step krok dla strzałek
     //! \param visible czy ma być widoczny po utworzeniu
     //! \return para (widget, spinbox) widget jest rodzicem spinboxa
-    SpinPair createSpinWidget( QWidget* parent, QString name, double step = 0.1, bool visible = true );
+    LabeledDoubleSpinBox * createSpinWidget(const QString & name, double step = 0.1);
     //! Wymusza zmiane węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param m macierz z transformacja, która ma zostac ustawiona w wezle
@@ -167,17 +174,17 @@ private:
     //! Odwieza spinboxy skali, jeśli ulegly one zmianie
     void refreshScaleSpinboxes();
 
+	static coreUI::CoreWidgetAction * createWidgetAction(QWidget * widget, QObject * parent, const QString & sectionName, coreUI::CoreTitleBar::SideType side);
+
+	//! ustawienie aktywnej serii
+	//! \param idx indeks serii, która ma stac się aktywna. Musi być z zakresu <0, liczbaSerii)
+	void setActiveSerie(int idx);
+
 private slots:
     //! Dialog z ustawieniami trajektorii stanie się widoczny
     void showTrajectoriesDialog();
     //! Dialog z ustawieniami widoczności węzłów stanie się widoczny
     void showSchemeDialog();
-    //! ustawienie aktywnej serii
-    //! \param idx indeks serii, która ma stac się aktywna. Musi być z zakresu <0, liczbaSerii)
-    void setActiveSerie(int idx);
-    //! ustawienie aktywnej serii
-    //! \param serie seria, która ma stac się aktywna
-    void setActiveSerie(KinematicSerie* serie);
     //! Pobiera aktywna serie i zminia jej węzeł przeznaczony dla manipulatorów
     //! \param d wartość X nowej translacji
     void shiftX(double d);
@@ -234,51 +241,49 @@ private:
     //! zwracany widget wizualizatora
     osg::ref_ptr<osgui::QOsgDefaultWidget> widget;
     //! pokazuje dialog z trajektoriami
-    QAction* actionTrajectories;
+    coreUI::CoreAction* actionTrajectories;
     //! pokazuje dialog umożliwiający chowanie węzłów z geometria
-    QAction* actionScheme;
+    coreUI::CoreAction* actionScheme;
     //! pokazuje ghosta dla markerów
-    QAction* actionGhost;
+    coreUI::CoreAction* actionGhost;
     //! zamienia osie jeśli jest taka potrzeba
-    QAction* actionSwitchAxes;
+    coreUI::CoreAction* actionSwitchAxes;
     //! wywołuje stan 'pickera' - można wybrać aktywna serie klikając na nia myszka
-    QAction* pickerAction;
+    coreUI::CoreAction* pickerAction;
     //! wywołuje manipulator translacji
-    QAction* translateAction;
+    coreUI::CoreAction* translateAction;
     //! wywołuje manipulator rotacji
-    QAction* rotateAction;
+    coreUI::CoreAction* rotateAction;
     //! wywołuje manipulator skali
-    QAction* scaleAction;
+    coreUI::CoreAction* scaleAction;
     //! niweluje działanie manipulatorów
-    QAction* resetAction;
+    coreUI::CoreAction* resetAction;
     //! Dialog zarządzający trajektoriami
     TrajectoriesDialog* trajectoriesDialog;
     //! Dialog zarządzający widocznością węzłów na scenie
     SchemeDialog* schemeDialog;
-    //! combo z seriami danych
-    QComboBox* activeSerieCombo;
-    //! nr aktywnej serii, -1 jeśli takiej nie ma
-    int currentSerie;
     //! kolecja z seriami danych podpiętymi pod wizualizator
     std::vector<KinematicSerie*> series;
+
+	int currentSerie;
     //! spinbox pokazujący translacje X
-    SpinPair translateSpinWidgetX;
+    LabeledDoubleSpinBox * translateSpinWidgetX;
     //! spinbox pokazujący translacje Y
-    SpinPair translateSpinWidgetY;
+    LabeledDoubleSpinBox * translateSpinWidgetY;
     //! spinbox pokazujący translacje Z
-    SpinPair translateSpinWidgetZ;
+    LabeledDoubleSpinBox * translateSpinWidgetZ;
     //! spinbox pokazujący rotacje X
-    SpinPair rotateSpinWidgetX;
+    LabeledDoubleSpinBox * rotateSpinWidgetX;
     //! spinbox pokazujący rotacje Y
-    SpinPair rotateSpinWidgetY;
+    LabeledDoubleSpinBox * rotateSpinWidgetY;
     //! spinbox pokazujący rotacje Z
-    SpinPair rotateSpinWidgetZ;
+    LabeledDoubleSpinBox * rotateSpinWidgetZ;
     //! spinbox pokazujący skale X
-    SpinPair scaleSpinWidgetX;
+    LabeledDoubleSpinBox * scaleSpinWidgetX;
     //! spinbox pokazujący skale Y
-    SpinPair scaleSpinWidgetY;
+    LabeledDoubleSpinBox * scaleSpinWidgetY;
     //! spinbox pokazujący skale Z
-    SpinPair scaleSpinWidgetZ;
+    LabeledDoubleSpinBox * scaleSpinWidgetZ;
     //! manipulator translacji
     DraggerContainerPtr translateDragger;
     //! manipulator rotacji

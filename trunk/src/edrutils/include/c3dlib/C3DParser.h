@@ -20,7 +20,6 @@
 
 namespace c3dlib {
 
-
 //! Opis platformy GRF
 struct C3DLIB_EXPORT ForcePlatform
 {

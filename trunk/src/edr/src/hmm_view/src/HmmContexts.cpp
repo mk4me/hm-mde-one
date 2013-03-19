@@ -4,13 +4,15 @@
 #include <QtGui/QToolBar>
 #include <QtGui/QMenu>
 #include <QtCore/QBuffer>
-#include <core/PluginCommon.h>
-#include <core/src/VisualizerManager.h>
-#include <core/src/VisualizerWidget.h>
+#include <corelib/PluginCommon.h>
 #include "HmmContexts.h"
 #include "HmmMainWindow.h"
-#include "textedit.h"
 #include "AnalisisWidget.h"
+#include <coreui/CoreVisualizerWidget.h>
+#include <coreui/CoreTextEditWidget.h>
+#include <coreui/ICoreActionSection.h>
+#include <coreui/CoreFlexiToolBarSection.h>
+#include <QtGui/QWidgetAction>
 
 HMMAnalysisContext::HMMAnalysisContext(TreeRefresher * refresher) :
     refresher(refresher)
@@ -28,13 +30,13 @@ void HMMAnalysisContext::deactivateContext(QWidget * nextContextWidget, bool ref
 }
 
 
-HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
+HMMVisualizerUsageContext::HMMVisualizerUsageContext(QTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
 {
 
 }
 
 void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
-{
+{	
     //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest już zaladowany
     if(contextWidget == nullptr || visualizerGroupID != -1){
         return;
@@ -43,7 +45,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
     //TODO zapisać styl widgeta, dokleić nasz styl i ustawić a nie nadpisywać
 
     contextWidget->setStyleSheet(QString::fromUtf8(
-        "VisualizerWidget > .QWidget, VisualizerWidget > .QWidget:focus:hover {" \
+        "coreUI--CoreVisualizerWidget, coreUI--CoreVisualizerWidget:focus:hover {" \
             "border: 2px solid orange;"\
         "}"
     ));
@@ -54,20 +56,9 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
         return;
     }
 
-    if(it->second.empty() == false){
-        auto visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
-        auto vis = visWidget->getCurrentVisualizer();
-        //tworzymy grupę dla wizualizatora
-        visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer") + QString(" - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
-
-        for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); ++sectionIT){
-            auto sectionID = flexiTabWidget->addSection(visualizerGroupID, sectionIT->second, sectionIT->first);
-            sectionIT->second->setVisible(true);
-            visualizerSectionsIDs.insert(sectionID);
-        }
-
-        flexiTabWidget->setCurrentGroup(visualizerGroupID);
-    }
+	visualizerGroupID = flexiTabWidget->addTab(it->second.widget , it->second.icon, it->second.name);
+	it->second.widget->setVisible(true);
+	flexiTabWidget->setCurrentIndex(visualizerGroupID);
 }
 
 void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, bool refresh)
@@ -83,179 +74,144 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
         //TODO przywrócić poprzedni styl widgeta
         getCurrentContextWidget()->setStyleSheet(QString());
     }
-
+	
     if(visualizerGroupID != -1){
-        flexiTabWidget->removeGroup(visualizerGroupID);
+		flexiTabWidget->widget(visualizerGroupID)->setVisible(false);
+        flexiTabWidget->removeTab(visualizerGroupID);
         visualizerGroupID = -1;
-        std::set<FlexiTabWidget::GUIID>().swap(visualizerSectionsIDs);
     }
 }
 
 void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 {
-    VisualizerWidget * visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
+    coreUI::CoreVisualizerWidget * visWidget = qobject_cast<coreUI::CoreVisualizerWidget*>(contextWidget);
 
-    auto actionsManager = visWidget->getVisualizerActionsManager();
+	auto vis = visWidget->getVisualizer();
 
-    if(actionsManager.empty() == true){
+    auto actions = visWidget->actions();
+	actions.append(vis->getOrCreateWidget()->actions());
+
+    if(actions.empty() == true){
         return;
     }
-    auto vis = visWidget->getCurrentVisualizer();
 
-    for(auto groupIT = actionsManager.begin(); groupIT != actionsManager.end(); ++groupIT){
+	//grupujemy akcje wg sekcji
+	//jak nie potrafie wyciagnac sekcji to wrzucam do common
+	std::map<QString, std::list<QAction*>> sections;
 
-        //podziel elementy na 4 grupy - akcje, menusy, widget i inne nieobsługiwane elementy
-        //przy okazji wyznaczamy ilość elementów oraz ich sumaryczna szerokość i najwieksza wysokość do późniejszego layoutowania
-        //elementy są indeksowane tak jak podeslal nam je klient, ale ich kolejność może zostac zmieniona zeby lepiej je rozłożyć
-        std::map<int, QAction*> actions;
-        std::map<int, QMenu*> menus;
-        std::map<int, QObject*> others;
-        std::map<int, QObject*> all;
+	for(auto it = actions.begin(); it != actions.end(); ++it){
+		auto coreSectionAction = dynamic_cast<coreUI::ICoreActionSection*>(*it);
+		if(coreSectionAction != nullptr){
+			sections[coreSectionAction->section()].push_back(*it);
+		}else {
+			sections[QObject::tr("Common")].push_back(*it);
+		}
+	}
 
-        // budujemy widgety które beda potem trafialy do toolbarów
-        std::map<int, QWidget*> toolbarElements;
+	UsageContextData data;
+	data.widget = new QWidget;	
 
-        (*groupIT).getActions(actions);
-        (*groupIT).getMenus(menus);
-        (*groupIT).getObjects(others);
-        (*groupIT).getWidgets(toolbarElements);
-        (*groupIT).getAllObjects(all);
+	auto layout_ = new QHBoxLayout;
+	layout_->setSpacing(0);
+	layout_->setContentsMargins(0,0,0,0);
+	data.widget->setLayout(layout_);
+	data.widget->setVisible(false);
 
+	//teraz tworze sekcje
+	for(auto it = sections.begin(); it != sections.end(); ++it){
 
-        int maxHeight = 0;
-        int totalWidth = 0;
-        int totalElements = all.size();
+		//pomijam grupy które są tutaj niepotrzebne
+		if(it->first == QObject::tr("Settings")){
+			continue;
+		}
 
-        for(auto it = toolbarElements.begin(); it != toolbarElements.end(); ++it){
-            QWidget * widget = it->second;
-            if(QComboBox * cbox = qobject_cast<QComboBox*>(widget)){
-                cbox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-                cbox->setMinimumContentsLength(std::min(cbox->currentText().size(), 10));
-            }
+		coreUI::CoreFlexiToolBarSection * section = new coreUI::CoreFlexiToolBarSection(it->first);
+		
+		//mam sekcje więc zasilam ją w akcje
+		//zakladam ze mam 2 toolbary do ktorych wrzucam akcje wg lewy prawy
+		std::map<coreUI::CoreTitleBar::SideType, std::pair<std::map<int, QAction*>, std::map<int, QWidgetAction*>> > sideActions;
 
-            //dodajemy od razu do elementów toolbara - indeksy zostaja zachowane dla późniejszego rozmieszczania wg kolejności
-            auto s = widget->sizeHint();
-            int width = std::min(s.width(), 250);
-            if(s.width() > 250){
-                widget->setMaximumWidth(250);
-            }
-            totalWidth += width;
-            maxHeight = std::max(maxHeight, s.height());
-        }
+		int idx = 0;
 
-        totalElements -= others.size();
+		for(auto aIT = it->second.begin(); aIT != it->second.end(); ++aIT){
+			auto side = coreUI::CoreTitleBar::Left;
+			auto sideInterface = dynamic_cast<coreUI::CoreTitleBar::ICoreTitleBarAction*>(*aIT);
+			if(sideInterface != nullptr){
+				side = sideInterface->side();
+			}
 
-        if(totalElements == 0){
-            return;
-        }
+			auto widgetAction = dynamic_cast<QWidgetAction*>(*aIT);
+			if(widgetAction != nullptr){
+				sideActions[side].second[idx++] = widgetAction;
+			}else{
+				sideActions[side].first[idx++] = *aIT;
+			}
+		}
 
-        for(auto it = actions.begin(); it != actions.end(); ++it){
-            QToolButton * actionButton = new QToolButton();
-            if(it->second->toolTip().isEmpty() == true){
-                actionButton->setToolTip(it->second->text());
-            }
+		//mam akcje pogrupowane - balansujemy aby bylo mniej wiecej rowno po lewej i prawej stronie (gora i dól)
 
-            //actionButton->setIconSize(QSize(20,20));
-            actionButton->setFixedSize(20,20);
+		std::map<int, QAction*> leftActions;
 
-            actionButton->setDefaultAction(it->second);
-            //actionButton->setMaximumSize(QSize(20,20));
-            actionButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+		auto it = sideActions.find(coreUI::CoreTitleBar::Left);
+		if(it != sideActions.end()){
+			leftActions = it->second.first;
+			leftActions.insert(it->second.second.begin(), it->second.second.end());
+		}
 
-            toolbarElements[it->first] = actionButton;
+		std::map<int, QAction*> rightActions;
 
-            auto s = actionButton->sizeHint();
-            totalWidth += s.width();
-            maxHeight = std::max(maxHeight, s.height());
-        }
+		it = sideActions.find(coreUI::CoreTitleBar::Right);
+		if(it != sideActions.end()){
+			rightActions = it->second.first;
+			rightActions.insert(it->second.second.begin(), it->second.second.end());
+		}
 
-        for(auto it = menus.begin(); it != menus.end(); ++it){
-            QToolButton * menuButton = new QToolButton();
+		double ratio = std::max(leftActions.size(), rightActions.size()) / (double)(leftActions.size() + rightActions.size());
 
-            if(it->second->toolTip().isEmpty() == true){
-                menuButton->setToolTip(it->second->title());
-            }
+		if(ratio > 0.65){
+			//TODO
+			//rabalansowanie akcji po lewej i prawej stronie
+		}
 
-            menuButton->setMenu(it->second);
+		QWidget * sectionWidget = new QWidget;
+		auto vLayout = new QVBoxLayout;
+		vLayout->setContentsMargins(0,0,0,0);
+		vLayout->setSpacing(3);
+		if(leftActions.empty() == false){
+			QToolBar * upperBar = new QToolBar(section);
+			upperBar->setMovable(false);
+			upperBar->setFloatable(false);
+			for(auto it = leftActions.begin(); it != leftActions.end(); ++it){
+				upperBar->addAction(it->second);
+			}
 
-            //if(it->second->icon().isNull() == false){
-            //menuButton->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonTextBesideIcon);
-            //}
+			vLayout->addWidget(upperBar);
+		}
 
-            menuButton->setText(it->second->title());
-            menuButton->setPopupMode(QToolButton::InstantPopup);
+		if(rightActions.empty() == false){
+			QToolBar * lowerBar = new QToolBar(section);
+			lowerBar->setMovable(false);
+			lowerBar->setFloatable(false);
+			for(auto it = rightActions.begin(); it != rightActions.end(); ++it){
+				lowerBar->addAction(it->second);
+			}
 
-            menuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+			vLayout->addWidget(lowerBar);
+		}
 
-            toolbarElements[it->first] = menuButton;
+		sectionWidget->setLayout(vLayout);
 
-            auto s = menuButton->sizeHint();
-            totalWidth += s.width();
-            maxHeight = std::max(maxHeight, s.height());
-        }
+		section->setInnerWidget(sectionWidget);
 
-        //rozkładamy to w niezaleznych QToolBarach. Maksymalnie 2 rzedy.
-        //TODO
-        //dodać maksymalna szerokość + przerzucanie elementów do ukrytego panelu jeśli za duzo ich jest
+		layout_->addWidget(section);
+	}
 
-        int halfWidth = totalWidth;
+	layout_->addStretch();
+	
+	data.name = QObject::tr("Visualizer") + QString(" - ") + QString::fromUtf8(vis->getName().c_str());
+	data.icon = vis->getIcon();
 
-        int halfElements = totalElements / 2;
-
-        QVBoxLayout * layout = new QVBoxLayout();
-        QToolBar * topToolbar = new QToolBar();
-        topToolbar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        topToolbar->setIconSize(QSize(20,20));
-        topToolbar->setStyleSheet(QString::fromUtf8("QToolBar { spacing: 2px; }"));
-
-        layout->addWidget(topToolbar);
-
-        QToolBar * bottomToolbar = nullptr;
-
-        //budujemy 2 wiersze jeśli conajmniej 5 elementów
-        if(halfElements > 4){
-            bottomToolbar = new QToolBar();
-            bottomToolbar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-            bottomToolbar->setIconSize(QSize(20,20));
-            layout->addWidget(bottomToolbar);
-            halfWidth /= 2;
-        }
-
-        layout->addSpacerItem(new QSpacerItem(1,1, QSizePolicy::Fixed, QSizePolicy::Expanding));
-
-        int currentWidth = 0;
-        auto it = toolbarElements.begin();
-
-        while(it != toolbarElements.end()){
-            auto s = it->second->sizeHint();
-            int width = std::min(s.width(), 250);
-            if(currentWidth + width > halfWidth){
-                ++it;
-            }else{
-                topToolbar->addWidget(it->second);
-                currentWidth += width;
-                it = toolbarElements.erase(it);
-            }
-        }
-
-        if(bottomToolbar != nullptr){
-            it = toolbarElements.begin();
-
-            while(it != toolbarElements.end()){
-                bottomToolbar->addWidget(it->second);
-                ++it;
-            }
-        }
-
-        //wypełniamy grupę
-        QWidget * widget = new QWidget();
-        widget->setLayout(layout);
-        layout->setContentsMargins(0,0,0,0);
-        layout->setMargin(0);
-        layout->setSpacing(1);
-
-        visualizersData[contextWidget][(*groupIT).name()] = widget;
-    }
+    visualizersData[contextWidget] = data;
 }
 
 void HMMVisualizerUsageContext::onUnregisterContextWidget(QWidget * contextWidget)
@@ -266,28 +222,29 @@ void HMMVisualizerUsageContext::onUnregisterContextWidget(QWidget * contextWidge
         return;
     }
 
-    for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); ++sectionIT){
-        try{
-
-            delete sectionIT->second;
-
-        }catch(...)
-        {
-
-        }
-    }
+	//TODO
+	//czy to jest konieczne?
+    delete it->second.widget;
 
     visualizersData.erase(it);
 }
 
 
-HMMTreeItemUsageContext::HMMTreeItemUsageContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
+HMMTreeItemUsageContext::HMMTreeItemUsageContext( QTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
-	flexiSection(new QWidget()),
+	flexiContent(new QWidget()),
+	flexiSection(new coreUI::CoreFlexiToolBarSection()),
+	contextWidgetActions(new QWidget()),
     groupID(-1),
     hmm(hmm)
 {
-
+	flexiSection->setInnerWidget(flexiContent);
+	auto layout_ = new QHBoxLayout;
+	layout_->setContentsMargins(0,0,0,0);
+	layout_->addWidget(flexiSection);
+	layout_->addStretch();
+	contextWidgetActions->setLayout(layout_);
+	contextWidgetActions->setVisible(false);
 }
 
 void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
@@ -297,16 +254,8 @@ void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
         return;
     }
 
-    QTreeWidget* tree = qobject_cast<QTreeWidget*>(contextWidget);/*
-    TreeItemHelper* item = dynamic_cast<TreeItemHelper*>(tree->currentItem());
-    if (item) {*/
-    groupID = flexiTabWidget->addGroup(QObject::tr("Tree"));
-
-    recreateFlexiSectionWidget(flexiSection, dynamic_cast<HmmTreeItem*>(tree->currentItem()));
-    flexiTabWidget->addSection(groupID, flexiSection, tr("Item Actions"));
-    flexiSection->setVisible(true);
-    flexiTabWidget->setCurrentGroup(groupID);
-    //}*/
+    QTreeWidget* tree = qobject_cast<QTreeWidget*>(contextWidget);
+    recreateFlexiSectionWidget(flexiContent, dynamic_cast<HmmTreeItem*>(tree->currentItem()));
 }
 
 void HMMTreeItemUsageContext::deactivateContext( QWidget * nextContextWidget, bool refresh )
@@ -315,10 +264,11 @@ void HMMTreeItemUsageContext::deactivateContext( QWidget * nextContextWidget, bo
         return;
     }
 
-    if(groupID != -1){
-        flexiTabWidget->removeGroup(groupID);
-        groupID = -1;
-    }
+	if(groupID != -1){
+		contextWidgetActions->setVisible(false);
+		flexiTabWidget->removeTab(groupID);
+		groupID = -1;
+	}
 }
 
 void HMMTreeItemUsageContext::onRegisterContextWidget( QWidget * contextWidget )
@@ -333,29 +283,39 @@ void HMMTreeItemUsageContext::onUnregisterContextWidget( QWidget * contextWidget
 }
 
 
-void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, HmmTreeItem* helper)
+void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiContent, HmmTreeItem* helper)
 {
-   if (!flexiSection->layout()) {
-       flexiSection->setLayout(new QVBoxLayout());
-   }
+	if (!flexiContent->layout()) {
+		flexiContent->setLayout(new QVBoxLayout());		
+		flexiContent->layout()->setContentsMargins(0, 0, 0, 0);
+		flexiContent->layout()->setSpacing(3);
+	}
 
-    const QObjectList& children = flexiSection->children();
-    for (int i = children.size() - 1; i >= 0; --i) {
-        QWidget* w = qobject_cast<QWidget*>(children[i]);
-        if (w) {
-            w->setVisible(false);
-        }
-    }
-
+	const QObjectList& children = flexiContent->children();
+	for (int i = children.size() - 1; i >= 0; --i) {
+		QWidget* w = qobject_cast<QWidget*>(children[i]);
+		if (w) {
+			w->setVisible(false);
+		}
+	}
+	
     if (helper) {
-        QLayout* l = flexiSection->layout() ? flexiSection->layout() : new QVBoxLayout(flexiSection);
-        l = flexiSection->layout();
-        l->setContentsMargins(0, 0, 0, 0);
-        l->setSpacing(3);
-        QLabel* label = new QLabel(helper->text(0));
-        l->addWidget(label);
-        QMenu* menu = hmm->getContextMenu(nullptr, helper);
-        QWidget* horizontal = new QWidget(flexiSection);
+
+		if(groupID == -1){
+			groupID = flexiTabWidget->addTab(contextWidgetActions, QObject::tr("Tree"));
+			flexiTabWidget->setCurrentIndex(groupID);
+		}
+
+		contextWidgetActions->setVisible(true);
+        QLayout* l = flexiContent->layout();
+        flexiSection->setName(helper->text(0));
+		QToolButton* menuButton = new QToolButton(flexiContent);
+        QMenu* menu = hmm->getContextMenu(menuButton, helper);
+		menuButton->setMenu(menu);
+		menuButton->setPopupMode(QToolButton::InstantPopup);
+		menuButton->setText(tr("Data actions"));
+		l->addWidget(menuButton);
+        /*QWidget* horizontal = new QWidget(flexiContent);
         l->addWidget(horizontal);
         QHBoxLayout* hl = new QHBoxLayout();
         hl->setContentsMargins(0, 0, 0, 0);
@@ -365,13 +325,14 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
         for (auto it = actions.begin(); it != actions.end(); ++it) {
             QMenu* m = (*it)->menu();
             if (m) {
-                QToolButton* menuButton = new QToolButton();
+                QToolButton* menuButton = new QToolButton(horizontal);
                 menuButton->setText((*it)->text());
                 menuButton->setPopupMode(QToolButton::InstantPopup);
 
                 menuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
                 menuButton->setMenu(m);
+				m->setParent(menuButton);
                 hl->addWidget(menuButton);
             } else if (!(*it)->isSeparator()) {
                 QToolButton* actionButton = new QToolButton(horizontal);
@@ -379,15 +340,15 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
                 connect(actionButton, SIGNAL(clicked()), *it, SLOT(trigger()));
                 hl->addWidget(actionButton);
             }
-
-        }
-        flexiSection->setLayout(l);
-    }
+        }   */     
+    }else{
+		contextWidgetActions->setVisible(false);
+	}
 }
 
 void HMMTreeItemUsageContext::itemChanged( QTreeWidgetItem* current, QTreeWidgetItem* previous )
 {
-    recreateFlexiSectionWidget(flexiSection, dynamic_cast<HmmTreeItem*>(current));
+    recreateFlexiSectionWidget(flexiContent, dynamic_cast<HmmTreeItem*>(current));
 }
 
 
@@ -395,21 +356,21 @@ void HMMTreeItemUsageContext::refresh()
 {
    QTreeWidget* tree = qobject_cast<QTreeWidget*>(getCurrentContextWidget());
    if (tree) {
-     recreateFlexiSectionWidget(flexiSection, dynamic_cast<HmmTreeItem*>(tree->currentItem()));
+     recreateFlexiSectionWidget(flexiContent, dynamic_cast<HmmTreeItem*>(tree->currentItem()));
    }
 }
 
 
-RaportsThumbnailsContext::RaportsThumbnailsContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
+RaportsThumbnailsContext::RaportsThumbnailsContext( QTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
-	flexiSection(new QWidget()),
+	flexiSection(nullptr),
     groupID(-1),
     hmm(hmm),
     projectName(nullptr),
 	projectTemplate(nullptr),
 	cssCombo(nullptr)
 {
-
+	
 }
 
 void RaportsThumbnailsContext::activateContext( QWidget * contextWidget )
@@ -418,12 +379,10 @@ void RaportsThumbnailsContext::activateContext( QWidget * contextWidget )
     if(contextWidget == nullptr || groupID != -1){
         return;
     }
-
-    groupID = flexiTabWidget->addGroup(QObject::tr("Raports Tab"));
-
-    flexiTabWidget->addSection(groupID, flexiSection, tr("Actions"));
-    flexiSection->setVisible(true);
-    flexiTabWidget->setCurrentGroup(groupID);
+	
+	groupID = flexiTabWidget->addTab(flexiSection, QObject::tr("Raports Tab"));
+	flexiSection->setVisible(true);
+	flexiTabWidget->setCurrentIndex(groupID);
 }
 
 void RaportsThumbnailsContext::deactivateContext( QWidget * nextContextWidget, bool refresh )
@@ -431,16 +390,18 @@ void RaportsThumbnailsContext::deactivateContext( QWidget * nextContextWidget, b
     if(nextContextWidget == getCurrentContextWidget()){
         return;
     }
-
-    if(groupID != -1){
-        flexiTabWidget->removeGroup(groupID);
-        groupID = -1;
-    }
+	
+	if(groupID != -1){
+		flexiTabWidget->removeTab(groupID);
+		flexiSection->setVisible(false);
+		groupID = -1;
+	}
 }
 
 void RaportsThumbnailsContext::onRegisterContextWidget( QWidget * contextWidget )
 {
-    flexiSection = new QWidget();
+    flexiSection = new QWidget(flexiTabWidget);
+	flexiSection->setVisible(false);
     QVBoxLayout* l = new QVBoxLayout();
     l->setContentsMargins(0, 0, 0, 0);
     l->setSpacing(0);
@@ -453,7 +414,7 @@ void RaportsThumbnailsContext::onRegisterContextWidget( QWidget * contextWidget 
     projectName->setPlainText(tr("Simple Raport"));
     projectName->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
-    QString dirPath = core::getResourceString("templates");
+    QString dirPath = QString::fromStdString(plugin::getResourcePath("templates").string());
     QStringList filters;
     filters << "*.htm" << "*.html";
     QDir templateDir(dirPath);
@@ -530,7 +491,7 @@ void RaportsThumbnailsContext::createRaport()
         }
     }
 
-    QString templateDir = core::getResourceString("templates\\");//QString("C:\\programming\\HMEdr\\src\\edr\\resources\\deploy\\templates\\");
+    QString templateDir = QString::fromStdString(plugin::getResourcePath("templates\\").string());//QString("C:\\programming\\HMEdr\\src\\edr\\resources\\deploy\\templates\\");
     QString cssFile = templateDir + cssCombo->currentText();
     QFile f(cssFile);
     QString css;
@@ -568,7 +529,7 @@ void RaportsThumbnailsContext::createRaport()
     hmm->createRaport(html);
 }
 
-RaportsTabContext::RaportsTabContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
+RaportsTabContext::RaportsTabContext( QTabWidget * flexiTabWidget, HmmMainWindow* hmm ) :
     flexiTabWidget(flexiTabWidget),
 	editSection(nullptr),
     groupID(-1),
@@ -587,34 +548,27 @@ void RaportsTabContext::activateContext( QWidget * contextWidget )
         return;
     }
 
-    groupID = flexiTabWidget->addGroup(QObject::tr("Raports Tab"));
-
-    fileSection->setVisible(true);
-    editSection->setVisible(true);
-    textSection->setVisible(true);
-
-    flexiTabWidget->addSection(groupID, fileSection, tr("File"));
-    flexiTabWidget->addSection(groupID, editSection, tr("Edit"));
-    flexiTabWidget->addSection(groupID, textSection, tr("Text"));
-
-    flexiTabWidget->setCurrentGroup(groupID);
+	groupID = flexiTabWidget->addTab(widget, QObject::tr("Raports Tab"));
+	widget->setVisible(true);
+    flexiTabWidget->setCurrentIndex(groupID);
 }
 
 void RaportsTabContext::deactivateContext( QWidget * nextContextWidget, bool refresh )
 {
-    if(nextContextWidget == getCurrentContextWidget()){
-        return;
-    }
+	if(nextContextWidget == getCurrentContextWidget()){
+		return;
+	}
 
-    if(groupID != -1){
-        flexiTabWidget->removeGroup(groupID);
-        groupID = -1;
-    }
+	if(groupID != -1){
+		widget->setVisible(false);
+		flexiTabWidget->removeTab(groupID);
+		groupID = -1;
+	}
 }
 
 void RaportsTabContext::onRegisterContextWidget( QWidget * contextWidget )
 {
-    TextEdit* textEdit = qobject_cast<TextEdit*>(contextWidget);
+    auto textEdit = qobject_cast<coreUI::CoreTextEditWidget*>(contextWidget);
 
     auto twoLine = createTwoLineWidget();
     editSection = twoLine.get<0>();
@@ -627,6 +581,24 @@ void RaportsTabContext::onRegisterContextWidget( QWidget * contextWidget )
     twoLine = createTwoLineWidget();
     textSection = twoLine.get<0>();
     placeObjects(textEdit->getTextActions(), twoLine.get<1>(), twoLine.get<2>(), true);
+
+	widget = new coreUI::CoreFlexiToolBar(flexiTabWidget);
+
+	auto section = new coreUI::CoreFlexiToolBarSection(tr("File"));
+	section->setInnerWidget(fileSection);
+	
+	widget->addSection(section);
+
+	section = new coreUI::CoreFlexiToolBarSection(tr("Edit"));
+	section->setInnerWidget(editSection);
+
+	widget->addSection(section);
+
+	section = new coreUI::CoreFlexiToolBarSection(tr("Text"));
+	section->setInnerWidget(textSection);
+
+	widget->addSection(section);
+	widget->setVisible(false);
 }
 
 void RaportsTabContext::onUnregisterContextWidget( QWidget * contextWidget )
@@ -683,4 +655,165 @@ boost::tuple<QWidget*, QLayout*, QLayout*> RaportsTabContext::createTwoLineWidge
     flexiSection->setLayout(l);
 
     return boost::make_tuple(flexiSection, lowerLayout, upperLayout);
+}
+
+HMMVVdfUsageContext::HMMVVdfUsageContext( QTabWidget * flexiTabWidget ) :
+    flexiTabWidget(flexiTabWidget), 
+    groupID(-1)
+{
+
+}
+
+void HMMVVdfUsageContext::activateContext( QWidget * contextWidget )
+{
+    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest już zaladowany
+    if(contextWidget == nullptr || groupID != -1){
+        return;
+    }
+
+    groupID = flexiTabWidget->addTab(widget, QObject::tr("Vdf Tab"));
+    widget->setVisible(true);
+    flexiTabWidget->setCurrentIndex(groupID);
+
+}
+
+void HMMVVdfUsageContext::deactivateContext( QWidget * nextContextWidget, bool refresh )
+{
+    if(nextContextWidget == getCurrentContextWidget()){
+        return;
+    }
+
+    if(groupID != -1){
+        widget->setVisible(false);
+        flexiTabWidget->removeTab(groupID);
+        groupID = -1;
+    }
+
+}
+
+void HMMVVdfUsageContext::onRegisterContextWidget( QWidget * contextWidget )
+{
+    auto actions = contextWidget->actions();
+    
+    if(actions.empty() == true){
+        return;
+    }
+    
+    //grupujemy akcje wg sekcji
+    //jak nie potrafie wyciagnac sekcji to wrzucam do common
+    std::map<QString, std::list<QAction*>> sections;
+    
+    for(auto it = actions.begin(); it != actions.end(); ++it){
+        auto coreSectionAction = dynamic_cast<coreUI::ICoreActionSection*>(*it);
+        if(coreSectionAction != nullptr){
+            sections[coreSectionAction->section()].push_back(*it);
+        }else {
+            sections[QObject::tr("Common")].push_back(*it);
+        }
+    }
+    
+    widget = new coreUI::CoreFlexiToolBar();
+    auto layout_ = new QHBoxLayout();
+
+    layout_->setSpacing(0);
+    layout_->setContentsMargins(0,0,0,0);
+    
+    //teraz tworze sekcje
+    for(auto it = sections.begin(); it != sections.end(); ++it){
+            
+        coreUI::CoreFlexiToolBarSection * section = new coreUI::CoreFlexiToolBarSection(it->first);
+    
+        //mam sekcje więc zasilam ją w akcje
+        //zakladam ze mam 2 toolbary do ktorych wrzucam akcje wg lewy prawy
+        std::map<coreUI::CoreTitleBar::SideType, std::pair<std::map<int, QAction*>, std::map<int, QWidgetAction*>> > sideActions;
+    
+        int idx = 0;
+    
+        for(auto aIT = it->second.begin(); aIT != it->second.end(); ++aIT){
+            auto side = coreUI::CoreTitleBar::Left;
+            auto sideInterface = dynamic_cast<coreUI::CoreTitleBar::ICoreTitleBarAction*>(*aIT);
+            if(sideInterface != nullptr){
+                side = sideInterface->side();
+            }
+    
+            auto widgetAction = dynamic_cast<QWidgetAction*>(*aIT);
+            if(widgetAction != nullptr){
+                sideActions[side].second[idx++] = widgetAction;
+            }else{
+                sideActions[side].first[idx++] = *aIT;
+            }
+        }
+    
+        //mam akcje pogrupowane - balansujemy aby bylo mniej wiecej rowno po lewej i prawej stronie (gora i dól)
+    
+        std::map<int, QAction*> leftActions;
+    
+        auto it = sideActions.find(coreUI::CoreTitleBar::Left);
+        if(it != sideActions.end()){
+            leftActions = it->second.first;
+            leftActions.insert(it->second.second.begin(), it->second.second.end());
+        }
+    
+        std::map<int, QAction*> rightActions;
+    
+        it = sideActions.find(coreUI::CoreTitleBar::Right);
+        if(it != sideActions.end()){
+            rightActions = it->second.first;
+            rightActions.insert(it->second.second.begin(), it->second.second.end());
+        }
+    
+        double ratio = std::max(leftActions.size(), rightActions.size()) / (double)(leftActions.size() + rightActions.size());
+    
+        if(ratio > 0.65){
+            //TODO
+            //rabalansowanie akcji po lewej i prawej stronie
+        }
+    
+        QWidget * sectionWidget = new QWidget;
+        auto vLayout = new QVBoxLayout;
+        vLayout->setContentsMargins(0,0,0,0);
+        vLayout->setSpacing(3);
+        if(leftActions.empty() == false){
+            QToolBar * upperBar = new QToolBar(section);
+            upperBar->setMovable(false);
+            upperBar->setFloatable(false);
+            for(auto it = leftActions.begin(); it != leftActions.end(); ++it){
+                upperBar->addAction(it->second);
+            }
+    
+            vLayout->addWidget(upperBar);
+        }
+    
+        if(rightActions.empty() == false){
+            QToolBar * lowerBar = new QToolBar(section);
+            lowerBar->setMovable(false);
+            lowerBar->setFloatable(false);
+            for(auto it = rightActions.begin(); it != rightActions.end(); ++it){
+                lowerBar->addAction(it->second);
+            }
+    
+            vLayout->addWidget(lowerBar);
+        }
+    
+        sectionWidget->setLayout(vLayout);
+    
+        section->setInnerWidget(sectionWidget);
+    
+        layout_->addWidget(section);
+    }
+    
+    layout_->addStretch();
+
+    auto section = new coreUI::CoreFlexiToolBarSection();
+    QWidget* inner = new QWidget();
+    inner->setLayout(layout_);
+    section->setInnerWidget(inner);
+
+    widget->addSection(section);
+
+}
+
+void HMMVVdfUsageContext::onUnregisterContextWidget( QWidget * contextWidget )
+{
+
 }

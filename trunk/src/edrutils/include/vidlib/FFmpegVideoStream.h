@@ -18,7 +18,6 @@ extern "C" {
 }
 
 #include <vidlib/VideoStream.h>
-#include <vidlib/Export.h>
 
 struct AVFormatContext;
 struct AVCodecContext;

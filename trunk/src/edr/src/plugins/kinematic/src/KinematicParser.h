@@ -1,13 +1,14 @@
 #ifndef __HEADER_GUARD_KINEMATIC__KINEMATICPARSER_H__
 #define __HEADER_GUARD_KINEMATIC__KINEMATICPARSER_H__
 
-#include <core/IParser.h>
-#include <core/IDataManager.h>
+#include <corelib/IParser.h>
+#include <corelib/IDataManagerReader.h>
 
 //! klasa wykorzystuje bibliotekę kinematiclib w celu wczytania danych animacji szkieletowej
-class KinematicParser : public core::IParser
+class KinematicParser : public plugin::IParser, public plugin::ISourceParserCapabilities
 {
-    UNIQUE_ID("{AE673002-AE76-4E79-983E-ABDB15713E74}", "Kinematic parser");
+	UNIQUE_ID("{AE673002-AE76-4E79-983E-ABDB15713E74}")
+	CLASS_DESCRIPTION("Kinematic parser", "Kinematic parser")
 private:
     //! wrapper, do którego trafią wczytane dane
     core::ObjectWrapperPtr skeletonData;
@@ -19,12 +20,12 @@ public:
 public:
     //! metoda odpowiada za wczytanie pliku z animacją szkieletową
     //! \param path ścieżka do pliku 
-    virtual void parseFile(const core::Filesystem::Path& path);
+    virtual void parse(const std::string & source);
     //! tworzy pusty obiekt parsera
-    virtual core::IParser* create();
+    virtual plugin::IParser* create() const;
     //! zwraca wspierane rozszerzenia plików (amc, bvh)
     //! \param extensions kolecja, do której trafią wspierane rozszerzenia
-    virtual void getSupportedExtensions(Extensions & extensions) const;
+    virtual void acceptedExpressions(Expressions & expressions) const;
     //! \param objects kolekcja z object wrapperem (skeletonData)
     virtual void getObjects(core::Objects& objects);
 };

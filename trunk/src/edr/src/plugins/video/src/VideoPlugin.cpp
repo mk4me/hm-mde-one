@@ -1,10 +1,10 @@
 #include "VideoPCH.h"
-#include <core/Plugin.h>
+#include <corelib/IPlugin.h>
 #include "VideoParser.h"
 #include <vidlib/osg/FFmpegImageStream.h>
 #include "VideoVisualizer.h"
 
-CORE_PLUGIN_BEGIN("video", UID::GenerateUniqueID("{4F39348A-3364-4B2F-B748-B1CF578C0628}"));
+CORE_PLUGIN_BEGIN("video", core::UID::GenerateUniqueID("{4F39348A-3364-4B2F-B748-B1CF578C0628}"));
     CORE_PLUGIN_ADD_PARSER(VideoParser);
     CORE_PLUGIN_ADD_VISUALIZER(VideoVisualizer);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(::VideoStream);
@@ -27,20 +27,20 @@ void logCallback(vidlib::FFmpegVideoStream::LogSeverity severity, const char* ms
         case FFmpegVideoStream::LogSeverityPanic:
         case FFmpegVideoStream::LogSeverityFatal:
         case FFmpegVideoStream::LogSeverityError:
-            LOG_ERROR_STATIC_NAMED("ffmpeg", msg);
+            PLUGIN_LOG_NAMED_ERROR("ffmpeg", msg);
             break;
 
         case FFmpegVideoStream::LogSeverityWarning:
-            LOG_WARNING_STATIC_NAMED("ffmpeg", msg);
+            PLUGIN_LOG_NAMED_WARNING("ffmpeg", msg);
             break;
 
         case FFmpegVideoStream::LogSeverityInfo:
         case FFmpegVideoStream::LogSeverityVerbose:
-            LOG_INFO_STATIC_NAMED("ffmpeg", msg);
+            PLUGIN_LOG_NAMED_INFO("ffmpeg", msg);
             break;
 
         case FFmpegVideoStream::LogSeverityDebug:
-            LOG_DEBUG_STATIC_NAMED("ffmpeg", msg);
+            PLUGIN_LOG_NAMED_DEBUG("ffmpeg", msg);
             break;
 
         default:

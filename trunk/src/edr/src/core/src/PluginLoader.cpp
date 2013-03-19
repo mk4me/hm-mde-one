@@ -10,18 +10,18 @@
 #endif
 
 #include "PluginLoader.h"
-#include <core/Plugin.h>
-#include <core/PluginCommon.h>
+#include <corelib/IPlugin.h>
+#include <corelib/PluginCommon.h>
+#include "PluginApplication.h"
 #include <regex>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-PluginLoader::PluginLoader()
+PluginLoader::PluginLoader(const Filesystem::Path & pluginsPath)
 {
-    // dodaje domyślne ścieżki
-    addDefaultPaths();
+    paths.push_back(pluginsPath);
 }
 
 PluginLoader::~PluginLoader()
@@ -34,75 +34,26 @@ void PluginLoader::clear()
     // wyczyszczenie ścieżek
     Paths().swap(paths);
 
-    //wyczyszczenie pluginów
-    Plugins().swap(plugins);
+	for(auto it = plugins.begin(); it != plugins.end(); ++it)
+	{
+		(*it).plugin.reset();
+		unloadSharedLibrary((*it).handle);
+		(*it).coreApplication.reset();
+	}
 }
 
 void PluginLoader::unloadPlugins()
 {
     try{
         clear();
-        freeLibraries();
-    }
-    catch(std::runtime_error& e){
-        LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
-    }
-    catch(std::invalid_argument& e){
-        LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
     catch(std::exception& e){
-        LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
+        CORE_LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
     catch(...){
-        LOG_ERROR("PluginLoader: Error unloading plugins ");
+        CORE_LOG_ERROR("PluginLoader: Error unloading plugins ");
     }
 }
-
-void PluginLoader::addDefaultPaths()
-{
-#if defined(__WIN32__)
-	// katalog uruchomieniowy
-	DWORD retval = 0;
-	const DWORD size = MAX_PATH;
-	char path[size];
-	std::string executableDir;
-
-	retval = ::GetModuleFileName(NULL, path, size);
-	if (retval != 0 && retval < size)
-	{
-		std::string pathstr(path);
-		executableDir = std::string( pathstr, 0, pathstr.find_last_of("\\/") );
-		paths.push_back(executableDir);
-	}
-	else
-	{
-		LOG_ERROR("Could not get application directory "
-			"using Win32 API. It will not be searched.");
-	}
-
-	// katalog plugins
-	if (!executableDir.empty())
-	{
-		boost::filesystem::path dirpath(executableDir);
-		dirpath /= "plugins";
-		paths.push_back(dirpath.string());
-	}
-	else
-	{
-		LOG_ERROR("Could not get application directory -- plugins folder"
-			"using Win32 API. It will not be searched.");
-	}
-#elif defined(__UNIX__)
-	// katalog uruchomieniowy
-	std::string dir = std::string(".");
-	paths.push_back(dir);
-
-	// zagnieżdżony katalog plugins
-	dir = std::string("plugins/.");
-	paths.push_back(dir);
-#endif
-}
-
 
 void PluginLoader::load()
 {
@@ -115,7 +66,6 @@ void PluginLoader::load()
 #endif
 
 	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {
-        //std::unique_ptr<std::string> pathIT(new std::string("/home/wojtek/programming/WORK/EDR/_out/edrCB/bin"));
 		std::vector<std::string> localFiles = core::Filesystem::listFiles(*pathIT, true);
 
 		for(auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
@@ -128,12 +78,12 @@ void PluginLoader::load()
 	}
 }
 
-HMODULE PluginLoader::loadSharedLibrary(const std::string & path)
+HMODULE PluginLoader::loadSharedLibrary(const Filesystem::Path & path)
 {
 #if defined(__WIN32__)
-	return ::LoadLibrary( path.c_str() );
+	return ::LoadLibrary( path.string().c_str() );
 #elif defined(__UNIX__)
-	return dlopen(path.c_str(), RTLD_LAZY);
+	return dlopen(path.string().c_str(), RTLD_LAZY);
 #else
 #error "Unsupported system for loading shared libraries"
 	return 0;
@@ -181,165 +131,156 @@ const std::string PluginLoader::lastLoadSharedLibraryError()
 #endif
 }
 
-bool PluginLoader::addPlugIn( const std::string& path )
+bool PluginLoader::addPlugIn( const Filesystem::Path& path )
 {
-    HMODULE library = loadSharedLibrary(path);
+    HMODULE library = loadSharedLibrary(path.string());
     if ( library ) {
         try{
             if (checkPluginVersion(library, path) && checkLibrariesVersions(library, path) && checkPluginBuildType(library, path) ) {
-                auto proc = loadProcedure<Plugin::CreateFunction>(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
-                if ( proc ) {
-                    bool success = onAddPlugin(path, library, proc);
-                    if ( success ) {
-                        return true;
-                    }
+                PluginPtr plugin(new Plugin());
+				plugin->setPath(path);
+				auto procNameID = loadProcedure<Plugin::SetIDNameFunction>(library, STRINGIZE(CORE_SET_PLUGIN_ID_FUNCTION_NAME));
+				if( procNameID ){
+					procNameID(plugin.get());
+				}else{
+					CORE_LOG_DEBUG(path << " is a plugin, but finding " << STRINGIZE(CORE_SET_PLUGIN_ID_FUNCTION_NAME) << " failed.");
+					return false;
+				}
+
+				auto procFill = loadProcedure<Plugin::FillFunction>(library, STRINGIZE(CORE_FILL_PLUGIN_FUNCTION_NAME));
+                if ( procFill ) {
+                    return onAddPlugin(plugin, library, procFill);
                 } else {
-                    LOG_DEBUG(path<<" is a plugin, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed.");
+                    CORE_LOG_DEBUG(path << " is a plugin, but finding " << STRINGIZE(CORE_FILL_PLUGIN_FUNCTION_NAME) << " failed.");
                 }
             }
         }catch(std::exception & e){
-            LOG_DEBUG(path << " is a plugin, but trying to check version or libraries failed with error: " << e.what());
+            CORE_LOG_DEBUG(path << " is a plugin, but trying to check version or libraries failed with error: " << e.what());
         }catch(...){
-            LOG_DEBUG(path << " is a plugin, but trying to check version or libraries failed with UNKNOWN error");
+            CORE_LOG_DEBUG(path << " is a plugin, but trying to check version or libraries failed with UNKNOWN error");
         }
     } else  {
-        LOG_ERROR("Error \"" << lastLoadSharedLibraryError() << "\" during loading " << path << ".");
+        CORE_LOG_ERROR("Error \"" << lastLoadSharedLibraryError() << "\" during loading " << path << ".");
     }
 
 	unloadSharedLibrary(library);
     return false;
 }
 
-bool PluginLoader::onAddPlugin( const std::string& path, HMODULE library, Plugin::CreateFunction createFunction )
+bool PluginLoader::onAddPlugin( PluginPtr plugin, HMODULE library, Plugin::FillFunction fillFunction )
 {
-    Plugin* plugin = NULL;
-
-    LOG_INFO("Loading plugin " << path);
+	PluginData pData;
+    CORE_LOG_INFO("Loading plugin " << plugin->getPath());
 
     // próba załadowania
     try {
-        plugin = createFunction(&__instanceInfo);
+		auto pluginName = plugin->getName();
+		if(pluginName.empty() == true){
+			plugin->setName(plugin->getPath().filename().string());
+			CORE_LOG_WARNING("Plugin name for plugin loaded from " << plugin->getPath() << " was empty. Setting dynamic library file name as plugin name: " << plugin->getName() );
+		}
+
+		pData.coreApplication.reset(new PluginApplication(plugin->getName()));
+		fillFunction(plugin.get(), pData.coreApplication.get());
+        pData.plugin = plugin;		
+		pData.handle = library;
     } catch ( std::exception& ex ) {
-        LOG_ERROR("Error loading plugin "<<path<<": "<<ex.what());
+        CORE_LOG_ERROR("Error loading plugin " << plugin->getPath() << ": " << ex.what());
         return false;
     } catch ( ... ) {
-        LOG_ERROR("Error loading plugin "<<path<<": Unknown");
+        CORE_LOG_ERROR("Error loading plugin " << plugin->getPath() << ": Unknown");
         return false;
     }
-
-    // czy udało się wczytać?
-    if ( !plugin ) {
-        LOG_ERROR("Error loading plugin "<<path<<": Plugin not created");
-        return false;
-    }
-
 
     bool pluginIDFound = false;
     core::PluginPtr collidingPlugin;
     //szukamy pluginu o podanym ID - jeśli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
     for(auto it = plugins.begin(); it != plugins.end(); ++it){
-        if( (*it).first->getID() == plugin->getID()){
+        if( (*it).plugin->getID() == pData.plugin->getID()){
             pluginIDFound = true;
-            collidingPlugin = (*it).first;
+            collidingPlugin = (*it).plugin;
             break;
         }
     }
 
-    if(pluginIDFound == false){
+    if(pluginIDFound == false){	
 
-        plugin->setPath(path);
+        plugins.push_back( pData );
 
-        // musi tak być, inaczej dwa smart pointery do jendego obiektu!!
-        PluginPair p;
-        p.first.reset(plugin);
-        p.second = p.first;
-
-        plugins.push_back( p );
-        libraries.push_back(library);
-
-        LOG_INFO("Successfully loaded plugin " << path);
+        CORE_LOG_INFO("Successfully loaded plugin " << plugin->getPath());
 
     }else{
-        LOG_WARNING("Plugin with given ID " << plugin->getID() << " already exist. Plugin " << path << " NOT loaded to application! Collision with plugin loaded from: " << collidingPlugin->getPath() );
+        CORE_LOG_WARNING("Plugin with given ID " << pData.plugin->getID() << " already exist. Plugin " << plugin->getPath() << " NOT loaded to application! Collision with plugin loaded from: " << collidingPlugin->getPath() );
     }
 
     return !pluginIDFound;
 }
 
-void PluginLoader::freeLibraries()
-{
-    for (size_t i = 0; i < libraries.size(); ++i)
-    {
-		unloadSharedLibrary(libraries[i]);
-    }
-    libraries.clear();
-}
-
-bool PluginLoader::checkLibrariesVersions( HMODULE library, const std::string& path )
+bool PluginLoader::checkLibrariesVersions( HMODULE library, const Filesystem::Path& path )
 {
     // pobranie wersji bibliotek
     auto libsVerProc = loadProcedure<Plugin::GetLibrariesVersionFunction>(library, STRINGIZE(CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME));
     if ( libsVerProc ) {
         int boostVer, qtVer, stlVer;
         libsVerProc(&boostVer, &qtVer, &stlVer);
-        LOG_DEBUG(path << " boost: " << boostVer << "; Qt: " << std::hex << qtVer << "; STL: " << std::dec << stlVer);
+        CORE_LOG_DEBUG(path << " boost: " << boostVer << "; Qt: " << std::hex << qtVer << "; STL: " << std::dec << stlVer);
         bool success = true;
         // boost/version.hpp - sprawdzenie major i minor
         if ( boostVer / 100 != BOOST_VERSION / 100 ) {
-            LOG_ERROR(path << " has incompatible boost version: " << boostVer);
+            CORE_LOG_ERROR(path << " has incompatible boost version: " << boostVer);
             success = false;
         }
         // QtCore/QGlobal.h - sprawdzenie tylko wersji Major
         if ( (qtVer >> 16) != (QT_VERSION >> 16) ) {
-            LOG_ERROR(path << " has incompatible Qt version: " << qtVer);
+            CORE_LOG_ERROR(path << " has incompatible Qt version: " << qtVer);
             success = false;
         }
         //
         if ( stlVer != CORE_CPPLIB_VER ) {
             if ( stlVer == -1 ) {
-                LOG_ERROR(path << " has incompatible STL version: " << "unknown");
+                CORE_LOG_ERROR(path << " has incompatible STL version: " << "unknown");
             } else {
-                LOG_ERROR(path << " has incompatible STL version: " << stlVer);
+                CORE_LOG_ERROR(path << " has incompatible STL version: " << stlVer);
             }
             success = false;
         }
         return success;
     } else {
-        LOG_ERROR(path << " is a plugin, but finding " << STRINGIZE(CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME) << " failed");
+        CORE_LOG_ERROR(path << " is a plugin, but finding " << STRINGIZE(CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME) << " failed");
         return false;
     }
 }
 
-bool PluginLoader::checkPluginVersion( HMODULE library, const std::string& path )
+bool PluginLoader::checkPluginVersion( HMODULE library, const Filesystem::Path& path )
 {
-	auto versionProc = loadProcedure<Plugin::GetVersionFunction>(library, STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME));
+	auto versionProc = loadProcedure<Plugin::GetInterfaceVersionFunction>(library, STRINGIZE(CORE_GET_PLUGIN_INTERFACE_VERSION_FUNCTION_NAME));
 	if ( versionProc ) {
 		int version = versionProc();
 		if ( version != CORE_PLUGIN_INTERFACE_VERSION ) {
-			LOG_ERROR(path<<" has obsolete interface version; should be "<<CORE_PLUGIN_INTERFACE_VERSION<<", is "<<version);
+			CORE_LOG_ERROR(path<<" has obsolete interface version; should be "<<CORE_PLUGIN_INTERFACE_VERSION<<", is "<<version);
 			return false;
 		} else {
 			return true;
 		}
 	} else {
-		LOG_ERROR(path<<" is a shared library, but finding "<<STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
+		CORE_LOG_ERROR(path<<" is a shared library, but finding "<<STRINGIZE(CORE_GET_PLUGIN_INTERFACE_VERSION_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
 		return false;
 	}
 }
 
-bool PluginLoader::checkPluginBuildType( HMODULE library, const std::string& path )
+bool PluginLoader::checkPluginBuildType( HMODULE library, const Filesystem::Path& path )
 {
     auto buildTypeProc = loadProcedure<Plugin::GetBuildTypeFunction>(library, STRINGIZE(CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME));
     if ( buildTypeProc ) {
         int buildType = buildTypeProc();
         if ( buildType != CORE_PLUGIN_BUILD_TYPE ) {
-            LOG_ERROR(path<<" has obsolete interface buildType; should be "<<CORE_PLUGIN_BUILD_TYPE<<", is "<<buildType);
+            CORE_LOG_ERROR(path<<" has obsolete interface buildType; should be "<<CORE_PLUGIN_BUILD_TYPE<<", is "<<buildType);
             return false;
         } else {
             return true;
         }
     } else {
-        LOG_ERROR(path<<" is a shared library, but finding "<<STRINGIZE(CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
+        CORE_LOG_ERROR(path<<" is a shared library, but finding "<<STRINGIZE(CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
         return false;
     }
 }

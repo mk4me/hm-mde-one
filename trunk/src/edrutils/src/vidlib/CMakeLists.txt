@@ -1,6 +1,5 @@
 BEGIN_PROJECT("dynamic")
 
-
 CONFIG_OPTION(VIDLIB_ENABLE_EXCEPTIONS "Enable exeptions?" ON)
 CONFIG_OPTION(VIDLIB_LIBRARY_STATIC "Build static library?" OFF)
 add_definitions(-DVIDLIB_LIBRARY)
@@ -11,6 +10,7 @@ SET_PRIVATE_HEADERS(
 	Converter.h
 	VideoBufferChunk.h
 	VidLibPrivate.h
+	PCH.h
 )
 
 set (PUBLIC 
@@ -22,7 +22,6 @@ set (PUBLIC
 	VideoBuffer.h
 	FFmpegError.h
 	FFmpegVideoStream.h
-	Export.h
 	FileSequenceVideoStream.h
 	VideoStreamAdapter.h
 	)
@@ -39,12 +38,11 @@ set(SOURCE
 	VideoError.cpp
 	FileSequenceVideoStream.cpp
 	VideoStreamAdapter.cpp
+	PCH.cpp
 	)
 
-
-
 if (CONFIG_VIDLIB_ENABLE_OSG)
-	# OSG
+#	OSG
 	set(PUBLIC ${PUBLIC}
 		osg/BufferedVideoImageStream.h
 		osg/VideoImageStream.h
@@ -71,15 +69,16 @@ SET_PUBLIC_HEADERS(
 	${PUBLIC}
 )
 
-
 SET_SOURCE_FILES(
 	${SOURCE}
 )
 
 SET_CONFIGURATION_INPUT_FILES(
-	"Config.h.in"
+	Config.h.in
 )
 
 CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")
+
+SET_PRECOMPILED_HEADER( PCH.h PCH.cpp)
 
 END_PROJECT()

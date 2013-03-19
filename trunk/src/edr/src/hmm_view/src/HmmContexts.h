@@ -13,9 +13,9 @@
 #include <QtGui/QPlainTextEdit>
 #include <QtGui/QComboBox>
 #include <QtGui/QTreeWidget>
-#include <core/src/FlexiTabWidget.h>
-#include <core/src/IAppUsageContextManager.h>
 #include <boost/tuple/tuple.hpp>
+#include "IAppUsageContext.h"
+#include <coreui/CoreFlexiToolBar.h>
 
 //! Kontekst bazowy dla kontekstów aplikacji medycznej
 class HMMEmptyContext : public IAppUsageContext
@@ -67,11 +67,48 @@ class HMMReportContext : public HMMEmptyContext
 
 };
 
+//! placeholder dla kontekstu vdf
+class HMMVdfContext : public HMMEmptyContext
+{
+
+};
+
+//! kontekst dla wizualizatorów
+class HMMVVdfUsageContext : public IAppUsageContext
+{
+public:
+    HMMVVdfUsageContext(QTabWidget * flexiTabWidget);
+public:
+    //! wywoływane, po aktywowaniu się kontekstu
+    //! \param contextWidget wiget, który wywołał kontekst
+    virtual void activateContext(QWidget * contextWidget);
+    //! wywoływane, gdy kontekst przestaje być aktywny
+    //! \param nextContextWidget 
+    //! \param refresh
+    virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
+    //! widget jest rejestrowany, tworzony jest flexi tabdla niego
+    virtual void onRegisterContextWidget(QWidget * contextWidget);
+    //! widget jest zamknięty, usuwany jest flexitab dla niego
+    virtual void onUnregisterContextWidget(QWidget * contextWidget);
+
+private:
+    //! flexi tab z akcjami
+    QTabWidget * flexiTabWidget;
+    //! zbiór sekcji
+
+    std::list<coreUI::CoreFlexiToolBarSection*> sections;
+
+    coreUI::CoreFlexiToolBar * widget;
+    //! identyfikator grupy dla miniatur raportów
+    int groupID;
+
+};
+
 //! kontekst dla wizualizatorów
 class HMMVisualizerUsageContext : public IAppUsageContext
 {
 public:
-    HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget);
+    HMMVisualizerUsageContext(QTabWidget * flexiTabWidget);
 public:
     //! wywoływane, po aktywowaniu się kontekstu
     //! \param contextWidget wiget, który wywołał kontekst
@@ -86,14 +123,23 @@ public:
     virtual void onUnregisterContextWidget(QWidget * contextWidget);
 
 private:
+
+	struct UsageContextData
+	{
+		QString name;
+		QWidget * widget;
+		QIcon icon;
+	};
+
+private:
     //! flexi tab z akcjami
-    FlexiTabWidget * flexiTabWidget;
+    QTabWidget * flexiTabWidget;
     //! identyfikator grupy dla wizualizatorów
-    FlexiTabWidget::GUIID visualizerGroupID;
+    int visualizerGroupID;
     //! zbiór sekcji
-    std::set<FlexiTabWidget::GUIID> visualizerSectionsIDs;
+    std::list<coreUI::CoreFlexiToolBarSection*> visualizerSections;
     //! mapa [widget kontekstu - > [nazwa grupy -> widget flexi]]
-    std::map<QWidget*, std::map<QString, QWidget *>> visualizersData;
+    std::map<QWidget*, UsageContextData> visualizersData;
 
 };
 
@@ -108,7 +154,7 @@ public:
     //! konstruktor
     //! \param flexiTabWidget 
     //! \param hmm 
-    HMMTreeItemUsageContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
+    HMMTreeItemUsageContext(QTabWidget * flexiTabWidget, HmmMainWindow* hmm);
 public:
     //! wywoływane, po aktywowaniu się kontekstu, do flexi bara trafią akcje związane z drzewem analiz
     //! \param contextWidget wiget, który wywołał kontekst
@@ -139,11 +185,15 @@ private:
 
 private:
     //! flexi widget
-    FlexiTabWidget * flexiTabWidget;
+    QTabWidget * flexiTabWidget;
     //! sekcja obsługiwanego flexi widgeta
-    QWidget* flexiSection;
+    QWidget* flexiContent;
+
+	QWidget * contextWidgetActions;
+
+	coreUI::CoreFlexiToolBarSection * flexiSection;
     //! identyfikator grupy dla drzewa
-    FlexiTabWidget::GUIID groupID;
+    int groupID;
     //! główne okno aplikacji
     HmmMainWindow* hmm;
 };
@@ -158,7 +208,7 @@ public:
     //! konstruktor
     //! \param flexiTabWidget flexi widget kontekstu
     //! \param hmm główne okno aplikacji
-    RaportsThumbnailsContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
+    RaportsThumbnailsContext(QTabWidget * flexiTabWidget, HmmMainWindow* hmm);
 public:
     //! wywoływane, po aktywowaniu się kontekstu, do flexi bara trafią akcje związane z tworzeniem raportów
     //! \param contextWidget wiget, który wywołał kontekst
@@ -177,11 +227,11 @@ private Q_SLOTS:
 
 private:
     //! flexi widget
-    FlexiTabWidget * flexiTabWidget;
+    QTabWidget * flexiTabWidget;
     //! sekcja obsługiwanego flexi widgeta
     QWidget* flexiSection;
     //! identyfikator grupy dla miniatur raportów
-    FlexiTabWidget::GUIID groupID;
+    int groupID;
     //! główne okno aplikacji
     HmmMainWindow* hmm;
     //! nazwa tworzonego raportu
@@ -202,7 +252,7 @@ public:
     //! konstruktor
     //! \param flexiTabWidget flexi widget kontekstu
     //! \param hmm główne okno aplikacji
-    RaportsTabContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
+    RaportsTabContext(QTabWidget * flexiTabWidget, HmmMainWindow* hmm);
 
 public:
     //! wywoływane, po aktywowaniu się kontekstu, do flexi bara trafią akcje związane z oknem raportów
@@ -229,15 +279,17 @@ private:
 
 private:
     //! flexi widget
-    FlexiTabWidget * flexiTabWidget;
+    QTabWidget * flexiTabWidget;
     //! sekcja z akcjami związanymi z edycja dokumentu
     QWidget* editSection;
     //! sekcja z akcjami związanymi z układem tekstu dokumentu
     QWidget* textSection;
     //! sekcja z akcjami związanymi z zapisem, odczytem dokumentu
     QWidget* fileSection;
+
+	coreUI::CoreFlexiToolBar * widget;
     //! identyfikator grupy dla miniatur raportów
-    FlexiTabWidget::GUIID groupID;
+    int groupID;
     //! główne okno aplikacji
     HmmMainWindow* hmm;
 };

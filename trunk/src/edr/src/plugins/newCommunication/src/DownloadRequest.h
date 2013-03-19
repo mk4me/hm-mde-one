@@ -12,7 +12,7 @@
 #include <map>
 #include <plugins/newCommunication/IDownloadRequest.h>
 #include "CommunicationManager.h"
-#include <core/Filesystem.h>
+#include <corelib/Filesystem.h>
 #include <OpenThreads/ReentrantMutex>
 #include <OpenThreads/ScopedLock>
 

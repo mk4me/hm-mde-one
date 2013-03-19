@@ -2,12 +2,14 @@
 #include <QtGui/QHBoxLayout>
 #include "NewChartHelpers.h"
 
-boost::tuple<QWidget*, QLabel*, QDoubleSpinBox*> LabeledSpinbox::create (
-    QWidget* parent, const QString& label, double singleStep, double minimum, double maximum)
+std::pair<QWidget*, QDoubleSpinBox*> LabeledSpinbox::create(const QString& label, double singleStep, double minimum, double maximum)
 {
-    QWidget* spinWidget = new QWidget(parent);
-    spinWidget->setLayout(new QHBoxLayout());
-	auto layout = spinWidget->layout();
+	std::pair<QWidget*, QDoubleSpinBox*> ret;
+    ret.first = new QWidget();
+	auto layout = new QHBoxLayout();
+	layout->setContentsMargins(3,0,3,0);
+	layout->setSpacing(3);
+    ret.first->setLayout(layout);
     QLabel* l = new QLabel(label);
     layout->addWidget(l);
     QDoubleSpinBox* spin = new QDoubleSpinBox();
@@ -17,8 +19,8 @@ boost::tuple<QWidget*, QLabel*, QDoubleSpinBox*> LabeledSpinbox::create (
     spin->setSingleStep(singleStep);
     spin->setMaximumWidth(90);
     layout->addWidget(spin);
-    layout->setMargin(0);
-    layout->setContentsMargins(0, 0, 0, 0);
-    return boost::make_tuple(spinWidget, l, spin);
+	l->setBuddy(spin);
+	ret.second = spin;
+    return ret;
 }
 

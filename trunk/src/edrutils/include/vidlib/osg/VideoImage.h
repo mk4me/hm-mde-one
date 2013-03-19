@@ -17,7 +17,6 @@ UTILS_PUSH_WARNINGS
 #include <osg/observer_ptr>
 #include <osg/Image>
 UTILS_POP_WARNINGS
-#include <vidlib/Export.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/VideoStream.h>
 #include <vidlib/Picture.h>

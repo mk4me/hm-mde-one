@@ -10,10 +10,12 @@
 #ifndef HEADER_GUARD_NEW_CHART__INEWCHARTVISUALIZER_H__
 #define HEADER_GUARD_NEW_CHART__INEWCHARTVISUALIZER_H__
 
+#include <corelib/IVisualizer.h>
+
 //! niektóre elementy wizualizatora wykresów są edytowane z zewnątrz, 
 //! dlatego należy interfejsować serie danych, aby dać dostęp do obiektu bez konieczności linkowania się z pluginem
 //! taką funkcjonalność w obrębie wizualizatora zapewnia właśnie ten interfejs
-class INewChartVisualizer : public core::IVisualizer
+class INewChartVisualizer : public plugin::IVisualizer
 {
 public:
 	virtual ~INewChartVisualizer() {}

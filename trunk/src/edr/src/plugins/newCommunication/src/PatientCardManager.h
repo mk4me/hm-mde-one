@@ -10,7 +10,7 @@
 #define HEADER_GUARD___PATIENTCARDMANAGER_H__
 
 #include <plugins/newCommunication/IPatientCardManager.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 #include <vector>
 
 class PatientCardManager : public communication::IPatientCardManager

@@ -32,7 +32,7 @@ bool DataFilterWidget::eventFilter(QObject *object, QEvent *event)
     return false;
 }
 
-void DataFilterWidget::addFilter(const QString& bigLabelText, DataFilterPtr dataFilter, const QPixmap* icon)
+void DataFilterWidget::addFilter(const QString& bigLabelText, SubjectHierarchyFilterPtr dataFilter, const QPixmap* icon)
 {
     SimpleFilterCommandPtr simple(new SimpleFilterCommand(dataFilter));
     addFilter(bigLabelText, simple, icon);
@@ -54,7 +54,7 @@ void DataFilterWidget::addFilter( const QString& bigLabelText, IFilterCommandPtr
 void DataFilterWidget::onClick()
 {
     uncheckEntries();
-    const std::vector<SessionConstPtr>& sessions = hmmWindow->getCurrentSessions();
+    const auto& sessions = hmmWindow->getCurrentSessions();
     hmmWindow->clearTree();
     BOOST_FOREACH(FilterEntryWidget* filter, entries) {
         hmmWindow->addItemToTree(filter->getFilterCommand()->createTreeBranch(filter->getName(), sessions));

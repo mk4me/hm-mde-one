@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>920</width>
-    <height>709</height>
+    <height>707</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -133,7 +133,7 @@ color: white;
         </property>
         <widget class="QWidget" name="activeDataTab">
          <attribute name="icon">
-          <iconset resource="../../core/ui/CoreIcons.qrc">
+          <iconset resource="../../coreui/ui/CoreIcons.qrc">
            <normaloff>:/resources/icons/zaladowane.png</normaloff>:/resources/icons/zaladowane.png</iconset>
          </attribute>
          <attribute name="title">
@@ -153,6 +153,17 @@ color: white;
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QMenu {
+	border: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+QMenu::item {
+color: black;
+}</string>
             </property>
            </widget>
           </item>
@@ -176,7 +187,7 @@ color: white;
         </widget>
         <widget class="QWidget" name="filtersTab">
          <attribute name="icon">
-          <iconset resource="../../core/ui/CoreIcons.qrc">
+          <iconset resource="../../coreui/ui/CoreIcons.qrc">
            <normaloff>:/resources/icons/filtry.png</normaloff>:/resources/icons/filtry.png</iconset>
          </attribute>
          <attribute name="title">
@@ -283,7 +294,7 @@ color: white;
                    <string>hide</string>
                   </property>
                   <property name="icon">
-                   <iconset resource="Icons.qrc">
+                   <iconset resource="hmmViewIcons.qrc">
                     <normaloff>:/resources/icons/strzalka-dol.png</normaloff>
                     <normalon>:/resources/icons/strzalka-gora.png</normalon>:/resources/icons/strzalka-dol.png</iconset>
                   </property>
@@ -341,7 +352,7 @@ color: white;
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>314</width>
+                  <width>313</width>
                   <height>160</height>
                  </rect>
                 </property>
@@ -396,8 +407,8 @@ QPushButton#applyButton:hover
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>318</width>
-                  <height>436</height>
+                  <width>100</width>
+                  <height>30</height>
                  </rect>
                 </property>
                </widget>
@@ -410,7 +421,7 @@ QPushButton#applyButton:hover
         </widget>
         <widget class="QWidget" name="raportsTab">
          <attribute name="icon">
-          <iconset resource="../../core/ui/CoreIcons.qrc">
+          <iconset resource="../../coreui/ui/CoreIcons.qrc">
            <normaloff>:/resources/icons/karta.png</normaloff>:/resources/icons/karta.png</iconset>
          </attribute>
          <attribute name="title">
@@ -432,8 +443,8 @@ QPushButton#applyButton:hover
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>318</width>
-               <height>659</height>
+               <width>65</width>
+               <height>52</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -477,121 +488,89 @@ QPushButton#applyButton:hover
      <property name="styleSheet">
       <string notr="true">#analisisArea {
  background-color: rgb(91, 91, 91);
+color: black;
 padding: 0px;
 margin: 0px;
 }
 
-/* timeline */
-#analisisArea .QMainWindow .QTreeWidget {
- background: transparent;
-}
-
-/* topWindow i bottomWindow */
-#analisisArea &gt; QMainWindow {
- border: 1px solid black;
- border-radius: 4px;
- background: white;
-}
-
 /* topWindow */
-#analisisArea &gt; EDRDockWidgetManager {
- /*border-bottom-left-radius: 0px;
- border-bottom-right-radius: 0px;
-*/
- margin: 0px;
- padding: 0px;
-}
-
-#analisisArea &gt; EDRDockWidgetManager QMainWindow {
- /*border-radius: 0px;*/
- background: white;
- margin: 0px;
- padding: 0px;
-}
-
-#analisisArea VisualizerWidget &gt; .QWidget {
- border-top-left-radius: 0px;
- border-top-right-radius: 0px;
-}
-
-/* timeline */
-#timelineControls, #TimelineWidget {
- spacing: 0px;
- margin: 0px;
- padding-left: 4px;
- padding-right: 4px;
- border-left: 1px solid black;
- border-right: 1px solid black;
-}
-
-#timelineControls QAbstractSpinBox{
- border: 1px solid rgb(135, 177, 255);
- border-radius: 4px;
-}
-
-#timelineControls QToolButton, #timelineControls QPushButton {
+coreUI--CoreDockWidgetManager {
  background: transparent;
- border: 1px rgb(135, 177, 255);
- border-radius: 0px;
- padding: 0px;
- margin: 0px;
- spacing: 0px;
-}
-
-#timelineGroupedControls {
- spacing: 0px;
  margin: 0px;
  padding: 0px;
- background: rgb(101, 101, 101); 
+border: none;
 }
 
-#leftContainer, #centerContainer, #rightContainer {
- border: 2px solid rgb(135, 177, 255);
- background: rgb(101, 101, 101); 
- spacing: 0px;
- margin: 0px;
- padding: 0px;
-}
-
-#leftContainer {
- border-bottom: none;
- border-left: none;
- border-right: none;
-}
-
-#rightContainer {
- border-bottom: none;
- border-left: none;
- border-right: none;
-}
-
-#centerContainer {
- border-top: none;
- border-bottom-left-radius: 4px;
- border-bottom-right-radius: 4px;
- background: white;
-}
-
-#leftControls, #rightCOntrols, #centerControls {
- border: none;
- margin: 0px;
- padding: 0px;
+QTabWidget::pane {
  background: transparent;
+	margin: 0px;
+	border: 1px solid black;
+	padding: 2px;
+	 border-radius: 4px;
+}
+
+QTabWidget::pane &gt; QWidget {
+	background: transparent;
+}
+
+coreUI--CoreDockWidgetSet {
+ background: transparent;
+ margin: 0px;
+ padding: 0px;
+border: none;
+}
+
+QMainWindow {
+	border: none;
+	padding: 0px;
+	margin: 0px;
+	border-radius: 4px;
+	background: transparent;
+}
+
+QDockWidget {
+	padding: 0px;
+	border: 1px solid black;
+	border-radius: 4px;
+	background: transparent;
+	color: black;
+}
+
+coreUI--CoreVisualizerWidget {
+	background: transparent;
+	border: 1px solid black;
+	color: black;
+	border-top: 1px solid white;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	background: transparent;
+}
+
+coreUI--CoreVisualizerWidget * {
+color: black;
+}
+
+coreUI--CoreVisualizerWidget:hover {
+	border: 2px solid rgb(135, 177, 255);
 }
 
 /* styl titlebarów i ich dzieci */
-EDRTitleBar, EDRTitleBar * {
- background-color: rgb(43, 42, 41);
- color: white;
- border: none;
+coreUI--CoreTitleBar {
+ background: black;
+color: white;
  border-radius: 0px;
  border-top-left-radius: 4px;
  border-top-right-radius: 4px;
  margin: 0px;
- padding: 0px;
+ padding: 2px;
 }
 
-EDRTitleBar QToolButton#buttonFloat {
+coreUI--CoreTitleBar QLabel#titleLabel {
+ background: black;
+color: white;
+}
+
+coreUI--CoreTitleBar QToolButton#buttonFloat {
     background: rgb(43, 42, 41);
     border: 1px solid rgb(63, 62, 61);
      border-bottom: none;
@@ -601,17 +580,17 @@ EDRTitleBar QToolButton#buttonFloat {
  margin-top: 4px;
  max-height: 12px;
  min-width: 17px;
-} 
+}
 
-EDRTitleBar QToolButton#buttonFloat:hover {
+coreUI--CoreTitleBar QToolButton#buttonFloat:hover {
     background-color: rgb(135, 177, 255);
  }
 
-EDRTitleBar QToolButton#buttonFloat:pressed {
+coreUI--CoreTitleBar QToolButton#buttonFloat:pressed {
     background-color: rgb(55, 97, 180);
 }
 
-EDRTitleBar QToolButton#buttonClose {
+coreUI--CoreTitleBar QToolButton#buttonClose {
     background-color: rgb(43, 42, 41);
      border: 1px solid rgb(63, 62, 61);
      border-bottom: none; 
@@ -622,11 +601,11 @@ EDRTitleBar QToolButton#buttonClose {
  min-width: 23px;
 }
 
- EDRTitleBar QToolButton#buttonClose:hover {
+ coreUI--CoreTitleBar QToolButton#buttonClose:hover {
      background-color: rgb(200, 0, 0); 
  }
 
-EDRTitleBar QToolButton#buttonClose:pressed {
+coreUI--CoreTitleBar QToolButton#buttonClose:pressed {
          background-color: rgb(128, 0, 0);
 }
 
@@ -652,6 +631,74 @@ QMainWindow::separator:vertical:hover {
 QMainWindow::separator:horizontal:hover {
  margin-left: 4px;
  margin-right: 4px;
+} 
+
+/* timeline */
+#timelineControls, #TimelineWidget {
+ spacing: 0px;
+ margin: 0px;
+ padding-left: 4px;
+ padding-right: 4px;
+border: none;
+}
+
+#timelineControls QAbstractSpinBox{
+ border: 1px solid rgb(135, 177, 255);
+ border-radius: 4px;
+}
+
+#timelineControls QToolButton, #timelineControls QPushButton {
+ background: transparent;
+ border: 1px rgb(135, 177, 255);
+ border-radius: 0px;
+ padding: 0px;
+ margin: 0px;
+ spacing: 0px;
+}
+
+#timelineGroupedControls {
+ spacing: 0px;
+ margin: 0px;
+ padding: 0px;
+ background: rgb(91, 91, 91); 
+}
+
+#leftContainer, #centerContainer, #rightContainer {
+ border: 2px solid rgb(135, 177, 255);
+ background: rgb(91, 91, 91); 
+ spacing: 0px;
+ margin: 0px;
+ padding: 0px;
+}
+
+TimeSliderWidget {
+	padding-top: 4px;
+}
+
+#leftContainer {
+ border-bottom: none;
+ border-left: none;
+ border-right: none;
+}
+
+#rightContainer {
+ border-bottom: none;
+ border-left: none;
+ border-right: none;
+}
+
+#centerContainer {
+ border-top: none;
+ border-bottom-left-radius: 4px;
+ border-bottom-right-radius: 4px;
+ background: white;
+}
+
+#leftControls, #rightControls, #centerControls {
+ border: none;
+ margin: 0px;
+ padding: 0px;
+ background: transparent;
 }
 
 QTabBar {
@@ -660,7 +707,7 @@ QTabBar {
 position: absolute;
 }
 
-EDRDockWidgetSet QTabBar {
+coreUI--CoreDockWidgetSet QTabBar {
  background: white;
 }
 
@@ -675,75 +722,6 @@ border-top: 3px solid black;
  margin-right: 1px;
 }
 
-/*
-EDRDockWidgetSet QTabBar::tab {
- background: rgb(91, 91, 91);
-}
-
-
-QTabBar::tab:previous-selected {
- border-right: none;
-}
-
-QTabBar::tab:next-selected, QTabBar::tab:middle:next-selected {
- border-right: 1px solid black;
-}
-
-QTabBar::tab:first, EDRDockWidgetSet QTabBar::tab:first{
- border: 1px solid  black;
- border-top: 3px solid black;
- border-bottom-left-radius: 4px;
- padding: 2px;
-}
-
-QTabBar::tab:first:previous-selected {
- border-right: none;
-}
-
-QTabBar::tab:middle {
- border: 1px solid  black;
- border-top: 3px solid black;
- border-left: none;
-}
-
-QTabBar::tab:last {
- border: 1px solid  black;
- border-top: 3px solid black;
- border-left: none;
- border-bottom-right-radius: 4px;
-}
-
-QTabBar::tab:middle:selected {
- border: 1px solid  black;
- border-top: 3px solid black;
- background-color: black;
- border-bottom-left-radius: 0px;
- border-bottom-right-radius: 0px;
- margin-left: -1px;
- margin-right: -1px;
-}
-
-QTabBar::tab:first:selected {
-border: 1px solid black;
- border-top: 3px solid black;
- background-color: black;
- border-bottom-left-radius: 4px;
- border-bottom-right-radius: 0px;
- margin-left: 0px;
- margin-right: -1px;
-}
-
-QTabBar::tab:last:selected {
-border: 1px solid  black;
-border-top: 3px solid black;
- background-color: black;
- border-bottom-left-radius: 0px;
- border-bottom-right-radius: 4px;
-  margin-left: -1px;
- margin-right: 0px;
-}
-*/
-
 QTabBar::tab:selected {
  background-color: black;
  border-bottom-left-radius: 4px;
@@ -753,6 +731,14 @@ color: white;
 
 QTabBar::tab:hover {
     background-color: #898989;
+}
+
+QFrame#bottomMainWindow {
+	background: rgb(91, 91, 91);
+	border: 1px solid black;
+	border-radius: 4px;
+	margin: 0px;
+	padding: 0px;
 }</string>
      </property>
     </widget>
@@ -760,8 +746,8 @@ QTabBar::tab:hover {
   </layout>
  </widget>
  <resources>
-  <include location="Icons.qrc"/>
-  <include location="../../core/ui/CoreIcons.qrc"/>
+  <include location="../../coreui/ui/CoreIcons.qrc"/>
+  <include location="hmmViewIcons.qrc"/>
  </resources>
  <connections/>
 </ui>

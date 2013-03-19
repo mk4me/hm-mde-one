@@ -1,6 +1,7 @@
 #include "CommunicationPCH.h"
 #include "FilesHelper.h"
 #include "DataSourceStatusManager.h"
+#include <corelib/IParserManagerReader.h>
 
 using namespace communication;
 using namespace webservices;
@@ -106,26 +107,17 @@ void FilesHelper::filterFiles(const std::set<int> & inFiles, const DataStatus & 
     filteredFiles.insert(localFilteredFiles.begin(), localFilteredFiles.end());
 }
 
-void FilesHelper::filterFiles(const std::set<int> & inFiles, const std::set<std::string> & filesExtensions, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager)
+void FilesHelper::filterFiles(const std::set<int> & inFiles, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager)
 {
 	std::vector<int> localFilteredFiles;
 	auto filesITEnd = inFiles.end();
-	auto extITEnd = filesExtensions.end();
 	for(auto fileIT = inFiles.begin(); fileIT != filesITEnd; ++fileIT){
-		if(filesExtensions.find(filesStatusManager.filePath(*fileIT).extension().string()) != extITEnd){
+		if(plugin::getParserManagerReader()->sourceIsAccepted(filesStatusManager.filePath(*fileIT).string()) == true){
 			localFilteredFiles.push_back(*fileIT);
 		}
 	}
 
 	filteredFiles.insert(localFilteredFiles.begin(), localFilteredFiles.end());
-}
-
-void FilesHelper::filterFiles(const std::set<int> & inFiles, const std::string & filesExtension, std::set<int> & filteredFiles, const FileStatusManager & filesStatusManager)
-{
-	std::set<std::string> ext;
-	ext.insert(filesExtension);
-
-	filterFiles(inFiles, ext, filteredFiles, filesStatusManager);
 }
 
 void FilesHelper::getFiles(const MedicalShallowCopy::Disorder * disorder, const ShallowCopy & shallowCopy, std::set<int> & files)

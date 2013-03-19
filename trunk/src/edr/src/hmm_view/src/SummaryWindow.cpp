@@ -2,7 +2,6 @@
 #include "TreeItemHelper.h"
 #include "HmmMainWindow.h"
 #include "AnalisisWidget.h"
-#include <core/src/VisualizerWidget.h>
 #include "TreeItemHelper.h"
 #include <plugins/newCommunication/IPatient.h>
 
@@ -41,7 +40,9 @@ void SummaryWindow::display( const std::vector<TreeItemHelperPtr>& helpers )
                 for (auto it = desc.begin(); it != desc.end(); ++it) {
                     auto motion = it->motion;
                     if (motion) {
-                        QString text = QString::fromStdString(it->wrapper->getName()) + createDescription(it->motion);
+						std::string name;
+						it->wrapper->tryGetMeta("core/name", name);
+                        QString text = QString::fromStdString(name) + createDescription(it->motion);
                         addItem(text, root);
                     }
                 }
@@ -64,8 +65,8 @@ void SummaryWindow::display( const std::vector<TreeItemHelperPtr>& helpers )
 QString SummaryWindow::createDescription( PluginSubject::MotionConstPtr motion) const
 {
     QString text;
-    PluginSubject::SessionConstPtr session = motion->getSession();
-    PluginSubject::SubjectConstPtr subject = session->getSubject();
+    PluginSubject::SessionConstPtr session = motion->getUnpackedSession();
+    PluginSubject::SubjectConstPtr subject = session->getUnpackedSubject();
     
     text += QObject::tr("Motion: ") + QString::fromStdString(motion->getLocalName()) + "\n";
     text += QObject::tr("Session: ") + QString::fromStdString(session->getLocalName()) + "\n";
@@ -73,36 +74,36 @@ QString SummaryWindow::createDescription( PluginSubject::MotionConstPtr motion) 
    
     std::vector<core::ObjectWrapperConstPtr> metadata;      
     try {
-        core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), session, metadata);
-        auto metaITEnd = metadata.end();
-        for(auto metaIT = metadata.begin(); metaIT != metaITEnd; ++metaIT){
-            core::MetadataConstPtr meta = (*metaIT)->get(false);
-            std::string groupName, groupID;
 
-            if(meta != nullptr && meta->value("groupName", groupName) == true) {
-                text += QObject::tr("Owner: %1").arg(groupName.c_str()); 
-                if (meta->value("groupID", groupID) == true) {
-                    text += QString("(%1)").arg(groupID.c_str());
-                }
-                text += "\n";
-            }
+		std::string groupName, groupID;
 
-            std::string date;
-            if(meta != nullptr && meta->value("data", date) == true) {
-                text += QObject::tr("Date: %1\n").arg(date.c_str());
-            }
-        }
+		if(motion->getSession()->tryGetMeta("groupName", groupName) == true) {
+			text += QObject::tr("Owner: %1").arg(groupName.c_str()); 
+			if (motion->getSession()->tryGetMeta("groupID", groupID) == true) {
+				text += QString("(%1)").arg(groupID.c_str());
+			}
+			text += "\n";
+		}
+
+		std::string date;
+		if(motion->getSession()->tryGetMeta("data", date) == true) {
+			text += QObject::tr("Date: %1\n").arg(date.c_str());
+		}
     } catch (...) {
-        LOG_WARNING("Problem with summary window metadata");
+        PLUGIN_LOG_WARNING("Problem with summary window metadata");
     }
     
-    if (session->hasObjectOfType(typeid(communication::IPatient))) {
-        communication::PatientConstPtr patient = session->getWrapperOfType(typeid(communication::IPatient))->get();
+    if (session->hasObject(typeid(communication::IPatient), false)) {
+		core::ConstObjectsList patients;
+		session->getObjects(patients, typeid(communication::IPatient), false);
+        communication::PatientConstPtr patient = patients.front()->get();
         text += QObject::tr("Patient: ") + QString::fromStdString(patient->getName()) + " " + QString::fromStdString(patient->getSurname()) + "\n";
     }
 
-    if (session->hasObjectOfType(typeid(communication::AntropometricData))) {
-        core::shared_ptr<communication::AntropometricData> antro = session->getWrapperOfType(typeid(communication::AntropometricData))->get();
+    if (session->hasObject(typeid(communication::AntropometricData), false)) {
+		core::ConstObjectsList antropo;
+		session->getObjects(antropo, typeid(communication::AntropometricData), false);
+        core::shared_ptr<const communication::AntropometricData> antro = antropo.front()->get();
         text += " ";
         text += QObject::tr("Weight: ") + QString("%1 ").arg(antro->bodyMass.first) + QString::fromStdString(antro->bodyMass.second) + "\n";
     }
@@ -134,9 +135,9 @@ void SummaryWindowController::onTreeItemSelected( QTreeWidgetItem* item, int col
     summary->display(collection);
 }
 
-void SummaryWindowController::onVisualizator( VisualizerWidget* visualizatorWidget )
+void SummaryWindowController::onVisualizator( coreUI::CoreVisualizerWidget* visualizatorWidget )
 {
-    VisualizerPtr visualizer = visualizatorWidget->getCurrentVisualizer();
+    core::VisualizerPtr visualizer = visualizatorWidget->getVisualizer();
     
     SummaryWindow::HelpersCollection collection;
     for (auto it = hmm->items2Descriptions.begin(); it != hmm->items2Descriptions.end(); ++it) {

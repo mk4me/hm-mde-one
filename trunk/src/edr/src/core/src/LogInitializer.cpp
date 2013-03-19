@@ -1,37 +1,20 @@
 #include "CorePCH.h"
+#include "Config.h"
 #include "LogInitializer.h"
-#include "Log.h"
 #include <QtCore/QThread>
-#include <boost/foreach.hpp>
 #include <osg/Notify>
 #include <boost/algorithm/string.hpp>
 #include <utils/Debug.h>
-#include "EDRConsoleWidget.h"
-#include <core/StringTools.h>
-#include <osg/ref_ptr>
-#include <core/IPath.h>
+#include <coreui/CoreConsoleWidget.h>
 
 using namespace core;
+using namespace coreUI;
 
-
-void QtMessageHandler(QtMsgType type, const char *msg)
-{
-    switch (type) {
-        case QtDebugMsg:
-            LOG_DEBUG_STATIC_NAMED("qt", msg);
-            break;
-        case QtWarningMsg:
-            LOG_WARNING_STATIC_NAMED("qt", msg);
-            break;
-        default:
-            // pozostałe poziomy komunikatu są już tożsame errorowi
-            LOG_ERROR_STATIC_NAMED("qt", msg);
-            break;
-    }
-}
-
+#ifndef CORE_DISABLE_LOGGING
+//------------------------------------------------------------------------------
 #ifdef CORE_ENABLE_LOG4CXX
 
+#include <boost/foreach.hpp>
 #include <log4cxx/logger.h>
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/appenderskeleton.h>
@@ -42,62 +25,66 @@ void QtMessageHandler(QtMsgType type, const char *msg)
 
 using namespace log4cxx;
 
-//------------------------------------------------------------------------------
+void QtMessageHandler(QtMsgType type, const char *msg)
+{
+	const static auto qtLogger = Logger::getLogger("qt");
+    switch (type) {
+        case QtDebugMsg:
+            LOG4CXX_DEBUG(qtLogger, msg);
+            break;
+        case QtWarningMsg:
+            LOG4CXX_WARN(qtLogger, msg);
+            break;
+        default:
+            // pozostałe poziomy komunikatu są już tożsame errorowi
+            LOG4CXX_ERROR(qtLogger, msg);
+            break;
+    }
+}
 
-/** Strumień przekierowywujący logowania do log4cxx */
+/** Strumień przekierowywujący logowania do naszego logera */
 class OsgNotifyHandlerLog4cxx : public osg::NotifyHandler
 {
-private:
-    //! Faktyczny logger.
-    log4cxx::LoggerPtr logger;
-
-public:
-    //! \param logger Faktyczny logger.
-    OsgNotifyHandlerLog4cxx(LoggerPtr logger) :
-    logger(logger)
-    {}
-    //! \param severity
-    //! \param message
-    void notify(osg::NotifySeverity severity, const char *message)
-    {
-        // z wiadomości usuwamy zbędne znaki (osg zawsze na koniec daje nową linię)
-        std::string msg = message;
-        boost::trim(msg);
-        switch (severity) {
-            case osg::ALWAYS:
-                LOG4CXX_LOG(logger, Level::getAll(), msg)
-                break;
-            case osg::FATAL:
-                LOG4CXX_ERROR(logger, msg);
-                break;
-            case osg::WARN:
-                LOG4CXX_WARN(logger, msg);
-                break;
-            case osg::NOTICE:
-            case osg::INFO:
-                LOG4CXX_INFO(logger, msg);
-                break;
-            case osg::DEBUG_INFO:
-            case osg::DEBUG_FP:
-                LOG4CXX_DEBUG(logger, msg);
-                break;
-            default:
-                UTILS_ASSERT(false, "Nieznany poziom osg. Wiadomość: %s", message);
-                break;
-        }
-    }
+public:	
+	  //! \param severity
+	  //! \param message
+	  virtual void notify(osg::NotifySeverity severity, const char *message)
+	  {
+		  const static auto osgLogger = Logger::getLogger("osg");
+		  // z wiadomości usuwamy zbędne znaki (osg zawsze na koniec daje nową linię)
+		  std::string msg(message);
+		  boost::trim(msg);
+		  switch (severity) {
+		  case osg::FATAL:
+			  LOG4CXX_ERROR(osgLogger, message);
+			  break;
+		  case osg::WARN:
+			  LOG4CXX_WARN(osgLogger, message);
+			  break;
+		  case osg::ALWAYS:
+		  case osg::NOTICE:
+		  case osg::INFO:
+			  LOG4CXX_INFO(osgLogger, message);
+			  break;
+		  case osg::DEBUG_INFO:
+		  case osg::DEBUG_FP:
+			  LOG4CXX_DEBUG(osgLogger, message);
+			  break;
+		  default:
+			  UTILS_ASSERT(false, "Nieznany poziom osg. Wiadomość: %s", message);
+			  break;
+		  }
+	  }
 };
-
-//------------------------------------------------------------------------------
 
 class ConsoleWidgetAppender : public AppenderSkeleton
 {
 private:
     //! Konsola właściwa.
-    EDRConsoleWidget* console;
+    CoreConsoleWidget* console;
     //! Kolejka wiadomości dla konsoli. Używana, gdy pojawiają się zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
-    std::queue<EDRConsoleWidgetEntryPtr> queuedEntries;
+    std::queue<CoreConsoleWidgetEntryPtr> queuedEntries;
 
 public:
     DECLARE_LOG4CXX_OBJECT(ConsoleWidgetAppender)
@@ -109,17 +96,17 @@ public:
 public:
     //! Zerujący konstruktor
     ConsoleWidgetAppender() :
-    console(NULL)
+    console(nullptr)
     {}
     //!
     virtual ~ConsoleWidgetAppender()
     {
-        UTILS_ASSERT(console == NULL, "Wskaźnik powinien zostać jawnie wyzerowany metodą setConsole!");
+        UTILS_ASSERT(console == nullptr, "Wskaźnik powinien zostać jawnie wyzerowany metodą setConsole!");
     }
 
 public:
     //! \param console Widget konsoli.
-    void setConsole(EDRConsoleWidget* console)
+    void setConsole(CoreConsoleWidget* console)
     {
         // korzytamy z muteksa z klasy bazowej !
         helpers::synchronized sync(mutex);
@@ -135,7 +122,9 @@ public:
 // Appender
 public:
     virtual void close()
-    {}
+	{
+
+	}
 
     virtual bool requiresLayout() const
     {
@@ -149,36 +138,69 @@ protected:
         LogString buf;
         layout->format(buf, event, p);
 
-        EDRConsoleWidgetEntryPtr entry(new EDRConsoleWidgetEntry());
+        CoreConsoleWidgetEntryPtr entry(new CoreConsoleWidgetEntry());
         int level = event->getLevel()->toInt();
         if ( level <= Level::DEBUG_INT ) {
-            entry->severity = core::LogSeverityDebug;
+            entry->severity = core::ILog::LogSeverityDebug;
         } else if ( level <= Level::INFO_INT ) {
-            entry->severity = core::LogSeverityInfo;
+            entry->severity = core::ILog::LogSeverityInfo;
         } else if ( level <= Level::WARN_INT ) {
-            entry->severity = core::LogSeverityWarning;
+            entry->severity = core::ILog::LogSeverityWarning;
         } else {
-            entry->severity = core::LogSeverityError;
+            entry->severity = core::ILog::LogSeverityError;
         }
 
         // rev - jakie flagi/ustawienia powoduja roznice? trzeba znalezc uniwersalne rozwiazanie
         // jeśli Utf16 jest ustawiane w konfiguracji, to nie można tego tak zahardcodować
+
         #ifdef __WIN32__
-            entry->message = QString::fromUtf16( reinterpret_cast<const ushort*>(buf.c_str()) );
+			#if LOG4CXX_LOGCHAR_IS_WCHAR
+				entry->message = QString::fromUtf16( reinterpret_cast<const ushort*>(buf.c_str()) );
+			#endif
+
+			#if LOG4CXX_LOGCHAR_IS_UTF8
+				entry->message = QString::fromUtf8( reinterpret_cast<const ushort*>(buf.c_str()) );
+			#endif
+			
+			#if LOG4CXX_LOGCHAR_IS_UNICHAR
+				entry->message = QString::fromStdString(buf);
+			#endif
+            
         #else
-            entry->message = QString::fromStdString(buf);
+			
+			#if LOG4CXX_LOGCHAR_IS_WCHAR
+				#if WCHAR_MAX > 0xFFFFu
+					entry->message = QString::fromUtf16( reinterpret_cast<const ushort*>(buf.c_str()) );
+				#else
+					entry->message = QString::fromUtf8( reinterpret_cast<const ushort*>(buf.c_str()) );
+				#endif
+			#endif
+
+			#if LOG4CXX_LOGCHAR_IS_UTF8
+				entry->message = QString::fromUtf8( reinterpret_cast<const ushort*>(buf.c_str()) );
+			#endif
+
+			#if LOG4CXX_LOGCHAR_IS_UNICHAR
+				entry->message = QString::fromStdString(buf);
+			#endif
         #endif
+
         entry->file = QString::fromAscii( event->getLocationInformation().getFileName() );
         entry->line = event->getLocationInformation().getLineNumber();
         entry->timestamp = QDate::currentDate();
         entry->theadId = QThread::currentThreadId();
-        if ( console ) {
-            // mamy konsolę - wysłamy jej komunikat
-            console->logOrQueueEntry(entry);
-        } else {
-            // nie ma konsoli - kolejkujemy
-            queuedEntries.push(entry);
-        }
+		{
+			// korzytamy z muteksa z klasy bazowej !
+			helpers::synchronized sync(mutex);
+
+			if ( console ) {
+				// mamy konsolę - wysłamy jej komunikat
+				console->logOrQueueEntry(entry);
+			} else {
+				// nie ma konsoli - kolejkujemy
+				queuedEntries.push(entry);
+			}
+		}
     }
 };
 
@@ -187,12 +209,12 @@ typedef log4cxx::helpers::ObjectPtrT<ConsoleWidgetAppender> ConsoleWidgetAppende
 
 //------------------------------------------------------------------------------
 
-LogInitializer::LogInitializer( const char* configPath )
+LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
 {
     ConsoleWidgetAppender::registerClass();
     // załadowanie parametów logowania
-    PropertyConfigurator::configure(configPath);
-    osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(Logger::getLogger( "osg" ) ));
+    PropertyConfigurator::configure(configPath.string());
+    osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx());
     qInstallMsgHandler(QtMessageHandler);
 }
 
@@ -202,7 +224,7 @@ LogInitializer::~LogInitializer()
     osg::setNotifyHandler( new osg::StandardNotifyHandler() );
 }
 
-void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
+void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
 {
     // pobranie wszystkich appenderów dla konsoli
     LoggerList loggers;
@@ -226,40 +248,61 @@ void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
 
 #else // fallback do logowania OSG
 
+#include <OpenThreads/Mutex>
+#include <OpenThreads/ScopedLock>
+#include <osg/ref_ptr>
+
+void QtMessageHandler(QtMsgType type, const char *msg)
+{
+	switch (type) {
+	case QtDebugMsg:
+		OSG_DEBUG << "[qt]->" << msg << std::endl;
+		break;
+	case QtWarningMsg:
+		OSG_WARN << "[qt]->" << msg << std::endl;
+		break;
+	default:
+		// pozostałe poziomy komunikatu są już tożsame errorowi
+		OSG_FATAL << "[qt]->" << msg << std::endl;
+		break;
+	}
+}
 
 /** Strumień przekierowywujący logowania do konsoli */
 class OsgNotifyHandlerConsoleWidget : public osg::NotifyHandler
 {
 private:
     //! Konsola właściwa.
-    EDRConsoleWidget* console;
-    //!
-    osg::ref_ptr<osg::NotifyHandler> defaultHandler;
+    CoreConsoleWidget* console;
+
+	osg::ref_ptr<osg::NotifyHandler> defaultHandler;
     //! Kolejka wiadomości dla konsoli. Używana, gdy pojawiają się zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
-    std::queue<EDRConsoleWidgetEntryPtr> queuedEntries;
+    std::queue<CoreConsoleWidgetEntryPtr> queuedEntries;
     typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
     OpenThreads::Mutex queueMutex;
 
 public:
     //! \param console Konsola.
     OsgNotifyHandlerConsoleWidget(osg::NotifyHandler* handler) :
-    console(NULL), defaultHandler(handler)
+    console(nullptr), defaultHandler(handler)
     {}
 
-    //! \return Domyślny handler.
-    osg::NotifyHandler* getDefaultHandler()
-    {
-        return defaultHandler.get();
-    }
+	//! \return Domyślny handler.
+	osg::NotifyHandler* getDefaultHandler()
+	{
+		return defaultHandler.get();
+	}
 
     //! \param console
-    void setConsole(EDRConsoleWidget* console)
+    void setConsole(CoreConsoleWidget* console)
     {
+		// nie ma konsoli - kolejkujemy
+		ScopedLock lock(queueMutex);
+
         this->console = console;
         // opróżniamy kolejkę komunikatów
         if ( console ) {
-            ScopedLock lock(queueMutex);
             for ( ; !queuedEntries.empty(); queuedEntries.pop() ) {
                 console->logOrQueueEntry(queuedEntries.front());
             }
@@ -268,42 +311,43 @@ public:
 
     //! \param severity
     //! \param message
-    void notify(osg::NotifySeverity severity, const char *message)
+    virtual void notify(osg::NotifySeverity severity, const char *message)
     {
         // standardowe drukowanie
         defaultHandler->notify(severity, message);
 
         // z wiadomości usuwamy zbędne znaki (osg zawsze na koniec daje nową linię)
-        std::string msg = message;
+        std::string msg(message);
         boost::trim(msg);
 
-        EDRConsoleWidgetEntryPtr entry(new EDRConsoleWidgetEntry());
+        CoreConsoleWidgetEntryPtr entry(new CoreConsoleWidgetEntry());
         if ( severity >= osg::DEBUG_INFO ) {
-            entry->severity = core::LogSeverityDebug;
+            entry->severity = core::ILog::LogSeverityDebug;
         } else if ( severity >= osg::NOTICE ) {
-            entry->severity = core::LogSeverityInfo;
+            entry->severity = core::ILog::LogSeverityInfo;
         } else if ( severity >= osg::WARN ) {
-            entry->severity = core::LogSeverityWarning;
+            entry->severity = core::ILog::LogSeverityWarning;
         } else {
-            entry->severity = core::LogSeverityError;
+            entry->severity = core::ILog::LogSeverityError;
         }
-        entry->message = core::toQString(msg);
+        entry->message = QString::fromStdString(msg);
         entry->line = -1;
         entry->timestamp = QDate::currentDate();
         entry->theadId = QThread::currentThreadId();
-        if ( console ) {
-            // mamy konsolę - wysłamy jej komunikat
-            console->logOrQueueEntry(entry);
-        } else {
-            // nie ma konsoli - kolejkujemy
-            ScopedLock lock(queueMutex);
-            queuedEntries.push(entry);
-        }
+		{
+			ScopedLock lock(queueMutex);
+			if ( console ) {
+				// mamy konsolę - wysłamy jej komunikat
+				console->logOrQueueEntry(entry);
+			} else {
+				queuedEntries.push(entry);
+			}
+		}
     }
 };
 
 
-LogInitializer::LogInitializer( const char* configPath )
+LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
 {
     qInstallMsgHandler(QtMessageHandler);
     osg::setNotifyHandler( new OsgNotifyHandlerConsoleWidget(osg::getNotifyHandler()) );
@@ -317,11 +361,56 @@ LogInitializer::~LogInitializer()
 }
 
 
-void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
+void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
 {
     OsgNotifyHandlerConsoleWidget* handler = dynamic_cast<OsgNotifyHandlerConsoleWidget*>(osg::getNotifyHandler());
     UTILS_ASSERT(handler);
     handler->setConsole(widget);
 }
 
-#endif // CORE_ENABLE_LOG4CXX
+#endif
+
+#else //CORE_DEFINE_DISABLE_LOGGING
+
+void QtMessageHandler(QtMsgType type, const char *msg)
+{
+}
+
+/** Strumień przekierowywujący logowania do konsoli */
+class OsgNotifyHandlerConsoleWidget : public osg::NotifyHandler
+{
+public:
+	//! \param console Konsola.
+	OsgNotifyHandlerConsoleWidget()
+	{
+
+	}
+
+	  //! \param severity
+	  //! \param message
+	  virtual void notify(osg::NotifySeverity severity, const char *message)
+	  {
+		  
+	  }
+};
+
+
+LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
+{
+	qInstallMsgHandler(QtMessageHandler);
+	osg::setNotifyHandler( new OsgNotifyHandlerConsoleWidget() );
+}
+
+LogInitializer::~LogInitializer()
+{
+	osg::setNotifyHandler( new osg::StandardNotifyHandler() );
+}
+
+
+void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
+{
+	
+}
+
+#endif
+

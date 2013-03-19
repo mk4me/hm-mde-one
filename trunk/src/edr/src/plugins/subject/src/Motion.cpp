@@ -5,36 +5,57 @@
 #include "Session.h"
 #include "Subject.h"
 #include "Motion.h"
-#include <core/PluginCommon.h>
+#include <corelib/PluginCommon.h>
 
 using namespace PluginSubject;
 
-Motion::Motion(PluginSubject::SubjectID motionID, const PluginSubject::SessionConstPtr & session,
-    PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
-	: motionID(motionID), session(session), localMotionID(localMotionID), wrappers(wrappers)
+PluginSubject::SubjectID Motion::globalID = 0;
+
+PluginSubject::SubjectID Motion::nextGlobalID()
 {
-    //generujemy nazwę
+	if(globalID == std::numeric_limits<PluginSubject::SubjectID>::max()){
+		throw std::runtime_error("Motion overflow");
+	}
 
-    std::stringstream ss;
-    ss.fill('0');
-    ss.width(4);
-    ss << motionID;
+	return globalID++;
+}
 
-    name = "Motion" + ss.str();
-
-    localName = session->getLocalName() + "-M";
-
-    std::stringstream ss1;
-    ss1.fill('0');
-    ss1.width(2);
-    ss1 << localMotionID;
-
-    localName += ss1.str();
+Motion::Motion(const core::ObjectWrapperConstPtr & session,
+	const PluginSubject::SessionConstPtr & unpackedSession,
+    PluginSubject::SubjectID localMotionID)
+	: motionID(nextGlobalID()), session(session), unpackedSession(unpackedSession), localMotionID(localMotionID),
+	name(generateName(motionID)), localName(generateLocalName(localMotionID, unpackedSession->getLocalName()))
+{
+    
 }
 
 Motion::~Motion()
 {
 
+}
+
+std::string Motion::generateName(PluginSubject::SubjectID motionID)
+{
+	std::stringstream ss;
+	ss.fill('0');
+	ss.width(4);
+	ss << motionID;
+
+	return "Motion" + ss.str();
+}
+
+std::string Motion::generateLocalName(PluginSubject::SubjectID motionLocalID, const std::string & sessionLocalName)
+{
+	std::string localName = sessionLocalName + "-M";
+
+	std::stringstream ss1;
+	ss1.fill('0');
+	ss1.width(2);
+	ss1 << motionLocalID;
+
+	localName += ss1.str();
+
+	return localName;
 }
 
 const std::string & Motion::getName() const
@@ -58,88 +79,57 @@ SubjectID Motion::getLocalID() const
 }
 
 
-const SessionConstPtr & Motion::getSession() const
+const core::ObjectWrapperConstPtr & Motion::getSession() const
 {
     return session;
 }
 
-int Motion::size() const
+const PluginSubject::SessionConstPtr & Motion::getUnpackedSession() const
 {
-    return wrappers.size();
+	return unpackedSession;
 }
 
-const core::ObjectWrapperConstPtr & Motion::get(int i) const
+void Motion::addData(const core::ObjectWrapperConstPtr & data)
 {
-    return wrappers[i];
+	storage.addData(data);
 }
 
-bool Motion::isSupported( const core::TypeInfo& typeToCheck ) const
+void Motion::removeData(const core::ObjectWrapperConstPtr & data)
 {
-    for (auto it = types.begin(); it != types.end(); ++it) {
-        if (*it == typeToCheck) {
-            return true;
-        }
-    }
-    return false;
+	storage.removeData(data);
 }
 
-void Motion::getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const
+const bool Motion::tryAddData(const core::ObjectWrapperConstPtr & data)
 {
-    wrappers.insert(wrappers.end(), this->wrappers.begin(), this->wrappers.end());
+	return storage.tryAddData(data);
 }
 
-FilteredMotion::FilteredMotion(const MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
-    : originalMotion(originalMotion), wrappers(wrappers)
+const bool Motion::tryRemoveData(const core::ObjectWrapperConstPtr & data)
 {
-
+	return storage.tryRemoveData(data);
 }
 
-FilteredMotion::~FilteredMotion()
+void Motion::getObjects(core::ConstObjectsList & objects) const
 {
-
+	storage.getObjects(objects);
 }
 
-const std::string & FilteredMotion::getName() const
+void Motion::getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const
 {
-    return originalMotion->getName();
+	storage.getObjects(objects, type, exact);
 }
 
-const std::string & FilteredMotion::getLocalName() const
+void Motion::getObjects(core::ObjectWrapperCollection& objects) const
 {
-    return originalMotion->getLocalName();
+	storage.getObjects(objects);
 }
 
-SubjectID FilteredMotion::getID() const
+const bool Motion::isManaged(const core::ObjectWrapperConstPtr & object) const
 {
-    return originalMotion->getID();
+	return storage.isManaged(object);
 }
 
-SubjectID FilteredMotion::getLocalID() const
+const bool Motion::hasObject(const core::TypeInfo & type, bool exact) const
 {
-    return originalMotion->getLocalID();
-}
-
-const SessionConstPtr & FilteredMotion::getSession() const
-{
-    return session;
-}
-
-void FilteredMotion::setSession(const SessionConstPtr & session)
-{
-    this->session = session;
-}
-
-int FilteredMotion::size() const
-{
-    return wrappers.size();
-}
-
-const core::ObjectWrapperConstPtr & FilteredMotion::get(int i) const
-{
-    return wrappers[i];
-}
-
-const MotionConstPtr & FilteredMotion::getOriginalMotion() const
-{
-    return originalMotion;
+	return storage.hasObject(type, exact);
 }

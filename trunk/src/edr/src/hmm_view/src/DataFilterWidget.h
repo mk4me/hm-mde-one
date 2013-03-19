@@ -18,6 +18,7 @@
 #include "FilterEntryWidget.h"
 #include "HmmMainWindow.h"
 #include "ui_filter.h"
+#include <plugins/subject/SubjectDataFilters.h>
 
 //! widget przechowujący grupę filtrów
 class DataFilterWidget : public QWidget, private Ui::FilterWidget
@@ -36,7 +37,7 @@ public:
     //! \param bigLabelText duża etykieta dla tekstu
     //! \param dataFilter filtr danych trafiających do drzewa
     //! \param icon ikona filtru
-    void addFilter(const QString& bigLabelText, PluginSubject::DataFilterPtr dataFilter, const QPixmap* icon = nullptr);
+    void addFilter(const QString& bigLabelText, SubjectHierarchyFilterPtr dataFilter, const QPixmap* icon = nullptr);
     //! Dodaje nowy filtr do grupy
     //! \param bigLabelText duża etykieta dla tekstu
     //! \param command akcja filtrująca dane trafiające do drzewa

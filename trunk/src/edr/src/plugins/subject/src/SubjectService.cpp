@@ -2,56 +2,20 @@
 #include "SubjectService.h"
 
 #include <limits>
-
+#include <OpenThreads/Mutex>
 #include <OpenThreads/ScopedLock>
-#include <core/ObjectWrapper.h>
+#include <corelib/BaseDataTypes.h>
 #include "Session.h"
 #include "Subject.h"
 #include "Motion.h"
 
+OpenThreads::Mutex subjectCreationMutex;
+OpenThreads::Mutex sessionCreationMutex;
+OpenThreads::Mutex motionCreationMutex;
+
 using namespace PluginSubject;
 
-FilteredDataFacory::FilteredDataFacory()
-{
-
-}
-
-FilteredDataFacory::~FilteredDataFacory()
-{
-
-}
-
-MotionPtr FilteredDataFacory::createFilteredMotion(const MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const
-{
-    auto filteredMotion = core::dynamic_pointer_cast<const FilteredMotion>(originalMotion);
-    MotionConstPtr trueOriginalMotion(originalMotion);
-
-    if(filteredMotion != nullptr){
-        trueOriginalMotion = filteredMotion->getOriginalMotion();
-    }
-
-    return MotionPtr(new FilteredMotion(trueOriginalMotion, wrappers));
-}
-
-SessionPtr FilteredDataFacory::createFilteredSession(const SessionConstPtr & originalSession, const std::vector<MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const
-{
-    auto filteredSession = core::dynamic_pointer_cast<const FilteredSession>(originalSession);
-    SessionConstPtr trueOriginalSession(originalSession);
-
-    if(filteredSession != nullptr){
-        trueOriginalSession = filteredSession->getOriginalSession();
-    }
-
-    SessionPtr ret(new FilteredSession(originalSession, motions, wrappers));
-
-    for(auto it = motions.begin(); it != motions.end(); ++it){
-        core::dynamic_pointer_cast<FilteredMotion>(*it)->setSession(ret);
-    }
-    
-    return ret;
-}
-
-SubjectService::SubjectService() : filteredDataFactory(new FilteredDataFacory), currentSubjectID(0), currentSessionID(0), currentMotionID(0)
+SubjectService::SubjectService()
 {
 
 }
@@ -61,83 +25,92 @@ SubjectService::~SubjectService()
 
 }
 
-void SubjectService::init(core::IManagersAccessor * managersAccessor)
+void SubjectService::init(core::ISourceManager * sourceManager,
+	core::IVisualizerManager * visualizerManager,
+	core::IMemoryDataManager * memoryDataManager,
+	core::IStreamDataManager * streamDataManager,
+	core::IFileDataManager * fileDataManager)
 {
 
 }
 
-QWidget* SubjectService::getWidget( core::IActionsGroupManager * actionsManager )
-{
-	return nullptr;
-}
-
-QWidget* SubjectService::getSettingsWidget( core::IActionsGroupManager * actionsManager )
-{
-	return nullptr;
-}
-
-const std::string& SubjectService::getName() const
-{
-	static std::string s = "SubjectService";
-	return s;
-}
-
-QWidget* SubjectService::getControlWidget( core::IActionsGroupManager * actionsManager )
+QWidget* SubjectService::getWidget()
 {
 	return nullptr;
 }
 
-SubjectPtr SubjectService::createSubject()
+QWidget* SubjectService::getSettingsWidget()
+{
+	return nullptr;
+}
+
+QWidget* SubjectService::getControlWidget()
+{
+	return nullptr;
+}
+
+core::ObjectWrapperPtr SubjectService::createSubject()
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(subjectCreationMutex);
-
-    if(currentSubjectID == std::numeric_limits<SubjectID>::max()){
-        throw std::runtime_error("Subjects overflow");
-    }
-
-    SubjectPtr ret(new Subject(++currentSubjectID));
-
-    localSessionIDs[ret] = 0;
-
+	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::ISubject>();
+	ret->set(SubjectPtr(new Subject()));
     return ret;
 }
 
-SessionPtr SubjectService::createSession(const SubjectConstPtr & subject, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
+core::ObjectWrapperPtr SubjectService::createSession(const core::ObjectWrapperConstPtr & subject)
 {
-	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(sessionCreationMutex);
+	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(sessionCreationMutex);	
 
-    if(currentSessionID == std::numeric_limits<SubjectID>::max()){
-        throw std::runtime_error("Sessions overflow");
-    }
-
-    if(subject == nullptr){
+    if(subject == nullptr || subject->isNull() == true){
         throw std::runtime_error("Wrong subject for session");
     }
 
-    SessionPtr ret(new Session(++currentSessionID, subject,
-        ++localSessionIDs[subject], wrappers));
+	PluginSubject::SubjectConstPtr unpackedSubject;
+	bool ok = subject->tryGet(unpackedSubject, false);
 
-    localMotionIDs[ret] = 0;
+	if(!ok || unpackedSubject == nullptr){
+		throw std::runtime_error("Subject not passed in wrapper");
+	}
+
+	auto subImpl = core::dynamic_pointer_cast<const Subject>(unpackedSubject);
+
+	if(subImpl == nullptr){
+		throw std::runtime_error("Other subject implementation passed in wrapper");
+	}
+
+	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::ISession>();
+	SessionPtr session(new Session(subject,unpackedSubject, subImpl->nextSessionID()));
+	ret->set(session);
+	(*ret)["name"] = session->getName();
 
     return ret;
 }
 
-MotionPtr SubjectService::createMotion(const SessionConstPtr & session,
-    const std::vector<core::ObjectWrapperConstPtr> & wrappers)
+core::ObjectWrapperPtr SubjectService::createMotion(const core::ObjectWrapperConstPtr & session)
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(motionCreationMutex);
 
-    if(session == nullptr){
-        throw std::runtime_error("Wrong session for motion");
-    }
+	if(session == nullptr || session->isNull() == true){
+		throw std::runtime_error("Wrong session for motion");
+	}
 
-    MotionPtr ret(new Motion(++currentMotionID, session,
-        ++localMotionIDs[session], wrappers));
+	PluginSubject::SessionConstPtr unpackedSession;
+	bool ok = session->tryGet(unpackedSession, false);
 
-    return ret;
-}
+	if(!ok || unpackedSession == nullptr){
+		throw std::runtime_error("Session not passed in wrapper");
+	}
 
-const FilteredDataFacoryPtr & SubjectService::getFilteredDataFacotry() const
-{
-    return filteredDataFactory;
+	auto sessionImpl = core::dynamic_pointer_cast<const Session>(unpackedSession);
+
+	if(sessionImpl == nullptr){
+		throw std::runtime_error("Other session implementation passed in wrapper");
+	}
+
+	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::IMotion>();
+	MotionPtr motion(new Motion(session,unpackedSession, sessionImpl->nextMotionID()));
+	ret->set(motion);
+	(*ret)["name"] = motion->getName();
+
+	return ret;
 }

@@ -31,7 +31,6 @@
 
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
-//#include <QtOpenGL/QtOpenGL>
 
 UTILS_PUSH_WARNINGS
 #include <osg/Node>
@@ -61,8 +60,6 @@ UTILS_PUSH_WARNINGS
 #include <osgGA/StateSetManipulator>
 UTILS_POP_WARNINGS
 
-
-
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -71,18 +68,31 @@ UTILS_POP_WARNINGS
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
 
-#include <core/TypeInfo.h>
-#include <core/SmartPtr.h>
-#include <core/ILog.h>
+#include <corelib/BaseDataTypes.h>
+#include <corelib/SmartPtr.h>
+#include "Application.h"
+#include "ServiceManager.h"
+#include "MemoryDataManager.h"
+#include "ParserManager.h"
+#include "StreamDataManager.h"
+#include "FileDataManager.h"
+#include "DataHierarchyManager.h"
+#include "SourceManager.h"
+#include "VisualizerManager.h"
+#include "ApplicationCommon.h"
+#include "PluginApplication.h"
 #include "Log.h"
-#include <core/IDataManager.h>
-#include <core/IDataProcessorManager.h>
-#include <core/IDataSourceManager.h>
-#include <core/IServiceManager.h>
-#include <core/IActionsGroupManager.h>
-#include "IAppUsageContextManager.h"
-#include <core/ISourceManager.h>
-#include <core/IVisualizerManager.h>
+#include "LogInitializer.h"
+#include "Plugin.h"
+#include "PluginLoader.h"
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
 
 // przywrócenie warningów wyłączonych przez OSG
 #if defined(_MSC_VER)
@@ -95,8 +105,8 @@ UTILS_POP_WARNINGS
 #   pragma warning( default : 4511 )
 #endif
 
-using std::min;
-using std::max;
+//using std::min;
+//using std::max;
 
 #endif  // DISABLE_PRECOMPILED_HEADERS
 #endif  // __HEADER_GUARD__COREPCH_H__

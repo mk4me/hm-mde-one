@@ -1,7 +1,7 @@
 #include "TimelinePCH.h"
 
 
-#include <core/PluginCommon.h>
+#include <corelib/PluginCommon.h>
 #include "TimelineService.h"
 #include "TimelineWidget.h"
 
@@ -62,20 +62,14 @@ const TimelineService::UIChannelAction & TimelineService::getOnChannelRemove() c
     return widget->getOnChannelRemove();
 }
   
- QWidget* TimelineService::getWidget(core::IActionsGroupManager * actionsManager)
+ QWidget* TimelineService::getWidget()
  {
      return nullptr;
  }
 
-QWidget* TimelineService::getControlWidget(core::IActionsGroupManager * actionsManager)
+QWidget* TimelineService::getControlWidget()
 {
-    widget->loadToolbarElements(actionsManager);
     return widget;
-}
-
-const std::string& TimelineService::getName() const
-{
-    return name;
 }
 
 void TimelineService::addChannel(const std::string & path, const timeline::IChannelPtr & channel)

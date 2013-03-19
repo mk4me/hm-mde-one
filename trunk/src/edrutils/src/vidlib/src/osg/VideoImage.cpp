@@ -77,7 +77,7 @@ namespace vidlib
 
     void VideoImage::refresh()
     {
-        if (!applyMaxWidth(getMaxWidth())) {
+        if (!applyMaxWidth(getMaxWidth())) {	
             reloadImage(currentPicture);
         }
     }
@@ -94,13 +94,13 @@ namespace vidlib
                 picture.data, NO_DELETE);
             break;
 
-        case PixelFormatRGB24:
+        case PixelFormatRGB24:			
             setImage(picture.width, picture.height,
                 1, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE,
                 picture.data, NO_DELETE);
             break;
 
-        case PixelFormatBGRA:
+        case PixelFormatBGRA:			
             setImage(picture.width, picture.height,
                 1, GL_RGBA, GL_BGRA, GL_UNSIGNED_BYTE,
                 picture.data, NO_DELETE);
@@ -113,8 +113,7 @@ namespace vidlib
                 picture.data, NO_DELETE);
             break;
 
-        }
-
+        }		
         timestamp = stream->getFrameTimestamp();
     }
 

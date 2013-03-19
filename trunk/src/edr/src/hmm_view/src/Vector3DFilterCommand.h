@@ -23,7 +23,7 @@
 
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 #include <plugins/subject/ISubjectService.h>
 
@@ -39,7 +39,7 @@ typedef std::map<QString, std::pair<QString,QString> > NamesDictionary;
 class BuilderFilterCommand : public IFilterCommand
 {
 public:
-    typedef boost::function<QTreeWidgetItem* (const PluginSubject::MotionConstPtr&, const QString&, const QIcon&, const QIcon&)> BranchFunction;
+    typedef boost::function<QTreeWidgetItem* (const PluginSubject::MotionConstPtr&, const QString&, const QIcon&, const QIcon&, const std::string &)> BranchFunction;
 public:
     //! Konstruktor
     //! \param function funkcja, która zostanie wykorzystana do stworzenia elementu drzewa
@@ -51,7 +51,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions );
 
 protected:
     //! funkcja, która zostanie wykorzystana do stworzenia elementu drzewa
@@ -70,7 +70,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ConstObjectsList& sessions );
 };
 
 //! klasa, dzięki której możliwe jest korzystanie z sygnałow i slotów w klasie szablonowej.
@@ -221,7 +221,7 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ConstObjectsList& sessions)
     {
         QTreeWidgetItem* root = BuilderFilterCommand::createTreeBranch(rootItemName, sessions);
         filterTree(root);
@@ -283,11 +283,11 @@ public:
     //! tworzy gałąź drzewa z przefiltrowanymi danymi
     //! \param rootItemName nazwa korzenia
     //! \param sessions sesje do przefiltrowania
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const core::ObjectWrapperCollection& sessions );
     //! pobiera i zwraca metadane (konfigurację pomiarową)
     //! \param session badana sesja
     //! \return konfiguracja pomiarowa dla podanej sesji
-    MeasurementConfigConstPtr getMeta( PluginSubject::SessionConstPtr session);
+    MeasurementConfigConstPtr getSessionMeta( const core::ObjectWrapperConstPtr & session);
 };
 
 //! klasa dostarcza drzewu  przefiltrowanych danych z kanałów z wektorami
@@ -316,7 +316,7 @@ public:
       //! tworzy gałąź drzewa z przefiltrowanymi danymi
       //! \param rootItemName nazwa korzenia
       //! \param sessions sesje do przefiltrowania
-      virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
+      virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const core::ObjectWrapperCollection& sessions)
       {
           QTreeWidgetItem* root = new QTreeWidgetItem();
           root->setText(0, rootItemName);

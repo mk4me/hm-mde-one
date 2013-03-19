@@ -15,7 +15,7 @@ UTILS_PUSH_WARNINGS
 UTILS_POP_WARNINGS
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/VideoBuffer.h>
-#include <vidlib/Export.h>
+#include <vidlib/Config.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {

@@ -11,10 +11,13 @@
 #define HEADER_GUARD_HMM__SUMMARYWINDOW_H__
 
 class HmmMainWindow;
-class VisualizerWidget;
 
 #include <plugins/subject/ISubject.h>
 #include "TreeItemHelper.h"
+
+namespace coreUI {
+	class CoreVisualizerWidget;
+}
 
 //! okno służy do wyświetlenia podsumowania i dodatkowych informacji dla wizualizatora lub elementu drzewa danych
 class SummaryWindow
@@ -63,14 +66,14 @@ public:
     //! \param hmm główne okno aplikacji
     SummaryWindowController(SummaryWindowPtr sw, HmmMainWindow* hmm);
 
-public slots:
+public Q_SLOTS:
     //! pobiera dane z elementu i przesyła je do okna podsumowań
     //! \param item elmenet drzewa analiz
     //! \param column zaznaczona kolumna, ignorowane
     void onTreeItemSelected(QTreeWidgetItem* item, int column);
     //! pobiera dane na podstawie elementów zawartych w wizualizatorze i przesyła je do okna podsumowań
     //! \param visualizatorWidget wizualizator, który uzyskał focus
-    void onVisualizator(VisualizerWidget* visualizatorWidget);
+    void onVisualizator(coreUI::CoreVisualizerWidget* visualizatorWidget);
 
 private:
     //! główne okno aplikacji

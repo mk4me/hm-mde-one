@@ -19,10 +19,14 @@ visualizer(visualizer),
 
 }
 
-void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
+void NewChartSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
 {
     this->data = data;
-    curve = new NewChartCurve(data->getName().c_str());
+	this->requestedType = requestedType;
+	std::string name;
+	data->tryGetMeta("core/name", name);
+
+    curve = new NewChartCurve(name.c_str());	
     reader = data->get();
     accessor.reset(new ScalarContiniousTimeAccessor(reader));
     ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
@@ -42,6 +46,16 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
 
     _zBase = curve->z();
     curve->setZ(_zBase + _z);
+}
+
+const utils::TypeInfo & NewChartSerie::getRequestedDataType() const
+{
+	return requestedType;
+}
+
+void NewChartSerie::update()
+{
+
 }
 
 void NewChartSerie::setTime( double time )
@@ -74,6 +88,7 @@ NewChartSerie::~NewChartSerie()
 {
     //delete[] xvals;
     //delete[] yvals;
+	curve = nullptr;
 }
 
 void NewChartSerie::setEvents( EventsCollectionConstPtr val )
@@ -211,7 +226,7 @@ void NewChartSerie::setName( const std::string & name )
     this->name = name;
 }
 
-const std::string & NewChartSerie::getName() const
+const std::string NewChartSerie::getName() const
 {
     return name;
 }

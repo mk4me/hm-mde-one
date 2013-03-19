@@ -11,6 +11,7 @@
 #define HEADER_GUARD_HMM__TREEBUILDER_H__
 
 #include <plugins/subject/Types.h>
+#include <plugins/subject/SubjectDataFilters.h>
 #include "TreeItemHelper.h"
 
 //! Klasa służy do budowania drzewa danych w analizach
@@ -21,61 +22,61 @@ public:
     //! \param rootItemName nazwa korzenia
     //! \param sessions dostarczone sesje
     //! \return stworzony element
-    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions);
+    static QTreeWidgetItem* createTree(const QString& rootItemName, const core::ConstObjectsList& sessions);
     //! Tworzy drzewo na podstawie dostarczony sesji
     //! \param rootItemName nazwa korzenia
     //! \param sessions dostarczone sesje
     //! \param dataFilter obiekt filtrujący sesje
     //! \return stworzony element
-    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions, const PluginSubject::DataFilterPtr & dataFilter);
+    static QTreeWidgetItem* createTree(const QString& rootItemName, const core::ConstObjectsList& sessions, const SubjectHierarchyFilterPtr & dataFilter);
     //! Tworzy gałąź dla markerów
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liści
-    static QTreeWidgetItem* createMarkersBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
+    static QTreeWidgetItem* createMarkersBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & );
     //! Tworzy gałąź dla stawów
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liści
-    static QTreeWidgetItem* createJointsBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
+    static QTreeWidgetItem* createJointsBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & );
     //! Tworzy gałąź dla nagrań video
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liści
-    static QTreeWidgetItem* createVideoBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
+    static QTreeWidgetItem* createVideoBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & );
     //! Tworzy gałąź dla danych grf
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liści
-    static QTreeWidgetItem* createGRFBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
+    static QTreeWidgetItem* createGRFBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & );
     //! Tworzy gałąź dla danych emg
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liści
-    static QTreeWidgetItem* createEMGBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
+    static QTreeWidgetItem* createEMGBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIconconst, const std::string & conf );
     //! Tworzy gałąź dla 
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liści
-    static QTreeWidgetItem* createForcesBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
+    static QTreeWidgetItem* createForcesBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & );
     //! Tworzy gałąź dla momentów
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liści
-    static QTreeWidgetItem* createMomentsBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
+    static QTreeWidgetItem* createMomentsBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & );
     //! Tworzy gałąź dla mocy
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liści
-    static QTreeWidgetItem* createPowersBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
+    static QTreeWidgetItem* createPowersBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & );
 
     //! \return ikona dla gałęzi z markerami
     static const QIcon& getMarkersIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/markerSmall.png")); return icon; }
@@ -123,12 +124,13 @@ public:
         typedef typename core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
         typedef typename Collection::ChannelType Channel;
 
-        core::ObjectWrapperConstPtr collection = motion->getWrapperOfType(typeid(Collection));
+        core::ConstObjectsList collection;
+		motion->getObjects(collection, typeid(Collection), false);
         QTreeWidgetItem* rootItem = new QTreeWidgetItem();
         rootItem->setIcon(0, rootIcon);
         rootItem->setText(0, rootName);
 
-        CollectionConstPtr m = collection->get();
+        CollectionConstPtr m = collection.front()->get();
         tryAddVectorToTree<Channel>(motion, m, "Collection", itemIcon, rootItem, false);
         return rootItem;
     }
@@ -149,9 +151,9 @@ public:
                 wrapper->set(core::const_pointer_cast<VectorChannel>(boost::dynamic_pointer_cast<const VectorChannel>(collection->getChannel(i))));
 
                 static int number = 0;
-                std::string name = "Serie_" + boost::lexical_cast<std::string>(number);
-                wrapper->setName(name);
-                wrapper->setSource(name);
+                std::string();
+                (*wrapper)["name"] = "Serie_" + boost::lexical_cast<std::string>(number);
+                (*wrapper)["source"] = "TreeBuilder";
                 wrappers.push_back(wrapper);
             }
             QTreeWidgetItem* collectionItem;

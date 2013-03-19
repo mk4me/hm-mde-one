@@ -9,8 +9,6 @@
 #ifndef HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__
 #define HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__
 
-
-
 #include <vidlib/osg/VideoImageStream.h>
 
 ////////////////////////////////////////////////////////////////////////////////

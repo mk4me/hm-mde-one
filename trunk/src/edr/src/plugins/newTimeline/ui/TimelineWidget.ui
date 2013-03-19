@@ -77,7 +77,7 @@
   </action>
  </widget>
  <resources>
-  <include location="Icons.qrc"/>
+  <include location="../../../coreui/ui/CoreIcons.qrc"/>
  </resources>
  <connections>
   <connection>

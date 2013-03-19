@@ -3,6 +3,8 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartSerie.h>
 
+using namespace core;
+
 template<class PointType, class TimeType>
 class ChannelNoCopyModifier : public utils::IChannelAutoModifier<PointType, TimeType>
 {
@@ -364,14 +366,11 @@ VisualizerPtr EMGFilterHelper::createVisualizer()
     return NewChartItemHelper::createVisualizer();
 }
 
-void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
 {
-    ScalarChannelReaderInterfacePtr channel = wrapper->get();
-    ScalarChannelReaderInterfacePtr nonConstChannel2(core::const_pointer_cast<ScalarChannelReaderInterface>(channel));
+    ScalarChannelReaderInterfacePtr channel = wrapper->clone()->get();
 
-    //core::shared_ptr<ScalarModifier> absChannel(new ScalarModifier(nonConstChannel2, ScalarChannelAbs()));
-
-    boost::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(nonConstChannel2));
+    boost::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(channel));
     absTest->initialize();
 
     //core::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
@@ -379,11 +378,15 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 
     core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
     wrapperX->set(core::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
-    wrapperX->setName  (wrapper->getName());
-    wrapperX->setSource(wrapper->getSource());
+	(*wrapperX).copyMeta(*wrapper);
     visualizer->getOrCreateWidget();
 
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(wrapperX, wrapperX->getName())));
+	std::string name("UNKNOWN");
+	wrapperX->tryGetMeta("core/name", name);    
+	auto s = visualizer->createSerie(typeid(ScalarChannelReaderInterface),wrapperX);
+	s->serie()->setName(name);
+	series.push_back(s);
+
 }
 
 

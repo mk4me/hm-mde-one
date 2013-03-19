@@ -2,13 +2,8 @@
 #define PLUGIN_SERVICE_H
 
 #include <vector>
-#include <string>
-#include <deque>
-#include <core/Plugin.h>
-#include <core/SmartPtr.h>
-#include <utils/Debug.h>
-#include <type_traits>
-
+#include "Plugin.h"
+#include <corelib/SmartPtr.h>
 
 // rev
 #ifdef WIN32
@@ -25,37 +20,40 @@ class PluginLoader
 {
 public:
     //! Ścieżki wyszukiwania.
-    typedef std::deque<std::string> Paths;
+    typedef std::list<Filesystem::Path> Paths;
 
 private:
 
-    typedef std::pair<PluginPtr, PluginConstPtr> PluginPair;
+	//! Struktura opisująca załadowany plugin
+	struct PluginData {
+		//! Wskaźnik do pluginu
+		PluginPtr plugin;
+		//! Wskaźnik do dedykowanej implementacji interfejcu core::IApplication
+		shared_ptr<IApplication> coreApplication;
+		//! Uchwyt do biblioteki
+		HMODULE handle;
+	};
+
     //! Załadowane pluginy.
-    typedef std::vector<PluginPair> Plugins;
-    //! Uchwyty do bibliotek dynamicznie ładowanych.
-    typedef std::vector<HMODULE> Handles;
+    typedef std::vector<PluginData> Plugins;
 
 private:
-    //! Uchwyty do bibliotek dynamicznie ładowanych.
-    Handles libraries;
     //! Załadowane pluginy.
     Plugins plugins;
     //! Ścieżki wyszukiwania.
     Paths paths;
 
 public:
-    PluginLoader();
+    PluginLoader(const Filesystem::Path & pluginsPath);
     virtual ~PluginLoader();
 
 public:
     //!
     void clear();
-    //!
-    void addDefaultPaths();
     //! Ładuje pluginy.
     void load();
 
-	void addPath(const std::string& path)
+	void addPath(const Filesystem::Path& path)
 	{
 		this->paths.push_back(path);
 	}
@@ -67,15 +65,15 @@ public:
     }
     //!
     //! \param idx
-    const PluginPtr & getPlugin(int idx)
+    PluginPtr getPlugin(int idx)
     {
-        return plugins[idx].first;
+        return plugins[idx].plugin;
     }
     //!
     //! \param idx
-    const PluginConstPtr & getPlugin(int idx) const
+    PluginConstPtr getPlugin(int idx) const
     {
-        return plugins[idx].second;
+        return plugins[idx].plugin;
     }
     //! \return
     const Paths& getPaths() const
@@ -90,7 +88,7 @@ public:
 
     void unloadPlugins();
 
-	static HMODULE loadSharedLibrary(const std::string & path);
+	static HMODULE loadSharedLibrary(const Filesystem::Path & path);
 	static void unloadSharedLibrary(HMODULE library);
 	static const std::string lastLoadSharedLibraryError();
 
@@ -112,32 +110,26 @@ public:
 private:
     //!
     //! \param path
-    bool addPlugIn(const std::string& path);
+    bool addPlugIn(const Filesystem::Path& path);
 
     //!
     //! \param library
     //! \param path
-    bool checkPluginVersion( HMODULE library, const std::string& path );
+    bool checkPluginVersion( HMODULE library, const Filesystem::Path& path );
 
     //!
     //! \param library
     //! \param path
-    bool checkPluginBuildType( HMODULE library, const std::string& path );
+    bool checkPluginBuildType( HMODULE library, const Filesystem::Path& path );
     //!
     //! \param library
     //! \param path
-    bool checkLibrariesVersions( HMODULE library, const std::string& path );
+    bool checkLibrariesVersions( HMODULE library, const Filesystem::Path& path );
     //!
     //! \param path
     //! \param library
     //! \param createFunction
-    bool onAddPlugin(const std::string& path, HMODULE library, Plugin::CreateFunction createFunction);
-    //!
-    //! \param fileName
-    std::string getFileName(const std::string& fileName);
-
-    //! Zwalnia biblioteki. Można to wywołać dopiero po zniszczeniu głównego okna.
-    void freeLibraries();
+    bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::FillFunction fillFunction);
 };
 
 typedef shared_ptr<PluginLoader> PluginLoaderPtr;

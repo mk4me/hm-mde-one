@@ -41,14 +41,14 @@ struct PtrPolicyBoost
     //! Zerowanie wskaźnika.
     //! \param ptr
     template <class T>
-    void initPtr( T & ptr ) const
+    static void initPtr( T & ptr )
     {}
 
     //! Ustawienie wartości wskaźnika surowymi danymi.
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(boost::shared_ptr<T> & ptr, T * data) const
+    static void setPtr(boost::shared_ptr<T> & ptr, T * data)
     {
         ptr.reset(data);
     }
@@ -57,15 +57,21 @@ struct PtrPolicyBoost
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(boost::shared_ptr<T> & ptr, const boost::shared_ptr<T> & data) const
+    static void setPtr(boost::shared_ptr<T> & ptr, const boost::shared_ptr<T> & data)
     {
         ptr = data;
     }
 
+	template<class T>
+	static void swapPtr(boost::shared_ptr<T> & ptr, boost::shared_ptr<T> & data)
+	{
+		std::swap(ptr, data);
+	}
+
     //! Zwraca surowy wskaźnik
     //! \param ptr
     template<class T>
-    void* getRawPtr(const boost::shared_ptr<T> & ptr)
+    static void* getRawPtr(const boost::shared_ptr<T> & ptr)
     {
         return ptr.get();
     }
@@ -73,7 +79,7 @@ struct PtrPolicyBoost
     //! Zwraca surowy wskaźnik
     //! \param ptr
     template<class T>
-    const void* getRawPtr(const boost::shared_ptr<T> & ptr) const
+    static const void* getConstRawPtr(const boost::shared_ptr<T> & ptr)
     {
         return ptr.get();
     }
@@ -81,7 +87,7 @@ struct PtrPolicyBoost
     //! Czy wskaźnik jest unikatowy?
     //! \param ptr
     template<class T>
-    bool isUnique(boost::shared_ptr<T> & ptr) const
+    static const bool isUnique(boost::shared_ptr<T> & ptr)
     {
         return ptr.unique();
     }

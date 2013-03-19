@@ -22,6 +22,7 @@ class IOutputPin;
 class IConnection
 {
 public:
+    virtual ~IConnection() {}
 
 	//! \return Wezeł źródłowy
 	virtual IOutputPin * source() = 0;

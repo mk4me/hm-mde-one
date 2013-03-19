@@ -9,19 +9,20 @@
 #ifndef HEADER_GUARD___SOURCEMANAGER_H__
 #define HEADER_GUARD___SOURCEMANAGER_H__
 
-#include <core/ISourceManager.h>
-#include <core/ISource.h>
+#include <corelib/ISourceManager.h>
+#include <corelib/ISource.h>
 #include <map>
 #include <vector>
-#include "ManagerHelper.h"
 
-class SourceManager: public core::ISourceManager, public ManagerHelper<SourceManager>
+namespace core {
+
+class SourceManager: public ISourceManager
 {
 public:
 	//! Słownik usług.
-	typedef std::map<UniqueID, core::ISourcePtr> SourcesMap;
+	typedef std::map<UniqueID, plugin::ISourcePtr> SourcesMap;
 	//! Sekwencja usług.
-	typedef std::vector<core::ISourcePtr> SourcesList;
+	typedef std::vector<plugin::ISourcePtr> SourcesList;
 
 private:
 	//! Słownik usług.
@@ -44,15 +45,17 @@ public:
 public:
 	//! Rejestruje źródło. Źródła muszą mieć unikatowe ID!
 	//! \param source Źródło do rejestracji.
-	virtual void registerSource(const core::ISourcePtr & source);
+	virtual void registerSource(const plugin::ISourcePtr & source);
 	//! \return Liczba źródeł.
 	virtual int getNumSources() const;
 	//! \param idx Indeks źródła.
 	//! \return Źródło o zadanym indeksie.
-	virtual core::ISourcePtr getSource(int idx);
+	virtual plugin::ISourcePtr getSource(int idx);
 	//! \param id ID źródła do wyszukania.
 	//! \return Odnalezione źródło bądź NULL.
-	virtual core::ISourcePtr getSource(UniqueID id);
+	virtual plugin::ISourcePtr getSource(UniqueID id);
 };
+
+}
 
 #endif	//	HEADER_GUARD___SOURCEMANAGER_H__

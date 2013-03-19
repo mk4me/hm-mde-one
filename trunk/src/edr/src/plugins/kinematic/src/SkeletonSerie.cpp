@@ -11,11 +11,11 @@ SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer ) :
 
 }
 
-void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
+void SkeletonSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
     this->data = data;
-	connect(visualizer->actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
+	this->requestedType = requestedType;
 	
 	kinematic::JointAnglesCollectionConstPtr collection = data->get();
 	scheme = SkeletalVisualizationSchemePtr(new SkeletalVisualizationScheme());
@@ -35,8 +35,10 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
     skeletonNode->addChild(skeletonDrawers->getNode());
     //skeletonNode->addChild(trajectoryDrawer->getNode());
     
-    visualizer->trajectoriesDialog->setDrawer(skeletonDrawers, QString::fromStdString(data->getName()));
-    visualizer->schemeDialog->setDrawer(skeletonDrawers, QString::fromStdString(data->getName()));
+	std::string name;
+	data->tryGetMeta("core/name", name);
+    visualizer->trajectoriesDialog->setDrawer(skeletonDrawers, QString::fromStdString(name));
+    visualizer->schemeDialog->setDrawer(skeletonDrawers, QString::fromStdString(name));
     transformNode->addChild(skeletonNode);
 	//visualizer->transformNode->addChild(skeletonNode);
 	setAxis(true);
@@ -144,7 +146,7 @@ void SkeletonSerie::setName( const std::string & name )
     this->name = name;
 }
 
-const std::string & SkeletonSerie::getName() const
+const std::string SkeletonSerie::getName() const
 {
     return name;
 }
@@ -158,6 +160,16 @@ double SkeletonSerie::getLength() const
 {
     UTILS_ASSERT(scheme);
     return scheme->getDuration();
+}
+
+void SkeletonSerie::update()
+{
+
+}
+
+const utils::TypeInfo & SkeletonSerie::getRequestedDataType() const
+{
+	return requestedType;
 }
 
 

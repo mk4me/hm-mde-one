@@ -1,56 +1,41 @@
 #ifndef TOOLBOXMAIN_H
 #define TOOLBOXMAIN_H
 
-#include <utils/Debug.h>
-#include <osgViewer/CompositeViewer>
-#include <QtCore/QVector>
+#include <coreui/CoreMainWindow.h>
+#include <corelib/Visualizer.h>
+#include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
 
-#include <core/src/PluginLoader.h>
-#include <core/Window.h>
-#include <core/src/DataManager.h>
+namespace timeline {
 
-#include "ui_toolboxmaindeffile.h"
-#include <core/Filesystem.h>
-#include <core/src/MainWindow.h>
-class UserInterfaceService;
-class ServiceManager;
-//class SceneGraphWidget;
-class EDRConsoleWidget;
-class VisualizerManager;
-class DataProcessorManager;
-class VisualizerWidget;
+	class IChannel;
 
+}
 
-class ToolboxMain : public core::MainWindow, private Ui::EDRMain
+class QMenu;
+
+namespace Ui {
+	class EDRMain;
+}
+
+namespace coreUI {
+	class CoreDockWidget;
+}
+
+class ToolboxMain : public coreUI::CoreMainWindow
 {
-public:
 	Q_OBJECT
-public:
-	ToolboxMain() : MainWindow() {}
-	virtual ~ToolboxMain()
-	{
-
-	}
 
 public:
-	virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
-    virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
+	ToolboxMain(const CloseUpOperations & closeUpOperations);
+	virtual ~ToolboxMain();
+
+private:
+
+	virtual void customViewInit(QWidget * console);
 
 public slots:
-	
-	void onOpen();
 
 	void onExit();
-	void onCustomAction();
-	void onCustomAction(bool triggered);
-
-	void onSaveLayout();
-	void onOpenLayout();
-	void onShowSavedLayouts();
-
-	void addLayoutsToMenu( const core::Filesystem::Path &dir );
-	void onDockWidgetVisiblityChanged(bool visible);
-	void onLayoutTriggered();
 
 private slots:
 	//! Wypełnia podmenu akcjami dla dostępnych okien.
@@ -61,9 +46,10 @@ private slots:
 	//!
 	void actionCreateVisualizer();
 
-	void createWorkflow();
-
 private:
+
+	virtual void initializeSplashScreen(QSplashScreen * splashScreen);
+
 	//!
 	void populateWindowMenu( QMenu* menu );
 	//!
@@ -71,12 +57,12 @@ private:
 
 	void initializeUI();
 
-	//! Natywne dodanie opcji do menu.
-	virtual void onAddMenuItem( const std::string& path, bool checkable, bool initialState );
-	//! Natywne usunięcie opcji z menu.
-	virtual void onRemoveMenuItem( const std::string& path );
+	static coreUI::CoreDockWidget * embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);	
 	
-	void openLayout( const QString& path );
+private:
+	QMainWindow * visualizersPlaceholder;
+	Ui::EDRMain * ui;
+	VisualizerTimelineHelper * helper;
 };
 
 #endif // TOOLBOXMAIN_H

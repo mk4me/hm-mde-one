@@ -10,7 +10,7 @@
 #define HEADER_GUARD___IDATASOURCEFILTERMANAGER_H__
 
 #include <plugins/newCommunication/DataSourceFilter.h>
-#include <core/SmartPtr.h>
+#include <corelib/SmartPtr.h>
 
 namespace communication
 {
