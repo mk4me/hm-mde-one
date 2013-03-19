@@ -1,5 +1,0 @@
-ADD_TEST_PROJECT(vidlib "vidlib;BOOST")
-ADD_TEST_PROJECT(utils "OSG;utils")
-ADD_TEST_PROJECT(kinematiclib "kinematiclib")
-ADD_TEST_PROJECT(dflib "dflib;BOOST;QT;OSG")
-ADD_TEST_PROJECT(timelinelib "timelinelib;utils;BOOST")
