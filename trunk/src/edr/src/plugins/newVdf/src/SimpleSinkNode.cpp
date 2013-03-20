@@ -5,16 +5,13 @@
 using namespace vdf;
 
 SimpleSinkNode::SimpleSinkNode() : 
-simpleItem(new SimpleTextItem (0,0))
+    simpleItem(new SimpleTextItem (0,0))
 {
-
 }
 
 
 void SimpleSinkNode::addInputPin( IVisualInputPinPtr pin )
 {
-    //pin->visualItem()->setParentItem(simpleItem);
-
     pin->visualItem()->setParentItem(simpleItem);
     pin->visualItem()->setPos(margin, margin + pins.size() * pinHeight);
     pins.push_back(pin);

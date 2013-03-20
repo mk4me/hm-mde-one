@@ -10,7 +10,6 @@ using namespace vdf;
 SimpleProcessingNode::SimpleProcessingNode() :
     simpleItem(new SimpleTextItem(0,0))
 {
-	
 }
 
 void SimpleProcessingNode::addInputPin( IVisualInputPinPtr pin )
@@ -89,8 +88,6 @@ void SimpleProcessingNode::removeCollision()
 
 void SimpleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
 {
-    //pin->visualItem()->setParentItem(simpleItem);
-
     pin->visualItem()->setParentItem(simpleItem);
     pin->visualItem()->setPos(margin + nodeWidth - pin2, margin + outputPins.size() * pinHeight);
 

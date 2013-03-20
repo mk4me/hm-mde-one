@@ -8,7 +8,6 @@ using namespace vdf;
 StyleConnection::StyleConnection() :
     item(new StyleItem())
 {
-
 }
 
 void StyleConnection::setInputPin( const IVisualInputPinPtr pin )

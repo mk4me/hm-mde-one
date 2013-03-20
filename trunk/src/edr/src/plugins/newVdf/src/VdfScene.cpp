@@ -34,7 +34,11 @@ VdfScene::VdfScene(SceneStateMachinePtr machine, SceneModelPtr sceneModel, QObje
 
 void VdfScene::keyPressEvent(QKeyEvent *event)
 {
-	if (!stateMachine->keyPressEvent(event)) {
+	if(event->type() == QKeyEvent::KeyPress && event->matches(QKeySequence::Undo)) {
+		stateMachine->getCommandStack()->undo();
+	} else if(event->type() == QKeyEvent::KeyPress && event->matches(QKeySequence::Redo)) {
+		stateMachine->getCommandStack()->redo();
+	} else if (!stateMachine->keyPressEvent(event)) {
 		QGraphicsScene::keyPressEvent(event);
 	}
 }

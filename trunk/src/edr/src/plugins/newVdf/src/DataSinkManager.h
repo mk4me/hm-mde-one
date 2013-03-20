@@ -18,7 +18,7 @@
 
 namespace vdf {
 
-class DataSinkManager : public IDataSinkManager//, public ManagerHelper<DataSinkManager>
+class DataSinkManager : public IDataSinkManager
 {
     friend class DataSink;
 public:

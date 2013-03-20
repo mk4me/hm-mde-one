@@ -11,18 +11,14 @@
 
 using namespace vdf;
 
-TypesWindow::TypesWindow(CommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent, Qt::WindowFlags f) :
+TypesWindow::TypesWindow(ICommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     canvas(canvas),
     newVdf(newVdf),
 	commmandStack(stack)
 {
     setupUi(this);
-    //treeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-    //treeWidget->setDragEnabled(true);
-    //treeWidget->viewport()->setAcceptDrops(true);
-    //treeWidget->setDropIndicatorShown(true);
-	
+    
     processorsList->setSelectionMode(QAbstractItemView::SingleSelection);
     processorsList->setDragEnabled(true);
 
@@ -32,14 +28,6 @@ TypesWindow::TypesWindow(CommandStackPtr stack, CanvasStyleEditorPtr canvas, New
     sourcesList->setSelectionMode(QAbstractItemView::SingleSelection);
     sourcesList->setDragEnabled(true);
 }
-
-//void TypesWindow::insert()
-//{
-//    QTreeWidgetItem* current = treeWidget->currentItem();
-//    if (current) {
-//        insert(current->text(0), QPointF());
-//    }
-//}
 
 void TypesWindow::insert( const QString& name, const QPointF& scenePos )
 {
@@ -70,7 +58,6 @@ void TypesWindow::addEntry( const QString& entry, const QIcon& icon, IVisualItem
     default:
         UTILS_ASSERT(false);
     }
-    //treeWidget->addTopLevelItem(item);
 }
 
 SceneBuilder::VisualNodeWithPins TypesWindow::createItemByEntry( const QString& entry )
@@ -144,7 +131,7 @@ void TypesWindow::update( const IDataSinkManager* sm )
 
 void vdf::TypesWindow::onNodeSelected( IVisualNodePtr node )
 {
-    if (!node) {
+    if (!node || !node->getModelNode()) {
         tabWidget->setCurrentIndex(0);
         return;
     }

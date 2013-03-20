@@ -25,12 +25,10 @@ public:
 	virtual void clearOutputPins() = 0;
 	virtual int getNumOutputPins() const = 0;
 	virtual IVisualOutputPinPtr getOutputPin(int no) = 0;
-	virtual Type getType() const { return IVisualItem::SourceNode; }
-	virtual bool isType(Type t) const { return t == IVisualItem::SourceNode || t == IVisualItem::Node; }
 };
 typedef core::shared_ptr<IVisualSourceNode> IVisualSourceNodePtr;
 typedef core::shared_ptr<const IVisualSourceNode> IVisualSourceNodeConstPtr;
 
 }
 
-#endif	//	HEADER_GUARD___IVISUALNODE_H__
+#endif	

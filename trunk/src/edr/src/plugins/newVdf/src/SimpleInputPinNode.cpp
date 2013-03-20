@@ -8,12 +8,10 @@ SimpleInputPinNode::SimpleInputPinNode() :
     item(new SimplePinItem()),
 	index(-1)
 {
-
 }
 
 SimpleInputPinNode::~SimpleInputPinNode()
 {
-
 }
 
 

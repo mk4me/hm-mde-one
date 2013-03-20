@@ -4,6 +4,12 @@
 
 using namespace vdf;
 
+DataProcessor::DataProcessor( df::IProcessingNode* impl, core::UniqueID id, const std::string& name, Creator creator ) :
+_impl(impl), _id(id), _name(name), _creator(creator)
+{
+}
+
+
 void DataProcessor::getInputInfo( std::vector<InputInfo>& info ) const
 {
 	int size = _impl->inputSize();
@@ -24,16 +30,6 @@ df::INode* DataProcessor::getPrototype() const
 	return _impl;
 }
 
-const std::string& DataProcessor::getDescription() const
-{
-	return _desc;
-}
-
-IWorkflowItemBase* DataProcessor::createClone( void ) const
-{
-	UTILS_ASSERT(false); return nullptr;
-}
-
 core::UniqueID DataProcessor::getID() const
 {
 	return _id;
@@ -52,10 +48,4 @@ void DataProcessor::getOutputInfo( std::vector<OutputInfo> & output ) const
 const std::string DataProcessor::getName() const
 {
 	return _name;
-}
-
-DataProcessor::DataProcessor( df::IProcessingNode* impl, core::UniqueID id, const std::string& name, Creator creator ) :
-_impl(impl), _id(id), _name(name), _creator(creator)
-{
-
 }

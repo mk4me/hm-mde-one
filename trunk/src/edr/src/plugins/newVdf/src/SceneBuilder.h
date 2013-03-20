@@ -22,7 +22,6 @@ class IVisualItem;
 
 class SceneBuilder
 {
-	friend class SceneModel;
 public:
     typedef std::vector<IVisualPinPtr> Pins;
     typedef boost::tuple<IVisualNodePtr, Pins, Pins> VisualNodeWithPins;
@@ -31,16 +30,16 @@ public:
     virtual ~SceneBuilder() {}
 
     IVisualConnectionPtr createConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin);
-
+	VisualNodeWithPins createMerged( const QString& name, std::vector<IVisualInputPinPtr> ipins, std::vector<IVisualOutputPinPtr> opins );
     VisualNodeWithPins createType(const QString& text, const QIcon& icon, df::INode* prototype, int in, int out) const;
     VisualNodeWithPins createSource(const QString& text, const QIcon& icon, df::INode* prototype, int out) const;
     VisualNodeWithPins createSink(const QString& text, const QIcon& icon, df::INode* prototype, int in) const;
     VisualNodeWithPins createProcessing(const QString& text, const QIcon& icon, df::INode* prototype, int in, int out) const;
     vdf::CanvasStyleEditorPtr getFactories() const { return factories; }
+
 private:
     Pins addInputPins(IVisualSinkNodePtr sink, int count) const;
     Pins addOutputPins(IVisualSourceNodePtr source, int count) const;
-
 private:
     CanvasStyleEditorPtr factories;
 };

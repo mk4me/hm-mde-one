@@ -4,19 +4,9 @@
 
 using namespace vdf;
 
-QIcon* DataSink::getIcon( void ) const
+DataSink::DataSink( df::ISinkNode* impl, core::UniqueID id, const std::string& name, Creator creator ) :
+_impl(impl), _id(id), _name(name), _creator(creator)
 {
-	UTILS_ASSERT(false); return nullptr;
-}
-
-bool DataSink::empty( void ) const
-{
-	UTILS_ASSERT(false); return false;
-}
-
-QDialog * DataSink::getOutputConfigurationDialog( void )
-{
-	return nullptr;
 }
 
 void DataSink::getInputInfo( std::vector<InputInfo>& info ) const
@@ -27,16 +17,6 @@ void DataSink::getInputInfo( std::vector<InputInfo>& info ) const
 		pin.name = "in" + boost::lexical_cast<std::string>(i);
 		info.push_back(pin);
 	}
-}
-
-const std::string& DataSink::getDescription() const
-{
-	return _desc;
-}
-
-vdf::IWorkflowItemBase* DataSink::createClone( void ) const
-{
-	UTILS_ASSERT(false); return nullptr;
 }
 
 core::UniqueID DataSink::getID() const
@@ -57,10 +37,4 @@ df::INode* DataSink::getPrototype() const
 const std::string DataSink::getName() const
 {
 	return _name;
-}
-
-DataSink::DataSink( df::ISinkNode* impl, core::UniqueID id, const std::string& name, Creator creator ) :
-_impl(impl), _id(id), _name(name), _creator(creator)
-{
-
 }

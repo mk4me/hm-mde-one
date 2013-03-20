@@ -103,7 +103,11 @@ IVisualConnectionPtr SceneBuilder::createConnection(IVisualOutputPinPtr outputPi
     connection->setOutputPin(outputPin);
 	connection->visualItem()->setZValue(Z<IVisualItem::Connection, false>::value());
 	connection->visualItem()->setFlag(QGraphicsItem::ItemIsMovable, false);
-	//inputPin->setConnection(connection);
-	//outputPin->addConnection(connection);
     return connection;
+}
+
+SceneBuilder::VisualNodeWithPins vdf::SceneBuilder::createMerged( const QString& name, std::vector<IVisualInputPinPtr> ipins, std::vector<IVisualOutputPinPtr> opins )
+{
+	SceneBuilder::VisualNodeWithPins node = createType(name, QIcon(), nullptr, ipins.size(), opins.size());
+	return node;
 }

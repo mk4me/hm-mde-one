@@ -22,28 +22,23 @@ namespace vdf {
 class IVisualConnection : public IVisualItem
 {
 public:
-	IVisualConnection() {}
-	virtual ~IVisualConnection() {
-    }
+	virtual ~IVisualConnection() {}
 
 public:
 	virtual void setInputPin(IVisualInputPinPtr pin) = 0;
 	virtual void setOutputPin(IVisualOutputPinPtr pin) = 0;
 	virtual IVisualInputPinPtr getInputPin() = 0;
 	virtual IVisualOutputPinPtr getOutputPin() = 0;
-	// TODO: przeniesc implementacje
-	df::IConnection* getModelConnection() {  UTILS_ASSERT(_connection); return _connection.get(); }
-	const df::IConnection* getModelConnection() const { UTILS_ASSERT(_connection); return _connection.get(); }
-	void setModelConnection(df::IConnection* node) { _connection.reset(node); }
+	
+    virtual df::IConnection* getModelConnection() = 0; 
+	virtual const df::IConnection* getModelConnection() const = 0; 
+	virtual void setModelConnection(df::IConnection* node) = 0; 
 
-	virtual IVisualItem::Type getType() const { return IVisualItem::Connection; }
-	virtual bool isType(IVisualItem::Type t) const { return t == IVisualItem::Connection; }
+	virtual IVisualItem::Type getType() const = 0;
+	virtual bool isType(IVisualItem::Type t) const = 0; 
 
     virtual bool isSelected() const = 0;
     virtual void setSelected(bool val) = 0;
-
-private:
-	core::shared_ptr<df::IConnection> _connection;
 };
 typedef core::shared_ptr<IVisualConnection> IVisualConnectionPtr;
 typedef core::weak_ptr<IVisualConnection> IVisualConnectionWeakPtr;

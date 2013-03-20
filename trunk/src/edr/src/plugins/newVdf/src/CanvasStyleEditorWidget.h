@@ -11,9 +11,7 @@
 
 #include <QtGui/QWidget>
 #include "ui_canvasStyleEditorWidget.h"
-//#include <utils/Serializable.h>
 #include "CanvasStyleEditor.h"
-//#include "HACK.h"
 
 namespace vdf {
 

@@ -1,41 +1,36 @@
 #include "NewVdfPCH.h"
-#include "DarkConnectionStrategy.h"
+#include "SimpleConnectionStrategy.h"
 #include <plugins/newVdf/IVisualPin.h>
 #include "SceneModel.h"
 
 using namespace vdf;
 
-DarkConnectionStrategy::DarkConnectionStrategy()
+SimpleConnectionStrategy::SimpleConnectionStrategy()
 {
 }
 
-void DarkConnectionStrategy::paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /*= nullptr */ )
+void SimpleConnectionStrategy::paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /*= nullptr */ )
 {
     auto c = connection.lock();
 	if (c && hasPins()) {
-        
-	    painter->setRenderHint(QPainter::Antialiasing, true);
         path = QPainterPath();
 	    
-        PinResolver p(beginPin.lock(), endPin.lock());
+        QPointF start = beginPin.lock()->getConnectionPosHint(); 
+	    QPointF finish = endPin.lock()->getConnectionPosHint();
 
-        QPointF start = p.getOutput()->getConnectionPosHint(); 
-	    QPointF finish = p.getInput()->getConnectionPosHint();
-
-        int shift = 30;
 	    path.moveTo(QPointF(start.x(), start.y()));
-		path.cubicTo(QPointF(start.x() + shift, start.y()), QPointF(finish.x() - shift, finish.y()), QPointF(finish.x(), finish.y()) );
+		path.moveTo(QPointF(finish.x(), finish.y()));
 	    
-        painter->setPen(QPen(QColor(128, 213, 220), c->isSelected() ? 4 : 2));
+        painter->setPen(QPen(c->isSelected() ? QColor(255, 50, 30) : QColor(), 2));
 	    painter->drawPath(path);
     }
 }
 
-const QRectF& DarkConnectionStrategy::getRect()
+const QRectF& SimpleConnectionStrategy::getRect()
 {
     if (hasPins()) {
-	    QPointF start = beginPin.lock()->getConnectionPosHint(); 
-	    QPointF finish = endPin.lock()->getConnectionPosHint();
+	    QPointF start = beginPin.lock()->visualItem()->scenePos(); 
+	    QPointF finish = endPin.lock()->visualItem()->scenePos();
 	    int margin = 100;
 	    if (start.y() < finish.y()) {
 		    rect.setTop(start.y() - margin);
@@ -55,17 +50,17 @@ const QRectF& DarkConnectionStrategy::getRect()
 	return rect;
 }
 
-QPainterPath vdf::DarkConnectionStrategy::shape() const
+QPainterPath vdf::SimpleConnectionStrategy::shape() const
 {
     return path;
 }
 
-void vdf::DarkConnectionStrategy::setConnection( core::weak_ptr<IVisualConnection> connection )
+void vdf::SimpleConnectionStrategy::setConnection( core::weak_ptr<IVisualConnection> connection )
 {
     this->connection = connection;
 }
 
-bool vdf::DarkConnectionStrategy::hasPins()
+bool vdf::SimpleConnectionStrategy::hasPins()
 {
     auto p1 = beginPin.lock();
     auto p2 = endPin.lock();

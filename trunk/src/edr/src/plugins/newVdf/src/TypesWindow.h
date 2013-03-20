@@ -18,6 +18,7 @@
 #include <plugins/newVdf/IDataSourceManager.h>
 
 #include "Command.h"
+#include "CommandStack.h"
 #include "ui_TypesWindow.h"
 #include "CanvasStyleEditor.h"
 #include "SceneModel.h"
@@ -32,7 +33,7 @@ class TypesWindow : public QWidget, private Ui::TypesWindow,
 {
     Q_OBJECT;
 public:
-    explicit TypesWindow(CommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent = 0, Qt::WindowFlags f = 0);
+    explicit TypesWindow(ICommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TypesWindow() {}
 
 public:
@@ -52,7 +53,7 @@ private:
 
 private:
     CanvasStyleEditorPtr canvas;
-	CommandStackPtr commmandStack;
+	ICommandStackPtr commmandStack;
     NewVdfWidget* newVdf;
     std::map<QString, IWorkflowItemBasePtr> name2node;
 };

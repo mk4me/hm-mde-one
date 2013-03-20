@@ -17,9 +17,6 @@ namespace vdf {
 
 class IVisualProcessingNode : public IVisualSinkNode, public IVisualSourceNode
 {
-public:
-	virtual Type getType() const { return IVisualItem::ProcessingNode; }
-	virtual bool isType(Type t) const { return t == IVisualItem::ProcessingNode || t == IVisualItem::Node; }
 };
 typedef core::shared_ptr<IVisualProcessingNode> IVisualProcessingNodePtr;
 typedef core::shared_ptr<const IVisualProcessingNode> IVisualProcessingNodeConstPtr;

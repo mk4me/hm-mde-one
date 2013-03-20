@@ -19,12 +19,10 @@ void DarkPinStrategy::paint( QPainter *painter, const QStyleOptionGraphicsItem *
 	QRadialGradient grad(6.0f,6.0f,8.0f);
 	grad.setColorAt(0.0f, Qt::white);
 	grad.setColorAt(0.5f, stateColor);
-	//painter->setBrush(QBrush(QColor(25, 170, 220)));
 	painter->setBrush(grad);
     QPen p(QColor(64, 64, 64));
     p.setWidth(2);
 	painter->setPen(p);
-
 
 	float width = r.width() * 0.8f;
 	float height = r.height() * 0.8f;

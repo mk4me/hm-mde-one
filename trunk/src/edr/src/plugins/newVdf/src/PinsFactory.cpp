@@ -33,38 +33,3 @@ const QString PinsFactory::description() const
     return "Simple pin desc";
 }
 
-//----------------------------
-
-//IVisualInputPin * StylePinsFactory::createInputPin() const
-//{
-//	auto* pin = new StyleInputPinNode();
-//	auto str = IPinStrategyPtr(new PinsStrategy());
-//	str->setPin(pin);
-//	pin->setVisualStrategy(str);
-//	return pin;
-//}
-//
-//IVisualOutputPin * StylePinsFactory::createOutputPin() const
-//{
-//	auto* pin = new StyleOutputPinNode();
-//	auto str = IPinStrategyPtr(new PinsStrategy());
-//	str->setPin(pin);
-//	pin->setVisualStrategy(str);
-//	return pin;
-//}
-//
-//const QUuid StylePinsFactory::id() const
-//{
-//	return QUuid::createUuid();
-//}
-//
-//const QString StylePinsFactory::name() const
-//{
-//	return "Style pin";
-//}
-//
-//const QString StylePinsFactory::description() const
-//{
-//	return "Style pin desc";
-//}
-

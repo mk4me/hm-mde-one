@@ -19,6 +19,7 @@
 #include "GroupState.h"
 #include "ConnectState.h"
 #include "Command.h"
+#include "CommandStack.h"
 
 namespace vdf {
 
@@ -41,7 +42,7 @@ public:
     void setState(ISceneStatePtr state);
 	VdfScene* getScene() const;
 	SceneModelPtr getSceneModel() const;
-	CommandStackPtr getCommandStack() const;
+	ICommandStackPtr getCommandStack() const;
 
 public:
     bool mousePressEvent(QGraphicsSceneMouseEvent* e);

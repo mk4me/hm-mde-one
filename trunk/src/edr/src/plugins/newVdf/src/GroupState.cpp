@@ -5,37 +5,14 @@
 
 using namespace vdf;
 
-//void PreGroupState::selectionChanged( const QList<QGraphicsItem*>& list )
-//{
-//	stateMachine->setState(stateMachine->getNormalState());
-//}
-//
-//bool PreGroupState::mousePressEvent( QGraphicsSceneMouseEvent* e )
-//{
-//	if (e->button() == Qt::LeftButton) {
-//		startPos = e->scenePos();
-//		stateMachine->setState(stateMachine->getGroupState());
-//	} else {
-//		stateMachine->setState(stateMachine->getNormalState());
-//	}
-//	return false;
-//}
-//
-//void PreGroupState::begin( ISceneStateConstPtr lastState )
-//{
-//	stateMachine->getScene()->changeCursor(Qt::CrossCursor);
-//}
-//
-//void PreGroupState::end()
-//{
-//	stateMachine->getScene()->changeCursor(Qt::ArrowCursor);
-//}
-
+GroupState::GroupState( SceneStateMachine* scene ) :
+    ISceneState(scene),
+    tempRect(nullptr)
+{
+}
+    
 void GroupState::begin( ISceneStateConstPtr lastState )
 {
-	//auto preGroup = stateMachine->getPreGroupState();
-	//UTILS_ASSERT(preGroup == lastState);
-	
 	startPos = PointPtr();
     auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>();
     for (auto it = nodes.begin(); it != nodes.end(); ++it) {
@@ -67,29 +44,8 @@ bool GroupState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
 
 bool GroupState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
-	//if (e->button() == Qt::LeftButton) {
-	//	QRectF rect = getRect(*startPos, e->scenePos());
-	//	auto selected = stateMachine->getScene()->items(rect, Qt::ContainsItemBoundingRect, Qt::AscendingOrder);
-	//	selectedNodes = stateMachine->getScene()->getSceneModel()->getVisualItems<IVisualNodePtr>(selected);
-	//	if (selectedNodes.size() > 0) {
-	//		for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it) {
-	//			(*it)->addSelection();
-	//		}
-	//		//stateMachine->setState(stateMachine->getGroupSelectedState());
-	//		stateMachine->setState(stateMachine->getNormalState());
-	//		return true;
-	//	}
-	//} 
-	
 	stateMachine->setState(stateMachine->getNormalState());
 	return true;
-}
-
-GroupState::GroupState( SceneStateMachine* scene ) :
-	ISceneState(scene),
-	tempRect(nullptr)
-{
-
 }
 
 QRectF GroupState::getRect( const QPointF& startPos, const QPointF& endPos )
@@ -108,7 +64,6 @@ QRectF GroupState::getRect( const QPointF& startPos, const QPointF& endPos )
 GroupSelectedState::GroupSelectedState( SceneStateMachine* scene ) :
 	ISceneState(scene)
 {
-
 }
 
 void GroupSelectedState::begin( ISceneStateConstPtr lastState )
@@ -119,12 +74,10 @@ void GroupSelectedState::begin( ISceneStateConstPtr lastState )
 	for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it) {
 		(*it)->addSelection();
 	}
-
 }
 
 void GroupSelectedState::end()
 {
-
 }
 
 bool GroupSelectedState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )

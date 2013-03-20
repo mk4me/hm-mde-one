@@ -27,16 +27,13 @@ public:
 	virtual df::INode* getPrototype() const;
 	virtual df::INode* create() const;
 	virtual void getOutputInfo( std::vector<OutputInfo> & output ) const;
+    virtual core::UniqueID getID() const;
 
-	virtual QDialog * getOutputConfigurationDialog();
-	virtual bool empty() const;
-	//! \return Ikona Ÿród³a
-	virtual QIcon* getIcon() const;
-	virtual core::UniqueID getID() const;
-	IWorkflowItemBase* createClone(void) const;
-	virtual const std::string& getDescription() const;
+    QIcon getIcon() const { return icon; }
+    void setIcon(const QIcon& val) { icon = val; }
 
 private:
+    QIcon icon;
 	df::ISourceNode* _impl;
 	std::string _desc;
 	std::string _name;

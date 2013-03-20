@@ -19,7 +19,6 @@ namespace vdf {
 class IVisualOutputPin : public IVisualPin
 {
 public:
-
 	virtual void markIncomplete() = 0;
 	virtual Type getType() const { return IVisualItem::OutputPin; }
 	virtual bool isType(Type t) const { return t == IVisualItem::OutputPin || t == IVisualItem::Pin; }

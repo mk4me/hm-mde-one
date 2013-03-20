@@ -16,7 +16,7 @@
 
 namespace vdf {
 
-class DataProcessorManager : public IDataProcessorManager//, public ManagerHelper<DataProcessorManager>
+class DataProcessorManager : public IDataProcessorManager
 {
     friend class DataProcessor;
 public:

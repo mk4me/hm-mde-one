@@ -25,15 +25,6 @@ void AddToSceneCommand::doIt()
 
 void AddToSceneCommand::undoIt()
 {
-	/*SceneBuilder::Pins pins = nodeWithPins.get<2>();
-	for (auto it = pins.begin(); it != pins.end(); ++it) {
-		sceneModel->removeItem(*it);
-	}
-
-	pins = nodeWithPins.get<1>();
-	for (auto it = pins.begin(); it != pins.end(); ++it) {
-		sceneModel->removeItem(*it);
-	}*/
 	sceneModel->removeItem(nodeWithPins.get<0>());
 }
 
@@ -50,62 +41,6 @@ QString AddToSceneCommand::name()
 	return QString(typeid(this).name());
 }
 
-void CommandStack::addCommand( ICommandPtr command )
-{
-	command->doIt();
-	if (isRedoPossible()) {
-		commands.erase(++currentCommand, commands.end());
-	}
-	commands.push_back(command);
-	currentCommand = --commands.end();
-	emit changed();
-}
-
-void CommandStack::undo()
-{
-	if (isUndoPossible()) {
-		(*currentCommand)->undoIt();
-		--currentCommand;
-		//commands.back()->undoIt();
-		//commands.pop_back();
-		emit changed();
-	}
-}
-
-void CommandStack::redo()
-{
-	if (isRedoPossible()) {
-		currentCommand++;
-		(*currentCommand)->doIt();
-		emit changed();
-	}
-}
-
-void CommandStack::clear()
-{
-    commands.clear();
-    currentCommand = commands.end();
-}
-
-
-bool CommandStack::isRedoPossible() const
-{
-	return	!commands.empty() && 
-			currentCommand != commands.end() && 
-			currentCommand != (--commands.end());
-}
-
-CommandStack::CommandStack() 
-{
-	currentCommand = commands.end();
-}
-
-bool CommandStack::isUndoPossible() const
-{
-	return	!commands.empty() && 
-		currentCommand != commands.begin();
-}
-
 AddConnectionCommand::AddConnectionCommand( SceneModelPtr scene, IVisualOutputPinPtr p1, IVisualInputPinPtr p2 ) :
 	sceneModel(scene),
 	outputPin(p1),
@@ -116,17 +51,11 @@ AddConnectionCommand::AddConnectionCommand( SceneModelPtr scene, IVisualOutputPi
 
 void AddConnectionCommand::doIt()
 {
-    //if (!connection) {
-        connection = sceneModel->addConnection(outputPin, inputPin);
-    /*} else {
-        UTILS_ASSERT(connection->getInputPin() && connection->getOutputPin());
-        sceneModel->addItem(connection);
-    }*/
+    connection = sceneModel->addConnection(outputPin, inputPin);
 }
 
 void AddConnectionCommand::undoIt()
 {
-	///sceneModel->removeItem(connection);
     sceneModel->removeConnection(connection);
 }
 
@@ -217,7 +146,6 @@ void RemoveNodeCommand::undoIt()
 void RemoveNodeCommand::removeConnection( IVisualConnectionPtr connection ) 
 {
     if (connection) {
-        //sceneModel->removeItem(connection);
         sceneModel->removeConnection(connection);
         removedConnections.push_back(connection);
     }
@@ -279,7 +207,6 @@ void vdf::RemoveConnectionCommand::doIt()
 void vdf::RemoveConnectionCommand::undoIt()
 {
     sceneModel->addConnection(item->getOutputPin(), item->getInputPin());
-    //sceneModel->addItem(item);
 }
 
 vdf::RemoveConnectionCommand::RemoveConnectionCommand( SceneModelPtr scene, IVisualConnectionPtr toRemove ) :

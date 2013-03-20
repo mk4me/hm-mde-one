@@ -102,7 +102,7 @@ GroupSelectedStatePtr SceneStateMachine::getGroupSelectedState()
 	return groupSelectedState;
 }
 
-CommandStackPtr SceneStateMachine::getCommandStack() const
+ICommandStackPtr SceneStateMachine::getCommandStack() const
 {
 	return vdfWidget->getCommandStack();
 }

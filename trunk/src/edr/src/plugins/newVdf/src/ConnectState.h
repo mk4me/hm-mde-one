@@ -33,7 +33,6 @@ public:
 
 private:
     IVisualPinPtr firstPin;
-    //QGraphicsLineItem* tempLine;
     IVisualConnectionPtr connection;
     IVisualInputPinPtr pin1;
     IVisualOutputPinPtr pin2;

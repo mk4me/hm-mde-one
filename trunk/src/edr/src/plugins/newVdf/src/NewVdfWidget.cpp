@@ -14,7 +14,7 @@
 
 using namespace vdf;
 
-NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
+NewVdfWidget::NewVdfWidget(ICommandStackPtr stack, SceneModelPtr sceneModel) :
     sceneModel(sceneModel),
 	commandStack(stack)
 {
@@ -56,10 +56,9 @@ NewVdfWidget::NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel) :
     setMinimumSize(500, 400);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
-    
+
 NewVdfWidget::~NewVdfWidget()
 {
-
 }
 
 void NewVdfWidget::undo()
@@ -74,7 +73,9 @@ void NewVdfWidget::redo()
 
 void NewVdfWidget::merge()
 {
-	sceneModel->merge(scene->selectedItems());
+	auto node = sceneModel->merge(scene->selectedItems());
+	// TODO
+	commandStack->addCommand(ICommandPtr(new AddToSceneCommand(sceneModel, node, node.get<0>()->visualItem()->scenePos())));
 }
 
 void vdf::NewVdfWidget::deleteSelected()

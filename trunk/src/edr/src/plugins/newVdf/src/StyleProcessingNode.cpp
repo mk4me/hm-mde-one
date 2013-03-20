@@ -15,14 +15,12 @@ StyleProcessingNode::StyleProcessingNode() :
 
 void StyleProcessingNode::addInputPin( IVisualInputPinPtr pin )
 {
-    //pin->visualItem()->setPos(margin, margin + inputPins.size() * pinHeight);
     pin->visualItem()->setParentItem(styleItem);
 
 	INodeStrategyPtr nodeStr = core::dynamic_pointer_cast<INodeStrategy>(styleItem->getStrategy());
 	pin->visualItem()->setPos(nodeStr->getPinPosition(inputPins.size(), true));
 
     inputPins.push_back(pin);
-    //StyleItem->setSize(calculateNodeSize(inputPins.size(), outputPins.size()));
 }
 
 void StyleProcessingNode::removeInputPin( IVisualInputPinPtr pin )
@@ -93,13 +91,11 @@ void StyleProcessingNode::removeCollision()
 void StyleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
 {
     pin->visualItem()->setParentItem(styleItem);
-    //pin->visualItem()->setPos(margin + nodeWidth - pin2, margin + outputPins.size() * pinHeight);
 
 	INodeStrategyPtr nodeStr = core::dynamic_pointer_cast<INodeStrategy>(styleItem->getStrategy());
 	pin->visualItem()->setPos(nodeStr->getPinPosition(outputPins.size(), false));
 
     outputPins.push_back(pin);
-    //StyleItem->setSize(calculateNodeSize(inputPins.size(), outputPins.size()));
 }
 
 void StyleProcessingNode::removeOutputPin( IVisualOutputPinPtr pin )

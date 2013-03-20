@@ -46,8 +46,20 @@ public:
 
 	virtual void setVisualStrategy( IVisualStrategyPtr strategy );
 
+    virtual df::INode* getModelNode() { return _node.get(); }
+    virtual const df::INode* getModelNode() const { return _node.get(); }
+
+    virtual const QIcon& getIcon() const { return icon; }
+    virtual void setIcon(const QIcon& val) { icon = val; }
+
+    virtual void setModelNode(df::INode* node) { _node.reset(node); }
+    virtual Type getType() const { return IVisualItem::SourceNode; }
+    virtual bool isType(Type t) const { return t == IVisualItem::SourceNode || t == IVisualItem::Node; }
+
 
 private:
+    core::shared_ptr<df::INode> _node;
+    QIcon icon;
     SimpleTextItem* simpleItem;
     std::vector<IVisualOutputPinPtr> pins;
 	QString name;

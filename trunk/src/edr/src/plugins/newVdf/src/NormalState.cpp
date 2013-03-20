@@ -1,5 +1,6 @@
 #include "NewVdfPCH.h"
 #include "NormalState.h"
+#include <QtGui/QInputDialog>
 #include "SimpleItem.h"
 #include "SceneStateMachine.h"
 #include "VdfScene.h"
@@ -30,14 +31,6 @@ void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
 
 bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
-    //if (e->button() == Qt::RightButton) {
-    //    auto items = stateMachine->getScene()->items(e->scenePos(), Qt::ContainsItemShape, Qt::AscendingOrder);
-    //    auto connections = stateMachine->getSceneModel()->getVisualItems<IVisualConnectionPtr>(items);
-    //    if (!connections.empty()) {
-    //        IVisualConnectionPtr connection = *connections.begin();
-    //        connection->setSelected(true);
-    //    }
-    //}
 	if (e->button() == Qt::LeftButton) {
 		if (stateMachine->getScene()->itemAt(e->scenePos())) {
 			positions.clear();
@@ -48,7 +41,6 @@ bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 		} else {
 			stateMachine->setState(stateMachine->getGroupState());
 		}
-		
 	}
 
 	// celowo zwracany jest false, nawet gdy obs³u¿yliœmy event (domyœlna obs³uga jest w tym przypadku porz¹dana)
@@ -57,7 +49,6 @@ bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 
 bool NormalState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
 {
-
 	if (e->button() == Qt::LeftButton) {
 		std::vector<ICommandPtr> commands;
 		for (auto it = positions.begin(); it != positions.end(); ++it) {
@@ -71,7 +62,6 @@ bool NormalState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
 		if (!commands.empty()) {
 			stateMachine->getCommandStack()->addCommand(ICommandPtr(new MultiCommand(commands)));
 		}
-		//return true;
 	}
 	return false;
 }
@@ -79,20 +69,25 @@ bool NormalState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
 bool NormalState::keyReleaseEvent( QKeyEvent *event )
 {
 	if (event->key() == Qt::Key_Delete) {
-		/*auto selected = stateMachine->getScene()->selectedItems();
-		auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>(selected);
-
-		std::vector<ICommandPtr> commands;
-		for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-			commands.push_back(ICommandPtr(new RemoveCommand(stateMachine->getSceneModel(), *it)));
-		}
-		if (!commands.empty()) {
-			stateMachine->getCommandStack()->addCommand(ICommandPtr(new MultiCommand(commands)));
-		}*/
 		auto selected = stateMachine->getScene()->selectedItems();
 		auto command = ICommandPtr(new RemoveSelectedCommand(stateMachine->getSceneModel(), selected));
 		stateMachine->getCommandStack()->addCommand(command);
 		return true;
+	} else if (event->key() == Qt::Key_F2) {
+		auto selected = stateMachine->getScene()->selectedItems();
+		if (selected.size() == 1) {
+			auto item = stateMachine->getSceneModel()->tryGetVisualItem(*selected.begin());
+			auto node = core::dynamic_pointer_cast<IVisualNode>(item);
+			if (node) {
+				bool ok;
+				QString text = QInputDialog::getText(nullptr, QObject::tr("Change node name"),
+					QObject::tr("New name:"), QLineEdit::Normal,
+					node->getName(), &ok);
+				if (ok && !text.isEmpty()) {
+					node->setName(text);
+				}
+			}
+		}
 	}
 
 	return false;

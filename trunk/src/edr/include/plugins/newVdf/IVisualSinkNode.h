@@ -25,12 +25,10 @@ public:
 
 	virtual int getNumInputPins() const = 0;
 	virtual IVisualInputPinPtr getInputPin(int no) = 0;
-	virtual Type getType() const { return IVisualItem::SinkNode; }
-	virtual bool isType(Type t) const { return t == IVisualItem::SinkNode || t == IVisualItem::Node; }
 };
 typedef core::shared_ptr<IVisualSinkNode> IVisualSinkNodePtr;
 typedef core::shared_ptr<const IVisualSinkNode> IVisualSinkNodeConstPtr;
 
 }
 
-#endif	//	HEADER_GUARD___IVISUALNODE_H__
+#endif	

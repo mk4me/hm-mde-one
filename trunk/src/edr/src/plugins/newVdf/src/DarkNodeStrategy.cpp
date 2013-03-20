@@ -8,22 +8,6 @@ using namespace vdf;
 void DarkNodeStrategy::setNode( IVisualNodeWeakPtr item )
 {
 	node = item;
-    /*auto ptr = node.lock();
-    if (ptr) {
-        switch (ptr->getType()) {
-        case IVisualItem::ProcessingNode:
-            lowerFrame->setPixmap(QIcon(":/resources/icons/vdf/processor.png").pixmap(32, 32));
-            break;
-
-        case IVisualItem::SinkNode:
-            lowerFrame->setPixmap(QIcon(":/resources/icons/vdf/sink.png").pixmap(32, 32));
-            break;
-
-        case IVisualItem::SourceNode:
-            lowerFrame->setPixmap(QIcon(":/resources/icons/vdf/source.png").pixmap(32, 32));
-            break;
-        }
-    }*/
     lowerFrame->setAlignment(Qt::AlignCenter);
 }
 

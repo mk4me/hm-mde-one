@@ -9,12 +9,10 @@ SimpleOutputPinNode::SimpleOutputPinNode() :
 	item(new SimplePinItem()),
 	index(-1)
 {
-
 }
 
 SimpleOutputPinNode::~SimpleOutputPinNode()
 {
-
 }
 
 

@@ -37,7 +37,6 @@ QRectF StyleItem::boundingRect() const
 void StyleItem::paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0 */ )
 {
 	UTILS_ASSERT(strategy);
-	//QGraphicsItem::paint(painter, option, widget);
 	if (strategy->getWidget()) {
 		//QGraphicsObject::paint(painter, option, widget);
 	} else {

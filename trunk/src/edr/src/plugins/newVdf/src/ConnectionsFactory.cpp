@@ -25,27 +25,3 @@ const QString ConnectionsFactory::description() const
 {
     return "Simple line";
 }
-//
-//IVisualConnection * StyleConnectionsFactory::createConnection() const
-//{
-//    auto connection = new StyleConnection();
-//	auto strategy = IConnectionStrategyPtr(new ConnectionStrategy());
-//	connection->setVisualStrategy(strategy);
-//	return connection;
-//}
-//
-//const QUuid StyleConnectionsFactory::id() const
-//{
-//    return QUuid::createUuid();
-//}
-//
-//const QString StyleConnectionsFactory::name() const
-//{
-//    return "Curved";
-//}
-//
-//const QString StyleConnectionsFactory::description() const
-//{
-//    return "Curved line";
-//}
-//

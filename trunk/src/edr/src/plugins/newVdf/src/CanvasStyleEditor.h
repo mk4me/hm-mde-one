@@ -10,7 +10,6 @@
 #define HEADER_GUARD___CANVASSTYLEEDITOR_H__
 
 
-//#include "HACK.h"
 #include <boost/range.hpp>
 #include <plugins/newVdf/INodesFactory.h>
 #include <plugins/newVdf/IPinsFactory.h>
@@ -45,9 +44,6 @@ public:
 	void registerPinsFactory(IPinsFactoryPtr pFactory);
 	void registerConnectionsFactory(IConnectionsFactoryPtr pFactory);
 	void registerBackgroundsFactory(IBackgroundsFactoryPtr pFactory);
-
-	//const QString & currentSelectionStyle() const;
-
 	virtual std::string serialize() const;
 	virtual void deserialize(const std::string & src);
 

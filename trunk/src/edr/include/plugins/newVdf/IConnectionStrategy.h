@@ -19,7 +19,6 @@ class IVisualConnection;
 class IConnectionStrategy : public IVisualStrategy
 {
 public:
-	//virtual void setPins(core::weak_ptr<IVisualPin> pin1, core::weak_ptr<IVisualPin> pin2) = 0;
     virtual void setConnection(core::weak_ptr<IVisualConnection> connection) = 0;
     virtual QPainterPath shape() const = 0;
 };

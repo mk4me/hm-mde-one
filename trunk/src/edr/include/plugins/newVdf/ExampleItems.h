@@ -1,7 +1,7 @@
 /********************************************************************
 	created:	2012/12/13
 	created:	13:12:2012   11:03
-	filename: 	HACK.h
+	filename: 	ExampleItems.h
 	author:		Wojciech Kniec
 	
 	purpose:	
@@ -108,7 +108,7 @@ public:
         addInputPin(inPinA);
         addInputPin(inPinB);
         addOutputPin(outPinA);
-        widget = new QLabel("The method or operation is not implemented.\nTrolololo");
+        widget = new QLabel("The method or operation is not implemented.");
     }
 
     virtual ~IntProcessor() { delete widget; }

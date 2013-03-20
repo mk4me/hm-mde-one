@@ -8,7 +8,6 @@ using namespace vdf;
 SimpleSourceNode::SimpleSourceNode() :
     simpleItem(new SimpleTextItem(0, 0))
 {
-
 }
 
 void SimpleSourceNode::addOutputPin( IVisualOutputPinPtr pin )
@@ -78,7 +77,6 @@ void SimpleSourceNode::removeCollision()
 
 void SimpleSourceNode::removeOutputPin( IVisualOutputPinPtr pin )
 {
-
 }
 
 void SimpleSourceNode::setVisualStrategy( IVisualStrategyPtr strategy )

@@ -11,7 +11,6 @@
 
 #include <QtGui/QGraphicsItem>
 #include <plugins/newVdf/IVisualStrategy.h>
-//#include "HACK.h"
 
 namespace vdf {
 
@@ -61,8 +60,6 @@ struct Z
 {
     static qreal value() { return (focus ? 10.0f : 0.0f) + _Z<T>::value(); };
 };
-
-
 
 }
 

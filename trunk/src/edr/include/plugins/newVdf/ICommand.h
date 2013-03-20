@@ -16,48 +16,22 @@
 
 namespace vdf {
 
+//! podstawowy interfejs reprezentuj¹cy pojedyncze polecenie (zgodnie ze wzorcem)
 class ICommand
 {
 public:
 	virtual ~ICommand() {}
+
+public:
+    //! metoda wykonuje polecenie
     virtual void doIt() = 0;
+    //! cofa wykonane ju¿ polecenie
     virtual void undoIt() = 0;
+	//! \return nazwa polecenia (dla ewentualnej reprezentacji stosu poleceñ)
 	virtual QString name() = 0; 
 };
 typedef core::shared_ptr<ICommand> ICommandPtr;
 typedef core::shared_ptr<const ICommand> ICommandConstPtr;
-
-// TODO : utworzyc interfejs
-class CommandStack : public QObject
-{
-	Q_OBJECT;
-	friend class CommandStackDebug;
-public:
-	typedef std::list<ICommandPtr> Commands;
-public:
-	CommandStack();
-    virtual ~CommandStack() {}
-
-public:
-    void addCommand(ICommandPtr command);
-	void undo();
-	void redo();
-	bool isUndoPossible() const;
-	bool isRedoPossible() const;
-    void clear();
-
-signals:
-	void changed();
-
-private:
-    Commands commands;
-	Commands::iterator currentCommand;
-};
-
-
-typedef core::shared_ptr<CommandStack> CommandStackPtr;
-typedef core::shared_ptr<const CommandStack> CommandStackConstPtr;
-
 }
 
 #endif

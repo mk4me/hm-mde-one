@@ -28,7 +28,7 @@ NewVdfService::NewVdfService() :
     newVdfWidget = new NewVdfWidget(commandStack, scene);
 //	commandStackDebug = new CommandStackDebug(commandStack);
 //	QObject::connect(commandStack.get(), SIGNAL(changed()), commandStackDebug, SLOT(refresh()));
-	commandStack->addCommand(ICommandPtr(new NullCommand()));
+//	commandStack->addCommand(ICommandPtr(new NullCommand()));
     typesWindow = new TypesWindow(commandStack, canvas, newVdfWidget);
     QObject::connect(newVdfWidget, SIGNAL(singleNodeSelected(IVisualNodePtr)), typesWindow, SLOT(onNodeSelected(IVisualNodePtr)));
 	dataSourceManager->attach(typesWindow);
@@ -43,27 +43,17 @@ NewVdfService::~NewVdfService()
 }
 
 
-//void NewVdfService::init( core::IManagersAccessor * managersAccessor )
-//{
-//
-//}
-
-//const std::string NewVdfService::getName() const
-//{
-//    return name;
-//}
-
-QWidget* NewVdfService::getWidget() // core::IActionsGroupManager * actionsManager )
+QWidget* NewVdfService::getWidget() 
 {
 	return newVdfWidget;
 }
 
-QWidget* NewVdfService::getSettingsWidget() // core::IActionsGroupManager * actionsManager )
+QWidget* NewVdfService::getSettingsWidget()
 {
     return canvasStyleEditorWidget;
 }
 
-QWidget* NewVdfService::getControlWidget() // core::IActionsGroupManager * actionsManager )
+QWidget* NewVdfService::getControlWidget()
 {
     return typesWindow;
 }

@@ -15,6 +15,7 @@
 #include <QtGui/QWheelEvent>
 
 #include "SceneModel.h"
+#include "CommandStack.h"
 #include "Command.h"
 
 class QGraphicsScene;
@@ -23,7 +24,7 @@ class QMouseEvent;
 
 namespace vdf {
 
-class SimplePinItem;
+//class SimplePinItem;
 class SceneStateMachine;
 class VdfScene;  
 class VdfView;
@@ -33,14 +34,14 @@ class NewVdfWidget : public QWidget
     Q_OBJECT;
 
 public:
-    NewVdfWidget(CommandStackPtr stack, SceneModelPtr sceneModel);
+    NewVdfWidget(ICommandStackPtr stack, SceneModelPtr sceneModel);
     virtual ~NewVdfWidget();
 
 public:
     SceneModelPtr getSceneModel() const { return sceneModel; }
 	VdfScene* getScene() const { return scene; }  
 	VdfView* getView() const { return view; }
-	CommandStackPtr getCommandStack() const { return commandStack; }
+	ICommandStackPtr getCommandStack() const { return commandStack; }
 
 public slots:
 	void undo();
@@ -58,7 +59,7 @@ private:
     VdfView* view;
     SceneModelPtr sceneModel;
     bool connectionMode;
-	CommandStackPtr commandStack;
+	ICommandStackPtr commandStack;
 	core::shared_ptr<SceneStateMachine> stateMachine;
 };
 

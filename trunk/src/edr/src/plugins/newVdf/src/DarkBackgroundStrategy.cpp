@@ -15,7 +15,6 @@ void DarkBackgroundStrategy::paint( QPainter* painter, const QRectF& rect)
 	float x2 = rect.width() + rect.x();
 	float y2 = rect.height() + rect.y();
 	while (y1 <= y2) {
-
 		painter->drawLine(x, y1, x2, y1);
 		y1 += step;
 	}

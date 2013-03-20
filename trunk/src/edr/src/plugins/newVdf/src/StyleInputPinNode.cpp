@@ -52,9 +52,7 @@ void StyleInputPinNode::markConnective()
 
 void StyleInputPinNode::markUnconnective()
 {
-
 	strategy->setState(IPinStrategy::Unconnective);
-    //item->setColor(QColor(230, 0, 0));
 	item->update();
 }
 

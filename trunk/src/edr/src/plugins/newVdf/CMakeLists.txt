@@ -35,6 +35,7 @@ SET_PUBLIC_HEADERS(
 	IOutputDescription.h
 	IWorkflowItemBase.h
 	ICommand.h
+	ICommandStack.h
 	IDataFlowProvider.h
 	DataSource.h
 	DataSink.h
@@ -47,6 +48,7 @@ SET_PRIVATE_HEADERS(
 	NewVdfWidget.h
 	BackgroundsFactory.h
 	Command.h
+	CommandStack.h
 	CommandStackDebug.h
 	SceneModel.h
 	CanvasStyleEditor.h
@@ -58,11 +60,6 @@ SET_PRIVATE_HEADERS(
 	DarkPinsFactory.h
 	DarkNodesFactory.h
 	DarkConnectionsFactory.h
-	#ModelCanvasScene.h
-	#ModelCanvasViewer.h
-	#NodeDescriptor.h
-	#PinDescriptor.h
-	#ConnectionDescriptor.h
 	SceneBuilder.h
 	TypesWindow.h
 	PinsFactory.h
@@ -75,6 +72,9 @@ SET_PRIVATE_HEADERS(
 	SimpleMergedNode.h
 	SimpleOutputPinNode.h
 	SimpleInputPinNode.h
+	SimpleConnectionStrategy.h
+	SimplePinStrategy.h
+	SimpleNodeStrategy.h
 	SimpleItem.h
 	StyleItem.h
 	StylePinItem.h
@@ -111,6 +111,7 @@ SET_SOURCE_FILES (
 	DarkNodeStrategy.cpp
 	DarkConnectionStrategy.cpp
 	Command.cpp
+	CommandStack.cpp
 	CommandStackDebug.cpp
 	SceneModel.cpp
 	SceneBuilder.cpp
@@ -120,12 +121,6 @@ SET_SOURCE_FILES (
 	NormalState.cpp
 	ConnectState.cpp
 	GroupState.cpp
-	#VisualItemsFactoriesManager.cpp
-	#ModelCanvasScene.cpp
-	#ModelCanvasViewer.cpp
-	#NodeDescriptor.cpp
-	#PinDescriptor.cpp
-	#ConnectionDescriptor.cpp
 	SimpleItem.cpp
 	StyleItem.cpp
 	PinsFactory.cpp
@@ -138,6 +133,9 @@ SET_SOURCE_FILES (
 	SimpleMergedNode.cpp
 	SimpleOutputPinNode.cpp
 	SimpleInputPinNode.cpp
+	SimpleConnectionStrategy.cpp
+	SimplePinStrategy.cpp
+	SimpleNodeStrategy.cpp
 	StyleConnection.cpp
 	StyleSourceNode.cpp
 	StyleSinkNode.cpp
@@ -161,11 +159,9 @@ SET_SOURCE_FILES (
 SET_MOC_FILES(
 	NewVdfWidget.h
 	CanvasStyleEditorWidget.h
-	ICommand.h
+	CommandStack.h
 	CommandStackDebug.h
 	TypesWindow.h
-	#ModelCanvasScene.h
-	#ModelCanvasViewer.h
 	SimpleItem.h
 	SimpleConnection.h
 	StyleItem.h

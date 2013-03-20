@@ -27,13 +27,14 @@ public:
 	virtual void getOutputInfo( std::vector<OutputInfo> & output ) const;
 
 	virtual core::UniqueID getID() const;
-	IWorkflowItemBase* createClone(void) const;
-	virtual const std::string& getDescription() const;
 	virtual df::INode* getPrototype() const;
 	virtual df::INode* create() const;
 	virtual void getInputInfo( std::vector<InputInfo>& info ) const;
+    QIcon getIcon() const { return icon; }
+    void setIcon(const QIcon& val) { icon = val; }
 
 private:
+    QIcon icon;
 	df::IProcessingNode* _impl;
 	std::string _desc;
 	std::string _name;

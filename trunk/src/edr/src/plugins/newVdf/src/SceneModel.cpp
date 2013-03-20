@@ -12,6 +12,9 @@
 #include <dflib/Node.h>
 #include <type_traits>
 
+#include "StyleMergedNode.h"
+#include "SimpleMergedNode.h"
+
 using namespace vdf;
 
 IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin)
@@ -51,7 +54,10 @@ void SceneModel::addItem( IVisualItemPtr item )
 
 	if (item->isType(IVisualItem::Node)) {
 		IVisualNodePtr node = core::dynamic_pointer_cast<IVisualNode>(item);
-		addNode(node->getModelNode());
+		auto modelNode = node->getModelNode();
+		if (modelNode) {
+			addNode(modelNode);
+		}
 	} else if (item->isType(IVisualItem::InputPin)) {
 		inputPins.push_back(core::dynamic_pointer_cast<IVisualInputPin>(item)); 
 	} else if (item->isType(IVisualItem::OutputPin)) {
@@ -82,18 +88,6 @@ bool SceneModel::connectionPossible( IVisualPinPtr pin1, IVisualPinPtr pin2) con
     auto modelOutput = p.getOutput()->getModelPin();
     return model->canConnect(modelOutput, modelInput);
 }
-
-//bool SceneModel::connectionPossible( QGraphicsItem* pin1, QGraphicsItem* pin2 ) const
-//{
-//	auto it = graphics2Visual.find(pin1);
-//	IVisualPin* vpin1 = it != graphics2Visual.end() ? dynamic_cast<IVisualPin*>(it->second) : nullptr;
-//	it = graphics2Visual.find(pin2);
-//	IVisualPin* vpin2 = it != graphics2Visual.end() ? dynamic_cast<IVisualPin*>(it->second) : nullptr;
-//	if(vpin1 && vpin2) {
-//		return connectionPossible(vpin1, vpin2);
-//	} 
-//	return false;
-//}
 
 void SceneModel::addNode(df::INode* node )
 {
@@ -126,46 +120,6 @@ void SceneModel::run()
 	runner.start(model.get(), nullptr);
 	runner.join();
 }
-//
-//df::IInputPin* SceneModel::getInputPin( df::INode* node, int index )
-//{
-//	UTILS_ASSERT(node && index >= 0);
-//
-//	switch(node->type()) {
-//		case df::INode::PROCESSING_NODE: {
-//			df::IProcessingNode* processing = dynamic_cast<df::IProcessingNode*>(node);
-//			return processing->inputPin(index);
-//		}
-//
-//		case df::INode::SINK_NODE: {
-//			df::ISinkNode* sink = dynamic_cast<df::ISinkNode*>(node);
-//			return sink->inputPin(index);
-//		}
-//	}
-//
-//	UTILS_ASSERT(false);
-//	return nullptr;
-//}
-//
-//df::IOutputPin* SceneModel::getOutputPin( df::INode* node, int index )
-//{
-//	UTILS_ASSERT(node && index >= 0);
-//
-//	switch(node->type()) {
-//		case df::INode::PROCESSING_NODE: {
-//			df::IProcessingNode* processing = dynamic_cast<df::IProcessingNode*>(node);
-//			return processing->outputPin(index);
-//		}
-//
-//		case df::INode::SOURCE_NODE: {
-//			df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(node);
-//			return source->outputPin(index);
-//		}
-//	}
-//
-//	UTILS_ASSERT(false);
-//	return nullptr;
-//}
 
 const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr vpin  ) 
 {
@@ -203,7 +157,6 @@ void vdf::SceneModel::removePin( IVisualItemPtr item )
         auto inputPin = core::dynamic_pointer_cast<IVisualInputPin>(pin);
         auto connection = inputPin->getConnection().lock();
         if (connection) {
-            //removeItem(connection);
             removeConnection(connection);
         }
 		inputPins.remove(inputPin);
@@ -213,7 +166,6 @@ void vdf::SceneModel::removePin( IVisualItemPtr item )
         for (int i = count - 1; i >= 0 ; --i) {
             auto connection = outputPin->getConnection(i).lock();
             if (connection) {
-                //removeItem(connection);
                 removeConnection(connection);
             }
         }
@@ -271,13 +223,6 @@ void SceneModel::removeItem( IVisualItemPtr item )
 
 	case (IVisualItem::Connection):
         UTILS_ASSERT(false);
-		/*IVisualConnectionPtr connection = core::dynamic_pointer_cast<IVisualConnection>(item);
-		connection->getInputPin()->setConnection(IVisualConnectionWeakPtr());
-		connection->getOutputPin()->removeConnection(connection);
-		try {
-			model->removeConnection(connection->getModelConnection());
-		} catch (std::exception& e) {
-		}*/
 		break;
 	}
 }
@@ -292,16 +237,7 @@ IVisualItemPtr SceneModel::tryGetVisualItem( QGraphicsItem* item )
 	return IVisualItemPtr();
 }
 
-//void SceneModel::removeConnection( IVisualPinPtr pin1, IVisualPinPtr pin2 )
-//{
-//	if(!(pin1->getConnection().lock() == pin2->getConnection().lock())) {
-//        return;
-//    }
-//	auto connection = pin1->getConnection().lock();
-//	removeItem(connection);
-//}
-
-void SceneModel::merge( const QList<QGraphicsItem*>& items )
+SceneBuilder::VisualNodeWithPins SceneModel::merge( const QList<QGraphicsItem*>& items )
 {
 	QList<IVisualNodePtr> nodes = this->getVisualItems<IVisualNodePtr>(items);
 	MergedItemPtr merged(new MergedItem());
@@ -344,20 +280,10 @@ void SceneModel::merge( const QList<QGraphicsItem*>& items )
 			}
 		}
 	}
-	if (!ipins.empty() && !opins.empty()) {
-		IVisualProcessingNodePtr node = builder.factories->getCurrentNodesFactory()->createProcessingNode();
-		node->setName("Merged");
-		for (auto it = ipins.begin(); it != ipins.end(); ++it) {
-			node->addInputPin(*it);
-		}
-		for (auto it = opins.begin(); it != opins.end(); ++it) {
-			node->addOutputPin(*it);
-		}
-		merged->node = node;
-						
+	if (!ipins.empty() || !opins.empty()) {
+		return  builder.createMerged("Merged", ipins, opins);
 	}
-	emit visualItemAdded(merged->node);
-	
+	return SceneBuilder::VisualNodeWithPins();
 }
 
 
@@ -422,21 +348,14 @@ void vdf::SceneModel::removeConnection( IVisualOutputPinPtr outputPin, IVisualIn
             outputPin->removeConnection(c);
             try {
                 model->removeConnection(c->getModelConnection());
-            } catch (std::exception& e) {
-                int a = 0;
+            } catch (std::exception& ) {
+                // TODO
             }
             return;
         }
     }
 
     UTILS_ASSERT (false);
-    /*IVisualConnectionPtr connection = core::dynamic_pointer_cast<IVisualConnection>(item);
-    connection->getInputPin()->setConnection(IVisualConnectionWeakPtr());
-    connection->getOutputPin()->removeConnection(connection);
-    try {
-        model->removeConnection(connection->getModelConnection());
-    } catch (std::exception& e) {
-    }*/
 }
 
 void vdf::SceneModel::removeConnection( IVisualItemPtr item )

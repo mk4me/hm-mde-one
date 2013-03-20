@@ -77,7 +77,7 @@ public:
 	virtual ~SceneModel() {}
 
 public slots:
-	void merge(const QList<QGraphicsItem*>& items);
+	SceneBuilder::VisualNodeWithPins merge(const QList<QGraphicsItem*>& items);
 
 public:
 	IVisualConnectionPtr addConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin);
@@ -89,7 +89,6 @@ public:
     const SceneBuilder& getBuilder() const { return builder; }
 
 	bool connectionPossible(IVisualPinPtr pin1, IVisualPinPtr pin2) const;
-	//bool connectionPossible(QGraphicsItem* pin1, QGraphicsItem* pin2) const;
 	const Connections& getPossibleConections(IVisualPinPtr vpin);
 
 	IVisualItemPtr tryGetVisualItem(QGraphicsItem* item);
@@ -131,8 +130,6 @@ signals:
 
 private:
 	void addNode(df::INode* node);
-	//df::IInputPin* getInputPin(df::INode* node, int index);
-	//df::IOutputPin* getOutputPin(df::INode* node, int index);
 	template<class VisualT, class DFNodeT>
 	void removeNode(IVisualItemPtr item);
 	template<class VisualPinT>

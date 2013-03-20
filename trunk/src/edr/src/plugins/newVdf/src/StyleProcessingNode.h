@@ -55,7 +55,19 @@ public:
 
 	virtual QString getName() const;
 
+    virtual df::INode* getModelNode() {  return _node.get(); }
+    virtual const df::INode* getModelNode() const { return _node.get(); }
+
+    virtual const QIcon& getIcon() const { return icon; }
+    virtual void setIcon(const QIcon& val) { icon = val; }
+
+    virtual void setModelNode(df::INode* node) { _node.reset(node); }
+    virtual Type getType() const { return IVisualItem::ProcessingNode; }
+    virtual bool isType(Type t) const { return t == IVisualItem::ProcessingNode || t == IVisualItem::Node; }
+
 private:
+    core::shared_ptr<df::INode> _node;
+    QIcon icon;
     StyleItem* styleItem;
     std::vector<IVisualInputPinPtr> inputPins;
     std::vector<IVisualOutputPinPtr> outputPins;

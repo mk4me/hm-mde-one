@@ -4,34 +4,14 @@
 
 using namespace vdf;
 
-const std::string& DataSource::getDescription() const
+DataSource::DataSource( df::ISourceNode* impl, core::UniqueID id, const std::string& name, Creator creator ) :
+_impl(impl), _id(id), _name(name), _creator(creator)
 {
-	UTILS_ASSERT(false); return _desc;
-}
-
-IWorkflowItemBase* DataSource::createClone( void ) const
-{
-	UTILS_ASSERT(false); return nullptr;
 }
 
 core::UniqueID DataSource::getID() const
 {
 	return _id;
-}
-
-QIcon* DataSource::getIcon() const
-{
-	return nullptr;
-}
-
-bool DataSource::empty() const
-{
-	UTILS_ASSERT(false); return false;
-}
-
-QDialog * DataSource::getOutputConfigurationDialog()
-{
-	return nullptr;
 }
 
 void DataSource::getOutputInfo( std::vector<OutputInfo> & output ) const
@@ -59,8 +39,3 @@ const std::string DataSource::getName() const
 	return _name;
 }
 
-DataSource::DataSource( df::ISourceNode* impl, core::UniqueID id, const std::string& name, Creator creator ) :
-_impl(impl), _id(id), _name(name), _creator(creator)
-{
-
-}

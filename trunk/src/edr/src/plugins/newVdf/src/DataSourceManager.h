@@ -16,7 +16,7 @@
 
 namespace vdf {
 
-class DataSourceManager : public IDataSourceManager//, public ManagerHelper<DataSourceManager>
+class DataSourceManager : public IDataSourceManager
 {
     friend class DataSource;
 public:

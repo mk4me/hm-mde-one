@@ -7,7 +7,6 @@ using namespace vdf;
 SimpleConnection::SimpleConnection() :
     item(new QGraphicsLineItem())
 {
-
 }
 
 void SimpleConnection::setInputPin( const IVisualInputPinPtr pin )
