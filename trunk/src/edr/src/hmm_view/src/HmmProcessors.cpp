@@ -154,7 +154,7 @@ void Scalar2Vector::process()
     }
 }
 
-QWidget* ScalarTreshold::getConfigurationWidget() const
+QWidget* ScalarTreshold::getConfigurationWidget()
 {
     return widget;
 }

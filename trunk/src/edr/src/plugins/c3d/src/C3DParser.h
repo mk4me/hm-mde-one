@@ -59,7 +59,7 @@ public:
     //! Zwraca obiekty dostarczone przez parser
     //! \param objects kolekcja z obiektami (set)
     virtual void getObjects(core::Objects& objects);
-    //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko asf)
+    //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;
 	//! Zapisauje dane w konkretnym miejscu, nie używane

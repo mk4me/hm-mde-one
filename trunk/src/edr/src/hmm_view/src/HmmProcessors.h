@@ -166,7 +166,7 @@ public:
         return (std::min)(v1, treshold);
     }
 
-    virtual QWidget* getConfigurationWidget() const;
+    virtual QWidget* getConfigurationWidget();
     virtual void refreshConfiguration();
 private:
     QWidget* widget;

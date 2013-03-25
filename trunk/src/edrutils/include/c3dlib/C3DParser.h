@@ -156,6 +156,7 @@ public:
     double getPointFrequency() const;
     //! \return liczba eventów wczytanych z pliku c3d
 	int getNumEvents() const;
+	const std::vector<double>& getMovieDelays() const;
     //! \return event o konkrentym indeksie (zgodnie z kolejnością w c3d)
 	IEventPtr getEvent(int index) const;
     //! \return kolekcja z informacjami o platformach pomiarowych zapisanych w pliku 
@@ -176,7 +177,7 @@ private:
     std::vector<IEventPtr> events;
 	//! płyty GRF
 	ForcePlatformCollection forcePlatforms;
-
+	std::vector<double> movieDelaysVector;
 private:
 	//! Zapewnia właściwe wczytywanie danych akwizycji
     void loadAcquisition();

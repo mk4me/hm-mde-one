@@ -47,6 +47,8 @@ void C3DParser::parse( const std::string & source  )
 	std::string importWarnings;
     parserPtr->importFrom(files, importWarnings);
 
+	std::vector<double> test = parserPtr->getMovieDelays();
+
     // wczytanie danych analogowych
     GRFCollectionPtr grfs(new GRFCollection());
     EMGCollectionPtr e(new EMGCollection());

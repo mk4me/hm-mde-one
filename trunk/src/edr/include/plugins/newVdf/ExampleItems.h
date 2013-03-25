@@ -120,7 +120,7 @@ public:
         outPinA->value(inPinA->value() + inPinB->value());
     }
 
-    virtual QWidget* getConfigurationWidget() const
+    virtual QWidget* getConfigurationWidget()
     {
         return widget;
     }

@@ -64,7 +64,7 @@ hmm(nullptr)
     _XSink();
 }
 
-QWidget* XSink::getConfigurationWidget() const
+QWidget* XSink::getConfigurationWidget()
 {
     return widget;    
 }

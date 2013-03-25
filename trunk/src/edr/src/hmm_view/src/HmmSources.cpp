@@ -4,9 +4,7 @@
 #include "FilterCommand.h"
 #include "Vector3DFilterCommand.h"
 
-
-
-QWidget* VectorSource::getConfigurationWidget() const
+QWidget* VectorSource::getConfigurationWidget() 
 {
     return tree;
 }
@@ -113,7 +111,7 @@ void EMGSource::produce()
     }
 }
 
-QWidget* EMGSource::getConfigurationWidget() const
+QWidget* EMGSource::getConfigurationWidget()
 {
     return tree;
 }

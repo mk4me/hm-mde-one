@@ -93,8 +93,7 @@ int Application::initUIContext(int & argc, char *argv[])
 	arguments.read("--plugins",path);
 	if(path.empty() == false){
 		additionalPluginsPath = path;
-	}
-
+	} 
 	// inicjalizacja UI, wszystkich potrzebnych zasobów
 	{
 		uiApplication_.reset(new coreUI::UIApplication(argc, argv));
@@ -204,6 +203,12 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	
 	//inicjalizacja obiektu ³aduj¹cego pluginy
 	pluginLoader_.reset(new PluginLoader(Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
+
+	#if defined(__WIN32__)
+	if (additionalPluginsPath.empty() == true) {
+		additionalPluginsPath = getPathInterface()->getPluginPath();
+	}
+	#endif
 
 	//obsluga dodatkowej sciezki z pluginami zewnetrznymi
 	if(additionalPluginsPath.empty() == false && Filesystem::pathExists(additionalPluginsPath) == true)

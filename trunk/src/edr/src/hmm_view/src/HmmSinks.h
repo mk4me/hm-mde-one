@@ -28,7 +28,7 @@ public:
     HmmMainWindow* getHmm() const;
     void setHmm(HmmMainWindow* val);
 
-    virtual QWidget* getConfigurationWidget() const;
+    virtual QWidget* getConfigurationWidget();
     virtual void refreshConfiguration();
 
 private:

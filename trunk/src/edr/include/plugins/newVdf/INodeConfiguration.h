@@ -18,7 +18,7 @@ namespace vdf {
     {
     public:
 	    virtual ~INodeConfiguration() {}
-        virtual QWidget* getConfigurationWidget() const = 0;
+        virtual QWidget* getConfigurationWidget() = 0;
         virtual void refreshConfiguration() = 0;
     };
     typedef core::shared_ptr<INodeConfiguration> INodeConfigurationPtr;

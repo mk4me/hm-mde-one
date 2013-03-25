@@ -30,7 +30,7 @@ public:
     virtual void reset();
     virtual const bool empty() const;
     virtual void produce();
-    virtual QWidget* getConfigurationWidget() const;
+    virtual QWidget* getConfigurationWidget();
     virtual bool isNodeValid();
     virtual QString getErrorMessage();
 
@@ -65,7 +65,7 @@ public:
     virtual void reset();
     virtual const bool empty() const;
     virtual void produce();
-    virtual QWidget* getConfigurationWidget() const;
+    virtual QWidget* getConfigurationWidget();
     virtual bool isNodeValid();
     virtual QString getErrorMessage();
 

@@ -337,6 +337,16 @@ void C3DParser::loadAcquisition()
         }
     }
 
+	btk::MetaData::ConstIterator itPoints = this->data->aquisitionPointer->GetMetaData()->FindChild("POINT");
+	if (itPoints != this->data->aquisitionPointer->GetMetaData()->End())
+	{
+		btk::MetaDataInfo::Pointer movieDelays = (*itPoints)->ExtractChildInfo("MOVIE_DELAY", btk::MetaDataInfo::Real, 1, false);
+		if (movieDelays)
+		{
+			movieDelaysVector = movieDelays->ToDouble();
+		}
+	}
+
     this->data->virtualMarkersSeparator->SetInput(this->data->aquisitionPointer->GetPoints());
     this->data->forcePlatformsExtractor->SetInput(this->data->aquisitionPointer);
 
@@ -515,6 +525,11 @@ float C3DParser::getUnitScale( const std::string& unit ) const
 	if (unit == "m") return 1.0f;
 	if (unit == "mm") return 0.001f;
 	throw std::runtime_error("Unknown unit");
+}
+
+const std::vector<double>& C3DParser::getMovieDelays() const
+{
+	return movieDelaysVector;
 }
 
 }
