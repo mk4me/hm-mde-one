@@ -58,6 +58,6 @@ private:
     bool wasInit;
 };
 
-typedef core::shared_ptr<SchemeDrawerContainer> SchemeDrawerContainerPtr;
+typedef utils::shared_ptr<SchemeDrawerContainer> SchemeDrawerContainerPtr;
 
 #endif

@@ -12,7 +12,7 @@
 
 #include <QtCore/QString>
 #include <vector>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <boost/bimap.hpp>
 
 //! W klasie przechowywana jest konkretna konfiguracja EMG
@@ -58,14 +58,14 @@ private:
     //! mapa z wpisami
     std::map<QString, EntryData> entry2Data;
 };
-typedef core::shared_ptr<MeasurementConfig> MeasurementConfigPtr;
-typedef core::shared_ptr<const MeasurementConfig> MeasurementConfigConstPtr;
+typedef utils::shared_ptr<MeasurementConfig> MeasurementConfigPtr;
+typedef utils::shared_ptr<const MeasurementConfig> MeasurementConfigConstPtr;
 
 //! klasa przechowuje wszystkie konfigi oraz ułatwia dostęp do nich
 class Measurements
 {
 public:
-    static core::shared_ptr<const Measurements> get();
+    static utils::shared_ptr<const Measurements> get();
 public:
     Measurements() {}
     virtual ~Measurements() {}
@@ -103,10 +103,10 @@ private:
 
 private:
     //! kolekcja z konfiguracjami pomiarowymi
-    static core::shared_ptr<const Measurements> measurements;
+    static utils::shared_ptr<const Measurements> measurements;
 };
-typedef core::shared_ptr<Measurements> MeasurementsPtr;
-typedef core::shared_ptr<const Measurements> MeasurementsConstPtr;
+typedef utils::shared_ptr<Measurements> MeasurementsPtr;
+typedef utils::shared_ptr<const Measurements> MeasurementsConstPtr;
 
 
 //! parser xml-a z konfigami EMG
@@ -141,8 +141,8 @@ private:
     //! kolekcja z konfigami EMG
     MeasurementsPtr measurments;
 };
-typedef core::shared_ptr<MeasurementsParser> MeasurementsParserPtr;
-typedef core::shared_ptr<const MeasurementsParser> MeasurementsParserConstPtr;
+typedef utils::shared_ptr<MeasurementsParser> MeasurementsParserPtr;
+typedef utils::shared_ptr<const MeasurementsParser> MeasurementsParserConstPtr;
 
 
 #endif

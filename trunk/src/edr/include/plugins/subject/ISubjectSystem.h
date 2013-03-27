@@ -21,8 +21,8 @@ public:
 	// todo zmienic na pure virtual;
 	virtual void setUp(MotionConstPtr motion) {}
 };
-typedef core::shared_ptr<ISubjectSystem> ISubjectSystemPtr;
-typedef core::shared_ptr<const ISubjectSystem> ISubjectSystemConstPtr;
+typedef utils::shared_ptr<ISubjectSystem> ISubjectSystemPtr;
+typedef utils::shared_ptr<const ISubjectSystem> ISubjectSystemConstPtr;
 
 
 #endif

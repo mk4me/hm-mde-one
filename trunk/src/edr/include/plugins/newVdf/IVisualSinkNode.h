@@ -26,8 +26,7 @@ public:
 	virtual int getNumInputPins() const = 0;
 	virtual IVisualInputPinPtr getInputPin(int no) = 0;
 };
-typedef core::shared_ptr<IVisualSinkNode> IVisualSinkNodePtr;
-typedef core::shared_ptr<const IVisualSinkNode> IVisualSinkNodeConstPtr;
+DEFINE_SMART_POINTERS(IVisualSinkNode);
 
 }
 

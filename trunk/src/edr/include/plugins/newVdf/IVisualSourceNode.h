@@ -26,8 +26,7 @@ public:
 	virtual int getNumOutputPins() const = 0;
 	virtual IVisualOutputPinPtr getOutputPin(int no) = 0;
 };
-typedef core::shared_ptr<IVisualSourceNode> IVisualSourceNodePtr;
-typedef core::shared_ptr<const IVisualSourceNode> IVisualSourceNodeConstPtr;
+DEFINE_SMART_POINTERS(IVisualSourceNode);
 
 }
 

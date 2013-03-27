@@ -60,7 +60,7 @@ private:
     SceneModelPtr sceneModel;
     bool connectionMode;
 	ICommandStackPtr commandStack;
-	core::shared_ptr<SceneStateMachine> stateMachine;
+	utils::shared_ptr<SceneStateMachine> stateMachine;
 };
 
 }

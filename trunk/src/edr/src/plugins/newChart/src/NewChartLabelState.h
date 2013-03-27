@@ -53,8 +53,8 @@ protected:
         //! seria zwiazana z etykietą
         const NewChartSerie* serie;
     };
-    typedef core::shared_ptr<LabelData> LabelDataPtr;
-    typedef core::shared_ptr<const LabelData> LabelDataConstPtr;
+    typedef utils::shared_ptr<LabelData> LabelDataPtr;
+    typedef utils::shared_ptr<const LabelData> LabelDataConstPtr;
 
     typedef boost::tuple<const NewChartSerie*, QPointF, double> SeriePointDist;
 
@@ -87,8 +87,8 @@ protected:
     std::vector<LabelDataPtr> labels;
 
 };
-typedef core::shared_ptr<NewChartLabelState> NewChartLabelStatePtr;
-typedef core::shared_ptr<const NewChartLabelState> NewChartLabelStateConstPtr;
+typedef utils::shared_ptr<NewChartLabelState> NewChartLabelStatePtr;
+typedef utils::shared_ptr<const NewChartLabelState> NewChartLabelStateConstPtr;
 
 
 #endif

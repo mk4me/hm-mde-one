@@ -13,17 +13,17 @@
 #include <map>
 #include <stdexcept>
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 
 class QWidget;
 class IAppUsageContextManager;
 
 class IAppUsageContext;
-typedef core::shared_ptr<IAppUsageContext> AppUsageContextPtr;
-typedef core::weak_ptr<IAppUsageContext> AppUsageContextWeakPtr;
-typedef core::shared_ptr<const IAppUsageContext> AppUsageContextConstPtr;
-typedef core::weak_ptr<const IAppUsageContext> AppUsageContextConstWeakPtr;
+typedef utils::shared_ptr<IAppUsageContext> AppUsageContextPtr;
+typedef utils::weak_ptr<IAppUsageContext> AppUsageContextWeakPtr;
+typedef utils::shared_ptr<const IAppUsageContext> AppUsageContextConstPtr;
+typedef utils::weak_ptr<const IAppUsageContext> AppUsageContextConstWeakPtr;
 
 
 class IAppUsageContext

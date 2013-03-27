@@ -27,8 +27,8 @@ public:
     //! \return tytuł wykresu 
     virtual QString getTitle() const = 0;
 };
-typedef core::shared_ptr<INewChartVisualizer> INewChartVisualizerPtr;
-typedef core::shared_ptr<const INewChartVisualizer> INewChartVisualizerConstPtr;
+typedef utils::shared_ptr<INewChartVisualizer> INewChartVisualizerPtr;
+typedef utils::shared_ptr<const INewChartVisualizer> INewChartVisualizerConstPtr;
 
 
 #endif

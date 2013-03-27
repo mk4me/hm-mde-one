@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__IVISUALIZER_H__
 
 #include <string>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IIdentifiable.h>
 #include <QtGui/QPixmap>
@@ -117,10 +117,10 @@ namespace plugin
 		virtual int getMaxDataSeries() const = 0;
     };
 
-    typedef core::shared_ptr<IVisualizer> IVisualizerPtr;
-    typedef core::shared_ptr<const IVisualizer> IVisualizerConstPtr;
-    typedef core::weak_ptr<IVisualizer> IVisualizerWeakPtr;
-    typedef core::weak_ptr<const IVisualizer> IVisualizerConstWeakPtr;
+    typedef utils::shared_ptr<IVisualizer> IVisualizerPtr;
+    typedef utils::shared_ptr<const IVisualizer> IVisualizerConstPtr;
+    typedef utils::weak_ptr<IVisualizer> IVisualizerWeakPtr;
+    typedef utils::weak_ptr<const IVisualizer> IVisualizerConstWeakPtr;
 
 } // namespace plugin
 

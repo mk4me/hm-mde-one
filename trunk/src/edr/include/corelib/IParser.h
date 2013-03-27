@@ -4,7 +4,7 @@
 #include <map>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IIdentifiable.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/Filesystem.h>
 
 namespace plugin
@@ -46,9 +46,9 @@ namespace plugin
         virtual void getObjects(core::Objects& objects) = 0;
     };
 
-    typedef core::shared_ptr<IParser> IParserPtr;
-    typedef core::shared_ptr<const IParser> IParserConstPtr;
-    typedef core::weak_ptr<IParser> IParserWeakPtr;
+    typedef utils::shared_ptr<IParser> IParserPtr;
+    typedef utils::shared_ptr<const IParser> IParserConstPtr;
+    typedef utils::weak_ptr<IParser> IParserWeakPtr;
 
 	//! Interfejs parsera obsługującego we własnym zakresie I/O na podstawie ścieżki źródła
 	//! Po tej klasie musi dziedziczyć IParser jeśli wspiera taką funkcjonalność

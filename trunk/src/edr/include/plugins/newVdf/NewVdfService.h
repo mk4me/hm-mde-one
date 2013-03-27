@@ -82,8 +82,8 @@ private:
     IDataSourceManagerPtr dataSourceManager;
     IDataSinkManagerPtr dataSinkManager;
 };
-typedef core::shared_ptr<NewVdfService> NewVdfServicePtr;
-typedef core::shared_ptr<const NewVdfService> NewVdfServiceConstPtr;
+typedef utils::shared_ptr<NewVdfService> NewVdfServicePtr;
+typedef utils::shared_ptr<const NewVdfService> NewVdfServiceConstPtr;
 }
 
 #endif  //HEADER_GUARD___VDFSERVICE_H__

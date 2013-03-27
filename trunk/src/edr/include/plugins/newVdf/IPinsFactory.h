@@ -21,8 +21,7 @@ public:
 	virtual IVisualInputPinPtr createInputPin() const = 0;
 	virtual IVisualOutputPinPtr createOutputPin() const = 0;
 };
-typedef core::shared_ptr<IPinsFactory> IPinsFactoryPtr;
-typedef core::shared_ptr<const IPinsFactory> IPinsFactoryConstPtr;
+DEFINE_SMART_POINTERS(IPinsFactory);
 
 }
 

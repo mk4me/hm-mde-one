@@ -68,7 +68,7 @@ private:
         //! obiekt, który będzie odświeżany po zmianie danych
         HmmMainWindow* hmm;
     };
-    typedef core::shared_ptr<DataObserver> DataObserverPtr;
+    typedef utils::shared_ptr<DataObserver> DataObserverPtr;
 
     //! służy do przechowywania informacji o utworzonych wizualizatorach i ich seriach, używane w mapie itemHelper -> itemDesc
     struct DataItemDescription 
@@ -85,7 +85,7 @@ private:
 
 		QDockWidget * visualizerDockWidget;
 
-		core::shared_ptr<VisualizerSerieTimelineMultiChannel> channel;
+		utils::shared_ptr<VisualizerSerieTimelineMultiChannel> channel;
 
 		std::string path;
     };

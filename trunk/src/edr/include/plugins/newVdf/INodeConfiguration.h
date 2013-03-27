@@ -21,8 +21,7 @@ namespace vdf {
         virtual QWidget* getConfigurationWidget() = 0;
         virtual void refreshConfiguration() = 0;
     };
-    typedef core::shared_ptr<INodeConfiguration> INodeConfigurationPtr;
-    typedef core::shared_ptr<const INodeConfiguration> INodeConfigurationConstPtr;
+    DEFINE_SMART_POINTERS(INodeConfiguration);
 
     class INodeValidation
     {
@@ -31,9 +30,7 @@ namespace vdf {
         virtual bool isNodeValid() = 0;
         virtual QString getErrorMessage() = 0;
     };
-    typedef core::shared_ptr<INodeValidation> INodeValidationPtr;
-    typedef core::shared_ptr<const INodeValidation> INodeValidationConstPtr;
-
+    DEFINE_SMART_POINTERS(INodeValidation);
 }
 
 #endif

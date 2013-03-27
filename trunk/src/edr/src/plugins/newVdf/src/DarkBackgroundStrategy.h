@@ -22,8 +22,8 @@ public:
 	virtual void paint( QPainter*, const QRectF& );
 
 };
-typedef core::shared_ptr<DarkBackgroundStrategy> DarkBackgroundStrategyPtr;
-typedef core::shared_ptr<const DarkBackgroundStrategy> DarkBackgroundStrategyConstPtr;
+DEFINE_SMART_POINTERS(DarkBackgroundStrategy);
+
 }
 
 #endif

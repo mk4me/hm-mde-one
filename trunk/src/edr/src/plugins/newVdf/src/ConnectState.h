@@ -39,8 +39,7 @@ private:
 
 	SceneModel::Connections connections;
 };
-typedef core::shared_ptr<ConnectState> ConnectStatePtr;
-typedef core::shared_ptr<const ConnectState> ConnectStateConstPtr;
+DEFINE_SMART_POINTERS(ConnectState);
 }
 
 #endif

@@ -51,7 +51,7 @@ private:
     IVisualInputPinPtr inputPin;
     IVisualOutputPinPtr outputPin;
     StyleItem* item;
-    core::shared_ptr<df::IConnection> _connection;
+    utils::shared_ptr<df::IConnection> _connection;
 };
 
 }

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_CORE__APPINITIALIZER_H__
 #define HEADER_GUARD_CORE__APPINITIALIZER_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <boost/type_traits.hpp>
 #include <coreui/CoreMainWindow.h>
 

@@ -14,7 +14,7 @@
 #include <QtGui/QGraphicsView>
 #include <QtGui/QWheelEvent>
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include "SceneModel.h"
 
 class QGraphicsScene;
@@ -28,8 +28,8 @@ class SceneStateMachine;
 class ISceneState
 {
 public:
-    typedef core::shared_ptr<ISceneState> Ptr;
-    typedef core::shared_ptr<const ISceneState> ConstPtr;
+    typedef utils::shared_ptr<ISceneState> Ptr;
+    typedef utils::shared_ptr<const ISceneState> ConstPtr;
 public:
     ISceneState(SceneStateMachine* machine) :
       stateMachine(machine) {}
@@ -52,9 +52,7 @@ public:
 protected:
     SceneStateMachine* stateMachine;
 };
-typedef ISceneState::Ptr ISceneStatePtr;
-typedef ISceneState::ConstPtr ISceneStateConstPtr;
-
+DEFINE_SMART_POINTERS(ISceneState);
 }
 
 #endif

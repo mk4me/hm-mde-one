@@ -26,9 +26,7 @@ public:
     virtual const QString name() const;
     virtual const QString description() const;
 };
-typedef core::shared_ptr<NodesFactory> NodesFactoryPtr;
-typedef core::shared_ptr<const NodesFactory> NodesFactoryConstPtr;
-
+DEFINE_SMART_POINTERS(NodesFactory);
 }
 
 #endif

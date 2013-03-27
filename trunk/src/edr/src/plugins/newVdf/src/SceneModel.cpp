@@ -53,17 +53,17 @@ void SceneModel::addItem( IVisualItemPtr item )
 	}
 
 	if (item->isType(IVisualItem::Node)) {
-		IVisualNodePtr node = core::dynamic_pointer_cast<IVisualNode>(item);
+		IVisualNodePtr node = utils::dynamic_pointer_cast<IVisualNode>(item);
 		auto modelNode = node->getModelNode();
 		if (modelNode) {
 			addNode(modelNode);
 		}
 	} else if (item->isType(IVisualItem::InputPin)) {
-		inputPins.push_back(core::dynamic_pointer_cast<IVisualInputPin>(item)); 
+		inputPins.push_back(utils::dynamic_pointer_cast<IVisualInputPin>(item)); 
 	} else if (item->isType(IVisualItem::OutputPin)) {
-		outputPins.push_back(core::dynamic_pointer_cast<IVisualOutputPin>(item));
+		outputPins.push_back(utils::dynamic_pointer_cast<IVisualOutputPin>(item));
 	} else if (item->isType(IVisualItem::Connection)) {
-        auto c = core::dynamic_pointer_cast<IVisualConnection>(item);
+        auto c = utils::dynamic_pointer_cast<IVisualConnection>(item);
         c->getInputPin()->setConnection(c);
         c->getOutputPin()->addConnection(c);
     }
@@ -150,18 +150,18 @@ const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr v
 template<class VisualPinT>
 void vdf::SceneModel::removePin( IVisualItemPtr item )
 {
-	auto pin = core::dynamic_pointer_cast<VisualPinT>(item);
+	auto pin = utils::dynamic_pointer_cast<VisualPinT>(item);
 	UTILS_ASSERT(pin);
 	
 	if (std::is_same<VisualPinT, IVisualInputPin>::value) {
-        auto inputPin = core::dynamic_pointer_cast<IVisualInputPin>(pin);
+        auto inputPin = utils::dynamic_pointer_cast<IVisualInputPin>(pin);
         auto connection = inputPin->getConnection().lock();
         if (connection) {
             removeConnection(connection);
         }
 		inputPins.remove(inputPin);
 	} else if (std::is_same<VisualPinT, IVisualOutputPin>::value) {
-        auto outputPin = core::dynamic_pointer_cast<IVisualOutputPin>(pin);
+        auto outputPin = utils::dynamic_pointer_cast<IVisualOutputPin>(pin);
         int count = outputPin->getNumConnections();
         for (int i = count - 1; i >= 0 ; --i) {
             auto connection = outputPin->getConnection(i).lock();
@@ -178,7 +178,7 @@ void vdf::SceneModel::removePin( IVisualItemPtr item )
 template<class VisualT, class DFNodeT>
 void SceneModel::removeNode( IVisualItemPtr item )
 {
-	auto node = core::dynamic_pointer_cast<VisualT>(item);
+	auto node = utils::dynamic_pointer_cast<VisualT>(item);
 	UTILS_ASSERT(node);
 	auto* ptr = dynamic_cast<DFNodeT*>(node->getModelNode());
 	UTILS_ASSERT(ptr);
@@ -196,7 +196,7 @@ void SceneModel::removeNode( IVisualItemPtr item )
 
 void SceneModel::removeItem( IVisualItemPtr item )
 {
-    UTILS_ASSERT(!core::dynamic_pointer_cast<IVisualConnection>(item));
+    UTILS_ASSERT(!utils::dynamic_pointer_cast<IVisualConnection>(item));
     commonErase(item);
 
 
@@ -250,7 +250,7 @@ SceneBuilder::VisualNodeWithPins SceneModel::merge( const QList<QGraphicsItem*>&
 		auto graphicsItem = (*it)->visualItem();
 		graphicsItem->setVisible(false);
 		graphicsItem->update();
-		IVisualSourceNodePtr source = core::dynamic_pointer_cast<IVisualSourceNode>(*it);
+		IVisualSourceNodePtr source = utils::dynamic_pointer_cast<IVisualSourceNode>(*it);
 		if (source) {
 			int count = source->getNumOutputPins();
 			for (int i = 0; i < count; ++i) {
@@ -266,7 +266,7 @@ SceneBuilder::VisualNodeWithPins SceneModel::merge( const QList<QGraphicsItem*>&
 				opins.push_back(opin);
 			}
 		}
-		IVisualSinkNodePtr sink = core::dynamic_pointer_cast<IVisualSinkNode>(*it);
+		IVisualSinkNodePtr sink = utils::dynamic_pointer_cast<IVisualSinkNode>(*it);
 		if (sink) {
 			int count = sink->getNumInputPins();
 			for (int i = 0; i < count; ++i) {
@@ -304,7 +304,7 @@ void vdf::SceneModel::clearScene()
 
 void vdf::SceneModel::removeInputPins(IVisualNodePtr node )
 {
-	IVisualSinkNodePtr sink = core::dynamic_pointer_cast<vdf::IVisualSinkNode>(node);
+	IVisualSinkNodePtr sink = utils::dynamic_pointer_cast<vdf::IVisualSinkNode>(node);
 	if (sink) {
 		int count = sink->getNumInputPins();
 		for (int i = 0; i < count; ++i) {
@@ -315,7 +315,7 @@ void vdf::SceneModel::removeInputPins(IVisualNodePtr node )
 
 void vdf::SceneModel::removeOutputPins(IVisualNodePtr node) 
 {
-	IVisualSourceNodePtr source = core::dynamic_pointer_cast<vdf::IVisualSourceNode>(node);
+	IVisualSourceNodePtr source = utils::dynamic_pointer_cast<vdf::IVisualSourceNode>(node);
 	if (source) {
 		int count = source->getNumOutputPins();
 		for (int i = 0; i < count; ++i) {
@@ -360,7 +360,7 @@ void vdf::SceneModel::removeConnection( IVisualOutputPinPtr outputPin, IVisualIn
 
 void vdf::SceneModel::removeConnection( IVisualItemPtr item )
 {
-    auto c = core::dynamic_pointer_cast<IVisualConnection>(item);
+    auto c = utils::dynamic_pointer_cast<IVisualConnection>(item);
     UTILS_ASSERT(c);
     removeConnection(c->getOutputPin(), c->getInputPin());
 }

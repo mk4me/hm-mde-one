@@ -13,7 +13,7 @@
 #include <plugins/subject/Types.h>
 #include <plugins/subject/ISession.h>
 #include <vector>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
 #include "BasicDataStorage.h"
 

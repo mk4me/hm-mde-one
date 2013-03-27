@@ -10,12 +10,12 @@
 #ifndef HEADER_GUARD_CORE__ILOG_H__
 #define HEADER_GUARD_CORE__ILOG_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 namespace core
 {
 	class ILog;
-	typedef shared_ptr<ILog> LogPtr;
+	typedef utils::shared_ptr<ILog> LogPtr;
 
     //! Interfejs do logowania informacji w aplikacji (w konsoli aplikacji)
 	class ILog

@@ -664,7 +664,7 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
                         item->setHidden(!visible);
                     }
                     for (auto it = statesMap.begin(); it != statesMap.end(); ++it) {
-                        NewChartLabelStatePtr labelState = core::dynamic_pointer_cast<NewChartLabelState>(it->second);
+                        NewChartLabelStatePtr labelState = utils::dynamic_pointer_cast<NewChartLabelState>(it->second);
                         if (labelState) {
                             labelState->setVisible(series[i], visible);
                         }
@@ -929,7 +929,7 @@ void NewChartVisualizer::refreshBounds()
     //dzielnik dla średniej
     float size = channels.size();
     //akcesor do danych
-    core::shared_ptr<ScalarContiniousTimeAccessor> accessor(new ScalarContiniousTimeAccessor(channels.front()));
+    utils::shared_ptr<ScalarContiniousTimeAccessor> accessor(new ScalarContiniousTimeAccessor(channels.front()));
 
     //wyliczamy próbki czasowe
     //wyliczam średnią dla wszystkich próbek
@@ -1199,7 +1199,7 @@ void NewChartVisualizer::setLabelsVisible( bool val )
 {
     for (auto serie = series.begin(); serie != series.end(); ++serie) {
         for (auto it = statesMap.begin(); it != statesMap.end(); ++it) {
-            NewChartLabelStatePtr labels = core::dynamic_pointer_cast<NewChartLabelState>(it->second);
+            NewChartLabelStatePtr labels = utils::dynamic_pointer_cast<NewChartLabelState>(it->second);
             if (labels) {
                 labels->setVisible(*serie, val && (*serie)->isVisible());
             }

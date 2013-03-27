@@ -53,10 +53,7 @@ private:
     Commands::iterator currentCommand;
 };
 
-
-typedef core::shared_ptr<CommandStack> CommandStackPtr;
-typedef core::shared_ptr<const CommandStack> CommandStackConstPtr;
-
+DEFINE_SMART_POINTERS(CommandStack);
 }
 
 #endif

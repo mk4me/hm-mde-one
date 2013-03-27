@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEW_CHART__NEWCHARTSTATE_H__
 
 #include <QtCore/QObject>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 class NewChartVisualizer;
 class QwtPlot;
@@ -24,7 +24,7 @@ class NewChartState : public QObject
 {
     Q_OBJECT
 public:
-    typedef core::shared_ptr<QwtPlot> QwtPlotPtr;
+    typedef utils::shared_ptr<QwtPlot> QwtPlotPtr;
 
 public:
     //! kostruktor pobiera obiekt wizualizatora, którym będzie się zarządzało
@@ -49,7 +49,6 @@ protected:
     //! płótno wykresu
     QwtPlotCanvas* canvas;
 };
-typedef core::shared_ptr<NewChartState> NewChartStatePtr;
-typedef core::shared_ptr<const NewChartState> NewChartStateConstPtr;
+DEFINE_SMART_POINTERS(NewChartState);
 
 #endif

@@ -23,15 +23,12 @@ public:
 	virtual Type getType() const { return IVisualItem::OutputPin; }
 	virtual bool isType(Type t) const { return t == IVisualItem::OutputPin || t == IVisualItem::Pin; }
     virtual int getNumConnections() const = 0;
-    virtual core::weak_ptr<IVisualConnection> getConnection(int idx) const = 0;
-    virtual void addConnection(core::weak_ptr<IVisualConnection> connection) = 0;
-    virtual void removeConnection(core::weak_ptr<IVisualConnection> connection) = 0;
+    virtual utils::weak_ptr<IVisualConnection> getConnection(int idx) const = 0;
+    virtual void addConnection(utils::weak_ptr<IVisualConnection> connection) = 0;
+    virtual void removeConnection(utils::weak_ptr<IVisualConnection> connection) = 0;
     virtual df::IOutputPin* getModelPin() const = 0;
 };
-typedef core::shared_ptr<IVisualOutputPin> IVisualOutputPinPtr;
-typedef core::weak_ptr<IVisualOutputPin> IVisualOutputPinWeakPtr;
-typedef core::shared_ptr<const IVisualOutputPin> IVisualOutputPinConstPtr;
-
+DEFINE_SMART_POINTERS(IVisualOutputPin);
 }
 
 #endif

@@ -67,26 +67,26 @@ const bool NewVdfService::lateInit()
 	int count = manager->getNumServices();
 
 	for (int i = 0; i < count; ++i) {
-		IDataFlowProviderPtr provider = core::dynamic_pointer_cast<IDataFlowProvider>(manager->getService(i));
+		IDataFlowProviderPtr provider = utils::dynamic_pointer_cast<IDataFlowProvider>(manager->getService(i));
 		if (provider) {
 			provider->provideDataFlowItems(items);
 		}
 	}
 
-	DataProcessorManagerPtr processorManager = core::dynamic_pointer_cast<DataProcessorManager>(dataProcessorManager);
-	DataSinkManagerPtr sinkManager = core::dynamic_pointer_cast<DataSinkManager>(dataSinkManager);
-	DataSourceManagerPtr sourceManager = core::dynamic_pointer_cast<DataSourceManager>(dataSourceManager);
+	DataProcessorManagerPtr processorManager = utils::dynamic_pointer_cast<DataProcessorManager>(dataProcessorManager);
+	DataSinkManagerPtr sinkManager = utils::dynamic_pointer_cast<DataSinkManager>(dataSinkManager);
+	DataSourceManagerPtr sourceManager = utils::dynamic_pointer_cast<DataSourceManager>(dataSourceManager);
 
 	for (auto it = items.begin(); it != items.end(); ++it) {
-		IDataProcessorPtr processor = core::dynamic_pointer_cast<IDataProcessor>(*it);
+		IDataProcessorPtr processor = utils::dynamic_pointer_cast<IDataProcessor>(*it);
 		if (processor) {
 			processorManager->registerDataProcessor(processor);
 		} else {
-			IDataSourcePtr source = core::dynamic_pointer_cast<IDataSource>(*it);
+			IDataSourcePtr source = utils::dynamic_pointer_cast<IDataSource>(*it);
 			if (source) {
 				sourceManager->registerDataSource(source);
 			}
-			IDataSinkPtr sink = core::dynamic_pointer_cast<IDataSink>(*it);
+			IDataSinkPtr sink = utils::dynamic_pointer_cast<IDataSink>(*it);
 			if (sink) {
 				sinkManager->registerDataSink(sink);
 			}
@@ -114,18 +114,18 @@ void NewVdfService::init( core::ISourceManager * sourceManager, core::IVisualize
 
 void vdf::NewVdfService::registerDataSource( const IDataSourcePtr & dataSource )
 {
-    DataSourceManagerPtr sourceManager = core::dynamic_pointer_cast<DataSourceManager>(dataSourceManager);
+    DataSourceManagerPtr sourceManager = utils::dynamic_pointer_cast<DataSourceManager>(dataSourceManager);
     sourceManager->registerDataSource(dataSource);
 }
 
 void vdf::NewVdfService::registerDataSink( const IDataSinkPtr & dataSink )
 {
-    DataSinkManagerPtr sinkManager = core::dynamic_pointer_cast<DataSinkManager>(dataSinkManager);
+    DataSinkManagerPtr sinkManager = utils::dynamic_pointer_cast<DataSinkManager>(dataSinkManager);
     sinkManager->registerDataSink(dataSink);
 }
 
 void vdf::NewVdfService::registerDataProcessor( const IDataProcessorPtr & dataProcessor )
 {
-    DataProcessorManagerPtr processorManager = core::dynamic_pointer_cast<DataProcessorManager>(dataProcessorManager);
+    DataProcessorManagerPtr processorManager = utils::dynamic_pointer_cast<DataProcessorManager>(dataProcessorManager);
     processorManager->registerDataProcessor(dataProcessor);
 }

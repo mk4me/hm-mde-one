@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_PLUGINC3D__C3DPARSER_H__
 #define HEADER_GUARD_PLUGINC3D__C3DPARSER_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/Filesystem.h>
 #include <corelib/IParser.h>
 #include <c3dlib/C3DParser.h>
@@ -21,7 +21,7 @@ class C3DParser : public plugin::IParser, public plugin::ISourceParserCapabiliti
 {
     UNIQUE_ID("{D7801231-BACA-42C6-9A8E-706F561A563F}")
 	CLASS_DESCRIPTION("C3D parser", "C3D parser")
-	typedef core::shared_ptr<c3dlib::C3DParser> ParserPtr;
+	typedef utils::shared_ptr<c3dlib::C3DParser> ParserPtr;
 private:
     //! Obsolete. Wektor zawiera 4 kanały analogowe z płyt GRF
 	std::vector<core::ObjectWrapperPtr> GRFChannels;

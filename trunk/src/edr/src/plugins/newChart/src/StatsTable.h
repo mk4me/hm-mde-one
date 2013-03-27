@@ -105,8 +105,8 @@ private:
     std::multimap<ScalarChannelStatsConstPtr, QTreeWidgetItem*> stats2TreeItems;
     ItemDelegate treeItemDelegate;
 };
-typedef core::shared_ptr<StatsTable> StatsTablePtr;
-typedef core::shared_ptr<const StatsTable> StatsTableConstPtr;
+typedef utils::shared_ptr<StatsTable> StatsTablePtr;
+typedef utils::shared_ptr<const StatsTable> StatsTableConstPtr;
 
 
 #endif

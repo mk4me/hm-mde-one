@@ -50,7 +50,7 @@ namespace core {
 		virtual ~IFileDataManager() {}
 
 		//! Typ transakcji - dzia³a jak RAII -> przy niszczeniu próbuje "commitowaæ" zmiany jeœli nie by³o wczeœniej ¿adnych b³êdów
-		typedef core::shared_ptr<IFileDataManagerTransaction> TransactionPtr;
+		typedef utils::shared_ptr<IFileDataManagerTransaction> TransactionPtr;
 		//! \return Nowa transakcja
 		virtual TransactionPtr transaction() = 0;
 	};

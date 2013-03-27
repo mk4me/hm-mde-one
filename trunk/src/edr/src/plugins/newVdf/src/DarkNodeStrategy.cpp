@@ -63,8 +63,8 @@ const QRectF& DarkNodeStrategy::getRect()
 {
 	int maximum = 0;
 	// TODO: optymalniej
-	auto src = core::dynamic_pointer_cast<IVisualSourceNode>(node.lock());
-	auto snk = core::dynamic_pointer_cast<IVisualSinkNode>(node.lock());
+	auto src = utils::dynamic_pointer_cast<IVisualSourceNode>(node.lock());
+	auto snk = utils::dynamic_pointer_cast<IVisualSinkNode>(node.lock());
 	maximum = src ? src->getNumOutputPins() : 0;
 	maximum = (std::max)(maximum, snk ? snk->getNumInputPins() : 0);
 	rect.setRect(0, 0, 100, (std::max)(10 + maximum * 20, 40) + labelHeight );

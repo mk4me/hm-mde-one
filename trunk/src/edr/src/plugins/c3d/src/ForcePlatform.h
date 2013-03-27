@@ -125,8 +125,8 @@ private:
     //! kanał z odpowiadająca płycie momentem siły
     GRFChannelConstPtr moment;
 };
-typedef core::shared_ptr<ForcePlatform> ForcePlatformPtr;
-typedef core::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;
+typedef utils::shared_ptr<ForcePlatform> ForcePlatformPtr;
+typedef utils::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;
 
 
 #endif

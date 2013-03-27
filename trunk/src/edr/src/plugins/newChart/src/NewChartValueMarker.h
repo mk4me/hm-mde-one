@@ -45,7 +45,7 @@ private:
     //! etykieta, która jest obecnie przesuwana (może to być dowolna etykieta)
     LabelDataConstPtr currentLabel;
 };
-typedef core::shared_ptr<NewChartValueMarker> NewChartValueMarkerPtr;
-typedef core::shared_ptr<const NewChartValueMarker> NewChartValueMarkerConstPtr;
+typedef utils::shared_ptr<NewChartValueMarker> NewChartValueMarkerPtr;
+typedef utils::shared_ptr<const NewChartValueMarker> NewChartValueMarkerConstPtr;
 
 #endif

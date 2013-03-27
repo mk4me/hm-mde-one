@@ -74,9 +74,7 @@ private:
 	GroupSelectedStatePtr groupSelectedState;
 	NewVdfWidget* vdfWidget;
 };
-typedef core::shared_ptr<SceneStateMachine> SceneStateMachinePtr;
-typedef core::shared_ptr<const SceneStateMachine> SceneStateMachineConstPtr;
-
+DEFINE_SMART_POINTERS(SceneStateMachine);
 }
 
 #endif

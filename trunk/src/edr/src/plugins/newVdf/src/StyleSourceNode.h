@@ -59,7 +59,7 @@ public:
 
 
 private:
-    core::shared_ptr<df::INode> _node;
+    utils::shared_ptr<df::INode> _node;
     QIcon icon;
     StyleItem* styleItem;
     std::vector<IVisualOutputPinPtr> pins;

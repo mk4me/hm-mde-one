@@ -43,8 +43,7 @@ public:
     //! \param type Typy wspierane na danym wejściu.
     virtual void getInputInfo(std::vector<InputInfo>& info) const = 0;
 };
-typedef core::shared_ptr<IInputDescription> IInputDescriptionPtr;
-typedef core::shared_ptr<const IInputDescription> IInputDescriptionConstPtr;
+DEFINE_SMART_POINTERS(IInputDescription);
 }
 
 #endif

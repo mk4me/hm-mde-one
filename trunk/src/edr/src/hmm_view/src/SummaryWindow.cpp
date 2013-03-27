@@ -34,7 +34,7 @@ void SummaryWindow::display( const std::vector<TreeItemHelperPtr>& helpers )
 
         for (auto itHelper = helpers.begin(); itHelper != helpers.end(); ++itHelper) {
             
-            NewMultiserieHelperPtr multiserieHelper = core::dynamic_pointer_cast<NewMultiserieHelper>(*itHelper);
+            NewMultiserieHelperPtr multiserieHelper = utils::dynamic_pointer_cast<NewMultiserieHelper>(*itHelper);
             if (multiserieHelper) {
                 const auto& desc = multiserieHelper->getChartWithDescriptions();
                 for (auto it = desc.begin(); it != desc.end(); ++it) {
@@ -103,7 +103,7 @@ QString SummaryWindow::createDescription( PluginSubject::MotionConstPtr motion) 
     if (session->hasObject(typeid(communication::AntropometricData), false)) {
 		core::ConstObjectsList antropo;
 		session->getObjects(antropo, typeid(communication::AntropometricData), false);
-        core::shared_ptr<const communication::AntropometricData> antro = antropo.front()->get();
+        utils::shared_ptr<const communication::AntropometricData> antro = antropo.front()->get();
         text += " ";
         text += QObject::tr("Weight: ") + QString("%1 ").arg(antro->bodyMass.first) + QString::fromStdString(antro->bodyMass.second) + "\n";
     }

@@ -23,7 +23,7 @@ public:
 	void setContainerStyle(INodeStrategy::State state);
 
 	virtual void paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr ) {}
-	virtual void setNode(core::weak_ptr<IVisualNode> item);
+	virtual void setNode(utils::weak_ptr<IVisualNode> item);
 	virtual const QRectF& getRect();
 	virtual QWidget* getWidget();
 	virtual void update();
@@ -31,7 +31,7 @@ public:
 	virtual void setState( State state );
 
 private:
-	core::weak_ptr<IVisualNode> node;
+	utils::weak_ptr<IVisualNode> node;
 	QLabel* label;
 	QWidget* container;
 	QLabel* lowerFrame;
@@ -39,9 +39,7 @@ private:
 	int labelHeight;
 };
 
-typedef core::shared_ptr<DarkNodeStrategy> DarkNodeStrategyPtr;
-typedef core::shared_ptr<const DarkNodeStrategy> DarkNodeStrategyConstPtr;
-
+DEFINE_SMART_POINTERS(DarkNodeStrategy);
 }
 
 #endif

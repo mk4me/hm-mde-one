@@ -36,7 +36,7 @@ void VectorSource::produce()
 {
     HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());
     if (treeItem) {
-        NewVector3ItemHelperPtr vectorItem = core::dynamic_pointer_cast<NewVector3ItemHelper>(treeItem->getHelper());
+        NewVector3ItemHelperPtr vectorItem = utils::dynamic_pointer_cast<NewVector3ItemHelper>(treeItem->getHelper());
         auto wrp = vectorItem->getWrapper();
         channel = wrp->get();
         outPinA->value(channel);
@@ -101,7 +101,7 @@ void EMGSource::produce()
 {
     HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());
     if (treeItem) {
-        TreeWrappedItemHelperPtr vectorItem = core::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
+        TreeWrappedItemHelperPtr vectorItem = utils::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
         auto wrp = vectorItem->getWrapper();
         channel = wrp->get();
         outPinA->value(channel);

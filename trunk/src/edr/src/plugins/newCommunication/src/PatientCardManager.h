@@ -10,14 +10,14 @@
 #define HEADER_GUARD___PATIENTCARDMANAGER_H__
 
 #include <plugins/newCommunication/IPatientCardManager.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <vector>
 
 class PatientCardManager : public communication::IPatientCardManager
 {
 private:
 
-	typedef core::shared_ptr<communication::IPatientCard> PatientCardPtr;
+	typedef utils::shared_ptr<communication::IPatientCard> PatientCardPtr;
 
 	struct PatientCardData
 	{

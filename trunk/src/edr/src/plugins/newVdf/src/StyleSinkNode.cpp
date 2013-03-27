@@ -14,7 +14,7 @@ StyleSinkNode::StyleSinkNode() :
 void StyleSinkNode::addInputPin( IVisualInputPinPtr pin )
 {
     pin->visualItem()->setParentItem(styleItem);
-	INodeStrategyPtr nodeStr = core::dynamic_pointer_cast<INodeStrategy>(styleItem->getStrategy());
+	INodeStrategyPtr nodeStr = utils::dynamic_pointer_cast<INodeStrategy>(styleItem->getStrategy());
 	pin->visualItem()->setPos(nodeStr->getPinPosition(pins.size(), true));
     pins.push_back(pin);
 }
@@ -86,7 +86,7 @@ void StyleSinkNode::removeCollision()
 
 void StyleSinkNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
-	this->strategy = core::dynamic_pointer_cast<INodeStrategy>(strategy);
+	this->strategy = utils::dynamic_pointer_cast<INodeStrategy>(strategy);
 	styleItem->setStrategy(strategy);
 }
 

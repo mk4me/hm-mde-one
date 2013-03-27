@@ -197,8 +197,8 @@ private:
     //! główne okno aplikacji
     HmmMainWindow* hmm;
 };
-typedef core::shared_ptr<HMMTreeItemUsageContext> HMMTreeItemUsageContextPtr;
-typedef core::shared_ptr<const HMMTreeItemUsageContext> HMMTreeItemUsageContextConstPtr;
+typedef utils::shared_ptr<HMMTreeItemUsageContext> HMMTreeItemUsageContextPtr;
+typedef utils::shared_ptr<const HMMTreeItemUsageContext> HMMTreeItemUsageContextConstPtr;
 
 //! kontekst dla zakładki z miniaturkami obrazów do raportu
 class RaportsThumbnailsContext : public QObject, public IAppUsageContext
@@ -241,8 +241,8 @@ private:
     //! kombo box ze stylami raportów
     QComboBox* cssCombo;
 };
-typedef core::shared_ptr<RaportsThumbnailsContext> RaportsThumbnailsContextPtr;
-typedef core::shared_ptr<const RaportsThumbnailsContext> RaportsThumbnailsContextConstPtr;
+typedef utils::shared_ptr<RaportsThumbnailsContext> RaportsThumbnailsContextPtr;
+typedef utils::shared_ptr<const RaportsThumbnailsContext> RaportsThumbnailsContextConstPtr;
 
 //! kontekst dla zakładki z raportami
 class RaportsTabContext : public QObject, public IAppUsageContext
@@ -293,7 +293,7 @@ private:
     //! główne okno aplikacji
     HmmMainWindow* hmm;
 };
-typedef core::shared_ptr<RaportsTabContext> RaportsTabContextPtr;
-typedef core::shared_ptr<const RaportsTabContext> RaportsTabContextConstPtr;
+typedef utils::shared_ptr<RaportsTabContext> RaportsTabContextPtr;
+typedef utils::shared_ptr<const RaportsTabContext> RaportsTabContextConstPtr;
 
 #endif

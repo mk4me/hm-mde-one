@@ -40,9 +40,7 @@ public:
     virtual bool isSelected() const = 0;
     virtual void setSelected(bool val) = 0;
 };
-typedef core::shared_ptr<IVisualConnection> IVisualConnectionPtr;
-typedef core::weak_ptr<IVisualConnection> IVisualConnectionWeakPtr;
-typedef core::shared_ptr<const IVisualConnection> IVisualConnectionConstPtr;
+DEFINE_SMART_POINTERS(IVisualConnection);
 
 }
 

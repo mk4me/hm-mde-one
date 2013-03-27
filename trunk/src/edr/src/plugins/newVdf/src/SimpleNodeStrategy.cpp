@@ -23,8 +23,8 @@ void SimpleNodeStrategy::setNode( IVisualNodeWeakPtr item )
 {
 	node = item;
 	name = node.lock()->getName().toStdString();
-	auto src = core::dynamic_pointer_cast<IVisualSourceNode>(node.lock());
-	auto snk = core::dynamic_pointer_cast<IVisualSinkNode>(node.lock());
+	auto src = utils::dynamic_pointer_cast<IVisualSourceNode>(node.lock());
+	auto snk = utils::dynamic_pointer_cast<IVisualSinkNode>(node.lock());
 	height = src ? src->getNumOutputPins() : 0;
 	height = (std::max)(height, snk ? snk->getNumInputPins() : 0);
 }

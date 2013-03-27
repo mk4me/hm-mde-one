@@ -55,7 +55,7 @@ QPainterPath vdf::SimpleConnectionStrategy::shape() const
     return path;
 }
 
-void vdf::SimpleConnectionStrategy::setConnection( core::weak_ptr<IVisualConnection> connection )
+void vdf::SimpleConnectionStrategy::setConnection( utils::weak_ptr<IVisualConnection> connection )
 {
     this->connection = connection;
 }

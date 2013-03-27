@@ -69,7 +69,7 @@ private:
     //! kolor wybrany przez użytkownika
     osg::Vec4 customColor;
 };
-typedef core::shared_ptr<GlLineSchemeDrawer> GlLineSchemeDrawerPtr;
-typedef core::shared_ptr<const GlLineSchemeDrawer> GlLineSchemeDrawerConstPtr;
+typedef utils::shared_ptr<GlLineSchemeDrawer> GlLineSchemeDrawerPtr;
+typedef utils::shared_ptr<const GlLineSchemeDrawer> GlLineSchemeDrawerConstPtr;
 
 #endif //HEADER_GUARD_POINTSCHEMEDRAWER_H__

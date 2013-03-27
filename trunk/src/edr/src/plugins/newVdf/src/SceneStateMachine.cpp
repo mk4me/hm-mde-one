@@ -84,7 +84,7 @@ void SceneStateMachine::selectionChanged()
     if (items.size() == 1) {
         auto node = getSceneModel()->tryGetVisualItem(*items.begin());
         if (node && node->isType(IVisualItem::Node)) {
-            emit singleNodeSelected(core::dynamic_pointer_cast<IVisualNode>(node));
+            emit singleNodeSelected(utils::dynamic_pointer_cast<IVisualNode>(node));
             return;
         }
     }

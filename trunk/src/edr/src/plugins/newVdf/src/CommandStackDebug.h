@@ -34,8 +34,7 @@ private:
 	//! Stos z poleceniami
 	CommandStackPtr commandStack;
 };
-typedef core::shared_ptr<CommandStackDebug> CommandStackDebugPtr;
-typedef core::shared_ptr<const CommandStackDebug> CommandStackDebugConstPtr;
+DEFINE_SMART_POINTERS(CommandStackDebug);
 }
 
 #endif

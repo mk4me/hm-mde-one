@@ -373,11 +373,11 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     boost::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(channel));
     absTest->initialize();
 
-    //core::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
-    core::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, RMSModifier()));
+    //utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
+    utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, RMSModifier()));
 
     core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-    wrapperX->set(core::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
+    wrapperX->set(utils::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
 	(*wrapperX).copyMeta(*wrapper);
     visualizer->getOrCreateWidget();
 

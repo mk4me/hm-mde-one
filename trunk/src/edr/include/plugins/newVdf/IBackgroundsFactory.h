@@ -22,8 +22,7 @@ public:
 
 	virtual IBackgroundStrategyPtr createBackgroundStrategy() = 0;
 };
-typedef core::shared_ptr<IBackgroundsFactory> IBackgroundsFactoryPtr;
-typedef core::shared_ptr<const IBackgroundsFactory> IBackgroundsFactoryConstPtr;
+DEFINE_SMART_POINTERS(IBackgroundsFactory);
 }
 
 #endif

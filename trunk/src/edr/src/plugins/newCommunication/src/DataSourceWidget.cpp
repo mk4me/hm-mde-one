@@ -1857,7 +1857,7 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 	}
 
 	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, patient->birthDate,
-		Patient::decodeGender(patient->gender), core::shared_ptr<const QPixmap>(), disorders));
+		Patient::decodeGender(patient->gender), utils::shared_ptr<const QPixmap>(), disorders));
 
 	//dodaję do DM
 	auto pOW = core::ObjectWrapper::create<communication::IPatient>();
@@ -1869,9 +1869,9 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 	patientsMapping[patient->patientID].first = pOW;
 }
 
-core::shared_ptr<communication::AntropometricData> DataSourceWidget::createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs)
+utils::shared_ptr<communication::AntropometricData> DataSourceWidget::createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs)
 {
-	auto antro = core::shared_ptr<communication::AntropometricData>(new communication::AntropometricData());
+	auto antro = utils::shared_ptr<communication::AntropometricData>(new communication::AntropometricData());
 	antro->bodyMass = communication::AntropometricData::value_type(getAntropometricValue("BodyMass", attrs), "kg");
 	antro->height = communication::AntropometricData::value_type(getAntropometricValue("Height", attrs), "mm");
 	antro->interAsisDistance = communication::AntropometricData::value_type(getAntropometricValue("InterAsisDistance", attrs), "mm");

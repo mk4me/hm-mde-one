@@ -66,7 +66,7 @@ public:
     virtual bool isType(Type t) const { return t == IVisualItem::ProcessingNode || t == IVisualItem::Node; }
 
 private:
-    core::shared_ptr<df::INode> _node;
+    utils::shared_ptr<df::INode> _node;
     QIcon icon;
     StyleItem* styleItem;
     std::vector<IVisualInputPinPtr> inputPins;

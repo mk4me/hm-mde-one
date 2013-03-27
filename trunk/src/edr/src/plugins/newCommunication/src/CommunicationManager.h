@@ -225,11 +225,11 @@ public:
         unsigned int photoID;
     };
 
-    typedef core::shared_ptr<BasicRequest> BasicRequestPtr;
-	typedef core::shared_ptr<PingRequest> PingRequestPtr;
-    typedef core::shared_ptr<MetadataRequest> MetadataRequestPtr;
-    typedef core::shared_ptr<FileRequest> FileRequestPtr;
-    typedef core::shared_ptr<PhotoRequest> PhotoRequestPtr;
+    typedef utils::shared_ptr<BasicRequest> BasicRequestPtr;
+	typedef utils::shared_ptr<PingRequest> PingRequestPtr;
+    typedef utils::shared_ptr<MetadataRequest> MetadataRequestPtr;
+    typedef utils::shared_ptr<FileRequest> FileRequestPtr;
+    typedef utils::shared_ptr<PhotoRequest> PhotoRequestPtr;
 
     typedef boost::function<void(const BasicRequestPtr &)> RequestCallback;
     typedef boost::function<void(const BasicRequestPtr &, const std::string &)> RequestErrorCallback;
@@ -284,7 +284,7 @@ public:
         std::vector<CompleteRequest> requests;
     };
 
-    typedef core::shared_ptr<ComplexRequest> ComplexRequestPtr;
+    typedef utils::shared_ptr<ComplexRequest> ComplexRequestPtr;
 
 private:
 
@@ -472,7 +472,7 @@ private:
 	//! Czy przerwać ściąganie
     bool cancelDownloading;
 	//! Wątek przetwarzający zlecenia communication managera
-	core::shared_ptr<ProcessingThread> processingThread;
+	utils::shared_ptr<ProcessingThread> processingThread;
 };
 
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

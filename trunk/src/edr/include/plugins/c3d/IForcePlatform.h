@@ -12,7 +12,7 @@
 
 #include <boost/range.hpp>
 #include <osg/Vec3>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <plugins/c3d/C3DChannels.h>
 
 //! Interfejs platformy GRF, obiekty tego typu zasilają system
@@ -35,8 +35,8 @@ public:
             //! \return czy dane zawarte w klasie są poprawne
             virtual bool isValid() const = 0;
     };
-    typedef core::shared_ptr<IStep> IStepPtr;
-    typedef core::shared_ptr<const IStep> IStepConstPtr;
+    typedef utils::shared_ptr<IStep> IStepPtr;
+    typedef utils::shared_ptr<const IStep> IStepConstPtr;
 
     //! wektor z krokami
     typedef std::vector<IStepConstPtr> Steps;
@@ -76,8 +76,8 @@ public:
         return (getCenter() - vec).length();
     }
 };
-typedef core::shared_ptr<IForcePlatform> IForcePlatformPtr;
-typedef core::shared_ptr<const IForcePlatform> IForcePlatformConstPtr;
+typedef utils::shared_ptr<IForcePlatform> IForcePlatformPtr;
+typedef utils::shared_ptr<const IForcePlatform> IForcePlatformConstPtr;
 typedef std::vector<IForcePlatformPtr> IForcePlatformCollection;
 
 

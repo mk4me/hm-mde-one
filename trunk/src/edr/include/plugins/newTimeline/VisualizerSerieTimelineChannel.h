@@ -97,7 +97,7 @@ public:
 
 private:
 	ITimelineService * timeline;
-	std::map<core::Visualizer::VisualizerSerie *, std::pair<int, core::shared_ptr<timeline::IChannel>>> seriesToChannels;
+	std::map<core::Visualizer::VisualizerSerie *, std::pair<int, utils::shared_ptr<timeline::IChannel>>> seriesToChannels;
 };
 
 #endif	//	HEADER_GUARD___VISUALIZERCHANNEL_H__

@@ -40,9 +40,7 @@ private:
 	core::UniqueID _id;
 	Creator _creator;
 };
-typedef core::shared_ptr<DataSource> DataSourcePtr;
-typedef core::shared_ptr<const DataSource> DataSourceConstPtr;
-
+DEFINE_SMART_POINTERS(DataSource);
 }
 
 #endif

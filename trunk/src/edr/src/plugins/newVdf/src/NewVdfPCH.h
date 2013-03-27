@@ -28,6 +28,6 @@
 #include <dflib/INode.h>
 #include <dflib/IModel.h>
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 #endif  // HEADER_GUARD___VDFPCH_H__

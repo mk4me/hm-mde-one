@@ -75,8 +75,7 @@ public:
 	virtual ~IDataFlowProvider() {}
 	virtual void provideDataFlowItems(std::list<IWorkflowItemBasePtr>& items) = 0;
 };
-typedef core::shared_ptr<IDataFlowProvider> IDataFlowProviderPtr;
-typedef core::shared_ptr<const IDataFlowProvider> IDataFlowProviderConstPtr;
+DEFINE_SMART_POINTERS(IDataFlowProvider);
 }
 
 #endif

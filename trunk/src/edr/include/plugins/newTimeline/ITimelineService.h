@@ -71,7 +71,7 @@ public:
 
 };
 
-typedef core::shared_ptr<ITimelineService> TimelinePtr;
+typedef utils::shared_ptr<ITimelineService> TimelinePtr;
 
 
 #endif  // __HEADER_GUARD__ITIMELINESERVICE_H__

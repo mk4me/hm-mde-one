@@ -19,12 +19,10 @@ class IVisualConnection;
 class IConnectionStrategy : public IVisualStrategy
 {
 public:
-    virtual void setConnection(core::weak_ptr<IVisualConnection> connection) = 0;
+    virtual void setConnection(utils::weak_ptr<IVisualConnection> connection) = 0;
     virtual QPainterPath shape() const = 0;
 };
-typedef core::shared_ptr<IConnectionStrategy> IConnectionStrategyPtr;
-typedef core::weak_ptr<IConnectionStrategy> IConnectionStrategyWeakPtr;
-typedef core::shared_ptr<const IConnectionStrategy> IConnectionStrategyConstPtr;
+DEFINE_SMART_POINTERS(IConnectionStrategy);
 
 }
 #endif

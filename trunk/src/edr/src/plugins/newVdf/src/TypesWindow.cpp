@@ -68,8 +68,8 @@ SceneBuilder::VisualNodeWithPins TypesWindow::createItemByEntry( const QString& 
     auto it = name2node.find(entry);
     if (it != name2node.end()) {
         auto node = it->second;
-        IOutputDescriptionConstPtr output = core::dynamic_pointer_cast<const IOutputDescription>(node);
-		IInputDescriptionConstPtr input = core::dynamic_pointer_cast<const IInputDescription>(node);
+        IOutputDescriptionConstPtr output = utils::dynamic_pointer_cast<const IOutputDescription>(node);
+		IInputDescriptionConstPtr input = utils::dynamic_pointer_cast<const IInputDescription>(node);
         
         int out = 0;
 		if (output) {

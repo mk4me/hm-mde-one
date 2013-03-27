@@ -32,8 +32,7 @@ private:
 	IVisualPinWeakPtr pin;
 	QColor stateColor;
 };
-typedef core::shared_ptr<DarkPinStrategy> DarkPinStrategyPtr;
-typedef core::shared_ptr<const DarkPinStrategy> DarkPinStrategyConstPtr;
+DEFINE_SMART_POINTERS(DarkPinStrategy);
 }
 
 #endif

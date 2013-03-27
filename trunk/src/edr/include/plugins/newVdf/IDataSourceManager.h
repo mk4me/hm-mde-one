@@ -29,11 +29,7 @@ namespace vdf {
         virtual IDataSourcesConstRange enumPrototypes() const = 0;
 
     };
-
-    typedef core::shared_ptr<IDataSourceManager> IDataSourceManagerPtr;
-    typedef core::shared_ptr<const IDataSourceManager> IDataSourceManagerConstPtr;
-    typedef core::weak_ptr<IDataSourceManager> IDataSourceManagerWeakPtr;
-    typedef core::weak_ptr<const IDataSourceManager> IDataSourceManagerWeakConstPtr;
+	DEFINE_SMART_POINTERS(IDataSourceManager);
 
     ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

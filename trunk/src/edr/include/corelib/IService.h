@@ -11,7 +11,7 @@
 
 #include <utils/Debug.h>
 #include <corelib/IIdentifiable.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 class QObject;
 class QWidget;
@@ -66,9 +66,9 @@ namespace plugin
         virtual QWidget* getSettingsWidget() = 0;
     };
 
-    typedef core::shared_ptr<IService> IServicePtr;
-    typedef core::shared_ptr<const IService> IServiceConstPtr;
-    typedef core::weak_ptr<IService> IServiceWeakPtr;
+    typedef utils::shared_ptr<IService> IServicePtr;
+    typedef utils::shared_ptr<const IService> IServiceConstPtr;
+    typedef utils::weak_ptr<IService> IServiceWeakPtr;
 
 }
 

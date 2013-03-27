@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_SUBJECT__TYPES_H__
 #define HEADER_GUARD_SUBJECT__TYPES_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <vector>
 
 namespace PluginSubject {
@@ -19,27 +19,27 @@ class ISubjectService;
 typedef unsigned int SubjectID;
 
 class ISubject;
-typedef core::shared_ptr<ISubject> SubjectPtr;
-typedef core::shared_ptr<const ISubject> SubjectConstPtr;
+typedef utils::shared_ptr<ISubject> SubjectPtr;
+typedef utils::shared_ptr<const ISubject> SubjectConstPtr;
 
 class ISession;
-typedef core::shared_ptr<ISession> SessionPtr;
-typedef core::shared_ptr<const ISession> SessionConstPtr;
+typedef utils::shared_ptr<ISession> SessionPtr;
+typedef utils::shared_ptr<const ISession> SessionConstPtr;
 typedef std::vector<SessionConstPtr> Sessions;
 
 class IMotion;
-typedef core::shared_ptr<IMotion> MotionPtr;
-typedef core::shared_ptr<const IMotion> MotionConstPtr;
+typedef utils::shared_ptr<IMotion> MotionPtr;
+typedef utils::shared_ptr<const IMotion> MotionConstPtr;
 typedef std::vector<MotionConstPtr> Motions;
 
 class IDataFilter;
 class IFilteredDataFactory;
 
-typedef core::shared_ptr<IDataFilter> DataFilterPtr;
-typedef core::shared_ptr<const IDataFilter> DataFilterConstPtr;
+typedef utils::shared_ptr<IDataFilter> DataFilterPtr;
+typedef utils::shared_ptr<const IDataFilter> DataFilterConstPtr;
 
-typedef core::shared_ptr<IFilteredDataFactory> FilteredDataFacoryPtr;
-typedef core::shared_ptr<const IFilteredDataFactory> FilteredDataFacoryConstPtr;
+typedef utils::shared_ptr<IFilteredDataFactory> FilteredDataFacoryPtr;
+typedef utils::shared_ptr<const IFilteredDataFactory> FilteredDataFacoryConstPtr;
 
 }
 

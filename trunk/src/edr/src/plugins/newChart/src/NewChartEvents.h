@@ -68,9 +68,9 @@ public:
         PlotCurvePtr normalizedCurve;
     };
     //! 
-    typedef core::shared_ptr<Segment> SegmentPtr;
+    typedef utils::shared_ptr<Segment> SegmentPtr;
     //!
-    typedef core::shared_ptr<const Segment> SegmentConstPtr;
+    typedef utils::shared_ptr<const Segment> SegmentConstPtr;
     //! 
     typedef std::vector<SegmentPtr> Segments;
     //!
@@ -114,8 +114,8 @@ private:
     //! element rysowany na wykresie
     EventsPlotItem* eventsItem;
 };
-typedef core::shared_ptr<EventsHelper> EventsHelperPtr;
-typedef core::shared_ptr<const EventsHelper> EventsHelperConstPtr;
+typedef utils::shared_ptr<EventsHelper> EventsHelperPtr;
+typedef utils::shared_ptr<const EventsHelper> EventsHelperConstPtr;
 
 
 #endif

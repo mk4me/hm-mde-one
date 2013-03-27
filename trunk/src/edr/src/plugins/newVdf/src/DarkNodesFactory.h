@@ -27,7 +27,6 @@ public:
     virtual const QString name() const;
     virtual const QString description() const;
 };
-typedef core::shared_ptr<DarkNodesFactory> DarkNodesFactoryPtr;
-typedef core::shared_ptr<const DarkNodesFactory> DarkNodesFactoryConstPtr;
+DEFINE_SMART_POINTERS(DarkNodesFactory);
 }
 #endif

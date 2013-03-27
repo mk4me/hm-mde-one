@@ -41,9 +41,7 @@ public:
 
 	virtual void setModelNode(df::INode* node) = 0; 
 };
-typedef core::shared_ptr<IVisualNode> IVisualNodePtr;
-typedef core::weak_ptr<IVisualNode> IVisualNodeWeakPtr;
-typedef core::shared_ptr<const IVisualNode> IVisualNodeConstPtr;
+DEFINE_SMART_POINTERS(IVisualNode);
 
 }
 

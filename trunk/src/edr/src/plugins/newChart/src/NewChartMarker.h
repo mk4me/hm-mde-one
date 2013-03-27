@@ -54,8 +54,8 @@ private:
     //! pionowy wspoczynniki opóźnienia
     float lerpY;
 };
-typedef core::shared_ptr<NewChartMarker> NewChartMarkerPtr;
-typedef core::shared_ptr<const NewChartMarker> NewChartMarkerConstPtr;
+typedef utils::shared_ptr<NewChartMarker> NewChartMarkerPtr;
+typedef utils::shared_ptr<const NewChartMarker> NewChartMarkerConstPtr;
 
 
 #endif

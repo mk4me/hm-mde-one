@@ -18,8 +18,7 @@ namespace vdf {
 class IVisualProcessingNode : public IVisualSinkNode, public IVisualSourceNode
 {
 };
-typedef core::shared_ptr<IVisualProcessingNode> IVisualProcessingNodePtr;
-typedef core::shared_ptr<const IVisualProcessingNode> IVisualProcessingNodeConstPtr;
+DEFINE_SMART_POINTERS(IVisualProcessingNode);
 
 }
 

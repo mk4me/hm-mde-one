@@ -58,7 +58,7 @@ namespace core {
 		};
 
 		//! Typ transakcji na danych domenowych - dzia³a w oparciu o RAII -> próbuje "commitowaæ" zmiany przy koñcu trwania ¿ycia obiektu transakcji
-		typedef core::shared_ptr<IMemoryDataTransaction> TransactionPtr;
+		typedef utils::shared_ptr<IMemoryDataTransaction> TransactionPtr;
 
 	public:
 

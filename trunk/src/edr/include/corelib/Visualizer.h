@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__VISUALIZER_H__
 
 #include <corelib/Export.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/ObjectWrapperCollection.h>
 #include <corelib/IVisualizer.h>
 #include <QtCore/QObject>
@@ -106,7 +106,7 @@ public:
 
 private:
 
-	core::shared_ptr<VisualizerImpl> visualizerImpl;
+	utils::shared_ptr<VisualizerImpl> visualizerImpl;
 
 Q_SIGNALS:
 	//! \param screenshot Screen z wizualizatora
@@ -208,10 +208,10 @@ private:
 	void update(double deltaTime);
 };
 
-typedef core::shared_ptr<Visualizer> VisualizerPtr;
-typedef core::shared_ptr<const Visualizer> VisualizerConstPtr;
-typedef core::weak_ptr<Visualizer> VisualizerWeakPtr;
-typedef core::weak_ptr<const Visualizer> VisualizerConstWeakPtr;
+typedef utils::shared_ptr<Visualizer> VisualizerPtr;
+typedef utils::shared_ptr<const Visualizer> VisualizerConstPtr;
+typedef utils::weak_ptr<Visualizer> VisualizerWeakPtr;
+typedef utils::weak_ptr<const Visualizer> VisualizerConstWeakPtr;
 
 class CORELIB_EXPORT VisualizerMemoryDataSource : public Visualizer::VisualizerDataSource
 {

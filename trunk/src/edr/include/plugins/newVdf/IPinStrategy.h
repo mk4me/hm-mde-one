@@ -24,12 +24,11 @@ public:
 		Connective,
 		Unconnective
 	};
-	virtual void setPin(core::weak_ptr<IVisualPin> item) = 0;
+	virtual void setPin(utils::weak_ptr<IVisualPin> item) = 0;
 	virtual void setState(State s) = 0;
     virtual QPointF getConnectionEndShift() = 0;
 };
-typedef core::shared_ptr<IPinStrategy> IPinStrategyPtr;
-typedef core::shared_ptr<const IPinStrategy> IPinStrategyConstPtr;
+DEFINE_SMART_POINTERS(IPinStrategy);
 
 }
 

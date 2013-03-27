@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEWVDF__SCENEMODEL_H__
 #define HEADER_GUARD_NEWVDF__SCENEMODEL_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <CanvasStyleEditor.h>
 #include <boost/tuple/tuple.hpp>
 #include <dflib/IConnection.h>
@@ -31,11 +31,11 @@ public:
     PinResolver(IVisualPinPtr p1, IVisualPinPtr p2)
     {
         if (p1->isType(IVisualItem::InputPin)) {
-            input = core::dynamic_pointer_cast<IVisualInputPin>(p1);
-            output = core::dynamic_pointer_cast<IVisualOutputPin>(p2);
+            input = utils::dynamic_pointer_cast<IVisualInputPin>(p1);
+            output = utils::dynamic_pointer_cast<IVisualOutputPin>(p2);
         } else {
-            input = core::dynamic_pointer_cast<IVisualInputPin>(p2);
-            output = core::dynamic_pointer_cast<IVisualOutputPin>(p1);
+            input = utils::dynamic_pointer_cast<IVisualInputPin>(p2);
+            output = utils::dynamic_pointer_cast<IVisualOutputPin>(p1);
         }
 
         UTILS_ASSERT(input && output);
@@ -69,8 +69,7 @@ public:
 		QList<IVisualInputPinPtr> inputPins;
 		QList<IVisualOutputPinPtr> outputPins;
 	};
-	typedef core::shared_ptr<MergedItem> MergedItemPtr;
-	typedef core::shared_ptr<const MergedItem> MergedItemConstPtr;
+	DEFINE_SMART_POINTERS(MergedItem);
 
 public:
     SceneModel(CanvasStyleEditorPtr factories);
@@ -100,7 +99,7 @@ public:
 	{
 		QList<VisualItemT> ret;
 		for (auto it = graphics2Visual.begin(); it != graphics2Visual.end(); ++it) {
-			VisualItemT item = core::dynamic_pointer_cast<VisualItemT::element_type>(it->second);
+			VisualItemT item = utils::dynamic_pointer_cast<VisualItemT::element_type>(it->second);
 			if (item) {
 				ret.push_back(item);
 			}
@@ -147,12 +146,7 @@ private:
 	mutable Connections pinsHelper;
 	std::vector<MergedItemPtr> mergedItems;
 };
-
-
-
-typedef core::shared_ptr<SceneModel> SceneModelPtr;
-typedef core::shared_ptr<const SceneModel> SceneModelConstPtr;
-
+DEFINE_SMART_POINTERS(SceneModel);
 }
 
 #endif

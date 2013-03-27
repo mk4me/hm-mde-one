@@ -418,7 +418,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processCompl
         request.callbacks.onBeginCallback(request.request);
     }
 
-    core::shared_ptr<ComplexRequest> complexRequest = core::dynamic_pointer_cast<ComplexRequest>(request.request);
+    utils::shared_ptr<ComplexRequest> complexRequest = utils::dynamic_pointer_cast<ComplexRequest>(request.request);
     
     unsigned int s = complexRequest->size();
     unsigned int i = 0;
@@ -513,7 +513,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processPhoto
 
     try {
 
-        core::shared_ptr<PhotoRequest> photoRequest = core::dynamic_pointer_cast<PhotoRequest>(request.request);
+        utils::shared_ptr<PhotoRequest> photoRequest = utils::dynamic_pointer_cast<PhotoRequest>(request.request);
         
 		setCurrentDownloadHelper(&photoDownloadHelper);
 
@@ -579,7 +579,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processFile(
 
     try {
 
-        core::shared_ptr<FileRequest> fileRequest = core::dynamic_pointer_cast<FileRequest>(request.request);
+        utils::shared_ptr<FileRequest> fileRequest = utils::dynamic_pointer_cast<FileRequest>(request.request);
         setCurrentDownloadHelper(&fileDownloadHelper);
 
 		fileDownloadHelper.setDownload(fileRequest->fileID, fileRequest->filePath);
@@ -643,7 +643,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processMotio
     }
 
     try {
-        core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(request.request);
+        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
         setCurrentDownloadHelper(&motionShallowDownloadHelper);
         
 		motionShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowData, metaRequest->filePath);
@@ -707,7 +707,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processMotio
     }
 
     try {
-        core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(request.request);
+        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
 		setCurrentDownloadHelper(&motionShallowDownloadHelper);
 
 		motionShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowMetadata, metaRequest->filePath);
@@ -769,7 +769,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processMedic
     }
 
     try {
-        core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(request.request);
+        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
 		setCurrentDownloadHelper(&medicalShallowDownloadHelper);
 
 		medicalShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowData, metaRequest->filePath);
@@ -830,7 +830,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processMedic
     }
 
     try {
-        core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(request.request);
+        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
 		setCurrentDownloadHelper(&medicalShallowDownloadHelper);
 
 		medicalShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowMetadata, metaRequest->filePath);
@@ -894,7 +894,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processPing(
 
     try{
 
-		core::shared_ptr<PingRequest> pingRequest = core::dynamic_pointer_cast<PingRequest>(request.request);
+		utils::shared_ptr<PingRequest> pingRequest = utils::dynamic_pointer_cast<PingRequest>(request.request);
 		CURLcode pingCurlResult;
 		{
 			curl_easy_setopt(pingCurl, CURLOPT_URL, pingRequest->urlToPing().c_str());

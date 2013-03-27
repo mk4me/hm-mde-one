@@ -47,6 +47,6 @@ private:
     bool initialized;
 };
 
-typedef core::shared_ptr<OsgSchemeDrawer> OsgSchemeDrawerPtr;
+typedef utils::shared_ptr<OsgSchemeDrawer> OsgSchemeDrawerPtr;
 
 #endif //HEADER_GUARD_OSGSCHEMEDRAWER_H__

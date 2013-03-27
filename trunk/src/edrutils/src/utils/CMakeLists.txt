@@ -42,6 +42,7 @@ SET_PUBLIC_HEADERS(
 	TypeInfo.h
 	ObjectWrapper.h
 	Export.h
+	SmartPtr.h
 )
 
 #------------------------------------------------------------------------------

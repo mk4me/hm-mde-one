@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__CORECONSOLEWIDGET_H__
 
 #include <coreui/Export.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/ILog.h>
 #include <queue>
 #include <QtGui/QWidget>
@@ -42,7 +42,7 @@ struct COREUI_EXPORT CoreConsoleWidgetEntry {
     Qt::HANDLE theadId;
 };
 
-typedef core::shared_ptr<CoreConsoleWidgetEntry> CoreConsoleWidgetEntryPtr;
+typedef utils::shared_ptr<CoreConsoleWidgetEntry> CoreConsoleWidgetEntryPtr;
 
 //Q_DECLARE_METATYPE(CoreConsoleWidgetEntryPtr);
 Q_DECLARE_METATYPE(CoreConsoleWidgetEntry);

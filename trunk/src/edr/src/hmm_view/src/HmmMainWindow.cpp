@@ -309,8 +309,8 @@ void HmmMainWindow::customViewInit(QWidget * console)
     for (int i = 0; i < plugin::getServiceManager()->getNumServices(); ++i) {
         plugin::IServicePtr service = plugin::getServiceManager()->getService(i);
 
-		auto timeline = core::dynamic_pointer_cast<ITimelineService>(service);
-		auto vdf = core::dynamic_pointer_cast<vdf::NewVdfService>(service);
+		auto timeline = utils::dynamic_pointer_cast<ITimelineService>(service);
+		auto vdf = utils::dynamic_pointer_cast<vdf::NewVdfService>(service);
         if(timeline != nullptr) {
             showTimeline();
         } else if (vdf) {
@@ -470,10 +470,10 @@ void HmmMainWindow::createNewVisualizer()
 //    //ContextAction* action = qobject_cast<ContextAction*>(sender());
 //    //try{
 //    //    HmmTreeItem* treeItem = action->getTreeItem();
-//    //    TreeWrappedItemHelperPtr wrapped = core::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
+//    //    TreeWrappedItemHelperPtr wrapped = utils::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
 //
 //    //    core::IServiceManager* manager = plugin::getServiceManager();
-//    //    vdf::NewVdfServicePtr vdfService = core::dynamic_pointer_cast<vdf::NewVdfService>(manager->getService(vdf::NewVdfService::getClassID()));
+//    //    vdf::NewVdfServicePtr vdfService = utils::dynamic_pointer_cast<vdf::NewVdfService>(manager->getService(vdf::NewVdfService::getClassID()));
 //    //    VectorChannelReaderInterfaceConstPtr item = wrapped->getWrapper()->get();
 //
 //    //    vdfService->registerDataSource(vdf::IDataSourcePtr(new vdf::DataSource(new XSource(item), core::UniqueID(random_uuid()), wrapped->getText().toStdString(), 
@@ -586,7 +586,7 @@ void HmmMainWindow::addToVisualizer()
         helper->getSeries(visualizer, path, series);
             
 		//TODO - obsługa timeline
-		auto channel = core::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+		auto channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
 		auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
 		timeline->addChannel(path.toStdString(), channel);
 
@@ -647,7 +647,7 @@ void HmmMainWindow::showTimeline()
         for (int i = 0; i < plugin::getServiceManager()->getNumServices(); ++i) {
             plugin::IServicePtr service = plugin::getServiceManager()->getService(i);
 
-            auto timeline = core::dynamic_pointer_cast<ITimelineService>(service);
+            auto timeline = utils::dynamic_pointer_cast<ITimelineService>(service);
             if(timeline != nullptr) {
 
                 QWidget* viewWidget = service->getWidget();
@@ -1105,7 +1105,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
      helper->getSeries(visualizer, path, series);
      if (!series.empty()) {
          DataItemDescription desc(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
-		 desc.channel = core::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+		 desc.channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
 		 desc.path = path.toStdString();
          items2Descriptions.insert(std::make_pair(helper, desc));
 
@@ -1143,7 +1143,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
      connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
      connect(addNew, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
-     if (core::dynamic_pointer_cast<NewChartItemHelper>(item->getHelper())) {
+     if (utils::dynamic_pointer_cast<NewChartItemHelper>(item->getHelper())) {
          QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);
          QAction * multi = new ContextAction(item, menu);
          multi->setText(tr("All from session"));
@@ -1153,7 +1153,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
          menu->addMenu(multiMenu);
      }
 
-     if (core::dynamic_pointer_cast<NewVector3ItemHelper>(item->getHelper())) {
+     if (utils::dynamic_pointer_cast<NewVector3ItemHelper>(item->getHelper())) {
          QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);
          QAction * multiX = new ContextAction(item, menu);
          multiX->setText(tr("All X from session"));
@@ -1420,7 +1420,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  void HmmMainWindow::allFromSession()
  {
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewChartItemHelperPtr helper = core::dynamic_pointer_cast<NewChartItemHelper>(a->getTreeItem()->getHelper());
+     NewChartItemHelperPtr helper = utils::dynamic_pointer_cast<NewChartItemHelper>(a->getTreeItem()->getHelper());
      UTILS_ASSERT(helper);
 
      if (helper && helper->getMotion()) {
@@ -1463,7 +1463,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  {
      auto context = c3dlib::C3DParser::IEvent::Left;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
+     NewVector3ItemHelperPtr helper = utils::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      if (helper) {
          createNormalizedFromAll(helper, context);
      }
@@ -1473,7 +1473,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  {
      auto context = c3dlib::C3DParser::IEvent::Right;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
+     NewVector3ItemHelperPtr helper = utils::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      if (helper) {
          createNormalizedFromAll(helper, context);
 
@@ -1484,7 +1484,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  {
      auto context = c3dlib::C3DParser::IEvent::Left;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
+     NewVector3ItemHelperPtr helper = utils::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      if (helper) {
          createNormalized(helper, context);
 
@@ -1495,7 +1495,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  {
      auto context = c3dlib::C3DParser::IEvent::Right;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
+     NewVector3ItemHelperPtr helper = utils::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      if (helper) {
          createNormalized(helper, context);
      }
@@ -1505,7 +1505,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  {
      int channelNo = 0;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
+     NewVector3ItemHelperPtr helper = utils::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      allTFromSession(helper, channelNo);
  }
 
@@ -1513,7 +1513,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  {
      int channelNo = 1;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
+     NewVector3ItemHelperPtr helper = utils::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      allTFromSession(helper, channelNo);
  }
 
@@ -1521,7 +1521,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
  {
      int channelNo = 2;
      ContextAction* a = qobject_cast<ContextAction*>(sender());
-     NewVector3ItemHelperPtr helper = core::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
+     NewVector3ItemHelperPtr helper = utils::dynamic_pointer_cast<NewVector3ItemHelper>(a->getTreeItem()->getHelper());
      allTFromSession(helper, channelNo);
  }
 

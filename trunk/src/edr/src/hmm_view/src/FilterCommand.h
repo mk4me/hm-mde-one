@@ -12,7 +12,7 @@
 
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 #include <plugins/subject/Types.h>
 #include <plugins/subject/SubjectDataFilters.h>
@@ -72,7 +72,7 @@ typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr
 
 // OBSOLETE!
 //! tworzy gałąź drzewa danych z multiwykresem
-template <class Type, class TypePtr = core::shared_ptr<Type> >
+template <class Type, class TypePtr = utils::shared_ptr<Type> >
 class MultiChartCommand : public IFilterCommand
 {
     //! tworzy gałąź drzewa z przefiltrowanymi danymi

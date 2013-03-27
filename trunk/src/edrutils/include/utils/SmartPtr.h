@@ -6,8 +6,8 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_CORE__SMARTPTR_H__
-#define __HEADER_GUARD_CORE__SMARTPTR_H__
+#ifndef __HEADER_GUARD_UTILS__SMARTPTR_H__
+#define __HEADER_GUARD_UTILS__SMARTPTR_H__
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -17,7 +17,7 @@
 #include <boost/scoped_ptr.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace core {
+namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 	using boost::enable_shared_from_this;
@@ -31,19 +31,19 @@ namespace core {
     using boost::make_shared;
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace core
+} // namespace utils
 ////////////////////////////////////////////////////////////////////////////////
 
 #define DEFINE_SMART_POINTERS(className)                                  \
-    typedef core::shared_ptr<className> className ## Ptr;                 \
-    typedef core::shared_ptr<const className> className ## ConstPtr;      \
-    typedef core::weak_ptr<className> className ## WeakPtr;               \
-    typedef core::weak_ptr<const className> className ## ConstWeakPtr;
+    typedef utils::shared_ptr<className> className ## Ptr;                 \
+    typedef utils::shared_ptr<const className> className ## ConstPtr;      \
+    typedef utils::weak_ptr<className> className ## WeakPtr;               \
+    typedef utils::weak_ptr<const className> className ## ConstWeakPtr;
 
 #define DEFINE_SCOPED_SMART_POINTERS(className, targetNamespace)                                    \
-    typedef core::shared_ptr<className> targetNamespace ## :: ## className ## Ptr;                  \
-    typedef core::shared_ptr<const className> targetNamespace ## :: ## className ## ConstPtr;       \
-    typedef core::weak_ptr<className> targetNamespace ## :: ## className ## WeakPtr;                \
-    typedef core::weak_ptr<const className> targetNamespace ## :: ## className ## ConstWeakPtr;
+    typedef utils::shared_ptr<className> targetNamespace ## :: ## className ## Ptr;                  \
+    typedef utils::shared_ptr<const className> targetNamespace ## :: ## className ## ConstPtr;       \
+    typedef utils::weak_ptr<className> targetNamespace ## :: ## className ## WeakPtr;                \
+    typedef utils::weak_ptr<const className> targetNamespace ## :: ## className ## ConstWeakPtr;
 
 #endif  // __HEADER_GUARD_CORE__SMARTPTR_H__

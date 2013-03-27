@@ -84,8 +84,8 @@ private:
     //void notifyCreated(DataProcessor* dataProcessor);
     //void notifyDestroyed(DataProcessor* dataProcessor);
 };
-typedef core::shared_ptr<DataProcessorManager> DataProcessorManagerPtr;
-typedef core::shared_ptr<const DataProcessorManager> DataProcessorManagerConstPtr;
+typedef utils::shared_ptr<DataProcessorManager> DataProcessorManagerPtr;
+typedef utils::shared_ptr<const DataProcessorManager> DataProcessorManagerConstPtr;
 
 }
 

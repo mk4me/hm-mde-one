@@ -56,8 +56,8 @@ private:
     //! marker obrazujący pierwszy wskazywany punkt 
     NewChartMarker marker;
 };
-typedef core::shared_ptr<NewChartVerticals> NewChartVerticalsPtr;
-typedef core::shared_ptr<const NewChartVerticals> NewChartVerticalsConstPtr;
+typedef utils::shared_ptr<NewChartVerticals> NewChartVerticalsPtr;
+typedef utils::shared_ptr<const NewChartVerticals> NewChartVerticalsConstPtr;
 
 
 #endif

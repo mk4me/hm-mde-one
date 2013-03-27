@@ -20,16 +20,8 @@ namespace vdf {
 //! Interfejs do implemntacji ujść danych
 class IDataSink : public IInputDescription, public IWorkflowItemBase
 {
-public:
-    //! \return Dialog konfigurujący opis wyjścia źródła danych
-    //virtual QDialog * getOutputConfigurationDialog() = 0;
-    //! \return Ikona źródła
-    //virtual QIcon* getIcon() const = 0;
 };
-
-typedef core::shared_ptr<IDataSink> IDataSinkPtr;
-typedef core::shared_ptr<const IDataSink> IDataSinkConstPtr;
-
+DEFINE_SMART_POINTERS(IDataSink);
 }
 
 #endif 

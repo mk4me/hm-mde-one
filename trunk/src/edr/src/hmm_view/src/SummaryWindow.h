@@ -53,8 +53,8 @@ private:
     //! drzewo, które będzie wyświetlane w oknie z podsumowaniami
     QTreeWidget* tree;
 };
-typedef core::shared_ptr<SummaryWindow> SummaryWindowPtr;
-typedef core::shared_ptr<const SummaryWindow> SummaryWindowConstPtr;
+typedef utils::shared_ptr<SummaryWindow> SummaryWindowPtr;
+typedef utils::shared_ptr<const SummaryWindow> SummaryWindowConstPtr;
 
 //! Kontroler dla okienka z podsumowaniem
 class SummaryWindowController : public QObject

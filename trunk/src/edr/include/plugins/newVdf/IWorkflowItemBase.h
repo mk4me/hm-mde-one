@@ -12,7 +12,7 @@
 
 #include <QtGui/QIcon>
 #include <utils/Debug.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
 
 namespace df {
@@ -41,8 +41,6 @@ public:
     virtual void setIcon(const QIcon& val) = 0;
 };
 
-typedef core::shared_ptr<IWorkflowItemBase> IWorkflowItemBasePtr;
-typedef core::shared_ptr<const IWorkflowItemBasePtr> IWorkflowItemBaseConstPtr;
-
+DEFINE_SMART_POINTERS(IWorkflowItemBase);
 }
 #endif

@@ -23,8 +23,7 @@ public:
 	virtual IVisualSourceNodePtr createSourceNode() const = 0;
 	virtual IVisualProcessingNodePtr createProcessingNode() const = 0;
 };
-typedef core::shared_ptr<INodesFactory> INodesFactoryPtr;
-typedef core::shared_ptr<const INodesFactory> INodesFactoryConstPtr;
+DEFINE_SMART_POINTERS(INodesFactory);
 }
 
 #endif	//	HEADER_GUARD___INODESFACTORY_H__

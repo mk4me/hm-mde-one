@@ -60,7 +60,7 @@ QPainterPath vdf::DarkConnectionStrategy::shape() const
     return path;
 }
 
-void vdf::DarkConnectionStrategy::setConnection( core::weak_ptr<IVisualConnection> connection )
+void vdf::DarkConnectionStrategy::setConnection( utils::weak_ptr<IVisualConnection> connection )
 {
     this->connection = connection;
 }

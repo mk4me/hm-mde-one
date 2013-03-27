@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEWVDF__COMMAND_H__
 #define HEADER_GUARD_NEWVDF__COMMAND_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <QtCore/QObject>
 #include <QtCore/QPointF>
 #include <plugins/newVdf/ICommand.h>

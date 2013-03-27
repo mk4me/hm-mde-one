@@ -268,7 +268,7 @@ namespace communication
 		virtual const std::string name() const = 0;
 	};
 
-	typedef core::shared_ptr<IDataSourceContent> DataSourceContentPtr;
+	typedef utils::shared_ptr<IDataSourceContent> DataSourceContentPtr;
 }
 
 #endif	//	HEADER_GUARD___IDATASOURCECONTENT_H__

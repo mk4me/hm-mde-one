@@ -37,7 +37,7 @@ class CommunicationDataSource : public communication::ICommunicationDataSource, 
 
 private:
 	//! Typ smart pointera do requesta ściągania danych
-	typedef core::shared_ptr<DownloadRequest> DownloadRequestPtr;
+	typedef utils::shared_ptr<DownloadRequest> DownloadRequestPtr;
 
 	//! Struktura opisująca stan danego połączenia z WebService
 	struct ConnectionStatus
@@ -195,7 +195,7 @@ private:
     communication::ShallowCopy fullShallowCopy;
 
     //! Manager statusu plików
-    core::shared_ptr<FileStatusManager> fileStatusManager;
+    utils::shared_ptr<FileStatusManager> fileStatusManager;
 
 	//! Manager danych lokalnych
 	DataSourcePathsManager * pathsManager;
@@ -204,7 +204,7 @@ private:
     DataSourceLocalStorage * localStorage;
 
     //! Manager statusów pełnej płytkiej kopi
-    core::shared_ptr<DataSourceStatusManager> fullShallowCopyStatus;
+    utils::shared_ptr<DataSourceStatusManager> fullShallowCopyStatus;
 
 	//! ------------------------------- Obsługa DM ------------------------------
 

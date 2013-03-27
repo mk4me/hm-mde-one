@@ -30,13 +30,10 @@ namespace vdf{
 
     };
 
-    typedef core::shared_ptr<IDataSinkManager> IDataSinkManagerPtr;
-    typedef core::shared_ptr<const IDataSinkManager> IDataSinkManagerConstPtr;
-    typedef core::weak_ptr<IDataSinkManager> IDataSinkManagerWeakPtr;
-    typedef core::weak_ptr<const IDataSinkManager> IDataSinkManagerWeakConstPtr;
+    DEFINE_SMART_POINTERS(IDataSinkManager);
 
     ////////////////////////////////////////////////////////////////////////////////
-} // namespace core
+} // namespace vdf
 ////////////////////////////////////////////////////////////////////////////////
 
 

@@ -17,8 +17,8 @@ namespace vdf {
 class ConnectionsFactory : public IConnectionsFactory
 {
 public:
-	typedef core::shared_ptr<ConnectionsFactory> Ptr;
-	typedef core::shared_ptr<const ConnectionsFactory> ConstPtr;
+	typedef utils::shared_ptr<ConnectionsFactory> Ptr;
+	typedef utils::shared_ptr<const ConnectionsFactory> ConstPtr;
 
 public:
 	virtual ~ConnectionsFactory() {}
@@ -32,9 +32,7 @@ public:
     virtual const QString description() const;
 
 };
-typedef core::shared_ptr<ConnectionsFactory> ConnectionFactoryPtr;
-typedef core::shared_ptr<const ConnectionsFactory> ConnectionFactoryConstPtr;
-
+DEFINE_SMART_POINTERS(ConnectionsFactory);
 }
 
 #endif

@@ -28,8 +28,8 @@ public:
     //! \param color kolor w formacie Qt
     virtual void setColor(const QColor& color) = 0;
 };
-typedef core::shared_ptr<INewChartSerie> INewChartSeriePtr;
-typedef core::shared_ptr<const INewChartSerie> INewChartSerieConstPtr;
+typedef utils::shared_ptr<INewChartSerie> INewChartSeriePtr;
+typedef utils::shared_ptr<const INewChartSerie> INewChartSerieConstPtr;
 
 
 #endif

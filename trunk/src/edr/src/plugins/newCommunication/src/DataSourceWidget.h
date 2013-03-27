@@ -157,7 +157,7 @@ private:
 	void generateCommonContextMenu(QMenu & menu, QTreeWidget * perspective);
 
 
-	static core::shared_ptr<communication::AntropometricData> createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs);
+	static utils::shared_ptr<communication::AntropometricData> createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs);
 	static float getAntropometricValue(const std::string & attribute, const webservices::MotionShallowCopy::Attrs & attrs, float defValue = 0.0);
 
 	void loadFiles(const std::set<int> & files);
@@ -231,7 +231,7 @@ private:
     communication::ShallowCopy filteredShallowCopy;
 
     //! Manager statusów przefiltrowanej płytkiej kopi
-    core::shared_ptr<DataSourceStatusManager> filteredShallowCopyStatus;
+    utils::shared_ptr<DataSourceStatusManager> filteredShallowCopyStatus;
 
     //! Manager karty pacjenta
     PatientCardManager patientCardManager;
@@ -270,7 +270,7 @@ private:
     //! Informacja o niepowodzeniu
     QString downloadError;
 
-    core::shared_ptr<LocalDataLoader> localDataLoader;
+    utils::shared_ptr<LocalDataLoader> localDataLoader;
 
     //! Pliki zaangażowane w operacje użytkownika - ściągnij / ładuj / wyładuj
     //! Wyznaczmy je przy realizacji menu kontekstowego

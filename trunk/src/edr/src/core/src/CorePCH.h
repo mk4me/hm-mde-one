@@ -69,7 +69,7 @@ UTILS_POP_WARNINGS
 #include <boost/iterator.hpp>
 
 #include <corelib/BaseDataTypes.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include "Application.h"
 #include "ServiceManager.h"
 #include "MemoryDataManager.h"

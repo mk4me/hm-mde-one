@@ -37,8 +37,7 @@ public:
     //! Usuwa wszystkie polecenia ze stosu 
     virtual void clear() = 0;
 };
-typedef core::shared_ptr<ICommandStack> ICommandStackPtr;
-typedef core::shared_ptr<const ICommandStack> ICommandStackConstPtr;
+DEFINE_SMART_POINTERS(ICommandStack);
 
 }
 

@@ -23,8 +23,8 @@ public:
     //! \return kolor dla dajnej serii
     virtual QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr ow) const = 0;
 };
-typedef core::shared_ptr<IMultiserieColorStrategy> IMultiserieColorStrategyPtr;
-typedef core::shared_ptr<const IMultiserieColorStrategy> IMultiserieColorStrategyConstPtr;
+typedef utils::shared_ptr<IMultiserieColorStrategy> IMultiserieColorStrategyPtr;
+typedef utils::shared_ptr<const IMultiserieColorStrategy> IMultiserieColorStrategyConstPtr;
 
 //! klasa dostarcza losowych kolorów dla serii
 class RandomMultiserieColorStrategy : public IMultiserieColorStrategy

@@ -85,7 +85,7 @@ private:
     //! flaga określająca, czy używać koloru zdefiniowanego przez użytkownika
     bool useCustomColor;
 };
-typedef core::shared_ptr<GlPointSchemeDrawer> GlPointSchemeDrawerPtr;
-typedef core::shared_ptr<const GlPointSchemeDrawer> GlPointSchemeDrawerConstPtr;
+typedef utils::shared_ptr<GlPointSchemeDrawer> GlPointSchemeDrawerPtr;
+typedef utils::shared_ptr<const GlPointSchemeDrawer> GlPointSchemeDrawerConstPtr;
 
 #endif //HEADER_GUARD_POINTSCHEMEDRAWER_H__

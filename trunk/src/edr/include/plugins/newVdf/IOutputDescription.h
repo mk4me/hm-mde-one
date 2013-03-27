@@ -13,7 +13,7 @@
 #include <vector>
 #include <string>
 #include <utils/TypeInfo.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 namespace vdf {
 
@@ -57,8 +57,7 @@ public:
 
     virtual ~IOutputDescription() {}
 };
-typedef core::shared_ptr<IOutputDescription> IOutputDescriptionPtr;
-typedef core::shared_ptr<const IOutputDescription> IOutputDescriptionConstPtr;
+DEFINE_SMART_POINTERS(IOutputDescription);
 }
 
 #endif

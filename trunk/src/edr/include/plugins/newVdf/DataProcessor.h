@@ -41,9 +41,7 @@ private:
 	core::UniqueID _id;
 	Creator _creator;
 };
-
-typedef core::shared_ptr<DataProcessor> DataProcessorPtr;
-typedef core::shared_ptr<const DataProcessor> DataProcessorConstPtr;
+DEFINE_SMART_POINTERS(DataProcessor);
 
 }
 

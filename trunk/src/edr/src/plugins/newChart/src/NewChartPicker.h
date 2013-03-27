@@ -68,7 +68,7 @@ private:
     //! flaga określająca, czy kursor się porusza, jeśli tak, to nie można wykonać wszystkich akcji pickera
     bool move;
 };
-typedef core::shared_ptr<NewChartPicker> NewChartPickerPtr;
-typedef core::shared_ptr<const NewChartPicker> NewChartPickerConstPtr;
+typedef utils::shared_ptr<NewChartPicker> NewChartPickerPtr;
+typedef utils::shared_ptr<const NewChartPicker> NewChartPickerConstPtr;
 
 #endif

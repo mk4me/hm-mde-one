@@ -12,7 +12,7 @@
 
 #include <corelib/IPlugin.h>
 #include <boost/utility.hpp>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 #include <vector>
 #include <map>

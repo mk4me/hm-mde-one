@@ -72,7 +72,7 @@ core::ObjectWrapperPtr SubjectService::createSession(const core::ObjectWrapperCo
 		throw std::runtime_error("Subject not passed in wrapper");
 	}
 
-	auto subImpl = core::dynamic_pointer_cast<const Subject>(unpackedSubject);
+	auto subImpl = utils::dynamic_pointer_cast<const Subject>(unpackedSubject);
 
 	if(subImpl == nullptr){
 		throw std::runtime_error("Other subject implementation passed in wrapper");
@@ -101,7 +101,7 @@ core::ObjectWrapperPtr SubjectService::createMotion(const core::ObjectWrapperCon
 		throw std::runtime_error("Session not passed in wrapper");
 	}
 
-	auto sessionImpl = core::dynamic_pointer_cast<const Session>(unpackedSession);
+	auto sessionImpl = utils::dynamic_pointer_cast<const Session>(unpackedSession);
 
 	if(sessionImpl == nullptr){
 		throw std::runtime_error("Other session implementation passed in wrapper");

@@ -112,7 +112,7 @@ private:
 	//! Ilość serwerów do odświeżenia
 	unsigned int toCheck;
 	//! Wątek odświeżający statusy
-	core::shared_ptr<StatusChecker> statusChecker;
+	utils::shared_ptr<StatusChecker> statusChecker;
 };
 
 

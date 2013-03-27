@@ -56,7 +56,7 @@ private:
     //! aktualny środek geometryczny
     osg::Vec3 currentPosition;
 };
-typedef core::shared_ptr<MarkersVisualizationScheme> MarkersVisualizationSchemePtr;
-typedef core::shared_ptr<const MarkersVisualizationScheme> MarkersVisualizationSchemeConstPtr;
+typedef utils::shared_ptr<MarkersVisualizationScheme> MarkersVisualizationSchemePtr;
+typedef utils::shared_ptr<const MarkersVisualizationScheme> MarkersVisualizationSchemeConstPtr;
 
 #endif

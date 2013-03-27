@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__IDATAPROCESSOR_H__
 #define HEADER_GUARD_CORE__IDATAPROCESSOR_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <plugins/newVdf/IInputDescription.h>
 #include <plugins/newVdf/IOutputDescription.h>
 #include <plugins/newVdf/IWorkflowItemBase.h>
@@ -22,9 +22,8 @@ namespace vdf
 	class IDataProcessor : public IOutputDescription, public IInputDescription, public IWorkflowItemBase
 	{
 	};
-	typedef core::shared_ptr<IDataProcessor> IDataProcessorPtr;
-	typedef core::shared_ptr<const IDataProcessor> IDataProcessorConstPtr;
-
+	
+	DEFINE_SMART_POINTERS(IDataProcessor);
 } 
 
 #endif

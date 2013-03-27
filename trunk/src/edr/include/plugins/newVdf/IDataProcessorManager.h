@@ -27,14 +27,10 @@ namespace vdf{
         virtual IDataProcessorsConstRange enumPrototypes() const = 0;
 
     };
-
-    typedef core::shared_ptr<IDataProcessorManager> IDataProcessorManagerPtr;
-    typedef core::shared_ptr<const IDataProcessorManager> IDataProcessorManagerConstPtr;
-    typedef core::weak_ptr<IDataProcessorManager> IDataProcessorManagerWeakPtr;
-    typedef core::weak_ptr<const IDataProcessorManager> IDataProcessorManagerWeakConstPtr;
+	DEFINE_SMART_POINTERS(IDataProcessorManager);
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace core
+} // namespace vdf
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif //HEADER_GUARD___ISERVICEMANAGER_H__

@@ -34,7 +34,7 @@ private:
     C3DEventsCollection::Context context; 
 
 };
-typedef core::shared_ptr<EventSerieBase> EventSerieBasePtr;
-typedef core::shared_ptr<const EventSerieBase> EventSerieBaseConstPtr;
+typedef utils::shared_ptr<EventSerieBase> EventSerieBasePtr;
+typedef utils::shared_ptr<const EventSerieBase> EventSerieBaseConstPtr;
 
 #endif

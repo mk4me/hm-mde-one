@@ -85,8 +85,8 @@ private:
     //void notifyCreated(DataSink* dataSink);
     //void notifyDestroyed(DataSink* dataSink);
 };
-typedef core::shared_ptr<DataSinkManager> DataSinkManagerPtr;
-typedef core::shared_ptr<const DataSinkManager> DataSinkManagerConstPtr;
+typedef utils::shared_ptr<DataSinkManager> DataSinkManagerPtr;
+typedef utils::shared_ptr<const DataSinkManager> DataSinkManagerConstPtr;
 
 }
 

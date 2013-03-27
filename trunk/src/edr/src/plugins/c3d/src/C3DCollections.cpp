@@ -154,7 +154,7 @@ void GRFCollection::setPlatforms(const IForcePlatformCollection& val)
 GRFChannelConstPtr GRFCollection::getGRFChannel(GRFChannel::Type type) const
 {
 	for (auto it = channels.begin(); it != channels.end(); ++it) {
-		GRFChannelConstPtr channel = core::dynamic_pointer_cast<const GRFChannel>(*it);
+		GRFChannelConstPtr channel = utils::dynamic_pointer_cast<const GRFChannel>(*it);
 		if (channel->getType() == type) {
 			return channel;
 		}

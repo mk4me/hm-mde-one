@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___APPLICATION_H__
 #define HEADER_GUARD___APPLICATION_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/ILog.h>
 #include <corelib/IVisualizer.h>

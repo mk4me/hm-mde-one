@@ -139,7 +139,7 @@ void ServerStatusManager::onPingEnd(const CommunicationManager::BasicRequestPtr 
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(*mThis);
 	--toCheck;
-	CommunicationManager::PingRequestPtr ping = core::dynamic_pointer_cast<CommunicationManager::PingRequest>(request);
+	CommunicationManager::PingRequestPtr ping = utils::dynamic_pointer_cast<CommunicationManager::PingRequest>(request);
 	auto it = serverStatuses.find(ping->urlToPing());
 	if(it != serverStatuses.end()){
 		it->second.online = ping->getProgress() == 0.0 ? false : true;
@@ -152,7 +152,7 @@ void ServerStatusManager::onPingError(const CommunicationManager::BasicRequestPt
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(*mThis);
 	--toCheck;
-	CommunicationManager::PingRequestPtr ping = core::dynamic_pointer_cast<CommunicationManager::PingRequest>(request);
+	CommunicationManager::PingRequestPtr ping = utils::dynamic_pointer_cast<CommunicationManager::PingRequest>(request);
 	auto it = serverStatuses.find(ping->urlToPing());
 	if(it != serverStatuses.end()){
 		it->second.online = ping->getProgress() == 0.0 ? false : true;

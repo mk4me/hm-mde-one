@@ -16,7 +16,7 @@ class Patient : public communication::IPatient
 public:
 
     Patient(PluginSubject::SubjectID id, const std::string & name, const std::string & surname, const std::string & birthday,
-		Gender gender, const core::shared_ptr<const QPixmap> & photo, const std::vector<communication::Disorder> & disorders);
+		Gender gender, const utils::shared_ptr<const QPixmap> & photo, const std::vector<communication::Disorder> & disorders);
 
     virtual ~Patient();
 
@@ -26,13 +26,13 @@ public:
     virtual const std::string & getSurname() const;
     virtual const std::string & getBirthday() const;
     virtual Gender getGender() const;
-    virtual const core::shared_ptr<const QPixmap> & getPhoto() const;
+    virtual const utils::shared_ptr<const QPixmap> & getPhoto() const;
 
 	void setName(const std::string & name);
 	void setSurname(const std::string & surname);
 	void setBirthday(const std::string & birthday);
 	void setGender(Gender gender);
-	void setPhoto(const core::shared_ptr<const QPixmap> & photo);
+	void setPhoto(const utils::shared_ptr<const QPixmap> & photo);
 
     virtual unsigned int disordersCount() const;
     virtual const communication::Disorder & disorder(unsigned int idx) const;
@@ -47,7 +47,7 @@ private:
     std::string surname;
     std::string birthday;
     Gender gender;
-    core::shared_ptr<const QPixmap> photo;
+    utils::shared_ptr<const QPixmap> photo;
     std::vector<communication::Disorder> disorders;
 };
 

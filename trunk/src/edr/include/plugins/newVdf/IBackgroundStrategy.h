@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEWVDF__IBACKGROUNDSTRATEGY_H__
 #define HEADER_GUARD_NEWVDF__IBACKGROUNDSTRATEGY_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 namespace vdf {
 
@@ -20,8 +20,7 @@ public:
 	virtual ~IBackgroundStrategy() {}
 	virtual void paint(QPainter*, const QRectF&) = 0;
 };
-typedef core::shared_ptr<IBackgroundStrategy> IBackgroundStrategyPtr;
-typedef core::shared_ptr<const IBackgroundStrategy> IBackgroundStrategyConstPtr;
+DEFINE_SMART_POINTERS(IBackgroundStrategy);
 
 }
 #endif

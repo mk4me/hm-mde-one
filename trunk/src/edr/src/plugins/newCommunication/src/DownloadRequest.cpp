@@ -174,7 +174,7 @@ std::string DownloadRequest::currentFileName() const
 {
 	ScopedLock lock(stateMutex);
 	if(currentTransfer != nullptr){
-		auto metaTransfer(core::dynamic_pointer_cast<CommunicationManager::MetadataRequest>(currentTransfer));
+		auto metaTransfer(utils::dynamic_pointer_cast<CommunicationManager::MetadataRequest>(currentTransfer));
 		if(metaTransfer != nullptr){
 			return core::Filesystem::Path(metaTransfer->getFilePath()).filename().string();
 		}
@@ -187,7 +187,7 @@ std::string DownloadRequest::currentFilePath() const
 {
 	ScopedLock lock(stateMutex);
 	if(currentTransfer != nullptr){
-		auto metaTransfer(core::dynamic_pointer_cast<CommunicationManager::MetadataRequest>(currentTransfer));
+		auto metaTransfer(utils::dynamic_pointer_cast<CommunicationManager::MetadataRequest>(currentTransfer));
 		if(metaTransfer != nullptr){
 			return metaTransfer->getFilePath();
 		}
@@ -231,11 +231,11 @@ const long DownloadRequest::getRequestSize(const CommunicationManager::BasicRequ
     if(it != shallowSizes.end()){
         size = it->second;
     }else {
-        CommunicationManager::FileRequestPtr fileRequest(core::dynamic_pointer_cast<CommunicationManager::FileRequest>(request));
+        CommunicationManager::FileRequestPtr fileRequest(utils::dynamic_pointer_cast<CommunicationManager::FileRequest>(request));
         if(fileRequest != nullptr){
             size = filesSizes.find(fileRequest->getFileID())->second;
         }else{
-            CommunicationManager::PhotoRequestPtr photoRequest(core::dynamic_pointer_cast<CommunicationManager::PhotoRequest>(request));
+            CommunicationManager::PhotoRequestPtr photoRequest(utils::dynamic_pointer_cast<CommunicationManager::PhotoRequest>(request));
             size = photosSizes.find(photoRequest->getPhotoID())->second;
         }
     }

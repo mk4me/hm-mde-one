@@ -62,8 +62,8 @@ private:
     QString text;
 };
 
-typedef core::shared_ptr<TreeItemHelper> TreeItemHelperPtr;
-typedef core::shared_ptr<const TreeItemHelper> TreeItemHelperConstPtr;
+typedef utils::shared_ptr<TreeItemHelper> TreeItemHelperPtr;
+typedef utils::shared_ptr<const TreeItemHelper> TreeItemHelperConstPtr;
 
 
 //! podstawowa klasa ułatwiająca tworzenie wizualizatora na podstawie elementu drzewa
@@ -139,8 +139,8 @@ protected:
     //! przypisany do helpera wrapper
     core::ObjectWrapperConstPtr wrapper;
 };
-typedef core::shared_ptr<TreeWrappedItemHelper> TreeWrappedItemHelperPtr;
-typedef core::shared_ptr<const TreeWrappedItemHelper> TreeWrappedItemHelperConstPtr;
+typedef utils::shared_ptr<TreeWrappedItemHelper> TreeWrappedItemHelperPtr;
+typedef utils::shared_ptr<const TreeWrappedItemHelper> TreeWrappedItemHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu wizualizatora wykresów
 //! klasa musi dostarczyć ScalarChannelReaderInterface z danymi we wrapperze
@@ -161,8 +161,8 @@ public:
     std::vector<core::TypeInfo> getTypeInfos() const;
 
 };
-typedef core::shared_ptr<NewChartItemHelper> NewChartItemHelperPtr;
-typedef core::shared_ptr<const NewChartItemHelper> NewChartItemHelperConstPtr;
+typedef utils::shared_ptr<NewChartItemHelper> NewChartItemHelperPtr;
+typedef utils::shared_ptr<const NewChartItemHelper> NewChartItemHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu wykresów z wektora 3-elementowego
 class NewVector3ItemHelper : public TreeWrappedItemHelper
@@ -183,8 +183,8 @@ public:
     //! \return typ ScalarChannelReaderInterface
     std::vector<core::TypeInfo> getTypeInfos() const;
 };
-typedef core::shared_ptr<NewVector3ItemHelper> NewVector3ItemHelperPtr;
-typedef core::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPtr;
+typedef utils::shared_ptr<NewVector3ItemHelper> NewVector3ItemHelperPtr;
+typedef utils::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPtr;
 
 //! pomaga tworzyć wizualizator 2D z wieloma seriami danych
 class NewMultiserieHelper : public TreeItemHelper
@@ -248,8 +248,8 @@ private:
     //! wykorzystana strategia do kolorowania serii
     IMultiserieColorStrategyConstPtr colorStrategy;
 };
-typedef core::shared_ptr<NewMultiserieHelper> NewMultiserieHelperPtr;
-typedef core::shared_ptr<const NewMultiserieHelper> NewMultiserieHelperConstPtr;
+typedef utils::shared_ptr<NewMultiserieHelper> NewMultiserieHelperPtr;
+typedef utils::shared_ptr<const NewMultiserieHelper> NewMultiserieHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu wizualizatora jointów (leniwe parsowanie)
 class JointsItemHelper : public TreeItemHelper
@@ -274,8 +274,8 @@ private:
     //! motion, z którego beda wyciagane elementy do stworzenia JointAnglesCollection
     PluginSubject::MotionConstPtr motion;
 };
-typedef core::shared_ptr<JointsItemHelper> JointsItemHelperPtr;
-typedef core::shared_ptr<const JointsItemHelper> JointsItemHelperConstPtr;
+typedef utils::shared_ptr<JointsItemHelper> JointsItemHelperPtr;
+typedef utils::shared_ptr<const JointsItemHelper> JointsItemHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu zbiorczego widoku 3d (markery + jointy + płyty GRF)
 class Multiserie3D : public TreeItemHelper
@@ -300,7 +300,7 @@ private:
     //! próba pomiarowa, z której beda wyciagane elementy 3D
     PluginSubject::MotionConstPtr motion;
 };
-typedef core::shared_ptr<Multiserie3D> Multiserie3DPtr;
-typedef core::shared_ptr<const Multiserie3D> Multiserie3DConstPtr;
+typedef utils::shared_ptr<Multiserie3D> Multiserie3DPtr;
+typedef utils::shared_ptr<const Multiserie3D> Multiserie3DConstPtr;
 
 #endif

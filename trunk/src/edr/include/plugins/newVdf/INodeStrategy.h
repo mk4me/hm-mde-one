@@ -23,11 +23,10 @@ public:
 		Selected
 	};
 	virtual void setState(State state) = 0;
-	virtual void setNode(core::weak_ptr<IVisualNode> item) = 0;
+	virtual void setNode(utils::weak_ptr<IVisualNode> item) = 0;
 	virtual QPointF getPinPosition(int no, bool input) = 0;
 };
-typedef core::shared_ptr<INodeStrategy> INodeStrategyPtr;
-typedef core::shared_ptr<const INodeStrategy> INodeStrategyConstPtr;
+DEFINE_SMART_POINTERS(INodeStrategy);
 
 }
 

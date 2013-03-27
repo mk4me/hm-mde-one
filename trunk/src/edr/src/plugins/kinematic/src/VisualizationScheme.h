@@ -21,7 +21,7 @@ UTILS_PUSH_WARNINGS
 #include <osg/Node>
 UTILS_POP_WARNINGS
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/PluginCommon.h>
 #include <boost/utility.hpp>
 #include <boost/function.hpp>
@@ -66,7 +66,7 @@ private:
 };
 
 class ISchemeDrawer;
-typedef core::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
+typedef utils::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
 
 //! klasa stanowi połączenie między reprezentacją wewnętrzną, a kontrolką odrysowywującą szkielet
 class VisualizationScheme
@@ -146,7 +146,7 @@ protected:
     virtual void update(double time) = 0;
 };
 
-typedef core::shared_ptr<VisualizationScheme> VisualizationSchemePtr;
-typedef core::weak_ptr<VisualizationScheme> VisualizationSchemeWeak;
-typedef core::shared_ptr<const VisualizationScheme> VisualizationSchemeConstPtr;
+typedef utils::shared_ptr<VisualizationScheme> VisualizationSchemePtr;
+typedef utils::weak_ptr<VisualizationScheme> VisualizationSchemeWeak;
+typedef utils::shared_ptr<const VisualizationScheme> VisualizationSchemeConstPtr;
 #endif

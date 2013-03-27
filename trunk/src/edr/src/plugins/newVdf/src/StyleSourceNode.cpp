@@ -15,7 +15,7 @@ StyleSourceNode::StyleSourceNode() :
 void StyleSourceNode::addOutputPin( IVisualOutputPinPtr pin )
 {
     pin->visualItem()->setParentItem(styleItem);
-    INodeStrategyPtr nodeStr = core::dynamic_pointer_cast<INodeStrategy>(styleItem->getStrategy());
+    INodeStrategyPtr nodeStr = utils::dynamic_pointer_cast<INodeStrategy>(styleItem->getStrategy());
 	pin->visualItem()->setPos(nodeStr->getPinPosition(pins.size(), false));
 	pins.push_back(pin);
 }
@@ -88,7 +88,7 @@ void StyleSourceNode::removeOutputPin( IVisualOutputPinPtr pin )
 
 void StyleSourceNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
-	this->strategy = core::dynamic_pointer_cast<INodeStrategy>(strategy);
+	this->strategy = utils::dynamic_pointer_cast<INodeStrategy>(strategy);
 	UTILS_ASSERT(this->strategy);
 	styleItem->setStrategy(strategy);
 }

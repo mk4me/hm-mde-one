@@ -244,7 +244,7 @@ private:
 
 private:
 
-	typedef core::shared_ptr<Invoker> InvokerPtr;
+	typedef utils::shared_ptr<Invoker> InvokerPtr;
 
 private:
 	std::string::size_type s;
@@ -324,7 +324,7 @@ void WSConnection::setUrl(const std::string & url)
 	auto pos = url.find("https");
 
 	if(pos != std::string::npos && pos != connection_->url().find("https")){
-		core::shared_ptr<ISecureWSConnection> newConnection(new _TWSConnection<WsdlPull::CustomSSLWsdlInvoker>());
+		utils::shared_ptr<ISecureWSConnection> newConnection(new _TWSConnection<WsdlPull::CustomSSLWsdlInvoker>());
 		newConnection->setCredentials(connection_->user(), connection_->password());
 		newConnection->setCAPath(connection_->CAPath());
 		newConnection->setHostVerification(connection_->hostVerification());

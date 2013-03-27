@@ -21,7 +21,7 @@
 #define _HMM_BEGIN_REGISTER \
     do {\
     core::IServiceManager* _manager = plugin::getServiceManager();\
-    vdf::NewVdfServicePtr _vdfService = core::dynamic_pointer_cast<vdf::NewVdfService>(_manager->getService(vdf::NewVdfService::getClassID()));
+    vdf::NewVdfServicePtr _vdfService = utils::dynamic_pointer_cast<vdf::NewVdfService>(_manager->getService(vdf::NewVdfService::getClassID()));
 
 #define _HMM_END_REGISTER \
     } while(0);

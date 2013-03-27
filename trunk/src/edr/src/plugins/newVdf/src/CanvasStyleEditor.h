@@ -87,7 +87,6 @@ private:
     IConnectionsFactoryPtr currentConnectionsFactory;
 	IBackgroundsFactoryPtr currentBackgroundFactory;
 };
-typedef core::shared_ptr<CanvasStyleEditor> CanvasStyleEditorPtr;
-typedef core::shared_ptr<const CanvasStyleEditor> CanvasStyleEditorConstPtr;
+DEFINE_SMART_POINTERS(CanvasStyleEditor);
 }
 #endif	//	HEADER_GUARD___CANVASSTYLEEDITOR_H__

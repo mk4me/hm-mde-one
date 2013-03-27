@@ -4,7 +4,6 @@ SET_PUBLIC_HEADERS(
 	BaseDataTypes.h
 	DataAccessors.h
 	Filesystem.h
-	SmartPtr.h
 	StringTools.h
 	Visualizer.h
 	# SubjectDataFilters.h

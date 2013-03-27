@@ -58,7 +58,7 @@ public:
 
 
 private:
-    core::shared_ptr<df::INode> _node;
+    utils::shared_ptr<df::INode> _node;
     QIcon icon;
     SimpleTextItem* simpleItem;
     std::vector<IVisualInputPinPtr> pins;

@@ -43,6 +43,6 @@
 #include <QtGui/QMouseEvent>
 
 #include <corelib/IPlugin.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 #endif

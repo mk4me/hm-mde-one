@@ -19,8 +19,7 @@ class IConnectionsFactory : public IFactory
 public:
 	virtual IVisualConnectionPtr createConnection() const = 0;
 };
-typedef core::shared_ptr<IConnectionsFactory> IConnectionsFactoryPtr;
-typedef core::shared_ptr<const IConnectionsFactory> IConnectionsFactoryConstPtr;
+DEFINE_SMART_POINTERS(IConnectionsFactory);
 
 }
 

@@ -13,7 +13,7 @@
 #include <string>
 #include <map>
 #include <plugins/subject/ISubject.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 
 namespace communication
@@ -96,7 +96,7 @@ public:
 	//! \return Płeć pacjenta
     virtual Gender getGender() const = 0;
 	//! \return Zdjęcie pacjenta
-    virtual const core::shared_ptr<const QPixmap> & getPhoto() const = 0;
+    virtual const utils::shared_ptr<const QPixmap> & getPhoto() const = 0;
 
 	//! \return Ilość schorzeń
     virtual unsigned int disordersCount() const = 0;
@@ -105,8 +105,8 @@ public:
     virtual const Disorder & disorder(unsigned int idx) const = 0;
 };
 
-typedef core::shared_ptr<IPatient> PatientPtr;
-typedef core::shared_ptr<const IPatient> PatientConstPtr;
+typedef utils::shared_ptr<IPatient> PatientPtr;
+typedef utils::shared_ptr<const IPatient> PatientConstPtr;
 
 }
 

@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___ISTREAMDATAMANAGER_H__
 #define HEADER_GUARD___ISTREAMDATAMANAGER_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/ITransaction.h>
 #include <corelib/IStreamManagerReader.h>
 #include <corelib/IMemoryDataManager.h>

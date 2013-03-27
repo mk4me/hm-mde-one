@@ -9,13 +9,13 @@
 #ifndef HEADER_GUARD___IDATASOURCEPERSPECTIVEMANAGER_H__
 #define HEADER_GUARD___IDATASOURCEPERSPECTIVEMANAGER_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <plugins/newCommunication/IDataSourcePerspective.h>
 
 namespace communication
 {
 
-	typedef core::shared_ptr<IDataSourcePerspective> DataSourcePerspectivePtr;
+	typedef utils::shared_ptr<IDataSourcePerspective> DataSourcePerspectivePtr;
 
 //! Interfejs managera perspektyw danych
 class IDataSourcePerspectiveManager

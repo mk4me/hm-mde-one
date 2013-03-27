@@ -27,7 +27,7 @@ public:
 	virtual const QRectF& getRect();
     QPainterPath shape() const;
 
-    virtual void setConnection( core::weak_ptr<IVisualConnection> connection );
+    virtual void setConnection( utils::weak_ptr<IVisualConnection> connection );
 
 private:
     bool hasPins();
@@ -39,10 +39,7 @@ private:
 	QRectF rect;
     QPainterPath path;
 };
-
-
-typedef core::shared_ptr<DarkConnectionStrategy> DarkConnectionStrategyPtr;
-typedef core::shared_ptr<const DarkConnectionStrategy> DarkConnectionStrategyConstPtr;
+DEFINE_SMART_POINTERS(DarkConnectionStrategy);
 }
 
 #endif

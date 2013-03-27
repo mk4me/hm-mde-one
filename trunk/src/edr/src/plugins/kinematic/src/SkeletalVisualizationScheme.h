@@ -76,7 +76,7 @@ private:
     //! kolor markerów
     osg::Vec4 dotColor;
 };
-typedef core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;
-typedef core::shared_ptr<const SkeletalVisualizationScheme> SkeletalVisualizationSchemeConstPtr;
+typedef utils::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;
+typedef utils::shared_ptr<const SkeletalVisualizationScheme> SkeletalVisualizationSchemeConstPtr;
 
 #endif

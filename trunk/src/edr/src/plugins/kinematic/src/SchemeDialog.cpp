@@ -35,17 +35,17 @@ void SchemeDialog::setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName 
     connect(rootCheck, SIGNAL(clicked(bool)), this, SLOT(rootVisibilityChanged(bool)));
     item2Root[root] = drawer;
     
-    SchemeDrawerContainerPtr container = core::dynamic_pointer_cast<SchemeDrawerContainer>(drawer);
+    SchemeDrawerContainerPtr container = utils::dynamic_pointer_cast<SchemeDrawerContainer>(drawer);
     if (container) {
         GlLineSchemeDrawerPtr lines;
         GlPointSchemeDrawerPtr points;
         BOOST_FOREACH (OsgSchemeDrawerPtr child, container->getDrawers()) {
-            GlLineSchemeDrawerPtr l = core::dynamic_pointer_cast<GlLineSchemeDrawer>(child);
+            GlLineSchemeDrawerPtr l = utils::dynamic_pointer_cast<GlLineSchemeDrawer>(child);
             if (l) {
                 lines = l;
             }
 
-            GlPointSchemeDrawerPtr p = core::dynamic_pointer_cast<GlPointSchemeDrawer>(child);
+            GlPointSchemeDrawerPtr p = utils::dynamic_pointer_cast<GlPointSchemeDrawer>(child);
             if (p) {
                 points = p;
             }

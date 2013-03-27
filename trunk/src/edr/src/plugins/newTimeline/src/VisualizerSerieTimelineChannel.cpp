@@ -140,7 +140,7 @@ void VisualizerTimelineHelper::update(core::Visualizer::VisualizerSerie * serie,
 	static int idx = 0;
 	if(modyfication == core::Visualizer::ADD_SERIE){
 		//utwórz kanał
-		auto channel = core::shared_ptr<timeline::IChannel>(new VisualizerSerieTimelineChannel(serie->visualizer(), serie));
+		auto channel = utils::shared_ptr<timeline::IChannel>(new VisualizerSerieTimelineChannel(serie->visualizer(), serie));
 		//dodaj do timeline
 		timeline->addChannel(boost::lexical_cast<std::string>(idx), channel);
 		//zapamiętaj

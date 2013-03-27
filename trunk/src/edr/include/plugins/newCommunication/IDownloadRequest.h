@@ -11,7 +11,7 @@
 
 #include <string>
 #include <utils/ObserverPattern.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 namespace communication
 {
@@ -67,8 +67,8 @@ public:
     virtual const int currentFile() const = 0;
 };
 
-typedef core::shared_ptr<IDownloadRequest> DownloadRequestPtr;
-typedef core::shared_ptr<const IDownloadRequest> DownloadRequestConstPtr;
+typedef utils::shared_ptr<IDownloadRequest> DownloadRequestPtr;
+typedef utils::shared_ptr<const IDownloadRequest> DownloadRequestConstPtr;
 
 }
 

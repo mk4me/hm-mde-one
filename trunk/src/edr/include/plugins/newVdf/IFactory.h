@@ -11,7 +11,7 @@
 
 #include <QtCore/QUuid>
 #include <QtCore/QString>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 namespace vdf {
 
@@ -28,9 +28,7 @@ public:
 	virtual const QString name() const = 0;
 	virtual const QString description() const = 0;
 };
-typedef core::shared_ptr<IFactory> IFactoryPtr;
-typedef core::shared_ptr<const IFactory> IFactoryConstPtr;
-
+DEFINE_SMART_POINTERS(IFactory);
 }
 
 #endif	//	HEADER_GUARD___IFACTORY_H__

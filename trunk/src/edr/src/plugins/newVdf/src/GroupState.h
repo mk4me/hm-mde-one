@@ -33,13 +33,12 @@ private:
 	QRectF getRect(const QPointF& startPos, const QPointF&  endPos );
 
 private:
-	typedef core::shared_ptr<QPointF> PointPtr;
+	typedef utils::shared_ptr<QPointF> PointPtr;
 	QGraphicsRectItem* tempRect;
 	PointPtr startPos;
 	QList<IVisualNodePtr> selectedNodes;
 };
-typedef core::shared_ptr<GroupState> GroupStatePtr;
-typedef core::shared_ptr<const GroupState> GroupStateConstPtr;
+DEFINE_SMART_POINTERS(GroupState);
 
 class GroupSelectedState : public ISceneState
 {
@@ -56,9 +55,7 @@ public:
 private:
 	QList<IVisualNodePtr> selectedNodes;
 };
-typedef core::shared_ptr<GroupSelectedState> GroupSelectedStatePtr;
-typedef core::shared_ptr<const GroupSelectedState> GroupSelectedStateConstPtr;
-
+DEFINE_SMART_POINTERS(GroupSelectedState);
 }
 
 #endif

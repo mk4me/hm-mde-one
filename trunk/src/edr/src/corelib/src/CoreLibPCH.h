@@ -74,7 +74,7 @@ UTILS_POP_WARNINGS
 
 #include <utils/Debug.h>
 #include <utils/Enum.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/ObjectWrapperCollection.h>
 #include <utils/Export.h>

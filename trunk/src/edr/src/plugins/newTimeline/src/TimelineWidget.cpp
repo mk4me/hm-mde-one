@@ -432,7 +432,7 @@ void TimelineWidget::refreshChannelsHierarchy()
     }
 
     for(auto it = getController()->getModel()->beginChannels(); it != getController()->getModel()->endChannels(); ++it){
-        modelNodes.insert(core::dynamic_pointer_cast<const timeline::Model::TChannel>(*it));
+        modelNodes.insert(utils::dynamic_pointer_cast<const timeline::Model::TChannel>(*it));
     }
 
     compareNodes(uiNodes, modelNodes, toDeleteItems, missingItems);
@@ -578,7 +578,7 @@ void TimelineWidget::recursiveHierarchyRefresh(QTreeWidgetItem* uiNode)
     ChannelsTreeItem* channelsTreeNode = reinterpret_cast<ChannelsTreeItem*>(uiNode);
 
     for(auto it = channelsTreeNode->getChannel()->begin(); it != channelsTreeNode->getChannel()->end(); ++it){
-        modelNodes.insert( core::dynamic_pointer_cast<const timeline::Model::TChannel>(*it));
+        modelNodes.insert( utils::dynamic_pointer_cast<const timeline::Model::TChannel>(*it));
     }
 
     compareNodes(uiNodes, modelNodes, toDeleteItems, missingItems);

@@ -10,16 +10,16 @@
 #define HEADER_GUARD___IDATASOURCEFILTERMANAGER_H__
 
 #include <plugins/newCommunication/DataSourceFilter.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 namespace communication
 {
 
-typedef core::shared_ptr<DataSourceFilter> DataFilterPtr;
-typedef core::shared_ptr<const DataSourceFilter> DataFilterConstPtr;
+typedef utils::shared_ptr<DataSourceFilter> DataFilterPtr;
+typedef utils::shared_ptr<const DataSourceFilter> DataFilterConstPtr;
 
-typedef core::weak_ptr<DataSourceFilter> DataFilterWPtr;
-typedef core::weak_ptr<const DataSourceFilter> DataFilterWConstPtr;
+typedef utils::weak_ptr<DataSourceFilter> DataFilterWPtr;
+typedef utils::weak_ptr<const DataSourceFilter> DataFilterWConstPtr;
 
 
 //! Interfejs zarządzający filtrami danych

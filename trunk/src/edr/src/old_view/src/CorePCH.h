@@ -37,7 +37,6 @@ UTILS_PUSH_WARNINGS
 #include <osg/Group>
 #include <osg/Image>
 #include <osg/ImageStream>
-#include <osg/Node>
 #include <osg/NodeVisitor>
 #include <osg/Notify>
 #include <osg/observer_ptr>
@@ -59,7 +58,6 @@ UTILS_POP_WARNINGS
 
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
-//#include <QtOpenGL/QtOpenGL>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>
@@ -69,7 +67,7 @@ UTILS_POP_WARNINGS
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/ILog.h>
 // przywrócenie warningów wyłączonych przez OSG
 #if defined(_MSC_VER)

@@ -266,7 +266,7 @@ private:
     //! Marker obrazujący aktualna wartość na wykresie
     QwtPlotMarker* qwtMarker;
     //! "kratka" na wykresie
-    core::shared_ptr<QwtPlotGrid> grid;
+    utils::shared_ptr<QwtPlotGrid> grid;
     //! obiekt przechwujący ekstrema krzywych
     Scales plotScales;
     //! kolekcja z wszystkimi seriami danych
@@ -282,7 +282,7 @@ private:
 
     // TODO porzadek z manipulatorami
     //! Manipulator całego wykresu
-    core::shared_ptr<QwtPlotZoomer> zoomer;
+    utils::shared_ptr<QwtPlotZoomer> zoomer;
     //! Manipulator całego wykresu
     QwtPlotPanner* plotPanner;
     //! Manipulator całego wykresu
@@ -327,8 +327,8 @@ private:
     //! aktualna wartość dla serii
     float currentSerieValue;
 };
-typedef core::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
-typedef core::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;
+typedef utils::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
+typedef utils::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;
 
 
 

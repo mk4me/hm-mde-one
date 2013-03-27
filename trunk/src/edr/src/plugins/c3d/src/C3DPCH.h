@@ -23,7 +23,7 @@
 #include <utils/Debug.h>
 
 #include <corelib/IPlugin.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 //UTILS_PUSH_WARNINGS
 

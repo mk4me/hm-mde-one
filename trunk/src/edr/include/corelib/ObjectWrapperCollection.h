@@ -13,7 +13,7 @@
 #include <corelib/Export.h>
 #include <vector>
 #include <stdexcept>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
 
 namespace core {

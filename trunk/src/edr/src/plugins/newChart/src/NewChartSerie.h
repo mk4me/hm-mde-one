@@ -147,7 +147,7 @@ private:
     //! obiekt ze statystykami
     ScalarChannelStatsPtr stats;
     //! aksesor do danych w DataChannel
-    core::shared_ptr<ScalarContiniousTimeAccessor> accessor;
+    utils::shared_ptr<ScalarContiniousTimeAccessor> accessor;
     //! obiekt z danymi
     ScalarChannelReaderInterfaceConstPtr reader;
     //! obiekt zajmujący się logika eventów

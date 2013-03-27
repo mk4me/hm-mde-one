@@ -41,9 +41,7 @@ private:
 	core::UniqueID _id;
 	Creator _creator;
 };
-typedef core::shared_ptr<DataSink> DataSinkPtr;
-typedef core::shared_ptr<const DataSink> DataSinkConstPtr;
-
+DEFINE_SMART_POINTERS(DataSink);
 }
 
 #endif

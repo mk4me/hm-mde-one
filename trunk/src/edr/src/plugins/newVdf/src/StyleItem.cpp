@@ -100,7 +100,7 @@ QGraphicsProxyWidget* StyleItem::getOrCreateProxy()
 
 QPainterPath vdf::StyleItem::shape() const
 {
-    IConnectionStrategyPtr connection = core::dynamic_pointer_cast<IConnectionStrategy>(this->strategy);
+    IConnectionStrategyPtr connection = utils::dynamic_pointer_cast<IConnectionStrategy>(this->strategy);
     if (connection) {
         return connection->shape();
     }

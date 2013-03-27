@@ -69,9 +69,9 @@ namespace core {
 		};
 
 		//! Wskaünik na obiek obserwujπcy zmiany
-		typedef core::shared_ptr<IFileObserver> FileObserverPtr;
+		typedef utils::shared_ptr<IFileObserver> FileObserverPtr;
 
-		typedef core::shared_ptr<IFileManagerReaderOperations> TransactionPtr;
+		typedef utils::shared_ptr<IFileManagerReaderOperations> TransactionPtr;
 
 	public:
 

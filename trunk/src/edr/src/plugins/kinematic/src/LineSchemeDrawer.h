@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_LINESCHEMEDRAWER_H__
 #define HEADER_GUARD_LINESCHEMEDRAWER_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <osg/PositionAttitudeTransform>
 #include "OsgSchemeDrawer.h"
 

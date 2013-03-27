@@ -30,6 +30,6 @@ public:
     //! \param series zwracana seria 
     virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
 };
-typedef core::shared_ptr<EMGFilterHelper> EMGFilterHelperPtr;
-typedef core::shared_ptr<const EMGFilterHelper> EMGFilterHelperConstPtr;
+typedef utils::shared_ptr<EMGFilterHelper> EMGFilterHelperPtr;
+typedef utils::shared_ptr<const EMGFilterHelper> EMGFilterHelperConstPtr;
 #endif

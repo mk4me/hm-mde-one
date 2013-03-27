@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Plugin.h"
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 // rev
 #ifdef WIN32

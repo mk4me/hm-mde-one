@@ -39,8 +39,7 @@ public:
 	virtual Type getType() const = 0;
 	virtual bool isType(Type t) const = 0;
 };
-typedef core::shared_ptr<IVisualItem> IVisualItemPtr;
-typedef core::shared_ptr<const IVisualItem> IVisualItemConstPtr;
+DEFINE_SMART_POINTERS(IVisualItem);
 
 template<IVisualItem::Type T>
 struct _Z { static qreal value() { return 0.0f; } };

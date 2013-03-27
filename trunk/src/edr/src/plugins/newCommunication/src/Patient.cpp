@@ -4,7 +4,7 @@
 using namespace communication;
 
 Patient::Patient(PluginSubject::SubjectID id, const std::string & name, const std::string & surname, const std::string & birthday,
-    Gender gender, const core::shared_ptr<const QPixmap> & photo, const std::vector<Disorder> & disorders)
+    Gender gender, const utils::shared_ptr<const QPixmap> & photo, const std::vector<Disorder> & disorders)
     :id(id), name(name), surname(surname), birthday(birthday), gender(gender), photo(photo), disorders(disorders)
 {
 
@@ -40,7 +40,7 @@ IPatient::Gender Patient::getGender() const
     return gender;
 }
 
-const core::shared_ptr<const QPixmap> & Patient::getPhoto() const
+const utils::shared_ptr<const QPixmap> & Patient::getPhoto() const
 {
     return photo;
 }
@@ -75,7 +75,7 @@ void Patient::setGender(Gender gender)
 	this->gender = gender;
 }
 
-void Patient::setPhoto(const core::shared_ptr<const QPixmap> & photo)
+void Patient::setPhoto(const utils::shared_ptr<const QPixmap> & photo)
 {
 	this->photo = photo;
 }

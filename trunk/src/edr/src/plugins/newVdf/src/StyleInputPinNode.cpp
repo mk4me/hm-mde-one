@@ -98,7 +98,7 @@ void StyleInputPinNode::removeCollision()
 
 void StyleInputPinNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
-	this->strategy = core::dynamic_pointer_cast<IPinStrategy>(strategy);
+	this->strategy = utils::dynamic_pointer_cast<IPinStrategy>(strategy);
 	item->setStrategy(strategy);
 }
 

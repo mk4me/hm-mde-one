@@ -20,15 +20,8 @@ namespace vdf {
 class IDataSource : public IOutputDescription, public IWorkflowItemBase
 
 {
-public:
-    ////! \return Dialog konfigurujący opis wyjścia źródła danych
-    //virtual QDialog * getOutputConfigurationDialog() = 0;
-    ////! \return Ikona źródła
-    //virtual QIcon* getIcon() const = 0;
 };
-
-typedef core::shared_ptr<IDataSource> IDataSourcePtr;
-typedef core::shared_ptr<const IDataSource> IDataSourceConstPtr;
+DEFINE_SMART_POINTERS(IDataSource);
 }
 
 #endif  //  HEADER_GUARD___IDATASOURCE_H__

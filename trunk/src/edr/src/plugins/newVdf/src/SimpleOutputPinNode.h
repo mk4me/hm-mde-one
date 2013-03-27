@@ -46,7 +46,7 @@ public:
 	IVisualNodeWeakPtr getParent() const { return parent; }
 	void setParent(IVisualNodeWeakPtr val) { parent = val; }
 	virtual void addConnection(IVisualConnectionWeakPtr connection) { connections.push_back(connection); }
-    virtual void removeConnection(core::weak_ptr<IVisualConnection> connection);
+    virtual void removeConnection(utils::weak_ptr<IVisualConnection> connection);
 	virtual IVisualConnectionWeakPtr getConnection(int idx) const { return connections[idx]; }
     virtual int getNumConnections() const { return connections.size(); }
 

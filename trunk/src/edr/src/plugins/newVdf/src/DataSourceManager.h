@@ -83,8 +83,8 @@ private:
     //void notifyCreated(DataSource* dataSource);
     //void notifyDestroyed(DataSource* dataSource);
 };
-typedef core::shared_ptr<DataSourceManager> DataSourceManagerPtr;
-typedef core::shared_ptr<const DataSourceManager> DataSourceManagerConstPtr;
+typedef utils::shared_ptr<DataSourceManager> DataSourceManagerPtr;
+typedef utils::shared_ptr<const DataSourceManager> DataSourceManagerConstPtr;
 
 }
 

@@ -11,7 +11,7 @@
 
 #include <webserviceslib/IWSConnection.h>
 #include <wsdlparser/WsdlInvoker.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 //! Interfejs rozszerzający podstawowe połączenie webservices o zabezpieczenia
 class ISecureWSConnection : public webservices::IWSConnection
@@ -30,7 +30,7 @@ public:
 	virtual WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification() const = 0;
 };
 
-typedef core::shared_ptr<ISecureWSConnection> WSConnectionPtr;
+typedef utils::shared_ptr<ISecureWSConnection> WSConnectionPtr;
 
 //! Implementacja połączenia po stronie communication
 class WSConnection : public ISecureWSConnection

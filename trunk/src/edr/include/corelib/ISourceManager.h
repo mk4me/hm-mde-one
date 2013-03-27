@@ -41,12 +41,12 @@ namespace core {
     //! Metoda wyszukująca wszystkie źródła danego typu (np. implementujące
     //! dany interfejs).
     template <class T>
-    core::shared_ptr<T> querySource(ISourceManager* manager, T* dummy = nullptr)
+    utils::shared_ptr<T> querySource(ISourceManager* manager, T* dummy = nullptr)
     {
-        std::vector<core::shared_ptr<T>> result;
+        std::vector<utils::shared_ptr<T>> result;
         querySources(manager, result);
         if ( result.empty() ) {
-            return core::shared_ptr<T>();
+            return utils::shared_ptr<T>();
         } else {
             UTILS_ASSERT(result.size()==1, "Multiple sources found.");
             return result[0];
@@ -56,11 +56,11 @@ namespace core {
     //! Metoda wyszukująca wszystkie źródła danego typu (np. implementujące
     //! dany interfejs).
     template <class T>
-    void querySources(ISourceManager* manager, std::vector<core::shared_ptr<T>>& target)
+    void querySources(ISourceManager* manager, std::vector<utils::shared_ptr<T>>& target)
     {
         for ( int i = 0; i < manager->getNumSources(); ++i ) {
             ISourcePtr service = manager->getSource(i);
-            core::shared_ptr<T> casted = core::dynamic_pointer_cast<T>(service);
+            utils::shared_ptr<T> casted = utils::dynamic_pointer_cast<T>(service);
             if ( casted ) {
                 target.push_back(casted);
             }

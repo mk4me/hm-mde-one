@@ -40,9 +40,7 @@ public:
 private: 
 	std::map<IVisualNodePtr, QPointF> positions;
 };
-typedef core::shared_ptr<NormalState> NormalStatePtr;
-typedef core::shared_ptr<const NormalState> NormalStateConstPtr;
-
+DEFINE_SMART_POINTERS(NormalState);
 }
 
 #endif

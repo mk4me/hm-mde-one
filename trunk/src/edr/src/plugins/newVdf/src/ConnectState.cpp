@@ -85,7 +85,7 @@ bool ConnectState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 
         auto items = stateMachine->getScene()->items(e->scenePos());
         for (auto it = items.begin(); it != items.end(); ++it) {
-            IVisualPinPtr pin2 = core::dynamic_pointer_cast<IVisualPin>(model->tryGetVisualItem(*it));
+            IVisualPinPtr pin2 = utils::dynamic_pointer_cast<IVisualPin>(model->tryGetVisualItem(*it));
             
             if (pin1 && pin2) {
                 if (model->connectionPossible(pin1, pin2)) {

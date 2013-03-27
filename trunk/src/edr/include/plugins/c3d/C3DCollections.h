@@ -20,9 +20,9 @@ class PLUGINC3D_EXPORT C3DEventsCollection
 {
 public:
     //! wskaźnik na zdarzenie wczytane z pliku C3D
-    typedef core::shared_ptr<c3dlib::C3DParser::IEvent> EventPtr;
+    typedef utils::shared_ptr<c3dlib::C3DParser::IEvent> EventPtr;
     //! niemodyfikowalny wskaźnik na zdarzenie wczytane z pliku C3D
-    typedef core::shared_ptr<const c3dlib::C3DParser::IEvent> EventConstPtr;
+    typedef utils::shared_ptr<const c3dlib::C3DParser::IEvent> EventConstPtr;
     //! kolekcja zdarzeń wczytanych z pliku C3D
     typedef std::vector<EventPtr> Collection;
     //! iterator kolekcji zdarzeń wczytanych z pliku C3D
@@ -93,11 +93,11 @@ typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
 //! Kolekcja kanałów opartych o trójwymiarowy wektor
 typedef utils::DataChannelCollection<VectorChannel> VectorChannelCollection;
-typedef core::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
-typedef core::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
+typedef utils::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
+typedef utils::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
 
 //! para liczb zmiennoprzecinkowych, służąca do określenia przedziału czasowego zdarzenia
-typedef core::shared_ptr<std::pair<float, float>> FloatPairPtr;
+typedef utils::shared_ptr<std::pair<float, float>> FloatPairPtr;
 //! Metoda wydziela przedziały czasowe, dla których realizowana jest analiza
 //! \param events zdarzenia, z których beda wyciągane przedziały
 //! \param context kontekst kroku (lewy, prawy)
@@ -144,14 +144,14 @@ private:
     //! parser vsk związany z kolekcją
     kinematic::VskParserPtr vsk;
 };
-typedef core::shared_ptr<MarkerCollection> MarkerCollectionPtr;
-typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
+typedef utils::shared_ptr<MarkerCollection> MarkerCollectionPtr;
+typedef utils::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 
 //! makro ułatwia definicje dodatkowych kanałów, osobne typy ułatwiaja otrzymanie konkretnych danych z DM
 #define DEFINE_CHANNEL_COLLECTION(name)                                         \
 class PLUGINC3D_EXPORT name##Collection : public VectorChannelCollection {};				        \
-    typedef core::shared_ptr<name##Collection> name##CollectionPtr;				\
-    typedef core::shared_ptr<const name##Collection> name##CollectionConstPtr;
+    typedef utils::shared_ptr<name##Collection> name##CollectionPtr;				\
+    typedef utils::shared_ptr<const name##Collection> name##CollectionConstPtr;
 
 
 DEFINE_CHANNEL_COLLECTION(Force);

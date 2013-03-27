@@ -42,7 +42,7 @@ public:
 
 private:
 
-	typedef core::shared_ptr<DataSourcePerspective> InnerDataSourcePerspectivePtr;
+	typedef utils::shared_ptr<DataSourcePerspective> InnerDataSourcePerspectivePtr;
 
 private:
 	//! Perspektywy danych

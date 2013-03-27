@@ -18,7 +18,7 @@
 #include <utils/DataChannelAccessors.h>
 #include <utils/DataChannelTimers.h>
 #include <c3dlib/C3DParser.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <utils/PtrPolicyBoost.h>
 #include <utils/ClonePolicies.h>
 #include <corelib/BaseDataTypes.h>
@@ -40,9 +40,9 @@ typedef utils::Channel<float> ScalarChannel;
 //! interfejs umożliwiający odczyt kanału
 typedef ScalarChannel::Interface ScalarChannelReaderInterface;
 //! wkaźnik na interfejs umożliwiający odczyt kanału
-typedef core::shared_ptr<ScalarChannelReaderInterface> ScalarChannelReaderInterfacePtr;
+typedef utils::shared_ptr<ScalarChannelReaderInterface> ScalarChannelReaderInterfacePtr;
 //! wkaźnik na niemodyfikowalny interfejs umożliwiający odczyt kanału
-typedef core::shared_ptr<const ScalarChannelReaderInterface> ScalarChannelReaderInterfaceConstPtr;
+typedef utils::shared_ptr<const ScalarChannelReaderInterface> ScalarChannelReaderInterfaceConstPtr;
 
 //! kanał przechowujący wektory trójwymiarowe
 typedef utils::Channel<osg::Vec3f> VectorChannel;
@@ -53,13 +53,13 @@ typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> VectorContiniousTimeAc
 //! interfejs, dzięki któremu można zmodyfikować kanał z wektorami
 typedef utils::ChannelAutoModifier<osg::Vec3f, float> VectorModifier;
 //! wskaźnik na kanał przechowujący wektory trójwymiarowe
-typedef core::shared_ptr<VectorChannel> VectorChannelPtr;
+typedef utils::shared_ptr<VectorChannel> VectorChannelPtr;
 //! niemodyfikowalny wskaźnik na kanał przechowujący wektory trójwymiarowe
-typedef core::shared_ptr<const VectorChannel> VectorChannelConstPtr;
+typedef utils::shared_ptr<const VectorChannel> VectorChannelConstPtr;
 //! wkaźnik na interfejs umożliwiający odczyt kanału
-typedef core::shared_ptr<VectorChannelReaderInterface> VectorChannelReaderInterfacePtr;
+typedef utils::shared_ptr<VectorChannelReaderInterface> VectorChannelReaderInterfacePtr;
 //! wkaźnik na niemodyfikowalny interfejs umożliwiający odczyt kanału
-typedef core::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
+typedef utils::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
 
 //! Adaptor, dzięki któremu można obsłużyć kanał z wektorem trójwymiarowym tak jak skalarny
 class PLUGINC3D_EXPORT VectorToScalarAdaptor : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
@@ -203,15 +203,15 @@ private:
 	utils::ChannelDescriptor descriptor;
 };
 //! wskaźnik do kanału z danymi skalarnymi
-typedef core::shared_ptr<ScalarChannel> ScalarChannelPtr;
+typedef utils::shared_ptr<ScalarChannel> ScalarChannelPtr;
 //! niemodyfikowalny skaźnik do kanału z danymi skalarnymi
-typedef core::shared_ptr<const ScalarChannel> ScalarChannelConstPtr;
+typedef utils::shared_ptr<const ScalarChannel> ScalarChannelConstPtr;
 //! obiekt ze statystykami do kanału z danymi skalarnymi
 typedef utils::ChannelStats<ScalarChannel::point_type, ScalarChannel::time_type> ScalarChannelStats;
 //! wskaźnik obiektu ze statystykami do kanału z danymi skalarnymi
-typedef core::shared_ptr<ScalarChannelStats> ScalarChannelStatsPtr;
+typedef utils::shared_ptr<ScalarChannelStats> ScalarChannelStatsPtr;
 //! niemodyfikowalny wskaźnik obiektu ze statystykami do kanału z danymi skalarnymi
-typedef core::shared_ptr<const ScalarChannelStats> ScalarChannelStatsConstPtr;
+typedef utils::shared_ptr<const ScalarChannelStats> ScalarChannelStatsConstPtr;
 
 //! Modyfikator, który normalizuje kanał
 class PLUGINC3D_EXPORT ScalarChannelNormalizer
@@ -242,8 +242,8 @@ protected:
     //! \param channel kopiowany kanał
     C3DAnalogChannel( const C3DAnalogChannel& channel );
 };
-typedef core::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
-typedef core::shared_ptr<const C3DAnalogChannel> C3DAnalogChannelConstPtr;
+typedef utils::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
+typedef utils::shared_ptr<const C3DAnalogChannel> C3DAnalogChannelConstPtr;
 
 //! kanał EMG
 class PLUGINC3D_EXPORT EMGChannel : public C3DAnalogChannel
@@ -264,8 +264,8 @@ public:
     //! \return zwraca kopię obiektu, którą trzeba samemu usunąć
     virtual EMGChannel* clone() const;
 };
-typedef core::shared_ptr<EMGChannel> EMGChannelPtr;
-typedef core::shared_ptr<const EMGChannel> EMGChannelConstPtr;
+typedef utils::shared_ptr<EMGChannel> EMGChannelPtr;
+typedef utils::shared_ptr<const EMGChannel> EMGChannelConstPtr;
 
 //! kanał GRF
 class PLUGINC3D_EXPORT GRFChannel : public VectorChannel
@@ -309,8 +309,8 @@ private:
     //! koniec danych, związanych z naciskiem na płytę
     float dataEnd;
 };
-typedef core::shared_ptr<GRFChannel> GRFChannelPtr;
-typedef core::shared_ptr<const GRFChannel> GRFChannelConstPtr;
+typedef utils::shared_ptr<GRFChannel> GRFChannelPtr;
+typedef utils::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
 //! kanał zawiera dane o jednym markerze
 class PLUGINC3D_EXPORT MarkerChannel : public VectorChannel
@@ -331,8 +331,8 @@ public:
     //! \return zwraca kopię obiektu, którą trzeba samemu usunąć
     virtual MarkerChannel* clone() const;
 };
-typedef core::shared_ptr<MarkerChannel> MarkerChannelPtr;
-typedef core::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
+typedef utils::shared_ptr<MarkerChannel> MarkerChannelPtr;
+typedef utils::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 
 #define DECLARE_CHANNEL(name)																	 \
 	class PLUGINC3D_EXPORT name##Channel : public VectorChannel 								 \
@@ -348,8 +348,8 @@ typedef core::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 	public:																						 \
 		virtual name##Channel* clone() const;													 \
 	};												 											 \
-	typedef core::shared_ptr<name##Channel> name##ChannelPtr;									 \
-	typedef core::shared_ptr<const name##Channel> name##ChannelConstPtr;
+	typedef utils::shared_ptr<name##Channel> name##ChannelPtr;									 \
+	typedef utils::shared_ptr<const name##Channel> name##ChannelConstPtr;
 
 DECLARE_CHANNEL(Force);
 DECLARE_CHANNEL(Moment);

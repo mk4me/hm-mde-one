@@ -21,7 +21,7 @@ void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
     if (list.size() == 1) {
 		IVisualItemPtr item = stateMachine->getSceneModel()->tryGetVisualItem(list.first());
         if (item && item->isType(IVisualItem::Pin)) {
-            IVisualPinPtr pin = core::dynamic_pointer_cast<IVisualPin>(item);
+            IVisualPinPtr pin = utils::dynamic_pointer_cast<IVisualPin>(item);
             ConnectStatePtr connectState = stateMachine->getConnectState();
             connectState->setFirstPin(pin);
             stateMachine->setState(stateMachine->getConnectState());
@@ -77,7 +77,7 @@ bool NormalState::keyReleaseEvent( QKeyEvent *event )
 		auto selected = stateMachine->getScene()->selectedItems();
 		if (selected.size() == 1) {
 			auto item = stateMachine->getSceneModel()->tryGetVisualItem(*selected.begin());
-			auto node = core::dynamic_pointer_cast<IVisualNode>(item);
+			auto node = utils::dynamic_pointer_cast<IVisualNode>(item);
 			if (node) {
 				bool ok;
 				QString text = QInputDialog::getText(nullptr, QObject::tr("Change node name"),

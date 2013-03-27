@@ -15,8 +15,8 @@
 #include <plugins/subject/Types.h>
 
 class ISubjectHierarchyFilter;
-typedef core::shared_ptr<ISubjectHierarchyFilter> SubjectHierarchyFilterPtr;
-typedef core::shared_ptr<const ISubjectHierarchyFilter> SubjectHierarchyFilterConstPtr;
+typedef utils::shared_ptr<ISubjectHierarchyFilter> SubjectHierarchyFilterPtr;
+typedef utils::shared_ptr<const ISubjectHierarchyFilter> SubjectHierarchyFilterConstPtr;
 
 class ISubjectHierarchyFilter
 {

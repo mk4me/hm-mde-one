@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__ISOURCE_H__
 
 #include <corelib/IIdentifiable.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 class QWidget;
 
@@ -61,10 +61,7 @@ namespace plugin
 		//! \param offeredTypes Typy oferowane przez to źródło
 		virtual void getOfferedTypes(core::TypeInfoList & offeredTypes) const = 0;
     };
-
-	typedef core::shared_ptr<ISource> ISourcePtr;
-	typedef core::shared_ptr<const ISource> ISourceConstPtr;
-	typedef core::weak_ptr<ISource> ISourceWeakPtr;
+	DEFINE_SMART_POINTERS(ISource);
 
 }
 

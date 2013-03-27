@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEWVDF__SCENEBUILDER_H__
 
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <CanvasStyleEditor.h>
 #include <plugins/newVdf/IVisualNode.h>
 #include <boost/tuple/tuple.hpp>

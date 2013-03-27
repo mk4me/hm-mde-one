@@ -19,7 +19,7 @@
 #include <corelib/PluginCommon.h>
 #include <corelib/ILog.h>
 #include <corelib/IPath.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/IService.h> 
 #include <corelib/ISource.h>
 #include <corelib/IParser.h>

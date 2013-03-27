@@ -6,7 +6,7 @@
 
 void TrajectoryDrawer::init( VisualizationSchemeConstPtr scheme )
 {
-    MarkersVisualizationSchemeConstPtr markesScheme = core::dynamic_pointer_cast<const MarkersVisualizationScheme>(scheme);
+    MarkersVisualizationSchemeConstPtr markesScheme = utils::dynamic_pointer_cast<const MarkersVisualizationScheme>(scheme);
 	UTILS_ASSERT(markesScheme && markesScheme->hasData());
 	OsgSchemeDrawer::init(markesScheme);
 	node = new osg::PositionAttitudeTransform();
@@ -182,7 +182,7 @@ void TrajectoryDrawer::setTimes( const std::string& name, const std::pair<float,
 
 MarkerCollectionConstPtr TrajectoryDrawer::getMarkers() const
 {
-    MarkersVisualizationSchemeConstPtr scheme = core::dynamic_pointer_cast<const MarkersVisualizationScheme>(getVisualiztionScheme());
+    MarkersVisualizationSchemeConstPtr scheme = utils::dynamic_pointer_cast<const MarkersVisualizationScheme>(getVisualiztionScheme());
     UTILS_ASSERT(scheme && scheme->getMarkers());
     return scheme->getMarkers();
 }

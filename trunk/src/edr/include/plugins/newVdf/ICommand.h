@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEWVDF__ICOMMAND_H__
 #define HEADER_GUARD_NEWVDF__ICOMMAND_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <QtCore/QObject>
 #include <QtCore/QPointF>
 
@@ -30,8 +30,7 @@ public:
 	//! \return nazwa polecenia (dla ewentualnej reprezentacji stosu poleceñ)
 	virtual QString name() = 0; 
 };
-typedef core::shared_ptr<ICommand> ICommandPtr;
-typedef core::shared_ptr<const ICommand> ICommandConstPtr;
+DEFINE_SMART_POINTERS(ICommand);
 }
 
 #endif

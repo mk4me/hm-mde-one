@@ -16,7 +16,7 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QTextEdit>
 #include <QtCore/QDateTime>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 
 class NotesWidget : public QFrame, private Ui::NotesWidget
 {
@@ -98,7 +98,7 @@ private:
 	};
 
 	//! Agregat indeksowanych notatek
-	typedef std::map<int, core::shared_ptr<NoteData>> Notes;
+	typedef std::map<int, utils::shared_ptr<NoteData>> Notes;
 	//! Notatki wg pacjentów
 	typedef std::map<int, Notes> PatientNotes;
 
@@ -106,7 +106,7 @@ private:
 	//! ID Aktualnego pacjenta
 	int currentPatientID;
 	//! Aktualna notatka
-	core::shared_ptr<NoteData> currentNote;
+	utils::shared_ptr<NoteData> currentNote;
 	//! Notatki
 	Notes notes;
 	//! Notatki wg pacjentów

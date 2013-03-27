@@ -11,7 +11,7 @@
 #define HEADER_GUARD_CORE__MAINWINDOW_H__
 
 #include <coreui/Export.h>
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <corelib/IPlugin.h>
 #include <QtCore/QSettings>
 #include <QtGui/QMainWindow>

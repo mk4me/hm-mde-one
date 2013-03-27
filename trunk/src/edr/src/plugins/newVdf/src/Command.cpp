@@ -107,7 +107,7 @@ RemoveNodeCommand::RemoveNodeCommand(SceneModelPtr scene, IVisualNodePtr toRemov
 void RemoveNodeCommand::doIt()
 {
 	removedConnections.clear();
-	IVisualSourceNodePtr source = core::dynamic_pointer_cast<IVisualSourceNode>(item);
+	IVisualSourceNodePtr source = utils::dynamic_pointer_cast<IVisualSourceNode>(item);
 	if (source) {
 		int count = source->getNumOutputPins();
 		for (int i = 0; i < count; i++) {
@@ -117,7 +117,7 @@ void RemoveNodeCommand::doIt()
 		}
 	}
 
-	IVisualSinkNodePtr sink = core::dynamic_pointer_cast<IVisualSinkNode>(item);
+	IVisualSinkNodePtr sink = utils::dynamic_pointer_cast<IVisualSinkNode>(item);
 	if (sink) {
 		int count = sink->getNumInputPins();
 		for (int i = 0; i < count; i++) {

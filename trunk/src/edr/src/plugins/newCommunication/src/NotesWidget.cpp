@@ -83,7 +83,7 @@ void NotesWidget::addNote(int patientID, const QDateTime & created, const QStrin
 {
 	UTILS_ASSERT(patientID >= 0,"Bledny identyfikator pacjenta");
 
-	core::shared_ptr<NoteData> noteData(new NoteData());
+	utils::shared_ptr<NoteData> noteData(new NoteData());
 	noteData->title = title;
 	noteData->text = text;
 	noteData->globalID = generateNoteUniqueID();
@@ -115,7 +115,7 @@ void NotesWidget::addNote(int patientID, const QDateTime & created, const QStrin
 
 void NotesWidget::addNote(const QDateTime & created, const QString & title, const QString & text)
 {
-	core::shared_ptr<NoteData> noteData(new NoteData());
+	utils::shared_ptr<NoteData> noteData(new NoteData());
 	noteData->title = title;
 	noteData->text = text;
 	noteData->globalID = generateNoteUniqueID();

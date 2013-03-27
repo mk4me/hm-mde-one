@@ -34,10 +34,10 @@ void TrajectoriesDialog::setDrawer(OsgSchemeDrawerPtr drawer, const QString& roo
     connect(rootCheck, SIGNAL(clicked(bool)), this, SLOT(rootVisibilityChanged(bool)));
     item2Root[root] = drawer;
     
-    SchemeDrawerContainerPtr container = core::dynamic_pointer_cast<SchemeDrawerContainer>(drawer);
+    SchemeDrawerContainerPtr container = utils::dynamic_pointer_cast<SchemeDrawerContainer>(drawer);
     if (container) {
         BOOST_FOREACH (OsgSchemeDrawerPtr child, container->getDrawers()) {
-            TrajectoryDrawerPtr trajectories = core::dynamic_pointer_cast<TrajectoryDrawer>(child);
+            TrajectoryDrawerPtr trajectories = utils::dynamic_pointer_cast<TrajectoryDrawer>(child);
             if (trajectories) {
                 MarkerCollectionConstPtr markers = trajectories->getMarkers();
                 int count = markers->getNumChannels();

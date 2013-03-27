@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEWVDF__IVISUALSTRATEGY_H__
 #define HEADER_GUARD_NEWVDF__IVISUALSTRATEGY_H__
 
-#include <corelib/SmartPtr.h>
+#include <utils/SmartPtr.h>
 #include <QtCore/QRect>
 
 class QPainter;
@@ -29,9 +29,7 @@ public:
 	virtual void update() {}
 	virtual const QRectF& getRect() = 0;
 };
-typedef core::shared_ptr<IVisualStrategy> IVisualStrategyPtr;
-typedef core::shared_ptr<const IVisualStrategy> IVisualStrategyConstPtr;
-
+DEFINE_SMART_POINTERS(IVisualStrategy);
 }
 
 #endif
