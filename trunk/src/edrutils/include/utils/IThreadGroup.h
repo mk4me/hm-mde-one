@@ -14,14 +14,6 @@
 
 namespace utils {
 
-	//! Wyj¹tek rzucany gdy próbujemy uruchomiæ w¹tek po wykonaniu na nim kill
-	class KilledGroupReStartException : public KilledReStartException
-	{
-	public:
-		KilledGroupReStartException() {}
-		KilledGroupReStartException(const char * msg) : KilledReStartException(msg) {}
-	};
-
 	//! Wyj¹tek rzucany gdy próbujemy uruchomiæ w¹tek ju¿ uruchomiony
 	class RunningGroupStartException : public RunningStartException
 	{

@@ -10,6 +10,9 @@ SET_SOURCE_FILES(
 	NamedTreeBaseTest.cpp
 	SynchronizedTest.cpp
 	DataChannelTest.cpp
+	ThreadTest.cpp
+	ThreadPoolTest.cpp
+	ThreadGroupTest.cpp
 )
 
 SET_PRIVATE_HEADERS(
@@ -21,6 +24,9 @@ SET_PRIVATE_HEADERS(
 	NamedTreeBaseTest.h
 	SynchronizedTest.h
 	DataChannelTest.h
+	ThreadTest.h
+	ThreadPoolTest.h
+	ThreadGroupTest.h
 )
 
 END_PROJECT()

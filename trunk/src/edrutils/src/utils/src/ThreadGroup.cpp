@@ -28,6 +28,8 @@ private:
 	std::vector<ThreadData> threads;
 	//! Obiekt do synchronizacji stanu grupy
 	mutable QMutex synch;
+	//! Obiekt do synchronizacji stanu grupy podczas anylowania
+	mutable QMutex cancelingSynch;
 	//! Obiekt synchronizuj¹cy czekaj¹cych - join
 	mutable QMutex waitSynch;
 	//! Obiekt synchronizuj¹cy czekaj¹cych - join
@@ -40,11 +42,28 @@ private:
 	IThreadingBase::Result result_;
 	//! Grupa której funkcjonalnoœæ realizujemy
 	ThreadGroup * threadGroup;
+	//! Info czy anulujemy pozosta³e watki
+	volatile bool canceling;
+	//! Info czy wystartowano
+	volatile bool started_;
+
+private:
+
+	void init()
+	{
+		status_ = IThreadingBase::Idle;
+		result_ = IThreadingBase::FirstProcessing;
+		waitingCounter = 0;
+		canceling = false;
+		started_ = false;
+	}
 
 public:
 	ThreadGroupImpl(ThreadGroup * threadGroup, ThreadGroup::size_type size) : threadGroup(threadGroup), synch(QMutex::Recursive),
-		waitSynch(QMutex::NonRecursive), threads(size), status_(IThreadingBase::Idle), result_(IThreadingBase::FirstProcessing)
+		waitSynch(QMutex::NonRecursive), threads(size)
 	{
+		init();
+
 		//Inicjujemy w¹tki
 		for(unsigned int i = 0; i < size; ++i){
 			ThreadData td;
@@ -56,8 +75,10 @@ public:
 	}
 
 	ThreadGroupImpl(ThreadGroup * threadGroup, const std::vector<ThreadPtr> & threads) : threadGroup(threadGroup), synch(QMutex::Recursive),
-		waitSynch(QMutex::NonRecursive), status_(IThreadingBase::Idle), result_(IThreadingBase::FirstProcessing), threads(threads.size())
+		waitSynch(QMutex::NonRecursive), threads(threads.size())
 	{
+		init();
+
 		//Inicjujemy w¹tki
 		for(auto it = threads.begin(); it != threads.end(); ++it){
 			if((*it)->result() != IThreadingBase::FirstProcessing || (*it)->status() == IThreadingBase::Running){
@@ -79,18 +100,27 @@ public:
 	{
 		{
 			QMutexLocker lock(&synch);
-
-			for(auto it = threads.begin(); it != threads.end(); ++it){
-				(*it).thread->cancel();
-				(*it).thread->detach(this);
+			if(canceling == true){
+				QMutexLocker lock(&cancelingSynch);
+			}else{
+				canceling = true;
 			}
-
-			if(status_ == IThreadingBase::Running){
-				result_ = IThreadingBase::Canceled;
-			}
-
-			status_ = IThreadingBase::Killed;
 		}
+
+		for(auto it = threads.begin(); it != threads.end(); ++it){
+			(*it).thread->cancel();
+		}
+
+		for(auto it = threads.begin(); it != threads.end(); ++it){
+			result_ = (*it).thread->result();
+			if(result_ == IThreadingBase::Error || result_ == IThreadingBase::Canceled){
+				break;
+			}
+		}
+
+		std::vector<ThreadData>().swap(threads);
+
+		status_ = IThreadingBase::Killed;
 
 		try{
 			threadGroup->notify();
@@ -101,14 +131,31 @@ public:
 
 	void cancel()
 	{
-		QMutexLocker lock(&synch);
-		if(status() == IThreadingBase::Idle){
-			return;
+		{
+			QMutexLocker lock(&synch);
+			if(canceling == true || status_ == IThreadingBase::Idle || started_ == false){
+				return;
+			}
+
+			canceling = true;
+		}		
+
+		for(unsigned int i = 0; i < threads.size(); ++i){			
+			threads[i].thread->cancel();
 		}
 
-		for(auto it = threads.begin(); it != threads.end(); ++it){
-			(*it).thread->cancel();
+		result_ = IThreadingBase::Canceled;
+		status_ = IThreadingBase::Idle;
+		started_ = false;
+
+		for(unsigned int i = 0; i < threads.size(); ++i){
+			for(auto it = threads[i].observers.begin(); it != threads[i].observers.end(); ++it){
+				(*it)->update(threads[i].thread.get());
+			}
 		}
+
+		threadGroup->notify();
+		waitSynch.unlock();
 	}
 
 	void join()
@@ -117,7 +164,7 @@ public:
 		{
 			//jezeli nie mam running to join natychmiast wraca
 			QMutexLocker lock(&synch);
-			if(status_ != IThreadingBase::Running){
+			if(started_ == false){
 				return;
 			}else{
 				update = true;
@@ -147,33 +194,39 @@ public:
 		{
 			QMutexLocker lock(&synch);
 
+			if(started_ == true){
+				throw RunningGroupStartException();
+			}
+
 			if(funcs.size() != threads.size()){
 				throw std::invalid_argument("Runnables size mismatch group size");
 			}
 
-			if(status_ == IThreadingBase::Running){
-				throw RunningGroupStartException();
-			}
+			started_ = true;
 
-			//czekam az wszyscy ktozy joineli poprzednie zadanie zostana wzbudzeni
-			while(waitingCounter > 0){
-				QMutex mutex;
-				mutex.lock();
-
-				QWaitCondition waitCondition;
-				waitCondition.wait(&mutex, 100);
-
-				mutex.unlock();
-			}
-
-			startSynch.lock();
-
-			for(unsigned int i = 0; i < threads.size(); ++i){
-				threads[i].thread->start(funcs[i].priority, funcs[i].runnable);
-			}
+			waitSynch.lock();
 		}
 
-		QMutexLocker lock(&startSynch);
+		//czekam az wszyscy ktozy joineli poprzednie zadanie zostana wzbudzeni
+		while(waitingCounter > 0){
+			QMutex mutex;
+			mutex.lock();
+
+			QWaitCondition waitCondition;
+			waitCondition.wait(&mutex, 100);
+
+			mutex.unlock();
+		}
+
+		canceling = false;
+
+		startSynch.lock();
+
+		for(unsigned int i = 0; i < threads.size(); ++i){
+			threads[i].thread->start(funcs[i].runnable, funcs[i].priority);
+		}
+
+		QMutexLocker lock(&startSynch);		
 	}
 
 	const ThreadGroup::size_type size() const
@@ -188,81 +241,99 @@ public:
 
 	virtual void update(const IThreadingBase * thread)
 	{
+		QMutexLocker lock(&synch);
+
+		auto newResult = thread->result();
+		auto newStatus = thread->status();
+			
+		if(canceling == true){
+			return;
+		}
+
+		auto t = dynamic_cast<const IThread*>(thread);		
+			
+		if(newStatus == IThreadingBase::Idle && (newResult == IThreadingBase::Error || newResult == IThreadingBase::Canceled) ){
+			canceling = true;
+			cancelingSynch.lock();
+			lock.unlock();
+
+			for(unsigned int i = 0; i < threads.size(); ++i){
+				if(threads[i].thread.get() != t){
+					threads[i].thread->cancel();
+				}
+			}
+		}
+
 		bool updatePool = false;
+		bool finished = true;
+
+		for(unsigned int i = 0; i < threads.size(); ++i){
+			if(threads[i].thread->result() != IThreadingBase::Finished){
+				finished = false;
+				break;
+			}
+		}
+
+		if(finished == true){
+			updatePool = true;
+		}		
+
 		bool updateAllThreads = false;
 		unsigned int tIDX = 0;
 
-		{
-			QMutexLocker lock(&synch);
-		
-			auto newStatus = thread->status();
-			auto newResult = thread->result();
+		for(unsigned int i = 0; i < threads.size(); ++i){
+			if(threads[i].thread.get() == t){
+				tIDX = i;
+				threads[i].status = newStatus;
+				break;
+			}
+		}
 
-			auto t = dynamic_cast<const IThread*>(thread);
-
+		if(newStatus == IThreadingBase::Idle){
 			for(unsigned int i = 0; i < threads.size(); ++i){
-				if(threads[i].thread.get() == t){
-					tIDX = i;
-					threads[i].status = newStatus;
+				if(threads[i].status == IThreadingBase::Running){
+					newStatus = IThreadingBase::Running;
 					break;
 				}
 			}
+		}
 
-			if(newResult != result_){
-				result_ = newResult;
-				updatePool = true;
+		if(newStatus != status_){				
+			status_ = newStatus;
+			updatePool = true;
 
-				if(result_ == IThreadingBase::Error || result_ == IThreadingBase::Canceled){
-
-					updateAllThreads = true;
-
-					for(unsigned int i = 0; i < threads.size(); ++i){
-						if(i != tIDX){
-							threads[i].thread->detach(this);
-							threads[i].thread->cancel();
-							threads[i].thread->attach(this);
-						}
-					}
-				}
-			}
-
-			if(newStatus == IThreadingBase::Idle){
-				for(unsigned int i = 0; i < threads.size(); ++i){
-					if(threads[i].status == IThreadingBase::Running){
-						newStatus = IThreadingBase::Running;
-						break;
-					}
-				}
-			}
-
-			if(newStatus != status_){
-
-				status_ = newStatus;
-				updatePool = true;
-
-				if(status_ == IThreadingBase::Running){
-					startSynch.unlock();
-				}
+			if(status_ == IThreadingBase::Running){
+				startSynch.unlock();
+			}else if(status_ == IThreadingBase::Idle){
+				started_ = false;
+				waitSynch.unlock();
 			}
 		}
 
-		for(auto it = threads[tIDX].observers.begin(); it != threads[tIDX].observers.end(); ++it){
-			(*it)->update(thread);
+		if(newResult != result_){
+			result_ = newResult;
+			updatePool = true;
 		}
 
-		if(updateAllThreads == true){
+		if(canceling == true){
 			for(unsigned int i = 0; i < threads.size(); ++i){
-				if(i != tIDX){
-					for(auto it = threads[i].observers.begin(); it != threads[i].observers.end(); ++it){
-						(*it)->update(thread);
-					}
+				for(auto it = threads[i].observers.begin(); it != threads[i].observers.end(); ++it){
+					(*it)->update(threads[i].thread.get());
 				}
 			}
-		}
+		}else{
+			for(auto it = threads[tIDX].observers.begin(); it != threads[tIDX].observers.end(); ++it){
+				(*it)->update(thread);
+			}
+		}			
 
-		if(updatePool == true){
+		if(updatePool == true || canceling == true){
 
 			threadGroup->notify();
+		}
+
+		if(canceling == true){
+			cancelingSynch.unlock();
 		}
 	}
 

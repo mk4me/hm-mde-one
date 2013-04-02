@@ -43,8 +43,8 @@ private:
 private:
 	//! Obiekt w¹tku realizuj¹cy kolejne przetwarzania
 	boost::shared_ptr<InnerThread> thread_;
-	//! Informacja czy konieczne jest utworzenie w¹tku
-	bool mustCreate;
+	//! Czy wystartowano
+	volatile bool started_;
 	//! Aktualny priorytet w¹tku
 	Thread::Priority priority_;
 	//! Aktualny rozmiar stosu dla w¹tku - UWAGA!! Mo¿e byæ przyczyn¹ problemów z uruchomieniem w¹tku!!
@@ -59,6 +59,8 @@ private:
 	clock_t idleStartTime_;
 	//! Obiekt synchronizuj¹cy stan w¹tku
 	mutable QMutex synch;
+	//! Obiekt synchronizuj¹cy stan w¹tku
+	QMutex cancelSynch;
 	//! Obiekt synchronizuj¹cy pêtlê kolejnych wywo³añ w¹tku z nowymi zadaniami
 	mutable QMutex runnableSynch;
 	//! Obiekt na którym czekaj¹ obiekty na zakoñczenie aktualnej pracy w¹tku
@@ -82,17 +84,17 @@ private:
 			if(runnable_ != nullptr){
 				
 				//aktualizujemy status watku
-				{				
+				{
 					QMutexLocker lock(&synch);
 					status_ = IThreadingBase::Running;
 					startSynch.unlock();
-				}
 
-				//informujemy o zmianie stanu
-				try{
-					logicalThread->notify();
-				}catch(...){
+					//informujemy o zmianie stanu
+					try{
+						logicalThread->notify();
+					}catch(...){
 
+					}
 				}
 
 				//probujemy obsluzyc przetwarzanie
@@ -105,13 +107,13 @@ private:
 						idleStartTime_ = clock();
 						status_ = IThreadingBase::Idle;
 						result_ = IThreadingBase::Finished;
-					}
 
-					//notyfikujemy
-					try{
-						logicalThread->notify();
-					}catch(...){
+						//notyfikujemy
+						try{
+							logicalThread->notify();
+						}catch(...){
 
+						}
 					}
 
 				}catch(...){
@@ -121,17 +123,18 @@ private:
 						QMutexLocker lock(&synch);
 						idleStartTime_ = clock();
 						status_ = IThreadingBase::Idle;
-						result_ = IThreadingBase::Error;
-					}					
+						result_ = IThreadingBase::Error;						
 
-					//notyfikujemy
-					try{
-						logicalThread->notify();
-					}catch(...){
+						//notyfikujemy
+						try{
+							logicalThread->notify();
+						}catch(...){
 
+						}
 					}
 				}
-
+				//zezwalamy na ponowny start
+				started_ = false;
 				//zwalniamy czekajacych
 				waitSynch.unlock();
 			}
@@ -180,7 +183,9 @@ private:
 
 public:
 	//! Publiczny konstruktor
-	ThreadImpl(Thread * thread) : mustCreate(true), status_(IThreadingBase::Idle), result_(IThreadingBase::FirstProcessing), idleStartTime_(clock()), priority_(IThread::Inheritate), stackSize_(0), waitingCounter(0)
+	ThreadImpl(Thread * thread) : cancelSynch(QMutex::NonRecursive), logicalThread(thread), status_(IThreadingBase::Idle),
+		result_(IThreadingBase::FirstProcessing), idleStartTime_(clock()), priority_(IThread::Inheritate),
+		stackSize_(0), waitingCounter(0), started_(false)
 	{
 		runnableSynch.lock();
 	}
@@ -188,17 +193,15 @@ public:
 	//! Publiczny destruktor
 	~ThreadImpl()
 	{
-		{		
-			QMutexLocker lock(&synch);
-			thread_->terminate();
-			thread_->wait();
+		QMutexLocker lock(&synch);
+		thread_->terminate();
+		thread_->wait();
 
-			if(status_ == IThreadingBase::Running){
-				result_ == IThreadingBase::Canceled;
-			}
-
-			status_ = IThreadingBase::Killed;
+		if(status_ == IThreadingBase::Running){
+			result_ == IThreadingBase::Canceled;
 		}
+
+		status_ = IThreadingBase::Killed;
 
 		try{
 			logicalThread->notify();
@@ -209,28 +212,22 @@ public:
 
 	void cancel()
 	{
-		bool change = false;
-		{
-			QMutexLocker lock(&synch);
-			if(status_ == IThreadingBase::Running){
-				mustCreate = true;
-				change = true;
-				thread_->terminate();
-				status_ = IThreadingBase::Idle;
-				result_ = IThreadingBase::Canceled;
-				idleStartTime_ = clock();
-				waitSynch.unlock();
-			}
-		}
+		QMutexLocker lock(&synch);
 
-		if(change == true){
+		if(started_ == true){
+			thread_->terminate();
+			status_ = IThreadingBase::Idle;
+			result_ = IThreadingBase::Canceled;
+			idleStartTime_ = clock();
 			try{
 				logicalThread->notify();
 			}catch(...){
 
 			}
+			waitSynch.unlock();
+			started_ = false;
+			startSynch.unlock();
 		}
-
 	}
 
 	void join()
@@ -239,7 +236,7 @@ public:
 		{
 			//jezeli nie mam running to join natychmiast wraca
 			QMutexLocker lock(&synch);
-			if(status_ != IThreadingBase::Running){
+			if(started_ == false){
 				return;
 			}else{
 				update = true;
@@ -264,60 +261,61 @@ public:
 		return result_;
 	}
 
-	void start(const IThread::Priority priority, const RunnablePtr & runnable)
-	{
-		{
+	void start(const RunnablePtr & runnable, const IThread::Priority priority)
+	{		
+		{		
 			QMutexLocker lock(&synch);
 
 			// je¿eli ju¿ dzia³a to wyj¹tek
-			if(status_ == IThreadingBase::Running){
+			if(started_ == true){
 				throw RunningStartException();
 			}
 
-			//czekam az wszyscy ktozy joineli poprzednie zadanie zostana wzbudzeni
-			while(waitingCounter > 0){
-				QMutex mutex;
-				mutex.lock();
+			started_ = true;
 
-				QWaitCondition waitCondition;
-				waitCondition.wait(&mutex, 100);
-
-				mutex.unlock();
-			}
-
-			//blokujê  do momentu kiedy nie wystartuje
-			startSynch.lock();
-
-			auto iP = translateThreadPriority(priority);
-
-			// czy trzeba tworzyæ nowy w¹tek - pierwszy raz lub po cancel
-			if(mustCreate == true){
-				//czekaj na w¹tek je¿eli istnia³
-				if(thread_ != nullptr){
-					thread_->wait();
-				}
-				// utwórz nowy w¹tek
-				thread_.reset(new InnerThread(boost::bind(&ThreadImpl::innerRun, this)));
-				//inicjuj rozmiar stosu
-				thread_->setStackSize(stackSize_);
-				//startuj nowy w¹tek z zadanym priorytetem
-				thread_->start(iP);
-				// zaznacz ¿e ju¿ utworzono
-				mustCreate = false;
-			}else{
-				//mamy watek wiec zmieniamy priorytet
-				thread_->setPriority(iP);
-			}
-
-			//ustaw parametry w¹tku
-			priority_ = priority;		
-			runnable_ = runnable;
-
-			//uruchom przetwarzanie - mamy juz runnable
-			runnableSynch.unlock();
 			//zezwol na join
 			waitSynch.lock();
 		}
+
+		//czekam az wszyscy ktozy joineli poprzednie zadanie zostana wzbudzeni
+		while(waitingCounter > 0){
+			QMutex mutex;
+			mutex.lock();
+
+			QWaitCondition waitCondition;
+			waitCondition.wait(&mutex, 100);
+
+			mutex.unlock();
+		}
+
+		//blokujê  do momentu kiedy nie wystartuje
+		startSynch.lock();
+
+		auto iP = translateThreadPriority(priority);
+
+		// czy trzeba tworzyæ nowy w¹tek - pierwszy raz lub po cancel
+		if(result_ == IThreadingBase::FirstProcessing || result_ == IThreadingBase::Canceled){
+			//czekaj na w¹tek je¿eli istnia³
+			if(thread_ != nullptr){
+				thread_->wait();
+			}
+			// utwórz nowy w¹tek
+			thread_.reset(new InnerThread(boost::bind(&ThreadImpl::innerRun, this)));
+			//inicjuj rozmiar stosu
+			thread_->setStackSize(stackSize_);
+			//startuj nowy w¹tek z zadanym priorytetem
+			thread_->start(iP);
+		}else{
+			//mamy watek wiec zmieniamy priorytet
+			thread_->setPriority(iP);
+		}
+
+		//ustaw parametry w¹tku
+		priority_ = priority;		
+		runnable_ = runnable;
+
+		//uruchom przetwarzanie - mamy juz runnable
+		runnableSynch.unlock();
 		// czekaj na faktyczny start zadania
 		QMutexLocker lock(&startSynch);
 	}
@@ -352,7 +350,7 @@ public:
 	void setStackSize(IThread::size_type stackSize)
 	{
 		QMutexLocker lock(&synch);
-		if(mustCreate == false){
+		if(result_ != IThreadingBase::FirstProcessing){
 			throw std::runtime_error("Stack size can not be set while thread is running");
 		}
 
@@ -390,9 +388,9 @@ const IThreadingBase::Result Thread::result() const
 	return impl_->result();
 }
 
-void Thread::start(const Priority priority, const RunnablePtr & runnable)
+void Thread::start(const RunnablePtr & runnable, const Priority priority)
 {
-	impl_->start(priority, runnable);
+	impl_->start(runnable, priority);
 }
 
 const float Thread::idleTime() const
@@ -408,6 +406,11 @@ const IThread::Priority Thread::priority() const
 const IThread::size_type Thread::stackSize() const
 {
 	return impl_->stackSize();
+}
+
+void Thread::setStackSize(IThread::size_type stackSize)
+{
+	impl_->setStackSize(stackSize);
 }
 
 RunnableConstPtr Thread::runnable() const

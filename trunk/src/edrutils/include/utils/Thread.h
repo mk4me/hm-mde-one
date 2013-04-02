@@ -42,7 +42,7 @@ namespace utils {
 		//! Metoda uruchamia przetwarzanie przez w¹tek, rzuca wyj¹tkiem kiedy w¹tek jeszcze dzia³¹ lub zosta³ zabity
 		//! \param priority Priorytet w¹tku		
 		//! \param runnable Obiekt wykonuj¹cy pracê w w¹tku, musi byæ kopiowalny
-		virtual void start(const Priority priority, const RunnablePtr & runnable);
+		virtual void start(const RunnablePtr & runnable, const Priority priority);
 		//! \return Czas aktualnego stanu idle dla w¹tku w sekundach
 		virtual const float idleTime() const;
 		//! \return aktualny priorytet w¹tku

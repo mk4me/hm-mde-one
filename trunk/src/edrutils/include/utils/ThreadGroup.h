@@ -24,13 +24,15 @@ namespace utils {
 		//! Obiekt klasy realizuj¹cej funkcjonalnoœæ
 		boost::shared_ptr<ThreadGroupImpl> impl;
 
+	protected:
+
+		//! \param threads W¹tki wchodz¹ce w sk³ad grupy
+		ThreadGroup(const std::vector<ThreadPtr> & threads);
+
 	public:
 
 		//! \param size Rozmiar grupy/Iloœæ w¹tków w grupie
 		ThreadGroup(size_type size);
-
-		//! \param threads W¹tki wchodz¹ce w sk³ad grupy
-		ThreadGroup(const std::vector<ThreadPtr> & threads);
 
 		//! Destruktor wirtualny
 		virtual ~ThreadGroup();

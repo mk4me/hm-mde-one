@@ -58,9 +58,9 @@ private:
 			return thread->result();
 		}
 
-		virtual void start(const Priority priority, const RunnablePtr & runnable)
+		virtual void start(const RunnablePtr & runnable, const Priority priority)
 		{
-			thread->start(priority, runnable);
+			thread->start(runnable, priority);
 		}
 
 		virtual const float idleTime() const

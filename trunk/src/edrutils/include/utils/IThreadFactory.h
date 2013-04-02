@@ -13,16 +13,16 @@ namespace utils {
 
 class IThread;
 
-class IThreadFactory
-{
-public:
-
-	
-
-public:
-
-	virtual IThread * createThread(const Functor & func) = 0;	
-};
+//class IThreadFactory
+//{
+//public:
+//
+//	
+//
+//public:
+//
+//	virtual IThread * createThread(const Functor & func) = 0;	
+//};
 
 }
 

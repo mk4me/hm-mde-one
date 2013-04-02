@@ -10,7 +10,6 @@
 #define HEADER_GUARD___ITHREAD_H__
 
 #include <exception>
-#include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <utils/ObserverPattern.h>
 
@@ -89,28 +88,12 @@ public:
 	virtual const Result result() const = 0;
 };
 
-//! Wyj¹tek rzucany gdy próbujemy uruchomiæ w¹tek po wykonaniu na nim cancel
-class KilledReStartException : public std::exception
-{
-public:
-	KilledReStartException() {}
-	KilledReStartException(const char * msg) : std::exception(msg) {}
-};
-
 //! Wyj¹tek rzucany gdy próbujemy uruchomiæ w¹tek ju¿ uruchomiony
 class RunningStartException : public std::exception
 {
 public:
 	RunningStartException() {}
 	RunningStartException(const char * msg) : std::exception(msg) {}
-};
-
-//! Wyj¹tek rzucany gdy próbujemy uruchomiæ w¹tek po wykonaniu na nim cancel
-class KilledThreadReStartException : public KilledReStartException
-{
-public:
-	KilledThreadReStartException() {}
-	KilledThreadReStartException(const char * msg) : KilledReStartException(msg) {}
 };
 
 //! Wyj¹tek rzucany gdy próbujemy uruchomiæ w¹tek ju¿ uruchomiony
@@ -145,7 +128,7 @@ public:
 	//! \param priority Priorytet w¹tku
 	//! \param stackSize Rozmiar stosu dla w¹tku - jeœli zbyt du¿y w¹tek mo¿e siê nie uruchomiæ ze wzglêdu na ograniczenia systemu operacyjnego
 	//! \param runnable Obiekt wykonuj¹cy pracê w w¹tku, musi byæ kopiowalny
-	virtual void start(const Priority priority, const RunnablePtr & runnable) = 0;
+	virtual void start(const RunnablePtr & runnable, const Priority priority) = 0;
 	//! \return Czas aktualnego stanu idle dla w¹tku w sekundach
 	virtual const float idleTime() const = 0;
 	//! \return aktualny priorytet w¹tku
