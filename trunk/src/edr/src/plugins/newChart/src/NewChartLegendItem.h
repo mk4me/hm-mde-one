@@ -16,7 +16,6 @@
 
 class QCheckBox;
 class QPushButton;
-class QwtPlotItem;
 
 //! Element legendy wykresu
 class NewChartLegendItem : public QWidget

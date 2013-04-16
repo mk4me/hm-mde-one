@@ -16,6 +16,7 @@
 
 class QCheckBox;
 class QPushButton;
+class QwtPlotItem;
 
 //! Klasa zarządzająca legendą New Charta
 class NewChartLegend : public QwtLegend

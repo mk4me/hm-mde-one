@@ -174,7 +174,7 @@ QWidget* NewChartVisualizer::createWidget()
     grid->enableXMin(false);
     grid->enableYMin(false);
 
-    grid->setMajPen(QPen(Qt::gray, 0, Qt::DashLine));
+    grid->setMajorPen(QPen(Qt::gray, 0, Qt::DashLine));
     grid->attach(qwtPlot);
 
     this->currentState = picker;
@@ -365,7 +365,7 @@ void NewChartVisualizer::setActiveSerie( int idx )
         }
 
         //odznacz w legendzie
-        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(serie->curve));
+        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(serie->getCurve()));
         if(legendLabel != nullptr && legendLabel->isItemActive() == true){
             legendLabel->blockSignals(true);
             legendLabel->setItemActive(false);
@@ -392,7 +392,7 @@ void NewChartVisualizer::setActiveSerie( int idx )
         }
 
         //zaznacz w legendzie
-        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(serie->curve));
+        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(serie->getCurve()));
         if(legendLabel != nullptr && legendLabel->isItemActive() == false){
             legendLabel->blockSignals(true);
             legendLabel->setItemActive(true);
@@ -438,7 +438,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
         if (on == true) {
         
             for (unsigned int i = 0; i < series.size(); ++i) {
-                NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->curve));
+                NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->getCurve()));
                 if (series[i]->curve == curve) {
                     // powinno wywołać sygnał, który ustawi aktywną serię
                     setActiveSerie(i);
@@ -453,8 +453,8 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
                 }
             }
         }else{
-            //ignorujemy to - zawsze musi być jedna seria aktywna
-            NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(item));
+            //ignorujemy to - zawsze musi być jedna seria aktywna			
+            NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget((const QwtPlotCurve*)curve));
             if(legendLabel != nullptr && legendLabel->isItemActive() == false){
                 legendLabel->setItemActive(true);
                 legendLabel->blockSignals(false);

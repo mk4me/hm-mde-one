@@ -22,7 +22,7 @@ class TimeSliderWidget : public QwtSlider
 public:
     explicit TimeSliderWidget(QWidget *parent = nullptr,
         Qt::Orientation orientation = Qt::Horizontal,
-        ScalePosition scalePos = NoScale, BackgroundStyles bgStyle = Groove );
+        ScalePosition scalePos = NoScale );
 
     virtual ~TimeSliderWidget();
 

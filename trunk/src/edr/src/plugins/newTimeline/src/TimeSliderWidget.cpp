@@ -34,7 +34,7 @@ public:
 };
 
 TimeSliderWidget::TimeSliderWidget(QWidget *parent, Qt::Orientation orientation,
-    ScalePosition scalePos, BackgroundStyles bgStyle)
+    ScalePosition scalePos)
     //: QwtSlider(parent, orientation, scalePos, bgStyle), leftMargin(0), rightMargin(0)
 	: QwtSlider(orientation, parent), leftMargin(0), rightMargin(0)
 {
