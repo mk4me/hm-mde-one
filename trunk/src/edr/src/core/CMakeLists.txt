@@ -25,6 +25,8 @@ SET_PRIVATE_HEADERS(
 	PluginLoader.h
 	CorePCH.h
 	Plugin.h
+	ConverterManager.h
+	Converter.h
 )
 
 SET_PUBLIC_HEADERS (
@@ -32,6 +34,8 @@ SET_PUBLIC_HEADERS (
 )
 
 SET_SOURCE_FILES(
+	ConverterManager.cpp
+	Converter.cpp
 	AppInitializer.cpp
 	Path.cpp
 	Application.cpp

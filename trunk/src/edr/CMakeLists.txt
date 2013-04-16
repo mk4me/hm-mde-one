@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
-project(EDR)
 include("../../CMakeModules/Logic/ProjectUtils.cmake")
 
-INITIALIZE_SOLUTION("KINEMATICLIB;DFLIB;EIGEN3;STDINT;BTK;LOG4CXX;ZLIB;BOOST;UTILS;OSG;OPENTHREADS;OSGUI;QT;TINYXML;OPENGL;DFMLIB;VDFMLIB;C3DLIB;QWT;FFMPEG;VIDLIB;CURL;WSDLPULL;WEBSERVICESLIB;QTHTMLGENLIB;SQLCIPHER;QUAZIP;TIMELINELIB")
+INITIALIZE_SOLUTION( EDR )
 
 set(EDRUTILS_INCLUDE_ROOT "${CMAKE_SOURCE_DIR}/../edrutils/include" CACHE PATH "EDR Utils include directory")
 set(EDRUTILS_BUILD_ROOT "${PROJECT_BINARY_DIR}/../edrUtils" CACHE PATH "EDR Utils build directory")
@@ -12,11 +11,11 @@ CONFIG_OPTION(CORE_ENABLE_LOG4CXX "Enable logging?" ON)
 CONFIG_OPTION(CORE_ENABLE_LEAK_DETECTION "Enable leak detection?" OFF)
 
 # projekt zasobów
-set(PROJECT_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/resources" CACHE PATH "Location of resources being part of repository.")
-option(PROJECT_ENABLE_SVN_RESOURCES "Enable svn resources?" ON)
-if(PROJECT_ENABLE_SVN_RESOURCES)	
-	add_subdirectory(${PROJECT_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
-	install(DIRECTORY ${PROJECT_SVN_RESOURCES_ROOT}/deploy/ DESTINATION bin/resources/ COMPONENT core
+set(SOLUTION_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/resources" CACHE PATH "Location of resources being part of repository.")
+option(SOLUTION_ENABLE_SVN_RESOURCES "Enable svn resources?" ON)
+if(SOLUTION_ENABLE_SVN_RESOURCES)	
+	add_subdirectory(${SOLUTION_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
+	install(DIRECTORY ${SOLUTION_SVN_RESOURCES_ROOT}/deploy/ DESTINATION bin/resources/ COMPONENT core
 		PATTERN ".svn" EXCLUDE
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "log.ini" EXCLUDE
@@ -26,7 +25,7 @@ endif()
 #---------------------------------------------------
 # Dodatkowa konfiguracja CPack dla instalatora
 set(CPACK_INSTALLER_RESOURCES "${PROJECT_SOURCE_DIR}/../../../installer_resources" CACHE PATH "Location of installer resources.")
-set(CPACK_PROJECT_SVN_RESOURCES_ROOT ${PROJECT_SVN_RESOURCES_ROOT})
+set(CPACK_SOLUTION_SVN_RESOURCES_ROOT ${SOLUTION_SVN_RESOURCES_ROOT})
 #---------------------------------------------------
 # CPack
 set(CPACK_PACKAGE_NAME "EDR")
