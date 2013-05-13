@@ -16,4 +16,6 @@ SET_UI_FILES(
 	toolboxmaindeffile.ui
 )
 
+GENERATE_PROJECT_TRANSLATIONS()
+
 END_PROJECT()

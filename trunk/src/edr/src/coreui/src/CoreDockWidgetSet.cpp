@@ -146,5 +146,3 @@ CoreDockWidgetSet::const_range CoreDockWidgetSet::getDockWidgets() const
 {
 	return boost::make_iterator_range(widgetsList.cbegin(), widgetsList.cend());
 }
-
-

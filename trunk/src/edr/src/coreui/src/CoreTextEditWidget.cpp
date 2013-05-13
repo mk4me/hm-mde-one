@@ -76,7 +76,7 @@
 #include <QtGui/QToolButton>
 #include <corelib/PluginCommon.h>
 
-const QString rsrcPath = ":/resources/icons/textedit";
+const QString rsrcPath = ":/coreUI/icons/textedit";
 
 using namespace coreUI;
 
@@ -810,5 +810,3 @@ bool CoreTextEditWidget::tryChangeLinkToBase64( QString& result, const QString& 
         return false;
     }
 }
-
-

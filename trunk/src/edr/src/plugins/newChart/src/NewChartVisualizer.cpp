@@ -96,7 +96,7 @@ QWidget* NewChartVisualizer::createWidget()
     eventsMenu = new QComboBox();
     eventsMenu->setToolTip(tr("Events context"));
 
-    QIcon eventsIcon(":/resources/icons/normalizacja1.png");
+    QIcon eventsIcon(":/newChart/icons/normalizacja1.png");
     eventsMenu->addItem(eventsIcon, tr("None events") , QVariant(C3DEventsCollection::IEvent::General));
     eventsMenu->addItem(eventsIcon, tr("Left events") , QVariant(C3DEventsCollection::IEvent::Left));
     eventsMenu->addItem(eventsIcon, tr("Right events"), QVariant(C3DEventsCollection::IEvent::Right));
@@ -110,31 +110,31 @@ QWidget* NewChartVisualizer::createWidget()
 	picker.reset(new NewChartPicker(this));
     connect(picker.get(), SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
 
-    coreUI::CoreAction * pickerAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/resources/icons/picker.png"), tr("Picker"), widget, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction * pickerAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/newChart/icons/picker.png"), tr("Picker"), widget, coreUI::CoreTitleBar::Left);
     statesMap[pickerAction] = picker;
     connect(pickerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 	widget->addAction(pickerAction);
     
 
-    coreUI::CoreAction * valueMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/resources/icons/value_tag.png"), tr("Value Marker"), widget, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction * valueMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/newChart/icons/value_tag.png"), tr("Value Marker"), widget, coreUI::CoreTitleBar::Left);
     statesMap[valueMarkerAction] =  NewChartStatePtr(new NewChartValueMarker(this));
     connect(valueMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 	widget->addAction(valueMarkerAction);
 
 
-	coreUI::CoreAction * hMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/resources/icons/vertical_tag.png"), tr("Horizontal Marker"), widget, coreUI::CoreTitleBar::Left);
+	coreUI::CoreAction * hMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/newChart/icons/vertical_tag.png"), tr("Horizontal Marker"), widget, coreUI::CoreTitleBar::Left);
     statesMap[hMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Horizontal));
     connect(hMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 	widget->addAction(hMarkerAction);
 
 
-	coreUI::CoreAction * vMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/resources/icons/horizontal_tag.png"), tr("Vertical Marker"), widget, coreUI::CoreTitleBar::Left);
+	coreUI::CoreAction * vMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/newChart/icons/horizontal_tag.png"), tr("Vertical Marker"), widget, coreUI::CoreTitleBar::Left);
     statesMap[vMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Vertical));
     connect(vMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 	widget->addAction(vMarkerAction);
 
 
-	coreUI::CoreAction * scaleAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/resources/icons/pomiary.png"), tr("Scale to active"), widget, coreUI::CoreTitleBar::Left);
+	coreUI::CoreAction * scaleAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/newChart/icons/pomiary.png"), tr("Scale to active"), widget, coreUI::CoreTitleBar::Left);
     scaleAction->setCheckable(true);
     scaleAction->setChecked(scaleToActive);
     connect(scaleAction, SIGNAL(triggered(bool)), this, SLOT(scaleToActiveSerie(bool)));
@@ -142,8 +142,8 @@ QWidget* NewChartVisualizer::createWidget()
 
 
 	QIcon iconStats;
-	iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-a.png"), QSize(), QIcon::Normal, QIcon::Off);
-	iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-b.png"), QSize(), QIcon::Normal, QIcon::On);
+	iconStats.addFile(QString::fromUtf8(":/newChart/icons/stat-a.png"), QSize(), QIcon::Normal, QIcon::Off);
+	iconStats.addFile(QString::fromUtf8(":/newChart/icons/stat-b.png"), QSize(), QIcon::Normal, QIcon::On);
 	coreUI::CoreAction * showStats = new coreUI::CoreAction(tr("Operations"), iconStats, tr("Statistics"), widget, coreUI::CoreTitleBar::Left);
     showStats->setCheckable(true);
     showStats->setChecked(false);
@@ -225,7 +225,7 @@ QWidget* NewChartVisualizer::createWidget()
 	widget->addAction(scaleSpinYAction);
     
     
-	coreUI::CoreAction * bandsAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/resources/icons/charts.png"), tr("Bands"), widget, coreUI::CoreTitleBar::Left);
+	coreUI::CoreAction * bandsAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/newChart/icons/charts.png"), tr("Bands"), widget, coreUI::CoreTitleBar::Left);
     bandsAction->setCheckable(true);
     bandsAction->setChecked(false);
     connect(bandsAction, SIGNAL(triggered(bool)), this, SLOT(showBands(bool)));
@@ -573,7 +573,7 @@ plugin::IVisualizer* NewChartVisualizer::create() const
 
 QIcon* NewChartVisualizer::createIcon()
 {
-    return new QIcon(QString::fromUtf8(":/resources/icons/2D.png"));
+    return new QIcon(QString::fromUtf8(":/newChart/icons/2D.png"));
 }
 
 int NewChartVisualizer::getMaxDataSeries( void ) const

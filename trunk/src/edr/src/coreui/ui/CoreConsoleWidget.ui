@@ -47,7 +47,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionClear_console">
    <property name="icon">
     <iconset resource="CoreIcons.qrc">
-     <normaloff>:/resources/icons/clear_console.png</normaloff>:/resources/icons/clear_console.png</iconset>
+     <normaloff>:/coreUI/icons/clear_console.png</normaloff>:/coreUI/icons/clear_console.png</iconset>
    </property>
    <property name="text">
     <string>Clear console</string>
@@ -62,7 +62,7 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="icon">
     <iconset resource="CoreIcons.qrc">
-     <normaloff>:/resources/icons/word_wrap_16x16.png</normaloff>:/resources/icons/word_wrap_16x16.png</iconset>
+     <normaloff>:/coreUI/icons/word_wrap_16x16.png</normaloff>:/coreUI/icons/word_wrap_16x16.png</iconset>
    </property>
    <property name="text">
     <string>Toogle word wrap</string>

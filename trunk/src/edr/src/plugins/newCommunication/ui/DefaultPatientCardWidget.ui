@@ -31,7 +31,7 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
-     <item alignment="Qt::AlignVCenter">
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -62,7 +62,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -149,7 +149,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="Icons.qrc"/>
+  <include location="newCommunicationIcons.qrc"/>
  </resources>
  <connections/>
  <slots>

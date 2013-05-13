@@ -108,26 +108,26 @@ QWidget* KinematicVisualizer::createWidget()
     widget->getCamera()->setClearColor(osg::Vec4(0.0f, 0.0f, 0.1f, 1));
 
 
-	actionTrajectories = new CoreAction(tr("Properties"), QIcon(QString::fromUtf8(":/resources/icons/tracea.png")), tr("Trajectories"), widget, CoreTitleBar::Left);
+	actionTrajectories = new CoreAction(tr("Properties"), QIcon(QString::fromUtf8(":/kinematic/icons/tracea.png")), tr("Trajectories"), widget, CoreTitleBar::Left);
     actionTrajectories->setCheckable(true);
     connect(actionTrajectories, SIGNAL(triggered()), this, SLOT(showTrajectoriesDialog()));
 	widget->addAction(actionTrajectories);
 
 
-    actionScheme = new CoreAction(tr("Properties"), QIcon(QString::fromUtf8(":/resources/icons/trace-blue.png")), tr("Scheme Drawers"), widget, CoreTitleBar::Left);
+    actionScheme = new CoreAction(tr("Properties"), QIcon(QString::fromUtf8(":/kinematic/icons/trace-blue.png")), tr("Scheme Drawers"), widget, CoreTitleBar::Left);
     actionScheme->setCheckable(true);
     connect(actionScheme, SIGNAL(triggered()), this, SLOT(showSchemeDialog()));
 	widget->addAction(actionScheme);
 	
 
-    actionGhost = new CoreAction(tr("Properties"), QIcon(QString::fromUtf8(":/resources/icons/skeletal_tracea.png")), tr("Ghost"), widget, CoreTitleBar::Left);
+    actionGhost = new CoreAction(tr("Properties"), QIcon(QString::fromUtf8(":/kinematic/icons/skeletal_tracea.png")), tr("Ghost"), widget, CoreTitleBar::Left);
     actionGhost->setCheckable(true);
     actionGhost->setVisible(false);
 	connect(actionGhost, SIGNAL(triggered(bool)), this, SLOT(showGhost(bool)));
 	widget->addAction(actionGhost);
 	
 	QToolButton * viewMenuButton = new QToolButton;
-	viewMenuButton->setIcon(QIcon(QString::fromUtf8(":/resources/icons/viewa.png")));
+	viewMenuButton->setIcon(QIcon(QString::fromUtf8(":/kinematic/icons/viewa.png")));
 	viewMenuButton->setText(tr("View"));
 	viewMenuButton->setPopupMode(QToolButton::MenuButtonPopup);	
 	QMenu* viewMenu = new QMenu(tr("View"), viewMenuButton);    
@@ -190,27 +190,27 @@ QWidget* KinematicVisualizer::createWidget()
 	widget->addAction(createWidgetAction(scaleSpinWidgetZ, widget, tr("Manipulators properties"), CoreTitleBar::Left));
 
     
-    pickerAction = new CoreAction(tr("Manipulators"), QIcon(":/resources/icons/picker.png"), tr("Picker"), widget, CoreTitleBar::Left);
+    pickerAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/picker.png"), tr("Picker"), widget, CoreTitleBar::Left);
 	connect(pickerAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
 	widget->addAction(pickerAction);
 
 
-	translateAction = new CoreAction(tr("Manipulators"), QIcon(":/resources/icons/manipulator-translate.png"), tr("Translate"), widget, CoreTitleBar::Left);
+	translateAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/manipulator-translate.png"), tr("Translate"), widget, CoreTitleBar::Left);
 	connect(translateAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
 	widget->addAction(translateAction);
 
 
-	rotateAction = new CoreAction(tr("Manipulators"), QIcon(":/resources/icons/manipulator-rotate.png"), tr("Rotate"), widget, CoreTitleBar::Left);
+	rotateAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/manipulator-rotate.png"), tr("Rotate"), widget, CoreTitleBar::Left);
 	connect(rotateAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
 	widget->addAction(rotateAction);
 
 
-	scaleAction = new CoreAction(tr("Manipulators"), QIcon(":/resources/icons/manipulator-scale.png"), tr("Scale"), widget, CoreTitleBar::Left);    
+	scaleAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/manipulator-scale.png"), tr("Scale"), widget, CoreTitleBar::Left);    
     connect(scaleAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
 	widget->addAction(scaleAction);
 		
 
-    CoreAction * resetTransformAction = new CoreAction(tr("Manipulators"), QIcon(":/resources/icons/left-b.png"), tr("Reset transform"), widget, CoreTitleBar::Left);    
+    CoreAction * resetTransformAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/left-b.png"), tr("Reset transform"), widget, CoreTitleBar::Left);    
     connect(resetTransformAction, SIGNAL(triggered()), this, SLOT(resetTransform()));
 	widget->addAction(resetTransformAction);
 
@@ -327,7 +327,7 @@ osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
 
 QIcon* KinematicVisualizer::createIcon()
 {
-    return new QIcon(QString::fromUtf8(":/resources/icons/3D.png"));
+    return new QIcon(QString::fromUtf8(":/kinematic/icons/3D.png"));
 }
 
 //void KinematicVisualizer::actionTriggered( QAction* action )

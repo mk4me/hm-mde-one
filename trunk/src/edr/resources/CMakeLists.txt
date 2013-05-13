@@ -1,4 +1,4 @@
-project(Resources)
+#project(Resources)
 
 set(ALL_RESURCES)
 
@@ -57,9 +57,9 @@ source_group("embedded\\icons" FILES ${ICONS})
 set(ALL_RESURCES ${ALL_RESURCES} ${ICONS})
 
 # ikony vdf
-file(GLOB ICONSVDF RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/deploy/icons/vdf/*.png")
-source_group("deploy\\iconsvdf" FILES ${ICONSVDF})
-set(ALL_RESURCES ${ALL_RESURCES} ${ICONSVDF})
+#file(GLOB ICONSVDF RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/deploy/icons/vdf/*.png")
+#source_group("deploy\\iconsvdf" FILES ${ICONSVDF})
+#set(ALL_RESURCES ${ALL_RESURCES} ${ICONSVDF})
 
 # obrazki
 file(GLOB IMAGES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/deploy/images/*.png")

@@ -6,7 +6,6 @@
 #include <boost/bind.hpp>
 
 using namespace coreUI;
-using namespace core;
 
 Q_DECLARE_METATYPE(CoreVisualizerWidget*);
 
@@ -102,7 +101,7 @@ void CoreCompoundVisualizerWidget::init()
 	addAction(switchVisualizerAction);
 }
 
-void CoreCompoundVisualizerWidget::addVisualizer(VisualizerPtr visualizer, const QString & visualizerName)
+void CoreCompoundVisualizerWidget::addVisualizer(core::VisualizerPtr visualizer, const QString & visualizerName)
 {
 	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
 
@@ -115,7 +114,7 @@ void CoreCompoundVisualizerWidget::addVisualizer(VisualizerPtr visualizer, const
 	tryRefreshVisualizerSwitchContent();
 }
 
-void CoreCompoundVisualizerWidget::addVisualizer(const QIcon & icon, VisualizerPtr visualizer, const QString & visualizerName)
+void CoreCompoundVisualizerWidget::addVisualizer(const QIcon & icon, core::VisualizerPtr visualizer, const QString & visualizerName)
 {
 	CoreVisualizerWidget * visualizerWidget = new CoreVisualizerWidget(visualizer, this);
 	
@@ -138,12 +137,12 @@ int CoreCompoundVisualizerWidget::currentIndex() const
 	return persistentVisualizerSwitch->currentIndex();
 }
 
-VisualizerPtr CoreCompoundVisualizerWidget::currentVisualizer() const
+core::VisualizerPtr CoreCompoundVisualizerWidget::currentVisualizer() const
 {
 	CoreVisualizerWidget * currentVisWidget = currentVisualizerWidget();
 
 	if(currentVisWidget == nullptr){
-		return VisualizerPtr();
+		return core::VisualizerPtr();
 	}
 
 	return currentVisWidget->getVisualizer();

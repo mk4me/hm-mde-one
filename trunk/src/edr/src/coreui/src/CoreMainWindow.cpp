@@ -18,9 +18,8 @@ PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR
 inline void initCoreResources() { Q_INIT_RESOURCE(CoreIcons); }
 
 using namespace coreUI;
-using namespace core;
 
-void CoreMainWindow::setStyle( const Filesystem::Path& path )
+void CoreMainWindow::setStyle( const core::Filesystem::Path& path )
 {
     QFile file(QString::fromUtf8(path.string().c_str()));
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -34,7 +33,7 @@ void CoreMainWindow::setStyle( const Filesystem::Path& path )
 }
 
 
-bool CoreMainWindow::trySetStyle( const Filesystem::Path& path )
+bool CoreMainWindow::trySetStyle( const core::Filesystem::Path& path )
 {
     try {
         setStyle(path);
@@ -107,7 +106,7 @@ void CoreMainWindow::init(core::IApplication * coreApplication)
 	plugin::__coreApplication = coreApplication;
 
 	//szukaj styli qt
-	auto temp = Filesystem::listFiles(plugin::getResourcesPath() / "app_skins", true, ".qss");
+	auto temp = core::Filesystem::listFiles(plugin::getResourcesPath() / "app_skins", true, ".qss");
 	applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
 
     readSettings(QSettings(), true);
@@ -121,7 +120,7 @@ CoreMainWindow::~CoreMainWindow()
 	}
 }
 
-const Filesystem::Path & CoreMainWindow::getApplicationSkinsFilePath(int i)
+const core::Filesystem::Path & CoreMainWindow::getApplicationSkinsFilePath(int i)
 {
 	return applicationSkinsPaths[i];
 }

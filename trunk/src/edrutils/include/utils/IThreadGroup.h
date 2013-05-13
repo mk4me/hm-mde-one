@@ -38,6 +38,9 @@ namespace utils {
 		typedef Runnables::size_type size_type;
 
 	public:
+		//! Wirtualny destruktor
+		virtual ~IThreadGroup() {}
+
 		//! Metoda uruchamia przetwarzanie przez grupê
 		//! \param funcs Funktory wykonywane w grupie - ich rozmiar musi siê zgadzaæ rozmiarowi grupy, w przeciwnym wypadku dostaniemy wyj¹tek
 		virtual void start(const Runnables & funcs) = 0;

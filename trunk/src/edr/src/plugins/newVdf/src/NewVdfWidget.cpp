@@ -29,12 +29,12 @@ NewVdfWidget::NewVdfWidget(ICommandStackPtr stack, SceneModelPtr sceneModel) :
 	view = new VdfView(scene);
 
 	QToolBar* toolbar = new QToolBar("States");
-    coreUI::CoreAction*  und = new coreUI::CoreAction(tr("Edit")  , QIcon(":/resources/icons/textedit/editundo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  red = new coreUI::CoreAction(tr("Edit")  , QIcon(":/resources/icons/textedit/editredo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  mrg = new coreUI::CoreAction(tr("Misc") , QIcon(":/resources/icons/skeletal_trace.png"), tr("Merge"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  clr = new coreUI::CoreAction(tr("Clear") , QIcon(":/resources/icons/vdf/rubber.png"), tr("Scene"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  del = new coreUI::CoreAction(tr("Edit"), QIcon(":/resources/icons/x.png"), tr("Delete"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  run = new coreUI::CoreAction(tr("Run"), QIcon(":/resources/icons/videoSmall.png"), tr("Run"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  und = new coreUI::CoreAction(tr("Edit")  , QIcon(":/coreUI/icons/textedit/editundo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  red = new coreUI::CoreAction(tr("Edit")  , QIcon(":/coreUI/icons/textedit/editredo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  mrg = new coreUI::CoreAction(tr("Misc") , QIcon(":/kinematic/icons/skeletal_trace.png"), tr("Merge"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  clr = new coreUI::CoreAction(tr("Clear") , QIcon(":/newVdf/icons/rubber.png"), tr("Scene"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  del = new coreUI::CoreAction(tr("Edit"), QIcon(":/coreUI/icons/x.png"), tr("Delete"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  run = new coreUI::CoreAction(tr("Run"), QIcon(":/newVdf/icons/videoSmall.png"), tr("Run"), this, coreUI::CoreTitleBar::Left);
 
 	mrg->setEnabled(false);
 	

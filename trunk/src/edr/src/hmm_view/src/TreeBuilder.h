@@ -79,38 +79,38 @@ public:
     static QTreeWidgetItem* createPowersBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & );
 
     //! \return ikona dla gałęzi z markerami
-    static const QIcon& getMarkersIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/markerSmall.png")); return icon; }
+    static const QIcon& getMarkersIcon( )      { static QIcon icon(QString::fromUtf8(":/mde/icons/markerSmall.png")); return icon; }
     //! \return ikona dla gałęzi ze stawami
-    static const QIcon& getJointsIcon( )       { static QIcon icon(QString::fromUtf8(":/resources/icons/jointSmall.png"));  return icon; }
+    static const QIcon& getJointsIcon( )       { static QIcon icon(QString::fromUtf8(":/mde/icons/jointSmall.png"));  return icon; }
     //! \return ikona dla gałęzi z nagraniami
-    static const QIcon& getVideoIcon( )        { static QIcon icon(QString::fromUtf8(":/resources/icons/videoSmall.png"));  return icon; }
+    static const QIcon& getVideoIcon( )        { static QIcon icon(QString::fromUtf8(":/mde/icons/videoSmall.png"));  return icon; }
     //! \return ikona dla gałęzi z danymi grf
-    static const QIcon& getGRFIcon( )          { static QIcon icon(QString::fromUtf8(":/resources/icons/grfSmall.png"));    return icon; }
+    static const QIcon& getGRFIcon( )          { static QIcon icon(QString::fromUtf8(":/mde/icons/grfSmall.png"));    return icon; }
     //! \return ikona dla gałęzi z danymi emg
-    static const QIcon& getEMGIcon( )          { static QIcon icon(QString::fromUtf8(":/resources/icons/emg1Small.png"));   return icon; }
+    static const QIcon& getEMGIcon( )          { static QIcon icon(QString::fromUtf8(":/mde/icons/emg1Small.png"));   return icon; }
     //! \return ikona dla gałęzi z siłami
-    static const QIcon& getForcesIcon( )       { static QIcon icon(QString::fromUtf8(":/resources/icons/forcesSmall.png")); return icon; }
+    static const QIcon& getForcesIcon( )       { static QIcon icon(QString::fromUtf8(":/mde/icons/forcesSmall.png")); return icon; }
     //! \return ikona dla gałęzi z momentami
-    static const QIcon& getMomentsIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/momentSmall.png")); return icon; }
+    static const QIcon& getMomentsIcon( )      { static QIcon icon(QString::fromUtf8(":/mde/icons/momentSmall.png")); return icon; }
     //! \return ikona dla gałęzi z mocami
-    static const QIcon& getPowersIcon( )       { static QIcon icon(QString::fromUtf8(":/resources/icons/powerSmall.png"));  return icon; }
+    static const QIcon& getPowersIcon( )       { static QIcon icon(QString::fromUtf8(":/mde/icons/powerSmall.png"));  return icon; }
 
     //! \return ikona dla głównej gałęzi z markerami
-    static const QIcon& getRootMarkersIcon( )  { static QIcon icon(QString::fromUtf8(":/resources/icons/markerSmall.png")); return icon; }
+    static const QIcon& getRootMarkersIcon( )  { static QIcon icon(QString::fromUtf8(":/mde/icons/markerSmall.png")); return icon; }
     //! \return ikona dla głównej gałęzi ze stawami
-    static const QIcon& getRootJointsIcon( )   { static QIcon icon(QString::fromUtf8(":/resources/icons/jointSmall.png"));  return icon; }
+    static const QIcon& getRootJointsIcon( )   { static QIcon icon(QString::fromUtf8(":/mde/icons/jointSmall.png"));  return icon; }
     //! \return ikona dla głównej gałęzi z nagraniami
-    static const QIcon& getRootVideoIcon( )    { static QIcon icon(QString::fromUtf8(":/resources/icons/videoSmall.png"));  return icon; }
+    static const QIcon& getRootVideoIcon( )    { static QIcon icon(QString::fromUtf8(":/mde/icons/videoSmall.png"));  return icon; }
     //! \return ikona dla głównej gałęzi z danymi grf
-    static const QIcon& getRootGRFIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/grfSmall.png"));    return icon; }
+    static const QIcon& getRootGRFIcon( )      { static QIcon icon(QString::fromUtf8(":/mde/icons/grfSmall.png"));    return icon; }
     //! \return ikona dla głównej gałęzi z danymi emg
-    static const QIcon& getRootEMGIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/emg1Small.png"));   return icon; }
+    static const QIcon& getRootEMGIcon( )      { static QIcon icon(QString::fromUtf8(":/mde/icons/emg1Small.png"));   return icon; }
     //! \return ikona dla głównej gałęzi z siłami
-    static const QIcon& getRootForcesIcon( )   { static QIcon icon(QString::fromUtf8(":/resources/icons/forcesSmall.png")); return icon; }
+    static const QIcon& getRootForcesIcon( )   { static QIcon icon(QString::fromUtf8(":/mde/icons/forcesSmall.png")); return icon; }
     //! \return ikona dla głównej gałęzi z momentami
-    static const QIcon& getRootMomentsIcon( )  { static QIcon icon(QString::fromUtf8(":/resources/icons/momentSmall.png")); return icon; }
+    static const QIcon& getRootMomentsIcon( )  { static QIcon icon(QString::fromUtf8(":/mde/icons/momentSmall.png")); return icon; }
     //! \return ikona dla głównej gałęzi z mocami
-    static const QIcon& getRootPowersIcon( )   { static QIcon icon(QString::fromUtf8(":/resources/icons/powerSmall.png"));  return icon; }
+    static const QIcon& getRootPowersIcon( )   { static QIcon icon(QString::fromUtf8(":/mde/icons/powerSmall.png"));  return icon; }
 
     //! tworzy element drzewa z dowolnej kolekcji kanałów danych
     //! \param motion próba pomiarowa

@@ -3,72 +3,22 @@ include("../../CMakeModules/Logic/ProjectUtils.cmake")
 
 INITIALIZE_SOLUTION( EDR )
 
-set(EDRUTILS_INCLUDE_ROOT "${CMAKE_SOURCE_DIR}/../edrutils/include" CACHE PATH "EDR Utils include directory")
-set(EDRUTILS_BUILD_ROOT "${PROJECT_BINARY_DIR}/../edrUtils" CACHE PATH "EDR Utils build directory")
-
-CONFIG_OPTION(CORE_DISABLE_LOGGING "Disable logging?" OFF)
-CONFIG_OPTION(CORE_ENABLE_LOG4CXX "Enable logging?" ON)
-CONFIG_OPTION(CORE_ENABLE_LEAK_DETECTION "Enable leak detection?" OFF)
-
 # projekt zasobów
 set(SOLUTION_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/resources" CACHE PATH "Location of resources being part of repository.")
 option(SOLUTION_ENABLE_SVN_RESOURCES "Enable svn resources?" ON)
-if(SOLUTION_ENABLE_SVN_RESOURCES)	
-	add_subdirectory(${SOLUTION_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
-	install(DIRECTORY ${SOLUTION_SVN_RESOURCES_ROOT}/deploy/ DESTINATION bin/resources/ COMPONENT core
-		PATTERN ".svn" EXCLUDE
-		PATTERN "CMakeLists.txt" EXCLUDE
-		PATTERN "log.ini" EXCLUDE
-		PATTERN "*.ts" EXCLUDE)
-endif()
+# if(SOLUTION_ENABLE_SVN_RESOURCES)	
+	# add_subdirectory(${SOLUTION_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
+	# install(DIRECTORY ${SOLUTION_SVN_RESOURCES_ROOT}/deploy/ DESTINATION bin/resources/ COMPONENT resources
+		# PATTERN ".svn" EXCLUDE
+		# PATTERN "CMakeLists.txt" EXCLUDE
+		# PATTERN "log.ini" EXCLUDE
+		# PATTERN "*.ts" EXCLUDE)
+# endif()
 
 #---------------------------------------------------
 # Dodatkowa konfiguracja CPack dla instalatora
-set(CPACK_INSTALLER_RESOURCES "${PROJECT_SOURCE_DIR}/../../../installer_resources" CACHE PATH "Location of installer resources.")
+set(CPACK_INSTALLER_RESOURCES "${PROJECT_SOURCE_DIR}/../installer_resources" CACHE PATH "Location of installer resources.")
 set(CPACK_SOLUTION_SVN_RESOURCES_ROOT ${SOLUTION_SVN_RESOURCES_ROOT})
 #---------------------------------------------------
-# CPack
-set(CPACK_PACKAGE_NAME "EDR")
-set(CPACK_PACKAGE_FILE_NAME "EDR")
-set(CPACK_NSIS_DISPLAY_NAME "EDR")
-set(CPACK_NSIS_PACKAGE_NAME "EDR")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "EDR")
-set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "EDR")
-set(CPACK_COMPONENT_PLUGIN_NEWCOMMUNICATION_GROUP "Plugins")
-set(CPACK_COMPONENT_PLUGIN_SUBJECT_GROUP "Plugins")
-set(CPACK_COMPONENT_PLUGIN_VIDEO_GROUP "Plugins")
-set(CPACK_COMPONENT_PLUGIN_C3D_GROUP "Plugins")
-set(CPACK_COMPONENT_PLUGIN_NEWCHART_GROUP "Plugins")
-set(CPACK_COMPONENT_PLUGIN_NEWTIMELINE_GROUP "Plugins")
-set(CPACK_COMPONENT_PLUGIN_NEWCOMMUNICATION_DISPLAY_NAME "Communication plugin")
-set(CPACK_COMPONENT_PLUGIN_VIDEO_DISPLAY_NAME "Video plugin")
-set(CPACK_COMPONENT_PLUGIN_NEWCHART_DISPLAY_NAME "Chart plugin")
-set(CPACK_COMPONENT_PLUGIN_C3D_DISPLAY_NAME "c3d plugin")
-set(CPACK_COMPONENT_PLUGIN_NEWTIMELINE_DISPLAY_NAME "Timeline plugin")
-set(CPACK_COMPONENT_PLUGIN_SUBJECT_DISPLAY_NAME "Subject plugin")
-set(CPACK_COMPONENT_CORE_DISPLAY_NAME "Main application")
-set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Runtime libraries")
-set(CPACK_COMPONENT_CORE_REQUIRED ON)
-set(CPACK_COMPONENT_LIBRARIES_REQUIRED ON)
-set(CPACK_COMPONENTS_ALL plugin_newCommunication plugin_c3d core plugin_newChart plugin_video plugin_newTimeline plugin_kinematic plugin_subject libraries)
-option(ENABLE_CPACK "Set on to enable CPack" OFF)
-option(ENABLE_CTEST "Set on to enable CTest" OFF)
-
-if(ENABLE_CPACK) 
-	#konfigurujemy cpacka w zaleznosci od systemu operacyjnego
-	if(WIN32)
-		set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}" ${CMAKE_MODULE_PATH})
-		set(CMAKE_MODULE_PATH "${CPACK_INSTALLER_RESOURCES}" ${CMAKE_MODULE_PATH})
-	else()
-		set(CPACK_BINARY_DEB ON)
-		set(CPACK_BINARY_RPM OFF)
-		set(CPACK_BINARY_STGZ OFF)
-		set(CPACK_BINARY_TBZ2 OFF)
-		set(CPACK_BINARY_TGZ OFF)
-		set(CPACK_BINARY_TZ OFF)
-		set(CPACK_PACKAGE_CONTACT "PJWSTK")
-	endif()
-	include(CPack)
-endif(ENABLE_CPACK)
 
 FINALIZE_SOLUTION()

@@ -189,7 +189,7 @@ color: white;
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="Icons.qrc">:/resources/splashscreen/spplash.png</pixmap>
+      <pixmap>:/mde/splashscreen/spplash.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -336,7 +336,7 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources>
-  <include location="Icons.qrc"/>
+  <include location="hmmViewIcons.qrc"/>
  </resources>
  <connections/>
 </ui>

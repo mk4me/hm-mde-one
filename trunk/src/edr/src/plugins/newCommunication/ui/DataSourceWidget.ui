@@ -21,8 +21,8 @@
   </property>
   <widget class="QWidget" name="motionDataTab">
    <attribute name="icon">
-    <iconset resource="../../../core/ui/CoreIcons.qrc">
-     <normaloff>:/resources/icons/zdalne.png</normaloff>:/resources/icons/zdalne.png</iconset>
+    <iconset resource="newCommunicationIcons.qrc">
+     <normaloff>:/newCommunication/icons/zdalne.png</normaloff>:/newCommunication/icons/zdalne.png</iconset>
    </attribute>
    <attribute name="title">
     <string>Motion Data</string>
@@ -109,8 +109,8 @@
   </widget>
   <widget class="QWidget" name="userDataTab">
    <attribute name="icon">
-    <iconset resource="newCommunicationIcons.qrc">
-     <normaloff>:/resources/icons/osobowe.png</normaloff>:/resources/icons/osobowe.png</iconset>
+    <iconset>
+     <normaloff>:/newCommunication/icons/osobowe.png</normaloff>:/newCommunication/icons/osobowe.png</iconset>
    </attribute>
    <attribute name="title">
     <string>User Data</string>
@@ -118,8 +118,8 @@
   </widget>
   <widget class="QWidget" name="configTab">
    <attribute name="icon">
-    <iconset resource="../../../hmm_view/ui/hmmViewIcons.qrc">
-     <normaloff>:/resources/icons/OperacjeP.png</normaloff>:/resources/icons/OperacjeP.png</iconset>
+    <iconset>
+     <normaloff>:/newCommunication/icons/OperacjeP.png</normaloff>:/newCommunication/icons/OperacjeP.png</iconset>
    </attribute>
    <attribute name="title">
     <string>Configuration</string>
@@ -606,8 +606,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>245</width>
-            <height>192</height>
+            <width>108</width>
+            <height>77</height>
            </rect>
           </property>
           <attribute name="label">
@@ -699,7 +699,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="../../../core/ui/CoreIcons.qrc"/>
+  <include location="../../../coreui/ui/CoreIcons.qrc"/>
   <include location="newCommunicationIcons.qrc"/>
   <include location="../../../hmm_view/ui/hmmViewIcons.qrc"/>
  </resources>

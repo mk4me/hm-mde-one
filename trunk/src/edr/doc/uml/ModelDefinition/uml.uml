@@ -16825,22 +16825,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="59fd9c37-36c0-4b44-83dd-a8d7882773f4"
-            name="MessageOccurrenceSpecification1">
-            <covered>
-              <lifelineMoniker
-                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="e83c3177-162d-48c6-939c-5741ab74306b"
             name="MessageOccurrenceSpecification2">
             <covered>
               <lifelineMoniker
                 Id="e5963476-2d97-434c-ae57-346923afbf8f"
                 LastKnownName="PluginLoader"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="59fd9c37-36c0-4b44-83dd-a8d7882773f4"
+            name="MessageOccurrenceSpecification1">
+            <covered>
+              <lifelineMoniker
+                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
+                LastKnownName="EDR"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -16895,16 +16895,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="c336ed1d-1b2a-4dd4-8bdf-77d9cb9eecc0"
-            name="MessageOccurrenceSpecification53">
-            <covered>
-              <lifelineMoniker
-                Id="e5963476-2d97-434c-ae57-346923afbf8f"
-                LastKnownName="PluginLoader"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="a248b374-a9a8-4c58-b1f6-6dc9e4ff05da"
             name="MessageOccurrenceSpecification54">
             <covered>
@@ -16915,12 +16905,12 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="a6e1530b-5597-4f5d-8504-a055708425d5"
-            name="MessageOccurrenceSpecification55">
+            Id="c336ed1d-1b2a-4dd4-8bdf-77d9cb9eecc0"
+            name="MessageOccurrenceSpecification53">
             <covered>
               <lifelineMoniker
-                Id="a15a2875-fb23-4b7f-b659-d0a862c30271"
-                LastKnownName="core::IPath"
+                Id="e5963476-2d97-434c-ae57-346923afbf8f"
+                LastKnownName="PluginLoader"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -16931,6 +16921,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="e5963476-2d97-434c-ae57-346923afbf8f"
                 LastKnownName="PluginLoader"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="a6e1530b-5597-4f5d-8504-a055708425d5"
+            name="MessageOccurrenceSpecification55">
+            <covered>
+              <lifelineMoniker
+                Id="a15a2875-fb23-4b7f-b659-d0a862c30271"
+                LastKnownName="core::IPath"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -16953,22 +16953,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="a566b490-09f5-4428-8c72-3d2f9ebf8335"
-            name="MessageOccurrenceSpecification4">
-            <covered>
-              <lifelineMoniker
-                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="d4e30b6f-9cf0-4245-a3e0-28d4126b178b"
             name="MessageOccurrenceSpecification3">
             <covered>
               <lifelineMoniker
                 Id="e5963476-2d97-434c-ae57-346923afbf8f"
                 LastKnownName="PluginLoader"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="a566b490-09f5-4428-8c72-3d2f9ebf8335"
+            name="MessageOccurrenceSpecification4">
+            <covered>
+              <lifelineMoniker
+                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
+                LastKnownName="EDR"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -17053,22 +17053,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="9ac31cc0-64ca-4d91-8971-b529d2ccb7e7"
-            name="MessageOccurrenceSpecification6">
-            <covered>
-              <lifelineMoniker
-                Id="e5963476-2d97-434c-ae57-346923afbf8f"
-                LastKnownName="PluginLoader"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="2bf13967-026f-445d-b708-5bab526c5b54"
             name="MessageOccurrenceSpecification5">
             <covered>
               <lifelineMoniker
                 Id="e641334f-d894-4a8f-a51b-cc36747cd265"
                 LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="9ac31cc0-64ca-4d91-8971-b529d2ccb7e7"
+            name="MessageOccurrenceSpecification6">
+            <covered>
+              <lifelineMoniker
+                Id="e5963476-2d97-434c-ae57-346923afbf8f"
+                LastKnownName="PluginLoader"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -17925,22 +17925,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="2032bf77-8b8d-4636-8d4c-83978eeea63b"
-            name="MessageOccurrenceSpecification7">
-            <covered>
-              <lifelineMoniker
-                Id="e5963476-2d97-434c-ae57-346923afbf8f"
-                LastKnownName="PluginLoader"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="48199ddc-7e3f-467a-a464-5b31fb0da2b9"
             name="MessageOccurrenceSpecification8">
             <covered>
               <lifelineMoniker
                 Id="e641334f-d894-4a8f-a51b-cc36747cd265"
                 LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="2032bf77-8b8d-4636-8d4c-83978eeea63b"
+            name="MessageOccurrenceSpecification7">
+            <covered>
+              <lifelineMoniker
+                Id="e5963476-2d97-434c-ae57-346923afbf8f"
+                LastKnownName="PluginLoader"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -18103,16 +18103,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="ac9d2555-8fa5-4ff6-8a9e-959273ce71fb"
-            name="MessageOccurrenceSpecification30">
-            <covered>
-              <lifelineMoniker
-                Id="e5963476-2d97-434c-ae57-346923afbf8f"
-                LastKnownName="PluginLoader"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="34a161a5-a861-4bc2-a7ab-c82f74241104"
             name="MessageOccurrenceSpecification29">
             <covered>
@@ -18123,12 +18113,12 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="bb005cf6-6557-4aef-8c03-34cd8511977e"
-            name="MessageOccurrenceSpecification32">
+            Id="ac9d2555-8fa5-4ff6-8a9e-959273ce71fb"
+            name="MessageOccurrenceSpecification30">
             <covered>
               <lifelineMoniker
-                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
-                LastKnownName="EDR"
+                Id="e5963476-2d97-434c-ae57-346923afbf8f"
+                LastKnownName="PluginLoader"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -18139,6 +18129,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="e5963476-2d97-434c-ae57-346923afbf8f"
                 LastKnownName="PluginLoader"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="bb005cf6-6557-4aef-8c03-34cd8511977e"
+            name="MessageOccurrenceSpecification32">
+            <covered>
+              <lifelineMoniker
+                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
+                LastKnownName="EDR"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -18211,16 +18211,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="9a3c85a4-11d0-4dd0-9bc2-227a79dba5ff"
-            name="MessageOccurrenceSpecification38">
-            <covered>
-              <lifelineMoniker
-                Id="d2d8e604-1e0e-4722-9c36-d64443f76dba"
-                LastKnownName="core::Plugin"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="84077ad0-e778-4b0e-a44b-4e23e0d9d545"
             name="MessageOccurrenceSpecification37">
             <covered>
@@ -18231,8 +18221,8 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="a8c2df4d-b226-4518-83a5-4ab3e387b75a"
-            name="MessageOccurrenceSpecification39">
+            Id="9a3c85a4-11d0-4dd0-9bc2-227a79dba5ff"
+            name="MessageOccurrenceSpecification38">
             <covered>
               <lifelineMoniker
                 Id="d2d8e604-1e0e-4722-9c36-d64443f76dba"
@@ -18247,6 +18237,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="e641334f-d894-4a8f-a51b-cc36747cd265"
                 LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="a8c2df4d-b226-4518-83a5-4ab3e387b75a"
+            name="MessageOccurrenceSpecification39">
+            <covered>
+              <lifelineMoniker
+                Id="d2d8e604-1e0e-4722-9c36-d64443f76dba"
+                LastKnownName="core::Plugin"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -18331,22 +18331,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="89553ebb-dd97-4a0c-bffb-3ea1bb97710f"
-            name="MessageOccurrenceSpecification41">
-            <covered>
-              <lifelineMoniker
-                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="bcc47b4a-831f-43ba-b423-b8d33fed1882"
             name="MessageOccurrenceSpecification42">
             <covered>
               <lifelineMoniker
                 Id="33224348-3c11-4611-96cf-81dbe2fb1915"
                 LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="89553ebb-dd97-4a0c-bffb-3ea1bb97710f"
+            name="MessageOccurrenceSpecification41">
+            <covered>
+              <lifelineMoniker
+                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
+                LastKnownName="EDR"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -18627,22 +18627,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="0530dbb2-5db2-4b65-8531-6f395788eb2d"
-            name="MessageOccurrenceSpecification44">
-            <covered>
-              <lifelineMoniker
-                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="d02d9cbb-4cfc-465c-bfe1-368cf1e24ba0"
             name="MessageOccurrenceSpecification43">
             <covered>
               <lifelineMoniker
                 Id="33224348-3c11-4611-96cf-81dbe2fb1915"
                 LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0530dbb2-5db2-4b65-8531-6f395788eb2d"
+            name="MessageOccurrenceSpecification44">
+            <covered>
+              <lifelineMoniker
+                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
+                LastKnownName="EDR"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -18823,16 +18823,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="02772f55-962e-4bce-955c-ffde7665b981"
-            name="MessageOccurrenceSpecification66">
-            <covered>
-              <lifelineMoniker
-                Id="e5963476-2d97-434c-ae57-346923afbf8f"
-                LastKnownName="PluginLoader"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="ab834b36-df05-4636-9208-039b9719068b"
             name="MessageOccurrenceSpecification65">
             <covered>
@@ -18843,8 +18833,8 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="04723706-060c-4cbf-8934-506ec0c8a82f"
-            name="MessageOccurrenceSpecification67">
+            Id="02772f55-962e-4bce-955c-ffde7665b981"
+            name="MessageOccurrenceSpecification66">
             <covered>
               <lifelineMoniker
                 Id="e5963476-2d97-434c-ae57-346923afbf8f"
@@ -18859,6 +18849,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="e641334f-d894-4a8f-a51b-cc36747cd265"
                 LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="04723706-060c-4cbf-8934-506ec0c8a82f"
+            name="MessageOccurrenceSpecification67">
+            <covered>
+              <lifelineMoniker
+                Id="e5963476-2d97-434c-ae57-346923afbf8f"
+                LastKnownName="PluginLoader"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -18931,16 +18931,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="ff0224c0-919d-4eb9-90f3-d9af9554fdda"
-            name="MessageOccurrenceSpecification70">
-            <covered>
-              <lifelineMoniker
-                Id="d2d8e604-1e0e-4722-9c36-d64443f76dba"
-                LastKnownName="core::Plugin"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="0f5f28fd-3d88-4d44-84f9-167a2c9f28f8"
             name="MessageOccurrenceSpecification69">
             <covered>
@@ -18951,8 +18941,8 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="2b74b144-f184-42ef-bac1-7d544279c90f"
-            name="MessageOccurrenceSpecification71">
+            Id="ff0224c0-919d-4eb9-90f3-d9af9554fdda"
+            name="MessageOccurrenceSpecification70">
             <covered>
               <lifelineMoniker
                 Id="d2d8e604-1e0e-4722-9c36-d64443f76dba"
@@ -18967,6 +18957,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="e641334f-d894-4a8f-a51b-cc36747cd265"
                 LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="2b74b144-f184-42ef-bac1-7d544279c90f"
+            name="MessageOccurrenceSpecification71">
+            <covered>
+              <lifelineMoniker
+                Id="d2d8e604-1e0e-4722-9c36-d64443f76dba"
+                LastKnownName="core::Plugin"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -19059,22 +19059,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="4e78f17c-947b-4bf5-abd4-68846088c358"
-            name="MessageOccurrenceSpecification74">
-            <covered>
-              <lifelineMoniker
-                Id="00bbd5c2-c61d-4d2b-a938-2e6f1dc05644"
-                LastKnownName="ServiceManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="42b4bf6e-064b-4140-b214-0606b4005372"
             name="MessageOccurrenceSpecification73">
             <covered>
               <lifelineMoniker
                 Id="e641334f-d894-4a8f-a51b-cc36747cd265"
                 LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="4e78f17c-947b-4bf5-abd4-68846088c358"
+            name="MessageOccurrenceSpecification74">
+            <covered>
+              <lifelineMoniker
+                Id="00bbd5c2-c61d-4d2b-a938-2e6f1dc05644"
+                LastKnownName="ServiceManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -19129,16 +19129,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="2de16ed7-a248-445e-8e26-bbf8ddc2d1bc"
-            name="MessageOccurrenceSpecification78">
-            <covered>
-              <lifelineMoniker
-                Id="cad1486f-c7dd-43e6-b391-dd5b8879279b"
-                LastKnownName="IService"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="0adb4c80-1e86-4ff2-bbbc-900492e3d205"
             name="MessageOccurrenceSpecification77">
             <covered>
@@ -19149,8 +19139,8 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="e6d5cc9c-5521-4bca-a05f-8d3debe6ddfb"
-            name="MessageOccurrenceSpecification79">
+            Id="2de16ed7-a248-445e-8e26-bbf8ddc2d1bc"
+            name="MessageOccurrenceSpecification78">
             <covered>
               <lifelineMoniker
                 Id="cad1486f-c7dd-43e6-b391-dd5b8879279b"
@@ -19165,6 +19155,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="00bbd5c2-c61d-4d2b-a938-2e6f1dc05644"
                 LastKnownName="ServiceManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="e6d5cc9c-5521-4bca-a05f-8d3debe6ddfb"
+            name="MessageOccurrenceSpecification79">
+            <covered>
+              <lifelineMoniker
+                Id="cad1486f-c7dd-43e6-b391-dd5b8879279b"
+                LastKnownName="IService"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -19367,22 +19367,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="e81c873c-cc49-46d2-b4e9-76498421ac3c"
-            name="MessageOccurrenceSpecification76">
-            <covered>
-              <lifelineMoniker
-                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="d588cad5-11e2-4a31-b8ba-6e6b3320285b"
             name="MessageOccurrenceSpecification75">
             <covered>
               <lifelineMoniker
                 Id="00bbd5c2-c61d-4d2b-a938-2e6f1dc05644"
                 LastKnownName="ServiceManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="e81c873c-cc49-46d2-b4e9-76498421ac3c"
+            name="MessageOccurrenceSpecification76">
+            <covered>
+              <lifelineMoniker
+                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
+                LastKnownName="EDR"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -19473,16 +19473,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="15894365-f98f-4871-b494-a92432cbcf2f"
-            name="MessageOccurrenceSpecification91">
-            <covered>
-              <lifelineMoniker
-                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="aa68854d-9bf6-4639-b005-13dbd429e7b0"
             name="MessageOccurrenceSpecification92">
             <covered>
@@ -19493,12 +19483,12 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="f2219649-6e4f-42fd-9c14-52191ecc1834"
-            name="MessageOccurrenceSpecification93">
+            Id="15894365-f98f-4871-b494-a92432cbcf2f"
+            name="MessageOccurrenceSpecification91">
             <covered>
               <lifelineMoniker
-                Id="00bbd5c2-c61d-4d2b-a938-2e6f1dc05644"
-                LastKnownName="ServiceManager"
+                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
+                LastKnownName="EDR"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -19509,6 +19499,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="e641334f-d894-4a8f-a51b-cc36747cd265"
                 LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="f2219649-6e4f-42fd-9c14-52191ecc1834"
+            name="MessageOccurrenceSpecification93">
+            <covered>
+              <lifelineMoniker
+                Id="00bbd5c2-c61d-4d2b-a938-2e6f1dc05644"
+                LastKnownName="ServiceManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -19665,16 +19665,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="50bfeebd-15ae-430e-8e2c-b51bb5fa5979"
-            name="MessageOccurrenceSpecification99">
-            <covered>
-              <lifelineMoniker
-                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="dc6dd753-cc6b-4b86-b185-67af2032e780"
             name="MessageOccurrenceSpecification100">
             <covered>
@@ -19685,12 +19675,12 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="e1bbafe6-8a68-46c6-83b6-976ca873c26c"
-            name="MessageOccurrenceSpecification101">
+            Id="50bfeebd-15ae-430e-8e2c-b51bb5fa5979"
+            name="MessageOccurrenceSpecification99">
             <covered>
               <lifelineMoniker
-                Id="00bbd5c2-c61d-4d2b-a938-2e6f1dc05644"
-                LastKnownName="ServiceManager"
+                Id="e641334f-d894-4a8f-a51b-cc36747cd265"
+                LastKnownName="EDR"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -19701,6 +19691,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="e641334f-d894-4a8f-a51b-cc36747cd265"
                 LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="e1bbafe6-8a68-46c6-83b6-976ca873c26c"
+            name="MessageOccurrenceSpecification101">
+            <covered>
+              <lifelineMoniker
+                Id="00bbd5c2-c61d-4d2b-a938-2e6f1dc05644"
+                LastKnownName="ServiceManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -21492,16 +21492,6 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="c75355d1-8382-4efd-9b36-a17df309e3f7"
-            name="MessageOccurrenceSpecification33">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="66b2a557-3adf-410a-a990-a6034daf1690"
             name="MessageOccurrenceSpecification34">
             <covered>
@@ -21512,8 +21502,8 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="0e601498-a5e1-477a-899b-964a4b4bc992"
-            name="MessageOccurrenceSpecification36">
+            Id="c75355d1-8382-4efd-9b36-a17df309e3f7"
+            name="MessageOccurrenceSpecification33">
             <covered>
               <lifelineMoniker
                 Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
@@ -21528,6 +21518,16 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
               <lifelineMoniker
                 Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
                 LastKnownName="ObjectWrapper"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0e601498-a5e1-477a-899b-964a4b4bc992"
+            name="MessageOccurrenceSpecification36">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -21600,16 +21600,6 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="37136c46-8ac8-4b11-897c-f1e018af5075"
-            name="MessageOccurrenceSpecification37">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="20d66d4e-de4a-4e8c-9148-e5e704869d16"
             name="MessageOccurrenceSpecification38">
             <covered>
@@ -21620,12 +21610,12 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="baab7597-b384-40d7-972f-d066c3222a04"
-            name="MessageOccurrenceSpecification39">
+            Id="37136c46-8ac8-4b11-897c-f1e018af5075"
+            name="MessageOccurrenceSpecification37">
             <covered>
               <lifelineMoniker
-                Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
-                LastKnownName="ObjectWrapper"
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -21636,6 +21626,16 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
               <lifelineMoniker
                 Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
                 LastKnownName="User"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="baab7597-b384-40d7-972f-d066c3222a04"
+            name="MessageOccurrenceSpecification39">
+            <covered>
+              <lifelineMoniker
+                Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
+                LastKnownName="ObjectWrapper"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -21728,22 +21728,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="dd7149f3-eb4a-450d-a3c9-19912a75ff6e"
-            name="MessageOccurrenceSpecification4">
-            <covered>
-              <lifelineMoniker
-                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
-                LastKnownName="IMemoryManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="ce0df9cf-417c-4bb8-9aee-c62ddb47ba06"
             name="MessageOccurrenceSpecification3">
             <covered>
               <lifelineMoniker
                 Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
                 LastKnownName="User"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="dd7149f3-eb4a-450d-a3c9-19912a75ff6e"
+            name="MessageOccurrenceSpecification4">
+            <covered>
+              <lifelineMoniker
+                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
+                LastKnownName="IMemoryManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -21834,22 +21834,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="7720bf85-af66-4a1c-8748-096b4f4b6324"
-            name="MessageOccurrenceSpecification7">
-            <covered>
-              <lifelineMoniker
-                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
-                LastKnownName="IMemoryManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="d79933e9-7833-4030-96a6-4b26061eb72a"
             name="MessageOccurrenceSpecification8">
             <covered>
               <lifelineMoniker
                 Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
                 LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="7720bf85-af66-4a1c-8748-096b4f4b6324"
+            name="MessageOccurrenceSpecification7">
+            <covered>
+              <lifelineMoniker
+                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
+                LastKnownName="IMemoryManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -22202,22 +22202,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="2831757f-2d18-455a-af86-06e1f347da69"
-            name="MessageOccurrenceSpecification9">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="3ca05477-53d1-4f06-9f82-3a3ab8e262df"
             name="MessageOccurrenceSpecification10">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="2831757f-2d18-455a-af86-06e1f347da69"
+            name="MessageOccurrenceSpecification9">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -22364,16 +22364,6 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="9e8335de-8738-4066-b90b-cf2381cabc1a"
-            name="MessageOccurrenceSpecification199">
-            <covered>
-              <lifelineMoniker
-                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
-                LastKnownName="IMemoryManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="d7b714cf-4453-4c90-b875-2f02a34b9ca4"
             name="MessageOccurrenceSpecification200">
             <covered>
@@ -22384,12 +22374,12 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="fc927566-d46e-4bb1-88cc-79a7aff1511e"
-            name="MessageOccurrenceSpecification201">
+            Id="9e8335de-8738-4066-b90b-cf2381cabc1a"
+            name="MessageOccurrenceSpecification199">
             <covered>
               <lifelineMoniker
-                Id="bd196462-b98c-4633-b233-66ddc22b8831"
-                LastKnownName="core::ObjectWrapperObserver"
+                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
+                LastKnownName="IMemoryManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -22400,6 +22390,16 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="fc927566-d46e-4bb1-88cc-79a7aff1511e"
+            name="MessageOccurrenceSpecification201">
+            <covered>
+              <lifelineMoniker
+                Id="bd196462-b98c-4633-b233-66ddc22b8831"
+                LastKnownName="core::ObjectWrapperObserver"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -22440,22 +22440,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="92d09bf6-572d-4c29-8f3b-f401846f69c2"
-            name="MessageOccurrenceSpecification6">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="73ad77a5-6574-4ea4-a1b9-e93a9e14e0ba"
             name="MessageOccurrenceSpecification5">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="92d09bf6-572d-4c29-8f3b-f401846f69c2"
+            name="MessageOccurrenceSpecification6">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -22536,22 +22536,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="498f1088-2e08-4fce-bcee-4514dfa87c1a"
-            name="MessageOccurrenceSpecification187">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="6aab8e49-2bc1-4d87-a6c7-d0ba61ffd8e7"
             name="MessageOccurrenceSpecification188">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="498f1088-2e08-4fce-bcee-4514dfa87c1a"
+            name="MessageOccurrenceSpecification187">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -22618,22 +22618,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="d7dd8557-b201-457d-92c2-76991e5580d0"
-            name="MessageOccurrenceSpecification192">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="be19d657-5a84-4a18-8f47-63be534a1144"
             name="MessageOccurrenceSpecification191">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="d7dd8557-b201-457d-92c2-76991e5580d0"
+            name="MessageOccurrenceSpecification192">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -22818,22 +22818,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="b21d2c12-3097-4695-9f9d-8c6610eb393e"
-            name="MessageOccurrenceSpecification193">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="23abb514-b9fd-4700-9361-3b48fac28052"
             name="MessageOccurrenceSpecification194">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="b21d2c12-3097-4695-9f9d-8c6610eb393e"
+            name="MessageOccurrenceSpecification193">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -22856,22 +22856,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="dbb7dbba-ac1b-451e-b2be-0fddcb881497"
-            name="MessageOccurrenceSpecification190">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="bca3c5ee-2c3e-470d-b0c0-3d4fb89d84c6"
             name="MessageOccurrenceSpecification189">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="dbb7dbba-ac1b-451e-b2be-0fddcb881497"
+            name="MessageOccurrenceSpecification190">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -22952,22 +22952,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="2beceaf8-2165-46e6-b33f-9852cd5d4b42"
-            name="MessageOccurrenceSpecification19">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="d3fe5c8d-e3fd-4430-990f-9999918ec52e"
             name="MessageOccurrenceSpecification20">
             <covered>
               <lifelineMoniker
                 Id="dd9520b7-34b5-486f-9dc3-76c0a6f4747c"
                 LastKnownName="IDataManagerReader"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="2beceaf8-2165-46e6-b33f-9852cd5d4b42"
+            name="MessageOccurrenceSpecification19">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -23058,22 +23058,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="ba942fd5-848f-4d9c-bab7-21b006c14614"
-            name="MessageOccurrenceSpecification24">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="31190604-f059-4a09-96ab-ec7e181676bb"
             name="MessageOccurrenceSpecification23">
             <covered>
               <lifelineMoniker
                 Id="dd9520b7-34b5-486f-9dc3-76c0a6f4747c"
                 LastKnownName="IDataManagerReader"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="ba942fd5-848f-4d9c-bab7-21b006c14614"
+            name="MessageOccurrenceSpecification24">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -23426,22 +23426,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="3c2aee01-b27b-4020-bb63-2f354f4c47b8"
-            name="MessageOccurrenceSpecification25">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="779537c4-676b-467b-a3ea-c8ffc35e7f70"
             name="MessageOccurrenceSpecification26">
             <covered>
               <lifelineMoniker
                 Id="dd9520b7-34b5-486f-9dc3-76c0a6f4747c"
                 LastKnownName="IDataManagerReader"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="3c2aee01-b27b-4020-bb63-2f354f4c47b8"
+            name="MessageOccurrenceSpecification25">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -23464,22 +23464,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="e1b879ba-0051-404d-b72c-50ee136e7b17"
-            name="MessageOccurrenceSpecification21">
-            <covered>
-              <lifelineMoniker
-                Id="dd9520b7-34b5-486f-9dc3-76c0a6f4747c"
-                LastKnownName="IDataManagerReader"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="efee159e-0508-4188-bec9-bd6ebb1bbe45"
             name="MessageOccurrenceSpecification22">
             <covered>
               <lifelineMoniker
                 Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
                 LastKnownName="User"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="e1b879ba-0051-404d-b72c-50ee136e7b17"
+            name="MessageOccurrenceSpecification21">
+            <covered>
+              <lifelineMoniker
+                Id="dd9520b7-34b5-486f-9dc3-76c0a6f4747c"
+                LastKnownName="IDataManagerReader"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -23576,22 +23576,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="3e710829-ddad-4595-a08a-9c4abab7676b"
-            name="MessageOccurrenceSpecification47">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="ce64aa33-cd73-4bb3-b920-06122d2682a6"
             name="MessageOccurrenceSpecification48">
             <covered>
               <lifelineMoniker
                 Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
                 LastKnownName="ObjectWrapper"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="3e710829-ddad-4595-a08a-9c4abab7676b"
+            name="MessageOccurrenceSpecification47">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -23976,22 +23976,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="b2e5ee35-df24-4953-beb4-7d044f20d2d7"
-            name="MessageOccurrenceSpecification63">
-            <covered>
-              <lifelineMoniker
-                Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
-                LastKnownName="ObjectWrapper"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="4a5ab7ad-e986-43c2-b4b5-76a89832b026"
             name="MessageOccurrenceSpecification64">
             <covered>
               <lifelineMoniker
                 Id="e31eea4f-1229-4767-9966-1f714d83365c"
                 LastKnownName="LazyInitializer"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="b2e5ee35-df24-4953-beb4-7d044f20d2d7"
+            name="MessageOccurrenceSpecification63">
+            <covered>
+              <lifelineMoniker
+                Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
+                LastKnownName="ObjectWrapper"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24058,22 +24058,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="0a962d06-9042-4873-be6b-7da0b1ede249"
-            name="MessageOccurrenceSpecification80">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="6f9071b7-d957-4b25-86a9-2a59154ab6d9"
             name="MessageOccurrenceSpecification79">
             <covered>
               <lifelineMoniker
                 Id="e31eea4f-1229-4767-9966-1f714d83365c"
                 LastKnownName="LazyInitializer"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0a962d06-9042-4873-be6b-7da0b1ede249"
+            name="MessageOccurrenceSpecification80">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24214,16 +24214,6 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="e96cadd8-4555-4c32-8585-3fa806a4fa1f"
-            name="MessageOccurrenceSpecification94">
-            <covered>
-              <lifelineMoniker
-                Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
-                LastKnownName="ObjectWrapper"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="3b4afb27-e1e4-4838-8d3f-f6538fab5a08"
             name="MessageOccurrenceSpecification93">
             <covered>
@@ -24234,12 +24224,12 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="87de38ef-bb3e-441c-a6f7-f2e0ebbd242e"
-            name="MessageOccurrenceSpecification96">
+            Id="e96cadd8-4555-4c32-8585-3fa806a4fa1f"
+            name="MessageOccurrenceSpecification94">
             <covered>
               <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
+                Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
+                LastKnownName="ObjectWrapper"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24250,6 +24240,16 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
               <lifelineMoniker
                 Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
                 LastKnownName="ObjectWrapper"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="87de38ef-bb3e-441c-a6f7-f2e0ebbd242e"
+            name="MessageOccurrenceSpecification96">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24404,22 +24404,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="dbf086e7-eccb-4e41-b58f-800e2af2c5b3"
-            name="MessageOccurrenceSpecification179">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="8fc8ace1-2733-4d12-af59-56e5aafbbba6"
             name="MessageOccurrenceSpecification180">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="dbf086e7-eccb-4e41-b58f-800e2af2c5b3"
+            name="MessageOccurrenceSpecification179">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24474,16 +24474,6 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="e1c32513-f30f-4918-9654-ff8003864c2e"
-            name="MessageOccurrenceSpecification184">
-            <covered>
-              <lifelineMoniker
-                Id="bd196462-b98c-4633-b233-66ddc22b8831"
-                LastKnownName="core::ObjectWrapperObserver"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="5982acf5-cb5e-4431-904d-3f771c0c9975"
             name="MessageOccurrenceSpecification183">
             <covered>
@@ -24494,8 +24484,8 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="fe7672da-776b-4856-9c3c-70e0b5137e8e"
-            name="MessageOccurrenceSpecification185">
+            Id="e1c32513-f30f-4918-9654-ff8003864c2e"
+            name="MessageOccurrenceSpecification184">
             <covered>
               <lifelineMoniker
                 Id="bd196462-b98c-4633-b233-66ddc22b8831"
@@ -24510,6 +24500,16 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="fe7672da-776b-4856-9c3c-70e0b5137e8e"
+            name="MessageOccurrenceSpecification185">
+            <covered>
+              <lifelineMoniker
+                Id="bd196462-b98c-4633-b233-66ddc22b8831"
+                LastKnownName="core::ObjectWrapperObserver"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24532,22 +24532,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="c6bfba84-04c8-48f4-891c-5a0289bb5401"
-            name="MessageOccurrenceSpecification182">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="2e9de54b-a31d-4943-b63c-14e168a017e7"
             name="MessageOccurrenceSpecification181">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="c6bfba84-04c8-48f4-891c-5a0289bb5401"
+            name="MessageOccurrenceSpecification182">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24606,22 +24606,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="4009777c-69fd-450e-8d02-05d3986b38d6"
-            name="MessageOccurrenceSpecification82">
-            <covered>
-              <lifelineMoniker
-                Id="e31eea4f-1229-4767-9966-1f714d83365c"
-                LastKnownName="LazyInitializer"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="a4086ff3-0407-4c85-8675-99c852847ece"
             name="MessageOccurrenceSpecification81">
             <covered>
               <lifelineMoniker
                 Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
                 LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="4009777c-69fd-450e-8d02-05d3986b38d6"
+            name="MessageOccurrenceSpecification82">
+            <covered>
+              <lifelineMoniker
+                Id="e31eea4f-1229-4767-9966-1f714d83365c"
+                LastKnownName="LazyInitializer"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24644,22 +24644,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="a08c6163-1254-4155-99d0-1d7c18caeb63"
-            name="MessageOccurrenceSpecification65">
-            <covered>
-              <lifelineMoniker
-                Id="e31eea4f-1229-4767-9966-1f714d83365c"
-                LastKnownName="LazyInitializer"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="5c0de06f-1031-4957-a2b7-20c3cb2e28ed"
             name="MessageOccurrenceSpecification66">
             <covered>
               <lifelineMoniker
                 Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
                 LastKnownName="ObjectWrapper"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="a08c6163-1254-4155-99d0-1d7c18caeb63"
+            name="MessageOccurrenceSpecification65">
+            <covered>
+              <lifelineMoniker
+                Id="e31eea4f-1229-4767-9966-1f714d83365c"
+                LastKnownName="LazyInitializer"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24736,22 +24736,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="26e17f41-feef-44ca-98e2-8f3af03b6efa"
-            name="MessageOccurrenceSpecification50">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="ff54131e-8fdf-4f6c-b060-fd47f66352ec"
             name="MessageOccurrenceSpecification49">
             <covered>
               <lifelineMoniker
                 Id="1f5a8544-e36a-4c61-b645-5063f6e7baed"
                 LastKnownName="ObjectWrapper"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="26e17f41-feef-44ca-98e2-8f3af03b6efa"
+            name="MessageOccurrenceSpecification50">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24844,22 +24844,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="bf941da1-0f77-41e3-8002-a6c0d8d2b624"
-            name="MessageOccurrenceSpecification146">
-            <covered>
-              <lifelineMoniker
-                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
-                LastKnownName="IMemoryManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="dab8738f-e714-4700-991f-79c89290245a"
             name="MessageOccurrenceSpecification145">
             <covered>
               <lifelineMoniker
                 Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
                 LastKnownName="User"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="bf941da1-0f77-41e3-8002-a6c0d8d2b624"
+            name="MessageOccurrenceSpecification146">
+            <covered>
+              <lifelineMoniker
+                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
+                LastKnownName="IMemoryManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -24926,22 +24926,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="1bea7b4d-96bc-4a5a-b5d5-47d4e498e2dc"
-            name="MessageOccurrenceSpecification136">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="4cd35a43-af29-4960-8d75-28285e103f42"
             name="MessageOccurrenceSpecification135">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="1bea7b4d-96bc-4a5a-b5d5-47d4e498e2dc"
+            name="MessageOccurrenceSpecification136">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25126,22 +25126,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="fb3b56b2-ef7e-46b6-ae73-e126c8cec49f"
-            name="MessageOccurrenceSpecification138">
-            <covered>
-              <lifelineMoniker
-                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
-                LastKnownName="IMemoryManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="0d08ccd9-56e0-4f54-a46d-18bbe911fe0f"
             name="MessageOccurrenceSpecification137">
             <covered>
               <lifelineMoniker
                 Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
                 LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="fb3b56b2-ef7e-46b6-ae73-e126c8cec49f"
+            name="MessageOccurrenceSpecification138">
+            <covered>
+              <lifelineMoniker
+                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
+                LastKnownName="IMemoryManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25288,16 +25288,6 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="1782d029-2061-40d1-9699-eecce62d835b"
-            name="MessageOccurrenceSpecification172">
-            <covered>
-              <lifelineMoniker
-                Id="bd196462-b98c-4633-b233-66ddc22b8831"
-                LastKnownName="core::ObjectWrapperObserver"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="cc36a5a8-5ec7-4d1c-a862-7c28ebfbba32"
             name="MessageOccurrenceSpecification171">
             <covered>
@@ -25308,12 +25298,12 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="93f9e940-8bcd-4aca-ac52-6056afbbc73f"
-            name="MessageOccurrenceSpecification174">
+            Id="1782d029-2061-40d1-9699-eecce62d835b"
+            name="MessageOccurrenceSpecification172">
             <covered>
               <lifelineMoniker
-                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
-                LastKnownName="IMemoryManager"
+                Id="bd196462-b98c-4633-b233-66ddc22b8831"
+                LastKnownName="core::ObjectWrapperObserver"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25324,6 +25314,16 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
               <lifelineMoniker
                 Id="bd196462-b98c-4633-b233-66ddc22b8831"
                 LastKnownName="core::ObjectWrapperObserver"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="93f9e940-8bcd-4aca-ac52-6056afbbc73f"
+            name="MessageOccurrenceSpecification174">
+            <covered>
+              <lifelineMoniker
+                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
+                LastKnownName="IMemoryManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25364,22 +25364,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="1d790e32-2928-4cda-bd14-5c200d2678fd"
-            name="MessageOccurrenceSpecification148">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="76e12a90-76e8-40ee-b996-1997336a0c5b"
             name="MessageOccurrenceSpecification147">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="1d790e32-2928-4cda-bd14-5c200d2678fd"
+            name="MessageOccurrenceSpecification148">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25472,22 +25472,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="818fef97-3952-4663-837b-b3d947908880"
-            name="MessageOccurrenceSpecification151">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="9cb6f3fe-1ec9-4b49-81e0-ec36f25daf1a"
             name="MessageOccurrenceSpecification152">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="818fef97-3952-4663-837b-b3d947908880"
+            name="MessageOccurrenceSpecification151">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25554,22 +25554,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="af99cc09-16c2-424d-a698-483160a22468"
-            name="MessageOccurrenceSpecification155">
-            <covered>
-              <lifelineMoniker
-                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
-                LastKnownName="IMemoryManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="09748200-b644-49a0-883f-9d6d9f9f0b5c"
             name="MessageOccurrenceSpecification156">
             <covered>
               <lifelineMoniker
                 Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
                 LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="af99cc09-16c2-424d-a698-483160a22468"
+            name="MessageOccurrenceSpecification155">
+            <covered>
+              <lifelineMoniker
+                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
+                LastKnownName="IMemoryManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25698,16 +25698,6 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="4cff8389-f55d-4add-961e-aad0d2ceaf46"
-            name="MessageOccurrenceSpecification162">
-            <covered>
-              <lifelineMoniker
-                Id="4ea3825f-7b2c-4d7a-9b2f-0e6ee03ad680"
-                LastKnownName="IMemotyManager::ObjectUpdater"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="a3247d24-bf6f-4947-8198-3d452111f562"
             name="MessageOccurrenceSpecification161">
             <covered>
@@ -25718,8 +25708,8 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="c5fe25b7-3e49-4279-90e8-5064ab25cf61"
-            name="MessageOccurrenceSpecification163">
+            Id="4cff8389-f55d-4add-961e-aad0d2ceaf46"
+            name="MessageOccurrenceSpecification162">
             <covered>
               <lifelineMoniker
                 Id="4ea3825f-7b2c-4d7a-9b2f-0e6ee03ad680"
@@ -25734,6 +25724,16 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
               <lifelineMoniker
                 Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
                 LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="c5fe25b7-3e49-4279-90e8-5064ab25cf61"
+            name="MessageOccurrenceSpecification163">
+            <covered>
+              <lifelineMoniker
+                Id="4ea3825f-7b2c-4d7a-9b2f-0e6ee03ad680"
+                LastKnownName="IMemotyManager::ObjectUpdater"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25774,22 +25774,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="87359870-2a91-46f6-a5c8-d7da00dfecc9"
-            name="MessageOccurrenceSpecification157">
-            <covered>
-              <lifelineMoniker
-                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="a6807c61-4abe-4208-98b9-2d29d5e5274c"
             name="MessageOccurrenceSpecification158">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="87359870-2a91-46f6-a5c8-d7da00dfecc9"
+            name="MessageOccurrenceSpecification157">
+            <covered>
+              <lifelineMoniker
+                Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
+                LastKnownName="DataManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25936,16 +25936,6 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="3803ce28-995e-4f88-8e48-a5c300044a42"
-            name="MessageOccurrenceSpecification176">
-            <covered>
-              <lifelineMoniker
-                Id="bd196462-b98c-4633-b233-66ddc22b8831"
-                LastKnownName="core::ObjectWrapperObserver"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="f9e2c1df-9af0-41c4-afba-09a5707f9483"
             name="MessageOccurrenceSpecification175">
             <covered>
@@ -25956,12 +25946,12 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="9982d6c8-e75d-441e-bd7b-81897019eb45"
-            name="MessageOccurrenceSpecification178">
+            Id="3803ce28-995e-4f88-8e48-a5c300044a42"
+            name="MessageOccurrenceSpecification176">
             <covered>
               <lifelineMoniker
-                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
-                LastKnownName="IMemoryManager"
+                Id="bd196462-b98c-4633-b233-66ddc22b8831"
+                LastKnownName="core::ObjectWrapperObserver"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -25972,6 +25962,16 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
               <lifelineMoniker
                 Id="bd196462-b98c-4633-b233-66ddc22b8831"
                 LastKnownName="core::ObjectWrapperObserver"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="9982d6c8-e75d-441e-bd7b-81897019eb45"
+            name="MessageOccurrenceSpecification178">
+            <covered>
+              <lifelineMoniker
+                Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
+                LastKnownName="IMemoryManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -26012,22 +26012,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="5712ca62-9194-4777-8800-a36c091f2bad"
-            name="MessageOccurrenceSpecification154">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="6ce4dc53-3f37-417d-8fc7-c4162db36ecc"
             name="MessageOccurrenceSpecification153">
             <covered>
               <lifelineMoniker
                 Id="fc9717aa-cac8-4686-b6e7-168e60f8d4df"
                 LastKnownName="IMemoryManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="5712ca62-9194-4777-8800-a36c091f2bad"
+            name="MessageOccurrenceSpecification154">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -26108,22 +26108,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="421aa8ab-2a14-403e-abe1-49aa3d4addf6"
-            name="MessageOccurrenceSpecification100">
-            <covered>
-              <lifelineMoniker
-                Id="768df102-38e3-4505-87b4-5f781c94b95e"
-                LastKnownName="IFileManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="be9046aa-794e-4554-ab98-0d79df2fc4b8"
             name="MessageOccurrenceSpecification99">
             <covered>
               <lifelineMoniker
                 Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
                 LastKnownName="User"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="421aa8ab-2a14-403e-abe1-49aa3d4addf6"
+            name="MessageOccurrenceSpecification100">
+            <covered>
+              <lifelineMoniker
+                Id="768df102-38e3-4505-87b4-5f781c94b95e"
+                LastKnownName="IFileManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -26178,16 +26178,6 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="dccf7a50-5ad7-477f-b436-c9a9d26a6ae6"
-            name="MessageOccurrenceSpecification103">
-            <covered>
-              <lifelineMoniker
-                Id="768df102-38e3-4505-87b4-5f781c94b95e"
-                LastKnownName="IFileManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="c79bb202-d3b6-44de-bc39-a46d78d48342"
             name="MessageOccurrenceSpecification104">
             <covered>
@@ -26198,8 +26188,8 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="eee4cb70-3b3b-4360-b913-739d06e4ae09"
-            name="MessageOccurrenceSpecification106">
+            Id="dccf7a50-5ad7-477f-b436-c9a9d26a6ae6"
+            name="MessageOccurrenceSpecification103">
             <covered>
               <lifelineMoniker
                 Id="768df102-38e3-4505-87b4-5f781c94b95e"
@@ -26214,6 +26204,16 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
               <lifelineMoniker
                 Id="e07e6b2f-a8ae-42d7-b568-49417e07f7e9"
                 LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="eee4cb70-3b3b-4360-b913-739d06e4ae09"
+            name="MessageOccurrenceSpecification106">
+            <covered>
+              <lifelineMoniker
+                Id="768df102-38e3-4505-87b4-5f781c94b95e"
+                LastKnownName="IFileManager"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -26236,22 +26236,22 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="eb32f8c2-df21-41a2-83f0-fc6983d2a8db"
-            name="MessageOccurrenceSpecification102">
-            <covered>
-              <lifelineMoniker
-                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
-                LastKnownName="User"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="a103f321-4603-42d4-9e61-8dcd9be2797e"
             name="MessageOccurrenceSpecification101">
             <covered>
               <lifelineMoniker
                 Id="768df102-38e3-4505-87b4-5f781c94b95e"
                 LastKnownName="IFileManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="eb32f8c2-df21-41a2-83f0-fc6983d2a8db"
+            name="MessageOccurrenceSpecification102">
+            <covered>
+              <lifelineMoniker
+                Id="061e23d2-d0cb-46da-b080-edf3af4b45cb"
+                LastKnownName="User"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -28491,6 +28491,156 @@ Inny wariant jest możliwy w połączeniu z parserami - ta dynamika jest dostęp
     <packageHasNamedElement>
       <executionEvent
         Id="e118bfca-0cfe-4ebb-a459-96e96bea424b"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <interaction
+        Id="95757a67-c9cc-4879-81b9-a698e95fc587"
+        name="Sequence1"
+        collapseFragmentsFlag="false"
+        isActiveClass="false"
+        isAbstract="false"
+        isLeaf="false"
+        isReentrant="false">
+        <fragments>
+          <messageOccurrenceSpecification
+            Id="4b93beca-29fd-4b76-9c4c-1d3239eab4a3"
+            name="MessageOccurrenceSpecification1">
+            <covered>
+              <lifelineMoniker
+                Id="91b111a9-6938-492a-b20b-e754f6947c52"
+                LastKnownName="FindLibrary"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification
+            Id="2cdbc79a-604b-44a3-b95f-334fa3bf1c1b"
+            name="BehaviorExecutionSpecification1">
+            <coveredLifelines>
+              <lifelineMoniker
+                Id="91b111a9-6938-492a-b20b-e754f6947c52"
+                LastKnownName="FindLibrary"
+                LastKnownLocation="uml.uml" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker
+                Id="7a2c7ccc-87f9-4a65-ab1d-adba151cc60c"
+                LastKnownName="ExecutionOccurrenceSpecification2"
+                LastKnownLocation="uml.uml" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker
+                Id="4506adde-f118-4b0b-954a-7bb34ed60a24"
+                LastKnownName="ExecutionOccurrenceSpecification1"
+                LastKnownLocation="uml.uml" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="8909dee5-28d4-45d3-b9f5-82c87876f552"
+                LastKnownName="MessageOccurrenceSpecification2"
+                LastKnownLocation="uml.uml" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification
+            Id="4506adde-f118-4b0b-954a-7bb34ed60a24"
+            name="ExecutionOccurrenceSpecification1">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="81c0be97-72f7-4a46-ae93-4717216ac851"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="uml.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="91b111a9-6938-492a-b20b-e754f6947c52"
+                LastKnownName="FindLibrary"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="8909dee5-28d4-45d3-b9f5-82c87876f552"
+            name="MessageOccurrenceSpecification2">
+            <covered>
+              <lifelineMoniker
+                Id="91b111a9-6938-492a-b20b-e754f6947c52"
+                LastKnownName="FindLibrary"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification
+            Id="7a2c7ccc-87f9-4a65-ab1d-adba151cc60c"
+            name="ExecutionOccurrenceSpecification2">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker
+                  Id="3b985e0a-af0d-420a-8c66-c7e10b2d5e19"
+                  LastKnownName="ExecutionEvent"
+                  LastKnownLocation="uml.uml" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker
+                Id="91b111a9-6938-492a-b20b-e754f6947c52"
+                LastKnownName="FindLibrary"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </executionOccurrenceSpecification>
+        </fragments>
+        <lifelines>
+          <lifeline
+            Id="91b111a9-6938-492a-b20b-e754f6947c52"
+            name="FindLibrary"
+            isActor="false"
+            lifelineDisplayName="FindLibrary">
+            <topLevelOccurrences>
+              <messageOccurrenceSpecificationMoniker
+                Id="4b93beca-29fd-4b76-9c4c-1d3239eab4a3"
+                LastKnownName="MessageOccurrenceSpecification1"
+                LastKnownLocation="uml.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="4506adde-f118-4b0b-954a-7bb34ed60a24"
+                LastKnownName="ExecutionOccurrenceSpecification1"
+                LastKnownLocation="uml.uml" />
+              <executionOccurrenceSpecificationMoniker
+                Id="7a2c7ccc-87f9-4a65-ab1d-adba151cc60c"
+                LastKnownName="ExecutionOccurrenceSpecification2"
+                LastKnownLocation="uml.uml" />
+            </topLevelOccurrences>
+          </lifeline>
+        </lifelines>
+        <messages>
+          <message
+            Id="ac78530a-8458-4307-a8b4-4396cd1b70d0"
+            name="FIND_INIT"
+            messageKind="Complete"
+            messageSort="SynchCall"
+            createSelfMessage="true">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="4b93beca-29fd-4b76-9c4c-1d3239eab4a3"
+                LastKnownName="MessageOccurrenceSpecification1"
+                LastKnownLocation="uml.uml" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker
+                Id="8909dee5-28d4-45d3-b9f5-82c87876f552"
+                LastKnownName="MessageOccurrenceSpecification2"
+                LastKnownLocation="uml.uml" />
+            </receiveEvent>
+          </message>
+        </messages>
+      </interaction>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="81c0be97-72f7-4a46-ae93-4717216ac851"
+        name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent
+        Id="3b985e0a-af0d-420a-8c66-c7e10b2d5e19"
         name="ExecutionEvent" />
     </packageHasNamedElement>
   </packagedElements>

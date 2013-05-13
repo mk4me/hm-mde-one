@@ -58,8 +58,8 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     preciseTimeWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     QIcon icon0;
-    icon0.addFile(QString::fromUtf8(":/resources/icons/direction.png"), QSize(), QIcon::Normal, QIcon::Off);
-    icon0.addFile(QString::fromUtf8(":/resources/icons/direction2.png"), QSize(), QIcon::Normal, QIcon::On);
+    icon0.addFile(QString::fromUtf8(":/newTimeline/icons/direction.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon0.addFile(QString::fromUtf8(":/newTimeline/icons/direction2.png"), QSize(), QIcon::Normal, QIcon::On);
     playbackDirectionAction->setIcon(icon0);
     playbackDirectionAction->setCheckable(true);
 
@@ -68,22 +68,22 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     //SRODKOWY-GLOWNY TAB
     QIcon icon1;
-    icon1.addFile(QString::fromUtf8(":/resources/icons/rew.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon1.addFile(QString::fromUtf8(":/newTimeline/icons/rew.png"), QSize(), QIcon::Normal, QIcon::Off);
     timeToBeginAction->setIcon(icon1);
 
     QIcon icon2;
-    icon2.addFile(QString::fromUtf8(":/resources/icons/forw.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon2.addFile(QString::fromUtf8(":/newTimeline/icons/forw.png"), QSize(), QIcon::Normal, QIcon::Off);
     timeToEndAction->setIcon(icon2);
 
     QIcon icon3;
-    icon3.addFile(QString::fromUtf8(":/resources/icons/play.png"), QSize(), QIcon::Normal, QIcon::Off);
-    icon3.addFile(QString::fromUtf8(":/resources/icons/pause.png"), QSize(), QIcon::Normal, QIcon::On);
+    icon3.addFile(QString::fromUtf8(":/newTimeline/icons/play.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon3.addFile(QString::fromUtf8(":/newTimeline/icons/pause.png"), QSize(), QIcon::Normal, QIcon::On);
     playPauseAction->setIcon(icon3);
     playPauseAction->setCheckable(true);
     playPauseAction->setEnabled(false);
 
     QIcon icon4;
-    icon4.addFile(QString::fromUtf8(":/resources/icons/stop.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon4.addFile(QString::fromUtf8(":/newTimeline/icons/stop.png"), QSize(), QIcon::Normal, QIcon::Off);
     stopAction->setIcon(icon4);
     stopAction->setEnabled(false);
 

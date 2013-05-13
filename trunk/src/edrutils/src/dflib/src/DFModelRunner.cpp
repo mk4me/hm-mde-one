@@ -13,9 +13,9 @@ namespace df {
 		delete privImpl;
 	}
 
-	void DFModelRunner::start(IModelReader * model, IDFLogger * logger, utils::IThreadFactory * tFactory)
+	void DFModelRunner::start(IModelReader * model, IDFLogger * logger, utils::IThreadPool * tPool)
 	{
-		privImpl->start(model, logger, tFactory);
+		privImpl->start(model, logger, tPool);
 	}
 
 	void DFModelRunner::stop()

@@ -28,6 +28,8 @@
 #include <plugins/newVdf/NewVdfService.h>
 #include "HmmVdf.h"
 
+#include <QtCore/QTranslator>
+
 using namespace core;
 
 using namespace PluginSubject;
@@ -146,7 +148,7 @@ void HmmMainWindow::onContextChange(int idx)
 
 void HmmMainWindow::initializeSplashScreen(QSplashScreen * splashScreen)
 {
-	splashScreen->setPixmap(QPixmap(":/resources/splashscreen/splash.png"));
+	splashScreen->setPixmap(QPixmap(":/mde/splashscreen/splash.png"));
 }
 
 void HmmMainWindow::showSplashScreenMessage(const QString & message)
@@ -684,19 +686,19 @@ void HmmMainWindow::createFilterTabs()
 void HmmMainWindow::createFilterTab1()
 {
 
-    QPixmap iconAnalog(QString::fromUtf8(":/resources/icons/analogBig.png"));
-    QPixmap iconKinetic(QString::fromUtf8(":/resources/icons/kineticBig.png"));
-    QPixmap iconKinematic(QString::fromUtf8(":/resources/icons/kinematicBig.png"));
-    QPixmap iconVideo(QString::fromUtf8(":/resources/icons/videoBig.png"));
+    QPixmap iconAnalog(QString::fromUtf8(":/mde/icons/analogBig.png"));
+    QPixmap iconKinetic(QString::fromUtf8(":/mde/icons/kineticBig.png"));
+    QPixmap iconKinematic(QString::fromUtf8(":/mde/icons/kinematicBig.png"));
+    QPixmap iconVideo(QString::fromUtf8(":/mde/icons/videoBig.png"));
 
-    QPixmap iconEmgSmall(QString::fromUtf8(":/resources/icons/emg1Small.png"));
-    QPixmap iconForceSmall(QString::fromUtf8(":/resources/icons/forcesSmall.png"));
-    QPixmap iconPowerSmall(QString::fromUtf8(":/resources/icons/powerSmall.png"));
-    QPixmap iconGRFSmall(QString::fromUtf8(":/resources/icons/grfSmall.png"));
-    QPixmap iconMomentSmall(QString::fromUtf8(":/resources/icons/momentSmall.png"));
-    QPixmap iconJointSmall(QString::fromUtf8(":/resources/icons/jointSmall.png"));
-    QPixmap iconMarkerSmall(QString::fromUtf8(":/resources/icons/markerSmall.png"));
-    QPixmap iconVideoSmall(QString::fromUtf8(":/resources/icons/videoSmall.png"));
+    QPixmap iconEmgSmall(QString::fromUtf8(":/mde/icons/emg1Small.png"));
+    QPixmap iconForceSmall(QString::fromUtf8(":/mde/icons/forcesSmall.png"));
+    QPixmap iconPowerSmall(QString::fromUtf8(":/mde/icons/powerSmall.png"));
+    QPixmap iconGRFSmall(QString::fromUtf8(":/mde/icons/grfSmall.png"));
+    QPixmap iconMomentSmall(QString::fromUtf8(":/mde/icons/momentSmall.png"));
+    QPixmap iconJointSmall(QString::fromUtf8(":/mde/icons/jointSmall.png"));
+    QPixmap iconMarkerSmall(QString::fromUtf8(":/mde/icons/markerSmall.png"));
+    QPixmap iconVideoSmall(QString::fromUtf8(":/mde/icons/videoSmall.png"));
 
     DataFilterWidget* filter1 = new DataFilterWidget(tr("ANALOG"), iconAnalog, this);
     DataFilterWidget* filter2 = new DataFilterWidget(tr("KINETIC"), iconKinetic, this);
@@ -916,11 +918,11 @@ void HmmMainWindow::createFilterTab1()
 
 void HmmMainWindow::createFilterTab2()
 {
-    QPixmap iconKinetic(QString::fromUtf8(":/resources/icons/kineticBig.png"));
-    QPixmap iconIllness(QString::fromUtf8(":/resources/icons/jed.chorobowe.png"));
-    QPixmap iconEndo(QString::fromUtf8(":/resources/icons/po_endoplastyce.png"));
-    QPixmap iconStroke(QString::fromUtf8(":/resources/icons/po_udarze.png"));
-    QPixmap iconSpine(QString::fromUtf8(":/resources/icons/zwyrodnienia.png"));
+    QPixmap iconKinetic(QString::fromUtf8(":/mde/icons/kineticBig.png"));
+    QPixmap iconIllness(QString::fromUtf8(":/mde/icons/jed.chorobowe.png"));
+    QPixmap iconEndo(QString::fromUtf8(":/mde/icons/po_endoplastyce.png"));
+    QPixmap iconStroke(QString::fromUtf8(":/mde/icons/po_udarze.png"));
+    QPixmap iconSpine(QString::fromUtf8(":/mde/icons/zwyrodnienia.png"));
 
     DataFilterWidget* filter1 = new DataFilterWidget(tr("ILLNESS"), iconIllness, this);
     DataFilterWidget* filter2 = new DataFilterWidget(tr("MULTI"), iconKinetic, this);
@@ -1144,7 +1146,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
      connect(addNew, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
      if (utils::dynamic_pointer_cast<NewChartItemHelper>(item->getHelper())) {
-         QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);
+         QMenu* multiMenu = new QMenu(tr("Multichart"), menu);
          QAction * multi = new ContextAction(item, menu);
          multi->setText(tr("All from session"));
          multiMenu->addAction(multi);
@@ -1154,7 +1156,7 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
      }
 
      if (utils::dynamic_pointer_cast<NewVector3ItemHelper>(item->getHelper())) {
-         QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);
+         QMenu* multiMenu = new QMenu(tr("Multichart"), menu);
          QAction * multiX = new ContextAction(item, menu);
          multiX->setText(tr("All X from session"));
          multiMenu->addAction(multiX);

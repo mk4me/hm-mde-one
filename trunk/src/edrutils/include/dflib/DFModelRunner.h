@@ -15,7 +15,7 @@
 //! Forward declaration
 namespace utils
 {
-	class IThreadFactory;
+	class IThreadPool;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ namespace df{
 		//! \param model Model kóry bêdziemy przetwarzaæ
 		//! \param logger Obiekt loguj¹cy stan przetwarzania
 		//! \param tFactory Fabryka w¹tków - gdy pusta u¿ywamy domyslnej wynikaj¹cej z implementacji
-		void start(IModelReader * model, IDFLogger * logger, utils::IThreadFactory * tFactory = nullptr);
+		void start(IModelReader * model, IDFLogger * logger, utils::IThreadPool * tPool);
 
 		//! Natychmiastowe przerwania przetwarzania
 		//! Metoda blokuj¹ca - czeka na zakoñczenie wszystkich w¹tków

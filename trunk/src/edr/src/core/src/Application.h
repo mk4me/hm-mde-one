@@ -21,6 +21,7 @@
 #include <QtCore/QTimer>
 
 class QSplashScreen;
+class QTranslator;
 
 namespace coreUI {
 
@@ -63,6 +64,7 @@ namespace core {
 		shared_ptr<StreamDataManager> streamDataManager_;
 		shared_ptr<FileDataManager> fileDataManager_;
 		shared_ptr<coreUI::UIApplication> uiApplication_;
+		std::vector<shared_ptr<QTranslator>> translators_;
 		shared_ptr<ServiceManager> serviceManager_;
 		shared_ptr<SourceManager> sourceManager_;
 		shared_ptr<VisualizerManager> visualizerManager_;

@@ -67,7 +67,7 @@ Application::Application() : visualizerTimeDelta(0), servicesTimeDelta(0), mainW
 
 void Application::showSplashScreenMessage(const QString & message)
 {
-	mainWindow->showSplashScreenMessage(QObject::tr("Initializing application pathInterface"));
+	mainWindow->showSplashScreenMessage(message);
 	QApplication::processEvents();
 }
 
@@ -103,15 +103,6 @@ int Application::initUIContext(int & argc, char *argv[])
 		QSettings::setDefaultFormat(QSettings::IniFormat);
 	}
 
-	return 0;
-}
-
-void Application::initWithUI(CoreMainWindow * mainWindow)
-{
-	this->mainWindow = mainWindow;
-	mainWindow->splashScreen();
-
-	showSplashScreenMessage(QObject::tr("Initializing application pathInterface"));
 	//inicjalizacja œcie¿ek aplikacji, katalogów tymczasowych itp, u¿ywane do ³adowania t³umaczeñ
 	{
 		if(trySetPathsFromRegistry(paths_) == false){
@@ -123,6 +114,56 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 			throw std::runtime_error("Could not initialize application pathInterface");
 		}
 	}
+
+	//t³umaczenia aplikacji - musze to robiæ tutaj aby wszystkie nowo utworzone widgety ju¿ widzia³y t³umaczenia
+	//alternatywnie mogê to robiæ póŸniej pod warunkiem ¿e wszystkie widgety sa œwiadome t³umaczeñ - obs³uguj¹ event
+	// zmiany jêzyka!! Dla plików Ui ju¿ jest metoda retranslateUi
+	{
+		std::string locale = QLocale::system().name().toStdString();
+		auto langPath = paths_->getResourcesPath() / "lang";
+		// pobieram listê wszystkich dostarczonych standardowo t³umaczeñ
+		auto files = core::Filesystem::listFiles(langPath.string(), true, ".qm");
+
+		for(auto it = files.begin(); it != files.end(); ++it)
+		{
+			// sprawdzam czy t³umaczenie pasuje do aktualnego jêzyka
+			if((*it).find(locale) != std::string::npos ){
+
+				shared_ptr<QTranslator> translator(new QTranslator);
+
+				if(translator->load((*it).c_str()) == true) {
+					uiApplication_->installTranslator(translator.get());
+					translators_.push_back(translator);
+					//TODO
+					//jak tego siê nie uda za³adowaæ to mamy tylko angielski jêzyk - trzeba poinformowaæ
+				}
+			}
+		}		
+
+		// teraz t³umaczenia z Qt
+
+		shared_ptr<QTranslator> translator(new QTranslator);
+		bool translationFound = translator->load(("qt_" + locale).c_str(), langPath.string().c_str());
+		if(translationFound == false) {
+			translationFound = translator->load(QString("qt_pl"), langPath.string().c_str());
+			// TODO
+			// jak tego siê nie uda za³adowaæ to mamy tylko angielski jêzyk - trzeba poinformowaæ
+		}
+
+		if(translationFound == true){
+			uiApplication_->installTranslator(translator.get());
+			translators_.push_back(translator);
+		}
+	}
+
+	return 0;
+}
+
+void Application::initWithUI(CoreMainWindow * mainWindow)
+{
+	this->mainWindow = mainWindow;
+	mainWindow->splashScreen();
+	
 
 	showSplashScreenMessage(QObject::tr("Initializing log"));	
 
@@ -148,32 +189,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 	showSplashScreenMessage(QObject::tr("Initializing translations"));	
 
-	//t³umaczenia aplikacji
-	{
-		QString locale = QLocale::system().name();
-
-		auto langPath = QString::fromStdString((paths_->getResourcesPath() / "lang").string());
-
-		QTranslator appTranslator;
-
-		if(appTranslator.load("lang_" + locale, langPath) == false) {
-			appTranslator.load(QString("lang_pl_PL"), langPath);
-			//TODO
-			//jak tego siê nie uda za³adowaæ to mamy tylko angielski jêzyk - trzeba poinformowaæ
-		}
-
-		uiApplication_->installTranslator(&appTranslator);
-
-		QTranslator qtTranslator;
-
-		if(qtTranslator.load("qt_" + QLocale::languageToString(QLocale::system().language()), langPath) == false) {
-			qtTranslator.load(QString("qt_pl"), langPath);
-			//TODO
-			//jak tego siê nie uda za³adowaæ to mamy tylko angielski jêzyk - trzeba poinformowaæ
-		}
-
-		uiApplication_->installTranslator(&qtTranslator);
-	}
+	
 
 	showSplashScreenMessage(QObject::tr("Initializing 3D context"));
 
@@ -300,6 +316,9 @@ Application::~Application()
 
 	CORE_LOG_INFO("Cleaning UI context");
 	uiApplication_.reset();
+
+	CORE_LOG_INFO("Cleaning translations");
+	std::vector<shared_ptr<QTranslator>>().swap(translators_);
 
 	CORE_LOG_INFO("Cleaning tmp files");
 	Filesystem::deleteDirectory(getPathInterface()->getTmpPath());

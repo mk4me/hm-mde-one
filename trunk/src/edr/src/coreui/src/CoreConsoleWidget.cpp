@@ -3,8 +3,8 @@
 #include <coreui/CoreConsoleWidget.h>
 #include "ui_CoreConsoleWidget.h"
 
+
 using namespace coreUI;
-using namespace core;
 
 //qRegisterMetaType<CoreConsoleWidgetEntry>("CoreConsoleWidgetEntry");
 //qRegisterMetaType<CoreConsoleWidgetEntryPtr>("CoreConsoleWidgetEntryPtr");
@@ -31,11 +31,11 @@ void CoreConsoleWidget::logEntry( const CoreConsoleWidgetEntry& entry )
 {
     QTextCharFormat fmt;
 
-    if ( entry.severity == ILog::LogSeverityInfo ) {
+    if ( entry.severity == core::ILog::LogSeverityInfo ) {
         fmt.setForeground( QColor(0, 0, 0, 255) );
-    } else if ( entry.severity == ILog::LogSeverityWarning ) {
+    } else if ( entry.severity == core::ILog::LogSeverityWarning ) {
         fmt.setForeground( QColor(255, 130, 0, 255) );
-    } else if ( entry.severity == ILog::LogSeverityError ) {
+    } else if ( entry.severity == core::ILog::LogSeverityError ) {
         fmt.setForeground( QColor(255, 0, 0, 255) );
     } else {
         fmt.setForeground( QColor(100, 150, 50, 255) );

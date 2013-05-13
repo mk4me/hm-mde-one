@@ -320,7 +320,7 @@ QWidget* VideoVisualizer::createWidget()
 
 QIcon* VideoVisualizer::createIcon()
 {
-    return new QIcon(QString::fromUtf8(":/resources/icons/video.png"));
+    return new QIcon(QString::fromUtf8(":/video/icons/video.png"));
 }
 
 int VideoVisualizer::getMaxDataSeries() const

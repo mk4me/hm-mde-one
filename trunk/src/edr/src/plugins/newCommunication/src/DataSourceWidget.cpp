@@ -365,15 +365,15 @@ QIcon DataSourceWidget::statusIcon(const communication::DataStorage storage, con
 
 	switch(storage){
 	case Local:
-		s = QPixmap(QString::fromUtf8(":/resources/icons/lokalne.png"));
+		s = QPixmap(QString::fromUtf8(":/newCommunication/icons/lokalne.png"));
 		break;
 
 	default:
 	case Remote:
-		s = QPixmap(QString::fromUtf8(":/resources/icons/zdalne.png"));
+		s = QPixmap(QString::fromUtf8(":/newCommunication/icons/zdalne.png"));
 		break;
 	case PartiallyLocal:
-		s = QPixmap(QString::fromUtf8(":/resources/icons/pol-na-pol-green.png"));
+		s = QPixmap(QString::fromUtf8(":/newCommunication/icons/pol-na-pol-green.png"));
 		break;
 	}
 
@@ -382,15 +382,15 @@ QIcon DataSourceWidget::statusIcon(const communication::DataStorage storage, con
 
 	switch(usage){
 	case Loaded:
-		u = QPixmap(QString::fromUtf8(":/resources/icons/zaladowane.png"));
+		u = QPixmap(QString::fromUtf8(":/newCommunication/icons/zaladowane.png"));
 		break;
 
 	default:
 	case Unloaded:
-		u = QPixmap(QString::fromUtf8(":/resources/icons/niezaladowane.png"));
+		u = QPixmap(QString::fromUtf8(":/newCommunication/icons/niezaladowane.png"));
 		break;
 	case PartiallyLoaded:
-		u = QPixmap(QString::fromUtf8(":/resources/icons/polnapol-ladowanie2.png"));
+		u = QPixmap(QString::fromUtf8(":/newCommunication/icons/polnapol-ladowanie2.png"));
 		break;
 	}
 

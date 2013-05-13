@@ -20,11 +20,11 @@ CoreSplitableDockWidget::CoreSplitableDockWidget(QWidget *parent, Qt::WindowFlag
 
 void CoreSplitableDockWidget::init()
 {
-	CoreAction * splitVerticalyAction = new CoreAction(tr("Utils"), QIcon(QString::fromUtf8(":/resources/icons/vertical.png")), tr("Split vertically"), this, CoreTitleBar::Right);
+	CoreAction * splitVerticalyAction = new CoreAction(tr("Utils"), QIcon(QString::fromUtf8(":/coreUI/icons/vertical.png")), tr("Split vertically"), this, CoreTitleBar::Right);
 
 	connect(splitVerticalyAction, SIGNAL(triggered()), this, SLOT(splitVerticaly()));
 
-	CoreAction * splitHorizontalyAction = new CoreAction(tr("Utils"), QIcon(QString::fromUtf8(":/resources/icons/horizontal.png")), tr("Split horizontally"), this, CoreTitleBar::Right);
+	CoreAction * splitHorizontalyAction = new CoreAction(tr("Utils"), QIcon(QString::fromUtf8(":/coreUI/icons/horizontal.png")), tr("Split horizontally"), this, CoreTitleBar::Right);
 
 	connect(splitHorizontalyAction, SIGNAL(triggered()), this, SLOT(splitHorizontaly()));
 

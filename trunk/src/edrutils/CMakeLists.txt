@@ -3,11 +3,4 @@ include("../../CMakeModules/Logic/ProjectUtils.cmake")
 
 INITIALIZE_SOLUTION(EDR_UTILS)
 
-# Czy skopiowaæ modu³y (niezlinkowane .so oraz .dll)?
-#option(PROJECT_ENABLE_EXAMPLES "Build examples?" OFF)
-#option(PROJECT_ENABLE_TESTS "Build test projects?" OFF)
-# Opcje konfiguracji
-CONFIG_OPTION(VIDLIB_ENABLE_LOG4CXX "Enable logging with log4cxx?" OFF)
-CONFIG_OPTION(VIDLIB_ENABLE_OSG "Enable logging with log4cxx?" ON)
-
 FINALIZE_SOLUTION()

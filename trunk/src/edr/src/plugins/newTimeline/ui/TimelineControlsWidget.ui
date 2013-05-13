@@ -83,8 +83,8 @@
         </property>
         <property name="icon">
          <iconset>
-          <normaloff>:/resources/icons/toBegin.png</normaloff>
-          <normalon>:/resources/icons/rew.png</normalon>:/resources/icons/toBegin.png</iconset>
+          <normaloff>:/newTimeline/icons/toBegin.png</normaloff>
+          <normalon>:/newTimeline/icons/rew.png</normalon>:/newTimeline/icons/toBegin.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -110,8 +110,8 @@
         </property>
         <property name="icon">
          <iconset resource="newTimelineIcons.qrc">
-          <normaloff>:/resources/icons/play.png</normaloff>
-          <normalon>:/resources/icons/pause.png</normalon>:/resources/icons/play.png</iconset>
+          <normaloff>:/newTimeline/icons/play.png</normaloff>
+          <normalon>:/newTimeline/icons/pause.png</normalon>:/newTimeline/icons/play.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -140,8 +140,8 @@
         </property>
         <property name="icon">
          <iconset resource="newTimelineIcons.qrc">
-          <normaloff>:/resources/icons/stop.png</normaloff>
-          <normalon>:/resources/icons/stop2.png</normalon>:/resources/icons/stop.png</iconset>
+          <normaloff>:/newTimeline/icons/stop.png</normaloff>
+          <normalon>:/newTimeline/icons/stop2.png</normalon>:/newTimeline/icons/stop.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -167,8 +167,8 @@
         </property>
         <property name="icon">
          <iconset resource="newTimelineIcons.qrc">
-          <normaloff>:/resources/icons/forw.png</normaloff>
-          <normalon>:/resources/icons/forw2.png</normalon>:/resources/icons/forw.png</iconset>
+          <normaloff>:/newTimeline/icons/forw.png</normaloff>
+          <normalon>:/newTimeline/icons/forw2.png</normalon>:/newTimeline/icons/forw.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -271,8 +271,8 @@
         </property>
         <property name="icon">
          <iconset resource="newTimelineIcons.qrc">
-          <normaloff>:/resources/icons/direction-white.png</normaloff>
-          <normalon>:/resources/icons/direction2-white.png</normalon>:/resources/icons/direction-white.png</iconset>
+          <normaloff>:/newTimeline/icons/direction-white.png</normaloff>
+          <normalon>:/newTimeline/icons/direction2-white.png</normalon>:/newTimeline/icons/direction-white.png</iconset>
         </property>
         <property name="iconSize">
          <size>

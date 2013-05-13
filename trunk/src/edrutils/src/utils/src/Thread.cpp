@@ -31,6 +31,19 @@ private:
 
 		}
 
+		virtual ~InnerThread()
+		{
+			try{
+				if(isRunning() == true){
+					terminate();
+				}
+
+				wait();
+			}catch(...){
+
+			}
+		}
+
 	protected:
 		//! Implementacja metody uruchamianej w nowym w¹tku
 		virtual void run()
@@ -194,11 +207,11 @@ public:
 	~ThreadImpl()
 	{
 		QMutexLocker lock(&synch);
-		thread_->terminate();
-		thread_->wait();
+
+		thread_.reset();
 
 		if(status_ == IThreadingBase::Running){
-			result_ == IThreadingBase::Canceled;
+			result_ = IThreadingBase::Canceled;
 		}
 
 		status_ = IThreadingBase::Killed;
@@ -305,7 +318,7 @@ public:
 			thread_->setStackSize(stackSize_);
 			//startuj nowy w¹tek z zadanym priorytetem
 			thread_->start(iP);
-		}else{
+		}else if( priority != IThread::Inheritate){
 			//mamy watek wiec zmieniamy priorytet
 			thread_->setPriority(iP);
 		}

@@ -50,7 +50,7 @@ ToolboxMain::ToolboxMain(const CloseUpOperations & closeUpOperations) : CoreMain
 	setTabPosition( Qt::RightDockWidgetArea, QTabWidget::North );
 	setCentralWidget( visualizersPlaceholder );
 	//setDocumentMode(true);	
-	setWindowIcon(QPixmap(QString::fromUtf8(":/resources/icons/appIcon.png")));
+	setWindowIcon(QPixmap(QString::fromUtf8(":/coreUI/icons/appIcon.png")));
 }
 
 ToolboxMain::~ToolboxMain()

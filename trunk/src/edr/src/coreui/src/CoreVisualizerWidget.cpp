@@ -19,27 +19,26 @@
 #include <boost/bind.hpp>
 
 using namespace coreUI;
-using namespace core;
 
 struct FutureSerieData {
 	std::string serieName;
-	TypeInfo requestedType;
-	ObjectWrapperConstPtr data;
+	core::TypeInfo requestedType;
+	core::ObjectWrapperConstPtr data;
 	int localIdx;
 };
 
 Q_DECLARE_METATYPE(FutureSerieData);
-Q_DECLARE_METATYPE(Visualizer::VisualizerSerie*);
+Q_DECLARE_METATYPE(core::Visualizer::VisualizerSerie*);
 
 QWidget * CoreVisualizerWidget::createSourceMenuWidget(QWidget * parent)
 {
 	QToolButton * dataSelectionButton = new QToolButton(parent);
 	dataSelectionButton->setText(tr("Data"));
-	dataSelectionButton->setIcon(QIcon(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png")));
+	dataSelectionButton->setIcon(QIcon(QString::fromUtf8(":/coreUI/icons/dane.wejsciowe.png")));
 	dataSelectionButton->setPopupMode(QToolButton::MenuButtonPopup);
 	//wybór danych
 	QMenu * dataSelectioMenu = new QMenu(tr("Data"), dataSelectionButton);
-	dataSelectioMenu->setIcon(QIcon(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png")));
+	dataSelectioMenu->setIcon(QIcon(QString::fromUtf8(":/coreUI/icons/dane.wejsciowe.png")));
 	connect(dataSelectioMenu, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
 	connect(dataSelectioMenu, SIGNAL(aboutToHide()), this, SLOT(clearSourcesMenu()));
 	dataSelectionButton->setMenu(dataSelectioMenu);
@@ -227,7 +226,7 @@ void CoreVisualizerWidget::fillSourcesMenu()
 		//oznaczyć serie które są w wizualizatorze ale nie ma ich już w samych danych wizualizatora!!
 
 		//najpierw serie aktywne
-		std::map<TypeInfo, QMenu*> typeMenus;
+		std::map<core::TypeInfo, QMenu*> typeMenus;
 		for(auto typeIT = activeData.begin(); typeIT != activeData.end(); ++typeIT){
 			auto typeMenu = activeDataSubmenu->addMenu(QString::fromUtf8(typeIT->first.name()));
 			for(auto dataIT = typeIT->second.begin(); dataIT != typeIT->second.end(); ++dataIT){
@@ -354,7 +353,7 @@ void CoreVisualizerWidget::serieSelected(int idx)
 	if(idx == 0){
 		visualizer_->setActiveSerie(nullptr);
 	}else{
-		visualizer_->setActiveSerie(persistentActiveSerieSwitch->itemData(idx).value<Visualizer::VisualizerSerie*>());
+		visualizer_->setActiveSerie(persistentActiveSerieSwitch->itemData(idx).value<core::Visualizer::VisualizerSerie*>());
 	}
 }
 
@@ -387,7 +386,7 @@ void CoreVisualizerWidget::addSerie()
 void CoreVisualizerWidget::removeSerie()
 {
 	QAction * action = qobject_cast<QAction*>(sender());
-	Visualizer::VisualizerSerie * serie = action->data().value<Visualizer::VisualizerSerie *>();
+	core::Visualizer::VisualizerSerie * serie = action->data().value<core::Visualizer::VisualizerSerie *>();
 
 	auto activeDataIT = activeData.find(serie->serie()->getRequestedDataType());
 
@@ -448,4 +447,6 @@ const bool CoreVisualizerWidget::getDataSource(core::ObjectWrapperConstPtr data,
 void CoreVisualizerWidget::onLiveObserveChange(bool observe)
 {
 	visualizer_->setLiveObserveActive(observe);
+
+
 }

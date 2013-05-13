@@ -15,12 +15,9 @@
 #include <vector>
 #include <map>
 #include <utils/IThread.h>
-#include <utils/IThreadFactory.h>
 #include <dflib/MRModelInterfaceVerifier.h>
-#include "DefaultThreadFactory.h"
 #include <dflib/IDFLogger.h>
-#include <QtCore/QThread>
-#include <QtCore/QWaitCondition>
+#include <utils/IThreadPool.h>
 
 namespace df{
 
@@ -129,28 +126,6 @@ private:
 
 	friend class ProcessingNodeRunner;
 
-	class DataflowFinisher : public QThread
-	{
-	public:
-		DataflowFinisher();
-
-		void setThreadFactory(utils::IThreadFactory * factory);
-		void setRunner(DFModelRunnerImpl * runner);
-
-		virtual ~DataflowFinisher();
-
-	protected:
-
-		virtual void run();
-
-	private:
-
-		DFModelRunnerImpl * runner;
-		utils::IThreadFactory * factory;
-	};
-
-	friend class DataflowFinisher;
-
 struct SourceNodeWrapData
 {
 	IMRSourceNode * node;
@@ -161,7 +136,8 @@ typedef std::vector<SourceNodeWrapData> WrapedSources;
 typedef std::vector<IMRSinkNode *> WrapedSinks;
 typedef std::vector<IMRProcessingNode*> WrapedProcessors;
 
-typedef std::vector<utils::IThread*> Threads;
+typedef std::vector<utils::RunnablePtr> Runnables;
+typedef std::vector<utils::ThreadPtr> Threads;
 typedef std::list<df::IDFLoggerHelper*> LoggerHelpers;
 typedef std::vector<INodeRunner*> NodeRunners;
 
@@ -176,9 +152,9 @@ private:
 
 	void cleanUpDataflow();
 
-	void wrapSourceNode(const MRModelInterfaceVerifier::SourceVerificationData & sourceData, utils::IThreadFactory * tFactory, OutputPinsMapping & outputMapping);
-	void wrapSinkNode(const MRModelInterfaceVerifier::SinkVerificationData & sinkData, utils::IThreadFactory * tFactory, InputPinsMapping & inputMapping);
-	void wrapProcessorNode(const MRModelInterfaceVerifier::ProcessorVerificationData & processorData, utils::IThreadFactory * tFactory, InputPinsMapping & inputMapping, OutputPinsMapping & outputMapping);
+	void wrapSourceNode(const MRModelInterfaceVerifier::SourceVerificationData & sourceData, OutputPinsMapping & outputMapping);
+	void wrapSinkNode(const MRModelInterfaceVerifier::SinkVerificationData & sinkData, InputPinsMapping & inputMapping);
+	void wrapProcessorNode(const MRModelInterfaceVerifier::ProcessorVerificationData & processorData, InputPinsMapping & inputMapping, OutputPinsMapping & outputMapping);
 	
 	void wrapInputPins(IMRSinkNode * sink, const MRModelInterfaceVerifier::InputVerification & inputData, InputPinsMapping & inputMapping);
 	void wrapOutputPins(IMRSourceNode * source, const MRModelInterfaceVerifier::OutputVerification & outputData, OutputPinsMapping & outputMapping);
@@ -218,7 +194,7 @@ private:
 
 	//! Metoda mapuje elementy modelu do obiektów wrappuj¹cych, które obs³uguj¹ logikê przep³ywu danych
 	//! \param reader Obiekt pozwalajacy czytaæ strukturê naszego modelu
-	void wrapModelElements(df::IModelReader * model, const MRModelInterfaceVerifier::ModelVerificationData & modelElements, utils::IThreadFactory * tFactory);
+	void wrapModelElements(df::IModelReader * model, const MRModelInterfaceVerifier::ModelVerificationData & modelElements);
 
 private:
 	StrictSyncPolicy failureMessageSync;
@@ -234,6 +210,7 @@ private:
 	WrapedSources sources_;
 	WrapedSinks sinks_;
 	WrapedProcessors processors_;
+	Runnables runnables_;
 	Threads threads_;
 	LoggerHelpers loggerHelpers_;
 	NodeRunners nodeRunners_;
@@ -258,9 +235,7 @@ private:
 
 	df::IDFLogger * logger_;
 
-	DataflowFinisher dataflowFinisher;
-
-	static DefaultThreadFactory defaultThreadFactory;
+	utils::IThreadPool * threadPool;
 
 public:
 
@@ -270,7 +245,7 @@ public:
 	//! \return Czy model mo¿na przetwarzaæ
 	static const bool verifyModel(const df::IModelReader * reader);
 
-	void start(df::IModelReader * model, df::IDFLogger * logger, utils::IThreadFactory * tFactory);
+	void start(df::IModelReader * model, df::IDFLogger * logger, utils::IThreadPool * tPool);
 	void stop();
 
 	void pause(df::INode * node);

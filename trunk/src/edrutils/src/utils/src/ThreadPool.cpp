@@ -18,24 +18,38 @@ private:
 	//! Wewnêtrznie obs³uguje ju¿ faktyczny w¹tek w systemie reprezentowany przez klasê QThread
 	class TPThread : public IThread
 	{
+		friend class ThreadPoolImpl;
 	private:
 		//! Pool z którego pochodzi w¹tek
 		ThreadPoolImpl * tp;
 		//! W¹tek obs³uguj¹cy zadania, bêdzie wykozystywany w pool wiele razy jeœli nada¿y siê taka okazja
 		//! ma to zminimalizowaæ iloœæ tworzenia w¹tków
 		ThreadPtr thread;
+		//! Obiekt synchronizujacy stan watku
+		QMutex synch;
+
+	private:
+
+		void setThreadPool(ThreadPoolImpl * tp)
+		{
+			QMutexLocker lock(&synch);
+			this->tp = tp;
+		}
 
 	public:
 		//! \param tp ThreadPool dla któego utworzono w¹tek
 		//! \param thread W¹tek faktycznie obs³uguj¹cy zadania
-		TPThread(ThreadPoolImpl * tp, const ThreadPtr & thread) : tp(tp), thread(thread)
+		TPThread(ThreadPoolImpl * tp, const ThreadPtr & thread) : tp(tp), thread(thread), synch(QMutex::NonRecursive)
 		{
 
 		}
 
 		virtual ~TPThread()
 		{
-
+			QMutexLocker lock(&synch);
+			if(tp != nullptr){
+				tp->reuseThreads(this);
+			}
 		}
 
 		virtual void cancel()
@@ -100,7 +114,7 @@ private:
 	//! Minimalna iloœæ w¹tków do utworzenia
 	ThreadPool::size_type minThreads_;
 	//! Dzia³aj¹ce w¹tki
-	std::map<IThread*, ThreadPtr> logicalThreads_;
+	std::map<TPThread*, ThreadPtr> logicalThreads_;
 	//! W¹tki do ponownego u¿ycia
 	std::list<ThreadPtr> freeThreads_;
 	//! W¹tki w u¿yciu
@@ -110,7 +124,7 @@ private:
 
 public:
 
-	ThreadPoolImpl(ThreadPool::size_type minThreads, ThreadPool::size_type maxThreads) : minThreads_(minThreads), maxThreads_(maxThreads), synch(QMutex::NonRecursive)
+	ThreadPoolImpl(ThreadPool::size_type minThreads, ThreadPool::size_type maxThreads) : minThreads_(minThreads), maxThreads_(maxThreads), synch(QMutex::Recursive)
 	{
 		if(maxThreads_ < minThreads_) {
 			throw std::invalid_argument("Max threads value less then min threads value");
@@ -119,7 +133,14 @@ public:
 
 	~ThreadPoolImpl()
 	{
+		for(auto it = logicalThreads_.begin(); it != logicalThreads_.end(); ++it){
+			it->first->setThreadPool(nullptr);
+		}
 
+		QMutexLocker lock(&synch);
+		std::map<TPThread*, ThreadPtr>().swap(logicalThreads_);		
+		std::list<ThreadPtr>().swap(freeThreads_);		
+		std::list<ThreadPtr>().swap(usedThreads_);
 	}
 
 	const ThreadPool::size_type maxThreads() const
@@ -163,7 +184,7 @@ public:
 		//tworzymy watek
 		auto tpt = new TPThread(this, executorThread);
 		//zapamietujemy watek i jego executor
-		logicalThreads_.insert(std::map<IThread*, ThreadPtr>::value_type(tpt,executorThread));
+		logicalThreads_.insert(std::map<TPThread*, ThreadPtr>::value_type(tpt,executorThread));
 		return ThreadPtr(tpt);
 	}
 
@@ -191,7 +212,7 @@ public:
 		//Czy mamy juz tyle ile potrzeba?
 		if(useFree < groupSize){
 			//musimy utworzyc nowych executorow
-			for(unsigned int i = useFree; i < useFree; ++i){
+			for(unsigned int i = useFree; i < groupSize; ++i){
 				executorsThreads.push_back(ThreadPtr(new Thread()));
 			}
 		}
@@ -207,7 +228,7 @@ public:
 			//tworzymy watek
 			auto tpt = new TPThread(this, *it);
 			//zapamietujemy watek i jego executor
-			logicalThreads_.insert(std::map<IThread*, ThreadPtr>::value_type(tpt,*it));
+			logicalThreads_.insert(std::map<TPThread*, ThreadPtr>::value_type(tpt,*it));
 
 			toInsert.push_back(ThreadPtr(tpt));
 		}
@@ -236,7 +257,7 @@ public:
 		minThreads_ = minThreads;
 	}
 
-	void reuseThreads(IThread * thread)
+	void reuseThreads(TPThread * thread)
 	{
 		QMutexLocker lock(&synch);
 		auto it = logicalThreads_.find(thread);
@@ -253,6 +274,11 @@ public:
 ThreadPool::ThreadPool(size_type minThreads, size_type maxThreads)
 {
 	impl_.reset(new ThreadPoolImpl(minThreads, maxThreads));
+}
+
+ThreadPool::~ThreadPool()
+{
+	impl_.reset();
 }
 
 const ThreadPool::size_type ThreadPool::maxThreads() const

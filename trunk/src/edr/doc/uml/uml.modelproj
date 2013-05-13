@@ -24,6 +24,13 @@
       <SubType>Content</SubType>
       <DependentUpon>C3D.classdiagram</DependentUpon>
     </Content>
+    <Content Include="CMake\Finders.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="CMake\Finders.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>CMake\Finders.sequencediagram</DependentUpon>
+    </Content>
     <Content Include="DataManager.sequencediagram">
       <SubType>Content</SubType>
     </Content>
@@ -51,9 +58,6 @@
     <Content Include="InputOutputWorkflowItemDescription.classdiagram">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="ManagersDiagram.classdiagram">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="ModelDefinition\Package_1206.uml">
       <SubType>Content</SubType>
     </Content>
@@ -76,13 +80,6 @@
     <Content Include="ModelDefinition\Package_1601.uml">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="PodstawoweElementyAplikacji.classdiagram">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="PodstawoweElementyAplikacji.classdiagram.layout">
-      <SubType>Content</SubType>
-      <DependentUpon>PodstawoweElementyAplikacji.classdiagram</DependentUpon>
-    </Content>
     <Content Include="UMLClassDiagram1.classdiagram">
       <SubType>Content</SubType>
     </Content>
@@ -96,20 +93,6 @@
     <Content Include="IVisualizer.sequencediagram.layout">
       <SubType>Content</SubType>
       <DependentUpon>IVisualizer.sequencediagram</DependentUpon>
-    </Content>
-    <Content Include="UMLClassDiagram2.classdiagram">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="UMLClassDiagram2.classdiagram.layout">
-      <SubType>Content</SubType>
-      <DependentUpon>UMLClassDiagram2.classdiagram</DependentUpon>
-    </Content>
-    <Content Include="UMLClassDiagram3.classdiagram">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="UMLClassDiagram3.classdiagram.layout">
-      <SubType>Content</SubType>
-      <DependentUpon>UMLClassDiagram3.classdiagram</DependentUpon>
     </Content>
     <Content Include="Plugin.sequencediagram">
       <SubType>Content</SubType>
@@ -150,5 +133,6 @@
     <Content Include="ModelDefinition\uml.uml">
       <SubType>Content</SubType>
     </Content>
+    <Folder Include="CMake" />
   </ItemGroup>
 </Project>

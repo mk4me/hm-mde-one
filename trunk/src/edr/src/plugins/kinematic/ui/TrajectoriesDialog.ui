@@ -36,8 +36,8 @@
        <string/>
       </property>
       <property name="icon">
-       <iconset resource="../../../core/ui/CoreIcons.qrc">
-        <normaloff>:/resources/icons/trajectory.png</normaloff>:/resources/icons/trajectory.png</iconset>
+       <iconset resource="kinematicIcons.qrc">
+        <normaloff>:/kinematic/icons/trajectory.png</normaloff>:/kinematic/icons/trajectory.png</iconset>
       </property>
      </column>
      <column>
@@ -153,8 +153,8 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../../core/ui/CoreIcons.qrc"/>
-  <include location="Icons.qrc"/>
+  <include location="../../../coreui/ui/CoreIcons.qrc"/>
+  <include location="kinematicIcons.qrc"/>
  </resources>
  <connections/>
 </ui>

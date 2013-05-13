@@ -23,7 +23,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../../core/ui/Icons.qrc"/>
+  <include location="newVdfIcons.qrc"/>
  </resources>
  <connections/>
  <slots>

@@ -138,7 +138,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="Icons.qrc"/>
+  <include location="newCommunicationIcons.qrc"/>
  </resources>
  <connections/>
  <slots>

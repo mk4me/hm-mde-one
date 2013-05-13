@@ -117,7 +117,8 @@ void SceneModel::run()
 {
 	df::DFModelRunner runner;
 	bool test = df::DFModelRunner::verifyModel(model.get());
-	runner.start(model.get(), nullptr);
+	//TODO
+	//runner.start(model.get(), nullptr);
 	runner.join();
 }
 

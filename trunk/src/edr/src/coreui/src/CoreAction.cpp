@@ -1,7 +1,8 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreAction.h>
 
-using namespace coreUI;
+namespace coreUI
+{
 
 CoreAction::CoreAction(const QString & sectionName, const QString &text, QObject* parent, CoreTitleBar::SideType side)
 	: QAction(text, parent), side_(side), sectionName_(sectionName)
@@ -28,4 +29,6 @@ CoreTitleBar::SideType CoreAction::side() const
 const QString CoreAction::section() const
 {
 	return sectionName_;
+}
+
 }

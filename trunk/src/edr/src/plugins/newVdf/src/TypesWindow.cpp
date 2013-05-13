@@ -41,17 +41,17 @@ void TypesWindow::addEntry( const QString& entry, const QIcon& icon, IVisualItem
     item->setText(entry);
     switch (type)  {
     case IVisualItem::ProcessingNode:
-        item->setIcon(icon.isNull() ? QIcon(":/resources/icons/vdf/processor.png"): icon);
+        item->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/processor.png"): icon);
         processorsList->addItem(item);
         break;
 
     case IVisualItem::SourceNode:
-        item->setIcon(icon.isNull() ? QIcon(":/resources/icons/vdf/source.png") : icon);
+        item->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/source.png") : icon);
         sourcesList->addItem(item);
         break;
 
     case IVisualItem::SinkNode:
-        item->setIcon(icon.isNull() ? QIcon(":/resources/icons/vdf/sink.png") : icon);
+        item->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/sink.png") : icon);
         sinksList->addItem(item);
         break;
 

@@ -1,13 +1,12 @@
 <RCC>
-  <qresource prefix="resources/icons">
-    <file alias="polnapol-ladowanie.png">../../../../resources/embedded/icons/polnapol-ladowanie.png</file>
-    <file alias="polnapol-ladowanie2.png">../../../../resources/embedded/icons/polnapol-ladowanie2.png</file>
-    <file alias="polnapol-dane.png">../../../../resources/embedded/icons/polnapol-dane.png</file>
-    <file alias="pol-na-pol-green.png">../../../../resources/embedded/icons/pol-na-pol-green.png</file>
-    <file alias="session.png">../../../../resources/embedded/icons/session.png</file>
-    <file alias="subject.png">../../../../resources/embedded/icons/subject.png</file>
-    <file alias="trial.png">../../../../resources/embedded/icons/trial.png</file>
-	<file alias="osobowe.png">../../../../resources/embedded/icons/osobowe.png</file>
-	<file alias="pomiar.png">../../../../resources/embedded/icons/pomiar.png</file>
+  <qresource prefix="newCommunication/icons">
+    <file alias="niezaladowane.png">../resources/embedded/icons/niezaladowane.png</file>
+    <file alias="zaladowane.png">../resources/embedded/icons/zaladowane.png</file>
+    <file alias="zdalne.png">../resources/embedded/icons/zdalne.png</file>
+    <file alias="lokalne.png">../resources/embedded/icons/lokalne.png</file>
+    <file alias="polnapol-ladowanie.png">../resources/embedded/icons/polnapol-ladowanie.png</file>
+    <file alias="polnapol-ladowanie2.png">../resources/embedded/icons/polnapol-ladowanie2.png</file>
+    <file alias="polnapol-dane.png">../resources/embedded/icons/polnapol-dane.png</file>
+    <file alias="pol-na-pol-green.png">../resources/embedded/icons/pol-na-pol-green.png</file>
   </qresource>
 </RCC>

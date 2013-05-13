@@ -8,7 +8,7 @@ TrajectoriesDialog::TrajectoriesDialog( QWidget* parent) :
 	QDialog(parent)
 {
 	Ui::TrajectoriesDialog::setupUi(this);
-	QIcon icon( QString::fromUtf8(":/resources/icons/trajectory.png") );
+	QIcon icon( QString::fromUtf8(":/kinematic/icons/trajectory.png") );
 	QTreeWidgetItem* item = tree->headerItem();
 	item->setIcon(0, icon);
 	item->setText(0, "");

@@ -58,13 +58,13 @@
 QTreeView::branch:has-children:!has-siblings:closed,
      QTreeView::branch:closed:has-children:has-siblings {
              border-image: none;
-             image: url(:/resources/icons/trojkat-8x8-dodolu.png);
+             image: url(:/mde/icons/trojkat-8x8-dodolu.png);
      }
 
      QTreeView::branch:open:has-children:!has-siblings,
      QTreeView::branch:open:has-children:has-siblings  {
              border-image: none;
-             image: url(:/resources/icons/trojkat-8x8-naboku.png);
+             image: url(:/mde/icons/trojkat-8x8-naboku.png);
      }
 
 #treeHolder
@@ -134,7 +134,7 @@ color: white;
         <widget class="QWidget" name="activeDataTab">
          <attribute name="icon">
           <iconset resource="../../coreui/ui/CoreIcons.qrc">
-           <normaloff>:/resources/icons/zaladowane.png</normaloff>:/resources/icons/zaladowane.png</iconset>
+           <normaloff>:/mde/icons/zaladowane.png</normaloff>:/mde/icons/zaladowane.png</iconset>
          </attribute>
          <attribute name="title">
           <string>Active Data</string>
@@ -188,7 +188,7 @@ color: black;
         <widget class="QWidget" name="filtersTab">
          <attribute name="icon">
           <iconset resource="../../coreui/ui/CoreIcons.qrc">
-           <normaloff>:/resources/icons/filtry.png</normaloff>:/resources/icons/filtry.png</iconset>
+           <normaloff>:/mde/icons/filtry.png</normaloff>:/mde/icons/filtry.png</iconset>
          </attribute>
          <attribute name="title">
           <string>Filters</string>
@@ -295,8 +295,8 @@ color: black;
                   </property>
                   <property name="icon">
                    <iconset resource="hmmViewIcons.qrc">
-                    <normaloff>:/resources/icons/strzalka-dol.png</normaloff>
-                    <normalon>:/resources/icons/strzalka-gora.png</normalon>:/resources/icons/strzalka-dol.png</iconset>
+                    <normaloff>:/mde/icons/strzalka-dol.png</normaloff>
+                    <normalon>:/mde/icons/strzalka-gora.png</normalon>:/mde/icons/strzalka-dol.png</iconset>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -422,7 +422,7 @@ QPushButton#applyButton:hover
         <widget class="QWidget" name="raportsTab">
          <attribute name="icon">
           <iconset resource="../../coreui/ui/CoreIcons.qrc">
-           <normaloff>:/resources/icons/karta.png</normaloff>:/resources/icons/karta.png</iconset>
+           <normaloff>:/mde/icons/karta.png</normaloff>:/mde/icons/karta.png</iconset>
          </attribute>
          <attribute name="title">
           <string>Raports</string>
@@ -616,11 +616,11 @@ QMainWindow::separator {
 }
 
 QMainWindow::separator:vertical {
- image: url(:/resources/icons/splitter-dots-vertical.png);
+ image: url(:/mde/icons/splitter-dots-vertical.png);
  }
 
 QMainWindow::separator:horizontal {
- image: url(:/resources/icons/splitter-dots-horizontal.png);
+ image: url(:/mde/icons/splitter-dots-horizontal.png);
 }
 
 QMainWindow::separator:vertical:hover {

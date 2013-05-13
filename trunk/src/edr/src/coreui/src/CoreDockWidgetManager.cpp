@@ -49,14 +49,7 @@ void CoreDockWidgetManager::removeTabsDistance()
 				tab->setDrawBase(false);
 			}
 		}
-
-		//TODO - na zewnątrz to powinno być robione
-		//tabWidget->setCurrentIndex(idx);
 	}
-
-	//TODO
-	//to powinno być robione na zewnątrz albo w metodzie bez nazw
-	//set->setWindowTitle(QString(tr("Group %1")).arg(dockList.size()));
 }
 
 int CoreDockWidgetManager::addDockWidgetSet(CoreDockWidgetSet* set, const QString & label)

@@ -11,6 +11,7 @@
 
 #include <exception>
 #include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 #include <utils/ObserverPattern.h>
 
 namespace utils {
@@ -23,6 +24,28 @@ public:
 	virtual ~IRunnable() {}
 	//! Metoda wirtualna realizuj¹ca przetwarzanie w w¹tku
 	virtual void run() = 0;
+};
+
+class FunctorRunnable : public IRunnable
+{
+public:
+
+	typedef boost::function<void()> Functor;
+
+public:
+
+	FunctorRunnable(const Functor & func) : func(func) {}
+
+	virtual void run()
+	{
+		if(func.empty() == false){
+			func();
+		}
+	}
+
+private:
+
+	Functor func;
 };
 
 typedef boost::shared_ptr<IRunnable> RunnablePtr;
@@ -78,6 +101,9 @@ public:
 	};
 
 public:
+	//! Wirtualny destruktor
+	virtual ~IThreadingBase() {}
+
 	//! Metoda zabija w¹tek/grupe, nie nadaje siê on/ona ponownie do u¿ycia
 	virtual void cancel() = 0;
 	//! Metoda blokuj¹ca a¿ w¹tek/grupa nie zakoñczy przetwarzania lub nie zostanie zniszczony/a
@@ -124,11 +150,14 @@ public:
 	};
 
 public:
+	//! Wirtualny destruktor
+	virtual ~IThread() {}
+
 	//! Metoda uruchamia przetwarzanie przez w¹tek, rzuca wyj¹tkiem kiedy w¹tek jeszcze dzia³¹ lub zosta³ zabity
 	//! \param priority Priorytet w¹tku
 	//! \param stackSize Rozmiar stosu dla w¹tku - jeœli zbyt du¿y w¹tek mo¿e siê nie uruchomiæ ze wzglêdu na ograniczenia systemu operacyjnego
 	//! \param runnable Obiekt wykonuj¹cy pracê w w¹tku, musi byæ kopiowalny
-	virtual void start(const RunnablePtr & runnable, const Priority priority) = 0;
+	virtual void start(const RunnablePtr & runnable, const Priority priority = Inheritate) = 0;
 	//! \return Czas aktualnego stanu idle dla w¹tku w sekundach
 	virtual const float idleTime() const = 0;
 	//! \return aktualny priorytet w¹tku

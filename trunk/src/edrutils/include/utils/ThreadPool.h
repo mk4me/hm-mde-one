@@ -10,6 +10,7 @@
 #define HEADER_GUARD___THREADPOOL_H__
 
 #include <utils/IThreadPool.h>
+#include <boost/shared_ptr.hpp>
 
 namespace utils {
 
@@ -21,12 +22,14 @@ namespace utils {
 
 	private:
 		//! Obiekt realizujacy funkcjonalnoœæ
-		std::auto_ptr<ThreadPoolImpl> impl_;
+		boost::shared_ptr<ThreadPoolImpl> impl_;
 
 	public:
 		//! \param minThreads Minimalna iloœæ w¹tków do utrzymania
 		//! \param maxThreads Maksymalna iloœæ w¹tków do utrzymania
 		ThreadPool(size_type minThreads = 4, size_type maxThreads = 16);
+		//! Wirtualny desturktor
+		virtual ~ThreadPool();
 
 		//! \return Maksymalna iloœc w¹tków jakie mo¿na utworzyæ
 		virtual const size_type maxThreads() const;

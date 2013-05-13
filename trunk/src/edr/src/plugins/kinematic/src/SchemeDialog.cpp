@@ -11,7 +11,7 @@ SchemeDialog::SchemeDialog( QWidget* parent) :
 {
 	Ui::TrajectoriesDialog::setupUi(this);
     Ui::TrajectoriesDialog::propertiesBox->setVisible(false);
-	QIcon icon( QString::fromUtf8(":/resources/icons/trajectory.png") );
+	QIcon icon( QString::fromUtf8(":/kinematic/icons/trajectory.png") );
 	QTreeWidgetItem* item = tree->headerItem();
     tree->setColumnCount(3);
 	item->setIcon(0, icon);
