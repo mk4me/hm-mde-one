@@ -23,10 +23,6 @@ SET_PROJECTS_GROUP("view")
 ADD_PROJECT(old_view "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;plugin_newTimeline;OPENGL;c3dlib")
 ADD_PROJECT(hmm_view "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;c3dlib;QWT;vidlib;plugin_newVdf;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject")
 
-SET_PROJECTS_GROUP("custom")
-ADD_PROJECT(laboratorium_gk "BOOST;utils;OSG;EIGEN3")
-
-
 
 BEGIN_INSTALLER("MDE" "MDE")
 
