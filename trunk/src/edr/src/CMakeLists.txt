@@ -23,11 +23,20 @@ SET_PROJECTS_GROUP("view")
 ADD_PROJECT(old_view "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;plugin_newTimeline;OPENGL;c3dlib")
 ADD_PROJECT(hmm_view "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;c3dlib;QWT;vidlib;plugin_newVdf;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject")
 
+#SET_PROJECTS_GROUP("custom")
+#ADD_PROJECT(laboratorium_gk "BOOST;utils;OSG;QT;TINYXML")
+
+
+
 
 BEGIN_INSTALLER("MDE" "MDE")
 
 SET_INSTALLER_VENDOR("PJWSTK")
 SET_INSTALLER_VERSION("0.0.1")
+SET_INSTALLER_ADDITIONAL_INFO("http://hm.pjwstk.edu.pl" "http://hmkb.pjwstk.edu.pl" "Marek.Kulbacki@pjwstk.edu.pl")
+SET_INSTALLER_BRANDING_IMAGE("graphic/IKONA.png")
+SET_INSTALLER_PRODUCT_ICONS("graphic/IKONA.ico" "graphic/IKONA.ico")
+SET_INSTALLER_LICENSE("license.txt")
 
 BEGIN_INSTALLER_GROUP(core "Core" "Core application elements")
 ADD_INSTALLER_GROUP_PROJECT(corelib "corelib" "General purpose library")
