@@ -24,7 +24,7 @@ ADD_PROJECT(old_view "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;plugin_newT
 ADD_PROJECT(hmm_view "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;c3dlib;QWT;vidlib;plugin_newVdf;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject")
 
 #SET_PROJECTS_GROUP("custom")
-#ADD_PROJECT(laboratorium_gk "BOOST;utils;OSG;QT;TINYXML")
+#ADD_PROJECT(laboratorium_gk "BOOST;utils;OSG;QT;TINYXML;EIGEN3")
 
 
 
@@ -38,21 +38,28 @@ SET_INSTALLER_BRANDING_IMAGE("graphic/IKONA.png")
 SET_INSTALLER_PRODUCT_ICONS("graphic/IKONA.ico" "graphic/IKONA.ico")
 SET_INSTALLER_LICENSE("license.txt")
 
+ADD_INSTALLER_INSTALLATION_TYPE(Full "Complete installation")
+ADD_INSTALLER_INSTALLATION_TYPE(Min "Minimal installation")
+
 BEGIN_INSTALLER_GROUP(core "Core" "Core application elements")
-ADD_INSTALLER_GROUP_PROJECT(corelib "corelib" "General purpose library")
-ADD_INSTALLER_GROUP_PROJECT(coreui "coreui" "UI support library")
+ADD_INSTALLER_GROUP_PROJECT(corelib "corelib" "General purpose library" "" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(coreui "coreui" "UI support library" "" "Full Min")
+
+ADD_INSTALLER_GROUP_PROJECT(old_view "old_view" "Debelopers view" "HIDDEN REQUIRED" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(hmm_view "hmm_view" "Medical view" "HIDDEN REQUIRED" "Full Min")
+
 END_INSTALLER_GROUP()
 
 BEGIN_INSTALLER_GROUP(plugins "Plugins" "Built-in application plugins")
 
-ADD_INSTALLER_GROUP_PROJECT(plugin_c3d "c3d" "Plugin supporting reading C3D files data")
-ADD_INSTALLER_GROUP_PROJECT(plugin_video "video" "Plugin supporting reading and playing video files")
-ADD_INSTALLER_GROUP_PROJECT(plugin_newTimeline "newTimeline" "Plugin offering time managment and synchronization")
-ADD_INSTALLER_GROUP_PROJECT(plugin_kinematic "kinematic" "Plugin offering skeleton and kinematic data managment and visualisation")
-ADD_INSTALLER_GROUP_PROJECT(plugin_newCommunication "newCommunication" "Plugin offering motion database and services access")
-ADD_INSTALLER_GROUP_PROJECT(plugin_newChart "newChart" "Plugin supporting data plots and visualisation")
-ADD_INSTALLER_GROUP_PROJECT(plugin_subject "subject" "Plugin supporting motion data organisation")
-ADD_INSTALLER_GROUP_PROJECT(plugin_newVdf "newVdf" "Plugins supporting efficient data processing with flexible GUI configuration")
+ADD_INSTALLER_GROUP_PROJECT(plugin_c3d "c3d" "Plugin supporting reading C3D files data" "" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(plugin_video "video" "Plugin supporting reading and playing video files" "" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(plugin_newTimeline "newTimeline" "Plugin offering time managment and synchronization" "" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(plugin_kinematic "kinematic" "Plugin offering skeleton and kinematic data managment and visualisation" "" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(plugin_newCommunication "newCommunication" "Plugin offering motion database and services access" "" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(plugin_newChart "newChart" "Plugin supporting data plots and visualisation" "" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(plugin_subject "subject" "Plugin supporting motion data organisation" "" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(plugin_newVdf "newVdf" "Plugins supporting efficient data processing with flexible GUI configuration" "" "Full")
 
 END_INSTALLER_GROUP()
 
