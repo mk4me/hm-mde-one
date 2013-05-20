@@ -555,42 +555,14 @@ FunctionEnd
 
   !insertmacro MUI_PAGE_LICENSE "@CPACK_INSTALLER_RESOURCES@\license.txt"
   Page custom InstallOptionsPage
- ; Page custom InstallOptionsPage installOptionsLeave
- ; Create custom pages
-
-
-;Function InstallOptionsPage
-
-
-  ;!insertmacro MUI_HEADER_TEXT "Install Options" "@CPACK_NSIS_PACKAGE_NAME@"
-  ;!insertmacro MUI_INSTALLOPTIONS_EXTRACT "NSIS.InstallOptions.ini"
-  ;  !insertmacro MUI_INSTALLOPTIONS_WRITE "NSIS.InstallOptions.ini" "Field 1" "Text" $(field1)
-	;!insertmacro MUI_INSTALLOPTIONS_WRITE "NSIS.InstallOptions.ini" "Field 2" "Text" $(field2)
-	;!insertmacro MUI_INSTALLOPTIONS_WRITE "NSIS.InstallOptions.ini" "Field 3" "Text" $(field3) 
-  ;!insertmacro MUI_INSTALLOPTIONS_DISPLAY "NSIS.InstallOptions.ini"
-
-;FunctionEnd
-;Var default
-;Function installOptionsLeave
-
-;FunctionEnd
-      ;!define MUI_PAGE_CUSTOMFUNCTION_PRE default
   !insertmacro MUI_PAGE_DIRECTORY
   
   ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "SHCTX" 
   !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" 
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
-   ;!define MUI_PAGE_CUSTOMFUNCTION_PRE default
-  ;Function default
-    ;!insertmacro MUI_INSTALLOPTIONS_READ $R0 "NSIS.InstallOptions.ini" "Field 2" "State"
-  ;${If} $R0 == 1 
-   ;Abort
-  ;${EndIf}
-
-;FunctionEnd
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
-  ;!define MUI_PAGE_CUSTOMFUNCTION_PRE default
+
   @CPACK_NSIS_PAGE_COMPONENTS@
 
   !insertmacro MUI_PAGE_INSTFILES
@@ -599,13 +571,75 @@ FunctionEnd
   !insertmacro MUI_PAGE_FINISH
 
   !insertmacro MUI_UNPAGE_CONFIRM
-
-  ;!insertmacro MUI_UNPAGE_COMPONENTS
-
   !insertmacro MUI_UNPAGE_INSTFILES
 Function LaunchLink
-  ExecShell "" "$INSTDIR\EDR.lnk"
+  ExecShell "" "$INSTDIR\MDE.lnk"
 FunctionEnd
+
+;--------------------------------
+;Languages
+
+  !insertmacro MUI_LANGUAGE "Polish" ;first language is the default language
+  !insertmacro MUI_LANGUAGE "Albanian"
+  !insertmacro MUI_LANGUAGE "Arabic"
+  !insertmacro MUI_LANGUAGE "Basque"
+  !insertmacro MUI_LANGUAGE "Belarusian"
+  !insertmacro MUI_LANGUAGE "Bosnian"
+  !insertmacro MUI_LANGUAGE "Breton"
+  !insertmacro MUI_LANGUAGE "Bulgarian"
+  !insertmacro MUI_LANGUAGE "Croatian"
+  !insertmacro MUI_LANGUAGE "Czech"
+  !insertmacro MUI_LANGUAGE "Danish"
+  !insertmacro MUI_LANGUAGE "Dutch"
+  !insertmacro MUI_LANGUAGE "English"
+  !insertmacro MUI_LANGUAGE "Estonian"
+  !insertmacro MUI_LANGUAGE "Farsi"
+  !insertmacro MUI_LANGUAGE "Finnish"
+  !insertmacro MUI_LANGUAGE "French"
+  !insertmacro MUI_LANGUAGE "German"
+  !insertmacro MUI_LANGUAGE "Greek"
+  !insertmacro MUI_LANGUAGE "Hebrew"
+  !insertmacro MUI_LANGUAGE "Hungarian"
+  !insertmacro MUI_LANGUAGE "Icelandic"
+  !insertmacro MUI_LANGUAGE "Indonesian"
+  !insertmacro MUI_LANGUAGE "Irish"
+  !insertmacro MUI_LANGUAGE "Italian"
+  !insertmacro MUI_LANGUAGE "Japanese"
+  !insertmacro MUI_LANGUAGE "Korean"
+  !insertmacro MUI_LANGUAGE "Kurdish"
+  !insertmacro MUI_LANGUAGE "Latvian"
+  !insertmacro MUI_LANGUAGE "Lithuanian"
+  !insertmacro MUI_LANGUAGE "Luxembourgish"
+  !insertmacro MUI_LANGUAGE "Macedonian"
+  !insertmacro MUI_LANGUAGE "Malay"
+  !insertmacro MUI_LANGUAGE "Mongolian"
+  !insertmacro MUI_LANGUAGE "Norwegian"
+  !insertmacro MUI_LANGUAGE "Portuguese"
+  !insertmacro MUI_LANGUAGE "PortugueseBR"
+  !insertmacro MUI_LANGUAGE "Romanian"
+  !insertmacro MUI_LANGUAGE "Russian"
+  !insertmacro MUI_LANGUAGE "Serbian"
+  !insertmacro MUI_LANGUAGE "SerbianLatin"
+  !insertmacro MUI_LANGUAGE "SimpChinese"
+  !insertmacro MUI_LANGUAGE "Slovak"
+  !insertmacro MUI_LANGUAGE "Slovenian"
+  !insertmacro MUI_LANGUAGE "Spanish"
+  !insertmacro MUI_LANGUAGE "Swedish"
+  !insertmacro MUI_LANGUAGE "Thai"
+  !insertmacro MUI_LANGUAGE "TradChinese"
+  !insertmacro MUI_LANGUAGE "Turkish"
+  !insertmacro MUI_LANGUAGE "Ukrainian"
+  !insertmacro MUI_LANGUAGE "Welsh"
+
+LangString field1 ${LANG_POLISH} "Wybierz typ instalacji"
+LangString field1 ${LANG_ENGLISH} "Choose installation type"
+LangString field2 ${LANG_POLISH} "Domyœlna"
+LangString field2 ${LANG_ENGLISH} "Default"
+LangString field3 ${LANG_POLISH} "Zaawansowana"
+LangString field3 ${LANG_ENGLISH} "Advanced"
+LangString ConfirmUninstall ${LANG_ENGLISH} "Do you want to keep user data?"
+LangString ConfirmUninstall ${LANG_POLISH} "Czy chcesz zachowaæ dane u¿ytkownika?"
+
 
 ;--------------------------------
 ;Reserve Files
@@ -695,10 +729,10 @@ Section "-Core installation"
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\bin\core.exe"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\bin\core.exe" "" "$INSTDIR\Uninstall.exe"
   ShellLink::SetShortCutWorkingDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\bin\"
 
-  CreateShortCut "$INSTDIR\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\bin\core.exe"
+  CreateShortCut "$INSTDIR\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\bin\core.exe" "" "$INSTDIR\Uninstall.exe"
     ShellLink::SetShortCutWorkingDirectory "$INSTDIR\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\bin\"
 
   ;Read a value from an InstallOptions INI file
@@ -808,70 +842,6 @@ SectionEnd
 Function .onSelChange
   !insertmacro SectionList MaybeSelectionChanged
 FunctionEnd
-
-;--------------------------------
-;Languages
-
-  !insertmacro MUI_LANGUAGE "Polish" ;first language is the default language
-  !insertmacro MUI_LANGUAGE "Albanian"
-  !insertmacro MUI_LANGUAGE "Arabic"
-  !insertmacro MUI_LANGUAGE "Basque"
-  !insertmacro MUI_LANGUAGE "Belarusian"
-  !insertmacro MUI_LANGUAGE "Bosnian"
-  !insertmacro MUI_LANGUAGE "Breton"
-  !insertmacro MUI_LANGUAGE "Bulgarian"
-  !insertmacro MUI_LANGUAGE "Croatian"
-  !insertmacro MUI_LANGUAGE "Czech"
-  !insertmacro MUI_LANGUAGE "Danish"
-  !insertmacro MUI_LANGUAGE "Dutch"
-  !insertmacro MUI_LANGUAGE "English"
-  !insertmacro MUI_LANGUAGE "Estonian"
-  !insertmacro MUI_LANGUAGE "Farsi"
-  !insertmacro MUI_LANGUAGE "Finnish"
-  !insertmacro MUI_LANGUAGE "French"
-  !insertmacro MUI_LANGUAGE "German"
-  !insertmacro MUI_LANGUAGE "Greek"
-  !insertmacro MUI_LANGUAGE "Hebrew"
-  !insertmacro MUI_LANGUAGE "Hungarian"
-  !insertmacro MUI_LANGUAGE "Icelandic"
-  !insertmacro MUI_LANGUAGE "Indonesian"
-  !insertmacro MUI_LANGUAGE "Irish"
-  !insertmacro MUI_LANGUAGE "Italian"
-  !insertmacro MUI_LANGUAGE "Japanese"
-  !insertmacro MUI_LANGUAGE "Korean"
-  !insertmacro MUI_LANGUAGE "Kurdish"
-  !insertmacro MUI_LANGUAGE "Latvian"
-  !insertmacro MUI_LANGUAGE "Lithuanian"
-  !insertmacro MUI_LANGUAGE "Luxembourgish"
-  !insertmacro MUI_LANGUAGE "Macedonian"
-  !insertmacro MUI_LANGUAGE "Malay"
-  !insertmacro MUI_LANGUAGE "Mongolian"
-  !insertmacro MUI_LANGUAGE "Norwegian"
-  !insertmacro MUI_LANGUAGE "Portuguese"
-  !insertmacro MUI_LANGUAGE "PortugueseBR"
-  !insertmacro MUI_LANGUAGE "Romanian"
-  !insertmacro MUI_LANGUAGE "Russian"
-  !insertmacro MUI_LANGUAGE "Serbian"
-  !insertmacro MUI_LANGUAGE "SerbianLatin"
-  !insertmacro MUI_LANGUAGE "SimpChinese"
-  !insertmacro MUI_LANGUAGE "Slovak"
-  !insertmacro MUI_LANGUAGE "Slovenian"
-  !insertmacro MUI_LANGUAGE "Spanish"
-  !insertmacro MUI_LANGUAGE "Swedish"
-  !insertmacro MUI_LANGUAGE "Thai"
-  !insertmacro MUI_LANGUAGE "TradChinese"
-  !insertmacro MUI_LANGUAGE "Turkish"
-  !insertmacro MUI_LANGUAGE "Ukrainian"
-  !insertmacro MUI_LANGUAGE "Welsh"
-
-LangString field1 ${LANG_POLISH} "Wybierz typ instalacji"
-LangString field1 ${LANG_ENGLISH} "Choose installation type"
-LangString field2 ${LANG_POLISH} "Domyœlna"
-LangString field2 ${LANG_ENGLISH} "Default"
-LangString field3 ${LANG_POLISH} "Zaawansowana"
-LangString field3 ${LANG_ENGLISH} "Advanced"
-LangString ConfirmUninstall ${LANG_ENGLISH} "Do you want to keep user data?"
-LangString ConfirmUninstall ${LANG_POLISH} "Czy chcesz zachowaæ dane u¿ytkownika?"
 
 ;--------------------------------
 ;Uninstaller Section
