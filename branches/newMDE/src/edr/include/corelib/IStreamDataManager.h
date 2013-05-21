@@ -45,7 +45,7 @@ namespace core {
 		};
 
 		//! Typ transkacji na strumieniach - dzia³a w oparciu o RAII -> próbuje "commitowaæ" zmiany przy niszczeniu obiektu transakcji
-		typedef shared_ptr<IStreamDataManagerTransaction> TransactionPtr;
+		typedef utils::shared_ptr<IStreamDataManagerTransaction> TransactionPtr;
 
 	public:
 

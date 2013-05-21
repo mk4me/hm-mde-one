@@ -5,6 +5,7 @@
 #include <plugins/c3d/EventSerieBase.h>
 #include <utils/Debug.h>
 #include <kinematiclib/JointAnglesCollection.h>
+#include <hmmlib/EMGFilter.h>
 
 using namespace core;
 
@@ -34,7 +35,7 @@ VisualizerPtr TreeWrappedItemHelper::createVisualizer()
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
 	core::IVisualizerManager::VisualizerPrototypes prototypes;
-	plugin::getVisualizerManager()->getVisualizerPrototypes(wrapper->getTypeInfo(), prototypes, true);
+	plugin::getVisualizerManager()->getVisualizerPrototypes(wrapper->getTypeInfo(), prototypes, false);
     return VisualizerPtr(prototypes.front()->create());
 }
 
@@ -377,4 +378,38 @@ void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString&
 	if(series.empty() == false && visualizer->getActiveSerie() == nullptr){
 		visualizer->setActiveSerie(series.front());
 	}
+}
+
+
+EMGFilterHelper::EMGFilterHelper( const core::ObjectWrapperConstPtr& wrapper ) :
+NewChartItemHelper(wrapper)
+{
+}
+
+VisualizerPtr EMGFilterHelper::createVisualizer()
+{
+    return NewChartItemHelper::createVisualizer();
+}
+
+void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
+{
+    ScalarChannelReaderInterfacePtr channel = wrapper->clone()->get();
+
+    boost::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(channel));
+    absTest->initialize();
+
+    //utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
+    utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, RMSModifier()));
+
+    core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    wrapperX->set(utils::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
+    (*wrapperX).copyMeta(*wrapper);
+    visualizer->getOrCreateWidget();
+
+    std::string name("UNKNOWN");
+    wrapperX->tryGetMeta("core/name", name);    
+    auto s = visualizer->createSerie(typeid(ScalarChannelReaderInterface),wrapperX);
+    s->serie()->setName(name);
+    series.push_back(s);
+
 }

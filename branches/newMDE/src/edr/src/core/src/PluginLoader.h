@@ -29,7 +29,7 @@ private:
 		//! Wskaźnik do pluginu
 		PluginPtr plugin;
 		//! Wskaźnik do dedykowanej implementacji interfejcu core::IApplication
-		shared_ptr<IApplication> coreApplication;
+		utils::shared_ptr<IApplication> coreApplication;
 		//! Uchwyt do biblioteki
 		HMODULE handle;
 	};
@@ -132,7 +132,7 @@ private:
     bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::FillFunction fillFunction);
 };
 
-typedef shared_ptr<PluginLoader> PluginLoaderPtr;
+typedef utils::shared_ptr<PluginLoader> PluginLoaderPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

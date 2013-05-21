@@ -72,7 +72,7 @@ public:
 
 private:
 
-	shared_ptr<Application> coreApplication;
+	utils::shared_ptr<Application> coreApplication;
 	MainViewApplication mainViewApplication;
 	int initUIContextRes;
 	coreUI::CoreMainWindow::CloseUpOperations cleanUp_;

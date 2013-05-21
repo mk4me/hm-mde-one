@@ -15,7 +15,7 @@ class MuscularSystem
 public:
 	virtual ~MuscularSystem() {}
 };
-typedef shared_ptr<MuscularSystem> MuscularSystemPtr;
-typedef shared_ptr<const MuscularSystem> MuscularSystemConstPtr;
+typedef utils::shared_ptr<MuscularSystem> MuscularSystemPtr;
+typedef utils::shared_ptr<const MuscularSystem> MuscularSystemConstPtr;
 
 #endif

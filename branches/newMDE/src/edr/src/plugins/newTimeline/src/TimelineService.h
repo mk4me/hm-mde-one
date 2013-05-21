@@ -45,12 +45,12 @@ public:
     virtual void finalize();
     //!
     virtual QWidget* getWidget();
-    //!
-    virtual QWidget* getControlWidget();
+
+    virtual QWidgetList getPropertiesWidgets();
+
 
 	const bool lateInit() { return true; }
 	void update(double deltaTime) {}
-	QWidget * getSettingsWidget() { return nullptr; }
 
 
 public:

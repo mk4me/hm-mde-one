@@ -71,9 +71,8 @@ namespace core {
 		};
 
 		//! Wskaźnik na obiek obserwujący zmiany
-		typedef shared_ptr<IObjectObserver> ObjectObserverPtr;
-
-		typedef shared_ptr<IDataManagerReaderOperations> TransactionPtr;
+		typedef utils::shared_ptr<IObjectObserver> ObjectObserverPtr;
+		typedef utils::shared_ptr<IDataManagerReaderOperations> TransactionPtr;
 
     public:
 

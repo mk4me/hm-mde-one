@@ -2,14 +2,16 @@
 #include "HmmVdf.h"
 #include "HmmSources.h"
 #include "HmmSinks.h"
-#include "HmmPins.h"
-#include "HmmProcessors.h"
+
+#include <plugins/dfElements/DFPins.h>
+//#include "HmmPins.h"
+//#include "HmmProcessors.h"
 
 
 void HmmVdf::registerNodes(HmmMainWindow* hmm)
 {
 
-    HMM_REGISTER_DATA_PROCESSOR_SIMPLE(
+    /*HMM_REGISTER_DATA_PROCESSOR_SIMPLE(
         ScalarTreshold, 
         "Treshold",
         "{1143D447-2F76-458A-ADEB-4A669E487023}",
@@ -61,7 +63,7 @@ void HmmVdf::registerNodes(HmmMainWindow* hmm)
         VectorAdder, 
         "Sum (Vector)",
         "{C47836AC-2B12-48AC-BB81-90B1DCA05CE3}",
-        QIcon(":/resources/icons/vdf/sum.png"));
+        QIcon(":/resources/icons/vdf/sum.png"));*/
 
     HMM_REGISTER_VECTOR_DATA_SOURCE(
         Forces,
@@ -137,7 +139,7 @@ void HmmVdf::registerNodes(HmmMainWindow* hmm)
         emgLambda);
 
     // ------------------------ !!!! FAKE !!!!--------------------------------------------
-    HMM_REGISTER_DATA_PROCESSOR_SIMPLE(
+    /*HMM_REGISTER_DATA_PROCESSOR_SIMPLE(
         ScalarDummy, 
         ".High-pass",
         "{8E4E35A1-219B-4C06-A3B7-96BDC16D4638}",
@@ -209,7 +211,7 @@ void HmmVdf::registerNodes(HmmMainWindow* hmm)
         ScalarDummy, 
         ".Smooth",
         "{0EE64473-2E58-4277-9E83-4B735FE2D751}",
-        QIcon(":/resources/icons/vdf/processor.png"));
+        QIcon(":/resources/icons/vdf/processor.png"));*/
 
 
     // ------------------------ !!!! FAKE END !!!!--------------------------------------------

@@ -124,8 +124,8 @@ public:
 };
 
 //! Definicja wskaünika.
-typedef shared_ptr<Plugin> PluginPtr;
-typedef shared_ptr<const Plugin> PluginConstPtr;
+typedef utils::shared_ptr<Plugin> PluginPtr;
+typedef utils::shared_ptr<const Plugin> PluginConstPtr;
 
 }
 

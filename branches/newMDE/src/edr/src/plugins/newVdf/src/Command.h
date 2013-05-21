@@ -13,7 +13,7 @@
 #include <utils/SmartPtr.h>
 #include <QtCore/QObject>
 #include <QtCore/QPointF>
-#include <plugins/newVdf/ICommand.h>
+#include <utils/ICommand.h>
 
 #include "SceneBuilder.h"
 #include "SceneModel.h"
@@ -24,7 +24,7 @@ namespace vdf {
 class IVisualItem;
 
 //! Dodaje element (node) na scenê.
-class AddToSceneCommand : public ICommand
+class AddToSceneCommand : public utils::ICommand
 {
 public:
 	//! Konstruktor
@@ -49,7 +49,7 @@ private:
 };
 
 //! Polecenie obs³uguje dodanie po³¹czenia pomiêdzy pinami.
-class AddConnectionCommand : public ICommand
+class AddConnectionCommand : public utils::ICommand
 {
 public:
 	//! Konstruktor
@@ -76,7 +76,7 @@ private:
 };
 
 //! Polecenie przesuwa elementy na scenie
-class MoveCommand : public ICommand
+class MoveCommand : public utils::ICommand
 {
 public:
 	//! Konstruktor
@@ -103,12 +103,12 @@ private:
 };
 
 //! Polecenie agreguje inne polecenia
-class MultiCommand : public ICommand
+class MultiCommand : public utils::ICommand
 {
 public:
 	//! Konstruktor
 	//! \param c Wektor z poleceniami do wykonania
-	MultiCommand(const std::vector<ICommandPtr>& c);
+	MultiCommand(const std::vector<utils::ICommandPtr>& c);
 public:
 	//! Kolejno wykonuje dostarczone polecenia
 	virtual void doIt();
@@ -119,11 +119,11 @@ public:
 
 private:
 	//! Dostarczone polecenia do wykonania
-	std::vector<ICommandPtr> commands;
+	std::vector<utils::ICommandPtr> commands;
 };
 
 //! Polecenie usuwa po³¹czenie pomiêdzy pinami
-class RemoveConnectionCommand : public ICommand
+class RemoveConnectionCommand : public utils::ICommand
 {
 public:
     //! Konstruktor
@@ -147,7 +147,7 @@ private:
 };
 
 //! Polecenie usuwa element (node) ze sceny vdf
-class RemoveNodeCommand : public ICommand
+class RemoveNodeCommand : public utils::ICommand
 {
 public:
 	//! Konstruktor
@@ -185,7 +185,7 @@ private:
 };
 
 //! Usuwa ca³¹ grupê elementów graficznych, wykorzustuje inne polecenia do realizacji tego celu
-class RemoveSelectedCommand : public ICommand
+class RemoveSelectedCommand : public utils::ICommand
 {
 public:
 	//! Konstruktor
@@ -205,7 +205,7 @@ private:
 	//! Model sceny vdf
     SceneModelPtr sceneModel;
 	//! Polecenia usuwaj¹ce elementy ze sceny
-    std::vector<ICommandPtr> commands;
+    std::vector<utils::ICommandPtr> commands;
 };
 }
 

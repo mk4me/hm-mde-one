@@ -13,12 +13,12 @@
 
 #include <QtGui/QWidget>
 #include <utils/ObserverPattern.h>
+#include <utils/CommandStack.h>
 #include <plugins/newVdf/IDataProcessorManager.h>
 #include <plugins/newVdf/IDataSinkManager.h>
 #include <plugins/newVdf/IDataSourceManager.h>
 
 #include "Command.h"
-#include "CommandStack.h"
 #include "ui_TypesWindow.h"
 #include "CanvasStyleEditor.h"
 #include "SceneModel.h"
@@ -33,15 +33,12 @@ class TypesWindow : public QWidget, private Ui::TypesWindow,
 {
     Q_OBJECT;
 public:
-    explicit TypesWindow(ICommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent = 0, Qt::WindowFlags f = 0);
+    explicit TypesWindow(utils::ICommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TypesWindow() {}
 
 public:
     void insert(const QString& name, const QPointF& scenePos);
-
-public slots:
-    void onNodeSelected(IVisualNodePtr node);
-    
+        
 protected:
     void update(const IDataProcessorManager* pm);
     void update(const IDataSourceManager* sm);
@@ -53,7 +50,7 @@ private:
 
 private:
     CanvasStyleEditorPtr canvas;
-	ICommandStackPtr commmandStack;
+	utils::ICommandStackPtr commmandStack;
     NewVdfWidget* newVdf;
     std::map<QString, IWorkflowItemBasePtr> name2node;
 };

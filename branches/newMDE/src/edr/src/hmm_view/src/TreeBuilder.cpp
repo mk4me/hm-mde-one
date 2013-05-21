@@ -1,7 +1,7 @@
 #include "hmmPCH.h"
 #include "TreeBuilder.h"
 #include "HmmMainWindow.h"
-#include "EMGFilter.h"
+#include <hmmlib/EMGFilter.h>
 #include <corelib/IDataManagerReader.h>
 #include "Measurements.h"
 #include <corelib/DataAccessors.h>

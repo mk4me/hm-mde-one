@@ -369,7 +369,7 @@ SourceManager* Application::sourceManager()
 	return sourceManager_.get();
 }
 
-bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
+bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
 {
 #ifdef WIN32
 #define PATH_BUFFER_SIZE 1024
@@ -421,7 +421,7 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 #endif
 }
 
-void Application::setDefaultPaths(shared_ptr<Path> & path)
+void Application::setDefaultPaths(utils::shared_ptr<Path> & path)
 {
 	//TODO
 	//mieæ na uwadze nazwê aplikacji i PJWSTK

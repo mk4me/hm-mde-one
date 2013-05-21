@@ -81,7 +81,7 @@ public:
 	};
 
 	//! Smart pointer do źródła
-	typedef shared_ptr<VisualizerDataSource> VisualizerDataSourcePtr;
+	typedef utils::shared_ptr<VisualizerDataSource> VisualizerDataSourcePtr;
 	//! Agregat źródeł danych
 	typedef std::list<VisualizerDataSourcePtr> DataSources;
 

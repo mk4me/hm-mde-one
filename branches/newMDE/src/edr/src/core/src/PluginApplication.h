@@ -50,8 +50,8 @@ public:
 
 private:
 
-	shared_ptr<IPath> path_;
-	shared_ptr<ILog> log_;
+	utils::shared_ptr<IPath> path_;
+	utils::shared_ptr<ILog> log_;
 };
 
 class MainViewApplication : public IApplication

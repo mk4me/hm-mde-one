@@ -11,6 +11,7 @@
 #include <dflib/Connection.h>
 #include <dflib/Node.h>
 #include <type_traits>
+#include <corelib/PluginCommon.h>
 
 #include "StyleMergedNode.h"
 #include "SimpleMergedNode.h"
@@ -364,3 +365,4 @@ void vdf::SceneModel::removeConnection( IVisualItemPtr item )
     UTILS_ASSERT(c);
     removeConnection(c->getOutputPin(), c->getInputPin());
 }
+

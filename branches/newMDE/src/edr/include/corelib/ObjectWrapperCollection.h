@@ -172,13 +172,13 @@ public:
     void removeDerivedTypes();
 };
 
-typedef shared_ptr<ObjectWrapperCollection> ObjectWrapperCollectionPtr;
-typedef shared_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstPtr;
+typedef utils::shared_ptr<ObjectWrapperCollection> ObjectWrapperCollectionPtr;
+typedef utils::shared_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstPtr;
 
-typedef const shared_ptr<const ObjectWrapperCollection> ConstObjectWrapperCollectionConstPtr;
+typedef const utils::shared_ptr<const ObjectWrapperCollection> ConstObjectWrapperCollectionConstPtr;
 
-typedef weak_ptr<ObjectWrapperCollection> ObjectWrapperCollectionWeakPtr;
-typedef weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeakPtr;
+typedef utils::weak_ptr<ObjectWrapperCollection> ObjectWrapperCollectionWeakPtr;
+typedef utils::weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeakPtr;
 
 }
 

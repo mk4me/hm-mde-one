@@ -10,6 +10,8 @@
 #ifndef HEADER_GUARD_NEWVDF__INODECONFIGURATION_H__
 #define HEADER_GUARD_NEWVDF__INODECONFIGURATION_H__
 
+#include <QtCore/QString>
+#include <corelib/IHierarchyItem.h>
 class QWidget;
 
 namespace vdf {
@@ -19,7 +21,7 @@ namespace vdf {
     public:
 	    virtual ~INodeConfiguration() {}
         virtual QWidget* getConfigurationWidget() = 0;
-        virtual void refreshConfiguration() = 0;
+        //virtual void refreshConfiguration() = 0;
     };
     DEFINE_SMART_POINTERS(INodeConfiguration);
 
@@ -31,6 +33,14 @@ namespace vdf {
         virtual QString getErrorMessage() = 0;
     };
     DEFINE_SMART_POINTERS(INodeValidation);
+
+    class INodeHierarchyObserver
+    {
+    public:
+        virtual ~INodeHierarchyObserver() {}
+        virtual void refresh(core::IHierarchyItemConstPtr root) = 0;
+    };
+    DEFINE_SMART_POINTERS(INodeHierarchyObserver);
 }
 
 #endif

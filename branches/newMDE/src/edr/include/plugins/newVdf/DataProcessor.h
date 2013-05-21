@@ -22,6 +22,7 @@ class PLUGIN_NEWVDF_EXPORT DataProcessor : public IDataProcessor
 public:
 	typedef boost::function<df::IProcessingNode* (const df::IProcessingNode*)> Creator;
 	DataProcessor(df::IProcessingNode* impl, core::UniqueID id, const std::string& name, Creator creator);
+    //virtual ~DataProcessor() { delete impl; }
 	//! \return Nazwa elementu logicznego
 	virtual const std::string getName() const;;
 	virtual void getOutputInfo( std::vector<OutputInfo> & output ) const;
@@ -35,11 +36,12 @@ public:
 
 private:
     QIcon icon;
-	df::IProcessingNode* _impl;
+	utils::scoped_ptr<df::IProcessingNode> _impl;
 	std::string _desc;
 	std::string _name;
 	core::UniqueID _id;
 	Creator _creator;
+
 };
 DEFINE_SMART_POINTERS(DataProcessor);
 

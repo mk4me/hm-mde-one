@@ -39,15 +39,12 @@ QWidget* SubjectService::getWidget()
 	return nullptr;
 }
 
-QWidget* SubjectService::getSettingsWidget()
+
+QWidgetList SubjectService::getPropertiesWidgets()
 {
-	return nullptr;
+    return QWidgetList();
 }
 
-QWidget* SubjectService::getControlWidget()
-{
-	return nullptr;
-}
 
 core::ObjectWrapperPtr SubjectService::createSubject()
 {

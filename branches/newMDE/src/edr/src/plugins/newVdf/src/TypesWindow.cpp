@@ -11,7 +11,7 @@
 
 using namespace vdf;
 
-TypesWindow::TypesWindow(ICommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent, Qt::WindowFlags f) :
+TypesWindow::TypesWindow(utils::ICommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     canvas(canvas),
     newVdf(newVdf),
@@ -32,7 +32,7 @@ TypesWindow::TypesWindow(ICommandStackPtr stack, CanvasStyleEditorPtr canvas, Ne
 void TypesWindow::insert( const QString& name, const QPointF& scenePos )
 {
     auto item = createItemByEntry(name);
-	commmandStack->addCommand(ICommandPtr(new AddToSceneCommand(newVdf->getSceneModel(), item, scenePos)));
+	commmandStack->addCommand(utils::ICommandPtr(new AddToSceneCommand(newVdf->getSceneModel(), item, scenePos)));
 }
 
 void TypesWindow::addEntry( const QString& entry, const QIcon& icon, IVisualItem::Type type )
@@ -129,39 +129,3 @@ void TypesWindow::update( const IDataSinkManager* sm )
     }
 }
 
-void vdf::TypesWindow::onNodeSelected( IVisualNodePtr node )
-{
-    if (!node || !node->getModelNode()) {
-        tabWidget->setCurrentIndex(0);
-        return;
-    }
-
-    auto modelNode = node->getModelNode();
-    vdf::INodeConfiguration* conf = dynamic_cast<INodeConfiguration*>(modelNode);
-    
-    if (!propertiesTab->layout()) {
-        propertiesTab->setLayout(new QHBoxLayout());
-    } else {
-        auto list = propertiesTab->children();
-        for (auto it = list.begin(); it != list.end(); ++it) {
-            if ((*it)->isWidgetType()) {
-                auto widget = qobject_cast<QWidget*>(*it);
-                widget->setVisible(false);
-            }
-        }
-    }
-    if (conf) {
-        conf->refreshConfiguration();
-        auto widget = conf->getConfigurationWidget();
-        
-        if (widget->parent() == propertiesTab) {
-            widget->setVisible(true);
-        } else {
-            propertiesTab->layout()->addWidget(widget);
-        }
-        tabWidget->setCurrentIndex(1);
-    } else {
-        tabWidget->setCurrentIndex(0);
-    }
-    
-}

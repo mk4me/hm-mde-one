@@ -34,13 +34,15 @@ SET_PUBLIC_HEADERS(
 	IInputDescription.h
 	IOutputDescription.h
 	IWorkflowItemBase.h
-	ICommand.h
-	ICommandStack.h
+	#ICommand.h
+	#ICommandStack.h
 	IDataFlowProvider.h
 	DataSource.h
 	DataSink.h
 	DataProcessor.h
 	ExampleItems.h
+	TreeBuilder.h
+	TreeItemHelper.h
 	Export.h
 )
 
@@ -48,7 +50,7 @@ SET_PRIVATE_HEADERS(
 	NewVdfWidget.h
 	BackgroundsFactory.h
 	Command.h
-	CommandStack.h
+	#CommandStack.h
 	CommandStackDebug.h
 	SceneModel.h
 	CanvasStyleEditor.h
@@ -62,6 +64,7 @@ SET_PRIVATE_HEADERS(
 	DarkConnectionsFactory.h
 	SceneBuilder.h
 	TypesWindow.h
+	PropertiesWindow.h
 	PinsFactory.h
 	ConnectionsFactory.h
 	NodesFactory.h
@@ -111,11 +114,12 @@ SET_SOURCE_FILES (
 	DarkNodeStrategy.cpp
 	DarkConnectionStrategy.cpp
 	Command.cpp
-	CommandStack.cpp
+	#CommandStack.cpp
 	CommandStackDebug.cpp
 	SceneModel.cpp
 	SceneBuilder.cpp
 	TypesWindow.cpp
+	PropertiesWindow.cpp
 	CanvasStyleEditor.cpp
 	CanvasStyleEditorWidget.cpp
 	NormalState.cpp
@@ -154,14 +158,18 @@ SET_SOURCE_FILES (
 	DataSinkManager.cpp
 	DataProcessor.cpp
 	DataProcessorManager.cpp
+	TreeBuilder.cpp
+	TreeItemHelper.cpp
 )
 
 SET_MOC_FILES(
 	NewVdfWidget.h
+	NewVdfService.h
 	CanvasStyleEditorWidget.h
-	CommandStack.h
+	#CommandStack.h
 	CommandStackDebug.h
 	TypesWindow.h
+	PropertiesWindow.h
 	SimpleItem.h
 	SimpleConnection.h
 	StyleItem.h
@@ -176,6 +184,7 @@ SET_UI_FILES (
 	NewVdfWidget.ui
 	canvasStyleEditorWidget.ui
 	TypesWindow.ui
+	PropertiesWindow.ui
 )
 
 SET_RC_FILES (

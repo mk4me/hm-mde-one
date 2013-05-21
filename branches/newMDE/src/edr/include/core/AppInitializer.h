@@ -18,7 +18,7 @@ namespace core {
 
 class AppInitializer;
 
-typedef shared_ptr<AppInitializer> AppInitializerPtr;
+typedef utils::shared_ptr<AppInitializer> AppInitializerPtr;
 
 class AppInitializer
 {
@@ -28,7 +28,7 @@ private:
 
 private:
 
-	shared_ptr<AppInitializerImpl> impl;
+	utils::shared_ptr<AppInitializerImpl> impl;
 	
 
 public:

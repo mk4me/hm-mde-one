@@ -17,6 +17,8 @@
 #include <dflib/IModel.h>
 #include "SceneBuilder.h"
 #include <boost/type_traits.hpp>
+#include <plugins/newVdf/TreeBuilder.h>
+#include <corelib/IDataManagerReader.h>
 
 namespace vdf {
 
@@ -93,7 +95,7 @@ public:
 	IVisualItemPtr tryGetVisualItem(QGraphicsItem* item);
 
 	void clearScene();
-
+    
 	template <class VisualItemT>
 	QList<VisualItemT> getVisualItems()
 	{

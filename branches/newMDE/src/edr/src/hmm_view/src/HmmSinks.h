@@ -10,9 +10,38 @@
 #ifndef HEADER_GUARD_HMM__HMMSINKS_H__
 #define HEADER_GUARD_HMM__HMMSINKS_H__
 
-#include "HmmPins.h"
+#include <plugins/dfElements/DFPins.h>
 #include <QtGui/QLineEdit>
 #include "TreeItemHelper.h"
+
+class HmmMainWindow;
+
+//! Klasa potrafi obs³u¿yæ piny, które implementuj¹ interfejs IMDEOutputPin
+class XInputPin : public df::InputPin, public df::IDFInput
+{
+public:
+    //! 
+    //! \param node 
+    XInputPin( df::ISinkNode * node );
+
+public:
+    //! 
+    virtual void reset();
+    //! 
+    //! \param pin 
+    void copyData( const df::IDFOutput * pin );
+    //! 
+    //! \param pin 
+    virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
+    //! 
+    utils::ObjectWrapperConstPtr getWrapper() const;
+    //! 
+    //! \param val 
+    void setWrapper(utils::ObjectWrapperConstPtr val);
+
+private:
+    utils::ObjectWrapperConstPtr wrapper;
+};
 
 class XSink : public df::SinkNode, public df::IDFSink, public vdf::INodeConfiguration
 {
@@ -23,7 +52,7 @@ public:
     virtual void reset();
     virtual void consume();
 
-    void insertToTree( TreeItemHelperPtr channelHelper, utils::ObjectWrapperPtr wrp );
+    void insertToTree( TreeItemHelperPtr channelHelper);//, utils::ObjectWrapperPtr wrp );
 
     HmmMainWindow* getHmm() const;
     void setHmm(HmmMainWindow* val);
@@ -36,7 +65,7 @@ private:
 
 private:
     HmmMainWindow* hmm;
-    ChannelInputPin * inPinA;
+    XInputPin * inPinA;
     QWidget* widget;
     QLineEdit* line;
     QString defaultName;

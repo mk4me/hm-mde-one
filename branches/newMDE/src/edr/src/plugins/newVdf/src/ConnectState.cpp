@@ -90,7 +90,7 @@ bool ConnectState::mousePressEvent( QGraphicsSceneMouseEvent* e )
             if (pin1 && pin2) {
                 if (model->connectionPossible(pin1, pin2)) {
                     PinResolver p(pin1, pin2);
-                    stateMachine->getCommandStack()->addCommand(ICommandPtr(new AddConnectionCommand(model, p, p)));
+                    stateMachine->getCommandStack()->addCommand(utils::ICommandPtr(new AddConnectionCommand(model, p, p)));
                     break;
                 }
             }

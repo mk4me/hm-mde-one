@@ -52,20 +52,20 @@ namespace core {
 		friend class UIApplication;
 
 	private:
-		shared_ptr<Path> paths_;
-		shared_ptr<LogInitializer> logInitializer_;
+		utils::shared_ptr<Path> paths_;
+		utils::shared_ptr<LogInitializer> logInitializer_;
 		LogPtr loggerPrototype_;
 		LogPtr logger_;
-		shared_ptr<PluginLoader> pluginLoader_;
-		shared_ptr<DataHierarchyManager> dataHierarchyManager_;
-		shared_ptr<MemoryDataManager> memoryDataManager_;
-		shared_ptr<ParserManager> parserManager_;
-		shared_ptr<StreamDataManager> streamDataManager_;
-		shared_ptr<FileDataManager> fileDataManager_;
-		shared_ptr<coreUI::UIApplication> uiApplication_;
-		shared_ptr<ServiceManager> serviceManager_;
-		shared_ptr<SourceManager> sourceManager_;
-		shared_ptr<VisualizerManager> visualizerManager_;
+		utils::shared_ptr<PluginLoader> pluginLoader_;
+		utils::shared_ptr<DataHierarchyManager> dataHierarchyManager_;
+		utils::shared_ptr<MemoryDataManager> memoryDataManager_;
+		utils::shared_ptr<ParserManager> parserManager_;
+		utils::shared_ptr<StreamDataManager> streamDataManager_;
+		utils::shared_ptr<FileDataManager> fileDataManager_;
+		utils::shared_ptr<coreUI::UIApplication> uiApplication_;
+		utils::shared_ptr<ServiceManager> serviceManager_;
+		utils::shared_ptr<SourceManager> sourceManager_;
+		utils::shared_ptr<VisualizerManager> visualizerManager_;
 
 		Filesystem::Path additionalPluginsPath;
 
@@ -79,8 +79,8 @@ namespace core {
 
 	private:
 
-		static bool trySetPathsFromRegistry(shared_ptr<Path> & path);
-		static void setDefaultPaths(shared_ptr<Path> & path);
+		static bool trySetPathsFromRegistry(utils::shared_ptr<Path> & path);
+		static void setDefaultPaths(utils::shared_ptr<Path> & path);
 		void showSplashScreenMessage(const QString & message);
 
 		void safeRegisterService(const plugin::IServicePtr & service);

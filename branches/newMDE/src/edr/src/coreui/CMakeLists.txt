@@ -17,6 +17,7 @@ SET_PUBLIC_HEADERS(
 	ICoreActionSection.h
 	CoreCompoundVisualizerWidget.h
 	CoreTextEditWidget.h
+	HierarchyTreeModel.h
 	Export.h
 )
 
@@ -36,6 +37,7 @@ SET_SOURCE_FILES(
 	CoreUiPCH.cpp
 	CoreCompoundVisualizerWidget.cpp
 	CoreTextEditWidget.cpp
+	HierarchyTreeModel.cpp
 )
 
 SET_PRIVATE_HEADERS(
@@ -57,6 +59,7 @@ SET_MOC_FILES(
 	CoreFlexiToolBarSection.h
 	CoreTitleBar.h
 	CoreWidgetAction.h
+	HierarchyTreeModel.h
 )
 
 SET_UI_FILES(
