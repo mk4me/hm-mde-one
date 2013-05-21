@@ -1,0 +1,28 @@
+SET_PROJECTS_GROUP("core")
+
+if (CONFIG_CORE_ENABLE_LOG4CXX)
+ADD_PROJECT(core "LOG4CXX;BOOST;UTILS;OSG;QT;TINYXML;corelib;OPENGL")
+else()
+ADD_PROJECT(core "BOOST;UTILS;OSG;QT;TINYXML;corelib;OPENGL")
+endif()
+
+ADD_PROJECT(corelib "BOOST;UTILS;OSG;OPENTHREADS;OSGUI;QT;TINYXML")
+ADD_PROJECT(coreui "BOOST;UTILS;QT;TINYXML;corelib;OPENGL;corelib")
+
+SET_PROJECTS_GROUP("plugins")
+ADD_PROJECT(plugin_c3d "BOOST;corelib;C3DLIB;KINEMATICLIB" "plugins/c3d")
+ADD_PROJECT(plugin_video "OSG;QT;VIDLIB;FFMPEG;TINYXML;corelib" "plugins/video")
+ADD_PROJECT(plugin_newTimeline "BOOST;QT;QWT;corelib;TIMELINELIB;OPENTHREADS" "plugins/newTimeline")
+ADD_PROJECT(plugin_newCommunication "QT;CURL;WSDLPULL;TINYXML;corelib;WEBSERVICESLIB;QTHTMLGENLIB;SQLCIPHER;QuaZip;plugin_kinematic;" "plugins/newCommunication")
+ADD_PROJECT(plugin_kinematic "QT;BOOST;corelib;coreui;plugin_c3d;KINEMATICLIB;OSG;C3DLIB" "plugins/kinematic")
+ADD_PROJECT(plugin_newChart "BOOST;OSG;QT;QWT;corelib;coreui;plugin_c3d;C3DLIB" "plugins/newChart")
+ADD_PROJECT(plugin_subject "BOOST;OSG;QT;corelib;UTILS;C3DLIB;KINEMATICLIB" "plugins/subject")
+ADD_PROJECT(plugin_newVdf "BOOST;QT;DFLIB;corelib;coreui" "plugins/newVdf")
+#ADD_PROJECT(plugin_python "BOOST;QT;corelib" "plugins/python")
+
+SET_PROJECTS_GROUP("view")
+ADD_PROJECT(old_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;plugin_newTimeline;OPENGL;C3DLIB")
+ADD_PROJECT(hmm_view "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;C3DLIB;QWT;VIDLIB;plugin_newVdf;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject")
+
+#SET_PROJECTS_GROUP("custom")
+#ADD_PROJECT(laboratorium_gk "BOOST;UTILS;OSG;EIGEN3;")

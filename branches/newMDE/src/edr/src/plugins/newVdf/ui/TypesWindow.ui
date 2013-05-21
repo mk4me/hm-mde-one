@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TypesWindow</class>
+ <widget class="QWidget" name="TypesWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>310</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Types</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin">
+    <number>2</number>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="elementsTab">
+      <attribute name="title">
+       <string>Elements</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Sources</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="sourcesList">
+         <property name="movement">
+          <enum>QListView::Static</enum>
+         </property>
+         <property name="viewMode">
+          <enum>QListView::IconMode</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Processing elements</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="processorsList">
+         <property name="movement">
+          <enum>QListView::Static</enum>
+         </property>
+         <property name="viewMode">
+          <enum>QListView::IconMode</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Sinks</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="sinksList">
+         <property name="movement">
+          <enum>QListView::Static</enum>
+         </property>
+         <property name="viewMode">
+          <enum>QListView::IconMode</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="propertiesTab">
+      <attribute name="title">
+       <string>Properties</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="newVdfIcons.qrc"/>
+ </resources>
+ <connections/>
+</ui>
