@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <list>
 #include <set>
+#include <vector>
 
 namespace utils {
 
@@ -73,6 +74,7 @@ namespace utils {
 
     typedef std::list<TypeInfo> TypeInfoList;
     typedef std::set<TypeInfo> TypeInfoSet;
+	typedef std::vector<TypeInfo> TypeInfoVector;
 }
 
 #endif  // HEADER_GUARD_UTILS__TYPEINFO_H__

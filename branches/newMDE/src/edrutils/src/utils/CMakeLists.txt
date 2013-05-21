@@ -39,9 +39,14 @@ SET_PUBLIC_HEADERS(
 	SynchronizationPolicies.h
 	IThread.h
 	IThreadFactory.h
+	IThreadGroup.h
+	IThreadPool.h
+	ThreadPool.h
+	Thread.h
 	TypeInfo.h
 	ObjectWrapper.h
 	Export.h
+	ThreadGroup.h
 	SmartPtr.h
 	ICommand.h
 	ICommandStack.h
@@ -51,13 +56,15 @@ SET_PUBLIC_HEADERS(
 #------------------------------------------------------------------------------
 # Ÿród³a
 SET_SOURCE_FILES(
-	CommandStack.cpp
+	ThreadPool.cpp
+	Thread.cpp
 	Enum.cpp
 	Debug.cpp
 	NamedTree.cpp
 	Profiler.cpp
 	TypeInfo.cpp
 	ObjectWrapper.cpp
+	ThreadGroup.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(

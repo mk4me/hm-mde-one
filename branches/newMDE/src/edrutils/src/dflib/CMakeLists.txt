@@ -29,8 +29,6 @@ SET_PRIVATE_HEADERS (
 	MRPin.h
 	MRConnection.h
 	DFModelRunnerImpl.h
-	DefaultThread.h
-	DefaultThreadFactory.h
 )
 
 SET_SOURCE_FILES(
@@ -50,8 +48,6 @@ SET_SOURCE_FILES(
 	MRModelInterfaceVerifier.cpp
 	MRModelPinRequirementsVerifier.cpp
 	MRModelLogicVerifier.cpp
-	DefaultThread.cpp
-	DefaultThreadFactory.cpp
 )
 
 END_PROJECT()

@@ -9,22 +9,20 @@
 #ifndef HEADER_GUARD___ITHREADFACTORY_H__
 #define HEADER_GUARD___ITHREADFACTORY_H__
 
-#include <boost/function.hpp>
-
 namespace utils {
 
 class IThread;
 
-class IThreadFactory
-{
-public:
-
-	typedef boost::function<void(void)> Functor;
-
-public:
-
-	virtual IThread * createThread(const Functor & func) = 0;	
-};
+//class IThreadFactory
+//{
+//public:
+//
+//	
+//
+//public:
+//
+//	virtual IThread * createThread(const Functor & func) = 0;	
+//};
 
 }
 

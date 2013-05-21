@@ -288,14 +288,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ToolboxMain.cpp" line="95"/>
-        <location filename="../src/ToolboxMain.cpp" line="117"/>
+        <location filename="../src/ToolboxMain.cpp" line="122"/>
         <source>control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ToolboxMain.cpp" line="99"/>
-        <location filename="../src/ToolboxMain.cpp" line="121"/>
+        <location filename="../src/ToolboxMain.cpp" line="126"/>
         <source>settings</source>
         <translation type="unfinished"></translation>
     </message>

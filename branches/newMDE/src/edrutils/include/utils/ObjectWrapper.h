@@ -36,6 +36,9 @@ namespace utils {
 	typedef std::list<ObjectWrapperPtr> ObjectsList;
 	typedef std::list<ObjectWrapperConstPtr> ConstObjectsList;
 
+	typedef std::vector<ObjectWrapperPtr> ObjectsVector;
+	typedef std::vector<ObjectWrapperConstPtr> ConstObjectsVector;
+
 	template<class T>
 	class ObjectWrapperT;
 
