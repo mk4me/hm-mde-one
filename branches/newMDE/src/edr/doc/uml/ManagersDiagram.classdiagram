@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner" dslVersion="1.0.0.0" Id="8b00a1fb-0a62-41f0-b043-b81c9f5f6335" name="ManagersDiagram" linkedPackageId="dd58cf8c-61ce-4c65-80d1-e5a99f47ca86" xmlns="http://schemas.microsoft.com/dsltools/LogicalClassDesigner">
+  <packagedElements>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="0746a656-b3d5-4722-bf22-a1c2f071faa5" name="IVisualizerManger" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="826a5bdd-846e-4400-ba89-5e5138701fbc" />
+        <generalsInternal>
+          <generalization Id="7f7664d8-9c13-43dc-baa0-1321e6cb78ed" isSubstitutable="false">
+            <interfaceMoniker Id="9803c3a9-a3c5-4559-8551-16fe3ad6cf42" LastKnownName="IWorkflowComponentsManager" />
+            <elementDefinition Id="201acfb8-c674-461c-ada2-d5ee6c2b9379" />
+          </generalization>
+        </generalsInternal>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="3d921b8e-a4d0-4419-a255-0e821d54c520" name="IDataProcessorManager" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="0ef34d50-e22a-4afc-93d5-eef8711d5bfb" />
+        <generalsInternal>
+          <generalization Id="7b40c615-d62f-4bf5-b0ce-fd53d9153ca8" isSubstitutable="false">
+            <interfaceMoniker Id="9803c3a9-a3c5-4559-8551-16fe3ad6cf42" LastKnownName="IWorkflowComponentsManager" />
+            <elementDefinition Id="7bd8ee4e-cabb-4c99-b0fc-a9bd3edee0e6" />
+          </generalization>
+        </generalsInternal>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="88c6585f-a31a-49b6-842b-8497952279c2" name="IDataSourceManager" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="d50fd39a-ea54-4dd3-b07e-14f2cd27ccad" />
+        <generalsInternal>
+          <generalization Id="4f3740b0-69e3-414d-ace9-dca891917065" isSubstitutable="false">
+            <interfaceMoniker Id="9803c3a9-a3c5-4559-8551-16fe3ad6cf42" LastKnownName="IWorkflowComponentsManager" />
+            <elementDefinition Id="07302f9b-be81-4427-9139-1ceb490b67e0" />
+          </generalization>
+        </generalsInternal>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="e17291e0-a004-485c-837a-254ff965c8e8" name="IDataSinkManager" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="c64e97a2-4d49-4022-9802-894ceb5e2eb8" />
+        <generalsInternal>
+          <generalization Id="052eeff6-4463-4d26-b03e-e2501ef599f8" isSubstitutable="false">
+            <interfaceMoniker Id="9803c3a9-a3c5-4559-8551-16fe3ad6cf42" LastKnownName="IWorkflowComponentsManager" />
+            <elementDefinition Id="00294722-b98b-4465-8aa8-40e360ddf9bb" />
+          </generalization>
+        </generalsInternal>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="d66e0c08-6080-4e90-92cc-3832b7092520" name="VisualizerManager" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="86cbe87b-81d5-4465-997e-7f7f4d8fce37" />
+        <suppliersInternal>
+          <interfaceRealization Id="75adb7a0-7094-4b48-bd85-ef38ac1de3f3">
+            <interfaceMoniker Id="0746a656-b3d5-4722-bf22-a1c2f071faa5" LastKnownName="IVisualizerManger" />
+            <elementDefinition Id="770d6b53-ee2d-4d17-8bf1-773ac7a44323" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="184ae26e-aab3-4687-a3b8-a0383ac70391" name="DataProcessorManager" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="bfc8dba6-548c-4d7d-bbe6-262b96945989" />
+        <suppliersInternal>
+          <interfaceRealization Id="32c4a4d5-27ae-4dfd-bc2c-147d646be980">
+            <interfaceMoniker Id="3d921b8e-a4d0-4419-a255-0e821d54c520" LastKnownName="IDataProcessorManager" />
+            <elementDefinition Id="08bee7b9-6cba-4579-ae0a-06ee1d2285fb" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="8c451d0e-6669-4f53-b401-80aa9656eebb" name="DataSourceManager" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="cf8c407f-997e-4ef4-aa11-4697e2da6090" />
+        <suppliersInternal>
+          <interfaceRealization Id="cc719c6b-7c8e-4b98-a158-5a999d240e06">
+            <interfaceMoniker Id="88c6585f-a31a-49b6-842b-8497952279c2" LastKnownName="IDataSourceManager" />
+            <elementDefinition Id="2055d23e-52cc-47e8-a8eb-ef2d74fbe442" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="466ced28-770b-44b9-bc50-fcf269a9ff19" name="DataSinkManager" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="a99c702d-8f34-4097-a02d-55b313b7adef" />
+        <suppliersInternal>
+          <interfaceRealization Id="8cb5f2c4-b70c-4524-bca8-e4ff27e5365d">
+            <interfaceMoniker Id="e17291e0-a004-485c-837a-254ff965c8e8" LastKnownName="IDataSinkManager" />
+            <elementDefinition Id="46c6ea25-d5c2-481d-9312-41526dc3f902" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="9803c3a9-a3c5-4559-8551-16fe3ad6cf42" name="IWorkflowComponentsManager" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="26102a88-19db-499a-9e35-0ae7b5a6394b" />
+        <generalsInternal>
+          <generalization Id="51427be9-deab-457c-8466-d1206b4f6336" isSubstitutable="false">
+            <interfaceMoniker Id="b0bdcde7-0aee-485b-8866-4ac5196621e7" LastKnownName="IIdentifible" />
+            <elementDefinition Id="a3ff5ecc-26a4-45c4-b403-107353dd5d18" />
+          </generalization>
+        </generalsInternal>
+        <ownedRedefinableTemplateSignatureInternal>
+          <redefinableTemplateSignature Id="a355793a-47c5-4344-9bcb-cded5e71ff66" parameters="" isLeaf="false">
+            <elementDefinition Id="63fe0f7d-8c64-4253-9640-34830b5d13bc" />
+            <ownedParameters>
+              <classifierTemplateParameter Id="768025e3-a021-4a34-add3-ef0f0a8082b4">
+                <elementDefinition Id="d7042f76-686f-4203-86a0-66f4f69df8c7" />
+                <ownedParameterableElement>
+                  <class Id="c92319ee-037b-4d1c-8b24-cff22175e992" name="T" isAbstract="false" isLeaf="false" isActiveClass="false">
+                    <elementDefinition Id="c405452c-c3d9-4fef-80ca-5065be7d641b" />
+                  </class>
+                </ownedParameterableElement>
+              </classifierTemplateParameter>
+            </ownedParameters>
+          </redefinableTemplateSignature>
+        </ownedRedefinableTemplateSignatureInternal>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="b0bdcde7-0aee-485b-8866-4ac5196621e7" name="IIdentifible" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="6446a36a-8c4a-44c2-8fb4-fa4987a34a03" />
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="2f8102d2-c515-43d1-9ae4-ce6428e49c46" name="IWorkflowComponentsManager" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="b74645ad-eb10-4431-ac2c-de8ed65dcad1" />
+        <targetEnds>
+          <association Id="6e4003ae-4d4e-4769-bee9-11d6a31a16ab" isDerived="false" sourceEndRoleName="IWorkflowComponentsManager" targetEndRoleName="IWorkflowComponentsManager" isLeaf="false" isAbstract="false">
+            <interfaceMoniker Id="9803c3a9-a3c5-4559-8551-16fe3ad6cf42" LastKnownName="IWorkflowComponentsManager" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="70e4e44c-b0a4-4656-a0dc-21890b0f39b8" name="IWorkflowComponentsManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Shared" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="8b5598ef-15d1-4127-9944-d18f7115d17b" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="d07e4217-5214-4216-9e3a-d3acd6a49e28" name="IWorkflowComponentsManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <lowerValueInternal>
+                    <literalString Id="bbc60add-f22c-47d1-9e57-106c588bca4b" name="Lower" value="*">
+                      <elementDefinition Id="e34cb2b0-62e5-4869-b03c-12e5a382be31" />
+                    </literalString>
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString Id="2d8cec5f-addd-46b0-8f66-c78bbf6a75d9" name="Upper" value="*">
+                      <elementDefinition Id="5696954b-9b79-437e-9be7-36529a510bcb" />
+                    </literalString>
+                  </upperValueInternal>
+                  <elementDefinition Id="2d964444-ebf4-4fb9-b7e0-9e1e6d48194f" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="15ba1fcd-e613-4c34-9a8c-77a7f423ca3d" />
+          </association>
+        </targetEnds>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="a45fc6f5-b589-44f9-88d2-ae8ef126ea92" name="WorkflowComponentsManager" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="88fac176-4883-4b36-80f4-a04017f61da1" />
+        <suppliersInternal>
+          <interfaceRealization Id="85c438fe-f89e-4a98-b898-4f39f444a7a8">
+            <interfaceMoniker Id="2f8102d2-c515-43d1-9ae4-ce6428e49c46" LastKnownName="IWorkflowComponentsManager" />
+            <elementDefinition Id="9b867611-413b-4380-931f-c02b4d9f3561" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+  </packagedElements>
+  <package Id="dd58cf8c-61ce-4c65-80d1-e5a99f47ca86" name="uml">
+    <elementDefinition Id="c2d1360b-ea8b-406c-b331-dd1f2f8fbe08" />
+  </package>
+</logicalClassDesignerModel>

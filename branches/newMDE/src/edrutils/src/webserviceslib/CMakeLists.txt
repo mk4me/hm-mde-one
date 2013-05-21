@@ -1,0 +1,48 @@
+BEGIN_PROJECT("static")
+
+SET_PUBLIC_HEADERS(
+	IAccountFactoryWS.h
+	AccountFactoryWS.h
+	IWSConnection.h
+	IDownloadHelper.h
+	IFtpsConnection.h
+	DownloadHelper.h
+	IWebService.h
+	IAdministrationWS.h
+	AdministrationWS.h
+	IAuthorizationWS.h
+	AuthorizationWS.h
+	IBasicQueriesWS.h
+	BasicQueriesWS.h
+	IBasicUpdatesWS.h
+	BasicUpdatesWS.h
+	IFileStoremanWS.h
+	FileStoremanWS.h
+	IUserPersonalSpaceWS.h
+	UserPersonalSpaceWS.h
+	IWSCredentials.h
+	MetadataParser.h
+	ShallowCopyParser.h
+	FtpsConnection.h
+	DateTime.h
+	DateTimeUtils.h
+	Entity.h
+)
+
+SET_SOURCE_FILES(
+	AccountFactoryWS.cpp
+	DownloadHelper.cpp
+	AdministrationWS.cpp
+	AuthorizationWS.cpp
+	BasicUpdatesWS.cpp
+	BasicQueriesWS.cpp
+	FileStoremanWS.cpp	
+	UserPersonalSpaceWS.cpp
+	MetadataParser.cpp
+	ShallowCopyParser.cpp
+	FtpsConnection.cpp
+	DateTime.cpp
+	DateTimeUtils.cpp
+)
+
+END_PROJECT()
