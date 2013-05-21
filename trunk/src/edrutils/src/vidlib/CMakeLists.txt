@@ -1,8 +1,12 @@
-BEGIN_PROJECT("dynamic")
+CONFIG_OPTION(VIDLIB_LIBRARY_STATIC "Build vidlib static library?" OFF)
+
+if(VIDLIB_LIBRARY_STATIC)
+	BEGIN_PROJECT("static")
+else()
+	BEGIN_PROJECT("dynamic")
+endif()
 
 CONFIG_OPTION(VIDLIB_ENABLE_EXCEPTIONS "Enable exeptions?" ON)
-CONFIG_OPTION(VIDLIB_LIBRARY_STATIC "Build static library?" OFF)
-add_definitions(-DVIDLIB_LIBRARY)
 
 #------------------------------------------------------------------------------
 

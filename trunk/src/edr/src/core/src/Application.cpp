@@ -14,7 +14,7 @@
 //#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
 // Od Visty dodawane s¹ przedrostki typu Wow6432Node do sciezki w rejestrach
 // adres podawany do oczytu klucza powinien byæ automatycznie konwertowany.
-#define KEY_PATH TEXT("Software\\PJWSTK\\EDR")
+#define KEY_PATH TEXT("Software\\PJWSTK\\MDE")
 #endif
 
 #ifdef CORE_ENABLE_LEAK_DETECTION

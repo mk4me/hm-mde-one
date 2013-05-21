@@ -42,11 +42,11 @@ ADD_INSTALLER_INSTALLATION_TYPE(Full "Complete installation")
 ADD_INSTALLER_INSTALLATION_TYPE(Min "Minimal installation")
 
 BEGIN_INSTALLER_GROUP(core "Core" "Core application elements")
-ADD_INSTALLER_GROUP_PROJECT(corelib "corelib" "General purpose library" "" "Full Min")
-ADD_INSTALLER_GROUP_PROJECT(coreui "coreui" "UI support library" "" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(corelib "corelib" "General purpose library" "REQUIRED" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(coreui "coreui" "UI support library" "REQUIRED" "Full Min")
 
-ADD_INSTALLER_GROUP_PROJECT(old_view "old_view" "Debelopers view" "HIDDEN REQUIRED" "Full Min")
-ADD_INSTALLER_GROUP_PROJECT(hmm_view "hmm_view" "Medical view" "HIDDEN REQUIRED" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(old_view "old_view" "Debelopers view" "HIDDEN" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(hmm_view "hmm_view" "Medical view" "HIDDEN" "Full Min")
 
 END_INSTALLER_GROUP()
 

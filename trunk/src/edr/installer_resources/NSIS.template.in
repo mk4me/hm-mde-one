@@ -164,9 +164,9 @@ Var AR_RegFlags
 ;--------------------------------
 ; path functions
 
-!verbose 3
-!include "WinMessages.NSH"
-!verbose 4
+;!verbose 3
+;!include "WinMessages.NSH"
+;!verbose 4
 
 ;----------------------------------------
 ; based upon a script of "Written by KiCHiK 2003-01-18 05:57:02"
@@ -716,7 +716,7 @@ Section "-Core installation"
 ;write information into registry 
 
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" '@CPACK_PACKAGE_VENDOR@-@CPACK_NSIS_PACKAGE_NAME@' "@CPACK_PACKAGE_VENDOR@-@CPACK_NSIS_PACKAGE_NAME@"
-		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'ProgramFilesPath' "$PROGRAMFILES\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\"
+		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'ProgramFilesPath' "$INSTDIR"
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'ApplicationDataPath' "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\"
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'UserDataPath' "$DOCUMENTS\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\"
 	
@@ -761,14 +761,23 @@ Section "-Core installation"
 
 @CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
 
+	SetOutPath "$INSTDIR"
+
 SectionEnd
 
 Section "-Add to path"
   Push $INSTDIR\bin
   StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 doNotAddToPath
-  StrCmp $DO_NOT_ADD_TO_PATH "1" doNotAddToPath 0  
+  StrCmp $DO_NOT_ADD_TO_PATH "1" doNotAddToPath 0	
     Call AddToPath
   doNotAddToPath:
+SectionEnd
+
+Section "-Create desktop shortcut"
+  StrCmp $INSTALL_DESKTOP "1" 0 doNotCreateDesktopShortcut	
+    CreateShortCut "$DESKTOP\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\bin\core.exe" "" "$INSTDIR\Uninstall.exe"
+	ShellLink::SetShortCutWorkingDirectory "$DESKTOP\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\bin\"
+  doNotCreateDesktopShortcut:
 SectionEnd
 
 ;--------------------------------
@@ -847,12 +856,17 @@ FunctionEnd
 ;Uninstaller Section
 
 Section un.data data
-
-MessageBox MB_YESNO|MB_ICONINFORMATION $(ConfirmUninstall) IDYES +4
+; Sprawdzenie czy zostawiæ dane u¿ytkownika
+; Tak - wywalamy ca³¹ resztê
+; Nie - wywalamy wszystko
+MessageBox MB_YESNO|MB_ICONINFORMATION $(ConfirmUninstall) IDNO leaveUserData
 SetShellVarContext current
 RMDir /r "$DOCUMENTS\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@"
-RMDir /r "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@"
-RMDir /r "$INSTDIR"
+RMDir "$DOCUMENTS\@CPACK_PACKAGE_VENDOR@"
+leaveUserData:
+IfFileExists "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\*.*" 0 +3
+	RMDir /r "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@"
+	RMDir "$APPDATA\@CPACK_PACKAGE_VENDOR@"
 SetShellVarContext all
 SectionEnd
 Section un.main main
@@ -887,7 +901,7 @@ Section un.main main
   DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 
   ;Remove the installation directory if it is empty.
-  RMDir "$INSTDIR"
+  RMDir /r "$INSTDIR"
 
   ; Remove the registry entries.
   DeleteRegKey SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
@@ -939,6 +953,12 @@ Section un.main main
   StrCmp $DO_NOT_ADD_TO_PATH_ "1" doNotRemoveFromPath 0
     Call un.RemoveFromPath
   doNotRemoveFromPath:
+  
+  StrCmp $INSTALL_DESKTOP "1" 0 doNotRemoveDesktopShortcut
+  IfFileExists "$DESKTOP\@CPACK_NSIS_PACKAGE_NAME@.lnk" 0 doNotRemoveDesktopShortcut
+    Delete "$DESKTOP\@CPACK_NSIS_PACKAGE_NAME@.lnk"
+  doNotRemoveDesktopShortcut:
+  
 SectionEnd
 
 Section "Microsoft Visual C++ 2010 Redistributable Package (x86)"
@@ -956,10 +976,7 @@ Section "Microsoft Visual C++ 2010 Redistributable Package (x86)"
 ExecWait '$INSTDIR\vcredist_x86.exe /q:a /c:"VCREDI~3.EXE /q:a /c:""msiexec /i vcredist.msi /qn"" "'
    StrCpy $R0 "-1"
 
-
 VSRedistInstalled:
-
-
 
 SectionEnd
 
