@@ -65,6 +65,7 @@ SET_SOURCE_FILES(
 	TypeInfo.cpp
 	ObjectWrapper.cpp
 	ThreadGroup.cpp
+	CommandStack.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(

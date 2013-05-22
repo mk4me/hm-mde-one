@@ -12,13 +12,18 @@
 
 #include <QtGui/QDialog>
 #include <QtCore/QFileInfo>
+#include <QtGui/QHBoxLayout>
 #include "ConfigurationPainter.h"
-#include "ui_configurationDialog.h"
-#include "ui_FilterConfiguratorWidget.h"
+//#include "ui_configurationDialog.h"
+//#include "ui_FilterConfiguratorWidget.h"
 #include <hmmlib/Export.h>
 
+namespace Ui {
+    class FilterConfiguratorWidget;
+}
+
 //! Widget z konfiguratorem graficznym
-class HMMLIB_EXPORT ConfigurationWidget : public QWidget, public Ui::FilterConfiguratorWidget
+class HMMLIB_EXPORT ConfigurationWidget : public QWidget//, public Ui::FilterConfiguratorWidget
 {
     Q_OBJECT;
 public:
@@ -102,6 +107,7 @@ private:
     QHBoxLayout scrollLayout;
     //! czy konfigurator aktualnie pokazuje przód postaci
     bool isFront;
+    Ui::FilterConfiguratorWidget* ui;
 };
 
 #endif

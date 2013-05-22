@@ -1,4 +1,4 @@
-#include "DFSources.h"
+#include <plugins/dfElements/DFSources.h>
 //##include "FilterCommand.h"
 //#include "Vector3DFilterCommand.h"
 

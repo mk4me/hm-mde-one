@@ -74,6 +74,8 @@ SET_RC_FILES (
 
 SET_PRECOMPILED_HEADER(MdePCH.h MdePCH.cpp)
 
+GENERATE_PROJECT_TRANSLATIONS()
+
 #------------------------------------------------------------------------------
 # DEFINICJE WYNIKAJ¥CE Z KONFLIKTU QT - BOOST (foreach)
 # wy³aczamy s³owa kluczowe qt, zastêpujemy je makrami

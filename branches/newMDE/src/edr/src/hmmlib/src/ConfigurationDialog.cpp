@@ -4,6 +4,7 @@
 #include <QtGui/QListWidgetItem>
 #include <utils/Debug.h>
 #include <tinyxml.h>
+#include "ui_FilterConfiguratorWidget.h"
 
 const float SCALE = 0.6f;
 
@@ -11,14 +12,15 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
     QWidget(parent),
     painterFront(this),
     painterBack(this),
-    isFront(true)
+    isFront(true),
+    ui(new Ui::FilterConfiguratorWidget())
 {
     painterFront.setScale(SCALE);
     painterBack.setScale(SCALE);
-    setupUi(this);
+    ui->setupUi(this);
     scrollLayout.setMargin(0);
     scrollLayout.setContentsMargins(0, 0, 0, 0);
-    scrollAreaWidget->setLayout(&scrollLayout);
+    ui->scrollAreaWidget->setLayout(&scrollLayout);
     scrollLayout.addWidget(&painterFront);
     scrollLayout.addWidget(&painterBack);
     painterBack.hide();
@@ -34,9 +36,9 @@ void ConfigurationWidget::setBackground(ConfigurationPainter& painter, const QSt
 {
     int w = static_cast<int>(SCALE * pixmap->width());
     int h = static_cast<int>(SCALE * pixmap->height());
-    scrollArea->setMaximumSize(w, h);
-    scrollArea->setMinimumSize(w, h);
-    scrollAreaWidget->setGeometry(QRect(0, 0, w, h));
+    ui->scrollArea->setMaximumSize(w, h);
+    ui->scrollArea->setMinimumSize(w, h);
+    ui->scrollAreaWidget->setGeometry(QRect(0, 0, w, h));
     painter.setBackground(name, pixmap);
 }
 
@@ -126,7 +128,7 @@ void ConfigurationWidget::onElementHovered( const QString& name, bool selected )
 
 void ConfigurationWidget::setText( const QString& text )
 {
-    this->label->setText(text);
+    ui->label->setText(text);
 }
 
 void ConfigurationWidget::setVisibles( const std::map<QString, bool>& visibles )

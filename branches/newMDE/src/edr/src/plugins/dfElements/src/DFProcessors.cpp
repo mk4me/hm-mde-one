@@ -1,4 +1,4 @@
-#include "DFProcessors.h"
+#include <plugins/dfElements/DFProcessors.h>
 #include <QtGui/QHBoxLayout>
 
 

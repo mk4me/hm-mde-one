@@ -1,7 +1,7 @@
 #include <corelib/IPlugin.h>
-#include "DFProcessors.h"
-#include "DfSinks.h"
-#include "DFSources.h"
+#include <plugins/dfelements/DFProcessors.h>
+#include <plugins/dfelements/DfSinks.h>
+#include <plugins/dfelements/DFSources.h>
 #include <plugins/newVdf/IDataFlowProvider.h>
 
 CORE_PLUGIN_BEGIN("DFEments", core::UID::GenerateUniqueID("{678727A0-ED31-43CA-AE6D-BADA05717ADA}"))

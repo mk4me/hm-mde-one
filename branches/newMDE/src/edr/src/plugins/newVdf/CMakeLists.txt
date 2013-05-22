@@ -51,7 +51,7 @@ SET_PRIVATE_HEADERS(
 	BackgroundsFactory.h
 	Command.h
 	#CommandStack.h
-	CommandStackDebug.h
+	#CommandStackDebug.h
 	SceneModel.h
 	CanvasStyleEditor.h
 	CanvasStyleEditorWidget.h
@@ -115,7 +115,7 @@ SET_SOURCE_FILES (
 	DarkConnectionStrategy.cpp
 	Command.cpp
 	#CommandStack.cpp
-	CommandStackDebug.cpp
+	#CommandStackDebug.cpp
 	SceneModel.cpp
 	SceneBuilder.cpp
 	TypesWindow.cpp
@@ -167,7 +167,7 @@ SET_MOC_FILES(
 	NewVdfService.h
 	CanvasStyleEditorWidget.h
 	#CommandStack.h
-	CommandStackDebug.h
+	#CommandStackDebug.h
 	TypesWindow.h
 	PropertiesWindow.h
 	SimpleItem.h

@@ -215,4 +215,5 @@ void HmmVdf::registerNodes(HmmMainWindow* hmm)
 
 
     // ------------------------ !!!! FAKE END !!!!--------------------------------------------
+    */
 }

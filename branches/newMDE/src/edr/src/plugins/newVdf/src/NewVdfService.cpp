@@ -8,7 +8,8 @@
 #include "SceneModel.h"
 #include "VdfScene.h"
 #include "Command.h"
-#include "CommandStackDebug.h"
+#include <utils/CommandStack.h>
+//#include "CommandStackDebug.h"
 #include <QtCore/QObject>
 #include <corelib/PluginCommon.h>
 #include "DataSinkManager.h"
