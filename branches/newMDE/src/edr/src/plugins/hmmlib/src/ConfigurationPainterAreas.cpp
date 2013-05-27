@@ -1,5 +1,5 @@
 #include "HmmLibPCH.h"
-#include <hmmlib/ConfigurationPainterAreas.h>
+#include <plugins/hmmlib/ConfigurationPainterAreas.h>
 #include <QtGui/QPainter>
 #include <QtGui/QPen>
 

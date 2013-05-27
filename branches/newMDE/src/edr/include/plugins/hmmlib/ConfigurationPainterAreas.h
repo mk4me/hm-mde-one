@@ -11,7 +11,7 @@
 #define HEADER_GUARD_HMM__CONFIGURATIONPAINTERAREAS_H__
 
 #include <boost/shared_ptr.hpp>
-#include <hmmlib/Export.h>
+#include <plugins/hmmlib/Export.h>
 
 //! okresla obszar na konfiguratorze graficznym
 class HMMLIB_EXPORT IArea

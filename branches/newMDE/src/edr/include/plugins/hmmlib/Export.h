@@ -11,7 +11,7 @@
 
 #include <utils/Export.h>
 
-#if defined (hmmlib_EXPORTS)
+#if defined (plugin_hmm_EXPORTS)
 #  define HMMLIB_EXPORT UTILS_DECL_EXPORT
 #else
 #  define HMMLIB_EXPORT UTILS_DECL_IMPORT

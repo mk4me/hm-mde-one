@@ -13,6 +13,7 @@
 #include <coreui/CoreTitleBar.h>
 #include <QtGui/QMenu>
 #include "ContextAutoPlacer.h"
+#include <coreui/DataFilterWidget.h>
 //#include "SummaryWindow.h"
 //#include "AnalisisTreeWidget.h"
 
@@ -20,7 +21,10 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, QWidget* parent, int mar
     QWidget(parent, flags),
     model(model),
     manager(nullptr),
-    flexiTabWidget(nullptr)
+    flexiTabWidget(nullptr),
+    margin(margin),
+    filterWidth(-1), 
+    filterHeight(-1)
 {
     setupUi(this);
     devideArea();
@@ -34,6 +38,7 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, QWidget* parent, int mar
     
     auto vdfService = core::queryServices<vdf::NewVdfService>(plugin::getServiceManager());
     connect(vdfService.get(), SIGNAL(transferResults(core::IHierarchyItemPtr )), this, SLOT(addRoot(core::IHierarchyItemPtr)));
+    connect(model.get(), SIGNAL(filterBundleAdded(core::IFilterBundlePtr)), this, SLOT(onFilterBundleAdded(core::IFilterBundlePtr)));
 }
 
 void AnalisisWidget::showTimeline()
@@ -228,6 +233,59 @@ void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
 {
     model->getTreeModel()->addRootItem(root);
 }
+
+void AnalisisWidget::onFilterBundleAdded( core::IFilterBundlePtr bundle )
+{
+    coreUi::DataFilterWidget* dataWidget = new coreUi::DataFilterWidget("TEST", QPixmap());
+    int count = bundle->genNumFilters();
+    for (int i = 0; i < count; ++i) {
+        dataWidget->addFilter(QString("Filter %1").arg(i + 1), bundle->getFilter(i));
+    }
+    addDataFilterWidget(dataWidget);
+    connect(dataWidget, SIGNAL(onFilterClicked(core::IFilterCommandPtr)), this, SLOT(onFilterClicked(core::IFilterCommandPtr)));
+}
+
+
+void AnalisisWidget::addDataFilterWidget( coreUi::DataFilterWidget* filter )
+{ 
+    if (filterWidth < 0 && filterHeight < 0) {
+        filterWidth = filter->width();
+        filterHeight = filter->height();
+    }
+
+    UTILS_ASSERT(filterHeight == filter->height() && filterWidth == filter->width());
+
+
+    int count = filterScroll->children().size();
+    int x = count % 2;
+    int y = count / 2;
+
+    if (x == 0) {
+        int w = 3 * margin + filterWidth * 2;
+        int h = 2 * margin + (filterHeight + margin) * (y + 1);
+        filterScroll->setMinimumSize(w, h);
+        containerFrame->setMaximumWidth(w + 22);
+        containerFrame->setMinimumWidth(w + 22);
+        scrollArea->setMinimumHeight(3 * margin + filterHeight * 2);
+    }
+
+    filter->setParent(filterScroll);
+    filter->setGeometry(margin + x * (filterWidth + margin),margin +  y * (margin + filterHeight), filterWidth, filterHeight);
+
+    connect(filter, SIGNAL( clicked()), this, SLOT(switchToFirstTab()));
+    connect(this->resetButton, SIGNAL(clicked()), filter, SLOT(resetFilters()));
+    //connect(this->resetButton, SIGNAL(clicked()), hmm, SLOT(refreshTree()));
+    for (int i = 0; i < filter->getNumEntries(); ++i) {
+        connect(filter->getEntry(i), SIGNAL( onFilterClicked(core::IFilterCommandPtr)), this, SLOT(onFilterClicked(core::IFilterCommandPtr)));
+    }
+}
+
+void AnalisisWidget::onFilterClicked( core::IFilterCommandPtr filter )
+{
+    model->applyFilter(filter);
+}
+
+
 
 
 AnalysisTreeContextMenu::AnalysisTreeContextMenu( AnalisisModelPtr model, AnalisisWidget* widget ) :

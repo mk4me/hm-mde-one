@@ -39,12 +39,17 @@ SET_PUBLIC_HEADERS(
 	HierarchyItem.h
 	IHierarchyDataItem.h
 	IHierarchyItem.h
+	IFilterProvider.h
+	IFilterCommand.h
+	IFilterBundle.h
+	FilterBundle.h
 	Export.h
 )
 
 SET_SOURCE_FILES(
 	Filesystem.cpp
 	Visualizer.cpp
+	FilterBundle.cpp
 	# SubjectDataFilters.cpp
 	CoreLibPCH.cpp
 	ObjectWrapperCollection.cpp

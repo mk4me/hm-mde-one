@@ -1,7 +1,8 @@
-#include <hmmlib/ConfigurationPainter.h>
+#include <plugins/hmmlib/ConfigurationPainter.h>
 #include <QtGui/QMouseEvent>
 #include <stdexcept>
 #include <utils/Debug.h>
+
 ConfigurationPainter::ConfigurationPainter( QWidget* parent ) :
 QWidget(parent),
     scale(1.0f)

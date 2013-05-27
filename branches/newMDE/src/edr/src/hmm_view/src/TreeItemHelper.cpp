@@ -5,7 +5,7 @@
 #include <plugins/c3d/EventSerieBase.h>
 #include <utils/Debug.h>
 #include <kinematiclib/JointAnglesCollection.h>
-#include <hmmlib/EMGFilter.h>
+#include <plugins/hmmlib/EMGFilter.h>
 
 using namespace core;
 

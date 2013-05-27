@@ -17,7 +17,7 @@
 #include <QtGui/QPen>
 #include <QtGui/QPainter>
 #include "ConfigurationPainterAreas.h"
-#include <hmmlib/Export.h>
+#include <plugins/hmmlib/Export.h>
 
 //! klasa odpowiada za wyświetlenie graficznego konfiguratora
 class HMMLIB_EXPORT ConfigurationPainter : public QWidget

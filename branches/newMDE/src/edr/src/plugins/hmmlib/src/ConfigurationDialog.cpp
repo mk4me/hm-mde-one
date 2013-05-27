@@ -1,4 +1,4 @@
-#include <hmmlib/ConfigurationDialog.h>
+#include <plugins/hmmlib/ConfigurationDialog.h>
 #include <corelib/PluginCommon.h>
 #include <QtCore/QFileInfo>
 #include <QtGui/QListWidgetItem>

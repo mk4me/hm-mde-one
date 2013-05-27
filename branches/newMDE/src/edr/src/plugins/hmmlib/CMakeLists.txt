@@ -16,10 +16,15 @@ SET_SOURCE_FILES(
 	ConfigurationDialog.cpp
 	ConfigurationPainter.cpp
 	ConfigurationPainterAreas.cpp
+	HmmPlugin.cpp
+	HmmService.cpp
+	FilterCommand.cpp
 )
 
 SET_PRIVATE_HEADERS(
 	HmmLibPCH.h
+	HmmService.h
+	FilterCommand.h
 )
 
 SET_UI_FILES(

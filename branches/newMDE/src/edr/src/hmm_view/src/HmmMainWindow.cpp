@@ -13,7 +13,7 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include "IllnessUnit.h"
-#include <hmmlib/EMGFilter.h>
+#include <plugins/hmmlib/EMGFilter.h>
 #include <coreui/CoreTextEditWidget.h>
 #include <QtGui/QApplication>
 //#include <QtGui/QCloseEvent>

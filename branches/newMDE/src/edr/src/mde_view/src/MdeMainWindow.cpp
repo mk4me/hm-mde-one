@@ -92,6 +92,11 @@ void MdeMainWindow::customViewInit(QWidget * console)
         if (w) {
             addTab(IMdeTabPtr(new SimpleTab(w, QIcon(":/resources/icons/Operacje.png"),tr(service->getName().c_str()))));
         }
+
+        core::IFilterProviderPtr filterProvider = utils::dynamic_pointer_cast<core::IFilterProvider>(service);
+        if (filterProvider) {
+            analysisModel->addFilterBundles(filterProvider->getFilterBundles());
+        }
    }
 
    emit activateTab(*tabs.begin());

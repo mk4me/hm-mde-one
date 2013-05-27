@@ -29,7 +29,7 @@
 
 #include "FilterCommand.h"
 #include "TreeItemHelper.h"
-#include <hmmlib/ConfigurationDialog.h>
+#include <plugins/hmmlib/ConfigurationDialog.h>
 #include "Measurements.h"
 
 //! mapa [element konfiguracji (np. elektroda) -> wpis z odpowiadającą nazwą + ew. nazwą obrazka]

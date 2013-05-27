@@ -14,6 +14,7 @@
 #include <coreui/CoreDockWidget.h>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/CoreVisualizerWidget.h>
+#include <coreui/DataFilterWidget.h>
 #include <corelib/HierarchyHelper.h>
 #include "ui_AnalisisWidget.h"
 #include "AnalisisModel.h"
@@ -41,8 +42,8 @@ public:
     ////! \return widget przechowujący miniaturki do raportów
     //QWidget* getRaportsThumbnailList();
     ////! dodaje widget z filtrami
-    ////! \param filter dodawany widget
-    //void addDataFilterWidget(DataFilterWidget* filter);
+    //! \param filter dodawany widget
+    void addDataFilterWidget(coreUi::DataFilterWidget* filter);
     //! \return obszar, gdzie laduja wizualizatory i timeline
     QWidget* getArea() { return analisisArea; }
     QTreeView* getTreeView() { return treeView; }
@@ -51,6 +52,7 @@ public:
 public Q_SLOTS:
     void createVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper);
     void addRoot(core::IHierarchyItemPtr root);
+
 
 private:
     void showTimeline();
@@ -61,6 +63,8 @@ private:
     
 private Q_SLOTS:
     void visualizerDestroyed(QObject * visualizer);
+    void onFilterBundleAdded(core::IFilterBundlePtr bundle);
+    void onFilterClicked(core::IFilterCommandPtr filter);
     ////! zmienia widoczność filtrów
     ////! \param expand chowa/pokazuje filtry
     //void setFiltersExpanded(bool expand);
@@ -83,12 +87,12 @@ private:
     IAppUsageContextManager* manager;
     IAppUsageContextPtr parent;
     QTabWidget * flexiTabWidget;
-    ////! szerokość filtru w zakładce
-    //int filterWidth;
-    ////! wysokość filtru w zakładce
-    //int filterHeight;
-    ////! margines dla filtrów w zakładce
-    //int margin;
+    //! szerokość filtru w zakładce
+    int filterWidth;
+    //! wysokość filtru w zakładce
+    int filterHeight;
+    //! margines dla filtrów w zakładce
+    int margin;
     ////! drzewo danych
     //AnalisisTreeWidget* treeWidget;
     ////! widok HMM

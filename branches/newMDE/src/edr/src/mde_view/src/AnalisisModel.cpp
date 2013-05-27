@@ -33,3 +33,24 @@ void AnalisisModel::observe( const core::IDataManagerReader::ChangeList & change
         }
     }*/
 }
+
+void AnalisisModel::addFilterBundles( const core::IFilterProvider::FilterBundles& bundles )
+{
+    for (auto it = bundles.begin(); it != bundles.end(); ++it) {
+        filters.push_back(*it);
+        emit filterBundleAdded(*it);
+    }
+}
+
+void AnalisisModel::applyFilter( core::IFilterCommandPtr filter )
+{
+    std::vector<core::IHierarchyItemConstPtr> itms;
+    auto count = model.getNumChildren();
+    for (int i = 0; i < count; ++i) {
+        itms.push_back(model.getChild(i));
+    }
+    model.clear();
+    for (int i = 0; i < count; ++i) {
+        model.addRootItem(filter->getFilteredTree(itms[i]));
+    }
+}

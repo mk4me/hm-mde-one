@@ -16,7 +16,7 @@
 #include "ConfigurationPainter.h"
 //#include "ui_configurationDialog.h"
 //#include "ui_FilterConfiguratorWidget.h"
-#include <hmmlib/Export.h>
+#include <plugins/hmmlib/Export.h>
 
 namespace Ui {
     class FilterConfiguratorWidget;
