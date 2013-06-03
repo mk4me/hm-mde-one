@@ -33,6 +33,7 @@ public:
 
 Q_SIGNALS:
     void filterBundleAdded(core::IFilterBundlePtr);
+    void reportCreated(const QString& html);
 private:
     coreui::HierarchyTreeModel model;
     ContextEventFilterPtr contextEventFilter;

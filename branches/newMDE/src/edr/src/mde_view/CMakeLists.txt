@@ -7,6 +7,7 @@ SET_PRIVATE_HEADERS(
 	SimpleTab.h
 	AnalysisTab.h
 	ReportsTab.h
+	ReportsThumbnailContext.h
 	IAppUsageContext.h
 	IAppUsageContextManager.h
 	AboutDialog.h
@@ -32,6 +33,7 @@ SET_SOURCE_FILES (
 	SimpleTab.cpp
 	AnalysisTab.cpp
 	ReportsTab.cpp
+	ReportsThumbnailContext.cpp
 	AboutDialog.cpp
 	main.cpp
 	MdeMainWindow.cpp
@@ -57,6 +59,7 @@ SET_MOC_FILES(
 	MdeContexts.h
 	AnalisisModel.h
 	ReportsTab.h
+	ReportsThumbnailContext.h
 	ContextAction.h
 	AnalisisWidget.h
 	#AnalysisTreeModel.h

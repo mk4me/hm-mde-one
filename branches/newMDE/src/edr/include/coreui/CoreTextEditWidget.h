@@ -83,10 +83,12 @@ public:
     //! \param parent 
     CoreTextEditWidget(QWidget *parent = 0);
 
-public:
+public slots:
     //! zasila kontrolkę w kod html
     //! \param html kod, który ma zostać wyświetlony 
     void setHtml(const QString& html);
+
+public:
     //! \return akcje związane z zapisem / odczytem plików
     const QList<QObject*>& getFileActions() const { return fileList; }
     //! \return akcje związane z edycją tekstu

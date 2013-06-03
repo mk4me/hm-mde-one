@@ -43,6 +43,7 @@ bool ContextEventFilter::eventFilter( QObject *obj, QEvent *event )
         }
         break;
 
+    case QEvent::FocusIn:
     case QEvent::MouseButtonPress:
         {
             auto it = closableWidgets.find(w);
@@ -51,9 +52,6 @@ bool ContextEventFilter::eventFilter( QObject *obj, QEvent *event )
                 mainWindow->setCurrentContext(w);
             }
         }
-        break;
-
-    case QEvent::FocusIn:
         {
             auto it = permamentWidgets.find(w);
             if(it != permamentWidgets.end()){

@@ -169,7 +169,9 @@ void SimpleContext::onRegisterContextWidget( QWidget * contextWidget )
     QList<QAction*> actions = contextWidget->actions();
     if (!actions.empty()) {
         QWidget* actionsWidget = ContextAutoPlacer::create(actions);
-        widget = new coreUI::CoreFlexiToolBar(flexiTabWidget);
+        if (!widget) {
+            widget = new coreUI::CoreFlexiToolBar(flexiTabWidget);
+        }
 
         auto section = new coreUI::CoreFlexiToolBarSection(QObject::tr("Operations"));
         section->setInnerWidget(actionsWidget);

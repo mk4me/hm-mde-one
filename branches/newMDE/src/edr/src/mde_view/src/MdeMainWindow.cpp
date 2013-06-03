@@ -12,7 +12,6 @@
 #include <corelib/IServiceManager.h>
 #include <corelib/ISourceManager.h>
 #include <coreui/CoreDockWidget.h>
-#
 #include <corelib/IDataHierarchyManagerReader.h>
 #include "IMdeTab.h"
 #include "SimpleTab.h"
@@ -39,9 +38,10 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
     //connect(this, SIGNAL(onSwitchToAnalysis()), this, SLOT(safeSwitchToAnalysis()), Qt::QueuedConnection);
 
     tabPlaceholder->layout()->addWidget(contextPlaceholder);
-    contextPlaceholder->addTab(new QTabBar(), "TEST");
+    //contextPlaceholder->addTab(new QTabBar(), "TEST");
     tabPlaceholder->show();
     contextPlaceholder->show();
+    templateButton->hide();
     //contextPlaceholder->findChild<QTabBar*>()->setDrawBase(false);
 
     contextEventFilter = ContextEventFilterPtr(new ContextEventFilter(this));
@@ -73,24 +73,27 @@ void MdeMainWindow::customViewInit(QWidget * console)
        auto source = sourceManager->getSource(i);
        QWidget* widget = source->getWidget();
        if (widget) {
-           addTab(IMdeTabPtr(new SimpleTab(widget, QIcon(":/resources/icons/Badania.png"),tr(source->getName().c_str()))));
+           addTab(IMdeTabPtr(new SimpleTab(widget, QIcon(":/mde/icons/Badania.png"),tr(source->getName().c_str()))));
        }
    }
    
    AnalisisWidget* aw = new AnalisisWidget(analysisModel, nullptr);
    // -----------------------
 
-   addTab(IMdeTabPtr(new AnalysisTab(aw, QIcon(":/resources/icons/Analizy.png"), tr("Analysis"))));
-   addTab(IMdeTabPtr(new ReportsTab(QIcon(":/resources/icons/Raporty.png"), tr("Reports"))));
-   addTab(IMdeTabPtr(new SimpleTab(console, QIcon(":/resources/icons/Operacje.png"),tr("Console"))));
+   addTab(IMdeTabPtr(new AnalysisTab(aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
+   IMdeTabPtr reportsTab  = IMdeTabPtr(new ReportsTab(QIcon(":/mde/icons/Raporty.png"), tr("Reports")));
+   addTab(reportsTab);
+   addTab(IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/Operacje.png"),tr("Console"))));
 
+   // TODO : najlepiej byloby utworzyc jakis kontroler do tego typu powiazan
+   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
    auto serviceManager = plugin::getServiceManager();
    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
        plugin::IServicePtr service = serviceManager->getService(i);
        
         auto w = createServiceWidget(service);
         if (w) {
-            addTab(IMdeTabPtr(new SimpleTab(w, QIcon(":/resources/icons/Operacje.png"),tr(service->getName().c_str()))));
+            addTab(IMdeTabPtr(new SimpleTab(w, QIcon(":/mde/icons/Operacje.png"),tr(service->getName().c_str()))));
         }
 
         core::IFilterProviderPtr filterProvider = utils::dynamic_pointer_cast<core::IFilterProvider>(service);

@@ -24,7 +24,7 @@ class AnalisisTreeWidget;
 class AnalysisTreeContextMenu;
 
 //! Klasa jest odpowiedzialna za widok zakładki analiz
-class AnalisisWidget : public QWidget, public Ui::AnalisisWidget
+class AnalisisWidget : public QWidget, private Ui::AnalisisWidget
 {
     Q_OBJECT;
 public:
@@ -65,6 +65,7 @@ private Q_SLOTS:
     void visualizerDestroyed(QObject * visualizer);
     void onFilterBundleAdded(core::IFilterBundlePtr bundle);
     void onFilterClicked(core::IFilterCommandPtr filter);
+    void addToReports(const QPixmap& pixmap);
     ////! zmienia widoczność filtrów
     ////! \param expand chowa/pokazuje filtry
     //void setFiltersExpanded(bool expand);

@@ -89,7 +89,7 @@
              <string/>
             </property>
             <property name="pixmap">
-             <pixmap resource="MdeViewIcons.qrc">:/resources/icons/header.png</pixmap>
+             <pixmap resource="MdeViewIcons.qrc">:/mde/icons/header.png</pixmap>
             </property>
            </widget>
           </item>
@@ -118,8 +118,8 @@ QToolButton:pressed {
           <string>?</string>
          </property>
          <property name="icon">
-          <iconset resource="../../coreui/ui/CoreIcons.qrc">
-           <normaloff>:/resources/icons/about.png</normaloff>:/resources/icons/about.png</iconset>
+          <iconset>
+           <normaloff>:/mde/icons/about.png</normaloff>:/mde/icons/about.png</iconset>
          </property>
         </widget>
        </item>
@@ -157,7 +157,7 @@ QToolButton:pressed {
          </property>
          <property name="icon">
           <iconset resource="MdeViewIcons.qrc">
-           <normaloff>:/resources/icons/minimalizacja-alpha.png</normaloff>:/resources/icons/minimalizacja-alpha.png</iconset>
+           <normaloff>:/mde/icons/minimalizacja-alpha.png</normaloff>:/mde/icons/minimalizacja-alpha.png</iconset>
          </property>
          <property name="checkable">
           <bool>false</bool>
@@ -202,7 +202,7 @@ QToolButton:pressed {
          </property>
          <property name="icon">
           <iconset resource="../../coreui/ui/CoreIcons.qrc">
-           <normaloff>:/resources/icons/x-alpha.png</normaloff>:/resources/icons/x-alpha.png</iconset>
+           <normaloff>:/coreUI/icons/x-alpha.png</normaloff>:/coreUI/icons/x-alpha.png</iconset>
          </property>
          <property name="autoRaise">
           <bool>true</bool>
@@ -312,11 +312,7 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
          </property>
          <property name="icon">
           <iconset resource="MdeViewIcons.qrc">
-           <normaloff>:/resources/icons/Strona.png</normaloff>
-           <disabledoff>:/resources/icons/StronaH.png</disabledoff>
-           <disabledon>:/resources/icons/StronaH.png</disabledon>
-           <activeoff>:/resources/icons/StronaP.png</activeoff>
-           <activeon>:/resources/icons/Strona.png</activeon>:/resources/icons/Strona.png</iconset>
+           <normaloff>:/mde/icons/Strona.png</normaloff>:/mde/icons/Strona.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -331,22 +327,6 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
           <bool>true</bool>
          </property>
         </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
        <item>
         <widget class="QWidget" name="tabPlaceholder" native="true">
@@ -682,8 +662,8 @@ QFrame#mainArea VisualizerWidget &gt; .QWidget:hover {
   </widget>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="../../coreui/ui/CoreIcons.qrc">
-     <normaloff>:/resources/icons/about.png</normaloff>:/resources/icons/about.png</iconset>
+    <iconset>
+     <normaloff>:/mde/icons/about.png</normaloff>:/mde/icons/about.png</iconset>
    </property>
    <property name="text">
     <string>About...</string>
@@ -691,8 +671,8 @@ QFrame#mainArea VisualizerWidget &gt; .QWidget:hover {
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset resource="../../coreui/ui/CoreIcons.qrc">
-     <normaloff>:/resources/icons/open.png</normaloff>:/resources/icons/open.png</iconset>
+    <iconset>
+     <normaloff>:/mde/icons/open.png</normaloff>:/mde/icons/open.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -713,8 +693,8 @@ QFrame#mainArea VisualizerWidget &gt; .QWidget:hover {
   </action>
   <action name="actionSaveLayout">
    <property name="icon">
-    <iconset resource="../../coreui/ui/CoreIcons.qrc">
-     <normaloff>:/resources/icons/save.png</normaloff>:/resources/icons/save.png</iconset>
+    <iconset>
+     <normaloff>:/mde/icons/save.png</normaloff>:/mde/icons/save.png</iconset>
    </property>
    <property name="text">
     <string>Save layout</string>

@@ -14,6 +14,7 @@
 #include <QtGui/QMenu>
 #include "ContextAutoPlacer.h"
 #include <coreui/DataFilterWidget.h>
+#include "ReportsThumbnailContext.h"
 //#include "SummaryWindow.h"
 //#include "AnalisisTreeWidget.h"
 
@@ -87,7 +88,7 @@ void AnalisisWidget::createVisualizer( core::IHierarchyDataItemConstPtr treeItem
 
 QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & visualizer)
 {
-    connect(visualizer.get(), SIGNAL(screenshotTaken(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
+    connect(visualizer.get(), SIGNAL(screenshotTaken(const QPixmap&)), this, SLOT(addToReports(const QPixmap&)));
 
     auto visWidget = new coreUI::CoreVisualizerWidget(visualizer);
 
@@ -136,7 +137,7 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
 
     //kontekst wizualizatora!!
-    SimpleContextPtr visualizerUsageContext(new SimpleContext(flexiTabWidget, "VIS"));
+    SimpleContextPtr visualizerUsageContext(new SimpleContext(flexiTabWidget, tr("Visualizer")));
     manager->addContext(visualizerUsageContext, parent);
     manager->addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
     manager->addWidgetToContext(visualizerUsageContext, titleBar);
@@ -227,6 +228,14 @@ void AnalisisWidget::setContextItems( IAppUsageContextManager* manager, IAppUsag
     this->manager = manager;
     this->parent = parent;
     this->flexiTabWidget = flexiTabWidget;
+
+    ReportsThumbnailContextPtr visualizerUsageContext(new ReportsThumbnailContext(flexiTabWidget, raportsArea));
+    manager->addContext(visualizerUsageContext, parent);
+    this->raportsArea->addAction(new QAction(tr("Create report"), this));
+    model->getContextEventFilter()->registerPermamentContextWidget(this->raportsArea);
+    this->raportsArea->installEventFilter(model->getContextEventFilter().get());
+    manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
+    connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
 }
 
 void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
@@ -236,7 +245,7 @@ void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
 
 void AnalisisWidget::onFilterBundleAdded( core::IFilterBundlePtr bundle )
 {
-    coreUi::DataFilterWidget* dataWidget = new coreUi::DataFilterWidget("TEST", QPixmap());
+    coreUi::DataFilterWidget* dataWidget = new coreUi::DataFilterWidget("Filter 1", QPixmap());
     int count = bundle->genNumFilters();
     for (int i = 0; i < count; ++i) {
         dataWidget->addFilter(QString("Filter %1").arg(i + 1), bundle->getFilter(i));
@@ -285,6 +294,39 @@ void AnalisisWidget::onFilterClicked( core::IFilterCommandPtr filter )
     model->applyFilter(filter);
 }
 
+void AnalisisWidget::addToReports( const QPixmap& pixmap )
+{
+    if (!(pixmap.width() && pixmap.height())) {
+        return;
+    }
+
+    tabWidget->setCurrentWidget(raportsTab);
+    const int maxH = 128;
+    const int maxW = 128;
+    QWidget* list = raportsArea;
+    QLabel* thumb = new QLabel();
+
+    if (pixmap.width() > pixmap.height()) {
+        int newHeight = static_cast<int>(1.0 * maxH * pixmap.height() / pixmap.width());
+        thumb->setFixedSize(maxW, newHeight);
+    } else {
+        int newWidth = static_cast<int>(1.0 * maxW * pixmap.width() / pixmap.height());
+        thumb->setFixedSize(newWidth, maxH);
+    }
+
+    thumb->setScaledContents(true);
+    thumb->setPixmap(pixmap);
+
+    QGridLayout* grid = qobject_cast<QGridLayout*>(list->layout());
+    if (grid) {
+        int size = list->children().size() - 1;
+        int x = size % 2;
+        int y = size / 2;
+        grid->addWidget(thumb, y, x);
+    } else {
+        list->layout()->addWidget(thumb);
+    }
+}
 
 
 
