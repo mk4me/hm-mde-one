@@ -22,9 +22,9 @@ namespace df {
 		if(model_ != nullptr){
 			if(model != nullptr){
 				if(model == model_){
-					throw std::exception("Node already attached to desired model");
+					throw std::runtime_error("Node already attached to desired model");
 				}else{
-					throw std::exception("Node already attached to other model");
+					throw std::runtime_error("Node already attached to other model");
 				}
 			}else{
 				model_ = nullptr;
@@ -38,7 +38,7 @@ namespace df {
 	{
 		if(model_ != nullptr)
 		{
-			throw std::exception("Can not edit node attached to model");
+			throw std::runtime_error("Can not edit node attached to model");
 		}
 	}
 

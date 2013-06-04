@@ -1,6 +1,7 @@
 #include "MRPin.h"
 #include "IMRNode.h"
 #include "MRConnection.h"
+#include <stdexcept>
 
 MRInputPin::MRInputPin(IMRSink * sink, df::IInputPin * pin, df::IDFInput * dfInput) : sink_(sink), pin_(pin), dfInput_(dfInput), consumed_(false), outputsReady(0)
 {
@@ -82,7 +83,7 @@ void MRInputPin::addConnection(MRConnection * connection)
 {
 	if(std::find(connections.begin(), connections.end(), connection) != connections.end())
 	{
-		throw std::exception("Connection already registered in pin");
+		throw std::runtime_error("Connection already registered in pin");
 	}
 
 	connections.push_back(connection);
@@ -193,7 +194,7 @@ void MROutputPin::addConnection(MRConnection * connection)
 {
 	if(std::find(connections.begin(), connections.end(), connection) != connections.end())
 	{
-		throw std::exception("Connection already registered in pin");
+		throw std::runtime_error("Connection already registered in pin");
 	}
 
 	connections.push_back(connection);

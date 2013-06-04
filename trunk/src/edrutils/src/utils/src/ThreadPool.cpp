@@ -12,18 +12,18 @@ class ThreadPool::ThreadPoolImpl
 {
 private:
 
-	//! Implementacja w¹tku logicznego dla poola
-	//! W¹tek ten pozwala wykonywaæ zadania wielokrotnie jedno po drugim
+	//! Implementacja wï¿½tku logicznego dla poola
+	//! Wï¿½tek ten pozwala wykonywaï¿½ zadania wielokrotnie jedno po drugim
 	//! za pomoca metody start
-	//! Wewnêtrznie obs³uguje ju¿ faktyczny w¹tek w systemie reprezentowany przez klasê QThread
+	//! Wewnï¿½trznie obsï¿½uguje juï¿½ faktyczny wï¿½tek w systemie reprezentowany przez klasï¿½ QThread
 	class TPThread : public IThread
 	{
 		friend class ThreadPoolImpl;
 	private:
-		//! Pool z którego pochodzi w¹tek
+		//! Pool z ktï¿½rego pochodzi wï¿½tek
 		ThreadPoolImpl * tp;
-		//! W¹tek obs³uguj¹cy zadania, bêdzie wykozystywany w pool wiele razy jeœli nada¿y siê taka okazja
-		//! ma to zminimalizowaæ iloœæ tworzenia w¹tków
+		//! Wï¿½tek obsï¿½ugujï¿½cy zadania, bï¿½dzie wykozystywany w pool wiele razy jeï¿½li nadaï¿½y siï¿½ taka okazja
+		//! ma to zminimalizowaï¿½ iloï¿½ï¿½ tworzenia wï¿½tkï¿½w
 		ThreadPtr thread;
 		//! Obiekt synchronizujacy stan watku
 		QMutex synch;
@@ -37,8 +37,8 @@ private:
 		}
 
 	public:
-		//! \param tp ThreadPool dla któego utworzono w¹tek
-		//! \param thread W¹tek faktycznie obs³uguj¹cy zadania
+		//! \param tp ThreadPool dla ktï¿½ego utworzono wï¿½tek
+		//! \param thread Wï¿½tek faktycznie obsï¿½ugujï¿½cy zadania
 		TPThread(ThreadPoolImpl * tp, const ThreadPtr & thread) : tp(tp), thread(thread), synch(QMutex::NonRecursive)
 		{
 
@@ -109,17 +109,17 @@ private:
 	};
 
 private:
-	//! Maksymalna iloœæ w¹tków do utworzenia
+	//! Maksymalna iloï¿½ï¿½ wï¿½tkï¿½w do utworzenia
 	ThreadPool::size_type maxThreads_;
-	//! Minimalna iloœæ w¹tków do utworzenia
+	//! Minimalna iloï¿½ï¿½ wï¿½tkï¿½w do utworzenia
 	ThreadPool::size_type minThreads_;
-	//! Dzia³aj¹ce w¹tki
+	//! Dziaï¿½ajï¿½ce wï¿½tki
 	std::map<TPThread*, ThreadPtr> logicalThreads_;
-	//! W¹tki do ponownego u¿ycia
+	//! Wï¿½tki do ponownego uï¿½ycia
 	std::list<ThreadPtr> freeThreads_;
-	//! W¹tki w u¿yciu
+	//! Wï¿½tki w uï¿½yciu
 	std::list<ThreadPtr> usedThreads_;
-	//! Obiekt synchronizuj¹cy stan poola
+	//! Obiekt synchronizujï¿½cy stan poola
 	QMutex synch;
 
 public:
@@ -163,7 +163,7 @@ public:
 		QMutexLocker lock(&synch);
 		//czy osiagnelismy limit? wszystkie watki poola zajete
 		if(maxThreads_ <= usedThreads_.size()){
-			throw NoFreeThreadAvaiable();
+			throw NoFreeThreadAvaiable("All threads in use");
 		}
 
 		//probujemy pobrac wolny executor
@@ -194,7 +194,7 @@ public:
 
 		//czy osiagnelismy limit? grupa za duza na mozliwosci poola?
 		if(maxThreads_ <= logicalThreads_.size() + groupSize){
-			throw NoFreeThreadAvaiable();
+			throw NoFreeThreadAvaiable("Not enough free threads for a group");
 		}
 
 		//ile moge wziac z puli

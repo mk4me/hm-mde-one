@@ -119,6 +119,7 @@ namespace vidlib
     class OsgAdapter : public Stream, public __OsgAdapter
     {
     public:
+
         //! Konstruktor.
         OsgAdapter(const std::string& source) :
         Stream(source)
@@ -130,9 +131,9 @@ namespace vidlib
         //! Aktualizuje obrazki korzystające ze strumienia.
         virtual bool setTime(double time)
         {
-            double prevTimestamp = getFrameTimestamp();
+            double prevTimestamp = this->Stream().getFrameTimestamp();
             bool result = Stream::setTime(time);
-            if ( prevTimestamp != getFrameTimestamp() ) {
+            if ( prevTimestamp != this->Stream().getFrameTimestamp() ) {
                 refreshImages();
             }
             return result;

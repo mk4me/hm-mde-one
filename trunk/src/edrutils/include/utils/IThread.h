@@ -9,20 +9,20 @@
 #ifndef HEADER_GUARD___ITHREAD_H__
 #define HEADER_GUARD___ITHREAD_H__
 
-#include <exception>
+#include <stdexcept>
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
 #include <utils/ObserverPattern.h>
 
 namespace utils {
 
-//! Interfejs obiektu realizuj¹cego przetwarzanie w w¹tkach
+//! Interfejs obiektu realizujï¿½cego przetwarzanie w wï¿½tkach
 class IRunnable
 {
 public:
 	//! Wirtualny destruktor
 	virtual ~IRunnable() {}
-	//! Metoda wirtualna realizuj¹ca przetwarzanie w w¹tku
+	//! Metoda wirtualna realizujï¿½ca przetwarzanie w wï¿½tku
 	virtual void run() = 0;
 };
 
@@ -53,126 +53,124 @@ typedef boost::shared_ptr<const IRunnable> RunnableConstPtr;
 typedef boost::weak_ptr<IRunnable> RunnableWPtr;
 typedef boost::weak_ptr<const IRunnable> RunnableWConstPtr;
 
-//! Interfejs pozwalaj¹cy okreœliæ procentowy stan pracy w¹tku
-//! Postêp podawany jest w procentach od 0% do 100%;
+//! Interfejs pozwalajï¿½cy okreï¿½liï¿½ procentowy stan pracy wï¿½tku
+//! Postï¿½p podawany jest w procentach od 0% do 100%;
 class IPercentageProgress
 {
 public:
 	//! Destruktor wirtualny
 	virtual ~IPercentageProgress() {}
-	//! \return Postêp realizacji przetwarzania od 0% do 100%
+	//! \return Postï¿½p realizacji przetwarzania od 0% do 100%
 	virtual float progress() const = 0;
 };
 
-//! Interfejs pozwalaj¹cy okreœliæ szacowany czas do koñca zadania oraz czas jaki up³yn¹³ od momentu jego wystartowania
+//! Interfejs pozwalajï¿½cy okreï¿½liï¿½ szacowany czas do koï¿½ca zadania oraz czas jaki upï¿½ynï¿½ï¿½ od momentu jego wystartowania
 //! Czas podawany jest w sekundach
 class ITimeProgress
 {
 public:
 	//! Destruktor wirtualny
 	virtual ~ITimeProgress() {}
-	//! \return Czas [s] jaki zadanie jest ju¿ przetwarzane
+	//! \return Czas [s] jaki zadanie jest juï¿½ przetwarzane
 	virtual float elapsed() const = 0;
-	//! \return Szacowany czas [s] do zakoñczenia przetwarzania
+	//! \return Szacowany czas [s] do zakoï¿½czenia przetwarzania
 	virtual float remaining() const = 0;
 };
 
-//! Bazowy interfejs w¹tków i grup - notyfikuje o zmianach swojego stanu
+//! Bazowy interfejs wï¿½tkï¿½w i grup - notyfikuje o zmianach swojego stanu
 class IThreadingBase : public Observable<IThreadingBase>
 {
 public:
 
-	//! Typ wyliczeniowy opisuj¹cy stan w¹tku lub grupy
+	//! Typ wyliczeniowy opisujï¿½cy stan wï¿½tku lub grupy
 	//! Po utworzeniu mamy stan Idle - nic nie robimy
-	//! Po uruchomieniu metod¹ start dla niepustego runnable przejdziemy do stanu running
-	//! Po zakoñczeniu przetwarzania wracamy do stanu idle
+	//! Po uruchomieniu metodï¿½ start dla niepustego runnable przejdziemy do stanu running
+	//! Po zakoï¿½czeniu przetwarzania wracamy do stanu idle
 	enum Status {
-		Idle,		//! W¹tek/grupa utworzony/a, nic nie robi
-		Running,	//! W¹tek/grupa uruchomiony/a
-		Killed		//! W¹tek/grupa zostaje zniszczony/a, nie mozna z nim prowadzic dalszej interakcji
+		Idle,		//! Wï¿½tek/grupa utworzony/a, nic nie robi
+		Running,	//! Wï¿½tek/grupa uruchomiony/a
+		Killed		//! Wï¿½tek/grupa zostaje zniszczony/a, nie mozna z nim prowadzic dalszej interakcji
 	};
 
-	//! Typ wyliczeniowy opisuj¹cy stan przetwarzania ostatniego zadania
+	//! Typ wyliczeniowy opisujï¿½cy stan przetwarzania ostatniego zadania
 	enum Result {
-		FirstProcessing,	//! W¹tek jeszcze nic nie przetwarza³
-		Finished,			//! W¹tek/Grupa zakoñczy³y pracê pomyœlnie
-		Error,				//! W¹tek/Grupa zakoñczy³y pracê b³êdem
-		Canceled			//! W¹tek/grupa anulowany - czekamy na kolejne zadanie
+		FirstProcessing,	//! Wï¿½tek jeszcze nic nie przetwarzaï¿½
+		Finished,			//! Wï¿½tek/Grupa zakoï¿½czyï¿½y pracï¿½ pomyï¿½lnie
+		Error,				//! Wï¿½tek/Grupa zakoï¿½czyï¿½y pracï¿½ bï¿½ï¿½dem
+		Canceled			//! Wï¿½tek/grupa anulowany - czekamy na kolejne zadanie
 	};
 
 public:
 	//! Wirtualny destruktor
 	virtual ~IThreadingBase() {}
 
-	//! Metoda zabija w¹tek/grupe, nie nadaje siê on/ona ponownie do u¿ycia
+	//! Metoda zabija wï¿½tek/grupe, nie nadaje siï¿½ on/ona ponownie do uï¿½ycia
 	virtual void cancel() = 0;
-	//! Metoda blokuj¹ca a¿ w¹tek/grupa nie zakoñczy przetwarzania lub nie zostanie zniszczony/a
+	//! Metoda blokujï¿½ca aï¿½ wï¿½tek/grupa nie zakoï¿½czy przetwarzania lub nie zostanie zniszczony/a
 	virtual void join() = 0;
-	//! \return Stan aktywnoœci w¹tku/grupy
+	//! \return Stan aktywnoï¿½ci wï¿½tku/grupy
 	virtual const Status status() const = 0;
-	//! \return Stan ostatniego przetwarzania w¹tku/grupy
+	//! \return Stan ostatniego przetwarzania wï¿½tku/grupy
 	virtual const Result result() const = 0;
 };
 
-//! Wyj¹tek rzucany gdy próbujemy uruchomiæ w¹tek ju¿ uruchomiony
-class RunningStartException : public std::exception
+//! Wyjï¿½tek rzucany gdy prï¿½bujemy uruchomiï¿½ wï¿½tek juï¿½ uruchomiony
+class RunningStartException : public std::runtime_error
 {
 public:
-	RunningStartException() {}
-	RunningStartException(const char * msg) : std::exception(msg) {}
+	RunningStartException(const char * msg) : std::runtime_error(msg) {}
 };
 
-//! Wyj¹tek rzucany gdy próbujemy uruchomiæ w¹tek ju¿ uruchomiony
+//! Wyjï¿½tek rzucany gdy prï¿½bujemy uruchomiï¿½ wï¿½tek juï¿½ uruchomiony
 class RunningThreadStartException : public RunningStartException
 {
 public:
-	RunningThreadStartException() {}
 	RunningThreadStartException(const char * msg) : RunningStartException(msg) {}
 };
 
-//! Interfejs klasy obs³uguj¹cej w¹tki
+//! Interfejs klasy obsï¿½ugujï¿½cej wï¿½tki
 class IThread : public IThreadingBase
 {
 public:
 	//! Typ rozmiaru stosu w bajtach
 	typedef unsigned int size_type;
 
-	//! Priorytet w¹tku
+	//! Priorytet wï¿½tku
 	enum Priority {
-		Idle,			//! Wznawiaj tylko wtedy gdy nie ma innych w¹tków
-		Lowest,			//! Najni¿szy priorytet
+		Idle,			//! Wznawiaj tylko wtedy gdy nie ma innych wï¿½tkï¿½w
+		Lowest,			//! Najniï¿½szy priorytet
 		Low,			//! Niski priorytet
-		Normal,			//! Œredni priorytet
+		Normal,			//! ï¿½redni priorytet
 		High,			//! Wysoki priorytet
-		Highest,		//! Najwy¿szy priorytet
-		TimeCritical,	//! Wznawiaj tak czêsto jak to mo¿liwe
-		Inheritate		//! Priorytet w¹tku two¿¹cego - domyœlna wartoœæ
+		Highest,		//! Najwyï¿½szy priorytet
+		TimeCritical,	//! Wznawiaj tak czï¿½sto jak to moï¿½liwe
+		Inheritate		//! Priorytet wï¿½tku twoï¿½ï¿½cego - domyï¿½lna wartoï¿½ï¿½
 	};
 
 public:
 	//! Wirtualny destruktor
 	virtual ~IThread() {}
 
-	//! Metoda uruchamia przetwarzanie przez w¹tek, rzuca wyj¹tkiem kiedy w¹tek jeszcze dzia³¹ lub zosta³ zabity
-	//! \param priority Priorytet w¹tku
-	//! \param stackSize Rozmiar stosu dla w¹tku - jeœli zbyt du¿y w¹tek mo¿e siê nie uruchomiæ ze wzglêdu na ograniczenia systemu operacyjnego
-	//! \param runnable Obiekt wykonuj¹cy pracê w w¹tku, musi byæ kopiowalny
+	//! Metoda uruchamia przetwarzanie przez wï¿½tek, rzuca wyjï¿½tkiem kiedy wï¿½tek jeszcze dziaï¿½ï¿½ lub zostaï¿½ zabity
+	//! \param priority Priorytet wï¿½tku
+	//! \param stackSize Rozmiar stosu dla wï¿½tku - jeï¿½li zbyt duï¿½y wï¿½tek moï¿½e siï¿½ nie uruchomiï¿½ ze wzglï¿½du na ograniczenia systemu operacyjnego
+	//! \param runnable Obiekt wykonujï¿½cy pracï¿½ w wï¿½tku, musi byï¿½ kopiowalny
 	virtual void start(const RunnablePtr & runnable, const Priority priority = Inheritate) = 0;
-	//! \return Czas aktualnego stanu idle dla w¹tku w sekundach
+	//! \return Czas aktualnego stanu idle dla wï¿½tku w sekundach
 	virtual const float idleTime() const = 0;
-	//! \return aktualny priorytet w¹tku
+	//! \return aktualny priorytet wï¿½tku
 	virtual const Priority priority() const = 0;
-	//! \return Aktualny rozmiar stosu w¹tku
+	//! \return Aktualny rozmiar stosu wï¿½tku
 	virtual const size_type stackSize() const = 0;
-	//! \param stackSize Rozmiar stosu w¹tku
-	//! Metoda powinna byæ wywo³ywana przed pierwszym uruchomieniem w¹tku,
-	//! potem nie ma mo¿liwoœci zmiany tego parametru. W przypadku braku
-	//! wywo³ania tej metody bêdzie u¿yty domyœlny stos
-	//! W przypadku wywo³ania tej metody podczas dzia³ania watku bêdzie rzucany wyj¹tek
+	//! \param stackSize Rozmiar stosu wï¿½tku
+	//! Metoda powinna byï¿½ wywoï¿½ywana przed pierwszym uruchomieniem wï¿½tku,
+	//! potem nie ma moï¿½liwoï¿½ci zmiany tego parametru. W przypadku braku
+	//! wywoï¿½ania tej metody bï¿½dzie uï¿½yty domyï¿½lny stos
+	//! W przypadku wywoï¿½ania tej metody podczas dziaï¿½ania watku bï¿½dzie rzucany wyjï¿½tek
 	virtual void setStackSize(size_type stackSize) = 0;
-	//! \return Aktualnie wykonywana operacja w w¹tku, mo¿e byæ null jesli nic siê nie dzieje
+	//! \return Aktualnie wykonywana operacja w wï¿½tku, moï¿½e byï¿½ null jesli nic siï¿½ nie dzieje
 	virtual RunnableConstPtr runnable() const = 0;
-	//! \return Aktualnie wykonywana operacja w w¹tku, mo¿e byæ null jesli nic siê nie dzieje
+	//! \return Aktualnie wykonywana operacja w wï¿½tku, moï¿½e byï¿½ null jesli nic siï¿½ nie dzieje
 	virtual RunnablePtr runnable() = 0;
 };
 

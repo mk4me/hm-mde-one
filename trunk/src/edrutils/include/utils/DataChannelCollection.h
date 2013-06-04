@@ -166,10 +166,10 @@ public:
 		}
 		
 		int count = values.size();
-		auto chosenVal = values[0].get<0>();
+		auto chosenVal = values[0].template get<0>();
 		int chosenIdx = 0;
 		for (int i = 1; i < count; ++i) {
-			auto val = values[i].get<0>();
+			auto val = values[i].template get<0>();
 			if (f(chosenVal, val)) {
 				chosenIdx = i;
 				chosenVal = val;

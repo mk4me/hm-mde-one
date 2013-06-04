@@ -9,15 +9,15 @@
 
 using namespace utils;
 
-//! Wewnêtrzna implementacja w¹tku realizuj¹ca ca³¹ jego obs³uge
+//! Wewnï¿½trzna implementacja wï¿½tku realizujï¿½ca caï¿½ï¿½ jego obsï¿½uge
 class Thread::ThreadImpl
 {
 private:
-	//! Faktyczny w¹tek systemu operacujnego realizuj¹cy przetwarzanie
+	//! Faktyczny wï¿½tek systemu operacujnego realizujï¿½cy przetwarzanie
 	class InnerThread : public QThread
 	{
 	public:
-		//! Typ funktora przekazywanego do w¹tku i wykonywanego potem w w¹tku
+		//! Typ funktora przekazywanego do wï¿½tku i wykonywanego potem w wï¿½tku
 		typedef boost::function<void()> Functor;
 
 	private:
@@ -25,7 +25,7 @@ private:
 		Functor func;
 
 	public:
-		//! \param func Funktor do wykonania w w¹tku
+		//! \param func Funktor do wykonania w wï¿½tku
 		InnerThread(const Functor & func) : func(func)
 		{
 
@@ -45,7 +45,7 @@ private:
 		}
 
 	protected:
-		//! Implementacja metody uruchamianej w nowym w¹tku
+		//! Implementacja metody uruchamianej w nowym wï¿½tku
 		virtual void run()
 		{
 			func();
@@ -54,40 +54,40 @@ private:
 
 
 private:
-	//! Obiekt w¹tku realizuj¹cy kolejne przetwarzania
+	//! Obiekt wï¿½tku realizujï¿½cy kolejne przetwarzania
 	boost::shared_ptr<InnerThread> thread_;
 	//! Czy wystartowano
 	volatile bool started_;
-	//! Aktualny priorytet w¹tku
+	//! Aktualny priorytet wï¿½tku
 	Thread::Priority priority_;
-	//! Aktualny rozmiar stosu dla w¹tku - UWAGA!! Mo¿e byæ przyczyn¹ problemów z uruchomieniem w¹tku!!
+	//! Aktualny rozmiar stosu dla wï¿½tku - UWAGA!! Moï¿½e byï¿½ przyczynï¿½ problemï¿½w z uruchomieniem wï¿½tku!!
 	Thread::size_type stackSize_;
-	//! Status w¹tku
+	//! Status wï¿½tku
 	volatile IThreadingBase::Status status_;
 	//! Rezultat ostatniego przetwarzania
 	volatile IThreadingBase::Result result_;
-	//! Aktualnie wykonywany obiekt w w¹tku
+	//! Aktualnie wykonywany obiekt w wï¿½tku
 	RunnablePtr runnable_;
-	//! Obiekt przechowuj¹cy czas pocz¹tku stanu dla Idle
+	//! Obiekt przechowujï¿½cy czas poczï¿½tku stanu dla Idle
 	clock_t idleStartTime_;
-	//! Obiekt synchronizuj¹cy stan w¹tku
+	//! Obiekt synchronizujï¿½cy stan wï¿½tku
 	mutable QMutex synch;
-	//! Obiekt synchronizuj¹cy stan w¹tku
+	//! Obiekt synchronizujï¿½cy stan wï¿½tku
 	QMutex cancelSynch;
-	//! Obiekt synchronizuj¹cy pêtlê kolejnych wywo³añ w¹tku z nowymi zadaniami
+	//! Obiekt synchronizujï¿½cy pï¿½tlï¿½ kolejnych wywoï¿½aï¿½ wï¿½tku z nowymi zadaniami
 	mutable QMutex runnableSynch;
-	//! Obiekt na którym czekaj¹ obiekty na zakoñczenie aktualnej pracy w¹tku
+	//! Obiekt na ktï¿½rym czekajï¿½ obiekty na zakoï¿½czenie aktualnej pracy wï¿½tku
 	mutable QMutex waitSynch;
-	//! Obiekt na którym czekaj¹ obiekty na zakoñczenie aktualnej pracy w¹tku
+	//! Obiekt na ktï¿½rym czekajï¿½ obiekty na zakoï¿½czenie aktualnej pracy wï¿½tku
 	mutable QMutex startSynch;
-	//! Iloœæ wisz¹cych na joinie
+	//! Iloï¿½ï¿½ wiszï¿½cych na joinie
 	unsigned int waitingCounter;
-	//! W¹tek logiczny do notyfikacji
+	//! Wï¿½tek logiczny do notyfikacji
 	Thread * logicalThread;
 
 private:
-	//! Wewnêtrzna realizacja przetwarzania w¹tku
-	//! Ma formê nieskoñczonej pêtli aby maksymalnie wyko¿ystaæ dany w¹tek bez potrzeby jego niszczenia i tworzenia
+	//! Wewnï¿½trzna realizacja przetwarzania wï¿½tku
+	//! Ma formï¿½ nieskoï¿½czonej pï¿½tli aby maksymalnie wykoï¿½ystaï¿½ dany wï¿½tek bez potrzeby jego niszczenia i tworzenia
 	void innerRun()
 	{
 		while(true){
@@ -155,7 +155,7 @@ private:
 	}
 
 	//! \param priority Priorytet wg interfejsu IThread
-	//! \return Priorytet dla w¹tku w Qt który faktyczie realizuje nasz w¹tek w systemei operacyjnym
+	//! \return Priorytet dla wï¿½tku w Qt ktï¿½ry faktyczie realizuje nasz wï¿½tek w systemei operacyjnym
 	static const QThread::Priority translateThreadPriority(const IThread::Priority priority)
 	{
 		QThread::Priority ret = QThread::InheritPriority;
@@ -279,9 +279,9 @@ public:
 		{		
 			QMutexLocker lock(&synch);
 
-			// je¿eli ju¿ dzia³a to wyj¹tek
+			// jeï¿½eli juï¿½ dziaï¿½a to wyjï¿½tek
 			if(started_ == true){
-				throw RunningStartException();
+				throw RunningStartException("Thread already running");
 			}
 
 			started_ = true;
@@ -301,29 +301,29 @@ public:
 			mutex.unlock();
 		}
 
-		//blokujê  do momentu kiedy nie wystartuje
+		//blokujï¿½  do momentu kiedy nie wystartuje
 		startSynch.lock();
 
 		auto iP = translateThreadPriority(priority);
 
-		// czy trzeba tworzyæ nowy w¹tek - pierwszy raz lub po cancel
+		// czy trzeba tworzyï¿½ nowy wï¿½tek - pierwszy raz lub po cancel
 		if(result_ == IThreadingBase::FirstProcessing || result_ == IThreadingBase::Canceled){
-			//czekaj na w¹tek je¿eli istnia³
+			//czekaj na wï¿½tek jeï¿½eli istniaï¿½
 			if(thread_ != nullptr){
 				thread_->wait();
 			}
-			// utwórz nowy w¹tek
+			// utwï¿½rz nowy wï¿½tek
 			thread_.reset(new InnerThread(boost::bind(&ThreadImpl::innerRun, this)));
 			//inicjuj rozmiar stosu
 			thread_->setStackSize(stackSize_);
-			//startuj nowy w¹tek z zadanym priorytetem
+			//startuj nowy wï¿½tek z zadanym priorytetem
 			thread_->start(iP);
 		}else if( priority != IThread::Inheritate){
 			//mamy watek wiec zmieniamy priorytet
 			thread_->setPriority(iP);
 		}
 
-		//ustaw parametry w¹tku
+		//ustaw parametry wï¿½tku
 		priority_ = priority;		
 		runnable_ = runnable;
 

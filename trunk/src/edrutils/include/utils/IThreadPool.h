@@ -15,20 +15,19 @@
 
 namespace utils {
 
-	//! Wyj¹tek rzucany kiedy chcemy pobraæ w¹tek/grupê z managera a nie ma ju¿ ¿adnych wolnych lub iloœæ wolnych jest niewystarczaj¹ca (dla grupy)
-	class NoFreeThreadAvaiable : public std::exception
+	//! Wyjï¿½tek rzucany kiedy chcemy pobraï¿½ wï¿½tek/grupï¿½ z managera a nie ma juï¿½ ï¿½adnych wolnych lub iloï¿½ï¿½ wolnych jest niewystarczajï¿½ca (dla grupy)
+	class NoFreeThreadAvaiable : public std::runtime_error
 	{
 	public:
-		NoFreeThreadAvaiable() {}
-		NoFreeThreadAvaiable(const char * msg) : std::exception(msg) {}
+		NoFreeThreadAvaiable(const char * msg) : std::runtime_error(msg) {}
 	};
 
-	//! Interfejs klasy zarz¹dzaj¹cej w¹tkami. Klasa nadzoruje iloœæ aktualnie utworzonych w¹tków i nie pozwala utworzyæ wiêcej ni¿ zdefiniowano.
-	//! Aby zminimalizowaæ koszt tworzenia i niszczenia w¹tków klasa utrzymuje pewn¹ iloœæ w¹tków do ponownego u¿ycia.
+	//! Interfejs klasy zarzï¿½dzajï¿½cej wï¿½tkami. Klasa nadzoruje iloï¿½ï¿½ aktualnie utworzonych wï¿½tkï¿½w i nie pozwala utworzyï¿½ wiï¿½cej niï¿½ zdefiniowano.
+	//! Aby zminimalizowaï¿½ koszt tworzenia i niszczenia wï¿½tkï¿½w klasa utrzymuje pewnï¿½ iloï¿½ï¿½ wï¿½tkï¿½w do ponownego uï¿½ycia.
 	class IThreadPool
 	{
 	public:
-		//! Typ opisuj¹cy iloœæ w¹tków
+		//! Typ opisujï¿½cy iloï¿½ï¿½ wï¿½tkï¿½w
 		typedef unsigned int size_type;
 		//! Typ czasu
 		typedef double time_type;
@@ -36,16 +35,16 @@ namespace utils {
 	public:
 		//! Wirtualny destruktor
 		virtual ~IThreadPool() {}
-		//! \return Maksymalna iloœc w¹tków jakie mo¿na utworzyæ
+		//! \return Maksymalna iloï¿½c wï¿½tkï¿½w jakie moï¿½na utworzyï¿½
 		virtual const size_type maxThreads() const = 0;
-		//! \return Minimalna iloœæ w¹tków utrzymywana przez manager
+		//! \return Minimalna iloï¿½ï¿½ wï¿½tkï¿½w utrzymywana przez manager
 		virtual const size_type minThreads() const = 0;
-		//! \return Iloœæ aktualnie zajêtych w¹tków
+		//! \return Iloï¿½ï¿½ aktualnie zajï¿½tych wï¿½tkï¿½w
 		virtual const size_type threadsCount() const = 0;
-		//! \return Nowy w¹tek
+		//! \return Nowy wï¿½tek
 		virtual ThreadPtr getOrCreateThread() = 0;
-		//! \param groupSize Iloœæ w¹tków w grupie
-		//! \param threads [out] Lista z nowymi w¹tkami, dopisujemy zawsze na koñcu
+		//! \param groupSize Iloï¿½ï¿½ wï¿½tkï¿½w w grupie
+		//! \param threads [out] Lista z nowymi wï¿½tkami, dopisujemy zawsze na koï¿½cu
 		virtual void getOrCreateThreadsGroup(const size_type groupSize, std::vector<ThreadPtr> & threads) = 0;
 	};
 

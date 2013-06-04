@@ -26,62 +26,62 @@ namespace df{
 	class IDFLogger;
 	class INode;
 
-	//! Wyj¹tki
+	//! Wyjï¿½tki
 
-	//! Wyh¹tek weryfikacji modelu pod k¹tem mo¿liwoœci jego przetwarzania
-	class ModelVerificationException : public std::exception
+	//! Wyhï¿½tek weryfikacji modelu pod kï¿½tem moï¿½liwoï¿½ci jego przetwarzania
+	class ModelVerificationException : public std::runtime_error
 	{
 	public:
-		ModelVerificationException(const char * e) : std::exception(e) {}
+		ModelVerificationException(const char * e) : std::runtime_error(e) {}
 	};
 
-	//! Wyj¹tek inicjalizacji przetwarzania -> mapowania obiektów modelu na obiekty przetwarzaj¹ce
-	class ModelRunInitializationException : public std::exception
+	//! Wyjï¿½tek inicjalizacji przetwarzania -> mapowania obiektï¿½w modelu na obiekty przetwarzajï¿½ce
+	class ModelRunInitializationException : public std::runtime_error
 	{
 	public:
-		ModelRunInitializationException(const char * e) : std::exception(e) {}
+		ModelRunInitializationException(const char * e) : std::runtime_error(e) {}
 	};
 
-	//! Wyj¹tek startu przetwarzania -> przygotowanie i uruchomienie w¹tków obd³uguj¹cych posdzczególne obiekty modelu
-	class ModelStartException : public std::exception
+	//! Wyjï¿½tek startu przetwarzania -> przygotowanie i uruchomienie wï¿½tkï¿½w obdï¿½ugujï¿½cych posdzczegï¿½lne obiekty modelu
+	class ModelStartException : public std::runtime_error
 	{
 	public:
-		ModelStartException(const char * e) : std::exception(e) {}
+		ModelStartException(const char * e) : std::runtime_error(e) {}
 	};
 
-	//! Wyj¹tek przetwarzania modelu -> coœ posz³o nie tak w dataflow
-	class ModelRunningException : public std::exception
+	//! Wyjï¿½tek przetwarzania modelu -> coï¿½ poszï¿½o nie tak w dataflow
+	class ModelRunningException : public std::runtime_error
 	{
 	public:
-		ModelRunningException(const char * e) : std::exception(e) {}
+		ModelRunningException(const char * e) : std::runtime_error(e) {}
 	};
 
-	//! Klasa realizuj¹ca wielow¹tkowe, potokowe przetwarzanie danych. Ka¿dy wêze³ modelu jest wrapowany przez
-	//! dedykowan¹ klasê wraz z obs³uguj¹cycm j¹ w¹tkiem. Przetwarzanie odbywa siê od Ÿróde³ do sinków lub procesorów
-	//! z niepodpiêtymi wyjsciami. Tylko Ÿtód³¹ s¹ synchronizowane - czekaj¹ a¿ wszystkie razem skoñcz¹ produkowaæ dane
-	//! do modelu, aby sprawdziæ czy s¹ w stanie wszystkie dostarczyæ nowych danych. Jeœli tak ponownie moga produkowac dane,
-	//! w przeciwnym wypadku czekamy na przetworzenie danych ju¿ znajduj¹cych siê w modelu. 
+	//! Klasa realizujï¿½ca wielowï¿½tkowe, potokowe przetwarzanie danych. Kaï¿½dy wï¿½zeï¿½ modelu jest wrapowany przez
+	//! dedykowanï¿½ klasï¿½ wraz z obsï¿½ugujï¿½cycm jï¿½ wï¿½tkiem. Przetwarzanie odbywa siï¿½ od ï¿½rï¿½deï¿½ do sinkï¿½w lub procesorï¿½w
+	//! z niepodpiï¿½tymi wyjsciami. Tylko ï¿½tï¿½dï¿½ï¿½ sï¿½ synchronizowane - czekajï¿½ aï¿½ wszystkie razem skoï¿½czï¿½ produkowaï¿½ dane
+	//! do modelu, aby sprawdziï¿½ czy sï¿½ w stanie wszystkie dostarczyï¿½ nowych danych. Jeï¿½li tak ponownie moga produkowac dane,
+	//! w przeciwnym wypadku czekamy na przetworzenie danych juï¿½ znajdujï¿½cych siï¿½ w modelu. 
 	class DFModelRunner : public IDFPausable, public IDFJoinable
 	{
 	public:
-		//! Domyœlny konstruktor
+		//! Domyï¿½lny konstruktor
 		DFModelRunner();
 		//! Destruktor
 		~DFModelRunner();
 
-		//! Metoda startuj¹ca model, nieblokuj¹ca -> nale¿y uzyæ join by czekaæ na koniec modelu
-		//! \param model Model kóry bêdziemy przetwarzaæ
-		//! \param logger Obiekt loguj¹cy stan przetwarzania
-		//! \param tFactory Fabryka w¹tków - gdy pusta u¿ywamy domyslnej wynikaj¹cej z implementacji
+		//! Metoda startujï¿½ca model, nieblokujï¿½ca -> naleï¿½y uzyï¿½ join by czekaï¿½ na koniec modelu
+		//! \param model Model kï¿½ry bï¿½dziemy przetwarzaï¿½
+		//! \param logger Obiekt logujï¿½cy stan przetwarzania
+		//! \param tFactory Fabryka wï¿½tkï¿½w - gdy pusta uï¿½ywamy domyslnej wynikajï¿½cej z implementacji
 		void start(IModelReader * model, IDFLogger * logger, utils::IThreadPool * tPool);
 
 		//! Natychmiastowe przerwania przetwarzania
-		//! Metoda blokuj¹ca - czeka na zakoñczenie wszystkich w¹tków
+		//! Metoda blokujï¿½ca - czeka na zakoï¿½czenie wszystkich wï¿½tkï¿½w
 		void stop();
 
-		//! \param node Wêze³ który chcemy pauzowaæ
+		//! \param node Wï¿½zeï¿½ ktï¿½ry chcemy pauzowaï¿½
 		virtual void pause(INode * node);
-		//! \param node Wêze³ który chcemy przywróciæ do pracy
+		//! \param node Wï¿½zeï¿½ ktï¿½ry chcemy przywrï¿½ciï¿½ do pracy
 		virtual void resume(INode * node);
 
 		//! Pauzowanie przetwrarzania
@@ -91,12 +91,12 @@ namespace df{
 		//! Czy przetwarzanie wstrzymane
 		virtual const bool paused() const;
 
-		//! Metoda blokuj¹ca, czeka a¿ model zakoñczy przetwarzanie w jakikolwiek sposób,
-		//! poprawnie b¹dŸ z b³êdem - wtedy rzuca wyj¹tkiem i zwalnia blokadê.
+		//! Metoda blokujï¿½ca, czeka aï¿½ model zakoï¿½czy przetwarzanie w jakikolwiek sposï¿½b,
+		//! poprawnie bï¿½dï¿½ z bï¿½ï¿½dem - wtedy rzuca wyjï¿½tkiem i zwalnia blokadï¿½.
 		virtual void join();
 
-		//! \param reader Model który potencjalnie ma byæ uruchomiony 
-		//! \return Czy model mo¿na uruchomiæ za pomoca tego runnera
+		//! \param reader Model ktï¿½ry potencjalnie ma byï¿½ uruchomiony 
+		//! \return Czy model moï¿½na uruchomiï¿½ za pomoca tego runnera
 		static const bool verifyModel(const IModelReader * reader);
 
 	private:

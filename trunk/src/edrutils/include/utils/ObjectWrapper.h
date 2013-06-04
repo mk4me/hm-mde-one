@@ -169,20 +169,20 @@ namespace utils {
 
 		//! \param dummy Pozostawić pusty.
 		//! \return Wrappowany obiekt. Gdy wrapper jest innego typu niż parametr szablonu rzucany jest wyjątek.
-		template <class T>
+		template <typename T>
 		const typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
-			return static_cast<ObjectWrapperT<T>::Ptr>(get());
+			return static_cast<typename ObjectWrapperT<T>::Ptr>(get());
 		}
 
 		//! \param dummy Pozostawić pusty.
 		//! \return Wrappowany obiekt. Gdy wrapper jest innego typu niż parametr szablonu rzucany jest wyjątek.
-		template <class T>
+		template <typename T>
 		const typename ObjectWrapperT<T>::ConstPtr get(T* dummy = nullptr) const
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
-			return static_cast<ObjectWrapperT<T>::ConstPtr>(get());
+			return static_cast<typename ObjectWrapperT<T>::ConstPtr>(get());
 		}
 
 		//! Pobiera obiekt z wrappera. W razie błędu rzuca bad_castem.
@@ -594,35 +594,133 @@ namespace utils {
         }
     };
 
+	template <class T>
+	struct ObjectWrapperTraits
+	{
+		static const bool isDefinitionVisible = false;
+
+		struct PtrPolicy
+		{
+			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+		};
+
+		struct Ptr
+		{
+			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+		};
+
+		struct ConstPtr
+		{
+			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+		};
+
+		struct ClonePolicy
+		{
+			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+		};
+	};
+
+	//! Deklaracja typu. Trzeba go specjalizować za pomocą makr. Ta wersja będzie
+	//! rzucać statyczną asercją.
+	template <class T>
+	class ObjectWrapperT : public ObjectWrapper
+	{
+		UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+
+		/*
+	public:
+		//! \return Nazwa typu.
+		virtual const std::string& getClassName() const
+		{
+			const static std::string className = "";
+			return className;
+		}
+
+		//! \return Informacje o typie.
+		virtual const TypeInfo & getTypeInfo() const
+		{
+			static const TypeInfo typeInfo_ = TypeInfo();
+			return typeInfo_;
+		}
+
+		//! \return Klon bieżącego obiektu. Wewnętrzny wskaźnik również jest kopiowany.
+		virtual const ObjectWrapperPtr clone() const
+		{
+			return ObjectWrapperPtr();
+		}
+
+		virtual const ObjectWrapperPtr create() const
+		{
+			return ObjectWrapperPtr();
+		}
+
+		virtual const void* getRawPtr() const
+		{
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return nullptr;
+		}
+
+		virtual void* getRawPtr()
+		{
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return nullptr;
+		}
+
+		//! \return Informacje o typie odpowiednio normalnego i stałego wskaźnika.
+		virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const
+		{
+			static const std::pair<TypeInfo, TypeInfo> ptrTypeInfo_ = std::pair<TypeInfo, TypeInfo>();
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return ptrTypeInfo_;
+		}
+
+		virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const
+		{
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return false;
+		}
+
+	private:
+
+		virtual void __reset()
+		{
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+		}
+
+		virtual const bool __setData(const void * object)
+		{
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+		}
+
+		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType)
+		{
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return false;
+		}
+
+		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType) const
+		{
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return false;
+		}
+
+		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType)
+		{
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return false;
+		}
+
+		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const
+		{
+			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return false;
+		}
+	*/
+	};
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils
 ////////////////////////////////////////////////////////////////////////////////
-
-template <class T>
-struct ObjectWrapperTraits
-{
-	static const bool isDefinitionVisible = false;
-
-	struct PtrPolicy
-	{
-		//UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
-	};
-
-	struct Ptr
-	{
-		//UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
-	};
-
-	struct ConstPtr
-	{
-		//UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
-	};
-
-	struct ClonePolicy
-	{
-		//UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
-	};
-};
 
 #define __DEFINE_WRAPPER_META(type, ptrPolicy, clonePolicy)\
 template <> struct ObjectWrapperTraits<type>\
@@ -643,106 +741,6 @@ template <> struct ObjectWrapperTraits<typeT>\
 	typedef PtrPolicy::Ptr<const typeT>::Type ConstPtr;\
 	typedef ObjectWrapperTraits<baseTypeT>::ClonePolicy ClonePolicy;\
 };
-
-namespace utils {
-//! Deklaracja typu. Trzeba go specjalizować za pomocą makr. Ta wersja będzie
-//! rzucać statyczną asercją.
-template <class T>
-class ObjectWrapperT : public ObjectWrapper
-{
-public:
-	//! \return Nazwa typu.
-	virtual const std::string& getClassName() const
-	{
-		const static std::string className = "";
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return className;
-	}
-
-	//! \return Informacje o typie.
-	virtual const TypeInfo & getTypeInfo() const
-	{
-		static const TypeInfo typeInfo_ = TypeInfo();
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return typeInfo_;
-	}
-
-	//! \return Klon bieżącego obiektu. Wewnętrzny wskaźnik również jest kopiowany.
-	virtual const ObjectWrapperPtr clone() const
-	{		
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return ObjectWrapperPtr();
-	}
-
-	virtual const ObjectWrapperPtr create() const
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return ObjectWrapperPtr();
-	}
-
-	virtual const void* getRawPtr() const
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return nullptr;
-	}
-
-	virtual void* getRawPtr()
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return nullptr;
-	}
-
-	//! \return Informacje o typie odpowiednio normalnego i stałego wskaźnika.
-	virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const
-	{
-		static const std::pair<TypeInfo, TypeInfo> ptrTypeInfo_ = std::pair<TypeInfo, TypeInfo>();
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");		
-		return ptrTypeInfo_;
-	}
-
-	virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return false;
-	}
-
-private:
-
-	virtual void __reset()
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-	}
-
-	virtual const bool __setData(const void * object)
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-	}
-
-	virtual const bool __tryGetData(void * object, const TypeInfo & ptrType)
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return false;
-	}
-
-	virtual const bool __tryGetData(void * object, const TypeInfo & ptrType) const
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return false;
-	}
-
-	virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType)
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return false;
-	}
-
-	virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const
-	{
-		UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-		return false;
-	}
-};
-}
 
 // Makro tworzące specjalizację ObjectWrapperT. Musi występować w globalnym
 // namespace. Drugim parametrem może być dowolny typ mający cechy ptrPolicy,

@@ -14,49 +14,48 @@
 
 namespace utils {
 
-	//! Wyj¹tek rzucany gdy próbujemy uruchomiæ w¹tek ju¿ uruchomiony
+	//! Wyjï¿½tek rzucany gdy prï¿½bujemy uruchomiï¿½ wï¿½tek juï¿½ uruchomiony
 	class RunningGroupStartException : public RunningStartException
 	{
 	public:
-		RunningGroupStartException() {}
 		RunningGroupStartException(const char * msg) : RunningStartException(msg) {}
 	};
 
-	//! Interfejs klasy obs³uguj¹cej w¹tki
+	//! Interfejs klasy obsï¿½ugujï¿½cej wï¿½tki
 	class IThreadGroup : public IThreadingBase
 	{
 	public:
-		//! Struktura opisuj¹ca parametry przetwarzania
+		//! Struktura opisujï¿½ca parametry przetwarzania
 		struct RunnableDescription
 		{
 			RunnablePtr runnable;		//! Przetwarzany obiekt
 			IThread::Priority priority;	//! Priorytet jego przetwarzania
 		};
-		//! Typ grupy funktorów wykonywanych w w¹tkach grupy
+		//! Typ grupy funktorï¿½w wykonywanych w wï¿½tkach grupy
 		typedef std::vector<RunnableDescription> Runnables;
-		//! Typ iloœci w¹tków w grupie
+		//! Typ iloï¿½ci wï¿½tkï¿½w w grupie
 		typedef Runnables::size_type size_type;
 
 	public:
 		//! Wirtualny destruktor
 		virtual ~IThreadGroup() {}
 
-		//! Metoda uruchamia przetwarzanie przez grupê
-		//! \param funcs Funktory wykonywane w grupie - ich rozmiar musi siê zgadzaæ rozmiarowi grupy, w przeciwnym wypadku dostaniemy wyj¹tek
+		//! Metoda uruchamia przetwarzanie przez grupï¿½
+		//! \param funcs Funktory wykonywane w grupie - ich rozmiar musi siï¿½ zgadzaï¿½ rozmiarowi grupy, w przeciwnym wypadku dostaniemy wyjï¿½tek
 		virtual void start(const Runnables & funcs) = 0;
 		//! \return Rozmiar grupy
 		virtual const size_type size() const = 0;
-		//! \param idx Indeks w¹tku
-		//! \return W¹tek pod zadanym indeksem
+		//! \param idx Indeks wï¿½tku
+		//! \return Wï¿½tek pod zadanym indeksem
 		virtual ThreadConstPtr thread(size_type idx) const = 0;
-		//! \param stacks Wektor opisuj¹cy rozmiary stosów poszczególnych watkóe w grupie
-		//! Wolno wo³aæ t¹ metode przed pierwszym przetwarzaniem lub bezpoœrednio po kill
+		//! \param stacks Wektor opisujï¿½cy rozmiary stosï¿½w poszczegï¿½lnych watkï¿½e w grupie
+		//! Wolno woï¿½aï¿½ tï¿½ metode przed pierwszym przetwarzaniem lub bezpoï¿½rednio po kill
 		virtual void setStacksSizes(const std::vector<IThread::size_type> & stacks) = 0;
-		//! \param idx Indeks w¹tku który chcemy obserwowaæ w grupie
-		//! \param observer Obiekt obserwuj¹cy w¹tek
+		//! \param idx Indeks wï¿½tku ktï¿½ry chcemy obserwowaï¿½ w grupie
+		//! \param observer Obiekt obserwujï¿½cy wï¿½tek
 		virtual void attachToThread(size_type idx, Observer<IThreadingBase> * observer) = 0;
-		//! \param idx Indeks w¹tku który chcemy przestaæ obserwowaæ w grupie
-		//! \param observer Obiekt obserwuj¹cy w¹tek
+		//! \param idx Indeks wï¿½tku ktï¿½ry chcemy przestaï¿½ obserwowaï¿½ w grupie
+		//! \param observer Obiekt obserwujï¿½cy wï¿½tek
 		virtual void detachFromThread(size_type idx, Observer<IThreadingBase> * observer) = 0;
 	};
 

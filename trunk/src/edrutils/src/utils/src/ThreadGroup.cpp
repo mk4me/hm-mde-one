@@ -12,37 +12,37 @@ class ThreadGroup::ThreadGroupImpl : private Observer<IThreadingBase>
 {
 private:
 
-	//! Struktura opisuj¹ca dane w¹tku
+	//! Struktura opisujï¿½ca dane wï¿½tku
 	struct ThreadData
 	{
-		//! W¹tek
+		//! Wï¿½tek
 		ThreadPtr thread;
-		//! Status w¹tku
+		//! Status wï¿½tku
 		IThreadingBase::Status status;
-		//! Obiekty obserwuj¹ce w¹tek
+		//! Obiekty obserwujï¿½ce wï¿½tek
 		std::list<Observer<IThreadingBase>*> observers;
 	};
 
 private:	
-	//! W¹tki
+	//! Wï¿½tki
 	std::vector<ThreadData> threads;
 	//! Obiekt do synchronizacji stanu grupy
 	mutable QMutex synch;
 	//! Obiekt do synchronizacji stanu grupy podczas anylowania
 	mutable QMutex cancelingSynch;
-	//! Obiekt synchronizuj¹cy czekaj¹cych - join
+	//! Obiekt synchronizujï¿½cy czekajï¿½cych - join
 	mutable QMutex waitSynch;
-	//! Obiekt synchronizuj¹cy czekaj¹cych - join
+	//! Obiekt synchronizujï¿½cy czekajï¿½cych - join
 	mutable QMutex startSynch;
-	//! Iloœæ w¹tków melduj¹cych swój stan
+	//! Iloï¿½ï¿½ wï¿½tkï¿½w meldujï¿½cych swï¿½j stan
 	unsigned int waitingCounter;
 	//! Poprzedni status grupy
 	IThreadingBase::Status status_;
 	//! Poprzedni rezultat grupy
 	IThreadingBase::Result result_;
-	//! Grupa której funkcjonalnoœæ realizujemy
+	//! Grupa ktï¿½rej funkcjonalnoï¿½ï¿½ realizujemy
 	ThreadGroup * threadGroup;
-	//! Info czy anulujemy pozosta³e watki
+	//! Info czy anulujemy pozostaï¿½e watki
 	volatile bool canceling;
 	//! Info czy wystartowano
 	volatile bool started_;
@@ -64,7 +64,7 @@ public:
 	{
 		init();
 
-		//Inicjujemy w¹tki
+		//Inicjujemy wï¿½tki
 		for(unsigned int i = 0; i < size; ++i){
 			ThreadData td;
 			td.thread = ThreadPtr(new Thread());
@@ -79,7 +79,7 @@ public:
 	{
 		init();
 
-		//Inicjujemy w¹tki
+		//Inicjujemy wï¿½tki
 		for(auto it = threads.begin(); it != threads.end(); ++it){
 			if((*it)->result() != IThreadingBase::FirstProcessing || (*it)->status() == IThreadingBase::Running){
 				throw std::runtime_error("Group initialized with already used thread");
@@ -195,7 +195,7 @@ public:
 			QMutexLocker lock(&synch);
 
 			if(started_ == true){
-				throw RunningGroupStartException();
+				throw RunningGroupStartException("Group already running");
 			}
 
 			if(funcs.size() != threads.size()){
