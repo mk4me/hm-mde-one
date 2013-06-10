@@ -250,30 +250,47 @@ core::IHierarchyItemPtr TreeBuilder::createMarkersBranch( const MotionConstPtr &
 
     MarkerCollectionConstPtr m = markerCollection->get(); 
     tryAddVectorToTree<MarkerChannel>(motion, m, "Marker collection", itemIcon, markersItem, false);
+    /*int count = markersItem->getNumChildren();
+    for (int i = 0; i < count; ++i) {
+        core::HierarchyDataItemConstPtr di = utils::dynamic_pointer_cast<const core::HierarchyDataItem>(markersItem->getChild(i));
+        if (di) {
+            core::HierarchyHelperPtr helperX = utils::make_shared<NewVector3ItemHelper>(di->getData());
+            helperX->setText(QObject::tr("All x from session"));
+            utils::const_pointer_cast<core::HierarchyDataItem>(di)->addHelper(helperX);
+
+            core::HierarchyHelperPtr helperY = utils::make_shared<NewVector3ItemHelper>(di->getData());
+            helperY->setText(QObject::tr("All y from session"));
+            utils::const_pointer_cast<core::HierarchyDataItem>(di)->addHelper(helperY);
+
+            core::HierarchyHelperPtr helperZ = utils::make_shared<NewVector3ItemHelper>(di->getData());
+            helperZ->setText(QObject::tr("All z from session"));
+            utils::const_pointer_cast<core::HierarchyDataItem>(di)->addHelper(helperZ);
+        }
+    }*/
     return markersItem;
 }
 
 core::IHierarchyItemPtr TreeBuilder::createForcesBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
-    return createTBranch<ForceCollection>(motion, rootName, rootIcon, itemIcon);
+    return createTBranch<ForceChannel, ForceCollection>(motion, rootName, rootIcon, itemIcon);
 }
 
 core::IHierarchyItemPtr TreeBuilder::createMomentsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
-    return createTBranch<MomentCollection>(motion, rootName, rootIcon, itemIcon);
+    return createTBranch<MomentChannel, MomentCollection>(motion, rootName, rootIcon, itemIcon);
 }
 
 core::IHierarchyItemPtr TreeBuilder::createPowersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
-    return createTBranch<PowerCollection>(motion, rootName, rootIcon, itemIcon);
+    return createTBranch<PowerChannel, PowerCollection>(motion, rootName, rootIcon, itemIcon);
 }
 
-template <class Collection>
+template <class Channel, class Collection>
 core::IHierarchyItemPtr TreeBuilder::createTBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
 {
     typedef typename core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
     typedef typename core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
-    typedef typename Collection::ChannelType Channel;
+    //typedef typename Collection::ChannelType Channel;
 
     core::ConstObjectsList collection;
     motion->getObjects(collection, typeid(Collection), false);
@@ -289,8 +306,8 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
     if (collection) {
         std::vector<core::ObjectWrapperConstPtr> wrappers;
         for (int i = 0; i < collection->getNumChannels(); ++i) {
-            core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<VectorChannel>();
-            wrapper->set(core::const_pointer_cast<VectorChannel>(boost::dynamic_pointer_cast<const VectorChannel>(collection->getChannel(i))));
+            core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<Channel>();
+            wrapper->set(core::const_pointer_cast<Channel>(boost::dynamic_pointer_cast<const Channel>(collection->getChannel(i))));
 
             static int number = 0;
             std::string();
@@ -308,12 +325,192 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
         int count = wrappers.size();
         for (int i = 0; i < count; ++i) {
             VectorChannelConstPtr c = wrappers[i]->get();
-            core::HierarchyHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i]));
-            // todo setmotion
-            //channelHelper->setMotion(motion);
-
-            core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getName()), channelHelper));
+            std::string channelName = c->getName();
+            std::list<core::HierarchyHelperPtr> helpers;
+            NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i]));
+            helpers.push_back(channelHelper);
+            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 0));
+            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 1));
+            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 2));
+            helpers.push_back(createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Left));
+            helpers.push_back(createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
+            helpers.push_back(createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
+            helpers.push_back(createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
+            core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getName()), helpers));
             collectionItem->appendChild(channelItem);
         }
     }
+}
+
+
+
+NewMultiserieHelperPtr TreeBuilder::allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo )
+{
+    NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
+    core::ConstObjectsList motions;
+    s->getMotions(motions);
+
+    for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
+        PluginSubject::MotionConstPtr m = (*itMotion)->get();
+        core::ConstObjectsList wrappers;
+        m->getObjects(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
+
+        EventsCollectionConstPtr events;
+        if (m->hasObject(typeid(C3DEventsCollection), false)) {
+            core::ConstObjectsList e;
+            m->getObjects(e, typeid(C3DEventsCollection), false);
+            events = e.front()->get();
+        }
+
+        for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
+            VectorChannelCollectionConstPtr collection = (*it)->get();
+            int count = collection->getNumChannels();
+            for (int i = 0; i < count; ++i) {
+                VectorChannelConstPtr channel = collection->getChannel(i);
+                if (channel->getName() == channelName) {
+                    ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
+                    core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+                    wrapper->set(reader);
+                    int no = toVisualize.size();
+                    std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
+                    (*wrapper)["core/name"] = prefix + boost::lexical_cast<std::string>(no);
+                    std::string src;
+                    (*it)->tryGetMeta("core/source", src);
+                    (*wrapper)["core/source"] = src + boost::lexical_cast<std::string>(no);
+                    toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, m));
+                }
+
+            }
+
+        }
+    }
+    NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
+    QString text = QString("All %1 from session").arg(channelNo == 0 ? "X" : (channelNo == 1 ? "Y" : "Z"));
+    multi->setText(text);
+    return multi;
+}
+
+NewMultiserieHelperPtr TreeBuilder::createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context )
+{
+    NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
+    //MotionConstPtr motion = helper->getMotion();
+    EventsCollectionConstPtr events;
+    std::vector<FloatPairPtr> segments;
+    if (motion->hasObject(typeid(C3DEventsCollection), false)) {
+        core::ConstObjectsList wrappers;
+        motion->getObjects(wrappers, typeid(C3DEventsCollection), false);
+        events = wrappers.front()->get();
+        segments = getTimeSegments(events, context);
+    }
+    std::map<utils::ObjectWrapperConstPtr, QColor> colorMap;
+    VectorChannelConstPtr channel = wrapper->get();
+    for (int j = 0; j != segments.size(); ++j) {
+        FloatPairPtr segment = segments[j];
+        for (int channelNo = 0; channelNo <= 2; ++channelNo) {
+            ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
+            ScalarChannelReaderInterfacePtr normalized(new ScalarWithTimeSegment(reader, segment->first, segment->second));
+            core::ObjectWrapperPtr newWrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+            newWrapper->set(normalized);
+            int no = toVisualize.size();
+            std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
+            colorMap[newWrapper] = channelNo == 0 ? QColor(255, 0, 0) : (channelNo == 1 ? QColor(0, 255, 0) : QColor(0, 0, 255));
+            (*newWrapper)["core/name"] = prefix + ":" + boost::lexical_cast<std::string>(j);
+            std::string src;
+            wrapper->tryGetMeta("core/sources", src);
+            (*newWrapper)["core/sources"] = src + boost::lexical_cast<std::string>(no);
+            toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(newWrapper, events, motion));
+        }
+    }
+    NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
+    multi->setColorStrategy(utils::make_shared<ColorMapMultiserieStrategy>(colorMap));
+
+    QString text;
+    if (context == c3dlib::C3DParser::IEvent::Left) {
+        text = QObject::tr("Normalized left from motion");
+    } else if (context == c3dlib::C3DParser::IEvent::Right) {
+        text = QObject::tr("Normalized right from motion");
+    } else {
+        UTILS_ASSERT(false);
+    }
+    multi->setText(text);
+    return multi;
+}
+
+NewMultiserieHelperPtr  TreeBuilder::createNormalizedFromAll( const std::string& channelName, SessionConstPtr s, c3dlib::C3DParser::IEvent::Context context )
+{
+    NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
+    //SessionConstPtr s = helper->getMotion()->getUnpackedSession();
+    core::ConstObjectsList motions;
+    s->getMotions(motions);
+
+    std::map<utils::ObjectWrapperConstPtr, QColor> colorMap;
+    for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
+        PluginSubject::MotionConstPtr m = (*itMotion)->get();
+        core::ConstObjectsList wrappers;
+        m->getObjects(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
+
+        EventsCollectionConstPtr events;
+        std::vector<FloatPairPtr> segments;
+        if (m->hasObject(typeid(C3DEventsCollection), false)) {
+            core::ConstObjectsList e;
+            m->getObjects(e, typeid(C3DEventsCollection), false);
+            events = e.front()->get();
+            segments = getTimeSegments(events, context);
+        }
+
+        for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
+            VectorChannelCollectionConstPtr collection = (*it)->get();
+            int count = collection->getNumChannels();
+            for (int i = 0; i < count; ++i) {
+                VectorChannelConstPtr channel = collection->getChannel(i);
+                if (channel->getName() == channelName) {
+
+                    int r = rand() % 200;
+                    int g = rand() % 200;
+                    int b = rand() % 200;
+                    QColor colorX(r + 55,g , b);
+                    QColor colorY(r, g + 55, b);
+                    QColor colorZ(r, g, b + 55);
+                    for (int j = 0; j != segments.size(); ++j) {
+                        FloatPairPtr segment = segments[j];
+
+                        for (int channelNo = 0; channelNo <= 2; ++channelNo) {
+                            ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
+                            ScalarChannelReaderInterfacePtr normalized(new ScalarWithTimeSegment(reader, segment->first, segment->second));
+                            core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+                            wrapper->set(normalized);
+                            colorMap[wrapper] = channelNo == 0 ? colorX : (channelNo == 1 ? colorY : colorZ);
+                            int no = toVisualize.size();
+                            std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
+                            (*wrapper)["core/name"] = prefix + boost::lexical_cast<std::string>(i) + ":" + boost::lexical_cast<std::string>(j);
+                            std::string src;
+                            (*it)->tryGetMeta("core/source", src);
+                            (*wrapper)["core/source"] = src + boost::lexical_cast<std::string>(no);
+                            toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, m));
+                        }
+                    }
+                }
+
+            }
+
+        }
+    }
+    if (toVisualize.empty() == false) {
+        NewMultiserieHelperPtr multi(new NewMultiserieHelper(toVisualize));
+        multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
+
+        QString text;
+        if (context == c3dlib::C3DParser::IEvent::Left) {
+            text = QObject::tr("Normalized left from session");
+        } else if (context == c3dlib::C3DParser::IEvent::Right) {
+            text = QObject::tr("Normalized right from session");
+        } else {
+            UTILS_ASSERT(false);
+        }
+        multi->setText(text);
+        return multi;
+    } 
+
+    UTILS_ASSERT(false);
+    return NewMultiserieHelperPtr();
 }

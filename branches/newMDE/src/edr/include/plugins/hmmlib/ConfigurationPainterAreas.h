@@ -82,19 +82,19 @@ public:
 
 public:
     //! \return pozycja Y rysowanego markera (środek - promień)
-    virtual int getY() const { return getScale() * ( posY - r); }
+    virtual int getY() const { return static_cast<int>(getScale() * ( posY - r)); }
     //! ustawia pozycję Y rysowanego markera
     //! \param val nowa pozycja
     virtual void setY(int val) { posY = val + r; }
     //! \return pozycja Y rysowanego markera
-    virtual int getX() const { return getScale() * (posX - r); }
+    virtual int getX() const { return static_cast<int>(getScale() * (posX - r)); }
     //! ustawia pozycję X rysowanego markera  (środek - promień)
     //! \param val nowa pozycja
     virtual void setX(int val) { posX = val + r; }
     //! \return szerokość rysowanego markera (2 x promień)
-    virtual int getWidth() const { return getScale() * (2 * r); }
+    virtual int getWidth() const { return static_cast<int>(getScale() * (2 * r)); }
     //! \return wysokość rysowanego markera (2 x promień)
-    virtual int getHeight() const { return getScale() * (2 * r); }
+    virtual int getHeight() const { return static_cast<int>(getScale() * (2 * r)); }
     //! \return nazwa markera
     virtual const QString& getName() const { return name; }
     //! pozwala odrysować się obiektowi

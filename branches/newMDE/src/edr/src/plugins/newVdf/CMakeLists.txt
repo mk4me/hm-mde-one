@@ -43,6 +43,7 @@ SET_PUBLIC_HEADERS(
 	ExampleItems.h
 	TreeBuilder.h
 	TreeItemHelper.h
+	MultiserieColorStrategy.h
 	Export.h
 )
 

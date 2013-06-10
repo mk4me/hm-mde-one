@@ -16,3 +16,4 @@ int core::FilterBundle::genNumFilters() const
     return commands.size();
 }
 
+

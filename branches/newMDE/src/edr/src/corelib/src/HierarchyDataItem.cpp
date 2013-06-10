@@ -50,3 +50,8 @@ utils::ObjectWrapperConstPtr core::HierarchyDataItem::getData() const
 {
     return data;
 }
+
+void core::HierarchyDataItem::addHelper( HierarchyHelperPtr helper )
+{
+    helpers.push_back(helper);
+}

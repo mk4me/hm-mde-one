@@ -10,6 +10,7 @@
 #ifndef HEADER_GUARD_HMM__ANALISISWIDGET_H__
 #define HEADER_GUARD_HMM__ANALISISWIDGET_H__
 
+#include <list>
 #include <coreui/CoreDockWidgetManager.h>
 #include <coreui/CoreDockWidget.h>
 #include <coreui/CoreTitleBar.h>
@@ -41,9 +42,6 @@ public:
     //QTreeWidget* getTreeWidget();
     ////! \return widget przechowujący miniaturki do raportów
     //QWidget* getRaportsThumbnailList();
-    ////! dodaje widget z filtrami
-    //! \param filter dodawany widget
-    void addDataFilterWidget(coreUi::DataFilterWidget* filter);
     //! \return obszar, gdzie laduja wizualizatory i timeline
     QWidget* getArea() { return analisisArea; }
     QTreeView* getTreeView() { return treeView; }
@@ -52,6 +50,7 @@ public:
 public Q_SLOTS:
     void createVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper);
     void addRoot(core::IHierarchyItemPtr root);
+    void switchToFirstTab();
 
 
 private:
@@ -60,6 +59,9 @@ private:
     QDockWidget* createDockVisualizer(const core::VisualizerPtr & visualizer);
     QDockWidget* createAndAddDockVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet);
     coreUI::CoreDockWidget* embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);
+    //! dodaje widget z filtrami
+    //! \param filter dodawany widget
+    void addDataFilterWidget(coreUi::DataFilterWidget* filter);
     
 private Q_SLOTS:
     void visualizerDestroyed(QObject * visualizer);
@@ -72,13 +74,14 @@ private Q_SLOTS:
     ////! kliknięto w filtr
     ////! \param filter kliknięty
     //void filterClicked(FilterEntryWidget* filter);
-    ////! Kliknięto zatwierdź w graficznym konfiguratorze
-    //void applyClicked();
+    //! Kliknięto zatwierdź w graficznym konfiguratorze
+    void applyClicked();
     ////! proste przejście do pierwszej zakładki (z drzewem danych)
     //void switchToFirstTab();
     ////! odtwarza drzewo danych 
     ////! \param currentFilter filtr, na podstawie którego odtworzone zostanie drzewo
     //void recreateTree(FilterEntryWidget* currentFilter);
+    void onBundleActivated(coreUi::DataFilterWidget* widget);
 
 private:
     coreUI::CoreDockWidgetManager* topMainWindow;
@@ -98,8 +101,9 @@ private:
     //AnalisisTreeWidget* treeWidget;
     ////! widok HMM
     //HmmMainWindow* hmm;
-    ////TODO potrzebne tylko, aby przekazac info między elementami.
-    //FilterEntryWidget* currentFilter;
+    // potrzebne tylko, aby przekazac info między elementami.
+    core::IFilterCommandPtr currentFilter;
+    std::list<coreUi::DataFilterWidget*> filterBundleWidgets;
 };
 
 

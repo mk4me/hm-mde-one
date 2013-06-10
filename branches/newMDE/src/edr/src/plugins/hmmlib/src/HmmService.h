@@ -33,6 +33,9 @@ public:
     virtual QWidget* getWidget() { return nullptr; } 					
     virtual QWidgetList getPropertiesWidgets() { return QWidgetList(); } 
     virtual core::IFilterProvider::FilterBundles getFilterBundles() const;
+
+private:
+    void addSubjectFilterToBundle( core::IFilterBundlePtr fb, const core::TypeInfo&, const QString& name, const QIcon& icon) const;
 };										
 DEFINE_SMART_POINTERS(HmmService);
 

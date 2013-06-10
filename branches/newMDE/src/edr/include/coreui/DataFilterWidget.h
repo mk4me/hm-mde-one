@@ -26,6 +26,22 @@ namespace Ui {
 
 namespace coreUi {
 
+class COREUI_EXPORT BundleFilter : public core::IFilterCommand
+{
+public:
+    virtual ~BundleFilter() {}
+
+public:
+    virtual core::IHierarchyItemPtr getFilteredTree( core::IHierarchyItemConstPtr root );
+    virtual QString getName() const;
+    virtual QIcon getIcon() const;
+    virtual void addFilterCommand(core::IFilterCommandPtr command);
+
+private:
+    std::vector<core::IFilterCommandPtr> commands;
+};
+DEFINE_SMART_POINTERS(BundleFilter)
+
 //! widget przechowujący grupę filtrów
 class COREUI_EXPORT DataFilterWidget : public QWidget
 {
@@ -33,22 +49,17 @@ class COREUI_EXPORT DataFilterWidget : public QWidget
 public:
     //! Konstruktor
     //! \param name nazwa GUI
-    //! \param pixmap ikona
+    //! \param icon ikona
     //! \param hmmWindow widok HMM
-    DataFilterWidget(const QString& name, const QPixmap& pixmap);
+    DataFilterWidget(const QString& name, const QIcon& icon);
 	virtual ~DataFilterWidget() {}
 
 public:
     //! Dodaje nowy filtr do grupy
     //! \param bigLabelText duża etykieta dla tekstu
-    //! \param dataFilter filtr danych trafiających do drzewa
-    //! \param icon ikona filtru
-    void addFilter(const QString& bigLabelText, SubjectHierarchyFilterPtr dataFilter, const QPixmap* icon = nullptr);
-    //! Dodaje nowy filtr do grupy
-    //! \param bigLabelText duża etykieta dla tekstu
     //! \param command akcja filtrująca dane trafiające do drzewa
     //! \param icon ikona filtru
-    void addFilter(const QString& bigLabelText, core::IFilterCommandPtr command, const QPixmap* icon = nullptr);
+    void addFilter(const QString& bigLabelText, core::IFilterCommandPtr command, const QIcon& icon = QIcon());
     //!  Dodaje nowy filtr do grupy
     //! \param entry gotowy, przygotowany wcześniej filtr
     void addFilter(FilterEntryWidget* entry);
@@ -81,8 +92,8 @@ protected:
 
 Q_SIGNALS:
     //! zmieniła się aktywność grupy
-    //! \param aktywowana / deaktywowana
-    void activated(bool);
+    //! \param grupa
+    void activityChanged(coreUi::DataFilterWidget*);
     //! grupa została kliknięta
     void clicked();
     //! sygnał informujący, że filtr został kliknięty
@@ -104,15 +115,17 @@ public Q_SLOTS:
 private Q_SLOTS:
     //! kliknięto grupę filtrów
     void onClick();
+    void onFilterEntryClicked(core::IFilterCommandPtr filter);
 
 private:
-    //! filtry zawarte w grupie
-    std::vector<FilterEntryWidget*> entries;
     //! czy grupa jest aktywna
     bool active;
     //! czy do grupy można jeszcze dodać następne filtry
     bool filtersClosed;
+    //! filtry zawarte w grupie
+    std::vector<FilterEntryWidget*> entries;
     Ui::FilterWidget* ui;
+    BundleFilterPtr bundleFilter;
 };
 typedef boost::shared_ptr<DataFilterWidget> DataFilterWidgetPtr;
 typedef boost::shared_ptr<const DataFilterWidget> DataFilterWidgetConstPtr;

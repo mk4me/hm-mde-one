@@ -44,13 +44,34 @@ void AnalisisModel::addFilterBundles( const core::IFilterProvider::FilterBundles
 
 void AnalisisModel::applyFilter( core::IFilterCommandPtr filter )
 {
-    std::vector<core::IHierarchyItemConstPtr> itms;
+    if (filter) {
+        if (itms.empty()) {
+            saveSourceItems();
+        }
+        model.clear();
+        auto count = itms.size();
+        for (int i = 0; i < count; ++i) {
+            model.addRootItem(filter->getFilteredTree(itms[i]));
+        }
+    } else {
+        loadSourceItems();
+    }
+}
+
+void AnalisisModel::saveSourceItems()
+{
+    itms.clear();
     auto count = model.getNumChildren();
     for (int i = 0; i < count; ++i) {
         itms.push_back(model.getChild(i));
     }
+}
+
+void AnalisisModel::loadSourceItems()
+{
     model.clear();
-    for (int i = 0; i < count; ++i) {
-        model.addRootItem(filter->getFilteredTree(itms[i]));
+    for (auto it = itms.begin(); it != itms.end(); ++it) {
+        model.addRootItem(*it);
     }
+    itms.clear();
 }

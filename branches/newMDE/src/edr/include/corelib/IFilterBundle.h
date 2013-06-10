@@ -21,6 +21,8 @@ public:
     virtual void addFilterCommand(IFilterCommandPtr command) = 0;
     virtual IFilterCommandPtr getFilter(int idx) = 0;
     virtual int genNumFilters() const = 0;
+    virtual QString getName() const = 0;
+    virtual QIcon getIcon() const = 0;
 };
 DEFINE_SMART_POINTERS(IFilterBundle);
 }

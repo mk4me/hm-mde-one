@@ -18,13 +18,25 @@ SET_SOURCE_FILES(
 	ConfigurationPainterAreas.cpp
 	HmmPlugin.cpp
 	HmmService.cpp
-	FilterCommand.cpp
+	SubjectFilterCommand.cpp
+	IllnessUnitFilter.cpp
+	Measurements.cpp
+	ConfiguredFilterCommand.cpp
+	MarkersFilter.cpp
+	EMGConfigFilter.cpp
+	KineticFilter.cpp
 )
 
 SET_PRIVATE_HEADERS(
 	HmmLibPCH.h
 	HmmService.h
-	FilterCommand.h
+	SubjectFilterCommand.h
+	IllnessUnitFilter.h
+	Measurements.h
+	ConfiguredFilterCommand.h
+	MarkersFilter.h
+	EMGConfigFilter.h
+	KineticFilter.h
 )
 
 SET_UI_FILES(
@@ -35,6 +47,7 @@ SET_UI_FILES(
 SET_MOC_FILES(
 	ConfigurationDialog.h
 	ConfigurationPainter.h
+	ConfiguredFilterCommand.h
 )
 
 SET_PRECOMPILED_HEADER (HmmLibPCH.h HmmLibPCH.cpp)

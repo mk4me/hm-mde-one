@@ -14,6 +14,7 @@
 #include <QtGui/QWidget>
 #include <osg/Vec3>
 #include <corelib/IFilterCommand.h>
+#include <QtGui/QIcon>
 //#include "FilterCommand.h"
 ////#include "ui_filterEntry.h"
 
@@ -32,7 +33,7 @@ public:
     //! \param bigLabelText tekst z dużą etykietą
     //! \param filterCommand akcja dokonująca właściwego filtrowania
     //! \param icon ikona reprezentująca filtr
-    FilterEntryWidget(QWidget* parent, const QString& bigLabelText, core::IFilterCommandPtr filterCommand, const QPixmap* icon = nullptr);
+    FilterEntryWidget(QWidget* parent, const QString& bigLabelText, core::IFilterCommandPtr filterCommand, const QIcon& icon = QIcon());
 	//! destruktor
 	virtual ~FilterEntryWidget();
 

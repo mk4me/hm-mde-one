@@ -19,35 +19,63 @@
 
 namespace core {
 
-class CORELIB_EXPORT HierarchyDataItem : public HierarchyItem, public IHierarchyDataItem
-{
-public:
-    HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
-        const QIcon& icon, const QString& name, HierarchyHelperPtr helper);
+    //! Klasa stanowi podstawowy element hierarchii danych.
+    //! Jej podstawowym zadaniem jest dostarczenie danych i sposobu ich wizualizacji
+    class CORELIB_EXPORT HierarchyDataItem : public HierarchyItem, public IHierarchyDataItem
+    {
+    public:
+        //! 
+        //! \param wrapper 
+        //! \param icon 
+        //! \param name 
+        //! \param helper 
+        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
+            const QIcon& icon, const QString& name, HierarchyHelperPtr helper);
 
-    HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
-        const QIcon& icon, const QString& name, std::list<HierarchyHelperPtr> helpers);
+        //! 
+        //! \param wrapper 
+        //! \param icon 
+        //! \param name 
+        //! \param helpers 
+        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
+            const QIcon& icon, const QString& name, std::list<HierarchyHelperPtr> helpers);
 
-    HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, 
-        const QIcon& icon, const QString& name);
+        //! 
+        //! \param wrapper 
+        //! \param icon 
+        //! \param name 
+        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, 
+            const QIcon& icon, const QString& name);
 
-    HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, 
-        const QIcon& icon = QIcon());
+        //! 
+        //! \param wrapper 
+        //! \param icon 
+        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, 
+            const QIcon& icon = QIcon());
 
-    HierarchyDataItem(const QIcon& icon, const QString& name, 
-        HierarchyHelperPtr helper);
+        //! 
+        //! \param icon 
+        //! \param name 
+        //! \param helper 
+        HierarchyDataItem(const QIcon& icon, const QString& name, 
+            HierarchyHelperPtr helper);
 
-	virtual ~HierarchyDataItem();
+	    virtual ~HierarchyDataItem();
 
-public:
-    virtual std::list<HierarchyHelperPtr> getHelpers() const { return helpers; }
+    public:
+        //! 
+        virtual std::list<HierarchyHelperPtr> getHelpers() const { return helpers; }
+        //! 
+        virtual utils::ObjectWrapperConstPtr getData() const;
+        //! 
+        //! \param helper 
+        void addHelper(HierarchyHelperPtr helper);
 
-    virtual utils::ObjectWrapperConstPtr getData() const;
-
-private:
-    std::list<HierarchyHelperPtr> helpers;
-    utils::ObjectWrapperConstPtr data;
-};
+    private:
+        std::list<HierarchyHelperPtr> helpers;
+        utils::ObjectWrapperConstPtr data;
+    };
+    DEFINE_SMART_POINTERS(HierarchyDataItem)
 }
 
 #endif

@@ -2,21 +2,25 @@
 #include <coreui/DataFilterWidget.h>
 #include <coreui/FilterEntryWidget.h>
 #include <QtGui/QMouseEvent>
+#include <corelib/HierarchyItem.h>
 #include "ui_filter.h"
 //#include "FilterCommand.h"
 
 using namespace PluginSubject;
 using namespace coreUi;
 
-DataFilterWidget::DataFilterWidget(const QString& name, const QPixmap& pixmap) :
+const int PIXMAP_SIZE = 64;
+
+DataFilterWidget::DataFilterWidget(const QString& name, const QIcon& icon) :
     active(false),
     filtersClosed(false),
-    ui(new Ui::FilterWidget())
+    ui(new Ui::FilterWidget()),
+    bundleFilter(new BundleFilter())
 {
     ui->setupUi(this);
     setActive(false);
     ui->label->setText(name);
-    ui->pictureLabel->setPixmap(pixmap);
+    ui->pictureLabel->setPixmap(icon.pixmap(QSize(PIXMAP_SIZE, PIXMAP_SIZE)));
     this->installEventFilter(this);
     ui->colorBox->installEventFilter(this);
 }
@@ -35,40 +39,26 @@ bool DataFilterWidget::eventFilter(QObject *object, QEvent *event)
     return false;
 }
 
-void DataFilterWidget::addFilter(const QString& bigLabelText, SubjectHierarchyFilterPtr dataFilter, const QPixmap* icon)
-{
-    UTILS_ASSERT(false);
-    // TODO
-    //SimpleFilterCommandPtr simple(new SimpleFilterCommand(dataFilter));
-    //addFilter(bigLabelText, simple, icon);
-}
-
 void DataFilterWidget::addFilter(FilterEntryWidget* entry) 
 {
     UTILS_ASSERT(filtersClosed == false);
     entries.push_back(entry);
-    connect(entry, SIGNAL(onFilterClicked(core::IFilterCommandPtr)), this, SLOT(onFilterClicked(core::IFilterCommandPtr)));
+    connect(entry, SIGNAL(onFilterClicked(core::IFilterCommandPtr)), this, SLOT(onFilterEntryClicked(core::IFilterCommandPtr)));
     ui->verticalLayout->addWidget(entry);
 }
 
-void DataFilterWidget::addFilter( const QString& bigLabelText, core::IFilterCommandPtr command, const QPixmap* icon)
+void DataFilterWidget::addFilter( const QString& bigLabelText, core::IFilterCommandPtr command, const QIcon& icon)
 {
     FilterEntryWidget* entry = new FilterEntryWidget(this, bigLabelText, command, icon);
+    bundleFilter->addFilterCommand(command);
     addFilter(entry);
 }
 
 void DataFilterWidget::onClick()
 {
-    UTILS_ASSERT(false);
-    // TODO
-    /*uncheckEntries();
-    const auto& sessions = hmmWindow->getCurrentSessions();
-    hmmWindow->clearTree();
-    BOOST_FOREACH(FilterEntryWidget* filter, entries) {
-        hmmWindow->addItemToTree(filter->getFilterCommand()->createTreeBranch(filter->getName(), sessions));
-    } 
+    uncheckEntries();
     setActive(!getActive());
-    Q_EMIT clicked();*/
+    Q_EMIT onFilterClicked(getActive() ? bundleFilter : core::IFilterCommandPtr());
 }
 
 void DataFilterWidget::mousePressEvent( QMouseEvent *e )
@@ -82,9 +72,9 @@ void DataFilterWidget::mousePressEvent( QMouseEvent *e )
 
 void DataFilterWidget::setActive( bool val )
 {
-    setColor(val ? QColor(235, 235, 235) : Qt::white);
+    setColor(val ? QColor(200, 200, 255) : Qt::white);
     active = val;
-    Q_EMIT activated(val); 
+    Q_EMIT activityChanged(this); 
 }
 
 void DataFilterWidget::closeFilters()
@@ -145,4 +135,44 @@ QString DataFilterWidget::getName() const
 int DataFilterWidget::getNumEntries() const
 {
     return entries.size();
+}
+
+core::IHierarchyItemPtr coreUi::BundleFilter::getFilteredTree( core::IHierarchyItemConstPtr root )
+{
+    core::HierarchyItemPtr results = utils::make_shared<core::HierarchyItem>(QObject::tr("Filtered"));
+    for (auto it = commands.begin(); it != commands.end(); ++it) {
+        results->appendChild((*it)->getFilteredTree(root));
+    }
+    return results;
+}
+
+QString coreUi::BundleFilter::getName() const
+{
+    return QObject::tr("Filter bundle");
+}
+
+QIcon coreUi::BundleFilter::getIcon() const
+{
+    return QIcon();
+}
+
+void coreUi::BundleFilter::addFilterCommand( core::IFilterCommandPtr command )
+{
+    commands.push_back(command);
+}
+
+void coreUi::DataFilterWidget::onFilterEntryClicked( core::IFilterCommandPtr filter )
+{
+    for (auto it = entries.begin(); it != entries.end(); ++it) {
+        auto filterWidget = *it;
+        if (filterWidget->getFilterCommand() == filter) {
+            uncheckEntries(filterWidget);
+            if (filterWidget->isChecked()) {
+                Q_EMIT onFilterClicked(filter);
+            } else {
+                Q_EMIT onFilterClicked(core::IFilterCommandPtr());
+            }
+
+        }
+    }
 }

@@ -34,6 +34,9 @@ public:
     virtual void reset() {}
     //! \return widget z konfiguratorem lub nullptr jeśli nie jest on dostarczany
     virtual QWidget* getConfigurationWidget() { return nullptr; }
+    //! \return nazwa filtru używana w GUI
+    virtual QString getName() const = 0;
+    virtual QIcon getIcon() const = 0;
 };
 DEFINE_SMART_POINTERS(IFilterCommand)
 

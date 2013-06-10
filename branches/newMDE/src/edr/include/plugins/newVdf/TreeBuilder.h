@@ -15,6 +15,7 @@
 #include <corelib/IHierarchyItem.h>
 #include <QtGui/QIcon>
 #include <plugins/newVdf/Export.h>
+#include <plugins/newVdf/TreeItemHelper.h>
 
 class PLUGIN_NEWVDF_EXPORT TreeBuilder
 {
@@ -117,7 +118,7 @@ private:
     //! \param rootName nazwa dla rodzica tworzonych elementów
     //! \param rootIcon ikona rodzica
     //! \param itemIcon ikona dla liœci
-    template <class Collection>
+    template <class Channel, class Collection>
     static core::IHierarchyItemPtr createTBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon );
     //! dodanie do drzewa elementów z podpiêtymi danymi w postaci wektorów
     //! \param motion próba pomiarowa
@@ -129,6 +130,9 @@ private:
     template <class Channel, class CollectionPtr>
     static void tryAddVectorToTree(const PluginSubject::MotionConstPtr & motion, const CollectionPtr & collection, const std::string& name, const QIcon& childIcon,  core::IHierarchyItemPtr parentItem, bool createContainerItem = true );
 
+    static NewMultiserieHelperPtr allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo );
+    static NewMultiserieHelperPtr createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context );
+    static NewMultiserieHelperPtr createNormalizedFromAll( const std::string& channelName, PluginSubject::SessionConstPtr s, c3dlib::C3DParser::IEvent::Context context );
 };
 
 

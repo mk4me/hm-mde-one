@@ -240,67 +240,68 @@ std::vector<core::TypeInfo> NewVector3ItemHelper::getTypeInfos() const
     return ret;
 }
 
-//void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
-//{
-//    int count = wrappers.size();
-//    for (int i = 0; i < count; ++i) {
-//        auto wrapper = wrappers[i].wrapper;
-//		std::string source;
-//		wrapper->tryGetMeta("core/source", source);
-//        auto serieX = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
-//		serieX->serie()->setName(source);
-//        if (wrappers[i].events) {
-//            EventSerieBase * eventSerie = dynamic_cast<EventSerieBase*>(serieX->serie());
-//            eventSerie->setEvents(wrappers[i].events);
-//        }
-//        INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
-//
-//        chartSerieX->setColor(colorStrategy->getColor(chartSerieX, wrapper));
-//        series.push_back(serieX);
-//    }
-//}
-//
-//
-//VisualizerPtr NewMultiserieHelper::createVisualizer()
-//{
-//	core::IVisualizerManager::VisualizerPrototypes prototypes;
-//	plugin::getVisualizerManager()->getVisualizerPrototypes(typeid(ScalarChannelReaderInterface), prototypes, true);
-//	VisualizerPtr visualizer(prototypes.front()->create());
-//
-//    QWidget * visWidget = visualizer->getOrCreateWidget();
-//    visWidget->layout()->setContentsMargins(2, 0, 2, 2);
-//    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
-//    if (!chart) {
-//        UTILS_ASSERT(false);
-//        PLUGIN_LOG_ERROR("Wrong visualizer type!");
-//    } else {
-//        chart->setTitle(title);
-//        //chart->setShowLegend(false);
-//    }
-//    return visualizer;
-//}
-//
-//std::vector<core::TypeInfo> NewMultiserieHelper::getTypeInfos() const
-//{
-//    std::vector<core::TypeInfo> ret;
-//    ret.push_back(typeid(ScalarChannelReaderInterface));
-//    return ret;
-//}
-//
-//NewMultiserieHelper::NewMultiserieHelper( const ChartWithDescriptionCollection& charts ):
-//    wrappers(charts),
-//    title(""),
-//    colorStrategy(new RandomMultiserieColorStrategy())
-//{
-//}
-//
-//NewMultiserieHelper::NewMultiserieHelper( const std::vector<core::ObjectWrapperConstPtr>& charts ):
-//    title(""),
-//    colorStrategy(new RandomMultiserieColorStrategy())
-//{
-//    UTILS_ASSERT(false);
-//    for (auto it = charts.begin(); it != charts.end(); ++it) {
-//        wrappers.push_back(ChartWithDescription(*it, EventsCollectionConstPtr(), PluginSubject::MotionConstPtr()));
-//    }
-//}
+void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
+{
+    int count = wrappers.size();
+    for (int i = 0; i < count; ++i) {
+        auto wrapper = wrappers[i].wrapper;
+		std::string source;
+		wrapper->tryGetMeta("core/source", source);
+        auto serieX = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
+		serieX->serie()->setName(source);
+        if (wrappers[i].events) {
+            EventSerieBase * eventSerie = dynamic_cast<EventSerieBase*>(serieX->serie());
+            eventSerie->setEvents(wrappers[i].events);
+        }
+        INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
+
+        chartSerieX->setColor(colorStrategy->getColor(chartSerieX, wrapper));
+        series.push_back(serieX);
+    }
+}
+
+
+VisualizerPtr NewMultiserieHelper::createVisualizer(core::IVisualizerManager* manager)
+{
+	core::IVisualizerManager::VisualizerPrototypes prototypes;
+    // TODO : jawnie pobrac New Chart
+	manager->getVisualizerPrototypes(typeid(ScalarChannelReaderInterface), prototypes, true);
+	VisualizerPtr visualizer(prototypes.front()->create());
+
+    QWidget * visWidget = visualizer->getOrCreateWidget();
+    visWidget->layout()->setContentsMargins(2, 0, 2, 2);
+    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
+    if (!chart) {
+        UTILS_ASSERT(false);
+        throw std::runtime_error("Wrong visualizer type!");
+    } else {
+        chart->setTitle(title);
+        //chart->setShowLegend(false);
+    }
+    return visualizer;
+}
+
+std::vector<core::TypeInfo> NewMultiserieHelper::getTypeInfos() const
+{
+    std::vector<core::TypeInfo> ret;
+    ret.push_back(typeid(ScalarChannelReaderInterface));
+    return ret;
+}
+
+NewMultiserieHelper::NewMultiserieHelper( const ChartWithDescriptionCollection& charts ):
+    wrappers(charts),
+    title(""),
+    colorStrategy(new RandomMultiserieColorStrategy())
+{
+}
+
+NewMultiserieHelper::NewMultiserieHelper( const std::vector<core::ObjectWrapperConstPtr>& charts ):
+    title(""),
+    colorStrategy(new RandomMultiserieColorStrategy())
+{
+    UTILS_ASSERT(false);
+    for (auto it = charts.begin(); it != charts.end(); ++it) {
+        wrappers.push_back(ChartWithDescription(*it, EventsCollectionConstPtr(), PluginSubject::MotionConstPtr()));
+    }
+}
 

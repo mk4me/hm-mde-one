@@ -34,11 +34,17 @@ public:
 Q_SIGNALS:
     void filterBundleAdded(core::IFilterBundlePtr);
     void reportCreated(const QString& html);
+
+private:
+    // TODO : przyda sie madrzejszy sposob zarzadzania elementami przefiltrowanymi i nieprzefiltrowanymi 
+    void saveSourceItems();
+    void loadSourceItems();
 private:
     coreui::HierarchyTreeModel model;
     ContextEventFilterPtr contextEventFilter;
     core::IHierarchyItemPtr dataManagerTreeItem; 
     core::IFilterProvider::FilterBundles filters;
+    std::vector<core::IHierarchyItemConstPtr> itms;
 };
 DEFINE_SMART_POINTERS(AnalisisModel);
 

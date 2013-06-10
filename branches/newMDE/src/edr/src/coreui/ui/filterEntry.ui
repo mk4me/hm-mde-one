@@ -67,11 +67,21 @@
 	color: rgb(105, 147, 225);; 
 	background-color: rgb(135, 177, 255);
 }
+QPushButton::checked {
+	color: rgb(105, 147, 225);
+	border-bottom: 1px solid black;
+     border-color: black;
+}
 QPushButton {
     /*color:  rgb(135, 177, 255); */
     color: rgb(114, 114, 113);
 	background-color:white;
     text-align: left;
+
+     border-style: outset;
+     border-width: 1px;
+     border-radius: 2px;
+     border-color: white;
 }</string>
    </property>
    <property name="text">
@@ -79,6 +89,9 @@ QPushButton {
    </property>
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
    </property>
    <property name="flat">
     <bool>true</bool>

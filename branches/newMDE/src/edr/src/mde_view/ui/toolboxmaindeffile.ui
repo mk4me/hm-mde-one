@@ -320,6 +320,12 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
            <height>28</height>
           </size>
          </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>

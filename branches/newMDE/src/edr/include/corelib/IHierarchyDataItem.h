@@ -15,13 +15,17 @@
 
 namespace core {
 
+//! Interfejs dla podstawowego elementu hierarchii danych.
+//! Jego podstawowym zadaniem jest dostarczenie danych i sposobu ich wizualizacji
 class IHierarchyDataItem
 {
 public:
 	virtual ~IHierarchyDataItem() {}
 
 public:
+    //! \return kolekcja z helperami (obiekty, które dostarczaj¹ informacji jak wizualizowaæ dane)
     virtual std::list<HierarchyHelperPtr> getHelpers() const = 0;
+    //! \return wrapper zwi¹zany z elementem w hierarchii, mo¿e byæ pusty wskaŸnik, jeœli dane s¹ na wy¿szym poziomie abstrakcji   
     virtual utils::ObjectWrapperConstPtr getData() const = 0;
 };
 DEFINE_SMART_POINTERS(IHierarchyDataItem);

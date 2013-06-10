@@ -85,16 +85,19 @@ void MdeMainWindow::customViewInit(QWidget * console)
    addTab(reportsTab);
    addTab(IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/Operacje.png"),tr("Console"))));
 
-   // TODO : najlepiej byloby utworzyc jakis kontroler do tego typu powiazan
+   // TODO : najlepiej byloby przeniesc to do kontrolera
    bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
    auto serviceManager = plugin::getServiceManager();
+   auto timeline = plugin::getServiceManager()->getService(core::UID::GenerateUniqueID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}"));
    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
        plugin::IServicePtr service = serviceManager->getService(i);
        
-        auto w = createServiceWidget(service);
-        if (w) {
-            addTab(IMdeTabPtr(new SimpleTab(w, QIcon(":/mde/icons/Operacje.png"),tr(service->getName().c_str()))));
-        }
+       if (service != timeline) {
+            auto w = createServiceWidget(service);
+            if (w) {
+                addTab(IMdeTabPtr(new SimpleTab(w, QIcon(":/mde/icons/Operacje.png"),tr(service->getName().c_str()))));
+            }
+       }
 
         core::IFilterProviderPtr filterProvider = utils::dynamic_pointer_cast<core::IFilterProvider>(service);
         if (filterProvider) {
@@ -150,6 +153,8 @@ void MdeMainWindowController::addTab( IMdeTabPtr tab )
     button->setToolButtonStyle(templateB->toolButtonStyle());
     button->setStyleSheet(templateB->styleSheet());
     button->setMinimumSize(templateB->minimumSize());
+    button->setCheckable(true);
+    button->setFixedWidth(templateB->width());
 
     QLayout* layout = window->toolBar->layout();
     auto count = layout->count();
@@ -203,6 +208,7 @@ void MdeMainWindowController::activateTab( IMdeTabPtr tab )
         IMdeTabPtr t = it->second;
         t->setActive(t == tab);
         t->getMainWidget()->setVisible(t == tab);
+        it->first->setChecked( t == tab);
     }
 }
 

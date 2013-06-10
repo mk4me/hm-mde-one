@@ -3,7 +3,7 @@
 #include "ui_filterEntry.h"
 
 FilterEntryWidget::FilterEntryWidget( QWidget* parent, const QString& bigLabelText, 
-            core::IFilterCommandPtr filterCommand, const QPixmap* icon /*= nullptr*/ ) : 
+            core::IFilterCommandPtr filterCommand, const QIcon& icon /*= nullptr*/ ) : 
         QWidget(parent),
         filterCommand(filterCommand),
         ui(new Ui::FilterEntry()),
@@ -12,9 +12,7 @@ FilterEntryWidget::FilterEntryWidget( QWidget* parent, const QString& bigLabelTe
     ui->setupUi(this);
     ui->pushButton->setText(bigLabelText);
     ui->pushButton->setAttribute(Qt::WA_NoSystemBackground, true);
-    if (icon) {
-        ui->pushButton->setIcon(*icon);
-    }
+    ui->pushButton->setIcon(icon);
 
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(onButton()));
 }
@@ -31,6 +29,7 @@ void FilterEntryWidget::onButton()
     if (!configurator) {
         configurator = filterCommand->getConfigurationWidget();
     }
+    //setChecked(!isChecked());
     Q_EMIT onFilterClicked(filterCommand);
 }
 

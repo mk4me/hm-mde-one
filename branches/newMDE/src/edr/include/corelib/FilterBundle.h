@@ -19,6 +19,7 @@ namespace core {
 class CORELIB_EXPORT FilterBundle : public IFilterBundle
 {
 public:
+    FilterBundle(const QString& name, const QIcon& icon = QIcon()) : name(name), icon(icon) {}
 	virtual ~FilterBundle() {}
 
 public:
@@ -26,8 +27,13 @@ public:
     virtual IFilterCommandPtr getFilter( int idx );
     virtual int genNumFilters() const;
 
+    virtual QString getName() const { return name; }
+    virtual QIcon getIcon() const { return icon; }
+    
 private:
     std::vector<IFilterCommandPtr> commands;
+    QIcon icon;
+    QString name;
 };
 DEFINE_SMART_POINTERS(FilterBundle);
 }
