@@ -21,7 +21,7 @@ void SimpleSourceNode::addOutputPin( IVisualOutputPinPtr pin )
 
 void SimpleSourceNode::clearOutputPins()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSourceNode::setName( const QString & name )
@@ -32,12 +32,12 @@ void SimpleSourceNode::setName( const QString & name )
 
 void SimpleSourceNode::setConfigButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSourceNode::setCloseButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * SimpleSourceNode::visualItem() const
@@ -57,22 +57,22 @@ void SimpleSourceNode::removeSelection()
 
 void SimpleSourceNode::addHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSourceNode::removeHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSourceNode::addCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSourceNode::removeCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSourceNode::removeOutputPin( IVisualOutputPinPtr pin )
@@ -81,7 +81,7 @@ void SimpleSourceNode::removeOutputPin( IVisualOutputPinPtr pin )
 
 void SimpleSourceNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
-	throw std::exception("The method or operation is not implemented.");
+	throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QString SimpleSourceNode::getName() const

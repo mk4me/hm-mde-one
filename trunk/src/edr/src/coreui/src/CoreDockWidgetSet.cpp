@@ -4,6 +4,7 @@
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QDockWidget>
 #include <QtGui/QTabBar>
+#include <stdexcept>
 
 using namespace coreUI;
 

@@ -99,7 +99,7 @@ public:
 		#if defined(__WIN32__)
 			return reinterpret_cast<T>(::GetProcAddress(library, procName));
 		#elif defined(__UNIX__)
-			return reinterpret_cast<Plugin::CreateFunction>(dlsym(library, procName));
+			return reinterpret_cast<T>(dlsym(library, procName));
 		#else
 		#error "Unsupported system for unloading shared libraries"
 			return 0;

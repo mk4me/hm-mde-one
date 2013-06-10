@@ -907,7 +907,8 @@ void NewChartVisualizer::refreshBounds()
     //minimalna rozdzielczość dla wszystkich kanałów
     std::vector<ScalarChannelReaderInterfaceConstPtr> channels;
     for (auto it = series.begin(); it != series.end(); ++it) {
-        ScalarChannelReaderInterfaceConstPtr data((*it)->getData()->get());
+        ScalarChannelReaderInterfaceConstPtr data;
+        (*it)->getData()->tryGet(data);
         minT = (std::max)(minT, data->argument(0));
         maxT = (std::min)(maxT, data->argument(data->size() - 1));
         channels.push_back(data);

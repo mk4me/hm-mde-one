@@ -98,9 +98,9 @@ public:
 
 	const size_type size() const;
 
-	void erase(const const_iterator & it);
+	iterator erase(iterator position);
 
-	void erase(const const_iterator & itS, const const_iterator & itE);
+	iterator erase(iterator first, iterator last);
 
 	void push_front(const ObjectWrapperConstPtr & obj);
 
@@ -133,10 +133,6 @@ public:
 
 		data.insert(position, tmp.begin(), tmp.end());
 	}
-
-	iterator erase(iterator position);
-
-	iterator erase(iterator first, iterator last);
 
 	void swap(ObjectWrapperCollection & owc);
 

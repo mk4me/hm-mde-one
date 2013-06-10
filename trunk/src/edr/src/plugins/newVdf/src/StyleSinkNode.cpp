@@ -21,12 +21,12 @@ void StyleSinkNode::addInputPin( IVisualInputPinPtr pin )
 
 void StyleSinkNode::removeInputPin( IVisualInputPinPtr pin )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSinkNode::clearInputPins()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSinkNode::setName( const QString & name )
@@ -37,12 +37,12 @@ void StyleSinkNode::setName( const QString & name )
 
 void StyleSinkNode::setConfigButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSinkNode::setCloseButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * StyleSinkNode::visualItem() const
@@ -66,22 +66,22 @@ void StyleSinkNode::removeSelection()
 
 void StyleSinkNode::addHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSinkNode::removeHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSinkNode::addCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSinkNode::removeCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSinkNode::setVisualStrategy( IVisualStrategyPtr strategy )

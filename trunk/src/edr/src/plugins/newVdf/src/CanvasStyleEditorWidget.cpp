@@ -1,4 +1,4 @@
-#include "newVdfPCH.h"
+#include "NewVdfPCH.h"
 #include <CanvasStyleEditorWidget.h>
 
 using namespace vdf;

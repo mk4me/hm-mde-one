@@ -9,8 +9,8 @@ SET_PUBLIC_HEADERS(
 	# SubjectDataFilters.h
 	ObjectWrapperCollection.h
 	PluginCommon.h
-	IConverter.h
-	IConverterManager.h
+	#IConverter.h
+	#IConverterManager.h
 	IPlugin.h
 	IVisualizerManager.h
 	IVisualizer.h

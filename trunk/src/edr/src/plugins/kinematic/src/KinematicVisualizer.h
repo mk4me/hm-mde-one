@@ -35,7 +35,7 @@
 #include "SchemeDialog.h"
 #include "KinematicSerie.h"
 
-#include <coreUI/CoreWidgetAction.h>
+#include <coreui/CoreWidgetAction.h>
 
 class LabeledDoubleSpinBox;
 

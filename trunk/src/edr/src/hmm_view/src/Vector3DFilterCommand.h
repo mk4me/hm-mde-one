@@ -26,6 +26,7 @@
 #include <utils/SmartPtr.h>
 
 #include <plugins/subject/ISubjectService.h>
+#include <plugins/subject/SubjectDataFilters.h>
 
 #include "FilterCommand.h"
 #include "TreeItemHelper.h"
@@ -308,7 +309,7 @@ public:
 public:
       //! konstruktor, tworzy dowiązanie do helpera
       Vector3DFilterCommand() :
-          simpleTypeFilter(new TypeFilter(typeid(Collection))),
+          simpleTypeFilter(new SubjectHierarchyTypeFilter(typeid(Collection))),
           helper(boost::bind( &Vector3DFilterCommand::checkBoxChanged, this, _1, _2 ))
       {
 

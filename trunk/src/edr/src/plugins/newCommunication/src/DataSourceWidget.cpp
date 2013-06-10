@@ -32,6 +32,7 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/IParserManagerReader.h>
+#include <corelib/PluginCommon.h>
 
 
 using namespace communication;
@@ -1670,12 +1671,16 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		if(subIT != subjectsMapping.end()){
 			//mam subjecta - nie musze już nic robić
 			subOW = subIT->second.first;
-			subPtr = subOW->get();
+			//FIX dla linux RtR
+			//subPtr = subOW->get();
+			subOW->tryGet(subPtr);
 		}else{
 			//tworzę subjecta
 			subOW = subjectService->createSubject();
 			//tworze ow dla subjecta
-			subPtr = subOW->get();
+			//FIX dla linux - RtR nie działa dla boost::shared_ptr
+			//subPtr = subOW->get();
+			subOW->tryGet(subPtr);
 			
 			std::stringstream label;
 
@@ -1708,7 +1713,9 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			if(sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze już nic robić
 				sOW = sIT->second.first;
-				sPtr = sOW->get();
+				//FIX dla linux RtR
+				//sPtr = sOW->get();
+				sOW->tryGet(sPtr);
 			}else{
 				//tworzę sesję
 				//generuję zbiór ow dla sesji
@@ -1735,7 +1742,9 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 
 				sOW = subjectService->createSession(subOW);
-				sPtr = sOW->get();
+				//FIX dla linux RtR
+				//sPtr = sOW->get();
+				sOW->tryGet(sPtr);
 				for(auto it = sessionObjects.begin(); it != sessionObjects.end(); ++it){
 					sPtr->addData(*it);
 				}
@@ -1769,7 +1778,9 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					//mam subjecta - nie musze już nic robić
 					//TODO
 					//nie powinno mnie tu być wg aktualnego działania pluginu subject!!
-					mPtr = mIT->second.first->get();
+					//FIX dla linux RtR
+					//mPtr = mIT->second.first->get();
+					mIT->second.first->tryGet(mPtr);
 				}else{
 					//tworzę sesję
 					//generuję zbiór ow dla motiona
@@ -1817,7 +1828,9 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					}
 
 					auto mOW = subjectService->createMotion(sOW);
-					mPtr = mOW->get();
+					//FIX dla linux RtR
+					//mPtr = mOW->get();
+					mOW->tryGet(mPtr);
 					for(auto it = motionObjects.begin(); it != motionObjects.end(); ++it){
 						mPtr->addData(*it);
 					}
@@ -2003,7 +2016,9 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 			auto sIT = sessionsMapping.find(sessionIT->first);
 			if(sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze już nic robić
-				sPtr = sIT->second.first->get();
+				//FIX dla linux RtR
+				//sPtr = sIT->second.first->get();
+				sIT->second.first->tryGet(sPtr);
 				core::ConstObjectsList motions;
 				sPtr->getMotions(motions);
 				if(motions.empty() == true){
@@ -2029,7 +2044,9 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 		auto subIT = subjectsMapping.find(subjectIT->first);
 		if(subIT != subjectsMapping.end()){
 			//mam subjecta - nie musze już nic robić
-			subPtr = subIT->second.first->get();
+			//FIX dla linux RtR
+			//subPtr = subIT->second.first->get();
+			subIT->second.first->tryGet(subPtr);
 			core::ConstObjectsList sessions;
 			subPtr->getSessions(sessions);
 			if(sessions.empty() == true){

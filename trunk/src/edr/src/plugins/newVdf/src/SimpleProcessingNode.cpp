@@ -22,12 +22,12 @@ void SimpleProcessingNode::addInputPin( IVisualInputPinPtr pin )
 
 void SimpleProcessingNode::removeInputPin( IVisualInputPinPtr pin )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleProcessingNode::clearInputPins()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleProcessingNode::setName( const QString & name )
@@ -43,12 +43,12 @@ QString SimpleProcessingNode::getName() const
 
 void SimpleProcessingNode::setConfigButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleProcessingNode::setCloseButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * SimpleProcessingNode::visualItem() const
@@ -68,22 +68,22 @@ void SimpleProcessingNode::removeSelection()
 
 void SimpleProcessingNode::addHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleProcessingNode::removeHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleProcessingNode::addCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleProcessingNode::removeCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
@@ -97,11 +97,11 @@ void SimpleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
 
 void SimpleProcessingNode::removeOutputPin( IVisualOutputPinPtr pin )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleProcessingNode::clearOutputPins()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 

@@ -25,12 +25,12 @@ void StyleProcessingNode::addInputPin( IVisualInputPinPtr pin )
 
 void StyleProcessingNode::removeInputPin( IVisualInputPinPtr pin )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::clearInputPins()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::setName( const QString & name )
@@ -41,12 +41,12 @@ void StyleProcessingNode::setName( const QString & name )
 
 void StyleProcessingNode::setConfigButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::setCloseButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * StyleProcessingNode::visualItem() const
@@ -70,22 +70,22 @@ void StyleProcessingNode::removeSelection()
 
 void StyleProcessingNode::addHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::removeHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::addCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::removeCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
@@ -100,12 +100,12 @@ void StyleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
 
 void StyleProcessingNode::removeOutputPin( IVisualOutputPinPtr pin )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::clearOutputPins()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::setVisualStrategy( IVisualStrategyPtr strategy )

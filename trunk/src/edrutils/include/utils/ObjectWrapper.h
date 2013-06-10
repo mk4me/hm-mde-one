@@ -182,7 +182,8 @@ namespace utils {
 		const typename ObjectWrapperT<T>::ConstPtr get(T* dummy = nullptr) const
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
-			return static_cast<typename ObjectWrapperT<T>::ConstPtr>(get());
+			typename ObjectWrapperT<T>::ConstPtr ret = get();
+			return ret;
 		}
 
 		//! Pobiera obiekt z wrappera. W razie błędu rzuca bad_castem.

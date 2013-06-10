@@ -1,6 +1,9 @@
 #include "CorePCH.h"
 #include "PluginApplication.h"
+#include "ApplicationCommon.h"
 #include "PluginPath.h"
+#include "ParserManager.h"
+#include "DataHierarchyManager.h"
 
 using namespace core;
 

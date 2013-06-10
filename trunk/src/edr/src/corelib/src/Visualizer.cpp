@@ -1,4 +1,7 @@
 #include "CoreLibPCH.h"
+#include <corelib/Visualizer.h>
+#include <corelib/IVisualizerManager.h>
+#include <corelib/IDataManagerReader.h>
 #include <utils/SynchronizationPolicies.h>
 
 using namespace core;

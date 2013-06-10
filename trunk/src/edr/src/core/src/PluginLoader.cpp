@@ -13,6 +13,7 @@
 #include <corelib/IPlugin.h>
 #include <corelib/PluginCommon.h>
 #include "PluginApplication.h"
+#include "ApplicationCommon.h"
 #include <regex>
 
 ////////////////////////////////////////////////////////////////////////////////

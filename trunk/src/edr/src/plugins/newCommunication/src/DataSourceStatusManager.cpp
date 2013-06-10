@@ -2,6 +2,7 @@
 #include "DataSourceStatusManager.h"
 #include <QtGui/QPainter>
 #include <corelib/IFileManagerReader.h>
+#include <corelib/PluginCommon.h>
 
 using namespace communication;
 

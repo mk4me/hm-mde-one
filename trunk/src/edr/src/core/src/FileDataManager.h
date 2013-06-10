@@ -28,7 +28,7 @@ private:
 	class FileReaderTransaction;
 	friend class FileReaderTransaction;
 
-	//! Deklaracja wewnêtrznej reprezentacji parsera, obudowauj¹cej core::IParser
+	//! Deklaracja wewnï¿½trznej reprezentacji parsera, obudowaujï¿½cej core::IParser
 	class Parser;
 	class FileParser;
 	class StreameFileParser;
@@ -36,11 +36,11 @@ private:
 	friend class FileParser;
 	friend class StreameFileParser;
 
-	//! WskaŸnik na parser.
+	//! Wskaï¿½nik na parser.
 	typedef shared_ptr<Parser> ParserPtr;
-	//! S³aby wskaŸnik na parser
+	//! Sï¿½aby wskaï¿½nik na parser
 	typedef weak_ptr<Parser> ParserWeakPtr;
-	//! S³ownik aktualnie obs³ugiwanych plików i skojarzonych z nimi parserów
+	//! Sï¿½ownik aktualnie obsï¿½ugiwanych plikï¿½w i skojarzonych z nimi parserï¿½w
 	typedef std::map<Filesystem::Path, ObjectsList> ObjectsByFiles;
 
 	typedef utils::RecursiveSyncPolicy SyncPolicy;
@@ -50,13 +50,13 @@ private:
 
 private:
 
-	//! Mapa parserów wg plików
+	//! Mapa parserï¿½w wg plikï¿½w
 	ObjectsByFiles objectsByFiles;
 
 	//! Obiekt na potrzeby synchronizacji
 	mutable SyncPolicy sync;
 
-	//! Obiekty obserwuj¹ce stan DM
+	//! Obiekty obserwujï¿½ce stan DM
 	std::list<FileObserverPtr> observers;
 
 	const static ParserCreator streamParserCreator;
@@ -92,16 +92,16 @@ private:
 public:
 	//IFileDataManager API
 
-	//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
+	//! \param files Lista plikï¿½w ktï¿½re zostanï¿½ usuniï¿½te z aplikacji a wraz z nimi skojarzone parsery i dane
 	virtual void removeFile(const Filesystem::Path & file);
 
-	//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
-	//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
+	//! \param files Lista plikï¿½w dla ktï¿½rych zostanï¿½ utworzone parsery i z ktï¿½rych wyciï¿½gniï¿½te dane
+	//! bï¿½da dostï¿½pne poprzez DataMangera LENIWA INICJALIZACJA
 	virtual void addFile(const Filesystem::Path & file);
 
-	virtual const bool core::IFileDataManagerOperations::tryAddFile(const core::Filesystem::Path & file);
+	virtual const bool tryAddFile(const core::Filesystem::Path & file);
 
-	virtual const bool core::IFileDataManagerOperations::tryRemoveFile(const core::Filesystem::Path & file);
+	virtual const bool tryRemoveFile(const core::Filesystem::Path & file);
 
 	//! \return Nowa transakcja
 	virtual IFileDataManager::TransactionPtr transaction();
@@ -113,19 +113,19 @@ public:
 	virtual void addObserver(const FileObserverPtr & fileWatcher);
 	virtual void removeObserver(const FileObserverPtr & fileWatcher);
 
-	//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
+	//! \param files Zbiï¿½r plikï¿½w ktrymi aktualnie zarzï¿½dza ten DataManager
 	virtual void getFiles(Files & files) const;
 
-	//! \param file Plik kótry weryfikujemy czy jest zarz¹dzany przez DM
-	//! \return Prawda jeœli plik jest zarz¹dzany przez ten DM
+	//! \param file Plik kï¿½try weryfikujemy czy jest zarzï¿½dzany przez DM
+	//! \return Prawda jeï¿½li plik jest zarzï¿½dzany przez ten DM
 	virtual const bool isManaged(const Filesystem::Path & file) const;
 
-	//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-	//! \return Mapa obiektów wzglêdem plików z których pochodza
+	//! \param files Zbior plikï¿½w dla ktï¿½rych chcemy pobraï¿½ listï¿½ obiektï¿½w
+	//! \return Mapa obiektï¿½w wzglï¿½dem plikï¿½w z ktï¿½rych pochodza
 	virtual void getObjects(const Filesystem::Path & file, ConstObjectsList & objects) const;
 
-	//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-	//! \return Mapa obiektów wzglêdem plików z których pochodza
+	//! \param files Zbior plikï¿½w dla ktï¿½rych chcemy pobraï¿½ listï¿½ obiektï¿½w
+	//! \return Mapa obiektï¿½w wzglï¿½dem plikï¿½w z ktï¿½rych pochodza
 	virtual void getObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const;
 
 	virtual IFileManagerReader::TransactionPtr transaction() const;

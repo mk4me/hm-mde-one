@@ -1,4 +1,6 @@
 #include "DarkPinStrategy.h"
+#include <QtGui/QPainter>
+#include <utils/Debug.h>
 
 using namespace vdf;
 

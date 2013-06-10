@@ -45,7 +45,7 @@ struct COREUI_EXPORT CoreConsoleWidgetEntry {
 typedef utils::shared_ptr<CoreConsoleWidgetEntry> CoreConsoleWidgetEntryPtr;
 
 //Q_DECLARE_METATYPE(CoreConsoleWidgetEntryPtr);
-Q_DECLARE_METATYPE(CoreConsoleWidgetEntry);
+Q_DECLARE_METATYPE(coreUI::CoreConsoleWidgetEntry);
 
 class COREUI_EXPORT CoreConsoleWidget : public QWidget
 {

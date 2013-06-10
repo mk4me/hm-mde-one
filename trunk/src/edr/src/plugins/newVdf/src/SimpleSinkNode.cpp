@@ -20,12 +20,12 @@ void SimpleSinkNode::addInputPin( IVisualInputPinPtr pin )
 
 void SimpleSinkNode::removeInputPin( IVisualInputPinPtr pin )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSinkNode::clearInputPins()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSinkNode::setName( const QString & name )
@@ -36,12 +36,12 @@ void SimpleSinkNode::setName( const QString & name )
 
 void SimpleSinkNode::setConfigButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSinkNode::setCloseButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * SimpleSinkNode::visualItem() const
@@ -61,27 +61,27 @@ void SimpleSinkNode::removeSelection()
 
 void SimpleSinkNode::addHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSinkNode::removeHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSinkNode::addCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSinkNode::removeCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleSinkNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
-	throw std::exception("The method or operation is not implemented.");
+	throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QString SimpleSinkNode::getName() const
