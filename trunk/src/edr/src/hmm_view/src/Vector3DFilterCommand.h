@@ -290,7 +290,7 @@ public:
     //! \return konfiguracja pomiarowa dla podanej sesji
     MeasurementConfigConstPtr getSessionMeta( const core::ObjectWrapperConstPtr & session);
 };
-
+/*
 //! klasa dostarcza drzewu  przefiltrowanych danych z kanałów z wektorami
 template <class Channel, class Collection, class ItemHelper, bool useTreeItemHelperForRoot = false>
 class Vector3DFilterCommand : public IFilterCommand
@@ -523,7 +523,7 @@ private:
     //! konfigurator
     ConfigurationWidget* dialog;
 };
-
+*/
 
 
 #endif

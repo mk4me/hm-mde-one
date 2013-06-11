@@ -1440,7 +1440,9 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
              if (m->hasObject(typeid(C3DEventsCollection), false)) {
 				 core::ConstObjectsList e;
                  m->getObjects(e, typeid(C3DEventsCollection), false);
-                 events = e.front()->get();
+                 //FIX dla RtR pod linux
+                 //events = e.front()->get();
+                 e.front()->tryGet(events);
              }
 			 std::string name;
 
@@ -1546,7 +1548,9 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
              if (m->hasObject(typeid(C3DEventsCollection), false)) {
 				 core::ConstObjectsList e;
                  m->getObjects(e, typeid(C3DEventsCollection), false);
-                 events = e.front()->get();
+                 //FIX dla RtR pod linux
+                 //events = e.front()->get();
+                 e.front()->tryGet(events);
              }
 
              for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
@@ -1587,7 +1591,9 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
      if (motion->hasObject(typeid(C3DEventsCollection), false)) {
 		 core::ConstObjectsList wrappers;
          motion->getObjects(wrappers, typeid(C3DEventsCollection), false);
-         events = wrappers.front()->get();
+         //FIX dla RtR pod linux
+         //events = wrappers.front()->get();
+         wrappers.front()->tryGet(events);
          segments = getTimeSegments(events, context);
      }
      std::map<ObjectWrapperConstPtr, QColor> colorMap;
@@ -1634,7 +1640,9 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
          if (m->hasObject(typeid(C3DEventsCollection), false)) {
 			 core::ConstObjectsList e;
              m->getObjects(e, typeid(C3DEventsCollection), false);
-             events = e.front()->get();
+             //FIX dla RtR pod linux
+             //events = e.front()->get();
+             e.front()->tryGet(events);
              segments = getTimeSegments(events, context);
          }
 

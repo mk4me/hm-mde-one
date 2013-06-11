@@ -152,18 +152,18 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
 		std::map<int, QAction*> leftActions;
 
-		auto it = sideActions.find(coreUI::CoreTitleBar::Left);
-		if(it != sideActions.end()){
-			leftActions = it->second.first;
-			leftActions.insert(it->second.second.begin(), it->second.second.end());
+		auto lIT = sideActions.find(coreUI::CoreTitleBar::Left);
+		if(lIT != sideActions.end()){
+			leftActions = lIT->second.first;
+			leftActions.insert(lIT->second.second.begin(), lIT->second.second.end());
 		}
 
 		std::map<int, QAction*> rightActions;
 
-		it = sideActions.find(coreUI::CoreTitleBar::Right);
-		if(it != sideActions.end()){
-			rightActions = it->second.first;
-			rightActions.insert(it->second.second.begin(), it->second.second.end());
+		auto rIT = sideActions.find(coreUI::CoreTitleBar::Right);
+		if(rIT != sideActions.end()){
+			rightActions = rIT->second.first;
+			rightActions.insert(rIT->second.second.begin(), rIT->second.second.end());
 		}
 
 		double ratio = std::max(leftActions.size(), rightActions.size()) / (double)(leftActions.size() + rightActions.size());
@@ -748,18 +748,18 @@ void HMMVVdfUsageContext::onRegisterContextWidget( QWidget * contextWidget )
     
         std::map<int, QAction*> leftActions;
     
-        auto it = sideActions.find(coreUI::CoreTitleBar::Left);
-        if(it != sideActions.end()){
-            leftActions = it->second.first;
-            leftActions.insert(it->second.second.begin(), it->second.second.end());
+        auto lIT = sideActions.find(coreUI::CoreTitleBar::Left);
+        if(lIT != sideActions.end()){
+            leftActions = lIT->second.first;
+            leftActions.insert(lIT->second.second.begin(), lIT->second.second.end());
         }
     
         std::map<int, QAction*> rightActions;
     
-        it = sideActions.find(coreUI::CoreTitleBar::Right);
-        if(it != sideActions.end()){
-            rightActions = it->second.first;
-            rightActions.insert(it->second.second.begin(), it->second.second.end());
+        auto rIT = sideActions.find(coreUI::CoreTitleBar::Right);
+        if(rIT != sideActions.end()){
+            rightActions = rIT->second.first;
+            rightActions.insert(rIT->second.second.begin(), rIT->second.second.end());
         }
     
         double ratio = std::max(leftActions.size(), rightActions.size()) / (double)(leftActions.size() + rightActions.size());
