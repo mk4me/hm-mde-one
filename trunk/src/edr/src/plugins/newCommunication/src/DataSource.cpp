@@ -755,9 +755,11 @@ void CommunicationDataSource::removeShallowCopyFromLocalStorage()
 void CommunicationDataSource::setShallowCopy(const ShallowCopy & shallowCopy)
 {
     //różnica danych wypakowanych z localStorage + status plików jeśli chodzi o storage
-    extractDataFromLocalStorageToUserSpace(fullShallowCopy, shallowCopy);
+    //extractDataFromLocalStorageToUserSpace(fullShallowCopy, shallowCopy);
 
     fullShallowCopy = shallowCopy;
+
+	refreshFileManager();
 
     //aktualizuj status danych
     fullShallowCopyStatus->setShallowCopy(&fullShallowCopy);
@@ -813,12 +815,20 @@ void CommunicationDataSource::refreshFileManager()
     for(auto it = fullShallowCopy.motionShallowCopy->files.begin(); it != itEnd; ++it){
         auto file = it->second;
         auto filePath = pathsManager->filePath(file->fileName, file->isSessionFile() == true ? file->session->sessionName : file->trial->session->sessionName);
+
         if(fileStatusManager->fileExists(file->fileID) == false){
-            fileStatusManager->addFile(file->fileID, filePath);
+
+			communication::DataStorage storage = communication::Remote;
+
+			if(localStorage->fileIsLocal(file->fileName) == true){
+				storage = communication::Local;
+			}
+
+            fileStatusManager->addFile(file->fileID, filePath, DataStatus(storage, communication::Unloaded));
         }else{
             fileStatusManager->setFilePath(file->fileID, filePath);
         }
-    }
+	}
 }
 
 CommunicationDataSource::DownloadRequestPtr CommunicationDataSource::generateDownloadFileRequest(int fileID)

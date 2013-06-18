@@ -1502,8 +1502,7 @@ bool DataSourceWidget::refreshShallowCopy()
 
 	communication::ShallowCopy shallowCopy;
 	try{
-		if(dataSource->buildShallowCopyFromLocalUserSpace(shallowCopy) == true){
-
+		if(dataSource->buildShallowCopyFromLocalUserSpace(shallowCopy) == true){			
 			//ustawiam nowa płytka kopię danych
 			dataSource->setShallowCopy(shallowCopy);
 			//odświeżam przefiltrowaną płytką kopię danych co wiąże się z unieważnieniem dotychczasowych perspektyw
@@ -2237,19 +2236,28 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 
-	//! Ładuje pliki do DM
+	//! Ładuje pliki do DM	
 	std::set<int> loadedFiles;
 	std::map<int, std::vector<core::ObjectWrapperConstPtr>> loadedFilesObjects;
 	std::map<int, std::string> loadingErrors;
 	std::vector<int> unknownErrors;
 
 	{
-
 		auto transaction = dataSource->fileDM->transaction();
 
-		for(auto it = files.begin(); it != files.end(); ++it){
-			try{				
+		for(auto it = filesToLoad.begin(); it != filesToLoad.end(); ++it){
+			try{
 				const auto & p = dataSource->fileStatusManager->filePath(*it);
+
+				if(core::Filesystem::pathExists(p) == false){
+
+					if(core::Filesystem::pathExists(p.parent_path()) == false){
+						core::Filesystem::createDirectory(p.parent_path());
+					}
+
+					dataSource->localStorage->extractFile(p.filename().string(), p);
+				}
+
 				transaction->addFile(p);
 				core::ConstObjectsList oList;
 				transaction->getObjects(p, oList);
