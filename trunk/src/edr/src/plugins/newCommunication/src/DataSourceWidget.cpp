@@ -8,9 +8,13 @@
 #include <QtGui/QHBoxLayout>
 #include <QtCore/QRegExp>
 #include <QtGui/QKeyEvent>
+#include <QtCore/QSettings>
+
+#include <openssl/aes.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
+#include <boost/scoped_array.hpp>
 
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/ISubject.h>
@@ -208,6 +212,8 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 {
 	setupUi(this);
 	loginRecoveryButton->setVisible(false);
+    // wczytanie ostatnio użytego loginu i hasła
+    loadCredentials();
 	initializeStatusIcons();
 
 	setTabEnabled(0, false);
@@ -649,6 +655,9 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 		messageBox.exec();
 
 	}else if(dataSource->isLogged() == true){
+
+        // zapisanie loginu i hasła
+        saveCredentials();
 
 		bool synch = false;
 		bool shallowCopyAvailable = false;
@@ -2644,4 +2653,43 @@ void DataSourceWidget::setPatientCard(webservices::MedicalShallowCopy::Patient *
 {
 	perspectiveManager.currentPerspectiveWidget()->clearSelection();
 	patientCardManager.currentPatientCard()->setPatient(patient, subject, QPixmap(), dataSource->currentUser_.userData());
+}
+
+void DataSourceWidget::saveCredentials()
+{
+    QSettings settings(crypt("Credentials", false));
+    QString usr = userEdit->text();
+    QString pwd = passwordEdit->text();
+    settings.setValue(crypt("User", false), crypt(usr, true));
+    settings.setValue(crypt("Password", false), crypt(pwd, true));
+}
+
+void DataSourceWidget::loadCredentials()
+{
+    QSettings settings(crypt("Credentials", false));
+    QString usr = settings.value(crypt("User", false)).toString();
+    QString pwd = settings.value(crypt("Password", false)).toString();
+    userEdit->setText(crypt(usr, false));
+    passwordEdit->setText(crypt(pwd, false));
+}
+
+QString DataSourceWidget::crypt( const QString& input, bool encrypt )
+{
+    QByteArray tempArray = input.toLocal8Bit();
+    const char* indata = tempArray.data();
+    auto length = strlen(indata);
+    boost::scoped_array<unsigned char> outdata(new unsigned char [length]);
+    
+    
+    unsigned char ckey[] = "XlzuthN1WoyiDzsj";
+    unsigned char ivec[] = "4SX9GRId6tAtHzmx";
+
+    AES_KEY key;
+    AES_set_encrypt_key(ckey, 128, &key);
+
+    int num = 0;
+    AES_cfb128_encrypt((const unsigned char*)indata, outdata.get(), length, &key, ivec, &num, encrypt? AES_ENCRYPT:AES_DECRYPT);
+
+    QString output = QString::fromLocal8Bit((const char*)outdata.get(), length);
+    return output;
 }
