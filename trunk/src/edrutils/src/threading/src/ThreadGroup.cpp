@@ -1,5 +1,5 @@
-#include <utils/ThreadGroup.h>
-#include <utils/Thread.h>
+#include <threading/ThreadGroup.h>
+#include <threading/Thread.h>
 #include <QtCore/QMutex>
 #include <QtCore/QWaitCondition>
 #include <QtCore/QMutexLocker>

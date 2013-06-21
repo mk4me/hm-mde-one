@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___THREAD_H__
 #define HEADER_GUARD___THREAD_H__
 
-#include <utils/IThread.h>
+#include <threading/IThread.h>
 #include <boost/shared_ptr.hpp>
 
 namespace utils {

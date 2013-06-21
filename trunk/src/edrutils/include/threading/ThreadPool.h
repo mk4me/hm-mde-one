@@ -9,9 +9,9 @@
 #ifndef HEADER_GUARD___THREADPOOL_H__
 #define HEADER_GUARD___THREADPOOL_H__
 
-#include <utils/IThreadPool.h>
+#include <threading/IThreadPool.h>
+#include <threading/IThreadFactory.h>
 #include <boost/shared_ptr.hpp>
-#include <utils/IThreadFactory.h>
 
 namespace utils {
 

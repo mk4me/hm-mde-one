@@ -1,5 +1,5 @@
-﻿#include <utils/ReusableThread.h>
-#include <utils/SynchronizationPolicies.h>
+﻿#include <threading/ReusableThread.h>
+#include <threading/SynchronizationPolicies.h>
 #include <boost/bind.hpp>
 
 using namespace utils;

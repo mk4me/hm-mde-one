@@ -12,7 +12,6 @@
 #include <corelib/ITransaction.h>
 #include <corelib/IDataManagerReader.h>
 #include <corelib/BaseDataTypes.h>
-#include <utils/SynchronizationPolicies.h>
 
 namespace core {
 

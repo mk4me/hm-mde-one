@@ -13,7 +13,7 @@
 #include <list>
 #include <corelib/IFileManagerReader.h>
 #include <corelib/IFileDataManager.h>
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
 #include <corelib/IParserManagerReader.h>
 
 namespace core {

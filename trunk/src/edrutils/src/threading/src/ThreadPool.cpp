@@ -1,6 +1,6 @@
-#include <utils/ThreadPool.h>
-#include <utils/RerunnableThread.h>
-#include <utils/SynchronizationPolicies.h>
+#include <threading/ThreadPool.h>
+#include <threading/RerunnableThread.h>
+#include <threading/SynchronizationPolicies.h>
 #include <list>
 
 //TODO
@@ -146,7 +146,7 @@ public:
 
 	~ThreadPoolImpl()
 	{
-		UTILS_ASSERT(usedThreads_.empty() == true);
+		UTILS_ASSERT(threadsCount_ == 0);
 	}
 
 	const ThreadPool::size_type maxThreads() const

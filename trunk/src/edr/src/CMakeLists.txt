@@ -3,9 +3,9 @@ SET_PROJECTS_GROUP("core")
 CONFIG_OPTION(CORE_ENABLE_LOGGING "Enable logging?" ON)
 CONFIG_OPTION(CORE_ENABLE_LOG4CXX "Enable logging with LOG4CXX?" ON)
 CONFIGURE_PROJECT_DEPENDENCIES("CORE_ENABLE_LOGGING;CORE_ENABLE_LOG4CXX" "LOG4CXX")
-ADD_PROJECT(core "BOOST;utils;OSG;QT;TINYXML;corelib;OPENGL")
+ADD_PROJECT(core "BOOST;utils;threading;OSG;QT;TINYXML;corelib;OPENGL")
 
-ADD_PROJECT(corelib "BOOST;OSG;OPENTHREADS;QT;TINYXML;utils")
+ADD_PROJECT(corelib "BOOST;OSG;threading;OPENTHREADS;QT;TINYXML;utils")
 ADD_PROJECT(coreui "BOOST;utils;QT;TINYXML;corelib;OPENGL;corelib")
 
 SET_PROJECTS_GROUP("plugins")
@@ -22,11 +22,6 @@ ADD_PROJECT(plugin_newVdf "BOOST;QT;dflib;corelib;coreui" "plugins/newVdf")
 SET_PROJECTS_GROUP("view")
 ADD_PROJECT(old_view "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;plugin_newTimeline;OPENGL;c3dlib")
 ADD_PROJECT(hmm_view "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;c3dlib;QWT;vidlib;plugin_newVdf;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject")
-
-#SET_PROJECTS_GROUP("custom")
-#ADD_PROJECT(laboratorium_gk "BOOST;utils;OSG;QT;TINYXML;EIGEN3")
-
-
 
 
 BEGIN_INSTALLER("MDE" "MDE")

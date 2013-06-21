@@ -12,8 +12,8 @@
 #ifndef HEADER_GUARD___REUSABLETHREAD_H__
 #define HEADER_GUARD___REUSABLETHREAD_H__
 
-#include <utils/IThread.h>
-#include <utils/IThreadFactory.h>
+#include <threading/IThread.h>
+#include <threading/IThreadFactory.h>
 
 namespace utils {
 

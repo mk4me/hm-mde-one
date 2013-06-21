@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD__MODEL_H__
 #define HEADER_GUARD__MODEL_H__
 
-#include <utils/Synchronized.h>
+#include <threading/Synchronized.h>
 #include <utils/ObserverPattern.h>
 #include <dfmlib/DFLMTypes.h>
 #include <dfmlib/Node.h>

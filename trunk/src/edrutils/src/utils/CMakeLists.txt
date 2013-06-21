@@ -18,8 +18,6 @@ SET_PUBLIC_HEADERS(
 	DataChannelStats.h
 	Pool.h
 	Enum.h
-	IJob.h
-	IJobManager.h
 	NamedTree.h
 	PtrPolicyRaw.h
 	PtrPolicyBoost.h
@@ -35,38 +33,21 @@ SET_PUBLIC_HEADERS(
 	LeakDetection.h
 	Push.h
 	Serializable.h
-	Synchronized.h
-	SynchronizationPolicies.h
-	IThread.h
-	IThreadFactory.h
-	IThreadGroup.h
-	IThreadPool.h
-	ThreadPool.h
-	Thread.h
 	TypeInfo.h
 	ObjectWrapper.h
 	Export.h
-	ThreadGroup.h
 	SmartPtr.h
-	IProgress.h
-	ReusableThread.h
-	RerunnableThread.h
 )
 
 #------------------------------------------------------------------------------
 # Ÿród³a
 SET_SOURCE_FILES(
-	ThreadPool.cpp
-	Thread.cpp
 	Enum.cpp
 	Debug.cpp
 	NamedTree.cpp
 	Profiler.cpp
 	TypeInfo.cpp
 	ObjectWrapper.cpp
-	ThreadGroup.cpp
-	ReusableThread.cpp
-	RerunnableThread.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(

@@ -11,7 +11,7 @@
 
 #include <map>
 #include <list>
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
 #include <corelib/IParserManagerReader.h>
 #include <corelib/IStreamDataManager.h>
 #include <corelib/IStreamManagerReader.h>

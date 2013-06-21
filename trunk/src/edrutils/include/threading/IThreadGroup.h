@@ -10,7 +10,7 @@
 #define HEADER_GUARD___ITHREADGROUP_H__
 
 #include <vector>
-#include <utils/IThread.h>
+#include <threading/IThread.h>
 
 namespace utils {
 

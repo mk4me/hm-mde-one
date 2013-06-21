@@ -1,6 +1,6 @@
-#include <utils/RerunnableThread.h>
-#include <utils/Thread.h>
-#include <utils/ReusableThread.h>
+#include <threading/RerunnableThread.h>
+#include <threading/Thread.h>
+#include <threading/ReusableThread.h>
 
 using namespace utils;
 

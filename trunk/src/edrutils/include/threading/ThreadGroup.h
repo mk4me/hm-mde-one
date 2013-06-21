@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___THREADGROUP_H__
 #define HEADER_GUARD___THREADGROUP_H__
 
-#include <utils/IThreadGroup.h>
+#include <threading/IThreadGroup.h>
 
 namespace utils {
 

@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___MRPIN_H__
 #define HEADER_GUARD___MRPIN_H__
 
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
 #include <vector>
 #include <dflib/IDFFeatures.h>
 #include <dflib/IDFPin.h>

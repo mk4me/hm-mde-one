@@ -1,4 +1,4 @@
-#include <utils/Thread.h>
+#include <threading/Thread.h>
 #include <QtCore/QThread>
 #include <QtCore/QWaitCondition>
 #include <QtCore/QMutex>

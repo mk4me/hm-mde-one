@@ -1,6 +1,6 @@
 #include "CorePCH.h"
 #include <core/AppInitializer.h>
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
 #include "ApplicationCommon.h"
 #include <corelib/PluginCommon.h>
 #include <boost/bind.hpp>

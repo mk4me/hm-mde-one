@@ -9,8 +9,8 @@
 #ifndef HEADER_GUARD___ITHREADPOOL_H__
 #define HEADER_GUARD___ITHREADPOOL_H__
 
-#include <utils/IThread.h>
-#include <utils/IThreadGroup.h>
+#include <threading/IThread.h>
+#include <threading/IThreadGroup.h>
 #include <list>
 
 namespace utils {

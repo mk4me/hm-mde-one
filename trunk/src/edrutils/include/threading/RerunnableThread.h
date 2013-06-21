@@ -12,8 +12,8 @@
 #define HEADER_GUARD___RERUNNABLETHREAD_H__
 
 #include <utils/SmartPtr.h>
-#include <utils/IThread.h>
-#include <utils/IThreadFactory.h>
+#include <threading/IThread.h>
+#include <threading/IThreadFactory.h>
 
 namespace utils {
 

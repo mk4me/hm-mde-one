@@ -10,7 +10,7 @@
 #define HEADER_GUARD___ITHREADFACTORY_H__
 
 #include <utils/SmartPtr.h>
-#include <utils/IThread.h>
+#include <threading/IThread.h>
 
 namespace utils {
 

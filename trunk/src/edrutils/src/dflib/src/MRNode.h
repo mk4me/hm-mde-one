@@ -15,7 +15,7 @@
 #include <dflib/IDFNode.h>
 #include "MRNodeImpl.h"
 
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
 
 class MRSinkNode : public IMRSinkNode, public utils::SynchronizedT<true>
 {
