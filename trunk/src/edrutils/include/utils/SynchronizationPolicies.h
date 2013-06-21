@@ -60,11 +60,10 @@ private:
 	QMutex mut;
 };
 
-template<class SyncPolicy>
 class EmptyScopedLock
 {
 public:
-
+	template<class SyncPolicy>
 	EmptyScopedLock(SyncPolicy & mux) {}
 
 	virtual ~EmptyScopedLock() {}
@@ -75,7 +74,6 @@ template<class SyncPolicy>
 class ScopedLock
 {
 public:
-
 	ScopedLock(SyncPolicy & mux) : mux(mux)
 	{
 		mux.lock();
@@ -87,7 +85,7 @@ public:
 	}
 
 private:
-	SyncPolicy & mux;
+	LockingPolicy & mux;
 };
 
 template<bool threading>
@@ -96,7 +94,7 @@ class SynchronizedT : public boost::mpl::if_c<threading, RecursiveSyncPolicy, No
 public:
 
 	typedef typename boost::mpl::if_c<threading, RecursiveSyncPolicy, NoSyncPolicy>::type RecursiveSyncPolicy;
-	typedef typename boost::mpl::if_c<threading, ScopedLock<RecursiveSyncPolicy>, EmptyScopedLock<RecursiveSyncPolicy>>::type ScopedLock;
+	typedef typename boost::mpl::if_c<threading, ScopedLock<RecursiveSyncPolicy>, EmptyScopedLock>::type ScopedLock;
 
 protected:
 

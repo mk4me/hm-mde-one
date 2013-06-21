@@ -48,6 +48,9 @@ SET_PUBLIC_HEADERS(
 	Export.h
 	ThreadGroup.h
 	SmartPtr.h
+	IProgress.h
+	ReusableThread.h
+	RerunnableThread.h
 )
 
 #------------------------------------------------------------------------------
@@ -62,6 +65,8 @@ SET_SOURCE_FILES(
 	TypeInfo.cpp
 	ObjectWrapper.cpp
 	ThreadGroup.cpp
+	ReusableThread.cpp
+	RerunnableThread.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(

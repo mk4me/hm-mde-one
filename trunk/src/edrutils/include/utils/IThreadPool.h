@@ -42,10 +42,11 @@ namespace utils {
 		//! \return Ilo�� aktualnie zaj�tych w�tk�w
 		virtual const size_type threadsCount() const = 0;
 		//! \return Nowy w�tek
-		virtual ThreadPtr getOrCreateThread() = 0;
+		virtual IThreadPtr getThread() = 0;
 		//! \param groupSize Ilo�� w�tk�w w grupie
 		//! \param threads [out] Lista z nowymi w�tkami, dopisujemy zawsze na ko�cu
-		virtual void getOrCreateThreadsGroup(const size_type groupSize, std::vector<ThreadPtr> & threads) = 0;
+		//! \param exact Czy ma być dokładnie tyle wątków czy może być mniej
+		virtual void getThreads(const size_type groupSize, std::vector<IThreadPtr> & threads, const bool exact = true) = 0;
 	};
 
 	typedef boost::shared_ptr<IThreadPool> ThreadPoolPtr;

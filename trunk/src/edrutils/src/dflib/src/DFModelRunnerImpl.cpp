@@ -324,7 +324,11 @@ void df::DFModelRunner::DFModelRunnerImpl::start(df::IModelReader * model, df::I
 
 	Threads().swap(threads_);
 	Runnables().swap(runnables_);
-	tPool->getOrCreateThreadsGroup(model->nodesSize() +1, threads_);
+	try{
+		tPool->getThreads(model->nodesSize() +1, threads_);
+	}catch(utils::NoFreeThreadAvaiable & e){
+		throw ModelRunInitializationException(e.what());
+	}
 
 	logger_ = logger;
 

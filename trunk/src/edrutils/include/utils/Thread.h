@@ -27,7 +27,7 @@ namespace utils {
 
 	public:
 		//! Publiczny konstruktor
-		Thread();
+		Thread(IThreadPtr innerThread);
 		//! Wirtualny destruktor
 		virtual ~Thread();
 
@@ -35,10 +35,8 @@ namespace utils {
 		virtual void cancel();
 		//! Metoda blokuj¹ca a¿ w¹tek/grupa nie zakoñczy przetwarzania lub nie zostanie zniszczony/a
 		virtual void join();
-		//! \return Stan aktywnoœci w¹tku/grupy
-		virtual const Status status() const;
-		//! \return Stan ostatniego przetwarzania w¹tku/grupy
-		virtual const Result result() const;
+		//! \return Czy w¹tek wci¹¿ dzia³a
+		virtual const bool running() const;
 		//! Metoda uruchamia przetwarzanie przez w¹tek, rzuca wyj¹tkiem kiedy w¹tek jeszcze dzia³¹ lub zosta³ zabity
 		//! \param priority Priorytet w¹tku		
 		//! \param runnable Obiekt wykonuj¹cy pracê w w¹tku, musi byæ kopiowalny
@@ -53,12 +51,19 @@ namespace utils {
 		//! Metoda powinna byæ wywo³ywana przed pierwszym uruchomieniem w¹tku, lub po wykonaniu metody cancel
 		//! potem nie ma mo¿liwoœci zmiany tego parametru. W przypadku braku
 		//! wywo³ania tej metody domyœlny stos bêdzie u¿yty
-		virtual void setStackSize(size_type stackSize);
+		virtual void setStackSize(const size_type stackSize);
+		//! \param priority Priorytet w¹tku
+		virtual void setPriority(const Priority priority);
 		//! \return Aktualnie wykonywana operacja w w¹tku, mo¿e byæ null jesli nic siê nie dzieje
-		virtual RunnableConstPtr runnable() const;
+		virtual const RunnableConstPtr runnable() const;
 		//! \return Aktualnie wykonywana operacja w w¹tku, mo¿e byæ null jesli nic siê nie dzieje
 		virtual RunnablePtr runnable();
 	};
+
+	typedef boost::shared_ptr<Thread> ThreadPtr;
+	typedef boost::shared_ptr<const Thread> ThreadConstPtr;
+	typedef boost::weak_ptr<Thread> ThreadWPtr;
+	typedef boost::weak_ptr<const Thread> ThreadWConstPtr;
 
 }
 

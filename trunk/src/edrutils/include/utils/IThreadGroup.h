@@ -14,49 +14,49 @@
 
 namespace utils {
 
-	//! Wyj�tek rzucany gdy pr�bujemy uruchomi� w�tek ju� uruchomiony
-	class RunningGroupStartException : public RunningStartException
-	{
-	public:
-		RunningGroupStartException(const char * msg) : RunningStartException(msg) {}
-	};
-
 	//! Interfejs klasy obs�uguj�cej w�tki
-	class IThreadGroup : public IThreadingBase
+	class IThreadGroup
 	{
 	public:
-		//! Struktura opisuj�ca parametry przetwarzania
-		struct RunnableDescription
-		{
-			RunnablePtr runnable;		//! Przetwarzany obiekt
-			IThread::Priority priority;	//! Priorytet jego przetwarzania
+		//! Struktura opisuje wątek wraz z funkcją jaką ma realizować
+		struct ThreadData{
+			//! Wątek który będziemy uruchamiać
+			IThreadPtr thread;
+			//! Zadanie które będzie realizował wątek
+			RunnablePtr runnable;
+			//! Priorytet z jakim wątek będzie realizował swoje zadanie
+			IThread::Priority priority;
 		};
-		//! Typ grupy funktor�w wykonywanych w w�tkach grupy
-		typedef std::vector<RunnableDescription> Runnables;
-		//! Typ ilo�ci w�tk�w w grupie
-		typedef Runnables::size_type size_type;
+
+		//! Polityka uruchamiania i ewentualnego kończenia działania grupy
+		enum StartPolicy {
+			ALL_OR_NONE,	//! Błąd jednego wątku ciagnie za sobą anulowanie pozostałych
+			ANY				//! Błąd jednego wątku nie wpływa na przerwanie pracy pozostałych
+		};
+
+		//! Typ agregujący wątki do kontrolowania
+		typedef std::vector<ThreadData> Threads;		
+		//! Typ opisujący rozmiar grupy wątków
+		typedef Threads::size_type size_type;
 
 	public:
 		//! Wirtualny destruktor
 		virtual ~IThreadGroup() {}
 
 		//! Metoda uruchamia przetwarzanie przez grup�
-		//! \param funcs Funktory wykonywane w grupie - ich rozmiar musi si� zgadza� rozmiarowi grupy, w przeciwnym wypadku dostaniemy wyj�tek
-		virtual void start(const Runnables & funcs) = 0;
+		//! \param threads Wątki obsługiwane przez grupę
+		//! \param finishPolicy Polityka kończenia pracy wątków w grupie
+		virtual void start(const Threads & threads,
+			const StartPolicy startPolicy = ALL_OR_NONE) = 0;
+		//! \return Aktualna polityka kończenia grupy wątków
+		virtual const StartPolicy startPolicy() const = 0;
+		//! \return Czy grupa działa
+		virtual const bool running() const = 0;
 		//! \return Rozmiar grupy
 		virtual const size_type size() const = 0;
 		//! \param idx Indeks w�tku
 		//! \return W�tek pod zadanym indeksem
-		virtual ThreadConstPtr thread(size_type idx) const = 0;
-		//! \param stacks Wektor opisuj�cy rozmiary stos�w poszczeg�lnych watk�e w grupie
-		//! Wolno wo�a� t� metode przed pierwszym przetwarzaniem lub bezpo�rednio po kill
-		virtual void setStacksSizes(const std::vector<IThread::size_type> & stacks) = 0;
-		//! \param idx Indeks w�tku kt�ry chcemy obserwowa� w grupie
-		//! \param observer Obiekt obserwuj�cy w�tek
-		virtual void attachToThread(size_type idx, Observer<IThreadingBase> * observer) = 0;
-		//! \param idx Indeks w�tku kt�ry chcemy przesta� obserwowa� w grupie
-		//! \param observer Obiekt obserwuj�cy w�tek
-		virtual void detachFromThread(size_type idx, Observer<IThreadingBase> * observer) = 0;
+		virtual IThreadConstPtr thread(const size_type idx) const = 0;
 	};
 
 	typedef boost::shared_ptr<IThreadGroup> ThreadGroupPtr;

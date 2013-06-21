@@ -1,10 +1,10 @@
 #include <utils/ThreadPool.h>
-#include <utils/Thread.h>
-#include <utils/ThreadGroup.h>
-#include <QtCore/QMutex>
-#include <QtCore/QMutexLocker>
+#include <utils/RerunnableThread.h>
+#include <utils/SynchronizationPolicies.h>
 #include <list>
-#include <map>
+
+//TODO
+//synchronizacja niszczenia Poola i wątków
 
 using namespace utils;
 
@@ -12,135 +12,141 @@ class ThreadPool::ThreadPoolImpl
 {
 private:
 
-	//! Implementacja w�tku logicznego dla poola
-	//! W�tek ten pozwala wykonywa� zadania wielokrotnie jedno po drugim
-	//! za pomoca metody start
-	//! Wewn�trznie obs�uguje ju� faktyczny w�tek w systemie reprezentowany przez klas� QThread
+	//! Klasa pomocnicza, wrapuje faktyczny wątek, zwraca go pod kontrolę poola
+	//! w momencie niszczenia
 	class TPThread : public IThread
 	{
 		friend class ThreadPoolImpl;
-	private:
-		//! Pool z kt�rego pochodzi w�tek
-		ThreadPoolImpl * tp;
-		//! W�tek obs�uguj�cy zadania, b�dzie wykozystywany w pool wiele razy je�li nada�y si� taka okazja
-		//! ma to zminimalizowa� ilo�� tworzenia w�tk�w
-		ThreadPtr thread;
-		//! Obiekt synchronizujacy stan watku
-		QMutex synch;
-
-	private:
-
-		void setThreadPool(ThreadPoolImpl * tp)
-		{
-			QMutexLocker lock(&synch);
-			this->tp = tp;
-		}
 
 	public:
-		//! \param tp ThreadPool dla kt�ego utworzono w�tek
-		//! \param thread W�tek faktycznie obs�uguj�cy zadania
-		TPThread(ThreadPoolImpl * tp, const ThreadPtr & thread) : tp(tp), thread(thread), synch(QMutex::NonRecursive)
-		{
 
-		}
-
-		virtual ~TPThread()
+		TPThread(IThreadPtr thread)
+			: thread_(thread), threadPool_(nullptr)
 		{
-			QMutexLocker lock(&synch);
-			if(tp != nullptr){
-				tp->reuseThreads(this);
+			if(thread_ == nullptr){
+				throw std::invalid_argument("Uninitialized pool thread");
 			}
 		}
 
-		virtual void cancel()
+		//! Wirtualny destruktor - zwraca wątek do puli
+		virtual ~TPThread()
 		{
-			thread->cancel();
-		}
-
-		virtual void join()
-		{
-			thread->join();
-		}
-
-		virtual const IThreadingBase::Status status() const
-		{
-			return thread->status();
-		}
-
-		virtual const IThreadingBase::Result result() const
-		{
-			return thread->result();
+			if(threadPool_ != nullptr){					
+				threadPool_->returnThreadToPool(thread_);
+			}		
 		}
 
 		virtual void start(const RunnablePtr & runnable, const Priority priority)
 		{
-			thread->start(runnable, priority);
+			thread_->start(runnable, priority);
 		}
 
-		virtual const float idleTime() const
+		//! Metoda zabija w�tek/grupe, nie nadaje si� on/ona ponownie do u�ycia
+		virtual void cancel()
 		{
-			return thread->idleTime();
+			thread_->cancel();
 		}
 
-		virtual const IThread::Priority priority() const
+		//! Metoda blokuj�ca a� w�tek/grupa nie zako�czy przetwarzania lub nie zostanie zniszczony/a
+		virtual void join()
 		{
-			return thread->priority();
+			thread_->join();
 		}
 
-		virtual void setStackSize(size_type stackSize)
+		//! \return Czy wątek wciąż działa
+		virtual const bool running() const
 		{
-			thread->setStackSize(stackSize);
+			return thread_->running();
 		}
 
-		virtual const IThread::size_type stackSize() const
+		//! \return aktualny priorytet w�tku
+		virtual const Priority priority() const
 		{
-			return thread->stackSize();
+			return thread_->priority();
 		}
 
-		virtual RunnableConstPtr runnable() const
+		//! \return Aktualny rozmiar stosu w�tku
+		virtual const size_type stackSize() const
 		{
-			return thread->runnable();
+			return thread_->stackSize();
 		}
 
+		//! \param stackSize Rozmiar stosu w�tku
+		//! Metoda powinna by� wywo�ywana przed pierwszym uruchomieniem w�tku,
+		//! potem nie ma mo�liwo�ci zmiany tego parametru. W przypadku braku
+		//! wywo�ania tej metody b�dzie u�yty domy�lny stos
+		//! W przypadku wywo�ania tej metody podczas dzia�ania watku powinien być rzucany wyj�tek
+		virtual void setStackSize(const size_type stackSize)
+		{
+			thread_->setStackSize(stackSize);
+		}
+
+		//! \param priority Priorytet wątku
+		virtual void setPriority(const Priority priority)
+		{
+			thread_->setPriority(priority);
+		}
+
+		//! \return Aktualnie wykonywana operacja w w�tku, mo�e by� null jesli nic si� nie dzieje
+		virtual const RunnableConstPtr runnable() const
+		{
+			return thread_->runnable();
+		}
+
+		//! \return Aktualnie wykonywana operacja w w�tku, mo�e by� null jesli nic si� nie dzieje
 		virtual RunnablePtr runnable()
 		{
-			return thread->runnable();
+			return thread_->runnable();
 		}
+
+	private:
+		//! \param threadPool Aktualna thread pool obsługująca ten wątek
+		void setThreadPool(ThreadPoolImpl * threadPool)
+		{
+			threadPool_ = threadPool;			
+		}		
+
+	private:
+		ThreadPoolImpl * threadPool_;
+		IThreadPtr thread_;
 	};
 
+	friend class TPThread;
+
 private:
+	//! Fabryka logicznych wątków
+	IThreadFactoryPtr threadFactory_;
 	//! Maksymalna ilo�� w�tk�w do utworzenia
 	ThreadPool::size_type maxThreads_;
 	//! Minimalna ilo�� w�tk�w do utworzenia
-	ThreadPool::size_type minThreads_;
-	//! Dzia�aj�ce w�tki
-	std::map<TPThread*, ThreadPtr> logicalThreads_;
+	ThreadPool::size_type minThreads_;	
 	//! W�tki do ponownego u�ycia
-	std::list<ThreadPtr> freeThreads_;
-	//! W�tki w u�yciu
-	std::list<ThreadPtr> usedThreads_;
+	std::list<IThreadPtr> freeThreads_;
+	//! Aktualna ilość wątków
+	std::list<IThreadPtr>::size_type threadsCount_;
 	//! Obiekt synchronizuj�cy stan poola
-	QMutex synch;
+	StrictSyncPolicy sync_;
 
 public:
 
-	ThreadPoolImpl(ThreadPool::size_type minThreads, ThreadPool::size_type maxThreads) : minThreads_(minThreads), maxThreads_(maxThreads), synch(QMutex::Recursive)
+	ThreadPoolImpl(IThreadFactoryPtr threadFactory, ThreadPool::size_type minThreads,
+		ThreadPool::size_type maxThreads)
+		: threadFactory_(threadFactory),
+		minThreads_(minThreads), maxThreads_(maxThreads),
+		threadsCount_(0)
 	{
+		if(threadFactory_ == nullptr){
+			throw std::invalid_argument("Uninitialized thread factory for thread pool");
+		}
+
 		if(maxThreads_ < minThreads_) {
 			throw std::invalid_argument("Max threads value less then min threads value");
-		}
+		}		
 	}
 
 	~ThreadPoolImpl()
 	{
-		for(auto it = logicalThreads_.begin(); it != logicalThreads_.end(); ++it){
-			it->first->setThreadPool(nullptr);
-		}
-
-		QMutexLocker lock(&synch);
-		std::map<TPThread*, ThreadPtr>().swap(logicalThreads_);		
-		std::list<ThreadPtr>().swap(freeThreads_);		
-		std::list<ThreadPtr>().swap(usedThreads_);
+		UTILS_ASSERT(usedThreads_.empty() == true);
 	}
 
 	const ThreadPool::size_type maxThreads() const
@@ -155,19 +161,19 @@ public:
 
 	const ThreadPool::size_type threadsCount() const
 	{
-		return usedThreads_.size();
+		return threadsCount_;
 	}
 
-	ThreadPtr getOrCreateThread()
+	IThreadPtr getThread()
 	{
-		QMutexLocker lock(&synch);
+		ScopedLock<StrictSyncPolicy> lock(sync_);
 		//czy osiagnelismy limit? wszystkie watki poola zajete
-		if(maxThreads_ <= usedThreads_.size()){
+		if(maxThreads_ <= threadsCount_){
 			throw NoFreeThreadAvaiable("All threads in use");
 		}
 
 		//probujemy pobrac wolny executor
-		ThreadPtr executorThread;
+		IThreadPtr executorThread;
 
 		if(freeThreads_.empty() == false){
 			//pobieramy wolny executor
@@ -175,63 +181,62 @@ public:
 			freeThreads_.pop_front();				
 		}else{
 			//tworzymy nowy executor
-			executorThread.reset(new Thread());
+			executorThread.reset(new RerunnableThread(threadFactory_));
 		}
 
-		//zapamietuje watek
-		usedThreads_.push_back(executorThread);
-
 		//tworzymy watek
-		auto tpt = new TPThread(this, executorThread);
-		//zapamietujemy watek i jego executor
-		logicalThreads_.insert(std::map<TPThread*, ThreadPtr>::value_type(tpt,executorThread));
-		return ThreadPtr(tpt);
+		auto tpt = new TPThread(executorThread);
+		tpt->setThreadPool(this);
+
+		//zwiększam sumaryczną ilość wątków
+		++threadsCount_;
+		
+		return IThreadPtr(tpt);
 	}
 
-	void getOrCreateThreadsGroup(const IThreadGroup::size_type groupSize, std::vector<ThreadPtr> & threads)
+	void getThreads(const IThreadGroup::size_type groupSize,
+		std::vector<IThreadPtr> & threads, const bool exact)
 	{
-		QMutexLocker lock(&synch);
+		ScopedLock<StrictSyncPolicy> lock(sync_);
 
 		//czy osiagnelismy limit? grupa za duza na mozliwosci poola?
-		if(maxThreads_ <= logicalThreads_.size() + groupSize){
-			throw NoFreeThreadAvaiable("Not enough free threads for a group");
+		if(maxThreads_ <= threadsCount_ + groupSize && exact == true){
+			throw NoFreeThreadAvaiable("Not enough free threads");
 		}
 
 		//ile moge wziac z puli
 		unsigned int useFree = std::min(groupSize, freeThreads_.size());
+		//ile maksymalnie mogę wziąć
+		const unsigned int toTake = std::min(maxThreads_ - threadsCount_, groupSize);
+
 
 		//pobieram iterator ostatniego mozliwego
 		auto last = freeThreads_.begin();
 		std::advance(last, useFree);
 
 		//inicjujemy liste executorow
-		std::list<ThreadPtr> executorsThreads(freeThreads_.begin(), last);
+		std::list<IThreadPtr> executorsThreads(freeThreads_.begin(), last);
 		// usuwamy z listy dostepnych
 		freeThreads_.erase(freeThreads_.begin(), last);
 
 		//Czy mamy juz tyle ile potrzeba?
-		if(useFree < groupSize){
+		while(useFree++ < toTake){
 			//musimy utworzyc nowych executorow
-			for(unsigned int i = useFree; i < groupSize; ++i){
-				executorsThreads.push_back(ThreadPtr(new Thread()));
-			}
-		}
-
-		//zapamietuje watki
-		usedThreads_.insert(usedThreads_.end(), executorsThreads.begin(), executorsThreads.end());
+			executorsThreads.push_back(IThreadPtr(new RerunnableThread(threadFactory_)));			
+		}				
 		
 		//watki dla uzytkownika
-		std::list<ThreadPtr> toInsert;
+		std::list<IThreadPtr> toInsert;
 
 		//tworzymy watki dla uzytkownika
 		for(auto it = executorsThreads.begin(); it != executorsThreads.end(); ++it) {
 			//tworzymy watek
-			auto tpt = new TPThread(this, *it);
-			//zapamietujemy watek i jego executor
-			logicalThreads_.insert(std::map<TPThread*, ThreadPtr>::value_type(tpt,*it));
-
-			toInsert.push_back(ThreadPtr(tpt));
+			auto tpt = new TPThread(*it);
+			tpt->setThreadPool(this);
+			toInsert.push_back(IThreadPtr(tpt));
 		}
+
+		threadsCount_ += toTake;
 
 		// przepisujemy
 		threads.insert(threads.end(), toInsert.begin(), toInsert.end());
@@ -239,7 +244,7 @@ public:
 	
 	void setMaxThreads(ThreadPool::size_type maxThreads)
 	{
-		QMutexLocker lock(&synch);
+		ScopedLock<StrictSyncPolicy> lock(sync_);
 		if(maxThreads < minThreads_) {
 			throw std::invalid_argument("Max threads value less then min threads value");
 		}
@@ -249,7 +254,7 @@ public:
 	
 	void setMinThreads(ThreadPool::size_type minThreads)
 	{
-		QMutexLocker lock(&synch);
+		ScopedLock<StrictSyncPolicy> lock(sync_);
 		if(maxThreads_ < minThreads) {
 			throw std::invalid_argument("Min threads value greater then max threads value");
 		}
@@ -257,28 +262,26 @@ public:
 		minThreads_ = minThreads;
 	}
 
-	void reuseThreads(TPThread * thread)
+	void returnThreadToPool(IThreadPtr thread)
 	{
-		QMutexLocker lock(&synch);
-		auto it = logicalThreads_.find(thread);
-		usedThreads_.remove(it->second);
-
-		if(usedThreads_.size() < minThreads_){
-			freeThreads_.push_back(it->second);
+		ScopedLock<StrictSyncPolicy> lock(sync_);
+		if(freeThreads_.size() < minThreads_){
+			freeThreads_.push_back(thread);
 		}
 
-		logicalThreads_.erase(it);
+		--threadsCount_;
 	}
 };
 
-ThreadPool::ThreadPool(size_type minThreads, size_type maxThreads)
+ThreadPool::ThreadPool(IThreadFactoryPtr threadFactory, size_type minThreads, size_type maxThreads)
+	: impl_(new ThreadPoolImpl(threadFactory, minThreads, maxThreads))
 {
-	impl_.reset(new ThreadPoolImpl(minThreads, maxThreads));
+	
 }
 
 ThreadPool::~ThreadPool()
 {
-	impl_.reset();
+
 }
 
 const ThreadPool::size_type ThreadPool::maxThreads() const
@@ -296,14 +299,15 @@ const ThreadPool::size_type ThreadPool::threadsCount() const
 	return impl_->threadsCount();
 }
 
-ThreadPtr ThreadPool::getOrCreateThread()
+IThreadPtr ThreadPool::getThread()
 {
-	return impl_->getOrCreateThread();
+	return impl_->getThread();
 }
 
-void ThreadPool::getOrCreateThreadsGroup(const size_type groupSize, std::vector<ThreadPtr> & threads)
+void ThreadPool::getThreads(const size_type groupSize, std::vector<IThreadPtr> & threads,
+	const bool exact)
 {
-	return impl_->getOrCreateThreadsGroup(groupSize, threads);
+	return impl_->getThreads(groupSize, threads, exact);
 }
 
 void ThreadPool::setMaxThreads(ThreadPool::size_type maxThreads)

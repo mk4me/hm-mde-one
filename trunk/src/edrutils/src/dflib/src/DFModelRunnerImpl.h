@@ -137,7 +137,7 @@ typedef std::vector<IMRSinkNode *> WrapedSinks;
 typedef std::vector<IMRProcessingNode*> WrapedProcessors;
 
 typedef std::vector<utils::RunnablePtr> Runnables;
-typedef std::vector<utils::ThreadPtr> Threads;
+typedef std::vector<utils::IThreadPtr> Threads;
 typedef std::list<df::IDFLoggerHelper*> LoggerHelpers;
 typedef std::vector<INodeRunner*> NodeRunners;
 

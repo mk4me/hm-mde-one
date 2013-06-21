@@ -13,146 +13,13 @@ using namespace utils;
 class Thread::ThreadImpl
 {
 private:
-	//! Faktyczny w�tek systemu operacujnego realizuj�cy przetwarzanie
-	class InnerThread : public QThread
-	{
-	public:
-		//! Typ funktora przekazywanego do w�tku i wykonywanego potem w w�tku
-		typedef boost::function<void()> Functor;
-
-	private:
-		//! Obiekt funktora do wykonania
-		Functor func;
-
-	public:
-		//! \param func Funktor do wykonania w w�tku
-		InnerThread(const Functor & func) : func(func)
-		{
-
-		}
-
-		virtual ~InnerThread()
-		{
-			try{
-				if(isRunning() == true){
-					terminate();
-				}
-
-				wait();
-			}catch(...){
-
-			}
-		}
-
-	protected:
-		//! Implementacja metody uruchamianej w nowym w�tku
-		virtual void run()
-		{
-			func();
-		}
-	};
-
-
-private:
 	//! Obiekt w�tku realizuj�cy kolejne przetwarzania
-	boost::shared_ptr<InnerThread> thread_;
+	IThreadPtr thread_;
 	//! Czy wystartowano
-	volatile bool started_;
-	//! Aktualny priorytet w�tku
-	Thread::Priority priority_;
-	//! Aktualny rozmiar stosu dla w�tku - UWAGA!! Mo�e by� przyczyn� problem�w z uruchomieniem w�tku!!
-	Thread::size_type stackSize_;
-	//! Status w�tku
-	volatile IThreadingBase::Status status_;
-	//! Rezultat ostatniego przetwarzania
-	volatile IThreadingBase::Result result_;
-	//! Aktualnie wykonywany obiekt w w�tku
-	RunnablePtr runnable_;
-	//! Obiekt przechowuj�cy czas pocz�tku stanu dla Idle
-	clock_t idleStartTime_;
-	//! Obiekt synchronizuj�cy stan w�tku
-	mutable QMutex synch;
-	//! Obiekt synchronizuj�cy stan w�tku
-	QMutex cancelSynch;
-	//! Obiekt synchronizuj�cy p�tl� kolejnych wywo�a� w�tku z nowymi zadaniami
-	mutable QMutex runnableSynch;
-	//! Obiekt na kt�rym czekaj� obiekty na zako�czenie aktualnej pracy w�tku
-	mutable QMutex waitSynch;
-	//! Obiekt na kt�rym czekaj� obiekty na zako�czenie aktualnej pracy w�tku
-	mutable QMutex startSynch;
-	//! Ilo�� wisz�cych na joinie
-	unsigned int waitingCounter;
-	//! W�tek logiczny do notyfikacji
-	Thread * logicalThread;
-
+	bool started_;	
+	//! Priorytet wątku
+	IThread::Priority priority_;
 private:
-	//! Wewn�trzna realizacja przetwarzania w�tku
-	//! Ma form� niesko�czonej p�tli aby maksymalnie wyko�ysta� dany w�tek bez potrzeby jego niszczenia i tworzenia
-	void innerRun()
-	{
-		while(true){
-			//czekamy na kolejne zadanie
-			runnableSynch.lock();
-			//czy zadanie jest puste?
-			if(runnable_ != nullptr){
-				
-				//aktualizujemy status watku
-				{
-					QMutexLocker lock(&synch);
-					status_ = IThreadingBase::Running;
-					startSynch.unlock();
-
-					//informujemy o zmianie stanu
-					try{
-						logicalThread->notify();
-					}catch(...){
-
-					}
-				}
-
-				//probujemy obsluzyc przetwarzanie
-				try{
-					runnable_->run();
-
-					//aktualizujemy stan
-					{				
-						QMutexLocker lock(&synch);
-						idleStartTime_ = clock();
-						status_ = IThreadingBase::Idle;
-						result_ = IThreadingBase::Finished;
-
-						//notyfikujemy
-						try{
-							logicalThread->notify();
-						}catch(...){
-
-						}
-					}
-
-				}catch(...){
-
-					//blad - ustawiamy stan
-					{
-						QMutexLocker lock(&synch);
-						idleStartTime_ = clock();
-						status_ = IThreadingBase::Idle;
-						result_ = IThreadingBase::Error;						
-
-						//notyfikujemy
-						try{
-							logicalThread->notify();
-						}catch(...){
-
-						}
-					}
-				}
-				//zezwalamy na ponowny start
-				started_ = false;
-				//zwalniamy czekajacych
-				waitSynch.unlock();
-			}
-		}
-	}
 
 	//! \param priority Priorytet wg interfejsu IThread
 	//! \return Priorytet dla w�tku w Qt kt�ry faktyczie realizuje nasz w�tek w systemei operacyjnym
@@ -196,148 +63,45 @@ private:
 
 public:
 	//! Publiczny konstruktor
-	ThreadImpl(Thread * thread) : cancelSynch(QMutex::NonRecursive), logicalThread(thread), status_(IThreadingBase::Idle),
-		result_(IThreadingBase::FirstProcessing), idleStartTime_(clock()), priority_(IThread::Inheritate),
-		stackSize_(0), waitingCounter(0), started_(false)
+	ThreadImpl(IThreadPtr thread) : thread_(thread), started_(false), priority_(IThread::Inheritate)
 	{
-		runnableSynch.lock();
+		if(thread_ == nullptr){
+			throw std::invalid_argument("Uninitialized thread to manage");
+		}
 	}
 
 	//! Publiczny destruktor
 	~ThreadImpl()
-	{
-		QMutexLocker lock(&synch);
-
-		thread_.reset();
-
-		if(status_ == IThreadingBase::Running){
-			result_ = IThreadingBase::Canceled;
-		}
-
-		status_ = IThreadingBase::Killed;
-
-		try{
-			logicalThread->notify();
-		}catch(...){
-
+	{		
+		if(thread_->running()){
+			thread_->cancel();
+			thread_->join();
 		}
 	}
 
 	void cancel()
 	{
-		QMutexLocker lock(&synch);
-
-		if(started_ == true){
-			thread_->terminate();
-			status_ = IThreadingBase::Idle;
-			result_ = IThreadingBase::Canceled;
-			idleStartTime_ = clock();
-			try{
-				logicalThread->notify();
-			}catch(...){
-
-			}
-			waitSynch.unlock();
-			started_ = false;
-			startSynch.unlock();
-		}
+		thread_->cancel();
 	}
 
 	void join()
 	{
-		bool update = false;
-		{
-			//jezeli nie mam running to join natychmiast wraca
-			QMutexLocker lock(&synch);
-			if(started_ == false){
-				return;
-			}else{
-				update = true;
-				++waitingCounter;
-			}
-		}
-
-		//w przeciwnym wypadku wisze na mutexie az do skonczenia zadania
-		QMutexLocker lock(&waitSynch);
-		if(update == true){
-			--waitingCounter;
-		}
-	}
-
-	const IThreadingBase::Status status() const
-	{		
-		return status_;
-	}
-
-	const IThreadingBase::Result result() const
-	{		
-		return result_;
+		thread_->join();	
 	}
 
 	void start(const RunnablePtr & runnable, const IThread::Priority priority)
 	{		
-		{		
-			QMutexLocker lock(&synch);
-
-			// je�eli ju� dzia�a to wyj�tek
-			if(started_ == true){
-				throw RunningStartException("Thread already running");
-			}
-
-			started_ = true;
-
-			//zezwol na join
-			waitSynch.lock();
+		if(started_ == true){
+			throw std::runtime_error("Thread already started once");
 		}
 
-		//czekam az wszyscy ktozy joineli poprzednie zadanie zostana wzbudzeni
-		while(waitingCounter > 0){
-			QMutex mutex;
-			mutex.lock();
+		started_ = true;
 
-			QWaitCondition waitCondition;
-			waitCondition.wait(&mutex, 100);
-
-			mutex.unlock();
+		if(thread_->running() == true){
+			throw std::runtime_error("Thread started outside");
 		}
 
-		//blokuj�  do momentu kiedy nie wystartuje
-		startSynch.lock();
-
-		auto iP = translateThreadPriority(priority);
-
-		// czy trzeba tworzy� nowy w�tek - pierwszy raz lub po cancel
-		if(result_ == IThreadingBase::FirstProcessing || result_ == IThreadingBase::Canceled){
-			//czekaj na w�tek je�eli istnia�
-			if(thread_ != nullptr){
-				thread_->wait();
-			}
-			// utw�rz nowy w�tek
-			thread_.reset(new InnerThread(boost::bind(&ThreadImpl::innerRun, this)));
-			//inicjuj rozmiar stosu
-			thread_->setStackSize(stackSize_);
-			//startuj nowy w�tek z zadanym priorytetem
-			thread_->start(iP);
-		}else if( priority != IThread::Inheritate){
-			//mamy watek wiec zmieniamy priorytet
-			thread_->setPriority(iP);
-		}
-
-		//ustaw parametry w�tku
-		priority_ = priority;		
-		runnable_ = runnable;
-
-		//uruchom przetwarzanie - mamy juz runnable
-		runnableSynch.unlock();
-		// czekaj na faktyczny start zadania
-		QMutexLocker lock(&startSynch);
-	}
-
-	const float idleTime() const
-	{
-		QMutexLocker lock(&synch);
-		//jezeli nie mamy running to znaczy ze nie ma idleTime
-		return (status_ != IThreadingBase::Running) ? (float)(clock() - idleStartTime_)/(float)CLOCKS_PER_SEC : 0.0;
+		thread_->start(runnable, priority);
 	}
 
 	IThread::Priority priority() const
@@ -347,33 +111,41 @@ public:
 
 	IThread::size_type stackSize() const
 	{
-		return stackSize_;
+		return thread_->stackSize();
 	}
 
 	RunnableConstPtr runnable() const
 	{
-		return runnable_;
+		return thread_->runnable();
 	}
 
 	RunnablePtr runnable()
 	{
-		return runnable_;
+		return thread_->runnable();
+	}
+
+	const bool running() const
+	{
+		return thread_->running();
 	}
 
 	void setStackSize(IThread::size_type stackSize)
 	{
-		QMutexLocker lock(&synch);
-		if(result_ != IThreadingBase::FirstProcessing){
-			throw std::runtime_error("Stack size can not be set while thread is running");
-		}
+		thread_->setStackSize(stackSize);
+	}
 
-		stackSize_ = stackSize;
+	void setPriority(const IThread::Priority priority)
+	{
+		priority_ = priority;
+		if(thread_->running() == true){
+			thread_->setPriority(priority_);
+		}
 	}
 };
 
-Thread::Thread()
+Thread::Thread(IThreadPtr thread) : impl_(new ThreadImpl(thread))
 {
-	impl_.reset(new ThreadImpl(this));
+	
 }
 
 Thread::~Thread()
@@ -391,24 +163,14 @@ void Thread::join()
 	impl_->join();
 }
 
-const IThreadingBase::Status Thread::status() const
-{
-	return impl_->status();
-}
-
-const IThreadingBase::Result Thread::result() const
-{
-	return impl_->result();
-}
-
 void Thread::start(const RunnablePtr & runnable, const Priority priority)
 {
 	impl_->start(runnable, priority);
 }
 
-const float Thread::idleTime() const
+const bool Thread::running() const
 {
-	return impl_->idleTime();
+	return impl_->running();
 }
 
 const IThread::Priority Thread::priority() const
@@ -426,7 +188,12 @@ void Thread::setStackSize(IThread::size_type stackSize)
 	impl_->setStackSize(stackSize);
 }
 
-RunnableConstPtr Thread::runnable() const
+void Thread::setPriority(IThread::Priority priority)
+{
+	impl_->setPriority(priority);
+}
+
+const RunnableConstPtr Thread::runnable() const
 {
 	return impl_->runnable();
 }

@@ -24,51 +24,29 @@ namespace utils {
 		//! Obiekt klasy realizuj¹cej funkcjonalnoœæ
 		boost::shared_ptr<ThreadGroupImpl> impl;
 
-	protected:
-
-		//! \param threads W¹tki wchodz¹ce w sk³ad grupy
-		ThreadGroup(const std::vector<ThreadPtr> & threads);
-
 	public:
-
-		//! \param size Rozmiar grupy/Iloœæ w¹tków w grupie
-		ThreadGroup(size_type size);
+		//! Domyœlny kosntruktor
+		ThreadGroup();
 
 		//! Destruktor wirtualny
 		virtual ~ThreadGroup();
 
-		//! Metoda zabija w¹tek/grupe, nie nadaje siê on/ona ponownie do u¿ycia
+		//! Metoda zabija grupe, w¹tki nie nadaj¹ siê ponownie do u¿ycia
 		virtual void cancel();
 		//! Metoda blokuj¹ca a¿ w¹tek/grupa nie zakoñczy przetwarzania lub nie zostanie zniszczony/a
 		virtual void join();
-		//! \return Stan w¹tku/grupy
-		virtual const Status status() const;
-		//! \return Rezultat w¹tku/grupy
-		virtual const Result result() const;
-
-		//! Metoda uruchamia przetwarzanie przez grupê
-		//! \param funcs Funktory wykonywane w grupie - ich rozmiar musi siê zgadzaæ rozmiarowi grupy, w przeciwnym wypadku dostaniemy wyj¹tek
-		virtual void start(const Runnables & funcs);
-
-		//! \param runnables Obiekty przetwarzane w grupie
-		//! \param priority Priotytet w¹tkó w grupie
-		void start(const std::vector<RunnablePtr> & runnables, IThread::Priority priority);
-
-		//! \param stacks Wektor opisuj¹cy rozmiary stosów poszczególnych watkóe w grupie
-		//! Wolno wo³aæ t¹ metode przed pierwszym przetwarzaniem lub bezpoœrednio po cancel
-		virtual void setStacksSizes(const std::vector<IThread::size_type> & stacks);
-
+		//! \param threads W¹tki obs³ugiwane przez grupê
+		//! \param priority Priorytet na jakim bêd¹ uruchomione w¹tki grupy
+		virtual void start(const Threads & threads, const IThreadGroup::StartPolicy startPolicy);
+		//! \return Aktualna polityka koñczenia grupy w¹tków
+		virtual const StartPolicy startPolicy() const;
+		//! \return Czy grupa dzia³a
+		virtual const bool running() const;
 		//! \return Rozmiar grupy
 		virtual const size_type size() const;
 		//! \param idx Indeks w¹tku
 		//! \return W¹tek pod zadanym indeksem
-		virtual ThreadConstPtr thread(size_type idx) const;
-		//! \param idx Indeks w¹tku który chemy obserwowaæ w grupie
-		//! \param observer Obiekt obserwujacy w¹tek
-		virtual void attachToThread(size_type idx, Observer<IThreadingBase> * observer);
-		//! \param idx Indeks w¹tku który chemy przestac obserwowaæ
-		//! \param observer Obiekt obserwujacy w¹tek
-		virtual void detachFromThread(size_type idx, Observer<IThreadingBase> * observer);
+		virtual IThreadConstPtr thread(const size_type idx) const;
 	};
 
 }
