@@ -4,9 +4,10 @@
 
 using namespace core;
 
-HierarchyItem::HierarchyItem( const QString& name, const QIcon& icon) :
+HierarchyItem::HierarchyItem( const QString& name, const QString& description, const QIcon& icon) :
     icon(icon),
-    name(name)
+    name(name),
+    desc(description)
 {
 }
 
@@ -76,4 +77,9 @@ void HierarchyItem::removeChild( IHierarchyItemConstPtr child )
     childItems.removeOne(child);
     auto ptr = utils::const_pointer_cast<IHierarchyItem>(child);
     ptr->setParent(IHierarchyItemConstPtr());
+}
+
+QString core::HierarchyItem::getDescription() const
+{
+    return desc;
 }

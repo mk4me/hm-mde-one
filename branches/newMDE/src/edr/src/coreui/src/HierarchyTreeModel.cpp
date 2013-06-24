@@ -11,7 +11,7 @@ using namespace coreui;
 HierarchyTreeModel::HierarchyTreeModel(QObject *parent) :
     QAbstractItemModel(parent)
 {
-    rootItem = core::IHierarchyItemPtr(new core::HierarchyItem(""));
+    rootItem = core::IHierarchyItemPtr(new core::HierarchyItem("",""));
 }
 
 //HierarchyTreeModel::HierarchyTreeModel( core::IHierarchyItemConstPtr root, QObject* parent /*= nullptr*/ ) :
@@ -135,13 +135,15 @@ QModelIndex HierarchyTreeModel::createSmartIndex( int row, int col, core::IHiera
 
 core::IHierarchyItemConstPtr HierarchyTreeModel::internalSmart( const QModelIndex& idx ) const
 {
-    auto raw = idx.internalPointer();
-    auto it = raw2Smart.find(const_cast<void*>(raw));
-    if (it != raw2Smart.end()) {
-        return it->second;
-    }
+    if (idx.isValid()) {
+        auto raw = idx.internalPointer();
+        auto it = raw2Smart.find(const_cast<void*>(raw));
+        if (it != raw2Smart.end()) {
+            return it->second;
+        }
 
-    UTILS_ASSERT(false);
+        UTILS_ASSERT(false);
+    }
     return core::IHierarchyItemConstPtr();
 }
 

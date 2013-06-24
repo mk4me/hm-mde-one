@@ -101,6 +101,27 @@
       <SubType>Content</SubType>
       <DependentUpon>Plugin.sequencediagram</DependentUpon>
     </Content>
+    <Content Include="TreeModel.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="TreeModel.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>TreeModel.classdiagram</DependentUpon>
+    </Content>
+    <Content Include="MdeMainWindow.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="MdeMainWindow.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>MdeMainWindow.classdiagram</DependentUpon>
+    </Content>
+    <Content Include="Filters.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Filters.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>Filters.classdiagram</DependentUpon>
+    </Content>
     <Content Include="VDF.sequencediagram">
       <SubType>Content</SubType>
     </Content>

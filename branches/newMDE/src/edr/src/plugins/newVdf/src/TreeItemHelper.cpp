@@ -70,7 +70,7 @@ std::vector<core::TypeInfo> Multiserie3D::getTypeInfos() const
     return ret;
 }
 
-Multiserie3D::Multiserie3D( const PluginSubject::MotionConstPtr & motion ) :
+Multiserie3D::Multiserie3D(const PluginSubject::MotionConstPtr & motion ) :
     motion(motion)
 {
 
@@ -106,7 +106,7 @@ std::vector<core::TypeInfo> JointsItemHelper::getTypeInfos() const
     return ret;
 }
 
-JointsItemHelper::JointsItemHelper( const PluginSubject::MotionConstPtr & motion ) :
+JointsItemHelper::JointsItemHelper(const PluginSubject::MotionConstPtr & motion ) :
     motion(motion)
 {
 }
@@ -152,7 +152,7 @@ std::vector<core::TypeInfo> NewChartItemHelper::getTypeInfos() const
     return ret;
 }
 
-NewChartItemHelper::NewChartItemHelper( const core::ObjectWrapperConstPtr& wrapper ) :
+NewChartItemHelper::NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper ) :
     WrappedItemHelper(wrapper)
 {
 }
@@ -228,7 +228,7 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     series.push_back(serieZ);
 }
 
-NewVector3ItemHelper::NewVector3ItemHelper( const core::ObjectWrapperConstPtr& wrapper ) :
+NewVector3ItemHelper::NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper ) :
     WrappedItemHelper(wrapper)
 {
 }
@@ -288,14 +288,14 @@ std::vector<core::TypeInfo> NewMultiserieHelper::getTypeInfos() const
     return ret;
 }
 
-NewMultiserieHelper::NewMultiserieHelper( const ChartWithDescriptionCollection& charts ):
+NewMultiserieHelper::NewMultiserieHelper(const ChartWithDescriptionCollection& charts ):
     wrappers(charts),
     title(""),
     colorStrategy(new RandomMultiserieColorStrategy())
 {
 }
 
-NewMultiserieHelper::NewMultiserieHelper( const std::vector<core::ObjectWrapperConstPtr>& charts ):
+NewMultiserieHelper::NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts ):
     title(""),
     colorStrategy(new RandomMultiserieColorStrategy())
 {

@@ -20,7 +20,7 @@ namespace core {
 class CORELIB_EXPORT HierarchyItem : public IHierarchyItem, public boost::enable_shared_from_this<HierarchyItem>
 {
 public:
-    HierarchyItem(const QString& name, const QIcon& icon = QIcon() );
+    HierarchyItem(const QString& name, const QString& description, const QIcon& icon = QIcon() );
     virtual ~HierarchyItem();
 
 public:
@@ -35,9 +35,12 @@ public:
     virtual QIcon getIcon() const;
     virtual void setParent(IHierarchyItemConstPtr parent);
 
+    virtual QString getDescription() const;
+
 private:
     QList<IHierarchyItemConstPtr> childItems;
     QString name;
+    QString desc;
     QIcon icon;
     IHierarchyItemConstWeakPtr parentItem;
 };

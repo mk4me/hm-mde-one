@@ -139,7 +139,7 @@ int DataFilterWidget::getNumEntries() const
 
 core::IHierarchyItemPtr coreUi::BundleFilter::getFilteredTree( core::IHierarchyItemConstPtr root )
 {
-    core::HierarchyItemPtr results = utils::make_shared<core::HierarchyItem>(QObject::tr("Filtered"));
+    core::HierarchyItemPtr results = utils::make_shared<core::HierarchyItem>(QObject::tr("Filtered"), "");
     for (auto it = commands.begin(); it != commands.end(); ++it) {
         results->appendChild((*it)->getFilteredTree(root));
     }

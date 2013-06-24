@@ -16,10 +16,36 @@
 #include <corelib/IFilterProvider.h>
 #include <corelib/IFilterBundle.h>
 #include "ContextEventFilter.h"
+#include <coreui/CoreVisualizerWidget.h>
+#include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
+
+class QDockWidget;
 
 class AnalisisModel : public QObject, public core::IDataManagerReader::IObjectObserver
 {
     Q_OBJECT
+public:
+    //! s³u¿y do przechowywania informacji o utworzonych wizualizatorach i ich seriach, u¿ywane w mapie itemHelper -> itemDesc
+    struct DataItemDescription 
+    {
+        DataItemDescription() {}
+
+        //! Konstruktor wype³nia wszystkie pola struktury 
+        //! \param visualizer 
+        //! \param series 
+        //! \param widget 
+        DataItemDescription(coreUI::CoreVisualizerWidget* widget, QDockWidget * dockWidget);
+        //! widget, w który reprezentuje wizualizator
+        coreUI::CoreVisualizerWidget* visualizerWidget;
+
+        QDockWidget * visualizerDockWidget;
+
+        utils::weak_ptr<VisualizerSerieTimelineMultiChannel> channel;
+
+        std::string path;
+    };
+    DEFINE_SMART_POINTERS(DataItemDescription)
+
 public:
     AnalisisModel(ContextEventFilterPtr contextEventFilter);
 	virtual ~AnalisisModel() {}
@@ -30,6 +56,11 @@ public:
     ContextEventFilterPtr getContextEventFilter() const { return contextEventFilter; }
     void addFilterBundles( const core::IFilterProvider::FilterBundles& bundles );
     void applyFilter( core::IFilterCommandPtr filter );
+    void addVisualizerDataDescription( core::HierarchyHelperPtr helper, AnalisisModel::DataItemDescriptionPtr desc );
+    std::list<DataItemDescriptionConstPtr> getVisualizerDataDescriptions( const core::HierarchyHelperPtr& helper );
+    DataItemDescriptionConstPtr getVisualizerDataDescription(const core::VisualizerPtr& visualizer);
+    core::HierarchyHelperPtr getHelper(const DataItemDescriptionConstPtr& desc);
+
 
 Q_SIGNALS:
     void filterBundleAdded(core::IFilterBundlePtr);
@@ -45,6 +76,9 @@ private:
     core::IHierarchyItemPtr dataManagerTreeItem; 
     core::IFilterProvider::FilterBundles filters;
     std::vector<core::IHierarchyItemConstPtr> itms;
+    //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z którego elementu powsta³y
+    std::multimap<core::HierarchyHelperWeakPtr, DataItemDescriptionPtr> items2Descriptions;
+    std::map<core::HierarchyHelperWeakPtr, core::IHierarchyDataItemConstWeakPtr> helper2hierarchyItem;
 };
 DEFINE_SMART_POINTERS(AnalisisModel);
 

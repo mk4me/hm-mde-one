@@ -4,10 +4,10 @@
 #include <plugins/subject/IMotion.h>
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <plugins/newVdf/TreeBuilder.h>
-
+#include <QtGui/QDockWidget>
 
 AnalisisModel::AnalisisModel(ContextEventFilterPtr contextEventFilter) :
-contextEventFilter(contextEventFilter)
+    contextEventFilter(contextEventFilter)
 {
 
 }
@@ -49,7 +49,7 @@ void AnalisisModel::applyFilter( core::IFilterCommandPtr filter )
             saveSourceItems();
         }
         model.clear();
-        auto count = itms.size();
+        int count = static_cast<int>(itms.size());
         for (int i = 0; i < count; ++i) {
             model.addRootItem(filter->getFilteredTree(itms[i]));
         }
@@ -74,4 +74,54 @@ void AnalisisModel::loadSourceItems()
         model.addRootItem(*it);
     }
     itms.clear();
+}
+
+void AnalisisModel::addVisualizerDataDescription( core::HierarchyHelperPtr helper, AnalisisModel::DataItemDescriptionPtr desc )
+{
+    items2Descriptions.insert(std::make_pair(core::HierarchyHelperWeakPtr(helper), desc));
+}
+
+std::list<AnalisisModel::DataItemDescriptionConstPtr> AnalisisModel::getVisualizerDataDescriptions( const core::HierarchyHelperPtr& helper )
+{
+    std::list<DataItemDescriptionConstPtr> descs;
+    auto range = items2Descriptions.equal_range(core::HierarchyHelperWeakPtr(helper));
+    for (auto it = range.first; it != range.second; it++) {
+        descs.push_back(it->second);
+    }
+
+    return descs;
+}
+
+AnalisisModel::DataItemDescriptionConstPtr AnalisisModel::getVisualizerDataDescription( const core::VisualizerPtr& visualizer )
+{
+    for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
+        DataItemDescriptionPtr d = it->second;
+        if (d->visualizerWidget->getVisualizer() == visualizer) {
+            return d;
+        }
+    }
+    return DataItemDescriptionConstPtr();
+}
+
+core::HierarchyHelperPtr AnalisisModel::getHelper( const DataItemDescriptionConstPtr& desc ) 
+{
+    for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
+        if (it->second == desc) {
+            return core::HierarchyHelperPtr(it->first);
+        }
+    }
+
+
+    return core::HierarchyHelperPtr();
+}
+
+
+AnalisisModel::DataItemDescription::DataItemDescription( coreUI::CoreVisualizerWidget* widget, QDockWidget * dockWidget) :
+    visualizerWidget(widget),
+    visualizerDockWidget(dockWidget)
+{
+    //// konwersja na weak ptr.
+    //for (auto it = series.begin(); it != series.end(); ++it) {
+    //    this->series.push_back(*it);
+    //}
 }

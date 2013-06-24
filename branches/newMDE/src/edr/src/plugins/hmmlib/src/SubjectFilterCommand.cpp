@@ -15,7 +15,7 @@ AbstractFilterCommand::AbstractFilterCommand( const QString& name, const QIcon& 
 
 core::IHierarchyItemPtr AbstractFilterCommand::getFilteredTree( core::IHierarchyItemConstPtr root )
 {
-    core::HierarchyItemPtr hi(new core::HierarchyItem(getName(), root->getIcon()));
+    core::HierarchyItemPtr hi(new core::HierarchyItem(getName(), root->getDescription(), root->getIcon()));
     traverse(root, hi);
     return hi;
 }

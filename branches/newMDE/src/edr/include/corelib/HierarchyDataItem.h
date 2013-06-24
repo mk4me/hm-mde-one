@@ -13,6 +13,7 @@
 #include <QtCore/QList>
 #include <QtCore/QVariant>
 #include <utils/ObjectWrapper.h>
+#include <boost/enable_shared_from_this.hpp>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/IHierarchyDataItem.h>
@@ -30,7 +31,7 @@ namespace core {
         //! \param name 
         //! \param helper 
         HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
-            const QIcon& icon, const QString& name, HierarchyHelperPtr helper);
+            const QIcon& icon, const QString& name, const QString& description, HierarchyHelperPtr helper);
 
         //! 
         //! \param wrapper 
@@ -38,26 +39,26 @@ namespace core {
         //! \param name 
         //! \param helpers 
         HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
-            const QIcon& icon, const QString& name, std::list<HierarchyHelperPtr> helpers);
+            const QIcon& icon, const QString& name, const QString& description, std::list<HierarchyHelperPtr> helpers);
 
         //! 
         //! \param wrapper 
         //! \param icon 
         //! \param name 
         HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, 
-            const QIcon& icon, const QString& name);
+            const QIcon& icon, const QString& name, const QString& description);
 
         //! 
         //! \param wrapper 
         //! \param icon 
-        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, 
+        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, const QString& description, 
             const QIcon& icon = QIcon());
 
         //! 
         //! \param icon 
         //! \param name 
         //! \param helper 
-        HierarchyDataItem(const QIcon& icon, const QString& name, 
+        HierarchyDataItem(const QIcon& icon, const QString& name, const QString& description, 
             HierarchyHelperPtr helper);
 
 	    virtual ~HierarchyDataItem();

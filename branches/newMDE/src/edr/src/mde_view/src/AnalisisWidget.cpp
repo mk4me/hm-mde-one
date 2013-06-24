@@ -6,6 +6,7 @@
 #include <corelib/BaseDataTypes.h>
 #include <coreui/CoreVisualizerWidget.h>
 #include <coreui/CoreDockWidgetSet.h>
+#include <coreui/CoreVisualizerWidget.h>
 #include <corelib/HierarchyHelper.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
@@ -15,6 +16,10 @@
 #include "ContextAutoPlacer.h"
 #include <coreui/DataFilterWidget.h>
 #include "ReportsThumbnailContext.h"
+#include <corelib/IDataHierarchyManagerReader.h>
+#include <coreui/HierarchyTreeModel.h>
+#include <QtGui/QMessageBox>
+#include "AnalysisTreeContext.h"
 //#include "SummaryWindow.h"
 //#include "AnalisisTreeWidget.h"
 
@@ -34,6 +39,7 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, QWidget* parent, int mar
     treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     contextMenu = new AnalysisTreeContextMenu(model, this);
     connect(treeView, SIGNAL(customContextMenuRequested(const QPoint &)), contextMenu ,SLOT(contextualMenu(const QPoint &)));
+    connect(treeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onTreeItemActivated(const QModelIndex&)));
     connect(contextMenu, SIGNAL(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)), this, SLOT(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)));
 
     
@@ -42,6 +48,10 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, QWidget* parent, int mar
     connect(model.get(), SIGNAL(filterBundleAdded(core::IFilterBundlePtr)), this, SLOT(onFilterBundleAdded(core::IFilterBundlePtr)));
 
     connect(applyButton, SIGNAL(clicked()), this, SLOT(applyClicked()));
+    
+    summary = utils::make_shared<SummaryWindow>(SummaryWindowWidget);
+    summaryController = new SummaryWindowController(summary, model);
+    summary->initialize();
 }
 
 void AnalisisWidget::showTimeline()
@@ -149,7 +159,7 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
 void AnalisisWidget::visualizerDestroyed(QObject * visualizer)
 {
     // TODO
-    //auto w = qobject_cast<QWidget*>(visualizer);
+    auto w = qobject_cast<QWidget*>(visualizer);
     //visualizerUsageContext->setCurrentContextWidgetDestroyed(true);
     //removeContext(w);
     //visualizerUsageContext->setCurrentContextWidgetDestroyed(false);
@@ -188,6 +198,12 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::IHierarchyDataIte
     static int incr = 0;
     QString suffix = QString("/id_%1").arg(incr++);
     path += suffix;
+    return createAndAddDockVisualizer(helper, dockSet, path);
+
+}
+
+QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, QString &path )
+{
     auto visualizer = helper->createVisualizer(plugin::getVisualizerManager());
     auto visualizerDockWidget = createDockVisualizer(visualizer);
 
@@ -200,21 +216,21 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::IHierarchyDataIte
     std::vector<core::Visualizer::VisualizerSerie*> series;
     helper->getSeries(visualizer, path, series);
     if (!series.empty()) {
-        // TODO : zapis informacji
 
-        //DataItemDescription desc(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
-        //desc.channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
-        //desc.path = path.toStdString();
-        //items2Descriptions.insert(std::make_pair(helper, desc));
+        AnalisisModel::DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
+        desc->channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+        desc->path = path.toStdString();
+        model->addVisualizerDataDescription(helper, desc);
 
         auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
         //timeline->addChannel(desc.path, desc.channel);
         auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
         timeline->addChannel(path.toStdString(), channels);
 
-        //for(auto it = series.begin(); it != series.end(); ++it){
-        //    seriesToChannels[*it] = desc.path;
-        //}
+        // TODO : sprawdzic i przywrocic/zastapic
+        /*for(auto it = series.begin(); it != series.end(); ++it){
+        seriesToChannels[*it] = desc.path;
+        }*/
     } else {
         PLUGIN_LOG_WARNING("Problem adding series to visualizer");
     }
@@ -238,6 +254,12 @@ void AnalisisWidget::setContextItems( IAppUsageContextManager* manager, IAppUsag
     this->raportsArea->installEventFilter(model->getContextEventFilter().get());
     manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
     connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
+
+    AnalysisTreeContextPtr treeContext = utils::make_shared<AnalysisTreeContext>(flexiTabWidget, model->getTreeModel(), contextMenu);
+    manager->addContext(treeContext, parent);
+    model->getContextEventFilter()->registerPermamentContextWidget(treeView);
+    this->treeView->installEventFilter(model->getContextEventFilter().get());
+    manager->addWidgetToContext(treeContext, treeView);
 }
 
 void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
@@ -405,18 +427,9 @@ void AnalysisTreeContextMenu::contextualMenu( const QPoint &clickedPoint )
 
     //QModelIndex index = view->indexAt(clickedPoint);
     QModelIndex index = view->currentIndex();
-    core::IHierarchyItemConstPtr item = model->getTreeModel()->internalSmart(index);
-    core::IHierarchyDataItemConstPtr dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
-    if (dataItem) {
-        auto helpers = dataItem->getHelpers();
-        for (auto it = helpers.begin(); it != helpers.end(); ++it) {
-            auto helper = *it;
-            HelperAction* ha = new HelperAction(helper, QIcon(), helper->getText());
-            menu->addAction(ha);
-            connect(ha, SIGNAL(triggered()), this, SLOT(onCreateVisualizer()));
-        }
+    createMenu(index, menu);
 
-    }
+
     menu->exec(QCursor::pos());
 }
 
@@ -431,4 +444,372 @@ void AnalysisTreeContextMenu::onCreateVisualizer()
     emit createVisualizer(dataItem, ha->getHelper());
 }
 
+void AnalysisTreeContextMenu::addHelperToMenu( const core::HierarchyHelperPtr& helper, std::map<QString, QMenu*>& submenus, QMenu * menu )
+{
+    auto list = helper->getText().split('/');
+    QMenu* submenu = menu;
 
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        if (*it == list.back()) {
+            HelperAction* ha = new HelperAction(helper, *it);
+            submenu->addAction(ha);
+            connect(ha, SIGNAL(triggered()), this, SLOT(onCreateVisualizer()));
+        } else {
+            auto prevIt = submenus.find(*it);
+            if (prevIt == submenus.end()) {
+                submenus[*it] = submenu = submenu->addMenu(*it);
+            } else {
+                submenu = prevIt->second;
+            }
+        }
+    }
+}
+
+void AnalysisTreeContextMenu::addAddictionMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper)
+{
+    QMenu* addTo = new QMenu(tr("Add to:"), menu);
+    addTo->setEnabled(false);
+    connect(addTo, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
+    connect(addTo, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
+    BOOST_FOREACH(coreUI::CoreDockWidgetSet* set, widget->topMainWindow->getDockSet()) {
+        QMenu* group = new QMenu(widget->topMainWindow->setText(widget->topMainWindow->indexOf(set)), menu);
+        BOOST_FOREACH(QDockWidget* dock, set->getDockWidgets()) {
+            coreUI::CoreVisualizerWidget* vw = dynamic_cast<coreUI::CoreVisualizerWidget*>(dock->widget());
+            if (vw ) {
+                core::VisualizerPtr visualizer = vw->getVisualizer();
+                auto hierarchyManager = plugin::getDataHierachyManagerReader();
+                bool compatibile = false;
+                core::TypeInfoSet supportedTypes;
+                visualizer->getSupportedTypes(supportedTypes);
+
+                std::vector<utils::TypeInfo> types = helper->getTypeInfos();
+                for (unsigned int h = 0; h < types.size(); ++h) {
+                    if(supportedTypes.find(types[h]) != supportedTypes.end()){
+                        compatibile = true;
+                    }else {
+                        for(auto it = supportedTypes.begin(); it != supportedTypes.end(); ++it){
+                            if(hierarchyManager->isTypeCompatible(*it, types[h]) == true){
+                                compatibile = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(compatibile == true){
+                        break;
+                    }
+                }
+
+                if (compatibile) {
+                    int maxSeries = visualizer->getMaxSeries();
+                    if (maxSeries == -1 || maxSeries > static_cast<int>(visualizer->getNumSeries())) {
+                        // TODO
+                        HelperAction* addAction = new HelperAction(helper, QString::fromStdString(visualizer->getName()), visualizer);
+                        //QAction* addAction = new ContextAction(item, group, visualizer);
+                        //addAction->setText(QString::fromStdString(visualizer->getName()));
+                        connect(addAction, SIGNAL(triggered()), widget, SLOT(addToVisualizer()));
+                        //connect(addAction, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+                        group->addAction(addAction);
+                    }
+                }
+            }
+        }
+
+        if (group->actions().size()) {
+            addTo->addMenu(group);
+        } else  {
+            delete group;
+        }
+    }
+
+    menu->addMenu(addTo);
+
+    if (addTo->actions().size()) {
+        addTo->setEnabled(true);
+    }
+}
+
+
+void AnalisisWidget::addToVisualizer()
+{
+    HelperAction* action = qobject_cast<HelperAction*>(sender());
+    try {
+        core::VisualizerPtr visualizer = action->getVisualizer();
+        /*INewChartVisualizer* newChart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
+        if (newChart) {
+            newChart->setTitle(tr("Multichart"));
+        }*/
+
+        auto helper = action->getHelper();
+        static int counter = 0;
+        QString path = QString("Custom_addition...%1").arg(counter++);
+
+        std::vector<core::Visualizer::VisualizerSerie*> series;
+        helper->getSeries(visualizer, path, series);
+
+        //TODO - obsługa timeline
+        auto channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+        auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+        timeline->addChannel(path.toStdString(), channel);
+
+        coreUI::CoreVisualizerWidget* vw = nullptr;
+        QDockWidget* vd = nullptr;
+
+        auto visDesc = model->getVisualizerDataDescription(visualizer);
+        vw = visDesc->visualizerWidget;
+        vd = visDesc->visualizerDockWidget;
+        /*
+        for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
+            DataItemDescription& d = it->second;
+            if (d.visualizerWidget->getVisualizer() == visualizer) {
+                vw = d.visualizerWidget;
+                vd = d.visualizerDockWidget;
+                break;
+            }
+        }*/
+        UTILS_ASSERT(vw);
+        AnalisisModel::DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(vw, vd);
+        desc->channel = channel;
+        desc->path = path.toStdString();
+
+        // TODO
+        /*for(auto it = series.begin(); it != series.end(); ++it){
+            seriesToChannels[*it] = desc->path;
+        }*/
+
+        model->addVisualizerDataDescription(helper, desc);
+    } catch (std::exception& e) {
+        QString message("Unable to add data to visualizer");
+        message += "\n";
+        message += tr("reason: ");
+        message += tr(e.what());
+        QMessageBox::warning(this, tr("Warning"), message);
+    } catch (...) {
+        QMessageBox::warning(this, tr("Warning"), tr("Unable to add data to visualizer"));
+    }
+}
+
+
+void AnalysisTreeContextMenu::addRemovalMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper)
+{
+
+    QMenu* removeFrom = new QMenu(tr("Remove from:"), menu);
+
+    connect(removeFrom, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
+    connect(removeFrom, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
+
+    removeFrom->setEnabled(false);
+    menu->addMenu(removeFrom);
+
+    auto descriptions = model->getVisualizerDataDescriptions(helper);
+    if(!descriptions.empty()) {
+        removeFrom->setEnabled(true);
+        connect(removeFrom, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
+        connect(removeFrom, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
+        for (auto it = descriptions.begin(); it != descriptions.end(); it++) {
+            AnalisisModel::DataItemDescriptionConstPtr desc = *it;
+
+            HelperAction* action = new HelperAction(helper,
+                QString::fromStdString(desc->visualizerWidget->getVisualizer()->getName()), desc->visualizerWidget->getVisualizer());
+            //QAction * action = new ContextAction(item, menu, desc.visualizerWidget->getVisualizer());
+            //action->setText(QString::fromStdString(desc.visualizerWidget->getVisualizer()->getName()));
+
+            connect(action, SIGNAL(triggered()), widget, SLOT(removeFromVisualizer()));
+            //connect(action, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
+            removeFrom->addAction(action);
+        }
+
+        //TODO, HACK
+        HelperAction* all = new HelperAction(helper, tr("All visualizers"));
+
+        //QAction* all = new ContextAction(item, menu);
+        //all->setText("All visualizers");
+        connect(all, SIGNAL(triggered()), this, SLOT(removeFromAll()));
+        //connect(all, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
+        removeFrom->addSeparator();
+        removeFrom->addAction(all);
+    }
+
+}
+
+void AnalysisTreeContextMenu::addCreationMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper )
+{
+
+    QMenu* createIn = new QMenu(tr("Create in:"), menu);
+    createIn->setEnabled(false);
+    menu->addMenu(createIn);
+    BOOST_FOREACH(coreUI::CoreDockWidgetSet* set, widget->topMainWindow->getDockSet()) {
+        if (set->isAdditionPossible()) {
+            //TODO, HACK
+            HelperAction* action = new HelperAction(helper, 
+                tr("Set %1").arg(widget->topMainWindow->indexOf(set)), core::VisualizerPtr(), QIcon(), set);
+            /*QAction* action = new ContextAction(item, menu, VisualizerPtr(), set);
+            action->setText(topMainWindow->setText(topMainWindow->indexOf(set)));*/
+            createIn->addAction(action);
+            connect(action, SIGNAL(triggered()), widget, SLOT(createNewVisualizer()));
+            //connect(action, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
+            //TODO
+            //connect(action, SIGNAL(hovered(QAction*)), this, SLOT(menuShowGroup(QAction*)));
+        }
+    }
+
+    // TODO, HACK
+    //QAction* newGroup = new ContextAction(item, menu);
+    HelperAction* newGroup = new HelperAction(helper, tr("New Group"));
+    //newGroup->setText(tr("New group"));
+    createIn->addAction(newGroup);
+    connect(newGroup, SIGNAL(triggered()), widget, SLOT(createVisualizerInNewSet()));
+//    connect(newGroup, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
+    if (createIn->actions().size()) {
+        createIn->setEnabled(true);
+    }
+}
+
+void AnalysisTreeContextMenu::menuHighlightVisualizer( QAction* action /*= nullptr*/ )
+{
+    HelperAction* context = qobject_cast<HelperAction*>(action);
+    if (context) {
+        widget->highlightVisualizer(context->getVisualizer());
+
+    } else {
+        widget->highlightVisualizer(core::VisualizerPtr());
+    }
+}
+
+void AnalysisTreeContextMenu::createMenu( QModelIndex index, QMenu * menu )
+{
+    core::IHierarchyItemConstPtr item = model->getTreeModel()->internalSmart(index);
+    createMenu(item, menu);
+
+}
+
+void AnalysisTreeContextMenu::createMenu( core::IHierarchyItemConstPtr item, QMenu * menu )
+{
+    core::IHierarchyDataItemConstPtr dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
+    if (dataItem) {
+        auto helpers = dataItem->getHelpers();
+        std::map<QString, QMenu*> submenus;
+        for (auto it = helpers.begin(); it != helpers.end(); ++it) {
+            addHelperToMenu(*it, submenus, menu);
+        }
+        addAddictionMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
+        addRemovalMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
+        addCreationMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
+    }
+}
+
+
+void AnalisisWidget::removeFromVisualizers( HelperAction* action, bool once)
+{
+    UTILS_ASSERT(action);
+    if (action) {
+        typedef std::list<AnalisisModel::DataItemDescriptionConstPtr> DescList;
+        std::list<DescList::iterator> toErase;
+        DescList descriptors = model->getVisualizerDataDescriptions(action->getHelper());
+
+        auto it = descriptors.begin();
+        while(it != descriptors.end() ) {
+            // na razie kopia, w przeciwnym razie jest problem z usuwaniem.
+            AnalisisModel::DataItemDescriptionConstPtr desc = *it;
+            // jeśli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
+            // to znaczy, ze chcemy usunąć dane z wszystkich wizualizatorw
+            if (action->getVisualizer() == nullptr || desc->visualizerWidget->getVisualizer() == action->getVisualizer()) {
+
+                //teraz usuwamy serie
+                auto channel = desc->channel.lock();
+                if (channel) {
+                    auto series = channel->getVisualizersSeries();
+
+                    for(auto it = series.begin(); it != series.end(); ++it){
+                        auto vis = (*it)->visualizer();
+                        vis->destroySerie((*it));					 
+                    }
+
+                    if (desc->visualizerWidget->getVisualizer()->getNumSeries() == 0) {
+                        desc->visualizerDockWidget->close();
+                    }
+
+                    if (once) {
+                        break;
+                    }
+                }
+                
+                // TODO - czy jest to potrzebne?
+                //it = items2Descriptions.find(action->getTreeItem()->getHelper());
+            }else{
+                ++it;
+            }
+        }
+    }
+}
+
+
+void AnalisisWidget::removeFromAll()
+{
+    HelperAction* action = qobject_cast<HelperAction*>(sender());
+    removeFromVisualizers(action, false);
+}
+
+void AnalisisWidget::removeFromVisualizer()
+{
+    HelperAction* action = qobject_cast<HelperAction*>(sender());
+    removeFromVisualizers(action, true);
+}
+
+void AnalisisWidget::createVisualizerInNewSet()
+{
+    static const QString setName = tr("Group %1");
+    HelperAction* action = qobject_cast<HelperAction*>(sender());
+    coreUI::CoreDockWidgetSet* set = new coreUI::CoreDockWidgetSet(topMainWindow);
+    topMainWindow->addDockWidgetSet(set, setName.arg(topMainWindow->count()+1));
+
+    createAndAddDockVisualizer(action->getHelper(), set, tr("...TEST..."));
+}
+
+void AnalisisWidget::createNewVisualizer()
+{
+    HelperAction* action = qobject_cast<HelperAction*>(sender());
+    try{
+        createAndAddDockVisualizer(action->getHelper(), action->getDockSet(), QString("...TEST2..."));
+    }catch(std::exception& e ){
+        PLUGIN_LOG_ERROR("Error creating visualizer: " << e.what());
+    } catch (...) {
+        PLUGIN_LOG_ERROR("Error creating visualizer");
+    }
+}
+
+void AnalisisWidget::onTreeItemActivated( const QModelIndex& index)
+{
+    auto item = model->getTreeModel()->internalSmart(index);
+    if (item) {
+        summary->display(item);
+    } else {
+        summary->clear();
+    }
+    
+}
+
+void AnalisisWidget::highlightVisualizer( core::VisualizerPtr param1 )
+{
+    auto docks = topMainWindow->getDockSet();
+    BOOST_FOREACH(coreUI::CoreDockWidgetSet* set, docks) {
+        BOOST_FOREACH(QDockWidget* dock, set->getDockWidgets()) {
+            coreUI::CoreVisualizerWidget* visualizerWidget = dynamic_cast<coreUI::CoreVisualizerWidget*>(dock->widget());
+            if (visualizerWidget) {
+                visualizerWidget->setStyleSheet(QString());
+            }
+        }
+    }
+
+    if (param1) {
+        AnalisisModel::DataItemDescriptionConstPtr desc = model->getVisualizerDataDescription(param1);
+        coreUI::CoreDockWidgetSet* set = topMainWindow->tryGetDockSet(desc->visualizerDockWidget);
+        if (set) {
+            topMainWindow->setCurrentSet(set);
+        }
+        desc->visualizerWidget->setStyleSheet(QString::fromUtf8(
+            "coreUI--CoreVisualizerWidget {" \
+            "border: 2px solid red;"\
+            "}"));
+    }
+}

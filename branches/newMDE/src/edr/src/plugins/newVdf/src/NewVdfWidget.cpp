@@ -117,7 +117,7 @@ void vdf::NewVdfWidget::runDF()
     static int processingNo = 0;
     try {
 
-        root = core::HierarchyItemPtr(new core::HierarchyItem(QString("Processing %1").arg(++processingNo)));
+        root = core::HierarchyItemPtr(new core::HierarchyItem(QString("Processing %1").arg(++processingNo), QString()));
         sceneModel->run();
         for (auto it = sinks.begin(); it != sinks.end(); ++it) {
             root->appendChild((*it)->getDataItem());

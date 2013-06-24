@@ -170,7 +170,7 @@ void vdf::NewVdfService::observe( const core::IDataManagerReader::ChangeList & c
 
 void vdf::NewVdfService::onTransferResults()
 {
-    core::HierarchyItemPtr root(new core::HierarchyItem(tr("Processed")));
+    core::HierarchyItemPtr root(new core::HierarchyItem(tr("Processed"), QString()));
     auto count = resultsModel.getNumChildren();
     for (int i = 0; i < count; ++i) {
         root->appendChild(resultsModel.getChild(i));

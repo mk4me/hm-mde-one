@@ -5,16 +5,16 @@
 using namespace core;
 
 HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,  
-    const QIcon& icon, const QString& name, HierarchyHelperPtr helper) :
-    HierarchyItem(name, icon),
+    const QIcon& icon, const QString& name, const QString& description, HierarchyHelperPtr helper) :
+    HierarchyItem(name, description, icon),
     data(wrapper)
 {
     helpers.push_back(helper);
 }
 
 HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,  
-    const QIcon& icon, const QString& name, std::list<HierarchyHelperPtr> helpers) :
-    HierarchyItem(name, icon),
+    const QIcon& icon, const QString& name, const QString& description, std::list<HierarchyHelperPtr> helpers) :
+    HierarchyItem(name, description, icon),
     helpers(helpers),
     data(wrapper)
 {
@@ -22,23 +22,28 @@ HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
 
 
 HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
-    const QIcon& icon, const QString& name) :
-    HierarchyItem(name, icon),
+    const QIcon& icon, const QString& name, const QString& description) :
+    HierarchyItem(name, description, icon),
     data(wrapper)
 {
-    helpers.push_back(HierarchyHelperPtr(new WrappedItemHelper(wrapper)));
+    HierarchyHelperPtr helper = utils::make_shared<WrappedItemHelper>(wrapper);
+    helper->setParent(this);
+    helpers.push_back(helper);
 }
 
-HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, const QIcon& icon) :
-    HierarchyItem( QString::fromStdString(wrapper->getClassName()), icon),
+HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, const QString& description, const QIcon& icon) :
+    HierarchyItem( QString::fromStdString(wrapper->getClassName()), description, icon),
     data(wrapper)
 {
-    helpers.push_back(HierarchyHelperPtr(new WrappedItemHelper(wrapper)));
+    HierarchyHelperPtr helper = utils::make_shared<WrappedItemHelper>(wrapper);
+    helper->setParent(this);
+    helpers.push_back(helper);
 }
 
-HierarchyDataItem::HierarchyDataItem(const QIcon& icon, const QString& name, HierarchyHelperPtr helper) :
-    HierarchyItem( name, icon)
+HierarchyDataItem::HierarchyDataItem(const QIcon& icon, const QString& name, const QString& description, HierarchyHelperPtr helper) :
+    HierarchyItem( name, description, icon)
 {
+    helper->setParent(this);
     helpers.push_back(helper);
 }
 
@@ -53,5 +58,6 @@ utils::ObjectWrapperConstPtr core::HierarchyDataItem::getData() const
 
 void core::HierarchyDataItem::addHelper( HierarchyHelperPtr helper )
 {
+    helper->setParent(this);
     helpers.push_back(helper);
 }

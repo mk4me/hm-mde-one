@@ -12,8 +12,10 @@
 
 #include <QtCore/QString>
 #include <corelib/Visualizer.h>
+#include <corelib/IHierarchyItem.h>
 
 namespace core {
+
 
 //! klasa podpinana pod elementy drzewa, pozwala tworzyć i zasilac wizualizatory
 class CORELIB_EXPORT HierarchyHelper
@@ -37,18 +39,24 @@ public:
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie
     void getSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
-    //! \return tekst do GUI (np. summary window)
+    //! \return opis do np. menu kontekstowego -> 'multichart/create x from session"
     QString getText() const { return text; }
-    //! ustawia tekst GUI (np. summary window)
+    //! ustawia opis do np. menu kontekstowego -> 'multichart/create x from session"
     //! \param val 
     void setText(QString val) { text = val; }
     //! \return typy wspierane przez helper
     virtual std::vector<core::TypeInfo> getTypeInfos() const = 0;
+    
+    void setParent(const IHierarchyItem* val) { parent = val; }
+    const IHierarchyItem* getParent() const { return parent; }
+
 private:
     //! utworzony przez helper wizualizator
     core::VisualizerPtr createdVisualizer;
-    //! tekst GUI (np. summary window)
+    //! opis do np. menu kontekstowego -> 'multichart/create x from session"
     QString text;
+    //! 
+    const IHierarchyItem* parent;
 };
 DEFINE_SMART_POINTERS(HierarchyHelper);
 

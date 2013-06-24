@@ -4,13 +4,14 @@
 
 using namespace core;
 
-core::HierarchyHelper::HierarchyHelper()
+core::HierarchyHelper::HierarchyHelper() :
+    parent(nullptr)
 {
     text = QObject::tr("Create Visualizer");
 }
 
 
-WrappedItemHelper::WrappedItemHelper( const ObjectWrapperConstPtr & wrapper ) :
+WrappedItemHelper::WrappedItemHelper(const ObjectWrapperConstPtr & wrapper ) :
     wrapper(wrapper)
 {
 }

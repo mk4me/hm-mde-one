@@ -133,6 +133,7 @@ private:
     static NewMultiserieHelperPtr allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo );
     static NewMultiserieHelperPtr createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context );
     static NewMultiserieHelperPtr createNormalizedFromAll( const std::string& channelName, PluginSubject::SessionConstPtr s, c3dlib::C3DParser::IEvent::Context context );
+    static QString createDescription( PluginSubject::MotionConstPtr motion);
 };
 
 

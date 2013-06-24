@@ -5,7 +5,7 @@
 
 core::IHierarchyItemPtr EndoFilter::getFilteredTree( core::IHierarchyItemConstPtr root )
 {
-    return utils::make_shared<core::HierarchyItem>(root->getName(), root->getIcon());
+    return utils::make_shared<core::HierarchyItem>(root->getName(), root->getDescription(), root->getIcon());
 }
 
 void EndoFilter::reset()

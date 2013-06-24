@@ -33,7 +33,7 @@ void UniversalSink::consume()
     }
     
     core::IHierarchyItemPtr dataItem = 
-        core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(wrapper->getClassName()), helper));
+        core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(wrapper->getClassName()), QString(), helper));
     emit itemConsumed(dataItem);
     this->dataItem = dataItem;
     //insertToTree(helper);//, wrapper);
