@@ -163,8 +163,8 @@ QWidget* NewChartVisualizer::createWidget()
     plotMagnifier =  new QwtPlotMagnifier( qwtPlot->canvas() );
     
 
-    connect(legend, SIGNAL(checked( QwtPlotItem *, bool, int)), this, SLOT(onSerieSelected(QwtPlotItem*, bool, int)));
-    connect(legend, SIGNAL(checkboxChanged(const QwtPlotItem*, bool)), this, SLOT(onSerieVisible(const QwtPlotItem*, bool)));
+    connect(legend, SIGNAL(checked( const QVariant&, bool, int)), this, SLOT(onSerieSelected(const QVariant&, bool, int)));
+    connect(legend, SIGNAL(checkboxChanged(const QVariant&, bool)), this, SLOT(onSerieVisible(const QVariant&, bool)));
     qwtMarker = new NewChartMarker();
     qwtMarker->setXValue(0);
     qwtMarker->setYValue(0);
@@ -267,7 +267,8 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeI
 
     statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), ret->getStats());
 
-    NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
+    //NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
+    NewChartLegendItem * legendLabel = getLegendLabel(ret->getCurve());
 	if(legendLabel != nullptr){	
 		std::string source;
 		data->tryGetMeta("core/source", source);
@@ -318,8 +319,6 @@ void NewChartVisualizer::removeSerie( plugin::IVisualizer::ISerie *serie )
 	(*it)->removeItemsFromPlot();
 	qwtPlot->replot();
 
-    //updateFIFO.push_back(boost::bind( &NewChartSerie::removeItemsFromPlot, *it ));
-    //updateFIFO.push_back(boost::bind( &QwtPlot::replot, qwtPlot));
     series.erase(it);
 
     plotChanged();
@@ -365,7 +364,7 @@ void NewChartVisualizer::setActiveSerie( int idx )
         }
 
         //odznacz w legendzie
-        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(serie->getCurve()));
+        NewChartLegendItem * legendLabel = getLegendLabel(serie->getCurve());
         if(legendLabel != nullptr && legendLabel->isItemActive() == true){
             legendLabel->blockSignals(true);
             legendLabel->setItemActive(false);
@@ -388,11 +387,10 @@ void NewChartVisualizer::setActiveSerie( int idx )
         auto helper = serie->getEventsHelper();
         if (helper && helper->getEventsItem()) {
             helper->getEventsItem()->setVisible(context != C3DEventsCollection::IEvent::General);
-            //helper->getEventsItem()->attach(qwtPlot);
         }
 
         //zaznacz w legendzie
-        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(serie->getCurve()));
+        NewChartLegendItem * legendLabel = getLegendLabel(serie->getCurve());
         if(legendLabel != nullptr && legendLabel->isItemActive() == false){
             legendLabel->blockSignals(true);
             legendLabel->setItemActive(true);
@@ -423,10 +421,10 @@ void NewChartVisualizer::refreshSerieLayers()
 }
 
 
-void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
+void NewChartVisualizer::onSerieSelected(const QVariant& item, bool on, int idx)
 {
     legend->blockSignals(true);
-    QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
+    QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(qwtPlot->infoToItem(item));
     if (!isCurveFromSerie(curve)) {
         QPen pen = curve->pen();
         QColor c = pen.color();
@@ -438,7 +436,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
         if (on == true) {
         
             for (unsigned int i = 0; i < series.size(); ++i) {
-                NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->getCurve()));
+                NewChartLegendItem * legendLabel = getLegendLabel(series[i]->getCurve());
                 if (series[i]->curve == curve) {
                     // powinno wywołać sygnał, który ustawi aktywną serię
                     setActiveSerie(i);
@@ -464,17 +462,10 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
     legend->blockSignals(false);
 }
 
-void NewChartVisualizer::onSerieSelected( QwtPlotItem* item)
+void NewChartVisualizer::onSerieSelected(QwtPlotItem* item)
 {
-    onSerieSelected(item, true, -1);
-    //QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
-    //for (int i = series.size() - 1; i >= 0; --i) {
-    //    if (series[i]->curve == curve) {
-    //        // powinno wywołać sygnał, który ustawi aktywną serię
-    //        activeSerieCombo->setCurrentIndex(i);
-    //        return;
-    //    }
-    //}
+    QVariant info = qwtPlot->itemToInfo(item);
+    onSerieSelected(info, true, -1);
 }
 
 void NewChartVisualizer::onStateAction()
@@ -526,10 +517,6 @@ NewChartSerie* NewChartVisualizer::tryGetCurrentSerie()
 
 void NewChartVisualizer::update( double deltaTime )
 {
-   /* for (auto it = updateFIFO.begin(); it != updateFIFO.end(); ++it) {
-        (*it)();
-    }
-    updateFIFO.clear();*/
     if (currentSerie >= 0 && currentSerie < static_cast<int>(series.size())) {
         
         qwtMarker->setVisible(true);
@@ -647,10 +634,10 @@ void NewChartVisualizer::showStatistics( bool visible )
     statsTable->setVisible(visible);
 }
 
-void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visible )
+void NewChartVisualizer::onSerieVisible(const QVariant& info, bool visible )
 {
     legend->blockSignals(true);
-    const QwtPlotCurve* curve = dynamic_cast<const QwtPlotCurve*>(dataSerie);
+    const QwtPlotCurve* curve = dynamic_cast<const QwtPlotCurve*>(qwtPlot->infoToItem(info));
     if (!isCurveFromSerie(curve)) {
         QwtPlotCurve* c = const_cast<QwtPlotCurve*>(curve);
         c->setVisible(visible);
@@ -1216,6 +1203,20 @@ boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> NewChartVisua
 QPixmap NewChartVisualizer::takeScreenshot() const 
 {
     return QPixmap::grabWidget(qwtPlot);
+}
+
+NewChartLegendItem* NewChartVisualizer::getLegendLabel( QwtPlotCurve* curve )
+{
+    QVariant itemInfo = qwtPlot->itemToInfo(curve);
+    QWidgetList items = legend->legendWidgets(itemInfo);
+    for (auto it = items.begin(); it != items.end(); ++it) {
+        NewChartLegendItem* itm = qobject_cast<NewChartLegendItem *>(*it);
+        if (itm) {
+            return itm;
+        }
+    }
+    UTILS_ASSERT(false);
+    return nullptr;
 }
 
 

@@ -15,19 +15,17 @@ QWidget * NewChartLegend::createWidget( const QwtLegendData & data ) const
 
 void NewChartLegend::onCheck(bool checked)
 {
-    auto it = widget2PlotItem.find(qobject_cast<QWidget*>(sender()));
-    if (it != widget2PlotItem.end()) {
-        const QwtPlotItem* plotItem = it->second;
-        emit checkboxChanged(plotItem, checked);
-    } else {
-        UTILS_ASSERT(false);
+    QWidget* w = qobject_cast<QWidget*>(sender());
+    UTILS_ASSERT(w);
+    if (w) {
+        QVariant info = itemInfo(w);
+        emit checkboxChanged(info, checked);
     }
 }
 
-void NewChartLegend::updateLegend( const QwtPlotItem *item, const QList<QwtLegendData> &list )
+void NewChartLegend::updateLegend( const QVariant &v, const QList<QwtLegendData> & d)
 {
-    QwtLegend::updateLegend(item, list);
-    widget2PlotItem[this->legendWidget(item)] = item;
+    QwtLegend::updateLegend(v, d);
 }
 
 void NewChartLegend::updateWidget( QWidget* w, const QwtLegendData& data )

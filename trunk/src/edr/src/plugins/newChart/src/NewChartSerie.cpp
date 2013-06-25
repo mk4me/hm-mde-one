@@ -113,6 +113,12 @@ const QwtPlotCurve* NewChartSerie::getCurve() const
     return curve;
 }
 
+QwtPlotCurve* NewChartSerie::getCurve()
+{
+    return curve;
+}
+
+
 void NewChartSerie::setVisible( bool visible )
 {
     curve->setVisible(visible);

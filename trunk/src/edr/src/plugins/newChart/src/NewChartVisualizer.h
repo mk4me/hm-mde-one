@@ -36,6 +36,7 @@
 class StatsTable;
 class NewChartLegend;
 class PercentScaleDraw;
+class NewChartLegendItem;
 
 //! Wizualizator wykresów, oparty o QWT
 class NewChartVisualizer : public QObject, public INewChartVisualizer
@@ -200,11 +201,14 @@ private slots:
       //! \param dataSerie krzywa zwiazana z seria
       //! \param on stan przycisku legendy (on = uczyń aktywną)
       //! \param idx niewykorzystywane
-      void onSerieSelected(QwtPlotItem* dataSerie, bool on, int idx);
+      void onSerieSelected(const QVariant& dataSerie, bool on, int idx);
+
+      NewChartLegendItem* getLegendLabel(QwtPlotCurve* curve);
+
       //! Zmienia widoczność aktywnej serii, metoda wywoływana przez legendę
       //! \param dataSerie krzywa zwiazana z seria
       //! \param visible czy seria ma być widoczna czy ukryta
-      void onSerieVisible(const QwtPlotItem* dataSerie, bool visible);
+      void onSerieVisible(const QVariant& info, bool visible);
       //! wybrano zmianę stanu wizualizatora
       void onStateAction();
       //! zmiana kontekstu eventów, czyli sposobu rysowania wykresu
