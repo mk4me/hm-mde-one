@@ -184,7 +184,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	//Mam �cie�k� do konfiguracji loggera, nie wiem czy to OSG, Log4cxx czy pusty albo co� jeszcze innego - initializer powinien to zrobi� za mnie
 	//powinien te� obs�ugiwa� widget!!
 	{	
-		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "settings" / "log.ini").string()));
+		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "resources" / "settings" / "log.ini").string()));
 
 		loggerPrototype_.reset(new Log());
 		logger_ = loggerPrototype_->subLog("core");
