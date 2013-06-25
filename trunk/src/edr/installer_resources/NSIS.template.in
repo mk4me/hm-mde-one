@@ -717,7 +717,12 @@ Section "-Core installation"
 
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" '@CPACK_PACKAGE_VENDOR@-@CPACK_NSIS_PACKAGE_NAME@' "@CPACK_PACKAGE_VENDOR@-@CPACK_NSIS_PACKAGE_NAME@"
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'ProgramFilesPath' "$INSTDIR"
+		; Tutaj ³apiê œcie¿kê dla wszystkich
+		SetShellVarContext all
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'ApplicationDataPath' "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\"
+		; Chcê z³apaæ te¿ œcie¿ke dla aktualnego usera
+		SetShellVarContext user
+		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'UserApplicationDataPath' "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\"
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'UserDataPath' "$DOCUMENTS\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\"
 	
 	SetOutPath "$INSTDIR"
@@ -758,8 +763,16 @@ Section "-Core installation"
   Call ConditionalAddToRegisty
 
   !insertmacro MUI_STARTMENU_WRITE_END
-
+; UWAGA!! Domyœlnie wszystkie komendy s¹ wykonywane ogólnie dla wszystkich u¿ytkowników!!
+; Jeœli chcemy coœ robiæ dla aktualnego u¿ytkownika w CPACK_NSIS_EXTRA_INSTALL_COMMANDS
+; musimy ustawiaæ kontekst u¿ytkownika - SetShellVarContext current | admin | all
+; dla nas ok - obecnie tylko log.ini leci jako wspólny dla wszystkich
+; Podobny komentarz jest w skryptach CMake - Logic/InstallUtils.cmake
+  SetShellVarContext all
 @CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
+
+; Tutaj przywracam kontekst!
+  SetShellVarContext all
 
 	SetOutPath "$INSTDIR"
 

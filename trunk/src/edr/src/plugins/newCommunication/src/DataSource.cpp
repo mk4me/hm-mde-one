@@ -105,7 +105,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     localStorage = DataSourceLocalStorage::create();
 
     //inicjuję managera danych dla użytkowników ścieżką do wswólnej bazy danych
-    localStorage->setLocalStorageDataPath(plugin::getPathInterface()->getApplicationDataPath() / "db" / "localStorage.db");
+    localStorage->setLocalStorageDataPath(plugin::getPathInterface()->getUserApplicationDataPath() / "db" / "localStorage.db");
 
     //Zeruje aktualnego użytkownika
     currentUser_.setID(-1);

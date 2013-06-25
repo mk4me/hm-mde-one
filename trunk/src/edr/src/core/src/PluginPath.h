@@ -22,6 +22,8 @@ public:
 	virtual const Filesystem::Path& getUserDataPath() const;
 	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"
 	virtual const Filesystem::Path& getApplicationDataPath() const;
+	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"
+	virtual const Filesystem::Path& getUserApplicationDataPath() const;
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Filesystem::Path& getResourcesPath() const;
 	//! \return Zwraca pe³n¹ œcie¿kê do tymczasowego folderu, który jest czyszczony podczas ka¿dego zamykania aplikacji

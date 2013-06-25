@@ -184,7 +184,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	//Mam �cie�k� do konfiguracji loggera, nie wiem czy to OSG, Log4cxx czy pusty albo co� jeszcze innego - initializer powinien to zrobi� za mnie
 	//powinien te� obs�ugiwa� widget!!
 	{	
-		logInitializer_.reset(new LogInitializer((paths_->getResourcesPath() / "settings" / "log.ini").string()));
+		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "settings" / "log.ini").string()));
 
 		loggerPrototype_.reset(new Log());
 		logger_ = loggerPrototype_->subLog("core");
@@ -434,6 +434,18 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 		return false;
 	}
 
+	Filesystem::Path userApplicationDataPath;
+
+	lpValueName = "UserApplicationDataPath";
+	dwSize = sizeof(buffer);
+	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
+	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
+		userApplicationDataPath = Filesystem::Path(buffer);
+		RegCloseKey(hKey);
+	} else {
+		return false;
+	}
+
 	Filesystem::Path userDataPath;
 
 	lpValueName = "UserDataPath";
@@ -446,7 +458,7 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 		return false;
 	}
 
-	path.reset(new Path(userDataPath, applicationDataPath, resourcesPath, userDataPath / "tmp", applicationDataPath / "plugins"));
+	path.reset(new Path(userDataPath, applicationDataPath, userApplicationDataPath, resourcesPath, userDataPath / "tmp", applicationDataPath / "plugins"));
 
 	return true;
 #else
@@ -458,11 +470,13 @@ void Application::setDefaultPaths(shared_ptr<Path> & path)
 {
 	//TODO
 	//mie� na uwadze nazw� aplikacji i PJWSTK
-	auto userPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString()) / "PJWSTK" / "EDR";
+	auto userPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString()) / "PJWSTK" / "MDE";
 	auto appDataPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DataLocation).toStdString());
+	//TODO - czy pod linux taka konwencja jest ok? jak tam działają takie wspólne foldery?
+	auto userAppDataPath = appDataPath;
 	auto resourcesPath = Filesystem::Path(QDir::currentPath().toStdString()) / "resources";
 	
-	path.reset(new Path(userPath, appDataPath, resourcesPath, userPath / "tmp", appDataPath / "plugins"));
+	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath, userPath / "tmp", appDataPath / "plugins"));
 }
 
 void Application::safeRegisterService(const plugin::IServicePtr & service)

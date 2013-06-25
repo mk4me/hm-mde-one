@@ -21,6 +21,11 @@ const Filesystem::Path& PluginPath::getApplicationDataPath() const
 	return getPathInterface()->getApplicationDataPath();
 }
 
+const Filesystem::Path& PluginPath::getUserApplicationDataPath() const
+{
+	return getPathInterface()->getUserApplicationDataPath();
+}
+
 const Filesystem::Path& PluginPath::getResourcesPath() const
 {
 	return getPathInterface()->getResourcesPath();

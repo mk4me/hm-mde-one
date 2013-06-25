@@ -86,6 +86,12 @@ namespace plugin
         return getPathInterface()->getApplicationDataPath();
     }
 
+	//! Pomocnica metoda upraszczająca odwołanie do katalogów.
+    inline const core::Filesystem::Path& getUserApplicationDataPath()
+    {
+        return getPathInterface()->getUserApplicationDataPath();
+    }
+
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
     inline const core::Filesystem::Path& getUserDataPath()
     {
@@ -102,6 +108,12 @@ namespace plugin
     inline core::Filesystem::Path getApplicationDataPath(const core::Filesystem::Path& path)
     {
         return getApplicationDataPath()/path;
+    }
+
+	    //! \return Pomocnicza metoda do pobierania ścieżek.
+    inline core::Filesystem::Path getUserApplicationDataPath(const core::Filesystem::Path& path)
+    {
+        return getUserApplicationDataPath()/path;
     }
 
     //! \return Pomocnicza metoda do pobierania ścieżek.
