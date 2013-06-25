@@ -721,7 +721,7 @@ Section "-Core installation"
 		SetShellVarContext all
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'ApplicationDataPath' "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\"
 		; Chcê z³apaæ te¿ œcie¿ke dla aktualnego usera
-		SetShellVarContext user
+		SetShellVarContext current
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'UserApplicationDataPath' "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\"
 		WriteRegStr HKLM "SOFTWARE\${AppSufix}" 'UserDataPath' "$DOCUMENTS\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\"
 	
