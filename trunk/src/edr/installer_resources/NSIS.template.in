@@ -897,17 +897,14 @@ SectionEnd
 Section un.main main
   ReadRegStr $START_MENU SHCTX \
    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "StartMenu"
-  ;MessageBox MB_OK "Start menu is in: $START_MENU"
   ReadRegStr $DO_NOT_ADD_TO_PATH SHCTX \
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "DoNotAddToPath"
   ReadRegStr $ADD_TO_PATH_ALL_USERS SHCTX \
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "AddToPathAllUsers"
   ReadRegStr $ADD_TO_PATH_CURRENT_USER SHCTX \
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "AddToPathCurrentUser"
-  ;MessageBox MB_OK "Add to path: $DO_NOT_ADD_TO_PATH all users: $ADD_TO_PATH_ALL_USERS"
   ReadRegStr $INSTALL_DESKTOP SHCTX \
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "InstallToDesktop"
-  ;MessageBox MB_OK "Install to desktop: $INSTALL_DESKTOP "
 
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
 
@@ -929,7 +926,7 @@ Section un.main main
   RMDir /r "$INSTDIR"
 
   ; Remove the registry entries.
-  DeleteRegKey SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
+  ;DeleteRegKey SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 
   ; Removes all optional components
   !insertmacro SectionList "RemoveSection"
@@ -972,6 +969,14 @@ Section un.main main
     StrCmp "$MUI_TEMP" "$SMPROGRAMS" secondStartMenuDeleteLoopDone secondStartMenuDeleteLoop
   secondStartMenuDeleteLoopDone:
 
+  ;usuwamy klucze rejestru ale tylko te ktore sami tworzylismy przy instalacji
+	DeleteRegKey HKLM "SOFTWARE\${AppSufix}\@CPACK_PACKAGE_VENDOR@-@CPACK_NSIS_PACKAGE_NAME@"
+	DeleteRegKey HKLM "SOFTWARE\${AppSufix}\ProgramFilesPath"
+	DeleteRegKey KLM "SOFTWARE\${AppSufix}\pplicationDataPath"
+	DeleteRegKey HKLM "SOFTWARE\${AppSufix}\UserApplicationDataPath"
+	DeleteRegKey HKLM "SOFTWARE\${AppSufix}\UserDataPath"
+	DeleteRegKey /ifempty HKLM "Software\${AppSufix}"
+  
   DeleteRegKey /ifempty SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 
   Push $INSTDIR\bin
