@@ -879,7 +879,7 @@ RMDir "$DOCUMENTS\@CPACK_PACKAGE_VENDOR@"
 IfFileExists "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\*.*" 0 leaveUserData
 	RMDir /r "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@"
 	Push "$APPDATA\@CPACK_PACKAGE_VENDOR@"
-	Call isEmptyDir
+	Call un.isEmptyDir
 	Pop $0
 	StrCmp $0 1 0 leaveUserData
 		RMDir "$APPDATA\@CPACK_PACKAGE_VENDOR@"	
@@ -888,7 +888,7 @@ SetShellVarContext all
 IfFileExists "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@\*.*" 0 finishDelete
 	RMDir /r "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@"
 	Push "$APPDATA\@CPACK_PACKAGE_VENDOR@"
-	Call isEmptyDir
+	Call un.isEmptyDir
 	Pop $0
 	StrCmp $0 1 0 finishDelete
 		RMDir "$APPDATA\@CPACK_PACKAGE_VENDOR@"		
@@ -972,7 +972,7 @@ Section un.main main
   ;usuwamy klucze rejestru ale tylko te ktore sami tworzylismy przy instalacji
 	DeleteRegKey HKLM "SOFTWARE\${AppSufix}\@CPACK_PACKAGE_VENDOR@-@CPACK_NSIS_PACKAGE_NAME@"
 	DeleteRegKey HKLM "SOFTWARE\${AppSufix}\ProgramFilesPath"
-	DeleteRegKey KLM "SOFTWARE\${AppSufix}\pplicationDataPath"
+	DeleteRegKey HKLM "SOFTWARE\${AppSufix}\ApplicationDataPath"
 	DeleteRegKey HKLM "SOFTWARE\${AppSufix}\UserApplicationDataPath"
 	DeleteRegKey HKLM "SOFTWARE\${AppSufix}\UserDataPath"
 	DeleteRegKey /ifempty HKLM "Software\${AppSufix}"
