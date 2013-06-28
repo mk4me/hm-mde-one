@@ -127,6 +127,7 @@ coreUI::CoreDockWidget* AnalisisWidget::embeddWidget(QWidget * widget, const QSt
 
 void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEventFilter, coreUI::CoreTitleBar * titleBar, coreUI::CoreVisualizerWidget* visualizerDockWidget, const core::VisualizerPtr & visualizer )
 {
+    this->contextEventFilter = contextEventFilter;
     contextEventFilter->registerClosableContextWidget(titleBar);
     titleBar->installEventFilter(contextEventFilter.get());
     contextEventFilter->registerClosableContextWidget(visualizerDockWidget);
@@ -158,19 +159,19 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
 
 void AnalisisWidget::visualizerDestroyed(QObject * visualizer)
 {
-    // TODO
     auto w = qobject_cast<QWidget*>(visualizer);
     //visualizerUsageContext->setCurrentContextWidgetDestroyed(true);
-    //removeContext(w);
+    manager->removeContext(w);
     //visualizerUsageContext->setCurrentContextWidgetDestroyed(false);
-    //contextEventFilter->unregisterClosableContextWidget(w);
-    //auto it = derrivedContextWidgets.right.find(w);
-    //while( it != derrivedContextWidgets.right.end() && it->first == w){
-    //    contextEventFilter->unregisterClosableContextWidget(it->second);
-    //    ++it;
-    //}
-    //derrivedContextWidgets.right.erase(w);
-    //plainContextWidgets.erase(w);
+
+    contextEventFilter->unregisterClosableContextWidget(w);
+    /*auto it = derrivedContextWidgets.right.find(w);
+    while( it != derrivedContextWidgets.right.end() && it->first == w){
+        contextEventFilter->unregisterClosableContextWidget(it->second);
+        ++it;
+    }
+    derrivedContextWidgets.right.erase(w);
+    plainContextWidgets.erase(w);*/
 }
 
 
@@ -205,6 +206,7 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::IHierarchyDataIte
 QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, QString &path )
 {
     auto visualizer = helper->createVisualizer(plugin::getVisualizerManager());
+    visualizer->addObserver(this->model.get());
     auto visualizerDockWidget = createDockVisualizer(visualizer);
 
     if (dockSet) {
@@ -213,30 +215,30 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
         topMainWindow->autoAddDockWidget( visualizerDockWidget, tr("Group %1").arg(topMainWindow->count()+1) );
     }
 
-    std::vector<core::Visualizer::VisualizerSerie*> series;
-    helper->getSeries(visualizer, path, series);
-    if (!series.empty()) {
+    model->addSeriesToVisualizer(visualizer, helper, path, visualizerDockWidget);
 
-        AnalisisModel::DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
-        desc->channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
-        desc->path = path.toStdString();
-        model->addVisualizerDataDescription(helper, desc);
 
-        auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
-        //timeline->addChannel(desc.path, desc.channel);
-        auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
-        timeline->addChannel(path.toStdString(), channels);
+    //std::vector<core::Visualizer::VisualizerSerie*> series;
+    //helper->getSeries(visualizer, path, series);
+    //if (!series.empty()) {
 
-        // TODO : sprawdzic i przywrocic/zastapic
-        /*for(auto it = series.begin(); it != series.end(); ++it){
-        seriesToChannels[*it] = desc.path;
-        }*/
-    } else {
-        PLUGIN_LOG_WARNING("Problem adding series to visualizer");
-    }
+    //    AnalisisModel::DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
+    //    desc->channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+    //    desc->path = path.toStdString();
+    //    model->addVisualizerDataDescription(helper, desc);
 
-    // TODO : co robi observer wizualizatora
-    //visualizer->addObserver(this);
+    //    auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+    //    //timeline->addChannel(desc.path, desc.channel);
+    //    auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+    //    timeline->addChannel(path.toStdString(), channels);
+
+    //    for(auto it = series.begin(); it != series.end(); ++it){
+    //        seriesToChannels[*it] = desc.path;
+    //    }
+    //} else {
+    //    PLUGIN_LOG_WARNING("Problem adding series to visualizer");
+    //}
+
 
     return visualizerDockWidget;
 }
@@ -544,40 +546,44 @@ void AnalisisWidget::addToVisualizer()
         static int counter = 0;
         QString path = QString("Custom_addition...%1").arg(counter++);
 
-        std::vector<core::Visualizer::VisualizerSerie*> series;
-        helper->getSeries(visualizer, path, series);
-
-        //TODO - obsługa timeline
-        auto channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
-        auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
-        timeline->addChannel(path.toStdString(), channel);
-
-        coreUI::CoreVisualizerWidget* vw = nullptr;
-        QDockWidget* vd = nullptr;
 
         auto visDesc = model->getVisualizerDataDescription(visualizer);
-        vw = visDesc->visualizerWidget;
-        vd = visDesc->visualizerDockWidget;
-        /*
-        for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
-            DataItemDescription& d = it->second;
-            if (d.visualizerWidget->getVisualizer() == visualizer) {
-                vw = d.visualizerWidget;
-                vd = d.visualizerDockWidget;
-                break;
-            }
-        }*/
-        UTILS_ASSERT(vw);
-        AnalisisModel::DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(vw, vd);
-        desc->channel = channel;
-        desc->path = path.toStdString();
 
-        // TODO
-        /*for(auto it = series.begin(); it != series.end(); ++it){
-            seriesToChannels[*it] = desc->path;
-        }*/
+        model->addSeriesToVisualizer(visualizer, helper, path, visDesc->visualizerDockWidget );
+        //std::vector<core::Visualizer::VisualizerSerie*> series;
+        //helper->getSeries(visualizer, path, series);
 
-        model->addVisualizerDataDescription(helper, desc);
+        ////TODO - obsługa timeline
+        //auto channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+        //auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+        //timeline->addChannel(path.toStdString(), channel);
+
+        //coreUI::CoreVisualizerWidget* vw = nullptr;
+        //QDockWidget* vd = nullptr;
+
+        //auto visDesc = model->getVisualizerDataDescription(visualizer);
+        //vw = visDesc->visualizerWidget;
+        //vd = visDesc->visualizerDockWidget;
+        ///*
+        //for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
+        //    DataItemDescription& d = it->second;
+        //    if (d.visualizerWidget->getVisualizer() == visualizer) {
+        //        vw = d.visualizerWidget;
+        //        vd = d.visualizerDockWidget;
+        //        break;
+        //    }
+        //}*/
+        //UTILS_ASSERT(vw);
+        //AnalisisModel::DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(vw, vd);
+        //desc->channel = channel;
+        //desc->path = path.toStdString();
+
+        //// TODO
+        ///*for(auto it = series.begin(); it != series.end(); ++it){
+        //    seriesToChannels[*it] = desc->path;
+        //}*/
+
+        //model->addVisualizerDataDescription(helper, desc);
     } catch (std::exception& e) {
         QString message("Unable to add data to visualizer");
         message += "\n";
@@ -716,7 +722,7 @@ void AnalisisWidget::removeFromVisualizers( HelperAction* action, bool once)
             if (action->getVisualizer() == nullptr || desc->visualizerWidget->getVisualizer() == action->getVisualizer()) {
 
                 //teraz usuwamy serie
-                auto channel = desc->channel.lock();
+                auto channel = desc->channel;
                 if (channel) {
                     auto series = channel->getVisualizersSeries();
 

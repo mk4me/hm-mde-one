@@ -93,8 +93,6 @@ void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QSt
 		s->serie()->setName(path.toStdString());
         series.push_back(s);
     } else {
-        //LOG_ERROR("Empty object - joints");
-        //UTILS_ASSERT(false);
         throw std::runtime_error("Empty object - joints");
     }
 }

@@ -52,7 +52,7 @@ public:
 
 private:
     //! utworzony przez helper wizualizator
-    core::VisualizerPtr createdVisualizer;
+    core::VisualizerWeakPtr createdVisualizer;
     //! opis do np. menu kontekstowego -> 'multichart/create x from session"
     QString text;
     //! 

@@ -53,14 +53,7 @@
 
 #include <utils/Utils.h>
 #include <utils/ObjectWrapper.h>
-//UTILS_PUSH_WARNINGS
-//#include <osg/Node>
-//#include <osg/Config>
-//#include <osg/Quat>
-//#include <osg/ref_ptr>
-//#include <osg/Referenced>
-//#include <osg/Vec3>
-//UTILS_POP_WARNINGS
+
 #include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <utils/Push.h>

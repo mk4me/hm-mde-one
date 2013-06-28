@@ -21,14 +21,15 @@
 namespace coreui {
 
 
+//! Klasa jest poœrednikiem pomiêdzy hierarchiczn¹ struktur¹ opart¹ na IHierarchyItem, a klasami widoku Qt
 class COREUI_EXPORT HierarchyTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
     HierarchyTreeModel(QObject* parent = nullptr);
-    //HierarchyTreeModel(core::IHierarchyItemConstPtr root, QObject* parent = nullptr);
     virtual ~HierarchyTreeModel();
 
+public:
     QVariant data(const QModelIndex &index, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;

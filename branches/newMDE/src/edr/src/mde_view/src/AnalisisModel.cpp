@@ -5,7 +5,8 @@
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <plugins/newVdf/TreeBuilder.h>
 #include <QtGui/QDockWidget>
-
+#include <plugins/newTimeline/ITimelineService.h>
+#include <corelib/IServiceManager.h>
 AnalisisModel::AnalisisModel(ContextEventFilterPtr contextEventFilter) :
     contextEventFilter(contextEventFilter)
 {
@@ -124,4 +125,71 @@ AnalisisModel::DataItemDescription::DataItemDescription( coreUI::CoreVisualizerW
     //for (auto it = series.begin(); it != series.end(); ++it) {
     //    this->series.push_back(*it);
     //}
+}
+
+
+
+void AnalisisModel::update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication )
+{
+    if(modyfication == core::Visualizer::REMOVE_SERIE){
+        auto it = seriesToChannels.find(serie);
+        if(it != seriesToChannels.end()){
+            std::string path = it->second;
+            auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+            if(timeline != nullptr){
+                timeline->removeChannel(it->second);
+            }
+
+            seriesToChannels.erase(it);
+
+            //TODO
+            //usun¹æ wpisy dla pozosta³ych serii bo kanal usuwamy tylko raz
+
+            auto tIT = seriesToChannels.begin();
+            while(tIT != seriesToChannels.end()){
+                if(tIT->second == path){
+                    auto toErase = tIT;
+                    ++tIT;
+                    seriesToChannels.erase(toErase);
+                }else{
+                    ++tIT;
+                }
+            }
+
+            //teraz usuwam wpisy dla menu
+            for(auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it)
+            {
+                if(it->second->path == path){
+                    items2Descriptions.erase(it);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+
+void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core::HierarchyHelperPtr helper, QString &path, QDockWidget * visualizerDockWidget )
+{
+    std::vector<core::Visualizer::VisualizerSerie*> series;
+    helper->getSeries(visualizer, path, series);
+    if (!series.empty()) {
+
+        DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
+        desc->channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+        desc->path = path.toStdString();
+        addVisualizerDataDescription(helper, desc);
+
+        auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+        //timeline->addChannel(desc.path, desc.channel);
+        auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+        timeline->addChannel(path.toStdString(), channels);
+
+        for(auto it = series.begin(); it != series.end(); ++it){
+            seriesToChannels[*it] = desc->path;
+        }
+    } else {
+        PLUGIN_LOG_WARNING("Problem with adding series to visualizer");
+    }
 }

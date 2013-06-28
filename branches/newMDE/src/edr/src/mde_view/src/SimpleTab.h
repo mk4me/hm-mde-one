@@ -13,6 +13,8 @@
 
 #include "AbstractTab.h"
 
+//! Podstawowa zak³adka g³ównego okna MDE.
+//! W konstruktorze pobiera widget, na podstawie dostarczonych przez niego akcji tworzony jest kontekst 
 class SimpleTab : public AbstractTab
 {
 public:
@@ -21,7 +23,9 @@ public:
 	virtual ~SimpleTab() {}
 
 public:
+    //! \return dostarczony w konstruktorze widget
     virtual QWidget* getMainWidget();
+    //! \return podpina kontekst zak³adki, jeœli dostarzony widget ma akcje, to metoda je automatycznie rozmiesci w kontekœcie.
     virtual void registerConxtext( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget* flexiWidget );
 
 private:

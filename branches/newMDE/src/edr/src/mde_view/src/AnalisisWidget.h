@@ -67,7 +67,7 @@ private:
     QDockWidget* createAndAddDockVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet);
     QDockWidget* createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, QString &path );
 
-    coreUI::CoreDockWidget* embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);
+     coreUI::CoreDockWidget* embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);
     //! dodaje widget z filtrami
     //! \param filter dodawany widget
     void addDataFilterWidget(coreUi::DataFilterWidget* filter);
@@ -124,6 +124,7 @@ private:
     std::list<coreUi::DataFilterWidget*> filterBundleWidgets;
     SummaryWindowPtr summary;
     SummaryWindowController* summaryController;
+    ContextEventFilterPtr contextEventFilter;
 };
 
 
@@ -140,14 +141,14 @@ public:
         set(set)
     {} 
 
-    core::VisualizerPtr getVisualizer() const { return visualizer; }
+    core::VisualizerPtr getVisualizer() const { return visualizer.lock(); }
     core::HierarchyHelperPtr getHelper() const { return helper; }
     //! \return set, do którego ma trafic wizualizator lub nullptr jeśli nie jest to sprecyzowane
     coreUI::CoreDockWidgetSet* getDockSet() const { return set; }
 
 private:
     core::HierarchyHelperPtr helper;
-    core::VisualizerPtr visualizer;
+    core::VisualizerWeakPtr visualizer;
     //! set, do którego ma trafic wizualizator lub nullptr jeśli nie jest to sprecyzowane
     coreUI::CoreDockWidgetSet* set;
 };

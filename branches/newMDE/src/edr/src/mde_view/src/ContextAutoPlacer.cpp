@@ -8,7 +8,6 @@
 
 QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions)
 {
-
     if(actions.empty() == true){
         return nullptr;
     }
@@ -182,6 +181,5 @@ void SimpleContext::onRegisterContextWidget( QWidget * contextWidget )
 
 void SimpleContext::onUnregisterContextWidget( QWidget * contextWidget )
 {
-
 }
 

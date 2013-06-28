@@ -83,6 +83,7 @@ public Q_SLOTS:
 private:
     //! obiekt z oknem podsumowań
     SummaryWindowPtr summary;
+    //! model zakładki analiz
     AnalisisModelPtr analysisModel;
 };
 

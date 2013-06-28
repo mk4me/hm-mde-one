@@ -18,6 +18,8 @@ namespace core {
 class IHierarchyItem;
 DEFINE_SMART_POINTERS(IHierarchyItem);
 
+
+//! Postawowy interfejs, na którym opiera siê hierarchiczna struktura danych
 class IHierarchyItem
 {
 public:

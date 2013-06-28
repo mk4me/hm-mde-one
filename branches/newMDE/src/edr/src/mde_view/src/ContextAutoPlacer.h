@@ -16,9 +16,14 @@
 #include <QtGui/QTabWidget>
 #include <coreui/CoreFlexiToolBar.h>
 
+
+//! klasa, która automatycznie rozmieszcza akcje w widgetcie flexi bara
 class ContextAutoPlacer
 {
 public:
+    //! Automatycznie rozmieszcza akcje w widgecie.
+    //! \param actions rozmieszczane akcje
+    //! \return stworzony widget z rozmieszczonymi akcjami
     static QWidget* create(const QList<QAction*>& actions);
 };
 

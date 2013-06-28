@@ -13,6 +13,9 @@
 #include "IContextRoot.h"
 #include "IMdeTab.h"
 
+
+//! Zak³adka g³ównego okna MDE, zapewnia podstawow¹ funkcjonalnoœæ.
+//! Wymaga podania widgeta dla zak³adki oraz zarejstrowania kontekstu we flexi tabie
 class AbstractTab : public IContextRoot, public IMdeTab
 {
 public:

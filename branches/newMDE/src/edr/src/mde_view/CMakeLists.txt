@@ -14,7 +14,6 @@ SET_PRIVATE_HEADERS(
 	MdeMainWindow.h
 	AnalisisWidget.h
 	AnalisisModel.h
-	ContextAction.h
 	ContextEventFilter.h
 	MdeContexts.h
 	SummaryWindow.h
@@ -64,7 +63,6 @@ SET_MOC_FILES(
 	AnalisisModel.h
 	ReportsTab.h
 	ReportsThumbnailContext.h
-	ContextAction.h
 	AnalisisWidget.h
 	AnalysisTreeContext.h
 	SummaryWindow.h

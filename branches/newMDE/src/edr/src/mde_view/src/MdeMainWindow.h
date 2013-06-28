@@ -29,6 +29,7 @@ private:
     MdeMainWindow* window;
     //! mapa [przycisk -> zakładka]
     std::map<QToolButton*, IMdeTabPtr> button2TabWindow;
+    //! mapa [zakładka -> jej kontekst]
     std::map<IMdeTabPtr, IAppUsageContextPtr> tab2Contex;
 };
 //! Klasa realizuje widok aplikacji dla medyków

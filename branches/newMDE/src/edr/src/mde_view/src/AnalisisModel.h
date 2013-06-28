@@ -21,7 +21,7 @@
 
 class QDockWidget;
 
-class AnalisisModel : public QObject, public core::IDataManagerReader::IObjectObserver
+class AnalisisModel : public QObject, public core::IDataManagerReader::IObjectObserver, public core::Visualizer::IVisualizerObserver
 {
     Q_OBJECT
 public:
@@ -40,7 +40,7 @@ public:
 
         QDockWidget * visualizerDockWidget;
 
-        utils::weak_ptr<VisualizerSerieTimelineMultiChannel> channel;
+        utils::shared_ptr<VisualizerSerieTimelineMultiChannel> channel;
 
         std::string path;
     };
@@ -61,6 +61,8 @@ public:
     DataItemDescriptionConstPtr getVisualizerDataDescription(const core::VisualizerPtr& visualizer);
     core::HierarchyHelperPtr getHelper(const DataItemDescriptionConstPtr& desc);
 
+    virtual void update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication );
+    void addSeriesToVisualizer(core::VisualizerPtr visualizer, core::HierarchyHelperPtr helper, QString &path, QDockWidget * visualizerDockWidget );
 
 Q_SIGNALS:
     void filterBundleAdded(core::IFilterBundlePtr);
@@ -70,6 +72,7 @@ private:
     // TODO : przyda sie madrzejszy sposob zarzadzania elementami przefiltrowanymi i nieprzefiltrowanymi 
     void saveSourceItems();
     void loadSourceItems();
+
 private:
     coreui::HierarchyTreeModel model;
     ContextEventFilterPtr contextEventFilter;
@@ -79,6 +82,8 @@ private:
     //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z którego elementu powsta³y
     std::multimap<core::HierarchyHelperWeakPtr, DataItemDescriptionPtr> items2Descriptions;
     std::map<core::HierarchyHelperWeakPtr, core::IHierarchyDataItemConstWeakPtr> helper2hierarchyItem;
+
+    std::map<core::Visualizer::VisualizerSerie*, std::string> seriesToChannels;
 };
 DEFINE_SMART_POINTERS(AnalisisModel);
 

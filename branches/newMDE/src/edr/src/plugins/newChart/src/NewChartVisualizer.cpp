@@ -318,8 +318,6 @@ void NewChartVisualizer::removeSerie( plugin::IVisualizer::ISerie *serie )
 	(*it)->removeItemsFromPlot();
 	qwtPlot->replot();
 
-    //updateFIFO.push_back(boost::bind( &NewChartSerie::removeItemsFromPlot, *it ));
-    //updateFIFO.push_back(boost::bind( &QwtPlot::replot, qwtPlot));
     series.erase(it);
 
     plotChanged();
@@ -526,10 +524,6 @@ NewChartSerie* NewChartVisualizer::tryGetCurrentSerie()
 
 void NewChartVisualizer::update( double deltaTime )
 {
-   /* for (auto it = updateFIFO.begin(); it != updateFIFO.end(); ++it) {
-        (*it)();
-    }
-    updateFIFO.clear();*/
     if (currentSerie >= 0 && currentSerie < static_cast<int>(series.size())) {
         
         qwtMarker->setVisible(true);

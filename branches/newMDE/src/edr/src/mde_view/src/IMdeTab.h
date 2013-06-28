@@ -17,6 +17,7 @@
 
 class QWidget;
 
+//! interfejs dla zak³adki g³ównego okna MDE
 class IMdeTab
 {
 public:
