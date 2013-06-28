@@ -872,7 +872,7 @@ Section un.data data
 ; Sprawdzenie czy zostawiæ dane u¿ytkownika
 ; Tak - wywalamy ca³¹ resztê
 ; Nie - wywalamy wszystko
-MessageBox MB_YESNO|MB_ICONINFORMATION $(ConfirmUninstall) IDNO leaveUserData
+MessageBox MB_YESNO|MB_ICONINFORMATION $(ConfirmUninstall) IDYES leaveUserData
 SetShellVarContext current
 RMDir /r "$DOCUMENTS\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@"
 RMDir "$DOCUMENTS\@CPACK_PACKAGE_VENDOR@"
