@@ -1,0 +1,4 @@
+set(TESTS_DEPENDENCIES "CPPUNIT")
+ADD_TEST_PROJECT(test_corelib "corelib" "corelib")
+ADD_TEST_PROJECT(test_mde_view "mde_view;BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;c3dlib;QWT;vidlib;plugin_newVdf;plugin_dfElements;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject;plugin_hmm" "mde_view")
+ADD_TEST_PROJECT(test_newVdf "plugin_newVdf" "plugins/newVdf")

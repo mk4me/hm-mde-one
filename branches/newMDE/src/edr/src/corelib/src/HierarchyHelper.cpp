@@ -4,8 +4,7 @@
 
 using namespace core;
 
-core::HierarchyHelper::HierarchyHelper() :
-    parent(nullptr)
+core::HierarchyHelper::HierarchyHelper()
 {
     text = QObject::tr("Create Visualizer");
 }

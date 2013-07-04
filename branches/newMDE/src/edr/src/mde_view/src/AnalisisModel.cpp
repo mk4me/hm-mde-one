@@ -7,10 +7,9 @@
 #include <QtGui/QDockWidget>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <corelib/IServiceManager.h>
-AnalisisModel::AnalisisModel(ContextEventFilterPtr contextEventFilter) :
-    contextEventFilter(contextEventFilter)
-{
 
+AnalisisModel::AnalisisModel()
+{
 }
 
 void AnalisisModel::observe( const core::IDataManagerReader::ChangeList & changes )

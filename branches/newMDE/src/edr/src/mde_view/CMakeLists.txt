@@ -18,14 +18,8 @@ SET_PRIVATE_HEADERS(
 	MdeContexts.h
 	SummaryWindow.h
 	AnalysisTreeContext.h
-	#IAnalysisTreeItem.h
-	#IAnalysisDataItem.h
-	#AnalysisTreeItem.h
-	#AnalysisTreeDataItem.h
-	#TreeItemHelper.h
-	#AnalysisTreeModel.h
-	#TreeBuilder.h
 	ContextAutoPlacer.h
+	VisualizerEventFilter.h
 	MdePCH.h
 )
 
@@ -42,14 +36,10 @@ SET_SOURCE_FILES (
 	AnalisisModel.cpp
 	AnalisisWidget.cpp
 	AnalysisTreeContext.cpp
-	#AnalysisTreeItem.cpp
-	#AnalysisTreeDataItem.cpp
-	#TreeItemHelper.cpp
-	#AnalysisTreeModel.cpp
-	#TreeBuilder.cpp
 	SummaryWindow.cpp
 	ContextAutoPlacer.cpp
 	ContextEventFilter.cpp
+	VisualizerEventFilter.cpp
 	MdePCH.cpp
 )
 
@@ -58,6 +48,7 @@ SET_MOC_FILES(
 	SimpleTab.h
 	AnalysisTab.h
 	ContextEventFilter.h
+	VisualizerEventFilter.h
 	MdeMainWindow.h
 	MdeContexts.h
 	AnalisisModel.h
@@ -66,7 +57,6 @@ SET_MOC_FILES(
 	AnalisisWidget.h
 	AnalysisTreeContext.h
 	SummaryWindow.h
-	#AnalysisTreeModel.h
 )
 
 SET_UI_FILES(

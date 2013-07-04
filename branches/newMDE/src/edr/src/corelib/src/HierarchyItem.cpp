@@ -19,11 +19,17 @@ void HierarchyItem::appendChild(IHierarchyItemConstPtr item)
 {
     childItems.append(item);
     IHierarchyItemPtr ptr = utils::const_pointer_cast<IHierarchyItem>(item);
-    ptr->setParent(shared_from_this());
+    auto thisShared = shared_from_this();
+    if (ptr->getParent() != thisShared) {
+        ptr->setParent(thisShared);
+    }
 }
 
 IHierarchyItemConstPtr HierarchyItem::getChild(int row) const
 {
+    if (row < 0 || row >= getNumChildren()) {
+        throw std::out_of_range("HierarchyItem : wrong child index");
+    }
     return childItems.value(row);
 }
 
@@ -64,6 +70,11 @@ int HierarchyItem::getChildIndex( IHierarchyItemConstPtr child ) const
 
 void HierarchyItem::setParent( IHierarchyItemConstPtr parent )
 {
+    if (this->getParent() && this->getParent()->getChildIndex(shared_from_this()) != -1) {
+        auto ptr = utils::const_pointer_cast<IHierarchyItem>(this->getParent());
+        ptr->removeChild(shared_from_this());
+    }
+
     this->parentItem = parent;
     if (parent && parent->getChildIndex(shared_from_this()) == -1) {
         auto ptr = utils::const_pointer_cast<IHierarchyItem>(parent);
@@ -73,10 +84,13 @@ void HierarchyItem::setParent( IHierarchyItemConstPtr parent )
 
 void HierarchyItem::removeChild( IHierarchyItemConstPtr child )
 {
-    UTILS_ASSERT(childItems.indexOf(child) != -1);
-    childItems.removeOne(child);
-    auto ptr = utils::const_pointer_cast<IHierarchyItem>(child);
-    ptr->setParent(IHierarchyItemConstPtr());
+    if(childItems.indexOf(child) != -1) {
+        childItems.removeOne(child);
+        auto ptr = utils::const_pointer_cast<IHierarchyItem>(child);
+        ptr->setParent(IHierarchyItemConstPtr());
+    } else {
+        throw std::runtime_error("HierarchyItem : child was not found");
+    }
 }
 
 QString core::HierarchyItem::getDescription() const

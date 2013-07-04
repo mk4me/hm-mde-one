@@ -22,17 +22,16 @@
 #include "AnalisisModel.h"
 #include "IAppUsageContext.h"
 #include "SummaryWindow.h"
+#include "VisualizerEventFilter.h"
 
 class AnalisisTreeWidget;
 class AnalysisTreeContextMenu;
 
-// TODO HACK - removeFromVisualizer musi miec juz konkretne parametry...
 class HelperAction;
 
 //! Klasa jest odpowiedzialna za widok zakładki analiz
 class AnalisisWidget : public QWidget, private Ui::AnalisisWidget
 {
-    // TODO: tymczasowo?
     friend class AnalysisTreeContextMenu;
     Q_OBJECT;
 public:
@@ -41,19 +40,16 @@ public:
     //! \param hmm obiekt widoku HMM 
     //! \param margin margines dla filtrów
     //! \param flags flagi Qt
-    AnalisisWidget(AnalisisModelPtr model, QWidget* parent, int margin = 2, Qt::WindowFlags flags = 0);
+    AnalisisWidget(AnalisisModelPtr model, ContextEventFilterPtr contextEventFilter, QWidget* parent, int margin = 2, Qt::WindowFlags flags = 0);
     virtual ~AnalisisWidget() {}
 
 public:
-    ////! \return drzewo danych
-    //QTreeWidget* getTreeWidget();
-    ////! \return widget przechowujący miniaturki do raportów
-    //QWidget* getRaportsThumbnailList();
     //! \return obszar, gdzie laduja wizualizatory i timeline
     QWidget* getArea() { return analisisArea; }
     QTreeView* getTreeView() { return treeView; }
     void registerVisualizerContext(ContextEventFilterPtr contextEventFilter, coreUI::CoreTitleBar * titleBar, coreUI::CoreVisualizerWidget* visualizerDockWidget, const core::VisualizerPtr & visualizer );
     void setContextItems( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget * flexiTabWidget );
+    ContextEventFilterPtr getContextEventFilter() const { return contextEventFilter; }
 public Q_SLOTS:
     void createVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper);
     void addRoot(core::IHierarchyItemPtr root);
@@ -101,6 +97,7 @@ private Q_SLOTS:
 
     void onTreeItemActivated(const QModelIndex&);
     void highlightVisualizer( core::VisualizerPtr param1 );
+    void onVisualizerFocus(QWidget* w);
 private:
     coreUI::CoreDockWidgetManager* topMainWindow;
     QFrame* bottomMainWindow;
@@ -115,16 +112,13 @@ private:
     int filterHeight;
     //! margines dla filtrów w zakładce
     int margin;
-    ////! drzewo danych
-    //AnalisisTreeWidget* treeWidget;
-    ////! widok HMM
-    //HmmMainWindow* hmm;
     // potrzebne tylko, aby przekazac info między elementami.
     core::IFilterCommandPtr currentFilter;
     std::list<coreUi::DataFilterWidget*> filterBundleWidgets;
     SummaryWindowPtr summary;
     SummaryWindowController* summaryController;
     ContextEventFilterPtr contextEventFilter;
+    VisualizerEventFilterPtr visualizerFilter;
 };
 
 

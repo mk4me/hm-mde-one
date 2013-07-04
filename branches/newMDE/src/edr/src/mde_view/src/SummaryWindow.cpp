@@ -56,10 +56,11 @@ void SummaryWindow::display( const HelpersCollection& helpers )
                 // TODO obsluga motion
                 //auto motion = (*itHelper)->getMotion();
                 //QString text = motion ? createDescription(motion) : QString();
-                QString text;
+                
                 core::IHierarchyItemConstPtr hdi = itHelper->lock();
+                QString text = hdi->getName() + "\n";
                 if (hdi) {
-                    text = hdi->getDescription() + "\n" + text;
+                    text += hdi->getDescription();
                 }
                 addItem(text, root);
             //}
@@ -88,34 +89,16 @@ SummaryWindowController::SummaryWindowController( SummaryWindowPtr sw, AnalisisM
 {
 
 }
-
-//void SummaryWindowController::onTreeItemSelected( QTreeWidgetItem* item, int column )
-//{
-//    SummaryWindow::HelpersCollection collection;
-//    HmmTreeItem* hmmItem = dynamic_cast<HmmTreeItem*>(item);
-//    if (hmmItem) {
-//        collection.push_back(hmmItem->getHelper());
-//    }
-//    summary->display(collection);
-//}
-
-void SummaryWindowController::onVisualizator( coreUI::CoreVisualizerWidget* visualizatorWidget )
+    
+void SummaryWindowController::onVisualizer( coreUI::CoreVisualizerWidget* visualizatorWidget )
 {
     core::VisualizerPtr visualizer = visualizatorWidget->getVisualizer();
     
     SummaryWindow::HelpersCollection collection;
-    auto desc = analysisModel->getVisualizerDataDescription(visualizatorWidget->getVisualizer());
-    /*for (auto it = hmm->items2Descriptions.begin(); it != hmm->items2Descriptions.end(); ++it) {
-    
-        if (it->second.visualizerWidget == visualizatorWidget) {
-            collection.push_back(it->first);
-        }
-    }*/
-
-    // TODO : raw ptr tez nie dziala, bo nie jest kompatybilny... 
-    /*core::HierarchyHelperPtr helper  = analysisModel->getHelper(desc);
-    if (helper && helper->getParent()) {
+    auto desc = analysisModel->getVisualizerDataDescription(visualizatorWidget->getVisualizer());\
+    core::HierarchyHelperPtr helper  = analysisModel->getHelper(desc);
+    if (helper && helper->getParent().lock()) {
         collection.push_back(helper->getParent());
         summary->display(collection);
-    }*/
+    }
 }

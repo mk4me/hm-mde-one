@@ -48,10 +48,6 @@ private:
     //! \param root korzeń, do którego zostanie dodany element
     void addItem( QString text, QTreeWidgetItem* root );
 
-    //! Metoda pomocnicza, tworzy opis próby pomiarowej
-    //! \param motion próba pomiarowa, której będzie dotyczył opis
-    //QString createDescription( PluginSubject::MotionConstPtr motion ) const;
-
 private:
     //! drzewo, które będzie wyświetlane w oknie z podsumowaniami
     QTreeWidget* tree;
@@ -78,7 +74,7 @@ public Q_SLOTS:
     //void onTreeItemSelected(QTreeWidgetItem* item, int column);
     //! pobiera dane na podstawie elementów zawartych w wizualizatorze i przesyła je do okna podsumowań
     //! \param visualizatorWidget wizualizator, który uzyskał focus
-    void onVisualizator(coreUI::CoreVisualizerWidget* visualizatorWidget);
+    void onVisualizer(coreUI::CoreVisualizerWidget* visualizatorWidget);
 
 private:
     //! obiekt z oknem podsumowań

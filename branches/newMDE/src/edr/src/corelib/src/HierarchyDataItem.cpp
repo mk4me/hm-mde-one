@@ -27,7 +27,6 @@ HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
     data(wrapper)
 {
     HierarchyHelperPtr helper = utils::make_shared<WrappedItemHelper>(wrapper);
-    helper->setParent(this);
     helpers.push_back(helper);
 }
 
@@ -36,14 +35,12 @@ HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, const
     data(wrapper)
 {
     HierarchyHelperPtr helper = utils::make_shared<WrappedItemHelper>(wrapper);
-    helper->setParent(this);
     helpers.push_back(helper);
 }
 
 HierarchyDataItem::HierarchyDataItem(const QIcon& icon, const QString& name, const QString& description, HierarchyHelperPtr helper) :
     HierarchyItem( name, description, icon)
 {
-    helper->setParent(this);
     helpers.push_back(helper);
 }
 
@@ -58,6 +55,18 @@ utils::ObjectWrapperConstPtr core::HierarchyDataItem::getData() const
 
 void core::HierarchyDataItem::addHelper( HierarchyHelperPtr helper )
 {
-    helper->setParent(this);
+    helper->setParent(HierarchyItem::shared_from_this());
     helpers.push_back(helper);
+}
+
+std::list<HierarchyHelperPtr> core::HierarchyDataItem::getHelpers() const
+{
+    auto ptr = shared_from_this();
+
+    for (auto it = helpers.begin(); it != helpers.end(); ++it) {
+        (*it)->setParent(ptr);
+    }
+    
+
+    return helpers;
 }

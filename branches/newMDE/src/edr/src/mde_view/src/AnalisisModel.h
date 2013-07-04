@@ -47,13 +47,12 @@ public:
     DEFINE_SMART_POINTERS(DataItemDescription)
 
 public:
-    AnalisisModel(ContextEventFilterPtr contextEventFilter);
+    AnalisisModel();
 	virtual ~AnalisisModel() {}
 
 public:
     virtual void observe(const core::IDataManagerReader::ChangeList & changes);
     coreui::HierarchyTreeModel* getTreeModel() { return &model; }
-    ContextEventFilterPtr getContextEventFilter() const { return contextEventFilter; }
     void addFilterBundles( const core::IFilterProvider::FilterBundles& bundles );
     void applyFilter( core::IFilterCommandPtr filter );
     void addVisualizerDataDescription( core::HierarchyHelperPtr helper, AnalisisModel::DataItemDescriptionPtr desc );
@@ -75,7 +74,6 @@ private:
 
 private:
     coreui::HierarchyTreeModel model;
-    ContextEventFilterPtr contextEventFilter;
     core::IHierarchyItemPtr dataManagerTreeItem; 
     core::IFilterProvider::FilterBundles filters;
     std::vector<core::IHierarchyItemConstPtr> itms;

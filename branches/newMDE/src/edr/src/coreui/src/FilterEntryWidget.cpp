@@ -13,7 +13,7 @@ FilterEntryWidget::FilterEntryWidget( QWidget* parent, const QString& bigLabelTe
     ui->pushButton->setText(bigLabelText);
     ui->pushButton->setAttribute(Qt::WA_NoSystemBackground, true);
     ui->pushButton->setIcon(icon);
-
+    
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(onButton()));
 }
 

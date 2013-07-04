@@ -23,14 +23,16 @@
 //#include "SummaryWindow.h"
 //#include "AnalisisTreeWidget.h"
 
-AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, QWidget* parent, int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
+AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr contextEventFilter, QWidget* parent, int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
     QWidget(parent, flags),
+    contextEventFilter(contextEventFilter),
     model(model),
     manager(nullptr),
     flexiTabWidget(nullptr),
     margin(margin),
     filterWidth(-1), 
-    filterHeight(-1)
+    filterHeight(-1),
+    visualizerFilter(new VisualizerEventFilter(contextEventFilter))
 {
     setupUi(this);
     devideArea();
@@ -41,7 +43,7 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, QWidget* parent, int mar
     connect(treeView, SIGNAL(customContextMenuRequested(const QPoint &)), contextMenu ,SLOT(contextualMenu(const QPoint &)));
     connect(treeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onTreeItemActivated(const QModelIndex&)));
     connect(contextMenu, SIGNAL(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)), this, SLOT(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)));
-
+    connect(visualizerFilter.get(), SIGNAL(focusOn(QWidget*)), this, SLOT(onVisualizerFocus(QWidget*)));
     
     auto vdfService = core::queryServices<vdf::NewVdfService>(plugin::getServiceManager());
     connect(vdfService.get(), SIGNAL(transferResults(core::IHierarchyItemPtr )), this, SLOT(addRoot(core::IHierarchyItemPtr)));
@@ -108,8 +110,7 @@ QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & vi
         Qt::AllDockWidgetAreas,
         false);
 
-    // TODO : rejestrowanien
-    registerVisualizerContext(model->getContextEventFilter(), qobject_cast<coreUI::CoreTitleBar*>(dockVisWidget->titleBarWidget()), qobject_cast<coreUI::CoreVisualizerWidget*>(dockVisWidget->widget()), visualizer);
+    registerVisualizerContext(getContextEventFilter(), qobject_cast<coreUI::CoreTitleBar*>(dockVisWidget->titleBarWidget()), qobject_cast<coreUI::CoreVisualizerWidget*>(dockVisWidget->widget()), visualizer);
     dockVisWidget->setMinimumSize((std::max)(50, dockVisWidget->minimumWidth()), (std::max)(50, dockVisWidget->minimumHeight()));
     return dockVisWidget;
 }
@@ -131,12 +132,12 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
     contextEventFilter->registerClosableContextWidget(titleBar);
     titleBar->installEventFilter(contextEventFilter.get());
     contextEventFilter->registerClosableContextWidget(visualizerDockWidget);
-    visualizerDockWidget->installEventFilter(contextEventFilter.get());
+    visualizerDockWidget->installEventFilter(visualizerFilter.get());
 
     auto visWidget = visualizer->getWidget();
 
     contextEventFilter->registerClosableContextWidget(visWidget);
-    visWidget->installEventFilter(contextEventFilter.get());
+    visWidget->installEventFilter(visualizerFilter.get());
 
     // TODO : zastanowic sie nas sensem tych operacji
 
@@ -216,30 +217,6 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
     }
 
     model->addSeriesToVisualizer(visualizer, helper, path, visualizerDockWidget);
-
-
-    //std::vector<core::Visualizer::VisualizerSerie*> series;
-    //helper->getSeries(visualizer, path, series);
-    //if (!series.empty()) {
-
-    //    AnalisisModel::DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
-    //    desc->channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
-    //    desc->path = path.toStdString();
-    //    model->addVisualizerDataDescription(helper, desc);
-
-    //    auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
-    //    //timeline->addChannel(desc.path, desc.channel);
-    //    auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
-    //    timeline->addChannel(path.toStdString(), channels);
-
-    //    for(auto it = series.begin(); it != series.end(); ++it){
-    //        seriesToChannels[*it] = desc.path;
-    //    }
-    //} else {
-    //    PLUGIN_LOG_WARNING("Problem adding series to visualizer");
-    //}
-
-
     return visualizerDockWidget;
 }
 
@@ -252,15 +229,15 @@ void AnalisisWidget::setContextItems( IAppUsageContextManager* manager, IAppUsag
     ReportsThumbnailContextPtr visualizerUsageContext(new ReportsThumbnailContext(flexiTabWidget, raportsArea));
     manager->addContext(visualizerUsageContext, parent);
     this->raportsArea->addAction(new QAction(tr("Create report"), this));
-    model->getContextEventFilter()->registerPermamentContextWidget(this->raportsArea);
-    this->raportsArea->installEventFilter(model->getContextEventFilter().get());
+    getContextEventFilter()->registerPermamentContextWidget(this->raportsArea);
+    this->raportsArea->installEventFilter(getContextEventFilter().get());
     manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
     connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
 
     AnalysisTreeContextPtr treeContext = utils::make_shared<AnalysisTreeContext>(flexiTabWidget, model->getTreeModel(), contextMenu);
     manager->addContext(treeContext, parent);
-    model->getContextEventFilter()->registerPermamentContextWidget(treeView);
-    this->treeView->installEventFilter(model->getContextEventFilter().get());
+    getContextEventFilter()->registerPermamentContextWidget(treeView);
+    this->treeView->installEventFilter(getContextEventFilter().get());
     manager->addWidgetToContext(treeContext, treeView);
 }
 
@@ -550,40 +527,6 @@ void AnalisisWidget::addToVisualizer()
         auto visDesc = model->getVisualizerDataDescription(visualizer);
 
         model->addSeriesToVisualizer(visualizer, helper, path, visDesc->visualizerDockWidget );
-        //std::vector<core::Visualizer::VisualizerSerie*> series;
-        //helper->getSeries(visualizer, path, series);
-
-        ////TODO - obsługa timeline
-        //auto channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
-        //auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
-        //timeline->addChannel(path.toStdString(), channel);
-
-        //coreUI::CoreVisualizerWidget* vw = nullptr;
-        //QDockWidget* vd = nullptr;
-
-        //auto visDesc = model->getVisualizerDataDescription(visualizer);
-        //vw = visDesc->visualizerWidget;
-        //vd = visDesc->visualizerDockWidget;
-        ///*
-        //for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it) {
-        //    DataItemDescription& d = it->second;
-        //    if (d.visualizerWidget->getVisualizer() == visualizer) {
-        //        vw = d.visualizerWidget;
-        //        vd = d.visualizerDockWidget;
-        //        break;
-        //    }
-        //}*/
-        //UTILS_ASSERT(vw);
-        //AnalisisModel::DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(vw, vd);
-        //desc->channel = channel;
-        //desc->path = path.toStdString();
-
-        //// TODO
-        ///*for(auto it = series.begin(); it != series.end(); ++it){
-        //    seriesToChannels[*it] = desc->path;
-        //}*/
-
-        //model->addVisualizerDataDescription(helper, desc);
     } catch (std::exception& e) {
         QString message("Unable to add data to visualizer");
         message += "\n";
@@ -817,5 +760,18 @@ void AnalisisWidget::highlightVisualizer( core::VisualizerPtr param1 )
             "coreUI--CoreVisualizerWidget {" \
             "border: 2px solid red;"\
             "}"));
+    }
+}
+
+void AnalisisWidget::onVisualizerFocus( QWidget* w )
+{
+    QObject* obj = w;
+    while (obj) {
+        auto vis = qobject_cast<coreUI::CoreVisualizerWidget*>(obj);
+        if (vis) {
+            summaryController->onVisualizer(vis);
+            return;
+        }
+        obj = obj->parent();
     }
 }

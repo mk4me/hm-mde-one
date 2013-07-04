@@ -5,7 +5,7 @@
 using namespace vdf;
 
 DataProcessor::DataProcessor( df::IProcessingNode* impl, core::UniqueID id, const std::string& name, Creator creator ) :
-_impl(impl), _id(id), _name(name), _creator(creator)
+    _impl(impl), _id(id), _name(name), _creator(creator)
 {
 }
 

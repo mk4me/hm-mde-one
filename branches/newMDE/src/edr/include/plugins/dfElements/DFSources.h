@@ -17,9 +17,6 @@
 #include <QtGui/QTreeWidget>
 #include <QtGui/QIcon>
 #include <coreui/HierarchyTreeModel.h>
-//#include "FilterCommand.h"
-//#include "Vector3DFilterCommand.h"
-
 
 
 template <class PinT>

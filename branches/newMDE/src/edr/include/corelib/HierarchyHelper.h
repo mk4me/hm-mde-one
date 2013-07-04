@@ -47,8 +47,8 @@ public:
     //! \return typy wspierane przez helper
     virtual std::vector<core::TypeInfo> getTypeInfos() const = 0;
     
-    void setParent(const IHierarchyItem* val) { parent = val; }
-    const IHierarchyItem* getParent() const { return parent; }
+    void setParent(const core::IHierarchyItemConstPtr val) { parent = val; }
+    const core::IHierarchyItemConstWeakPtr getParent() const { return parent; }
 
 private:
     //! utworzony przez helper wizualizator
@@ -56,7 +56,7 @@ private:
     //! opis do np. menu kontekstowego -> 'multichart/create x from session"
     QString text;
     //! 
-    const IHierarchyItem* parent;
+    core::IHierarchyItemConstWeakPtr parent;
 };
 DEFINE_SMART_POINTERS(HierarchyHelper);
 

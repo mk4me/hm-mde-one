@@ -2,16 +2,19 @@
 #define HMM_TOOLBOXMAIN_H
 
 #include <map>
+#include <QtGui/QToolButton>
 #include "IMdeTab.h"
 #include <corelib/PluginCommon.h>
 #include <coreui/CoreMainWindow.h>
-#include "ui_toolboxmaindeffile.h"
 #include "IAppUsageContextManager.h"
 #include "ContextEventFilter.h"
 #include "AnalisisModel.h"
 
 class QWidget;
+
 class MdeMainWindow;
+namespace Ui { class HMMMain; }
+
 class MdeMainWindowController : public QObject
 {
     Q_OBJECT;
@@ -34,7 +37,7 @@ private:
 };
 //! Klasa realizuje widok aplikacji dla medyków
 //! Z czasem klasa zaczela się rozrastac, wymaga glebszej refaktoryzacji
-class MdeMainWindow : public coreUI::CoreMainWindow, private Ui::HMMMain, protected IAppUsageContextManager//, private core::Visualizer::IVisualizerObserver
+class MdeMainWindow : public coreUI::CoreMainWindow, public IAppUsageContextManager//, private core::Visualizer::IVisualizerObserver
 {
     Q_OBJECT;
     friend class MdeMainWindowController;
@@ -68,6 +71,7 @@ private:
     QTabWidget * contextPlaceholder;
     AnalisisModelPtr analysisModel;
     ContextEventFilterPtr contextEventFilter;
+    Ui::HMMMain* ui;
 };
 
 

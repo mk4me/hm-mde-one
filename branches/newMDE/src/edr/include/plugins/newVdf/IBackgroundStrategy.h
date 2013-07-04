@@ -11,6 +11,7 @@
 #define HEADER_GUARD_NEWVDF__IBACKGROUNDSTRATEGY_H__
 
 #include <utils/SmartPtr.h>
+#include <QtGui/QPainter>
 
 namespace vdf {
 

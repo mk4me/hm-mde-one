@@ -12,7 +12,7 @@ CORE_PLUGIN_BEGIN("DFEments", core::UID::GenerateUniqueID("{678727A0-ED31-43CA-A
             "Vector source",
             "{03FCCADA-5814-4B7B-BC60-2E07CBBF35FB}",
             QIcon());
-		//VDF_ADD_DATA_PROCESSOR(ExampleIntProccesorFlopSignMul, core::UID::GenerateUniqueID("{20F17BB2-32BF-40FA-946A-35AEB301144B}"))
+
 		VDF_ADD_DATA_PROCESSOR(
 			ScalarTreshold, 
 			"Treshold",

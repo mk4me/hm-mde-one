@@ -65,7 +65,7 @@ namespace core {
 
     public:
         //! 
-        virtual std::list<HierarchyHelperPtr> getHelpers() const { return helpers; }
+        virtual std::list<HierarchyHelperPtr> getHelpers() const; 
         //! 
         virtual utils::ObjectWrapperConstPtr getData() const;
         //! 

@@ -18,6 +18,7 @@
 #include "ReportsTab.h"
 #include "AnalisisWidget.h"
 #include "AnalysisTab.h"
+#include "ui_toolboxmaindeffile.h"
 
 using namespace core;
 
@@ -25,8 +26,9 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
     coreUI::CoreMainWindow(closeUpOperations),
     controller(this)
 {
-    setupUi(this);
-    connect(actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
+    ui = new Ui::HMMMain();
+    ui->setupUi(this);
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 
     contextPlaceholder = new QTabWidget(this);
     contextPlaceholder->setTabsClosable(false);
@@ -37,15 +39,14 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
     //connect(contextPlaceholder, SIGNAL(currentChanged(int)), this, SLOT(onContextChange(int)));
     //connect(this, SIGNAL(onSwitchToAnalysis()), this, SLOT(safeSwitchToAnalysis()), Qt::QueuedConnection);
 
-    tabPlaceholder->layout()->addWidget(contextPlaceholder);
-    //contextPlaceholder->addTab(new QTabBar(), "TEST");
-    tabPlaceholder->show();
+    ui->tabPlaceholder->layout()->addWidget(contextPlaceholder);
+    ui->tabPlaceholder->show();
     contextPlaceholder->show();
-    templateButton->hide();
+    ui->templateButton->hide();
     //contextPlaceholder->findChild<QTabBar*>()->setDrawBase(false);
 
     contextEventFilter = ContextEventFilterPtr(new ContextEventFilter(this));
-    analysisModel = AnalisisModelPtr(new AnalisisModel(contextEventFilter));
+    analysisModel = AnalisisModelPtr(new AnalisisModel());
 }
 
 MdeMainWindow::~MdeMainWindow()
@@ -77,7 +78,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
        }
    }
    
-   AnalisisWidget* aw = new AnalisisWidget(analysisModel, nullptr);
+   AnalisisWidget* aw = new AnalisisWidget(analysisModel, contextEventFilter, nullptr);
    // -----------------------
 
    addTab(IMdeTabPtr(new AnalysisTab(aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
@@ -145,7 +146,7 @@ QWidget* MdeMainWindow::createServiceWidget( plugin::IServicePtr service )
 
 void MdeMainWindowController::addTab( IMdeTabPtr tab )
 {
-    QToolButton* templateB = window->templateButton;
+    QToolButton* templateB = window->ui->templateButton;
     QToolButton* button = new QToolButton();
     button->setText(tab->getLabel());
     button->setIcon(tab->getIcon());
@@ -156,7 +157,7 @@ void MdeMainWindowController::addTab( IMdeTabPtr tab )
     button->setCheckable(true);
     button->setFixedWidth(templateB->width());
 
-    QLayout* layout = window->toolBar->layout();
+    QLayout* layout = window->ui->toolBar->layout();
     auto count = layout->count();
     auto item = layout->itemAt(count - 1);
     layout->removeItem(item);
@@ -178,7 +179,7 @@ void MdeMainWindowController::addTab( IMdeTabPtr tab )
     }
 
     QWidget* widget = tab->getMainWidget();
-    window->mainArea->layout()->addWidget(widget);
+    window->ui->mainArea->layout()->addWidget(widget);
     widget->hide();
 }
 

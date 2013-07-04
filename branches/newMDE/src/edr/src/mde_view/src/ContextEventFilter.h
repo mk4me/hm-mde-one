@@ -42,12 +42,12 @@ public:
     //! \param widget usuwany widget
     void unregisterClosableContextWidget(QWidget * widget);
 
-protected:
+public:
     //! filtruje zdarzenia dla zarejstrowanych widgetów, 
     //! dzięki tej metodzie wysyłane są informacje, dla jakich widgetów powinien zostać aktywowany kontekst
     //! \param obj 
     //! \param event 
-    bool eventFilter(QObject *obj, QEvent *event);
+    virtual bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     //! 
