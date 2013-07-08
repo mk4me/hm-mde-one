@@ -332,7 +332,8 @@ void DataSourceWidget::refreshStatus()
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 	//odświeżam status plików
-	dataSource->fileStatusManager->refreshFilesStatus();
+	//dataSource->fileStatusManager->refreshFilesStatus();
+	dataSource->refreshFileManager();
 	//odświeżam status pełnej płytkiej kopii
 	dataSource->fullShallowCopyStatus->setShallowCopy(&dataSource->fullShallowCopy);
 	//odświeżam status przefiltrowanej płytkiej kopii
@@ -348,7 +349,7 @@ void DataSourceWidget::refreshStatus()
 void DataSourceWidget::refreshStatus(const std::set<int> & filesIDs)
 {
 	//odświeżam status plików
-	dataSource->fileStatusManager->refreshFilesStatus(filesIDs);
+	dataSource->fileStatusManager->refreshFilesStatus(filesIDs, dataSource->localStorage);
 	//odświeżam status pełnej płytkiej kopii
 	dataSource->fullShallowCopyStatus->refreshDataStatus(filesIDs);
 	//odświeżam status przefiltrowanej płytkiej kopii

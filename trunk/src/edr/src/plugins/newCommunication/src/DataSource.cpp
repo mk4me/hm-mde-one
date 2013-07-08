@@ -188,7 +188,7 @@ void CommunicationDataSource::init(core::IMemoryDataManager * memoryDM, core::IS
     this->memoryDM = memoryDM;
     this->fileDM = fileDM;
 
-    fileStatusManager.reset(new FileStatusManager(fileDM));
+    fileStatusManager.reset(new FileStatusManager());
     fullShallowCopyStatus.reset(new DataSourceStatusManager(fileStatusManager.get()));
 
     UTILS_ASSERT(memoryDM != nullptr, "Niezainicjowany DM");
@@ -817,16 +817,9 @@ void CommunicationDataSource::refreshFileManager()
         auto filePath = pathsManager->filePath(file->fileName, file->isSessionFile() == true ? file->session->sessionName : file->trial->session->sessionName);
 
         if(fileStatusManager->fileExists(file->fileID) == false){
-
-			communication::DataStorage storage = communication::Remote;
-
-			if(localStorage->fileIsLocal(file->fileName) == true){
-				storage = communication::Local;
-			}
-
-            fileStatusManager->addFile(file->fileID, filePath, DataStatus(storage, communication::Unloaded));
+            fileStatusManager->addFile(file->fileID, filePath, DataStatus((localStorage->fileIsLocal(file->fileName) == true) ? communication::Local : communication::Remote, communication::Unloaded));
         }else{
-            fileStatusManager->setFilePath(file->fileID, filePath);
+            fileStatusManager->setFilePath(file->fileID, filePath);			
         }
 	}
 }
