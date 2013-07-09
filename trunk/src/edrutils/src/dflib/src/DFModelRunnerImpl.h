@@ -139,8 +139,7 @@ typedef std::vector<SourceNodeWrapData> WrapedSources;
 typedef std::vector<IMRSinkNode *> WrapedSinks;
 typedef std::vector<IMRProcessingNode*> WrapedProcessors;
 
-typedef std::vector<utils::RunnablePtr> Runnables;
-typedef std::vector<utils::IThreadPtr> Threads;
+typedef std::vector<utils::IRunnablePtr> Runnables;
 typedef std::list<df::IDFLoggerHelper*> LoggerHelpers;
 typedef std::vector<INodeRunner*> NodeRunners;
 
@@ -214,7 +213,7 @@ private:
 	WrapedSinks sinks_;
 	WrapedProcessors processors_;
 	Runnables runnables_;
-	Threads threads_;
+	utils::IThreadPool::Threads threads_;
 	LoggerHelpers loggerHelpers_;
 	NodeRunners nodeRunners_;
 

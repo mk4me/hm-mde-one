@@ -4,6 +4,8 @@
 #include "PluginPath.h"
 #include "ParserManager.h"
 #include "DataHierarchyManager.h"
+#include "ThreadPool.h"
+#include "JobManager.h"
 
 using namespace core;
 
@@ -69,7 +71,15 @@ IVisualizerManager * PluginApplication::visualizerManager()
 	return getVisualizerManager();
 }
 
+core::IThreadPool * PluginApplication::threadPool()
+{
+	return getThreadPool();
+}
 
+core::IJobManager * PluginApplication::jobManager()
+{
+	return getJobManager();
+}
 
 IPath * MainViewApplication::pathInterface()
 {
@@ -124,4 +134,14 @@ IDataHierarchyManagerReader * MainViewApplication::dataHierarchyManagerReader()
 IVisualizerManager * MainViewApplication::visualizerManager()
 {
 	return getVisualizerManager();
+}
+
+core::IThreadPool * MainViewApplication::threadPool()
+{
+	return getThreadPool();
+}
+
+core::IJobManager * MainViewApplication::jobManager()
+{
+	return getJobManager();
 }

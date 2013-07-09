@@ -9,8 +9,8 @@
 #ifndef HEADER_GUARD___ITHREADPOOL_H__
 #define HEADER_GUARD___ITHREADPOOL_H__
 
+#include <stdexcept>
 #include <threading/IThread.h>
-#include <threading/IThreadGroup.h>
 #include <list>
 
 namespace utils {
@@ -29,8 +29,8 @@ namespace utils {
 	public:
 		//! Typ opisuj�cy ilo�� w�tk�w
 		typedef unsigned int size_type;
-		//! Typ czasu
-		typedef double time_type;
+		//! Agregat pobieranych wątków
+		typedef std::list<IThreadPtr> Threads;
 
 	public:
 		//! Wirtualny destruktor
@@ -46,13 +46,10 @@ namespace utils {
 		//! \param groupSize Ilo�� w�tk�w w grupie
 		//! \param threads [out] Lista z nowymi w�tkami, dopisujemy zawsze na ko�cu
 		//! \param exact Czy ma być dokładnie tyle wątków czy może być mniej
-		virtual void getThreads(const size_type groupSize, std::vector<IThreadPtr> & threads, const bool exact = true) = 0;
+		virtual void getThreads(const size_type groupSize, Threads & threads, const bool exact = true) = 0;
 	};
 
-	typedef boost::shared_ptr<IThreadPool> ThreadPoolPtr;
-	typedef boost::shared_ptr<const IThreadPool> ThreadPoolConstPtr;
-	typedef boost::weak_ptr<IThreadPool> ThreadPoolWPtr;
-	typedef boost::weak_ptr<const IThreadPool> ThreadPoolWConstPtr;
+	DEFINE_SMART_POINTERS(IThreadPool)
 }
 
 #endif	//	HEADER_GUARD___ITHREADPOOL_H__

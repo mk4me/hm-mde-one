@@ -8,11 +8,7 @@ SET_SOURCE_FILES(
 	EnumTest.cpp
 	ObserverPatternTest.cpp
 	NamedTreeBaseTest.cpp
-	SynchronizedTest.cpp
 	DataChannelTest.cpp
-	ThreadTest.cpp
-	ThreadPoolTest.cpp
-	ThreadGroupTest.cpp
 )
 
 SET_PRIVATE_HEADERS(
@@ -22,11 +18,7 @@ SET_PRIVATE_HEADERS(
 	EnumTest.h
 	ObserverPatternTest.h
 	NamedTreeBaseTest.h
-	SynchronizedTest.h
 	DataChannelTest.h
-	ThreadTest.h
-	ThreadPoolTest.h
-	ThreadGroupTest.h
 )
 
 END_PROJECT()

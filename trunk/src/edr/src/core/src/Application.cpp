@@ -22,6 +22,8 @@
 #include "SourceManager.h"
 #include "LogInitializer.h"
 #include "PluginLoader.h"
+#include "ThreadPool.h"
+#include "JobManager.h"
 
 #ifdef WIN32
 #include <Windows.h>
@@ -37,6 +39,8 @@
 
 DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+
+const double TimeDelta = 1000.0/25.0;
 
 namespace coreUI {
 
@@ -73,7 +77,7 @@ void Application::updateServices()
 	serviceManager_->update(servicesTimeDelta);
 }
 
-Application::Application() : visualizerTimeDelta(0), servicesTimeDelta(0), mainWindow(nullptr)
+Application::Application() : visualizerTimeDelta(TimeDelta), servicesTimeDelta(TimeDelta), mainWindow(nullptr)
 {
 	connect(&visualizerUpdateTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
 	connect(&servicesUpdateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
@@ -227,7 +231,31 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	fileDataManager_.reset(new FileDataManager());
 	serviceManager_.reset(new ServiceManager());
 	sourceManager_.reset(new SourceManager());
-	visualizerManager_.reset(new VisualizerManager());	
+	visualizerManager_.reset(new VisualizerManager());
+
+	//Wielowątkowość
+	{	
+		threadFactory_.reset(new utils::QtThreadFactory());
+
+		const core::ThreadPool::size_type threadsCount = QThread::idealThreadCount();
+
+		threadPool_.reset(new core::ThreadPool(threadFactory_, (threadsCount / 2) + 1 , threadsCount * 4));
+
+		core::ThreadPool::Threads ts;
+		threadPool_->getThreads("Core", ts, 1, true);
+		ts.front()->setDestination("JobManager maintenance thread");
+
+		jobManager_.reset(new core::JobManager(ts.front()));
+
+		ts.clear();
+	
+		threadPool_->getThreads("Core", ts, threadsCount - 1, true);
+
+		for(auto it = ts.begin(); it != ts.end(); ++it){
+			(*it)->setDestination("JobManager worker");
+			jobManager_->addWorkerThread(*it);
+		}
+	}
 
 	showSplashScreenMessage(QObject::tr("Initializing plugins loader"));
 	
@@ -294,8 +322,6 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 int Application::run()
 {
-	servicesTimeDelta = visualizerTimeDelta = 1000.0/25.0;
-
 	visualizerUpdateTimer.start(visualizerTimeDelta);
 	servicesUpdateTimer.start(servicesTimeDelta);	
 	return uiApplication_->exec();
@@ -306,11 +332,16 @@ Application::~Application()
 	//zeruje ju� konsole - wi�cej z niej nie b�d� korzysta�
 	CORE_LOG_INFO("Closing core application");
 
+	CORE_LOG_INFO("Releasing job manager");
+	jobManager_.reset();
+	CORE_LOG_INFO("Releasing thread pool");
+	threadPool_.reset();
+	CORE_LOG_INFO("Releasing thread factory");
+	threadFactory_.reset();
 	CORE_LOG_INFO("Releasing sources");
 	sourceManager_.reset();
 	CORE_LOG_INFO("Releasing services");
 	serviceManager_.reset();
-
 	CORE_LOG_INFO("Releasing core managers");
 	CORE_LOG_INFO("Releasing visualizer manager");
 	visualizerManager_.reset();
@@ -324,25 +355,18 @@ Application::~Application()
 	memoryDataManager_.reset();
 	CORE_LOG_INFO("Releasing hierarchy data manager");
 	dataHierarchyManager_.reset();
-
 	CORE_LOG_INFO("Releasing plugins");
 	pluginLoader_.reset();
-
 	CORE_LOG_INFO("Cleaning UI context");
 	uiApplication_.reset();
-
 	CORE_LOG_INFO("Cleaning translations");
 	std::vector<shared_ptr<QTranslator>>().swap(translators_);
-
 	CORE_LOG_INFO("Cleaning tmp files");
 	Filesystem::deleteDirectory(getPathInterface()->getTmpPath());
-
 	CORE_LOG_INFO("Releasing logs - reseting to default loggers");
 	logInitializer_.reset();
-
 	CORE_LOG_INFO("Releasing log prototype");
 	loggerPrototype_.reset();
-
 	CORE_LOG_INFO("Releasing core log");
 	logger_.reset();
 }
@@ -400,6 +424,16 @@ ServiceManager* Application::serviceManager()
 SourceManager* Application::sourceManager()
 {
 	return sourceManager_.get();
+}
+
+core::ThreadPool* Application::threadPool()
+{
+	return threadPool_.get();
+}
+
+core::JobManager* Application::jobManager()
+{
+	return jobManager_.get();
 }
 
 bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)

@@ -68,6 +68,18 @@ namespace plugin
 		return __coreApplication->visualizerManager();
 	}
 
+	//! \return Interfejs dostępu do puli wątków
+	inline core::IThreadPool* getThreadPool()
+	{
+		return __coreApplication->threadPool();
+	}
+
+	//! \return Interfejs dostępu do managera zadań
+	inline core::IJobManager* getJobManager()
+	{
+		return __coreApplication->jobManager();
+	}
+
     //! \return Interfejs logowania informacji
 	inline core::ILog* getLogInterface()
 	{

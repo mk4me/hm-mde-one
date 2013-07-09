@@ -35,6 +35,10 @@ SET_PUBLIC_HEADERS(
 	IClonable.h
 	IApplication.h
 	Export.h
+	IJobManager.h
+	IThreadPool.h
+	IJob.h
+	IThread.h
 )
 
 SET_SOURCE_FILES(
@@ -42,7 +46,7 @@ SET_SOURCE_FILES(
 	Visualizer.cpp
 	# SubjectDataFilters.cpp
 	CoreLibPCH.cpp
-	ObjectWrapperCollection.cpp
+	ObjectWrapperCollection.cpp	
 )
 
 SET_PRIVATE_HEADERS(

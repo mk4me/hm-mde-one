@@ -1,7 +1,6 @@
 #include <threading/ThreadPool.h>
-#include <threading/RerunnableThread.h>
 #include <threading/SynchronizationPolicies.h>
-#include <list>
+#include <utils/Debug.h>
 
 //TODO
 //synchronizacja niszczenia Poola i wątków
@@ -32,11 +31,11 @@ private:
 		virtual ~TPThread()
 		{
 			if(threadPool_ != nullptr){					
-				threadPool_->returnThreadToPool(thread_);
+				threadPool_->returnThreadToPool();
 			}		
 		}
 
-		virtual void start(const RunnablePtr & runnable, const Priority priority)
+		virtual void start(const IRunnablePtr & runnable, const Priority priority)
 		{
 			thread_->start(runnable, priority);
 		}
@@ -88,13 +87,13 @@ private:
 		}
 
 		//! \return Aktualnie wykonywana operacja w w�tku, mo�e by� null jesli nic si� nie dzieje
-		virtual const RunnableConstPtr runnable() const
+		virtual const IRunnableConstPtr runnable() const
 		{
 			return thread_->runnable();
 		}
 
 		//! \return Aktualnie wykonywana operacja w w�tku, mo�e by� null jesli nic si� nie dzieje
-		virtual RunnablePtr runnable()
+		virtual IRunnablePtr runnable()
 		{
 			return thread_->runnable();
 		}
@@ -121,9 +120,9 @@ private:
 	//! Minimalna ilo�� w�tk�w do utworzenia
 	ThreadPool::size_type minThreads_;	
 	//! W�tki do ponownego u�ycia
-	std::list<IThreadPtr> freeThreads_;
+	IThreadPool::Threads freeThreads_;
 	//! Aktualna ilość wątków
-	std::list<IThreadPtr>::size_type threadsCount_;
+	ThreadPool::size_type threadsCount_;
 	//! Obiekt synchronizuj�cy stan poola
 	StrictSyncPolicy sync_;
 
@@ -181,7 +180,7 @@ public:
 			freeThreads_.pop_front();				
 		}else{
 			//tworzymy nowy executor
-			executorThread.reset(new RerunnableThread(threadFactory_));
+			executorThread = threadFactory_->createThread();
 		}
 
 		//tworzymy watek
@@ -194,8 +193,8 @@ public:
 		return IThreadPtr(tpt);
 	}
 
-	void getThreads(const IThreadGroup::size_type groupSize,
-		std::vector<IThreadPtr> & threads, const bool exact)
+	void getThreads(const IThreadPool::size_type groupSize,
+		IThreadPool::Threads & threads, const bool exact)
 	{
 		ScopedLock<StrictSyncPolicy> lock(sync_);
 
@@ -222,7 +221,7 @@ public:
 		//Czy mamy juz tyle ile potrzeba?
 		while(useFree++ < toTake){
 			//musimy utworzyc nowych executorow
-			executorsThreads.push_back(IThreadPtr(new RerunnableThread(threadFactory_)));			
+			executorsThreads.push_back(threadFactory_->createThread());
 		}				
 		
 		//watki dla uzytkownika
@@ -239,7 +238,7 @@ public:
 		threadsCount_ += toTake;
 
 		// przepisujemy
-		threads.insert(threads.end(), toInsert.begin(), toInsert.end());
+		threads.insert(threads.end(), toInsert.begin(), toInsert.end());		
 	}
 	
 	void setMaxThreads(ThreadPool::size_type maxThreads)
@@ -262,11 +261,11 @@ public:
 		minThreads_ = minThreads;
 	}
 
-	void returnThreadToPool(IThreadPtr thread)
+	void returnThreadToPool()
 	{
 		ScopedLock<StrictSyncPolicy> lock(sync_);
 		if(freeThreads_.size() < minThreads_){
-			freeThreads_.push_back(thread);
+			freeThreads_.push_back(threadFactory_->createThread());
 		}
 
 		--threadsCount_;
@@ -304,7 +303,7 @@ IThreadPtr ThreadPool::getThread()
 	return impl_->getThread();
 }
 
-void ThreadPool::getThreads(const size_type groupSize, std::vector<IThreadPtr> & threads,
+void ThreadPool::getThreads(const size_type groupSize, Threads & threads,
 	const bool exact)
 {
 	return impl_->getThreads(groupSize, threads, exact);

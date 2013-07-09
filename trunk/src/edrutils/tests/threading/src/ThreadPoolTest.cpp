@@ -1,6 +1,7 @@
 #include "ThreadPoolTest.h"
-#include <utils/ThreadPool.h>
+#include <threading/ThreadPool.h>
 #include <vector>
+#include <threading/QtThreadFactory.h>
 
 using namespace utils;
 
@@ -40,18 +41,19 @@ private:
 
 void ThreadPoolTest::testCreate()
 {
-	ThreadPool tp(5,10);
+	IThreadFactoryPtr tf(new QtThreadFactory);
+	ThreadPool tp(tf, 5, 10);
 
 	CPPUNIT_ASSERT(tp.minThreads() == 5);
 	CPPUNIT_ASSERT(tp.maxThreads() == 10);
 	CPPUNIT_ASSERT(tp.threadsCount() == 0);	
 
 	{
-		auto t = tp.getOrCreateThread();
+		auto t = tp.getThread();
 		CPPUNIT_ASSERT(t != nullptr);
 		CPPUNIT_ASSERT(tp.threadsCount() == 1);
 		{
-			auto t = tp.getOrCreateThread();
+			auto t = tp.getThread();
 			CPPUNIT_ASSERT(t != nullptr);
 			CPPUNIT_ASSERT(tp.threadsCount() == 2);
 		}
@@ -60,7 +62,9 @@ void ThreadPoolTest::testCreate()
 
 		auto r = new SimpleTestRunnable(1);
 
-		t->start(utils::RunnablePtr(r));
+		IRunnablePtr rr(r);
+
+		t->start(rr);
 		t->join();
 
 		CPPUNIT_ASSERT(r->value() == 2);
@@ -71,20 +75,21 @@ void ThreadPoolTest::testCreate()
 
 void ThreadPoolTest::testCreateGroup()
 {
-	ThreadPool tp(16,100);
+	IThreadFactoryPtr tf(new QtThreadFactory);
+	ThreadPool tp(tf, 16,100);
 
 	CPPUNIT_ASSERT(tp.minThreads() == 16);
 	CPPUNIT_ASSERT(tp.maxThreads() == 100);
 	CPPUNIT_ASSERT(tp.threadsCount() == 0);	
 
 	{
-		std::vector<utils::ThreadPtr> ts;
-		tp.getOrCreateThreadsGroup(4, ts);
+		std::list<IThreadPtr> ts;
+		tp.getThreads(4, ts, true);
 		CPPUNIT_ASSERT(ts.size() == 4);
 		CPPUNIT_ASSERT(tp.threadsCount() == 4);
 		{
-			std::vector<utils::ThreadPtr> ts;
-			tp.getOrCreateThreadsGroup(10, ts);
+			std::list<IThreadPtr> ts;
+			tp.getThreads(10, ts, true);
 			CPPUNIT_ASSERT(ts.size() == 10);
 			CPPUNIT_ASSERT(tp.threadsCount() == 14);
 		}
@@ -97,12 +102,13 @@ void ThreadPoolTest::testCreateGroup()
 
 void ThreadPoolTest::testToMuchException()
 {
-	ThreadPool tp(1,2);
+	IThreadFactoryPtr tf(new QtThreadFactory);
+	ThreadPool tp(tf, 1,2);
 
 	CPPUNIT_ASSERT(tp.minThreads() == 1);
 	CPPUNIT_ASSERT(tp.maxThreads() == 2);
 	CPPUNIT_ASSERT(tp.threadsCount() == 0);	
 
-	std::vector<utils::ThreadPtr> ts;
-	tp.getOrCreateThreadsGroup(4, ts);
+	std::list<IThreadPtr> ts;
+	tp.getThreads(4, ts, true);
 }

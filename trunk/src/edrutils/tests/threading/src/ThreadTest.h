@@ -16,17 +16,11 @@ class ThreadTest : public CppUnit::TestFixture
 	CPPUNIT_TEST_SUITE(ThreadTest);
 	CPPUNIT_TEST(testJoin);
 	CPPUNIT_TEST(testCancel);
-	CPPUNIT_TEST(testNotify);	
-	CPPUNIT_TEST(testExceptionPersistence);
-	CPPUNIT_TEST(testCancelPersistence);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	void testJoin();
 	void testCancel();
-	void testNotify();
-	void testExceptionPersistence();
-	void testCancelPersistence();
 };
 
 #endif	//	HEADER_GUARD___THREADTEST_H__

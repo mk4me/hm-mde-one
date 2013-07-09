@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
     created:  2013/03/26
     created:  26:3:2013   15:30
     filename: ThreadPool.h
@@ -11,41 +11,40 @@
 
 #include <threading/IThreadPool.h>
 #include <threading/IThreadFactory.h>
-#include <boost/shared_ptr.hpp>
 
 namespace utils {
 
 	class ThreadPool : public IThreadPool
 	{
 	private:
-		//! Typ implementuj¹cy faktyczn¹ funkcjonalnoœæ
+		//! Typ implementujÄ…cy faktycznÄ… funkcjonalnoÅ›Ä‡
 		class ThreadPoolImpl;
 
 	private:
-		//! Obiekt realizujacy funkcjonalnoœæ
-		boost::shared_ptr<ThreadPoolImpl> impl_;
+		//! Obiekt realizujacy funkcjonalnoÅ›Ä‡
+		shared_ptr<ThreadPoolImpl> impl_;
 
 	public:
-		//! \param minThreads Minimalna iloœæ w¹tków do utrzymania
-		//! \param maxThreads Maksymalna iloœæ w¹tków do utrzymania
+		//! \param minThreads Minimalna iloÅ›Ä‡ wÄ…tkÃ³w do utrzymania
+		//! \param maxThreads Maksymalna iloÅ›Ä‡ wÄ…tkÃ³w do utrzymania
 		ThreadPool(IThreadFactoryPtr threadFactory, size_type minThreads = 4, size_type maxThreads = 16);
 		//! Wirtualny desturktor
 		virtual ~ThreadPool();
 
-		//! \return Maksymalna iloœc w¹tków jakie mo¿na utworzyæ
+		//! \return Maksymalna iloÅ›c wÄ…tkÃ³w jakie moÅ¼na utworzyÄ‡
 		virtual const size_type maxThreads() const;
-		//! \return Minimalna iloœæ w¹tków utrzymywana przez manager
+		//! \return Minimalna iloÅ›Ä‡ wÄ…tkÃ³w utrzymywana przez manager
 		virtual const size_type minThreads() const;
-		//! \return Iloœæ aktualnie zajêtych w¹tków
+		//! \return IloÅ›Ä‡ aktualnie zajÄ™tych wÄ…tkÃ³w
 		virtual const size_type threadsCount() const;
-		//! \return Nowy w¹tek
+		//! \return Nowy wÄ…tek
 		virtual IThreadPtr getThread();
-		//! \param groupSize Iloœæ w¹tków w grupie
-		//! \param threads [out] Lista z nowymi w¹tkami, dopisujemy zawsze na koñcu
-		virtual void getThreads(const size_type groupSize, std::vector<IThreadPtr> & threads, const bool exact);
-		//! \param maxThreads Maksymalna iloœæ w¹tków jakie mo¿na stworzyæ
+		//! \param groupSize IloÅ›Ä‡ wÄ…tkÃ³w w grupie
+		//! \param threads [out] Lista z nowymi wÄ…tkami, dopisujemy zawsze na koÅ„cu
+		virtual void getThreads(const size_type groupSize, Threads & threads, const bool exact);
+		//! \param maxThreads Maksymalna iloÅ›Ä‡ wÄ…tkÃ³w jakie moÅ¼na stworzyÄ‡
 		void setMaxThreads(size_type maxThreads);
-		//! \param minThreads Minimalna iloœæ w¹tków jaka bêdzie utrzymywana
+		//! \param minThreads Minimalna iloÅ›Ä‡ wÄ…tkÃ³w jaka bÄ™dzie utrzymywana
 		void setMinThreads(size_type minThreads);
 	};
 

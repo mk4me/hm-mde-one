@@ -35,6 +35,10 @@ SET_PRIVATE_HEADERS(
 	Plugin.h
 	#ConverterManager.h
 	#Converter.h
+	ThreadPool.h
+	JobManager.h
+	Job.h
+	Thread.h
 )
 
 SET_PUBLIC_HEADERS (
@@ -62,6 +66,10 @@ SET_SOURCE_FILES(
 	VisualizerManager.cpp
 	CorePCH.cpp
 	Plugin.cpp
+	ThreadPool.cpp
+	JobManager.cpp
+	Job.cpp
+	Thread.cpp
 )
 
 SET_MOC_FILES(

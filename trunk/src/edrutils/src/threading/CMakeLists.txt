@@ -1,28 +1,28 @@
 BEGIN_PROJECT("static")
 
+SET_PRIVATE_HEADERS(
+	JobManagerImpl.h
+)
+
 SET_PUBLIC_HEADERS(
-	IJob.h
-	IJobManager.h
+	JobManager.h
 	Synchronized.h
 	SynchronizationPolicies.h
 	IThread.h
 	IThreadFactory.h
-	IThreadGroup.h
 	IThreadPool.h
 	ThreadPool.h
-	Thread.h
-	ThreadGroup.h
 	IProgress.h
-	ReusableThread.h
-	RerunnableThread.h
+	Runnable.h
+	QtThreadFactory.h
 )
 
 SET_SOURCE_FILES(
 	ThreadPool.cpp
-	Thread.cpp
-	ThreadGroup.cpp
-	ReusableThread.cpp
-	RerunnableThread.cpp
+	JobManager.cpp
+	JobManagerImpl.cpp
+	Runnable.cpp
+	QtThreadFactory.cpp	
 )
 
 END_PROJECT()

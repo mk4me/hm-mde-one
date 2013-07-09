@@ -40,8 +40,7 @@ public:
     virtual void unlock() { recMutex.unlock(); }
     virtual const bool tryLock() { return recMutex.tryLock(); }
 
-private:
-    //OpenThreads::ReentrantMutex recMutex;
+private:    
 	QMutex recMutex;
 };
 
@@ -55,8 +54,7 @@ public:
     virtual void unlock() { mut.unlock(); }
     virtual const bool tryLock() { return mut.tryLock(); }
 
-private:
-    //OpenThreads::Mutex mut;
+private:    
 	QMutex mut;
 };
 

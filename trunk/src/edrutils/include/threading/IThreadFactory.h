@@ -14,8 +14,6 @@
 
 namespace utils {
 
-class IThread;
-
 class IThreadFactory
 {
 	public:

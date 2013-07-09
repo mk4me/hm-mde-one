@@ -10,7 +10,7 @@
 #define HEADER_GUARD_UTILS__SYNCHRONIZEDTEST_H__
 
 #include <cppunit/extensions/HelperMacros.h>
-#include <utils/Synchronized.h>
+#include <threading/Synchronized.h>
 #include <OpenThreads/Thread>
 
 class SynchronizedTest : public CppUnit::TestFixture
