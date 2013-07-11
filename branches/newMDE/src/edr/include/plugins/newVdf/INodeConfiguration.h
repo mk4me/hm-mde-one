@@ -38,7 +38,7 @@ namespace vdf {
     {
     public:
         virtual ~INodeHierarchyObserver() {}
-        virtual void refresh(core::IHierarchyItemConstPtr root) = 0;
+        virtual void refresh(core::IDataManagerReader* dm, const core::IDataManagerReader::ChangeList & changes) = 0;
     };
     DEFINE_SMART_POINTERS(INodeHierarchyObserver);
 }

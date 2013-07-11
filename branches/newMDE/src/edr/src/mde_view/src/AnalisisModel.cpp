@@ -22,6 +22,7 @@ void AnalisisModel::observe( const core::IDataManagerReader::ChangeList & change
     }
     dataManagerTreeItem = TreeBuilder::createTree("Sessions", sessions);
     model.addRootItem(dataManagerTreeItem);
+    emit expandTree(2);
     /*break;
     auto dhm = plugin::getDataHierachyManagerReader();
     for(auto it = changes.begin(); it != changes.end(); ++it){

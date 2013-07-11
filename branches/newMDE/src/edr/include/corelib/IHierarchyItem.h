@@ -38,6 +38,8 @@ public:
     virtual void setParent(IHierarchyItemConstPtr parent) = 0;
     virtual QString getDescription() const = 0;
 };
+DEFINE_SMART_POINTERS(IHierarchyItem);
+
 }
 
 #endif

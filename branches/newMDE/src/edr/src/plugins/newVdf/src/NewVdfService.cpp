@@ -33,7 +33,7 @@ NewVdfService::NewVdfService() :
 //	commandStackDebug = new CommandStackDebug(commandStack);
 //	QObject::connect(commandStack.get(), SIGNAL(changed()), commandStackDebug, SLOT(refresh()));
 //	commandStack->addCommand(ICommandPtr(new NullCommand()));
-    typesWindow = new TypesWindow(commandStack, canvas, newVdfWidget);
+    typesWindow = new TypesWindow(commandStack, canvas, scene);
     propertiesWindow = new PropertiesWindow(commandStack);
     QObject::connect(newVdfWidget, SIGNAL(singleNodeSelected(IVisualNodePtr)), propertiesWindow, SLOT(onNodeSelected(IVisualNodePtr)));
 	dataSourceManager->attach(typesWindow);
@@ -151,19 +151,20 @@ void vdf::NewVdfService::registerDataProcessor( const IDataProcessorPtr & dataPr
 
 void vdf::NewVdfService::observe( const core::IDataManagerReader::ChangeList & changes )
 {
-    core::ConstObjectsList sessions, inputSessions;
-    
-    plugin::getDataManagerReader()->getObjects(inputSessions, typeid(PluginSubject::ISession), false);
-    SubjectHierarchyFilterPtr typeFilter(new SubjectHierarchyTypeFilter(typeid(VectorChannelCollection)));
-    typeFilter->filterSessions(inputSessions, sessions);
-
-    auto dataManagerTreeItem = TreeBuilder::createTree("Sessions", sessions, typeFilter);
+    auto* dataManagerReader = plugin::getDataManagerReader();
+    //core::ConstObjectsList sessions, inputSessions;
+    //dataManagerReader->getObjects(inputSessions, typeid(PluginSubject::ISession), false);
+    //SubjectHierarchyFilterPtr typeFilter(new SubjectHierarchyTypeFilter(typeid(VectorChannelCollection)));
+    //typeFilter->filterSessions(inputSessions, sessions);
+    //
+    //auto dataManagerTreeItem = TreeBuilder::createTree("Sessions", sessions, typeFilter);
     auto model = newVdfWidget->getSceneModel();
     auto items = model->getVisualItems<IVisualSourceNodePtr>();
     for (auto it = items.begin(); it != items.end(); ++it) {
         auto observer = dynamic_cast<vdf::INodeHierarchyObserver*>((*it)->getModelNode());
         if (observer) {
-            observer->refresh(dataManagerTreeItem);
+            //observer->refresh(dataManagerTreeItem);
+            observer->refresh(dataManagerReader, changes);
         }
     }
 }

@@ -31,8 +31,7 @@ void VisualizerContextTest::testEventFilter()
 
 void VisualizerContextTest::setUp()
 {
-    char** argv = nullptr;
-    int arc = 0;
+    char** argv = nullptr; int arc = 0;
     app = new QApplication(arc, argv);
 }
 

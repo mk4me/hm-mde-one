@@ -54,7 +54,7 @@ NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneMod
     this->addAction(run);
     	
     layout->addWidget(view);
-    setMinimumSize(500, 400);
+    setMinimumSize(300, 200);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 

@@ -78,38 +78,38 @@ public:
     static core::IHierarchyItemPtr createPowersBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & );
 
     //! \return ikona dla ga³êzi z markerami
-    static const QIcon& getMarkersIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/markerSmall.png")); return icon; }
+    static const QIcon& getMarkersIcon( )      { static QIcon icon(QString::fromUtf8(":/mde/icons/markerSmall.png")); return icon; }
     //! \return ikona dla ga³êzi ze stawami
-    static const QIcon& getJointsIcon( )       { static QIcon icon(QString::fromUtf8(":/resources/icons/jointSmall.png"));  return icon; }
+    static const QIcon& getJointsIcon( )       { static QIcon icon(QString::fromUtf8(":/mde/icons/jointSmall.png"));  return icon; }
     //! \return ikona dla ga³êzi z nagraniami
-    static const QIcon& getVideoIcon( )        { static QIcon icon(QString::fromUtf8(":/resources/icons/videoSmall.png"));  return icon; }
+    static const QIcon& getVideoIcon( )        { static QIcon icon(QString::fromUtf8(":/mde/icons/videoSmall.png"));  return icon; }
     //! \return ikona dla ga³êzi z danymi grf
-    static const QIcon& getGRFIcon( )          { static QIcon icon(QString::fromUtf8(":/resources/icons/grfSmall.png"));    return icon; }
+    static const QIcon& getGRFIcon( )          { static QIcon icon(QString::fromUtf8(":/mde/icons/grfSmall.png"));    return icon; }
     //! \return ikona dla ga³êzi z danymi emg
-    static const QIcon& getEMGIcon( )          { static QIcon icon(QString::fromUtf8(":/resources/icons/emg1Small.png"));   return icon; }
+    static const QIcon& getEMGIcon( )          { static QIcon icon(QString::fromUtf8(":/mde/icons/emg1Small.png"));   return icon; }
     //! \return ikona dla ga³êzi z si³ami
-    static const QIcon& getForcesIcon( )       { static QIcon icon(QString::fromUtf8(":/resources/icons/forcesSmall.png")); return icon; }
+    static const QIcon& getForcesIcon( )       { static QIcon icon(QString::fromUtf8(":/mde/icons/forcesSmall.png")); return icon; }
     //! \return ikona dla ga³êzi z momentami
-    static const QIcon& getMomentsIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/momentSmall.png")); return icon; }
+    static const QIcon& getMomentsIcon( )      { static QIcon icon(QString::fromUtf8(":/mde/icons/momentSmall.png")); return icon; }
     //! \return ikona dla ga³êzi z mocami
-    static const QIcon& getPowersIcon( )       { static QIcon icon(QString::fromUtf8(":/resources/icons/powerSmall.png"));  return icon; }
+    static const QIcon& getPowersIcon( )       { static QIcon icon(QString::fromUtf8(":/mde/icons/powerSmall.png"));  return icon; }
 
     //! \return ikona dla g³ównej ga³êzi z markerami
-    static const QIcon& getRootMarkersIcon( )  { static QIcon icon(QString::fromUtf8(":/resources/icons/markerSmall.png")); return icon; }
+    static const QIcon& getRootMarkersIcon( )  { static QIcon icon(QString::fromUtf8(":/mde/icons/markerSmall.png")); return icon; }
     //! \return ikona dla g³ównej ga³êzi ze stawami
-    static const QIcon& getRootJointsIcon( )   { static QIcon icon(QString::fromUtf8(":/resources/icons/jointSmall.png"));  return icon; }
+    static const QIcon& getRootJointsIcon( )   { static QIcon icon(QString::fromUtf8(":/mde/icons/jointSmall.png"));  return icon; }
     //! \return ikona dla g³ównej ga³êzi z nagraniami
-    static const QIcon& getRootVideoIcon( )    { static QIcon icon(QString::fromUtf8(":/resources/icons/videoSmall.png"));  return icon; }
+    static const QIcon& getRootVideoIcon( )    { static QIcon icon(QString::fromUtf8(":/mde/icons/videoSmall.png"));  return icon; }
     //! \return ikona dla g³ównej ga³êzi z danymi grf
-    static const QIcon& getRootGRFIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/grfSmall.png"));    return icon; }
+    static const QIcon& getRootGRFIcon( )      { static QIcon icon(QString::fromUtf8(":/mde/icons/grfSmall.png"));    return icon; }
     //! \return ikona dla g³ównej ga³êzi z danymi emg
-    static const QIcon& getRootEMGIcon( )      { static QIcon icon(QString::fromUtf8(":/resources/icons/emg1Small.png"));   return icon; }
+    static const QIcon& getRootEMGIcon( )      { static QIcon icon(QString::fromUtf8(":/mde/icons/emg1Small.png"));   return icon; }
     //! \return ikona dla g³ównej ga³êzi z si³ami
-    static const QIcon& getRootForcesIcon( )   { static QIcon icon(QString::fromUtf8(":/resources/icons/forcesSmall.png")); return icon; }
+    static const QIcon& getRootForcesIcon( )   { static QIcon icon(QString::fromUtf8(":/mde/icons/forcesSmall.png")); return icon; }
     //! \return ikona dla g³ównej ga³êzi z momentami
-    static const QIcon& getRootMomentsIcon( )  { static QIcon icon(QString::fromUtf8(":/resources/icons/momentSmall.png")); return icon; }
+    static const QIcon& getRootMomentsIcon( )  { static QIcon icon(QString::fromUtf8(":/mde/icons/momentSmall.png")); return icon; }
     //! \return ikona dla g³ównej ga³êzi z mocami
-    static const QIcon& getRootPowersIcon( )   { static QIcon icon(QString::fromUtf8(":/resources/icons/powerSmall.png"));  return icon; }
+    static const QIcon& getRootPowersIcon( )   { static QIcon icon(QString::fromUtf8(":/mde/icons/powerSmall.png"));  return icon; }
 
 
 private:

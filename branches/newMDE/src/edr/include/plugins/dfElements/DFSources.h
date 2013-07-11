@@ -17,6 +17,8 @@
 #include <QtGui/QTreeWidget>
 #include <QtGui/QIcon>
 #include <coreui/HierarchyTreeModel.h>
+#include <plugins/subject/SubjectDataFilters.h>
+#include <plugins/newVdf/TreeBuilder.h>
 
 
 template <class PinT>
@@ -45,51 +47,58 @@ public:
     }
     virtual void produce()
     {
-        QModelIndexList list = tree->selectionModel()->selectedIndexes();
-        if (!list.empty()) {
-            QModelIndex idx = list.front();
-            auto item = model.internalSmart(idx);
-            auto dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
-            if (dataItem && dataItem->getData()) {
-                outPinA->value(dataItem->getData()->get());
-            }
+        auto item = tryGetSelectedItem();
+        auto dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
+        if (dataItem && dataItem->getData()) {
+            outPinA->value(dataItem->getData()->get());
         }
-        /*HmmTreeItem* treeItem = dynamic_cast<HmmTreeItem*>(tree->currentItem());
-        if (treeItem) {
-            NewVector3ItemHelperPtr vectorItem = utils::dynamic_pointer_cast<NewVector3ItemHelper>(treeItem->getHelper());
-            auto wrp = vectorItem->getWrapper();
-            channel = wrp->get();
-            outPinA->value(channel);
-            used = true;
-        } else {
-            throw std::runtime_error("Source is not set");
-        }*/
     }
 
+    
     virtual QWidget* getConfigurationWidget() { return tree; }
     virtual bool isNodeValid()
     {
-        return true;
+        return tryGetSelectedItem();
     }
     virtual QString getErrorMessage()
     {
-        return QString("Source is not set");
+        return isNodeValid() ? QString() : QString("Source is not set");
+    }
+    
+    virtual void refresh( core::IDataManagerReader* dm, const core::IDataManagerReader::ChangeList & changes )
+    {
+        core::ConstObjectsList sessions, inputSessions;
+        dm->getObjects(inputSessions, typeid(PluginSubject::ISession), false);
+        SubjectHierarchyFilterPtr typeFilter(new SubjectHierarchyTypeFilter(typeid(VectorChannelCollection)));
+        typeFilter->filterSessions(inputSessions, sessions);
+        //
+        auto item = TreeBuilder::createTree("Sessions", sessions, typeFilter);
+        refreshTree(item);
     }
 
 private:
-
-    virtual void refresh( core::IHierarchyItemConstPtr root ) 
+    void refreshTree( core::IHierarchyItemConstPtr root ) 
     {
         model.clear();
         model.addRootItem(root);
     }
+
+    core::IHierarchyItemConstPtr tryGetSelectedItem()
+    {
+        QModelIndexList list = tree->selectionModel()->selectedIndexes();
+        if (!list.empty()) {
+            QModelIndex idx = list.front();
+            return model.internalSmart(idx);
+        }
+        return core::IHierarchyItemConstPtr();
+    }
+
 
 private:
     UniversalOutputPin<PinT> * outPinA;
     QTreeView* tree;
     typename UniversalOutputPin<PinT>::ConstPtr channel;
     bool used;
-    //BuilderFilterCommand::BranchFunction branchFunction;
     QIcon rootIcon;
     QIcon leafIcon;
     coreui::HierarchyTreeModel model;

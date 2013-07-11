@@ -20,6 +20,7 @@ SET_PRIVATE_HEADERS(
 	AnalysisTreeContext.h
 	ContextAutoPlacer.h
 	VisualizerEventFilter.h
+    MdeServiceWindow.h
 	MdePCH.h
 )
 
@@ -40,6 +41,7 @@ SET_SOURCE_FILES (
 	ContextAutoPlacer.cpp
 	ContextEventFilter.cpp
 	VisualizerEventFilter.cpp
+    MdeServiceWindow.cpp
 	MdePCH.cpp
 )
 
@@ -57,6 +59,7 @@ SET_MOC_FILES(
 	AnalisisWidget.h
 	AnalysisTreeContext.h
 	SummaryWindow.h
+    MdeServiceWindow.h
 )
 
 SET_UI_FILES(

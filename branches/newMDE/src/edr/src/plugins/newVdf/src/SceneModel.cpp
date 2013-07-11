@@ -15,6 +15,7 @@
 
 #include "StyleMergedNode.h"
 #include "SimpleMergedNode.h"
+#include "plugins/newVdf/INodeConfiguration.h"
 
 using namespace vdf;
 
@@ -107,6 +108,10 @@ void SceneModel::addNode(df::INode* node )
 
 		case df::INode::SOURCE_NODE: {
 			df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(node);
+            auto dmNode = dynamic_cast<INodeHierarchyObserver*>(source);
+            if (dmNode) {
+                dmNode->refresh(plugin::getDataManagerReader(), core::IDataManagerReader::ChangeList());
+            }
 			model->addNode(source);
 		} return;
 	}
@@ -119,7 +124,7 @@ void SceneModel::run()
 	df::DFModelRunner runner;
 	bool test = df::DFModelRunner::verifyModel(model.get());
 	//TODO
-	//runner.start(model.get(), nullptr);
+	runner.start(model.get(), nullptr, nullptr);
 	runner.join();
 }
 

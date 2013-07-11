@@ -26,6 +26,8 @@ namespace vdf {
 class VdfScene;
 class NewVdfWidget;
 
+
+//! Obiekt zarz¹dza stanami sceny vdf
 class SceneStateMachine : public QObject
 {
     Q_OBJECT;

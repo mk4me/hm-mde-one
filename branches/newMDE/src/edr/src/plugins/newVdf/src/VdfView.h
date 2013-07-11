@@ -15,17 +15,23 @@
 #include <QtGui/QWheelEvent>
 
 namespace vdf {
-
+    
+//! Klasa obrazuj¹c¹ scenê GraphicsView. Dodaje obs³ugê zoomu (na scroll myszki)
 class VdfView : public QGraphicsView
 {
     Q_OBJECT;
 public:
+    //! Konstruktor
+    //! \param scene 
     VdfView(QGraphicsScene* scene);
 
 protected:
+    //! Obs³uga scrolla myszy, zmienia skalê widoku
+    //! \param event 
     virtual void wheelEvent(QWheelEvent *event);
 
 private:
+    //! aktualna skala widoku sceny
     qreal viewScale;
 };
 

@@ -9,6 +9,7 @@
 
 using namespace vdf;
 
+//! Najprostrze t³o dla sceny - szare
 class SimpleBackground : public IBackgroundStrategy
 {
 public:

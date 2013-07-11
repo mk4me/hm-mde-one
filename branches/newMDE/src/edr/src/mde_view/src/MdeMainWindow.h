@@ -6,6 +6,7 @@
 #include "IMdeTab.h"
 #include <corelib/PluginCommon.h>
 #include <coreui/CoreMainWindow.h>
+#include <coreui/CoreDockWidget.h>
 #include "IAppUsageContextManager.h"
 #include "ContextEventFilter.h"
 #include "AnalisisModel.h"
@@ -61,6 +62,7 @@ private:
 
     QWidget* createServiceWidget( plugin::IServicePtr service );
 
+    
     void addTab(IMdeTabPtr tab);
 
 private:

@@ -1,6 +1,7 @@
 #include "MdePCH.h"
 #include <QtGui/QMenu>
 #include <QtGui/QLayout>
+#include <QtGui/QListWidget>
 #include <QtGui/QSplashScreen>
 #include <QtGui/QMainWindow>
 #include <utils/Debug.h>
@@ -19,6 +20,7 @@
 #include "AnalisisWidget.h"
 #include "AnalysisTab.h"
 #include "ui_toolboxmaindeffile.h"
+#include "MdeServiceWindow.h"
 
 using namespace core;
 
@@ -32,18 +34,15 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
 
     contextPlaceholder = new QTabWidget(this);
     contextPlaceholder->setTabsClosable(false);
-    //contextPlaceholder->setDocumentMode(true);
+    contextPlaceholder->setDocumentMode(true);
     contextPlaceholder->setMovable(false);
     contextPlaceholder->setVisible(false);
-
-    //connect(contextPlaceholder, SIGNAL(currentChanged(int)), this, SLOT(onContextChange(int)));
-    //connect(this, SIGNAL(onSwitchToAnalysis()), this, SLOT(safeSwitchToAnalysis()), Qt::QueuedConnection);
-
+    
     ui->tabPlaceholder->layout()->addWidget(contextPlaceholder);
     ui->tabPlaceholder->show();
     contextPlaceholder->show();
     ui->templateButton->hide();
-    //contextPlaceholder->findChild<QTabBar*>()->setDrawBase(false);
+    contextPlaceholder->findChild<QTabBar*>()->setDrawBase(false);
 
     contextEventFilter = ContextEventFilterPtr(new ContextEventFilter(this));
     analysisModel = AnalisisModelPtr(new AnalisisModel());
@@ -69,6 +68,8 @@ void MdeMainWindow::customViewInit(QWidget * console)
    memoryManager->addObserver(analysisModel);
    trySetStyleByName("hmm");
  
+   this->showFullScreen();
+
    auto sourceManager = plugin::getSourceManager();
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {
        auto source = sourceManager->getSource(i);
@@ -96,6 +97,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
        if (service != timeline) {
             auto w = createServiceWidget(service);
             if (w) {
+                w->show();
                 addTab(IMdeTabPtr(new SimpleTab(w, QIcon(":/mde/icons/Operacje.png"),tr(service->getName().c_str()))));
             }
        }
@@ -115,28 +117,23 @@ void MdeMainWindow::addTab( IMdeTabPtr tab )
     emit tabAdded(tab);
 }
 
-// todo przeniesc
 QWidget* MdeMainWindow::createServiceWidget( plugin::IServicePtr service )
 {
     QWidget* viewWidget = service->getWidget();
     
-    QMainWindow* w = nullptr;
-     if(viewWidget) {
-        w = new QMainWindow();
+    MdeServiceWindow* w = nullptr;
+    if(viewWidget) {
+        QString serviceName = QString::fromStdString(service->getName());
+        w = new MdeServiceWindow(serviceName);
         w->setCentralWidget(viewWidget);
         w->addActions(viewWidget->actions());
 
         QWidgetList properites = service->getPropertiesWidgets();
         if (!properites.empty()) {
-            auto it = properites.begin();
-            coreUI::CoreDockWidget* first = new coreUI::CoreDockWidget((*it)->objectName());
-            first->setWidget(*it);
-            w->addDockWidget(Qt::RightDockWidgetArea, first);
-            for (++it; it != properites.end(); ++it) {
-                coreUI::CoreDockWidget* dw = new coreUI::CoreDockWidget((*it)->objectName());
-                dw->setWidget(*it);
-                w->addDockWidget(Qt::RightDockWidgetArea, dw);
-                w->tabifyDockWidget(first, dw);
+            w->loadLayout();
+            int propNo = 0;
+            for (auto it = properites.begin(); it != properites.end(); ++it) {
+                w->createMdeDock(serviceName, *it);
             }
         }
     }
