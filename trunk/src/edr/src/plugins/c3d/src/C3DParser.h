@@ -43,6 +43,8 @@ private:
 	core::ObjectWrapperPtr powerChannels;
     //! Kolekcja ze zdarzeniami zapisanymi w pliku C3D (np. stąpnięcie stopy)
     core::ObjectWrapperPtr allEvents;
+    //! Offsety video
+    core::ObjectWrapperPtr movieDelays;
     //! wskaźnik do właściwego parsera z biblioteki c3dlib
 	ParserPtr parserPtr;
 

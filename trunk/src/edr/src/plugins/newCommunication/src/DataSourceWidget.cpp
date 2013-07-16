@@ -37,6 +37,9 @@
 #include <corelib/IFileDataManager.h>
 #include <corelib/IParserManagerReader.h>
 #include <corelib/PluginCommon.h>
+#include <plugins/video/Wrappers.h>
+#include <plugins/c3d/C3DCollections.h>
+#include <boost/lexical_cast.hpp>
 
 
 using namespace communication;
@@ -1843,6 +1846,28 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					for(auto it = motionObjects.begin(); it != motionObjects.end(); ++it){
 						mPtr->addData(*it);
 					}
+
+                    if (mPtr->hasObject(typeid(VideoChannel), false) && mPtr->hasObject(typeid(MovieDelays), false)) {
+                        core::ObjectWrapperCollection videoCollection(typeid(VideoChannel), false);
+                        core::ObjectWrapperCollection movieDelaysCollection(typeid(MovieDelays), false);
+                        mPtr->getObjects(videoCollection);
+                        mPtr->getObjects(movieDelaysCollection);
+                        if (movieDelaysCollection.size() == 1 ) {
+                            MovieDelaysConstPtr delays = *(movieDelaysCollection.begin())->get();
+                            if (delays->size() == videoCollection.size()) {
+                                int i = 0;
+                                for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
+                                    core::ObjectWrapperPtr wrp = utils::const_pointer_cast<core::ObjectWrapper>(*it);
+                                    (*wrp)["movieDelay"] = boost::lexical_cast<std::string>(delays->at(i++));
+                                }
+                            } else {
+                                PLUGIN_LOG_ERROR("Unable to map movie delays");
+                            }
+                        } else {
+                            PLUGIN_LOG_ERROR("Wrong movie delays");
+                        }
+                    }
+                    
 
 					if(jointsWrapper != nullptr){
 						//metadane

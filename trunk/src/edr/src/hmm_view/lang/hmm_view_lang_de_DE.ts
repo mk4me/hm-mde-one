@@ -712,8 +712,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmSources.cpp" line="54"/>
-        <location filename="../src/HmmSources.cpp" line="133"/>
+        <location filename="../src/HmmSources.cpp" line="56"/>
+        <location filename="../src/HmmSources.cpp" line="137"/>
         <source>Elements</source>
         <translation type="unfinished"></translation>
     </message>

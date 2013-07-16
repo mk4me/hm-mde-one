@@ -70,12 +70,17 @@ private:
 		//! \param time Aktualny, lokalny czas kanału w sekundach
 		virtual void setTime(double time);
 
+        double getOffset() const;
+        void setOffset(double val);
+
 	private:
 		VideoVisualizer * visualizer;
 		std::string name;
 		core::ObjectWrapperConstPtr data;
 		utils::TypeInfo requestedType;
-	};
+        double offset;
+        
+    };
 
 	friend class VideoSerie;
 
