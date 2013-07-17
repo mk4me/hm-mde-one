@@ -1,4 +1,4 @@
-#include "newVdfPCH.h"
+#include "NewVdfPCH.h"
 #include "TypesWindow.h"
 #include "CanvasStyleEditor.h"
 #include "NewVdfWidget.h"

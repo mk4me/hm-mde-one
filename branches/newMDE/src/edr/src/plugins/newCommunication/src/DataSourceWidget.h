@@ -220,6 +220,11 @@ private:
 
 	void addPatientObject(const webservices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID);
 
+    void saveCredentials();
+    void loadCredentials();
+    QString crypt(const QString& input, bool encyprt);
+
+
 private:
 	//! Event filter do obsługi ENTER przy logowaniu/wylogownaiu
 	LoginEventFilter * loginEventFilter;

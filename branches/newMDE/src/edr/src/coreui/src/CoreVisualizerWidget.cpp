@@ -14,8 +14,8 @@
 #include <coreui/CoreMainWindow.h>
 #include <corelib/DataAccessors.h>
 #include <coreui/CoreTitleBar.h>
-#include <coreUI/CoreWidgetAction.h>
-#include <coreUI/CoreAction.h>
+#include <coreui/CoreWidgetAction.h>
+#include <coreui/CoreAction.h>
 #include <boost/bind.hpp>
 
 using namespace coreUI;

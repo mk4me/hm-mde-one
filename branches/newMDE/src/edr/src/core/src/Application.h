@@ -19,6 +19,7 @@
 #include "Plugin.h"
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
+#include <threading/QtThreadFactory.h>
 
 class QSplashScreen;
 class QTranslator;
@@ -44,6 +45,8 @@ namespace core {
 	class VisualizerManager;
 	class SourceManager;
 	class ServiceManager;
+	class ThreadPool;
+	class JobManager;
 
 	class Application : private QObject
 	{
@@ -68,6 +71,9 @@ namespace core {
 		utils::shared_ptr<ServiceManager> serviceManager_;
 		utils::shared_ptr<SourceManager> sourceManager_;
 		utils::shared_ptr<VisualizerManager> visualizerManager_;
+		shared_ptr<utils::IThreadFactory> threadFactory_;
+		shared_ptr<core::ThreadPool> threadPool_;
+		shared_ptr<JobManager> jobManager_;
 
 		Filesystem::Path additionalPluginsPath;
 
@@ -120,6 +126,8 @@ namespace core {
 		VisualizerManager* visualizerManager();
 		ServiceManager* serviceManager();
 		SourceManager* sourceManager();
+		ThreadPool* threadPool();
+		JobManager* jobManager();
 
 		void finalizeUI();
 	};

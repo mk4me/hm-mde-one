@@ -12,6 +12,9 @@
 
 #include <plugins/newVdf/INodeStrategy.h>
 #include <QtCore/QRect>
+#include <QtGui/QLabel>
+#include <QtGui/QFrame>
+#include <QtGui/QVBoxLayout>
 
 namespace vdf {
 

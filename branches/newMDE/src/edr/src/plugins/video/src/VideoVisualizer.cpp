@@ -49,8 +49,9 @@ struct VideoVisualizer::WidgetUpdater : public osg::Drawable::UpdateCallback
 };
 
 
-VideoVisualizer::VideoSerie::VideoSerie(VideoVisualizer * visualizer)
-	: visualizer(visualizer)
+VideoVisualizer::VideoSerie::VideoSerie(VideoVisualizer * visualizer) :
+	visualizer(visualizer),
+    offset(0.0)
 {
 
 }
@@ -73,6 +74,11 @@ const std::string VideoVisualizer::VideoSerie::getName() const
 void VideoVisualizer::VideoSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data)
 {
 	bool success = false;
+
+    auto delayIt = data->find("movieDelay");
+    if (delayIt != data->end()) {
+        this->offset = boost::lexical_cast<double>(delayIt->second);
+    }
 	if (data->isSupported(typeid(VideoStreamPtr))) {
 		auto clonedData = data->clone();
 		visualizer->clear();
@@ -129,7 +135,17 @@ double VideoVisualizer::VideoSerie::getLength() const
 
 void VideoVisualizer::VideoSerie::setTime(double time)
 {
-	visualizer->currentStreamTime = time;
+	visualizer->currentStreamTime = time - offset;
+}
+
+void VideoVisualizer::VideoSerie::setOffset( double val )
+{
+    offset = val;
+}
+
+double VideoVisualizer::VideoSerie::getOffset() const
+{
+    return offset;
 }
 
 VideoVisualizer::VideoVisualizer() :

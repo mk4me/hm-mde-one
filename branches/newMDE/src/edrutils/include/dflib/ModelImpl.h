@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace df{
@@ -25,31 +26,31 @@ namespace df{
 	class IConnection;
 
 	// Wyjątek rzucany kiedy naruszymy reguły łączenia
-	class BasicConnectionRulesException : public std::exception
+	class BasicConnectionRulesException : public std::runtime_error
 	{
 	public:
-		BasicConnectionRulesException(const char * e) : std::exception(e) {}
+		BasicConnectionRulesException(const char * e) : std::runtime_error(e) {}
 	};
 
 	// Wyjątek rzucany kiedy naruszymy reguły łączenia
-	class NodePinsConfigurationException : public std::exception
+	class NodePinsConfigurationException : public std::runtime_error
 	{
 	public:
-		NodePinsConfigurationException(const char * e) : std::exception(e) {}
+		NodePinsConfigurationException(const char * e) : std::runtime_error(e) {}
 	};
 
 	// Wyjątek rzucany kiedy naruszymy reguły łączenia
-	class PinsConnectionException : public std::exception
+	class PinsConnectionException : public std::runtime_error
 	{
 	public:
-		PinsConnectionException(const char * e) : std::exception(e) {}
+		PinsConnectionException(const char * e) : std::runtime_error(e) {}
 	};
 
 	// Wyjątek rzucany kiedy naruszymy reguły łączenia
-	class NodeInModelEditionException : public std::exception
+	class NodeInModelEditionException : public std::runtime_error
 	{
 	public:
-		NodeInModelEditionException(const char * e) : std::exception(e) {}
+		NodeInModelEditionException(const char * e) : std::runtime_error(e) {}
 	};
 
 
@@ -101,19 +102,19 @@ public:
 
 	Connections::iterator find( IConnection * connection );
 
-	const bool exists(Nodes::iterator & nIT);
-	const bool exists(SourceNodes::iterator & srcIT);
-	const bool exists(SinkNodes::iterator & snkIT);
-	const bool exists(ProcessingNodes::iterator & procIT);
-	const bool exists(Connections::iterator & connIT);
+	const bool exists(Nodes::iterator nIT);
+	const bool exists(SourceNodes::iterator srcIT);
+	const bool exists(SinkNodes::iterator snkIT);
+	const bool exists(ProcessingNodes::iterator procIT);
+	const bool exists(Connections::iterator connIT);
 
 	Connections::iterator verifyConnectionForEdition( IConnection * connection );
 
-	void removeNode(SourceNodes::iterator & srcIT, Nodes::iterator & nIT);
+	void removeNode(SourceNodes::iterator srcIT, Nodes::iterator nIT);
 
-	void removeNode(SinkNodes::iterator & snkIT, Nodes::iterator & nIT);
+	void removeNode(SinkNodes::iterator snkIT, Nodes::iterator nIT);
 
-	void removeNode(ProcessingNodes::iterator & procIT, Nodes::iterator & nIT);
+	void removeNode(ProcessingNodes::iterator procIT, Nodes::iterator nIT);
 
 	//! Usuwa wszystkie węzły i połączenia z modelu
 	void removeAllNodes();
@@ -126,7 +127,7 @@ public:
 	void addConnection(IConnection * connection);
 
 	//! \param connection Połączenie do usunięcia
-	void removeConnection(Connections::iterator & connIT);
+	void removeConnection(Connections::iterator connIT);
 
 	//! Usuwa wszystkie połączenia w modelu
 	void removeAllConnections();

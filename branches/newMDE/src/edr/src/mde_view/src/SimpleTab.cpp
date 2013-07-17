@@ -1,6 +1,7 @@
 #include "MdePCH.h"
 #include "SimpleTab.h"
 #include "ContextAutoPlacer.h"
+#include "IAppUsageContextManager.h"
 
 SimpleTab::SimpleTab( QWidget* mainWidget, const QIcon& icon, const QString& label ) :
     AbstractTab(icon, label),

@@ -12,7 +12,7 @@
 #include <map>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/ObjectWrapperCollection.h>
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
 
 class BasicDataStorage
 {

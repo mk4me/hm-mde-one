@@ -2,6 +2,34 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="pl_PL">
 <context>
+    <name>ConfigurationDialog</name>
+    <message>
+        <location filename="../ui/configurationDialog.ui" line="14"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/configurationDialog.ui" line="65"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/configurationDialog.ui" line="103"/>
+        <source>Back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/configurationDialog.ui" line="120"/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/configurationDialog.ui" line="127"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CoreConsoleWidget</name>
     <message>
         <location filename="../ui/CoreConsoleWidget.ui" line="14"/>
@@ -106,6 +134,40 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>FilterConfiguratorWidget</name>
+    <message>
+        <location filename="../ui/FilterConfiguratorWidget.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FilterEntry</name>
+    <message>
+        <location filename="../ui/filterEntry.ui" line="32"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FilterWidget</name>
+    <message>
+        <location filename="../ui/filter.ui" line="32"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/filter.ui" line="118"/>
+        <source>JEDNOSTKI CHOROBOWE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/filter.ui" line="149"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OsgTest</name>
     <message>
         <location filename="../ui/OsgWidget.ui" line="26"/>
@@ -125,6 +187,19 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/OsgWidget.ui" line="53"/>
         <source>Scene view: </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location filename="../src/DataFilterWidget.cpp" line="142"/>
+        <source>Filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataFilterWidget.cpp" line="151"/>
+        <source>Filter bundle</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

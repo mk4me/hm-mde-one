@@ -2,17 +2,17 @@
 #include "DataSourceStatusManager.h"
 #include <QtGui/QPainter>
 #include <corelib/IFileManagerReader.h>
+#include <corelib/PluginCommon.h>
+#include "DataSourceLocalStorage.h"
 
 using namespace communication;
 
 static const DataStatus partialStatus = DataStatus(PartiallyLocal, PartiallyLoaded);
 std::map<communication::DataStorage, std::map<communication::DataUsage, QIcon>> DataSourceStatusManager::statusIcons = std::map<communication::DataStorage, std::map<communication::DataUsage, QIcon>>();
 
-FileStatusManager::FileStatusManager(const core::IFileDataManager * fileDataManager) : fileDataManager(fileDataManager)
+FileStatusManager::FileStatusManager()	
 {
-    if(fileDataManager == nullptr){
-        throw std::invalid_argument("Uninitialized core::IFileDataManager object");
-    }
+	
 }
 
 FileStatusManager::~FileStatusManager()
@@ -138,7 +138,7 @@ const DataStorage FileStatusManager::fileStorage(int fileID) const
     return it->second.fileStatus.storage();
 }
 
-void FileStatusManager::refreshFilesStatus(const std::set<int> & files)
+void FileStatusManager::refreshFilesStatus(const std::set<int> & files, const DataSourceLocalStorage * localStorage)
 {
     core::Files managedFiles;
     plugin::getFileDataManagerReader()->getFiles(managedFiles);
@@ -156,7 +156,8 @@ void FileStatusManager::refreshFilesStatus(const std::set<int> & files)
         }
 
         newStatus.insert(std::map<FileStatus*, DataStatus>::value_type(&(fileIT->second),
-            DataStatus(core::Filesystem::pathExists(fileIT->second.filePath) == true ? Local : Remote,
+            //DataStatus(core::Filesystem::pathExists(fileIT->second.filePath) == true ? Local : Remote,
+			DataStatus(localStorage->fileIsLocal(fileIT->second.filePath.filename().string()) == true ? Local : Remote,
             managedFiles.find(fileIT->second.filePath) != managedFilesITEnd ? Loaded : Unloaded)));
     }
 
@@ -167,7 +168,7 @@ void FileStatusManager::refreshFilesStatus(const std::set<int> & files)
     }
 }
 
-void FileStatusManager::refreshFilesStatus()
+void FileStatusManager::refreshFilesStatus(const DataSourceLocalStorage * localStorage)
 {
     core::Files managedFiles;
     plugin::getFileDataManagerReader()->getFiles(managedFiles);
@@ -178,7 +179,8 @@ void FileStatusManager::refreshFilesStatus()
 
     for(auto it = filesStatus.begin(); it != filesStatus.end(); ++it){
         newStatus.insert(std::map<FileStatus*, DataStatus>::value_type(&(it->second),
-            DataStatus(core::Filesystem::pathExists(it->second.filePath) == true ? Local : Remote,
+            //DataStatus(core::Filesystem::pathExists(it->second.filePath) == true ? Local : Remote,
+			DataStatus(localStorage->fileIsLocal(it->second.filePath.filename().string()) == true ? Local : Remote,
             managedFiles.find(it->second.filePath) != managedFilesITEnd ? Loaded : Unloaded)));
     }
 
@@ -189,19 +191,19 @@ void FileStatusManager::refreshFilesStatus()
     }
 }
 
-void FileStatusManager::refreshFileStatus(int fileID)
+void FileStatusManager::refreshFileStatus(int fileID, const DataSourceLocalStorage * localStorage)
 {
     auto it = filesStatus.find(fileID);
     if(it == filesStatus.end()){
         throw std::runtime_error("File not registered");
     }
 
-    refreshFileStatus(it->second);
+    refreshFileStatus(it->second, localStorage);
 }
 
-void FileStatusManager::refreshFileStatus(FileStatus & fileStatus)
+void FileStatusManager::refreshFileStatus(FileStatus & fileStatus, const DataSourceLocalStorage * localStorage)
 {
-    DataStorage storage(core::Filesystem::pathExists(fileStatus.filePath) == true ? Local : Remote);
+    DataStorage storage(localStorage->fileIsLocal(fileStatus.filePath.filename().string()) == true ? Local : Remote);
     DataUsage usage(plugin::getFileDataManagerReader()->isManaged(fileStatus.filePath) == true ? Loaded : Unloaded);
 
     fileStatus.fileStatus.setStorage(storage);

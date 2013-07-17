@@ -4,12 +4,13 @@
 #include <dflib/IPin.h>
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 
 namespace df {
 
 	class IConnection;
 
-	//! Wzorzes klasy realizujacej przechowywanie po³aczeñ w pinie
+	//! Wzorzes klasy realizujacej przechowywanie poï¿½aczeï¿½ w pinie
 	template<class Node, class Connection>
 	class PinImpl
 	{
@@ -60,7 +61,7 @@ namespace df {
 			auto it = find(connection);
 			if(it != connections_.end())
 			{
-				throw std::exception("Connection already managed by the pin");
+				throw std::runtime_error("Connection already managed by the pin");
 			}
 
 			//innerAddConnection(connection, boost::is_same<IConnection, Connection>::value);
@@ -72,7 +73,7 @@ namespace df {
 			auto it = find(connection);
 			if(it == connections_.end())
 			{
-				throw std::exception("Connection not managed by the pin");
+				throw std::runtime_error("Connection not managed by the pin");
 			}
 
 			connections_.erase(it);
@@ -91,12 +92,12 @@ namespace df {
 		Connections connections_;
 	};
 
-	//! Wzorzec klasy realizuj¹cej przechowywanie po³¹czeñ w pinie i jego dodatkowy opis zale¿noœci
+	//! Wzorzec klasy realizujï¿½cej przechowywanie poï¿½ï¿½czeï¿½ w pinie i jego dodatkowy opis zaleï¿½noï¿½ci
 	template<class Node, class Connection, class Pin>
 	class ExtPinImpl : public PinImpl<Node, Connection>
 	{
 	public:
-
+		typedef typename PinImpl<Node, Connection>::size_type size_type;
 		typedef std::vector<Pin*> Dependencies;
 
 	public:
@@ -131,7 +132,7 @@ namespace df {
 		const bool dependencyOK() const
 		{
 			bool ret = true;
-			for(auto it = dependency_.begin(), it != dependency_.end(); ++it)
+			for(auto it = dependency_.begin(); it != dependency_.end(); ++it)
 			{
 				if((*it)->empty() == true){
 					ret = false;
@@ -146,7 +147,7 @@ namespace df {
 			auto it = findDepenency(pin);
 			if(it != dependency_.end())
 			{
-				throw std::exception("Dependency already exists");
+				throw std::runtime_error("Dependency already exists");
 			}
 
 			dependency_.push_back(pin);
@@ -157,7 +158,7 @@ namespace df {
 			auto it = findDepenency(pin);
 			if(it == dependency_.end())
 			{
-				throw std::exception("Dependency not exists");
+				throw std::runtime_error("Dependency not exists");
 			}
 
 			dependency_.erase(it);
@@ -179,7 +180,7 @@ namespace df {
 		Dependencies dependency_;
 	};
 
-//! Implementacja pina wejœciowego
+//! Implementacja pina wejï¿½ciowego
 class InputPin : public IInputPin
 {
 public:
@@ -213,7 +214,7 @@ protected:
 	PinImpl<ISinkNode, IConnection> pinImpl;
 };
 
-//! Implementacja pina wyjœciowego
+//! Implementacja pina wyjï¿½ciowego
 class OutputPin : public IOutputPin
 {
 public:
@@ -243,7 +244,7 @@ protected:
 	PinImpl<ISourceNode, IConnection> pinImpl;
 };
 
-//! Implementacja rozszerzonego pina wejœciowego
+//! Implementacja rozszerzonego pina wejï¿½ciowego
 class ExtInputPin : public IExtInputPin
 {
 public:
@@ -293,7 +294,7 @@ private:
 	ExtPinImpl<ISinkNode, IConnection, IOutputPin> pinImpl;
 };
 
-//! Implementacja rozszerzonego pina wyjœciowego
+//! Implementacja rozszerzonego pina wyjï¿½ciowego
 class ExtOutputPin : public IExtOutputPin
 {
 public:

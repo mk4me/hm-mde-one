@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include "MemoryDataManager.h"
 #include "DataHierarchyManager.h"
+#include "ApplicationCommon.h"
 
 using namespace core;
 
@@ -49,7 +50,7 @@ public:
 			}
 		}
 
-		//cofanie pozosta³ych zmian od koñca
+		//cofanie pozostaï¿½ych zmian od koï¿½ca
 		for(auto it = modyfications.rbegin(); it != modyfications.rend(); ++it){
 			switch((*it).modyfication){
 
@@ -66,7 +67,7 @@ public:
 		mdm->sync.unlock();
 	}
 
-	//! \data Dane wchodz¹ce pod kontrolê DM
+	//! \data Dane wchodzï¿½ce pod kontrolï¿½ DM
 	virtual void addData(const ObjectWrapperPtr & data)
 	{
 		if(transactionRollbacked == true){
@@ -97,7 +98,7 @@ public:
 	}
 
 	//! \param data Aktualizowane dane
-	//! \param newData Nowa wartoœæ danych
+	//! \param newData Nowa wartoï¿½ï¿½ danych
 	virtual void updateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData)
 	{
 		if(transactionRollbacked == true){
@@ -491,8 +492,8 @@ void MemoryDataManager::updateObservers(const ChangeList & changes )
 			(*it)->observe(changes);
 		}catch(...){
 			//TODO
-			//rozwin¹æ obserwatorów aby siê jakoœ identyfikowali!! ewentualnie robiæ to przez w³asn¹ implementacjê dostarczan¹ konretnym obiektom
-			//(osobne interfejsy readerów dla ka¿dego elemnentu ³adowanego do aplikacji - service, source, datasink, itp)
+			//rozwinï¿½ï¿½ obserwatorï¿½w aby siï¿½ jakoï¿½ identyfikowali!! ewentualnie robiï¿½ to przez wï¿½asnï¿½ implementacjï¿½ dostarczanï¿½ konretnym obiektom
+			//(osobne interfejsy readerï¿½w dla kaï¿½dego elemnentu ï¿½adowanego do aplikacji - service, source, datasink, itp)
 			CORE_LOG_WARNING("Error while updating memory data manager observer");
 		}
 	}

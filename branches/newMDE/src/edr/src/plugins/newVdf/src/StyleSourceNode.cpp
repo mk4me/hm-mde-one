@@ -23,7 +23,7 @@ void StyleSourceNode::addOutputPin( IVisualOutputPinPtr pin )
 
 void StyleSourceNode::clearOutputPins()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSourceNode::setName( const QString & name )
@@ -34,12 +34,12 @@ void StyleSourceNode::setName( const QString & name )
 
 void StyleSourceNode::setConfigButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSourceNode::setCloseButton( QAbstractButton * button )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * StyleSourceNode::visualItem() const
@@ -63,22 +63,22 @@ void StyleSourceNode::removeSelection()
 
 void StyleSourceNode::addHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSourceNode::removeHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSourceNode::addCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSourceNode::removeCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleSourceNode::removeOutputPin( IVisualOutputPinPtr pin )

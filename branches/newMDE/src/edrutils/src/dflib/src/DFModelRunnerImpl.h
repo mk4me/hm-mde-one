@@ -10,14 +10,17 @@
 #define HEADER_GUARD___DFMODELRUNNERIMPL_H__
 
 #include <dflib/DFModelRunner.h>
-#include <utils/SynchronizationPolicies.h>
+#include <dflib/MRModelInterfaceVerifier.h>
+#include <dflib/IDFLogger.h>
+
+#include <threading/SynchronizationPolicies.h>
+#include <threading/IThread.h>
+#include <threading/IThreadPool.h>
+
 #include <list>
 #include <vector>
 #include <map>
-#include <utils/IThread.h>
-#include <dflib/MRModelInterfaceVerifier.h>
-#include <dflib/IDFLogger.h>
-#include <utils/IThreadPool.h>
+
 
 namespace df{
 
@@ -136,8 +139,7 @@ typedef std::vector<SourceNodeWrapData> WrapedSources;
 typedef std::vector<IMRSinkNode *> WrapedSinks;
 typedef std::vector<IMRProcessingNode*> WrapedProcessors;
 
-typedef std::vector<utils::RunnablePtr> Runnables;
-typedef std::vector<utils::ThreadPtr> Threads;
+typedef std::vector<utils::IRunnablePtr> Runnables;
 typedef std::list<df::IDFLoggerHelper*> LoggerHelpers;
 typedef std::vector<INodeRunner*> NodeRunners;
 
@@ -211,7 +213,7 @@ private:
 	WrapedSinks sinks_;
 	WrapedProcessors processors_;
 	Runnables runnables_;
-	Threads threads_;
+	utils::IThreadPool::Threads threads_;
 	LoggerHelpers loggerHelpers_;
 	NodeRunners nodeRunners_;
 

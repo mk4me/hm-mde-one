@@ -98,50 +98,50 @@ namespace df
 		return std::find(processingNodes_.begin(), processingNodes_.end(), proc);
 	}
 
-	const bool ModelImpl::exists(Nodes::iterator & nIT)
+	const bool ModelImpl::exists(Nodes::iterator nIT)
 	{
 		return nIT != nodes_.end();
 	}
 
-	const bool ModelImpl::exists(SourceNodes::iterator & srcIT)
+	const bool ModelImpl::exists(SourceNodes::iterator srcIT)
 	{
 		return srcIT != sourceNodes_.end();
 	}
 
-	const bool ModelImpl::exists(SinkNodes::iterator & snkIT)
+	const bool ModelImpl::exists(SinkNodes::iterator snkIT)
 	{
 		return snkIT != sinkNodes_.end();
 	}
 
-	const bool ModelImpl::exists(ProcessingNodes::iterator & procIT)
+	const bool ModelImpl::exists(ProcessingNodes::iterator procIT)
 	{
 		return procIT != processingNodes_.end();
 	}
 
-	const bool ModelImpl::exists(Connections::iterator & connIT)
+	const bool ModelImpl::exists(Connections::iterator connIT)
 	{
 		return connIT != connections_.end();
 	}
 
-	void ModelImpl::removeNode(SourceNodes::iterator & srcIT, Nodes::iterator & nIT)
+	void ModelImpl::removeNode(SourceNodes::iterator srcIT, Nodes::iterator nIT)
 	{
 		sourceNodes_.erase(srcIT);
 		nodes_.erase(nIT);
 	}
 
-	void ModelImpl::removeNode(SinkNodes::iterator & snkIT, Nodes::iterator & nIT)
+	void ModelImpl::removeNode(SinkNodes::iterator snkIT, Nodes::iterator nIT)
 	{
 		sinkNodes_.erase(snkIT);
 		nodes_.erase(nIT);
 	}
 
-	void ModelImpl::removeNode(ProcessingNodes::iterator & procIT, Nodes::iterator & nIT)
+	void ModelImpl::removeNode(ProcessingNodes::iterator procIT, Nodes::iterator nIT)
 	{
 		processingNodes_.erase(procIT);
 		nodes_.erase(nIT);
 	}
 
-	//! Usuwa wszystkie wêz³y i po³¹czenia z modelu
+	//! Usuwa wszystkie wï¿½zï¿½y i poï¿½ï¿½czenia z modelu
 	void ModelImpl::removeAllNodes()
 	{
 		SourceNodes().swap(sourceNodes_);
@@ -151,9 +151,9 @@ namespace df
 		Connections().swap(connections_);
 	}
 
-	//! \param src Pin Ÿród³owy (wyjœciowy)
-	//! \param src Pin docelowy (wejœciowy)
-	//! \return Czy mo¿na po³aczyæ piny ze wzglêdu na obowi¹zuj¹ce regu³y
+	//! \param src Pin ï¿½rï¿½dï¿½owy (wyjï¿½ciowy)
+	//! \param src Pin docelowy (wejï¿½ciowy)
+	//! \return Czy moï¿½na poï¿½aczyï¿½ piny ze wzglï¿½du na obowiï¿½zujï¿½ce reguï¿½y
 	const bool ModelImpl::canConnect(const IOutputPin * src, const IInputPin * dest) const
 	{
 		if(src->node() == nullptr || dest->node() == nullptr)
@@ -191,13 +191,13 @@ namespace df
 		connections_.push_back(connection);
 	}
 
-	//! \param connection Po³¹czenie do usuniêcia
-	void ModelImpl::removeConnection(Connections::iterator & connIT)
+	//! \param connection Poï¿½ï¿½czenie do usuniï¿½cia
+	void ModelImpl::removeConnection(Connections::iterator connIT)
 	{
 		connections_.erase(connIT);
 	}
 
-	//! Usuwa wszystkie po³¹czenia w modelu
+	//! Usuwa wszystkie poï¿½ï¿½czenia w modelu
 	void ModelImpl::removeAllConnections()
 	{
 		Connections().swap(connections_);
@@ -223,7 +223,7 @@ namespace df
 		return nodes_[idx];
 	}
 
-	//! \return Wszystkie wêz³y modelu
+	//! \return Wszystkie wï¿½zï¿½y modelu
 	const ModelImpl::size_type ModelImpl::sourcesSize() const
 	{
 		return sourceNodes_.size();
@@ -244,7 +244,7 @@ namespace df
 		return sourceNodes_[idx];
 	}
 
-	//! \return Wszystkie wêz³y modelu
+	//! \return Wszystkie wï¿½zï¿½y modelu
 	const ModelImpl::size_type ModelImpl::sinksSize() const
 	{
 		return sinkNodes_.size();
@@ -265,7 +265,7 @@ namespace df
 		return sinkNodes_[idx];
 	}
 
-	//! \return Wszystkie wêz³y modelu
+	//! \return Wszystkie wï¿½zï¿½y modelu
 	const ModelImpl::size_type ModelImpl::processorsSize() const
 	{
 		return processingNodes_.size();
@@ -286,7 +286,7 @@ namespace df
 		return processingNodes_[idx];
 	}
 
-	//! \return Wszystkie po³¹czenia w modelu
+	//! \return Wszystkie poï¿½ï¿½czenia w modelu
 	const ModelImpl::size_type ModelImpl::connectionsSize() const
 	{
 		return connections_.size();

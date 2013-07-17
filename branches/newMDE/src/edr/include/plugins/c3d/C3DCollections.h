@@ -147,6 +147,10 @@ private:
 typedef utils::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 typedef utils::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 
+
+typedef std::vector<double> MovieDelays;
+DEFINE_SMART_POINTERS(MovieDelays);
+
 //! makro ułatwia definicje dodatkowych kanałów, osobne typy ułatwiaja otrzymanie konkretnych danych z DM
 #define DEFINE_CHANNEL_COLLECTION(name)                                         \
 class PLUGINC3D_EXPORT name##Collection : public VectorChannelCollection {};				        \
@@ -162,6 +166,7 @@ DEFINE_CHANNEL_COLLECTION(Power);
 DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(VectorChannelCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(MovieDelays, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER_INHERITANCE(ForceCollection,  VectorChannelCollection);
 DEFINE_WRAPPER_INHERITANCE(AngleCollection,  VectorChannelCollection);
 DEFINE_WRAPPER_INHERITANCE(PowerCollection,  VectorChannelCollection);

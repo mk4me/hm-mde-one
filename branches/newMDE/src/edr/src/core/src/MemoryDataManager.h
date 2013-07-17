@@ -12,7 +12,7 @@
 #include <list>
 #include <corelib/IDataManagerReader.h>
 #include <corelib/IMemoryDataManager.h>
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
 
 namespace core {
 

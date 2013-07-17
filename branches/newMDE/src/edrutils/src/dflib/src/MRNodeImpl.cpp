@@ -1,6 +1,7 @@
 #include "MRNodeImpl.h"
 #include "IMRNode.h"
 #include "MRPin.h"
+#include <stdexcept>
 
 MRNodeImpl::MRNodeImpl() : paused_(false)
 {
@@ -78,7 +79,7 @@ void MRSourceNodeImpl::addPin(MROutputPin * pin)
 {
 	if(std::find(outputPins.begin(), outputPins.end(), pin) != outputPins.end())
 	{
-		throw std::exception("Pin already added to node");
+		throw std::runtime_error("Pin already added to node");
 	}
 
 	outputPins.push_back(pin);
@@ -146,7 +147,7 @@ void MRSinkNodeImpl::addPin(MRInputPin * pin)
 {
 	if(std::find(inputPins.begin(), inputPins.end(), pin) != inputPins.end())
 	{
-		throw std::exception("Pin already added to node");
+		throw std::runtime_error("Pin already added to node");
 	}
 
 	inputPins.push_back(pin);

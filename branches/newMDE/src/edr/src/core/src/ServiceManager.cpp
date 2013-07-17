@@ -1,7 +1,6 @@
 #include "CorePCH.h"
-#include <corelib/ILog.h>
-#include "Log.h"
 #include "ServiceManager.h"
+#include "ApplicationCommon.h"
 
 namespace core {
 

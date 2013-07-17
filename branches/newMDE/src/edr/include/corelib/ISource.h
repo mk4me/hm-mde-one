@@ -61,6 +61,7 @@ namespace plugin
 		//! \param offeredTypes Typy oferowane przez to źródło
 		virtual void getOfferedTypes(core::TypeInfoList & offeredTypes) const = 0;
     };
+
 	DEFINE_SMART_POINTERS(ISource);
 
 }

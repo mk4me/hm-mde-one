@@ -23,6 +23,8 @@
 
 #include <corelib/IFileDataManager.h>
 
+class DataSourceLocalStorage;
+
 //! Kalsa zarządzająca statusem plików. Ma charakter singletona
 class FileStatusManager
 {
@@ -42,9 +44,8 @@ private:
     typedef std::map<int, FileStatus> FilesStatus;
 
 public:
-    //! Prywatny konstruktor
-    //! \param fileDataManager Manager plików w oparciu o którego będą sprawdzane przypadki użycia plików
-    FileStatusManager(const core::IFileDataManager * fileDataManager);
+    //! Prywatny konstruktor    
+    FileStatusManager();
     //! Destruktor
     ~FileStatusManager();
 
@@ -92,26 +93,27 @@ public:
     const communication::DataStorage fileStorage(int fileID) const;
 
     //! Odświeża status wszystkich plików
-    void refreshFilesStatus();
+	//! \param localStorage Local storage
+	void refreshFilesStatus(const DataSourceLocalStorage * localStorage);
 
     //! Odświeża status żądanych plików
-    void refreshFilesStatus(const std::set<int> & files);
+	//! \param localStorage Local storage
+    void refreshFilesStatus(const std::set<int> & files, const DataSourceLocalStorage * localStorage);
 
     //! Odświeża status zadanego pliku
     //! \param fileID Identyfikator pliku
-    void refreshFileStatus(int fileID);
+    //! \param localStorage Local storage
+    void refreshFileStatus(int fileID, const DataSourceLocalStorage * localStorage);
 
 private:
     //! \param fileStatus Opis statusu pliku który aktualizujemy
-    void refreshFileStatus(FileStatus & fileStatus);
+    void refreshFileStatus(FileStatus & fileStatus, const DataSourceLocalStorage * localStorage);
 
 private:
-
     //! Informacje o statusie plików
     FilesStatus filesStatus;
+	//! Identyfikatory zarejestrowanych plików
 	std::set<int> files;
-    //! Manager plików do weryfikacji ich statusów
-    const core::IFileDataManager * fileDataManager;
 };
 
 //! Klasa udostępniająca statusy danych na różnych poziomach hierarchii

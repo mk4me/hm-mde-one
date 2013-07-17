@@ -2,6 +2,7 @@
 #include "FilesHelper.h"
 #include "DataSourceStatusManager.h"
 #include <corelib/IParserManagerReader.h>
+#include <corelib/PluginCommon.h>
 
 using namespace communication;
 using namespace webservices;

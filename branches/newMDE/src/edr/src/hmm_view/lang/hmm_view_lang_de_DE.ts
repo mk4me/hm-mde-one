@@ -281,188 +281,188 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="375"/>
+        <location filename="../src/HmmMainWindow.cpp" line="376"/>
         <source>Console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="524"/>
-        <location filename="../src/HmmMainWindow.cpp" line="1103"/>
+        <location filename="../src/HmmMainWindow.cpp" line="525"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1104"/>
         <source>Group %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="579"/>
-        <location filename="../src/HmmMainWindow.cpp" line="1149"/>
-        <location filename="../src/HmmMainWindow.cpp" line="1159"/>
+        <location filename="../src/HmmMainWindow.cpp" line="580"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1150"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1160"/>
         <source>Multichart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="619"/>
+        <location filename="../src/HmmMainWindow.cpp" line="620"/>
         <source>reason: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="621"/>
-        <location filename="../src/HmmMainWindow.cpp" line="623"/>
+        <location filename="../src/HmmMainWindow.cpp" line="622"/>
+        <location filename="../src/HmmMainWindow.cpp" line="624"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="623"/>
+        <location filename="../src/HmmMainWindow.cpp" line="624"/>
         <source>Unable to add data to visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="703"/>
+        <location filename="../src/HmmMainWindow.cpp" line="704"/>
         <source>ANALOG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="704"/>
+        <location filename="../src/HmmMainWindow.cpp" line="705"/>
         <source>KINETIC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="705"/>
+        <location filename="../src/HmmMainWindow.cpp" line="706"/>
         <source>KINEMATIC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="706"/>
+        <location filename="../src/HmmMainWindow.cpp" line="707"/>
         <source>VIDEO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="709"/>
+        <location filename="../src/HmmMainWindow.cpp" line="710"/>
         <source>GRF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="761"/>
+        <location filename="../src/HmmMainWindow.cpp" line="762"/>
         <source>EMG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="841"/>
+        <location filename="../src/HmmMainWindow.cpp" line="842"/>
         <source>FORCES</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="842"/>
+        <location filename="../src/HmmMainWindow.cpp" line="843"/>
         <source>MOMENTS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="843"/>
+        <location filename="../src/HmmMainWindow.cpp" line="844"/>
         <source>POWERS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="890"/>
+        <location filename="../src/HmmMainWindow.cpp" line="891"/>
         <source>MARKERS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="891"/>
+        <location filename="../src/HmmMainWindow.cpp" line="892"/>
         <source>JOINTS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="895"/>
+        <location filename="../src/HmmMainWindow.cpp" line="896"/>
         <source>VIDEOS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="927"/>
+        <location filename="../src/HmmMainWindow.cpp" line="928"/>
         <source>ILLNESS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="928"/>
         <location filename="../src/HmmMainWindow.cpp" line="929"/>
         <location filename="../src/HmmMainWindow.cpp" line="930"/>
+        <location filename="../src/HmmMainWindow.cpp" line="931"/>
         <source>MULTI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="936"/>
+        <location filename="../src/HmmMainWindow.cpp" line="937"/>
         <source>Endo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="937"/>
+        <location filename="../src/HmmMainWindow.cpp" line="938"/>
         <source>Stroke</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="938"/>
+        <location filename="../src/HmmMainWindow.cpp" line="939"/>
         <source>Spine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1142"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1143"/>
         <source>Create new visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1151"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1152"/>
         <source>All from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1161"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1162"/>
         <source>All X from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1167"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1168"/>
         <source>All Y from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1173"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1174"/>
         <source>All Z from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1181"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1182"/>
         <source>Left Step normalization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1187"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1188"/>
         <source>Right Step normalization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1193"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1194"/>
         <source>Left Step normalization - all from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1199"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1200"/>
         <source>Right Step normalization - all from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1208"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1209"/>
         <source>Add to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1269"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1270"/>
         <source>Remove from:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1273"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1274"/>
         <source>Create in:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/HmmMainWindow.cpp" line="1314"/>
+        <location filename="../src/HmmMainWindow.cpp" line="1315"/>
         <source>New group</source>
         <translation type="unfinished"></translation>
     </message>

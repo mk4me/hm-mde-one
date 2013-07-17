@@ -1,5 +1,8 @@
 #include "CoreLibPCH.h"
-#include <utils/SynchronizationPolicies.h>
+#include <corelib/Visualizer.h>
+#include <corelib/IVisualizerManager.h>
+#include <corelib/IDataManagerReader.h>
+#include <threading/SynchronizationPolicies.h>
 
 using namespace core;
 using namespace plugin;

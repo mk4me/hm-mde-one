@@ -1,7 +1,9 @@
 #include "CorePCH.h"
 #include "VisualizerManager.h"
 #include "DataHierarchyManager.h"
+#include "MemoryDataManager.h"
 #include <utils/Push.h>
+#include "ApplicationCommon.h"
 
 using namespace core;
 

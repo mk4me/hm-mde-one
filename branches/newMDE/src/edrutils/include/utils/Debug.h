@@ -96,7 +96,19 @@ UTILS_MULTISTATEMENT_END
 #   define UTILS_STATIC_ASSERT(cond, msg) static_assert((cond), msg)
 #else
 #   include <boost/static_assert.hpp>
-#   define UTILS_STATIC_ASSERT(cond, msg) BOOST_STATIC_ASSERT((cond))
+//! UWAGA!!
+//! Jeśli chcemy w ten sposób uzyskać statyczną asercję we wzorcu klasy
+//! nie pozwalając na jej instancjonowanie z pewnych względów (np.
+//! mechanizm ObjectWrapperów) umieszczając w jej wnętrzu
+//! wywołanie typu: UTILS_STATIC_ASSERT((false), msg)
+//! musimy uzależnić to wywołanie od przynajmniej jednego parametru wzorca
+//! np.
+//! template<class T> will_faill
+//! {
+//! 	UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie mozna utworzyc klasy wprost")
+//! };
+//! Odwołanie: http://www.boost.org/doc/libs/1_53_0/doc/html/boost_staticassert.html
+#   define UTILS_STATIC_ASSERT(cond, msg) BOOST_STATIC_ASSERT_MSG((cond), msg)
 #endif
 
 

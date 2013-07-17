@@ -17,7 +17,7 @@
 #include <QtGui/QIcon>
 #include <corelib/IVisualizerManager.h>
 #include <corelib/IVisualizer.h>
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
 
 
 //class SceneGraphWidget;

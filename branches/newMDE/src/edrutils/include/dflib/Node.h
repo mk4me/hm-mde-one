@@ -3,6 +3,7 @@
 
 #include <dflib/IPin.h>
 #include <algorithm>
+#include <stdexcept>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace df{
@@ -76,7 +77,7 @@ public:
 		auto it = find(pin);
 		if(it != pins_.end())
 		{
-			throw std::exception("Pin already managed by node");
+			throw std::runtime_error("Pin already managed by node");
 		}
 
 		pins_.push_back(pin);
@@ -87,7 +88,7 @@ public:
 		auto it = find(pin);
 		if(it == pins_.end())
 		{
-			throw std::exception("Pin not managed by node");
+			throw std::runtime_error("Pin not managed by node");
 		}
 
 		pins_.erase(it);

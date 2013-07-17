@@ -101,7 +101,7 @@ public:
 	{
 		QList<VisualItemT> ret;
 		for (auto it = graphics2Visual.begin(); it != graphics2Visual.end(); ++it) {
-			VisualItemT item = utils::dynamic_pointer_cast<VisualItemT::element_type>(it->second);
+			auto item = utils::dynamic_pointer_cast<typename VisualItemT::element_type>(it->second);
 			if (item) {
 				ret.push_back(item);
 			}

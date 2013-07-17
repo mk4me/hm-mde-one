@@ -44,8 +44,10 @@ public:
     //! ustawia obiekt ze zdarzeniami powiazanymi z próbą pomiarową
     //! \param val kolecja zdarzeń
     virtual void setEvents(EventsCollectionConstPtr val);
-    //! pobierz krzywa qwt
+    //! pobierz krzywą qwt
     const QwtPlotCurve* getCurve() const;
+    //! pobierz krzywą qwt
+    QwtPlotCurve* getCurve();
     //! ustaw widzialność krzywej
     //! \param visible widoczna / niewidoczna
     void setVisible(bool visible);

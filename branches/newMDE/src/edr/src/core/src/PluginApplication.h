@@ -47,6 +47,11 @@ public:
 	virtual ISourceManager * sourceManager();
 	//! \return Interfejs managera wizualizatorów
 	virtual IVisualizerManager * visualizerManager();
+	//! \return Interfejs puli w¹tków
+	virtual IThreadPool * threadPool();
+	//! \return Interfejs managera zadañ
+	virtual IJobManager * jobManager();
+
 
 private:
 
@@ -79,6 +84,11 @@ public:
 	virtual ISourceManager * sourceManager();
 	//! \return Interfejs managera wizualizatorów
 	virtual IVisualizerManager * visualizerManager();
+	//! \return Interfejs puli w¹tków
+	virtual IThreadPool * threadPool();
+	//! \return Interfejs managera zadañ
+	virtual IJobManager * jobManager();
+
 };
 
 }

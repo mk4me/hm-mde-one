@@ -17,12 +17,12 @@ SimpleInputPinNode::~SimpleInputPinNode()
 
 void SimpleInputPinNode::markRequired()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::markMissing()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::markNormal()
@@ -33,12 +33,12 @@ void SimpleInputPinNode::markNormal()
 
 void SimpleInputPinNode::markCompatible()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::markIncompatible()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::markConnective()
@@ -55,7 +55,7 @@ void SimpleInputPinNode::markUnconnective()
 
 void SimpleInputPinNode::markConnected()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * SimpleInputPinNode::visualItem() const
@@ -65,37 +65,37 @@ QGraphicsItem * SimpleInputPinNode::visualItem() const
 
 void SimpleInputPinNode::addSelection()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::removeSelection()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::addHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::removeHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::addCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::removeCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleInputPinNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
-	throw std::exception("The method or operation is not implemented.");
+	throw std::runtime_error("The method or operation is not implemented.");
 }
 
 

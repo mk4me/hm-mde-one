@@ -26,6 +26,7 @@
 #include <utils/SmartPtr.h>
 
 #include <plugins/subject/ISubjectService.h>
+#include <plugins/subject/SubjectDataFilters.h>
 
 #include "FilterCommand.h"
 #include "TreeItemHelper.h"
@@ -289,7 +290,7 @@ public:
     //! \return konfiguracja pomiarowa dla podanej sesji
     MeasurementConfigConstPtr getSessionMeta( const core::ObjectWrapperConstPtr & session);
 };
-
+/*
 //! klasa dostarcza drzewu  przefiltrowanych danych z kanałów z wektorami
 template <class Channel, class Collection, class ItemHelper, bool useTreeItemHelperForRoot = false>
 class Vector3DFilterCommand : public IFilterCommand
@@ -308,7 +309,7 @@ public:
 public:
       //! konstruktor, tworzy dowiązanie do helpera
       Vector3DFilterCommand() :
-          simpleTypeFilter(new TypeFilter(typeid(Collection))),
+          simpleTypeFilter(new SubjectHierarchyTypeFilter(typeid(Collection))),
           helper(boost::bind( &Vector3DFilterCommand::checkBoxChanged, this, _1, _2 ))
       {
 
@@ -522,7 +523,7 @@ private:
     //! konfigurator
     ConfigurationWidget* dialog;
 };
-
+*/
 
 
 #endif

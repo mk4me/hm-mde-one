@@ -38,7 +38,9 @@ void VectorSource::produce()
     if (treeItem) {
         NewVector3ItemHelperPtr vectorItem = utils::dynamic_pointer_cast<NewVector3ItemHelper>(treeItem->getHelper());
         auto wrp = vectorItem->getWrapper();
-        channel = wrp->get();
+        //FIX dla RtR pod linux
+        //channel = wrp->get();
+        wrp->tryGet(channel);
         outPinA->value(channel);
         used = true;
     } else {
@@ -103,7 +105,9 @@ void EMGSource::produce()
     if (treeItem) {
         TreeWrappedItemHelperPtr vectorItem = utils::dynamic_pointer_cast<TreeWrappedItemHelper>(treeItem->getHelper());
         auto wrp = vectorItem->getWrapper();
-        channel = wrp->get();
+        //FIX dla RtR pod linux
+        //channel = wrp->get();
+        wrp->tryGet(channel);
         outPinA->value(channel);
         used = true;
     } else {

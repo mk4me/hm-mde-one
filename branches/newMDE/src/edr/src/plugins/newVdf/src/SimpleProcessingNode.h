@@ -52,7 +52,7 @@ public:
 	virtual IVisualOutputPinPtr getOutputPin(int no) { return outputPins[no]; }
 	virtual void setVisualStrategy( IVisualStrategyPtr strategy )
 	{
-		throw std::exception("The method or operation is not implemented.");
+		throw std::runtime_error("The method or operation is not implemented.");
 	}
     virtual df::INode* getModelNode() { return _node.get(); }
     virtual const df::INode* getModelNode() const { return _node.get(); }

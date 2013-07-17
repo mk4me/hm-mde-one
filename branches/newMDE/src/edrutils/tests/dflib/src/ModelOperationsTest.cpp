@@ -8,6 +8,9 @@
 #include <boost/shared_ptr.hpp>
 #include <cmath>
 
+#include <threading/QtThreadFactory.h>
+#include <threading/ThreadPool.h>
+
 typedef boost::shared_ptr<df::Model> ModelPtr;
 typedef boost::shared_ptr<IntSource> SourcePtr;
 typedef boost::shared_ptr<IntSink> SinkPtr;
@@ -242,6 +245,10 @@ void ModelOperationsTest::testDifferentModelConnectionRemove()
 
 void ModelOperationsTest::testModelRunning()
 {
+	utils::IThreadFactoryPtr tf(new utils::QtThreadFactory);
+	utils::IThreadPoolPtr tp(new utils::ThreadPool(tf));
+
+
 	IntSource::Data dataA;
 	IntSource::Data dataB;
 
@@ -326,7 +333,7 @@ void ModelOperationsTest::testModelRunning()
 	
 
 	//startujemy model
-	runner.start(model.get(), nullptr);
+	runner.start(model.get(), nullptr, tp.get());
 	runner.join();
 
 	//porównyjemy wyniki - zawartoœæ sinków i Ÿróde³ powinna byæ taka sama

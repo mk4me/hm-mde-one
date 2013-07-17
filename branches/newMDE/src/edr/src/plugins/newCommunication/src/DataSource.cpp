@@ -105,7 +105,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     localStorage = DataSourceLocalStorage::create();
 
     //inicjuję managera danych dla użytkowników ścieżką do wswólnej bazy danych
-    localStorage->setLocalStorageDataPath(plugin::getPathInterface()->getApplicationDataPath() / "db" / "localStorage.db");
+    localStorage->setLocalStorageDataPath(plugin::getPathInterface()->getUserApplicationDataPath() / "db" / "localStorage.db");
 
     //Zeruje aktualnego użytkownika
     currentUser_.setID(-1);
@@ -188,7 +188,7 @@ void CommunicationDataSource::init(core::IMemoryDataManager * memoryDM, core::IS
     this->memoryDM = memoryDM;
     this->fileDM = fileDM;
 
-    fileStatusManager.reset(new FileStatusManager(fileDM));
+    fileStatusManager.reset(new FileStatusManager());
     fullShallowCopyStatus.reset(new DataSourceStatusManager(fileStatusManager.get()));
 
     UTILS_ASSERT(memoryDM != nullptr, "Niezainicjowany DM");
@@ -755,9 +755,11 @@ void CommunicationDataSource::removeShallowCopyFromLocalStorage()
 void CommunicationDataSource::setShallowCopy(const ShallowCopy & shallowCopy)
 {
     //różnica danych wypakowanych z localStorage + status plików jeśli chodzi o storage
-    extractDataFromLocalStorageToUserSpace(fullShallowCopy, shallowCopy);
+    //extractDataFromLocalStorageToUserSpace(fullShallowCopy, shallowCopy);
 
     fullShallowCopy = shallowCopy;
+
+	refreshFileManager();
 
     //aktualizuj status danych
     fullShallowCopyStatus->setShallowCopy(&fullShallowCopy);
@@ -813,12 +815,13 @@ void CommunicationDataSource::refreshFileManager()
     for(auto it = fullShallowCopy.motionShallowCopy->files.begin(); it != itEnd; ++it){
         auto file = it->second;
         auto filePath = pathsManager->filePath(file->fileName, file->isSessionFile() == true ? file->session->sessionName : file->trial->session->sessionName);
+
         if(fileStatusManager->fileExists(file->fileID) == false){
-            fileStatusManager->addFile(file->fileID, filePath);
+            fileStatusManager->addFile(file->fileID, filePath, DataStatus((localStorage->fileIsLocal(file->fileName) == true) ? communication::Local : communication::Remote, communication::Unloaded));
         }else{
-            fileStatusManager->setFilePath(file->fileID, filePath);
+            fileStatusManager->setFilePath(file->fileID, filePath);			
         }
-    }
+	}
 }
 
 CommunicationDataSource::DownloadRequestPtr CommunicationDataSource::generateDownloadFileRequest(int fileID)

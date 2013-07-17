@@ -32,34 +32,6 @@
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
 
-UTILS_PUSH_WARNINGS
-#include <osg/Node>
-#include <osg/Config>
-#include <osg/Geode>
-#include <osg/Geometry>
-#include <osg/Group>
-#include <osg/Image>
-#include <osg/ImageStream>
-#include <osg/Node>
-#include <osg/NodeVisitor>
-#include <osg/Notify>
-#include <osg/observer_ptr>
-#include <osg/PositionAttitudeTransform>
-#include <osg/PrimitiveSet>
-#include <osg/Quat>
-#include <osg/ref_ptr>
-#include <osg/Referenced>
-#include <osg/ShapeDrawable>
-#include <osg/Timer>
-#include <osg/Vec3>
-#include <osgViewer/Viewer>
-#include <osgViewer/CompositeViewer>
-#include <osgViewer/ViewerEventHandlers>
-#include <osgViewer/GraphicsWindow>
-#include <osgViewer/ViewerEventHandlers>
-#include <osgGA/StateSetManipulator>
-UTILS_POP_WARNINGS
-
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>

@@ -23,8 +23,10 @@ public:
 
 	//! \return Zwraca pelna sciezke do folderu "MyDocuments\EDR"
 	virtual const Filesystem::Path& getUserDataPath() const = 0;
-	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"
+	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR" dla wszystkich użytkowników
 	virtual const Filesystem::Path& getApplicationDataPath() const = 0;
+	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR" dla aktualnego użytkownika
+	virtual const Filesystem::Path& getUserApplicationDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Filesystem::Path& getResourcesPath() const = 0;
     //! \return Zwraca pełną ścieżkę do tymczasowego folderu, który jest czyszczony podczas każdego zamykania aplikacji

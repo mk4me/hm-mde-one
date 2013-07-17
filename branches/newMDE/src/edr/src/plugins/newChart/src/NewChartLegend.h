@@ -38,11 +38,12 @@ signals:
     //! zmienił się checkbox z widocznością serii
     //! \param item element legendy zawierający checkbox
     //! \param active seria powinna stac się widoczna/ukryta
-    void checkboxChanged(const QwtPlotItem* item, bool active);
+    void checkboxChanged(const QVariant& info, bool active);
 
 public slots:
     //! Aktualizacja legendy
-    virtual void updateLegend( const QwtPlotItem *, const QList<QwtLegendData> & );
+    //virtual void updateLegend( const QwtPlotItem *, const QList<QwtLegendData> & );
+    virtual void updateLegend( const QVariant &, const QList<QwtLegendData> & );
     //! Aktualizacja pojedynczego elementu legendy
     //! \param w element klasy NewChartLegendItem
     //! \param data zmienione dane elementu
@@ -52,10 +53,6 @@ private slots:
     //! zmienił się checkbox z widocznością serii
     //! \param checked seria ma stac się widoczna/ukryta
     void onCheck(bool checked);
-
-private:
-    //! mapa z powiązaniem element wykresu (krzywa) - > widget legendy (NewChartLegendItem)
-    std::map<const QWidget*, const QwtPlotItem *> widget2PlotItem;
 };
 
 

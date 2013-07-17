@@ -59,7 +59,7 @@ namespace core {
     void querySources(ISourceManager* manager, std::vector<utils::shared_ptr<T>>& target)
     {
         for ( int i = 0; i < manager->getNumSources(); ++i ) {
-            ISourcePtr service = manager->getSource(i);
+            plugin::ISourcePtr service = manager->getSource(i);
             utils::shared_ptr<T> casted = utils::dynamic_pointer_cast<T>(service);
             if ( casted ) {
                 target.push_back(casted);

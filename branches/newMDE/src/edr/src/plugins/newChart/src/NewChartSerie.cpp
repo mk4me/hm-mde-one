@@ -27,9 +27,12 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType, const core::O
 	data->tryGetMeta("core/name", name);
 
     curve = new NewChartCurve(name.c_str());	
-    reader = data->get();
+    data->tryGet(reader);
     accessor.reset(new ScalarContiniousTimeAccessor(reader));
-    ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
+    ScalarChannelReaderInterfacePtr nonConstChannel;
+    ScalarChannelReaderInterfaceConstPtr constChannel;
+    data->tryGet(constChannel);
+    nonConstChannel = core::const_pointer_cast<ScalarChannelReaderInterface>(constChannel);
     stats.reset(new ScalarChannelStats(nonConstChannel));
     curve->setSamples(new NewChartSeriesData(reader));
     int r = rand() % 256;
@@ -109,6 +112,12 @@ const QwtPlotCurve* NewChartSerie::getCurve() const
 {
     return curve;
 }
+
+QwtPlotCurve* NewChartSerie::getCurve()
+{
+    return curve;
+}
+
 
 void NewChartSerie::setVisible( bool visible )
 {

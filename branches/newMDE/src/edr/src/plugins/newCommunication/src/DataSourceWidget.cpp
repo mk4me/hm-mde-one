@@ -8,9 +8,13 @@
 #include <QtGui/QHBoxLayout>
 #include <QtCore/QRegExp>
 #include <QtGui/QKeyEvent>
+#include <QtCore/QSettings>
+
+#include <openssl/aes.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
+#include <boost/scoped_array.hpp>
 
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/ISubject.h>
@@ -32,6 +36,10 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/IParserManagerReader.h>
+#include <corelib/PluginCommon.h>
+#include <plugins/video/Wrappers.h>
+#include <plugins/c3d/C3DCollections.h>
+#include <boost/lexical_cast.hpp>
 
 
 using namespace communication;
@@ -207,6 +215,8 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 {
 	setupUi(this);
 	loginRecoveryButton->setVisible(false);
+    // wczytanie ostatnio użytego loginu i hasła
+    loadCredentials();
 	initializeStatusIcons();
 
 	setTabEnabled(0, false);
@@ -325,7 +335,8 @@ void DataSourceWidget::refreshStatus()
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 	//odświeżam status plików
-	dataSource->fileStatusManager->refreshFilesStatus();
+	//dataSource->fileStatusManager->refreshFilesStatus();
+	dataSource->refreshFileManager();
 	//odświeżam status pełnej płytkiej kopii
 	dataSource->fullShallowCopyStatus->setShallowCopy(&dataSource->fullShallowCopy);
 	//odświeżam status przefiltrowanej płytkiej kopii
@@ -341,7 +352,7 @@ void DataSourceWidget::refreshStatus()
 void DataSourceWidget::refreshStatus(const std::set<int> & filesIDs)
 {
 	//odświeżam status plików
-	dataSource->fileStatusManager->refreshFilesStatus(filesIDs);
+	dataSource->fileStatusManager->refreshFilesStatus(filesIDs, dataSource->localStorage);
 	//odświeżam status pełnej płytkiej kopii
 	dataSource->fullShallowCopyStatus->refreshDataStatus(filesIDs);
 	//odświeżam status przefiltrowanej płytkiej kopii
@@ -648,6 +659,9 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 		messageBox.exec();
 
 	}else if(dataSource->isLogged() == true){
+
+        // zapisanie loginu i hasła
+        saveCredentials();
 
 		bool synch = false;
 		bool shallowCopyAvailable = false;
@@ -1501,8 +1515,7 @@ bool DataSourceWidget::refreshShallowCopy()
 
 	communication::ShallowCopy shallowCopy;
 	try{
-		if(dataSource->buildShallowCopyFromLocalUserSpace(shallowCopy) == true){
-
+		if(dataSource->buildShallowCopyFromLocalUserSpace(shallowCopy) == true){			
 			//ustawiam nowa płytka kopię danych
 			dataSource->setShallowCopy(shallowCopy);
 			//odświeżam przefiltrowaną płytką kopię danych co wiąże się z unieważnieniem dotychczasowych perspektyw
@@ -1670,12 +1683,16 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		if(subIT != subjectsMapping.end()){
 			//mam subjecta - nie musze już nic robić
 			subOW = subIT->second.first;
-			subPtr = subOW->get();
+			//FIX dla linux RtR
+			//subPtr = subOW->get();
+			subOW->tryGet(subPtr);
 		}else{
 			//tworzę subjecta
 			subOW = subjectService->createSubject();
 			//tworze ow dla subjecta
-			subPtr = subOW->get();
+			//FIX dla linux - RtR nie działa dla boost::shared_ptr
+			//subPtr = subOW->get();
+			subOW->tryGet(subPtr);
 			
 			std::stringstream label;
 
@@ -1708,7 +1725,9 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			if(sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze już nic robić
 				sOW = sIT->second.first;
-				sPtr = sOW->get();
+				//FIX dla linux RtR
+				//sPtr = sOW->get();
+				sOW->tryGet(sPtr);
 			}else{
 				//tworzę sesję
 				//generuję zbiór ow dla sesji
@@ -1735,7 +1754,9 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 
 				sOW = subjectService->createSession(subOW);
-				sPtr = sOW->get();
+				//FIX dla linux RtR
+				//sPtr = sOW->get();
+				sOW->tryGet(sPtr);
 				for(auto it = sessionObjects.begin(); it != sessionObjects.end(); ++it){
 					sPtr->addData(*it);
 				}
@@ -1769,7 +1790,9 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					//mam subjecta - nie musze już nic robić
 					//TODO
 					//nie powinno mnie tu być wg aktualnego działania pluginu subject!!
-					mPtr = mIT->second.first->get();
+					//FIX dla linux RtR
+					//mPtr = mIT->second.first->get();
+					mIT->second.first->tryGet(mPtr);
 				}else{
 					//tworzę sesję
 					//generuję zbiór ow dla motiona
@@ -1817,10 +1840,34 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					}
 
 					auto mOW = subjectService->createMotion(sOW);
-					mPtr = mOW->get();
+					//FIX dla linux RtR
+					//mPtr = mOW->get();
+					mOW->tryGet(mPtr);
 					for(auto it = motionObjects.begin(); it != motionObjects.end(); ++it){
 						mPtr->addData(*it);
 					}
+
+                    if (mPtr->hasObject(typeid(VideoChannel), false) && mPtr->hasObject(typeid(MovieDelays), false)) {
+                        core::ObjectWrapperCollection videoCollection(typeid(VideoChannel), false);
+                        core::ObjectWrapperCollection movieDelaysCollection(typeid(MovieDelays), false);
+                        mPtr->getObjects(videoCollection);
+                        mPtr->getObjects(movieDelaysCollection);
+                        if (movieDelaysCollection.size() == 1 ) {
+                            MovieDelaysConstPtr delays = *(movieDelaysCollection.begin())->get();
+                            if (delays->size() == videoCollection.size()) {
+                                int i = 0;
+                                for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
+                                    core::ObjectWrapperPtr wrp = utils::const_pointer_cast<core::ObjectWrapper>(*it);
+                                    (*wrp)["movieDelay"] = boost::lexical_cast<std::string>(delays->at(i++));
+                                }
+                            } else {
+                                PLUGIN_LOG_ERROR("Unable to map movie delays");
+                            }
+                        } else {
+                            PLUGIN_LOG_ERROR("Wrong movie delays");
+                        }
+                    }
+                    
 
 					if(jointsWrapper != nullptr){
 						//metadane
@@ -2003,7 +2050,9 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 			auto sIT = sessionsMapping.find(sessionIT->first);
 			if(sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze już nic robić
-				sPtr = sIT->second.first->get();
+				//FIX dla linux RtR
+				//sPtr = sIT->second.first->get();
+				sIT->second.first->tryGet(sPtr);
 				core::ConstObjectsList motions;
 				sPtr->getMotions(motions);
 				if(motions.empty() == true){
@@ -2029,7 +2078,9 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 		auto subIT = subjectsMapping.find(subjectIT->first);
 		if(subIT != subjectsMapping.end()){
 			//mam subjecta - nie musze już nic robić
-			subPtr = subIT->second.first->get();
+			//FIX dla linux RtR
+			//subPtr = subIT->second.first->get();
+			subIT->second.first->tryGet(subPtr);
 			core::ConstObjectsList sessions;
 			subPtr->getSessions(sessions);
 			if(sessions.empty() == true){
@@ -2220,19 +2271,28 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 
-	//! Ładuje pliki do DM
+	//! Ładuje pliki do DM	
 	std::set<int> loadedFiles;
 	std::map<int, std::vector<core::ObjectWrapperConstPtr>> loadedFilesObjects;
 	std::map<int, std::string> loadingErrors;
 	std::vector<int> unknownErrors;
 
 	{
-
 		auto transaction = dataSource->fileDM->transaction();
 
-		for(auto it = files.begin(); it != files.end(); ++it){
-			try{				
+		for(auto it = filesToLoad.begin(); it != filesToLoad.end(); ++it){
+			try{
 				const auto & p = dataSource->fileStatusManager->filePath(*it);
+
+				if(core::Filesystem::pathExists(p) == false){
+
+					if(core::Filesystem::pathExists(p.parent_path()) == false){
+						core::Filesystem::createDirectory(p.parent_path());
+					}
+
+					dataSource->localStorage->extractFile(p.filename().string(), p);
+				}
+
 				transaction->addFile(p);
 				core::ConstObjectsList oList;
 				transaction->getObjects(p, oList);
@@ -2619,4 +2679,43 @@ void DataSourceWidget::setPatientCard(webservices::MedicalShallowCopy::Patient *
 {
 	perspectiveManager.currentPerspectiveWidget()->clearSelection();
 	patientCardManager.currentPatientCard()->setPatient(patient, subject, QPixmap(), dataSource->currentUser_.userData());
+}
+
+void DataSourceWidget::saveCredentials()
+{
+    QSettings settings(crypt("Credentials", false));
+    QString usr = userEdit->text();
+    QString pwd = passwordEdit->text();
+    settings.setValue(crypt("User", false), crypt(usr, true));
+    settings.setValue(crypt("Password", false), crypt(pwd, true));
+}
+
+void DataSourceWidget::loadCredentials()
+{
+    QSettings settings(crypt("Credentials", false));
+    QString usr = settings.value(crypt("User", false)).toString();
+    QString pwd = settings.value(crypt("Password", false)).toString();
+    userEdit->setText(crypt(usr, false));
+    passwordEdit->setText(crypt(pwd, false));
+}
+
+QString DataSourceWidget::crypt( const QString& input, bool encrypt )
+{
+    QByteArray tempArray = input.toLocal8Bit();
+    const char* indata = tempArray.data();
+    auto length = strlen(indata);
+    boost::scoped_array<unsigned char> outdata(new unsigned char [length]);
+    
+    
+    unsigned char ckey[] = "XlzuthN1WoyiDzsj";
+    unsigned char ivec[] = "4SX9GRId6tAtHzmx";
+
+    AES_KEY key;
+    AES_set_encrypt_key(ckey, 128, &key);
+
+    int num = 0;
+    AES_cfb128_encrypt((const unsigned char*)indata, outdata.get(), length, &key, ivec, &num, encrypt? AES_ENCRYPT:AES_DECRYPT);
+
+    QString output = QString::fromLocal8Bit((const char*)outdata.get(), length);
+    return output;
 }

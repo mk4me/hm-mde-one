@@ -8,7 +8,6 @@ SET_SOURCE_FILES(
 	EnumTest.cpp
 	ObserverPatternTest.cpp
 	NamedTreeBaseTest.cpp
-	SynchronizedTest.cpp
 	DataChannelTest.cpp
 )
 
@@ -19,7 +18,6 @@ SET_PRIVATE_HEADERS(
 	EnumTest.h
 	ObserverPatternTest.h
 	NamedTreeBaseTest.h
-	SynchronizedTest.h
 	DataChannelTest.h
 )
 

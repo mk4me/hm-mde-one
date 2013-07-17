@@ -44,6 +44,10 @@ SET_PUBLIC_HEADERS(
 	IFilterBundle.h
 	FilterBundle.h
 	Export.h
+	IJobManager.h
+	IThreadPool.h
+	IJob.h
+	IThread.h
 )
 
 SET_SOURCE_FILES(
@@ -52,7 +56,7 @@ SET_SOURCE_FILES(
 	FilterBundle.cpp
 	# SubjectDataFilters.cpp
 	CoreLibPCH.cpp
-	ObjectWrapperCollection.cpp
+	ObjectWrapperCollection.cpp	
 	HierarchyDataItem.cpp
 	HierarchyHelper.cpp
 	HierarchyItem.cpp

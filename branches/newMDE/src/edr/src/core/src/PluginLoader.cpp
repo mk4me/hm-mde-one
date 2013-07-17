@@ -13,6 +13,7 @@
 #include <corelib/IPlugin.h>
 #include <corelib/PluginCommon.h>
 #include "PluginApplication.h"
+#include "ApplicationCommon.h"
 #include <regex>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,13 +94,13 @@ HMODULE PluginLoader::loadSharedLibrary(const Filesystem::Path & path)
 void PluginLoader::unloadSharedLibrary(HMODULE library)
 {
 	if(library){
-		#if defined(__WIN32__)
-			FreeLibrary(library);
-		#elif defined(__UNIX__)
-			dlclose(library);
-		#else
-		#error "Unsupported system for unloading shared libraries"
-		#endif
+#if defined(__WIN32__)
+		FreeLibrary(library);
+#elif defined(__UNIX__)
+		dlclose(library);
+#else
+	#error "Unsupported system for unloading shared libraries"
+#endif
 	}
 }
 
@@ -115,18 +116,18 @@ const std::string PluginLoader::lastLoadSharedLibraryError()
 			*p = '\0';
 		}
 
-		std::string ret(p);
+		std::string ret(errStr);
 
 		::LocalFree(errStr);
 
-		return ret + ". Error code: " + boost::lexical_cast<std::string>(err);
+		return ret + " Error code: " + boost::lexical_cast<std::string>(err);
 	}
 
 	return std::string("Unknown error");
 #elif defined(__UNIX__)
 	return std::string(dlerror());
 #else
-#error "Unsupported system for unloading shared libraries"
+#error "Unsupported system for loading shared libraries"
 	return std::string("Unknown error");
 #endif
 }

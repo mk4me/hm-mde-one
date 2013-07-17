@@ -1,5 +1,5 @@
 ADD_PROJECT(utils "BOOST;QT;OSG")
-
+ADD_PROJECT(threading "utils;BOOST;QT;OSG")
 
 ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_LOG4CXX "Enable logging with LOG4CXX?" OFF "LOG4CXX")
 ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_OSG "Enable osg for vidlib?" ON "OSG")
@@ -28,8 +28,6 @@ ADD_INSTALLER_GROUP_PROJECT(vidlib "vidlib" "Video decoding library")
 ADD_INSTALLER_GROUP_PROJECT(kinematiclib "kinematiclib" "Library supporting kinematic chains")
 ADD_INSTALLER_GROUP_PROJECT(osgui "osgui" "Library extending OSG capabilities")
 ADD_INSTALLER_GROUP_PROJECT(dflib "dflib" "Library supporting data flow processing")
-#ADD_INSTALLER_GROUP_PROJECT(vdfmlib "vdfmlib" "Deprecated library" "DISABLED")
-#ADD_INSTALLER_GROUP_PROJECT(testnodefactory "testnodefactory" "Deprecated library" "DISABLED")
 ADD_INSTALLER_GROUP_PROJECT(timelinelib "timelinelib" "Library offering timeline functionality")
 ADD_INSTALLER_GROUP_PROJECT(c3dlib "c3dlib" "Library offering c3d format support")
 ADD_INSTALLER_GROUP_PROJECT(webserviceslib "webserviceslib" "Library offering hml motion database access and functionality")

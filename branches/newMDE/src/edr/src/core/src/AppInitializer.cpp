@@ -1,6 +1,11 @@
 #include "CorePCH.h"
 #include <core/AppInitializer.h>
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
+#include "ApplicationCommon.h"
+#include <corelib/PluginCommon.h>
+#include <boost/bind.hpp>
+#include <QtCore/QCoreApplication>
+#include "PluginApplication.h"
 
 DEFINE_CORE_APPLICATION_ACCESSOR;
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR;
@@ -25,7 +30,7 @@ public:
 
 	}
 
-	//! Metoda uruchamiaj¹ca aplikacje, pobiera jako parametr wzorca widok który bêdzie uruchomiony, widok powinien dziedziczyæ po CoreMainWindow
+	//! Metoda uruchamiajï¿½ca aplikacje, pobiera jako parametr wzorca widok ktï¿½ry bï¿½dzie uruchomiony, widok powinien dziedziczyï¿½ po CoreMainWindow
 	int start(coreUI::CoreMainWindow * mainWindow)
 	{
 		int result = 0;
@@ -38,10 +43,10 @@ public:
 				coreApplication->initWithUI(mainWindow);
 
 				mainWindow->init(plugin::__coreApplication);
-				//ustawiamy tutaj ¿eby nadpisaæ ewentualne zmiany z widoków
+				//ustawiamy tutaj ï¿½eby nadpisaï¿½ ewentualne zmiany z widokï¿½w
 				qApp->setOrganizationName("PJWSTK");
 				try{
-					//faktycznie blokowane wywo³anie
+					//faktycznie blokowane wywoï¿½anie
 					//uruchamia kontekst Qt
 					result = coreApplication->run();
 				}catch(std::exception & e){

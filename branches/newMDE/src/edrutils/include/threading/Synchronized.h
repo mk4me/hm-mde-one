@@ -14,7 +14,7 @@
 #define HEADER_GUARD_UTILS__SYNCHRONIZED_H__
 
 #include <boost/type_traits/is_scalar.hpp>
-#include <utils/SynchronizationPolicies.h>
+#include <threading/SynchronizationPolicies.h>
 
 namespace utils 
 {

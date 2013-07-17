@@ -32,15 +32,6 @@ typedef utils::shared_ptr<IMotion> MotionPtr;
 typedef utils::shared_ptr<const IMotion> MotionConstPtr;
 typedef std::vector<MotionConstPtr> Motions;
 
-class IDataFilter;
-class IFilteredDataFactory;
-
-typedef utils::shared_ptr<IDataFilter> DataFilterPtr;
-typedef utils::shared_ptr<const IDataFilter> DataFilterConstPtr;
-
-typedef utils::shared_ptr<IFilteredDataFactory> FilteredDataFacoryPtr;
-typedef utils::shared_ptr<const IFilteredDataFactory> FilteredDataFacoryConstPtr;
-
 }
 
 #endif HEADER_GUARD_SUBJECT__TYPES_H__

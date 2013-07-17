@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include "DataHierarchyManager.h"
+#include "ApplicationCommon.h"
 #include <utils/Debug.h>
 
 namespace core {
@@ -64,7 +65,7 @@ void DataHierarchyManager::getTypeDerrivedTypes(const TypeInfo & type, TypeInfoS
 void DataHierarchyManager::registerObjectWrapperPrototype(const ObjectWrapperPtr & owp)
 {
 	UTILS_ASSERT((owp->getRawPtr() == nullptr), "Obiekt powinien byc pusty jako prototyp");
-	UTILS_ASSERT((owp->initializer().empty() == true), "Obiekt powinien nie zawieraæ inicjalizatora - jest prototypem");
+	UTILS_ASSERT((owp->initializer().empty() == true), "Obiekt powinien nie zawieraï¿½ inicjalizatora - jest prototypem");
 	const TypeInfo & typeInfo = owp->getTypeInfo();
 	auto it = typesHierarchy.find(typeInfo);
 	if(it == typesHierarchy.end()){
@@ -87,7 +88,7 @@ void DataHierarchyManager::registerObjectWrapperPrototype(const ObjectWrapperPtr
 	for(auto it = baseTypes.begin(); it != baseTypes.end(); ++it){
 		auto thIT = typesHierarchy.find(*it);
 		if(thIT == typesHierarchy.end()){
-			//rejestrujemy typ pochodny przed typem bazowym - nieco niebezpieczne bo nie wiadomo czy typ bazowy bêdzie potem zarejestrowany
+			//rejestrujemy typ pochodny przed typem bazowym - nieco niebezpieczne bo nie wiadomo czy typ bazowy bï¿½dzie potem zarejestrowany
 			TypeHierarchy thBase;
 			thBase.derrivedTypes.insert(typeInfo);
 			typesHierarchy.insert(TypesHierarchy::value_type(*it, thBase));

@@ -4,6 +4,7 @@
 #include <coreui/CoreFlexiToolBar.h>
 #include <QtGui/QToolButton>
 #include "ReportsTab.h"
+#include "IAppUsageContextManager.h"
 
 ReportsTab::ReportsTab( const QIcon& icon, const QString& label ) :
     AbstractTab(icon, label),

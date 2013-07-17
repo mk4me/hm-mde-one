@@ -673,7 +673,8 @@ void FFmpegVideoStream::alignPacket( AVPacket * packet )
     // i przywracamy ustawienia
     *packet = packetCopy;
     // nie pozwalamy na kasowanie!
-    packet->destruct = NULL;
+    //! deprecated
+    //packet->destruct = NULL;
     packet->data = alignedData;
     // shrink spowoduje, że dodatkowe miejsce alokowane przez ffmpega będzie wyzerowane
     packet->size = alignedSize;

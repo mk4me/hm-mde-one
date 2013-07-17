@@ -3,6 +3,7 @@
 
 #include <corelib/ILog.h>
 #include <corelib/PluginCommon.h>
+#include "ApplicationCommon.h"
 
 namespace core{
 

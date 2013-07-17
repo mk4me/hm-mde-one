@@ -68,6 +68,18 @@ namespace plugin
 		return __coreApplication->visualizerManager();
 	}
 
+	//! \return Interfejs dostępu do puli wątków
+	inline core::IThreadPool* getThreadPool()
+	{
+		return __coreApplication->threadPool();
+	}
+
+	//! \return Interfejs dostępu do managera zadań
+	inline core::IJobManager* getJobManager()
+	{
+		return __coreApplication->jobManager();
+	}
+
     //! \return Interfejs logowania informacji
 	inline core::ILog* getLogInterface()
 	{
@@ -86,6 +98,12 @@ namespace plugin
         return getPathInterface()->getApplicationDataPath();
     }
 
+	//! Pomocnica metoda upraszczająca odwołanie do katalogów.
+    inline const core::Filesystem::Path& getUserApplicationDataPath()
+    {
+        return getPathInterface()->getUserApplicationDataPath();
+    }
+
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
     inline const core::Filesystem::Path& getUserDataPath()
     {
@@ -102,6 +120,12 @@ namespace plugin
     inline core::Filesystem::Path getApplicationDataPath(const core::Filesystem::Path& path)
     {
         return getApplicationDataPath()/path;
+    }
+
+	    //! \return Pomocnicza metoda do pobierania ścieżek.
+    inline core::Filesystem::Path getUserApplicationDataPath(const core::Filesystem::Path& path)
+    {
+        return getUserApplicationDataPath()/path;
     }
 
     //! \return Pomocnicza metoda do pobierania ścieżek.

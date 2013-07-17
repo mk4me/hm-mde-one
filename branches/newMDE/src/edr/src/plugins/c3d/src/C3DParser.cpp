@@ -30,6 +30,7 @@ C3DParser::C3DParser()
 	momentChannels = core::ObjectWrapper::create<MomentCollection>();
 	powerChannels  = core::ObjectWrapper::create<PowerCollection>();
 	allEvents = core::ObjectWrapper::create<C3DEventsCollection>();
+    movieDelays = core::ObjectWrapper::create<MovieDelays>();
 }
 
 C3DParser::~C3DParser()
@@ -40,15 +41,15 @@ void C3DParser::parse( const std::string & source  )
 {
 	core::Filesystem::Path path(source);
 
-	parserPtr.reset(new c3dlib::C3DParser());
+	parserPtr = utils::make_shared<c3dlib::C3DParser>();
 
     std::vector<std::string> files;
     files.push_back(path.string());
 	std::string importWarnings;
     parserPtr->importFrom(files, importWarnings);
 
-	std::vector<double> test = parserPtr->getMovieDelays();
-
+	MovieDelaysPtr delays = utils::make_shared<MovieDelays>(parserPtr->getMovieDelays());
+    movieDelays->set(delays);
     // wczytanie danych analogowych
     GRFCollectionPtr grfs(new GRFCollection());
     EMGCollectionPtr e(new EMGCollection());
@@ -176,6 +177,7 @@ void C3DParser::acceptedExpressions(Expressions & expressions) const
     expDesc.types.insert(typeid(MomentCollection));
     expDesc.types.insert(typeid(PowerCollection));
     expDesc.types.insert(typeid(C3DEventsCollection));
+    expDesc.types.insert(typeid(MovieDelays));
 
     expressions.insert(Expressions::value_type(".*\.c3d$", expDesc));
 }
@@ -191,6 +193,7 @@ void C3DParser::getObjects( core::Objects& objects )
 	objects.insert(angleChannels );
 	objects.insert(momentChannels);
 	objects.insert(powerChannels );
+    objects.insert(movieDelays   );
 	//objects.insert(c3dMisc);
 }
 

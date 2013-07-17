@@ -15,7 +15,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QTabWidget>
 #include <coreui/CoreFlexiToolBar.h>
-
+#include "IAppUsageContextManager.h"
 
 //! klasa, która automatycznie rozmieszcza akcje w widgetcie flexi bara
 class ContextAutoPlacer

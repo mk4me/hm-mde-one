@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include "PluginPath.h"
+#include "ApplicationCommon.h"
 
 using namespace core;
 
@@ -18,6 +19,11 @@ const Filesystem::Path& PluginPath::getUserDataPath() const
 const Filesystem::Path& PluginPath::getApplicationDataPath() const
 {
 	return getPathInterface()->getApplicationDataPath();
+}
+
+const Filesystem::Path& PluginPath::getUserApplicationDataPath() const
+{
+	return getPathInterface()->getUserApplicationDataPath();
 }
 
 const Filesystem::Path& PluginPath::getResourcesPath() const

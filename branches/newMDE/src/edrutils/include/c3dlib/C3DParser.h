@@ -177,6 +177,7 @@ private:
     std::vector<IEventPtr> events;
 	//! płyty GRF
 	ForcePlatformCollection forcePlatforms;
+    //! przesunięcia video, zgodnie z kolejnością
 	std::vector<double> movieDelaysVector;
 private:
 	//! Zapewnia właściwe wczytywanie danych akwizycji

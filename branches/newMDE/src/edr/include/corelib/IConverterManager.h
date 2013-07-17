@@ -10,39 +10,41 @@
 #define HEADER_GUARD___ICONVERTERMANAGER_H__
 
 #include <corelib/IConverter.h>
+#include <list>
+#include <utils/ObjectWrapper.h>
 
 namespace plugin {
 
-//! Interfejs klasy zapewniaj¹cej dostêp do zarejestrowanych konwerterów
+//! Interfejs klasy zapewniajï¿½cej dostï¿½p do zarejestrowanych konwerterï¿½w
 class IConverterManager
 {
 public:
-	//! Typ kolekcji konwerterów
+	//! Typ kolekcji konwerterï¿½w
 	typedef std::list<IConverterConstPtr> Converters;
 
 public:
 	//! Wirtualny destruktor
 	virtual ~IConverterManager() {}
 
-	//! \param input Dane wejœciowe do konwersji
+	//! \param input Dane wejï¿½ciowe do konwersji
 	//! \param output [out] Wyniki konwersji	
-	//! \param recursive Czy wyniki maj¹ byæ generowane rekurencyjnie równie¿ na bazie wyników z poprzednich iteracji
+	//! \param recursive Czy wyniki majï¿½ byï¿½ generowane rekurencyjnie rï¿½wnieï¿½ na bazie wynikï¿½w z poprzednich iteracji
 	virtual void convert(const utils::ConstObjectsList & input, utils::ConstObjectsList & output, bool recursive = false) const = 0;
 
-	//! \param input Dane wejœciowe do konwersji
+	//! \param input Dane wejï¿½ciowe do konwersji
 	//! \param output [out] Wyniki konwersji	
-	//! \param requestedTypes Oczekiwane typy wyjœciowe
-	//! \param recursive Czy wyniki maj¹ byæ generowane rekurencyjnie równie¿ na bazie wyników z poprzednich iteracji
+	//! \param requestedTypes Oczekiwane typy wyjï¿½ciowe
+	//! \param recursive Czy wyniki majï¿½ byï¿½ generowane rekurencyjnie rï¿½wnieï¿½ na bazie wynikï¿½w z poprzednich iteracji
 	virtual void convert(const utils::ConstObjectsList & input, utils::ConstObjectsList & output, const utils::TypeInfoSet & requestedTypes, bool recursive = false) const = 0;
 
 	//! \param converters [out] Wszystkie zarejestrowane konwertery danych domenowych
 	virtual void converters(Converters & converters) const = 0;
 
-	//! \param inTypes Typy danych wejœciowych które chcemy konwertowaæ
-	//! \param converters [out] Zarejestrowane konwertery danych domenowych które potrafi¹ operowaæ na danym zbiorze i jego podzbiorach
+	//! \param inTypes Typy danych wejï¿½ciowych ktï¿½re chcemy konwertowaï¿½
+	//! \param converters [out] Zarejestrowane konwertery danych domenowych ktï¿½re potrafiï¿½ operowaï¿½ na danym zbiorze i jego podzbiorach
 	virtual void convertersForInputs(const utils::TypeInfoList & inTypes, Converters & converters) const = 0;
-	//! \param inTypes Typy danych wejœciowych które chcemy uzyskac po konwersji
-	//! \param converters [out] Zarejestrowane konwertery danych domenowych które potrafi¹ generowaæ dane zadanego typu
+	//! \param inTypes Typy danych wejï¿½ciowych ktï¿½re chcemy uzyskac po konwersji
+	//! \param converters [out] Zarejestrowane konwertery danych domenowych ktï¿½re potrafiï¿½ generowaï¿½ dane zadanego typu
 	virtual void convertersWithOutputs(const utils::TypeInfoSet & outTypes, Converters & converters) const = 0;
 };
 

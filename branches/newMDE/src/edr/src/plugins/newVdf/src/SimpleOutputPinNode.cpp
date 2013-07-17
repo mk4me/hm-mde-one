@@ -18,7 +18,7 @@ SimpleOutputPinNode::~SimpleOutputPinNode()
 
 void SimpleOutputPinNode::markIncomplete()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::markNormal()
@@ -29,12 +29,12 @@ void SimpleOutputPinNode::markNormal()
 
 void SimpleOutputPinNode::markCompatible()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::markIncompatible()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::markConnective()
@@ -51,7 +51,7 @@ void SimpleOutputPinNode::markUnconnective()
 
 void SimpleOutputPinNode::markConnected()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * SimpleOutputPinNode::visualItem() const
@@ -61,37 +61,37 @@ QGraphicsItem * SimpleOutputPinNode::visualItem() const
 
 void SimpleOutputPinNode::addSelection()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::removeSelection()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::addHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::removeHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::addCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::removeCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
-	throw std::exception("The method or operation is not implemented.");
+	throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void vdf::SimpleOutputPinNode::removeConnection( utils::weak_ptr<IVisualConnection> connection )

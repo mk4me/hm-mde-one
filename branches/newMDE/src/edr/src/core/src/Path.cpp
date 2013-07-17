@@ -5,11 +5,13 @@ using namespace core;
 
 Path::Path(const Filesystem::Path & userDataPath,
 	const Filesystem::Path & applicationDataPath,
+	const Filesystem::Path & userApplicationDataPath,
 	const Filesystem::Path & resourcesPath,
 	const Filesystem::Path & tmpPath,
 	const Filesystem::Path & pluginPath)
 	: userDataPath_(userDataPath),
 	  applicationDataPath_(applicationDataPath),
+	  userApplicationDataPath_(userApplicationDataPath),
 	  resourcesPath_(resourcesPath),
 	  tmpPath_(tmpPath),
 	  pluginPath_(pluginPath)
@@ -30,6 +32,12 @@ const Filesystem::Path& Path::getUserDataPath() const
 const Filesystem::Path& Path::getApplicationDataPath() const
 {
 	return applicationDataPath_;
+}
+
+
+const Filesystem::Path& Path::getUserApplicationDataPath() const
+{
+	return userApplicationDataPath_;
 }
 
 const Filesystem::Path& Path::getResourcesPath() const

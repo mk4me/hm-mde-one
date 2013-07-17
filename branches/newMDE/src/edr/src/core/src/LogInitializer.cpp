@@ -6,6 +6,7 @@
 #include <boost/algorithm/string.hpp>
 #include <utils/Debug.h>
 #include <coreui/CoreConsoleWidget.h>
+#include "ApplicationCommon.h"
 
 using namespace core;
 using namespace coreUI;
@@ -177,7 +178,8 @@ protected:
 			#endif
 
 			#if LOG4CXX_LOGCHAR_IS_UTF8
-				entry->message = QString::fromUtf8( reinterpret_cast<const ushort*>(buf.c_str()) );
+				//entry->message = QString::fromUtf8( reinterpret_cast<const ushort*>(buf.c_str()) );
+				entry->message = QString::fromUtf8( buf.c_str() );
 			#endif
 
 			#if LOG4CXX_LOGCHAR_IS_UNICHAR

@@ -67,6 +67,16 @@ inline VisualizerManager* getVisualizerManager()
 	return __application->visualizerManager();
 }
 
+inline ThreadPool* getThreadPool()
+{
+	return __application->threadPool();
+}
+
+inline JobManager* getJobManager()
+{
+	return __application->jobManager();
+}
+
 //! \return Interfejs dostêpu do œcie¿ek aplikacji
 inline Path* getPathInterface()
 {

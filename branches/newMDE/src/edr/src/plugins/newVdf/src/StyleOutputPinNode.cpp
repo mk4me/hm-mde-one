@@ -19,7 +19,7 @@ StyleOutputPinNode::~StyleOutputPinNode()
 
 void StyleOutputPinNode::markIncomplete()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleOutputPinNode::markNormal()
@@ -30,12 +30,12 @@ void StyleOutputPinNode::markNormal()
 
 void StyleOutputPinNode::markCompatible()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleOutputPinNode::markIncompatible()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleOutputPinNode::markConnective()
@@ -52,7 +52,7 @@ void StyleOutputPinNode::markUnconnective()
 
 void StyleOutputPinNode::markConnected()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * StyleOutputPinNode::visualItem() const
@@ -62,32 +62,32 @@ QGraphicsItem * StyleOutputPinNode::visualItem() const
 
 void StyleOutputPinNode::addSelection()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleOutputPinNode::removeSelection()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleOutputPinNode::addHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleOutputPinNode::removeHover()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleOutputPinNode::addCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleOutputPinNode::removeCollision()
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleOutputPinNode::setVisualStrategy( IVisualStrategyPtr strategy )

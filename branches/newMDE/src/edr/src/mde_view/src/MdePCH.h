@@ -57,8 +57,8 @@
 #include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <utils/Push.h>
-#include <timelinelib/IChannel.h>
-#include "IAppUsageContextManager.h"
+//#include <timelinelib/IChannel.h>
+//#include "IAppUsageContextManager.h"
 
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IService.h>
@@ -68,9 +68,9 @@
 
 #include <corelib/IPlugin.h>
 
-#include <plugins/newTimeline/ITimelineService.h>
-#include <plugins/video/Wrappers.h>
-#include <plugins/kinematic/Wrappers.h>
+//#include <plugins/newTimeline/ITimelineService.h>
+//#include <plugins/video/Wrappers.h>
+//#include <plugins/kinematic/Wrappers.h>
 
 
 #endif

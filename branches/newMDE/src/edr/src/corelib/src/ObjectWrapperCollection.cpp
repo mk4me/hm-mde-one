@@ -24,14 +24,14 @@ const TypeInfo & ObjectWrapperCollection::getTypeInfo() const
 	return typeInfo;
 }
 
-//! \return Czy dane musza byæ dok³¹dnie tego samego typu dla którego utworzono kolekcjê czy mog¹ te¿ byæ pochodne od niego
+//! \return Czy dane musza byï¿½ dokï¿½ï¿½dnie tego samego typu dla ktï¿½rego utworzono kolekcjï¿½ czy mogï¿½ teï¿½ byï¿½ pochodne od niego
 const bool ObjectWrapperCollection::exactTypes() const
 {
 	return exact;
 }
 
-//! \param exact Czy dane maj¹ byæ dok³adnie tego typu dla którego utworzono kolekcjê
-//! \param clear Czy czyœciæ dane niezgodne z typem kolekcji - pochodne mu
+//! \param exact Czy dane majï¿½ byï¿½ dokï¿½adnie tego typu dla ktï¿½rego utworzono kolekcjï¿½
+//! \param clear Czy czyï¿½ciï¿½ dane niezgodne z typem kolekcji - pochodne mu
 void ObjectWrapperCollection::setExactTypes(bool exact)
 {
 	this->exact = exact;
@@ -91,16 +91,6 @@ const ObjectWrapperCollection::size_type ObjectWrapperCollection::size() const
 	return data.size();
 }
 
-void ObjectWrapperCollection::erase(const const_iterator & it)
-{
-	data.erase(it);
-}
-
-void ObjectWrapperCollection::erase(const const_iterator & itS, const const_iterator & itE)
-{
-	data.erase(itS, itE);
-}
-
 void ObjectWrapperCollection::push_front(const ObjectWrapperConstPtr & obj)
 {
 	insert(data.begin(), obj);
@@ -143,10 +133,10 @@ ObjectWrapperCollection::const_reference ObjectWrapperCollection::back() const
 
 ObjectWrapperCollection::iterator ObjectWrapperCollection::insert(iterator position, const ObjectWrapperConstPtr& val)
 {
-	// sprawdzenie poprawnoœci typu
+	// sprawdzenie poprawnoï¿½ci typu
 	if (exact == true){
 		if(val->getTypeInfo() != getTypeInfo()) {
-			// bad_cast nie pobiera parametrów
+			// bad_cast nie pobiera parametrï¿½w
 			//throw std::bad_cast("Type of object not equal to type of collection");
 			throw std::bad_cast();
 		}
@@ -201,7 +191,7 @@ void ObjectWrapperCollection::reverse()
 
 void ObjectWrapperCollection::removeDerivedTypes()
 {
-	//iteruj po kolekcji i usun te typy które nie s¹ dok³adnie typu kolekcji
+	//iteruj po kolekcji i usun te typy ktï¿½re nie sï¿½ dokï¿½adnie typu kolekcji
 	auto cIT = begin();
 	while( cIT != end() ) {
 		if((*cIT)->getTypeInfo() != typeInfo){
