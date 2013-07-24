@@ -17,7 +17,7 @@
 #include <dflib/IModel.h>
 #include "SceneBuilder.h"
 #include <boost/type_traits.hpp>
-#include <plugins/newVdf/TreeBuilder.h>
+//#include <plugins/newVdf/TreeBuilder.h>
 #include <corelib/IDataManagerReader.h>
 
 namespace vdf {

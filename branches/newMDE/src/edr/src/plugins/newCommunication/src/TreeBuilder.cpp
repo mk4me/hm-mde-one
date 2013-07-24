@@ -1,4 +1,3 @@
-#include "NewVdfPCH.h"
 #include <corelib/IDataManagerReader.h>
 #include <corelib/DataAccessors.h>
 #include <plugins/c3d/C3DChannels.h>
@@ -7,9 +6,10 @@
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
 #include <utils/ObjectWrapper.h>
-#include <plugins/newVdf/TreeBuilder.h>
+#include "TreeBuilder.h"
+#include "TreeItemHelper.h"
 #include <kinematiclib/JointAnglesCollection.h>
-#include <plugins/newVdf/TreeItemHelper.h>
+#include "TreeItemHelper.h"
 #include <plugins/video/Wrappers.h>
 #include <boost/foreach.hpp>
 #include <plugins/subject/ISubject.h>
@@ -22,6 +22,22 @@ core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, con
     SubjectHierarchyFilterPtr nullFilter;
     return TreeBuilder::createTree(rootItemName, sessions, nullFilter);
 }
+
+
+core::IHierarchyItemPtr TreeBuilder::createTree( const QString& rootItemName, const PluginSubject::SubjectConstPtr& subject, const SubjectHierarchyFilterPtr & dataFilter )
+{
+    core::ConstObjectsList sessions;
+    subject->getSessions(sessions);
+    return createTree(rootItemName, sessions, dataFilter);
+}
+
+
+core::IHierarchyItemPtr TreeBuilder::createTree( const QString& rootItemName, const PluginSubject::SubjectConstPtr& subject )
+{
+    return TreeBuilder::createTree(rootItemName, subject, SubjectHierarchyFilterPtr());
+}
+
+
 
 core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, const core::ConstObjectsList& sessions, const SubjectHierarchyFilterPtr & dataFilter)
 {
@@ -357,7 +373,7 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
 
 
 
-NewMultiserieHelperPtr TreeBuilder::allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo )
+core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo )
 {
     NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
     core::ConstObjectsList motions;
@@ -403,7 +419,7 @@ NewMultiserieHelperPtr TreeBuilder::allTFromSession( const std::string& channelN
     return multi;
 }
 
-NewMultiserieHelperPtr TreeBuilder::createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context )
+core::HierarchyHelperPtr TreeBuilder::createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context )
 {
     NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
     //MotionConstPtr motion = helper->getMotion();
@@ -449,7 +465,7 @@ NewMultiserieHelperPtr TreeBuilder::createNormalized( utils::ObjectWrapperConstP
     return multi;
 }
 
-NewMultiserieHelperPtr  TreeBuilder::createNormalizedFromAll( const std::string& channelName, SessionConstPtr s, c3dlib::C3DParser::IEvent::Context context )
+core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::string& channelName, SessionConstPtr s, c3dlib::C3DParser::IEvent::Context context )
 {
     NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
     //SessionConstPtr s = helper->getMotion()->getUnpackedSession();

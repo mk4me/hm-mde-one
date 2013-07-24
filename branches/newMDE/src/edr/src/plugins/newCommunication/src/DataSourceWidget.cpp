@@ -40,6 +40,7 @@
 #include <plugins/video/Wrappers.h>
 #include <plugins/c3d/C3DCollections.h>
 #include <boost/lexical_cast.hpp>
+#include "TreeBuilder.h"
 
 
 using namespace communication;
@@ -1672,7 +1673,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	}
 
 	auto transaction = dataSource->memoryDM->transaction();
-
+    auto hierarchyTransaction = dataSource->memoryDM->hierarchyTransaction();
 	for(auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
 		//tworzę subject jeśli to konieczne!!
 
@@ -1707,7 +1708,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 			(*subOW)["label"] = label.str();
 
-
+            
 			//dodaję do DM
 			transaction->addData(subOW);
 
@@ -1761,6 +1762,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					sPtr->addData(*it);
 				}
 
+                
 				(*sOW)["label"] = s->sessionName;
 				(*sOW)["EMGConf"] = boost::lexical_cast<std::string>(s->emgConf);
 				(*sOW)["data"] = s->sessionDate;
@@ -1885,6 +1887,9 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				}
 			}
 		}
+
+        auto root = TreeBuilder::createTree("SUB", subPtr);
+        hierarchyTransaction->addRoot(root);
 	}
 }
 

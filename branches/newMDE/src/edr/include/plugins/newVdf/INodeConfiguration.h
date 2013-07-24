@@ -12,6 +12,8 @@
 
 #include <QtCore/QString>
 #include <corelib/IHierarchyItem.h>
+#include <corelib/IMemoryDataManager.h>
+
 class QWidget;
 
 namespace vdf {
@@ -38,7 +40,7 @@ namespace vdf {
     {
     public:
         virtual ~INodeHierarchyObserver() {}
-        virtual void refresh(core::IDataManagerReader* dm, const core::IDataManagerReader::ChangeList & changes) = 0;
+        virtual void refresh(core::IMemoryDataManagerHierarchy* dm, const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes) = 0;
     };
     DEFINE_SMART_POINTERS(INodeHierarchyObserver);
 }

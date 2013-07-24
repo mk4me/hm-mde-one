@@ -18,10 +18,11 @@
 #include "ContextEventFilter.h"
 #include <coreui/CoreVisualizerWidget.h>
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
+#include <corelib/IMemoryDataManager.h>
 
 class QDockWidget;
 
-class AnalisisModel : public QObject, public core::IDataManagerReader::IObjectObserver, public core::Visualizer::IVisualizerObserver
+class AnalisisModel : public QObject, public core::IMemoryDataManagerHierarchy::IHierarchyObserver, public core::Visualizer::IVisualizerObserver
 {
     Q_OBJECT
 public:
@@ -51,7 +52,7 @@ public:
 	virtual ~AnalisisModel() {}
 
 public:
-    virtual void observe(const core::IDataManagerReader::ChangeList & changes);
+    virtual void observe(const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes);
     coreui::HierarchyTreeModel* getTreeModel() { return &model; }
     void addFilterBundles( const core::IFilterProvider::FilterBundles& bundles );
     void applyFilter( core::IFilterCommandPtr filter );

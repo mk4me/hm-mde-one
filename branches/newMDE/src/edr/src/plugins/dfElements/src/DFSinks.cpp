@@ -1,6 +1,6 @@
 #include <plugins/dfElements/DFSinks.h>
 #include <QtGui/QHBoxLayout>
-#include <plugins/newVdf/TreeItemHelper.h>
+//#include <plugins/newVdf/TreeItemHelper.h>
 
 void UniversalSink::_UniversalSink()
 {
@@ -26,11 +26,11 @@ void UniversalSink::consume()
     utils::ObjectWrapperConstPtr wrapper = inPinA->getWrapper();
     // HACK - trzeba by wprowadzic defaultowe helpery dla typow danych lub wprowadzic Vec3 do typow obslugiwanych przez NewChart
     core::HierarchyHelperPtr helper;
-    if (wrapper->isSupported(typeid(VectorChannelReaderInterface))) {
-        helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(wrapper));
-    } else {
+    /*if (wrapper->isSupported(typeid(VectorChannelReaderInterface))) {
+    helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(wrapper));
+    } else {*/
         helper = core::HierarchyHelperPtr(new core::WrappedItemHelper(wrapper));
-    }
+    //}
     
     core::IHierarchyItemPtr dataItem = 
         core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(wrapper->getClassName()), QString(), helper));

@@ -1,7 +1,7 @@
 #include "HmmLibPCH.h"
 #include "MarkersFilter.h"
 
-#include <plugins/newVdf/TreeBuilder.h>
+//#include <plugins/newVdf/TreeBuilder.h>
 
 static NamesDictionary getNames( )
 {

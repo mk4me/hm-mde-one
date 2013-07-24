@@ -5,7 +5,7 @@
 #include <plugins/c3d/C3DCollections.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <plugins/video/Wrappers.h>
-#include <plugins/newVdf/TreeBuilder.h>
+//#include <plugins/newVdf/TreeBuilder.h>
 #include "SubjectFilterCommand.h" 
 #include "ConfiguredFilterCommand.h"
 #include <QtCore/QObject>

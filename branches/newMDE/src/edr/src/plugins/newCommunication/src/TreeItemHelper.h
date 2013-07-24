@@ -7,8 +7,8 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_NEWVDF__TREEITEMHELPER_H__
-#define HEADER_GUARD_NEWVDF__TREEITEMHELPER_H__
+#ifndef HEADER_GUARD_NEWCOMMUNICATION__TREEITEMHELPER_H__
+#define HEADER_GUARD_NEWCOMMUNICATION__TREEITEMHELPER_H__
 
 #include <QtCore/QString>
 #include <QtGui/QTreeWidgetItem>
@@ -16,12 +16,11 @@
 #include <plugins/newChart/INewChartSerie.h>
 #include <corelib/Visualizer.h>
 #include <corelib/HierarchyHelper.h>
-#include <plugins/newVdf/Export.h>
 #include <plugins/newVdf/MultiserieColorStrategy.h>
 
 //! klasa pomocnicza przy tworzeniu wizualizatora wykresów
 //! klasa musi dostarczyć ScalarChannelReaderInterface z danymi we wrapperze
-class PLUGIN_NEWVDF_EXPORT NewChartItemHelper : public core::WrappedItemHelper
+class NewChartItemHelper : public core::WrappedItemHelper
 {
 public:
     NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper);
@@ -42,7 +41,7 @@ typedef utils::shared_ptr<NewChartItemHelper> NewChartItemHelperPtr;
 typedef utils::shared_ptr<const NewChartItemHelper> NewChartItemHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu wykresów z wektora 3-elementowego
-class PLUGIN_NEWVDF_EXPORT NewVector3ItemHelper : public core::WrappedItemHelper
+class NewVector3ItemHelper : public core::WrappedItemHelper
 {
 public:
     //! Konstruktor pobiera obiekt z wrapperem wektora 3D
@@ -129,7 +128,7 @@ typedef utils::shared_ptr<NewMultiserieHelper> NewMultiserieHelperPtr;
 typedef utils::shared_ptr<const NewMultiserieHelper> NewMultiserieHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu wizualizatora jointów (leniwe parsowanie)
-class PLUGIN_NEWVDF_EXPORT JointsItemHelper : public core::HierarchyHelper
+class JointsItemHelper : public core::HierarchyHelper
 {
 public:
     //! Konstruktor
@@ -155,7 +154,7 @@ typedef utils::shared_ptr<JointsItemHelper> JointsItemHelperPtr;
 typedef utils::shared_ptr<const JointsItemHelper> JointsItemHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu zbiorczego widoku 3d (markery + jointy + płyty GRF)
-class PLUGIN_NEWVDF_EXPORT Multiserie3D : public core::HierarchyHelper
+class Multiserie3D : public core::HierarchyHelper
 {
 public:
     //! Konstruktor
@@ -182,7 +181,7 @@ typedef utils::shared_ptr<const Multiserie3D> Multiserie3DConstPtr;
 
 //
 //! Klasa tworzy wizualizator wykresów, i wypełnią go przefiltrowanymi danymi EMG
-//class PLUGIN_NEWVDF_EXPORT EMGFilterHelper : public NewChartItemHelper
+//class EMGFilterHelper : public NewChartItemHelper
 //{
 //public:
 //    //! Konstruktor

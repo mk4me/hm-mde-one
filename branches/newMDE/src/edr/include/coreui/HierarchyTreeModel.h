@@ -16,6 +16,7 @@
 #include <corelib/HierarchyHelper.h>
 #include <corelib/IHierarchyItem.h>
 #include <corelib/IHierarchyDataItem.h>
+#include <corelib/IMemoryDataManager.h>
 #include <coreui/Export.h>
 
 namespace coreui {
@@ -47,10 +48,13 @@ public:
     
     core::IHierarchyItemConstPtr internalSmart(const QModelIndex& idx) const;
 
+    void applyChange( const core::IMemoryDataManagerHierarchy::HierarchyChange& change );
+    void applyChanges( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes );
+
 private:
     QModelIndex createSmartIndex(int row, int col, core::IHierarchyItemConstPtr ptr) const;
     bool hasChild(core::IHierarchyItemConstPtr parent, core::IHierarchyItemConstPtr child) const;
-
+    
 private:
     mutable std::map<const void*, core::IHierarchyItemConstPtr> raw2Smart;
     core::IHierarchyItemPtr rootItem;

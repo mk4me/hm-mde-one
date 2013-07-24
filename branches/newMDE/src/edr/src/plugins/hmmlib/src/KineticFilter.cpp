@@ -1,6 +1,6 @@
 #include "HmmLibPCH.h"
 #include "KineticFilter.h"
-#include <plugins/newVdf/TreeBuilder.h>
+//#include <plugins/newVdf/TreeBuilder.h>
 
 static NamesDictionary getPowersNames()
 {

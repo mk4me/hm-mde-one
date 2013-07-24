@@ -97,6 +97,18 @@ public:
 		rawRemoveData(data);
 	}
 
+
+    virtual const bool tryAddHierarchy( const IHierarchyItemConstPtr root, bool unpack )
+    {
+        throw std::exception("The method or operation is not implemented.");
+    }
+
+    virtual void addHierarchy( const IHierarchyItemConstPtr root, bool unpack )
+    {
+        throw std::exception("The method or operation is not implemented.");
+    }
+
+
 	//! \param data Aktualizowane dane
 	//! \param newData Nowa warto�� danych
 	virtual void updateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData)
@@ -427,6 +439,8 @@ IDataManagerReader::TransactionPtr MemoryDataManager::transaction() const
 	return IDataManagerReader::TransactionPtr(new MemoryReaderTransaction(const_cast<MemoryDataManager*>(this)));
 }
 
+
+
 void MemoryDataManager::rawGetObjects(core::ConstObjectsList & objects) const
 {
 	for(auto it = objectsByTypes.begin(); it != objectsByTypes.end(); ++it){
@@ -533,3 +547,4 @@ void MemoryDataManager::requestedTypes( const TypeInfo & type, bool exact, TypeI
 		getDataHierarchyManager()->getTypeDerrivedTypes(type, types);
 	}
 }
+

@@ -112,7 +112,7 @@ void SceneModel::addNode(df::INode* node )
 			df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(node);
             auto dmNode = dynamic_cast<INodeHierarchyObserver*>(source);
             if (dmNode) {
-                dmNode->refresh(plugin::getDataManagerReader(), core::IDataManagerReader::ChangeList());
+                dmNode->refresh(plugin::getHierarchyManagerReader(), core::IMemoryDataManagerHierarchy::HierarchyChangeList());
             }
 			model->addNode(source);
 		} return;

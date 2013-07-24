@@ -19,6 +19,7 @@
 #include "StreamDataManager.h"
 #include "FileDataManager.h"
 #include "DataHierarchyManager.h"
+#include "HierarchyDataManager.h"
 #include "SourceManager.h"
 #include "LogInitializer.h"
 #include "PluginLoader.h"
@@ -225,7 +226,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	showSplashScreenMessage(QObject::tr("Initializing core managers"));
 
 	dataHierarchyManager_.reset(new DataHierarchyManager());
-	memoryDataManager_.reset(new MemoryDataManager());
+	memoryDataManager_.reset(new HierarchyDataManager());
 	parserManager_.reset(new ParserManager());
 	streamDataManager_.reset(new StreamDataManager());
 	fileDataManager_.reset(new FileDataManager());

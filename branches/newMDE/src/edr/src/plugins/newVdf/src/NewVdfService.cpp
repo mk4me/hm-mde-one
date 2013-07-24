@@ -17,6 +17,7 @@
 #include <corelib/IMemoryDataManager.h>
 #include "DataSourceManager.h"
 #include <plugins/c3d/C3DCollections.h>
+#include <corelib/IMemoryDataManager.h>
 
 using namespace vdf;
 
@@ -126,7 +127,7 @@ void NewVdfService::update( double time )
 
 void NewVdfService::init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager )
 {
-    auto memoryManager = plugin::getDataManagerReader();
+    auto memoryManager = plugin::getHierarchyManagerReader();
     memoryManager->addObserver(shared_from_this());
 }
 
@@ -149,22 +150,15 @@ void vdf::NewVdfService::registerDataProcessor( const IDataProcessorPtr & dataPr
     processorManager->registerDataProcessor(dataProcessor);
 }
 
-void vdf::NewVdfService::observe( const core::IDataManagerReader::ChangeList & changes )
+void vdf::NewVdfService::observe( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )
 {
-    auto* dataManagerReader = plugin::getDataManagerReader();
-    //core::ConstObjectsList sessions, inputSessions;
-    //dataManagerReader->getObjects(inputSessions, typeid(PluginSubject::ISession), false);
-    //SubjectHierarchyFilterPtr typeFilter(new SubjectHierarchyTypeFilter(typeid(VectorChannelCollection)));
-    //typeFilter->filterSessions(inputSessions, sessions);
-    //
-    //auto dataManagerTreeItem = TreeBuilder::createTree("Sessions", sessions, typeFilter);
+    auto memoryManager = plugin::getHierarchyManagerReader();
     auto model = newVdfWidget->getSceneModel();
     auto items = model->getVisualItems<IVisualSourceNodePtr>();
     for (auto it = items.begin(); it != items.end(); ++it) {
         auto observer = dynamic_cast<vdf::INodeHierarchyObserver*>((*it)->getModelNode());
         if (observer) {
-            //observer->refresh(dataManagerTreeItem);
-            observer->refresh(dataManagerReader, changes);
+            observer->refresh(memoryManager, changes);
         }
     }
 }

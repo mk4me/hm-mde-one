@@ -18,7 +18,8 @@
 #include <QtGui/QIcon>
 #include <coreui/HierarchyTreeModel.h>
 #include <plugins/subject/SubjectDataFilters.h>
-#include <plugins/newVdf/TreeBuilder.h>
+#include <plugins/c3d/C3DCollections.h>
+//#include <plugins/newVdf/TreeBuilder.h>
 
 
 template <class PinT>
@@ -65,15 +66,16 @@ public:
         return isNodeValid() ? QString() : QString("Source is not set");
     }
     
-    virtual void refresh( core::IDataManagerReader* dm, const core::IDataManagerReader::ChangeList & changes )
+    virtual void refresh( core::IMemoryDataManagerHierarchy* dm, const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )
     {
-        core::ConstObjectsList sessions, inputSessions;
-        dm->getObjects(inputSessions, typeid(PluginSubject::ISession), false);
-        SubjectHierarchyFilterPtr typeFilter(new SubjectHierarchyTypeFilter(typeid(VectorChannelCollection)));
-        typeFilter->filterSessions(inputSessions, sessions);
-        //
-        auto item = TreeBuilder::createTree("Sessions", sessions, typeFilter);
-        refreshTree(item);
+        if (changes.empty()) {
+            model.clear();
+            for (auto it = dm->hierarchyBegin(); it != dm->hierarchyEnd(); ++it) {
+                model.addRootItem(*it);
+            }
+        } else {
+            model.applyChanges(changes);
+        }
     }
 
 private:

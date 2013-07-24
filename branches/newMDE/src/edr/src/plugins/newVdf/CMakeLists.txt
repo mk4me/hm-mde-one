@@ -41,8 +41,8 @@ SET_PUBLIC_HEADERS(
 	DataSink.h
 	DataProcessor.h
 	ExampleItems.h
-	TreeBuilder.h
-	TreeItemHelper.h
+	#TreeBuilder.h
+	#TreeItemHelper.h
 	MultiserieColorStrategy.h
 	Export.h
 )
@@ -159,8 +159,8 @@ SET_SOURCE_FILES (
 	DataSinkManager.cpp
 	DataProcessor.cpp
 	DataProcessorManager.cpp
-	TreeBuilder.cpp
-	TreeItemHelper.cpp
+	#TreeBuilder.cpp
+	#TreeItemHelper.cpp
 )
 
 SET_MOC_FILES(

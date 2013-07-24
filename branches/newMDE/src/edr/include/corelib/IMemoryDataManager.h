@@ -12,6 +12,7 @@
 #include <corelib/ITransaction.h>
 #include <corelib/IDataManagerReader.h>
 #include <corelib/BaseDataTypes.h>
+#include <corelib/IHierarchyItem.h>
 
 namespace core {
 
@@ -31,6 +32,56 @@ namespace core {
 		virtual const bool tryRemoveData(const ObjectWrapperConstPtr & data) = 0;
 	};
 
+    //! Operacje zwi¹zane z zarz¹dzaniem hierarchicznymi danymi
+    class IMemoryDataManagerHierarchyOperations
+    {
+    public:
+        virtual ~IMemoryDataManagerHierarchyOperations() {}
+
+    public:
+        //! Dodanie roota, odczytanie wszystkich danych w hierarchii i dodanie ich do DM
+        //! \param ptr dodawany element
+        virtual void addRoot(IHierarchyItemConstPtr ptr) = 0;
+        //! Usuniêcie roota z DM
+        //! \param ptr element do usuniêcia, musi byæ wczeœniej dodany
+        virtual void removeRoot(IHierarchyItemConstPtr ptr) = 0;
+        //! Wywo³ane, gdy hierarchia, lub jej dane siê zmieni³y
+        //! \param ptr update'owany element
+        virtual void updateRoot(IHierarchyItemConstPtr ptr) = 0;
+
+        
+    };
+
+    class IMemoryDataManagerHierarchy : public IMemoryDataManagerHierarchyOperations
+    {
+    public:
+        typedef IDataManagerReader::ModificationType ModificationType;
+        //! Obiekt opisuj¹cy zmianê w DM
+        struct HierarchyChange
+        {
+            IHierarchyItemConstPtr value;
+            ModificationType modification;			//! Typ zmiany na hierarchii
+        };
+
+        typedef std::set<IHierarchyItemConstPtr>::const_iterator hierarchyConstIterator;  
+        //! Agregat zmian w DM
+        typedef std::list<HierarchyChange> HierarchyChangeList;
+        typedef IChangesObserver<HierarchyChangeList> IHierarchyObserver;
+        //! WskaŸnik na obiek obserwuj¹cy zmiany
+        typedef utils::shared_ptr<IHierarchyObserver> HierarchyObserverPtr;
+        typedef utils::shared_ptr<IDataManagerReaderOperations> TransactionPtr;
+
+    public:
+        virtual ~IMemoryDataManagerHierarchy() {}
+        //! \param objectWatcher Obserwator DM do zarejestrowania
+        virtual void addObserver(const HierarchyObserverPtr & objectWatcher) = 0;
+        //! \param objectWatcher Obserwator DM do wyrejestrowania
+        virtual void removeObserver(const HierarchyObserverPtr & objectWatcher) = 0;
+
+        virtual hierarchyConstIterator hierarchyBegin() const = 0;
+        virtual hierarchyConstIterator hierarchyEnd() const = 0;
+    };
+
 	//! Operacje zwi¹zane z zarz¹dzaniem danymi domenowymi aplikacji
 	class IMemoryDataManagerOperations : public IMemoryDataManagerBasicOperations
 	{
@@ -45,6 +96,8 @@ namespace core {
 		virtual const bool tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData) = 0;
 	};
 
+    
+
 	//! Interfejs do danych domenowych i zarz¹dzania nimi w aplikacji
 	class IMemoryDataManager : public IMemoryDataManagerOperations
 	{
@@ -56,8 +109,16 @@ namespace core {
 			virtual ~IMemoryDataTransaction() {}
 		};
 
+        class IMemoryDataHierarchyTransaction : public ITransaction, public IMemoryDataManagerHierarchyOperations
+        {
+        public:
+            virtual ~IMemoryDataHierarchyTransaction() {}
+        };
+
 		//! Typ transakcji na danych domenowych - dzia³a w oparciu o RAII -> próbuje "commitowaæ" zmiany przy koñcu trwania ¿ycia obiektu transakcji
 		typedef utils::shared_ptr<IMemoryDataTransaction> TransactionPtr;
+        //! Typ transakcji dodaj¹cej dane w postaci hierarchicznej
+        typedef utils::shared_ptr<IMemoryDataHierarchyTransaction> HierarchyTransactionPtr;
 
 	public:
 
@@ -65,6 +126,7 @@ namespace core {
 
 		//! \return Nowa transakcja danych domenowych
 		virtual TransactionPtr transaction() = 0;
+        virtual HierarchyTransactionPtr hierarchyTransaction() = 0;
 	};
 
 }

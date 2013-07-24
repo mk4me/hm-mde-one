@@ -35,7 +35,7 @@ class CanvasStyleEditorWidget;
 class TypesWindow;
 class PropertiesWindow;
 
-class PLUGIN_NEWVDF_EXPORT NewVdfService : public QObject, public plugin::IService, public IDataFlowProvider, public core::IDataManagerReader::IObjectObserver, public boost::enable_shared_from_this<NewVdfService>
+class PLUGIN_NEWVDF_EXPORT NewVdfService : public QObject, public plugin::IService, public IDataFlowProvider, public core::IMemoryDataManagerHierarchy::IHierarchyObserver, public boost::enable_shared_from_this<NewVdfService>
 {
     Q_OBJECT
     UNIQUE_ID("{DF5B5B15-C591-4BCF-A205-FD995D2398DB}")
@@ -65,8 +65,7 @@ public:
     //! \param actions 
     virtual QWidgetList getPropertiesWidgets();
 
-    // HACK : hierarcha powinna pochodzic juz z core'a
-    virtual void observe( const core::IDataManagerReader::ChangeList & changes );
+    virtual void observe( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes );
 
 	virtual const bool lateInit();
 	virtual void finalize();

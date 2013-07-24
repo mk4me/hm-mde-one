@@ -181,3 +181,27 @@ void coreui::HierarchyTreeModel::clear()
         rootItem->removeChild(child);
     }
 }
+
+void coreui::HierarchyTreeModel::applyChange( const core::IMemoryDataManagerHierarchy::HierarchyChange& change )
+{
+    switch(change.modification) {
+    case core::IDataManagerReader::ADD_OBJECT:
+        addRootItem(change.value);
+        break;
+    case  core::IDataManagerReader::REMOVE_OBJECT:
+        removeRootItem(change.value);
+        break;
+    case core::IDataManagerReader::UPDATE_OBJECT:
+        updateItem(change.value);
+        break;
+    default:
+        UTILS_ASSERT(false);
+    }
+}
+
+void coreui::HierarchyTreeModel::applyChanges( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )
+{
+    for (auto it = changes.begin(); it != changes.end(); ++it) {
+        applyChange(*it);
+    }
+}

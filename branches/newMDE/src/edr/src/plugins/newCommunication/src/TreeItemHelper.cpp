@@ -1,5 +1,5 @@
-#include "NewVdfPCH.h"
-#include <plugins/newVdf/TreeItemHelper.h>
+#include "TreeItemHelper.h"
+#include <QtGui/QHBoxLayout>
 #include <corelib/IVisualizerManager.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/c3d/EventSerieBase.h>

@@ -3,7 +3,7 @@
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>
 #include <corelib/IDataHierarchyManagerReader.h>
-#include <plugins/newVdf/TreeBuilder.h>
+//#include "TreeBuilder.h"
 #include <QtGui/QDockWidget>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <corelib/IServiceManager.h>
@@ -12,27 +12,20 @@ AnalisisModel::AnalisisModel()
 {
 }
 
-void AnalisisModel::observe( const core::IDataManagerReader::ChangeList & changes )
+void AnalisisModel::observe( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )
 {
-    core::ConstObjectsList sessions;
-    plugin::getDataManagerReader()->getObjects(sessions, typeid(PluginSubject::ISession), false);
-
-    if (dataManagerTreeItem) {
-        model.removeRootItem(dataManagerTreeItem);
-    }
-    dataManagerTreeItem = TreeBuilder::createTree("Sessions", sessions);
-    model.addRootItem(dataManagerTreeItem);
-    emit expandTree(2);
-    /*break;
-    auto dhm = plugin::getDataHierachyManagerReader();
-    for(auto it = changes.begin(); it != changes.end(); ++it){
-        if((*it).type == typeid(PluginSubject::ISession) || dhm->isTypeCompatible(typeid(PluginSubject::ISession), (*it).type)){
-            core::ConstObjectsList sessions;
-            plugin::getDataManagerReader()->getObjects(sessions, typeid(PluginSubject::ISession), false);
-            model.setRootItem(TreeBuilder::createTree("Sessions", sessions));
+    for (auto it = changes.begin(); it != changes.end(); ++it) {
+        switch (it->modification) {
+        case core::IDataManagerReader::ADD_OBJECT:
+            model.addRootItem(it->value);
             break;
+        case core::IDataManagerReader::REMOVE_OBJECT:
+            model.removeRootItem(it->value);
+            break;
+        case core::IDataManagerReader::UPDATE_OBJECT:
+            model.updateItem(it->value);
         }
-    }*/
+    }
 }
 
 void AnalisisModel::addFilterBundles( const core::IFilterProvider::FilterBundles& bundles )

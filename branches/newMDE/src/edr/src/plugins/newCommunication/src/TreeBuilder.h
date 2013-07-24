@@ -7,17 +7,16 @@
 	purpose:
 *********************************************************************/
 
-#ifndef HEADER_GUARD_NEWVDF__TREEBUILDER_H__
-#define HEADER_GUARD_NEWVDF__TREEBUILDER_H__
+#ifndef HEADER_GUARD_NEWCOMMUNICATION__TREEBUILDER_H__
+#define HEADER_GUARD_NEWCOMMUNICATION__TREEBUILDER_H__
 
 #include <plugins/subject/Types.h>
 #include <plugins/subject/SubjectDataFilters.h>
 #include <corelib/IHierarchyItem.h>
 #include <QtGui/QIcon>
-#include <plugins/newVdf/Export.h>
-#include <plugins/newVdf/TreeItemHelper.h>
+#include <corelib/HierarchyHelper.h>
 
-class PLUGIN_NEWVDF_EXPORT TreeBuilder
+class TreeBuilder
 {
 public:  
     //! Tworzy drzewo na podstawie dostarczony sesji
@@ -28,6 +27,9 @@ public:
     static core::IHierarchyItemPtr  createTree(const QString& rootItemName, const core::ConstObjectsList& sessions, const SubjectHierarchyFilterPtr & dataFilter);
 
     static core::IHierarchyItemPtr createTree(const QString& rootItemName, const core::ConstObjectsList& sessions);
+
+    static core::IHierarchyItemPtr createTree(const QString& rootItemName, const PluginSubject::SubjectConstPtr& subject);
+    static core::IHierarchyItemPtr createTree(const QString& rootItemName, const PluginSubject::SubjectConstPtr& subject, const SubjectHierarchyFilterPtr & dataFilter);
     //! Tworzy ga³¹Ÿ dla markerów
     //! \param motion próba pomiarowa
     //! \param rootName nazwa dla rodzica tworzonych elementów
@@ -130,9 +132,9 @@ private:
     template <class Channel, class CollectionPtr>
     static void tryAddVectorToTree(const PluginSubject::MotionConstPtr & motion, const CollectionPtr & collection, const std::string& name, const QIcon& childIcon,  core::IHierarchyItemPtr parentItem, bool createContainerItem = true );
 
-    static NewMultiserieHelperPtr allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo );
-    static NewMultiserieHelperPtr createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context );
-    static NewMultiserieHelperPtr createNormalizedFromAll( const std::string& channelName, PluginSubject::SessionConstPtr s, c3dlib::C3DParser::IEvent::Context context );
+    static core::HierarchyHelperPtr allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo );
+    static core::HierarchyHelperPtr createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context );
+    static core::HierarchyHelperPtr createNormalizedFromAll( const std::string& channelName, PluginSubject::SessionConstPtr s, c3dlib::C3DParser::IEvent::Context context );
     static QString createDescription( PluginSubject::MotionConstPtr motion);
 };
 

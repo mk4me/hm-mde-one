@@ -16,7 +16,7 @@ ADD_PROJECT(plugin_newTimeline "BOOST;QT;QWT;corelib;timelinelib;OPENTHREADS" "p
 ADD_PROJECT(plugin_kinematic "QT;BOOST;corelib;coreui;plugin_c3d;kinematiclib;OSG;c3dlib;osgui" "plugins/kinematic")
 ADD_PROJECT(plugin_newCommunication "QT;CURL;WSDLPULL;TINYXML;corelib;webserviceslib;qthtmlgenlib;SQLCIPHER;QUAZIP;plugin_kinematic;plugin_video;vidlib" "plugins/newCommunication")
 ADD_PROJECT(plugin_newChart "BOOST;OSG;QT;QWT;corelib;coreui;plugin_c3d;c3dlib" "plugins/newChart")
-ADD_PROJECT(plugin_subject "BOOST;OSG;QT;corelib;utils;c3dlib;kinematiclib" "plugins/subject")
+ADD_PROJECT(plugin_subject "BOOST;OSG;QT;corelib;utils;c3dlib;kinematiclib;vidlib;plugin_c3d" "plugins/subject")
 ADD_PROJECT(plugin_hmm "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;c3dlib;QWT;vidlib;kinematiclib;plugin_subject" "plugins/hmmlib")
 ADD_PROJECT(plugin_newVdf "utils;BOOST;QT;OSG;utils;dflib;core;corelib;kinematiclib;vidlib;plugin_subject;plugin_newTimeline;plugin_c3d;plugin_video;coreui" "plugins/newVdf")
 #ADD_PROJECT(plugin_newVdf "BOOST;UTILS;OSG;QT;core;corelib;DFLIB;coreui;VIDLIB;plugin_newTimeline;plugin_video;plugin_c3d;plugin_subject" "plugins/newVdf")
