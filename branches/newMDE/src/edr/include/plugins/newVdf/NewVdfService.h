@@ -78,7 +78,7 @@ public:
 private slots:
     void onTransferResults();
 signals:
-    void transferResults(core::IHierarchyItemPtr root);
+    void transferResults();
 
 private:
     std::string name;
@@ -92,6 +92,7 @@ private:
 
     coreui::HierarchyTreeModel resultsModel;
 
+    core::IMemoryDataManager * memoryManager;
 	//QListWidget* commandStackDebug;
 	utils::ICommandStackPtr commandStack;
 	IDataProcessorManagerPtr dataProcessorManager;

@@ -26,6 +26,10 @@ SET_MOC_FILES(
 	DFSinks.h
 )
 
+SET_RC_FILES (
+	dfElementsIcons.qrc
+)
+
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek
 SET_PRECOMPILED_HEADER( DFElementsPCH.h DFElementsPCH.cpp)

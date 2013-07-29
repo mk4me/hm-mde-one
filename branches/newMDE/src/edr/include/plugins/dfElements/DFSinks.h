@@ -17,32 +17,7 @@
 #include <plugins/dfElements/DFPins.h>
 #include <QtGui/QDoubleSpinBox>
 
-//! Klasa potrafi obs³u¿yæ piny, które implementuj¹ interfejs IMDEOutputPin
-class UniversalInputPin : public df::InputPin, public df::IDFInput
-{
-public:
-    //! 
-    //! \param node 
-    UniversalInputPin( df::ISinkNode * node );
 
-public:
-    //! 
-    virtual void reset();
-    //! 
-    //! \param pin 
-    void copyData( const df::IDFOutput * pin );
-    //! 
-    //! \param pin 
-    virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
-    //! 
-    utils::ObjectWrapperConstPtr getWrapper() const;
-    //! 
-    //! \param val 
-    void setWrapper(utils::ObjectWrapperConstPtr val);
-
-private:
-    utils::ObjectWrapperConstPtr wrapper;
-};
 
 class UniversalSink : public QObject, public df::SinkNode, public df::IDFSink, public vdf::INodeConfiguration
 {
@@ -67,7 +42,7 @@ signals:
     void itemConsumed(core::IHierarchyItemPtr dataItem);
 
 private:
-    UniversalInputPin * inPinA;
+    UniversalInputPinBase * inPinA;
     QWidget* widget;
     QLineEdit* line;
     QString defaultName;

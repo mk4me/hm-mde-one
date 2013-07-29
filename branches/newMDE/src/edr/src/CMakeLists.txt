@@ -20,7 +20,7 @@ ADD_PROJECT(plugin_subject "BOOST;OSG;QT;corelib;utils;c3dlib;kinematiclib;vidli
 ADD_PROJECT(plugin_hmm "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;c3dlib;QWT;vidlib;kinematiclib;plugin_subject" "plugins/hmmlib")
 ADD_PROJECT(plugin_newVdf "utils;BOOST;QT;OSG;utils;dflib;core;corelib;kinematiclib;vidlib;plugin_subject;plugin_newTimeline;plugin_c3d;plugin_video;coreui" "plugins/newVdf")
 #ADD_PROJECT(plugin_newVdf "BOOST;UTILS;OSG;QT;core;corelib;DFLIB;coreui;VIDLIB;plugin_newTimeline;plugin_video;plugin_c3d;plugin_subject" "plugins/newVdf")
-ADD_PROJECT(plugin_dfElements "BOOST;QT;dflib;corelib;coreui;utils;plugin_newVdf;c3dlib;plugin_c3d" "plugins/dfElements")
+ADD_PROJECT(plugin_dfElements "BOOST;QT;dflib;corelib;coreui;utils;plugin_newVdf;c3dlib;plugin_c3d;plugin_newCommunication" "plugins/dfElements")
 #ADD_PROJECT(plugin_python "BOOST;QT;corelib" "plugins/python")
 
 SET_PROJECTS_GROUP("view")

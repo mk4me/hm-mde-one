@@ -16,24 +16,24 @@
 #include <plugins/dfElements/Export.h>
 #include <plugins/newVdf/IDataFlowProvider.h>
 #include <utils/ObjectWrapper.h>
-//class HmmMainWindow;
+#include <utils/TypeInfo.h>
+#include <dflib/IDFPin.h>
 
-template <class T>
-class PLUGIN_DFELEMENTS_EXPORT UniversalOutputPin : public df::OutputPin, public df::IDFOutput, public vdf::IMDEOutputPin
+class PLUGIN_DFELEMENTS_EXPORT UniversalOutputPinBase : public df::OutputPin, public df::IDFOutput
 {
-    MDE_OUTPUT_PIN(T);
 public:
-    UniversalOutputPin(df::ISourceNode * node) : df::OutputPin(node) {}
+    UniversalOutputPinBase(df::ISourceNode * node) : 
+      df::OutputPin(node)
+    {}
 
-    typedef utils::ObjectWrapperT<T> Wrapper;
-    typedef typename Wrapper::ConstPtr ConstPtr;
+    typedef utils::ObjectWrapperConstPtr ConstPtr;
 
-    const ConstPtr value() const
+    const ConstPtr getWrapper() const
     {
         return val;
     }
 
-    void value(ConstPtr val) 
+    void setWrapper(ConstPtr val) 
     {
         this->val = val;
     }
@@ -46,112 +46,191 @@ private:
     ConstPtr val;
 };
 
-class PLUGIN_DFELEMENTS_EXPORT VectorOutputPin : public df::OutputPin, public df::IDFOutput, public vdf::IMDEOutputPin
+class UniversalOutputPin : public UniversalOutputPinBase
 {
-	MDE_OUTPUT_PIN(VectorChannelReaderInterface);
 public:
-    VectorOutputPin(df::ISourceNode * node);
+    UniversalOutputPin(df::ISourceNode* node, const utils::TypeInfo& info) : 
+      UniversalOutputPinBase(node),
+      info(info)
+    {}
+    virtual ~UniversalOutputPin() {}
 
-    const VectorChannelReaderInterfaceConstPtr value() const;
-    void value(VectorChannelReaderInterfaceConstPtr val);
-
-    virtual void reset();
-
-private:
-    VectorChannelReaderInterfaceConstPtr val;
-
+protected:
+    utils::TypeInfo info;
 };
 
-class PLUGIN_DFELEMENTS_EXPORT VectorInputPin : public df::InputPin, public df::IDFInput
+template <class T>
+class UniversalOutputPinT : public UniversalOutputPin
 {
 public:
-    VectorInputPin(df::ISinkNode * node);
+    typedef typename utils::ObjectWrapperT<T>::Ptr Ptr;
+    typedef typename utils::ObjectWrapperT<T>::ConstPtr ConstPtr;
+public:
+    UniversalOutputPinT (df::ISourceNode* node) : UniversalOutputPin(node, typeid(T)) {}
+    virtual ~UniversalOutputPinT() {}
+
+    ConstPtr getValue() { return getWrapper()->get(); }
+    void setValue(Ptr item)
+    {
+        utils::ObjectWrapperPtr wrapper = utils::ObjectWrapper::create<T>();
+        wrapper->set(item);
+        setWrapper(wrapper);
+    }
+};
+
+//! Klasa potrafi obs³u¿yæ piny, które implementuj¹ interfejs IMDEOutputPin
+class UniversalInputPinBase : public df::InputPin, public df::IDFInput
+{
+public:
+    //! 
+    //! \param node 
+    UniversalInputPinBase( df::ISinkNode * node);
 
 public:
-    virtual void copyData(const df::IDFOutput * pin);
+    //! 
     virtual void reset();
-    const VectorChannelReaderInterfaceConstPtr value() const;
+    //! 
+    //! \param pin 
+    void copyData( const df::IDFOutput * pin );
+    //! 
+    //! \param pin 
+    virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
+    //! 
+    utils::ObjectWrapperConstPtr getWrapper() const;
+    //! 
+    //! \param val 
+    void setWrapper(utils::ObjectWrapperConstPtr val);
+
+private:
+    utils::ObjectWrapperConstPtr wrapper;
+};
+
+class UniversalInputPin : public UniversalInputPinBase
+{
+public:
+    UniversalInputPin(df::ISinkNode* node, const utils::TypeInfo& info) : 
+        UniversalInputPinBase(node),
+        info(info)
+    {}
+    virtual ~UniversalInputPin() {}
 
     virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
 
-private:
-    VectorChannelReaderInterfaceConstPtr val;
+protected:
+    utils::TypeInfo info;
 };
 
-
-class PLUGIN_DFELEMENTS_EXPORT ScalarOutputPin : public df::OutputPin, public df::IDFOutput, public vdf::IMDEOutputPin
-{
-    MDE_OUTPUT_PIN(ScalarChannelReaderInterface);
-
-public:
-    ScalarOutputPin(df::ISourceNode * node) : df::OutputPin(node) {}
-
-    const ScalarChannelReaderInterfaceConstPtr value() const { return val; }
-    void value(ScalarChannelReaderInterfaceConstPtr val) { this->val = val; }
-
-    virtual void reset() { val = ScalarChannelReaderInterfaceConstPtr(); }
-
-private:
-    ScalarChannelReaderInterfaceConstPtr val;
-};
-
-class PLUGIN_DFELEMENTS_EXPORT ScalarInputPin : public df::InputPin, public df::IDFInput
+template <class T>
+class UniversalInputPinT : public UniversalInputPin
 {
 public:
-    ScalarInputPin(df::ISinkNode * node) : df::InputPin(node) {}
-
+    typedef typename utils::ObjectWrapperT<T>::Ptr Ptr;
+    typedef typename utils::ObjectWrapperT<T>::ConstPtr ConstPtr;
 public:
-    virtual void copyData(const df::IDFOutput * pin) { val = dynamic_cast<const ScalarOutputPin*>(pin)->value(); }
-    virtual void reset() { val = ScalarChannelReaderInterfaceConstPtr(); }
-    const ScalarChannelReaderInterfaceConstPtr value() const { return val; }
+    UniversalInputPinT(df::ISinkNode * node) : UniversalInputPin(node, typeid(T)) {}
+    virtual ~UniversalInputPinT() {}
 
-    virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
+    ConstPtr getValue() { return getWrapper()->get(); }
+    void setValue(Ptr item)
+    {
+        utils::ObjectWrapperPtr wrapper = utils::ObjectWrapper::create<T>();
+        wrapper->set(item);
+        setWrapper(wrapper);
+    }
 
 private:
-    ScalarChannelReaderInterfaceConstPtr val;
+    utils::TypeInfo info;
 };
 
-class PLUGIN_DFELEMENTS_EXPORT ChannelInputPin : public df::InputPin, public df::IDFInput
-{
-public:
-    ChannelInputPin(df::ISinkNode * node);
+typedef UniversalInputPinT<VectorChannelReaderInterface> VectorInputPin;
+typedef UniversalOutputPinT<VectorChannel> VectorOutputPin;
 
-public:
-    virtual void copyData(const df::IDFOutput * pin);
-    virtual void reset();
-    //const ScalarChannelReaderInterfaceConstPtr value() const;
-    ScalarChannelReaderInterfaceConstPtr getScalar() const { return scalar; }
-    VectorChannelReaderInterfaceConstPtr getVector() const { return vector; }
-
-    virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
-
-private:
-    ScalarChannelReaderInterfaceConstPtr scalar;
-    VectorChannelReaderInterfaceConstPtr vector;
-};
+typedef UniversalInputPinT<ScalarChannelReaderInterface> ScalarInputPin;
+typedef UniversalOutputPinT<ScalarChannel> ScalarOutputPin;
 
 
-//class ChannelOutputPin : public df::InputPin, public df::IDFInput
+//class PLUGIN_DFELEMENTS_EXPORT VectorOutputPin : public df::OutputPin, public df::IDFOutput, public vdf::IMDEOutputPin
+//{
+//	MDE_OUTPUT_PIN(VectorChannelReaderInterface);
+//public:
+//    VectorOutputPin(df::ISourceNode * node);
+//
+//    const VectorChannelReaderInterfaceConstPtr value() const;
+//    void value(VectorChannelReaderInterfaceConstPtr val);
+//
+//    virtual void reset();
+//
+//private:
+//    VectorChannelReaderInterfaceConstPtr val;
+//
+//};
+//
+//class PLUGIN_DFELEMENTS_EXPORT VectorInputPin : public df::InputPin, public df::IDFInput
 //{
 //public:
-//    ChannelOutputPin(df::ISinkNode * node);
+//    VectorInputPin(df::ISinkNode * node);
 //
 //public:
-//    virtual void reset()
-//    {
-//        scalar = ScalarChannelReaderInterfaceConstPtr(); 
-//        vector = VectorChannelReaderInterfaceConstPtr();
-//    }
+//    virtual void copyData(const df::IDFOutput * pin);
+//    virtual void reset();
+//    const VectorChannelReaderInterfaceConstPtr value() const;
+//
+//    virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
+//
+//private:
+//    VectorChannelReaderInterfaceConstPtr val;
+//};
+//
+//
+//class PLUGIN_DFELEMENTS_EXPORT ScalarOutputPin : public df::OutputPin, public df::IDFOutput, public vdf::IMDEOutputPin
+//{
+//    MDE_OUTPUT_PIN(ScalarChannelReaderInterface);
+//
+//public:
+//    ScalarOutputPin(df::ISourceNode * node) : df::OutputPin(node) {}
+//
+//    const ScalarChannelReaderInterfaceConstPtr value() const { return val; }
+//    void value(ScalarChannelReaderInterfaceConstPtr val) { this->val = val; }
+//
+//    virtual void reset() { val = ScalarChannelReaderInterfaceConstPtr(); }
+//
+//private:
+//    ScalarChannelReaderInterfaceConstPtr val;
+//};
+//
+//class PLUGIN_DFELEMENTS_EXPORT ScalarInputPin : public df::InputPin, public df::IDFInput
+//{
+//public:
+//    ScalarInputPin(df::ISinkNode * node) : df::InputPin(node) {}
+//
+//public:
+//    virtual void copyData(const df::IDFOutput * pin) { val = dynamic_cast<const ScalarOutputPin*>(pin)->value(); }
+//    virtual void reset() { val = ScalarChannelReaderInterfaceConstPtr(); }
+//    const ScalarChannelReaderInterfaceConstPtr value() const { return val; }
+//
+//    virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
+//
+//private:
+//    ScalarChannelReaderInterfaceConstPtr val;
+//};
+//
+//class PLUGIN_DFELEMENTS_EXPORT ChannelInputPin : public df::InputPin, public df::IDFInput
+//{
+//public:
+//    ChannelInputPin(df::ISinkNode * node);
+//
+//public:
+//    virtual void copyData(const df::IDFOutput * pin);
+//    virtual void reset();
 //    //const ScalarChannelReaderInterfaceConstPtr value() const;
-//    VectorChannelReaderInterfaceConstPtr getVector() const { return vector; }
-//    void setVector(VectorChannelReaderInterfaceConstPtr val) { vector = val; }
 //    ScalarChannelReaderInterfaceConstPtr getScalar() const { return scalar; }
-//    void setScalar(ScalarChannelReaderInterfaceConstPtr val) { scalar = val; }
+//    VectorChannelReaderInterfaceConstPtr getVector() const { return vector; }
+//
+//    virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
 //
 //private:
 //    ScalarChannelReaderInterfaceConstPtr scalar;
 //    VectorChannelReaderInterfaceConstPtr vector;
-//   
 //};
 
 #endif

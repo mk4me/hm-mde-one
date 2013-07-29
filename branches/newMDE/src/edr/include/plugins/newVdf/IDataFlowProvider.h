@@ -111,26 +111,26 @@ public:
 };
 DEFINE_SMART_POINTERS(IDataFlowProvider);
 
-class IMDEOutputPin
-{
-public:
-	virtual ~IMDEOutputPin() {}
+//class IMDEOutputPin
+//{
+//public:
+//	virtual ~IMDEOutputPin() {}
+//
+//public:
+//	virtual utils::ObjectWrapperConstPtr getWrapper() const = 0;
+//};
+//DEFINE_SMART_POINTERS(IMDEOutputPin);
 
-public:
-	virtual utils::ObjectWrapperConstPtr getWrapper() const = 0;
-};
-DEFINE_SMART_POINTERS(IMDEOutputPin);
-
-        // TODO : skorzystac z DHM                                          
-#define MDE_OUTPUT_PIN(Type)												\
-public:																		\
-	utils::ObjectWrapperConstPtr getWrapper() const 						\
-	{																		\
-		utils::ObjectWrapperPtr wrp = utils::ObjectWrapper::create<Type>();	\
-        auto ptr = utils::const_pointer_cast<Type>(value());                \
-		wrp->set(ptr);          											\
-		return wrp;															\
-	}
+//        // TODO : skorzystac z DHM                                          
+//#define MDE_OUTPUT_PIN(Type)												\
+//public:																		\
+//	utils::ObjectWrapperConstPtr getWrapper() const 						\
+//	{																		\
+//		utils::ObjectWrapperPtr wrp = utils::ObjectWrapper::create<Type>();	\
+//        auto ptr = utils::const_pointer_cast<Type>(value());                \
+//		wrp->set(ptr);          											\
+//		return wrp;															\
+//	}
 
 }
 

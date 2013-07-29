@@ -47,8 +47,8 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     connect(contextMenu, SIGNAL(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)), this, SLOT(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)));
     connect(visualizerFilter.get(), SIGNAL(focusOn(QWidget*)), this, SLOT(onVisualizerFocus(QWidget*)));
     
-    auto vdfService = core::queryServices<vdf::NewVdfService>(plugin::getServiceManager());
-    connect(vdfService.get(), SIGNAL(transferResults(core::IHierarchyItemPtr )), this, SLOT(addRoot(core::IHierarchyItemPtr)));
+    //auto vdfService = core::queryServices<vdf::NewVdfService>(plugin::getServiceManager());
+    //connect(vdfService.get(), SIGNAL(transferResults()), this, SLOT(addRoot(core::IHierarchyItemPtr)));
     connect(model.get(), SIGNAL(filterBundleAdded(core::IFilterBundlePtr)), this, SLOT(onFilterBundleAdded(core::IFilterBundlePtr)));
 
     connect(applyButton, SIGNAL(clicked()), this, SLOT(applyClicked()));

@@ -68,8 +68,8 @@ void MdeMainWindow::customViewInit(QWidget * console)
    memoryManager->addObserver(analysisModel);
    trySetStyleByName("hmm");
  
-   this->showFullScreen();
-
+   //this->showFullScreen();
+   
    auto sourceManager = plugin::getSourceManager();
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {
        auto source = sourceManager->getSource(i);

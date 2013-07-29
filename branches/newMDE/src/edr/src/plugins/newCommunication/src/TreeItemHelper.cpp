@@ -1,4 +1,4 @@
-#include "TreeItemHelper.h"
+#include <plugins/newCommunication/TreeItemHelper.h>
 #include <QtGui/QHBoxLayout>
 #include <corelib/IVisualizerManager.h>
 #include <plugins/newChart/INewChartVisualizer.h>

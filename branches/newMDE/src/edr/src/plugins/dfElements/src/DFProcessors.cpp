@@ -4,8 +4,8 @@
 
 void VectorDiff::process()
 {
-    VectorChannelReaderInterfaceConstPtr signal1 = inPinA->value();
-    VectorChannelReaderInterfaceConstPtr signal2 = inPinB->value();
+    VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
+    VectorChannelReaderInterfaceConstPtr signal2 = inPinB->getValue();
 
     if (signal1 && signal2) {
         VectorChannelPtr channel(new VectorChannel(signal1->size() / signal1->getLength()));
@@ -16,7 +16,7 @@ void VectorDiff::process()
             auto val = signal1->value(i) - signal2->value(i);
             channel->addPoint(val);
         }
-        outPinA->value(channel);
+        outPinA->setValue(channel);
     } else {
 
     }
@@ -29,9 +29,9 @@ void VectorDiff::reset()
 
 VectorDiff::VectorDiff()
 {
-    inPinA = new VectorInputPin(this);
-    inPinB = new VectorInputPin(this);
-    outPinA = new VectorOutputPin(this);
+    inPinA = new UniversalInputPinT<VectorChannelReaderInterface>(this);
+    inPinB = new UniversalInputPinT<VectorChannelReaderInterface>(this);
+    outPinA = new UniversalOutputPinT<VectorChannel>(this);
     addInputPin(inPinA);
     addInputPin(inPinB);
     addOutputPin(outPinA);
@@ -54,8 +54,8 @@ void VectorAdder::reset()
 
 void VectorAdder::process()
 {
-    VectorChannelReaderInterfaceConstPtr signal1 = inPinA->value();
-    VectorChannelReaderInterfaceConstPtr signal2 = inPinB->value();
+    VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
+    VectorChannelReaderInterfaceConstPtr signal2 = inPinB->getValue();
 
     if (signal1 && signal2) {
         VectorChannelPtr channel(new VectorChannel(signal1->size() / signal1->getLength()));
@@ -66,7 +66,7 @@ void VectorAdder::process()
             auto val = signal1->value(i) + signal2->value(i);
             channel->addPoint(val);
         }
-        outPinA->value(channel);
+        outPinA->setValue(channel);
     } else {
 
     }
@@ -91,7 +91,7 @@ void Vector2Scalar::reset()
 
 void Vector2Scalar::process()
 {
-    VectorChannelReaderInterfaceConstPtr signal1 = inPinA->value();
+    VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
     if (signal1) {
         float samplesPS = signal1->size() / signal1->getLength();
         ScalarChannelPtr channelX(new ScalarChannel(samplesPS)); channelX->setName("X");
@@ -106,9 +106,9 @@ void Vector2Scalar::process()
             channelY->addPoint(val[1]);
             channelZ->addPoint(val[2]);
         }
-        outPinX->value(channelX);
-        outPinY->value(channelY);
-        outPinZ->value(channelZ);
+        outPinX->setValue(channelX);
+        outPinY->setValue(channelY);
+        outPinZ->setValue(channelZ);
     } else {
 
     }
@@ -133,9 +133,9 @@ void Scalar2Vector::reset()
 
 void Scalar2Vector::process()
 {
-    ScalarChannelReaderInterfaceConstPtr signal1 = inPinX->value();
-    ScalarChannelReaderInterfaceConstPtr signal2 = inPinY->value();
-    ScalarChannelReaderInterfaceConstPtr signal3 = inPinZ->value();
+    ScalarChannelReaderInterfaceConstPtr signal1 = inPinX->getValue();
+    ScalarChannelReaderInterfaceConstPtr signal2 = inPinY->getValue();
+    ScalarChannelReaderInterfaceConstPtr signal3 = inPinZ->getValue();
     if (signal1 && signal2 && signal3) {
         float samplesPS = signal1->size() / signal1->getLength();
         VectorChannelPtr channel(new VectorChannel(samplesPS)); 
@@ -148,7 +148,7 @@ void Scalar2Vector::process()
             osg::Vec3 val(signal1->value(i), signal2->value(i), signal3->value(i));
             channel->addPoint(val);
         }
-        outPinA->value(channel);
+        outPinA->setValue(channel);
     } else {
 
     }

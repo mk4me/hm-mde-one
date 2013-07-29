@@ -37,7 +37,6 @@ SET_PRIVATE_HEADERS(
 	ServerStatusManager.h
 	CommunicationPCH.h
 	TreeBuilder.h
-	TreeItemHelper.h
 )
 
 SET_PUBLIC_HEADERS (
@@ -59,6 +58,9 @@ SET_PUBLIC_HEADERS (
 	IDataSourcePerspectiveManager.h
 	IDataSourceStatus.h
 	IDataSourceStatusManager.h
+	MultiserieColorStrategy.h
+	TreeItemHelper.h
+	Export.h
 )
 
 #------------------------------------------------------------------------------

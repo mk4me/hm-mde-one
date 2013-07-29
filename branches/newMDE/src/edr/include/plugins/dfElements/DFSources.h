@@ -21,8 +21,7 @@
 #include <plugins/c3d/C3DCollections.h>
 //#include <plugins/newVdf/TreeBuilder.h>
 
-
-template <class PinT>
+template<class T>
 class UniversalSource : public df::SourceNode, public df::IDFSource, public vdf::INodeConfiguration, public vdf::INodeValidation, public vdf::INodeHierarchyObserver
 {
 public:
@@ -31,7 +30,7 @@ public:
           tree = new QTreeView();
           tree->setModel(&model);
           tree->setHeaderHidden(true);
-          outPinA = new UniversalOutputPin<PinT>(this);
+          outPinA = new UniversalOutputPinT<T>(this);
           addOutputPin(outPinA);
           used = false;
       }
@@ -51,7 +50,7 @@ public:
         auto item = tryGetSelectedItem();
         auto dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
         if (dataItem && dataItem->getData()) {
-            outPinA->value(dataItem->getData()->get());
+            outPinA->setWrapper(dataItem->getData());
         }
     }
 
@@ -97,9 +96,9 @@ private:
 
 
 private:
-    UniversalOutputPin<PinT> * outPinA;
+    UniversalOutputPin * outPinA;
     QTreeView* tree;
-    typename UniversalOutputPin<PinT>::ConstPtr channel;
+    UniversalOutputPin::ConstPtr channel;
     bool used;
     QIcon rootIcon;
     QIcon leafIcon;

@@ -23,9 +23,9 @@ public:
     virtual void process();
 
 private:
-    VectorInputPin * inPinA;
-    VectorInputPin * inPinB;
-    VectorOutputPin * outPinA;
+    UniversalInputPinT<VectorChannelReaderInterface> * inPinA;
+    UniversalInputPinT<VectorChannelReaderInterface> * inPinB;
+    UniversalOutputPinT<VectorChannel>* outPinA;
     std::string name;
 };
 
@@ -39,9 +39,9 @@ public:
     virtual void process();
 
 private:
-    VectorInputPin * inPinA;
-    VectorInputPin * inPinB;
-    VectorOutputPin * outPinA;
+    UniversalInputPinT<VectorChannelReaderInterface> * inPinA;
+    UniversalInputPinT<VectorChannelReaderInterface> * inPinB;
+    UniversalOutputPinT<VectorChannel> * outPinA;
     std::string name;
 };
 
@@ -64,7 +64,7 @@ public:
     virtual SimpleOutT processSingleValue(const SimpleInT& val) = 0;
     virtual void process()
     {
-        InputPtr signal1 = inPinA->value();
+        InputPtr signal1 = inPinA->getValue();
 
         if (signal1) {
             OutputPtr channel(new typename OutputPtr::element_type(signal1->size() / signal1->getLength()));
@@ -74,7 +74,7 @@ public:
             for (size_type i = 0; i < count; ++i) {
                 channel->addPoint(processSingleValue(signal1->value(i)));
             }
-            outPinA->value(channel);
+            outPinA->setValue(channel);
         } else {
 
         }
@@ -108,8 +108,8 @@ public:
     virtual SimpleOutT processSingleValue(const SimpleInT& v1, const SimpleInT& v2) = 0;
     virtual void process()
     {
-        InputPtr signal1 = inPinA->value();
-        InputPtr signal2 = inPinB->value();
+        InputPtr signal1 = inPinA->getValue();
+        InputPtr signal2 = inPinB->getValue();
 
         if (signal1 && signal2) {
             OutputPtr channel(new typename OutputPtr::element_type(signal1->size() / signal1->getLength()));
@@ -120,7 +120,7 @@ public:
                 auto val = processSingleValue(signal1->value(i), signal2->value(i));
                 channel->addPoint(val);
             }
-            outPinA->value(channel);
+            outPinA->setValue(channel);
         } else {
 
         }

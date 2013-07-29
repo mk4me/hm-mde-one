@@ -127,6 +127,7 @@ void NewVdfService::update( double time )
 
 void NewVdfService::init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager )
 {
+    this->memoryManager = memoryDataManager;
     auto memoryManager = plugin::getHierarchyManagerReader();
     memoryManager->addObserver(shared_from_this());
 }
@@ -170,6 +171,10 @@ void vdf::NewVdfService::onTransferResults()
     for (int i = 0; i < count; ++i) {
         root->appendChild(resultsModel.getChild(i));
     }
-    emit transferResults(root);
+
+    auto transaction = this->memoryManager->hierarchyTransaction();
+    transaction->addRoot(root);
+
+    emit transferResults();
 }
 

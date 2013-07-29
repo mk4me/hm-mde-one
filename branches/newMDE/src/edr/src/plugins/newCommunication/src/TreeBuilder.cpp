@@ -7,9 +7,8 @@
 #include <corelib/HierarchyDataItem.h>
 #include <utils/ObjectWrapper.h>
 #include "TreeBuilder.h"
-#include "TreeItemHelper.h"
+#include <plugins/newCommunication/TreeItemHelper.h>
 #include <kinematiclib/JointAnglesCollection.h>
-#include "TreeItemHelper.h"
 #include <plugins/video/Wrappers.h>
 #include <boost/foreach.hpp>
 #include <plugins/subject/ISubject.h>
