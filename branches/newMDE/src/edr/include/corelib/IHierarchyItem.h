@@ -17,8 +17,8 @@
 namespace core {
 class IHierarchyItem;
 DEFINE_SMART_POINTERS(IHierarchyItem);
-
-
+class IHierarchyItem;
+DEFINE_SMART_POINTERS(IHierarchyItem);
 //! Postawowy interfejs, na którym opiera siê hierarchiczna struktura danych
 class IHierarchyItem
 {
@@ -37,8 +37,9 @@ public:
     virtual QIcon getIcon() const = 0;
     virtual void setParent(IHierarchyItemConstPtr parent) = 0;
     virtual QString getDescription() const = 0;
+    virtual IHierarchyItemPtr shallowCopy() const = 0;
 };
-DEFINE_SMART_POINTERS(IHierarchyItem);
+
 
 }
 

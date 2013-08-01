@@ -3,7 +3,6 @@
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>
 #include <corelib/IDataHierarchyManagerReader.h>
-//#include "TreeBuilder.h"
 #include <QtGui/QDockWidget>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <corelib/IServiceManager.h>

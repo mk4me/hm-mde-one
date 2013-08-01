@@ -23,9 +23,9 @@ public:
     virtual void process();
 
 private:
-    UniversalInputPinT<VectorChannelReaderInterface> * inPinA;
-    UniversalInputPinT<VectorChannelReaderInterface> * inPinB;
-    UniversalOutputPinT<VectorChannel>* outPinA;
+    VectorInputPin* inPinA;
+    VectorInputPin* inPinB;
+    VectorOutputPin* outPinA;
     std::string name;
 };
 
@@ -39,9 +39,9 @@ public:
     virtual void process();
 
 private:
-    UniversalInputPinT<VectorChannelReaderInterface> * inPinA;
-    UniversalInputPinT<VectorChannelReaderInterface> * inPinB;
-    UniversalOutputPinT<VectorChannel> * outPinA;
+    VectorInputPin* inPinA;
+    VectorInputPin* inPinB;
+    VectorOutputPin* outPinA;
     std::string name;
 };
 

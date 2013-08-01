@@ -43,8 +43,8 @@ public:
     void removeRootItem(core::IHierarchyItemConstPtr root);
     void updateItem(core::IHierarchyItemConstPtr item);
     void clear();
-    int getNumChildren() const { return rootItem->getNumChildren(); }
-    core::IHierarchyItemConstPtr getChild(int idx) { return rootItem->getChild(idx); }
+    int getNumChildren() const;
+    core::IHierarchyItemConstPtr getChild(int idx);
     
     core::IHierarchyItemConstPtr internalSmart(const QModelIndex& idx) const;
 
@@ -57,7 +57,8 @@ private:
     
 private:
     mutable std::map<const void*, core::IHierarchyItemConstPtr> raw2Smart;
-    core::IHierarchyItemPtr rootItem;
+    //core::IHierarchyItemPtr rootItem;
+    std::vector<core::IHierarchyItemConstPtr> roots;
 
 };
 

@@ -37,7 +37,9 @@ public:
 
     virtual QString getDescription() const;
 
-private:
+    virtual IHierarchyItemPtr shallowCopy() const;
+
+protected:
     QList<IHierarchyItemConstPtr> childItems;
     QString name;
     QString desc;

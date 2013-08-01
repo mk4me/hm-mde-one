@@ -97,3 +97,14 @@ QString core::HierarchyItem::getDescription() const
 {
     return desc;
 }
+
+core::IHierarchyItemPtr core::HierarchyItem::shallowCopy() const
+{
+    auto hi = utils::make_shared<core::HierarchyItem>(*this);
+    hi->childItems.clear();
+    for (auto it = childItems.begin(); it != childItems.end(); ++it) {
+        hi->appendChild((*it)->shallowCopy());
+    }
+    
+    return hi;
+}

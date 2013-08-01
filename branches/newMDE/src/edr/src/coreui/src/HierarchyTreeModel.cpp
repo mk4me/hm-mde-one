@@ -11,14 +11,8 @@ using namespace coreui;
 HierarchyTreeModel::HierarchyTreeModel(QObject *parent) :
     QAbstractItemModel(parent)
 {
-    rootItem = core::IHierarchyItemPtr(new core::HierarchyItem("",""));
+    
 }
-
-//HierarchyTreeModel::HierarchyTreeModel( core::IHierarchyItemConstPtr root, QObject* parent /*= nullptr*/ ) :
-//    QAbstractItemModel(parent)
-//{
-//    addRootItem(root);
-//}
 
 HierarchyTreeModel::~HierarchyTreeModel()
 {
@@ -68,15 +62,15 @@ QModelIndex HierarchyTreeModel::index(int row, int column, const QModelIndex &pa
         return QModelIndex();
     }
 
-    core::IHierarchyItemConstPtr parentItem;
 
+    core::IHierarchyItemConstPtr childItem;
     if (!parent.isValid()) {
-        parentItem = rootItem;
+        childItem = roots[row];
     } else {
-        parentItem = internalSmart(parent);
+        core::IHierarchyItemConstPtr parentItem = internalSmart(parent);
+        childItem = parentItem->getChild(row);
     }
 
-    core::IHierarchyItemConstPtr childItem = parentItem->getChild(row);
     if (childItem) {
         return createSmartIndex(row, column, childItem);
     } else {
@@ -93,7 +87,7 @@ QModelIndex HierarchyTreeModel::parent(const QModelIndex &index) const
     core::IHierarchyItemConstPtr childItem = internalSmart(index);
     core::IHierarchyItemConstPtr parentItem = childItem->getParent();
 
-    if (!parentItem || parentItem == rootItem) {
+    if (!parentItem) {
         return QModelIndex();
     }
 
@@ -108,11 +102,11 @@ int HierarchyTreeModel::rowCount(const QModelIndex &parent) const
     }
 
     if (!parent.isValid()) {
-        parentItem = rootItem;
-    } else {
-        parentItem = internalSmart(parent);
+        return getNumChildren();
     }
 
+
+    parentItem = internalSmart(parent);
     return parentItem ? parentItem->getNumChildren() : 0;
 }
 
@@ -120,11 +114,14 @@ int HierarchyTreeModel::rowCount(const QModelIndex &parent) const
 
 void HierarchyTreeModel::addRootItem( core::IHierarchyItemConstPtr root )
 {
-    //raw2Smart.clear();
-    rootItem->appendChild(root);
-
-    // TODO : zrobic to wlasciwie, nie trzeba odswiezac calego drzewa
-    this->reset();
+    auto it = std::find(roots.begin(), roots.end(), root);
+    if (it != roots.end()) {
+        throw std::runtime_error("Root item is already present in tree model");
+    } else {
+        // TODO : zrobic to wlasciwie, nie trzeba odswiezac calego drzewa
+        this->reset();
+        roots.push_back(root);
+    }
 }
 
 QModelIndex HierarchyTreeModel::createSmartIndex( int row, int col, core::IHierarchyItemConstPtr ptr ) const
@@ -155,9 +152,14 @@ void HierarchyTreeModel::updateItem( core::IHierarchyItemConstPtr item )
 
 void HierarchyTreeModel::removeRootItem( core::IHierarchyItemConstPtr root )
 {
-    UTILS_ASSERT(hasChild(rootItem, root));
-    // TODO : usunac wpisy z mapy...
-    rootItem->removeChild(root);
+    auto it = std::find(roots.begin(), roots.end(), root);
+    if (it != roots.end()) {
+        // TODO : usunac wpisy z mapy...
+       roots.erase(it);
+    } else {
+        throw std::runtime_error("Unable to remove root item from hierarchy tree model");
+    }
+    
 }
 
 bool HierarchyTreeModel::hasChild( core::IHierarchyItemConstPtr parent, core::IHierarchyItemConstPtr child ) const
@@ -175,11 +177,7 @@ bool HierarchyTreeModel::hasChild( core::IHierarchyItemConstPtr parent, core::IH
 
 void coreui::HierarchyTreeModel::clear()
 {
-    auto count = rootItem->getNumChildren();
-    for (auto i = count - 1; i >= 0; --i) {
-        auto child = rootItem->getChild(i);
-        rootItem->removeChild(child);
-    }
+    roots.clear();
 }
 
 void coreui::HierarchyTreeModel::applyChange( const core::IMemoryDataManagerHierarchy::HierarchyChange& change )
@@ -204,4 +202,14 @@ void coreui::HierarchyTreeModel::applyChanges( const core::IMemoryDataManagerHie
     for (auto it = changes.begin(); it != changes.end(); ++it) {
         applyChange(*it);
     }
+}
+
+int coreui::HierarchyTreeModel::getNumChildren() const
+{
+    return roots.size();
+}
+
+core::IHierarchyItemConstPtr coreui::HierarchyTreeModel::getChild( int idx )
+{
+    return roots[idx];
 }

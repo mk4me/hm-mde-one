@@ -68,7 +68,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
    memoryManager->addObserver(analysisModel);
    trySetStyleByName("hmm");
  
-   //this->showFullScreen();
+   this->showFullScreen();
    
    auto sourceManager = plugin::getSourceManager();
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {
@@ -205,9 +205,11 @@ void MdeMainWindowController::activateTab( IMdeTabPtr tab )
     for (auto it = button2TabWindow.begin(); it != button2TabWindow.end(); ++it) {
         IMdeTabPtr t = it->second;
         t->setActive(t == tab);
-        t->getMainWidget()->setVisible(t == tab);
+        t->getMainWidget()->setVisible(false);
         it->first->setChecked( t == tab);
     }
+
+    tab->getMainWidget()->setVisible(true);
 }
 
 

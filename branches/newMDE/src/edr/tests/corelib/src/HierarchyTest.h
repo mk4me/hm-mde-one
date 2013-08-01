@@ -19,11 +19,20 @@ class HierarchyTest : public CppUnit::TestFixture
 {
     CPPUNIT_TEST_SUITE(HierarchyTest);
         CPPUNIT_TEST(testHierarchyHelper);
+        CPPUNIT_TEST(testShallowCopy);
+        CPPUNIT_TEST(testModel);
+        CPPUNIT_TEST(testModelView);
     CPPUNIT_TEST_SUITE_END();
 
 public:
     virtual void setUp();
     void testHierarchyHelper();
+    void testShallowCopy();
+    void testModel();
+    void testModelView();
+
+private:
+    core::IHierarchyItemPtr createSimpleTree();
 };
 
 #endif

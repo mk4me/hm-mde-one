@@ -55,6 +55,8 @@ public:
     {}
     virtual ~UniversalOutputPin() {}
 
+    utils::TypeInfo getInfo() const { return info; }
+
 protected:
     utils::TypeInfo info;
 };
@@ -115,6 +117,7 @@ public:
     virtual ~UniversalInputPin() {}
 
     virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
+    utils::TypeInfo getInfo() const { return info; }
 
 protected:
     utils::TypeInfo info;
@@ -143,10 +146,10 @@ private:
 };
 
 typedef UniversalInputPinT<VectorChannelReaderInterface> VectorInputPin;
-typedef UniversalOutputPinT<VectorChannel> VectorOutputPin;
+typedef UniversalOutputPinT<VectorChannelReaderInterface> VectorOutputPin;
 
 typedef UniversalInputPinT<ScalarChannelReaderInterface> ScalarInputPin;
-typedef UniversalOutputPinT<ScalarChannel> ScalarOutputPin;
+typedef UniversalOutputPinT<ScalarChannelReaderInterface> ScalarOutputPin;
 
 
 //class PLUGIN_DFELEMENTS_EXPORT VectorOutputPin : public df::OutputPin, public df::IDFOutput, public vdf::IMDEOutputPin

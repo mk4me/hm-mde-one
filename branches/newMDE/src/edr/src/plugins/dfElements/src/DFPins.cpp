@@ -9,9 +9,9 @@ UniversalInputPinBase::UniversalInputPinBase( df::ISinkNode * node ) :
 
 const bool UniversalInputPin::pinCompatible( const df::IOutputPin * pin ) const
 {
-    const UniversalInputPin* ip = dynamic_cast<const UniversalInputPin*>(pin);
-    if (ip) {
-        return ip->info == this->info;
+    const UniversalOutputPin* op = dynamic_cast<const UniversalOutputPin*>(pin);
+    if (op) {
+        return op->getInfo() == this->info;
     }
 
     return false;

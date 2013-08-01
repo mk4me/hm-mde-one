@@ -70,3 +70,14 @@ std::list<HierarchyHelperPtr> core::HierarchyDataItem::getHelpers() const
 
     return helpers;
 }
+
+core::IHierarchyItemPtr core::HierarchyDataItem::shallowCopy() const
+{
+    auto hi = utils::make_shared<core::HierarchyDataItem>(*this);
+    hi->childItems.clear();
+    for (auto it = childItems.begin(); it != childItems.end(); ++it) {
+        hi->appendChild((*it)->shallowCopy());
+    }
+    
+    return hi;
+}

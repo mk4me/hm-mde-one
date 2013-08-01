@@ -29,9 +29,9 @@ void VectorDiff::reset()
 
 VectorDiff::VectorDiff()
 {
-    inPinA = new UniversalInputPinT<VectorChannelReaderInterface>(this);
-    inPinB = new UniversalInputPinT<VectorChannelReaderInterface>(this);
-    outPinA = new UniversalOutputPinT<VectorChannel>(this);
+    inPinA = new VectorInputPin(this);
+    inPinB = new VectorInputPin(this);
+    outPinA = new VectorOutputPin(this);
     addInputPin(inPinA);
     addInputPin(inPinB);
     addOutputPin(outPinA);

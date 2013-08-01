@@ -72,6 +72,8 @@ namespace core {
         //! \param helper 
         void addHelper(HierarchyHelperPtr helper);
 
+        virtual IHierarchyItemPtr shallowCopy() const;
+
     private:
         std::list<HierarchyHelperPtr> helpers;
         utils::ObjectWrapperConstPtr data;
