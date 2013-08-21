@@ -22,40 +22,27 @@
 class PLUGIN_DFELEMENTS_EXPORT UniversalOutputPinBase : public df::OutputPin, public df::IDFOutput
 {
 public:
-    UniversalOutputPinBase(df::ISourceNode * node) : 
-      df::OutputPin(node)
-    {}
+    UniversalOutputPinBase(df::ISourceNode * node);
 
     typedef utils::ObjectWrapperConstPtr ConstPtr;
 
-    const ConstPtr getWrapper() const
-    {
-        return val;
-    }
+    const ConstPtr getWrapper() const;
 
-    void setWrapper(ConstPtr val) 
-    {
-        this->val = val;
-    }
+    void setWrapper(ConstPtr val);
 
-    virtual void reset() {
-        val = ConstPtr();
-    }
+    virtual void reset();
 
 private:
     ConstPtr val;
 };
 
-class UniversalOutputPin : public UniversalOutputPinBase
+class PLUGIN_DFELEMENTS_EXPORT UniversalOutputPin : public UniversalOutputPinBase
 {
 public:
-    UniversalOutputPin(df::ISourceNode* node, const utils::TypeInfo& info) : 
-      UniversalOutputPinBase(node),
-      info(info)
-    {}
-    virtual ~UniversalOutputPin() {}
+    UniversalOutputPin(df::ISourceNode* node, const utils::TypeInfo& info);
+    virtual ~UniversalOutputPin();
 
-    utils::TypeInfo getInfo() const { return info; }
+    utils::TypeInfo getInfo() const;
 
 protected:
     utils::TypeInfo info;
@@ -81,7 +68,7 @@ public:
 };
 
 //! Klasa potrafi obs³u¿yæ piny, które implementuj¹ interfejs IMDEOutputPin
-class UniversalInputPinBase : public df::InputPin, public df::IDFInput
+class PLUGIN_DFELEMENTS_EXPORT UniversalInputPinBase : public df::InputPin, public df::IDFInput
 {
 public:
     //! 
@@ -107,17 +94,14 @@ private:
     utils::ObjectWrapperConstPtr wrapper;
 };
 
-class UniversalInputPin : public UniversalInputPinBase
+class PLUGIN_DFELEMENTS_EXPORT UniversalInputPin : public UniversalInputPinBase
 {
 public:
-    UniversalInputPin(df::ISinkNode* node, const utils::TypeInfo& info) : 
-        UniversalInputPinBase(node),
-        info(info)
-    {}
-    virtual ~UniversalInputPin() {}
+    UniversalInputPin(df::ISinkNode* node, const utils::TypeInfo& info);
+    virtual ~UniversalInputPin();
 
     virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
-    utils::TypeInfo getInfo() const { return info; }
+    utils::TypeInfo getInfo() const;
 
 protected:
     utils::TypeInfo info;

@@ -11,6 +11,9 @@ ADD_PROJECT(coreui "BOOST;utils;QT;TINYXML;corelib;OPENGL;corelib")
 
 SET_PROJECTS_GROUP("plugins")
 ADD_PROJECT(plugin_c3d "BOOST;corelib;c3dlib;kinematiclib" "plugins/c3d")
+#ADD_PROJECT(plugin_dicom "BOOST;corelib;DCMTK;STDINT" "plugins/dicom")
+#ADD_PROJECT(plugin_fileSource "BOOST;corelib" "plugins/fileSource")
+#ADD_PROJECT(plugin_sampleService "BOOST;corelib" "plugins/sampleService")
 ADD_PROJECT(plugin_video "OSG;QT;vidlib;FFMPEG;TINYXML;corelib;osgui" "plugins/video")
 ADD_PROJECT(plugin_newTimeline "BOOST;QT;QWT;corelib;timelinelib;OPENTHREADS" "plugins/newTimeline")
 ADD_PROJECT(plugin_kinematic "QT;BOOST;corelib;coreui;plugin_c3d;kinematiclib;OSG;c3dlib;osgui" "plugins/kinematic")
@@ -26,7 +29,7 @@ ADD_PROJECT(plugin_dfElements "BOOST;QT;dflib;corelib;coreui;utils;plugin_newVdf
 SET_PROJECTS_GROUP("view")
 #ADD_PROJECT(hmmlib  "BOOST;UTILS;OSG;QT;TINYXML;core;corelib;coreui;C3DLIB;QWT;VIDLIB;plugin_newVdf;plugin_dfElements;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject")
 ADD_PROJECT(old_view "BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;plugin_newTimeline;OPENGL;c3dlib")
-ADD_PROJECT(hmm_view "core;corelib;coreui;plugin_dfElements;plugin_newVdf;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject;plugin_hmm")
+#ADD_PROJECT(hmm_view "core;corelib;coreui;plugin_dfElements;plugin_newVdf;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject;plugin_hmm")
 ADD_PROJECT(mde_view "core;corelib;coreui;utils;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
 
 

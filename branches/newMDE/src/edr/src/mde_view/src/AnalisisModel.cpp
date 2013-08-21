@@ -169,13 +169,14 @@ void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core:
     if (!series.empty()) {
 
         DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
-        desc->channel = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+        auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+        desc->channel = channels;
         desc->path = path.toStdString();
         addVisualizerDataDescription(helper, desc);
 
         auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
         //timeline->addChannel(desc.path, desc.channel);
-        auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+        
         timeline->addChannel(path.toStdString(), channels);
 
         for(auto it = series.begin(); it != series.end(); ++it){

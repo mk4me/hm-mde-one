@@ -3,6 +3,7 @@
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
 #include "coreui/HierarchyTreeModel.h"
+#include <QtGui/QTreeView>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( HierarchyTest );
@@ -168,7 +169,15 @@ void HierarchyTest::testModel()
 
 void HierarchyTest::testModelView()
 {
-    core::IHierarchyItemPtr rootItem = createSimpleTree();
+    core::IHierarchyItemPtr rootItem1 = createSimpleTree();
+    core::IHierarchyItemPtr rootItem2 = createSimpleTree();
+    core::IHierarchyItemPtr rootItem3 = createSimpleTree();
+    coreui::HierarchyTreeModel model;
+    model.addRootItem(rootItem1);
+    model.addRootItem(rootItem2);
+    model.addRootItem(rootItem3);
+    QTreeView view;
+    view.setModel(&model);
 }
 
 core::IHierarchyItemPtr HierarchyTest::createSimpleTree()

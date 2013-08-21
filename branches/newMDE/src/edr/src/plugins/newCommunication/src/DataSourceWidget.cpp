@@ -1889,7 +1889,11 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		}
 
         auto root = TreeBuilder::createTree("SUB", subPtr);
-        hierarchyTransaction->addRoot(root);
+        int childCount = root->getNumChildren();
+        for (int c = 0; c < childCount; ++c) {
+            hierarchyTransaction->addRoot(root->getChild(c));
+        }
+        
 	}
 }
 
