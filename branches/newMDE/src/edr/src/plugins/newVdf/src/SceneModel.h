@@ -20,6 +20,12 @@
 //#include <plugins/newVdf/TreeBuilder.h>
 #include <corelib/IDataManagerReader.h>
 
+namespace utils {
+
+	class IThreadPool;
+
+}
+
 namespace vdf {
 
 class IVisualItem;
@@ -57,6 +63,7 @@ private:
 class SceneModel : public QObject
 {
     Q_OBJECT;
+
 public:
 	struct Connections
 	{
@@ -147,6 +154,7 @@ private:
 	IModelPtr model;
 	mutable Connections pinsHelper;
 	std::vector<MergedItemPtr> mergedItems;
+	core::shared_ptr<utils::IThreadPool> dfThreadFactory;
 };
 DEFINE_SMART_POINTERS(SceneModel);
 }
