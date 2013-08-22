@@ -169,7 +169,8 @@ void vdf::NewVdfService::onTransferResults()
     core::HierarchyItemPtr root(new core::HierarchyItem(tr("Processed"), QString()));
     auto count = resultsModel.getNumChildren();
     for (int i = count - 1; i >= 0; --i) {
-        root->appendChild(resultsModel.getChild(i));
+        core::IHierarchyItemPtr itm = utils::const_pointer_cast<core::IHierarchyItem>(resultsModel.getChild(i));
+        root->appendChild(itm);
     }
 
     auto transaction = this->memoryManager->hierarchyTransaction();

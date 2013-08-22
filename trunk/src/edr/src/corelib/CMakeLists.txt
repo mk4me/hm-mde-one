@@ -1,6 +1,7 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
+	AbstractFilterCommand.h
 	BaseDataTypes.h
 	DataAccessors.h
 	Filesystem.h
@@ -51,6 +52,7 @@ SET_PUBLIC_HEADERS(
 )
 
 SET_SOURCE_FILES(
+	AbstractFilterCommand.cpp
 	Filesystem.cpp
 	Visualizer.cpp
 	FilterBundle.cpp

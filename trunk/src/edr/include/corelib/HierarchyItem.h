@@ -24,8 +24,8 @@ public:
     virtual ~HierarchyItem();
 
 public:
-    virtual void appendChild(IHierarchyItemConstPtr child);
-    virtual void removeChild(IHierarchyItemConstPtr child);
+    virtual void appendChild(IHierarchyItemPtr child);
+    virtual void removeChild(IHierarchyItemPtr child);
     virtual IHierarchyItemConstPtr getChild(int row) const;
     virtual int getNumChildren() const;
     virtual int getIndex() const;
@@ -33,11 +33,11 @@ public:
     virtual IHierarchyItemConstPtr getParent() const;
     virtual QString getName() const;
     virtual QIcon getIcon() const;
-    virtual void setParent(IHierarchyItemConstPtr parent);
+    virtual void setParent(IHierarchyItemPtr parent);
 
     virtual QString getDescription() const;
 
-    virtual IHierarchyItemPtr shallowCopy() const;
+    virtual IHierarchyItemPtr shallowCopy(bool withChildren = true) const;
 
 protected:
     QList<IHierarchyItemConstPtr> childItems;

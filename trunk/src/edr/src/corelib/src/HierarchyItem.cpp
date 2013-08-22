@@ -15,7 +15,7 @@ HierarchyItem::~HierarchyItem()
 {
 }
 
-void HierarchyItem::appendChild(IHierarchyItemConstPtr item)
+void HierarchyItem::appendChild(IHierarchyItemPtr item)
 {
     childItems.append(item);
     IHierarchyItemPtr ptr = utils::const_pointer_cast<IHierarchyItem>(item);
@@ -68,7 +68,7 @@ int HierarchyItem::getChildIndex( IHierarchyItemConstPtr child ) const
     return childItems.indexOf(utils::const_pointer_cast<IHierarchyItem>(child));
 }
 
-void HierarchyItem::setParent( IHierarchyItemConstPtr parent )
+void HierarchyItem::setParent( IHierarchyItemPtr parent )
 {
     if (this->getParent() && this->getParent()->getChildIndex(shared_from_this()) != -1) {
         auto ptr = utils::const_pointer_cast<IHierarchyItem>(this->getParent());
@@ -82,12 +82,12 @@ void HierarchyItem::setParent( IHierarchyItemConstPtr parent )
     }
 }
 
-void HierarchyItem::removeChild( IHierarchyItemConstPtr child )
+void HierarchyItem::removeChild( IHierarchyItemPtr child )
 {
     if(childItems.indexOf(child) != -1) {
         childItems.removeOne(child);
-        auto ptr = utils::const_pointer_cast<IHierarchyItem>(child);
-        ptr->setParent(IHierarchyItemConstPtr());
+        //auto ptr = utils::const_pointer_cast<IHierarchyItem>(child);
+        child->setParent(IHierarchyItemPtr());
     } else {
         throw std::runtime_error("HierarchyItem : child was not found");
     }
@@ -98,13 +98,15 @@ QString core::HierarchyItem::getDescription() const
     return desc;
 }
 
-core::IHierarchyItemPtr core::HierarchyItem::shallowCopy() const
+core::IHierarchyItemPtr core::HierarchyItem::shallowCopy(bool withChildren) const
 {
     auto hi = utils::make_shared<core::HierarchyItem>(*this);
     hi->childItems.clear();
-    for (auto it = childItems.begin(); it != childItems.end(); ++it) {
-        hi->appendChild((*it)->shallowCopy());
+
+    if (withChildren) {
+        for (auto it = childItems.begin(); it != childItems.end(); ++it) {
+            hi->appendChild((*it)->shallowCopy());
+        }
     }
-    
     return hi;
 }

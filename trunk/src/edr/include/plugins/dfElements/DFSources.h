@@ -19,7 +19,30 @@
 #include <coreui/HierarchyTreeModel.h>
 #include <plugins/subject/SubjectDataFilters.h>
 #include <plugins/c3d/C3DCollections.h>
+#include <corelib/AbstractFilterCommand.h>
 //#include <plugins/newVdf/TreeBuilder.h>
+
+
+template<class T>
+class TypeFilter : public core::AbstractFilterCommand
+{
+public:
+    TypeFilter() : core::AbstractFilterCommand("", QIcon()) {}
+    virtual ~TypeFilter() {}
+
+    virtual bool checkItem( core::IHierarchyItemConstPtr item )
+    {
+        core::IHierarchyDataItemConstPtr data = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
+        if (data) {
+            return data->getData()? data->getData()->isSupported(typeid(T)) : false;
+        } else {
+            return false;
+        }
+    }
+
+public:
+
+};
 
 template<class T>
 class UniversalSource : public df::SourceNode, public df::IDFSource, public vdf::INodeConfiguration, public vdf::INodeValidation, public vdf::INodeHierarchyObserver
@@ -28,6 +51,7 @@ public:
     UniversalSource ()
       {
           tree = new QTreeView();
+          model.setFilter(utils::make_shared<TypeFilter<T>>());
           tree->setModel(&model);
           
           tree->setHeaderHidden(true);
@@ -79,11 +103,6 @@ public:
     }
 
 private:
-    void refreshTree( core::IHierarchyItemConstPtr root ) 
-    {
-        model.clear();
-        model.addRootItem(root);
-    }
 
     core::IHierarchyItemConstPtr tryGetSelectedItem()
     {

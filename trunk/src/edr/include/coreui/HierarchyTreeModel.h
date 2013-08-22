@@ -18,6 +18,7 @@
 #include <corelib/IHierarchyDataItem.h>
 #include <corelib/IMemoryDataManager.h>
 #include <coreui/Export.h>
+#include <corelib/IFilterCommand.h>
 
 namespace coreui {
 
@@ -51,6 +52,11 @@ public:
     void applyChange( const core::IMemoryDataManagerHierarchy::HierarchyChange& change );
     void applyChanges( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes );
 
+
+    void setFilter(const core::IFilterCommandPtr& filter);
+
+    void rebuildFilteredRoots();
+
 private:
     QModelIndex createSmartIndex(int row, int col, core::IHierarchyItemConstPtr ptr) const;
     bool hasChild(core::IHierarchyItemConstPtr parent, core::IHierarchyItemConstPtr child) const;
@@ -60,6 +66,8 @@ private:
     //core::IHierarchyItemPtr rootItem;
     std::vector<core::IHierarchyItemConstPtr> roots;
 
+    std::vector<core::IHierarchyItemConstPtr> rootOrigins;
+    core::IFilterCommandPtr currentFilter;
 };
 
 

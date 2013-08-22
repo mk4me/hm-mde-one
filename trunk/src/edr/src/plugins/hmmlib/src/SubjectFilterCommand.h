@@ -16,42 +16,13 @@
 #include <utils/SmartPtr.h>
 #include <corelib/IFilterCommand.h>
 #include <corelib/HierarchyItem.h>
+#include <corelib/AbstractFilterCommand.h>
 #include <utils/TypeInfo.h>
 #include <plugins/subject/Types.h>
 #include <plugins/subject/SubjectDataFilters.h>
 
-
 //! komenda bez konfiguratora, która tworzy przefiltrowane drzewo na podstawie filtra danych
-class AbstractFilterCommand : public core::IFilterCommand
-{
-public:
-    //! Konstruktor
-    AbstractFilterCommand(const QString& name, const QIcon& icon);
-    
-    virtual core::IHierarchyItemPtr getFilteredTree( core::IHierarchyItemConstPtr root );
-
-
-    virtual QWidget* getConfigurationWidget() { return nullptr; }
-    virtual void reset() {}
-
-    virtual QString getName() const { return name; }
-    virtual QIcon getIcon() const { return icon; }
-
-protected:
-    virtual bool checkItem(core::IHierarchyItemConstPtr item) = 0;
-
-private:
-    void traverse(core::IHierarchyItemConstPtr source, core::HierarchyItemPtr parent);
-
-private:
-    //! filtr danych, który będzie użyty do tworzenia drzewa
-    QString name;
-    QIcon icon;
-};
-DEFINE_SMART_POINTERS(AbstractFilterCommand);
-
-//! komenda bez konfiguratora, która tworzy przefiltrowane drzewo na podstawie filtra danych
-class SimpleFilterCommand : public AbstractFilterCommand
+class SimpleFilterCommand : public core::AbstractFilterCommand
 {
 public:
     //! Konstruktor

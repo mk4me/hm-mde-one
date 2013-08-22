@@ -4,14 +4,16 @@
 #include <corelib/IHierarchyDataItem.h>
 #include <corelib/IHierarchyItem.h>
 #include <corelib/HierarchyItem.h>
+#include <corelib/AbstractFilterCommand.h>
 
 
 using namespace coreui;
 
 HierarchyTreeModel::HierarchyTreeModel(QObject *parent) :
-    QAbstractItemModel(parent)
+    QAbstractItemModel(parent),
+    currentFilter(new core::NullFilter())
 {
-    
+        
 }
 
 HierarchyTreeModel::~HierarchyTreeModel()
@@ -114,13 +116,14 @@ int HierarchyTreeModel::rowCount(const QModelIndex &parent) const
 
 void HierarchyTreeModel::addRootItem( core::IHierarchyItemConstPtr root )
 {
-    auto it = std::find(roots.begin(), roots.end(), root);
-    if (it != roots.end()) {
+    auto it = std::find(rootOrigins.begin(), rootOrigins.end(), root);
+    if (it != rootOrigins.end()) {
         throw std::runtime_error("Root item is already present in tree model");
     } else {
+        roots.push_back(currentFilter->getFilteredTree(root));
+        rootOrigins.push_back(root);
         // TODO : zrobic to wlasciwie, nie trzeba odswiezac calego drzewa
         this->reset();
-        roots.push_back(root);
     }
 }
 
@@ -152,10 +155,11 @@ void HierarchyTreeModel::updateItem( core::IHierarchyItemConstPtr item )
 
 void HierarchyTreeModel::removeRootItem( core::IHierarchyItemConstPtr root )
 {
-    auto it = std::find(roots.begin(), roots.end(), root);
-    if (it != roots.end()) {
+    auto it = std::find(rootOrigins.begin(), rootOrigins.end(), root);
+    if (it != rootOrigins.end()) {
         // TODO : usunac wpisy z mapy...
-       roots.erase(it);
+       rootOrigins.erase(it);
+       rebuildFilteredRoots();
     } else {
         throw std::runtime_error("Unable to remove root item from hierarchy tree model");
     }
@@ -212,4 +216,19 @@ int coreui::HierarchyTreeModel::getNumChildren() const
 core::IHierarchyItemConstPtr coreui::HierarchyTreeModel::getChild( int idx )
 {
     return roots[idx];
+}
+
+
+void coreui::HierarchyTreeModel::setFilter( const core::IFilterCommandPtr& filter )
+{
+    this->currentFilter = filter ? filter : utils::make_shared<core::NullFilter>();
+    rebuildFilteredRoots();
+}
+
+void coreui::HierarchyTreeModel::rebuildFilteredRoots()
+{
+    roots.clear();
+    for (auto it = rootOrigins.begin(); it != rootOrigins.end(); ++it) {
+        roots.push_back(currentFilter->getFilteredTree(*it));
+    }
 }
