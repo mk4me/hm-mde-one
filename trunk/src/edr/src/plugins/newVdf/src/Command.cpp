@@ -59,7 +59,7 @@ void AddConnectionCommand::undoIt()
     sceneModel->removeConnection(connection);
 }
 
-MultiCommand::MultiCommand( const std::vector<ICommandPtr>& c ) :
+MultiCommand::MultiCommand( const std::vector<utils::ICommandPtr>& c ) :
 	commands(c) 
 {
 
@@ -179,13 +179,13 @@ void vdf::RemoveSelectedCommand::doIt()
 {
 	auto nodes = sceneModel->getVisualItems<IVisualNodePtr>(items);
 	for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-        auto command = ICommandPtr(new RemoveNodeCommand(sceneModel, *it));
+        auto command = utils::ICommandPtr(new RemoveNodeCommand(sceneModel, *it));
         command->doIt();
 		commands.push_back(command);
 	}
     auto connections = sceneModel->getVisualItems<IVisualConnectionPtr>(items);
     for (auto it = connections.begin(); it != connections.end(); ++it) {
-        auto command = ICommandPtr(new RemoveConnectionCommand(sceneModel, *it));
+        auto command = utils::ICommandPtr(new RemoveConnectionCommand(sceneModel, *it));
         command->doIt();
         commands.push_back(command);
     }

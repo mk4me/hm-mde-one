@@ -19,6 +19,7 @@
 #include "StreamDataManager.h"
 #include "FileDataManager.h"
 #include "DataHierarchyManager.h"
+#include "HierarchyDataManager.h"
 #include "SourceManager.h"
 #include "LogInitializer.h"
 #include "PluginLoader.h"
@@ -28,8 +29,8 @@
 #ifdef WIN32
 #include <Windows.h>
 //#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
-// Od Visty dodawane sï¿½ przedrostki typu Wow6432Node do sciezki w rejestrach
-// adres podawany do oczytu klucza powinien byï¿½ automatycznie konwertowany.
+// Od Visty dodawane s? przedrostki typu Wow6432Node do sciezki w rejestrach
+// adres podawany do oczytu klucza powinien by? automatycznie konwertowany.
 #define KEY_PATH TEXT("Software\\PJWSTK\\MDE")
 #endif
 
@@ -91,7 +92,7 @@ void Application::showSplashScreenMessage(const QString & message)
 
 int Application::initUIContext(int & argc, char *argv[])
 {
-	//obsï¿½uga argumentï¿½w i opisu uzycia aplikacji z konsoli
+	//obs?uga argument?w i opisu uzycia aplikacji z konsoli
 	osg::ArgumentParser arguments(&argc,argv);
 	arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
 	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" example usage of EDR.");
@@ -99,20 +100,20 @@ int Application::initUIContext(int & argc, char *argv[])
 	arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display this information");
 	arguments.getApplicationUsage()->addCommandLineOption("--plugins <path>","Additional plugins directory");
 
-	// czy wyï¿½wietlamy pomoc?
+	// czy wy?wietlamy pomoc?
 	if (arguments.read("-h") || arguments.read("--help"))
 	{
 		arguments.getApplicationUsage()->write(std::cout);
 		return 1;
 	}
 
-	// pdczytujemy czy jest podana dodatkowa ï¿½cieï¿½ka dla pluginï¿½w
+	// pdczytujemy czy jest podana dodatkowa ?cie?ka dla plugin?w
 	std::string path;
 	arguments.read("--plugins",path);
 	if(path.empty() == false){
 		additionalPluginsPath = path;
 	} 
-	// inicjalizacja UI, wszystkich potrzebnych zasobï¿½w
+	// inicjalizacja UI, wszystkich potrzebnych zasob?w
 	{
 		uiApplication_.reset(new coreUI::UIApplication(argc, argv));
 		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath()+"/plugins");
@@ -121,30 +122,30 @@ int Application::initUIContext(int & argc, char *argv[])
 		QSettings::setDefaultFormat(QSettings::IniFormat);
 	}
 
-	//inicjalizacja ï¿½cieï¿½ek aplikacji, katalogï¿½w tymczasowych itp, uï¿½ywane do ï¿½adowania tï¿½umaczeï¿½
+	//inicjalizacja ?cie?ek aplikacji, katalog?w tymczasowych itp, u?ywane do ?adowania t?umacze?
 	{
 		if(trySetPathsFromRegistry(paths_) == false){
 			setDefaultPaths(paths_);
 		}
 
-		//sprawdzamy czy udaï¿½o siï¿½ wygenerowac poprawne sciezki alikacji
+		//sprawdzamy czy uda?o si? wygenerowac poprawne sciezki alikacji
 		if(paths_ == nullptr){
 			throw std::runtime_error("Could not initialize application pathInterface");
 		}
 	}
 
-	//tï¿½umaczenia aplikacji - musze to robiï¿½ tutaj aby wszystkie nowo utworzone widgety juï¿½ widziaï¿½y tï¿½umaczenia
-	//alternatywnie mogï¿½ to robiï¿½ pï¿½niej pod warunkiem ï¿½e wszystkie widgety sa ï¿½wiadome tï¿½umaczeï¿½ - obsï¿½ugujï¿½ event
-	// zmiany jï¿½zyka!! Dla plikï¿½w Ui juï¿½ jest metoda retranslateUi
+	//t?umaczenia aplikacji - musze to robi? tutaj aby wszystkie nowo utworzone widgety ju? widzia?y t?umaczenia
+	//alternatywnie mog? to robi? p?niej pod warunkiem ?e wszystkie widgety sa ?wiadome t?umacze? - obs?uguj? event
+	// zmiany j?zyka!! Dla plik?w Ui ju? jest metoda retranslateUi
 	{
 		std::string locale = QLocale::system().name().toStdString();
 		auto langPath = paths_->getResourcesPath() / "lang";
-		// pobieram listï¿½ wszystkich dostarczonych standardowo tï¿½umaczeï¿½
+		// pobieram list? wszystkich dostarczonych standardowo t?umacze?
 		auto files = core::Filesystem::listFiles(langPath.string(), true, ".qm");
 
 		for(auto it = files.begin(); it != files.end(); ++it)
 		{
-			// sprawdzam czy tï¿½umaczenie pasuje do aktualnego jï¿½zyka
+			// sprawdzam czy t?umaczenie pasuje do aktualnego j?zyka
 			if((*it).find(locale) != std::string::npos ){
 
 				shared_ptr<QTranslator> translator(new QTranslator);
@@ -153,19 +154,19 @@ int Application::initUIContext(int & argc, char *argv[])
 					uiApplication_->installTranslator(translator.get());
 					translators_.push_back(translator);
 					//TODO
-					//jak tego siï¿½ nie uda zaï¿½adowaï¿½ to mamy tylko angielski jï¿½zyk - trzeba poinformowaï¿½
+					//jak tego si? nie uda za?adowa? to mamy tylko angielski j?zyk - trzeba poinformowa?
 				}
 			}
 		}		
 
-		// teraz tï¿½umaczenia z Qt
+		// teraz t?umaczenia z Qt
 
 		shared_ptr<QTranslator> translator(new QTranslator);
 		bool translationFound = translator->load(("qt_" + locale).c_str(), langPath.string().c_str());
 		if(translationFound == false) {
 			translationFound = translator->load(QString("qt_pl"), langPath.string().c_str());
 			// TODO
-			// jak tego siï¿½ nie uda zaï¿½adowaï¿½ to mamy tylko angielski jï¿½zyk - trzeba poinformowaï¿½
+			// jak tego si? nie uda za?adowa? to mamy tylko angielski j?zyk - trzeba poinformowa?
 		}
 
 		if(translationFound == true){
@@ -185,8 +186,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 	showSplashScreenMessage(QObject::tr("Initializing log"));	
 
-	//Mam ï¿½cieï¿½kï¿½ do konfiguracji loggera, nie wiem czy to OSG, Log4cxx czy pusty albo coï¿½ jeszcze innego - initializer powinien to zrobiï¿½ za mnie
-	//powinien teï¿½ obsï¿½ugiwaï¿½ widget!!
+	//Mam ?cie?k? do konfiguracji loggera, nie wiem czy to OSG, Log4cxx czy pusty albo co? jeszcze innego - initializer powinien to zrobi? za mnie
+	//powinien te? obs?ugiwa? widget!!
 	{	
 		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "resources" / "settings" / "log.ini").string()));
 
@@ -197,7 +198,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	showSplashScreenMessage(QObject::tr("Initializing directories"));
 	
 
-	//probujemy tmp katalog zapewniï¿½
+	//probujemy tmp katalog zapewni?
 	try{
 		Filesystem::createDirectory(paths_->getTmpPath());
 	}catch(...){
@@ -212,20 +213,20 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	showSplashScreenMessage(QObject::tr("Initializing 3D context"));
 
 	{
-		//HACK - wymuszamy statyczne linkowanie z bibliotekï¿½ osgQt.
+		//HACK - wymuszamy statyczne linkowanie z bibliotek? osgQt.
 		// to gwarantuje poprawne zainicjowanie obiektu HeartBeat odpowiedzialnego
-		// za obsï¿½ugï¿½ scen OpenGL po stronie widgetï¿½w OSG.
-		// Choï¿½ niekoniecznie w tym wï¿½tku z tego kozystamy ( nie musimy mieï¿½ tworzonych na starcie ï¿½adnych widgetï¿½w OSG)
-		// jest to niezbï¿½dne dla prawidï¿½owej deinicjalizacji tego obiektu - czasu ï¿½ycia jego zasobï¿½w.
-		// W przeciwnym wypadku powstanie kilka instancji tego obiektu - po jednej dla kaï¿½dego pluginu dostarczajï¿½cego widgetï¿½w OSG
-		// Bardzo niebezpieczne!! Powodowaï¿½o crash aplikacji przy inicjalizacji a potem przy zamykaniu
+		// za obs?ug? scen OpenGL po stronie widget?w OSG.
+		// Cho? niekoniecznie w tym w?tku z tego kozystamy ( nie musimy mie? tworzonych na starcie ?adnych widget?w OSG)
+		// jest to niezb?dne dla prawid?owej deinicjalizacji tego obiektu - czasu ?ycia jego zasob?w.
+		// W przeciwnym wypadku powstanie kilka instancji tego obiektu - po jednej dla ka?dego pluginu dostarczaj?cego widget?w OSG
+		// Bardzo niebezpieczne!! Powodowa?o crash aplikacji przy inicjalizacji a potem przy zamykaniu
 		boost::shared_ptr<QWidget> w(new osgQt::GLWidget());
 	}	
 
 	showSplashScreenMessage(QObject::tr("Initializing core managers"));
 
 	dataHierarchyManager_.reset(new DataHierarchyManager());
-	memoryDataManager_.reset(new MemoryDataManager());
+	memoryDataManager_.reset(new HierarchyDataManager());
 	parserManager_.reset(new ParserManager());
 	streamDataManager_.reset(new StreamDataManager());
 	fileDataManager_.reset(new FileDataManager());
@@ -233,7 +234,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	sourceManager_.reset(new SourceManager());
 	visualizerManager_.reset(new VisualizerManager());
 
-	//WielowÄ…tkowoÅ›Ä‡
+	//Wielow¹tkowoœæ
 	{	
 		threadFactory_.reset(new utils::QtThreadFactory());
 
@@ -259,7 +260,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 	showSplashScreenMessage(QObject::tr("Initializing plugins loader"));
 	
-	//inicjalizacja obiektu ï¿½adujï¿½cego pluginy
+	//inicjalizacja obiektu ?aduj?cego pluginy
 	pluginLoader_.reset(new PluginLoader(Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
 
 	#if defined(__WIN32__)
@@ -282,7 +283,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 	showSplashScreenMessage(QObject::tr("Loading plugins"));	
 
-	//ï¿½adujemy pluginy
+	//?adujemy pluginy
 	pluginLoader_->load();
 
 	for(int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
@@ -291,20 +292,20 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 	showSplashScreenMessage(QObject::tr("Initializing services"));	
 
-	// inicjalizacja usï¿½ug
+	// inicjalizacja us?ug
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
 		serviceManager_->getService(i)->init(sourceManager_.get(),
 			visualizerManager_.get(), memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
 	}
 
-	// inicjalizacja usï¿½ug
+	// inicjalizacja us?ug
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
 		serviceManager_->getService(i)->lateInit();
 	}
 
 	showSplashScreenMessage(QObject::tr("Initializing sources"));
 
-	// inicjalizacja ï¿½rï¿½deï¿½	
+	// inicjalizacja ?r?de?	
 	for (int i = 0; i < sourceManager_->getNumSources(); ++i) {
 		sourceManager_->getSource(i)->init(memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
 	}
@@ -329,7 +330,7 @@ int Application::run()
 
 Application::~Application()
 {
-	//zeruje juï¿½ konsole - wiï¿½cej z niej nie bï¿½dï¿½ korzystaï¿½
+	//zeruje ju? konsole - wi?cej z niej nie b?d? korzysta?
 	CORE_LOG_INFO("Closing core application");
 
 	CORE_LOG_INFO("Releasing job manager");
@@ -500,13 +501,13 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 #endif
 }
 
-void Application::setDefaultPaths(shared_ptr<Path> & path)
+void Application::setDefaultPaths(utils::shared_ptr<Path> & path)
 {
 	//TODO
-	//mieï¿½ na uwadze nazwï¿½ aplikacji i PJWSTK
+	//mie? na uwadze nazw? aplikacji i PJWSTK
 	auto userPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString()) / "PJWSTK" / "MDE";
 	auto appDataPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DataLocation).toStdString());
-	//TODO - czy pod linux taka konwencja jest ok? jak tam dziaÅ‚ajÄ… takie wspÃ³lne foldery?
+	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia³aj¹ takie wspólne foldery?
 	auto userAppDataPath = appDataPath;
 	auto resourcesPath = Filesystem::Path(QDir::currentPath().toStdString()) / "resources";
 	

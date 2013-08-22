@@ -31,10 +31,10 @@ namespace core {
         virtual plugin::IServicePtr getService(UniqueID id) = 0;
     };
 
-    typedef shared_ptr<IServiceManager> IServiceManagerPtr;
-    typedef shared_ptr<const IServiceManager> IServiceManagerConstPtr;
-    typedef weak_ptr<IServiceManager> IServiceManagerWeakPtr;
-    typedef weak_ptr<const IServiceManager> IServiceManagerWeakConstPtr;
+    typedef utils::shared_ptr<IServiceManager> IServiceManagerPtr;
+    typedef utils::shared_ptr<const IServiceManager> IServiceManagerConstPtr;
+    typedef utils::weak_ptr<IServiceManager> IServiceManagerWeakPtr;
+    typedef utils::weak_ptr<const IServiceManager> IServiceManagerWeakConstPtr;
 
 }
 
@@ -43,12 +43,12 @@ namespace core {
     //! Metoda wyszukująca wszystkie usługi danego typu (np. implementujące
     //! dany interfejs).
     template <class T>
-    shared_ptr<T> queryServices(IServiceManager* manager, T* dummy = nullptr)
+    utils::shared_ptr<T> queryServices(IServiceManager* manager, T* dummy = nullptr)
     {
-        std::vector<shared_ptr<T>> result;
+        std::vector<utils::shared_ptr<T>> result;
         queryServices(manager, result);
         if ( result.empty() ) {
-            return shared_ptr<T>();
+            return utils::shared_ptr<T>();
         } else {
             UTILS_ASSERT(result.size()==1, "Multiple services found.");
             return result[0];
@@ -58,11 +58,11 @@ namespace core {
     //! Metoda wyszukująca wszystkie usługi danego typu (np. implementujące
     //! dany interfejs).
     template <class T>
-    void queryServices(IServiceManager* manager, std::vector<shared_ptr<T>>& target)
+    void queryServices(IServiceManager* manager, std::vector<utils::shared_ptr<T>>& target)
     {
         for ( int i = 0; i < manager->getNumServices(); ++i ) {
             plugin::IServicePtr service = manager->getService(i);
-            shared_ptr<T> casted = dynamic_pointer_cast<T>(service);
+            utils::shared_ptr<T> casted = dynamic_pointer_cast<T>(service);
             if ( casted ) {
                 target.push_back(casted);
             }

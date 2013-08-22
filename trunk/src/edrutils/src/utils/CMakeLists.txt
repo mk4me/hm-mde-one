@@ -37,6 +37,9 @@ SET_PUBLIC_HEADERS(
 	ObjectWrapper.h
 	Export.h
 	SmartPtr.h
+	ICommand.h
+	ICommandStack.h
+	CommandStack.h
 )
 
 #------------------------------------------------------------------------------
@@ -48,10 +51,15 @@ SET_SOURCE_FILES(
 	Profiler.cpp
 	TypeInfo.cpp
 	ObjectWrapper.cpp
+	CommandStack.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(
 	"Config.h.in"
+)
+
+SET_MOC_FILES(
+	CommandStack.h
 )
 
 CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")

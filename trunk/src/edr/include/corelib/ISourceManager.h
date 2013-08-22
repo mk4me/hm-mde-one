@@ -33,10 +33,10 @@ namespace core {
         virtual plugin::ISourcePtr getSource(UniqueID id) = 0;
     };
 
-    typedef shared_ptr<ISourceManager> ISourceManagerPtr;
-    typedef shared_ptr<const ISourceManager> ISourceManagerConstPtr;
-    typedef weak_ptr<ISourceManager> ISourceManagerWeakPtr;
-    typedef weak_ptr<const ISourceManager> ISourceManagerWeakConstPtr;
+    typedef utils::shared_ptr<ISourceManager> ISourceManagerPtr;
+    typedef utils::shared_ptr<const ISourceManager> ISourceManagerConstPtr;
+    typedef utils::weak_ptr<ISourceManager> ISourceManagerWeakPtr;
+    typedef utils::weak_ptr<const ISourceManager> ISourceManagerWeakConstPtr;
 
     //! Metoda wyszukująca wszystkie źródła danego typu (np. implementujące
     //! dany interfejs).

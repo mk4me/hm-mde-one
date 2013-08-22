@@ -413,9 +413,9 @@ public:
 private:
 	//! Obiekt obserwujący dane w MemoryDM - tylko update nas interesuje aby odświeżać serię
 	//! Reszta będzie robiona w widgetach na odpowiednie akcje (czy dane są jeszcze w DM)
-	shared_ptr<VisualizerHelper> visualizerHelper_;
+	utils::shared_ptr<VisualizerHelper> visualizerHelper_;
 	//! Faktyczny wizualizator dla danych
-	shared_ptr<plugin::IVisualizer> innerVisualizer_;
+	utils::shared_ptr<plugin::IVisualizer> innerVisualizer_;
 
 	//! Faktyczny widget.
 	QWidget* widget;

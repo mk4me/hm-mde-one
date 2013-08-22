@@ -83,21 +83,26 @@ void ToolboxMain::initializeUI()
 
 		QWidget* viewWidget = service->getWidget();
 
-		QWidget* controlWidget = service->getControlWidget();
-
-		QWidget* settingsWidget = service->getSettingsWidget();
+		//QWidget* controlWidget = service->getControlWidget();
+        //
+		//QWidget* settingsWidget = service->getSettingsWidget();
 
 		if ( viewWidget ) {
 			addDockWidget(Qt::RightDockWidgetArea, embeddWidget(viewWidget, QString::fromStdString(service->getName()), Qt::RightDockWidgetArea, true));
 		}
 
-		if ( controlWidget ) {
-			addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(controlWidget, QString::fromStdString(service->getName()) + " " + tr("control"), Qt::BottomDockWidgetArea, true));
-		}
+        QWidgetList propertiesWidgets = service->getPropertiesWidgets();
+        for (auto it = propertiesWidgets.begin(); it != propertiesWidgets.end(); ++it) {
+            addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(*it, QString::fromStdString(service->getName()), Qt::LeftDockWidgetArea, true));
+        }
 
-		if ( settingsWidget ) {
-			addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(settingsWidget, QString::fromStdString(service->getName()) + " " + tr("settings"), Qt::LeftDockWidgetArea, true));
-		}
+		//if ( controlWidget ) {
+		//	addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(controlWidget, QString::fromStdString(service->getName()) + " " + tr("control"), Qt::BottomDockWidgetArea, true));
+		//}
+        //
+		//if ( settingsWidget ) {
+		//	addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(settingsWidget, QString::fromStdString(service->getName()) + " " + tr("settings"), Qt::LeftDockWidgetArea, true));
+		//}
 	}
 
 	for (int i = 0; i < getSourceManager()->getNumSources(); ++i) {

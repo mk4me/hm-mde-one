@@ -8,9 +8,32 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
+    //! Interfejs obserwatora zmian
+    template <class Changes>
+    class IChangesObserver
+    {
+    public:
+
+        virtual ~IChangesObserver() {}
+
+        //! \param previousValue 
+        //! \param currentVal 
+        //! \param type 
+        //! \param modyfication 
+        virtual void observe(const Changes & changes) = 0;
+    };
+
+
     class IDataManagerReaderOperations
 	{
 	public:
+
+        //! Typ zmian danych w managerze
+        enum ModificationType {
+            ADD_OBJECT,		//! Dodajemy obiekt do DM
+            REMOVE_OBJECT,	//! Usuwamy obiekt z DM
+            UPDATE_OBJECT	//! Aktualizujemy obiekt w DM
+        };
 
 		virtual ~IDataManagerReaderOperations() {}
 
@@ -37,13 +60,6 @@ namespace core {
     class IDataManagerReader : public IDataManagerReaderOperations
     {
 	public:
-		//! Typ zmian danych w managerze
-		enum ModificationType {
-			ADD_OBJECT,		//! Dodajemy obiekt do DM
-			REMOVE_OBJECT,	//! Usuwamy obiekt z DM
-			UPDATE_OBJECT	//! Aktualizujemy obiekt w DM
-		};
-
 		//! Obiekt opisujący zmianę w DM
 		struct ObjectChange
 		{
@@ -56,24 +72,10 @@ namespace core {
 		//! Agregat zmian w DM
 		typedef std::list<ObjectChange> ChangeList;
 
-		//! Interfejs obserwatora zmian
-		class IObjectObserver
-		{
-		public:
-
-			virtual ~IObjectObserver() {}
-
-			//! \param previousValue 
-			//! \param currentVal 
-			//! \param type 
-			//! \param modyfication 
-			virtual void observe(const ChangeList & changes) = 0;
-		};
-
+		typedef IChangesObserver<ChangeList> IObjectObserver;
 		//! Wskaźnik na obiek obserwujący zmiany
-		typedef shared_ptr<IObjectObserver> ObjectObserverPtr;
-
-		typedef shared_ptr<IDataManagerReaderOperations> TransactionPtr;
+		typedef utils::shared_ptr<IObjectObserver> ObjectObserverPtr;
+		typedef utils::shared_ptr<IDataManagerReaderOperations> TransactionPtr;
 
     public:
 

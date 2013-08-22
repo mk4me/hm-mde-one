@@ -15,9 +15,10 @@
 #include <QtGui/QWheelEvent>
 
 #include "SceneModel.h"
-#include "CommandStack.h"
+#include <utils/CommandStack.h>
 #include "Command.h"
-
+#include <corelib/HierarchyItem.h>
+#include <coreui/HierarchyTreeModel.h>
 class QGraphicsScene;
 class QMouseEvent;
 
@@ -34,14 +35,14 @@ class NewVdfWidget : public QWidget
     Q_OBJECT;
 
 public:
-    NewVdfWidget(ICommandStackPtr stack, SceneModelPtr sceneModel);
+    NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, coreui::HierarchyTreeModel* treeModel);
     virtual ~NewVdfWidget();
 
 public:
     SceneModelPtr getSceneModel() const { return sceneModel; }
 	VdfScene* getScene() const { return scene; }  
 	VdfView* getView() const { return view; }
-	ICommandStackPtr getCommandStack() const { return commandStack; }
+	utils::ICommandStackPtr getCommandStack() const { return commandStack; }
 
 public slots:
 	void undo();
@@ -51,6 +52,9 @@ public slots:
 	void clearScene();
     void runDF();
 
+private slots:
+    void onSinkGenerate(core::IHierarchyItemPtr item);
+
 signals:
     void singleNodeSelected(IVisualNodePtr node);
 
@@ -59,8 +63,10 @@ private:
     VdfView* view;
     SceneModelPtr sceneModel;
     bool connectionMode;
-	ICommandStackPtr commandStack;
+	utils::ICommandStackPtr commandStack;
 	utils::shared_ptr<SceneStateMachine> stateMachine;
+    core::HierarchyItemPtr root;
+    coreui::HierarchyTreeModel* treeModel;
 };
 
 }

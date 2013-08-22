@@ -2,7 +2,7 @@
 
 #include <QtGui/QMenu>
 #include <QtGui/QSplashScreen>
-#include <cmath>
+//#include <cmath>
 #include <utils/Debug.h>
 #include "HmmMainWindow.h"
 #include "DataFilterWidget.h"
@@ -13,10 +13,10 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include "IllnessUnit.h"
-#include "EMGFilter.h"
+#include <plugins/hmmlib/EMGFilter.h>
 #include <coreui/CoreTextEditWidget.h>
 #include <QtGui/QApplication>
-#include <QtGui/QCloseEvent>
+//#include <QtGui/QCloseEvent>
 #include "AboutDialog.h"
 #include "ContextAction.h"
 #include "ContextEventFilter.h"
@@ -317,12 +317,13 @@ void HmmMainWindow::customViewInit(QWidget * console)
             showTimeline();
         } else if (vdf) {
 			QWidget* viewWidget = vdf->getWidget();
-			QWidget* controlWidget = vdf->getControlWidget();
-			QWidget* settingsWidget = vdf->getSettingsWidget();
+			/*QWidget* controlWidget = vdf->getControlWidget();
+			QWidget* settingsWidget = vdf->getSettingsWidget();*/
+            QWidget* controlWidget = vdf->getPropertiesWidgets().first();
 			controlWidget->setMaximumWidth(350);
 			viewWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 			controlWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-			settingsWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+			//settingsWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 			QVBoxLayout* vlayout = new QVBoxLayout();
 			vlayout->addWidget(viewWidget);
 			//vlayout->addWidget(settingsWidget);
@@ -352,23 +353,23 @@ void HmmMainWindow::customViewInit(QWidget * console)
 
 		} else {
             QWidget* viewWidget = service->getWidget();
-            QWidget* controlWidget = service->getControlWidget();
-            QWidget* settingsWidget = service->getSettingsWidget();
+            //QWidget* controlWidget = service->getControlWidget();
+            //QWidget* settingsWidget = service->getSettingsWidget();
 
-            if(settingsWidget){
-				settingsWidget->setParent(operations);
-                layout->addWidget(settingsWidget);
-            }
+            //if(settingsWidget){
+			//    settingsWidget->setParent(operations);
+            //    layout->addWidget(settingsWidget);
+            //}
 
             if(viewWidget){
 				viewWidget->setParent(operations);
                 layout->addWidget(viewWidget);
             }
 
-            if(controlWidget){
-				controlWidget->setParent(operations);
-                layout->addWidget(controlWidget);
-            }
+            //if(controlWidget){
+			//	controlWidget->setParent(operations);
+            //    layout->addWidget(controlWidget);
+            //}
         }
     }
 
@@ -654,11 +655,11 @@ void HmmMainWindow::showTimeline()
 
                 QWidget* viewWidget = service->getWidget();
 
-                QWidget* controlWidget = service->getControlWidget();
+                /*QWidget* controlWidget = service->getControlWidget();
                 
-                QWidget* settingsWidget = service->getSettingsWidget();
+                QWidget* settingsWidget = service->getSettingsWidget();*/
 				dynamic_cast<QVBoxLayout*>(bottomMainWindow->layout())->addStretch();
-				bottomMainWindow->layout()->addWidget(controlWidget);
+				bottomMainWindow->layout()->addWidget(viewWidget);
 				dynamic_cast<QVBoxLayout*>(bottomMainWindow->layout())->addStretch();
                 timelineVisible = true;
             }
@@ -1111,8 +1112,8 @@ QDockWidget* HmmMainWindow::createAndAddDockVisualizer( HmmTreeItem* hmmItem, co
 		 desc.path = path.toStdString();
          items2Descriptions.insert(std::make_pair(helper, desc));
 
-		 auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
-		 timeline->addChannel(desc.path, desc.channel);
+		auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+		timeline->addChannel(desc.path, desc.channel);
 
 		 for(auto it = series.begin(); it != series.end(); ++it){
 			 seriesToChannels[*it] = desc.path;
@@ -1786,20 +1787,6 @@ void HmmMainWindow::safeSwitchToAnalysis()
     analisis->getTreeWidget()->setFocus();
     refreshTree();
 }
-
-//
-//void HmmMainWindow::processedBranchIncreaseWhenEqual( int sinkRunNo )
-//{
-//    ScopedLock lock(processedMutex);
-//    static int count = 0;
-//    if (sinkRunNo == count) {
-//        QString s;
-//        s.sprintf("Run %04d", ++count);
-//        QTreeWidgetItem* itm = new QTreeWidgetItem();
-//        itm->setText(0, s);
-//        processedBranch->addChild(itm);
-//    }
-//}
 
 int HmmMainWindow::getProcessedBranchCount()
 {

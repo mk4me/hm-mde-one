@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_HMM__HMMSOURCES_H__
 #define HEADER_GUARD_HMM__HMMSOURCES_H__
 
-#include "HmmPins.h"
+#include <plugins/dfElements/DFPins.h>
 #include <utils/ObjectWrapper.h>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QIcon>

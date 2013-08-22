@@ -11,10 +11,10 @@
 
 using namespace vdf;
 
-TypesWindow::TypesWindow(ICommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent, Qt::WindowFlags f) :
+TypesWindow::TypesWindow(utils::ICommandStackPtr stack, CanvasStyleEditorPtr canvas, SceneModelPtr sceneModel, QWidget* parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     canvas(canvas),
-    newVdf(newVdf),
+    sceneModel(sceneModel),
 	commmandStack(stack)
 {
     setupUi(this);
@@ -32,7 +32,7 @@ TypesWindow::TypesWindow(ICommandStackPtr stack, CanvasStyleEditorPtr canvas, Ne
 void TypesWindow::insert( const QString& name, const QPointF& scenePos )
 {
     auto item = createItemByEntry(name);
-	commmandStack->addCommand(ICommandPtr(new AddToSceneCommand(newVdf->getSceneModel(), item, scenePos)));
+	commmandStack->addCommand(utils::ICommandPtr(new AddToSceneCommand(sceneModel, item, scenePos)));
 }
 
 void TypesWindow::addEntry( const QString& entry, const QIcon& icon, IVisualItem::Type type )
@@ -63,8 +63,7 @@ void TypesWindow::addEntry( const QString& entry, const QIcon& icon, IVisualItem
 SceneBuilder::VisualNodeWithPins TypesWindow::createItemByEntry( const QString& entry )
 {
     SceneBuilder::VisualNodeWithPins item;
-    SceneModelPtr scene = newVdf->getSceneModel();
-
+    
     auto it = name2node.find(entry);
     if (it != name2node.end()) {
         auto node = it->second;
@@ -83,7 +82,7 @@ SceneBuilder::VisualNodeWithPins TypesWindow::createItemByEntry( const QString& 
 			input->getInputInfo(inputInfo);
 			in = inputInfo.size();
 		}
-        item = scene->getBuilder().createType(it->first, node->getIcon(), node->create(), in, out);
+        item = sceneModel->getBuilder().createType(it->first, node->getIcon(), node->create(), in, out);
     }
     UTILS_ASSERT(item.get<0>() != nullptr);
     return item;
@@ -129,39 +128,3 @@ void TypesWindow::update( const IDataSinkManager* sm )
     }
 }
 
-void vdf::TypesWindow::onNodeSelected( IVisualNodePtr node )
-{
-    if (!node || !node->getModelNode()) {
-        tabWidget->setCurrentIndex(0);
-        return;
-    }
-
-    auto modelNode = node->getModelNode();
-    vdf::INodeConfiguration* conf = dynamic_cast<INodeConfiguration*>(modelNode);
-    
-    if (!propertiesTab->layout()) {
-        propertiesTab->setLayout(new QHBoxLayout());
-    } else {
-        auto list = propertiesTab->children();
-        for (auto it = list.begin(); it != list.end(); ++it) {
-            if ((*it)->isWidgetType()) {
-                auto widget = qobject_cast<QWidget*>(*it);
-                widget->setVisible(false);
-            }
-        }
-    }
-    if (conf) {
-        conf->refreshConfiguration();
-        auto widget = conf->getConfigurationWidget();
-        
-        if (widget->parent() == propertiesTab) {
-            widget->setVisible(true);
-        } else {
-            propertiesTab->layout()->addWidget(widget);
-        }
-        tabWidget->setCurrentIndex(1);
-    } else {
-        tabWidget->setCurrentIndex(0);
-    }
-    
-}

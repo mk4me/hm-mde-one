@@ -17,8 +17,57 @@
 
 #include "StyleMergedNode.h"
 #include "SimpleMergedNode.h"
+#include "plugins/newVdf/INodeConfiguration.h"
 
 using namespace vdf;
+
+class VDFThreadPool : public utils::IThreadPool
+{
+public:
+
+	VDFThreadPool(core::IThreadPool * tp) : tp_(tp)
+	{
+
+	}
+
+	virtual ~VDFThreadPool() {}
+
+	virtual const size_type maxThreads() const
+	{
+		return tp_->max();
+	}
+
+	virtual const size_type minThreads() const
+	{
+		return tp_->min();
+	}
+
+	virtual const size_type threadsCount() const
+	{
+		return tp_->count();
+	}
+
+	virtual utils::IThreadPtr getThread()
+	{
+		core::IThreadPool::Threads ret;
+		tp_->getThreads("VDF", ret, 1);
+		ret.front()->setDestination("Node thread");
+		return ret.front();
+	}
+
+	virtual void getThreads(const size_type groupSize, Threads & threads, const bool exact = true)
+	{
+		core::IThreadPool::Threads ret;
+		tp_->getThreads("VDF", ret, groupSize);
+		for(auto it = ret.begin(); it != ret.end(); ++it){
+			(*it)->setDestination("Node thread");
+			threads.push_back(*it);
+		}		
+	}
+
+private:
+	core::IThreadPool * tp_;
+};
 
 IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin)
 {
@@ -39,7 +88,8 @@ IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr outputPin, IV
 
 SceneModel::SceneModel( CanvasStyleEditorPtr factories ) :
     builder(factories),
-	model(new df::Model)
+	model(new df::Model),
+	dfThreadFactory(new VDFThreadPool(plugin::getThreadPool()))
 {
 
 }
@@ -109,6 +159,10 @@ void SceneModel::addNode(df::INode* node )
 
 		case df::INode::SOURCE_NODE: {
 			df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(node);
+            auto dmNode = dynamic_cast<INodeHierarchyObserver*>(source);
+            if (dmNode) {
+                dmNode->refresh(plugin::getHierarchyManagerReader(), core::IMemoryDataManagerHierarchy::HierarchyChangeList());
+            }
 			model->addNode(source);
 		} return;
 	}
@@ -116,63 +170,18 @@ void SceneModel::addNode(df::INode* node )
 	UTILS_ASSERT(false);
 }
 
-class VDFThreadPool : public utils::IThreadPool
-{
-public:
-
-	VDFThreadPool(core::IThreadPool * tp) : tp_(tp)
-	{
-
-	}
-
-	virtual ~VDFThreadPool() {}
-	
-	virtual const size_type maxThreads() const
-	{
-		return tp_->max();
-	}
-	
-	virtual const size_type minThreads() const
-	{
-		return tp_->min();
-	}
-
-	virtual const size_type threadsCount() const
-	{
-		return tp_->count();
-	}
-	
-	virtual utils::IThreadPtr getThread()
-	{
-		core::IThreadPool::Threads ret;
-		tp_->getThreads("VDF", ret, 1);
-		ret.front()->setDestination("Node thread");
-		return ret.front();
-	}
-
-	virtual void getThreads(const size_type groupSize, Threads & threads, const bool exact = true)
-	{
-		core::IThreadPool::Threads ret;
-		tp_->getThreads("VDF", ret, groupSize);
-		for(auto it = ret.begin(); it != ret.end(); ++it){
-			(*it)->setDestination("Node thread");
-			threads.push_back(*it);
-		}		
-	}
-
-private:
-	core::IThreadPool * tp_;
-};
-
 void SceneModel::run()
-{
-	df::DFModelRunner runner;
-	bool test = df::DFModelRunner::verifyModel(model.get());
-	
-	utils::IThreadPoolPtr tp(new VDFThreadPool(plugin::getThreadPool()));
+{	
+	if(df::DFModelRunner::verifyModel(model.get()) == true){
+		df::DFModelRunner runner;
+		runner.start(model.get(), nullptr, dfThreadFactory.get());
+		runner.join();
+	}else{
+		//TODO
+		//obs³uga b³êdów
+		UTILS_ASSERT(false);
 
-	runner.start(model.get(), nullptr, tp.get());
-	runner.join();
+	}
 }
 
 const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr vpin  ) 
@@ -418,3 +427,4 @@ void vdf::SceneModel::removeConnection( IVisualItemPtr item )
     UTILS_ASSERT(c);
     removeConnection(c->getOutputPin(), c->getInputPin());
 }
+

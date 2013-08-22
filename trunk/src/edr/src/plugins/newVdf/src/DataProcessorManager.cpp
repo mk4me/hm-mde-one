@@ -14,7 +14,7 @@ DataProcessorManager::~DataProcessorManager()
     while (prototypes.size()) {
         prototypes.pop_back();
     }
-}
+ }
 
 IDataProcessorConstPtr DataProcessorManager::getPrototype( core::UniqueID id ) const
 {

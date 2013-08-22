@@ -303,4 +303,26 @@ private:
 typedef utils::shared_ptr<Multiserie3D> Multiserie3DPtr;
 typedef utils::shared_ptr<const Multiserie3D> Multiserie3DConstPtr;
 
+
+//! Klasa tworzy wizualizator wykresów, i wypełnią go przefiltrowanymi danymi EMG
+class EMGFilterHelper : public NewChartItemHelper
+{
+public:
+    //! Konstruktor
+    //! \param wrapper 
+    EMGFilterHelper(const core::ObjectWrapperConstPtr& wrapper);
+    virtual ~EMGFilterHelper() {}
+
+public:
+    //! \return wizualizator stworzony dla dostarczonego wrappera
+    virtual core::VisualizerPtr createVisualizer();
+    //! tworzy serie ze zmodyfikowanym EMG na podstawiawie dostarczonego wrappera
+    //! \param visualizer wizualizator, który będzie tworzył serie
+    //! \param path ścieżka dla timeline'a
+    //! \param series zwracana seria 
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+};
+typedef utils::shared_ptr<EMGFilterHelper> EMGFilterHelperPtr;
+typedef utils::shared_ptr<const EMGFilterHelper> EMGFilterHelperConstPtr;
+
 #endif

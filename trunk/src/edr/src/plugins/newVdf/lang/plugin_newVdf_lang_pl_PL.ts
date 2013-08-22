@@ -66,6 +66,19 @@
     </message>
 </context>
 <context>
+    <name>PropertiesWindow</name>
+    <message>
+        <location filename="../ui/PropertiesWindow.ui" line="14"/>
+        <source>Properties</source>
+        <translation type="unfinished">Właściwości</translation>
+    </message>
+    <message>
+        <location filename="../ui/PropertiesWindow.ui" line="23"/>
+        <source>Properties window</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/NormalState.cpp" line="83"/>
@@ -86,29 +99,27 @@
         <translation>Typy</translation>
     </message>
     <message>
-        <location filename="../ui/TypesWindow.ui" line="27"/>
         <source>Elements</source>
-        <translation>Elementy</translation>
+        <translation type="obsolete">Elementy</translation>
     </message>
     <message>
-        <location filename="../ui/TypesWindow.ui" line="33"/>
+        <location filename="../ui/TypesWindow.ui" line="20"/>
         <source>Sources</source>
         <translation>Źródła</translation>
     </message>
     <message>
-        <location filename="../ui/TypesWindow.ui" line="50"/>
+        <location filename="../ui/TypesWindow.ui" line="37"/>
         <source>Processing elements</source>
         <translation>Elementy przetwarzające</translation>
     </message>
     <message>
-        <location filename="../ui/TypesWindow.ui" line="67"/>
+        <location filename="../ui/TypesWindow.ui" line="54"/>
         <source>Sinks</source>
         <translation>Elementy docelowe</translation>
     </message>
     <message>
-        <location filename="../ui/TypesWindow.ui" line="85"/>
         <source>Properties</source>
-        <translation>Właściwości</translation>
+        <translation type="obsolete">Właściwości</translation>
     </message>
 </context>
 <context>
@@ -120,73 +131,86 @@
     </message>
 </context>
 <context>
+    <name>vdf::NewVdfService</name>
+    <message>
+        <location filename="../src/NewVdfService.cpp" line="50"/>
+        <source>Transfer results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/NewVdfService.cpp" line="169"/>
+        <source>Processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>vdf::NewVdfWidget</name>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="32"/>
         <location filename="../src/NewVdfWidget.cpp" line="33"/>
-        <location filename="../src/NewVdfWidget.cpp" line="36"/>
+        <location filename="../src/NewVdfWidget.cpp" line="34"/>
+        <location filename="../src/NewVdfWidget.cpp" line="37"/>
         <source>Edit</source>
         <translation>Edytuj</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="32"/>
+        <location filename="../src/NewVdfWidget.cpp" line="33"/>
         <source>Undo</source>
         <translation>Cofnij</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="33"/>
+        <location filename="../src/NewVdfWidget.cpp" line="34"/>
         <source>Redo</source>
         <translation>Powtórz</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="34"/>
+        <location filename="../src/NewVdfWidget.cpp" line="35"/>
         <source>Misc</source>
         <translation>Inne</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="34"/>
+        <location filename="../src/NewVdfWidget.cpp" line="35"/>
         <source>Merge</source>
         <translation>Połącz</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="35"/>
+        <location filename="../src/NewVdfWidget.cpp" line="36"/>
         <source>Clear</source>
         <translation>Wyczyść</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="35"/>
+        <location filename="../src/NewVdfWidget.cpp" line="36"/>
         <source>Scene</source>
         <translation>Scena</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="36"/>
+        <location filename="../src/NewVdfWidget.cpp" line="37"/>
         <source>Delete</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="37"/>
+        <location filename="../src/NewVdfWidget.cpp" line="38"/>
         <source>Run</source>
         <translation>Uruchom</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="90"/>
+        <location filename="../src/NewVdfWidget.cpp" line="91"/>
         <source>Confirm operation</source>
         <translation>Potwierdz operację</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="90"/>
+        <location filename="../src/NewVdfWidget.cpp" line="91"/>
         <source>Are You sure You want to clear scene?</source>
         <translation>Czy jesteś pewien że chcesz wyczyścić scenę?</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="104"/>
-        <location filename="../src/NewVdfWidget.cpp" line="112"/>
-        <location filename="../src/NewVdfWidget.cpp" line="114"/>
+        <location filename="../src/NewVdfWidget.cpp" line="106"/>
+        <location filename="../src/NewVdfWidget.cpp" line="127"/>
+        <location filename="../src/NewVdfWidget.cpp" line="129"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="114"/>
+        <location filename="../src/NewVdfWidget.cpp" line="129"/>
         <source>Unknown error</source>
         <translation>Nieznany błąd</translation>
     </message>

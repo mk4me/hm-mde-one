@@ -12,6 +12,7 @@
 #include <utils/Debug.h>
 #include <corelib/IIdentifiable.h>
 #include <utils/SmartPtr.h>
+#include <QtGui/QWidgetList>
 
 class QObject;
 class QWidget;
@@ -58,12 +59,16 @@ namespace plugin
         //! Usługa nie musi mieć wizualnej reprezentacji.
         //! \return Widget tworzony przez usługę bądź NULL.
         virtual QWidget* getWidget() = 0;
-        
-        //! \return Widget kontrolujący zachowanie usługi/usług zależnych.
-        virtual QWidget* getControlWidget() = 0;
 
-        //! \return Widget dostarczający opcji związanych z usługą/usługami zależnymi.
-        virtual QWidget* getSettingsWidget() = 0;
+        //! Metoda dostarcza pomocniczych widgetów serwisu
+        //! \return Lista pomocniczych widgetów serwisu
+        virtual QWidgetList getPropertiesWidgets() = 0;
+        
+        ////! \return Widget kontrolujący zachowanie usługi/usług zależnych.
+        //virtual QWidget* getControlWidget() = 0;
+        //
+        ////! \return Widget dostarczający opcji związanych z usługą/usługami zależnymi.
+        //virtual QWidget* getSettingsWidget() = 0;
     };
 
     typedef utils::shared_ptr<IService> IServicePtr;

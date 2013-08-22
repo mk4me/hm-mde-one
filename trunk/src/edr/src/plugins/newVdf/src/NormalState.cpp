@@ -50,17 +50,17 @@ bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 bool NormalState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
 {
 	if (e->button() == Qt::LeftButton) {
-		std::vector<ICommandPtr> commands;
+		std::vector<utils::ICommandPtr> commands;
 		for (auto it = positions.begin(); it != positions.end(); ++it) {
 			QGraphicsItem* item = it->first->visualItem();
 			QPointF oldP = it->second;
 			QPointF newP = item->pos();
 			if (newP != oldP) {
-				commands.push_back(ICommandPtr(new MoveCommand(item, newP, oldP)));
+				commands.push_back(utils::ICommandPtr(new MoveCommand(item, newP, oldP)));
 			}
 		}
 		if (!commands.empty()) {
-			stateMachine->getCommandStack()->addCommand(ICommandPtr(new MultiCommand(commands)));
+			stateMachine->getCommandStack()->addCommand(utils::ICommandPtr(new MultiCommand(commands)));
 		}
 	}
 	return false;
@@ -70,7 +70,7 @@ bool NormalState::keyReleaseEvent( QKeyEvent *event )
 {
 	if (event->key() == Qt::Key_Delete) {
 		auto selected = stateMachine->getScene()->selectedItems();
-		auto command = ICommandPtr(new RemoveSelectedCommand(stateMachine->getSceneModel(), selected));
+		auto command = utils::ICommandPtr(new RemoveSelectedCommand(stateMachine->getSceneModel(), selected));
 		stateMachine->getCommandStack()->addCommand(command);
 		return true;
 	} else if (event->key() == Qt::Key_F2) {

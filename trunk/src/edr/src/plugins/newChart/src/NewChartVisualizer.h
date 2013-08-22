@@ -253,8 +253,6 @@ private:
     QwtPlotCurve* lowerBoundCurve;
     //! dodatkowa krzywa - średnia kroczaca
     QwtPlotCurve* averageCurve;
-    //! wektor z operacjami do wykonania na później (w update) pozwala wyeliminować problemy z watkami
-    std::vector< boost::function<void ()> > updateFIFO;
     //! automatyczne odświeżanie dodatkowych krzywych
     bool boundsAutoRefresh;
     //! dodatkowe krzywe powinny zostac odświeżone

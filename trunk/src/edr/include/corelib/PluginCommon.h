@@ -14,6 +14,7 @@
 #include <corelib/IPath.h>
 #include <corelib/ILog.h>
 #include <utils/Macros.h>
+#include <corelib/IMemoryDataManager.h>
 
 namespace plugin 
 {
@@ -29,6 +30,11 @@ namespace plugin
     inline core::IDataManagerReader* getDataManagerReader()
     {
         return __coreApplication->dataManagerReader();
+    }
+
+    inline core::IMemoryDataManagerHierarchy* getHierarchyManagerReader()
+    {
+        return dynamic_cast<core::IMemoryDataManagerHierarchy*>(__coreApplication->dataManagerReader());
     }
 
 	inline core::IServiceManager* getServiceManager()

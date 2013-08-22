@@ -13,12 +13,12 @@
 
 #include <QtGui/QWidget>
 #include <utils/ObserverPattern.h>
+#include <utils/CommandStack.h>
 #include <plugins/newVdf/IDataProcessorManager.h>
 #include <plugins/newVdf/IDataSinkManager.h>
 #include <plugins/newVdf/IDataSourceManager.h>
 
 #include "Command.h"
-#include "CommandStack.h"
 #include "ui_TypesWindow.h"
 #include "CanvasStyleEditor.h"
 #include "SceneModel.h"
@@ -28,33 +28,56 @@ namespace vdf {
 class NewVdfWidget;
 
 
+//! Widget z elementami do wstawienia na scenê
 class TypesWindow : public QWidget, private Ui::TypesWindow,
     public utils::Observer<vdf::IDataProcessorManager>, public utils::Observer<vdf::IDataSinkManager>, public utils::Observer<vdf::IDataSourceManager>
 {
     Q_OBJECT;
 public:
-    explicit TypesWindow(ICommandStackPtr stack, CanvasStyleEditorPtr canvas, NewVdfWidget* newVdf, QWidget* parent = 0, Qt::WindowFlags f = 0);
+    //! Konstruktor
+    //! \param stack Stos komend (umo¿liwia m.in. undo)
+    //! \param canvas Model ze stylami elementów
+    //! \param sceneModel Scena, na któr¹ trafi¹ elementy 
+    //! \param parent 
+    //! \param f 
+    explicit TypesWindow(utils::ICommandStackPtr stack, CanvasStyleEditorPtr canvas, SceneModelPtr sceneModel, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TypesWindow() {}
 
 public:
+    //! Tworzy element na podstawie nazwy i umieszcza go na scenie, komenda trafia na stos wywo³añ.
+    //! \param name nazwa elementu, który zostanie utworzony
+    //! \param scenePos pozycja na scenie, gdzie trafi obiekt
     void insert(const QString& name, const QPointF& scenePos);
-
-public slots:
-    void onNodeSelected(IVisualNodePtr node);
-    
+        
 protected:
+    //! Wywo³ywane, gdy pojawi¹ siê nowe elementy przetwarzaj¹ce
+    //! \param pm 
     void update(const IDataProcessorManager* pm);
+    //! Wywo³ywane, gdy pojawi¹ siê nowe Ÿród³a
+    //! \param sm 
     void update(const IDataSourceManager* sm);
+    //! Wywo³ywane, gdy pojawi¹ siê nowe sinki
+    //! \param sm 
     void update(const IDataSinkManager* sm);
 
 private:
+    //! Dodanie nowego elementu do odpwiedniego widgeta
+    //! \param entry nazwa/identyfikator elementu
+    //! \param icon ikona elementu
+    //! \param type typ elementu, warunkuje, do którego widgeta trafi wpis
     void addEntry(const QString& entry, const QIcon& icon, IVisualItem::Type type);
+    //! Tworzy element, który jest gotowy aby go wstawiæ na scenê
+    //! \param entry nazwa/identyfikator elementu
     SceneBuilder::VisualNodeWithPins createItemByEntry(const QString& entry);
 
 private:
+    //! Model ze stylami elmentów
     CanvasStyleEditorPtr canvas;
-	ICommandStackPtr commmandStack;
-    NewVdfWidget* newVdf;
+    //! Stos komend (umo¿liwia m.in. undo)
+	utils::ICommandStackPtr commmandStack;
+    //! Scena, na któr¹ trafi¹ elementy
+    SceneModelPtr sceneModel;
+    //! nazwa/identyfikator elementu -> prototyp elementu
     std::map<QString, IWorkflowItemBasePtr> name2node;
 };
 

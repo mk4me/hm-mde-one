@@ -18,7 +18,7 @@ namespace core {
 
 class MemoryDataManager : public IDataManagerReader, public IMemoryDataManager
 {
-private:
+protected:
 
 	class MemoryTransaction;
 	friend class MemoryTransaction;
@@ -32,7 +32,7 @@ private:
 	typedef utils::RecursiveSyncPolicy SyncPolicy;
 	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
 
-private:
+protected:
 
 	//! Obiekty pochodz¹ce z parserów.
 	ObjectsByTypes objectsByTypes;
@@ -87,7 +87,9 @@ public:
 
 	virtual IMemoryDataManager::TransactionPtr transaction();
 
-private:	
+    
+
+protected:	
 
 	const bool rawHasObject(const TypeInfo & type, bool exact) const;
 
@@ -108,6 +110,7 @@ private:
 	void updateObservers(const ChangeList & changes );
 
 	static void requestedTypes(const TypeInfo & type, bool exact, TypeInfoSet & types);
+
 
 };
 

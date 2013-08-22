@@ -30,7 +30,7 @@ class DataSourceWidget;
 class CommunicationDataSource : public communication::ICommunicationDataSource, public plugin::ISource
 {
     UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}");
-	CLASS_DESCRIPTION("Communication Data Source", "Communication Data Source");
+	CLASS_DESCRIPTION("Communication", "Communication Data Source");
 
 	//! Zaprzyjaźniona klasa realizująca widok danych
 	friend class DataSourceWidget;

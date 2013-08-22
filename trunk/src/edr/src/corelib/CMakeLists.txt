@@ -34,6 +34,15 @@ SET_PUBLIC_HEADERS(
 	IDataHierarchyManagerReader.h
 	IClonable.h
 	IApplication.h
+	HierarchyDataItem.h
+	HierarchyHelper.h
+	HierarchyItem.h
+	IHierarchyDataItem.h
+	IHierarchyItem.h
+	IFilterProvider.h
+	IFilterCommand.h
+	IFilterBundle.h
+	FilterBundle.h
 	Export.h
 	IJobManager.h
 	IThreadPool.h
@@ -44,9 +53,13 @@ SET_PUBLIC_HEADERS(
 SET_SOURCE_FILES(
 	Filesystem.cpp
 	Visualizer.cpp
+	FilterBundle.cpp
 	# SubjectDataFilters.cpp
 	CoreLibPCH.cpp
 	ObjectWrapperCollection.cpp	
+	HierarchyDataItem.cpp
+	HierarchyHelper.cpp
+	HierarchyItem.cpp
 )
 
 SET_PRIVATE_HEADERS(

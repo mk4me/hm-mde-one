@@ -5,7 +5,7 @@
 using namespace vdf;
 
 DataProcessor::DataProcessor( df::IProcessingNode* impl, core::UniqueID id, const std::string& name, Creator creator ) :
-_impl(impl), _id(id), _name(name), _creator(creator)
+    _impl(impl), _id(id), _name(name), _creator(creator)
 {
 }
 
@@ -22,12 +22,13 @@ void DataProcessor::getInputInfo( std::vector<InputInfo>& info ) const
 
 df::INode* DataProcessor::create() const
 {
-	return _creator(_impl);
+	return _creator(_impl.get());
 }
 
 df::INode* DataProcessor::getPrototype() const
 {
-	return _impl;
+    // todo zwrocic smart_ptr
+	return _impl.get();
 }
 
 core::UniqueID DataProcessor::getID() const

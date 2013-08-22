@@ -37,9 +37,9 @@ private:
 	friend class StreameFileParser;
 
 	//! Wska�nik na parser.
-	typedef shared_ptr<Parser> ParserPtr;
+	typedef utils::shared_ptr<Parser> ParserPtr;
 	//! S�aby wska�nik na parser
-	typedef weak_ptr<Parser> ParserWeakPtr;
+	typedef utils::weak_ptr<Parser> ParserWeakPtr;
 	//! S�ownik aktualnie obs�ugiwanych plik�w i skojarzonych z nimi parser�w
 	typedef std::map<Filesystem::Path, ObjectsList> ObjectsByFiles;
 

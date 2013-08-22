@@ -17,6 +17,9 @@ SET_PUBLIC_HEADERS(
 	ICoreActionSection.h
 	CoreCompoundVisualizerWidget.h
 	CoreTextEditWidget.h
+	HierarchyTreeModel.h
+	DataFilterWidget.h
+	FilterEntryWidget.h
 	Export.h
 )
 
@@ -36,6 +39,9 @@ SET_SOURCE_FILES(
 	CoreUiPCH.cpp
 	CoreCompoundVisualizerWidget.cpp
 	CoreTextEditWidget.cpp
+	HierarchyTreeModel.cpp
+	DataFilterWidget.cpp
+	FilterEntryWidget.cpp
 )
 
 SET_PRIVATE_HEADERS(
@@ -57,12 +63,19 @@ SET_MOC_FILES(
 	CoreFlexiToolBarSection.h
 	CoreTitleBar.h
 	CoreWidgetAction.h
+	HierarchyTreeModel.h
+	DataFilterWidget.h
+	FilterEntryWidget.h
 )
 
 SET_UI_FILES(
 	CoreConsoleWidget.ui
 	CoreFlexiToolBarSection.ui
 	CoreTitleBar.ui
+	configurationDialog.ui
+	filter.ui
+	FilterConfiguratorWidget.ui
+	filterEntry.ui
 )
 
 SET_RC_FILES (

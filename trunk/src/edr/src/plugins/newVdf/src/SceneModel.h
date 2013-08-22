@@ -17,6 +17,14 @@
 #include <dflib/IModel.h>
 #include "SceneBuilder.h"
 #include <boost/type_traits.hpp>
+//#include <plugins/newVdf/TreeBuilder.h>
+#include <corelib/IDataManagerReader.h>
+
+namespace utils {
+
+	class IThreadPool;
+
+}
 
 namespace vdf {
 
@@ -55,6 +63,7 @@ private:
 class SceneModel : public QObject
 {
     Q_OBJECT;
+
 public:
 	struct Connections
 	{
@@ -93,7 +102,7 @@ public:
 	IVisualItemPtr tryGetVisualItem(QGraphicsItem* item);
 
 	void clearScene();
-
+    
 	template <class VisualItemT>
 	QList<VisualItemT> getVisualItems()
 	{
@@ -145,6 +154,7 @@ private:
 	IModelPtr model;
 	mutable Connections pinsHelper;
 	std::vector<MergedItemPtr> mergedItems;
+	core::shared_ptr<utils::IThreadPool> dfThreadFactory;
 };
 DEFINE_SMART_POINTERS(SceneModel);
 }

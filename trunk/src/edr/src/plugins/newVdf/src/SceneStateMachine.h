@@ -13,19 +13,21 @@
 #include <QtGui/QWidget>
 #include <QtGui/QGraphicsView>
 #include <QtGui/QWheelEvent>
+#include <utils/CommandStack.h>
 
 #include "ISceneState.h"
 #include "NormalState.h"
 #include "GroupState.h"
 #include "ConnectState.h"
 #include "Command.h"
-#include "CommandStack.h"
 
 namespace vdf {
 
 class VdfScene;
 class NewVdfWidget;
 
+
+//! Obiekt zarz¹dza stanami sceny vdf
 class SceneStateMachine : public QObject
 {
     Q_OBJECT;
@@ -42,7 +44,7 @@ public:
     void setState(ISceneStatePtr state);
 	VdfScene* getScene() const;
 	SceneModelPtr getSceneModel() const;
-	ICommandStackPtr getCommandStack() const;
+	utils::ICommandStackPtr getCommandStack() const;
 
 public:
     bool mousePressEvent(QGraphicsSceneMouseEvent* e);

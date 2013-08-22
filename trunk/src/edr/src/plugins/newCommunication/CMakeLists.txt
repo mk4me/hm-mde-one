@@ -36,6 +36,7 @@ SET_PRIVATE_HEADERS(
 	DataSourcePerspectiveManager.h
 	ServerStatusManager.h
 	CommunicationPCH.h
+	TreeBuilder.h
 )
 
 SET_PUBLIC_HEADERS (
@@ -57,6 +58,9 @@ SET_PUBLIC_HEADERS (
 	IDataSourcePerspectiveManager.h
 	IDataSourceStatus.h
 	IDataSourceStatusManager.h
+	MultiserieColorStrategy.h
+	TreeItemHelper.h
+	Export.h
 )
 
 #------------------------------------------------------------------------------
@@ -96,6 +100,8 @@ SET_SOURCE_FILES(
 	DataSourcePerspectiveManager.cpp
 	ServerStatusManager.cpp
 	CommunicationPCH.cpp
+	TreeBuilder.cpp
+	TreeItemHelper.cpp
 )
 
 SET_MOC_FILES(

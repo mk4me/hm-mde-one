@@ -2,14 +2,16 @@
 #include "HmmVdf.h"
 #include "HmmSources.h"
 #include "HmmSinks.h"
-#include "HmmPins.h"
-#include "HmmProcessors.h"
+
+#include <plugins/dfElements/DFPins.h>
+//#include "HmmPins.h"
+//#include "HmmProcessors.h"
 
 
 void HmmVdf::registerNodes(HmmMainWindow* hmm)
 {
 
-    HMM_REGISTER_DATA_PROCESSOR_SIMPLE(
+    /*HMM_REGISTER_DATA_PROCESSOR_SIMPLE(
         ScalarTreshold, 
         "Treshold",
         "{1143D447-2F76-458A-ADEB-4A669E487023}",
@@ -137,7 +139,7 @@ void HmmVdf::registerNodes(HmmMainWindow* hmm)
         emgLambda);
 
     // ------------------------ !!!! FAKE !!!!--------------------------------------------
-    HMM_REGISTER_DATA_PROCESSOR_SIMPLE(
+    /*HMM_REGISTER_DATA_PROCESSOR_SIMPLE(
         ScalarDummy, 
         ".High-pass",
         "{8E4E35A1-219B-4C06-A3B7-96BDC16D4638}",
@@ -213,4 +215,5 @@ void HmmVdf::registerNodes(HmmMainWindow* hmm)
 
 
     // ------------------------ !!!! FAKE END !!!!--------------------------------------------
+    */
 }

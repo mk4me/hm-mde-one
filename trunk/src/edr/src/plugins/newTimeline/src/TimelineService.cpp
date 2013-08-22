@@ -64,13 +64,14 @@ const TimelineService::UIChannelAction & TimelineService::getOnChannelRemove() c
   
  QWidget* TimelineService::getWidget()
  {
-     return nullptr;
+     return widget;
  }
 
-QWidget* TimelineService::getControlWidget()
-{
-    return widget;
-}
+ QWidgetList TimelineService::getPropertiesWidgets()
+ {
+     return QWidgetList();
+ }
+
 
 void TimelineService::addChannel(const std::string & path, const timeline::IChannelPtr & channel)
 {
@@ -120,3 +121,4 @@ void TimelineService::setNormalizedTime(double time)
 {
     controller->setNormalizedTime(time);
 }
+

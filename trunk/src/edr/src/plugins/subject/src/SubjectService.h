@@ -36,11 +36,7 @@ public:
 	//! \param actions 
 	virtual QWidget* getWidget();
 	//! 
-	//! \param actions 
-	virtual QWidget* getSettingsWidget();
-	//! 
-	//! \param actions 
-	virtual QWidget* getControlWidget();
+    virtual QWidgetList getPropertiesWidgets();
 
 	virtual const bool lateInit() { return true; }
 	virtual void finalize() {}

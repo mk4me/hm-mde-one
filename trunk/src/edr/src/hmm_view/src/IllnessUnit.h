@@ -16,6 +16,7 @@
 #include <plugins/subject/IMotion.h>
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/ISubject.h>
+#include <plugins/c3d/C3DCollections.h>
 
 //! klasa zapewnia filtrowanie po typie przekazanym w szablonie
 template<class Collection>

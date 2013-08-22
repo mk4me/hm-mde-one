@@ -10,13 +10,14 @@
 #include "Command.h"
 #include "VdfView.h"
 #include <plugins/newVdf/INodeConfiguration.h>
-
+#include <plugins/dfElements/DFSinks.h>
 
 using namespace vdf;
 
-NewVdfWidget::NewVdfWidget(ICommandStackPtr stack, SceneModelPtr sceneModel) :
+NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, coreui::HierarchyTreeModel* treeModel) :
     sceneModel(sceneModel),
-	commandStack(stack)
+	commandStack(stack),
+    treeModel(treeModel)
 {
     QVBoxLayout* layout = new QVBoxLayout();
     layout->setMargin(0);
@@ -51,9 +52,9 @@ NewVdfWidget::NewVdfWidget(ICommandStackPtr stack, SceneModelPtr sceneModel) :
     this->addAction(del);
     this->addAction(clr);
     this->addAction(run);
-	
+    	
     layout->addWidget(view);
-    setMinimumSize(500, 400);
+    setMinimumSize(300, 200);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
@@ -75,13 +76,13 @@ void NewVdfWidget::merge()
 {
 	auto node = sceneModel->merge(scene->selectedItems());
 	// TODO
-	commandStack->addCommand(ICommandPtr(new AddToSceneCommand(sceneModel, node, node.get<0>()->visualItem()->scenePos())));
+	commandStack->addCommand(utils::ICommandPtr(new AddToSceneCommand(sceneModel, node, node.get<0>()->visualItem()->scenePos())));
 }
 
 void vdf::NewVdfWidget::deleteSelected()
 {
     auto selected = stateMachine->getScene()->selectedItems();
-    auto command = ICommandPtr(new RemoveSelectedCommand(stateMachine->getSceneModel(), selected));
+    auto command = utils::ICommandPtr(new RemoveSelectedCommand(stateMachine->getSceneModel(), selected));
     stateMachine->getCommandStack()->addCommand(command);
 }
 
@@ -96,6 +97,7 @@ void vdf::NewVdfWidget::clearScene()
 
 void vdf::NewVdfWidget::runDF()
 {
+    std::list<UniversalSink*> sinks;
     auto nodes = sceneModel->getVisualItems<IVisualNodePtr>();
     for (auto it = nodes.begin(); it != nodes.end(); ++it) {
         auto modelNode = (*it)->getModelNode();
@@ -104,13 +106,31 @@ void vdf::NewVdfWidget::runDF()
             QMessageBox::critical(this, tr("Error"), QString("Info: %1").arg(valid->getErrorMessage()));
             return;
         }
+
+        UniversalSink* usink = dynamic_cast<UniversalSink*>(modelNode);
+        if (usink) {
+            connect(usink, SIGNAL(itemConsumed(core::IHierarchyItemPtr)), this, SLOT(onSinkGenerate(core::IHierarchyItemPtr)));
+            sinks.push_back(usink);
+        }
     }
 
+    static int processingNo = 0;
     try {
+
+        root = core::HierarchyItemPtr(new core::HierarchyItem(QString("Processing %1").arg(++processingNo), QString()));
         sceneModel->run();
+        for (auto it = sinks.begin(); it != sinks.end(); ++it) {
+            root->appendChild((*it)->getDataItem());
+        }
+        treeModel->addRootItem(root);
     } catch (std::exception& e) {
         QMessageBox::critical(this, tr("Error"), QString("Info: %1").arg(e.what()));
     } catch (...) {
         QMessageBox::critical(this, tr("Error"), tr("Unknown error"));
     }
+}
+
+void vdf::NewVdfWidget::onSinkGenerate( core::IHierarchyItemPtr item )
+{
+    root->appendChild(item);
 }

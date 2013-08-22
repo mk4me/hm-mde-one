@@ -19,7 +19,7 @@ namespace core {
 	{
 	public:
 		//! Typ wskaünika na strumieÒ
-		typedef shared_ptr<const std::istream> StreamConstPtr;
+		typedef utils::shared_ptr<const std::istream> StreamConstPtr;
 
 		//! Opis strumienia
 		struct StreamData
@@ -80,9 +80,9 @@ namespace core {
 		};
 
 		//! Wskaünik na obiek obserwujπcy zmiany
-		typedef shared_ptr<IStreamObserver> StreamObserverPtr;
+		typedef utils::shared_ptr<IStreamObserver> StreamObserverPtr;
 
-		typedef shared_ptr<IStreamManagerReaderOperations> TransactionPtr;
+		typedef utils::shared_ptr<IStreamManagerReaderOperations> TransactionPtr;
 
 	public:
 		//! \param streamWatcher Rejestrowany obiekt obserwujπcy zmiany managera strumieni
