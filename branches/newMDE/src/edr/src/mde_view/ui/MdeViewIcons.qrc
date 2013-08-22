@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="mde/icons">
-        <file alias="przod.png">../resources/embedded/icons/przod.png</file>
-        <file alias="tyl.png">../resources/embedded/icons/tyl.png</file>
         <file alias="minimalizacja-alpha.png">../resources/embedded/icons/minimalizacja-alpha.png</file>
         <file alias="trojkat-8x8-naboku.png">../resources/embedded/icons/trojkat-8x8-naboku.png</file>
         <file alias="trojkat-8x8-dodolu.png">../resources/embedded/icons/trojkat-8x8-dodolu.png</file>

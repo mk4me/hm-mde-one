@@ -12,7 +12,7 @@
 #include "AnalisisModel.h"
 
 class QWidget;
-
+class MdeServiceWindow;
 class MdeMainWindow;
 namespace Ui { class HMMMain; }
 
@@ -60,8 +60,8 @@ private:
 	virtual void initializeSplashScreen(QSplashScreen * splashScreen);
 	virtual void customViewInit(QWidget * console);
 
-    QWidget* createServiceWidget( plugin::IServicePtr service );
-
+    void addPropertiesToServiceWindow( plugin::IServicePtr service, MdeServiceWindow * w );
+    MdeServiceWindow* createServiceWidget( plugin::IServicePtr service );
     
     void addTab(IMdeTabPtr tab);
 

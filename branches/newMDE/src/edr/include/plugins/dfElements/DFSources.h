@@ -29,6 +29,7 @@ public:
       {
           tree = new QTreeView();
           tree->setModel(&model);
+          
           tree->setHeaderHidden(true);
           outPinA = new UniversalOutputPinT<T>(this);
           addOutputPin(outPinA);

@@ -49,6 +49,9 @@ SET_MOC_FILES(
 	ConfigurationPainter.h
 	ConfiguredFilterCommand.h
 )
+SET_RC_FILES (
+	hmmIcons.qrc
+)
 
 SET_PRECOMPILED_HEADER (HmmLibPCH.h HmmLibPCH.cpp)
 

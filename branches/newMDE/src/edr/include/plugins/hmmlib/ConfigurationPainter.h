@@ -33,13 +33,13 @@ public:
     typedef std::map<QString, std::pair<QString, QString>> NamesDictionary;
 public:
     //! \return obrazek z tłem
-    QPixmapConstPtr getBackground() const { return background; }
+    QImageConstPtr getBackground() const { return background; }
     //! \return nazwa paintera
     const QString& getName() const { return name; }
     //! ustawia obrazek z tłem
     //! \param name nazwa obrazka
     //! \param val pixmapa z obrazkiem
-    void setBackground(const QString& name, const QPixmapConstPtr & val) { this->name = name; background = val; }
+    void setBackground(const QString& name, const QImageConstPtr & val) { this->name = name; background = val; }
     //! dodaje nowy obszar do paintera (marker lub obrazek)
     //! \param data dodawany obszar
     void addArea(const IAreaPtr & data);
@@ -104,7 +104,7 @@ private:
 
 private:
     //! tło paintera
-    QPixmapConstPtr background;
+    QImageConstPtr background;
     //! nazwa paintera
     QString name;
     //! lista obszarów w painterze

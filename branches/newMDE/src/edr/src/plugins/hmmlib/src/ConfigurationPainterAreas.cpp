@@ -66,7 +66,7 @@ name(QFileInfo(name).baseName()),
     setPixmapAlpha(*alphaPixmap, 100);
 }
 
-SinglePicture::SinglePicture( const QString& name, const QPixmapPtr& pixmap, int x /*= 0*/, int y /*= 0*/, bool alwaysVisible /*= false*/ ) :
+SinglePicture::SinglePicture( const QString& name, const QImagePtr& pixmap, int x /*= 0*/, int y /*= 0*/, bool alwaysVisible /*= false*/ ) :
 name(name),
     pixmap(pixmap),
     alphaPixmap(new QImage(*pixmap)),

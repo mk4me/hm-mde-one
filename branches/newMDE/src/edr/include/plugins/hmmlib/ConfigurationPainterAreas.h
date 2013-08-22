@@ -123,8 +123,8 @@ private:
 typedef boost::shared_ptr<SingleMarker> SingleMarkerPtr;
 typedef boost::shared_ptr<const SingleMarker> SingleMarkerConstPtr;
 
-typedef boost::shared_ptr<QImage> QPixmapPtr;
-typedef boost::shared_ptr<const QImage> QPixmapConstPtr;
+typedef boost::shared_ptr<QImage> QImagePtr;
+typedef boost::shared_ptr<const QImage> QImageConstPtr;
 
 //! reprezentuje obrazek na konfiguratorze
 class SinglePicture : public IArea
@@ -142,7 +142,7 @@ public:
     //! \param x pozycja x
     //! \param y pozycja y
     //! \param alwaysVisible czy obrazek ma być zawsze widoczny
-    SinglePicture(const QString& name, const QPixmapPtr& pixmap, int x = 0, int y = 0, bool alwaysVisible = false);
+    SinglePicture(const QString& name, const QImagePtr& pixmap, int x = 0, int y = 0, bool alwaysVisible = false);
 
 public:
     //! \return współrzędna Y rysowanego obrazka
@@ -172,7 +172,7 @@ public:
 
 public:
     //! \return wyświetlany obrazek
-    QPixmapConstPtr getPixmap() const { return pixmap; }
+    QImageConstPtr getPixmap() const { return pixmap; }
 
 public:
     //! ustawia nowa wartość przezroczystości obrazka
@@ -184,9 +184,9 @@ private:
     //! nazwa obszaru
     QString name;
     //! wyświetlany obrazek
-    QPixmapPtr pixmap;
+    QImagePtr pixmap;
     //! kopia obrazka ze zmieniona alpha (wyświetlane, gdy zaznacza się obszar)
-    QPixmapPtr alphaPixmap;
+    QImagePtr alphaPixmap;
     //! pozycja x
     int x;
     //! pozycja y

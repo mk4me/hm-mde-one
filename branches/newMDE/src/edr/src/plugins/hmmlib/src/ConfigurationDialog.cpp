@@ -29,10 +29,9 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
     connect(&painterBack, SIGNAL(elementSelected(const QString&, bool)), this, SLOT(onItemSelected(const QString&, bool)));
     connect(&painterFront, SIGNAL(elementHovered(const QString&, bool)), this, SLOT(onElementHovered(const QString&, bool)));
     connect(&painterBack, SIGNAL(elementHovered(const QString&, bool)), this, SLOT(onElementHovered(const QString&, bool)));
-    //connect(switchButton, SIGNAL(clicked()), this, SLOT(onSwitchButton()));
 }
 
-void ConfigurationWidget::setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap )
+void ConfigurationWidget::setBackground(ConfigurationPainter& painter, const QString& name, QImageConstPtr pixmap )
 {
     int w = static_cast<int>(SCALE * pixmap->width());
     int h = static_cast<int>(SCALE * pixmap->height());
@@ -76,8 +75,17 @@ void ConfigurationWidget::loadConfigurations(const QString& frontXml, const QStr
     painterFront.intersectNames(names);
     painterBack.intersectNames(names);
 
-    loadPicture(painterFront, QString::fromStdString(plugin::getResourcePath("images/przod.png").string()), 0, 0, true);
-    loadPicture(painterBack, QString::fromStdString(plugin::getResourcePath("images/tyl.png").string()), 0, 0, true);
+    //loadPicture(painterFront, QString::fromStdString(plugin::getResourcePath("images/przod.png").string()), 0, 0, true);
+    //loadPicture(painterBack, QString::fromStdString(plugin::getResourcePath("images/tyl.png").string()), 0, 0, true);
+    QImagePtr imgFront = utils::make_shared<QImage>(QString::fromUtf8(":/hmm/icons/przod.png"));
+    SinglePicturePtr front(new SinglePicture("__front", imgFront , 0, 0, true));
+    front->setActive(true);
+    painterFront.addArea(front);
+
+    QImagePtr imgBack = utils::make_shared<QImage>(QString::fromUtf8(":/hmm/icons/tyl.png"));
+    SinglePicturePtr back(new SinglePicture("__back", imgBack , 0, 0, true));
+    back->setActive(true);
+    painterBack.addArea(back);
 }
 
 
@@ -98,8 +106,8 @@ void ConfigurationWidget::loadXml(ConfigurationPainter& painter, const QString &
 
     QString background(root->Attribute("BackgroundFilename"));
     background = path + "\\" + background;
-    QPixmapPtr pixmap(new QImage(background));
-    setBackground(painter, background, pixmap);
+    QImagePtr img = utils::make_shared<QImage>(background);
+    setBackground(painter, background, img);
 
     TiXmlElement* element = root->FirstChildElement();
     while (element) {
@@ -153,11 +161,9 @@ void ConfigurationWidget::setVisibles( const std::map<QString, bool>& visibles )
 
 void ConfigurationWidget::onItemSelected( const QString& name, bool selected )
 {
-    QFileInfo info(name);
-    QString filename = info.baseName();
-    if (filename == "przod") {
+    if (name == "__front") {
         showBack();
-    } else if (filename == "tyl") {
+    } else if (name == "__back") {
         showFront();
     } else {
         Q_EMIT itemSelected(name, selected);
@@ -166,14 +172,6 @@ void ConfigurationWidget::onItemSelected( const QString& name, bool selected )
     }
 }
 
-void ConfigurationWidget::onSwitchButton()
-{
-    if (isFront) {
-        showBack();
-    } else {
-        showFront();
-    }
-}
 
 void ConfigurationWidget::showFront()
 {

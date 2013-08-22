@@ -97,8 +97,9 @@ void MdeMainWindow::customViewInit(QWidget * console)
        if (service != timeline) {
             auto w = createServiceWidget(service);
             if (w) {
-                w->show();
                 addTab(IMdeTabPtr(new SimpleTab(w, QIcon(":/mde/icons/Operacje.png"),tr(service->getName().c_str()))));
+                addPropertiesToServiceWindow(service, w);
+
             }
        }
 
@@ -117,7 +118,7 @@ void MdeMainWindow::addTab( IMdeTabPtr tab )
     emit tabAdded(tab);
 }
 
-QWidget* MdeMainWindow::createServiceWidget( plugin::IServicePtr service )
+MdeServiceWindow* MdeMainWindow::createServiceWidget( plugin::IServicePtr service )
 {
     QWidget* viewWidget = service->getWidget();
     
@@ -128,17 +129,30 @@ QWidget* MdeMainWindow::createServiceWidget( plugin::IServicePtr service )
         w->setCentralWidget(viewWidget);
         w->addActions(viewWidget->actions());
 
-        QWidgetList properites = service->getPropertiesWidgets();
+        /*QWidgetList properites = service->getPropertiesWidgets();
         if (!properites.empty()) {
             w->loadLayout();
             int propNo = 0;
             for (auto it = properites.begin(); it != properites.end(); ++it) {
                 w->createMdeDock(serviceName, *it);
             }
-        }
+        }*/
     }
 
     return w;
+}
+
+void MdeMainWindow::addPropertiesToServiceWindow( plugin::IServicePtr service, MdeServiceWindow * w )
+{
+    QWidgetList properites = service->getPropertiesWidgets();
+    if (!properites.empty()) {
+        w->loadLayout();
+        int propNo = 0;
+        QString serviceName = QString::fromStdString(service->getName());
+        for (auto it = properites.begin(); it != properites.end(); ++it) {
+            w->createMdeDock(serviceName, *it);
+        }
+    }
 }
 
 void MdeMainWindowController::addTab( IMdeTabPtr tab )

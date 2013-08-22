@@ -14,8 +14,6 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QHBoxLayout>
 #include "ConfigurationPainter.h"
-//#include "ui_configurationDialog.h"
-//#include "ui_FilterConfiguratorWidget.h"
 #include <plugins/hmmlib/Export.h>
 
 namespace Ui {
@@ -61,8 +59,6 @@ private Q_SLOTS:
     //! \param name nazwa elementu
     //! \param selected 
     void onItemSelected(const QString& name, bool selected);
-    //! nacisnieto przycisk odwracający postac
-    void onSwitchButton();
 
 private:   
     //! wczytuje wszystkie pliki z listy i dodaje je do paintera (pozycja 0,0)
@@ -94,7 +90,7 @@ private:
     //! \param painter modyfikowany painter
     //! \param name nazwa widoku
     //! \param pixmap obrazek tła
-    void setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap);
+    void setBackground(ConfigurationPainter& painter, const QString& name, QImageConstPtr pixmap);
 
 private:
     //! painter, który rysuje przód podstaci

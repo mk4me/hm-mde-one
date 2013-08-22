@@ -23,7 +23,7 @@ core::IHierarchyItemPtr AbstractFilterCommand::getFilteredTree( core::IHierarchy
 void AbstractFilterCommand::traverse(core::IHierarchyItemConstPtr source, core::HierarchyItemPtr parent) 
 {
     if (checkItem(source)) {
-        parent->appendChild(source);
+        parent->appendChild(source->shallowCopy());
     }
 
     auto count = source->getNumChildren();
