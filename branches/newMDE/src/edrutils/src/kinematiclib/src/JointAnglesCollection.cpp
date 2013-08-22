@@ -295,6 +295,7 @@ JointAnglesCollection* JointAnglesCollection::clone() const
 	obj->configurationID = this->configurationID;
 	obj->haSkeleton = hAnimSkeletonPtr(this->haSkeleton->clone());
 	obj->lengthRatio = this->lengthRatio;
+	obj->rootPositions = this->rootPositions;
     //obj->preferedConnectionColor = this->preferedConnectionColor;
     //obj->preferedDotColor = this->preferedDotColor;
 	//obj->skeletalData = SkeletalDataPtr(this->skeletalData->clone());
