@@ -208,6 +208,35 @@ bool DataSourceLocalStorage::fileIsLocal(const std::string & fileName) const
 	return ret;
 }
 
+void DataSourceLocalStorage::listFiles(Files & files)
+{
+	const char* tail;
+	sqlite3_stmt* res;
+
+	std::string fileQuery("SELECT file_name, size FROM files_table;");
+
+	int rc = sqlite3_prepare_v2(db, fileQuery.c_str(), -1, &res, &tail);
+
+	if (rc != SQLITE_OK || res == nullptr){
+		sqlite3_finalize(res);
+		throw std::runtime_error("Could not query DB");
+	}
+
+	Files locFiles;
+
+	while(sqlite3_step(res) == SQLITE_ROW){
+		
+		FileDescription fd;
+
+		fd.name = std::string((char*)sqlite3_column_text(res, 0));
+		fd.size = sqlite3_column_int64(res, 1);
+		
+		locFiles.push_back(fd);
+	}
+
+	files.insert(files.end(), locFiles.begin(), locFiles.end());
+}
+
 void DataSourceLocalStorage::loadFile(const core::Filesystem::Path & path, const std::string & fileUniqueName)
 {
 	std::string uniqueName(fileUniqueName);

@@ -1,6 +1,16 @@
 #include "CommunicationPCH.h"
 #include <corelib/ILog.h>
 #include <corelib/PluginCommon.h>
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
+#include <corelib/IThreadPool.h>
 #include "DataSource.h"
 #include <quazip/quazip.h>
 #include <quazip/quazipfile.h>
@@ -88,7 +98,10 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     servicesManager->medicalFileStoremanService()->setConnection(connectionsManager->medicalFileStoremanWSConnection());
 
     //tworzymy i konfigurujemy instancje connectionManagera = odpowiada za sciąganie plików
-    auto communication = CommunicationManager::getInstance();
+	core::IThreadPool::Threads t;
+	plugin::getThreadPool()->getThreads("CommunicatioDataSource", t, 1);
+	t.front()->setDestination("Processing data downloads");
+    communicationManager.reset(new CommunicationManager(t.front()));
 
 	//TODO - obsługa pingu serwerów
 	//adres serwara/serwerów do pingowania
@@ -96,11 +109,11 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
 
 
 	//usługi do ściągania plików z danymi/metadanymi/zdjęciami
-	communication->setMotionFileStoremanService(servicesManager->motionFileStoremanService());
-    communication->setMedicalFileStoremanService(servicesManager->medicalFileStoremanService());
+	communicationManager->setMotionFileStoremanService(servicesManager->motionFileStoremanService());
+    communicationManager->setMedicalFileStoremanService(servicesManager->medicalFileStoremanService());
 
-    communication->setMotionFtps(connectionsManager->motionFtps());
-    communication->setMedicalFtps(connectionsManager->medicalFtps());
+    communicationManager->setMotionFtps(connectionsManager->motionFtps());
+    communicationManager->setMedicalFtps(connectionsManager->medicalFtps());
 
     localStorage = DataSourceLocalStorage::create();
 
@@ -129,7 +142,7 @@ CommunicationDataSource::~CommunicationDataSource()
 	}
 
 	delete loginManager;
-    CommunicationManager::destoryInstance();
+    communicationManager.reset();
     DataSourceWebServicesManager::destroy();
     DataSourceConnectionManager::destroy();
     DataSourcePathsManager::destroy();
@@ -409,7 +422,7 @@ CommunicationDataSource::DownloadRequestPtr CommunicationDataSource::generateDow
 
     reqData.insert(std::map<CommunicationManager::Request, DownloadRequest::ShallowCopyDescriptor>::value_type(CommunicationManager::CopyMedicalMetadata, desc));
 
-    return CommunicationDataSource::DownloadRequestPtr(DownloadRequest::createShallowCopyRequest(reqData));
+    return CommunicationDataSource::DownloadRequestPtr(DownloadRequest::createShallowCopyRequest(reqData, communicationManager.get()));
 }
 
 void CommunicationDataSource::extractShallowCopyFromLocalStorageToUserSpace()
@@ -763,6 +776,14 @@ void CommunicationDataSource::setShallowCopy(const ShallowCopy & shallowCopy)
 
     //aktualizuj status danych
     fullShallowCopyStatus->setShallowCopy(&fullShallowCopy);
+
+	//TODO DEBUG
+	/*DataSourceLocalStorage::Files f;
+	localStorage->listFiles(f);
+
+	for(auto it = f.begin(); it != f.end(); ++it){
+	PLUGIN_LOG_DEBUG( "Plik: " << (*it).name << " -> rozmiar: " << (*it).size);
+	}*/
 }
 
 bool CommunicationDataSource::tryActivateAccount(const std::string & login, const std::string & activationCode)
@@ -811,17 +832,48 @@ bool CommunicationDataSource::registerUser(const std::string & login, const std:
 
 void CommunicationDataSource::refreshFileManager()
 {
+	PLUGIN_LOG_DEBUG("refreshingFileManager");
+
+	DataSourceLocalStorage::Files f;
+	localStorage->listFiles(f);
+
+	PLUGIN_LOG_DEBUG("localStorageFiles");
+	std::ofstream localStorageFiles((plugin::getPathInterface()->getUserDataPath() / "localStorageFiles.txt").string());
+
+	for(auto it = f.begin(); it != f.end(); ++it){
+		localStorageFiles << (*it).name << std::endl;
+	}
+
+	localStorageFiles.flush();
+	localStorageFiles.close();
+
+
+	PLUGIN_LOG_DEBUG("shallowCopyFiles");
+	std::ofstream shallowCopyFiles((plugin::getPathInterface()->getUserDataPath() / "shallowCopyFiles.txt").string());
+
     auto itEnd = fullShallowCopy.motionShallowCopy->files.end();
     for(auto it = fullShallowCopy.motionShallowCopy->files.begin(); it != itEnd; ++it){
-        auto file = it->second;
+		
+		auto file = it->second;
+
+		shallowCopyFiles << file->fileName << std::endl;
+
         auto filePath = pathsManager->filePath(file->fileName, file->isSessionFile() == true ? file->session->sessionName : file->trial->session->sessionName);
 
+		DataStatus status((localStorage->fileIsLocal(file->fileName) == true) ? communication::Local : communication::Remote, communication::Unloaded);
+
+		PLUGIN_LOG_DEBUG("File: " << file->fileName << " -> status: " << (status.storage() == communication::DataStorage::Local ? "local" : "remote"));
+
         if(fileStatusManager->fileExists(file->fileID) == false){
-            fileStatusManager->addFile(file->fileID, filePath, DataStatus((localStorage->fileIsLocal(file->fileName) == true) ? communication::Local : communication::Remote, communication::Unloaded));
+            fileStatusManager->addFile(file->fileID, filePath, status);
         }else{
-            fileStatusManager->setFilePath(file->fileID, filePath);			
+            fileStatusManager->setFilePath(file->fileID, filePath);
+			fileStatusManager->setFileStatus(file->fileID, status);
         }
 	}
+
+	shallowCopyFiles.flush();
+	shallowCopyFiles.close();
 }
 
 CommunicationDataSource::DownloadRequestPtr CommunicationDataSource::generateDownloadFileRequest(int fileID)
@@ -858,5 +910,5 @@ CommunicationDataSource::DownloadRequestPtr CommunicationDataSource::generateDow
         files.insert(std::map<int, DownloadRequest::FileDescriptor>::value_type(desc.id, desc));
     }
 
-    return DownloadRequestPtr(DownloadRequest::createFilesRequest(files));
+    return DownloadRequestPtr(DownloadRequest::createFilesRequest(files,communicationManager.get()));
 }

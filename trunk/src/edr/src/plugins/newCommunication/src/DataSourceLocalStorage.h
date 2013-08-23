@@ -13,6 +13,7 @@
 #include <corelib/Filesystem.h>
 #include "DataSourceUser.h"
 #include <sqlite3.h>
+#include <list>
 
 //! Klasa zarządzająca położeniem danych naszego źródła.
 //! Inicjalizacja wymaga podania ścieżki do składowania lokanego źródła danych.
@@ -33,6 +34,16 @@ private:
 
 public:
 
+	struct FileDescription
+	{
+		std::string name;
+		unsigned long size;
+	};
+
+	typedef std::list<FileDescription> Files;
+
+public:
+
     //! \param motionDataPath Ścieżka danych ruchu
     //! \param schemasPath Ścieżka płytkich kopii danych
     //! \return Instancja DataSourceLocalStorage
@@ -48,6 +59,9 @@ public:
 
     //! \return Instancja local storage
     static DataSourceLocalStorage * instance();
+
+	//! \param file Pliki aktualnie znajdujące się w bazie
+	void listFiles(Files & files);
 
 	//! \param fileName Unikalna nazwa pliku o który pytamy czy jest dostępny lokalnie
 	//! \return Czy plik jest dostępny lokalnie

@@ -5,8 +5,12 @@
 using namespace communication;
 
 //! Prywatny konstruktor
-DownloadRequest::DownloadRequest() : state_(Created), currentTransferID(0), totalSize_(0), currentSize(0)
+DownloadRequest::DownloadRequest(CommunicationManager * cm) : cm(cm), state_(Created), currentTransferID(0), totalSize_(0), currentSize(0)
 {
+	if(cm == nullptr){
+		throw std::invalid_argument("Uninitialised CommunicationManager");
+	}
+
 	//inicjalizacja callbacków pojedynczego pobierania
 	singleTransferCallbacks.onBeginCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onDownloadBegin, this, _1);
 	singleTransferCallbacks.onEndCallback = (CommunicationManager::RequestCallback)boost::bind(&DownloadRequest::onDownloadComplete, this, _1);
@@ -20,17 +24,16 @@ DownloadRequest::DownloadRequest() : state_(Created), currentTransferID(0), tota
 	complexTransferCallbacks.onErrorCallback = singleTransferCallbacks.onErrorCallback;
 }
 
-DownloadRequest * DownloadRequest::createFilesRequest(const std::map<int, FileDescriptor> & filesToDownload)
+DownloadRequest * DownloadRequest::createFilesRequest(const std::map<int, FileDescriptor> & filesToDownload,
+	CommunicationManager * cm)
 {
-    auto communicationManager = CommunicationManager::getInstance();
-
-    DownloadRequest * ret = new DownloadRequest();
+    DownloadRequest * ret = new DownloadRequest(cm);
 
     std::vector<CommunicationManager::CompleteRequest> filesRequests;
 
     for(auto it = filesToDownload.begin(); it != filesToDownload.end(); ++it){
 		CommunicationManager::CompleteRequest completeRequest;
-		completeRequest.request = communicationManager->createRequestFile(it->first, it->second.destPath);
+		completeRequest.request = cm->createRequestFile(it->first, it->second.destPath);
 		completeRequest.callbacks = ret->singleTransferCallbacks;
         filesRequests.push_back(completeRequest);
 
@@ -38,27 +41,27 @@ DownloadRequest * DownloadRequest::createFilesRequest(const std::map<int, FileDe
         ret->filesSizes[it->first] = it->second.size;
     }
 
-	ret->request_ = communicationManager->createRequestComplex(filesRequests);
+	ret->request_ = cm->createRequestComplex(filesRequests);
 
     return ret;
 }
 
-DownloadRequest * DownloadRequest::createPhotosRequest(const std::map<int, FileDescriptor> & photosToDownload)
+DownloadRequest * DownloadRequest::createPhotosRequest(const std::map<int, FileDescriptor> & photosToDownload,
+	CommunicationManager * cm)
 {
     return nullptr;
 }
 
 DownloadRequest * DownloadRequest::createFilesAndPhotosRequest(const std::map<int, FileDescriptor> & filesToDownload,
-    const std::map<int, FileDescriptor> & photosToDownload)
+    const std::map<int, FileDescriptor> & photosToDownload, CommunicationManager * cm)
 {
     return nullptr;
 }
 
-DownloadRequest * DownloadRequest::createShallowCopyRequest(const std::map<CommunicationManager::Request, ShallowCopyDescriptor> & shallowCopiesToDownload)
+DownloadRequest * DownloadRequest::createShallowCopyRequest(const std::map<CommunicationManager::Request,
+	ShallowCopyDescriptor> & shallowCopiesToDownload, CommunicationManager * cm)
 {
-	auto communicationManager = CommunicationManager::getInstance();
-
-	DownloadRequest * ret = new DownloadRequest();
+	DownloadRequest * ret = new DownloadRequest(cm);
 
 	std::vector<CommunicationManager::CompleteRequest> filesRequests;
 
@@ -67,19 +70,19 @@ DownloadRequest * DownloadRequest::createShallowCopyRequest(const std::map<Commu
 
 		switch(it->first){
 		case CommunicationManager::CopyMotionShallowCopy:
-			completeRequest.request = communicationManager->createRequestMotionShallowCopy(it->second.destPath);
+			completeRequest.request = cm->createRequestMotionShallowCopy(it->second.destPath);
 			ret->shallowSizes[CommunicationManager::CopyMotionShallowCopy] = it->second.size;
 			break;
 		case CommunicationManager::CopyMotionMetadata:
-			completeRequest.request = communicationManager->createRequestMotionMetadata(it->second.destPath);
+			completeRequest.request = cm->createRequestMotionMetadata(it->second.destPath);
 			ret->shallowSizes[CommunicationManager::CopyMotionMetadata] = it->second.size;
 			break;
 		case CommunicationManager::CopyMedicalShallowCopy:
-			completeRequest.request = communicationManager->createRequestMedicalShallowCopy(it->second.destPath);
+			completeRequest.request = cm->createRequestMedicalShallowCopy(it->second.destPath);
 			ret->shallowSizes[CommunicationManager::CopyMedicalShallowCopy] = it->second.size;
 			break;
 		case CommunicationManager::CopyMedicalMetadata:
-			completeRequest.request = communicationManager->createRequestMedicalMetadata(it->second.destPath);
+			completeRequest.request = cm->createRequestMedicalMetadata(it->second.destPath);
 			ret->shallowSizes[CommunicationManager::CopyMedicalMetadata] = it->second.size;
 			break;
 		}
@@ -95,7 +98,7 @@ DownloadRequest * DownloadRequest::createShallowCopyRequest(const std::map<Commu
 		}
 	}
 
-	ret->request_ = communicationManager->createRequestComplex(filesRequests);
+	ret->request_ = cm->createRequestComplex(filesRequests);
 
 	return ret;
 }
@@ -128,7 +131,7 @@ void DownloadRequest::cancel()
 		throw std::runtime_error("Download already finished");
 	}
 
-    CommunicationManager::getInstance()->cancelRequest(request_);
+    cm->cancelRequest(request_);
 
 	state_ = FinishedCancel;
 
@@ -152,7 +155,7 @@ void DownloadRequest::start()
 	completeRequest.request = request_;
 	completeRequest.callbacks = complexTransferCallbacks;
 
-	CommunicationManager::getInstance()->pushRequest(completeRequest);
+	cm->pushRequest(completeRequest);
 }
 
 const float DownloadRequest::totalProgress() const

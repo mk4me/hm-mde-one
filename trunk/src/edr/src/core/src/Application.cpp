@@ -324,7 +324,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 int Application::run()
 {
 	visualizerUpdateTimer.start(visualizerTimeDelta);
-	servicesUpdateTimer.start(servicesTimeDelta);	
+	servicesUpdateTimer.start(servicesTimeDelta);
 	return uiApplication_->exec();
 }
 
@@ -333,12 +333,6 @@ Application::~Application()
 	//zeruje ju? konsole - wi?cej z niej nie b?d? korzysta?
 	CORE_LOG_INFO("Closing core application");
 
-	CORE_LOG_INFO("Releasing job manager");
-	jobManager_.reset();
-	CORE_LOG_INFO("Releasing thread pool");
-	threadPool_.reset();
-	CORE_LOG_INFO("Releasing thread factory");
-	threadFactory_.reset();
 	CORE_LOG_INFO("Releasing sources");
 	sourceManager_.reset();
 	CORE_LOG_INFO("Releasing services");
@@ -358,6 +352,14 @@ Application::~Application()
 	dataHierarchyManager_.reset();
 	CORE_LOG_INFO("Releasing plugins");
 	pluginLoader_.reset();
+
+	CORE_LOG_INFO("Releasing job manager");
+	jobManager_.reset();
+	CORE_LOG_INFO("Releasing thread pool");
+	threadPool_.reset();
+	CORE_LOG_INFO("Releasing thread factory");
+	threadFactory_.reset();
+
 	CORE_LOG_INFO("Cleaning UI context");
 	uiApplication_.reset();
 	CORE_LOG_INFO("Cleaning translations");

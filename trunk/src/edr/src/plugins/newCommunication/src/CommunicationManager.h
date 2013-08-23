@@ -15,49 +15,15 @@ i web serwisy wsdl.
 #include <webserviceslib/IFtpsConnection.h>
 #include <webserviceslib/IFileStoremanWS.h>
 #include <webserviceslib/DownloadHelper.h>
-#include <OpenThreads/ScopedLock>
-#include <OpenThreads/ReentrantMutex>
 #include <queue>
 #include <boost/function.hpp>
 #include <curl/curl.h>
+#include <threading/SynchronizationPolicies.h>
+#include <corelib/IThread.h>
 
 //! Klasa odpowiedzialna za dostarczanie plików z bazy danych
 class CommunicationManager
 {
-private:
-    //! Typ lokalnego lokowania obiektów synchronizujących
-    typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
-
-	//! Wątek przetwarzający zlecenia z CommunicationManagera
-	class ProcessingThread : public OpenThreads::Thread
-	{
-	public:
-		//! Konstruktor
-		//! \patam manager Manager którego obsługujemy
-		ProcessingThread(CommunicationManager * manager);
-		virtual ~ProcessingThread();
-
-		//! Metoda obsługująca managera
-		virtual void run();
-		//! \param ms Ilośc milisekund jakie mam spać kiedy nie ma nic do przetwarzania
-		void setIdleSleep(unsigned int ms);
-		//! \return Ilośc milisekund jakie mam spać kiedy nie ma nic do przetwarzania
-		unsigned int idleSleep() const;
-		//! Iformuję wątek że ma się zakończyć jak najszybciej - przy kolejnym przejsciu pętli
-		//! Po tym wywołaniu będę na niego najprawdopodobniej czekał!!
-		void finish();
-
-	private:
-		//! Obsługiwnay manager
-		CommunicationManager * manager;
-		//! Ilośc milisekund jakie mam spać kiedy nie ma nic do przetwarzania
-		unsigned int idleSleep_;
-		//! Czy kończyć pracę?
-		bool finish_;
-	};
-
-	friend class ProcessingThread;
-
 public:
     //! Typ zlecenie
     enum Request
@@ -124,7 +90,7 @@ public:
 
     private:
 		//! Mutex do anulowania requesta
-        mutable OpenThreads::Mutex cancelLock;
+        mutable utils::StrictSyncPolicy cancelLock;
 		//! Czy request anulowany
         bool canceled;
 		//! Typ requesta
@@ -286,16 +252,38 @@ public:
 
     typedef utils::shared_ptr<ComplexRequest> ComplexRequestPtr;
 
+
+	class RequestsExecutor : public utils::IRunnable
+	{
+	public:
+		//! Typ określający czas w milisekundach
+		typedef unsigned int time_type;
+
+	public:
+		RequestsExecutor(CommunicationManager * manager,
+			const time_type sleepTime = 10000);
+
+		~RequestsExecutor();
+
+		virtual void run();
+
+		void finish();
+
+		const time_type sleepTime() const;
+
+		void setSleepTime(const time_type sleepTime);
+
+	private:
+		//! Czas przerwy w mikrosekundach
+		time_type sleepTime_;
+		//! Czy kończymy obsługiwanie zleceń
+		bool finish_;
+		//! CommunicationManager
+		CommunicationManager * manager;
+	};
+
 private:
 
-    /**
-    Ukryty konstruktor
-    */
-    CommunicationManager();
-    /**
-    Ukryty destruktor
-    */
-    virtual ~CommunicationManager();
     /**
     Metoda statyczna (wymagana przez curla) typu callback do odbierania danych podczas pingowania.
     @param buffer wskaźnik do bloku pamięci o rozmiarze size*nmemb
@@ -331,11 +319,22 @@ private:
     webservices::IFtpsConnection::OperationStatus processMedicalMetadata(const CompleteRequest & request) { std::string temp; return processMedicalMetadata(request, temp); }
     webservices::IFtpsConnection::OperationStatus processPing(const CompleteRequest & request) { std::string temp; return processPing(request, temp); }
 
+    /**
+    Ustala stan w jakim znajduje się Communication Service.
+    @param state stan jaki ustalić jako aktualny dla CS
+    */
+    void setState(State state);
+
 public:
 
-	//! \param motionFileStoremanService Serwis do ściągania plików ruchu
+	//! Konstruktor
+    CommunicationManager(core::IThreadPtr executorThread);
+    
+	//! Destruktor
+    ~CommunicationManager();
+
 	void setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService);
-	//! \param medicalFileStoremanService Serwis do ściągania plików medycznych
+
 	void setMedicalFileStoremanService(const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService);
 
 	//! \param medicalFtps Ftps do ściągania danych medycznych
@@ -381,32 +380,11 @@ public:
     */
     int getProgress() const;
 
-private:
-    /**
-    Ustala stan w jakim znajduje się Communication Service.
-    @param state stan jaki ustalić jako aktualny dla CS
-    */
-    void setState(State state);
-
-public:
     /**
     Sprawdza stan w jakim znajduje się Communication Service.
     @return aktualny stan CS
     */
     State getState();
-
-public:
-
-    /**
-    Statyczna metoda pobierająca jedyna instancję klasy CommuniationManagera.
-    @return jedyna instancja CommunicationManagera
-    */
-    static CommunicationManager* getInstance();
-    /**
-    Statyczna metoda usuwająca jedyną instancję CommunicationManagera.
-    */
-    static void destoryInstance();
-
 
 private:
 
@@ -423,11 +401,6 @@ private:
 
 	webservices::ShallowDownloadHelper motionShallowDownloadHelper;
 	webservices::ShallowDownloadHelper medicalShallowDownloadHelper;
-
-    /**
-    Jedyna instancja klasy CommunicationManager.
-    */
-    static CommunicationManager* instance;
 
     /**
     Wskaźnik na klasę IDownloadHelper zajmującą się aktualmnym pobieraniem
@@ -460,19 +433,21 @@ private:
     /**
     Muteks zabezpieczający przed zakleszczeniami.
     */
-    OpenThreads::ReentrantMutex trialsMutex;
+    utils::RecursiveSyncPolicy trialsMutex;
     /**
     Muteks synchronizujący obsługę kolejki zleceń
     */
-    mutable OpenThreads::ReentrantMutex requestsMutex;
+    mutable utils::RecursiveSyncPolicy requestsMutex;
 
-    mutable OpenThreads::ReentrantMutex downloadHelperMutex;
+    mutable utils::RecursiveSyncPolicy downloadHelperMutex;
 	//! Czy kończymy przetwarzanie
     bool finish;
 	//! Czy przerwać ściąganie
     bool cancelDownloading;
-	//! Wątek przetwarzający zlecenia communication managera
-	utils::shared_ptr<ProcessingThread> processingThread;
+	//! Wątek obsługujący komunikację
+	core::IThreadPtr executorThread;
+	//! Wykonawca zleceń ściągania danych
+	core::shared_ptr<RequestsExecutor> requestsExecutor;
 };
 
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

@@ -43,20 +43,20 @@ void User::setPassword(const std::string & password)
 
 const UserPrivilages & User::userPrivilages() const
 {
-    return privilages_;
+    return userPrivilages_;
 }
 
-void User::setPrivilages(const UserPrivilages & userPrivilages)
+void User::setUserPrivilages(const UserPrivilages & userPrivilages)
 {
-    privilages_ = userPrivilages;
+    userPrivilages_ = userPrivilages;
 }
 
 const UserData & User::userData() const
 {
-    return data_;
+    return userData_;
 }
 
-void User::setData(const UserData & userData)
+void User::setUserData(const UserData & userData)
 {
-    data_ = userData;
+    userData_ = userData;
 }

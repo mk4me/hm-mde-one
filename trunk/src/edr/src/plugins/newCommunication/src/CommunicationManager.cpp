@@ -5,21 +5,22 @@
 #include "CommunicationPCH.h"
 #include <corelib/Filesystem.h>
 #include "CommunicationManager.h"
+#include <OpenThreads/Thread>
 
-CommunicationManager* CommunicationManager::instance = nullptr;
-
-
-CommunicationManager::ProcessingThread::ProcessingThread(CommunicationManager * manager) : manager(manager), idleSleep_(10000), finish_(false)
+CommunicationManager::RequestsExecutor::RequestsExecutor(CommunicationManager * manager,
+	const time_type sleepTime) : manager(manager), sleepTime_(sleepTime), finish_(false)
 {
-
+	if(manager == nullptr){
+		throw std::invalid_argument("Uninitialized CommunicationManager");
+	}
 }
 
-CommunicationManager::ProcessingThread::~ProcessingThread()
+CommunicationManager::RequestsExecutor::~RequestsExecutor()
 {
-
+	finish();
 }
 
-void CommunicationManager::ProcessingThread::run()
+void CommunicationManager::RequestsExecutor::run()
 {
 	while(!finish_){
 		
@@ -104,24 +105,24 @@ void CommunicationManager::ProcessingThread::run()
 			if(manager->state != Ready){
 				manager->setState(Ready);
 			}
-			microSleep(idleSleep_);
+			OpenThreads::Thread::microSleep(sleepTime_);
 		}
 	}
 }
 
-void CommunicationManager::ProcessingThread::finish()
+void CommunicationManager::RequestsExecutor::finish()
 {
 	finish_ = true;
 }
 
-void CommunicationManager::ProcessingThread::setIdleSleep(unsigned int ms)
+void CommunicationManager::RequestsExecutor::setSleepTime(const time_type sleepTime)
 {
-	idleSleep_ = ms;
+	sleepTime_ = sleepTime;
 }
 
-unsigned int CommunicationManager::ProcessingThread::idleSleep() const
+const CommunicationManager::RequestsExecutor::time_type CommunicationManager::RequestsExecutor::sleepTime() const
 {
-	return idleSleep_;
+	return sleepTime_;
 }
 
 
@@ -132,13 +133,13 @@ CommunicationManager::BasicRequest::~BasicRequest()
 
 void CommunicationManager::BasicRequest::cancel()
 {
-	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(cancelLock);
+	utils::ScopedLock<utils::StrictSyncPolicy> lock(cancelLock);
 	canceled = true;
 }
 
 bool CommunicationManager::BasicRequest::isCancelled() const
 {
-	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(cancelLock);
+	utils::ScopedLock<utils::StrictSyncPolicy> lock(cancelLock);
 	return (isComplete() == false) && canceled;
 }
 
@@ -254,25 +255,14 @@ double CommunicationManager::ComplexRequest::getProgress() const
 	return 100.0 * (ret / (100 * requests.size()));
 }
 
-CommunicationManager* CommunicationManager::getInstance()
+CommunicationManager::CommunicationManager(core::IThreadPtr executorThread)
+	: executorThread(executorThread),	finish(false), state(Ready), pingCurl(nullptr)
 {
-    if(!instance) {
-        instance = new CommunicationManager();
-    }
-    return instance;
-}
 
-void CommunicationManager::destoryInstance()
-{
-    if(instance) {
-        delete instance;
-    }
-    instance = nullptr;
-}
+	if(executorThread == nullptr){
+		throw std::invalid_argument("Uninitialized requests processing thread");
+	}
 
-CommunicationManager::CommunicationManager()
-	: finish(false), state(Ready), pingCurl(nullptr)
-{
 	pingCurl = curl_easy_init();
 	if(pingCurl) {
 		curl_easy_setopt(pingCurl, CURLOPT_URL, "127.0.0.1");
@@ -280,9 +270,9 @@ CommunicationManager::CommunicationManager()
 		curl_easy_setopt(pingCurl, CURLOPT_WRITEFUNCTION, pingDataCallback);
 	}else{
 		throw std::runtime_error("Error while initializing CURL");
-	}
+	}	
 
-	processingThread.reset(new ProcessingThread(this));
+	requestsExecutor.reset(new RequestsExecutor(this));
 }
 
 CommunicationManager::~CommunicationManager()
@@ -291,15 +281,15 @@ CommunicationManager::~CommunicationManager()
         curl_easy_cleanup(pingCurl);
     }
 
-	if(processingThread != nullptr && processingThread->isRunning() == true){    
-        processingThread->finish();
-        processingThread->join();
+	if(executorThread->running() == true){    
+        requestsExecutor->finish();
+        executorThread->join();
     }
 }
 
 void CommunicationManager::setMedicalFtps(const webservices::FtpsConnectionPtr & medicalFtps)
 {
-	ScopedLock lock(requestsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	medicalFtps_ = medicalFtps;
 	medicalShallowDownloadHelper.configure(medicalFileStoremanService_, medicalFtps_);
 	photoDownloadHelper.configure(medicalFileStoremanService_, medicalFtps_);
@@ -307,7 +297,7 @@ void CommunicationManager::setMedicalFtps(const webservices::FtpsConnectionPtr &
 
 void CommunicationManager::setMotionFtps(const webservices::FtpsConnectionPtr & motionFtps)
 {
-	ScopedLock lock(requestsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	motionFtps_ = motionFtps;
 	motionShallowDownloadHelper.configure(motionFileStoremanService_, motionFtps);
 	fileDownloadHelper.configure(motionFileStoremanService_, motionFtps);
@@ -315,7 +305,7 @@ void CommunicationManager::setMotionFtps(const webservices::FtpsConnectionPtr & 
 
 void CommunicationManager::setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService)
 {
-	ScopedLock lock(requestsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	motionFileStoremanService_ = motionFileStoremanService;
 	fileDownloadHelper.configure(motionFileStoremanService_, motionFtps_);
 	motionShallowDownloadHelper.configure(motionFileStoremanService_, motionFtps_);
@@ -323,7 +313,7 @@ void CommunicationManager::setMotionFileStoremanService(const webservices::Motio
 
 void CommunicationManager::setMedicalFileStoremanService(const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService)
 {
-	ScopedLock lock(requestsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	medicalFileStoremanService_ = medicalFileStoremanService;
 	photoDownloadHelper.configure(medicalFileStoremanService_, medicalFtps_);
 	medicalShallowDownloadHelper.configure(medicalFileStoremanService_, medicalFtps_);
@@ -341,36 +331,36 @@ const webservices::FtpsConnectionPtr & CommunicationManager::motionFtps()
 
 void CommunicationManager::popRequest(CompleteRequest & reuest)
 {
-	ScopedLock lock(requestsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	reuest = requestsQueue.front();
 	requestsQueue.pop();
 }
 
 void CommunicationManager::pushRequest(const CompleteRequest & request)
 {
-	ScopedLock lock(requestsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	requestsQueue.push(request);
 
-	if(processingThread->isRunning() == false){
-		processingThread->start();
+	if(executorThread->running() == false){
+		executorThread->start(requestsExecutor);
 	}
 }
 
 void CommunicationManager::setCurrentDownloadHelper(webservices::IDownloadHelper * downloadHelper)
 {
-	ScopedLock lock(downloadHelperMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(downloadHelperMutex);
 	currentDownloadHelper = downloadHelper;
 }
 
 bool CommunicationManager::requestsQueueEmpty() const
 {
-	ScopedLock lock(requestsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	return requestsQueue.empty();
 }
 
 void CommunicationManager::cancelAllPendingRequests()
 {
-	ScopedLock lock(requestsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	while(requestsQueue.empty() == false)
 	{
 		if(requestsQueue.front().callbacks.onCancelCallback.empty() == false){
@@ -384,19 +374,19 @@ void CommunicationManager::cancelAllPendingRequests()
 
 int CommunicationManager::getProgress() const
 {
-    ScopedLock lock(downloadHelperMutex);
+    utils::ScopedLock<utils::RecursiveSyncPolicy> lock(downloadHelperMutex);
     return (currentDownloadHelper == nullptr || currentRequest.request == nullptr) ? 0 : currentRequest.request->getProgress();
 }
 
 void CommunicationManager::setState(State state)
 {
-	ScopedLock lock(trialsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(trialsMutex);
 	this->state = state;    
 }
 
 CommunicationManager::State CommunicationManager::getState()
 {
-	ScopedLock lock(trialsMutex);
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(trialsMutex);
 	return state;
 }
 
@@ -520,7 +510,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processPhoto
 		photoDownloadHelper.setDownload(photoRequest->getPhotoID(), photoRequest->getFilePath());
 		
 		{
-			ScopedLock lock(requestsMutex);
+			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = photoDownloadHelper.get(photoRequest.get());
 		}
 
@@ -585,7 +575,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processFile(
 		fileDownloadHelper.setDownload(fileRequest->fileID, fileRequest->filePath);
 		
 		{
-			ScopedLock lock(requestsMutex);
+			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = fileDownloadHelper.get(fileRequest.get());
 		}
 
@@ -649,7 +639,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processMotio
 		motionShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowData, metaRequest->filePath);
 		
 		{
-			ScopedLock lock(requestsMutex);
+			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = motionShallowDownloadHelper.get(metaRequest.get());
 		}
 
@@ -713,7 +703,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processMotio
 		motionShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowMetadata, metaRequest->filePath);
 		
 		{
-			ScopedLock lock(requestsMutex);
+			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = motionShallowDownloadHelper.get(metaRequest.get());
 		}
 
@@ -775,7 +765,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processMedic
 		medicalShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowData, metaRequest->filePath);
 		
 		{
-			ScopedLock lock(requestsMutex);
+			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = medicalShallowDownloadHelper.get(metaRequest.get());
 		}
 
@@ -836,7 +826,7 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processMedic
 		medicalShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowMetadata, metaRequest->filePath);
 		
 		{
-			ScopedLock lock(requestsMutex);
+			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = medicalShallowDownloadHelper.get(metaRequest.get());
 		}
 

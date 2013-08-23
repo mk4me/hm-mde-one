@@ -13,8 +13,7 @@
 #include <plugins/newCommunication/IDownloadRequest.h>
 #include "CommunicationManager.h"
 #include <corelib/Filesystem.h>
-#include <OpenThreads/ReentrantMutex>
-#include <OpenThreads/ScopedLock>
+#include <threading/SynchronizationPolicies.h>
 
 //! Kalsa wpierająca pobieranie plików z bazy danych
 class DownloadRequest : public communication::IDownloadRequest
@@ -23,9 +22,9 @@ class DownloadRequest : public communication::IDownloadRequest
 private:
 
     //! Typ mutexa
-    typedef OpenThreads::ReentrantMutex ReentrantMutex;
+    typedef utils::RecursiveSyncPolicy ReentrantMutex;
     //! Typ lokalnego blokowania mutexa
-    typedef OpenThreads::ScopedLock<ReentrantMutex> ScopedLock;
+    typedef utils::ScopedLock<ReentrantMutex> ScopedLock;
 
 public:
     //! Struktura opisująca pliki metadanych
@@ -44,30 +43,31 @@ public:
         int id;
     };
 
-
-
 private:
     //! Prywatny konstruktor
-    DownloadRequest();
+    DownloadRequest(CommunicationManager * cm);
 
 public:
 
     //! \param filesToDownload Mapa identyfikatorów plików i deskryptorów do ściągnięcia
     //! \return zlecenie transferu plików
-    static DownloadRequest * createFilesRequest(const std::map<int, FileDescriptor> & filesToDownload);
+    static DownloadRequest * createFilesRequest(const std::map<int, FileDescriptor> & filesToDownload,
+		CommunicationManager * cm);
     //! \param photosToDownload Mapa identyfikatorów zdjęć i deskryptorów do ściągnięcia
     //! \return zlecenie transferu zdjęć
-    static DownloadRequest * createPhotosRequest(const std::map<int, FileDescriptor> & photosToDownload);
+    static DownloadRequest * createPhotosRequest(const std::map<int, FileDescriptor> & photosToDownload,
+		CommunicationManager * cm);
 
     //! \param filesToDownload Mapa identyfikatorów plików i deskryptorów do ściągnięcia
     //! \param photosToDownload Mapa identyfikatorów zdjęć i deskryptorów do ściągnięcia
     //! \return Zlecenie transferu
     static DownloadRequest * createFilesAndPhotosRequest(const std::map<int, FileDescriptor> & filesToDownload,
-        const std::map<int, FileDescriptor> & photosToDownload);
+        const std::map<int, FileDescriptor> & photosToDownload, CommunicationManager * cm);
 
     //! \param Mapa typów requestów wraz z ich deskryptorami
     //! \return Zlecenie transferu
-    static DownloadRequest * createShallowCopyRequest(const std::map<CommunicationManager::Request, ShallowCopyDescriptor> & shallowCopiesToDownload);
+    static DownloadRequest * createShallowCopyRequest(const std::map<CommunicationManager::Request,
+		ShallowCopyDescriptor> & shallowCopiesToDownload, CommunicationManager * cm);
 
     //! Wirtualny destruktor
     virtual ~DownloadRequest();
@@ -186,6 +186,8 @@ private:
     mutable ReentrantMutex stateMutex;
 	//! Mutex synchrnizujący operacje na obiekcie
 	mutable ReentrantMutex cancelMutex;
+	//! CommunicationManager
+	CommunicationManager * cm;
 };
 
 #endif	//	HEADER_GUARD___DOWNLOADREQUEST_H__

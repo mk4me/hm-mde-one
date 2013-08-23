@@ -27,8 +27,8 @@ void DataSourceLoginManager::login(const std::string & user, const std::string &
     getUserData(userID, data);
 
     user_.setID(userID);
-    user_.setPrivilages(privilages);
-    user_.setData(data);
+    user_.setUserPrivilages(privilages);
+    user_.setUserData(data);
 	user_.setName(user);
 	user_.setPassword(password);
 }
@@ -41,8 +41,8 @@ void DataSourceLoginManager::logout()
     //potem takie dane powinny być wczytywane z dysku i ponownie musi nastapić próba zapisu
 
     user_.setID(-1);
-    user_.setPrivilages(UserPrivilages());
-    user_.setData(UserData());
+    user_.setUserPrivilages(UserPrivilages());
+    user_.setUserData(UserData());
 }
 
 const User & DataSourceLoginManager::user() const

@@ -42,12 +42,12 @@ public:
     //! \return Prawa użytkownika
     virtual const UserPrivilages & userPrivilages() const;
     //! \param userPrivilages Nowe uprawnienia użytkownika
-    void setPrivilages(const UserPrivilages & userPrivilages);
+    void setUserPrivilages(const UserPrivilages & userPrivilages);
 
     //! \return Dane użytkownika
     virtual const UserData & userData() const;
     //! \param userData Nowe dane użytkownika
-    void setData(const UserData & userData);
+    void setUserData(const UserData & userData);
 
 private:
     //! Identyfikator użytkownika
@@ -57,9 +57,9 @@ private:
     //! Hasło użytkownika
     std::string password_;
     //! Uprawnienia użytkownika
-    UserPrivilages privilages_;
+    UserPrivilages userPrivilages_;
     //! Dane użytkownika
-    UserData data_;
+    UserData userData_;
 };
 
 #endif  //  HEADER_GUARD___COMMUNICATIONDATASOURCEUSER_H__

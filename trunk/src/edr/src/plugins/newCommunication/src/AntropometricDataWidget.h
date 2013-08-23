@@ -29,32 +29,55 @@ public slots:
 	void setAutoUpdate(bool autoUpdate = true);
 
 	//! Funkcje seterów wartości
-
+	//! \param val Masa
 	void setBodyMass(const QString & val);
+	//! \param val Wzrost
 	void setBodyHeight(const QString & val);
+	//! \param val TODO
 	void setASIS(const QString & val);
-	
+	//! \param val Długość lewej nogi
 	void setLeftLegLength(const QString & val);
+	//! \param val Długość prawej nogi
 	void setRightLegLenght(const QString & val);
+	//! \param val Szerokośc lewego kolana
 	void setLeftKneeWidth(const QString & val);
+	//! \param val Szerokośc prawego kolana
 	void setRightKneeWidth(const QString & val);
+	//! \param val Szerokośc lewej kostki
 	void setLeftAnkleWidth(const QString & val);
+	//! \param val Szerokośc prawej kostki
 	void setRightAnkleWidth(const QString & val);
+	//! \param val Szerokośc TODO
 	void setLeftCircuitThigh(const QString & val);
+	//! \param val Szerokośc TODO
 	void setRightCircuitThight(const QString & val);
+	//! \param val TODO
 	void setLeftCircuitShank(const QString & val);
+	//! \param val TODO
 	void setRightCircuitShank(const QString & val);
+	//! \param val Przesunięcie lewego ramienia
 	void setLeftShoulderOffset(const QString & val);
+	//! \param val Przesunięcie prawego ramienia
 	void setRightShoulderOffset(const QString & val);
+	//! \param val Szerokość lewego łokcia
 	void setLeftElbowWidth(const QString & val);
+	//! \param val Szerokość prawego łokcia
 	void setRightElbowWidth(const QString & val);
+	//! \param val Szerokość lewego nadgarstka
 	void setLeftWristWidth(const QString & val);
+	//! \param val Szerokość prawego nadgarstka
 	void setRightWristWidth(const QString & val);
+	//! \param val Grubość lewego nadgarstka
 	void setLeftWristThickness(const QString & val);
+	//! \param val Grubość prawego nadgarstka
 	void setRightWristThickness(const QString & val);
+	//! \param val Szerokość lewej dłoni
 	void setLeftHandWidth(const QString & val);
+	//! \param val Szerokość prawej dłoni
 	void setRightHandWidth(const QString & val);
+	//! \param val Grubość lewej dłoni
 	void setLeftHandThickness(const QString & val);
+	//! \param val Grubość prawej dłoni
 	void setRightHandThickness(const QString & val);
 
 	//! \param val Wartość która zastąpi wszystkie wpisy w tabelach

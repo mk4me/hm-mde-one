@@ -25,6 +25,7 @@ class DataSourceLocalStorage;
 class DataSourceStatusManager;
 class DataSourceLoginManager;
 class DataSourceWidget;
+class CommunicationManager;
 
 //! Źródło danych EDR typu communication - dostarcza dancyh z Bazy Danych Ruchu
 class CommunicationDataSource : public communication::ICommunicationDataSource, public plugin::ISource
@@ -205,6 +206,9 @@ private:
 
     //! Manager statusów pełnej płytkiej kopi
     utils::shared_ptr<DataSourceStatusManager> fullShallowCopyStatus;
+
+	//! ConnectionManager
+	core::shared_ptr<CommunicationManager> communicationManager;
 
 	//! ------------------------------- Obsługa DM ------------------------------
 
