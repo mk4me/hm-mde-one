@@ -245,7 +245,18 @@ core::IHierarchyItemPtr TreeBuilder::createJointsBranch( const MotionConstPtr & 
         JointsItemHelperPtr skeletonHelper(new JointsItemHelper(motion));
         // todo setmotion
         //skeletonHelper->setMotion(motion);
-        skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(rootIcon, rootName, desc, skeletonHelper));
+        
+        core::ConstObjectsList jCollections;
+        motion->getObjects(jCollections, typeid(kinematic::JointAnglesCollection), false);
+        if (jCollections.size() != 1) {
+            // error
+        }
+
+        core::ObjectWrapperConstPtr joints = jCollections.front();
+
+
+
+        skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(joints, rootIcon, rootName, desc, skeletonHelper));
     } else {
         skeletonItem = core::IHierarchyItemPtr(new core::HierarchyItem(rootName, desc, rootIcon));
     }

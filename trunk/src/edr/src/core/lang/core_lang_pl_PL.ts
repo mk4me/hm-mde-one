@@ -59,32 +59,32 @@
         <translation>Inicjalizacja głównego widoku</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="598"/>
+        <location filename="../src/Application.cpp" line="600"/>
         <source>Loading plugin %1 content: %2</source>
         <translation>Ładuję element %2 pluginu %1</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="600"/>
+        <location filename="../src/Application.cpp" line="602"/>
         <source>domain objects</source>
         <translation>obiekty domenowe</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="606"/>
+        <location filename="../src/Application.cpp" line="608"/>
         <source>services</source>
         <translation>serwisy</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="612"/>
+        <location filename="../src/Application.cpp" line="614"/>
         <source>sources</source>
         <translation>źródła danych</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="618"/>
+        <location filename="../src/Application.cpp" line="620"/>
         <source>parsers</source>
         <translation>parsery</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="624"/>
+        <location filename="../src/Application.cpp" line="626"/>
         <source>visualizers</source>
         <translation>wizualizatory</translation>
     </message>

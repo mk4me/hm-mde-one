@@ -51,7 +51,8 @@ public:
     UniversalSource ()
       {
           tree = new QTreeView();
-          model.setFilter(utils::make_shared<TypeFilter<T>>());
+          filter = utils::make_shared<TypeFilter<T>>();
+          model.setFilter(filter);
           tree->setModel(&model);
           
           tree->setHeaderHidden(true);
@@ -94,6 +95,7 @@ public:
     {
         if (changes.empty()) {
             model.clear();
+            model.setFilter(filter);
             for (auto it = dm->hierarchyBegin(); it != dm->hierarchyEnd(); ++it) {
                 model.addRootItem(*it);
             }
@@ -123,6 +125,7 @@ private:
     QIcon rootIcon;
     QIcon leafIcon;
     coreui::HierarchyTreeModel model;
+    utils::shared_ptr<TypeFilter<T>> filter;
 };
 
 

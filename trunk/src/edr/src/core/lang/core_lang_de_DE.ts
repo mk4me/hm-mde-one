@@ -59,32 +59,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="598"/>
+        <location filename="../src/Application.cpp" line="600"/>
         <source>Loading plugin %1 content: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="600"/>
+        <location filename="../src/Application.cpp" line="602"/>
         <source>domain objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="606"/>
+        <location filename="../src/Application.cpp" line="608"/>
         <source>services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="612"/>
+        <location filename="../src/Application.cpp" line="614"/>
         <source>sources</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="618"/>
+        <location filename="../src/Application.cpp" line="620"/>
         <source>parsers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="624"/>
+        <location filename="../src/Application.cpp" line="626"/>
         <source>visualizers</source>
         <translation type="unfinished"></translation>
     </message>

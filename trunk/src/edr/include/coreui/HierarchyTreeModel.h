@@ -62,7 +62,7 @@ private:
     bool hasChild(core::IHierarchyItemConstPtr parent, core::IHierarchyItemConstPtr child) const;
     
 private:
-    mutable std::map<const void*, core::IHierarchyItemConstPtr> raw2Smart;
+    mutable std::map<const void*, core::IHierarchyItemConstWeakPtr> raw2Smart;
     //core::IHierarchyItemPtr rootItem;
     std::vector<core::IHierarchyItemConstPtr> roots;
 

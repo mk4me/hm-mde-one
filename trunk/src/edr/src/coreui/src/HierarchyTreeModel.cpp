@@ -139,7 +139,7 @@ core::IHierarchyItemConstPtr HierarchyTreeModel::internalSmart( const QModelInde
         auto raw = idx.internalPointer();
         auto it = raw2Smart.find(const_cast<void*>(raw));
         if (it != raw2Smart.end()) {
-            return it->second;
+            return it->second.lock();
         }
 
         UTILS_ASSERT(false);
@@ -157,7 +157,7 @@ void HierarchyTreeModel::removeRootItem( core::IHierarchyItemConstPtr root )
 {
     auto it = std::find(rootOrigins.begin(), rootOrigins.end(), root);
     if (it != rootOrigins.end()) {
-        // TODO : usunac wpisy z mapy...
+        // TODO : usunac wpisy z mapy raw2smart
        rootOrigins.erase(it);
        rebuildFilteredRoots();
     } else {
@@ -182,6 +182,9 @@ bool HierarchyTreeModel::hasChild( core::IHierarchyItemConstPtr parent, core::IH
 void coreui::HierarchyTreeModel::clear()
 {
     roots.clear();
+    rootOrigins.clear();
+    currentFilter = utils::make_shared<core::NullFilter>();
+    reset();
 }
 
 void coreui::HierarchyTreeModel::applyChange( const core::IMemoryDataManagerHierarchy::HierarchyChange& change )

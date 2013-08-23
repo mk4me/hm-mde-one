@@ -177,5 +177,6 @@ void vdf::NewVdfService::onTransferResults()
     transaction->addRoot(root);
 
     emit transferResults();
+    resultsModel.clear();
 }
 

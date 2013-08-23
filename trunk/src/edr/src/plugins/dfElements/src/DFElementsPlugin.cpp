@@ -5,6 +5,7 @@
 #include <plugins/newVdf/IDataFlowProvider.h>
 
 CORE_PLUGIN_BEGIN("DFEments", core::UID::GenerateUniqueID("{678727A0-ED31-43CA-AE6D-BADA05717ADA}"))
+
 	VDF_SERVICE_BEGIN(DFElementsService, "{C354FD3F-3559-4990-830D-57BA5E5BC813}")
 
         VDF_ADD_DATA_SOURCE(

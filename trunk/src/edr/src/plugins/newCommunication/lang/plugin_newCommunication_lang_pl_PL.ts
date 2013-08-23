@@ -1103,58 +1103,58 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="457"/>
+        <location filename="../src/TreeBuilder.cpp" line="468"/>
         <source>Multichart/Normalized left from motion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="459"/>
+        <location filename="../src/TreeBuilder.cpp" line="470"/>
         <source>Multichart/Normalized right from motion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="532"/>
+        <location filename="../src/TreeBuilder.cpp" line="543"/>
         <source>Multichart/Normalized left from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="534"/>
+        <location filename="../src/TreeBuilder.cpp" line="545"/>
         <source>Multichart/Normalized right from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="552"/>
+        <location filename="../src/TreeBuilder.cpp" line="563"/>
         <source>Motion: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="553"/>
+        <location filename="../src/TreeBuilder.cpp" line="564"/>
         <source>Session: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="554"/>
+        <location filename="../src/TreeBuilder.cpp" line="565"/>
         <source>Subject: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="562"/>
+        <location filename="../src/TreeBuilder.cpp" line="573"/>
         <source>Owner: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="571"/>
+        <location filename="../src/TreeBuilder.cpp" line="582"/>
         <source>Date: %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="581"/>
+        <location filename="../src/TreeBuilder.cpp" line="592"/>
         <source>Patient: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="589"/>
+        <location filename="../src/TreeBuilder.cpp" line="600"/>
         <source>Weight: </source>
         <translation type="unfinished"></translation>
     </message>
