@@ -32,7 +32,7 @@ void AmcParserTest::testLoad()
     kinematic::AmcParser amc;
    // kinematic::SkeletalModelPtr model(new kinematic::SkeletalModel);
 	kinematic::SkeletalDataPtr data(new kinematic::SkeletalData);
-    amc.parse(data, "kinematic/acclaim/cmu/01/01_14.amc");
+    amc.parse(data, "test.amc");
 
 }
 

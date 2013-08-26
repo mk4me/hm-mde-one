@@ -153,10 +153,15 @@ void hAnimSkeleton::doSkeletonMapping(SkeletalModelConstPtr skeletalModel)
 
 kinematic::hAnimSkeletonPtr hAnimSkeleton::create()
 {
+    return kinematic::hAnimSkeletonPtr(createRaw());
+}
+
+hAnimSkeleton* hAnimSkeleton::createRaw()
+{
 	hAnimJointPtr joint;
 	hAnimBonePtr bone;
 	hAnimJointPtr rootJoint;
-	hAnimSkeletonPtr skeleton(new hAnimSkeleton);
+	hAnimSkeleton* skeleton = new hAnimSkeleton;
 
 	skeleton->createJointAndBone("HumanoidRoot", "sacrum", joint, bone); rootJoint = joint;
 	skeleton->createJointAndBone("sacroiliac", "pelvis", joint, bone);
@@ -278,14 +283,32 @@ kinematic::hAnimSkeletonPtr hAnimSkeleton::create()
 
 hAnimSkeleton* hAnimSkeleton::clone() const
 {
-	hAnimSkeleton* clone = new hAnimSkeleton;
-	clone->root = cloneHierarchy(this->root, clone->joints, clone->bones);                          
-	                                               
-	for (auto it = mappingSchemes.cbegin(); it != mappingSchemes.cend(); ++it) {
-		clone->mappingSchemes.push_back(SkeletonMappingSchemePtr((*it)->clone()));
-	}
+    /*hAnimSkeleton* clone = new hAnimSkeleton;
+    clone->root = cloneHierarchy(this->root, clone->joints, clone->bones);                          
 
-	return clone;
+    clone->mappingSchemes.clear();
+    for (auto it = mappingSchemes.cbegin(); it != mappingSchemes.cend(); ++it) {
+    clone->mappingSchemes.push_back(SkeletonMappingSchemePtr((*it)->clone()));
+    }
+
+    return clone;*/
+
+    hAnimSkeleton* clone = hAnimSkeleton::createRaw();
+    clone->mappingSchemes.clear();
+    for (auto it = mappingSchemes.cbegin(); it != mappingSchemes.cend(); ++it) {
+        clone->mappingSchemes.push_back(SkeletonMappingSchemePtr((*it)->clone()));
+    }
+
+    for (auto it = joints.begin(); it != joints.end(); ++it) {
+        hAnimJoint::copyContent(*it->second, *clone->joints[it->first]);
+    }
+
+   /* for (auto it = bones.begin(); it != bones.end(); ++it) {
+        hAnimBone::copyContent(it->second, clone->bones[it->first]);
+    }*/
+
+    clone->createActiveHierarchy();
+    return clone;
 }
 
 kinematic::hAnimJointPtr hAnimSkeleton::cloneHierarchy( hAnimJointConstPtr root, std::map<std::string, hAnimJointPtr>& joints, std::map<std::string, hAnimBonePtr>& bones ) const
@@ -325,5 +348,6 @@ kinematic::hAnimJointPtr hAnimSkeleton::cloneHierarchy( hAnimJointConstPtr curre
 	}
 	return current;
 }
+
 
 } // kinematic

@@ -44,8 +44,8 @@ namespace df { class IProcessingNode; class ISourceNode; class ISinkNode; };
 	do {																												 \
 	auto processor =  vdf::IDataProcessorPtr(new vdf::DataProcessor(new (className), core::UID::GenerateUniqueID(uid), 	 \
 		 (name), [&](const df::IProcessingNode* prototype) { return new className(); }));								 \
-	processor->setIcon(icon);																							 \
-	__providerItems.push_back(processor);																							 \
+	processor->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/processor.png") : icon);                                    \
+	__providerItems.push_back(processor);																				 \
 	} while (0);																										 
 																														 
 //! Dodaje źródło zadanego typu do pluginu.																				 
@@ -53,8 +53,8 @@ namespace df { class IProcessingNode; class ISourceNode; class ISinkNode; };
 	do {																												 \
 	auto source = vdf::IDataSourcePtr(new vdf::DataSource(new (className), core::UID::GenerateUniqueID(uid), 			 \
 		(name), [&](const df::ISourceNode* prototype) { return new className(); }));									 \
-	source->setIcon(icon);																								 \
-	__providerItems.push_back(source);																							 \
+	source->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/source.png") : icon);         								 \
+	__providerItems.push_back(source);																					 \
 	} while(0);																											 
 																														 
 //! Dodaje sink zadanego typu do pluginu.																				 
@@ -62,8 +62,8 @@ namespace df { class IProcessingNode; class ISourceNode; class ISinkNode; };
 	do {																												 \
 	auto sink = vdf::IDataSinkPtr(new vdf::DataSink(new (className), core::UID::GenerateUniqueID(uid), 					 \
 		(name), [&](const df::ISinkNode* prototype) { return new className(); }));										 \
-	sink->setIcon(icon);																								 \
-	__providerItems.push_back(sink);																								 \
+	sink->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/sink.png") : icon);         									 \
+	__providerItems.push_back(sink);																					 \
 	} while(0);
 
 

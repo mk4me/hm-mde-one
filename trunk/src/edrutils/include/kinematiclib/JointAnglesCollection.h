@@ -31,6 +31,8 @@ typedef boost::shared_ptr<const JointAngleChannel> JointAngleChannelConstPtr;
 class JointAnglesCollection : public utils::DataChannelCollection<JointAngleChannel>
 {
 public:
+    ENABLE_PRIVATE_TESTS
+
     JointAnglesCollection(void);
 	virtual ~JointAnglesCollection() {}
 

@@ -23,6 +23,8 @@ typedef boost::weak_ptr<hAnimJoint> hAnimJointWeak;
 /// \brief Klasa reprezentuje staw standardu h-anim
 class hAnimJoint : boost::noncopyable 
 {
+public:
+    ENABLE_PRIVATE_TESTS
 	friend class JointAnglesCollection;
 private :
     //! staw
@@ -136,6 +138,9 @@ public:
 	static void copyContent(const hAnimJoint& source, hAnimJoint& destination)
 	{
 		destination.setJoint(source.joint);
+        destination.active = source.active;
+        destination.localShift = source.localShift;                   
+        destination.childParentRotation = source.childParentRotation;
 	}
 };
 }

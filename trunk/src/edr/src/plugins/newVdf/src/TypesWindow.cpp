@@ -39,6 +39,9 @@ void TypesWindow::addEntry( const QString& entry, const QIcon& icon, IVisualItem
 {
     QListWidgetItem* item = new QListWidgetItem();
     item->setText(entry);
+
+    item->setSizeHint(QSize(64, 64));
+
     switch (type)  {
     case IVisualItem::ProcessingNode:
         item->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/processor.png"): icon);

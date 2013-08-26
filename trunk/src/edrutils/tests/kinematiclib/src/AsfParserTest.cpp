@@ -32,8 +32,8 @@ void AsfParserTest::testLoad()
     kinematic::AsfParser asf;
     kinematic::SkeletalModelPtr model(new kinematic::SkeletalModel);
     
-    asf.parse(model, "kinematic/acclaim/cmu/01/01.asf");
-    asf.save(model, "asftest.asf");
+    asf.parse(model, "test.asf");
+    asf.save(model, "asf_save_test.asf");
 }
 
 void AsfParserTest::testLoadNotExisting() {

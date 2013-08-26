@@ -7,5 +7,5 @@
 #ifdef __WIN32__
 	#cmakedefine UTILS_ENABLE_LEAK_DETECTION_VLD
 #endif
-
+#cmakedefine UTILS_ENABLE_PRIVATE_TESTS
 #endif // HEADER_GUARD_UTILS__CONFIG_H__

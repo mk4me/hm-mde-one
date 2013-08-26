@@ -15,16 +15,19 @@
 #include <kinematiclib/hAnimJoint.h>
 #include <kinematiclib/SkeletalMappingScheme.h>
 #include <kinematiclib/SkeletalModel.h>
+#include <utils/SmartPtr.h>
 
 namespace kinematic {
 
 	class hAnimSkeleton;
-	typedef boost::shared_ptr<hAnimSkeleton> hAnimSkeletonPtr;
-	typedef boost::shared_ptr<const hAnimSkeleton> hAnimSkeletonConstPtr;
+	DEFINE_SMART_POINTERS(hAnimSkeleton);
+
 
 	/// \brief  klasa reprezentuje szkielet h-anim
 	class hAnimSkeleton : boost::noncopyable
 	{
+    public:
+        ENABLE_PRIVATE_TESTS
 	public:
 		//! \return całkowita, pusta struktura h-anim
 		static hAnimSkeletonPtr create();
@@ -33,6 +36,7 @@ namespace kinematic {
 	private:
 		//! 
 		hAnimSkeleton();
+        static hAnimSkeleton* createRaw();
 
 	public:
 		//! \return korzeń drzewa h-anim (powinien być zawsze "Humanoid Root")
@@ -115,7 +119,6 @@ namespace kinematic {
 		std::map<std::string, hAnimBonePtr> bones;
 		//! słowniki ze sposobem mapowania                                                 
 		std::vector<SkeletonMappingSchemePtr> mappingSchemes;
-
 	};
 	
 }

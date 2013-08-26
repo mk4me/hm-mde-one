@@ -7,6 +7,7 @@ SET_SOURCE_FILES(
 	BvhParserTest.cpp
 	MiscTest.cpp
 	KinematicModelTest.cpp
+	JointAnglesCollectionTest.cpp
 )
 
 SET_PRIVATE_HEADERS(
@@ -15,6 +16,7 @@ SET_PRIVATE_HEADERS(
 	BvhParserTest.h
 	MiscTest.h
 	KinematicModelTest.h
+	JointAnglesCollectionTest.h
 )
 
 END_PROJECT()

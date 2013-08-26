@@ -293,8 +293,11 @@ JointAnglesCollection* JointAnglesCollection::clone() const
 		obj->channels[i] = JointAngleChannelPtr(this->channels[i]->clone());
 	}
 	obj->configurationID = this->configurationID;
-	obj->haSkeleton = hAnimSkeletonPtr(this->haSkeleton->clone());
+	obj->haSkeleton = this->haSkeleton ? hAnimSkeletonPtr(this->haSkeleton->clone()) : hAnimSkeletonPtr();
 	obj->lengthRatio = this->lengthRatio;
+    obj->initialized = this->initialized;
+    obj->rootPositions = this->rootPositions;
+
     //obj->preferedConnectionColor = this->preferedConnectionColor;
     //obj->preferedDotColor = this->preferedDotColor;
 	//obj->skeletalData = SkeletalDataPtr(this->skeletalData->clone());

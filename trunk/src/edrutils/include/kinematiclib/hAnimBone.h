@@ -21,6 +21,8 @@ typedef boost::weak_ptr<hAnimJoint> hAnimJointWeak;
 /// Klasa nie jest powiązana z danymi, pomaga jedynie budować hierarchie
 class hAnimBone : boost::noncopyable
 {
+public:
+    ENABLE_PRIVATE_TESTS
 private:
 	//! nazwa kości (powinna być taka jak w h-anim 1.1)
 	std::string name; 

@@ -35,7 +35,7 @@ NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneMod
     coreUI::CoreAction*  mrg = new coreUI::CoreAction(tr("Misc") , QIcon(":/kinematic/icons/skeletal_trace.png"), tr("Merge"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  clr = new coreUI::CoreAction(tr("Clear") , QIcon(":/newVdf/icons/rubber.png"), tr("Scene"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  del = new coreUI::CoreAction(tr("Edit"), QIcon(":/coreUI/icons/x.png"), tr("Delete"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  run = new coreUI::CoreAction(tr("Run"), QIcon(":/newVdf/icons/videoSmall.png"), tr("Run"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  run = new coreUI::CoreAction(tr("Run"), QIcon(":/newVdf/icons/run.png"), tr("Run"), this, coreUI::CoreTitleBar::Left);
 
 	mrg->setEnabled(false);
 	

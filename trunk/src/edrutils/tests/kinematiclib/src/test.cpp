@@ -8,13 +8,14 @@
 #include "MiscTest.h"
 #include "BvhParserTest.h"
 #include "KinematicModelTest.h"
+#include "JointAnglesCollectionTest.h"
 
-
-CPPUNIT_TEST_SUITE_REGISTRATION( MiscTest );
+//CPPUNIT_TEST_SUITE_REGISTRATION( MiscTest );
 //CPPUNIT_TEST_SUITE_REGISTRATION( AmcParserTest );
 //CPPUNIT_TEST_SUITE_REGISTRATION( BvhParserTest );
 //CPPUNIT_TEST_SUITE_REGISTRATION( AsfParserTest );
 CPPUNIT_TEST_SUITE_REGISTRATION( KinematicModelTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( JointAnglesCollectionTest );
 
 int main(int argc, char* argv[])
 {

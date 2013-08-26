@@ -5,6 +5,7 @@ CONFIG_OPTION(UTILS_ENABLE_PROFILER "Enable profiling?" OFF)
 if(WIN32)
 	CONFIG_OPTION(UTILS_ENABLE_LEAK_DETECTION_VLD "Enable leak detection with VLD? (http://sites.google.com/site/dmoulding/vld)" OFF)
 endif()
+CONFIG_OPTION(UTILS_ENABLE_PRIVATE_TESTS "Enable private class members testing?" OFF)
 
 SET_PUBLIC_HEADERS(
 	Align.h

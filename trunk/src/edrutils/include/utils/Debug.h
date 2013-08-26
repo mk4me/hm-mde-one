@@ -111,5 +111,12 @@ UTILS_MULTISTATEMENT_END
 #   define UTILS_STATIC_ASSERT(cond, msg) BOOST_STATIC_ASSERT_MSG((cond), msg)
 #endif
 
+#ifdef UTILS_ENABLE_PRIVATE_TESTS
+#   define ENABLE_PRIVATE_TESTS                 \
+        template<class _TestClass>              \
+        static void _privateTestHook(_TestClass& x);    
+#else
+#   define ENABLE_PRIVATE_TESTS
+#endif
 
 #endif  // HEADER_GUARD__UTILS_DEBUG_H__

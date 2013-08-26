@@ -6,87 +6,87 @@
     <message>
         <location filename="../src/Application.cpp" line="187"/>
         <source>Initializing log</source>
-        <translation>Inicjalizacja loga</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="198"/>
         <source>Initializing directories</source>
-        <translation>Inicjalizacja ścieżek aplikacji</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="209"/>
         <source>Initializing translations</source>
-        <translation>Inicjalizacja tłumaczeń</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="213"/>
         <source>Initializing 3D context</source>
-        <translation>Inicjalizacja kontekstu 3D</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="226"/>
         <source>Initializing core managers</source>
-        <translation>Inicjalizacja managerów</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="261"/>
         <source>Initializing plugins loader</source>
-        <translation>Inicjalizacja managera pluginów</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="284"/>
         <source>Loading plugins</source>
-        <translation>Ładowanie pluginów</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="293"/>
         <source>Initializing services</source>
-        <translation>Inicjalizacja serwisów</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="306"/>
         <source>Initializing sources</source>
-        <translation>Inicjalizacja źróedł danych</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="313"/>
         <source>Initializing console</source>
-        <translation>Inicjalizacja konsoli</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="317"/>
         <source>Initializing main view</source>
-        <translation>Inicjalizacja głównego widoku</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="600"/>
         <source>Loading plugin %1 content: %2</source>
-        <translation>Ładuję element %2 pluginu %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="602"/>
         <source>domain objects</source>
-        <translation>obiekty domenowe</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="608"/>
         <source>services</source>
-        <translation>serwisy</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="614"/>
         <source>sources</source>
-        <translation>źródła danych</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="620"/>
         <source>parsers</source>
-        <translation>parsery</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="626"/>
         <source>visualizers</source>
-        <translation>wizualizatory</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

@@ -1,8 +1,5 @@
 <RCC>
   <qresource prefix="dfElements/icons">
-	<file alias="processor.png">../resources/embedded/processor.png</file>
-	<file alias="sink.png">../resources/embedded/sink.png</file>
-	<file alias="source.png">../resources/embedded/source.png</file>
 	<file alias="emg.png">../resources/embedded/emg.png</file>
 	<file alias="force.png">../resources/embedded/force.png</file>
 	<file alias="grf.png">../resources/embedded/grf.png</file>

@@ -120,12 +120,6 @@
 <context>
     <name>DataSourceWidget</name>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="194"/>
-        <location filename="../src/DataSourceWidget.cpp" line="859"/>
-        <source>Login</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../ui/DataSourceWidget.ui" line="14"/>
         <source>TabWidget</source>
         <translation type="unfinished"></translation>
@@ -158,6 +152,12 @@
     <message>
         <location filename="../ui/DataSourceWidget.ui" line="125"/>
         <source>Configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/DataSourceWidget.ui" line="194"/>
+        <location filename="../src/DataSourceWidget.cpp" line="859"/>
+        <source>Login</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -882,18 +882,6 @@
 <context>
     <name>NotesWidget</name>
     <message>
-        <location filename="../ui/NotesWidget.ui" line="129"/>
-        <location filename="../src/NotesWidget.cpp" line="178"/>
-        <source>Add note</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/NotesWidget.ui" line="156"/>
-        <location filename="../src/NotesWidget.cpp" line="192"/>
-        <source>Edit note</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../ui/NotesWidget.ui" line="20"/>
         <source>Frame</source>
         <translation type="unfinished"></translation>
@@ -919,8 +907,20 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ui/NotesWidget.ui" line="129"/>
+        <location filename="../src/NotesWidget.cpp" line="178"/>
+        <source>Add note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../ui/NotesWidget.ui" line="136"/>
         <source>Remove note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/NotesWidget.ui" line="156"/>
+        <location filename="../src/NotesWidget.cpp" line="192"/>
+        <source>Edit note</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -947,14 +947,14 @@
 <context>
     <name>PersonalDataWidget</name>
     <message>
-        <location filename="../ui/PersonalDataWidget.ui" line="47"/>
-        <location filename="../src/PersonalDataWidget.cpp" line="22"/>
-        <source>No photo</source>
+        <location filename="../ui/PersonalDataWidget.ui" line="20"/>
+        <source>Frame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/PersonalDataWidget.ui" line="20"/>
-        <source>Frame</source>
+        <location filename="../ui/PersonalDataWidget.ui" line="47"/>
+        <location filename="../src/PersonalDataWidget.cpp" line="22"/>
+        <source>No photo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -989,6 +989,21 @@
 <context>
     <name>QObject</name>
     <message>
+        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="245"/>
+        <source>Man</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="250"/>
+        <source>Woman</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="253"/>
+        <source>Not specified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/DataSourceBaseContent.cpp" line="50"/>
         <location filename="../src/DataSourceBaseContent.cpp" line="115"/>
         <source>Subject</source>
@@ -1022,29 +1037,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="201"/>
-        <source>Before treatment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/DataSourcePerspective.cpp" line="189"/>
         <location filename="../src/DataSourcePerspective.cpp" line="228"/>
         <source>Gender</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="245"/>
-        <source>Man</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="250"/>
-        <source>Woman</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="253"/>
-        <source>Not specified</source>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="201"/>
+        <source>Before treatment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
