@@ -14,6 +14,7 @@
 #include <plugins/subject/ISubject.h>
 #include <plugins/newCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
+#include <utils/ObjectWrapper.h>
 
 using namespace PluginSubject;
 core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, const core::ConstObjectsList& sessions)
@@ -176,16 +177,13 @@ core::IHierarchyItemPtr TreeBuilder::createEMGBranch( const MotionConstPtr & mot
             std::string l("UNKNOWN");
             (*it)->tryGetMeta("core/name", l);
 
-            core::IHierarchyItemPtr channelItem = utils::make_shared<core::HierarchyDataItem>(*it, itemIcon, QString::fromStdString(l), desc);
-            emgItem->appendChild(channelItem);			
+            /*core::IHierarchyItemPtr channelItem = utils::make_shared<core::HierarchyDataItem>(*it, itemIcon, QString::fromStdString(l), desc);
+            emgItem->appendChild(channelItem);	*/		
 
-            //EMGFilterHelperPtr channelHelper(new EMGFilterHelper(*it));
-            //channelHelper->setMotion(motion);
-            //
-            //core::IHierarchyItemPtr channelItem(new HierarchyDataItem(channelHelper));
-            //channelItem->setIcon(0, itemIcon);
-            //channelItem->setItemAndHelperText(QString::fromStdString(l));
-            //emgItem->addChild(channelItem);			
+            EMGFilterHelperPtr channelHelper(new EMGFilterHelper(*it, getEvents(motion)));
+            
+            core::IHierarchyItemPtr channelItem(new core::HierarchyDataItem(*it, itemIcon, QString::fromStdString(l), desc, channelHelper));
+            emgItem->appendChild(channelItem);			
         }
     }
 
@@ -362,11 +360,14 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
             collectionItem = parentItem;
         }
         int count = wrappers.size();
+
+        EventsCollectionConstPtr events = getEvents(motion);
+        
         for (int i = 0; i < count; ++i) {
             VectorChannelConstPtr c = wrappers[i]->get();
             std::string channelName = c->getName();
             std::list<core::HierarchyHelperPtr> helpers;
-            NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i]));
+            NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i], events));
             helpers.push_back(channelHelper);
             helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 0));
             helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 1));
@@ -600,4 +601,15 @@ QString TreeBuilder::createDescription( PluginSubject::MotionConstPtr motion )
         text += QObject::tr("Weight: ") + QString("%1 ").arg(antro->bodyMass.first) + QString::fromStdString(antro->bodyMass.second) + "\n";
     }
     return text;
+}
+
+EventsCollectionConstPtr TreeBuilder::getEvents( const PluginSubject::MotionConstPtr & motion )
+{
+    EventsCollectionConstPtr events;
+    if (motion->hasObject(typeid(C3DEventsCollection), false)) {
+        utils::ConstObjectsList m;
+        motion->getObjects(m, typeid(C3DEventsCollection), false);
+        events = m.front()->get();
+    }
+    return events;
 }

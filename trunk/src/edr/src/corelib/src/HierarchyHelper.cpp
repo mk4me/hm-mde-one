@@ -52,21 +52,7 @@ void HierarchyHelper::getSeries( const VisualizerPtr & visualizer, const QString
 			++it;
 		}
 	}	
-
-
-  // TODO : wymyslic cos z eventserie base
-  //  if (motion && motion->hasObject(typeid(C3DEventsCollection), false)) {
-		//ConstObjectsList m;
-		//motion->getObjects(m, typeid(C3DEventsCollection), false);
-  //      EventsCollectionConstPtr events = m.front()->get();
-  //      BOOST_FOREACH(Visualizer::VisualizerSerie * ptr, series) {
-  //          EventSerieBase * eventPtr = dynamic_cast<EventSerieBase*>(ptr->serie());
-  //          if (eventPtr) {
-  //              eventPtr->setEvents(events);
-  //          }
-  //      }
-  //  }
-
+    
 	if(series.empty() == false && visualizer->getActiveSerie() == nullptr){
 		visualizer->setActiveSerie(series.front());
 	}

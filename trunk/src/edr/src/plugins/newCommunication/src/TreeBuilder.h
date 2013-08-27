@@ -132,6 +132,8 @@ private:
     template <class Channel, class CollectionPtr>
     static void tryAddVectorToTree(const PluginSubject::MotionConstPtr & motion, const CollectionPtr & collection, const std::string& name, const QIcon& childIcon,  core::IHierarchyItemPtr parentItem, bool createContainerItem = true );
 
+    static EventsCollectionConstPtr getEvents( const PluginSubject::MotionConstPtr & motion);
+
     static core::HierarchyHelperPtr allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo );
     static core::HierarchyHelperPtr createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context );
     static core::HierarchyHelperPtr createNormalizedFromAll( const std::string& channelName, PluginSubject::SessionConstPtr s, c3dlib::C3DParser::IEvent::Context context );

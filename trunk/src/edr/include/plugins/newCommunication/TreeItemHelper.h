@@ -24,7 +24,7 @@
 class NEWCOMMUNICATION_EXPORT NewChartItemHelper : public core::WrappedItemHelper
 {
 public:
-    NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper);
+    NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
 
 public:
     //! Tworzy wizualizator newChart
@@ -37,6 +37,8 @@ public:
     //! \return typ ScalarChannelReaderInterface
     std::vector<core::TypeInfo> getTypeInfos() const;
 
+protected:
+    EventsCollectionConstPtr events;
 };
 typedef utils::shared_ptr<NewChartItemHelper> NewChartItemHelperPtr;
 typedef utils::shared_ptr<const NewChartItemHelper> NewChartItemHelperConstPtr;
@@ -47,7 +49,7 @@ class NEWCOMMUNICATION_EXPORT NewVector3ItemHelper : public core::WrappedItemHel
 public:
     //! Konstruktor pobiera obiekt z wrapperem wektora 3D
     //! \param wrapper 
-    NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper);
+    NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
 
 public:
     //! zwraca utworzone serie danych
@@ -59,6 +61,8 @@ public:
     virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
     //! \return typ ScalarChannelReaderInterface
     std::vector<core::TypeInfo> getTypeInfos() const;
+private:
+    EventsCollectionConstPtr events;
 };
 typedef utils::shared_ptr<NewVector3ItemHelper> NewVector3ItemHelperPtr;
 typedef utils::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPtr;
@@ -182,24 +186,22 @@ typedef utils::shared_ptr<const Multiserie3D> Multiserie3DConstPtr;
 
 //
 //! Klasa tworzy wizualizator wykresów, i wypełnią go przefiltrowanymi danymi EMG
-//class EMGFilterHelper : public NewChartItemHelper
-//{
-//public:
-//    //! Konstruktor
-//    //! \param wrapper 
-//    EMGFilterHelper(const core::ObjectWrapperConstPtr& wrapper);
-//    virtual ~EMGFilterHelper() {}
-//
-//public:
-//    //! \return wizualizator stworzony dla dostarczonego wrappera
-//    virtual core::VisualizerPtr createVisualizer();
-//    //! tworzy serie ze zmodyfikowanym EMG na podstawiawie dostarczonego wrappera
-//    //! \param visualizer wizualizator, który będzie tworzył serie
-//    //! \param path ścieżka dla timeline'a
-//    //! \param series zwracana seria 
-//    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
-//};
-//typedef utils::shared_ptr<EMGFilterHelper> EMGFilterHelperPtr;
-//typedef utils::shared_ptr<const EMGFilterHelper> EMGFilterHelperConstPtr;
+class EMGFilterHelper : public NewChartItemHelper
+{
+public:
+    //! Konstruktor
+    //! \param wrapper 
+    EMGFilterHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
+    virtual ~EMGFilterHelper() {}
+
+public:
+    //! tworzy serie ze zmodyfikowanym EMG na podstawiawie dostarczonego wrappera
+    //! \param visualizer wizualizator, który będzie tworzył serie
+    //! \param path ścieżka dla timeline'a
+    //! \param series zwracana seria 
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+};
+typedef utils::shared_ptr<EMGFilterHelper> EMGFilterHelperPtr;
+typedef utils::shared_ptr<const EMGFilterHelper> EMGFilterHelperConstPtr;
 
 #endif

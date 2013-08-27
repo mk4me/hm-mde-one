@@ -150,8 +150,9 @@ std::vector<core::TypeInfo> NewChartItemHelper::getTypeInfos() const
     return ret;
 }
 
-NewChartItemHelper::NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper ) :
-    WrappedItemHelper(wrapper)
+NewChartItemHelper::NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+    WrappedItemHelper(wrapper),
+    events(events)
 {
 }
 
@@ -217,6 +218,12 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
     INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->serie());
 
+    if (events) {
+        chartSerieX->setEvents(events);
+        chartSerieY->setEvents(events);
+        chartSerieZ->setEvents(events);
+    }
+
     chartSerieX->setColor(QColor(255, 0, 0));
     chartSerieY->setColor(QColor(0, 255, 0));
     chartSerieZ->setColor(QColor(0, 0, 255));
@@ -226,8 +233,9 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     series.push_back(serieZ);
 }
 
-NewVector3ItemHelper::NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper ) :
-    WrappedItemHelper(wrapper)
+NewVector3ItemHelper::NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+    WrappedItemHelper(wrapper),
+    events(events)
 {
 }
 
@@ -303,3 +311,38 @@ NewMultiserieHelper::NewMultiserieHelper(const std::vector<core::ObjectWrapperCo
     }
 }
 
+
+
+EMGFilterHelper::EMGFilterHelper( const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+    NewChartItemHelper(wrapper, events)
+{
+}
+
+
+void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
+{
+    ScalarChannelReaderInterfacePtr channel = wrapper->clone()->get();
+
+    boost::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(channel));
+    absTest->initialize();
+
+    //utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
+    utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, RMSModifier()));
+
+    core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    wrapperX->set(utils::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
+    (*wrapperX).copyMeta(*wrapper);
+    visualizer->getOrCreateWidget();
+
+    std::string name("UNKNOWN");
+    wrapperX->tryGetMeta("core/name", name);    
+    auto s = visualizer->createSerie(typeid(ScalarChannelReaderInterface),wrapperX);
+
+    INewChartSerie* chartSerie = dynamic_cast<INewChartSerie*>(s->serie());
+    if (events && chartSerie) {
+        chartSerie->setEvents(events);
+    }
+    s->serie()->setName(name);
+    series.push_back(s);
+
+}
