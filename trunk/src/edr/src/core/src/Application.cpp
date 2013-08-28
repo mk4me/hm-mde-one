@@ -240,7 +240,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 		const core::ThreadPool::size_type threadsCount = QThread::idealThreadCount();
 
-		threadPool_.reset(new core::ThreadPool(threadFactory_, (threadsCount / 2) + 1 , threadsCount * 4));
+		threadPool_.reset(new core::ThreadPool(threadFactory_, (threadsCount / 2) + 1 , threadsCount * 50));
 
 		core::ThreadPool::Threads ts;
 		threadPool_->getThreads("Core", ts, 1, true);

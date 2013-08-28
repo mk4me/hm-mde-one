@@ -832,31 +832,31 @@ bool CommunicationDataSource::registerUser(const std::string & login, const std:
 
 void CommunicationDataSource::refreshFileManager()
 {
-	PLUGIN_LOG_DEBUG("refreshingFileManager");
+	//PLUGIN_LOG_DEBUG("refreshingFileManager");
 
-	DataSourceLocalStorage::Files f;
-	localStorage->listFiles(f);
+	//DataSourceLocalStorage::Files f;
+	//localStorage->listFiles(f);
 
-	PLUGIN_LOG_DEBUG("localStorageFiles");
-	std::ofstream localStorageFiles((plugin::getPathInterface()->getUserDataPath() / "localStorageFiles.txt").string());
+	//PLUGIN_LOG_DEBUG("localStorageFiles");
+	//std::ofstream localStorageFiles((plugin::getPathInterface()->getUserDataPath() / "localStorageFiles.txt").string());
 
-	for(auto it = f.begin(); it != f.end(); ++it){
-		localStorageFiles << (*it).name << std::endl;
-	}
+	//for(auto it = f.begin(); it != f.end(); ++it){
+	//	localStorageFiles << (*it).name << std::endl;
+	//}
 
-	localStorageFiles.flush();
-	localStorageFiles.close();
+	//localStorageFiles.flush();
+	//localStorageFiles.close();
 
 
-	PLUGIN_LOG_DEBUG("shallowCopyFiles");
-	std::ofstream shallowCopyFiles((plugin::getPathInterface()->getUserDataPath() / "shallowCopyFiles.txt").string());
+	//PLUGIN_LOG_DEBUG("shallowCopyFiles");
+	//std::ofstream shallowCopyFiles((plugin::getPathInterface()->getUserDataPath() / "shallowCopyFiles.txt").string());
 
     auto itEnd = fullShallowCopy.motionShallowCopy->files.end();
     for(auto it = fullShallowCopy.motionShallowCopy->files.begin(); it != itEnd; ++it){
 		
 		auto file = it->second;
 
-		shallowCopyFiles << file->fileName << std::endl;
+		//shallowCopyFiles << file->fileName << std::endl;
 
         auto filePath = pathsManager->filePath(file->fileName, file->isSessionFile() == true ? file->session->sessionName : file->trial->session->sessionName);
 
@@ -872,8 +872,8 @@ void CommunicationDataSource::refreshFileManager()
         }
 	}
 
-	shallowCopyFiles.flush();
-	shallowCopyFiles.close();
+	//shallowCopyFiles.flush();
+	//shallowCopyFiles.close();
 }
 
 CommunicationDataSource::DownloadRequestPtr CommunicationDataSource::generateDownloadFileRequest(int fileID)
