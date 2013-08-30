@@ -108,10 +108,11 @@ void ReportsTabContext::placeObjects( const QList<QObject*> &editList, QLayout* 
         QAction* a = qobject_cast<QAction*>(editList[i]);
         if (a) {
             QToolButton* b = new QToolButton();
+            b->setStyleSheet("background-color: rgba(0, 0, 0, 0%);");
+            b->setBackgroundRole(QPalette::Window);
             b->setDefaultAction(a);
             b->setToolTip(a->text().remove("&"));
             b->setFixedSize(20,20);
-            b->setIcon(a->icon());
             b->setIconSize(QSize(20, 20));
             if (actionsOnTop || i < count / 2) {
                 upperLayout->addWidget(b);
