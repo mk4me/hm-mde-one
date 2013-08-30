@@ -62,6 +62,7 @@ QT_FORWARD_DECLARE_CLASS(QFontComboBox)
 QT_FORWARD_DECLARE_CLASS(QTextEdit)
 QT_FORWARD_DECLARE_CLASS(QTextCharFormat)
 QT_FORWARD_DECLARE_CLASS(QMenu)
+QT_FORWARD_DECLARE_CLASS(QScrollArea)
 
 namespace coreUI {
 
@@ -81,7 +82,7 @@ class COREUI_EXPORT CoreTextEditWidget : public QMainWindow
 public:
     //! konstruktor
     //! \param parent 
-    CoreTextEditWidget(QWidget *parent = 0);
+    CoreTextEditWidget(QWidget *parent = 0, int pageWidth = 1000);
 
 public slots:
     //! zasila kontrolkę w kod html
@@ -201,6 +202,7 @@ private:
     //! \param savedDocument zmieniany dokument
     void changeLinksToBase64( QTextFrame * root, QTextDocument* document);
 
+
 private: 
     //! lista akcji związanych z edycją tekstu
     QList<QObject*> editList;
@@ -261,7 +263,10 @@ private:
     QString fileName;
     //! kontrolka z edytowanym tekstem
     QTextEdit *textEdit;
-    
+    //! kontrolka opakowująca tekst i marginesy wokoło niego
+    QScrollArea* scroll;
+    //! szerokość wyświetlanej strony
+    int pageWidth;
 };
 
 }

@@ -74,19 +74,61 @@
 #include <QtCore/QUrl>
 #include <QtCore/QBuffer>
 #include <QtGui/QToolButton>
+#include <QtGui/QScrollArea>
+#include <QtGui/QScrollBar>
+#include <QtGui/QLayout>
 #include <corelib/PluginCommon.h>
 
 const QString rsrcPath = ":/coreUI/icons/textedit";
 
 using namespace coreUI;
 
-CoreTextEditWidget::CoreTextEditWidget(QWidget *parent):
-    QMainWindow(parent)
+CoreTextEditWidget::CoreTextEditWidget(QWidget *parent, int pageWidth):
+    QMainWindow(parent),
+    pageWidth(pageWidth)
 {
-    textEdit = new QTextEdit(this);
+    int topMargin = 64;
+
+    textEdit = new QTextEdit();
+    auto left = new QWidget();
+    auto right = new QWidget();
+    auto cont = new QWidget();
+    cont->setLayout(new QHBoxLayout());
+    cont->layout()->addWidget(left);
+    cont->layout()->addWidget(textEdit);
+    cont->layout()->addWidget(right);
+    cont->layout()->setSpacing(0);
+    cont->layout()->setContentsMargins(0,0,0,0);
+
+    auto top = new QWidget();
+    top->setMinimumHeight(topMargin);
+    auto bottom = new QWidget();
+    bottom->setMinimumHeight(topMargin);
+    QWidget* widget = new QWidget();
+    widget->setLayout(new QVBoxLayout());
+    widget->layout()->addWidget(top);
+    widget->layout()->addWidget(cont);
+    widget->layout()->addWidget(bottom);
+    widget->layout()->setSpacing(0);
+    widget->layout()->setContentsMargins(0,0,0,0);
+
+    textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    
+    textEdit->setMinimumWidth(pageWidth);
+    textEdit->setMaximumWidth(pageWidth);
+    textEdit->setMinimumHeight(pageWidth / 0.7);
+
+
+    scroll = new QScrollArea();
+    //scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    scroll->setWidget(widget);
+    scroll->setWidgetResizable(true);
+    scroll->setStyleSheet(QString::fromUtf8("background-color: rgb(220, 220, 220)"));
+    textEdit->setStyleSheet(QString::fromUtf8("background-color: white"));
     connect(textEdit, SIGNAL(currentCharFormatChanged(QTextCharFormat)), this, SLOT(currentCharFormatChanged(QTextCharFormat)));
     connect(textEdit, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChanged()));
-    setCentralWidget(textEdit);
+    setCentralWidget(scroll);
     textEdit->setFocus();
     setCurrentFileName(QString());
 
@@ -97,7 +139,6 @@ CoreTextEditWidget::CoreTextEditWidget(QWidget *parent):
     fontChanged(textEdit->font());
     colorChanged(textEdit->textColor());
     alignmentChanged(textEdit->alignment());
-
 
     connect(textEdit->document(), SIGNAL(modificationChanged(bool)), this, SLOT(setWindowModified(bool)));
 
@@ -625,6 +666,9 @@ void CoreTextEditWidget::currentCharFormatChanged(const QTextCharFormat &format)
 void CoreTextEditWidget::cursorPositionChanged()
 {
     alignmentChanged(textEdit->alignment());
+    textEdit->setMinimumHeight((std::max)((int)textEdit->document()->size().height(), textEdit->minimumHeight()));
+    auto pos = textEdit->mapTo(scroll, textEdit->cursorRect().center());
+    scroll->ensureVisible(pos.x(), pos.y() + scroll->verticalScrollBar()->value());
 }
 
 void CoreTextEditWidget::clipboardDataChanged()
@@ -809,4 +853,4 @@ bool CoreTextEditWidget::tryChangeLinkToBase64( QString& result, const QString& 
     } else {
         return false;
     }
-}
+} 
