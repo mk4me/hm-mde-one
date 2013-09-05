@@ -11,7 +11,6 @@
 #define HEADER_GUARD_C3DPLUGIN__C3DCOLLECTIONS_H__
 
 #include <plugins/c3d/Export.h>
-#include <kinematiclib/VskParser.h>
 #include <plugins/c3d/IForcePlatform.h>
 #include <plugins/c3d/C3DChannels.h>
 
@@ -122,6 +121,13 @@ private:
 };
 typedef boost::shared_ptr<GRFCollection> GRFCollectionPtr;
 typedef boost::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
+
+
+namespace kinematic
+{
+    class VskParser;
+    DEFINE_SMART_POINTERS(VskParser);
+}
 
 //! Kontener wszystkich markerów modelu, ułatwia obsługę danych, dodaje wsparcie o pliki VSK
 class PLUGINC3D_EXPORT MarkerCollection : public VectorChannelCollection

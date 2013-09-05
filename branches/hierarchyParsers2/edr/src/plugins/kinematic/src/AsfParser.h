@@ -37,7 +37,7 @@ public:
 	virtual void acceptedExpressions(Expressions & expressions) const;
     //! Zwraca obiekty dostarczone przez parser
     //! \param objects kolekcja z obiektami (set)
-    virtual void getObjects(core::IHierarchyItemPtr& hierarchy, core::Objects& additionalObjects );
+    virtual ParsedObjectsPtr getObjects();
 };
 
 

@@ -41,9 +41,9 @@ private:
 	//! S�aby wska�nik na parser
 	typedef utils::weak_ptr<Parser> ParserWeakPtr;
 
-    typedef std::pair<IHierarchyItemPtr, ObjectsList> HierarchyWithObjects;
+    typedef plugin::IParser::ParsedObjectsPtr HierarchyWithObjectsPtr;
 	//! S�ownik aktualnie obs�ugiwanych plik�w i skojarzonych z nimi parser�w
-	typedef std::map<Filesystem::Path, HierarchyWithObjects> ObjectsByFiles;
+	typedef std::multimap<Filesystem::Path, HierarchyWithObjectsPtr> ObjectsByFiles;
 
 	typedef utils::RecursiveSyncPolicy SyncPolicy;
 	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
@@ -83,13 +83,14 @@ private:
 
 	void rawGetFiles(Files & files) const;
 
-	void rawGetObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const;
+	/*void rawGetObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const;
 
-	void rawGetObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const;
+	void rawGetObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const;*/
 
-	void rawGetObjects(const Filesystem::Path & file, IHierarchyItemPtr& itm, ObjectsList & objects);
+	ParsedCollection rawGetObjects(const Filesystem::Path & file);
+    ParsedConstCollection rawGetObjects(const Filesystem::Path & file) const;
 
-	void initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator, ObjectsList & objects);
+	ObjectsByFiles initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator);
 
 public:
 	//IFileDataManager API
@@ -122,14 +123,19 @@ public:
 	//! \return Prawda je�li plik jest zarz�dzany przez ten DM
 	virtual const bool isManaged(const Filesystem::Path & file) const;
 
-	//! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
-	//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
-	virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const;
+	////! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
+	////! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
+	//virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const;
 
-	//! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
-	//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
-	virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const;
+	////! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
+	////! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
+	//virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const;
 
+
+    ////! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
+    ////! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
+    virtual ParsedConstCollection getObjects(const Filesystem::Path & file) const;
+    
 	virtual IFileManagerReader::TransactionPtr transaction() const;
 };
 

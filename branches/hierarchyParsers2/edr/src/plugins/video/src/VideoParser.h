@@ -28,7 +28,7 @@ public:
     virtual void parse(const std::string & source);
     virtual plugin::IParser* create() const;
     virtual void acceptedExpressions(Expressions & expressions) const;
-    virtual void getObjects(core::IHierarchyItemPtr& hierarchy, core::Objects& additionalObjects );
+    virtual ParsedObjectsPtr getObjects();
 };
 
 

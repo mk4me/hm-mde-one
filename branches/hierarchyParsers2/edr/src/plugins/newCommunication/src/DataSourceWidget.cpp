@@ -2303,10 +2303,14 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 				}
 
 				transaction->addFile(p);
-				core::ConstObjectsList oList;
-				transaction->getObjects(p, oList);
+
+                std::vector<core::ObjectWrapperConstPtr> oList;
+				core::IFileManagerReaderOperations::ParsedConstCollection objs = transaction->getObjects(p);
+                for (auto objIt = objs.begin(); objIt != objs.end(); ++objIt) {
+                    std::copy((*objIt)->additionalObjects.begin(), (*objIt)->additionalObjects.end(), std::back_inserter(oList));
+                }
 				loadedFiles.insert(*it);
-				loadedFilesObjects[*it] = std::vector<core::ObjectWrapperConstPtr>(oList.begin(), oList.end());
+				loadedFilesObjects[*it] = oList;
 			}catch(std::exception & e){
 				loadingErrors[*it] = std::string(e.what());
 			}catch(...){

@@ -2,6 +2,7 @@
 #include <corelib/Filesystem.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
+#include <plugins/c3d/C3DCollections.h>
 #include "FileSourceWidget.h"
 
 
@@ -61,13 +62,19 @@ void FileSource::addFile( const core::Filesystem::Path& path )
     transaction->addFile(path);
     core::ConstObjectsList oList;
     core::IHierarchyItemConstPtr root;// = utils::make_shared<core::HierarchyItem>(path.filename().string().c_str(), path.string().c_str(), QIcon());
-    transaction->getObjects(path, root, oList);
-
+    auto objs = transaction->getObjects(path);
+    
     auto hierarchyTransaction = memoryDM->hierarchyTransaction();
-    /*for (auto it = oList.begin(); it != oList.end(); ++it) {
-        core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(*it, QString());
-        root->appendChild(item);
-    }*/
+    for (auto it = objs.begin(); it != objs.end(); ++it) {
+        auto addition = (*it)->additionalObjects;
+        for (auto ad = addition.begin(); ad != addition.end(); ++ad) {
+            (*ad)->initialize();
 
-    hierarchyTransaction->addRoot(root);
+        }
+        if ((*it)->hierarchy) {
+            hierarchyTransaction->addRoot((*it)->hierarchy);
+        }
+    }
+
+    
 }

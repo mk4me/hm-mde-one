@@ -1,5 +1,6 @@
 #include "C3DPCH.h"
 #include <plugins/c3d/C3DCollections.h>
+#include <kinematiclib/VskParser.h>
 
 bool C3DEventsCollection::EventFunctor::operator()(const EventPtr& e1, const EventPtr& e2)
 {

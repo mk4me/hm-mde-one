@@ -12,14 +12,17 @@
 #include <corelib/Filesystem.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/ObjectWrapperCollection.h>
-#include <corelib/IHierarchyItem.h>
+#include <corelib/IParser.h>
 
 namespace core {
 
 	class IFileManagerReaderOperations
 	{
 	public:
-
+        typedef plugin::IParser::ParsedObjects ParsedObjects;
+        DEFINE_SMART_POINTERS(ParsedObjects);
+        typedef std::vector<ParsedObjectsPtr> ParsedCollection;
+        typedef std::vector<ParsedObjectsConstPtr> ParsedConstCollection;
 		virtual ~IFileManagerReaderOperations() {}
 
 		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
@@ -31,11 +34,11 @@ namespace core {
 
 		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const = 0;
+		virtual ParsedConstCollection getObjects(const Filesystem::Path & file) const = 0;
 
-		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const = 0;
+		////! \param files Zbior plików dla których chcemy pobraæ listê obiektów
+		////! \return Mapa obiektów wzglêdem plików z których pochodza
+		//virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const = 0;
 	};
 
 	//! Zapewnia dostêp do danych plikowych aplikacji, pozwala obserwowaæ zmiany z nimi zwi¹zane

@@ -9,6 +9,106 @@
 #include <plugins/c3d/C3DChannels.h>
 #include "C3DParser.h"
 #include "ForcePlatform.h"
+#include <corelib/HierarchyItem.h>
+#include <corelib/HierarchyHelper.h>
+#include <corelib/Visualizer.h>
+#include <corelib/IVisualizerManager.h>
+#include <QtGui/QWidget>
+#include <QtGui/QLayout>
+#include <plugins/c3d/EventSerieBase.h>
+#include <corelib/HierarchyDataItem.h>
+#include <kinematiclib/VskParser.h>
+
+core::VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* manager)
+{
+    core::IVisualizerManager::VisualizerPrototypes prototypes;
+    manager->getVisualizerPrototypes(typeid(ScalarChannelReaderInterface), prototypes, true);
+    core::VisualizerPtr visualizer(prototypes.front()->create());
+
+    QWidget * visWidget = visualizer->getOrCreateWidget();
+    visWidget->layout()->setContentsMargins(2, 0, 2, 2);
+    /*INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
+    if (!chart) {
+        UTILS_ASSERT(false);
+        throw std::runtime_error("Wrong visualizer type!");
+    } else {
+        std::string title;
+        VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
+        title += vectorChannel->getName();
+        title += " [";
+        title += vectorChannel->getValueBaseUnit();
+        title += "]";
+        chart->setTitle(QString(title.c_str()));
+    }*/
+    return visualizer;
+}
+
+void NewVector3ItemHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
+{
+    VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
+
+    ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
+    ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
+    ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(vectorChannel, 2));
+    core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    core::ObjectWrapperPtr wrapperY = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    core::ObjectWrapperPtr wrapperZ = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    wrapperX->set(x);
+    wrapperY->set(y);
+    wrapperZ->set(z);
+
+    static int number = 0;
+    // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+    std::string suffix = boost::lexical_cast<std::string>(number++);
+    std::string p = path.toStdString();
+
+    (*wrapperX)["core/name"] = "X_" + suffix;
+    (*wrapperY)["core/name"] = "Y_" + suffix;
+    (*wrapperZ)["core/name"] = "Z_" + suffix;
+    (*wrapperX)["core/source"] = p + "/X_" + suffix;
+    (*wrapperY)["core/source"] = p + "/Y_" + suffix;
+    (*wrapperZ)["core/source"] = p + "/Z_" + suffix;
+    visualizer->getOrCreateWidget();
+
+    auto serieX = visualizer->createSerie(wrapperX->getTypeInfo(), wrapperX);
+    serieX->serie()->setName("X_" + suffix);
+    auto serieY = visualizer->createSerie(wrapperY->getTypeInfo(), wrapperY);
+    serieY->serie()->setName("Y_" + suffix);
+    auto serieZ = visualizer->createSerie(wrapperZ->getTypeInfo(), wrapperZ);
+    serieZ->serie()->setName("Z_" + suffix);
+
+    EventSerieBase* chartSerieX = dynamic_cast<EventSerieBase*>(serieX->serie());
+    EventSerieBase* chartSerieY = dynamic_cast<EventSerieBase*>(serieY->serie());
+    EventSerieBase* chartSerieZ = dynamic_cast<EventSerieBase*>(serieZ->serie());
+
+    if (events) {
+        chartSerieX->setEvents(events);
+        chartSerieY->setEvents(events);
+        chartSerieZ->setEvents(events);
+    }
+
+    //chartSerieX->setColor(QColor(255, 0, 0));
+    //chartSerieY->setColor(QColor(0, 255, 0));
+    //chartSerieZ->setColor(QColor(0, 0, 255));
+
+    series.push_back(serieX);
+    series.push_back(serieY);
+    series.push_back(serieZ);
+}
+
+NewVector3ItemHelper::NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+    WrappedItemHelper(wrapper),
+    events(events)
+{
+}
+
+std::vector<core::TypeInfo> NewVector3ItemHelper::getTypeInfos() const
+{
+    std::vector<core::TypeInfo> ret;
+    ret.push_back(typeid(ScalarChannelReaderInterface));
+    return ret;
+}
+
 
 C3DParser::C3DParser()
 {
@@ -31,6 +131,8 @@ C3DParser::C3DParser()
 	powerChannels  = core::ObjectWrapper::create<PowerCollection>();
 	allEvents = core::ObjectWrapper::create<C3DEventsCollection>();
     movieDelays = core::ObjectWrapper::create<MovieDelays>();
+
+    hierarchy = utils::make_shared<core::HierarchyItem>("TEST", "TEST");
 }
 
 C3DParser::~C3DParser()
@@ -155,6 +257,8 @@ void C3DParser::parse( const std::string & source  )
         }
 		grfs->setPlatforms(platforms);
 	} catch(...) {}
+
+    createTree();
 }
 
 plugin::IParser* C3DParser::create() const
@@ -182,20 +286,24 @@ void C3DParser::acceptedExpressions(Expressions & expressions) const
     expressions.insert(Expressions::value_type(".*\.c3d$", expDesc));
 }
 
-void C3DParser::getObjects( core::IHierarchyItemPtr& hierarchy, core::Objects& additionalObjects )
+plugin::IParser::ParsedObjectsPtr C3DParser::getObjects()
 {
-	additionalObjects.insert(GRFChannels.begin(), GRFChannels.end());
-	additionalObjects.insert(EMGChannels.begin(), EMGChannels.end());
-	additionalObjects.insert(markerChannels);    
-    additionalObjects.insert(allEvents);
-	additionalObjects.insert(EMGs);
-	additionalObjects.insert(GRFs);
-	additionalObjects.insert(forceChannels );
-	additionalObjects.insert(angleChannels );
-	additionalObjects.insert(momentChannels);
-	additionalObjects.insert(powerChannels );
-    additionalObjects.insert(movieDelays   );
+    plugin::IParser::ParsedObjectsPtr  objs = utils::make_shared<IParser::ParsedObjects>();
+    objs->additionalObjects.insert(GRFChannels.begin(), GRFChannels.end());
+    objs->additionalObjects.insert(EMGChannels.begin(), EMGChannels.end());
+    objs->additionalObjects.insert(markerChannels);    
+    objs->additionalObjects.insert(allEvents);
+    objs->additionalObjects.insert(EMGs);
+    objs->additionalObjects.insert(GRFs);
+    objs->additionalObjects.insert(forceChannels );
+    objs->additionalObjects.insert(angleChannels );
+    objs->additionalObjects.insert(momentChannels);
+    objs->additionalObjects.insert(powerChannels );
+    objs->additionalObjects.insert(movieDelays   );
 	//objects.insert(c3dMisc);
+
+    objs->hierarchy = hierarchy;
+    return objs;
 }
 
 void C3DParser::saveFile( const core::Filesystem::Path& path )
@@ -204,3 +312,75 @@ void C3DParser::saveFile( const core::Filesystem::Path& path )
 		parserPtr->save(path.string());
 	}
 }
+
+template < class CollectionPtr>
+void C3DParser::tryAddVectorToTree( const CollectionPtr & collection, const std::string& name, const QIcon& childIcon, core::IHierarchyItemPtr parentItem, bool createContainerItem /*= true */ )
+{
+    typedef CollectionPtr::element_type Collection;
+    typedef Collection::ChannelType Channel;
+    if (collection) {
+        std::vector<core::ObjectWrapperConstPtr> wrappers;
+        for (int i = 0; i < collection->getNumChannels(); ++i) {
+            core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<Channel>();
+            wrapper->set(core::const_pointer_cast<Channel>(boost::dynamic_pointer_cast<const Channel>(collection->getChannel(i))));
+
+            static int number = 0;
+            std::string();
+            (*wrapper)["name"] = "Serie_" + boost::lexical_cast<std::string>(number);
+            (*wrapper)["source"] = "C3DParser";
+            wrappers.push_back(wrapper);
+        }
+        core::IHierarchyItemPtr collectionItem;
+        if (createContainerItem) {
+            collectionItem = core::IHierarchyItemPtr(new core::HierarchyItem(QString::fromStdString(name), QString("DESC")));
+            parentItem->appendChild(collectionItem);
+        } else {
+            collectionItem = parentItem;
+        }
+        int count = wrappers.size();
+
+        EventsCollectionConstPtr events = this->allEvents->get();
+
+        for (int i = 0; i < count; ++i) {
+            VectorChannelConstPtr c = wrappers[i]->get();
+            std::string channelName = c->getName();
+            std::list<core::HierarchyHelperPtr> helpers;
+            NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i], events));
+            helpers.push_back(channelHelper);
+            core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getName()), "desc", helpers));
+            collectionItem->appendChild(channelItem);
+        }
+    }
+}
+
+void C3DParser::createTree()
+{
+    core::IHierarchyItemPtr analog = utils::make_shared<core::HierarchyItem>(QString("Analog"), QString(""), QIcon());
+    addCollection<GRFCollectionConstPtr>(analog, GRFs->get(), "GRF", "GRF");
+    //addCollection<EMGCollectionConstPtr>(analog, EMGs->get(), "EMG", "GRF");
+
+    core::IHierarchyItemPtr kinetic = utils::make_shared<core::HierarchyItem>(QString("Kinetic"), QString(""), QIcon());
+    addCollection<ForceCollectionConstPtr>(kinetic, forceChannels->get(), "Forces", "Forces");
+    addCollection<MomentCollectionConstPtr>(kinetic, momentChannels->get(), "Moments", "Moments");
+    addCollection<PowerCollectionConstPtr>(kinetic, powerChannels->get(), "Powers", "Powers");
+
+    core::IHierarchyItemPtr kinematic = utils::make_shared<core::HierarchyItem>(QString("Kinematic"), QString(""), QIcon());
+    addCollection<AngleCollectionConstPtr>(kinematic, angleChannels->get(), "Angles", "Angles");
+    addCollection<MarkerCollectionConstPtr>(kinematic, markerChannels->get(), "Markers", "Markers");
+
+    hierarchy->appendChild(analog);
+    hierarchy->appendChild(kinetic);
+    hierarchy->appendChild(kinematic);
+    /*core::IHierarchyItemPtr momentsItem = utils::make_shared<core::HierarchyItem>("Moments", "Moments");
+    tryAddVectorToTree<ForceCollectionConstPtr>(forceChannels->get(), "Collection", QIcon(), momentsItem, false);
+    hierarchy->appendChild(momentsItem);*/
+}
+
+template <class CollectionPtr>
+void C3DParser::addCollection(core::IHierarchyItemPtr parent, const CollectionPtr& collection, const QString& name, const QString& desc)
+{
+    core::IHierarchyItemPtr item = utils::make_shared<core::HierarchyItem>(name, desc);
+    tryAddVectorToTree(collection, "Collection", QIcon(), item, false);
+    parent->appendChild(item);
+}
+

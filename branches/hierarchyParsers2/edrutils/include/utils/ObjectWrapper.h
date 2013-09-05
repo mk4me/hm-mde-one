@@ -346,11 +346,12 @@ namespace utils {
 
 		void reset();
 
-		void swap(ObjectWrapper & ow);
+        void swap(ObjectWrapper & ow);
+
+        void initialize() const;
 
 	private:
 
-		void initialize() const;
 
 		virtual const void* __getRawPtr() const = 0;
 

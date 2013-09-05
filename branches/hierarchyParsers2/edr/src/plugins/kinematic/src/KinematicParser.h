@@ -26,8 +26,11 @@ public:
     //! zwraca wspierane rozszerzenia plików (amc, bvh)
     //! \param extensions kolecja, do której trafią wspierane rozszerzenia
     virtual void acceptedExpressions(Expressions & expressions) const;
+
+    virtual ParsedObjectsPtr getObjects();
+
     //! \param objects kolekcja z object wrapperem (skeletonData)
-    virtual void getObjects(core::IHierarchyItemPtr& hierarchy, core::Objects& additionalObjects );
+    //virtual void getObjects(core::IHierarchyItemPtr& hierarchy, core::Objects& additionalObjects );
 };
 
 #endif  // __HEADER_GUARD_KINEMATIC__KINEMATICPARSER_H__

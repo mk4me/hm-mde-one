@@ -9,6 +9,7 @@
 #include <corelib/ILog.h>
 #include <osg/ImageSequence>
 #include <osgDB/ReadFile>
+#include <corelib/HierarchyDataItem.h>
 
 using namespace vidlib;
 
@@ -163,8 +164,10 @@ void VideoParser::acceptedExpressions(Expressions & expressions) const
 	expressions.insert(Expressions::value_type(".*\.imgsequence$", expDesc));
 }
 
-void VideoParser::getObjects(core::IHierarchyItemPtr& hierarchy, core::Objects& additionalObjects )
+plugin::IParser::ParsedObjectsPtr VideoParser::getObjects( )
 {
-    additionalObjects.insert(adapter);
-	additionalObjects.insert(channelWrapper);
+    ParsedObjectsPtr parsed = utils::make_shared<ParsedObjects>();
+    parsed->additionalObjects.insert(adapter);
+	parsed->hierarchy = utils::make_shared<core::HierarchyDataItem>(channelWrapper, QString(""));
+    return parsed;
 }

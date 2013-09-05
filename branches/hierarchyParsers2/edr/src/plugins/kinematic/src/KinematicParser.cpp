@@ -61,7 +61,14 @@ void KinematicParser::acceptedExpressions(Expressions & extensions) const
     //extensions["bvh"] = expDesc;
 }
 
-void KinematicParser::getObjects(core::IHierarchyItemPtr& hierarchy, core::Objects& additionalObjects )
+//void KinematicParser::getObjects(core::IHierarchyItemPtr& hierarchy, core::Objects& additionalObjects )
+//{
+//	additionalObjects.insert(skeletonData);
+//}
+
+plugin::IParser::ParsedObjectsPtr KinematicParser::getObjects()
 {
-	additionalObjects.insert(skeletonData);
+    ParsedObjectsPtr parsed = utils::make_shared<ParsedObjects>();
+    parsed->additionalObjects.insert(skeletonData);
+    return parsed;
 }

@@ -14,6 +14,35 @@
 #include <corelib/Filesystem.h>
 #include <corelib/IParser.h>
 #include <c3dlib/C3DParser.h>
+#include <corelib/HierarchyItem.h>
+#include <corelib/HierarchyHelper.h>
+#include <plugins/c3d/C3DCollections.h>
+#include <utils/ObjectWrapper.h>
+
+//! klasa pomocnicza przy tworzeniu wykresów z wektora 3-elementowego
+class  NewVector3ItemHelper : public core::WrappedItemHelper
+{
+public:
+    //! Konstruktor pobiera obiekt z wrapperem wektora 3D
+    //! \param wrapper 
+    NewVector3ItemHelper(
+        const utils::ObjectWrapperConstPtr& wrapper, 
+        const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
+public:
+    //! zwraca utworzone serie danych
+    //! \param visualizer wizualizator, który będzie tworzył serie
+    //! \param path ścieżka dla timeline
+    //! \param series tutaj trafia stworzone serie
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+    //! \return wizualizator 2D
+    virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
+    //! \return typ ScalarChannelReaderInterface
+    std::vector<core::TypeInfo> getTypeInfos() const;
+private:
+    EventsCollectionConstPtr events;
+};
+typedef utils::shared_ptr<NewVector3ItemHelper> NewVector3ItemHelperPtr;
+typedef utils::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPtr;
 
 
 //! Klasa wykorzystuje c3dlib do zasilenia systemu w obiekty domenowe pochodzące z plików C3D
@@ -48,6 +77,17 @@ private:
     //! wskaźnik do właściwego parsera z biblioteki c3dlib
 	ParserPtr parserPtr;
 
+    core::HierarchyItemPtr hierarchy;
+
+private:
+    void createTree(); 
+    template <class CollectionPtr>
+    void addCollection(core::IHierarchyItemPtr parent, const CollectionPtr& collection, const QString& name, const QString& desc);
+
+    template <class CollectionPtr>
+    void tryAddVectorToTree(const CollectionPtr & collection, const std::string& name, const QIcon& childIcon,  core::IHierarchyItemPtr parentItem, bool createContainerItem = true );
+
+
 public:
     C3DParser();
     virtual ~C3DParser();
@@ -60,7 +100,7 @@ public:
     virtual plugin::IParser* create() const;
     //! Zwraca obiekty dostarczone przez parser
     //! \param objects kolekcja z obiektami (set)
-    virtual void getObjects(core::IHierarchyItemPtr& hierarchy, core::Objects& objects);
+    virtual plugin::IParser::ParsedObjectsPtr getObjects();
     //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;

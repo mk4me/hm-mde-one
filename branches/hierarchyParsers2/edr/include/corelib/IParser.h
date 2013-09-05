@@ -30,6 +30,13 @@ namespace plugin
 			core::TypeInfoSet types;			//! Typy możliwe do uzyskania
 		};
 
+        struct ParsedObjects
+        {
+            core::IHierarchyItemPtr hierarchy;
+            core::Objects additionalObjects;
+        };
+        DEFINE_SMART_POINTERS(ParsedObjects);
+
 		//! Słownik rozszerzeń wpsieranych przez parser z ich opisem
 		typedef std::map<std::string, ExpressionDescription> Expressions;
 
@@ -44,7 +51,7 @@ namespace plugin
         //! \return Instancja tego samego typu.
         virtual IParser* create() const = 0;
         //! \return Obiekt danych parsera.
-        virtual void getObjects(core::IHierarchyItemPtr& hierarchy, core::Objects& addictionalObjects) = 0;
+        virtual ParsedObjectsPtr getObjects() = 0;
         
     };
 

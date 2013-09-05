@@ -43,8 +43,10 @@ void AsfParser::acceptedExpressions(Expressions & expressions) const
     expressions[".*\.asf$"] = expDesc;
 }
 
-void AsfParser::getObjects( core::IHierarchyItemPtr& hierarchy, core::Objects& additionalObjects  )
+plugin::IParser::ParsedObjectsPtr AsfParser::getObjects()
 {
-    additionalObjects.insert(this->skeletalModel);
+    ParsedObjectsPtr parsed = utils::make_shared<ParsedObjects>();
+    parsed->additionalObjects.insert(this->skeletalModel);
+    return parsed;
 }
 

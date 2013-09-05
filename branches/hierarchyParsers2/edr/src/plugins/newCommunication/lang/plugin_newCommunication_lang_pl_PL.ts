@@ -477,7 +477,7 @@
     </message>
     <message>
         <location filename="../src/DataSourceWidget.cpp" line="1276"/>
-        <location filename="../src/DataSourceWidget.cpp" line="2536"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2540"/>
         <source>Save project as...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -547,92 +547,92 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2330"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2334"/>
         <source>Loading info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2331"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2335"/>
         <source>Data loaded successfully to application.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2338"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2342"/>
         <source>Errors while data loading:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2343"/>
-        <location filename="../src/DataSourceWidget.cpp" line="2421"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2347"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2425"/>
         <source>
 %1. File ID: %2. Error description: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2348"/>
-        <location filename="../src/DataSourceWidget.cpp" line="2426"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2352"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2430"/>
         <source>
 %1. File ID: %2. Unknown error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2353"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2357"/>
         <source>Loading warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2408"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2412"/>
         <source>Unloading info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2409"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2413"/>
         <source>Data unloaded successfully.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2416"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2420"/>
         <source>Errors while data unloading:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2431"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2435"/>
         <source>Unloading warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2473"/>
-        <location filename="../src/DataSourceWidget.cpp" line="2498"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2477"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2502"/>
         <source>Loading project warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2474"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2478"/>
         <source>Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2499"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2503"/>
         <source>Some project files must are missing. Data download is required. Do You want to continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2534"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2538"/>
         <source>Project name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2535"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2539"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2546"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2550"/>
         <source>Save project warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2547"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2551"/>
         <source>Project name can not be empty. Please give a name to the project and continue.</source>
         <translation type="unfinished"></translation>
     </message>

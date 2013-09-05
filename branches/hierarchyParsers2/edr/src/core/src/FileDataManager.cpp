@@ -170,23 +170,23 @@ public:
 		return fdm->isManaged(file);
 	}
 
-	virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const
+	virtual ParsedConstCollection getObjects(const Filesystem::Path & file) const
 	{
 		if(transactionRolledback == true){
 			throw std::runtime_error("File transaction already rolled-back");
 		}
 
-		fdm->getObjects(file, itm, objects);
+		return fdm->getObjects(file);
 	}
 
-	virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const
+	/*virtual plugin::IParser::ParsedObjectsConstPtr getObjects(const Filesystem::Path & file) const
 	{
 		if(transactionRolledback == true){
 			throw std::runtime_error("File transaction already rolled-back");
 		}
 
-		fdm->getObjects(file, itm, objects);
-	}
+		return fdm->getObjects(file, itm, objects);
+	}*/
 
 private:
 
@@ -202,16 +202,17 @@ private:
 
 	void rawRemoveFile(const Filesystem::Path & file)
 	{
-		Modyfication mod;
-		mod.modyfication = IFileManagerReader::REMOVE_FILE;
-
         // TODO
-        IHierarchyItemPtr itm;
-		fdm->rawGetObjects(file, itm, mod.objects);
-		//dodajemy dane do dm
-		fdm->rawRemoveFile(file, mdmTransaction);
-		//aktualizujemy liste zmian
-		modyfications.insert(FileModyfications::value_type(file,mod));
+		//Modyfication mod;
+		//mod.modyfication = IFileManagerReader::REMOVE_FILE;
+
+  //      // TODO
+  //      IHierarchyItemPtr itm;
+		//fdm->rawGetObjects(file, itm, mod.objects);
+		////dodajemy dane do dm
+		//fdm->rawRemoveFile(file, mdmTransaction);
+		////aktualizujemy liste zmian
+		//modyfications.insert(FileModyfications::value_type(file,mod));
 	}
 };
 
@@ -240,15 +241,15 @@ public:
 		return fdm->isManaged(file);
 	}
 
-	virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const
+	virtual ParsedConstCollection getObjects(const Filesystem::Path & file) const
 	{
-		fdm->getObjects(file, itm, objects);
+		return fdm->getObjects(file);
 	}
 
-	virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const
-	{
-		fdm->getObjects(file, itm, objects);
-	}
+    /*virtual void getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const
+    {
+    fdm->getObjects(file, itm, objects);
+    }*/
 
 private:
 	FileDataManager * fdm;
@@ -357,9 +358,11 @@ public:
             objs.insert(utils::const_pointer_cast<ObjectWrapper>(data->getData()));
         }
 
-        auto count = root->getNumChildren();
-        for (auto i = 0; i < count; ++i) {
-            _getObjectsRecursion(root->getChild(i), objs);
+        if (root) {
+            auto count = root->getNumChildren();
+            for (auto i = 0; i < count; ++i) {
+                _getObjectsRecursion(root->getChild(i), objs);
+            }
         }
     }
 
@@ -372,14 +375,16 @@ public:
 
 	//! \param objects Lista wrappowanych obiekt�w, zainicjowanych (przeparsowany parser)
 	//!         b�d� nie.
-	inline void getObjects(core::IHierarchyItemPtr itm, Objects& objects)
+	inline plugin::IParser::ParsedObjectsPtr getObjects()
 	{
-        parser->getObjects(itm, objects);
-        auto objs = getObjects(itm);
+        plugin::IParser::ParsedObjectsPtr parsed = parser->getObjects();
+        // TODO zastanowic sie, jak przechowywac przeparsowane obiekty,
+        // oraz, czy juz teraz je rozpakowywac...
+        auto objs = getObjects(parsed->hierarchy);
         for (auto it = objs.begin(); it != objs.end(); ++it) {
-            objects.insert( utils::const_pointer_cast<ObjectWrapper>(*it));
+            parsed->additionalObjects.insert( utils::const_pointer_cast<ObjectWrapper>(*it));
         }
-        
+        return parsed;
 	}
 };
 
@@ -471,90 +476,100 @@ void FileDataManager::initializeDataWithExternalInitializer(ObjectWrapper & obje
 
 void FileDataManager::verifyAndRemoveUninitializedParserObjects(const ParserPtr & parser)
 {
-	auto it = objectsByFiles.find(parser->getPath());
-	if(it != objectsByFiles.end()){
-		Objects parserObjects;
-        // TODO
-        IHierarchyItemPtr itm;
-		parser->getObjects(itm, parserObjects);
-		std::set<ObjectWrapperPtr> parsersObjectSet(parserObjects.begin(), parserObjects.end());
-		std::set<ObjectWrapperPtr> fileObjectSet(it->second.second.begin(), it->second.second.end());
-		std::vector<ObjectWrapperPtr> toVerify(std::min(parserObjects.size(), it->second.second.size()));
-		std::set_intersection(parsersObjectSet.begin(), parsersObjectSet.end(), fileObjectSet.begin(), fileObjectSet.end(), toVerify.begin());
+    // TODO
+	//auto it = objectsByFiles.find(parser->getPath());
+	//if(it != objectsByFiles.end()){
 
-		if(toVerify.empty() == false){
+ //       HierarchyWithObjectsPtr ho = it->second;
+	//	Objects parserObjects;
+ //       // TODO
+	//	plugin::IParser::ParsedObjectsPtr objs = parser->getObjects();
+ //       parserObjects = objs->additionalObjects;
 
-			ObjectsList toRemove;
+	//	std::set<ObjectWrapperPtr> parsersObjectSet(parserObjects.begin(), parserObjects.end());
+	//	std::set<ObjectWrapperPtr> fileObjectSet(ho->additionalObjects.begin(), ho->additionalObjects.end());
+	//	std::vector<ObjectWrapperPtr> toVerify(std::min(parserObjects.size(), it->second.second.size()));
+	//	std::set_intersection(parsersObjectSet.begin(), parsersObjectSet.end(), fileObjectSet.begin(), fileObjectSet.end(), toVerify.begin());
 
-			//transakcja w MemoryDataManager
-			{
-				auto mdmTransaction = getMemoryDataManager()->transaction();
-		
-				for(auto itV = toVerify.begin(); itV != toVerify.end(); ++itV){
-					if((*itV)->getRawPtr() == nullptr){
-						CORE_LOG_DEBUG("Object of type " << (*itV)->getTypeInfo().name() << " not initialized properly by parser ID " << parser->getParser()->getID() <<
-							" named "  << parser->getParser()->getName() << " for file " << parser->getPath());
-						toRemove.push_back(*itV);
-						it->second.second.remove(*itV);
-						if(mdmTransaction->isManaged(*itV) == true){
-							mdmTransaction->removeData(*itV);
-						}
-					}
-				}
-			}
+	//	if(toVerify.empty() == false){
 
-			//sprawdzam czy nie moge juz usun�� pliku i notyfikowa� o zmianie
-			if(it->second.second.empty() == true){
-				CORE_LOG_INFO("Removing unused file " << parser->getPath() << " because of lack of derived objects in memory data manager. Some of them were corrupted while parsing - not initialized properly.");
-				ChangeList changes;
-				FileChange change;
-				change.filePath = it->first;
-				change.modyfication = IFileManagerReader::REMOVE_UNUSED_FILE;
-				changes.push_back(change);
+	//		ObjectsList toRemove;
 
-				objectsByFiles.erase(it);
-				
-				updateObservers(changes);
-			}
-		}
-	}	
+	//		//transakcja w MemoryDataManager
+	//		{
+	//			auto mdmTransaction = getMemoryDataManager()->transaction();
+	//	
+	//			for(auto itV = toVerify.begin(); itV != toVerify.end(); ++itV){
+	//				if((*itV)->getRawPtr() == nullptr){
+	//					CORE_LOG_DEBUG("Object of type " << (*itV)->getTypeInfo().name() << " not initialized properly by parser ID " << parser->getParser()->getID() <<
+	//						" named "  << parser->getParser()->getName() << " for file " << parser->getPath());
+	//					toRemove.push_back(*itV);
+	//					it->second.second.remove(*itV);
+	//					if(mdmTransaction->isManaged(*itV) == true){
+	//						mdmTransaction->removeData(*itV);
+	//					}
+	//				}
+	//			}
+	//		}
+
+	//		//sprawdzam czy nie moge juz usun�� pliku i notyfikowa� o zmianie
+	//		if(it->second.second.empty() == true){
+	//			CORE_LOG_INFO("Removing unused file " << parser->getPath() << " because of lack of derived objects in memory data manager. Some of them were corrupted while parsing - not initialized properly.");
+	//			ChangeList changes;
+	//			FileChange change;
+	//			change.filePath = it->first;
+	//			change.modyfication = IFileManagerReader::REMOVE_UNUSED_FILE;
+	//			changes.push_back(change);
+
+	//			objectsByFiles.erase(it);
+	//			
+	//			updateObservers(changes);
+	//		}
+	//	}
+	//}	
 }
 
 void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction)
 {
-	bool ok = true;
-	ObjectsList toRemove;
-	//pobieramy obiekty do usuniecia z DM
-    IHierarchyItemPtr itm;
-	rawGetObjects(file, itm, toRemove);
-	//usu� obiekty z MemoryDM w transakcji
-	for(auto it = toRemove.begin(); it != toRemove.end(); ++it){
-		if(memTransaction->tryRemoveData(*it) == false){
-			ok = false;
-		}
-	}
+	//bool ok = true;
+	//ObjectsList toRemove;
+	////pobieramy obiekty do usuniecia z DM
+ //   IHierarchyItemPtr itm;
+	//rawGetObjects(file, itm, toRemove);
+	////usu� obiekty z MemoryDM w transakcji
+	//for(auto it = toRemove.begin(); it != toRemove.end(); ++it){
+	//	if(memTransaction->tryRemoveData(*it) == false){
+	//		ok = false;
+	//	}
+	//}
 
-	//usu� plik	
-	objectsByFiles.erase(file);
-	if(ok == true){
-		CORE_LOG_INFO("File: " << file << " succesfully removed from manager");
-	}else{
-		CORE_LOG_DEBUG("There were some problems while removing data from memory data manager for file " << file << ". Not all objects have been removed properly");
-	}
+	////usu� plik	
+	//objectsByFiles.erase(file);
+	//if(ok == true){
+	//	CORE_LOG_INFO("File: " << file << " succesfully removed from manager");
+	//}else{
+	//	CORE_LOG_DEBUG("There were some problems while removing data from memory data manager for file " << file << ". Not all objects have been removed properly");
+	//}
 }
 
-void FileDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator, ObjectsList & objects)
+FileDataManager::ObjectsByFiles FileDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator)
 {
+    FileDataManager::ObjectsByFiles objects;
 	//je�li pliku nie ma dodaj go, stw�rz parsery i rozszerz dost�pne dane wraz z ich opisem
 	for(auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT){
 		//twworzymy w�asne opakowanie parsera klienckiego
 		ParserPtr parser(parserCreator((*parserIT)->create(), path));
-        IHierarchyItemPtr itm;
-		Objects objectsToVerify;
+        Objects objectsToVerify;
 		//pobieramy udost�pniane obiekty - powinno dawa� tylko obiekty zarejestrowane w DM
-		parser->getObjects(itm, objectsToVerify);
 
-		//zarejestrowanie obiekt�w i ich zwi�zku z parserem i typami danych
+        // TODO
+		plugin::IParser::ParsedObjectsPtr objs = parser->getObjects();
+        objectsToVerify = objs->additionalObjects;
+
+        objects.insert(std::make_pair(path, objs));
+
+        // TODO
+		////zarejestrowanie obiekt�w i ich zwi�zku z parserem i typami danych
 		for(auto objectIT = objectsToVerify.begin(); objectIT != objectsToVerify.end(); ++objectIT){
 
 			if(*objectIT == nullptr){
@@ -576,16 +591,16 @@ void FileDataManager::initializeParsers(const IParserManagerReader::ParserProtot
 					(*objectIT)->set(ObjectWrapper::LazyInitializer(boost::bind(&FileDataManager::initializeDataWithParser, this, _1, parser)));
 				}
 
-				objects.push_back(*objectIT);
+				//objects.push_back(*objectIT);
 			}
 		}
 	}
+
+    return objects;
 }
 
 void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction)
 {
-	ObjectsList objects;
-
 	IParserManagerReader::ParserPrototypes sourceParsers;
 	getParserManager()->sourceParsers(file.string(), sourceParsers);
 	IParserManagerReader::ParserPrototypes streamParsers;
@@ -604,38 +619,41 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 	sourcesLeft.erase(lastIT, sourcesLeft.end());
 
 	//preferuje uzycie parser�w z w�asn� obs�ug� I/O - wierze �e zrobi� to maksymalnie wydajnie wg w�asnych zasad
-	initializeParsers(streamParsers, file, streamParserCreator, objects);
+	ObjectsByFiles objects = initializeParsers(streamParsers, file, streamParserCreator);
 	//teraz uzywam parser�w strumieniowych - sam dostarcz� im strumieni
-	initializeParsers(sourcesLeft, file, sourceParserCreator, objects);
+	ObjectsByFiles objects2 = initializeParsers(sourcesLeft, file, sourceParserCreator);
+    objects.insert(objects2.begin(), objects2.end());
 
-	if(objects.empty() == true){
-		CORE_LOG_DEBUG("Any of known parsers did not provide any valid data for file: " << file);
-	}else{
+    this->objectsByFiles.insert(objects.begin(), objects.end());
+    // TODO ; walidacja OW i uzupelnienie metadanych
+	//if(objects.empty() == true){
+	//	CORE_LOG_DEBUG("Any of known parsers did not provide any valid data for file: " << file);
+	//}else{
 
-		int idx = 0;
-		ObjectsList objectsAdded;
+	//	int idx = 0;
+	//	ObjectsList objectsAdded;
 
-		for(auto it = objects.begin(); it != objects.end(); ++it){
-			if((*it)->find("core/name") == (*it)->end()){
-				std::stringstream name;
-				name << file.filename().string() << "_" << idx++;
-				(*(*it))["core/name"] = name.str();
-			}
+	//	for(auto it = objects.begin(); it != objects.end(); ++it){
+	//		if((*it)->find("core/name") == (*it)->end()){
+	//			std::stringstream name;
+	//			name << file.filename().string() << "_" << idx++;
+	//			(*(*it))["core/name"] = name.str();
+	//		}
 
-			if((*it)->find("core/source") == (*it)->end()){
-				(*(*it))["core/source"] = file.filename().string();
-			}
+	//		if((*it)->find("core/source") == (*it)->end()){
+	//			(*(*it))["core/source"] = file.filename().string();
+	//		}
 
-			if(memTransaction->isManaged(*it) == false){
-				memTransaction->addData(*it);
-				objectsAdded.push_back(*it);
-			}
-		}
+	//		if(memTransaction->isManaged(*it) == false){
+	//			memTransaction->addData(*it);
+	//			objectsAdded.push_back(*it);
+	//		}
+	//	}
 
-		// jak wszystko ok to zapami�tuje
-		objectsByFiles.insert(ObjectsByFiles::value_type(file, objectsAdded));
-		CORE_LOG_INFO("File: " << file << " succesfully loaded to manager. Extracted data : " << objects.size() << "| data loaded to memory data manager : " << objectsAdded.size());
-	}
+	//	// jak wszystko ok to zapami�tuje
+	//	objectsByFiles.insert(ObjectsByFiles::value_type(file, objectsAdded));
+	//	CORE_LOG_INFO("File: " << file << " succesfully loaded to manager. Extracted data : " << objects.size() << "| data loaded to memory data manager : " << objectsAdded.size());
+	//}
 }
 
 const bool FileDataManager::rawIsManaged(const Filesystem::Path & file) const
@@ -650,35 +668,47 @@ void FileDataManager::rawGetFiles(Files & files) const
 	}
 }
 
-void FileDataManager::rawGetObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const
+//FileDataManager::HierarchyWithObjectsConstPtr FileDataManager::rawGetObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const
+//{
+//    // TODO
+//}
+
+FileDataManager::ParsedCollection FileDataManager::rawGetObjects(const Filesystem::Path & file)
 {
-	auto it = objectsByFiles.find(file);
-    itm = it->second.first;
-	objects.insert(objects.end(), it->second.second.begin(), it->second.second.end());
+    ParsedCollection collection;
+	auto itms = objectsByFiles.equal_range(file);
+    for (auto it = itms.first; it != itms.second; ++it) {
+        collection.push_back(it->second);
+    } 
+    return collection;
 }
 
-void FileDataManager::rawGetObjects(const Filesystem::Path & file, IHierarchyItemPtr& itm, ObjectsList & objects)
+FileDataManager::ParsedConstCollection FileDataManager::rawGetObjects(const Filesystem::Path & file) const
 {
-	auto it = objectsByFiles.find(file);
-    itm = it->second.first;
-	objects.insert(objects.end(), it->second.second.begin(), it->second.second.end());
+    ParsedConstCollection collection;
+    auto itms = objectsByFiles.equal_range(file);
+    for (auto it = itms.first; it != itms.second; ++it) {
+        collection.push_back(it->second);
+    } 
+    return collection;
 }
 
-// TODO : itm jest tu niepotrzebny
-void FileDataManager::rawGetObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const
-{
-	auto it = objectsByFiles.find(file);
-
-	for(auto objectIT = it->second.second.begin(); objectIT != it->second.second.end(); ++objectIT){
-		if(objects.exactTypes() == true){
-			if((*objectIT)->getTypeInfo() == objects.getTypeInfo()){
-				objects.push_back(*objectIT);
-			}
-		}else if((*objectIT)->isSupported(objects.getTypeInfo()) == true){
-			objects.push_back(*objectIT);
-		}
-	}
-}
+// TODO
+//// TODO : itm jest tu niepotrzebny
+//void FileDataManager::rawGetObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const
+//{
+//	auto it = objectsByFiles.find(file);
+//
+//	for(auto objectIT = it->second.second.begin(); objectIT != it->second.second.end(); ++objectIT){
+//		if(objects.exactTypes() == true){
+//			if((*objectIT)->getTypeInfo() == objects.getTypeInfo()){
+//				objects.push_back(*objectIT);
+//			}
+//		}else if((*objectIT)->isSupported(objects.getTypeInfo()) == true){
+//			objects.push_back(*objectIT);
+//		}
+//	}
+//}
 
 void FileDataManager::updateObservers(const ChangeList & changes )
 {
@@ -806,17 +836,17 @@ const bool FileDataManager::isManaged(const Filesystem::Path & file) const
 	return rawIsManaged(file);
 }
 
-void FileDataManager::getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ConstObjectsList & objects) const
+FileDataManager::ParsedConstCollection FileDataManager::getObjects(const Filesystem::Path & file) const
 {
-	ScopedLock lock(sync);
-	rawGetObjects(file, itm, objects);
+    ScopedLock lock(sync);
+    return rawGetObjects(file);
 }
-
-void FileDataManager::getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const
-{
-	ScopedLock lock(sync);
-	rawGetObjects(file, itm, objects);
-}
+//
+//void FileDataManager::getObjects(const Filesystem::Path & file, IHierarchyItemConstPtr& itm, ObjectWrapperCollection & objects) const
+//{
+//	ScopedLock lock(sync);
+//	rawGetObjects(file, itm, objects);
+//}
 
 FileDataManager::ParserPtr FileDataManager::createSourceParser(plugin::IParser * parser, const Filesystem::Path & path)
 {
