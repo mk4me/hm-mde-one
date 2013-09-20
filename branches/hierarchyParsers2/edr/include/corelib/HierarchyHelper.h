@@ -82,10 +82,10 @@ public:
     //! \return typ wspierany przez helper (typ wpisany do wrappera)
     std::vector<core::TypeInfo> getTypeInfos() const;
     //! \return przypisany do helpera wrapper
-    const core::ObjectWrapperConstPtr getWrapper() const { return wrapper; }
+    const core::ObjectWrapperConstPtr getWrapper() const { return wrapper.lock(); }
 protected:
     //! przypisany do helpera wrapper
-    core::ObjectWrapperConstPtr wrapper;
+    core::ObjectWrapperConstWeakPtr wrapper;
 };
 DEFINE_SMART_POINTERS(WrappedItemHelper);
 

@@ -12,6 +12,7 @@
 
 #include <corelib/ISource.h>
 #include <corelib/Filesystem.h>
+#include <corelib/IHierarchyItem.h>
 
 class FileSource : public plugin::ISource
 {
@@ -39,11 +40,14 @@ public:
 
     virtual void getOfferedTypes( core::TypeInfoList & offeredTypes ) const;
     void addFile( const core::Filesystem::Path& path );
-
+    void removeFiles();
 private:
     core::IMemoryDataManager* memoryDM;
     core::IFileDataManager* fileDM;
     core::IStreamDataManager* streamDM;
+
+    core::Files files;
+    std::set<core::IHierarchyItemConstPtr> roots;
 };
 DEFINE_SMART_POINTERS(FileSource);
 

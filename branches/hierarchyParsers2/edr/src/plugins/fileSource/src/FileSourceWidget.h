@@ -31,7 +31,9 @@ public:
 
 private slots:
     void onLoadFiles();
-    
+    void onRemoveFiles();
+    void onLoadAndRemove();
+
 private:
     FileSource *fileSource;
 };

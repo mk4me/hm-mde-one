@@ -45,7 +45,11 @@ core::VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerMana
 
 void NewVector3ItemHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
 {
-    VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
+    utils::ObjectWrapperConstPtr wrp = this->wrapper.lock();
+    if (!wrp) {
+        return;
+    }
+    VectorChannelReaderInterfaceConstPtr vectorChannel = wrp->get();
 
     ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
     ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
@@ -357,7 +361,7 @@ void C3DParser::createTree()
 {
     core::IHierarchyItemPtr analog = utils::make_shared<core::HierarchyItem>(QString("Analog"), QString(""), QIcon());
     addCollection<GRFCollectionConstPtr>(analog, GRFs->get(), "GRF", "GRF");
-    //addCollection<EMGCollectionConstPtr>(analog, EMGs->get(), "EMG", "GRF");
+    addCollection<EMGCollectionConstPtr>(analog, EMGs->get(), "EMG", "EMG");
 
     core::IHierarchyItemPtr kinetic = utils::make_shared<core::HierarchyItem>(QString("Kinetic"), QString(""), QIcon());
     addCollection<ForceCollectionConstPtr>(kinetic, forceChannels->get(), "Forces", "Forces");
@@ -384,3 +388,18 @@ void C3DParser::addCollection(core::IHierarchyItemPtr parent, const CollectionPt
     parent->appendChild(item);
 }
 
+template <>
+void C3DParser::addCollection<EMGCollectionConstPtr>(core::IHierarchyItemPtr parent, const EMGCollectionConstPtr& collection, const QString& name, const QString& desc)
+{
+    core::IHierarchyItemPtr emgItem = utils::make_shared<core::HierarchyItem>(name, desc, QIcon());
+
+    std::vector<core::ObjectWrapperConstPtr> wrappers;
+    for (int i = 0; i < collection->getNumChannels(); ++i) {
+        core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<EMGChannel>();
+        wrapper->set(core::const_pointer_cast<EMGChannel>(boost::dynamic_pointer_cast<const EMGChannel>(collection->getChannel(i))));
+         core::IHierarchyItemPtr channelItem(new core::HierarchyDataItem(wrapper, "EMG"));
+        emgItem->appendChild(channelItem);
+    }
+
+    parent->appendChild(emgItem);
+}

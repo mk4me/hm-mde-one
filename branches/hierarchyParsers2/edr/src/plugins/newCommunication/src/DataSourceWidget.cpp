@@ -1642,10 +1642,11 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	//na bazie tej mapy będę realizował hierarchię pluginu subject
 
 	SubjectFiles subjectHierarchy;
+    std::set<int> loadedFiles;
 
 	auto itEND = loadedFilesObjects.end();
 	for(auto it = loadedFilesObjects.begin(); it != itEND; ++it){
-
+        loadedFiles.insert(it->first);
 		if(it->first < 0){
 			auto s = filteredShallowCopy.motionShallowCopy->sessions.find(- it->first);
 
@@ -1890,10 +1891,13 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
         auto root = TreeBuilder::createTree("SUB", subPtr);
         int childCount = root->getNumChildren();
+        std::set<core::IHierarchyItemConstPtr> roots;
         for (int c = 0; c < childCount; ++c) {
-            hierarchyTransaction->addRoot(root->getChild(c));
+            auto r = root->getChild(c);
+            roots.insert(r);
+            hierarchyTransaction->addRoot(r);
         }
-        
+        files2roots[loadedFiles] = roots;
 	}
 }
 
@@ -2398,6 +2402,17 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 		}
 	}
 
+    {
+        auto hierarchyTransaction = dataSource->memoryDM->hierarchyTransaction();
+        auto entry = files2roots.find(files);
+        if (entry != files2roots.end()) {
+            auto roots = entry->second;
+            for (auto it = roots.begin(); it != roots.end(); ++it) {
+                hierarchyTransaction->removeRoot(*it);
+            }
+        }
+	}
+
 	std::vector<int> diff(filesLoadedToDM.size() - unloadedFiles.size());
 	std::set_difference(filesLoadedToDM.begin(), filesLoadedToDM.end(), unloadedFiles.begin(), unloadedFiles.end(), diff.begin());
 
@@ -2732,3 +2747,4 @@ QString DataSourceWidget::crypt( const QString& input, bool encrypt )
     QString output = QString::fromLocal8Bit((const char*)outdata.get(), length);
     return output;
 }
+

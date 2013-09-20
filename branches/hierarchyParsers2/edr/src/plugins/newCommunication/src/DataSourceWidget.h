@@ -300,6 +300,8 @@ private:
 	std::map<int, MappingValue> motionsMapping;
 
 	std::map<std::string, std::set<int>> projects;
+
+    std::map<std::set<int>, std::set<core::IHierarchyItemConstPtr>> files2roots;
 };
 
 #endif	//	HEADER_GUARD___DATASOURCEWIDGET_H__

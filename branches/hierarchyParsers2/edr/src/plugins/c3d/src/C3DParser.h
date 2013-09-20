@@ -84,6 +84,9 @@ private:
     template <class CollectionPtr>
     void addCollection(core::IHierarchyItemPtr parent, const CollectionPtr& collection, const QString& name, const QString& desc);
 
+    template<>
+    void addCollection<EMGCollectionConstPtr>(core::IHierarchyItemPtr parent, const EMGCollectionConstPtr& collection, const QString& name, const QString& desc);
+
     template <class CollectionPtr>
     void tryAddVectorToTree(const CollectionPtr & collection, const std::string& name, const QIcon& childIcon,  core::IHierarchyItemPtr parentItem, bool createContainerItem = true );
 

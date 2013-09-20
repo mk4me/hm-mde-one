@@ -58,6 +58,7 @@ void FileSource::getOfferedTypes( core::TypeInfoList & offeredTypes ) const
 
 void FileSource::addFile( const core::Filesystem::Path& path )
 {
+    files.insert(path);
     auto transaction = fileDM->transaction();
     transaction->addFile(path);
     core::ConstObjectsList oList;
@@ -73,8 +74,24 @@ void FileSource::addFile( const core::Filesystem::Path& path )
         }
         if ((*it)->hierarchy) {
             hierarchyTransaction->addRoot((*it)->hierarchy);
+            roots.insert((*it)->hierarchy);
         }
     }
 
     
+}
+
+void FileSource::removeFiles()
+{
+    for (auto it = files.begin(); it != files.end(); ++it) {
+        auto transaction = fileDM->transaction();
+        transaction->removeFile(*it);
+    }
+    files.clear();
+
+    for (auto it = roots.begin(); it != roots.end(); ++it) {
+        auto transaction = memoryDM->hierarchyTransaction();
+        transaction->removeRoot(*it);
+    }
+    roots.clear();
 }

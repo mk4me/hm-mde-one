@@ -17,6 +17,7 @@ WrappedItemHelper::WrappedItemHelper(const ObjectWrapperConstPtr & wrapper ) :
 
 VisualizerPtr WrappedItemHelper::createVisualizer(IVisualizerManager* manager)
 {
+    utils::ObjectWrapperConstPtr wrapper = this->wrapper.lock();
     UTILS_ASSERT(wrapper, "Item should be initialized");
     IVisualizerManager::VisualizerPrototypes prototypes;
 
@@ -26,6 +27,7 @@ VisualizerPtr WrappedItemHelper::createVisualizer(IVisualizerManager* manager)
 
 void WrappedItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
+    utils::ObjectWrapperConstPtr wrapper = this->wrapper.lock();
     UTILS_ASSERT(wrapper, "Item should be initialized");
     auto serie = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
 	serie->serie()->setName(path.toStdString());
@@ -34,6 +36,7 @@ void WrappedItemHelper::createSeries( const VisualizerPtr & visualizer, const QS
 
 std::vector<TypeInfo> WrappedItemHelper::getTypeInfos() const
 {
+    utils::ObjectWrapperConstPtr wrapper = this->wrapper.lock();
     std::vector<TypeInfo> ret;
     ret.push_back(wrapper->getTypeInfo());
     return ret;
