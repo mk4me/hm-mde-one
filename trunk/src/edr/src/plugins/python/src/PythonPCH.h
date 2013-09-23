@@ -26,8 +26,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/python.hpp>
 
-#include <core/Plugin.h>
-#include <core/SmartPtr.h>
+#include <corelib/IPlugin.h>
+#include <utils/SmartPtr.h>
 
 #include <utils/Utils.h>
 #include <utils/Debug.h>

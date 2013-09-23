@@ -87,6 +87,11 @@ QModelIndex HierarchyTreeModel::parent(const QModelIndex &index) const
     }
 
     core::IHierarchyItemConstPtr childItem = internalSmart(index);
+
+    if (!childItem) {
+        return QModelIndex();
+    }
+
     core::IHierarchyItemConstPtr parentItem = childItem->getParent();
 
     if (!parentItem) {

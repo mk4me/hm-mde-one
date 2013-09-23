@@ -11,15 +11,17 @@
 #define HEADER_GUARD_PYTHON__PYTHONSERVICE_H__
 
 #include <QtCore/QObject>
-#include <core/IService.h>
+#include <corelib/IService.h>
 #include "PythonLogic.h"
 
 class QTextEdit;
 
-class PythonService : public QObject, public core::IService
+class PythonService : public QObject, public plugin::IService
 {
     Q_OBJECT;
-	UNIQUE_ID("{2AB10F39-C5C9-4637-A562-85D15EAE118A}", "Python Service");
+	UNIQUE_ID("{2AB10F39-C5C9-4637-A562-85D15EAE118A}");
+
+    CLASS_DESCRIPTION("Python Service", "Python Service");
 
 public:
 	//! 
@@ -29,23 +31,21 @@ public:
 
 //core::IService
 public:
-    //! 
-    //! \param managersAccessor 
-    virtual void init(core::IManagersAccessor * managersAccessor);
-	//! 
-	//! \param actions 
-	virtual QWidget* getWidget( core::IActionsGroupManager * actionsManager );
-	//! 
-	//! \param actions 
-	virtual QWidget* getSettingsWidget( core::IActionsGroupManager * actionsManager );
-	//! 
-	virtual const std::string& getName() const;
-	//! 
-	//! \param actions 
-	virtual QWidget* getControlWidget( core::IActionsGroupManager * actionsManager );
+    virtual void init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager );
+    virtual QWidget* getWidget();
+
 
 private slots:
     void runScript();
+
+public:
+    virtual const bool lateInit();
+
+    virtual void finalize();
+
+    virtual void update( double deltaTime );
+
+    virtual QWidgetList getPropertiesWidgets();
 
 private:
     PythonLogic logic;

@@ -78,7 +78,7 @@ public:
     {
         HierarchyChange hc;
         hc.value = ptr;
-        hc.modification = IDataManagerReader::ADD_OBJECT;
+        hc.modification = IDataManagerReader::REMOVE_OBJECT;
         modifications.push_back(hc);
         mdm->removeRoot(ptr);
     }
@@ -102,7 +102,13 @@ void core::HierarchyDataManager::addRoot( IHierarchyItemConstPtr ptr )
 
 void core::HierarchyDataManager::removeRoot( IHierarchyItemConstPtr ptr )
 {
-    UTILS_ASSERT(false, "NYI");
+    auto it = roots.find(ptr);
+    if (it == roots.end()) {
+        throw std::runtime_error("HierarchyDataManager - root was not found");
+    }
+
+    roots.erase(it);
+    
 }
 
 void core::HierarchyDataManager::updateRoot( IHierarchyItemConstPtr ptr )

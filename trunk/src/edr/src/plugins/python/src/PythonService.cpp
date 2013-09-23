@@ -7,7 +7,7 @@
 #include <QtGui/QTextEdit>
 #include <QtGui/QPushButton>
 #include <QtGui/QLabel>
-#include <core/ObjectWrapper.h>
+#include <utils/ObjectWrapper.h>
 
 
 PythonService::PythonService() :
@@ -21,12 +21,13 @@ PythonService::~PythonService()
 
 }
 
-void PythonService::init(core::IManagersAccessor * managersAccessor)
+
+void PythonService::init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager )
 {
 
 }
 
-QWidget* PythonService::getSettingsWidget( core::IActionsGroupManager * actionsManager )
+QWidget* PythonService::getWidget( )
 {
     QFont font;
     font.setFamily("Courier");
@@ -35,18 +36,42 @@ QWidget* PythonService::getSettingsWidget( core::IActionsGroupManager * actionsM
 
     editor = new QTextEdit;
     editor->setFont(font);
-    
+
     QString text("print \"Hello world\"\nresult = 5 * 4");
     editor->setPlainText(text);
     QSyntaxHighlighter* highlighter = new PythonHighlighter(editor->document());
     //editor->setMinimumSize(600, 600);
     editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     editor->setStyleSheet("border: 1px solid red");
+
     return editor;
 }
 
-QWidget* PythonService::getWidget( core::IActionsGroupManager * actionsManager )
+void PythonService::runScript()
 {
+    int input = 10;
+    logic.getDict()["input"] = input;
+    logic.run(editor->toPlainText().toStdString());
+}
+
+const bool PythonService::lateInit()
+{
+    return true;
+}
+
+void PythonService::finalize()
+{
+ 
+}
+
+void PythonService::update( double deltaTime )
+{
+ 
+}
+
+QWidgetList PythonService::getPropertiesWidgets()
+{
+    QWidgetList l;
     QVBoxLayout* layout = new QVBoxLayout();
 
     QLabel* label = new QLabel("Widget TEST");
@@ -63,26 +88,8 @@ QWidget* PythonService::getWidget( core::IActionsGroupManager * actionsManager )
 
     QWidget* widget = new QWidget();
     widget->setLayout(layout);
-    return widget;
-	
-}
+    l.push_back(widget);
 
-const std::string& PythonService::getName() const
-{
-	static std::string s = "PythonService";
-	return s;
-}
-
-QWidget* PythonService::getControlWidget( core::IActionsGroupManager * actionsManager )
-{
-    QLabel* label = new QLabel("control TEST");
-    label->setStyleSheet("background:red");
-    return label;
-}
-
-void PythonService::runScript()
-{
-    int input = 10;
-    logic.getDict()["input"] = input;
-    logic.run(editor->toPlainText().toStdString());
+   
+    return l;
 }

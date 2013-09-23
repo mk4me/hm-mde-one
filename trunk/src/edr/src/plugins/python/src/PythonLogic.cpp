@@ -40,7 +40,7 @@ void PythonLogic::run( const std::string& script)
     try {
         exec(code, mainNamespace);
         try {
-            int result = extract<int>(mainNamespace["result"]);
+            float result = extract<float>(mainNamespace["result"]);
             QMessageBox::information(nullptr, "Result", QString("Result : %1").arg(result));
         } catch (...) {
 
