@@ -18,6 +18,8 @@
 #include "DataSourceManager.h"
 #include <plugins/c3d/C3DCollections.h>
 #include <corelib/IMemoryDataManager.h>
+#include "PresetsWidget.h"
+#include "MergedWidget.h"
 
 using namespace vdf;
 
@@ -53,6 +55,11 @@ NewVdfService::NewVdfService() :
     resultProperty->layout()->addWidget(resultButton);
     connect(resultButton, SIGNAL(clicked()), this, SLOT(onTransferResults()));
     resultProperty->setObjectName("Result view");
+
+    mergedWidget = new MergedWidget();
+    mergedWidget->setObjectName("Merged");
+    presetsWidget = new PresetsWidget(newVdfWidget->getSceneModel(), typesWindow);
+    presetsWidget->setObjectName("Presets");
 }
 
 NewVdfService::~NewVdfService()
@@ -72,6 +79,8 @@ QWidgetList vdf::NewVdfService::getPropertiesWidgets()
     list.push_back(typesWindow);
     list.push_back(propertiesWindow);
     list.push_back(resultProperty);
+    list.push_back(mergedWidget);
+    list.push_back(presetsWidget);
     return list;
 }
 

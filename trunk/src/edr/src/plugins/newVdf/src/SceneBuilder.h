@@ -12,7 +12,7 @@
 
 
 #include <utils/SmartPtr.h>
-#include <CanvasStyleEditor.h>
+#include "CanvasStyleEditor.h"
 #include <plugins/newVdf/IVisualNode.h>
 #include <boost/tuple/tuple.hpp>
 

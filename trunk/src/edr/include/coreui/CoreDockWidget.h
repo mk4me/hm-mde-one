@@ -14,7 +14,7 @@
 
 namespace coreUI {
 
-//! Klasa rozszerza klasycznego QDockWidget o możliwosć przełanczania trybu oddokowywania na przeciwny,
+//! Klasa rozszerza klasycznego QDockWidget o możliwosć przełączania trybu oddokowywania na przeciwny,
 //! ustawaiania okna jako "niesmiertelnego" przy zamykaniu go oraz modyfikacji jego flag przy oddokowywaniu
 class COREUI_EXPORT CoreDockWidget : public QDockWidget
 {

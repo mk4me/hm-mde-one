@@ -1,5 +1,5 @@
 set(TESTS_DEPENDENCIES "CPPUNIT")
 ADD_TEST_PROJECT(test_corelib "corelib;coreui" "corelib")
-ADD_TEST_PROJECT(test_mde_view "mde_view;BOOST;utils;OSG;QT;TINYXML;core;corelib;coreui;c3dlib;QWT;vidlib;plugin_newVdf;plugin_dfElements;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject;plugin_hmm" "mde_view")
-ADD_TEST_PROJECT(test_newVdf "plugin_newVdf" "plugins/newVdf")
-ADD_TEST_PROJECT(test_dfElements "BOOST;QT;dflib;corelib;coreui;utils;plugin_newVdf;c3dlib;plugin_c3d;plugin_newCommunication" "plugins/dfElements")
+ADD_TEST_PROJECT(test_mde_view "core;corelib;coreui;utils;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf" "mde_view")
+ADD_TEST_PROJECT(test_newVdf "dflib;core;kinematiclib;vidlib;plugin_subject;plugin_newCommunication;plugin_newTimeline;plugin_c3d;plugin_video;coreui" "plugins/newVdf")
+ADD_TEST_PROJECT(test_dfElements "dflib;coreui;plugin_newVdf;c3dlib;plugin_c3d;plugin_newCommunication" "plugins/dfElements")

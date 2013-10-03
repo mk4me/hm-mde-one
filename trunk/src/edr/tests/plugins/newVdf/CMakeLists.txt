@@ -8,10 +8,12 @@ set (TARGET_OBJ ${objFiles})
 SET_SOURCE_FILES(
 	test.cpp
 	MergeTest.cpp
+    SaveSceneTest.cpp
 )
 
 SET_PRIVATE_HEADERS(
 	MergeTest.h
+    SaveSceneTest.h
 )
 
 END_PROJECT()

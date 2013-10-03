@@ -63,12 +63,6 @@ namespace plugin
         //! Metoda dostarcza pomocniczych widgetów serwisu
         //! \return Lista pomocniczych widgetów serwisu
         virtual QWidgetList getPropertiesWidgets() = 0;
-        
-        ////! \return Widget kontrolujący zachowanie usługi/usług zależnych.
-        //virtual QWidget* getControlWidget() = 0;
-        //
-        ////! \return Widget dostarczający opcji związanych z usługą/usługami zależnymi.
-        //virtual QWidget* getSettingsWidget() = 0;
     };
 
     typedef utils::shared_ptr<IService> IServicePtr;

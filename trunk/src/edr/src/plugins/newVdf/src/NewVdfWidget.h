@@ -48,6 +48,8 @@ public slots:
 	void undo();
 	void redo();
 	void merge();
+    void demerge();
+    void saveScene();
 	void deleteSelected();
 	void clearScene();
     void runDF();

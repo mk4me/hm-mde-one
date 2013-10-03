@@ -14,6 +14,8 @@
 #include <QtGui/QMainWindow>
 #include <coreui/CoreDockWidget.h>
 
+class QMenu;
+
 class MdeServiceWindow : public QMainWindow
 {
     Q_OBJECT;
@@ -37,6 +39,7 @@ private:
 private:
     QString id;
     std::map<QString, int> serviceCount;
+    QMenu* viewMenu;
 };
 
 

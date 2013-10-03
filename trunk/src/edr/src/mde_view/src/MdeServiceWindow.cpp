@@ -1,11 +1,26 @@
 #include "MdePCH.h"
 #include "MdeServiceWindow.h"
 #include <QtCore/QSettings>
+#include <QtGui/QToolButton>
+#include <QtGui/QMenu>
+#include <coreui/CoreWidgetAction.h>
 
 MdeServiceWindow::MdeServiceWindow( const QString& idName ) :
     id(idName)
 {
     loadLayout();
+
+    QToolButton * viewMenuButton = new QToolButton;
+    //viewMenuButton->setIcon(QIcon(QString::fromUtf8(":/kinematic/icons/viewa.png")));
+    viewMenuButton->setText(tr("Properties"));
+    viewMenuButton->setPopupMode(QToolButton::MenuButtonPopup);	
+    viewMenu = new QMenu(tr("Properties"), viewMenuButton);    
+    
+    viewMenuButton->setMenu(viewMenu);
+
+    coreUI::CoreWidgetAction * viewAction = new coreUI::CoreWidgetAction(this, tr("Properties"), coreUI::CoreTitleBar::Right);
+    viewAction->setDefaultWidget(viewMenuButton);
+    addAction(viewAction);
 }
 
 MdeServiceWindow::~MdeServiceWindow()
@@ -40,9 +55,11 @@ void MdeServiceWindow::createMdeDock( QString serviceName, QWidget* widget )
         serviceCount[serviceName] = 0;
     }
     coreUI::CoreDockWidget* dw = dockWrap(widget, widget->objectName(), serviceName, serviceCount[serviceName]++);
+    
     if (!restoreDockWidget(dw)) {
         addDockWidget(Qt::RightDockWidgetArea, dw);
     }
+    viewMenu->addAction(dw->toggleViewAction());
 }
 
 coreUI::CoreDockWidget* MdeServiceWindow::dockWrap(QWidget* widget, const QString& dockTitle, const QString& serviceName, int propNo )
@@ -52,6 +69,6 @@ coreUI::CoreDockWidget* MdeServiceWindow::dockWrap(QWidget* widget, const QStrin
     dock->setAllowedAreas(Qt::AllDockWidgetAreas);
     dock->setWidget(widget);	
     dock->setObjectName(dockName);
-    //dock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     return dock;
 }
+

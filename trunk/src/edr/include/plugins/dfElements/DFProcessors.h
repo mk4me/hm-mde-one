@@ -10,8 +10,13 @@
 #ifndef HEADER_GUARD_DFELEMENTS__HMMPROCESSORS_H__
 #define HEADER_GUARD_DFELEMENTS__HMMPROCESSORS_H__
 
+#include <plugins/newVdf/UniversalInputPin.h>
+#include <plugins/newVdf/UniversalOutputPin.h>
 #include <plugins/dfElements/DFPins.h>
 #include <QtGui/QDoubleSpinBox>
+#include <dflib/Node.h>
+#include <dflib/IDFNode.h>
+#include <plugins/newVdf/INodeConfiguration.h>
 
 class VectorDiff : public df::ProcessingNode, public df::IDFProcessor
 {
@@ -191,7 +196,7 @@ public:
     }
 };
 
-class PLUGIN_DFELEMENTS_EXPORT ScalarDummy : public UniversalScalar
+class ScalarDummy : public UniversalScalar
 {
 public:
     virtual float processSingleValue(const float& v1) 

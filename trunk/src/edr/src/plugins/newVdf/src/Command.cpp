@@ -6,7 +6,8 @@ using namespace vdf;
 
 void AddToSceneCommand::doIt()
 {
-	auto node = nodeWithPins.get<0>();
+    sceneModel->addNodeWithPins(nodeWithPins, position);
+	/*auto node = nodeWithPins.get<0>();
 	auto vis = node->visualItem();
 	vis->setPos(position);
 
@@ -20,7 +21,7 @@ void AddToSceneCommand::doIt()
 	pins = nodeWithPins.get<2>();
 	for (auto it = pins.begin(); it != pins.end(); ++it) {
 		sceneModel->addItem(*it);
-	}
+	}*/
 }
 
 void AddToSceneCommand::undoIt()

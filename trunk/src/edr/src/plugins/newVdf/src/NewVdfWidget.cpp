@@ -10,7 +10,7 @@
 #include "Command.h"
 #include "VdfView.h"
 #include <plugins/newVdf/INodeConfiguration.h>
-#include <plugins/dfElements/DFSinks.h>
+#include <plugins/newVdf/UniversalSink.h>
 
 using namespace vdf;
 
@@ -32,16 +32,22 @@ NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneMod
 	QToolBar* toolbar = new QToolBar("States");
     coreUI::CoreAction*  und = new coreUI::CoreAction(tr("Edit")  , QIcon(":/coreUI/icons/textedit/editundo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  red = new coreUI::CoreAction(tr("Edit")  , QIcon(":/coreUI/icons/textedit/editredo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
+
     coreUI::CoreAction*  mrg = new coreUI::CoreAction(tr("Misc") , QIcon(":/kinematic/icons/skeletal_trace.png"), tr("Merge"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  dmr = new coreUI::CoreAction(tr("Misc") , QIcon(":/kinematic/icons/skeletal_trace.png"), tr("Demerge"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  sav = new coreUI::CoreAction(tr("Misc") , QIcon(":/kinematic/icons/skeletal_trace.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
+
     coreUI::CoreAction*  clr = new coreUI::CoreAction(tr("Clear") , QIcon(":/newVdf/icons/rubber.png"), tr("Scene"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  del = new coreUI::CoreAction(tr("Edit"), QIcon(":/coreUI/icons/x.png"), tr("Delete"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  run = new coreUI::CoreAction(tr("Run"), QIcon(":/newVdf/icons/run.png"), tr("Run"), this, coreUI::CoreTitleBar::Left);
 
-	mrg->setEnabled(false);
+	//mrg->setEnabled(false);
 	
 	connect(und, SIGNAL(triggered()), this, SLOT(undo()));
 	connect(red, SIGNAL(triggered()), this, SLOT(redo()));
 	connect(mrg, SIGNAL(triggered()), this, SLOT(merge()));
+    connect(dmr, SIGNAL(triggered()), this, SLOT(demerge()));
+    connect(sav, SIGNAL(triggered()), this, SLOT(saveScene()));
 	connect(clr, SIGNAL(triggered()), this, SLOT(clearScene()));
 	connect(del, SIGNAL(triggered()), this, SLOT(deleteSelected()));
     connect(run, SIGNAL(triggered()), this, SLOT(runDF()));
@@ -49,9 +55,15 @@ NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneMod
     this->addAction(und);
     this->addAction(red);
     this->addAction(mrg);
+    this->addAction(dmr);
+    this->addAction(sav);
     this->addAction(del);
     this->addAction(clr);
     this->addAction(run);
+
+    mrg->setEnabled(false);
+    dmr->setEnabled(false);
+    sav->setEnabled(false);
     	
     layout->addWidget(view);
     setMinimumSize(300, 200);
@@ -70,6 +82,16 @@ void NewVdfWidget::undo()
 void NewVdfWidget::redo()
 {
 	commandStack->redo();
+}
+
+void NewVdfWidget::demerge()
+{
+
+}
+
+void NewVdfWidget::saveScene()
+{
+
 }
 
 void NewVdfWidget::merge()

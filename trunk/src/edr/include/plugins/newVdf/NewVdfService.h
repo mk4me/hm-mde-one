@@ -17,6 +17,7 @@
 #include <corelib/BaseDataTypes.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <QtGui/QTreeView>
+#include <QtGui/QListView>
 #include <QtGui/QPushButton>
 #include <plugins/newVdf/IDataProcessor.h>
 #include <plugins/newVdf/IDataSource.h>
@@ -34,6 +35,8 @@ class NewVdfWidget;
 class CanvasStyleEditorWidget;
 class TypesWindow;
 class PropertiesWindow;
+class PresetsWidget;
+class MergedWidget;
 
 class PLUGIN_NEWVDF_EXPORT NewVdfService : public QObject, public plugin::IService, public IDataFlowProvider, public core::IMemoryDataManagerHierarchy::IHierarchyObserver, public boost::enable_shared_from_this<NewVdfService>
 {
@@ -88,6 +91,8 @@ private:
     PropertiesWindow* propertiesWindow;
     QTreeView* resultsView;
     QWidget* resultProperty;
+    QWidget* mergedWidget;
+    QWidget* presetsWidget;
     QPushButton* resultButton;
 
     coreui::HierarchyTreeModel resultsModel;

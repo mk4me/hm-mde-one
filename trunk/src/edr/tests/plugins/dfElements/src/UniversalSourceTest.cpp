@@ -1,5 +1,5 @@
 #include "UniversalSourceTest.h"
-#include <plugins/dfElements/DFSources.h>
+#include <plugins/newVdf/UniversalSource.h>
 #include <plugins/dfElements/DFPins.h>
 
 // Registers the fixture into the 'registry'
@@ -14,7 +14,7 @@ void UniversalSourceTest::setUp()
 
 void UniversalSourceTest::testCreate()
 {
-    UniversalSource<VectorChannelReaderInterface> us;
+    vdf::UniversalSource<VectorChannelReaderInterface> us;
     CPPUNIT_ASSERT(!us.isNodeValid());
     us.produce();
 }

@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEWVDF__SCENEMODEL_H__
 
 #include <utils/SmartPtr.h>
-#include <CanvasStyleEditor.h>
+#include "CanvasStyleEditor.h"
 #include <boost/tuple/tuple.hpp>
 #include <dflib/IConnection.h>
 #include <dflib/IModel.h>
@@ -19,6 +19,12 @@
 #include <boost/type_traits.hpp>
 //#include <plugins/newVdf/TreeBuilder.h>
 #include <corelib/IDataManagerReader.h>
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/split_member.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/string.hpp>
+#include <vector>
+#include <corelib/PluginCommon.h>
 
 namespace utils {
 
@@ -60,6 +66,10 @@ private:
     IVisualOutputPinPtr output;
 };
 
+class TypesWindow;
+class SceneModel;
+DEFINE_SMART_POINTERS(SceneModel);
+
 class SceneModel : public QObject
 {
     Q_OBJECT;
@@ -81,7 +91,7 @@ public:
 	DEFINE_SMART_POINTERS(MergedItem);
 
 public:
-    SceneModel(CanvasStyleEditorPtr factories);
+    SceneModel(CanvasStyleEditorPtr factories, core::IThreadPool* threadpool = plugin::getThreadPool());
 	virtual ~SceneModel() {}
 
 public slots:
@@ -93,6 +103,7 @@ public:
     void removeConnection(IVisualItemPtr item);
 
     void addItem(IVisualItemPtr item);
+    void addNodeWithPins(const SceneBuilder::VisualNodeWithPins& nodeWidthPins, const QPointF& pos);
 	void removeItem(IVisualItemPtr item);
     const SceneBuilder& getBuilder() const { return builder; }
 
@@ -146,6 +157,104 @@ private:
 	void removeInputPins(IVisualNodePtr node); 
 	void commonErase( IVisualItemPtr item );
 
+public:
+    class Serializer
+    {
+    public:
+        Serializer(SceneModelPtr sm, TypesWindow* tw) : model(sm), typesWindow(tw) {}
+    private:
+        struct NodeInfo
+        {
+            NodeInfo(): x(0.0f), y(0.0f), index(-1) {}
+            std::string id;
+            std::string name;
+            float x;
+            float y;
+            int index;
+
+            template <typename Archive>
+            void serialize(Archive& ar, const unsigned int version)
+            {
+                ar & boost::serialization::make_nvp("id", id);
+                ar & boost::serialization::make_nvp("name", name);
+                ar & boost::serialization::make_nvp("x", x);
+                ar & boost::serialization::make_nvp("y", y);
+                ar & boost::serialization::make_nvp("index", index);
+            }
+
+            typedef std::vector<NodeInfo> Collection;
+        };
+
+        struct ConnectionInfo
+        {
+            ConnectionInfo() : 
+                outputNodeIndex(-1),
+                outputPinIndex(-1),
+                inputNodeIndex(-1),
+                inputPinIndex(-1)
+                {}
+            int outputNodeIndex;
+            int outputPinIndex;
+            int inputNodeIndex;
+            int inputPinIndex;
+
+            template <typename Archive>
+            void serialize(Archive& ar, const unsigned int version)
+            {
+                ar & boost::serialization::make_nvp("outputNodeIndex", outputNodeIndex);
+                ar & boost::serialization::make_nvp("outputPinIndex", outputPinIndex);
+                ar & boost::serialization::make_nvp("inputNodeIndex", inputNodeIndex);
+                ar & boost::serialization::make_nvp("inputPinIndex", inputPinIndex);
+            }
+
+            typedef std::vector<ConnectionInfo> Collection;
+        };
+
+        typedef std::pair<NodeInfo::Collection,ConnectionInfo::Collection> Infos;
+        friend class boost::serialization::access;
+        template<class Archive>
+        void save(Archive & ar, const unsigned int version) const
+        {
+            Infos i = extractInfos();
+            ar  & boost::serialization::make_nvp("nodes", i.first);
+            ar  & boost::serialization::make_nvp("connections", i.second);
+        }
+        template<class Archive>
+        void load(Archive & ar, const unsigned int version)
+        {
+            NodeInfo::Collection nc;
+            ConnectionInfo::Collection cc;
+            ar & boost::serialization::make_nvp("nodes", nc);
+            ar & boost::serialization::make_nvp("connections", cc);
+            
+            // TODO: sprawdzanie czy dane sa poprawne.
+            model->clearScene();
+
+            std::map<int, IVisualNodePtr> idx2Node;
+            for (auto it = nc.begin(); it != nc.end(); ++it) {
+                auto itm = typesWindow->createItemByEntry(QString::fromStdString(it->name));
+                idx2Node[it->index] = itm.get<0>();
+                model->addNodeWithPins(itm, QPointF(it->x, it->y));
+            }
+
+            for (auto it = cc.begin(); it != cc.end(); ++it) {
+                IVisualSourceNodePtr outNode = utils::dynamic_pointer_cast<IVisualSourceNode>(idx2Node[it->outputNodeIndex]);
+                IVisualSinkNodePtr inNode = utils::dynamic_pointer_cast<IVisualSinkNode>(idx2Node[it->inputNodeIndex]);
+                
+                model->addConnection(
+                    outNode->getOutputPin(it->outputPinIndex),
+                    inNode->getInputPin(it->inputPinIndex)
+                );                   
+            }
+        }
+
+        Infos extractInfos() const ;
+
+        BOOST_SERIALIZATION_SPLIT_MEMBER();
+        SceneModelPtr model;
+        TypesWindow* typesWindow;
+    };
+
 private:
     std::map<QGraphicsItem*, IVisualItemPtr> graphics2Visual;
     SceneBuilder builder;
@@ -156,7 +265,7 @@ private:
 	std::vector<MergedItemPtr> mergedItems;
 	core::shared_ptr<utils::IThreadPool> dfThreadFactory;
 };
-DEFINE_SMART_POINTERS(SceneModel);
+
 }
 
 #endif

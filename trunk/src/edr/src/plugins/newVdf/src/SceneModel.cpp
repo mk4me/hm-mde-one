@@ -13,11 +13,14 @@
 #include <type_traits>
 #include <corelib/IThreadPool.h>
 #include <threading/IThreadPool.h>
-#include <corelib/PluginCommon.h>
+
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 #include "StyleMergedNode.h"
 #include "SimpleMergedNode.h"
-#include "plugins/newVdf/INodeConfiguration.h"
+#include <plugins/newVdf/INodeConfiguration.h>
+#include "TypesWindow.h"
 
 using namespace vdf;
 
@@ -86,10 +89,10 @@ IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr outputPin, IV
 }
 
 
-SceneModel::SceneModel( CanvasStyleEditorPtr factories ) :
+SceneModel::SceneModel( CanvasStyleEditorPtr factories, core::IThreadPool* threadpool ) :
     builder(factories),
 	model(new df::Model),
-	dfThreadFactory(new VDFThreadPool(plugin::getThreadPool()))
+	dfThreadFactory(new VDFThreadPool(threadpool))
 {
 
 }
@@ -326,7 +329,9 @@ SceneBuilder::VisualNodeWithPins SceneModel::merge( const QList<QGraphicsItem*>&
                         connection->visualItem()->setVisible(false);
                     }
                 }
-				opins.push_back(opin);
+                if (!numConnections) {
+				    opins.push_back(opin);
+                }
 			}
 		}
 		IVisualSinkNodePtr sink = utils::dynamic_pointer_cast<IVisualSinkNode>(*it);
@@ -426,5 +431,59 @@ void vdf::SceneModel::removeConnection( IVisualItemPtr item )
     auto c = utils::dynamic_pointer_cast<IVisualConnection>(item);
     UTILS_ASSERT(c);
     removeConnection(c->getOutputPin(), c->getInputPin());
+}
+
+void vdf::SceneModel::addNodeWithPins( const SceneBuilder::VisualNodeWithPins& nodeWithPins, const QPointF& pos )
+{
+    auto node = nodeWithPins.get<0>();
+    auto vis = node->visualItem();
+    vis->setPos(pos);
+
+    addItem(node);
+
+    SceneBuilder::Pins pins = nodeWithPins.get<1>();
+    for (auto it = pins.begin(); it != pins.end(); ++it) {
+        addItem(*it);
+    }
+
+    pins = nodeWithPins.get<2>();
+    for (auto it = pins.begin(); it != pins.end(); ++it) {
+        addItem(*it);
+    }
+}
+
+
+vdf::SceneModel::Serializer::Infos vdf::SceneModel::Serializer::extractInfos() const
+{
+    auto nodes = model->getVisualItems<IVisualNodePtr>();
+    std::map<IVisualNodePtr, int> node2idx;
+    NodeInfo::Collection infos;
+    int count = nodes.size();
+    for (int i = 0; i < count; ++i) {
+        NodeInfo ni;
+        node2idx[nodes[i]] = i;
+        ni.index = i;
+        ni.id = boost::lexical_cast<std::string>(typesWindow->getId(nodes[i]->getName()));
+        ni.x = nodes[i]->visualItem()->x();
+        ni.y = nodes[i]->visualItem()->y();
+        ni.name = nodes[i]->getName().toStdString();
+        infos.push_back(ni);
+    }
+    
+    ConnectionInfo::Collection connections;
+    auto connectionItems = model->getVisualItems<IVisualConnectionPtr>();
+    for (auto it = connectionItems.begin(); it != connectionItems.end(); ++it) {
+        IVisualInputPinPtr ipin = (*it)->getInputPin();
+        IVisualOutputPinPtr opin = (*it)->getOutputPin();
+        
+        ConnectionInfo info;
+        info.inputNodeIndex = node2idx[ipin->getParent().lock()];
+        info.inputPinIndex = ipin->getIndex();
+        info.outputNodeIndex = node2idx[opin->getParent().lock()];
+        info.outputPinIndex = opin->getIndex();
+        connections.push_back(info);
+    }
+    
+    return std::make_pair(infos, connections);
 }
 

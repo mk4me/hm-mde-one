@@ -8,6 +8,7 @@
 #include <plugins/newVdf/IDataSource.h>
 #include <plugins/newVdf/INodeConfiguration.h>
 #include <corelib/PluginCommon.h>
+#include "ui_TypesWindow.h"
 
 using namespace vdf;
 
@@ -15,18 +16,19 @@ TypesWindow::TypesWindow(utils::ICommandStackPtr stack, CanvasStyleEditorPtr can
     QWidget(parent, f),
     canvas(canvas),
     sceneModel(sceneModel),
-	commmandStack(stack)
+	commmandStack(stack),
+    ui(new Ui::TypesWindow())
 {
-    setupUi(this);
+    ui->setupUi(this);
     
-    processorsList->setSelectionMode(QAbstractItemView::SingleSelection);
-    processorsList->setDragEnabled(true);
+    ui->processorsList->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->processorsList->setDragEnabled(true);
 
-    sinksList->setSelectionMode(QAbstractItemView::SingleSelection);
-    sinksList->setDragEnabled(true);
-
-    sourcesList->setSelectionMode(QAbstractItemView::SingleSelection);
-    sourcesList->setDragEnabled(true);
+    ui->sinksList->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->sinksList->setDragEnabled(true);
+    
+    ui->sourcesList->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->sourcesList->setDragEnabled(true);
 }
 
 void TypesWindow::insert( const QString& name, const QPointF& scenePos )
@@ -45,17 +47,17 @@ void TypesWindow::addEntry( const QString& entry, const QIcon& icon, IVisualItem
     switch (type)  {
     case IVisualItem::ProcessingNode:
         item->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/processor.png"): icon);
-        processorsList->addItem(item);
+        ui->processorsList->addItem(item);
         break;
 
     case IVisualItem::SourceNode:
         item->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/source.png") : icon);
-        sourcesList->addItem(item);
+        ui->sourcesList->addItem(item);
         break;
 
     case IVisualItem::SinkNode:
         item->setIcon(icon.isNull() ? QIcon(":/newVdf/icons/sink.png") : icon);
-        sinksList->addItem(item);
+        ui->sinksList->addItem(item);
         break;
 
     default:
@@ -127,7 +129,17 @@ void TypesWindow::update( const IDataSinkManager* sm )
         if (present == name2node.end()) {
             name2node[name] = *it;
             addEntry(name, (*it)->getIcon(), IVisualItem::SinkNode);
-        }
+        } 
     }
+}
+
+core::UniqueID vdf::TypesWindow::getId( const QString& name ) const
+{
+    auto it = name2node.find(name);
+    if (it != name2node.end()) {
+        return it->second->getID();
+    }
+
+    throw std::runtime_error("Node not found");
 }
 

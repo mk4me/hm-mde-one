@@ -585,7 +585,6 @@ void AnalysisTreeContextMenu::addRemovalMenuSection( QMenu * menu, const core::H
 
 void AnalysisTreeContextMenu::addCreationMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper )
 {
-
     QMenu* createIn = new QMenu(tr("Create in:"), menu);
     createIn->setEnabled(false);
     menu->addMenu(createIn);

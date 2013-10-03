@@ -19,9 +19,10 @@
 #include <plugins/newVdf/IDataSourceManager.h>
 
 #include "Command.h"
-#include "ui_TypesWindow.h"
 #include "CanvasStyleEditor.h"
 #include "SceneModel.h"
+
+namespace Ui { class TypesWindow; } 
 
 namespace vdf {
 
@@ -29,7 +30,7 @@ class NewVdfWidget;
 
 
 //! Widget z elementami do wstawienia na scenê
-class TypesWindow : public QWidget, private Ui::TypesWindow,
+class TypesWindow : public QWidget, 
     public utils::Observer<vdf::IDataProcessorManager>, public utils::Observer<vdf::IDataSinkManager>, public utils::Observer<vdf::IDataSourceManager>
 {
     Q_OBJECT;
@@ -44,10 +45,18 @@ public:
 	virtual ~TypesWindow() {}
 
 public:
+    // TODO : zmienic idedtyfikacje z name na uid
+
     //! Tworzy element na podstawie nazwy i umieszcza go na scenie, komenda trafia na stos wywo³añ.
     //! \param name nazwa elementu, który zostanie utworzony
     //! \param scenePos pozycja na scenie, gdzie trafi obiekt
     void insert(const QString& name, const QPointF& scenePos);
+
+    //! Tworzy element, który jest gotowy aby go wstawiæ na scenê
+    //! \param entry nazwa/identyfikator elementu
+    SceneBuilder::VisualNodeWithPins createItemByEntry(const QString& entry);
+
+    core::UniqueID getId(const QString& name) const;
         
 protected:
     //! Wywo³ywane, gdy pojawi¹ siê nowe elementy przetwarzaj¹ce
@@ -66,9 +75,6 @@ private:
     //! \param icon ikona elementu
     //! \param type typ elementu, warunkuje, do którego widgeta trafi wpis
     void addEntry(const QString& entry, const QIcon& icon, IVisualItem::Type type);
-    //! Tworzy element, który jest gotowy aby go wstawiæ na scenê
-    //! \param entry nazwa/identyfikator elementu
-    SceneBuilder::VisualNodeWithPins createItemByEntry(const QString& entry);
 
 private:
     //! Model ze stylami elmentów
@@ -79,6 +85,8 @@ private:
     SceneModelPtr sceneModel;
     //! nazwa/identyfikator elementu -> prototyp elementu
     std::map<QString, IWorkflowItemBasePtr> name2node;
+    //! ui tworzone w designerze
+    Ui::TypesWindow* ui;
 };
 
 }
