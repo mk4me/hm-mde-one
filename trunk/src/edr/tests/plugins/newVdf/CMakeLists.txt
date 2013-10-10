@@ -9,11 +9,13 @@ SET_SOURCE_FILES(
 	test.cpp
 	MergeTest.cpp
     SaveSceneTest.cpp
+	UniversalSourceTest.cpp
 )
 
 SET_PRIVATE_HEADERS(
 	MergeTest.h
     SaveSceneTest.h
+	UniversalSourceTest.h
 )
 
 END_PROJECT()

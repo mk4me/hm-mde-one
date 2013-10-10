@@ -14,6 +14,8 @@
 #include <corelib/Filesystem.h>
 #include <corelib/IParser.h>
 
+namespace dicom {
+
 //! Klasa wykorzystuje dcmtk do zasilenia systemu w obiekty domenowe DICOM
 class DicomParser : public plugin::IParser, public plugin::ISourceParserCapabilities
 {
@@ -38,9 +40,8 @@ public:
     virtual void acceptedExpressions(Expressions & expressions) const;
 
 private:
-    utils::ObjectWrapperPtr wrapper;
     utils::ObjectWrapperPtr image;
 };
 
-
+}
 #endif

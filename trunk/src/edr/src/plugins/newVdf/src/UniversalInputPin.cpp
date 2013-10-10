@@ -56,7 +56,11 @@ void UniversalInputPinBase::copyData( const df::IDFOutput * pin )
 {
     auto uniPin = dynamic_cast<const UniversalOutputPinBase*>(pin);
     UTILS_ASSERT(uniPin);
-    wrapper = uniPin->getWrapper()->clone();
+    auto wrp = uniPin->getWrapper();
+    UTILS_ASSERT(wrp); 
+    if (wrp) {
+        wrapper = wrp->clone();
+    }
 }
 
 void UniversalInputPinBase::reset()

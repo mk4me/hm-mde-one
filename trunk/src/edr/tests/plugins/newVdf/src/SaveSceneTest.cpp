@@ -98,7 +98,7 @@ void SaveSceneTest::testSaveScene()
 
 
         IVisualSourceNodePtr onode2 = utils::dynamic_pointer_cast<IVisualSourceNode>(nodes2[0]);
-        IVisualSinkNodePtr inode2 = utils::dynamic_pointer_cast<IVisualSinkNode>(nodes[1]);
+        IVisualSinkNodePtr inode2 = utils::dynamic_pointer_cast<IVisualSinkNode>(nodes2[1]);
 
         CPPUNIT_ASSERT(onode1 && onode2);
         CPPUNIT_ASSERT(inode1 && inode2);

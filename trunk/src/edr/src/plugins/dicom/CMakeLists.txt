@@ -9,17 +9,22 @@ SET_PRIVATE_HEADERS (
 	DicomParser.h
 	DicomPCH.h
 	DicomVisualizer.h
+	DicomSource.h
+	DicomSourceWidget.h
 )
 
 SET_SOURCE_FILES(
 	DicomPlugin.cpp
 	DicomParser.cpp
 	DicomVisualizer.cpp
+	DicomSource.cpp
+	DicomSourceWidget.cpp
 	DicomPCH.cpp
 )
 
 SET_MOC_FILES(
 	DicomVisualizer.h
+	DicomSourceWidget.h
 )
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek

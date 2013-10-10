@@ -11,9 +11,15 @@
 #define HEADER_GUARD_NEWVDF__UNIVERSALSOURCE_H__
 
 #include <QtGui/QTreeView>
+#include <corelib/HierarchyItem.h>
+#include <corelib/HierarchyDataItem.h>
 #include <plugins/newVdf/TypeFilter.h>
 #include <coreui/HierarchyTreeModel.h>
-
+#include <plugins/newVdf/UniversalSource.h>
+#include <plugins/newVdf/UniversalOutputPin.h>
+#include <dflib/Node.h>
+#include <dflib/IDFNode.h>
+#include <plugins/newVdf/INodeConfiguration.h>
 
 namespace vdf {
 

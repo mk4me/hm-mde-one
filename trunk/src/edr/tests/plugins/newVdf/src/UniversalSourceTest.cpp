@@ -1,6 +1,8 @@
 #include "UniversalSourceTest.h"
 #include <plugins/newVdf/UniversalSource.h>
-#include <plugins/dfElements/DFPins.h>
+#include <plugins/newVdf/UniversalInputPin.h>
+#include <plugins/newVdf/UniversalOutputPin.h>
+#include "plugins/c3d/C3DChannels.h"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( UniversalSourceTest );

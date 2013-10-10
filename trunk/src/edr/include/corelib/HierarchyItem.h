@@ -14,6 +14,7 @@
 #include <QtCore/QVariant>
 #include <utils/ObjectWrapper.h>
 #include <corelib/IHierarchyItem.h>
+#include <corelib/Export.h>
 
 namespace core {
 

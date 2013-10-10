@@ -16,6 +16,9 @@
 #include <plugins/dicom/Dicom.h>
 
 class QLabel;
+class QScrollArea;
+
+namespace dicom {
 
 // TODO Przeniesc do corelib
 class AbstractSerie : public plugin::IVisualizer::ISerie
@@ -53,6 +56,9 @@ public:
     virtual ~DicomSerie() {}
 
     virtual void setupData( const core::ObjectWrapperConstPtr & data );
+
+    //QPixmap convertToPixmap( DicomImagePtr image );
+
     virtual void update() {}
 
     virtual void setTime( double time );
@@ -111,7 +117,10 @@ public://! \return pusty obiekt wizualizatora
       virtual QPixmap takeScreenshot() const;
 private:
     QLabel* label;
+    QScrollArea* scrollArea;
 };
 DEFINE_SMART_POINTERS(DicomVisualizer);
+
+}
 
 #endif
