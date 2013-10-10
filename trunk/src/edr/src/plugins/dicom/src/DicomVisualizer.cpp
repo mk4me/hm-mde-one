@@ -23,9 +23,9 @@ QPixmap dicom::convertToPixmap( DicomImagePtr image )
         const int depth = (int)(image->getDepth());
         char header[32];
         /* create PGM header */
-        sprintf(header, "P6\n%i %i\n255\n", width, height);
+        sprintf(header, "P%i\n%i %i\n255\n", image->isMonochrome() ? 5 : 6, width, height);
         const int offset = strlen(header);
-        const unsigned int length = image->getOutputDataSize() + offset;//width * height + offset;
+        const unsigned int length = image->getOutputDataSize(8) + offset;//width * height + offset;
         /* create output buffer for DicomImage class */
         Uint8 *buffer = new Uint8[length];
         if (buffer != NULL)
@@ -34,7 +34,7 @@ QPixmap dicom::convertToPixmap( DicomImagePtr image )
             OFBitmanipTemplate<Uint8>::copyMem((const Uint8 *)header, buffer, offset);
             if (image->getOutputData((void *)(buffer + offset), length))
             {
-                result.loadFromData((const unsigned char *)buffer, length, "PMM", Qt::AvoidDither);
+                result.loadFromData((const unsigned char *)buffer, length, image->isMonochrome() ? "PGM" : "PMM", Qt::AvoidDither);
             }
             /* delete temporary pixel buffer */
             delete[] buffer;
@@ -66,13 +66,10 @@ plugin::IVisualizer* DicomVisualizer::create() const
 
 plugin::IVisualizer::ISerie * DicomVisualizer::createSerie( const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data )
 {
-    static int test = 0;
     auto serie = new DicomSerie();
     serie->setData(requestedType, data);
     QPixmap pixmap = serie->getPixmap();
     label->setPixmap(pixmap);
-    pixmap.save(QString("E:/testPimxap%1.png").arg(test++));
-
     return serie; 
 }
 
