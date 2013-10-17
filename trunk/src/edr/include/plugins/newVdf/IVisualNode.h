@@ -27,19 +27,16 @@ public:
 public:
 	virtual void setName(const QString & name) = 0;
 	virtual QString getName() const = 0;
-	virtual void setConfigButton(QAbstractButton * button) = 0;
-	virtual void setCloseButton(QAbstractButton * button) = 0;
 
-    virtual void addSelection() = 0;
-    virtual void removeSelection() = 0;
+    virtual void setSelection(bool selected) = 0;
+    virtual void setValid(bool valid) = 0;
 
     virtual df::INode* getModelNode() = 0; 
-	virtual const df::INode* getModelNode() const = 0;
+    virtual const df::INode* getModelNode() const = 0;
+    virtual void setModelNode(df::INode* node) = 0; 
     
     virtual const QIcon& getIcon() const = 0; 
     virtual void setIcon(const QIcon& val) = 0; 
-
-	virtual void setModelNode(df::INode* node) = 0; 
 };
 DEFINE_SMART_POINTERS(IVisualNode);
 

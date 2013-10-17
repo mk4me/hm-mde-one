@@ -28,11 +28,8 @@ public:
     }
 
 	virtual void markNormal() = 0;
-	virtual void markCompatible() = 0;
-	virtual void markIncompatible() = 0;
 	virtual void markConnective() = 0;
 	virtual void markUnconnective() = 0;
-	virtual void markConnected() = 0;
 	virtual int getIndex() const = 0;
 	virtual void setIndex(int val) = 0;
     virtual QPointF getConnectionPosHint() = 0;

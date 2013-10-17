@@ -14,43 +14,17 @@
 #include <QtGui/QWidget>
 #include <corelib/IVisualizer.h>
 #include <plugins/dicom/Dicom.h>
+#include <corelib/AbstractSerie.h>
+
 
 class QLabel;
 class QScrollArea;
+class QPushButton;
+class QSlider;
 
 namespace dicom {
-
-// TODO Przeniesc do corelib
-class AbstractSerie : public plugin::IVisualizer::ISerie
-{
-public:
-    virtual ~AbstractSerie() {}
-
-public:
-    virtual void setName( const std::string & name ) { this->name = name; }
-    virtual const std::string getName() const { return name; }
-    virtual const core::ObjectWrapperConstPtr & getData() const { return data; }
-    virtual const core::TypeInfo & getRequestedDataType() const { return requestedType; }
-    virtual void setData( const core::TypeInfo & requestedDataType, const core::ObjectWrapperConstPtr & data )
-    {
-        this->requestedType = requestedDataType;
-        this->data = data;
-        setupData(data);
-    }
-
-public:
-    virtual void setupData( const core::ObjectWrapperConstPtr & data ) = 0;
-
-protected:
-    //! wrapper przekazany serii
-    core::ObjectWrapperConstPtr data;
-    utils::TypeInfo requestedType;
-    //! nazwa serii
-    std::string name;
-};
-DEFINE_SMART_POINTERS(AbstractSerie);
-
-class DicomSerie : public AbstractSerie, public plugin::IVisualizer::ITimeAvareSerieFeatures
+    
+class DicomSerie : public plugin::AbstractSerie, public plugin::IVisualizer::ITimeAvareSerieFeatures
 {
 public:
     virtual ~DicomSerie() {}
@@ -118,6 +92,10 @@ public://! \return pusty obiekt wizualizatora
 private:
     QLabel* label;
     QScrollArea* scrollArea;
+    QSlider* bar;
+    QPushButton* nextButton;
+    QPushButton* prevButton;
+    QWidget* mainWidget;
 };
 DEFINE_SMART_POINTERS(DicomVisualizer);
 

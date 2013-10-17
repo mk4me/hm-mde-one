@@ -17,6 +17,7 @@
 #include <corelib/IMemoryDataManager.h>
 #include "DataSourceManager.h"
 #include <plugins/c3d/C3DCollections.h>
+#include <boost/chrono/thread_clock.hpp>
 #include <corelib/IMemoryDataManager.h>
 #include "PresetsWidget.h"
 #include "MergedWidget.h"
@@ -131,7 +132,26 @@ void NewVdfService::finalize()
 
 void NewVdfService::update( double time )
 {
+    using namespace boost::chrono;
+    static thread_clock::time_point startTime = thread_clock::now();
+    thread_clock::time_point currentTime = thread_clock::now();  
+    if (duration_cast<milliseconds>(currentTime - startTime).count()  > 1000) {
+        startTime = currentTime;
 
+        // TODO : tutaj tylko tymczasowo
+
+        auto sceneModel = newVdfWidget->getSceneModel();
+        auto nodes = sceneModel->getVisualItems<IVisualNodePtr>();
+        for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+            IVisualNodePtr node = *it;
+            auto modelNode = node->getModelNode();
+            INodeValidation* valid = dynamic_cast<INodeValidation*>(modelNode);
+            if (valid) {
+                node->setValid(valid->isNodeValid());
+            }
+        }
+        
+    }
 }
 
 void NewVdfService::init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager )

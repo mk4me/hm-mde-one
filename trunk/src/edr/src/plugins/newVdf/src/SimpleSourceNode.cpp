@@ -45,34 +45,9 @@ QGraphicsItem * SimpleSourceNode::visualItem() const
     return simpleItem;
 }
 
-void SimpleSourceNode::addSelection()
+void SimpleSourceNode::setSelection(bool selected)
 {
-    simpleItem->setSelected(true);
-}
-
-void SimpleSourceNode::removeSelection()
-{
-    simpleItem->setSelected(false);
-}
-
-void SimpleSourceNode::addHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleSourceNode::removeHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleSourceNode::addCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleSourceNode::removeCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
+    simpleItem->setSelected(selected);
 }
 
 void SimpleSourceNode::removeOutputPin( IVisualOutputPinPtr pin )
@@ -87,4 +62,9 @@ void SimpleSourceNode::setVisualStrategy( IVisualStrategyPtr strategy )
 QString SimpleSourceNode::getName() const
 {
 	return name;
+}
+
+void vdf::SimpleSourceNode::setValid( bool valid )
+{
+    throw std::exception("The method or operation is not implemented.");
 }

@@ -40,6 +40,8 @@ private:
 	QLabel* lowerFrame;
 	QRectF rect;
 	int labelHeight;
+    bool invalid;
+    bool selected;
 };
 
 DEFINE_SMART_POINTERS(DarkNodeStrategy);

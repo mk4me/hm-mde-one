@@ -19,15 +19,6 @@ void StyleSinkNode::addInputPin( IVisualInputPinPtr pin )
     pins.push_back(pin);
 }
 
-void StyleSinkNode::removeInputPin( IVisualInputPinPtr pin )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSinkNode::clearInputPins()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
 
 void StyleSinkNode::setName( const QString & name )
 {
@@ -35,54 +26,24 @@ void StyleSinkNode::setName( const QString & name )
     styleItem->getStrategy()->update();
 }
 
-void StyleSinkNode::setConfigButton( QAbstractButton * button )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSinkNode::setCloseButton( QAbstractButton * button )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
 QGraphicsItem * StyleSinkNode::visualItem() const
 {
     return styleItem;
 }
 
-void StyleSinkNode::addSelection()
+void StyleSinkNode::setSelection(bool selected)
 {
-    styleItem->setSelected(true);
-	strategy->setState(INodeStrategy::Selected);
-    styleItem->setZValue(Z<IVisualItem::Node, true>::value());
+    styleItem->setSelected(selected);
+    if (selected) {
+        strategy->setState(INodeStrategy::Selected);
+        styleItem->setZValue(Z<IVisualItem::Node, true>::value());
+    } else {
+        strategy->setState(INodeStrategy::Normal);
+        styleItem->setZValue(Z<IVisualItem::Node, false>::value());
+    }
 }
 
-void StyleSinkNode::removeSelection()
-{
-    styleItem->setSelected(false);
-	strategy->setState(INodeStrategy::Normal);
-    styleItem->setZValue(Z<IVisualItem::Node, false>::value());
-}
 
-void StyleSinkNode::addHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSinkNode::removeHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSinkNode::addCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSinkNode::removeCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
 
 void StyleSinkNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
@@ -93,6 +54,11 @@ void StyleSinkNode::setVisualStrategy( IVisualStrategyPtr strategy )
 QString StyleSinkNode::getName() const
 {
 	return name;
+}
+
+void vdf::StyleSinkNode::setValid( bool valid )
+{
+    strategy->setState(valid ? INodeStrategy::Valid : INodeStrategy::Invalid);
 }
 
 

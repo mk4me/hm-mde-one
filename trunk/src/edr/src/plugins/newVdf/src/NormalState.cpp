@@ -12,11 +12,7 @@ void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
 	auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>();
 	for (auto it = nodes.begin(); it != nodes.end(); ++it) {
 		IVisualNodePtr node = *it;
-		if (node->visualItem()->isSelected()) {
-			node->addSelection();
-		} else {
-			node->removeSelection();
-		}
+		node->setSelection(node->visualItem()->isSelected());
 	}
     if (list.size() == 1) {
 		IVisualItemPtr item = stateMachine->getSceneModel()->tryGetVisualItem(list.first());

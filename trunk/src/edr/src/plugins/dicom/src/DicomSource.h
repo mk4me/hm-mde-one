@@ -14,10 +14,29 @@
 #include <corelib/ISource.h>
 #include <corelib/Filesystem.h>
 #include <corelib/IHierarchyItem.h>
+#include <corelib/HierarchyHelper.h>
 
 class DcmDirectoryRecord;
 
 namespace dicom {
+
+
+class LayerHelper : public core::HierarchyHelper
+{
+public:
+    LayerHelper(const core::ObjectWrapperConstPtr& dicomImageWrapper);
+    virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series );
+    virtual core::VisualizerPtr createVisualizer( core::IVisualizerManager* manager );
+    virtual std::vector<core::TypeInfo> getTypeInfos() const;
+
+protected:
+    LayerHelper() {}
+
+private:
+    utils::ObjectWrapperConstPtr dicomWrapper;
+
+};
+DEFINE_SMART_POINTERS(LayerHelper);
 
 class DicomSource : public plugin::ISource
 {
@@ -54,7 +73,7 @@ private:
     void handlePatientRecord( DcmDirectoryRecord * patientRecord, core::IHierarchyItemPtr root, std::string basePath );
     void handleStudyRecord( DcmDirectoryRecord * studyRecord, core::IHierarchyItemPtr root, std::string basePath );
     void handleSeriesRecord( DcmDirectoryRecord * seriesRecord, core::IHierarchyItemPtr root, std::string basePath );
-    void handleFileRecord( DcmDirectoryRecord * fileRecord, core::IHierarchyItemPtr root, std::string basePath );
+    void handleFileRecord( DcmDirectoryRecord * fileRecord, core::IHierarchyItemPtr root, std::string basePath, std::vector<LayerHelperPtr>& helpers );
     core::IHierarchyItemPtr transactionPart( const core::Filesystem::Path &path );
 
 private:

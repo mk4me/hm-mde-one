@@ -16,25 +16,10 @@ SimpleOutputPinNode::~SimpleOutputPinNode()
 }
 
 
-void SimpleOutputPinNode::markIncomplete()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
 void SimpleOutputPinNode::markNormal()
 {
 	item->setColor(QColor(180, 180, 180));
 	item->update();
-}
-
-void SimpleOutputPinNode::markCompatible()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleOutputPinNode::markIncompatible()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::markConnective()
@@ -49,44 +34,9 @@ void SimpleOutputPinNode::markUnconnective()
 	item->update();
 }
 
-void SimpleOutputPinNode::markConnected()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
 QGraphicsItem * SimpleOutputPinNode::visualItem() const
 {
     return item;
-}
-
-void SimpleOutputPinNode::addSelection()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleOutputPinNode::removeSelection()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleOutputPinNode::addHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleOutputPinNode::removeHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleOutputPinNode::addCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleOutputPinNode::removeCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void SimpleOutputPinNode::setVisualStrategy( IVisualStrategyPtr strategy )

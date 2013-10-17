@@ -28,19 +28,10 @@ public:
 
 public:
     virtual void addOutputPin( IVisualOutputPinPtr pin );
-    virtual void removeOutputPin( IVisualOutputPinPtr pin );
-    virtual void clearOutputPins();
 	virtual QString getName() const;
     virtual void setName( const QString & name );
-    virtual void setConfigButton( QAbstractButton * button );
-    virtual void setCloseButton( QAbstractButton * button );
     virtual QGraphicsItem * visualItem() const;
-    virtual void addSelection();
-    virtual void removeSelection();
-    virtual void addHover();
-    virtual void removeHover();
-    virtual void addCollision();
-    virtual void removeCollision();
+    virtual void setSelection(bool selected);
 
 	virtual int getNumOutputPins() const { return pins.size(); }
 	virtual IVisualOutputPinPtr getOutputPin(int no) { return pins[no]; }
@@ -56,6 +47,8 @@ public:
     virtual void setModelNode(df::INode* node) { _node.reset(node); }
     virtual Type getType() const { return IVisualItem::SourceNode; }
     virtual bool isType(Type t) const { return t == IVisualItem::SourceNode || t == IVisualItem::Node; }
+
+    virtual void setValid( bool valid );
 
 
 private:

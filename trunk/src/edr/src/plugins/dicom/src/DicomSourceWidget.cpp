@@ -1,4 +1,6 @@
+#include "DicomPCH.h"
 #include "DicomSourceWidget.h"
+#include "ui_DicomSource.h"
 #include <QtGui/QWidget>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
@@ -17,9 +19,14 @@
 using namespace dicom;
 
 DicomSourceWidget::DicomSourceWidget( DicomSource* source ) :
-    dicomSource(source)
+    dicomSource(source),
+    ui(new Ui::DicomSource)
 {
-    QLayout* layout = new QVBoxLayout();
+    ui->setupUi(this);
+    connect(ui->openFileButton, SIGNAL(clicked()), this, SLOT(onLoadFiles()));
+    connect(ui->loadDirectoryButton, SIGNAL(clicked()), this, SLOT(onLoadDirectory()));
+
+    /*QLayout* layout = new QVBoxLayout();
     this->setLayout(layout);
     QPushButton* loadFile = new QPushButton();
     loadFile->setText(tr("Load files"));
@@ -29,7 +36,7 @@ DicomSourceWidget::DicomSourceWidget( DicomSource* source ) :
     QPushButton* loadDictionary = new QPushButton();
     loadDictionary->setText(tr("Select directory to load"));
     layout->addWidget(loadDictionary);
-    connect(loadDictionary, SIGNAL(clicked()), this, SLOT(onLoadDirectory()));
+    connect(loadDictionary, SIGNAL(clicked()), this, SLOT(onLoadDirectory()));*/
 }
 
 void DicomSourceWidget::onLoadFiles()

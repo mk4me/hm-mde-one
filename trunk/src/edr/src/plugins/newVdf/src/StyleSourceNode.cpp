@@ -21,25 +21,10 @@ void StyleSourceNode::addOutputPin( IVisualOutputPinPtr pin )
 }
 
 
-void StyleSourceNode::clearOutputPins()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
 void StyleSourceNode::setName( const QString & name )
 {
 	this->name = name;
     styleItem->getStrategy()->update();
-}
-
-void StyleSourceNode::setConfigButton( QAbstractButton * button )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSourceNode::setCloseButton( QAbstractButton * button )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * StyleSourceNode::visualItem() const
@@ -47,43 +32,16 @@ QGraphicsItem * StyleSourceNode::visualItem() const
     return styleItem;
 }
 
-void StyleSourceNode::addSelection()
+void StyleSourceNode::setSelection(bool selected)
 {
-    styleItem->setSelected(true);
-	strategy->setState(INodeStrategy::Selected);
-    styleItem->setZValue(Z<IVisualItem::Node, true>::value());
-}
-
-void StyleSourceNode::removeSelection()
-{
-    styleItem->setSelected(false);
-	strategy->setState(INodeStrategy::Normal);
-    styleItem->setZValue(Z<IVisualItem::Node, false>::value());
-}
-
-void StyleSourceNode::addHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSourceNode::removeHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSourceNode::addCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSourceNode::removeCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleSourceNode::removeOutputPin( IVisualOutputPinPtr pin )
-{
-	UTILS_ASSERT(false);
+    styleItem->setSelected(selected);
+    if (selected) {
+        strategy->setState(INodeStrategy::Selected);
+        styleItem->setZValue(Z<IVisualItem::Node, true>::value());
+    } else {
+        strategy->setState(INodeStrategy::Normal);
+        styleItem->setZValue(Z<IVisualItem::Node, false>::value());
+    }
 }
 
 void StyleSourceNode::setVisualStrategy( IVisualStrategyPtr strategy )
@@ -96,4 +54,9 @@ void StyleSourceNode::setVisualStrategy( IVisualStrategyPtr strategy )
 QString StyleSourceNode::getName() const 
 {
 	return name;
+}
+
+void vdf::StyleSourceNode::setValid( bool valid )
+{
+    strategy->setState(valid ? INodeStrategy::Valid : INodeStrategy::Invalid);
 }

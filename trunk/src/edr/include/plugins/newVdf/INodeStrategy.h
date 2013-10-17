@@ -20,7 +20,9 @@ class INodeStrategy : public IVisualStrategy
 public:
 	enum State {
 		Normal,
-		Selected
+		Selected,
+        Invalid,
+        Valid
 	};
 	virtual void setState(State state) = 0;
 	virtual void setNode(utils::weak_ptr<IVisualNode> item) = 0;

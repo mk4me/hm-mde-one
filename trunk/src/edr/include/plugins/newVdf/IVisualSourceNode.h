@@ -21,8 +21,6 @@ class IVisualSourceNode : public virtual IVisualNode
 {
 public:
     virtual void addOutputPin(IVisualOutputPinPtr pin) = 0;
-    virtual void removeOutputPin(IVisualOutputPinPtr pin) = 0;
-	virtual void clearOutputPins() = 0;
 	virtual int getNumOutputPins() const = 0;
 	virtual IVisualOutputPinPtr getOutputPin(int no) = 0;
 };

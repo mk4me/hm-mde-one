@@ -3,6 +3,9 @@
 #include "DicomVisualizer.h"
 #include <QtGui/QPixmap>
 #include <QtGui/QLabel>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QSlider>
+#include <QtGui/QPushButton>
 #include <QtGui/QScrollArea>
 #include <dcmtk/ofstd/ofbmanip.h>
 #include <dcmtk/dcmimage/diregist.h>
@@ -47,11 +50,26 @@ QPixmap dicom::convertToPixmap( DicomImagePtr image )
 
 DicomVisualizer::DicomVisualizer()
 {
+    mainWidget = new QWidget();
+    mainWidget->setLayout(new QVBoxLayout());
+
     scrollArea = new QScrollArea();
     label = new QLabel();
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(label);
+
+    QWidget* cont = new QWidget();
+    cont->setLayout(new QHBoxLayout());
+    nextButton = new QPushButton(">");
+    prevButton = new QPushButton("<");
+    bar = new QSlider(Qt::Horizontal);
+    cont->layout()->addWidget(bar);
+    cont->layout()->addWidget(prevButton);
+    cont->layout()->addWidget(nextButton);
+
+    mainWidget->layout()->addWidget(scrollArea);
+    mainWidget->layout()->addWidget(cont);
 }
 
 DicomVisualizer::~DicomVisualizer()
@@ -95,7 +113,7 @@ const plugin::IVisualizer::ISerie * DicomVisualizer::getActiveSerie() const
 
 QWidget* DicomVisualizer::createWidget()
 {
-    return scrollArea;
+    return mainWidget;
 }
 
 QIcon* DicomVisualizer::createIcon()

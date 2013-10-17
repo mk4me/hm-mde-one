@@ -20,6 +20,13 @@ HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
 {
 }
 
+core::HierarchyDataItem::HierarchyDataItem( const QIcon& icon, const QString& name, const QString& description ) :
+    HierarchyItem(name, description, icon)
+{
+    // helpery i data pozostaja niewypelnione danymi
+    // obiekt taki nie jest gotowy do uzycia!
+}
+
 
 HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
     const QIcon& icon, const QString& name, const QString& description) :
@@ -82,3 +89,4 @@ core::IHierarchyItemPtr core::HierarchyDataItem::shallowCopy(bool withChildren) 
     }
     return hi;
 }
+

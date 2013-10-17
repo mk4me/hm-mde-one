@@ -27,20 +27,10 @@ public:
     virtual ~SimpleOutputPinNode();
 
 public:
-    virtual void markIncomplete();
     virtual void markNormal();
-    virtual void markCompatible();
-    virtual void markIncompatible();
     virtual void markConnective();
     virtual void markUnconnective();
-    virtual void markConnected();
     virtual QGraphicsItem * visualItem() const;
-    virtual void addSelection();
-    virtual void removeSelection();
-    virtual void addHover();
-    virtual void removeHover();
-    virtual void addCollision();
-    virtual void removeCollision();
 	virtual int getIndex() const { UTILS_ASSERT(index != -1); return index; }
 	virtual void setIndex(int val) { index = val; }
 	IVisualNodeWeakPtr getParent() const { return parent; }

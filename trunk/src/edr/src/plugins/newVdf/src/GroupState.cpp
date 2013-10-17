@@ -16,7 +16,7 @@ void GroupState::begin( ISceneStateConstPtr lastState )
 	startPos = PointPtr();
     auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>();
     for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-        (*it)->removeSelection();
+        (*it)->setSelection(false);
     }
 
     auto connections = stateMachine->getSceneModel()->getVisualItems<IVisualConnectionPtr>();
@@ -72,7 +72,7 @@ void GroupSelectedState::begin( ISceneStateConstPtr lastState )
 	UTILS_ASSERT(groupState == lastState);
 	selectedNodes = groupState->getSelectedNodes();
 	for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it) {
-		(*it)->addSelection();
+		(*it)->setSelection(true);
 	}
 }
 
@@ -99,7 +99,7 @@ bool vdf::GroupState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
 		selectedNodes = stateMachine->getScene()->getSceneModel()->getVisualItems<IVisualNodePtr>(selected);
 		if (!selectedNodes.empty()) {
 			for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it) {
-				(*it)->addSelection();
+				(*it)->setSelection(true);
 			}
 		}
 	} 

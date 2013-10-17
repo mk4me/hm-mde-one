@@ -21,6 +21,10 @@ namespace core
     class IMemoryDataManager;
 }
 
+namespace Ui {
+    class DicomSource;
+}
+
 namespace dicom {
 
     class DicomSource;
@@ -37,7 +41,8 @@ namespace dicom {
         void onLoadDirectory();
     
     private:
-        DicomSource *dicomSource;
+        DicomSource* dicomSource;
+        Ui::DicomSource* ui;
     };
 }
 

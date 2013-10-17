@@ -56,35 +56,11 @@ QGraphicsItem * SimpleProcessingNode::visualItem() const
     return simpleItem;
 }
 
-void SimpleProcessingNode::addSelection()
+void SimpleProcessingNode::setSelection(bool selected)
 {
-    simpleItem->setSelected(true);
+    simpleItem->setSelected(selected);
 }
 
-void SimpleProcessingNode::removeSelection()
-{
-	simpleItem->setSelected(false);
-}
-
-void SimpleProcessingNode::addHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleProcessingNode::removeHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleProcessingNode::addCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleProcessingNode::removeCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
 
 void SimpleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
 {
@@ -103,5 +79,10 @@ void SimpleProcessingNode::removeOutputPin( IVisualOutputPinPtr pin )
 void SimpleProcessingNode::clearOutputPins()
 {
     throw std::runtime_error("The method or operation is not implemented.");
+}
+
+void vdf::SimpleProcessingNode::setValid( bool valid )
+{
+    throw std::exception("The method or operation is not implemented.");
 }
 

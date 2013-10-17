@@ -23,15 +23,6 @@ void StyleProcessingNode::addInputPin( IVisualInputPinPtr pin )
     inputPins.push_back(pin);
 }
 
-void StyleProcessingNode::removeInputPin( IVisualInputPinPtr pin )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleProcessingNode::clearInputPins()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
 
 void StyleProcessingNode::setName( const QString & name )
 {
@@ -39,54 +30,24 @@ void StyleProcessingNode::setName( const QString & name )
 	this->styleItem->getStrategy()->update();
 }
 
-void StyleProcessingNode::setConfigButton( QAbstractButton * button )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleProcessingNode::setCloseButton( QAbstractButton * button )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
 
 QGraphicsItem * StyleProcessingNode::visualItem() const
 {
     return styleItem;
 }
 
-void StyleProcessingNode::addSelection()
+void StyleProcessingNode::setSelection(bool selected)
 {
-	strategy->setState(INodeStrategy::Selected);
-    styleItem->setSelected(true);
-    styleItem->setZValue(Z<IVisualItem::Node, true>::value());
+    styleItem->setSelected(selected);
+    if (selected) {
+        strategy->setState(INodeStrategy::Selected);
+        styleItem->setZValue(Z<IVisualItem::Node, true>::value());
+    } else {
+        strategy->setState(INodeStrategy::Normal);
+        styleItem->setZValue(Z<IVisualItem::Node, false>::value());
+    }
 }
 
-void StyleProcessingNode::removeSelection()
-{
-	strategy->setState(INodeStrategy::Normal);
-    styleItem->setSelected(false);
-    styleItem->setZValue(Z<IVisualItem::Node, false>::value());
-}
-
-void StyleProcessingNode::addHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleProcessingNode::removeHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleProcessingNode::addCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleProcessingNode::removeCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
 
 void StyleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
 {
@@ -96,16 +57,6 @@ void StyleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
 	pin->visualItem()->setPos(nodeStr->getPinPosition(outputPins.size(), false));
 
     outputPins.push_back(pin);
-}
-
-void StyleProcessingNode::removeOutputPin( IVisualOutputPinPtr pin )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void StyleProcessingNode::clearOutputPins()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 void StyleProcessingNode::setVisualStrategy( IVisualStrategyPtr strategy )
@@ -118,5 +69,10 @@ void StyleProcessingNode::setVisualStrategy( IVisualStrategyPtr strategy )
 QString StyleProcessingNode::getName() const 
 {
 	return name;
+}
+
+void vdf::StyleProcessingNode::setValid( bool valid )
+{
+    strategy->setState(valid ? INodeStrategy::Valid : INodeStrategy::Invalid);
 }
 

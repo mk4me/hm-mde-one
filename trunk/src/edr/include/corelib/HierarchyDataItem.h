@@ -42,6 +42,12 @@ namespace core {
             const QIcon& icon, const QString& name, const QString& description, std::list<HierarchyHelperPtr> helpers);
 
         //! 
+        //! \param icon 
+        //! \param name 
+        //! \param description 
+        HierarchyDataItem(const QIcon& icon, const QString& name, const QString& description);
+        
+        //! 
         //! \param wrapper 
         //! \param icon 
         //! \param name 

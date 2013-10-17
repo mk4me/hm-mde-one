@@ -12,7 +12,9 @@ void DarkNodeStrategy::setNode( IVisualNodeWeakPtr item )
 }
 
 DarkNodeStrategy::DarkNodeStrategy() : 
-	labelHeight(24)
+	labelHeight(24),
+    invalid(false),
+    selected(false)
 {
 	label = new QLabel();
 	label->setStyleSheet(
@@ -104,17 +106,37 @@ void DarkNodeStrategy::setState( State state )
 
 void DarkNodeStrategy::setContainerStyle(INodeStrategy::State state)
 {
+    // TODO wproadzic flagi do obslugi stanow wezla
 	QString s;
 	switch(state) {
+    case INodeStrategy::Valid:
+        invalid = false;
+        break;
 	case INodeStrategy::Normal:
-		s = "border: 0px;";
+        selected = false;
+		//s = "border: 0px;";
 		break;
 	case INodeStrategy::Selected:
-		s = "border: 2px solid rgb(128, 213, 220);";
+        selected = true;
+		//s = "border: 2px solid rgb(128, 213, 220);";
 		break;
+    case INodeStrategy::Invalid:
+        //s = "border: 2px solid rgb(255, 213, 220);";
+        invalid = true;
+        break;
 	default:
 		UTILS_ASSERT(false);
 	}
+    if (invalid && selected) {
+        s = "border: 2px solid rgb(255, 110, 0);";
+    } else if (invalid) {
+        s = "border: 2px solid rgb(200, 0, 0);";
+    } else if (selected) {
+        s = "border: 2px solid rgb(128, 213, 220);";
+    } else {
+        s = "border: 0px;";
+    }
+
 	container->setStyleSheet(QString(
 		"QFrame{								"
 		"background-color: rgb(104, 104, 104);	"

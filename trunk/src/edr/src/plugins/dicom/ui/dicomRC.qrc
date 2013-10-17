@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="dicom">
+    <file alias="dicomLogo.png">../resources/embedded/dicomLogo.png</file>
+  </qresource>
+</RCC>

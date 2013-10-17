@@ -551,7 +551,7 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
         return multi;
     } 
 
-    UTILS_ASSERT(false);
+    //UTILS_ASSERT(false);
     return NewMultiserieHelperPtr();
 }
 

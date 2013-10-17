@@ -264,7 +264,7 @@ private:
     SchemeDialog* schemeDialog;
     //! kolecja z seriami danych podpiętymi pod wizualizator
     std::vector<KinematicSerie*> series;
-
+    //! nr aktywnej serii
 	int currentSerie;
     //! spinbox pokazujący translacje X
     LabeledDoubleSpinBox * translateSpinWidgetX;

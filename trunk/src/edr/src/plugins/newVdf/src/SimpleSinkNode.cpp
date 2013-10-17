@@ -18,30 +18,10 @@ void SimpleSinkNode::addInputPin( IVisualInputPinPtr pin )
     simpleItem->setSize(calculateNodeSize(pins.size()));
 }
 
-void SimpleSinkNode::removeInputPin( IVisualInputPinPtr pin )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleSinkNode::clearInputPins()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
 void SimpleSinkNode::setName( const QString & name )
 {
 	this->name = name;
     simpleItem->setText(name);
-}
-
-void SimpleSinkNode::setConfigButton( QAbstractButton * button )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleSinkNode::setCloseButton( QAbstractButton * button )
-{
-    throw std::runtime_error("The method or operation is not implemented.");
 }
 
 QGraphicsItem * SimpleSinkNode::visualItem() const
@@ -49,35 +29,12 @@ QGraphicsItem * SimpleSinkNode::visualItem() const
     return simpleItem;
 }
 
-void SimpleSinkNode::addSelection()
+void SimpleSinkNode::setSelection(bool selected)
 {
-    simpleItem->setSelected(true);
+    simpleItem->setSelected(selected);
 }
 
-void SimpleSinkNode::removeSelection()
-{
-    simpleItem->setSelected(false);
-}
 
-void SimpleSinkNode::addHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleSinkNode::removeHover()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleSinkNode::addCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
-
-void SimpleSinkNode::removeCollision()
-{
-    throw std::runtime_error("The method or operation is not implemented.");
-}
 
 void SimpleSinkNode::setVisualStrategy( IVisualStrategyPtr strategy )
 {
@@ -87,6 +44,11 @@ void SimpleSinkNode::setVisualStrategy( IVisualStrategyPtr strategy )
 QString SimpleSinkNode::getName() const
 {
 	return name;
+}
+
+void vdf::SimpleSinkNode::setValid( bool valid )
+{
+
 }
 
 

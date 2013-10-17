@@ -20,9 +20,6 @@ class IVisualSinkNode : public virtual IVisualNode
 {
 public:
     virtual void addInputPin(IVisualInputPinPtr pin) = 0;
-    virtual void removeInputPin(IVisualInputPinPtr pin) = 0;
-	virtual void clearInputPins() = 0;
-
 	virtual int getNumInputPins() const = 0;
 	virtual IVisualInputPinPtr getInputPin(int no) = 0;
 };
