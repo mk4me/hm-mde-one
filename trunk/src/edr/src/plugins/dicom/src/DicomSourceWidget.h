@@ -39,6 +39,11 @@ namespace dicom {
     private slots:
         void onLoadFiles();
         void onLoadDirectory();
+
+        void onOpenProject();
+        void onImport();
+        void onSelectImportDir();
+        void onSelectSaveDir();
     
     private:
         DicomSource* dicomSource;

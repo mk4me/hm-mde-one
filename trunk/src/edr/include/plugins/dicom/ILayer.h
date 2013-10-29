@@ -20,6 +20,7 @@ public:
     // TODO: Zmienic (faktyczna obsluga warstw)
     virtual QPixmap render() const = 0; 
     virtual QString getName() const = 0;
+
 };
 DEFINE_SMART_POINTERS(ILayer);
 

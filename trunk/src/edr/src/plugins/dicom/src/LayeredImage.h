@@ -34,4 +34,5 @@ DEFINE_SMART_POINTERS(LayeredImage);
 
 }
 
+DEFINE_WRAPPER_INHERITANCE(dicom::LayeredImage, dicom::ILayeredImage);
 #endif

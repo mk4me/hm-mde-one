@@ -28,6 +28,8 @@ SET_PROJECTS_GROUP("view")
 ADD_PROJECT(old_view "core;coreui;plugin_newTimeline;OPENGL;c3dlib")
 #ADD_PROJECT(hmm_view "core;corelib;coreui;plugin_dfElements;plugin_newVdf;plugin_c3d;plugin_newTimeline;plugin_video;plugin_kinematic;plugin_subject;plugin_hmm")
 ADD_PROJECT(mde_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
+
+#ADD_PROJECT(medusa_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
 #ADD_PROJECT(console_view "BOOST;utils;QT;TINYXML;core;corelib;coreui;plugin_newTimeline")
 
 BEGIN_INSTALLER("MDE" "MDE")

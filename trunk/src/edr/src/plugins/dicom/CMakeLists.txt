@@ -5,6 +5,7 @@ SET_PUBLIC_HEADERS (
 	Dicom.h
 	ILayer.h
 	ILayeredImage.h
+	IDicomInternalStruct.h
 )
 
 SET_PRIVATE_HEADERS (
@@ -13,10 +14,13 @@ SET_PRIVATE_HEADERS (
 	DicomVisualizer.h
 	DicomSource.h
 	DicomSourceWidget.h
+	DicomImporter.h
+	DicomInternalStruct.h
 	BackgroundLayer.h
 	LayeredImage.h
 	LayeredImageVisualizer.h
 	LayeredImageVisualizerView.h
+	PngParser.h
 )
 
 SET_SOURCE_FILES(
@@ -25,10 +29,13 @@ SET_SOURCE_FILES(
 	DicomVisualizer.cpp
 	DicomSource.cpp
 	DicomSourceWidget.cpp
+	DicomInternalStruct.cpp
+	DicomImporter.cpp
 	BackgroundLayer.cpp
 	LayeredImage.cpp
 	LayeredImageVisualizer.cpp
 	LayeredImageVisualizerView.cpp
+	PngParser.cpp
 	DicomPCH.cpp
 )
 

@@ -616,15 +616,21 @@ void FileDataManager::rawGetFiles(Files & files) const
 void FileDataManager::rawGetObjects(const Filesystem::Path & file, ConstObjectsList & objects) const
 {
 	auto it = objectsByFiles.find(file);
-
-	objects.insert(objects.end(), it->second.begin(), it->second.end());
+    if (it != objectsByFiles.end()) {
+	    objects.insert(objects.end(), it->second.begin(), it->second.end());
+    } else {
+        throw std::runtime_error("File not managed");
+    }
 }
 
 void FileDataManager::rawGetObjects(const Filesystem::Path & file, ObjectsList & objects)
 {
 	auto it = objectsByFiles.find(file);
-
-	objects.insert(objects.end(), it->second.begin(), it->second.end());
+    if (it != objectsByFiles.end()) {
+	    objects.insert(objects.end(), it->second.begin(), it->second.end());
+    } else {
+        throw std::runtime_error("File not managed");
+    }
 }
 
 void FileDataManager::rawGetObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const

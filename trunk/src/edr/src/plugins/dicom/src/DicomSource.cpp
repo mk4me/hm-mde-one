@@ -12,6 +12,7 @@
 #include "LayeredImage.h"
 #include "corelib/IVisualizerManager.h"
 #include "LayeredImageVisualizer.h"
+#include "DicomImporter.h"
 
 using namespace dicom;
 
@@ -131,7 +132,7 @@ void DicomSource::getOfferedTypes( core::TypeInfoList & offeredTypes ) const
 
 void DicomSource::addFile( const core::Filesystem::Path& path )
 {
-    auto root = transactionPart(path);
+    auto root = transactionPart<core::WrappedItemHelper>(path);
     auto hierarchyTransaction = memoryDM->hierarchyTransaction();
     hierarchyTransaction->addRoot(root);
 }
@@ -212,7 +213,7 @@ void DicomSource::handleFileRecord( DcmDirectoryRecord * fileRecord, core::IHier
                 //utils::ObjectWrapperPtr wrapper;
                 ////HierarchyDataItemPtr dataItem = utils::make_shared<HierarchyDataItem>(wrapper, QString());                
                 //core::HierarchyItemPtr dataItem = utils::make_shared<core::HierarchyItem>(QString("image"), QString());                
-                auto dataItem = transactionPart(currentPath);
+                auto dataItem = transactionPart<core::WrappedItemHelper>(currentPath);
                 core::HierarchyDataItemPtr di = utils::dynamic_pointer_cast<core::HierarchyDataItem>(dataItem); 
                 if (di) {
                     LayerHelperPtr helper = utils::make_shared<LayerHelper>(di->getData());
@@ -306,6 +307,7 @@ void DicomSource::handlePatientRecord( DcmDirectoryRecord * patientRecord, core:
     }
 }
 
+template <class Helper>
 core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Path &path )
 {
     auto transaction = fileDM->transaction();
@@ -313,20 +315,82 @@ core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Pa
     core::ConstObjectsList oList;
     transaction->getObjects(path, oList);
 
-    QString filename = QString::fromStdString(path.filename().string());
+    QString filename = QString::fromStdString(path.stem().string());
     QString desc = QString::fromStdString(path.string());
 
     if (oList.size() == 1) {
-        return utils::make_shared<core::HierarchyDataItem>(*oList.begin(), QIcon(), filename, desc);
+        return utils::make_shared<core::HierarchyDataItem>(*oList.begin(), QIcon(), filename, desc, utils::make_shared<Helper>(*oList.begin()));
     }
 
     core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(filename, desc, QIcon());
     for (auto it = oList.begin(); it != oList.end(); ++it) {
-        core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(*it, desc);
+        core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(*it, QIcon(), QString((*it)->getClassName().c_str()), desc,  utils::make_shared<Helper>(*it));
         root->appendChild(item);
     }
 
     return root;
+}
+
+void dicom::DicomSource::import( const core::Filesystem::Path& from, const core::Filesystem::Path& to )
+{
+    DicomImporter importer;
+    auto inter = importer.import(from);
+    std::vector<DicomInternalStructPtr> splits = importer.split(inter);
+
+    DicomSaver saver;
+    for (auto it = splits.begin(); it != splits.end(); ++it) {
+        importer.convertImages(*it, from, to);
+        saver.save(to, *it);
+    }
+}
+
+void dicom::DicomSource::openInternalDataMainFile( core::Filesystem::Path path )
+{
+    DicomLoader loader;
+    auto inter = loader.load(path);
+    int count = inter->getNumPatients();
+    for (int i = 0; i < count; ++i) {
+        auto patient = inter->getPatient(i);
+        for (auto itSession = patient->sessions.begin(); itSession != patient->sessions.end(); ++itSession) {
+            QString name((*itSession)->getOutputDirectory().c_str());
+
+            core::HierarchyDataItemPtr sessionItem = utils::make_shared<core::HierarchyDataItem>(QIcon(), name, QString());
+            std::vector<LayerHelperPtr> helpers;
+
+            for (auto itSerie = (*itSession)->series.begin(); itSerie !=  (*itSession)->series.end(); ++itSerie) {
+                for (auto itImage = (*itSerie)->images.begin(); itImage != (*itSerie)->images.end(); ++itImage) {
+                    auto dataItem = transactionPart<LayerHelper>(path.parent_path() / (*itImage)->imageFile);
+                    core::HierarchyDataItemPtr di = utils::dynamic_pointer_cast<core::HierarchyDataItem>(dataItem); 
+                    if (di) {
+                        auto itemHelpers = di->getHelpers();
+                        for (auto itHelper = itemHelpers.begin(); itHelper != itemHelpers.end(); ++itHelper) {
+                            LayerHelperPtr helper = utils::dynamic_pointer_cast<LayerHelper>(*itHelper);
+                            if (helper) {
+                                helpers.push_back(helper);
+                            }
+                        }
+                        //helpers.insert(helpers.end(), di->getHelpers().begin(), di->getHelpers().end());
+                        //LayerHelperPtr helper = utils::make_shared<LayerHelper>(di->getData());
+                        //helpers.push_back(helper);
+                        //di->addHelper(helper);
+                    }
+                    sessionItem->appendChild(dataItem);
+
+                }
+            }
+            
+            int childrenCount = sessionItem->getNumChildren();
+            if (childrenCount > 0) {  
+                MultiHelperPtr multi = utils::make_shared<MultiHelper>(helpers);
+                sessionItem->addHelper(multi);
+            }
+
+            if (sessionItem->getNumChildren()) {
+                auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+                hierarchyTransaction->addRoot(sessionItem);
+            }
+        }
+    }
 }
 
 std::vector<core::TypeInfo> dicom::LayerHelper::getTypeInfos() const
@@ -346,17 +410,23 @@ core::VisualizerPtr dicom::LayerHelper::createVisualizer( core::IVisualizerManag
 
 void dicom::LayerHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
 {
-    DicomImageConstPtr dcm = dicomWrapper->get();
-    utils::ObjectWrapperPtr layered = utils::ObjectWrapper::create<ILayeredImage>();
-    ILayeredImagePtr img = utils::make_shared<LayeredImage>(convertToPixmap(utils::const_pointer_cast<DicomImage>(dcm)));
-    layered->set(img);
+    utils::ObjectWrapperConstPtr layered;
+    if (imageWrapper->isSupported(typeid(DicomImage))) {
+        DicomImageConstPtr dcm = imageWrapper->get();
+        utils::ObjectWrapperPtr lay = utils::ObjectWrapper::create<ILayeredImage>();
+        ILayeredImagePtr img = utils::make_shared<LayeredImage>(convertToPixmap(utils::const_pointer_cast<DicomImage>(dcm)));
+        lay->set(img);
+        layered = lay;
+    } else {
+        layered = imageWrapper;
+    }
     auto serie = visualizer->createSerie(layered->getTypeInfo(), layered);
     serie->serie()->setName(path.toStdString());
     series.push_back(serie);
 }
 
-dicom::LayerHelper::LayerHelper( const core::ObjectWrapperConstPtr& dicomImageWrapper ) :
-dicomWrapper(dicomImageWrapper)
+dicom::LayerHelper::LayerHelper( const core::ObjectWrapperConstPtr& imgWrapper ) :
+imageWrapper(imgWrapper)
 {
 
 }

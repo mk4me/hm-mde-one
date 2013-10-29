@@ -24,7 +24,7 @@ namespace dicom {
 class LayerHelper : public core::HierarchyHelper
 {
 public:
-    LayerHelper(const core::ObjectWrapperConstPtr& dicomImageWrapper);
+    LayerHelper(const core::ObjectWrapperConstPtr& imgWrapper);
     virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series );
     virtual core::VisualizerPtr createVisualizer( core::IVisualizerManager* manager );
     virtual std::vector<core::TypeInfo> getTypeInfos() const;
@@ -33,7 +33,7 @@ protected:
     LayerHelper() {}
 
 private:
-    utils::ObjectWrapperConstPtr dicomWrapper;
+    utils::ObjectWrapperConstPtr imageWrapper;
 
 };
 DEFINE_SMART_POINTERS(LayerHelper);
@@ -65,17 +65,17 @@ public:
     virtual void getOfferedTypes( core::TypeInfoList & offeredTypes ) const;
     void addFile( const core::Filesystem::Path& path );
 
-    
-
     void loadDirFile(const core::Filesystem::Path& dirPath );
+    void import( const core::Filesystem::Path& from, const core::Filesystem::Path& to );
+    void openInternalDataMainFile( core::Filesystem::Path path );
 
 private:
     void handlePatientRecord( DcmDirectoryRecord * patientRecord, core::IHierarchyItemPtr root, std::string basePath );
     void handleStudyRecord( DcmDirectoryRecord * studyRecord, core::IHierarchyItemPtr root, std::string basePath );
     void handleSeriesRecord( DcmDirectoryRecord * seriesRecord, core::IHierarchyItemPtr root, std::string basePath );
     void handleFileRecord( DcmDirectoryRecord * fileRecord, core::IHierarchyItemPtr root, std::string basePath, std::vector<LayerHelperPtr>& helpers );
+    template <class Helper>
     core::IHierarchyItemPtr transactionPart( const core::Filesystem::Path &path );
-
 private:
     core::IMemoryDataManager* memoryDM;
     core::IFileDataManager* fileDM;
