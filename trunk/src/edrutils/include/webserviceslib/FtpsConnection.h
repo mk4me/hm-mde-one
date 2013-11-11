@@ -15,12 +15,12 @@ interfejs ISendable.
 
 namespace webservices
 {
-    //! Forward declaration pimpl
-    class FtpsConnectionImpl;
-
     //! Klasa realizująca połaczenia FTP i FTPS
     class FtpsConnection : public IFtpsConnection
     {
+	private:
+		//! Forward declaration pimpl
+		class FtpsConnectionImpl;
 
     private:
         //! Obiekt implementujący funkcjonalność

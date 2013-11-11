@@ -21,7 +21,7 @@ Date::Date() : year(0), month(0), day(0)
 
 }
 
-Date::Date(int year, int month, int day)
+Date::Date(int year, const unsigned char month, const unsigned char day)
     : year(year), month(month), day(day)
 {
     UTILS_ASSERT((month > 0 && month < 13), "Błędny miesiąc");
@@ -38,14 +38,14 @@ void Date::setYear(int year)
     this->year = year;
 }
 
-void Date::setMonth(int month)
+void Date::setMonth(const unsigned char month)
 {
     if(month > 12 || month < 1)
         throw std::runtime_error("Incorrect date format.");
     this->month = month;
 }
 
-void Date::setDay(int day)
+void Date::setDay(const unsigned char day)
 {
     if(day > 31 || day < 1)
         throw std::runtime_error("Incorrect date format.");
@@ -57,12 +57,12 @@ const int Date::getYear() const
     return year;
 }
 
-const int Date::getMonth() const
+const unsigned char Date::getMonth() const
 {
     return month;
 }
 
-const int Date::getDay() const
+const unsigned char Date::getDay() const
 {
     return day;
 }
@@ -164,7 +164,9 @@ Time::Time(const Time & time) : hour(time.hour), minutes(time.minutes), seconds(
 
 }
 
-Time::Time(int hour, int minutes, int seconds) : hour(hour), minutes(minutes), seconds(seconds)
+Time::Time(const unsigned char hour,
+	const unsigned char minutes,
+	const unsigned char seconds) : hour(hour), minutes(minutes), seconds(seconds)
 {
     UTILS_ASSERT((hour > -1), "Błędna godzina");
     UTILS_ASSERT((minutes > -1 && minutes < 60), "Błędne minuty");
@@ -192,38 +194,38 @@ const Time Time::now()
     return ret;
 }
 
-void Time::setHour(int hour)
+void Time::setHour(const unsigned char hour)
 {
     if(hour > 23 || hour < 0)
         throw std::runtime_error("Incorrect date format.");
     this->hour = hour;
 }
 
-void Time::setMinutes(int minutes)
+void Time::setMinutes(const unsigned char minutes)
 {
     if(minutes > 59 || minutes < 0)
         throw std::runtime_error("Incorrect date format.");
     this->minutes = minutes;
 }
 
-void Time::setSeconds(int seconds)
+void Time::setSeconds(const unsigned char seconds)
 {
     if(seconds > 59 || seconds < 0)
         throw std::runtime_error("Incorrect date format.");
     this->seconds = seconds;
 }
 
-const int Time::getHour() const
+const unsigned char Time::getHour() const
 {
     return hour;
 }
 
-const int Time::getMinutes() const
+const unsigned char Time::getMinutes() const
 {
     return minutes;
 }
 
-const int Time::getSeconds() const
+const unsigned char Time::getSeconds() const
 {
     return seconds;
 }
@@ -303,7 +305,9 @@ DateTime::DateTime()
 
 }
 
-DateTime::DateTime(int year, int month, int day, int hour, int minutes, int seconds) :
+DateTime::DateTime(int year, const unsigned char month,
+	const unsigned char day, const unsigned char hour,
+	const unsigned char minutes, const unsigned char seconds) :
 Date(year, month, day), Time(hour, minutes, seconds)
 {
 

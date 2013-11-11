@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___DATASOURCESHALLOWCOPY_H__
 #define HEADER_GUARD___DATASOURCESHALLOWCOPY_H__
 
-#include <webserviceslib/Entity.h>
+#include <webserviceslib/ShallowCopy.h>
 #include <utils/SmartPtr.h>
 
 namespace communication

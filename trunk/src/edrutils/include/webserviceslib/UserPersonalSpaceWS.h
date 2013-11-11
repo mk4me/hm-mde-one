@@ -13,23 +13,11 @@
 
 namespace webservices
 {
-    class UserPersonalSpaceWS : public IUserPersonalSpaceWS
+    class UserPersonalSpaceWS : public WebServiceT<IUserPersonalSpaceWS>
     {
 	public:
 		UserPersonalSpaceWS(const WSConnectionPtr & connection = WSConnectionPtr());
 		virtual ~UserPersonalSpaceWS();
-
-		//! \param connection Połączenie przez które będzie realizowany serwis
-		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionPtr & connection();
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionConstPtr & connection() const;
-
-	private:
-		mutable OpenThreads::ReentrantMutex * mutex;
-		WSConnectionPtr connection_;
-		WSConnectionConstPtr constConnection_;
     };
 }
 

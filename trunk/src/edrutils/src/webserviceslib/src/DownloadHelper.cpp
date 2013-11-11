@@ -19,18 +19,15 @@ void BasicDownloadHelper::configure(const BasicStoremanWSPtr & basicStoremanWS, 
 	this->ftpsConnection = ftpsConnection;
 }
 
-IFtpsConnection::OperationStatus BasicDownloadHelper::get(IFtpsConnection::IProgress * progress)
+const IFtpsConnection::OperationStatus BasicDownloadHelper::get(IFtpsConnection::IProgress * progress)
 {
 	IFtpsConnection::OperationStatus ret = IFtpsConnection::Error;
-	std::string remotePath;
-
-	webservices::IWebService::ScopedLock lock(*basicStoremanWS);
-	webservices::IFtpsConnection::ScopedLock lock2(*ftpsConnection);
+	std::string remotePath;	
 
 	// Tutaj może się nie powieść całe pobieranie jeśli na ftp po stornie bazy nie uda się przygotować pliku do pobrania
 	// Lub usługa się wywróci
 	try{
-		remotePath = basicStoremanWS->retrieve(fileID);
+		remotePath = basicStoremanWS->retrieve(fileID).fileLocation;
 	}catch(std::exception & e){
 		errorMessage_ = e.what();
 		return ret;
@@ -40,7 +37,7 @@ IFtpsConnection::OperationStatus BasicDownloadHelper::get(IFtpsConnection::IProg
 		str << "Unknown error during file retrival. FileID = " << fileID;
 		errorMessage_ = str.str();
 		return ret;
-	}	
+	}
 
 	// Tutaj pobieranie może się nie powieść
 	try {
@@ -53,7 +50,7 @@ IFtpsConnection::OperationStatus BasicDownloadHelper::get(IFtpsConnection::IProg
 	}	
 	catch(...){
 		std::stringstream str;
-		str << "Unknown error during ftps file retrival. FileID = " << fileID << " RemotePath = " << remotePath <<", LocalPath = " << destinationPath;
+		str << "Unknown error during ftp(s) file retrival. FileID = " << fileID << " RemotePath = " << remotePath <<", LocalPath = " << destinationPath;
 		errorMessage_ = str.str();
 	}
 
@@ -62,14 +59,13 @@ IFtpsConnection::OperationStatus BasicDownloadHelper::get(IFtpsConnection::IProg
 		basicStoremanWS->downloadComplete(fileID, remotePath);
 	}catch(...){
 		
-	}	
+	}
 
 	return ret;
 }
 
 void BasicDownloadHelper::abort()
 {
-	webservices::IFtpsConnection::ScopedLock lock2(*ftpsConnection);
 	ftpsConnection->abort();
 }
 
@@ -105,13 +101,10 @@ void ShallowDownloadHelper::configure(const ShallowStoremanWSPtr & shallowStorem
 	this->ftpsConnection = ftpsConnection;
 }
 
-IFtpsConnection::OperationStatus ShallowDownloadHelper::get(IFtpsConnection::IProgress * progress)
+const IFtpsConnection::OperationStatus ShallowDownloadHelper::get(IFtpsConnection::IProgress * progress)
 {
 	IFtpsConnection::OperationStatus ret = IFtpsConnection::Error;
-	std::string remotePath;
-
-	webservices::IWebService::ScopedLock lock(*shallowStoremanWS);
-	webservices::IFtpsConnection::ScopedLock lock2(*ftpsConnection);
+	std::string remotePath;	
 	
 	try{
 		remotePath = (shallowFile == ShallowData ? shallowStoremanWS->getShallowCopy() : shallowStoremanWS->getMetadata());
@@ -121,7 +114,7 @@ IFtpsConnection::OperationStatus ShallowDownloadHelper::get(IFtpsConnection::IPr
 	}	
 	catch(...){
 		std::stringstream str;
-		str << "Unknown error during file retrival. File = " << (shallowFile == ShallowData ? "ShallowCopy" : "Metadata");
+		str << "Unknown error during file retrieval. File = " << (shallowFile == ShallowData ? "ShallowCopy" : "Metadata");
 		errorMessage_ = str.str();
 		return ret;
 	}
@@ -151,7 +144,6 @@ IFtpsConnection::OperationStatus ShallowDownloadHelper::get(IFtpsConnection::IPr
 
 void ShallowDownloadHelper::abort()
 {
-	webservices::IFtpsConnection::ScopedLock lock2(*ftpsConnection);
 	ftpsConnection->abort();
 }
 

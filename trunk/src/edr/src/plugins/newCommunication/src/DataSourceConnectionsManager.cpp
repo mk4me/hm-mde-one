@@ -27,16 +27,16 @@ DataSourceConnectionManager * DataSourceConnectionManager::instance()
 }
 
 DataSourceConnectionManager::DataSourceConnectionManager()
-	:	motionFilesStoremanWSConnection_(new WSConnection()),
-		motionBasicQueriesWSConnection_(new WSConnection()),
-		motionBasicUpdatesWSConnection_(new WSConnection()),
-		medicalFilesStoremanWSConnection_(new WSConnection()),
-		medicalBasicQueriesWSConnection_(new WSConnection()),
-		medicalBasicUpdatesWSConnection_(new WSConnection()),
-		accountFactoryWSConnection_(new WSConnection()),
-		userPersonalSpaceWSConnection_(new WSConnection()),
-		administrationWSConnection_(new WSConnection()),
-		authorizationWSConnection_(new WSConnection()),
+	:	motionFilesStoremanWSConnection_(new webservices::WSSecureConnection()),
+		motionBasicQueriesWSConnection_(new webservices::WSSecureConnection()),
+		motionBasicUpdatesWSConnection_(new webservices::WSSecureConnection()),
+		medicalFilesStoremanWSConnection_(new webservices::WSSecureConnection()),
+		medicalBasicQueriesWSConnection_(new webservices::WSSecureConnection()),
+		medicalBasicUpdatesWSConnection_(new webservices::WSSecureConnection()),
+		accountFactoryWSConnection_(new webservices::WSSecureConnection()),
+		userPersonalSpaceWSConnection_(new webservices::WSSecureConnection()),
+		administrationWSConnection_(new webservices::WSSecureConnection()),
+		authorizationWSConnection_(new webservices::WSSecureConnection()),
 		motionFtps_(new webservices::FtpsConnection()),
 		medicalFtps_(new webservices::FtpsConnection())
 {
@@ -48,52 +48,52 @@ DataSourceConnectionManager::~DataSourceConnectionManager()
 
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::motionFileStoremanWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::motionFileStoremanWSConnection() const
 {
 	return motionFilesStoremanWSConnection_;
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::motionBasicQueriesWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::motionBasicQueriesWSConnection() const
 {
 	return motionBasicQueriesWSConnection_;
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::motionBasicUpdatesWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::motionBasicUpdatesWSConnection() const
 {
 	return motionBasicUpdatesWSConnection_;
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::medicalFileStoremanWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::medicalFileStoremanWSConnection() const
 {
 	return medicalFilesStoremanWSConnection_;
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::medicalBasicQueriesWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::medicalBasicQueriesWSConnection() const
 {
 	return medicalBasicQueriesWSConnection_;
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::medicalBasicUpdatesWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::medicalBasicUpdatesWSConnection() const
 {
 	return medicalBasicUpdatesWSConnection_;
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::accountFactoryWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::accountFactoryWSConnection() const
 {
 	return accountFactoryWSConnection_;
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::userPersonalSpaceWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::userPersonalSpaceWSConnection() const
 {
 	return userPersonalSpaceWSConnection_;
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::administrationWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::administrationWSConnection() const
 {
 	return administrationWSConnection_;
 }
 
-const WSConnectionPtr & DataSourceConnectionManager::authorizationWSConnection() const
+const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::authorizationWSConnection() const
 {
 	return authorizationWSConnection_;
 }

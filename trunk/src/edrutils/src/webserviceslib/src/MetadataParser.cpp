@@ -1,4 +1,5 @@
 #include <webserviceslib/MetadataParser.h>
+#include <webserviceslib/Entity.h>
 #include <utils/Debug.h>
 #include <tinyxml.h>
 
@@ -67,7 +68,11 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
             MotionMetaData::AttributeGroup attributeGroup;
             attribute_group_element->QueryIntAttribute("AttributeGroupID", &attributeGroup.attributeGroupID);
             attribute_group_element->QueryStringAttribute("AttributeGroupName", &attributeGroup.attributeGroupName);
-            attribute_group_element->QueryStringAttribute("DescribedEntity", &attributeGroup.describedEntity);
+			{
+				std::string describedEntity;
+				attribute_group_element->QueryStringAttribute("DescribedEntity", &describedEntity);
+				attributeGroup.describedEntity = xmlWsdl::Entity::convert(describedEntity);
+			}
 
             //Attributes
             TiXmlElement* attrs_element = attribute_group_element->FirstChildElement("Attributes");
@@ -76,7 +81,13 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
                 while(attr_element) {
                     MotionMetaData::Attribute attribute;
                     attr_element->QueryStringAttribute("AttributeName", &attribute.attributeName);
-                    attr_element->QueryStringAttribute("AttributeType", &attribute.attributeType);
+
+					{
+						std::string attributeType;
+						attr_element->QueryStringAttribute("AttributeType", &attributeType);
+						attribute.attributeType = xmlWsdl::AttributeType::convert(attributeType);
+					}
+
                     attr_element->QueryStringAttribute("Unit", &attribute.unit);
                     //EnumValues
                     /*TiXmlElement* enum_values_element = attr_element->FirstChildElement("EnumValues");
@@ -96,7 +107,7 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
                 }
             }
 
-            metadata.attributeGroups.push_back(attributeGroup);
+            metadata.attributeGroups[attributeGroup.attributeGroupID] = attributeGroup;
             attribute_group_element = attribute_group_element->NextSiblingElement();
         }
     }
@@ -124,10 +135,10 @@ void MedicalMetadataParser::parseFile(const std::string & path, MedicalMetaData:
         TiXmlElement* exam_type_element = exam_types_element->FirstChildElement("ExamType");
         while(exam_type_element) {
             MedicalMetaData::ExamType examType;
-            exam_type_element->QueryIntAttribute("ExamTypeID", &examType.id);
+            exam_type_element->QueryIntAttribute("ExamTypeID", &examType.examTypeID);
             exam_type_element->QueryStringAttribute("ExamTypeName", &examType.name);
 
-            metadata.examTypes[examType.id] = examType;
+            metadata.examTypes[examType.examTypeID] = examType;
             exam_type_element = exam_type_element->NextSiblingElement();
         }
     }
@@ -137,10 +148,10 @@ void MedicalMetadataParser::parseFile(const std::string & path, MedicalMetaData:
         TiXmlElement* disorder_element = disorders_element->FirstChildElement("Disorder");
         while(disorder_element) {
             MedicalMetaData::DisorderType disorderType;
-            disorder_element->QueryIntAttribute("DisorderID", &disorderType.id);
+            disorder_element->QueryIntAttribute("DisorderID", &disorderType.disorderTpeID);
             disorder_element->QueryStringAttribute("DisorderName", &disorderType.name);
 
-            metadata.disorderTypes[disorderType.id] = disorderType;
+            metadata.disorderTypes[disorderType.disorderTpeID] = disorderType;
             disorder_element = disorder_element->NextSiblingElement();
         }
     }

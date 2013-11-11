@@ -14,7 +14,7 @@
 namespace webservices
 {
 	//! Klasa przygotowująca pliki do pobrania
-    class SimpleFileStoremanWS : public IBasicStoremanWS
+    class SimpleFileStoremanWS : public WebServiceT<IBasicStoremanWS>
     {
     public:
 
@@ -22,79 +22,42 @@ namespace webservices
 
         virtual ~SimpleFileStoremanWS();
 
-		//! \param connection Połączenie przez które będzie realizowany serwis
-		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionPtr & connection();
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionConstPtr & connection() const;
-
-        virtual void downloadComplete(int id, const std::string & path);
+        virtual void downloadComplete(const int id, const std::string & path);
         
-        virtual const std::string retrieve(int id);
-
-	private:
-		mutable OpenThreads::ReentrantMutex * mutex;
-		WSConnectionPtr connection_;
-		WSConnectionConstPtr constConnection_;
+        virtual const xmlWsdl::FileData retrieve(const int id);
     };
 
 	//! Klasa przygotowująca zdjęcia do pobrania
-    class PhotoStoremanWS : public IBasicStoremanWS
+    class PhotoStoremanWS : public WebServiceT<IBasicStoremanWS>
     {
     public:
 
         PhotoStoremanWS(const WSConnectionPtr & connection = WSConnectionPtr());
 
-        virtual ~PhotoStoremanWS();
+        virtual ~PhotoStoremanWS();		
 
-		//! \param connection Połączenie przez które będzie realizowany serwis
-		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionPtr & connection();
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionConstPtr & connection() const;
+        virtual void downloadComplete(const int id, const std::string & path);
 
-        virtual void downloadComplete(int id, const std::string & path);
-
-        virtual const std::string retrieve(int id);
-
-	private:
-		mutable OpenThreads::ReentrantMutex * mutex;
-		WSConnectionPtr connection_;
-		WSConnectionConstPtr constConnection_;
+        virtual const xmlWsdl::FileData retrieve(const int id);	
     };
 
 	//! Klasa przygotowująca płytkie kopie do pobrania
-    class ShallowStoremanWS : public IShallowStoremanWS
+    class ShallowStoremanWS : public WebServiceT<IShallowStoremanWS>
     {
     public:
 
         ShallowStoremanWS(const WSConnectionPtr & connection = WSConnectionPtr());
 
-        virtual ~ShallowStoremanWS();
-
-		//! \param connection Połączenie przez które będzie realizowany serwis
-		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionPtr & connection();
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionConstPtr & connection() const;
+        virtual ~ShallowStoremanWS();	
 
         virtual const std::string getShallowCopy();
 
         virtual const std::string getMetadata();
 
-		virtual void downloadComplete(const std::string & path);
-
-	private:
-		mutable OpenThreads::ReentrantMutex * mutex;
-		WSConnectionPtr connection_;
-		WSConnectionConstPtr constConnection_;
-		SimpleFileStoremanWS fileStoremanWS;
+		virtual void downloadComplete(const std::string & path);	
     };
 
-    class MotionFileStoremanWS : public IMotionFileStoremanWS
+    class MotionFileStoremanWS : public WebServiceT<IMotionFileStoremanWS>
     {
     public:
 
@@ -102,39 +65,24 @@ namespace webservices
 
         virtual ~MotionFileStoremanWS();
 
-		//! \param connection Połączenie przez które będzie realizowany serwis
-		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionPtr & connection();
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionConstPtr & connection() const;
-
-		virtual void downloadComplete(int fileID, const std::string& path);
+		virtual void downloadComplete(const int fileID, const std::string & path);
 
 		virtual void downloadComplete(const std::string & path);
 
-		virtual const std::string retrieve(int fileID);
+		virtual const xmlWsdl::FileData retrieve(const int fileID);
 
 		virtual const std::string getShallowCopy();
 
         virtual const std::string getShallowCopyIncrement(const DateTime & dateTime);
 		
 		virtual const std::string getMetadata();
-        /**
-		Realizuje wprowadzenie pojedynczego pliku przez performera pod kontrolę bazy danych.
-		@param performerID id performera
-		@param path względna ścieżka do pliku na dysku serwera w stosunku do korzenia obszaru Usługi Transportu Plików
-		@param description opis pliku
-		@param filename nazwa pliku
-		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
-		*/
-		virtual const int storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename);
-		/**
-		Realizuje wprowadzenie plików pod kontrolę bazy danych.
-		@param performerID id performera
-		@param path ścieżka do katalogu z plikami do wgrania na serwer
-		*/
-		virtual void storePerformerFiles(int performerID, const std::string& path);
+        
+		virtual const int storeMeasurementConfFile(const int mcID, const std::string & path,
+			const std::string & description, const std::string & filename);
+
+		virtual void storeMeasurementConfFiles(const int measurementConfID,
+			const std::string & path, const std::string & description);
+
 		/**
 		Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolę bazy danych.
 		@param sessionID id sesji która wcześniej została juz umieszczona w bazie danych
@@ -143,14 +91,16 @@ namespace webservices
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		virtual const int storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename);
+		virtual const int storeSessionFile(const int sessionID, const std::string & path,
+			const std::string & description, const std::string & filename);
 		/**
 		Realizuje wprowadzenie plików pod kontrolę bazy danych.
 		@param sessionID id sesji która wcześniej została juz umieszczona w bazie danych
 		@param path ścieżka do katalogu z plikami do wgrania na serwer
 		@param description
 		*/
-		virtual const int storeSessionFiles(int sessionID, const std::string& path, const std::string& description);
+		virtual void storeSessionFiles(const int sessionID, const std::string & path,
+			const std::string & description);
 		/**
 		Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolę bazy danych.
 		@param trialID id trial
@@ -159,53 +109,34 @@ namespace webservices
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		virtual const int storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename);
+		virtual const int storeTrialFile(const int trialID, const std::string & path,
+			const std::string & description, const std::string & filename);
 		/**
 		Realizuje wprowadzenie plików pod kontrolę bazy danych.
 		@param trialID id trial
 		@param path ścieżka do katalogu z plikami do wgrania na serwer
 		*/
-		virtual void storeTrialFiles(int trialID, const std::string& path);
-
-	private:
-		mutable OpenThreads::ReentrantMutex * mutex;
-		WSConnectionPtr connection_;
-		WSConnectionConstPtr constConnection_;
-		SimpleFileStoremanWS simpleFileStoremanWS_;
-		ShallowStoremanWS shallowStoremanWS_;
+		virtual void storeTrialFiles(const int trialID, const std::string & path,
+			const std::string & description);
     };
 
-	class MedicalFileStoremanWS : public IMedicalFileStoremanWS
+	class MedicalFileStoremanWS : public WebServiceT<IMedicalFileStoremanWS>
 	{
 	public:
 
 		MedicalFileStoremanWS(const WSConnectionPtr & connection = WSConnectionPtr());
 
-		virtual ~MedicalFileStoremanWS();
+		virtual ~MedicalFileStoremanWS();	
 
-		//! \param connection Połączenie przez które będzie realizowany serwis
-		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionPtr & connection();
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionConstPtr & connection() const;
-
-		virtual void downloadComplete(int fileID, const std::string& path);
+		virtual void downloadComplete(const int fileID, const std::string & path);
 
 		virtual void downloadComplete(const std::string & path);
 
-		virtual const std::string retrieve(int fileID);
+		virtual const xmlWsdl::FileData retrieve(const int fileID);
 
 		virtual const std::string getShallowCopy();
 
-		virtual const std::string getMetadata();
-
-	private:
-		mutable OpenThreads::ReentrantMutex * mutex;
-		WSConnectionPtr connection_;
-		WSConnectionConstPtr constConnection_;
-		PhotoStoremanWS photoStoremanWS_;
-		ShallowStoremanWS shallowStoremanWS_;
+		virtual const std::string getMetadata();	
 	};
 }
 

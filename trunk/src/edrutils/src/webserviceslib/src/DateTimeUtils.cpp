@@ -40,4 +40,15 @@ const std::string toString(const struct tm & time)
 	return std::string(buffer);
 }
 
+const std::string toString(const DateTime & time)
+{
+	std::stringstream ss;
+
+	ss << time.getYear() << "-" << time.getMonth() << "-" << time.getDay() << "T"
+		<< time.getHour() << ":" << time.getMinutes() << ":"
+		<< time.getSeconds() << ".000Z";
+
+	return ss.str();
+}
+
 }

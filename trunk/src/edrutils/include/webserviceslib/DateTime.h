@@ -24,11 +24,11 @@ namespace webservices
 		/**
 		Pole klasy przechowujace informacje o miesiacu
 		*/
-		int month;
+		unsigned char month;
 		/**
 		Pole klasy przechowujace informacje o dniu
 		*/
-		int day;
+		unsigned char day;
 
     public:
 
@@ -40,7 +40,7 @@ namespace webservices
         //! \param year Rok
         //! \param month Miesiąc
         //! \param day Dzień
-        Date(int year, int month = 1, int day = 1);
+        Date(const int year, const unsigned char month = 1, const unsigned char day = 1);
         virtual ~Date();
 
         //! \return Zwraca dzisiejszą datę wg ustawień komputera
@@ -60,22 +60,22 @@ namespace webservices
 		Setter month
 		@param month miesiac
 		*/
-		void setMonth(int month);
+		void setMonth(const unsigned char month);
 		/**
 		Getter month
 		@return miesiac
 		*/
-		const int getMonth() const;
+		const unsigned char getMonth() const;
 		/**
 		Setter day
 		@param day dzien
 		*/
-		void setDay(int day);
+		void setDay(const unsigned char day);
 		/**
 		Getter day
 		@return dzien
 		*/
-		const int getDay() const;
+		const unsigned char getDay() const;
 
         //! \return Data w formie napisu
         const std::string toString() const;
@@ -105,15 +105,15 @@ namespace webservices
         /**
 		Pole klasy przechowujace informacje o godzinie
 		*/
-		int hour;
+		unsigned char hour;
 		/**
 		Pole klasy przechowujace informacje o minutach
 		*/
-		int minutes;
+		unsigned char minutes;
 		/**
 		Pole klasy przechowujace informacje o sekundach
 		*/
-		int seconds;
+		unsigned char seconds;
 
     public:
         //! Konstruktor kopiujący
@@ -123,7 +123,9 @@ namespace webservices
         //! \param hour Godzina
         //! \param minutes Minuty
         //! \param seconds Sekundy
-        Time(int hour = 0, int minutes = 0, int seconds = 0);
+        Time(const unsigned char hour = 0,
+			const unsigned char minutes = 0,
+			const unsigned char seconds = 0);
         //! Wirtualny destruktor
         virtual ~Time();
 
@@ -134,32 +136,32 @@ namespace webservices
 		Setter hour
 		@param hour godzina
 		*/
-        void setHour(int hour);
+        void setHour(const unsigned char hour);
 		/**
 		Getter hour
 		@return godzina
 		*/
-		const int getHour() const;
+		const unsigned char getHour() const;
 		/**
 		Setter minutes
 		@param minutes minuty
 		*/
-		void setMinutes(int minutes);
+		void setMinutes(const unsigned char minutes);
 		/**
 		Getter minutes
 		@return minuty
 		*/
-		const int getMinutes() const;
+		const unsigned char getMinutes() const;
 		/**
 		Setter seconds
 		@param seconds sekundy
 		*/
-		void setSeconds(int seconds);
+		void setSeconds(const unsigned char seconds);
 		/**
 		Getter seconds
 		@return sekundy
 		*/
-		const int getSeconds() const;
+		const unsigned char getSeconds() const;
 
         //! \return Czas w formie tekstu
         const std::string toString() const;
@@ -196,7 +198,11 @@ namespace webservices
 		/**
 		Konstruktor klasy DateTime.
 		*/
-		DateTime(int year, int month = 1, int day = 1, int hour = 0, int minutes = 0, int seconds = 0);
+		DateTime(int year, const unsigned char month = 1,
+			const unsigned char day = 1,
+			const unsigned char hour = 0,
+			const unsigned char minutes = 0,
+			const unsigned char seconds = 0);
 		/**
 		Konstruktor klasy DateTime.
 		*/

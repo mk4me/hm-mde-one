@@ -1,9 +1,8 @@
-#include "CommunicationPCH.h"
-#include <corelib/ILog.h>
-#include <corelib/PluginCommon.h>
-#include "WSConnection.h"
+#include <webserviceslib/WSConnection.h>
 #include <wsdlparser/WsdlInvoker.h>
 #include <boost/type_traits.hpp>
+
+using namespace webservices;
 
 template<class Invoker>
 class _TWSConnection : public ISecureWSConnection
@@ -32,13 +31,13 @@ public:
 	}
 
 	//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL względem ceryfikatów
-	virtual void setHostVerification(WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification)
+	virtual void setHostVerification(HostVerification hostVerification)
 	{
 		hostVerification_ = hostVerification;
 	}
 
 	//! \return Mechanizm weryfikacji hosta po SSL względem ceryfikatów
-	virtual WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification() const
+	virtual const HostVerification hostVerification() const
 	{
 		return hostVerification_;
 	}
@@ -138,6 +137,9 @@ public:
 			throw webservices::WSConnectionOperationValueException(str.c_str());
 		}
 
+		std::string::size_type s = 0;
+		std::string::size_type e = 0;
+
 		try{
 			exception_ = false;
 			s = e = std::string::npos;
@@ -175,22 +177,24 @@ public:
 	}
 	//! \param name Nazwa wartości którą chcemy pobrać
 	//! \return Wskaźnik do wartości, nullptr jeśli nie ma takiej wartości, wskaxnik pozostaje pod kontrolą implementacji IWSConnection
-	virtual void * getValue(const std::string & name)
+	virtual const void * getValue(const std::string & name) const
 	{
 		Schema::Type type;
 		return invoker_->getValue(name, type);
 	}
 
 	//! \return Pełna odpowiedź serwisu webowego w formacie html/xml
-	virtual const std::string xmlResponse()
+	virtual const std::string xmlResponse() const
 	{
 		//musze przetworzyć odpowiedź - chcę w niej mieć tylko to co istotne bez zbędnych nagłówków SOAP i bezpieczeństwa
 		std::string ret(invoker_->getXMLResponse());
 
+		std::string::size_type s = 0;
+		std::string::size_type e = 0;
+
 		if(exception_ != true){
 
-			s = ret.find("<" + operationName_ + "Result", 0);
-
+			s = ret.find("<" + operationName_ + "Result", 0);			
 			if(s != std::string::npos){
 				e = ret.find("</" + operationName_ + "Result>", s + 1) + 9 + operationName_.size();
 				if(e == std::string::npos){
@@ -207,34 +211,31 @@ public:
 
 private:
 
+	static const WsdlPull::CustomSSLWsdlInvoker::HostVerification convert(const HostVerification hostVerification)
+	{
+		return static_cast<const WsdlPull::CustomSSLWsdlInvoker::HostVerification>(hostVerification);
+	}
+
 	void resetInvoker()
 	{
 		try{
 			invoker_.reset(new Invoker());
+
+// w wersji debug rzucamy wszystko co możemy na konsole
+#ifdef _DEBUG
 			invoker_->setVerbose(true);
+#endif
 			setInvoker(boost::is_base_of<WsdlPull::CustomSSLWsdlInvoker, Invoker>());
-			PLUGIN_LOG_INFO("Created Invoker " << typeid(Invoker).name());
 		}catch(std::exception & e){
-			PLUGIN_LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with error: " << e.what());
 			throw webservices::WSConnectionInitializationException(e.what());
 		}catch(...){
-			PLUGIN_LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with unknown error");
 			throw webservices::WSConnectionInitializationException("Unknown connection initialization error");
 		}
 	}
 
 	void setInvoker(boost::true_type)
-	{
-		std::string hVer("None");
-
-		if(hostVerification_ == WsdlPull::CustomSSLWsdlInvoker::HVExist){
-			hVer = "Exist";
-		}else if( hostVerification_ == WsdlPull::CustomSSLWsdlInvoker::HVMatch){
-			hVer = "Match";
-		}
-
-		PLUGIN_LOG_INFO("Invoker WSDLUri: url -> " << url_ << " || caPath_ -> " << caPath_ << " || hostVerification_ -> " << hVer);
-		invoker_->setWSDLUri(url_, caPath_, hostVerification_);
+	{		
+		invoker_->setWSDLUri(url_, caPath_, convert(hostVerification_));
 	}
 
 	void setInvoker(boost::false_type)
@@ -247,8 +248,6 @@ private:
 	typedef utils::shared_ptr<Invoker> InvokerPtr;
 
 private:
-	std::string::size_type s;
-	std::string::size_type e;
 	bool exception_;
 	bool ready;
 	std::string operationName_;
@@ -262,61 +261,61 @@ private:
 
 	std::string lastUrl;
 	bool resetRequired;
-	WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification_;
+	HostVerification hostVerification_;
 };
 
 
-WSConnection::WSConnection() : connection_(new _TWSConnection<WsdlPull::WsdlInvoker>())
+WSSecureConnection::WSSecureConnection() : connection_(new _TWSConnection<WsdlPull::WsdlInvoker>())
 {
 
 }
 
-void WSConnection::setCAPath(const std::string & caPath)
+void WSSecureConnection::setCAPath(const std::string & caPath)
 {
 	connection_->setCAPath(caPath);
 }
 
-const std::string WSConnection::CAPath() const
+const std::string WSSecureConnection::CAPath() const
 {
 	return connection_->CAPath();
 }
 
-void WSConnection::setHostVerification(WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification)
+void WSSecureConnection::setHostVerification(HostVerification hostVerification)
 {
 	connection_->setHostVerification(hostVerification);
 }
 
-WsdlPull::CustomSSLWsdlInvoker::HostVerification WSConnection::hostVerification() const
+const ISecureWSConnection::HostVerification WSSecureConnection::hostVerification() const
 {
 	return connection_->hostVerification();
 }
 
-void WSConnection::setUser(const std::string & user)
+void WSSecureConnection::setUser(const std::string & user)
 {
 	connection_->setUser(user);
 }
 
-void WSConnection::setPassword(const std::string & password)
+void WSSecureConnection::setPassword(const std::string & password)
 {
 	connection_->setPassword(password);
 }
 
-void WSConnection::setCredentials(const std::string & user, const std::string & password)
+void WSSecureConnection::setCredentials(const std::string & user, const std::string & password)
 {
 	connection_->setCredentials(user, password);
 }
 
-const std::string WSConnection::user() const
+const std::string WSSecureConnection::user() const
 {
 	return connection_->user();
 }
 
-const std::string WSConnection::password() const
+const std::string WSSecureConnection::password() const
 {
 	return connection_->password();
 }
 
-void WSConnection::setUrl(const std::string & url)
+void WSSecureConnection::setUrl(const std::string & url)
 {
 	//metoda fabryka dla naszych połączeń!!
 	//automatycznie kopiuje wszystkie ustawienia
@@ -334,32 +333,32 @@ void WSConnection::setUrl(const std::string & url)
 	connection_->setUrl(url);
 }
 
-const std::string & WSConnection::url() const
+const std::string & WSSecureConnection::url() const
 {
 	return connection_->url();
 }
 
-void WSConnection::setOperation(const std::string & operation)
+void WSSecureConnection::setOperation(const std::string & operation)
 {
 	connection_->setOperation(operation);
 }
 
-void WSConnection::setValue(const std::string & name, const std::string & value)
+void WSSecureConnection::setValue(const std::string & name, const std::string & value)
 {
 	connection_->setValue(name, value);
 }
 
-void WSConnection::invoke(bool process)
+void WSSecureConnection::invoke(bool process)
 {
 	connection_->invoke(process);
 }
 
-void * WSConnection::getValue(const std::string & name)
+const void * WSSecureConnection::getValue(const std::string & name) const
 {
 	return connection_->getValue(name);
 }
 
-const std::string WSConnection::xmlResponse()
+const std::string WSSecureConnection::xmlResponse() const
 {
 	return connection_->xmlResponse();
 }

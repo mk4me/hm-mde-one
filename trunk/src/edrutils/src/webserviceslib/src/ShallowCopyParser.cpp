@@ -100,7 +100,11 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             session_element->QueryIntAttribute("UserID", &session->userID);
             session_element->QueryIntAttribute("LabID", &session->labID);
             session_element->QueryStringAttribute("MotionKind", &session->motionKind);
-            session_element->QueryStringAttribute("SessionDate", &session->sessionDate);
+			{
+				std::string sessionDate;
+				session_element->QueryStringAttribute("SessionDate", &sessionDate);
+				session->sessionDate = toTime(sessionDate);
+			}
             session_element->QueryStringAttribute("SessionName", &session->sessionName);
             session_element->QueryStringAttribute("Tags", &session->tags);
             session_element->QueryStringAttribute("SessionDescription", &session->sessionDescription);
@@ -421,13 +425,19 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
             patient_element->QueryStringAttribute("FirstName", &patient->name);
             patient_element->QueryStringAttribute("LastName", &patient->surname);
 
-            std::string gender;
-            patient_element->QueryStringAttribute("Gender", &gender);
-            patient->gender = gender[0];
+			{
+				std::string gender;
+				patient_element->QueryStringAttribute("Gender", &gender);
+				patient->gender = xmlWsdl::Gender::convert(gender);
+			}
 
             shallowCopy.patientsByGender[patient->gender].insert(patient);
 
-            patient_element->QueryStringAttribute("BirthDate", &patient->birthDate);
+			{
+				std::string birthDate;
+				patient_element->QueryStringAttribute("BirthDate", &birthDate);
+				patient->birthDate = toTime(birthDate);
+			}
 
             patient_element = patient_element->NextSiblingElement();
         }
@@ -449,7 +459,12 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
             shallowCopy.patients[patientID]->disorders[disorderID].disorder = shallowCopy.disorders.find(disorderID)->second;
             disorder_element->QueryStringAttribute("Focus", &disorder.focus);
 
-            disorder_element->QueryStringAttribute("DiagnosisDate", &disorder.diagnosisDate);
+			{
+				std::string diagnosisDate;
+				disorder_element->QueryStringAttribute("DiagnosisDate", &diagnosisDate);
+				disorder.diagnosisDate = toTime(diagnosisDate);
+			}
+
             disorder_element->QueryStringAttribute("Comments", &disorder.comments);
 
             shallowCopy.patientsByDisorder[disorderID].insert(shallowCopy.patients[patientID]);

@@ -11,7 +11,7 @@
 
 #include <stdexcept>
 #include <webserviceslib/IWSCredentials.h>
-#include <boost/shared_ptr.hpp>
+#include <utils/SmartPtr.h>
 #include <boost/lexical_cast.hpp>
 
 namespace webservices
@@ -97,7 +97,7 @@ namespace webservices
         virtual void invoke(bool process = false) = 0;
         //! \param name Nazwa wartości którą chcemy pobrać
         //! \return Wskaźnik do wartości, nullptr jeśli nie ma takiej wartości, wskaxnik pozostaje pod kontrolą implementacji IWSConnection
-        virtual void * getValue(const std::string & name) = 0;
+        virtual const void * getValue(const std::string & name) const = 0;
 
 		//! \param param Nazwa parametru dla którego ustawiamy wartość wywołania
 		//! \param value Wartośc dla zadanego parametru
@@ -110,9 +110,9 @@ namespace webservices
 		//! \param param Nazwa parametru dla którego pobieramy wartość jeśli wykonywaliśmy zapytanie z parsowanie
 		//! \param value [out] Wartośc dla zadanego parametru
         template<class T>
-        void getValue(const std::string & name, T & value)
+        void getValue(const std::string & name, T & value) const
         {
-			void * ret = getValue(name);
+			const void * ret = getValue(name);
 			if(ret != nullptr){
 				value = *((T*)ret);
 			}else{
@@ -121,11 +121,39 @@ namespace webservices
         }
 
         //! \return Pełna odpowiedź serwisu webowego w formacie html/xml
-        virtual const std::string xmlResponse() = 0;
+        virtual const std::string xmlResponse() const = 0;
     };
 
-    typedef boost::shared_ptr<IWSConnection> WSConnectionPtr;
-    typedef boost::shared_ptr<const IWSConnection> WSConnectionConstPtr;
+    typedef utils::shared_ptr<IWSConnection> WSConnectionPtr;
+    typedef utils::shared_ptr<const IWSConnection> WSConnectionConstPtr;
+
+	//! Interfejs rozszerzający podstawowe połączenie webservices o zabezpieczenia
+	class ISecureWSConnection : public IWSConnection
+	{
+	public:
+		//! Mechanizm weryfikacji hosta dla bezpiecznych połączeń przez SSL za pomoca curla i openssl
+		enum HostVerification {
+			HVNone = 0,     //! Brak weryfikacji
+			HVExist =  1,   //! Wpis o CN przynajmniej istnieje
+			HVMatch = 2,    //! Wpis o CN istnieje i jest zgodny
+		};
+
+	public:
+		//! Destruktor wirtualny
+		virtual ~ISecureWSConnection() {}
+		//! \param caPath Ścieżka certyfikatu, którym weryfikujemy hosta
+		virtual void setCAPath(const std::string & caPath) = 0;
+		//! \return Ścieżka certyfikatu, którym weryfikujemy hosta
+		virtual const std::string CAPath() const = 0;
+
+		//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL względem ceryfikatów
+		virtual void setHostVerification(HostVerification hostVerification) = 0;
+		//! \return Mechanizm weryfikacji hosta po SSL względem ceryfikatów
+		virtual const HostVerification hostVerification() const = 0;
+	};
+
+	typedef utils::shared_ptr<ISecureWSConnection> WSSecureConnectionPtr;
+	typedef utils::shared_ptr<const ISecureWSConnection> WSSecureConnectionConstPtr;
 }
 
 #endif	//	HEADER_GUARD___IWSCONNECTION_H__

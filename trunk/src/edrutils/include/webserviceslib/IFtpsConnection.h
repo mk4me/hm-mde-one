@@ -44,8 +44,9 @@ namespace webservices
 
 		virtual ~IFtpsConnection() {}
 
+		//! \param url Adres usługi ftp z którym się łączymy
 		virtual void setUrl(const std::string & url) = 0;
-
+		//! \return Adres usługi ftp z którym się łączymy
 		virtual const std::string url() const = 0;
 
 		/**

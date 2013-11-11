@@ -11,7 +11,7 @@
 
 #include <QtGui/QWidget>
 #include <QtGui/QPixmap>
-#include <webserviceslib/Entity.h>
+#include <webserviceslib/ShallowCopy.h>
 #include <plugins/newCommunication/IDataSourceUserData.h>
 
 namespace communication

@@ -1,6 +1,7 @@
 BEGIN_PROJECT("static")
 
 SET_PUBLIC_HEADERS(
+	ShallowCopy.h
 	IAccountFactoryWS.h
 	AccountFactoryWS.h
 	IWSConnection.h
@@ -27,6 +28,9 @@ SET_PUBLIC_HEADERS(
 	DateTime.h
 	DateTimeUtils.h
 	Entity.h
+	WSConnection.h
+	IUploadHelper.h
+	UploadHelper.h
 )
 
 SET_SOURCE_FILES(
@@ -43,6 +47,9 @@ SET_SOURCE_FILES(
 	FtpsConnection.cpp
 	DateTime.cpp
 	DateTimeUtils.cpp
+	Entity.cpp
+	WSConnection.cpp
+	UploadHelper.cpp
 )
 
 END_PROJECT()

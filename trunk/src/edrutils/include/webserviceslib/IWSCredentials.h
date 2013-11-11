@@ -9,8 +9,6 @@
 #ifndef HEADER_GUARD___IWSCREDENTIALS_H__
 #define HEADER_GUARD___IWSCREDENTIALS_H__
 
-#include <OpenThreads/ReentrantMutex>
-#include <OpenThreads/ScopedLock>
 #include <string>
 #include <boost/shared_ptr.hpp>
 
@@ -18,13 +16,8 @@ namespace webservices
 {
 
 //! Interfejs konfigurowania autoryzacji użytkownika usług webowych
-class IWSCredentials : public OpenThreads::ReentrantMutex
+class IWSCredentials
 {
-public:
-
-	typedef OpenThreads::ReentrantMutex Mutex;
-	typedef OpenThreads::ScopedLock<Mutex> ScopedLock;
-
 public:
 
     //! Wirtualny destruktor

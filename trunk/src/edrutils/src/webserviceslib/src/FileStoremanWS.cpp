@@ -6,9 +6,10 @@
 namespace webservices
 {
 
-SimpleFileStoremanWS::SimpleFileStoremanWS(const WSConnectionPtr & connection) : connection_(connection), constConnection_(connection)
+SimpleFileStoremanWS::SimpleFileStoremanWS(const WSConnectionPtr & connection)
+	: WebServiceT<IBasicStoremanWS>(connection)
 {
-	mutex = this;
+	
 }
 
 SimpleFileStoremanWS::~SimpleFileStoremanWS()
@@ -16,51 +17,32 @@ SimpleFileStoremanWS::~SimpleFileStoremanWS()
 
 }
 
-void SimpleFileStoremanWS::setConnection(const WSConnectionPtr & connection)
+void SimpleFileStoremanWS::downloadComplete(const int id, const std::string & path)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	connection_ = connection;
-	constConnection_ = connection;
+	connection()->setOperation("DownloadComplete");
+	connection()->setValue("fileID", id);
+	connection()->setValue("path", path);
+	connection()->invoke();
 }
 
-const WSConnectionPtr & SimpleFileStoremanWS::connection()
-{
-	return connection_;
-}
+const xmlWsdl::FileData SimpleFileStoremanWS::retrieve(const int id)
+{	
+	connection()->setOperation("RetrieveFile");
+	connection()->setValue("fileID", id);
+	connection()->invoke(true);
 
-const WSConnectionConstPtr & SimpleFileStoremanWS::connection() const
-{
-	return constConnection_;
-}
-
-void SimpleFileStoremanWS::downloadComplete(int id, const std::string & path)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("DownloadComplete");
-	connection_->setValue("fileID", id);
-	connection_->setValue("path", path);
-	connection_->invoke();
-}
-
-const std::string SimpleFileStoremanWS::retrieve(int id)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("RetrieveFile");
-	connection_->setValue("fileID", id);
-	connection_->invoke(true);
-
-	std::string ret;
-	connection_->getValue("FileLocation", ret);
+	xmlWsdl::FileData ret;
+	connection()->getValue("FileLocation", ret.fileLocation);
+	connection()->getValue("SubdirPath", ret.subdirPath);
 
 	return ret;
 }
 
 
-PhotoStoremanWS::PhotoStoremanWS(const WSConnectionPtr & connection) : connection_(connection), constConnection_(connection)
+PhotoStoremanWS::PhotoStoremanWS(const WSConnectionPtr & connection)
+	: WebServiceT<IBasicStoremanWS>(connection)
 {
-	mutex = this;
+
 }
 
 PhotoStoremanWS::~PhotoStoremanWS()
@@ -68,52 +50,32 @@ PhotoStoremanWS::~PhotoStoremanWS()
 
 }
 
-void PhotoStoremanWS::setConnection(const WSConnectionPtr & connection)
+void PhotoStoremanWS::downloadComplete(const int id, const std::string & path)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	connection_ = connection;
-	constConnection_ = connection;
+	connection()->setOperation("DownloadComplete");
+	connection()->setValue("photoID", id);
+	connection()->setValue("path", path);
+	connection()->invoke();
 }
 
-const WSConnectionPtr & PhotoStoremanWS::connection()
-{
-	return connection_;
-}
+const xmlWsdl::FileData PhotoStoremanWS::retrieve(const int id)
+{	
+	connection()->setOperation("RetrievePhoto");
+	connection()->setValue("photoID", id);
+	connection()->invoke(true);
 
-const WSConnectionConstPtr & PhotoStoremanWS::connection() const
-{
-	return constConnection_;
-}
-
-void PhotoStoremanWS::downloadComplete(int id, const std::string & path)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("DownloadComplete");
-	connection_->setValue("photoID", id);
-	connection_->setValue("path", path);
-	connection_->invoke();
-}
-
-const std::string PhotoStoremanWS::retrieve(int id)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("RetrievePhoto");
-	connection_->setValue("photoID", id);
-	connection_->invoke(true);
-
-	std::string ret;
-	connection_->getValue("FileLocation", ret);
+	xmlWsdl::FileData ret;
+	connection()->getValue("FileLocation", ret.fileLocation);
+	connection()->getValue("SubdirPath", ret.subdirPath);
 
 	return ret;
 }
 
 
-ShallowStoremanWS::ShallowStoremanWS(const WSConnectionPtr & connection) : connection_(connection),
-	constConnection_(connection), fileStoremanWS(connection)
+ShallowStoremanWS::ShallowStoremanWS(const WSConnectionPtr & connection)
+	: WebServiceT<IShallowStoremanWS>(connection)	
 {
-	mutex = this;
+	
 }
 
 ShallowStoremanWS::~ShallowStoremanWS()
@@ -121,56 +83,37 @@ ShallowStoremanWS::~ShallowStoremanWS()
 
 }
 
-void ShallowStoremanWS::setConnection(const WSConnectionPtr & connection)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	connection_ = connection;
-	constConnection_ = connection;
-	fileStoremanWS.setConnection(connection);
-}
-
-const WSConnectionPtr & ShallowStoremanWS::connection()
-{
-	return connection_;
-}
-
-const WSConnectionConstPtr & ShallowStoremanWS::connection() const
-{
-	return constConnection_;
-}
-
 const std::string ShallowStoremanWS::getShallowCopy()
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("GetShallowCopy");
-	connection_->invoke(true);
+	connection()->setOperation("GetShallowCopy");
+	connection()->invoke(true);
+
 	std::string ret;
-	connection_->getValue("GetShallowCopyResult", ret);
+	connection()->getValue("GetShallowCopyResult", ret);
+
 	return ret;
 }
 
 const std::string ShallowStoremanWS::getMetadata()
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("GetMetadata");
-	connection_->invoke(true);
+{	
+	connection()->setOperation("GetMetadata");
+	connection()->invoke(true);
+
 	std::string ret;
-	connection_->getValue("GetMetadataResult", ret);
+	connection()->getValue("GetMetadataResult", ret);
+
 	return ret;
 }
 
 void ShallowStoremanWS::downloadComplete(const std::string & path)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	fileStoremanWS.downloadComplete(0, path);
+{	
+	SimpleFileStoremanWS(connection()).downloadComplete(0, path);
 }
 
-MotionFileStoremanWS::MotionFileStoremanWS(const WSConnectionPtr & connection) : connection_(connection), constConnection_(connection),
-	simpleFileStoremanWS_(connection), shallowStoremanWS_(connection)
+MotionFileStoremanWS::MotionFileStoremanWS(const WSConnectionPtr & connection)
+	: WebServiceT<IMotionFileStoremanWS>(connection)
 {
-	mutex = this;
+
 }
 
 MotionFileStoremanWS::~MotionFileStoremanWS()
@@ -178,155 +121,123 @@ MotionFileStoremanWS::~MotionFileStoremanWS()
 
 }
 
-void MotionFileStoremanWS::setConnection(const WSConnectionPtr & connection)
+void MotionFileStoremanWS::downloadComplete(const int fileID, const std::string & path)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	connection_ = connection;
-	constConnection_ = connection;
-	simpleFileStoremanWS_.setConnection(connection);
-	shallowStoremanWS_.setConnection(connection);
-}
-
-const WSConnectionPtr & MotionFileStoremanWS::connection()
-{
-	return connection_;
-}
-
-const WSConnectionConstPtr & MotionFileStoremanWS::connection() const
-{
-	return constConnection_;
-}
-
-void MotionFileStoremanWS::downloadComplete(int fileID, const std::string& path)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-    simpleFileStoremanWS_.downloadComplete(fileID, path);
+	SimpleFileStoremanWS(connection()).downloadComplete(fileID, path);
 }
 
 void MotionFileStoremanWS::downloadComplete(const std::string & path)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	shallowStoremanWS_.downloadComplete(path);
+	ShallowStoremanWS(connection()).downloadComplete(path);
 }
 
-const std::string MotionFileStoremanWS::retrieve(int fileID)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-    return simpleFileStoremanWS_.retrieve(fileID);
+const xmlWsdl::FileData MotionFileStoremanWS::retrieve(const int fileID)
+{	
+    return SimpleFileStoremanWS(connection()).retrieve(fileID);
 }
 
 const std::string MotionFileStoremanWS::getShallowCopy()
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-    return shallowStoremanWS_.getShallowCopy();
+{	
+    return ShallowStoremanWS(connection()).getShallowCopy();
 }
 
 const std::string MotionFileStoremanWS::getShallowCopyIncrement(const DateTime & dateTime)
 {
-	struct tm time;
-	time.tm_year = dateTime.getYear();
-	time.tm_mon = dateTime.getMonth() - 1;
-	time.tm_mday = dateTime.getDay();
-	time.tm_hour = dateTime.getHour();
-	time.tm_min = dateTime.getMinutes();
-	time.tm_sec = dateTime.getSeconds();
+    connection()->setOperation("GetShallowCopyIncrement");
+    connection()->setValue("since", toString(dateTime));
+    connection()->invoke(true);
+    
+	std::string ret;
+    connection()->getValue("GetShallowCopyIncrementResult", ret);
 
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-    connection_->setOperation("GetShallowCopyIncrement");
-
-    connection_->setValue("since", toString(time));
-    connection_->invoke(true);
-    std::string ret;
-    connection_->getValue("GetShallowCopyIncrementResult", ret);
     return ret;
 }
 		
 const std::string MotionFileStoremanWS::getMetadata()
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-    return shallowStoremanWS_.getMetadata();
+	return ShallowStoremanWS(connection()).getMetadata();
 }
 
-const int MotionFileStoremanWS::storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename)
+const int MotionFileStoremanWS::storeSessionFile(const int sessionID,
+	const std::string & path, const std::string & description,
+	const std::string & filename)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("StorePerformerFile");
-	connection_->setValue("performerID",performerID);
-	connection_->setValue("path", path);
-	connection_->setValue("description", description);
-	connection_->setValue("filename", filename);
-	connection_->invoke(true);
-	
-	int val = -1;
-	connection_->getValue("StorePerformerFileResult", val);
-	return val;
-}
-
-void MotionFileStoremanWS::storePerformerFiles(int performerID, const std::string& path)
-{
-	
-}
-
-const int MotionFileStoremanWS::storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("StoreSessionFile");
-	connection_->setValue("sessionId", sessionID);
-	connection_->setValue("path", path);
-	connection_->setValue("description", description);
-	connection_->setValue("filename", filename);
-	connection_->invoke(true);
+	connection()->setOperation("StoreSessionFile");
+	connection()->setValue("sessionId", sessionID);
+	connection()->setValue("path", path);
+	connection()->setValue("description", description);
+	connection()->setValue("filename", filename);
+	connection()->invoke(true);
 		
 	int val = -1;
-	
-	connection_->getValue("StoreSessionFileResult", val);
+	connection()->getValue("StoreSessionFileResult", val);
 
 	return val;
 }
 
-const int MotionFileStoremanWS::storeSessionFiles(int sessionID, const std::string& path, const std::string& description)
+void MotionFileStoremanWS::storeSessionFiles(const int sessionID,
+	const std::string & path, const std::string & description)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("StoreSessionFiles");
-	connection_->setValue("sessionID", sessionID);
-	connection_->setValue("path", path);
-	connection_->setValue("description", description);
-	connection_->invoke(true);
-		
-	int val = -1;
-	connection_->getValue("StoreSessionFilesResult", val);
-	return val;
+	connection()->setOperation("StoreSessionFiles");
+	connection()->setValue("sessionID", sessionID);
+	connection()->setValue("path", path);
+	connection()->setValue("description", description);
+	connection()->invoke();	
 }
 
-const int MotionFileStoremanWS::storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("StoreTrialFile");
-	connection_->setValue("trialID", trialID);
-	connection_->setValue("path", path);
-	connection_->setValue("description", description);
-	connection_->setValue("filename", filename);
-	connection_->invoke(true);
+const int MotionFileStoremanWS::storeTrialFile(const int trialID,
+	const std::string & path, const std::string & description,
+	const std::string& filename)
+{	
+	connection()->setOperation("StoreTrialFile");
+	connection()->setValue("trialID", trialID);
+	connection()->setValue("path", path);
+	connection()->setValue("description", description);
+	connection()->setValue("filename", filename);
+	connection()->invoke(true);
 
 	int val = -1;
-	connection_->getValue("StoreTrialFileResult", val);
+	connection()->getValue("StoreTrialFileResult", val);
+
 	return val;
 	
 }
 
-void MotionFileStoremanWS::storeTrialFiles(int trialID, const std::string& path)
+void MotionFileStoremanWS::storeTrialFiles(const int trialID,
+	const std::string & path, const std::string & description)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("StoreTrialFiles");
-	connection_->setValue("trialID", trialID);
-	connection_->setValue("path", path);
-	connection_->invoke();
+	connection()->setOperation("StoreTrialFiles");
+	connection()->setValue("trialID", trialID);
+	connection()->setValue("path", path);
+	connection()->setValue("description", description);
+	connection()->invoke();
+}
+
+const int MotionFileStoremanWS::storeMeasurementConfFile(const int mcID,
+	const std::string & path, const std::string & description,
+	const std::string & filename)
+{	
+	connection()->setOperation("StoreMeasurementConfFile");
+	connection()->setValue("mcID", mcID);
+	connection()->setValue("path", path);
+	connection()->setValue("description", description);
+	connection()->setValue("filename", filename);
+	connection()->invoke(true);
+
+	int val = -1;
+	connection()->getValue("StoreMeasurementConfFileResult", val);
+
+	return val;
+}
+
+void MotionFileStoremanWS::storeMeasurementConfFiles(const int mcID,
+	const std::string & path, const std::string & description)
+{
+	connection()->setOperation("StoreMeasurementConfFiles");
+	connection()->setValue("mcID", mcID);
+	connection()->setValue("path", path);
+	connection()->setValue("description", description);
+	connection()->invoke();
 }
 
 
@@ -350,10 +261,9 @@ void MotionFileStoremanWS::storeTrialFiles(int trialID, const std::string& path)
 //
 
 MedicalFileStoremanWS::MedicalFileStoremanWS(const WSConnectionPtr & connection)
-	: connection_(connection), constConnection_(connection),
-	photoStoremanWS_(connection), shallowStoremanWS_(connection)
+	: WebServiceT<IMedicalFileStoremanWS>(connection)
 {
-	mutex = this;
+	
 }
 
 MedicalFileStoremanWS::~MedicalFileStoremanWS()
@@ -361,53 +271,30 @@ MedicalFileStoremanWS::~MedicalFileStoremanWS()
 
 }
 
-void MedicalFileStoremanWS::setConnection(const WSConnectionPtr & connection)
+void MedicalFileStoremanWS::downloadComplete(const int fileID,
+	const std::string & path)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	connection_ = connection;
-	constConnection_ = connection;
-	photoStoremanWS_.setConnection(connection);
-	shallowStoremanWS_.setConnection(connection);
-}
-
-const WSConnectionPtr & MedicalFileStoremanWS::connection()
-{
-	return connection_;
-}
-
-const WSConnectionConstPtr & MedicalFileStoremanWS::connection() const
-{
-	return constConnection_;
-}
-
-void MedicalFileStoremanWS::downloadComplete(int fileID, const std::string& path)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	photoStoremanWS_.downloadComplete(fileID, path);
+	PhotoStoremanWS(connection()).downloadComplete(fileID, path);
 }
 
 void MedicalFileStoremanWS::downloadComplete(const std::string & path)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	shallowStoremanWS_.downloadComplete(path);
+{	
+	ShallowStoremanWS(connection()).downloadComplete(path);
 }
 
-const std::string MedicalFileStoremanWS::retrieve(int fileID)
+const xmlWsdl::FileData MedicalFileStoremanWS::retrieve(const int fileID)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	return photoStoremanWS_.retrieve(fileID);
+	return PhotoStoremanWS(connection()).retrieve(fileID);
 }
 
 const std::string MedicalFileStoremanWS::getShallowCopy()
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	return shallowStoremanWS_.getShallowCopy();
+{	
+	return ShallowStoremanWS(connection()).getShallowCopy();
 }
 
 const std::string MedicalFileStoremanWS::getMetadata()
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	return shallowStoremanWS_.getMetadata();
+	return ShallowStoremanWS(connection()).getMetadata();
 }
 
 }

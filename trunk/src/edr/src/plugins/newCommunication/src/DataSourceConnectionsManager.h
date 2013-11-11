@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___DATASOURCECONNECTIONSMANAGER_H__
 #define HEADER_GUARD___DATASOURCECONNECTIONSMANAGER_H__
 
-#include "WSConnection.h"
+#include <webserviceslib/WSConnection.h>
 #include <webserviceslib/FtpsConnection.h>
 
 //! Klasa agregująca połączenia webservices - singletone
@@ -25,28 +25,28 @@ public:
 	static DataSourceConnectionManager * instance();
 
 	//! \return Połączenie z usługą FileStoremanWS dla danych ruchu
-	const WSConnectionPtr & motionFileStoremanWSConnection() const;
+	const webservices::WSSecureConnectionPtr & motionFileStoremanWSConnection() const;
 	//! \return Połączenie z usługą BasicQueriesWS dla danych ruchu
-	const WSConnectionPtr & motionBasicQueriesWSConnection() const;
+	const webservices::WSSecureConnectionPtr & motionBasicQueriesWSConnection() const;
 	//! \return Połączenie z usługą BasicUpdatesWS dla danych ruchu
-	const WSConnectionPtr & motionBasicUpdatesWSConnection() const;
+	const webservices::WSSecureConnectionPtr & motionBasicUpdatesWSConnection() const;
 
 	//! \return Połączenie z usługą FileStoremanWS dla danych medycznych
-	const WSConnectionPtr & medicalFileStoremanWSConnection() const;
+	const webservices::WSSecureConnectionPtr & medicalFileStoremanWSConnection() const;
 	//! \return Połączenie z usługą BasicQueriesWS dla danych medycznych
-	const WSConnectionPtr & medicalBasicQueriesWSConnection() const;
+	const webservices::WSSecureConnectionPtr & medicalBasicQueriesWSConnection() const;
 	//! \return Połączenie z usługą BasicUpdatesWS dla danych medycznych
-	const WSConnectionPtr & medicalBasicUpdatesWSConnection() const;
+	const webservices::WSSecureConnectionPtr & medicalBasicUpdatesWSConnection() const;
 
 
 	//! \return Połączenie z usługą AcvcountFactoryWS
-	const WSConnectionPtr & accountFactoryWSConnection() const;
+	const webservices::WSSecureConnectionPtr & accountFactoryWSConnection() const;
 	//! \return Połączenie z usługą UserPersonalSpaceWS
-	const WSConnectionPtr & userPersonalSpaceWSConnection() const;
+	const webservices::WSSecureConnectionPtr & userPersonalSpaceWSConnection() const;
 	//! \return Połączenie z usługą AdministrationWS
-	const WSConnectionPtr & administrationWSConnection() const;
+	const webservices::WSSecureConnectionPtr & administrationWSConnection() const;
 	//! \return Połączenie z usługą AuthorizationWS
-	const WSConnectionPtr & authorizationWSConnection() const;
+	const webservices::WSSecureConnectionPtr & authorizationWSConnection() const;
 
 	//! \return Połączenie ftps z danymi ruchu
 	const webservices::FtpsConnectionPtr & motionFtps() const;
@@ -61,18 +61,18 @@ private:
 
 private:
 
-	WSConnectionPtr motionFilesStoremanWSConnection_;
-	WSConnectionPtr motionBasicQueriesWSConnection_;
-	WSConnectionPtr motionBasicUpdatesWSConnection_;
-
-	WSConnectionPtr medicalFilesStoremanWSConnection_;
-	WSConnectionPtr medicalBasicQueriesWSConnection_;
-	WSConnectionPtr medicalBasicUpdatesWSConnection_;
-
-	WSConnectionPtr accountFactoryWSConnection_;
-	WSConnectionPtr userPersonalSpaceWSConnection_;
-	WSConnectionPtr administrationWSConnection_;
-	WSConnectionPtr authorizationWSConnection_;
+	webservices::WSSecureConnectionPtr motionFilesStoremanWSConnection_;
+	webservices::WSSecureConnectionPtr motionBasicQueriesWSConnection_;
+	webservices::WSSecureConnectionPtr motionBasicUpdatesWSConnection_;
+				 
+	webservices::WSSecureConnectionPtr medicalFilesStoremanWSConnection_;
+	webservices::WSSecureConnectionPtr medicalBasicQueriesWSConnection_;
+	webservices::WSSecureConnectionPtr medicalBasicUpdatesWSConnection_;
+				 
+	webservices::WSSecureConnectionPtr accountFactoryWSConnection_;
+	webservices::WSSecureConnectionPtr userPersonalSpaceWSConnection_;
+	webservices::WSSecureConnectionPtr administrationWSConnection_;
+	webservices::WSSecureConnectionPtr authorizationWSConnection_;
 
 	webservices::FtpsConnectionPtr motionFtps_;
 	webservices::FtpsConnectionPtr medicalFtps_;

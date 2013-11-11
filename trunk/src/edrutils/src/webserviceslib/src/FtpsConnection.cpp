@@ -12,7 +12,7 @@ namespace webservices
 {
 
 //! Model PIMPL - chowam curla
-class FtpsConnectionImpl
+class FtpsConnection::FtpsConnectionImpl
 {
 public:
     //! Domyślny konstruktor

@@ -2,9 +2,10 @@
 
 namespace webservices {
 
-SingleAccountFactoryWS::SingleAccountFactoryWS(const WSConnectionPtr & connection) : connection_(connection), constConnection_(connection)
+SingleAccountFactoryWS::SingleAccountFactoryWS(const WSConnectionPtr & connection)
+	: WebServiceT<ISingleAccountFactoryWS>(connection)
 {
-	mutex = this;
+
 }
 
 SingleAccountFactoryWS::~SingleAccountFactoryWS()
@@ -12,69 +13,51 @@ SingleAccountFactoryWS::~SingleAccountFactoryWS()
 
 }
 
-void SingleAccountFactoryWS::setConnection(const WSConnectionPtr & connection)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	connection_ = connection;
-	constConnection_ = connection;
-}
-
-const WSConnectionPtr & SingleAccountFactoryWS::connection()
-{
-	return connection_;
-}
-
-const WSConnectionConstPtr & SingleAccountFactoryWS::connection() const
-{
-	return constConnection_;
-}
-
-void SingleAccountFactoryWS::createUserAccount(const std::string & login, const std::string & email, const std::string & password,
+void SingleAccountFactoryWS::createUserAccount(const std::string & login,
+	const std::string & email, const std::string & password,
 	const std::string & firstName, const std::string & lastName)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("CreateUserAccount");
-	connection_->setValue("login", login);
-	connection_->setValue("email", email);
-	connection_->setValue("pass", password);
-	connection_->setValue("firstName", firstName);
-	connection_->setValue("lastName", lastName);
-	connection_->invoke();
+	connection()->setOperation("CreateUserAccount");
+	connection()->setValue("login", login);
+	connection()->setValue("email", email);
+	connection()->setValue("pass", password);
+	connection()->setValue("firstName", firstName);
+	connection()->setValue("lastName", lastName);
+	connection()->invoke();
 }
 
-bool SingleAccountFactoryWS::activateUserAccount(const std::string & login, const std::string & activationCode)
+const bool SingleAccountFactoryWS::activateUserAccount(const std::string & login,
+	const std::string & activationCode)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("ActivateUserAccount");
-	connection_->setValue("login", login);
-	connection_->setValue("activationCode", activationCode);
-	connection_->invoke(true);
+	connection()->setOperation("ActivateUserAccount");
+	connection()->setValue("login", login);
+	connection()->setValue("activationCode", activationCode);
+	connection()->invoke(true);
+	
 	bool ret = false;
-	connection_->getValue("ActivateUserAccountResult", ret);
+	connection()->getValue("ActivateUserAccountResult", ret);
 
 	return ret;
 }
 
-bool SingleAccountFactoryWS::resetPassword(const std::string & email)
+const bool SingleAccountFactoryWS::resetPassword(const std::string & email)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("ResetPassword");
-	connection_->setValue("email", email);
-	connection_->invoke(true);
+	connection()->setOperation("ResetPassword");
+	connection()->setValue("email", email);
+	connection()->invoke(true);
+	
 	bool ret = false;
-	connection_->getValue("ResetPasswordResult", ret);
+	connection()->getValue("ResetPasswordResult", ret);
 
 	return ret;
 }
 
 //Multi
 
-MultiAccountFactoryWS::MultiAccountFactoryWS(const WSConnectionPtr & connection) : connection_(connection), constConnection_(connection)
+MultiAccountFactoryWS::MultiAccountFactoryWS(const WSConnectionPtr & connection)
+	: WebServiceT<IMultiAccountFactoryWS>(connection)
 {
-	mutex = this;
+
 }
 
 MultiAccountFactoryWS::~MultiAccountFactoryWS()
@@ -82,63 +65,46 @@ MultiAccountFactoryWS::~MultiAccountFactoryWS()
 
 }
 
-void MultiAccountFactoryWS::setConnection(const WSConnectionPtr & connection)
+void MultiAccountFactoryWS::createUserAccount(const std::string & login,
+	const std::string & email, const std::string & password,
+	const std::string & firstName, const std::string & lastName,
+	const bool propagateToHMDB)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	connection_ = connection;
-	constConnection_ = connection;
+	connection()->setOperation("CreateUserAccount");
+	connection()->setValue("login", login);
+	connection()->setValue("email", email);
+	connection()->setValue("pass", password);
+	connection()->setValue("firstName", firstName);
+	connection()->setValue("lastName", lastName);
+	connection()->setValue("propagateToHMDB", propagateToHMDB);
+	connection()->invoke();
 }
 
-const WSConnectionPtr & MultiAccountFactoryWS::connection()
+const bool MultiAccountFactoryWS::activateUserAccount(const std::string & login,
+	const std::string & activationCode, const bool propagateToHMDB)
 {
-	return connection_;
-}
-
-const WSConnectionConstPtr & MultiAccountFactoryWS::connection() const
-{
-	return constConnection_;
-}
-
-void MultiAccountFactoryWS::createUserAccount(const std::string & login, const std::string & email, const std::string & password,
-	const std::string & firstName, const std::string & lastName, bool propagateToHMDB)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("CreateUserAccount");
-	connection_->setValue("login", login);
-	connection_->setValue("email", email);
-	connection_->setValue("pass", password);
-	connection_->setValue("firstName", firstName);
-	connection_->setValue("lastName", lastName);
-	connection_->setValue("propagateToHMDB", propagateToHMDB);
-	connection_->invoke();
-}
-
-bool MultiAccountFactoryWS::activateUserAccount(const std::string & login, const std::string & activationCode, bool propagateToHMDB)
-{
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("ActivateUserAccount");
-	connection_->setValue("login", login);
-	connection_->setValue("activationCode", activationCode);
-	connection_->setValue("propagateToHMDB", propagateToHMDB);
-	connection_->invoke(true);
+	connection()->setOperation("ActivateUserAccount");
+	connection()->setValue("login", login);
+	connection()->setValue("activationCode", activationCode);
+	connection()->setValue("propagateToHMDB", propagateToHMDB);
+	connection()->invoke(true);
+	
 	bool ret = false;
-	connection_->getValue("ActivateUserAccountResult", ret);
+	connection()->getValue("ActivateUserAccountResult", ret);
 
 	return ret;
 }
 
-bool MultiAccountFactoryWS::resetPassword(const std::string & email, bool propagateToHMDB)
+const bool MultiAccountFactoryWS::resetPassword(const std::string & email,
+	const bool propagateToHMDB)
 {
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
-	webservices::IWSConnection::ScopedLock lockConn(*connection_);
-	connection_->setOperation("ResetPassword");
-	connection_->setValue("propagateToHMDB", propagateToHMDB);
-	connection_->setValue("email", email);
-	connection_->invoke(true);
+	connection()->setOperation("ResetPassword");
+	connection()->setValue("propagateToHMDB", propagateToHMDB);
+	connection()->setValue("email", email);
+	connection()->invoke(true);
+
 	bool ret = false;
-	connection_->getValue("ResetPasswordResult", ret);
+	connection()->getValue("ResetPasswordResult", ret);
 
 	return ret;
 }

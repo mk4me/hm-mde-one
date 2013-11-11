@@ -48,8 +48,9 @@ BEGIN_INSTALLER_GROUP(core "Core" "Core application elements")
 ADD_INSTALLER_GROUP_PROJECT(corelib "corelib" "General purpose library" "REQUIRED" "Full Min")
 ADD_INSTALLER_GROUP_PROJECT(coreui "coreui" "UI support library" "REQUIRED" "Full Min")
 
-ADD_INSTALLER_GROUP_PROJECT(old_view "old_view" "Debelopers view" "HIDDEN" "Full Min")
-ADD_INSTALLER_GROUP_PROJECT(hmm_view "hmm_view" "Medical view" "HIDDEN" "Full Min")
+#ADD_INSTALLER_GROUP_PROJECT(old_view "old_view" "Debelopers view" "HIDDEN" "Full Min")
+#ADD_INSTALLER_GROUP_PROJECT(hmm_view "hmm_view" "Medical view" "HIDDEN" "Full Min")
+ADD_INSTALLER_GROUP_PROJECT(mde_view "mde_view" "Medical view" "HIDDEN" "Full Min")
 
 END_INSTALLER_GROUP()
 
@@ -63,6 +64,7 @@ ADD_INSTALLER_GROUP_PROJECT(plugin_newCommunication "newCommunication" "Plugin o
 ADD_INSTALLER_GROUP_PROJECT(plugin_newChart "newChart" "Plugin supporting data plots and visualisation" "" "Full Min")
 ADD_INSTALLER_GROUP_PROJECT(plugin_subject "subject" "Plugin supporting motion data organisation" "" "Full Min")
 ADD_INSTALLER_GROUP_PROJECT(plugin_newVdf "newVdf" "Plugins supporting efficient data processing with flexible GUI configuration" "" "Full")
+ADD_INSTALLER_GROUP_PROJECT(plugin_dfElements "dfElements" "Plugins delivering universal helper classes for newVdf" "" "Full")
 
 END_INSTALLER_GROUP()
 

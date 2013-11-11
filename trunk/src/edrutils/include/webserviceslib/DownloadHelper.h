@@ -22,7 +22,7 @@ namespace webservices
 		BasicDownloadHelper();
 		virtual ~BasicDownloadHelper();
 
-		virtual IFtpsConnection::OperationStatus get(IFtpsConnection::IProgress * progress = nullptr);
+		virtual const IFtpsConnection::OperationStatus get(IFtpsConnection::IProgress * progress = nullptr);
 		virtual void abort();
 		virtual const int progress();
 		virtual const std::string errorMessage();
@@ -55,7 +55,7 @@ namespace webservices
 		ShallowDownloadHelper();
 		virtual ~ShallowDownloadHelper();
 
-		virtual IFtpsConnection::OperationStatus get(IFtpsConnection::IProgress * progress = nullptr);
+		virtual const IFtpsConnection::OperationStatus get(IFtpsConnection::IProgress * progress = nullptr);
 		virtual void abort();
 		virtual const int progress();
 		virtual const std::string errorMessage();

@@ -13,40 +13,28 @@
 
 namespace webservices
 {
-    class AdministrationWS : public IAdministrationWS
+    class AdministrationWS : public WebServiceT<IAdministrationWS>
     {
     public:
 
 		AdministrationWS(const WSConnectionPtr & connection = WSConnectionPtr());
 		virtual ~AdministrationWS();
 
-        //! \param connection Połączenie przez które będzie realizowany serwis
-        virtual void setConnection(const WSConnectionPtr & connection);
-        //! \return Połączenie przez które jest realizowany serwis
-        virtual const WSConnectionPtr & connection();
-        //! \return Połączenie przez które jest realizowany serwis
-        virtual const WSConnectionConstPtr & connection() const;
-
         virtual void defineAttributeGroup(const std::string & groupName, const std::string & entity);
 
         virtual void removeAttributeGroup(const std::string & groupName, const std::string & entity);
 
         virtual void defineAttribute(const std::string & attributeName, const std::string & groupName,
-            const std::string & entity, bool isEnum, const std::string & pluginDescriptor,
+            const std::string & entity, const bool isEnum, const std::string & pluginDescriptor,
             const std::string & type, const std::string & unit);
 
         virtual void removeAttribute(const std::string & attributeName, const std::string & groupName,
             const std::string & entity);
 
         virtual void addAttributeEnumValue(const std::string & attributeName, const std::string & groupName,
-            const std::string & entity, const std::string & value, bool clearExisting);
+            const std::string & entity, const std::string & value, const bool clearExisting);
 
-        virtual void downloadAreaCleanup(int olderThanMinutes);
-
-	private:
-		mutable OpenThreads::ReentrantMutex * mutex;
-		WSConnectionPtr connection_;
-		WSConnectionConstPtr constConnection_;
+        virtual void downloadAreaCleanup(const int olderThanMinutes);
     };
 }
 

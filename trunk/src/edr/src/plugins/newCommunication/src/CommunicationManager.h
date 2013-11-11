@@ -8,7 +8,7 @@ i web serwisy wsdl.
 #ifndef HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
 #define HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
 
-#include "WSConnection.h"
+#include <webserviceslib/WSConnection.h>
 #include <corelib/IDataManagerReader.h>
 #include <corelib/IServiceManager.h>
 #include <webserviceslib/Entity.h>
@@ -343,9 +343,9 @@ public:
 	void setMotionFtps(const webservices::FtpsConnectionPtr & motionFtps);
 
 	//! \return Połącznie medyczne
-	const WSConnectionPtr & medicalConnection();
+	const webservices::WSConnectionPtr & medicalConnection();
 	//! \return Połącznie ruchu
-	const WSConnectionPtr & motionConnection();
+	const webservices::WSConnectionPtr & motionConnection();
 
 	//! \return Ftps do ściągania danych medycznych
 	const webservices::FtpsConnectionPtr & medicalFtps();

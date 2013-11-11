@@ -15,7 +15,7 @@
 #include <webserviceslib/IFtpsConnection.h>
 #include "DataSourceUser.h"
 #include <corelib/ISource.h>
-#include "WSConnection.h"
+#include <webserviceslib/WSConnection.h>
 
 //! Forward declarations
 class DownloadRequest;
@@ -233,9 +233,9 @@ private:
 	//! Adres serwera który pingujemy
 	std::string serwerPingUrl;
 	//! Połączenie z web services dla danych ruchu
-	WSConnectionPtr motionFileStoremanWSConnection;
+	webservices::WSConnectionPtr motionFileStoremanWSConnection;
 	//! Połączenie z web services dla danych medycznych
-	WSConnectionPtr medicalFileStoremanConnection;
+	webservices::WSConnectionPtr medicalFileStoremanConnection;
 
 	//! ------------------------------- FTPS -----------------------------
 

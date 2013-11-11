@@ -42,6 +42,11 @@
 #include <boost/lexical_cast.hpp>
 #include "TreeBuilder.h"
 
+//Dla wersji demo wystarczy zdefiniować DEMO_VERSION_COMMUNICATION
+//aby zablokowac możliwość ściągania danych z bazy danych
+
+//#define DEMO_VERSION_COMMUNICATION
+
 
 using namespace communication;
 using namespace webservices;
@@ -259,18 +264,23 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	userEdit->installEventFilter(loginEventFilter);
 	passwordEdit->installEventFilter(loginEventFilter);
 
-	//dataSource->setOfflineMode(true);
-	//onLogin("matiegon", "Matiegon9");
-	////onLogin("bdrdemo", ";bdrdemo");
-	//setCurrentWidget(motionDataTab);
-	//setTabEnabled(indexOf(configTab), false);
-	//setTabEnabled(indexOf(userDataTab), false);
+#ifdef DEMO_VERSION_COMMUNICATION
 
-
+	dataSource->setOfflineMode(true);
+	onLogin("matiegon", "Matiegon9");
+	//onLogin("bdrdemo", ";bdrdemo");
+	
+	setCurrentWidget(motionDataTab);
+	setTabEnabled(indexOf(configTab), false);
+	setTabEnabled(indexOf(userDataTab), false);
+	
+#else
+	
 	setTabEnabled(indexOf(motionDataTab), false);
 	setTabEnabled(indexOf(userDataTab), false);
 
 	setCurrentWidget(configTab);
+#endif
 }
 
 DataSourceWidget::~DataSourceWidget()
@@ -1155,7 +1165,11 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 	auto load = menu.addAction(tr("Load"));
 	auto unload = menu.addAction(tr("Unload"));
 	menu.addSeparator();
-	auto download = menu.addAction(tr("Download"));
+#ifdef DEMO_VERSION_COMMUNICATION
+	auto download = menu.addAction(tr("Download - not available in demo version"));
+#else
+  auto download = menu.addAction(tr("Download"));
+#endif
 	menu.addSeparator();
 
 	auto refresh = menu.addAction(tr("Refresh status"));
@@ -1218,10 +1232,14 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 					connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
 				}
 
+        #ifndef DEMO_VERSION_COMMUNICATION
+				
 				if(filesToDownload.empty() == false){
 					download->setEnabled(true);
 					connect(download, SIGNAL(triggered()), this, SLOT(onDownload()));
 				}
+				
+        #endif
 			}
 		}
 	}
@@ -1232,7 +1250,11 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 	//poszczeólne akcje
 	auto loadAll = menu.addAction(tr("Load All"));
 	auto unloadAll = menu.addAction(tr("Unload All"));
-	auto downloadAll = menu.addAction(tr("Download All"));
+  #ifdef DEMO_VERSION_COMMUNICATION
+	auto downloadAll = menu.addAction(tr("Download All - not available in demo version"));
+  #else
+  auto downloadAll = menu.addAction(tr("Download All"));
+  #endif
 
 	//skoro coś ściągam muszę poczekać!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
@@ -1260,10 +1282,15 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 			connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnload()));
 		}
 
+    #ifndef DEMO_VERSION_COMMUNICATION
+		
 		if(filesToDownload.empty() == false){
 			downloadAll->setEnabled(true);
 			connect(downloadAll, SIGNAL(triggered()), this, SLOT(onDownload()));
 		}
+		
+    #endif
+
 	}else{
 		loadAll->setEnabled(false);
 		unloadAll->setEnabled(false);
@@ -1277,13 +1304,19 @@ void DataSourceWidget::generateCommonContextMenu(QMenu & menu, QTreeWidget * per
 	auto loadProject = menu.addMenu(tr("Load project"));
 	auto deleteProject = menu.addMenu(tr("Delete project"));
 	menu.addSeparator();
-	auto synch = menu.addAction(tr("Synchronize"));
-
+  #ifdef DEMO_VERSION_COMMUNICATION
+	auto synch = menu.addAction(tr("Synchronize - not available in demo version"));
+	synch->setEnabled(false);
+  #else
+  auto synch = menu.addAction(tr("Synchronize"));
+  #endif
 	//skoro coś ściągam muszę poczekać!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
 
 		connect(saveProject, SIGNAL(triggered()), this, SLOT(onSaveProject()));
+    #ifndef DEMO_VERSION_COMMUNICATION
 		connect(synch, SIGNAL(triggered()), this, SLOT(updateShallowCopy()));
+    #endif
 
 		for(auto it = projects.begin(); it != projects.end(); ++it){
 			auto loadAction = loadProject->addAction(QString::fromUtf8(it->first.c_str()));
@@ -1766,7 +1799,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
                 
 				(*sOW)["label"] = s->sessionName;
 				(*sOW)["EMGConf"] = boost::lexical_cast<std::string>(s->emgConf);
-				(*sOW)["data"] = s->sessionDate;
+				(*sOW)["data"] = webservices::toString(s->sessionDate);
 				if(s->groupAssigment != nullptr){
 					(*sOW)["groupID"] = boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID);
 					auto sgIT = filteredShallowCopy.motionMetaData.sessionGroups.find(s->groupAssigment->sessionGroupID);
@@ -1909,14 +1942,14 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 
 		communication::Disorder dis;
 		dis.focus = it->second.focus;
-		dis.diagnosisDate = it->second.diagnosisDate;
+		dis.diagnosisDate = webservices::toString(it->second.diagnosisDate);
 		dis.comments = it->second.comments;
 		dis.name = it->second.disorder->name;
 
 		disorders.push_back(dis);
 	}
 
-	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, patient->birthDate,
+	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, webservices::toString(patient->birthDate),
 		Patient::decodeGender(patient->gender), utils::shared_ptr<const QPixmap>(), disorders));
 
 	//dodaję do DM

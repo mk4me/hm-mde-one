@@ -6,6 +6,7 @@
 #include <QtGui/QVBoxLayout>
 #include <plugins/newCommunication/IDataSourceContent.h>
 #include <QtGui/QGroupBox>
+#include <webserviceslib/DateTimeUtils.h>
 
 using namespace communication;
 using namespace webservices;
@@ -121,7 +122,7 @@ void DefaultPatientCardWidget::setPersonalData(const MedicalShallowCopy::Patient
 		personalDataWidget->setName(QString::fromUtf8(patient->name.c_str()));
 		personalDataWidget->setSurname(QString::fromUtf8(patient->surname.c_str()));
 		personalDataWidget->setGender(communication::IDataSourceContent::decodeGender(patient->gender));
-		personalDataWidget->setBirthdate(QString::fromStdString(patient->birthDate));
+		personalDataWidget->setBirthdate(QString::fromStdString(webservices::toString(patient->birthDate)));
 		personalDataWidget->setPhoto(photo);
 	}
 }
@@ -137,7 +138,7 @@ void DefaultPatientCardWidget::setDisordersData(const MedicalShallowCopy::Patien
 		int i = 0;
 		for(auto it = patientDisorders.begin(); it != patientDisorders.end(); ++it){
 			disordersDataWidget->setDisorder(i++, QString::fromUtf8(it->second.disorder->name.c_str()),
-				QString::fromUtf8(it->second.diagnosisDate.c_str()), QString::fromUtf8(it->second.focus.c_str()));
+				QString::fromStdString(webservices::toString(it->second.diagnosisDate)), QString::fromUtf8(it->second.focus.c_str()));
 		}
 
 		for( ; i < s; ++i){
@@ -190,7 +191,7 @@ void DefaultPatientCardWidget::setSessionsData(const MotionShallowCopy::Performe
 		//wypełniamy sesjami
 
 		//grupujemy wykresy na przed/po badaniu + upperBody, lowerBody
-		std::map<std::string, std::map<int, const MotionShallowCopy::Session *>> groupedData;
+		std::map<webservices::DateTime, std::map<int, const MotionShallowCopy::Session *>> groupedData;
 
 		for(auto it = subjectConfigurations.begin(); it != subjectConfigurations.end(); ++it){
 			auto session = it->second->session;
@@ -225,7 +226,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 	QTreeWidgetItem * ret = new QTreeWidgetItem();
 
 	ret->setText(0, name);
-	ret->setText(1, sessions.begin()->second->sessionDate.c_str());
+	ret->setText(1, webservices::toString(sessions.begin()->second->sessionDate).c_str());
 
 	//górna partia
 	if(sessions.begin()->first % 2 == 0){

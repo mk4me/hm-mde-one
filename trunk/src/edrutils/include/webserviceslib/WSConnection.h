@@ -10,41 +10,20 @@
 #define HEADER_GUARD___WSCONNECTION_H__
 
 #include <webserviceslib/IWSConnection.h>
-#include <wsdlparser/WsdlInvoker.h>
 #include <utils/SmartPtr.h>
 
-//! Interfejs rozszerzający podstawowe połączenie webservices o zabezpieczenia
-class ISecureWSConnection : public webservices::IWSConnection
+namespace webservices
 {
-public:
-	//! Destruktor wirtualny
-	virtual ~ISecureWSConnection() {}
-	//! \param caPath Ścieżka certyfikatu, którym weryfikujemy hosta
-	virtual void setCAPath(const std::string & caPath) = 0;
-	//! \return Ścieżka certyfikatu, którym weryfikujemy hosta
-	virtual const std::string CAPath() const = 0;
-
-	//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL względem ceryfikatów
-	virtual void setHostVerification(WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification) = 0;
-	//! \return Mechanizm weryfikacji hosta po SSL względem ceryfikatów
-	virtual WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification() const = 0;
-};
-
-typedef utils::shared_ptr<ISecureWSConnection> WSConnectionPtr;
 
 //! Implementacja połączenia po stronie communication
-class WSConnection : public ISecureWSConnection
+class WSSecureConnection : public ISecureWSConnection
 {
 public:
-
-	typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
-
-public:
 	//! domyślny konstruktor
-	WSConnection();
+	WSSecureConnection();
 
 	//! Wirtualny destruktor
-	virtual ~WSConnection() {}
+	virtual ~WSSecureConnection() {}
 
 	//! \param caPath Ścieżka certyfikatu, którym weryfikujemy hosta
 	virtual void setCAPath(const std::string & caPath);
@@ -52,9 +31,9 @@ public:
 	virtual const std::string CAPath() const;
 
 	//! \param hostVeryfication Mechanizm weryfikacji hosta po SSL względem ceryfikatów
-	virtual void setHostVerification(WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification);
+	virtual void setHostVerification(HostVerification hostVerification);
 	//! \return Mechanizm weryfikacji hosta po SSL względem ceryfikatów
-	virtual WsdlPull::CustomSSLWsdlInvoker::HostVerification hostVerification() const;
+	virtual const HostVerification hostVerification() const;
 
 	//! \param name Nazwa użytkownika wywołującego usługę
 	virtual void setUser(const std::string & user);
@@ -83,15 +62,16 @@ public:
 	virtual void invoke(bool process = false);
 	//! \param name Nazwa wartości którą chcemy pobrać
 	//! \return Wskaźnik do wartości, nullptr jeśli nie ma takiej wartości, wskaxnik pozostaje pod kontrolą implementacji IWSConnection
-	virtual void * getValue(const std::string & name);
+	virtual const void * getValue(const std::string & name) const;
 
 	//! \return Pełna odpowiedź serwisu webowego w formacie html/xml
-	virtual const std::string xmlResponse();
+	virtual const std::string xmlResponse() const;
 
 private:
 	//! Wewnętrzne połączenie realizujące faktycznie wszystkie zapytania
-	WSConnectionPtr connection_;
-
+	WSSecureConnectionPtr connection_;
 };
+
+}
 
 #endif	//	HEADER_GUARD___WSCONNECTION_H__

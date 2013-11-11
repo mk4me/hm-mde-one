@@ -9,6 +9,7 @@
 #include <errno.h>
 #endif
 
+#include <corelib/Version.h>
 #include "PluginLoader.h"
 #include <corelib/IPlugin.h>
 #include <corelib/PluginCommon.h>
@@ -254,17 +255,22 @@ bool PluginLoader::checkLibrariesVersions( HMODULE library, const Filesystem::Pa
 
 bool PluginLoader::checkPluginVersion( HMODULE library, const Filesystem::Path& path )
 {
-	auto versionProc = loadProcedure<Plugin::GetInterfaceVersionFunction>(library, STRINGIZE(CORE_GET_PLUGIN_INTERFACE_VERSION_FUNCTION_NAME));
+	auto versionProc = loadProcedure<Plugin::GetAPIVersionFunction>(library, STRINGIZE(CORE_GET_PLUGIN_API_VERSION_FUNCTION_NAME));
 	if ( versionProc ) {
-		int version = versionProc();
-		if ( version != CORE_PLUGIN_INTERFACE_VERSION ) {
-			CORE_LOG_ERROR(path<<" has obsolete interface version; should be "<<CORE_PLUGIN_INTERFACE_VERSION<<", is "<<version);
+		int pMajor;
+		int pMinor;
+		int pPatch;
+		versionProc(&pMajor, &pMinor, &pPatch);
+		if ( pMajor != Version::major() || pMinor > Version::minor()) {
+			CORE_LOG_ERROR(path << " has obsolete interface version; should be "
+				<< Version::version() << ", is "
+				<< Version::version(pMajor, pMinor, pPatch));
 			return false;
 		} else {
 			return true;
 		}
 	} else {
-		CORE_LOG_ERROR(path<<" is a shared library, but finding "<<STRINGIZE(CORE_GET_PLUGIN_INTERFACE_VERSION_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
+		CORE_LOG_ERROR(path<<" is a shared library, but finding "<<STRINGIZE(CORE_GET_PLUGIN_API_VERSION_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
 		return false;
 	}
 }

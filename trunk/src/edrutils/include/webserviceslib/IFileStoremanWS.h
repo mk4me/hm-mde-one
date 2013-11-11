@@ -11,6 +11,7 @@
 
 #include <webserviceslib/IWebService.h>
 #include <webserviceslib/DateTime.h>
+#include <webserviceslib/Entity.h>
 #include <boost/shared_ptr.hpp>
 
 namespace webservices
@@ -27,14 +28,14 @@ public:
 	@param id ID pliku do pobrania
 	@param path ścieżka względna do pliku na serwerze podana w rezultacie operacji RetrieveFile
 	*/
-	virtual void downloadComplete(int id, const std::string & path) = 0;
+	virtual void downloadComplete(const int id, const std::string & path) = 0;
 
     /**
 	Wydobywanie pliku z bazy danych o podanym ID do uri zwracanego przez metode.
 	@param id ID pliku do pobrania
 	@return ścieżka względna do pliku wraz z nazwa pliku
 	*/
-	virtual const std::string retrieve(int id) = 0;
+	virtual const xmlWsdl::FileData retrieve(const int id) = 0;
 };
 
 typedef boost::shared_ptr<IBasicStoremanWS> BasicStoremanWSPtr;
@@ -85,22 +86,18 @@ public:
     //! \return Ścieżka na serwerze ftp do różnicowej kopii danych ruchu począwszy od czasu jaki zadaliśmy
     virtual const std::string getShallowCopyIncrement(const DateTime & dateTime) = 0;
 
-    /**
-	Realizuje wprowadzenie pojedynczego pliku przez performera pod kontrolę bazy danych.
-	@param performerID id performera
+	/*
+	Realizuje wprowadzenie pojedynczego pliku konfiguracji pomiarowej pod kontrolę bazy danych.
+	@param mcID id konfiguracji pomiarowej która wcześniej została juz umieszczona w bazie danych
 	@param path względna ścieżka do pliku na dysku serwera w stosunku do korzenia obszaru Usługi Transportu Plików
 	@param description opis pliku
 	@param filename nazwa pliku
 	@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 	*/
-	virtual const int storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename) = 0;
-	/**
-	Realizuje wprowadzenie plików pod kontrolę bazy danych.
-	@param performerID id performera
-	@param path ścieżka do katalogu z plikami do wgrania na serwer
-	*/
-	virtual void storePerformerFiles(int performerID, const std::string& path) = 0;
-	/**
+	virtual const int storeMeasurementConfFile(const int mcID, const std::string & path,
+		const std::string & description, const std::string & filename) = 0;
+
+    /*
 	Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolę bazy danych.
 	@param sessionID id sesji która wcześniej została juz umieszczona w bazie danych
 	@param path względna ścieżka do pliku na dysku serwera w stosunku do korzenia obszaru Usługi Transportu Plików
@@ -108,14 +105,8 @@ public:
 	@param filename nazwa pliku
 	@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 	*/
-	virtual const int storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename) = 0;
-	/**
-	Realizuje wprowadzenie plików pod kontrolę bazy danych.
-	@param sessionID id sesji która wcześniej została juz umieszczona w bazie danych
-	@param path ścieżka do katalogu z plikami do wgrania na serwer
-	@param description
-	*/
-	virtual const int storeSessionFiles(int sessionID, const std::string& path, const std::string& description) = 0;
+	virtual const int storeSessionFile(const int sessionID, const std::string & path,
+		const std::string & description, const std::string & filename) = 0;
 	/**
 	Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolę bazy danych.
 	@param trialID id trial
@@ -124,13 +115,31 @@ public:
 	@param filename nazwa pliku
 	@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 	*/
-	virtual const int storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename) = 0;
+	virtual const int storeTrialFile(const int trialID, const std::string & path,
+		const std::string & description, const std::string & filename) = 0;
 	/**
 	Realizuje wprowadzenie plików pod kontrolę bazy danych.
 	@param trialID id trial
 	@param path ścieżka do katalogu z plikami do wgrania na serwer
 	*/
-	virtual void storeTrialFiles(int trialID, const std::string& path) = 0;
+	virtual void storeTrialFiles(const int trialID, const std::string & path,
+		const std::string & description) = 0;
+
+	/**
+	Realizuje wprowadzenie plików pod kontrolę bazy danych.
+	@param measurementConfID id konfiguracji pomiarowej
+	@param path ścieżka do katalogu z plikami do wgrania na serwer
+	*/
+	virtual void storeMeasurementConfFiles(const int measurementConfID, const std::string & path,
+		const std::string & description) = 0;
+
+	/**
+	Realizuje wprowadzenie plików pod kontrolę bazy danych.
+	@param sessionID id sesji
+	@param path ścieżka do katalogu z plikami do wgrania na serwer
+	*/
+	virtual void storeSessionFiles(const int sessionID, const std::string & path,
+		const std::string & description) = 0;
 };
 
 typedef boost::shared_ptr<IMotionFileStoremanWS> MotionFileStoremanWSPtr;

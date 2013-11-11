@@ -12,6 +12,8 @@
 #include <vector>
 #include <string>
 
+#include <corelib/Version.h>
+
 #include <boost/version.hpp>
 #include <QtCore/QtGlobal>
 #include <utils/Macros.h>
@@ -30,9 +32,6 @@
 //! NIEZWYKLE ISTOTNE - przy każdej zmianie w Pluginach wersja ta będzie się zmieniać, pluginy nieprzebudowane z nowym nagłowiekm
 //! nie będą ładowane do aplikacji!!
 
-//! Sami musimy modyfikować ta wersję!!
-#define CORE_PLUGIN_INTERFACE_VERSION 6
-
 //! Weryfikacja typu bilda pluginu
 #ifdef _DEBUG
     #define CORE_PLUGIN_BUILD_TYPE 0
@@ -47,7 +46,7 @@
 #endif
 
 //! Nazwa funkcji pobierającej numer wersji pluginu.
-#define CORE_GET_PLUGIN_INTERFACE_VERSION_FUNCTION_NAME CoreGetPluginInterfaceVersion
+#define CORE_GET_PLUGIN_API_VERSION_FUNCTION_NAME CoreGetPluginAPIVersion
 
 #define CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME CoreGetPluginBuildType
 //! Nazwa funkcji tworzącej plugin.
@@ -62,9 +61,12 @@
 //! \param id ID pluginu.
 #define CORE_PLUGIN_BEGIN(name, id)                                     \
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR                                 \
-extern "C" UTILS_DECL_EXPORT unsigned CORE_GET_PLUGIN_INTERFACE_VERSION_FUNCTION_NAME() \
+extern "C" UTILS_DECL_EXPORT void CORE_GET_PLUGIN_API_VERSION_FUNCTION_NAME( \
+	int* major, int* minor, int* patch)									\
 {                                                                       \
-    return CORE_PLUGIN_INTERFACE_VERSION;                               \
+	*major = CORE_API_MAJOR;				                            \
+	*minor = CORE_API_MINOR;			                              \
+	*patch = CORE_API_PATCH;			                               \
 }                                                                       \
 extern "C" UTILS_DECL_EXPORT unsigned CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME() \
 {                                                                       \
@@ -77,14 +79,15 @@ extern "C" UTILS_DECL_EXPORT void CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME(  \
     *qtVersion = QT_VERSION;                                            \
     *stlVersion = CORE_CPPLIB_VER;                                      \
 }                                                                       \
-extern "C" UTILS_DECL_EXPORT void CORE_SET_PLUGIN_ID_FUNCTION_NAME(core::IPlugin * plugin) {	\
+extern "C" UTILS_DECL_EXPORT void CORE_SET_PLUGIN_ID_FUNCTION_NAME(core::IPlugin * plugin) \
+{																		\
 	plugin->setName(name);												\
 	plugin->setID(id);													\
 }																		\
 extern "C" UTILS_DECL_EXPORT void CORE_FILL_PLUGIN_FUNCTION_NAME(core::IPlugin * plugin, \
-	core::IApplication* coreApplication) \
+	core::IApplication* coreApplication)								\
 {                                                                       \
-    plugin::__coreApplication = coreApplication;                                       \
+    plugin::__coreApplication = coreApplication;						\
 
 //! Kończy rejestrację pluginu.
 #define CORE_PLUGIN_END                                                 \

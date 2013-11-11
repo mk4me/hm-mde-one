@@ -19,12 +19,12 @@ namespace core {
 class Plugin : public IPlugin
 {
 public:
-    //! Typ funkcji tworz¹cej plugin.
+    //! Typ funkcji inicjuj¹cej plugin kontekstem aplikacji.
     typedef void (*FillFunction)(IPlugin * plugin, IApplication* coreApplication);
-	//! Typ funkcji tworz¹cej plugin.
+	//! Typ funkcji wype³niaj¹cej opis pluginu.
 	typedef void (*SetIDNameFunction)(IPlugin * plugin);
     //! Typ funkcji pobieraj¹cej wersjê pluginu.
-    typedef int (*GetInterfaceVersionFunction)();
+    typedef int (*GetAPIVersionFunction)(int * major, int * minor, int * patch);
     //! Typ funkcji pobieraj¹cej typ builda pluginu
     typedef int (*GetBuildTypeFunction)();
     //!

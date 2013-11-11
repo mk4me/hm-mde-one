@@ -14,7 +14,7 @@ ADD_PROJECT(vdfmlib "osgui;dfmlib;BOOST;OSG;utils")
 ADD_PROJECT(testnodefactory "dfmlib;BOOST;utils")
 ADD_PROJECT(timelinelib "OPENTHREADS;utils;BOOST;QT")
 ADD_PROJECT(c3dlib "BTK;BOOST;OSG;utils")
-ADD_PROJECT(webserviceslib "BOOST;TINYXML;CURL;OPENTHREADS;utils")
+ADD_PROJECT(webserviceslib "BOOST;TINYXML;CURL;OPENTHREADS;WSDLPULL;utils")
 ADD_PROJECT(qthtmlgenlib "BOOST;TINYXML;QT;utils")
 
 

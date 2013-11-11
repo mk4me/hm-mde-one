@@ -8,11 +8,8 @@ SET_PUBLIC_HEADERS(
 	Filesystem.h
 	StringTools.h
 	Visualizer.h
-	# SubjectDataFilters.h
 	ObjectWrapperCollection.h
 	PluginCommon.h
-	#IConverter.h
-	#IConverterManager.h
 	IPlugin.h
 	IVisualizerManager.h
 	IVisualizer.h
@@ -50,6 +47,7 @@ SET_PUBLIC_HEADERS(
 	IThreadPool.h
 	IJob.h
 	IThread.h
+	Version.h
 )
 
 SET_SOURCE_FILES(
@@ -58,12 +56,12 @@ SET_SOURCE_FILES(
 	Filesystem.cpp
 	Visualizer.cpp
 	FilterBundle.cpp
-	# SubjectDataFilters.cpp
 	CoreLibPCH.cpp
 	ObjectWrapperCollection.cpp	
 	HierarchyDataItem.cpp
 	HierarchyHelper.cpp
 	HierarchyItem.cpp
+	Version.cpp
 )
 
 SET_PRIVATE_HEADERS(

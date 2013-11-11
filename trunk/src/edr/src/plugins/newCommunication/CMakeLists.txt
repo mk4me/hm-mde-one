@@ -31,7 +31,6 @@ SET_PRIVATE_HEADERS(
 	DataSourceShallowCopyUtils.h
 	DataSourcePrivilagesVerifier.h
 	Patient.h
-	WSConnection.h
 	DataSourcePerspective.h
 	DataSourcePerspectiveManager.h
 	ServerStatusManager.h
@@ -85,7 +84,6 @@ SET_SOURCE_FILES(
 	Patient.cpp
 	CommunicationManager.cpp
 	CommunicationPlugin.cpp
-	WSConnection.cpp
 	DataSource.cpp
 	DataSourceStatusManager.cpp
 	DataSourceUserPrivilages.cpp

@@ -14,58 +14,47 @@
 namespace webservices{
 
 	//! Klasa tworząca konto po stronie bazy danych
-	class SingleAccountFactoryWS : public ISingleAccountFactoryWS
+	class SingleAccountFactoryWS : public WebServiceT<ISingleAccountFactoryWS>
 	{
 	public:
 		SingleAccountFactoryWS(const WSConnectionPtr & connection = WSConnectionPtr());
 		virtual ~SingleAccountFactoryWS();
 
-		//! \param connection Połączenie przez które będzie realizowany serwis
-		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionPtr & connection();
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionConstPtr & connection() const;
-
 		virtual void createUserAccount(const std::string & login, const std::string & email, const std::string & password,
 			const std::string & firstName, const std::string & lastName);
 
-		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode);
+		virtual const bool activateUserAccount(const std::string & login, const std::string & activationCode);
 
-		virtual bool resetPassword(const std::string & email);
-
-	private:
-		mutable OpenThreads::ReentrantMutex * mutex;
-		WSConnectionPtr connection_;
-		WSConnectionConstPtr constConnection_;
+		virtual const bool resetPassword(const std::string & email);
 	};
 
 	//! Klasa tworząca konto po stronie bazy danych (medycznej i ruchu)
-	class MultiAccountFactoryWS : public IMultiAccountFactoryWS
+	class MultiAccountFactoryWS : public WebServiceT<IMultiAccountFactoryWS>
 	{
 	public:
 		MultiAccountFactoryWS(const WSConnectionPtr & connection = WSConnectionPtr());
 		virtual ~MultiAccountFactoryWS();
 
-		//! \param connection Połączenie przez które będzie realizowany serwis
-		virtual void setConnection(const WSConnectionPtr & connection);
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionPtr & connection();
-		//! \return Połączenie przez które jest realizowany serwis
-		virtual const WSConnectionConstPtr & connection() const;
-
+		//! \param login Login użytkownika
+		//! \param email Adres email użytkownika
+		//! \param password Hasło użytkownika
+		//! \param firstName Imię użytkownika
+		//! \param lastName Nazwisko użytkownika
+		//! \param propagateToHMDB Czy propagować tworzenie konta na bazę pacjentów
 		virtual void createUserAccount(const std::string & login, const std::string & email, const std::string & password,
-			const std::string & firstName, const std::string & lastName, bool propagateToHMDB);
+			const std::string & firstName, const std::string & lastName, const bool propagateToHMDB);
 
-		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode,
-			bool propagateToHMDB);
+		//! \param login Login użytkownika
+		//! \param activationCode Kod aktywacyjny użytkownika	
+		//! \param propagateToHMDB Czy propagować aktywację konta na bazę pacjentów
+		//! \return Czy udało się aktywować konto
+		virtual const bool activateUserAccount(const std::string & login, const std::string & activationCode,
+			const bool propagateToHMDB);
 
-		virtual bool resetPassword(const std::string & email, bool propagateToHMDB);
-
-	private:
-		mutable OpenThreads::ReentrantMutex * mutex;
-		WSConnectionPtr connection_;
-		WSConnectionConstPtr constConnection_;
+		//! \param email Adres email użytkownika dla którego chcemy zresetować hasło
+		//! \param propagateToHMDB Czy propagować reset hasła na bazę pacjentów
+		//! \return Czy udało się zresetować hasło
+		virtual const bool resetPassword(const std::string & email, const bool propagateToHMDB);
 	};
 }
 

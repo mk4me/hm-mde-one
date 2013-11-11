@@ -68,10 +68,8 @@ void DataSourceLoginManager::getUserPrivilages(int userID, UserPrivilages & user
 }
 
 const int DataSourceLoginManager::getUserIDForLoginAndPassword(const std::string & login, const std::string & password)
-{
-    OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourceWebServicesManager::instance()->authorizationService());
-	auto conn = DataSourceWebServicesManager::instance()->authorizationService()->connection();
-	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lockConn(*conn);
+{    
+	auto conn = DataSourceWebServicesManager::instance()->authorizationService()->connection();	
 
 	int ret = -1;
 

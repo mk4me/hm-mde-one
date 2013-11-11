@@ -9,8 +9,7 @@
 #ifndef HEADER_GUARD___METADATAPARSER_H__
 #define HEADER_GUARD___METADATAPARSER_H__
 
-#include <boost/shared_ptr.hpp>
-#include <webserviceslib/Entity.h>
+#include <webserviceslib/ShallowCopy.h>
 
 namespace webservices
 {

@@ -10,18 +10,18 @@
 #define HEADER_GUARD___IDOWNLOADHELPER_H__
 
 #include <webserviceslib/IFtpsConnection.h>
-#include <boost/shared_ptr.hpp>
+#include <utils/SmartPtr.h>
 
 namespace webservices
 {
-	//! Interfejs do pobierania danych z bazy wg zasad webserwisec
+	//! Interfejs do pobierania danych z bazy wg zasad webserwises
 	class IDownloadHelper
 	{
 	public:
 		//! Destruktor wirtualny
 		virtual ~IDownloadHelper() {}
 		//! Pobiera plik
-		virtual IFtpsConnection::OperationStatus get(IFtpsConnection::IProgress * progress = nullptr) = 0;
+		virtual const IFtpsConnection::OperationStatus get(IFtpsConnection::IProgress * progress = nullptr) = 0;
 		//! \return Postęp pobieranie w przedziale [0-100]
 		virtual const int progress() = 0;
 		//! Przerywa aktualne pobieranie
@@ -30,7 +30,7 @@ namespace webservices
 		virtual const std::string errorMessage() = 0;
 	};
 
-	typedef boost::shared_ptr<IDownloadHelper> DownloadHelperPtr;
+	typedef utils::shared_ptr<IDownloadHelper> DownloadHelperPtr;
 }
 
 #endif	//	HEADER_GUARD___IDOWNLOADHELPER_H__

@@ -394,7 +394,6 @@ bool CommunicationDataSource::isShallowCopyComplete() const
 
 bool CommunicationDataSource::isShallowCopyCurrent()
 {
-    OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourceWebServicesManager::instance()->motionBasicQueriesService());
     auto lastMod = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
 
     return DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(fullShallowCopy, lastMod);
@@ -862,7 +861,7 @@ void CommunicationDataSource::refreshFileManager()
 
 		DataStatus status((localStorage->fileIsLocal(file->fileName) == true) ? communication::Local : communication::Remote, communication::Unloaded);
 
-		PLUGIN_LOG_DEBUG("File: " << file->fileName << " -> status: " << (status.storage() == communication::DataStorage::Local ? "local" : "remote"));
+		//PLUGIN_LOG_DEBUG("File: " << file->fileName << " -> status: " << (status.storage() == communication::DataStorage::Local ? "local" : "remote"));
 
         if(fileStatusManager->fileExists(file->fileID) == false){
             fileStatusManager->addFile(file->fileID, filePath, status);

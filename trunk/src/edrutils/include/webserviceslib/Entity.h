@@ -7,363 +7,415 @@
 #define HEADER_GUARD_COMMUNICATION_ENTITY_H__
 
 #include <string>
-#include <map>
-#include <set>
-#include <vector>
+#include <list>
 #include <webserviceslib/DateTime.h>
 
 namespace webservices
 {
-    /**
-    Encje bazodanowe operacji wsdlowych.
-    */
-    namespace motionWsdl
-    {
-        struct Trial
-        {
-            int id;
-            int sessionId;
-            std::string trialDescription;
-            std::vector<int> trialFiles;
-        };
+	//! Obiekty dla zapytań usług webowych w formie XML
+	namespace xmlWsdl
+	{
+		//! Wyliczenie dla typów encji po stronie bazy danych ruchu
+		struct Entity
+		{
+		public:
 
-        struct Session
-        {
-            int id;
-            int userId;
-            int labId;
-            std::string motionKind;
-            std::string sessionDescription;
-            std::string sessionLabel;
-            DateTime sessionDate;
-            std::vector<int> sessionTrials;
-        };
+			//! Typ wyliczeniowy encji
+			enum Type {
+				Unspecified,				//! Nieokreślono
+				Session,					//! Sesja
+				Trial,						//! Próba pomiarowa
+				File,						//! Plik
+				MeasurementConfiguration,	//! Konfiguracja pomiaru
+				Performer,					//! Aktor
+				PerformerConfiguration,	//! Konfiguracja aktora
+			};
 
-        struct File
-        {
-            int id;
-            std::string fileName;
-            std::string fileDescription;
-            std::string fileSubdir;
-            std::string fileAttributeName;
-        };
+			//! \param entity Tekstowa reprezentacja encji
+			//! \return Wyliczeniowa reprezentacja encji
+			static const Type convert(const std::string & entity);
+			//! \param entity Wyliczeniowa reprezentacja encji
+			//! \return Tekstowa reprezentacja encji
+			static const std::string convert(const Type & entity);
+		};
 
-        typedef int Performer;
-    }
+		//! Wyliczenie dla płci
+		struct Gender
+		{
+		public:
 
-    namespace medicalWsdl
-    {
+			//! Typ wyliczeniowy płci
+			enum Type {
+				Unspecified,	//! Nieokreślono
+				Male,			//! Mężczyzna
+				Female			//! Kobieta
+			};
 
-    }
+			//! \param entity Tekstowa reprezentacja płci
+			//! \return Wyliczeniowa reprezentacja płci
+			static const Type convert(const std::string & gender);
+			//! \param entity Wyliczeniowa reprezentacja płci
+			//! \return Tekstowa reprezentacja płci
+			static const std::string convert(const Type & gender);
+		};
 
-    //! Forward declarations
-    namespace MotionShallowCopy
-    {
-        struct File;
-        struct Trial;
-        struct Session;
-        struct Performer;
-        struct PerformerConf;
-        struct ShallowCopy;
-    }
+		//! Typy atrybutów
+		struct AttributeType
+		{
+		public:
+			//! Typ wyliczeniowy typów atrybutów
+			enum Type {
+				Unspecified,			//! Nieokreślono (domyślnie tekst)
+				Int,					//! Integer
+				Decimal,				//! Wartość dzisiętna
+				NonNegativeInteger,	//! Nieujemny integer
+				NonNegativeDecimal,	//! Nieujemna wartość dzisiętna
+				DateTime,				//! Data i czas
+				Date,					//! Data
+				TimeCode,				//! TODO co to jest?
+				Float					//! Wartość zmiennoprzecinkowa
+			};
 
-    //! Forward declarations
-    namespace MedicalShallowCopy
-    {
-        struct Disorder;
-        struct DisorderOccurence;
-        struct Patient;
-    }
-    
-    /**
-    Encje bazodanowe z operacji płytkiej kopii bazy danych. Schemat MotionMetaData.
-    */
-    namespace MotionMetaData
-    {
-        struct SessionGroup
-        {
-            int sessionGroupID;
-            std::string sessionGroupName;
-        };
+			//! \param entity Tekstowa reprezentacja typu atrybutu
+			//! \return Wyliczeniowa reprezentacja typu atrybutu
+			static const Type convert(const std::string & attributeType);
+			//! \param entity Wyliczeniowa reprezentacja typu atrybutu
+			//! \return Tekstowa reprezentacja typu atrybutu
+			static const std::string convert(const Type & attributeType);
+		};
 
-        typedef std::map<int, SessionGroup> SessionGroups;
+		//! Typ logiczny
+		struct BooleanType
+		{
+		public:
 
-        struct MotionKind
-        {
-            std::string motionKindName;
-        };
+			//! Typ wyliczeniowy wartosci logicznych
+			enum Type {
+				Unspecified,	//! Nieokreślono
+				True,			//! Prawda
+				False			//! Fałsz
+			};
 
-        typedef std::vector<MotionKind> MotionKinds;
+			//! \param booleanType Tekstowa reprezentacja typu logicznego
+			//! \return Wyliczeniowa reprezentacja typu logicznego
+			static const Type convert(const std::string & booleanType);
+			//! \param booleanType Wyliczeniowa reprezentacja typu logicznego
+			//! \return Tekstowa reprezentacja typu logicznego
+			static const std::string convert(const Type & booleanType);
+		};
 
-        struct Lab
-        {
-            int labID;
-            std::string labName;
-        };
+		//! Szczegóły użytkownika
+		struct UserDetails
+		{
+			std::string login;		//! Login użytkownika
+			std::string firstName;	//! Imię
+			std::string lastName;	//! Nazwisko
+		};
 
-        typedef std::map<int, Lab> Labs;
+		//! Lista użytkowników
+		typedef std::list<UserDetails> UserList;
 
-        struct Attribute
-        {
-            std::string attributeName;
-            std::string attributeType;
-            std::string unit;
-        };
+		//! Użytkownik
+		struct User : public UserDetails
+		{
+			std::string email;	//! Adres email użytkownika
+		};
 
-        typedef std::map<std::string, Attribute> Attributes;
+		//! Prawa dostępu do sesji
+		struct SessionPrivilege
+		{
+			std::string login;	//! Login użytkownika
+			bool canWrite;		//! Czy użytkownik ma prawa zapisu (edycji) sesji
+		};
 
-        struct AttributeGroup
-        {
-            Attributes attributes;
-            int attributeGroupID;
-            std::string attributeGroupName;
-            std::string describedEntity;
-        };
+		//! Lista praw dostępu użytkowników do sesji
+		typedef std::list<SessionPrivilege> SessionPrivilegeList;
 
-        typedef std::vector<AttributeGroup> AttributeGroups;
+		//! Aktor
+		struct PerformerData
+		{
+			std::string name;		//! Imię aktora
+			std::string surname;	//! Nazwisko aktora
+		};
 
-        struct MetaData
-        {
-            DateTime timestamp;
-            SessionGroups sessionGroups;
-            MotionKinds motionKinds;
-            Labs labs;
-            AttributeGroups attributeGroups;
+		//! Opis atrybutu
+		struct Attribute
+		{
+			std::string name;			//! Nazwa
+			std::string value;			//! Wartość
+			Entity::Type entity;		//! Typ encji
+			std::string attributeGroup;	//! Grupa
+			AttributeType::Type type;	//! Typ
+		};
 
-			MetaData() : timestamp(0) {}
-        };
-    }
+		//! Typ listy atrybutów
+		typedef std::list<Attribute> Attributes;
 
-    namespace MedicalMetaData
-    {
-        struct ExamType
-        {
-            int id;
-            std::string name;
-        };
+		//! Opis grupy atrybutów
+		struct AttributeGroupDefinition
+		{
+			std::string name;				//! Nazwa
+			Entity::Type describedEntity;	//! Opisywana encja
+		};
 
-        typedef std::map<int, ExamType> ExamTypes;
+		//! Typ listy grup atrybutów
+		typedef std::list<AttributeGroupDefinition> AttributeGroupDefinitionList;
 
-        struct DisorderType
-        {
-            int id;
-            std::string name;
-        };
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista definicji atrybutów
+		const AttributeGroupDefinitionList parseAttributeGroupDefinitions(const std::string & xmlResponse);
 
-        typedef std::map<int, DisorderType> DisorderTypes;
+		//! Dane aktora
+		struct PerformerDetails
+		{
+			int id;					//! Identyfikator
+			std::string firstName;	//! Imię
+			std::string lastName;	//! Nazwisko
+		};
 
-        struct MetaData
-        {
-            DateTime timestamp;
-            ExamTypes examTypes;
-            DisorderTypes disorderTypes;
+		//! Typ listy aktorów
+		typedef std::list<PerformerDetails> PerformerList;
 
-			MetaData() : timestamp(0) {}
-        };
-    }
-    
-    /**
-    Encje bazodanowe z operacji płytkiej kopii bazy danych. Schemat MotionShallowCopy.
-    */
-    namespace MotionShallowCopy
-    {
-        struct File;
-        struct Trial;
-        struct Session;
-        struct Performer;
-        struct PerformerConf;
-		struct GroupAssigment;
-        struct ShallowCopy;
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista aktorów
+		const PerformerList parsePerfomers(const std::string & xmlResponse);
 
-        typedef std::map<std::string, std::string> Attrs;
+		//! Dane aktora z atrybutami
+		struct PerformerDetailsWithAttributes
+		{
+			PerformerDetails performerDetails;	//! Szczegóły aktora
+			Attributes attributes;				//! Atrybuty
+		};
 
-        struct File
-        {
-            bool isSessionFile() const
-            {
-                return trial == nullptr;
-            }
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Opis aktora z atrybutami
+		const PerformerDetailsWithAttributes parsePerformer(const std::string & xmlResponse);
 
-            Trial * trial;
-            Session * session;
-            int fileID;
-            std::string fileName;
-            std::string fileDescription;
-            std::string subdirPath;
-			unsigned long long fileSize;
-        };
+		//! Typ listy ze szczegółami aktorów i ich atrybutami
+		typedef std::list<PerformerDetailsWithAttributes> PerformerWithAttributesList;
 
-        //typedef std::vector<File> Files;
-        typedef std::map<int, File*> Files;
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista aktorów z atrybutami
+		const PerformerWithAttributesList parsePerfomersWithAttributes(const std::string & xmlResponse);
 
-        struct Trial
-        {
-            Session * session;
-            Attrs attrs;
-            Files files;
-            int trialID;
-            //int sessionID;
-            std::string trialName;
-            std::string trialDescription;
-        };
+		//! Dane sesji
+		struct SessionDetails
+		{
+			int id;						//! Identyfikator
+			int userID;					//! Właściciel
+			int labID;					//! Laboratorium
+			std::string motionKind;		//! Typ ruchu
+			DateTime dateTime;			//! Czas rejestracji
+			std::string description;	//! Opis
+			std::string label;			//! Nazwa
+		};
 
-        //typedef std::vector<Trial> Trials;
-        typedef std::map<int, Trial*> Trials;
+		//! Typ listy z sesjami
+		typedef std::list<SessionDetails> SessionList;
 
-        struct Session
-        {
-            PerformerConf * performerConf;
-			GroupAssigment * groupAssigment;
-            Trials trials;
-            Attrs attrs;
-            int sessionID;
-            int userID;
-            int labID;
-            std::string motionKind;
-            std::string sessionDate;
-            std::string sessionName;
-            std::string tags;
-            std::string sessionDescription;
-            Files files;
-			std::string emgConf;
-        };
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista sesji
+		const SessionList parseSessions(const std::string & xmlResponse);
 
-        //typedef std::vector<Session> Sessions;
-        typedef std::map<int, Session*> Sessions;
+		//! Dane sesji z atrybutami
+		struct SessionDetailsWithAttributes
+		{
+			SessionDetails sessionDetails;	//! Szczegóły sesji
+			Attributes attributes;			//! Atrybuty
+		};
 
-        struct GroupAssigment
-        {
-            Sessions sessions;
-            int sessionGroupID;
-        };
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Opis sesji z atrybutami
+		const SessionDetailsWithAttributes parseSession(const std::string & xmlResponse);
 
-        typedef std::map<int, GroupAssigment*> GroupAssigments;
+		//! Typ listy sesji
+		typedef std::list<SessionDetailsWithAttributes> SessionWithAttributesList;
 
-        struct PerformerConf
-        {
-            Attrs attrs;
-            int performerConfID;
-            //int sessionID;
-            Performer * performer;
-            //int performerID;
-            Session * session;
-        };
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista sesji z atrybutami
+		const SessionWithAttributesList parseSessionsWithAttributes(const std::string & xmlResponse);
 
-        //typedef std::vector<PerformerConf> PerformerConfs;
-        typedef std::map<int, PerformerConf*> PerformerConfs;
+		//! Dane grupy sesji
+		struct SessionGroupDefinition
+		{
+			int id;				//! Identyfikator
+			std::string name;	//! Nazwa
+		};
 
-        struct Performer
-        {
-            Attrs attrs;
-            int performerID;
-            PerformerConfs performerConfs;
-            MedicalShallowCopy::Patient * patient;
-        };
+		//! Typ listy grup sesji
+		typedef std::list<SessionGroupDefinition> SessionGroupDefinitionList;
 
-        //typedef std::vector<Performer> Performers;
-        typedef std::map<int, Performer*> Performers;
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista grup sesji
+		const SessionGroupDefinitionList parseSessionGroups(const std::string & xmlResponse);
 
-        struct ShallowCopy
-        {
-        public:
-            DateTime timestamp;
-            Sessions sessions;
-            GroupAssigments groupAssigments;
-            Trials trials;
-            Performers performers;
-            PerformerConfs performerConfs;
-            Files files;
+		//! Opis typów ruchów
+		struct MotionKindDefinition
+		{
+			int id;				//! Identyfikator
+			std::string name;	//! Nazwa
+		};
 
-            ~ShallowCopy()
-            {
-                for(auto it = sessions.begin(); it != sessions.end(); ++it){
-                    delete it->second;
-                }
+		//! Typ listy typów ruchów
+		typedef std::list<MotionKindDefinition> MotionKindDefinitionList;
 
-                for(auto it = trials.begin(); it != trials.end(); ++it){
-                    delete it->second;
-                }
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista definicji typów ruchów
+		const MotionKindDefinitionList parseMotionKinds(const std::string & xmlResponse);
 
-                for(auto it = performers.begin(); it != performers.end(); ++it){
-                    delete it->second;
-                }
+		//! Dane próby pomiarowej
+		struct TrialDetails
+		{
+			int id;						//! Identyfikator
+			int sessionID;				//! Sesja
+			std::string description;	//! Opis
+		};
 
-                for(auto it = performerConfs.begin(); it != performerConfs.end(); ++it){
-                    delete it->second;
-                }
+		//! Typ listy triali
+		typedef std::list<TrialDetails> TrialList;
 
-				for(auto it = groupAssigments.begin(); it != groupAssigments.end(); ++it){
-					delete it->second;
-				}
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista prób pomiarowych
+		const TrialList parseTrials(const std::string & xmlResponse);
 
-                for(auto it = files.begin(); it != files.end(); ++it){
-                    delete it->second;
-                }
-            }
+		//! Dane próby pomiarowej
+		struct TrialDetailsWithAttributes
+		{
+			TrialDetails trialDetails;	//! Szczegóły próby pomiarowej
+			Attributes attributes;		//! Atrybuty
+		};
 
-			ShallowCopy() : timestamp(0) {}
-        };
-    }
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Opis próby pomiarowej z atrybutami
+		const TrialDetailsWithAttributes parseTrial(const std::string & xmlResponse);
 
-    namespace MedicalShallowCopy
-    {
-        struct Disorder
-        {
-            int disorderID;
-            std::string name;
-        };
+		//! Typ listy triali z atrybutami
+		typedef std::list<TrialDetailsWithAttributes> TrialsWithAttributesList;
 
-        typedef std::map<int, Disorder*> Disorders;
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista prób pomiarowych z atrybutami
+		const TrialsWithAttributesList parseTrialsWithAttributes(const std::string & xmlResponse);
 
-        struct DisorderOccurence
-        {
-            Disorder * disorder;
-            std::string focus;
-            std::string diagnosisDate;
-            std::string comments;
-        };
+		//! Dane konfiguracji pomiarowej
+		struct MeasurementConfDetails
+		{
+			int id;						//! Identyfikator
+			std::string name;			//! Nazwa
+			std::string kind;			//! Rodzaj
+			std::string description;	//! Opis
+		};
 
-        typedef std::map<int, DisorderOccurence> PatientDisorders;
 
-        struct Patient
-        {
-            int patientID;
-            int motionPerformerID;
-            std::string name;
-            std::string surname;
-            std::string birthDate;
-            char gender;
-            PatientDisorders disorders;
-            MotionShallowCopy::Performer * performer;
-        };
+		//! Dane konfiguracji pomiarowej
+		struct MeasurementConfDetailsWithAttributes
+		{
+			MeasurementConfDetails measurementConfDetails;	//! Szczegóły konfiguracji pomiarowej
+			Attributes attributes;							//! Atrybuty
+		};
 
-        typedef std::map<int, Patient*> Patients;
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Opis konfiguracji pomiarowej z atrybutami
+		const MeasurementConfDetailsWithAttributes parseMeasurementConf(const std::string & xmlResponse);
 
-        typedef std::map<char, std::set<Patient*> > PatientsByGender;
+		//! Typ listy z konfiguracjami pomiarowymi
+		typedef std::list<MeasurementConfDetailsWithAttributes> MeasurementConfWithAttributesList;
 
-        typedef std::map<int, std::set<Patient*> > PatientsByDisorder;
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista konfiguracji pomiarowych z atrybutami
+		const MeasurementConfWithAttributesList parseMeasurementsConfWithAttributes(const std::string & xmlResponse);
 
-        struct ShallowCopy
-        {
-            DateTime timestamp;
-            Disorders disorders;
-            Patients patients;
-            PatientsByGender patientsByGender;
-            PatientsByDisorder patientsByDisorder;
+		//! Dane konfiguracji aktora
+		struct PerformerConfDetails
+		{
+			int id;					//! Identyfikator
+			int sessionID;			//! Sesja
+			int performerID;		//! Aktor
+		};
 
-            ~ShallowCopy()
-            {
-                for(auto it = disorders.begin(); it !=disorders.end(); ++it){
-                    delete it->second;
-                }
+		//! Dane konfiguracji aktora
+		struct PerformerConfDetailsWithAttributes
+		{
+			PerformerConfDetails performerConfDetails;	//! Szczegóły konfiguracji aktora
+			Attributes attributes;						//! Atrybuty
+		};
 
-                for(auto it = patients.begin(); it != patients.end(); ++it){
-                    delete it->second;
-                }
-            }
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Opis konfiguracji aktora z atrybutami
+		const PerformerConfDetailsWithAttributes parsePerfomerConf(const std::string & xmlResponse);
 
-			ShallowCopy() : timestamp(0) {}
-        };
-    }
+		//! Typ listy konfiguracji aktorów
+		typedef std::list<PerformerConfDetailsWithAttributes> PerformerConfWithAttributesList;
+
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista konfiguracji aktorów z atrybutami
+		const PerformerConfWithAttributesList parsePerformersConfWithAttributes(const std::string & xmlResponse);
+
+		//! Dane pliku
+		struct FileData
+		{
+			std::string fileLocation;	//! Ścieżka względna do pliku
+			std::string subdirPath;		//! Katalog pliku jeśli był ładowany przez operację grupową
+		};
+
+		//! Opis pliku
+		struct FileDetails
+		{
+			int id;						//! Identyfikator
+			std::string name;			//! Nazwa
+			std::string description;	//! Opis
+			std::string subdirPath;		//! Ścieżka
+			std::string attributeName;	//! Nazwa atrybutu
+		};
+
+		//! Typ listy plików
+		typedef std::list<FileDetails> FileList;
+
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista plików
+		const FileList parseFiles(const std::string & xmlResponse);
+
+		//! Opis pliku z atrybutami
+		struct FileDetailsWithAttribute
+		{
+			FileDetails fileDetails;	//! Szczegóły pliku
+			Attributes attributes;		//! Atrybuty
+		};
+
+		//! Typ listy plików z atrybutami
+		typedef std::list<FileDetailsWithAttribute> FileWithAttributeList;
+
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista plików z atrybutami
+		const FileWithAttributeList parseFilesWithAttributes(const std::string & xmlResponse);
+
+		//! Typ wartości enum
+		typedef std::string EnumValue;
+
+		//! Typ listy wartości enum
+		typedef std::list<EnumValue> EnumValueList;
+
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista wartości wyliczeń
+		const EnumValueList parseEnumValues(const std::string & xmlResponse);
+
+		//! Dane atrybutu
+		struct AttributeDefinition
+		{
+			std::string name;			//! Nazwa
+			std::string type;			//! Typ
+			int enumerate;				//! Identyfikator
+			std::string groupName;		//! Nazwa grupy
+			std::string unit;			//! Jednostka
+			EnumValueList enumValues;	//! Wartości
+		};
+
+		//! Typ listy definicji atrybutów
+		typedef std::list<AttributeDefinition> AttributeDefinitionList;
+
+		//! \param xmlResponse Odpowiedź na zapytanie
+		//! \return Lista plików z atrybutami
+		const AttributeDefinitionList parseAttributesDefinitions(const std::string & xmlResponse);
+	}    
 }
+
 #endif //HEADER_GUARD_COMMUNICATION_ENTITY_H__
