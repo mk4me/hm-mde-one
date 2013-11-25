@@ -1,5 +1,0 @@
-<RCC>
-  <qresource prefix="newVdf/icons">
-	<file alias="rubber.png">../resources/embedded/icons/rubber.png</file>
-  </qresource>
-</RCC>
