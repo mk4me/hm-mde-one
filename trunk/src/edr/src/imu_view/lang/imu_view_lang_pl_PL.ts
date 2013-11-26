@@ -116,7 +116,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/AnalisisWidget.cpp" line="218"/>
-        <location filename="../src/AnalisisWidget.cpp" line="712"/>
+        <location filename="../src/AnalisisWidget.cpp" line="711"/>
         <source>Group %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -142,7 +142,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="717"/>
+        <location filename="../src/AnalisisWidget.cpp" line="716"/>
         <source>...TEST...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -165,17 +165,17 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="589"/>
+        <location filename="../src/AnalisisWidget.cpp" line="588"/>
         <source>Create in:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="596"/>
+        <location filename="../src/AnalisisWidget.cpp" line="595"/>
         <source>Set %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="609"/>
+        <location filename="../src/AnalisisWidget.cpp" line="608"/>
         <source>New Group</source>
         <translation type="unfinished"></translation>
     </message>
@@ -263,6 +263,16 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/MdeMainWindow.cpp" line="88"/>
         <source>Console</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MdeServiceWindow</name>
+    <message>
+        <location filename="../src/MdeServiceWindow.cpp" line="15"/>
+        <location filename="../src/MdeServiceWindow.cpp" line="17"/>
+        <location filename="../src/MdeServiceWindow.cpp" line="21"/>
+        <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
