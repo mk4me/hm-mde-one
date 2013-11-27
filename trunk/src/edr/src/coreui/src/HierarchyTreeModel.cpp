@@ -7,7 +7,7 @@
 #include <corelib/AbstractFilterCommand.h>
 
 
-using namespace coreui;
+using namespace coreUI;
 
 HierarchyTreeModel::HierarchyTreeModel(QObject *parent) :
     QAbstractItemModel(parent),
@@ -184,7 +184,7 @@ bool HierarchyTreeModel::hasChild( core::IHierarchyItemConstPtr parent, core::IH
 }
 
 
-void coreui::HierarchyTreeModel::clear()
+void coreUI::HierarchyTreeModel::clear()
 {
     roots.clear();
     rootOrigins.clear();
@@ -192,7 +192,7 @@ void coreui::HierarchyTreeModel::clear()
     reset();
 }
 
-void coreui::HierarchyTreeModel::applyChange( const core::IMemoryDataManagerHierarchy::HierarchyChange& change )
+void coreUI::HierarchyTreeModel::applyChange( const core::IMemoryDataManagerHierarchy::HierarchyChange& change )
 {
     switch(change.modification) {
     case core::IDataManagerReader::ADD_OBJECT:
@@ -209,31 +209,31 @@ void coreui::HierarchyTreeModel::applyChange( const core::IMemoryDataManagerHier
     }
 }
 
-void coreui::HierarchyTreeModel::applyChanges( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )
+void coreUI::HierarchyTreeModel::applyChanges( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )
 {
     for (auto it = changes.begin(); it != changes.end(); ++it) {
         applyChange(*it);
     }
 }
 
-int coreui::HierarchyTreeModel::getNumChildren() const
+int coreUI::HierarchyTreeModel::getNumChildren() const
 {
     return roots.size();
 }
 
-core::IHierarchyItemConstPtr coreui::HierarchyTreeModel::getChild( int idx )
+core::IHierarchyItemConstPtr coreUI::HierarchyTreeModel::getChild( int idx )
 {
     return roots[idx];
 }
 
 
-void coreui::HierarchyTreeModel::setFilter( const core::IFilterCommandPtr& filter )
+void coreUI::HierarchyTreeModel::setFilter( const core::IFilterCommandPtr& filter )
 {
     this->currentFilter = filter ? filter : utils::make_shared<core::NullFilter>();
     rebuildFilteredRoots();
 }
 
-void coreui::HierarchyTreeModel::rebuildFilteredRoots()
+void coreUI::HierarchyTreeModel::rebuildFilteredRoots()
 {
     roots.clear();
     for (auto it = rootOrigins.begin(); it != rootOrigins.end(); ++it) {

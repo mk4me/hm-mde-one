@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="dicom">
-    <file alias="dicomLogo.png">../resources/embedded/dicomLogo.png</file>
+    <file alias="pathIcon.png">../resources/embedded/pathIcon.png</file>
+    <file alias="curveIcon.png">../resources/embedded/curveIcon.png</file>	
+    <file alias="arrowIcon.png">../resources/embedded/arrowIcon.png</file>
+    <file alias="file.png">../resources/embedded/file.png</file>
+    <file alias="file_done.png">../resources/embedded/file_done.png</file>
   </qresource>
 </RCC>

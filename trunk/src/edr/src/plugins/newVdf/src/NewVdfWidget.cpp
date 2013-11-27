@@ -8,13 +8,15 @@
 #include "SimpleItem.h"
 #include "VdfScene.h"
 #include "Command.h"
-#include "VdfView.h"
+//#include "VdfView.h"
 #include <plugins/newVdf/INodeConfiguration.h>
 #include <plugins/newVdf/UniversalSink.h>
+#include <coreui/WheelGraphicsView.h>
+#include <coreui/HierarchyTreeModel.h>
 
 using namespace vdf;
 
-NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, coreui::HierarchyTreeModel* treeModel) :
+NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, coreUI::HierarchyTreeModel* treeModel) :
     sceneModel(sceneModel),
 	commandStack(stack),
     treeModel(treeModel)
@@ -27,9 +29,10 @@ NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneMod
 	stateMachine = SceneStateMachinePtr(new SceneStateMachine(this));
     connect(stateMachine.get(), SIGNAL(singleNodeSelected(IVisualNodePtr)), this, SIGNAL(singleNodeSelected(IVisualNodePtr)));
 	scene = new VdfScene(stateMachine, sceneModel);
-	view = new VdfView(scene);
+	view = new coreUI::WheelGraphicsView(scene, Qt::ControlModifier);
+    view->setAcceptDrops(true);
 
-	QToolBar* toolbar = new QToolBar("States");
+	//QToolBar* toolbar = new QToolBar("States");
     coreUI::CoreAction*  und = new coreUI::CoreAction(tr("Edit")  , QIcon(":/coreUI/icons/textedit/editundo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  red = new coreUI::CoreAction(tr("Edit")  , QIcon(":/coreUI/icons/textedit/editredo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
 

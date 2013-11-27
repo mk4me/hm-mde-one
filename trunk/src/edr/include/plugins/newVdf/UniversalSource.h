@@ -103,7 +103,7 @@ namespace vdf {
         bool used;
         QIcon rootIcon;
         QIcon leafIcon;
-        coreui::HierarchyTreeModel model;
+        coreUI::HierarchyTreeModel model;
         utils::shared_ptr<TypeFilter<T>> filter;
     };
 

@@ -24,7 +24,7 @@ namespace Ui {
     class FilterWidget;
 }
 
-namespace coreUi {
+namespace coreUI {
 
 class COREUI_EXPORT BundleFilter : public core::IFilterCommand
 {
@@ -93,7 +93,7 @@ protected:
 Q_SIGNALS:
     //! zmieniła się aktywność grupy
     //! \param grupa
-    void activityChanged(coreUi::DataFilterWidget*);
+    void activityChanged(coreUI::DataFilterWidget*);
     //! grupa została kliknięta
     void clicked();
     //! sygnał informujący, że filtr został kliknięty

@@ -6,8 +6,15 @@
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QSlider>
 #include <QtGui/QPushButton>
-#include <QtGui/QScrollArea>
 #include "LayeredImageVisualizerView.h"
+#include <QtGui/QApplication>
+#include "BackgroundLayer.h"
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
+#include "LayeredImage.h"
+#include "PointsLayer.h"
+#include <corelib/PluginCommon.h>
 
 using namespace dicom;
 
@@ -29,7 +36,7 @@ plugin::IVisualizer* LayeredImageVisualizer::create() const
 
 plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie( const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data )
 {
-    auto serie = new LayeredSerie();
+    auto serie = new LayeredSerie(this);
     serie->setData(requestedType, data);
 
     series.push_back(serie);
@@ -38,7 +45,7 @@ plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie( const utils::
         setActiveSerie(series[0]);
     }
 
-    emit serieChanged();
+    Q_EMIT serieChanged();
 
     return serie; 
 }
@@ -60,7 +67,7 @@ void LayeredImageVisualizer::removeSerie( plugin::IVisualizer::ISerie *serie )
         currentSerie = series.empty() ? 0 : 1;
     }
 
-    emit serieChanged();
+    Q_EMIT serieChanged();
 }
 
 void LayeredImageVisualizer::setActiveSerie( plugin::IVisualizer::ISerie * serie )
@@ -71,7 +78,7 @@ void LayeredImageVisualizer::setActiveSerie( plugin::IVisualizer::ISerie * serie
         if (series[i] == serie) {
             currentSerie = i;
             if (prevSerie != series[i]) {
-                emit serieChanged();
+                Q_EMIT serieChanged();
             }
             return;
         }
@@ -82,6 +89,12 @@ const plugin::IVisualizer::ISerie * LayeredImageVisualizer::getActiveSerie() con
 {
     return correctIndex(currentSerie) ? series[currentSerie] : nullptr;
 }
+
+plugin::IVisualizer::ISerie * dicom::LayeredImageVisualizer::getActiveSerie()
+{
+    return correctIndex(currentSerie) ? series[currentSerie] : nullptr;
+}
+
 
 QWidget* LayeredImageVisualizer::createWidget()
 {
@@ -152,20 +165,21 @@ int dicom::LayeredImageVisualizer::getCurrentSerieNo() const
     return currentSerie;
 }
 
-
-void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
+void dicom::LayeredImageVisualizer::saveSerie()
 {
-    ILayeredImageConstPtr img = data->get();
-    pixmap = img->getPixmap();
+    if (correctIndex(currentSerie)) {
+        series[currentSerie]->save();
+        //std::ofstream ofs(series[currentSerie]->getXmlOutputFilename());
+        //assert(ofs.good());
+        //boost::archive::xml_oarchive oa(ofs);
+        ///*oa.register_type<LayeredImage>();*/
+        //oa.register_type<BackgroundLayer>();
+        //oa.register_type<CircleLayer>();
+        //oa.register_type<PointsLayer>();
+        //LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(series[currentSerie]->getImage());
+        //oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize());
+        //ofs.close();
+    }
 }
 
-void LayeredSerie::setTime( double time )
-{
-
-}
-
-double LayeredSerie::getLength() const
-{
-    return 1.0;
-}
 

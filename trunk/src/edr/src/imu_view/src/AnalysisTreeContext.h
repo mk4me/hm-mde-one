@@ -27,7 +27,7 @@ public:
     //! konstruktor
     //! \param flexiTabWidget 
     //! \param hmm 
-    AnalysisTreeContext(QTabWidget * flexiTabWidget, coreui::HierarchyTreeModel* model, AnalysisTreeContextMenu* menuBuilder);
+    AnalysisTreeContext(QTabWidget * flexiTabWidget, coreUI::HierarchyTreeModel* model, AnalysisTreeContextMenu* menuBuilder);
 public:
     //! wywoływane, po aktywowaniu się kontekstu, do flexi bara trafią akcje związane z drzewem analiz
     //! \param contextWidget wiget, który wywołał kontekst
@@ -67,7 +67,7 @@ private:
     //! identyfikator grupy dla drzewa
     int groupID;
 
-    coreui::HierarchyTreeModel* treeModel;
+    coreUI::HierarchyTreeModel* treeModel;
 
     AnalysisTreeContextMenu* menuBuilder;
 };

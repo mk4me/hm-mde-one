@@ -250,7 +250,7 @@ void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
 
 void AnalisisWidget::onFilterBundleAdded( core::IFilterBundlePtr bundle )
 {
-    coreUi::DataFilterWidget* dataWidget = new coreUi::DataFilterWidget(bundle->getName(), bundle->getIcon());
+    coreUI::DataFilterWidget* dataWidget = new coreUI::DataFilterWidget(bundle->getName(), bundle->getIcon());
     int count = bundle->genNumFilters();
     for (int i = 0; i < count; ++i) {
         auto filter = bundle->getFilter(i);
@@ -261,10 +261,10 @@ void AnalisisWidget::onFilterBundleAdded( core::IFilterBundlePtr bundle )
 }
 
 
-void AnalisisWidget::addDataFilterWidget( coreUi::DataFilterWidget* filter )
+void AnalisisWidget::addDataFilterWidget( coreUI::DataFilterWidget* filter )
 {
     filterBundleWidgets.push_back(filter);
-    bool c = connect(filter, SIGNAL(activityChanged(coreUi::DataFilterWidget*)), this, SLOT(onBundleActivated(coreUi::DataFilterWidget*)));
+    bool c = connect(filter, SIGNAL(activityChanged(coreUI::DataFilterWidget*)), this, SLOT(onBundleActivated(coreUI::DataFilterWidget*)));
     if (filterWidth < 0 && filterHeight < 0) {
         filterWidth = filter->width();
         filterHeight = filter->height();
@@ -378,10 +378,10 @@ void AnalisisWidget::addToReports( const QPixmap& pixmap )
     }
 }
 
-void AnalisisWidget::onBundleActivated( coreUi::DataFilterWidget* widget )
+void AnalisisWidget::onBundleActivated( coreUI::DataFilterWidget* widget )
 {
     for (auto it = filterBundleWidgets.begin(); it != filterBundleWidgets.end(); ++it) {
-        coreUi::DataFilterWidget* dfw = *it;
+        coreUI::DataFilterWidget* dfw = *it;
         if (dfw != widget) {
             dfw->blockSignals(true);
             dfw->setActive(false);

@@ -66,7 +66,7 @@ private:
      coreUI::CoreDockWidget* embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);
     //! dodaje widget z filtrami
     //! \param filter dodawany widget
-    void addDataFilterWidget(coreUi::DataFilterWidget* filter);
+    void addDataFilterWidget(coreUI::DataFilterWidget* filter);
     void removeFromVisualizers(HelperAction* action, bool once);
     
 private Q_SLOTS:
@@ -89,7 +89,7 @@ private Q_SLOTS:
     ////! odtwarza drzewo danych 
     ////! \param currentFilter filtr, na podstawie którego odtworzone zostanie drzewo
     //void recreateTree(FilterEntryWidget* currentFilter);
-    void onBundleActivated(coreUi::DataFilterWidget* widget);
+    void onBundleActivated(coreUI::DataFilterWidget* widget);
     void createVisualizerInNewSet();
 
     void removeFromAll();
@@ -114,7 +114,7 @@ private:
     int margin;
     // potrzebne tylko, aby przekazac info między elementami.
     core::IFilterCommandPtr currentFilter;
-    std::list<coreUi::DataFilterWidget*> filterBundleWidgets;
+    std::list<coreUI::DataFilterWidget*> filterBundleWidgets;
     SummaryWindowPtr summary;
     SummaryWindowController* summaryController;
     ContextEventFilterPtr contextEventFilter;

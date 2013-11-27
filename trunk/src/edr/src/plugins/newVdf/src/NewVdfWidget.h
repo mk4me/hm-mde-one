@@ -18,9 +18,14 @@
 #include <utils/CommandStack.h>
 #include "Command.h"
 #include <corelib/HierarchyItem.h>
-#include <coreui/HierarchyTreeModel.h>
+
 class QGraphicsScene;
 class QMouseEvent;
+
+namespace coreUI { 
+    class WheelGraphicsView; 
+    class HierarchyTreeModel;
+}
 
 
 namespace vdf {
@@ -28,20 +33,21 @@ namespace vdf {
 //class SimplePinItem;
 class SceneStateMachine;
 class VdfScene;  
-class VdfView;
+//class VdfView;
+
 
 class NewVdfWidget : public QWidget
 {
     Q_OBJECT;
 
 public:
-    NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, coreui::HierarchyTreeModel* treeModel);
+    NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, coreUI::HierarchyTreeModel* treeModel);
     virtual ~NewVdfWidget();
 
 public:
     SceneModelPtr getSceneModel() const { return sceneModel; }
 	VdfScene* getScene() const { return scene; }  
-	VdfView* getView() const { return view; }
+	coreUI::WheelGraphicsView* getView() const { return view; }
 	utils::ICommandStackPtr getCommandStack() const { return commandStack; }
 
 public slots:
@@ -62,13 +68,13 @@ signals:
 
 private:
     VdfScene* scene;  
-    VdfView* view;
+    coreUI::WheelGraphicsView* view;
     SceneModelPtr sceneModel;
     bool connectionMode;
 	utils::ICommandStackPtr commandStack;
 	utils::shared_ptr<SceneStateMachine> stateMachine;
     core::HierarchyItemPtr root;
-    coreui::HierarchyTreeModel* treeModel;
+    coreUI::HierarchyTreeModel* treeModel;
 };
 
 }

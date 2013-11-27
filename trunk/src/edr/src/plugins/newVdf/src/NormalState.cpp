@@ -1,6 +1,8 @@
 #include "NewVdfPCH.h"
 #include "NormalState.h"
 #include <QtGui/QInputDialog>
+#include <coreui/MoveCommand.h>
+#include <coreui/MultiCommand.h>
 #include "SimpleItem.h"
 #include "SceneStateMachine.h"
 #include "VdfScene.h"
@@ -52,11 +54,11 @@ bool NormalState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
 			QPointF oldP = it->second;
 			QPointF newP = item->pos();
 			if (newP != oldP) {
-				commands.push_back(utils::ICommandPtr(new MoveCommand(item, newP, oldP)));
+				commands.push_back(utils::ICommandPtr(new coreUI::MoveCommand(item, newP, oldP)));
 			}
 		}
 		if (!commands.empty()) {
-			stateMachine->getCommandStack()->addCommand(utils::ICommandPtr(new MultiCommand(commands)));
+			stateMachine->getCommandStack()->addCommand(utils::ICommandPtr(new coreUI::MultiCommand(commands)));
 		}
 	}
 	return false;

@@ -15,10 +15,19 @@
 #include <corelib/Filesystem.h>
 #include <corelib/IHierarchyItem.h>
 #include <corelib/HierarchyHelper.h>
+#include "DicomInternalStruct.h"
 
 class DcmDirectoryRecord;
 
 namespace dicom {
+
+class DicomLoader
+{
+public:
+    virtual ~DicomLoader() {}
+    DicomInternalStructPtr load( const core::Filesystem::Path& from);
+};
+DEFINE_SMART_POINTERS(DicomLoader);
 
 
 class LayerHelper : public core::HierarchyHelper
@@ -65,8 +74,8 @@ public:
     virtual void getOfferedTypes( core::TypeInfoList & offeredTypes ) const;
     void addFile( const core::Filesystem::Path& path );
 
-    void loadDirFile(const core::Filesystem::Path& dirPath );
-    void import( const core::Filesystem::Path& from, const core::Filesystem::Path& to );
+    //void loadDirFile(const core::Filesystem::Path& dirPath );
+    //void import( const core::Filesystem::Path& from, const core::Filesystem::Path& to );
     void openInternalDataMainFile( core::Filesystem::Path path );
 
 private:

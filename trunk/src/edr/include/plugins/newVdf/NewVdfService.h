@@ -95,7 +95,7 @@ private:
     QWidget* presetsWidget;
     QPushButton* resultButton;
 
-    coreui::HierarchyTreeModel resultsModel;
+    coreUI::HierarchyTreeModel resultsModel;
 
     core::IMemoryDataManager * memoryManager;
 	//QListWidget* commandStackDebug;

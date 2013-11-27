@@ -10,25 +10,53 @@
 #ifndef HEADER_GUARD_DICOM__LAYEREDIMAGE_H__
 #define HEADER_GUARD_DICOM__LAYEREDIMAGE_H__
 
+
+#include <plugins/dicom/ILayer.h>
 #include <plugins/dicom/ILayeredImage.h>
+
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/split_member.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/string.hpp>
+
 
 namespace dicom {
 
 class LayeredImage : public ILayeredImage
 {
 public:
-    LayeredImage() {}
+    LayeredImage();
     LayeredImage(const QPixmap& pixmap);
-	virtual ~LayeredImage() {}
+    LayeredImage(const std::string& pixmap);
+	virtual ~LayeredImage();
 
 public:
-    virtual void addLayer( ILayerConstPtr layer );
-    virtual void removeLayer( ILayerConstPtr layer );
+    virtual void addLayer( ILayerItemPtr layer );
+    virtual void removeLayer( ILayerItemConstPtr layer );
     virtual const_range getLayers() const;
     virtual QPixmap getPixmap() const;
+    virtual int getNumLayers() const;
+    virtual ILayerItemConstPtr getLayer(int idx) const;
+    virtual ILayerItemPtr getLayer(int idx);
+    QSize getSize() const;
+
+    // workaround
+    std::vector<ILayerItemConstPtr> getLayersToSerialize() const;
+
 
 private:
-    std::list<ILayerConstPtr> layers;
+    std::vector<ILayerItemPtr> layers;
+
+private:
+    friend class boost::serialization::access;
+    template <typename Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        //ar & boost::serialization::base_object<ILayeredImage>(*this);
+        //BOOST_SERIALIZATION_BASE_OBJECT_NVP(ILayeredImage);
+        ar & boost::serialization::make_nvp("layers", layers);
+    }
 };
 DEFINE_SMART_POINTERS(LayeredImage);
 

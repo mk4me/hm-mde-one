@@ -75,52 +75,52 @@ private:
     IVisualConnectionPtr connection;
 };
 
-//! Polecenie przesuwa elementy na scenie
-class MoveCommand : public utils::ICommand
-{
-public:
-	//! Konstruktor
-	//! \param item Element graficzny sceny, które zostanie przesuniêty 
-	//! \param newP Nowa pozycja elementu 
-	//! \param oldP Stara pozycja elementu
-	MoveCommand(QGraphicsItem* item, const QPointF& newP, const QPointF& oldP);
+////! Polecenie przesuwa elementy na scenie
+//class MoveCommand : public utils::ICommand
+//{
+//public:
+//	//! Konstruktor
+//	//! \param item Element graficzny sceny, które zostanie przesuniêty 
+//	//! \param newP Nowa pozycja elementu 
+//	//! \param oldP Stara pozycja elementu
+//	MoveCommand(QGraphicsItem* item, const QPointF& newP, const QPointF& oldP);
+//
+//public:
+//	//! Przesuwa element
+//	virtual void doIt();
+//	//! Cofa przesuniêcie
+//	virtual void undoIt();
+//	//! Nazwa polecenia 
+//	virtual QString name() { return QString(typeid(this).name()); }
+//
+//private:
+//	//! Element graficzny sceny, które zostanie przesuniêty 
+//	QGraphicsItem* item;
+//	//! Nowa pozycja elementu graficznego
+//	QPointF newPosition;
+//	//! Stara pozycja elementu graficznego
+//	QPointF oldPosition;
+//};
 
-public:
-	//! Przesuwa element
-	virtual void doIt();
-	//! Cofa przesuniêcie
-	virtual void undoIt();
-	//! Nazwa polecenia 
-	virtual QString name() { return QString(typeid(this).name()); }
-
-private:
-	//! Element graficzny sceny, które zostanie przesuniêty 
-	QGraphicsItem* item;
-	//! Nowa pozycja elementu graficznego
-	QPointF newPosition;
-	//! Stara pozycja elementu graficznego
-	QPointF oldPosition;
-};
-
-//! Polecenie agreguje inne polecenia
-class MultiCommand : public utils::ICommand
-{
-public:
-	//! Konstruktor
-	//! \param c Wektor z poleceniami do wykonania
-	MultiCommand(const std::vector<utils::ICommandPtr>& c);
-public:
-	//! Kolejno wykonuje dostarczone polecenia
-	virtual void doIt();
-	//! Cofa polecenia w odwrotnej kolejnoœci do wykonania
-	virtual void undoIt();
-	//! Nazwa polecenia 
-	virtual QString name() { return QString(typeid(this).name()); }
-
-private:
-	//! Dostarczone polecenia do wykonania
-	std::vector<utils::ICommandPtr> commands;
-};
+////! Polecenie agreguje inne polecenia
+//class MultiCommand : public utils::ICommand
+//{
+//public:
+//	//! Konstruktor
+//	//! \param c Wektor z poleceniami do wykonania
+//	MultiCommand(const std::vector<utils::ICommandPtr>& c);
+//public:
+//	//! Kolejno wykonuje dostarczone polecenia
+//	virtual void doIt();
+//	//! Cofa polecenia w odwrotnej kolejnoœci do wykonania
+//	virtual void undoIt();
+//	//! Nazwa polecenia 
+//	virtual QString name() { return QString(typeid(this).name()); }
+//
+//private:
+//	//! Dostarczone polecenia do wykonania
+//	std::vector<utils::ICommandPtr> commands;
+//};
 
 //! Polecenie usuwa po³¹czenie pomiêdzy pinami
 class RemoveConnectionCommand : public utils::ICommand

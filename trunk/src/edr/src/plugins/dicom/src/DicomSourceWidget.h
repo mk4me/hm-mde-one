@@ -36,15 +36,9 @@ namespace dicom {
     public:
         DicomSourceWidget(DicomSource *source);
 
-    private slots:
-        void onLoadFiles();
-        void onLoadDirectory();
-
+    private Q_SLOTS:
         void onOpenProject();
-        void onImport();
-        void onSelectImportDir();
-        void onSelectSaveDir();
-    
+        
     private:
         DicomSource* dicomSource;
         Ui::DicomSource* ui;

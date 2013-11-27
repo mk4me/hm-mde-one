@@ -10,7 +10,7 @@
 #include "AnalisisWidget.h"
 
 
-AnalysisTreeContext::AnalysisTreeContext( QTabWidget * flexiTabWidget, coreui::HierarchyTreeModel* model, AnalysisTreeContextMenu* menuBuilder) :
+AnalysisTreeContext::AnalysisTreeContext( QTabWidget * flexiTabWidget, coreUI::HierarchyTreeModel* model, AnalysisTreeContextMenu* menuBuilder) :
     flexiTabWidget(flexiTabWidget),
 	flexiContent(new QWidget()),
 	flexiSection(new coreUI::CoreFlexiToolBarSection()),

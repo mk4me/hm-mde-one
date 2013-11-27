@@ -111,7 +111,7 @@ void HierarchyTest::testShallowCopy()
 
 void HierarchyTest::testModel()
 {
-    coreui::HierarchyTreeModel model;
+    coreUI::HierarchyTreeModel model;
     core::IHierarchyItemPtr rootItem1 = createSimpleTree();
     core::IHierarchyItemPtr rootItem2 = createSimpleTree();
     core::IHierarchyItemPtr rootItem3 = createSimpleTree();
@@ -172,7 +172,7 @@ void HierarchyTest::testModelView()
     core::IHierarchyItemPtr rootItem1 = createSimpleTree();
     core::IHierarchyItemPtr rootItem2 = createSimpleTree();
     core::IHierarchyItemPtr rootItem3 = createSimpleTree();
-    coreui::HierarchyTreeModel model;
+    coreUI::HierarchyTreeModel model;
     model.addRootItem(rootItem1);
     model.addRootItem(rootItem2);
     model.addRootItem(rootItem3);

@@ -20,7 +20,7 @@
 #include <coreui/Export.h>
 #include <corelib/IFilterCommand.h>
 
-namespace coreui {
+namespace coreUI {
 
 
 //! Klasa jest poœrednikiem pomiêdzy hierarchiczn¹ struktur¹ opart¹ na IHierarchyItem, a klasami widoku Qt

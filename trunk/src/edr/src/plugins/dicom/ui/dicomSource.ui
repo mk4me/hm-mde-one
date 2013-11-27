@@ -42,96 +42,9 @@ color: white
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="pictureLabel">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap resource="dicomRC.qrc">:/dicom/dicomLogo.png</pixmap>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QLabel" name="importFromLabel">
-         <property name="text">
-          <string>Import From:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QLineEdit" name="importFromEdit">
-           <property name="styleSheet">
-            <string notr="true">background-color: white;
-color: black;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="importFromButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QLabel" name="exportToLabel">
-       <property name="text">
-        <string>Export to:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLineEdit" name="exportToEdit">
-         <property name="styleSheet">
-          <string notr="true">background-color: white;
-color: black;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="exportToButton">
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QPushButton" name="importButton">
-       <property name="text">
-        <string>Import</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="openProjectButton">
        <property name="text">
         <string>Open Project</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="loadDirectoryButton">
-       <property name="text">
-        <string>Load Directory</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="openFileButton">
-       <property name="text">
-        <string>OpenFile</string>
        </property>
       </widget>
      </item>

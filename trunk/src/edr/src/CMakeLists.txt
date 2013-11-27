@@ -10,7 +10,8 @@ ADD_PROJECT(coreui "OPENGL;corelib")
 
 SET_PROJECTS_GROUP("plugins")
 ADD_PROJECT(plugin_c3d "corelib;c3dlib;kinematiclib" "plugins/c3d")
-ADD_PROJECT(plugin_dicom "BOOST;corelib;DCMTK;STDINT" "plugins/dicom")
+ADD_PROJECT(plugin_dicom "BOOST;coreui;QWT" "plugins/dicom")
+ADD_PROJECT(plugin_dicomImporter "BOOST;coreui;corelib;DCMTK;STDINT" "plugins/dicomImporter")
 ADD_PROJECT(plugin_fileSource "BOOST;corelib" "plugins/fileSource")
 #ADD_PROJECT(plugin_sampleService "BOOST;corelib" "plugins/sampleService")
 ADD_PROJECT(plugin_video "vidlib;FFMPEG;corelib;osgui" "plugins/video")
@@ -31,7 +32,7 @@ ADD_PROJECT(mde_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_n
 ADD_PROJECT(imu_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
 ADD_PROJECT(medusa_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
 
-#ADD_PROJECT(medusa_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
+ADD_PROJECT(medusa_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
 #ADD_PROJECT(console_view "BOOST;utils;QT;TINYXML;core;corelib;coreui;plugin_newTimeline")
 
 BEGIN_INSTALLER("MDE" "MDE")

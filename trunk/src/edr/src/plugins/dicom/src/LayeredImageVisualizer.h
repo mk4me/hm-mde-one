@@ -15,6 +15,8 @@
 #include <corelib/IVisualizer.h>
 #include <corelib/AbstractSerie.h>
 #include <plugins/dicom/ILayeredImage.h>
+#include "LayeredSerie.h"
+#include "Adnotations.h"
 
 class QLabel;
 class QScrollArea;
@@ -22,29 +24,6 @@ class QPushButton;
 class QSlider;
 
 namespace dicom {
-
-    class LayeredSerie : public plugin::AbstractSerie, public plugin::IVisualizer::ITimeAvareSerieFeatures
-    {
-    public:
-        virtual ~LayeredSerie() {}
-
-        virtual void setupData( const core::ObjectWrapperConstPtr & data );
-
-        //QPixmap convertToPixmap( DicomImagePtr image );
-
-        virtual void update() {}
-
-        virtual void setTime( double time );
-
-        virtual double getLength() const;
-
-    public:
-        const QPixmap& getPixmap() const { return pixmap; }
-
-    private:
-        QPixmap pixmap;
-    };
-    DEFINE_SMART_POINTERS(LayeredSerie)
 
     class LayeredImageVisualizerView;
     //! Wizualizator Dicom
@@ -73,6 +52,7 @@ namespace dicom {
 
         virtual void setActiveSerie(plugin::IVisualizer::ISerie * serie);
         virtual const plugin::IVisualizer::ISerie * getActiveSerie() const;
+        virtual plugin::IVisualizer::ISerie * getActiveSerie();
         //! Tworzy g³ówny widget wizualizatora
         //! \param manager Manager z akcjami do flexi bara
         //! \return utworzony widget
@@ -92,13 +72,15 @@ namespace dicom {
 
         int getNumSeries() const;
         int getCurrentSerieNo() const;
+        
 
-    public slots:
+    public Q_SLOTS:
         void setPrevSerie();
         void setNextSerie();
         void trySetSerie(int val);
+        void saveSerie();
 
-    signals:
+    Q_SIGNALS:
         void serieChanged();
     private:
         bool correctIndex(int i) const;

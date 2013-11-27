@@ -7,7 +7,7 @@
 //#include "FilterCommand.h"
 
 using namespace PluginSubject;
-using namespace coreUi;
+using namespace coreUI;
 
 const int PIXMAP_SIZE = 64;
 
@@ -137,7 +137,7 @@ int DataFilterWidget::getNumEntries() const
     return entries.size();
 }
 
-core::IHierarchyItemPtr coreUi::BundleFilter::getFilteredTree( core::IHierarchyItemConstPtr root )
+core::IHierarchyItemPtr coreUI::BundleFilter::getFilteredTree( core::IHierarchyItemConstPtr root )
 {
     core::HierarchyItemPtr results = utils::make_shared<core::HierarchyItem>(QObject::tr("Filtered"), "");
     for (auto it = commands.begin(); it != commands.end(); ++it) {
@@ -146,22 +146,22 @@ core::IHierarchyItemPtr coreUi::BundleFilter::getFilteredTree( core::IHierarchyI
     return results;
 }
 
-QString coreUi::BundleFilter::getName() const
+QString coreUI::BundleFilter::getName() const
 {
     return QObject::tr("Filter bundle");
 }
 
-QIcon coreUi::BundleFilter::getIcon() const
+QIcon coreUI::BundleFilter::getIcon() const
 {
     return QIcon();
 }
 
-void coreUi::BundleFilter::addFilterCommand( core::IFilterCommandPtr command )
+void coreUI::BundleFilter::addFilterCommand( core::IFilterCommandPtr command )
 {
     commands.push_back(command);
 }
 
-void coreUi::DataFilterWidget::onFilterEntryClicked( core::IFilterCommandPtr filter )
+void coreUI::DataFilterWidget::onFilterEntryClicked( core::IFilterCommandPtr filter )
 {
     for (auto it = entries.begin(); it != entries.end(); ++it) {
         auto filterWidget = *it;

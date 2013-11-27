@@ -1,6 +1,9 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
+	AbstractState.h
+	AbstractStateMachine.h
+	GraphicSceneWithStateMachine.h
 	CoreDockWidgetSet.h
 	CoreDockWidgetManager.h
 	CoreConsoleWidget.h
@@ -20,10 +23,16 @@ SET_PUBLIC_HEADERS(
 	HierarchyTreeModel.h
 	DataFilterWidget.h
 	FilterEntryWidget.h
+	WheelGraphicsView.h
+	MultiCommand.h
+	MoveCommand.h
 	Export.h
 )
 
 SET_SOURCE_FILES(
+	AbstractState.cpp
+	AbstractStateMachine.cpp
+	GraphicSceneWithStateMachine.cpp
 	CoreDockWidgetSet.cpp
 	CoreDockWidgetManager.cpp
 	CoreVisualizerWidget.cpp
@@ -42,6 +51,9 @@ SET_SOURCE_FILES(
 	HierarchyTreeModel.cpp
 	DataFilterWidget.cpp
 	FilterEntryWidget.cpp
+	WheelGraphicsView.cpp
+	MultiCommand.cpp
+	MoveCommand.cpp
 )
 
 SET_PRIVATE_HEADERS(
@@ -49,6 +61,8 @@ SET_PRIVATE_HEADERS(
 )
 
 SET_MOC_FILES(
+	AbstractStateMachine.h
+	GraphicSceneWithStateMachine.h
 	CoreTextEditWidget.h
 	CoreCompoundVisualizerWidget.h
 	CoreVisualizerWidget.h
@@ -66,6 +80,7 @@ SET_MOC_FILES(
 	HierarchyTreeModel.h
 	DataFilterWidget.h
 	FilterEntryWidget.h
+	WheelGraphicsView.h
 )
 
 SET_UI_FILES(

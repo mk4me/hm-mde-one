@@ -60,43 +60,43 @@ void AddConnectionCommand::undoIt()
     sceneModel->removeConnection(connection);
 }
 
-MultiCommand::MultiCommand( const std::vector<utils::ICommandPtr>& c ) :
-	commands(c) 
-{
+//MultiCommand::MultiCommand( const std::vector<utils::ICommandPtr>& c ) :
+//	commands(c) 
+//{
+//
+//}
+//
+//void MultiCommand::doIt()
+//{
+//	for (auto it = commands.begin(); it != commands.end(); ++it) {
+//		(*it)->doIt();
+//	}
+//}
+//
+//void MultiCommand::undoIt()
+//{
+//	for (int i = commands.size() - 1; i >= 0; --i) {
+//		commands[i]->undoIt();
+//	}
+//}
 
-}
-
-void MultiCommand::doIt()
-{
-	for (auto it = commands.begin(); it != commands.end(); ++it) {
-		(*it)->doIt();
-	}
-}
-
-void MultiCommand::undoIt()
-{
-	for (int i = commands.size() - 1; i >= 0; --i) {
-		commands[i]->undoIt();
-	}
-}
-
-MoveCommand::MoveCommand( QGraphicsItem* item, const QPointF& newP, const QPointF& oldP ) :
-	item(item),
-	newPosition(newP),
-	oldPosition(oldP)
-{
-
-}
-
-void MoveCommand::doIt()
-{
-	item->setPos(newPosition);
-}
-
-void MoveCommand::undoIt()
-{
-	item->setPos(oldPosition);
-}
+//MoveCommand::MoveCommand( QGraphicsItem* item, const QPointF& newP, const QPointF& oldP ) :
+//	item(item),
+//	newPosition(newP),
+//	oldPosition(oldP)
+//{
+//
+//}
+//
+//void MoveCommand::doIt()
+//{
+//	item->setPos(newPosition);
+//}
+//
+//void MoveCommand::undoIt()
+//{
+//	item->setPos(oldPosition);
+//}
 
 RemoveNodeCommand::RemoveNodeCommand(SceneModelPtr scene, IVisualNodePtr toRemove ) : 
 	item(toRemove),

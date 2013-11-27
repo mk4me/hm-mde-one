@@ -53,7 +53,7 @@ public:
 
 public:
     virtual void observe(const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes);
-    coreui::HierarchyTreeModel* getTreeModel() { return &model; }
+    coreUI::HierarchyTreeModel* getTreeModel() { return &model; }
     void addFilterBundles( const core::IFilterProvider::FilterBundles& bundles );
     void applyFilter( core::IFilterCommandPtr filter );
     void addVisualizerDataDescription( core::HierarchyHelperPtr helper, AnalisisModel::DataItemDescriptionPtr desc );
@@ -75,7 +75,7 @@ private:
     void loadSourceItems();
 
 private:
-    coreui::HierarchyTreeModel model;
+    coreUI::HierarchyTreeModel model;
     core::IHierarchyItemPtr dataManagerTreeItem; 
     core::IFilterProvider::FilterBundles filters;
     std::vector<core::IHierarchyItemConstPtr> itms;
