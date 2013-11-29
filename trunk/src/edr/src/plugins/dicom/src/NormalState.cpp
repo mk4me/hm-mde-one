@@ -15,22 +15,17 @@ dicom::NormalState::NormalState( LayeredStateMachine* machine ) :
 
 }
 
+
+
 void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
 {
-//    auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>();
-//    for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-//        IVisualNodePtr node = *it;
-//        node->setSelection(node->visualItem()->isSelected());
-//    }
-//    if (list.size() == 1) {
-//        IVisualItemPtr item = stateMachine->getSceneModel()->tryGetVisualItem(list.first());
-//        if (item && item->isType(IVisualItem::Pin)) {
-//            IVisualPinPtr pin = utils::dynamic_pointer_cast<IVisualPin>(item);
-//            ConnectStatePtr connectState = stateMachine->getConnectState();
-//            connectState->setFirstPin(pin);
-//            stateMachine->setState(stateMachine->getConnectState());
-//        }
-//    }
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        QGraphicsItem* item = extractItem(*it);
+        auto childs = item->childItems();
+        for (auto it2 = childs.begin(); it2 != childs.end(); ++it2) {
+            (*it2)->setSelected(true);
+        }
+    }
 }
 
 bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
@@ -81,6 +76,12 @@ void NormalState::end()
 QGraphicsItem* NormalState::extractItem( QGraphicsSceneMouseEvent* e )
 {
     QGraphicsItem* itm = machine->getGraphicsScene()->itemAt(e->scenePos());
+    return extractItem(itm);
+}
+
+
+QGraphicsItem* dicom::NormalState::extractItem( QGraphicsItem* itm )
+{
     if (itm) {
         QGraphicsItemGroup* grp = dynamic_cast<QGraphicsItemGroup*>(itm->parentItem());
         if (grp) {
@@ -90,5 +91,3 @@ QGraphicsItem* NormalState::extractItem( QGraphicsSceneMouseEvent* e )
 
     return itm;
 }
-
-

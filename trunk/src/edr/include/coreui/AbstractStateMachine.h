@@ -30,6 +30,8 @@ public:
     void setState(AbstractStatePtr state);
     int getNumStates() const;
     AbstractStatePtr getState(int idx);
+
+    AbstractStatePtr getCurrentState();
     template <class TPtr>
     TPtr getState();
 

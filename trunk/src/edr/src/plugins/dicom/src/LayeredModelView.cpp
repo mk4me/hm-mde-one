@@ -105,4 +105,19 @@ void dicom::LayeredModelView::setImage( ILayeredImagePtr val )
     this->reset();
 }
 
+bool dicom::LayeredModelView::removeRows( int row, int count, const QModelIndex &parent /*= QModelIndex( ) */ )
+{
+    std::list<ILayerItemConstPtr> toRemove;
+    int endRow = (std::min)(row + count, image->getNumLayers());
+    for (int i = row; i < endRow; ++i) {
+        toRemove.push_back(image->getLayer(i));
+    }
+    
+    for (auto it = toRemove.begin(); it != toRemove.end(); ++it) {
+        image->removeLayer(*it);
+    }
+
+    return !toRemove.empty();
+}
+
 //! [quoting mymodel_f]

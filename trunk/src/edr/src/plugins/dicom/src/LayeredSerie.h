@@ -42,6 +42,7 @@ namespace dicom {
         virtual void update() {}
         virtual void setTime( double time );
         virtual double getLength() const;
+        
 
     public:
         QPixmap getPixmap() const;
@@ -57,7 +58,8 @@ namespace dicom {
         void refresh();
         void save();
 
-
+        void removeLayer(int idx);
+        void editLayer(int idx);
         void undo();
         void redo();
         void setPolyState();

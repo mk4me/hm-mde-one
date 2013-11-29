@@ -34,7 +34,7 @@ public:
 
 private:
     QGraphicsItem* extractItem( QGraphicsSceneMouseEvent* e );
-
+    QGraphicsItem* extractItem( QGraphicsItem* itm);
 private: 
     std::pair<QGraphicsItem*, QPointF> position;
     LayeredStateMachine* machine;

@@ -43,6 +43,9 @@ public:
     virtual void begin(AbstractStateConstPtr lastState) {}
     virtual void end() {}
 
+    // TODO : oprogramowac w AbstractStateMachine
+    virtual void selectionChanged(const QList<QGraphicsItem*>& list) {}
+
 protected:
     AbstractStateMachine* stateMachine;
 };

@@ -33,11 +33,16 @@ public:
     ILayeredImageConstPtr getImage() const;
     void setImage(ILayeredImagePtr val);
 
+protected:
+    virtual bool removeRows( int row, int count, const QModelIndex &parent = QModelIndex( ) );
+
 private:
     ILayeredImagePtr image;
     
 Q_SIGNALS:
     void editCompleted(const QString &);
+
+
 };
 
 }

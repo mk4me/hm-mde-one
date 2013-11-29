@@ -29,7 +29,7 @@ namespace dicom {
     {
     public:
         virtual ~IPointsDrawer() {}
-        virtual QPen getLinePen() = 0;
+        virtual QPen getLinePen(bool editable) = 0;
         //virtual QPen getPointPen() = 0;
         virtual QString methodName() = 0;
         virtual QPainterPath createPath(const QVector<QGraphicsItem*>& points) = 0;
@@ -40,7 +40,7 @@ namespace dicom {
     class CurveDrawer : public IPointsDrawer 
     {
     public:
-        QPen getLinePen();
+        QPen getLinePen(bool editable);
         //QPen getPointPen();
         QString methodName();
         QPainterPath createPath(const QVector<QGraphicsItem*>& points);
@@ -50,7 +50,7 @@ namespace dicom {
     class PolyDrawer : public IPointsDrawer
     {
     public:
-        QPen getLinePen();
+        QPen getLinePen(bool editable);
         //QPen getPointPen();
         QString methodName();
         QPainterPath createPath(const QVector<QGraphicsItem*>& points);
@@ -124,7 +124,7 @@ namespace dicom {
             } else if (method == "Polygon") {
                 pointsDrawer = utils::make_shared<PolyDrawer>();
             }
-            pathItem->setPen(pointsDrawer->getLinePen());
+            pathItem->setPen(pointsDrawer->getLinePen(false));
             for (auto it = rawPoints.begin(); it != rawPoints.end(); ++it) {
                 addPoint(*it);
             }

@@ -20,6 +20,7 @@ SET_PRIVATE_HEADERS (
 	#DicomImporter.h
 	DicomInternalStruct.h
 	PointsState.h
+	EditState.h
 	NormalState.h
 	LayeredSerie.h
 	BackgroundLayer.h
@@ -39,6 +40,7 @@ SET_SOURCE_FILES(
 	LayeredStateMachine.cpp
 	PointsState.cpp
 	NormalState.cpp
+	EditState.cpp
 	LayeredSerie.cpp
 	DicomPlugin.cpp
 	#DicomParser.cpp
@@ -66,6 +68,7 @@ SET_MOC_FILES(
 	LayeredImageVisualizerView.h
 	LayeredModelView.h
 	PointsState.h
+	EditState.h
 )
 SET_UI_FILES(
 	layeredImageVisualizer.ui

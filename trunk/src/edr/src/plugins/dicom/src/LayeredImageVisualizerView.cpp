@@ -50,6 +50,8 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(ui->sliderBar, SIGNAL(valueChanged(int)), model, SLOT(trySetSerie(int)));
     connect(model, SIGNAL(serieChanged()), this, SLOT(refresh()));
     connect(ui->saveButton, SIGNAL(clicked()), model, SLOT(saveSerie()));
+    connect(ui->editButton, SIGNAL(clicked()), this, SLOT(editSelectedSerie()));
+    connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedLayers()));
 
     ui->tableView->setItemDelegateForColumn(1, new AdnotationsDelegate());
 
@@ -163,5 +165,29 @@ void dicom::LayeredImageVisualizerView::polyState()
     LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
     if (serie) {
         serie->setPolyState();
+    }
+}
+
+void dicom::LayeredImageVisualizerView::removeSelectedLayers()
+{
+    QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
+    std::set<int> rows;
+    for (auto it = indexes.begin(); it != indexes.end(); ++it) {
+        rows.insert(it->row());
+    }
+    if (rows.size() == 1) {
+        model->removeLayer(*rows.begin());
+    }
+}
+
+void dicom::LayeredImageVisualizerView::editSelectedSerie()
+{
+    QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
+    std::set<int> rows;
+    for (auto it = indexes.begin(); it != indexes.end(); ++it) {
+        rows.insert(it->row());
+    }
+    if (rows.size() == 1) {
+        model->editSerie(*rows.begin());
     }
 }

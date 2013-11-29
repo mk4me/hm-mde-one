@@ -41,6 +41,11 @@ coreUI::AbstractStatePtr coreUI::AbstractStateMachine::getState( int idx )
     return impl->states[idx];
 }
 
+coreUI::AbstractStatePtr coreUI::AbstractStateMachine::getCurrentState()
+{
+    return impl->currentState;
+}
+
     
 void AbstractStateMachine::setState( AbstractStatePtr state )
 {

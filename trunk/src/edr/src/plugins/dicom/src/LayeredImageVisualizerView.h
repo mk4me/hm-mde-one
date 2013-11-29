@@ -47,7 +47,8 @@ private Q_SLOTS:
     void normalState();
     void curveState();
     void polyState();
-
+    void removeSelectedLayers();
+    void editSelectedSerie();
 private:
     //! ui z designera
     Ui::LayeredImageVisualizer* ui;

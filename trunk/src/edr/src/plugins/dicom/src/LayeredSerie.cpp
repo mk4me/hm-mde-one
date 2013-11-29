@@ -14,9 +14,50 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include "LayeredImage.h"
+#include <utils/ICommand.h>
 
 using namespace dicom;
 
+class RemoveLayerCommand : public utils::ICommand
+{
+public:
+    RemoveLayerCommand(LayeredSerie* serie, ILayeredImagePtr img, ILayerItemPtr layer) :
+      img(img),
+      layer(layer),
+      serie(serie)
+    {
+    }
+
+public:
+    virtual void doIt() 
+    {
+        img->removeLayer(layer);
+        IVectorLayerItemPtr v = utils::dynamic_pointer_cast<IVectorLayerItem>(layer);
+        if (v) {
+            v->getItem()->setVisible(false);//setParentItem(nullptr);
+        }
+        serie->refresh();
+    }
+    //! cofa wykonane ju¿ polecenie
+    virtual void undoIt() 
+    {
+        img->addLayer(layer);
+        IVectorLayerItemPtr v = utils::dynamic_pointer_cast<IVectorLayerItem>(layer);
+        if (v) {
+            //serie->getGraphicsScene()->addItem(v->getItem());
+            v->getItem()->setVisible(true);
+        }
+        serie->refresh();
+    }
+
+    //! \return nazwa polecenia (dla ewentualnej reprezentacji stosu poleceñ)
+    virtual QString name() { return QString(typeid(this).name()); }
+
+private:
+    ILayeredImagePtr img;
+    ILayerItemPtr layer;
+    LayeredSerie* serie;
+};
 
 void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
 {
@@ -84,6 +125,7 @@ dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer) :
     graphicsView->setRenderHint(QPainter::Antialiasing, true);
     graphicsScene->setSceneRect( graphicsView->rect() );
 
+    QObject::connect(graphicsScene, SIGNAL(selectionChanged()), stateMachine.get(), SLOT(selectionChanged()));
 }
 
 coreUI::WheelGraphicsView* dicom::LayeredSerie::getGraphicsView() const
@@ -162,5 +204,27 @@ void dicom::LayeredSerie::save()
     LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(getImage());
     oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize());
     ofs.close();
+}
+
+void dicom::LayeredSerie::removeLayer( int idx )
+{
+    auto img = this->getImage();
+    if (idx >= 0 && idx < img->getNumLayers()) {
+        auto layer = img->getLayer(idx);
+        commandStack->addCommand(utils::make_shared<RemoveLayerCommand>(this, img, layer));    
+    }
+}
+
+void dicom::LayeredSerie::editLayer( int idx )
+{
+    auto img = this->getImage();
+    if (idx >= 0 && idx < img->getNumLayers()) {
+        auto layer = img->getLayer(idx);
+        auto pointsLayer = utils::dynamic_pointer_cast<PointsLayer>(layer);
+        if (pointsLayer) {
+            stateMachine->getEditState()->setLayerToEdit(pointsLayer);
+            stateMachine->setState(stateMachine->getEditState());
+        }
+    }
 }
 

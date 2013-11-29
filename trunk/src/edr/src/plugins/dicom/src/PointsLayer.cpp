@@ -178,7 +178,7 @@ void dicom::PointsLayer::setPointsDrawer( dicom::IPointsDrawerPtr val )
 {
     pointsDrawer = val;
 
-    pathItem->setPen(pointsDrawer->getLinePen());
+    pathItem->setPen(pointsDrawer->getLinePen(getEditable()));
     pathItem->setPath(pointsDrawer->createPath(points));
 
     // TODO: Podmiana punktow
@@ -194,7 +194,7 @@ void dicom::PointsLayer::setEditable( bool val )
     group->setHandlesChildEvents(!val);
     group->setFlag(QGraphicsItem::ItemIsMovable, !val);
     group->setFlag(QGraphicsItem::ItemIsSelectable, !val);
-
+    pathItem->setPen(pointsDrawer->getLinePen(val));
     /*for (auto it = points.begin(); it != points.end(); ++it) {
         (*it)->setVisible(val);
     }*/
@@ -202,9 +202,9 @@ void dicom::PointsLayer::setEditable( bool val )
 
 
 
-QPen dicom::PolyDrawer::getLinePen()
+QPen dicom::PolyDrawer::getLinePen(bool editable)
 {
-    QPen pen(QColor(128, 212, 220));
+    QPen pen(editable ? QColor(0, 100, 255) : QColor(128, 212, 220));
     pen.setWidth(2);
     return pen;
 }
@@ -218,7 +218,7 @@ QGraphicsItem* dicom::PolyDrawer::createPoint()
 {
     const int size = 5;
     auto rect = new QGraphicsRectItem(-size, -size, size * 2, size * 2);
-    rect->setPen(getLinePen());
+    rect->setPen(getLinePen(true));
     return rect;
 }
 
@@ -248,9 +248,10 @@ QPainterPath dicom::PolyDrawer::createPath(const QVector<QGraphicsItem*>& points
     return QPainterPath();
 }
 
-QPen dicom::CurveDrawer::getLinePen()
+
+QPen dicom::CurveDrawer::getLinePen(bool editable)
 {
-    QPen pen(QColor(220, 128, 128));
+    QPen pen(editable ? QColor(255, 0, 0) : QColor(220, 128, 128));
     pen.setWidth(2);
     return pen;
 }
@@ -264,7 +265,7 @@ QGraphicsItem* dicom::CurveDrawer::createPoint()
 {
     int size = 5;
     auto itm = new QGraphicsEllipseItem(-size, -size, 2 * size, 2 * size);
-    itm->setPen(getLinePen());
+    itm->setPen(getLinePen(true));
     return itm;
 }
 
@@ -279,10 +280,12 @@ QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& point
     if (count > 2) {
         QwtSplineCurveFitter fitter;
         QPolygonF poly;
+        //poly << (*(points.end() - 1))->scenePos();
         for (auto it = points.begin(); it != points.end(); ++it) {
             poly << (*it)->scenePos();
         }
         poly << (*points.begin())->scenePos();
+        //poly << (*(points.begin() + 1))->scenePos();
 
         fitter.setFitMode(QwtSplineCurveFitter::ParametricSpline);
         poly = fitter.fitCurve(poly);

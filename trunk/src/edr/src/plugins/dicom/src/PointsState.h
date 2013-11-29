@@ -16,13 +16,28 @@ namespace dicom {
 
 class LayeredStateMachine;
 
+//class EditState : public QObject, public coreUI::AbstractState
+//{
+//public:
+//    EditState(LayeredStateMachine* machine);
+//    dicom::PointsLayerPtr getLayerToEdit() const { return layerToEdit; }
+//    void setLayerToEdit(dicom::PointsLayerPtr val) { layerToEdit = val; }
+//
+//    virtual void begin( coreUI::AbstractStateConstPtr lastState );
+//
+//private:
+//    PointsLayerPtr layerToEdit;
+//    LayeredStateMachine* machine;
+//};
+//DEFINE_SMART_POINTERS(EditState)
+
 class PointsState : public QObject, public coreUI::AbstractState
 {
     Q_OBJECT
 public:
     PointsState(LayeredStateMachine* machine, bool curved);
 	virtual ~PointsState() {}
-
+    friend class AddLayerCommand;
 public:
     virtual bool keyReleaseEvent( QKeyEvent *event );
     virtual bool mouseMoveEvent(QGraphicsSceneMouseEvent* e);

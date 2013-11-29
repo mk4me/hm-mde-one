@@ -182,4 +182,18 @@ void dicom::LayeredImageVisualizer::saveSerie()
     }
 }
 
+void dicom::LayeredImageVisualizer::editSerie(int idx)
+{
+    if (correctIndex(currentSerie)) {
+        series[currentSerie]->editLayer(idx);
+    }
+}
+
+void dicom::LayeredImageVisualizer::removeLayer(int idx)
+{
+    if (correctIndex(currentSerie)) {
+        series[currentSerie]->removeLayer(idx);
+    }
+}
+
 
