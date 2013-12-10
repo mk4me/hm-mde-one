@@ -7,14 +7,17 @@
 #include <boost/serialization/export.hpp>
 #include <QtGui/QGraphicsItemGroup>
 
+
 dicom::LayeredImage::LayeredImage( const QPixmap& pixmap ) 
 {
-    layers.push_back(utils::make_shared<BackgroundLayer>(pixmap));
+    //layers.push_back(utils::make_shared<BackgroundLayer>(pixmap));
+    backgroundLayer = utils::make_shared<BackgroundLayer>(pixmap);
 }
 
 dicom::LayeredImage::LayeredImage( const std::string& pixmap )
 {
-    layers.push_back(utils::make_shared<BackgroundLayer>(QString::fromStdString(pixmap)));
+    //layers.push_back(utils::make_shared<BackgroundLayer>(QString::fromStdString(pixmap)));
+    backgroundLayer = utils::make_shared<BackgroundLayer>(QString::fromStdString(pixmap));
 }
 
 dicom::LayeredImage::LayeredImage()
@@ -50,7 +53,8 @@ dicom::LayeredImage::const_range dicom::LayeredImage::getLayers() const
 
 QPixmap dicom::LayeredImage::getPixmap() const
 {
-    QSize size = getSize();
+    throw std::runtime_error("Not implemented");
+    /*QSize size = getSize();
     QRect rect(QPoint(0, 0), size);
     QPixmap pix(size);
     QPainter paint(&pix);
@@ -60,13 +64,12 @@ QPixmap dicom::LayeredImage::getPixmap() const
             raster->render(&paint, &rect);
         }
     }
-    return pix;
-    //return (*layers.begin())->render();
+    return pix;*/
 }
 
 QSize dicom::LayeredImage::getSize() const
 {
-    QSize maxSize(0, 0);
+    QSize maxSize = backgroundLayer->getSize();
     for (auto it = layers.begin(); it != layers.end(); ++it) {
         QSize layerSize = (*it)->getSize();
 
@@ -103,13 +106,23 @@ std::vector<dicom::ILayerItemConstPtr> dicom::LayeredImage::getLayersToSerialize
 {
     std::vector<ILayerItemConstPtr> ret;
     for (auto it = layers.begin(); it != layers.end(); ++it) {
-        BackgroundLayerPtr b = utils::dynamic_pointer_cast<BackgroundLayer>(*it);
-        if (!b) {
+        //BackgroundLayerPtr b = utils::dynamic_pointer_cast<BackgroundLayer>(*it);
+        //if (!b) {
             ret.push_back(*it);
-        }
+        //}
     }
 
     return ret;
+}
+
+dicom::IVectorLayerItemPtr dicom::LayeredImage::getBackgroundLayer() const
+{
+    return backgroundLayer;
+}
+
+void dicom::LayeredImage::setBackgroundLayer( dicom::BackgroundLayerPtr val )
+{
+    backgroundLayer = val;
 }
 
 

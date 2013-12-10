@@ -12,7 +12,7 @@ SET_PRIVATE_HEADERS (
 	AdnotationsDelegate.h
 	Adnotations.h
 	LayeredStateMachine.h
-	DicomParser.h
+	#DicomParser.h
 	DicomPCH.h
 	#DicomVisualizer.h
 	DicomSource.h

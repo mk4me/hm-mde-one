@@ -33,6 +33,8 @@ public:
     ILayeredImageConstPtr getImage() const;
     void setImage(ILayeredImagePtr val);
 
+    void refresh() { reset(); }
+
 protected:
     virtual bool removeRows( int row, int count, const QModelIndex &parent = QModelIndex( ) );
 

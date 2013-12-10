@@ -71,8 +71,8 @@ private:
     
 private Q_SLOTS:
     void visualizerDestroyed(QObject * visualizer);
-    void onFilterBundleAdded(core::IFilterBundlePtr bundle);
-    void onFilterClicked(core::IFilterCommandPtr filter);
+    //void onFilterBundleAdded(core::IFilterBundlePtr bundle);
+    //void onFilterClicked(core::IFilterCommandPtr filter);
     void addToReports(const QPixmap& pixmap); 
     //! dodaje serie danych z helpera do wybranego wizualizatora
     void addToVisualizer();
@@ -83,13 +83,13 @@ private Q_SLOTS:
     ////! \param filter kliknięty
     //void filterClicked(FilterEntryWidget* filter);
     //! Kliknięto zatwierdź w graficznym konfiguratorze
-    void applyClicked();
+    //void applyClicked();
     ////! proste przejście do pierwszej zakładki (z drzewem danych)
     //void switchToFirstTab();
     ////! odtwarza drzewo danych 
     ////! \param currentFilter filtr, na podstawie którego odtworzone zostanie drzewo
     //void recreateTree(FilterEntryWidget* currentFilter);
-    void onBundleActivated(coreUI::DataFilterWidget* widget);
+    //void onBundleActivated(coreUI::DataFilterWidget* widget);
     void createVisualizerInNewSet();
 
     void removeFromAll();
@@ -106,15 +106,15 @@ private:
     IAppUsageContextManager* manager;
     IAppUsageContextPtr parent;
     QTabWidget * flexiTabWidget;
-    //! szerokość filtru w zakładce
-    int filterWidth;
-    //! wysokość filtru w zakładce
-    int filterHeight;
+    ////! szerokość filtru w zakładce
+    //int filterWidth;
+    ////! wysokość filtru w zakładce
+    //int filterHeight;
     //! margines dla filtrów w zakładce
     int margin;
     // potrzebne tylko, aby przekazac info między elementami.
-    core::IFilterCommandPtr currentFilter;
-    std::list<coreUI::DataFilterWidget*> filterBundleWidgets;
+    //core::IFilterCommandPtr currentFilter;
+    //std::list<coreUI::DataFilterWidget*> filterBundleWidgets;
     SummaryWindowPtr summary;
     SummaryWindowController* summaryController;
     ContextEventFilterPtr contextEventFilter;

@@ -29,9 +29,9 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     model(model),
     manager(nullptr),
     flexiTabWidget(nullptr),
-    margin(margin),
+    margin(margin),/*
     filterWidth(-1), 
-    filterHeight(-1),
+    filterHeight(-1),*/
     visualizerFilter(new VisualizerEventFilter(contextEventFilter))
 {
     setupUi(this);
@@ -52,13 +52,15 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     
     //auto vdfService = core::queryServices<vdf::NewVdfService>(plugin::getServiceManager());
     //connect(vdfService.get(), SIGNAL(transferResults()), this, SLOT(addRoot(core::IHierarchyItemPtr)));
-    connect(model.get(), SIGNAL(filterBundleAdded(core::IFilterBundlePtr)), this, SLOT(onFilterBundleAdded(core::IFilterBundlePtr)));
+    //connect(model.get(), SIGNAL(filterBundleAdded(core::IFilterBundlePtr)), this, SLOT(onFilterBundleAdded(core::IFilterBundlePtr)));
 
-    connect(applyButton, SIGNAL(clicked()), this, SLOT(applyClicked()));
+    //connect(applyButton, SIGNAL(clicked()), this, SLOT(applyClicked()));
     
     summary = utils::make_shared<SummaryWindow>(SummaryWindowWidget);
     summaryController = new SummaryWindowController(summary, model);
     summary->initialize();
+
+    raportsTab->setVisible(false);
 }
 
 void AnalisisWidget::showTimeline()
@@ -117,6 +119,10 @@ QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & vi
 
     registerVisualizerContext(getContextEventFilter(), qobject_cast<coreUI::CoreTitleBar*>(dockVisWidget->titleBarWidget()), qobject_cast<coreUI::CoreVisualizerWidget*>(dockVisWidget->widget()), visualizer);
     dockVisWidget->setMinimumSize((std::max)(50, dockVisWidget->minimumWidth()), (std::max)(50, dockVisWidget->minimumHeight()));
+    {
+        QObject* visObj = dynamic_cast<QObject*>(visualizer->visualizer());
+        connect(visObj, SIGNAL(changeLabel(const QString&)), dockVisWidget, SLOT(setLabel(const QString&)));
+    }
     return dockVisWidget;
 }
 
@@ -251,54 +257,54 @@ void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
     model->getTreeModel()->addRootItem(root);
 }
 
-void AnalisisWidget::onFilterBundleAdded( core::IFilterBundlePtr bundle )
-{
-    coreUI::DataFilterWidget* dataWidget = new coreUI::DataFilterWidget(bundle->getName(), bundle->getIcon());
-    int count = bundle->genNumFilters();
-    for (int i = 0; i < count; ++i) {
-        auto filter = bundle->getFilter(i);
-        dataWidget->addFilter(filter->getName(), filter, filter->getIcon());
-    }
-    addDataFilterWidget(dataWidget);
-    connect(dataWidget, SIGNAL(onFilterClicked(core::IFilterCommandPtr)), this, SLOT(onFilterClicked(core::IFilterCommandPtr)));
-}
+//void AnalisisWidget::onFilterBundleAdded( core::IFilterBundlePtr bundle )
+//{
+//    coreUI::DataFilterWidget* dataWidget = new coreUI::DataFilterWidget(bundle->getName(), bundle->getIcon());
+//    int count = bundle->genNumFilters();
+//    for (int i = 0; i < count; ++i) {
+//        auto filter = bundle->getFilter(i);
+//        dataWidget->addFilter(filter->getName(), filter, filter->getIcon());
+//    }
+//    addDataFilterWidget(dataWidget);
+//    connect(dataWidget, SIGNAL(onFilterClicked(core::IFilterCommandPtr)), this, SLOT(onFilterClicked(core::IFilterCommandPtr)));
+//}
 
 
-void AnalisisWidget::addDataFilterWidget( coreUI::DataFilterWidget* filter )
-{
-    filterBundleWidgets.push_back(filter);
-    bool c = connect(filter, SIGNAL(activityChanged(coreUI::DataFilterWidget*)), this, SLOT(onBundleActivated(coreUI::DataFilterWidget*)));
-    if (filterWidth < 0 && filterHeight < 0) {
-        filterWidth = filter->width();
-        filterHeight = filter->height();
-    }
-
-    UTILS_ASSERT(filterHeight == filter->height() && filterWidth == filter->width());
-
-
-    int count = filterScroll->children().size();
-    int x = count % 2;
-    int y = count / 2;
-
-    if (x == 0) {
-        int w = 3 * margin + filterWidth * 2;
-        int h = 2 * margin + (filterHeight + margin) * (y + 1);
-        filterScroll->setMinimumSize(w, h);
-        containerFrame->setMaximumWidth(w + 22);
-        containerFrame->setMinimumWidth(w + 22);
-        scrollArea->setMinimumHeight(3 * margin + filterHeight * 2);
-    }
-
-    filter->setParent(filterScroll);
-    filter->setGeometry(margin + x * (filterWidth + margin),margin +  y * (margin + filterHeight), filterWidth, filterHeight);
-
-    //connect(filter, SIGNAL( clicked()), this, SLOT(switchToFirstTab()));
-    connect(this->resetButton, SIGNAL(clicked()), filter, SLOT(resetFilters()));
-    //connect(this->resetButton, SIGNAL(clicked()), hmm, SLOT(refreshTree()));
-    //for (int i = 0; i < filter->getNumEntries(); ++i) {
-    //    connect(filter->getEntry(i), SIGNAL( onFilterClicked(core::IFilterCommandPtr)), this, SLOT(onFilterClicked(core::IFilterCommandPtr)));
-    //}
-}
+//void AnalisisWidget::addDataFilterWidget( coreUI::DataFilterWidget* filter )
+//{
+//    filterBundleWidgets.push_back(filter);
+//    bool c = connect(filter, SIGNAL(activityChanged(coreUI::DataFilterWidget*)), this, SLOT(onBundleActivated(coreUI::DataFilterWidget*)));
+//    if (filterWidth < 0 && filterHeight < 0) {
+//        filterWidth = filter->width();
+//        filterHeight = filter->height();
+//    }
+//
+//    UTILS_ASSERT(filterHeight == filter->height() && filterWidth == filter->width());
+//
+//
+//    int count = filterScroll->children().size();
+//    int x = count % 2;
+//    int y = count / 2;
+//
+//    if (x == 0) {
+//        int w = 3 * margin + filterWidth * 2;
+//        int h = 2 * margin + (filterHeight + margin) * (y + 1);
+//        filterScroll->setMinimumSize(w, h);
+//        containerFrame->setMaximumWidth(w + 22);
+//        containerFrame->setMinimumWidth(w + 22);
+//        scrollArea->setMinimumHeight(3 * margin + filterHeight * 2);
+//    }
+//
+//    filter->setParent(filterScroll);
+//    filter->setGeometry(margin + x * (filterWidth + margin),margin +  y * (margin + filterHeight), filterWidth, filterHeight);
+//
+//    //connect(filter, SIGNAL( clicked()), this, SLOT(switchToFirstTab()));
+//    connect(this->resetButton, SIGNAL(clicked()), filter, SLOT(resetFilters()));
+//    //connect(this->resetButton, SIGNAL(clicked()), hmm, SLOT(refreshTree()));
+//    //for (int i = 0; i < filter->getNumEntries(); ++i) {
+//    //    connect(filter->getEntry(i), SIGNAL( onFilterClicked(core::IFilterCommandPtr)), this, SLOT(onFilterClicked(core::IFilterCommandPtr)));
+//    //}
+//}
 
 void AnalisisWidget::switchToFirstTab()
 {
@@ -306,46 +312,46 @@ void AnalisisWidget::switchToFirstTab()
     tabWidget->setCurrentIndex(0);
 }
 
-void AnalisisWidget::applyClicked() 
-{
-    if (currentFilter) {
-        model->applyFilter(currentFilter);
-        switchToFirstTab();
-    }
-}
+//void AnalisisWidget::applyClicked() 
+//{
+//    if (currentFilter) {
+//        model->applyFilter(currentFilter);
+//        switchToFirstTab();
+//    }
+//}
 
-void AnalisisWidget::onFilterClicked( core::IFilterCommandPtr filter )
-{
-    auto conf = filter ? filter->getConfigurationWidget() : nullptr;
-    if (conf) {
-        currentFilter = filter;
-        if (!configurationWidget->layout()) {
-            configurationWidget->setLayout(new QVBoxLayout());
-        }
-        bool hasChild = false;
-        const QObjectList& childList = configurationWidget->children();
-        for (int i = childList.size() - 1; i >= 0; --i) {
-            QWidget* w = qobject_cast<QWidget*>(childList.at(i));
-            if (w) {
-                w->hide();
-                if (w == conf) {
-                    hasChild = true;
-                }
-            }
-        }
-        if (!hasChild) {
-            configurationWidget->layout()->addWidget(conf);
-        }
-        conf->setVisible(true);
-        conf->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);\
-        applyButton->setVisible(true);
-        applyButton->setText(QString("%1 - Apply").arg(filter->getName()));
-        
-    } else {
-        model->applyFilter(filter);
-        switchToFirstTab();
-    }
-}
+//void AnalisisWidget::onFilterClicked( core::IFilterCommandPtr filter )
+//{
+//    auto conf = filter ? filter->getConfigurationWidget() : nullptr;
+//    if (conf) {
+//        currentFilter = filter;
+//        if (!configurationWidget->layout()) {
+//            configurationWidget->setLayout(new QVBoxLayout());
+//        }
+//        bool hasChild = false;
+//        const QObjectList& childList = configurationWidget->children();
+//        for (int i = childList.size() - 1; i >= 0; --i) {
+//            QWidget* w = qobject_cast<QWidget*>(childList.at(i));
+//            if (w) {
+//                w->hide();
+//                if (w == conf) {
+//                    hasChild = true;
+//                }
+//            }
+//        }
+//        if (!hasChild) {
+//            configurationWidget->layout()->addWidget(conf);
+//        }
+//        conf->setVisible(true);
+//        conf->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);\
+//        applyButton->setVisible(true);
+//        applyButton->setText(QString("%1 - Apply").arg(filter->getName()));
+//        
+//    } else {
+//        model->applyFilter(filter);
+//        switchToFirstTab();
+//    }
+//}
 
 void AnalisisWidget::addToReports( const QPixmap& pixmap )
 {
@@ -381,17 +387,17 @@ void AnalisisWidget::addToReports( const QPixmap& pixmap )
     }
 }
 
-void AnalisisWidget::onBundleActivated( coreUI::DataFilterWidget* widget )
-{
-    for (auto it = filterBundleWidgets.begin(); it != filterBundleWidgets.end(); ++it) {
-        coreUI::DataFilterWidget* dfw = *it;
-        if (dfw != widget) {
-            dfw->blockSignals(true);
-            dfw->setActive(false);
-            dfw->blockSignals(false);
-        }
-    }
-}
+//void AnalisisWidget::onBundleActivated( coreUI::DataFilterWidget* widget )
+//{
+//    for (auto it = filterBundleWidgets.begin(); it != filterBundleWidgets.end(); ++it) {
+//        coreUI::DataFilterWidget* dfw = *it;
+//        if (dfw != widget) {
+//            dfw->blockSignals(true);
+//            dfw->setActive(false);
+//            dfw->blockSignals(false);
+//        }
+//    }
+//}
 
 
 

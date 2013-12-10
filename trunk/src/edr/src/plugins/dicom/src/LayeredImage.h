@@ -19,6 +19,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/string.hpp>
+#include "BackgroundLayer.h"
 
 
 namespace dicom {
@@ -44,17 +45,18 @@ public:
     // workaround
     std::vector<ILayerItemConstPtr> getLayersToSerialize() const;
 
+    dicom::IVectorLayerItemPtr getBackgroundLayer() const;
+    void setBackgroundLayer(dicom::BackgroundLayerPtr val);
 
 private:
     std::vector<ILayerItemPtr> layers;
+    BackgroundLayerPtr backgroundLayer;
 
 private:
     friend class boost::serialization::access;
     template <typename Archive>
     void serialize(Archive& ar, const unsigned int version)
     {
-        //ar & boost::serialization::base_object<ILayeredImage>(*this);
-        //BOOST_SERIALIZATION_BASE_OBJECT_NVP(ILayeredImage);
         ar & boost::serialization::make_nvp("layers", layers);
     }
 };

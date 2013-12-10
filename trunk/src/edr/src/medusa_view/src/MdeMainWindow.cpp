@@ -83,12 +83,12 @@ void MdeMainWindow::customViewInit(QWidget * console)
    // -----------------------
 
    addTab(IMdeTabPtr(new AnalysisTab(aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
-   IMdeTabPtr reportsTab  = IMdeTabPtr(new ReportsTab(QIcon(":/mde/icons/Raporty.png"), tr("Reports")));
-   addTab(reportsTab);
+   //IMdeTabPtr reportsTab  = IMdeTabPtr(new ReportsTab(QIcon(":/mde/icons/Raporty.png"), tr("Reports")));
+   //addTab(reportsTab);
    addTab(IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/Operacje.png"),tr("Console"))));
 
    // TODO : najlepiej byloby przeniesc to do kontrolera
-   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
+//   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
    auto serviceManager = plugin::getServiceManager();
    auto timeline = plugin::getServiceManager()->getService(core::UID::GenerateUniqueID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}"));
    for (int i = 0; i < serviceManager->getNumServices(); ++i) {

@@ -44,7 +44,6 @@ public:
         img->addLayer(layer);
         IVectorLayerItemPtr v = utils::dynamic_pointer_cast<IVectorLayerItem>(layer);
         if (v) {
-            //serie->getGraphicsScene()->addItem(v->getItem());
             v->getItem()->setVisible(true);
         }
         serie->refresh();
@@ -65,6 +64,7 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
     ILayeredImageConstPtr img = data->get();
     if (img) {
         image = utils::const_pointer_cast<ILayeredImage>(img);
+        graphicsScene->addItem(image->getBackgroundLayer()->getItem());
         int count = image->getNumLayers();
         for (int i = 0; i < count; ++i) {
             IVectorLayerItemPtr vec = utils::dynamic_pointer_cast<IVectorLayerItem>(image->getLayer(i));
@@ -72,8 +72,8 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
                 graphicsScene->addItem(vec->getItem());
             }
         }
-        pixmapItem = graphicsScene->addPixmap(getPixmap());
-        pixmapItem->setZValue(-100);
+        //pixmapItem = graphicsScene->addPixmap(getPixmap());
+        //pixmapItem->setZValue(-100);
         this->data = data;
     }
 }
@@ -87,11 +87,6 @@ double LayeredSerie::getLength() const
 {
     return 1.0;
 }
-
-//void dicom::LayeredSerie::onClick( const QPoint& p )
-//{
-//    image->addLayer(utils::make_shared<CircleLayer>(p));
-//}
 
 QPixmap dicom::LayeredSerie::getPixmap() const
 {
@@ -115,7 +110,7 @@ dicom::ILayeredImagePtr dicom::LayeredSerie::getImage()
 
 dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer) :
     visualizer(visualizer),
-    pixmapItem(nullptr),
+    //pixmapItem(nullptr),
     layersModel(visualizer),
     commandStack(new utils::CommandStack)
 {
@@ -142,11 +137,11 @@ void dicom::LayeredSerie::refresh()
 {
     getGraphicsView()->setSceneRect(0, 0, getSize().width(), getSize().height());
     getGraphicsScene()->setSceneRect( getGraphicsView()->rect() );
-    pixmapItem->setPixmap(getPixmap());
+    //pixmapItem->setPixmap(getPixmap());
     int count = image->getNumLayers();
     for (int i = 0; i < count; ++i) {
         IVectorLayerItemPtr vec = utils::dynamic_pointer_cast<IVectorLayerItem>(image->getLayer(i));
-        if (vec) {
+        if (vec && graphicsScene != vec->getItem()->scene()) {
             graphicsScene->addItem(vec->getItem());
         }
     }
@@ -199,7 +194,7 @@ void dicom::LayeredSerie::save()
     boost::archive::xml_oarchive oa(ofs);
     /*oa.register_type<LayeredImage>();*/
     oa.register_type<BackgroundLayer>();
-    oa.register_type<CircleLayer>();
+//    oa.register_type<CircleLayer>();
     oa.register_type<PointsLayer>();
     LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(getImage());
     oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize());
@@ -224,6 +219,20 @@ void dicom::LayeredSerie::editLayer( int idx )
         if (pointsLayer) {
             stateMachine->getEditState()->setLayerToEdit(pointsLayer);
             stateMachine->setState(stateMachine->getEditState());
+        }
+    }
+}
+
+void dicom::LayeredSerie::switchCrop()
+{
+    ILayeredImagePtr img = this->getImage();
+    int count = img->getNumLayers();
+    BackgroundLayerPtr background = utils::dynamic_pointer_cast<BackgroundLayer>(img->getBackgroundLayer());
+    if (background) {
+        if (background->getPixmap().rect() == background->getCrop()) {
+            background->setCrop(QRect(56,135, 761, 493));
+        } else {
+            background->setCrop(background->getPixmap().rect());
         }
     }
 }

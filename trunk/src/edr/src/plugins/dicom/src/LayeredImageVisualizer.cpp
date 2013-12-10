@@ -78,6 +78,7 @@ void LayeredImageVisualizer::setActiveSerie( plugin::IVisualizer::ISerie * serie
         if (series[i] == serie) {
             currentSerie = i;
             if (prevSerie != series[i]) {
+                Q_EMIT changeLabel(QString::fromStdString(series[i]->getName()));
                 Q_EMIT serieChanged();
             }
             return;
@@ -169,16 +170,6 @@ void dicom::LayeredImageVisualizer::saveSerie()
 {
     if (correctIndex(currentSerie)) {
         series[currentSerie]->save();
-        //std::ofstream ofs(series[currentSerie]->getXmlOutputFilename());
-        //assert(ofs.good());
-        //boost::archive::xml_oarchive oa(ofs);
-        ///*oa.register_type<LayeredImage>();*/
-        //oa.register_type<BackgroundLayer>();
-        //oa.register_type<CircleLayer>();
-        //oa.register_type<PointsLayer>();
-        //LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(series[currentSerie]->getImage());
-        //oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize());
-        //ofs.close();
     }
 }
 
@@ -194,6 +185,46 @@ void dicom::LayeredImageVisualizer::removeLayer(int idx)
     if (correctIndex(currentSerie)) {
         series[currentSerie]->removeLayer(idx);
     }
+}
+
+void dicom::LayeredImageVisualizer::selectLayer( int idx )
+{
+    if (idx != selectedLayer()) {
+        LayeredSerie* serie = dynamic_cast<LayeredSerie*>(getActiveSerie());
+        if (serie) {
+            serie->getGraphicsScene()->blockSignals(true);
+            ILayeredImagePtr img = serie->getImage();
+            int count = img->getNumLayers();
+            for (int i = 0; i < count; ++i) {
+                img->getLayer(i)->setSelected(i == idx);
+            }
+            serie->getGraphicsScene()->blockSignals(false);
+            serie->getLayersModel()->refresh();
+        }
+    }
+}
+
+int dicom::LayeredImageVisualizer::selectedLayer() const
+{
+    int idx = -1;
+    const LayeredSerie* serie = dynamic_cast<const LayeredSerie*>(getActiveSerie());
+    if (serie) {
+        ILayeredImageConstPtr img = serie->getImage();
+        int count = img->getNumLayers();
+        for (int i = 0; i < count; ++i) {
+            if (img->getLayer(i)->getSelected()) {
+                if (idx == -1) {
+                    idx = i;
+                } else {
+                    // zaznaczono wiecej niz jedna serie danych !?
+                    UTILS_ASSERT(false);
+                    return -1;
+                }
+            }
+        }
+    }
+
+    return idx;
 }
 
 

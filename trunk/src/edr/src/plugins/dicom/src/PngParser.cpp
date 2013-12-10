@@ -19,7 +19,6 @@ PngParser::~PngParser()
 
 void PngParser::parse( const std::string & source  )
 {
-	//QPixmap p(source.c_str());
     LayeredImagePtr l = utils::make_shared<LayeredImage>(source);
     image->set(l);
 }

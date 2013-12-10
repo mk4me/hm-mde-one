@@ -81,19 +81,17 @@ namespace dicom {
         void saveSerie();
         void editSerie(int idx);
         void removeLayer(int idx);
+        void selectLayer( int idx );
 
     Q_SIGNALS:
         void serieChanged();
-    private:
-        bool correctIndex(int i) const;
+        void changeLabel(const QString& newLabel);
 
     private:
-       //QLabel* label;
-       //QScrollArea* scrollArea;
-       //QSlider* bar;
-       //QPushButton* nextButton;
-       //QPushButton* prevButton;
-        //QWidget* mainWidget;
+        bool correctIndex(int i) const;
+        int selectedLayer() const;
+        
+    private:
         LayeredImageVisualizerView* mainWidget;
         std::vector<LayeredSerie*> series;
         int currentSerie;

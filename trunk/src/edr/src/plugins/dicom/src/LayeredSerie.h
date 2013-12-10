@@ -47,7 +47,6 @@ namespace dicom {
     public:
         QPixmap getPixmap() const;
         QSize getSize() const;
-        //void onClick(const QPoint& p);
         std::string getXmlOutputFilename() const;
 
         ILayeredImagePtr getImage();
@@ -57,7 +56,6 @@ namespace dicom {
         dicom::LayeredModelView* getLayersModel();
         void refresh();
         void save();
-
         void removeLayer(int idx);
         void editLayer(int idx);
         void undo();
@@ -65,13 +63,14 @@ namespace dicom {
         void setPolyState();
         void setCurveState();
         void setNormalState();
+        void switchCrop();
     private:
         ILayeredImagePtr image;
         coreUI::WheelGraphicsView* graphicsView;
         coreUI::GraphicSceneWithStateMachine* graphicsScene;
         LayeredStateMachinePtr stateMachine;
         LayeredImageVisualizer* visualizer;
-        QGraphicsPixmapItem* pixmapItem;
+        //QGraphicsPixmapItem* pixmapItem;
         LayeredModelView layersModel;
         utils::ObjectWrapperConstPtr data;
         utils::CommandStackPtr commandStack;

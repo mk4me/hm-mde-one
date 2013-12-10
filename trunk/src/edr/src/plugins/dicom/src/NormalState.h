@@ -11,6 +11,7 @@
 #define HEADER_GUARD_DICOM__NORMALSTATE_H__
 
 #include <coreui/AbstractState.h>
+#include <plugins/dicom/ILayeredImage.h>
 
 namespace dicom {
 
@@ -24,20 +25,20 @@ public:
 
 public:
     virtual void selectionChanged(const QList<QGraphicsItem*>& list);
-
     virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e);
     virtual bool mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
-
     virtual bool keyReleaseEvent( QKeyEvent *event );
-
+    virtual void begin();
     virtual void end();
 
 private:
     QGraphicsItem* extractItem( QGraphicsSceneMouseEvent* e );
     QGraphicsItem* extractItem( QGraphicsItem* itm);
+
 private: 
     std::pair<QGraphicsItem*, QPointF> position;
     LayeredStateMachine* machine;
+    std::map<QGraphicsItem*, IVectorLayerItemPtr> item2layer;
 };
 DEFINE_SMART_POINTERS(NormalState);
 

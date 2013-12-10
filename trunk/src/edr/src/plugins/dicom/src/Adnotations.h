@@ -10,7 +10,6 @@
 #ifndef HEADER_GUARD_DICOM__ADNOTATIONS_H__
 #define HEADER_GUARD_DICOM__ADNOTATIONS_H__
 
-//#include <QtCore/QString>
 #include <string>
 #include <boost/bimap.hpp>
 #include "qstring_serialization.h"

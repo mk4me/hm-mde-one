@@ -55,27 +55,16 @@ public:
     DicomSource();
 	virtual ~DicomSource() {}
 
-
 public:
     virtual void init( core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM );
-
     virtual bool lateInit();
-
     virtual void finalize();
-
     virtual void update( double deltaTime );
-
     virtual QWidget* getWidget();
-
     virtual QWidget* getControlWidget();
-
     virtual QWidget* getSettingsWidget();
-
     virtual void getOfferedTypes( core::TypeInfoList & offeredTypes ) const;
     void addFile( const core::Filesystem::Path& path );
-
-    //void loadDirFile(const core::Filesystem::Path& dirPath );
-    //void import( const core::Filesystem::Path& from, const core::Filesystem::Path& to );
     void openInternalDataMainFile( core::Filesystem::Path path );
 
 private:
@@ -85,6 +74,7 @@ private:
     void handleFileRecord( DcmDirectoryRecord * fileRecord, core::IHierarchyItemPtr root, std::string basePath, std::vector<LayerHelperPtr>& helpers );
     template <class Helper>
     core::IHierarchyItemPtr transactionPart( const core::Filesystem::Path &path );
+
 private:
     core::IMemoryDataManager* memoryDM;
     core::IFileDataManager* fileDM;

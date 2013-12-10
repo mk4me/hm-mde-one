@@ -61,26 +61,6 @@ namespace dicom {
         PointsLayerPtr layer;
     };
 
-   /* class AddLayerCommand : public utils::ICommand
-    {
-    public:
-        AddLayerCommand(LayeredStateMachine* machine, ILayeredImagePtr image, PointsState* pointsState, PointsLayerPtr layer, int adnotationIdx);
-
-    public:
-        virtual void doIt();
-
-        virtual void undoIt();
-
-        virtual QString name();
-
-    private:
-        PointsLayerPtr layer;
-        int adnotationIdx;
-        ILayeredImagePtr image;
-        LayeredStateMachine* machine;
-        PointsState* pointsState;
-    };*/
-
 
 class LayeredStateMachine;
 
@@ -107,19 +87,10 @@ public:
     void setLayerToEdit(dicom::PointsLayerPtr val) { layerToEdit = val; }
 
 private Q_SLOTS:
-    //void clear();
     void done();
-
-    //void resetLayer();
-
-    //void addLayer();
-
-    
 
 private:
     PointsLayerPtr layerToEdit;
-    /*std::vector<QGraphicsItem*> points;
-    std::vector<QGraphicsItem*> connections;*/
     std::vector<std::pair<QGraphicsItem*, QPointF>> positionsToCheck;
     PointsLayerPtr layer;
     LayeredStateMachine* machine;

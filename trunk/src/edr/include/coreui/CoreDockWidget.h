@@ -30,7 +30,8 @@ public:
 	static void setDockWidgetPermament(QDockWidget * dockWidget, bool permanent);
 
 public Q_SLOTS:
-
+    //! zmienia tytuł okna
+    void setLabel( const QString& label );
     //! Zmienia stan dokowania.
     void toggleFloating();
 

@@ -2,6 +2,7 @@
 
 #include "LayeredModelView.h"
 #include "Adnotations.h"
+#include <QtGui/QFont>
 
 using namespace dicom; 
 
@@ -25,19 +26,26 @@ int LayeredModelView::columnCount(const QModelIndex & /*parent*/) const
 //-----------------------------------------------------------------
 QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 {
-    if (role == Qt::DisplayRole && image)
-    {
-        ILayerItemConstPtr itm = image->getLayer(index.row());
-        if (index.column() == 0) {
-            return itm->getName();
-        } else if (index.column() == 1) {
-            adnotations::AdnotationsTypePtr adn = adnotations::instance();
-            auto it = adn->left.find(itm->getAdnotationIdx());
-            if (it != adn->left.end()) {
-                return it->second;
+    if (image) {
+        if (role == Qt::DisplayRole) {
+            ILayerItemConstPtr itm = image->getLayer(index.row());
+            if (index.column() == 0) {
+                return itm->getName();
+            } else if (index.column() == 1) {
+                adnotations::AdnotationsTypePtr adn = adnotations::instance();
+                auto it = adn->left.find(itm->getAdnotationIdx());
+                if (it != adn->left.end()) {
+                    return it->second;
+                }
             }
+        } else if (role == Qt::FontRole) {
+            ILayerItemConstPtr itm = image->getLayer(index.row());
+            QFont f;
+            f.setBold(itm->getSelected());
+            return f;
         }
     }
+    
     return QVariant();
 }
 
@@ -85,9 +93,9 @@ QVariant LayeredModelView::headerData( int section, Qt::Orientation orientation,
             switch (section)
             {
             case 0:
-                return QString("Name");
+                return QString("Tag");
             case 1:
-                return QString("Adnotation");
+                return QString("Label");
             }
         }
     }

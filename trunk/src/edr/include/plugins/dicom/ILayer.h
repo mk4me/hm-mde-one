@@ -12,7 +12,6 @@
 
 #include <utils/SmartPtr.h>
 #include <boost/serialization/access.hpp>
-//#include "boost/serialization/assume_abstract.hpp"
 #include <boost/serialization/nvp.hpp>
 
 class QPainter;
@@ -34,6 +33,10 @@ public:
     virtual void setName(const QString& name) = 0;
     virtual QSize getSize() const = 0;
 
+    virtual bool getSelected() const = 0;
+    virtual void setSelected(bool val) = 0;
+
+
     // TODO : dobrze byloby przeniest to do jakiegos dekoratora...
     int getAdnotationIdx() const { return adnotationIdx; }
     void setAdnotationIdx(int val) { adnotationIdx = val; }
@@ -49,14 +52,14 @@ private:
 };
 DEFINE_SMART_POINTERS(ILayerItem);
 
-class IRasterLayerItem : public ILayerItem
-{
-public:
-    virtual ~IRasterLayerItem() {}
-
-    virtual void render(QPainter* painter, const QRect* rect) const = 0;
-};
-DEFINE_SMART_POINTERS(IRasterLayerItem);
+//class IRasterLayerItem : public ILayerItem
+//{
+//public:
+//    virtual ~IRasterLayerItem() {}
+//
+//    virtual void render(QPainter* painter, const QRect* rect) const = 0;
+//};
+//DEFINE_SMART_POINTERS(IRasterLayerItem);
 
 class IVectorLayerItem : public ILayerItem
 {

@@ -5,5 +5,11 @@
     <file alias="arrowIcon.png">../resources/embedded/arrowIcon.png</file>
     <file alias="file.png">../resources/embedded/file.png</file>
     <file alias="file_done.png">../resources/embedded/file_done.png</file>
+    <file alias="undo.png">../resources/embedded/undo.png</file>
+    <file alias="redo.png">../resources/embedded/redo.png</file>
+    <file alias="save.png">../resources/embedded/save.png</file>
+    <file alias="edit.png">../resources/embedded/edit.png</file>
+    <file alias="remove.png">../resources/embedded/remove.png</file>
+	<file alias="crop.png">../resources/embedded/crop.png</file>
   </qresource>
 </RCC>

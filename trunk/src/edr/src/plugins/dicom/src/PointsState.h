@@ -16,21 +16,6 @@ namespace dicom {
 
 class LayeredStateMachine;
 
-//class EditState : public QObject, public coreUI::AbstractState
-//{
-//public:
-//    EditState(LayeredStateMachine* machine);
-//    dicom::PointsLayerPtr getLayerToEdit() const { return layerToEdit; }
-//    void setLayerToEdit(dicom::PointsLayerPtr val) { layerToEdit = val; }
-//
-//    virtual void begin( coreUI::AbstractStateConstPtr lastState );
-//
-//private:
-//    PointsLayerPtr layerToEdit;
-//    LayeredStateMachine* machine;
-//};
-//DEFINE_SMART_POINTERS(EditState)
-
 class PointsState : public QObject, public coreUI::AbstractState
 {
     Q_OBJECT
@@ -56,8 +41,6 @@ private Q_SLOTS:
 
 
 private:
-    /*std::vector<QGraphicsItem*> points;
-    std::vector<QGraphicsItem*> connections;*/
     std::vector<std::pair<QGraphicsItem*, QPointF>> positionsToCheck;
     PointsLayerPtr layer;
     LayeredStateMachine* machine;

@@ -5,26 +5,29 @@
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include "LayeredStateMachine.h"
 #include <coreUI/MoveCommand.h>
+#include "LayeredSerie.h"
 
 using namespace dicom;
 
-dicom::NormalState::NormalState( LayeredStateMachine* machine ) :
+dicom::NormalState::NormalState( LayeredStateMachine* machine) :
     coreUI::AbstractState(machine),
     machine(machine)
 {
 
 }
 
-
-
 void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
 {
+    if (item2layer.empty()) {
+        begin();
+    }
     for (auto it = list.begin(); it != list.end(); ++it) {
         QGraphicsItem* item = extractItem(*it);
-        auto childs = item->childItems();
-        for (auto it2 = childs.begin(); it2 != childs.end(); ++it2) {
-            (*it2)->setSelected(true);
+        auto layerIt = item2layer.find(item);
+        if (layerIt != item2layer.end()) {
+            (layerIt->second)->setSelected(true);
         }
+        machine->getSerie()->getLayersModel()->refresh();
     }
 }
 
@@ -57,13 +60,6 @@ bool NormalState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
 
 bool NormalState::keyReleaseEvent( QKeyEvent *event )
 {
-    /*if (event->key() == Qt::Key_Delete) {
-    auto selected = stateMachine->getScene()->selectedItems();
-    auto command = utils::ICommandPtr(new RemoveSelectedCommand(stateMachine->getSceneModel(), selected));
-    stateMachine->getCommandStack()->addCommand(command);
-    return true;
-    } */
-
     return false;
 }
 
@@ -71,6 +67,7 @@ bool NormalState::keyReleaseEvent( QKeyEvent *event )
 void NormalState::end()
 {
     position.first = nullptr;
+    item2layer.clear();
 }
 
 QGraphicsItem* NormalState::extractItem( QGraphicsSceneMouseEvent* e )
@@ -90,4 +87,16 @@ QGraphicsItem* dicom::NormalState::extractItem( QGraphicsItem* itm )
     }
 
     return itm;
+}
+
+void dicom::NormalState::begin()
+{
+    ILayeredImagePtr image = machine->getSerie()->getImage();
+    int count = image->getNumLayers();
+    for (int i = 0; i < count; ++i) {
+        IVectorLayerItemPtr vl = utils::dynamic_pointer_cast<IVectorLayerItem>(image->getLayer(i));
+        if (vl) {
+            item2layer[vl->getItem()] = vl;
+        }
+    }
 }

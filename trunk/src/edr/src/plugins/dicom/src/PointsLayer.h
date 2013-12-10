@@ -41,7 +41,6 @@ namespace dicom {
     {
     public:
         QPen getLinePen(bool editable);
-        //QPen getPointPen();
         QString methodName();
         QPainterPath createPath(const QVector<QGraphicsItem*>& points);
         QGraphicsItem* createPoint();
@@ -51,7 +50,6 @@ namespace dicom {
     {
     public:
         QPen getLinePen(bool editable);
-        //QPen getPointPen();
         QString methodName();
         QPainterPath createPath(const QVector<QGraphicsItem*>& points);
         QGraphicsItem* createPoint();
@@ -81,8 +79,10 @@ namespace dicom {
         bool getEditable() const;
         void setEditable(bool val);
 
-    private:
-        //QPainterPath createPath();
+
+        virtual bool getSelected() const;
+
+        virtual void setSelected( bool val );
         
     private:
         utils::scoped_ptr<QGraphicsItemGroup> group;
@@ -132,6 +132,8 @@ namespace dicom {
         }
 
         BOOST_SERIALIZATION_SPLIT_MEMBER();
+
+
     };
     DEFINE_SMART_POINTERS(PointsLayer);      
 

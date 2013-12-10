@@ -44,134 +44,6 @@ public:
 private:
     PointsLayerPtr layer;
 };
-    //{
-    //public:
-    //    //! Konstruktor
-    //    //! \param item Element graficzny sceny, które zostanie przesuniêty 
-    //    //! \param newP Nowa pozycja elementu 
-    //    //! \param oldP Stara pozycja elementu
-    //    AddPointCommand(PointsLayerPtr layer, const QPointF& newP) : 
-    //       layer(layer),
-    //       newP(newP),
-    //       idx(-1),
-    //       removedPoint(nullptr)
-    //    {
-    //
-    //    }
-    //
-    //public:
-    //    //! Przesuwa element
-    //    virtual void doIt()
-    //    {
-    //        if (removedPoint) {
-    //            removedPoint->setVisible(true);
-    //            layer->addPoint(removedPoint.release());
-    //            removedPoint = std::unique_ptr<QGraphicsItem>();
-    //        } else {
-    //            idx = layer->getNumPoint();
-    //            layer->addPoint(newP);
-    //        }
-    //    }
-    //
-    //    //! Cofa przesuniêcie
-    //    virtual void undoIt() {
-    //        auto point = layer->removePoint(idx);
-    //        removedPoint = std::unique_ptr<QGraphicsItem>(point);
-    //        removedPoint->setVisible(false);
-    //        layer->refresh();
-    //    }
-    //    //! Nazwa polecenia 
-    //    virtual QString name() { return QString(typeid(this).name()); }
-    //
-    //private:
-    //    //! Modyfikowany obszar
-    //    PointsLayerPtr layer;
-    //    //! Nowododany punkt
-    //    const QPointF& newP;
-    //    //! indeks punktu do usuniêcia
-    //    int idx;
-    //    /// usuniêty punkt, który mo¿e zostaæ przywrócony. Przywracaj¹c nie mo¿na stworzyæ nowej instancji
-    //    /// gdy¿ mog³oby to spowodowaæ b³êdy np. przy MoveCommand
-    //    std::unique_ptr<QGraphicsItem> removedPoint;
-    //};
-////! Polecenie dodaje punkt do obszaru
-//class AddPointCommand : public utils::ICommand
-//{
-//public:
-//    //! Konstruktor
-//    //! \param item Element graficzny sceny, które zostanie przesuniêty 
-//    //! \param newP Nowa pozycja elementu 
-//    //! \param oldP Stara pozycja elementu
-//    AddPointCommand(PointsLayerPtr layer, const QPointF& newP) : 
-//       layer(layer),
-//       newP(newP),
-//       idx(-1),
-//       removedPoint(nullptr)
-//    {
-//
-//    }
-//
-//public:
-//    //! Przesuwa element
-//    virtual void doIt()
-//    {
-//        if (removedPoint) {
-//            removedPoint->setVisible(true);
-//            layer->addPoint(removedPoint.release());
-//            removedPoint = std::unique_ptr<QGraphicsItem>();
-//        } else {
-//            idx = layer->getNumPoint();
-//            layer->addPoint(newP);
-//        }
-//    }
-//
-//    //! Cofa przesuniêcie
-//    virtual void undoIt() {
-//        auto point = layer->removePoint(idx);
-//        removedPoint = std::unique_ptr<QGraphicsItem>(point);
-//        removedPoint->setVisible(false);
-//        layer->refresh();
-//    }
-//    //! Nazwa polecenia 
-//    virtual QString name() { return QString(typeid(this).name()); }
-//
-//private:
-//    //! Modyfikowany obszar
-//    PointsLayerPtr layer;
-//    //! Nowododany punkt
-//    const QPointF& newP;
-//    //! indeks punktu do usuniêcia
-//    int idx;
-//    /// usuniêty punkt, który mo¿e zostaæ przywrócony. Przywracaj¹c nie mo¿na stworzyæ nowej instancji
-//    /// gdy¿ mog³oby to spowodowaæ b³êdy np. przy MoveCommand
-//    std::unique_ptr<QGraphicsItem> removedPoint;
-//};
-//
-//
-//class MovePathCommand : public coreUI::MoveCommand 
-//{
-//public:
-//    MovePathCommand(PointsLayerPtr layer, QGraphicsItem* item, const QPointF& newP, const QPointF& oldP) : 
-//      MoveCommand(item, newP, oldP),
-//      layer(layer)
-//    {
-//    }
-//
-//    virtual void doIt()
-//    {
-//        MoveCommand::doIt();
-//        layer->refresh();
-//    }
-//
-//    virtual void undoIt()
-//    {
-//        MoveCommand::undoIt();
-//        layer->refresh();
-//    }
-//
-//private:
-//    PointsLayerPtr layer;
-//};
 
 namespace dicom {
 class AddLayerCommand : public utils::ICommand
@@ -194,8 +66,6 @@ public:
         image->addLayer(layer);
         machine->getSerie()->refresh();
         machine->getSerie()->save();
-        //pointsState->clear();
-
         machine->setState(machine->getNormalState());
     }
     
@@ -223,24 +93,6 @@ private:
     PointsState* pointsState;
 };
 
-//void EditState::begin( coreUI::AbstractStateConstPtr lastState )
-//{
-//    UTILS_ASSERT(layerToEdit);
-//    // hack
-//    if (utils::dynamic_pointer_cast<CurveDrawer>(layerToEdit->getPointsDrawer())) {
-//        machine->setState(machine->getCurveState());
-//    } else {
-//        machine->setState(machine->getPolyState());
-//    }
-//    
-//}
-//
-//EditState::EditState( LayeredStateMachine* machine ) :
-//    machine(machine),
-//    AbstractState(machine)
-//{
-//
-//}
 
 }
 
@@ -261,15 +113,13 @@ bool dicom::PointsState::keyReleaseEvent( QKeyEvent *event )
 }
 
 
-//bool dicom::PointsState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
 bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
     if (e->button() == Qt::RightButton) {
         QMenu menu;
         QAction* clearAction = menu.addAction(tr("Clear"));
-        //QAction* addLayerAction = menu.addAction(tr("Add layer"));
 
-        QMenu* sub = menu.addMenu(QIcon(), tr("Add as:"));
+        QMenu* sub = menu.addMenu(QIcon(), tr("Set as:"));
         adnotations::AdnotationsTypePtr adn = adnotations::instance();
         for (auto it = adn->right.begin(); it != adn->right.end(); ++it) {
             QAction* a = sub->addAction(it->first);
@@ -277,7 +127,6 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
         }
 
         connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
-        //connect(addLayerAction, SIGNAL(triggered()), this, SLOT(addLayer()));
         menu.exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {
         auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
@@ -292,7 +141,6 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
             return false;
         } else {
             auto pos = e->scenePos();
-            //layer->addPoint(pos);
             machine->getCommandStack()->addCommand(utils::make_shared<AddPointCommand>(layer, pos));
         }
     }
@@ -303,7 +151,6 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 
 void dicom::PointsState::clear()
 {
-    //resetLayer();
     machine->getCommandStack()->addCommand(utils::make_shared<ClearCommand>(layer));
     machine->setState(machine->getNormalState());
 }
@@ -316,14 +163,6 @@ void dicom::PointsState::addLayer()
 
     auto command = utils::make_shared<AddLayerCommand>(machine, img, this, layer, adnIdx);
     machine->getCommandStack()->addCommand(command);
-    /*layer->setEditable(false);
-    layer->setAdnotationIdx(adnIdx);
-    img->addLayer(layer);
-    machine->getSerie()->refresh();
-    machine->getSerie()->save();
-    clear();
-
-    machine->setState(machine->getNormalState());*/
 }
 
 void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
@@ -338,7 +177,6 @@ void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
 
 void dicom::PointsState::end()
 {
-    //clear();
 }
 
 bool dicom::PointsState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )

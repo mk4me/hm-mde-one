@@ -14,7 +14,6 @@
 
 class QWidget;
 
-
 namespace dicom {
     class AdnotationsDelegate : public QItemDelegate
     {

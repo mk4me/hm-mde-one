@@ -11,37 +11,11 @@
 
 using namespace dicom;
 
-//class LayeredGraphicsView : public coreUI::WheelGraphicsView
-//{
-//public:
-//    LayeredGraphicsView(LayeredImageVisualizerView* view, LayeredImageVisualizer* model, QGraphicsScene* scene, Qt::KeyboardModifier modifier = Qt::NoModifier) : 
-//      coreUI::WheelGraphicsView(scene, modifier), model(model), view(view) {}
-//
-//    //virtual void mousePressEvent( QMouseEvent * e)
-//    //{
-//    //    auto serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
-//    //    if (serie) {
-//    //        QSize size = serie->getSize();
-//    //        QPoint p;
-//    //        p.setX(e->pos().x());
-//    //        p.setY(e->pos().y());
-//    //        //serie->onClick(p);
-//    //        view->refresh();
-//    //    } 
-//    //}
-//
-//private:
-//    LayeredImageVisualizer* model;
-//    LayeredImageVisualizerView* view;
-//};
 
 LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* model, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
     model(model),
     QWidget(parent, f),
     ui(new Ui::LayeredImageVisualizer()),
-    //pixmapItem(nullptr),
-    //layersModel(this),
-    //stateMachine(new LayeredStateMachine),
     lastView(nullptr)
 {
     ui->setupUi(this);
@@ -49,34 +23,43 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(ui->nextButton, SIGNAL(clicked()), model, SLOT(setNextSerie()));
     connect(ui->sliderBar, SIGNAL(valueChanged(int)), model, SLOT(trySetSerie(int)));
     connect(model, SIGNAL(serieChanged()), this, SLOT(refresh()));
-    connect(ui->saveButton, SIGNAL(clicked()), model, SLOT(saveSerie()));
+    //connect(ui->saveButton, SIGNAL(clicked()), model, SLOT(saveSerie()));
     connect(ui->editButton, SIGNAL(clicked()), this, SLOT(editSelectedSerie()));
     connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedLayers()));
 
+    ui->tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->tableView->setItemDelegateForColumn(1, new AdnotationsDelegate());
+    connect(ui->tableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
 
-    coreUI::CoreAction*  und = new coreUI::CoreAction(tr("Edit")  , QIcon(":/coreUI/icons/textedit/editundo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  red = new coreUI::CoreAction(tr("Edit")  , QIcon(":/coreUI/icons/textedit/editredo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  undo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/undo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  redo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/redo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
 
-    coreUI::CoreAction*  nrm = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/arrowIcon.png"), tr("Normal"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  cur = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/curveIcon.png"), tr("Add curve"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  pol = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  nrml = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/arrowIcon.png"), tr("Normal"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  curv = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/curveIcon.png"), tr("Add curve"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);
+
+    coreUI::CoreAction*  save = new coreUI::CoreAction(tr("File")  , QIcon(":/dicom/save.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
+
+    coreUI::CoreAction*  crop = new coreUI::CoreAction(tr("Other")  , QIcon(":/dicom/crop.png"), tr("Crop"), this, coreUI::CoreTitleBar::Left);
     
+    connect(undo, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(redo, SIGNAL(triggered()), this, SLOT(redo()));
 
-    
-    connect(und, SIGNAL(triggered()), this, SLOT(undo()));
-    connect(red, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(nrml, SIGNAL(triggered()), this, SLOT(normalState()));
+    connect(curv, SIGNAL(triggered()), this, SLOT(curveState()));
+    connect(poly, SIGNAL(triggered()), this, SLOT(polyState()));
 
-    connect(nrm, SIGNAL(triggered()), this, SLOT(normalState()));
-    connect(cur, SIGNAL(triggered()), this, SLOT(curveState()));
-    connect(pol, SIGNAL(triggered()), this, SLOT(polyState()));
+    connect(save, SIGNAL(triggered()), model, SLOT(saveSerie()));
+    connect(crop, SIGNAL(triggered()), this, SLOT(crop()));
 
-    this->addAction(und);
-    this->addAction(red);
+    this->addAction(undo);
+    this->addAction(redo);
 
-    this->addAction(nrm);
-    this->addAction(cur);
-    this->addAction(pol);
+    this->addAction(nrml);
+    this->addAction(curv);
+    this->addAction(poly);
+    this->addAction(save);
+    this->addAction(crop);
     
     ui->graphicsHolder->setLayout(new QHBoxLayout());
     ui->graphicsHolder->setContentsMargins(0, 0, 0, 0);
@@ -86,6 +69,12 @@ void dicom::LayeredImageVisualizerView::refresh()
 {
     int currentSerieNo = model->getCurrentSerieNo();
     int numSeries = model->getNumSeries();
+
+    if (numSeries > 1) {
+        ui->sliderContainer->show();
+    } else {
+        ui->sliderContainer->hide();
+    }
 
     ui->sliderBar->blockSignals(true);
     if (currentSerieNo >= 0) {
@@ -98,10 +87,6 @@ void dicom::LayeredImageVisualizerView::refresh()
         ui->sliderBar->setEnabled(false);
     }
     ui->sliderBar->blockSignals(false);
-
-    /*if (pixmapItem) {
-    graphicsScene->removeItem(dynamic_cast<QGraphicsItem*>(pixmapItem));
-    }*/
 
     auto serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
     
@@ -117,13 +102,9 @@ void dicom::LayeredImageVisualizerView::refresh()
         lastView->show();
     }
         serie->refresh();
-        //pixmapItem = graphicsScene->addPixmap(serie->getPixmap());
-        /*serie->getGraphicsView()->setSceneRect(0, 0, serie->getSize().width(), serie->getSize().height());
-        serie->getGraphicsScene()->setSceneRect( serie->getGraphicsView()->rect() );*/
-        //layersModel.setImage(serie->getImage());
         ui->tableView->setModel(serie->getLayersModel());
     } else {
-        //ui->pictureHolder->setPixmap(QPixmap());
+
     }
 
 }
@@ -189,5 +170,25 @@ void dicom::LayeredImageVisualizerView::editSelectedSerie()
     }
     if (rows.size() == 1) {
         model->editSerie(*rows.begin());
+    }
+}
+
+void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex & )
+{
+    QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
+    std::set<int> rows;
+    for (auto it = indexes.begin(); it != indexes.end(); ++it) {
+        rows.insert(it->row());
+    }
+    if (rows.size() == 1) {
+        model->selectLayer(*rows.begin());
+    }
+}
+
+void dicom::LayeredImageVisualizerView::crop()
+{
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+    if (serie) {
+        serie->switchCrop();
     }
 }
