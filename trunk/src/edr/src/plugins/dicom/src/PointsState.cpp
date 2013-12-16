@@ -66,7 +66,6 @@ public:
         image->addLayer(layer);
         machine->getSerie()->refresh();
         machine->getSerie()->save();
-        machine->setState(machine->getNormalState());
     }
     
     virtual void undoIt() {
@@ -159,6 +158,13 @@ void dicom::PointsState::addLayer()
 {
     QAction* a = qobject_cast<QAction*>(sender());
     int adnIdx = adnotations::instance()->right.at(a->text());
+    addLayer(adnIdx);
+    resetLayer();
+    machine->setState(machine->getNormalState());
+}
+
+void dicom::PointsState::addLayer( int adnIdx )
+{
     auto img = machine->getSerie()->getImage();
 
     auto command = utils::make_shared<AddLayerCommand>(machine, img, this, layer, adnIdx);
@@ -167,16 +173,24 @@ void dicom::PointsState::addLayer()
 
 void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
 {
-    if (lastState == machine->getEditState()) {
-        layer = machine->getEditState()->getLayerToEdit();
+    if (this->curved) {
+        QCursor c(QPixmap(":/dicom/add_curve.png"), 0, 0);
+        machine->changeCursor(c);
     } else {
-        resetLayer();
-        machine->getGraphicsScene()->addItem(layer->getItem());
+        QCursor c(QPixmap(":/dicom/add_poly.png"), 0, 0);
+        machine->changeCursor(c);
     }
+    resetLayer();
+    machine->getGraphicsScene()->addItem(layer->getItem());
 }
 
 void dicom::PointsState::end()
 {
+    if (layer->getNumPoint() > 0) {
+        addLayer(-1);
+        resetLayer();
+    }
+    machine->changeCursor(Qt::ArrowCursor);
 }
 
 bool dicom::PointsState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )

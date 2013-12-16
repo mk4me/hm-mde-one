@@ -36,6 +36,7 @@ public:
     virtual bool getSelected() const = 0;
     virtual void setSelected(bool val) = 0;
 
+    virtual QGraphicsItem* getItem() = 0;
 
     // TODO : dobrze byloby przeniest to do jakiegos dekoratora...
     int getAdnotationIdx() const { return adnotationIdx; }
@@ -51,23 +52,6 @@ private:
     }
 };
 DEFINE_SMART_POINTERS(ILayerItem);
-
-//class IRasterLayerItem : public ILayerItem
-//{
-//public:
-//    virtual ~IRasterLayerItem() {}
-//
-//    virtual void render(QPainter* painter, const QRect* rect) const = 0;
-//};
-//DEFINE_SMART_POINTERS(IRasterLayerItem);
-
-class IVectorLayerItem : public ILayerItem
-{
-public:
-    virtual ~IVectorLayerItem() {}
-    virtual QGraphicsItem* getItem() = 0;
-};
-DEFINE_SMART_POINTERS(IVectorLayerItem);
 
 class ILayer
 {

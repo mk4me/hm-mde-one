@@ -14,6 +14,7 @@
 #include "NormalState.h"
 #include "EditState.h"
 #include "PointsState.h"
+#include "MoveState.h"
 #include <utils/ICommandStack.h>
 
 namespace dicom {
@@ -29,6 +30,7 @@ public:
 
 public:
     NormalStatePtr getNormalState();
+    MoveStatePtr getMoveState();
     PointsStatePtr getCurveState();
     PointsStatePtr getPolyState();
     EditStatePtr getEditState();
@@ -36,6 +38,8 @@ public:
     QGraphicsScene* getGraphicsScene();
     QGraphicsView* getGraphicsView();
     utils::ICommandStackPtr getCommandStack() const { return commandStack; }
+
+    void changeCursor(const QCursor& cursor);
 
 public Q_SLOTS:
     void selectionChanged();
@@ -45,6 +49,7 @@ private:
     EditStatePtr editState;
     PointsStatePtr pointsState;
     PointsStatePtr polyState;
+    MoveStatePtr moveState;
     LayeredSerie* serie;
     utils::ICommandStackPtr commandStack;
 };

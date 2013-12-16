@@ -73,8 +73,11 @@ private:
     void handleSeriesRecord( DcmDirectoryRecord * seriesRecord, core::IHierarchyItemPtr root, std::string basePath );
     void handleFileRecord( DcmDirectoryRecord * fileRecord, core::IHierarchyItemPtr root, std::string basePath, std::vector<LayerHelperPtr>& helpers );
     template <class Helper>
-    core::IHierarchyItemPtr transactionPart( const core::Filesystem::Path &path );
-
+    core::IHierarchyItemPtr transactionPart( const core::Filesystem::Path &path, const QString& desc = QString() );
+    QString createDesc(const internalData::Patient& patient);
+    QString createDesc(const internalData::Study& study); 
+    QString createDesc(const internalData::Serie& serie); 
+    QString createDesc(const internalData::Image& image);
 private:
     core::IMemoryDataManager* memoryDM;
     core::IFileDataManager* fileDM;

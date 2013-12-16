@@ -19,7 +19,7 @@
 
 namespace dicom {
 
-class BackgroundLayer : public IVectorLayerItem
+class BackgroundLayer : public ILayerItem
 {
 public:
     BackgroundLayer(const QPixmap& p, const QString& name = QString("Background"));
@@ -41,7 +41,7 @@ private:
     template <typename Archive>
     void serialize(Archive& ar, const unsigned int version)
     {
-        ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(IVectorLayerItem);
+        ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(ILayerItem);
         ar & BOOST_SERIALIZATION_NVP(name);
         ar & BOOST_SERIALIZATION_NVP(pixmapPath);
     }

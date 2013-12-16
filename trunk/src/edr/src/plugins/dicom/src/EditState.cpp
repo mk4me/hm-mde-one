@@ -52,7 +52,8 @@ bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
             return false;
         } else {
             auto pos = e->scenePos();
-            machine->getCommandStack()->addCommand(utils::make_shared<AddPointCommand>(layer, pos));
+            auto offs = layer->getItem()->pos();
+            machine->getCommandStack()->addCommand(utils::make_shared<AddPointCommand>(layer, pos - offs));
         }
     }
 
@@ -67,6 +68,7 @@ void dicom::EditState::begin( coreUI::AbstractStateConstPtr lastState )
 
 void dicom::EditState::end()
 {
+    //done();
     layer->setEditable(false);
 }
 

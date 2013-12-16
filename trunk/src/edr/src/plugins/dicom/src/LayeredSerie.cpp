@@ -32,9 +32,8 @@ public:
     virtual void doIt() 
     {
         img->removeLayer(layer);
-        IVectorLayerItemPtr v = utils::dynamic_pointer_cast<IVectorLayerItem>(layer);
-        if (v) {
-            v->getItem()->setVisible(false);//setParentItem(nullptr);
+        if (layer) {
+            layer->getItem()->setVisible(false);//setParentItem(nullptr);
         }
         serie->refresh();
     }
@@ -42,9 +41,8 @@ public:
     virtual void undoIt() 
     {
         img->addLayer(layer);
-        IVectorLayerItemPtr v = utils::dynamic_pointer_cast<IVectorLayerItem>(layer);
-        if (v) {
-            v->getItem()->setVisible(true);
+        if (layer) {
+            layer->getItem()->setVisible(true);
         }
         serie->refresh();
     }
@@ -67,13 +65,13 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
         graphicsScene->addItem(image->getBackgroundLayer()->getItem());
         int count = image->getNumLayers();
         for (int i = 0; i < count; ++i) {
-            IVectorLayerItemPtr vec = utils::dynamic_pointer_cast<IVectorLayerItem>(image->getLayer(i));
+            ILayerItemPtr vec = image->getLayer(i);
             if (vec) {
                 graphicsScene->addItem(vec->getItem());
             }
         }
-        //pixmapItem = graphicsScene->addPixmap(getPixmap());
-        //pixmapItem->setZValue(-100);
+        core::Filesystem::Path xml = data->at("DICOM_XML");
+        setName(xml.stem().string());
         this->data = data;
     }
 }
@@ -140,7 +138,7 @@ void dicom::LayeredSerie::refresh()
     //pixmapItem->setPixmap(getPixmap());
     int count = image->getNumLayers();
     for (int i = 0; i < count; ++i) {
-        IVectorLayerItemPtr vec = utils::dynamic_pointer_cast<IVectorLayerItem>(image->getLayer(i));
+        ILayerItemPtr vec = image->getLayer(i);
         if (vec && graphicsScene != vec->getItem()->scene()) {
             graphicsScene->addItem(vec->getItem());
         }
@@ -235,5 +233,10 @@ void dicom::LayeredSerie::switchCrop()
             background->setCrop(background->getPixmap().rect());
         }
     }
+}
+
+void dicom::LayeredSerie::setMoveState()
+{
+    stateMachine->setState(stateMachine->getMoveState());
 }
 

@@ -121,7 +121,11 @@ QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & vi
     dockVisWidget->setMinimumSize((std::max)(50, dockVisWidget->minimumWidth()), (std::max)(50, dockVisWidget->minimumHeight()));
     {
         QObject* visObj = dynamic_cast<QObject*>(visualizer->visualizer());
-        connect(visObj, SIGNAL(changeLabel(const QString&)), dockVisWidget, SLOT(setLabel(const QString&)));
+        if (visObj) {
+            // todo : znalezc lepszy sposob na zmiane etykiety wizualizatora
+            // (a moze wystarczy sprawdzic metaInfo o sygnalach? )
+            connect(visObj, SIGNAL(changeLabel(const QString&)), dockVisWidget, SLOT(setLabel(const QString&)));
+        }
     }
     return dockVisWidget;
 }

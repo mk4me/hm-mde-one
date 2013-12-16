@@ -55,7 +55,7 @@ namespace dicom {
         QGraphicsItem* createPoint();
     };
 
-    class PointsLayer : public IVectorLayerItem
+    class PointsLayer : public ILayerItem
     {
     public:
         PointsLayer();

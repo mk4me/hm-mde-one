@@ -22,6 +22,7 @@ SET_PRIVATE_HEADERS (
 	PointsState.h
 	EditState.h
 	NormalState.h
+	MoveState.h
 	LayeredSerie.h
 	BackgroundLayer.h
 	PointsLayer.h
@@ -31,6 +32,7 @@ SET_PRIVATE_HEADERS (
 	LayeredModelView.h
 	PngParser.h
     Serializers.h
+	spline.h
     qstring_serialization.h
 )
 
@@ -40,6 +42,7 @@ SET_SOURCE_FILES(
 	LayeredStateMachine.cpp
 	PointsState.cpp
 	NormalState.cpp
+	MoveState.cpp
 	EditState.cpp
 	LayeredSerie.cpp
 	DicomPlugin.cpp
@@ -56,6 +59,7 @@ SET_SOURCE_FILES(
 	LayeredImageVisualizerView.cpp
 	PngParser.cpp
 	LayeredModelView.cpp
+	spline.cpp
 	DicomPCH.cpp
 )
 
@@ -69,6 +73,7 @@ SET_MOC_FILES(
 	LayeredModelView.h
 	PointsState.h
 	EditState.h
+	NormalState.h
 )
 SET_UI_FILES(
 	layeredImageVisualizer.ui

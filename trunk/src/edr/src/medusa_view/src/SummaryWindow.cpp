@@ -72,9 +72,12 @@ void SummaryWindow::display( const HelpersCollection& helpers )
 
 void SummaryWindow::addItem( QString text, QTreeWidgetItem* root )
 {
-    QTreeWidgetItem* itm = new QTreeWidgetItem();
-    itm->setText(0, text);
-    root->addChild(itm);
+    QStringList splits = text.split("\n", QString::SkipEmptyParts);
+    for (auto it = splits.begin(); it != splits.end(); ++it) {
+        QTreeWidgetItem* itm = new QTreeWidgetItem();
+        itm->setText(0, *it);
+        root->addChild(itm);
+    }
 }
 
 void SummaryWindow::clear()

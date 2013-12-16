@@ -3,7 +3,7 @@
 #include <QtGui/QGraphicsItemGroup>
 #include <QtGui/QGraphicsPathItem>
 #include <QtGui/QPen>
-#include <qwt_curve_fitter.h>
+#include "spline.h"
 #include "boost/serialization/export.hpp"
 
 
@@ -14,6 +14,7 @@ dicom::PointsLayer::PointsLayer() :
 {
     pathItem->setParentItem(group.get());
     group->setHandlesChildEvents(false);
+    //setEditable(false);
 }
 
 dicom::PointsLayer::~PointsLayer()
@@ -59,7 +60,7 @@ void dicom::PointsLayer::addPoint( const QPointF& p )
     rect->setZValue(1.0);
     rect->setParentItem(group.get());
     rect->setFlag(QGraphicsItem::ItemIsMovable);
-    rect->setFlag(QGraphicsItem::ItemIsSelectable);
+    rect->setFlag(QGraphicsItem::ItemIsSelectable, false);
 
     addPoint(rect);
 }
@@ -127,10 +128,37 @@ bool dicom::PointsLayer::getEditable() const
 
 void dicom::PointsLayer::setEditable( bool val )
 {
+    /*if (val) {
+        setSelected(false);
+        for (auto it = points.begin(); it != points.end(); ++it) {
+            (*it)->setSelected(false);
+            (*it)->setFlag(QGraphicsItem::ItemIsSelectable, !val);
+        }
+
+        pathItem->setSelected(false);
+
+        pathItem->setFlag(QGraphicsItem::ItemIsMovable, !val);
+        pathItem->setFlag(QGraphicsItem::ItemIsSelectable, !val);
+    }
     group->setHandlesChildEvents(!val);
     group->setFlag(QGraphicsItem::ItemIsMovable, !val);
     group->setFlag(QGraphicsItem::ItemIsSelectable, !val);
-    pathItem->setPen(pointsDrawer->getLinePen(val));
+    pathItem->setPen(pointsDrawer->getLinePen(val));*/
+
+    setSelected(false);
+    for (auto it = points.begin(); it != points.end(); ++it) {
+        (*it)->setSelected(false);
+        (*it)->setFlag(QGraphicsItem::ItemIsSelectable, !val);
+        (*it)->setFlag(QGraphicsItem::ItemIsMovable, val);
+    }
+    group->setHandlesChildEvents(!val);
+    group->setFlag(QGraphicsItem::ItemIsSelectable, !val);
+    group->setFlag(QGraphicsItem::ItemIsMovable, !val);
+    pathItem->setFlag(QGraphicsItem::ItemIsSelectable, !val);
+    pathItem->setFlag(QGraphicsItem::ItemIsMovable, false);
+    if (pointsDrawer) {
+        pathItem->setPen(pointsDrawer->getLinePen(val));
+    }
 }
 
 bool dicom::PointsLayer::getSelected() const
@@ -173,12 +201,11 @@ QPainterPath dicom::PolyDrawer::createPath(const QVector<QGraphicsItem*>& points
 {
     int count = points.size();
     if (count > 2) {
-        QwtSplineCurveFitter fitter;
         QPolygonF poly;
         for (auto it = points.begin(); it != points.end(); ++it) {
-            poly << (*it)->scenePos();
+            poly << (*it)->pos();
         }
-        poly << (*points.begin())->scenePos();
+        poly << (*points.begin())->pos();
         QPainterPath path;
         path.addPolygon(poly);
         return path;
@@ -213,16 +240,17 @@ QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& point
 {
     int count = points.size();
     if (count > 2) {
-        QwtSplineCurveFitter fitter;
         QPolygonF poly;
-        //poly << (*(points.end() - 1))->scenePos();
+        auto beginPos = (*points.begin())->pos();
+        auto endPos = (*(points.end() - 1))->pos();
         for (auto it = points.begin(); it != points.end(); ++it) {
-            poly << (*it)->scenePos();
+            poly << (*it)->pos();
         }
-        poly << (*points.begin())->scenePos();
-        //poly << (*(points.begin() + 1))->scenePos();
+        if (poly.isClosed() == false) {
+            poly << beginPos;
+        }
 
-        fitter.setFitMode(QwtSplineCurveFitter::ParametricSpline);
+        SplineCurveFitter fitter;
         poly = fitter.fitCurve(poly);
         QPainterPath path;
         path.addPolygon(poly);

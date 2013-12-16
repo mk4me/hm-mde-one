@@ -102,7 +102,7 @@ void DicomSource::addFile( const core::Filesystem::Path& path )
 
 
 template <class Helper>
-core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Path &path )
+core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Path &path, const QString& desc )
 {
     auto transaction = fileDM->transaction();
     transaction->addFile(path);
@@ -116,7 +116,7 @@ core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Pa
             return utils::const_pointer_cast<utils::ObjectWrapper>(w); 
         });
     QString filename = QString::fromStdString(path.stem().string());
-    QString desc = QString::fromStdString(path.string());
+    QString desc2 = QString::fromStdString(path.string()) + QString("\n") + desc;
 
     if (oList.size() == 1) {
         utils::ObjectWrapperPtr wrapper = *oList.begin();
@@ -144,13 +144,13 @@ core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Pa
             icon = QIcon(":/dicom/file.png");
         }
 
-        return utils::make_shared<core::HierarchyDataItem>(*oList.begin(), icon, filename, desc, utils::make_shared<Helper>(*oList.begin()));
+        return utils::make_shared<core::HierarchyDataItem>(*oList.begin(), icon, filename, desc2, utils::make_shared<Helper>(*oList.begin()));
     }
 
     UTILS_ASSERT(false, "Obsolete code");
-    core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(filename, desc, QIcon());
+    core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(filename, desc2, QIcon());
     for (auto it = oList.begin(); it != oList.end(); ++it) {
-        core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(*it, QIcon(), QString((*it)->getClassName().c_str()), desc,  utils::make_shared<Helper>(*it));
+        core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(*it, QIcon(), QString((*it)->getClassName().c_str()), desc2,  utils::make_shared<Helper>(*it));
         root->appendChild(item);
     }
 
@@ -173,19 +173,22 @@ dicom::DicomInternalStructPtr DicomLoader::load( const core::Filesystem::Path& f
 void dicom::DicomSource::openInternalDataMainFile( core::Filesystem::Path path )
 {
     DicomLoader loader;
-    auto inter = loader.load(path);
+    DicomInternalStructPtr inter = loader.load(path);
     int count = inter->getNumPatients();
     for (int i = 0; i < count; ++i) {
         auto patient = inter->getPatient(i);
+        QString patientDesc = createDesc(*patient);
         for (auto itSession = patient->sessions.begin(); itSession != patient->sessions.end(); ++itSession) {
             QString name((*itSession)->getOutputDirectory().c_str());
-
-            core::HierarchyDataItemPtr sessionItem = utils::make_shared<core::HierarchyDataItem>(QIcon(), name, QString());
+            QString sessionDesc = createDesc(*(*itSession)) + QString("\n") + patientDesc;
+            core::HierarchyDataItemPtr sessionItem = utils::make_shared<core::HierarchyDataItem>(QIcon(), name, sessionDesc);
             std::vector<LayerHelperPtr> helpers;
 
             for (auto itSerie = (*itSession)->series.begin(); itSerie !=  (*itSession)->series.end(); ++itSerie) {
+                QString serieDesc = createDesc(*(*itSerie)) + QString("\n") + sessionDesc;
                 for (auto itImage = (*itSerie)->images.begin(); itImage != (*itSerie)->images.end(); ++itImage) {
-                    auto dataItem = transactionPart<LayerHelper>(path.parent_path() / (*itImage)->imageFile);
+                    QString imageDesc = createDesc(*(*itImage)) + QString("\n") + serieDesc;
+                    auto dataItem = transactionPart<LayerHelper>(path.parent_path() / (*itImage)->imageFile, imageDesc);
                     core::HierarchyDataItemPtr di = utils::dynamic_pointer_cast<core::HierarchyDataItem>(dataItem); 
                     if (di) {
                         auto itemHelpers = di->getHelpers();
@@ -213,6 +216,52 @@ void dicom::DicomSource::openInternalDataMainFile( core::Filesystem::Path path )
             }
         }
     }
+}
+
+QString dicom::DicomSource::createDesc( const internalData::Patient& patient )
+{
+    QString desc;
+    desc += QString("patientID : %1\n").arg(patient.patientID.c_str());
+    desc += QString("patientName : %1\n").arg(patient.patientName.c_str());
+    desc += QString("patientBirthdate : %1\n").arg(patient.patientBirthdate.c_str());
+    desc += QString("patientSex : %1\n").arg(patient.patientSex.c_str());
+    return desc;
+}
+
+QString dicom::DicomSource::createDesc( const internalData::Study& study )
+{
+    QString desc;
+    desc += QString("studyId: %1\n").arg(study.studyId.c_str());
+    desc += QString("studyDesc: %1\n").arg(study.studyDesc.c_str());
+    desc += QString("studyDate: %1\n").arg(study.studyDate.c_str());
+    desc += QString("studyTime: %1\n").arg(study.studyTime.c_str());
+    desc += QString("physicianName: %1\n").arg(study.physicianName.c_str());
+    desc += QString("accesionNumber: %1\n").arg(study.accesionNumber.c_str());
+    desc += QString("studyNumber: %1\n").arg(study.studyNumber);
+    return desc;
+}
+
+QString dicom::DicomSource::createDesc( const internalData::Serie& serie )
+{
+    QString desc;
+    desc += QString("serieId : %1\n").arg(serie.serieId.c_str());
+    desc += QString("modality : %1\n").arg(serie.modality.c_str());
+    desc += QString("serieDate : %1\n").arg(serie.serieDate.c_str());
+    desc += QString("serieTime : %1\n").arg(serie.serieTime.c_str());
+    desc += QString("serieDesc : %1\n").arg(serie.serieDesc.c_str());
+    desc += QString("serieNumber : %1\n").arg(serie.serieNumber.c_str());
+    desc += QString("physicianName : %1\n").arg(serie.physicianName.c_str());
+    return desc;
+}
+
+QString dicom::DicomSource::createDesc( const internalData::Image& image )
+{
+    QString desc;
+    desc += QString("imageFile : %1\n").arg(image.imageFile.c_str());
+    desc += QString("adnotationsFile : %1\n").arg(image.adnotationsFile.c_str());
+    desc += QString("originFilePath : %1\n").arg(image.originFilePath.c_str());
+    desc += QString("isPowerDoppler : %1\n").arg(image.isPowerDoppler);
+    return desc;
 }
 
 std::vector<core::TypeInfo> dicom::LayerHelper::getTypeInfos() const

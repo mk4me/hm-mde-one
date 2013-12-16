@@ -45,7 +45,7 @@ public:
     // workaround
     std::vector<ILayerItemConstPtr> getLayersToSerialize() const;
 
-    dicom::IVectorLayerItemPtr getBackgroundLayer() const;
+    dicom::ILayerItemPtr getBackgroundLayer() const;
     void setBackgroundLayer(dicom::BackgroundLayerPtr val);
 
 private:

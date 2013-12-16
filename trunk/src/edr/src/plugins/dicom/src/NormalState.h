@@ -17,8 +17,9 @@ namespace dicom {
 
 class LayeredStateMachine;
 
-class NormalState : public coreUI::AbstractState
+class NormalState : public QObject, public coreUI::AbstractState
 {
+    Q_OBJECT
 public:
     NormalState(LayeredStateMachine* machine);
 	virtual ~NormalState() {}
@@ -26,19 +27,30 @@ public:
 public:
     virtual void selectionChanged(const QList<QGraphicsItem*>& list);
     virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e);
+    virtual bool mouseMoveEvent(QGraphicsSceneMouseEvent* e);
     virtual bool mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
     virtual bool keyReleaseEvent( QKeyEvent *event );
     virtual void begin();
+
+
     virtual void end();
 
-private:
+protected:
+    int getNumSelected();
+    ILayerItemPtr getFirstSelected();
+    void createItem2LayerMap();
     QGraphicsItem* extractItem( QGraphicsSceneMouseEvent* e );
     QGraphicsItem* extractItem( QGraphicsItem* itm);
 
-private: 
-    std::pair<QGraphicsItem*, QPointF> position;
+protected: 
     LayeredStateMachine* machine;
-    std::map<QGraphicsItem*, IVectorLayerItemPtr> item2layer;
+    std::map<QGraphicsItem*, ILayerItemPtr> item2layer;
+
+private Q_SLOTS:
+    void move();
+    void addCurve();
+    void addPoly();
+    void edit();
 };
 DEFINE_SMART_POINTERS(NormalState);
 

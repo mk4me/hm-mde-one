@@ -36,6 +36,8 @@ private Q_SLOTS:
 
     void addLayer();
 
+    void addLayer( int adnIdx );
+
     virtual void begin( coreUI::AbstractStateConstPtr lastState );
     virtual void end();
 

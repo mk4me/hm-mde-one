@@ -36,7 +36,7 @@ public:
     virtual int getNumLayers() const = 0;
     virtual ILayerItemConstPtr getLayer(int idx) const = 0;
     virtual ILayerItemPtr getLayer(int idx) = 0;
-    virtual dicom::IVectorLayerItemPtr getBackgroundLayer() const = 0;
+    virtual dicom::ILayerItemPtr getBackgroundLayer() const = 0;
 
 };
 DEFINE_SMART_POINTERS(ILayeredImage);

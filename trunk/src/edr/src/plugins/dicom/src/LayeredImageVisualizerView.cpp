@@ -24,7 +24,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(ui->sliderBar, SIGNAL(valueChanged(int)), model, SLOT(trySetSerie(int)));
     connect(model, SIGNAL(serieChanged()), this, SLOT(refresh()));
     //connect(ui->saveButton, SIGNAL(clicked()), model, SLOT(saveSerie()));
-    connect(ui->editButton, SIGNAL(clicked()), this, SLOT(editSelectedSerie()));
+//    connect(ui->editButton, SIGNAL(clicked()), this, SLOT(editSelectedSerie()));
     connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedLayers()));
 
     ui->tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
@@ -35,6 +35,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     coreUI::CoreAction*  redo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/redo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
 
     coreUI::CoreAction*  nrml = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/arrowIcon.png"), tr("Normal"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  move = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/moveIcon.png"), tr("Move"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  curv = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/curveIcon.png"), tr("Add curve"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);
 
@@ -46,6 +47,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(redo, SIGNAL(triggered()), this, SLOT(redo()));
 
     connect(nrml, SIGNAL(triggered()), this, SLOT(normalState()));
+    connect(move, SIGNAL(triggered()), this, SLOT(moveState()));
     connect(curv, SIGNAL(triggered()), this, SLOT(curveState()));
     connect(poly, SIGNAL(triggered()), this, SLOT(polyState()));
 
@@ -56,6 +58,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     this->addAction(redo);
 
     this->addAction(nrml);
+    //this->addAction(move);
     this->addAction(curv);
     this->addAction(poly);
     this->addAction(save);
@@ -190,5 +193,13 @@ void dicom::LayeredImageVisualizerView::crop()
     LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
     if (serie) {
         serie->switchCrop();
+    }
+}
+
+void dicom::LayeredImageVisualizerView::moveState()
+{
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+    if (serie) {
+        serie->setMoveState();
     }
 }

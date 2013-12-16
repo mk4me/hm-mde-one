@@ -9,6 +9,7 @@ dicom::LayeredStateMachine::LayeredStateMachine(LayeredSerie* serie, utils::ICom
     pointsState(new PointsState(this, true)),
     polyState(new PointsState(this, false)),
     editState(new EditState(this)),
+    moveState(new MoveState(this)),
     serie(serie),
     commandStack(commandStack)
 {
@@ -53,5 +54,18 @@ void dicom::LayeredStateMachine::selectionChanged()
 EditStatePtr dicom::LayeredStateMachine::getEditState()
 {
     return editState;
+}
+
+void dicom::LayeredStateMachine::changeCursor( const QCursor& cursor )
+{
+    QList<QGraphicsView*> viewList = getGraphicsScene()->views();
+    for (auto it = viewList.begin(); it != viewList.end(); ++it) {
+        (*it)->setCursor(cursor);
+    }
+}
+
+dicom::MoveStatePtr dicom::LayeredStateMachine::getMoveState()
+{
+    return moveState;
 }
 

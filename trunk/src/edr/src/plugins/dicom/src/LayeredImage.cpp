@@ -115,7 +115,7 @@ std::vector<dicom::ILayerItemConstPtr> dicom::LayeredImage::getLayersToSerialize
     return ret;
 }
 
-dicom::IVectorLayerItemPtr dicom::LayeredImage::getBackgroundLayer() const
+dicom::ILayerItemPtr dicom::LayeredImage::getBackgroundLayer() const
 {
     return backgroundLayer;
 }

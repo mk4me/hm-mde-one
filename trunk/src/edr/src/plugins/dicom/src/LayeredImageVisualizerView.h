@@ -46,6 +46,7 @@ private Q_SLOTS:
     void redo();
     void crop();
     void normalState();
+    void moveState();
     void curveState();
     void polyState();
     void removeSelectedLayers();

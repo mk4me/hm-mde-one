@@ -49,4 +49,8 @@ void CoreDockWidget::toggleFloating()
 void coreUI::CoreDockWidget::setLabel( const QString& label )
 {
     setWindowTitle(label);
+    auto titleBar = this->titleBarWidget();
+    if (titleBar) {
+        titleBar->setWindowTitle(label);
+    }
 }

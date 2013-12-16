@@ -64,13 +64,13 @@ namespace dicom {
         void setCurveState();
         void setNormalState();
         void switchCrop();
+        void setMoveState();
     private:
         ILayeredImagePtr image;
         coreUI::WheelGraphicsView* graphicsView;
         coreUI::GraphicSceneWithStateMachine* graphicsScene;
         LayeredStateMachinePtr stateMachine;
         LayeredImageVisualizer* visualizer;
-        //QGraphicsPixmapItem* pixmapItem;
         LayeredModelView layersModel;
         utils::ObjectWrapperConstPtr data;
         utils::CommandStackPtr commandStack;

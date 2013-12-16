@@ -11,5 +11,11 @@
     <file alias="edit.png">../resources/embedded/edit.png</file>
     <file alias="remove.png">../resources/embedded/remove.png</file>
 	<file alias="crop.png">../resources/embedded/crop.png</file>
+	<file alias="move.png">../resources/embedded/move.png</file>
+	<file alias="add_curve.png">../resources/embedded/add_curve.png</file>
+	<file alias="add_poly.png">../resources/embedded/add_poly.png</file>
+	<file alias="moveIcon.png">../resources/embedded/moveIcon.png</file>
+	<file alias="left.png">../resources/embedded/left.png</file>
+	<file alias="right.png">../resources/embedded/right.png</file>
   </qresource>
 </RCC>
