@@ -16,6 +16,7 @@
 #include <corelib/IHierarchyItem.h>
 #include <corelib/HierarchyHelper.h>
 #include "DicomInternalStruct.h"
+#include "LayeredImage.h"
 
 class DcmDirectoryRecord;
 
@@ -24,8 +25,8 @@ namespace dicom {
 class DicomLoader
 {
 public:
-    virtual ~DicomLoader() {}
-    DicomInternalStructPtr load( const core::Filesystem::Path& from);
+    static DicomInternalStructPtr load( const core::Filesystem::Path& from);
+    static LayersVectorPtr loadLayers(const core::Filesystem::Path &p );
 };
 DEFINE_SMART_POINTERS(DicomLoader);
 

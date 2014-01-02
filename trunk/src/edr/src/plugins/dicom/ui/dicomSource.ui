@@ -56,6 +56,19 @@ color: white
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <widget class="QPushButton" name="sendButton">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>30</y>
+          <width>75</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Send file test</string>
+        </property>
+       </widget>
       </widget>
      </item>
     </layout>

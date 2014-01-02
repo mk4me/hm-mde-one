@@ -33,6 +33,9 @@ SET_PRIVATE_HEADERS (
 	PngParser.h
     Serializers.h
 	spline.h
+	DicomPerspective.h
+	LayersXmlParser.h
+	InternalXmlParser.h
     qstring_serialization.h
 )
 
@@ -60,6 +63,9 @@ SET_SOURCE_FILES(
 	PngParser.cpp
 	LayeredModelView.cpp
 	spline.cpp
+	DicomPerspective.cpp
+	LayersXmlParser.cpp
+	InternalXmlParser.cpp
 	DicomPCH.cpp
 )
 

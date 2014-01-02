@@ -1922,13 +1922,19 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			}
 		}
 
-        auto root = TreeBuilder::createTree("SUB", subPtr);
-        int childCount = root->getNumChildren();
+        std::vector<IHierarchyPerspectivePtr> perspectives = dataSource->getHierarchyPerspectives();
         std::set<core::IHierarchyItemConstPtr> roots;
-        for (int c = 0; c < childCount; ++c) {
-            auto r = root->getChild(c);
-            roots.insert(r);
-            hierarchyTransaction->addRoot(r);
+        for (auto it = perspectives.begin(); it != perspectives.end(); ++it) {
+            //auto root = TreeBuilder::createTree("SUB", subPtr);
+            auto root = (*it)->getPerspective(subPtr);
+            if (root) {
+                int childCount = root->getNumChildren();
+                for (int c = 0; c < childCount; ++c) {
+                    auto r = root->getChild(c);
+                    roots.insert(r);
+                    hierarchyTransaction->addRoot(r);
+                }
+            }
         }
         files2roots[loadedFiles] = roots;
 	}

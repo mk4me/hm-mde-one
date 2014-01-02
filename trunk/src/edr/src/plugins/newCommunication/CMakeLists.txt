@@ -59,6 +59,7 @@ SET_PUBLIC_HEADERS (
 	IDataSourceStatusManager.h
 	MultiserieColorStrategy.h
 	TreeItemHelper.h
+	IHierarchyPerspective.h
 	Export.h
 )
 

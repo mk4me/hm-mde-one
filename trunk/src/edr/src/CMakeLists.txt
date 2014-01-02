@@ -10,7 +10,7 @@ ADD_PROJECT(coreui "OPENGL;corelib")
 
 SET_PROJECTS_GROUP("plugins")
 ADD_PROJECT(plugin_c3d "corelib;c3dlib;kinematiclib" "plugins/c3d")
-ADD_PROJECT(plugin_dicom "BOOST;coreui;QWT" "plugins/dicom")
+ADD_PROJECT(plugin_dicom "plugin_newCommunication;plugin_subject;CURL;WSDLPULL;BOOST;coreui;QWT;webserviceslib" "plugins/dicom")
 ADD_PROJECT(plugin_dicomImporter "BOOST;coreui;corelib;DCMTK;STDINT" "plugins/dicomImporter")
 ADD_PROJECT(plugin_fileSource "BOOST;corelib" "plugins/fileSource")
 #ADD_PROJECT(plugin_sampleService "BOOST;corelib" "plugins/sampleService")

@@ -15,6 +15,18 @@
 #include <corelib/IHierarchyItem.h>
 #include <QtGui/QIcon>
 #include <corelib/HierarchyHelper.h>
+#include <plugins/newCommunication/IHierarchyPerspective.h>
+#include <plugins/c3d/C3DCollections.h>
+
+
+class MotionPerspective : public communication::IHierarchyPerspective
+{
+public:
+    virtual core::IHierarchyItemPtr getPerspective( PluginSubject::SubjectPtr subject );
+private:
+    bool hasValidData( PluginSubject::SubjectPtr subject );
+
+};
 
 class TreeBuilder
 {

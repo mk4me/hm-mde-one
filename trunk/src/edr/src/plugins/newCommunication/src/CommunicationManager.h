@@ -333,6 +333,8 @@ public:
 	//! Destruktor
     ~CommunicationManager();
 
+    // TODO - usunac, gdy upload zostanie juz przeniesiony do communication manager
+    webservices::MotionFileStoremanWSPtr getMotionFileStoremanService() const { return motionFileStoremanService_; }
 	void setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService);
 
 	void setMedicalFileStoremanService(const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService);
@@ -393,7 +395,7 @@ private:
 	webservices::FtpsConnectionPtr medicalFtps_;
 
 	webservices::MotionFileStoremanWSPtr motionFileStoremanService_;
-	webservices::MedicalFileStoremanWSPtr medicalFileStoremanService_;
+    webservices::MedicalFileStoremanWSPtr medicalFileStoremanService_;
 
 	// ----------------------- inner ------------------------------
 	webservices::BasicDownloadHelper fileDownloadHelper;

@@ -60,7 +60,7 @@ public:
     virtual void init(core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamManager, core::IFileDataManager * fileDM);
 
 	virtual bool lateInit() { return true; }
-	virtual void finalize() {}
+	virtual void finalize() ;
 	virtual void update(double) {}
 	virtual QWidget * getControlWidget() { return nullptr; }
 	virtual QWidget * getSettingsWidget() { return nullptr; }
@@ -90,6 +90,9 @@ public:
 	virtual void showPatientCard(const PluginSubject::SubjectConstPtr & subject, const communication::PatientConstPtr & patient = communication::PatientConstPtr());
 	virtual void showUserDataCard();
 	virtual void showConfigurationCard();
+
+    virtual void addHierarchyPerspective( communication::IHierarchyPerspectivePtr perspective );
+    std::vector<communication::IHierarchyPerspectivePtr> getHierarchyPerspectives();
 
 private:
 
@@ -185,6 +188,9 @@ private:
 	//! \param outFile Gdzie zapisujemy dane z rozpakowanego pliku zip
 	static bool copyData(QIODevice &inFile, QIODevice &outFile);
 
+    virtual bool uploadMotionFile( const core::Filesystem::Path& path );
+
+    
 private:
     // ------------------------ LOGIKA -------------------------------
 	//! Aktualny użytkownik
@@ -248,6 +254,10 @@ private:
     // -------------------------- UI ------------------------------------
 	//! Widget źródła danych
 	DataSourceWidget * dataSourceWidget;
+
+
+    // ----------------------- Hierarchie -------------------------------
+    std::vector<communication::IHierarchyPerspectivePtr> perspectives;
 
 };
 

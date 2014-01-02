@@ -79,6 +79,7 @@ namespace dicom {
         void setNextSerie();
         void trySetSerie(int val);
         void saveSerie();
+        void uploadSerie();
         void editSerie(int idx);
         void removeLayer(int idx);
         void selectLayer( int idx );

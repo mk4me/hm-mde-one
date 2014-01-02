@@ -61,8 +61,11 @@ private:
     }
 };
 DEFINE_SMART_POINTERS(LayeredImage);
-
+typedef std::vector<dicom::ILayerItemPtr> LayersVector;
+DEFINE_SMART_POINTERS(LayersVector);
 }
 
 DEFINE_WRAPPER_INHERITANCE(dicom::LayeredImage, dicom::ILayeredImage);
+
+DEFINE_WRAPPER(dicom::LayersVector,  utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
 #endif

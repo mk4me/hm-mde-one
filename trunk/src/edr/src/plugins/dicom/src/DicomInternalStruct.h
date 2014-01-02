@@ -153,4 +153,7 @@ struct DicomInternalStruct : public IDicomInternalStruct
 };
 DEFINE_SMART_POINTERS(DicomInternalStruct);
 }
+
+
+DEFINE_WRAPPER(dicom::DicomInternalStruct, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
 #endif

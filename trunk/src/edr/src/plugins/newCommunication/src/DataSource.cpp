@@ -35,6 +35,8 @@
 #include "DataSourceWebServicesManager.h"
 #include "DataSourceWidget.h"
 #include "DataSourceShallowCopyUtils.h"
+#include "TreeBuilder.h"
+#include "webserviceslib/UploadHelper.h"
 
 using namespace communication;
 using namespace webservices;
@@ -128,6 +130,9 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     //inicjuję roota danych użytkowników podczas działania aplikacji (rozpakowywana z localStorage na bazie shallowCopy)
     pathsManager->setUsersDataPath(plugin::getPathInterface()->getTmpPath() / "data");
     pathsManager->setUser(currentUser_);
+
+    auto ms = utils::make_shared<MotionPerspective>();
+    perspectives.push_back(ms);
 }
 
 CommunicationDataSource::~CommunicationDataSource()
@@ -140,7 +145,6 @@ CommunicationDataSource::~CommunicationDataSource()
 
 		}
 	}
-
 	delete loginManager;
     communicationManager.reset();
     DataSourceWebServicesManager::destroy();
@@ -910,4 +914,47 @@ CommunicationDataSource::DownloadRequestPtr CommunicationDataSource::generateDow
     }
 
     return DownloadRequestPtr(DownloadRequest::createFilesRequest(files,communicationManager.get()));
+}
+
+void CommunicationDataSource::addHierarchyPerspective( communication::IHierarchyPerspectivePtr perspective )
+{
+    perspectives.push_back(perspective);
+}
+
+std::vector<IHierarchyPerspectivePtr> CommunicationDataSource::getHierarchyPerspectives()
+{
+    return perspectives;
+}
+
+void CommunicationDataSource::finalize()
+{
+    perspectives.clear();
+}
+
+bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& path )
+{
+    webservices::BasicUploadHelper fileUploaderHelper;
+    fileUploaderHelper.configure(communicationManager->motionFtps());
+    fileUploaderHelper.setFileUpload(path.string(), std::string("BDR/w/") + path.filename().string());
+    auto res = fileUploaderHelper.put();
+    auto errorMsg = fileUploaderHelper.errorMessage();
+    //statusManage
+    std::string stem = path.stem().string();
+    int trialID = -1;
+    auto& trials = this->fullShallowCopy.motionShallowCopy->trials;
+    for (auto it = trials.begin(); it != trials.end(); ++it) {
+        webservices::MotionShallowCopy::Trial* trial = it->second;
+        if (stem.find(trial->trialName) != std::string::npos) {
+            trialID = trial->trialID;
+            break;
+        }
+    }
+    if (trialID != -1) {
+        int res2 = communicationManager->getMotionFileStoremanService()->storeTrialFile(trialID, "/BDR/w", "test xml file", path.filename().string()  );
+        return true;
+    } else {
+        return false;
+    }
+    
+    //int res = fileStorem
 }

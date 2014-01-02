@@ -17,5 +17,6 @@
 	<file alias="moveIcon.png">../resources/embedded/moveIcon.png</file>
 	<file alias="left.png">../resources/embedded/left.png</file>
 	<file alias="right.png">../resources/embedded/right.png</file>
+	<file alias="upload.png">../resources/embedded/upload.png</file>
   </qresource>
 </RCC>

@@ -70,8 +70,11 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
                 graphicsScene->addItem(vec->getItem());
             }
         }
-        core::Filesystem::Path xml = data->at("DICOM_XML");
-        setName(xml.stem().string());
+        auto it = data->find("DICOM_XML");
+        if (it != data->end()) {
+            core::Filesystem::Path xml = it->second;
+            setName(xml.stem().string());
+        }
         this->data = data;
     }
 }

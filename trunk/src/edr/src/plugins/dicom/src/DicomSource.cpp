@@ -125,18 +125,9 @@ core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Pa
         (*wrapper)[std::string("DICOM_XML")] = std::string(p.string());
         QIcon icon;
         if (core::Filesystem::pathExists(p)) {
-            std::ifstream ifs(p.string());
-            boost::archive::xml_iarchive xmlIn(ifs);
-
-            xmlIn.register_type<BackgroundLayer>();
-            //xmlIn.register_type<CircleLayer>();
-            xmlIn.register_type<PointsLayer>();
-            std::vector<ILayerItemPtr> layers;
-            xmlIn >> BOOST_SERIALIZATION_NVP(layers);
-            ifs.close();
-
+            auto layers = DicomLoader::loadLayers(p);
             ILayeredImagePtr img = wrapper->get();
-            for (auto it = layers.begin(); it != layers.end(); ++it) {
+            for (auto it = layers->begin(); it != layers->end(); ++it) {
                 img->addLayer(*it);
             }
             icon = QIcon(":/dicom/file_done.png");
@@ -155,6 +146,22 @@ core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Pa
     }
 
     return root;
+}
+
+dicom::LayersVectorPtr DicomLoader::loadLayers(const core::Filesystem::Path &p )
+{
+    std::ifstream ifs(p.string());
+    boost::archive::xml_iarchive xmlIn(ifs);
+
+    xmlIn.register_type<BackgroundLayer>();
+    //xmlIn.register_type<CircleLayer>();
+    xmlIn.register_type<PointsLayer>();
+    LayersVectorPtr layers = utils::make_shared<LayersVector>();
+    //xmlIn >> BOOST_SERIALIZATION_NVP(layers);
+    xmlIn >> boost::serialization::make_nvp("layers", *layers);
+    ifs.close();
+
+    return layers;
 }
 
 dicom::DicomInternalStructPtr DicomLoader::load( const core::Filesystem::Path& from )
@@ -290,3 +297,4 @@ imageWrapper(imgWrapper)
 {
 
 }
+

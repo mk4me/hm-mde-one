@@ -613,3 +613,49 @@ EventsCollectionConstPtr TreeBuilder::getEvents( const PluginSubject::MotionCons
     }
     return events;
 }
+
+core::IHierarchyItemPtr MotionPerspective::getPerspective( PluginSubject::SubjectPtr subject )
+{
+    if (hasValidData(subject)) {
+        return TreeBuilder::createTree("SUB", subject);
+    }
+
+    return core::IHierarchyItemPtr();
+}
+
+bool MotionPerspective::hasValidData(PluginSubject::SubjectPtr subject)
+{
+    std::set<core::TypeInfo> types;
+    types.insert(typeid(C3DEventsCollection));
+    types.insert(typeid(EMGChannel));
+    types.insert(typeid(GRFCollection));
+    types.insert(typeid(ForceCollection));
+    types.insert(typeid(MomentCollection));
+    types.insert(typeid(PowerCollection));
+    types.insert(typeid(MarkerCollection));
+    types.insert(typeid(kinematic::JointAnglesCollection));
+    types.insert(typeid(AngleCollection));
+    types.insert(typeid(VideoChannel));
+    types.insert(typeid(EMGCollection));
+    types.insert(typeid(GRFChannel));
+
+    core::ConstObjectsList sessions;
+    subject->getSessions(sessions);
+    for (auto it = sessions.crbegin(); it != sessions.crend(); ++it) {
+        core::ConstObjectsList motions;
+        PluginSubject::SessionConstPtr s = (*it)->get();
+        s->getMotions(motions);
+
+        BOOST_FOREACH(utils::ObjectWrapperConstPtr motionOW, motions) {	
+
+            PluginSubject::MotionConstPtr motion = motionOW->get();
+            for (auto it = types.begin(); it != types.end(); ++it) {
+                if (motion->hasObject(*it, false)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}

@@ -13,6 +13,7 @@
 #include <plugins/newCommunication/IDataSourceUser.h>
 #include <plugins/subject/ISubject.h>
 #include <plugins/newCommunication/IPatient.h>
+#include <plugins/newCommunication/IHierarchyPerspective.h>
 
 namespace communication
 {
@@ -49,7 +50,12 @@ public:
 	virtual void showUserDataCard() = 0;
 	//! Przełancza widok danych na konfigurację
 	virtual void showConfigurationCard() = 0;
+    //! dołączenie zewnętrznej perspektywy tworzącej hierarchiczną reprezentację
+    virtual void addHierarchyPerspective(communication::IHierarchyPerspectivePtr perspective) = 0;
+
+    virtual bool uploadMotionFile(const core::Filesystem::Path& path) = 0;
 };
+DEFINE_SMART_POINTERS(ICommunicationDataSource);
 
 }
 

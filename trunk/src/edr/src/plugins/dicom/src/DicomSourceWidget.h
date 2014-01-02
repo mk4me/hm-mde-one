@@ -38,6 +38,7 @@ namespace dicom {
 
     private Q_SLOTS:
         void onOpenProject();
+        void onSendTest();
         
     private:
         DicomSource* dicomSource;

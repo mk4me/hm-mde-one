@@ -15,6 +15,8 @@
 #include "LayeredImage.h"
 #include "PointsLayer.h"
 #include <corelib/PluginCommon.h>
+#include <plugins/newCommunication/ICommunicationDataSource.h>
+#include "corelib/ISourceManager.h"
 
 using namespace dicom;
 
@@ -225,6 +227,16 @@ int dicom::LayeredImageVisualizer::selectedLayer() const
     }
 
     return idx;
+}
+
+void dicom::LayeredImageVisualizer::uploadSerie()
+{
+    saveSerie();
+    if (correctIndex(currentSerie)) {
+        communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+        core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
+        comm->uploadMotionFile(p);
+    }
 }
 
 

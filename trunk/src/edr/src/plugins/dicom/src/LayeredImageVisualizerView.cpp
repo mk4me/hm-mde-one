@@ -40,6 +40,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);
 
     coreUI::CoreAction*  save = new coreUI::CoreAction(tr("File")  , QIcon(":/dicom/save.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  upld = new coreUI::CoreAction(tr("File")  , QIcon(":/dicom/upload.png"), tr("Upload"), this, coreUI::CoreTitleBar::Left);
 
     coreUI::CoreAction*  crop = new coreUI::CoreAction(tr("Other")  , QIcon(":/dicom/crop.png"), tr("Crop"), this, coreUI::CoreTitleBar::Left);
     
@@ -52,6 +53,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(poly, SIGNAL(triggered()), this, SLOT(polyState()));
 
     connect(save, SIGNAL(triggered()), model, SLOT(saveSerie()));
+    connect(upld, SIGNAL(triggered()), model, SLOT(uploadSerie()));
     connect(crop, SIGNAL(triggered()), this, SLOT(crop()));
 
     this->addAction(undo);
@@ -62,6 +64,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     this->addAction(curv);
     this->addAction(poly);
     this->addAction(save);
+    this->addAction(upld);
     this->addAction(crop);
     
     ui->graphicsHolder->setLayout(new QHBoxLayout());
