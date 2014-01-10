@@ -7,7 +7,9 @@ ADD_PROJECT(vidlib "BOOST;FFMPEG;utils;STDINT;OPENTHREADS")
 
 
 ADD_PROJECT(kinematiclib "BOOST;TINYXML;OSG;utils")
+ADD_PROJECT(imucostumelib "BOOST;utils;OSG")
 ADD_PROJECT(osgui "utils;OSG;QT;BOOST")
+ADD_PROJECT(osgutils "utils;OSG;BOOST")
 ADD_PROJECT(dflib "BOOST;QT;utils")
 ADD_PROJECT(dfmlib "BOOST;OSG;utils")
 ADD_PROJECT(vdfmlib "osgui;dfmlib;BOOST;OSG;utils")

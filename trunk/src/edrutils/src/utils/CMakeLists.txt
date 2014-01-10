@@ -41,6 +41,7 @@ SET_PUBLIC_HEADERS(
 	ICommand.h
 	ICommandStack.h
 	CommandStack.h
+	StreamData.h
 )
 
 #------------------------------------------------------------------------------

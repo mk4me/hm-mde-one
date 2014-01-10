@@ -25,8 +25,7 @@ namespace utils {
 //cała ta klasa do rev -> ciężko ją było skompilować budując np. plugin_c3d w edr!!
 
 //! Klasa agreguje klasy DataChannel, wszystkie dodawane kanały powinny mieć tyle samo wpisow
-//template <class Channel, template<typename Point, typename Time> class Interpolator = LerpInterpolator>
-template <class Channel, class TimeAccessor = DataChannelTimeAccessor<typename Channel::point_type, typename Channel::time_type>>
+template <class Channel>
 class DataChannelCollection
 {
     UTILS_STATIC_ASSERT((boost::is_base_of<IRawGeneralDataChannelReader<typename Channel::point_type, typename Channel::time_type>, Channel>::value), "Base class should inherit from IRawGeneralDataChannelReader");
@@ -41,6 +40,7 @@ public:
 	typedef typename Collection::iterator iterator;
 	typedef typename Collection::const_iterator const_iterator;
 	typedef boost::tuple<PointType, TimeType, int> PointTimeIndex;
+	typedef DataChannelTimeAccessor<typename Channel::point_type, typename Channel::time_type> DefaultTimeAccessor;
 protected:
 	Collection channels;
 	//! numer konfiguracji
@@ -109,8 +109,10 @@ public:
 		}
 	}
 
+	//! \tparam Typ akcesora czasu
 	//! \param time czas, dla którego pobieramy wartości
 	//! \return wartości wszystkich kanałów dla konkretnego czasu
+	template<typename TimeAccessor>
 	std::vector<PointType> getValues(TimeType time) const
 	{
 		int count = static_cast<int>(channels.size());
@@ -120,6 +122,13 @@ public:
             res[i] = TimeAccessor::getValue(time, *channels[i]);
 		}
 		return res;
+	}
+
+	//! \param time czas, dla którego pobieramy wartości
+	//! \return wartości wszystkich kanałów dla konkretnego czasu
+	std::vector<PointType> getValues(TimeType time) const
+	{
+		return getValues<DefaultTimeAccessor>(time);
 	}
 
 	int getConfigurationID() const
@@ -133,12 +142,22 @@ public:
 		configurationID = id;
 	}
 
+	//! \tparam Typ akcesora czasu
+	//! \param index indeks kanału, dla którego pobieramy wartość
+	//! \param time czas, dla którego będzie zwrócona wartość
+	//! \return wartość kanału
+	template<typename TimeAccessor>		
+	PointType getValue(int index, TimeType time) const
+	{
+		return TimeAccessor::getValue(time, *getChannel(index));
+	}
+
 	//! \param index indeks kanału, dla którego pobieramy wartość
 	//! \param time czas, dla którego będzie zwrócona wartość
 	//! \return wartość kanału
 	PointType getValue(int index, TimeType time) const
 	{
-		return TimeAccessor::getValue(time, *getChannel(index));
+		return getValue<DefaultTimeAccessor>(index, time);
 	}
 	
 	//! \return krotka z maksymalną wartością, jej czasem i indeksem kanału w calej dziedzinie dla wszystkich kanałów
