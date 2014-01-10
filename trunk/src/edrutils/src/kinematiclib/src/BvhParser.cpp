@@ -258,7 +258,7 @@ void BvhParser::parse(SkeletalModelPtr model, SkeletalDataPtr data, const std::s
                 // zgodnie z kolejnością wystapienia jointów w pliku
                 for (it = jointList.begin(); it != jointList.end(); ++it) {
                     JointPtr bone = this->tempBonesMap[(*it)];
-                    SkeletalData::singleJointStatePtr state;
+                    SkeletalData::singleJointStatePtr state(new SkeletalData::singleJointState);
                     state->name = bone->name;
                     int channelsCount = bone->dofs.size();
                     double number;

@@ -73,8 +73,8 @@ namespace imuCostume
 
 	public:
 		//! \param ip Adres kostiumu
-		Costume(const std::string & ip = std::string("127.0.0.1"),
-			const unsigned int port = 1234);
+		Costume(const std::string & ip = std::string(),
+			const unsigned int port = 1234, const float timeout = 0.01);
 		//! Destruktor
 		~Costume();		
 
@@ -88,9 +88,12 @@ namespace imuCostume
 		const CostumePacket costumePacket() const;
 		//! \return Czy dane gotowe do odbioru
 		const bool ready() const;
-		//! Metoda czytaj¹ca pojedynczy pakiet danych z kostiumu
-		//! \param timeout Czas jaki mamy na odbiór paczki [s]
-		void readPacket(const float timeout = 0.05);
+		//! Metoda czytaj¹ca pojedynczy pakiet danych z kostiumu		
+		void readPacket();
+		//! \return Czas na odbiór jednego pakietu
+		const float timeout() const;
+		//! \param timeout Czas na odbout jednego pakietu
+		void setTimeout(const float timeout);
 
 	private:
 		//! Wewnêtrzna implementacja

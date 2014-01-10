@@ -13,17 +13,21 @@ public:
 	static const unsigned int ImuBufferDataSize = 1024;
 
 public:
-	CostumeImpl(const std::string & ip, const unsigned int port) :
-	  ip_(ip), port_(port), ready_(false), imusNumber_(Costume::MaxIMUsPerCostume), io_service(),
-		  socket(io_service), serverEndpoint(boost::asio::ip::address::from_string(ip), port),
+	CostumeImpl(const std::string & ip, const unsigned int port, const float timeout) :
+	  ip_(ip), port_(port), timeout_(0.0), ready_(false), imusNumber_(Costume::MaxIMUsPerCostume),
+		  io_service(), socket(io_service),
+		  serverEndpoint(ip.empty() == true ? boost::asio::ip::address_v4::broadcast() :
+		  boost::asio::ip::address::from_string(ip), port),
 		  deadline(io_service)
 	{
+		setTimeout(timeout);
+
 		boost::system::error_code error;
 		socket.open(boost::asio::ip::udp::v4(), error);
 		if(!error) {			
 			socket.bind(
 				boost::asio::ip::udp::endpoint(
-					boost::asio::ip::address::from_string("127.0.0.1"),
+					boost::asio::ip::address_v4::any(),
 					port));
 		}else{
 			throw std::runtime_error(error.message());
@@ -34,6 +38,18 @@ public:
 	~CostumeImpl()
 	{
 
+	}
+
+	const float timeout() const
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(synch);
+		return timeout_;
+	}
+
+	void setTimeout(const float timeout)
+	{
+		utils::ScopedLock<utils::StrictSyncPolicy> lock(synch);
+		timeout_ = timeout;
 	}
 
 	//! \return Adres kostiumu
@@ -65,11 +81,11 @@ public:
 	}
 
 	//! Metoda czytaj¹ca pojedynczy pakiet danych z kostiumu
-	void readPacket(const float timeout)
+	void readPacket()
 	{
 		utils::ScopedLock<utils::StrictSyncPolicy> lock(synch);
 
-		const boost::posix_time::time_duration td(boost::posix_time::millisec(1000 * timeout));
+		const boost::posix_time::time_duration td(boost::posix_time::millisec(1000 * timeout_));
 
 		boost::system::error_code ec = boost::asio::error::would_block;
 
@@ -109,7 +125,8 @@ public:
 			for(unsigned int i = 0; i < Costume::MaxIMUsPerCostume; ++i)
 			{
 				//il.ramek, dl. ramki
-				auto offs = 4 * 8 * i;
+				//auto offs = 4 * 8 * i;
+				auto offs = i << 5;
 
 				{				
 					osg::Vec3 acc;
@@ -154,7 +171,6 @@ public:
 
 					costumePacket_.data[i].orientation = orient;
 				}
-				//imuData->timestamp = clock();
 			}
 
 		}else{
@@ -190,6 +206,8 @@ private:
 	}
 
 private:
+	//! Timeout
+	float timeout_;
 	//! Adres IP kostiumu
 	std::string ip_;
 	//! Port kostiumy
@@ -216,7 +234,8 @@ private:
 using namespace imuCostume;
 
 Costume::Costume(const std::string & ip /* = std::string() */,
-	const unsigned int port /* = 1234 */) : impl_(new CostumeImpl(ip, port))
+	const unsigned int port /* = 1234 */,
+	const float timeout /* = 0.01 */) : impl_(new CostumeImpl(ip, port, timeout))
 {
 
 }
@@ -252,13 +271,23 @@ const bool Costume::ready() const
 	return impl_->ready();
 }
 
-void Costume::readPacket(const float timeout)
+void Costume::readPacket()
+{
+	return impl_->readPacket();
+}
+
+const float Costume::timeout() const
+{
+	return impl_->timeout();
+}
+
+void Costume::setTimeout(const float timeout)
 {
 	if(timeout <= 0.0){
 		throw std::invalid_argument("Non-positive timeout value");
 	}
 
-	return impl_->readPacket(timeout);
+	impl_->setTimeout(timeout);
 }
 
 
