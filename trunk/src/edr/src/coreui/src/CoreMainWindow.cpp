@@ -74,6 +74,10 @@ CoreMainWindow::CoreMainWindow(const CloseUpOperations & closeUpOperations): QMa
 	widgetConsole(new CoreConsoleWidget()), closeUpOperations_(closeUpOperations)
 {
 	initCoreResources();
+
+	connect(&consoleTimer, SIGNAL(timeout()), widgetConsole, SLOT(flushQueue()));
+
+	consoleTimer.start(1000/25);
 }
 
 QSplashScreen * CoreMainWindow::splashScreen()

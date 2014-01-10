@@ -27,6 +27,8 @@ SET_PUBLIC_HEADERS(
 	MultiCommand.h
 	MoveCommand.h
 	Export.h
+	CoreLabeledWidget.h
+	CoreCursorChanger.h
 )
 
 SET_SOURCE_FILES(
@@ -51,6 +53,8 @@ SET_SOURCE_FILES(
 	HierarchyTreeModel.cpp
 	DataFilterWidget.cpp
 	FilterEntryWidget.cpp
+	CoreLabeledWidget.cpp
+	CoreCursorChanger.cpp
 	WheelGraphicsView.cpp
 	MultiCommand.cpp
 	MoveCommand.cpp
@@ -80,6 +84,7 @@ SET_MOC_FILES(
 	HierarchyTreeModel.h
 	DataFilterWidget.h
 	FilterEntryWidget.h
+	CoreLabeledWidget.h
 	WheelGraphicsView.h
 )
 

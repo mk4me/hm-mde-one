@@ -3,11 +3,7 @@
 #include <coreui/CoreConsoleWidget.h>
 #include "ui_CoreConsoleWidget.h"
 
-
 using namespace coreUI;
-
-//qRegisterMetaType<CoreConsoleWidgetEntry>("CoreConsoleWidgetEntry");
-//qRegisterMetaType<CoreConsoleWidgetEntryPtr>("CoreConsoleWidgetEntryPtr");
 
 CoreConsoleWidget::CoreConsoleWidget(QWidget *parent, Qt::WindowFlags flags) : QWidget(parent, flags), ui(new Ui::CoreConsoleWidget)
 {

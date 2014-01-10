@@ -15,6 +15,7 @@
 #include <corelib/IPlugin.h>
 #include <QtCore/QSettings>
 #include <QtGui/QMainWindow>
+#include <QtCore/QTimer>
 #include <corelib/Filesystem.h>
 #include <boost/function.hpp>
 
@@ -63,6 +64,8 @@ namespace coreUI {
 		//trzeba zobaczyć czy nie wystarczą sygnały i sloty
 		//! operacje na zamknięcie aplikacji
 		CloseUpOperations closeUpOperations_;
+		//! Timer odświeżający konsolę
+		QTimer consoleTimer;
 
 	private:
 

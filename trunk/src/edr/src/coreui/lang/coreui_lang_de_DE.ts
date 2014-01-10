@@ -293,7 +293,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>coreUI::CoreConsoleWidget</name>
     <message>
-        <location filename="../src/CoreConsoleWidget.cpp" line="27"/>
+        <location filename="../src/CoreConsoleWidget.cpp" line="23"/>
         <source>Console</source>
         <translation type="unfinished"></translation>
     </message>
@@ -301,12 +301,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>coreUI::CoreMainWindow</name>
     <message>
-        <location filename="../src/CoreMainWindow.cpp" line="152"/>
+        <location filename="../src/CoreMainWindow.cpp" line="156"/>
         <source>Confirm exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreMainWindow.cpp" line="152"/>
+        <location filename="../src/CoreMainWindow.cpp" line="156"/>
         <source>Are You sure You want to exit application?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -333,161 +333,161 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>coreUI::CoreTextEditWidget</name>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="120"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="161"/>
         <source>&amp;New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="127"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="168"/>
         <source>&amp;Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="132"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="173"/>
         <source>&amp;Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="139"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="180"/>
         <source>Save &amp;As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="146"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="187"/>
         <source>&amp;Print...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="153"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="194"/>
         <source>Print Preview...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="158"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="199"/>
         <source>&amp;Export PDF...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="174"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="215"/>
         <source>&amp;Undo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="179"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="220"/>
         <source>&amp;Redo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="184"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="225"/>
         <source>Cu&amp;t</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="189"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="230"/>
         <source>&amp;Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="194"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="235"/>
         <source>&amp;Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="227"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="268"/>
         <source>&amp;Bold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="237"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="278"/>
         <source>&amp;Italic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="247"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="288"/>
         <source>&amp;Underline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="263"/>
-        <location filename="../src/CoreTextEditWidget.cpp" line="269"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="304"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="310"/>
         <source>&amp;Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="264"/>
-        <location filename="../src/CoreTextEditWidget.cpp" line="268"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="305"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="309"/>
         <source>C&amp;enter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="265"/>
-        <location filename="../src/CoreTextEditWidget.cpp" line="267"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="306"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="308"/>
         <source>&amp;Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="271"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="312"/>
         <source>&amp;Justify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="294"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="335"/>
         <source>&amp;Color...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="361"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="402"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="362"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="403"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="384"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="425"/>
         <source>%1[*] - %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="384"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="425"/>
         <source>Rich Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="398"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="439"/>
         <source>Open File...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="399"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="440"/>
         <source>HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="428"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="469"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="429"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="470"/>
         <source>ODF files (*.odt);;HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="447"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="488"/>
         <source>Print Document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="640"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="684"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreTextEditWidget.cpp" line="640"/>
+        <location filename="../src/CoreTextEditWidget.cpp" line="684"/>
         <source>This example demonstrates Qt&apos;s rich text editing facilities in action, providing an example document for you to experiment with.</source>
         <translation type="unfinished"></translation>
     </message>
