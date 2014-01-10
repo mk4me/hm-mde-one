@@ -44,9 +44,10 @@ const std::string toString(const DateTime & time)
 {
 	std::stringstream ss;
 
-	ss << time.getYear() << "-" << time.getMonth() << "-" << time.getDay() << "T"
-		<< time.getHour() << ":" << time.getMinutes() << ":"
-		<< time.getSeconds() << ".000Z";
+	ss << time.getYear() << "-" << boost::lexical_cast<std::string>(time.getMonth())
+		<< "-" << boost::lexical_cast<std::string>(time.getDay()) << "T"
+		<< boost::lexical_cast<std::string>(time.getHour()) << ":" << boost::lexical_cast<std::string>(time.getMinutes()) << ":"
+		<< boost::lexical_cast<std::string>(time.getSeconds()) << ".000Z";
 
 	return ss.str();
 }

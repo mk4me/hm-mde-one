@@ -160,8 +160,11 @@ public:
 
 		s = resp.find("<faultstring", 0);
 		if(s != std::string::npos){
+
+			s = resp.find('>', s + 13) + 1;
+
 			exception_ = true;
-			e = invoker_->getXMLResponse().find("</s:Fault>", s + 12);
+			e = invoker_->getXMLResponse().find("</faultstring>", s);
 			if(e == std::string::npos){
 				e = invoker_->getXMLResponse().size();
 			}
@@ -169,9 +172,9 @@ public:
 			resetRequired = true;
 
 			if(resp.find("a:InvalidSecurityToken", 0) != std::string::npos){
-				throw webservices::WSConnectionSecurityException(resp.substr(s + 11, e-s - 11).c_str());
+				throw webservices::WSConnectionSecurityException(resp.substr(s, e-s).c_str());
 			}else{
-				throw webservices::WSConnectionResponseException(resp.substr(s + 11, e-s - 11).c_str());
+				throw webservices::WSConnectionResponseException(resp.substr(s, e-s).c_str());
 			}
 		}
 	}

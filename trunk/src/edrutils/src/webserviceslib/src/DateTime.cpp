@@ -75,9 +75,9 @@ const std::string Date::toString() const
 
     sstream.flags(std::ios::right);
     sstream << year << "-";
-    sstream.width(2); sstream << month;
+    sstream.width(2); sstream << (unsigned int)month;
     sstream << "-";
-    sstream.width(2); sstream << day;
+    sstream.width(2); sstream << (unsigned int)day;
 
     return sstream.str();
 }
@@ -237,10 +237,10 @@ const std::string Time::toString() const
     sstream.fill('0');
     sstream.width(2);
     sstream.flags(std::ios::right);
-    sstream << hour << ":";
-    sstream.width(2); sstream << minutes;
+    sstream << (unsigned int)hour << ":";
+    sstream.width(2); sstream << (unsigned int)minutes;
     sstream << ":";
-    sstream.width(2); sstream << seconds;
+    sstream.width(2); sstream << (unsigned int)seconds;
 
     return sstream.str();
 }

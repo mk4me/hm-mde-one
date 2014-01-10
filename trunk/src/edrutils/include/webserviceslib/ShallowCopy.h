@@ -209,7 +209,7 @@ namespace webservices
             int motionPerformerID;						//! Identyfikator aktora bazy danych ruchu
             std::string name;							//! Imiê
             std::string surname;						//! Nazwisko
-            DateTime birthDate;							//! Data urodzenia
+            Date birthDate;							//! Data urodzenia
             xmlWsdl::Gender::Type gender;				//! P³eæ
             PatientDisorders disorders;					//! Schorzenia pacjenta
             MotionShallowCopy::Performer * performer;	//! Odpowiadaj¹cy aktor z bazy danych ruchu

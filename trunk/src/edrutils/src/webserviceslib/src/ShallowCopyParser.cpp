@@ -462,7 +462,9 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
 			{
 				std::string diagnosisDate;
 				disorder_element->QueryStringAttribute("DiagnosisDate", &diagnosisDate);
-				disorder.diagnosisDate = toTime(diagnosisDate);
+				if(diagnosisDate.empty() == false){
+					disorder.diagnosisDate = toTime(diagnosisDate);
+				}
 			}
 
             disorder_element->QueryStringAttribute("Comments", &disorder.comments);
