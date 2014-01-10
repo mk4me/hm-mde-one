@@ -51,8 +51,8 @@ void AbstractStateMachine::setState( AbstractStatePtr state )
 {
     UTILS_ASSERT(impl->currentState);
     impl->currentState->end();
-    state->begin(impl->currentState);
     impl->currentState = state;
+    state->begin(impl->currentState);
 }
 
 bool AbstractStateMachine::mousePressEvent( QGraphicsSceneMouseEvent* e )

@@ -23,6 +23,7 @@ const IFtpsConnection::OperationStatus BasicUploadHelper::put(IFtpsConnection::I
 		if(ret == webservices::IFtpsConnection::Error){
 			errorMessage_ = ftpsConnection->errorMessage();
 		}
+
 	}catch(std::exception & e){
 		errorMessage_ = e.what();
 	}	
@@ -64,7 +65,8 @@ void BasicUploadHelper::setFolderUpload(const std::string & sourcePath, const st
 	isFile = false;
 }
 
-void BasicUploadHelper::configure(const FtpsConnectionPtr & ftpsConnection)
+void BasicUploadHelper::configure(FileStoremanWSPtr storeman, const FtpsConnectionPtr & ftpsConnection)
 {
+    this->storeman = storeman;
 	this->ftpsConnection = ftpsConnection;
 }

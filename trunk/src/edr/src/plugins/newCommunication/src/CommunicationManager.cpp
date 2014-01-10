@@ -50,6 +50,22 @@ void CommunicationManager::RequestsExecutor::run()
 
 					break;
 
+                case UploadFile:
+
+                    manager->setState(UploadingFile);
+
+                    manager->processUpload(currentRequest);
+
+                    break;
+
+                case ReplaceFile:
+
+                    manager->setState(ReplacingFile);
+
+                    manager->processReplace(currentRequest);
+
+                    break;
+
 				case DownloadPhoto:
 
 					manager->setState(DownloadingPhoto);
@@ -208,6 +224,49 @@ unsigned int CommunicationManager::FileRequest::getFileID() const
 	return fileID;
 }
 
+CommunicationManager::ReplaceRequest::ReplaceRequest( unsigned int fileID, const std::string & sourcePath, const std::string & filePath) : 
+    MetadataRequest(ReplaceFile, filePath), 
+    sourcePath(sourcePath),
+    fileID(fileID)
+{
+
+}
+
+unsigned int CommunicationManager::ReplaceRequest::getFileID() const
+{
+    return fileID;
+}
+
+std::string CommunicationManager::ReplaceRequest::getFileName() const
+{
+    core::Filesystem::Path p(getFilePath());
+    return p.filename().string();
+}
+
+std::string CommunicationManager::ReplaceRequest::getSourcePath() const
+{
+    return sourcePath;
+}
+
+CommunicationManager::UploadRequest::UploadRequest(const std::string& sourcePath, const std::string & filePath, unsigned int trialID) : 
+    MetadataRequest(UploadFile, filePath), 
+    sourcePath(sourcePath),
+    trialID(trialID)
+{
+
+}
+
+unsigned int CommunicationManager::UploadRequest::getTrialID() const
+{
+    return trialID;
+}
+
+std::string CommunicationManager::UploadRequest::getFileName() const
+{
+    core::Filesystem::Path p(getFilePath());
+    return p.filename().string();
+}
+
 
 CommunicationManager::PhotoRequest::PhotoRequest(const std::string & filePath, unsigned int photoID) : MetadataRequest(DownloadPhoto, filePath), photoID(photoID)
 {
@@ -301,6 +360,7 @@ void CommunicationManager::setMotionFtps(const webservices::FtpsConnectionPtr & 
 	motionFtps_ = motionFtps;
 	motionShallowDownloadHelper.configure(motionFileStoremanService_, motionFtps);
 	fileDownloadHelper.configure(motionFileStoremanService_, motionFtps);
+    fileUploadHelper.configure(motionFileStoremanService_, motionFtps_);
 }
 
 void CommunicationManager::setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService)
@@ -308,6 +368,7 @@ void CommunicationManager::setMotionFileStoremanService(const webservices::Motio
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	motionFileStoremanService_ = motionFileStoremanService;
 	fileDownloadHelper.configure(motionFileStoremanService_, motionFtps_);
+    //fileUploadHelper.configure(motionFileStoremanService_, motionFtps_);
 	motionShallowDownloadHelper.configure(motionFileStoremanService_, motionFtps_);
 }
 
@@ -435,6 +496,14 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processCompl
 
             case DownloadFile:
                 ret = processFile(r, message);
+                break;
+
+            case UploadFile:
+                ret = processUpload(r, message);
+                break;
+
+            case ReplaceFile:
+                ret = processReplace(r, message);
                 break;
 
             case DownloadPhoto:
@@ -623,6 +692,142 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processFile(
 
     return ret;
 }
+
+
+webservices::IFtpsConnection::OperationStatus CommunicationManager::processUpload(const CompleteRequest & request, std::string & message)
+{
+    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+
+    if(request.callbacks.onBeginCallback.empty() == false){
+        request.callbacks.onBeginCallback(request.request);
+    }
+
+    try {
+
+        utils::shared_ptr<UploadRequest> uploadRequest = utils::dynamic_pointer_cast<UploadRequest>(request.request);
+        
+        fileUploadHelper.setFileUpload(uploadRequest->sourcePath, uploadRequest->filePath);
+
+        {
+            utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
+            ret = fileUploadHelper.put(uploadRequest.get());
+            //if (ret == webservices::IFtpsConnection::Complete) {
+                motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "test xml file", uploadRequest->getFileName());
+            //}
+        }
+
+        //ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
+
+        switch(ret){
+
+        case webservices::IFtpsConnection::Complete:
+            if(request.callbacks.onEndCallback.empty() == false){
+                request.callbacks.onEndCallback(request.request);
+            }
+
+            break;
+
+        case webservices::IFtpsConnection::Cancelled:
+            if(request.callbacks.onCancelCallback.empty() == false){
+                request.callbacks.onCancelCallback(request.request);
+            }
+
+            break;
+
+        case webservices::IFtpsConnection::Error:
+
+            message += fileUploadHelper.errorMessage();
+
+            if(request.callbacks.onErrorCallback.empty() == false){
+                request.callbacks.onErrorCallback(request.request, message);
+            }
+
+        }
+    } catch(std::exception& e) {
+
+        message += e.what();
+
+        if(request.callbacks.onErrorCallback.empty() == false){
+            request.callbacks.onErrorCallback(request.request, message);
+        }
+    }
+
+    if(ret == webservices::IFtpsConnection::Error){
+        serverResponse = false;
+    }else{
+        serverResponse = true;
+    }
+
+    return ret;
+}
+
+webservices::IFtpsConnection::OperationStatus CommunicationManager::processReplace(const CompleteRequest & request, std::string & message)
+{
+    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+
+    if(request.callbacks.onBeginCallback.empty() == false){
+        request.callbacks.onBeginCallback(request.request);
+    }
+
+    try {
+
+        utils::shared_ptr<ReplaceRequest> replaceRequest = utils::dynamic_pointer_cast<ReplaceRequest>(request.request);
+
+        fileUploadHelper.setFileUpload(replaceRequest->sourcePath, replaceRequest->filePath);
+
+        {
+            utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
+            ret = fileUploadHelper.put(replaceRequest.get());
+            //if (ret == webservices::IFtpsConnection::Complete) {
+            motionFileStoremanService_->replaceFile(replaceRequest->fileID,  "/BDR/w", replaceRequest->getFileName());
+            //}
+        }
+
+        //ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
+
+        switch(ret){
+
+        case webservices::IFtpsConnection::Complete:
+            if(request.callbacks.onEndCallback.empty() == false){
+                request.callbacks.onEndCallback(request.request);
+            }
+
+            break;
+
+        case webservices::IFtpsConnection::Cancelled:
+            if(request.callbacks.onCancelCallback.empty() == false){
+                request.callbacks.onCancelCallback(request.request);
+            }
+
+            break;
+
+        case webservices::IFtpsConnection::Error:
+
+            message += fileUploadHelper.errorMessage();
+
+            if(request.callbacks.onErrorCallback.empty() == false){
+                request.callbacks.onErrorCallback(request.request, message);
+            }
+
+        }
+    } catch(std::exception& e) {
+
+        message += e.what();
+
+        if(request.callbacks.onErrorCallback.empty() == false){
+            request.callbacks.onErrorCallback(request.request, message);
+        }
+    }
+
+    if(ret == webservices::IFtpsConnection::Error){
+        serverResponse = false;
+    }else{
+        serverResponse = true;
+    }
+
+    return ret;
+}
+
 
 webservices::IFtpsConnection::OperationStatus CommunicationManager::processMotionShallowCopy(const CompleteRequest & request, std::string & message)
 {
@@ -927,6 +1132,13 @@ CommunicationManager::FileRequestPtr CommunicationManager::createRequestFile(uns
     return FileRequestPtr(new FileRequest(filePath, fileID));
 }
 
+
+CommunicationManager::UploadRequestPtr CommunicationManager::createRequestUpload( const std::string & sourcePath, const std::string & filePath, unsigned int trialID )
+{
+    return UploadRequestPtr(new UploadRequest(sourcePath, filePath, trialID));
+}
+
+
 CommunicationManager::PhotoRequestPtr CommunicationManager::createRequestPhoto(unsigned int fileID, const std::string & filePath)
 {
     return PhotoRequestPtr(new PhotoRequest(filePath, fileID));
@@ -955,4 +1167,9 @@ CommunicationManager::MetadataRequestPtr CommunicationManager::createRequestMedi
 CommunicationManager::PingRequestPtr CommunicationManager::createRequestPing(const std::string & urlToPing)
 {
     return PingRequestPtr(new PingRequest(urlToPing));
+}
+
+CommunicationManager::ReplaceRequestPtr CommunicationManager::createRequestReplace( const std::string & sourcePath, const std::string & filePath, unsigned int fileID )
+{
+    return ReplaceRequestPtr(new ReplaceRequest(fileID, sourcePath, filePath));
 }

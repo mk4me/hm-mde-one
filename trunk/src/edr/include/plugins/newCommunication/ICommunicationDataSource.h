@@ -30,6 +30,8 @@ public:
 	//! \return Czy źródło działa w trybie offline
 	virtual bool offlineMode() const = 0;
 
+    virtual void setCompactMode(bool compact = true) = 0;
+
     //! \param user Nazwa użytkownika
     //! \param password Hasło użytkownika
 	//! \param localLogin Czy logujemy tylko lokalnie - dla problemów lub braku połaczenia z internetem
@@ -53,7 +55,7 @@ public:
     //! dołączenie zewnętrznej perspektywy tworzącej hierarchiczną reprezentację
     virtual void addHierarchyPerspective(communication::IHierarchyPerspectivePtr perspective) = 0;
 
-    virtual bool uploadMotionFile(const core::Filesystem::Path& path) = 0;
+    virtual bool uploadMotionFile(const core::Filesystem::Path& path, const std::string& trialName) = 0;
 };
 DEFINE_SMART_POINTERS(ICommunicationDataSource);
 

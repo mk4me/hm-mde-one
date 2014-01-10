@@ -128,7 +128,7 @@ core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Pa
             auto layers = DicomLoader::loadLayers(p);
             ILayeredImagePtr img = wrapper->get();
             for (auto it = layers->begin(); it != layers->end(); ++it) {
-                img->addLayer(*it);
+                img->addLayer(*it, "DicomSource");
             }
             icon = QIcon(":/dicom/file_done.png");
         } else {

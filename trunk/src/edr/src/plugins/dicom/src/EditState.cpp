@@ -63,6 +63,7 @@ bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 void dicom::EditState::begin( coreUI::AbstractStateConstPtr lastState )
 {
     layer = getLayerToEdit();
+    layer->setSelected(false);
     layer->setEditable(true);
 }
 
@@ -127,12 +128,43 @@ void dicom::AddPointCommand::doIt()
         idx = layer->getNumPoint();
         layer->addPoint(newP);
     }
+
+    layer->refresh();
 }
 
 dicom::AddPointCommand::AddPointCommand( PointsLayerPtr layer, const QPointF& newP ) : 
 layer(layer),
     newP(newP),
     idx(-1),
+    removedPoint(nullptr)
+{
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+QString dicom::RemovePointCommand::name()
+{
+    return QString(typeid(this).name());
+}
+
+void dicom::RemovePointCommand::undoIt()
+{
+    removedPoint->setVisible(true);
+    layer->addPoint(removedPoint.release(), idx);
+}
+
+void dicom::RemovePointCommand::doIt()
+{
+    auto point = layer->removePoint(idx);
+    removedPoint = std::unique_ptr<QGraphicsItem>(point);
+    removedPoint->setVisible(false);
+    layer->refresh();
+}
+
+dicom::RemovePointCommand::RemovePointCommand( PointsLayerPtr layer, int idx ) : 
+    layer(layer),
+    idx(idx),
     removedPoint(nullptr)
 {
 
@@ -156,3 +188,36 @@ MoveCommand(item, newP, oldP),
 {
 
 }
+
+
+
+bool dicom::EditState::keyPressEvent( QKeyEvent* event )
+{
+    if (event->key() == Qt::Key_Delete) {
+        int idx = getSelectedPointIdx();
+        if (idx != -1) {
+            machine->getCommandStack()->addCommand(utils::make_shared<RemovePointCommand>(layer, idx));
+            return true;
+        }
+    }
+
+    return false;
+}
+
+int dicom::EditState::getSelectedPointIdx() const
+{
+    int count = layer->getNumPoint();
+    int idx = -1;
+    for (int i = 0; i < count; i++) {
+        if (layer->getPoint(i)->isSelected()) {
+            if (idx == -1) {
+                idx = i;
+            } else {
+                return -1;
+            }
+        }
+    }
+
+    return idx;
+}
+

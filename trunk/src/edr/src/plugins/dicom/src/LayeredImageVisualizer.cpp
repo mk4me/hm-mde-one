@@ -57,6 +57,12 @@ plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie( const plugin:
     return nullptr;
 }
 
+plugin::IVisualizer::ISerie* dicom::LayeredImageVisualizer::createSerie( const ISerie* serie, const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
+{
+    return nullptr;
+}
+
+
 void LayeredImageVisualizer::removeSerie( plugin::IVisualizer::ISerie *serie )
 {
     auto active = getActiveSerie();
@@ -175,58 +181,66 @@ void dicom::LayeredImageVisualizer::saveSerie()
     }
 }
 
-void dicom::LayeredImageVisualizer::editSerie(int idx)
+void dicom::LayeredImageVisualizer::editSerie(int tagIdx, int idx)
 {
     if (correctIndex(currentSerie)) {
-        series[currentSerie]->editLayer(idx);
+        series[currentSerie]->editLayer(tagIdx,idx);
     }
 }
 
-void dicom::LayeredImageVisualizer::removeLayer(int idx)
+void dicom::LayeredImageVisualizer::removeLayer(int tagIdx, int idx)
 {
     if (correctIndex(currentSerie)) {
-        series[currentSerie]->removeLayer(idx);
+        series[currentSerie]->removeLayer(tagIdx,idx);
     }
 }
 
-void dicom::LayeredImageVisualizer::selectLayer( int idx )
+void dicom::LayeredImageVisualizer::selectLayer(int tagIdx, int idx )
 {
-    if (idx != selectedLayer()) {
-        LayeredSerie* serie = dynamic_cast<LayeredSerie*>(getActiveSerie());
-        if (serie) {
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(getActiveSerie());
+    if (serie) {
+        auto selected = selectedLayer();
+        ILayeredImagePtr img = serie->getImage();
+        std::string tag = img->getTag(tagIdx);
+        if (tag != selected.first || idx != selected.second) {
             serie->getGraphicsScene()->blockSignals(true);
-            ILayeredImagePtr img = serie->getImage();
-            int count = img->getNumLayers();
-            for (int i = 0; i < count; ++i) {
-                img->getLayer(i)->setSelected(i == idx);
+            BOOST_FOREACH(std::string t, img->getTags()) {
+                int count = img->getNumLayerItems(t);
+                for (int i = 0; i < count; ++i) {
+                    img->getLayerItem(t, i)->setSelected(tag == t && i == idx);
+                }
             }
             serie->getGraphicsScene()->blockSignals(false);
-            serie->getLayersModel()->refresh();
+            serie->getLayersModel()->refreshSelected();
         }
     }
 }
 
-int dicom::LayeredImageVisualizer::selectedLayer() const
+std::pair<std::string, int> dicom::LayeredImageVisualizer::selectedLayer() const
 {
     int idx = -1;
+    std::string selectedTag;
     const LayeredSerie* serie = dynamic_cast<const LayeredSerie*>(getActiveSerie());
     if (serie) {
         ILayeredImageConstPtr img = serie->getImage();
-        int count = img->getNumLayers();
-        for (int i = 0; i < count; ++i) {
-            if (img->getLayer(i)->getSelected()) {
-                if (idx == -1) {
-                    idx = i;
-                } else {
-                    // zaznaczono wiecej niz jedna serie danych !?
-                    UTILS_ASSERT(false);
-                    return -1;
+        BOOST_FOREACH(std::string tag, img->getTags()) {
+            int count = img->getNumLayerItems(tag);
+            for (int i = 0; i < count; ++i) {
+                if (img->getLayerItem(tag, i)->getSelected()) {
+                    if (idx == -1) {
+                        idx = i;
+                        selectedTag = tag;
+                    } else {
+                        // zaznaczono wiecej niz jedna serie danych !?
+                        UTILS_ASSERT(false);
+                        return std::make_pair(std::string(), -1);
+                    }
                 }
             }
         }
     }
 
-    return idx;
+    return std::make_pair(selectedTag, idx);
 }
 
 void dicom::LayeredImageVisualizer::uploadSerie()
@@ -235,8 +249,16 @@ void dicom::LayeredImageVisualizer::uploadSerie()
     if (correctIndex(currentSerie)) {
         communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
         core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
-        comm->uploadMotionFile(p);
+        /// TODO : pobrac dane z OW
+        comm->uploadMotionFile(p, "");
     }
 }
+
+std::string dicom::LayeredImageVisualizer::getUserName() const
+{
+    communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+    return comm->currentUser()->name();
+}
+
 
 

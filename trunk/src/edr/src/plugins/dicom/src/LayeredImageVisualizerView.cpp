@@ -27,9 +27,9 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 //    connect(ui->editButton, SIGNAL(clicked()), this, SLOT(editSelectedSerie()));
     connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedLayers()));
 
-    ui->tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    ui->tableView->setItemDelegateForColumn(1, new AdnotationsDelegate());
-    connect(ui->tableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
+//    ui->treeView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    ui->treeView->setItemDelegateForColumn(1, new AdnotationsDelegate());
+    connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
 
     coreUI::CoreAction*  undo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/undo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  redo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/redo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
@@ -98,17 +98,17 @@ void dicom::LayeredImageVisualizerView::refresh()
     
     if (serie) {
         if (serie->getGraphicsView() != lastView) {
-        if (lastView) {
-            lastView->hide();
+            if (lastView) {
+                lastView->hide();
+            }
+            lastView = serie->getGraphicsView();
+            if (lastView->parent() != ui->graphicsHolder) {
+                ui->graphicsHolder->layout()->addWidget(lastView);
+            }
+            lastView->show();
         }
-        lastView = serie->getGraphicsView();
-        if (lastView->parent() != ui->graphicsHolder) {
-            ui->graphicsHolder->layout()->addWidget(lastView);
-        }
-        lastView->show();
-    }
         serie->refresh();
-        ui->tableView->setModel(serie->getLayersModel());
+        ui->treeView->setModel(serie->getLayersModel());
     } else {
 
     }
@@ -157,37 +157,40 @@ void dicom::LayeredImageVisualizerView::polyState()
 
 void dicom::LayeredImageVisualizerView::removeSelectedLayers()
 {
-    QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
-    std::set<int> rows;
+    QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
+    std::set<std::pair<int,int>> rows;
     for (auto it = indexes.begin(); it != indexes.end(); ++it) {
-        rows.insert(it->row());
+        rows.insert(LayeredModelView::getTagAndIndex(*it));
     }
     if (rows.size() == 1) {
-        model->removeLayer(*rows.begin());
+        auto ti = rows.begin();
+        model->removeLayer(ti->first, ti->second);
     }
 }
 
 void dicom::LayeredImageVisualizerView::editSelectedSerie()
 {
-    QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
-    std::set<int> rows;
+    QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
+    std::set<std::pair<int,int>> rows;
     for (auto it = indexes.begin(); it != indexes.end(); ++it) {
-        rows.insert(it->row());
+        rows.insert(LayeredModelView::getTagAndIndex(*it));
     }
     if (rows.size() == 1) {
-        model->editSerie(*rows.begin());
+        auto ti = rows.begin();
+        model->editSerie(ti->first, ti->second);
     }
 }
 
 void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex & )
 {
-    QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
-    std::set<int> rows;
+    QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
+    std::set<std::pair<int,int>> rows;
     for (auto it = indexes.begin(); it != indexes.end(); ++it) {
-        rows.insert(it->row());
+        rows.insert(LayeredModelView::getTagAndIndex(*it));
     }
     if (rows.size() == 1) {
-        model->selectLayer(*rows.begin());
+        auto ti = rows.begin();
+        model->selectLayer(ti->first, ti->second);
     }
 }
 

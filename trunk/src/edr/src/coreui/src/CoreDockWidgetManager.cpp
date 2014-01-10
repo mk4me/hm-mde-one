@@ -9,7 +9,8 @@
 using namespace coreUI;
 
 CoreDockWidgetManager::CoreDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
-	QWidget(parent, flags), tabWidget(new QTabWidget)
+	QWidget(parent, flags), tabWidget(new QTabWidget),
+    maxWidgetsInSetHint(5)
 {
 	auto layout = new QHBoxLayout;
 	layout->setContentsMargins(0,0,0,0);
@@ -87,6 +88,7 @@ CoreDockWidgetSet* CoreDockWidgetManager::autoAddDockWidget( QDockWidget* widget
 	}
 
 	CoreDockWidgetSet* set = new CoreDockWidgetSet();
+    set->setMaxWidgetsNumber(getMaxWidgetsInSetHint());
 	set->addDockWidget(widget);
 	addDockWidgetSet(set, icon, label);
 	setCurrentSet(set);
@@ -105,6 +107,7 @@ CoreDockWidgetSet* CoreDockWidgetManager::autoAddDockWidget( QDockWidget* widget
 
 	if(set == nullptr){
 		set = new CoreDockWidgetSet();
+        set->setMaxWidgetsNumber(getMaxWidgetsInSetHint());
 		addDockWidgetSet(set, label);
 	}
 
@@ -358,4 +361,14 @@ void CoreDockWidgetManager::onTabWidgetChange(int idx)
 void CoreDockWidgetManager::onTabCloseRequest(int idx)
 {
 	emit setCloseRequested(idx);
+}
+
+int coreUI::CoreDockWidgetManager::getMaxWidgetsInSetHint() const
+{
+    return maxWidgetsInSetHint;
+}
+
+void coreUI::CoreDockWidgetManager::setMaxWidgetsInSetHint( int val )
+{
+    maxWidgetsInSetHint = val;
 }

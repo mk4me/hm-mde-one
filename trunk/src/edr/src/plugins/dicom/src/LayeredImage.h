@@ -33,24 +33,28 @@ public:
 	virtual ~LayeredImage();
 
 public:
-    virtual void addLayer( ILayerItemPtr layer );
+    virtual void addLayer( ILayerItemPtr layer, const std::string& layerName);
     virtual void removeLayer( ILayerItemConstPtr layer );
-    virtual const_range getLayers() const;
+    virtual const_range getLayerItems(const std::string& layerName) const;
     virtual QPixmap getPixmap() const;
-    virtual int getNumLayers() const;
-    virtual ILayerItemConstPtr getLayer(int idx) const;
-    virtual ILayerItemPtr getLayer(int idx);
+    virtual int getNumLayerItems(const std::string& layerName) const;
+    virtual ILayerItemConstPtr getLayerItem(const std::string& layerName, int idx) const;
+    virtual ILayerItemPtr getLayerItem(const std::string& layerName, int idx);
     QSize getSize() const;
 
     // workaround
-    std::vector<ILayerItemConstPtr> getLayersToSerialize() const;
-
+    std::vector<ILayerItemConstPtr> getLayersToSerialize(const std::string& tag) const;
     dicom::ILayerItemPtr getBackgroundLayer() const;
     void setBackgroundLayer(dicom::BackgroundLayerPtr val);
+    virtual int getNumTags() const;
+    virtual std::string getTag( int idx ) const;
+    virtual tags_range getTags() const;
 
 private:
-    std::vector<ILayerItemPtr> layers;
+    //std::vector<ILayerItemPtr> layers;
     BackgroundLayerPtr backgroundLayer;
+    LayersMap layers;
+    std::set<std::string> tags;
 
 private:
     friend class boost::serialization::access;
@@ -59,6 +63,9 @@ private:
     {
         ar & boost::serialization::make_nvp("layers", layers);
     }
+
+
+
 };
 DEFINE_SMART_POINTERS(LayeredImage);
 typedef std::vector<dicom::ILayerItemPtr> LayersVector;

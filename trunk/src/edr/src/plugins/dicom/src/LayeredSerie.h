@@ -31,6 +31,7 @@ namespace dicom {
 
     class LayeredImageVisualizer;
 
+    // TODO : wywalic to time avare...
     class LayeredSerie : public plugin::AbstractSerie, public plugin::IVisualizer::ITimeAvareSerieFeatures
     {
     public:
@@ -48,7 +49,7 @@ namespace dicom {
         QPixmap getPixmap() const;
         QSize getSize() const;
         std::string getXmlOutputFilename() const;
-
+        std::string getUserName() const;
         ILayeredImagePtr getImage();
         ILayeredImageConstPtr getImage() const;
         coreUI::WheelGraphicsView* getGraphicsView() const;
@@ -56,8 +57,8 @@ namespace dicom {
         dicom::LayeredModelView* getLayersModel();
         void refresh();
         void save();
-        void removeLayer(int idx);
-        void editLayer(int idx);
+        void removeLayer(int tagIdx, int idx);
+        void editLayer(int tagIdx, int idx);
         void undo();
         void redo();
         void setPolyState();
@@ -65,6 +66,11 @@ namespace dicom {
         void setNormalState();
         void switchCrop();
         void setMoveState();
+
+        virtual double getBegin() const;
+
+        virtual double getEnd() const;
+
     private:
         ILayeredImagePtr image;
         coreUI::WheelGraphicsView* graphicsView;

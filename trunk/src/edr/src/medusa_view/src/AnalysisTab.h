@@ -31,4 +31,22 @@ private:
 };
 DEFINE_SMART_POINTERS(AnalysisTab);
 
+class CompoundAnalysisTab : public AnalysisTab
+{
+public:
+    CompoundAnalysisTab(QWidget* compound, AnalisisWidget* widget, const QIcon& icon, const QString& label) :
+        AnalysisTab(widget, icon, label), 
+        compound(compound)
+        {}
+    virtual ~CompoundAnalysisTab() {}
+
+public:
+    virtual QWidget* getMainWidget() { return compound; }
+
+private:
+    QWidget* compound;
+
+};
+DEFINE_SMART_POINTERS(CompoundAnalysisTab);
+
 #endif

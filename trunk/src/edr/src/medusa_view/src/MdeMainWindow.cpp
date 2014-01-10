@@ -21,6 +21,7 @@
 #include "AnalysisTab.h"
 #include "ui_toolboxmaindeffile.h"
 #include "MdeServiceWindow.h"
+#include "plugins/newCommunication/ICommunicationDataSource.h"
 
 using namespace core;
 
@@ -70,21 +71,32 @@ void MdeMainWindow::customViewInit(QWidget * console)
  
    this->showFullScreen();
    
-   auto sourceManager = plugin::getSourceManager();
+   /*auto sourceManager = plugin::getSourceManager();
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {
-       auto source = sourceManager->getSource(i);
-       QWidget* widget = source->getWidget();
-       if (widget) {
-           addTab(IMdeTabPtr(new SimpleTab(widget, QIcon(":/mde/icons/Badania.png"),tr(source->getName().c_str()))));
-       }
+   auto source = sourceManager->getSource(i);
+   QWidget* widget = source->getWidget();
+   if (widget) {
+   addTab(IMdeTabPtr(new SimpleTab(widget, QIcon(":/mde/icons/Badania.png"),tr(source->getName().c_str()))));
    }
+   }*/
+
+
+   communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+   plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
    
+   QWidget* commWidget = commSource->getWidget();
+   icomm->setCompactMode(true);
+   commWidget->setMaximumWidth(300);
+
+   QWidget* compound = new QWidget();
+   compound->setLayout(new QHBoxLayout);
+
+
    AnalisisWidget* aw = new AnalisisWidget(analysisModel, contextEventFilter, nullptr);
    // -----------------------
-
-   addTab(IMdeTabPtr(new AnalysisTab(aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
-   //IMdeTabPtr reportsTab  = IMdeTabPtr(new ReportsTab(QIcon(":/mde/icons/Raporty.png"), tr("Reports")));
-   //addTab(reportsTab);
+   compound->layout()->addWidget(commWidget);
+   compound->layout()->addWidget(aw);
+   addTab(IMdeTabPtr(new CompoundAnalysisTab(compound, aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
    addTab(IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/Operacje.png"),tr("Console"))));
 
    // TODO : najlepiej byloby przeniesc to do kontrolera
@@ -99,7 +111,6 @@ void MdeMainWindow::customViewInit(QWidget * console)
             if (w) {
                 addTab(IMdeTabPtr(new SimpleTab(w, QIcon(":/mde/icons/Operacje.png"),tr(service->getName().c_str()))));
                 addPropertiesToServiceWindow(service, w);
-
             }
        }
 

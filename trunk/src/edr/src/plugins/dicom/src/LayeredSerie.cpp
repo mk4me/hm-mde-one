@@ -40,7 +40,7 @@ public:
     //! cofa wykonane ju¿ polecenie
     virtual void undoIt() 
     {
-        img->addLayer(layer);
+        img->addLayer(layer, serie->getUserName());
         if (layer) {
             layer->getItem()->setVisible(true);
         }
@@ -63,11 +63,14 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
     if (img) {
         image = utils::const_pointer_cast<ILayeredImage>(img);
         graphicsScene->addItem(image->getBackgroundLayer()->getItem());
-        int count = image->getNumLayers();
-        for (int i = 0; i < count; ++i) {
-            ILayerItemPtr vec = image->getLayer(i);
-            if (vec) {
-                graphicsScene->addItem(vec->getItem());
+
+        BOOST_FOREACH(std::string tag, img->getTags()) {
+            int count = image->getNumLayerItems(tag);
+            for (int i = 0; i < count; ++i) {
+                ILayerItemPtr vec = image->getLayerItem(tag, i);
+                if (vec) {
+                    graphicsScene->addItem(vec->getItem());
+                }
             }
         }
         auto it = data->find("DICOM_XML");
@@ -139,11 +142,13 @@ void dicom::LayeredSerie::refresh()
     getGraphicsView()->setSceneRect(0, 0, getSize().width(), getSize().height());
     getGraphicsScene()->setSceneRect( getGraphicsView()->rect() );
     //pixmapItem->setPixmap(getPixmap());
-    int count = image->getNumLayers();
-    for (int i = 0; i < count; ++i) {
-        ILayerItemPtr vec = image->getLayer(i);
-        if (vec && graphicsScene != vec->getItem()->scene()) {
-            graphicsScene->addItem(vec->getItem());
+    BOOST_FOREACH(std::string tag, image->getTags()) {
+        int count = image->getNumLayerItems(tag);
+        for (int i = 0; i < count; ++i) {
+            ILayerItemPtr vec = image->getLayerItem(tag, i);
+            if (vec && graphicsScene != vec->getItem()->scene()) {
+                graphicsScene->addItem(vec->getItem());
+            }
         }
     }
     layersModel.setImage(getImage());
@@ -198,24 +203,27 @@ void dicom::LayeredSerie::save()
 //    oa.register_type<CircleLayer>();
     oa.register_type<PointsLayer>();
     LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(getImage());
-    oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize());
+    oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize(visualizer->getUserName()));
     ofs.close();
 }
 
-void dicom::LayeredSerie::removeLayer( int idx )
+void dicom::LayeredSerie::removeLayer( int tagIdx, int idx )
 {
     auto img = this->getImage();
-    if (idx >= 0 && idx < img->getNumLayers()) {
-        auto layer = img->getLayer(idx);
+    auto tag = img->getTag(tagIdx);
+    if (idx >= 0 && idx < img->getNumLayerItems(tag)) {
+        auto layer = img->getLayerItem(tag, idx);
         commandStack->addCommand(utils::make_shared<RemoveLayerCommand>(this, img, layer));    
     }
 }
 
-void dicom::LayeredSerie::editLayer( int idx )
+void dicom::LayeredSerie::editLayer( int tagIdx, int idx )
 {
     auto img = this->getImage();
-    if (idx >= 0 && idx < img->getNumLayers()) {
-        auto layer = img->getLayer(idx);
+
+    auto tag = img->getTag(tagIdx);
+    if (idx >= 0 && idx < img->getNumLayerItems(tag)) {
+        auto layer = img->getLayerItem(tag, idx);
         auto pointsLayer = utils::dynamic_pointer_cast<PointsLayer>(layer);
         if (pointsLayer) {
             stateMachine->getEditState()->setLayerToEdit(pointsLayer);
@@ -227,7 +235,7 @@ void dicom::LayeredSerie::editLayer( int idx )
 void dicom::LayeredSerie::switchCrop()
 {
     ILayeredImagePtr img = this->getImage();
-    int count = img->getNumLayers();
+    //int count = img->getNumLayerItems(TODO);
     BackgroundLayerPtr background = utils::dynamic_pointer_cast<BackgroundLayer>(img->getBackgroundLayer());
     if (background) {
         if (background->getPixmap().rect() == background->getCrop()) {
@@ -241,5 +249,20 @@ void dicom::LayeredSerie::switchCrop()
 void dicom::LayeredSerie::setMoveState()
 {
     stateMachine->setState(stateMachine->getMoveState());
+}
+
+std::string dicom::LayeredSerie::getUserName() const
+{
+    return visualizer->getUserName();
+}
+
+double dicom::LayeredSerie::getBegin() const
+{
+    return 0.0;
+}
+
+double dicom::LayeredSerie::getEnd() const
+{
+    return 0.0;
 }
 

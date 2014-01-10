@@ -47,6 +47,34 @@ namespace dicom {
         std::unique_ptr<QGraphicsItem> removedPoint;
     };
 
+    //! Polecenie usuwa punkt z obszaru
+    class RemovePointCommand : public utils::ICommand
+    {
+    public:
+        //! Konstruktor
+        //! \param item Element graficzny sceny, które zostanie przesuniêty 
+        //! \param newP Nowa pozycja elementu 
+        //! \param oldP Stara pozycja elementu
+        RemovePointCommand(PointsLayerPtr layer, int idx);
+
+    public:
+        //! Przesuwa element
+        virtual void doIt();
+
+        //! Cofa przesuniêcie
+        virtual void undoIt();
+        //! Nazwa polecenia 
+        virtual QString name();
+
+    private:
+        //! Modyfikowany obszar
+        PointsLayerPtr layer;
+        //! indeks punktu do usuniêcia
+        int idx;
+        /// usuniêty punkt, który mo¿e zostaæ przywrócony. Przywracaj¹c nie mo¿na stworzyæ nowej instancji
+        /// gdy¿ mog³oby to spowodowaæ b³êdy np. przy MoveCommand
+        std::unique_ptr<QGraphicsItem> removedPoint;
+    };
 
     class MovePathCommand : public coreUI::MoveCommand 
     {
@@ -79,12 +107,16 @@ public:
     virtual bool mouseReleaseEvent( QGraphicsSceneMouseEvent* e );
     virtual bool mousePressEvent( QGraphicsSceneMouseEvent* e );
 
+    virtual bool keyPressEvent( QKeyEvent* event );
 
     virtual void begin( coreUI::AbstractStateConstPtr lastState );
     virtual void end();
 
     dicom::PointsLayerPtr getLayerToEdit() const { return layerToEdit; }
     void setLayerToEdit(dicom::PointsLayerPtr val) { layerToEdit = val; }
+
+
+    int getSelectedPointIdx() const;
 
 private Q_SLOTS:
     void done();

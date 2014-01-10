@@ -15,6 +15,7 @@ i web serwisy wsdl.
 #include <webserviceslib/IFtpsConnection.h>
 #include <webserviceslib/IFileStoremanWS.h>
 #include <webserviceslib/DownloadHelper.h>
+#include <webserviceslib/UploadHelper.h>
 #include <queue>
 #include <boost/function.hpp>
 #include <curl/curl.h>
@@ -29,6 +30,8 @@ public:
     enum Request
     {
         DownloadFile,           //! Prośba o plik
+        UploadFile,             //! Prośba o upload pliku
+        ReplaceFile,            //! Prośba o update pliku
         Complex,                //! Złożona prośba (można zagnieżdżać i dodawać wszystkie pozostałe
         DownloadPhoto,          //! Prośba o plik
         CopyMotionShallowCopy,  //! Prośba o plik z płytką kopią bazy danych ruchu
@@ -46,6 +49,8 @@ public:
         Ready, /** Gotowy do wszelkich działań */
         ProcessingComplex, /** Przetwarzanie kompleksowego zapytania */
         DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
+        UploadingFile, /** Trwa wysyłanie pojedynczego pliku */
+        ReplacingFile, /** Trwa aktualizacja pojedynczego pliku */
         DownloadingPhoto, /** Trwa pobieranie pojedynczego zdjęcia */
         CopyingMotionShallowCopy, /** Trwa pobieranie pliku z płytką kopią bazy danych ruchu*/
         CopyingMotionMetadata, /** Trwa pobieranie pliku z metadanymi ruchu*/
@@ -171,6 +176,58 @@ public:
         unsigned int fileID;
     };
 
+    //! Klasa odpowiedzialna za update plików (z identyfikatorami)
+    class ReplaceRequest : public MetadataRequest
+    {
+        friend class CommunicationManager;
+
+    private:
+        //! Kosntruktor
+        //! \param filePath Ścieżka do lokalnego pliku
+        //! \param filePath Ścieżka zapisu pliku
+        //! \param fileID ID pliku do ściągnięcia
+        ReplaceRequest( unsigned int fileID, const std::string& sourcePath, const std::string & filePath);
+
+    public:
+        //! \return nazwa pliku
+        std::string getFileName() const;
+        //! \return identyfikator pliku
+        unsigned int getFileID() const;
+        //! \return ścieżka do lokalnego pliku
+        std::string getSourcePath() const;
+
+    private:
+        //! Identyfikator update'owanego pliku
+        unsigned int fileID;
+        //! Ścieżka do lokalnego pliku
+        std::string sourcePath;
+    };
+
+    //! Klasa odpowiedzialna za request plików (z identyfikatorami)
+    class UploadRequest : public MetadataRequest
+    {
+        friend class CommunicationManager;
+
+    private:
+        //! Kosntruktor
+        //! \param filePath Ścieżka do lokalnego pliku
+        //! \param filePath Ścieżka zapisu pliku
+        //! \param fileID ID pliku do ściągnięcia
+        UploadRequest(const std::string& sourcePath, const std::string & filePath, unsigned int trialID);
+
+    public:
+        //! \return Identyfikator triala, pod który ma trafić plik
+        unsigned int getTrialID() const;
+        //! \return nazwa uploadowanego pliku
+        std::string getFileName() const;
+
+    private:
+        //! Identyfikator triala, pod który ma trafić plik
+        unsigned int trialID;
+        //! Ścieżka do lokalnego pliku
+        std::string sourcePath;
+    };
+
 	//! Klasa odpowiedzialna za request zdjęć
     class PhotoRequest : public MetadataRequest
     {
@@ -195,6 +252,8 @@ public:
 	typedef utils::shared_ptr<PingRequest> PingRequestPtr;
     typedef utils::shared_ptr<MetadataRequest> MetadataRequestPtr;
     typedef utils::shared_ptr<FileRequest> FileRequestPtr;
+    typedef utils::shared_ptr<UploadRequest> UploadRequestPtr;
+    typedef utils::shared_ptr<ReplaceRequest> ReplaceRequestPtr;
     typedef utils::shared_ptr<PhotoRequest> PhotoRequestPtr;
 
     typedef boost::function<void(const BasicRequestPtr &)> RequestCallback;
@@ -304,6 +363,8 @@ private:
 	webservices::IFtpsConnection::OperationStatus processComplex(const CompleteRequest & request, std::string & message);
     webservices::IFtpsConnection::OperationStatus processPhoto(const CompleteRequest & request, std::string & message);
     webservices::IFtpsConnection::OperationStatus processFile(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processUpload(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processReplace(const CompleteRequest & request, std::string & message);
     webservices::IFtpsConnection::OperationStatus processMotionShallowCopy(const CompleteRequest & request, std::string & message);
     webservices::IFtpsConnection::OperationStatus processMotionMetadata(const CompleteRequest & request, std::string & message);
     webservices::IFtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request, std::string & message);
@@ -313,6 +374,8 @@ private:
 	webservices::IFtpsConnection::OperationStatus processComplex(const CompleteRequest & request) { std::string temp; return processComplex(request, temp); }
     webservices::IFtpsConnection::OperationStatus processPhoto(const CompleteRequest & request) { std::string temp; return processPhoto(request, temp); }
     webservices::IFtpsConnection::OperationStatus processFile(const CompleteRequest & request) { std::string temp; return processFile(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processUpload(const CompleteRequest & request) { std::string temp; return processUpload(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processReplace(const CompleteRequest & request) { std::string temp; return processReplace(request, temp); }
     webservices::IFtpsConnection::OperationStatus processMotionShallowCopy(const CompleteRequest & request) { std::string temp; return processMotionShallowCopy(request, temp); }
     webservices::IFtpsConnection::OperationStatus processMotionMetadata(const CompleteRequest & request) { std::string temp; return processMotionMetadata(request, temp); }
     webservices::IFtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request) { std::string temp; return processMedicalShallowCopy(request, temp); }
@@ -333,8 +396,6 @@ public:
 	//! Destruktor
     ~CommunicationManager();
 
-    // TODO - usunac, gdy upload zostanie juz przeniesiony do communication manager
-    webservices::MotionFileStoremanWSPtr getMotionFileStoremanService() const { return motionFileStoremanService_; }
 	void setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService);
 
 	void setMedicalFileStoremanService(const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService);
@@ -360,6 +421,8 @@ public:
 	//! Metody tworzące obsługiwane typy zleceń
     static ComplexRequestPtr createRequestComplex(const std::vector<CompleteRequest> & requests);
     static FileRequestPtr createRequestFile(unsigned int fileID, const std::string & filePath);
+    static UploadRequestPtr createRequestUpload(const std::string & sourcePath, const std::string & filePath, unsigned int trialID);
+    static ReplaceRequestPtr createRequestReplace(const std::string & sourcePath, const std::string & filePath, unsigned int fileID);
     static PhotoRequestPtr createRequestPhoto(unsigned int fileID, const std::string & filePath);
     static MetadataRequestPtr createRequestMotionShallowCopy(const std::string & filePath);
     static MetadataRequestPtr createRequestMotionMetadata(const std::string & filePath);
@@ -400,6 +463,8 @@ private:
 	// ----------------------- inner ------------------------------
 	webservices::BasicDownloadHelper fileDownloadHelper;
 	webservices::BasicDownloadHelper photoDownloadHelper;
+
+    webservices::BasicUploadHelper fileUploadHelper;
 
 	webservices::ShallowDownloadHelper motionShallowDownloadHelper;
 	webservices::ShallowDownloadHelper medicalShallowDownloadHelper;
@@ -442,6 +507,9 @@ private:
     mutable utils::RecursiveSyncPolicy requestsMutex;
 
     mutable utils::RecursiveSyncPolicy downloadHelperMutex;
+
+
+    mutable utils::RecursiveSyncPolicy uploadHelperMutex;
 	//! Czy kończymy przetwarzanie
     bool finish;
 	//! Czy przerwać ściąganie

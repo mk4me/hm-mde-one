@@ -20,8 +20,6 @@ LayersXmlParser::~LayersXmlParser()
 
 void LayersXmlParser::parse( const std::string & source  )
 {
-    //LayeredImagePtr l = utils::make_shared<LayeredImage>(source);
-    //image->set(l);
     LayersVectorPtr layers = DicomLoader::loadLayers(source);
     this->layers->set(layers);
 }

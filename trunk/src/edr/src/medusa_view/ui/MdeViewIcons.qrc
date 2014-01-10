@@ -50,6 +50,9 @@
         <file alias="splitter-dots-vertical.png">../resources/embedded/icons/splitter-dots-vertical.png</file>
         <file alias="filtry.png">../resources/embedded/icons/filtry.png</file>
         <file alias="karta.png">../resources/embedded/icons/karta.png</file>
+		<file alias="flexi_create.png">../resources/embedded/icons/flexi_create.png</file>
+		<file alias="flexi_add_to.png">../resources/embedded/icons/flexi_add_to.png</file>
+		<file alias="flexi_remove_from.png">../resources/embedded/icons/flexi_remove_from.png</file>
     </qresource>
     <qresource prefix="mde/splashscreen">
         <file alias="splash.png">../resources/embedded/splashscreen/splash.png</file>

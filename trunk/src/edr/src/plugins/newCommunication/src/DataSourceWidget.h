@@ -223,7 +223,7 @@ private:
     void saveCredentials();
     void loadCredentials();
     QString crypt(const QString& input, bool encyprt);
-
+    void setCompactMode( bool compact );
 
 private:
 	//! Event filter do obsługi ENTER przy logowaniu/wylogownaiu

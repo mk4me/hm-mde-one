@@ -121,11 +121,15 @@ bool dicom::NormalState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
 void dicom::NormalState::createItem2LayerMap()
 {
     ILayeredImagePtr image = machine->getSerie()->getImage();
-    int count = image->getNumLayers();
-    for (int i = 0; i < count; ++i) {
-        ILayerItemPtr vl = image->getLayer(i);
-        if (vl) {
-            item2layer[vl->getItem()] = vl;
+    int tags = image->getNumTags();
+    for (int tagIdx = 0; tagIdx < tagIdx; ++tagIdx) {
+        auto tag = image->getTag(tagIdx);
+        int count = image->getNumLayerItems(tag);
+        for (int i = 0; i < count; ++i) {
+            ILayerItemPtr vl = image->getLayerItem(tag, i);
+            if (vl) {
+                item2layer[vl->getItem()] = vl;
+            }
         }
     }
 }
@@ -134,14 +138,15 @@ int dicom::NormalState::getNumSelected()
 {
     int selected = 0;
     ILayeredImagePtr image = machine->getSerie()->getImage();
-    int count = image->getNumLayers();
-    for (int i = 0; i < count; ++i) {
-        ILayerItemPtr vl = image->getLayer(i);
-        if (vl->getSelected()) {
-            ++selected;
+    BOOST_FOREACH(std::string tag, image->getTags()) {
+        int count = image->getNumLayerItems(tag);
+        for (int i = 0; i < count; ++i) {
+            ILayerItemPtr vl = image->getLayerItem(tag, i);
+            if (vl->getSelected()) {
+                ++selected;
+            }
         }
     }
-
     return selected;
 }
 
@@ -149,14 +154,15 @@ dicom::ILayerItemPtr dicom::NormalState::getFirstSelected()
 {
     int selected = 0;
     ILayeredImagePtr image = machine->getSerie()->getImage();
-    int count = image->getNumLayers();
-    for (int i = 0; i < count; ++i) {
-        ILayerItemPtr vl = image->getLayer(i);
-        if (vl->getSelected()) {
-            return vl;
+    BOOST_FOREACH(std::string tag, image->getTags()) {
+        int count = image->getNumLayerItems(tag);
+        for (int i = 0; i < count; ++i) {
+            ILayerItemPtr vl = image->getLayerItem(tag, i);
+            if (vl->getSelected()) {
+                return vl;
+            }
         }
     }
-
     return ILayerItemPtr();
 }
 

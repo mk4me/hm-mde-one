@@ -48,7 +48,10 @@ QGraphicsView* dicom::LayeredStateMachine::getGraphicsView()
 void dicom::LayeredStateMachine::selectionChanged()
 {
     auto items = getGraphicsScene()->selectedItems();
+    bool b = getGraphicsScene()->signalsBlocked();
+    getGraphicsScene()->blockSignals(true);
     getCurrentState()->selectionChanged(items);
+    getGraphicsScene()->blockSignals(b);
 }
 
 EditStatePtr dicom::LayeredStateMachine::getEditState()

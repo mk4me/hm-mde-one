@@ -66,6 +66,10 @@ public:
     //! \return odnaleziona grupa lub nullptr
     CoreDockWidgetSet* tryGetDockSet(QDockWidget* widget);
 
+
+    int getMaxWidgetsInSetHint() const;
+    void setMaxWidgetsInSetHint(int val);
+
 	int count() const;
 	int	currentIndex() const;
 	CoreDockWidgetSet * currentSet() const;
@@ -126,6 +130,8 @@ private:
 	QTabWidget * tabWidget;
     //! lista wszystkich grup managera
 	std::list<CoreDockWidgetSet*> dockList;
+    //! maksymalna liczba widgetów w tworzonych setach
+    int maxWidgetsInSetHint;
 };
 
 }

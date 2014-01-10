@@ -931,14 +931,10 @@ void CommunicationDataSource::finalize()
     perspectives.clear();
 }
 
-bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& path )
+
+bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& path, const std::string& trialName )
 {
-    webservices::BasicUploadHelper fileUploaderHelper;
-    fileUploaderHelper.configure(communicationManager->motionFtps());
-    fileUploaderHelper.setFileUpload(path.string(), std::string("BDR/w/") + path.filename().string());
-    auto res = fileUploaderHelper.put();
-    auto errorMsg = fileUploaderHelper.errorMessage();
-    //statusManage
+    // TODO : obsluzyc ten parametr trialname
     std::string stem = path.stem().string();
     int trialID = -1;
     auto& trials = this->fullShallowCopy.motionShallowCopy->trials;
@@ -949,12 +945,58 @@ bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& pa
             break;
         }
     }
-    if (trialID != -1) {
-        int res2 = communicationManager->getMotionFileStoremanService()->storeTrialFile(trialID, "/BDR/w", "test xml file", path.filename().string()  );
-        return true;
-    } else {
-        return false;
+
+    std::string filename = path.filename().string();
+    int fileID = -1;
+    auto& files = this->fullShallowCopy.motionShallowCopy->files;
+    for (auto it = files.begin(); it != files.end(); ++it) {
+        webservices::MotionShallowCopy::File* file = it->second;
+        if (file->fileName == filename) {
+            fileID = file->fileID;
+            break;
+        }
     }
-    
-    //int res = fileStorem
+    // TODO : obsluga bledow
+    CommunicationManager::BasicRequestPtr  req;
+    if (fileID != -1) {
+        req = CommunicationManager::createRequestReplace(path.string(), std::string("BDR/w/") + path.filename().string(), fileID );
+    } else if (trialID != -1) {
+        req = CommunicationManager::createRequestUpload(path.string(), std::string("BDR/w/") + path.filename().string(), trialID );
+    } else {
+        throw std::runtime_error("Unable to find file or trial ID for requested file");
+    }
+    CommunicationManager::CompleteRequest cpl;
+    cpl.request = req;
+    communicationManager->pushRequest(cpl);
+    return true;
+
+    //webservices::BasicUploadHelper fileUploaderHelper;
+    //fileUploaderHelper.configure(communicationManager->motionFtps());
+    //fileUploaderHelper.setFileUpload(path.string(), std::string("BDR/w/") + path.filename().string());
+    //auto res = fileUploaderHelper.put();
+    //auto errorMsg = fileUploaderHelper.errorMessage();
+    ////statusManage
+    //std::string stem = path.stem().string();
+    //int trialID = -1;
+    //auto& trials = this->fullShallowCopy.motionShallowCopy->trials;
+    //for (auto it = trials.begin(); it != trials.end(); ++it) {
+    //    webservices::MotionShallowCopy::Trial* trial = it->second;
+    //    if (stem.find(trial->trialName) != std::string::npos) {
+    //        trialID = trial->trialID;
+    //        break;
+    //    }
+    //}
+    //if (trialID != -1) {
+    //    int res2 = communicationManager->getMotionFileStoremanService()->storeTrialFile(trialID, "/BDR/w", "test xml file", path.filename().string()  );
+    //    return true;
+    //} else {
+    //    return false;
+    //}
+    //
+    ////int res = fileStorem
+}
+
+void CommunicationDataSource::setCompactMode( bool compact /*= true */ )
+{
+    dataSourceWidget->setCompactMode(compact);
 }

@@ -140,6 +140,8 @@ public:
 	*/
 	virtual void storeSessionFiles(const int sessionID, const std::string & path,
 		const std::string & description) = 0;
+
+    virtual void replaceFile(int fileID, const std::string& path, std::string& filename) = 0;
 };
 
 typedef boost::shared_ptr<IMotionFileStoremanWS> MotionFileStoremanWSPtr;

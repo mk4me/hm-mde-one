@@ -19,9 +19,20 @@
 #include <plugins/newCommunication/IDataSourceUser.h>
 #include <corelib/ISourceManager.h>
 #include <corelib/PluginCommon.h>
+#include "DicomSource.h"
 
 typedef core::Filesystem fs;
 
+dicom::LayersVectorConstPtr resolveLocalXml( const fs::Path& xmlPath, dicom::LayersVectorConstPtr layersVector = dicom::LayersVectorConstPtr() )
+{
+    if (fs::pathExists(xmlPath)) {
+        dicom::LayersVectorPtr layers = dicom::DicomLoader::loadLayers(xmlPath);
+        if (layers->size()) {
+            return layers;
+        }
+    }
+    return layersVector;
+}
 
 core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::SubjectPtr subject )
 {
@@ -62,6 +73,9 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
         BOOST_FOREACH(utils::ObjectWrapperConstPtr motionOW, motions) {	
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
+            std::string trialName;
+            motionOW->tryGetMeta("core/source", trialName);
+            
             if (motion->hasObject(typeid(dicom::ILayeredImage), false)) {
                 core::ConstObjectsList images;
                 core::ConstObjectsList layers;
@@ -76,14 +90,35 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                         fs::Path stem = fs::Path(sourceFile).stem();
                         fs::Path p = tmpDir / (stem.string() + "." + name + ".xml");
                         (*wrapper)[std::string("DICOM_XML")] = std::string(p.string());
-
-                        // TODO : wsparcie dla wielu plikow xml + tymczasowego save'a
-                        if (layers.size() == 1) {
-                            LayeredImageConstPtr cimg = wrapper->get();
-                            LayeredImagePtr img = utils::const_pointer_cast<LayeredImage>(cimg);
-                            LayersVectorConstPtr layersVector = (*layers.begin())->get();
+                        (*wrapper)[std::string("TRIAL_NAME")] = trialName;
+                        
+                        LayeredImageConstPtr cimg = wrapper->get();
+                        LayeredImagePtr img = utils::const_pointer_cast<LayeredImage>(cimg);
+                        bool localAdded = false;
+                        for (auto itXml = layers.begin(); itXml != layers.end(); ++itXml) {
+                            LayersVectorConstPtr layersVector = (*itXml)->get();
+                            std::string xmlUser = "unknown";
+                            if ((*itXml)->tryGetMeta("core/source", xmlUser)) {
+                                // TODO zrobic to regexem
+                                xmlUser = fs::Path(xmlUser).stem().string();
+                                xmlUser = xmlUser.substr(xmlUser.find_last_of(".") + 1);
+                            }
+                            if (name == xmlUser) {
+                                layersVector = resolveLocalXml(p, layersVector);
+                                localAdded = true;
+                            }
                             for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
-                                img->addLayer(*layerIt);
+                                img->addLayer(*layerIt, xmlUser);
+                            }
+                        }
+
+                        // nie bylo konfliktu danych lokalnych vs sciagnietych, ale mozliwe, ze sa tylko lokalne
+                        if (!localAdded) {
+                            auto layersVector = resolveLocalXml(p);
+                            if (layersVector) {
+                                for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
+                                    img->addLayer(*layerIt, name);
+                                }
                             }
                         }
 
@@ -96,21 +131,6 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                 } else {
                     // powinien byc zawsze jeden obraz na motion
                     UTILS_ASSERT(false);
-                    /*for(auto it = images.begin(); it != images.end(); ++it) {			
-                        utils::ObjectWrapperPtr wrapper = utils::const_pointer_cast<utils::ObjectWrapper>(*it);
-                        std::string sourceFile;
-                        if (wrapper->tryGetMeta("core/source", sourceFile)) {
-                            fs::Path stem = fs::Path(sourceFile).stem();
-                            fs::Path p = tmpDir / (stem.string() + "." + name + ".xml");
-                            (*wrapper)[std::string("DICOM_XML")] = std::string(p.string());
-                            core::IHierarchyItemPtr imgItem(new core::HierarchyDataItem(*it, QIcon(), QString::fromStdString(stem.string()), desc));
-                            sessionItem->appendChild(imgItem);
-                            hasData = true;
-                        } else {
-                            UTILS_ASSERT(false);
-                        }
-
-                    }*/
                 }
             }
         }
@@ -122,4 +142,6 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 
     return core::IHierarchyItemPtr();
 }
+
+
 

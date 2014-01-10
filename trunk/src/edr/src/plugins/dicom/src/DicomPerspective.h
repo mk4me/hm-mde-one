@@ -20,7 +20,6 @@ public:
 	virtual ~DicomPerspective() {}
 
     virtual core::IHierarchyItemPtr getPerspective( PluginSubject::SubjectPtr subject );
-
 };
 DEFINE_SMART_POINTERS(DicomPerspective);
 

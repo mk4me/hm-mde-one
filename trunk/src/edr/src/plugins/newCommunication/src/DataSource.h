@@ -188,7 +188,9 @@ private:
 	//! \param outFile Gdzie zapisujemy dane z rozpakowanego pliku zip
 	static bool copyData(QIODevice &inFile, QIODevice &outFile);
 
-    virtual bool uploadMotionFile( const core::Filesystem::Path& path );
+    virtual bool uploadMotionFile( const core::Filesystem::Path& path, const std::string& trialName );
+
+    virtual void setCompactMode( bool compact = true );
 
     
 private:

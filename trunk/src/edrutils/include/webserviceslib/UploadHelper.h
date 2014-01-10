@@ -29,15 +29,15 @@ namespace webservices
 
 		void setFileUpload(const std::string & sourcePath, const std::string & destinationPath);
 		void setFolderUpload(const std::string & sourcePath, const std::string & destinationPath);
-		void configure(const FtpsConnectionPtr & ftpsConnection);
+        void configure(FileStoremanWSPtr storeman, const FtpsConnectionPtr & ftpsConnection);
 
 	private:
-		
 		FtpsConnectionPtr ftpsConnection;
 		bool isFile;
 		std::string sourcePath;
 		std::string destinationPath;
 		std::string errorMessage_;
+        FileStoremanWSPtr storeman;
 	};
 }
 

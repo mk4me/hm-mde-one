@@ -10,13 +10,13 @@
 #ifndef HEADER_GUARD_DICOM__LAYEREDMODELVIEW_H__
 #define HEADER_GUARD_DICOM__LAYEREDMODELVIEW_H__
 
-#include <QtCore/QAbstractTableModel>
+#include <QtCore/QAbstractItemModel>
 #include <QtCore/QString>
 #include <plugins/dicom/ILayeredImage.h>
 
 namespace dicom {
 
-class LayeredModelView : public QAbstractTableModel
+class LayeredModelView : public QAbstractItemModel
 {
     Q_OBJECT
 public:
@@ -33,17 +33,38 @@ public:
     ILayeredImageConstPtr getImage() const;
     void setImage(ILayeredImagePtr val);
 
+
+    virtual QModelIndex index( int row, int column, const QModelIndex &parent = QModelIndex( ) ) const;
+    virtual QModelIndex parent( const QModelIndex &child ) const;
+
     void refresh() { reset(); }
+    void refreshSelected();
+
+    static std::pair<int, int> getTagAndIndex(const QModelIndex& idx);
 
 protected:
     virtual bool removeRows( int row, int count, const QModelIndex &parent = QModelIndex( ) );
 
 private:
+    struct treedata
+    {
+        int tag, idx;
+        bool operator <(const treedata& d) const
+        {
+            if (tag == d.tag) {
+                return idx < d.idx;
+            }
+            return tag < d.tag ;
+        }
+    };
+
+    mutable std::set<treedata> datas;
+    const treedata* getData(int tag, int idx) const;
+private:
     ILayeredImagePtr image;
     
 Q_SIGNALS:
     void editCompleted(const QString &);
-
 
 };
 

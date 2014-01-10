@@ -78,6 +78,8 @@ void AnalisisWidget::devideArea()
 {
     topMainWindow = new coreUI::CoreDockWidgetManager();
     topMainWindow->setSetsClosable(true);
+    // na potrzeby meduzy, jeden set - jeden widget
+    topMainWindow->setMaxWidgetsInSetHint(1);
     topMainWindow->setTabPosition(QTabWidget::South);
     topMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     bottomMainWindow = new QFrame();
@@ -249,11 +251,12 @@ void AnalisisWidget::setContextItems( IAppUsageContextManager* manager, IAppUsag
     manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
     connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
 
-    AnalysisTreeContextPtr treeContext = utils::make_shared<AnalysisTreeContext>(flexiTabWidget, model->getTreeModel(), contextMenu);
+    // TODO : odkomentowac i zmienic ikony w przyciskach flexi
+    /*AnalysisTreeContextPtr treeContext = utils::make_shared<AnalysisTreeContext>(flexiTabWidget, model->getTreeModel(), contextMenu);
     manager->addContext(treeContext, parent);
     getContextEventFilter()->registerPermamentContextWidget(treeView);
     this->treeView->installEventFilter(getContextEventFilter().get());
-    manager->addWidgetToContext(treeContext, treeView);
+    manager->addWidgetToContext(treeContext, treeView);*/
 }
 
 void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
@@ -724,6 +727,8 @@ void AnalisisWidget::createVisualizerInNewSet()
     static const QString setName = tr("Group %1");
     HelperAction* action = qobject_cast<HelperAction*>(sender());
     coreUI::CoreDockWidgetSet* set = new coreUI::CoreDockWidgetSet(topMainWindow);
+    // dla meduzy : 1 widget - 1 set
+    set->setMaxWidgetsNumber(1);
     topMainWindow->addDockWidgetSet(set, setName.arg(topMainWindow->count()+1));
 
     createAndAddDockVisualizer(action->getHelper(), set, tr("...TEST..."));

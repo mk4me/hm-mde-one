@@ -67,6 +67,7 @@ namespace dicom {
         virtual QSize getSize() const;
     public:
         void addPoint(const QPointF& p);
+        void addPoint(QGraphicsItem* itm, int idx);
         void addPoint(QGraphicsItem* itm);
         int getNumPoint() const;
         QGraphicsItem* getPoint(int idx) const;

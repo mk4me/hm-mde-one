@@ -217,7 +217,7 @@ background-color: white;
             </layout>
            </item>
            <item>
-            <widget class="QTableView" name="tableView">
+            <widget class="QTreeView" name="treeView">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                <horstretch>0</horstretch>

@@ -32,22 +32,27 @@ dicom::LayeredImage::~LayeredImage()
 }
 
 
-void dicom::LayeredImage::addLayer( ILayerItemPtr layer )
+void dicom::LayeredImage::addLayer( ILayerItemPtr layer, const std::string& layerName )
 {
-    layers.push_back(layer);
+    layers.insert(std::make_pair(layerName, layer));
+    tags.insert(layerName);
+    //layers.push_back(layer);
 }
 
 void dicom::LayeredImage::removeLayer( ILayerItemConstPtr layer )
 {
-    auto it = std::find(layers.begin(), layers.end(), layer);
-    if (it != layers.end()) {
-        layers.erase(it);
+    for (auto it = layers.begin(); it != layers.end(); ++it) {
+        if (it->second == layer) {
+            layers.erase(it);
+            break;
+        }
     }
 }
 
-dicom::LayeredImage::const_range dicom::LayeredImage::getLayers() const
+dicom::LayeredImage::const_range dicom::LayeredImage::getLayerItems( const std::string& layerName ) const
 {
-    return boost::make_iterator_range(layers.cbegin(), layers.cend());
+    return boost::make_iterator_range(layers.equal_range(layerName));
+    //return boost::make_iterator_range(layers.cbegin(), layers.cend());
 }
 
 
@@ -71,8 +76,8 @@ QSize dicom::LayeredImage::getSize() const
 {
     QSize maxSize = backgroundLayer->getSize();
     for (auto it = layers.begin(); it != layers.end(); ++it) {
-        QSize layerSize = (*it)->getSize();
-
+        QSize layerSize = (it->second)->getSize();
+        //QSize layerSize = (*it)->getSize();
         if (maxSize.width() < layerSize.width()) {
             maxSize.setWidth(layerSize.width());
         }
@@ -85,33 +90,33 @@ QSize dicom::LayeredImage::getSize() const
     return maxSize;
 }
 
-int dicom::LayeredImage::getNumLayers() const
+int dicom::LayeredImage::getNumLayerItems( const std::string& layerName ) const
 {
-    return layers.size();
+    return layers.count(layerName);
 }
 
-dicom::ILayerItemConstPtr dicom::LayeredImage::getLayer( int idx ) const
+dicom::ILayerItemConstPtr dicom::LayeredImage::getLayerItem(const std::string& layerName, int idx ) const
 {
-    UTILS_ASSERT(idx >= 0 && idx < getNumLayers());
-    return layers[idx];
+    UTILS_ASSERT(idx >= 0 && idx < getNumLayerItems(layerName));
+    auto it = layers.equal_range(layerName).first;
+    std::advance(it, idx);
+    return (it->second);
 }
 
-dicom::ILayerItemPtr dicom::LayeredImage::getLayer( int idx )
+dicom::ILayerItemPtr dicom::LayeredImage::getLayerItem(const std::string& layerName,  int idx )
 {
-    UTILS_ASSERT(idx >= 0 && idx < getNumLayers());
-    return layers[idx];
+    UTILS_ASSERT(idx >= 0 && idx < getNumLayerItems(layerName));
+    auto it = layers.equal_range(layerName).first;
+    std::advance(it, idx);
+    return (it->second);
 }
 
-std::vector<dicom::ILayerItemConstPtr> dicom::LayeredImage::getLayersToSerialize() const
+std::vector<dicom::ILayerItemConstPtr> dicom::LayeredImage::getLayersToSerialize( const std::string& tag ) const
 {
     std::vector<ILayerItemConstPtr> ret;
-    for (auto it = layers.begin(); it != layers.end(); ++it) {
-        //BackgroundLayerPtr b = utils::dynamic_pointer_cast<BackgroundLayer>(*it);
-        //if (!b) {
-            ret.push_back(*it);
-        //}
+    BOOST_FOREACH(auto layer, layers.equal_range(tag)) {
+        ret.push_back(layer.second);
     }
-
     return ret;
 }
 
@@ -123,6 +128,23 @@ dicom::ILayerItemPtr dicom::LayeredImage::getBackgroundLayer() const
 void dicom::LayeredImage::setBackgroundLayer( dicom::BackgroundLayerPtr val )
 {
     backgroundLayer = val;
+}
+
+int dicom::LayeredImage::getNumTags() const
+{
+    return tags.size();
+}
+
+std::string dicom::LayeredImage::getTag( int idx ) const
+{
+    auto it = tags.begin();
+    std::advance(it, idx);
+    return *it;
+}
+
+dicom::LayeredImage::tags_range dicom::LayeredImage::getTags() const
+{
+    return boost::make_iterator_range(tags.cbegin(), tags.cend());
 }
 
 

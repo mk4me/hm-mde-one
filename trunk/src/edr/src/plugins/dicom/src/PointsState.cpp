@@ -63,7 +63,7 @@ public:
     {
         layer->setEditable(false);
         layer->setAdnotationIdx(adnotationIdx);
-        image->addLayer(layer);
+        image->addLayer(layer, machine->getSerie()->getUserName());
         machine->getSerie()->refresh();
         machine->getSerie()->save();
     }
@@ -114,7 +114,7 @@ bool dicom::PointsState::keyReleaseEvent( QKeyEvent *event )
 
 bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
-    if (e->button() == Qt::RightButton) {
+    if (e->button() == Qt::RightButton && layer->getNumPoint() > 0) {
         QMenu menu;
         QAction* clearAction = menu.addAction(tr("Clear"));
 
@@ -165,10 +165,13 @@ void dicom::PointsState::addLayer()
 
 void dicom::PointsState::addLayer( int adnIdx )
 {
-    auto img = machine->getSerie()->getImage();
+    // warunek isVisible wynika z tego, ze clear nie usuwa punktow tylko robi warstwe niewidoczna
+    if (layer->getNumPoint() > 0 && layer->getItem()->isVisible()) {
+        auto img = machine->getSerie()->getImage();
 
-    auto command = utils::make_shared<AddLayerCommand>(machine, img, this, layer, adnIdx);
-    machine->getCommandStack()->addCommand(command);
+        auto command = utils::make_shared<AddLayerCommand>(machine, img, this, layer, adnIdx);
+        machine->getCommandStack()->addCommand(command);
+    }
 }
 
 void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
@@ -181,6 +184,12 @@ void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
         machine->changeCursor(c);
     }
     resetLayer();
+    ILayeredImagePtr img = machine->getSerie()->getImage();
+    BOOST_FOREACH(std::string tag, img->getTags()) {
+        for (int i = img->getNumLayerItems(tag) - 1; i >= 0; --i) {
+            img->getLayerItem(tag, i)->setSelected(false);
+        }
+    }
     machine->getGraphicsScene()->addItem(layer->getItem());
 }
 
@@ -230,4 +239,3 @@ void dicom::PointsState::resetLayer()
         layer->setPointsDrawer(utils::make_shared<PolyDrawer>());
     }
 }
-

@@ -41,7 +41,6 @@ private Q_SLOTS:
     virtual void begin( coreUI::AbstractStateConstPtr lastState );
     virtual void end();
 
-
 private:
     std::vector<std::pair<QGraphicsItem*, QPointF>> positionsToCheck;
     PointsLayerPtr layer;

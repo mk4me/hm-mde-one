@@ -101,7 +101,7 @@ void dicom::DicomSourceWidget::onSendTest()
     writerFps->setCredentials("testUser", "testUser");
 
     ws::BasicUploadHelper fileUploaderHelper;
-    fileUploaderHelper.configure(writerFps);
+    fileUploaderHelper.configure(fileStoreman, writerFps);
     fileUploaderHelper.setFileUpload("C:/Users/Wojciech/Desktop/testImport1_6/2013-09-03-S0005/2013-09-03-S0005-T0001.xml", "BDR/w/2013-08-21-S0007-T0013.userusg1.xml");
     auto res = fileUploaderHelper.put();
     auto errorMsg = fileUploaderHelper.errorMessage();

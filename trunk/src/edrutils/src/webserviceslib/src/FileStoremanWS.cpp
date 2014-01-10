@@ -240,6 +240,15 @@ void MotionFileStoremanWS::storeMeasurementConfFiles(const int mcID,
 	connection()->invoke();
 }
 
+void MotionFileStoremanWS::replaceFile( int fileID, const std::string& path, std::string& filename )
+{
+    connection()->setOperation("ReplaceFile");
+    connection()->setValue("fileID", fileID);
+    connection()->setValue("path", path);
+    connection()->setValue("filename", filename);
+    connection()->invoke();
+}
+
 
 
 //

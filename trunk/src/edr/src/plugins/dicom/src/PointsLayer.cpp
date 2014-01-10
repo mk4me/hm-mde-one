@@ -23,6 +23,9 @@ dicom::PointsLayer::~PointsLayer()
 
 QGraphicsItem* dicom::PointsLayer::getItem()
 {
+    if (pathItem->path().isEmpty()) {
+        refresh();
+    }
     return group.get();
 }
 
@@ -63,12 +66,18 @@ void dicom::PointsLayer::addPoint( const QPointF& p )
     rect->setFlag(QGraphicsItem::ItemIsSelectable, false);
 
     addPoint(rect);
+    setSelected(false);
 }
 
 void dicom::PointsLayer::addPoint( QGraphicsItem* itm )
 {
-    points.push_back(itm);
-    pathItem->setPath(pointsDrawer->createPath(points));
+    addPoint(itm, points.size());
+}
+
+void dicom::PointsLayer::addPoint( QGraphicsItem* itm, int idx )
+{
+    points.insert(idx, itm);
+    setSelected(false);
 }
 
 int dicom::PointsLayer::getNumPoint() const
@@ -148,7 +157,7 @@ void dicom::PointsLayer::setEditable( bool val )
     setSelected(false);
     for (auto it = points.begin(); it != points.end(); ++it) {
         (*it)->setSelected(false);
-        (*it)->setFlag(QGraphicsItem::ItemIsSelectable, !val);
+        (*it)->setFlag(QGraphicsItem::ItemIsSelectable, true);
         (*it)->setFlag(QGraphicsItem::ItemIsMovable, val);
     }
     group->setHandlesChildEvents(!val);

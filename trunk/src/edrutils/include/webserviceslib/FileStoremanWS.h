@@ -118,6 +118,8 @@ namespace webservices
 		*/
 		virtual void storeTrialFiles(const int trialID, const std::string & path,
 			const std::string & description);
+
+        virtual void replaceFile(int fileID, const std::string& path, std::string& filename);
     };
 
 	class MedicalFileStoremanWS : public WebServiceT<IMedicalFileStoremanWS>

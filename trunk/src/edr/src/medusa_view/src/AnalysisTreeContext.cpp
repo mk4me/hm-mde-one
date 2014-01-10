@@ -89,7 +89,11 @@ void AnalysisTreeContext::recreateFlexiSectionWidget(QWidget* flexiContent, core
 		}
 
 		contextWidgetActions->setVisible(true);
-        QLayout* l = flexiContent->layout();
+        
+        QWidget* container = new QWidget();
+        flexiContent->layout()->addWidget(container);
+        QLayout* l = new QHBoxLayout();
+        container->setLayout(l);
         flexiSection->setName(helper->getName());
 
         // TODO : wyciek pamiêci !!!
@@ -98,6 +102,7 @@ void AnalysisTreeContext::recreateFlexiSectionWidget(QWidget* flexiContent, core
         auto actions = menu->actions();
         for (auto it = actions.begin(); it != actions.end(); ++it) {
             QToolButton* menuButton = new QToolButton(flexiContent);
+            menuButton->setIcon(QIcon(":/mde/icons/flexi_create.png"));
             if ((*it)->menu()) {
                 menuButton->setMenu((*it)->menu());
             } else {

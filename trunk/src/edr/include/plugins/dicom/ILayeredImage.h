@@ -23,21 +23,25 @@ namespace dicom {
 class ILayeredImage
 {
 public:
-    typedef boost::iterator_range<std::vector<ILayerItemPtr>::const_iterator> const_range;
+    typedef std::multimap<std::string, ILayerItemPtr> LayersMap;
+    typedef boost::iterator_range<LayersMap::const_iterator> const_range;
+    typedef boost::iterator_range<std::set<std::string>::const_iterator> tags_range;
 
 public:
     ILayeredImage() {}
 	virtual ~ILayeredImage() {}
-    virtual void addLayer(ILayerItemPtr layer) = 0;
+    virtual void addLayer(ILayerItemPtr layer, const std::string& layerName) = 0;
     virtual void removeLayer(ILayerItemConstPtr layer) = 0;
-    virtual const_range getLayers() const = 0;
+    virtual const_range getLayerItems(const std::string& layerName) const = 0;
     virtual QPixmap getPixmap() const = 0;
     virtual QSize getSize() const = 0;
-    virtual int getNumLayers() const = 0;
-    virtual ILayerItemConstPtr getLayer(int idx) const = 0;
-    virtual ILayerItemPtr getLayer(int idx) = 0;
+    virtual int getNumLayerItems(const std::string& layerName) const = 0;
+    virtual ILayerItemConstPtr getLayerItem(const std::string& layerName,int idx) const = 0;
+    virtual ILayerItemPtr getLayerItem(const std::string& layerName, int idx) = 0;
     virtual dicom::ILayerItemPtr getBackgroundLayer() const = 0;
-
+    virtual int getNumTags() const = 0;
+    virtual std::string getTag(int idx) const = 0;
+    virtual tags_range getTags() const = 0;
 };
 DEFINE_SMART_POINTERS(ILayeredImage);
 }

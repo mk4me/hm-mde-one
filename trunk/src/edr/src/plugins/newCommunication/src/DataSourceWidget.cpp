@@ -277,6 +277,7 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 #else
 	
 	setTabEnabled(indexOf(motionDataTab), false);
+    // TODO : czy userDataTab byl potrzebny?
 	setTabEnabled(indexOf(userDataTab), false);
 
 	setCurrentWidget(configTab);
@@ -2725,6 +2726,7 @@ void DataSourceWidget::tryLoadProjects()
 
 void DataSourceWidget::showUserData()
 {
+    // TODO : czy userDataTab byl potrzebny?
 	setCurrentWidget(userDataTab);
 }
 
@@ -2781,4 +2783,17 @@ QString DataSourceWidget::crypt( const QString& input, bool encrypt )
 
     QString output = QString::fromLocal8Bit((const char*)outdata.get(), length);
     return output;
+}
+
+void DataSourceWidget::setCompactMode( bool compact )
+{
+    //this->horizontalSpacer_2
+    this->patientCardPlaceholerWidget->setVisible(!compact);
+    this->perspectiveComboBox->setVisible(!compact);
+    this->perspectiveLabel->setVisible(!compact);
+    this->filterLabel->setVisible(!compact);
+    this->filterComboBox->setVisible(!compact);
+    int margin = compact ? 0 : 9;
+    this->dataViewWidget->setContentsMargins(0,0,0,0);
+    this->motionDataTab->setContentsMargins(0,0,0,0);
 }

@@ -46,6 +46,9 @@ namespace dicom {
         plugin::IVisualizer::ISerie *createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data);
         // \return metoda nie jest obs³ugiwana, nullptr
         plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie * serie);
+
+        virtual ISerie* createSerie( const ISerie* serie, const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data );
+
         //! Usuwa serie z wizualizatora
         //! \param serie seria do usuniêcia, musi nale¿eæ do wizualizatora i musi byæ przez niego stworzona
         virtual void removeSerie(plugin::IVisualizer::ISerie *serie);
@@ -72,7 +75,12 @@ namespace dicom {
 
         int getNumSeries() const;
         int getCurrentSerieNo() const;
+
+        std::string getUserName() const;
         
+        void editSerie(int tagIdx, int idx);
+        void removeLayer(int tagIdx, int idx);
+        void selectLayer(int tagIdx, int idx );
 
     public Q_SLOTS:
         void setPrevSerie();
@@ -80,9 +88,6 @@ namespace dicom {
         void trySetSerie(int val);
         void saveSerie();
         void uploadSerie();
-        void editSerie(int idx);
-        void removeLayer(int idx);
-        void selectLayer( int idx );
 
     Q_SIGNALS:
         void serieChanged();
@@ -90,7 +95,7 @@ namespace dicom {
 
     private:
         bool correctIndex(int i) const;
-        int selectedLayer() const;
+        std::pair<std::string, int> selectedLayer() const;
         
     private:
         LayeredImageVisualizerView* mainWidget;

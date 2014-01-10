@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>934</width>
-    <height>833</height>
+    <width>957</width>
+    <height>704</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <enum>QTabWidget::South</enum>
   </property>
   <property name="currentIndex">
-   <number>2</number>
+   <number>0</number>
   </property>
   <widget class="QWidget" name="motionDataTab">
    <attribute name="icon">
@@ -28,6 +28,9 @@
     <string>Motion Data</string>
    </attribute>
    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <property name="margin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="QWidget" name="dataViewWidget" native="true">
       <property name="sizePolicy">
@@ -49,6 +52,9 @@
        </size>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="margin">
+        <number>0</number>
+       </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <property name="sizeConstraint">
@@ -108,12 +114,8 @@
    </layout>
   </widget>
   <widget class="QWidget" name="userDataTab">
-   <attribute name="icon">
-    <iconset>
-     <normaloff>:/newCommunication/icons/osobowe.png</normaloff>:/newCommunication/icons/osobowe.png</iconset>
-   </attribute>
    <attribute name="title">
-    <string>User Data</string>
+    <string>User data</string>
    </attribute>
   </widget>
   <widget class="QWidget" name="configTab">
@@ -606,7 +608,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>108</width>
+            <width>101</width>
             <height>77</height>
            </rect>
           </property>
