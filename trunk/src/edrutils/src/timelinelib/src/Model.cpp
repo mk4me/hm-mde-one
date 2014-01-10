@@ -292,6 +292,7 @@ void Model::removeChannel(const std::string & path)
     innerRemoveChannel(getChannel(path));
 
     state.length = getLength();
+	state.time = std::min(state.time, state.length);
 
     notify();
 }
@@ -320,6 +321,7 @@ void Model::removeChannels(const std::set<std::string> & paths)
         }
 
         state.length = getLength();
+		state.time = std::min(state.time, state.length);
 
         notify();
     }

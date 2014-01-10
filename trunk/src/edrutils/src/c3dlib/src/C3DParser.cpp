@@ -164,8 +164,8 @@ public:
     //! \return g≥Íboka kopia obiektu
 	virtual IEvent* clone() const
 	{
-        Event* newEvent = new Event(*this);
-		return newEvent;
+        std::auto_ptr<Event> newEvent(new Event(*this));
+		return newEvent.release();
 	}
 public:
     //! \return wkaünik na obiekt btk zawierajπcy informacje o zdarzeniu
