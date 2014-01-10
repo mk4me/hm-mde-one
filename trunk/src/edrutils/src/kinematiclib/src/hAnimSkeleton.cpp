@@ -112,33 +112,20 @@ std::string hAnimSkeleton::mapJointName(const std::string& given)
 {
 	// hack
 	const std::map<std::string, std::string>& jointMappingDictionary = mappingSchemes[0]->getMappingDictionary();
-	if (/*boneMappingDictionary.size() == 0 && */jointMappingDictionary.empty() == true) {
+	if (jointMappingDictionary.empty() == true) {
 		throw kinematic::DictionaryNotLoadedException("dictionary with mapping scheme was not loaded");
 	}
-	std::map<std::string, std::string>::const_iterator it = jointMappingDictionary.find(given);
+	auto it = jointMappingDictionary.find(given);
 	if (it != jointMappingDictionary.end()) {
 		return it->second;
 	} else {
 		throw UnableToMapJointException(given);
 	}
-	/*std::map<std::string, std::string>::iterator it = boneMappingDictionary.find(given);
-	if (it != boneMappingDictionary.end()) {
-		hAnimBonePtr bone = bones[it->second];
-		return bone->getParentJoint().lock()->getName();
-	} else {
-		it = jointMappingDictionary.find(given);
-		if (it != jointMappingDictionary.end()) {
-			return it->second;
-		} else {
-			throw UnableToMapJointException(given);
-		}
-	}*/
 }
 
 void hAnimSkeleton::doSkeletonMapping(SkeletalModelConstPtr skeletalModel)
 {
     const SkeletalModel::JointMap& jointMap = skeletalModel->getJointMap();
-    //SkeletalModel::JointMap::iterator it;
     for (auto it = jointMap.cbegin(); it != jointMap.cend(); ++it) {
         std::string mappedName = mapJointName(it->first);
         JointPtr joint = it->second;
@@ -161,7 +148,7 @@ hAnimSkeleton* hAnimSkeleton::createRaw()
 	hAnimJointPtr joint;
 	hAnimBonePtr bone;
 	hAnimJointPtr rootJoint;
-	hAnimSkeleton* skeleton = new hAnimSkeleton;
+	std::auto_ptr<hAnimSkeleton> skeleton(new hAnimSkeleton);
 
 	skeleton->createJointAndBone("HumanoidRoot", "sacrum", joint, bone); rootJoint = joint;
 	skeleton->createJointAndBone("sacroiliac", "pelvis", joint, bone);
@@ -278,21 +265,11 @@ hAnimSkeleton* hAnimSkeleton::createRaw()
 
 	
 	skeleton->setRoot(rootJoint);
-	return skeleton;
+	return skeleton.release();
 }
 
 hAnimSkeleton* hAnimSkeleton::clone() const
 {
-    /*hAnimSkeleton* clone = new hAnimSkeleton;
-    clone->root = cloneHierarchy(this->root, clone->joints, clone->bones);                          
-
-    clone->mappingSchemes.clear();
-    for (auto it = mappingSchemes.cbegin(); it != mappingSchemes.cend(); ++it) {
-    clone->mappingSchemes.push_back(SkeletonMappingSchemePtr((*it)->clone()));
-    }
-
-    return clone;*/
-
     hAnimSkeleton* clone = hAnimSkeleton::createRaw();
     clone->mappingSchemes.clear();
     for (auto it = mappingSchemes.cbegin(); it != mappingSchemes.cend(); ++it) {
@@ -302,10 +279,6 @@ hAnimSkeleton* hAnimSkeleton::clone() const
     for (auto it = joints.begin(); it != joints.end(); ++it) {
         hAnimJoint::copyContent(*it->second, *clone->joints[it->first]);
     }
-
-   /* for (auto it = bones.begin(); it != bones.end(); ++it) {
-        hAnimBone::copyContent(it->second, clone->bones[it->first]);
-    }*/
 
     clone->createActiveHierarchy();
     return clone;

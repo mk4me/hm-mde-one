@@ -11,6 +11,7 @@
 #define HEADER_GUARD_KINEMATIC__HANIMJOINT_H__
 
 #include <osg/Vec3>
+#include <osg/Quat>
 #include <kinematiclib/Joint.h>
 #include <kinematiclib/hAnimBone.h>
 

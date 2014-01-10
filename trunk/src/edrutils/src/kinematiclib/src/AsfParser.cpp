@@ -272,7 +272,6 @@ bool AsfParser::parseRoot(const string& root, Skeleton& skeleton) {
     string token;
     string line;
     
-    //vector<DegreeOfFreedom::Channel> channels;
     channels.clear();
     while (getline(lines, line)) {
         istringstream is(line);
@@ -315,11 +314,10 @@ bool AsfParser::parseRoot(const string& root, Skeleton& skeleton) {
 
     skeleton.setAxis(order);
     skeleton.setOrder(dataOrder);
-    //skeleton.setChannels(channels);
     skeleton.setOrientation(orientation);
     skeleton.setPosition(position);
     
-    return true;//result;
+    return true;
 }
 
 bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton)

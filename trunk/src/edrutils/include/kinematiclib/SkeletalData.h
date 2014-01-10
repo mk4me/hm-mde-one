@@ -4,11 +4,12 @@
 #include <boost/utility.hpp>
 #include <kinematiclib/Joint.h>
 #include <kinematiclib/Skeleton.h>
+#include <utils/StreamData.h>
 #include <utils/Debug.h>
 namespace kinematic 
 {
     //! klasa przechowuje wczytane dane animacji
-	class SkeletalData : public boost::noncopyable
+	class SkeletalData : boost::noncopyable
 	{
 	public:
 		/// \brief  Struktura zawiera wartości kanałów dla
@@ -27,12 +28,13 @@ namespace kinematic
             //! \return głęboka kopia obiektu
 			singleJointState* clone() const
 			{
-				singleJointState* clone = new singleJointState();
+				std::auto_ptr<singleJointState> clone(new singleJointState());
 				clone->channelValues = this->channelValues;
 				clone->name = this->name;
-				return clone;
+				return clone.release();
 			}
 		};
+
 		typedef boost::shared_ptr<singleJointState> singleJointStatePtr;
 		typedef boost::shared_ptr<const singleJointState> singleJointStateConstPtr;
 
@@ -44,16 +46,17 @@ namespace kinematic
             //! \return głęboka kopia obiektu
 			singleFrame* clone() const 
 			{
-				singleFrame* clone = new singleFrame();
+				std::auto_ptr<singleFrame> clone(new singleFrame());
 				clone->frameNo = this->frameNo;
 				int count = this->jointsData.size();
 				clone->jointsData.resize(count);
 				for (int i = 0; i < count; ++i) {
 					clone->jointsData[i] = singleJointStatePtr(this->jointsData[i]->clone());
 				}
-				return clone;
+				return clone.release();
 			}
 		};
+
 		typedef boost::shared_ptr<singleFrame> singleFramePtr;
 
 	public:
@@ -79,13 +82,13 @@ namespace kinematic
         //! \return głęboka kopia obiektu
 		virtual SkeletalData* clone() const 
 		{
-			SkeletalData* clone = new SkeletalData();
+			std::auto_ptr<SkeletalData> clone(new SkeletalData());
 			int count = this->frames.size();
 			clone->frames.resize(count);
 			for (int i = 0; i < count; ++i) {
 				clone->frames[i] = singleFramePtr(frames[i]->clone());
 			}
-			return clone;
+			return clone.release();
 		}
 		
 	private:
@@ -97,6 +100,43 @@ namespace kinematic
 	};
 	typedef boost::shared_ptr<SkeletalData> SkeletalDataPtr;
 	typedef boost::shared_ptr<const SkeletalData> SkeletalDataConstPtr;
+
+	//! Klatka dla danych strumieniowych
+	struct StreamSingleFrame
+	{
+		//! Pozycja roota
+		osg::Vec3 rootPosition;
+		int frameNo; //!< numer klatki animacji
+		std::vector<SkeletalData::singleJointStatePtr> jointsData; //!< wartości kanałów
+
+		StreamSingleFrame* clone() const 
+		{
+			std::auto_ptr<StreamSingleFrame> clone(new StreamSingleFrame());
+			clone->rootPosition = this->rootPosition;
+			clone->frameNo = this->frameNo;
+			int count = this->jointsData.size();
+			clone->jointsData.resize(count);
+			for (int i = 0; i < count; ++i) {
+				clone->jointsData[i] = SkeletalData::singleJointStatePtr(this->jointsData[i]->clone());
+			}
+			return clone.release();
+		}
+	};
+
+	struct StreamSkeletonDataFrame
+	{
+		//! Pozycja roota
+		osg::Vec3 rootPosition;
+		int frameNo; //!< numer klatki animacji
+		std::vector<osg::Quat> rotations; //!< rotacje
+	};
+
+	typedef utils::StreamT<StreamSingleFrame> SkeletalFramesStream;
+
+	typedef utils::StreamT<StreamSkeletonDataFrame> SkeletalDataStream;
+
+	typedef boost::shared_ptr<SkeletalDataStream> SkeletalDataStreamPtr;
+	typedef boost::shared_ptr<const SkeletalDataStream> SkeletalDataStreamConstPtr;
 
 }
 #endif

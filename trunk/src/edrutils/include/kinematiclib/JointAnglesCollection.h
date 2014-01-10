@@ -79,34 +79,6 @@ public:
 private:
     /// \brief  Na podstawie danych z parsera tworzy tablicę z kwaternionami
     void createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel, SkeletalDataConstPtr & skeletalData);
-    /// \brief  Wyszukuje i zwraca długość najdłuższej z kości w szkielecie
-    /// \param  skeleton  Przeszukiwany szkielet
-    /// \return długość najdłuższej z kości. 
-    double getMaxBoneLength(const Skeleton& skeleton) const;
-    /// \brief zwraca maksymalną długość kości
-    /// \param  joint staw, dostarczający hierarchię 
-    /// \param  maxLength dotychczasowa, najdłuższa kość
-    /// \return wyliczona długość. 
-    double getMaxLength(const JointConstPtr & joint, double maxLength) const;
-    //! obraca wektor o kąty eulera
-    //! \param v obracany wektor
-    //! \param rX kąt X
-    //! \param rY kąt Y
-    //! \param rZ kąt Z
-    //! \return obliczony wektor
-    osg::Vec3 vectorRotation( osg::Vec3 v, double rX, double rY, double rZ);
-    //! zwraca rotację względną pozmiędzy rodzicem a dzieckiem
-    //! \param parent rodzic, dla którego liczona jest rotacja
-    //! \param child dziecko, dla którego liczona jest rotacja
-    //! \return kwaternion z obliczoną rotacją
-    osg::Quat rotationParentChild(hAnimJointPtr parent, hAnimJointPtr child);
-    //! Tworzy rotację na podstawie kątów
-    //! \param rX kąt X
-    //! \param rY kąt Y
-    //! \param rZ kąt Z
-    //! \param order kolejność kątów
-    //! \return wyliczony kwaternion
-    osg::Quat createRotation(const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order);
 	
 private:
 	//! pełny szkielet h-anim                          
@@ -117,7 +89,54 @@ private:
     double lengthRatio;
     //! czy obiekt jest już zainicjalizowany
     bool initialized;
-}; 
+};
+
+
+class JointAnglesCollectionStream
+{
+public:
+	//! Konstruktor domyślny
+	JointAnglesCollectionStream();
+	//! Destruktor
+	~JointAnglesCollectionStream();
+
+public: 
+	//! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
+	//! \param skeletalModel struktura szkieletu
+	//! \param skeletalData dane szkieletu
+	void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
+	//! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
+	//! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
+	//! \param rootPositions kolekcja danych pozycji korzenia szkieletu
+	//! \param channels kolekcja z danymi w postaci DataChannel
+	void setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
+	//! \brief zwraca szkielet zgodny z h-anim
+	const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }
+	//! \return długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
+	double getLengthRatio() const { return lengthRatio; }
+	//! ustawia długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
+	void setLengthRatio(double val) { lengthRatio = val; }
+	//! zwraca pozycję roota
+	//! \param time czas, dla którego ma być zwrócona pozycja
+	//! \return pozycja  
+	osg::Vec3 getRootPosition() const;
+
+	const std::vector<osg::Vec3> getRotations() const;
+
+private:
+	/// \brief  Na podstawie danych z parsera tworzy tablicę z kwaternionami
+	void createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
+
+private:
+	//! pełny szkielet h-anim                          
+	kinematic::hAnimSkeletonPtr haSkeleton;
+	//! Strumień z danymi dla szkieletu
+	kinematic::SkeletalDataStreamPtr skeletalDataStream;
+	//! długość przez którą należy pomnożyc aby uzyskać początkowe długości kości            
+	double lengthRatio;
+	//! czy obiekt jest już zainicjalizowany
+	bool initialized;
+};
 
 typedef boost::shared_ptr<JointAnglesCollection> JointAnglesCollectionPtr;
 typedef boost::shared_ptr<const kinematic::JointAnglesCollection> JointAnglesCollectionConstPtr;

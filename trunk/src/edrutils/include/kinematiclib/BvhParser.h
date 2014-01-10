@@ -75,7 +75,7 @@ private:
     /// \return Kolejność rotacji
     Axis::Order getAxisOrder(JointPtr bone) const;
     /// \brief  Zwraca stringa zawierającego podana liczbę spacji 
-    std::string space(int no) const;
+    static const std::string space(const int no);
     /// \brief  Zwraca stringa zawierającego liczbę spacji lub tabulatorów uzależniona od poziomu rekurencji
     std::string spaceL(int lvl) const;
 

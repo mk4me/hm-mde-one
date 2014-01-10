@@ -10,6 +10,12 @@
 #ifndef HEADER_GUARD_KINEMATIC__SKELETALMAPPINGSCHEME_H__
 #define HEADER_GUARD_KINEMATIC__SKELETALMAPPINGSCHEME_H__
 
+#include <string>
+#include <map>
+#include <vector>
+
+class TiXmlNode;
+
 namespace kinematic {
 
 	class SkeletonMappingScheme;
@@ -32,7 +38,8 @@ namespace kinematic {
         //! \return głęboka kopia obiektu
 		virtual SkeletonMappingScheme* clone() const 
 		{
-			return new SkeletonMappingScheme(*this);
+			std::auto_ptr<SkeletonMappingScheme> ret(new SkeletonMappingScheme(*this));
+			return ret.release();
 		}
 
 	private:

@@ -4,7 +4,7 @@
 namespace kinematic {
 SkeletalModel* SkeletalModel::clone() const
 {
-	SkeletalModel* clone = new SkeletalModel();
+	std::auto_ptr<SkeletalModel> clone(new SkeletalModel());
 	clone->version = this->version;        
 	clone->name = this->name;           
 	clone->documentation = this->documentation;  
@@ -14,7 +14,7 @@ SkeletalModel* SkeletalModel::clone() const
 	clone->skeleton = SkeletonPtr(this->skeleton->clone());
 
 	SkeletalModel::createMaps(clone->skeleton->getRoot(), clone->jointsMap, clone->jointsIds);
-	return clone;
+	return clone.release();
 }
 
 JointPtr SkeletalModel::getJointByName( const std::string& name )

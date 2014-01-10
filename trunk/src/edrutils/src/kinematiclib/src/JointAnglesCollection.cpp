@@ -9,25 +9,16 @@ using namespace std;
 
 namespace kinematic {
 
-
-
 JointAnglesCollection::JointAnglesCollection(void) :
     lengthRatio(4.0),
     initialized(false)
-    //preferedConnectionColor(1, 1, 1, 0.5f),
-    //preferedDotColor(1,1,0,1)
 {
 }
-
 
 void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData )
 {
     UTILS_ASSERT(!initialized);
-    //UTILS_ASSERT(!this->skeletalModel && !this->skeletalData);
-    //this->skeletalModel = skeletalModel;
-	//this->skeletalData = skeletalData;
     
-   const std::vector<SkeletalData::singleFramePtr>& frm = skeletalData->getFrames();
    this->haSkeleton = hAnimSkeleton::create();
    this->haSkeleton->doSkeletonMapping(skeletalModel);
    this->haSkeleton->createActiveHierarchy();
@@ -40,7 +31,7 @@ void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelConstPtr skelet
 			joint->setLength(joint->getLength() / lengthRatio);
                     
 			osg::Vec3 shift = joint->getDirection() * joint->getLength();
-			shift = vectorRotation(shift, 
+			shift = SkeletonUtils::vectorRotation(shift, 
 				osg::DegreesToRadians(-joint->getAxis()[0]),
 				osg::DegreesToRadians(-joint->getAxis()[1]),
 				osg::DegreesToRadians(-joint->getAxis()[2]));
@@ -49,7 +40,7 @@ void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelConstPtr skelet
 			osg::Quat pc;
 			hAnimJointPtr parent = joint->getActiveParent().lock();
 			if (parent) {
-				pc = rotationParentChild(parent, joint);
+				pc = SkeletonUtils::rotationParentChild(parent, joint);
 			}
 			joint->setChildParentRotation(pc);
 		}
@@ -69,21 +60,6 @@ void JointAnglesCollection::setSkeletal( kinematic::hAnimSkeletonPtr skeletalMod
     initialized = true;
 }
 
-double JointAnglesCollection::getMaxBoneLength(const Skeleton& skeleton) const 
-{
-    JointConstPtr root = skeleton.getRoot();
-    return getMaxLength(root, -1.0);
-}
-
-double JointAnglesCollection::getMaxLength(const JointConstPtr & joint, double maxLength) const
-{
-    maxLength = std::max(maxLength, joint->length);
-    for (int i = joint->children.size() - 1; i >= 0; --i) {
-        maxLength = std::max(maxLength, getMaxLength(joint->children[i], maxLength));
-    }
-    return maxLength;
- }
-
 void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel, kinematic::SkeletalDataConstPtr & data )
 {
     UTILS_ASSERT(lengthRatio > 0.0);
@@ -96,10 +72,7 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalMo
 	vector<SkeletalData::singleJointStatePtr>& jointsData = frames[0]->jointsData;
 	std::map<std::string, JointAngleChannelPtr> channelsMap;
 
-	
 	int fps = static_cast<int> (1.0 / data->getFrameTime());
-
-	
 
 	for (unsigned int i = 0; i < jointsData.size(); ++i) {
 		JointAngleChannelPtr channel(new JointAngleChannel(static_cast<float>(fps))); 
@@ -119,7 +92,6 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalMo
         }
     }
 
-    
     for (int i = 0; i < framesNo; ++i) {
         int jointStatesNo = frames[i]->jointsData.size();
         for (int j = 0; j < jointStatesNo; ++j) {
@@ -152,81 +124,9 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalMo
                 rootPositions[i][2] = (index != -1 ? jointState->channelValues[index] : 0.0);
                 rootPositions[i] /= lengthRatio;
 			} 
-			channelsMap[name]->addPoint(createRotation(mX, mY, mZ, joint->getOrder()));
+			channelsMap[name]->addPoint(SkeletonUtils::createRotation(mX, mY, mZ, joint->getOrder()));
         }
     }
-}
-
-
-
-// rewizja tworzenie skeletal data
-//SkeletalModelPtr JointAnglesCollection::createSkeletalData() const 
-//{
-//    SkeletalModelPtr model(new SkeletalModel);
-//    Skeleton& skeleton = model->getSkeleton();
-//	
-//    JointPtr newRoot = cloneRootWithActivated(this->haSkeleton->getRoot());
-//    skeleton.setRoot(newRoot);
-//
-//    model->setName("HumanModel");
-//    UTILS_ASSERT(false, "testowo zmienila się struktura ramek w parserach!");
-//    //model->getFrames() = frames;
-//    model->RecreateMaps();
-//    return model;
-//}
-
-//rewizja
-//JointPtr JointAnglesCollection::cloneRootWithActivated(const JointPtr origin ) const
-//{
-//    return Joint::clone(origin);
-//}
-
-//void JointAnglesCollection::changeNameInFrames(const std::string& oldName, const std::string& newName)
-//{
-//    int index = -1;
-//    for (int i = frames[0]->jointsData.size() - 1; i >= 0; --i) {
-//        if (frames[0]->jointsData[i].name == oldName) {
-//            index = i;
-//            break;
-//        }
-//    }
-//    if (index == -1) {
-//        return;
-//    }
-//    for (int i = frames.size() -1; i >= 0; --i) {
-//        frames[i]->jointsData[index].name = newName;
-//    }
-//}
-
-
-osg::Vec3 JointAnglesCollection::vectorRotation( osg::Vec3 v, double rX, double rY, double rZ )
-{
-    osg::Quat rotz; rotz.makeRotate(rZ, 0,0,1);
-    osg::Quat roty; roty.makeRotate(rY, 0,1,0);
-    osg::Quat rotx; rotx.makeRotate(rX, 1,0,0);
-    v = rotz * v;
-    v = roty * v;
-    v = rotx * v;
-    return v;
-}
-
-osg::Quat JointAnglesCollection::rotationParentChild(hAnimJointPtr parent, hAnimJointPtr child)
-{
-    double mul  = osg::DegreesToRadians(1.0);
-    osg::Matrix matParZ; matParZ.makeRotate(-parent->getAxis()[2] * mul, 0.0, 0.0, 1.0);
-    osg::Matrix matParY; matParY.makeRotate(-parent->getAxis()[1] * mul, 0.0, 1.0, 0.0);
-    osg::Matrix matParX; matParX.makeRotate(-parent->getAxis()[0] * mul, 1.0, 0.0, 0.0);
-
-    osg::Matrix matPar = matParZ * matParY * matParX;
-    osg::Matrix matChiZ; matChiZ.makeRotate(child->getAxis()[2] * mul, 0.0, 0.0, 1.0);
-    osg::Matrix matChiY; matChiY.makeRotate(child->getAxis()[1] * mul, 0.0, 1.0, 0.0);
-    osg::Matrix matChiX; matChiX.makeRotate(child->getAxis()[0] * mul, 1.0, 0.0, 0.0);
-
-    osg::Matrix matChi = matChiX * matChiY * matChiZ;
-    osg::Matrix resM = matChi * matPar ;
-    osg::Quat res; 
-    res.set(resM);
-    return res;
 }
 
 osg::Vec3 JointAnglesCollection::getRootPosition( int frame ) const
@@ -240,23 +140,6 @@ osg::Vec3 JointAnglesCollection::getRootPosition( double time ) const
     // TODO : Lerp
     int frame = std::min(std::max(0, static_cast<int>(framesNo * time)), framesNo - 1);
     return getRootPosition(frame);
-}
-
-osg::Quat JointAnglesCollection::createRotation( const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order )
-{
-    switch (order) 
-    {
-    case Axis::XYZ: return rX * rY * rZ;
-    case Axis::XZY: return rX * rZ * rY;
-    case Axis::YXZ: return rY * rX * rZ;
-    case Axis::YZX: return rY * rZ * rX;
-    case Axis::ZXY: return rZ * rX * rY;
-    case Axis::ZYX: return rZ * rY * rX;
-    default:
-        UTILS_ASSERT(false);
-        osg::Quat q;
-        return q;
-    }
 }
 
 int JointAnglesCollection::getIndex(const std::string& name ) const
@@ -286,7 +169,7 @@ int JointAnglesCollection::tryGetIndex(const std::string& name ) const
 
 JointAnglesCollection* JointAnglesCollection::clone() const
 {
-	JointAnglesCollection* obj = new JointAnglesCollection();
+	std::auto_ptr<JointAnglesCollection> obj(new JointAnglesCollection());
 	int count = static_cast<int>(channels.size());
 	obj->channels.resize(count);
 	for (int i = 0; i < count; ++i) {
@@ -298,11 +181,92 @@ JointAnglesCollection* JointAnglesCollection::clone() const
     obj->initialized = this->initialized;
     obj->rootPositions = this->rootPositions;
 
-    //obj->preferedConnectionColor = this->preferedConnectionColor;
-    //obj->preferedDotColor = this->preferedDotColor;
-	//obj->skeletalData = SkeletalDataPtr(this->skeletalData->clone());
-	//obj->skeletalModel = SkeletalModelPtr(this->skeletalModel->clone());
-	return obj;
+	return obj.release();
+}
+
+JointAnglesCollectionStream::JointAnglesCollectionStream() :
+	lengthRatio(4.0), initialized(false)
+{
+
+}
+
+JointAnglesCollectionStream::~JointAnglesCollectionStream()
+{
+
+}
+
+void JointAnglesCollectionStream::setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel,
+	kinematic::SkeletalDataStreamPtr skeletalDataStream)
+{
+	UTILS_ASSERT(!initialized);
+
+	this->haSkeleton = hAnimSkeleton::create();
+	this->haSkeleton->doSkeletonMapping(skeletalModel);
+	this->haSkeleton->createActiveHierarchy();
+
+	std::map<std::string, hAnimJointPtr>& joints = this->haSkeleton->getJoints();
+	std::for_each(joints.begin(), joints.end(), [&](std::pair<string, hAnimJointPtr> p) 
+	{   
+		hAnimJointPtr joint = p.second;
+		if (joint->isActive()) {
+			joint->setLength(joint->getLength() / lengthRatio);
+
+			osg::Vec3 shift = joint->getDirection() * joint->getLength();
+			shift = SkeletonUtils::vectorRotation(shift, 
+				osg::DegreesToRadians(-joint->getAxis()[0]),
+				osg::DegreesToRadians(-joint->getAxis()[1]),
+				osg::DegreesToRadians(-joint->getAxis()[2]));
+			joint->setLocalShift(shift);
+
+			osg::Quat pc;
+			hAnimJointPtr parent = joint->getActiveParent().lock();
+			if (parent) {
+				pc = SkeletonUtils::rotationParentChild(parent, joint);
+			}
+			joint->setChildParentRotation(pc);
+		}
+	} 
+	);
+
+	createQuaternionRepresentation(skeletalModel, skeletalDataStream);
+	this->skeletalDataStream = skeletalDataStream;
+	initialized = true;
+}
+	
+void JointAnglesCollectionStream::setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel,
+	kinematic::SkeletalDataStreamPtr skeletalDataStream)
+{
+	this->haSkeleton = skeletalModel;
+	this->skeletalDataStream = skeletalDataStream;
+	initialized = true;
+}
+
+osg::Vec3 JointAnglesCollectionStream::getRootPosition() const
+{
+	kinematic::StreamSkeletonDataFrame data;
+	skeletalDataStream->data(data);
+	return data.rootPosition;
+}
+
+const std::vector<osg::Vec3> JointAnglesCollectionStream::getRotations() const
+{
+	kinematic::StreamSkeletonDataFrame data;
+	skeletalDataStream->data(data);
+
+	std::vector<osg::Vec3> ret;
+	ret.reserve(data.rotations.size());
+
+	for(auto it = data.rotations.begin(); it != data.rotations.end(); ++it){
+		ret.push_back(SkeletonUtils::getEulerFromQuat(*it));
+	}
+
+	return ret;
+}
+
+void JointAnglesCollectionStream::createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel,
+	kinematic::SkeletalDataStreamPtr skeletalDataStream)
+{
+
 }
 
 } //kinematic

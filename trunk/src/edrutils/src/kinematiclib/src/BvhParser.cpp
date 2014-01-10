@@ -23,13 +23,8 @@ std::string kinematic::BvhParser::getChannelName( DegreeOfFreedom::Channel chann
     throw WrongFileException("Wrong channel name");
 }
 //----------------------------------------------------------------------------------
-std::string kinematic::BvhParser::space(int no) const {
-    // ugly, na pewno jest jakas funkcja do tego
-    string res;
-    for (int i = 0; i < no; ++i) {
-        res += ' ';
-    }
-    return res;
+const std::string kinematic::BvhParser::space(const int no) {
+    return string(no, ' ');
 }
 //-------------------------------------------------------------------------------------------
 string kinematic::BvhParser::spaceL(int lvl) const {

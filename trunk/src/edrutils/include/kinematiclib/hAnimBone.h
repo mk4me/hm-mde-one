@@ -10,6 +10,8 @@
 #ifndef HEADER_GUARD_KINEMATIC__HANIMBONE_H__
 #define HEADER_GUARD_KINEMATIC__HANIMBONE_H__
 
+#include <boost/noncopyable.hpp>
+
 namespace kinematic {
 
 class hAnimJoint;
