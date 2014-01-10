@@ -1,8 +1,6 @@
 #include "PCH.h"
 #include "DataSource.h"
 #include <kinematiclib/JointAnglesCollection.h>
-#include <KdAR.h>
-#include <BIC.h>
 #include <boost/lexical_cast.hpp>
 #include <kinematiclib/BvhParser.h>
 #include <corelib/Filesystem.h>
@@ -16,7 +14,8 @@
 
 using namespace IMU;
 
-IMUCostumeDataSource::IMUCostumeDataSource() : connected_(false)
+IMUCostumeDataSource::IMUCostumeDataSource()
+	: connected_(false), refreshData_(false), memoryDM(nullptr)
 {
 
 }
@@ -98,6 +97,13 @@ void IMUCostumeDataSource::addToUpdate(const unsigned int idx,
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(updateSynch);
 	coreData[idx] = ol;
 	rawData[idx] = rd;
+
+	if(refreshData_ == false){
+		refreshData_ = true;
+		utils::FunctorRunnable::Functor f = boost::bind(&IMUCostumeDataSource::refreshData, this);
+		utils::IRunnablePtr runnable(new utils::FunctorRunnable(f));
+		refreshThread->start(runnable);
+	}
 }
 
 void IMUCostumeDataSource::removeFromUpdate(const unsigned int idx)
@@ -228,30 +234,24 @@ void IMUCostumeDataSource::unloadAllCostumes()
 void IMUCostumeDataSource::connectCostiumes()
 {
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch);
-	
+
 	if(connected_ == true){
 		return;
 	}
 
-	StartThread();
-
-	unsigned int i = 500;
-
-	while((!GetIsReady() || !IsReady()) && --i > 0){
-		OpenThreads::Thread::microSleep(1000);
-	}
-
-	const auto modelsCount = GetModelsCount();
-
-	if(GetIsReady() == false || IsReady() == false || modelsCount == 0){
-		//EndThread();
+	core::shared_ptr<imuCostume::Costume> costume;
+	try{
+		costume.reset(new imuCostume::Costume);
+	}catch(...){
 		return;
 	}
 
-	costumesConfigurations.resize(modelsCount);
+	costumesConfigurations.resize(1);
 
-	costumesDataStatus_.resize(modelsCount);
+	costumesDataStatus_.resize(1);
 	std::fill(costumesDataStatus_.begin(), costumesDataStatus_.end(), NODATA);
+
+	costumesConfigurations[0].costume = costume;
 
 	core::Filesystem::Path p(QCoreApplication::applicationDirPath().toStdString());		
 
@@ -260,10 +260,7 @@ void IMUCostumeDataSource::connectCostiumes()
 
 	kinematic::hAnimSkeletonPtr model;
 
-	if(core::Filesystem::pathExists(p) == false){
-		//TODO
-		//message ¿e nie ma pliku z konfiguracj¹ szkieletu - nie mozna utworzyæ strumieni dla szkieletów
-	}else{
+	if(core::Filesystem::pathExists(p) == true){
 		kinematic::SkeletalDataPtr tmpData(new kinematic::SkeletalData);
 		kinematic::SkeletalModelPtr tmpModel(new kinematic::SkeletalModel);
 
@@ -271,39 +268,24 @@ void IMUCostumeDataSource::connectCostiumes()
 		kinematic::BvhParser parser;
 		parser.parse(tmpModel, tmpData, p.string());
 
-		model = kinematic::hAnimSkeleton::create();
-		model->doSkeletonMapping(tmpModel);
-		model->createActiveHierarchy();
+		//TODO
+		//model = kinematic::hAnimSkeleton::create();
+		//model->doSkeletonMapping(tmpModel);
+		//model->createActiveHierarchy();
 	}
 
-	for(unsigned int i = 0; i < modelsCount; ++i){
-		costumesConfigurations[i].id = i;
-		//iloœæ IMU na sztywno 12
-		costumesConfigurations[i].IMUcount = 12;
-		//ile mam jointów w modelu
-		costumesConfigurations[i].jointsCount = 0;
-		if(model != nullptr){
-			costumesConfigurations[i].jointsCount = model->getJoints().size();
-		}
-
-		costumesConfigurations[i].name = "Costume " + boost::lexical_cast<std::string>(i);
-		// model wszêdzie taki sam
-		costumesConfigurations[i].skeleton = model;
-	}
+	costumesConfigurations[0].id = 0;
+	costumesConfigurations[0].name = "Costume " + boost::lexical_cast<std::string>(0);
+	// model wszêdzie taki sam
+	costumesConfigurations[0].skeleton = model;	
 
 	core::IThreadPool::Threads t;
 	plugin::getThreadPool()->getThreads("IMUCostumeDataSource", t, 1);
-
-	if(t.empty() == false){
-		utils::FunctorRunnable::Functor f = boost::bind(&IMUCostumeDataSource::refreshData, this);
-		refreshThread = t.front();
-		utils::IRunnablePtr runnable(new utils::FunctorRunnable(f));
-		refreshData_ = true;
-		refreshThread->start(runnable);
-	}
+	refreshThread = t.front();	
 
 	connected_ = true;
 }
+
 
 void IMUCostumeDataSource::disconnectCostiumes()
 {
@@ -314,13 +296,11 @@ void IMUCostumeDataSource::disconnectCostiumes()
 	}
 
 	//zakoñcz w¹tek pobieraj¹cy dane jeœli jest taki
-	if(refreshThread != nullptr){
+	if(refreshData_ == true){
 		refreshData_ = false;
 		refreshThread->join();
 		refreshThread.reset();
-	}
-	//koñczê w¹tek odbieraj¹cy dane
-	//EndThread();
+	}	
 
 	//uzupe³niam statusy
 	std::fill(costumesDataStatus_.begin(), costumesDataStatus_.end(), NODATA);
@@ -339,43 +319,50 @@ void IMUCostumeDataSource::refreshData()
 {
 	while(refreshData_ == true){
 		try {
+
 			for(auto it = rawData.begin(); it != rawData.end(); ++it){
 
-				std::vector<IMUData> imuData(12);
+				std::vector<IMU::IMUData> imuData(costumesConfigurations[it->first].costume->imusNumber());
 
 				{
 					utils::ScopedLock<utils::RecursiveSyncPolicy> lock(updateSynch);
 
-					for(unsigned int i = 0; i < 12; ++i){
+					costumesConfigurations[it->first].costume->readPacket();
 
-						auto rid = GetImuData(i+1);
+					auto packet = costumesConfigurations[it->first].costume->costumePacket();
 
-						imuData[i].accelerometer = osg::Vec3(rid.acc_x, rid.acc_y, rid.acc_z);
-						imuData[i].gyroscope = osg::Vec3(rid.rate_x, rid.rate_y, rid.rate_z);
-						imuData[i].magnetometer = osg::Vec3(rid.mag_x, rid.mag_y, rid.mag_z);
+					for(unsigned int i = 0; i < imuData.size(); ++i){						
 
-						/*
-						std::stringstream ss;
+						if(packet.status[i] == imuCostume::Costume::DATA){
 
-						ss << "IMU " << i <<" readings:\nacceletrometer: x = " 
-							<< imuData[i].accelerometer[0] << "\ty = "
-							<< imuData[i].accelerometer[1] << "\tz = "
-							<< imuData[i].accelerometer[2] << "\ngyroscope: x = "
-							<< imuData[i].gyroscope[0] << "\ty = "
-							<< imuData[i].gyroscope[1] << "\tz = "
-							<< imuData[i].gyroscope[2] << "\nmagnetometer: x = "
-							<< imuData[i].magnetometer[0] << "\ty = "
-							<< imuData[i].magnetometer[1] << "\tz = "
-							<< imuData[i].magnetometer[2];
+							imuData[i].accelerometer = packet.data[i].accelerometer;
+							imuData[i].gyroscope = packet.data[i].gyroscope;
+							imuData[i].magnetometer = packet.data[i].magnetometer;
+							imuData[i].orientation = packet.data[i].orientation;
+						
+							std::stringstream ss;
 
-						PLUGIN_LOG_DEBUG(ss.str());
-						*/
+							ss << "IMU " << i <<" readings:\nacceletrometer: x = " 
+								<< imuData[i].accelerometer[0] << "\ty = "
+								<< imuData[i].accelerometer[1] << "\tz = "
+								<< imuData[i].accelerometer[2] << "\ngyroscope: x = "
+								<< imuData[i].gyroscope[0] << "\ty = "
+								<< imuData[i].gyroscope[1] << "\tz = "
+								<< imuData[i].gyroscope[2] << "\nmagnetometer: x = "
+								<< imuData[i].magnetometer[0] << "\ty = "
+								<< imuData[i].magnetometer[1] << "\tz = "
+								<< imuData[i].magnetometer[2];
+
+							PLUGIN_LOG_DEBUG(ss.str());
+						}else{
+							PLUGIN_LOG_DEBUG("No data for costume " << it->first << " from IMU " << i);
+						}
 					}
 				}
 
 				rawData[it->first].imuDataStream->pushData(imuData);
 
-				if(costumesConfigurations[it->first].jointsCount > 0){
+				/*if(costumesConfigurations[it->first].jointsCount > 0){
 
 					kinematic::StreamSkeletonDataFrame sf;
 
@@ -394,7 +381,7 @@ void IMUCostumeDataSource::refreshData()
 					}
 
 					rawData[it->first].skeletalDataStream->pushData(sf);
-				}
+				}*/
 			}
 		}catch(...){
 

@@ -23,7 +23,7 @@ ADD_PROJECT(plugin_subject "corelib;vidlib;plugin_c3d" "plugins/subject")
 ADD_PROJECT(plugin_hmm "corelib;coreui;c3dlib;QWT;vidlib;kinematiclib;plugin_subject" "plugins/hmmlib")
 ADD_PROJECT(plugin_newVdf "dflib;plugin_subject;plugin_newCommunication;plugin_newTimeline;plugin_c3d;plugin_video;coreui" "plugins/newVdf")
 ADD_PROJECT(plugin_dfElements "dflib;coreui;plugin_newVdf;plugin_c3d" "plugins/dfElements")
-ADD_PROJECT(plugin_imuCostume "corelib;coreui;BOOST;QT;OSG;plugin_c3d;plugin_kinematic;BIC;KDAR" "plugins/imuCostume")
+ADD_PROJECT(plugin_imuCostume "corelib;coreui;BOOST;QT;OSG;plugin_c3d;plugin_kinematic;imucostumelib" "plugins/imuCostume")
 #ADD_PROJECT(plugin_python "BOOST;QT;corelib" "plugins/python")
 
 SET_PROJECTS_GROUP("view")

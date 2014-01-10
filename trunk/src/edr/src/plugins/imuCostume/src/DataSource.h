@@ -17,6 +17,7 @@
 #include <kinematiclib/hAnimSkeleton.h>
 #include <kinematiclib/JointAnglesCollection.h>
 #include <threading/SynchronizationPolicies.h>
+#include <imucostumelib/ImuCostume.h>
 
 namespace IMU
 {
@@ -33,8 +34,7 @@ namespace IMU
 			std::string name;						//! Nazwa
 			unsigned int id;						//! Identyfikator
 			kinematic::hAnimSkeletonPtr skeleton;	//! Szkielet
-			unsigned int IMUcount;					//! Iloœæ sensorów
-			unsigned int jointsCount;				//! Iloœæ jointów
+			core::shared_ptr<imuCostume::Costume> costume;
 		};
 
 		//! Wyliczenie opisuj¹ce status danych kostiumu

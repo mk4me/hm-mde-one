@@ -10,6 +10,7 @@
 #define HEADER_GUARD_IMU__WRAPPERS_H__
 
 #include <osg/Vec3>
+#include <osg/Quat>
 #include <utils/StreamData.h>
 #include <utils/SmartPtr.h>
 #include <corelib/BaseDataTypes.h>
@@ -23,6 +24,7 @@ namespace IMU
 		osg::Vec3 accelerometer;
 		osg::Vec3 gyroscope;
 		osg::Vec3 magnetometer;
+		osg::Quat orientation;
 	};
 
 	//! Strumieñ danych z IMU
