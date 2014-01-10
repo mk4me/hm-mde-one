@@ -234,5 +234,5 @@ bool DataSourceGenderPerspective::headers(const QTreeWidgetItem * item, QStringL
 
 void DataSourceGenderPerspective::release()
 {
-	std::map<const QTreeWidgetItem*, char>().swap(contentMap);
+	std::map<const QTreeWidgetItem*, webservices::xmlWsdl::Gender::Type>().swap(contentMap);
 }

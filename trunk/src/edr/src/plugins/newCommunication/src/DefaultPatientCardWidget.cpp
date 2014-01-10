@@ -11,6 +11,17 @@
 using namespace communication;
 using namespace webservices;
 
+QString getDate(const webservices::Date & date)
+{
+	QString ret;
+
+	if(date.getYear() >= 1800){
+		ret = QString::fromStdString(date.toString());
+	}
+
+	return ret;
+}
+
 class SessionTreeItem : public QTreeWidgetItem
 {
 public:
@@ -122,7 +133,7 @@ void DefaultPatientCardWidget::setPersonalData(const MedicalShallowCopy::Patient
 		personalDataWidget->setName(QString::fromUtf8(patient->name.c_str()));
 		personalDataWidget->setSurname(QString::fromUtf8(patient->surname.c_str()));
 		personalDataWidget->setGender(communication::IDataSourceContent::decodeGender(patient->gender));
-		personalDataWidget->setBirthdate(QString::fromStdString(webservices::toString(patient->birthDate)));
+		personalDataWidget->setBirthdate(getDate(patient->birthDate));
 		personalDataWidget->setPhoto(photo);
 	}
 }
@@ -138,7 +149,7 @@ void DefaultPatientCardWidget::setDisordersData(const MedicalShallowCopy::Patien
 		int i = 0;
 		for(auto it = patientDisorders.begin(); it != patientDisorders.end(); ++it){
 			disordersDataWidget->setDisorder(i++, QString::fromUtf8(it->second.disorder->name.c_str()),
-				QString::fromStdString(webservices::toString(it->second.diagnosisDate)), QString::fromUtf8(it->second.focus.c_str()));
+				getDate(it->second.diagnosisDate), QString::fromUtf8(it->second.focus.c_str()));
 		}
 
 		for( ; i < s; ++i){
@@ -226,7 +237,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 	QTreeWidgetItem * ret = new QTreeWidgetItem();
 
 	ret->setText(0, name);
-	ret->setText(1, webservices::toString(sessions.begin()->second->sessionDate).c_str());
+	ret->setText(1, getDate(sessions.begin()->second->sessionDate));
 
 	//górna partia
 	if(sessions.begin()->first % 2 == 0){

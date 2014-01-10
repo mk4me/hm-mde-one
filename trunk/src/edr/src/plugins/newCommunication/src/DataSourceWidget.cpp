@@ -1955,7 +1955,7 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 		disorders.push_back(dis);
 	}
 
-	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, webservices::toString(patient->birthDate),
+	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, patient->birthDate.toString(),
 		Patient::decodeGender(patient->gender), utils::shared_ptr<const QPixmap>(), disorders));
 
 	//dodaję do DM
@@ -2272,9 +2272,9 @@ void DataSourceWidget::finishDownloadRequest()
 
 void DataSourceWidget::tryHideStatusWidget()
 {
-	if(getObservedObjects().empty() == true){
+	//if(getObservedObjects().empty() == true){
 		downloadStatusWidget->setVisible(false);
-	}
+	//}
 }
 
 void DataSourceWidget::update(const communication::IDownloadRequest * request)

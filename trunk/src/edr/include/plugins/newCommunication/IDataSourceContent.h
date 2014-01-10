@@ -233,20 +233,15 @@ namespace communication
 		virtual void release() = 0;
 		//! \param c Znak symbolizujący płeć - z webservices::MedicalShallowCopy::Patient, m,M => Mężczyzna, f,F,w,W,k,K => Kobieta
 		//! \return Przetłumaczona nazwa płci
-		static QString decodeGender(char c)
+		static QString decodeGender(const webservices::xmlWsdl::Gender::Type g)
 		{
-			QChar g(c);
-			g = g.toUpper();
-
 			QString gender;
 
-			switch(g.toAscii()){
-			case 'M':
+			switch(g){
+			case webservices::xmlWsdl::Gender::Male:
 				gender = QObject::tr("Man");
 				break;
-			case 'K':
-			case 'F':
-			case 'W':
+			case webservices::xmlWsdl::Gender::Female:
 				gender = QObject::tr("Woman");
 				break;
 			default:

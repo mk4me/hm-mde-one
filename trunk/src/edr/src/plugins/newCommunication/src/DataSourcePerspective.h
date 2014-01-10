@@ -108,7 +108,7 @@ public:
 
 private:
 
-	std::map<const QTreeWidgetItem*, char> contentMap;
+	std::map<const QTreeWidgetItem*, webservices::xmlWsdl::Gender::Type> contentMap;
 };
 
 #endif	//	HEADER_GUARD___DATASOURCEPERSPECTIVE_H__
