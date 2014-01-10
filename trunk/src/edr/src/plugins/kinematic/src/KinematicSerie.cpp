@@ -1,47 +1,53 @@
 #include "PCH.h"
 #include "KinematicSerie.h"
 
-KinematicSerie::KinematicSerie() :
-transformNode(new osg::PositionAttitudeTransform()),
-    matrixTransform(new osg::MatrixTransform()),
-    time(0.0)
+KinematicSerieBase::KinematicSerieBase() :
+	matrixTransform(new osg::MatrixTransform())	
 {
-    // węzeł obsługiwany przez manipulatory jest parentem dla wezja wewnetrznego serii
-    matrixTransform->addChild(transformNode);
+
+}	
+
+KinematicSerieBase::~KinematicSerieBase()
+{
+
 }
 
-void KinematicSerie::resetTransform()
+KinematicSerieBase::MatrixTransformPtr KinematicSerieBase::getMatrixTransformNode()
 {
-    // zerowanie pracy manipulatorów
-    MatrixTransformPtr transform = getMatrixTransformNode();
-    // pobieramy podstawowa macierz (dla czasu 0)
-    transform->setMatrix(getInitialMatrix());
+	return matrixTransform;
+}
+
+void KinematicSerieBase::resetTransform()
+{
+	matrixTransform->setMatrix(osg::Matrix());
+	innerResetTransform();
+}
+
+const osg::Vec3 KinematicSerieBase::pivotPoint() const
+{
+	return matrixTransform->getMatrix().getTrans();
+}
+
+KinematicTimeSerie::KinematicTimeSerie() : time(-1.0)
+{
+
+}
+
+void KinematicTimeSerie::resetTransform()
+{
+	KinematicSerieBase::resetTransform();
     // ustawienie czasu (powinno odświeżyć)
     setLocalTime(getTime());
 }
 
-void KinematicSerie::setTime( double val )
+void KinematicTimeSerie::setTime( double val )
 {
     time = val; 
     // ustawienie czasu w klasie pochodnej
     setLocalTime(val);
 }
 
-osg::Vec3 KinematicSerie::getPivot() const
-{
-    // w najprostszym wariancie, pivot pobieramy od razu z macierzy
-    // klasy pochodne moga to robic w inny sposób
-    auto matrix = matrixTransform->getMatrix();
-    auto t1 = matrix.getTrans();
-    return t1;
-}
-
-void KinematicSerie::setEvents( EventsCollectionConstPtr val )
+void KinematicTimeSerie::setEvents( EventsCollectionConstPtr val )
 {
     events = val;
-}
-
-KinematicSerie::MatrixTransformPtr KinematicSerie::getMatrixTransformNode()
-{
-    return matrixTransform;
 }

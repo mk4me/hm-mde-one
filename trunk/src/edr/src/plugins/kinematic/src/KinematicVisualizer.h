@@ -22,25 +22,18 @@
 #include <QtGui/QWidget>
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QComboBox>
-#include "SkeletalVisualizationScheme.h"
-#include "ISchemeDrawer.h"
 #include "OsgSchemeDrawer.h"
-#include "LineSchemeDrawer.h"
-#include "PointSchemeDrawer.h"
-#include "GlPointSchemeDrawer.h"
-#include "GlLineSchemeDrawer.h"
-#include "SchemeDrawerContainer.h"
 #include "Manipulators.h"
 #include "TrajectoriesDialog.h"
-#include "SchemeDialog.h"
 #include "KinematicSerie.h"
 
 #include <coreui/CoreWidgetAction.h>
 
-class LabeledDoubleSpinBox;
+class QDoubleSpinBox;
 
 namespace coreUI {
 	class CoreAction;
+	class CoreLabeledWidget;
 }
 
 /*! Klasa dostarcza scenę 3d i zarządza obiektami na niej */
@@ -56,6 +49,10 @@ class KinematicVisualizer :  private QObject, public plugin::IVisualizer
     Q_OBJECT;
     UNIQUE_ID("{E8B5DEB2-5C57-4323-937D-1FFD288B65B9}")
 	CLASS_DESCRIPTION("Kinematic visualizer", "Kinematic visualizer")
+
+private:
+
+	typedef std::pair<coreUI::CoreLabeledWidget*, QDoubleSpinBox*> LabeledDoubleSpinBox;
 
 public:
     KinematicVisualizer();
@@ -73,6 +70,9 @@ public:
     //! Tworzenie serii na podstawie już istniejącej, nie zaimplementowane
     //! \param serie Kopiowana seria
     virtual plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie* serie);
+
+	virtual plugin::IVisualizer::ISerie * createSerie(const plugin::IVisualizer::ISerie *,const utils::TypeInfo &,const utils::ObjectWrapperConstPtr &);
+			
     //! Usuwa serie z wizualizatora
     //! \param serie seria do usunięcia
     virtual void removeSerie(plugin::IVisualizer::ISerie *serie);
@@ -81,6 +81,7 @@ public:
 	virtual void setActiveSerie(plugin::IVisualizer::ISerie *serie);
 	//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
 	virtual const plugin::IVisualizer::ISerie * getActiveSerie() const;
+	virtual plugin::IVisualizer::ISerie * getActiveSerie();
 
 	//! Tworzy pusty wizualizator
 	virtual plugin::IVisualizer* create() const;
@@ -101,69 +102,51 @@ private:
     //! \return węzeł z siatką reprezentującą podlogę
     osg::ref_ptr<osg::Group> createFloor();
     //! \return aktywna seria, o ile taka została wybrana
-    KinematicSerie* tryGetCurrentSerie();
+    KinematicTimeSerie* tryGetCurrentSerie();
     //! odświeża dane w spinboxach zawierających informcacje o transformacjach manipulatorów
     void refreshSpinboxes();
     //! Metoda ustala, do której serii należy dana geoda
     //! \param geode obiekt sceny, który chcemy sprawdzic
     //! \return seria, do której należy obiekt lub nullptr jeśli nie znaleziono
-    KinematicSerie* getParentSerie(GeodePtr geode);
-    //! Metoda pomocnicza, do konwersji zapisu rotacji
-    //! \param q kwaternion z liczona rotacja
-    //! \return wyliczone katy Eulera
-    static osg::Vec3 getEulerFromQuat(const osg::Quat& q);
-    //! Metoda pomocnicza, do konwersji zapisu rotacji
-    //! \param heading
-    //! \param attitude
-    //! \param bank
-    //! \return wyliczony kwaternion
-    static osg::Quat getQuatFromEuler(double heading, double attitude, double bank);
-    //! Metoda pomocnicza, do konwersji zapisu rotacji
-    //! \param euler katy eulera w postaci wektora
-    //! \return wyliczony kwaternion
-    static osg::Quat getQuatFromEuler(const osg::Vec3& euler);
+    KinematicTimeSerie* getParentSerie(GeodePtr geode);
     //! Metoda ułatwiająca tworzenie spinwidgetów z opisem. Tworzony jest widget rodzica zawierający spinbox i label z opisem
     //! \param parent rodzic, do którego zostanie towrzony widget
     //! \param name opis spinboxa
     //! \param step krok dla strzałek
     //! \param visible czy ma być widoczny po utworzeniu
     //! \return para (widget, spinbox) widget jest rodzicem spinboxa
-    LabeledDoubleSpinBox * createSpinWidget(const QString & name, double step = 0.1);
-    //! Wymusza zmiane węzła podlegającego wplywom manipulatorów
-    //! \param serie seria, dla której ma być zmianiony węzeł
-    //! \param m macierz z transformacja, która ma zostac ustawiona w wezle
-    void setTransformMatrix(KinematicSerie* serie, const osg::Matrix& m);
+    LabeledDoubleSpinBox createSpinWidget(const QString & name, double step = 0.1);    
     //! Wymusza zmiane translacji węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param index Indeks współrzędnej (0 - x, 1 - y, 2 - z)
     //! \param d ustawiana wartość translacji
-    void setTranslation(KinematicSerie* serie, int index, double d );
+    void setTranslation(KinematicTimeSerie* serie, int index, double d );
     //! Wymusza zmiane obrotu węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param index Indeks współrzędnej (0 - x, 1 - y, 2 - z)
     //! \param d ustawiana wartość katu Eulera
-    void setRotation( KinematicSerie* serie, int index, double d );
+    void setRotation( KinematicTimeSerie* serie, int index, double d );
     //! Wymusza zmiane skali węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param index Indeks współrzędnej (0 - x, 1 - y, 2 - z)
     //! \param d ustawiana wartość skali
-    void setScale(KinematicSerie* serie, int index, double d );
+    void setScale(KinematicTimeSerie* serie, int index, double d );
     //! Wymusza zmiane translacji węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param t nowa translacja
-    void setTranslation(KinematicSerie* serie, const osg::Vec3& t  );
+    void setTranslation(KinematicTimeSerie* serie, const osg::Vec3& t  );
     //! Wymusza zmiane obrotu węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param r nowy obrot w postaci kątów Eulera
-    void setRotation( KinematicSerie* serie, const osg::Vec3& r );
+    void setRotation( KinematicTimeSerie* serie, const osg::Vec3& r );
     //! Wymusza zmiane obrotu węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param q nowy obrot
-    void setRotation( KinematicSerie* serie, const osg::Quat& q);
+    void setRotation( KinematicTimeSerie* serie, const osg::Quat& q);
     //! Wymusza zmiane skali węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param s nowa skala
-    void setScale(KinematicSerie* serie, const osg::Vec3& s );
+    void setScale(KinematicTimeSerie* serie, const osg::Vec3& s );
     //! tworzy węzeł ze wskaźnikiem aktywnej serii danych
     //! \return utworzony węzeł
     TransformPtr createIndicator() const;
@@ -259,31 +242,31 @@ private:
     //! niweluje działanie manipulatorów
     coreUI::CoreAction* resetAction;
     //! Dialog zarządzający trajektoriami
-    TrajectoriesDialog* trajectoriesDialog;
+    //TrajectoriesDialog* trajectoriesDialog;
     //! Dialog zarządzający widocznością węzłów na scenie
-    SchemeDialog* schemeDialog;
+    //SchemeDialog* schemeDialog;
     //! kolecja z seriami danych podpiętymi pod wizualizator
-    std::vector<KinematicSerie*> series;
+    std::vector<KinematicSerieBase*> series;
     //! nr aktywnej serii
 	int currentSerie;
     //! spinbox pokazujący translacje X
-    LabeledDoubleSpinBox * translateSpinWidgetX;
+    LabeledDoubleSpinBox translateSpinWidgetX;
     //! spinbox pokazujący translacje Y
-    LabeledDoubleSpinBox * translateSpinWidgetY;
+    LabeledDoubleSpinBox translateSpinWidgetY;
     //! spinbox pokazujący translacje Z
-    LabeledDoubleSpinBox * translateSpinWidgetZ;
+    LabeledDoubleSpinBox translateSpinWidgetZ;
     //! spinbox pokazujący rotacje X
-    LabeledDoubleSpinBox * rotateSpinWidgetX;
+    LabeledDoubleSpinBox rotateSpinWidgetX;
     //! spinbox pokazujący rotacje Y
-    LabeledDoubleSpinBox * rotateSpinWidgetY;
+    LabeledDoubleSpinBox rotateSpinWidgetY;
     //! spinbox pokazujący rotacje Z
-    LabeledDoubleSpinBox * rotateSpinWidgetZ;
+    LabeledDoubleSpinBox rotateSpinWidgetZ;
     //! spinbox pokazujący skale X
-    LabeledDoubleSpinBox * scaleSpinWidgetX;
+    LabeledDoubleSpinBox scaleSpinWidgetX;
     //! spinbox pokazujący skale Y
-    LabeledDoubleSpinBox * scaleSpinWidgetY;
+    LabeledDoubleSpinBox scaleSpinWidgetY;
     //! spinbox pokazujący skale Z
-    LabeledDoubleSpinBox * scaleSpinWidgetZ;
+    LabeledDoubleSpinBox scaleSpinWidgetZ;
     //! manipulator translacji
     DraggerContainerPtr translateDragger;
     //! manipulator rotacji

@@ -7,19 +7,27 @@
 using namespace core;
 using namespace plugin;
 
+//! Klasa implementująca funkcjonalność wizualizatora w zakresie jego logiki
 class Visualizer::VisualizerImpl
 {
 
 private:
-
+	//! Klasa pomocnicza implementacji wizualizatora przy obserwowaniu zmian danych dla serii
 	class VisualizerHelper : public IDataManagerReader::IObjectObserver
 	{
 	public:
+		//! \param visualizer Wizualizaotor który wspieramy
 		VisualizerHelper(VisualizerImpl * visualizer) : visualizer_(visualizer), liveObserve(false) {}
 
+		//! \param changes Zmiany jakie zaszły w managerze danych
 		virtual void observe(const IDataManagerReader::ChangeList & changes)
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
+			
+			if(liveObserve == false){
+				return;
+			}
+
 			for(auto it = changes.begin(); it != changes.end(); ++it){
 				if((*it).modyfication == IDataManagerReader::UPDATE_OBJECT){
 					auto dataIT = dataSeriesToObserve.find((*it).currentValue);
@@ -32,6 +40,7 @@ private:
 			tryUpdate();
 		}
 
+		//! \param active Czy auto odświeżanie i obserwacja danych w menagerze danych są aktywne
 		void setLiveObserveActive(bool active)
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
@@ -40,18 +49,21 @@ private:
 
 		}
 
+		//! \return Czy auto odświeżanie i obserwacja danych w menagerze danych są aktywne
 		const bool isLiveObserveActive() const
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
 			return liveObserve;
 		}
 
+		//! \param serie Seria której dane będą obserwowane
 		void addSerieToObserve(Visualizer::VisualizerSerie* serie)
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
 			dataSeriesToObserve[serie->serie()->getData()].push_back(serie);
 		}
 
+		//! \param serie Seria której dane nie będą obserwowane
 		void removeSerieToObserve(Visualizer::VisualizerSerie* serie)
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sync);
@@ -59,24 +71,29 @@ private:
 			dataToUpdate[serie->serie()->getData()].remove(serie);
 		}
 
+		//! \param dataSource Nowe źródło danych na potrzeby pobierania danych dostępnych dla wizualizatorów
 		void addDataSource(VisualizerDataSourcePtr dataSource)
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
 			sources_.push_back(dataSource);
 		}
 
+		//! \param dataSource Usuwane źródło danych na potrzeby pobierania danych dostępnych dla wizualizatorów
 		void removeDataSource(VisualizerDataSourcePtr dataSource)
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
 			sources_.remove(dataSource);
 		}
 
+		//! \return Ilość źródeł danych
 		const int getNumDataSources() const
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
 			return sources_.size();
 		}
 
+		//! \param idx Indeks źródła danych
+		//! \return Źródło danych o zadanym indeksie
 		VisualizerDataSourcePtr getDataSource(int idx)
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
@@ -85,6 +102,9 @@ private:
 			return *it;
 		}
 
+		//! \param type Typ danych o które pytamy
+		//! \param objects [out] Lista obiektów zadanego typu z wszystkich źródeł danych
+		//! \param exact Czy dane muszą być dokłądnie zadanego typu czy mogą go wspierać
 		void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
@@ -103,35 +123,41 @@ private:
 
 	private:
 
+		//! Próbujemy odświeżać dane z serii wizualizatora jeśli nastąpiła w nich jakaś zmiana
 		void tryUpdate()
 		{
-			if(liveObserve == true && dataToUpdate.empty() == false){
-				for(auto dataIT = dataToUpdate.begin(); dataIT != dataToUpdate.end(); ++dataIT){
-					for(auto serieIT = dataIT->second.begin(); serieIT != dataIT->second.end(); ++serieIT){
-						(*serieIT)->serie()->update();
-					}
+			for(auto dataIT = dataToUpdate.begin(); dataIT != dataToUpdate.end(); ++dataIT){
+				for(auto serieIT = dataIT->second.begin(); serieIT != dataIT->second.end(); ++serieIT){
+					(*serieIT)->serie()->requestUpdate();
 				}
-
-				std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>>().swap(dataToUpdate);
 			}
+
+			std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>>().swap(dataToUpdate);
 		}
 
 	private:
+		//! Obiekt synchornizujący stan
 		mutable utils::StrictSyncPolicy sync;
+		//! Obiekt synchronizujący operacje na źródłach
 		mutable utils::StrictSyncPolicy sourcesSync;
 		//! Lista źródeł danych wizualizatora
 		DataSources sources_;
+		//! Prywatna implementacja wizualizatora
 		VisualizerImpl * visualizer_;
 		//! Czy live observe jest aktywne
 		bool liveObserve; 
+		//! Mapa seri wizualizatorów obserwujących dane
 		std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataSeriesToObserve;
+		//! Mapa danych do aktualizacji (odświeżenia) w seriach
 		std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataToUpdate;
 	};
 
+	//! Zaprzyjaźniona klasa pomocnicza wizualizatora
 	friend class VisualizerHelper;
 
 private:
 
+	//! Inicjalizacja wizualizatora na bazie dostarczonej implementacji
 	void init()
 	{
 		{
@@ -149,6 +175,9 @@ private:
 
 public:
 	
+	//! \param vis Wizualizator dostarczony przez klienta, opakowany przez nasz obiekt
+	//! \param dmr Manager pamięci pozwalający czytać załadowane dane
+	//! \param visManager Manager wizualizatorów - informujemy o usunięci/zamknięciu naszego wizualizatora
 	VisualizerImpl( plugin::IVisualizerPtr vis, IDataManagerReader * dmr, IVisualizerManager * visManager ) :
 		visualizer_(nullptr),
 		innerVisualizer_(vis),
@@ -159,6 +188,9 @@ public:
 		init();
 	}
 	
+	//! Konstruktor kopiujący
+	//! \param vis Wizualizator do skopiowania
+	//TODO dodać kopiowanie serii danych!!
 	VisualizerImpl( const VisualizerImpl& vis ) :
 		visualizer_(nullptr),
 		innerVisualizer_(vis.visualizer()->create()), 
@@ -171,12 +203,14 @@ public:
 		setLiveObserveActive(vis.isLiveObserveActive());
 	}
 
+	//! \param visualizer Obsługiwany wizualizator
 	void setVisualizer(Visualizer * visualizer)
 	{
 		visualizer_ = visualizer;
 		visManager->registerVisualizer(visualizer_);
 	}
 	
+	//! \return Obsługiwany wizualizator
 	plugin::IVisualizer * visualizer()
 	{
 		return innerVisualizer_.get();
@@ -187,6 +221,7 @@ public:
 		return innerVisualizer_.get();
 	}
 
+	//! Destruktor
 	VisualizerImpl::~VisualizerImpl()
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
@@ -196,6 +231,7 @@ public:
 		destroyAllSeries();
 	}
 
+	//! \return Pobiera lub tworzy widget wizualizatora do pokazania w aplikacji
 	QWidget* getOrCreateWidget()
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
@@ -207,41 +243,49 @@ public:
 		return widget;
 	}
 
+	//! \return Ikona wizualizatora
 	const QIcon getIcon() const
 	{
 		return icon;
 	}
 
+	//! \return Widget wizualizatora do pokazania w aplikacji
 	QWidget* getWidget()
 	{
 		return widget;
 	}
 
+	//! \return Nazwa wizualizatora
 	const std::string getName() const
 	{
 		return innerVisualizer_->getName();
 	}
 
+	//! \return Unikalny ID wizualizatora
 	core::UniqueID getID() const
 	{
 		return innerVisualizer_->getID();
 	}
 
+	//! \return Opis wizualizatora
 	const std::string  getDescription() const
 	{
 		return innerVisualizer_->getDescription();
 	}
 
+	//! \return Nowa instancja wizualizatora
 	Visualizer * create() const
 	{
 		return new Visualizer(plugin::IVisualizerPtr(innerVisualizer_->create()), dmr, visManager);
 	}
 
+	//! \return Maksumalna ilość serii danych wizualizatora
 	const int getMaxSeries() const
 	{
 		return innerVisualizer_->getMaxDataSeries();
 	}
 
+	//! \param supportedTypes Typy wspierane przez wizualizator
 	void getSupportedTypes(TypeInfoSet & supportedTypes) const
 	{
 		TypeInfoList list;
@@ -249,6 +293,9 @@ public:
 		supportedTypes.insert(list.begin(), list.end());
 	}
 
+	//! \param requestedType Typ danych oczekiwanych do wyświetlenia
+	//! \param data Dane
+	//! \return Seria danych wizualizatora
 	Visualizer::VisualizerSerie * createSerie(const TypeInfo & requestedType, const ObjectWrapperConstPtr & data)
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
@@ -264,6 +311,8 @@ public:
 		return serie;
 	}
 
+	//! \param serie Seria danych do sklonowania
+	//! \return sklonowana seria danych
 	Visualizer::VisualizerSerie * createSerie(VisualizerSerie * serie)
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
@@ -281,6 +330,7 @@ public:
 		return retserie;
 	}
 
+	//! \param serie Seria danych do usunięcia/zniszczenia
 	void destroySerie(VisualizerSerie * serie)
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
@@ -293,6 +343,8 @@ public:
 		}
 	}
 
+	//! \param serie Seria danych do odświeżenia
+	//! \param modyfication typ modyfikacji serii
 	void notifyChange(VisualizerSerie * serie, SerieModyfication modyfication)
 	{
 		for(auto it = observers_.begin(); it != observers_.end(); ++it){
@@ -300,6 +352,7 @@ public:
 		}
 	}
 
+	//! Metoda niszczy wszystkie serie wizualizatora
 	void destroyAllSeries()
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
@@ -310,36 +363,41 @@ public:
 		DataSeries().swap(dataSeries);
 	}
 
+	//! \param observer Obiekt obserwujący wizualizator
 	void addObserver(IVisualizerObserver * observer)
 	{		
 		observers_.push_back(observer);
 	}
-
+	//! \param observer Usuwany obiekt obserwujący wizualizator
 	void removeObserver(IVisualizerObserver * observer)
 	{
 		observers_.remove(observer);
 	}
-
+	//! \param dataSource Nowe źródło danych wizualizatora
 	void addDataSource(VisualizerDataSourcePtr dataSource)
 	{
 		visualizerHelper_->addDataSource(dataSource);
 	}
-
+	//! \param dataSource Usuwane źródło dancyh wizualizatora
 	void removeDataSource(VisualizerDataSourcePtr dataSource)
 	{
 		visualizerHelper_->removeDataSource(dataSource);
 	}
-
+	//! \return Ilość źródeł danych wizualizatora
 	const int getNumDataSources() const
 	{
 		return visualizerHelper_->getNumDataSources();
 	}
-
+	//! \param idx Indeks źródła danych wizualizatora
+	//! \return Źródło danych
 	Visualizer::VisualizerDataSourcePtr getDataSource(int idx)
 	{
 		return visualizerHelper_->getDataSource(idx);
 	}
 
+	//! \param type Typ danych
+	//! \param objects [out] Dane pobrane ze źróeł danych wizualizatora dla danego typu
+	//! \param exact Czy dane musza być dokłądnie  tego samego typu o który pytano
 	void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
 	{
 		visualizerHelper_->getData(type, objects, exact);
@@ -434,16 +492,16 @@ private:
 	IVisualizerManager * visManager;
 	//! Aktywna seria
 	VisualizerSerie * activeSerie;
-
+	//! Obiekt synchronizujący stan
 	mutable utils::RecursiveSyncPolicy sync;
-
+	//! Obsługiwany wizualizator
 	Visualizer * visualizer_;
 };
 
 Visualizer::VisualizerSerie::VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase)
-	: visualizer_(visualizer), serie_(serieBase), timeAvareSerieFeatures_(dynamic_cast<IVisualizer::ITimeAvareSerieFeatures*>(serieBase))
+	: visualizer_(visualizer), serie_(serieBase)
 {
-	timeEditableSerieFeatures_ = (timeAvareSerieFeatures_ != nullptr ? dynamic_cast<IVisualizer::ITimeEditableSerieFeatures*>(serieBase) : nullptr);
+	
 }
 
 Visualizer::VisualizerSerie::~VisualizerSerie()
@@ -451,24 +509,24 @@ Visualizer::VisualizerSerie::~VisualizerSerie()
 	delete serie_;
 }
 
-Visualizer * Visualizer::VisualizerSerie::visualizer() const
+const Visualizer * Visualizer::VisualizerSerie::visualizer() const
 {
 	return visualizer_;
 }
 
-plugin::IVisualizer::ISerie * Visualizer::VisualizerSerie::serie() const
+Visualizer * Visualizer::VisualizerSerie::visualizer()
+{
+	return visualizer_;
+}
+
+const plugin::IVisualizer::ISerie * Visualizer::VisualizerSerie::serie() const
 {
 	return serie_;
 }
 
-plugin::IVisualizer::ITimeAvareSerieFeatures * Visualizer::VisualizerSerie::timeAvareSerieFeatures() const
+plugin::IVisualizer::ISerie * Visualizer::VisualizerSerie::serie()
 {
-	return timeAvareSerieFeatures_;
-}
-
-plugin::IVisualizer::ITimeEditableSerieFeatures * Visualizer::VisualizerSerie::timeEditableSerieFeatures() const
-{
-	return timeEditableSerieFeatures_;
+	return serie_;
 }
 
 Visualizer::Visualizer(plugin::IVisualizerPtr vis, IDataManagerReader * dmr, IVisualizerManager * visManager ) :

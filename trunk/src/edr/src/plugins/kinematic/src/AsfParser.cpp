@@ -7,7 +7,6 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/kinematic/Wrappers.h>
 #include "AsfParser.h"
-#include "ISchemeDrawer.h"
 
 AsfParser::AsfParser()
 {

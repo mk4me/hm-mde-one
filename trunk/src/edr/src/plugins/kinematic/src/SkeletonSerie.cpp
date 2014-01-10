@@ -1,144 +1,174 @@
 #include "PCH.h"
 #include "SkeletonSerie.h"
-#include "MarkersVisualizationScheme.h"
+#include "OsgSchemeDrawer.h"
+#include "TrajectoriesDrawer.h"
+#include "SkeletalVisualizationSchemeHelper.h"
+#include <kinematiclib/JointAnglesCollection.h>
 
-SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer ) : 
-    visualizer(visualizer), 
-    skeletonDrawers(new SchemeDrawerContainer()),
-    skeletonNode(new osg::PositionAttitudeTransform()),
-    xyzAxis(false)
-{
+static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
+SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer,
+	const core::TypeInfo & requestedType,
+	const core::ObjectWrapperConstPtr & data ) : 
+	visualizer(visualizer),
+	data(data), requestedType(requestedType),
+	lastUpdateTime(std::numeric_limits<double>::min()),
+    xyzAxis(false),
+	name("Skeleton"),
+	pointsDrawer(new PointsDrawer(3)),
+	connectionsDrawer(new ConnectionsDrawer(10)),
+	ghostDrawer(new GhostSchemeDrawer(3, 10)),
+	jointsMapping(new SkeletonJointsMapping),
+	trajectoriesManager(new TrajectoryDrawerManager)
+{	
+	UTILS_ASSERT(data->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
+	data->tryGetMeta("core/name", name);	
+	jointAngles = data->get();
+
+	std::vector<std::string> mapping;
+	mapping.reserve(jointAngles->getNumChannels());
+
+	for(unsigned int i = 0; i < jointAngles->getNumChannels(); ++i){
+		mapping.push_back(jointAngles->getChannel(i)->getName());
+	}
+
+	jointsMapping->init(jointAngles->getHAnimSkeleton(), mapping);
+
+	skeletonSchemeHelper.reset(new SkeletalVisualizationSchemeHelper(pointsDrawer.get(),
+		connectionsDrawer.get()));
+
+	auto connections = jointsMapping->generateMappedConnectionsDescription();
+
+	skeletonSchemeHelper->init(jointsMapping.get(), connections);
+
+	pointsDrawer->setSize(0.02);
+	connectionsDrawer->setSize(0.005);
+
+	pointsDrawer->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
+	connectionsDrawer->setColor(osg::Vec4(0.0, 1.0, 0.0, 0.5));
+
+	matrixTransform->addChild(pointsDrawer->getNode());
+	matrixTransform->addChild(connectionsDrawer->getNode());
+
+	//punkty dla ducha i trajektorii
+	auto allPointsPositions = createPointsPositions(300);
+
+	std::vector<std::vector<osg::Vec3>> pointsPositions(10);
+
+	for(unsigned int i = 0; i < 10; ++i){
+		pointsPositions[i] = allPointsPositions[i * 30];
+	}
+
+	ghostDrawer->init(pointsPositions, connections);
+	ghostDrawer->pointsDrawer()->setColor(osg::Vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 0.0f, 0.0f, 0.5f));
+	ghostDrawer->pointsDrawer()->setSize(0.02);
+	ghostDrawer->connectionsDrawer()->setSize(0.005);
+
+	matrixTransform->addChild(ghostDrawer->getNode());
+
+	setGhostVisible(false);
+
+	// teraz punkty dla ducha przerabiam na punkty dla trajektorii
+	// przechodzę z klatek po czasie do klatek po stawach - generalnie transpozycja
+	
+	std::vector<std::vector<osg::Vec3>> trajectories(jointsMapping->mappedJointsNumber());
+
+	for(auto it = allPointsPositions.begin(); it != allPointsPositions.end(); ++it){
+		for(unsigned int i = 0; i < jointsMapping->mappedJointsNumber(); ++i){
+			trajectories[i].push_back((*it)[i]);
+		}
+	}
+
+	trajectoriesManager->initialize(trajectories);	
+	trajectoriesManager->setVisible(false);
+	trajectoriesManager->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
+	matrixTransform->addChild(trajectoriesManager->getNode());
+
+	setTime(0.0);
+
+	rootPosition = jointAngles->getRootPosition(0.0);
+
+	setAxis(true);
 }
 
-void SkeletonSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
+const std::vector<std::vector<osg::Vec3>> SkeletonSerie::createPointsPositions(const unsigned int density) const
 {
-	UTILS_ASSERT(data->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
-    this->data = data;
-	this->requestedType = requestedType;
-	
-	kinematic::JointAnglesCollectionConstPtr collection = data->get();
-	scheme = SkeletalVisualizationSchemePtr(new SkeletalVisualizationScheme());
-	scheme->setJoints(collection);
-	
-	skeletonDrawers->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(3, 0.02f)));
-	skeletonDrawers->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(10, 0.005f)));
-    
-    trajectoryDrawer.reset(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.33f), 300));
-    MarkersVisualizationSchemePtr tempScheme(new MarkersVisualizationScheme());
-    MarkerCollectionConstPtr mc = createTrajectories(collection);
-    tempScheme->setMarkers(mc);
-    trajectoryDrawer->init(tempScheme);
-    skeletonDrawers->addDrawer(trajectoryDrawer);
-	
-    skeletonDrawers->init(scheme);
-    skeletonNode->addChild(skeletonDrawers->getNode());
-    //skeletonNode->addChild(trajectoryDrawer->getNode());
-    
-	std::string name;
-	data->tryGetMeta("core/name", name);
-    visualizer->trajectoriesDialog->setDrawer(skeletonDrawers, QString::fromStdString(name));
-    visualizer->schemeDialog->setDrawer(skeletonDrawers, QString::fromStdString(name));
-    transformNode->addChild(skeletonNode);
-	//visualizer->transformNode->addChild(skeletonNode);
-	setAxis(true);
-	//visualizer->actionSwitchAxes->trigger();
-    matrixTransform->setMatrix(getInitialMatrix());
-    trajectoryDrawer->setOffset(-scheme->getRootPosition(0.0));
+	std::vector<std::vector<osg::Vec3>> ret(density);
+
+	const double delta = jointAngles->getLength() / (double)density;
+
+	double time = 0.0;
+
+	for(unsigned int i = 0; i < density; ++i, time = delta * i){
+		auto rotations = jointAngles->getValues(time);
+		auto rootPosition = jointAngles->getRootPosition(time / jointAngles->getLength());
+		std::vector<osg::Vec3> positions;
+		skeletonSchemeHelper->calculatePointsPositions(positions,
+			rootPosition,
+			rotations);
+
+		ret[i] = positions;
+	}
+
+	return ret;
+}
+
+const osg::Quat SkeletonSerie::orientation() const
+{
+	return preRot.inverse() * matrixTransform->getMatrix().getRotate();
+}
+
+void SkeletonSerie::setOrientation(const osg::Quat & orientation)
+{
+	auto q = preRot * orientation;
+	auto m = matrixTransform->getMatrix();
+	m.setRotate(q);
+	matrixTransform->setMatrix(m);
+}
+
+const osg::Vec3 SkeletonSerie::position() const
+{
+	return rootPosition * matrixTransform->getMatrix();
+}
+
+void SkeletonSerie::setPosition(const osg::Vec3 & position)
+{
+	auto p = position - rootPosition;
+	auto m = matrixTransform->getMatrix();
+
+	m.setTrans(p * osg::Matrix::inverse(m));
+	matrixTransform->setMatrix(m);
 }
 
 void SkeletonSerie::setAxis( bool xyz)
 {
+	//TODO - sprawdzic jak to dziala
     xyzAxis = xyz;
-	if (xyz) {
-		osg::Quat q(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f));
-		osg::Quat q2(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
-		skeletonNode->setAttitude(q * q2);
-	} else {
-		osg::Quat q;
-		skeletonNode->setAttitude(q);
+	auto o = orientation();
+	if(xyz == true) {				
+		preRot = invQXYZ;
+	}else{
+		preRot = invQXYZ.inverse();
 	}
+
+	setOrientation(o);
 }
 
-MarkerCollectionConstPtr SkeletonSerie::createTrajectories( kinematic::JointAnglesCollectionConstPtr joints )
+osg::Matrix SkeletonSerie::getXYZMatrix()
 {
-    if (joints->getNumChannels() > 0) {
-        using namespace kinematic;
-        MarkerCollectionPtr markers(new MarkerCollection);
-        SkeletalVisualizationScheme scheme;
-        scheme.setJoints(joints);
-        JointAngleChannelConstPtr joint = joints->getChannel(0);
-        const std::vector<VisualizationScheme::State>& s = scheme.getStates();
-        int count = s.size();
-        for (int i = 0; i < count; ++i) {
-            MarkerChannelPtr marker(new MarkerChannel(joint->getSamplesPerSecond()));
-            marker->setName(s[i].name);
-            markers->addChannel(marker);
-        }
-   
-        int argumentsSize = joint->size();
-        for (int arg = 0; arg < argumentsSize; ++arg) {
-            auto time = joint->argument(arg);
-            scheme.setTime(time);
-            auto rootPos = scheme.getCurrentPosition();
-            const std::vector<VisualizationScheme::State>& states = scheme.getStates();
-            // czy kolejność jest zapewniona? 
-            int size = states.size();
-            for (int i = 0; i < size; ++i) {
-                VectorChannelPtr marker = markers->getChannel(i);
-                marker->addPoint(states[i].position + rootPos);
-            }
-        }
-        
-        return markers;
-    }
-
-    throw std::runtime_error("Skeleton Serie: Null object passed");
-}
-
-osg::Matrix SkeletonSerie::getXYZMatrix() const
-{
-    osg::Quat q(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f));
-    osg::Quat q2(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
-    osg::Matrix r; 
-    r.setRotate(q * q2);
-    return r;
-}
-
-void SkeletonSerie::setLocalTime( double time )
-{
-    UTILS_ASSERT(scheme && skeletonDrawers);
-    auto shift = scheme->getCurrentPosition();
-    scheme->setTime(time);
-    skeletonDrawers->update();
-    shift = scheme->getCurrentPosition() - shift;
-    osg::Matrix m = matrixTransform->getMatrix();
-    osg::Matrix r = xyzAxis ? getXYZMatrix() : osg::Matrix();
-
-    osg::Matrix r2 = m;
-    r2.setTrans(osg::Vec3());
-    //m.setTrans(scheme->getCurrentPosition() * r);
-
-    trajectoryDrawer->setOffset(-scheme->getCurrentPosition());
-    m.setTrans(m.getTrans() + shift * r * r2);
-    matrixTransform->setMatrix(m);
+    return osg::Matrix(invQXYZ);
 }
 
 osg::Matrix SkeletonSerie::getInitialMatrix() const
 {
-  osg::Matrix m;
-
-  osg::Matrix r = xyzAxis ? getXYZMatrix() : osg::Matrix();
-  m.setTrans(scheme->getRootPosition(0.0) * r);
-  return m;
+  return xyzAxis ? getXYZMatrix() : osg::Matrix();
 }
 
 void SkeletonSerie::resetTransform()
 {
     MatrixTransformPtr transform = getMatrixTransformNode();
     transform->setMatrix(getInitialMatrix());
-    scheme->setNormalizedTime(0.0);
-    setLocalTime(getTime());
 }
 
 void SkeletonSerie::setName( const std::string & name )
@@ -158,18 +188,51 @@ const core::ObjectWrapperConstPtr & SkeletonSerie::getData() const
 
 double SkeletonSerie::getLength() const
 {
-    UTILS_ASSERT(scheme);
-    return scheme->getDuration();
+    return jointAngles->getLength();
+}
+
+double SkeletonSerie::getBegin() const
+{
+	return 0.0;
+}
+
+double SkeletonSerie::getEnd() const
+{
+	return getLength();
 }
 
 void SkeletonSerie::update()
 {
+	auto t = std::max(lastUpdateTime, 0.0);
 
+	auto rotations = jointAngles->getValues(lastUpdateTime);
+	rootPosition = jointAngles->getRootPosition(lastUpdateTime / jointAngles->getLength());
+
+	skeletonSchemeHelper->updateJointTransforms(rootPosition, rotations);
+}
+
+void SkeletonSerie::setLocalTime(double time)
+{
+	if( (lastUpdateTime == std::numeric_limits<double>::min()) ||
+		(std::abs(time - lastUpdateTime) >= jointAngles->getChannel(0)->getSampleDuration())){
+		lastUpdateTime = time;
+		update();
+	}
 }
 
 const utils::TypeInfo & SkeletonSerie::getRequestedDataType() const
 {
 	return requestedType;
+}
+
+const bool SkeletonSerie::ghostVisible() const
+{
+	return !(ghostDrawer->getNode()->getNodeMask() == 0);
+}
+
+void SkeletonSerie::setGhostVisible(const bool visible)
+{
+	ghostDrawer->getNode()->setNodeMask( visible == true ? 1 : 0);
 }
 
 

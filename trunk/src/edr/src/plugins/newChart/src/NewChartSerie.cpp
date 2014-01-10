@@ -27,12 +27,9 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType, const core::O
 	data->tryGetMeta("core/name", name);
 
     curve = new NewChartCurve(name.c_str());	
-    data->tryGet(reader);
-    accessor.reset(new ScalarContiniousTimeAccessor(reader));
+    data->tryGet(reader);    
     ScalarChannelReaderInterfacePtr nonConstChannel;
-    ScalarChannelReaderInterfaceConstPtr constChannel;
-    data->tryGet(constChannel);
-    nonConstChannel = core::const_pointer_cast<ScalarChannelReaderInterface>(constChannel);
+    nonConstChannel = core::const_pointer_cast<ScalarChannelReaderInterface>(reader);
     stats.reset(new ScalarChannelStats(nonConstChannel));
     curve->setSamples(new NewChartSeriesData(reader));
     int r = rand() % 256;
@@ -203,12 +200,22 @@ void NewChartSerie::setColorsForEvents( EventsHelper::SegmentsRange range, const
 
 double NewChartSerie::getCurrentValue() const 
 { 
-    return static_cast<double>(accessor->getValue(time)); 
+    return static_cast<double>(ScalarContiniousTimeAccessor::getValue(time, *reader)); 
 } 
 
 double NewChartSerie::getLength() const
 {
     return reader->getLength();
+}
+
+double NewChartSerie::getBegin() const
+{
+	return 0.0;
+}
+
+double NewChartSerie::getEnd() const
+{
+	return getLength();
 }
 
 void NewChartSerie::setColor( int r, int g, int b, int a /*= 255*/ )

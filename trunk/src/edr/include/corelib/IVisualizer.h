@@ -11,6 +11,7 @@
 
 #include <string>
 #include <utils/SmartPtr.h>
+#include <threading/SynchronizationPolicies.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IIdentifiable.h>
 #include <QtGui/QPixmap>
@@ -29,43 +30,68 @@ namespace plugin
 		//! !!UWAGA!! Wszystykie operacje na seriach danych muszą być robione z poziomu UI, wyjątkiem jest update
         class ISerie
         {
-        public:
+		private:
+			//! Metoda wywoływana na seri danych kiedy dane się zmienią - wymusza odrysowanie
+			virtual void update() = 0;
 
+        protected:
+			ISerie() : update_(true) {}
+		public:
+			//! Destrutkor prywatny
 			virtual ~ISerie() {}
-
             //! \param name Nazwa serii danych do ustawienia
             virtual void setName(const std::string & name) = 0;
             //! \return Nazwa serii danych
             virtual const std::string getName() const = 0;
-            //! \param data Dane do ustawienia w serii danych. ObjecWrappery pozwalają nam uniknąć potrzeby generowania wielu metod dla różnych argumentów.
-            //! Znacząco uprasza interfejs, w przeciwnym wypadku musielibyśmy skorzystać z template
-            virtual void setData(const core::TypeInfo & requestedDataType, const core::ObjectWrapperConstPtr & data) = 0;
-			//! Metoda wywoływana na seri danych kiedy dane się zmienią
-			virtual void update() = 0;
             //! \return Dane serii
             virtual const core::ObjectWrapperConstPtr & getData() const = 0;
 			//! \return Typ, jak mają być traktowane dane - może chcę pokazać dane z niższego typu
 			virtual const core::TypeInfo & getRequestedDataType() const = 0;
+			//! Próbujemy odświeżać dane jeśli jest to konieczne
+			void tryUpdate()
+			{
+				utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+				if(update_ == true){
+					update();
+					update_ = false;
+				}
+			}
+
+			//! Metoda zaznacza potrzebę odświeżenia serii danych
+			void requestUpdate()
+			{
+				utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+				update_ = true;
+			}
+
+		private:
+			utils::StrictSyncPolicy synch_;
+			bool update_;
+
         };
 		//! Seria o charakterze czasowym - pozwala manipulować czasem w serii danych
 		//! setTime może być wołane poza watkiem UI - trzeba to uwzględniać przy update
         class ITimeAvareSerieFeatures
         {
         public:
-
+			//! Destruktor wirtualny
 			virtual ~ITimeAvareSerieFeatures() {}
 
 			//! \param time Aktualny czas serii - najprawdopodobniej timeline będzie go ustawiał
             virtual void setTime(double time) = 0;
 			//! \return Czas trwania serii
             virtual double getLength() const = 0;
+			//! \return Początek czasu
+			virtual double getBegin() const = 0;
+			//! \return Koniec czasu
+			virtual double getEnd() const = 0;
         };
 
 		//! Dla serii o charakterze czasowym - czy można edytować skalę czasu i offset
 		class ITimeEditableSerieFeatures
 		{
 		public:
-
+			//! Destruktor wirtualny
 			virtual ~ITimeEditableSerieFeatures() {}
 
 			//! \param offset Przesunięcie serii względem aktualnego stanu (pierwsze względem 0)
@@ -75,10 +101,10 @@ namespace plugin
 		};
 
     public:
-
+		//! Destruktor wirtualny
 		virtual ~IVisualizer() {}
 
-		//! Przeładowana
+		//! Przeładowana - tworzy nowy wizualizator
 		virtual IVisualizer * create() const = 0;
 
         //! Tylko tutaj powinno następować tworzenie widgetu. Metoda wywoływana tylko jeden raz.
@@ -94,11 +120,17 @@ namespace plugin
         //! Aktualizacja wyświetlania. NIE aktualizacja stanu wyświetlanych danych.
 		//! \param deltaTime Zmiana czasu od ostatniego update
         virtual void update(double deltaTime) = 0;
+		//! \param requestedType Typ danych który faktycznie ma być przedstawiony w serii
+		//! \param data Dane które będą brane do wizualizaowania w serii
 		//! \return Seria danych która można ustawiac - nazwa i dane, nie zarządza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
 		virtual ISerie* createSerie(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data) = 0;
-		//! \param serie Seria bazowa którą powielamy
+		//! \param serie Seria bazowa której konfigurację powielamy
+		//! \return Nowa seria danych na bazie zadanej serii - powiela odwołąnie do danych
+		virtual ISerie* createSerie(const ISerie* serie, const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data) = 0;
+		//! \param serie Seria bazowa której konfigurację powielamy
 		//! \return Nowa seria danych na bazie zadanej serii - powiela odwołąnie do danych
 		virtual ISerie* createSerie(const ISerie* serie) = 0;
+
 
 		//! \param serie Seria danych do usunięcia, nie powinien usuwać tej serii! Zarządzamy nią my!!
 		virtual void removeSerie(ISerie* serie) = 0;
@@ -107,6 +139,8 @@ namespace plugin
 		virtual void setActiveSerie(ISerie * serie) = 0;
 		//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
 		virtual const ISerie * getActiveSerie() const = 0;
+		//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
+		virtual ISerie * getActiveSerie() = 0;
 
 		//! \param supportedTypes [out] Lista typów wspieranych przez dany wizualizator, z których potrafi stworzyć serię danych
 		virtual void getSupportedTypes(core::TypeInfoList & supportedTypes) const = 0;

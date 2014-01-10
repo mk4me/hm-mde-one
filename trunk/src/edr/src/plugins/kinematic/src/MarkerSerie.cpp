@@ -1,104 +1,253 @@
 #include "PCH.h"
 #include "MarkerSerie.h"
-#include <QtGui/QTableView>
+#include "TrajectoriesDrawer.h"
+#include "VisualizationScheme.h"
 
-void MarkerSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
+MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
+	const core::TypeInfo & requestedType,
+	const core::ObjectWrapperConstPtr & data) : 
+	visualizer(visualizer), requestedType(requestedType),
+	data(data), lastUpdateTime(std::numeric_limits<double>::min()),
+	name("Markers"),
+	pointsDrawer(new PointsDrawer(3)),
+	ghostDrawer(new GhostSchemeDrawer(3, 10)),	
+	trajectoriesManager(new TrajectoryDrawerManager)
 {
-	UTILS_ASSERT(data->getTypeInfo() == typeid(MarkerCollection));
-    this->data = data;
-	this->requestedType = requestedType;
+	markersCollection = data->get();
 
-	MarkerCollectionConstPtr markersCollection = data->get();
-	scheme = MarkersVisualizationSchemePtr(new MarkersVisualizationScheme());
-	scheme->setMarkers(markersCollection);
 	int markersCount = markersCollection->getNumChannels();
-	try {
-        auto vsk = markersCollection->getVsk();
-		scheme->setMarkersDataFromVsk(vsk ? vsk : Vsk::get(static_cast<Vsk::MarkersCount>(markersCount)));
-	} catch (...) {}
-    	
-	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(3, 0.02f)));
-	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(10, 0.005f)));
-    
-    trajectoryDrawer = TrajectoryDrawerPtr(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.33f), 300));
-	markersDrawer->addDrawer(trajectoryDrawer);
-	markersDrawer->init(scheme);
-	std::string name;
-	data->tryGetMeta("core/name", name);
-	visualizer->trajectoriesDialog->setDrawer(markersDrawer, QString::fromStdString(name));
-	visualizer->schemeDialog->setDrawer(markersDrawer, QString::fromStdString(name));
+	auto vsk = markersCollection->getVsk();
+	if(vsk == nullptr){
+		try {		
+			vsk = Vsk::get(static_cast<Vsk::MarkersCount>(markersCount));
+		} catch (...)
+		{
 
-	transformNode->addChild(markersDrawer->getNode());
-    matrixTransform->setMatrix(getInitialMatrix());
-    trajectoryDrawer->setOffset(-scheme->getRootPosition(0.0));
+		}
+	}
+
+	pointsDrawer->init(markersCollection->getNumChannels());
+	pointsDrawer->setColor(osg::Vec4(0,0,1,1));
+	pointsDrawer->setSize(0.02);
+
+	
+	std::vector<osg::Vec4> connectionsColors;
+	std::map<unsigned int, osg::Vec4> pointsColors;
+
+	if(vsk != nullptr){
+
+		//mapujemy markery i po³¹czenia dla drawera
+		std::vector<std::string> mapping;
+		mapping.reserve(markersCollection->getNumChannels());
+
+		for(unsigned int i = 0; i < markersCollection->getNumChannels(); ++i){
+			mapping.push_back(markersCollection->getChannel(i)->getName());
+		}
+
+		auto sticks = vsk->getSticks();
+		auto connectionsNumber = std::distance(sticks.first, sticks.second);
+
+		connectionsConfigurations.reserve(connectionsNumber);
+		connectionsColors.reserve(connectionsNumber);
+
+		for (auto it = sticks.first; it != sticks.second; ++it) {
+			
+			auto it1 = std::find(mapping.begin(), mapping.end(),it->name1);
+			auto it2 = std::find(mapping.begin(), mapping.end(),it->name2);
+
+			if (it1 != mapping.end() && it2 != mapping.end()) {
+
+				IConnectionsSchemeDrawer::ConnectionDescription cd;
+				cd.first.first = std::distance(mapping.begin(), it1);
+				cd.first.second = std::distance(mapping.begin(), it2);				
+				cd.second = getStickLength(markersCollection->getChannel(cd.first.first),
+					markersCollection->getChannel(cd.first.second));
+				connectionsColors.push_back(it->color);
+				connectionsConfigurations.push_back(cd);
+			}
+		}
+
+		if(connectionsNumber > 0){
+			connectionsDrawer.reset(new ConnectionsDrawer(10));
+			connectionsDrawer->init(connectionsConfigurations);
+			connectionsDrawer->setSize(0.005);
+			for(unsigned int i = 0; i < connectionsColors.size(); ++i){
+				connectionsDrawer->setColor(i, connectionsColors[i]);
+			}
+		}
+
+		//kolorowanie
+		auto vskMarkers = vsk->getMarkers();		
+
+		for (auto it = vskMarkers.first; it != vskMarkers.second; ++it) {
+			auto found = std::find(mapping.begin(), mapping.end(), it->name);
+			if (found != mapping.end()) {
+				auto d = std::distance(mapping.begin(), found);
+				pointsColors[d] = it->color;
+				pointsDrawer->setColor(d, it->color);
+			}
+		}
+	}
+
+	matrixTransform->addChild(pointsDrawer->getNode());
+	if(connectionsDrawer != nullptr){
+		matrixTransform->addChild(connectionsDrawer->getNode());
+	}
+
+	//punkty dla ducha i trajektorii
+	auto allPointsPositions = createPointsPositions(300);
+
+	std::vector<std::vector<osg::Vec3>> pointsPositions(10);
+
+	for(unsigned int i = 0; i < 10; ++i){
+		pointsPositions[i] = allPointsPositions[i * 30];
+	}
+
+	ghostDrawer->init(pointsPositions, connectionsConfigurations);
+	ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
+	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
+	ghostDrawer->pointsDrawer()->setSize(0.02);
+	ghostDrawer->connectionsDrawer()->setSize(0.005);
+
+	matrixTransform->addChild(ghostDrawer->getNode());
+
+	setGhostVisible(false);
+
+
+	// teraz punkty dla ducha przerabiam na punkty dla trajektorii
+	// przechodzê z klatek po czasie do klatek po stawach - generalnie transpozycja
+
+	std::vector<std::vector<osg::Vec3>> trajectories(markersCount);
+
+	for(auto it = allPointsPositions.begin(); it != allPointsPositions.end(); ++it){
+		for(unsigned int i = 0; i < markersCount; ++i){
+			trajectories[i].push_back((*it)[i]);
+		}
+	}
+
+	trajectoriesManager->initialize(trajectories);
+	trajectoriesManager->setVisible(true);
+	trajectoriesManager->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
+	matrixTransform->addChild(trajectoriesManager->getNode());
+
+	setTime(0.0);
 }
 
-
-void MarkerSerie::showGhost( bool visible )
+const std::vector<std::vector<osg::Vec3>> MarkerSerie::createPointsPositions(const unsigned int density) const
 {
-    if (!ghostNode) {
-	    float time = 0.0f;
-        ghostNode = new osg::PositionAttitudeTransform();
-        MarkerCollectionConstPtr markersCollection = data->get();
-        while (time < this->getLength()) {
-            MarkersVisualizationSchemePtr tempScheme(new MarkersVisualizationScheme);
-            
-            tempScheme->setMarkers(markersCollection);
-            try {
-                tempScheme->setMarkersDataFromVsk(Vsk::get(static_cast<Vsk::MarkersCount>(markersCollection->getNumChannels())));
-            } catch (...) {}
-            tempScheme->setTime(time);
-            osg::Vec4 color(1.0f, 1.0f, 0.9f, 0.25f);
-            OsgSchemeDrawerPtr drawer1(new GlPointSchemeDrawer(3, 0.02f, color));
-            OsgSchemeDrawerPtr drawer2(new GlLineSchemeDrawer(10, 0.005f, color));
-            drawer1->init(tempScheme);
-            drawer2->init(tempScheme);
-            drawer1->update();
-            drawer2->update();
-            osg::ref_ptr<osg::PositionAttitudeTransform> shift = new osg::PositionAttitudeTransform();
-            shift->setPosition(tempScheme->getCurrentPosition());
-            shift->addChild(drawer1->getNode());
-            shift->addChild(drawer2->getNode());
-            ghostNode->addChild(shift);
-            time += 1.5f;
-        }
+	std::vector<std::vector<osg::Vec3>> ret;
 
-        transformNode->addChild(ghostNode);
-        ghostNode->setPosition(-scheme->getCurrentPosition());
-    }
+	const auto step = markersCollection->getChannel(0)->getLength() / (double)density;
 
-    ghostNode->setNodeMask(visible ? 0xFFFF : 0);
+	double t = 0.0;
+
+	for(unsigned int i = 0; i < density; ++i){
+		ret.push_back(markersCollection->getValues(step * (double)i));
+	}
+
+	return ret;
+}
+
+float MarkerSerie::getStickLength( VectorChannelConstPtr channel1, VectorChannelConstPtr channel2, float epsilon)
+{
+	std::map<float, int> histogram;
+	const auto s = std::min(channel1->size(), channel2->size());
+	const float epsilon2 = std::pow(epsilon, 2.0f);
+	const auto delta = std::max<unsigned int>(1, s / 100);
+
+	histogram[(channel1->value(0) - channel2->value(0)).length2()] = 1;
+
+	for(unsigned int i = delta; i < s; i += delta){		
+		float len2 = (channel1->value(i) - channel2->value(i)).length2();
+
+		auto it = histogram.lower_bound(len2);
+
+		if(it == histogram.end()){
+			--it;
+		}
+
+		if(std::abs(it->first - len2) < epsilon2){
+			++(it->second);
+		}else{
+			histogram[len2] = 1;
+		}
+	}
+
+	float ret = 0.0f;
+	int max = 0;
+	for (auto it = histogram.begin(); it != histogram.end(); ++it) {
+		if (max < it->second) {
+			max = it->second;
+			ret = it->first;
+		}
+	}
+
+	return std::sqrt(ret);
 }
 
 void MarkerSerie::setLocalTime( double time )
 {
-    UTILS_ASSERT(scheme);
-    auto shift = scheme->getCurrentPosition();
-    scheme->setTime(time);
-    markersDrawer->update();
-    osg::Matrix m = matrixTransform->getMatrix();
-    shift = scheme->getCurrentPosition() - shift;
-    osg::Matrix rot = m;
-    rot.setTrans(osg::Vec3());
-    m.setTrans(m.getTrans() + shift * rot);
-    trajectoryDrawer->setOffset(-scheme->getCurrentPosition());
-    if (ghostNode) {
-        ghostNode->setPosition(-scheme->getCurrentPosition());
-    }
-    matrixTransform->setMatrix(m);
+	if( (lastUpdateTime == std::numeric_limits<double>::min()) ||
+		(std::abs(time - lastUpdateTime) >= markersCollection->getChannel(0)->getSampleDuration())){
+			lastUpdateTime = time;
+			update();
+	}
+}
+
+void MarkerSerie::update()
+{
+	auto t = std::max(lastUpdateTime, 0.0);
+
+	auto positions = markersCollection->getValues(t);
+	pointsDrawer->update(positions);
+
+	if(connectionsDrawer != nullptr){
+
+		std::set<int> toShow;
+
+		for(unsigned int i = 0; i < connectionsConfigurations.size(); ++i){
+
+			const auto pointAIDX = connectionsConfigurations[i].first.first;
+			const auto pointBIDX = connectionsConfigurations[i].first.second;
+
+			const auto dist = (positions[pointAIDX] - positions[pointBIDX]).length();			
+			const auto diff = std::abs(dist - connectionsConfigurations[i].second) / 2.0;			
+			
+			if( diff > std::min(pointsDrawer->size(pointAIDX), pointsDrawer->size(pointBIDX)) ){
+				connectionsDrawer->setVisible(i, false);
+			}else{
+				toShow.insert(i);
+			}
+		}
+
+		connectionsDrawer->update(positions);
+
+		for(auto it = toShow.begin(); it != toShow.end(); ++it){
+			connectionsDrawer->setVisible(*it, true);
+		}
+	}
 }
 
 osg::Matrix MarkerSerie::getInitialMatrix() const
 {
-    osg::Matrix m;
-    m.setTrans(scheme->getRootPosition(0.0));
-    return m;
+    //osg::Matrix m;
+    //m.setTrans(scheme->getRootPosition(0.0));
+    return osg::Matrix();
 }
 
 double MarkerSerie::getLength() const
 {
-    UTILS_ASSERT(scheme);
-    return scheme->getDuration();
+    return markersCollection->getLength();
+}
+
+double MarkerSerie::getBegin() const
+{
+	return 0.0;
+}
+
+double MarkerSerie::getEnd() const
+{
+	return getLength();
 }
 
 const core::ObjectWrapperConstPtr & MarkerSerie::getData() const
@@ -116,13 +265,18 @@ void MarkerSerie::setName( const std::string & name )
     this->name = name;
 }
 
-void MarkerSerie::update()
-{
-
-}
-
 const utils::TypeInfo & MarkerSerie::getRequestedDataType() const
 {
 	return requestedType;
+}
+
+const bool MarkerSerie::ghostVisible() const
+{
+	return false;
+}
+
+void MarkerSerie::setGhostVisible(const bool visible)
+{
+	ghostDrawer->getNode()->setNodeMask( visible == true ? 1 : 0);
 }
 

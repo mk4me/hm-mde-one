@@ -3,9 +3,10 @@
 #include <plugins/newTimeline/ITimelineService.h>
 
 VisualizerSerieTimelineChannel::VisualizerSerieTimelineChannel(core::Visualizer * visualizer, core::Visualizer::VisualizerSerie * serie)
-    : visualizer(visualizer), serie(serie)
+    : visualizer(visualizer), serie(serie), timeAvareSerieFeatures(serie->serieFeatures<plugin::IVisualizer::ITimeAvareSerieFeatures>()), 
+	timeEditableSerieFeatures(serie->serieFeatures<plugin::IVisualizer::ITimeEditableSerieFeatures>())
 {
-	if(serie->timeAvareSerieFeatures() == nullptr){
+	if(timeAvareSerieFeatures == nullptr){
 		throw std::runtime_error("Serie not aware of time");
 	}
 }
@@ -17,25 +18,25 @@ VisualizerSerieTimelineChannel::~VisualizerSerieTimelineChannel()
 
 void VisualizerSerieTimelineChannel::setTime(double time)
 {
-    serie->timeAvareSerieFeatures()->setTime(time);
+    timeAvareSerieFeatures->setTime(time);
 }
 
 double VisualizerSerieTimelineChannel::getLength() const
 {
-    return serie->timeAvareSerieFeatures()->getLength();
+    return timeAvareSerieFeatures->getLength();
 }
 
 void VisualizerSerieTimelineChannel::offsetChanged(double newOffset)
 {
-	if(serie->timeEditableSerieFeatures()){
-		serie->timeEditableSerieFeatures()->setOffset(newOffset);
+	if(timeEditableSerieFeatures != nullptr){
+		timeEditableSerieFeatures->setOffset(newOffset);
 	}
 }
 
 void VisualizerSerieTimelineChannel::scaleChanged(double newScale)
 {
-	if(serie->timeEditableSerieFeatures()){
-		serie->timeEditableSerieFeatures()->setScale(newScale);
+	if(timeEditableSerieFeatures != nullptr){
+		timeEditableSerieFeatures->setScale(newScale);
 	}	
 }
 
@@ -58,14 +59,31 @@ const core::Visualizer * VisualizerSerieTimelineChannel::getVisualizer() const
 }
 
 VisualizerSerieTimelineMultiChannel::VisualizerSerieTimelineMultiChannel(const VisualizersSeries & visualizersSeries)
-    : visualizersSeries(visualizersSeries)
+    : visualizersSeries(visualizersSeries), length(-1)
 {
     UTILS_ASSERT((visualizersSeries.empty() == false), "Nie podano żadnych serii dla kanalu");
+
+	std::list<plugin::IVisualizer::ITimeAvareSerieFeatures*> locTasfs;
+	std::list<plugin::IVisualizer::ITimeEditableSerieFeatures*> locTesfs;
+
 	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		if((*it)->timeAvareSerieFeatures() == nullptr){
+
+		auto tasf = (*it)->serieFeatures<plugin::IVisualizer::ITimeAvareSerieFeatures>();
+
+		if(tasf == nullptr){
 			throw std::runtime_error("Serie not aware of time");
 		}
+
+		locTasfs.push_back(tasf);
+
+		auto tesf = (*it)->serieFeatures<plugin::IVisualizer::ITimeEditableSerieFeatures>();
+		if(tesf != nullptr){
+			locTesfs.push_back(tesf);
+		}
 	}
+
+	tasfs = locTasfs;
+	tesfs = locTesfs;
 }
 
 VisualizerSerieTimelineMultiChannel::~VisualizerSerieTimelineMultiChannel()
@@ -75,8 +93,8 @@ VisualizerSerieTimelineMultiChannel::~VisualizerSerieTimelineMultiChannel()
 
 void VisualizerSerieTimelineMultiChannel::setTime(double time)
 {
-    for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		(*it)->timeAvareSerieFeatures()->setTime(time > (*it)->timeAvareSerieFeatures()->getLength() ? (*it)->timeAvareSerieFeatures()->getLength() : time);
+    for(auto it = tasfs.begin(); it != tasfs.end(); ++it){
+		(*it)->setTime(time > (*it)->getLength() ? (*it)->getLength() : time);
     }
 }
 
@@ -84,8 +102,8 @@ double VisualizerSerieTimelineMultiChannel::getLength() const
 {
 	double length = 0;
 
-	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		length = std::max(length, (*it)->timeAvareSerieFeatures()->getLength());
+	for(auto it = tasfs.begin(); it != tasfs.end(); ++it){
+		length = std::max(length, (*it)->getLength());
 	}
 
 	return length;
@@ -106,19 +124,15 @@ const VisualizerSerieTimelineMultiChannel::VisualizersSeries & VisualizerSerieTi
 
 void VisualizerSerieTimelineMultiChannel::offsetChanged(double newOffset)
 {
-	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		if((*it)->timeEditableSerieFeatures()){
-			(*it)->timeEditableSerieFeatures()->setOffset(newOffset);
-		}
+	for(auto it = tesfs.begin(); it != tesfs.end(); ++it){
+		(*it)->setOffset(newOffset);
 	}
 }
 
 void VisualizerSerieTimelineMultiChannel::scaleChanged(double newScale)
 {
-	for(auto it = visualizersSeries.begin(); it != visualizersSeries.end(); ++it){
-		if((*it)->timeEditableSerieFeatures()){
-			(*it)->timeEditableSerieFeatures()->setScale(newScale);
-		}
+	for(auto it = tesfs.begin(); it != tesfs.end(); ++it){
+		(*it)->setScale(newScale);
 	}
 }
 

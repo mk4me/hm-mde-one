@@ -7,7 +7,6 @@
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/kinematic/Wrappers.h>
-#include "ISchemeDrawer.h"
 
 
 KinematicParser::KinematicParser()

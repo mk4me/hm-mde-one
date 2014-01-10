@@ -29,6 +29,7 @@
 #include <QtGui/QtGui>
 
 UTILS_PUSH_WARNINGS
+#include <osg/Array>
 #include <osg/Node>
 #include <osg/AnimationPath>
 #include <osg/Config>

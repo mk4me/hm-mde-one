@@ -294,6 +294,12 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie( const plugin::IVi
     return nullptr;
 }
 
+plugin::IVisualizer::ISerie *NewChartVisualizer::createSerie(const plugin::IVisualizer::ISerie * serie,
+	const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data)
+{
+	return nullptr;
+}
+
 void NewChartVisualizer::addPlotCurve( QwtPlotCurve* curve, const Scales& scales)
 {
     plotScales.merge(scales);
@@ -338,6 +344,17 @@ void NewChartVisualizer::setActiveSerie(plugin::IVisualizer::ISerie * serie)
 }
 
 const plugin::IVisualizer::ISerie * NewChartVisualizer::getActiveSerie() const
+{
+	for(int i = 0; i < series.size(); ++i){
+		if(series[i]->isActive() == true){
+			return series[i];
+		}
+	}
+
+	return nullptr;
+}
+
+plugin::IVisualizer::ISerie * NewChartVisualizer::getActiveSerie()
 {
 	for(int i = 0; i < series.size(); ++i){
 		if(series[i]->isActive() == true){

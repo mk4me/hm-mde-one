@@ -41,6 +41,8 @@ public:
     virtual void setTime(double time);
     //! \return czas trwania serii
     virtual double getLength() const;
+	virtual double getBegin() const;
+	virtual double getEnd() const;
     //! ustawia obiekt ze zdarzeniami powiazanymi z próbą pomiarową
     //! \param val kolecja zdarzeń
     virtual void setEvents(EventsCollectionConstPtr val);
@@ -148,8 +150,6 @@ private:
     NewChartCurve* curve;
     //! obiekt ze statystykami
     ScalarChannelStatsPtr stats;
-    //! aksesor do danych w DataChannel
-    utils::shared_ptr<ScalarContiniousTimeAccessor> accessor;
     //! obiekt z danymi
     ScalarChannelReaderInterfaceConstPtr reader;
     //! obiekt zajmujący się logika eventów

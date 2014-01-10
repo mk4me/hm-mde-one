@@ -11,25 +11,64 @@
 #define HEADER_GUARD_KINEMATIC__KINEMATICSERIE_H__
 
 #include <plugins/c3d/EventSerieBase.h>
+#include <osg/MatrixTransform>
+
+class IGhostSerie
+{
+public:
+
+	virtual ~IGhostSerie() {}
+
+	virtual const bool ghostVisible() const = 0;
+	virtual void setGhostVisible(const bool visible) = 0;
+};
+
+class KinematicSerieBase
+{
+public: 
+	typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;	
+
+public:
+	KinematicSerieBase();
+
+	virtual ~KinematicSerieBase();
+	//! \return macierz, na której operują manipulatory
+	MatrixTransformPtr getMatrixTransformNode();
+	//! Metoda niweluje efekty działania manipulatorów
+	void resetTransform();
+
+	virtual const osg::Vec3 pivotPoint() const;
+
+private:
+
+	virtual void innerResetTransform() {}
+
+protected:
+	//! macierz, na której działają manipulatory
+	MatrixTransformPtr matrixTransform;
+};
+
+class KinematicSerie : public KinematicSerieBase, public plugin::IVisualizer::ISerie
+{
+public:
+
+	virtual ~KinematicSerie() {}
+
+protected:
+
+	KinematicSerie() {}
+};
 
 
 /*! Podstawowa i abstrakcyjna seria danych w wizualizatorze 3D */
-class KinematicSerie : public EventSerieBase
+class KinematicTimeSerie : public KinematicSerieBase, public EventSerieBase
 {
-public: 
-    typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
-    typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
-
 public:
     //! W konstruktorze tworzone są już węzły i zerowany czas
-    KinematicSerie();
-    virtual ~KinematicSerie() {}
+    KinematicTimeSerie();
+    virtual ~KinematicTimeSerie() {}
 
 public:
-    //! \return macierz, na której operują manipulatory
-    inline MatrixTransformPtr getMatrixTransformNode();
-    //! \return punkt zaczepienia manipulatorów
-    osg::Vec3 getPivot() const;
     //! KinematicSerie jest serią zawierającą eventy. Klasy pochodne maja możliwość ich obsługi
     virtual void setEvents(EventsCollectionConstPtr val);
     //! Zwraca czas 
@@ -37,10 +76,8 @@ public:
     //! Ustawia czas. Metoda celowo nie jest wirtualna, klasy dziedziczące powinny implementować setLocalTime
     //! \param val ustawiany czas
     void setTime(double val);
-    //! Macierz serii z transformacją, która nie została zmieniona przez manipulatory
-    virtual osg::Matrix getInitialMatrix() const { return osg::Matrix(); }
-    //! Metoda niweluje efekty działania manipulatorów
-    virtual void resetTransform();
+	//! Metoda niweluje efekty działania manipulatorów
+	virtual void resetTransform();
 
 protected:
     //! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
@@ -48,14 +85,11 @@ protected:
     virtual void setLocalTime(double time) = 0;
 
 protected:
-    //! węzeł używany przez klasę pochodną
-    TransformPtr transformNode;
     //! zdarzenia związane z próba pomiarowa
     EventsCollectionConstPtr events;
-    //! macierz, na której działają manipulatory
-    MatrixTransformPtr matrixTransform;
 private:
     //! ustawiony czas dla serii
     double time;
 };
+
 #endif

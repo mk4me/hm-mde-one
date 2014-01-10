@@ -11,23 +11,28 @@
 #define HEADER_GUARD_KINEMATIC__SKELETONSERIE_H__
 
 #include <corelib/IVisualizer.h>
-#include <osg/Geode>
-#include "KinematicVisualizer.h"
+#include "KinematicSerie.h"
+#include <kinematiclib/JointAnglesCollection.h>
+
+class KinematicVisualizer;
+class SkeletalVisualizationSchemeHelper;
+class IPointsSchemeDrawer;
+class IConnectionsSchemeDrawer;
+class GhostSchemeDrawer;
+class SkeletonJointsMapping;
+class TrajectoryDrawerManager;
 
 //! Seria danych wizualizatora 3D wizualizująca animacje szkieletowa
-class SkeletonSerie :  public QObject, public KinematicSerie
+class SkeletonSerie :  public QObject, public KinematicTimeSerie, public IGhostSerie
 {
 	Q_OBJECT;
-public:
-    //! wskaźnik do węzła przechowywującego geometrię
-	typedef osg::ref_ptr<osg::Geode> GeodePtr;
-    //! wskaźnik do węzła przechowywującego grupę węzłów
-	typedef osg::ref_ptr<osg::Group> GroupPtr;
 
 public:
 	//! Konstuktor
 	//! \param visualizer wizualizator, który stworzył serie danych
-	SkeletonSerie(KinematicVisualizer * visualizer);
+	SkeletonSerie(KinematicVisualizer * visualizer,
+		const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+
 	virtual ~SkeletonSerie() {}
 
 private slots:
@@ -41,9 +46,6 @@ public:
     virtual void setName(const std::string & name);
     //! \return nazwa serii
     virtual const std::string getName() const;
-    //! Ustawienie danych, inicjalizacja 
-    //! \param data dane typu JointAnglesCollection
-	virtual void setData(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
     //! \return ustawione dane
     virtual const core::ObjectWrapperConstPtr & getData() const;
 
@@ -52,42 +54,69 @@ public:
 	virtual const utils::TypeInfo & getRequestedDataType() const;
 	//! \return długość kanału w sekundach
 	virtual double getLength() const;
-	//! Czas zawiera się między 0 a getLength()
-	//! \param time Aktualny, lokalny czas kanału w sekundach
-	virtual void setLocalTime(double time);
+	virtual double getBegin() const;
+	virtual double getEnd() const;
     //! \return macierz serii z transformacja, która nie została zmieniona przez manipulatory
-    osg::Matrix getInitialMatrix() const;
+    virtual osg::Matrix getInitialMatrix() const;
+
+	virtual const osg::Quat orientation() const;
+
+	virtual void setOrientation(const osg::Quat & orientation);
+
+	virtual const osg::Vec3 position() const;
+
+	virtual void setPosition(const osg::Vec3 & position);
+
+	virtual const bool ghostVisible() const;
+	virtual void setGhostVisible(const bool visible);
+
+protected:
+	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
+	//! \param time ustawiany czas
+	virtual void setLocalTime(double time);
 
 private:
-    //! Dialog z trajektoriami działa dla MarkersCollection, dlatego należy dokonać konwersji
-    //! \param joints struktura i dane animacji szkieletowej
-    //! \return kolekcja z markerami, dla której można już używać dialogu TrajectoriesDialog
-    MarkerCollectionConstPtr createTrajectories(kinematic::JointAnglesCollectionConstPtr joints);
+
+	const std::vector<std::vector<osg::Vec3>> createPointsPositions(const unsigned int density) const;
+
     //! \return macierz potrzebna przy operacjach z różnymi ukl. współrzędnych
-    osg::Matrix getXYZMatrix() const;
+    static osg::Matrix getXYZMatrix();
     //! niweluje działanie manipulatorów
     virtual void resetTransform();
 
 private:
+	//! Aktualna dodatkowa rotacja wynikająca ze zmiany osi
+	osg::Quat preRot;
+	//! Pozycja wynikająca z położenia roota szkieletu
+	osg::Vec3 rootPosition;
+	//! Czas faktycznej aktualizacji
+	double lastUpdateTime;
     //! Wizualizator, który utworzył serie
 	KinematicVisualizer * visualizer;
-    //! połączenie między aniamcja szieletowa (struktura + dane) a ich wizualizacja
-	SkeletalVisualizationSchemePtr scheme;
-    //! drawer schematu
-	SchemeDrawerContainerPtr skeletonDrawers;
     //! wrapper przekazany serii
     core::ObjectWrapperConstPtr data;
-
+	//! Dane rozpakowane
+	kinematic::JointAnglesCollectionConstPtr jointAngles;
+	//! Typ danych
 	utils::TypeInfo requestedType;
     //! nazwa serii
     std::string name;
-    //! główny wezej animacji
-    TransformPtr skeletonNode;
     //! czy operujemy na układzie XYZ czy innym
     bool xyzAxis;
-    //! Drawer rysujący trajektorie, powstały one dzięki konwersji JoinAnglesCollection - > MarkersCollection
-    TrajectoryDrawerPtr trajectoryDrawer;
+	//! Obiekt rysujący punkty
+	core::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
+	//! Obiekt rysujący połączenia
+	core::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
+	//! Obiekt pomocniczny do mapowania jointów z danych do wizualizacji
+	core::shared_ptr<SkeletonJointsMapping> jointsMapping;
+	//! Klasa pomocnicza przy rysowaniu szkieletu
+	core::shared_ptr<SkeletalVisualizationSchemeHelper> skeletonSchemeHelper;
+	//! Klasa pomocnicza przy rysowaniu ducha
+	core::shared_ptr<GhostSchemeDrawer> ghostDrawer;
+	//! Klasa pomocnicza przy rysowaniu trajektorii
+	core::shared_ptr<TrajectoryDrawerManager> trajectoriesManager;
 };
+
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;
 typedef boost::shared_ptr<const SkeletonSerie> SkeletonSerieConstPtr;
 

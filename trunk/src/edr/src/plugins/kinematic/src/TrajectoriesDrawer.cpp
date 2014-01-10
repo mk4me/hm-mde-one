@@ -1,193 +1,100 @@
 #include "PCH.h"
-#include <osg/LineWidth>
-#include "UniqueCollection.h"
 #include "TrajectoriesDrawer.h"
-#include "MarkersVisualizationScheme.h"
 
-void TrajectoryDrawer::init( VisualizationSchemeConstPtr scheme )
-{
-    MarkersVisualizationSchemeConstPtr markesScheme = utils::dynamic_pointer_cast<const MarkersVisualizationScheme>(scheme);
-	UTILS_ASSERT(markesScheme && markesScheme->hasData());
-	OsgSchemeDrawer::init(markesScheme);
-	node = new osg::PositionAttitudeTransform();
-	createTrajectories(markesScheme->getMarkers());
-}
-
-void TrajectoryDrawer::deinit()
+TrajectoryDrawerManager::TrajectoryDrawerManager()
 {
 
 }
 
-void TrajectoryDrawer::draw()
+TrajectoryDrawerManager::~TrajectoryDrawerManager()
 {
 
 }
 
-void TrajectoryDrawer::update()
+void TrajectoryDrawerManager::setRange(const Range & range)
 {
-
+	for(auto it = featuresDescriptors.begin(); it != featuresDescriptors.end(); ++it){
+		(*it)->setRange(range);
+	}
 }
 
-osg::ref_ptr<osg::Node> TrajectoryDrawer::getNode()
+void TrajectoryDrawerManager::initialize(const std::vector<std::vector<osg::Vec3>> & pointsPositions)
+{
+	FeaturesDescriptors locFDs;
+	locFDs.reserve(pointsPositions.size());
+
+	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
+
+	for(auto it = pointsPositions.begin(); it != pointsPositions.end(); ++it){
+		core::shared_ptr<TrajectorySchemeDrawer> td(new TrajectorySchemeDrawer());
+		td->init(*it);
+		tmpNode->addChild(td->getNode(), false);
+		locFDs.push_back(td);
+	}
+
+	std::swap(locFDs, featuresDescriptors);
+	std::swap(node, tmpNode);	
+}
+
+osg::ref_ptr<osg::Node> TrajectoryDrawerManager::getNode()
 {
 	return node;
 }
 
-
-TrajectoryDrawer::TrajectoryDrawer( const osg::Vec4& color, int density ) :
-	density(density),
-	color(color)
+const unsigned int TrajectoryDrawerManager::count() const
 {
+	return featuresDescriptors.size();
 }
 
-
-void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
+const bool TrajectoryDrawerManager::visible(const unsigned int idx) const
 {
-	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-	colors->push_back(color);
-
-	std::pair<float, float> times;
-	times.first = 0.0f;
-	times.second = markers->getLength();
-
-	for (int i = markers->getNumChannels() - 1; i >= 0; --i) {
-		VectorChannelConstPtr channel = markers->getChannel(i);
-
-		// stateset colowo jest generowany dla kazdej trajektorii osobno
-		// można w ten sposób zmieniac grubość linii, itp.
-		osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
-		stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-		stateset->setMode( GL_BLEND, osg::StateAttribute::ON );
-		stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
-		GeodePtr geode = new osg::Geode();
-		GeometryPtr lines = new osg::Geometry();
-		osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
-
-		float mult = channel->getLength() / static_cast<float>(density);
-
-		for (int n = 0; n < density - 1; ++n) {
-			vertices->push_back(VectorContiniousTimeAccessor::getValue(mult * n, *channel));
-			vertices->push_back(VectorContiniousTimeAccessor::getValue(mult * (n+1), *channel));
-		}
-
-		geode->setStateSet(stateset);
-		lines->setVertexArray(vertices);
-		lines->setColorArray(colors);
-        lines->setDataVariance(osg::Object::DYNAMIC);
-		lines->setColorBinding(osg::Geometry::BIND_OVERALL);
-		lines->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, vertices->size()));
-
-		trajectoriesMap[channel->getName()] = geode;
-		timesMap[channel->getName()] = times;
-		thicknessMap[channel->getName()] = 1.0f;
-
-		geode->addDrawable(lines);
-
-		node->addChild(geode);
-		geode->setNodeMask(0);
-	}
-
-
+	return node->getValue(idx);
 }
 
-void TrajectoryDrawer::setVisible( const std::string& name, bool visible)
+void TrajectoryDrawerManager::setColor(const osg::Vec4 & color)
 {
-	GeodePtr ptr = trajectoriesMap[name];
-	ptr->setNodeMask(visible ? 0xFFFF : 0);
+	for(unsigned int i = 0; i < featuresDescriptors.size(); ++i){
+		setColor(i, color);
+	}	
 }
 
-osg::Vec4 TrajectoryDrawer::getColor( const std::string& name )
-{
-	auto it = trajectoriesMap.find(name);
-
-	if (it != trajectoriesMap.end()) {
-		GeodePtr ptr = it->second;
-		const osg::Geometry* lines = dynamic_cast<const osg::Geometry*>(ptr->getDrawable(0));
-		if (lines && lines->getColorArray() && lines->getColorArray()->getDataSize()) {
-			const osg::Vec4Array* colors = static_cast<const osg::Vec4Array*>( lines->getColorArray() );
-			return (*colors)[0];
-		}
-	}
-
-	throw std::runtime_error("Wrong color buffer");
+void TrajectoryDrawerManager::setColor(const unsigned int idx, const osg::Vec4 & color)
+{	
+	featuresDescriptors[idx]->setColor(color);
 }
 
-void TrajectoryDrawer::setColor( const std::string& name, const osg::Vec4& color )
+void TrajectoryDrawerManager::setVisible(const bool visible)
 {
-	GeodePtr ptr = trajectoriesMap[name];
-	osg::Geometry* lines = dynamic_cast<osg::Geometry*>(const_cast<osg::Drawable*>(ptr->getDrawable(0)));
-	if (lines) {
-		osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-		colors->push_back(color);
-		return lines->setColorArray(colors);
-	} else {
-		throw std::runtime_error("Wrong color buffer");
+	if(visible == true){
+		node->setAllChildrenOn();
+	}else{
+		node->setAllChildrenOff();
 	}
 }
 
-void TrajectoryDrawer::setLineWidth( const std::string& name, float width )
+void TrajectoryDrawerManager::setVisible(const unsigned int idx, const bool visible)
 {
-	thicknessMap[name] = width;
-	GeodePtr ptr = trajectoriesMap[name];
-	osg::StateSet* stateset = ptr->getStateSet();
-
-	osg::ref_ptr<osg::LineWidth> linewidth = new osg::LineWidth();
-	linewidth->setWidth(width);
-	stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
+	node->setValue(idx, visible);
 }
 
-
-float TrajectoryDrawer::getLineWidth( const std::string& name ) const
+void TrajectoryDrawerManager::setSize(const float size)
 {
-	auto it = thicknessMap.find(name);
-	if (it != thicknessMap.end()) {
-		return it->second;
-	}
-
-	throw std::runtime_error("Wrong marker name");
-}
-
-
-std::pair<float, float> TrajectoryDrawer::getTimes( const std::string& name ) const
-{
-	auto it = timesMap.find(name);
-	if (it != timesMap.end()) {
-		return it->second;
-	}
-
-	throw std::runtime_error("Wrong marker name");
-}
-
-void TrajectoryDrawer::setTimes( const std::string& name, const std::pair<float, float>& times )
-{
-	timesMap[name] = times;
-	GeodePtr ptr = trajectoriesMap[name];
-	try {
-		osg::Geometry* geometry = ptr->getDrawable(0)->asGeometry();
-
-		float length = OsgSchemeDrawer::getVisualiztionScheme()->getDuration();
-
-		const osg::Array* vertices = geometry->getVertexArray();
-		int start = static_cast<int>(vertices->getNumElements() * (times.first / length));
-		start = start - (start % 4);
-		int end = static_cast<int>(vertices->getNumElements() * (times.second / length));
-		if (end > start) {
-			geometry->removePrimitiveSet(0);
-			geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, start, end - start));
-		}
-	} catch (...) {
-		//int i = 0;
+	for(auto it = featuresDescriptors.begin(); it != featuresDescriptors.end(); ++it){
+		(*it)->setWidth(size);
 	}
 }
 
-MarkerCollectionConstPtr TrajectoryDrawer::getMarkers() const
+void TrajectoryDrawerManager::setSize(const unsigned int idx, const float size)
 {
-    MarkersVisualizationSchemeConstPtr scheme = utils::dynamic_pointer_cast<const MarkersVisualizationScheme>(getVisualiztionScheme());
-    UTILS_ASSERT(scheme && scheme->getMarkers());
-    return scheme->getMarkers();
+	featuresDescriptors[idx]->setWidth(size);
 }
 
-void TrajectoryDrawer::setOffset( const osg::Vec3& offset )
+const osg::Vec4 & TrajectoryDrawerManager::color(const unsigned int idx) const
 {
-    node->setPosition(offset);
+	return featuresDescriptors[idx]->color();
+}
+
+const float TrajectoryDrawerManager::size(const unsigned int idx) const
+{
+	return featuresDescriptors[idx]->width();
 }

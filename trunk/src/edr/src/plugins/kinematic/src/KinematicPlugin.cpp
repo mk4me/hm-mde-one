@@ -2,8 +2,6 @@
 #include "KinematicVisualizer.h"
 #include <utils/DataChannel.h>
 #include "OsgSchemeDrawer.h"
-#include "PointSchemeDrawer.h"
-#include "LineSchemeDrawer.h"
 #include "KinematicParser.h"
 #include "AsfParser.h"
 #include <plugins/kinematic/Wrappers.h>

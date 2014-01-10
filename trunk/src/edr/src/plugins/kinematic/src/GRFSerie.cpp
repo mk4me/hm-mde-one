@@ -13,26 +13,52 @@ const float treshold = 0.01f;
 osg::ref_ptr<osg::Texture2D> GRFSerie::texture1;
 osg::ref_ptr<osg::Texture2D> GRFSerie::texture2;
 
-GRFSerie::GRFSerie( KinematicVisualizer * visualizer ) : 
-visualizer(visualizer),
+GRFSerie::GRFSerie( KinematicVisualizer * visualizer,
+	const utils::TypeInfo & requestedType,
+	const core::ObjectWrapperConstPtr & data ) : visualizer(visualizer),
     maxLength(0.0f)
 {
+	UTILS_ASSERT(data->getTypeInfo() == typeid(GRFCollection));
+	this->data = data;
+	this->requestedType = requestedType;
+	//FIX tymczasowy dla linuxa
+	//grfCollection = this->data->get();
+	data->tryGet(grfCollection);
 
+	const IForcePlatformCollection& platforms = grfCollection->getPlatforms();
+	matrixTransform->addChild(createPlatformsGroup(platforms));
+	matrixTransform->addChild(createButterfly(grfCollection, this->maxLength));
+
+	for (auto it = platforms.begin(); it != platforms.end(); ++it) {
+		auto range = (*it)->getSteps();
+		for (auto step = range.begin(); step != range.end(); ++step) {
+			ArrowPtr a1 = createArrow();
+			matrixTransform->addChild(a1->mainPtr);
+			a1->mainPtr->setNodeMask(0);
+			GhostStackPtr ghost1(new GhostStack(8, matrixTransform, osg::Vec4(1,1,1,1)));
+			stepsData[*step] = std::make_pair(a1, ghost1);
+		}
+	}
+}
+
+osg::Matrix GRFSerie::getInitialMatrix() const
+{
+	//osg::Matrix m;
+	//m.setTrans(scheme->getRootPosition(0.0));
+	return osg::Matrix();
 }
 
 osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const IForcePlatformCollection& platforms)
 {
 	osg::ref_ptr<osg::Group> group = new osg::Group();
-	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-	colors->push_back(osg::Vec4(0.5f, 0.5f, 0.3f, 1.0f));
-	osg::Vec3 up(0, 0, -0.00001f);
 	int i = 0;
+
+	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
+	stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
+
 	for ( auto it = platforms.cbegin(); it != platforms.cend(); ++it) {
 		GeodePtr platformGeode = new osg::Geode();
-
-		//GeometryPtr platformLines = new osg::Geometry();
-		osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
-		stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
+		
 		platformGeode->setStateSet(stateset);
 
         osg::ref_ptr<osg::Box> box = new osg::Box((*it)->getCenter() - Vec3(0,0, 0.025f), (*it)->getWidth(), (*it)->getLength(), 0.025f);		
@@ -73,13 +99,6 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& 
     return group;
 }
 
-//GRFSerie::GeodePtr GRFSerie::createPlatformButterfly(IForcePlatformConstPtr platform, GRFCollectionConstPtr grf, float& maxLength) const
-//{
-//    IForcePlatform::IStepConstPtr step = *platform->getSteps().begin();
-//    return createStep(step, grf, maxLength, platform);
-//
-//}
-
 GRFSerie::GeodePtr GRFSerie::createStep( IForcePlatform::IStepConstPtr step, float &maxLength, IForcePlatformConstPtr platform) const
 {
     osg::Vec3 start1 = step->getStartPoint();
@@ -98,7 +117,6 @@ GRFSerie::GeodePtr GRFSerie::createStep( IForcePlatform::IStepConstPtr step, flo
     osg::Vec4 highColor(1.0f, 0.0f, 0.0f, 0.7f);
     osg::Vec4 lowColor(0.0f, 1.0f, 0.0f, 0.0f);
     osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-    //colors->push_back(osg::Vec4(1.0f, 0.3f, 0.3f, 1.0f));
 
     maxLength = 0.0f;
 
@@ -118,7 +136,6 @@ GRFSerie::GeodePtr GRFSerie::createStep( IForcePlatform::IStepConstPtr step, flo
         v[2] *= -1.0f;
         v += origin1;
 
-        //if (length > treshold) {
         if (ratio1 >= 0.0f && ratio1 <= 1.0f) {
             colors->push_back(highColor);
             verts->push_back(v);
@@ -168,139 +185,13 @@ GRFSerie::GeodePtr GRFSerie::createStep( IForcePlatform::IStepConstPtr step, flo
     return geode;
 }
 
-/*
-GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& maxLength ) const
-{
-	osg::ref_ptr<osg::Group> group = new osg::Group();
-    if (f1->hasStartEndData() && f2->hasStartEndData()) {
-        osg::Vec3 start1 = f1->getStartPoint();
-        osg::Vec3 end1   = f1->getEndPoint();
-        osg::Vec3 start2 = f2->getStartPoint();
-        osg::Vec3 end2   = f2->getEndPoint();
-        float startTime1 = f1->getDataStartTime();
-        float endTime1	 = f1->getDataEndTime();
-        float startTime2 = f2->getDataStartTime();
-        float endTime2	 = f2->getDataEndTime();
-
-        int numSegments = 300;
-        float delta = (grf->getLength() / static_cast<float>(numSegments));
-        GeodePtr geode = new osg::Geode();
-        osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
-        Vec3 v;
-        osg::Vec3 origin1 = grf->getPlatforms()[0]->getCenter();
-        osg::Vec3 origin2 = grf->getPlatforms()[1]->getCenter();
-
-        osg::Vec4 highColor(1.0f, 0.0f, 0.0f, 0.7f);
-        osg::Vec4 lowColor(0.0f, 1.0f, 0.0f, 0.0f);
-        osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-        //colors->push_back(osg::Vec4(1.0f, 0.3f, 0.3f, 1.0f));
-
-        maxLength = 0.0f;
-
-        float f = 0.0f;
-        float lengthBuffer = f1->getLength();
-        osg::Vec3 lastV1;
-        osg::Vec3 lastV2;
-        osg::Vec3 lastOrigin1;
-        osg::Vec3 lastOrigin2;
-        for (int i = 0; i < numSegments; i++) {
-            v.set(getChannelValue(f, *f1));
-            float length = v.length();
-
-            float ratio1 = (f - startTime1) / (endTime1 - startTime1);
-            float ratio2 = (f - startTime2) / (endTime2 - startTime2);
-            origin1  = start1  * (1.0f - ratio1) + end1 * ratio1;
-            origin2 = start2  * (1.0f - ratio2) + end2 * ratio2;
-            v *= grfScale;
-            v[0] *= grf->getPlatforms()[0]->getSignX();
-            v[1] *= grf->getPlatforms()[0]->getSignY();
-            v[2] *= -1.0f;
-            v += origin1;
-
-            //if (length > treshold) {
-            if (ratio1 >= 0.0f && ratio1 <= 1.0f) {
-                colors->push_back(highColor);
-                verts->push_back(v);
-                colors->push_back(highColor);
-                verts->push_back(lastV1);
-                colors->push_back(lowColor);
-                verts->push_back(origin1); 
-
-                colors->push_back(highColor);
-                verts->push_back(lastV1);
-                colors->push_back(lowColor);
-                verts->push_back(origin1);
-                colors->push_back(lowColor);
-                verts->push_back(lastOrigin1);
-
-            }
-            if (length > maxLength) {
-                maxLength = length;
-            }
-            lastV1 = v;
-            lastOrigin1 = origin1;
-            v.set(getChannelValue(f, *f2));
-            length = v.length();
-            v *= grfScale;
-            v[0] *= grf->getPlatforms()[1]->getSignX();
-            v[1] *= grf->getPlatforms()[1]->getSignY();
-            v[2] *= -1.0f;
-            v += origin2;
-
-            //if (length > treshold) {
-            if (ratio2 >= 0.0f && ratio2 <= 1.0f) {
-                colors->push_back(highColor);
-                verts->push_back(v);
-                colors->push_back(highColor);
-                verts->push_back(lastV2);
-                colors->push_back(lowColor);
-                verts->push_back(origin2); 
-
-                colors->push_back(highColor);
-                verts->push_back(lastV2);
-                colors->push_back(lowColor);
-                verts->push_back(origin2);
-                colors->push_back(lowColor);
-                verts->push_back(lastOrigin2);
-            }
-
-            if (length > maxLength) {
-                maxLength = length;
-            }
-            lastV2 = v;
-            lastOrigin2 = origin2;
-            f += delta;
-            if (f > lengthBuffer) {
-                f = lengthBuffer;
-            }
-
-        }
-
-        osg::ref_ptr<osg::Geometry> lines = new osg::Geometry();
-
-        osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
-        stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-        stateset->setMode( GL_BLEND, osg::StateAttribute::ON );
-        stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
-        geode->setStateSet(stateset);
-        lines->setVertexArray(verts);
-        lines->setColorArray(colors);
-        lines->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-        lines->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, verts->size()));
-        geode->addDrawable(lines);
-        group->addChild(geode);
-    }
-	return group;
-}
-*/
 void GRFSerie::setLocalTime( double time )
 {
-    float t = time;
     try {
         const auto& platforms = grfCollection->getPlatforms();
         for (auto it = platforms.cbegin(); it != platforms.cend(); ++it) {
             auto f1 = (*it)->getForceChannel();
-            osg::Vec3 v1(TimeAccessor::getValue(t, *f1));
+            osg::Vec3 v1(TimeAccessor::getValue(time, *f1));
 
             float ratio1 = v1.length() / maxLength;
 
@@ -313,10 +204,11 @@ void GRFSerie::setLocalTime( double time )
        
             auto range = (*it)->getSteps();
             for (auto step = range.begin(); step != range.end(); ++step) {
-                osg::Vec3 start1 = (*step)->getStartPoint();
-                osg::Vec3 end1   = (*step)->getEndPoint();
                 float startTime1 = (*step)->getStartTime();
                 float endTime1	 = (*step)->getEndTime();
+
+				osg::Vec3 start1 = (*step)->getStartPoint();
+				osg::Vec3 end1   = (*step)->getEndPoint();
 
                 float timeRatio1 = (time - startTime1) / (endTime1 - startTime1);
         
@@ -329,7 +221,7 @@ void GRFSerie::setLocalTime( double time )
                     auto g1 = data->second.second;
                     auto platform1 = platform2Shape[*it];
                     if (timeRatio1 >= 0.0f && timeRatio1 <= 1.0f) {
-                        a1->mainPtr->setNodeMask(0xffff);
+                        a1->mainPtr->setNodeMask(1);
                         a1->setArrow(origin1, v1 + origin1);	
                         a1->setColor(c1);
                         g1->addState(std::make_pair(origin1, v1 + origin1));
@@ -345,80 +237,9 @@ void GRFSerie::setLocalTime( double time )
             
         }
     } catch(...) {
+		
     }
 }
-
-//void GRFSerie::setLocalTime( double time )
-//{
-//	try {
-//		float t = time;
-//        auto f1 = grfCollection->getGRFChannel(GRFChannel::F1);
-//        auto f2 = grfCollection->getGRFChannel(GRFChannel::F2);
-//		osg::Vec3 v1(getChannelValue(t, *f1));
-//		osg::Vec3 v2(getChannelValue(t, *f2));
-//
-//		float ratio1 = v1.length() / maxLength;
-//		float ratio2 = v2.length() / maxLength;
-//
-//		osg::Vec4 c1(ratio1, 1.0f - ratio1, 0.0f, 1.0f);
-//		osg::Vec4 c2(ratio2, 1.0f - ratio2, 0.0f, 1.0f);
-//
-//		v1 *= grfScale;
-//        v1[0] *= grfCollection->getPlatforms()[0]->getSignX();
-//        v1[1] *= grfCollection->getPlatforms()[0]->getSignY();
-//		v1[2] *= -1.0f;
-//		v2 *= grfScale;
-//        v2[0] *= grfCollection->getPlatforms()[1]->getSignX();
-//        v2[1] *= grfCollection->getPlatforms()[1]->getSignY();
-//		v2[2] *= -1.0f;
-//		//osg::Vec3 origin1 = grfCollection->getPlatforms()[0]->getCenter();
-//		//osg::Vec3 origin2 = grfCollection->getPlatforms()[1]->getCenter();
-//
-//		osg::Vec3 start1 = f1->getStartPoint();
-//		osg::Vec3 end1   = f1->getEndPoint();
-//		osg::Vec3 start2 = f2->getStartPoint();
-//		osg::Vec3 end2   = f2->getEndPoint();
-//		float startTime1 = f1->getDataStartTime();
-//		float endTime1	 = f1->getDataEndTime();
-//		float startTime2 = f2->getDataStartTime();
-//		float endTime2	 = f2->getDataEndTime();
-//
-//		float timeRatio1 = (time - startTime1) / (endTime1 - startTime1);
-//		float timeRatio2 = (time - startTime2) / (endTime2 - startTime2);
-//
-//		osg::Vec3 origin1  = start1  * (1.0f - timeRatio1) + end1 * timeRatio1;
-//		osg::Vec3 origin2 = start2  * (1.0f - timeRatio2) + end2 * timeRatio2;
-//		
-//		// chowanie/pokazywanie strzalek, kolorowanie platform.
-//		//if (v1.length2() > treshold) {
-//		if (timeRatio1 >= 0.0f && timeRatio1 <= 1.0f) {
-//			a1->mainPtr->setNodeMask(0xffff);
-//			a1->setArrow(origin1, v1 + origin1);	
-//			a1->setColor(c1);
-//			g1->addState(std::make_pair(origin1, v1 + origin1));
-//			platform1->setColor(osg::Vec4(0.4f, 0.4f, 0.0f, 1.0f));
-//		} else {
-//			a1->mainPtr->setNodeMask(0);
-//			platform1->setColor(osg::Vec4(0.5f, 0.5f, 0.3f, 1.0f));
-//		}
-//
-//		//if (v2.length2() > treshold) {
-//		if (timeRatio2 >= 0.0f && timeRatio2 <= 1.0f) {
-//			a2->setColor(c2);
-//			a2->setArrow(origin2, v2 + origin2);
-//			a2->mainPtr->setNodeMask(0xffff);
-//			g2->addState(std::make_pair(origin2, v2 + origin2));
-//			platform2->setColor(osg::Vec4(0.4f, 0.4f, 0.0f, 1.0f));
-//		} else {
-//			a2->mainPtr->setNodeMask(0);
-//			platform2->setColor(osg::Vec4(0.5f, 0.5f, 0.3f, 1.0f));
-//		}
-//
-//		g1->update();
-//		g2->update();
-//	} catch(...) {
-//	}
-//}
 
 GRFSerie::ArrowPtr GRFSerie::createArrow()
 {
@@ -448,7 +269,6 @@ GRFSerie::ArrowPtr GRFSerie::createArrow()
 
 	transform->addChild(transformBox);
 	transformBox->addChild(transformCone);
-	//transform->addChild(transformCone);
 
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 	stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
@@ -463,31 +283,6 @@ GRFSerie::ArrowPtr GRFSerie::createArrow()
 	a->boxShape = boxShape;
 	a->coneShape = coneShape;
 	return a;
-}
-
-void GRFSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
-{
-	UTILS_ASSERT(data->getTypeInfo() == typeid(GRFCollection));
-    this->data = data;
-	this->requestedType = requestedType;
-	//FIX tymczasowy dla linuxa
-	//grfCollection = this->data->get();
-	data->tryGet(grfCollection);
-	    
-    const IForcePlatformCollection& platforms = grfCollection->getPlatforms();
-    transformNode->addChild(createPlatformsGroup(platforms));
-	transformNode->addChild(createButterfly(grfCollection, this->maxLength));
-    
-    for (auto it = platforms.begin(); it != platforms.end(); ++it) {
-        auto range = (*it)->getSteps();
-        for (auto step = range.begin(); step != range.end(); ++step) {
-            ArrowPtr a1 = createArrow();
-            a1->mainPtr->setNodeMask(0);
-            transformNode->addChild(a1->mainPtr);
-            GhostStackPtr ghost1(new GhostStack(8, transformNode, osg::Vec4(1,1,1,1)));
-            stepsData[*step] = std::make_pair(a1, ghost1);
-        }
-    }
 }
 
 const core::ObjectWrapperConstPtr & GRFSerie::getData() const
@@ -609,6 +404,16 @@ double GRFSerie::getLength() const
     return grfCollection->getLength();
 }
 
+double GRFSerie::getBegin() const
+{
+	return 0.0;
+}
+
+double GRFSerie::getEnd() const
+{
+	return getLength();
+}
+
 
 
 void GRFSerie::Arrow::setArrow( Vec3 from, Vec3 to )
@@ -654,6 +459,7 @@ maxSize(maxSize) ,
         ArrowPtr a = createArrow();
         hookNode->addChild(a->mainPtr);
         a->mainPtr->setNodeMask(0);
+		a->setColor(osg::Vec4());
         stackArrows.push_back(a);
     }
 }
@@ -678,14 +484,14 @@ void GRFSerie::GhostStack::addState( const ArrowState& state )
 
 void GRFSerie::GhostStack::update()
 {
-    float delta = color[3] / static_cast<float>(maxSize);
+    static const float delta = color[3] / static_cast<float>(maxSize);
 
     for (auto it = stackArrows.begin(); it != stackArrows.end(); ++it) {
         ArrowPtr a = *it;
         const osg::Vec4& color = a->getColor();
         float alpha = color[3] - delta;
         if (alpha > 0) {
-            a->mainPtr->setNodeMask(0xffff);
+            a->mainPtr->setNodeMask(1);
             a->setColor(osg::Vec4(color[0], color[1], color[2], alpha));
         } else {
             a->mainPtr->setNodeMask(0);

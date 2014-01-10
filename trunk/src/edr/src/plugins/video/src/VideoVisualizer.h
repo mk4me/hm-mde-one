@@ -66,6 +66,9 @@ private:
 		//! \return długość kanału w sekundach
 		virtual double getLength() const;
 
+		virtual double getBegin() const;
+		virtual double getEnd() const;
+
 		//! Czas zawiera się między 0 a getLength()
 		//! \param time Aktualny, lokalny czas kanału w sekundach
 		virtual void setTime(double time);
@@ -155,12 +158,16 @@ public:
 
     virtual plugin::IVisualizer::ISerie* createSerie(const plugin::IVisualizer::ISerie * serie);
 
+	virtual plugin::IVisualizer::ISerie* createSerie(const plugin::IVisualizer::ISerie * serie, const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+
     //! \param serie Seria danych do usunięcia, nie powinien usuwać tej serii! Zarządzamy nią my!!
     virtual void removeSerie(plugin::IVisualizer::ISerie* serie);
 
 	virtual void setActiveSerie(plugin::IVisualizer::ISerie * serie);
 
 	virtual const plugin::IVisualizer::ISerie * getActiveSerie() const;
+
+	virtual plugin::IVisualizer::ISerie * getActiveSerie();
 
 private:
 

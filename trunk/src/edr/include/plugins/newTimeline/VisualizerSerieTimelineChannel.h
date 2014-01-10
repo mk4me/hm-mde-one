@@ -48,6 +48,8 @@ private:
 
 	core::Visualizer * visualizer;
 	core::Visualizer::VisualizerSerie * serie;
+	plugin::IVisualizer::ITimeAvareSerieFeatures * timeAvareSerieFeatures;
+	plugin::IVisualizer::ITimeEditableSerieFeatures * timeEditableSerieFeatures;
 };
 
 
@@ -84,6 +86,9 @@ public:
 private:
 
 	VisualizersSeries visualizersSeries;
+	mutable double length;
+	std::list<plugin::IVisualizer::ITimeAvareSerieFeatures*> tasfs;
+	std::list<plugin::IVisualizer::ITimeEditableSerieFeatures*> tesfs;
 };
 
 class PLUGINTIMELINE_EXPORT VisualizerTimelineHelper : public core::Visualizer::IVisualizerObserver

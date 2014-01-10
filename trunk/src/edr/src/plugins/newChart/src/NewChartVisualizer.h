@@ -67,12 +67,16 @@ public:
       plugin::IVisualizer::ISerie *createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data);
       // \return metoda nie jest obsługiwana, nullptr
       plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie * serie);
+
+	  plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie * serie,
+		  const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data);
       //! Usuwa serie z wizualizatora
       //! \param serie seria do usunięcia, musi należeć do wizualizatora i musi być przez niego stworzona
       virtual void removeSerie(plugin::IVisualizer::ISerie *serie);
 
 	  virtual void setActiveSerie(plugin::IVisualizer::ISerie * serie);
 	  virtual const plugin::IVisualizer::ISerie * getActiveSerie() const;
+	  virtual plugin::IVisualizer::ISerie * getActiveSerie();
       //! Tworzy główny widget wizualizatora
       //! \param manager Manager z akcjami do flexi bara
       //! \return utworzony widget

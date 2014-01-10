@@ -21,7 +21,7 @@
 const float grfScale = 0.0008f;
 
 //! Seria danych odpowiedzialna za wizualizacje płyt naciskowych i sił na nie działających
-class GRFSerie : public KinematicSerie
+class GRFSerie : public KinematicTimeSerie
 {
 public:
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;
@@ -34,7 +34,8 @@ public:
 public:
 	//! Konstruktor
 	//! \param visualizer wizualizator tworzący ta serie
-	GRFSerie(KinematicVisualizer * visualizer);
+	GRFSerie(KinematicVisualizer * visualizer, const utils::TypeInfo & requestedType,
+		const core::ObjectWrapperConstPtr & data);
 
 public:
 	//! Ustawia nazwę serii
@@ -42,9 +43,6 @@ public:
 	virtual void setName(const std::string & name);
     //! \return nazwa serii
     virtual const std::string getName() const;
-	//! Ustawienie danych, inicjalizacja 
-	//! \param data dane typu GRFCollection
-	virtual void setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
 
 	virtual void update();
     //! \return ustawione dane
@@ -53,9 +51,13 @@ public:
 	virtual const utils::TypeInfo & getRequestedDataType() const;
 	//! \return długość kanału w sekundach
 	virtual double getLength() const;
+	virtual double getBegin() const;
+	virtual double getEnd() const;
 	//! Czas zawiera się między 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanału w sekundach
 	virtual void setLocalTime(double time);
+
+	virtual osg::Matrix getInitialMatrix() const;
 
 private:
     //! Struktura pomocna przy wizualizacji wektora siły.

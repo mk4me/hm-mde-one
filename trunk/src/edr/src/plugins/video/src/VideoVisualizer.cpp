@@ -133,6 +133,16 @@ double VideoVisualizer::VideoSerie::getLength() const
 	return visualizer->stream->getDuration();
 }
 
+double VideoVisualizer::VideoSerie::getBegin() const
+{
+	return 0.0;
+}
+
+double VideoVisualizer::VideoSerie::getEnd() const
+{
+	return getLength();
+}
+
 void VideoVisualizer::VideoSerie::setTime(double time)
 {
 	visualizer->currentStreamTime = time - offset;
@@ -359,6 +369,11 @@ plugin::IVisualizer::ISerie* VideoVisualizer::createSerie(const plugin::IVisuali
     return nullptr;
 }
 
+plugin::IVisualizer::ISerie* VideoVisualizer::createSerie(const plugin::IVisualizer::ISerie * serie, const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data)
+{
+	return nullptr;
+}
+
 void VideoVisualizer::removeSerie(plugin::IVisualizer::ISerie* serie)
 {
     clear();
@@ -390,6 +405,11 @@ void VideoVisualizer::setActiveSerie(plugin::IVisualizer::ISerie * serie)
 }
 
 const plugin::IVisualizer::ISerie * VideoVisualizer::getActiveSerie() const
+{
+	return currentSerie_;
+}
+
+plugin::IVisualizer::ISerie * VideoVisualizer::getActiveSerie()
 {
 	return currentSerie_;
 }

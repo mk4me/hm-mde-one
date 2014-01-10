@@ -11,6 +11,9 @@
 
 #include <corelib/Export.h>
 #include <utils/SmartPtr.h>
+#include <utils/DataChannel.h>
+#include <utils/DataChannelDescriptors.h>
+#include <utils/StreamData.h>
 #include <corelib/ObjectWrapperCollection.h>
 #include <corelib/IVisualizer.h>
 #include <QtCore/QObject>
@@ -28,11 +31,11 @@ namespace core {
 class CORELIB_EXPORT Visualizer : public QObject
 {
 	Q_OBJECT;
-
+	//! Zaprzyjaźneinie z managerem wizualizatorów
 	friend class VisualizerManager;
 
 private:
-	//! Forward declaration implementacji
+	//! Forward declaration implementacji wizualizatora
 	class VisualizerImpl;
 
 public:
@@ -40,6 +43,7 @@ public:
 	//! Seria vizualizatora
 	class CORELIB_EXPORT VisualizerSerie
 	{
+		//! Zaprzyjaźnienie z wizualizatorem
 		friend class Visualizer;
 	private:
 		//! Prywatny konstruktor - tylko wizualizator może tworzyć takie obiekty
@@ -49,29 +53,47 @@ public:
 		VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase);
 		//! Prywatny destruktor - tylko wizualizator może niszczyć serie danych
 		~VisualizerSerie();
+		//! Metoda próbuje odświezyć serię danych - odrysować na scenie wizualizatora
+		void tryUpdate();
 
 	public:
-		Visualizer * visualizer() const;
+		//! \return Wizualizator który stworzył ta serie danych
+		Visualizer * visualizer();
+		//! \return Wizualizator który stworzył ta serie danych
+		const Visualizer * visualizer() const;
 		//! \return Podstawowy interfejs serii danych
-		plugin::IVisualizer::ISerie * serie() const;
-		//! \return Czasowy interfejs serii danych - nie musi być implementowany przez serię, wtedy nullptr
-		plugin::IVisualizer::ITimeAvareSerieFeatures * timeAvareSerieFeatures() const;
-		//! \return Czasowy interfejs serii pozwalajacy zmieniać jej skalę czasu i offset
-		plugin::IVisualizer::ITimeEditableSerieFeatures * timeEditableSerieFeatures() const;
+		const plugin::IVisualizer::ISerie * serie() const;
+		//! \return Podstawowy interfejs serii danych
+		plugin::IVisualizer::ISerie * serie();
+		//! Metoda ustawia dane serii - podmienia ją na inną jeżeli requestedType inny niż zadany w serii
+		void setData(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+		//! \tparam Typ który powinna wspierać seria danych
+		//! \return Wskaźnik do danego typu jeśli go wspiera, nullptr jesli nie ma serii
+		//! lub nie wspiera typu
+		template<typename T>
+		T * serieFeatures()
+		{
+			return dynamic_cast<T*>(serie());
+		}
+		//! \tparam Typ który powinna wspierać seria danych
+		//! \return Wskaźnik do danego typu jeśli go wspiera, nullptr jesli nie ma serii
+		//! lub nie wspiera typu
+		template<typename T>
+		const T * serieFeatures() const
+		{
+			return dynamic_cast<const T*>(serie());
+		}
+
+		//! Metoda żąda odświeżenia danych
+		void requestUpdate();
 
 	private:
-		//! Wizualizator który utworzył tę serię danych
-		Visualizer * visualizer_;
-		//! Podstawowy interfejs serii danych
 		plugin::IVisualizer::ISerie * serie_;
-		//! Czasowy interfejs serii danych - nie musi być implementowany przez serię, wtedy nullptr
-		plugin::IVisualizer::ITimeAvareSerieFeatures * timeAvareSerieFeatures_;
-		//! Czasowy interfejs serii danych obsługujących skalowanie i zmianę offsetu
-		plugin::IVisualizer::ITimeEditableSerieFeatures * timeEditableSerieFeatures_;
+		Visualizer * visualizer_;
 	};
 
 	//! Interfejs źródła danych wizualizatora
-	class VisualizerDataSource
+	class IVisualizerDataSource
 	{
 	public:
 		//! \param type Typdanych jaki nas interesuje
@@ -81,7 +103,7 @@ public:
 	};
 
 	//! Smart pointer do źródła
-	typedef utils::shared_ptr<VisualizerDataSource> VisualizerDataSourcePtr;
+	typedef utils::shared_ptr<IVisualizerDataSource> VisualizerDataSourcePtr;
 	//! Agregat źródeł danych
 	typedef std::list<VisualizerDataSourcePtr> DataSources;
 
@@ -105,7 +127,7 @@ public:
 	};
 
 private:
-
+	//! Implementacja
 	utils::shared_ptr<VisualizerImpl> visualizerImpl;
 
 Q_SIGNALS:
@@ -113,7 +135,7 @@ Q_SIGNALS:
 	void screenshotTaken(const QPixmap & screenshot);
 
 public Q_SLOTS:
-
+	//! Trigger na screenshot
 	void onScreenshotTrigger();
 
 public:
@@ -199,12 +221,14 @@ public:
 	//! \param exact Czy interesują nas tylko typy zgodne czy mogą być też pochodne
 	void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact);
 
+	//! \return Wizualizator opakowany
 	plugin::IVisualizer * visualizer();
-
+	//! \return Wizualizator opakowany
 	const plugin::IVisualizer * visualizer() const;
 
 private:
-
+	//! Metoda aktualizująca wizualizator
+	//! \param deltaTime Różnica czasu względem poprzedniego odświeżenia
 	void update(double deltaTime);
 };
 
@@ -213,15 +237,17 @@ typedef utils::shared_ptr<const Visualizer> VisualizerConstPtr;
 typedef utils::weak_ptr<Visualizer> VisualizerWeakPtr;
 typedef utils::weak_ptr<const Visualizer> VisualizerConstWeakPtr;
 
-class CORELIB_EXPORT VisualizerMemoryDataSource : public Visualizer::VisualizerDataSource
+//! Klasa obsługująca jako źródło danych manager danych
+class CORELIB_EXPORT VisualizerMemoryDataSource : public Visualizer::IVisualizerDataSource
 {
 public:
-
+	//! \param dmr DataManagerReader jako źródło danych
 	VisualizerMemoryDataSource(core::IDataManagerReader * dmr);
 
 	virtual void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact = false) const;
 
 private:
+	//! DataManagerReader
 	core::IDataManagerReader * dmr;
 };
 
