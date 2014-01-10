@@ -21,11 +21,11 @@ public:
 	//! Destruktor wirtualny
 	virtual ~IPath() {}
 
-	//! \return Zwraca pelna sciezke do folderu "MyDocuments\EDR"
+	//! \return Zwraca pelna sciezke do folderu "MyDocuments\MDE"
 	virtual const Filesystem::Path& getUserDataPath() const = 0;
-	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR" dla wszystkich użytkowników
+	//! \return Zwraca pelna sciezke do folderu "ApplicationData\MDE" dla wszystkich użytkowników
 	virtual const Filesystem::Path& getApplicationDataPath() const = 0;
-	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR" dla aktualnego użytkownika
+	//! \return Zwraca pelna sciezke do folderu "ApplicationData\MDE" dla aktualnego użytkownika
 	virtual const Filesystem::Path& getUserApplicationDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Filesystem::Path& getResourcesPath() const = 0;

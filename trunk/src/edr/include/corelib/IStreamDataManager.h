@@ -20,27 +20,35 @@ namespace core {
 	class IStreamDataManagerOperations
 	{
 	public:
-
+		//! Destrutkor wirtualny
 		virtual ~IStreamDataManagerOperations() {}
 
-		//! \data Dane wchodz¹ce pod kontrolê DM
-		virtual void addStream(std::istream * stream) = 0;
-		//! Dane usuwane z DM
+		//! \param stream Strumieñ dodawany do managera
+		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
+		virtual void addStream(const IStreamManagerReaderOperations::StreamData & stream) = 0;
+		//! \param stream Strumieñ usuwany z DM
+		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
 		virtual void removeStream(const std::istream * stream) = 0;
-
-		virtual const bool tryAddData(std::istream * stream) = 0;
-
+		//! \param stream Strumieñ dodawany do managera
+		//! \return Prawda jeœli pomyœlnie dodano strumieñ
+		virtual const bool tryAddStream(const IStreamManagerReaderOperations::StreamData & stream) = 0;
+		//! \param stream Strumieñ usuwany z managera
+		//! \return Prawda jeœli pomyœlnie usuniêto strumieñ
 		virtual const bool tryRemoveStream(const std::istream * stream) = 0;
+
+		//! TODO
+		// poprawiæ API - usuwamy smart pointerem strumienia albo jego œcie¿k¹
 	};
 
 	//! Manager udostêpniaj¹cy operacje na strumieniach zarz¹dzanych przez DM w oparciu o zarejestrowane parsery i rozszerzenia
 	class IStreamDataManager : public IStreamDataManagerOperations
 	{
 	public:
-
+		//! Interfejs transakcji managera strumieni
 		class IStreamDataManagerTransaction : public ITransaction, public IStreamDataManagerOperations, public IStreamManagerReaderOperations
 		{
 		public:
+			//! Destruktor wirtualny
 			virtual ~IStreamDataManagerTransaction() {}
 		};
 
@@ -48,7 +56,7 @@ namespace core {
 		typedef utils::shared_ptr<IStreamDataManagerTransaction> TransactionPtr;
 
 	public:
-
+		//! Destruktor wirtualny
 		virtual ~IStreamDataManager() {}
 
 		//! \return Transakcja na strumieniach

@@ -13,7 +13,7 @@
 
 namespace core
 {
-
+	//! Interfejs managera zadañ
 	class IJobManager
 	{
 	public:

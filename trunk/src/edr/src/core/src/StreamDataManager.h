@@ -30,7 +30,7 @@ namespace core {
 		}
 
 		//! \data Dane wchodz¹ce pod kontrolê DM
-		virtual void addStream(std::istream * stream)
+		virtual void addStream(const IStreamManagerReaderOperations::StreamData & stream)
 		{
 
 		}
@@ -41,7 +41,7 @@ namespace core {
 
 		}
 
-		virtual const bool tryAddData(std::istream * stream)
+		virtual const bool tryAddStream(const IStreamManagerReaderOperations::StreamData & stream)
 		{
 			return false;
 		}

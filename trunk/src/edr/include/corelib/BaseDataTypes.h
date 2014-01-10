@@ -35,6 +35,21 @@ static UniqueID GenerateUniqueID(const std::string& uuid)
 }
 };
 
+//! Interfejs obserwatora zmian dla managerów
+template <class Changes>
+class IChangesObserver
+{
+public:
+
+	virtual ~IChangesObserver() {}
+
+	//! \param previousValue 
+	//! \param currentVal 
+	//! \param type 
+	//! \param modyfication 
+	virtual void observe(const Changes & changes) = 0;
+};
+
 }
 
 #endif //BASE_SERVICE_H

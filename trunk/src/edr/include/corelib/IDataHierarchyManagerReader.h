@@ -16,7 +16,7 @@ namespace core {
 	class IDataHierarchyManagerReader {
 
 	public:
-
+		//! Destruktor wirtualny
 		virtual ~IDataHierarchyManagerReader() {}
 
 		//! \param typeInfo Typ zarejestrowany w DM dla któego chemy utworzyæ OW

@@ -14,7 +14,7 @@
 
 namespace core
 {	
-
+	//! Interfejs klasy reprezentuj¹cej zadanie do wykonania
 	class IJob
 	{
 	public:
@@ -28,9 +28,8 @@ namespace core
 		};
 
 	public:
-
+		//Desturuktor wirtualny
 		virtual ~IJob() {}
-
 		//! \return Zadanie do przetworzenia
 		virtual utils::IRunnablePtr runnable() = 0;
 		//! \return Zadanie do przetworzenia

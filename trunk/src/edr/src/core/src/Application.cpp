@@ -95,7 +95,7 @@ int Application::initUIContext(int & argc, char *argv[])
 	//obs?uga argument?w i opisu uzycia aplikacji z konsoli
 	osg::ArgumentParser arguments(&argc,argv);
 	arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
-	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" example usage of EDR.");
+	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" example usage of MDE.");
 	arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename");
 	arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display this information");
 	arguments.getApplicationUsage()->addCommandLineOption("--plugins <path>","Additional plugins directory");

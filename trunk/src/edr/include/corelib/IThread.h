@@ -26,7 +26,6 @@ namespace core
 		virtual const std::string & destination() const = 0;
 		//! \param destination Przeznaczenie w¹tku, co realizuje
 		virtual void setDestination(const std::string & destination) = 0;
-
 	};
 
 	DEFINE_SMART_POINTERS(IThread)

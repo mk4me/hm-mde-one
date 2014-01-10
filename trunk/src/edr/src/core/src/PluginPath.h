@@ -18,11 +18,11 @@ class PluginPath : public IPath
 public:
 	PluginPath(const std::string & pluginName);
 
-	//! \return Zwraca pelna sciezke do folderu "MyDocuments\EDR"
+	//! \return Zwraca pelna sciezke do folderu "MyDocuments\MDE"
 	virtual const Filesystem::Path& getUserDataPath() const;
-	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"
+	//! \return Zwraca pelna sciezke do folderu "ApplicationData\MDE"
 	virtual const Filesystem::Path& getApplicationDataPath() const;
-	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"
+	//! \return Zwraca pelna sciezke do folderu "ApplicationData\MDE"
 	virtual const Filesystem::Path& getUserApplicationDataPath() const;
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Filesystem::Path& getResourcesPath() const;

@@ -19,16 +19,21 @@ namespace core {
 	class IMemoryDataManagerBasicOperations
 	{
 	public:
-
+		//! Destruktor wirtualny
 		virtual ~IMemoryDataManagerBasicOperations() {}
 
 		//! \data Dane wchodz¹ce pod kontrolê DM
+		//! rzuca wyj¹tkiem jeœli nie uda siê dodaæ danych
 		virtual void addData(const ObjectWrapperPtr & data) = 0;
 		//! Dane usuwane z DM
+		//! rzuca wyj¹tkiem jeœli nie uda siê usun¹æ danych
 		virtual void removeData(const ObjectWrapperConstPtr & data) = 0;
 
+		//! \param data Dane do dodaniwa w DM
+		//! \return Czy uda³o siê poprawnie dodaæ dane do DM
 		virtual const bool tryAddData(const ObjectWrapperPtr & data) = 0;
-
+		//! \param data Dane do dodaniwa w DM
+		//! \return Czy uda³o siê poprawnie usun¹æ dane do DM
 		virtual const bool tryRemoveData(const ObjectWrapperConstPtr & data) = 0;
 	};
 
@@ -36,9 +41,9 @@ namespace core {
     class IMemoryDataManagerHierarchyOperations
     {
     public:
+		//! Destruktor wirtualny
         virtual ~IMemoryDataManagerHierarchyOperations() {}
-
-    public:
+    
         //! Dodanie roota, odczytanie wszystkich danych w hierarchii i dodanie ich do DM
         //! \param ptr dodawany element
         virtual void addRoot(IHierarchyItemConstPtr ptr) = 0;

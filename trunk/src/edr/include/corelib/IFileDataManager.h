@@ -21,18 +21,22 @@ namespace core {
 	class IFileDataManagerOperations
 	{
 	public:
-
+		//! Destruktor wirtualny
 		virtual ~IFileDataManagerOperations() {}
 
 		//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
+		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
 		virtual void removeFile(const Filesystem::Path & file) = 0;
 
 		//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
 		//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
+		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
 		virtual void addFile(const Filesystem::Path & file) = 0;
-
+		//! \param file Œcie¿ka do dodawanego pliku
+		//! \return Prawda jeœli plik pomyœlnie dodano
 		virtual const bool tryAddFile(const Filesystem::Path & file) = 0;
-
+		//! \param file Œcie¿ka do usuwanego pliku
+		//! \return Prawda jeœli plik pomyœlnie usuniêto
 		virtual const bool tryRemoveFile(const Filesystem::Path & file) = 0;
 	};
 
@@ -40,13 +44,15 @@ namespace core {
 	class IFileDataManager : public IFileDataManagerOperations
 	{
 	public:
-
+		//! Interfejs transakcji dla managera plików
 		class IFileDataManagerTransaction : public ITransaction, public IFileDataManagerOperations, public IFileManagerReaderOperations
 		{
 		public:
+			//! Destruktor wirtualny
 			virtual ~IFileDataManagerTransaction() {}
 		};
 
+		//! Destruktor wirtualny
 		virtual ~IFileDataManager() {}
 
 		//! Typ transakcji - dzia³a jak RAII -> przy niszczeniu próbuje "commitowaæ" zmiany jeœli nie by³o wczeœniej ¿adnych b³êdów

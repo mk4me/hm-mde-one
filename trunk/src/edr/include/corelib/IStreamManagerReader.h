@@ -14,7 +14,7 @@
 #include <corelib/ObjectWrapperCollection.h>
 
 namespace core {
-
+	
 	class IStreamManagerReaderOperations
 	{
 	public:
@@ -32,7 +32,7 @@ namespace core {
 		typedef std::list<StreamData> StreamsList;
 
 	public:
-
+		//! Destruktor wirtualny
 		virtual ~IStreamManagerReaderOperations() {}
 
 		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
@@ -72,16 +72,11 @@ namespace core {
 		typedef std::list<StreamChange> ChangeList;
 
 		//! Interfejs obserwatora zmian
-		class IStreamObserver
-		{
-		public:
-			//! \param changes Lista zmian managera
-			virtual void observe(const ChangeList & changes) = 0;
-		};
+		typedef IChangesObserver<ChangeList> IStreamObserver;
 
 		//! WskaŸnik na obiek obserwuj¹cy zmiany
 		typedef utils::shared_ptr<IStreamObserver> StreamObserverPtr;
-
+		//! WskaŸnik transakcji
 		typedef utils::shared_ptr<IStreamManagerReaderOperations> TransactionPtr;
 
 	public:
@@ -89,7 +84,7 @@ namespace core {
 		virtual void addObserver(const StreamObserverPtr & streamWatcher) = 0;
 		//! \param streamWatcher Wyrejestrowywany obiekt obserwuj¹cy zmiany managera strumieni
 		virtual void removeObserver(const StreamObserverPtr & streamWatcher) = 0;
-
+		//! \return Nowa transakcja
 		virtual TransactionPtr transaction() const = 0;
 	};
 

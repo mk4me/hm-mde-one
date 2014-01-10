@@ -18,7 +18,7 @@ namespace core {
 	class IFileManagerReaderOperations
 	{
 	public:
-
+		//! Destruktor wirtualny
 		virtual ~IFileManagerReaderOperations() {}
 
 		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
@@ -43,8 +43,8 @@ namespace core {
 	public:
 		//! Typ operacji na plikach
 		enum ModificationType {
-			ADD_FILE,		//! Operacja dodawania pliku
-			REMOVE_FILE,		//! Operacja usuniêcia pliku			
+			ADD_FILE,				//! Operacja dodawania pliku
+			REMOVE_FILE,			//! Operacja usuniêcia pliku			
 			REMOVE_UNUSED_FILE		//! Operacja usuniêcia pliku w wyniku usuniêcia jego wszystkich obiektów ( w wyniku niepomyœlnych inicjalizacji, innych operacji u¿ytkowników na MemoryDataManager)			
 		};
 
@@ -59,27 +59,24 @@ namespace core {
 		typedef std::list<FileChange> ChangeList;
 
 		//! Interfejs obserwatora zmian
-		class IFileObserver
-		{
-		public:
-			//! \param changes Lista zmian na plikach
-			virtual void observe(const ChangeList & changes) = 0;
-
-			virtual ~IFileObserver() {}
-		};
+		typedef IChangesObserver<ChangeList> IFileObserver;
 
 		//! WskaŸnik na obiek obserwuj¹cy zmiany
 		typedef utils::shared_ptr<IFileObserver> FileObserverPtr;
 
+		//! WskaŸnik transakcji
 		typedef utils::shared_ptr<IFileManagerReaderOperations> TransactionPtr;
 
 	public:
 
+		//! Destrutkor wirtualny
 		virtual ~IFileManagerReader() {}
 
+		//! \param fileWatcher Dodawany obserwator managera plików
 		virtual void addObserver(const FileObserverPtr & fileWatcher) = 0;
+		//! \param fileWatcher Usuwany obserwator managera plików
 		virtual void removeObserver(const FileObserverPtr & fileWatcher) = 0;
-
+		//! \return Nowa transakcja do czytania danych
 		virtual TransactionPtr transaction() const = 0;
 	};
 
