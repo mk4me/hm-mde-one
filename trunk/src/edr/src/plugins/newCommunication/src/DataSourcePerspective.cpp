@@ -135,6 +135,64 @@ void DataSourcePatientPerspective::rebuildPerspective(QTreeWidget * treeWidget, 
 	}
 }
 
+DataSourceMedusaPerspective::DataSourceMedusaPerspective()
+{
+
+}
+
+DataSourceMedusaPerspective::~DataSourceMedusaPerspective()
+{
+
+}
+
+const std::string DataSourceMedusaPerspective::name() const
+{
+    return std::string(QObject::tr("Medusa").toUtf8().constData());
+}
+
+void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy)
+{
+    //auto patientsITEnd = shallowCopy.medicalShallowCopy->patients.end();
+    //for(auto patientIT = shallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
+    auto subjectsITEnd = shallowCopy.motionShallowCopy->performers.end();
+    for(auto subjectIT = shallowCopy.motionShallowCopy->performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
+
+        //jeśli pusty pacjent to go pomijamy
+        if(subjectIT->second->performerConfs.empty() == true){
+            continue;
+        }
+                
+
+        auto perfConfsITEnd = subjectIT->second->performerConfs.end();
+        for(auto perfConfIT = subjectIT->second->performerConfs.begin(); perfConfIT != perfConfsITEnd; ++ perfConfIT){
+
+            if(perfConfIT->second->session->trials.empty() == true){
+                continue;
+            }
+
+            //generuje item sesji
+            auto sessionItem = new SessionItem(perfConfIT->second->session);
+
+            treeWidget->addTopLevelItem(sessionItem);
+
+            auto motionsITEnd = perfConfIT->second->session->trials.end();
+            for(auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){
+
+                if(motionIT->second->files.empty() == true){
+                    continue;
+                }
+
+                //generuje item motiona
+                auto motionItem = new MotionItem(motionIT->second);
+
+                sessionItem->addChild(motionItem);
+            }
+        }
+    }
+}
+
+
+
 DataSourceDisorderPerspective::DataSourceDisorderPerspective()
 {
 

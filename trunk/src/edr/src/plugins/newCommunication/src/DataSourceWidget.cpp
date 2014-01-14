@@ -247,6 +247,7 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	registerPerspective(new DataSourcePatientPerspective());
 	registerPerspective(new DataSourceDisorderPerspective());
 	registerPerspective(new DataSourceGenderPerspective());
+    registerPerspective(new DataSourceMedusaPerspective()); // tymczasowo
 
 	//inicjujemy content
 	contentManager.registerContent(new DataSourceBaseContent());
@@ -1168,8 +1169,10 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 	menu.addSeparator();
 #ifdef DEMO_VERSION_COMMUNICATION
 	auto download = menu.addAction(tr("Download - not available in demo version"));
+    auto force = menu.addAction(tr("Force download - not available in demo version"));
 #else
   auto download = menu.addAction(tr("Download"));
+  auto force = menu.addAction(tr("Force download"));
 #endif
 	menu.addSeparator();
 
@@ -1178,6 +1181,7 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 	load->setEnabled(false);
 	unload->setEnabled(false);
 	download->setEnabled(false);
+    force->setEnabled(false);
 	refresh->setEnabled(false);
 
 	//skoro coś ściągam muszę poczekać!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
@@ -1221,6 +1225,7 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 				FilesHelper::filterFiles(dmOKFiles, communication::Loaded, filesToUnload, *(dataSource->fileStatusManager));
 
 				//pliki do ściągnięcia
+                filesToForcedDownload = dmOKFiles;
 				FilesHelper::filterFiles(filesIDs, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
 				if(filesToLoad.empty() == false){
@@ -1239,6 +1244,11 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 					download->setEnabled(true);
 					connect(download, SIGNAL(triggered()), this, SLOT(onDownload()));
 				}
+
+                if (filesToForcedDownload.empty() == false) {
+                    force->setEnabled(true);
+                    connect(force, SIGNAL(triggered()), this, SLOT(onForced()));
+                }
 				
         #endif
 			}
@@ -1932,8 +1942,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
                 int childCount = root->getNumChildren();
                 for (int c = 0; c < childCount; ++c) {
                     auto r = root->getChild(c);
-                    roots.insert(r);
-                    hierarchyTransaction->addRoot(r);
+                    updateOrAddRoot(r, roots, hierarchyTransaction);
                 }
             }
         }
@@ -2789,11 +2798,45 @@ void DataSourceWidget::setCompactMode( bool compact )
 {
     //this->horizontalSpacer_2
     this->patientCardPlaceholerWidget->setVisible(!compact);
-    this->perspectiveComboBox->setVisible(!compact);
+    //this->perspectiveComboBox->setVisible(!compact);
     this->perspectiveLabel->setVisible(!compact);
     this->filterLabel->setVisible(!compact);
     this->filterComboBox->setVisible(!compact);
     int margin = compact ? 0 : 9;
     this->dataViewWidget->setContentsMargins(0,0,0,0);
     this->motionDataTab->setContentsMargins(0,0,0,0);
+}
+
+bool hasChild(core::IHierarchyItemConstPtr root, const QString& childName) 
+{
+    for (int i = root->getNumChildren() - 1; i >= 0; --i) {
+        if (root->getChild(i)->getName() == childName) {
+            return true;
+        }
+    }
+    return false;
+}
+void DataSourceWidget::updateOrAddRoot( core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots, core::IMemoryDataManager::HierarchyTransactionPtr hierarchyTransaction )
+{
+    auto it = name2root.find(root->getName());
+    if (it != name2root.end()) {
+        for (int i = root->getNumChildren() - 1; i >= 0; --i) {
+            auto nroot = utils::const_pointer_cast<core::IHierarchyItem>(it->second);
+            auto nchild = utils::const_pointer_cast<core::IHierarchyItem>(root->getChild(i));
+            if (!hasChild(nroot, nchild->getName())) {
+                nroot->appendChild(nchild);
+                hierarchyTransaction->updateRoot(nroot);
+            }
+        }
+    } else {
+        name2root[root->getName()] = root;
+        roots.insert(root);
+        hierarchyTransaction->addRoot(root);
+    }
+}
+
+void DataSourceWidget::onForced()
+{
+    filesToDownload = filesToForcedDownload;
+    onDownload();
 }

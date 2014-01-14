@@ -125,6 +125,7 @@ void dicom::PointsLayer::setPointsDrawer( dicom::IPointsDrawerPtr val )
     pointsDrawer = val;
 
     pathItem->setPen(pointsDrawer->getLinePen(getEditable()));
+    pathItem->setBrush(pointsDrawer->getLineBrush(getEditable()));
     pathItem->setPath(pointsDrawer->createPath(points));
 
     // TODO: Podmiana punktow
@@ -167,6 +168,7 @@ void dicom::PointsLayer::setEditable( bool val )
     pathItem->setFlag(QGraphicsItem::ItemIsMovable, false);
     if (pointsDrawer) {
         pathItem->setPen(pointsDrawer->getLinePen(val));
+        pathItem->setBrush(pointsDrawer->getLineBrush(val));
     }
 }
 
@@ -223,6 +225,11 @@ QPainterPath dicom::PolyDrawer::createPath(const QVector<QGraphicsItem*>& points
     return QPainterPath();
 }
 
+QBrush dicom::PolyDrawer::getLineBrush( bool editable )
+{
+    return QBrush(editable ? QColor(0, 100, 255, 30) : QColor(128, 212, 220, 30));
+}
+
 
 QPen dicom::CurveDrawer::getLinePen(bool editable)
 {
@@ -267,4 +274,9 @@ QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& point
     }
 
     return QPainterPath();
+}
+
+QBrush dicom::CurveDrawer::getLineBrush( bool editable )
+{
+    return QBrush(editable ? QColor(255, 0, 0, 30) : QColor(220, 128, 128, 30));
 }

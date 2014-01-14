@@ -156,6 +156,7 @@ void HierarchyTreeModel::updateItem( core::IHierarchyItemConstPtr item )
 {
     // TODO : zrobic to wlasciwie
     reset();
+    rebuildFilteredRoots();
 }
 
 void HierarchyTreeModel::removeRootItem( core::IHierarchyItemConstPtr root )

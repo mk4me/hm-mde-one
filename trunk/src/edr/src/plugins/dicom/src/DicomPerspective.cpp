@@ -61,7 +61,8 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
             utils::ObjectWrapperConstPtr sessionWrp = *inter.begin();
             std::string sessionName;
             if (sessionWrp->tryGetMeta("core/source", sessionName)) {
-                label = QString(sessionName.c_str());
+                fs::Path sp(sessionName);
+                label = QString(sp.stem().string().c_str());
             }
             
             //DicomInternalStructConstPtr test = (*inter.begin())->get();
@@ -120,6 +121,11 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                                     img->addLayer(*layerIt, name);
                                 }
                             }
+                        }
+
+                        for (int row = img->getNumTags() - 1; row >= 0; --row) {
+                            std::string tag = img->getTag(row);
+                            img->setTagVisible(tag, tag == name);
                         }
 
                         core::IHierarchyItemPtr imgItem(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(stem.string()), desc));

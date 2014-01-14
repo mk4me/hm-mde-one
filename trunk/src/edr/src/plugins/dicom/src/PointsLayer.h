@@ -30,6 +30,7 @@ namespace dicom {
     public:
         virtual ~IPointsDrawer() {}
         virtual QPen getLinePen(bool editable) = 0;
+        virtual QBrush getLineBrush(bool editable) = 0;
         //virtual QPen getPointPen() = 0;
         virtual QString methodName() = 0;
         virtual QPainterPath createPath(const QVector<QGraphicsItem*>& points) = 0;
@@ -44,6 +45,9 @@ namespace dicom {
         QString methodName();
         QPainterPath createPath(const QVector<QGraphicsItem*>& points);
         QGraphicsItem* createPoint();
+
+        virtual QBrush getLineBrush( bool editable );
+
     };
 
     class PolyDrawer : public IPointsDrawer
@@ -53,6 +57,9 @@ namespace dicom {
         QString methodName();
         QPainterPath createPath(const QVector<QGraphicsItem*>& points);
         QGraphicsItem* createPoint();
+
+        virtual QBrush getLineBrush( bool editable );
+
     };
 
     class PointsLayer : public ILayerItem

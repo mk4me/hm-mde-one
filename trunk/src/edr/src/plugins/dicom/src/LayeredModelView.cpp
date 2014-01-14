@@ -38,7 +38,13 @@ int LayeredModelView::columnCount(const QModelIndex & parent) const
 QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 {
     if (image) {
-        
+        if ( role == Qt::CheckStateRole && index.column() == 0 ) {
+            treedata* td = static_cast<treedata*>(index.internalPointer());
+            if (td->idx == -1) {
+                std::string tag = image->getTag(td->tag);
+                return static_cast< int >(image->getTagVisible(tag) ? Qt::Checked : Qt::Unchecked);
+            }
+        }
         if (role == Qt::DisplayRole) {
             treedata* td = static_cast<treedata*>(index.internalPointer());
             std::string tag = image->getTag(td->tag);
@@ -78,6 +84,15 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 //! [quoting mymodel_e]
 bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value, int role)
 {
+    if ( role == Qt::CheckStateRole) {
+        treedata* td = static_cast<treedata*>(index.internalPointer());
+        if (td->idx == -1) {
+            Qt::CheckState checked = static_cast< Qt::CheckState >( value.toInt() );
+            std::string tag = image->getTag(td->tag);
+            image->setTagVisible(tag, checked == Qt::Checked);
+        }
+
+    }
     if (role == Qt::EditRole)
     {
         treedata* td = static_cast<treedata*>(index.internalPointer());
@@ -108,9 +123,24 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 
 //-----------------------------------------------------------------
 //! [quoting mymodel_f]
-Qt::ItemFlags LayeredModelView::flags(const QModelIndex & /*index*/) const
+Qt::ItemFlags LayeredModelView::flags(const QModelIndex & index) const
 {
-    return Qt::ItemIsSelectable |  Qt::ItemIsEditable | Qt::ItemIsEnabled ;
+    if (!index.isValid()) {
+        return 0;
+    }
+
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
+    treedata* td = static_cast<treedata*>(index.internalPointer());
+    if (td->idx == -1) {
+        if ( index.column() == 0 ) {
+            flags |= Qt::ItemIsUserCheckable;
+        }
+    } else {
+        flags |=  Qt::ItemIsEditable ;
+    }
+
+    return flags;
 }
 
 QVariant LayeredModelView::headerData( int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole */ ) const
@@ -210,6 +240,15 @@ std::pair<int, int> dicom::LayeredModelView::getTagAndIndex( const QModelIndex& 
 void dicom::LayeredModelView::refreshSelected()
 {
     Q_EMIT layoutChanged();
+}
+
+dicom::LayeredModelView::Expands dicom::LayeredModelView::getExpands() const
+{
+    Expands exp;
+    for (int row = image->getNumTags() - 1; row >= 0; --row) {
+        exp.push_back(std::make_pair(createIndex(row, 0, (void*)getData(row, -1)), image->getTagVisible(image->getTag(row))));
+    }
+    return exp;
 }
 
 //! [quoting mymodel_f]

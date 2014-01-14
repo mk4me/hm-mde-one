@@ -49,12 +49,16 @@ public:
     virtual int getNumTags() const;
     virtual std::string getTag( int idx ) const;
     virtual tags_range getTags() const;
+    virtual bool getTagVisible(const std::string& tag) const;
+    virtual void setTagVisible(const std::string& tag, bool val);
 
 private:
     //std::vector<ILayerItemPtr> layers;
     BackgroundLayerPtr backgroundLayer;
     LayersMap layers;
+    // TODO : przyda sie refaktoring, string juz nie starcza
     std::set<std::string> tags;
+    std::map<std::string, bool> tagsVisibility;
 
 private:
     friend class boost::serialization::access;

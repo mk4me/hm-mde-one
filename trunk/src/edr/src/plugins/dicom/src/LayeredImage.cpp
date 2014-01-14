@@ -36,7 +36,10 @@ void dicom::LayeredImage::addLayer( ILayerItemPtr layer, const std::string& laye
 {
     layers.insert(std::make_pair(layerName, layer));
     tags.insert(layerName);
-    //layers.push_back(layer);
+    auto vis = tagsVisibility.find(layerName);
+    if (vis == tagsVisibility.end()) {
+        tagsVisibility[layerName] = true;
+    }
 }
 
 void dicom::LayeredImage::removeLayer( ILayerItemConstPtr layer )
@@ -145,6 +148,24 @@ std::string dicom::LayeredImage::getTag( int idx ) const
 dicom::LayeredImage::tags_range dicom::LayeredImage::getTags() const
 {
     return boost::make_iterator_range(tags.cbegin(), tags.cend());
+}
+
+bool dicom::LayeredImage::getTagVisible( const std::string& tag ) const
+{
+    auto vis = tagsVisibility.find(tag);
+    if (vis != tagsVisibility.end()) {
+        return vis->second;
+    } else {
+        throw std::runtime_error("Unknown tag");
+    }
+}
+
+void dicom::LayeredImage::setTagVisible( const std::string& tag, bool val )
+{
+    tagsVisibility[tag] = val;
+    for (int i = getNumLayerItems(tag) - 1; i >= 0; --i ) {
+        getLayerItem(tag, i)->getItem()->setVisible(val);
+    }
 }
 
 

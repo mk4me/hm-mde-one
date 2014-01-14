@@ -29,6 +29,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 
 //    ui->treeView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->treeView->setItemDelegateForColumn(1, new AdnotationsDelegate());
+    ui->treeView->header()->setResizeMode(QHeaderView::ResizeToContents);
     connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
 
     coreUI::CoreAction*  undo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/undo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
@@ -108,7 +109,12 @@ void dicom::LayeredImageVisualizerView::refresh()
             lastView->show();
         }
         serie->refresh();
-        ui->treeView->setModel(serie->getLayersModel());
+        auto treeModel = serie->getLayersModel();
+        ui->treeView->setModel(treeModel);
+        auto expands = treeModel->getExpands();
+        for (auto it = expands.begin(); it != expands.end(); ++it) {
+            ui->treeView->setExpanded(it->first, it->second);
+        }
     } else {
 
     }

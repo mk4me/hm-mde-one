@@ -78,6 +78,18 @@ public:
 	virtual void rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy);
 };
 
+//! Perspektywa medusy - tylko sesje
+class DataSourceMedusaPerspective : public communication::IDataSourcePerspective
+{
+public:
+    DataSourceMedusaPerspective();
+    virtual ~DataSourceMedusaPerspective();
+
+    virtual const std::string name() const;
+
+    virtual void rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy);
+};
+
 //! Perspektywa chorób - pacjenci pojawiają się kilka razy w zależności od choroby
 class DataSourceDisorderPerspective : public communication::IDataSourcePerspective
 {

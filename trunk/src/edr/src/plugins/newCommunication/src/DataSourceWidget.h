@@ -134,6 +134,7 @@ private slots:
     void updateShallowCopy();
 
     void onDownload();
+    void onForced();
     void onLoad();
 	void onUnload();
 
@@ -172,7 +173,10 @@ private:
 	static bool isItemLoadable(const QTreeWidgetItem * item);
 
 	void loadSubjectHierarchy(const std::map<int, std::vector<core::ObjectWrapperConstPtr>> & loadedFilesObjects);
-	void unloadSubjectHierarchy(const std::set<int> & filesIDs);
+
+    void updateOrAddRoot( core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots, core::IMemoryDataManager::HierarchyTransactionPtr hierarchyTransaction );
+
+    void unloadSubjectHierarchy(const std::set<int> & filesIDs);
 	void unloadSubjectHierarchy();
 
     void refreshStatus(const std::set<int> & filesIDs);
@@ -286,6 +290,8 @@ private:
     std::set<int> filesToUnload;
     //! Pliki do ściągnięcia
     std::set<int> filesToDownload;
+    //! Pliki do ponownego ściągnięcia
+    std::set<int> filesToForcedDownload;
 
 	//! Pliki aktualnie załadowane do DM
 	std::set<int> filesLoadedToDM;
@@ -302,6 +308,7 @@ private:
 	std::map<std::string, std::set<int>> projects;
 
     std::map<std::set<int>, std::set<core::IHierarchyItemConstPtr>> files2roots;
+    std::map<QString, core::IHierarchyItemConstPtr> name2root;
 };
 
 #endif	//	HEADER_GUARD___DATASOURCEWIDGET_H__

@@ -42,6 +42,8 @@ public:
     virtual int getNumTags() const = 0;
     virtual std::string getTag(int idx) const = 0;
     virtual tags_range getTags() const = 0;
+    virtual bool getTagVisible(const std::string& tag) const = 0;
+    virtual void setTagVisible(const std::string& tag, bool val) = 0;
 };
 DEFINE_SMART_POINTERS(ILayeredImage);
 }
