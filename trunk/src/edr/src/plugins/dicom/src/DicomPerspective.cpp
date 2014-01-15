@@ -54,17 +54,22 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
         core::ConstObjectsList motions;
         PluginSubject::SessionConstPtr s = (*it)->get();
         QString label(QString::fromUtf8(s->getLocalName().c_str()));
-        QString desc("desc");
+        QString desc("");
+        utils::ObjectWrapperConstPtr sessionWrp;
         if (s->hasObject(typeid(dicom::DicomInternalStruct),false)) {
             core::ConstObjectsList inter;
             s->getObjects(inter, typeid(dicom::DicomInternalStruct), false);
-            utils::ObjectWrapperConstPtr sessionWrp = *inter.begin();
+            sessionWrp = *inter.begin();
             std::string sessionName;
             if (sessionWrp->tryGetMeta("core/source", sessionName)) {
                 fs::Path sp(sessionName);
                 label = QString(sp.stem().string().c_str());
             }
-            
+            dicom::DicomInternalStructConstPtr internalStruct = sessionWrp->get();
+            auto session = internalStruct->tryGetSession(label.toStdString());
+            if (session) {
+                desc = DicomSource::createDesc(*session);
+            }
             //DicomInternalStructConstPtr test = (*inter.begin())->get();
         }
         core::IHierarchyItemPtr sessionItem(new core::HierarchyItem(label, desc));
@@ -127,8 +132,23 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                             std::string tag = img->getTag(row);
                             img->setTagVisible(tag, tag == name);
                         }
+                        std::string imageFilename = stem.string();
+                        if (sessionWrp) {
+                            dicom::DicomInternalStructConstPtr internalStruct = sessionWrp->get();
+                            auto internalImage = internalStruct->tryGetImage(imageFilename + ".png");
+                            if (internalImage) {
+                                desc = DicomSource::createDesc(*internalImage);
+                            }
+                        }
+                        
+                        QIcon icon;
+                        if (img->getNumTags()) {
+                            icon = QIcon(":/dicom/file_done.png");
+                        } else {
+                            icon = QIcon(":/dicom/file.png");
+                        }
 
-                        core::IHierarchyItemPtr imgItem(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(stem.string()), desc));
+                        core::IHierarchyItemPtr imgItem(new core::HierarchyDataItem(wrapper, icon, QString::fromStdString(imageFilename), desc));
                         sessionItem->appendChild(imgItem);
                         hasData = true;
                     } else {

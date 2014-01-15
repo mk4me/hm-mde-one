@@ -147,7 +147,7 @@ DataSourceMedusaPerspective::~DataSourceMedusaPerspective()
 
 const std::string DataSourceMedusaPerspective::name() const
 {
-    return std::string(QObject::tr("Medusa").toUtf8().constData());
+    return std::string(QObject::tr("Sessions only").toUtf8().constData());
 }
 
 void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy)
@@ -189,6 +189,12 @@ void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidget * treeWidget, c
             }
         }
     }
+}
+
+bool DataSourceMedusaPerspective::headers( const QTreeWidgetItem * item, QStringList & headers ) const
+{
+    headers << QObject::tr("Data base");
+    return true;  
 }
 
 

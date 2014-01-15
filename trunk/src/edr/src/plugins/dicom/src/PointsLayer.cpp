@@ -54,9 +54,8 @@ QSize dicom::PointsLayer::getSize() const
     return s;
 }
 
-void dicom::PointsLayer::addPoint( const QPointF& p )
+void dicom::PointsLayer::addPoint( const QPointF& p, int idx )
 {
-    const int size = 5;
     QGraphicsItem* rect = pointsDrawer->createPoint();
     
     rect->setPos(p.x(), p.y());
@@ -65,8 +64,13 @@ void dicom::PointsLayer::addPoint( const QPointF& p )
     rect->setFlag(QGraphicsItem::ItemIsMovable);
     rect->setFlag(QGraphicsItem::ItemIsSelectable, false);
 
-    addPoint(rect);
+    addPoint(rect, idx);
     setSelected(false);
+}
+
+void dicom::PointsLayer::addPoint( const QPointF& p)
+{
+    addPoint(p, points.size());
 }
 
 void dicom::PointsLayer::addPoint( QGraphicsItem* itm )
@@ -79,6 +83,8 @@ void dicom::PointsLayer::addPoint( QGraphicsItem* itm, int idx )
     points.insert(idx, itm);
     setSelected(false);
 }
+
+
 
 int dicom::PointsLayer::getNumPoint() const
 {
@@ -184,6 +190,11 @@ void dicom::PointsLayer::setSelected( bool val )
     for (auto it2 = childs.begin(); it2 != childs.end(); ++it2) {
         (*it2)->setSelected(val);
     }
+}
+
+int dicom::PointsLayer::getPointIdx( QGraphicsItem* itm )
+{
+    return points.indexOf(itm);
 }
 
 

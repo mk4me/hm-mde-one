@@ -30,7 +30,7 @@ public:
     virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e);
     virtual bool mouseMoveEvent(QGraphicsSceneMouseEvent* e);
     virtual bool mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
-    virtual void begin();
+    virtual void begin(coreUI::AbstractStateConstPtr lastState);
     virtual void end();
     
 private: 

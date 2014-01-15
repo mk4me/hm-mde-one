@@ -88,6 +88,9 @@ public:
     virtual const std::string name() const;
 
     virtual void rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy);
+
+    virtual bool headers( const QTreeWidgetItem * item, QStringList & headers ) const;
+
 };
 
 //! Perspektywa chorób - pacjenci pojawiają się kilka razy w zależności od choroby

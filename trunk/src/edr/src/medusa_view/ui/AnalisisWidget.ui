@@ -196,59 +196,6 @@ color: black;
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="raportsTab">
-         <attribute name="icon">
-          <iconset resource="MdeViewIcons.qrc">
-           <normaloff>:/mde/icons/karta.png</normaloff>:/mde/icons/karta.png</iconset>
-         </attribute>
-         <attribute name="title">
-          <string>Raports</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QScrollArea" name="scrollArea_3">
-            <property name="styleSheet">
-             <string notr="true">#scrollArea_3 {
-	border: none;
-}</string>
-            </property>
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="raportCont">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>236</width>
-               <height>657</height>
-              </rect>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_7">
-              <item>
-               <widget class="QWidget" name="raportsArea" native="true">
-                <layout class="QGridLayout" name="gridLayout"/>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_2" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </widget>
-          </item>
-         </layout>
-        </widget>
        </widget>
       </item>
      </layout>

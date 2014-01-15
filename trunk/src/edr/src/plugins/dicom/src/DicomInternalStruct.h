@@ -149,6 +149,10 @@ struct DicomInternalStruct : public IDicomInternalStruct
         ar & boost::serialization::make_nvp("patients", patients);
     }
 
+    internalData::StudyConstPtr getSession(const std::string& sessionName) const;
+    internalData::StudyConstPtr tryGetSession(const std::string& sessionName) const;
+    internalData::ImageConstPtr getImage(const std::string& imageFilename) const;
+    internalData::ImageConstPtr tryGetImage(const std::string& imageFilename) const;
     std::vector<internalData::PatientPtr> patients;
 };
 DEFINE_SMART_POINTERS(DicomInternalStruct);

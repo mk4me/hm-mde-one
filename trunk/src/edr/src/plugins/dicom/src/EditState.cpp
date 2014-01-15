@@ -21,7 +21,8 @@ using namespace dicom;
 dicom::EditState::EditState( LayeredStateMachine* machine ) :
     coreUI::AbstractState(machine),
     machine(machine),
-    possibleMove(false)
+    possibleMove(false),
+    delPointIdx(-1)
 {
 
 }
@@ -38,6 +39,12 @@ bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
         QMenu menu;
         QAction* doneAction = menu.addAction(tr("Done"));
         connect(doneAction, SIGNAL(triggered()), this, SLOT(done()));
+        auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
+        if (layer->hasPoint(item)) {
+            delPointIdx = layer->getPointIdx(item);
+            QAction* deleteAction = menu.addAction(tr("Delete point"));
+            connect(deleteAction, SIGNAL(triggered()), this, SLOT(deletePoint()));
+        }
         menu.exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {
         auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
@@ -125,8 +132,8 @@ void dicom::AddPointCommand::doIt()
         layer->addPoint(removedPoint.release());
         removedPoint = std::unique_ptr<QGraphicsItem>();
     } else {
-        idx = layer->getNumPoint();
-        layer->addPoint(newP);
+        idx = getBestIdx();
+        layer->addPoint(newP, idx);
     }
 
     layer->refresh();
@@ -139,6 +146,73 @@ layer(layer),
     removedPoint(nullptr)
 {
 
+}
+
+float magnitude(const QPointF &l1,  const QPointF &l2)
+{
+    QPointF ofs = l2 - l1;
+    return sqrt(ofs.x() * ofs.x() + ofs.y() * ofs.y());
+}
+
+
+float distancePointLine( const QPointF &p, const QPointF &l1,  const QPointF &l2)
+{
+    float lineMag;
+    float u;
+    QPoint intersectPnt;
+
+    lineMag = magnitude( l2, l1 );
+
+    u = ( ( ( p.x() - l1.x() ) * ( l2.x() - l1.x() ) ) +
+        ( ( p.y() - l1.y() ) * ( l2.y() - l1.y() ) ) ) /
+        ( lineMag * lineMag );
+
+    if ( u < 0.0f) {
+        return magnitude(p, l1);
+    }
+    if ( u > 1.0f ) {
+        return magnitude(p, l2);
+    }
+
+    intersectPnt.setX( int( l1.x() + u * ( l2.x() - l1.x() ) ) );
+    intersectPnt.setY( int( l1.y() + u * ( l2.y() - l1.y() ) ) );
+
+    return magnitude( p, intersectPnt );
+}
+
+int dicom::AddPointCommand::getBestIdx()
+{
+    int count = layer->getNumPoint();
+    if (count < 2) {
+        return count;
+    } 
+    float minDist2 = std::numeric_limits<float>::max();
+    int minIdx = -1;
+    for (int i =  0; i < count; ++i) {
+
+        float dist2 = getDistance2(layer->getPoint(i)->pos());
+        if (dist2 < minDist2) {
+            minDist2 = dist2;
+            minIdx = i;
+        }
+    }
+
+    int prev = minIdx == 0 ? (count - 1) : (minIdx - 1);
+    int next = minIdx == (count - 1) ? 0 : (minIdx + 1);
+    
+    /*float prevDist = getDistance2(layer->getPoint(prev)->pos());
+    float nextDist = getDistance2(layer->getPoint(next)->pos());*/
+
+    float prevDist = distancePointLine(newP, layer->getPoint(prev)->pos(), layer->getPoint(minIdx)->pos());
+    float nextDist = distancePointLine(newP, layer->getPoint(minIdx)->pos(), layer->getPoint(next)->pos());
+    
+    return prevDist < nextDist ? minIdx : next;
+}
+
+float dicom::AddPointCommand::getDistance2( const QPointF& p )
+{
+    QPointF ofs = p - newP;
+    return ofs.x() * ofs.x() + ofs.y() * ofs.y();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -194,11 +268,8 @@ MoveCommand(item, newP, oldP),
 bool dicom::EditState::keyPressEvent( QKeyEvent* event )
 {
     if (event->key() == Qt::Key_Delete) {
-        int idx = getSelectedPointIdx();
-        if (idx != -1) {
-            machine->getCommandStack()->addCommand(utils::make_shared<RemovePointCommand>(layer, idx));
-            return true;
-        }
+        delPointIdx = getSelectedPointIdx();
+        deletePoint();
     }
 
     return false;
@@ -219,5 +290,15 @@ int dicom::EditState::getSelectedPointIdx() const
     }
 
     return idx;
+}
+
+void dicom::EditState::deletePoint()
+{
+    if (delPointIdx != -1) {
+        machine->getCommandStack()->addCommand(utils::make_shared<RemovePointCommand>(layer, delPointIdx));
+        delPointIdx = -1;
+    } else {
+        UTILS_ASSERT(false);
+    }
 }
 

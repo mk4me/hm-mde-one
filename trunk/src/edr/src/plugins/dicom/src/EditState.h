@@ -34,12 +34,13 @@ namespace dicom {
         virtual void undoIt();
         //! Nazwa polecenia 
         virtual QString name();
-
+        int getBestIdx();
+        float getDistance2( const QPointF& p );
     private:
         //! Modyfikowany obszar
         PointsLayerPtr layer;
         //! Nowododany punkt
-        const QPointF& newP;
+        QPointF newP;
         //! indeks punktu do usuniêcia
         int idx;
         /// usuniêty punkt, który mo¿e zostaæ przywrócony. Przywracaj¹c nie mo¿na stworzyæ nowej instancji
@@ -120,6 +121,7 @@ public:
 
 private Q_SLOTS:
     void done();
+    void deletePoint();
 
 private:
     PointsLayerPtr layerToEdit;
@@ -127,6 +129,7 @@ private:
     PointsLayerPtr layer;
     LayeredStateMachine* machine;
     bool possibleMove;
+    int delPointIdx;
 };
 DEFINE_SMART_POINTERS(EditState);
 

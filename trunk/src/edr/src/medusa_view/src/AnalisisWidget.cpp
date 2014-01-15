@@ -49,6 +49,8 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     connect(model.get(), SIGNAL(expandTree(int)), treeView, SLOT(expandToDepth(int)));
     connect(contextMenu, SIGNAL(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)), this, SLOT(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)));
     connect(visualizerFilter.get(), SIGNAL(focusOn(QWidget*)), this, SLOT(onVisualizerFocus(QWidget*)));
+
+    connect(topMainWindow, SIGNAL(setCloseRequested(int)), this, SLOT(closeSet(int)));
     
     //auto vdfService = core::queryServices<vdf::NewVdfService>(plugin::getServiceManager());
     //connect(vdfService.get(), SIGNAL(transferResults()), this, SLOT(addRoot(core::IHierarchyItemPtr)));
@@ -60,7 +62,7 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     summaryController = new SummaryWindowController(summary, model);
     summary->initialize();
 
-    raportsTab->setVisible(false);
+    //raportsTab->setVisible(false);
 }
 
 void AnalisisWidget::showTimeline()
@@ -243,13 +245,13 @@ void AnalisisWidget::setContextItems( IAppUsageContextManager* manager, IAppUsag
     this->parent = parent;
     this->flexiTabWidget = flexiTabWidget;
 
-    ReportsThumbnailContextPtr visualizerUsageContext(new ReportsThumbnailContext(flexiTabWidget, raportsArea));
-    manager->addContext(visualizerUsageContext, parent);
-    this->raportsArea->addAction(new QAction(tr("Create report"), this));
-    getContextEventFilter()->registerPermamentContextWidget(this->raportsArea);
-    this->raportsArea->installEventFilter(getContextEventFilter().get());
-    manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
-    connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
+    //ReportsThumbnailContextPtr visualizerUsageContext(new ReportsThumbnailContext(flexiTabWidget, raportsArea));
+    //manager->addContext(visualizerUsageContext, parent);
+    //this->raportsArea->addAction(new QAction(tr("Create report"), this));
+    //getContextEventFilter()->registerPermamentContextWidget(this->raportsArea);
+    //this->raportsArea->installEventFilter(getContextEventFilter().get());
+    //manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
+    //connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
 
     // TODO : odkomentowac i zmienic ikony w przyciskach flexi
     /*AnalysisTreeContextPtr treeContext = utils::make_shared<AnalysisTreeContext>(flexiTabWidget, model->getTreeModel(), contextMenu);
@@ -360,39 +362,39 @@ void AnalisisWidget::switchToFirstTab()
 //    }
 //}
 
-void AnalisisWidget::addToReports( const QPixmap& pixmap )
-{
-    if (!(pixmap.width() && pixmap.height())) {
-        return;
-    }
-
-    tabWidget->setCurrentWidget(raportsTab);
-    const int maxH = 128;
-    const int maxW = 128;
-    QWidget* list = raportsArea;
-    QLabel* thumb = new QLabel();
-
-    if (pixmap.width() > pixmap.height()) {
-        int newHeight = static_cast<int>(1.0 * maxH * pixmap.height() / pixmap.width());
-        thumb->setFixedSize(maxW, newHeight);
-    } else {
-        int newWidth = static_cast<int>(1.0 * maxW * pixmap.width() / pixmap.height());
-        thumb->setFixedSize(newWidth, maxH);
-    }
-
-    thumb->setScaledContents(true);
-    thumb->setPixmap(pixmap);
-
-    QGridLayout* grid = qobject_cast<QGridLayout*>(list->layout());
-    if (grid) {
-        int size = list->children().size() - 1;
-        int x = size % 2;
-        int y = size / 2;
-        grid->addWidget(thumb, y, x);
-    } else {
-        list->layout()->addWidget(thumb);
-    }
-}
+//void AnalisisWidget::addToReports( const QPixmap& pixmap )
+//{
+//    if (!(pixmap.width() && pixmap.height())) {
+//        return;
+//    }
+//
+//    tabWidget->setCurrentWidget(raportsTab);
+//    const int maxH = 128;
+//    const int maxW = 128;
+//    QWidget* list = raportsArea;
+//    QLabel* thumb = new QLabel();
+//
+//    if (pixmap.width() > pixmap.height()) {
+//        int newHeight = static_cast<int>(1.0 * maxH * pixmap.height() / pixmap.width());
+//        thumb->setFixedSize(maxW, newHeight);
+//    } else {
+//        int newWidth = static_cast<int>(1.0 * maxW * pixmap.width() / pixmap.height());
+//        thumb->setFixedSize(newWidth, maxH);
+//    }
+//
+//    thumb->setScaledContents(true);
+//    thumb->setPixmap(pixmap);
+//
+//    QGridLayout* grid = qobject_cast<QGridLayout*>(list->layout());
+//    if (grid) {
+//        int size = list->children().size() - 1;
+//        int x = size % 2;
+//        int y = size / 2;
+//        grid->addWidget(thumb, y, x);
+//    } else {
+//        list->layout()->addWidget(thumb);
+//    }
+//}
 
 //void AnalisisWidget::onBundleActivated( coreUI::DataFilterWidget* widget )
 //{
@@ -665,6 +667,7 @@ void AnalysisTreeContextMenu::createMenu( core::IHierarchyItemConstPtr item, QMe
 }
 
 
+
 void AnalisisWidget::removeFromVisualizers( HelperAction* action, bool once)
 {
     UTILS_ASSERT(action);
@@ -793,4 +796,10 @@ void AnalisisWidget::onVisualizerFocus( QWidget* w )
         }
         obj = obj->parent();
     }
+
+}
+
+void AnalisisWidget::closeSet( int idx )
+{
+    topMainWindow->removeSet(idx);
 }

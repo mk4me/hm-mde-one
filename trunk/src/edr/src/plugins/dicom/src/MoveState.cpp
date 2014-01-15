@@ -68,9 +68,9 @@ void MoveState::end()
     position.first = nullptr;
 }
 
-void dicom::MoveState::begin()
+void dicom::MoveState::begin(coreUI::AbstractStateConstPtr lastState)
 {
-    NormalState::begin();
+    NormalState::begin(lastState);
     machine->changeCursor(moveCursor);
 }
 

@@ -88,8 +88,8 @@ public:
     virtual ~DataSourceWidget();
 
 public slots:
-
-	void showUserData();
+    // medusa code
+	//void showUserData();
 	void showConfiguration();
 	void showPatientCard();
 

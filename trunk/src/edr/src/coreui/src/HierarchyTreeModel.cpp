@@ -54,6 +54,12 @@ Qt::ItemFlags HierarchyTreeModel::flags(const QModelIndex &index) const
 
 QVariant HierarchyTreeModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    if (role == Qt::DisplayRole)
+    {
+        if (orientation == Qt::Horizontal && section == 0) {
+            return QString(tr("User area"));
+        }
+    }
     return QVariant();
 }
 
@@ -128,7 +134,8 @@ void HierarchyTreeModel::addRootItem( core::IHierarchyItemConstPtr root )
         roots.push_back(currentFilter->getFilteredTree(root));
         rootOrigins.push_back(root);
         // TODO : zrobic to wlasciwie, nie trzeba odswiezac calego drzewa
-        this->reset();
+        //this->reset();
+        Q_EMIT layoutChanged();
     }
 }
 
@@ -155,8 +162,9 @@ core::IHierarchyItemConstPtr HierarchyTreeModel::internalSmart( const QModelInde
 void HierarchyTreeModel::updateItem( core::IHierarchyItemConstPtr item )
 {
     // TODO : zrobic to wlasciwie
-    reset();
+    //reset();
     rebuildFilteredRoots();
+    Q_EMIT layoutChanged();
 }
 
 void HierarchyTreeModel::removeRootItem( core::IHierarchyItemConstPtr root )

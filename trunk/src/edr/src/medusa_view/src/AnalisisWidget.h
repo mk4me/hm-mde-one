@@ -70,10 +70,12 @@ private:
     void removeFromVisualizers(HelperAction* action, bool once);
     
 private Q_SLOTS:
+
+    void closeSet(int idx);
     void visualizerDestroyed(QObject * visualizer);
     //void onFilterBundleAdded(core::IFilterBundlePtr bundle);
     //void onFilterClicked(core::IFilterCommandPtr filter);
-    void addToReports(const QPixmap& pixmap); 
+    //void addToReports(const QPixmap& pixmap); 
     //! dodaje serie danych z helpera do wybranego wizualizatora
     void addToVisualizer();
     ////! zmienia widoczność filtrów

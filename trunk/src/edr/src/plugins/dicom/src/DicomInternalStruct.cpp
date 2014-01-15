@@ -57,6 +57,63 @@ int dicom::DicomInternalStruct::getNumImages() const
     return num;
 }
 
+internalData::StudyConstPtr dicom::DicomInternalStruct::getSession( const std::string& sessionName ) const
+{
+    int numPatients = getNumPatients();
+    for (int iP = 0; iP < numPatients; ++iP) {
+        auto patient = getPatient(iP);
+        for (auto it = patient->sessions.begin(); it != patient->sessions.end(); ++it) {
+            if ((*it)->getOutputDirectory() == sessionName) {
+                return *it;
+            }
+        }
+    }
+
+    throw std::runtime_error("session not found");
+}
+
+internalData::ImageConstPtr dicom::DicomInternalStruct::getImage( const std::string& imageFilename ) const
+{
+    int numPatients = getNumPatients();
+    for (int iP = 0; iP < numPatients; ++iP) {
+        auto patient = getPatient(iP);
+        for (int iSession = patient->sessions.size() - 1; iSession >= 0; --iSession) {
+            auto session = patient->sessions[iSession];
+            for (int iSerie = session->series.size() - 1; iSerie >= 0; --iSerie) {
+                auto serie = session->series[iSerie];
+                for (int iImg = serie->images.size() - 1; iImg >= 0; --iImg) {
+                    auto image = serie->images[iImg];
+                    if (image->imageFile == imageFilename) {
+                        return image;
+                    }
+                } 
+            }  
+        }
+    }
+
+    throw std::runtime_error("serie not found");
+}
+
+internalData::StudyConstPtr dicom::DicomInternalStruct::tryGetSession( const std::string& sessionName ) const
+{
+    try {
+        auto s = getSession(sessionName);
+        return s;
+    } catch (...) {
+        return internalData::StudyConstPtr();
+    }
+}
+
+internalData::ImageConstPtr dicom::DicomInternalStruct::tryGetImage( const std::string& imageFilename ) const
+{
+    try {
+        auto s = getImage(imageFilename);
+        return s;
+    } catch (...) {
+        return internalData::ImageConstPtr();
+    }
+}
+
 dicom::internalData::Patient::Patient( const Patient& other )
 {
     cloneMeta(other);

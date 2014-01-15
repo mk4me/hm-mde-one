@@ -225,9 +225,13 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
     loadCredentials();
 	initializeStatusIcons();
 
-	setTabEnabled(0, false);
-	setTabEnabled(1, false);
-	setTabEnabled(2, true);
+	setTabEnabled(indexOf(motionDataTab), false);
+	//setTabEnabled(indexOf(userDataTab), false);
+	setTabEnabled(indexOf(configTab), true);
+
+    // medusa code
+//   userDataTab->setVisible(false);
+
 	setCurrentWidget(configTab);
 
 	downloadStatusWidget->setVisible(false);
@@ -244,10 +248,10 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	patientCardManager.currentPatientCard()->setPatient(nullptr);
 
 	//inicjujemy perspektywy
+    registerPerspective(new DataSourceMedusaPerspective()); // medusa_code tymczasowo
 	registerPerspective(new DataSourcePatientPerspective());
 	registerPerspective(new DataSourceDisorderPerspective());
 	registerPerspective(new DataSourceGenderPerspective());
-    registerPerspective(new DataSourceMedusaPerspective()); // tymczasowo
 
 	//inicjujemy content
 	contentManager.registerContent(new DataSourceBaseContent());
@@ -265,6 +269,7 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	userEdit->installEventFilter(loginEventFilter);
 	passwordEdit->installEventFilter(loginEventFilter);
 
+    // medusa code : usunieto userDataTab!
 #ifdef DEMO_VERSION_COMMUNICATION
 
 	dataSource->setOfflineMode(true);
@@ -273,14 +278,12 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	
 	setCurrentWidget(motionDataTab);
 	setTabEnabled(indexOf(configTab), false);
-	setTabEnabled(indexOf(userDataTab), false);
+	//setTabEnabled(indexOf(userDataTab), false);
 	
 #else
 	
 	setTabEnabled(indexOf(motionDataTab), false);
-    // TODO : czy userDataTab byl potrzebny?
-	setTabEnabled(indexOf(userDataTab), false);
-
+	//setTabEnabled(indexOf(userDataTab), false);
 	setCurrentWidget(configTab);
 #endif
 }
@@ -2733,11 +2736,11 @@ void DataSourceWidget::tryLoadProjects()
 	}
 }
 
-void DataSourceWidget::showUserData()
-{
-    // TODO : czy userDataTab byl potrzebny?
-	setCurrentWidget(userDataTab);
-}
+//void DataSourceWidget::showUserData()
+//{
+//    // TODO : czy userDataTab byl potrzebny?
+//	setCurrentWidget(userDataTab);
+//}
 
 void DataSourceWidget::showConfiguration()
 {
@@ -2796,11 +2799,16 @@ QString DataSourceWidget::crypt( const QString& input, bool encrypt )
 
 void DataSourceWidget::setCompactMode( bool compact )
 {
-    //this->horizontalSpacer_2
+    // medusa_code
     this->patientCardPlaceholerWidget->setVisible(!compact);
-    //this->perspectiveComboBox->setVisible(!compact);
+    this->perspectiveComboBox->setVisible(!compact);
     this->perspectiveLabel->setVisible(!compact);
     this->filterLabel->setVisible(!compact);
+
+    QWidget* w = dynamic_cast<QWidget*>(filterLabel->parent());
+    if (w) {
+        w->layout()->setSpacing(compact ? 0 : 3);
+    }
     this->filterComboBox->setVisible(!compact);
     int margin = compact ? 0 : 9;
     this->dataViewWidget->setContentsMargins(0,0,0,0);

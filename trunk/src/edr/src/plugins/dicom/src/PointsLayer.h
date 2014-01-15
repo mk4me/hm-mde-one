@@ -74,6 +74,7 @@ namespace dicom {
         virtual QSize getSize() const;
     public:
         void addPoint(const QPointF& p);
+        void addPoint(const QPointF& p, int idx);
         void addPoint(QGraphicsItem* itm, int idx);
         void addPoint(QGraphicsItem* itm);
         int getNumPoint() const;
@@ -82,6 +83,8 @@ namespace dicom {
         void refresh();
 
         bool hasPoint(QGraphicsItem* itm);
+        int getPointIdx(QGraphicsItem* itm);
+
         dicom::IPointsDrawerPtr getPointsDrawer() const;
         void setPointsDrawer(dicom::IPointsDrawerPtr val);
         bool getEditable() const;

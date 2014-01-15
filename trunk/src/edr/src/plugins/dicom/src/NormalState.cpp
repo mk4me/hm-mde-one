@@ -20,7 +20,7 @@ dicom::NormalState::NormalState( LayeredStateMachine* machine) :
 void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
 {
     if (item2layer.empty()) {
-        begin();
+        createItem2LayerMap();
     }
     for (auto it = list.begin(); it != list.end(); ++it) {
         QGraphicsItem* item = extractItem(*it);
@@ -107,7 +107,7 @@ QGraphicsItem* dicom::NormalState::extractItem( QGraphicsItem* itm )
     return itm;
 }
 
-void dicom::NormalState::begin()
+void dicom::NormalState::begin(coreUI::AbstractStateConstPtr lastState)
 {
     createItem2LayerMap();
 
@@ -122,7 +122,7 @@ void dicom::NormalState::createItem2LayerMap()
 {
     ILayeredImagePtr image = machine->getSerie()->getImage();
     int tags = image->getNumTags();
-    for (int tagIdx = 0; tagIdx < tagIdx; ++tagIdx) {
+    for (int tagIdx = 0; tagIdx < tags; ++tagIdx) {
         auto tag = image->getTag(tagIdx);
         int count = image->getNumLayerItems(tag);
         for (int i = 0; i < count; ++i) {

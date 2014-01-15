@@ -86,7 +86,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
    
    QWidget* commWidget = commSource->getWidget();
    icomm->setCompactMode(true);
-   commWidget->setMaximumWidth(300);
+   commWidget->setMaximumWidth(304);
 
    QWidget* compound = new QWidget();
    compound->setLayout(new QHBoxLayout);

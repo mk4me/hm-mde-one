@@ -113,11 +113,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="userDataTab">
-   <attribute name="title">
-    <string>User data</string>
-   </attribute>
-  </widget>
   <widget class="QWidget" name="configTab">
    <attribute name="icon">
     <iconset>
