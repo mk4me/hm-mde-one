@@ -97,6 +97,7 @@ SET_UI_FILES(
 	CoreConsoleWidget.ui
 	CoreFlexiToolBarSection.ui
 	CoreTitleBar.ui
+	CorePopup.ui
 	configurationDialog.ui
 	filter.ui
 	FilterConfiguratorWidget.ui

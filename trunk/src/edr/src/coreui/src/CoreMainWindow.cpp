@@ -8,6 +8,7 @@
 #include <QtCore/QSettings>
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
+#include <QtCore/QCoreApplication>
 
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR
 
@@ -88,7 +89,7 @@ QSplashScreen * CoreMainWindow::splashScreen()
 
 		initializeSplashScreen(splashScreen_);
 
-		splashScreen_->finish(this);
+		//splashScreen_->finish(this);
 		splashScreen_->show();
 	}	
 

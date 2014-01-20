@@ -175,29 +175,29 @@ void LocalDataLoader::showFinalMessage()
 	if(sourceWidget->downloadCanceled == true){
 		//anulowano pobieranie
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-			coreUI::CorePopup::showMessage(tr("Synchronization canceled\nSynchronization successfully canceled"), popupDelay);
+			coreUI::CorePopup::showMessage(tr("Synchronization canceled"), tr("Synchronization successfully canceled"), popupDelay);
 		}else{
-			coreUI::CorePopup::showMessage(tr("Download canceled\nDownload successfully canceled"), popupDelay);
+			coreUI::CorePopup::showMessage(tr("Download canceled"), tr("Download successfully canceled"), popupDelay);
 		}
 	}else if(sourceWidget->downloadCrashed == true){
 		//błąd pobierania
 		QMessageBox messageBox(sourceWidget);
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 			coreUI::CorePopup::showMessage(
-                tr("Synchronization error\nSynchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"),
+                tr("Synchronization error"), tr("Synchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"),
                 popupDelay);
 		}else{
             coreUI::CorePopup::showMessage(
-			    tr("Download error\nDownload has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to download later. If this error continues to happen contact producer"),
+			    tr("Download error"), tr("Download has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to download later. If this error continues to happen contact producer"),
                 popupDelay);
 		}
 
 	}else{
 		//wszystko ok
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-			coreUI::CorePopup::showMessage(tr("Synchronization successful\nSynchronization has finished successfully"), popupDelay);
+			coreUI::CorePopup::showMessage(tr("Synchronization successful"), tr("Synchronization has finished successfully"), popupDelay);
 		}else{
-			coreUI::CorePopup::showMessage(tr("Download successful\nDownload has finished successfully"), popupDelay);
+			coreUI::CorePopup::showMessage(tr("Download successful"), tr("Download has finished successfully"), popupDelay);
 		}
 	}
 }
@@ -2466,7 +2466,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
         messageBox.setDefaultButton(QMessageBox::Ok);
 
         messageBox.exec();*/
-        coreUI::CorePopup::showMessage(tr("Loading info\nData loaded successfully to application."), popupDelay);
+        coreUI::CorePopup::showMessage(tr("Loading info"), tr("Data loaded successfully to application."), popupDelay);
 	}else{
 		QString message(tr("Errors while data loading:"));
 

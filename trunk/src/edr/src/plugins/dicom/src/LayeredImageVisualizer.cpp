@@ -17,6 +17,8 @@
 #include <corelib/PluginCommon.h>
 #include <plugins/newCommunication/ICommunicationDataSource.h>
 #include "corelib/ISourceManager.h"
+#include "plugins/newCommunication/IDownloadRequest.h"
+#include "coreui/CorePopup.h"
 
 using namespace dicom;
 
@@ -250,6 +252,7 @@ void dicom::LayeredImageVisualizer::uploadSerie()
         communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
         core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
         /// TODO : pobrac dane z OW
+        
         comm->uploadMotionFile(p, "");
     }
 }

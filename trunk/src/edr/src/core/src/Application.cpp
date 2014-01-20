@@ -182,7 +182,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 {
 	this->mainWindow = mainWindow;
 	mainWindow->splashScreen();
-	
+
+    uiApplication_->processEvents();
 
 	showSplashScreenMessage(QObject::tr("Initializing log"));	
 

@@ -17,8 +17,8 @@ namespace coreUI {
 class COREUI_EXPORT CorePopup 
 {
 public:
-    static void showMessage(const QString& message, int ms, const QRect& rect);
-    static void showMessage(const QString& message, int ms);
+    static void showMessage(const QString& title, const QString& message, int ms, const QRect& rect);
+    static void showMessage(const QString& title, const QString& message, int ms = 3000);
 };
 
 }

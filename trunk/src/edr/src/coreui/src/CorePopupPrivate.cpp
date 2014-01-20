@@ -4,30 +4,42 @@
 #include <coreui/CoreCursorChanger.h>
 #include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
+#include <QtCore/QThread>
+#include <QtCore/QCoreApplication>
 
 using namespace coreUI;
 
 coreUI::CorePopupDeleter deleter;
+coreUI::CorePopupStarter starter;
 
-void coreUI::CorePopup::showMessage( const QString& message, int ms, const QRect& rect )
+void coreUI::CorePopup::showMessage(const QString& title, const QString& message, int ms, const QRect& rect )
 {
-    CorePopupPrivate* popup = new CorePopupPrivate(message, ms, rect, nullptr, Qt::Dialog | Qt::FramelessWindowHint);
-    QObject::connect(popup, SIGNAL(done(CorePopupPrivate*)), &deleter, SLOT(deletePopup(CorePopupPrivate*)));
-    popup->start();
+    const bool isGui = QThread::currentThread() == QCoreApplication::instance()->thread();
+    auto connectionType = isGui ? Qt::DirectConnection : Qt::QueuedConnection;
+    QMetaObject::invokeMethod(&starter, "start", connectionType, 
+        Q_ARG(const QString&, title),
+        Q_ARG(const QString&, message),
+        Q_ARG(int, ms),
+        Q_ARG(const QRect&, rect));
 }
 
-void coreUI::CorePopup::showMessage( const QString& message, int ms ) 
+void coreUI::CorePopup::showMessage(const QString& title, const QString& message, int ms ) 
 {
-    QDesktopWidget widget;
-    QRect mainScreenSize = widget.availableGeometry(widget.primaryScreen());
-    QRect popupRect(mainScreenSize.right() - 200, mainScreenSize.bottom() - 50, 200, 50);
-    showMessage(message, ms, popupRect);
+    const bool isGui = QThread::currentThread() == QCoreApplication::instance()->thread();
+    auto connectionType = isGui ? Qt::DirectConnection : Qt::QueuedConnection;
+    QMetaObject::invokeMethod(&starter, "start", connectionType, 
+        Q_ARG(const QString&, title),
+        Q_ARG(const QString&, message),
+        Q_ARG(int, ms));
 }
 
-coreUI::CorePopupPrivate::CorePopupPrivate( const QString& message, int ms, const QRect& rect, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
-    QLabel(message, parent, f),
+coreUI::CorePopupPrivate::CorePopupPrivate(const QString& title, const QString& message, int ms, const QRect& rect, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
+    QWidget(parent, f),
     rect(rect)
 {
+    setupUi(this);
+    this->text->setText(message);
+    this->header->setText(title);
     timer.setInterval(ms);
     connect(&timer, SIGNAL(timeout()), this, SLOT(closePopup()));
 }
@@ -48,4 +60,21 @@ void coreUI::CorePopupPrivate::start()
 void coreUI::CorePopupDeleter::deletePopup( CorePopupPrivate* cp)
 {
     delete cp;
+}
+
+void coreUI::CorePopupStarter::start( const QString& title, const QString& message, int ms /*= 3000*/ )
+{
+    const int width = 300;
+    const int height = 100;
+    QDesktopWidget widget;
+    QRect mainScreenSize = widget.availableGeometry(widget.primaryScreen());
+    QRect popupRect(mainScreenSize.right() - width, mainScreenSize.bottom() - height, width, height);
+    start(title, message, ms, popupRect);
+}
+
+void coreUI::CorePopupStarter::start(const QString& title, const QString& message, int ms, const QRect& rect) 
+{
+    CorePopupPrivate* popup = new CorePopupPrivate(title, message, ms, rect, nullptr, Qt::Dialog | Qt::FramelessWindowHint);
+    QObject::connect(popup, SIGNAL(done(CorePopupPrivate*)), &deleter, SLOT(deletePopup(CorePopupPrivate*)));
+    popup->start();
 }

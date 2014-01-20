@@ -15,9 +15,10 @@
 #include <plugins/newCommunication/IPatient.h>
 #include <plugins/newCommunication/IHierarchyPerspective.h>
 
+
 namespace communication
 {
-
+        
 //! Interfejs źródła danych communication
 class ICommunicationDataSource : public utils::Observable<ICommunicationDataSource>
 {

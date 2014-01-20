@@ -41,6 +41,7 @@
 #include <webserviceslib/IncrementalBranchShallowCopy.h>
 #include <webserviceslib/IncrementalBranchShallowCopyParser.h>
 #include "IncrementalBranchShallowCopyHelper.h"
+#include "coreui/CorePopup.h"
 
 using namespace communication;
 using namespace webservices;
@@ -941,6 +942,25 @@ void CommunicationDataSource::finalize()
 }
 
 
+void uploadCallback(communication::IDownloadRequest::State s, const std::string& message) 
+{
+    switch (s) {
+    case communication::IDownloadRequest::FinishedCancel:
+        coreUI::CorePopup::showMessage(QObject::tr("Status"), QObject::tr("Uploading cancelled"));
+        break;
+
+    case communication::IDownloadRequest::FinishedError:
+        coreUI::CorePopup::showMessage(QObject::tr("Status"), QObject::tr("Upload error:") + QString::fromStdString(message));
+        break;
+
+    case communication::IDownloadRequest::FinishedOK:
+        coreUI::CorePopup::showMessage(QObject::tr("Status"), QObject::tr("Uploading successful"));
+        break;
+    }
+
+};
+
+
 bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& path, const std::string& trialName )
 {
     // TODO : obsluzyc ten parametr trialname
@@ -974,8 +994,21 @@ bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& pa
     } else {
         throw std::runtime_error("Unable to find file or trial ID for requested file");
     }
+    CommunicationManager::RequestCallbacks singleTransferCallbacks;
+    singleTransferCallbacks.onEndCallback = (CommunicationManager::RequestCallback)[&](const CommunicationManager::BasicRequestPtr &) 
+        { 
+            std::string s("Success");
+            uploadCallback(communication::IDownloadRequest::FinishedOK, s); 
+        };
+    singleTransferCallbacks.onCancelCallback = (CommunicationManager::RequestCallback)[&](const CommunicationManager::BasicRequestPtr &) 
+        { uploadCallback(communication::IDownloadRequest::FinishedCancel, "Cancelled"); };
+    singleTransferCallbacks.onErrorCallback = (CommunicationManager::RequestErrorCallback)[&](const CommunicationManager::BasicRequestPtr &, const std::string &e) 
+        { uploadCallback(communication::IDownloadRequest::FinishedError, e); };
+
+
     CommunicationManager::CompleteRequest cpl;
     cpl.request = req;
+    cpl.callbacks = singleTransferCallbacks;
     communicationManager->pushRequest(cpl);
     return true;
 }
