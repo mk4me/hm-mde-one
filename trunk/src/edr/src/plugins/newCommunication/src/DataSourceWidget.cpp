@@ -41,6 +41,7 @@
 #include <plugins/c3d/C3DCollections.h>
 #include <boost/lexical_cast.hpp>
 #include "TreeBuilder.h"
+#include "coreui/CorePopup.h"
 
 //Dla wersji demo wystarczy zdefiniować DEMO_VERSION_COMMUNICATION
 //aby zablokowac możliwość ściągania danych z bazy danych
@@ -50,6 +51,8 @@
 
 using namespace communication;
 using namespace webservices;
+
+const int popupDelay = 3000;
 
 LocalDataLoader::LocalDataLoader(DataSourceWidget * sourceWidget) : sourceWidget(sourceWidget), counter(-1)
 {
@@ -99,10 +102,12 @@ void LocalDataLoader::run()
 		}
 	}
 
+    bool wasShallow = false;
 	//definitywnie kończymy pobieranie i jego obsługę
 	if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 		//TODO - jedna wspolna metoda
 		//usuwam płytką kopię
+        wasShallow = true;
 		for(auto it = sourceWidget->downloadedFiles.begin(); it != sourceWidget->downloadedFiles.end(); ++it){
 			try{
 				core::Filesystem::deleteFile(*it);
@@ -124,6 +129,27 @@ void LocalDataLoader::run()
 	std::vector<std::string>().swap(sourceWidget->downloadedFiles);
 
 	sourceWidget->currentDownloadRequest.reset();
+
+    if (wasShallow) {
+        auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
+        webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
+
+        auto addToDownload = [&]( const webservices::IncrementalBranchShallowCopy::Trials& trials ) -> void
+        {
+            for (auto it = trials.begin(); it != trials.end(); ++it) {
+                for (auto iFile = it->addedFiles.begin(); iFile != it->addedFiles.end(); ++iFile) {
+                    sourceWidget->filesToDownload.insert(iFile->fileID);
+                }
+                for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
+                    sourceWidget->filesToDownload.insert(iFile->fileID);
+                } 
+            }
+        };
+
+        addToDownload(incCpy.added.trials);
+        addToDownload(incCpy.modified.trials);
+        sourceWidget->onDownload();
+    }
 }
 
 void LocalDataLoader::prepareStatusWidget()
@@ -148,54 +174,87 @@ void LocalDataLoader::showFinalMessage()
 	//obsługa komunikatu
 	if(sourceWidget->downloadCanceled == true){
 		//anulowano pobieranie
-		QMessageBox messageBox(sourceWidget);
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-			messageBox.setWindowTitle(tr("Synchronization canceled"));
-			messageBox.setText(tr("Synchronization successfully canceled"));
+			coreUI::CorePopup::showMessage(tr("Synchronization canceled\nSynchronization successfully canceled"), popupDelay);
 		}else{
-			messageBox.setWindowTitle(tr("Download canceled"));
-			messageBox.setText(tr("Download successfully canceled"));
+			coreUI::CorePopup::showMessage(tr("Download canceled\nDownload successfully canceled"), popupDelay);
 		}
-
-		messageBox.setIcon(QMessageBox::Information);
-		messageBox.setStandardButtons(QMessageBox::Ok);
-		messageBox.setDefaultButton(QMessageBox::Ok);
-		messageBox.exec();
 	}else if(sourceWidget->downloadCrashed == true){
 		//błąd pobierania
 		QMessageBox messageBox(sourceWidget);
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-			messageBox.setWindowTitle(tr("Synchronization error"));
-			messageBox.setText(tr("Synchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"));
+			coreUI::CorePopup::showMessage(
+                tr("Synchronization error\nSynchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"),
+                popupDelay);
 		}else{
-			messageBox.setWindowTitle(tr("Download error"));
-			messageBox.setText(tr("Download has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to download later. If this error continues to happen contact producer"));
+            coreUI::CorePopup::showMessage(
+			    tr("Download error\nDownload has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to download later. If this error continues to happen contact producer"),
+                popupDelay);
 		}
 
-		messageBox.setIcon(QMessageBox::Critical);
-		messageBox.setStandardButtons(QMessageBox::Ok);
-		messageBox.setDefaultButton(QMessageBox::Ok);
-		messageBox.exec();
 	}else{
 		//wszystko ok
-		QMessageBox messageBox(sourceWidget);
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-			messageBox.setWindowTitle(tr("Synchronization successful"));
-			messageBox.setText(tr("Synchronization has finished successfully"));
+			coreUI::CorePopup::showMessage(tr("Synchronization successful\nSynchronization has finished successfully"), popupDelay);
 		}else{
-			messageBox.setWindowTitle(tr("Download successful"));
-			messageBox.setText(tr("Download has finished successfully"));
+			coreUI::CorePopup::showMessage(tr("Download successful\nDownload has finished successfully"), popupDelay);
 		}
-
-		messageBox.setIcon(QMessageBox::Information);
-		messageBox.setStandardButtons(QMessageBox::Ok);
-		messageBox.setDefaultButton(QMessageBox::Ok);
-		messageBox.exec();
 	}
-
-	//próbujemy chować po 3 sekundach
-	QTimer::singleShot(3000, sourceWidget, SLOT(tryHideStatusWidget()));
 }
+//
+//void LocalDataLoader::showFinalMessage()
+//{
+//    //obsługa komunikatu
+//    if(sourceWidget->downloadCanceled == true){
+//        //anulowano pobieranie
+//        QMessageBox messageBox(sourceWidget);
+//        if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
+//            messageBox.setWindowTitle(tr("Synchronization canceled"));
+//            messageBox.setText(tr("Synchronization successfully canceled"));
+//        }else{
+//            messageBox.setWindowTitle(tr("Download canceled"));
+//            messageBox.setText(tr("Download successfully canceled"));
+//        }
+//
+//        messageBox.setIcon(QMessageBox::Information);
+//        messageBox.setStandardButtons(QMessageBox::Ok);
+//        messageBox.setDefaultButton(QMessageBox::Ok);
+//        messageBox.exec();
+//    }else if(sourceWidget->downloadCrashed == true){
+//        //błąd pobierania
+//        QMessageBox messageBox(sourceWidget);
+//        if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
+//            messageBox.setWindowTitle(tr("Synchronization error"));
+//            messageBox.setText(tr("Synchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"));
+//        }else{
+//            messageBox.setWindowTitle(tr("Download error"));
+//            messageBox.setText(tr("Download has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to download later. If this error continues to happen contact producer"));
+//        }
+//
+//        messageBox.setIcon(QMessageBox::Critical);
+//        messageBox.setStandardButtons(QMessageBox::Ok);
+//        messageBox.setDefaultButton(QMessageBox::Ok);
+//        messageBox.exec();
+//    }else{
+//        //wszystko ok
+//        QMessageBox messageBox(sourceWidget);
+//        if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
+//            messageBox.setWindowTitle(tr("Synchronization successful"));
+//            messageBox.setText(tr("Synchronization has finished successfully"));
+//        }else{
+//            messageBox.setWindowTitle(tr("Download successful"));
+//            messageBox.setText(tr("Download has finished successfully"));
+//        }
+//
+//        messageBox.setIcon(QMessageBox::Information);
+//        messageBox.setStandardButtons(QMessageBox::Ok);
+//        messageBox.setDefaultButton(QMessageBox::Ok);
+//        messageBox.exec();
+//    }
+//
+//    //próbujemy chować po 3 sekundach
+//    QTimer::singleShot(3000, sourceWidget, SLOT(tryHideStatusWidget()));
+//}
 
 DataSourceWidget::LoginEventFilter::LoginEventFilter(DataSourceWidget * sourceWidget, QObject * parent) : QObject(parent), sourceWidget(sourceWidget)
 {
@@ -217,7 +276,7 @@ bool DataSourceWidget::LoginEventFilter::eventFilter(QObject * watched, QEvent *
 
 
 DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget * parent) : QTabWidget(parent), loginEventFilter(nullptr), dataSource(dataSource),
-	downloadStatusWidget(new DownloadStatusWidget()), downloadCanceled(false), downloadCrashed(false)
+	downloadStatusWidget(new DownloadStatusWidget()),  downloadCanceled(false), downloadCrashed(false)
 {
 	setupUi(this);
 	loginRecoveryButton->setVisible(false);
@@ -262,7 +321,11 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	//ustawiamy aktualną perspektywę
 	perspectiveComboBox->setCurrentIndex(0);
 
+
+    statusWidget = new communication::StatusWidget(dataSource->getServerStatusManager(), "http://v21.pjwstk.edu.pl/");
+    connect(statusWidget->getLogoutButton(), SIGNAL(clicked()), this, SLOT(onLogin()));
 	dataViewWidget->layout()->addWidget(downloadStatusWidget);
+    dataViewWidget->layout()->addWidget(statusWidget);
 
 	loginEventFilter = new LoginEventFilter(this);
 	loginPage->installEventFilter(loginEventFilter);
@@ -663,7 +726,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 	// błąd logowania - błąd połączenia z webserwisami
 
 	if(wasError == true){
-
+        statusWidget->setUserName("");
 		error += ". " + tr("Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.");
 
 		QMessageBox messageBox(this);
@@ -678,6 +741,8 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
         // zapisanie loginu i hasła
         saveCredentials();
+
+        statusWidget->setUserName(userEdit->text());
 
 		bool synch = false;
 		bool shallowCopyAvailable = false;
@@ -732,11 +797,20 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 				messageBox.exec();
 			}else if(dataSource->offlineMode() == false){
 
+                try {
+                    dataSource->testDownloadBranchIncrement();
+                    //std::string test = DataSourceWebServicesManager::instance()->motionFileStoremanService()->getShallowCopyBranchesIncrement(userShallowCopy.motionShallowCopy->timestamp);
+                    //test += " ";
+                } catch (const webservices::WSConnectionInvokeException& e) {
+                    std::string mes = e.what();
+                    mes += " ";
+                }
 				//pobierz datę ostatenij modyfikacji i porównaj
 				//jeśli nowsza to zaproponuj synchronizację
 				//jeśli odmówi załaduj już sparsowaną płytką kopię bazy danych
 				try{
 					auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
+
 
 					if(DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(userShallowCopy, time) == true){
 						QMessageBox messageBox(this);
@@ -1517,8 +1591,10 @@ void DataSourceWidget::performShallowCopyUpdate()
 {
 	//generujemy ścieżki
 
-	auto downloadRequest = dataSource->generateDownloadShallowCopyRequestToLocalUserSpace();
+    //auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
+    //webservices::IncrementalBranchShallowCopy incCpy = dataSource->getIncrementalShallowCopy(time);
 
+	auto downloadRequest = dataSource->generateDownloadShallowCopyRequestToLocalUserSpace();
 	if(downloadRequest != nullptr){
 		shallowCopyRequest = downloadRequest;
 		processShallowCopyDownload(downloadRequest);
@@ -2382,14 +2458,15 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	loadSubjectHierarchy(loadedFilesObjects);
 
 	if(loadingErrors.empty() == true && unknownErrors.empty() == true){
-		QMessageBox messageBox(this);
-		messageBox.setWindowTitle(tr("Loading info"));
-		messageBox.setText(tr("Data loaded successfully to application."));
-		messageBox.setIcon(QMessageBox::Information);
-		messageBox.setStandardButtons(QMessageBox::Ok);
-		messageBox.setDefaultButton(QMessageBox::Ok);
+        /*QMessageBox messageBox(this);
+        messageBox.setWindowTitle(tr("Loading info"));
+        messageBox.setText(tr("Data loaded successfully to application."));
+        messageBox.setIcon(QMessageBox::Information);
+        messageBox.setStandardButtons(QMessageBox::Ok);
+        messageBox.setDefaultButton(QMessageBox::Ok);
 
-		messageBox.exec();
+        messageBox.exec();*/
+        coreUI::CorePopup::showMessage(tr("Loading info\nData loaded successfully to application."), popupDelay);
 	}else{
 		QString message(tr("Errors while data loading:"));
 

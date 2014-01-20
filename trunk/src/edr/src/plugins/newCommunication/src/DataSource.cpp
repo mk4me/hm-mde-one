@@ -38,6 +38,10 @@
 #include "TreeBuilder.h"
 #include "webserviceslib/UploadHelper.h"
 
+#include <webserviceslib/IncrementalBranchShallowCopy.h>
+#include <webserviceslib/IncrementalBranchShallowCopyParser.h>
+#include "IncrementalBranchShallowCopyHelper.h"
+
 using namespace communication;
 using namespace webservices;
 
@@ -133,6 +137,10 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
 
     auto ms = utils::make_shared<MotionPerspective>();
     perspectives.push_back(ms);
+
+
+    serverStatusManager = utils::make_shared<ServerStatusManager>(communicationManager.get());
+    serverStatusManager->addServer(serwerPingUrl);
 }
 
 CommunicationDataSource::~CommunicationDataSource()
@@ -198,6 +206,7 @@ void CommunicationDataSource::setConnectionsCredentials(const User & user)
     //connectionsManager->motionFtps()->setCredentials(user.name(), user.password());
     //connectionsManager->medicalFtps()->setCredentials(user.name(), user.password());
 }
+
 
 
 void CommunicationDataSource::init(core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamManager, core::IFileDataManager * fileDM)
@@ -969,34 +978,34 @@ bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& pa
     cpl.request = req;
     communicationManager->pushRequest(cpl);
     return true;
-
-    //webservices::BasicUploadHelper fileUploaderHelper;
-    //fileUploaderHelper.configure(communicationManager->motionFtps());
-    //fileUploaderHelper.setFileUpload(path.string(), std::string("BDR/w/") + path.filename().string());
-    //auto res = fileUploaderHelper.put();
-    //auto errorMsg = fileUploaderHelper.errorMessage();
-    ////statusManage
-    //std::string stem = path.stem().string();
-    //int trialID = -1;
-    //auto& trials = this->fullShallowCopy.motionShallowCopy->trials;
-    //for (auto it = trials.begin(); it != trials.end(); ++it) {
-    //    webservices::MotionShallowCopy::Trial* trial = it->second;
-    //    if (stem.find(trial->trialName) != std::string::npos) {
-    //        trialID = trial->trialID;
-    //        break;
-    //    }
-    //}
-    //if (trialID != -1) {
-    //    int res2 = communicationManager->getMotionFileStoremanService()->storeTrialFile(trialID, "/BDR/w", "test xml file", path.filename().string()  );
-    //    return true;
-    //} else {
-    //    return false;
-    //}
-    //
-    ////int res = fileStorem
 }
 
 void CommunicationDataSource::setCompactMode( bool compact /*= true */ )
 {
     dataSourceWidget->setCompactMode(compact);
+}
+
+ServerStatusManagerConstPtr CommunicationDataSource::getServerStatusManager() const
+{
+    return serverStatusManager;
+}
+
+
+
+void CommunicationDataSource::testDownloadBranchIncrement()
+{
+    /*webservices::IncrementalBranchShallowCopy cpy;
+    webservices::IncrementalBranchShallowCopyParser::parseFile("E:/Incremental.xml", cpy);
+    CommunicationManager::BasicRequestPtr  req = CommunicationManager::createRequestMotionShallowBranchIncrement("E:/Incremental.xml", DateTime(2014, 1, 9));
+    
+    CommunicationManager::CompleteRequest cpl;
+    cpl.request = req;
+    communicationManager->pushRequest(cpl);*/
+}
+
+
+webservices::IncrementalBranchShallowCopy CommunicationDataSource::getIncrementalShallowCopy(const webservices::DateTime& dt)
+{
+    std::string savePath = pathsManager->getLocalIncrementalBranchShallowCopyPath().string();
+    return IncrementalBranchShallowCopyHelper::getIncrementalShallowCopy(communicationManager.get(), savePath,  dt);
 }

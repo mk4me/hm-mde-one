@@ -38,6 +38,8 @@ public:
 
     virtual QGraphicsItem* getItem() = 0;
 
+    virtual ILayerItem* clone() const = 0;
+
     // TODO : dobrze byloby przeniest to do jakiegos dekoratora...
     int getAdnotationIdx() const { return adnotationIdx; }
     void setAdnotationIdx(int val) { adnotationIdx = val; }

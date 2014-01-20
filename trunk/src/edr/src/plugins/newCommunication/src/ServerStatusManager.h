@@ -50,7 +50,7 @@ private:
 		void finish();
 
 		//! \param ms Opóźnienie po sprawdzeniu statusów serwerów
-		void setCheckDelay(unsigned int ms);
+		void setCheckDelay(unsigned int us);
 		unsigned int checkDelay();
 
 	private:
@@ -87,7 +87,7 @@ public:
 	//! \return Czy są jakieś serwery do testowania?
 	bool empty() const;
 	//! \param ms Przerwa pomiędzy kolejnymi sprawdzeniami
-	void setCheckDelay(unsigned int ms);
+	void setCheckDelay(unsigned int us);
 	//! \return przerwa pomiędzy kolejnymi sprawdzeniami
 	unsigned int checkDelay() const;
 	//! \return Czy jeszcze odświeżamy status serwerów
@@ -114,6 +114,6 @@ private:
 	//! Wątek odświeżający statusy
 	utils::shared_ptr<StatusChecker> statusChecker;
 };
-
+DEFINE_SMART_POINTERS(ServerStatusManager)
 
 #endif	//	HEADER_GUARD___SERVERSTATUSMANAGER_H__

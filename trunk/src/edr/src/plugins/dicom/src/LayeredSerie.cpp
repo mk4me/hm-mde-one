@@ -58,13 +58,14 @@ private:
 
 void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
 {
-    // TODO: const_cast, jak zastosowac update danych?
-    ILayeredImageConstPtr img = data->get();
-    if (img) {
-        image = utils::const_pointer_cast<ILayeredImage>(img);
+    // TODO: jak zastosowac update danych?
+    auto cloneWrp = data->clone();
+    image = cloneWrp->get();
+    if (image) {
+        //image = utils::const_pointer_cast<ILayeredImage>(img);
         graphicsScene->addItem(image->getBackgroundLayer()->getItem());
 
-        BOOST_FOREACH(std::string tag, img->getTags()) {
+        BOOST_FOREACH(std::string tag, image->getTags()) {
             int count = image->getNumLayerItems(tag);
             for (int i = 0; i < count; ++i) {
                 ILayerItemPtr vec = image->getLayerItem(tag, i);

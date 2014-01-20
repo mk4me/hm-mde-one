@@ -197,6 +197,20 @@ int dicom::PointsLayer::getPointIdx( QGraphicsItem* itm )
     return points.indexOf(itm);
 }
 
+dicom::ILayerItem* dicom::PointsLayer::clone() const
+{
+    std::unique_ptr<PointsLayer> pl(new PointsLayer());
+    pl->setName(this->name);
+    pl->setPointsDrawer(IPointsDrawerPtr(pointsDrawer->clone()));
+
+    for (auto it = points.begin(); it != points.end(); ++it) {
+        pl->addPoint((*it)->pos());
+    }
+    pl->setEditable(getEditable());
+
+    return pl.release();
+}
+
 
 
 QPen dicom::PolyDrawer::getLinePen(bool editable)
@@ -239,6 +253,11 @@ QPainterPath dicom::PolyDrawer::createPath(const QVector<QGraphicsItem*>& points
 QBrush dicom::PolyDrawer::getLineBrush( bool editable )
 {
     return QBrush(editable ? QColor(0, 100, 255, 30) : QColor(128, 212, 220, 30));
+}
+
+dicom::IPointsDrawer* dicom::PolyDrawer::clone() const
+{
+    return new PolyDrawer();
 }
 
 
@@ -290,4 +309,9 @@ QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& point
 QBrush dicom::CurveDrawer::getLineBrush( bool editable )
 {
     return QBrush(editable ? QColor(255, 0, 0, 30) : QColor(220, 128, 128, 30));
+}
+
+dicom::IPointsDrawer* dicom::CurveDrawer::clone() const
+{
+    return new CurveDrawer();
 }

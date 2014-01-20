@@ -214,6 +214,9 @@ void DataSourcePathsManager::rebuildUserPaths()
 	localMedicalShallowCopyPath = localMedicalSchemasPath / ("med" + userHash_ + "s.xml");
 	// dodaję na początek med dla unikalności (od medical) oraz m na koniec (od metadata)
 	localMedicalMetadataPath = localMedicalSchemasPath / ("med" + userHash_ + "m.xml");
+
+    // dodaję na początek m dla unikalności (od motion) oraz ib na koniec (od incremental branch)
+    localIncrementalBranchShallowCopyPath = localMotionSchemasPath / ("m" + userHash_ + "ib.xml");
 }
 
 void DataSourcePathsManager::clearUserPaths()
@@ -277,4 +280,9 @@ void DataSourcePathsManager::removeUserDataPaths() const
 	catch(...){
 
 	}
+}
+
+const core::Filesystem::Path& DataSourcePathsManager::getLocalIncrementalBranchShallowCopyPath() const
+{
+    return localIncrementalBranchShallowCopyPath;
 }

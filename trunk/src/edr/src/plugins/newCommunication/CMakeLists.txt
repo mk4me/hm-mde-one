@@ -6,6 +6,7 @@ SET_PRIVATE_HEADERS(
 	DownloadStatusWidget.h
 	DataSourcePathsManager.h
 	NotesWidget.h
+	StatusWidget.h
 	AntropometricDataWidget.h
 	DisordersDataWidget.h
 	PersonalDataWidget.h
@@ -30,6 +31,7 @@ SET_PRIVATE_HEADERS(
 	DataSourceStatus.h
 	DataSourceShallowCopyUtils.h
 	DataSourcePrivilagesVerifier.h
+	IncrementalBranchShallowCopyHelper.h
 	Patient.h
 	DataSourcePerspective.h
 	DataSourcePerspectiveManager.h
@@ -70,6 +72,8 @@ SET_SOURCE_FILES(
 	DownloadStatusWidget.cpp
 	DataSourcePathsManager.cpp
 	NotesWidget.cpp
+	StatusWidget.cpp
+	IncrementalBranchShallowCopyHelper.cpp
 	AntropometricDataWidget.cpp
 	DisordersDataWidget.cpp
 	PersonalDataWidget.cpp
@@ -112,6 +116,7 @@ SET_MOC_FILES(
 	AntropometricDataWidget.h
 	DisordersDataWidget.h
 	NotesWidget.h
+	StatusWidget.h
 	DataSourcePerspective.h
 )
 
@@ -121,6 +126,7 @@ SET_UI_FILES(
 	DefaultPatientCardWidget.ui
 	PersonalDataWidget.ui
 	NotesWidget.ui
+	StatusWidget.ui
 )
 
 SET_RC_FILES (

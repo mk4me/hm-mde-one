@@ -29,16 +29,17 @@ public:
     //! Typ zlecenie
     enum Request
     {
-        DownloadFile,           //! Prośba o plik
-        UploadFile,             //! Prośba o upload pliku
-        ReplaceFile,            //! Prośba o update pliku
-        Complex,                //! Złożona prośba (można zagnieżdżać i dodawać wszystkie pozostałe
-        DownloadPhoto,          //! Prośba o plik
-        CopyMotionShallowCopy,  //! Prośba o plik z płytką kopią bazy danych ruchu
-        CopyMotionMetadata,     //! Prośba o plik z metadanymi ruchu
-        CopyMedicalShallowCopy, //! Prośba o plik z płyką kopia danych medycznych
-        CopyMedicalMetadata,    //! Prośba o plik z metadanymi medycznymi
-        PingServer              //! Prośba o sprawdzenie dostępności serwera poprzez ping
+        DownloadFile,             //! Prośba o plik
+        UploadFile,               //! Prośba o upload pliku
+        ReplaceFile,              //! Prośba o update pliku
+        Complex,                  //! Złożona prośba (można zagnieżdżać i dodawać wszystkie pozostałe
+        DownloadPhoto,            //! Prośba o plik
+        CopyMotionShallowCopy,    //! Prośba o plik z płytką kopią bazy danych ruchu
+        CopyMotionMetadata,       //! Prośba o plik z metadanymi ruchu
+        CopyMedicalShallowCopy,   //! Prośba o plik z płyką kopia danych medycznych
+        CopyMedicalMetadata,      //! Prośba o plik z metadanymi medycznymi
+        PingServer,               //! Prośba o sprawdzenie dostępności serwera poprzez ping
+        CopyMotionBranchIncrement //! Prośba o różnicową płytką kopię
     };
 
     /**
@@ -53,6 +54,7 @@ public:
         ReplacingFile, /** Trwa aktualizacja pojedynczego pliku */
         DownloadingPhoto, /** Trwa pobieranie pojedynczego zdjęcia */
         CopyingMotionShallowCopy, /** Trwa pobieranie pliku z płytką kopią bazy danych ruchu*/
+        CopyingMotionBranchIncrement, /** Trwa pobieranie pliku z przyrostową kopią bazy danych ruchu*/
         CopyingMotionMetadata, /** Trwa pobieranie pliku z metadanymi ruchu*/
         CopyingMedicalShallowCopy, /** Trwa pobieranie pliku z płyką kopia danych medycznych*/
         CopyingMedicalMetadata, /** Trwa pobieranie pliku z metadanymi medycznymi*/
@@ -139,7 +141,7 @@ public:
 		//! Kosntruktor
 		//! \param type Typ requesta
 		//! \param filePath Ścieżka zapisu pliku
-        MetadataRequest(Request type, const std::string & filePath);
+        MetadataRequest(Request type, const std::string & filePath, const webservices::DateTime& since = webservices::DateTime());
 
     public:
 		//! \return Ścieżka pliku
@@ -148,12 +150,16 @@ public:
         virtual void setProgress(double p);
 		//! Impementacja interfejsu webservices::IFtpsConnection::IProgress
         virtual double getProgress() const;
+        //! \return czas potrzebny przy żądaniu kopii różnicowych
+        webservices::DateTime getDateTime() const;
 
     private:
 		//! Progres ściągania pliku
         double progress;
 		//! Ścieżka docelowa pliku
         std::string filePath;
+        //! Dla różnicowych kopii potrzebny jest czas
+        webservices::DateTime dateTime;
     };
 
 	//! Klasa odpowiedzialna za request plików (z identyfikatorami)
@@ -370,6 +376,7 @@ private:
     webservices::IFtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request, std::string & message);
     webservices::IFtpsConnection::OperationStatus processMedicalMetadata(const CompleteRequest & request, std::string & message);
     webservices::IFtpsConnection::OperationStatus processPing(const CompleteRequest & request, std::string & message);
+    webservices::IFtpsConnection::OperationStatus processMotionBranchIncrementShallowCopy(const CompleteRequest & request, std::string & message);
 
 	webservices::IFtpsConnection::OperationStatus processComplex(const CompleteRequest & request) { std::string temp; return processComplex(request, temp); }
     webservices::IFtpsConnection::OperationStatus processPhoto(const CompleteRequest & request) { std::string temp; return processPhoto(request, temp); }
@@ -381,6 +388,7 @@ private:
     webservices::IFtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request) { std::string temp; return processMedicalShallowCopy(request, temp); }
     webservices::IFtpsConnection::OperationStatus processMedicalMetadata(const CompleteRequest & request) { std::string temp; return processMedicalMetadata(request, temp); }
     webservices::IFtpsConnection::OperationStatus processPing(const CompleteRequest & request) { std::string temp; return processPing(request, temp); }
+    webservices::IFtpsConnection::OperationStatus processMotionBranchIncrementShallowCopy(const CompleteRequest & request) { std::string temp; return processMotionBranchIncrementShallowCopy(request, temp); }
 
     /**
     Ustala stan w jakim znajduje się Communication Service.
@@ -429,6 +437,7 @@ public:
     static MetadataRequestPtr createRequestMedicalShallowCopy(const std::string & filePath);
     static MetadataRequestPtr createRequestMedicalMetadata(const std::string & filePath);
     static PingRequestPtr createRequestPing(const std::string & urlToPing);
+    static MetadataRequestPtr createRequestMotionShallowBranchIncrement( const std::string& path, const webservices::DateTime& since );
 
 	//! \param request Zlecenie które chcemy anulować jeśli jeszcze nie było przetwarzane - do przetworzenia lub przetwarzane
     void cancelRequest(const BasicRequestPtr & request);

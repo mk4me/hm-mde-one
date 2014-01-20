@@ -55,6 +55,11 @@ namespace webservices
         virtual const std::string getMetadata();
 
 		virtual void downloadComplete(const std::string & path);	
+
+        virtual const std::string getShallowCopyIncrement( const DateTime & dateTime );
+
+        virtual const std::string getShallowCopyBranchesIncrement( const DateTime& dateTime );
+
     };
 
     class MotionFileStoremanWS : public WebServiceT<IMotionFileStoremanWS>
@@ -74,6 +79,8 @@ namespace webservices
 		virtual const std::string getShallowCopy();
 
         virtual const std::string getShallowCopyIncrement(const DateTime & dateTime);
+
+        virtual const std::string getShallowCopyBranchesIncrement( const DateTime& dateTime );
 		
 		virtual const std::string getMetadata();
         
@@ -120,6 +127,8 @@ namespace webservices
 			const std::string & description);
 
         virtual void replaceFile(int fileID, const std::string& path, std::string& filename);
+
+
     };
 
 	class MedicalFileStoremanWS : public WebServiceT<IMedicalFileStoremanWS>
@@ -139,7 +148,12 @@ namespace webservices
 		virtual const std::string getShallowCopy();
 
 		virtual const std::string getMetadata();	
-	};
+
+        virtual const std::string getShallowCopyIncrement( const DateTime & dateTime );
+
+        virtual const std::string getShallowCopyBranchesIncrement( const DateTime& dateTime );
+
+    };
 }
 
 #endif	//	HEADER_GUARD___FILESTOREMANWS_H__

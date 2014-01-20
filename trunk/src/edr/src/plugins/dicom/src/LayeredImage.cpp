@@ -168,4 +168,19 @@ void dicom::LayeredImage::setTagVisible( const std::string& tag, bool val )
     }
 }
 
+dicom::ILayeredImage* dicom::LayeredImage::clone() const
+{
+    std::unique_ptr<LayeredImage> img(new LayeredImage());
+    img->backgroundLayer = utils::dynamic_pointer_cast<BackgroundLayer>(ILayerItemPtr(backgroundLayer->clone()));
+    for (auto it = layers.begin(); it != layers.end(); ++it) {
+        img->addLayer(ILayerItemPtr(it->second->clone()), it->first);
+    }
+
+    for (auto it = tagsVisibility.begin(); it != tagsVisibility.end(); ++it) {
+        img->setTagVisible(it->first, it->second);
+    }
+
+    return img.release();
+}
+
 

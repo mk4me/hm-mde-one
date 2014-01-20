@@ -51,6 +51,7 @@ public:
     virtual tags_range getTags() const;
     virtual bool getTagVisible(const std::string& tag) const;
     virtual void setTagVisible(const std::string& tag, bool val);
+    virtual ILayeredImage* clone() const;
 
 private:
     //std::vector<ILayerItemPtr> layers;

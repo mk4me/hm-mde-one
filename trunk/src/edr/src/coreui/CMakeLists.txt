@@ -21,6 +21,7 @@ SET_PUBLIC_HEADERS(
 	CoreCompoundVisualizerWidget.h
 	CoreTextEditWidget.h
 	HierarchyTreeModel.h
+	CorePopup.h
 	DataFilterWidget.h
 	FilterEntryWidget.h
 	WheelGraphicsView.h
@@ -41,6 +42,7 @@ SET_SOURCE_FILES(
 	CoreMainWindow.cpp
 	CoreConsoleWidget.cpp
 	CoreAction.cpp
+	CorePopupPrivate.cpp
 	CoreDockWidget.cpp
 	CoreSplitableDockWidget.cpp
 	CoreFlexiToolBar.cpp
@@ -62,6 +64,7 @@ SET_SOURCE_FILES(
 
 SET_PRIVATE_HEADERS(
 	CoreUiPCH.h
+	CorePopupPrivate.h
 )
 
 SET_MOC_FILES(
@@ -76,6 +79,8 @@ SET_MOC_FILES(
 	CoreConsoleWidget.h
 	CoreMainWindow.h	
 	CoreAction.h
+	CorePopup.h
+	CorePopupPrivate.h
 	CoreDockWidget.h
 	CoreFlexiToolBar.h
 	CoreFlexiToolBarSection.h

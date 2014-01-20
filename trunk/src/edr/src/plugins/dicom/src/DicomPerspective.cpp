@@ -34,11 +34,17 @@ dicom::LayersVectorConstPtr resolveLocalXml( const fs::Path& xmlPath, dicom::Lay
     return layersVector;
 }
 
-core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::SubjectPtr subject )
+std::string getUserName()
 {
     communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
     const communication::IUser* usr = comm->currentUser();
-    std::string name = usr->name();
+    return usr->name();
+}
+
+core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::SubjectPtr subject )
+{
+    std::string name = getUserName();
+
     
     fs::Path tmpDir = plugin::getUserDataPath() / std::string( "MEDUSA/tmp");
     if (!fs::pathExists(tmpDir)) {
@@ -90,48 +96,14 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                 
                 // w bazie jest po jednym pliku na motion
                 if (images.size() == 1) {
-                    utils::ObjectWrapperPtr wrapper = utils::const_pointer_cast<utils::ObjectWrapper>(*images.begin());
+                    utils::ObjectWrapperConstPtr wrapper = (*images.begin());
                     std::string sourceFile;
                     if (wrapper->tryGetMeta("core/source", sourceFile)) {
                         fs::Path stem = fs::Path(sourceFile).stem();
-                        fs::Path p = tmpDir / (stem.string() + "." + name + ".xml");
-                        (*wrapper)[std::string("DICOM_XML")] = std::string(p.string());
-                        (*wrapper)[std::string("TRIAL_NAME")] = trialName;
+                        fs::Path xmlFilename = tmpDir / (stem.string() + "." + name + ".xml");
                         
-                        LayeredImageConstPtr cimg = wrapper->get();
-                        LayeredImagePtr img = utils::const_pointer_cast<LayeredImage>(cimg);
-                        bool localAdded = false;
-                        for (auto itXml = layers.begin(); itXml != layers.end(); ++itXml) {
-                            LayersVectorConstPtr layersVector = (*itXml)->get();
-                            std::string xmlUser = "unknown";
-                            if ((*itXml)->tryGetMeta("core/source", xmlUser)) {
-                                // TODO zrobic to regexem
-                                xmlUser = fs::Path(xmlUser).stem().string();
-                                xmlUser = xmlUser.substr(xmlUser.find_last_of(".") + 1);
-                            }
-                            if (name == xmlUser) {
-                                layersVector = resolveLocalXml(p, layersVector);
-                                localAdded = true;
-                            }
-                            for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
-                                img->addLayer(*layerIt, xmlUser);
-                            }
-                        }
-
-                        // nie bylo konfliktu danych lokalnych vs sciagnietych, ale mozliwe, ze sa tylko lokalne
-                        if (!localAdded) {
-                            auto layersVector = resolveLocalXml(p);
-                            if (layersVector) {
-                                for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
-                                    img->addLayer(*layerIt, name);
-                                }
-                            }
-                        }
-
-                        for (int row = img->getNumTags() - 1; row >= 0; --row) {
-                            std::string tag = img->getTag(row);
-                            img->setTagVisible(tag, tag == name);
-                        }
+                        LayeredImageConstPtr img = wrapper->get();
+                        
                         std::string imageFilename = stem.string();
                         if (sessionWrp) {
                             dicom::DicomInternalStructConstPtr internalStruct = sessionWrp->get();
@@ -142,13 +114,14 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                         }
                         
                         QIcon icon;
-                        if (img->getNumTags()) {
+                        if (!layers.empty() || fs::pathExists(xmlFilename)) {
                             icon = QIcon(":/dicom/file_done.png");
                         } else {
                             icon = QIcon(":/dicom/file.png");
                         }
-
-                        core::IHierarchyItemPtr imgItem(new core::HierarchyDataItem(wrapper, icon, QString::fromStdString(imageFilename), desc));
+                        
+                        DicomHelperPtr helper = DicomHelperPtr(new DicomHelper(wrapper, layers, xmlFilename.string(), trialName));
+                        core::IHierarchyItemPtr imgItem(new core::HierarchyDataItem(icon, QString::fromStdString(imageFilename), desc, helper));
                         sessionItem->appendChild(imgItem);
                         hasData = true;
                     } else {
@@ -171,3 +144,59 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 
 
 
+void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
+{
+    UTILS_ASSERT(wrapper, "Item should be initialized");
+    std::string name = getUserName();
+    core::ObjectWrapperPtr wrp = wrapper->clone();
+    (*wrp)[std::string("DICOM_XML")] = xmlFilename;
+    (*wrp)[std::string("TRIAL_NAME")] = trialName;
+                        
+    LayeredImagePtr img = wrp->get();
+    //LayeredImagePtr img = utils::const_pointer_cast<LayeredImage>(cimg);
+    bool localAdded = false;
+    for (auto itXml = layers.begin(); itXml != layers.end(); ++itXml) {
+        LayersVectorConstPtr layersVector = (*itXml)->get();
+        std::string xmlUser = "unknown";
+        if ((*itXml)->tryGetMeta("core/source", xmlUser)) {
+            // TODO zrobic to regexem
+            xmlUser = fs::Path(xmlUser).stem().string();
+            xmlUser = xmlUser.substr(xmlUser.find_last_of(".") + 1);
+        }
+        if (name == xmlUser) {
+            layersVector = resolveLocalXml(xmlFilename, layersVector);
+            localAdded = true;
+        }
+        for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
+            img->addLayer(*layerIt, xmlUser);
+        }
+    }
+
+    // nie bylo konfliktu danych lokalnych vs sciagnietych, ale mozliwe, ze sa tylko lokalne
+    if (!localAdded) {
+        auto layersVector = resolveLocalXml(xmlFilename);
+        if (layersVector) {
+            for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
+                img->addLayer(*layerIt, name);
+            }
+        }
+    }
+
+    for (int row = img->getNumTags() - 1; row >= 0; --row) {
+        std::string tag = img->getTag(row);
+        img->setTagVisible(tag, tag == name);
+    }
+    auto serie = visualizer->createSerie(wrp->getTypeInfo(), wrp);
+    serie->serie()->setName(path.toStdString());
+    series.push_back(serie);    
+}
+
+dicom::DicomHelper::DicomHelper( const core::ObjectWrapperConstPtr & wrapper, const core::ConstObjectsList& layers,
+    const std::string& xmlFilename, const std::string& trialName) :
+    WrappedItemHelper(wrapper),
+    layers(layers),
+    xmlFilename(xmlFilename),
+    trialName(trialName)
+{
+
+}

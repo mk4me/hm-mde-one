@@ -3,7 +3,7 @@
 #include <ctime>
 #include <iterator>
 
-ServerStatusManager::StatusChecker::StatusChecker(ServerStatusManager * manager) : manager(manager), checkDelay_(10000), finish_(false)
+ServerStatusManager::StatusChecker::StatusChecker(ServerStatusManager * manager) : manager(manager), checkDelay_(10000000), finish_(false)
 {
 
 }
@@ -16,21 +16,21 @@ ServerStatusManager::StatusChecker::~StatusChecker()
 void ServerStatusManager::StatusChecker::run()
 {
 	while(!finish_){
+        {
+		    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(*manager);
 
-		OpenThreads::ScopedLock<OpenThreads::Mutex> lock(*manager);
+		    if(manager->refreshingServers() == false){
 
-		if(manager->refreshingServers() == false){
+			    for(auto it = manager->serverStatuses.begin(); it != manager->serverStatuses.end(); ++it){
+				    CommunicationManager::CompleteRequest completeRequest;
+				    completeRequest.callbacks = manager->pingCallbacks;
+				    completeRequest.request = manager->manager->createRequestPing(it->first);
+				    manager->manager->pushRequest(completeRequest);
+			    }
 
-			for(auto it = manager->serverStatuses.begin(); it != manager->serverStatuses.end(); ++it){
-				CommunicationManager::CompleteRequest completeRequest;
-				completeRequest.callbacks = manager->pingCallbacks;
-				completeRequest.request = manager->manager->createRequestPing(it->first);
-				manager->manager->pushRequest(completeRequest);
-			}
-
-			manager->toCheck = manager->serverStatuses.size();
-		}
-
+			    manager->toCheck = manager->serverStatuses.size();
+		    }
+        }
 		microSleep(checkDelay_);
 	}
 }
@@ -50,7 +50,9 @@ unsigned int ServerStatusManager::StatusChecker::checkDelay()
 	return checkDelay_;
 }
 
-ServerStatusManager::ServerStatusManager(CommunicationManager * manager)
+ServerStatusManager::ServerStatusManager(CommunicationManager * manager) :
+    manager(manager),
+    toCheck(0)
 {
 	mThis = this;
 	pingCallbacks.onEndCallback = boost::bind(&ServerStatusManager::onPingEnd, this, _1);

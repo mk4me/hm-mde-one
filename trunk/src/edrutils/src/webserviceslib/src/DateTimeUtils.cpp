@@ -1,6 +1,7 @@
 #include <webserviceslib/DateTimeUtils.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/format.hpp>
 
 namespace webservices
 {
@@ -44,10 +45,16 @@ const std::string toString(const DateTime & time)
 {
 	std::stringstream ss;
 
-	ss << time.getYear() << "-" << boost::lexical_cast<std::string>(time.getMonth())
-		<< "-" << boost::lexical_cast<std::string>(time.getDay()) << "T"
-		<< boost::lexical_cast<std::string>(time.getHour()) << ":" << boost::lexical_cast<std::string>(time.getMinutes()) << ":"
-		<< boost::lexical_cast<std::string>(time.getSeconds()) << ".000Z";
+    boost::format fmt("%02d");
+    std::string year = (fmt % (int)time.getYear()).str();
+    std::string month = (fmt % (int)time.getMonth()).str();
+    std::string day = (fmt % (int)time.getDay()).str();
+    std::string hour = (fmt % (int)time.getHour()).str();
+    std::string minutes = (fmt % (int)time.getMinutes()).str();
+    std::string seconds = (fmt % (int)time.getSeconds()).str();
+
+
+	ss << year << "-" << month << "-" << day << "T" << hour << ":" << minutes << ":" << seconds << ".000Z";
 
 	return ss.str();
 }

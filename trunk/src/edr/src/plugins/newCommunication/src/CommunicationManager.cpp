@@ -82,6 +82,13 @@ void CommunicationManager::RequestsExecutor::run()
 
 					break;
 
+                case CopyMotionBranchIncrement:
+
+                    manager->setState(CopyingMotionBranchIncrement);
+
+                    manager->processMotionBranchIncrementShallowCopy(currentRequest);
+                    break;
+
 				case CopyMotionMetadata:
 
 					manager->setState(CopyingMotionMetadata);
@@ -194,7 +201,11 @@ const std::string & CommunicationManager::PingRequest::urlToPing() const
 	return urlToPing_;
 }
 
-CommunicationManager::MetadataRequest::MetadataRequest(Request type, const std::string & filePath) : BasicRequest(type), filePath(filePath), progress(0)
+CommunicationManager::MetadataRequest::MetadataRequest(Request type, const std::string & filePath, const webservices::DateTime& dateTime) : 
+    BasicRequest(type), 
+    filePath(filePath),
+    progress(0),
+    dateTime(dateTime)
 {
 
 }
@@ -212,6 +223,11 @@ void CommunicationManager::MetadataRequest::setProgress(double p)
 double CommunicationManager::MetadataRequest::getProgress() const
 {
 	return progress;
+}
+
+webservices::DateTime CommunicationManager::MetadataRequest::getDateTime() const
+{
+    return dateTime;
 }
 
 CommunicationManager::FileRequest::FileRequest(const std::string & filePath, unsigned int fileID) : MetadataRequest(DownloadFile, filePath), fileID(fileID)
@@ -512,6 +528,10 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processCompl
 
             case CopyMotionShallowCopy:
                 ret = processMotionShallowCopy(r, message);
+                break;
+
+            case CopyMotionBranchIncrement:
+                ret = processMotionBranchIncrementShallowCopy(r, message);
                 break;
 
             case CopyMotionMetadata:
@@ -1117,6 +1137,71 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processPing(
     return ret;
 }
 
+webservices::IFtpsConnection::OperationStatus CommunicationManager::processMotionBranchIncrementShallowCopy(const CompleteRequest & request, std::string & message)
+{
+    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+
+    if(request.callbacks.onBeginCallback.empty() == false){
+        request.callbacks.onBeginCallback(request.request);
+    }
+
+    try {
+        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
+        setCurrentDownloadHelper(&motionShallowDownloadHelper);
+
+        motionShallowDownloadHelper.setIncrementalDownload(metaRequest->filePath, metaRequest->getDateTime());
+
+        {
+            utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
+            ret = motionShallowDownloadHelper.get(metaRequest.get());
+        }
+
+
+        //ret = motionTransportManager->getShallowCopy(metaRequest->filePath, metaRequest.get());
+
+        switch(ret){
+
+        case webservices::IFtpsConnection::Complete:
+            if(request.callbacks.onEndCallback.empty() == false){
+                request.callbacks.onEndCallback(request.request);
+            }
+
+            break;
+
+        case webservices::IFtpsConnection::Cancelled:
+            if(request.callbacks.onCancelCallback.empty() == false){
+                request.callbacks.onCancelCallback(request.request);
+            }
+
+            break;
+
+        case webservices::IFtpsConnection::Error:
+
+            message += motionShallowDownloadHelper.errorMessage();
+
+            if(request.callbacks.onErrorCallback.empty() == false){
+                request.callbacks.onErrorCallback(request.request, message);
+            }
+        }
+    } catch(std::exception& e) {
+
+        message += e.what();
+
+        if(request.callbacks.onErrorCallback.empty() == false){
+            request.callbacks.onErrorCallback(request.request, message);
+        }
+    }
+
+    if(ret == webservices::IFtpsConnection::Error){
+        serverResponse = false;
+    }else{
+        serverResponse = true;
+    }
+
+    return ret;
+}
+
+
 size_t CommunicationManager::pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream)
 {
     return size*nmemb;
@@ -1173,3 +1258,9 @@ CommunicationManager::ReplaceRequestPtr CommunicationManager::createRequestRepla
 {
     return ReplaceRequestPtr(new ReplaceRequest(fileID, sourcePath, filePath));
 }
+
+CommunicationManager::MetadataRequestPtr CommunicationManager::createRequestMotionShallowBranchIncrement( const std::string& path, const webservices::DateTime& since )
+{
+    return MetadataRequestPtr(new MetadataRequest(CopyMotionBranchIncrement, path, since));
+}
+

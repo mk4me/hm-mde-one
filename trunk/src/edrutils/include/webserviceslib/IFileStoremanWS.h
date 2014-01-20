@@ -60,6 +60,14 @@ public:
 	*/
 	virtual const std::string getMetadata() = 0;
 
+    //! \param datTime Czas od którego potrzebujemy zmian jakie zaszły w bazie danych
+    //! \return Ścieżka na serwerze ftp do różnicowej kopii danych ruchu począwszy od czasu jaki zadaliśmy
+    virtual const std::string getShallowCopyIncrement(const DateTime & dateTime) = 0;
+
+    //! \param datTime Czas od którego potrzebujemy zmian jakie zaszły w bazie danych
+    //! \return Ścieżka na serwerze ftp do różnicowej kopii danych ruchu począwszy od czasu jaki zadaliśmy
+    virtual const std::string getShallowCopyBranchesIncrement(const DateTime& dateTime) = 0;
+
 	virtual void downloadComplete(const std::string & path) = 0;
 };
 
@@ -82,11 +90,7 @@ public:
 
     virtual ~IMotionFileStoremanWS() {}
 
-    //! \param datTime Czas od którego potrzebujemy zmian jakie zaszły w bazie danych
-    //! \return Ścieżka na serwerze ftp do różnicowej kopii danych ruchu począwszy od czasu jaki zadaliśmy
-    virtual const std::string getShallowCopyIncrement(const DateTime & dateTime) = 0;
-
-	/*
+    /*
 	Realizuje wprowadzenie pojedynczego pliku konfiguracji pomiarowej pod kontrolę bazy danych.
 	@param mcID id konfiguracji pomiarowej która wcześniej została juz umieszczona w bazie danych
 	@param path względna ścieżka do pliku na dysku serwera w stosunku do korzenia obszaru Usługi Transportu Plików

@@ -24,6 +24,8 @@ SET_PUBLIC_HEADERS(
 	IWSCredentials.h
 	MetadataParser.h
 	ShallowCopyParser.h
+	IncrementalBranchShallowCopy.h
+	IncrementalBranchShallowCopyParser.h
 	FtpsConnection.h
 	DateTime.h
 	DateTimeUtils.h
@@ -44,6 +46,8 @@ SET_SOURCE_FILES(
 	UserPersonalSpaceWS.cpp
 	MetadataParser.cpp
 	ShallowCopyParser.cpp
+	IncrementalBranchShallowCopy.cpp
+	IncrementalBranchShallowCopyParser.cpp
 	FtpsConnection.cpp
 	DateTime.cpp
 	DateTimeUtils.cpp

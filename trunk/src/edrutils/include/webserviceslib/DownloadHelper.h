@@ -47,7 +47,8 @@ namespace webservices
 		//! Typ pliku płytkiej kopii danych
 		enum ShallowFile {
 			ShallowData,	//! Plik płytkiej kopi danych
-			ShallowMetadata	//! Plik płytkiej kopi metadanych
+			ShallowMetadata,	//! Plik płytkiej kopi metadanych
+            ShallowBranchesIncrement //! Plik różnicowy
 		};
 
 	public:
@@ -61,6 +62,7 @@ namespace webservices
 		virtual const std::string errorMessage();
 
 		void setDownload(ShallowFile shallowFile, const std::string & destinationPath);
+        void setIncrementalDownload(const std::string & destinationPath, const DateTime& since);
 		void configure(const ShallowStoremanWSPtr & shallowStoremanWS, const FtpsConnectionPtr & ftpsConnection);
 	private:
 
@@ -70,6 +72,7 @@ namespace webservices
 		ShallowFile shallowFile;
 		std::string destinationPath;
 		std::string errorMessage_;
+        DateTime dateTime;
 	};
 }
 

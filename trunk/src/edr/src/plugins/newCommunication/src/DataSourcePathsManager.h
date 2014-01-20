@@ -79,6 +79,9 @@ public:
 
 	//! \return Ścieżka do płytkiej kopii bazy danych ruchu
 	const core::Filesystem::Path & projectsPath() const;
+    
+    //! \return Ścieżka do przyrostowej płytkiej kopii bazy danych
+    const core::Filesystem::Path& getLocalIncrementalBranchShallowCopyPath() const;
 
     //! \return Ścieżka do płytkiej kopii bazy danych ruchu
     const core::Filesystem::Path & motionShallowCopyPath() const;
@@ -124,7 +127,11 @@ private:
     core::Filesystem::Path localMedicalShallowCopyPath;
     //! Ścieżka do pliku metadancyh dla pacjentów
     core::Filesystem::Path localMedicalMetadataPath;
-	//! Użytkownik kótrego ścieżki obsługujemy
+    //! Ścieżka do pliku metadancyh dla pacjentów
+    core::Filesystem::Path localIncrementalBranchShallowCopyPath;
+    
+    
+    //! Użytkownik kótrego ścieżki obsługujemy
 	User user_;
 	//! Hash użytkownika używany przy tworzeniu unikalnej przestrzeni dyskowej na dane
 	std::string userHash_;

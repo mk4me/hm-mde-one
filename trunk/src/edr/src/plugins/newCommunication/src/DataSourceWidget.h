@@ -16,6 +16,7 @@
 #include "PatientCardManager.h"
 #include "DataSource.h"
 #include "DownloadRequest.h"
+#include "StatusWidget.h"
 #include <QtCore/QTimer>
 #include <QtCore/QThread>
 #include <QtGui/QPixmap>
@@ -258,6 +259,7 @@ private:
 
     CommunicationDataSource * dataSource;
     DownloadStatusWidget * downloadStatusWidget;
+    communication::StatusWidget * statusWidget;
 
     //! Aktualne pobieranie
     CommunicationDataSource::DownloadRequestPtr currentDownloadRequest;

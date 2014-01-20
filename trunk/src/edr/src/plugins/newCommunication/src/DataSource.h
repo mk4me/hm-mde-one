@@ -16,6 +16,9 @@
 #include "DataSourceUser.h"
 #include <corelib/ISource.h>
 #include <webserviceslib/WSConnection.h>
+#include "ServerStatusManager.h"
+#include "webserviceslib/IncrementalBranchShallowCopy.h"
+#include "webserviceslib/DateTime.h"
 
 //! Forward declarations
 class DownloadRequest;
@@ -54,7 +57,7 @@ public:
     CommunicationDataSource();
 	//! Destruktor
     virtual ~CommunicationDataSource();
-
+    
     //! Inicjalizacja źródła. Następuje już po wczytaniu pluginów i skonstruowaniu
     //! (nie zainicjalizowaniu!) wszystkich źródeł.
     virtual void init(core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamManager, core::IFileDataManager * fileDM);
@@ -94,8 +97,10 @@ public:
     virtual void addHierarchyPerspective( communication::IHierarchyPerspectivePtr perspective );
     std::vector<communication::IHierarchyPerspectivePtr> getHierarchyPerspectives();
 
-private:
+    ServerStatusManagerConstPtr getServerStatusManager() const;
 
+    webservices::IncrementalBranchShallowCopy getIncrementalShallowCopy(const webservices::DateTime& dt);
+private:
 	//! \param connection Połączenie z webService które inicjalizuję - ustawiam adres jeżeli jest inny niż aktualnie ustawiony w połączeniu
 	//! Ta metoda w przypadku zmiany adresu usługi powinna ściągnąc jej definicję, sparsować ją i przygotować połaczenie do dalszej pracy
 	//! Jest to leniwa inicjalizacja, kiedy nie chcemy od razu nawiazaywać połączenia ponieważ user może sobie zarzyczyć trybu offline
@@ -192,6 +197,7 @@ private:
 
     virtual void setCompactMode( bool compact = true );
 
+    void testDownloadBranchIncrement();
     
 private:
     // ------------------------ LOGIKA -------------------------------
@@ -217,7 +223,6 @@ private:
 
 	//! ConnectionManager
 	core::shared_ptr<CommunicationManager> communicationManager;
-
 	//! ------------------------------- Obsługa DM ------------------------------
 
 	//! Manager surowych danych w pamięci
@@ -245,6 +250,7 @@ private:
 	//! Połączenie z web services dla danych medycznych
 	webservices::WSConnectionPtr medicalFileStoremanConnection;
 
+    ServerStatusManagerPtr serverStatusManager;
 	//! ------------------------------- FTPS -----------------------------
 
 	//! Połączenie ftps z bazą danych ruchu

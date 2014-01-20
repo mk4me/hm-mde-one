@@ -44,10 +44,12 @@ public:
     virtual tags_range getTags() const = 0;
     virtual bool getTagVisible(const std::string& tag) const = 0;
     virtual void setTagVisible(const std::string& tag, bool val) = 0;
+
+    virtual ILayeredImage* clone() const = 0;
 };
 DEFINE_SMART_POINTERS(ILayeredImage);
 }
 
-DEFINE_WRAPPER(dicom::ILayeredImage, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(dicom::ILayeredImage, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 
 #endif

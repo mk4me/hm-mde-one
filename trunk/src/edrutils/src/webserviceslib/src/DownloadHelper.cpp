@@ -107,7 +107,24 @@ const IFtpsConnection::OperationStatus ShallowDownloadHelper::get(IFtpsConnectio
 	std::string remotePath;	
 	
 	try{
-		remotePath = (shallowFile == ShallowData ? shallowStoremanWS->getShallowCopy() : shallowStoremanWS->getMetadata());
+        switch (shallowFile) {
+        case ShallowData:
+            remotePath = shallowStoremanWS->getShallowCopy(); 
+            break;
+
+        case ShallowMetadata:
+            remotePath = shallowStoremanWS->getMetadata();
+            break;
+
+        case ShallowBranchesIncrement:
+            UTILS_ASSERT(dateTime != DateTime(), "Date time is necessary for incremental shallow copy");
+            remotePath = shallowStoremanWS->getShallowCopyBranchesIncrement(dateTime);
+            break;
+
+        default:
+            UTILS_ASSERT(false);
+        }
+		
 	}catch(std::exception & e){
 		errorMessage_ = e.what();
 		return ret;
@@ -161,6 +178,13 @@ void ShallowDownloadHelper::setDownload(ShallowFile shallowFile, const std::stri
 const std::string ShallowDownloadHelper::errorMessage()
 {
 	return errorMessage_;
+}
+
+void ShallowDownloadHelper::setIncrementalDownload( const std::string & destinationPath, const DateTime& since )
+{
+    this->shallowFile = ShallowFile::ShallowBranchesIncrement;
+    this->destinationPath = destinationPath;
+    this->dateTime = since;
 }
 
 }

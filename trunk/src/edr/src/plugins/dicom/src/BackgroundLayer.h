@@ -35,6 +35,8 @@ public:
     void setCrop(const QRect& val);
     const QPixmap& getPixmap() const;
 
+    ILayerItem* clone() const;
+
 private:
     BackgroundLayer() {}
     friend class boost::serialization::access;

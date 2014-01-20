@@ -35,6 +35,7 @@ namespace dicom {
         virtual QString methodName() = 0;
         virtual QPainterPath createPath(const QVector<QGraphicsItem*>& points) = 0;
         virtual QGraphicsItem* createPoint() = 0;
+        virtual IPointsDrawer* clone() const = 0;
     };
     DEFINE_SMART_POINTERS(IPointsDrawer);
 
@@ -47,7 +48,7 @@ namespace dicom {
         QGraphicsItem* createPoint();
 
         virtual QBrush getLineBrush( bool editable );
-
+        virtual IPointsDrawer* clone() const;
     };
 
     class PolyDrawer : public IPointsDrawer
@@ -59,7 +60,7 @@ namespace dicom {
         QGraphicsItem* createPoint();
 
         virtual QBrush getLineBrush( bool editable );
-
+        virtual IPointsDrawer* clone() const;
     };
 
     class PointsLayer : public ILayerItem
@@ -94,6 +95,8 @@ namespace dicom {
         virtual bool getSelected() const;
 
         virtual void setSelected( bool val );
+
+        virtual ILayerItem* clone() const;
         
     private:
         utils::scoped_ptr<QGraphicsItemGroup> group;

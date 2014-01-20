@@ -1,6 +1,8 @@
 <RCC>
   <qresource prefix="newCommunication/icons">
-    <file alias="niezaladowane.png">../resources/embedded/icons/niezaladowane.png</file>
+    <file alias="dostepny.png">../resources/embedded/icons/dostepny.png</file>
+	<file alias="niedostepny.png">../resources/embedded/icons/niedostepny.png</file>
+	<file alias="niezaladowane.png">../resources/embedded/icons/niezaladowane.png</file>
     <file alias="zaladowane.png">../resources/embedded/icons/zaladowane.png</file>
     <file alias="zdalne.png">../resources/embedded/icons/zdalne.png</file>
     <file alias="lokalne.png">../resources/embedded/icons/lokalne.png</file>

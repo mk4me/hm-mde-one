@@ -110,6 +110,32 @@ void ShallowStoremanWS::downloadComplete(const std::string & path)
 	SimpleFileStoremanWS(connection()).downloadComplete(0, path);
 }
 
+const std::string ShallowStoremanWS::getShallowCopyIncrement( const DateTime & dateTime )
+{
+    connection()->setOperation("GetShallowCopyIncrement");
+    connection()->setValue("since", toString(dateTime));
+    connection()->invoke(true);
+    
+	std::string ret;
+    connection()->getValue("GetShallowCopyIncrementResult", ret);
+
+    return ret;
+}
+
+const std::string ShallowStoremanWS::getShallowCopyBranchesIncrement( const DateTime& dateTime )
+{
+    connection()->setOperation("GetShallowCopyBranchesIncrement");
+    std::string date = toString(dateTime);
+    //std::string date = "2013-11-13T10:39:35Z";
+    connection()->setValue("since", date );
+    connection()->invoke(true);
+
+    std::string ret;
+    connection()->getValue("GetShallowCopyBranchesIncrementResult", ret);
+
+    return ret;
+}
+
 MotionFileStoremanWS::MotionFileStoremanWS(const WSConnectionPtr & connection)
 	: WebServiceT<IMotionFileStoremanWS>(connection)
 {
@@ -143,14 +169,15 @@ const std::string MotionFileStoremanWS::getShallowCopy()
 
 const std::string MotionFileStoremanWS::getShallowCopyIncrement(const DateTime & dateTime)
 {
-    connection()->setOperation("GetShallowCopyIncrement");
+    return ShallowStoremanWS(connection()).getShallowCopyIncrement(dateTime);
+    /*connection()->setOperation("GetShallowCopyIncrement");
     connection()->setValue("since", toString(dateTime));
     connection()->invoke(true);
     
 	std::string ret;
     connection()->getValue("GetShallowCopyIncrementResult", ret);
 
-    return ret;
+    return ret;*/
 }
 		
 const std::string MotionFileStoremanWS::getMetadata()
@@ -249,6 +276,21 @@ void MotionFileStoremanWS::replaceFile( int fileID, const std::string& path, std
     connection()->invoke();
 }
 
+const std::string MotionFileStoremanWS::getShallowCopyBranchesIncrement( const DateTime& dateTime )
+{
+    return ShallowStoremanWS(connection()).getShallowCopyBranchesIncrement(dateTime);
+    //connection()->setOperation("GetShallowCopyBranchesIncrement");
+    ////std::string date = toString(dateTime);
+    //std::string date = "2013-11-13T10:39:35Z";
+    //connection()->setValue("since", date );
+    //connection()->invoke(true);
+
+    //std::string ret;
+    //connection()->getValue("GetShallowCopyBranchesIncrementResult", ret);
+
+    //return ret;
+}
+
 
 
 //
@@ -304,6 +346,16 @@ const std::string MedicalFileStoremanWS::getShallowCopy()
 const std::string MedicalFileStoremanWS::getMetadata()
 {
 	return ShallowStoremanWS(connection()).getMetadata();
+}
+
+const std::string MedicalFileStoremanWS::getShallowCopyIncrement( const DateTime & dateTime )
+{
+    return ShallowStoremanWS(connection()).getShallowCopyIncrement(dateTime);
+}
+
+const std::string MedicalFileStoremanWS::getShallowCopyBranchesIncrement( const DateTime& dateTime )
+{
+    return ShallowStoremanWS(connection()).getShallowCopyBranchesIncrement(dateTime);
 }
 
 }
