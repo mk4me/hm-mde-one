@@ -661,12 +661,14 @@ void AnalisisWidget::removeFromVisualizers( HelperAction* action, bool once)
         while(it != descriptors.end() ) {
             // na razie kopia, w przeciwnym razie jest problem z usuwaniem.
             AnalisisModel::DataItemDescriptionConstPtr desc = *it;
+
+			AnalisisModel::TimeDataItemDescriptionConstPtr timeDesc = core::dynamic_pointer_cast<const AnalisisModel::TimeDataItemDescription>(desc);
             // jeśli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
             // to znaczy, ze chcemy usunąć dane z wszystkich wizualizatorw
-            if (action->getVisualizer() == nullptr || desc->visualizerWidget->getVisualizer() == action->getVisualizer()) {
+            if (timeDesc != nullptr && action->getVisualizer() == nullptr || desc->visualizerWidget->getVisualizer() == action->getVisualizer()) {
 
                 //teraz usuwamy serie
-                auto channel = desc->channel;
+                auto channel = timeDesc->channel;
                 if (channel) {
                     auto series = channel->getVisualizersSeries();
 
@@ -687,6 +689,7 @@ void AnalisisWidget::removeFromVisualizers( HelperAction* action, bool once)
                 // TODO - czy jest to potrzebne?
                 //it = items2Descriptions.find(action->getTreeItem()->getHelper());
             }else{
+				//it = items2Descriptions.find(action->getTreeItem()->getHelper());
                 ++it;
             }
         }

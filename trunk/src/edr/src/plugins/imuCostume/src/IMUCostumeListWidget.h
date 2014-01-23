@@ -38,6 +38,8 @@ private slots:
 	void onLoadAll();
 	void onUnloadAll();
 
+	void onCalibrate();
+
 private:
 	IMU::IMUCostumeDataSource * ds;
 	Ui_IMUCostumeListWidget * ui;

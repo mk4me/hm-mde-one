@@ -50,7 +50,7 @@ namespace plugin
 			//! Próbujemy odświeżać dane jeśli jest to konieczne
 			void tryUpdate()
 			{
-				utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+				utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
 				if(update_ == true){
 					update();
 					update_ = false;
@@ -60,12 +60,12 @@ namespace plugin
 			//! Metoda zaznacza potrzebę odświeżenia serii danych
 			void requestUpdate()
 			{
-				utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+				utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
 				update_ = true;
 			}
 
 		private:
-			utils::StrictSyncPolicy synch_;
+			utils::RecursiveSyncPolicy synch_;
 			bool update_;
 
         };

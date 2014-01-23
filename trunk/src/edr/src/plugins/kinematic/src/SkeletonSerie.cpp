@@ -4,6 +4,7 @@
 #include "TrajectoriesDrawer.h"
 #include "SkeletalVisualizationSchemeHelper.h"
 #include <kinematiclib/JointAnglesCollection.h>
+#include <utils/StreamData.h>
 
 static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
@@ -216,7 +217,7 @@ void SkeletonSerie::setLocalTime(double time)
 	if( (lastUpdateTime == std::numeric_limits<double>::min()) ||
 		(std::abs(time - lastUpdateTime) >= jointAngles->getChannel(0)->getSampleDuration())){
 		lastUpdateTime = time;
-		update();
+		requestUpdate();
 	}
 }
 
@@ -236,3 +237,164 @@ void SkeletonSerie::setGhostVisible(const bool visible)
 }
 
 
+
+//---------------------------------------------------------------------
+
+
+class SkeletonStreamSerieUpdater : public utils::IStreamStatusObserver
+{
+public:
+	SkeletonStreamSerieUpdater(plugin::IVisualizer::ISerie * serie)
+		: serie(serie)
+	{
+
+	}
+
+	virtual ~SkeletonStreamSerieUpdater() {}
+
+	//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
+	virtual void update()
+	{
+		serie->requestUpdate();
+	}
+
+private:
+
+	plugin::IVisualizer::ISerie * serie;
+};
+
+
+SkeletonStreamSerie::SkeletonStreamSerie( KinematicVisualizer * visualizer,
+	const core::TypeInfo & requestedType,
+	const core::ObjectWrapperConstPtr & data ) : 
+visualizer(visualizer),
+	data(data), requestedType(requestedType),	
+	xyzAxis(false),
+	name("SkeletonData"),
+	pointsDrawer(new PointsDrawer(3)),
+	connectionsDrawer(new ConnectionsDrawer(10))
+{	
+	UTILS_ASSERT(data->getTypeInfo() == typeid(SkeletonDataStream));
+	data->tryGetMeta("core/name", name);	
+	skeletalData = data->get();
+	updater.reset(new SkeletonStreamSerieUpdater(this));
+
+	skeletalData->jointsStream->attachObserver(updater);
+	
+	pointsDrawer->init(skeletalData->jointsCount);
+	pointsDrawer->setSize(0.02);
+
+	auto conns = skeletalData->connections;
+
+	for(auto it = conns.begin(); it != conns.end(); ++it){
+		(*it).length /= 100.0;
+	}
+
+	connectionsDrawer->init(conns);
+	connectionsDrawer->setSize(0.005);
+
+	pointsDrawer->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
+	connectionsDrawer->setColor(osg::Vec4(0.0, 1.0, 0.0, 0.5));
+
+	matrixTransform->addChild(pointsDrawer->getNode());
+	matrixTransform->addChild(connectionsDrawer->getNode());
+
+	//setAxis(true);
+}
+
+SkeletonStreamSerie::~SkeletonStreamSerie()
+{
+	if(skeletalData != nullptr){
+		skeletalData->jointsStream->detachObserver(updater);
+	}
+}
+
+const osg::Quat SkeletonStreamSerie::orientation() const
+{
+	return preRot.inverse() * matrixTransform->getMatrix().getRotate();
+}
+
+void SkeletonStreamSerie::setOrientation(const osg::Quat & orientation)
+{
+	auto q = preRot * orientation;
+	auto m = matrixTransform->getMatrix();
+	m.setRotate(q);
+	matrixTransform->setMatrix(m);
+}
+
+const osg::Vec3 SkeletonStreamSerie::position() const
+{
+	return rootPosition * matrixTransform->getMatrix();
+}
+
+void SkeletonStreamSerie::setPosition(const osg::Vec3 & position)
+{
+	auto p = position - rootPosition;
+	auto m = matrixTransform->getMatrix();
+
+	m.setTrans(p * osg::Matrix::inverse(m));
+	matrixTransform->setMatrix(m);
+}
+
+void SkeletonStreamSerie::setAxis( bool xyz)
+{
+	//TODO - sprawdzic jak to dziala
+	xyzAxis = xyz;
+	auto o = orientation();
+	if(xyz == true) {				
+		preRot = invQXYZ;
+	}else{
+		preRot = invQXYZ.inverse();
+	}
+
+	setOrientation(o);
+}
+
+osg::Matrix SkeletonStreamSerie::getXYZMatrix()
+{
+	return osg::Matrix(invQXYZ);
+}
+
+osg::Matrix SkeletonStreamSerie::getInitialMatrix() const
+{
+	return xyzAxis ? getXYZMatrix() : osg::Matrix();
+}
+
+void SkeletonStreamSerie::resetTransform()
+{
+	MatrixTransformPtr transform = getMatrixTransformNode();
+	transform->setMatrix(getInitialMatrix());
+}
+
+void SkeletonStreamSerie::setName( const std::string & name )
+{
+	this->name = name;
+}
+
+const std::string SkeletonStreamSerie::getName() const
+{
+	return name;
+}
+
+const core::ObjectWrapperConstPtr & SkeletonStreamSerie::getData() const
+{
+	return data;
+}
+
+void SkeletonStreamSerie::update()
+{
+	std::vector<osg::Vec3> points;
+	skeletalData->jointsStream->data(points);
+
+	for(auto it = points.begin(); it != points.end(); ++it){
+		(*it) /= 100.0;
+	}
+
+	pointsDrawer->update(points);
+	connectionsDrawer->update(points);
+}
+
+const utils::TypeInfo & SkeletonStreamSerie::getRequestedDataType() const
+{
+	return requestedType;
+}

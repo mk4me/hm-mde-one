@@ -3,6 +3,7 @@ BEGIN_PROJECT("dynamic")
 SET_PUBLIC_HEADERS(
 	INewChartVisualizer.h
 	INewChartSerie.h
+	Wrappers.h
 )
 
 SET_PRIVATE_HEADERS (

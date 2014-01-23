@@ -11,6 +11,7 @@
 #define HEADER_GUARD_KINEMATIC__HANIMBONE_H__
 
 #include <boost/noncopyable.hpp>
+#include <osg/Vec3>
 
 namespace kinematic {
 
@@ -27,13 +28,30 @@ public:
     ENABLE_PRIVATE_TESTS
 private:
 	//! nazwa kości (powinna być taka jak w h-anim 1.1)
-	std::string name; 
+	std::string name;
+	//! masa
+	float mass;
+	//! dlugosc kosci
+	float length;
+	//! pozycja srodka ciezkosci
+	float cofMass;
 	//! do jednej kości moze być podłączone wiele stawów                          
 	std::vector<hAnimJointPtr> childrenJoints;  
 	//! staw, z którego wychodzi kość     
-	hAnimJointWeak parentJoint;                 
+	hAnimJointWeak parentJoint;
 	
 public:
+
+	hAnimBone() : name("UnnamedBone"), mass(-1), length(-1), cofMass(-1) {}
+
+	const float getLength() const { return length; }
+	const float getMass() const { return mass; }
+	const float getCofMass() const { return cofMass; }
+
+	void setLength(const float l)  { length = l; }
+	void setMass(const float m) { mass = m; }
+	void setCofMass(const float cfm) { cofMass = cfm; }
+
 	//! \return nazwa kości
 	const std::string& getName() const { return name; }
 	//! ustawia nazwę danej kości
@@ -46,6 +64,8 @@ public:
 	//! ustawia rodzica kości
 	//! \param val staw h-anim
 	void setParentJoint(kinematic::hAnimJointWeak val) { parentJoint = val; }
+
+	void setChildrenJoints(const std::vector<hAnimJointPtr> & joint) { childrenJoints = joint; }
 };
 typedef boost::shared_ptr<hAnimBone> hAnimBonePtr;
 typedef boost::weak_ptr<hAnimBone> hAnimBoneWeak;

@@ -151,16 +151,18 @@ void AnalisisModel::update(core::Visualizer::VisualizerSerie * serie, core::Visu
                     ++tIT;
                 }
             }
-
-            //teraz usuwam wpisy dla menu
-            for(auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it)
-            {
-                if(it->second->path == path){
-                    items2Descriptions.erase(it);
-                    break;
-                }
-            }
         }
+
+		//teraz usuwam wpisy dla menu
+		for(auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it)
+		{
+			/*
+			if(it->second->path == path){
+				items2Descriptions.erase(it);
+				break;
+			}
+			}*/
+		}
     }
 }
 
@@ -172,20 +174,40 @@ void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core:
     helper->getSeries(visualizer, path, series);
     if (!series.empty()) {
 
-        DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
-        auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
-        desc->channel = channels;
-        desc->path = path.toStdString();
-        addVisualizerDataDescription(helper, desc);
+		DataItemDescriptionPtr desc;
 
-        auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
-        //timeline->addChannel(desc.path, desc.channel);
+		if(series[0]->serieFeatures<plugin::IVisualizer::ITimeAvareSerieFeatures>() != nullptr){
+
+			try {
+				auto timeDesc = utils::make_shared<AnalisisModel::TimeDataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
+		
+				auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+				timeDesc->channel = channels;
+
+				auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+				//timeline->addChannel(desc.path, desc.channel);
         
-        timeline->addChannel(path.toStdString(), channels);
+				timeline->addChannel(path.toStdString(), channels);
 
-        for(auto it = series.begin(); it != series.end(); ++it){
-            seriesToChannels[*it] = desc->path;
-        }
+				for(auto it = series.begin(); it != series.end(); ++it){
+					seriesToChannels[*it] = desc->path;
+				}
+
+				desc = timeDesc;
+			}catch(const std::exception & e){				
+				PLUGIN_LOG_WARNING("Problem with adding series to timeline: " << e.what());
+			}catch(...){				
+				PLUGIN_LOG_WARNING("Unknown problem with adding series to timeline");
+			}
+		}
+
+		if(desc == nullptr){
+			desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
+		}
+
+		desc->path = path.toStdString();
+
+		addVisualizerDataDescription(helper, desc);
     } else {
         PLUGIN_LOG_WARNING("Problem with adding series to visualizer");
     }

@@ -55,9 +55,11 @@ public:
 		try {
 			return QApplication::notify(receiver, event);
 		} catch (std::exception &e) {
-			CORE_LOG_ERROR("Error occured in UI during user operation execution: " << e.what());
+			CORE_LOG_ERROR("Error occurred in UI during user operation execution for QObject "
+				<< receiver->objectName().toStdString()  << ": " << e.what());
 		} catch (...) {
-			CORE_LOG_ERROR("Unknown error occured in UI during user operation execution");
+			CORE_LOG_ERROR("Unknown error occurred in UI during user operation execution for QObject "
+				<< receiver->objectName().toStdString());
 		}
 		return false;
 	}
@@ -67,6 +69,8 @@ public:
 
 using namespace coreUI;
 using namespace core;
+
+
 
 void Application::updateVisualizers()
 {

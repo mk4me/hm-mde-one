@@ -38,6 +38,15 @@ void hAnimSkeleton::createJointAndBone(std::string newJointName, std::string new
 	parentBone = bone;
 }
 
+void hAnimSkeleton::registerMappingScheme(SkeletonMappingSchemePtr mappingScheme)
+{
+	if(mappingScheme == nullptr){
+		throw std::invalid_argument("Uninitialized mapping scheme");
+	}
+
+	mappingSchemes.push_back(mappingScheme);
+}
+
 void hAnimSkeleton::loadMappingDictionary(const std::string& filename) {
 	 SkeletonMappingScheme::loadFromXML(filename, mappingSchemes);
 }
@@ -108,34 +117,108 @@ void hAnimSkeleton::createActiveHierarchy()
 	createActiveHierarchy(root, root);
 }
 
-std::string hAnimSkeleton::mapJointName(const std::string& given)
+std::string hAnimSkeleton::mapJointName(const std::string& given) const
 {
 	// hack
-	const std::map<std::string, std::string>& jointMappingDictionary = mappingSchemes[0]->getMappingDictionary();
+	const std::map<std::string, std::string>& jointMappingDictionary = mappingSchemes[0]->getJointsMappingDictionary();
 	if (jointMappingDictionary.empty() == true) {
 		throw kinematic::DictionaryNotLoadedException("dictionary with mapping scheme was not loaded");
 	}
 	auto it = jointMappingDictionary.find(given);
 	if (it != jointMappingDictionary.end()) {
 		return it->second;
-	} else {
-		throw UnableToMapJointException(given);
 	}
+	
+	throw UnableToMapJointException(given);
+}
+
+const std::pair<std::string, std::string> hAnimSkeleton::mapBoneNames(const std::string& given) const
+{
+	// hack
+	const auto & bonesMappingDictionary = mappingSchemes[0]->getSegmentsMappingDictionary();
+	if (bonesMappingDictionary.empty() == true) {
+		throw kinematic::DictionaryNotLoadedException("dictionary with mapping scheme was not loaded");
+	}
+
+	auto it = bonesMappingDictionary.find(given);
+	if (it != bonesMappingDictionary.end()) {
+		return it->second;
+	}	
+
+	throw UnableToMapBoneException(given);	
 }
 
 void hAnimSkeleton::doSkeletonMapping(SkeletalModelConstPtr skeletalModel)
 {
-    const SkeletalModel::JointMap& jointMap = skeletalModel->getJointMap();
-    for (auto it = jointMap.cbegin(); it != jointMap.cend(); ++it) {
-        std::string mappedName = mapJointName(it->first);
-        JointPtr joint = it->second;
-        hAnimJointPtr hJoint = joints[mappedName];
-		hJoint->setJoint(*joint);
+	const SkeletalModel::JointMap& jointMap = skeletalModel->getJointMap();
+
+	if(skeletalModel->getJointsInterpretation() == kinematic::SkeletalModel::Joints){
+		for (auto it = jointMap.cbegin(); it != jointMap.cend(); ++it) {
+			std::string mappedName = mapJointName(it->first);
+			JointPtr joint = it->second;
+			hAnimJointPtr hJoint = joints[mappedName];
+			
+			hJoint->setDirection(joint->direction);
+			hJoint->setAxis(joint->axis);
+			hJoint->setOrder(joint->order);
+			hJoint->setDofs(joint->dofs);
+
+			auto s = hJoint->getChildrenBones().size();
+
+			for(auto it = hJoint->getChildrenBones().begin();
+				it != hJoint->getChildrenBones().end(); ++it){
+
+				auto bone = *it;
+				bone->setLength(joint->length);
+				bone->setMass(joint->bodymass / s);
+				bone->setCofMass(joint->cofmass);
+			}
 		
-        hJoint->setName(mappedName);
-        hJoint->setActive(true);
-        JointPtr parent = joint->parent.lock();
-    }
+			hJoint->setName(mappedName);
+			hJoint->setActive(true);
+		}
+	}else{
+
+		std::set<std::string> usedJoints;
+
+		for (auto it = jointMap.cbegin(); it != jointMap.cend(); ++it) {
+			auto mappedNamesRange = mapBoneNames(it->first);
+
+			//weryfikuje zakres
+			std::set<std::string> locallyUsedJoints;
+
+			hAnimBonePtr bone = bones[mappedNamesRange.second];
+			locallyUsedJoints.insert(bone->getName());
+
+			while(bone != nullptr && bone->getName() != mappedNamesRange.first){				
+				locallyUsedJoints.insert(bone->getName());
+				bone = bone->getParentJoint().lock()->getParentBone().lock();
+			}
+
+			if(bone == nullptr){
+				throw std::runtime_error("Invalid bones mapping range");
+			}
+
+			std::vector<std::string> overlap(std::min(usedJoints.size(), locallyUsedJoints.size()));
+			auto oIT = std::set_intersection(usedJoints.begin(), usedJoints.end(), locallyUsedJoints.begin(), locallyUsedJoints.end(), overlap.end());
+
+			if(oIT != overlap.begin()){
+				throw std::runtime_error("Overlapping bones mapping range");
+			}
+
+			usedJoints.insert(locallyUsedJoints.begin(), locallyUsedJoints.end());
+
+			bone->getParentJoint().lock()->setActive(true);
+
+			bone = bones[mappedNamesRange.second];
+
+			auto cJ = bone->getChildrenJoints();
+
+			for(auto jIT = cJ.begin(); jIT != cJ.end(); ++jIT){
+				(*jIT)->setActive(true);
+			}
+		}
+	}
 }
 
 kinematic::hAnimSkeletonPtr hAnimSkeleton::create()

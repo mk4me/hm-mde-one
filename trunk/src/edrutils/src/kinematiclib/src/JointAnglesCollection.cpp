@@ -28,14 +28,24 @@ void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelConstPtr skelet
     {   
         hAnimJointPtr joint = p.second;
 		if (joint->isActive()) {
-			joint->setLength(joint->getLength() / lengthRatio);
+
+			double totalLength = 0.0;
+
+			for(auto it = joint->getChildrenBones().begin(); it != joint->getChildrenBones().end(); ++it){
+
+				auto bone = *it;
+
+				bone->setLength(bone->getLength() / lengthRatio);
+
+				totalLength += bone->getLength();
+			}
                     
-			osg::Vec3 shift = joint->getDirection() * joint->getLength();
+			osg::Vec3 shift = joint->getDirection() * totalLength / joint->getChildrenBones().size();
 			shift = SkeletonUtils::vectorRotation(shift, 
 				osg::DegreesToRadians(-joint->getAxis()[0]),
 				osg::DegreesToRadians(-joint->getAxis()[1]),
 				osg::DegreesToRadians(-joint->getAxis()[2]));
-			joint->setLocalShift(shift);
+			joint->setLocalShift(shift);			
 
 			osg::Quat pc;
 			hAnimJointPtr parent = joint->getActiveParent().lock();
@@ -209,14 +219,23 @@ void JointAnglesCollectionStream::setSkeletal(kinematic::SkeletalModelConstPtr s
 	{   
 		hAnimJointPtr joint = p.second;
 		if (joint->isActive()) {
-			joint->setLength(joint->getLength() / lengthRatio);
 
-			osg::Vec3 shift = joint->getDirection() * joint->getLength();
+			double totalLength = 0.0;
+
+			for(auto it = joint->getChildrenBones().begin(); it != joint->getChildrenBones().end(); ++it){
+				auto bone = *it;
+				
+				bone->setLength(bone->getLength() / lengthRatio);
+
+				totalLength += bone->getLength();
+			}
+
+			osg::Vec3 shift = joint->getDirection() * totalLength / joint->getChildrenBones().size();
 			shift = SkeletonUtils::vectorRotation(shift, 
 				osg::DegreesToRadians(-joint->getAxis()[0]),
 				osg::DegreesToRadians(-joint->getAxis()[1]),
 				osg::DegreesToRadians(-joint->getAxis()[2]));
-			joint->setLocalShift(shift);
+			joint->setLocalShift(shift);			
 
 			osg::Quat pc;
 			hAnimJointPtr parent = joint->getActiveParent().lock();

@@ -26,28 +26,39 @@ class hAnimJoint : boost::noncopyable
 {
 public:
     ENABLE_PRIVATE_TESTS
-	friend class JointAnglesCollection;
+	//friend class JointAnglesCollection;
 private :
     //! staw
-	Joint joint;                              
+	//Joint joint;
+
+	//! Nazwa jointa
+	std::string name;
     //! kość, z której wychodzi staw 
 	hAnimBoneWeak parentBone;                 
     //! do jednego stawu moze być podłączone wiele kości 
 	std::vector<hAnimBonePtr> childrenBones;  
     //! określa, czy staw jest aktywny (jeśli model ma jakies stawy nieaktywne, to mamy do czynienia z niekompletnym szkieletem h-anim 1.1) 
-	bool active;                              
-    //! przesunięcie względem rodzica 
-	osg::Vec3 localShift;                     
-    //! rotacja względem rodzica 
-	osg::Quat childParentRotation;            
+	bool active;
     //! najbliższy, aktywny parent 
-	hAnimJointWeak activeParent;              
+	hAnimJointWeak activeParent;           
     //! najbliższe aktywne childy 
 	std::vector<hAnimJointPtr> activeJointChildren;
+	//! Kierunek stawu
+	osg::Vec3d direction;
+	//! Inicjalny kierunek stawu
+	osg::Vec3d axis;
+	//! Kolejnosc katow dla rotacji
+	Axis::Order order;
+	//! Stopnie swobody
+	std::vector<DegreeOfFreedom> dofs;
+	//! rotacja względem rodzica 
+	osg::Quat childParentRotation;
+	//! przesunięcie względem rodzica 
+	osg::Vec3 localShift;
 	
 public:
 	/// \brief  Domyslny konstruktor, wszystkie stawy sa nieaktywne, dopiero podanie danych z parsera moze zmienic ten stan
-	hAnimJoint(JointPtr joint) :
+	/*hAnimJoint(JointPtr joint) :
 	  active(false)
 	  {
 		  // dla bezpieczeństwa zerowane sa dane o hierarchi
@@ -56,6 +67,7 @@ public:
 		  this->joint.children.clear();
 		  Joint::copyContent(*joint, this->joint);
 	  }
+	  */
 
 	  /// \brief domyślny konstruktor
 	  hAnimJoint() :
@@ -65,82 +77,76 @@ public:
 	  }
 
 public: 
+
+	//! \return przesunięcie względem rodzica
+	osg::Vec3 getLocalShift() const { return localShift; }
+	//! ustawia przesunięcie względem rodzica
+	void setLocalShift(osg::Vec3 val) { localShift = val; }
+
+	//! \return kierunek kości w globalnym układzie odniesienia
+	osg::Vec3d getDirection() const { return direction; }
+	//! ustawia kierunek kości w globalnym układzie odniesienia
+	void setDirection(osg::Vec3d val) { direction = val; }
+	//! \return początkowa orientacja dla kości
+	osg::Vec3d getAxis() const { return axis; }
+	//! ustawia początkową orientację dla kości
+	void setAxis(osg::Vec3d val) { axis = val; }
+
+	//! \return rotacja względem rodzica
+	osg::Quat getChildParentRotation() const { return childParentRotation; }
+	//! ustawia rotację względem rodzica
+	void setChildParentRotation(osg::Quat val) { childParentRotation = val; }
+
     //! ustawia nazwę stawu
-	void setName(const std::string& name) { joint.name = name; }
+	void setName(const std::string& name) { this->name = name; }
     //! \return nazwa stawu
-	const std::string& getName(void) const { return joint.name; }
+	const std::string& getName() const { return name; }
     //! \return kość rodzica
-	const hAnimBoneWeak& getParentBone(void) const { return(parentBone);		};
+	const hAnimBoneWeak& getParentBone() const { return(parentBone);		};
     //! ustawia kość rodzica
 	void setParentBone(const hAnimBoneWeak& _parentBone) { parentBone = _parentBone;	};
     //! \return kolekcja z podlegającymi kośćmi
-	std::vector<hAnimBonePtr>& getChildrenBones(void) { return(childrenBones);			};
+	std::vector<hAnimBonePtr>& getChildrenBones() { return(childrenBones);			};
     //! \return kolekcja z podlegającymi kośćmi
-	const std::vector<hAnimBonePtr>& getChildrenBones(void) const { return(childrenBones);			};
+	const std::vector<hAnimBonePtr>& getChildrenBones() const { return(childrenBones);			};
     //! \return kolekcja z najbliższymi, aktywnymi i podległymi stawami
 	std::vector<hAnimJointPtr>& getActiveJointChildren() { return activeJointChildren; }
     //! \return najbliższy aktywny rodzic
 	kinematic::hAnimJointWeak getActiveParent() const { return activeParent; }
     //! ustawia najbliższego, aktywnego rodzica
 	void setActiveParent(kinematic::hAnimJointWeak val) { activeParent = val; }
-    //! \return przesunięcie względem rodzica
-	osg::Vec3 getLocalShift() const { return localShift; }
-    //! ustawia przesunięcie względem rodzica
-	void setLocalShift(osg::Vec3 val) { localShift = val; }
-    //! \return rotacja względem rodzica
-	osg::Quat getChildParentRotation() const { return childParentRotation; }
-    //! ustawia rotację względem rodzica
-	void setChildParentRotation(osg::Quat val) { childParentRotation = val; }
     //! \return czy staw jest aktywny (jeśli model ma jakies stawy nieaktywne, to mamy do czynienia z niekompletnym szkieletem h-anim 1.1)
 	bool isActive() const { return this->active; }
     //! ustawia aktywność stawu
 	void setActive(bool val) { this->active = val; }
-    //! \return kierunek kości w globalnym układzie odniesienia
-	osg::Vec3d getDirection() const { return joint.direction; }
-    //! ustawia kierunek kości w globalnym układzie odniesienia
-	void setDirection(osg::Vec3d val) { joint.direction = val; }
-    //! \return długość kości
-	double getLength() const { return joint.length; }
-    //! ustawia długość kości
-	void setLength(double val) { joint.length = val; }
-    //! \return początkowa orientacja dla kości
-	osg::Vec3d getAxis() const { return joint.axis; }
-    //! ustawia początkową orientację dla kości
-	void setAxis(osg::Vec3d val) { joint.axis = val; }
     //! \return kolejność rotacji
-	Axis::Order getOrder() const { return joint.order; }
+	Axis::Order getOrder() const { return order; }
     //! ustawia kolejność rotacji
-	void setOrder(Axis::Order val) { joint.order = val; }
+	void setOrder(Axis::Order val) { order = val; }
     //! \return stopnie swobody dla kości (razem z limitami)
-	std::vector<DegreeOfFreedom> getDofs() const { return joint.dofs; }
+	std::vector<DegreeOfFreedom> getDofs() const { return dofs; }
     //! ustawia stopnie swobody dla kości (razem z limitami)
-	void setDofs(std::vector<DegreeOfFreedom> val) { joint.dofs = val; }
-    //! \return masa ciała związana z tą kością
-	double getBodymass() const { return joint.bodymass; }
-    //! ustawia mesę ciała związaną z tą kością
-	void setBodymass(double val) { joint.bodymass = val; }
-    //! \return pozycja środka cieżkości względem kości
-	double getCofmass() const { return joint.cofmass; }
-    //! ustawia pozycję środka cieżkości względem kości
-	void setCofmass(double val) { joint.cofmass = val; }
+	void setDofs(std::vector<DegreeOfFreedom> val) { dofs = val; }
 	//! ustawia staw hAnim na podstawie stawu wczytanego z pliku
 	//! \param j wczytany staw
-	void setJoint(const Joint& j) {
-		auto jp = this->joint.parent;
-		auto jc = this->joint.children;
+	
+	//void setJoint(const Joint& j) {
+		//auto jp = this->joint.parent;
+		//auto jc = this->joint.children;
 		//this->joint = j;
-		Joint::copyContent(j, this->joint);
-		this->joint.parent = jp;
-		this->joint.children = jc;
-	}
+		//Joint::copyContent(j, this->joint);
+		//this->joint.parent = jp;
+		//this->joint.children = jc;
+	//}
+
 	//! kopiuje zawartość stawu
 	//! \param source staw źródłowy
 	//! \param destination staw docelowy
 	static void copyContent(const hAnimJoint& source, hAnimJoint& destination)
 	{
-		destination.setJoint(source.joint);
+		//destination.setJoint(source.joint);
         destination.active = source.active;
-        destination.localShift = source.localShift;                   
+        //destination.localShift = source.localShift;                   
         destination.childParentRotation = source.childParentRotation;
 	}
 };

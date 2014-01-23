@@ -82,7 +82,7 @@ private:
     //! nazwa serii
     std::string name;
 	//! Konfiguracja połączeń
-	std::vector<IConnectionsSchemeDrawer::ConnectionDescription> connectionsConfigurations;
+	SegmentsDescriptors connectionsConfigurations;
 	//! Obiekt rysujący punkty
 	core::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
 	//! Obiekt rysujący połączenia

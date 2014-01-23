@@ -14,10 +14,18 @@ namespace kinematic
     class SkeletalModel : boost::noncopyable
     {
     public:
+		//! Typ opisujacy reprezentacje katow
         enum Angle {
-            degrees,
-            radians
+            degrees,	//! stopnie
+            radians		//! radiany
         };
+
+		//! Typ opisujacy interpretacje jointa
+		enum JointsInterpretation {
+			Segments,	//! Segment - kosc
+			Joints		//! Staw
+		};
+
         /// \brief  mapa nazwa kości -> kość
         typedef std::map<std::string, JointPtr> JointMap;
         /// \brief  mapa identyfikator kości -> kość
@@ -32,6 +40,7 @@ namespace kinematic
             length(1.0),
             mass(1.0),
             angle(degrees),
+			jointsInterpretation(Joints),
 			skeleton(new Skeleton)
         {
         }
@@ -57,6 +66,10 @@ namespace kinematic
         Angle getAngle() const { return angle; }
         //!  określa, czy dane sa w stopniach czy radianach
         void setAngle(Angle angle) { this->angle = angle;}
+		//! \return  czy dane sa w stopniach czy radianach
+		const JointsInterpretation getJointsInterpretation() const { return jointsInterpretation; }
+		//!  określa, czy jointy to jointy czy segmenty
+		void setJointsInterpretation(const JointsInterpretation joints) { jointsInterpretation = joints;}
         //! \return globalny modyfikator masy
         double getMass() const { return mass; }
         //! ustawia globalny modyfikator masy
@@ -98,6 +111,8 @@ namespace kinematic
         double mass;           
 		//! określa, czy dane sa w stopniach czy radianach
         Angle angle;          
+		//! określa, czy jointy intepretujemy jako kosci czy stawy
+		JointsInterpretation jointsInterpretation;  
 		//! mapa nazwa stawu -> staw
         JointMap jointsMap;      
 		//! mapa identyfikator stawu -> staw

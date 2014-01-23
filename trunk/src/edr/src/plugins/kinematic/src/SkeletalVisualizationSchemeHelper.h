@@ -34,13 +34,13 @@ public:
 
 	kinematic::hAnimSkeletonPtr skeleton() const;
 
-	const std::vector<IConnectionsSchemeDrawer::ConnectionDescription> generateMappedConnectionsDescription() const;
+	const SegmentsDescriptors generateMappedConnectionsDescription() const;
 
 private:
 
 	void generateMappedConnectionsDescription( kinematic::hAnimJointPtr join,
 		const unsigned int idx,
-		std::vector<IConnectionsSchemeDrawer::ConnectionDescription> & cds) const;
+		SegmentsDescriptors & cds) const;
 
 private:
 	//! Szkielet dla którego generowano mapowanie
@@ -67,7 +67,7 @@ public:
 	void init(const SkeletonJointsMapping * jointsMapping);
 
 	void init(const SkeletonJointsMapping * jointsMapping,
-		const std::vector<IConnectionsSchemeDrawer::ConnectionDescription> & connections);
+		const SegmentsDescriptors & connections);
 
     //! odświeżenie informacji o jointach
 	void updateJointTransforms(const osg::Vec3 & rootPosition,

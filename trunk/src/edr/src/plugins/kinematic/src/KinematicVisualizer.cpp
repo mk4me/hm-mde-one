@@ -9,6 +9,7 @@
 #include <coreui/CoreWidgetAction.h>
 #include <coreui/CoreLabeledWidget.h>
 #include <kinematiclib/Skeleton.h>
+#include <plugins/kinematic/Wrappers.h>
 
 using namespace coreUI;
 
@@ -29,7 +30,7 @@ void KinematicVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes
 	supportedTypes.push_back(typeid(MarkerCollection));
 	supportedTypes.push_back(typeid(GRFCollection));
 	supportedTypes.push_back(typeid(kinematic::JointAnglesCollection));
-	supportedTypes.push_back(typeid(kinematic::JointAnglesCollectionStream));
+	supportedTypes.push_back(typeid(SkeletonDataStream));
 }
 
 int KinematicVisualizer::getMaxDataSeries() const
@@ -46,8 +47,8 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const core::TypeIn
 		ret = new MarkerSerie(this, requestedType, data);		
 	} else if (requestedType == typeid (kinematic::JointAnglesCollection)) {
 		ret = new SkeletonSerie(this, requestedType, data);		
-	} else if (requestedType == typeid (kinematic::JointAnglesCollectionStream)) {
-		//ret = new SkeletonStreamSerie(this, requestedType, data);
+	} else if (requestedType == typeid (SkeletonDataStream)) {
+		ret = new SkeletonStreamSerie(this, requestedType, data);
 	}else {
 		UTILS_ASSERT(false);
 	}
@@ -277,15 +278,17 @@ coreUI::CoreWidgetAction * KinematicVisualizer::createWidgetAction(QWidget * wid
 
 void KinematicVisualizer::update( double deltaTime )
 {
-    KinematicTimeSerie* serie = tryGetCurrentSerie();
-    if (serie && serie->getTime() != lastTime) {
-        lastTime = serie->getTime();
-        if (currentDragger && serie) {
-            currentDragger->setDraggerPivot(serie->pivotPoint());
-        }
-        refreshSpinboxes();
-    }
-    
+	auto s = tryGetCurrentISerie();
+
+	if(s != nullptr) {
+		s->tryUpdate();
+		auto serie = dynamic_cast<KinematicSerieBase*>(s);
+		if (currentDragger && serie) {
+			currentDragger->setDraggerPivot(serie->pivotPoint());
+		}
+
+		refreshSpinboxes();	
+	}
 }
 
 osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
@@ -458,6 +461,16 @@ KinematicTimeSerie* KinematicVisualizer::tryGetCurrentSerie()
         return dynamic_cast<KinematicTimeSerie*>(series[currentSerie]);
     }
     return nullptr;
+}
+
+plugin::IVisualizer::ISerie* KinematicVisualizer::tryGetCurrentISerie()
+{
+	int count = static_cast<int>(series.size());
+	if (currentSerie >= 0 && currentSerie < count) {
+		return dynamic_cast<plugin::IVisualizer::ISerie*>(series[currentSerie]);
+	}
+
+	return nullptr;
 }
 
 osg::ref_ptr<osg::PositionAttitudeTransform> KinematicVisualizer::createIndicator() const

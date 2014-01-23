@@ -18,6 +18,8 @@
 #include <kinematiclib/JointAnglesCollection.h>
 #include <threading/SynchronizationPolicies.h>
 #include <imucostumelib/ImuCostume.h>
+#include <corelib/HierarchyItem.h>
+#include <plugins/kinematic/Wrappers.h>
 
 namespace IMU
 {
@@ -33,8 +35,8 @@ namespace IMU
 		{
 			std::string name;						//! Nazwa
 			unsigned int id;						//! Identyfikator
-			kinematic::hAnimSkeletonPtr skeleton;	//! Szkielet
-			core::shared_ptr<imuCostume::Costume> costume;
+			unsigned int imusCount;					//! Ilosæ czujników
+			unsigned int jointsCount;				//! Ilosc stawow w modelu			
 		};
 
 		//! Wyliczenie opisuj¹ce status danych kostiumu
@@ -46,11 +48,14 @@ namespace IMU
 
 	private:
 
+		typedef utils::StreamT<IMUData> RIMUStream;
+
+		DEFINE_SMART_POINTERS(RIMUStream);
+
 		struct CostumeRawData
-		{
-			kinematic::SkeletalDataStreamPtr skeletalDataStream;
-			core::shared_ptr<kinematic::JointAnglesCollectionStream> skeletonStream;
-			IMUsStreamPtr imuDataStream;
+		{			
+			SkeletonDataStreamPtr skeletonDataStream;
+			std::vector<RIMUStreamPtr> imuDataStreams;
 		};
 
 	public:
@@ -109,6 +114,13 @@ namespace IMU
 
 		const bool connected() const;
 
+		void callibrateFirstPass(const unsigned int idx);
+		void callibrateSecondPass(const unsigned int idx);
+		void finalizeCalibration(const unsigned int idx);
+		const bool isCalibrated(const unsigned int idx) const;
+
+		static kinematic::SkeletonMappingSchemePtr createMappingScheme();
+
 	private:
 
 		void refreshData();
@@ -117,10 +129,35 @@ namespace IMU
 		void innerUnloadCostume(const unsigned int idx);
 
 		void addToUpdate(const unsigned int idx,
-			const CostumeRawData & rd,
-			const core::ObjectsList & ol);
+			const CostumeRawData & rd);
 
 		void removeFromUpdate(const unsigned int idx);
+
+		static core::HierarchyItemPtr createRootItem();
+		static core::HierarchyItemPtr createStreamItem();
+		static core::HierarchyItemPtr createRecordItem();
+		static core::HierarchyItemPtr createIMUsItem();
+
+		void generateCostumeItem(const unsigned int idx,
+			const core::ObjectsList & data,
+			core::HierarchyItemPtr parent);
+
+		void tryCreateRootItem();
+
+		void tryCreateStreamItem();
+		void tryCreateRecordedItem();
+
+		static const core::ObjectsList generateCoreData(const CostumeRawData crd);
+
+		static const std::string imuName(const unsigned int idx);
+
+		static void extractAccelerometer(const IMUData & data, osg::Vec3 & ret);
+		static void extractGyroscope(const IMUData & data, osg::Vec3 & ret);
+		static void extractMagnetometer(const IMUData & data, osg::Vec3 & ret);
+
+		static void extractScalar(const osg::Vec3 & data, float & ret, const unsigned int idx);
+
+
 
 	private:
 		//! Czy odœwie¿amy dane
@@ -143,6 +180,12 @@ namespace IMU
 		std::map<unsigned int, core::ObjectsList> coreData;
 		//! Mapowanie kostiumu do danych surowych
 		std::map<unsigned int, CostumeRawData> rawData;
+		//! Korzen drzewa dla analiz
+		core::HierarchyItemPtr root;
+		//! Dane strumieniowe
+		core::HierarchyItemPtr streamItems;
+		//! Dane nagrane
+		core::HierarchyItemPtr recordedItems;
 	};
 }
 

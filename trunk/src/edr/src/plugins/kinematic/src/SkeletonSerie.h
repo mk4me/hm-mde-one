@@ -13,6 +13,7 @@
 #include <corelib/IVisualizer.h>
 #include "KinematicSerie.h"
 #include <kinematiclib/JointAnglesCollection.h>
+#include <plugins/kinematic/Wrappers.h>
 
 class KinematicVisualizer;
 class SkeletalVisualizationSchemeHelper;
@@ -115,6 +116,76 @@ private:
 	core::shared_ptr<GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
 	core::shared_ptr<TrajectoryDrawerManager> trajectoriesManager;
+};
+
+//! Seria danych wizualizatora 3D wizualizująca animacje szkieletowa
+class SkeletonStreamSerie :  public QObject, public KinematicSerie
+{
+	Q_OBJECT;
+
+public:
+	//! Konstuktor
+	//! \param visualizer wizualizator, który stworzył serie danych
+	SkeletonStreamSerie(KinematicVisualizer * visualizer,
+		const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+
+	virtual ~SkeletonStreamSerie();
+
+	private slots:
+		//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
+		//! \param xyz 
+		void setAxis(bool xyz);
+
+public:
+	//! Ustawia nową nazwę serii
+	//! \param name nowa nazwa
+	virtual void setName(const std::string & name);
+	//! \return nazwa serii
+	virtual const std::string getName() const;
+	//! \return ustawione dane
+	virtual const core::ObjectWrapperConstPtr & getData() const;
+
+	virtual void update();
+
+	virtual const utils::TypeInfo & getRequestedDataType() const;
+	//! \return macierz serii z transformacja, która nie została zmieniona przez manipulatory
+	virtual osg::Matrix getInitialMatrix() const;
+
+	virtual const osg::Quat orientation() const;
+
+	virtual void setOrientation(const osg::Quat & orientation);
+
+	virtual const osg::Vec3 position() const;
+
+	virtual void setPosition(const osg::Vec3 & position);
+
+	//! \return macierz potrzebna przy operacjach z różnymi ukl. współrzędnych
+	static osg::Matrix getXYZMatrix();
+	//! niweluje działanie manipulatorów
+	virtual void resetTransform();
+
+private:
+	utils::StreamStatusObserverPtr updater;
+	//! Aktualna dodatkowa rotacja wynikająca ze zmiany osi
+	osg::Quat preRot;
+	//! Pozycja wynikająca z położenia roota szkieletu
+	osg::Vec3 rootPosition;
+	//! Wizualizator, który utworzył serie
+	KinematicVisualizer * visualizer;
+	//! wrapper przekazany serii
+	core::ObjectWrapperConstPtr data;
+	//! Dane rozpakowane
+	SkeletonDataStreamConstPtr skeletalData;
+	//! Typ danych
+	utils::TypeInfo requestedType;
+	//! nazwa serii
+	std::string name;
+	//! czy operujemy na układzie XYZ czy innym
+	bool xyzAxis;
+	//! Obiekt rysujący punkty
+	core::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
+	//! Obiekt rysujący połączenia
+	core::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
 };
 
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;

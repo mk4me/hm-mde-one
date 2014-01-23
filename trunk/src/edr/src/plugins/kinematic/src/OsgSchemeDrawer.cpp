@@ -196,12 +196,12 @@ public:
 	osgutils::CustomCylinderDescription cylinder;
 	osg::ref_ptr<osg::Geode> geode;
 	osg::ref_ptr<osg::PositionAttitudeTransform> posAtt;
-	ConnectionsDrawer::ConnectionIndexes connectionIndices;
+	SegmentRange connectionIndices;
 
 	static void updatePositionOrientation(const osg::Vec3 & start, const osg::Vec3 & end,
 		osg::PositionAttitudeTransform * pat);
 
-	static const std::vector<utils::shared_ptr<ConnectionInstance>> createConnectionsScheme(const std::vector<IConnectionsSchemeDrawer::ConnectionDescription> & connections,
+	static const std::vector<utils::shared_ptr<ConnectionInstance>> createConnectionsScheme(const SegmentsDescriptors & connections,
 		const unsigned int complexity);
 
 	static void setSize(std::vector<utils::shared_ptr<ConnectionInstance>> & connections,
@@ -231,7 +231,7 @@ void ConnectionInstance::updatePositionOrientation(const osg::Vec3 & start,
 }
 
 const std::vector<utils::shared_ptr<ConnectionInstance>> ConnectionInstance::createConnectionsScheme(
-	const std::vector<IConnectionsSchemeDrawer::ConnectionDescription> & connections,
+	const SegmentsDescriptors & connections,
 	const unsigned int complexity)
 {
 	std::vector<utils::shared_ptr<ConnectionInstance>> ret(connections.size());
@@ -241,8 +241,8 @@ const std::vector<utils::shared_ptr<ConnectionInstance>> ConnectionInstance::cre
 	stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
 
 	utils::shared_ptr<ConnectionInstance> ci(new ConnectionInstance);
-	ci->connectionIndices = connections[0].first;
-	ci->cylinder = osgutils::CustomPrimitivesFactory::createCylinder(complexity, connections[0].second, 5.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
+	ci->connectionIndices = connections[0].range;
+	ci->cylinder = osgutils::CustomPrimitivesFactory::createCylinder(complexity, connections[0].length, 5.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
 	ci->geode = new osg::Geode;
 	ci->geode->setStateSet(stateset);
 	ci->posAtt = new osg::PositionAttitudeTransform;
@@ -252,8 +252,8 @@ const std::vector<utils::shared_ptr<ConnectionInstance>> ConnectionInstance::cre
 
 	for(unsigned int i = 1; i < connections.size(); ++i){
 		utils::shared_ptr<ConnectionInstance> lci(new ConnectionInstance);
-		lci->connectionIndices = connections[i].first;
-		lci->cylinder = osgutils::CustomPrimitivesHelper::cloneForHeightChange(ci->cylinder, connections[i].second);
+		lci->connectionIndices = connections[i].range;
+		lci->cylinder = osgutils::CustomPrimitivesHelper::cloneForHeightChange(ci->cylinder, connections[i].length);
 		lci->geode = new osg::Geode;
 		lci->geode->setStateSet(stateset);
 		lci->posAtt = new osg::PositionAttitudeTransform;
@@ -308,7 +308,7 @@ ConnectionsDrawer::ConnectionsDrawer(const unsigned int complexity)
 	
 }
 
-void ConnectionsDrawer::init(const std::vector<ConnectionDescription> & connections)
+void ConnectionsDrawer::init(const SegmentsDescriptors & connections)
 {
 	std::vector<utils::shared_ptr<ConnectionInstance>> locConnsInst(ConnectionInstance::createConnectionsScheme(connections, complexity));	
 	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
@@ -704,7 +704,7 @@ GhostSchemeDrawer::GhostSchemeDrawer(const unsigned int pointComplexity,
 }
 
 void GhostSchemeDrawer::init(const std::vector<std::vector<osg::Vec3>> & points,
-	const std::vector<IConnectionsSchemeDrawer::ConnectionDescription> & connections)
+	const SegmentsDescriptors & connections)
 {
 	utils::shared_ptr<GhostInstance> tmpGhost(new GhostInstance);
 	tmpGhost->pointsDrawer.reset(new GhostPointsSchemeDrawer(tmpGhost.get()));

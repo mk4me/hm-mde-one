@@ -24,9 +24,9 @@ namespace kinematic {
 			{
 				TiXmlElement* element = node->ToElement();
 				if (element && strcmp(element->Value(), "SkeletonScheme") == 0) {
-					mappingDict dict = readMappingNode(element);
+					jointsMappingDict dict = readMappingNode(element);
 					if (dict.size() > 0) {
-						SkeletonMappingSchemePtr sms(new SkeletonMappingScheme(dict));
+						SkeletonMappingSchemePtr sms(new SkeletonMappingScheme(dict, segmentsMappingDict()));
 						result.push_back(sms);
 					}
 					return;
@@ -51,9 +51,9 @@ namespace kinematic {
 		}
 	}
 
-	SkeletonMappingScheme::mappingDict SkeletonMappingScheme::readMappingNode(TiXmlNode* node)
+	SkeletonMappingScheme::jointsMappingDict SkeletonMappingScheme::readMappingNode(TiXmlNode* node)
 	{
-		mappingDict result;
+		jointsMappingDict result;
 		TiXmlNode* child;
 		for ( child = node->FirstChild(); child != nullptr; child = child->NextSibling()) {
 			int t = node->Type();
@@ -99,9 +99,15 @@ namespace kinematic {
 		}
 	}
 
-	kinematic::SkeletonMappingSchemePtr SkeletonMappingScheme::createDefault()
+	const kinematic::SkeletonMappingScheme::jointsMappingDict& kinematic::SkeletonMappingScheme::defaultJointsMappingDict()
 	{
-		std::map<std::string, std::string> jointMappingDictionary;
+		static const jointsMappingDict defaultMappingDict = createDefaultMappingDict();
+		return defaultMappingDict;
+	}
+
+	const kinematic::SkeletonMappingScheme::jointsMappingDict kinematic::SkeletonMappingScheme::createDefaultMappingDict()
+	{
+		jointsMappingDict jointMappingDictionary;
 		jointMappingDictionary["root0"] = "vl5";
 		jointMappingDictionary["root1"] = "l_hip";
 		jointMappingDictionary["root2"] = "r_hip";
@@ -196,12 +202,26 @@ namespace kinematic {
 		jointMappingDictionary["RightHand_dum2"] = "r_middle0"; 
 		jointMappingDictionary["RightHand_dum1"] = "r_thumb1";  
 		jointMappingDictionary["RightHandThumb"] = "r_thumb2"; 
-		
+
 		jointMappingDictionary["lshoulderjoint"] = "l_sternoclavicular";
 		jointMappingDictionary["rshoulderjoint"] = "r_sternoclavicular";
 
-		SkeletonMappingSchemePtr res(new SkeletonMappingScheme(jointMappingDictionary));
-		return res;
+		return jointMappingDictionary;
+	}
+
+	kinematic::SkeletonMappingSchemePtr SkeletonMappingScheme::createDefault()
+	{
+		return create(defaultJointsMappingDict());
+	}
+
+	SkeletonMappingSchemePtr SkeletonMappingScheme::create(const jointsMappingDict & schemeDict)
+	{
+		return SkeletonMappingSchemePtr(new SkeletonMappingScheme(schemeDict, segmentsMappingDict()));
+	}
+
+	SkeletonMappingSchemePtr SkeletonMappingScheme::create(const segmentsMappingDict & schemeDict)
+	{
+		return SkeletonMappingSchemePtr(new SkeletonMappingScheme(jointsMappingDict(), schemeDict));
 	}
 
 } //kinematic

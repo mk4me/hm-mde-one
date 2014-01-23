@@ -5,6 +5,7 @@
 #include <QtGui/QMenu>
 #include <coreui/CoreCursorChanger.h>
 #include <QtGui/QMessageBox>
+#include <OpenThreads/Thread>
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
@@ -19,6 +20,80 @@ IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 IMUCostumeWidget::~IMUCostumeWidget()
 {
 	delete ui;
+}
+
+void IMUCostumeWidget::onCalibrate()
+{
+	coreUI::CoreCursorChanger cc;
+
+	auto ci = ui->costumesListWidget->currentItem();
+
+	if(ci != nullptr){
+
+		unsigned int idx = ci->data(Qt::UserRole).toUInt();
+
+		if(ds->isCalibrated(idx) == true &&
+			QMessageBox::information(this, tr("Calibration status"), tr("Selected Costume already calibrated. Do You want to re-calibrate it?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No){
+
+			return;
+		}
+			
+
+		bool retry = false;
+
+		do {
+			retry = true;
+
+			QMessageBox::information(this, tr("Calibration - first step"), tr("Please stand still with Your hands along the body and press OK"), QMessageBox::Ok);
+
+			ds->callibrateFirstPass(idx);
+
+			unsigned int i = 2000;
+
+			while(--i > 0){
+				OpenThreads::Thread::microSleep(100);
+				QCoreApplication::processEvents();
+			}
+
+			QApplication::beep();
+
+			QMessageBox::information(this, tr("Calibration - second step"), tr("Please stand in 'T' pose and press OK"), QMessageBox::Ok);
+
+			ds->callibrateSecondPass(idx);
+
+			i = 2000;
+
+			while(--i > 0){
+				OpenThreads::Thread::microSleep(100);
+				QCoreApplication::processEvents();
+			}
+
+			ds->finalizeCalibration(idx);
+
+			if(ds->isCalibrated(idx) == false){
+
+				if(QMessageBox::question(this, tr("Costume calibration failed"), tr("Costume calibration failed. Would You like to retry calibration?"),
+					QMessageBox::Yes, QMessageBox::No) == QMessageBox::No){
+
+					retry = false;
+				}else{
+
+					QMessageBox::information(this, tr("Calibration - summary"), tr("Calibration failed for the given costume."), QMessageBox::Ok);
+
+				}
+
+			}else{
+
+				QMessageBox::information(this, tr("Calibration - summary"), tr("Calibration successful for the given costume."), QMessageBox::Ok);
+
+				retry = false;
+			}
+
+		}while(retry == true);
+
+	}else{
+		QMessageBox::warning(this, tr("Warning - no costume"), tr("No costume selected for configuration. Chose costume from the list and retry"), QMessageBox::Ok, QMessageBox::NoButton);
+	}
 }
 
 void IMUCostumeWidget::onConnect()

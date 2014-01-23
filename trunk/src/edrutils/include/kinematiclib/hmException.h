@@ -79,6 +79,25 @@ namespace kinematic
           virtual ~UnableToMapJointException() throw() {}
     };
 
+	/// \brief  wyjątek rzucany, gdy nie ma się mapować nazwy kosci na standard hAnim
+	class UnableToMapBoneException : public KinematicModelException
+	{
+		std::string unmappedBone;
+	public:
+		UnableToMapBoneException(const std::string& boneName) :
+		  KinematicModelException("Unable to map : " + boneName),
+			  unmappedBone(boneName)
+		  {
+		  }
+		  UnableToMapBoneException(const std::string& message, std::string boneName) :
+		  KinematicModelException(message),
+			  unmappedBone(boneName)
+		  {
+		  }
+
+		  virtual ~UnableToMapBoneException() throw() {}
+	};
+
     /// \brief  wyjątek rzucany, gdy nie ma dostępnego słownika mapującego nazwy do standardu hAnim
     class DictionaryNotLoadedException : public KinematicModelException
     {

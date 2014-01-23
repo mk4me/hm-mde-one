@@ -38,7 +38,7 @@ private:
     /// \brief  Wczytuje pojedynczego jointa z pliku. Wywoływane rekurencyjnie
     /// \param [in] in strumień wejściowy. 
     /// \param [in,out] jointList Lista, do której trafia kolejność wystapienia jointow. 
-    void readSingleJoint(SkeletalModelPtr model, std::istream& in, std::list<std::string>& jointList);
+    void readSingleBone(SkeletalModelPtr model, std::istream& in, std::list<std::string>& jointList);
     /// \brief  Zwraca nazwę kanału (w formacie biovision, np. xPosition)
     /// \param  channel kanał, dla którego zostanie zwrócona nazwa. 
     /// \return The channel name. 

@@ -103,6 +103,7 @@ private:
     osg::ref_ptr<osg::Group> createFloor();
     //! \return aktywna seria, o ile taka została wybrana
     KinematicTimeSerie* tryGetCurrentSerie();
+	plugin::IVisualizer::ISerie* tryGetCurrentISerie();
     //! odświeża dane w spinboxach zawierających informcacje o transformacjach manipulatorów
     void refreshSpinboxes();
     //! Metoda ustala, do której serii należy dana geoda

@@ -3,6 +3,7 @@
 
 #include <osg/Node>
 #include <osg/Switch>
+#include <plugins/kinematic/Wrappers.h>
 
 osg::Vec3Array * convert(const std::vector<osg::Vec3> & input);
 
@@ -96,14 +97,8 @@ private:
 class IConnectionsSchemeDrawer : public IOsgSchemeDrawer, public IBaseDrawerScheme
 {
 public:
-	//! Typ definiujący indeksy na połączonych punktach
-	typedef std::pair<int, int> ConnectionIndexes;
-	//! Typ reprezentuje indeksy punktów i długość połączenia
-	typedef std::pair<ConnectionIndexes, float> ConnectionDescription;
-
-public:
 	//! \param connections Schemat połączeń
-	virtual void init(const std::vector<ConnectionDescription> & connections) = 0;
+	virtual void init(const SegmentsDescriptors & connections) = 0;
 	//! Pozycje punktów dla których rysujemy połaczenia
 	virtual void update(const std::vector<osg::Vec3> & positions) = 0;
 };
@@ -118,7 +113,7 @@ public:
 	ConnectionsDrawer(const unsigned int complexity);
 
 	//! \param connections Schemat połączeń
-	virtual void init(const std::vector<ConnectionDescription> & connections);
+	virtual void init(const SegmentsDescriptors & connections);
 	//! \return Zwracać węzeł drawera
 	virtual osg::ref_ptr<osg::Node> getNode();
 	//! Pozycje punktów dla których rysujemy połaczenia
@@ -197,7 +192,7 @@ public:
 		const unsigned int connectionComplexity);
 
 	void init(const std::vector<std::vector<osg::Vec3>> & points,
-		const std::vector<IConnectionsSchemeDrawer::ConnectionDescription> & connections);
+		const SegmentsDescriptors & connections);
 	//! \return Zwracać węzeł drawera
 	virtual osg::ref_ptr<osg::Node> getNode();	
 

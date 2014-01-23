@@ -88,9 +88,9 @@ const int SkeletonJointsMapping::jointIndex(kinematic::hAnimJointPtr joint) cons
 	return -1;
 }
 
-const std::vector<IConnectionsSchemeDrawer::ConnectionDescription> SkeletonJointsMapping::generateMappedConnectionsDescription() const
+const SegmentsDescriptors SkeletonJointsMapping::generateMappedConnectionsDescription() const
 {
-	std::vector<IConnectionsSchemeDrawer::ConnectionDescription> cds;
+	SegmentsDescriptors cds;
 	auto idx = jointIndex(skeleton_->getRoot());
 	generateMappedConnectionsDescription(skeleton_->getRoot(), idx == -1 ? 0 : idx, cds);
 
@@ -99,7 +99,7 @@ const std::vector<IConnectionsSchemeDrawer::ConnectionDescription> SkeletonJoint
 
 void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::hAnimJointPtr joint,
 	const unsigned int idx,
-	std::vector<IConnectionsSchemeDrawer::ConnectionDescription> & cds) const
+	SegmentsDescriptors & cds) const
 {
 	BOOST_FOREACH(hAnimJointPtr child, joint->getActiveJointChildren()) {
 		
@@ -107,12 +107,22 @@ void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::hAn
 
 		if(idxB != -1){
 
-			IConnectionsSchemeDrawer::ConnectionDescription cd;
+			SegmentDescriptor cd;
 
-			cd.first.first = idx;
-			cd.first.second = idxB;
+			cd.range.first = idx;
+			cd.range.second = idxB;
 			//TODO - wyznaczyc odleglosci czy to wystarczy?
-			cd.second = child->getLength();
+
+			auto cb = child->getChildrenBones();
+
+			cd.length = 0.0;
+
+			for(auto it = cb.begin(); it != cb.end(); ++it){
+				cd.length += (*it)->getLength();
+			}
+
+			cd.length /= cb.size();
+
 			cds.push_back(cd);
 		}else{
 			idxB = idx;
@@ -199,7 +209,7 @@ void SkeletalVisualizationSchemeHelper::init(const SkeletonJointsMapping * joint
 }
 
 void SkeletalVisualizationSchemeHelper::init(const SkeletonJointsMapping * jointsMapping,
-	const std::vector<IConnectionsSchemeDrawer::ConnectionDescription> & connections)
+	const SegmentsDescriptors & connections)
 {
 	this->jointsMapping = jointsMapping;
 	pointsSchemeDrawer->init(jointsMapping->mappedJointsNumber());

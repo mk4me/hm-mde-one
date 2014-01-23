@@ -57,11 +57,11 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 
 			if (it1 != mapping.end() && it2 != mapping.end()) {
 
-				IConnectionsSchemeDrawer::ConnectionDescription cd;
-				cd.first.first = std::distance(mapping.begin(), it1);
-				cd.first.second = std::distance(mapping.begin(), it2);				
-				cd.second = getStickLength(markersCollection->getChannel(cd.first.first),
-					markersCollection->getChannel(cd.first.second));
+				SegmentDescriptor cd;
+				cd.range.first = std::distance(mapping.begin(), it1);
+				cd.range.second = std::distance(mapping.begin(), it2);				
+				cd.length = getStickLength(markersCollection->getChannel(cd.range.first),
+					markersCollection->getChannel(cd.range.second));
 				connectionsColors.push_back(it->color);
 				connectionsConfigurations.push_back(cd);
 			}
@@ -190,7 +190,7 @@ void MarkerSerie::setLocalTime( double time )
 	if( (lastUpdateTime == std::numeric_limits<double>::min()) ||
 		(std::abs(time - lastUpdateTime) >= markersCollection->getChannel(0)->getSampleDuration())){
 			lastUpdateTime = time;
-			update();
+			requestUpdate();
 	}
 }
 
@@ -207,11 +207,11 @@ void MarkerSerie::update()
 
 		for(unsigned int i = 0; i < connectionsConfigurations.size(); ++i){
 
-			const auto pointAIDX = connectionsConfigurations[i].first.first;
-			const auto pointBIDX = connectionsConfigurations[i].first.second;
+			const auto pointAIDX = connectionsConfigurations[i].range.first;
+			const auto pointBIDX = connectionsConfigurations[i].range.second;
 
 			const auto dist = (positions[pointAIDX] - positions[pointBIDX]).length();			
-			const auto diff = std::abs(dist - connectionsConfigurations[i].second) / 2.0;			
+			const auto diff = std::abs(dist - connectionsConfigurations[i].length) / 2.0;			
 			
 			if( diff > std::min(pointsDrawer->size(pointAIDX), pointsDrawer->size(pointBIDX)) ){
 				connectionsDrawer->setVisible(i, false);

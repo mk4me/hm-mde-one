@@ -252,7 +252,8 @@ QWidget* NewChartVisualizer::createWidget()
 
 void NewChartVisualizer::getSupportedTypes(core::TypeInfoList & supportedTypes) const
 {
-    supportedTypes.push_back(typeid(ScalarChannelReaderInterface));
+    supportedTypes.push_back(typeid(ScalarChannelReader));
+	supportedTypes.push_back(typeid(ScalarStream));
 }
 
 plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data)

@@ -240,7 +240,7 @@ void BvhParser::parse(SkeletalModelPtr model, SkeletalDataPtr data, const std::s
     {
         if (line == "HIERARCHY") {
             // rekurencyjne przejście przez cala hierarchie w pliku
-            readSingleJoint(model, in, jointList);
+            readSingleBone(model, in, jointList);
         } else if (line == "MOTION") {
             // odczyt danych animacji
             int noOfFrames = -1;
@@ -280,7 +280,7 @@ void BvhParser::parse(SkeletalModelPtr model, SkeletalDataPtr data, const std::s
     root->name = "root";
     root->id = -1;
     // utworzenie 'dummy bones' jeśli jest taka potrzeba
-    setBones(model);
+    //setBones(model);
     in.close();
 }
 //----------------------------------------------------------------------------------
@@ -297,7 +297,7 @@ kinematic::BvhParser::~BvhParser()
 
 }
 //----------------------------------------------------------------------------------
-void kinematic::BvhParser::readSingleJoint(SkeletalModelPtr model, std::istream& in, std::list<std::string>& jointList ) {
+void kinematic::BvhParser::readSingleBone(SkeletalModelPtr model, std::istream& in, std::list<std::string>& jointList ) {
     // dane o kościach na razie trafiaja do tymczasowych struktur (trafia do właściwych po utworzeniu dummy bones)
     SkeletalModel::JointIdMap& bonesIds = tempBonesID;
     SkeletalModel::JointMap& bonesMap = tempBonesMap;
@@ -402,7 +402,7 @@ void kinematic::BvhParser::readSingleJoint(SkeletalModelPtr model, std::istream&
         }
     }
     // rekurencja
-    readSingleJoint (model, in, jointList);
+    readSingleBone (model, in, jointList);
 
     in >> token;
 
@@ -428,7 +428,7 @@ void kinematic::BvhParser::readSingleJoint(SkeletalModelPtr model, std::istream&
         return;
     } else {
         // przetworzenie kolejnego jointa.
-        readSingleJoint (model, in, jointList);
+        readSingleBone (model, in, jointList);
     }
 }
 //----------------------------------------------------------------------------------
@@ -463,8 +463,7 @@ void kinematic::BvhParser::HandleBone(SkeletalModelPtr model, JointPtr newBone)
             boneIdMap[child->id] = child;
             newBone->children.push_back(child);
             
-            JointPtr child2(new Joint);
-            //(*child2) = *(children[i]);
+            JointPtr child2(new Joint);            
 			Joint::copyContent(*(children[i]), *child2);
             child2->parent = child;
             child2->children.clear();

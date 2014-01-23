@@ -27,13 +27,20 @@ namespace IMU
 		osg::Quat orientation;
 	};
 
-	//! Strumieñ danych z IMU
-	typedef utils::StreamT<std::vector<IMUData>> IMUsStream;
+	//! Strumieñ danych jednego czujnika IMU
+	typedef utils::IStreamT<IMUData> IMUStream;
 
-	DEFINE_SMART_POINTERS(IMUsStream);
+	DEFINE_SMART_POINTERS(IMUStream);
+
+	//! Strumieñ danych 3D
+	typedef utils::IStreamT<osg::Vec3> Vec3Stream;
+
+	DEFINE_SMART_POINTERS(Vec3Stream);
+
+	
 }
 
-DEFINE_WRAPPER(IMU::IMUsStream, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
-DEFINE_WRAPPER(kinematic::JointAnglesCollectionStream, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(IMU::IMUStream, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(IMU::Vec3Stream, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 #endif	//	HEADER_GUARD_IMU__WRAPPERS_H__

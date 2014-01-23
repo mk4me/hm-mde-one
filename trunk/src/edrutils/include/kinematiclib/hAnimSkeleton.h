@@ -52,6 +52,8 @@ namespace kinematic {
         //! \return mapa nazwa -> kość
 		std::map<std::string, hAnimBonePtr>& getBones() { return bones; }
 
+		//! \param mappingScheme Schemat mapujący nazwy jointów do struktury h-anim
+		void registerMappingScheme(SkeletonMappingSchemePtr mappingScheme);
 		/// \brief  Wczytuje słownik z nazwami do mapowania. 
 		/// \param  filename   Plik ze słownikiem. 
 		void loadMappingDictionary(const std::string& filename);
@@ -77,11 +79,16 @@ namespace kinematic {
 		//! realizuje mapowanie pojedynczego jointa na nazwę w h-anim
 		//! \param given nazwa podanego jointa
 		//! \return zmapowana na h-anim nazwa
-		std::string mapJointName(const std::string& given);
+		std::string mapJointName(const std::string& given) const;
+		//! realizuje mapowanie pojedynczego jointa na nazwę w h-anim
+		//! \param given nazwa podanego jointa
+		//! \return zmapowana na h-anim nazwa
+		const std::pair<std::string, std::string> mapBoneNames(const std::string& given) const;
         //! \return głęboka kopia obiektu
 		virtual hAnimSkeleton* clone() const;
 
 	private:
+
 		/// \brief  Wyszukuje kość i staw na podstawie podanych nazw i zmienia referencje do wskaźnikow.
 		/// \details Pomocnicze przy tworzeniu drzewa h-anim 
 		/// \param  newJointName       Nazwa stawu do wyszukania. 

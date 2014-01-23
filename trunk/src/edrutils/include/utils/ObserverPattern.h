@@ -44,28 +44,18 @@ public:
 
     typedef ObservableType* ObservablePtr;
 
-    typedef std::set<ObservablePtr> ObservedObjects;
-
 public:
     //! Polimorficzny destruktor.
     virtual ~Observer()
     {
-        for(auto it = observedObjects.begin(); it != observedObjects.end(); ++it){
+		//TODO tak nie moze być! Zawsze musi być zagwarantowane że obserwowany obiekt zyje dłużej!!
+        /*for(auto it = observedObjects.begin(); it != observedObjects.end(); ++it){
             (*it)->observers.erase(this);
-        }
+        }*/
     }
     //! Aktualizacja obserwatora.
     //! \param subject Obiekt podany obserwacji.
     virtual void update(const T * subject) = 0;
-
-    //! \return Lista obserwowanych obiektów
-    const ObservedObjects & getObservedObjects() const
-    {
-        return observedObjects;
-    }
-
-private:
-    ObservedObjects observedObjects;
 };
 
 //------------------------------------------------------------------------------
@@ -115,7 +105,6 @@ public:
     {
         auto it = observers.find( observer);
         if ( it == observers.end() ) {
-            observer->observedObjects.insert(this);
             observers.insert(observer);
         } else {
             throw std::invalid_argument("Observer already attached.");
@@ -127,7 +116,6 @@ public:
     {
         auto it = observers.find(observer);
         if ( it != observers.end() ) {
-            observer->observedObjects.erase(this);
             observers.erase(it);
         } else {
             throw std::invalid_argument("Observer not attached.");
@@ -137,23 +125,13 @@ public:
     //! Czy obserwator jest podpięty?
     //! \param observer Obserwator.
     //! \return
-    bool isAttached(ObserverPtr observer)
+    const bool isAttached(ObserverPtr observer)
     {
         return ( observers.find(observer) != observers.end() );
     }
 
-    //! Usuwa wszystkich podpiętych obserwatorów.
-    void detachAll()
-    {
-        for(auto it = observers.begin(); it != observers.end(); ++it){
-            (*it)->observedObjects.erase(this);
-        }
-
-        Observers().swap(observers);
-    }
-
     //! Aktualizuje wszystkie wyniki.
-    virtual void notify()
+    void notify()
     {
         if ( !self ) {
             self = dynamic_cast<const T*>(this);
@@ -164,7 +142,7 @@ public:
         }
 
         if (isUpdating) {
-            UTILS_ASSERT(false, "Can't update during notify.");
+            UTILS_ASSERT(false, "Can't update during notify. Maybe should use synchronized version?");
         }
 
         isUpdating = true;
@@ -173,6 +151,23 @@ public:
         }
         isUpdating = false;
     }
+
+protected:
+
+	//! Usuwa wszystkich podpiętych obserwatorów.
+	void detachAll()
+	{
+		Observers().swap(observers);
+	}
+};
+
+
+class GeneralObservable : public Observable<GeneralObservable>
+{
+public:
+	GeneralObservable() {}
+
+	virtual ~GeneralObservable() {}
 };
 
 //------------------------------------------------------------------------------

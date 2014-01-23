@@ -22,6 +22,7 @@
 #include <utils/PtrPolicyBoost.h>
 #include <utils/ClonePolicies.h>
 #include <corelib/BaseDataTypes.h>
+#include <plugins/newChart/Wrappers.h>
 
 //! interfejs do odczytu czasu timera
 typedef utils::ITimerReader<float>::TimerReaderType TimerReader;
@@ -363,9 +364,8 @@ DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);
 DEFINE_WRAPPER_INHERITANCE(MomentChannel,VectorChannel);
 DEFINE_WRAPPER_INHERITANCE(AngleChannel, VectorChannel);
 DEFINE_WRAPPER_INHERITANCE(PowerChannel, VectorChannel);
-DEFINE_WRAPPER(ScalarChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER_INHERITANCE(ScalarChannel, ScalarChannelReaderInterface);
-DEFINE_WRAPPER_INHERITANCE(VectorToScalarAdaptor, ScalarChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(ScalarChannel, ScalarChannelReader);
+DEFINE_WRAPPER_INHERITANCE(VectorToScalarAdaptor, ScalarChannelReader);
 DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
 DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
 DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);

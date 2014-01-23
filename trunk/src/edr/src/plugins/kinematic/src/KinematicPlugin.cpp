@@ -13,6 +13,7 @@ CORE_PLUGIN_BEGIN("kinematic", core::UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::JointAnglesCollection);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::SkeletalData);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::SkeletalModel);
+	CORE_PLUGIN_ADD_OBJECT_WRAPPER(SkeletonDataStream);
 CORE_PLUGIN_END;
 
 using namespace kinematic;
