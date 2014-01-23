@@ -171,6 +171,9 @@ public:
 	virtual void resetTransform();
 
 private:
+	//! Czy wyliczono juz poprawkę na wysokość
+	bool heightCompensation;
+	//! Obiekt aktualizujący
 	utils::StreamStatusObserverPtr updater;
 	//! Aktualna dodatkowa rotacja wynikająca ze zmiany osi
 	osg::Quat preRot;

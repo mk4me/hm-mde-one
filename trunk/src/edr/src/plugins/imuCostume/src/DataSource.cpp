@@ -181,7 +181,8 @@ void IMUCostumeDataSource::innerLoadCostume(const unsigned int idx)
 			if(first > -1 && second > -1){
 				rd.skeletonDataStream->connections[i].range.first = first;
 				rd.skeletonDataStream->connections[i].range.second = second;
-				rd.skeletonDataStream->connections[i].length = GetSegmentLengthF(idx, i);
+				//normalizuje do tego co bedzie w wizualizatorze
+				rd.skeletonDataStream->connections[i].length = GetSegmentLengthF(idx, i) / 100.0;
 			}
 		}		
 	}
@@ -632,7 +633,8 @@ void IMUCostumeDataSource::refreshData()
 					for(unsigned int i = 0; i < costumesConfigurations[it->first].jointsCount; ++i){
 						auto p = GetGlobalPositionF(it->first, i);
 
-						jointsPositions[i] = osg::Vec3(p.x, p.y, p.z);
+						//normalizuje juz do tego co jest w wizualizatorach zeby odswiezania nie meczyc tym
+						jointsPositions[i] = osg::Vec3(p.x, p.y, p.z) / 100.0;
 					}					
 
 					rawData[it->first].skeletonDataStream->jointsStream->pushData(jointsPositions);

@@ -80,6 +80,7 @@ void PointInstance::setSize(std::vector<utils::shared_ptr<PointInstance>> & poin
 
 	for(auto it = points.begin(); it != points.end(); ++it){
 		osgutils::CustomPrimitivesHelper::updatePrimitiveShape((*it)->sphere, v);
+		(*it)->sphere.radius = size;
 	}
 }
 

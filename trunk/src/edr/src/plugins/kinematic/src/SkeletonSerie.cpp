@@ -273,7 +273,8 @@ visualizer(visualizer),
 	xyzAxis(false),
 	name("SkeletonData"),
 	pointsDrawer(new PointsDrawer(3)),
-	connectionsDrawer(new ConnectionsDrawer(10))
+	connectionsDrawer(new ConnectionsDrawer(10)),
+	heightCompensation(false)
 {	
 	UTILS_ASSERT(data->getTypeInfo() == typeid(SkeletonDataStream));
 	data->tryGetMeta("core/name", name);	
@@ -282,13 +283,7 @@ visualizer(visualizer),
 	pointsDrawer->init(skeletalData->jointsCount);
 	pointsDrawer->setSize(0.02);
 
-	auto conns = skeletalData->connections;
-
-	for(auto it = conns.begin(); it != conns.end(); ++it){
-		(*it).length /= 100.0;
-	}
-
-	connectionsDrawer->init(conns);
+	connectionsDrawer->init(skeletalData->connections);
 	connectionsDrawer->setSize(0.005);
 
 	pointsDrawer->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
@@ -385,12 +380,31 @@ const core::ObjectWrapperConstPtr & SkeletonStreamSerie::getData() const
 
 void SkeletonStreamSerie::update()
 {
+
 	std::vector<osg::Vec3> points;
 	skeletalData->jointsStream->data(points);
 
-	for(auto it = points.begin(); it != points.end(); ++it){
-		(*it) /= 100.0;
+	if(heightCompensation == false){
+		heightCompensation = true;
+		float minZ = std::numeric_limits<float>::max();
+		for(auto it = points.begin(); it != points.end(); ++it){
+			minZ = std::min(minZ, (*it).z());
+		}
+
+		minZ -= pointsDrawer->size(0);
+
+		auto m = matrixTransform->getMatrix();
+		m.setTrans(osg::Vec3(0, 0, -minZ));
+		matrixTransform->setMatrix(m);
 	}
+
+	rootPosition = osg::Vec3(0,0,0);
+
+	for(auto it = points.begin(); it != points.end(); ++it){
+		rootPosition += *it;
+	}
+
+	rootPosition /= points.size();
 
 	pointsDrawer->update(points);
 	connectionsDrawer->update(points);
