@@ -128,41 +128,42 @@ AnalisisModel::DataItemDescription::DataItemDescription( coreUI::CoreVisualizerW
 void AnalisisModel::update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication )
 {
     if(modyfication == core::Visualizer::REMOVE_SERIE){
-        auto it = seriesToChannels.find(serie);
-        if(it != seriesToChannels.end()){
+        auto it = seriesToPaths.find(serie);
+        if(it != seriesToPaths.end()){
             std::string path = it->second;
-            auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
-            if(timeline != nullptr){
-                timeline->removeChannel(it->second);
-            }
+            
+			if(it->first->serieFeatures<plugin::IVisualizer::ITimeAvareSerieFeatures>() != nullptr){
+				auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+				if(timeline != nullptr){
+					timeline->removeChannel(it->second);
+				}
+			}
 
-            seriesToChannels.erase(it);
+            seriesToPaths.erase(it);
 
             //TODO
             //usun¹æ wpisy dla pozosta³ych serii bo kanal usuwamy tylko raz
 
-            auto tIT = seriesToChannels.begin();
-            while(tIT != seriesToChannels.end()){
+            auto tIT = seriesToPaths.begin();
+            while(tIT != seriesToPaths.end()){
                 if(tIT->second == path){
                     auto toErase = tIT;
                     ++tIT;
-                    seriesToChannels.erase(toErase);
+                    seriesToPaths.erase(toErase);
                 }else{
                     ++tIT;
                 }
             }
-        }
 
-		//teraz usuwam wpisy dla menu
-		for(auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it)
-		{
-			/*
-			if(it->second->path == path){
-				items2Descriptions.erase(it);
-				break;
+			//teraz usuwam wpisy dla menu
+			for(auto it = items2Descriptions.begin(); it != items2Descriptions.end(); ++it)
+			{
+				if(it->second->path == path){
+					items2Descriptions.erase(it);
+					break;
+				}
 			}
-			}*/
-		}
+        }
     }
 }
 
@@ -189,10 +190,6 @@ void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core:
         
 				timeline->addChannel(path.toStdString(), channels);
 
-				for(auto it = series.begin(); it != series.end(); ++it){
-					seriesToChannels[*it] = desc->path;
-				}
-
 				desc = timeDesc;
 			}catch(const std::exception & e){				
 				PLUGIN_LOG_WARNING("Problem with adding series to timeline: " << e.what());
@@ -202,10 +199,14 @@ void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core:
 		}
 
 		if(desc == nullptr){
-			desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
+			desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);
 		}
 
 		desc->path = path.toStdString();
+
+		for(auto it = series.begin(); it != series.end(); ++it){
+			seriesToPaths[*it] = desc->path;
+		}
 
 		addVisualizerDataDescription(helper, desc);
     } else {

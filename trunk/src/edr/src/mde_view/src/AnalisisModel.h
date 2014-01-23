@@ -99,7 +99,7 @@ private:
     std::multimap<core::HierarchyHelperWeakPtr, DataItemDescriptionPtr> items2Descriptions;
     std::map<core::HierarchyHelperWeakPtr, core::IHierarchyDataItemConstWeakPtr> helper2hierarchyItem;
 
-    std::map<core::Visualizer::VisualizerSerie*, std::string> seriesToChannels;
+    std::map<core::Visualizer::VisualizerSerie*, std::string> seriesToPaths;
 };
 DEFINE_SMART_POINTERS(AnalisisModel);
 
