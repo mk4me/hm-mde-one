@@ -244,7 +244,7 @@ void SkeletonSerie::setGhostVisible(const bool visible)
 class SkeletonStreamSerieUpdater : public utils::IStreamStatusObserver
 {
 public:
-	SkeletonStreamSerieUpdater(plugin::IVisualizer::ISerie * serie)
+	SkeletonStreamSerieUpdater(SkeletonStreamSerie * serie)
 		: serie(serie)
 	{
 
@@ -255,12 +255,13 @@ public:
 	//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
 	virtual void update()
 	{
-		serie->requestUpdate();
+		//serie->requestUpdate();
+		serie->myUpdate();
 	}
 
 private:
 
-	plugin::IVisualizer::ISerie * serie;
+	SkeletonStreamSerie * serie;
 };
 
 
@@ -277,9 +278,6 @@ visualizer(visualizer),
 	UTILS_ASSERT(data->getTypeInfo() == typeid(SkeletonDataStream));
 	data->tryGetMeta("core/name", name);	
 	skeletalData = data->get();
-	updater.reset(new SkeletonStreamSerieUpdater(this));
-
-	skeletalData->jointsStream->attachObserver(updater);
 	
 	pointsDrawer->init(skeletalData->jointsCount);
 	pointsDrawer->setSize(0.02);
@@ -300,6 +298,10 @@ visualizer(visualizer),
 	matrixTransform->addChild(connectionsDrawer->getNode());
 
 	//setAxis(true);
+
+	updater.reset(new SkeletonStreamSerieUpdater(this));
+
+	skeletalData->jointsStream->attachObserver(updater);
 }
 
 SkeletonStreamSerie::~SkeletonStreamSerie()

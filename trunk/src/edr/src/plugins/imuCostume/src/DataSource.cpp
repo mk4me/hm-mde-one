@@ -643,8 +643,8 @@ void IMUCostumeDataSource::refreshData()
 		}catch(...){
 			PLUGIN_LOG_DEBUG("Unknown problem while getting costume data");
 		}
-		// 60 fps mi wystarczy
-		OpenThreads::Thread::microSleep(16666);
+		// 30 fps mi wystarczy
+		OpenThreads::Thread::microSleep(33333);
 	}
 }
 
