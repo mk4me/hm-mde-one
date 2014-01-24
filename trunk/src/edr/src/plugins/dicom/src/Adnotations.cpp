@@ -5,14 +5,15 @@
 dicom::adnotations::AdnotationsTypePtr dicom::adnotations::getDefault()
 {
     AdnotationsTypePtr adn = utils::make_shared<AdnotationsType>();
-    adn->insert(AdnotationsType::value_type(-1, QObject::tr("unknown"))); 
-    adn->insert(AdnotationsType::value_type(0, QObject::tr("other"))); 
-    adn->insert(AdnotationsType::value_type(1, QObject::tr("skin"))); 
-    adn->insert(AdnotationsType::value_type(2, QObject::tr("bone"))); 
-    adn->insert(AdnotationsType::value_type(3, QObject::tr("tendon"))); 
-    adn->insert(AdnotationsType::value_type(4, QObject::tr("joint"))); 
-    adn->insert(AdnotationsType::value_type(5, QObject::tr("region inflammatory synovitis degree of inflammation / hyperplasia"))); 
-    adn->insert(AdnotationsType::value_type(6, QObject::tr("the degree of intensity/ hyperaemia")));
+    adn->insert(AdnotationsType::value_type(unknown, QObject::tr("unknown"))); 
+    adn->insert(AdnotationsType::value_type(other, QObject::tr("other"))); 
+    adn->insert(AdnotationsType::value_type(skin, QObject::tr("skin"))); 
+    adn->insert(AdnotationsType::value_type(bone, QObject::tr("bone"))); 
+    adn->insert(AdnotationsType::value_type(tendon, QObject::tr("tendon"))); 
+    adn->insert(AdnotationsType::value_type(joint, QObject::tr("joint"))); 
+    adn->insert(AdnotationsType::value_type(inflammatory, QObject::tr("region inflammatory synovitis degree of inflammation / hyperplasia"))); 
+    adn->insert(AdnotationsType::value_type(intensity, QObject::tr("the degree of intensity/ hyperaemia")));
+    adn->insert(AdnotationsType::value_type(noise, QObject::tr("noise")));
     return adn;
 }
 

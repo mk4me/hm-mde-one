@@ -158,21 +158,13 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
     contextEventFilter->registerClosableContextWidget(visWidget);
     visWidget->installEventFilter(visualizerFilter.get());
 
-    // TODO : zastanowic sie nas sensem tych operacji
-
-    //plainContextWidgets.insert(visualizerDockWidget);
-    //derrivedContextWidgets.insert(DerrivedContextWidgets::value_type(titleBar,visualizerDockWidget));
-    //derrivedContextWidgets.insert(DerrivedContextWidgets::value_type(visWidget,visualizerDockWidget));
-    //
-    //visWidget->setFocusPolicy(Qt::ClickFocus);
-    //visualizerDockWidget->setFocusProxy(visWidget);
-    //
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
 
     //kontekst wizualizatora!!
     SimpleContextPtr visualizerUsageContext(new SimpleContext(flexiTabWidget, tr("Visualizer")));
     manager->addContext(visualizerUsageContext, parent);
-    manager->addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
+    // WYLACZONE DLA MEDUSA!!
+    //manager->addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
     manager->addWidgetToContext(visualizerUsageContext, titleBar);
     manager->addWidgetToContext(visualizerUsageContext, visWidget);
 }

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_DICOM__SERIALIZERS_H__
 #define HEADER_GUARD_DICOM__SERIALIZERS_H__
 
-#include <QtCore/QPoint>
+#include <QtCore/QPointF>
 #include <string>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
@@ -21,28 +21,28 @@ namespace boost {
     namespace serialization {
 
         template<class Archive>
-        inline void save( Archive& ar, const QPoint& p, const unsigned int /*version*/ )
+        inline void save( Archive& ar, const QPointF& p, const unsigned int /*version*/ )
         {
             using boost::serialization::make_nvp;
-            int x = p.x();
-            int y = p.y();
+            float x = p.x();
+            float y = p.y();
             ar << make_nvp("PointX", x);
             ar << make_nvp("PointY", y);
         }
 
         template<class Archive>
-        inline void load( Archive& ar, QPoint& p, const unsigned int /*version*/ )
+        inline void load( Archive& ar, QPointF& p, const unsigned int /*version*/ )
         {
             using boost::serialization::make_nvp;
 
-            int x = 0, y = 0;
+            float x = 0, y = 0;
             ar >> make_nvp("PointX", x);
             ar >> make_nvp("PointY", y);
-            p = QPoint(x, y);
+            p = QPointF(x, y);
         }
 
         template<class Archive>
-        inline void serialize( Archive& ar, QPoint& s, const unsigned int file_version )
+        inline void serialize( Archive& ar, QPointF& s, const unsigned int file_version )
         {
             boost::serialization::split_free(ar, s, file_version);
         }
@@ -66,17 +66,18 @@ namespace boost {
         inline void load( Archive& ar, QVector<QPointF>& v, const unsigned int /*version*/ )
         {
             using boost::serialization::make_nvp;
-
             std::string res;
             ar >> make_nvp("PointsXY", res);
-            std::vector<int> numbers;
-            boost::tokenizer<> t(res);
-            std::transform( t.begin(), t.end(), std::back_inserter(numbers), &boost::lexical_cast<int,std::string> );
+            std::vector<float> numbers;
+            boost::char_separator<char> sep(" ");
+            boost::tokenizer< boost::char_separator<char> > t(res, sep);
+
+            std::transform( t.begin(), t.end(), std::back_inserter(numbers), &boost::lexical_cast<float,std::string> );
 
             int count = numbers.size();
             if ((count % 2) == 0) {
                 for (int i = 0; i < count; i += 2) {
-                    v.push_back(QPoint(numbers[i], numbers[i + 1]));
+                    v.push_back(QPointF(numbers[i], numbers[i + 1]));
                 }
             } else {
                 throw std::runtime_error("Wrong points number in xml file");

@@ -31,8 +31,14 @@ public:
 public:
     NormalStatePtr getNormalState();
     MoveStatePtr getMoveState();
-    PointsStatePtr getCurveState();
-    PointsStatePtr getPolyState();
+
+    PointsStatePtr getBoneState() const { return boneState; }
+    PointsStatePtr getTendonState() const { return tendonState; }
+    PointsStatePtr getSkinState() const { return skinState; }
+    PointsStatePtr getInflamatoryState() const { return inflamatoryState; }
+    PointsStatePtr getNoiseState() const { return noiseState; }
+    PointsStatePtr getJointState() const { return jointState; }
+
     EditStatePtr getEditState();
     LayeredSerie* getSerie() const { return serie; }
     QGraphicsScene* getGraphicsScene();
@@ -47,9 +53,15 @@ public Q_SLOTS:
 private:
     NormalStatePtr normalState;
     EditStatePtr editState;
-    PointsStatePtr pointsState;
-    PointsStatePtr polyState;
     MoveStatePtr moveState;
+
+    PointsStatePtr boneState;
+    PointsStatePtr skinState;
+    PointsStatePtr tendonState;
+    PointsStatePtr jointState;
+    PointsStatePtr inflamatoryState;
+    PointsStatePtr noiseState;
+
     LayeredSerie* serie;
     utils::ICommandStackPtr commandStack;
 };

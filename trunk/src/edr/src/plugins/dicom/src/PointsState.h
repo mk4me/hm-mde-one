@@ -20,7 +20,7 @@ class PointsState : public QObject, public coreUI::AbstractState
 {
     Q_OBJECT
 public:
-    PointsState(LayeredStateMachine* machine, bool curved);
+    PointsState(LayeredStateMachine* machine, bool curved, bool openLine, adnotations::annotationsIdx adnotationIdx);
 	virtual ~PointsState() {}
     friend class AddLayerCommand;
 public:
@@ -31,22 +31,20 @@ public:
 
 private Q_SLOTS:
     void clear();
-
     void resetLayer();
-
     void addLayer();
-
     void addLayer( int adnIdx );
 
     virtual void begin( coreUI::AbstractStateConstPtr lastState );
     virtual void end();
-
 private:
     std::vector<std::pair<QGraphicsItem*, QPointF>> positionsToCheck;
     PointsLayerPtr layer;
     LayeredStateMachine* machine;
     bool possibleMove;
     bool curved;
+    bool openLine;
+    adnotations::annotationsIdx adnotationIdx;
 };
 DEFINE_SMART_POINTERS(PointsState);
 

@@ -18,7 +18,20 @@
 namespace dicom {
 
 namespace adnotations {
-    typedef boost::bimap<int, QString> AdnotationsType;
+
+    enum annotationsIdx {
+        unknown = -1,
+        other = 0, 
+        skin = 1,  
+        bone = 2,  
+        tendon = 3,
+        joint = 4, 
+        inflammatory = 5,
+        intensity = 6,
+        noise = 7
+    };
+
+    typedef boost::bimap<annotationsIdx, QString> AdnotationsType;
     DEFINE_SMART_POINTERS(AdnotationsType);
 
     AdnotationsTypePtr getDefault();

@@ -179,15 +179,6 @@ void dicom::LayeredSerie::redo()
     }
 }
 
-void dicom::LayeredSerie::setPolyState()
-{
-    stateMachine->setState(stateMachine->getPolyState());
-}
-
-void dicom::LayeredSerie::setCurveState()
-{
-    stateMachine->setState(stateMachine->getCurveState());
-}
 
 void dicom::LayeredSerie::setNormalState()
 {
@@ -247,6 +238,16 @@ void dicom::LayeredSerie::switchCrop()
     }
 }
 
+//void dicom::LayeredSerie::setPolyState()
+//{
+//    stateMachine->setState(stateMachine->getPolyState());
+//}
+//
+//void dicom::LayeredSerie::setCurveState()
+//{
+//    stateMachine->setState(stateMachine->getCurveState());
+//}
+
 void dicom::LayeredSerie::setMoveState()
 {
     stateMachine->setState(stateMachine->getMoveState());
@@ -265,5 +266,35 @@ double dicom::LayeredSerie::getBegin() const
 double dicom::LayeredSerie::getEnd() const
 {
     return 0.0;
+}
+
+void dicom::LayeredSerie::setBoneState()
+{
+    stateMachine->setState(stateMachine->getBoneState());
+}
+
+void dicom::LayeredSerie::setSkinState()
+{
+    stateMachine->setState(stateMachine->getSkinState());
+}
+
+void dicom::LayeredSerie::setTendonState()
+{
+    stateMachine->setState(stateMachine->getTendonState());
+}
+
+void dicom::LayeredSerie::setJointState()
+{
+    stateMachine->setState(stateMachine->getJointState());
+}
+
+void dicom::LayeredSerie::setInflamatoryState()
+{
+    stateMachine->setState(stateMachine->getInflamatoryState());
+}
+
+void dicom::LayeredSerie::setNoiseState()
+{
+    stateMachine->setState(stateMachine->getNoiseState());
 }
 

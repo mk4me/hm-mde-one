@@ -22,8 +22,11 @@
 #include <boost/serialization/string.hpp>
 #include "qstring_serialization.h"
 #include "Serializers.h"
+#include "Adnotations.h"
 
 namespace dicom {
+
+    
 
     class IPointsDrawer
     {
@@ -39,9 +42,20 @@ namespace dicom {
     };
     DEFINE_SMART_POINTERS(IPointsDrawer);
 
+    class DrawersBuilder 
+    {
+    public:
+        static IPointsDrawerPtr createDrawer(adnotations::annotationsIdx annotationIdx);
+        static std::pair<QColor, QColor> getColors(adnotations::annotationsIdx annotationIdx);
+        static bool isOpenLine(adnotations::annotationsIdx annotationIdx);
+        static bool isCurved(adnotations::annotationsIdx annotationIdx);
+        static QPixmap getColorPixmap(adnotations::annotationsIdx annotationIdx);
+    };
+
     class CurveDrawer : public IPointsDrawer 
     {
     public:
+        CurveDrawer(bool openLine, const QColor& color, const QColor& colorEdit);
         QPen getLinePen(bool editable);
         QString methodName();
         QPainterPath createPath(const QVector<QGraphicsItem*>& points);
@@ -49,11 +63,16 @@ namespace dicom {
 
         virtual QBrush getLineBrush( bool editable );
         virtual IPointsDrawer* clone() const;
+    private:
+        QColor color;
+        QColor colorEdit;
+        bool openLine;
     };
 
     class PolyDrawer : public IPointsDrawer
     {
     public:
+        PolyDrawer(bool openLine, const QColor& color, const QColor& colorEdit);
         QPen getLinePen(bool editable);
         QString methodName();
         QPainterPath createPath(const QVector<QGraphicsItem*>& points);
@@ -61,6 +80,11 @@ namespace dicom {
 
         virtual QBrush getLineBrush( bool editable );
         virtual IPointsDrawer* clone() const;
+
+    private:
+        QColor color;
+        QColor colorEdit;
+        bool openLine;
     };
 
     class PointsLayer : public ILayerItem
@@ -133,12 +157,14 @@ namespace dicom {
             QString method;
             ar & BOOST_SERIALIZATION_NVP(method);
             // TODO: jesli dojdzie drawerow to koniecznie trzeba wprowadzic fabryke.
-            if (method == "Curve") {
+            /*if (method == "Curve") {
                 pointsDrawer = utils::make_shared<CurveDrawer>();
             } else if (method == "Polygon") {
                 pointsDrawer = utils::make_shared<PolyDrawer>();
-            }
+            }*/
+            pointsDrawer = DrawersBuilder::createDrawer(static_cast<adnotations::annotationsIdx>(getAdnotationIdx()));
             pathItem->setPen(pointsDrawer->getLinePen(false));
+
             for (auto it = rawPoints.begin(); it != rawPoints.end(); ++it) {
                 addPoint(*it);
             }

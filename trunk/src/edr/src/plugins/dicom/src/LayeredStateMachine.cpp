@@ -6,32 +6,36 @@ using namespace dicom;
 
 dicom::LayeredStateMachine::LayeredStateMachine(LayeredSerie* serie, utils::ICommandStackPtr commandStack) :
     normalState(new NormalState(this)),
-    pointsState(new PointsState(this, true)),
-    polyState(new PointsState(this, false)),
+    //pointsState(new PointsState(this, true)),
+    //polyState(new PointsState(this, false)),
+    boneState(new PointsState(this, true, true, adnotations::bone)),
+    skinState(new PointsState(this, false, true, adnotations::skin)),
+    tendonState(new PointsState(this, true, true, adnotations::tendon)),
+    jointState(new PointsState(this, false, false, adnotations::joint)),
+    inflamatoryState(new PointsState(this, true, false, adnotations::inflammatory)),
+    noiseState(new PointsState(this, false, false, adnotations::noise)),
     editState(new EditState(this)),
     moveState(new MoveState(this)),
     serie(serie),
     commandStack(commandStack)
 {
     addState(normalState);
-    addState(pointsState);
-    addState(polyState);
+    //addState(pointsState);
+    //addState(polyState);
+    addState(boneState);
+    addState(skinState);
+    addState(tendonState);
+    addState(jointState);
+    addState(inflamatoryState);
+    addState(noiseState);
+
     addState(editState);
+    addState(moveState);
 }
 
 dicom::NormalStatePtr dicom::LayeredStateMachine::getNormalState()
 {
     return normalState;
-}
-
-dicom::PointsStatePtr dicom::LayeredStateMachine::getCurveState()
-{
-    return pointsState;
-}
-
-dicom::PointsStatePtr dicom::LayeredStateMachine::getPolyState()
-{
-    return polyState;
 }
 
 

@@ -47,9 +47,14 @@ protected:
     std::map<QGraphicsItem*, ILayerItemPtr> item2layer;
 
 private Q_SLOTS:
+    void addBone();
+    void addSkin();
+    void addTendon();
+    void addJoint();
+    void addInflamatory();
+    void addNoise();
+
     void move();
-    void addCurve();
-    void addPoly();
     void edit();
 };
 DEFINE_SMART_POINTERS(NormalState);

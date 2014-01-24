@@ -42,25 +42,25 @@ DicomImporterSourceWidget::DicomImporterSourceWidget( DicomImporterSource* sourc
 #endif
 }
 
-void DicomImporterSourceWidget::onLoadFiles()
-{
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open file"));
-    for (auto it = fileNames.begin(); it != fileNames.end(); ++it) {
-        core::Filesystem::Path path = it->toStdString();
-        dicomSource->addFile(path);
-    }    
-}
+//void DicomImporterSourceWidget::onLoadFiles()
+//{
+//    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open file"));
+//    for (auto it = fileNames.begin(); it != fileNames.end(); ++it) {
+//        core::Filesystem::Path path = it->toStdString();
+//        dicomSource->addFile(path);
+//    }    
+//}
 
-void DicomImporterSourceWidget::onLoadDirectory()
-{
-    QString dirPath = QFileDialog::getExistingDirectory(this, tr("Directory"));
-    if ( dirPath.isNull() == false ) {
-        core::Filesystem::Path path(dirPath.toStdString());
-        if(core::Filesystem::pathExists(path)) {
-            dicomSource->loadDirFile(path);
-        }
-    }
-}
+//void DicomImporterSourceWidget::onLoadDirectory()
+//{
+//    QString dirPath = QFileDialog::getExistingDirectory(this, tr("Directory"));
+//    if ( dirPath.isNull() == false ) {
+//        core::Filesystem::Path path(dirPath.toStdString());
+//        if(core::Filesystem::pathExists(path)) {
+//            dicomSource->loadDirFile(path);
+//        }
+//    }
+//}
 
 //void dicomImporter::DicomImporterSourceWidget::onOpenProject()
 //{

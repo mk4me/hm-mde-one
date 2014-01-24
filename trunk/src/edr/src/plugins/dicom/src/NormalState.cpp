@@ -45,11 +45,24 @@ bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 
         int numSelected = getNumSelected();
         if (numSelected == 0) {
-            QAction* curveAction = menu.addAction(tr("Add curve"));
-            connect(curveAction, SIGNAL(triggered()), this, SLOT(addCurve()));
+            QAction* boneAction = menu.addAction(tr("Tag bone"));
+            connect(boneAction, SIGNAL(triggered()), this, SLOT(addBone()));
 
-            QAction* polyAction = menu.addAction(tr("Add poly"));
-            connect(polyAction, SIGNAL(triggered()), this, SLOT(addPoly()));
+            QAction* skinAction = menu.addAction(tr("Tag skin"));
+            connect(skinAction, SIGNAL(triggered()), this, SLOT(addSkin()));
+
+            QAction* tendonAction = menu.addAction(tr("Tag tendon"));
+            connect(tendonAction, SIGNAL(triggered()), this, SLOT(addTendon()));
+
+            QAction* jointAction = menu.addAction(tr("Tag joint"));
+            connect(jointAction, SIGNAL(triggered()), this, SLOT(addJoint()));
+
+            QAction* inflamatoryAction = menu.addAction(tr("Tag region of inflammatory synovitis"));
+            connect(inflamatoryAction, SIGNAL(triggered()), this, SLOT(addInflamatory()));
+
+            QAction* noiseAction = menu.addAction(tr("Tag noise"));
+            connect(noiseAction, SIGNAL(triggered()), this, SLOT(addNoise()));
+
         } else if (numSelected == 1) {
             QAction* moveAction = menu.addAction(tr("Move"));
             connect(moveAction, SIGNAL(triggered()), this, SLOT(move()));
@@ -171,16 +184,6 @@ void dicom::NormalState::move()
     machine->setState(machine->getMoveState());
 }
 
-void dicom::NormalState::addCurve()
-{
-    machine->setState(machine->getCurveState());
-}
-
-void dicom::NormalState::addPoly()
-{
-    machine->setState(machine->getPolyState());
-}
-
 void dicom::NormalState::edit()
 {
     PointsLayerPtr points = utils::dynamic_pointer_cast<PointsLayer>(getFirstSelected());
@@ -188,4 +191,34 @@ void dicom::NormalState::edit()
         machine->getEditState()->setLayerToEdit(points);
         machine->setState(machine->getEditState());
     }
+}
+
+void dicom::NormalState::addBone()
+{
+    machine->setState(machine->getBoneState());
+}
+
+void dicom::NormalState::addSkin()
+{
+    machine->setState(machine->getSkinState());
+}
+
+void dicom::NormalState::addTendon()
+{
+    machine->setState(machine->getTendonState());
+}
+
+void dicom::NormalState::addJoint()
+{
+    machine->setState(machine->getJointState());
+}
+
+void dicom::NormalState::addInflamatory()
+{
+    machine->setState(machine->getInflamatoryState());
+}
+
+void dicom::NormalState::addNoise()
+{
+    machine->setState(machine->getNoiseState());
 }

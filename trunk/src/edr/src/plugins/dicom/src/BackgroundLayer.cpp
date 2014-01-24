@@ -89,6 +89,7 @@ void dicom::BackgroundLayer::lazy() const
 dicom::ILayerItem* dicom::BackgroundLayer::clone() const
 {
     BackgroundLayer* bl = new BackgroundLayer(pixmap, name);
+    bl->setAdnotationIdx(getAdnotationIdx());
     bl->pixmapPath = this->pixmapPath;
     bl->setCrop(this->getCrop());
     return bl;

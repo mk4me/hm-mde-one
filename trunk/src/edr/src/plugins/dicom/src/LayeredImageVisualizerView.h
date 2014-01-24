@@ -47,8 +47,15 @@ private Q_SLOTS:
     void crop();
     void normalState();
     void moveState();
-    void curveState();
-    void polyState();
+    /*void curveState();
+    void polyState();*/
+    void boneState();
+    void skinState();
+    void tendonState();
+    void jointState();
+    void inflamatoryState();
+    void noiseState();
+
     void removeSelectedLayers();
     void editSelectedSerie();
     void selectionChanged(const QModelIndex &);

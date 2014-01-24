@@ -4,6 +4,7 @@
 #include <QtGui/QListWidget>
 #include <QtGui/QSplashScreen>
 #include <QtGui/QMainWindow>
+#include <QtGui/QSplitter>
 #include <utils/Debug.h>
 #include "MdeMainWindow.h"
 #include <coreui/CoreTextEditWidget.h>
@@ -71,24 +72,28 @@ void MdeMainWindow::customViewInit(QWidget * console)
  
    this->showFullScreen();
    
-   /*auto sourceManager = plugin::getSourceManager();
-   for (int i = 0; i < sourceManager->getNumSources(); ++i) {
-   auto source = sourceManager->getSource(i);
-   QWidget* widget = source->getWidget();
-   if (widget) {
-   addTab(IMdeTabPtr(new SimpleTab(widget, QIcon(":/mde/icons/Badania.png"),tr(source->getName().c_str()))));
-   }
-   }*/
+
+
+   
 
 
    communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
    
+   auto sourceManager = plugin::getSourceManager();
+   for (int i = 0; i < sourceManager->getNumSources(); ++i) {
+       auto source = sourceManager->getSource(i);
+       QWidget* widget = source->getWidget();
+       if (source != commSource && widget) {
+           addTab(IMdeTabPtr(new SimpleTab(widget, QIcon(":/mde/icons/Badania.png"),tr(source->getName().c_str()))));
+       }
+   }
+
    QWidget* commWidget = commSource->getWidget();
    icomm->setCompactMode(true);
    commWidget->setMaximumWidth(304);
 
-   QWidget* compound = new QWidget();
+   QSplitter* compound = new QSplitter();
    compound->setLayout(new QHBoxLayout);
 
 

@@ -1,8 +1,9 @@
 #include "DicomPCH.h"
-
+#include <QtGui/QPixmap>
 #include "LayeredModelView.h"
 #include "Adnotations.h"
 #include <QtGui/QFont>
+#include "PointsLayer.h"
 
 using namespace dicom; 
 
@@ -45,7 +46,14 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
                 return static_cast< int >(image->getTagVisible(tag) ? Qt::Checked : Qt::Unchecked);
             }
         }
-        if (role == Qt::DisplayRole) {
+        if (role == Qt::DecorationRole) {
+            treedata* td = static_cast<treedata*>(index.internalPointer());
+            if (td->idx != -1 && index.column() == 0) {
+                std::string tag = image->getTag(td->tag);
+                ILayerItemConstPtr itm = image->getLayerItem(tag, index.row());
+                return getItemColorPixmap(itm);
+            }
+        } else if (role == Qt::DisplayRole) {
             treedata* td = static_cast<treedata*>(index.internalPointer());
             std::string tag = image->getTag(td->tag);
             if (td->idx == -1) {
@@ -58,7 +66,7 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
                     return itm->getName();
                 } else if (index.column() == 1) {
                     adnotations::AdnotationsTypePtr adn = adnotations::instance();
-                    auto it = adn->left.find(itm->getAdnotationIdx());
+                    auto it = adn->left.find(static_cast<adnotations::annotationsIdx>(itm->getAdnotationIdx()));
                     if (it != adn->left.end()) {
                         return it->second;
                     }
@@ -107,13 +115,13 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
                         image->getLayerItem(tag, idx)->setName(result);
                         Q_EMIT editCompleted( result );
                     }
-                } else if (col == 1) {
+                } /*else if (col == 1) {
                     QString result = value.toString();
                     auto adn = adnotations::instance();
                     int adnotationIdx = adn->right.at(result);
                     image->getLayerItem(tag, idx)->setAdnotationIdx(adnotationIdx);
                     Q_EMIT editCompleted( result );
-                }
+                }*/
             }
         }
     }
@@ -249,6 +257,11 @@ dicom::LayeredModelView::Expands dicom::LayeredModelView::getExpands() const
         exp.push_back(std::make_pair(createIndex(row, 0, (void*)getData(row, -1)), image->getTagVisible(image->getTag(row))));
     }
     return exp;
+}
+
+QPixmap dicom::LayeredModelView::getItemColorPixmap( ILayerItemConstPtr itm ) const
+{
+    return DrawersBuilder::getColorPixmap(static_cast<adnotations::annotationsIdx>(itm->getAdnotationIdx()));
 }
 
 //! [quoting mymodel_f]

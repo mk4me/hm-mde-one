@@ -63,12 +63,12 @@ private:
 
     mutable std::set<treedata> datas;
     const treedata* getData(int tag, int idx) const;
+    QPixmap getItemColorPixmap( ILayerItemConstPtr itm ) const;
 private:
     ILayeredImagePtr image;
     
 Q_SIGNALS:
     void editCompleted(const QString &);
-
 };
 
 }

@@ -6,7 +6,7 @@
 #include <coreui/CoreTitleBar.h>
 #include <coreui/CoreFlexiToolBarSection.h>
 
-QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions)
+QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, bool skipSettings, bool skipUtils)
 {
     if(actions.empty() == true){
         return nullptr;
@@ -37,7 +37,12 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions)
     for(auto it = sections.begin(); it != sections.end(); ++it){
 
         //pomijam grupy które są tutaj niepotrzebne
-        if(it->first == QObject::tr("Settings")){
+        if(it->first == QObject::tr("Settings") && skipSettings){
+            continue;
+        }
+        QString tst = QObject::tr("Utils");
+        QString tst2 = QObject::tr("Tools");
+        if(it->first == QObject::tr("Utils") && skipUtils){
             continue;
         }
 
@@ -129,7 +134,7 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions)
 
 
 SimpleContext::SimpleContext( QTabWidget * flexiTabWidget, const QString& name ) :
-    flexiTabWidget(flexiTabWidget),
+flexiTabWidget(flexiTabWidget),
     groupID(-1),
     widget(nullptr),
     name(name)

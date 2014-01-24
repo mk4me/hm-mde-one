@@ -70,7 +70,12 @@ namespace dicom {
         virtual double getBegin() const;
 
         virtual double getEnd() const;
-
+        void setBoneState();
+        void setSkinState();
+        void setTendonState();
+        void setJointState();
+        void setInflamatoryState();
+        void setNoiseState();
     private:
         ILayeredImagePtr image;
         coreUI::WheelGraphicsView* graphicsView;

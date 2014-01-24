@@ -70,12 +70,12 @@ public:
     
     virtual void undoIt() {
         image->removeLayer(layer);
-        if (pointsState == machine->getCurveState().get()) {
+        /*if (pointsState == machine->getCurveState().get()) {
             machine->setState(machine->getCurveState());
         } else {
             machine->setState(machine->getPolyState());
         }
-
+*/
         machine->getSerie()->refresh();
         machine->getSerie()->save();
         layer->setEditable(true);
@@ -96,11 +96,13 @@ private:
 }
 
 
-dicom::PointsState::PointsState( LayeredStateMachine* machine, bool curved ) :
+dicom::PointsState::PointsState( LayeredStateMachine* machine, bool curved, bool openLine, adnotations::annotationsIdx adnotationIdx ) :
     coreUI::AbstractState(machine),
     machine(machine),
     possibleMove(false),
-    curved(curved)
+    curved(curved),
+    openLine(openLine),
+    adnotationIdx(adnotationIdx)
 {
 
 }
@@ -117,15 +119,11 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
     if (e->button() == Qt::RightButton && layer->getNumPoint() > 0) {
         QMenu menu;
         QAction* clearAction = menu.addAction(tr("Clear"));
-
-        QMenu* sub = menu.addMenu(QIcon(), tr("Set as:"));
-        adnotations::AdnotationsTypePtr adn = adnotations::instance();
-        for (auto it = adn->right.begin(); it != adn->right.end(); ++it) {
-            QAction* a = sub->addAction(it->first);
-            connect(a, SIGNAL(triggered()), this, SLOT(addLayer()));
-        }
-
+        
         connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
+
+        QAction* addAction = menu.addAction(tr("Add"));
+        connect(addAction, SIGNAL(triggered()), this, SLOT(addLayer()));
         menu.exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {
         auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
@@ -156,9 +154,7 @@ void dicom::PointsState::clear()
 
 void dicom::PointsState::addLayer()
 {
-    QAction* a = qobject_cast<QAction*>(sender());
-    int adnIdx = adnotations::instance()->right.at(a->text());
-    addLayer(adnIdx);
+    addLayer(adnotationIdx);
     resetLayer();
     machine->setState(machine->getNormalState());
 }
@@ -196,7 +192,7 @@ void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
 void dicom::PointsState::end()
 {
     if (layer->getNumPoint() > 0) {
-        addLayer(-1);
+        addLayer(adnotationIdx);
         resetLayer();
     }
     machine->changeCursor(Qt::ArrowCursor);
@@ -232,10 +228,6 @@ bool dicom::PointsState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
 void dicom::PointsState::resetLayer()
 {
     layer = utils::make_shared<PointsLayer>();
-    // TODO pozbyc sie tej flagi
-    if (curved) {
-        layer->setPointsDrawer(utils::make_shared<CurveDrawer>());
-    } else {
-        layer->setPointsDrawer(utils::make_shared<PolyDrawer>());
-    }
+    layer->setPointsDrawer(DrawersBuilder::createDrawer(adnotationIdx));
 }
+

@@ -89,7 +89,7 @@ QSplashScreen * CoreMainWindow::splashScreen()
 
 		initializeSplashScreen(splashScreen_);
 
-		//splashScreen_->finish(this);
+		splashScreen_->finish(this);
 		splashScreen_->show();
 	}	
 

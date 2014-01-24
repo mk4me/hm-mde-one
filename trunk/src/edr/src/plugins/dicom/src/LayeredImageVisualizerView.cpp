@@ -23,12 +23,9 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(ui->nextButton, SIGNAL(clicked()), model, SLOT(setNextSerie()));
     connect(ui->sliderBar, SIGNAL(valueChanged(int)), model, SLOT(trySetSerie(int)));
     connect(model, SIGNAL(serieChanged()), this, SLOT(refresh()));
-    //connect(ui->saveButton, SIGNAL(clicked()), model, SLOT(saveSerie()));
-//    connect(ui->editButton, SIGNAL(clicked()), this, SLOT(editSelectedSerie()));
     connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedLayers()));
 
-//    ui->treeView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    ui->treeView->setItemDelegateForColumn(1, new AdnotationsDelegate());
+    //ui->treeView->setItemDelegateForColumn(1, new AdnotationsDelegate());
     ui->treeView->header()->setResizeMode(QHeaderView::ResizeToContents);
     connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
 
@@ -37,9 +34,18 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 
     coreUI::CoreAction*  nrml = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/arrowIcon.png"), tr("Normal"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  move = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/moveIcon.png"), tr("Move"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  edit = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/moveIcon.png"), tr("Edit"), this, coreUI::CoreTitleBar::Left);
+/*
     coreUI::CoreAction*  curv = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/curveIcon.png"), tr("Add curve"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);*/
 
+    coreUI::CoreAction*  bone = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::bone)), tr("Tag bone"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  skin = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::skin)), tr("Tag skin"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  tend = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::tendon)), tr("Tag tendon"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  join = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::joint)), tr("Tag joint"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  infl = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::inflammatory)), tr("Tag region inflamatory synovitis"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  nois = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::noise)), tr("Tag noise"), this, coreUI::CoreTitleBar::Left);
+     
     coreUI::CoreAction*  save = new coreUI::CoreAction(tr("File")  , QIcon(":/dicom/save.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  upld = new coreUI::CoreAction(tr("File")  , QIcon(":/dicom/upload.png"), tr("Upload"), this, coreUI::CoreTitleBar::Left);
 
@@ -50,8 +56,13 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 
     connect(nrml, SIGNAL(triggered()), this, SLOT(normalState()));
     connect(move, SIGNAL(triggered()), this, SLOT(moveState()));
-    connect(curv, SIGNAL(triggered()), this, SLOT(curveState()));
-    connect(poly, SIGNAL(triggered()), this, SLOT(polyState()));
+
+    connect(bone, SIGNAL(triggered()), this, SLOT(boneState()));
+    connect(skin, SIGNAL(triggered()), this, SLOT(skinState()));
+    connect(tend, SIGNAL(triggered()), this, SLOT(tendonState()));
+    connect(join, SIGNAL(triggered()), this, SLOT(jointState()));
+    connect(infl, SIGNAL(triggered()), this, SLOT(inflamatoryState()));
+    connect(nois, SIGNAL(triggered()), this, SLOT(noiseState()));
 
     connect(save, SIGNAL(triggered()), model, SLOT(saveSerie()));
     connect(upld, SIGNAL(triggered()), model, SLOT(uploadSerie()));
@@ -62,8 +73,14 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 
     this->addAction(nrml);
     //this->addAction(move);
-    this->addAction(curv);
-    this->addAction(poly);
+
+    this->addAction(bone);
+    this->addAction(skin);
+    this->addAction(tend);
+    this->addAction(join);
+    this->addAction(infl);
+    this->addAction(nois);
+
     this->addAction(save);
     this->addAction(upld);
     this->addAction(crop);
@@ -145,21 +162,21 @@ void dicom::LayeredImageVisualizerView::normalState()
     }
 }
 
-void dicom::LayeredImageVisualizerView::curveState()
-{
-    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
-    if (serie) {
-        serie->setCurveState();
-    }
-}
-
-void dicom::LayeredImageVisualizerView::polyState()
-{
-    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
-    if (serie) {
-        serie->setPolyState();
-    }
-}
+//void dicom::LayeredImageVisualizerView::curveState()
+//{
+//    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+//    if (serie) {
+//        serie->setCurveState();
+//    }
+//}
+//
+//void dicom::LayeredImageVisualizerView::polyState()
+//{
+//    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+//    if (serie) {
+//        serie->setPolyState();
+//    }
+//}
 
 void dicom::LayeredImageVisualizerView::removeSelectedLayers()
 {
@@ -213,5 +230,53 @@ void dicom::LayeredImageVisualizerView::moveState()
     LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
     if (serie) {
         serie->setMoveState();
+    }
+}
+
+void dicom::LayeredImageVisualizerView::boneState()
+{
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+    if (serie) {
+        serie->setBoneState();
+    }
+}
+
+void dicom::LayeredImageVisualizerView::skinState()
+{
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+    if (serie) {
+        serie->setSkinState();
+    }
+}
+
+void dicom::LayeredImageVisualizerView::tendonState()
+{
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+    if (serie) {
+        serie->setTendonState();
+    }
+}
+
+void dicom::LayeredImageVisualizerView::jointState()
+{
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+    if (serie) {
+        serie->setJointState();
+    }
+}
+
+void dicom::LayeredImageVisualizerView::inflamatoryState()
+{
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+    if (serie) {
+        serie->setInflamatoryState();
+    }
+}
+
+void dicom::LayeredImageVisualizerView::noiseState()
+{
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
+    if (serie) {
+        serie->setNoiseState();
     }
 }

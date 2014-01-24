@@ -188,25 +188,48 @@ int dicom::AddPointCommand::getBestIdx()
     } 
     float minDist2 = std::numeric_limits<float>::max();
     int minIdx = -1;
-    for (int i =  0; i < count; ++i) {
+    for (int i =  0; i < count - 1; ++i) {
 
-        float dist2 = getDistance2(layer->getPoint(i)->pos());
+        float dist2 = distancePointLine(newP, layer->getPoint(i)->pos(), layer->getPoint(i + 1)->pos());
         if (dist2 < minDist2) {
             minDist2 = dist2;
-            minIdx = i;
+            minIdx = i + 1;
         }
     }
-
-    int prev = minIdx == 0 ? (count - 1) : (minIdx - 1);
-    int next = minIdx == (count - 1) ? 0 : (minIdx + 1);
+    float endD = sqrt(getDistance2(layer->getPoint(count - 1)->pos()));
+    float startD = sqrt(getDistance2(layer->getPoint(0)->pos()));
+    if (endD - minDist2 < 0.001f ) {
+        minIdx = count;
+        minDist2 = endD;
+    } 
+    
+    if (startD - minDist2 < 0.001f ) {
+        minIdx = 0;
+        minDist2 = startD;
+    }
+    /* float dist2 = distancePointLine(newP, layer->getPoint(count - 1)->pos(), layer->getPoint(0)->pos());
+    if (dist2 < minDist2) {
+    minDist2 = dist2;
+    if (getDistance2(layer->getPoint(count - 1)->pos()) < getDistance2(layer->getPoint(0)->pos())) {
+    minIdx = count;
+    } else {
+    minIdx = 0;
+    }
+    }*/
+    /*if (sqrt(getDistance2(layer->getPoint(count - 1)->pos())) - minDist2 < 0.001f) {
+        minIdx = count;
+    }*/
+    return minIdx;
+    //int prev = minIdx == 0 ? (count - 1) : (minIdx - 1);
+    //int next = minIdx == (count - 1) ? 0 : (minIdx + 1);
     
     /*float prevDist = getDistance2(layer->getPoint(prev)->pos());
     float nextDist = getDistance2(layer->getPoint(next)->pos());*/
 
-    float prevDist = distancePointLine(newP, layer->getPoint(prev)->pos(), layer->getPoint(minIdx)->pos());
-    float nextDist = distancePointLine(newP, layer->getPoint(minIdx)->pos(), layer->getPoint(next)->pos());
-    
-    return prevDist < nextDist ? minIdx : next;
+    //float prevDist = distancePointLine(newP, layer->getPoint(prev)->pos(), layer->getPoint(minIdx)->pos());
+    //float nextDist = distancePointLine(newP, layer->getPoint(minIdx)->pos(), layer->getPoint(next)->pos());
+    //
+    //return prevDist < nextDist ? minIdx : next;
 }
 
 float dicom::AddPointCommand::getDistance2( const QPointF& p )
