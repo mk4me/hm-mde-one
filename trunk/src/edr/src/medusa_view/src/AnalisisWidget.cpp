@@ -158,13 +158,13 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
     contextEventFilter->registerClosableContextWidget(visWidget);
     visWidget->installEventFilter(visualizerFilter.get());
 
-    connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
 
     //kontekst wizualizatora!!
-    SimpleContextPtr visualizerUsageContext(new SimpleContext(flexiTabWidget, tr("Visualizer")));
+    SimpleContextPtr visualizerUsageContext(new MedusaVisualizerSimpleContext(flexiTabWidget, tr("Visualizer")));
     manager->addContext(visualizerUsageContext, parent);
     // WYLACZONE DLA MEDUSA!!
-    //manager->addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
+    connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
+    manager->addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
     manager->addWidgetToContext(visualizerUsageContext, titleBar);
     manager->addWidgetToContext(visualizerUsageContext, visWidget);
 }

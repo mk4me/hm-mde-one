@@ -5,6 +5,7 @@
 #include <coreui/ICoreActionSection.h>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/CoreFlexiToolBarSection.h>
+#include <coreui/CoreVisualizerWidget.h>
 
 QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, bool skipSettings, bool skipUtils)
 {
@@ -37,12 +38,11 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, bool skipSett
     for(auto it = sections.begin(); it != sections.end(); ++it){
 
         //pomijam grupy które są tutaj niepotrzebne
-        if(it->first == QObject::tr("Settings") && skipSettings){
+        if(it->first == QObject::tr("Settings")){
             continue;
         }
-        QString tst = QObject::tr("Utils");
-        QString tst2 = QObject::tr("Tools");
-        if(it->first == QObject::tr("Utils") && skipUtils){
+
+        if(it->first == QObject::tr("Utils")){
             continue;
         }
 
@@ -188,3 +188,16 @@ void SimpleContext::onUnregisterContextWidget( QWidget * contextWidget )
 {
 }
 
+
+MedusaVisualizerSimpleContext::MedusaVisualizerSimpleContext( QTabWidget * flexiTabWidget, const QString& name ) :
+    SimpleContext(flexiTabWidget, name)
+{
+
+}
+
+void MedusaVisualizerSimpleContext::onRegisterContextWidget( QWidget * contextWidget )
+{
+    if (!dynamic_cast<coreUI::CoreVisualizerWidget*>(contextWidget)) {
+        SimpleContext::onRegisterContextWidget(contextWidget);
+    }
+}

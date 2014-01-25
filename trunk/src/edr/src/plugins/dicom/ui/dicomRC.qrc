@@ -18,5 +18,11 @@
 	<file alias="left.png">../resources/embedded/left.png</file>
 	<file alias="right.png">../resources/embedded/right.png</file>
 	<file alias="upload.png">../resources/embedded/upload.png</file>
+	<file alias="BoneIcon.png">../resources/embedded/BoneIcon.png</file>
+	<file alias="SkinIcon.png">../resources/embedded/SkinIcon.png</file>
+	<file alias="TendonIcon.png">../resources/embedded/TendonIcon.png</file>
+	<file alias="JointIcon.png">../resources/embedded/JointIcon.png</file>
+	<file alias="InflammatoryIcon.png">../resources/embedded/InflammatoryIcon.png</file>
+	<file alias="NoiseIcon.png">../resources/embedded/NoiseIcon.png</file>
   </qresource>
 </RCC>

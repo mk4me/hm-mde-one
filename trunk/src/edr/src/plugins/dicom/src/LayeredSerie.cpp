@@ -80,6 +80,7 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
             setName(xml.stem().string());
         }
         this->data = data;
+        switchCrop(); //domyslny cropping
     }
 }
 
@@ -231,7 +232,8 @@ void dicom::LayeredSerie::switchCrop()
     BackgroundLayerPtr background = utils::dynamic_pointer_cast<BackgroundLayer>(img->getBackgroundLayer());
     if (background) {
         if (background->getPixmap().rect() == background->getCrop()) {
-            background->setCrop(QRect(56,135, 761, 493));
+            //background->setCrop(QRect(56,135, 761, 493));
+            background->setCrop(QRect(4,133, 855, 645));
         } else {
             background->setCrop(background->getPixmap().rect());
         }

@@ -118,11 +118,11 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
     if (e->button() == Qt::RightButton && layer->getNumPoint() > 0) {
         QMenu menu;
-        QAction* clearAction = menu.addAction(tr("Clear"));
+        QAction* clearAction = menu.addAction(tr("Remove"));
         
         connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
 
-        QAction* addAction = menu.addAction(tr("Add"));
+        QAction* addAction = menu.addAction(tr("Save tag"));
         connect(addAction, SIGNAL(triggered()), this, SLOT(addLayer()));
         menu.exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {

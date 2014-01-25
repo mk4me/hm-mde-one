@@ -39,12 +39,12 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     coreUI::CoreAction*  curv = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/curveIcon.png"), tr("Add curve"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);*/
 
-    coreUI::CoreAction*  bone = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::bone)), tr("Tag bone"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  skin = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::skin)), tr("Tag skin"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  tend = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::tendon)), tr("Tag tendon"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  join = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::joint)), tr("Tag joint"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  infl = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::inflammatory)), tr("Tag region inflamatory synovitis"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  nois = new coreUI::CoreAction(tr("State")  , QIcon(DrawersBuilder::getColorPixmap(adnotations::noise)), tr("Tag noise"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  bone = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/BoneIcon.png"), tr("Tag bone"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  skin = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/SkinIcon.png"), tr("Tag skin"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  tend = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/TendonIcon.png"), tr("Tag tendon"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  join = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/JointIcon.png"), tr("Tag joint"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  infl = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/InflammatoryIcon.png"), tr("Tag region inflamatory synovitis"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  nois = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/NoiseIcon.png"), tr("Tag noise"), this, coreUI::CoreTitleBar::Left);
      
     coreUI::CoreAction*  save = new coreUI::CoreAction(tr("File")  , QIcon(":/dicom/save.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  upld = new coreUI::CoreAction(tr("File")  , QIcon(":/dicom/upload.png"), tr("Upload"), this, coreUI::CoreTitleBar::Left);
@@ -81,7 +81,8 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     this->addAction(infl);
     this->addAction(nois);
 
-    this->addAction(save);
+    // hack - tymczasowo ukryte
+    //this->addAction(save);
     this->addAction(upld);
     this->addAction(crop);
     

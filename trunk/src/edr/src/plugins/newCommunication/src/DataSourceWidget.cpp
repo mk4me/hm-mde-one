@@ -324,6 +324,9 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 
     statusWidget = new communication::StatusWidget(dataSource->getServerStatusManager(), "http://v21.pjwstk.edu.pl/");
     connect(statusWidget->getLogoutButton(), SIGNAL(clicked()), this, SLOT(onLogin()));
+    // hack - tymczasowo ukryte, drugi przycisk ukrywany po pozytywnym zalogowaniu (onLogin(u,p) - przy save credentials)
+    statusWidget->getLogoutButton()->setVisible(false); 
+
 	dataViewWidget->layout()->addWidget(downloadStatusWidget);
     dataViewWidget->layout()->addWidget(statusWidget);
 
@@ -738,7 +741,8 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 		messageBox.exec();
 
 	}else if(dataSource->isLogged() == true){
-
+        // hack - tymczasowo ukryte
+        loginButton->setVisible(false);
         // zapisanie loginu i hasła
         saveCredentials();
 

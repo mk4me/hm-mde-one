@@ -60,6 +60,15 @@ private:
 };
 DEFINE_SMART_POINTERS(SimpleContext);
 
+//! uniwersalny kontekst, sam rozmieszcza akcje
+class MedusaVisualizerSimpleContext : public SimpleContext
+{
+public:
+    MedusaVisualizerSimpleContext(QTabWidget * flexiTabWidget, const QString& name);
+    //! rejestracja kontekstu
+    virtual void onRegisterContextWidget(QWidget * contextWidget);
+};
+
 
 
 #endif
