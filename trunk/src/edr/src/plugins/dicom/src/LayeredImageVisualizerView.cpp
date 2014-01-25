@@ -24,7 +24,8 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(ui->sliderBar, SIGNAL(valueChanged(int)), model, SLOT(trySetSerie(int)));
     connect(model, SIGNAL(serieChanged()), this, SLOT(refresh()));
     connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedLayers()));
-
+    ui->removeButton->setToolTip(tr("Remove selected tag"));
+        
     //ui->treeView->setItemDelegateForColumn(1, new AdnotationsDelegate());
     ui->treeView->header()->setResizeMode(QHeaderView::ResizeToContents);
     connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
@@ -32,22 +33,22 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     coreUI::CoreAction*  undo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/undo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  redo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/redo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
 
-    coreUI::CoreAction*  nrml = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/arrowIcon.png"), tr("Normal"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  move = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/moveIcon.png"), tr("Move"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  edit = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/moveIcon.png"), tr("Edit"), this, coreUI::CoreTitleBar::Left);
-/*
-    coreUI::CoreAction*  curv = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/curveIcon.png"), tr("Add curve"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);*/
-
-    coreUI::CoreAction*  bone = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/BoneIcon.png"), tr("Tag bone"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  skin = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/SkinIcon.png"), tr("Tag skin"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  tend = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/TendonIcon.png"), tr("Tag tendon"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  join = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/JointIcon.png"), tr("Tag joint"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  infl = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/InflammatoryIcon.png"), tr("Tag region inflamatory synovitis"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  nois = new coreUI::CoreAction(tr("State")  , QIcon(":/dicom/NoiseIcon.png"), tr("Tag noise"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  nrml = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/arrowIcon.png"), tr("Normal"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  move = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/moveIcon.png"), tr("Move"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  edit = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/moveIcon.png"), tr("Edit"), this, coreUI::CoreTitleBar::Left);
+/*                                                        
+    coreUI::CoreAction*  curv = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/curveIcon.png"), tr("Add curve"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);*/
+                                                          
+    coreUI::CoreAction*  bone = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/BoneIcon.png"), tr("Tag bone"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  skin = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/SkinIcon.png"), tr("Tag skin"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  tend = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/TendonIcon.png"), tr("Tag tendon"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  join = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/JointIcon.png"), tr("Tag joint"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  infl = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/InflammatoryIcon.png"), tr("Tag region inflamatory synovitis"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  nois = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/NoiseIcon.png"), tr("Tag noise"), this, coreUI::CoreTitleBar::Left);
      
-    coreUI::CoreAction*  save = new coreUI::CoreAction(tr("File")  , QIcon(":/dicom/save.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  upld = new coreUI::CoreAction(tr("File")  , QIcon(":/dicom/upload.png"), tr("Upload"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  save = new coreUI::CoreAction(tr("I/O")  , QIcon(":/dicom/save.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
+    coreUI::CoreAction*  upld = new coreUI::CoreAction(tr("I/O")  , QIcon(":/dicom/upload.png"), tr("Upload"), this, coreUI::CoreTitleBar::Left);
 
     coreUI::CoreAction*  crop = new coreUI::CoreAction(tr("Other")  , QIcon(":/dicom/crop.png"), tr("Crop"), this, coreUI::CoreTitleBar::Left);
     

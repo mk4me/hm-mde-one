@@ -177,7 +177,7 @@ void SimpleContext::onRegisterContextWidget( QWidget * contextWidget )
             widget = new coreUI::CoreFlexiToolBar(flexiTabWidget);
         }
 
-        auto section = new coreUI::CoreFlexiToolBarSection(QObject::tr("Operations"));
+        auto section = new coreUI::CoreFlexiToolBarSection(QObject::tr("")); // hack - wywalilem nazwe Operations
         section->setInnerWidget(actionsWidget);
         widget->addSection(section);
         widget->setVisible(false);

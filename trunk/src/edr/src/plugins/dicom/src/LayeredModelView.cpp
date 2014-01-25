@@ -176,7 +176,8 @@ dicom::ILayeredImageConstPtr dicom::LayeredModelView::getImage() const
 void dicom::LayeredModelView::setImage( ILayeredImagePtr val )
 {
     image = val;
-    this->reset();
+    //this->reset();
+    this->refreshSelected();
 }
 
 bool dicom::LayeredModelView::removeRows( int row, int count, const QModelIndex &parent /*= QModelIndex( ) */ )

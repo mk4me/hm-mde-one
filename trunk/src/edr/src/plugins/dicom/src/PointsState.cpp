@@ -122,7 +122,7 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
         
         connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
 
-        QAction* addAction = menu.addAction(tr("Save tag"));
+        QAction* addAction = menu.addAction(tr("Save"));
         connect(addAction, SIGNAL(triggered()), this, SLOT(addLayer()));
         menu.exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {

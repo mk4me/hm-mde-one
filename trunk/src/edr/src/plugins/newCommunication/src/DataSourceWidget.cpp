@@ -743,6 +743,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 	}else if(dataSource->isLogged() == true){
         // hack - tymczasowo ukryte
         loginButton->setVisible(false);
+        setTabEnabled(indexOf(configTab), false);
         // zapisanie loginu i hasła
         saveCredentials();
 
@@ -860,9 +861,8 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 		tryLoadProjects();
 
-		setTabEnabled(0, true);
-		setTabEnabled(1, true);
-		setTabEnabled(2, true);
+		setTabEnabled(indexOf(motionDataTab), true);
+		setTabEnabled(indexOf(configTab), true);
 		setCurrentWidget(motionDataTab);
 
 	}else{
@@ -938,9 +938,8 @@ void DataSourceWidget::onLogin()
 
 		dataSource->logout();
 
-		setTabEnabled(0, false);
-		setTabEnabled(1, false);
-		setTabEnabled(2, true);
+		setTabEnabled(indexOf(motionDataTab), false);
+		setTabEnabled(indexOf(configTab), true);
 		setCurrentWidget(configTab);
 
 		onFilterChange(-1);

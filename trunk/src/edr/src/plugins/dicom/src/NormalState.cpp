@@ -28,7 +28,7 @@ void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
         if (layerIt != item2layer.end()) {
             (layerIt->second)->setSelected(true);
         }
-        machine->getSerie()->getLayersModel()->refresh();
+        machine->getSerie()->getLayersModel()->refreshSelected();
     }
 }
 
