@@ -69,4 +69,19 @@ void coreUI::GraphicSceneWithStateMachine::wheelEvent( QGraphicsSceneWheelEvent 
         QGraphicsScene::wheelEvent(event);
     }
 }
+
+void coreUI::GraphicSceneWithStateMachine::focusInEvent( QFocusEvent * event )
+{
+    if (!impl->machine->focusInEvent(event)) {
+        QGraphicsScene::focusInEvent(event);
+    }
+}
+
+void coreUI::GraphicSceneWithStateMachine::focusOutEvent( QFocusEvent * event )
+{
+    if (!impl->machine->focusOutEvent(event)) {
+        QGraphicsScene::focusOutEvent(event);
+    }
+}
+
 #endif

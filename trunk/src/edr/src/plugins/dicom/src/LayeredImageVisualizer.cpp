@@ -263,5 +263,10 @@ std::string dicom::LayeredImageVisualizer::getUserName() const
     return comm->currentUser()->name();
 }
 
+LayeredImageVisualizerView* dicom::LayeredImageVisualizer::getMainWidget() const
+{
+    return mainWidget;
+}
+
 
 

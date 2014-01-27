@@ -33,6 +33,8 @@ public:
 public:
     virtual bool mousePressEvent(QGraphicsSceneMouseEvent* e) { return false; }
     virtual bool mouseReleaseEvent(QGraphicsSceneMouseEvent* e) { return false; }
+    virtual bool focusInEvent(QFocusEvent * event) { return false; }
+    virtual bool focusOutEvent(QFocusEvent * event) { return false; }
     virtual bool mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) { return false; }
     virtual bool mouseMoveEvent(QGraphicsSceneMouseEvent* e) { return false; }
 	virtual bool keyPressEvent(QKeyEvent *event) { return false; }

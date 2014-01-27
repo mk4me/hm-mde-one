@@ -72,6 +72,7 @@ namespace dicom {
         virtual void update(double deltaTime);
         //! Zrzut wizualizatora do pixmapy
         virtual QPixmap takeScreenshot() const;
+        LayeredImageVisualizerView* getMainWidget() const;
 
         int getNumSeries() const;
         int getCurrentSerieNo() const;
@@ -99,6 +100,7 @@ namespace dicom {
         
     private:
         LayeredImageVisualizerView* mainWidget;
+        
         std::vector<LayeredSerie*> series;
         int currentSerie;
     };

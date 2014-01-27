@@ -138,7 +138,6 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	if(visWidget == nullptr){
 		throw std::runtime_error("nullptr instead of QWidget obtained from Visualizer");
 	}
-
 	visualizer_->getSupportedTypes(supportedDataTypes);
 
 	auto layout = new QHBoxLayout;

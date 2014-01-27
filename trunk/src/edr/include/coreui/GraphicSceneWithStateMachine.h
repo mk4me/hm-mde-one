@@ -43,6 +43,13 @@ public:
     //! \param event 
     virtual void wheelEvent( QGraphicsSceneWheelEvent *event );
     //! 
+    //! \param event 
+    virtual void focusInEvent(QFocusEvent * event);
+    //! 
+    //! \param event 
+    virtual void focusOutEvent(QFocusEvent * event);
+
+    //! 
     ////! \param event 
     //virtual void dropEvent(QGraphicsSceneDragDropEvent *event);
     ////! 

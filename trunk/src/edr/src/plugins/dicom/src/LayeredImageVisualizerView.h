@@ -37,6 +37,9 @@ public:
     LayeredImageVisualizerView(LayeredImageVisualizer* model, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~LayeredImageVisualizerView() {}
 
+public:
+    QRect getSceneRect() const;
+
 public Q_SLOTS:
     //! odœwie¿enie ca³ego wizualizatora, np. gdy zmieni³a siê aktywna seria
     void refresh();

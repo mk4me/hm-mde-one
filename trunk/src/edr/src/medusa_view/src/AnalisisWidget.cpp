@@ -116,7 +116,7 @@ QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & vi
     connect(visualizer.get(), SIGNAL(screenshotTaken(const QPixmap&)), this, SLOT(addToReports(const QPixmap&)));
 
     auto visWidget = new coreUI::CoreVisualizerWidget(visualizer);
-
+    
     auto dockVisWidget = embeddWidget(visWidget, QString::fromStdString(visualizer->getName()),
         Qt::AllDockWidgetAreas,
         false);
@@ -228,6 +228,8 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
     }
 
     model->addSeriesToVisualizer(visualizer, helper, path, visualizerDockWidget);
+     
+    visualizer->getOrCreateWidget()->setFocus(Qt::OtherFocusReason);
     return visualizerDockWidget;
 }
 

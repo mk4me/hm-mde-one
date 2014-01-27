@@ -42,6 +42,8 @@ public:
     bool mouseMoveEvent(QGraphicsSceneMouseEvent* e);
 	bool keyPressEvent(QKeyEvent *event);
 	bool keyReleaseEvent(QKeyEvent *event);
+    bool focusInEvent(QFocusEvent * event);
+    bool focusOutEvent(QFocusEvent * event);
 
 #ifndef QT_NO_WHEELEVENT
     bool wheelEvent(QGraphicsSceneWheelEvent* e);

@@ -46,6 +46,8 @@ coreUI::AbstractStatePtr coreUI::AbstractStateMachine::getCurrentState()
     return impl->currentState;
 }
 
+
+
     
 void AbstractStateMachine::setState( AbstractStatePtr state )
 {
@@ -53,6 +55,16 @@ void AbstractStateMachine::setState( AbstractStatePtr state )
     impl->currentState->end();
     impl->currentState = state;
     state->begin(impl->currentState);
+}
+
+bool coreUI::AbstractStateMachine::focusInEvent( QFocusEvent * event )
+{
+    return impl->currentState->focusInEvent(event);
+}
+
+bool coreUI::AbstractStateMachine::focusOutEvent( QFocusEvent * event )
+{
+    return impl->currentState->focusOutEvent(event);
 }
 
 bool AbstractStateMachine::mousePressEvent( QGraphicsSceneMouseEvent* e )

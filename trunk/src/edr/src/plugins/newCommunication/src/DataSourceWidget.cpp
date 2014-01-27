@@ -760,7 +760,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 		// poprawna komunikacja, użytkownik zweryfikowany || brak komunikacji i logowanie lokalne
 
-		if(dataSource->offlineMode() == true){
+		if(dataSource->offlineMode() == true) {
 			// jeżeli jestem zalogowany lokalnie to informuję o tym
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Login information"));

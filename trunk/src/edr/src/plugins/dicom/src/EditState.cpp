@@ -325,3 +325,9 @@ void dicom::EditState::deletePoint()
     }
 }
 
+bool dicom::EditState::focusOutEvent( QFocusEvent * event )
+{
+    machine->setState(machine->getNormalState());
+    return true;
+}
+

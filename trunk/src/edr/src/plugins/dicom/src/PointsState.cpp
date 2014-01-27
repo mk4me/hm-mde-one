@@ -191,7 +191,7 @@ void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
 
 void dicom::PointsState::end()
 {
-    if (layer->getNumPoint() > 0) {
+    if (layer->getNumPoint() > 2) {
         addLayer(adnotationIdx);
         resetLayer();
     }
@@ -231,3 +231,8 @@ void dicom::PointsState::resetLayer()
     layer->setPointsDrawer(DrawersBuilder::createDrawer(adnotationIdx));
 }
 
+bool dicom::PointsState::focusOutEvent( QFocusEvent * event )
+{
+    machine->setState(machine->getNormalState());
+    return true;
+}

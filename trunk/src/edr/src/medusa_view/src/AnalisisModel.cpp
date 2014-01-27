@@ -17,10 +17,6 @@ void AnalisisModel::observe( const core::IMemoryDataManagerHierarchy::HierarchyC
         switch (it->modification) {
         case core::IDataManagerReader::ADD_OBJECT:
             model.addRootItem(it->value);
-            if (model.getNumChildren() == 1) {
-                emit expandTree(1);
-            }
-            
             break;
         case core::IDataManagerReader::REMOVE_OBJECT:
             model.removeRootItem(it->value);
@@ -29,6 +25,8 @@ void AnalisisModel::observe( const core::IMemoryDataManagerHierarchy::HierarchyC
             model.updateItem(it->value);
         }
     }
+
+    emit expandTree(1);
 }
 
 void AnalisisModel::addFilterBundles( const core::IFilterProvider::FilterBundles& bundles )

@@ -40,7 +40,7 @@ namespace dicom {
 
     public:
         virtual void setupData( const core::ObjectWrapperConstPtr & data );
-        virtual void update() {}
+        virtual void update();
         virtual void setTime( double time );
         virtual double getLength() const;
         
@@ -61,8 +61,8 @@ namespace dicom {
         void editLayer(int tagIdx, int idx);
         void undo();
         void redo();
-        void setPolyState();
-        void setCurveState();
+        //void setPolyState();
+        //void setCurveState();
         void setNormalState();
         void switchCrop();
         void setMoveState();
@@ -76,6 +76,7 @@ namespace dicom {
         void setJointState();
         void setInflamatoryState();
         void setNoiseState();
+        void fitToSize();
     private:
         ILayeredImagePtr image;
         coreUI::WheelGraphicsView* graphicsView;

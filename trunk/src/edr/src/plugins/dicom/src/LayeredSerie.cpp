@@ -81,6 +81,7 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
         }
         this->data = data;
         switchCrop(); //domyslny cropping
+        fitToSize(); 
     }
 }
 
@@ -143,7 +144,6 @@ void dicom::LayeredSerie::refresh()
 {
     getGraphicsView()->setSceneRect(0, 0, getSize().width(), getSize().height());
     getGraphicsScene()->setSceneRect( getGraphicsView()->rect() );
-    //pixmapItem->setPixmap(getPixmap());
     BOOST_FOREACH(std::string tag, image->getTags()) {
         int count = image->getNumLayerItems(tag);
         for (int i = 0; i < count; ++i) {
@@ -191,9 +191,7 @@ void dicom::LayeredSerie::save()
     std::ofstream ofs(getXmlOutputFilename());
     assert(ofs.good());
     boost::archive::xml_oarchive oa(ofs);
-    /*oa.register_type<LayeredImage>();*/
     oa.register_type<BackgroundLayer>();
-//    oa.register_type<CircleLayer>();
     oa.register_type<PointsLayer>();
     LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(getImage());
     oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize(visualizer->getUserName()));
@@ -233,22 +231,12 @@ void dicom::LayeredSerie::switchCrop()
     if (background) {
         if (background->getPixmap().rect() == background->getCrop()) {
             //background->setCrop(QRect(56,135, 761, 493));
-            background->setCrop(QRect(4,133, 855, 645));
+            background->setCrop(QRect(4,133, 850, 645));
         } else {
             background->setCrop(background->getPixmap().rect());
         }
     }
 }
-
-//void dicom::LayeredSerie::setPolyState()
-//{
-//    stateMachine->setState(stateMachine->getPolyState());
-//}
-//
-//void dicom::LayeredSerie::setCurveState()
-//{
-//    stateMachine->setState(stateMachine->getCurveState());
-//}
 
 void dicom::LayeredSerie::setMoveState()
 {
@@ -299,4 +287,31 @@ void dicom::LayeredSerie::setNoiseState()
 {
     stateMachine->setState(stateMachine->getNoiseState());
 }
+
+void dicom::LayeredSerie::fitToSize()
+{
+    ILayeredImagePtr img = this->getImage();
+    BackgroundLayerPtr background = utils::dynamic_pointer_cast<BackgroundLayer>(img->getBackgroundLayer());
+    if (background) {
+        auto rect = background->getCrop();
+        auto rectW = visualizer->getMainWidget()->getSceneRect();
+
+        auto geom3 = getGraphicsView()->size();
+        auto geom2 = getGraphicsScene()->sceneRect();
+        
+        auto h = (float)rectW.height() / rect.height();
+        auto w = (float)rectW.width() / rect.width();
+
+        if (w > 1.0f) {
+            getGraphicsView()->scale(w, w);
+        }
+    }
+}
+
+void dicom::LayeredSerie::update()
+{
+}
+
+
+
 

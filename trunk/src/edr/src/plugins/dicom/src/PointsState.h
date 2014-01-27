@@ -28,6 +28,7 @@ public:
     virtual bool mouseMoveEvent(QGraphicsSceneMouseEvent* e);
     virtual bool mouseReleaseEvent( QGraphicsSceneMouseEvent* e );
     virtual bool mousePressEvent( QGraphicsSceneMouseEvent* e );
+    virtual bool focusOutEvent(QFocusEvent * event);
 
 private Q_SLOTS:
     void clear();

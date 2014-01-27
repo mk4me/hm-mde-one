@@ -69,8 +69,9 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(upld, SIGNAL(triggered()), model, SLOT(uploadSerie()));
     connect(crop, SIGNAL(triggered()), this, SLOT(crop()));
 
-    this->addAction(undo);
-    this->addAction(redo);
+    // tymczasowo wylaczone
+    //this->addAction(undo);
+    //this->addAction(redo);
 
     this->addAction(nrml);
     //this->addAction(move);
@@ -122,6 +123,7 @@ void dicom::LayeredImageVisualizerView::refresh()
                 lastView->hide();
             }
             lastView = serie->getGraphicsView();
+            serie->fitToSize();
             if (lastView->parent() != ui->graphicsHolder) {
                 ui->graphicsHolder->layout()->addWidget(lastView);
             }
@@ -164,21 +166,6 @@ void dicom::LayeredImageVisualizerView::normalState()
     }
 }
 
-//void dicom::LayeredImageVisualizerView::curveState()
-//{
-//    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
-//    if (serie) {
-//        serie->setCurveState();
-//    }
-//}
-//
-//void dicom::LayeredImageVisualizerView::polyState()
-//{
-//    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
-//    if (serie) {
-//        serie->setPolyState();
-//    }
-//}
 
 void dicom::LayeredImageVisualizerView::removeSelectedLayers()
 {
@@ -217,6 +204,10 @@ void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex & )
         auto ti = rows.begin();
         model->selectLayer(ti->first, ti->second);
     }
+
+    ui->treeView->blockSignals(true);
+    ui->treeView->clearSelection();
+    ui->treeView->blockSignals(false);
 }
 
 void dicom::LayeredImageVisualizerView::crop()
@@ -281,4 +272,9 @@ void dicom::LayeredImageVisualizerView::noiseState()
     if (serie) {
         serie->setNoiseState();
     }
+}
+
+QRect dicom::LayeredImageVisualizerView::getSceneRect() const
+{
+    return ui->graphicsHolderContainer->geometry();
 }
