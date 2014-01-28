@@ -129,7 +129,13 @@ void LayeredImageVisualizer::getSupportedTypes( core::TypeInfoList & supportedTy
 
 void LayeredImageVisualizer::update( double deltaTime )
 {
-
+    if (correctIndex(currentSerie)) {
+        auto serie = series[currentSerie];
+        // nie jest to najszczesliwszy mechanizm, ale inicjalizacja jest mozliwa dopiero, gdy zna sie geometrie widgetow
+        if (!serie->wasInitialized()) {
+            serie->init();
+        }
+    }
 }
 
 QPixmap LayeredImageVisualizer::takeScreenshot() const
@@ -263,9 +269,21 @@ std::string dicom::LayeredImageVisualizer::getUserName() const
     return comm->currentUser()->name();
 }
 
-LayeredImageVisualizerView* dicom::LayeredImageVisualizer::getMainWidget() const
+void dicom::LayeredImageVisualizer::removeSelectedLayers()
 {
-    return mainWidget;
+    LayeredSerie* serie = dynamic_cast<LayeredSerie*>(getActiveSerie());
+    if (serie) {
+        auto image = serie->getImage();
+        int tagsNo = image->getNumTags();
+        for (int iTag = 0; iTag < tagsNo; ++iTag) {
+            auto tag = image->getTag(iTag);
+            for (int itm = image->getNumLayerItems(tag) - 1; itm >= 0; --itm) {
+                if (image->getLayerItem(tag, itm)->getSelected()) {
+                    serie->removeLayer(iTag, itm);
+                }
+            }
+        }
+    }
 }
 
 

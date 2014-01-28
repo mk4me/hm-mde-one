@@ -77,7 +77,12 @@ namespace dicom {
         void setInflamatoryState();
         void setNoiseState();
         void fitToSize();
+
+        void init();
+        bool wasInitialized() const;
+
     private:
+        bool initialized;
         ILayeredImagePtr image;
         coreUI::WheelGraphicsView* graphicsView;
         coreUI::GraphicSceneWithStateMachine* graphicsScene;

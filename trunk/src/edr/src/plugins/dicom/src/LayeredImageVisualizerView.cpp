@@ -23,7 +23,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(ui->nextButton, SIGNAL(clicked()), model, SLOT(setNextSerie()));
     connect(ui->sliderBar, SIGNAL(valueChanged(int)), model, SLOT(trySetSerie(int)));
     connect(model, SIGNAL(serieChanged()), this, SLOT(refresh()));
-    connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(removeSelectedLayers()));
+    connect(ui->removeButton, SIGNAL(clicked()), model, SLOT(removeSelectedLayers()));
     ui->removeButton->setToolTip(tr("Remove selected tag"));
         
     //ui->treeView->setItemDelegateForColumn(1, new AdnotationsDelegate());
@@ -83,7 +83,6 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     this->addAction(infl);
     this->addAction(nois);
 
-    // hack - tymczasowo ukryte
     //this->addAction(save);
     this->addAction(upld);
     this->addAction(crop);
@@ -163,20 +162,6 @@ void dicom::LayeredImageVisualizerView::normalState()
     LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
     if (serie) {
         serie->setNormalState();
-    }
-}
-
-
-void dicom::LayeredImageVisualizerView::removeSelectedLayers()
-{
-    QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
-    std::set<std::pair<int,int>> rows;
-    for (auto it = indexes.begin(); it != indexes.end(); ++it) {
-        rows.insert(LayeredModelView::getTagAndIndex(*it));
-    }
-    if (rows.size() == 1) {
-        auto ti = rows.begin();
-        model->removeLayer(ti->first, ti->second);
     }
 }
 
@@ -274,7 +259,3 @@ void dicom::LayeredImageVisualizerView::noiseState()
     }
 }
 
-QRect dicom::LayeredImageVisualizerView::getSceneRect() const
-{
-    return ui->graphicsHolderContainer->geometry();
-}

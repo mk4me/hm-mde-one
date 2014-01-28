@@ -72,8 +72,7 @@ namespace dicom {
         virtual void update(double deltaTime);
         //! Zrzut wizualizatora do pixmapy
         virtual QPixmap takeScreenshot() const;
-        LayeredImageVisualizerView* getMainWidget() const;
-
+        
         int getNumSeries() const;
         int getCurrentSerieNo() const;
 
@@ -89,6 +88,7 @@ namespace dicom {
         void trySetSerie(int val);
         void saveSerie();
         void uploadSerie();
+        void removeSelectedLayers();
 
     Q_SIGNALS:
         void serieChanged();
@@ -97,7 +97,7 @@ namespace dicom {
     private:
         bool correctIndex(int i) const;
         std::pair<std::string, int> selectedLayer() const;
-        
+
     private:
         LayeredImageVisualizerView* mainWidget;
         

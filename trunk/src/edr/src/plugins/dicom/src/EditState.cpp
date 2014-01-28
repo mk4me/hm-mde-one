@@ -60,7 +60,7 @@ bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
         } else {
             auto pos = e->scenePos();
             auto offs = layer->getItem()->pos();
-            machine->getCommandStack()->addCommand(utils::make_shared<AddPointCommand>(layer, pos - offs));
+            machine->getCommandStack()->addCommand(utils::make_shared<AddPointCommand>(layer, pos - offs, true));
         }
     }
 
@@ -132,18 +132,19 @@ void dicom::AddPointCommand::doIt()
         layer->addPoint(removedPoint.release());
         removedPoint = std::unique_ptr<QGraphicsItem>();
     } else {
-        idx = getBestIdx();
+        idx = bestFit ? getBestIdx() : layer->getNumPoint();
         layer->addPoint(newP, idx);
     }
 
     layer->refresh();
 }
 
-dicom::AddPointCommand::AddPointCommand( PointsLayerPtr layer, const QPointF& newP ) : 
+dicom::AddPointCommand::AddPointCommand( PointsLayerPtr layer, const QPointF& newP, bool bestFit ) : 
 layer(layer),
     newP(newP),
     idx(-1),
-    removedPoint(nullptr)
+    removedPoint(nullptr),
+    bestFit(bestFit)
 {
 
 }
@@ -207,29 +208,7 @@ int dicom::AddPointCommand::getBestIdx()
         minIdx = 0;
         minDist2 = startD;
     }
-    /* float dist2 = distancePointLine(newP, layer->getPoint(count - 1)->pos(), layer->getPoint(0)->pos());
-    if (dist2 < minDist2) {
-    minDist2 = dist2;
-    if (getDistance2(layer->getPoint(count - 1)->pos()) < getDistance2(layer->getPoint(0)->pos())) {
-    minIdx = count;
-    } else {
-    minIdx = 0;
-    }
-    }*/
-    /*if (sqrt(getDistance2(layer->getPoint(count - 1)->pos())) - minDist2 < 0.001f) {
-        minIdx = count;
-    }*/
     return minIdx;
-    //int prev = minIdx == 0 ? (count - 1) : (minIdx - 1);
-    //int next = minIdx == (count - 1) ? 0 : (minIdx + 1);
-    
-    /*float prevDist = getDistance2(layer->getPoint(prev)->pos());
-    float nextDist = getDistance2(layer->getPoint(next)->pos());*/
-
-    //float prevDist = distancePointLine(newP, layer->getPoint(prev)->pos(), layer->getPoint(minIdx)->pos());
-    //float nextDist = distancePointLine(newP, layer->getPoint(minIdx)->pos(), layer->getPoint(next)->pos());
-    //
-    //return prevDist < nextDist ? minIdx : next;
 }
 
 float dicom::AddPointCommand::getDistance2( const QPointF& p )

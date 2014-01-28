@@ -15,6 +15,7 @@
 #include <boost/archive/xml_oarchive.hpp>
 #include "LayeredImage.h"
 #include <utils/ICommand.h>
+#include <QtGui/QScrollBar>
 
 using namespace dicom;
 
@@ -81,7 +82,6 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
         }
         this->data = data;
         switchCrop(); //domyslny cropping
-        fitToSize(); 
     }
 }
 
@@ -118,6 +118,7 @@ dicom::ILayeredImagePtr dicom::LayeredSerie::getImage()
 dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer) :
     visualizer(visualizer),
     //pixmapItem(nullptr),
+    initialized(false),
     layersModel(visualizer),
     commandStack(new utils::CommandStack)
 {
@@ -294,22 +295,33 @@ void dicom::LayeredSerie::fitToSize()
     BackgroundLayerPtr background = utils::dynamic_pointer_cast<BackgroundLayer>(img->getBackgroundLayer());
     if (background) {
         auto rect = background->getCrop();
-        auto rectW = visualizer->getMainWidget()->getSceneRect();
-
-        auto geom3 = getGraphicsView()->size();
-        auto geom2 = getGraphicsScene()->sceneRect();
+        auto rectW = getGraphicsView()->rect();
         
         auto h = (float)rectW.height() / rect.height();
         auto w = (float)rectW.width() / rect.width();
 
         if (w > 1.0f) {
+            w *= 0.99f;
             getGraphicsView()->scale(w, w);
+            auto sb = getGraphicsView()->verticalScrollBar();
+            sb->setValue(sb->maximum() - 1);
         }
     }
 }
 
 void dicom::LayeredSerie::update()
 {
+}
+
+void dicom::LayeredSerie::init()
+{
+    initialized = true;
+    fitToSize();
+}
+
+bool dicom::LayeredSerie::wasInitialized() const
+{
+    return initialized;
 }
 
 

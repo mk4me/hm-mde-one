@@ -24,7 +24,7 @@ namespace dicom {
         //! \param item Element graficzny sceny, które zostanie przesuniêty 
         //! \param newP Nowa pozycja elementu 
         //! \param oldP Stara pozycja elementu
-        AddPointCommand(PointsLayerPtr layer, const QPointF& newP);
+        AddPointCommand(PointsLayerPtr layer, const QPointF& newP, bool bestFit);
 
     public:
         //! Przesuwa element
@@ -46,6 +46,7 @@ namespace dicom {
         /// usuniêty punkt, który mo¿e zostaæ przywrócony. Przywracaj¹c nie mo¿na stworzyæ nowej instancji
         /// gdy¿ mog³oby to spowodowaæ b³êdy np. przy MoveCommand
         std::unique_ptr<QGraphicsItem> removedPoint;
+        bool bestFit;
     };
 
     //! Polecenie usuwa punkt z obszaru
