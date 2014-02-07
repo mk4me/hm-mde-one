@@ -33,7 +33,7 @@ public:
     virtual void doIt() 
     {
         img->removeLayer(layer);
-        if (layer) {
+        if (layer && layer->getItem() != nullptr) {
             layer->getItem()->setVisible(false);//setParentItem(nullptr);
         }
         serie->refresh();
@@ -42,7 +42,7 @@ public:
     virtual void undoIt() 
     {
         img->addLayer(layer, serie->getUserName());
-        if (layer) {
+        if (layer && layer->getItem() != nullptr) {
             layer->getItem()->setVisible(true);
         }
         serie->refresh();
@@ -194,6 +194,8 @@ void dicom::LayeredSerie::save()
     boost::archive::xml_oarchive oa(ofs);
     oa.register_type<BackgroundLayer>();
     oa.register_type<PointsLayer>();
+	oa.register_type<BloodLevelLayer>();
+	oa.register_type<ArthritisLevelLayer>();
     LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(getImage());
     oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize(visualizer->getUserName()));
     ofs.close();

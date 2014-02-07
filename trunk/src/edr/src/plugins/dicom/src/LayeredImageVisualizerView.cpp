@@ -93,6 +93,11 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     ui->graphicsHolder->setContentsMargins(0, 0, 0, 0);
 }
 
+void dicom::LayeredImageVisualizerView::setDeletionButtonEnabled(const bool enable)
+{
+	ui->removeButton->setEnabled(enable);
+}
+
 void dicom::LayeredImageVisualizerView::refresh()
 {
     int currentSerieNo = model->getCurrentSerieNo();

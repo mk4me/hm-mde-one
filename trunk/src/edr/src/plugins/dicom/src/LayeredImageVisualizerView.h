@@ -41,6 +41,8 @@ public:
 public Q_SLOTS:
     //! odœwie¿enie ca³ego wizualizatora, np. gdy zmieni³a siê aktywna seria
     void refresh();
+	//! \param enable Czy button do usuwania ma byc aktywny - dezaktywuje dla poziomu krwii i poziomu schorzenia
+	void setDeletionButtonEnabled(const bool enable);
     
 private Q_SLOTS:
     void undo();

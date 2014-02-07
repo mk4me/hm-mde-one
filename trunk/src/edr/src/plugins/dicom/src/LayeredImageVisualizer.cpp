@@ -211,7 +211,18 @@ void dicom::LayeredImageVisualizer::selectLayer(int tagIdx, int idx )
         ILayeredImagePtr img = serie->getImage();
         std::string tag = img->getTag(tagIdx);
         if (tag != selected.first || idx != selected.second) {
-            serie->getGraphicsScene()->blockSignals(true);
+            
+			auto li = img->getLayerItem(tag, idx);			
+
+			auto pl = utils::dynamic_pointer_cast<PointsLayer>(li);
+
+			if(pl == nullptr){
+				mainWidget->setDeletionButtonEnabled(false);
+			}else{
+				mainWidget->setDeletionButtonEnabled(true);
+			}
+			
+			serie->getGraphicsScene()->blockSignals(true);
             BOOST_FOREACH(std::string t, img->getTags()) {
                 int count = img->getNumLayerItems(t);
                 for (int i = 0; i < count; ++i) {
@@ -278,13 +289,18 @@ void dicom::LayeredImageVisualizer::removeSelectedLayers()
         for (int iTag = 0; iTag < tagsNo; ++iTag) {
             auto tag = image->getTag(iTag);
             for (int itm = image->getNumLayerItems(tag) - 1; itm >= 0; --itm) {
-                if (image->getLayerItem(tag, itm)->getSelected()) {
-                    serie->removeLayer(iTag, itm);
+
+				auto li = image->getLayerItem(tag, itm);
+
+				if (li->getSelected() == true) {
+
+					auto pl = utils::dynamic_pointer_cast<PointsLayer>(li);
+
+					if(pl != nullptr){
+						serie->removeLayer(iTag, itm);
+					}
                 }
             }
         }
     }
 }
-
-
-
