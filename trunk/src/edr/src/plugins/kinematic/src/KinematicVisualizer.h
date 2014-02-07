@@ -99,17 +99,20 @@ public:
 	void resetScene();
 
 private:
+
+	void updateIndicator();
+
     //! \return węzeł z siatką reprezentującą podlogę
     osg::ref_ptr<osg::Group> createFloor();
     //! \return aktywna seria, o ile taka została wybrana
-    KinematicTimeSerie* tryGetCurrentSerie();
+    KinematicSerieBase* tryGetCurrentSerie();
 	plugin::IVisualizer::ISerie* tryGetCurrentISerie();
     //! odświeża dane w spinboxach zawierających informcacje o transformacjach manipulatorów
     void refreshSpinboxes();
     //! Metoda ustala, do której serii należy dana geoda
     //! \param geode obiekt sceny, który chcemy sprawdzic
     //! \return seria, do której należy obiekt lub nullptr jeśli nie znaleziono
-    KinematicTimeSerie* getParentSerie(GeodePtr geode);
+    KinematicSerieBase* getParentSerie(GeodePtr geode);
     //! Metoda ułatwiająca tworzenie spinwidgetów z opisem. Tworzony jest widget rodzica zawierający spinbox i label z opisem
     //! \param parent rodzic, do którego zostanie towrzony widget
     //! \param name opis spinboxa
@@ -121,33 +124,33 @@ private:
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param index Indeks współrzędnej (0 - x, 1 - y, 2 - z)
     //! \param d ustawiana wartość translacji
-    void setTranslation(KinematicTimeSerie* serie, int index, double d );
+    void setTranslation(KinematicSerieBase* serie, int index, double d );
     //! Wymusza zmiane obrotu węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param index Indeks współrzędnej (0 - x, 1 - y, 2 - z)
     //! \param d ustawiana wartość katu Eulera
-    void setRotation( KinematicTimeSerie* serie, int index, double d );
+    void setRotation( KinematicSerieBase* serie, int index, double d );
     //! Wymusza zmiane skali węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param index Indeks współrzędnej (0 - x, 1 - y, 2 - z)
     //! \param d ustawiana wartość skali
-    void setScale(KinematicTimeSerie* serie, int index, double d );
+    void setScale(KinematicSerieBase* serie, int index, double d );
     //! Wymusza zmiane translacji węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param t nowa translacja
-    void setTranslation(KinematicTimeSerie* serie, const osg::Vec3& t  );
+    void setTranslation(KinematicSerieBase* serie, const osg::Vec3& t  );
     //! Wymusza zmiane obrotu węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param r nowy obrot w postaci kątów Eulera
-    void setRotation( KinematicTimeSerie* serie, const osg::Vec3& r );
+    void setRotation( KinematicSerieBase* serie, const osg::Vec3& r );
     //! Wymusza zmiane obrotu węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param q nowy obrot
-    void setRotation( KinematicTimeSerie* serie, const osg::Quat& q);
+    void setRotation( KinematicSerieBase* serie, const osg::Quat& q);
     //! Wymusza zmiane skali węzła podlegającego wplywom manipulatorów
     //! \param serie seria, dla której ma być zmianiony węzeł
     //! \param s nowa skala
-    void setScale(KinematicTimeSerie* serie, const osg::Vec3& s );
+    void setScale(KinematicSerieBase* serie, const osg::Vec3& s );
     //! tworzy węzeł ze wskaźnikiem aktywnej serii danych
     //! \return utworzony węzeł
     TransformPtr createIndicator() const;

@@ -347,9 +347,9 @@ dicom::CurveDrawer::CurveDrawer(bool openLine, const QColor& color, const QColor
 std::pair<QColor, QColor> dicom::DrawersBuilder::getColors( adnotations::annotationsIdx annotationIdx )
 {
     switch(annotationIdx) {
-        case adnotations::unknown:
+        case adnotations::unknownAnnotation:
             return std::make_pair(QColor(50, 50, 50), QColor(0, 0, 0));
-        case adnotations::other:                           
+        case adnotations::otherAnnotation:                           
             return std::make_pair(QColor(150, 75, 50), QColor(100, 50, 0));
         case adnotations::skin:                            
             return std::make_pair(QColor(220, 175, 128), QColor(255, 100, 0));
@@ -384,9 +384,9 @@ dicom::IPointsDrawerPtr dicom::DrawersBuilder::createDrawer( adnotations::annota
 bool dicom::DrawersBuilder::isOpenLine( adnotations::annotationsIdx annotationIdx )
 {
     switch(annotationIdx) {
-    case adnotations::unknown:
+    case adnotations::unknownAnnotation:
         return false;
-    case adnotations::other:                           
+    case adnotations::otherAnnotation:                           
         return false;
     case adnotations::skin:                            
         return true;
@@ -410,9 +410,9 @@ bool dicom::DrawersBuilder::isOpenLine( adnotations::annotationsIdx annotationId
 bool dicom::DrawersBuilder::isCurved( adnotations::annotationsIdx annotationIdx )
 {
     switch(annotationIdx) {
-    case adnotations::unknown:
+    case adnotations::unknownAnnotation:
         return false;
-    case adnotations::other:                           
+    case adnotations::otherAnnotation:                           
         return false;
     case adnotations::skin:                            
         return true;
@@ -442,8 +442,8 @@ QPixmap dicom::DrawersBuilder::getColorPixmap( adnotations::annotationsIdx annot
             pix.fill(getColors(idx).second);
             return pix;
         };
-        pixmaps[adnotations::unknown     ] = makePix(adnotations::unknown     );
-        pixmaps[adnotations::other       ] = makePix(adnotations::other       );
+        pixmaps[adnotations::unknownAnnotation     ] = makePix(adnotations::unknownAnnotation     );
+        pixmaps[adnotations::otherAnnotation       ] = makePix(adnotations::otherAnnotation       );
         pixmaps[adnotations::skin        ] = makePix(adnotations::skin        );
         pixmaps[adnotations::bone        ] = makePix(adnotations::bone        );
         pixmaps[adnotations::tendon      ] = makePix(adnotations::tendon      );

@@ -6,6 +6,7 @@
 #include <boost/bind.hpp>
 #include <QtCore/QCoreApplication>
 #include "PluginApplication.h"
+#include <coreui/SingleInstanceWindow.h>
 
 DEFINE_CORE_APPLICATION_ACCESSOR;
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR;
@@ -36,35 +37,53 @@ public:
 		int result = 0;
 		if(initUIContextRes == 1){
 			result = 1;
-		}else{
+		}else{			
 
-			try{
-				//inicjalizujemy widok
-				coreApplication->initWithUI(mainWindow);
+			coreUI::SingleInstanceWindow * siw = dynamic_cast<coreUI::SingleInstanceWindow*>(mainWindow);
+			bool allowed = true;
+			if(siw != nullptr){
+				if(siw->isSingle() == false){
 
-				mainWindow->init(plugin::__coreApplication);
-				//ustawiamy tutaj �eby nadpisa� ewentualne zmiany z widok�w
-				qApp->setOrganizationName("PJWSTK");
-				try{
-					//faktycznie blokowane wywo�anie
-					//uruchamia kontekst Qt
-					result = coreApplication->run();
-				}catch(std::exception & e){
-					result = -2;
-					CORE_LOG_ERROR("Error while UI run: " << e.what());
-				}catch(...){
-					result = -2;
-					CORE_LOG_ERROR("Unknown error while UI run");
+					mainWindow->setCloseConfirmationRequired(false);
+					mainWindow->setAttribute(Qt::WA_QuitOnClose);
+					mainWindow->close();
+
+					QMessageBox::warning(nullptr, mainWindow->windowTitle(), QObject::tr("Detected other instance of application already running. Only one instance of this application is allowed to be run. This application will be closed now."));
+					allowed = false;
 				}
-
-			}catch(std::exception & e){
-				result = -1;
-				CORE_LOG_ERROR("Error while UI initialization: " << e.what());
-			}catch(...){
-				result = -1;
-				CORE_LOG_ERROR("Unknown error while UI initialization");
 			}
-				
+
+			if(allowed == true){
+
+				try{
+
+					//inicjalizujemy widok
+					coreApplication->initWithUI(mainWindow);
+
+					mainWindow->init(plugin::__coreApplication);
+					//ustawiamy tutaj �eby nadpisa� ewentualne zmiany z widok�w
+					qApp->setOrganizationName("PJWSTK");
+
+					try{
+						//faktycznie blokowane wywo�anie
+						//uruchamia kontekst Qt
+						result = coreApplication->run();
+					}catch(std::exception & e){
+						result = -2;
+						CORE_LOG_ERROR("Error while UI run: " << e.what());
+					}catch(...){
+						result = -2;
+						CORE_LOG_ERROR("Unknown error while UI run");
+					}
+
+				}catch(std::exception & e){
+					result = -1;
+					CORE_LOG_ERROR("Error while UI initialization: " << e.what());
+				}catch(...){
+					result = -1;
+					CORE_LOG_ERROR("Unknown error while UI initialization");
+				}
+			}
 		}
 
 		return result;

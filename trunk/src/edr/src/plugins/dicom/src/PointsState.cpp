@@ -162,7 +162,8 @@ void dicom::PointsState::addLayer()
 void dicom::PointsState::addLayer( int adnIdx )
 {
     // warunek isVisible wynika z tego, ze clear nie usuwa punktow tylko robi warstwe niewidoczna
-    if (layer->getNumPoint() > 0 && layer->getItem()->isVisible()) {
+	auto item = layer->getItem();
+    if (layer->getNumPoint() > 0 && item != nullptr && item->isVisible()) {
         auto img = machine->getSerie()->getImage();
 
         auto command = utils::make_shared<AddLayerCommand>(machine, img, this, layer, adnIdx);

@@ -30,8 +30,12 @@ public:
     virtual const bool lateInit()  
     { 
         communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(sourceManager);
-        comm->addHierarchyPerspective(utils::make_shared<DicomPerspective>());
-        return true; 
+		if(comm != nullptr){
+			comm->addHierarchyPerspective(utils::make_shared<DicomPerspective>());
+			return true; 
+		}
+
+		return false;
     }
 
     virtual void finalize() {} 											

@@ -160,13 +160,6 @@ Var AR_RegFlags
 !define MUI_WELCOMEFINISHPAGE_BITMAP  "@CPACK_INSTALLER_RESOURCES@\graphic\MUI_WELCOMEFINISHPAGE_BITMAP.bmp"
 !define MUI_WELCOMEFINISHPAGE_UNBITMAP  "@CPACK_INSTALLER_RESOURCES@\graphic\MUI_UNWELCOMEFINISHPAGE_BITMAP.bmp"
 !define MUI_ABORTWARNING
-    
-;--------------------------------
-; path functions
-
-;!verbose 3
-;!include "WinMessages.NSH"
-;!verbose 4
 
 ;----------------------------------------
 ; based upon a script of "Written by KiCHiK 2003-01-18 05:57:02"
@@ -1010,6 +1003,26 @@ SectionEnd
 ; "Program Files" for AllUsers, "My Documents" for JustMe...
 
 Function .onInit
+
+; Funkcja sprawdza czy nie mamy ju¿ drugiej instancji naszego instalatora uruchomionej - jak tak to j¹ dajemy na pierwszy plan a t¹ zamykamy
+BringToFront
+; Check if already running
+; If so don't open another but bring to front
+  System::Call "kernel32::CreateMutex(i 0, i 0, t '@CPACK_PACKAGE_VENDOR@-@CPACK_NSIS_PACKAGE_NAME@-{3C64AC15-655A-443C-A4C1-CC802BFD2003}') i .r0 ?e"
+  Pop $0
+  StrCmp $0 0 launch
+   StrLen $0 "$(^Name)"
+   IntOp $0 $0 + 1
+  loop:
+    FindWindow $1 '#32770' '' 0 $1
+    IntCmp $1 0 +5
+    System::Call "user32::GetWindowText(i r1, t .r2, i r0) i."
+    StrCmp $2 "$(^Name)" 0 loop
+    System::Call "user32::ShowWindow(i r1,i 9) i."         ; If minimized then restore
+    System::Call "user32::SetForegroundWindow(i r1) i."    ; Bring to front
+    Abort
+  launch:
+
 !insertmacro MUI_LANGDLL_DISPLAY
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@\Components\${SecName}" \
   "Language" $LANGUAGE
@@ -1029,6 +1042,8 @@ ${Switch} $LANGUAGE
     ${Break}
 
 ${EndSwitch}
+
+
 ;Funkcja majaca na celu wykrycie poprzedniej instalacji i ewentualna deinstalacje
   ReadRegStr $R0 HKLM \
   "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" \

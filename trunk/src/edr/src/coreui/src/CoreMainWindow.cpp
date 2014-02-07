@@ -72,7 +72,7 @@ bool CoreMainWindow::trySetStyleByName( const std::string& styleName )
 }
 
 CoreMainWindow::CoreMainWindow(const CloseUpOperations & closeUpOperations): QMainWindow(nullptr), splashScreen_(nullptr),
-	widgetConsole(new CoreConsoleWidget()), closeUpOperations_(closeUpOperations)
+	widgetConsole(new CoreConsoleWidget()), closeUpOperations_(closeUpOperations), closeConfirmationRequired_(true)
 {
 	initCoreResources();
 
@@ -152,11 +152,32 @@ void CoreMainWindow::writeSettings()
     settings.setValue("WindowState", saveState());
 }
 
+void CoreMainWindow::setCloseConfirmationRequired(const bool required)
+{
+	closeConfirmationRequired_ = required;
+}
+
+const bool CoreMainWindow::closeConfirmationRequired() const
+{
+	return closeConfirmationRequired_;
+}
+
 void CoreMainWindow::closeEvent(QCloseEvent* event)
 {
-	if(QMessageBox::question( this, tr("Confirm exit"), tr("Are You sure You want to exit application?"),
-		QMessageBox::Yes | QMessageBox::Abort, QMessageBox::Abort ) == QMessageBox::Yes){
-	
+	bool close = true;
+
+	if(closeConfirmationRequired_ == true){
+
+		if(QMessageBox::question( this, tr("Confirm exit"), tr("Are You sure You want to exit application?"),
+			QMessageBox::Yes | QMessageBox::Abort, QMessageBox::Abort ) == QMessageBox::No){
+
+				close = false;
+		}
+
+	}
+
+	if(close == true){
+
 		writeSettings();
 
 		if(closeUpOperations_.empty() == false){

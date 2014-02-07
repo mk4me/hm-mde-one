@@ -70,7 +70,7 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
             int count = image->getNumLayerItems(tag);
             for (int i = 0; i < count; ++i) {
                 ILayerItemPtr vec = image->getLayerItem(tag, i);
-                if (vec) {
+                if (vec && vec->getItem() != nullptr) {
                     graphicsScene->addItem(vec->getItem());
                 }
             }
@@ -149,7 +149,7 @@ void dicom::LayeredSerie::refresh()
         int count = image->getNumLayerItems(tag);
         for (int i = 0; i < count; ++i) {
             ILayerItemPtr vec = image->getLayerItem(tag, i);
-            if (vec && graphicsScene != vec->getItem()->scene()) {
+            if (vec && vec->getItem() != nullptr && graphicsScene != vec->getItem()->scene()) {
                 graphicsScene->addItem(vec->getItem());
             }
         }

@@ -14,6 +14,7 @@
 #include "KinematicSerie.h"
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/kinematic/Wrappers.h>
+#include <osg/PositionAttitudeTransform>
 
 class KinematicVisualizer;
 class SkeletalVisualizationSchemeHelper;
@@ -52,21 +53,13 @@ public:
 
 	virtual void update();
 
+	virtual const osg::Vec3 pivotPoint() const;
+
 	virtual const utils::TypeInfo & getRequestedDataType() const;
 	//! \return długość kanału w sekundach
 	virtual double getLength() const;
 	virtual double getBegin() const;
 	virtual double getEnd() const;
-    //! \return macierz serii z transformacja, która nie została zmieniona przez manipulatory
-    virtual osg::Matrix getInitialMatrix() const;
-
-	virtual const osg::Quat orientation() const;
-
-	virtual void setOrientation(const osg::Quat & orientation);
-
-	virtual const osg::Vec3 position() const;
-
-	virtual void setPosition(const osg::Vec3 & position);
 
 	virtual const bool ghostVisible() const;
 	virtual void setGhostVisible(const bool visible);
@@ -80,12 +73,13 @@ private:
 
 	const std::vector<std::vector<osg::Vec3>> createPointsPositions(const unsigned int density) const;
 
-    //! \return macierz potrzebna przy operacjach z różnymi ukl. współrzędnych
-    static osg::Matrix getXYZMatrix();
-    //! niweluje działanie manipulatorów
-    virtual void resetTransform();
+	void createGhostAndTrajectories();
 
 private:
+
+	osg::Matrix lToW;
+
+	osg::ref_ptr<osg::PositionAttitudeTransform> localRootNode;
 	//! Aktualna dodatkowa rotacja wynikająca ze zmiany osi
 	osg::Quat preRot;
 	//! Pozycja wynikająca z położenia roota szkieletu
@@ -153,24 +147,15 @@ public:
 
 	virtual void update();
 
+	virtual const osg::Vec3 pivotPoint() const;
+
 	virtual const utils::TypeInfo & getRequestedDataType() const;
-	//! \return macierz serii z transformacja, która nie została zmieniona przez manipulatory
-	virtual osg::Matrix getInitialMatrix() const;
-
-	virtual const osg::Quat orientation() const;
-
-	virtual void setOrientation(const osg::Quat & orientation);
-
-	virtual const osg::Vec3 position() const;
-
-	virtual void setPosition(const osg::Vec3 & position);
-
-	//! \return macierz potrzebna przy operacjach z różnymi ukl. współrzędnych
-	static osg::Matrix getXYZMatrix();
-	//! niweluje działanie manipulatorów
-	virtual void resetTransform();
 
 private:
+
+	osg::Matrix lToW;
+
+	osg::ref_ptr<osg::PositionAttitudeTransform> localRootNode;
 	//! Czy wyliczono juz poprawkę na wysokość
 	bool heightCompensation;
 	//! Obiekt aktualizujący

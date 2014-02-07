@@ -35,13 +35,9 @@ public:
 	//! \return macierz, na której operują manipulatory
 	MatrixTransformPtr getMatrixTransformNode();
 	//! Metoda niweluje efekty działania manipulatorów
-	void resetTransform();
+	virtual void resetTransform();
 
 	virtual const osg::Vec3 pivotPoint() const;
-
-private:
-
-	virtual void innerResetTransform() {}
 
 protected:
 	//! macierz, na której działają manipulatory

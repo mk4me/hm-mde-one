@@ -246,9 +246,9 @@ QWidget* KinematicVisualizer::createWidget()
         auto it = list.begin();
         if (it != list.end()) {
             GeodePtr geode = it->get<0>();
-            KinematicTimeSerie* s = getParentSerie(geode);
+            KinematicSerieBase* s = getParentSerie(geode);
             if (s) {
-                setActiveSerie(s);
+                setActiveSerie(dynamic_cast<plugin::IVisualizer::ISerie*>(s));
             }
         }
     };
@@ -278,14 +278,28 @@ coreUI::CoreWidgetAction * KinematicVisualizer::createWidgetAction(QWidget * wid
 
 void KinematicVisualizer::update( double deltaTime )
 {
+
+	for(auto it = series.begin(); it != series.end(); ++it){
+		(dynamic_cast<plugin::IVisualizer::ISerie*>(*it))->tryUpdate();
+	}
+
 	auto s = tryGetCurrentISerie();
 
 	if(s != nullptr) {
-		s->tryUpdate();
 		auto serie = dynamic_cast<KinematicSerieBase*>(s);
 		if (currentDragger && serie) {
-			currentDragger->setDraggerPivot(serie->pivotPoint());
+
+			//auto bs = serie->getMatrixTransformNode()->getBound();
+
+			//bs.center().z() + bs.radius() * 1.05
+
+			currentDragger->setDraggerPivot(osg::Vec3(
+				translateSpinWidgetX.second->value(),
+				translateSpinWidgetY.second->value(),
+				translateSpinWidgetZ.second->value()));
 		}
+
+		updateIndicator();
 
 		refreshSpinboxes();	
 	}
@@ -295,7 +309,10 @@ osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
 {
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
-    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );	
+	stateset->setMode( GL_BLEND, osg::StateAttribute::ON );
+	stateset->setMode( GL_LINE_SMOOTH, osg::StateAttribute::ON );
+	stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
 	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
 	colors->push_back(osg::Vec4(0.05f, 0.05f, 0.3f, 1.0f));
 
@@ -420,6 +437,31 @@ void KinematicVisualizer::setActiveSerie( int idx )
     }
 }
 
+void KinematicVisualizer::updateIndicator()
+{
+	auto pos = series[currentSerie]->pivotPoint();
+	pos.z() = indicatorNode->getPosition().z();
+	indicatorNode->setPosition(pos);
+
+	auto s = series[currentSerie]->getMatrixTransformNode()->getNumChildren();
+
+	if(s > 1)
+	{	
+		auto bs = series[currentSerie]->getMatrixTransformNode()->getChild(0)->getBound();
+
+		for(unsigned int i = 1; i < s - 2; ++i){
+			bs.expandBy(series[currentSerie]->getMatrixTransformNode()->getChild(i)->getBound());
+		}
+
+		auto pos = series[currentSerie]->pivotPoint();
+		pos.z() += bs.radius() * 2;
+
+		indicatorNode->setPosition(pos);
+	}else{
+		indicatorNode->setPosition(osg::Vec3(0.0, 0.0, 0.0));
+	}
+}
+
 void KinematicVisualizer::setActiveSerie( plugin::IVisualizer::ISerie *serie )
 {
 	auto ks = dynamic_cast<KinematicSerieBase*>(serie);
@@ -454,11 +496,11 @@ plugin::IVisualizer::ISerie * KinematicVisualizer::getActiveSerie()
 	return dynamic_cast<plugin::IVisualizer::ISerie *>(series[currentSerie]);
 }
 
-KinematicTimeSerie* KinematicVisualizer::tryGetCurrentSerie()
+KinematicSerieBase* KinematicVisualizer::tryGetCurrentSerie()
 {
     int count = static_cast<int>(series.size());
     if (currentSerie >= 0 && currentSerie < count) {
-        return dynamic_cast<KinematicTimeSerie*>(series[currentSerie]);
+        return series[currentSerie];
     }
     return nullptr;
 }
@@ -596,12 +638,12 @@ bool isChildRecursive(osg::Group* group, osg::Geode* geode)
     return false;
 }
 
-KinematicTimeSerie* KinematicVisualizer::getParentSerie( GeodePtr geode )
+KinematicSerieBase* KinematicVisualizer::getParentSerie( GeodePtr geode )
 {
     for (auto it = series.begin(); it != series.end(); ++it) {
         osg::MatrixTransform* node = (*it)->getMatrixTransformNode();
         if (isChildRecursive(node, geode)) {
-            return dynamic_cast<KinematicTimeSerie*>(*it);
+            return *it;
         }
     }
 
@@ -616,7 +658,7 @@ void KinematicVisualizer::refreshTranslateSpinboxes()
 
     auto serie = tryGetCurrentSerie();
     if (serie) {
-        auto v = serie->pivotPoint();
+        auto v = serie->pivotPoint() + serie->getMatrixTransformNode()->getMatrix().getTrans();
         translateSpinWidgetX.second->setValue(v.x());
         translateSpinWidgetY.second->setValue(v.y());
         translateSpinWidgetZ.second->setValue(v.z());
@@ -704,33 +746,42 @@ void KinematicVisualizer::refreshScaleSpinboxes()
     scaleSpinWidgetZ.second->blockSignals(false);
 }
 
-void KinematicVisualizer::setTranslation(KinematicTimeSerie* serie, int index, double d )
+void KinematicVisualizer::setTranslation(KinematicSerieBase* serie, int index, double d )
 {
     if (serie) {
+
 		auto m = serie->getMatrixTransformNode()->getMatrix();
-        osg::Vec3 pos = serie->pivotPoint();
-		osg::Vec3 posTmp = pos;
-        posTmp._v[index] = d;
-		posTmp -= pos;
-        
-		m.setTrans(posTmp);
+
+		auto t = m.getTrans() + serie->pivotPoint();
+		auto oldT = t;
+		t[index] = d;
+		t -= oldT;
+
+		
+        osg::Vec3 pos = m.getTrans() + t;        
+		m.setTrans(pos);
 		serie->getMatrixTransformNode()->setMatrix(m);
-        translateDragger->setDraggerPivot(posTmp);
+        translateDragger->setDraggerPivot(pos);
     }
 }
 
-void KinematicVisualizer::setTranslation( KinematicTimeSerie* serie, const osg::Vec3& t )
+void KinematicVisualizer::setTranslation( KinematicSerieBase* serie, const osg::Vec3& t )
 {
 	if (serie) {
+
 		auto m = serie->getMatrixTransformNode()->getMatrix();
-		osg::Vec3 pos = t - serie->pivotPoint();
+
+		auto tt = t - (serie->pivotPoint() + m.getTrans());
+
+		osg::Vec3 pos = m.getTrans() + tt;        
 		m.setTrans(pos);
+		
 		serie->getMatrixTransformNode()->setMatrix(m);
 		translateDragger->setDraggerPivot(pos);
 	}
 }
 
-void KinematicVisualizer::setRotation( KinematicTimeSerie* serie, int index, double d )
+void KinematicVisualizer::setRotation( KinematicSerieBase* serie, int index, double d )
 {
     if (serie) {
 
@@ -746,7 +797,7 @@ void KinematicVisualizer::setRotation( KinematicTimeSerie* serie, int index, dou
     }
 }
 
-void KinematicVisualizer::setRotation( KinematicTimeSerie* serie, const osg::Vec3& r )
+void KinematicVisualizer::setRotation( KinematicSerieBase* serie, const osg::Vec3& r )
 {
 	if (serie) {
 		auto m = serie->getMatrixTransformNode()->getMatrix();
@@ -760,7 +811,7 @@ void KinematicVisualizer::setRotation( KinematicTimeSerie* serie, const osg::Vec
 	}
 }
 
-void KinematicVisualizer::setRotation( KinematicTimeSerie* serie, const osg::Quat& q )
+void KinematicVisualizer::setRotation( KinematicSerieBase* serie, const osg::Quat& q )
 {
     if (serie) {
 		auto m = serie->getMatrixTransformNode()->getMatrix();
@@ -771,7 +822,7 @@ void KinematicVisualizer::setRotation( KinematicTimeSerie* serie, const osg::Qua
 }
 
 
-void KinematicVisualizer::setScale( KinematicTimeSerie* serie, int index, double d )
+void KinematicVisualizer::setScale( KinematicSerieBase* serie, int index, double d )
 {
     if (serie && d != 0.0) {
         KinematicTimeSerie::MatrixTransformPtr transform = serie->getMatrixTransformNode();
@@ -786,7 +837,7 @@ void KinematicVisualizer::setScale( KinematicTimeSerie* serie, int index, double
     }
 }
 
-void KinematicVisualizer::setScale( KinematicTimeSerie* serie, const osg::Vec3& s )
+void KinematicVisualizer::setScale( KinematicSerieBase* serie, const osg::Vec3& s )
 {
     setScale(serie, 0, s[0]);
     setScale(serie, 1, s[1]);

@@ -80,10 +80,9 @@ void Application::updateServices()
 	serviceManager_->update(servicesTimeDelta);
 }
 
-Application::Application() : visualizerTimeDelta(TimeDelta), servicesTimeDelta(TimeDelta), mainWindow(nullptr)
+Application::Application() : visualizerTimeDelta(TimeDelta), servicesTimeDelta(TimeDelta), mainWindow(nullptr), uiInit(false)
 {
-	connect(&visualizerUpdateTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
-	connect(&servicesUpdateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
+	
 }
 
 void Application::showSplashScreenMessage(const QString & message)
@@ -166,7 +165,7 @@ int Application::initUIContext(int & argc, char *argv[])
 		shared_ptr<QTranslator> translator(new QTranslator);
 		bool translationFound = translator->load(("qt_" + locale).c_str(), langPath.string().c_str());
 		if(translationFound == false) {
-			translationFound = translator->load(QString("qt_pl"), langPath.string().c_str());
+			//translationFound = translator->load(QString("qt_pl"), langPath.string().c_str());
 			// TODO
 			// jak tego si? nie uda za?adowa? to mamy tylko angielski j?zyk - trzeba poinformowa?
 		}
@@ -185,7 +184,6 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	this->mainWindow = mainWindow;
 	mainWindow->splashScreen();
 	
-
 	showSplashScreenMessage(QObject::tr("Initializing log"));	
 
 	//Mam ?cie?k? do konfiguracji loggera, nie wiem czy to OSG, Log4cxx czy pusty albo co? jeszcze innego - initializer powinien to zrobi? za mnie
@@ -206,11 +204,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	}catch(...){
 		CORE_LOG_ERROR("Could not create temporary directory: " << paths_->getTmpPath());
 		throw;
-	}
-
-	showSplashScreenMessage(QObject::tr("Initializing translations"));	
-
-	
+	}	
 
 	showSplashScreenMessage(QObject::tr("Initializing 3D context"));
 
@@ -238,6 +232,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 	//Wielow¹tkowoœæ
 	{	
+		showSplashScreenMessage(QObject::tr("Initializing threading"));
+
 		threadFactory_.reset(new utils::QtThreadFactory());
 
 		const core::ThreadPool::size_type threadsCount = QThread::idealThreadCount();
@@ -321,59 +317,69 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	mainWindow->show();
 
 	mainWindow->splashScreen()->close();
+
+	uiInit = true;
 }
 
 int Application::run()
 {
-	visualizerUpdateTimer.start(visualizerTimeDelta);
-	servicesUpdateTimer.start(servicesTimeDelta);
+	if(uiInit == true){
+		connect(&visualizerUpdateTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
+		connect(&servicesUpdateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
+
+		visualizerUpdateTimer.start(visualizerTimeDelta);
+		servicesUpdateTimer.start(servicesTimeDelta);
+	}
+
 	return uiApplication_->exec();
 }
 
 Application::~Application()
 {
-	//zeruje ju? konsole - wi?cej z niej nie b?d? korzysta?
-	CORE_LOG_INFO("Closing core application");
+	if(uiInit == true){
+		//zeruje ju? konsole - wi?cej z niej nie b?d? korzysta?
+		CORE_LOG_INFO("Closing core application");
 
-	CORE_LOG_INFO("Releasing sources");
-	sourceManager_.reset();
-	CORE_LOG_INFO("Releasing services");
-	serviceManager_.reset();
-	CORE_LOG_INFO("Releasing core managers");
-	CORE_LOG_INFO("Releasing visualizer manager");
-	visualizerManager_.reset();
-	CORE_LOG_INFO("Releasing stream data manager");
-	streamDataManager_.reset();
-	CORE_LOG_INFO("Releasing file data manager");
-	fileDataManager_.reset();
-	CORE_LOG_INFO("Releasing parsers manager");
-	parserManager_.reset();
-	CORE_LOG_INFO("Releasing memory data manager");
-	memoryDataManager_.reset();
-	CORE_LOG_INFO("Releasing hierarchy data manager");
-	dataHierarchyManager_.reset();
-	CORE_LOG_INFO("Releasing plugins");
-	pluginLoader_.reset();
+		CORE_LOG_INFO("Releasing sources");
+		sourceManager_.reset();
+		CORE_LOG_INFO("Releasing services");
+		serviceManager_.reset();
+		CORE_LOG_INFO("Releasing core managers");
+		CORE_LOG_INFO("Releasing visualizer manager");
+		visualizerManager_.reset();
+		CORE_LOG_INFO("Releasing stream data manager");
+		streamDataManager_.reset();
+		CORE_LOG_INFO("Releasing file data manager");
+		fileDataManager_.reset();
+		CORE_LOG_INFO("Releasing parsers manager");
+		parserManager_.reset();
+		CORE_LOG_INFO("Releasing memory data manager");
+		memoryDataManager_.reset();
+		CORE_LOG_INFO("Releasing hierarchy data manager");
+		dataHierarchyManager_.reset();
+		CORE_LOG_INFO("Releasing plugins");
+		pluginLoader_.reset();
 
-	CORE_LOG_INFO("Releasing job manager");
-	jobManager_.reset();
-	CORE_LOG_INFO("Releasing thread pool");
-	threadPool_.reset();
-	CORE_LOG_INFO("Releasing thread factory");
-	threadFactory_.reset();
+		CORE_LOG_INFO("Releasing job manager");
+		jobManager_.reset();
+		CORE_LOG_INFO("Releasing thread pool");
+		threadPool_.reset();
+		CORE_LOG_INFO("Releasing thread factory");
+		threadFactory_.reset();
 
-	CORE_LOG_INFO("Cleaning UI context");
-	uiApplication_.reset();
-	CORE_LOG_INFO("Cleaning translations");
-	std::vector<shared_ptr<QTranslator>>().swap(translators_);
-	CORE_LOG_INFO("Cleaning tmp files");
-	Filesystem::deleteDirectory(getPathInterface()->getTmpPath());
-	CORE_LOG_INFO("Releasing logs - reseting to default loggers");
-	logInitializer_.reset();
-	CORE_LOG_INFO("Releasing log prototype");
-	loggerPrototype_.reset();
-	CORE_LOG_INFO("Releasing core log");
-	logger_.reset();
+		CORE_LOG_INFO("Cleaning UI context");
+		uiApplication_.reset();
+		CORE_LOG_INFO("Cleaning translations");
+		std::vector<shared_ptr<QTranslator>>().swap(translators_);
+		CORE_LOG_INFO("Cleaning tmp files");
+		Filesystem::deleteDirectory(getPathInterface()->getTmpPath());
+		CORE_LOG_INFO("Releasing logs - reseting to default loggers");
+		logInitializer_.reset();
+		CORE_LOG_INFO("Releasing log prototype");
+		loggerPrototype_.reset();
+		CORE_LOG_INFO("Releasing core log");
+		logger_.reset();
+	}
 }
 
 MemoryDataManager* Application::memoryDataManager()
@@ -634,20 +640,23 @@ void Application::unpackPlugin(CoreMainWindow * mainWindow, const core::PluginPt
 
 void Application::finalizeUI(){
 
-	try{
-		CORE_LOG_INFO("Finalizing sources");
-		sourceManager_->finalizeSources();
+	if(uiInit == true){
 
-		CORE_LOG_INFO("Finalizing services");
-		serviceManager_->finalizeServices();
+		try{
+			CORE_LOG_INFO("Finalizing sources");
+			sourceManager_->finalizeSources();
 
-		CORE_LOG_INFO("Closing log widget console");
-		logInitializer_->setConsoleWidget(nullptr);
+			CORE_LOG_INFO("Finalizing services");
+			serviceManager_->finalizeServices();
+
+			CORE_LOG_INFO("Closing log widget console");
+			logInitializer_->setConsoleWidget(nullptr);
 		
 		
-	}catch(std::exception & e){
-		CORE_LOG_ERROR("Error while closing UI during sources and services finalization: " << e.what());
-	}catch(...){
-		CORE_LOG_ERROR("UNKNOWN error while closing UI during sources and services finalization");
+		}catch(std::exception & e){
+			CORE_LOG_ERROR("Error while closing UI during sources and services finalization: " << e.what());
+		}catch(...){
+			CORE_LOG_ERROR("UNKNOWN error while closing UI during sources and services finalization");
+		}
 	}
 }

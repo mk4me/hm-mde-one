@@ -164,7 +164,10 @@ void dicom::LayeredImage::setTagVisible( const std::string& tag, bool val )
 {
     tagsVisibility[tag] = val;
     for (int i = getNumLayerItems(tag) - 1; i >= 0; --i ) {
-        getLayerItem(tag, i)->getItem()->setVisible(val);
+		auto item = getLayerItem(tag, i)->getItem();
+		if(item != nullptr){
+			item->setVisible(val);
+		}
     }
 }
 

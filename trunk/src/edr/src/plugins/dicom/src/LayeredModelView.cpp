@@ -39,14 +39,15 @@ int LayeredModelView::columnCount(const QModelIndex & parent) const
 QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 {
     if (image) {
-        if ( role == Qt::CheckStateRole && index.column() == 0 ) {
-            treedata* td = static_cast<treedata*>(index.internalPointer());
-            if (td->idx == -1) {
-                std::string tag = image->getTag(td->tag);
-                return static_cast< int >(image->getTagVisible(tag) ? Qt::Checked : Qt::Unchecked);
-            }
-        }
-        if (role == Qt::DecorationRole) {
+        if ( role == Qt::CheckStateRole){
+			if( index.column() == 0 ) {
+				treedata* td = static_cast<treedata*>(index.internalPointer());
+				if (td->idx == -1) {
+					std::string tag = image->getTag(td->tag);
+					return static_cast< int >(image->getTagVisible(tag) ? Qt::Checked : Qt::Unchecked);
+				}
+			}
+        }else if (role == Qt::DecorationRole) {
             treedata* td = static_cast<treedata*>(index.internalPointer());
             if (td->idx != -1 && index.column() == 0) {
                 std::string tag = image->getTag(td->tag);
@@ -65,11 +66,43 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
                 if (index.column() == 0) {
                     return itm->getName();
                 } else if (index.column() == 1) {
-                    adnotations::AdnotationsTypePtr adn = adnotations::instance();
-                    auto it = adn->left.find(static_cast<adnotations::annotationsIdx>(itm->getAdnotationIdx()));
-                    if (it != adn->left.end()) {
-                        return it->second;
-                    }
+
+					auto aidx = itm->getAdnotationIdx();
+
+					switch(aidx) {
+
+					case adnotations::bloodLevel:
+						{
+							auto bil = utils::dynamic_pointer_cast<const BloodLevelLayer>(itm);
+							if(bil != nullptr){
+
+								auto blt = adnotations::instanceBloodLevels();
+								return blt->left.at(bil->value());								
+							}
+						}
+						break;
+
+					case adnotations::arthritisLevel:
+						{
+							auto ail = utils::dynamic_pointer_cast<const ArthritisLevelLayer>(itm);
+							if(ail != nullptr){
+
+								auto alt = adnotations::instanceArthritisLevels();
+								return alt->left.at(ail->value());
+							}
+						}
+						break;
+
+					default:
+						{
+							adnotations::AdnotationsTypePtr adn = adnotations::instance();
+							auto it = adn->left.find(static_cast<adnotations::annotationsIdx>(aidx));
+							if (it != adn->left.end()) {
+								return it->second;
+							}
+						}
+						break;
+					}
                 }
             }
             
@@ -100,28 +133,69 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
             image->setTagVisible(tag, checked == Qt::Checked);
         }
 
-    }
-    if (role == Qt::EditRole)
-    {
+    } else if (role == Qt::EditRole) {
         treedata* td = static_cast<treedata*>(index.internalPointer());
         int idx = td->idx;
         if (idx != -1) {
             std::string tag = image->getTag(td->tag);
             int col = index.column();
-            if (image->getNumLayerItems(tag) > idx && idx >= 0) {
+            if (image->getNumLayerItems(tag) > idx ) {// && idx >= 0) { //! TODO: wczeœniej sprawdzxamy czy rozne od -1 wiec chyba mniej juz nigdy nie ma
                 if (col == 0) {
                     auto result = value.toString();
                     if (!result.isEmpty()) {
                         image->getLayerItem(tag, idx)->setName(result);
                         Q_EMIT editCompleted( result );
                     }
-                } /*else if (col == 1) {
-                    QString result = value.toString();
-                    auto adn = adnotations::instance();
-                    int adnotationIdx = adn->right.at(result);
-                    image->getLayerItem(tag, idx)->setAdnotationIdx(adnotationIdx);
-                    Q_EMIT editCompleted( result );
-                }*/
+                } else if (col == 1) {
+
+					auto il = image->getLayerItem(tag, idx);
+
+					auto aidx = il->getAdnotationIdx();
+
+					switch(aidx) {
+
+					case adnotations::bloodLevel:
+						{
+							auto bil = utils::dynamic_pointer_cast<BloodLevelLayer>(il);
+							if(bil != nullptr){
+
+								int val = value.toInt();
+								bil->setValue((dicom::adnotations::bloodLevelDescriptor)val);
+
+								auto blt = adnotations::instanceBloodLevels();
+								QString result = blt->left.at(bil->value());
+								Q_EMIT editCompleted( result );
+							}
+						}
+						break;
+
+					case adnotations::arthritisLevel:
+						{
+							auto ail = utils::dynamic_pointer_cast<ArthritisLevelLayer>(il);
+							if(ail != nullptr){
+
+								int val = value.toInt();
+								ail->setValue((dicom::adnotations::arthritisLevelDescriptor)val);
+
+								auto alt = adnotations::instanceArthritisLevels();
+								QString result = alt->left.at(ail->value());
+								Q_EMIT editCompleted( result );
+							}
+						}
+						break;
+
+					default:
+						{
+							QString result = value.toString();
+							auto adn = adnotations::instance();
+							int adnotationIdx = adn->right.at(result);
+
+							il->setAdnotationIdx(adnotationIdx);
+							Q_EMIT editCompleted( result );
+						}
+						break;
+					}
+                }
             }
         }
     }
@@ -138,14 +212,24 @@ Qt::ItemFlags LayeredModelView::flags(const QModelIndex & index) const
     }
 
     Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
-
+	auto col = index.column();
     treedata* td = static_cast<treedata*>(index.internalPointer());
     if (td->idx == -1) {
-        if ( index.column() == 0 ) {
+        if ( col == 0 ) {
             flags |= Qt::ItemIsUserCheckable;
         }
     } else {
-        flags |=  Qt::ItemIsEditable ;
+
+		std::string tag = image->getTag(td->tag);
+		if (image->getNumLayerItems(tag) > td->idx ) {
+			if (col == 0) {
+				if(image->getLayerItem(tag, td->idx)->getAdnotationIdx() < 8){
+					flags |=  Qt::ItemIsEditable;
+				}
+			}else{
+				flags |=  Qt::ItemIsEditable;
+			}
+		}        
     }
 
     return flags;
@@ -159,9 +243,9 @@ QVariant LayeredModelView::headerData( int section, Qt::Orientation orientation,
             switch (section)
             {
             case 0:
-                return QString("Tag");
+                return tr("Tag");
             case 1:
-                return QString("Label");
+                return tr("Label");
             }
         }
     }

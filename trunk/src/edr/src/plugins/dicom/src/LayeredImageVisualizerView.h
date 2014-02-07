@@ -15,6 +15,7 @@
 #include <coreui/GraphicSceneWithStateMachine.h>
 #include "LayeredModelView.h"
 #include "LayeredStateMachine.h"
+#include "AdnotationsDelegate.h"
 
 class QGraphicsScene;
 
@@ -63,6 +64,7 @@ private:
     //! model wizualizatora
     LayeredImageVisualizer* model;
     QGraphicsView* lastView;
+	AdnotationsDelegate * adnotationDelegate;
 };
 
 

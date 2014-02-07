@@ -48,7 +48,7 @@ public:
 protected:
     virtual bool removeRows( int row, int count, const QModelIndex &parent = QModelIndex( ) );
 
-private:
+public:
     struct treedata
     {
         int tag, idx;

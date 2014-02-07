@@ -175,7 +175,70 @@ namespace dicom {
 
 
     };
-    DEFINE_SMART_POINTERS(PointsLayer);      
+    DEFINE_SMART_POINTERS(PointsLayer);
+
+	template<typename T>
+	class ValueLayer : public ILayerItem
+	{
+	public:
+		ValueLayer() : value_(T()), selected(false) {}
+		ValueLayer(const T & val) : value_(val), selected(false) {}
+	    virtual ~ValueLayer() {}
+
+		virtual QString getName() const { return name; }
+		virtual void setName(const QString& name) { this->name = name; }
+		virtual QSize getSize() const { return QSize(); } 
+
+		virtual bool getSelected() const { return selected; }
+		virtual void setSelected(bool val) { selected = val; }
+
+		virtual QGraphicsItem* getItem() { return nullptr; }
+
+		virtual ILayerItem* clone() const
+		{
+			std::unique_ptr<ValueLayer<T>> pl(new ValueLayer<T>(value_));
+			pl->setAdnotationIdx(getAdnotationIdx());
+			pl->setName(this->name);
+
+			return pl.release();
+		}
+
+		const T & value() const { return value_; }
+
+		void setValue(const T & val) { value_ = val; }
+        
+    private:
+        QString name;
+		T value_;
+		bool selected;
+
+    private:
+        friend class boost::serialization::access;
+
+        template<class Archive>
+        void save(Archive & ar, const unsigned int version) const
+        {
+            ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(ILayerItem);
+            ar & BOOST_SERIALIZATION_NVP(value_);
+            ar & BOOST_SERIALIZATION_NVP(name);
+        }
+
+        template<class Archive>
+        void load(Archive & ar, const unsigned int version)
+        {
+            ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(ILayerItem);
+            ar & BOOST_SERIALIZATION_NVP(value_);
+            ar & BOOST_SERIALIZATION_NVP(name);
+        }
+
+        BOOST_SERIALIZATION_SPLIT_MEMBER();
+	};
+
+	typedef ValueLayer<dicom::adnotations::bloodLevelDescriptor> BloodLevelLayer;
+	typedef ValueLayer<dicom::adnotations::arthritisLevelDescriptor> ArthritisLevelLayer;
+
+	DEFINE_SMART_POINTERS(BloodLevelLayer);
+	DEFINE_SMART_POINTERS(ArthritisLevelLayer);
 
 
 }

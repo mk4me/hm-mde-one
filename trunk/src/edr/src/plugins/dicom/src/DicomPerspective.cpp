@@ -20,6 +20,7 @@
 #include <corelib/ISourceManager.h>
 #include <corelib/PluginCommon.h>
 #include "DicomSource.h"
+#include "PointsLayer.h"
 
 typedef core::Filesystem fs;
 
@@ -155,6 +156,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
     LayeredImagePtr img = wrp->get();
     //LayeredImagePtr img = utils::const_pointer_cast<LayeredImage>(cimg);
     bool localAdded = false;
+
     for (auto itXml = layers.begin(); itXml != layers.end(); ++itXml) {
         LayersVectorConstPtr layersVector = (*itXml)->get();
         std::string xmlUser = "unknown";
@@ -179,7 +181,23 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
             for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
                 img->addLayer(*layerIt, name);
             }
-        }
+        }else{
+
+			auto layersVector = utils::make_shared<LayersVector>();
+
+			//torzê na si³e layer z domyslnymi polami dla poziomu krwi i stopnia schorzenia
+			layersVector->push_back(dicom::ILayerItemPtr(new BloodLevelLayer(dicom::adnotations::unknownBloodLevel)));
+			layersVector->push_back(dicom::ILayerItemPtr(new ArthritisLevelLayer(dicom::adnotations::unknownArthritisLevel)));
+
+			(*layersVector)[0]->setName(QObject::tr("Blood level"));			
+			(*layersVector)[0]->setAdnotationIdx(dicom::adnotations::bloodLevel);
+			(*layersVector)[1]->setName(QObject::tr("Arthritis level"));
+			(*layersVector)[1]->setAdnotationIdx(dicom::adnotations::arthritisLevel);
+			
+			for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
+				img->addLayer(*layerIt, name);
+			}
+		}
     }
 
     for (int row = img->getNumTags() - 1; row >= 0; --row) {

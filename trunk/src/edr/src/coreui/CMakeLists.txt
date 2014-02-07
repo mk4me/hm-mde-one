@@ -30,6 +30,7 @@ SET_PUBLIC_HEADERS(
 	Export.h
 	CoreLabeledWidget.h
 	CoreCursorChanger.h
+	SingleInstanceWindow.h
 )
 
 SET_SOURCE_FILES(
@@ -60,6 +61,7 @@ SET_SOURCE_FILES(
 	WheelGraphicsView.cpp
 	MultiCommand.cpp
 	MoveCommand.cpp
+	SingleInstanceWindow.cpp
 )
 
 SET_PRIVATE_HEADERS(

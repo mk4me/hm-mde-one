@@ -20,12 +20,11 @@ KinematicSerieBase::MatrixTransformPtr KinematicSerieBase::getMatrixTransformNod
 void KinematicSerieBase::resetTransform()
 {
 	matrixTransform->setMatrix(osg::Matrix());
-	innerResetTransform();
 }
 
 const osg::Vec3 KinematicSerieBase::pivotPoint() const
 {
-	return matrixTransform->getMatrix().getTrans();
+	return osg::Vec3(0.0, 0.0, 0.0);
 }
 
 KinematicTimeSerie::KinematicTimeSerie() : time(-1.0)
@@ -37,7 +36,7 @@ void KinematicTimeSerie::resetTransform()
 {
 	KinematicSerieBase::resetTransform();
     // ustawienie czasu (powinno odświeżyć)
-    setLocalTime(getTime());
+    setTime(0.0);
 }
 
 void KinematicTimeSerie::setTime( double val )

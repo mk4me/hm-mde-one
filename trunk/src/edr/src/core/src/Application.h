@@ -85,6 +85,8 @@ namespace core {
 
 		coreUI::CoreMainWindow * mainWindow;
 
+		bool uiInit;
+
 	private:
 
 		static bool trySetPathsFromRegistry(utils::shared_ptr<Path> & path);

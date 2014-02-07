@@ -20,15 +20,17 @@ namespace dicom {
 namespace adnotations {
 
     enum annotationsIdx {
-        unknown = -1,
-        other = 0, 
+        unknownAnnotation = -1,
+        otherAnnotation = 0, 
         skin = 1,  
         bone = 2,  
         tendon = 3,
         joint = 4, 
         inflammatory = 5,
         intensity = 6,
-        noise = 7
+        noise = 7,
+		bloodLevel = 8,
+		arthritisLevel = 9
     };
 
     typedef boost::bimap<annotationsIdx, QString> AdnotationsType;
@@ -42,6 +44,43 @@ namespace adnotations {
     void autoSave();
 
     core::Filesystem::Path adnotationsFile();
+
+
+	enum bloodLevelDescriptor {
+
+		unknownBloodLevel = -1,
+		bloodLevel0,
+		bloodLevel1,
+		bloodLevel2,
+		bloodLevel3,
+		bloodLevel4
+
+	};
+
+	typedef boost::bimap<bloodLevelDescriptor, QString> BloodLevelsType;
+	DEFINE_SMART_POINTERS(BloodLevelsType);
+
+	BloodLevelsTypePtr getDefaultBloodLevels();	
+
+	BloodLevelsTypePtr instanceBloodLevels();
+
+	enum arthritisLevelDescriptor {
+
+		unknownArthritisLevel = -1,
+		arthritisLevel0,
+		arthritisLevel1,
+		arthritisLevel2,
+		arthritisLevel3,
+		arthritisLevel4
+
+	};
+
+	typedef boost::bimap<arthritisLevelDescriptor, QString> ArthritisLevelsType;
+	DEFINE_SMART_POINTERS(ArthritisLevelsType);
+
+	ArthritisLevelsTypePtr getDefaultArthritisLevels();	
+
+	ArthritisLevelsTypePtr instanceArthritisLevels();
 }
 }
 

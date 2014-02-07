@@ -66,6 +66,8 @@ namespace coreUI {
 		CloseUpOperations closeUpOperations_;
 		//! Timer odświeżający konsolę
 		QTimer consoleTimer;
+		//! Czy wymagane jest potwierdzenie zamknięcia
+		bool closeConfirmationRequired_;
 
 	private:
 
@@ -105,6 +107,11 @@ namespace coreUI {
         const core::Filesystem::Path & getApplicationSkinsFilePath(int i);
 
         int getApplicationSkinsFilePathCount();
+
+		void setCloseConfirmationRequired(const bool required);
+
+		const bool closeConfirmationRequired() const;
+
 		// QWidget
 	protected:
 		//!

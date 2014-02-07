@@ -306,6 +306,9 @@ public:
 			dataSeries.push_back(serie);
 			visualizerHelper_->addSerieToObserve(serie);
 			notifyChange(serie, ADD_SERIE);
+			if(dataSeries.size() == 1){
+				setActiveSerie(serie);
+			}
 		}
 
 		return serie;
@@ -335,6 +338,23 @@ public:
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
 		if(serie->visualizer_ == visualizer_){
+
+			if(activeSerie == serie){
+
+				if(dataSeries.size() - 1 > 0){
+
+					auto idx = serieIdx(serie);
+					if(idx > 0){
+						setActiveSerie(getSerie(idx-1));
+					}else{
+						setActiveSerie(getSerie(idx+1));
+					}
+
+				}else{
+					setActiveSerie(nullptr);
+				}
+			}
+
 			notifyChange(serie, REMOVE_SERIE);
 			dataSeries.remove(serie);
 			visualizerHelper_->removeSerieToObserve(serie);
@@ -356,6 +376,9 @@ public:
 	void destroyAllSeries()
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+
+		setActiveSerie(nullptr);
+
 		while(dataSeries.empty() == false){
 			destroySerie(*(dataSeries.begin()));
 		}
@@ -441,13 +464,17 @@ public:
 	void setActiveSerie(VisualizerSerie * serie)
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
+
 		if(serie == nullptr){
+			
 			innerVisualizer_->setActiveSerie(nullptr);
 		}else{
 			innerVisualizer_->setActiveSerie(serie->serie());
-		}
+		}		
 
 		activeSerie = serie;
+
+		notifyChange(activeSerie, Visualizer::ACTIVE_SERIE_CHANGED);
 	}
 
 	const Visualizer::VisualizerSerie * getActiveSerie() const
