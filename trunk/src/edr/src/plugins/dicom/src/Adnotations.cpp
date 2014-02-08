@@ -6,11 +6,10 @@ dicom::adnotations::BloodLevelsTypePtr dicom::adnotations::getDefaultBloodLevels
 {
 	BloodLevelsTypePtr adn = utils::make_shared<BloodLevelsType>();
 	adn->insert(BloodLevelsType::value_type(unknownBloodLevel, QObject::tr("unknown blood level"))); 
-	adn->insert(BloodLevelsType::value_type(bloodLevel0, QObject::tr("bloodLevel0"))); 
-	adn->insert(BloodLevelsType::value_type(bloodLevel1, QObject::tr("bloodLevel1"))); 
-	adn->insert(BloodLevelsType::value_type(bloodLevel2, QObject::tr("bloodLevel2"))); 
-	adn->insert(BloodLevelsType::value_type(bloodLevel3, QObject::tr("bloodLevel3"))); 
-	adn->insert(BloodLevelsType::value_type(bloodLevel4, QObject::tr("bloodLevel4")));	
+	adn->insert(BloodLevelsType::value_type(bloodLevel0, QObject::tr("level 0"))); 
+	adn->insert(BloodLevelsType::value_type(bloodLevel1, QObject::tr("level 1"))); 
+	adn->insert(BloodLevelsType::value_type(bloodLevel2, QObject::tr("level 2"))); 
+	adn->insert(BloodLevelsType::value_type(bloodLevel3, QObject::tr("level 3"))); 	
 	return adn;
 }
 
@@ -23,11 +22,10 @@ dicom::adnotations::ArthritisLevelsTypePtr dicom::adnotations::getDefaultArthrit
 {
 	ArthritisLevelsTypePtr adn = utils::make_shared<ArthritisLevelsType>();
 	adn->insert(ArthritisLevelsType::value_type(unknownArthritisLevel, QObject::tr("unknown arthritis level"))); 
-	adn->insert(ArthritisLevelsType::value_type(arthritisLevel0, QObject::tr("arthritisLevel0"))); 
-	adn->insert(ArthritisLevelsType::value_type(arthritisLevel1, QObject::tr("arthritisLevel1"))); 
-	adn->insert(ArthritisLevelsType::value_type(arthritisLevel2, QObject::tr("arthritisLevel2"))); 
-	adn->insert(ArthritisLevelsType::value_type(arthritisLevel3, QObject::tr("arthritisLevel3"))); 
-	adn->insert(ArthritisLevelsType::value_type(arthritisLevel4, QObject::tr("arthritisLevel4")));
+	adn->insert(ArthritisLevelsType::value_type(arthritisLevel0, QObject::tr("level 0"))); 
+	adn->insert(ArthritisLevelsType::value_type(arthritisLevel1, QObject::tr("level 1"))); 
+	adn->insert(ArthritisLevelsType::value_type(arthritisLevel2, QObject::tr("level 2"))); 
+	adn->insert(ArthritisLevelsType::value_type(arthritisLevel3, QObject::tr("level 3")));	
 
 	return adn;
 }

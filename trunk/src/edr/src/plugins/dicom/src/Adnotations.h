@@ -52,9 +52,7 @@ namespace adnotations {
 		bloodLevel0,
 		bloodLevel1,
 		bloodLevel2,
-		bloodLevel3,
-		bloodLevel4
-
+		bloodLevel3
 	};
 
 	typedef boost::bimap<bloodLevelDescriptor, QString> BloodLevelsType;
@@ -70,9 +68,7 @@ namespace adnotations {
 		arthritisLevel0,
 		arthritisLevel1,
 		arthritisLevel2,
-		arthritisLevel3,
-		arthritisLevel4
-
+		arthritisLevel3
 	};
 
 	typedef boost::bimap<arthritisLevelDescriptor, QString> ArthritisLevelsType;

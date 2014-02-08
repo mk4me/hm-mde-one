@@ -5,10 +5,6 @@
 #include "SkeletalVisualizationSchemeHelper.h"
 #include <kinematiclib/JointAnglesCollection.h>
 #include <utils/StreamData.h>
-#include <osgFX/Cartoon>
-#include <osgFX/AnisotropicLighting>
-#include <osgFX/BumpMapping>
-#include <osgFX/SpecularHighlights>
 
 static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
@@ -55,10 +51,7 @@ SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer,
 	localRootNode->addChild(connectionsDrawer->getNode());
 	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 
-	auto tmpFX = new osgFX::Cartoon;
-	tmpFX->addChild(localRootNode);
-
-	matrixTransform->addChild(tmpFX);
+	matrixTransform->addChild(localRootNode);
 
 	setTime(0.0);
 
@@ -272,12 +265,7 @@ visualizer(visualizer),
 	localRootNode->addChild(connectionsDrawer->getNode());
 	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 
-	//auto tmpFX = new osgFX::Cartoon;
-	auto tmpFX = new osgFX::SpecularHighlights;
-	tmpFX->setSpecularColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
-	tmpFX->addChild(localRootNode);
-
-	matrixTransform->addChild(tmpFX);
+	matrixTransform->addChild(localRootNode);
 
 	//setAxis(true);
 
