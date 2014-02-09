@@ -166,6 +166,7 @@ void dicom::PointsLayer::setEditable( bool val )
         (*it)->setSelected(false);
         (*it)->setFlag(QGraphicsItem::ItemIsSelectable, true);
         (*it)->setFlag(QGraphicsItem::ItemIsMovable, val);
+		(*it)->setVisible(val);
     }
     group->setHandlesChildEvents(!val);
     group->setFlag(QGraphicsItem::ItemIsSelectable, !val);
