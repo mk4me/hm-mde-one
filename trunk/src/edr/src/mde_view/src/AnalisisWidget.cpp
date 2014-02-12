@@ -437,7 +437,7 @@ void AnalysisTreeContextMenu::addHelperToMenu( const core::HierarchyHelperPtr& h
     }
 }
 
-void AnalysisTreeContextMenu::addAddictionMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper)
+void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper)
 {
     QMenu* addTo = new QMenu(tr("Add to:"), menu);
     addTo->setEnabled(false);
@@ -633,7 +633,7 @@ void AnalysisTreeContextMenu::createMenu( core::IHierarchyItemConstPtr item, QMe
         for (auto it = helpers.begin(); it != helpers.end(); ++it) {
             addHelperToMenu(*it, submenus, menu);
         }
-        addAddictionMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
+        addAdditionMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
         addRemovalMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
         addCreationMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
     }

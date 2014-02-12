@@ -41,15 +41,17 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     bottomMainWindow->setVisible(false);
 
     treeView->setModel(model->getTreeModel());
-    treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    //treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     
     contextMenu = new AnalysisTreeContextMenu(model, this);
-    connect(treeView, SIGNAL(customContextMenuRequested(const QPoint &)), contextMenu ,SLOT(contextualMenu(const QPoint &)));
+    //connect(treeView, SIGNAL(customContextMenuRequested(const QPoint &)), contextMenu ,SLOT(contextualMenu(const QPoint &)));
     connect(treeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onTreeItemActivated(const QModelIndex&)));
+	connect(treeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onTreeItemDoubleClicked(const QModelIndex&)));
     connect(model.get(), SIGNAL(expandTree(int)), treeView, SLOT(expandToDepth(int)));
-    connect(contextMenu, SIGNAL(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)), this, SLOT(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)));
+    //connect(contextMenu, SIGNAL(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)), this, SLOT(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)));
     connect(visualizerFilter.get(), SIGNAL(focusOn(QWidget*)), this, SLOT(onVisualizerFocus(QWidget*)));
 
+	topMainWindow->setAutoCloseEmptySets(true);
     connect(topMainWindow, SIGNAL(setCloseRequested(int)), this, SLOT(closeSet(int)));
     
     //auto vdfService = core::queryServices<vdf::NewVdfService>(plugin::getServiceManager());
@@ -63,6 +65,44 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     summary->initialize();
 
     //raportsTab->setVisible(false);
+}
+
+void AnalisisWidget::onTreeItemDoubleClicked(const QModelIndex& modelIDX)
+{
+	auto item = model->getTreeModel()->internalSmart(modelIDX);
+	core::IHierarchyDataItemConstPtr dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
+	if (dataItem) {
+		auto helper = dataItem->getDefaultHelper();
+		if(helper != nullptr){
+
+			auto it = activeHelpers.find(helper);
+			if(it == activeHelpers.end()){
+				createVisualizer(dataItem, helper);
+			}else if (it->second.empty() == false) {
+
+				auto docks = topMainWindow->getDockSet();
+				BOOST_FOREACH(coreUI::CoreDockWidgetSet* set, docks) {
+					BOOST_FOREACH(QDockWidget* dock, set->getDockWidgets()) {
+						coreUI::CoreVisualizerWidget* visualizerWidget = dynamic_cast<coreUI::CoreVisualizerWidget*>(dock->widget());
+						if (visualizerWidget) {
+							visualizerWidget->setStyleSheet(QString());
+						}
+					}
+				}
+
+				auto hid = it->second.front();
+
+				if(hid.dockSet != nullptr){
+					topMainWindow->setCurrentSet(hid.dockSet);
+				}
+
+				hid.visualizer->setStyleSheet(QString::fromUtf8(
+					"coreUI--CoreVisualizerWidget {" \
+					"border: 2px solid red;"\
+					"}"));
+			}
+		}
+	}
 }
 
 void AnalisisWidget::showTimeline()
@@ -184,6 +224,25 @@ void AnalisisWidget::visualizerDestroyed(QObject * visualizer)
     }
     derrivedContextWidgets.right.erase(w);
     plainContextWidgets.erase(w);*/
+
+	auto it = activeHelpers.begin();
+	while(it != activeHelpers.end()){
+
+		auto IT = it->second.begin();
+		while(IT != it->second.end()){
+			if((*IT).visualizer == w){
+				IT = it->second.erase(IT);
+			}else{
+				++IT;
+			}
+		}
+
+		if(it->second.empty() == true){
+			it = activeHelpers.erase(it);
+		}else{
+			++it;
+		}
+	}
 }
 
 
@@ -224,12 +283,20 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
     if (dockSet) {
         dockSet->addDockWidget(visualizerDockWidget);
     } else {
-        topMainWindow->autoAddDockWidget( visualizerDockWidget, tr("Group %1").arg(topMainWindow->count()+1) );
+        dockSet = topMainWindow->autoAddDockWidget( visualizerDockWidget, tr("Group %1").arg(topMainWindow->count()+1) );
     }
 
     model->addSeriesToVisualizer(visualizer, helper, path, visualizerDockWidget);
      
     visualizer->getOrCreateWidget()->setFocus(Qt::OtherFocusReason);
+
+	HelperInnerDescription hid;
+	hid.visualizer = qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget());
+	hid.dockSet = dockSet;
+	hid.visualizerDockWidget = visualizerDockWidget;
+
+	activeHelpers[helper].push_back(hid);
+
     return visualizerDockWidget;
 }
 
@@ -422,7 +489,6 @@ void AnalysisTreeContextMenu::contextualMenu( const QPoint &clickedPoint )
     QModelIndex index = view->currentIndex();
     createMenu(index, menu);
 
-
     menu->exec(QCursor::pos());
 }
 
@@ -458,7 +524,7 @@ void AnalysisTreeContextMenu::addHelperToMenu( const core::HierarchyHelperPtr& h
     }
 }
 
-void AnalysisTreeContextMenu::addAddictionMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper)
+void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper)
 {
     QMenu* addTo = new QMenu(tr("Add to:"), menu);
     addTo->setEnabled(false);
@@ -654,7 +720,7 @@ void AnalysisTreeContextMenu::createMenu( core::IHierarchyItemConstPtr item, QMe
         for (auto it = helpers.begin(); it != helpers.end(); ++it) {
             addHelperToMenu(*it, submenus, menu);
         }
-        addAddictionMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
+        addAdditionMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
         addRemovalMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
         addCreationMenuSection(menu, helpers.empty() ? core::HierarchyHelperPtr() : *helpers.begin());
     }

@@ -98,6 +98,7 @@ private Q_SLOTS:
     void removeFromVisualizer();
 
     void onTreeItemActivated(const QModelIndex&);
+	void onTreeItemDoubleClicked(const QModelIndex&);
     void highlightVisualizer( core::VisualizerPtr param1 );
     void onVisualizerFocus(QWidget* w);
 private:
@@ -121,6 +122,15 @@ private:
     SummaryWindowController* summaryController;
     ContextEventFilterPtr contextEventFilter;
     VisualizerEventFilterPtr visualizerFilter;
+
+	struct HelperInnerDescription
+	{
+		coreUI::CoreDockWidgetSet* dockSet;
+		QDockWidget * visualizerDockWidget;
+		coreUI::CoreVisualizerWidget* visualizer;
+	};
+
+	std::map<core::HierarchyHelperPtr, std::list<HelperInnerDescription>> activeHelpers; 
 };
 
 
@@ -183,7 +193,7 @@ private Q_SLOTS:
     void menuHighlightVisualizer(QAction* action = nullptr);
 
 private:
-    void addAddictionMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper );
+    void addAdditionMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper );
     void addRemovalMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper );
     void addCreationMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper );
     

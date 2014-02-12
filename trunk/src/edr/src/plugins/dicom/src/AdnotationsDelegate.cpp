@@ -47,9 +47,9 @@ QWidget *dicom::AdnotationsDelegate::createEditor(QWidget *parent,
 						}
 						break;
 
-					case adnotations::arthritisLevel:
+					case adnotations::inflammatoryLevel:
 						{
-							auto adn = dicom::adnotations::instanceArthritisLevels();
+							auto adn = dicom::adnotations::instanceInflammatoryLevels();
 							for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 								editor->addItem(it->second, it->first);
 							}

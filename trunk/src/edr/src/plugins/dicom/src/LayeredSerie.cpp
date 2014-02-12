@@ -195,7 +195,7 @@ void dicom::LayeredSerie::save()
     oa.register_type<BackgroundLayer>();
     oa.register_type<PointsLayer>();
 	oa.register_type<BloodLevelLayer>();
-	oa.register_type<ArthritisLevelLayer>();
+	oa.register_type<InflammatoryLevelLayer>();
     LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(getImage());
     oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize(visualizer->getUserName()));
     ofs.close();

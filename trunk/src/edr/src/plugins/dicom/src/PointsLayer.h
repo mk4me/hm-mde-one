@@ -235,10 +235,10 @@ namespace dicom {
 	};
 
 	typedef ValueLayer<dicom::adnotations::bloodLevelDescriptor> BloodLevelLayer;
-	typedef ValueLayer<dicom::adnotations::arthritisLevelDescriptor> ArthritisLevelLayer;
+	typedef ValueLayer<dicom::adnotations::inflammatoryLevelDescriptor> InflammatoryLevelLayer;
 
 	DEFINE_SMART_POINTERS(BloodLevelLayer);
-	DEFINE_SMART_POINTERS(ArthritisLevelLayer);
+	DEFINE_SMART_POINTERS(InflammatoryLevelLayer);
 
 
 }

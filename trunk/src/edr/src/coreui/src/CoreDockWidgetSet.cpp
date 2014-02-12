@@ -64,16 +64,19 @@ void CoreDockWidgetSet::addDockWidget(QDockWidget* widget, Qt::DockWidgetArea ar
     }
     QWidget::setUpdatesEnabled(true);
     raise();
+	emit widgetSetChange(widgetsList.size());
 }
 
 void CoreDockWidgetSet::addDockWidget( QDockWidget* widget, Qt::Orientation orientation )
 {
 	addDockWidget(widget, Qt::TopDockWidgetArea, orientation);
+	emit widgetSetChange(widgetsList.size());
 }
 
 void CoreDockWidgetSet::addDockWidget( QDockWidget* widget )
 {
     addDockWidget(widget, ((getNumWidgets() % 2) == 1) ? Qt::Horizontal : Qt::Vertical);
+	emit widgetSetChange(widgetsList.size());
 }
 
 void CoreDockWidgetSet::removeDockWidget(QDockWidget * widget)
@@ -86,6 +89,7 @@ void CoreDockWidgetSet::removeDockWidget(QDockWidget * widget)
 		disconnect(widget, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea )), this, SLOT(onDockWidgetLocationChanged(Qt::DockWidgetArea)));
 		widgetsList.erase(it);
 		QWidget::setUpdatesEnabled(true);
+		emit widgetSetChange(widgetsList.size());
 	}
 }
 
@@ -104,6 +108,7 @@ void CoreDockWidgetSet::onDockWidgetClosed( QObject* object )
     // konwersja wystarczająca, poniewaz chcemy tylko usunąć obiekt z listy
     QDockWidget* widget = reinterpret_cast<QDockWidget*>(object);
     widgetsList.remove(widget);
+	emit widgetSetChange(widgetsList.size());
 }
 
 void CoreDockWidgetSet::onDockWidgetLocationChanged(Qt::DockWidgetArea area)

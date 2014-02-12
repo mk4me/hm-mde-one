@@ -102,7 +102,8 @@ void DicomSource::addFile( const core::Filesystem::Path& path )
 
 
 template <class Helper>
-core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Path &path, const QString& desc )
+core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Path &path, const QString& desc,
+	const bool hasPowerDoppler)
 {
     auto transaction = fileDM->transaction();
     transaction->addFile(path);
@@ -157,41 +158,13 @@ dicom::LayersVectorPtr DicomLoader::loadLayers(const core::Filesystem::Path &p )
     //xmlIn.register_type<CircleLayer>();
     xmlIn.register_type<PointsLayer>();
 	xmlIn.register_type<BloodLevelLayer>();
-	xmlIn.register_type<ArthritisLevelLayer>();
+	xmlIn.register_type<InflammatoryLevelLayer>();
     LayersVectorPtr layers = utils::make_shared<LayersVector>();
     //xmlIn >> BOOST_SERIALIZATION_NVP(layers);
     xmlIn >> boost::serialization::make_nvp("layers", *layers);
     ifs.close();
 
-	bool bFound = false;
-	bool aFound = false;
-
-	for(auto it = layers->begin(); it != layers->end(); ++it){
-		switch((*it)->getAdnotationIdx()){
-			case dicom::adnotations::bloodLevel:
-				bFound = true;
-				break;
-		
-
-			case dicom::adnotations::arthritisLevel:
-				aFound = true;
-				break;
-		}
-	}
-
-	if(bFound == false){
-		layers->push_back(dicom::ILayerItemPtr(new BloodLevelLayer(dicom::adnotations::unknownBloodLevel)));
-		layers->back()->setName(QObject::tr("Blood level"));
-		layers->back()->setAdnotationIdx(dicom::adnotations::bloodLevel);
-	}
-
-	if(aFound == false){
-		layers->push_back(dicom::ILayerItemPtr(new ArthritisLevelLayer(dicom::adnotations::unknownArthritisLevel)));
-		layers->back()->setName(QObject::tr("Arthritis level"));
-		layers->back()->setAdnotationIdx(dicom::adnotations::arthritisLevel);
-	}
-
-    return layers;
+	return layers;
 }
 
 dicom::DicomInternalStructPtr DicomLoader::load( const core::Filesystem::Path& from )
@@ -225,7 +198,8 @@ void dicom::DicomSource::openInternalDataMainFile( core::Filesystem::Path path )
                 QString serieDesc = createDesc(*(*itSerie)) + QString("\n") + sessionDesc;
                 for (auto itImage = (*itSerie)->images.begin(); itImage != (*itSerie)->images.end(); ++itImage) {
                     QString imageDesc = createDesc(*(*itImage)) + QString("\n") + serieDesc;
-                    auto dataItem = transactionPart<LayerHelper>(path.parent_path() / (*itImage)->imageFile, imageDesc);
+                    auto dataItem = transactionPart<LayerHelper>(path.parent_path() / (*itImage)->imageFile,
+						imageDesc, (*itImage)->isPowerDoppler);
                     core::HierarchyDataItemPtr di = utils::dynamic_pointer_cast<core::HierarchyDataItem>(dataItem); 
                     if (di) {
                         auto itemHelpers = di->getHelpers();

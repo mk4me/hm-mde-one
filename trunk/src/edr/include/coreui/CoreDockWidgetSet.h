@@ -18,12 +18,13 @@
 
 class QDockWidget;
 
-namespace coreUI {
+namespace coreUI {	
 
 //! Klasa obsługuje grupę dock widgetów, sama będąc dock widgetem
 class COREUI_EXPORT CoreDockWidgetSet : public QWidget
 {
 	Q_OBJECT;
+
 public:
     //! niemodyfikowalny zakres wszystkich podległych widgetów zakładki
     typedef boost::iterator_range<std::list<QDockWidget*>::const_iterator> const_range;
@@ -38,6 +39,7 @@ public:
 	//! \param parent 
 	//! \param flags 
 	explicit CoreDockWidgetSet(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
+	//! Desturktor wirtualny
 	virtual ~CoreDockWidgetSet();
 
 public:
@@ -69,6 +71,10 @@ public:
 	void setMaxWidgetsNumber(int val);
     //! \return const range wszystkich dock widgetów w grupie
     const_range getDockWidgets() const;
+
+signals:
+	//! Sygnal z prosba o zamkniecie obiektu
+	void widgetSetChange(unsigned int numberOfWidgets);
 
 private Q_SLOTS:
     //! dock widget podpięty pod grupę został zamknięty

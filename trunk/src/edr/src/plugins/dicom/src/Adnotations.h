@@ -30,7 +30,7 @@ namespace adnotations {
         intensity = 6,
         noise = 7,
 		bloodLevel = 8,
-		arthritisLevel = 9
+		inflammatoryLevel = 9
     };
 
     typedef boost::bimap<annotationsIdx, QString> AdnotationsType;
@@ -62,21 +62,21 @@ namespace adnotations {
 
 	BloodLevelsTypePtr instanceBloodLevels();
 
-	enum arthritisLevelDescriptor {
+	enum inflammatoryLevelDescriptor {
 
-		unknownArthritisLevel = -1,
-		arthritisLevel0,
-		arthritisLevel1,
-		arthritisLevel2,
-		arthritisLevel3
+		unknownInflammatoryLevel = -1,
+		inflammatoryLevel0,
+		inflammatoryLevel1,
+		inflammatoryLevel2,
+		inflammatoryLevel3
 	};
 
-	typedef boost::bimap<arthritisLevelDescriptor, QString> ArthritisLevelsType;
-	DEFINE_SMART_POINTERS(ArthritisLevelsType);
+	typedef boost::bimap<inflammatoryLevelDescriptor, QString> InflammatoryLevelsType;
+	DEFINE_SMART_POINTERS(InflammatoryLevelsType);
 
-	ArthritisLevelsTypePtr getDefaultArthritisLevels();	
+	InflammatoryLevelsTypePtr getDefaultInflammatoryLevels();	
 
-	ArthritisLevelsTypePtr instanceArthritisLevels();
+	InflammatoryLevelsTypePtr instanceInflammatoryLevels();
 }
 }
 

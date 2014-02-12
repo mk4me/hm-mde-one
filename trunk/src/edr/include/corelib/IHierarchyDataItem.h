@@ -25,6 +25,8 @@ public:
 public:
     //! \return kolekcja z helperami (obiekty, które dostarczaj¹ informacji jak wizualizowaæ dane)
     virtual std::list<HierarchyHelperPtr> getHelpers() const = 0;
+	//! \return domyœlny helper dla danych, najlepiej do nich pasuj¹cy, domyœlnie null
+	virtual HierarchyHelperPtr getDefaultHelper() const { return HierarchyHelperPtr(); }
     //! \return wrapper zwi¹zany z elementem w hierarchii, mo¿e byæ pusty wskaŸnik, jeœli dane s¹ na wy¿szym poziomie abstrakcji   
     virtual utils::ObjectWrapperConstPtr getData() const = 0;
 };

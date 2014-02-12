@@ -111,6 +111,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                             auto internalImage = internalStruct->tryGetImage(imageFilename + ".png");
                             if (internalImage) {
                                 desc = DicomSource::createDesc(*internalImage);
+								utils::const_pointer_cast<LayeredImage>(img)->setIsPowerDoppler(internalImage->isPowerDoppler);
                             }
                         }
                         
@@ -176,26 +177,44 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 
     // nie bylo konfliktu danych lokalnych vs sciagnietych, ale mozliwe, ze sa tylko lokalne
     if (!localAdded) {
+
+		bool bFound = false;
+		bool iFound = false;
+
         auto layersVector = resolveLocalXml(xmlFilename);
         if (layersVector) {
             for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
-                img->addLayer(*layerIt, name);
+                
+				switch((*layerIt)->getAdnotationIdx()){
+				case dicom::adnotations::bloodLevel:
+					bFound = true;
+					break;
+
+
+				case dicom::adnotations::inflammatoryLevel:
+					iFound = true;
+					break;
+				}
             }
-        }else{
+        }
 
-			auto layersVector = utils::make_shared<LayersVector>();
+		if(iFound == false){
+			auto l = dicom::ILayerItemPtr(new InflammatoryLevelLayer(dicom::adnotations::unknownInflammatoryLevel));
+			l->setName(QObject::tr("Inflammatory level"));
+			l->setAdnotationIdx(dicom::adnotations::inflammatoryLevel);
+			img->addLayer(l, name);
+		}
 
-			//torzê na si³e layer z domyslnymi polami dla poziomu krwi i stopnia schorzenia
-			layersVector->push_back(dicom::ILayerItemPtr(new BloodLevelLayer(dicom::adnotations::unknownBloodLevel)));
-			layersVector->push_back(dicom::ILayerItemPtr(new ArthritisLevelLayer(dicom::adnotations::unknownArthritisLevel)));
+		if(bFound == false && img->isPowerDoppler() == true){
+			auto l = dicom::ILayerItemPtr(new BloodLevelLayer(dicom::adnotations::unknownBloodLevel));
+			l->setName(QObject::tr("Blood level"));
+			l->setAdnotationIdx(dicom::adnotations::bloodLevel);
+			img->addLayer(l, name);
+		}
 
-			(*layersVector)[0]->setName(QObject::tr("Blood level"));			
-			(*layersVector)[0]->setAdnotationIdx(dicom::adnotations::bloodLevel);
-			(*layersVector)[1]->setName(QObject::tr("Arthritis level"));
-			(*layersVector)[1]->setAdnotationIdx(dicom::adnotations::arthritisLevel);
-			
+		if (layersVector) {
 			for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
-				img->addLayer(*layerIt, name);
+				img->addLayer(*layerIt, name);				
 			}
 		}
     }

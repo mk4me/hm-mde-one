@@ -52,6 +52,8 @@ public:
     virtual bool getTagVisible(const std::string& tag) const;
     virtual void setTagVisible(const std::string& tag, bool val);
     virtual ILayeredImage* clone() const;
+	virtual const bool isPowerDoppler() const;
+	void setIsPowerDoppler(const bool val);
 
 private:
     //std::vector<ILayerItemPtr> layers;
@@ -60,6 +62,7 @@ private:
     // TODO : przyda sie refaktoring, string juz nie starcza
     std::set<std::string> tags;
     std::map<std::string, bool> tagsVisibility;
+	bool isPowerDoppler_;
 
 private:
     friend class boost::serialization::access;

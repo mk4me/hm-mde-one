@@ -53,27 +53,35 @@ void CoreDockWidgetManager::removeTabsDistance()
 	}
 }
 
+void CoreDockWidgetManager::setAutoCloseEmptySets(const bool val)
+{
+	autoCloseEmptySets_ = val;
+}
+
+const bool CoreDockWidgetManager::autoCloseEmptySets() const
+{
+	return autoCloseEmptySets_;
+}
+
+void CoreDockWidgetManager::onWidgetSetChange(unsigned int number)
+{
+	if(autoCloseEmptySets_ == true && number == 0){
+		auto cdws = qobject_cast<CoreDockWidgetSet*>(sender());
+		removeSet(indexOf(cdws));
+	}
+}
+
 int CoreDockWidgetManager::addDockWidgetSet(CoreDockWidgetSet* set, const QString & label)
 {
 	auto idx = tabWidget->addTab(set, label);
-	dockList.push_back(set);
-
-	removeTabsDistance();
-
-	setCurrentSet(idx);
-
+	innerAddDockWidgetSet(set, idx);
 	return idx;
 }
 
 int CoreDockWidgetManager::addDockWidgetSet( CoreDockWidgetSet* set, const QIcon & icon, const QString & label)
 {
 	auto idx = tabWidget->addTab(set, icon, label);
-	dockList.push_back(set);
-
-	removeTabsDistance();
-
-	setCurrentSet(idx);
-
+	innerAddDockWidgetSet(set, idx);
 	return idx;
 }
 
@@ -371,4 +379,16 @@ int coreUI::CoreDockWidgetManager::getMaxWidgetsInSetHint() const
 void coreUI::CoreDockWidgetManager::setMaxWidgetsInSetHint( int val )
 {
     maxWidgetsInSetHint = val;
+}
+
+void coreUI::CoreDockWidgetManager::innerAddDockWidgetSet( CoreDockWidgetSet* set,
+	const int idx)
+{
+	dockList.push_back(set);
+
+	removeTabsDistance();
+
+	setCurrentSet(idx);
+
+	connect(set, SIGNAL(widgetSetChange(unsigned int)), this, SLOT(onWidgetSetChange(unsigned int)));
 }

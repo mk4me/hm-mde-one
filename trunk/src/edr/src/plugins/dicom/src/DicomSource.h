@@ -74,7 +74,8 @@ private:
     void handleSeriesRecord( DcmDirectoryRecord * seriesRecord, core::IHierarchyItemPtr root, std::string basePath );
     void handleFileRecord( DcmDirectoryRecord * fileRecord, core::IHierarchyItemPtr root, std::string basePath, std::vector<LayerHelperPtr>& helpers );
     template <class Helper>
-    core::IHierarchyItemPtr transactionPart( const core::Filesystem::Path &path, const QString& desc = QString() );
+    core::IHierarchyItemPtr transactionPart( const core::Filesystem::Path &path, const QString& desc = QString(),
+		const bool hasPowerDoppler = false);
 
 public:
     static QString createDesc(const internalData::Patient& patient);

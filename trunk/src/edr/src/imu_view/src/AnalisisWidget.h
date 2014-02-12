@@ -181,7 +181,7 @@ private Q_SLOTS:
     void menuHighlightVisualizer(QAction* action = nullptr);
 
 private:
-    void addAddictionMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper );
+    void addAdditionMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper );
     void addRemovalMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper );
     void addCreationMenuSection( QMenu * menu, const core::HierarchyHelperPtr& helper );
     

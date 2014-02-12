@@ -18,21 +18,21 @@ dicom::adnotations::BloodLevelsTypePtr dicom::adnotations::instanceBloodLevels()
 	return getDefaultBloodLevels();
 }
 
-dicom::adnotations::ArthritisLevelsTypePtr dicom::adnotations::getDefaultArthritisLevels()
+dicom::adnotations::InflammatoryLevelsTypePtr dicom::adnotations::getDefaultInflammatoryLevels()
 {
-	ArthritisLevelsTypePtr adn = utils::make_shared<ArthritisLevelsType>();
-	adn->insert(ArthritisLevelsType::value_type(unknownArthritisLevel, QObject::tr("unknown arthritis level"))); 
-	adn->insert(ArthritisLevelsType::value_type(arthritisLevel0, QObject::tr("level 0"))); 
-	adn->insert(ArthritisLevelsType::value_type(arthritisLevel1, QObject::tr("level 1"))); 
-	adn->insert(ArthritisLevelsType::value_type(arthritisLevel2, QObject::tr("level 2"))); 
-	adn->insert(ArthritisLevelsType::value_type(arthritisLevel3, QObject::tr("level 3")));	
+	InflammatoryLevelsTypePtr adn = utils::make_shared<InflammatoryLevelsType>();
+	adn->insert(InflammatoryLevelsType::value_type(unknownInflammatoryLevel, QObject::tr("unknown inflammatory level"))); 
+	adn->insert(InflammatoryLevelsType::value_type(inflammatoryLevel0, QObject::tr("level 0"))); 
+	adn->insert(InflammatoryLevelsType::value_type(inflammatoryLevel1, QObject::tr("level 1"))); 
+	adn->insert(InflammatoryLevelsType::value_type(inflammatoryLevel2, QObject::tr("level 2"))); 
+	adn->insert(InflammatoryLevelsType::value_type(inflammatoryLevel3, QObject::tr("level 3")));	
 
 	return adn;
 }
 
-dicom::adnotations::ArthritisLevelsTypePtr dicom::adnotations::instanceArthritisLevels()
+dicom::adnotations::InflammatoryLevelsTypePtr dicom::adnotations::instanceInflammatoryLevels()
 {
-	return getDefaultArthritisLevels();
+	return getDefaultInflammatoryLevels();
 }
 
 
@@ -49,7 +49,7 @@ dicom::adnotations::AdnotationsTypePtr dicom::adnotations::getDefault()
     adn->insert(AdnotationsType::value_type(intensity, QObject::tr("the degree of intensity/ hyperaemia")));
     adn->insert(AdnotationsType::value_type(noise, QObject::tr("noise")));
 	adn->insert(AdnotationsType::value_type(bloodLevel, QObject::tr("blood level")));
-	adn->insert(AdnotationsType::value_type(arthritisLevel, QObject::tr("arthritis level")));
+	adn->insert(AdnotationsType::value_type(inflammatoryLevel, QObject::tr("inflammatory level")));
     return adn;
 }
 

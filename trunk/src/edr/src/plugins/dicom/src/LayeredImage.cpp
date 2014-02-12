@@ -8,19 +8,19 @@
 #include <QtGui/QGraphicsItemGroup>
 
 
-dicom::LayeredImage::LayeredImage( const QPixmap& pixmap ) 
+dicom::LayeredImage::LayeredImage( const QPixmap& pixmap ) : isPowerDoppler_(false)
 {
     //layers.push_back(utils::make_shared<BackgroundLayer>(pixmap));
     backgroundLayer = utils::make_shared<BackgroundLayer>(pixmap);
 }
 
-dicom::LayeredImage::LayeredImage( const std::string& pixmap )
+dicom::LayeredImage::LayeredImage( const std::string& pixmap ) : isPowerDoppler_(false)
 {
     //layers.push_back(utils::make_shared<BackgroundLayer>(QString::fromStdString(pixmap)));
     backgroundLayer = utils::make_shared<BackgroundLayer>(QString::fromStdString(pixmap));
 }
 
-dicom::LayeredImage::LayeredImage()
+dicom::LayeredImage::LayeredImage() : isPowerDoppler_(false)
 {
 
 }
@@ -29,6 +29,16 @@ dicom::LayeredImage::LayeredImage()
 dicom::LayeredImage::~LayeredImage()
 {
 
+}
+
+const bool dicom::LayeredImage::isPowerDoppler() const
+{
+	return isPowerDoppler_;
+}
+
+void dicom::LayeredImage::setIsPowerDoppler(const bool val)
+{
+	isPowerDoppler_ = val;
 }
 
 
@@ -182,6 +192,8 @@ dicom::ILayeredImage* dicom::LayeredImage::clone() const
     for (auto it = tagsVisibility.begin(); it != tagsVisibility.end(); ++it) {
         img->setTagVisible(it->first, it->second);
     }
+
+	img->setIsPowerDoppler(this->isPowerDoppler());
 
     return img.release();
 }

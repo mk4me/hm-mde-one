@@ -71,17 +71,22 @@ namespace core {
 
     public:
         //! 
-        virtual std::list<HierarchyHelperPtr> getHelpers() const; 
+        virtual std::list<HierarchyHelperPtr> getHelpers() const;
+		//!
+		virtual HierarchyHelperPtr getDefaultHelper() const;
         //! 
         virtual utils::ObjectWrapperConstPtr getData() const;
         //! 
         //! \param helper 
         void addHelper(HierarchyHelperPtr helper);
 
+		void setDefaultHelper(const int idx);
+
         virtual IHierarchyItemPtr shallowCopy(bool withChildren) const;
 
     private:
         std::list<HierarchyHelperPtr> helpers;
+		int defaultHelperIDX;
         utils::ObjectWrapperConstPtr data;
     };
     DEFINE_SMART_POINTERS(HierarchyDataItem)

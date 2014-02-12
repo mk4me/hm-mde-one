@@ -82,12 +82,12 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 						}
 						break;
 
-					case adnotations::arthritisLevel:
+					case adnotations::inflammatoryLevel:
 						{
-							auto ail = utils::dynamic_pointer_cast<const ArthritisLevelLayer>(itm);
+							auto ail = utils::dynamic_pointer_cast<const InflammatoryLevelLayer>(itm);
 							if(ail != nullptr){
 
-								auto alt = adnotations::instanceArthritisLevels();
+								auto alt = adnotations::instanceInflammatoryLevels();
 								return alt->left.at(ail->value());
 							}
 						}
@@ -169,15 +169,15 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 						}
 						break;
 
-					case adnotations::arthritisLevel:
+					case adnotations::inflammatoryLevel:
 						{
-							auto ail = utils::dynamic_pointer_cast<ArthritisLevelLayer>(il);
+							auto ail = utils::dynamic_pointer_cast<InflammatoryLevelLayer>(il);
 							if(ail != nullptr){
 
 								int val = value.toInt();
-								ail->setValue((dicom::adnotations::arthritisLevelDescriptor)val);
+								ail->setValue((dicom::adnotations::inflammatoryLevelDescriptor)val);
 
-								auto alt = adnotations::instanceArthritisLevels();
+								auto alt = adnotations::instanceInflammatoryLevels();
 								QString result = alt->left.at(ail->value());
 								Q_EMIT editCompleted( result );
 							}

@@ -44,6 +44,7 @@ public:
     virtual tags_range getTags() const = 0;
     virtual bool getTagVisible(const std::string& tag) const = 0;
     virtual void setTagVisible(const std::string& tag, bool val) = 0;
+	virtual const bool isPowerDoppler() const = 0;
 
     virtual ILayeredImage* clone() const = 0;
 };

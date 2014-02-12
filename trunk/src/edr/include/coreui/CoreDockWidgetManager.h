@@ -49,7 +49,8 @@ public:
 	//! Dodaj grupę dock widgetów
 	//! \param set dodawana grupa
 	int addDockWidgetSet(CoreDockWidgetSet* set, const QIcon & icon, const QString & label);
-    //! Grupa dock widgetów stanie się aktywna (widoczna)
+
+	//! Grupa dock widgetów stanie się aktywna (widoczna)
     
 	//! Dodaje widget do grupy, która ma na niego miejsce, jeśli takiej nie ma to tworzona jest nowa
 	//! \param widget dodawany dock widget
@@ -109,6 +110,8 @@ public:
 	QString setWhatsThis(int index) const;
 	bool setsClosable() const;
 	bool usesScrollButtons() const;
+	void setAutoCloseEmptySets(const bool val);
+	const bool autoCloseEmptySets() const;
 
 Q_SIGNALS:
     //! stan dock widgetów zmienił się
@@ -125,6 +128,12 @@ private Q_SLOTS:
 
 	void onTabWidgetChange(int idx);
 	void onTabCloseRequest(int idx);
+	void onWidgetSetChange(unsigned int number);
+
+private:
+
+	void innerAddDockWidgetSet( CoreDockWidgetSet* set,
+		const int idx);
 
 private:
 	QTabWidget * tabWidget;
@@ -132,6 +141,8 @@ private:
 	std::list<CoreDockWidgetSet*> dockList;
     //! maksymalna liczba widgetów w tworzonych setach
     int maxWidgetsInSetHint;
+	//! Czy automatycznie zamykać puste grupy?
+	bool autoCloseEmptySets_;
 };
 
 }
