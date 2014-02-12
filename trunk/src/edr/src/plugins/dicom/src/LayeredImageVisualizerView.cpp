@@ -194,7 +194,7 @@ void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex & )
     for (auto it = indexes.begin(); it != indexes.end(); ++it) {
         rows.insert(LayeredModelView::getTagAndIndex(*it));
     }
-    if (rows.size() == 1) {
+    if (rows.size() == 1 && rows.begin()->second != -1) {
         auto ti = rows.begin();
         model->selectLayer(ti->first, ti->second);
     }
