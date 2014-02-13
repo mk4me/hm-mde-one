@@ -255,6 +255,12 @@ public:
 		return widget;
 	}
 
+	//! \return Widget wizualizatora do pokazania w aplikacji
+	const QWidget* getWidget() const
+	{
+		return widget;
+	}
+
 	//! \return Nazwa wizualizatora
 	const std::string getName() const
 	{
@@ -596,6 +602,11 @@ const QIcon Visualizer::getIcon() const
 QWidget* Visualizer::getWidget()
 {
     return visualizerImpl->getWidget();
+}
+
+const QWidget* Visualizer::getWidget() const
+{
+	return visualizerImpl->getWidget();
 }
 
 const std::string Visualizer::getName() const

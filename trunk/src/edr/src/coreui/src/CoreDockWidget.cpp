@@ -45,12 +45,3 @@ void CoreDockWidget::toggleFloating()
 {
     QDockWidget::setFloating( !isFloating() );
 }
-
-void coreUI::CoreDockWidget::setLabel( const QString& label )
-{
-    setWindowTitle(label);
-    auto titleBar = this->titleBarWidget();
-    if (titleBar) {
-        titleBar->setWindowTitle(label);
-    }
-}

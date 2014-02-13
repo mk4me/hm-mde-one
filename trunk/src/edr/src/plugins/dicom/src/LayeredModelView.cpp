@@ -4,11 +4,14 @@
 #include "Adnotations.h"
 #include <QtGui/QFont>
 #include "PointsLayer.h"
+#include "LayeredImageVisualizer.h"
+#include <coreui/CoreVisualizerWidget.h>
+#include <coreui/CoreDockWidget.h>
 
 using namespace dicom; 
 
-LayeredModelView::LayeredModelView(QObject *parent)
-    :QAbstractItemModel(parent)
+LayeredModelView::LayeredModelView(LayeredImageVisualizer *parent)
+    :QAbstractItemModel(parent), parent_(parent)
 {
 }
 
@@ -134,6 +137,12 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
         }
 
     } else if (role == Qt::EditRole) {
+
+		auto w = parent_->createWidget();
+		if(w != nullptr){
+			w->setWindowModified(true);
+		}
+
         treedata* td = static_cast<treedata*>(index.internalPointer());
         int idx = td->idx;
         if (idx != -1) {

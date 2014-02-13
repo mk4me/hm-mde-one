@@ -24,6 +24,8 @@ namespace core
 	public:
 		//! Typ agregatu prototypów
 		typedef std::list<VisualizerConstPtr> VisualizerPrototypes;
+		//! Typ agreguj¹cy aktualnie ¿ywe instancje wizualizatorów
+		typedef std::list<const Visualizer*> VisualizerInstances;
 
 		//! Typ operacji rejestrowania, wyrejestrowywania wizualizatorów
 		enum VisuzalizerOperation {
@@ -49,7 +51,8 @@ namespace core
 		//! \param type Typ dla którego poszukujeemy wizualizatorów
 		//! \param prototypes [out] Prototypy wizualizatorów potrafi¹cych obs³u¿yæ zadany typ
 		virtual void getVisualizerPrototypes(const core::TypeInfo & type, VisualizerPrototypes & prototypes, bool exact) = 0;
-
+		//! \param visInstances [out] Obiekt do ktorego zapiszemy aktualnie zyjace instancje wizualizatorow
+		virtual void getVisualizersInstances(VisualizerInstances & visInstances) const = 0;
 		//! \param observer Obserwator tworzonych wizualziatorów w³¹czony do obserwacji
 		virtual void registerObserver(IVisualizerManagerObserver * observer) = 0;
 		//! \param observer Obserwator tworzonych wizualziatorów wy³anczany z obserwacji

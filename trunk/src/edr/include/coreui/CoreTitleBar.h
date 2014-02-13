@@ -54,7 +54,7 @@ public:
 
 public:
 
-	static CoreTitleBar * supplyWithCoreTitleBar(QDockWidget * dockWidget);
+	static CoreTitleBar * supplyWithCoreTitleBar(QDockWidget * dockWidget, const bool observe = true);
 	static void supplyCoreTitleBarWithActions(CoreTitleBar * titleBar, const QList<QAction *> & actions);
 	static void supplyCoreTitleBarWithActions(CoreTitleBar * titleBar, QWidget * widget);
 
@@ -79,16 +79,13 @@ public:
 	Qt::ToolButtonStyle titlebarButtonStyle() const;
 	QWidget * widgetForAction(QAction * action) const;
 
-	void setIcon(const QPixmap & icon);
-	const QPixmap & getIcon() const;
-
     bool isTitleVisible() const;
     
 public slots:
 
     void setTitleVisible(bool visible);
 
-	//! Qt API
+	//! Qt API obslugujace kssztalt i rozmiar dla akcji
 	void setIconSize(const QSize & iconSize);
 	void setTitlebarButtonStyle(Qt::ToolButtonStyle titlebarButtonStyle);
 

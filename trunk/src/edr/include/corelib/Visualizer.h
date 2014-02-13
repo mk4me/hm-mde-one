@@ -166,6 +166,8 @@ public:
     QWidget* getOrCreateWidget();
     //! \return Widget wizualizatora. Może być nullptr, jeżeli jeszcze nie jest stworzony.
     QWidget* getWidget();
+	//! \return Widget wizualizatora. Może być nullptr, jeżeli jeszcze nie jest stworzony.
+	const QWidget* getWidget() const;
     //! \return Ikona wizualizatora
     const QIcon getIcon() const;
 	//! \return Maksymalna ilość serii jaką wizualizator może obsłuzyć

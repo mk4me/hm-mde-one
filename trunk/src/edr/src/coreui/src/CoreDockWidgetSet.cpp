@@ -5,6 +5,7 @@
 #include <QtGui/QDockWidget>
 #include <QtGui/QTabBar>
 #include <stdexcept>
+#include <QtGui/QCloseEvent>
 
 using namespace coreUI;
 
@@ -151,4 +152,25 @@ void CoreDockWidgetSet::setMaxWidgetsNumber(int val)
 CoreDockWidgetSet::const_range CoreDockWidgetSet::getDockWidgets() const
 {
 	return boost::make_iterator_range(widgetsList.cbegin(), widgetsList.cend());
+}
+
+void CoreDockWidgetSet::closeEvent(QCloseEvent *event)
+{
+	bool accept = true;
+	auto wl = widgetsList;
+
+	blockSignals(true);
+	for(auto it = wl.begin(); it != wl.end(); ++it){
+		if((*it)->close() == false){
+			accept = false;
+		}
+	}
+
+	if(accept == true){
+		event->accept();
+	}else{
+		blockSignals(false);
+		event->ignore();
+		emit widgetSetChange(widgetsList.size());
+	}	
 }

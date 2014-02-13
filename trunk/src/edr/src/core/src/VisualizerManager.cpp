@@ -52,6 +52,13 @@ void VisualizerManager::getVisualizerPrototypes(const core::TypeInfo & type, IVi
 	}
 }
 
+void VisualizerManager::getVisualizersInstances(VisualizerInstances & visInstances) const
+{
+	for(auto it = visualizerInstances_.begin(); it != visualizerInstances_.end(); ++it){
+		visInstances.push_back(*it);
+	}
+}
+
 void VisualizerManager::registerVisualizer(Visualizer* visualizer)
 {
 	if(skipNotify == true){

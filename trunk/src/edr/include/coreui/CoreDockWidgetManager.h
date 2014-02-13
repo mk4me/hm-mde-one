@@ -139,6 +139,8 @@ private:
 	QTabWidget * tabWidget;
     //! lista wszystkich grup managera
 	std::list<CoreDockWidgetSet*> dockList;
+	//! lista prywatnych grup managera
+	std::list<CoreDockWidgetSet*> privateDockList;
     //! maksymalna liczba widgetów w tworzonych setach
     int maxWidgetsInSetHint;
 	//! Czy automatycznie zamykać puste grupy?

@@ -50,6 +50,9 @@ public:
     virtual ~MdeMainWindow();
 
 public:
+
+	virtual void closeEvent(QCloseEvent* event);
+
     virtual void showSplashScreenMessage(const QString & message);
     AnalisisModelConstPtr getAnalysisModel() const { return analysisModel; }
     ContextEventFilterPtr getContextEventFilter() const { return contextEventFilter; }

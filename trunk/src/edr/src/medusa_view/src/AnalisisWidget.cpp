@@ -96,10 +96,11 @@ void AnalisisWidget::onTreeItemDoubleClicked(const QModelIndex& modelIDX)
 					topMainWindow->setCurrentSet(hid.dockSet);
 				}
 
-				hid.visualizer->setStyleSheet(QString::fromUtf8(
+				/*hid.visualizer->setStyleSheet(QString::fromUtf8(
 					"coreUI--CoreVisualizerWidget {" \
 					"border: 2px solid red;"\
 					"}"));
+				*/
 			}
 		}
 	}
@@ -157,20 +158,26 @@ QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & vi
 
     auto visWidget = new coreUI::CoreVisualizerWidget(visualizer);
     
-    auto dockVisWidget = embeddWidget(visWidget, QString::fromStdString(visualizer->getName()),
+    auto dockVisWidget = embeddWidget(visWidget, QString::fromStdString(visualizer->getName() + "[*]"),
         Qt::AllDockWidgetAreas,
         false);
 
+	bool res = false;
+
+	//! HACK
+	// kolejny hack... - jak inaczej przechwycić zamknięcie wyedytowanego widgeta?
+	// tutaj powinien byc wprowadzony obiekt IEditor ktory natywnie to obsluguje
+
+	auto o = dynamic_cast<QObject *>(visualizer->visualizer());
+	if(o != nullptr){
+		dockVisWidget->installEventFilter(o);
+	}
+
+	visualizer->getOrCreateWidget()->installEventFilter(dockVisWidget->titleBarWidget());
+
     registerVisualizerContext(getContextEventFilter(), qobject_cast<coreUI::CoreTitleBar*>(dockVisWidget->titleBarWidget()), qobject_cast<coreUI::CoreVisualizerWidget*>(dockVisWidget->widget()), visualizer);
     dockVisWidget->setMinimumSize((std::max)(50, dockVisWidget->minimumWidth()), (std::max)(50, dockVisWidget->minimumHeight()));
-    {
-        QObject* visObj = dynamic_cast<QObject*>(visualizer->visualizer());
-        if (visObj) {
-            // todo : znalezc lepszy sposob na zmiane etykiety wizualizatora
-            // (a moze wystarczy sprawdzic metaInfo o sygnalach? )
-            connect(visObj, SIGNAL(changeLabel(const QString&)), dockVisWidget, SLOT(setLabel(const QString&)));
-        }
-    }
+    
     return dockVisWidget;
 }
 
@@ -181,7 +188,8 @@ coreUI::CoreDockWidget* AnalisisWidget::embeddWidget(QWidget * widget, const QSt
     embeddedDockWidget->setAllowedAreas(allowedAreas);
     embeddedDockWidget->setPermanent(permanent);
 
-    auto consoleTitleBar = coreUI::CoreTitleBar::supplyWithCoreTitleBar(embeddedDockWidget);
+    auto consoleTitleBar = coreUI::CoreTitleBar::supplyWithCoreTitleBar(embeddedDockWidget, false);
+
     return embeddedDockWidget;
 }
 
@@ -278,7 +286,7 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
 {
     auto visualizer = helper->createVisualizer(plugin::getVisualizerManager());
     visualizer->addObserver(this->model.get());
-    auto visualizerDockWidget = createDockVisualizer(visualizer);
+    auto visualizerDockWidget = createDockVisualizer(visualizer);	
 
     if (dockSet) {
         dockSet->addDockWidget(visualizerDockWidget);
@@ -838,10 +846,12 @@ void AnalisisWidget::highlightVisualizer( core::VisualizerPtr param1 )
         if (set) {
             topMainWindow->setCurrentSet(set);
         }
+		/*
         desc->visualizerWidget->setStyleSheet(QString::fromUtf8(
             "coreUI--CoreVisualizerWidget {" \
             "border: 2px solid red;"\
             "}"));
+		*/
     }
 }
 

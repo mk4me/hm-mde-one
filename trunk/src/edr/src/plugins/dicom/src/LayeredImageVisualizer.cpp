@@ -19,6 +19,7 @@
 #include "corelib/ISourceManager.h"
 #include "plugins/newCommunication/IDownloadRequest.h"
 #include "coreui/CorePopup.h"
+#include <QtGui/QMessageBox>
 
 using namespace dicom;
 
@@ -36,6 +37,30 @@ LayeredImageVisualizer::~LayeredImageVisualizer()
 plugin::IVisualizer* LayeredImageVisualizer::create() const
 {
     return new LayeredImageVisualizer();
+}
+
+bool LayeredImageVisualizer::eventFilter(QObject * watched, QEvent * event)
+{
+	if(event->type() == QEvent::Close){
+		//auto widget = qobject_cast<QWidget *>(watched);
+		
+		if(mainWidget->isWindowModified() == true &&
+			QMessageBox::question(mainWidget, tr("Data changed"), tr("Some data was changed. Would You like to save changes or discard them?"),
+			QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save){		
+
+			try{
+				uploadSerie();
+			}catch(...){
+				event->ignore();
+				return true;
+			}
+		}
+
+		event->accept();
+		return true;
+	}
+
+	return QObject::eventFilter(watched, event);
 }
 
 plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie( const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data )
@@ -88,7 +113,7 @@ void LayeredImageVisualizer::setActiveSerie( plugin::IVisualizer::ISerie * serie
         if (series[i] == serie) {
             currentSerie = i;
             if (prevSerie != series[i]) {
-                Q_EMIT changeLabel(QString::fromStdString(series[i]->getName()));
+                mainWidget->setWindowTitle(QString::fromStdString(series[i]->getName())+"[*]");
                 Q_EMIT serieChanged();
             }
             return;
@@ -272,6 +297,8 @@ void dicom::LayeredImageVisualizer::uploadSerie()
         
         comm->uploadMotionFile(p, "");
     }
+
+	mainWidget->setWindowModified(false);
 }
 
 std::string dicom::LayeredImageVisualizer::getUserName() const

@@ -45,22 +45,6 @@ CoreTitleBar::~CoreTitleBar()
 
 }
 
-void CoreTitleBar::setIcon(const QPixmap & icon)
-{
-	ui->iconPlaceholder->setPixmap(icon);
-
-	if(icon.isNull() == true){
-		ui->iconPlaceholder->setVisible(false);
-	}else{
-		ui->iconPlaceholder->setVisible(true);
-	}
-}
-
-const QPixmap & CoreTitleBar::getIcon() const
-{
-	return *(ui->iconPlaceholder->pixmap());
-}
-
 void CoreTitleBar::onTopLevelChanged(bool floating)
 {
 	ui->buttonFloat->blockSignals(true);
@@ -83,7 +67,7 @@ void CoreTitleBar::closeWindow()
 	if(parentWidget() != nullptr){
 		QDockWidget *dockWidget = qobject_cast<QDockWidget*>(parentWidget());
 		if(dockWidget != nullptr) {
-			dockWidget->close();
+			dockWidget->close();		
 			return;
 		}
 	}
@@ -93,10 +77,58 @@ void CoreTitleBar::closeWindow()
 
 bool CoreTitleBar::eventFilter(QObject * watched, QEvent * event)
 {
-	if(event->type() == QEvent::WindowTitleChange){
-		auto w = qobject_cast<QWidget *>(watched);
-		toogleViewAction_->setText(w->windowTitle());
+	if(event->type() == QEvent::WindowTitleChange || event->type() == QEvent::ModifiedChange){
+		auto widget = qobject_cast<QWidget *>(watched);
+		QString cap = widget->windowTitle();
+
+		if (cap.isEmpty() == false){			
+
+			QLatin1String placeHolder("[*]");
+			int placeHolderLength = 3; // QLatin1String doesn't have length()
+
+			int index = cap.indexOf(placeHolder);
+
+			// here the magic begins
+			while (index != -1) {
+				index += placeHolderLength;
+				int count = 1;
+				while (cap.indexOf(placeHolder, index) == index) {
+					++count;
+					index += placeHolderLength;
+				}
+
+				if (count%2) { // odd number of [*] -> replace last one
+					int lastIndex = cap.lastIndexOf(placeHolder, index - 1);
+					if (widget->isWindowModified()
+						&& widget->style()->styleHint(QStyle::SH_TitleBar_ModifyNotification, 0, widget))
+						cap.replace(lastIndex, 3, QWidget::tr("*"));
+					else
+						cap.remove(lastIndex, 3);
+				}
+
+				index = cap.indexOf(placeHolder, index);
+			}
+
+			cap.replace(QLatin1String("[*][*]"), placeHolder);
+		}
+
+		setWindowTitle(cap);
+		toogleViewAction_->setText(cap);
 		updateTitleOrientation();
+	}else if(event->type() == QEvent::WindowIconChange){
+		auto widget = qobject_cast<QWidget *>(watched);
+		auto icon = widget->windowIcon();
+		if(icon.isNull() == true){
+			ui->iconPlaceholder->setPixmap(QPixmap());
+			ui->iconPlaceholder->setVisible(false);
+		}else{
+			ui->iconPlaceholder->setPixmap(icon.pixmap(height()));
+			ui->iconPlaceholder->setVisible(true);
+		}
+	}else if(event->type() == QEvent::IconTextChange){
+		auto widget = qobject_cast<QWidget *>(watched);
+		auto iconText = widget->windowIconText();
+		ui->iconPlaceholder->setToolTip(iconText);
 	}
 
 	return QWidget::eventFilter(watched, event);
@@ -105,7 +137,8 @@ bool CoreTitleBar::eventFilter(QObject * watched, QEvent * event)
 void CoreTitleBar::changeEvent(QEvent * event)
 {
 	if(event->type() == QEvent::WindowTitleChange){
-		toogleViewAction_->setText(windowTitle());
+		auto t = windowTitle();
+		toogleViewAction_->setText(t);
 		updateTitleOrientation();	
 	}
 
@@ -130,17 +163,17 @@ bool CoreTitleBar::event(QEvent * event)
 
 void CoreTitleBar::updateTitleOrientation()
 {
-	if(verticalOrientation_ == true){
-		
-		QString newTitle(windowTitle());
+	QString newTitle(windowTitle());
+
+	if(verticalOrientation_ == true){		
 		for(auto i = newTitle.size() - 1; i > 0; --i){
 			newTitle.insert(i, "<BR>");
 		}
 
-		ui->titleLabel->setText("<html>" + newTitle + "</html>");
-	}else{
-		ui->titleLabel->setText(windowTitle());
+		newTitle = "<html>" + newTitle + "</html>";
 	}
+	
+	ui->titleLabel->setText(newTitle);	
 }
 
 void CoreTitleBar::onActionTriggeredLeft(QAction * action)
@@ -426,25 +459,15 @@ void CoreTitleBar::setTitlebarButtonStyle(Qt::ToolButtonStyle titlebarButtonStyl
 	rightToolbar->setToolButtonStyle(titlebarButtonStyle);
 }
 
-//void CoreTitleBar::paintEvent( QPaintEvent *paintEvent )
-//{
-//    QStyleOption opt;
-//    opt.init(this);
-//    QPainter p(this);
-//    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this); // PE_Widget
-//}
-
 bool CoreTitleBar::isTitleVisible() const
 {
     return ui->titleLabel->isVisible();
 }
 
-
 void CoreTitleBar::setTitleVisible(bool visible)
 {
     ui->titleLabel->setVisible(visible);
 }
-
 
 void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
 {
@@ -512,20 +535,22 @@ void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
 	}
 }
 
-CoreTitleBar * CoreTitleBar::supplyWithCoreTitleBar(QDockWidget * dockWidget)
+CoreTitleBar * CoreTitleBar::supplyWithCoreTitleBar(QDockWidget * dockWidget, const bool observe)
 {
     if(dockWidget->titleBarWidget() != nullptr){
         return nullptr;
     }
 
     auto titleBar = new CoreTitleBar(dockWidget->isFloating(), dockWidget);
-    dockWidget->setTitleBarWidget(titleBar);
-	titleBar->setWindowTitle(dockWidget->windowTitle());
+	dockWidget->setTitleBarWidget(titleBar);
 	titleBar->refreshFeatures(dockWidget->features());
 
+	if(observe == true){
+		titleBar->setWindowTitle(dockWidget->windowTitle());
+		// obserwujemy zmiany tytulu okna
+		dockWidget->installEventFilter(titleBar);
+	}
 
-	// obserwujemy zmiany tytulu okna
-	dockWidget->installEventFilter(titleBar);
 	//obserwujemy zmiany cech okna
     QObject::connect(dockWidget, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), titleBar, SLOT(refreshFeatures(QDockWidget::DockWidgetFeatures)));
 	//zmiana dokowania po stronie dockWidgeta z pominięciem titlebara

@@ -23,6 +23,10 @@
 #include "ui_toolboxmaindeffile.h"
 #include "MdeServiceWindow.h"
 #include "plugins/newCommunication/ICommunicationDataSource.h"
+#include <corelib/IVisualizerManager.h>
+#include <corelib/IVisualizer.h>
+#include <QtGui/QMessageBox>
+#include <QtGui/QCloseEvent>
 
 using namespace core;
 
@@ -243,4 +247,36 @@ void MdeMainWindowController::activateTab( IMdeTabPtr tab )
     tab->getMainWidget()->setVisible(true);
 }
 
+void MdeMainWindow::closeEvent(QCloseEvent* event)
+{
+	bool close = true;
 
+	auto visManager = plugin::getVisualizerManager();
+
+	core::IVisualizerManager::VisualizerInstances visInstances;
+
+	visManager->getVisualizersInstances(visInstances);
+
+	for(auto it = visInstances.begin(); it != visInstances.end(); ++it){
+
+		auto w = (*it)->getWidget();
+		if(w != nullptr && w->isWindowModified() == true){
+			close = false;
+			break;
+		}
+	}
+
+	if(close == false){
+		if(QMessageBox::question( this, tr("Confirm exit"), tr("There are some unsaved data changes. Do You want to close application and discard them?"),
+			QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) == QMessageBox::No){
+
+				event->ignore();
+		}else{
+
+			event->accept();
+
+		}
+	}else{
+		coreUI::CoreMainWindow::closeEvent(event);
+	}
+}

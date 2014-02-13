@@ -36,13 +36,12 @@ private:
 		//! Zbiór wspieranych przez niego typów
 		TypeInfoSet derrivedSupportedTypes;
 	};
-
+	//! Typ agregujący aktualnie żywe instancje wizualizatorów
+	typedef std::list<Visualizer*> InnerVisualizerInstances;
 	//! Lista prototypów vizualizatorów
 	typedef std::map<UniqueID, VisualizerPrototypeData> VisualizerPrototypes;
 	//! Typ listy obserwatorów
 	typedef std::set<IVisualizerManagerObserver*> Observers;
-	//! Typ listy aktualnie żyjącyh instancji
-	typedef std::list<Visualizer*> VisualizerInstances;
 	//! Obsługa synchronizacji
 	typedef utils::RecursiveSyncPolicy SyncPolicy;
 	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
@@ -51,7 +50,7 @@ private:
 
 	VisualizerPrototypes visualizerPrototypes_;
 	Observers observers_;
-	VisualizerInstances visualizerInstances_;
+	InnerVisualizerInstances visualizerInstances_;
 
 	//! Obiekt na potrzeby synchronizacji update
 	mutable SyncPolicy updateSync;
@@ -77,6 +76,8 @@ public:
 	//! \param type Typ dla którego poszukujeemy wizualizatorów
 	//! \param prototypes [out] Prototypy wizualizatorów potrafiących obsłużyć zadany typ
 	virtual void getVisualizerPrototypes(const core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact);
+
+	virtual void getVisualizersInstances(VisualizerInstances & visInstances) const;
 	
 	//! \param observer Obserwator tworzonych wizualziatorów włączony do obserwacji
 	virtual void registerObserver(IVisualizerManagerObserver * observer);

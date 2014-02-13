@@ -96,8 +96,10 @@ CoreDockWidgetSet* CoreDockWidgetManager::autoAddDockWidget( QDockWidget* widget
 	}
 
 	CoreDockWidgetSet* set = new CoreDockWidgetSet();
+	set->setAttribute(Qt::WA_DeleteOnClose);
     set->setMaxWidgetsNumber(getMaxWidgetsInSetHint());
 	set->addDockWidget(widget);
+	privateDockList.push_back(set);
 	addDockWidgetSet(set, icon, label);
 	setCurrentSet(set);
 	return set;
@@ -115,7 +117,9 @@ CoreDockWidgetSet* CoreDockWidgetManager::autoAddDockWidget( QDockWidget* widget
 
 	if(set == nullptr){
 		set = new CoreDockWidgetSet();
+		set->setAttribute(Qt::WA_DeleteOnClose);
         set->setMaxWidgetsNumber(getMaxWidgetsInSetHint());
+		privateDockList.push_back(set);
 		addDockWidgetSet(set, label);
 	}
 
@@ -228,9 +232,20 @@ bool CoreDockWidgetManager::isSetEnabled(int index) const
 
 void CoreDockWidgetManager::removeSet(int index)
 {
-	dockList.remove(set(index));
+	auto s = set(index);
+
+	if(s->close() == false){
+		return;
+	}
+
+	dockList.remove(s);
 	tabWidget->removeTab(index);
 	removeTabsDistance();
+
+	auto it = std::find(privateDockList.begin(), privateDockList.end(), s);
+	if(it != privateDockList.end()){
+		privateDockList.erase(it);
+	}
 }
 
 void CoreDockWidgetManager::setCornerWidget(QWidget * widget, Qt::Corner corner)

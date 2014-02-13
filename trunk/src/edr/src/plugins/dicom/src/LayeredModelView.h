@@ -16,11 +16,13 @@
 
 namespace dicom {
 
+	class LayeredImageVisualizer;
+
 class LayeredModelView : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    LayeredModelView(QObject *parent);
+    LayeredModelView(LayeredImageVisualizer* parent);
 
 public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const ;
@@ -66,6 +68,7 @@ public:
     QPixmap getItemColorPixmap( ILayerItemConstPtr itm ) const;
 private:
     ILayeredImagePtr image;
+	LayeredImageVisualizer* parent_;
     
 Q_SIGNALS:
     void editCompleted(const QString &);

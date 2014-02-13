@@ -37,7 +37,11 @@ namespace dicom {
         LayeredImageVisualizer();
         virtual ~LayeredImageVisualizer();
 
-    public://! \return pusty obiekt wizualizatora
+    public:
+
+		virtual bool eventFilter(QObject * watched, QEvent * event);
+
+		//! \return pusty obiekt wizualizatora
         virtual IVisualizer* create() const;
         //! Tworzy obiekt typu NewChartSerie
         //! \param data ObjectWrapper z interfejsem do odczytu DataChannela
@@ -91,8 +95,7 @@ namespace dicom {
         void removeSelectedLayers();
 
     Q_SIGNALS:
-        void serieChanged();
-        void changeLabel(const QString& newLabel);
+        void serieChanged();        
 
     private:
         bool correctIndex(int i) const;

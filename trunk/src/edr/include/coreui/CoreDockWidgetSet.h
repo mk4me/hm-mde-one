@@ -84,6 +84,10 @@ private Q_SLOTS:
     //! \param area 
     void onDockWidgetLocationChanged(Qt::DockWidgetArea area);
 
+protected:
+
+	virtual void closeEvent(QCloseEvent *event);
+
 private:
     //! kontener dodawanych dock widgetów
 	QMainWindow* mainWindow;
