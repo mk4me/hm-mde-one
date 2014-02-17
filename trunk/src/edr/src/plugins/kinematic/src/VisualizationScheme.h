@@ -19,6 +19,7 @@ public:
     //! Okresla przygotowane wczesniej zestawy danych
 	enum MarkersCount
 	{
+        MarkersCount15 = 15,
         MarkersCount16 = 16,
 		MarkersCount39 = 39,
 		MarkersCount53 = 53

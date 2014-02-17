@@ -14,6 +14,7 @@ kinematic::VskParserConstPtr Vsk::get( MarkersCount count )
 {
     switch(count)
     {
+    case MarkersCount15:
     case MarkersCount16:
         if (!Count16->isLoaded()) {
             Count16->parse(plugin::getResourcePath("trial/CZD.vsk").string());
