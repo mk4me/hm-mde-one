@@ -25,18 +25,23 @@ public:
     RemoveLayerCommand(LayeredSerie* serie, ILayeredImagePtr img, ILayerItemPtr layer) :
       img(img),
       layer(layer),
-      serie(serie)
+      serie(serie),
+	  wasEdited(false)
     {
     }
 
 public:
     virtual void doIt() 
     {
+		wasEdited = serie->isEdited();
+
         img->removeLayer(layer);
         if (layer && layer->getItem() != nullptr) {
             layer->getItem()->setVisible(false);//setParentItem(nullptr);
         }
         serie->refresh();
+
+		serie->markAsEdited(true);
     }
     //! cofa wykonane ju¿ polecenie
     virtual void undoIt() 
@@ -46,6 +51,8 @@ public:
             layer->getItem()->setVisible(true);
         }
         serie->refresh();
+
+		serie->markAsEdited(wasEdited);
     }
 
     //! \return nazwa polecenia (dla ewentualnej reprezentacji stosu poleceñ)
@@ -55,6 +62,7 @@ private:
     ILayeredImagePtr img;
     ILayerItemPtr layer;
     LayeredSerie* serie;
+	bool wasEdited;
 };
 
 void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
@@ -181,6 +189,23 @@ void dicom::LayeredSerie::redo()
     }
 }
 
+const bool dicom::LayeredSerie::isEdited() const
+{
+	auto w = visualizer->createWidget();
+	if(w != nullptr){
+		return w->isWindowModified();
+	}
+
+	return false;
+}
+
+void dicom::LayeredSerie::markAsEdited(const bool edited)
+{
+	auto w = visualizer->createWidget();
+	if(w != nullptr){
+		w->setWindowModified(edited);
+	}
+}
 
 void dicom::LayeredSerie::setNormalState()
 {

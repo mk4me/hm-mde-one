@@ -211,6 +211,7 @@ void dicom::LayeredImageVisualizer::saveSerie()
 {
     if (correctIndex(currentSerie)) {
         series[currentSerie]->save();
+		mainWidget->setWindowModified(false);
     }
 }
 
@@ -297,8 +298,6 @@ void dicom::LayeredImageVisualizer::uploadSerie()
         
         comm->uploadMotionFile(p, "");
     }
-
-	mainWidget->setWindowModified(false);
 }
 
 std::string dicom::LayeredImageVisualizer::getUserName() const

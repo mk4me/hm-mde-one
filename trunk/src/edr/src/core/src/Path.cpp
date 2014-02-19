@@ -9,7 +9,8 @@ Path::Path(const Filesystem::Path & userDataPath,
 	const Filesystem::Path & resourcesPath,
 	const Filesystem::Path & tmpPath,
 	const Filesystem::Path & pluginPath)
-	: userDataPath_(userDataPath),
+	: translationsPath_(resourcesPath / "lang"),
+	  userDataPath_(userDataPath),
 	  applicationDataPath_(applicationDataPath),
 	  userApplicationDataPath_(userApplicationDataPath),
 	  resourcesPath_(resourcesPath),
@@ -53,4 +54,9 @@ const Filesystem::Path& Path::getTmpPath() const
 const Filesystem::Path& Path::getPluginPath() const
 {
 	return pluginPath_;
+}
+
+const Filesystem::Path& Path::getTranslationsPath() const
+{
+	return translationsPath_;
 }

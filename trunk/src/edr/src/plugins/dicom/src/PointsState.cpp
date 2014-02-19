@@ -54,22 +54,29 @@ public:
       adnotationIdx(adnotationIdx),
       image(image),
       machine(machine),
-      pointsState(pointsState)
+      pointsState(pointsState),
+	  wasEdited(false)
     {
     }
 
 public:
     virtual void doIt()
     {
+		wasEdited = machine->getSerie()->isEdited();
+
         layer->setEditable(false);
         layer->setAdnotationIdx(adnotationIdx);
         image->addLayer(layer, machine->getSerie()->getUserName());
+		machine->getSerie()->markAsEdited(true);
         machine->getSerie()->refresh();
         machine->getSerie()->save();
     }
     
     virtual void undoIt() {
         image->removeLayer(layer);
+
+		machine->getSerie()->markAsEdited(wasEdited);
+
         /*if (pointsState == machine->getCurveState().get()) {
             machine->setState(machine->getCurveState());
         } else {
@@ -90,6 +97,7 @@ private:
     ILayeredImagePtr image;
     LayeredStateMachine* machine;
     PointsState* pointsState;
+	bool wasEdited;
 };
 
 

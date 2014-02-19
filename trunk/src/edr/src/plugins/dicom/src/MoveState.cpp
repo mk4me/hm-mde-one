@@ -9,6 +9,42 @@
 
 using namespace dicom;
 
+class DicomMoveCommand : public coreUI::MoveCommand
+{
+public:
+	DicomMoveCommand(LayeredStateMachine* machine,
+		QGraphicsItem* item, const QPointF& newP, const QPointF& oldP)
+		: coreUI::MoveCommand(item, newP, oldP), wasEdited(false),
+		machine(machine)
+	{
+
+	}
+
+public:
+	//! Przesuwa element
+	virtual void doIt()
+	{
+		wasEdited = machine->getSerie()->isEdited();
+
+		coreUI::MoveCommand::doIt();
+		
+		if(newPosition() != oldPosition()){
+			machine->getSerie()->markAsEdited(true);
+		}
+	}
+
+	//! Cofa przesuniêcie
+	virtual void undoIt()
+	{
+		coreUI::MoveCommand::undoIt();
+		machine->getSerie()->markAsEdited(wasEdited);
+	}
+
+private:
+	bool wasEdited;
+	LayeredStateMachine* machine;
+};
+
 dicom::MoveState::MoveState( LayeredStateMachine* machine) :
     NormalState(machine),
     moveCursor(QPixmap(":/dicom/move.png"), 0, 0)
@@ -53,7 +89,7 @@ bool MoveState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
             QGraphicsItem* item = position.first;
             QPointF oldP = position.second;
             QPointF newP = item->pos();
-            machine->getCommandStack()->addCommand(utils::make_shared<coreUI::MoveCommand>(item, newP, oldP));
+            machine->getCommandStack()->addCommand(utils::make_shared<DicomMoveCommand>(machine,item, newP, oldP));
         }
     }
     return false;

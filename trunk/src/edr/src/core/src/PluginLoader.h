@@ -129,7 +129,7 @@ private:
     //! \param path
     //! \param library
     //! \param createFunction
-    bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::FillFunction fillFunction);
+    bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::InitializeAndLoadFunction fillFunction);
 };
 
 typedef utils::shared_ptr<PluginLoader> PluginLoaderPtr;

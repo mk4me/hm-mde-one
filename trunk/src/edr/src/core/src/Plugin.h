@@ -19,10 +19,10 @@ namespace core {
 class Plugin : public IPlugin
 {
 public:
-    //! Typ funkcji inicjuj¹cej plugin kontekstem aplikacji.
-    typedef void (*FillFunction)(IPlugin * plugin, IApplication* coreApplication);
+    //! Typ funkcji inicjuj¹cej plugin kontekstem aplikacji i ladowanymi modulami.
+    typedef void (*InitializeAndLoadFunction)(IPlugin * plugin, IApplication* coreApplication);
 	//! Typ funkcji wype³niaj¹cej opis pluginu.
-	typedef void (*SetIDNameFunction)(IPlugin * plugin);
+	typedef void (*SetPluginDescriptionFunction)(IPlugin * plugin);
     //! Typ funkcji pobieraj¹cej wersjê pluginu.
     typedef int (*GetAPIVersionFunction)(int * major, int * minor, int * patch);
     //! Typ funkcji pobieraj¹cej typ builda pluginu
@@ -56,15 +56,19 @@ private:
     std::string name;
 	//! Nazwa pluginu.
 	std::string description;
+	//! Kod jêzyka domyslnego
+	std::string defaultLanguageCode;
     //! ID pluginu.
     UniqueID id;
     //! Œcie¿ka do pluginu.
     Filesystem::Path path;
 
 public:
+	//! Domyœlny konstruktor
     Plugin();
+	//! Destruktor wirtualny
+	virtual ~Plugin();
 
-public:
     //! \return ID pluginu.
     virtual UniqueID getID() const;
 
@@ -72,7 +76,7 @@ public:
     virtual const std::string getDescription() const;
 
     //! \return Nazwa pluginu.
-    const std::string getName() const;
+    virtual const std::string getName() const;
     //! \return
     const Filesystem::Path& getPath() const;
     //! \param path
@@ -83,6 +87,12 @@ public:
 
 	//! \param  description Opis pluginu
 	virtual void setDescription(const std::string & description);
+
+	//! \param langCode Kod domyœlnego jêzyka pluginu wg ISO639
+	virtual void setDefaultLanguageCode(const std::string & langCode);
+
+	//! \return Kod domyœlnego jêzyka pluginu wg ISO639
+	const std::string & getDefaultLanguageCode() const;
 
 	//! \param id Identyfikator pluginu
 	virtual void setID(UniqueID id);
@@ -121,6 +131,8 @@ public:
     int getNumObjectWrapperPrototypes() const;
     //! \param i
     const ObjectWrapperPtr & getObjectWrapperPrototype(int i);
+	//! \return Czy plugin cokolwiek wnosi do aplikacji
+	const bool empty() const;
 };
 
 //! Definicja wskaŸnika.

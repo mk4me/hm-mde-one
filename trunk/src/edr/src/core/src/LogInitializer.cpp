@@ -222,6 +222,18 @@ LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
 
 LogInitializer::~LogInitializer()
 {
+	//wylaczam appender dla widgeta konsoli
+	LoggerList loggers = Logger::getRootLogger()->getLoggerRepository()->getCurrentLoggers();
+	loggers.push_back(Logger::getRootLogger());
+	BOOST_FOREACH(LoggerPtr logger, loggers) {
+		AppenderList appenders = logger->getAllAppenders();
+		BOOST_FOREACH(AppenderPtr appender, appenders) {
+			if ( ConsoleWidgetAppenderPtr consoleAppender = appender ) {
+				logger->removeAppender(consoleAppender);
+			}
+		}
+	}
+
     // koniecznie trzeba przywrócić, inaczej będzie błąd
     osg::setNotifyHandler( new osg::StandardNotifyHandler() );
 }

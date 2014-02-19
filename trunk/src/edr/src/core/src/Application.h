@@ -47,6 +47,7 @@ namespace core {
 	class ServiceManager;
 	class ThreadPool;
 	class JobManager;
+	class LanguagesManager;
 
 	class Application : private QObject
 	{
@@ -60,6 +61,7 @@ namespace core {
 		utils::shared_ptr<LogInitializer> logInitializer_;
 		LogPtr loggerPrototype_;
 		LogPtr logger_;
+		utils::shared_ptr<LanguagesManager> languagesManager_;
 		utils::shared_ptr<PluginLoader> pluginLoader_;
 		utils::shared_ptr<DataHierarchyManager> dataHierarchyManager_;
 		utils::shared_ptr<MemoryDataManager> memoryDataManager_;

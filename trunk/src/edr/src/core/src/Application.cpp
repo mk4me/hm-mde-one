@@ -25,6 +25,11 @@
 #include "PluginLoader.h"
 #include "ThreadPool.h"
 #include "JobManager.h"
+#include "LanguagesManager.h"
+#include "LanguagesHelper.h"
+#include "LanguagesLoader.h"
+#include "LanguageChangeFilter.h"
+#include <boost/algorithm/string.hpp>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -131,49 +136,71 @@ int Application::initUIContext(int & argc, char *argv[])
 
 		//sprawdzamy czy uda?o si? wygenerowac poprawne sciezki alikacji
 		if(paths_ == nullptr){
-			throw std::runtime_error("Could not initialize application pathInterface");
+			throw std::runtime_error("Could not initialize application path interface");
 		}
+	}	
+
+	//teraz inicjujemy logger zeby moc juz wszystko logowaæ
+	//potem moge dolaczyc widget
+	{	
+		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "resources" / "settings" / "log.ini").string()));
+
+		loggerPrototype_.reset(new Log());
+		logger_ = loggerPrototype_->subLog("core");
 	}
+
+	//! DOPIERO OD TEGO MOMENTU MOGÊ LOGOWAC INFORMACJE!!
 
 	//t?umaczenia aplikacji - musze to robi? tutaj aby wszystkie nowo utworzone widgety ju? widzia?y t?umaczenia
 	//alternatywnie mog? to robi? p?niej pod warunkiem ?e wszystkie widgety sa ?wiadome t?umacze? - obs?uguj? event
 	// zmiany j?zyka!! Dla plik?w Ui ju? jest metoda retranslateUi
 	{
+		//inicjalizujemy klase pomocnicza przy obsludze tlumaczen i jezykow
+		LanguagesHelper::init();
+
+		// teraz inicjujemy manager jezykow
+		languagesManager_.reset(new LanguagesManager);
+
+		// ladujemy tlumaczenia dla core, qt i widoku
+		LanguagesLoader::loadCoreTranslations((paths_->getResourcesPath() / "lang").string(), languagesManager_.get());
+
+		// dodaje na sztywno angielski zebym mial przynajmniej jeden jezyk
+		// a qt w takiej wersji jest domyslnie i dla niej nie ma
+		// translatora
+		
+		auto en = LanguagesHelper::languageFromISO639Code("en");
+
+		languagesManager_->registerTranslator("qt",	en,
+			LanguagesManager::TranslatorPtr());
+
+		//ustawiamy jezyk
+		//TODO
+		// powinienem sprawdziæ w lokalnej bazie/rejestrze/jakims konfigu
+		// czy user juz nie wybral jezyka, jesli tak to ten jezyk ustawic,
+		// a jak nie to probowac go pobrac z systemu i jak ten sie nie
+		// powiedzie to domyslnie angielski
 		std::string locale = QLocale::system().name().toStdString();
-		auto langPath = paths_->getResourcesPath() / "lang";
-		// pobieram list? wszystkich dostarczonych standardowo t?umacze?
-		auto files = core::Filesystem::listFiles(langPath.string(), true, ".qm");
 
-		for(auto it = files.begin(); it != files.end(); ++it)
-		{
-			// sprawdzam czy t?umaczenie pasuje do aktualnego j?zyka
-			if((*it).find(locale) != std::string::npos ){
+		auto lang = LanguagesHelper::extractLanguageISO639Code(locale);
 
-				shared_ptr<QTranslator> translator(new QTranslator);
+		if(lang.empty() == true){
+			lang = en;
+			
+			QMessageBox::information(nullptr, QObject::tr("Translation problem"),
+				QObject::tr("Could not deduce application language from locale %1. Application will launch with English translation").arg(QLocale::system().name()));
 
-				if(translator->load((*it).c_str()) == true) {
-					uiApplication_->installTranslator(translator.get());
-					translators_.push_back(translator);
-					//TODO
-					//jak tego si? nie uda za?adowa? to mamy tylko angielski j?zyk - trzeba poinformowa?
-				}
+		}else {
+
+			auto registeredLangs = languagesManager_->registeredLanguages();
+			if(registeredLangs.find(lang) == registeredLangs.end()){
+				lang = en;
+
+				QMessageBox::information(nullptr, QObject::tr("Translation problem"),
+					QObject::tr("Could not load application with %1 language - no translations for this language. Application will launch with English translation").arg(QString::fromStdString(lang)));
 			}
-		}		
-
-		// teraz t?umaczenia z Qt
-
-		shared_ptr<QTranslator> translator(new QTranslator);
-		bool translationFound = translator->load(("qt_" + locale).c_str(), langPath.string().c_str());
-		if(translationFound == false) {
-			//translationFound = translator->load(QString("qt_pl"), langPath.string().c_str());
-			// TODO
-			// jak tego si? nie uda za?adowa? to mamy tylko angielski j?zyk - trzeba poinformowa?
 		}
 
-		if(translationFound == true){
-			uiApplication_->installTranslator(translator.get());
-			translators_.push_back(translator);
-		}
+		languagesManager_->setLanguage(lang);
 	}
 
 	return 0;
@@ -183,20 +210,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 {
 	this->mainWindow = mainWindow;
 	mainWindow->splashScreen();
-	
-	showSplashScreenMessage(QObject::tr("Initializing log"));	
-
-	//Mam ?cie?k? do konfiguracji loggera, nie wiem czy to OSG, Log4cxx czy pusty albo co? jeszcze innego - initializer powinien to zrobi? za mnie
-	//powinien te? obs?ugiwa? widget!!
-	{	
-		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "resources" / "settings" / "log.ini").string()));
-
-		loggerPrototype_.reset(new Log());
-		logger_ = loggerPrototype_->subLog("core");
-	}
 
 	showSplashScreenMessage(QObject::tr("Initializing directories"));
-	
 
 	//probujemy tmp katalog zapewni?
 	try{
@@ -261,11 +276,11 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 	//inicjalizacja obiektu ?aduj?cego pluginy
 	pluginLoader_.reset(new PluginLoader(Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
 
-	#if defined(__WIN32__)
+#if defined(__WIN32__)
 	if (additionalPluginsPath.empty() == true) {
 		additionalPluginsPath = getPathInterface()->getPluginPath();
 	}
-	#endif
+#endif
 
 	//obsluga dodatkowej sciezki z pluginami zewnetrznymi
 	if(additionalPluginsPath.empty() == false && Filesystem::pathExists(additionalPluginsPath) == true)
@@ -281,11 +296,38 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 	showSplashScreenMessage(QObject::tr("Loading plugins"));	
 
-	//?adujemy pluginy
-	pluginLoader_->load();
+	{
+		//tworze filtr zeby w unpackPlugin moc spokojnie dodawac nowe tlumaczenia
+		LanguageChangeFilter filter;
 
-	for(int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
-		unpackPlugin(mainWindow, pluginLoader_->getPlugin(i));
+		//ladujemy pluginy
+		pluginLoader_->load();
+
+		for(int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
+			auto plugin = pluginLoader_->getPlugin(i);
+			auto pluginName = plugin->getPath().stem().string();
+
+// je¿eli jestesmy w debug to pluginy maj¹ d na koñcu a t³umaczenia nie!!
+// muszê siê pozbyæ d
+#ifdef _DEBUG
+
+			if(pluginName.back() == 'd'){
+				pluginName.resize(pluginName.size() - 1);
+			}
+
+#endif
+
+			LanguagesLoader::loadPluginDefaultTranslation(pluginName,
+				plugin->getDefaultLanguageCode(), languagesManager_.get());
+
+			LanguagesLoader::loadPluginTranslations(paths_->getPluginPath().string(),
+				pluginName, languagesManager_.get());
+
+			LanguagesLoader::loadPluginTranslations(paths_->getTranslationsPath().string(),
+				pluginName, languagesManager_.get());
+
+			unpackPlugin(mainWindow, plugin);
+		}
 	}
 
 	showSplashScreenMessage(QObject::tr("Initializing services"));	
@@ -308,6 +350,11 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 		sourceManager_->getSource(i)->init(memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
 	}
 
+	// inicjalizacja ?r?de?	
+	for (int i = 0; i < sourceManager_->getNumSources(); ++i) {
+		sourceManager_->getSource(i)->lateInit();
+	}
+
 	showSplashScreenMessage(QObject::tr("Initializing console"));	
 
 	logInitializer_->setConsoleWidget(mainWindow->getConsole());
@@ -316,7 +363,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 	mainWindow->show();
 
-	mainWindow->splashScreen()->close();
+	mainWindow->splashScreen()->finish(mainWindow);
 
 	uiInit = true;
 }
@@ -344,7 +391,6 @@ Application::~Application()
 		sourceManager_.reset();
 		CORE_LOG_INFO("Releasing services");
 		serviceManager_.reset();
-		CORE_LOG_INFO("Releasing core managers");
 		CORE_LOG_INFO("Releasing visualizer manager");
 		visualizerManager_.reset();
 		CORE_LOG_INFO("Releasing stream data manager");
@@ -367,16 +413,15 @@ Application::~Application()
 		CORE_LOG_INFO("Releasing thread factory");
 		threadFactory_.reset();
 
+		CORE_LOG_INFO("Cleaning translations");
+		languagesManager_.reset();
+
 		CORE_LOG_INFO("Cleaning UI context");
 		uiApplication_.reset();
-		CORE_LOG_INFO("Cleaning translations");
-		std::vector<shared_ptr<QTranslator>>().swap(translators_);
+		
 		CORE_LOG_INFO("Cleaning tmp files");
 		Filesystem::deleteDirectory(getPathInterface()->getTmpPath());
-		CORE_LOG_INFO("Releasing logs - reseting to default loggers");
-		logInitializer_.reset();
-		CORE_LOG_INFO("Releasing log prototype");
-		loggerPrototype_.reset();
+		
 		CORE_LOG_INFO("Releasing core log");
 		logger_.reset();
 	}
@@ -651,7 +696,9 @@ void Application::finalizeUI(){
 
 			CORE_LOG_INFO("Closing log widget console");
 			logInitializer_->setConsoleWidget(nullptr);
-		
+
+			CORE_LOG_INFO("Reseting log system");
+			logInitializer_.reset();		
 		
 		}catch(std::exception & e){
 			CORE_LOG_ERROR("Error while closing UI during sources and services finalization: " << e.what());

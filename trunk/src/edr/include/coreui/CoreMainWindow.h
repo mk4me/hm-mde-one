@@ -68,6 +68,8 @@ namespace coreUI {
 		QTimer consoleTimer;
 		//! Czy wymagane jest potwierdzenie zamknięcia
 		bool closeConfirmationRequired_;
+		//! Czy wykonano juz operacje na zamkniecie
+		bool closePerformed;
 
 	private:
 
@@ -78,6 +80,8 @@ namespace coreUI {
 	protected:
 
 		CoreMainWindow(const CloseUpOperations & closeUpOperations);
+
+		void onClose();
 
 	public:
 

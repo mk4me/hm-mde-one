@@ -136,24 +136,24 @@ const std::string PluginLoader::lastLoadSharedLibraryError()
 bool PluginLoader::addPlugIn( const Filesystem::Path& path )
 {
     HMODULE library = loadSharedLibrary(path.string());
-    if ( library ) {
+    if ( library != 0) {
         try{
             if (checkPluginVersion(library, path) && checkLibrariesVersions(library, path) && checkPluginBuildType(library, path) ) {
                 PluginPtr plugin(new Plugin());
 				plugin->setPath(path);
-				auto procNameID = loadProcedure<Plugin::SetIDNameFunction>(library, STRINGIZE(CORE_SET_PLUGIN_ID_FUNCTION_NAME));
-				if( procNameID ){
-					procNameID(plugin.get());
+				auto procSetDescription = loadProcedure<Plugin::SetPluginDescriptionFunction>(library, STRINGIZE(CORE_INITIALIZE_PLUGIN_DESCRIPTION_FUNCTION_NAME));
+				if( procSetDescription != 0 ){
+					procSetDescription(plugin.get());
 				}else{
-					CORE_LOG_DEBUG(path << " is a plugin, but finding " << STRINGIZE(CORE_SET_PLUGIN_ID_FUNCTION_NAME) << " failed.");
+					CORE_LOG_DEBUG(path << " is a plugin, but finding " << STRINGIZE(CORE_INITIALIZE_PLUGIN_DESCRIPTION_FUNCTION_NAME) << " failed.");
 					return false;
 				}
 
-				auto procFill = loadProcedure<Plugin::FillFunction>(library, STRINGIZE(CORE_FILL_PLUGIN_FUNCTION_NAME));
-                if ( procFill ) {
-                    return onAddPlugin(plugin, library, procFill);
+				auto procInitializeAndLoad = loadProcedure<Plugin::InitializeAndLoadFunction>(library, STRINGIZE(CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME));
+                if ( procInitializeAndLoad != 0) {
+                    return onAddPlugin(plugin, library, procInitializeAndLoad);
                 } else {
-                    CORE_LOG_DEBUG(path << " is a plugin, but finding " << STRINGIZE(CORE_FILL_PLUGIN_FUNCTION_NAME) << " failed.");
+                    CORE_LOG_DEBUG(path << " is a plugin, but finding " << STRINGIZE(CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME) << " failed.");
                 }
             }
         }catch(std::exception & e){
@@ -169,30 +169,39 @@ bool PluginLoader::addPlugIn( const Filesystem::Path& path )
     return false;
 }
 
-bool PluginLoader::onAddPlugin( PluginPtr plugin, HMODULE library, Plugin::FillFunction fillFunction )
+bool PluginLoader::onAddPlugin( PluginPtr plugin, HMODULE library, Plugin::InitializeAndLoadFunction initializeAndLoadFunction )
 {
 	PluginData pData;
     CORE_LOG_INFO("Loading plugin " << plugin->getPath());
 
-    // próba załadowania
-    try {
-		auto pluginName = plugin->getName();
-		if(pluginName.empty() == true){
-			plugin->setName(plugin->getPath().filename().string());
-			CORE_LOG_WARNING("Plugin name for plugin loaded from " << plugin->getPath() << " was empty. Setting dynamic library file name as plugin name: " << plugin->getName() );
-		}
+	auto pluginName = plugin->getName();
+	if(pluginName.empty() == true){
+		plugin->setName(plugin->getPath().stem().string());
+		CORE_LOG_WARNING("Plugin name for plugin loaded from " << plugin->getPath() << " was empty. Setting dynamic library file name as plugin name: " << plugin->getName() );
+	}
 
-		pData.coreApplication.reset(new PluginApplication(plugin->getName()));
-		fillFunction(plugin.get(), pData.coreApplication.get());
-        pData.plugin = plugin;		
-		pData.handle = library;
+	pData.coreApplication.reset(new PluginApplication(plugin->getName()));
+
+    // próba załadowania zawartosci pluginu i zainicjowania kontekstu aplikacji
+    try {
+		
+		initializeAndLoadFunction(plugin.get(), pData.coreApplication.get());
+        
     } catch ( std::exception& ex ) {
-        CORE_LOG_ERROR("Error loading plugin " << plugin->getPath() << ": " << ex.what());
+        CORE_LOG_ERROR("Error loading plugin content and initializing appliaction context for " << plugin->getPath() << ": " << ex.what());
         return false;
     } catch ( ... ) {
-        CORE_LOG_ERROR("Error loading plugin " << plugin->getPath() << ": Unknown");
+        CORE_LOG_ERROR("Unknown error loading plugin content and initializing appliaction context for " << plugin->getPath());
         return false;
     }
+
+	if(plugin->empty() == true){
+		CORE_LOG_INFO("Skipping loading of an empty plugin " << plugin->getPath());
+		return false;
+	}
+
+	pData.plugin = plugin;		
+	pData.handle = library;
 
     bool pluginIDFound = false;
     core::PluginPtr collidingPlugin;

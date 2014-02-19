@@ -36,13 +36,16 @@ namespace coreUI {
         //! Nazwa polecenia 
         virtual QString name() { return QString(typeid(this).name()); }
 
+		const QPointF & newPosition() const { return newPosition_; }
+		const QPointF & oldPosition() const { return oldPosition_; }
+
     private:
         //! Element graficzny sceny, które zostanie przesuniêty 
         QGraphicsItem* item;
         //! Nowa pozycja elementu graficznego
-        QPointF newPosition;
+        QPointF newPosition_;
         //! Stara pozycja elementu graficznego
-        QPointF oldPosition;
+        QPointF oldPosition_;
     };
     DEFINE_SMART_POINTERS(MoveCommand);
 }

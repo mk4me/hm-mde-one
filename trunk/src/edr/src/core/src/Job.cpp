@@ -54,7 +54,7 @@ void Job::run()
 	try{
 		runnable_->run();
 		setStatus(IJob::JOB_FINISHED);
-	}catch(std::exception & e){
+	}catch(std::exception &){
 	
 	}catch(...){
 	

@@ -81,6 +81,10 @@ namespace dicom {
         void init();
         bool wasInitialized() const;
 
+		void markAsEdited(const bool edited);
+
+		const bool isEdited()const;
+
     private:
         bool initialized;
         ILayeredImagePtr image;

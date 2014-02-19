@@ -27,6 +27,7 @@
 #include <corelib/IVisualizer.h>
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
+#include <corelib/Version.h>
 
 using namespace core;
 
@@ -53,6 +54,7 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
 
     contextEventFilter = ContextEventFilterPtr(new ContextEventFilter(this));
     analysisModel = AnalisisModelPtr(new AnalisisModel());
+	ui->versionLabel->setText(QString("ver. %1").arg(Version::version().c_str()));
 }
 
 MdeMainWindow::~MdeMainWindow()
@@ -273,6 +275,7 @@ void MdeMainWindow::closeEvent(QCloseEvent* event)
 				event->ignore();
 		}else{
 
+			onClose();
 			event->accept();
 
 		}

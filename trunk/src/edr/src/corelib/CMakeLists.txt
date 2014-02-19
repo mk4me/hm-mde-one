@@ -1,6 +1,7 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
+	ILanguagesManager.h
 	AbstractFilterCommand.h
 	AbstractSerie.h
 	BaseDataTypes.h

@@ -8,6 +8,11 @@ Plugin::Plugin()
 
 }
 
+Plugin::~Plugin()
+{
+
+}
+
 UniqueID Plugin::getID() const
 {
 	return id;
@@ -41,6 +46,16 @@ void Plugin::setName(const std::string & name)
 void Plugin::setDescription(const std::string & description)
 {
 	this->description = description;
+}
+
+void Plugin::setDefaultLanguageCode(const std::string & langCode)
+{
+	defaultLanguageCode = langCode;
+}
+
+const std::string & Plugin::getDefaultLanguageCode() const
+{
+	return defaultLanguageCode;
 }
 
 void Plugin::setID(UniqueID id)
@@ -121,4 +136,10 @@ int Plugin::getNumObjectWrapperPrototypes() const
 const ObjectWrapperPtr & Plugin::getObjectWrapperPrototype(int i)
 {
 	return this->objectWrapperPrototypes[i];
+}
+
+const bool Plugin::empty() const
+{
+	return services.empty() && sources.empty() && parsers.empty()
+		&& visualizers.empty() && objectWrapperPrototypes.empty();
 }

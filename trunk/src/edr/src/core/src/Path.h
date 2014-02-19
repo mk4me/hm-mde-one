@@ -37,8 +37,11 @@ namespace core {
 		virtual const Filesystem::Path& getTmpPath() const;
 		//! \return Zwraca pe³n¹ œcie¿kê do folderu pluginu
 		virtual const Filesystem::Path& getPluginPath() const;
+		//! \return Zwraca pe³n¹ œcie¿kê do folderu z t³umaczeniami aplikacji
+		const Filesystem::Path& getTranslationsPath() const;
 
 	private:
+		Filesystem::Path translationsPath_;
 		Filesystem::Path userDataPath_;
 		Filesystem::Path applicationDataPath_;
 		Filesystem::Path userApplicationDataPath_;

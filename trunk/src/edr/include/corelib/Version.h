@@ -13,7 +13,7 @@
 #include <string>
 
 #define CORE_API_MAJOR 0	//! G³ówna wersja API, zmiany tej wartoœci oznaczaj¹ brak kompatybilnoœci wstecz dla API i ABI
-#define CORE_API_MINOR 2	//! Podrzêna wersja API, zmiany tej wartoœci powinny zachowywaæ kompatybilnoœæ wstecz (+ ABI)
+#define CORE_API_MINOR 3	//! Podrzêna wersja API, zmiany tej wartoœci powinny zachowywaæ kompatybilnoœæ wstecz (+ ABI)
 #define CORE_API_PATCH 0	//! Wersja poprawek dla danej wersji i podwersji - zachowuje kompatybilnoœæ wstecz
 
 namespace core

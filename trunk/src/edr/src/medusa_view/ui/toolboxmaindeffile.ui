@@ -97,7 +97,26 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="versionLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: white</string>
+         </property>
+         <property name="text">
+          <string>ver. unknown</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QToolButton" name="aboutButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="styleSheet">
           <string notr="true">QToolButton {
 margin-left: 4px;
@@ -118,8 +137,8 @@ QToolButton:pressed {
           <string>?</string>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>:/mde/icons/about.png</normaloff>:/mde/icons/about.png</iconset>
+          <iconset resource="../../coreui/ui/CoreIcons.qrc">
+           <normaloff>:/coreUI/icons/about.png</normaloff>:/coreUI/icons/about.png</iconset>
          </property>
         </widget>
        </item>
