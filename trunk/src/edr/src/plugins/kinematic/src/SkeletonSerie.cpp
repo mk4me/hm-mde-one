@@ -207,6 +207,11 @@ void SkeletonSerie::setGhostVisible(const bool visible)
 	ghostDrawer->getNode()->setNodeMask( visible == true ? 1 : 0);
 }
 
+core::shared_ptr<TrajectoryDrawerManager> SkeletonSerie::getTrajectoriesManager() const
+{
+    return trajectoriesManager;
+}
+
 
 
 //---------------------------------------------------------------------

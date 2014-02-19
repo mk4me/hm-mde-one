@@ -421,6 +421,7 @@ public:
 
 void TrajectorySchemeDrawer::init(const std::vector<osg::Vec3> & points)
 {
+    pointCount = points.size();
 	utils::shared_ptr<TrajectoryInstance> tmpTrajectory(new TrajectoryInstance);
 	tmpTrajectory->colors = new osg::Vec4Array;
 	tmpTrajectory->colors->push_back(osg::Vec4());
@@ -483,6 +484,24 @@ const osg::Vec4 & TrajectorySchemeDrawer::color() const
 const float TrajectorySchemeDrawer::width() const
 {
 	return trajectory->lineWidth->getWidth();
+}
+
+IRangeDrawer::Range TrajectorySchemeDrawer::range() const
+{
+    int first = trajectory->da->getFirst();
+    int count = trajectory->da->getCount();
+    return std::make_pair(first, first + count);
+}
+
+int TrajectorySchemeDrawer::count() const
+{
+    return pointCount;
+}
+
+TrajectorySchemeDrawer::TrajectorySchemeDrawer() :
+    pointCount(-1)
+{
+
 }
 
 class GhostPointsSchemeDrawer : public IBaseDrawerScheme

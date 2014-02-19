@@ -155,6 +155,7 @@ public:
 	//! \param range Zakres danych
 	virtual void setRange(const Range & range) = 0;
 };
+DEFINE_SMART_POINTERS(IRangeDrawer);
 
 class TrajectoryInstance;
 
@@ -162,7 +163,7 @@ class TrajectoryInstance;
 class TrajectorySchemeDrawer : public IOsgSchemeDrawer, public IRangeDrawer
 {
 public:
-
+    TrajectorySchemeDrawer();
 	void init(const std::vector<osg::Vec3> & points);
 	//! \return Zwracać węzeł drawera
 	virtual osg::ref_ptr<osg::Node> getNode();
@@ -176,8 +177,11 @@ public:
 	const osg::Vec4 & color() const;
 	const float width() const;
 
-private:
+    Range range() const;
+    int count() const;
 
+private:
+    int pointCount;
 	utils::shared_ptr<TrajectoryInstance> trajectory;
 };
 

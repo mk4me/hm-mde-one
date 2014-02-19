@@ -22,6 +22,7 @@ KinematicParser::~KinematicParser()
 void KinematicParser::parse( const std::string & source)
 {
 	core::Filesystem::Path path(source);
+    //path = std::string("C:/Users/Wojciech/Desktop/poprawiony-trial/2011-10-28-B0047-S02-T04.amc");
 	using namespace kinematic;
 	using kinematic::AsfParser;
 

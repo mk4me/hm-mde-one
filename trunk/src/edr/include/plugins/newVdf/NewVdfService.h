@@ -38,16 +38,17 @@ class PropertiesWindow;
 class PresetsWidget;
 class MergedWidget;
 
-class PLUGIN_NEWVDF_EXPORT NewVdfService : public QObject, public plugin::IService, public IDataFlowProvider, public core::IMemoryDataManagerHierarchy::IHierarchyObserver, public boost::enable_shared_from_this<NewVdfService>
+class PLUGIN_NEWVDF_EXPORT NewVdfService : public QObject, public plugin::IService, public core::IMemoryDataManagerHierarchy::IHierarchyObserver,
+    public boost::enable_shared_from_this<NewVdfService>//, public IDataFlowProvider
 {
     Q_OBJECT
     UNIQUE_ID("{DF5B5B15-C591-4BCF-A205-FD995D2398DB}")
 	CLASS_DESCRIPTION("Data Flow Service", "Data Flow Service");
-	VDF_BEGIN
+	/*VDF_BEGIN
 		VDF_ADD_DATA_SOURCE_SIMPLE(IntSource, core::UID::GenerateUniqueID("{EF393C1F-2202-47DA-A1B9-D5DE868FDFFA}"))
 		VDF_ADD_DATA_PROCESSOR_SIMPLE(IntProcessor, core::UID::GenerateUniqueID("{511A32C7-E82D-42FF-9BAA-2A74F83A5103}"))
 		VDF_ADD_DATA_SINK_SIMPLE(IntSink, core::UID::GenerateUniqueID("{B4F05E79-80E7-46E7-97AE-FD81212C9AF7}"))
-	VDF_END
+	VDF_END*/
 	     
 public:
     NewVdfService();

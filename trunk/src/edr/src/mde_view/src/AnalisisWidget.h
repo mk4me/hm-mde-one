@@ -68,7 +68,14 @@ private:
     //! \param filter dodawany widget
     void addDataFilterWidget(coreUI::DataFilterWidget* filter);
     void removeFromVisualizers(HelperAction* action, bool once);
-    
+
+    void initReportsCombos();
+
+Q_SIGNALS:
+    //! Sygnał generowany, gdy użytkownik kliknął przycisk 'utwórz raport'
+    //! \param str Wygenerowany raport (w HTML)
+    void reportCreated(const QString& str);
+
 private Q_SLOTS:
     void visualizerDestroyed(QObject * visualizer);
     void onFilterBundleAdded(core::IFilterBundlePtr bundle);
@@ -98,6 +105,8 @@ private Q_SLOTS:
     void onTreeItemActivated(const QModelIndex&);
     void highlightVisualizer( core::VisualizerPtr param1 );
     void onVisualizerFocus(QWidget* w);
+
+    void createReportClicked();
 private:
     coreUI::CoreDockWidgetManager* topMainWindow;
     QFrame* bottomMainWindow;

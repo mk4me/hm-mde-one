@@ -40,7 +40,7 @@ C3DParser::~C3DParser()
 void C3DParser::parse( const std::string & source  )
 {
 	core::Filesystem::Path path(source);
-
+    //path = std::string("C:/Users/Wojciech/Desktop/poprawiony-trial/2011-10-28-B0047-S02-T04.c3d");
 	parserPtr = utils::make_shared<c3dlib::C3DParser>();
 
     std::vector<std::string> files;

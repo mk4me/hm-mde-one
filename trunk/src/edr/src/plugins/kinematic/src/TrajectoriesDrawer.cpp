@@ -18,6 +18,16 @@ void TrajectoryDrawerManager::setRange(const Range & range)
 	}
 }
 
+void TrajectoryDrawerManager::setRange( const unsigned int idx, const Range & range )
+{
+    featuresDescriptors[idx]->setRange(range);
+}
+
+TrajectoryDrawerManager::Range TrajectoryDrawerManager::range( const unsigned int idx ) const
+{
+    return featuresDescriptors[idx]->range();
+}
+
 void TrajectoryDrawerManager::initialize(const std::vector<std::vector<osg::Vec3>> & pointsPositions)
 {
 	FeaturesDescriptors locFDs;
@@ -32,6 +42,7 @@ void TrajectoryDrawerManager::initialize(const std::vector<std::vector<osg::Vec3
 		locFDs.push_back(td);
 	}
 
+    
 	std::swap(locFDs, featuresDescriptors);
 	std::swap(node, tmpNode);	
 }
@@ -98,3 +109,10 @@ const float TrajectoryDrawerManager::size(const unsigned int idx) const
 {
 	return featuresDescriptors[idx]->width();
 }
+
+int TrajectoryDrawerManager::maxRange( const unsigned int idx ) const
+{
+    return featuresDescriptors[idx]->count();
+}
+
+

@@ -466,6 +466,55 @@ QPushButton#applyButton:hover
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_7">
               <item>
+               <widget class="QWidget" name="reportsTools" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <layout class="QFormLayout" name="formLayout">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>Report title</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="reportsTitle"/>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_4">
+                   <property name="text">
+                    <string>Style</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QComboBox" name="templateComboBox"/>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QComboBox" name="styleComboBox"/>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QPushButton" name="createReportButton">
+                   <property name="text">
+                    <string>Create Report</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
                <widget class="QWidget" name="raportsArea" native="true">
                 <layout class="QGridLayout" name="gridLayout"/>
                </widget>

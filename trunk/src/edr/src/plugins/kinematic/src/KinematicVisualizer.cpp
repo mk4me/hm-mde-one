@@ -15,7 +15,7 @@ using namespace coreUI;
 
 KinematicVisualizer::KinematicVisualizer() :
 	actionGhost(nullptr), actionSwitchAxes(nullptr), lastTime(-1.0f),
-	currentSerie(-1)
+	currentSerie(-1), trajectoriesDialog(nullptr)
 {
 	
 }
@@ -44,9 +44,13 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const core::TypeIn
 	if (requestedType == typeid(GRFCollection)) {
 		ret = new GRFSerie(this, requestedType, data);		
 	} else if (requestedType == typeid (MarkerCollection)) {
-		ret = new MarkerSerie(this, requestedType, data);		
+		auto ms = new MarkerSerie(this, requestedType, data);		
+        trajectoriesDialog->setDrawer(ms->getTrajectoriesManager(), getRootName(data, tr("Markers")), getMarkersNames(data->get()));
+        ret = ms;
 	} else if (requestedType == typeid (kinematic::JointAnglesCollection)) {
-		ret = new SkeletonSerie(this, requestedType, data);		
+		auto ss = new SkeletonSerie(this, requestedType, data);		
+        //trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), getSkeletonNames(data->get()));
+        ret = ss;
 	} else if (requestedType == typeid (SkeletonDataStream)) {
 		ret = new SkeletonStreamSerie(this, requestedType, data);
 	}else {
@@ -89,7 +93,7 @@ QWidget* KinematicVisualizer::createWidget()
     widget = new osgui::QOsgDefaultWidget();
     widget->setTimerActive(true);
 
-    //trajectoriesDialog = new TrajectoriesDialog(widget);
+    trajectoriesDialog = new TrajectoriesDialog(widget);
     //schemeDialog = new SchemeDialog(widget);
     const osg::GraphicsContext::Traits* traits = widget->getCamera()->getGraphicsContext()->getTraits();
 
@@ -418,7 +422,7 @@ void KinematicVisualizer::setTop()
 
 void KinematicVisualizer::showTrajectoriesDialog()
 {
-    //trajectoriesDialog->show();
+    trajectoriesDialog->show();
 }
 
 void KinematicVisualizer::setActiveSerie( int idx )
@@ -870,6 +874,32 @@ void KinematicVisualizer::scaleY( double d )
 void KinematicVisualizer::scaleZ( double d )
 {
     setScale(tryGetCurrentSerie(), 2, d);
+}
+
+QString KinematicVisualizer::getRootName( const core::ObjectWrapperConstPtr & data, const QString& suffix )
+{
+    auto it = data->find("core/name");
+    if (it != data->end()) {
+        return QString::fromStdString(it->second) + "_" + suffix;
+    }
+    return suffix;
+}
+
+std::vector<QString> KinematicVisualizer::getMarkersNames( const MarkerCollectionConstPtr& ms ) const
+{
+    std::vector<QString> names;
+    int count = ms->getNumChannels();
+    for (int i = 0; i < count; ++i) {
+        names.push_back(QString::fromStdString(ms->getMarkerName(i)));
+    }
+    return names;
+}
+
+std::vector<QString> KinematicVisualizer::getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ss ) const
+{
+    UTILS_ASSERT(false);
+    return std::vector<QString>();
+
 }
 
 

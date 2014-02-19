@@ -72,7 +72,10 @@ public:
     virtual plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie* serie);
 
 	virtual plugin::IVisualizer::ISerie * createSerie(const plugin::IVisualizer::ISerie *,const utils::TypeInfo &,const utils::ObjectWrapperConstPtr &);
-			
+
+    QString getRootName( const core::ObjectWrapperConstPtr & data, const QString& suffix );
+
+
     //! Usuwa serie z wizualizatora
     //! \param serie seria do usunięcia
     virtual void removeSerie(plugin::IVisualizer::ISerie *serie);
@@ -215,7 +218,8 @@ private slots:
 	void setBottom();
     //! zmienił się stan manipulatora
     void draggerTriggered();
-
+    std::vector<QString> getMarkersNames( const MarkerCollectionConstPtr& ms ) const;
+    std::vector<QString> getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ms ) const;
 private:
     //! główny węzeł sceny 3d
     osg::ref_ptr<osg::Group> rootNode;
@@ -246,7 +250,7 @@ private:
     //! niweluje działanie manipulatorów
     coreUI::CoreAction* resetAction;
     //! Dialog zarządzający trajektoriami
-    //TrajectoriesDialog* trajectoriesDialog;
+    TrajectoriesDialog* trajectoriesDialog;
     //! Dialog zarządzający widocznością węzłów na scenie
     //SchemeDialog* schemeDialog;
     //! kolecja z seriami danych podpiętymi pod wizualizator

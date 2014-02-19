@@ -24,6 +24,10 @@ public:
 
 	virtual void setRange(const Range & range);
 
+
+    void setRange(const unsigned int idx, const Range & range);
+    Range range(const unsigned int idx) const;
+    int maxRange(const unsigned int idx) const;
 	void initialize(const std::vector<std::vector<osg::Vec3>> & pointsPositions);
 
 	virtual osg::ref_ptr<osg::Node> getNode();
@@ -54,5 +58,6 @@ private:
 	osg::ref_ptr<osg::Switch> node;
 	FeaturesDescriptors featuresDescriptors;
 };
+DEFINE_SMART_POINTERS(TrajectoryDrawerManager);
 
 #endif

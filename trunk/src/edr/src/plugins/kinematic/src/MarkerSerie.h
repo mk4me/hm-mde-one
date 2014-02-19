@@ -14,6 +14,7 @@
 #include "KinematicSerie.h"
 #include <plugins/c3d/C3DChannels.h>
 #include "OsgSchemeDrawer.h"
+#include "TrajectoriesDrawer.h"
 
 class KinematicVisualizer;
 class TrajectoryDrawerManager;
@@ -51,6 +52,7 @@ public:
 
 	virtual const bool ghostVisible() const;
 	virtual void setGhostVisible(const bool visible);
+    TrajectoryDrawerManagerPtr getTrajectoriesManager() const;
 
 private:
 
@@ -90,7 +92,7 @@ private:
 	//! Klasa pomocnicza przy rysowaniu ducha
 	core::shared_ptr<GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
-	core::shared_ptr<TrajectoryDrawerManager> trajectoriesManager;
+	TrajectoryDrawerManagerPtr trajectoriesManager;
 };
 typedef boost::shared_ptr<MarkerSerie> MarkerSeriePtr;
 typedef boost::shared_ptr<const MarkerSerie> MarkerSerieConstPtr;

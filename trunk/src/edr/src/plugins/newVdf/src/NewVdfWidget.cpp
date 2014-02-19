@@ -57,9 +57,9 @@ NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneMod
        
     this->addAction(und);
     this->addAction(red);
-    this->addAction(mrg);
-    this->addAction(dmr);
-    this->addAction(sav);
+    //this->addAction(mrg);
+    //this->addAction(dmr);
+    //this->addAction(sav);
     this->addAction(del);
     this->addAction(clr);
     this->addAction(run);

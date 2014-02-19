@@ -24,7 +24,7 @@ vdf::PresetsWidget::PresetsWidget( SceneModelPtr scene, TypesWindow* tw ) :
     connect(saveButton, SIGNAL(clicked()), this, SLOT(save()));
     
     listWidget = new QListWidget();
-    layout()->addWidget(listWidget);
+    //layout()->addWidget(listWidget);
     layout()->addWidget(down);
 }
 

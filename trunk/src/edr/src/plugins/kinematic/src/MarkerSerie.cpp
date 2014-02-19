@@ -126,7 +126,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 	}
 
 	trajectoriesManager->initialize(trajectories);
-	trajectoriesManager->setVisible(true);
+	//trajectoriesManager->setVisible(true);
 	trajectoriesManager->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
 	matrixTransform->addChild(trajectoriesManager->getNode());
 
@@ -278,5 +278,10 @@ const bool MarkerSerie::ghostVisible() const
 void MarkerSerie::setGhostVisible(const bool visible)
 {
 	ghostDrawer->getNode()->setNodeMask( visible == true ? 1 : 0);
+}
+
+TrajectoryDrawerManagerPtr MarkerSerie::getTrajectoriesManager() const
+{
+    return trajectoriesManager;
 }
 

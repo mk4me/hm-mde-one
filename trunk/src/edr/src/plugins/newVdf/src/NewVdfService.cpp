@@ -80,7 +80,7 @@ QWidgetList vdf::NewVdfService::getPropertiesWidgets()
     list.push_back(typesWindow);
     list.push_back(propertiesWindow);
     list.push_back(resultProperty);
-    list.push_back(mergedWidget);
+    //list.push_back(mergedWidget);
     list.push_back(presetsWidget);
     return list;
 }

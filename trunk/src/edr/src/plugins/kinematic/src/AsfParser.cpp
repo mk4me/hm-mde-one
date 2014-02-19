@@ -21,6 +21,7 @@ AsfParser::~AsfParser()
 void AsfParser::parse( const std::string & source )
 {
 	core::Filesystem::Path path(source);
+    //path = std::string("C:/Users/Wojciech/Desktop/poprawiony-trial/2011-10-28-B0047-S02-T04.asf");
     kinematic::SkeletalModelPtr modelPtr(new kinematic::SkeletalModel);
     kinematic::AsfParser asf;
     asf.parse(modelPtr, path.string());

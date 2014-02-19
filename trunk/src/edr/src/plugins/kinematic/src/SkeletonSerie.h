@@ -15,6 +15,7 @@
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <osg/PositionAttitudeTransform>
+#include "TrajectoriesDrawer.h"
 
 class KinematicVisualizer;
 class SkeletalVisualizationSchemeHelper;
@@ -64,6 +65,8 @@ public:
 	virtual const bool ghostVisible() const;
 	virtual void setGhostVisible(const bool visible);
 
+    core::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager() const;
+
 protected:
 	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
 	//! \param time ustawiany czas
@@ -109,7 +112,7 @@ private:
 	//! Klasa pomocnicza przy rysowaniu ducha
 	core::shared_ptr<GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
-	core::shared_ptr<TrajectoryDrawerManager> trajectoriesManager;
+	TrajectoryDrawerManagerPtr trajectoriesManager;
 };
 
 //! Seria danych wizualizatora 3D wizualizująca animacje szkieletowa
