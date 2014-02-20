@@ -12,12 +12,16 @@ communication::StatusWidget::StatusWidget(ServerStatusManagerConstWeakPtr status
 
     connectedPixmap = QPixmap(":/newCommunication/icons/dostepny.png").scaledToHeight(32, Qt::SmoothTransformation);
     disconnectedPixmap = QPixmap(":/newCommunication/icons/niedostepny.png").scaledToHeight(32, Qt::SmoothTransformation);
-    setupUi(this);
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateTimer()));
-    timer->start(1000);
+    setupUi(this);   
+    connect(&timer, SIGNAL(timeout()), this, SLOT(updateTimer()));
+    timer.start(1000);
 
     setConnected(false);
+}
+
+communication::StatusWidget::~StatusWidget()
+{
+	timer.stop();
 }
 
 void communication::StatusWidget::setConnected( bool connected )

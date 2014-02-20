@@ -155,6 +155,7 @@ CommunicationDataSource::~CommunicationDataSource()
 		}
 	}
 	delete loginManager;
+	serverStatusManager.reset();
     communicationManager.reset();
     DataSourceWebServicesManager::destroy();
     DataSourceConnectionManager::destroy();

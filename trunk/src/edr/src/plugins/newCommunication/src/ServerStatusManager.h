@@ -59,7 +59,7 @@ private:
 		//! Przerwa w milisekundach pomiędzy kolejnymi sprawdzeniami - jeśli poprzednie zlecenia nie zostały skończone kolejne nie będą generowane
 		unsigned int checkDelay_;
 		//! Czy kończyć odświeżanie i zabijać wątek?
-		bool finish_;
+		volatile bool finish_;
 	};
 
 	friend class StatusChecker;

@@ -15,6 +15,7 @@
 #include "CommunicationManager.h"
 #include "ui_StatusWidget.h"
 #include "ServerStatusManager.h"
+#include <QtCore/QTimer>
 
 namespace communication {
 
@@ -26,7 +27,7 @@ class StatusWidget : public QWidget, private Ui::StatusWidget
 
 public:
     StatusWidget(ServerStatusManagerConstWeakPtr statusManager, const std::string& pingUrl, QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~StatusWidget() {}
+	virtual ~StatusWidget();
 
     QPushButton* getLogoutButton();
 public slots:
@@ -37,7 +38,7 @@ private slots:
     void updateTimer();
 
 private:
-    QTimer* timer;
+    QTimer timer;
     ServerStatusManagerConstWeakPtr statusManager;
     std::string pingUrl;
     QPixmap connectedPixmap;
