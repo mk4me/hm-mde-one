@@ -291,7 +291,7 @@ QLabel {
 QScrollBar:horizontal {											 
 	border: 1px ridge grey;											 
 	background: #FFFFFF;											
-	height: 4px;													
+	height: 6px;													
 	margin: 0px 0px 0px 0px;										
 }																
 																		
@@ -331,7 +331,7 @@ QScrollBar::sub-line:horizontal {
 QScrollBar:vertical {											
 	border: 1px ridge grey;											 
 	background: #FFFFFF;											
-	width: 4px;													
+	width: 6px;													
 	margin: 2px 0 2px 0;											
 }																
 																		
@@ -369,7 +369,8 @@ QPushButton, QToolButton {
 	spacing: 0px;
 	border: none;
     background-color: transparent;
-	color: white;
+	# to powodowalo, ze czesc przyciskow byla niewidoczna (np. message box przy wyjsciu z aplikacji)
+	#color: white;
  }
  
 QPushButton:hover, QToolButton:hover {
