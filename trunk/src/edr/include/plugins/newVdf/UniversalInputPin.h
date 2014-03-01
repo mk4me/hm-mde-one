@@ -10,12 +10,6 @@
 #ifndef HEADER_GUARD_NEWVDF__UNIVERSALINPUTPIN_H__
 #define HEADER_GUARD_NEWVDF__UNIVERSALINPUTPIN_H__
 
-
-/*#include <plugins/newVdf/NewVdfService.h>
-#include <plugins/newVdf/INodeConfiguration.h>
-#include <plugins/c3d/C3DChannels.h>
-#include <plugins/dfElements/Export.h>
-#include <plugins/newVdf/IDataFlowProvider.h>*/
 #include <utils/ObjectWrapper.h>
 #include <utils/TypeInfo.h>
 #include <dflib/IDFPin.h>

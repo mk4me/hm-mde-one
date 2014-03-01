@@ -166,6 +166,9 @@ const bool CoreMainWindow::closeConfirmationRequired() const
 void CoreMainWindow::onClose()
 {
 	if(closePerformed == false){
+
+		consoleTimer.stop();
+
 		closePerformed = true;
 
 		writeSettings();

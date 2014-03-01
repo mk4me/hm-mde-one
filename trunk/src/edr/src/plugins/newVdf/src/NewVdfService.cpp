@@ -16,7 +16,6 @@
 #include "DataProcessorManager.h"
 #include <corelib/IMemoryDataManager.h>
 #include "DataSourceManager.h"
-#include <plugins/c3d/C3DCollections.h>
 #include <boost/chrono/thread_clock.hpp>
 #include <corelib/IMemoryDataManager.h>
 #include "PresetsWidget.h"

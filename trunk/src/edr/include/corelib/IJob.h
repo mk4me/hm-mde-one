@@ -39,7 +39,9 @@ namespace core
 		//! \return Nazwa zadania
 		virtual const std::string & name() const = 0;
 		//! \param Status zadania
-		virtual const Status status() const = 0;	
+		virtual const Status status() const = 0;
+		//! Metoda czeka a¿ zadanie nie dobiegnie koñca lub zostanie anulowane
+		virtual void wait() = 0;
 	};
 
 	DEFINE_SMART_POINTERS(IJob)

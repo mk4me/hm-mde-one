@@ -7,12 +7,12 @@ Job::Job(const std::string & who, const std::string & name,
 	: who_(who), name_(name), runnable_(runnable),
 	status_(IJob::JOB_PENDING)
 {
-
+	wait_.lock();
 }
 
 Job::~Job()
 {
-
+	unlock();
 }
 
 utils::IRunnablePtr Job::runnable()
@@ -41,6 +41,16 @@ const IJob::Status Job::status() const
 	return status_;
 }
 
+void Job::wait()
+{
+	utils::ScopedLock<utils::StrictSyncPolicy> lock(wait_);
+}
+
+void Job::unlock()
+{
+	wait_.unlock();
+}
+
 void Job::setStatus(const Status status)
 {
 	utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
@@ -63,4 +73,6 @@ void Job::run()
 	if(status_ != IJob::JOB_FINISHED){	
 		setStatus(IJob::JOB_ERROR);
 	}
+
+	unlock();
 }

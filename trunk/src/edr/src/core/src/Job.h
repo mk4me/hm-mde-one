@@ -37,6 +37,8 @@ namespace core
 		virtual const std::string & name() const;
 		//! \param Status zadania
 		virtual const Status status() const;
+		//! Metoda czeka a¿ zadanie nie dobiegnie koñca lub zostanie anulowane
+		virtual void wait();
 		//! \param status Nowy status zadania
 		void setStatus(const Status status);
 
@@ -52,9 +54,14 @@ namespace core
 		Job(const std::string & who, const std::string & name,
 			const utils::IRunnablePtr runnable);
 
+		//! Metoda pozwala managerowi zwolnic czekanie na joba jesli go anuluje
+		void unlock();
+
 	private:
 		//! Obiekt synchronizuj¹cy
 		mutable utils::StrictSyncPolicy synch_;
+		//! Obiekt do czekania
+		utils::StrictSyncPolicy wait_;
 		//! Zleceniodawca
 		std::string who_;
 		//! Nazwa zadania
