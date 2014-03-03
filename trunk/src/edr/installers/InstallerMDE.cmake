@@ -3,6 +3,7 @@ BEGIN_INSTALLER("MDE" "Motion Data Editor" "MDEInstaller.cmake" "product")
 SET_INSTALLER_VENDOR("PJWSTK")
 SET_INSTALLER_VERSION("0.0.1")
 SET_INSTALLER_ADDITIONAL_INFO("http://hm.pjwstk.edu.pl" "http://hmkb.pjwstk.edu.pl" "Marek.Kulbacki@pjwstk.edu.pl")
+SET_INSTALLER_SHORT_DESCRIPTION("MDE (Motion Data Editor) is a software dedicated for motion data analysis. Is supports import/export of various standardized motion data formats (C3D, BVH, ASF/AMC, etc.), data visualization in 2D charts, 3D scenes with time synchronization and manipulation features. Application allow advanced and efficient data processing with automated utilization of available computational resources.")
 
 ADD_INSTALLATION_TYPE(Full "Complete installation")
 ADD_INSTALLATION_TYPE(Min "Minimal installation")
@@ -13,7 +14,7 @@ ADD_INSTALLER_GROUP_COMPONENT(coreui "coreui" "UI support library" "REQUIRED" "F
 
 #ADD_INSTALLER_GROUP_PROJECT(old_view "old_view" "Debelopers view" "HIDDEN" "Full Min")
 #ADD_INSTALLER_GROUP_PROJECT(hmm_view "hmm_view" "Medical view" "HIDDEN" "Full Min")
-ADD_INSTALLER_GROUP_COMPONENT(mde_view "mde_view" "Medical view" "HIDDEN" "Full Min")
+ADD_INSTALLER_GROUP_COMPONENT(mde_view "mde_view" "Medical view" "REQUIRED HIDDEN" "Full Min")
 #ADD_INSTALLER_GROUP_PROJECT(medusa_view "medusa_view" "Medusa view" "HIDDEN" "Full Min")
 
 END_INSTALLER_GROUP()
