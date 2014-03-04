@@ -13,15 +13,34 @@
 #include <plugins/newVdf/NewVdfService.h>
 #include <coreui/CoreTitleBar.h>
 #include <QtGui/QMenu>
-#include "ContextAutoPlacer.h"
+#include <coreui/ContextAutoPlacer.h>
 #include <coreui/DataFilterWidget.h>
 #include "ReportsThumbnailContext.h"
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <QtGui/QMessageBox>
 #include "AnalysisTreeContext.h"
+#include <coreui/SimpleContext.h>
 //#include "SummaryWindow.h"
 //#include "AnalisisTreeWidget.h"
+
+//! uniwersalny kontekst, sam rozmieszcza akcje
+class MedusaVisualizerSimpleContext : public coreUI::SimpleContext
+{
+public:
+    MedusaVisualizerSimpleContext(QTabWidget * flexiTabWidget, const QString& name) :
+        coreUI::SimpleContext(flexiTabWidget, name) 
+        {}
+    //! rejestracja kontekstu
+    virtual void onRegisterContextWidget(QWidget * contextWidget)
+    {
+        // standardowe elementy wizualizatora (np. screenshot albo wybór aktywnej serii)
+        // nie będą dodane do flexi dzięki temu "ifowi"
+        if (!dynamic_cast<coreUI::CoreVisualizerWidget*>(contextWidget)) {
+            coreUI::SimpleContext::onRegisterContextWidget(contextWidget);
+        }
+    }
+};
 
 AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr contextEventFilter, QWidget* parent, int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
     QWidget(parent, flags),
@@ -208,7 +227,7 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
 
 
     //kontekst wizualizatora!!
-    SimpleContextPtr visualizerUsageContext(new MedusaVisualizerSimpleContext(flexiTabWidget, tr("Visualizer")));
+    coreUI::SimpleContextPtr visualizerUsageContext(new MedusaVisualizerSimpleContext(flexiTabWidget, tr("Visualizer")));
     manager->addContext(visualizerUsageContext, parent);
     // WYLACZONE DLA MEDUSA!!
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
@@ -308,7 +327,7 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
     return visualizerDockWidget;
 }
 
-void AnalisisWidget::setContextItems( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
+void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
 {
     this->manager = manager;
     this->parent = parent;

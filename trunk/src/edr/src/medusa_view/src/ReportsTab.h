@@ -16,7 +16,7 @@
 #include <QtGui/QTabWidget>
 
 //! kontekst dla zak³adki z raportami
-class ReportsTabContext : public QObject, public IAppUsageContext
+class ReportsTabContext : public QObject, public coreUI::IAppUsageContext
 {
     Q_OBJECT;
 public:
@@ -74,7 +74,7 @@ public:
 
 public:
     virtual QWidget* getMainWidget();
-    virtual void registerConxtext( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget * flexiTabWidget ) ;
+    virtual void registerConxtext( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget ) ;
 
 private:
     QWidget* widget;

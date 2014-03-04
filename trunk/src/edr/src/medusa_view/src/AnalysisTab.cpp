@@ -17,7 +17,7 @@ QWidget* AnalysisTab::getMainWidget()
     return widget;
 }
 
-void AnalysisTab::registerConxtext( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
+void AnalysisTab::registerConxtext( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
 {
     widget->setContextItems(manager, parent, flexiTabWidget);
 }

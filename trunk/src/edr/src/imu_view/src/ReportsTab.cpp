@@ -4,7 +4,7 @@
 #include <coreui/CoreFlexiToolBar.h>
 #include <QtGui/QToolButton>
 #include "ReportsTab.h"
-#include "IAppUsageContextManager.h"
+#include <coreui/IAppUsageContextManager.h>
 
 ReportsTab::ReportsTab( const QIcon& icon, const QString& label ) :
     AbstractTab(icon, label),
@@ -18,7 +18,7 @@ QWidget* ReportsTab::getMainWidget()
     return widget;
 }
 
-void ReportsTab::registerConxtext( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
+void ReportsTab::registerConxtext( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
 {
     context = ReportsTabContextPtr(new ReportsTabContext(flexiTabWidget));
     manager->addContext(context, parent);

@@ -1,12 +1,15 @@
-#include "MdePCH.h"
-#include "ContextAutoPlacer.h"
+#include "CoreUiPCH.h"
+#include <coreUI/ContextAutoPlacer.h>
 #include <QtGui/QWidgetAction>
 #include <QtGui/QToolBar>
 #include <coreui/ICoreActionSection.h>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/CoreFlexiToolBarSection.h>
+#include <coreui/CoreVisualizerWidget.h>
 
-QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions)
+using namespace coreUI;
+
+QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, bool skipSettings, bool skipUtils)
 {
     if(actions.empty() == true){
         return nullptr;
@@ -37,7 +40,11 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions)
     for(auto it = sections.begin(); it != sections.end(); ++it){
 
         //pomijam grupy które są tutaj niepotrzebne
-        if(it->first == QObject::tr("Settings")){
+        if(skipSettings && it->first == QObject::tr("Settings")){
+            continue;
+        }
+
+        if(skipUtils && it->first == QObject::tr("Utils")){
             continue;
         }
 
@@ -125,61 +132,5 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions)
     layout_->addStretch();
 
     return widget;
-}
-
-
-SimpleContext::SimpleContext( QTabWidget * flexiTabWidget, const QString& name ) :
-    flexiTabWidget(flexiTabWidget),
-    groupID(-1),
-    widget(nullptr),
-    name(name)
-{
-
-}
-
-
-void SimpleContext::activateContext( QWidget * contextWidget )
-{
-    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest już zaladowany
-    if(contextWidget == nullptr || groupID != -1){
-        return;
-    }
-
-    groupID = flexiTabWidget->addTab(widget, name);
-    widget->setVisible(true);
-    flexiTabWidget->setCurrentIndex(groupID);
-}
-
-void SimpleContext::deactivateContext( QWidget * nextContextWidget, bool refresh )
-{
-    if(nextContextWidget == getCurrentContextWidget()){
-        return;
-    }
-
-    if(groupID != -1){
-        widget->setVisible(false);
-        flexiTabWidget->removeTab(groupID);
-        groupID = -1;
-    }
-}
-
-void SimpleContext::onRegisterContextWidget( QWidget * contextWidget )
-{
-    QList<QAction*> actions = contextWidget->actions();
-    if (!actions.empty()) {
-        QWidget* actionsWidget = ContextAutoPlacer::create(actions);
-        if (!widget) {
-            widget = new coreUI::CoreFlexiToolBar(flexiTabWidget);
-        }
-
-        auto section = new coreUI::CoreFlexiToolBarSection(QObject::tr("Operations"));
-        section->setInnerWidget(actionsWidget);
-        widget->addSection(section);
-        widget->setVisible(false);
-    }
-}
-
-void SimpleContext::onUnregisterContextWidget( QWidget * contextWidget )
-{
 }
 

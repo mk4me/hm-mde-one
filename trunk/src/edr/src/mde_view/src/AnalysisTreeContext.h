@@ -15,12 +15,12 @@
 #include <coreui/HierarchyTreeModel.h>
 #include <QtGui/QTabWidget>
 #include "AnalisisModel.h"
-#include "IAppUsageContext.h"
+#include <coreui/IAppUsageContext.h>
 
 class AnalysisTreeContextMenu;
 
 //! kontekst dla drzewa analiz
-class AnalysisTreeContext : public QObject, public IAppUsageContext
+class AnalysisTreeContext : public QObject, public coreUI::IAppUsageContext
 {
     Q_OBJECT;
 public:

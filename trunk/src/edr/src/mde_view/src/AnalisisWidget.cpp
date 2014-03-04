@@ -13,7 +13,7 @@
 #include <plugins/newVdf/NewVdfService.h>
 #include <coreui/CoreTitleBar.h>
 #include <QtGui/QMenu>
-#include "ContextAutoPlacer.h"
+#include <coreui/ContextAutoPlacer.h>
 #include <coreui/DataFilterWidget.h>
 #include "ReportsThumbnailContext.h"
 #include <corelib/IDataHierarchyManagerReader.h>
@@ -21,6 +21,7 @@
 #include <QtGui/QMessageBox>
 #include <QtCore/QBuffer>
 #include "AnalysisTreeContext.h"
+#include <coreui/SimpleContext.h>
 //#include "SummaryWindow.h"
 //#include "AnalisisTreeWidget.h"
 
@@ -147,7 +148,7 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
 
     //kontekst wizualizatora!!
-    SimpleContextPtr visualizerUsageContext(new SimpleContext(flexiTabWidget, tr("Visualizer")));
+    coreUI::SimpleContextPtr visualizerUsageContext(new coreUI::SimpleContext(flexiTabWidget, tr("Visualizer")));
     manager->addContext(visualizerUsageContext, parent);
     manager->addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
     manager->addWidgetToContext(visualizerUsageContext, titleBar);
@@ -216,7 +217,7 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
     return visualizerDockWidget;
 }
 
-void AnalisisWidget::setContextItems( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
+void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
 {
     this->manager = manager;
     this->parent = parent;

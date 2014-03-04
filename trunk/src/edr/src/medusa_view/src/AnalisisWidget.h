@@ -20,7 +20,7 @@
 #include <corelib/Visualizer.h>
 #include "ui_AnalisisWidget.h"
 #include "AnalisisModel.h"
-#include "IAppUsageContext.h"
+#include <coreui/IAppUsageContext.h>
 #include "SummaryWindow.h"
 #include "VisualizerEventFilter.h"
 
@@ -48,7 +48,7 @@ public:
     QWidget* getArea() { return analisisArea; }
     QTreeView* getTreeView() { return treeView; }
     void registerVisualizerContext(ContextEventFilterPtr contextEventFilter, coreUI::CoreTitleBar * titleBar, coreUI::CoreVisualizerWidget* visualizerDockWidget, const core::VisualizerPtr & visualizer );
-    void setContextItems( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget * flexiTabWidget );
+    void setContextItems( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget );
     ContextEventFilterPtr getContextEventFilter() const { return contextEventFilter; }
 public Q_SLOTS:
     void createVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper);
@@ -106,8 +106,8 @@ private:
     QFrame* bottomMainWindow;
     AnalisisModelPtr model;
     AnalysisTreeContextMenu* contextMenu;
-    IAppUsageContextManager* manager;
-    IAppUsageContextPtr parent;
+    coreUI::IAppUsageContextManager* manager;
+    coreUI::IAppUsageContextPtr parent;
     QTabWidget * flexiTabWidget;
     ////! szerokość filtru w zakładce
     //int filterWidth;

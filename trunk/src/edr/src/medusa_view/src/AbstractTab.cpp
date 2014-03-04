@@ -11,7 +11,7 @@ AbstractTab::AbstractTab( const QIcon& icon, const QString& label ):
 }
 
 
-void AbstractTab::attachChildContext( IAppUsageContextPtr child )
+void AbstractTab::attachChildContext( coreUI::IAppUsageContextPtr child )
 {
     throw std::exception("The method or operation is not implemented.");
 }

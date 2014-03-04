@@ -8,8 +8,8 @@ SET_PRIVATE_HEADERS(
 	AnalysisTab.h
 	ReportsTab.h
 	ReportsThumbnailContext.h
-	IAppUsageContext.h
-	IAppUsageContextManager.h
+	#IAppUsageContext.h
+	#IAppUsageContextManager.h
 	AboutDialog.h
 	MdeMainWindow.h
 	AnalisisWidget.h
@@ -18,7 +18,7 @@ SET_PRIVATE_HEADERS(
 	MdeContexts.h
 	SummaryWindow.h
 	AnalysisTreeContext.h
-	ContextAutoPlacer.h
+	#ContextAutoPlacer.h
 	VisualizerEventFilter.h
     MdeServiceWindow.h
 	MdePCH.h
@@ -38,7 +38,7 @@ SET_SOURCE_FILES (
 	AnalisisWidget.cpp
 	AnalysisTreeContext.cpp
 	SummaryWindow.cpp
-	ContextAutoPlacer.cpp
+	#ContextAutoPlacer.cpp
 	ContextEventFilter.cpp
 	VisualizerEventFilter.cpp
     MdeServiceWindow.cpp

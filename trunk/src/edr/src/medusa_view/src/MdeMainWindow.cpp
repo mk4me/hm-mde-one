@@ -201,10 +201,10 @@ void MdeMainWindowController::addTab( IMdeTabPtr tab )
     button2TabWindow[button] = tab;
     connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
-    auto context = IAppUsageContextPtr(new MdeEmptyContext());
+    auto context = coreUI::IAppUsageContextPtr(new MdeEmptyContext());
     tab2Contex[tab] = context;
 
-    IAppUsageContextManager* contextManager = dynamic_cast<IAppUsageContextManager*>(window);
+    coreUI::IAppUsageContextManager* contextManager = dynamic_cast<coreUI::IAppUsageContextManager*>(window);
     contextManager->addContext(context);
     contextManager->addWidgetToContext(context, button);
     IContextRootPtr tabContex = utils::dynamic_pointer_cast<IContextRoot>(tab);

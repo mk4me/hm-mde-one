@@ -31,6 +31,10 @@ SET_PUBLIC_HEADERS(
 	CoreLabeledWidget.h
 	CoreCursorChanger.h
 	SingleInstanceWindow.h
+	ContextAutoPlacer.h
+	IAppUsageContext.h
+	IAppUsageContextManager.h
+	SimpleContext.h
 )
 
 SET_SOURCE_FILES(
@@ -62,6 +66,8 @@ SET_SOURCE_FILES(
 	MultiCommand.cpp
 	MoveCommand.cpp
 	SingleInstanceWindow.cpp
+	ContextAutoPlacer.cpp
+	SimpleContext.cpp
 )
 
 SET_PRIVATE_HEADERS(

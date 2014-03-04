@@ -24,7 +24,7 @@ public:
 
 public:
     virtual QWidget* getMainWidget();
-    virtual void registerConxtext( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget * flexiTabWidget ) ;
+    virtual void registerConxtext( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget ) ;
 
 private:
     AnalisisWidget* widget;

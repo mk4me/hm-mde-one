@@ -122,6 +122,13 @@ class Event : public C3DParser::IEvent
 private:
     //! wkaŸnik na obiekt btk zawieraj¹cy informacje o zdarzeniu
 	btk::Event::ConstPointer eventPtr;
+    //! offset wynikaj¹cy z przesuniecia w pliku c3d (first frame)
+    double offset;
+
+public:
+    //! konstruktor
+    Event() : offset(0.0), eventPtr(nullptr) 
+    {}
 
 public:
     //! \return kontekst zdarzenia (strona lewa, prawa ... )
@@ -144,7 +151,7 @@ public:
     //! \return czas, w którym wyst¹pi³o zdarzenie
 	virtual double getTime() const
 	{
-		return eventPtr->GetTime();
+		return eventPtr->GetTime() - offset;
 	}
     //! \return nr próbki, dla której wyst¹pi³o zdarzenie
 	virtual int getFrame() const
@@ -167,6 +174,11 @@ public:
         std::auto_ptr<Event> newEvent(new Event(*this));
 		return newEvent.release();
 	}
+    //! ustawia offset wynikaj¹cy z przesuniecia w pliku c3d (first frame)
+    void setOffset(double val) 
+    {
+        offset = val;
+    }
 public:
     //! \return wkaŸnik na obiekt btk zawieraj¹cy informacje o zdarzeniu
 	btk::Event::ConstPointer getEventPtr() const { return eventPtr; }
@@ -446,11 +458,15 @@ void C3DParser::loadAcquisition()
 		a->setAnalog(*it);
 		this->analogs.push_back(a);
     }
-
+    
+    double analogFrq = getAnalogFrequency();
+    double pointFrq = getPointFrequency();
+    double offset = this->data->firstFrame / pointFrq;
     // Event
     for (btk::Acquisition::EventIterator it = this->data->aquisitionPointer->BeginEvent() ; it != this->data->aquisitionPointer->EndEvent() ; ++it) {
         EventPtr e = new Event();
         e->setEventPtr(*it);
+        e->setOffset(offset);
         this->events.push_back(e);
     }
 }

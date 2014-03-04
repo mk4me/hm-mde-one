@@ -18,6 +18,9 @@
 #include <QtCore/QObject>
 
 class QWidget;
+
+namespace coreUI {
+
 class IAppUsageContextManager;
 
 class IAppUsageContext;
@@ -184,5 +187,5 @@ private:
     IAppUsageContextWeakPtr parent;
     ChildContexts childContexts;
 };
-
+}
 #endif HEADER_GUARD___IAPPUSAGECONTEXT_H__

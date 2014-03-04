@@ -23,7 +23,7 @@ public:
 	virtual ~AbstractTab() {}
 
 public:
-    virtual void attachChildContext( IAppUsageContextPtr child );
+    virtual void attachChildContext( coreUI::IAppUsageContextPtr child );
     virtual void setEnabled( bool enabled );
     virtual bool isEnabled() const;
     virtual QIcon getIcon() const;

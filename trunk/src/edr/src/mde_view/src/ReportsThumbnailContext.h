@@ -15,10 +15,10 @@ class QComboBox;
 class QTabWidget;
 
 #include <QtCore/QObject>
-#include "IAppUsageContext.h"
+#include <coreUI/IAppUsageContext.h>
 
 //! kontekst dla zak³adki z miniaturkami obrazów do raportu
-class ReportsThumbnailContext : public QObject, public IAppUsageContext
+class ReportsThumbnailContext : public QObject, public coreUI::IAppUsageContext
 {
     Q_OBJECT;
 public:

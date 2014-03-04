@@ -15,7 +15,9 @@
 #include <QtCore/QObject>
 #include <utils/SmartPtr.h>
 
+namespace coreUI {
 class IAppUsageContextManager;
+}
 
 //! filtruje zmiany focusów widgetów, obsługuje zdarzenia dla kontekstów, wywołuje przydzielanie kontekstu dla odpowiedniego widgetu
 class ContextEventFilter : public QObject
@@ -24,7 +26,7 @@ class ContextEventFilter : public QObject
 public:
     //! konstruktor, przyjmuje na własność główne okno
     //! \param mainWindow potrzebne, aby uzyskać dostęp do kontekstów
-    ContextEventFilter(IAppUsageContextManager * mainWindow);
+    ContextEventFilter(coreUI::IAppUsageContextManager * mainWindow);
     //! destruktor
     virtual ~ContextEventFilter() {}
 
@@ -51,7 +53,7 @@ public:
 
 private:
     //! 
-    IAppUsageContextManager* mainWindow;
+    coreUI::IAppUsageContextManager* mainWindow;
     //! 
     std::set<QWidget*> permamentWidgets;
     //! 

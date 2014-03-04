@@ -9,12 +9,13 @@
 #ifndef HEADER_GUARD___IAPPUSAGECONTEXTMANAGER_H__
 #define HEADER_GUARD___IAPPUSAGECONTEXTMANAGER_H__
 
-#include "IAppUsageContext.h"
+#include <coreUI/IAppUsageContext.h>
 #include <queue>
 #include <vector>
 #include <set>
 #include <algorithm>
 
+namespace coreUI {
 class IAppUsageContextManager
 {
 
@@ -377,5 +378,5 @@ private:
     std::map<QWidget*, IAppUsageContextPtr> widgetContexts;
     std::set<QWidget*> widgets;
 };
-
+}
 #endif HEADER_GUARD___IAPPUSAGECONTEXTMANAGER_H__

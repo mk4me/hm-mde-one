@@ -26,11 +26,11 @@ public:
     //! \return dostarczony w konstruktorze widget
     virtual QWidget* getMainWidget();
     //! \return podpina kontekst zak³adki, jeœli dostarzony widget ma akcje, to metoda je automatycznie rozmiesci w kontekœcie.
-    virtual void registerConxtext( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget* flexiWidget );
+    virtual void registerConxtext( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget* flexiWidget );
 
 private:
     QWidget* widget;
-    IAppUsageContextPtr rootContext;
+    coreUI::IAppUsageContextPtr rootContext;
 };
 DEFINE_SMART_POINTERS(SimpleTab);
 

@@ -11,10 +11,10 @@
 #define HEADER_GUARD_MDE_VIEW__ICONTEXTROOT_H__
 
 #include <QtGui/QTabWidget>
-#include "IAppUsageContext.h"
+#include <coreui/IAppUsageContext.h>
 
 //! Kontekst bazowy dla kontekstów aplikacji medycznej
-class MdeEmptyContext : public IAppUsageContext
+class MdeEmptyContext : public coreUI::IAppUsageContext
 {
 public:
     MdeEmptyContext() {}
@@ -36,7 +36,7 @@ class IContextRoot
 {
 public:
 	virtual ~IContextRoot() {}
-    virtual void registerConxtext(IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget* flexiWidget ) = 0;
+    virtual void registerConxtext(coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget* flexiWidget ) = 0;
 };
 DEFINE_SMART_POINTERS(IContextRoot);
 

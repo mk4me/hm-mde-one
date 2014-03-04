@@ -1,7 +1,8 @@
 #include "MdePCH.h"
 #include "SimpleTab.h"
-#include "ContextAutoPlacer.h"
-#include "IAppUsageContextManager.h"
+#include <coreUI/ContextAutoPlacer.h>
+#include <coreUI/IAppUsageContextManager.h>
+#include <coreui/SimpleContext.h>
 
 SimpleTab::SimpleTab( QWidget* mainWidget, const QIcon& icon, const QString& label ) :
     AbstractTab(icon, label),
@@ -22,11 +23,11 @@ QWidget* SimpleTab::getMainWidget()
     return widget;
 }
 
-void SimpleTab::registerConxtext( IAppUsageContextManager* manager, IAppUsageContextPtr parent, QTabWidget* flexiWidget )
+void SimpleTab::registerConxtext( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget* flexiWidget )
 {
     QList<QAction*> actions = widget->actions();
     if (!actions.empty()) {
-        rootContext = SimpleContextPtr(new SimpleContext(flexiWidget, getLabel()));
+        rootContext = coreUI::SimpleContextPtr(new coreUI::SimpleContext(flexiWidget, getLabel()));
         manager->addContext(rootContext, parent);
         manager->addWidgetToContext(rootContext, widget);
     } else {

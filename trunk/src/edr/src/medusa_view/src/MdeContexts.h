@@ -14,11 +14,11 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QTreeWidget>
 #include <boost/tuple/tuple.hpp>
-#include "IAppUsageContext.h"
+#include <coreui/IAppUsageContext.h>
 #include <coreui/CoreFlexiToolBar.h>
 
 //! Kontekst bazowy dla kontekstów aplikacji medycznej
-class MdeEmptyContext : public IAppUsageContext
+class MdeEmptyContext : public coreUI::IAppUsageContext
 {
 public:
 	MdeEmptyContext() {}

@@ -1,8 +1,8 @@
 #include "MdePCH.h"
 #include "ContextEventFilter.h"
-#include "IAppUsageContextManager.h"
+#include <coreui/IAppUsageContextManager.h>
 
-ContextEventFilter::ContextEventFilter( IAppUsageContextManager* mainWindow ) 
+ContextEventFilter::ContextEventFilter( coreUI::IAppUsageContextManager* mainWindow ) 
     : mainWindow(mainWindow) 
 {}
 
