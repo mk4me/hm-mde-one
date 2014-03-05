@@ -4,88 +4,93 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/Application.cpp" line="187"/>
+        <location filename="../src/Application.cpp" line="182"/>
         <source>Initializing log</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicjalizacja loga</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="198"/>
+        <location filename="../src/Application.cpp" line="193"/>
         <source>Initializing directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicjalizacja ścieżek aplikacji</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="209"/>
+        <location filename="../src/Application.cpp" line="204"/>
         <source>Initializing translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicjalizacja tłumaczeń</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="213"/>
+        <location filename="../src/Application.cpp" line="208"/>
         <source>Initializing 3D context</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicjalizacja kontekstu 3D</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="226"/>
+        <location filename="../src/Application.cpp" line="221"/>
         <source>Initializing core managers</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicjalizacja managerów</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="261"/>
+        <location filename="../src/Application.cpp" line="232"/>
         <source>Initializing plugins loader</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicjalizacja managera pluginów</translation>
+    </message>
+    <message>
+        <location filename="../src/Application.cpp" line="255"/>
+        <source>Loading plugins</source>
+        <translation>Ładowanie pluginów</translation>
+    </message>
+    <message>
+        <location filename="../src/Application.cpp" line="264"/>
+        <source>Initializing services</source>
+        <translation>Inicjalizacja serwisów</translation>
+    </message>
+    <message>
+        <location filename="../src/Application.cpp" line="277"/>
+        <source>Initializing sources</source>
+        <translation>Inicjalizacja źróedł danych</translation>
     </message>
     <message>
         <location filename="../src/Application.cpp" line="284"/>
-        <source>Loading plugins</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/Application.cpp" line="293"/>
-        <source>Initializing services</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/Application.cpp" line="306"/>
-        <source>Initializing sources</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/Application.cpp" line="313"/>
         <source>Initializing console</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicjalizacja konsoli</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="317"/>
+        <location filename="../src/Application.cpp" line="288"/>
         <source>Initializing main view</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicjalizacja głównego widoku</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="600"/>
+        <location filename="../src/Application.cpp" line="549"/>
         <source>Loading plugin %1 content: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Ładuję element %2 pluginu %1</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="602"/>
+        <location filename="../src/Application.cpp" line="551"/>
         <source>domain objects</source>
-        <translation type="unfinished"></translation>
+        <translation>obiekty domenowe</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="608"/>
+        <location filename="../src/Application.cpp" line="557"/>
         <source>services</source>
-        <translation type="unfinished"></translation>
+        <translation>serwisy</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="614"/>
+        <location filename="../src/Application.cpp" line="563"/>
         <source>sources</source>
-        <translation type="unfinished"></translation>
+        <translation>źródła danych</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="620"/>
+        <location filename="../src/Application.cpp" line="569"/>
         <source>parsers</source>
-        <translation type="unfinished"></translation>
+        <translation>parsery</translation>
     </message>
     <message>
-        <location filename="../src/Application.cpp" line="626"/>
+        <location filename="../src/Application.cpp" line="575"/>
         <source>visualizers</source>
+        <translation>wizualizatory</translation>
+    </message>
+    <message>
+        <location filename="../src/AppInitializer.cpp" line="51"/>
+        <source>Detected other instance of application already running. Only one instance of this application is allowed to be run. This application will be closed now.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

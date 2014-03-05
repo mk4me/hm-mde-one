@@ -7,22 +7,22 @@
         <location filename="../src/AntropometricDataWidget.cpp" line="259"/>
         <location filename="../src/AntropometricDataWidget.cpp" line="272"/>
         <source>Unit</source>
-        <translation type="unfinished"></translation>
+        <translation>Jednostka</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="260"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Wartość</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="262"/>
         <source>Body Mass</source>
-        <translation type="unfinished"></translation>
+        <translation>Masa ciała</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="263"/>
         <source>Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Wzrost</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="264"/>
@@ -54,27 +54,27 @@
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="273"/>
         <source>Left Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Lewa wartość</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="274"/>
         <source>Right Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Prawa wartość</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="276"/>
         <source>Leg Length</source>
-        <translation type="unfinished"></translation>
+        <translation>Długość nogi</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="277"/>
         <source>Knee Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Szerokość kolana</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="278"/>
         <source>Anckle Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Szerokość kostki</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="279"/>
@@ -89,36 +89,42 @@
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="281"/>
         <source>Shoulder Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozstaw ramion</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="282"/>
         <source>Elbow Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Szerokość łokcia</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="283"/>
         <source>Wrist Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Szerokość nadgarstka</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="284"/>
         <source>Wrist Thickness</source>
-        <translation type="unfinished"></translation>
+        <translation>Grubość nadgarstka</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="285"/>
         <source>Hand Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Szerokość dłoni</translation>
     </message>
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="286"/>
         <source>Hand Thickness</source>
-        <translation type="unfinished"></translation>
+        <translation>Grubość dłoni</translation>
     </message>
 </context>
 <context>
     <name>DataSourceWidget</name>
+    <message>
+        <location filename="../ui/DataSourceWidget.ui" line="194"/>
+        <location filename="../src/DataSourceWidget.cpp" line="845"/>
+        <source>Login</source>
+        <translation>Logowanie</translation>
+    </message>
     <message>
         <location filename="../ui/DataSourceWidget.ui" line="14"/>
         <source>TabWidget</source>
@@ -127,514 +133,508 @@
     <message>
         <location filename="../ui/DataSourceWidget.ui" line="28"/>
         <source>Motion Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane ruchu</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="62"/>
+        <location filename="../ui/DataSourceWidget.ui" line="68"/>
         <source>Perspective:</source>
-        <translation type="unfinished"></translation>
+        <translation>Perspektywa:</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="72"/>
+        <location filename="../ui/DataSourceWidget.ui" line="78"/>
         <source>Filter:</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtr:</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="80"/>
+        <location filename="../ui/DataSourceWidget.ui" line="86"/>
         <source>No filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak filtra</translation>
     </message>
     <message>
         <location filename="../ui/DataSourceWidget.ui" line="116"/>
         <source>User Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane użytkownika</translation>
     </message>
     <message>
         <location filename="../ui/DataSourceWidget.ui" line="125"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguracja</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="194"/>
-        <location filename="../src/DataSourceWidget.cpp" line="859"/>
-        <source>Login</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/DataSourceWidget.ui" line="208"/>
+        <location filename="../ui/DataSourceWidget.ui" line="205"/>
         <source>User:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa użytkownika:</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="225"/>
-        <location filename="../ui/DataSourceWidget.ui" line="368"/>
+        <location filename="../ui/DataSourceWidget.ui" line="222"/>
+        <location filename="../ui/DataSourceWidget.ui" line="365"/>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Hasło:</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="255"/>
+        <location filename="../ui/DataSourceWidget.ui" line="252"/>
         <source>Logon</source>
-        <translation type="unfinished"></translation>
+        <translation>Loguj</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="290"/>
+        <location filename="../ui/DataSourceWidget.ui" line="287"/>
         <source>Login Recovery</source>
-        <translation type="unfinished"></translation>
+        <translation>Odzyskiwanie hasła</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="299"/>
+        <location filename="../ui/DataSourceWidget.ui" line="296"/>
         <source>Local login only</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokalne logowanie</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="350"/>
+        <location filename="../ui/DataSourceWidget.ui" line="347"/>
         <source>Registration</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejestracja</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="358"/>
-        <location filename="../ui/DataSourceWidget.ui" line="521"/>
+        <location filename="../ui/DataSourceWidget.ui" line="355"/>
+        <location filename="../ui/DataSourceWidget.ui" line="518"/>
         <source>Login:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa użytkownika:</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="382"/>
+        <location filename="../ui/DataSourceWidget.ui" line="379"/>
         <source>Repeat password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Powtórz haslo:</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="396"/>
+        <location filename="../ui/DataSourceWidget.ui" line="393"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Imię:</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="413"/>
+        <location filename="../ui/DataSourceWidget.ui" line="410"/>
         <source>Surname:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwisko:</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="430"/>
-        <location filename="../ui/DataSourceWidget.ui" line="622"/>
+        <location filename="../ui/DataSourceWidget.ui" line="427"/>
+        <location filename="../ui/DataSourceWidget.ui" line="619"/>
         <source>E-mail:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="457"/>
+        <location filename="../ui/DataSourceWidget.ui" line="454"/>
         <source>Send request</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyślij zgłoszenie</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="513"/>
+        <location filename="../ui/DataSourceWidget.ui" line="510"/>
         <source>Activation</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktywacja</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="531"/>
+        <location filename="../ui/DataSourceWidget.ui" line="528"/>
         <source>Activation Code:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kod aktywacyjny:</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="551"/>
+        <location filename="../ui/DataSourceWidget.ui" line="548"/>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktywuj</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="614"/>
+        <location filename="../ui/DataSourceWidget.ui" line="611"/>
         <source>Password Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Resetuj hasło</translation>
     </message>
     <message>
-        <location filename="../ui/DataSourceWidget.ui" line="636"/>
+        <location filename="../ui/DataSourceWidget.ui" line="633"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Resetuj</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="558"/>
-        <location filename="../src/DataSourceWidget.cpp" line="1078"/>
+        <location filename="../src/DataSourceWidget.cpp" line="547"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1064"/>
         <source>Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="636"/>
+        <location filename="../src/DataSourceWidget.cpp" line="625"/>
         <source>Error during login: </source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd podczas logowania:</translation>
+    </message>
+    <message>
+        <location filename="../src/DataSourceWidget.cpp" line="633"/>
+        <source>UNKNOWN ERROR</source>
+        <translation>Nieznany błąd</translation>
+    </message>
+    <message>
+        <location filename="../src/DataSourceWidget.cpp" line="641"/>
+        <source>Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.</source>
+        <translation>Sprawdź swoje połączenie z siecią, skonfiguruj Firewall aby przepuszczał kominikację aplikacji MDE. Jeśli problem nadal będzie się pojawiał skontaktuj się z producentem.</translation>
     </message>
     <message>
         <location filename="../src/DataSourceWidget.cpp" line="644"/>
-        <source>UNKNOWN ERROR</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DataSourceWidget.cpp" line="652"/>
-        <source>Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DataSourceWidget.cpp" line="655"/>
         <source>Login error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd logowania</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="674"/>
+        <location filename="../src/DataSourceWidget.cpp" line="660"/>
         <source>Logout</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyloguj</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="681"/>
+        <location filename="../src/DataSourceWidget.cpp" line="667"/>
         <source>Login information</source>
-        <translation type="unfinished"></translation>
+        <translation>Stan zalogowania</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="682"/>
+        <location filename="../src/DataSourceWidget.cpp" line="668"/>
         <source>User is logged locally - there might be a problem with internet connection and remote services might not work correctly.</source>
-        <translation type="unfinished"></translation>
+        <translation>Użytkownik zalogowany lokalnie - mogły wystąpić problemy z połączeniem lub z bazą danych.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="712"/>
+        <location filename="../src/DataSourceWidget.cpp" line="698"/>
         <source>Synchronization error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd synchronizacji</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="713"/>
+        <location filename="../src/DataSourceWidget.cpp" line="699"/>
         <source>Synchronization data is corrupted. Please try again later. If problem continues contact producer</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane synchronizacyjne uszkodzone. Proszę spróbowac ponownie później. Jeśli problem będzie sie powtarzał prosze skontaktować się z producentem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="728"/>
-        <location filename="../src/DataSourceWidget.cpp" line="747"/>
+        <location filename="../src/DataSourceWidget.cpp" line="714"/>
+        <location filename="../src/DataSourceWidget.cpp" line="733"/>
         <source>Synchronization required</source>
-        <translation type="unfinished"></translation>
+        <translation>Wymagana synchronizacja</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="729"/>
+        <location filename="../src/DataSourceWidget.cpp" line="715"/>
         <source>Database was updated. Some data might be not available. Would You like to synchronize?</source>
-        <translation type="unfinished"></translation>
+        <translation>Baza danych zaktualizowana. Część danych może być aktualnie niedostępna. Czy chcesz zsynchronizaować dane?</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="748"/>
+        <location filename="../src/DataSourceWidget.cpp" line="734"/>
         <source>Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?</source>
-        <translation type="unfinished"></translation>
+        <translation>Częśc danych jest niedostępna. Do daleszgo działania niezbędna jest synchronizacja. Czy chcesz zsynchronizować dane?</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="780"/>
+        <location filename="../src/DataSourceWidget.cpp" line="766"/>
         <source>Login unsuccessful</source>
-        <translation type="unfinished"></translation>
+        <translation>Logowanie nieudane</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="781"/>
+        <location filename="../src/DataSourceWidget.cpp" line="767"/>
         <source>Given user or password is incorrect. Please correct it and try again. If problem continues contact database administrators.</source>
-        <translation type="unfinished"></translation>
+        <translation>Podany użytkownik lub hasło są nieprawidłowe. Prosze poprawić dane i spróbowac ponownie. Jeśli problem będzie się powtarzał skontaktuj się z administratorem bazy danych.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="808"/>
+        <location filename="../src/DataSourceWidget.cpp" line="794"/>
         <source>Logout process</source>
-        <translation type="unfinished"></translation>
+        <translation>Wylogowanie</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="809"/>
+        <location filename="../src/DataSourceWidget.cpp" line="795"/>
         <source>Some download is currently performed. Do you want to logout and cancel it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściąganie danych w toku. Czy mimo to wylogować i przerwać ściąganie danych?</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="866"/>
+        <location filename="../src/DataSourceWidget.cpp" line="852"/>
         <source>Login problem</source>
-        <translation type="unfinished"></translation>
+        <translation>Problem logowania</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="867"/>
+        <location filename="../src/DataSourceWidget.cpp" line="853"/>
         <source>Both fields: User and Password need to be filled. Please fill them and retry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Oba pola: nazwa użytkownika oraz hasło musza być wypełnione. Prosze uzupełnić dane i spróbować ponownie.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="915"/>
+        <location filename="../src/DataSourceWidget.cpp" line="901"/>
         <source>All fields: Login, Password, Repeat password, Name, Surname and E-mail must be filled. Please correct them and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wszystkie pola: nazwa użytkownika, hasło, powtórzone hasło, imię, nazwisko i adres e-mail muszą być wypełnione. Uzupełnij dane i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="919"/>
+        <location filename="../src/DataSourceWidget.cpp" line="905"/>
         <source>Password differs from its repeat. Please verify password.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hasła różnią się. Proszę poprawnie wprowadzić hasło.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="936"/>
+        <location filename="../src/DataSourceWidget.cpp" line="922"/>
         <source>Registration form validation</source>
-        <translation type="unfinished"></translation>
+        <translation>Weryfikacja fomularza rejestracyjnego</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="948"/>
+        <location filename="../src/DataSourceWidget.cpp" line="934"/>
         <source>Registration successful</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejestracja zakończona sukcesem</translation>
+    </message>
+    <message>
+        <location filename="../src/DataSourceWidget.cpp" line="935"/>
+        <source>Your registration has finished. Activate Your account to be able to login and get access to database.</source>
+        <translation>Procedura rejestracji zakończona. Aktywuj konto w celu uzyskania dostępu do bazy danych.</translation>
     </message>
     <message>
         <location filename="../src/DataSourceWidget.cpp" line="949"/>
-        <source>Your registration has finished. Activate Your account to be able to login and get access to database.</source>
-        <translation type="unfinished"></translation>
+        <source>Registration failed</source>
+        <translation>Rejestracja zakończona niepowodzeniem</translation>
+    </message>
+    <message>
+        <location filename="../src/DataSourceWidget.cpp" line="950"/>
+        <source>Could not registrate. Please change login or email and try again. If problem continues contact producer.</source>
+        <translation>Nie mozna zarejestrować uzytkownika. Zmień nazwę użytkownika lub adres e-mail i spróbuj ponownie. Jeśli problem będzie się powtarzał skontaktuj się z producentem.</translation>
     </message>
     <message>
         <location filename="../src/DataSourceWidget.cpp" line="963"/>
-        <source>Registration failed</source>
-        <translation type="unfinished"></translation>
+        <source>Activation validation</source>
+        <translation>Weryfikacja aktywacji</translation>
     </message>
     <message>
         <location filename="../src/DataSourceWidget.cpp" line="964"/>
-        <source>Could not registrate. Please change login or email and try again. If problem continues contact producer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DataSourceWidget.cpp" line="977"/>
-        <source>Activation validation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DataSourceWidget.cpp" line="978"/>
         <source>Both fields: Login and Activation code must be filled. Please correct them and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Oba pola: nazwa użytkownika oraz Kod aktywacyjny musza być wypełnione. Proszę uzupełnić dane i spróbować ponownie.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="985"/>
+        <location filename="../src/DataSourceWidget.cpp" line="971"/>
         <source>Activation successful</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktywacja zakończona powodzeniem</translation>
+    </message>
+    <message>
+        <location filename="../src/DataSourceWidget.cpp" line="972"/>
+        <source>Given login has been successfully activated. You can now login using this account.</source>
+        <translation>Podana nazwa użytkownika została aktywowana. Można się logować do tego konta.</translation>
     </message>
     <message>
         <location filename="../src/DataSourceWidget.cpp" line="986"/>
-        <source>Given login has been successfully activated. You can now login using this account.</source>
-        <translation type="unfinished"></translation>
+        <source>Activation failed</source>
+        <translation>Aktywacja zakończona niepowodzeniem</translation>
+    </message>
+    <message>
+        <location filename="../src/DataSourceWidget.cpp" line="987"/>
+        <source>Could not activate given login with provided activation code. Verify data and try again. If problem continiues please contact the producer.</source>
+        <translation>Nie możnaaktywować  użytkownika podanym kodem aktywacyjnym. Prosze zweryfikować dane i spróbować ponownie. Jeśli problem będzie się powtarzał prosze skontaktować się z producentem. </translation>
+    </message>
+    <message>
+        <location filename="../src/DataSourceWidget.cpp" line="999"/>
+        <source>Password reset validation</source>
+        <translation>Weryfikacja formularza resetowania hasła</translation>
     </message>
     <message>
         <location filename="../src/DataSourceWidget.cpp" line="1000"/>
-        <source>Activation failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1001"/>
-        <source>Could not activate given login with provided activation code. Verify data and try again. If problem continiues please contact the producer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1013"/>
-        <source>Password reset validation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1014"/>
         <source>E-mail field must be filled correctly for password reset procedure.</source>
-        <translation type="unfinished"></translation>
+        <translation>Adres e-mail musi być podany do przeprowadzenia procedury resetowania hasła.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1021"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1007"/>
         <source>Password reset successful</source>
-        <translation type="unfinished"></translation>
+        <translation>Procedura resetowania hasła zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1022"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1008"/>
         <source>For the given email address further instructions about password reset procedure have been sent. Check your email in several minutes. Check your spam if no email have been received. Contact application administrator if email was not received in more than 2 hours.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dalsze instrukcje procedury resetowania hasła zostały wysłane na podany adres e-mail.Sprawdź poczę za kilka minut. Jeśli wiadomośc nie dotarła upewnij się że nie ma jej w wiadomościach SPAM.Jeśli tam również jej nie ma skontaktuj się z administratorem bazy danych.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1030"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1016"/>
         <source>Password reset failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd procedury resetowania hasła</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1031"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1017"/>
         <source>Either given email was not registered or there is some problem with database and connection. Try again in several minutes. If problem continues contact application administrator.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wystapił problem z połączeniem z bazą danych lub podany użytkownik nie istnieje. Spróbuj ponownie za kilka minut. Jeśli problem, będzie sie powtarzał skontaktuj się z producentem.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1155"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1141"/>
         <source>Load</source>
-        <translation type="unfinished"></translation>
+        <translation>Ładuj</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1156"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1142"/>
         <source>Unload</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyładuj</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1158"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1144"/>
         <source>Download</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściągnij</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1161"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1147"/>
         <source>Refresh status</source>
-        <translation type="unfinished"></translation>
+        <translation>Odśwież status</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1233"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1219"/>
         <source>Load All</source>
-        <translation type="unfinished"></translation>
+        <translation>Załaduj wszystko</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1234"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1220"/>
         <source>Unload All</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyładuj wszystko</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1235"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1221"/>
         <source>Download All</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściągnij wszystko</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1276"/>
-        <location filename="../src/DataSourceWidget.cpp" line="2536"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1262"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2484"/>
         <source>Save project as...</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz projekt jako...</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1277"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1263"/>
         <source>Load project</source>
-        <translation type="unfinished"></translation>
+        <translation>Załaduj projekt</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1278"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1264"/>
         <source>Delete project</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń projekt</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1280"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1266"/>
         <source>Synchronize</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizuj</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1455"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1441"/>
         <source>Database synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizacja bazy danych</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1456"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1442"/>
         <source>Local data already synchronized. Synchronization is not required. Proceed anyway?</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane lokalne są już zsynchronizowane. Synchronizacja nie jest wymagana. Czy kontynuować mimo to?</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1563"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1550"/>
         <source>Download problem</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściąganie danych - Problem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1564"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1551"/>
         <source>Download request requires %1 of free space while there is only %2 free space left. Download could not be continued. Please free some space or limit your download request.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane do ściągnięcia potrzebują %1 wolnego miejsca na dysku, ale tylko %2 jest dostępne. Ściąganie nie może być kontynuowane. Zwolnij miejsce na dysku i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1573"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1560"/>
         <source>Download warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściąganie danych - Ostrzeżenie</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1574"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1561"/>
         <source>Download request contains %1. This will take some time to download such amount of data. Are you sure you can wait some longer time?</source>
-        <translation type="unfinished"></translation>
+        <translation>Należy ściągniąć %1 danych. Ściąganie takiej ilości danych może trwać dłuższą chwilę. Czy mimo to kontynuować?</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1597"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1584"/>
         <source>Download preparation error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd ściągania danych</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="1598"/>
+        <location filename="../src/DataSourceWidget.cpp" line="1585"/>
         <source>Error while preparing download request. Error description: </source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd przygotowywania danych do ściągnięcia Opis błędu:</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2206"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2163"/>
         <source>Unknown error</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieznany błąd</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2267"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2224"/>
         <source>Downloading file %1 [%2/%3]</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściągam plik %1 [%2/%3]</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2330"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2278"/>
         <source>Loading info</source>
-        <translation type="unfinished"></translation>
+        <translation>Stan ładowania danych</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2331"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2279"/>
         <source>Data loaded successfully to application.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane załadowane pomyślnie do aplikacji.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2338"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2286"/>
         <source>Errors while data loading:</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd ładowania danych do aplikacji:</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2343"/>
-        <location filename="../src/DataSourceWidget.cpp" line="2421"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2291"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2369"/>
         <source>
 %1. File ID: %2. Error description: %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1. Plik o identyfikatorze %2. Opis błędu: %3</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2348"/>
-        <location filename="../src/DataSourceWidget.cpp" line="2426"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2296"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2374"/>
         <source>
 %1. File ID: %2. Unknown error.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1. Plik o identyfikatorze %2. Nieznany błąd.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2353"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2301"/>
         <source>Loading warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Ładowanie danych - Ostrzeżenie</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2408"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2356"/>
         <source>Unloading info</source>
-        <translation type="unfinished"></translation>
+        <translation>Stan wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2409"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2357"/>
         <source>Data unloaded successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane wyłądowane z powodzeniem.</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2416"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2364"/>
         <source>Errors while data unloading:</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd wyłądowywania danych:</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2431"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2379"/>
         <source>Unloading warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyładowywanie danych - OStrzeżenie</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2473"/>
-        <location filename="../src/DataSourceWidget.cpp" line="2498"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2421"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2446"/>
         <source>Loading project warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Ładowanie projektu - Ostrzeżenie</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2474"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2422"/>
         <source>Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Część plików projektowych nie jest dostepna. Skontaktuj się z właścicielem danych by uzyskać do nich dostęp. Czy chcesz załadować projekt bez tych plików?</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2499"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2447"/>
         <source>Some project files must are missing. Data download is required. Do You want to continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Część plików projektowych nie jest dostepna lokalnie. Konieczne jest ich ściągnięcie z bazy danych. Czy chcesz ściągnąć te pliki teraz?</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2534"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2482"/>
         <source>Project name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa projektu:</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2535"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2483"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2546"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2494"/>
         <source>Save project warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapis projektu - Ostrzeżenie</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="2547"/>
+        <location filename="../src/DataSourceWidget.cpp" line="2495"/>
         <source>Project name can not be empty. Please give a name to the project and continue.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa projektu nie może być pusta. Podaj poprawną nazwę projektu i spróbuj ponownie.</translation>
     </message>
 </context>
 <context>
@@ -647,94 +647,94 @@
     <message>
         <location filename="../ui/DefaultPatientCardWidget.ui" line="61"/>
         <source>Patient Card</source>
-        <translation type="unfinished"></translation>
+        <translation>Karta pacjenta</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="43"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="55"/>
         <source>Session Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Grupa sesji</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="53"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="65"/>
         <source>Personal data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane osobowe</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="61"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="73"/>
         <source>Disorders</source>
-        <translation type="unfinished"></translation>
+        <translation>Schorzenia</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="67"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="79"/>
         <source>Sessions</source>
-        <translation type="unfinished"></translation>
+        <translation>Sesje</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="71"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="83"/>
         <source>Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Notatki</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="90"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="102"/>
         <source>Anthropometric Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane antorpometryczne</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="165"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="177"/>
         <source>Session group</source>
-        <translation type="unfinished"></translation>
+        <translation>Grupa sesji</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="166"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="178"/>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Data</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="170"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="182"/>
         <source>Session</source>
-        <translation type="unfinished"></translation>
+        <translation>Sesja</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="171"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="183"/>
         <source>Laboratory</source>
-        <translation type="unfinished"></translation>
+        <translation>Laboratorium</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="172"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="184"/>
         <source>Owner ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Identyfikator właściciela</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="173"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="185"/>
         <source>Motion kind</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ ruchu</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="174"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="186"/>
         <source>Tags</source>
-        <translation type="unfinished"></translation>
+        <translation>Tagi</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="175"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="187"/>
         <source>Attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Atrybuty</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="206"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="218"/>
         <source>After treatment</source>
-        <translation type="unfinished"></translation>
+        <translation>Przed zabiegiem</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="233"/>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="254"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="245"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="266"/>
         <source>Upper body</source>
-        <translation type="unfinished"></translation>
+        <translation>Górna część ciała</translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="250"/>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="278"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="262"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="290"/>
         <source>Lower body</source>
-        <translation type="unfinished"></translation>
+        <translation>Dolna część ciała</translation>
     </message>
 </context>
 <context>
@@ -742,17 +742,17 @@
     <message>
         <location filename="../src/DisordersDataWidget.cpp" line="75"/>
         <source>Disorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Schorzenie</translation>
     </message>
     <message>
         <location filename="../src/DisordersDataWidget.cpp" line="76"/>
         <source>Diagnosis date</source>
-        <translation type="unfinished"></translation>
+        <translation>Data diagnozy</translation>
     </message>
     <message>
         <location filename="../src/DisordersDataWidget.cpp" line="77"/>
         <source>Focus</source>
-        <translation type="unfinished"></translation>
+        <translation>Status</translation>
     </message>
 </context>
 <context>
@@ -765,12 +765,12 @@
     <message>
         <location filename="../ui/DownloadStatusWidget.ui" line="22"/>
         <source>Total progress:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Postęp całkowity:</translation>
     </message>
     <message>
         <location filename="../ui/DownloadStatusWidget.ui" line="36"/>
         <source>File progress:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Postęp pliku:</translation>
     </message>
     <message>
         <location filename="../ui/DownloadStatusWidget.ui" line="52"/>
@@ -781,84 +781,84 @@
 <context>
     <name>LocalDataLoader</name>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="76"/>
+        <location filename="../src/DataSourceWidget.cpp" line="68"/>
         <source>Synchronization data corrupted</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane synchronizacyjne uszkodzone</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="83"/>
+        <location filename="../src/DataSourceWidget.cpp" line="75"/>
         <source>Synchronizing files:</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizuję pliki:</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="148"/>
+        <location filename="../src/DataSourceWidget.cpp" line="140"/>
         <source>Synchronization canceled</source>
-        <translation type="unfinished"></translation>
+        <translation>Anulowano synchronizację</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="149"/>
+        <location filename="../src/DataSourceWidget.cpp" line="141"/>
         <source>Synchronization successfully canceled</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizacja anulowana z powodzeniem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="151"/>
+        <location filename="../src/DataSourceWidget.cpp" line="143"/>
         <source>Download canceled</source>
-        <translation type="unfinished"></translation>
+        <translation>Anulowano ściąganie danych</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="152"/>
+        <location filename="../src/DataSourceWidget.cpp" line="144"/>
         <source>Download successfully canceled</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściąganie danych anulowano z powodzeniem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="163"/>
+        <location filename="../src/DataSourceWidget.cpp" line="155"/>
         <source>Synchronization error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd synchronizacji</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="164"/>
+        <location filename="../src/DataSourceWidget.cpp" line="156"/>
         <source>Synchronization has failed with the following error: </source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizacja zakończona nie powodzeniem:</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="164"/>
+        <location filename="../src/DataSourceWidget.cpp" line="156"/>
         <source>Please try to synchronize later. If this error continues to happen contact producer</source>
-        <translation type="unfinished"></translation>
+        <translation>Spróbuj synchronizować później. Jeśli problem będzie sie powtarzał skontatkuj się z producentem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="166"/>
+        <location filename="../src/DataSourceWidget.cpp" line="158"/>
         <source>Download error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd ściągania danych</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="167"/>
+        <location filename="../src/DataSourceWidget.cpp" line="159"/>
         <source>Download has failed with the following error: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ściąganie danych zakończyło się niepowodzeniem:</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="167"/>
+        <location filename="../src/DataSourceWidget.cpp" line="159"/>
         <source>Please try to download later. If this error continues to happen contact producer</source>
-        <translation type="unfinished"></translation>
+        <translation>Spróbuj ściągnąć dane ponownie później. Jeśli problem będzie sie powtarzał skontaktuj się z producentem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="178"/>
+        <location filename="../src/DataSourceWidget.cpp" line="170"/>
         <source>Synchronization successful</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizacja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="179"/>
+        <location filename="../src/DataSourceWidget.cpp" line="171"/>
         <source>Synchronization has finished successfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizacja zakończona powodzeniem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="181"/>
+        <location filename="../src/DataSourceWidget.cpp" line="173"/>
         <source>Download successful</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściąganie danych zakończone powodzeniem</translation>
     </message>
     <message>
-        <location filename="../src/DataSourceWidget.cpp" line="182"/>
+        <location filename="../src/DataSourceWidget.cpp" line="174"/>
         <source>Download has finished successfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Ściąganie danych zakończone powodzeniem</translation>
     </message>
 </context>
 <context>
@@ -866,21 +866,33 @@
     <message>
         <location filename="../src/NotesWidget.cpp" line="14"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../src/NotesWidget.cpp" line="21"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Tytuł</translation>
     </message>
     <message>
         <location filename="../src/NotesWidget.cpp" line="22"/>
         <source>Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Treść</translation>
     </message>
 </context>
 <context>
     <name>NotesWidget</name>
+    <message>
+        <location filename="../ui/NotesWidget.ui" line="129"/>
+        <location filename="../src/NotesWidget.cpp" line="178"/>
+        <source>Add note</source>
+        <translation>Dodaj notatkę</translation>
+    </message>
+    <message>
+        <location filename="../ui/NotesWidget.ui" line="156"/>
+        <location filename="../src/NotesWidget.cpp" line="192"/>
+        <source>Edit note</source>
+        <translation>Edytuj notatkę</translation>
+    </message>
     <message>
         <location filename="../ui/NotesWidget.ui" line="20"/>
         <source>Frame</source>
@@ -894,73 +906,61 @@
     <message>
         <location filename="../ui/NotesWidget.ui" line="84"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Tytuł</translation>
     </message>
     <message>
         <location filename="../ui/NotesWidget.ui" line="89"/>
         <source>Created</source>
-        <translation type="unfinished"></translation>
+        <translation>Utworzono</translation>
     </message>
     <message>
         <location filename="../ui/NotesWidget.ui" line="94"/>
         <source>Modified</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/NotesWidget.ui" line="129"/>
-        <location filename="../src/NotesWidget.cpp" line="178"/>
-        <source>Add note</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmodyfikowano</translation>
     </message>
     <message>
         <location filename="../ui/NotesWidget.ui" line="136"/>
         <source>Remove note</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/NotesWidget.ui" line="156"/>
-        <location filename="../src/NotesWidget.cpp" line="192"/>
-        <source>Edit note</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń notatkę</translation>
     </message>
     <message>
         <location filename="../src/NotesWidget.cpp" line="177"/>
         <source>New note</source>
-        <translation type="unfinished"></translation>
+        <translation>Nowa notatka</translation>
     </message>
     <message>
         <location filename="../src/NotesWidget.cpp" line="193"/>
         <source>Update note</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualizuj notatkę</translation>
     </message>
     <message>
         <location filename="../src/NotesWidget.cpp" line="210"/>
         <source>Note validation</source>
-        <translation type="unfinished"></translation>
+        <translation>Weryfikacja notatki</translation>
     </message>
     <message>
         <location filename="../src/NotesWidget.cpp" line="211"/>
         <source>All note fields must be filled. Please fill them and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wszystkie pola muszą być wypełnione i spróbuj ponownie.</translation>
     </message>
 </context>
 <context>
     <name>PersonalDataWidget</name>
+    <message>
+        <location filename="../ui/PersonalDataWidget.ui" line="47"/>
+        <location filename="../src/PersonalDataWidget.cpp" line="22"/>
+        <source>No photo</source>
+        <translation>Brak zdjęcia</translation>
+    </message>
     <message>
         <location filename="../ui/PersonalDataWidget.ui" line="20"/>
         <source>Frame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/PersonalDataWidget.ui" line="47"/>
-        <location filename="../src/PersonalDataWidget.cpp" line="22"/>
-        <source>No photo</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../ui/PersonalDataWidget.ui" line="82"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Imię:</translation>
     </message>
     <message>
         <location filename="../ui/PersonalDataWidget.ui" line="89"/>
@@ -973,189 +973,126 @@
     <message>
         <location filename="../ui/PersonalDataWidget.ui" line="96"/>
         <source>Surname:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwisko:</translation>
     </message>
     <message>
         <location filename="../ui/PersonalDataWidget.ui" line="110"/>
         <source>Gender:</source>
-        <translation type="unfinished"></translation>
+        <translation>Płeć:</translation>
     </message>
     <message>
         <location filename="../ui/PersonalDataWidget.ui" line="124"/>
         <source>Birth date:</source>
-        <translation type="unfinished"></translation>
+        <translation>Data urodzenia:</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="245"/>
-        <source>Man</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="250"/>
-        <source>Woman</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="253"/>
-        <source>Not specified</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/DataSourceBaseContent.cpp" line="50"/>
         <location filename="../src/DataSourceBaseContent.cpp" line="115"/>
         <source>Subject</source>
-        <translation type="unfinished"></translation>
+        <translation>Obiekt</translation>
     </message>
     <message>
         <location filename="../src/DataSourceBaseContent.cpp" line="107"/>
-        <location filename="../src/DataSourcePerspective.cpp" line="150"/>
+        <location filename="../src/DataSourcePerspective.cpp" line="214"/>
         <source>Disorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Schorzenie</translation>
     </message>
     <message>
         <location filename="../src/DataSourceBaseContent.cpp" line="111"/>
         <location filename="../src/DataSourcePerspective.cpp" line="85"/>
         <source>Patient</source>
-        <translation type="unfinished"></translation>
+        <translation>Pacjent</translation>
     </message>
     <message>
         <location filename="../src/DataSourceBaseContent.cpp" line="119"/>
         <source>Session</source>
-        <translation type="unfinished"></translation>
+        <translation>Sesja</translation>
     </message>
     <message>
         <location filename="../src/DataSourceBaseContent.cpp" line="123"/>
         <source>Motion</source>
-        <translation type="unfinished"></translation>
+        <translation>Nagranie</translation>
     </message>
     <message>
         <location filename="../src/DataSourceBaseContent.cpp" line="127"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik</translation>
+    </message>
+    <message>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="213"/>
+        <source>Before treatment</source>
+        <translation>Przed leczeniem</translation>
     </message>
     <message>
         <location filename="../src/DataSourcePerspective.cpp" line="189"/>
         <location filename="../src/DataSourcePerspective.cpp" line="228"/>
         <source>Gender</source>
+        <translation>Płeć</translation>
+    </message>
+    <message>
+        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="245"/>
+        <source>Man</source>
+        <translation>Mężczyzna</translation>
+    </message>
+    <message>
+        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="250"/>
+        <source>Woman</source>
+        <translation>Kobieta</translation>
+    </message>
+    <message>
+        <location filename="../../../../include/plugins/newCommunication/IDataSourceContent.h" line="253"/>
+        <source>Not specified</source>
+        <translation>Niezdefiniowano</translation>
+    </message>
+    <message>
+        <location filename="../src/DataSource.cpp" line="950"/>
+        <source>Uploading cancelled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="201"/>
-        <source>Before treatment</source>
+        <location filename="../src/DataSource.cpp" line="950"/>
+        <location filename="../src/DataSource.cpp" line="954"/>
+        <location filename="../src/DataSource.cpp" line="958"/>
+        <source>Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="83"/>
-        <source>Analog data</source>
+        <location filename="../src/DataSource.cpp" line="954"/>
+        <source>Upload error:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="86"/>
-        <source>EMG</source>
+        <location filename="../src/DataSource.cpp" line="958"/>
+        <source>Uploading successful</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StatusWidget</name>
+    <message>
+        <location filename="../ui/StatusWidget.ui" line="14"/>
+        <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="90"/>
-        <source>GRF</source>
+        <location filename="../ui/StatusWidget.ui" line="20"/>
+        <source>Icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="95"/>
-        <source>Kinetic data</source>
+        <location filename="../ui/StatusWidget.ui" line="43"/>
+        <source>Logout</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>communication::StatusWidget</name>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="104"/>
-        <source>Forces</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="107"/>
-        <source>Moments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="111"/>
-        <source>Powers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="120"/>
-        <source>Kinematic data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="130"/>
-        <source>Markers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="134"/>
-        <source>Joints</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="139"/>
-        <source>Videos</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="468"/>
-        <source>Multichart/Normalized left from motion</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="470"/>
-        <source>Multichart/Normalized right from motion</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="543"/>
-        <source>Multichart/Normalized left from session</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="545"/>
-        <source>Multichart/Normalized right from session</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="563"/>
-        <source>Motion: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="564"/>
-        <source>Session: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="565"/>
-        <source>Subject: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="573"/>
-        <source>Owner: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="582"/>
-        <source>Date: %1
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="592"/>
-        <source>Patient: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/TreeBuilder.cpp" line="600"/>
-        <source>Weight: </source>
+        <location filename="../src/StatusWidget.cpp" line="34"/>
+        <source>User: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
