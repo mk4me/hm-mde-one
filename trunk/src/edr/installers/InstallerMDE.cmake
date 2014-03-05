@@ -12,10 +12,7 @@ BEGIN_INSTALLER_GROUP(core "Core" "Core application elements")
 ADD_INSTALLER_GROUP_COMPONENT(corelib "corelib" "General purpose library" "REQUIRED" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(coreui "coreui" "UI support library" "REQUIRED" "Full Min")
 
-#ADD_INSTALLER_GROUP_PROJECT(old_view "old_view" "Debelopers view" "HIDDEN" "Full Min")
-#ADD_INSTALLER_GROUP_PROJECT(hmm_view "hmm_view" "Medical view" "HIDDEN" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(mde_view "mde_view" "Medical view" "REQUIRED HIDDEN" "Full Min")
-#ADD_INSTALLER_GROUP_PROJECT(medusa_view "medusa_view" "Medusa view" "HIDDEN" "Full Min")
 
 END_INSTALLER_GROUP()
 
