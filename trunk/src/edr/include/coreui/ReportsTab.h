@@ -7,16 +7,18 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_MDE__REPORTSTAB_H__
-#define HEADER_GUARD_MDE__REPORTSTAB_H__
+#ifndef HEADER_GUARD_COREUI__REPORTSTAB_H__
+#define HEADER_GUARD_COREUI__REPORTSTAB_H__
 
 #include "AbstractTab.h"
 #include <coreui/CoreFlexiToolBar.h>
 #include <boost/tuple/tuple.hpp>
 #include <QtGui/QTabWidget>
+#include <coreui/Export.h>
 
+namespace coreUI {
 //! kontekst dla zak³adki z raportami
-class ReportsTabContext : public QObject, public coreUI::IAppUsageContext
+class COREUI_EXPORT ReportsTabContext : public QObject, public coreUI::IAppUsageContext
 {
     Q_OBJECT;
 public:
@@ -66,7 +68,7 @@ typedef utils::shared_ptr<ReportsTabContext> ReportsTabContextPtr;
 typedef utils::shared_ptr<const ReportsTabContext> ReportsTabContextConstPtr;
 
 
-class ReportsTab : public AbstractTab
+class COREUI_EXPORT ReportsTab : public AbstractTab
 {
 public:
     ReportsTab(const QIcon& icon, const QString& label);
@@ -81,5 +83,6 @@ private:
     ReportsTabContextPtr context;
 };
 DEFINE_SMART_POINTERS(ReportsTab);
+}
 
 #endif

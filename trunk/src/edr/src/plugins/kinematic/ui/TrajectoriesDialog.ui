@@ -109,7 +109,7 @@
       <item row="2" column="1">
        <widget class="QDoubleSpinBox" name="startTimeSpin">
         <property name="singleStep">
-         <double>0.100000000000000</double>
+         <double>1.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -129,7 +129,7 @@
       <item row="4" column="1">
        <widget class="QDoubleSpinBox" name="endTimeSpin">
         <property name="singleStep">
-         <double>0.100000000000000</double>
+         <double>1.000000000000000</double>
         </property>
        </widget>
       </item>

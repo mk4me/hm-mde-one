@@ -13,7 +13,7 @@ SimpleTab::SimpleTab( QWidget* mainWidget, const QIcon& icon, const QString& lab
 SimpleTab::SimpleTab( const QIcon& icon, const QString& label ) :
     AbstractTab(icon, label),
     widget(new QWidget()),
-    rootContext(new MdeEmptyContext())
+    rootContext(new coreUI::MdeEmptyContext())
 {
 }
 
@@ -31,7 +31,7 @@ void SimpleTab::registerConxtext( coreUI::IAppUsageContextManager* manager, core
         manager->addContext(rootContext, parent);
         manager->addWidgetToContext(rootContext, widget);
     } else {
-        rootContext = MdeEmptyContextPtr(new MdeEmptyContext());
+        rootContext = coreUI::MdeEmptyContextPtr(new coreUI::MdeEmptyContext());
     }
 }
 

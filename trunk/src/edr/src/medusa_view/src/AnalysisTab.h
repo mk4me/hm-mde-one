@@ -10,13 +10,13 @@
 #ifndef HEADER_GUARD_MDE_VIEW__ANALYSISTAB_H__
 #define HEADER_GUARD_MDE_VIEW__ANALYSISTAB_H__
 
-#include "AbstractTab.h"
+#include <coreui/AbstractTab.h>
 #include <coreui/CoreFlexiToolBar.h>
 #include <boost/tuple/tuple.hpp>
 #include <QtGui/QTabWidget>
 #include "AnalisisWidget.h"
 
-class AnalysisTab : public AbstractTab
+class AnalysisTab : public coreUI::AbstractTab
 {
 public:
     AnalysisTab(AnalisisWidget* widget, const QIcon& icon, const QString& label);

@@ -7,11 +7,13 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_MDE_VIEW__ICONTEXTROOT_H__
-#define HEADER_GUARD_MDE_VIEW__ICONTEXTROOT_H__
+#ifndef HEADER_GUARD_COREUI__ICONTEXTROOT_H__
+#define HEADER_GUARD_COREUI__ICONTEXTROOT_H__
 
 #include <QtGui/QTabWidget>
 #include <coreui/IAppUsageContext.h>
+
+namespace coreUI {
 
 //! Kontekst bazowy dla kontekstów aplikacji medycznej
 class MdeEmptyContext : public coreUI::IAppUsageContext
@@ -40,4 +42,5 @@ public:
 };
 DEFINE_SMART_POINTERS(IContextRoot);
 
+}
 #endif

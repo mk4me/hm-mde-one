@@ -1,10 +1,13 @@
-#include "MdePCH.h"
+#include "CoreUiPCH.h"
 #include <coreui/CoreTextEditWidget.h>
 #include <coreui/CoreFlexiToolBarSection.h>
 #include <coreui/CoreFlexiToolBar.h>
 #include <QtGui/QToolButton>
-#include "ReportsTab.h"
-#include <coreUI/IAppUsageContextManager.h>
+#include <QtGui//QAction>
+#include <coreui/ReportsTab.h>
+#include <coreui/IAppUsageContextManager.h>
+
+using namespace coreUI;
 
 ReportsTab::ReportsTab( const QIcon& icon, const QString& label ) :
     AbstractTab(icon, label),

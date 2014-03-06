@@ -1,5 +1,7 @@
-#include "MdePCH.h"
-#include "AbstractTab.h"
+#include "CoreUiPCH.h"
+#include <coreui/AbstractTab.h>
+
+using namespace coreUI;
 
 AbstractTab::AbstractTab( const QIcon& icon, const QString& label ):
     icon(icon),

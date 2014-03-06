@@ -409,7 +409,7 @@ void TrajectoriesDialog::treeItemChanged( QTreeWidgetItem * current, QTreeWidget
 void TrajectoriesDialog::startSliderChanged(int value)
 {
 	if (endSlider->value() > value) {
-		startTimeChanged(value * 0.01f);
+		startTimeChanged(value);
 	} else {
 		startSlider->setValue(endSlider->value() - 1);
 	}
@@ -418,7 +418,7 @@ void TrajectoriesDialog::startSliderChanged(int value)
 void TrajectoriesDialog::endSliderChanged(int value)
 {
 	if (value > startSlider->value()) {
-		endTimeChanged(value * 0.01f);
+		endTimeChanged(value);
 	} else {
 		endSlider->setValue(startSlider->value() + 1);
 	}

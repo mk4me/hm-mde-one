@@ -1,11 +1,16 @@
-#include "MdePCH.h"
-#include "ReportsThumbnailContext.h"
+#include "CoreUiPCH.h"
+#include <coreui/ReportsThumbnailContext.h>
+#include <corelib/PluginCommon.h>
 #include <QtGui/QPlainTextEdit>
 #include <QtGui/QComboBox>
 #include <QtGui/QMessageBox>
 #include <QtGui/QToolButton>
 #include <QtGui/QTabWidget>
 #include <QtCore/QBuffer>
+#include <QtCore/QDir>
+#include <QtCore/QDateTime>
+
+using namespace coreUI;
 
 ReportsThumbnailContext::ReportsThumbnailContext( QTabWidget * flexiTabWidget, QWidget* reportsTab) :
     flexiTabWidget(flexiTabWidget),
@@ -107,13 +112,13 @@ void ReportsThumbnailContext::onUnregisterContextWidget( QWidget * contextWidget
 
 }
 
-void ReportsThumbnailContext::createRaport()
+QString ReportsThumbnailContext::createRaport(const QWidget* thumbs, const QString& projectName, const QString& templateReport, const QString& css)
 {
-    const QWidget* thumbParent = this->reportsTab;
+    const QWidget* thumbParent = thumbs; //this->reportsTab;
 
     QObjectList children = thumbParent->children();
     QDateTime time = QDateTime::currentDateTime();
-    QString images;
+    QString images = "<table>";
     int counter = 0;
     for (auto it = children.begin(); it != children.end(); ++it) {
         QLabel* l = qobject_cast<QLabel*>(*it);
@@ -130,31 +135,19 @@ void ReportsThumbnailContext::createRaport()
                     w = maxWidth;
                 }
                 QString base64 = buffer.buffer().toBase64();
-                images += tr("Screenshot %1 <br> <IMG SRC=\"data:image/png;base64,%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(base64).arg(w).arg(h);
+                images += tr("<tr><td>Screenshot %1 </td></tr>").arg(counter++);
+                images += tr("<tr><td><IMG SRC=\"data:image/png;base64,%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> </td></tr>").arg(base64).arg(w).arg(h);
             }
 
         }
     }
+    images += "</table>";
 
-    QString templateDir = QString::fromStdString(plugin::getResourcePath("templates\\").string());//QString("C:\\programming\\HMEdr\\src\\edr\\resources\\deploy\\templates\\");
-    QString cssFile = templateDir + cssCombo->currentText();
-    QFile f(cssFile);
-    QString css;
-    if (f.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        css = f.readAll();
-        f.close();
-    }
-
-
-    QString p = templateDir + projectTemplate->currentText();
-    QFile file(p);
     QString html;
-    if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QString raw = QString::fromUtf8(file.readAll());
-        html = raw.arg(projectName->toPlainText()).arg(time.toString()).arg(images).arg(css);
-    } else {
+    QString cssStyle = css;
+    if (templateReport.isEmpty()) {
         if (css.length()) {
-            css = QString(
+            cssStyle = QString(
                 "<HEAD>                    "
                 "<style type=\"text/css\"> "
                 "%1                        "
@@ -168,8 +161,10 @@ void ReportsThumbnailContext::createRaport()
             "<P><FONT SIZE=8> %3</FONT></P>"
             "%2     "
             "</BODY>"
-            "</HTML>").arg(css).arg(images).arg(projectName->toPlainText());
+            "</HTML>").arg(cssStyle).arg(images).arg(projectName);
+    } else {
+      html = templateReport.arg(projectName).arg(time.toString()).arg(images).arg(css);
     }
-
-    emit reportCreated(html);
+    
+    return html;
 }

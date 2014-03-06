@@ -15,7 +15,7 @@
 #include <QtGui/QMenu>
 #include <coreui/ContextAutoPlacer.h>
 #include <coreui/DataFilterWidget.h>
-#include "ReportsThumbnailContext.h"
+#include <coreui/ReportsThumbnailContext.h>
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <QtGui/QMessageBox>
@@ -229,7 +229,7 @@ void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, 
     this->parent = parent;
     this->flexiTabWidget = flexiTabWidget;
 
-    ReportsThumbnailContextPtr visualizerUsageContext(new ReportsThumbnailContext(flexiTabWidget, raportsArea));
+    coreUI::ReportsThumbnailContextPtr visualizerUsageContext(new coreUI::ReportsThumbnailContext(flexiTabWidget, raportsArea));
     manager->addContext(visualizerUsageContext, parent);
     this->raportsArea->addAction(new QAction(tr("Create report"), this));
     getContextEventFilter()->registerPermamentContextWidget(this->raportsArea);

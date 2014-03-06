@@ -3,7 +3,7 @@
 
 #include <map>
 #include <QtGui/QToolButton>
-#include "IMdeTab.h"
+#include <coreui/IMdeTab.h>
 #include <corelib/PluginCommon.h>
 #include <coreui/CoreMainWindow.h>
 #include <coreui/CoreDockWidget.h>
@@ -24,8 +24,8 @@ public:
     MdeMainWindowController(MdeMainWindow* mw);
 
 public Q_SLOTS:
-    void addTab(IMdeTabPtr tab);
-    void activateTab(IMdeTabPtr tab);
+    void addTab(coreUI::IMdeTabPtr tab);
+    void activateTab(coreUI::IMdeTabPtr tab);
 
 private Q_SLOTS:
     void buttonClicked();
@@ -33,9 +33,9 @@ private Q_SLOTS:
 private:
     MdeMainWindow* window;
     //! mapa [przycisk -> zakładka]
-    std::map<QToolButton*, IMdeTabPtr> button2TabWindow;
+    std::map<QToolButton*, coreUI::IMdeTabPtr> button2TabWindow;
     //! mapa [zakładka -> jej kontekst]
-    std::map<IMdeTabPtr, coreUI::IAppUsageContextPtr> tab2Contex;
+    std::map<coreUI::IMdeTabPtr, coreUI::IAppUsageContextPtr> tab2Contex;
 };
 //! Klasa realizuje widok aplikacji dla medyków
 //! Z czasem klasa zaczela się rozrastac, wymaga glebszej refaktoryzacji
@@ -58,8 +58,8 @@ public:
     ContextEventFilterPtr getContextEventFilter() const { return contextEventFilter; }
 
 Q_SIGNALS:
-    void tabAdded(IMdeTabPtr tab);
-    void activateTab(IMdeTabPtr tab);
+    void tabAdded(coreUI::IMdeTabPtr tab);
+    void activateTab(coreUI::IMdeTabPtr tab);
 
 private:	
 	virtual void initializeSplashScreen(QSplashScreen * splashScreen);
@@ -68,10 +68,10 @@ private:
     void addPropertiesToServiceWindow( plugin::IServicePtr service, MdeServiceWindow * w );
     MdeServiceWindow* createServiceWidget( plugin::IServicePtr service );
     
-    void addTab(IMdeTabPtr tab);
+    void addTab(coreUI::IMdeTabPtr tab);
 
 private:
-    std::list<IMdeTabPtr> tabs;
+    std::list<coreUI::IMdeTabPtr> tabs;
     MdeMainWindowController controller;
 
     // TODO : utworzyc klase widoku i przeniesc to tam

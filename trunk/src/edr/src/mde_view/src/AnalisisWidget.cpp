@@ -15,7 +15,7 @@
 #include <QtGui/QMenu>
 #include <coreui/ContextAutoPlacer.h>
 #include <coreui/DataFilterWidget.h>
-#include "ReportsThumbnailContext.h"
+#include <coreui/ReportsThumbnailContext.h>
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <QtGui/QMessageBox>
@@ -780,31 +780,6 @@ void AnalisisWidget::createReportClicked()
 {
     const QWidget* thumbParent = this->raportsArea;
 
-    QObjectList children = thumbParent->children();
-    QDateTime time = QDateTime::currentDateTime();
-    QString images;
-    int counter = 0;
-    for (auto it = children.begin(); it != children.end(); ++it) {
-        QLabel* l = qobject_cast<QLabel*>(*it);
-        if (l) {
-            const QPixmap* pixmap = l->pixmap();
-            if (pixmap) {
-                QBuffer buffer;
-                pixmap->save(&buffer, "PNG");
-                int w = pixmap->width();
-                int h = pixmap->height();
-                int maxWidth = 800;
-                if (w > maxWidth) {
-                    h *= static_cast<double>(maxWidth) / w;
-                    w = maxWidth;
-                }
-                QString base64 = buffer.buffer().toBase64();
-                images += tr("Screenshot %1 <br> <IMG SRC=\"data:image/png;base64,%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(base64).arg(w).arg(h);
-            }
-
-        }
-    }
-
     QString templateDir = QString::fromStdString(plugin::getResourcePath("templates\\").string());//QString("C:\\programming\\HMEdr\\src\\edr\\resources\\deploy\\templates\\");
     QString cssFile = templateDir + styleComboBox->currentText();
     QFile f(cssFile);
@@ -819,28 +794,9 @@ void AnalisisWidget::createReportClicked()
     QFile file(p);
     QString html;
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QString raw = QString::fromUtf8(file.readAll());
-        html = raw.arg(reportsTitle->text()).arg(time.toString()).arg(images).arg(css);
-    } else {
-        if (css.length()) {
-            css = QString(
-                "<HEAD>                    "
-                "<style type=\"text/css\"> "
-                "%1                        "
-                "</style>                  "
-                "</HEAD> ").arg(css);
-        }
-        html = QString(
-            "<HTML> "
-            "%1     "
-            "<BODY> "
-            "<P><FONT SIZE=8> %3</FONT></P>"
-            "%2     "
-            "</BODY>"
-            "</HTML>").arg(css).arg(images).arg(reportsTitle->text());
-    }
-
-    emit reportCreated(html);
+        html = QString::fromUtf8(file.readAll());
+    } 
+    emit reportCreated(coreUI::ReportsThumbnailContext::createRaport(thumbParent, reportsTitle->text(), html, css ));
 }
 
 void AnalisisWidget::initReportsCombos()

@@ -7,16 +7,17 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_MDE_VIEW__ABSTRACTTAB_H__
-#define HEADER_GUARD_MDE_VIEW__ABSTRACTTAB_H__
+#ifndef HEADER_GUARD_COREUI__ABSTRACTTAB_H__
+#define HEADER_GUARD_COREUI__ABSTRACTTAB_H__
 
-#include "IContextRoot.h"
-#include "IMdeTab.h"
+#include <coreui/IContextRoot.h>
+#include <coreui/IMdeTab.h>
+#include <coreui/Export.h>
 
-
+namespace coreUI {
 //! Zak³adka g³ównego okna MDE, zapewnia podstawow¹ funkcjonalnoœæ.
 //! Wymaga podania widgeta dla zak³adki oraz zarejstrowania kontekstu we flexi tabie
-class AbstractTab : public IContextRoot, public IMdeTab
+class COREUI_EXPORT AbstractTab : public IContextRoot, public IMdeTab
 {
 public:
     AbstractTab(const QIcon& icon, const QString& label);
@@ -38,5 +39,6 @@ private:
     bool enabled;
 };
 DEFINE_SMART_POINTERS(AbstractTab);
+}
 
 #endif

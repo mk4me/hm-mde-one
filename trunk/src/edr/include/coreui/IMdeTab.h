@@ -7,8 +7,8 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_MDE_VIEW__IMDETAB_H__
-#define HEADER_GUARD_MDE_VIEW__IMDETAB_H__
+#ifndef HEADER_GUARD_COREUI__IMDETAB_H__
+#define HEADER_GUARD_COREUI__IMDETAB_H__
 
 #include <QtGui/QIcon>
 #include <QtCore/QString>
@@ -16,6 +16,8 @@
 #include <utils/SmartPtr.h>
 
 class QWidget;
+
+namespace coreUI {
 
 //! interfejs dla zak³adki g³ównego okna MDE
 class IMdeTab
@@ -33,5 +35,7 @@ public:
     virtual void setActive(bool val) = 0; 
 };
 DEFINE_SMART_POINTERS(IMdeTab);
+
+}
 
 #endif

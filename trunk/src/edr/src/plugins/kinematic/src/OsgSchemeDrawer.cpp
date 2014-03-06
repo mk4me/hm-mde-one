@@ -463,6 +463,7 @@ osg::ref_ptr<osg::Node> TrajectorySchemeDrawer::getNode()
 void TrajectorySchemeDrawer::setColor(const osg::Vec4 & color)
 {
 	(*(trajectory->colors))[0] = color;
+    trajectory->geom->setColorArray(trajectory->colors);
 }
 
 void TrajectorySchemeDrawer::setWidth(const float width)
@@ -474,6 +475,7 @@ void TrajectorySchemeDrawer::setRange(const Range & range)
 {
 	trajectory->da->setFirst(range.first);
 	trajectory->da->setCount(range.second - range.first);
+    trajectory->geom->setPrimitiveSet(0, trajectory->da);
 }
 
 const osg::Vec4 & TrajectorySchemeDrawer::color() const

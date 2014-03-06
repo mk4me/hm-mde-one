@@ -1,13 +1,13 @@
 BEGIN_PROJECT("executable")
 
 SET_PRIVATE_HEADERS(
-	IMdeTab.h
-	IContextRoot.h
-	AbstractTab.h
+	#IMdeTab.h
+	#IContextRoot.h
+	#AbstractTab.h
 	SimpleTab.h
 	AnalysisTab.h
-	ReportsTab.h
-	ReportsThumbnailContext.h
+	#ReportsTab.h
+	#ReportsThumbnailContext.h
 	#IAppUsageContext.h
 	#IAppUsageContextManager.h
 	AboutDialog.h
@@ -25,11 +25,11 @@ SET_PRIVATE_HEADERS(
 )
 
 SET_SOURCE_FILES (
-	AbstractTab.cpp
+	#AbstractTab.cpp
 	SimpleTab.cpp
 	AnalysisTab.cpp
-	ReportsTab.cpp
-	ReportsThumbnailContext.cpp
+	#ReportsTab.cpp
+	#ReportsThumbnailContext.cpp
 	AboutDialog.cpp
 	main.cpp
 	MdeMainWindow.cpp

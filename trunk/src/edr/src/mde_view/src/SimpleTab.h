@@ -11,11 +11,11 @@
 #define HEADER_GUARD_MDE_VIEW__SIMPLETAB_H__
 
 
-#include "AbstractTab.h"
+#include <coreui/AbstractTab.h>
 
 //! Podstawowa zak³adka g³ównego okna MDE.
 //! W konstruktorze pobiera widget, na podstawie dostarczonych przez niego akcji tworzony jest kontekst 
-class SimpleTab : public AbstractTab
+class SimpleTab : public coreUI::AbstractTab
 {
 public:
     SimpleTab(QWidget* mainWidget, const QIcon& icon, const QString& label);

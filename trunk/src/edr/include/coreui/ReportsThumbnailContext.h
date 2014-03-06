@@ -7,18 +7,20 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_MDE_VIEW__REPORTSTHUMBNAILCONTEXT_H__
-#define HEADER_GUARD_MDE_VIEW__REPORTSTHUMBNAILCONTEXT_H__
+#ifndef HEADER_GUARD_COREUI__REPORTSTHUMBNAILCONTEXT_H__
+#define HEADER_GUARD_COREUI__REPORTSTHUMBNAILCONTEXT_H__
 
 class QPlainTextEdit;
 class QComboBox;
 class QTabWidget;
 
 #include <QtCore/QObject>
-#include <coreUI/IAppUsageContext.h>
+#include <coreui/IAppUsageContext.h>
+#include <coreui/Export.h>
 
+namespace coreUI {
 //! kontekst dla zak³adki z miniaturkami obrazów do raportu
-class ReportsThumbnailContext : public QObject, public coreUI::IAppUsageContext
+class COREUI_EXPORT ReportsThumbnailContext : public QObject, public coreUI::IAppUsageContext
 {
     Q_OBJECT;
 public:
@@ -38,9 +40,9 @@ public:
     //! wyrejstrowanie widgeta z miniaturkami raportów
     virtual void onUnregisterContextWidget(QWidget * contextWidget);
 
-private Q_SLOTS:
+public:
     //! Utworzenie raportu na podstawie szablonu i stylu, z do³¹czonymi obrazami
-    void createRaport();
+    static QString createRaport(const QWidget* thumbs, const QString& projectName, const QString& templateReport = QString(), const QString& css = QString());
 
 Q_SIGNALS:
     //! Sygna³ generowany, gdy u¿ytkownik klikn¹³ przycisk 'utwórz raport'
@@ -64,5 +66,5 @@ private:
     QWidget* reportsTab;
 };
 DEFINE_SMART_POINTERS(ReportsThumbnailContext);
-
+}
 #endif

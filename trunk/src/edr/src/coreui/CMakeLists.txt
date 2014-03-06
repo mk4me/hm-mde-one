@@ -1,6 +1,7 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
+	AbstractTab.h
 	AbstractState.h
 	AbstractStateMachine.h
 	GraphicSceneWithStateMachine.h
@@ -35,9 +36,14 @@ SET_PUBLIC_HEADERS(
 	IAppUsageContext.h
 	IAppUsageContextManager.h
 	SimpleContext.h
+	ReportsThumbnailContext.h
+	ReportsTab.h
+	IMdeTab.h
+	IContextRoot.h
 )
 
 SET_SOURCE_FILES(
+	AbstractTab.cpp
 	AbstractState.cpp
 	AbstractStateMachine.cpp
 	GraphicSceneWithStateMachine.cpp
@@ -68,6 +74,8 @@ SET_SOURCE_FILES(
 	SingleInstanceWindow.cpp
 	ContextAutoPlacer.cpp
 	SimpleContext.cpp
+	ReportsThumbnailContext.cpp
+	ReportsTab.cpp
 )
 
 SET_PRIVATE_HEADERS(
@@ -76,6 +84,7 @@ SET_PRIVATE_HEADERS(
 )
 
 SET_MOC_FILES(
+	AbstractTab.h
 	AbstractStateMachine.h
 	GraphicSceneWithStateMachine.h
 	CoreTextEditWidget.h
@@ -99,6 +108,8 @@ SET_MOC_FILES(
 	FilterEntryWidget.h
 	CoreLabeledWidget.h
 	WheelGraphicsView.h
+	ReportsThumbnailContext.h
+	ReportsTab.h
 )
 
 SET_UI_FILES(
