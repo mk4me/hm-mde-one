@@ -220,8 +220,8 @@ void MdeMainWindowController::addTab( coreUI::IMdeTabPtr tab )
 MdeMainWindowController::MdeMainWindowController( MdeMainWindow* mw ) : 
 window(mw)
 {
-    connect(mw, SIGNAL(activateTab(IMdeTabPtr)), this, SLOT(activateTab(IMdeTabPtr)));
-    connect(mw, SIGNAL(tabAdded(IMdeTabPtr)), this, SLOT(addTab(IMdeTabPtr)));
+    connect(mw, SIGNAL(activateTab(coreUI::IMdeTabPtr)), this, SLOT(activateTab(coreUI::IMdeTabPtr)));
+    connect(mw, SIGNAL(tabAdded(coreUI::IMdeTabPtr)), this, SLOT(addTab(coreUI::IMdeTabPtr)));
 }
 
 void MdeMainWindowController::buttonClicked()

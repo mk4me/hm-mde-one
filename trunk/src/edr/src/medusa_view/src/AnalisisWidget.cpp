@@ -15,7 +15,7 @@
 #include <QtGui/QMenu>
 #include <coreui/ContextAutoPlacer.h>
 #include <coreui/DataFilterWidget.h>
-#include "ReportsThumbnailContext.h"
+#include <coreui/ReportsThumbnailContext.h>
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <QtGui/QMessageBox>
