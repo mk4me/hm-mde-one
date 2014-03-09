@@ -27,7 +27,6 @@ ADD_INSTALLER_GROUP_COMPONENT(plugin_newChart "newChart" "Plugin supporting data
 ADD_INSTALLER_GROUP_COMPONENT(plugin_subject "subject" "Plugin supporting motion data organisation" "" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_newVdf "newVdf" "Plugins supporting efficient data processing with flexible GUI configuration" "" "Full")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_dfElements "dfElements" "Plugins delivering universal helper classes for newVdf" "" "Full")
-ADD_INSTALLER_GROUP_COMPONENT(plugin_dicom "dicom" "Plugin delivering dicom images support" "" "Full")
 
 END_INSTALLER_GROUP()
 
