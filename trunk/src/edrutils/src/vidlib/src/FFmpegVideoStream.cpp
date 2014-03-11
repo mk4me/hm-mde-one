@@ -213,7 +213,6 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
 
     formatContext = NULL;
     codecContext = NULL;
-	selectedStream = NULL;
     frame = NULL;
     videoStream = NULL;
 
@@ -232,11 +231,6 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
     packet = NULL;
     alignedPacket = NULL;
 
-	codec_opts = NULL;
-
-	av_dict_set(&codec_opts, "threads", "auto", 0);
-	av_dict_set(&codec_opts, "b", "2.5M", 0);
-
     wantedTime = INVALID_TIMESTAMP;
     init( source, wantedVideoStream );
 
@@ -251,17 +245,18 @@ FFmpegVideoStream::~FFmpegVideoStream()
 {
     VIDLIB_FUNCTION_PROLOG;
     av_free_packet(alignedPacket);
-    av_free(alignedPacket);
-    av_free(packet);
-    av_free(frame);
+    //av_freep(alignedPacket);
+	av_free_packet(packet);
+    //av_freep(packet);
+    avcodec_free_frame(&frame);
 
-	if(selectedStream != NULL){
-		selectedStream->discard = AVDISCARD_ALL;
+	if(videoStream != NULL){
+		videoStream->discard = AVDISCARD_ALL;
 	}
 
     avcodec_close(codecContext);
+	//av_freep(codecContext);
 	avformat_close_input(&formatContext);
-	av_dict_free(&codec_opts);
 }
 
 //------------------------------------------------------------------------------
@@ -285,7 +280,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
 
     // szukamy strumienia video
     for (unsigned int i = 0; i < formatContext->nb_streams; ++i) {
-        selectedStream = formatContext->streams[i];
+        auto selectedStream = formatContext->streams[i];
 		if ( selectedStream->codec->codec_type == AVMEDIA_TYPE_VIDEO ) {
             // czy to jest ten strumień, który chcemy otworzyć?
             if ( wantedVideoStream < 0 || wantedVideoStream == static_cast<int>(i) ) {
@@ -309,10 +304,18 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
 
 	codecContext->thread_type = FF_THREAD_SLICE;
 
+	//! Ustawienia dla kodeka - ilość wątków do dekodowania
+	AVDictionary * codec_opts = NULL;
+	av_dict_set(&codec_opts, "threads", "auto", 0);
+	av_dict_set(&codec_opts, "b", "2.5M", 0);
+
     // otwieramy kodek
     if( (error=avcodec_open2(codecContext, pCodec, &codec_opts)) <0) {
+		av_dict_free(&codec_opts);
         VIDLIB_ERROR( FFmpegError( "avcodec_open2", error ) );
     }
+
+	av_dict_free(&codec_opts);
 
     // alokacja kaltki
     frame = avcodec_alloc_frame();

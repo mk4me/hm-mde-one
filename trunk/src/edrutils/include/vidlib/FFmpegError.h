@@ -26,7 +26,7 @@ public:
     FFmpegError(const FFmpegError& error);
 
     //! \return Wewnętrzne ID błędu.
-    inline int getID()
+    inline const int getID()
     {
         return id;
     }

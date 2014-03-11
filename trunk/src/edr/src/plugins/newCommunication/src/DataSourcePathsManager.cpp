@@ -277,8 +277,10 @@ void DataSourcePathsManager::removeUserDataPaths() const
 	try{
 		core::Filesystem::deleteDirectory(localUserDataPath);
 	}
-	catch(...){
-
+	catch(std::exception & e){
+		PLUGIN_LOG_DEBUG("Problem releasing user tmp directories: " << e.what());
+	}catch(...){
+		PLUGIN_LOG_DEBUG("UNKNOWN problem releasing user tmp directories");
 	}
 }
 

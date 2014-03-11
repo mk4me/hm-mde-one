@@ -44,6 +44,12 @@ protected:
 	std::list<ObjectObserverPtr> observers;
 
 public:
+
+	MemoryDataManager();
+
+	virtual ~MemoryDataManager();
+
+public:
 	// IDataManagerReader API
 	//! \param objectWatcher Obserwator DM do zarejestrowania
 	virtual void addObserver(const ObjectObserverPtr & objectWatcher);
@@ -86,8 +92,6 @@ public:
 	virtual const bool tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData);
 
 	virtual IMemoryDataManager::TransactionPtr transaction();
-
-    
 
 protected:	
 

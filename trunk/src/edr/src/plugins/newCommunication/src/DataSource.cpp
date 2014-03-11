@@ -940,6 +940,10 @@ std::vector<IHierarchyPerspectivePtr> CommunicationDataSource::getHierarchyPersp
 void CommunicationDataSource::finalize()
 {
     perspectives.clear();
+    
+	if(isLogged() == true){
+		dataSourceWidget->onLogin();
+	}
 }
 
 

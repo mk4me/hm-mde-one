@@ -305,6 +305,16 @@ private:
 	MemoryDataManager * mdm;
 };
 
+MemoryDataManager::MemoryDataManager()
+{
+
+}
+
+MemoryDataManager::~MemoryDataManager()
+{
+	ObjectsByTypes().swap(objectsByTypes);
+}
+
 void MemoryDataManager::addObserver(const ObjectObserverPtr & objectWatcher)
 {
 	ScopedLock lock(sync);

@@ -129,6 +129,12 @@ public:
 	virtual void getObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const;
 
 	virtual IFileManagerReader::TransactionPtr transaction() const;
+
+public:
+
+	FileDataManager();
+
+	virtual ~FileDataManager();
 };
 
 }

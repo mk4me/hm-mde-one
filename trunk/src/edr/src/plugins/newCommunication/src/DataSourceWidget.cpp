@@ -2014,7 +2014,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				}
 			}
 		}
-
+		
         std::vector<IHierarchyPerspectivePtr> perspectives = dataSource->getHierarchyPerspectives();
         std::set<core::IHierarchyItemConstPtr> roots;
         for (auto it = perspectives.begin(); it != perspectives.end(); ++it) {
@@ -2448,7 +2448,6 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 				unknownErrors.push_back(*it);
 			}
 		}
-
 	}
 
 	filesLoadedToDM.insert(loadedFiles.begin(), loadedFiles.end());
@@ -2461,14 +2460,6 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	loadSubjectHierarchy(loadedFilesObjects);
 
 	if(loadingErrors.empty() == true && unknownErrors.empty() == true){
-        /*QMessageBox messageBox(this);
-        messageBox.setWindowTitle(tr("Loading info"));
-        messageBox.setText(tr("Data loaded successfully to application."));
-        messageBox.setIcon(QMessageBox::Information);
-        messageBox.setStandardButtons(QMessageBox::Ok);
-        messageBox.setDefaultButton(QMessageBox::Ok);
-
-        messageBox.exec();*/
         coreUI::CorePopup::showMessage(tr("Loading info"), tr("Data loaded successfully to application."), popupDelay);
 	}else{
 		QString message(tr("Errors while data loading:"));

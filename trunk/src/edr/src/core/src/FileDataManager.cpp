@@ -68,17 +68,31 @@ public:
 	virtual void rollback()
 	{
 		transactionRolledback = true;
-
+		//odkrecam poprzednia transakcje
 		mdmTransaction->rollback();
+		//tworze nowa zeby usunac reszte
+		mdmTransaction = getMemoryDataManager()->transaction();
 
 		for(auto it = modyfications.begin(); it != modyfications.end(); ++it){
 			switch(it->second.modyfication){
 			case IFileManagerReader::ADD_FILE:
-				fdm->objectsByFiles.erase(it->first);
+				{
+					ObjectsList toRemove;
+					fdm->rawGetObjects(it->first, toRemove);
+					//usu� obiekty z MemoryDM w transakcji
+					for(auto it = toRemove.begin(); it != toRemove.end(); ++it){
+						//TODO
+						//przywrócić poprzedni jeśli był
+						(*it)->set(ObjectWrapper::LazyInitializer());
+					}
+					fdm->objectsByFiles.erase(it->first);
+				}
 				break;
 
 			case IFileManagerReader::REMOVE_FILE:
 				{
+					//TODO
+					//przywrócić LazyInitializer!!
 					auto insRes = fdm->objectsByFiles.insert(FileDataManager::ObjectsByFiles::value_type(it->first, it->second.objects));
 					if(insRes.second == false){
 						insRes.first->second.insert(insRes.first->second.end(), it->second.objects.begin(), it->second.objects.end());
@@ -410,6 +424,20 @@ private:
 	plugin::IStreamParserCapabilities * streamFileParser;
 };
 
+FileDataManager::FileDataManager()
+{
+
+}
+
+FileDataManager::~FileDataManager()
+{
+	auto tmpObjectsByFiles = objectsByFiles;
+	auto mt = getMemoryDataManager()->transaction();
+	for(auto it = tmpObjectsByFiles.begin(); it != tmpObjectsByFiles.end(); ++it){
+		rawRemoveFile(it->first, mt);
+	}
+}
+
 void FileDataManager::initializeDataWithParser(ObjectWrapper & object, const ParserPtr & parser)
 {
 	ScopedLock lock(sync);
@@ -493,6 +521,9 @@ void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IMemory
 	rawGetObjects(file, toRemove);
 	//usu� obiekty z MemoryDM w transakcji
 	for(auto it = toRemove.begin(); it != toRemove.end(); ++it){
+		//TODO
+		//przywrócić poprzedni jeśli był
+		(*it)->set(ObjectWrapper::LazyInitializer());
 		if(memTransaction->tryRemoveData(*it) == false){
 			ok = false;
 		}

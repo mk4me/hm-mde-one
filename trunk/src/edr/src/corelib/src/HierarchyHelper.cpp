@@ -27,6 +27,8 @@ VisualizerPtr WrappedItemHelper::createVisualizer(IVisualizerManager* manager)
 void WrappedItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
+	//wrapper->getRawPtr();
+	
     auto serie = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
 	serie->serie()->setName(path.toStdString());
     series.push_back(serie);

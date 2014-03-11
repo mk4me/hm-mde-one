@@ -6,7 +6,7 @@
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
 
-int FFmpegImageStream::lockManager( void **mutex, FFmpegVideoStream::LockOp op )
+const int FFmpegImageStream::lockManager( void **mutex, FFmpegVideoStream::LockOp op )
 {
     // pobieramy mutexa
     OpenThreads::Mutex **m=reinterpret_cast<OpenThreads::Mutex**>(mutex);

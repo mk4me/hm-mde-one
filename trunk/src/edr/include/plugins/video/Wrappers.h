@@ -41,9 +41,15 @@ public:
         invSamplesPerSecond = 1.0f / samplesPerSecond;
     }
 
+	virtual ~VideoChannel()
+	{
+
+	}
+
 	virtual VideoChannel* clone() const
 	{
-		VideoStreamPtr v(new VideoStream(videoStream));
+		//VideoStreamPtr v(new VideoStream(videoStream->clone()));
+		VideoStreamPtr v(videoStream->clone());
 		return new VideoChannel(v,name);
 	}
 

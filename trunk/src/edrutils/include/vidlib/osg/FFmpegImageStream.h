@@ -33,7 +33,7 @@ public:
 public:
     //! Lock manager który wykorzystuje muteksy z OpenThreads.
     //! \see FFmpegVideoStream::setLockManager
-    static int lockManager(void **mutex, FFmpegVideoStream::LockOp op);
+    static const int lockManager(void **mutex, FFmpegVideoStream::LockOp op);
     //! Callback który przekierowywuje logi z ffmpeg do strumieni OSG. 
     //! \see FFmpegVideoStream::setLogCallback
     static void logCallback(FFmpegVideoStream::LogSeverity severity, const char* msg, FFmpegVideoStream::FFmpegClass* item, FFmpegVideoStream::FFmpegClass* parent);

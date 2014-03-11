@@ -166,7 +166,16 @@ useTextureRect(true), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth
 
 VideoVisualizer::~VideoVisualizer()
 {
-
+/*
+	std::cout << "deleting stream" << std::endl;
+	stream.release();
+	std::cout << "deleting streamImage" << std::endl;
+	streamImage.release();
+	std::cout << "deleting workspace" << std::endl;
+	workspace.release();
+	std::cout << "deleting ratioKeeper" << std::endl;
+	ratioKeeper.release();
+  */
 }
 
 plugin::IVisualizer* VideoVisualizer::create() const

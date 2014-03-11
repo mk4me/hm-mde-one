@@ -58,7 +58,7 @@ public:
     };
 
     //!
-    typedef int (*LockManager)(void **mutex, LockOp lock);
+    typedef const int (*LockManager)(void **mutex, LockOp lock);
 
     //! Klasa FFmpeg używana podczas logowania wiadomości.
     struct FFmpegClass {
@@ -101,8 +101,6 @@ private:
     AVCodecContext * codecContext;
     //! Strumień.
     AVStream * videoStream;
-	//! Strumień
-	AVStream * selectedStream;
     //! Bieżąca ramka.
     AVFrame * frame;
     //! Prawdziwy timestamp prezentacji bieżącej ramki. W jednostkach strumienia.
@@ -128,8 +126,6 @@ private:
     AVPacket * packet;
     //! Prawdziwy używany w momencie, gdy źródłowy nie ma wyalignowanych danych.
     AVPacket * alignedPacket;
-	//! Ustawienia dla kodeka - ilość wątków do dekodowania
-	AVDictionary * codec_opts;
 
 public:
     //! \param source Źródło.
