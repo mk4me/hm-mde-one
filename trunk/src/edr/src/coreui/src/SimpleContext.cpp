@@ -5,8 +5,9 @@
 #include <coreui/CoreFlexiToolBarSection.h>
 
 
-coreUI::SimpleContext::SimpleContext( QTabWidget * flexiTabWidget, const QString& name ) :
+coreUI::SimpleContext::SimpleContext( QTabWidget * flexiTabWidget, const QString& name, const QStringList& sectionsToSkip  ) :
 flexiTabWidget(flexiTabWidget),
+    sectionsToSkip(sectionsToSkip),
     groupID(-1),
     widget(nullptr),
     name(name)
@@ -44,7 +45,7 @@ void coreUI::SimpleContext::onRegisterContextWidget( QWidget * contextWidget )
 {
     QList<QAction*> actions = contextWidget->actions();
     if (!actions.empty()) {
-        QWidget* actionsWidget = coreUI::ContextAutoPlacer::create(actions);
+        QWidget* actionsWidget = coreUI::ContextAutoPlacer::create(actions, sectionsToSkip);
         if (!widget) {
             widget = new coreUI::CoreFlexiToolBar(flexiTabWidget);
         }

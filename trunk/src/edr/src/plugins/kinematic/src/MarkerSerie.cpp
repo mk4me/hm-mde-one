@@ -285,3 +285,13 @@ TrajectoryDrawerManagerPtr MarkerSerie::getTrajectoriesManager() const
     return trajectoriesManager;
 }
 
+IConnectionDrawerWithDescriptors MarkerSerie::getConnectionsDrawer() const
+{
+    return std::make_pair(connectionsDrawer, connectionsConfigurations);
+}
+
+IPointsSchemeDrawerPtr MarkerSerie::getPointsDrawer() const
+{
+    return pointsDrawer;
+}
+

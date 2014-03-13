@@ -7,15 +7,15 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_MDE_VIEW__SIMPLETAB_H__
-#define HEADER_GUARD_MDE_VIEW__SIMPLETAB_H__
+#ifndef HEADER_GUARD_COREUI__SIMPLETAB_H__
+#define HEADER_GUARD_COREUI__SIMPLETAB_H__
 
-
+#include <coreui/Export.h>
 #include <coreui/AbstractTab.h>
 
 //! Podstawowa zak³adka g³ównego okna MDE.
 //! W konstruktorze pobiera widget, na podstawie dostarczonych przez niego akcji tworzony jest kontekst 
-class SimpleTab : public coreUI::AbstractTab
+class COREUI_EXPORT SimpleTab : public coreUI::AbstractTab
 {
 public:
     SimpleTab(QWidget* mainWidget, const QIcon& icon, const QString& label);

@@ -136,7 +136,7 @@ public:
     //! Dodanie do dialogu drawera, który bêdzie modyfikowany
     //! \param drawer obiekt drawera osg
     //! \param rootName wyœwietlana nazwa
-    void setDrawer(TrajectoryDrawerManagerPtr drawer, const QString& rootName, const std::vector<QString>& names);
+    void setDrawer(TrajectoryDrawerManagerPtr drawer, const QString& rootName, const QStringList& names);
 
     private slots:
         //! zmieniono kolor

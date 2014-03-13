@@ -15,7 +15,7 @@ using namespace coreUI;
 
 KinematicVisualizer::KinematicVisualizer() :
 	actionGhost(nullptr), actionSwitchAxes(nullptr), lastTime(-1.0f),
-	currentSerie(-1), trajectoriesDialog(nullptr)
+	currentSerie(-1), trajectoriesDialog(nullptr), schemeDialog(nullptr)
 {
 	
 }
@@ -46,6 +46,8 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const core::TypeIn
 	} else if (requestedType == typeid (MarkerCollection)) {
 		auto ms = new MarkerSerie(this, requestedType, data);		
         trajectoriesDialog->setDrawer(ms->getTrajectoriesManager(), getRootName(data, tr("Markers")), getMarkersNames(data->get()));
+        schemeDialog->setDrawer(ms->getPointsDrawer(), getRootName(data, tr("Markers")), getMarkersNames(data->get()), ms->getConnectionsDrawer());
+        //schemeDialog->setDrawer(ms->getConnectionsDrawer(), getRootName(data, tr("Markers")));
         ret = ms;
 	} else if (requestedType == typeid (kinematic::JointAnglesCollection)) {
 		auto ss = new SkeletonSerie(this, requestedType, data);		
@@ -94,7 +96,7 @@ QWidget* KinematicVisualizer::createWidget()
     widget->setTimerActive(true);
 
     trajectoriesDialog = new TrajectoriesDialog(widget);
-    //schemeDialog = new SchemeDialog(widget);
+    schemeDialog = new SchemeDialog(widget);
     const osg::GraphicsContext::Traits* traits = widget->getCamera()->getGraphicsContext()->getTraits();
 
     widget->addEventHandler(new osgGA::StateSetManipulator(
@@ -579,7 +581,7 @@ void KinematicVisualizer::shiftZ( double d )
 
 void KinematicVisualizer::showSchemeDialog()
 {
-    //schemeDialog->show();
+    schemeDialog->show();
 }
 
 void KinematicVisualizer::refreshSpinboxes()
@@ -885,9 +887,9 @@ QString KinematicVisualizer::getRootName( const core::ObjectWrapperConstPtr & da
     return suffix;
 }
 
-std::vector<QString> KinematicVisualizer::getMarkersNames( const MarkerCollectionConstPtr& ms ) const
+QStringList KinematicVisualizer::getMarkersNames( const MarkerCollectionConstPtr& ms ) const
 {
-    std::vector<QString> names;
+    QStringList names;
     int count = ms->getNumChannels();
     for (int i = 0; i < count; ++i) {
         names.push_back(QString::fromStdString(ms->getMarkerName(i)));
@@ -895,10 +897,10 @@ std::vector<QString> KinematicVisualizer::getMarkersNames( const MarkerCollectio
     return names;
 }
 
-std::vector<QString> KinematicVisualizer::getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ss ) const
+QStringList KinematicVisualizer::getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ss ) const
 {
     UTILS_ASSERT(false);
-    return std::vector<QString>();
+    return QStringList();
 
 }
 

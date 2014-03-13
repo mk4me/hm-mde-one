@@ -148,7 +148,7 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
 
     //kontekst wizualizatora!!
-    coreUI::SimpleContextPtr visualizerUsageContext(new coreUI::SimpleContext(flexiTabWidget, tr("Visualizer")));
+    coreUI::SimpleContextPtr visualizerUsageContext(new coreUI::SimpleContext(flexiTabWidget, tr("Visualizer"), QStringList(tr("Settings"))));
     manager->addContext(visualizerUsageContext, parent);
     manager->addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
     manager->addWidgetToContext(visualizerUsageContext, titleBar);

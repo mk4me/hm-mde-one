@@ -1,5 +1,5 @@
-#include "MdePCH.h"
-#include "SimpleTab.h"
+#include "CoreUiPCH.h"
+#include <coreui/SimpleTab.h>
 #include <coreui/ContextAutoPlacer.h>
 #include <coreui/IAppUsageContextManager.h>
 #include <coreui/SimpleContext.h>
@@ -27,7 +27,7 @@ void SimpleTab::registerConxtext( coreUI::IAppUsageContextManager* manager, core
 {
     QList<QAction*> actions = widget->actions();
     if (!actions.empty()) {
-        rootContext = coreUI::SimpleContextPtr(new coreUI::SimpleContext(flexiWidget, getLabel()));
+        rootContext = coreUI::SimpleContextPtr(new coreUI::SimpleContext(flexiWidget, getLabel(), QStringList()));
         manager->addContext(rootContext, parent);
         manager->addWidgetToContext(rootContext, widget);
     } else {

@@ -26,7 +26,7 @@ public:
     //! Automatycznie rozmieszcza akcje w widgecie.
     //! \param actions rozmieszczane akcje
     //! \return stworzony widget z rozmieszczonymi akcjami
-    static QWidget* create(const QList<QAction*>& actions, bool skipSettings = true, bool skipUtils = true);
+    static QWidget* create(const QList<QAction*>& actions, const QList<QString>& sectionsToSkip);
 };
 
 

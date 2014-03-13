@@ -16,7 +16,7 @@
 #include <coreui/CoreDockWidget.h>
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/IMdeTab.h>
-#include "SimpleTab.h"
+#include <coreui/SimpleTab.h>
 #include <coreui/ReportsTab.h>
 #include "AnalisisWidget.h"
 #include "AnalysisTab.h"

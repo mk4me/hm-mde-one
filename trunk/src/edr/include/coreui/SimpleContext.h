@@ -23,7 +23,7 @@ namespace coreUI {
     public:
         //! konstruktor
         //! \param flexiTabWidget flexi widget kontekstu
-        SimpleContext(QTabWidget * flexiTabWidget, const QString& name);
+        SimpleContext(QTabWidget * flexiTabWidget, const QString& name, const QStringList& sectionsToSkip = QStringList() );
 
     public:
         //! wywo³ywane, po aktywowaniu siê kontekstu, do flexi bara trafi¹ akcje 
@@ -47,6 +47,7 @@ namespace coreUI {
         int groupID;
         //! nazwa dla glownej zak³adki flexi bara
         QString name;
+        QList<QString> sectionsToSkip;
     };
     DEFINE_SMART_POINTERS(SimpleContext);
 

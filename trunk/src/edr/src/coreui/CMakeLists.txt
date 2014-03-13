@@ -39,6 +39,7 @@ SET_PUBLIC_HEADERS(
 	ReportsThumbnailContext.h
 	ReportsTab.h
 	IMdeTab.h
+	SimpleTab.h
 	IContextRoot.h
 )
 
@@ -74,6 +75,7 @@ SET_SOURCE_FILES(
 	SingleInstanceWindow.cpp
 	ContextAutoPlacer.cpp
 	SimpleContext.cpp
+	SimpleTab.cpp
 	ReportsThumbnailContext.cpp
 	ReportsTab.cpp
 )
@@ -110,6 +112,7 @@ SET_MOC_FILES(
 	WheelGraphicsView.h
 	ReportsThumbnailContext.h
 	ReportsTab.h
+	SimpleTab.h
 )
 
 SET_UI_FILES(

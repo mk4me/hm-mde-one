@@ -192,7 +192,7 @@ TrajectoriesDialog::TrajectoriesDialog( QWidget* parent) :
 		    this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 }
 
-void TrajectoriesDialog::setDrawer(TrajectoryDrawerManagerPtr drawer, const QString& rootName, const std::vector<QString>& names )
+void TrajectoriesDialog::setDrawer(TrajectoryDrawerManagerPtr drawer, const QString& rootName, const QStringList& names )
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(1, rootName);
@@ -221,59 +221,7 @@ void TrajectoriesDialog::setDrawer(TrajectoryDrawerManagerPtr drawer, const QStr
         }
     } else {
         UTILS_ASSERT(false);
-    }
-   /* int maxVal = static_cast<int> (100 * markers->getLength()) - 1;
-    startSlider->setMinimum(0);
-    startSlider->setMaximum(maxVal-1);
-    endSlider->setMinimum(1);
-    endSlider->setMaximum(maxVal);
-    endSlider->setValue(maxVal);
-    startTimeSpin->setMinimum(0);
-    startTimeSpin->setMaximum(markers->getLength() - 0.001f);
-    endTimeSpin->setMinimum(1);
-    endTimeSpin->setMaximum(markers->getLength());
-    endTimeSpin->setValue(markers->getLength());*/
-
-    /*SchemeDrawerContainerPtr container = utils::dynamic_pointer_cast<SchemeDrawerContainer>(drawer);
-    if (container) {
-        BOOST_FOREACH (OsgTimeSchemeDrawerPtr child, container->getDrawers()) {
-            TrajectoryDrawerPtr trajectories = utils::dynamic_pointer_cast<TrajectoryDrawer>(child);
-            if (trajectories) {
-                MarkerCollectionConstPtr markers = trajectories->getMarkers();
-                int count = markers->getNumChannels();
-                if (count) {
-                    for (int i = 0; i < count; ++i) {
-                        QTreeWidgetItem* item = new QTreeWidgetItem();
-
-                        item->setText(1, markers->getChannel(i)->getName().c_str());
-
-                        item->setFlags(item->flags() | Qt::ItemIsSelectable);
-                        item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
-                        root->addChild(item);
-
-                        QCheckBox* check1 = new QCheckBox(tree);
-                        tree->setItemWidget(item, 0, check1);
-                        connect(check1, SIGNAL(clicked(bool)), this, SLOT(visibilityChanged(bool)));
-                        item2Trajectories[item] = trajectories;
-                    }
-                
-                    int maxVal = static_cast<int> (100 * markers->getLength()) - 1;
-                    startSlider->setMinimum(0);
-                    startSlider->setMaximum(maxVal-1);
-                    endSlider->setMinimum(1);
-                    endSlider->setMaximum(maxVal);
-                    endSlider->setValue(maxVal);
-                    startTimeSpin->setMinimum(0);
-                    startTimeSpin->setMaximum(markers->getLength() - 0.001f);
-                    endTimeSpin->setMinimum(1);
-                    endTimeSpin->setMaximum(markers->getLength());
-                    endTimeSpin->setValue(markers->getLength());
-                }
-            }
-        }
-       
-    }*/
-    
+    }    
 }
 
 

@@ -28,6 +28,7 @@
 #include "KinematicSerie.h"
 
 #include <coreui/CoreWidgetAction.h>
+#include "SchemeDialog.h"
 
 class QDoubleSpinBox;
 
@@ -218,8 +219,8 @@ private slots:
 	void setBottom();
     //! zmienił się stan manipulatora
     void draggerTriggered();
-    std::vector<QString> getMarkersNames( const MarkerCollectionConstPtr& ms ) const;
-    std::vector<QString> getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ms ) const;
+    QStringList getMarkersNames( const MarkerCollectionConstPtr& ms ) const;
+    QStringList getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ms ) const;
 private:
     //! główny węzeł sceny 3d
     osg::ref_ptr<osg::Group> rootNode;
@@ -252,7 +253,7 @@ private:
     //! Dialog zarządzający trajektoriami
     TrajectoriesDialog* trajectoriesDialog;
     //! Dialog zarządzający widocznością węzłów na scenie
-    //SchemeDialog* schemeDialog;
+    SchemeDialog* schemeDialog;
     //! kolecja z seriami danych podpiętymi pod wizualizator
     std::vector<KinematicSerieBase*> series;
     //! nr aktywnej serii

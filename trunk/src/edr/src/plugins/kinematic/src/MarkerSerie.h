@@ -23,7 +23,7 @@ class TrajectoryDrawerManager;
 class MarkerSerie : public QObject, public KinematicTimeSerie, public IGhostSerie
 {
 	Q_OBJECT;
-
+    
 public:
     //! Konstuktor
     //! \param visualizer wizualizator, który stworzył serie danych
@@ -53,6 +53,9 @@ public:
 	virtual const bool ghostVisible() const;
 	virtual void setGhostVisible(const bool visible);
     TrajectoryDrawerManagerPtr getTrajectoriesManager() const;
+
+    IPointsSchemeDrawerPtr getPointsDrawer() const;
+    IConnectionDrawerWithDescriptors getConnectionsDrawer() const;
 
 private:
 
@@ -87,9 +90,9 @@ private:
 	SegmentsDescriptors connectionsConfigurations;
 	//! Obiekt rysujący punkty
 	core::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
-	//! Obiekt rysujący połączenia
+    //! Obiekt rysujący połączenia
 	core::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
-	//! Klasa pomocnicza przy rysowaniu ducha
+    //! Klasa pomocnicza przy rysowaniu ducha
 	core::shared_ptr<GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
 	TrajectoryDrawerManagerPtr trajectoriesManager;

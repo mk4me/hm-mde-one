@@ -16,6 +16,7 @@ public:
 	//! \return Zwracać węzeł drawera
 	virtual osg::ref_ptr<osg::Node> getNode() = 0;
 };
+DEFINE_SMART_POINTERS(IOsgSchemeDrawer);
 
 class IBaseDrawerScheme
 {
@@ -45,6 +46,7 @@ public:
 	//! \return Rozmiar
 	virtual const float size(const unsigned int idx) const = 0;
 };
+DEFINE_SMART_POINTERS(IBaseDrawerScheme)
 
 class IPointsSchemeDrawer : public IOsgSchemeDrawer, public IBaseDrawerScheme
 {
@@ -57,7 +59,7 @@ public:
 	//! \param positions Pozycje punktów
 	virtual void update(const std::vector<osg::Vec3> & positions) = 0;
 };
-
+DEFINE_SMART_POINTERS(IPointsSchemeDrawer);
 class PointInstance;
 
 //! Drawer dla chmury punktów
@@ -93,6 +95,7 @@ private:
 
 	osg::ref_ptr<osg::Switch> node;
 };
+DEFINE_SMART_POINTERS(PointsDrawer);
 
 class IConnectionsSchemeDrawer : public IOsgSchemeDrawer, public IBaseDrawerScheme
 {
@@ -102,7 +105,8 @@ public:
 	//! Pozycje punktów dla których rysujemy połaczenia
 	virtual void update(const std::vector<osg::Vec3> & positions) = 0;
 };
-
+DEFINE_SMART_POINTERS(IConnectionsSchemeDrawer)
+typedef std::pair<IConnectionsSchemeDrawerPtr, SegmentsDescriptors> IConnectionDrawerWithDescriptors;
 class ConnectionInstance;
 
 //! Drawer dla połączeń
@@ -140,6 +144,7 @@ private:
 
 	osg::ref_ptr<osg::Switch> node;
 };
+DEFINE_SMART_POINTERS(ConnectionsDrawer);
 
 //! Interfejs drawera o zmienny zakresie danych
 class IRangeDrawer

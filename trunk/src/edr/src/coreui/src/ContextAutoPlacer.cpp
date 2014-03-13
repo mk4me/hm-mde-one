@@ -9,7 +9,7 @@
 
 using namespace coreUI;
 
-QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, bool skipSettings, bool skipUtils)
+QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, const QList<QString>& sectionsToSkip)
 {
     if(actions.empty() == true){
         return nullptr;
@@ -39,12 +39,16 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, bool skipSett
     //teraz tworze sekcje
     for(auto it = sections.begin(); it != sections.end(); ++it){
 
-        //pomijam grupy które są tutaj niepotrzebne
-        if(skipSettings && it->first == QObject::tr("Settings")){
-            continue;
-        }
+        ////pomijam grupy które są tutaj niepotrzebne
+        //if(skipSettings && it->first == QObject::tr("Settings")){
+        //    continue;
+        //}
 
-        if(skipUtils && it->first == QObject::tr("Utils")){
+        //if(skipUtils && it->first == QObject::tr("Utils")){
+        //    continue;
+        //}
+
+        if (sectionsToSkip.contains(it->first)) {
             continue;
         }
 

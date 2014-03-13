@@ -3,6 +3,8 @@
     <file alias="trajectory.png">../resources/embedded/icons/trajectory.png</file>
     <file alias="switch-axisa.png">../resources/embedded/icons/switch-axisa.png</file>
     <file alias="switch-axis.png">../resources/embedded/icons/switch-axis.png</file>
+    <file alias="picker.png">../resources/embedded/icons/picker.png</file>
+    <file alias="pickera.png">../resources/embedded/icons/pickera.png</file>
     <file alias="force_trace.png">../resources/embedded/icons/force_trace.png</file>
     <file alias="force_tracea.png">../resources/embedded/icons/force_tracea.png</file>
     <file alias="foot_trace.png">../resources/embedded/icons/foot_trace.png</file>

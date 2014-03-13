@@ -13,11 +13,13 @@ SET_PRIVATE_HEADERS(
 	GRFSerie.h
 	MarkerSerie.h
 	KinematicSerie.h
+	SchemeDialog.h
 	SkeletonSerie.h
 	TrajectoriesDialog.h
 	TrajectoriesDrawer.h
 	PickHandler.h
 	Manipulators.h	
+	#SchemeDrawerContainer.h
 	SkeletalVisualizationSchemeHelper.h	
 	VisualizationScheme.h	
 	PCH.h	
@@ -40,14 +42,17 @@ SET_SOURCE_FILES(
 	SkeletonSerie.cpp
 	TrajectoriesDialog.cpp
 	TrajectoriesDrawer.cpp
+	SchemeDialog.cpp
 	PickHandler.cpp
 	Manipulators.cpp
 	VisualizationScheme.cpp
+	#SchemeDrawerContainer.cpp
 	PCH.cpp
 )
 
 SET_MOC_FILES(
 	KinematicVisualizer.h
+	#SchemeDrawerContainer.h
 	SkeletonSerie.h
 	MarkerSerie.h
 	TrajectoriesDialog.h

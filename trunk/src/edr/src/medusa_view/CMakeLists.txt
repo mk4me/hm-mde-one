@@ -4,7 +4,7 @@ SET_PRIVATE_HEADERS(
 	#IMdeTab.h
 	#IContextRoot.h
 	#AbstractTab.h
-	SimpleTab.h
+	#SimpleTab.h
 	AnalysisTab.h
 	#ReportsTab.h
 	#ReportsThumbnailContext.h
@@ -26,7 +26,7 @@ SET_PRIVATE_HEADERS(
 
 SET_SOURCE_FILES (
 	#AbstractTab.cpp
-	SimpleTab.cpp
+	#SimpleTab.cpp
 	AnalysisTab.cpp
 	#ReportsTab.cpp
 	#ReportsThumbnailContext.cpp
@@ -47,7 +47,7 @@ SET_SOURCE_FILES (
 
 SET_MOC_FILES(
 	AboutDialog.h
-	SimpleTab.h
+	#SimpleTab.h
 	AnalysisTab.h
 	ContextEventFilter.h
 	VisualizerEventFilter.h
