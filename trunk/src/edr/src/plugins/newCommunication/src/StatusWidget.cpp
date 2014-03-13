@@ -19,9 +19,14 @@ communication::StatusWidget::StatusWidget(ServerStatusManagerConstWeakPtr status
     setConnected(false);
 }
 
-communication::StatusWidget::~StatusWidget()
+void communication::StatusWidget::stopUpdating()
 {
 	timer.stop();
+}
+
+communication::StatusWidget::~StatusWidget()
+{
+	
 }
 
 void communication::StatusWidget::setConnected( bool connected )

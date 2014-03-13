@@ -88,7 +88,7 @@ void LocalDataLoader::run()
 	if(synch == true){
 		QMetaObject::invokeMethod(this, "prepareStatusWidget", Qt::BlockingQueuedConnection);
 		//od razu ładujemy do local storage
-		QString info(tr("Synchronizing files:") + " %1 / " + QString::number(sourceWidget->downloadedFiles.size()));
+		info = (tr("Synchronizing files:") + " %1 / " + QString::number(sourceWidget->downloadedFiles.size()));
 		counter = 1;
 		for(auto it = sourceWidget->downloadedFiles.begin(); it != sourceWidget->downloadedFiles.end(); ++it){
 			try{
@@ -130,7 +130,11 @@ void LocalDataLoader::run()
 
 	sourceWidget->currentDownloadRequest.reset();
 
-    if (wasShallow) {
+	//TODO
+	// dlaczego to jestg tutaj? Skoro to byl request dla shallow to znaczy ze dostałem pełną płytką kopię
+	// to powinno być realizowane gdzieś wyżej, na poziomie metody void DataSourceWidget::performShallowCopyUpdate()
+    /*
+	if (wasShallow) {
         auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
         webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
 
@@ -148,8 +152,11 @@ void LocalDataLoader::run()
 
         addToDownload(incCpy.added.trials);
         addToDownload(incCpy.modified.trials);
-        sourceWidget->onDownload();
-    }
+
+		if(sourceWidget->filesToDownload.empty() == false){
+			sourceWidget->onDownload();
+		}
+    }*/
 }
 
 void LocalDataLoader::prepareStatusWidget()
@@ -201,60 +208,6 @@ void LocalDataLoader::showFinalMessage()
 		}
 	}
 }
-//
-//void LocalDataLoader::showFinalMessage()
-//{
-//    //obsługa komunikatu
-//    if(sourceWidget->downloadCanceled == true){
-//        //anulowano pobieranie
-//        QMessageBox messageBox(sourceWidget);
-//        if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-//            messageBox.setWindowTitle(tr("Synchronization canceled"));
-//            messageBox.setText(tr("Synchronization successfully canceled"));
-//        }else{
-//            messageBox.setWindowTitle(tr("Download canceled"));
-//            messageBox.setText(tr("Download successfully canceled"));
-//        }
-//
-//        messageBox.setIcon(QMessageBox::Information);
-//        messageBox.setStandardButtons(QMessageBox::Ok);
-//        messageBox.setDefaultButton(QMessageBox::Ok);
-//        messageBox.exec();
-//    }else if(sourceWidget->downloadCrashed == true){
-//        //błąd pobierania
-//        QMessageBox messageBox(sourceWidget);
-//        if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-//            messageBox.setWindowTitle(tr("Synchronization error"));
-//            messageBox.setText(tr("Synchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"));
-//        }else{
-//            messageBox.setWindowTitle(tr("Download error"));
-//            messageBox.setText(tr("Download has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to download later. If this error continues to happen contact producer"));
-//        }
-//
-//        messageBox.setIcon(QMessageBox::Critical);
-//        messageBox.setStandardButtons(QMessageBox::Ok);
-//        messageBox.setDefaultButton(QMessageBox::Ok);
-//        messageBox.exec();
-//    }else{
-//        //wszystko ok
-//        QMessageBox messageBox(sourceWidget);
-//        if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-//            messageBox.setWindowTitle(tr("Synchronization successful"));
-//            messageBox.setText(tr("Synchronization has finished successfully"));
-//        }else{
-//            messageBox.setWindowTitle(tr("Download successful"));
-//            messageBox.setText(tr("Download has finished successfully"));
-//        }
-//
-//        messageBox.setIcon(QMessageBox::Information);
-//        messageBox.setStandardButtons(QMessageBox::Ok);
-//        messageBox.setDefaultButton(QMessageBox::Ok);
-//        messageBox.exec();
-//    }
-//
-//    //próbujemy chować po 3 sekundach
-//    QTimer::singleShot(3000, sourceWidget, SLOT(tryHideStatusWidget()));
-//}
 
 DataSourceWidget::LoginEventFilter::LoginEventFilter(DataSourceWidget * sourceWidget, QObject * parent) : QObject(parent), sourceWidget(sourceWidget)
 {
@@ -907,6 +860,9 @@ void DataSourceWidget::onLogin()
 			if(ret == QMessageBox::No){
 				return;
 			}else{
+				if(statusWidget != nullptr){
+					statusWidget->stopUpdating();
+				}
 				currentDownloadRequest->cancel();
 				downloadRefreshTimer.stop();
 				if(localDataLoader != nullptr && localDataLoader->isRunning()){
@@ -2380,7 +2336,8 @@ void DataSourceWidget::update(const communication::IDownloadRequest * request)
 		currentDownloadRequest = it->second;
 		registeredRequests.erase(it);
 	}
-
+	//TODO
+	// te invoke są bardzo niebezpieczne, trzeba to wyprostować
 	//zapamiętuje sobie pliki które się dobrze ściągneły
 	if(currentDownloadRequest->state() == IDownloadRequest::SingleFinished){
 		if(core::Filesystem::pathExists(currentDownloadRequest->currentFilePath()) == true){

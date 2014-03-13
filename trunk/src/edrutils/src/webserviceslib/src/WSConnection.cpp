@@ -225,9 +225,9 @@ private:
 			invoker_.reset(new Invoker());
 
 // w wersji debug rzucamy wszystko co możemy na konsole
-#ifdef _DEBUG
+//#ifdef _DEBUG
 			invoker_->setVerbose(true);
-#endif
+//#endif
 			setInvoker(boost::is_base_of<WsdlPull::CustomSSLWsdlInvoker, Invoker>());
 		}catch(std::exception & e){
 			throw webservices::WSConnectionInitializationException(e.what());

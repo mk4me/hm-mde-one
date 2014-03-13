@@ -30,6 +30,8 @@ public:
 	virtual ~StatusWidget();
 
     QPushButton* getLogoutButton();
+
+	void stopUpdating();
 public slots:
     void setConnected(bool connected);
     void setUserName(const QString& val);

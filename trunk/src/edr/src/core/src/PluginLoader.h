@@ -48,50 +48,60 @@ public:
     virtual ~PluginLoader();
 
 public:
-    //!
+    //! Czyści pluginy
     void clear();
     //! Ładuje pluginy.
     void load();
-
+	//! \param path Ścieżka gdzie szukać wtyczek
 	void addPath(const Filesystem::Path& path)
 	{
 		this->paths.push_back(path);
 	}
 
-    //! \return
+    //! \return Ilośc wczytanych pluginów
     int getNumPlugins() const
     {
         return static_cast<int>(plugins.size());
     }
-    //!
-    //! \param idx
+    
+    //! \param idx Indeks pluginu który pobieramy
+    //! \return Plugin o zadanym indeksie
     PluginPtr getPlugin(int idx)
     {
         return plugins[idx].plugin;
     }
-    //!
-    //! \param idx
+    
+	//! \param idx Indeks pluginu który pobieramy
+	//! \return Plugin o zadanym indeksie
     PluginConstPtr getPlugin(int idx) const
     {
         return plugins[idx].plugin;
     }
-    //! \return
+    //! \return Zbiór ścieżek w których poszukiwane będa pluginy
     const Paths& getPaths() const
     {
         return paths;
     }
-    //! \param paths
+    //! \param paths Zbiór ścieżek w których poszukiwane będa pluginy
     void setPaths(const Paths& paths)
     {
         this->paths = paths;
     }
 
+	//! Wyładowuje wszystkie pluginy
     void unloadPlugins();
 
+	//! \param path Ścieżka do pluginu
+	//! \return Uchwyt do załadowanej biblioteki z pluginem
 	static HMODULE loadSharedLibrary(const Filesystem::Path & path);
+	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
 	static void unloadSharedLibrary(HMODULE library);
+	//! \return Ostatni błąd
 	static const std::string lastLoadSharedLibraryError();
 
+	//! \tparam T Typ funkcji jaki próbujemy wyciągnąć z biblioteki
+	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
+	//! \param procName Nazwa procedury o która pytamy
 	template<typename T>
 	static T loadProcedure(HMODULE library, const char * procName)
 	{
@@ -109,26 +119,29 @@ public:
 
 private:
     //!
-    //! \param path
+    //! \param path Ścieżka biblioteki z pluginem
     bool addPlugIn(const Filesystem::Path& path);
 
     //!
-    //! \param library
-    //! \param path
+    //! \param library Uchwyt do zwalnianej biblioteki z pluginem
+    //! \param path  Ścieżka biblioteki z pluginem
+    //! \return Czy wersj apluginu jest akceptowalna
     bool checkPluginVersion( HMODULE library, const Filesystem::Path& path );
 
     //!
-    //! \param library
-    //! \param path
+	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
+	//! \param path  Ścieżka biblioteki z pluginem
+    //! \return Czy dany typ budowy pluginu jest obsługiwany
     bool checkPluginBuildType( HMODULE library, const Filesystem::Path& path );
     //!
-    //! \param library
-    //! \param path
+	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
+	//! \param path  Ścieżka biblioteki z pluginem
+	//! \return Czy wersje bibliotek są kompatybilne z corem
     bool checkLibrariesVersions( HMODULE library, const Filesystem::Path& path );
     //!
-    //! \param path
-    //! \param library
-    //! \param createFunction
+	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
+	//! \param path  Ścieżka biblioteki z pluginem
+    //! \param createFunction Funkcja tworząca plugin
     bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::InitializeAndLoadFunction fillFunction);
 };
 

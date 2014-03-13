@@ -136,7 +136,7 @@ QString ReportsThumbnailContext::createRaport(const QWidget* thumbs, const QStri
                 }
                 QString base64 = buffer.buffer().toBase64();
                 images += tr("<tr><td>Screenshot %1 </td></tr>").arg(counter++);
-                images += tr("<tr><td><IMG SRC=\"data:image/png;base64,%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> </td></tr>").arg(base64).arg(w).arg(h);
+                images += tr("<tr><td><IMG SRC=\"data:image/png;base64,%1\" ALIGN=BOTTOM WIDTH=%2 HEIGHT=%3 BORDER=0></P> </td></tr>").arg(base64).arg(w).arg(h);
             }
 
         }

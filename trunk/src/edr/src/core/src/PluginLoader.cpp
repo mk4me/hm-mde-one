@@ -38,10 +38,14 @@ void PluginLoader::clear()
 
 	for(auto it = plugins.begin(); it != plugins.end(); ++it)
 	{
+		CORE_LOG_DEBUG("Unloading plugin " << (*it).plugin->getID() << " name " << (*it).plugin->getName() << " from " << (*it).plugin->getPath());
 		(*it).plugin.reset();
 		unloadSharedLibrary((*it).handle);
 		(*it).coreApplication.reset();
+		CORE_LOG_DEBUG("Plugin unloaded successfully");
 	}
+
+	Plugins().swap(plugins);
 }
 
 void PluginLoader::unloadPlugins()
@@ -53,7 +57,7 @@ void PluginLoader::unloadPlugins()
         CORE_LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
     catch(...){
-        CORE_LOG_ERROR("PluginLoader: Error unloading plugins ");
+        CORE_LOG_ERROR("PluginLoader: UNKNOWN error unloading plugins");
     }
 }
 

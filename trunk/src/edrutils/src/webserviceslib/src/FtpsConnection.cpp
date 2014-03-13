@@ -92,6 +92,7 @@ public:
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, ftpfile);
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+		curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
         if(customProgress == nullptr){
             curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, setDownloadProgress);
