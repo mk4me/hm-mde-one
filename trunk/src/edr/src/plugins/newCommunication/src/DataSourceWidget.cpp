@@ -1242,12 +1242,36 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 			//UTILS_ASSERT(filesIDs.empty() == false, "Brak danych w drzewie");
 
 			if(filesIDs.empty() == false){
+
+				std::set<int> additionalFiles;
+
+				getAdditionalItemsFiles(currentPerspectiveItem, additionalFiles);
+
 				//mam dane - mogę pracować
 				//wyciągam dane lokalne i zdalne
-				//wyciągam dane załądowane i niezaładowane
+				//wyciągam dane załadowane i niezaładowane
 				//na bazie tych info odpowiednio łącze akcje ze slotami i aktywuje je + zapamiętuje te info do wykonania ich!!
 
 				//pomijamy wszystkie niekompatybilne z DM pliki
+
+
+				std::set<int> dmAdditionalOKFiles;
+				std::set<int> additionalFilesToLoad;
+				std::set<int> additionalFilesToUnload;
+				std::set<int> additionalFilesToDownload;
+
+				if(additionalFiles.empty() == false){
+					//filtruje pliki obsługiwane przez DM
+					FilesHelper::filterFiles(additionalFiles, dmAdditionalOKFiles, *(dataSource->fileStatusManager));
+
+					//pliki do załadowania
+					FilesHelper::filterFiles(dmAdditionalOKFiles, DataStatus(Local, Unloaded), additionalFilesToLoad, *(dataSource->fileStatusManager));
+
+					//pliki do wyładowania - EXPERIMENTAL
+					FilesHelper::filterFiles(dmAdditionalOKFiles, communication::Loaded, additionalFilesToUnload, *(dataSource->fileStatusManager));
+					//pliki do sciagniecia
+					FilesHelper::filterFiles(dmAdditionalOKFiles, communication::Remote, additionalFilesToDownload, *(dataSource->fileStatusManager));
+				}
 
 				std::set<int> dmOKFiles;
 
@@ -1262,14 +1286,18 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 
 				//pliki do ściągnięcia
                 filesToForcedDownload = dmOKFiles;
+
 				FilesHelper::filterFiles(filesIDs, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
 				if(filesToLoad.empty() == false){
+					filesToLoad.insert(additionalFilesToLoad.begin(), additionalFilesToLoad.end());
 					load->setEnabled(true);
 					connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
 				}
 
 				if(filesToUnload.empty() == false){
+					//! TODO - sprawdzic czy wyzej jeszcze ktos tego nie trzyma!
+					filesToUnload.insert(additionalFilesToUnload.begin(), additionalFilesToUnload.end());
 					unload->setEnabled(true);
 					connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
 				}
@@ -1277,11 +1305,13 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
         #ifndef DEMO_VERSION_COMMUNICATION
 				
 				if(filesToDownload.empty() == false){
+					filesToDownload.insert(additionalFilesToDownload.begin(), additionalFilesToDownload.end());
 					download->setEnabled(true);
 					connect(download, SIGNAL(triggered()), this, SLOT(onDownload()));
 				}
 
                 if (filesToForcedDownload.empty() == false) {
+					filesToForcedDownload.insert(dmAdditionalOKFiles.begin(), dmAdditionalOKFiles.end());
                     force->setEnabled(true);
                     connect(force, SIGNAL(triggered()), this, SLOT(onForced()));
                 }
@@ -1406,7 +1436,7 @@ bool DataSourceWidget::isItemLoadable(const QTreeWidgetItem * item)
 	return ret;
 }
 
-void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & filesIDs, const ShallowCopy & shallowCopy)
+void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & filesIDs, const communication::ShallowCopy & shallowCopy)
 {
 	bool found = false;
 	auto content = dynamic_cast<const IContent*>(item);
@@ -1444,8 +1474,6 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 			{
 				auto motion = dynamic_cast<MotionItem*>(item);
 				FilesHelper::getFiles(motion->value(), filesIDs);
-				//extra dodaję pliki specyficzne sesji
-				FilesHelper::getSpecificFiles(motion->value()->session, filesIDs);
 			}
 			break;
 		case FileContent:
@@ -1453,8 +1481,6 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 				auto file = dynamic_cast<FileItem*>(item);
 				auto f = file->value();
 				filesIDs.insert(f->fileID);
-				//extra dodaję pliki specyficzne sesji
-				FilesHelper::getSpecificFiles(f->isSessionFile() == true ? f->session : f->trial->session, filesIDs);
 			}
 			break;
 		case DisordersGroupContent:
@@ -1493,7 +1519,61 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 			{
 				auto motionsGroup = dynamic_cast<MotionsGroupItem*>(item);
 				for(auto it = motionsGroup->value().begin(); it != motionsGroup->value().end(); ++it){
-					FilesHelper::getFiles(*it, filesIDs);
+					FilesHelper::getFiles(*it, filesIDs);					
+				}
+			}
+			break;
+		case FilesGroupContent:
+			{
+				auto filesGroup = dynamic_cast<FilesGroupItem*>(item);
+				for(auto it = filesGroup->value().begin(); it != filesGroup->value().end(); ++it){
+					filesIDs.insert((*it)->fileID);
+				}
+			}
+			break;
+		case CustomContent:
+			found = false;
+			break;
+		}
+	}
+
+	//jezeli nie znalazlem to ide w dół hierarchi perspektywy - może tam coś znajdę
+	if(found == false){
+		int childrenCount = item->childCount();
+		for(int i = 0; i < childrenCount; ++i){
+			getItemsFiles(item->child(i), filesIDs, shallowCopy);
+		}
+	}
+}
+
+void DataSourceWidget::getAdditionalItemsFiles(QTreeWidgetItem * item, std::set<int> & filesIDs)
+{
+	bool found = false;
+	auto content = dynamic_cast<const IContent*>(item);
+	if(content != nullptr){
+
+		found = true;
+		//wystarczy switch + dynamic_cast
+		switch(content->contentType()){
+
+		case MotionContent:
+			{
+				auto motion = dynamic_cast<MotionItem*>(item);
+				FilesHelper::getSpecificFiles(motion->value()->session, filesIDs);
+			}
+			break;
+		case FileContent:
+			{
+				auto file = dynamic_cast<FileItem*>(item);
+				auto f = file->value();
+				//extra dodaję pliki specyficzne sesji
+				FilesHelper::getSpecificFiles(f->isSessionFile() == true ? f->session : f->trial->session, filesIDs);
+			}
+			break;
+		case MotionsGroupContent:
+			{
+				auto motionsGroup = dynamic_cast<MotionsGroupItem*>(item);
+				for(auto it = motionsGroup->value().begin(); it != motionsGroup->value().end(); ++it){
 					//extra dodaję pliki specyficzne sesji
 					FilesHelper::getSpecificFiles((*it)->session, filesIDs);
 				}
@@ -1503,7 +1583,6 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 			{
 				auto filesGroup = dynamic_cast<FilesGroupItem*>(item);
 				for(auto it = filesGroup->value().begin(); it != filesGroup->value().end(); ++it){
-					filesIDs.insert((*it)->fileID);
 					//extra dodaję pliki specyficzne sesji
 					FilesHelper::getSpecificFiles((*it)->isSessionFile() == true ? (*it)->session : (*it)->trial->session, filesIDs);
 				}
@@ -1519,7 +1598,7 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 	if(found == false){
 		int childrenCount = item->childCount();
 		for(int i = 0; i < childrenCount; ++i){
-			getItemsFiles(item->child(i), filesIDs, shallowCopy);
+			getAdditionalItemsFiles(item->child(i), filesIDs);
 		}
 	}
 }

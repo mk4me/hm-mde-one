@@ -185,6 +185,7 @@ private:
     void refreshCurrentPerspectiveContent();
 
     static void getItemsFiles(QTreeWidgetItem * item, std::set<int> & filesIDs, const communication::ShallowCopy & shallowCopy);
+	static void getAdditionalItemsFiles(QTreeWidgetItem * item, std::set<int> & filesIDs);
     static void getPatientAndSubject(QTreeWidgetItem * item, const webservices::MedicalShallowCopy::Patient *& patient,
     const webservices::MotionShallowCopy::Performer *& subject);	
 
