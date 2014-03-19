@@ -89,7 +89,12 @@ void AnalysisTreeContext::recreateFlexiSectionWidget(QWidget* flexiContent, core
 		}
 
 		contextWidgetActions->setVisible(true);
-        QLayout* l = flexiContent->layout();
+
+        QWidget* container = new QWidget();
+        flexiContent->layout()->addWidget(container);
+        QLayout* l = new QHBoxLayout();
+        container->setLayout(l);
+
         flexiSection->setName(helper->getName());
 
         // TODO : wyciek pamiêci !!!

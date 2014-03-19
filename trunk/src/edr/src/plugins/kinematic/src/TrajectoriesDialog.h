@@ -138,34 +138,34 @@ public:
     //! \param rootName wyœwietlana nazwa
     void setDrawer(TrajectoryDrawerManagerPtr drawer, const QString& rootName, const QStringList& names);
 
-    private slots:
-        //! zmieniono kolor
-        void colorClicked();
-        //! zmieniono widocznoœæ pojedynczego wêz³a
-        //! \param visible czy widoczny
-        void visibilityChanged(bool visible);
-        //! zmieniono widocznoœæ roota (dzia³a na ca³oœæ)
-        //! \param visible czy widoczny
-        void rootVisibilityChanged(bool visible);
-        //! zmieniono szerokoœæ trajektorii
-        //! \param width nowa szerokoœæ
-        void widthChanged(double width);
-        //! zmieniony zosta³ poczaktowy czas, dla którego trajektoria jest widoczna
-        //! \param time ustawiwany czas
-        void startTimeChanged(double time);
-        //! zmieniony zosta³ koñcowy czas, dla którego trajektoria jest widoczna
-        //! \param time ustawiwany czas
-        void endTimeChanged(double time);
-        //! zmieni³ siê aktywny element drzewa
-        //! \param current aktualnie aktywny element
-        //! \param previous poprzednio aktywny element
-        void treeItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous );
-        //! zmieni³ siê slider reprezentuj¹cy pocz¹tkowy czas, dla którego trajektoria jest widoczna
-        //! \param value nowa wartoœæ pocz¹tkowa slidra
-        void startSliderChanged(int value);
-        //! zmieni³ siê slider reprezentuj¹cy koñcowy czas, dla którego trajektoria jest widoczna
-        //! \param value nowa wartoœæ koñcowa slidera
-        void endSliderChanged(int value);
+private slots:
+    //! zmieniono kolor
+    void colorClicked();
+    //! zmieniono widocznoœæ pojedynczego wêz³a
+    //! \param visible czy widoczny
+    void visibilityChanged(bool visible);
+    //! zmieniono widocznoœæ roota (dzia³a na ca³oœæ)
+    //! \param visible czy widoczny
+    void rootVisibilityChanged(bool visible);
+    //! zmieniono szerokoœæ trajektorii
+    //! \param width nowa szerokoœæ
+    void widthChanged(double width);
+    //! zmieniony zosta³ poczaktowy czas, dla którego trajektoria jest widoczna
+    //! \param time ustawiwany czas
+    void startTimeChanged(double time);
+    //! zmieniony zosta³ koñcowy czas, dla którego trajektoria jest widoczna
+    //! \param time ustawiwany czas
+    void endTimeChanged(double time);
+    //! zmieni³ siê aktywny element drzewa
+    //! \param current aktualnie aktywny element
+    //! \param previous poprzednio aktywny element
+    void treeItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous );
+    //! zmieni³ siê slider reprezentuj¹cy pocz¹tkowy czas, dla którego trajektoria jest widoczna
+    //! \param value nowa wartoœæ pocz¹tkowa slidra
+    void startSliderChanged(int value);
+    //! zmieni³ siê slider reprezentuj¹cy koñcowy czas, dla którego trajektoria jest widoczna
+    //! \param value nowa wartoœæ koñcowa slidera
+    void endSliderChanged(int value);
 
 private:
     //! Zmiana formatu koloru 

@@ -51,7 +51,11 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const core::TypeIn
         ret = ms;
 	} else if (requestedType == typeid (kinematic::JointAnglesCollection)) {
 		auto ss = new SkeletonSerie(this, requestedType, data);		
-        //trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), getSkeletonNames(data->get()));
+        QStringList names;
+        for (int i = 1; i <= ss->getTrajectoriesManager()->count(); ++i) {
+            names.push_back(QString("Joint %1").arg(i));
+        }
+        trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), names); //getSkeletonNames(data->get()));
         ret = ss;
 	} else if (requestedType == typeid (SkeletonDataStream)) {
 		ret = new SkeletonStreamSerie(this, requestedType, data);
@@ -133,7 +137,7 @@ QWidget* KinematicVisualizer::createWidget()
 
     actionGhost = new CoreAction(tr("Properties"), QIcon(QString::fromUtf8(":/kinematic/icons/skeletal_tracea.png")), tr("Ghost"), widget, CoreTitleBar::Left);
     actionGhost->setCheckable(true);
-    actionGhost->setVisible(false);
+    actionGhost->setVisible(true);
 	connect(actionGhost, SIGNAL(triggered(bool)), this, SLOT(showGhost(bool)));
 	widget->addAction(actionGhost);
 	
@@ -899,9 +903,21 @@ QStringList KinematicVisualizer::getMarkersNames( const MarkerCollectionConstPtr
 
 QStringList KinematicVisualizer::getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ss ) const
 {
+    QStringList names;
     UTILS_ASSERT(false);
-    return QStringList();
+    int count = ss->getNumChannels();
+    for (int i = 0; i < count; ++i) {
+        names.push_back(QString::fromStdString(ss->getChannel(i)->getName()));
+    }
+    return names;
+}
 
+void KinematicVisualizer::showGhost(bool val)
+{
+    IGhostSerie* serie = dynamic_cast<IGhostSerie*>(tryGetCurrentSerie());
+    if (serie) {
+        serie->setGhostVisible(val);
+    }
 }
 
 

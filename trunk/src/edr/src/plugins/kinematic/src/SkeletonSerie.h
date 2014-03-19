@@ -65,7 +65,7 @@ public:
 	virtual const bool ghostVisible() const;
 	virtual void setGhostVisible(const bool visible);
 
-    core::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager() const;
+    core::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
 
 protected:
 	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami

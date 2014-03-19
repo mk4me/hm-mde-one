@@ -103,15 +103,15 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 		pointsPositions[i] = allPointsPositions[i * 30];
 	}
 
-	//ghostDrawer->init(pointsPositions, connectionsConfigurations);
-	//ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
-	//ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
-	//ghostDrawer->pointsDrawer()->setSize(0.02);
-	//ghostDrawer->connectionsDrawer()->setSize(0.005);
+	ghostDrawer->init(pointsPositions, connectionsConfigurations);
+	ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
+	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
+	ghostDrawer->pointsDrawer()->setSize(0.02);
+	ghostDrawer->connectionsDrawer()->setSize(0.005);
 
-//	matrixTransform->addChild(ghostDrawer->getNode());
+    matrixTransform->addChild(ghostDrawer->getNode());
 
-//	setGhostVisible(false);
+	setGhostVisible(false);
 
 
 	// teraz punkty dla ducha przerabiam na punkty dla trajektorii
@@ -213,11 +213,11 @@ void MarkerSerie::update()
 			const auto dist = (positions[pointAIDX] - positions[pointBIDX]).length();			
 			const auto diff = std::abs(dist - connectionsConfigurations[i].length) / 2.0;			
 			
-			if( diff > std::min(pointsDrawer->size(pointAIDX), pointsDrawer->size(pointBIDX)) ){
-				connectionsDrawer->setVisible(i, false);
-			}else{
+			//if( diff > std::min(pointsDrawer->size(pointAIDX), pointsDrawer->size(pointBIDX)) ){
+			//	connectionsDrawer->setVisible(i, false);
+			//}else{
 				toShow.insert(i);
-			}
+			//}
 		}
 
 		connectionsDrawer->update(positions);

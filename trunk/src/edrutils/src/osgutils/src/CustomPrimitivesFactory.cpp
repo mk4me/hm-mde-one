@@ -281,6 +281,7 @@ osg::ref_ptr<osg::Vec3Array> CustomPrimitivesHelper::recreateVerticesForHeightRa
 void CustomPrimitivesHelper::setColor(CustonGeometryDescriptionBase & primitiveDescription, osg::Vec4Array * color)
 {
 	primitiveDescription.geom->setColorArray(color);
+    primitiveDescription.geom->dirtyDisplayList();
 }
 
 void CustomPrimitivesHelper::updatePrimitiveShape(CustonGeometryDescriptionBase & primitiveDescription,

@@ -169,7 +169,9 @@ private:
 
 	//! ustawienie aktywnej serii
 	//! \param idx indeks serii, która ma stac się aktywna. Musi być z zakresu <0, liczbaSerii)
-	void setActiveSerie(int idx);
+    void setActiveSerie(int idx);
+    QStringList getMarkersNames( const MarkerCollectionConstPtr& ms ) const;
+    QStringList getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ms ) const;
 
 private slots:
     //! Dialog z ustawieniami trajektorii stanie się widoczny
@@ -219,8 +221,9 @@ private slots:
 	void setBottom();
     //! zmienił się stan manipulatora
     void draggerTriggered();
-    QStringList getMarkersNames( const MarkerCollectionConstPtr& ms ) const;
-    QStringList getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ms ) const;
+
+    void showGhost(bool);
+
 private:
     //! główny węzeł sceny 3d
     osg::ref_ptr<osg::Group> rootNode;

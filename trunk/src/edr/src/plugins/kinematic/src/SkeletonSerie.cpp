@@ -44,8 +44,8 @@ SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer,
 	pointsDrawer->setSize(0.02);
 	connectionsDrawer->setSize(0.005);
 
-	pointsDrawer->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
-	connectionsDrawer->setColor(osg::Vec4(0.0, 1.0, 0.0, 0.5));
+	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
+	connectionsDrawer->setColor(osg::Vec4(0.7, 0.7, 0.7, 0.5));
 
 	localRootNode->addChild(pointsDrawer->getNode());
 	localRootNode->addChild(connectionsDrawer->getNode());
@@ -174,10 +174,11 @@ void SkeletonSerie::createGhostAndTrajectories()
 
 	ghostDrawer->init(pointsPositions,
 		jointsMapping->generateMappedConnectionsDescription());
-	ghostDrawer->pointsDrawer()->setColor(osg::Vec4(0.0f, 1.0f, 0.0f, 0.5f));
-	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 0.0f, 0.0f, 0.5f));
+	ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
+	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
 	ghostDrawer->pointsDrawer()->setSize(0.02);
 	ghostDrawer->connectionsDrawer()->setSize(0.005);
+    ghostDrawer->getNode()->setNodeMask(false);
 
 	localRootNode->addChild(ghostDrawer->getNode());
 
@@ -207,8 +208,11 @@ void SkeletonSerie::setGhostVisible(const bool visible)
 	ghostDrawer->getNode()->setNodeMask( visible == true ? 1 : 0);
 }
 
-core::shared_ptr<TrajectoryDrawerManager> SkeletonSerie::getTrajectoriesManager() const
+core::shared_ptr<TrajectoryDrawerManager> SkeletonSerie::getTrajectoriesManager() 
 {
+    if (!trajectoriesManager) {
+        createGhostAndTrajectories();
+    }
     return trajectoriesManager;
 }
 

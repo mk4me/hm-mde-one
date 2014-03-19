@@ -40,19 +40,10 @@ const std::vector<utils::shared_ptr<PointInstance>> PointInstance::createPointsS
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 	stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
 	stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-
-	utils::shared_ptr<PointInstance> pi(new PointInstance);
-	pi->sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, 1.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
-	pi->geode = new osg::Geode;
-	pi->geode->setStateSet(stateset);
-	pi->posAtt = new osg::PositionAttitudeTransform;
-	pi->geode->addDrawable(pi->sphere.geom);
-	pi->posAtt->addChild(pi->geode);
-	ret[0] = pi;
-
-	for(unsigned int i = 1; i < pointsNum; ++i){
+    
+	for(unsigned int i = 0; i < pointsNum; ++i){
 		utils::shared_ptr<PointInstance> lpi(new PointInstance);
-		lpi->sphere = pi->sphere;
+        lpi->sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, 1.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
 		lpi->geode = new osg::Geode;
 		lpi->geode->setStateSet(stateset);
 		lpi->posAtt = new osg::PositionAttitudeTransform;
