@@ -154,8 +154,16 @@ public:
 	//! \param entityKind Typ encji
 	//! \return Opis XML dla typów ruchów
 	virtual const std::string listEnumValues(const std::string & attributeName,
-		const std::string & entityKind) const = 0;	
+		const std::string & entityKind) const = 0;
 
+	//! Metoda zwraca listę adnotacji użytkownika dla danych USG - użytkownik brany z połączenia
+	virtual const std::string listMyAnnotations() const = 0;
+
+	//! Metoda zwraca listę adnotacji oczekujących na weryfikację dla danych USG - użytkownik brany z połączenia
+	virtual const std::string listAwaitingAnnotations() const = 0;
+
+	//! Metoda zwraca listę adnotacji zatwierdzonych dla danych USG - użytkownik brany z połączenia
+	virtual const std::string listReviewedAnnotations() const = 0;
 };
 
 typedef boost::shared_ptr<IMotionBasicQueriesWS> MotionBasicQueriesWSPtr;

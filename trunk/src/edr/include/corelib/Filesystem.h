@@ -69,7 +69,7 @@ public:
 	@return lista wszystkich plików wraz ze ścieżką
 	*/
     static std::vector<std::string> listFiles(const std::string& path, bool recursive = false);
-    static std::vector<std::string> listFiles(const Path& path, bool recursive = false);
+    static std::vector<Path> listFiles(const Path& path, bool recursive = false);
 	/*
 	Listuje wszystkie pliki danego folderu spełniające kryterium maski.
 	@param path ścieżka do folderu który ma być przeszukany
@@ -78,7 +78,7 @@ public:
 	@return lista wszystkich plików wraz ze ścieżką
 	*/
 	static std::vector<std::string> listFiles(const std::string& path, bool recursive, const std::string& mask);
-    static std::vector<std::string> listFiles(const Path& path, bool recursive, const std::string& mask);
+    static std::vector<Path> listFiles(const Path& path, bool recursive, const std::string& mask);
 	/*
 	Listuje wszystkie pliki danego folderu spełniające kryterium masek.
 	@param path ścieżka do folderu który ma być przeszukany
@@ -87,14 +87,14 @@ public:
 	@return lista wszystkich plików wraz ze ścieżką
 	*/
 	static std::vector<std::string> listFiles(const std::string& path, bool recursive, const std::vector<std::string>& masks);
-    static std::vector<std::string> listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks);
+    static std::vector<Path> listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks);
 	/*
 	Listuje wszystkie podfoldery danego folderu.
 	@param path ścieżka do folderu który ma być przeszukany
 	@return lista wszystkich podfolderów wraz ze ścieżką
 	*/
 	static std::vector<std::string> listSubdirectories(const std::string& path);
-    static std::vector<std::string> listSubdirectories(const Path& path);
+    static std::vector<Path> listSubdirectories(const Path& path);
     /*
 	Sprawdza czy podana scieżka wskazuje zwykły plik
 	@param path ścieżka do sprawdzenia

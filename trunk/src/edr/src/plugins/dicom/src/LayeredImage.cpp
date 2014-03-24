@@ -8,23 +8,22 @@
 #include <QtGui/QGraphicsItemGroup>
 
 
-dicom::LayeredImage::LayeredImage( const QPixmap& pixmap ) : isPowerDoppler_(false)
+dicom::LayeredImage::LayeredImage( const QPixmap& pixmap ) : isPowerDoppler_(false), trialID(-1)
 {
     //layers.push_back(utils::make_shared<BackgroundLayer>(pixmap));
     backgroundLayer = utils::make_shared<BackgroundLayer>(pixmap);
 }
 
-dicom::LayeredImage::LayeredImage( const std::string& pixmap ) : isPowerDoppler_(false)
+dicom::LayeredImage::LayeredImage( const std::string& pixmap ) : isPowerDoppler_(false), trialID(-1)
 {
     //layers.push_back(utils::make_shared<BackgroundLayer>(QString::fromStdString(pixmap)));
     backgroundLayer = utils::make_shared<BackgroundLayer>(QString::fromStdString(pixmap));
 }
 
-dicom::LayeredImage::LayeredImage() : isPowerDoppler_(false)
+dicom::LayeredImage::LayeredImage() : isPowerDoppler_(false), trialID(-1)
 {
 
 }
-
 
 dicom::LayeredImage::~LayeredImage()
 {
@@ -41,6 +40,15 @@ void dicom::LayeredImage::setIsPowerDoppler(const bool val)
 	isPowerDoppler_ = val;
 }
 
+const int dicom::LayeredImage::getTrialID() const
+{
+	return trialID;
+}
+
+void dicom::LayeredImage::setTrialID(const int trialID)
+{
+	this->trialID = trialID;
+}
 
 void dicom::LayeredImage::addLayer( ILayerItemPtr layer, const std::string& layerName )
 {

@@ -187,26 +187,27 @@ void CommunicationDataSource::setConnectionsSerwerCertificatePath(const core::Fi
     connectionsManager->medicalFileStoremanWSConnection()->setCAPath(caPath);
 }
 
-void CommunicationDataSource::setConnectionsCredentials(const User & user)
+void CommunicationDataSource::setConnectionsCredentials(const std::string & login,
+	const std::string & password)
 {
     auto connectionsManager = DataSourceConnectionManager::instance();
 
 	//TODO weryfikować do jakich usług klient ma dostęp i tylko te mu konfigurować
-	//connectionsManager->accountFactoryWSConnection()->setCredentials(user.name(), user.password());
-    connectionsManager->administrationWSConnection()->setCredentials(user.name(), user.password());
-    connectionsManager->authorizationWSConnection()->setCredentials(user.name(), user.password());
-    connectionsManager->userPersonalSpaceWSConnection()->setCredentials(user.name(), user.password());
+	//connectionsManager->accountFactoryWSConnection()->setCredentials(login, password);
+    connectionsManager->administrationWSConnection()->setCredentials(login, password);
+    connectionsManager->authorizationWSConnection()->setCredentials(login, password);
+    connectionsManager->userPersonalSpaceWSConnection()->setCredentials(login, password);
 
-    connectionsManager->motionBasicQueriesWSConnection()->setCredentials(user.name(), user.password());
-    connectionsManager->motionBasicUpdatesWSConnection()->setCredentials(user.name(), user.password());
-    connectionsManager->motionFileStoremanWSConnection()->setCredentials(user.name(), user.password());
+    connectionsManager->motionBasicQueriesWSConnection()->setCredentials(login, password);
+    connectionsManager->motionBasicUpdatesWSConnection()->setCredentials(login, password);
+    connectionsManager->motionFileStoremanWSConnection()->setCredentials(login, password);
 
-    connectionsManager->medicalBasicQueriesWSConnection()->setCredentials(user.name(), user.password());
-    connectionsManager->medicalBasicUpdatesWSConnection()->setCredentials(user.name(), user.password());
-    connectionsManager->medicalFileStoremanWSConnection()->setCredentials(user.name(), user.password());
+    connectionsManager->medicalBasicQueriesWSConnection()->setCredentials(login, password);
+    connectionsManager->medicalBasicUpdatesWSConnection()->setCredentials(login, password);
+    connectionsManager->medicalFileStoremanWSConnection()->setCredentials(login, password);
 
-    //connectionsManager->motionFtps()->setCredentials(user.name(), user.password());
-    //connectionsManager->medicalFtps()->setCredentials(user.name(), user.password());
+    //connectionsManager->motionFtps()->setCredentials(login, password);
+    //connectionsManager->medicalFtps()->setCredentials(login, password);
 }
 
 
@@ -235,8 +236,6 @@ QWidget* CommunicationDataSource::getWidget()
 void CommunicationDataSource::setCurrentUser(const User & user)
 {
     currentUser_ = user;
-    //aktualizuje połaczenia z webserwices
-    setConnectionsCredentials(currentUser_);
     //inicjuje pathManagera - tworzę strukturę danych użytkownika i generuje ścieżki dla danych
     pathsManager->setUser(currentUser_);
 }
@@ -251,9 +250,16 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
 
 	if(offlineMode_ == false){
 
+		auto connection = DataSourceConnectionManager::instance()->authorizationWSConnection();
+
+		auto lUser = connection->user();
+		auto lPassword = connection->password();
+
 		try{
+			//aktualizuje połaczenia z webserwices
+			connection->setCredentials(user, password);
 			loginManager->login(user, password);
-		}catch(std::exception & e){
+		}catch(std::exception & e){			
 			connError = true;
 			PLUGIN_LOG_ERROR("Error during login: " << e.what());
 		}catch(...){
@@ -261,10 +267,15 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
 			PLUGIN_LOG_ERROR("Unknown error during login");
 		}
 
+		//jak nie udalo sie zalogowac albo bledy to przywracam poprzednie ustawienia
+		if(connError == true || loginManager->isLogged() == false){
+			connection->setCredentials(lUser, lPassword);
+		}
 	}
 
     if(loginManager->isLogged() == true){
         setCurrentUser(loginManager->user());
+		setConnectionsCredentials(user, password);
     }else if(offlineMode_ == true || connError == true){
         //próbujemy lokalnie zalogować
         //sprawdzam czy użytkownik ma kompletną płytką kopię bazy danych - jeśli tak to go loguję offline

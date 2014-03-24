@@ -26,15 +26,17 @@ namespace core
 	class LanguagesLoader
 	{
 	public:
-		//! \param path Œcie¿ka w ktorej nalezy szukaæ t³umaczeñ
+		//! \param paths [out] Œcie¿ki do t³umaczeñ które nale¿y zweryfikowaæ,
+		//! podczas ladowania usuwane sa sciezki zaladowane
 		//! \param languageManager Manager t³umaczeñ zasilany znalezionymi t³umaczeniami
-		static void loadCoreTranslations(const std::string & path,
+		static void loadCoreTranslations(std::vector<Filesystem::Path> & paths,
 			LanguagesManager * languagesManager);
 
-		//! \param path Œcie¿ka w ktorej nalezy szukaæ t³umaczeñ
+		//! \param paths [out] Œcie¿ki do t³umaczeñ które nale¿y zweryfikowaæ,
+		//! podczas ladowania usuwane sa sciezki zaladowane
 		//! \param pluginName Nazwa pluginu która musi wyst¹piæ w nazwie t³umaczenia
 		//! \param languageManager Manager t³umaczeñ zasilany znalezionymi t³umaczeniami
-		static void loadPluginTranslations(const std::string & path,
+		static void loadPluginTranslations(std::vector<Filesystem::Path> & paths,
 			const std::string & pluginName,	LanguagesManager * languagesManager);
 
 		//! \param pluginName Nazwa pluginu która musi wyst¹piæ w nazwie t³umaczenia

@@ -95,22 +95,30 @@ void Filesystem::copy(const Path& pathOld, const Path& pathNew)
 
 std::vector<std::string> Filesystem::listFiles(const std::string& path, bool recursive)
 {
-    return listFiles(Path(path), recursive);
+    auto files = listFiles(Path(path), recursive);
+
+	std::vector<std::string> ret;
+
+	for(auto it = files.begin(); it != files.end(); ++it){
+		ret.push_back((*it).string());
+	}
+
+	return ret;
 }
 
-std::vector<std::string> Filesystem::listFiles(const Path& path, bool recursive)
+std::vector<Filesystem::Path> Filesystem::listFiles(const Path& path, bool recursive)
 {
-    std::vector<std::string> files;
+    std::vector<Path> files;
 
     if(pathExists(path) == true)
     {
         if(recursive)
         {
-            std::vector<std::string> dirs = listSubdirectories(path);
-            BOOST_FOREACH(std::string& dir, dirs)
+            std::vector<Path> dirs = listSubdirectories(path);
+            BOOST_FOREACH(Path& dir, dirs)
             {
-                std::vector<std::string> subfiles = listFiles(dir, recursive);
-                BOOST_FOREACH(std::string& file, subfiles)
+                std::vector<Path> subfiles = listFiles(dir, recursive);
+                BOOST_FOREACH(Path& file, subfiles)
                 {
                     files.push_back(file);
                 }
@@ -121,7 +129,7 @@ std::vector<std::string> Filesystem::listFiles(const Path& path, bool recursive)
         {
             if(isDirectory(iter->path()) == false)
             {
-                files.push_back(iter->path().string());
+                files.push_back(iter->path());
             }
         }
     }
@@ -130,22 +138,30 @@ std::vector<std::string> Filesystem::listFiles(const Path& path, bool recursive)
 
 std::vector<std::string> Filesystem::listFiles(const std::string& path, bool recursive, const std::string& mask)
 {
-    return listFiles(Path(path), recursive, mask);
+    auto files = listFiles(Path(path), recursive, mask);
+
+	std::vector<std::string> ret;
+
+	for(auto it = files.begin(); it != files.end(); ++it){
+		ret.push_back((*it).string());
+	}
+
+	return ret;
 }
 
-std::vector<std::string> Filesystem::listFiles(const Path& path, bool recursive, const std::string& mask)
+std::vector<Filesystem::Path> Filesystem::listFiles(const Path& path, bool recursive, const std::string& mask)
 {
-	std::vector<std::string> files;
+	std::vector<Path> files;
 
 	if(pathExists(path) == true)
 	{
 		if(recursive)
 		{
-			std::vector<std::string> dirs = listSubdirectories(path);
-			BOOST_FOREACH(std::string& dir, dirs)
+			std::vector<Path> dirs = listSubdirectories(path);
+			BOOST_FOREACH(Path& dir, dirs)
 			{
-				std::vector<std::string> subfiles = listFiles(dir, recursive, mask);
-				BOOST_FOREACH(std::string& file, subfiles)
+				std::vector<Path> subfiles = listFiles(dir, recursive, mask);
+				BOOST_FOREACH(Path& file, subfiles)
 				{
 					files.push_back(file);
 				}
@@ -156,7 +172,7 @@ std::vector<std::string> Filesystem::listFiles(const Path& path, bool recursive,
 		{
 			if(isDirectory(iter->path()) == false && fileExtension(iter->path()).compare(mask) == 0)
 			{
-				files.push_back(iter->path().string());
+				files.push_back(iter->path());
 			}
 		}
 	}
@@ -165,22 +181,30 @@ std::vector<std::string> Filesystem::listFiles(const Path& path, bool recursive,
 
 std::vector<std::string> Filesystem::listFiles(const std::string& path, bool recursive, const std::vector<std::string>& masks)
 {
-    return listFiles(Path(path), recursive, masks);
+    auto files = listFiles(Path(path), recursive, masks);
+
+	std::vector<std::string> ret;
+
+	for(auto it = files.begin(); it != files.end(); ++it){
+		ret.push_back((*it).string());
+	}
+
+	return ret;
 }
 
-std::vector<std::string> Filesystem::listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks)
+std::vector<Filesystem::Path> Filesystem::listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks)
 {
-	std::vector<std::string> files;
+	std::vector<Path> files;
 
 	if(pathExists(path) == true)
 	{
 		if(recursive)
 		{
-			std::vector<std::string> dirs = listSubdirectories(path);
-			BOOST_FOREACH(std::string& dir, dirs)
+			std::vector<Path> dirs = listSubdirectories(path);
+			BOOST_FOREACH(Path& dir, dirs)
 			{
-				std::vector<std::string> subfiles = listFiles(dir, recursive, masks);
-				BOOST_FOREACH(std::string& file, subfiles)
+				std::vector<Path> subfiles = listFiles(dir, recursive, masks);
+				BOOST_FOREACH(Path& file, subfiles)
 				{
 					files.push_back(file);
 				}
@@ -193,7 +217,7 @@ std::vector<std::string> Filesystem::listFiles(const Path& path, bool recursive,
 			{
 				if(isDirectory(iter->path()) == false && fileExtension(iter->path()).compare(mask) == 0)
 				{
-					files.push_back(iter->path().string());
+					files.push_back(iter->path());
 				}
 			}
 		}
@@ -203,12 +227,20 @@ std::vector<std::string> Filesystem::listFiles(const Path& path, bool recursive,
 
 std::vector<std::string> Filesystem::listSubdirectories(const std::string& path)
 {
-    return listSubdirectories(Path(path));
+    auto subdirs = listSubdirectories(Path(path));
+
+	std::vector<std::string> ret;
+
+	for(auto it = subdirs.begin(); it != subdirs.end(); ++it){
+		ret.push_back((*it).string());
+	}
+
+	return ret;
 }
 
-std::vector<std::string> Filesystem::listSubdirectories(const Path& path)
+std::vector<Filesystem::Path> Filesystem::listSubdirectories(const Path& path)
 {
-	std::vector<std::string> subdirs;
+	std::vector<Path> subdirs;
 
 	if(pathExists(path) == true)
 	{
@@ -217,7 +249,7 @@ std::vector<std::string> Filesystem::listSubdirectories(const Path& path)
 		{
 			if(isDirectory(iter->path()) == true)
 			{
-				subdirs.push_back(iter->path().string());
+				subdirs.push_back(iter->path());
 			}
 		}
 	}

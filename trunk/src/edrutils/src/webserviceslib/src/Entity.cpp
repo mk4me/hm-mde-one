@@ -65,11 +65,11 @@ const std::string Entity::convert(const Type & entity)
 	return ret;
 }
 
-const Gender::Type Gender::convert(const std::string & entity)
+const Gender::Type Gender::convert(const std::string & gender)
 {
 	Gender::Type ret = Gender::Unspecified;
 
-	std::string e = boost::algorithm::to_lower_copy(entity);
+	std::string e = boost::algorithm::to_lower_copy(gender);
 
 	if(e == "man" || e == "male" || e == "m"){
 		ret = Gender::Male;
@@ -80,11 +80,11 @@ const Gender::Type Gender::convert(const std::string & entity)
 	return ret;
 }
 
-const std::string Gender::convert(const Type & entity)
+const std::string Gender::convert(const Type & gender)
 {
 	std::string ret("unspecified");
 
-	switch(entity){
+	switch(gender){
 
 	case Gender::Male:
 		ret = "m";
@@ -98,11 +98,11 @@ const std::string Gender::convert(const Type & entity)
 	return ret;
 }
 
-const AttributeType::Type AttributeType::convert(const std::string & entity)
+const AttributeType::Type AttributeType::convert(const std::string & attributeType)
 {
 	AttributeType::Type ret = AttributeType::Unspecified;
 
-	std::string e = boost::algorithm::to_lower_copy(entity);
+	std::string e = boost::algorithm::to_lower_copy(attributeType);
 
 	if(e == "int"){
 		ret = AttributeType::Int;
@@ -125,11 +125,11 @@ const AttributeType::Type AttributeType::convert(const std::string & entity)
 	return ret;
 }
 
-const std::string AttributeType::convert(const Type & entity)
+const std::string AttributeType::convert(const Type & attributeType)
 {
 	std::string ret("unspecified");
 
-	switch(entity){
+	switch(attributeType){
 
 	case AttributeType::Int:
 		ret = "int";
@@ -167,11 +167,11 @@ const std::string AttributeType::convert(const Type & entity)
 	return ret;
 }
 
-const BooleanType::Type BooleanType::convert(const std::string & entity)
+const BooleanType::Type BooleanType::convert(const std::string & booleanType)
 {
 	BooleanType::Type ret = BooleanType::Unspecified;
 
-	std::string e = boost::algorithm::to_lower_copy(entity);
+	std::string e = boost::algorithm::to_lower_copy(booleanType);
 
 	if(e == "true"){
 		ret = BooleanType::True;
@@ -182,11 +182,11 @@ const BooleanType::Type BooleanType::convert(const std::string & entity)
 	return ret;
 }
 
-const std::string BooleanType::convert(const Type & entity)
+const std::string BooleanType::convert(const Type & booleanType)
 {
 	std::string ret("unspecified");
 
-	switch(entity){
+	switch(booleanType){
 
 	case BooleanType::True:
 		ret = "true";
@@ -194,6 +194,52 @@ const std::string BooleanType::convert(const Type & entity)
 
 	case BooleanType::False:
 		ret = "false";
+		break;
+	}
+
+	return ret;
+}
+
+const AnnotationStatus::Type AnnotationStatus::convert(const std::string & statusType)
+{
+	Type ret = Unspecified;
+
+	try{
+		int e = boost::lexical_cast<int>(statusType);
+		if(e > -1 && e < 5){
+			ret = static_cast<Type>(e);
+		}
+	}catch(...){
+
+	}
+
+	return ret;
+}
+
+const std::string AnnotationStatus::convert(const Type & statusType)
+{
+	std::string ret("unspecified");
+
+	switch(statusType){
+
+	case UnderConstruction:
+		ret = "1";
+		break;
+
+	case ReadyForReview:
+		ret = "2";
+		break;
+
+	case UnderReview:
+		ret = "3";
+		break;
+
+	case Approved:
+		ret = "4";
+		break;
+
+	case Rejected:
+		ret = "0";
 		break;
 	}
 
@@ -211,8 +257,28 @@ public:
 		TiXmlElement * element = rE.FirstChildElement(tag.c_str()).Element();
 
 		if(element != nullptr){
-			value = boost::lexical_cast<T>(element->GetText());
-			return true;
+			try{
+				value = boost::lexical_cast<T>(element->GetText());
+				return true;
+			}catch(...){
+				return false;
+			}
+		}
+
+		return false;
+	}
+
+	template<class T>
+	static const bool extractAttributeValue(TiXmlElement * root, const std::string & attribute, T & value)
+	{
+		std::string val;
+		if(root->QueryStringAttribute(attribute.c_str(), &val) == TIXML_SUCCESS){
+			try{
+				value = boost::lexical_cast<T>(val);
+				return true;
+			}catch(...){
+				return false;
+			}
 		}
 
 		return false;
@@ -228,6 +294,16 @@ public:
 		if(element != nullptr){
 			value = element->GetText();
 			return true;
+		}
+
+		return false;
+	}
+
+	template<>
+	static const bool extractAttributeValue<std::string>(TiXmlElement * root, const std::string & attribute, std::string & value)
+	{
+		if(root->QueryStringAttribute(attribute.c_str(), &value) == TIXML_SUCCESS){
+			return true;			
 		}
 
 		return false;
@@ -298,6 +374,38 @@ public:
 		}
 
 		return ret;
+	}
+
+	static void extractAnnotation(TiXmlElement * element, Annotation & annotation)
+	{	
+		XMLHelper::extractTagValue(element, "TrialID", annotation.trialID);		
+		XMLHelper::extractTagValue(element, "UserID", annotation.userID);
+
+		std::string status;
+		XMLHelper::extractTagValue(element, "Status", status);
+		annotation.status = AnnotationStatus::convert(status);
+
+		XMLHelper::extractTagValue(element, "Comment", annotation.comment);
+		XMLHelper::extractTagValue(element, "Note", annotation.note);
+	}
+
+	static void extractUserGroup(TiXmlElement * element, UserGroup & userGroup)
+	{		
+		XMLHelper::extractAttributeValue(element, "UserGroupID", userGroup.id);		
+		XMLHelper::extractAttributeValue(element, "UserGroupName", userGroup.name);		
+	}
+
+	static void extractUserDetails(TiXmlElement * element, UserDetails & userDetails)
+	{		
+		XMLHelper::extractTagValue(element, "Login", userDetails.login);		
+		XMLHelper::extractTagValue(element, "FirstName", userDetails.firstName);
+		XMLHelper::extractTagValue(element, "LastName", userDetails.lastName);
+	}
+
+	static void extractUserData(TiXmlElement * element, User & user)
+	{		
+		extractUserDetails(element, user);
+		XMLHelper::extractTagValue(element, "Email", user.email);
 	}
 
 	static void extractPerformer(TiXmlElement * element, PerformerDetails & performer)
@@ -388,13 +496,14 @@ public:
 	}
 };
 
-const AttributeGroupDefinitionList parseAttributeGroupDefinitions(const std::string & xmlResponse)
+const AnnotationsList webservices::xmlWsdl::parseAnnotations(const std::string & xmlResponse)
 {
-	AttributeGroupDefinitionList ret;
+	AnnotationsList ret;
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -402,7 +511,142 @@ const AttributeGroupDefinitionList parseAttributeGroupDefinitions(const std::str
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
+	if(!_element) {
+		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+	}
+
+	hElement = TiXmlHandle(_element);
+
+	TiXmlElement* annotationElement = hElement.FirstChild("Annotation").Element();
+
+	while(annotationElement != nullptr) {
+		Annotation a;
+
+		XMLHelper::extractAnnotation(annotationElement, a);
+
+		ret.push_back(a);
+
+		annotationElement = annotationElement->NextSiblingElement();
+	}
+
+	return ret;
+}
+
+const UserGroupsList webservices::xmlWsdl::parseUserGroups(const std::string & xmlResponse)
+{
+	UserGroupsList ret;
+
+	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
+
+	if(document.Error()) {
+		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+	}
+
+	TiXmlHandle hDocument(&document);
+	TiXmlElement* _element;
+	TiXmlHandle hElement(0);
+
+	_element = hDocument.FirstChildElement().FirstChildElement().FirstChildElement().Element();
+	if(!_element) {
+		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+	}
+
+	hElement = TiXmlHandle(_element);
+
+	TiXmlElement* userGroupElement = hElement.FirstChild("UserGroup").Element();
+
+	while(userGroupElement != nullptr) {
+		UserGroup ug;
+
+		XMLHelper::extractUserGroup(userGroupElement, ug);
+
+		ret.push_back(ug);
+
+		userGroupElement = userGroupElement->NextSiblingElement();
+	}
+
+	return ret;
+}
+
+const UsersList webservices::xmlWsdl::parseUsersList(const std::string & xmlResponse)
+{
+	UsersList ret;
+
+	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
+
+	if(document.Error()) {
+		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+	}
+
+	TiXmlHandle hDocument(&document);
+	TiXmlElement* _element;
+	TiXmlHandle hElement(0);
+
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
+	if(!_element) {
+		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+	}
+
+	hElement = TiXmlHandle(_element);
+
+	TiXmlElement* userDetailsElement = hElement.FirstChild("UserDetails").Element();
+
+	while(userDetailsElement != nullptr) {
+		UserDetails ud;
+
+		XMLHelper::extractUserDetails(userDetailsElement, ud);
+
+		ret.push_back(ud);
+
+		userDetailsElement = userDetailsElement->NextSiblingElement();
+	}
+
+	return ret;
+}
+
+const User webservices::xmlWsdl::parseUser(const std::string & xmlResponse)
+{
+	User ret;	
+
+	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
+
+	if(document.Error()) {
+		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+	}
+
+	TiXmlHandle hDocument(&document);
+	TiXmlElement* _element;
+
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
+	if(!_element) {
+		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+	}
+
+	XMLHelper::extractUserDetails(_element, ret);
+
+	return ret;
+}
+
+const AttributeGroupDefinitionList webservices::xmlWsdl::parseAttributeGroupDefinitions(const std::string & xmlResponse)
+{
+	AttributeGroupDefinitionList ret;	
+
+	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
+
+	if(document.Error()) {
+		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+	}
+
+	TiXmlHandle hDocument(&document);
+	TiXmlElement* _element;
+	TiXmlHandle hElement(0);
+
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -428,13 +672,14 @@ const AttributeGroupDefinitionList parseAttributeGroupDefinitions(const std::str
 	return ret;
 }
 
-const PerformerList parsePerfomers(const std::string & xmlResponse)
+const PerformerList webservices::xmlWsdl::parsePerfomers(const std::string & xmlResponse)
 {
-	PerformerList ret;
+	PerformerList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -442,7 +687,7 @@ const PerformerList parsePerfomers(const std::string & xmlResponse)
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -466,20 +711,21 @@ const PerformerList parsePerfomers(const std::string & xmlResponse)
 	return ret;
 }
 
-const PerformerDetailsWithAttributes parsePerformer(const std::string & xmlResponse)
+const PerformerDetailsWithAttributes webservices::xmlWsdl::parsePerformer(const std::string & xmlResponse)
 {
-	PerformerDetailsWithAttributes ret;
+	PerformerDetailsWithAttributes ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
 	TiXmlHandle hDocument(&document);
 	TiXmlElement* _element;
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -490,20 +736,21 @@ const PerformerDetailsWithAttributes parsePerformer(const std::string & xmlRespo
 	return ret;
 }
 
-const PerformerWithAttributesList parsePerfomersWithAttributes(const std::string & xmlResponse)
+const PerformerWithAttributesList webservices::xmlWsdl::parsePerfomersWithAttributes(const std::string & xmlResponse)
 {
-	PerformerWithAttributesList ret;
+	PerformerWithAttributesList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
 	TiXmlHandle hDocument(&document);
 	TiXmlElement* _element;	
 
-	_element = hDocument.FirstChildElement().FirstChildElement("PerformerDetailsWithAttributes").Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}	
@@ -523,13 +770,14 @@ const PerformerWithAttributesList parsePerfomersWithAttributes(const std::string
 	return ret;
 }
 
-const SessionList parseSessions(const std::string & xmlResponse)
+const SessionList webservices::xmlWsdl::parseSessions(const std::string & xmlResponse)
 {
-	SessionList ret;
+	SessionList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -537,7 +785,7 @@ const SessionList parseSessions(const std::string & xmlResponse)
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -570,20 +818,21 @@ const SessionList parseSessions(const std::string & xmlResponse)
 	return ret;
 }
 
-const SessionDetailsWithAttributes parseSession(const std::string & xmlResponse)
+const SessionDetailsWithAttributes webservices::xmlWsdl::parseSession(const std::string & xmlResponse)
 {
-	SessionDetailsWithAttributes ret;
+	SessionDetailsWithAttributes ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
 	TiXmlHandle hDocument(&document);
 	TiXmlElement* _element;
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -594,13 +843,14 @@ const SessionDetailsWithAttributes parseSession(const std::string & xmlResponse)
 	return ret;
 }
 
-const SessionWithAttributesList parseSessionsWithAttributes(const std::string & xmlResponse)
+const SessionWithAttributesList webservices::xmlWsdl::parseSessionsWithAttributes(const std::string & xmlResponse)
 {
-	SessionWithAttributesList ret;
+	SessionWithAttributesList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -608,7 +858,7 @@ const SessionWithAttributesList parseSessionsWithAttributes(const std::string & 
 	TiXmlElement* _element;	
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -631,13 +881,14 @@ const SessionWithAttributesList parseSessionsWithAttributes(const std::string & 
 	return ret;
 }
 
-const SessionGroupDefinitionList parseSessionGroups(const std::string & xmlResponse)
+const SessionGroupDefinitionList webservices::xmlWsdl::parseSessionGroups(const std::string & xmlResponse)
 {
 	SessionGroupDefinitionList ret;
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -645,7 +896,7 @@ const SessionGroupDefinitionList parseSessionGroups(const std::string & xmlRespo
 	TiXmlElement* _element;	
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -668,13 +919,14 @@ const SessionGroupDefinitionList parseSessionGroups(const std::string & xmlRespo
 	return ret;
 }
 
-const MotionKindDefinitionList parseMotionKinds(const std::string & xmlResponse)
+const MotionKindDefinitionList webservices::xmlWsdl::parseMotionKinds(const std::string & xmlResponse)
 {
-	MotionKindDefinitionList ret;
+	MotionKindDefinitionList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -682,7 +934,7 @@ const MotionKindDefinitionList parseMotionKinds(const std::string & xmlResponse)
 	TiXmlElement* _element;	
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -705,13 +957,14 @@ const MotionKindDefinitionList parseMotionKinds(const std::string & xmlResponse)
 	return ret;
 }
 
-const TrialList parseTrials(const std::string & xmlResponse)
+const TrialList webservices::xmlWsdl::parseTrials(const std::string & xmlResponse)
 {
-	TrialList ret;
+	TrialList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -719,7 +972,7 @@ const TrialList parseTrials(const std::string & xmlResponse)
 	TiXmlElement* _element;	
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -743,20 +996,21 @@ const TrialList parseTrials(const std::string & xmlResponse)
 	return ret;
 }
 
-const TrialDetailsWithAttributes parseTrial(const std::string & xmlResponse)
+const TrialDetailsWithAttributes webservices::xmlWsdl::parseTrial(const std::string & xmlResponse)
 {
-	TrialDetailsWithAttributes ret;
+	TrialDetailsWithAttributes ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
 	TiXmlHandle hDocument(&document);
 	TiXmlElement* _element;
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -767,13 +1021,14 @@ const TrialDetailsWithAttributes parseTrial(const std::string & xmlResponse)
 	return ret;
 }
 
-const TrialsWithAttributesList parseTrialsWithAttributes(const std::string & xmlResponse)
+const TrialsWithAttributesList webservices::xmlWsdl::parseTrialsWithAttributes(const std::string & xmlResponse)
 {
 	TrialsWithAttributesList ret;
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -781,7 +1036,7 @@ const TrialsWithAttributesList parseTrialsWithAttributes(const std::string & xml
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -804,20 +1059,21 @@ const TrialsWithAttributesList parseTrialsWithAttributes(const std::string & xml
 	return ret;
 }
 
-const MeasurementConfDetailsWithAttributes parseMeasurementConf(const std::string & xmlResponse)
+const MeasurementConfDetailsWithAttributes webservices::xmlWsdl::parseMeasurementConf(const std::string & xmlResponse)
 {
-	MeasurementConfDetailsWithAttributes ret;
+	MeasurementConfDetailsWithAttributes ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
 	TiXmlHandle hDocument(&document);
 	TiXmlElement* _element;
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -828,13 +1084,14 @@ const MeasurementConfDetailsWithAttributes parseMeasurementConf(const std::strin
 	return ret;
 }
 
-const MeasurementConfWithAttributesList parseMeasurementsConfWithAttributes(const std::string & xmlResponse)
+const MeasurementConfWithAttributesList webservices::xmlWsdl::parseMeasurementsConfWithAttributes(const std::string & xmlResponse)
 {
-	MeasurementConfWithAttributesList ret;
+	MeasurementConfWithAttributesList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -842,7 +1099,7 @@ const MeasurementConfWithAttributesList parseMeasurementsConfWithAttributes(cons
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -865,20 +1122,21 @@ const MeasurementConfWithAttributesList parseMeasurementsConfWithAttributes(cons
 	return ret;
 }
 
-const PerformerConfDetailsWithAttributes parsePerfomerConf(const std::string & xmlResponse)
+const PerformerConfDetailsWithAttributes webservices::xmlWsdl::parsePerfomerConf(const std::string & xmlResponse)
 {
-	PerformerConfDetailsWithAttributes ret;
+	PerformerConfDetailsWithAttributes ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
 	TiXmlHandle hDocument(&document);
 	TiXmlElement* _element;
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -889,13 +1147,14 @@ const PerformerConfDetailsWithAttributes parsePerfomerConf(const std::string & x
 	return ret;
 }
 
-const PerformerConfWithAttributesList parsePerformersConfWithAttributes(const std::string & xmlResponse)
+const PerformerConfWithAttributesList webservices::xmlWsdl::parsePerformersConfWithAttributes(const std::string & xmlResponse)
 {
-	PerformerConfWithAttributesList ret;
+	PerformerConfWithAttributesList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -903,7 +1162,7 @@ const PerformerConfWithAttributesList parsePerformersConfWithAttributes(const st
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -926,13 +1185,14 @@ const PerformerConfWithAttributesList parsePerformersConfWithAttributes(const st
 	return ret;
 }
 
-const FileList parseFiles(const std::string & xmlResponse)
+const FileList webservices::xmlWsdl::parseFiles(const std::string & xmlResponse)
 {
-	FileList ret;
+	FileList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -940,7 +1200,7 @@ const FileList parseFiles(const std::string & xmlResponse)
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -962,13 +1222,14 @@ const FileList parseFiles(const std::string & xmlResponse)
 	return ret;
 }
 
-const FileWithAttributeList parseFilesWithAttributes(const std::string & xmlResponse)
+const FileWithAttributeList webservices::xmlWsdl::parseFilesWithAttributes(const std::string & xmlResponse)
 {
-	FileWithAttributeList ret;
+	FileWithAttributeList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -976,7 +1237,7 @@ const FileWithAttributeList parseFilesWithAttributes(const std::string & xmlResp
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -999,20 +1260,21 @@ const FileWithAttributeList parseFilesWithAttributes(const std::string & xmlResp
 	return ret;
 }
 
-const EnumValueList parseEnumValues(const std::string & xmlResponse)
+const EnumValueList webservices::xmlWsdl::parseEnumValues(const std::string & xmlResponse)
 {
-	EnumValueList ret;
+	EnumValueList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
 	TiXmlHandle hDocument(&document);
 	TiXmlElement* _element;
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -1022,13 +1284,14 @@ const EnumValueList parseEnumValues(const std::string & xmlResponse)
 	return ret;
 }
 
-const AttributeDefinitionList parseAttributesDefinitions(const std::string & xmlResponse)
+const AttributeDefinitionList webservices::xmlWsdl::parseAttributesDefinitions(const std::string & xmlResponse)
 {
-	AttributeDefinitionList ret;
+	AttributeDefinitionList ret;	
 
 	TiXmlDocument document;
+	document.Parse(xmlResponse.c_str());
 
-	if(!document.Parse(xmlResponse.c_str())) {
+	if(document.Error()) {
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
 	}
 
@@ -1036,7 +1299,7 @@ const AttributeDefinitionList parseAttributesDefinitions(const std::string & xml
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}

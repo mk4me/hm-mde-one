@@ -96,7 +96,7 @@ void Application::showSplashScreenMessage(const QString & message)
 	QApplication::processEvents();
 }
 
-int Application::initUIContext(int & argc, char *argv[])
+int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem::Path> & coreTranslations)
 {
 	//obs?uga argument?w i opisu uzycia aplikacji z konsoli
 	osg::ArgumentParser arguments(&argc,argv);
@@ -161,8 +161,11 @@ int Application::initUIContext(int & argc, char *argv[])
 		// teraz inicjujemy manager jezykow
 		languagesManager_.reset(new LanguagesManager);
 
+		//pliki tlumaczen dostarczone z instalacja
+		coreTranslations = core::Filesystem::listFiles(paths_->getTranslationsPath(), true, ".qm");
+
 		// ladujemy tlumaczenia dla core, qt i widoku
-		LanguagesLoader::loadCoreTranslations((paths_->getResourcesPath() / "lang").string(), languagesManager_.get());
+		LanguagesLoader::loadCoreTranslations(coreTranslations, languagesManager_.get());
 
 		// dodaje na sztywno angielski zebym mial przynajmniej jeden jezyk
 		// a qt w takiej wersji jest domyslnie i dla niej nie ma
@@ -187,7 +190,7 @@ int Application::initUIContext(int & argc, char *argv[])
 			lang = en;
 			
 			QMessageBox::information(nullptr, QObject::tr("Translation problem"),
-				QObject::tr("Could not deduce application language from locale %1. Application will launch with English translation").arg(QLocale::system().name()));
+				QObject::tr("Could not deduce application language from locale %1. Application will be launched with English translation").arg(QLocale::system().name()));
 
 		}else {
 
@@ -196,7 +199,7 @@ int Application::initUIContext(int & argc, char *argv[])
 				lang = en;
 
 				QMessageBox::information(nullptr, QObject::tr("Translation problem"),
-					QObject::tr("Could not load application with %1 language - no translations for this language. Application will launch with English translation").arg(QString::fromStdString(lang)));
+					QObject::tr("Could not load application with %1 language - no translations for this language. Application will be launched with English translation").arg(QString::fromStdString(lang)));
 			}
 		}
 
@@ -206,7 +209,8 @@ int Application::initUIContext(int & argc, char *argv[])
 	return 0;
 }
 
-void Application::initWithUI(CoreMainWindow * mainWindow)
+void Application::initWithUI(CoreMainWindow * mainWindow,
+	std::vector<Filesystem::Path> & translations)
 {
 	this->mainWindow = mainWindow;
 	mainWindow->splashScreen();
@@ -302,6 +306,9 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 
 		//ladujemy pluginy
 		pluginLoader_->load();
+		
+		auto pluginTranslations = core::Filesystem::listFiles(paths_->getPluginPath(), true, ".qm");
+		translations.insert(translations.end(), pluginTranslations.begin(), pluginTranslations.end());
 
 		for(int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
 			auto plugin = pluginLoader_->getPlugin(i);
@@ -320,11 +327,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow)
 			LanguagesLoader::loadPluginDefaultTranslation(pluginName,
 				plugin->getDefaultLanguageCode(), languagesManager_.get());
 
-			LanguagesLoader::loadPluginTranslations(paths_->getPluginPath().string(),
-				pluginName, languagesManager_.get());
-
-			LanguagesLoader::loadPluginTranslations(paths_->getTranslationsPath().string(),
-				pluginName, languagesManager_.get());
+			LanguagesLoader::loadPluginTranslations(translations,
+				pluginName, languagesManager_.get());			
 
 			unpackPlugin(mainWindow, plugin);
 		}

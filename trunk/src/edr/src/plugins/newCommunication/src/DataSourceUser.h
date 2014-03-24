@@ -48,6 +48,10 @@ public:
     virtual const UserData & userData() const;
     //! \param userData Nowe dane użytkownika
     void setUserData(const UserData & userData);
+	//! \return Grupy użytkowników bazy danych do których należymy
+	virtual const webservices::xmlWsdl::UserGroupsList userGroups() const;
+	//! \param userGroups Grupy użytkowników bazy danych do których należymy
+	void setUserGroups(const webservices::xmlWsdl::UserGroupsList & userGroups);
 
 private:
     //! Identyfikator użytkownika
@@ -60,6 +64,8 @@ private:
     UserPrivilages userPrivilages_;
     //! Dane użytkownika
     UserData userData_;
+	//! Grupy użytkowników bazy danych do których należymy
+	webservices::xmlWsdl::UserGroupsList userGroups_;
 };
 
 #endif  //  HEADER_GUARD___COMMUNICATIONDATASOURCEUSER_H__

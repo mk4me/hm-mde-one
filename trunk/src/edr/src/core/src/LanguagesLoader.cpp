@@ -7,7 +7,7 @@
 #include <corelib/Filesystem.h>
 #include <QtCore/QTranslator>
 
-void registerTranslator(const std::string & locale, const std::string & path,
+void registerTranslator(const std::string & locale, const core::Filesystem::Path & path,
 	const std::string & module, core::LanguagesManager * languagesManager)
 {
 	// probuje wyci¹gn¹æ jêzyk dla tego kodu
@@ -19,7 +19,7 @@ void registerTranslator(const std::string & locale, const std::string & path,
 		utils::shared_ptr<QTranslator> translator(new QTranslator);
 
 		//probujemy ladowac tlumaczenia
-		if(translator->load(path.c_str()) == true){
+		if(translator->load(path.string().c_str()) == true){
 			languagesManager->registerTranslator(module, lang, translator);
 			CORE_LOG_DEBUG("Registered " << lang << " translator for module " << module << " from " << path);
 		}else{
@@ -32,30 +32,37 @@ void registerTranslator(const std::string & locale, const std::string & path,
 
 using namespace core;
 
-void LanguagesLoader::loadCoreTranslations(const std::string & path,
+void LanguagesLoader::loadCoreTranslations(std::vector<Filesystem::Path> & paths,
 	LanguagesManager * languagesManager)
 {
-	auto coreTranslations = core::Filesystem::listFiles(path, true, ".qm");
+	std::vector<int> toErase;
 
-	for(auto it = coreTranslations.begin(); it != coreTranslations.end(); ++it){
+	for(auto i = 0; i < paths.size(); ++i){
 		//nazwa pliku
-		auto file = core::Filesystem::Path(*it).stem().string();
+		auto file = paths[i].stem().string();
 		auto pos = file.find("qt_");
 		//teraz szukam t³umaczeñ dla core/qt/widoków
 		if(pos != std::string::npos){
 
 			registerTranslator(file.substr(pos + 3, file.size() - pos - 3),
-				*it, "qt", languagesManager);
+				paths[i], "qt", languagesManager);
+
+			toErase.push_back(i);
 
 		}else if( (pos = file.find("lang_")) != std::string::npos
 			&& file.find("plugin") == std::string::npos && pos > 1){
 
 			registerTranslator(file.substr(pos + 5, file.size() - pos - 5),
-				*it, file.substr(0, pos - 1), languagesManager);
+				paths[i], file.substr(0, pos - 1), languagesManager);
 
+			toErase.push_back(i);
 		}else{
-			CORE_LOG_INFO("Skipping translation file: " << *it << " as not matching any core translation pattern");
+			CORE_LOG_INFO("Skipping translation file: " << paths[i] << " as not matching any core translation pattern");
 		}
+	}
+
+	for(int j = toErase.size()-1; j > -1; --j){
+		paths.erase(paths.begin()+toErase[j]);
 	}
 }
 
@@ -75,14 +82,14 @@ void LanguagesLoader::loadPluginDefaultTranslation(const std::string & pluginNam
 	}
 }
 
-void LanguagesLoader::loadPluginTranslations(const std::string & path,
+void LanguagesLoader::loadPluginTranslations(std::vector<Filesystem::Path> & paths,
 	const std::string & pluginName, LanguagesManager * languagesManager)
 {
-	auto pluginsTranslations = core::Filesystem::listFiles(path, true, ".qm");
+	std::vector<int> toErase;
 
-	for(auto it = pluginsTranslations.begin(); it != pluginsTranslations.end(); ++it){
+	for(auto i = 0; i < paths.size(); ++i){
 		//nazwa pliku
-		auto file = core::Filesystem::Path(*it).stem().string();
+		auto file = paths[i].stem().string();
 
 		auto pos = file.find("lang_");
 
@@ -90,10 +97,16 @@ void LanguagesLoader::loadPluginTranslations(const std::string & path,
 			&& pos > 1){
 
 			registerTranslator(file.substr(pos + 5, file.size() - pos - 5),
-				*it, file.substr(0, pos - 1), languagesManager);
+				paths[i], file.substr(0, pos - 1), languagesManager);
+
+			toErase.push_back(i);
 
 		}else{
-			CORE_LOG_DEBUG("Skipping translation file: " << *it << " as not matching plugin`s " << pluginName << " translation pattern");
+			CORE_LOG_DEBUG("Skipping translation file: " << paths[i] << " as not matching plugin`s " << pluginName << " translation pattern");
 		}
+	}
+
+	for(int j = toErase.size()-1; j > -1; --j){
+		paths.erase(paths.begin()+toErase[j]);
 	}
 }

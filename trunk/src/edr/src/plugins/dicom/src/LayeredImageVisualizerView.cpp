@@ -53,6 +53,18 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     coreUI::CoreAction*  upld = new coreUI::CoreAction(tr("I/O")  , QIcon(":/dicom/upload.png"), tr("Upload"), this, coreUI::CoreTitleBar::Left);
 
     coreUI::CoreAction*  crop = new coreUI::CoreAction(tr("Other")  , QIcon(":/dicom/crop.png"), tr("Crop"), this, coreUI::CoreTitleBar::Left);
+
+	if(model->userIsReviewer() == true){
+		coreUI::CoreAction*  accept = new coreUI::CoreAction(tr("Status")  , QIcon(":/dicom/crop.png"), tr("Accept"), this, coreUI::CoreTitleBar::Left);
+		coreUI::CoreAction*  reject = new coreUI::CoreAction(tr("Status")  , QIcon(":/dicom/crop.png"), tr("Reject"), this, coreUI::CoreTitleBar::Left);
+	}else{
+		coreUI::CoreAction*  verify = new coreUI::CoreAction(tr("Status")  , QIcon(":/dicom/crop.png"), tr("Request verification"), this, coreUI::CoreTitleBar::Left);
+	}
+	
+	
+
+
+
     
     connect(undo, SIGNAL(triggered()), this, SLOT(undo()));
     connect(redo, SIGNAL(triggered()), this, SLOT(redo()));

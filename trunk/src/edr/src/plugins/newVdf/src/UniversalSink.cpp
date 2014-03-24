@@ -49,10 +49,7 @@ void UniversalSink::consume()
             }
 
             std::string name = (*it)->getClassName();
-            auto lIT = (*it)->find("core/label");
-            if(lIT != (*it)->end()){
-                name = lIT->second;
-            }
+            (*it)->getMetadata("core/label", name);
 
             core::IHierarchyItemPtr di = 
                 core::HierarchyItemPtr(new core::HierarchyDataItem(*it, QIcon(), QString::fromStdString(name), QString(), helper));

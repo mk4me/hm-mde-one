@@ -272,7 +272,7 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeI
     NewChartLegendItem * legendLabel = getLegendLabel(ret->getCurve());
 	if(legendLabel != nullptr){	
 		std::string source;
-		data->tryGetMeta("core/source", source);
+		data->getMetadata("core/source", source);
 		legendLabel->setToolTip(source.c_str());		
 		if(series.size() == 1){    
 			if(legendLabel->isItemActive() == false){

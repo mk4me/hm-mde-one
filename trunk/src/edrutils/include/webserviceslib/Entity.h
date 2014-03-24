@@ -104,6 +104,57 @@ namespace webservices
 			static const std::string convert(const Type & booleanType);
 		};
 
+		//! Typ statusu adnotacji dla danych USG
+		struct AnnotationStatus
+		{
+			//! Typ wyliczeniowy wartosci logicznych
+			enum Type {
+				Unspecified,		//! Nieokreślono
+				UnderConstruction,	//! W edycji
+				ReadyForReview,		//! Gotowy do weryfikacji
+				UnderReview,		//! W weryfikacji
+				Approved,			//! Zatwierdzony
+				Rejected			//! Odrzucony
+			};
+
+			//! \param statusType Tekstowa reprezentacja typu stanu adnotacji
+			//! \return Wyliczeniowa reprezentacja typu stanu adnotacji
+			static const Type convert(const std::string & statusType);
+			//! \param statusType Wyliczeniowa reprezentacja typu stanu adnotacji
+			//! \return Tekstowa reprezentacja typu stanu adnotacji
+			static const std::string convert(const Type & statusType);
+		};
+
+		//! Opis adnotacji dla danych USG
+		struct Annotation
+		{
+			int trialID;					//! Identyfikator triala którego dotyczy adnotacja
+			int userID;						//! Identyfikator uzytkownika którego status dotyczy
+			AnnotationStatus::Type status;	//! Status
+			std::string comment;			//! Komentarz do statusu
+			std::string note;				//! Notatka do statusu
+		};
+
+		//! Lista adnotacji
+		typedef std::list<Annotation> AnnotationsList;
+		//! \param xmlResponse Odpowiedź webserwisów
+		//! \return Lista adnotacji użytkownika
+		const AnnotationsList parseAnnotations(const std::string & xmlResponse);
+
+		//! Dane grupy użytkowników
+		struct UserGroup
+		{
+			int id;				//! Identyfikator grupy
+			std::string name;	//! Nazwa grupy
+		};
+
+		//! Lista grup użytkowników
+		typedef std::list<UserGroup> UserGroupsList;
+
+		//! \param xmlResponse Odpowiedź webserwisów
+		//! \return Lista grup użytkowników
+		const UserGroupsList parseUserGroups(const std::string & xmlResponse);
+
 		//! Szczegóły użytkownika
 		struct UserDetails
 		{
@@ -113,13 +164,21 @@ namespace webservices
 		};
 
 		//! Lista użytkowników
-		typedef std::list<UserDetails> UserList;
+		typedef std::list<UserDetails> UsersList;
+
+		//! \param xmlResponse Odpowiedź webserwisów
+		//! \return Lista użytkowników w bazie
+		const UsersList parseUsersList(const std::string & xmlResponse);
 
 		//! Użytkownik
 		struct User : public UserDetails
 		{
 			std::string email;	//! Adres email użytkownika
 		};
+
+		//! \param xmlResponse Odpowiedź webserwisów
+		//! \return Dane użytkownika
+		const User parseUser(const std::string & xmlResponse);
 
 		//! Prawa dostępu do sesji
 		struct SessionPrivilege

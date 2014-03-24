@@ -86,12 +86,15 @@ namespace dicom {
         void removeLayer(int tagIdx, int idx);
         void selectLayer(int tagIdx, int idx );
 
+		const bool userIsReviewer() const;
+
     public Q_SLOTS:
         void setPrevSerie();
         void setNextSerie();
         void trySetSerie(int val);
         void saveSerie();
         void uploadSerie();
+		//void setSerieStatus(const int statusID);
         void removeSelectedLayers();
 
     Q_SIGNALS:
@@ -106,6 +109,7 @@ namespace dicom {
         
         std::vector<LayeredSerie*> series;
         int currentSerie;
+		bool userIsReviever_;
     };
     DEFINE_SMART_POINTERS(LayeredImageVisualizer);
 

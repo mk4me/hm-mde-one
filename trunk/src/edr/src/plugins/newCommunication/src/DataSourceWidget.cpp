@@ -41,7 +41,8 @@
 #include <plugins/c3d/C3DCollections.h>
 #include <boost/lexical_cast.hpp>
 #include "TreeBuilder.h"
-#include "coreui/CorePopup.h"
+#include <coreui/CorePopup.h>
+#include <coreui/CoreCursorChanger.h>
 
 //Dla wersji demo wystarczy zdefiniować DEMO_VERSION_COMMUNICATION
 //aby zablokowac możliwość ściągania danych z bazy danych
@@ -367,7 +368,7 @@ void DataSourceWidget::connectionModeChanged()
 void DataSourceWidget::refreshStatus()
 {
 	//ustaw kursor na myślenie
-	setCursor(Qt::WaitCursor);
+	coreUI::CoreCursorChanger cursorChanger;	
 	QApplication::processEvents();
 	//odświeżam status plików
 	//dataSource->fileStatusManager->refreshFilesStatus();
@@ -380,8 +381,6 @@ void DataSourceWidget::refreshStatus()
 	invalidatePerspectivesContent();
 	//odświeżam bierzącą perspektywę
 	refreshCurrentPerspectiveContent();
-	//przywracam kursor
-	setCursor(Qt::ArrowCursor);
 }
 
 void DataSourceWidget::refreshStatus(const std::set<int> & filesIDs)
@@ -662,7 +661,7 @@ void DataSourceWidget::onFilterRemove()
 
 void DataSourceWidget::onLogin(const QString & user, const QString & password)
 {
-	setCursor(Qt::WaitCursor);
+	coreUI::CoreCursorChanger cursorChanger;
 	QApplication::processEvents();
 
 	//mamy jakieś dane wejściowe - możemy próbować logować
@@ -837,7 +836,6 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 	////resetuje go
 	//loginProgressBar->setRange(0,100);
 	//loginProgressBar->setValue(0);
-	setCursor(Qt::ArrowCursor);
 }
 
 void DataSourceWidget::onLogin()
@@ -1153,11 +1151,12 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 		return;
 	}
 
+	coreUI::CoreCursorChanger cursorChanger;
+
 	std::set<int>().swap(filesToLoad);
 	std::set<int>().swap(filesToUnload);
 	std::set<int>().swap(filesToDownload);
 
-	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 
 	//generujemy menu kontekstowe - download, load, unload + updateShallowCopy
@@ -1174,7 +1173,6 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 
 	generateCommonContextMenu(menu, perspective);
 
-	setCursor(Qt::ArrowCursor);
 	menu.exec(perspective->mapToGlobal(pos));
 
 	currentPerspectiveItem = nullptr;
@@ -1868,7 +1866,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				addPatientObject(pIT->second, subPtr->getID());
 			}
 
-			(*subOW)["label"] = label.str();
+			subOW->setMetadata("label", label.str());
 
             
 			//dodaję do DM
@@ -1925,14 +1923,14 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				}
 
                 
-				(*sOW)["label"] = s->sessionName;
-				(*sOW)["EMGConf"] = boost::lexical_cast<std::string>(s->emgConf);
-				(*sOW)["data"] = webservices::toString(s->sessionDate);
+				sOW->setMetadata("label", s->sessionName);
+				sOW->setMetadata("EMGConf", boost::lexical_cast<std::string>(s->emgConf));
+				sOW->setMetadata("data", webservices::toString(s->sessionDate));
 				if(s->groupAssigment != nullptr){
-					(*sOW)["groupID"] = boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID);
+					sOW->setMetadata("groupID", boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID));
 					auto sgIT = filteredShallowCopy.motionMetaData.sessionGroups.find(s->groupAssigment->sessionGroupID);
 					if(sgIT != filteredShallowCopy.motionMetaData.sessionGroups.end()){
-						(*sOW)["groupName"] = sgIT->second.sessionGroupName;
+						sOW->setMetadata("groupName", sgIT->second.sessionGroupName);
 					}
 				}
 
@@ -1996,7 +1994,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 						
 						if (dataWrapper && modelWrapper) {
 							jointsWrapper = core::ObjectWrapper::create<kinematic::JointAnglesCollection>();
-							jointsWrapper->set(core::ObjectWrapper::LazyInitializer(boost::bind(&JointsInitializer::initialize, _1, dataWrapper, modelWrapper)));
+							jointsWrapper->setInitializer(core::ObjectWrapper::LazyInitializer(boost::bind(&JointsInitializer::initialize, _1, dataWrapper, modelWrapper)));
 							motionObjects.push_back(jointsWrapper);
 							motionsMapping[motionIT->first].second.push_back(jointsWrapper);
 							transaction->addData(jointsWrapper);
@@ -2022,7 +2020,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
                                 int i = 0;
                                 for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
                                     core::ObjectWrapperPtr wrp = utils::const_pointer_cast<core::ObjectWrapper>(*it);
-                                    (*wrp)["movieDelay"] = boost::lexical_cast<std::string>(delays->at(i++));
+                                    wrp->setMetadata("movieDelay", boost::lexical_cast<std::string>(delays->at(i++)));
                                 }
                             } else {
                                 PLUGIN_LOG_ERROR("Unable to map movie delays");
@@ -2035,11 +2033,11 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 					if(jointsWrapper != nullptr){
 						//metadane
-						(*jointsWrapper)["name"] = mPtr->getLocalName() + " joints";
-						(*jointsWrapper)["source"] = "newCommunication->motion->" + mPtr->getLocalName();
+						jointsWrapper->setMetadata("name", mPtr->getLocalName() + " joints");
+						jointsWrapper->setMetadata("source", "newCommunication->motion->" + mPtr->getLocalName());
 					}
 					
-					(*mOW)["label"] = m->trialName;
+					mOW->setMetadata("label", m->trialName);
 
 					transaction->addData(mOW);
 
@@ -2448,7 +2446,7 @@ void DataSourceWidget::resetDownloadProgressStatus()
 
 void DataSourceWidget::loadFiles(const std::set<int> & files)
 {
-	setCursor(Qt::WaitCursor);
+	coreUI::CoreCursorChanger cursorChanger;
 	QApplication::processEvents();
 
 	//! Ładuje pliki do DM	
@@ -2486,16 +2484,17 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 		}
 	}
 
-	filesLoadedToDM.insert(loadedFiles.begin(), loadedFiles.end());
-
-	refreshStatus(loadedFiles);
-
-	//w loadedFilesObjects mamy info o plikach i związanych z nimi obiektach domenowych
-	//próbujemy teraz przez plugin subject realizować hierarchię danych
-
-	loadSubjectHierarchy(loadedFilesObjects);
-
 	if(loadingErrors.empty() == true && unknownErrors.empty() == true){
+
+		filesLoadedToDM.insert(loadedFiles.begin(), loadedFiles.end());
+
+		refreshStatus(loadedFiles);
+
+		//w loadedFilesObjects mamy info o plikach i związanych z nimi obiektach domenowych
+		//próbujemy teraz przez plugin subject realizować hierarchię danych
+
+		loadSubjectHierarchy(loadedFilesObjects);
+
         coreUI::CorePopup::showMessage(tr("Loading info"), tr("Data loaded successfully to application."), popupDelay);
 	}else{
 		QString message(tr("Errors while data loading:"));
@@ -2512,22 +2511,13 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 			++i;
 		}
 
-		QMessageBox messageBox(this);
-		messageBox.setWindowTitle(tr("Loading warning"));
-		messageBox.setText(message);
-		messageBox.setIcon(QMessageBox::Warning);
-		messageBox.setStandardButtons(QMessageBox::Ok);
-		messageBox.setDefaultButton(QMessageBox::Ok);
-
-		messageBox.exec();
+		coreUI::CorePopup::showMessage(tr("Loading error"), message, popupDelay);
 	}
-
-	setCursor(Qt::ArrowCursor);
 }
 
 void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage)
 {
-	setCursor(Qt::WaitCursor);
+	coreUI::CoreCursorChanger cursorChanger;
 	QApplication::processEvents();
 
 	//próbujemy teraz przez plugin subject realizować hierarchię danych
@@ -2611,8 +2601,6 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 			messageBox.exec();
 		}
 	}
-
-	setCursor(Qt::ArrowCursor);
 }
 
 void DataSourceWidget::saveProject(const std::string & projectName, const std::set<int> & projectFiles)

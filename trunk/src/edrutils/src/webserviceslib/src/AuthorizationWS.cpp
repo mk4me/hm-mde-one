@@ -41,6 +41,15 @@ const bool AuthorizationWS::checkMyLogin() const
 	return ret;
 }
 
+const std::string AuthorizationWS::listMyUserGroupsAssigned() const
+{
+	WSConnectionPtr c(boost::const_pointer_cast<IWSConnection>(connection()));
+	c->setOperation("ListMyUserGroupsAssigned");
+	c->invoke();
+
+	return c->xmlResponse();
+}
+
 const std::string AuthorizationWS::listUsers() const
 {
 	WSConnectionPtr c(boost::const_pointer_cast<IWSConnection>(connection()));

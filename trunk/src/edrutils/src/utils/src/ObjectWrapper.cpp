@@ -2,10 +2,10 @@
 
 using namespace utils;
 
-const bool ObjectWrapper::tryGetMeta(const std::string & key, std::string & val) const
+const bool ObjectWrapper::getMetadata(const std::string & key, std::string & val) const
 {
-	auto it = find(key);
-	if(it == end()){
+	auto it = metadata_.find(key);
+	if(it == metadata_.end()){
 		return false;
 	}
 
@@ -13,9 +13,29 @@ const bool ObjectWrapper::tryGetMeta(const std::string & key, std::string & val)
 	return true;
 }
 
-void ObjectWrapper::copyMeta(const ObjectWrapper & srcWrapper)
+const bool ObjectWrapper::existMetadata(const std::string & key) const
 {
-	insert(srcWrapper.begin(), srcWrapper.end());
+	return metadata_.find(key) != metadata_.end();
+}
+
+void ObjectWrapper::setMetadata(const std::string & key, const std::string & val)
+{
+	metadata_[key] = val;
+}
+
+void ObjectWrapper::removeMetadata(const std::string & key)
+{
+	metadata_.erase(key);
+}
+
+void ObjectWrapper::clearMetadata()
+{
+	Metadata().swap(metadata_);
+}
+
+void ObjectWrapper::copyMetadata(const ObjectWrapper & srcWrapper)
+{
+	metadata_.insert(srcWrapper.metadata_.begin(), srcWrapper.metadata_.end());
 }
 
 ObjectWrapper::get_t ObjectWrapper::get(bool exact)
@@ -33,19 +53,23 @@ const ObjectWrapper::get_t ObjectWrapper::get(bool exact) const
 	return result;
 }
 
-void ObjectWrapper::set(const LazyInitializer & initializer)
-{
-	UTILS_ASSERT((initializer.empty() == false), "Inicjalizator nie moze byc pusty");
-	reset();
+void ObjectWrapper::setInitializer(const LazyInitializer & initializer)
+{	
 	initializer_ = initializer;
+	
+	if(initializer_.empty() == false){
+		reset();
+	}else{
+		initialized = true;
+	}
 }
 
-ObjectWrapper::ObjectWrapper() : initialized(false)
+ObjectWrapper::ObjectWrapper() : initialized(true)
 {
 
 }
 
-ObjectWrapper::ObjectWrapper(const ObjectWrapper & wrapper) : initialized(false)
+ObjectWrapper::ObjectWrapper(const ObjectWrapper & wrapper) : initialized(true)
 {
 
 }
@@ -115,7 +139,7 @@ const ObjectWrapper::LazyInitializer & ObjectWrapper::initializer() const
 
 void ObjectWrapper::initialize() const
 {
-	if(initializer_.empty() == false && initialized == false){
+	if(initialized == false && initializer_.empty() == false){
 		try{
 			initializer_(*(const_cast<ObjectWrapper*>(this)));
 		}catch(...){
@@ -131,6 +155,8 @@ const ObjectWrapperPtr ObjectWrapper::clone() const
 	if(getRawPtr() != nullptr){
 		__clone(ret);
 	}
+
+	ret->copyMetadata(*this);
 	
 	return ret;
 }

@@ -83,9 +83,10 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
                 }
             }
         }
-        auto it = data->find("DICOM_XML");
-        if (it != data->end()) {
-            core::Filesystem::Path xml = it->second;
+
+		std::string xmlName;        
+        if (data->getMetadata("DICOM_XML", xmlName) == true) {
+            core::Filesystem::Path xml = xmlName;
             setName(xml.stem().string());
         }
         this->data = data;
@@ -167,7 +168,9 @@ void dicom::LayeredSerie::refresh()
 
 std::string dicom::LayeredSerie::getXmlOutputFilename() const
 {
-    return data->at("DICOM_XML");
+	std::string xml;
+	data->getMetadata("DICOM_XML",xml);
+    return xml;
 }
 
 dicom::LayeredModelView* dicom::LayeredSerie::getLayersModel()

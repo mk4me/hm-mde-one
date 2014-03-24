@@ -182,7 +182,7 @@ const std::string ShallowDownloadHelper::errorMessage()
 
 void ShallowDownloadHelper::setIncrementalDownload( const std::string & destinationPath, const DateTime& since )
 {
-    this->shallowFile = ShallowFile::ShallowBranchesIncrement;
+    this->shallowFile = ShallowBranchesIncrement;
     this->destinationPath = destinationPath;
     this->dateTime = since;
 }

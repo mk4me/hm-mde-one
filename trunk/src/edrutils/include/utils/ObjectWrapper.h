@@ -47,7 +47,7 @@ namespace utils {
 
     //! Baza dla typu wrapującego jakiś obiekt. Poza trzymaniem metadanych klasy pochodne
     //! trzymają referencje do obiektów.
-    class ObjectWrapper : public std::map<std::string, std::string>
+    class ObjectWrapper
     {
 		template<class T>
 		friend class ObjectWrapperT;
@@ -56,16 +56,9 @@ namespace utils {
 		friend class __ObjectWrapperT;
 
 	public:
+
 		//! Typ inicjalizatora danych - używany do leniwej inicjalizacji
 		typedef boost::function<void(ObjectWrapper &)> LazyInitializer;
-
-	private:
-		//! Inicjalizator danych
-		LazyInitializer initializer_;
-		//! Czy obiekt był już inicjalizowany
-		bool initialized;
-
-	public:
 
 		//! Lista typów.
 		typedef TypeInfoList Types;
@@ -102,12 +95,40 @@ namespace utils {
 			}
 		};
 
+	private:
+
+		//! Typ przechowujący metadane OW
+		typedef std::map<std::string, std::string> Metadata;
+
+	private:
+		//! Inicjalizator danych
+		LazyInitializer initializer_;
+		//! Czy obiekt był już inicjalizowany
+		bool initialized;
+		//! Metadane w formie klucz -> wartość tekstowo
+		Metadata metadata_;
+		
+
 	public:
 
-		const bool tryGetMeta(const std::string & key, std::string & val) const;
+		//! \param key Klucz metadanych który sprawdzamy czy istnieje
+		//! \return Czy dany klucz istnieje
+		const bool existMetadata(const std::string & key) const;
+		//! \param key Klucz metadanych który sprawdzamy czy istnieje
+		//! \param val [out] Wartość dla zadanego klucza, w przypadku braku klucza zmienna nie zostanie nadpisana
+		//! \return Czy udalo sie pobrac wartosc klucza
+		const bool getMetadata(const std::string & key, std::string & val) const;
+		//! \param key Klucz metadanych
+		//! \param val Wartość dla zadanego klucza
+		void setMetadata(const std::string & key, const std::string & val);
+		//! \param key Klucz ktorego wpis usuwamy
+		void removeMetadata(const std::string & key);
+		//! \param srcWrapper Zrodlowy OW z ktorego kopiujemy wpisy
+		void copyMetadata(const ObjectWrapper & srcWrapper);
+		//! Metoda usuwa wszystkie metadane
+		void clearMetadata();
 
-		void copyMeta(const ObjectWrapper & srcWrapper);
-
+		//! \tparam Ptr Typ wskaznika o który pytamy
 		template <class Ptr>
 		operator const Ptr()
 		{
@@ -116,6 +137,7 @@ namespace utils {
 			return result;
 		}
 
+		//! \tparam Ptr Typ wskaznika o który pytamy
 		template <class Ptr>
 		operator const Ptr() const
 		{
@@ -124,8 +146,8 @@ namespace utils {
 			return result;
 		}
 
-		//! \param object
-		//! \param name
+		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
+		//! \param dummy Parametr nie powinien być nigdy uzywany
 		//! \return Wrapper obiektu.
 		template <class T>
 		static const ObjectWrapperPtr create(T* dummy = nullptr)
@@ -134,6 +156,7 @@ namespace utils {
 			return ObjectWrapperPtr(new ObjectWrapperT<T>());
 		}
 
+		//! \tparam T Typ obiektu ktorego nazwe OW chcemy pobrac
 		//! \return Nazwa dla zadanego typu.
 		template <class T>
 		static const char* getClassName(T* dummy = nullptr)
@@ -143,6 +166,7 @@ namespace utils {
 		}
 
 		//! Próba pobrania obiektu z wrappera.
+		//! \tparam Ptr Wskaznik o ktory pytamy
 		//! \param object Rezultat.
 		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
 		//! \return Sukces/porażka.
@@ -153,6 +177,7 @@ namespace utils {
 		}
 
 		//! Próba pobrania obiektu z wrappera.
+		//! \tparam Ptr Wskaznik o ktory pytamy
 		//! \param object Rezultat.
 		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
 		//! \return Sukces/porażka.
@@ -167,6 +192,7 @@ namespace utils {
 		//! \return Return Type Resolver
 		get_t get(bool exact = false);
 
+		//! \tparam T Typ obiektu ktory chemy pobrac z OW
 		//! \param dummy Pozostawić pusty.
 		//! \return Wrappowany obiekt. Gdy wrapper jest innego typu niż parametr szablonu rzucany jest wyjątek.
 		template <typename T>
@@ -175,7 +201,7 @@ namespace utils {
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
 			return static_cast<typename ObjectWrapperT<T>::Ptr>(get());
 		}
-
+		//! \tparam T Typ obiektu ktory chemy pobrac z OW
 		//! \param dummy Pozostawić pusty.
 		//! \return Wrappowany obiekt. Gdy wrapper jest innego typu niż parametr szablonu rzucany jest wyjątek.
 		template <typename T>
@@ -192,6 +218,7 @@ namespace utils {
 		const get_t get(bool exact = false) const;
 
 		//! Ustawia obiekt wrappera. W razie błędu rzuca bad_castem.
+		//! \tparam Ptr Typ wskaznika ktory chcemy przypisac do OW
 		//! \param object Obiekt.
 		template <class Ptr>
 		void set(const Ptr& object)
@@ -201,9 +228,13 @@ namespace utils {
 			}
 		}
 
-		void set(const LazyInitializer & initializer);
+		//! \param initializer Obiekt leniwie inicjujący wartość OW
+		void setInitializer(const LazyInitializer & initializer);
+		//! \return Obiekt leniwie inicjujący wartość OW
+		const LazyInitializer & initializer() const;
 
 		//! Ustawia obiekt wrappera.
+		//! \tparam Ptr Typ wskaznika ktory chcemy przypisac do OW
 		//! \param object Obiekt.
 		//! \return Sukces/porażka.
 		template <class Ptr>
@@ -211,104 +242,7 @@ namespace utils {
 		{
 			return __trySetRawPtr(object, boost::is_pointer<Ptr>());
 		}
-
-    private:
-
-        //! \param className
-        //! \param classId
-        ObjectWrapper();
-
-		ObjectWrapper(const ObjectWrapper & wrapper);
-
-		//! Ustawia obiekt wrappera.
-		//! \param object Obiekt.
-		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool __trySetRawPtr(const Ptr& object, boost::true_type)
-		{
-			UTILS_STATIC_ASSERT((!boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Nalezy zapisywac dane bez modyfikatora const");
-			if(getPtrTypeInfo().first == typeid(Ptr)){
-				__setData(&object);
-				return true;
-			}
-			return false;
-		}
-
-		template <class Ptr>
-		const bool __trySetRawPtr(const Ptr& object, boost::false_type)
-		{
-			UTILS_STATIC_ASSERT((!boost::is_const<typename Ptr::element_type>::value), "Nalezy zapisywac dane bez modyfikatora const");
-			if(getPtrTypeInfo().first == typeid(Ptr)){
-				__setData(&object);
-				return true;
-			}
-			return false;
-		}
-
-		//! Próba pobrania obiektu z wrappera.
-		//! \param object Rezultat.
-		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
-		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool __tryGetRawPtr(Ptr& object, bool exact)
-		{
-			TypeInfo ptrInfo(typeid(Ptr));
-			if ( ptrInfo == getPtrTypeInfo().first || ptrInfo == getPtrTypeInfo().second ) {
-				return __tryUnpackData(&object, ptrInfo);
-			} else if(exact == false && isPtrSupported(ptrInfo) == true){
-				return __tryUnpackBaseData(&object, ptrInfo);
-			} else {
-				return false;
-			}
-		}
-
-		//! Próba pobrania obiektu z wrappera.
-		//! \param object Rezultat.
-		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
-		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool __tryGetRawPtr(Ptr& object, bool exact, boost::true_type) const
-		{
-			UTILS_STATIC_ASSERT((boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");		
-
-			TypeInfo ptrInfo(typeid(Ptr));
-			if ( ptrInfo == getPtrTypeInfo().second ) {
-				return __tryUnpackData(&object, ptrInfo);
-			} else if(exact == false && isPtrSupported(ptrInfo) == true){
-				return __tryUnpackBaseData(&object, ptrInfo);
-			} else {
-				return false;
-			}
-		}
-
-		//! Próba pobrania obiektu z wrappera.
-		//! \param object Rezultat.
-		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
-		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool __tryGetRawPtr(Ptr& object, bool exact, boost::false_type) const
-		{
-			UTILS_STATIC_ASSERT((boost::is_const<typename Ptr::element_type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");		
-
-			TypeInfo ptrInfo(typeid(Ptr));
-			if ( ptrInfo == getPtrTypeInfo().second ) {
-				return __tryUnpackData(&object, ptrInfo);
-			} else if(exact == false && isPtrSupported(ptrInfo) == true){
-				return __tryUnpackBaseData(&object, ptrInfo);
-			} else {
-				return false;
-			}
-		}
-
-		const bool __tryUnpackData(void * object, const TypeInfo & ptrType);
-
-		const bool __tryUnpackData(void * object, const TypeInfo & ptrType) const;
-
-		const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType);
-
-		const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType) const;
-
-    public:
+    
         //! Pusty polimorficzny destruktor.
         virtual ~ObjectWrapper();
 
@@ -328,40 +262,151 @@ namespace utils {
 		//! \return Czy wrappowany obiekt jest wyzerowany?
 		const bool isNull() const;
 
-		const LazyInitializer & initializer() const;
-
 		//! \return Klon bieżącego obiektu. Wewnętrzny wskaźnik również jest kopiowany.
 		const ObjectWrapperPtr clone() const;
 
+		//! \return Pusty OW dla danego typu
 		virtual const ObjectWrapperPtr create() const = 0;
 
+		//! \return Surowa wartość wskaźnika danych przechowywanych w OW
 		const void* getRawPtr() const;
 
+		//! \return Surowa wartość wskaźnika danych przechowywanych w OW
 		void* getRawPtr();
 
 		//! \return Informacje o typie odpowiednio normalnego i stałego wskaźnika.
 		virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const = 0;
-
+		//! \param ptrInfo Informacja o wskaźniku
+		//! \return Prawda jeśli wskaźnik można pobrać z danego OW
 		virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const = 0;
-
+		//! Zeruje obiekt
 		void reset();
-
+		//! Zamienia zawartosc OW jesli to możliwe
+		//! \param ow Obiekt z którym zamienimy przechowywane wartości
 		void swap(ObjectWrapper & ow);
 
 	private:
 
+		//! \param className
+		//! \param classId
+		ObjectWrapper();
+		//! Konstruktor kopiujący
+		//! \param wrapper Obiekt ktory kopiujemy
+		ObjectWrapper(const ObjectWrapper & wrapper);
+
+		//! Ustawia obiekt wrappera.
+		//! \tparam Ptr Typ wskaznika ktory chcemy przypisac do OW
+		//! \param object Obiekt.
+		//! \return Sukces/porażka.
+		template <class Ptr>
+		const bool __trySetRawPtr(const Ptr& object, boost::true_type)
+		{
+			UTILS_STATIC_ASSERT((!boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Nalezy zapisywac dane bez modyfikatora const");
+			if(getPtrTypeInfo().first == typeid(Ptr)){
+				__setData(&object);
+				return true;
+			}
+			return false;
+		}
+
+		//! Ustawia obiekt wrappera.
+		//! \tparam Ptr Typ wskaznika ktory chcemy przypisac do OW
+		//! \param object Obiekt.
+		//! \return Sukces/porażka.
+		template <class Ptr>
+		const bool __trySetRawPtr(const Ptr& object, boost::false_type)
+		{
+			UTILS_STATIC_ASSERT((!boost::is_const<typename Ptr::element_type>::value), "Nalezy zapisywac dane bez modyfikatora const");
+			if(getPtrTypeInfo().first == typeid(Ptr)){
+				__setData(&object);
+				return true;
+			}
+			return false;
+		}
+
+		//! Próba pobrania obiektu z wrappera.
+		//! \tparam Ptr Typ wskaznika ktory chcemy pobrać z OW
+		//! \param object Rezultat.
+		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
+		//! \return Sukces/porażka.
+		template <class Ptr>
+		const bool __tryGetRawPtr(Ptr& object, bool exact)
+		{
+			TypeInfo ptrInfo(typeid(Ptr));
+			if ( ptrInfo == getPtrTypeInfo().first || ptrInfo == getPtrTypeInfo().second ) {
+				return __tryUnpackData(&object, ptrInfo);
+			} else if(exact == false && isPtrSupported(ptrInfo) == true){
+				return __tryUnpackBaseData(&object, ptrInfo);
+			} else {
+				return false;
+			}
+		}
+
+		//! Próba pobrania obiektu z wrappera.
+		//! \tparam Ptr Typ wskaznika ktory chcemy pobrać z OW
+		//! \param object Rezultat.
+		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
+		//! \return Sukces/porażka.
+		template <class Ptr>
+		const bool __tryGetRawPtr(Ptr& object, bool exact, boost::true_type) const
+		{
+			UTILS_STATIC_ASSERT((boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");		
+
+			TypeInfo ptrInfo(typeid(Ptr));
+			if ( ptrInfo == getPtrTypeInfo().second ) {
+				return __tryUnpackData(&object, ptrInfo);
+			} else if(exact == false && isPtrSupported(ptrInfo) == true){
+				return __tryUnpackBaseData(&object, ptrInfo);
+			} else {
+				return false;
+			}
+		}
+
+		//! Próba pobrania obiektu z wrappera.
+		//! \tparam Ptr Typ wskaznika ktory chcemy pobrać z OW
+		//! \param object Rezultat.
+		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
+		//! \return Sukces/porażka.
+		template <class Ptr>
+		const bool __tryGetRawPtr(Ptr& object, bool exact, boost::false_type) const
+		{
+			UTILS_STATIC_ASSERT((boost::is_const<typename Ptr::element_type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");		
+
+			TypeInfo ptrInfo(typeid(Ptr));
+			if ( ptrInfo == getPtrTypeInfo().second ) {
+				return __tryUnpackData(&object, ptrInfo);
+			} else if(exact == false && isPtrSupported(ptrInfo) == true){
+				return __tryUnpackBaseData(&object, ptrInfo);
+			} else {
+				return false;
+			}
+		}
+
+		//! \param object Wskaźnik z którego rozpakowujemy dane
+		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
+		const bool __tryUnpackData(void * object, const TypeInfo & ptrType);
+		//! \param object Wskaźnik z którego rozpakowujemy dane
+		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
+		const bool __tryUnpackData(void * object, const TypeInfo & ptrType) const;
+		//! \param object Wskaźnik z którego rozpakowujemy dane
+		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
+		const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType);
+		//! \param object Wskaźnik z którego rozpakowujemy dane
+		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
+		const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType) const;
+		//! Metoda próbuje inicjowac obiekt
 		void initialize() const;
-
+		//! \return Surowy wskaźnik do przechowywanego obiektu
 		virtual const void* __getRawPtr() const = 0;
-
+		//! \return Surowy wskaźnik do przechowywanego obiektu
 		virtual void* __getRawPtr() = 0;
-
+		//! \param dest Obiekt docelowy do którego kopiujemy dane
 		virtual void __clone(const ObjectWrapperPtr & dest) const = 0;
 
 		//! \param ow Object wrapper z ktorym zamieniamy zawartość
 		//! Ważne!! To może rzucać wyjątkiem!!
 		virtual void __swap(ObjectWrapper & ow) = 0;
-
+		//! Zeruje dane OW
 		virtual void __reset() = 0;
 		//! \return Czy udało się ustawić mądry wskaźnik?
 		virtual void __setData(const void * object) = 0;

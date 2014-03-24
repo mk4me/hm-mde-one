@@ -52,7 +52,7 @@ core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, co
     for (auto it = filteredSessions.crbegin(); it != filteredSessions.crend(); ++it) {
         
         std::string emgConfigName;
-        (*it)->tryGetMeta("EMGConf", emgConfigName);
+        (*it)->getMetadata("EMGConf", emgConfigName);
         
         core::ConstObjectsList filteredMotions;
 
@@ -70,7 +70,7 @@ core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, co
             QString label(QString::fromUtf8(motion->getLocalName().c_str()));
 
             std::string metaLabel;
-            if(motionOW->tryGetMeta("label", metaLabel)){
+            if(motionOW->getMetadata("label", metaLabel)){
                 label = QString::fromStdString(metaLabel);
             }
 
@@ -175,7 +175,7 @@ core::IHierarchyItemPtr TreeBuilder::createEMGBranch( const MotionConstPtr & mot
         EMGChannelConstPtr c = (*it)->get();	
         if (c) {
             std::string l("UNKNOWN");
-            (*it)->tryGetMeta("core/name", l);
+            (*it)->getMetadata("core/name", l);
 
             /*core::IHierarchyItemPtr channelItem = utils::make_shared<core::HierarchyDataItem>(*it, itemIcon, QString::fromStdString(l), desc);
             emgItem->appendChild(channelItem);	*/		
@@ -204,7 +204,7 @@ core::IHierarchyItemPtr TreeBuilder::createGRFBranch( const MotionConstPtr & mot
         GRFChannelConstPtr c = (*it)->get();
         if (c) {
             std::string l("UNKNOWN");
-            (*it)->tryGetMeta("core/name", l);
+            (*it)->getMetadata("core/name", l);
             core::HierarchyHelperPtr channelHelper(new NewVector3ItemHelper(*it));
             // todo w jakim celu ustawiany byl motion
             //channelHelper->setMotion(motion);
@@ -225,7 +225,7 @@ core::IHierarchyItemPtr TreeBuilder::createVideoBranch( const MotionConstPtr & m
     motion->getObjects(videos, typeid(VideoChannel), false);	
     for(auto it = videos.begin(); it != videos.end(); ++it) {			
         std::string l("UNKNOWN");
-        (*it)->tryGetMeta("core/name", l);		
+        (*it)->getMetadata("core/name", l);		
         core::IHierarchyItemPtr channelItem(new core::HierarchyDataItem(*it, itemIcon, QString::fromStdString(l), desc));	
         videoItem->appendChild(channelItem);
     }
@@ -348,8 +348,8 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
 
             static int number = 0;
             std::string();
-            (*wrapper)["name"] = "Serie_" + boost::lexical_cast<std::string>(number);
-            (*wrapper)["source"] = "TreeBuilder";
+            wrapper->setMetadata("name", "Serie_" + boost::lexical_cast<std::string>(number));
+            wrapper->setMetadata("source", "TreeBuilder");
             wrappers.push_back(wrapper);
         }
         core::IHierarchyItemPtr collectionItem;
@@ -413,10 +413,10 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
                     wrapper->set(reader);
                     int no = toVisualize.size();
                     std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
-                    (*wrapper)["core/name"] = prefix + boost::lexical_cast<std::string>(no);
+                    wrapper->setMetadata("core/name", prefix + boost::lexical_cast<std::string>(no));
                     std::string src;
-                    (*it)->tryGetMeta("core/source", src);
-                    (*wrapper)["core/source"] = src + boost::lexical_cast<std::string>(no);
+                    (*it)->getMetadata("core/source", src);
+                    wrapper->setMetadata("core/source", src + boost::lexical_cast<std::string>(no));
                     toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, m));
                 }
 
@@ -454,10 +454,10 @@ core::HierarchyHelperPtr TreeBuilder::createNormalized( utils::ObjectWrapperCons
             int no = toVisualize.size();
             std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
             colorMap[newWrapper] = channelNo == 0 ? QColor(255, 0, 0) : (channelNo == 1 ? QColor(0, 255, 0) : QColor(0, 0, 255));
-            (*newWrapper)["core/name"] = prefix + ":" + boost::lexical_cast<std::string>(j);
+            newWrapper->setMetadata("core/name", prefix + ":" + boost::lexical_cast<std::string>(j));
             std::string src;
-            wrapper->tryGetMeta("core/sources", src);
-            (*newWrapper)["core/sources"] = src + boost::lexical_cast<std::string>(no);
+            wrapper->getMetadata("core/sources", src);
+            newWrapper->setMetadata("core/sources", src + boost::lexical_cast<std::string>(no));
             toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(newWrapper, events, motion));
         }
     }
@@ -522,10 +522,10 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
                             colorMap[wrapper] = channelNo == 0 ? colorX : (channelNo == 1 ? colorY : colorZ);
                             int no = toVisualize.size();
                             std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
-                            (*wrapper)["core/name"] = prefix + boost::lexical_cast<std::string>(i) + ":" + boost::lexical_cast<std::string>(j);
+                            wrapper->setMetadata("core/name", prefix + boost::lexical_cast<std::string>(i) + ":" + boost::lexical_cast<std::string>(j));
                             std::string src;
-                            (*it)->tryGetMeta("core/source", src);
-                            (*wrapper)["core/source"] = src + boost::lexical_cast<std::string>(no);
+                            (*it)->getMetadata("core/source", src);
+                            wrapper->setMetadata("core/source", src + boost::lexical_cast<std::string>(no));
                             toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(wrapper, events, m));
                         }
                     }
@@ -570,16 +570,16 @@ QString TreeBuilder::createDescription( PluginSubject::MotionConstPtr motion )
 
 		std::string groupName, groupID;
 
-		if(motion->getSession()->tryGetMeta("groupName", groupName) == true) {
+		if(motion->getSession()->getMetadata("groupName", groupName) == true) {
 			text += QObject::tr("Owner: %1").arg(groupName.c_str()); 
-			if (motion->getSession()->tryGetMeta("groupID", groupID) == true) {
+			if (motion->getSession()->getMetadata("groupID", groupID) == true) {
 				text += QString("(%1)").arg(groupID.c_str());
 			}
 			text += "\n";
 		}
 
 		std::string date;
-		if(motion->getSession()->tryGetMeta("data", date) == true) {
+		if(motion->getSession()->getMetadata("data", date) == true) {
 			text += QObject::tr("Date: %1\n").arg(date.c_str());
 		}
     } catch (...) {

@@ -320,7 +320,7 @@ const core::ObjectsList IMUCostumeDataSource::generateCoreData(const CostumeRawD
 	if(crd.skeletonDataStream != nullptr){
 
 		auto ow = core::ObjectWrapper::create<SkeletonDataStream>();
-		(*ow)["core/name"] = QObject::tr("Skeleton Stream").toStdString();
+		ow->setMetadata("core/name", QObject::tr("Skeleton Stream").toStdString());
 		ow->set(crd.skeletonDataStream);
 		ret.push_back(ow);
 	}
@@ -333,7 +333,7 @@ const core::ObjectsList IMUCostumeDataSource::generateCoreData(const CostumeRawD
 			Vec3StreamPtr vec3Stream(new utils::StreamAdapterT<IMUData, osg::Vec3>(crd.imuDataStreams[i],
 				utils::StreamAdapterT<IMUData, osg::Vec3>::ExtractorFunction(&IMUCostumeDataSource::extractAccelerometer)));
 
-			(*owv)["core/name"] = QObject::tr("Accelerometer").toStdString();
+			owv->setMetadata("core/name", QObject::tr("Accelerometer").toStdString());
 			owv->set(vec3Stream);
 			ret.push_back(owv);
 
@@ -341,7 +341,7 @@ const core::ObjectsList IMUCostumeDataSource::generateCoreData(const CostumeRawD
 			vec3Stream.reset(new utils::StreamAdapterT<IMUData, osg::Vec3>(crd.imuDataStreams[i],
 				utils::StreamAdapterT<IMUData, osg::Vec3>::ExtractorFunction(&IMUCostumeDataSource::extractGyroscope)));
 
-			(*owv)["core/name"] = QObject::tr("Gyroscope").toStdString();
+			owv->setMetadata("core/name", QObject::tr("Gyroscope").toStdString());
 			owv->set(vec3Stream);
 			ret.push_back(owv);
 
@@ -349,7 +349,7 @@ const core::ObjectsList IMUCostumeDataSource::generateCoreData(const CostumeRawD
 			vec3Stream.reset(new utils::StreamAdapterT<IMUData, osg::Vec3>(crd.imuDataStreams[i],
 				utils::StreamAdapterT<IMUData, osg::Vec3>::ExtractorFunction(&IMUCostumeDataSource::extractMagnetometer)));
 
-			(*owv)["core/name"] = QObject::tr("Magnetometer").toStdString();
+			owv->setMetadata("core/name", QObject::tr("Magnetometer").toStdString());
 			owv->set(vec3Stream);
 			ret.push_back(owv);
 		}

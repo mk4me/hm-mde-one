@@ -23,15 +23,28 @@
 
 using namespace dicom;
 
-LayeredImageVisualizer::LayeredImageVisualizer()
+LayeredImageVisualizer::LayeredImageVisualizer() : userIsReviever_(false)
 {
-    mainWidget = new LayeredImageVisualizerView(this);
-    currentSerie = -1;
+	communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+	if(comm != nullptr){
+		auto user = comm->currentUser();
+		//TODO
+		//uzupelnic inicjalizacje czy user to student czy reviewer
+		//userIsReviewer_ = ;
+	}
+
+	mainWidget = new LayeredImageVisualizerView(this);
+	currentSerie = -1;
 }
 
 LayeredImageVisualizer::~LayeredImageVisualizer()
 {
 
+}
+
+const bool LayeredImageVisualizer::userIsReviewer() const
+{
+	return userIsReviever_;
 }
 
 plugin::IVisualizer* LayeredImageVisualizer::create() const
@@ -297,6 +310,9 @@ void dicom::LayeredImageVisualizer::uploadSerie()
         /// TODO : pobrac dane z OW
         
         comm->uploadMotionFile(p, "");
+
+		//TODO
+		//zapis statusu adnotacji
     }
 }
 

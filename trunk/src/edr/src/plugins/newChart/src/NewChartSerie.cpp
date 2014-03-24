@@ -24,7 +24,7 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType, const core::O
     this->data = data;
 	this->requestedType = requestedType;
 	std::string name;
-	data->tryGetMeta("core/name", name);
+	data->getMetadata("core/name", name);
 
     curve = new NewChartCurve(name.c_str());	
     data->tryGet(reader);    

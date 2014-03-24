@@ -102,7 +102,7 @@ void VideoParser::parse(const std::string & source)
                 dirPath = path.branch_path() / directory;
             }
             // wylistowanie plików
-            std::vector<std::string> files = core::Filesystem::listFiles(dirPath);
+            auto files = core::Filesystem::listFiles(dirPath.string());
 
             // tworzymy strumień z sekwencji plików
             osg::ref_ptr<osgDB::Options> options = new osgDB::Options();
@@ -117,7 +117,7 @@ void VideoParser::parse(const std::string & source)
             realStream->setTime(0);
             adapter->set(realStream);
 			//metadane
-            (*adapter)["core/source"] = realStream->getSource();
+            adapter->setMetadata("core/source", realStream->getSource());
         }
     } else {
         {

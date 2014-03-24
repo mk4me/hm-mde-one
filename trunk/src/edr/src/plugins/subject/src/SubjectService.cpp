@@ -78,7 +78,7 @@ core::ObjectWrapperPtr SubjectService::createSession(const core::ObjectWrapperCo
 	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::ISession>();
 	SessionPtr session(new Session(subject,unpackedSubject, subImpl->nextSessionID()));
 	ret->set(session);
-	(*ret)["name"] = session->getName();
+	ret->setMetadata("name", session->getName());
 
     return ret;
 }
@@ -107,7 +107,7 @@ core::ObjectWrapperPtr SubjectService::createMotion(const core::ObjectWrapperCon
 	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::IMotion>();
 	MotionPtr motion(new Motion(session,unpackedSession, sessionImpl->nextMotionID()));
 	ret->set(motion);
-	(*ret)["name"] = motion->getName();
+	ret->setMetadata("name", motion->getName());
 
 	return ret;
 }

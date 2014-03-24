@@ -42,7 +42,7 @@ const int MotionBasicUpdatesWS::createSession(const int labID, const std::string
 
 	//TODO - generowanie identyfikatorów dla grup sesji
 
-	connection()->setValue("sessionGroutIDs", ids);
+	connection()->setValue("sessionGroupIDs", ids);
 	connection()->invoke(true);	
 
 	int ret = -1;
@@ -184,12 +184,12 @@ void MotionBasicUpdatesWS::setFileAttribute(const int fileID, const std::string 
 	connection()->invoke();
 }
 
-void MotionBasicUpdatesWS::setFileTypedAttributeValue(const int resourceID, const std::string & entity,
+void MotionBasicUpdatesWS::setFileTypedAttributeValue(const int resourceID, const xmlWsdl::Entity::Type entity,
 	const std::string & attributeName, const int fileID, const bool update)
 {
 	connection()->setOperation("SetFileTypedAttributeValue");
 	connection()->setValue("resourceID", resourceID);
-	connection()->setValue("entity", entity);
+	connection()->setValue("entity", xmlWsdl::Entity::convert(entity));
 	connection()->setValue("attributeName", attributeName);	
 	connection()->setValue("fileID", fileID);	
 	connection()->setValue("update", update);	
@@ -197,12 +197,34 @@ void MotionBasicUpdatesWS::setFileTypedAttributeValue(const int resourceID, cons
 }
 
 void MotionBasicUpdatesWS::clearAttributeValue(const int resourceID, const std::string & attributeName,
-	const std::string & entity)
+	const xmlWsdl::Entity::Type entity)
 {
 	connection()->setOperation("ClearAttributeValue");
 	connection()->setValue("resourceID", resourceID);
 	connection()->setValue("attributeName", attributeName);	
-	connection()->setValue("entity", entity);
+	connection()->setValue("entity", xmlWsdl::Entity::convert(entity));
+	connection()->invoke();
+}
+
+void MotionBasicUpdatesWS::setMyAnnotationStatus(const int trialID, const xmlWsdl::AnnotationStatus::Type status,
+	const std::string & comment)
+{
+	connection()->setOperation("SetMyAnnotationStatus");
+	connection()->setValue("trialID", trialID);
+	connection()->setValue("status", static_cast<int>(status));	
+	connection()->setValue("comment", comment);
+	connection()->invoke();
+}
+
+void MotionBasicUpdatesWS::setAnnotationReview(const int trialID, const int userID,
+	const xmlWsdl::AnnotationStatus::Type status,
+	const std::string & note)
+{
+	connection()->setOperation("SetAnnotationReview");
+	connection()->setValue("trialID", trialID);
+	connection()->setValue("userID", userID);
+	connection()->setValue("status", static_cast<int>(status));	
+	connection()->setValue("note", note);
 	connection()->invoke();
 }
 
@@ -216,195 +238,5 @@ MedicalBasicUpdatesWS::~MedicalBasicUpdatesWS()
 {
 
 }
-
-/**
-@author Marek Daniluk
-*/
-
-//MotionBasicUpdatesService::MotionBasicUpdatesService() { }
-//
-//MotionBasicUpdatesService::~MotionBasicUpdatesService() { }
-//
-//Performer* MotionBasicUpdatesService::createPerformer(const std::string& name, const std::string& surname) {
-//	this->setOperation("CreatePerformer");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("Name", new std::string(name)) ||
-//			!invoker.setValue("Surname", new std::string(surname))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		int val = invoker.getValue<int>("CreatePerformerResult");
-//		return new Performer(val, name, surname);
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-
-//Session* MotionBasicUpdatesService::createSession(int labID, int performerID, DateTime& sessionDate, const std::string& sessionDescription, const std::string& motionKindName, std::vector<int>& groupsIDs) {
-//	this->setOperation("CreateSession");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("labID", toString<int>(labID)) ||
-//			!invoker.setValue("motionKindName", new std::string(motionKindName)) ||
-//			!invoker.setValue("performerID", toString<int>(performerID)) ||
-//			!invoker.setValue("sessionDate", sessionDate.toString()) ||
-//			!invoker.setValue("sessionDescription", new std::string(sessionDescription)) ||
-//			!invoker.setValue("int", toStringVector<int>(groupsIDs))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		int val = invoker.getValue<int>("CreateSessionResult");
-//		return new Session(val, 0, performerID, sessionDate, sessionDescription);
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-//
-//Trial* MotionBasicUpdatesService::createTrial(int sessionID, const std::string& trialDescription, int trialDuration) {
-//	this->setOperation("CreateTrial");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
-//			!invoker.setValue("trialDuration", toString<int>(trialDuration)) ||
-//			!invoker.setValue("trialDescription", new std::string(trialDescription))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		int val = invoker.getValue<int>("CreateTrialResult");
-//		return new Trial(val, trialDescription, trialDuration);
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-//
-//Segment* MotionBasicUpdatesService::defineTrialSegment(int trialID, const std::string& segmentName, int startTime, int endTime) {
-//	this->setOperation("DefineTrialSegment");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("trialID", toString<int>(trialID)) ||
-//			!invoker.setValue("segmentName", new std::string(segmentName)) ||
-//			!invoker.setValue("startTime", toString<int>(startTime)) ||
-//			!invoker.setValue("endTime", toString<int>(endTime))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		int val = invoker.getValue<int>("DefineTrialSegment");
-//		return new Segment(val, trialID, segmentName, startTime, endTime);
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-//
-//bool MotionBasicUpdatesService::assignSessionToGroup(int sessionID, int groupID) {
-//	this->setOperation("AssignSessionToGroup");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
-//			!invoker.setValue("groupID", toString<int>(groupID))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		return invoker.getValue<bool>("AssignSessionToGroupResult");
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-//
-//int MotionBasicUpdatesService::setPerformerAttribute(int performerID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-//	this->setOperation("SetPerformerAttribute");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("performerID", toString<int>(performerID)) ||
-//			!invoker.setValue("attributeName", new std::string(attributeName)) ||
-//			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
-//			!invoker.setValue("update", toString<bool>(update))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		return invoker.getValue<int>("SetPerformerAttributeResult");
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-//
-//int MotionBasicUpdatesService::setTrialAttribute(int trialID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-//	this->setOperation("SetTrialAttribute");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("trialID", toString<int>(trialID)) ||
-//			!invoker.setValue("attributeName", new std::string(attributeName)) ||
-//			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
-//			!invoker.setValue("update", toString<bool>(update))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		return invoker.getValue<int>("SetTrialAttributeResult");
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-//
-//int MotionBasicUpdatesService::setSessionAttribute(int sessionID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-//	this->setOperation("SetSessionAttribute");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
-//			!invoker.setValue("attributeName", new std::string(attributeName)) ||
-//			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
-//			!invoker.setValue("update", toString<bool>(update))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		return invoker.getValue<int>("SetSessionAttributeResult");
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-//
-//int MotionBasicUpdatesService::setFileAttribute(int fileID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-//	this->setOperation("SetFileAttribute");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("fileID", toString<int>(fileID)) ||
-//			!invoker.setValue("attributeName", new std::string(attributeName)) ||
-//			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
-//			!invoker.setValue("update", toString<bool>(update))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		return invoker.getValue<int>("SetFileAttributeResult");
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-//
-//int MotionBasicUpdatesService::setSegmentAttribute(int segmentID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-//	this->setOperation("SetSegmentAttribute");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("segmentID", toString<int>(segmentID)) ||
-//			!invoker.setValue("attributeName", new std::string(attributeName)) ||
-//			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
-//			!invoker.setValue("update", toString<bool>(update))) {
-//				throw std::runtime_error("Bad operation arguments.");
-//		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
-//		}
-//		return invoker.getValue<int>("SetSegmentAttributeResult");
-//	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
-//	}
-//}
-
 
 }

@@ -73,6 +73,8 @@ public:
 
 	//! \return Zwraca prawdę jeżeli użytkownik tej usługi występuje w bazie danych
 	virtual const bool checkMyLogin() const;
+	//! \return Zwraca listę grup do których przynależy mój użytkownik
+	virtual const std::string listMyUserGroupsAssigned() const;
 };
 
 }

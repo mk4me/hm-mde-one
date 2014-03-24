@@ -331,7 +331,6 @@ void parseFilesBranch( TiXmlElement* files_element, IncrementalBranchShallowCopy
     while(file_element) {
         //newMotionShallowCopy::File * file = new MotionShallowCopy::File;
         IncrementalBranchShallowCopy::File file;
-        int fileID;
         file_element->QueryIntAttribute("FileID", &file.fileID);
         /*file.trial = trial;
         file.session = trial->session;*/

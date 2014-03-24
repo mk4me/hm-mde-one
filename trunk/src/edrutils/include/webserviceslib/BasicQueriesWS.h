@@ -161,6 +161,15 @@ namespace webservices
 		virtual const DateTime dataModificationTime() const;
 		//! \return Data ostatniej modyfikacji metadanych ruchu
 		virtual const DateTime metadataModificationTime() const;
+
+		//! Metoda zwraca listę adnotacji użytkownika dla danych USG - użytkownik brany z połączenia
+		virtual const std::string listMyAnnotations() const;
+
+		//! Metoda zwraca listę adnotacji oczekujących na weryfikację dla danych USG - użytkownik brany z połączenia
+		virtual const std::string listAwaitingAnnotations() const;
+
+		//! Metoda zwraca listę adnotacji zatwierdzonych dla danych USG - użytkownik brany z połączenia
+		virtual const std::string listReviewedAnnotations() const;
 	};
 
     class MedicalBasicQueriesWS : public WebServiceT<IMedicalBasicQueriesWS>

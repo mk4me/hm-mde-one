@@ -72,12 +72,12 @@ void PluginLoader::load()
 #endif
 
 	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {
-		std::vector<std::string> localFiles = core::Filesystem::listFiles(*pathIT, true);
+		auto localFiles = core::Filesystem::listFiles(*pathIT, true);
 
 		for(auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
 
 			// Skip if no match
-			if( !std::regex_match( core::Filesystem::Path(*fileIT).leaf().string(), pluginFilter) ) continue;
+			if( !std::regex_match( (*fileIT).leaf().string(), pluginFilter) ) continue;
 
 			addPlugIn(*fileIT);
 		}

@@ -23,7 +23,7 @@ public:
 		cleanUp_ = boost::bind(&Application::finalizeUI, coreApplication.get());
 		__application = coreApplication.get();
 		plugin::__coreApplication = &mainViewApplication;
-		initUIContextRes = coreApplication->initUIContext(argc, argv);
+		initUIContextRes = coreApplication->initUIContext(argc, argv, translations);
 	}
 
 	~AppInitializerImpl()
@@ -58,7 +58,21 @@ public:
 				try{
 
 					//inicjalizujemy widok
-					coreApplication->initWithUI(mainWindow);
+					coreApplication->initWithUI(mainWindow, translations);
+
+					if(translations.empty() == false){
+						auto it = translations.begin();
+						std::string files((*it).string());
+						++it;
+
+						for( ; it != translations.end(); ++it){
+							files += "\n" + (*it).string();
+						}
+
+						CORE_LOG_INFO("Unused translation files:\n" << files);
+
+						std::vector<Filesystem::Path>().swap(translations);
+					}
 
 					mainWindow->init(plugin::__coreApplication);
 					//ustawiamy tutaj �eby nadpisa� ewentualne zmiany z widok�w
@@ -95,7 +109,7 @@ public:
 	}
 
 private:
-
+	std::vector<Filesystem::Path> translations;
 	utils::shared_ptr<Application> coreApplication;
 	MainViewApplication mainViewApplication;
 	int initUIContextRes;

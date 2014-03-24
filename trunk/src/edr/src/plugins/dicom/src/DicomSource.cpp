@@ -123,7 +123,7 @@ core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Pa
         utils::ObjectWrapperPtr wrapper = *oList.begin();
         core::Filesystem::Path p = path;
         p.replace_extension("xml");
-        (*wrapper)[std::string("DICOM_XML")] = std::string(p.string());
+        wrapper->setMetadata("DICOM_XML", std::string(p.string()));
         QIcon icon;
         if (core::Filesystem::pathExists(p)) {
             auto layers = DicomLoader::loadLayers(p);

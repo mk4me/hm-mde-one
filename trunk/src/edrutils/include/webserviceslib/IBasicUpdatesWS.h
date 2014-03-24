@@ -112,18 +112,31 @@ public:
 		const std::string & attributeValue, const bool update) = 0;
 
 	//! \param resourceID Identyfikator zasobu
-	//! \param entity Nazwa encji
+	//! \param entity Typ encji
 	//! \param attributeName Nazwa atrybutu
 	//! \param fileID Identyfikator pliku
 	//! \param update Czy aktualizować wartość jeśli istnieje
-	virtual void setFileTypedAttributeValue(const int resourceID, const std::string & entity,
+	virtual void setFileTypedAttributeValue(const int resourceID, const xmlWsdl::Entity::Type entity,
 		const std::string & attributeName, const int fileID, const bool update) = 0;
 
 	//! \param resourceID Identyfikator zasobu
 	//! \param attributeName Nazwa atrybutu
-	//! \param entity Nazwa encji
+	//! \param entity Typ encji
 	virtual void clearAttributeValue(const int resourceID, const std::string & attributeName,
-		const std::string & entity) = 0;
+		const xmlWsdl::Entity::Type entity) = 0;
+
+	//! \param trialID Identyfikator triala dla ktorego przypisujemy status adnotacji
+	//! \param status Status jaki przypisujemy
+	//! \param comment Komentarz jaki przypisujemy dla statusu adnotacji
+	virtual void setMyAnnotationStatus(const int trialID, const xmlWsdl::AnnotationStatus::Type status,
+		const std::string & comment) = 0;
+
+	//! \param trialID Identyfikator triala dla ktorego przypisujemy status adnotacji
+	//! \param status Status jaki przypisujemy
+	//! \param note Notatka jaka przypisujemy dla statusu adnotacji
+	virtual void setAnnotationReview(const int trialID, const int userID,
+		const xmlWsdl::AnnotationStatus::Type status,
+		const std::string & note) = 0;
 };
 
 typedef boost::shared_ptr<IMotionBasicUpdatesWS> MotionBasicUpdatesWSPtr;

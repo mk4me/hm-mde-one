@@ -12,6 +12,7 @@
 #include <string>
 #include <plugins/newCommunication/IDataSourceUserData.h>
 #include <plugins/newCommunication/IDataSourceUserPrivilages.h>
+#include <webserviceslib/Entity.h>
 
 namespace communication
 {
@@ -33,6 +34,8 @@ public:
     virtual const IUserPrivilages & userPrivilages() const = 0;
     //! \return Dane użytkownika
     virtual const IUserData & userData() const = 0;
+	//! \return Grupy użytkowników bazy danych do których należymy
+	virtual const webservices::xmlWsdl::UserGroupsList userGroups() const = 0;
 };
 
 }

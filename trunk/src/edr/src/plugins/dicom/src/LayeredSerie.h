@@ -34,6 +34,15 @@ namespace dicom {
     // TODO : wywalic to time avare...
     class LayeredSerie : public plugin::AbstractSerie, public plugin::IVisualizer::ITimeAvareSerieFeatures
     {
+	public:
+
+		enum AdnotationsState
+		{
+			InEdition,	//! Adnotacje do edycji - domyslny stan jesli brak stanu oraz kiedy lekarz odrzuci adnotacje oczekujace na weryfikacje
+			ToVerify,	//! Student zamknal adnotacje, czeka na akceptacje
+			Verified	//! Lekarz zatwierdzil adnotacje, dalsza edycja niemozliwa
+		};
+
     public:
         LayeredSerie(LayeredImageVisualizer* visualizer);
         virtual ~LayeredSerie() {}
@@ -56,6 +65,8 @@ namespace dicom {
         coreUI::GraphicSceneWithStateMachine* getGraphicsScene() const;
         dicom::LayeredModelView* getLayersModel();
         void refresh();
+		void setAdnotationState(const AdnotationsState state);
+		const AdnotationsState adnotationState() const;
         void save();
         void removeLayer(int tagIdx, int idx);
         void editLayer(int tagIdx, int idx);

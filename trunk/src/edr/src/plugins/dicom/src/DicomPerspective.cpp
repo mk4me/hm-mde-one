@@ -68,7 +68,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
             s->getObjects(inter, typeid(dicom::DicomInternalStruct), false);
             sessionWrp = *inter.begin();
             std::string sessionName;
-            if (sessionWrp->tryGetMeta("core/source", sessionName)) {
+            if (sessionWrp->getMetadata("core/source", sessionName)) {
                 fs::Path sp(sessionName);
                 label = QString(sp.stem().string().c_str());
             }
@@ -87,7 +87,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
             std::string trialName;
-            motionOW->tryGetMeta("core/source", trialName);
+            motionOW->getMetadata("core/source", trialName);
             
             if (motion->hasObject(typeid(dicom::ILayeredImage), false)) {
                 core::ConstObjectsList images;
@@ -99,11 +99,12 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                 if (images.size() == 1) {
                     utils::ObjectWrapperConstPtr wrapper = (*images.begin());
                     std::string sourceFile;
-                    if (wrapper->tryGetMeta("core/source", sourceFile)) {
+                    if (wrapper->getMetadata("core/source", sourceFile)) {
                         fs::Path stem = fs::Path(sourceFile).stem();
                         fs::Path xmlFilename = tmpDir / (stem.string() + "." + name + ".xml");
                         
                         LayeredImageConstPtr img = wrapper->get();
+						LayeredImagePtr ncimg = utils::const_pointer_cast<LayeredImage>(img);
                         
                         std::string imageFilename = stem.string();
                         if (sessionWrp) {
@@ -111,9 +112,13 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                             auto internalImage = internalStruct->tryGetImage(imageFilename + ".png");
                             if (internalImage) {
                                 desc = DicomSource::createDesc(*internalImage);
-								utils::const_pointer_cast<LayeredImage>(img)->setIsPowerDoppler(internalImage->isPowerDoppler);
+								ncimg->setIsPowerDoppler(internalImage->isPowerDoppler);
                             }
                         }
+
+						//TODO
+						//dopisaæ nr motiona do image ¿eby móc potem nadawaæ mu status
+						ncimg->setTrialID(-1);
                         
                         QIcon icon;
                         if (!layers.empty() || fs::pathExists(xmlFilename)) {
@@ -144,15 +149,13 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
     return core::IHierarchyItemPtr();
 }
 
-
-
 void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
     std::string name = getUserName();
     core::ObjectWrapperPtr wrp = wrapper->clone();
-    (*wrp)[std::string("DICOM_XML")] = xmlFilename;
-    (*wrp)[std::string("TRIAL_NAME")] = trialName;
+    wrp->setMetadata("DICOM_XML", xmlFilename);
+    wrp->setMetadata("TRIAL_NAME", trialName);
                         
     LayeredImagePtr img = wrp->get();
     //LayeredImagePtr img = utils::const_pointer_cast<LayeredImage>(cimg);
@@ -161,7 +164,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
     for (auto itXml = layers.begin(); itXml != layers.end(); ++itXml) {
         LayersVectorConstPtr layersVector = (*itXml)->get();
         std::string xmlUser = "unknown";
-        if ((*itXml)->tryGetMeta("core/source", xmlUser)) {
+        if ((*itXml)->getMetadata("core/source", xmlUser)) {
             // TODO zrobic to regexem
             xmlUser = fs::Path(xmlUser).stem().string();
             xmlUser = xmlUser.substr(xmlUser.find_last_of(".") + 1);

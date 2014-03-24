@@ -83,7 +83,7 @@ public:
 					for(auto it = toRemove.begin(); it != toRemove.end(); ++it){
 						//TODO
 						//przywrócić poprzedni jeśli był
-						(*it)->set(ObjectWrapper::LazyInitializer());
+						(*it)->setInitializer(ObjectWrapper::LazyInitializer());
 					}
 					fdm->objectsByFiles.erase(it->first);
 				}
@@ -523,7 +523,7 @@ void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IMemory
 	for(auto it = toRemove.begin(); it != toRemove.end(); ++it){
 		//TODO
 		//przywrócić poprzedni jeśli był
-		(*it)->set(ObjectWrapper::LazyInitializer());
+		(*it)->setInitializer(ObjectWrapper::LazyInitializer());
 		if(memTransaction->tryRemoveData(*it) == false){
 			ok = false;
 		}
@@ -560,14 +560,14 @@ void FileDataManager::initializeParsers(const IParserManagerReader::ParserProtot
 				if((*objectIT)->initializer().empty() == false){
 					CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded with custom initializer. Supplying with compound initializer");
 					//inicjalizator na bazie inicjalizatora:)
-					(*objectIT)->set(ObjectWrapper::LazyInitializer(boost::bind(&FileDataManager::initializeDataWithExternalInitializer, this, _1, (*objectIT)->initializer(), parser)));
+					(*objectIT)->setInitializer(ObjectWrapper::LazyInitializer(boost::bind(&FileDataManager::initializeDataWithExternalInitializer, this, _1, (*objectIT)->initializer(), parser)));
 				}else{
 					if((*objectIT)->getRawPtr() != nullptr ){
 						CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded already initialized. Reseting object and supplying initializer");
 					}
 
 					//inicjalizator na bazie parsera
-					(*objectIT)->set(ObjectWrapper::LazyInitializer(boost::bind(&FileDataManager::initializeDataWithParser, this, _1, parser)));
+					(*objectIT)->setInitializer(ObjectWrapper::LazyInitializer(boost::bind(&FileDataManager::initializeDataWithParser, this, _1, parser)));
 				}
 
 				objects.push_back(*objectIT);
@@ -610,14 +610,14 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 		ObjectsList objectsAdded;
 
 		for(auto it = objects.begin(); it != objects.end(); ++it){
-			if((*it)->find("core/name") == (*it)->end()){
+			if((*it)->existMetadata("core/name") == false){
 				std::stringstream name;
 				name << file.filename().string() << "_" << idx++;
-				(*(*it))["core/name"] = name.str();
+				(*it)->setMetadata("core/name", name.str());
 			}
 
-			if((*it)->find("core/source") == (*it)->end()){
-				(*(*it))["core/source"] = file.filename().string();
+			if((*it)->existMetadata("core/source") == false){
+				(*it)->setMetadata("core/source", file.filename().string());
 			}
 
 			if(memTransaction->isManaged(*it) == false){

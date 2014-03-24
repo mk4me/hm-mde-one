@@ -55,6 +55,9 @@ public:
 	virtual const bool isPowerDoppler() const;
 	void setIsPowerDoppler(const bool val);
 
+	virtual const int getTrialID() const;
+	void setTrialID(const int trialID);
+
 private:
     //std::vector<ILayerItemPtr> layers;
     BackgroundLayerPtr backgroundLayer;
@@ -63,6 +66,7 @@ private:
     std::set<std::string> tags;
     std::map<std::string, bool> tagsVisibility;
 	bool isPowerDoppler_;
+	int trialID;
 
 private:
     friend class boost::serialization::access;

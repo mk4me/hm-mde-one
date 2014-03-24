@@ -434,13 +434,13 @@ void CoreVisualizerWidget::removeSerie()
 
 const bool CoreVisualizerWidget::getDataName(core::ObjectWrapperConstPtr data, std::string & dataName)
 {
-	return (data->tryGetMeta("core/uiUserName", dataName) == true || data->tryGetMeta("core/uiName", dataName) == true
-		|| data->tryGetMeta("core/name", dataName) == true);
+	return (data->getMetadata("core/uiUserName", dataName) == true || data->getMetadata("core/uiName", dataName) == true
+		|| data->getMetadata("core/name", dataName) == true);
 }
 
 const bool CoreVisualizerWidget::getDataSource(core::ObjectWrapperConstPtr data, std::string & dataSource)
 {
-	return data->tryGetMeta("core/source", dataSource);
+	return data->getMetadata("core/source", dataSource);
 }
 
 void CoreVisualizerWidget::onLiveObserveChange(bool observe)

@@ -131,8 +131,10 @@ private:
 	//! \param user Aktualny użytkownik zalogowany do bazy danych
 	void setCurrentUser(const User & user);
 
-	//! \param user Użytkownik wg którego ustawiany połączenia
-	static void setConnectionsCredentials(const User & user);
+	//! \param login Login użytkownika wg którego ustawiany połączenia
+	//! \param password Haslo użytkownika wg którego ustawiany połączenia
+	static void setConnectionsCredentials(const std::string & login,
+		const std::string & password);
 
 	//! \param certPath Ścieżka certyfikatu serwera dla połączeń https
 	static void setConnectionsSerwerCertificatePath(const core::Filesystem::Path & certPath);

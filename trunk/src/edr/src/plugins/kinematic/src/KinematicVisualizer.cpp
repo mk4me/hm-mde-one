@@ -883,10 +883,10 @@ void KinematicVisualizer::scaleZ( double d )
 }
 
 QString KinematicVisualizer::getRootName( const core::ObjectWrapperConstPtr & data, const QString& suffix )
-{
-    auto it = data->find("core/name");
-    if (it != data->end()) {
-        return QString::fromStdString(it->second) + "_" + suffix;
+{    
+	std::string name;
+    if (data->getMetadata("core/name", name) == true) {
+        return QString::fromStdString(name) + "_" + suffix;
     }
     return suffix;
 }

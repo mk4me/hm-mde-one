@@ -199,12 +199,12 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     std::string suffix = boost::lexical_cast<std::string>(number++);
     std::string p = path.toStdString();
 
-	(*wrapperX)["core/name"] = "X_" + suffix;
-	(*wrapperY)["core/name"] = "Y_" + suffix;
-	(*wrapperZ)["core/name"] = "Z_" + suffix;
-	(*wrapperX)["core/source"] = p + "/X_" + suffix;
-	(*wrapperY)["core/source"] = p + "/Y_" + suffix;
-	(*wrapperZ)["core/source"] = p + "/Z_" + suffix;
+	wrapperX->setMetadata("core/name", "X_" + suffix);
+	wrapperY->setMetadata("core/name", "Y_" + suffix);
+	wrapperZ->setMetadata("core/name", "Z_" + suffix);
+	wrapperX->setMetadata("core/source", p + "/X_" + suffix);
+	wrapperY->setMetadata("core/source", p + "/Y_" + suffix);
+	wrapperZ->setMetadata("core/source", p + "/Z_" + suffix);
     visualizer->getOrCreateWidget();
 
 	auto serieX = visualizer->createSerie(wrapperX->getTypeInfo(), wrapperX);
@@ -252,7 +252,7 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
     for (int i = 0; i < count; ++i) {
         auto wrapper = wrappers[i].wrapper;
 		std::string source;
-		wrapper->tryGetMeta("core/source", source);
+		wrapper->getMetadata("core/source", source);
         auto serieX = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
 		serieX->serie()->setName(source);
         if (wrappers[i].events) {
@@ -331,11 +331,11 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 
     core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
     wrapperX->set(utils::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
-    (*wrapperX).copyMeta(*wrapper);
+    wrapperX->copyMetadata(*wrapper);
     visualizer->getOrCreateWidget();
 
     std::string name("UNKNOWN");
-    wrapperX->tryGetMeta("core/name", name);    
+    wrapperX->getMetadata("core/name", name);    
     auto s = visualizer->createSerie(typeid(ScalarChannelReaderInterface),wrapperX);
 
     INewChartSerie* chartSerie = dynamic_cast<INewChartSerie*>(s->serie());

@@ -80,9 +80,11 @@ public:
 
     //! \return Zwraca prawdę jeżeli użytkownik tej usługi występuje w bazie danych
     virtual const bool checkMyLogin() const = 0;
+	//! \return Zwraca listę grup do których przynależy mój użytkownik
+	virtual const std::string listMyUserGroupsAssigned() const = 0;
 
 	//! Zwraca ciąg znaków dla aktualizacji, kiedy podana wartość nie ulegnie zmianie
-	static const std::string noChangeValue()
+	inline static const std::string noChangeValue()
 	{
 		return std::string("-nochange-");
 	}

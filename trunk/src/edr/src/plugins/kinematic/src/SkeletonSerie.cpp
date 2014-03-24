@@ -22,7 +22,7 @@ SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer,
 	localRootNode(new osg::PositionAttitudeTransform)
 {	
 	UTILS_ASSERT(data->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
-	data->tryGetMeta("core/name", name);	
+	data->getMetadata("core/name", name);	
 	jointAngles = data->get();
 
 	std::vector<std::string> mapping;
@@ -258,7 +258,7 @@ visualizer(visualizer),
 	localRootNode(new osg::PositionAttitudeTransform)
 {	
 	UTILS_ASSERT(data->getTypeInfo() == typeid(SkeletonDataStream));
-	data->tryGetMeta("core/name", name);	
+	data->getMetadata("core/name", name);	
 	skeletalData = data->get();
 	
 	pointsDrawer->init(skeletalData->jointsCount);

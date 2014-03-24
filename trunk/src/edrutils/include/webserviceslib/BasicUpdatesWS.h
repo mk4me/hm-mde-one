@@ -116,14 +116,27 @@ namespace webservices
 		//! \param attributeName Nazwa atrybutu
 		//! \param fileID Identyfikator pliku
 		//! \param update Czy aktualizować wartość jeśli istnieje
-		virtual void setFileTypedAttributeValue(const int resourceID, const std::string & entity,
+		virtual void setFileTypedAttributeValue(const int resourceID, const xmlWsdl::Entity::Type entity,
 			const std::string & attributeName, const int fileID, const bool update);
 
 		//! \param resourceID Identyfikator zasobu
 		//! \param attributeName Nazwa atrybutu
 		//! \param entity Nazwa encji
 		virtual void clearAttributeValue(const int resourceID, const std::string & attributeName,
-			const std::string & entity);
+			const xmlWsdl::Entity::Type entity);
+
+		//! \param trialID Identyfikator triala dla ktorego przypisujemy status adnotacji
+		//! \param status Status jaki przypisujemy
+		//! \param comment Komentarz jaki przypisujemy dla statusu adnotacji
+		virtual void setMyAnnotationStatus(const int trialID, const xmlWsdl::AnnotationStatus::Type status,
+			const std::string & comment);
+
+		//! \param trialID Identyfikator triala dla ktorego przypisujemy status adnotacji
+		//! \param status Status jaki przypisujemy
+		//! \param note Notatka jaka przypisujemy dla statusu adnotacji
+		virtual void setAnnotationReview(const int trialID, const int userID,
+			const xmlWsdl::AnnotationStatus::Type status,
+			const std::string & note);
 	};
 
     class MedicalBasicUpdatesWS : public WebServiceT<IMedicalBasicUpdatesWS>

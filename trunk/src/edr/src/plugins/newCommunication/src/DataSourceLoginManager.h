@@ -40,10 +40,10 @@ private:
     //! \param userID Identyfikator użytkownika dla którego chcemy pobrać prawa do przeglądania danych w bazie danych
     //! \param userPrivilages [out] Uprawnienia użytkownika do danych
     static void getUserPrivilages(int userID, UserPrivilages & userPrivilages);
-    //! \param login Login użytkownika w bazie (najprawdopodobniej jego email)
-    //! \param password Hasło użytkownika w bazie
+	//! \param userGroups [out] Grupy uzytkowników bazy danych do których nalezymy
+	static void getUserGroups(webservices::xmlWsdl::UserGroupsList & userGroups);
     //! \return Identyfikator użytkownika lub -1 jeżeli nie znaleziono
-    static const int getUserIDForLoginAndPassword(const std::string & login, const std::string & password);
+    static const int getUserID();
 
 private:
     //! Identyfikator aktualnie zalogowanego użytkownika

@@ -113,9 +113,10 @@ namespace core {
 		Application();
 		~Application();
 
-		int initUIContext(int & argc, char *argv[]);
+		int initUIContext(int & argc, char *argv[], std::vector<Filesystem::Path> & coreTranslations);
 
-		void initWithUI(coreUI::CoreMainWindow * mainWindow);
+		void initWithUI(coreUI::CoreMainWindow * mainWindow,
+			std::vector<Filesystem::Path> & translations);
 
 		int run();
 
