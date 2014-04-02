@@ -30,6 +30,7 @@
 #include "LanguagesLoader.h"
 #include "LanguageChangeFilter.h"
 #include <boost/algorithm/string.hpp>
+#include "ApplicationDescription.h"
 
 #ifdef WIN32
 #include <Windows.h>
@@ -85,7 +86,9 @@ void Application::updateServices()
 	serviceManager_->update(servicesTimeDelta);
 }
 
-Application::Application() : visualizerTimeDelta(TimeDelta), servicesTimeDelta(TimeDelta), mainWindow(nullptr), uiInit(false)
+Application::Application() : vendor_("Polsko-Japoñska Wy¿sza Szko³a Technik Komputerowych, Oddzia³ zamiejscowy w Bytomiu",
+	"PJWSTK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com"),
+	visualizerTimeDelta(TimeDelta), servicesTimeDelta(TimeDelta), mainWindow(nullptr), uiInit(false)
 {
 	
 }
@@ -206,6 +209,11 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 		languagesManager_->setLanguage(lang);
 	}
 
+	// Opis aplikacji
+	{
+		applicationDescription_.reset(new ApplicationDescription(&version_, &vendor_));
+	}
+
 	return 0;
 }
 
@@ -282,7 +290,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 #if defined(__WIN32__)
 	if (additionalPluginsPath.empty() == true) {
-		additionalPluginsPath = getPathInterface()->getPluginPath();
+		additionalPluginsPath = getPaths()->getPluginPath();
 	}
 #endif
 
@@ -325,7 +333,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 #endif
 
 			LanguagesLoader::loadPluginDefaultTranslation(pluginName,
-				plugin->getDefaultLanguageCode(), languagesManager_.get());
+				plugin->defaultLanguageCode(), languagesManager_.get());
 
 			LanguagesLoader::loadPluginTranslations(translations,
 				pluginName, languagesManager_.get());			
@@ -424,11 +432,24 @@ Application::~Application()
 		uiApplication_.reset();
 		
 		CORE_LOG_INFO("Cleaning tmp files");
-		Filesystem::deleteDirectory(getPathInterface()->getTmpPath());
+		Filesystem::deleteDirectory(getPaths()->getTmpPath());
 		
+		CORE_LOG_INFO("Releasing application description");
+		applicationDescription_.reset();
+
 		CORE_LOG_INFO("Releasing core log");
 		logger_.reset();
 	}
+}
+
+ApplicationDescription * Application::description()
+{
+	return applicationDescription_.get();
+}
+
+LanguagesManager * Application::languageManager()
+{
+	return languagesManager_.get();
 }
 
 MemoryDataManager* Application::memoryDataManager()
@@ -580,11 +601,11 @@ void Application::safeRegisterService(const plugin::IServicePtr & service)
 		serviceManager_->registerService(service);
 
 	}catch(std::exception & e){
-		CORE_LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
+		CORE_LOG_WARNING("Service " << service->name() << " " <<service->description() << " with ID " << service->ID() <<
 			" has caused an error during registration: " << e.what() << ". Service NOT registered in application!" );
 	}
 	catch(...){
-		CORE_LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
+		CORE_LOG_WARNING("Service " << service->name() << " " <<service->description() << " with ID " << service->ID() <<
 			" has caused an UNKNOWN error during registration. Service NOT registered in application!" );
 	}
 }
@@ -596,11 +617,11 @@ void Application::safeRegisterSource(const plugin::ISourcePtr & source)
 		sourceManager_->registerSource(source);
 
 	}catch(std::exception & e){
-		CORE_LOG_WARNING("Source " << source->getName() << " with ID " << source->getID() <<
+		CORE_LOG_WARNING("Source " << source->name() << " with ID " << source->ID() <<
 			" has caused an error during registration: " << e.what() << ". Source NOT registered in application!" );
 	}
 	catch(...){
-		CORE_LOG_WARNING("Source " << source->getName() << " with ID " << source->getID() <<
+		CORE_LOG_WARNING("Source " << source->name() << " with ID " << source->ID() <<
 			" has caused an UNKNOWN error during registration. Source NOT registered in application!" );
 	}
 }
@@ -612,11 +633,11 @@ void Application::safeRegisterParser(const plugin::IParserPtr & parser)
 		parserManager_->registerParser(parser);
 
 	}catch(std::exception & e){
-		CORE_LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
+		CORE_LOG_WARNING("Parser " << parser->description() << " with ID " << parser->ID() <<
 			" has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
 	}
 	catch(...){
-		CORE_LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
+		CORE_LOG_WARNING("Parser " << parser->description() << " with ID " << parser->ID() <<
 			" has caused an UNKNOWN error during registration. Parser NOT registered in application!" );
 	}
 }
@@ -643,18 +664,18 @@ void Application::safeRegisterVisualizer(const plugin::IVisualizerPtr & visualiz
 		visualizerManager_->registerVisualizerPrototype(visualizer);
 
 	}catch(std::exception & e){
-		CORE_LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
+		CORE_LOG_WARNING("Visualizer " << visualizer->name() << " with ID " << visualizer->ID()
 			<< " has caused an error during registration: " << e.what() << ". Visualizer NOT registered in application!" );
 	}
 	catch(...){
-		CORE_LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
+		CORE_LOG_WARNING("Visualizer " << visualizer->name() << " with ID " << visualizer->ID()
 			<< " has caused an UNKNOWN error during registration. Visualizer NOT registered in application!" );
 	}
 }
 
 void Application::unpackPlugin(CoreMainWindow * mainWindow, const core::PluginPtr & plugin)
 {
-	auto message = QObject::tr("Loading plugin %1 content: %2").arg(QString::fromStdString(plugin->getName()));
+	auto message = QObject::tr("Loading plugin %1 content: %2").arg(QString::fromStdString(plugin->name()));
 
 	showSplashScreenMessage(message.arg(QObject::tr("domain objects")));	
 

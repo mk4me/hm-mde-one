@@ -11,6 +11,7 @@
 
 #include <corelib/IPlugin.h>
 #include <corelib/Filesystem.h>
+#include <corelib/IIdentifiable.h>
 
 namespace core {
 /**
@@ -21,13 +22,13 @@ class Plugin : public IPlugin
 public:
     //! Typ funkcji inicjuj¹cej plugin kontekstem aplikacji i ladowanymi modulami.
     typedef void (*InitializeAndLoadFunction)(IPlugin * plugin, IApplication* coreApplication);
-	//! Typ funkcji wype³niaj¹cej opis pluginu.
+	//! Typ funkcji wype³niaj¹cej podstawowy opis pluginu.
 	typedef void (*SetPluginDescriptionFunction)(IPlugin * plugin);
-    //! Typ funkcji pobieraj¹cej wersjê pluginu.
+    //! Typ funkcji pobieraj¹cej wersjê API z któr¹ budowano plugin.
     typedef int (*GetAPIVersionFunction)(int * major, int * minor, int * patch);
     //! Typ funkcji pobieraj¹cej typ builda pluginu
     typedef int (*GetBuildTypeFunction)();
-    //!
+    //! Typ funkcji pobieraj¹cej wersje najwa¿niejszych bibliotek od których uzale¿niony jest core
     typedef int (*GetLibrariesVersionFunction)(int* boostVersion, int* qtVersion, int* stlVersion);
     //! Typ listy us³ug.
     typedef std::vector<plugin::IServicePtr> Services;
@@ -52,16 +53,18 @@ private:
     //! Zbiór wprowadzanych OW do aplikacji
     ObjectWrapperPrototypes objectWrapperPrototypes;
 
-    //! Nazwa pluginu.
-    std::string name;
-	//! Nazwa pluginu.
-	std::string description;
 	//! Kod jêzyka domyslnego
-	std::string defaultLanguageCode;
+	std::string defaultLanguageCode_;
     //! ID pluginu.
     UniqueID id;
     //! Œcie¿ka do pluginu.
     Filesystem::Path path;
+	//! Opis pluginu
+	plugin::Description desc;
+	//! Dostawca pluginu
+	core::shared_ptr<plugin::VendorDescription> vendor_;
+	//! Wersja pluginu
+	core::shared_ptr<Version> version_;
 
 public:
 	//! Domyœlny konstruktor
@@ -70,29 +73,55 @@ public:
 	virtual ~Plugin();
 
     //! \return ID pluginu.
-    virtual UniqueID getID() const;
+    virtual const UniqueID ID() const;
 
-    //! \return nazwa pluginu
-    virtual const std::string getDescription() const;
+    //! \return Opis pluginu
+    virtual const std::string description() const;
 
     //! \return Nazwa pluginu.
-    virtual const std::string getName() const;
+    virtual const std::string name() const;
+	//! \return Krótka nazwa pluginu.
+	virtual const std::string shortName() const;
     //! \return
     const Filesystem::Path& getPath() const;
+
+	//! \return Wersja pluginu
+	virtual const core::Version * version() const;
+	//! \return Dostawca pluginu
+	virtual const plugin::VendorDescription * vendor() const;
+
     //! \param path
     void setPath(const Filesystem::Path& path);
 
 	//! \param name Nazwa pluginu
 	virtual void setName(const std::string & name);
 
-	//! \param  description Opis pluginu
-	virtual void setDescription(const std::string & description);
+	//! \param major G³ówna wersja pluginu
+	//! \param minor Podrzêdna wersja pluginu
+	//! \param patch Wersja patcha pluginu
+	virtual void setVersion(const core::Version::VersionNumberType major,
+		const core::Version::VersionNumberType minor,
+		const core::Version::VersionNumberType patch);
+
+	//! \param name Nazwa dostawcy
+	//! \param shortName Skrócona nazwa dostawcy
+	//! \param description Opis dostawcy
+	//! \param contact Kontakt z dostawc¹
+	virtual void setVendor(const std::string & name,
+		const std::string & shortName,
+		const std::string & description,
+		const std::string & contact);
+
+	//! \param shortName Skrócona nazwa pluginu
+	//! \param description Opis pluginu	
+	virtual void setDescription(const std::string & name,		
+		const std::string & description);
 
 	//! \param langCode Kod domyœlnego jêzyka pluginu wg ISO639
 	virtual void setDefaultLanguageCode(const std::string & langCode);
 
 	//! \return Kod domyœlnego jêzyka pluginu wg ISO639
-	const std::string & getDefaultLanguageCode() const;
+	const std::string & defaultLanguageCode() const;
 
 	//! \param id Identyfikator pluginu
 	virtual void setID(UniqueID id);

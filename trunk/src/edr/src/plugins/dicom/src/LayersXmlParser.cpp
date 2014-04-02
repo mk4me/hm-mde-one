@@ -35,8 +35,8 @@ void LayersXmlParser::acceptedExpressions(Expressions & expressions) const
     expDesc.description = "Layers Xml";
 
     expDesc.types.insert(typeid(LayersVector));
-    expressions.insert(Expressions::value_type(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}-T[0-9]{4}\.xml$", expDesc));
-    expressions.insert(Expressions::value_type(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}-T[0-9]{4}\..*\.xml$", expDesc));
+    expressions.insert(Expressions::value_type(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}-T[0-9]{4}\\.xml$", expDesc));
+    expressions.insert(Expressions::value_type(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}-T[0-9]{4}\\..*\\.xml$", expDesc));
 }
 
 void LayersXmlParser::getObjects( core::Objects& objects )

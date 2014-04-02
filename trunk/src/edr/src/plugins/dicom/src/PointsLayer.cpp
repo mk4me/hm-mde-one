@@ -7,14 +7,14 @@
 #include "boost/serialization/export.hpp"
 
 
-dicom::PointsLayer::PointsLayer() :
+dicom::PointsLayer::PointsLayer(const int annotationIDX) :
+	ILayerGraphicItem(annotationIDX),
     group (new QGraphicsItemGroup()),
     pathItem(new QGraphicsPathItem()),
     name("VPoints")
 {
     pathItem->setParentItem(group.get());
     group->setHandlesChildEvents(false);
-    //setEditable(false);
 }
 
 dicom::PointsLayer::~PointsLayer()
@@ -198,10 +198,9 @@ int dicom::PointsLayer::getPointIdx( QGraphicsItem* itm )
     return points.indexOf(itm);
 }
 
-dicom::ILayerItem* dicom::PointsLayer::clone() const
+dicom::PointsLayer* dicom::PointsLayer::clone() const
 {
-    std::unique_ptr<PointsLayer> pl(new PointsLayer());
-    pl->setAdnotationIdx(getAdnotationIdx());
+    std::unique_ptr<PointsLayer> pl(new PointsLayer(getAdnotationIdx()));    
     pl->setName(this->name);
     pl->setPointsDrawer(IPointsDrawerPtr(pointsDrawer->clone()));
 

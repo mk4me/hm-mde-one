@@ -37,14 +37,14 @@ public:
 
 protected:
     int getNumSelected();
-    ILayerItemPtr getFirstSelected();
+    ILayerGraphicItemPtr getFirstSelected();
     void createItem2LayerMap();
     QGraphicsItem* extractItem( QGraphicsSceneMouseEvent* e );
     QGraphicsItem* extractItem( QGraphicsItem* itm);
 
 protected: 
     LayeredStateMachine* machine;
-    std::map<QGraphicsItem*, ILayerItemPtr> item2layer;
+    std::map<QGraphicsItem*, ILayerGraphicItemPtr> item2layer;
 
 private Q_SLOTS:
     void addBone();

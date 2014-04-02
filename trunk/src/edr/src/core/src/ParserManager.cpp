@@ -86,8 +86,8 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 {
 	//! Weryfikujemy ID parsera
 	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
-		if(it->first->getID() == parser->getID()){
-			CORE_LOG_NAMED_WARNING("parser", "Parser with given ID: " + boost::lexical_cast<std::string>(parser->getID()) + " already registered - skipping registration");
+		if(it->first->ID() == parser->ID()){
+			CORE_LOG_NAMED_WARNING("parser", "Parser with given ID: " + boost::lexical_cast<std::string>(parser->ID()) + " already registered - skipping registration");
 			throw std::runtime_error("Parser with similar ID already registered");
 		}
 	}
@@ -98,7 +98,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 	pData.streamParser = dynamic_cast<plugin::IStreamParserCapabilities*>(parser.get());
 
 	if( !(pData.sourceParser || pData.streamParser) ){
-		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->getID()) + " does not support any of known capabilities to parse");
+		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " does not support any of known capabilities to parse");
 		throw std::runtime_error("Parser does not support any known parse capabilities");
 	}
 
@@ -107,7 +107,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 	parser->acceptedExpressions(expressions);
 
 	if(expressions.empty() == true){
-		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->getID()) + " does not support any expressions");
+		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " does not support any expressions");
 		throw std::runtime_error("Parser does not support any expresions");
 	}
 
@@ -124,7 +124,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 
 		//! Weryfikacja czy wyrażenie wspiera jakieś znane typy
 		if(desc.types.empty() == true){
-			CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->getID()) + " not offers any known types for expression: " + it->first);
+			CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " not offers any known types for expression: " + it->first);
 		}else{
 			desc.description = it->second.description;
 			desc.regularExpression = std::regex(it->first);
@@ -134,7 +134,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 
 	//! Weryfikacja czy mamy jakies wyrażenia wspierające znane typy
 	if(pData.expressions.empty() == true){
-		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->getID()) + " not offers any known types for any offered expression - skiping registration");
+		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " not offers any known types for any offered expression - skiping registration");
 	}else{
 		parsers_[parser] = pData;
 		std::string capabilities;
@@ -145,6 +145,6 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 		}else{
 			capabilities = "stream capabilities";
 		}
-		CORE_LOG_NAMED_INFO("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->getID()) + " successfully registered offering: " + capabilities);
+		CORE_LOG_NAMED_INFO("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " successfully registered offering: " + capabilities);
 	}
 }

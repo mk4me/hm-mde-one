@@ -24,7 +24,9 @@ class ILayeredImage
 {
 public:
     typedef std::multimap<std::string, ILayerItemPtr> LayersMap;
-    typedef boost::iterator_range<LayersMap::const_iterator> const_range;
+	typedef std::multimap<std::string, ILayerGraphicItemPtr> GraphicLayersMap;
+    typedef boost::iterator_range<LayersMap::const_iterator> layers_const_range;
+	typedef boost::iterator_range<GraphicLayersMap::const_iterator> graphiclayers_const_range;
     typedef boost::iterator_range<std::set<std::string>::const_iterator> tags_range;
 
 public:
@@ -32,20 +34,23 @@ public:
 	virtual ~ILayeredImage() {}
     virtual void addLayer(ILayerItemPtr layer, const std::string& layerName) = 0;
     virtual void removeLayer(ILayerItemConstPtr layer) = 0;
-    virtual const_range getLayerItems(const std::string& layerName) const = 0;
+    virtual layers_const_range getLayerItems(const std::string& layerName) const = 0;
     virtual QPixmap getPixmap() const = 0;
     virtual QSize getSize() const = 0;
     virtual int getNumLayerItems(const std::string& layerName) const = 0;
+	virtual int getNumGraphicLayerItems(const std::string& layerName) const = 0;
     virtual ILayerItemConstPtr getLayerItem(const std::string& layerName,int idx) const = 0;
     virtual ILayerItemPtr getLayerItem(const std::string& layerName, int idx) = 0;
-    virtual dicom::ILayerItemPtr getBackgroundLayer() const = 0;
+	virtual ILayerGraphicItemConstPtr getLayerGraphicItem(const std::string& layerName,int idx) const = 0;
+	virtual ILayerGraphicItemPtr getLayerGraphicItem(const std::string& layerName, int idx) = 0;
+    virtual dicom::ILayerGraphicItemPtr getBackgroundLayer() const = 0;
     virtual int getNumTags() const = 0;
     virtual std::string getTag(int idx) const = 0;
     virtual tags_range getTags() const = 0;
     virtual bool getTagVisible(const std::string& tag) const = 0;
     virtual void setTagVisible(const std::string& tag, bool val) = 0;
 	virtual const bool isPowerDoppler() const = 0;
-	virtual const int getTrialID() const { return -1; }
+	virtual const int getTrialID() const { return -1; }	
 
     virtual ILayeredImage* clone() const = 0;
 };

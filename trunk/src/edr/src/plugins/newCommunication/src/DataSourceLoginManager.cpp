@@ -26,7 +26,7 @@ void DataSourceLoginManager::login(const std::string & user, const std::string &
     UserData data;
     getUserData(userID, data);
 
-	webservices::xmlWsdl::UserGroupsList userGroupsList;
+	communication::IUser::UserGroups userGroupsList;
 	getUserGroups(userGroupsList);
 
     user_.setID(userID);
@@ -71,11 +71,16 @@ void DataSourceLoginManager::getUserPrivilages(int userID, UserPrivilages & user
     //dodać ściąganie i parsowanie uprawnień do danych użytkownika
 }
 
-void DataSourceLoginManager::getUserGroups(webservices::xmlWsdl::UserGroupsList & userGroups)
+void DataSourceLoginManager::getUserGroups(communication::IUser::UserGroups & userGroups)
 {
 	try{
 		auto response = DataSourceWebServicesManager::instance()->authorizationService()->listMyUserGroupsAssigned();
-		userGroups = webservices::xmlWsdl::parseUserGroups(response);
+		auto wuserGroups = webservices::xmlWsdl::parseUserGroups(response);
+
+		for(auto it = wuserGroups.begin(); it != wuserGroups.end(); ++it){
+			userGroups[(*it).id] = (*it).name;
+		}
+
 	}catch(...){
 
 	}
@@ -87,11 +92,11 @@ const int DataSourceLoginManager::getUserID()
 	bool res = DataSourceWebServicesManager::instance()->authorizationService()->checkMyLogin();
 
 	if(res == true){
-		//TODO
-		//czym identyfikujemy użytkownika?
-		ret = 1;
+		
+		auto xml = DataSourceWebServicesManager::instance()->authorizationService()->getMyUserData();
+		ret = webservices::xmlWsdl::parseUser(xml).id;
 
-	}	
+	}
 
 	return ret;
 }

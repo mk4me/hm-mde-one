@@ -2,10 +2,10 @@
 #define BASE_DATA_TYPES_H
 
 #include <corelib/Export.h>
-#include <stdint.h>
+//#include <stdint.h>
 #include <string>
-#include <ostream>
-#include <algorithm>
+//#include <ostream>
+//#include <algorithm>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -29,7 +29,7 @@ public:
 //! Statyczna metoda
 //! \param uuid Ciąg znaków dla którego generujemy unikalny identyfikator
 //! \return Unikalny identyfikator
-static UniqueID GenerateUniqueID(const std::string& uuid) 
+inline static const UniqueID GenerateUniqueID(const std::string& uuid) 
 {
     return boost::uuids::string_generator()(uuid);
 }

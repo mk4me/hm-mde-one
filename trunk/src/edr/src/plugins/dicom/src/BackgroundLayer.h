@@ -19,7 +19,7 @@
 
 namespace dicom {
 
-class BackgroundLayer : public ILayerItem
+class BackgroundLayer : public ILayerGraphicItem
 {
 public:
     BackgroundLayer(const QPixmap& p, const QString& name = QString("Background"));
@@ -35,7 +35,7 @@ public:
     void setCrop(const QRect& val);
     const QPixmap& getPixmap() const;
 
-    ILayerItem* clone() const;
+    virtual BackgroundLayer* clone() const;
 
 private:
     BackgroundLayer() {}

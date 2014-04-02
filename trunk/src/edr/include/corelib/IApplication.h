@@ -24,6 +24,8 @@ namespace core {
 	class IVisualizerManager;
 	class IThreadPool;
 	class IJobManager;
+	class IApplicationDescription;
+	class ILanguagesManager;
 
 	//! Interfejs klasy dostarczaj¹cej pluginom ogólnych zasobów aplikacji:
 	//! interfejs œcie¿ek, interfejs do czytania danych,
@@ -31,15 +33,18 @@ namespace core {
 	//! wg kluczy
 
 	//! WA¯NE - pozosta³e elementy aplikacji których tutaj nie ma bêd¹ dostarczane poszczególnym modu³om indywidualnie
-	//! wg przyjêtych regu³ i potrzeb
+	//! wg przyjêtych regu³ i potrzeb - patrz serwisy, Ÿród³a danych
 	class IApplication {
 
 	public:
-
+		//! Destruktor wirtualny
 		virtual ~IApplication() {}
-
+		//! \return Opis aplikacji
+		virtual const IApplicationDescription * description() = 0;
+		//! \return Manager translacji aplikacji - pozwala zmieniaæ jêzyk
+		virtual ILanguagesManager * languagesManager() = 0;
 		//! \return Interfejs œcie¿ek aplikacji
-		virtual IPath * pathInterface() = 0;
+		virtual IPath * paths() = 0;
 		//! \return Interfejs do logowania
 		virtual ILog * log() = 0;
 		//! \return Interfejs do czytania danych

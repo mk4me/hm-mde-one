@@ -732,7 +732,11 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processUploa
             utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
             ret = fileUploadHelper.put(uploadRequest.get());
             //if (ret == webservices::IFtpsConnection::Complete) {
-                motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "test xml file", uploadRequest->getFileName());
+#ifdef _DEVELOPER
+				motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "test xml file", uploadRequest->getFileName());
+#else
+                motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "MEDUSA", uploadRequest->getFileName());
+#endif
             //}
         }
 

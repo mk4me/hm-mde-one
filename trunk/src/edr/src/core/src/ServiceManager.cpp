@@ -20,9 +20,9 @@ void ServiceManager::update(double deltaTime)
         try{
             (*it)->update(deltaTime);
         }catch(std::exception & e){
-            CORE_LOG_ERROR("Service: " << (*it)->getName() << " ID: " << (*it)->getID() << " caused an error during update: " << e.what());
+            CORE_LOG_ERROR("Service: " << (*it)->name() << " ID: " << (*it)->ID() << " caused an error during update: " << e.what());
         }catch(...){
-            CORE_LOG_ERROR("Service: " << (*it)->getName() << " ID: " << (*it)->getID() << " caused an UNKNOWN error during update");
+            CORE_LOG_ERROR("Service: " << (*it)->name() << " ID: " << (*it)->ID() << " caused an UNKNOWN error during update");
         }
     }
 }
@@ -32,16 +32,16 @@ void ServiceManager::finalizeServices()
     for(auto it = servicesList.begin(); it != servicesList.end(); ++it){
         try{
             (*it)->finalize();
-            CORE_LOG_DEBUG("ServiceManager: finalized correctly " << (*it)->getName() << " service");
+            CORE_LOG_DEBUG("ServiceManager: finalized correctly " << (*it)->name() << " service");
         }
         catch(std::runtime_error & e){
-            CORE_LOG_ERROR("ServiceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
+            CORE_LOG_ERROR("ServiceManager: Error finalizing " << (*it)->name() << " service with error " << e.what());
         }
         catch(std::invalid_argument & e){
-            CORE_LOG_ERROR("ServiceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
+            CORE_LOG_ERROR("ServiceManager: Error finalizing " << (*it)->name() << " service with error " << e.what());
         }
         catch(std::exception & e){
-            CORE_LOG_ERROR("ServiceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
+            CORE_LOG_ERROR("ServiceManager: Error finalizing " << (*it)->name() << " service with error " << e.what());
         }
         catch(...){
             CORE_LOG_ERROR("ServiceManager: Unknown error");
@@ -51,10 +51,10 @@ void ServiceManager::finalizeServices()
 
 void ServiceManager::registerService(plugin::IServicePtr service)
 {
-    if (servicesMap.find(service->getID()) == servicesMap.end()) {
-        servicesMap.insert( std::make_pair(service->getID(), service));
+    if (servicesMap.find(service->ID()) == servicesMap.end()) {
+        servicesMap.insert( std::make_pair(service->ID(), service));
         servicesList.push_back(service);
-        CORE_LOG_INFO("Service " << service->getName() << " registered.");
+        CORE_LOG_INFO("Service " << service->name() << " registered.");
     } else {
         throw std::runtime_error("Service with this ID already registered.");
     }

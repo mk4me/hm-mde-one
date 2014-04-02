@@ -5,8 +5,7 @@
 #include "TimelineService.h"
 #include "TimelineWidget.h"
 
-TimelineService::TimelineService() : name("newTimeline"),
-    controller(new timeline::Controller())
+TimelineService::TimelineService() : controller(new timeline::Controller())
 {
     widget = new TimelineWidget(controller);
 }

@@ -256,19 +256,24 @@ const std::string MotionBasicQueriesWS::listEnumValues(const std::string & attri
 	return c->xmlResponse();
 }
 
-const std::string MotionBasicQueriesWS::listMyAnnotations() const
+const std::string MotionBasicQueriesWS::listMyAnnotationsXML() const
 {
-	return simpleXMLQuerry("ListMyAnnotations", connection());
+	return simpleXMLQuerry("ListMyAnnotationsXML", connection());
 }
 
-const std::string MotionBasicQueriesWS::listAwaitingAnnotations() const
+const std::string MotionBasicQueriesWS::listAnnotationsXML() const
 {
-	return simpleXMLQuerry("ListAwaitingAnnotations", connection());
+	return simpleXMLQuerry("ListAnnotationsXML", connection());
 }
 
-const std::string MotionBasicQueriesWS::listReviewedAnnotations() const
+const std::string MotionBasicQueriesWS::listMyAwaitingAnnotationsXML() const
 {
-	return simpleXMLQuerry("ListReviewedAnnotations", connection());
+	return simpleXMLQuerry("ListMyAwaitingAnnotationsXML", connection());
+}
+
+const std::string MotionBasicQueriesWS::listMyReviewedAnnotationsXML() const
+{
+	return simpleXMLQuerry("ListMyReviewedAnnotationsXML", connection());
 }
 
 const DateTime MotionBasicQueriesWS::dataModificationTime() const

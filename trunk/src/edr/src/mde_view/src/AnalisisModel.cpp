@@ -133,7 +133,7 @@ void AnalisisModel::update(core::Visualizer::VisualizerSerie * serie, core::Visu
             std::string path = it->second;
             
 			if(it->first->serieFeatures<plugin::IVisualizer::ITimeAvareSerieFeatures>() != nullptr){
-				auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+				auto timeline = core::queryService<ITimelineService>(plugin::getServiceManager());
 				if(timeline != nullptr){
 					timeline->removeChannel(it->second);
 				}
@@ -185,7 +185,7 @@ void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core:
 				auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
 				timeDesc->channel = channels;
 
-				auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+				auto timeline = core::queryService<ITimelineService>(plugin::getServiceManager());
 				//timeline->addChannel(desc.path, desc.channel);
         
 				timeline->addChannel(path.toStdString(), channels);

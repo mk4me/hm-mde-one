@@ -129,7 +129,7 @@ void AnalisisModel::update(core::Visualizer::VisualizerSerie * serie, core::Visu
         auto it = seriesToChannels.find(serie);
         if(it != seriesToChannels.end()){
             std::string path = it->second;
-            auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
+            auto timeline = core::queryService<ITimelineService>(plugin::getServiceManager());
             if(timeline != nullptr){
                 timeline->removeChannel(it->second);
             }
@@ -170,20 +170,26 @@ void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core:
     helper->getSeries(visualizer, path, series);
     if (!series.empty()) {
 
-        DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);	 
-        auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
-        desc->channel = channels;
-        desc->path = path.toStdString();
+        DataItemDescriptionPtr desc = utils::make_shared<AnalisisModel::DataItemDescription>(qobject_cast<coreUI::CoreVisualizerWidget*>(visualizerDockWidget->widget()), visualizerDockWidget);
+		desc->path = path.toStdString();
+		try{
+			auto channels = utils::shared_ptr<VisualizerSerieTimelineMultiChannel>(new VisualizerSerieTimelineMultiChannel(VisualizerSerieTimelineMultiChannel::VisualizersSeries(series.begin(), series.end())));
+			desc->channel = channels;
+
+			auto timeline = core::queryService<ITimelineService>(plugin::getServiceManager());
+			//timeline->addChannel(desc.path, desc.channel);
+
+			timeline->addChannel(path.toStdString(), desc->channel);
+
+			for(auto it = series.begin(); it != series.end(); ++it){
+				seriesToChannels[*it] = desc->path;
+			}
+		}catch(...){
+
+		}
+			
         addVisualizerDataDescription(helper, desc);
 
-        auto timeline = core::queryServices<ITimelineService>(plugin::getServiceManager());
-        //timeline->addChannel(desc.path, desc.channel);
-        
-        timeline->addChannel(path.toStdString(), channels);
-
-        for(auto it = series.begin(); it != series.end(); ++it){
-            seriesToChannels[*it] = desc->path;
-        }
     } else {
         PLUGIN_LOG_WARNING("Problem with adding series to visualizer");
     }

@@ -1,6 +1,7 @@
 #include "CommunicationPCH.h"
 #include <corelib/ILog.h>
 #include <corelib/PluginCommon.h>
+#include <webserviceslib/Entity.h>
 
 #ifdef max
 #undef max
@@ -48,20 +49,21 @@ using namespace webservices;
 
 CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSourceLoginManager()),
 	memoryDM(nullptr), fileDM(nullptr),	offlineMode_(false),
-	serwerPingUrl("http://v21.pjwstk.edu.pl/"), dataSourceWidget(nullptr)
+	serwerPingUrl("http://v21.pjwstk.edu.pl/"), dataSourceWidget(nullptr),
+	userIsReviewer_(false)
 {    
 #if (defined _WIN32) || (defined _WIN64)
 	//konfiguracja wsdlpulla żeby pisać pliki tymczasowe tam gdzie mamy prawo zapisu
 	//pod windows
-	XmlUtils::TMPFILESDIR = plugin::getPathInterface()->getTmpPath().string();
+	XmlUtils::TMPFILESDIR = plugin::getPaths()->getTmpPath().string();
     // rev - zeby to przeszlo, w nagłówku musial być wywalony warunek na WIN32
-    WsdlPull::SCHEMADIR = (plugin::getPathInterface()->getResourcesPath() / "schemas/").string();
+    WsdlPull::SCHEMADIR = (plugin::getPaths()->getResourcesPath() / "schemas/").string();
 #endif
     WsdlPull::WsdlParser::useLocalSchema_ = false;
     //konfigurujemy ustawienia połączeń - adresy serwisów i ftp
     auto connectionsManager = DataSourceConnectionManager::create();
 
-    setConnectionsSerwerCertificatePath(plugin::getPathInterface()->getResourcesPath() / "v21.pjwstk.edu.pl.crt");
+    setConnectionsSerwerCertificatePath(plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt");
 
 	connectionsManager->accountFactoryWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDBMed/AccountFactoryWS.svc?wsdl");
     connectionsManager->administrationWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AdministrationWS.svc?wsdl");
@@ -125,7 +127,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     localStorage = DataSourceLocalStorage::create();
 
     //inicjuję managera danych dla użytkowników ścieżką do wswólnej bazy danych
-    localStorage->setLocalStorageDataPath(plugin::getPathInterface()->getUserApplicationDataPath() / "db" / "localStorage.db");
+    localStorage->setLocalStorageDataPath(plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db");
 
     //Zeruje aktualnego użytkownika
     currentUser_.setID(-1);
@@ -133,7 +135,7 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
     //tworze instancje obiektu zarządzającego ścieżkami danych użytkowników
     pathsManager = DataSourcePathsManager::create();
     //inicjuję roota danych użytkowników podczas działania aplikacji (rozpakowywana z localStorage na bazie shallowCopy)
-    pathsManager->setUsersDataPath(plugin::getPathInterface()->getTmpPath() / "data");
+    pathsManager->setUsersDataPath(plugin::getPaths()->getTmpPath() / "data");
     pathsManager->setUser(currentUser_);
 
     auto ms = utils::make_shared<MotionPerspective>();
@@ -227,7 +229,7 @@ void CommunicationDataSource::init(core::IMemoryDataManager * memoryDM, core::IS
 QWidget* CommunicationDataSource::getWidget()
 {
     if(dataSourceWidget == nullptr){
-        dataSourceWidget = new DataSourceWidget(this);
+        dataSourceWidget = new DataSourceWidget(&filterManager, this);
     }
 
     return dataSourceWidget;
@@ -236,6 +238,9 @@ QWidget* CommunicationDataSource::getWidget()
 void CommunicationDataSource::setCurrentUser(const User & user)
 {
     currentUser_ = user;
+
+	auto ug = user.userGroups();
+	userIsReviewer_ = (ug.find(1) != ug.end());
     //inicjuje pathManagera - tworzę strukturę danych użytkownika i generuje ścieżki dla danych
     pathsManager->setUser(currentUser_);
 }
@@ -809,6 +814,8 @@ void CommunicationDataSource::setShallowCopy(const ShallowCopy & shallowCopy)
 	for(auto it = f.begin(); it != f.end(); ++it){
 	PLUGIN_LOG_DEBUG( "Plik: " << (*it).name << " -> rozmiar: " << (*it).size);
 	}*/
+
+	notify();
 }
 
 bool CommunicationDataSource::tryActivateAccount(const std::string & login, const std::string & activationCode)
@@ -955,6 +962,8 @@ void CommunicationDataSource::finalize()
 	if(isLogged() == true){
 		dataSourceWidget->onLogin();
 	}
+
+	filterManager.clearFilters();
 }
 
 
@@ -1039,8 +1048,6 @@ ServerStatusManagerConstPtr CommunicationDataSource::getServerStatusManager() co
     return serverStatusManager;
 }
 
-
-
 void CommunicationDataSource::testDownloadBranchIncrement()
 {
     /*webservices::IncrementalBranchShallowCopy cpy;
@@ -1057,4 +1064,132 @@ webservices::IncrementalBranchShallowCopy CommunicationDataSource::getIncrementa
 {
     std::string savePath = pathsManager->getLocalIncrementalBranchShallowCopyPath().string();
     return IncrementalBranchShallowCopyHelper::getIncrementalShallowCopy(communicationManager.get(), savePath,  dt);
+}
+
+int CommunicationDataSource::addDataFilter(DataSourceFilter* filter)
+{
+	return filterManager.registerFilter(filter);
+}
+
+void CommunicationDataSource::setCurrentFilter(const int idx)
+{
+	dataSourceWidget->filterChange(idx);	
+}
+
+const int CommunicationDataSource::currentFilter() const
+{
+	return filterManager.currentFilterIndex();
+}
+
+void CommunicationDataSource::refreshCurrentFilter()
+{
+	dataSourceWidget->filterChange(currentFilter());
+}
+
+const webservices::xmlWsdl::AnnotationsList CommunicationDataSource::getAllAnnotationStatus() const
+{
+	CommunicationDataSource* ptr = const_cast<CommunicationDataSource*>(this);
+	//najpierw pobieramy adnotacje
+	ptr->tryRefreshAnnotationStatus();
+	//teraz przepisujemy
+	return annotations;
+}
+
+const bool CommunicationDataSource::userIsReviewer() const
+{
+	return userIsReviewer_;
+}
+
+const webservices::xmlWsdl::UsersList CommunicationDataSource::listUsers() const
+{
+	auto ws = DataSourceWebServicesManager::instance();	
+	auto res = ws->authorizationService()->listUsers();
+	return webservices::xmlWsdl::parseUsersList(res);
+}
+
+const int CommunicationDataSource::trialID(const std::string & name) const
+{
+	int ret = -1;
+
+	for(auto it = fullShallowCopy.motionShallowCopy->trials.begin();
+		it != fullShallowCopy.motionShallowCopy->trials.end(); ++it){
+
+		if(it->second->trialName == name){
+			ret = it->second->trialID;
+			break;
+		}
+	}
+
+	return ret;
+}
+
+void CommunicationDataSource::setAnnotationStatus(const int userID, const int motionID,
+	const webservices::xmlWsdl::AnnotationStatus::Type type,
+	const std::string & comment)
+{	
+	auto ws = DataSourceWebServicesManager::instance();	
+
+	if(userIsReviewer_ == true){
+		//lekarz
+		if(type == webservices::xmlWsdl::AnnotationStatus::Approved ||
+			type == webservices::xmlWsdl::AnnotationStatus::Rejected){
+
+			ws->motionBasicUpdatesService()->setAnnotationReview(motionID, userID, webservices::xmlWsdl::AnnotationStatus::UnderReview, comment);
+		}
+		
+		ws->motionBasicUpdatesService()->setAnnotationReview(motionID, userID, type, comment);
+
+	}else{
+		//student
+		UTILS_ASSERT(type == webservices::xmlWsdl::AnnotationStatus::ReadyForReview, "User moze tylko przekazac dane do weryfikacji");
+		UTILS_ASSERT(userID == currentUser()->id(), "User musi sie zgadzac z aktualnie zalogowanym");
+		ws->motionBasicUpdatesService()->setMyAnnotationStatus(motionID, type, comment);
+	}
+}
+
+const webservices::DateTime CommunicationDataSource::lastUpdateTime() const
+{
+
+	webservices::DateTime ret;
+
+	try{
+		auto ws = DataSourceWebServicesManager::instance();
+		ret = ws->motionBasicQueriesService()->dataModificationTime();
+	}catch(...){
+
+	}
+
+	return ret;
+}
+
+void CommunicationDataSource::tryRefreshAnnotationStatus()
+{
+
+	auto lsu = lastUpdateTime();
+
+	if(lastStatusUpdate < lsu){
+
+		refreshAnnotationStatus();
+
+		lastStatusUpdate = lsu;
+
+	}
+
+}
+
+void CommunicationDataSource::refreshAnnotationStatus()
+{
+	auto ws = DataSourceWebServicesManager::instance();	
+
+	//inaczej dla studentow a inaczej dla lekarza
+	if(userIsReviewer_ == false){
+		//student
+		auto myAnnotationsRes = ws->motionBasicQueriesService()->listMyAnnotationsXML();
+		annotations = webservices::xmlWsdl::parseAnnotations(myAnnotationsRes);
+
+	}else{
+		//lekarz		
+		std::string annotationsRes = ws->motionBasicQueriesService()->listAnnotationsXML();		
+		annotations = webservices::xmlWsdl::parseAnnotations(annotationsRes);		
+	}
 }

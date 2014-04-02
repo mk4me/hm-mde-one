@@ -6,19 +6,21 @@
 #include <boost/serialization/export.hpp>
 
 dicom::BackgroundLayer::BackgroundLayer( const QString& pixmapPath, const QString& name /*= QString("Background")*/ ) :
+	ILayerGraphicItem(0),
     pixmapPath(pixmapPath),
     name(name),
     pixmapItem(new QGraphicsPixmapItem())
 {
-    setAdnotationIdx(0);
+    
 }
 
 dicom::BackgroundLayer::BackgroundLayer( const QPixmap& p, const QString& name /*= QString("Background")*/ ) :
+	ILayerGraphicItem(0),
     pixmap(p),
     name(name),
     pixmapItem(new QGraphicsPixmapItem())
 {
-    setAdnotationIdx(0);
+    
 }
     
 QString dicom::BackgroundLayer::getName() const
@@ -42,8 +44,9 @@ bool dicom::BackgroundLayer::getSelected() const
     return false;
 }
 
-void dicom::BackgroundLayer::setSelected( bool val )
+void dicom::BackgroundLayer::setSelected( bool /*val*/ )
 {
+
 }
 
 QRect dicom::BackgroundLayer::getCrop() const
@@ -86,10 +89,9 @@ void dicom::BackgroundLayer::lazy() const
     }
 }
 
-dicom::ILayerItem* dicom::BackgroundLayer::clone() const
+dicom::BackgroundLayer* dicom::BackgroundLayer::clone() const
 {
     BackgroundLayer* bl = new BackgroundLayer(pixmap, name);
-    bl->setAdnotationIdx(getAdnotationIdx());
     bl->pixmapPath = this->pixmapPath;
     bl->setCrop(this->getCrop());
     return bl;

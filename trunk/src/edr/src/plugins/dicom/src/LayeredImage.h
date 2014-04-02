@@ -35,16 +35,19 @@ public:
 public:
     virtual void addLayer( ILayerItemPtr layer, const std::string& layerName);
     virtual void removeLayer( ILayerItemConstPtr layer );
-    virtual const_range getLayerItems(const std::string& layerName) const;
+    virtual layers_const_range getLayerItems(const std::string& layerName) const;
     virtual QPixmap getPixmap() const;
-    virtual int getNumLayerItems(const std::string& layerName) const;
-    virtual ILayerItemConstPtr getLayerItem(const std::string& layerName, int idx) const;
-    virtual ILayerItemPtr getLayerItem(const std::string& layerName, int idx);
+	virtual int getNumLayerItems(const std::string& layerName) const;
+	virtual int getNumGraphicLayerItems(const std::string& layerName) const;
+	virtual ILayerItemConstPtr getLayerItem(const std::string& layerName,int idx) const;
+	virtual ILayerItemPtr getLayerItem(const std::string& layerName, int idx);
+	virtual ILayerGraphicItemConstPtr getLayerGraphicItem(const std::string& layerName,int idx) const;
+	virtual ILayerGraphicItemPtr getLayerGraphicItem(const std::string& layerName, int idx);
     QSize getSize() const;
 
     // workaround
     std::vector<ILayerItemConstPtr> getLayersToSerialize(const std::string& tag) const;
-    dicom::ILayerItemPtr getBackgroundLayer() const;
+    dicom::ILayerGraphicItemPtr getBackgroundLayer() const;
     void setBackgroundLayer(dicom::BackgroundLayerPtr val);
     virtual int getNumTags() const;
     virtual std::string getTag( int idx ) const;
@@ -59,9 +62,9 @@ public:
 	void setTrialID(const int trialID);
 
 private:
-    //std::vector<ILayerItemPtr> layers;
     BackgroundLayerPtr backgroundLayer;
     LayersMap layers;
+	GraphicLayersMap graphicLayers;
     // TODO : przyda sie refaktoring, string juz nie starcza
     std::set<std::string> tags;
     std::map<std::string, bool> tagsVisibility;
@@ -75,10 +78,8 @@ private:
     {
         ar & boost::serialization::make_nvp("layers", layers);
     }
-
-
-
 };
+
 DEFINE_SMART_POINTERS(LayeredImage);
 typedef std::vector<dicom::ILayerItemPtr> LayersVector;
 DEFINE_SMART_POINTERS(LayersVector);

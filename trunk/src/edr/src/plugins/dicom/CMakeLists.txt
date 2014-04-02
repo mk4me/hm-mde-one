@@ -9,6 +9,7 @@ SET_PUBLIC_HEADERS (
 )
 
 SET_PRIVATE_HEADERS (
+	IDicomService.h
 	AdnotationsDelegate.h
 	Adnotations.h
 	LayeredStateMachine.h
@@ -37,6 +38,7 @@ SET_PRIVATE_HEADERS (
 	LayersXmlParser.h
 	InternalXmlParser.h
     qstring_serialization.h
+	AnnotationStatusFilter.h
 )
 
 SET_SOURCE_FILES(
@@ -67,6 +69,7 @@ SET_SOURCE_FILES(
 	LayersXmlParser.cpp
 	InternalXmlParser.cpp
 	DicomPCH.cpp
+	AnnotationStatusFilter.cpp
 )
 
 SET_MOC_FILES(

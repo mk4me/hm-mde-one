@@ -15,6 +15,7 @@ CONFIGURE_PRIVATE_HEADER("Config.h.in" "Config.h")
 SEARCH_DEPENDENCY_CONFIGURATION_DEFINES("Config.h" "CORE_ENABLE_LEAK_DETECTION;CORE_ENABLE_LOG4CXX;CORE_ENABLE_LOGGING")
 
 SET_PRIVATE_HEADERS(
+	ApplicationDescription.h
 	LanguagesManager.h
 	LanguagesLoader.h
 	LanguagesHelper.h
@@ -51,6 +52,7 @@ SET_PUBLIC_HEADERS (
 )
 
 SET_SOURCE_FILES(
+	ApplicationDescription.cpp
 	#ConverterManager.cpp
 	#Converter.cpp
 	LanguageChangeFilter.cpp

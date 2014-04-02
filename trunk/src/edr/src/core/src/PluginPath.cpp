@@ -5,30 +5,30 @@
 using namespace core;
 
 PluginPath::PluginPath(const std::string & pluginName)
-	: pluginPath(getPathInterface()->getPluginPath()/pluginName),
-	pluginTmpPath(getPathInterface()->getTmpPath()/pluginName)
+	: pluginPath(getPaths()->getPluginPath()/pluginName),
+	pluginTmpPath(getPaths()->getTmpPath()/pluginName)
 {
 	Filesystem::createDirectory(pluginTmpPath);
 }
 
 const Filesystem::Path& PluginPath::getUserDataPath() const
 {
-	return getPathInterface()->getUserDataPath();
+	return getPaths()->getUserDataPath();
 }
 
 const Filesystem::Path& PluginPath::getApplicationDataPath() const
 {
-	return getPathInterface()->getApplicationDataPath();
+	return getPaths()->getApplicationDataPath();
 }
 
 const Filesystem::Path& PluginPath::getUserApplicationDataPath() const
 {
-	return getPathInterface()->getUserApplicationDataPath();
+	return getPaths()->getUserApplicationDataPath();
 }
 
 const Filesystem::Path& PluginPath::getResourcesPath() const
 {
-	return getPathInterface()->getResourcesPath();
+	return getPaths()->getResourcesPath();
 }
 
 const Filesystem::Path& PluginPath::getTmpPath() const

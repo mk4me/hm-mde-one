@@ -73,7 +73,7 @@ QWidget* NewChartVisualizer::createWidget()
 {
     QWidget* widget = new QWidget();
     widget->setObjectName(QString::fromUtf8("newChartVisualizerWidget"));
-    QwtText txt(getName().c_str());
+    QwtText txt(name().c_str());
     qwtPlot = new QwtPlot(txt, nullptr);
     qwtPlot->setObjectName(QString::fromUtf8("plot"));
     percentDraw = new PercentScaleDraw(0.0, 5.0);

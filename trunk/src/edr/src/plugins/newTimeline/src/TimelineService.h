@@ -23,8 +23,6 @@ private:
     TimelineWidget* widget;
     //! Model timeline'a.
     timeline::ControllerPtr controller;
-    //!
-    std::string name;
 
 public:
     TimelineService();

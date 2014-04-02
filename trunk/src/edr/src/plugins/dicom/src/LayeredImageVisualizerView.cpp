@@ -1,4 +1,6 @@
 #include "DicomPCH.h"
+#include "IDicomService.h"
+#include "AdnotationsDelegate.h"
 #include "LayeredImageVisualizerView.h"
 #include "ui_layeredImageVisualizer.h"
 #include "LayeredImageVisualizer.h"
@@ -6,8 +8,8 @@
 #include <coreui/WheelGraphicsView.h>
 #include <QtGui/QGraphicsItem>
 #include <QtGui/QMouseEvent>
-#include <coreui/CoreAction.h>
-#include "AdnotationsDelegate.h"
+#include <webserviceslib/Entity.h>
+#include <corelib/IServiceManager.h>
 
 using namespace dicom;
 
@@ -16,8 +18,12 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     model(model),
     QWidget(parent, f),
     ui(new Ui::LayeredImageVisualizer()),
+	adnotationDelegate0(new AdnotationsDelegate(0)),
+	adnotationDelegate1(new AdnotationsDelegate(1)),
     lastView(nullptr),
-	adnotationDelegate(new AdnotationsDelegate)
+	toVerifyAction(nullptr),
+	acceptAction(nullptr),
+	rejectAction(nullptr)
 {
     ui->setupUi(this);
     connect(ui->prevButton, SIGNAL(clicked()), model, SLOT(setPrevSerie()));
@@ -27,9 +33,9 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     connect(ui->removeButton, SIGNAL(clicked()), model, SLOT(removeSelectedLayers()));
     ui->removeButton->setToolTip(tr("Remove selected tag"));
         
-    //ui->treeView->setItemDelegateForColumn(1, new AdnotationsDelegate());
     ui->treeView->header()->setResizeMode(QHeaderView::ResizeToContents);
-	ui->treeView->setItemDelegateForColumn(1, adnotationDelegate);
+	ui->treeView->setItemDelegateForColumn(0, adnotationDelegate0);
+	ui->treeView->setItemDelegateForColumn(1, adnotationDelegate1);
     connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
 
     coreUI::CoreAction*  undo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/undo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
@@ -54,17 +60,28 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 
     coreUI::CoreAction*  crop = new coreUI::CoreAction(tr("Other")  , QIcon(":/dicom/crop.png"), tr("Crop"), this, coreUI::CoreTitleBar::Left);
 
+	QIcon acceptIcon(":/dicom/accept.png");
+	acceptIcon.addFile(":/dicom/acceptDisabled.png", QSize(), QIcon::Disabled);
+
 	if(model->userIsReviewer() == true){
-		coreUI::CoreAction*  accept = new coreUI::CoreAction(tr("Status")  , QIcon(":/dicom/crop.png"), tr("Accept"), this, coreUI::CoreTitleBar::Left);
-		coreUI::CoreAction*  reject = new coreUI::CoreAction(tr("Status")  , QIcon(":/dicom/crop.png"), tr("Reject"), this, coreUI::CoreTitleBar::Left);
+		acceptAction = new coreUI::CoreAction(tr("Status"), acceptIcon, tr("Accept"), this, coreUI::CoreTitleBar::Left);	
+		acceptAction->setEnabled(false);
+		connect(acceptAction, SIGNAL(triggered()), this, SLOT(acceptAnnotation()));
+
+		QIcon rejectIcon(":/dicom/reject.png");
+		rejectIcon.addFile(":/dicom/rejectDisabled.png", QSize(), QIcon::Disabled);
+
+		rejectAction = new coreUI::CoreAction(tr("Status"), rejectIcon, tr("Reject"), this, coreUI::CoreTitleBar::Left);
+		connect(rejectAction, SIGNAL(triggered()), this, SLOT(rejectAnnotation()));
+		rejectAction->setEnabled(false);
+		this->addAction(acceptAction);
+		this->addAction(rejectAction);
 	}else{
-		coreUI::CoreAction*  verify = new coreUI::CoreAction(tr("Status")  , QIcon(":/dicom/crop.png"), tr("Request verification"), this, coreUI::CoreTitleBar::Left);
+		toVerifyAction = new coreUI::CoreAction(tr("Status"), acceptIcon, tr("Request verification"), this, coreUI::CoreTitleBar::Left);
+		connect(toVerifyAction, SIGNAL(triggered()), this, SLOT(requestAnnotationVerification()));
+		this->addAction(toVerifyAction);
+		toVerifyAction->setEnabled(false);
 	}
-	
-	
-
-
-
     
     connect(undo, SIGNAL(triggered()), this, SLOT(undo()));
     connect(redo, SIGNAL(triggered()), this, SLOT(redo()));
@@ -103,6 +120,41 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     
     ui->graphicsHolder->setLayout(new QHBoxLayout());
     ui->graphicsHolder->setContentsMargins(0, 0, 0, 0);
+}
+
+void dicom::LayeredImageVisualizerView::acceptAnnotation()
+{
+	try{
+		model->trySave();
+		model->setStatus(webservices::xmlWsdl::AnnotationStatus::Approved);
+		acceptAction->setEnabled(false);
+		rejectAction->setEnabled(false);
+	}catch(...){
+
+	}
+}
+
+void dicom::LayeredImageVisualizerView::rejectAnnotation()
+{
+	try{
+		model->trySave();
+		model->setStatus(webservices::xmlWsdl::AnnotationStatus::Rejected);
+		acceptAction->setEnabled(false);
+		rejectAction->setEnabled(false);
+	}catch(...){
+
+	}
+}
+
+void dicom::LayeredImageVisualizerView::requestAnnotationVerification()
+{
+	try{
+		model->trySave();
+		model->setStatus(webservices::xmlWsdl::AnnotationStatus::ReadyForReview);
+		toVerifyAction->setEnabled(false);
+	}catch(...){
+
+	}
 }
 
 void dicom::LayeredImageVisualizerView::setDeletionButtonEnabled(const bool enable)
@@ -150,7 +202,8 @@ void dicom::LayeredImageVisualizerView::refresh()
         serie->refresh();
         auto treeModel = serie->getLayersModel();
         ui->treeView->setModel(treeModel);
-		adnotationDelegate->setImage(treeModel->getImage());
+		adnotationDelegate0->setImage(treeModel->getImage());
+		adnotationDelegate1->setImage(treeModel->getImage());
 
         auto expands = treeModel->getExpands();
         for (auto it = expands.begin(); it != expands.end(); ++it) {
@@ -206,9 +259,45 @@ void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex & )
     for (auto it = indexes.begin(); it != indexes.end(); ++it) {
         rows.insert(LayeredModelView::getTagAndIndex(*it));
     }
-    if (rows.size() == 1 && rows.begin()->second != -1) {
+    if (rows.size() == 1) {
         auto ti = rows.begin();
         model->selectLayer(ti->first, ti->second);
+		
+		//odœwie¿yæ stan akcji ze wzglêdu na usera aktualnej adnotacji i jej status
+		 
+		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
+		
+		//auto status = webservices::xmlWsdl::AnnotationStatus::UnderConstruction;
+		auto status = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
+
+		if(model->userIsReviewer() == true){
+
+			bool enabled = true;
+
+			if(status == webservices::xmlWsdl::AnnotationStatus::Approved ||
+				status == webservices::xmlWsdl::AnnotationStatus::Rejected){
+				
+				enabled = false;
+			}
+
+			acceptAction->setEnabled(enabled);
+			rejectAction->setEnabled(enabled);
+
+		}else {
+			if(model->getCurrentLayerUserName() == model->getUserName()){
+				if(status == webservices::xmlWsdl::AnnotationStatus::Approved ||
+					status == webservices::xmlWsdl::AnnotationStatus::UnderReview ||
+					status == webservices::xmlWsdl::AnnotationStatus::ReadyForReview){
+
+					toVerifyAction->setEnabled(false);
+
+				}else{
+					toVerifyAction->setEnabled(true);
+				}
+			}else{
+				toVerifyAction->setEnabled(false);
+			}
+		}
     }
 
     ui->treeView->blockSignals(true);

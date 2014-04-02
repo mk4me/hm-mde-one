@@ -32,41 +32,28 @@ namespace dicom {
     class LayeredImageVisualizer;
 
     // TODO : wywalic to time avare...
-    class LayeredSerie : public plugin::AbstractSerie, public plugin::IVisualizer::ITimeAvareSerieFeatures
+    class LayeredSerie : public plugin::AbstractSerie
     {
-	public:
-
-		enum AdnotationsState
-		{
-			InEdition,	//! Adnotacje do edycji - domyslny stan jesli brak stanu oraz kiedy lekarz odrzuci adnotacje oczekujace na weryfikacje
-			ToVerify,	//! Student zamknal adnotacje, czeka na akceptacje
-			Verified	//! Lekarz zatwierdzil adnotacje, dalsza edycja niemozliwa
-		};
-
     public:
         LayeredSerie(LayeredImageVisualizer* visualizer);
         virtual ~LayeredSerie() {}
 
+		virtual void update() {}
+
     public:
-        virtual void setupData( const core::ObjectWrapperConstPtr & data );
-        virtual void update();
-        virtual void setTime( double time );
-        virtual double getLength() const;
-        
+        virtual void setupData( const core::ObjectWrapperConstPtr & data );  
 
     public:
         QPixmap getPixmap() const;
         QSize getSize() const;
         std::string getXmlOutputFilename() const;
-        std::string getUserName() const;
+        std::string getLoggedUserName() const;
         ILayeredImagePtr getImage();
         ILayeredImageConstPtr getImage() const;
         coreUI::WheelGraphicsView* getGraphicsView() const;
         coreUI::GraphicSceneWithStateMachine* getGraphicsScene() const;
         dicom::LayeredModelView* getLayersModel();
         void refresh();
-		void setAdnotationState(const AdnotationsState state);
-		const AdnotationsState adnotationState() const;
         void save();
         void removeLayer(int tagIdx, int idx);
         void editLayer(int tagIdx, int idx);
@@ -78,9 +65,6 @@ namespace dicom {
         void switchCrop();
         void setMoveState();
 
-        virtual double getBegin() const;
-
-        virtual double getEnd() const;
         void setBoneState();
         void setSkinState();
         void setTendonState();

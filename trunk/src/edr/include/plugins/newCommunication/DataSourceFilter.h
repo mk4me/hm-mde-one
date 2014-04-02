@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___DATASOURCEFILTER_H__
 #define HEADER_GUARD___DATASOURCEFILTER_H__
 
-#include <webserviceslib/Entity.h>
+#include <webserviceslib/ShallowCopy.h>
 
 //! Interfejs filtrów danych
 class DataSourceFilter

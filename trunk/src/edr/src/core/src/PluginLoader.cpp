@@ -38,7 +38,7 @@ void PluginLoader::clear()
 
 	for(auto it = plugins.begin(); it != plugins.end(); ++it)
 	{
-		CORE_LOG_DEBUG("Unloading plugin " << (*it).plugin->getID() << " name " << (*it).plugin->getName() << " from " << (*it).plugin->getPath());
+		CORE_LOG_DEBUG("Unloading plugin " << (*it).plugin->ID() << " name " << (*it).plugin->name() << " from " << (*it).plugin->getPath());
 		(*it).plugin.reset();
 		unloadSharedLibrary((*it).handle);
 		(*it).coreApplication.reset();
@@ -65,10 +65,10 @@ void PluginLoader::load()
 {
 
 #if defined(__WIN32__)
-	static const std::regex pluginFilter("^plugin_.*\.dll$");
+	static const std::regex pluginFilter("^plugin_.*\\.dll$");
 #elif defined(__UNIX__)
     // GCC cos nie radzi sobie ze znakami początku i końca linii !?
-	static const std::regex pluginFilter("libplugin_.*\.so");
+	static const std::regex pluginFilter("libplugin_.*\\.so");
 #endif
 
 	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {
@@ -178,13 +178,13 @@ bool PluginLoader::onAddPlugin( PluginPtr plugin, HMODULE library, Plugin::Initi
 	PluginData pData;
     CORE_LOG_INFO("Loading plugin " << plugin->getPath());
 
-	auto pluginName = plugin->getName();
+	auto pluginName = plugin->name();
 	if(pluginName.empty() == true){
 		plugin->setName(plugin->getPath().stem().string());
-		CORE_LOG_WARNING("Plugin name for plugin loaded from " << plugin->getPath() << " was empty. Setting dynamic library file name as plugin name: " << plugin->getName() );
+		CORE_LOG_WARNING("Plugin name for plugin loaded from " << plugin->getPath() << " was empty. Setting dynamic library file name as plugin name: " << plugin->name() );
 	}
 
-	pData.coreApplication.reset(new PluginApplication(plugin->getName()));
+	pData.coreApplication.reset(new PluginApplication(plugin->name()));
 
     // próba załadowania zawartosci pluginu i zainicjowania kontekstu aplikacji
     try {
@@ -211,7 +211,7 @@ bool PluginLoader::onAddPlugin( PluginPtr plugin, HMODULE library, Plugin::Initi
     core::PluginPtr collidingPlugin;
     //szukamy pluginu o podanym ID - jeśli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
     for(auto it = plugins.begin(); it != plugins.end(); ++it){
-        if( (*it).plugin->getID() == pData.plugin->getID()){
+        if( (*it).plugin->ID() == pData.plugin->ID()){
             pluginIDFound = true;
             collidingPlugin = (*it).plugin;
             break;
@@ -225,7 +225,7 @@ bool PluginLoader::onAddPlugin( PluginPtr plugin, HMODULE library, Plugin::Initi
         CORE_LOG_INFO("Successfully loaded plugin " << plugin->getPath());
 
     }else{
-        CORE_LOG_WARNING("Plugin with given ID " << pData.plugin->getID() << " already exist. Plugin " << plugin->getPath() << " NOT loaded to application! Collision with plugin loaded from: " << collidingPlugin->getPath() );
+        CORE_LOG_WARNING("Plugin with given ID " << pData.plugin->ID() << " already exist. Plugin " << plugin->getPath() << " NOT loaded to application! Collision with plugin loaded from: " << collidingPlugin->getPath() );
     }
 
     return !pluginIDFound;
@@ -274,10 +274,10 @@ bool PluginLoader::checkPluginVersion( HMODULE library, const Filesystem::Path& 
 		int pMinor;
 		int pPatch;
 		versionProc(&pMajor, &pMinor, &pPatch);
-		if ( pMajor != Version::major() || pMinor > Version::minor()) {
-			CORE_LOG_ERROR(path << " has obsolete interface version; should be "
-				<< Version::version() << ", is "
-				<< Version::version(pMajor, pMinor, pPatch));
+		if ( pMajor != CORE_API_MAJOR || pMinor > CORE_API_MINOR) {
+			CORE_LOG_ERROR(path << " has obsolete interface version - should be "
+				<< Version::formatedVersion() << ", is "
+				<< Version::formatedVersion(Version(pMajor, pMinor, pPatch)));
 			return false;
 		} else {
 			return true;

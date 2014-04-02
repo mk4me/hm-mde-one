@@ -63,9 +63,9 @@ namespace plugin
 	}
 
     //! \return Interfejs dostępu do ścieżek aplikacji
-	inline core::IPath* getPathInterface()
+	inline core::IPath* getPaths()
 	{
-		return __coreApplication->pathInterface();
+		return __coreApplication->paths();
 	}
 
 	//! \return Interfejs dostępu do ścieżek aplikacji
@@ -95,25 +95,25 @@ namespace plugin
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
     inline const core::Filesystem::Path& getResourcesPath()
     {
-        return getPathInterface()->getResourcesPath();
+        return getPaths()->getResourcesPath();
     }
 
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
     inline const core::Filesystem::Path& getApplicationDataPath()
     {
-        return getPathInterface()->getApplicationDataPath();
+        return getPaths()->getApplicationDataPath();
     }
 
 	//! Pomocnica metoda upraszczająca odwołanie do katalogów.
     inline const core::Filesystem::Path& getUserApplicationDataPath()
     {
-        return getPathInterface()->getUserApplicationDataPath();
+        return getPaths()->getUserApplicationDataPath();
     }
 
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
     inline const core::Filesystem::Path& getUserDataPath()
     {
-        return getPathInterface()->getUserDataPath();
+        return getPaths()->getUserDataPath();
     }
 
     //! \return Pomocnicza metoda do pobierania ścieżek.
@@ -143,7 +143,7 @@ namespace plugin
 	//! \return Pomocnicza metoda do pobierania ścieżek.
 	inline const core::Filesystem::Path & getPluginPath()
 	{
-		return getPathInterface()->getPluginPath();
+		return getPaths()->getPluginPath();
 	}
 
 	//! \return Pomocnicza metoda do pobierania ścieżek.

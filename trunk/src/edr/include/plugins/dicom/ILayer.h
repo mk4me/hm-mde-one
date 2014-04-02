@@ -20,32 +20,27 @@ class QGraphicsItem;
 
 namespace dicom {
 
-
-
 class ILayerItem
 {
 public:
     ILayerItem() : adnotationIdx(-1) {}
+
+	ILayerItem(const int val) : adnotationIdx(val) {}
 	virtual ~ILayerItem() {}
 
     
     virtual QString getName() const = 0;
     virtual void setName(const QString& name) = 0;
-    virtual QSize getSize() const = 0;
-
-    virtual bool getSelected() const = 0;
-    virtual void setSelected(bool val) = 0;
-
-    virtual QGraphicsItem* getItem() = 0;
 
     virtual ILayerItem* clone() const = 0;
 
     // TODO : dobrze byloby przeniest to do jakiegos dekoratora...
     int getAdnotationIdx() const { return adnotationIdx; }
-    void setAdnotationIdx(int val) { adnotationIdx = val; }
 
 private:
+	//! Index typu adnotacji
     int adnotationIdx;
+
     friend class boost::serialization::access;
     template <typename Archive>
     void serialize(Archive& ar, const unsigned int version)
@@ -54,6 +49,25 @@ private:
     }
 };
 DEFINE_SMART_POINTERS(ILayerItem);
+
+class ILayerGraphicItem : public ILayerItem
+{
+public:
+	ILayerGraphicItem() : ILayerItem() {}
+
+	ILayerGraphicItem(const int val) : ILayerItem(val) {}
+	virtual ~ILayerGraphicItem() {}
+
+	virtual QSize getSize() const = 0;
+
+	virtual bool getSelected() const = 0;
+	virtual void setSelected(bool val) = 0;
+
+	virtual QGraphicsItem* getItem() = 0;
+
+	virtual ILayerGraphicItem* clone() const = 0;
+};
+DEFINE_SMART_POINTERS(ILayerGraphicItem);
 
 class ILayer
 {

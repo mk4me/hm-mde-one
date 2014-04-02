@@ -88,12 +88,12 @@ void ToolboxMain::initializeUI()
 		//QWidget* settingsWidget = service->getSettingsWidget();
 
 		if ( viewWidget ) {
-			addDockWidget(Qt::RightDockWidgetArea, embeddWidget(viewWidget, QString::fromStdString(service->getName()), Qt::RightDockWidgetArea, true));
+			addDockWidget(Qt::RightDockWidgetArea, embeddWidget(viewWidget, QString::fromStdString(service->name()), Qt::RightDockWidgetArea, true));
 		}
 
         QWidgetList propertiesWidgets = service->getPropertiesWidgets();
         for (auto it = propertiesWidgets.begin(); it != propertiesWidgets.end(); ++it) {
-            addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(*it, QString::fromStdString(service->getName()), Qt::LeftDockWidgetArea, true));
+            addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(*it, QString::fromStdString(service->name()), Qt::LeftDockWidgetArea, true));
         }
 
 		//if ( controlWidget ) {
@@ -115,19 +115,19 @@ void ToolboxMain::initializeUI()
 		QWidget* settingsWidget = source->getSettingsWidget();
 
 		if ( viewWidget ) {
-			addDockWidget(Qt::RightDockWidgetArea, embeddWidget(viewWidget, QString::fromStdString(source->getName()), Qt::RightDockWidgetArea, true));
+			addDockWidget(Qt::RightDockWidgetArea, embeddWidget(viewWidget, QString::fromStdString(source->name()), Qt::RightDockWidgetArea, true));
 		}
 
 		if ( controlWidget ) {
-			addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(controlWidget, QString::fromStdString(source->getName()) + " " + tr("control"), Qt::BottomDockWidgetArea, true));
+			addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(controlWidget, QString::fromStdString(source->name()) + " " + tr("control"), Qt::BottomDockWidgetArea, true));
 		}
 
 		if ( settingsWidget ) {
-			addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(settingsWidget, QString::fromStdString(source->getName()) + " " + tr("settings"), Qt::LeftDockWidgetArea, true));
+			addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(settingsWidget, QString::fromStdString(source->name()) + " " + tr("settings"), Qt::LeftDockWidgetArea, true));
 		}
 	}
 
-	auto timelineService = core::queryServices<ITimelineService>(plugin::getServiceManager());
+	auto timelineService = core::queryService<ITimelineService>(plugin::getServiceManager());
 
 	helper = new VisualizerTimelineHelper(timelineService.get());
 }

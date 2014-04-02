@@ -78,7 +78,19 @@ inline JobManager* getJobManager()
 }
 
 //! \return Interfejs dostêpu do œcie¿ek aplikacji
-inline Path* getPathInterface()
+inline LanguagesManager* getLanguageManager()
+{
+	return __application->languageManager();
+}
+
+//! \return Interfejs dostêpu do œcie¿ek aplikacji
+inline ApplicationDescription * getDescription()
+{
+	return __application->description();
+}
+
+//! \return Interfejs dostêpu do œcie¿ek aplikacji
+inline Path* getPaths()
 {
 	return __application->paths();
 }
@@ -98,19 +110,19 @@ inline ILog* getPrototypeLogInterface()
 //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
 inline const Filesystem::Path& getResourcesPath()
 {
-	return getPathInterface()->getResourcesPath();
+	return getPaths()->getResourcesPath();
 }
 
 //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
 inline const Filesystem::Path& getApplicationDataPath()
 {
-	return getPathInterface()->getApplicationDataPath();
+	return getPaths()->getApplicationDataPath();
 }
 
 //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
 inline const Filesystem::Path& getUserDataPath()
 {
-	return getPathInterface()->getUserDataPath();
+	return getPaths()->getUserDataPath();
 }
 
 //! \return Pomocnicza metoda do pobierania œcie¿ek.
@@ -134,7 +146,7 @@ inline Filesystem::Path getUserDataPath(const Filesystem::Path& path)
 //! \return Pomocnicza metoda do pobierania œcie¿ek.
 inline const Filesystem::Path & getPluginPath()
 {
-	return getPathInterface()->getPluginPath();
+	return getPaths()->getPluginPath();
 }
 
 //! \return Pomocnicza metoda do pobierania œcie¿ek.

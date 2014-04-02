@@ -21,6 +21,7 @@
 #include <corelib/PluginCommon.h>
 #include "DicomSource.h"
 #include "PointsLayer.h"
+#include <corelib/ISourceManager.h>
 
 typedef core::Filesystem fs;
 
@@ -46,6 +47,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 {
     std::string name = getUserName();
 
+	auto comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
     
     fs::Path tmpDir = plugin::getUserDataPath() / std::string( "MEDUSA/tmp");
     if (!fs::pathExists(tmpDir)) {
@@ -101,7 +103,8 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                     std::string sourceFile;
                     if (wrapper->getMetadata("core/source", sourceFile)) {
                         fs::Path stem = fs::Path(sourceFile).stem();
-                        fs::Path xmlFilename = tmpDir / (stem.string() + "." + name + ".xml");
+						std::string sstem = stem.string();
+                        fs::Path xmlFilename = tmpDir / (sstem + "." + name + ".xml");
                         
                         LayeredImageConstPtr img = wrapper->get();
 						LayeredImagePtr ncimg = utils::const_pointer_cast<LayeredImage>(img);
@@ -116,9 +119,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                             }
                         }
 
-						//TODO
-						//dopisaæ nr motiona do image ¿eby móc potem nadawaæ mu status
-						ncimg->setTrialID(-1);
+						ncimg->setTrialID(comm->trialID(stem.string()));
                         
                         QIcon icon;
                         if (!layers.empty() || fs::pathExists(xmlFilename)) {
@@ -202,16 +203,14 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
         }
 
 		if(iFound == false){
-			auto l = dicom::ILayerItemPtr(new InflammatoryLevelLayer(dicom::adnotations::unknownInflammatoryLevel));
-			l->setName(QObject::tr("Inflammatory level"));
-			l->setAdnotationIdx(dicom::adnotations::inflammatoryLevel);
+			auto l = dicom::ILayerItemPtr(new InflammatoryLevelLayer(dicom::adnotations::inflammatoryLevel, dicom::adnotations::unknownInflammatoryLevel));
+			l->setName(QObject::tr("Inflammatory level"));			
 			img->addLayer(l, name);
 		}
 
 		if(bFound == false && img->isPowerDoppler() == true){
-			auto l = dicom::ILayerItemPtr(new BloodLevelLayer(dicom::adnotations::unknownBloodLevel));
-			l->setName(QObject::tr("Blood level"));
-			l->setAdnotationIdx(dicom::adnotations::bloodLevel);
+			auto l = dicom::ILayerItemPtr(new BloodLevelLayer(dicom::adnotations::bloodLevel, dicom::adnotations::unknownBloodLevel));
+			l->setName(QObject::tr("Blood level"));			
 			img->addLayer(l, name);
 		}
 

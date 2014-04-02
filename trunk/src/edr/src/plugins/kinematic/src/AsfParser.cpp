@@ -41,7 +41,7 @@ void AsfParser::acceptedExpressions(Expressions & expressions) const
 
     expDesc.types.insert(typeid(kinematic::SkeletalModel));
 
-    expressions[".*\.asf$"] = expDesc;
+    expressions[".*\\.asf$"] = expDesc;
 }
 
 void AsfParser::getObjects( core::Objects& objects )

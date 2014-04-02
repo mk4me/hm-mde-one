@@ -13,19 +13,24 @@ Plugin::~Plugin()
 
 }
 
-UniqueID Plugin::getID() const
+const UniqueID Plugin::ID() const
 {
 	return id;
 }     
 
-const std::string Plugin::getDescription() const
+const std::string Plugin::description() const
 {
-	return name;
+	return desc.description();
 }
 
-const std::string Plugin::getName() const
+const std::string Plugin::name() const
 {
-	return name;
+	return desc.name();
+}
+
+const std::string Plugin::shortName() const
+{
+	return desc.shortName();
 }
 
 const Filesystem::Path& Plugin::getPath() const
@@ -40,22 +45,61 @@ void Plugin::setPath(const Filesystem::Path& path)
 
 void Plugin::setName(const std::string & name)
 {
-	this->name = name;
+	desc.setName(name);
 }
 
-void Plugin::setDescription(const std::string & description)
+const core::Version * Plugin::version() const
 {
-	this->description = description;
+	return version_.get();
+}
+
+const plugin::VendorDescription * Plugin::vendor() const
+{
+	return vendor_.get();
+}
+
+void Plugin::setVersion(const core::Version::VersionNumberType major,
+	const core::Version::VersionNumberType minor,
+	const core::Version::VersionNumberType patch)
+{
+	if(version_ != nullptr){
+		CORE_LOG_DEBUG("Overriding plugin " << id << " -> " << desc.name() << " version");
+	}
+
+	version_.reset(new Version(major, minor, patch));
+}
+
+void Plugin::setVendor(const std::string & name,
+	const std::string & shortName,
+	const std::string & description,
+	const std::string & contact)
+{
+	if(vendor_ == nullptr){
+		vendor_.reset(new plugin::VendorDescription(name, shortName, description, contact));
+	}else{
+		CORE_LOG_DEBUG("Overriding plugin " << id << " -> " << desc.name() << " vendor description");
+		vendor_->setName(name);
+		vendor_->setShortName(shortName);
+		vendor_->setDescription(description);
+		vendor_->setContact(contact);
+	}
+}
+	
+void Plugin::setDescription(const std::string & name,		
+	const std::string & description)
+{
+	desc.setShortName(name);
+	desc.setDescription(description);
 }
 
 void Plugin::setDefaultLanguageCode(const std::string & langCode)
 {
-	defaultLanguageCode = langCode;
+	defaultLanguageCode_ = langCode;
 }
 
-const std::string & Plugin::getDefaultLanguageCode() const
+const std::string & Plugin::defaultLanguageCode() const
 {
-	return defaultLanguageCode;
+	return defaultLanguageCode_;
 }
 
 void Plugin::setID(UniqueID id)

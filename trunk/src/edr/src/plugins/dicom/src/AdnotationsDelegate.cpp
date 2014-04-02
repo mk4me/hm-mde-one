@@ -6,8 +6,8 @@
 #include "LayeredModelView.h"
 
 
-dicom::AdnotationsDelegate::AdnotationsDelegate( QObject *parent /*= 0*/ ) : 
-    QItemDelegate(parent)
+dicom::AdnotationsDelegate::AdnotationsDelegate(const int column, QObject *parent /*= 0*/ ) : 
+    QItemDelegate(parent), column(column)
 {
 
 }
@@ -34,37 +34,38 @@ QWidget *dicom::AdnotationsDelegate::createEditor(QWidget *parent,
 
 				if(aidx > 7){
 
-					QComboBox *editor = new QComboBox(parent);
+					if(column == 1){
 
-					switch(aidx) {
+						QComboBox *editor = new QComboBox(parent);
 
-					case adnotations::bloodLevel:
-						{
-							auto adn = dicom::adnotations::instanceBloodLevels();
-							for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
-								editor->addItem(it->second, it->first);
+						switch(aidx) {
+
+						case adnotations::bloodLevel:
+							{
+								auto adn = dicom::adnotations::instanceBloodLevels();
+								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
+									editor->addItem(it->second, it->first);
+								}
 							}
-						}
-						break;
+							break;
 
-					case adnotations::inflammatoryLevel:
-						{
-							auto adn = dicom::adnotations::instanceInflammatoryLevels();
-							for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
-								editor->addItem(it->second, it->first);
+						case adnotations::inflammatoryLevel:
+							{
+								auto adn = dicom::adnotations::instanceInflammatoryLevels();
+								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
+									editor->addItem(it->second, it->first);
+								}
 							}
+							break;
 						}
-						break;
+
+						ret = editor;
 					}
-
-					ret = editor;
+				}else if(column == 0){
+					ret = new QLineEdit(parent);
 				}
 			}
 		}
-	}
-
-	if(ret == nullptr){
-		ret = new QLineEdit(parent);
 	}
 
     return ret;

@@ -87,10 +87,10 @@ namespace dicom {
         bool openLine;
     };
 
-    class PointsLayer : public ILayerItem
+    class PointsLayer : public ILayerGraphicItem
     {
     public:
-        PointsLayer();
+        PointsLayer(const int annotationIDX = -1);
 	    virtual ~PointsLayer();
 
         virtual QGraphicsItem* getItem();
@@ -120,7 +120,7 @@ namespace dicom {
 
         virtual void setSelected( bool val );
 
-        virtual ILayerItem* clone() const;
+        virtual PointsLayer* clone() const;
         
     private:
         utils::scoped_ptr<QGraphicsItemGroup> group;
@@ -181,26 +181,21 @@ namespace dicom {
 	class ValueLayer : public ILayerItem
 	{
 	public:
-		ValueLayer() : value_(T()), selected(false) {}
-		ValueLayer(const T & val) : value_(val), selected(false) {}
+		ValueLayer(const int annotationIDX = -1) : ILayerItem(annotationIDX), value_(T()), selected(false) {}
+		ValueLayer(const int annotationIDX, const T & val) : ILayerItem(annotationIDX),value_(val), selected(false) {}
+		ValueLayer(const ValueLayer & other)
+			: ILayerItem(other.getAdnotationIdx()),
+			value_(other.value_), name(other.getName()),
+			selected(false) {}
+
 	    virtual ~ValueLayer() {}
 
 		virtual QString getName() const { return name; }
 		virtual void setName(const QString& name) { this->name = name; }
-		virtual QSize getSize() const { return QSize(); } 
 
-		virtual bool getSelected() const { return selected; }
-		virtual void setSelected(bool val) { selected = val; }
-
-		virtual QGraphicsItem* getItem() { return nullptr; }
-
-		virtual ILayerItem* clone() const
+		virtual ValueLayer<T>* clone() const
 		{
-			std::unique_ptr<ValueLayer<T>> pl(new ValueLayer<T>(value_));
-			pl->setAdnotationIdx(getAdnotationIdx());
-			pl->setName(this->name);
-
-			return pl.release();
+			return new ValueLayer<T>(*this);
 		}
 
 		const T & value() const { return value_; }
@@ -239,8 +234,6 @@ namespace dicom {
 
 	DEFINE_SMART_POINTERS(BloodLevelLayer);
 	DEFINE_SMART_POINTERS(InflammatoryLevelLayer);
-
-
 }
 
 #endif

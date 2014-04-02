@@ -36,8 +36,11 @@ public:
 		wasEdited = serie->isEdited();
 
         img->removeLayer(layer);
-        if (layer && layer->getItem() != nullptr) {
-            layer->getItem()->setVisible(false);//setParentItem(nullptr);
+
+		auto glayer = core::dynamic_pointer_cast<ILayerGraphicItem>(layer);
+
+        if (glayer) {
+            glayer->getItem()->setVisible(false);
         }
         serie->refresh();
 
@@ -46,10 +49,12 @@ public:
     //! cofa wykonane ju¿ polecenie
     virtual void undoIt() 
     {
-        img->addLayer(layer, serie->getUserName());
-        if (layer && layer->getItem() != nullptr) {
-            layer->getItem()->setVisible(true);
-        }
+        img->addLayer(layer, serie->getLoggedUserName());
+		auto glayer = core::dynamic_pointer_cast<ILayerGraphicItem>(layer);
+
+		if (glayer) {
+			glayer->getItem()->setVisible(true);
+		}
         serie->refresh();
 
 		serie->markAsEdited(wasEdited);
@@ -75,9 +80,9 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
         graphicsScene->addItem(image->getBackgroundLayer()->getItem());
 
         BOOST_FOREACH(std::string tag, image->getTags()) {
-            int count = image->getNumLayerItems(tag);
+            int count = image->getNumGraphicLayerItems(tag);
             for (int i = 0; i < count; ++i) {
-                ILayerItemPtr vec = image->getLayerItem(tag, i);
+                auto vec = image->getLayerGraphicItem(tag, i);
                 if (vec && vec->getItem() != nullptr) {
                     graphicsScene->addItem(vec->getItem());
                 }
@@ -92,16 +97,6 @@ void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
         this->data = data;
         switchCrop(); //domyslny cropping
     }
-}
-
-void LayeredSerie::setTime( double time )
-{
-
-}
-
-double LayeredSerie::getLength() const
-{
-    return 1.0;
 }
 
 QPixmap dicom::LayeredSerie::getPixmap() const
@@ -155,9 +150,9 @@ void dicom::LayeredSerie::refresh()
     getGraphicsView()->setSceneRect(0, 0, getSize().width(), getSize().height());
     getGraphicsScene()->setSceneRect( getGraphicsView()->rect() );
     BOOST_FOREACH(std::string tag, image->getTags()) {
-        int count = image->getNumLayerItems(tag);
-        for (int i = 0; i < count; ++i) {
-            ILayerItemPtr vec = image->getLayerItem(tag, i);
+		int count = image->getNumGraphicLayerItems(tag);
+		for (int i = 0; i < count; ++i) {
+			auto vec = image->getLayerGraphicItem(tag, i);
             if (vec && vec->getItem() != nullptr && graphicsScene != vec->getItem()->scene()) {
                 graphicsScene->addItem(vec->getItem());
             }
@@ -274,19 +269,9 @@ void dicom::LayeredSerie::setMoveState()
     stateMachine->setState(stateMachine->getMoveState());
 }
 
-std::string dicom::LayeredSerie::getUserName() const
+std::string dicom::LayeredSerie::getLoggedUserName() const
 {
     return visualizer->getUserName();
-}
-
-double dicom::LayeredSerie::getBegin() const
-{
-    return 0.0;
-}
-
-double dicom::LayeredSerie::getEnd() const
-{
-    return 0.0;
 }
 
 void dicom::LayeredSerie::setBoneState()
@@ -337,10 +322,6 @@ void dicom::LayeredSerie::fitToSize()
             sb->setValue(sb->maximum() - 1);
         }
     }
-}
-
-void dicom::LayeredSerie::update()
-{
 }
 
 void dicom::LayeredSerie::init()

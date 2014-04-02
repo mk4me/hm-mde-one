@@ -141,7 +141,7 @@ void DataSourceLocalStorage::initialize()
 
 void DataSourceLocalStorage::encrypt(const core::Filesystem::Path & localStorageDataPath)
 {
-	core::Filesystem::Path tmpDB = plugin::getPathInterface()->getTmpPath() / "tmpDB.db";
+	core::Filesystem::Path tmpDB = plugin::getPaths()->getTmpPath() / "tmpDB.db";
 	int rc = sqlite3_open_v2(localStorageDataPath.string().c_str(), &(this->db), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
 
 	if (rc != SQLITE_OK){

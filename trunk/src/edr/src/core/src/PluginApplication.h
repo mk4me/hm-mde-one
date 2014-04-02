@@ -25,8 +25,12 @@ public:
 
 	PluginApplication(const std::string & pluginName);
 
+	//! \return Opis aplikacji
+	IApplicationDescription * description();
+	//! \return Manager do zarz¹dzania t³umaczeniem aplikacji
+	ILanguagesManager * languagesManager();
 	//! \return Interfejs œcie¿ek aplikacji
-	virtual IPath * pathInterface();
+	virtual IPath * paths();
 	//! \return Interfejs do logowania
 	virtual ILog * log();
 	//! \return Interfejs do czytania danych
@@ -62,8 +66,12 @@ private:
 class MainViewApplication : public IApplication
 {
 public:
+	//! \return Opis aplikacji
+	virtual IApplicationDescription * description();
+	//! \return Manager translacji aplikacji - pozwala zmieniaæ jêzyk
+	virtual ILanguagesManager * languagesManager();
 	//! \return Interfejs œcie¿ek aplikacji
-	virtual IPath * pathInterface();
+	virtual IPath * paths();
 	//! \return Interfejs do logowania
 	virtual ILog * log();
 	//! \return Interfejs do czytania danych

@@ -1,43 +1,158 @@
+#include "CoreLibPCH.h"
 #include <corelib/Version.h>
 #include <sstream>
 
 using namespace core;
 
-const int Version::major()
+static const Version::VersionNumberType maxVersionValue = 1000;
+static const Version::VersionNumberType minVersionValue = 0;
+
+const bool _verify(const Version::VersionNumberType max,
+	const Version::VersionNumberType min,
+	const Version::VersionNumberType val)
 {
-	return CORE_API_MAJOR;
+	return (min <= val) && (val < max);
 }
 
-const int Version::minor()
+
+
+const Version::VersionNumberType Version::Traits::maxMajor()
 {
-	return CORE_API_MINOR;
+	return maxVersionValue;
 }
 
-const int Version::patch()
+const Version::VersionNumberType Version::Traits::minMajor()
 {
-	return CORE_API_PATCH;
+	return minVersionValue;
 }
 
-const std::string Version::version()
+const bool Version::Traits::verifyMajor(const VersionNumberType val)
 {
-	return version(major(), minor(), patch());
+	return _verify(maxMajor(), minMajor(), val);
 }
 
-const std::string Version::version(const int major, const int minor, const int patch)
+const Version::VersionNumberType Version::Traits::maxMinor()
+{
+	return maxVersionValue;
+}
+
+const Version::VersionNumberType Version::Traits::minMinor()
+{
+	return minVersionValue;
+}
+
+const bool Version::Traits::verifyMinor(const VersionNumberType val)
+{
+	return _verify(maxMinor(), minMinor(), val);
+}
+
+const Version::VersionNumberType Version::Traits::maxPatch()
+{
+	return maxVersionValue;
+}
+
+const Version::VersionNumberType Version::Traits::minPatch()
+{
+	return minVersionValue;
+}
+
+const bool Version::Traits::verifyPatch(const VersionNumberType val)
+{
+	return _verify(maxPatch(), minPatch(), val);
+}
+
+const bool Version::Traits::verify(const Version & version)
+{
+	return (verifyMajor(version.major()) &&
+		verifyMinor(version.minor()) &&
+		verifyPatch(version.patch()));
+}
+
+Version::Version(const VersionNumberType major,
+	const VersionNumberType minor,
+	const VersionNumberType patch)
+	: major_(major), minor_(minor), patch_(patch)
+{
+
+}
+
+Version::~Version()
+{
+
+}
+
+const Version::VersionNumberType Version::major() const
+{
+	return major_;
+}
+
+const Version::VersionNumberType Version::minor() const
+{
+	return minor_;
+}
+
+const Version::VersionNumberType Version::patch() const
+{
+	return patch_;
+}
+
+const std::string Version::formatedVersion(const Version & version,
+	const std::string & separator)
 {
 	std::stringstream ss;
-	ss << major << "." << minor << "." << patch;
+
+	ss << version.major_ << separator << version.minor_ << separator << version.patch_;
 
 	return ss.str();
 }
 
-const bool Version::isAtLeast(const int major, const int minor, const int patch)
+const bool Version::operator<(const Version & version)
 {
-	return (10000 * major + 1000 * minor + patch) <=
-		(10000 * Version::major() + 1000 * Version::minor() + Version::patch());
+	return (maxVersionValue * maxVersionValue * major_ + maxVersionValue * minor_ + patch_) <
+		(maxVersionValue * maxVersionValue * version.major_ + maxVersionValue * version.minor_ + version.patch_);
 }
 
-const bool Version::hasFeature(const std::string & feature)
+const bool Version::operator==(const Version & version)
+{
+	return (major_ == version.major_ &&
+		minor_ == version.minor_ &&
+		patch_ == version.patch_);
+}
+
+const bool Version::operator<=(const Version & version)
+{
+	return ((*this < version) || (*this == version));
+}
+
+const bool Version::operator>(const Version & version)
+{
+	return !(*this <= version);
+}
+
+const bool Version::operator>=(const Version & version)
+{
+	return !(*this < version);
+}
+
+const bool Version::isAtLeast(const Version & version)
+{
+	return (*this >= version);
+}
+
+ExtendedVersion::ExtendedVersion(const VersionNumberType major,
+	const VersionNumberType minor,
+	const VersionNumberType patch)
+	: Version(major, minor, patch)
+{
+
+}
+
+ExtendedVersion::~ExtendedVersion()
+{
+
+}
+
+const bool ExtendedVersion::hasFeature(const std::string & featureName) const
 {
 	return false;
 }

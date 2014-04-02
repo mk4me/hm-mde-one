@@ -18,6 +18,9 @@ public:
     DataSourceFilterManager();
     virtual ~DataSourceFilterManager();
 
+	//! Metoda usuwa wszystkie filtry
+	void clearFilters();
+
     //! \param filter Filtr danych który rejestrujemy
     //! \return Indeks zarejestrowanego filtra
     virtual int registerFilter(DataSourceFilter * filter);

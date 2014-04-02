@@ -27,6 +27,7 @@
 #include <corelib/IParser.h>
 #include <corelib/IVisualizer.h>
 #include <utils/Export.h>
+#include <corelib/IPluginDescription.h>
 
 //! Weryfikacja typu bilda pluginu
 #ifdef _DEBUG
@@ -41,16 +42,38 @@
 #define CORE_CPPLIB_VER -1
 #endif
 
-//! Nazwa funkcji pobierającej numer wersji pluginu.
+//! Nazwa funkcji pobierającej numer wersji biblioteki core z którą był zbudowany plugin
 #define CORE_GET_PLUGIN_API_VERSION_FUNCTION_NAME CoreGetPluginAPIVersion
-
+//! Nazwa funkcji pobierającej typ builda pluginu - debug/release
 #define CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME CoreGetPluginBuildType
-//! Nazwa funkcji tworzącej plugin.
+//! Nazwa funkcji rozpoczynającej ładowanie pluginu dostarczanymi elementami aplikacji
 #define CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME CoreCreatePluginInstance
-//! 
+//! Nazwa funkcji pobierającej wersję bibliotek od których zależny jest również core
 #define CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME CoreGetLibrariesVersions
-//!
+//! Nazwa fucnkji inicjującej opis pluginu
 #define CORE_INITIALIZE_PLUGIN_DESCRIPTION_FUNCTION_NAME CoreInitializePluginDescription
+
+//! Ustawia wersję pluginu
+#define CORE_PLUGIN_SET_VERSION(major, minor, patch)					\
+{																		\
+	plugin->setVersion(major, minor, patch);							\
+}
+
+//! Ustawia dostawce pluginu
+#define CORE_PLUGIN_SET_VENDOR(name, shortName, description, contact)	\
+{																		\
+	plugin->setVendor(name, shortName, description, contact);			\
+}
+
+//! Ustawia dostawce pluginu jako PJWSTK - domyślnie
+#define CORE_PLUGIN_SET_PJWSTK_VENDOR									\
+	CORE_PLUGIN_SET_VENDOR("Polsko-Japońska Wyższa Szkoła Technik Komputerowych, Oddział zamiejscowy w Bytomiu", "PJWSTK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com")
+
+//! Ustawia dodatkowy opis pluginu
+#define CORE_PLUGIN_SET_DESCRIPTION(shortName, description)	\
+{															\
+	plugin->setDescription(shortName, description);			\
+}
 
 //! Rozpoczyna rejestrację pluginu
 //! \param name Nazwa pluginu
@@ -85,6 +108,8 @@ extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME(
 	core::IApplication* coreApplication)								\
 {                                                                       \
     plugin::__coreApplication = coreApplication;						\
+	CORE_PLUGIN_SET_PJWSTK_VENDOR										\
+	CORE_PLUGIN_SET_VERSION(1, 0, 0)									\
 
 
 //! Rozpoczyna rejestrację pluginu z innym domyslnym językiem tłumaczeń niz angielski
@@ -97,8 +122,8 @@ extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME(
 	int* major, int* minor, int* patch)									\
 {                                                                       \
 	*major = CORE_API_MAJOR;				                            \
-	*minor = CORE_API_MINOR;			                              \
-	*patch = CORE_API_PATCH;			                               \
+	*minor = CORE_API_MINOR;											\
+	*patch = CORE_API_PATCH;											\
 }                                                                       \
 extern "C" UTILS_DECL_EXPORT unsigned CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME() \
 {                                                                       \
@@ -121,12 +146,15 @@ extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME(
 	core::IApplication* coreApplication)								\
 {                                                                       \
 	plugin::__coreApplication = coreApplication;						\
+	CORE_PLUGIN_SET_PJWSTK_VENDOR										\
+	CORE_PLUGIN_SET_VERSION(1, 0, 0)									\
 
 
 
 //! Kończy rejestrację pluginu.
 #define CORE_PLUGIN_END                                                 \
 }
+
 
 //! Dodaje usługę zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_SERVICE(className)                              \
@@ -144,7 +172,6 @@ extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME(
 	catch(...) { PLUGIN_LOG_DEBUG("UNKNOWN error while loading source class " << #className); } \
 }    
 
-
 //! Dodaje parser zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_PARSER(className)                               \
 {																		\
@@ -152,7 +179,6 @@ extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME(
 	catch(std::exception & e) { PLUGIN_LOG_DEBUG("Error while loading parser class " << #className << ": " << e.what()); } \
 	catch(...) { PLUGIN_LOG_DEBUG("UNKNOWN error while loading parser class " << #className); } \
 }     
-
 
 //! Dodaje wizualizator zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
@@ -176,7 +202,7 @@ namespace core {
 	////////////////////////////////////////////////////////////////////////////////
 
 //! Interfejs pluginu przez który dostarczane są usługi (serwisy) i prototypy elementów przetwarzających dane
-class IPlugin : public plugin::IIdentifiable, public plugin::IDescription
+class IPlugin : public plugin::IIdentifiable, public plugin::IPluginDescription
 {
 public:
 	//! Pusty destruktor wirtualny
@@ -184,12 +210,30 @@ public:
 
 	//! \param name Nazwa pluginu
 	virtual void setName(const std::string & name) = 0;
-	//! \param  description Opis pluginu
-	virtual void setDescription(const std::string & description) = 0;
 	//! \param id Identyfikator pluginu
 	virtual void setID(core::UniqueID id) = 0;
 	//! \param langCode Kod domyślnego języka pluginu wg ISO639
 	virtual void setDefaultLanguageCode(const std::string & langCode) = 0;
+	//! \param major Główna wersja pluginu
+	//! \param minor Podrzędna wersja pluginu
+	//! \param patch Wersja patcha pluginu
+	virtual void setVersion(const core::Version::VersionNumberType major,
+		const core::Version::VersionNumberType minor,
+		const core::Version::VersionNumberType patch) = 0;
+
+	//! \param name Nazwa dostawcy
+	//! \param shortName Skrócona nazwa dostawcy
+	//! \param description Opis dostawcy
+	//! \param contact Kontakt z dostawcą
+	virtual void setVendor(const std::string & name,
+		const std::string & shortName,
+		const std::string & description,
+		const std::string & contact) = 0;
+	
+	//! \param shortName Skrócona nazwa pluginu
+	//! \param description Opis pluginu	
+	virtual void setDescription(const std::string & name,		
+		const std::string & description) = 0;
 
 	//! \param service Serwis
 	virtual void addService(plugin::IServicePtr service) = 0;

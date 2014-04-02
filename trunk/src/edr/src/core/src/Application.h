@@ -48,6 +48,7 @@ namespace core {
 	class ThreadPool;
 	class JobManager;
 	class LanguagesManager;
+	class ApplicationDescription;
 
 	class Application : private QObject
 	{
@@ -57,10 +58,13 @@ namespace core {
 		friend class UIApplication;
 
 	private:
+		plugin::VendorDescription vendor_;
+		ExtendedVersion version_;
 		utils::shared_ptr<Path> paths_;
 		utils::shared_ptr<LogInitializer> logInitializer_;
 		LogPtr loggerPrototype_;
 		LogPtr logger_;
+		utils::shared_ptr<ApplicationDescription> applicationDescription_;
 		utils::shared_ptr<LanguagesManager> languagesManager_;
 		utils::shared_ptr<PluginLoader> pluginLoader_;
 		utils::shared_ptr<DataHierarchyManager> dataHierarchyManager_;
@@ -119,7 +123,9 @@ namespace core {
 			std::vector<Filesystem::Path> & translations);
 
 		int run();
-
+		
+		ApplicationDescription * description();
+		LanguagesManager * languageManager();
 		MemoryDataManager* memoryDataManager();
 		StreamDataManager* streamDataManager();
 		FileDataManager* fileDataManager();

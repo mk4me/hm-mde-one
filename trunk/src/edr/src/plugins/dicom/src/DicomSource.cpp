@@ -181,9 +181,8 @@ dicom::DicomInternalStructPtr DicomLoader::load( const core::Filesystem::Path& f
 }
 
 void dicom::DicomSource::openInternalDataMainFile( core::Filesystem::Path path )
-{
-    DicomLoader loader;
-    DicomInternalStructPtr inter = loader.load(path);
+{    
+    DicomInternalStructPtr inter = DicomLoader::load(path);
     int count = inter->getNumPatients();
     for (int i = 0; i < count; ++i) {
         auto patient = inter->getPatient(i);

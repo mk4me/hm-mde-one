@@ -19,6 +19,7 @@ namespace dicom {
 
 namespace adnotations {
 
+	//! Indeksy adnotacji
     enum annotationsIdx {
         unknownAnnotation = -1,
         otherAnnotation = 0, 
@@ -33,19 +34,25 @@ namespace adnotations {
 		inflammatoryLevel = 9
     };
 
+	//! Mapowanie indesków adnotacji do ich nazw
     typedef boost::bimap<annotationsIdx, QString> AdnotationsType;
     DEFINE_SMART_POINTERS(AdnotationsType);
 
+	//! Tworzy domyœlne mapowanie indeksów
     AdnotationsTypePtr getDefault();
+	//! \param p Œciazka pliku do którego zapisujemy  typy adnotacji
+	//! \param adnotations Zapisywane typy adnotacji
     void save(const core::Filesystem::Path& p, AdnotationsTypeConstPtr adnotations);
+	//! \param p Œcie¿ka z której wczytujemy typy adnotacji
     AdnotationsTypePtr load(const core::Filesystem::Path& p);
-
+	//! Zwraca instancje typów adnotacji
     AdnotationsTypePtr instance();
+	//! Zapisuje aktualne typy adnotacji
     void autoSave();
-
+	//! \return Œcie¿ka pliku z typami adnotacji
     core::Filesystem::Path adnotationsFile();
-
-
+	
+	//! Typ poziomu krwi
 	enum bloodLevelDescriptor {
 
 		unknownBloodLevel = -1,
@@ -55,13 +62,16 @@ namespace adnotations {
 		bloodLevel3
 	};
 
+	//! Mapiowanie indeksów do nazw z ich opisem
 	typedef boost::bimap<bloodLevelDescriptor, QString> BloodLevelsType;
 	DEFINE_SMART_POINTERS(BloodLevelsType);
 
+	//! \return Zwraca domyœlne poziomy krwi
 	BloodLevelsTypePtr getDefaultBloodLevels();	
-
+	//! Zwracaj instancjê poziomów krwi
 	BloodLevelsTypePtr instanceBloodLevels();
 
+	//! Typy poziomów schorzenia
 	enum inflammatoryLevelDescriptor {
 
 		unknownInflammatoryLevel = -1,
@@ -71,11 +81,13 @@ namespace adnotations {
 		inflammatoryLevel3
 	};
 
+	//! Mapowanie typów poziomów schorzenia do ich opisów
 	typedef boost::bimap<inflammatoryLevelDescriptor, QString> InflammatoryLevelsType;
 	DEFINE_SMART_POINTERS(InflammatoryLevelsType);
 
+	//! \return Domyœlne typy poziomów schorzenia
 	InflammatoryLevelsTypePtr getDefaultInflammatoryLevels();	
-
+	//! \return Instancja poziomów schorzenia
 	InflammatoryLevelsTypePtr instanceInflammatoryLevels();
 }
 }

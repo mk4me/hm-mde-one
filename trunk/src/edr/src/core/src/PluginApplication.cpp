@@ -6,6 +6,8 @@
 #include "DataHierarchyManager.h"
 #include "ThreadPool.h"
 #include "JobManager.h"
+#include "LanguagesManager.h"
+#include "ApplicationDescription.h"
 
 using namespace core;
 
@@ -16,7 +18,7 @@ PluginApplication::PluginApplication(const std::string & pluginName)
 
 }
 
-IPath * PluginApplication::pathInterface()
+IPath * PluginApplication::paths()
 {
 	return path_.get();
 }
@@ -81,9 +83,29 @@ core::IJobManager * PluginApplication::jobManager()
 	return getJobManager();
 }
 
-IPath * MainViewApplication::pathInterface()
+IApplicationDescription * PluginApplication::description()
 {
-	return getPathInterface();
+	return getDescription();
+}
+
+ILanguagesManager * PluginApplication::languagesManager()
+{
+	return getLanguageManager();
+}
+
+IApplicationDescription * MainViewApplication::description()
+{
+	return getDescription();
+}
+
+ILanguagesManager * MainViewApplication::languagesManager()
+{
+	return getLanguageManager();
+}
+
+IPath * MainViewApplication::paths()
+{
+	return getPaths();
 }
 
 IDataManagerReader * MainViewApplication::dataManagerReader()

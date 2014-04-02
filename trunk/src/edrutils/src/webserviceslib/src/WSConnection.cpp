@@ -199,9 +199,11 @@ public:
 
 			s = ret.find("<" + operationName_ + "Result", 0);			
 			if(s != std::string::npos){
-				e = ret.find("</" + operationName_ + "Result>", s + 1) + 9 + operationName_.size();
+				e = ret.find("</" + operationName_ + "Result>", s + 1);
 				if(e == std::string::npos){
 					e = ret.size();
+				}else{
+					e += 9 + operationName_.size();
 				}
 			}else{
 				s = 0;

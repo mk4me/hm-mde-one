@@ -20,10 +20,12 @@
 #include "plugins/newCommunication/IDownloadRequest.h"
 #include "coreui/CorePopup.h"
 #include <QtGui/QMessageBox>
+#include "IDicomService.h"
+#include <corelib/IServiceManager.h>
 
 using namespace dicom;
 
-LayeredImageVisualizer::LayeredImageVisualizer() : userIsReviever_(false)
+LayeredImageVisualizer::LayeredImageVisualizer() : userIsReviever_(false), currentTrialID(-1)
 {
 	communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
 	if(comm != nullptr){
@@ -52,24 +54,54 @@ plugin::IVisualizer* LayeredImageVisualizer::create() const
     return new LayeredImageVisualizer();
 }
 
+void LayeredImageVisualizer::setStatus(const webservices::xmlWsdl::AnnotationStatus::Type type)
+{
+	auto ds = core::queryService<IDicomService>(plugin::getServiceManager());
+	ds->setAnnotationStatus(currentLayerUser_, currentTrialID, type, "");
+}
+
+const std::string LayeredImageVisualizer::getCurrentLayerUserName() const
+{
+	return currentLayerUser_;
+}
+
+const int LayeredImageVisualizer::currnetTrialID() const
+{
+	return currentTrialID;
+}
+
+const bool LayeredImageVisualizer::trySave()
+{
+	if(mainWidget->isWindowModified() == false){
+		return true;
+	}
+
+	if(QMessageBox::question(mainWidget, tr("Data changed"), tr("Some data was changed. Would You like to save changes or discard them?"),
+		QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save){		
+
+		try{
+			uploadSerie();
+		}catch(...){
+			return false;
+		}
+	}else{
+		return true;
+	}
+
+	return true;
+}
+
 bool LayeredImageVisualizer::eventFilter(QObject * watched, QEvent * event)
 {
 	if(event->type() == QEvent::Close){
 		//auto widget = qobject_cast<QWidget *>(watched);
 		
-		if(mainWidget->isWindowModified() == true &&
-			QMessageBox::question(mainWidget, tr("Data changed"), tr("Some data was changed. Would You like to save changes or discard them?"),
-			QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save){		
-
-			try{
-				uploadSerie();
-			}catch(...){
-				event->ignore();
-				return true;
-			}
+		if(trySave() == true){
+			event->accept();
+		}else{
+			event->ignore();
 		}
 
-		event->accept();
 		return true;
 	}
 
@@ -249,8 +281,9 @@ void dicom::LayeredImageVisualizer::selectLayer(int tagIdx, int idx )
         auto selected = selectedLayer();
         ILayeredImagePtr img = serie->getImage();
         std::string tag = img->getTag(tagIdx);
-        if (tag != selected.first || idx != selected.second) {
-            
+		currentLayerUser_ = tag;
+		currentTrialID = img->getTrialID();
+        if (selected.second != -1 && (tag != selected.first || idx != selected.second)) {
 			auto li = img->getLayerItem(tag, idx);			
 
 			auto pl = utils::dynamic_pointer_cast<PointsLayer>(li);
@@ -263,9 +296,9 @@ void dicom::LayeredImageVisualizer::selectLayer(int tagIdx, int idx )
 			
 			serie->getGraphicsScene()->blockSignals(true);
             BOOST_FOREACH(std::string t, img->getTags()) {
-                int count = img->getNumLayerItems(t);
+                int count = img->getNumGraphicLayerItems(t);
                 for (int i = 0; i < count; ++i) {
-                    img->getLayerItem(t, i)->setSelected(tag == t && i == idx);
+                    img->getLayerGraphicItem(t, i)->setSelected(tag == t && i == idx);
                 }
             }
             serie->getGraphicsScene()->blockSignals(false);
@@ -282,9 +315,9 @@ std::pair<std::string, int> dicom::LayeredImageVisualizer::selectedLayer() const
     if (serie) {
         ILayeredImageConstPtr img = serie->getImage();
         BOOST_FOREACH(std::string tag, img->getTags()) {
-            int count = img->getNumLayerItems(tag);
+            int count = img->getNumGraphicLayerItems(tag);
             for (int i = 0; i < count; ++i) {
-                if (img->getLayerItem(tag, i)->getSelected()) {
+                if (img->getLayerGraphicItem(tag, i)->getSelected()) {
                     if (idx == -1) {
                         idx = i;
                         selectedTag = tag;
@@ -330,9 +363,9 @@ void dicom::LayeredImageVisualizer::removeSelectedLayers()
         int tagsNo = image->getNumTags();
         for (int iTag = 0; iTag < tagsNo; ++iTag) {
             auto tag = image->getTag(iTag);
-            for (int itm = image->getNumLayerItems(tag) - 1; itm >= 0; --itm) {
+            for (int itm = image->getNumGraphicLayerItems(tag) - 1; itm >= 0; --itm) {
 
-				auto li = image->getLayerItem(tag, itm);
+				auto li = image->getLayerGraphicItem(tag, itm);
 
 				if (li->getSelected() == true) {
 

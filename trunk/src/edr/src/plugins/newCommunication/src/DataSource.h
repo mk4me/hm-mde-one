@@ -19,6 +19,7 @@
 #include "ServerStatusManager.h"
 #include "webserviceslib/IncrementalBranchShallowCopy.h"
 #include "webserviceslib/DateTime.h"
+#include "DataSourceFilterManager.h"
 
 //! Forward declarations
 class DownloadRequest;
@@ -30,7 +31,7 @@ class DataSourceLoginManager;
 class DataSourceWidget;
 class CommunicationManager;
 
-//! Źródło danych EDR typu communication - dostarcza dancyh z Bazy Danych Ruchu
+//! Źródło danych EDR typu communication - dostarcza danych z Bazy Danych Ruchu
 class CommunicationDataSource : public communication::ICommunicationDataSource, public plugin::ISource
 {
     UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}");
@@ -100,7 +101,35 @@ public:
     ServerStatusManagerConstPtr getServerStatusManager() const;
 
     webservices::IncrementalBranchShallowCopy getIncrementalShallowCopy(const webservices::DateTime& dt);
+
+	virtual int addDataFilter(DataSourceFilter* filter);
+
+	virtual void setCurrentFilter(const int idx);
+
+	virtual const int currentFilter() const;
+
+	virtual void refreshCurrentFilter();
+	
+	virtual const webservices::xmlWsdl::AnnotationsList getAllAnnotationStatus() const;
+
+	virtual void setAnnotationStatus(const int userID, const int motionID,
+		const webservices::xmlWsdl::AnnotationStatus::Type type,
+		const std::string & comment);
+
+	virtual const webservices::DateTime lastUpdateTime() const;
+
+	virtual const bool userIsReviewer() const;
+
+	virtual const webservices::xmlWsdl::UsersList listUsers() const;
+
+	virtual const int trialID(const std::string & name) const;
+
 private:
+
+	void tryRefreshAnnotationStatus();
+
+	void refreshAnnotationStatus();
+
 	//! \param connection Połączenie z webService które inicjalizuję - ustawiam adres jeżeli jest inny niż aktualnie ustawiony w połączeniu
 	//! Ta metoda w przypadku zmiany adresu usługi powinna ściągnąc jej definicję, sparsować ją i przygotować połaczenie do dalszej pracy
 	//! Jest to leniwa inicjalizacja, kiedy nie chcemy od razu nawiazaywać połączenia ponieważ user może sobie zarzyczyć trybu offline
@@ -205,6 +234,7 @@ private:
     // ------------------------ LOGIKA -------------------------------
 	//! Aktualny użytkownik
 	User currentUser_;
+	bool userIsReviewer_;
     //! Manager logowania - zawiera użytkownika
     DataSourceLoginManager * loginManager;
 
@@ -269,6 +299,12 @@ private:
     // ----------------------- Hierarchie -------------------------------
     std::vector<communication::IHierarchyPerspectivePtr> perspectives;
 
+	//! Manager filtrów danych
+	DataSourceFilterManager filterManager;
+
+	//! --------------------- Status adnotacji ---------------------------
+	webservices::xmlWsdl::AnnotationsList annotations;
+	mutable webservices::DateTime lastStatusUpdate;	
 };
 
 #endif HEADER_GUARD___COMMUNICATIONDATASOURCE_H__

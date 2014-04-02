@@ -85,7 +85,6 @@ signals:
     void transferResults();
 
 private:
-    std::string name;
     NewVdfWidget* newVdfWidget;
     CanvasStyleEditorWidget* canvasStyleEditorWidget;
     TypesWindow* typesWindow;

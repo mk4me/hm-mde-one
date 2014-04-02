@@ -84,7 +84,8 @@ private:
 
 public:
 
-    DataSourceWidget(CommunicationDataSource * dataSource, QWidget * parent = nullptr);
+    DataSourceWidget(DataSourceFilterManager* fm,
+		CommunicationDataSource * dataSource, QWidget * parent = nullptr);
 
     virtual ~DataSourceWidget();
 
@@ -149,6 +150,8 @@ private slots:
     void onPerspectiveSelectionChanged();
 
 private:
+
+	void filterChange(const int idx);
 
 	void onLogin(const QString & user, const QString & password);
 
@@ -246,9 +249,8 @@ private:
 
     //! Manager karty pacjenta
     PatientCardManager patientCardManager;
-
-    //! Manager filtrów danych
-    DataSourceFilterManager filterManager;
+	//! Manager filtrow
+	DataSourceFilterManager* fm;
 
     //! Manager filtrów danych
     DataSourcePerspectiveManager perspectiveManager;

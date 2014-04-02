@@ -1,5 +1,6 @@
 #include "DicomPCH.h"
 #include <corelib/IPlugin.h>
+#include "IDicomService.h"
 #include <plugins/dicom/Dicom.h>
 #include <plugins/dicom/ILayeredImage.h>
 #include "PngParser.h"
@@ -12,25 +13,67 @@
 #include <corelib/ISourceManager.h>
 #include "LayersXmlParser.h"
 #include "InternalXmlParser.h"
+#include "AnnotationStatusFilter.h"
 
 using namespace dicom;
 
-class DicomTempService : public plugin::IService
+class DicomTempService : public IDicomService, public utils::Observer<communication::ICommunicationDataSource>
 {																		
 UNIQUE_ID("{2B0AE786-F194-46DE-A161-CCCFF317E44B}")						
 CLASS_DESCRIPTION("DicomTempService", "DicomTempService");							
-															
+		
+private:
+
+	struct AnnotationStatus {
+		webservices::xmlWsdl::AnnotationStatus::Type status;
+		std::string comment;
+	};
+
+	typedef std::map<int, std::map<int, AnnotationStatus>> AnnotationsMap;
+
+private:
+
+	static const AnnotationsMap convert(const webservices::xmlWsdl::AnnotationsList & annotations)
+	{
+		AnnotationsMap ret;
+
+		for(auto it = annotations.begin(); it != annotations.end(); ++it){
+
+			const webservices::xmlWsdl::Annotation & a = *it;
+
+			AnnotationStatus as;
+			as.status = a.status;
+			as.comment = a.comment;
+
+			ret[a.userID][a.trialID] = as;
+		}
+
+		return ret;
+	}
+
 public:			
-    DicomTempService() : sourceManager(nullptr) {}
+    DicomTempService() : sourceManager(nullptr), inEditionFilterIDX(-1),
+	inVerificationFilterIDX(-1), verifiedFilterIDX(-1), usersToRefresh(true) {}
+
     virtual void init(core::ISourceManager * sourceManager,core::IVisualizerManager * visualizerManager,						
         core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager ) 
     {
         this->sourceManager = sourceManager;
-    }						
+    }		
+
     virtual const bool lateInit()  
     { 
-        communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(sourceManager);
+        comm = core::querySource<communication::ICommunicationDataSource>(sourceManager);
 		if(comm != nullptr){
+
+			comm->attach(this);
+
+			auto as = QObject::tr("Annotation status");
+
+			//dodajemy filtry dla adnotacji
+			inEditionFilterIDX = comm->addDataFilter(inEditionFilter = new AnnotationStatusFilter(std::string((as + ": " + QObject::tr("in edition")).toStdString()), true, false));
+			inVerificationFilterIDX = comm->addDataFilter(inVerificationFilter = new AnnotationStatusFilter(std::string((as + ": " + QObject::tr("in verification")).toStdString()), true, false));
+			verifiedFilterIDX = comm->addDataFilter(verifiedFilter = new AnnotationStatusFilter(std::string((as + ": " + QObject::tr("verified")).toStdString()), true, false));
 			comm->addHierarchyPerspective(utils::make_shared<DicomPerspective>());
 			return true; 
 		}
@@ -38,12 +81,236 @@ public:
 		return false;
     }
 
-    virtual void finalize() {} 											
+	virtual void finalize()
+	{
+		comm->detach(this);
+		comm.reset();
+	}
+
+	virtual void update(const communication::ICommunicationDataSource * subject)
+	{
+		if(subject->isLogged() == true){
+
+			if(subject->userIsReviewer() == true && usersToRefresh == true){
+				std::map<std::string, int>().swap(usersMapping);
+				auto users = subject->listUsers();
+				for(auto it = users.begin(); it != users.end(); ++it){
+					usersMapping[(*it).login] = (*it).id;
+				}
+				usersToRefresh = false;
+			}
+			
+			auto lu = subject->lastUpdateTime();
+
+			if(lastUpdate < lu){
+
+				auto wa = subject->getAllAnnotationStatus();
+
+				annotations = convert(wa);
+
+				lastUpdate = lu;
+
+				updateFilters(subject);
+			}
+		}else{
+			usersToRefresh = true;
+		}
+	}
+
+	const int getInEditionFilterIDX() const
+	{
+		return inEditionFilterIDX;
+	}
+
+	const int getInVerificationFilterIDX() const
+	{
+		return inVerificationFilterIDX;
+	}
+
+	const int getVerifiedFilterIDX() const
+	{
+		return verifiedFilterIDX;
+	}
+
+	virtual const webservices::xmlWsdl::AnnotationStatus::Type annotationStatus(const std::string & user, const int trialID) const
+	{
+		auto id = userID(user);
+
+		auto it = annotations.find(id);
+
+		if(it != annotations.end()){
+
+			auto IT = it->second.find(trialID);
+			if(IT != it->second.end()){
+
+				if(IT->second.status == webservices::xmlWsdl::AnnotationStatus::Approved ||
+					IT->second.status == webservices::xmlWsdl::AnnotationStatus::ReadyForReview){
+					return IT->second.status;
+				}
+			}
+		}
+
+		return webservices::xmlWsdl::AnnotationStatus::UnderConstruction;
+	}
+
+	virtual void setAnnotationStatus(const std::string & user, const int trialID,
+		const webservices::xmlWsdl::AnnotationStatus::Type status,
+		const std::string & comment)
+	{
+		auto id = userID(user);
+
+		auto lu = comm->lastUpdateTime();
+
+		if(lastUpdate >= lu){
+			lastUpdate = webservices::DateTime::now();
+		}
+
+		comm->setAnnotationStatus(id, trialID, status, comment);
+		AnnotationStatus as;
+		as.status = status;
+		as.comment = comment;
+		annotations[id][trialID] = as;
+
+		updateFilters(comm.get());
+	}
+									
     virtual void update( double deltaTime ) {} 								 
     virtual QWidget* getWidget() { return nullptr; } 						 
-    virtual QWidgetList getPropertiesWidgets() { return QWidgetList(); }     
+    virtual QWidgetList getPropertiesWidgets() { return QWidgetList(); }
+
+private:
+
+	const int userID(const std::string & user) const
+	{
+		int ret = -1;
+
+		auto it = usersMapping.find(user);
+		if(it != usersMapping.end()){
+			ret = it->second;
+		}else if(user == comm->currentUser()->name()){
+			ret = comm->currentUser()->id();
+		}
+
+		return ret;
+	}
+
+	void updateFilters(const communication::ICommunicationDataSource * subject)
+	{
+		AnnotationStatusFilter::Identifiers inEdition;
+		AnnotationStatusFilter::Identifiers inVerification;
+		AnnotationStatusFilter::Identifiers verified;
+
+		auto ug = subject->currentUser()->userGroups();
+
+		if(subject->userIsReviewer() == false){
+			//student
+			if(annotations.empty() == false){
+				for(auto it = annotations.begin()->second.begin();
+					it != annotations.begin()->second.end(); ++it){
+
+					switch(it->second.status){
+
+					case webservices::xmlWsdl::AnnotationStatus::Approved:
+						verified.insert(it->first);
+						break;
+
+					case webservices::xmlWsdl::AnnotationStatus::ReadyForReview:
+						inVerification.insert(it->first);
+						break;
+
+					default:
+						inEdition.insert(it->first);
+						break;
+
+					}
+				}
+			}
+		}else{
+			//lekarz
+			//muszê przebudowaæ indeks na trialID -> userID + status
+			AnnotationsMap byTrialAnnotations;
+
+			for(auto it = annotations.begin();
+				it != annotations.end(); ++it){
+
+				for(auto IT = it->second.begin(); IT != it->second.end(); ++IT){
+
+					byTrialAnnotations[IT->first][it->first] = IT->second;
+
+				}
+			}
+
+			for(auto it = byTrialAnnotations.begin();
+				it != byTrialAnnotations.end(); ++it){
+
+				int verifiedC = 0;
+				int inEditionC = 0;
+				int waitingC = 0;
+
+				for(auto IT = it->second.begin(); IT != it->second.end(); ++IT){
+					
+					switch(IT->second.status){
+
+						case webservices::xmlWsdl::AnnotationStatus::Approved:
+							++verifiedC;
+							break;
+
+						case webservices::xmlWsdl::AnnotationStatus::ReadyForReview:
+							++waitingC;
+							break;
+
+						default:
+							++inEditionC;
+							break;
+					}
+				}
+
+				if(inEditionC > 0){
+
+					inEdition.insert(it->first);
+
+				}else if(waitingC > 0){
+
+					inVerification.insert(it->first);
+
+				}else if(verifiedC > 0){
+
+					verified.insert(it->first);
+
+				}
+			}
+		}
+
+		//aktualizuje filtry
+		inEditionFilter->setIdentifiers(inEdition);
+		inVerificationFilter->setIdentifiers(inVerification);
+		verifiedFilter->setIdentifiers(verified);
+
+		//odœwie¿am jeœli trzeba
+		auto fID = subject->currentFilter();
+
+		if(fID == inEditionFilterIDX || fID == inVerificationFilterIDX
+			|| fID == verifiedFilterIDX){
+
+				comm->refreshCurrentFilter();
+		}
+	}
+
 private:
     core::ISourceManager *sourceManager;
+	communication::ICommunicationDataSourcePtr comm;
+	AnnotationStatusFilter * inEditionFilter;
+	AnnotationStatusFilter * inVerificationFilter;
+	AnnotationStatusFilter * verifiedFilter;
+	std::map<std::string, int> usersMapping;
+	bool usersToRefresh;
+
+	int inEditionFilterIDX;
+	int inVerificationFilterIDX;
+	int verifiedFilterIDX;
+
+	webservices::DateTime lastUpdate;
+	AnnotationsMap annotations;
 };																			 
 
 CORE_PLUGIN_BEGIN("dicom", core::UID::GenerateUniqueID("{09E8994A-99B4-42D6-9E72-C695ABFEAB1E}"))

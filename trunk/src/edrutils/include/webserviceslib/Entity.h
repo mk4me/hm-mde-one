@@ -109,12 +109,12 @@ namespace webservices
 		{
 			//! Typ wyliczeniowy wartosci logicznych
 			enum Type {
-				Unspecified,		//! Nieokreślono
-				UnderConstruction,	//! W edycji
-				ReadyForReview,		//! Gotowy do weryfikacji
-				UnderReview,		//! W weryfikacji
-				Approved,			//! Zatwierdzony
-				Rejected			//! Odrzucony
+				Unspecified = -1,		//! Nieokreślono
+				UnderConstruction = 1,	//! W edycji
+				ReadyForReview = 2,		//! Gotowy do weryfikacji
+				UnderReview = 3,		//! W weryfikacji
+				Approved = 4,			//! Zatwierdzony
+				Rejected = 0			//! Odrzucony
 			};
 
 			//! \param statusType Tekstowa reprezentacja typu stanu adnotacji
@@ -158,6 +158,7 @@ namespace webservices
 		//! Szczegóły użytkownika
 		struct UserDetails
 		{
+			int id;					//! Identyfikator
 			std::string login;		//! Login użytkownika
 			std::string firstName;	//! Imię
 			std::string lastName;	//! Nazwisko

@@ -23,9 +23,9 @@ void SourceManager::update(double deltaTime)
 		try{
 			(*it)->update(deltaTime);
 		}catch(std::exception & e){
-			CORE_LOG_ERROR("Source: " << (*it)->getName() << " ID: " << (*it)->getID() << " caused an error during update: " << e.what());
+			CORE_LOG_ERROR("Source: " << (*it)->name() << " ID: " << (*it)->ID() << " caused an error during update: " << e.what());
 		}catch(...){
-			CORE_LOG_ERROR("Source: " << (*it)->getName() << " ID: " << (*it)->getID() << " caused an UNKNOWN error during update");
+			CORE_LOG_ERROR("Source: " << (*it)->name() << " ID: " << (*it)->ID() << " caused an UNKNOWN error during update");
 		}
 	}
 }
@@ -35,10 +35,10 @@ void SourceManager::finalizeSources()
 	for(auto it = sourcesList.begin(); it != sourcesList.end(); ++it){
 		try{
 			(*it)->finalize();
-			CORE_LOG_DEBUG("SourceManager: finalized correctly " << (*it)->getName() << " service");
+			CORE_LOG_DEBUG("SourceManager: finalized correctly " << (*it)->name() << " service");
 		}
 		catch(std::exception & e){
-			CORE_LOG_ERROR("SourceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
+			CORE_LOG_ERROR("SourceManager: Error finalizing " << (*it)->name() << " service with error " << e.what());
 		}
 		catch(...){
 			CORE_LOG_ERROR("ServiceManager: Unknown error");
@@ -48,10 +48,10 @@ void SourceManager::finalizeSources()
 
 void SourceManager::registerSource(const plugin::ISourcePtr & source)
 {
-	if (sourcesMap.find(source->getID()) == sourcesMap.end()) {
-		sourcesMap.insert( std::make_pair(source->getID(), source));
+	if (sourcesMap.find(source->ID()) == sourcesMap.end()) {
+		sourcesMap.insert( std::make_pair(source->ID(), source));
 		sourcesList.push_back(source);
-		CORE_LOG_INFO("Source " << source->getName() << " registered.");
+		CORE_LOG_INFO("Source " << source->name() << " registered.");
 	} else {
 		throw std::runtime_error("Source with this ID already registered.");
 	}

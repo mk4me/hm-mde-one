@@ -15,6 +15,7 @@
 #include <coreui/GraphicSceneWithStateMachine.h>
 #include "LayeredModelView.h"
 #include "LayeredStateMachine.h"
+#include <coreui/CoreAction.h>
 #include "AdnotationsDelegate.h"
 
 class QGraphicsScene;
@@ -60,13 +61,21 @@ private Q_SLOTS:
 
     void editSelectedSerie();
     void selectionChanged(const QModelIndex &);
+
+	void acceptAnnotation();
+	void rejectAnnotation();
+	void requestAnnotationVerification();
 private:
     //! ui z designera
     Ui::LayeredImageVisualizer* ui;
     //! model wizualizatora
     LayeredImageVisualizer* model;
-    QGraphicsView* lastView;
-	AdnotationsDelegate * adnotationDelegate;
+    QGraphicsView* lastView;	
+	coreUI::CoreAction* toVerifyAction;
+	coreUI::CoreAction* acceptAction;
+	coreUI::CoreAction* rejectAction;
+	AdnotationsDelegate * adnotationDelegate0;
+	AdnotationsDelegate * adnotationDelegate1;
 };
 
 

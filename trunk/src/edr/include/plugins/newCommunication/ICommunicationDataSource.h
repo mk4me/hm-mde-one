@@ -11,6 +11,7 @@
 
 #include <utils/ObserverPattern.h>
 #include <plugins/newCommunication/IDataSourceUser.h>
+#include <plugins/newCommunication/IDataSourceFilterManager.h>
 #include <plugins/subject/ISubject.h>
 #include <plugins/newCommunication/IPatient.h>
 #include <plugins/newCommunication/IHierarchyPerspective.h>
@@ -55,8 +56,38 @@ public:
 	virtual void showConfigurationCard() = 0;
     //! dołączenie zewnętrznej perspektywy tworzącej hierarchiczną reprezentację
     virtual void addHierarchyPerspective(communication::IHierarchyPerspectivePtr perspective) = 0;
-
+	//! \param path Ściezka do ładowanego pliku
+	//! \param trialName Trial dla ktorego łądujemy plik
+	//! \return Czy udało się załadować plik
     virtual bool uploadMotionFile(const core::Filesystem::Path& path, const std::string& trialName) = 0;
+	//! \param filter Filtr dla danych z bazy
+	//! \return Indeks filtra po rejestracji
+	virtual int addDataFilter(DataSourceFilter* filter) = 0;
+	//! \param idx Indeks filtra
+	virtual void setCurrentFilter(const int idx) = 0;
+	//! \return Indeks aktuialnego filtra
+	virtual const int currentFilter() const = 0;
+	//! Odswieża aktualny filtr
+	virtual void refreshCurrentFilter() = 0;
+	//! \return Lista wszystkich adnotacji
+	virtual const webservices::xmlWsdl::AnnotationsList getAllAnnotationStatus() const = 0;
+	//! \param userID Identyfikator usera dla ktorego ustawia sie status
+	//! \param trialID Identyfikator zdjęcia dla ktorego ustawia sie status
+	//! \param status Status adnotacji
+	//! \param comment Komentarz do adnotacji
+	virtual void setAnnotationStatus(const int userID, const int motionID,
+		const webservices::xmlWsdl::AnnotationStatus::Type type,
+		const std::string & comment = std::string()) = 0;
+
+	//! \return Czas ostatniej aktualizacji po stronie bazy danych
+	virtual const webservices::DateTime lastUpdateTime() const = 0;
+	//! \return Czy użytkownik to recenzent dla medusy
+	virtual const bool userIsReviewer() const = 0;
+	//! \return Użytkownicy bazy
+	virtual const webservices::xmlWsdl::UsersList listUsers() const = 0;
+	//! \param name Nazwa triala
+	//! \return Globalny ID triala
+	virtual const int trialID(const std::string & name) const = 0;
 };
 DEFINE_SMART_POINTERS(ICommunicationDataSource);
 

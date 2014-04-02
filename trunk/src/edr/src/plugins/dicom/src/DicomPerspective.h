@@ -16,6 +16,7 @@
 
 namespace dicom {
 
+//! Klasa pomocnicza przy tworzeniu wizualizatorów
 class DicomHelper : public core::WrappedItemHelper
 {
 public:
@@ -30,6 +31,7 @@ private:
 };
 DEFINE_SMART_POINTERS(DicomHelper);
 
+//! Klasa realizuj¹ca perspektywe danych
 class DicomPerspective : public communication::IHierarchyPerspective
 {
 public:

@@ -4,7 +4,7 @@
 	filename: 	AdnotationsDelegate.h
 	author:		Wojciech Kniec
 	
-	purpose:	
+	purpose:	Delegat obs³uguj¹cy edycjê adnotacji w drzewie
 *********************************************************************/
 
 #ifndef HEADER_GUARD_DICOM__ADNOTATIONSDELEGATE_H__
@@ -21,8 +21,8 @@ namespace dicom {
         Q_OBJECT
 
     public:
-        AdnotationsDelegate(QObject *parent = 0);
-
+        AdnotationsDelegate(const int column, QObject *parent = 0);
+		//! \param val Obraz adnotacji dla którego bêdzie tworzony edytor
 		void setImage(ILayeredImageConstPtr val);
 
         QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
@@ -36,7 +36,10 @@ namespace dicom {
             const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 	private:
+		//! Obraz adnotacji
 		ILayeredImageConstPtr val;
+		//! Kolumna dla której mamy delegata
+		const int column;
     };
 }
 

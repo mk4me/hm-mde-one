@@ -110,12 +110,15 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
             }
             
         } else if (role == Qt::FontRole) {
-                treedata* td = static_cast<treedata*>(index.internalPointer());
+			treedata* td = static_cast<treedata*>(index.internalPointer());
             if (td->idx != -1) {
                 std::string tag = image->getTag(td->tag);
                 ILayerItemConstPtr itm = image->getLayerItem(tag, index.row());
+				auto gitm = core::dynamic_pointer_cast<const ILayerGraphicItem>(itm);
                 QFont f;
-                f.setBold(itm->getSelected());
+				if(gitm != nullptr){
+					f.setBold(gitm->getSelected());
+				}
                 return f;
             }
         }
@@ -193,16 +196,19 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 						}
 						break;
 
+					/*
 					default:
 						{
 							QString result = value.toString();
 							auto adn = adnotations::instance();
 							int adnotationIdx = adn->right.at(result);
 
-							il->setAdnotationIdx(adnotationIdx);
+							//! TODO
+							//il->setAdnotationIdx(adnotationIdx);
 							Q_EMIT editCompleted( result );
 						}
 						break;
+					*/
 					}
                 }
             }

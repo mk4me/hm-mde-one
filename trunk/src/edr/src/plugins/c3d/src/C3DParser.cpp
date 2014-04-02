@@ -179,7 +179,7 @@ void C3DParser::acceptedExpressions(Expressions & expressions) const
     expDesc.types.insert(typeid(C3DEventsCollection));
     expDesc.types.insert(typeid(MovieDelays));
 
-    expressions.insert(Expressions::value_type(".*\.c3d$", expDesc));
+    expressions.insert(Expressions::value_type(".*\\.c3d$", expDesc));
 }
 
 void C3DParser::getObjects( core::Objects& objects )

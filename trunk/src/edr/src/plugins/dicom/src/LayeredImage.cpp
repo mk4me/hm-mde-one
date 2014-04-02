@@ -54,10 +54,16 @@ void dicom::LayeredImage::addLayer( ILayerItemPtr layer, const std::string& laye
 {
     layers.insert(std::make_pair(layerName, layer));
     tags.insert(layerName);
-    auto vis = tagsVisibility.find(layerName);
-    if (vis == tagsVisibility.end()) {
-        tagsVisibility[layerName] = true;
-    }
+
+	auto graphicLayer = core::dynamic_pointer_cast<ILayerGraphicItem>(layer);
+	if(graphicLayer != nullptr){
+		graphicLayers.insert(std::make_pair(layerName, graphicLayer));
+
+		auto vis = tagsVisibility.find(layerName);
+		if (vis == tagsVisibility.end()) {
+			tagsVisibility[layerName] = true;
+		}
+	}
 }
 
 void dicom::LayeredImage::removeLayer( ILayerItemConstPtr layer )
@@ -68,9 +74,19 @@ void dicom::LayeredImage::removeLayer( ILayerItemConstPtr layer )
             break;
         }
     }
+
+	auto graphicLayer = core::dynamic_pointer_cast<const ILayerGraphicItem>(layer);
+	if(graphicLayer != nullptr){
+		for (auto it = graphicLayers.begin(); it != graphicLayers.end(); ++it) {
+			if (it->second == layer) {
+				graphicLayers.erase(it);
+				break;
+			}
+		}
+	}
 }
 
-dicom::LayeredImage::const_range dicom::LayeredImage::getLayerItems( const std::string& layerName ) const
+dicom::LayeredImage::layers_const_range dicom::LayeredImage::getLayerItems( const std::string& layerName ) const
 {
     return boost::make_iterator_range(layers.equal_range(layerName));
     //return boost::make_iterator_range(layers.cbegin(), layers.cend());
@@ -96,9 +112,9 @@ QPixmap dicom::LayeredImage::getPixmap() const
 QSize dicom::LayeredImage::getSize() const
 {
     QSize maxSize = backgroundLayer->getSize();
-    for (auto it = layers.begin(); it != layers.end(); ++it) {
+    for (auto it = graphicLayers.begin(); it != graphicLayers.end(); ++it) {
         QSize layerSize = (it->second)->getSize();
-        //QSize layerSize = (*it)->getSize();
+       
         if (maxSize.width() < layerSize.width()) {
             maxSize.setWidth(layerSize.width());
         }
@@ -114,6 +130,11 @@ QSize dicom::LayeredImage::getSize() const
 int dicom::LayeredImage::getNumLayerItems( const std::string& layerName ) const
 {
     return layers.count(layerName);
+}
+
+int dicom::LayeredImage::getNumGraphicLayerItems(const std::string& layerName) const
+{
+	return graphicLayers.count(layerName);
 }
 
 dicom::ILayerItemConstPtr dicom::LayeredImage::getLayerItem(const std::string& layerName, int idx ) const
@@ -132,6 +153,22 @@ dicom::ILayerItemPtr dicom::LayeredImage::getLayerItem(const std::string& layerN
     return (it->second);
 }
 
+dicom::ILayerGraphicItemConstPtr dicom::LayeredImage::getLayerGraphicItem(const std::string& layerName,int idx) const
+{
+	UTILS_ASSERT(idx >= 0 && idx < getNumGraphicLayerItems(layerName));
+	auto it = graphicLayers.equal_range(layerName).first;
+	std::advance(it, idx);
+	return (it->second);
+}
+
+dicom::ILayerGraphicItemPtr dicom::LayeredImage::getLayerGraphicItem(const std::string& layerName, int idx)
+{
+	UTILS_ASSERT(idx >= 0 && idx < getNumGraphicLayerItems(layerName));
+	auto it = graphicLayers.equal_range(layerName).first;
+	std::advance(it, idx);
+	return (it->second);
+}
+
 std::vector<dicom::ILayerItemConstPtr> dicom::LayeredImage::getLayersToSerialize( const std::string& tag ) const
 {
     std::vector<ILayerItemConstPtr> ret;
@@ -141,7 +178,7 @@ std::vector<dicom::ILayerItemConstPtr> dicom::LayeredImage::getLayersToSerialize
     return ret;
 }
 
-dicom::ILayerItemPtr dicom::LayeredImage::getBackgroundLayer() const
+dicom::ILayerGraphicItemPtr dicom::LayeredImage::getBackgroundLayer() const
 {
     return backgroundLayer;
 }
@@ -181,11 +218,8 @@ bool dicom::LayeredImage::getTagVisible( const std::string& tag ) const
 void dicom::LayeredImage::setTagVisible( const std::string& tag, bool val )
 {
     tagsVisibility[tag] = val;
-    for (int i = getNumLayerItems(tag) - 1; i >= 0; --i ) {
-		auto item = getLayerItem(tag, i)->getItem();
-		if(item != nullptr){
-			item->setVisible(val);
-		}
+    for (int i = getNumGraphicLayerItems(tag) - 1; i >= 0; --i ) {
+		getLayerGraphicItem(tag, i)->getItem()->setVisible(val);	
     }
 }
 
@@ -202,6 +236,7 @@ dicom::ILayeredImage* dicom::LayeredImage::clone() const
     }
 
 	img->setIsPowerDoppler(this->isPowerDoppler());
+	img->setTrialID(this->getTrialID());
 
     return img.release();
 }

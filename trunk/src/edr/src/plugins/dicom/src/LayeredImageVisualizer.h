@@ -17,6 +17,7 @@
 #include <plugins/dicom/ILayeredImage.h>
 #include "LayeredSerie.h"
 #include "Adnotations.h"
+#include <webserviceslib/Entity.h>
 
 class QLabel;
 class QScrollArea;
@@ -32,6 +33,8 @@ namespace dicom {
         Q_OBJECT;
         UNIQUE_ID("{4CBA33A4-F0EA-4607-9CB1-C1816697D1A1}");
         CLASS_DESCRIPTION("Layered Image Visualizer", "Layered Image Visualizer");
+
+		friend class LayeredImageVisualizerView;
 
     public:
         LayeredImageVisualizer();
@@ -93,14 +96,20 @@ namespace dicom {
         void setNextSerie();
         void trySetSerie(int val);
         void saveSerie();
-        void uploadSerie();
-		//void setSerieStatus(const int statusID);
+        void uploadSerie();		
         void removeSelectedLayers();
 
     Q_SIGNALS:
         void serieChanged();        
 
     private:
+
+		void setStatus(const webservices::xmlWsdl::AnnotationStatus::Type type);
+
+		const std::string getCurrentLayerUserName() const;
+		const int currnetTrialID() const;
+		const bool trySave();
+
         bool correctIndex(int i) const;
         std::pair<std::string, int> selectedLayer() const;
 
@@ -110,6 +119,8 @@ namespace dicom {
         std::vector<LayeredSerie*> series;
         int currentSerie;
 		bool userIsReviever_;
+		std::string currentLayerUser_;
+		int currentTrialID;
     };
     DEFINE_SMART_POINTERS(LayeredImageVisualizer);
 

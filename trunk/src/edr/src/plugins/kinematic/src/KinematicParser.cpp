@@ -55,7 +55,7 @@ void KinematicParser::acceptedExpressions(Expressions & extensions) const
 
     expDesc.description = "Acclaim Motion Capture format";
     expDesc.types.insert(typeid(kinematic::SkeletalData));
-    extensions[".*\.amc$"] = expDesc;
+    extensions[".*\\.amc$"] = expDesc;
 
     //expDesc.description = "Biovision Hierarchical Data format";
     //extensions["bvh"] = expDesc;

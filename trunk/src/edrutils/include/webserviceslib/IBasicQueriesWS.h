@@ -156,14 +156,16 @@ public:
 	virtual const std::string listEnumValues(const std::string & attributeName,
 		const std::string & entityKind) const = 0;
 
-	//! Metoda zwraca listę adnotacji użytkownika dla danych USG - użytkownik brany z połączenia
-	virtual const std::string listMyAnnotations() const = 0;
+	//! \return Lista adnotacji użytkownika dla danych USG - użytkownik brany z połączenia
+	virtual const std::string listMyAnnotationsXML() const = 0;
+	//! \return Lista wszystkich adnotacji w bazie dla danych USG
+	virtual const std::string listAnnotationsXML() const = 0;
 
 	//! Metoda zwraca listę adnotacji oczekujących na weryfikację dla danych USG - użytkownik brany z połączenia
-	virtual const std::string listAwaitingAnnotations() const = 0;
+	virtual const std::string listMyAwaitingAnnotationsXML() const = 0;
 
 	//! Metoda zwraca listę adnotacji zatwierdzonych dla danych USG - użytkownik brany z połączenia
-	virtual const std::string listReviewedAnnotations() const = 0;
+	virtual const std::string listMyReviewedAnnotationsXML() const = 0;
 };
 
 typedef boost::shared_ptr<IMotionBasicQueriesWS> MotionBasicQueriesWSPtr;

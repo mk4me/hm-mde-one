@@ -1,6 +1,8 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
+	IPluginDescription.h
+	IApplicationDescription.h
 	ILanguagesManager.h
 	AbstractFilterCommand.h
 	AbstractSerie.h

@@ -41,7 +41,7 @@ private:
     //! \param userPrivilages [out] Uprawnienia użytkownika do danych
     static void getUserPrivilages(int userID, UserPrivilages & userPrivilages);
 	//! \param userGroups [out] Grupy uzytkowników bazy danych do których nalezymy
-	static void getUserGroups(webservices::xmlWsdl::UserGroupsList & userGroups);
+	static void getUserGroups(communication::IUser::UserGroups & userGroups);
     //! \return Identyfikator użytkownika lub -1 jeżeli nie znaleziono
     static const int getUserID();
 

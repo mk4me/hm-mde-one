@@ -22,15 +22,20 @@ class DcmDirectoryRecord;
 
 namespace dicom {
 
+//! Kalsa realizujπca odczyt danych USG
 class DicomLoader
 {
 public:
+	//! \param from åcieøka z ktÛrej prÛbujemy czytaÊ wewnÍtrznπ reprezentacjÍ danych USG
+	//! \return Drzewo danych USG
     static DicomInternalStructPtr load( const core::Filesystem::Path& from);
+	//! \param p åcieøka z kÛrej prÛbujemy czytaÊ warstwy adnotacji opusujπce obraz USG
+	//! \return Warstwy adnotacji opusujπce obraz USG
     static LayersVectorPtr loadLayers(const core::Filesystem::Path &p );
 };
 DEFINE_SMART_POINTERS(DicomLoader);
 
-
+//! Kalsa pomocnicza przy tworzeniu wizualizatora
 class LayerHelper : public core::HierarchyHelper
 {
 public:
@@ -48,6 +53,7 @@ private:
 };
 DEFINE_SMART_POINTERS(LayerHelper);
 
+//! èrÛd≥o danych DICOM
 class DicomSource : public plugin::ISource
 {
     UNIQUE_ID("{CB848CFE-5A1F-4D99-B06A-0249EA38B706}")

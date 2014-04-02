@@ -264,19 +264,19 @@ public:
 	//! \return Nazwa wizualizatora
 	const std::string getName() const
 	{
-		return innerVisualizer_->getName();
+		return innerVisualizer_->name();
 	}
 
 	//! \return Unikalny ID wizualizatora
 	core::UniqueID getID() const
 	{
-		return innerVisualizer_->getID();
+		return innerVisualizer_->ID();
 	}
 
 	//! \return Opis wizualizatora
 	const std::string  getDescription() const
 	{
-		return innerVisualizer_->getDescription();
+		return innerVisualizer_->description();
 	}
 
 	//! \return Nowa instancja wizualizatora

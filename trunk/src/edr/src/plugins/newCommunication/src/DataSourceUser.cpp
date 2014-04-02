@@ -61,12 +61,12 @@ void User::setUserData(const UserData & userData)
     userData_ = userData;
 }
 
-const webservices::xmlWsdl::UserGroupsList User::userGroups() const
+const User::UserGroups User::userGroups() const
 {
 	return userGroups_;
 }
 
-void User::setUserGroups(const webservices::xmlWsdl::UserGroupsList & userGroups)
+void User::setUserGroups(const UserGroups & userGroups)
 {
 	userGroups_ = userGroups;
 }

@@ -229,8 +229,11 @@ bool DataSourceWidget::LoginEventFilter::eventFilter(QObject * watched, QEvent *
 }
 
 
-DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget * parent) : QTabWidget(parent), loginEventFilter(nullptr), dataSource(dataSource),
-	downloadStatusWidget(new DownloadStatusWidget()),  downloadCanceled(false), downloadCrashed(false)
+DataSourceWidget::DataSourceWidget(DataSourceFilterManager* fm,
+	CommunicationDataSource * dataSource, QWidget * parent)
+	: QTabWidget(parent), fm(fm), loginEventFilter(nullptr), dataSource(dataSource),
+	downloadStatusWidget(new DownloadStatusWidget()), 
+	downloadCanceled(false), downloadCrashed(false)
 {
 	setupUi(this);
 	loginRecoveryButton->setVisible(false);
@@ -275,6 +278,10 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	//ustawiamy aktualną perspektywę
 	perspectiveComboBox->setCurrentIndex(0);
 
+	for(int i = 0; i < fm->size(); ++i){
+		auto f = fm->dataFilter(i);
+		filterComboBox->addItem(QString::fromStdString(f->name()), QVariant(i));
+	}
 
     statusWidget = new communication::StatusWidget(dataSource->getServerStatusManager(), "http://v21.pjwstk.edu.pl/");
     connect(statusWidget->getLogoutButton(), SIGNAL(clicked()), this, SLOT(onLogin()));
@@ -602,13 +609,23 @@ void DataSourceWidget::onPerspectiveSelectionChanged()
 
 void DataSourceWidget::onFilterChange(int idx)
 {
+	int fIDX = -1;
+	if(idx > 0){
+		fIDX = filterComboBox->itemData(idx).toInt();
+	}
+
+	filterChange(fIDX);
+}
+
+void DataSourceWidget::filterChange(const int idx)
+{
 	try{
 
 		ShallowCopy tmpShallow;
 
 		if(idx > -1){
 			//filtrujemy dane
-			DataSourceFilterManager::filterShallowCopy(dataSource->fullShallowCopy, tmpShallow, filterManager.dataFilter(idx));
+			DataSourceFilterManager::filterShallowCopy(dataSource->fullShallowCopy, tmpShallow, fm->dataFilter(idx));
 		}else{
 			//nie trzeba filtrować - wystarczy przepisać
 			tmpShallow = dataSource->fullShallowCopy;
@@ -618,7 +635,7 @@ void DataSourceWidget::onFilterChange(int idx)
 		std::swap(filteredShallowCopy, tmpShallow);
 
 		//ustawiamy aktualny filtr
-		filterManager.setCurrentFilter(idx);
+		fm->setCurrentFilter(idx);
 
 		//odświeżam status przefiltrowanych danych
 		filteredShallowCopyStatus->setShallowCopy(&filteredShallowCopy);
@@ -808,7 +825,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 			//ustawiamy nową płytką kopię bazy danych
 			dataSource->setShallowCopy(userShallowCopy);
 			//odświeżam przefiltrowaną płytką kopię danych co wiąże się z unieważnieniem dotychczasowych perspektyw
-			onFilterChange(filterManager.currentFilterIndex());
+			onFilterChange(fm->currentFilterIndex());
 		}
 
 		tryLoadProjects();
@@ -1679,7 +1696,7 @@ bool DataSourceWidget::refreshShallowCopy()
 			//ustawiam nowa płytka kopię danych
 			dataSource->setShallowCopy(shallowCopy);
 			//odświeżam przefiltrowaną płytką kopię danych co wiąże się z unieważnieniem dotychczasowych perspektyw
-			QMetaObject::invokeMethod(this, "onFilterChange", Q_ARG(int, filterManager.currentFilterIndex()));
+			QMetaObject::invokeMethod(this, "onFilterChange", Q_ARG(int, fm->currentFilterIndex()));
 		}else{
 			ret = false;
 		}
@@ -1791,7 +1808,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		  }
 	};
 
-	auto subjectService = core::queryServices<PluginSubject::ISubjectService>(plugin::getServiceManager());
+	auto subjectService = core::queryService<PluginSubject::ISubjectService>(plugin::getServiceManager());
 
 	if(subjectService == nullptr){
 		return;
@@ -2159,7 +2176,7 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 
 	//zainicjować wskaźnik do serwisu!!
 
-	auto subjectService = core::queryServices<PluginSubject::ISubjectService>(plugin::getServiceManager());
+	auto subjectService = core::queryService<PluginSubject::ISubjectService>(plugin::getServiceManager());
 
 	if(subjectService == nullptr){
 		return;
@@ -2898,13 +2915,13 @@ void DataSourceWidget::setCompactMode( bool compact )
     this->patientCardPlaceholerWidget->setVisible(!compact);
     this->perspectiveComboBox->setVisible(!compact);
     this->perspectiveLabel->setVisible(!compact);
-    this->filterLabel->setVisible(!compact);
+    //this->filterLabel->setVisible(!compact);
 
     QWidget* w = dynamic_cast<QWidget*>(filterLabel->parent());
     if (w) {
         w->layout()->setSpacing(compact ? 0 : 3);
     }
-    this->filterComboBox->setVisible(!compact);
+    //this->filterComboBox->setVisible(!compact);
     int margin = compact ? 0 : 9;
     this->dataViewWidget->setContentsMargins(0,0,0,0);
     this->motionDataTab->setContentsMargins(0,0,0,0);

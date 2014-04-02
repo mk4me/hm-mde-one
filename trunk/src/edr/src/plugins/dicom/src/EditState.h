@@ -46,6 +46,7 @@ namespace dicom {
         /// usuniêty punkt, który mo¿e zostaæ przywrócony. Przywracaj¹c nie mo¿na stworzyæ nowej instancji
         /// gdy¿ mog³oby to spowodowaæ b³êdy np. przy MoveCommand
         std::unique_ptr<QGraphicsItem> removedPoint;
+		//! 
         bool bestFit;
     };
 
@@ -78,6 +79,7 @@ namespace dicom {
         std::unique_ptr<QGraphicsItem> removedPoint;
     };
 
+	//! Polecenie obs³uguj¹ce przesuniêcie z jednego punktu do drugiego
     class MovePathCommand : public coreUI::MoveCommand 
     {
     public:

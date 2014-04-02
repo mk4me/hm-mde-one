@@ -443,7 +443,7 @@ void FileDataManager::initializeDataWithParser(ObjectWrapper & object, const Par
 	ScopedLock lock(sync);
 	if(parser->isUsed() == false){
 		if(parser->tryParse() == false){
-			CORE_LOG_DEBUG("Parser " << parser->getParser()->getName() << " ID " << parser->getParser()->getID() << " failed during initialization of object " << object.getClassName() << " with type info " << object.getTypeInfo().name() << " for file " << parser->getPath());
+			CORE_LOG_DEBUG("Parser " << parser->getParser()->name() << " ID " << parser->getParser()->ID() << " failed during initialization of object " << object.getClassName() << " with type info " << object.getTypeInfo().name() << " for file " << parser->getPath());
 		}
 
 		verifyAndRemoveUninitializedParserObjects(parser);
@@ -456,9 +456,9 @@ void FileDataManager::initializeDataWithExternalInitializer(ObjectWrapper & obje
 	try{
 		li(object);
 	}catch(std::exception & e){
-		CORE_LOG_DEBUG("Error while running compound initializer delivered from external parser " << parser->getParser()->getName() << " with ID " << parser->getParser()->getID() << " for file " << parser->getPath() << " : " << e.what());
+		CORE_LOG_DEBUG("Error while running compound initializer delivered from external parser " << parser->getParser()->name() << " with ID " << parser->getParser()->ID() << " for file " << parser->getPath() << " : " << e.what());
 	}catch(...){
-		CORE_LOG_DEBUG("UNKNOWN Error while running compound initializer delivered from external parser " << parser->getParser()->getName() << " with ID " << parser->getParser()->getID() << " for file " << parser->getPath());
+		CORE_LOG_DEBUG("UNKNOWN Error while running compound initializer delivered from external parser " << parser->getParser()->name() << " with ID " << parser->getParser()->ID() << " for file " << parser->getPath());
 	}
 
 	verifyAndRemoveUninitializedParserObjects(parser);
@@ -485,8 +485,9 @@ void FileDataManager::verifyAndRemoveUninitializedParserObjects(const ParserPtr 
 		
 				for(auto itV = toVerify.begin(); itV != toVerify.end(); ++itV){
 					if((*itV)->getRawPtr() == nullptr){
-						CORE_LOG_DEBUG("Object of type " << (*itV)->getTypeInfo().name() << " not initialized properly by parser ID " << parser->getParser()->getID() <<
-							" named "  << parser->getParser()->getName() << " for file " << parser->getPath());
+						CORE_LOG_DEBUG("Object of type " << (*itV)->getTypeInfo().name()
+							<< " not initialized properly by parser ID " << parser->getParser()->ID()
+							<< " named "  << parser->getParser()->name() << " for file " << parser->getPath());
 						toRemove.push_back(*itV);
 						it->second.remove(*itV);
 						if(mdmTransaction->isManaged(*itV) == true){
@@ -553,17 +554,17 @@ void FileDataManager::initializeParsers(const IParserManagerReader::ParserProtot
 
 			if(*objectIT == nullptr){
 
-				CORE_LOG_DEBUG("Unitialized object " << parser->getPath() << " for parser ID " << parser->getParser()->getID());
+				CORE_LOG_DEBUG("Unitialized object " << parser->getPath() << " for parser ID " << parser->getParser()->ID());
 
 			}else{
 				//dodac inicjalizator, jesli jest to warning!!
 				if((*objectIT)->initializer().empty() == false){
-					CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded with custom initializer. Supplying with compound initializer");
+					CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->ID() << " loaded with custom initializer. Supplying with compound initializer");
 					//inicjalizator na bazie inicjalizatora:)
 					(*objectIT)->setInitializer(ObjectWrapper::LazyInitializer(boost::bind(&FileDataManager::initializeDataWithExternalInitializer, this, _1, (*objectIT)->initializer(), parser)));
 				}else{
 					if((*objectIT)->getRawPtr() != nullptr ){
-						CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->getID() << " loaded already initialized. Reseting object and supplying initializer");
+						CORE_LOG_WARNING("Object " << (*objectIT)->getTypeInfo().name() << " from " << parser->getPath() << " for parser ID " << parser->getParser()->ID() << " loaded already initialized. Reseting object and supplying initializer");
 					}
 
 					//inicjalizator na bazie parsera

@@ -49,14 +49,14 @@ namespace dicom {
 class AddLayerCommand : public utils::ICommand
 {
 public:
-    AddLayerCommand(LayeredStateMachine* machine, ILayeredImagePtr image, PointsState* pointsState, PointsLayerPtr layer, int adnotationIdx) : 
+    AddLayerCommand(LayeredStateMachine* machine, ILayeredImagePtr image, PointsState* pointsState, PointsLayerPtr layer) : 
       layer(layer),
-      adnotationIdx(adnotationIdx),
       image(image),
       machine(machine),
       pointsState(pointsState),
 	  wasEdited(false)
     {
+
     }
 
 public:
@@ -65,8 +65,7 @@ public:
 		wasEdited = machine->getSerie()->isEdited();
 
         layer->setEditable(false);
-        layer->setAdnotationIdx(adnotationIdx);
-        image->addLayer(layer, machine->getSerie()->getUserName());
+        image->addLayer(layer, machine->getSerie()->getLoggedUserName());
 		machine->getSerie()->markAsEdited(true);
         machine->getSerie()->refresh();
         machine->getSerie()->save();
@@ -76,13 +75,6 @@ public:
         image->removeLayer(layer);
 
 		machine->getSerie()->markAsEdited(wasEdited);
-
-        /*if (pointsState == machine->getCurveState().get()) {
-            machine->setState(machine->getCurveState());
-        } else {
-            machine->setState(machine->getPolyState());
-        }
-*/
         machine->getSerie()->refresh();
         machine->getSerie()->save();
         layer->setEditable(true);
@@ -93,13 +85,11 @@ public:
 
 private:
     PointsLayerPtr layer;
-    int adnotationIdx;
     ILayeredImagePtr image;
     LayeredStateMachine* machine;
     PointsState* pointsState;
 	bool wasEdited;
 };
-
 
 }
 
@@ -174,7 +164,7 @@ void dicom::PointsState::addLayer( int adnIdx )
     if (layer->getNumPoint() > 0 && item != nullptr && item->isVisible()) {
         auto img = machine->getSerie()->getImage();
 
-        auto command = utils::make_shared<AddLayerCommand>(machine, img, this, layer, adnIdx);
+        auto command = utils::make_shared<AddLayerCommand>(machine, img, this, layer);
         machine->getCommandStack()->addCommand(command);
     }
 }
@@ -191,8 +181,8 @@ void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
     resetLayer();
     ILayeredImagePtr img = machine->getSerie()->getImage();
     BOOST_FOREACH(std::string tag, img->getTags()) {
-        for (int i = img->getNumLayerItems(tag) - 1; i >= 0; --i) {
-            img->getLayerItem(tag, i)->setSelected(false);
+        for (int i = img->getNumGraphicLayerItems(tag) - 1; i >= 0; --i) {
+            img->getLayerGraphicItem(tag, i)->setSelected(false);
         }
     }
     machine->getGraphicsScene()->addItem(layer->getItem());
@@ -236,7 +226,7 @@ bool dicom::PointsState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
 
 void dicom::PointsState::resetLayer()
 {
-    layer = utils::make_shared<PointsLayer>();
+    layer = utils::make_shared<PointsLayer>(adnotationIdx);
     layer->setPointsDrawer(DrawersBuilder::createDrawer(adnotationIdx));
 }
 

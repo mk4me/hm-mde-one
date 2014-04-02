@@ -35,7 +35,7 @@ void dicom::DicomSourceWidget::onOpenProject()
         QDir fileDir(dirPath);        
         QFileInfoList fileList = fileDir.entryInfoList();
 
-        QRegExp rxlen("[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}\.xml");        
+        QRegExp rxlen("[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}\\.xml");        
         BOOST_FOREACH(const QFileInfo &info, fileList) {
             QString filename = info.fileName();
             if(rxlen.exactMatch(filename)) {
@@ -54,7 +54,7 @@ void dicom::DicomSourceWidget::onOpenProject()
 void dicom::DicomSourceWidget::onSendTest()
 {
     namespace ws = webservices;
-    std::string caPath = (plugin::getPathInterface()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string();
+    std::string caPath = (plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string();
     ws::WSSecureConnectionPtr queriesConnection = utils::make_shared<ws::WSSecureConnection>();
     queriesConnection->setCAPath(caPath);
     queriesConnection->setUrl("https://v21.pjwstk.edu.pl/HMDB/res/BasicQueriesWSStandalone.wsdl");

@@ -10,9 +10,9 @@
 #define HEADER_GUARD___IDATASOURCEUSER_H__
 
 #include <string>
+#include <map>
 #include <plugins/newCommunication/IDataSourceUserData.h>
 #include <plugins/newCommunication/IDataSourceUserPrivilages.h>
-#include <webserviceslib/Entity.h>
 
 namespace communication
 {
@@ -20,6 +20,10 @@ namespace communication
 //! Interfejs klasy z danymi użytkownika
 class IUser
 {
+public:
+	//! Mapa identyfikatorów grup użytkowników i ich nazw
+	typedef std::map<int, std::string> UserGroups;
+
 public:
     //! Destruktor wirtualny
     virtual ~IUser() {}
@@ -35,7 +39,7 @@ public:
     //! \return Dane użytkownika
     virtual const IUserData & userData() const = 0;
 	//! \return Grupy użytkowników bazy danych do których należymy
-	virtual const webservices::xmlWsdl::UserGroupsList userGroups() const = 0;
+	virtual const UserGroups userGroups() const = 0;
 };
 
 }

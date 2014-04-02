@@ -120,7 +120,7 @@ void VisualizerManager::notify(Visualizer * visualizer, VisuzalizerOperation mod
 
 void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visualizerPrototype)
 {
-	if(visualizerPrototypes_.find(visualizerPrototype->getID()) != visualizerPrototypes_.end()){
+	if(visualizerPrototypes_.find(visualizerPrototype->ID()) != visualizerPrototypes_.end()){
 		throw std::runtime_error("Visualizer with given ID already registered");
 	}
 
@@ -139,7 +139,7 @@ void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visua
 		dhm->getTypeDerrivedTypes(*it, protoData.derrivedSupportedTypes);
 	}
 
-	visualizerPrototypes_.insert(VisualizerPrototypes::value_type(visualizerPrototype->getID(), protoData));
+	visualizerPrototypes_.insert(VisualizerPrototypes::value_type(visualizerPrototype->ID(), protoData));
 }
 
 void VisualizerManager::update(double deltaTime)

@@ -36,14 +36,10 @@ namespace core {
     typedef utils::weak_ptr<IServiceManager> IServiceManagerWeakPtr;
     typedef utils::weak_ptr<const IServiceManager> IServiceManagerWeakConstPtr;
 
-}
-
-namespace core {
-
     //! Metoda wyszukująca wszystkie usługi danego typu (np. implementujące
     //! dany interfejs).
     template <class T>
-    utils::shared_ptr<T> queryServices(IServiceManager* manager, T* dummy = nullptr)
+    utils::shared_ptr<T> queryService(IServiceManager* manager, T* dummy = nullptr)
     {
         std::vector<utils::shared_ptr<T>> result;
         queryServices(manager, result);

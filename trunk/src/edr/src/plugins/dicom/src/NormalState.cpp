@@ -137,9 +137,9 @@ void dicom::NormalState::createItem2LayerMap()
     int tags = image->getNumTags();
     for (int tagIdx = 0; tagIdx < tags; ++tagIdx) {
         auto tag = image->getTag(tagIdx);
-        int count = image->getNumLayerItems(tag);
+        int count = image->getNumGraphicLayerItems(tag);
         for (int i = 0; i < count; ++i) {
-            ILayerItemPtr vl = image->getLayerItem(tag, i);
+            auto vl = image->getLayerGraphicItem(tag, i);
             if (vl) {
                 item2layer[vl->getItem()] = vl;
             }
@@ -152,9 +152,9 @@ int dicom::NormalState::getNumSelected()
     int selected = 0;
     ILayeredImagePtr image = machine->getSerie()->getImage();
     BOOST_FOREACH(std::string tag, image->getTags()) {
-        int count = image->getNumLayerItems(tag);
+        int count = image->getNumGraphicLayerItems(tag);
         for (int i = 0; i < count; ++i) {
-            ILayerItemPtr vl = image->getLayerItem(tag, i);
+            auto vl = image->getLayerGraphicItem(tag, i);
             if (vl->getSelected()) {
                 ++selected;
             }
@@ -163,20 +163,20 @@ int dicom::NormalState::getNumSelected()
     return selected;
 }
 
-dicom::ILayerItemPtr dicom::NormalState::getFirstSelected()
+dicom::ILayerGraphicItemPtr dicom::NormalState::getFirstSelected()
 {
     int selected = 0;
     ILayeredImagePtr image = machine->getSerie()->getImage();
     BOOST_FOREACH(std::string tag, image->getTags()) {
-        int count = image->getNumLayerItems(tag);
+        int count = image->getNumGraphicLayerItems(tag);
         for (int i = 0; i < count; ++i) {
-            ILayerItemPtr vl = image->getLayerItem(tag, i);
+            auto vl = image->getLayerGraphicItem(tag, i);
             if (vl->getSelected()) {
                 return vl;
             }
         }
     }
-    return ILayerItemPtr();
+    return ILayerGraphicItemPtr();
 }
 
 void dicom::NormalState::move()

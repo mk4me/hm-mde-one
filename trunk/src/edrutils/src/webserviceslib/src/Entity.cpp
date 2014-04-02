@@ -397,6 +397,7 @@ public:
 
 	static void extractUserDetails(TiXmlElement * element, UserDetails & userDetails)
 	{		
+		XMLHelper::extractTagValue(element, "ID", userDetails.id);		
 		XMLHelper::extractTagValue(element, "Login", userDetails.login);		
 		XMLHelper::extractTagValue(element, "FirstName", userDetails.firstName);
 		XMLHelper::extractTagValue(element, "LastName", userDetails.lastName);
@@ -548,7 +549,7 @@ const UserGroupsList webservices::xmlWsdl::parseUserGroups(const std::string & x
 	TiXmlElement* _element;
 	TiXmlHandle hElement(0);
 
-	_element = hDocument.FirstChildElement().FirstChildElement().FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
@@ -621,7 +622,7 @@ const User webservices::xmlWsdl::parseUser(const std::string & xmlResponse)
 	TiXmlHandle hDocument(&document);
 	TiXmlElement* _element;
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().Element();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}

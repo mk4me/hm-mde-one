@@ -150,17 +150,17 @@ void VideoParser::acceptedExpressions(Expressions & expressions) const
 	ExpressionDescription expDesc;
 	expDesc.description = "Audio Video Interleaved format";
 	expDesc.types.insert(typeid(VideoChannel));
-	expressions.insert(Expressions::value_type(".*\.avi$", expDesc));
+	expressions.insert(Expressions::value_type(".*\\.avi$", expDesc));
 
 	expDesc.description = "Moving Picture Experts Group format";
-	expressions.insert(Expressions::value_type(".*\.mpg$", expDesc));
-	expressions.insert(Expressions::value_type(".*\.mpeg$", expDesc));
+	expressions.insert(Expressions::value_type(".*\\.mpg$", expDesc));
+	expressions.insert(Expressions::value_type(".*\\.mpeg$", expDesc));
 
 
 	expDesc.description = "Custom image sequence format (XML based)";
 	expDesc.types.clear();
 	expDesc.types.insert(typeid(::VideoStream));
-	expressions.insert(Expressions::value_type(".*\.imgsequence$", expDesc));
+	expressions.insert(Expressions::value_type(".*\\.imgsequence$", expDesc));
 }
 
 void VideoParser::getObjects( core::Objects& objects )

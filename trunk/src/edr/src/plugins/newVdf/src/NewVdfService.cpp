@@ -24,7 +24,6 @@
 using namespace vdf;
 
 NewVdfService::NewVdfService() :
-	name("Data flow service"),
 	commandStack(new utils::CommandStack()),
 	dataSinkManager(new DataSinkManager()),
 	dataProcessorManager(new DataProcessorManager()),
