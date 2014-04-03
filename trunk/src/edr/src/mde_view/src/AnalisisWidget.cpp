@@ -106,15 +106,13 @@ void AnalisisWidget::createVisualizer( core::IHierarchyDataItemConstPtr treeItem
     createAndAddDockVisualizer(treeItem, helper, nullptr);
 }
 
-QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & visualizer)
+QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & visualizer, const QString& titleName)
 {
     connect(visualizer.get(), SIGNAL(screenshotTaken(const QPixmap&)), this, SLOT(addToReports(const QPixmap&)));
 
     auto visWidget = new coreUI::CoreVisualizerWidget(visualizer);
 
-    auto dockVisWidget = embeddWidget(visWidget, QString::fromStdString(visualizer->getName()),
-        Qt::AllDockWidgetAreas,
-        false);
+    auto dockVisWidget = embeddWidget(visWidget, titleName, Qt::AllDockWidgetAreas, false);
 
     registerVisualizerContext(getContextEventFilter(), qobject_cast<coreUI::CoreTitleBar*>(dockVisWidget->titleBarWidget()), qobject_cast<coreUI::CoreVisualizerWidget*>(dockVisWidget->widget()), visualizer);
     dockVisWidget->setMinimumSize((std::max)(50, dockVisWidget->minimumWidth()), (std::max)(50, dockVisWidget->minimumHeight()));
@@ -205,7 +203,7 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
 {
     auto visualizer = helper->createVisualizer(plugin::getVisualizerManager());
     visualizer->addObserver(this->model.get());
-    auto visualizerDockWidget = createDockVisualizer(visualizer);
+    auto visualizerDockWidget = createDockVisualizer(visualizer, path);
 
     if (dockSet) {
         dockSet->addDockWidget(visualizerDockWidget);

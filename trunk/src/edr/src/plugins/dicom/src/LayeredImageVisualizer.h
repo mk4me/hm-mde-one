@@ -118,7 +118,6 @@ namespace dicom {
         
         std::vector<LayeredSerie*> series;
         int currentSerie;
-		bool userIsReviever_;
 		std::string currentLayerUser_;
 		int currentTrialID;
     };

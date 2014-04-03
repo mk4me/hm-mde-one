@@ -103,16 +103,15 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 		pointsPositions[i] = allPointsPositions[i * 30];
 	}
 
-	ghostDrawer->init(pointsPositions, connectionsConfigurations);
-	ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
-	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
-	ghostDrawer->pointsDrawer()->setSize(0.02);
-	ghostDrawer->connectionsDrawer()->setSize(0.005);
-
-    matrixTransform->addChild(ghostDrawer->getNode());
-
-	setGhostVisible(false);
-
+    if (!connectionsConfigurations.empty()) {
+	    ghostDrawer->init(pointsPositions, connectionsConfigurations);
+	    ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
+	    ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
+	    ghostDrawer->pointsDrawer()->setSize(0.02);
+	    ghostDrawer->connectionsDrawer()->setSize(0.005);
+        matrixTransform->addChild(ghostDrawer->getNode());
+	    setGhostVisible(false);
+    }
 
 	// teraz punkty dla ducha przerabiam na punkty dla trajektorii
 	// przechodzê z klatek po czasie do klatek po stawach - generalnie transpozycja

@@ -298,11 +298,10 @@ bool dicom::LayeredModelView::removeRows( int row, int count, const QModelIndex 
 QModelIndex dicom::LayeredModelView::index( int row, int column, const QModelIndex &parent /*= QModelIndex( ) */ ) const
 {
     if (!parent.isValid()) {
-        if (row >= 0 && row < image->getNumTags()) {
+        if (row >= 0 && row < image->getNumTags() && (parent_->userIsReviewer() || parent_->getUserName() == image->getTag(row))) {
             return createIndex(row, column, (void*)getData(row, -1));
-        } else {
-            return QModelIndex();
-        }
+        } 
+        return QModelIndex();
     } else {
         treedata* td = static_cast<treedata*>(parent.internalPointer());
         if (td->idx == -1) {

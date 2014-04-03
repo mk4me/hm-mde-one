@@ -12,7 +12,7 @@
 #include <coreui/Export.h>
 #include <map>
 #include <corelib/Visualizer.h>
-#include <QtGui/QFrame>
+#include <QtGui/QScrollArea>
 
 class QAction;
 class QLabel;
@@ -26,7 +26,7 @@ namespace coreUI {
 	class CoreAction;
 
 //! Widget wizualizacyjny.
-class COREUI_EXPORT CoreVisualizerWidget : public QFrame
+class COREUI_EXPORT CoreVisualizerWidget : public QScrollArea
 {
     Q_OBJECT
 
@@ -52,7 +52,7 @@ public:
     //! Zerujący konstruktor.
     //! \param parent
     //! \param flags
-    CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidget* parent = nullptr, Qt::WindowFlags flags = 0);        
+    CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidget* parent = nullptr);        
 
 	CoreVisualizerWidget(const CoreVisualizerWidget & visualizer);  
             

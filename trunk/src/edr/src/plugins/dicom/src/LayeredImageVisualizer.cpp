@@ -25,7 +25,7 @@
 
 using namespace dicom;
 
-LayeredImageVisualizer::LayeredImageVisualizer() : userIsReviever_(false), currentTrialID(-1)
+LayeredImageVisualizer::LayeredImageVisualizer() :  currentTrialID(-1)
 {
 	communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
 	if(comm != nullptr){
@@ -46,7 +46,12 @@ LayeredImageVisualizer::~LayeredImageVisualizer()
 
 const bool LayeredImageVisualizer::userIsReviewer() const
 {
-	return userIsReviever_;
+    communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+    if (comm) {
+        return comm->userIsReviewer();
+    }
+
+    return false;
 }
 
 plugin::IVisualizer* LayeredImageVisualizer::create() const

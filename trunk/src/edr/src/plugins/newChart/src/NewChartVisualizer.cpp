@@ -247,7 +247,7 @@ QWidget* NewChartVisualizer::createWidget()
     lowerBoundCurve->setVisible(false);
     averageCurve->setVisible(false);
    
-    return widget;
+    return widget; 
 }
 
 void NewChartVisualizer::getSupportedTypes(core::TypeInfoList & supportedTypes) const

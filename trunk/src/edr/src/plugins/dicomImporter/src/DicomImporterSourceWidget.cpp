@@ -29,6 +29,8 @@ DicomImporterSourceWidget::DicomImporterSourceWidget( DicomImporterSource* sourc
     ui->setupUi(this);
     connect(ui->openFileButton, SIGNAL(clicked()), this, SLOT(onLoadFiles()));
     connect(ui->loadDirectoryButton, SIGNAL(clicked()), this, SLOT(onLoadDirectory()));
+    ui->openFileButton->setVisible(false);
+    ui->loadDirectoryButton->setVisible(false);
 
     connect(ui->importFromButton, SIGNAL(clicked()), this, SLOT(onSelectImportDir()));
     connect(ui->exportToButton, SIGNAL(clicked()), this, SLOT(onSelectSaveDir()));
@@ -37,8 +39,8 @@ DicomImporterSourceWidget::DicomImporterSourceWidget( DicomImporterSource* sourc
 
     // TODO : wywalic
 #ifdef _DEBUG
-    ui->importFromEdit->setText("C:\\Users\\Wojciech\\Desktop\\USG_pas-M0001-M0006\\USG_pas-M0001-M0006");
-    ui->exportToEdit->setText("C:\\Users\\Wojciech\\Desktop\\testImport1_6");
+    ui->importFromEdit->setText("C:\\Users\\Wojciech\\Desktop\\testImport\\pts 10-12 and 23-26");
+    ui->exportToEdit->setText("C:\\Users\\Wojciech\\Desktop\\testImport\\_out");
 #endif
 }
 
@@ -108,7 +110,7 @@ void dicomImporter::DicomImporterSourceWidget::onImport()
         core::Filesystem::Path to = exportTo.toStdString();
         //dicomSource->import(from, to);
         
-        DicomImporter importer;
+        DicomImporter importer(ui->startIndex->value());
         auto inter = importer.import(from);
         QProgressDialog progress("Importing files...", "Abort", 0, inter->getNumImages(), this);
         progress.setWindowModality(Qt::WindowModal);

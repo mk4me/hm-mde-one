@@ -719,6 +719,9 @@ GhostSchemeDrawer::GhostSchemeDrawer(const unsigned int pointComplexity,
 void GhostSchemeDrawer::init(const std::vector<std::vector<osg::Vec3>> & points,
 	const SegmentsDescriptors & connections)
 {
+    if (connections.empty()) {
+        return;
+    }
 	utils::shared_ptr<GhostInstance> tmpGhost(new GhostInstance);
 	tmpGhost->pointsDrawer.reset(new GhostPointsSchemeDrawer(tmpGhost.get()));
 	tmpGhost->connectionsDrawer.reset(new GhostConnectionsSchemeDrawer(tmpGhost.get()));

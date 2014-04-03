@@ -130,7 +130,7 @@ void CoreVisualizerWidget::activeSerieSwitchDestroyed(QObject * activeSerieSwitc
 //! Zerujący konstruktor.
 //! \param parent
 //! \param flags
-CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidget* parent, Qt::WindowFlags flags) : QFrame(parent, flags),
+CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidget* parent) : QScrollArea(parent),
 	visualizer_(visualizer), persistentActiveSerieSwitch(nullptr)
 {
 	auto visWidget = visualizer->getOrCreateWidget();

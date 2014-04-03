@@ -59,7 +59,7 @@ public Q_SLOTS:
 private:
     void showTimeline();
     void devideArea();
-    QDockWidget* createDockVisualizer(const core::VisualizerPtr & visualizer);
+    QDockWidget* createDockVisualizer(const core::VisualizerPtr & visualizer, const QString& titleName);
     QDockWidget* createAndAddDockVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet);
     QDockWidget* createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, QString &path );
 
