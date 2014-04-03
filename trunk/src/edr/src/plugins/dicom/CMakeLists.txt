@@ -9,6 +9,7 @@ SET_PUBLIC_HEADERS (
 )
 
 SET_PRIVATE_HEADERS (
+	MessageDialog.h
 	IDicomService.h
 	AdnotationsDelegate.h
 	Adnotations.h
@@ -42,6 +43,7 @@ SET_PRIVATE_HEADERS (
 )
 
 SET_SOURCE_FILES(
+	MessageDialog.cpp
 	AdnotationsDelegate.cpp
 	Adnotations.cpp
 	LayeredStateMachine.cpp
@@ -73,6 +75,7 @@ SET_SOURCE_FILES(
 )
 
 SET_MOC_FILES(
+	MessageDialog.h
 	AdnotationsDelegate.h
 	LayeredStateMachine.h
 	LayeredImageVisualizer.h
@@ -87,6 +90,7 @@ SET_MOC_FILES(
 SET_UI_FILES(
 	layeredImageVisualizer.ui
 	dicomSource.ui
+	messageDialog.ui
 )
 
 SET_RC_FILES (

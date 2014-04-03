@@ -19,9 +19,17 @@ namespace dicom
 	class IDicomService : public plugin::IService
 	{
 	public:
+
+		struct AnnotationStatus {
+			webservices::xmlWsdl::AnnotationStatus::Type status;
+			std::string comment;
+			std::string note;
+		};
+
+	public:
 		virtual ~IDicomService() {}
 
-		virtual const webservices::xmlWsdl::AnnotationStatus::Type annotationStatus(const std::string & user, const int trialID) const = 0;
+		virtual const AnnotationStatus annotationStatus(const std::string & user, const int trialID) const = 0;
 
 		virtual void setAnnotationStatus(const std::string & user, const int trialID,
 			const webservices::xmlWsdl::AnnotationStatus::Type status,

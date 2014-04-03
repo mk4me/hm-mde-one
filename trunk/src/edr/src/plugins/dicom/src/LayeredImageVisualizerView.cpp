@@ -10,6 +10,7 @@
 #include <QtGui/QMouseEvent>
 #include <webserviceslib/Entity.h>
 #include <corelib/IServiceManager.h>
+#include "MessageDialog.h"
 
 using namespace dicom;
 
@@ -56,7 +57,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     coreUI::CoreAction*  nois = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/NoiseIcon.png"), tr("Tag noise"), this, coreUI::CoreTitleBar::Left);
      
     coreUI::CoreAction*  save = new coreUI::CoreAction(tr("I/O")  , QIcon(":/dicom/save.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  upld = new coreUI::CoreAction(tr("I/O")  , QIcon(":/dicom/upload.png"), tr("Upload"), this, coreUI::CoreTitleBar::Left);
+    upld = new coreUI::CoreAction(tr("I/O")  , QIcon(":/dicom/upload.png"), tr("Upload"), this, coreUI::CoreTitleBar::Left);
 
     coreUI::CoreAction*  crop = new coreUI::CoreAction(tr("Other")  , QIcon(":/dicom/crop.png"), tr("Crop"), this, coreUI::CoreTitleBar::Left);
 
@@ -98,6 +99,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 
     connect(save, SIGNAL(triggered()), model, SLOT(saveSerie()));
     connect(upld, SIGNAL(triggered()), model, SLOT(uploadSerie()));
+	upld->setEnabled(false);
     connect(crop, SIGNAL(triggered()), this, SLOT(crop()));
 
     // tymczasowo wylaczone
@@ -120,6 +122,9 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     
     ui->graphicsHolder->setLayout(new QHBoxLayout());
     ui->graphicsHolder->setContentsMargins(0, 0, 0, 0);
+
+	ui->commentGroupBox->setVisible(false);
+	ui->noteGroupBox->setVisible(false);
 }
 
 void dicom::LayeredImageVisualizerView::acceptAnnotation()
@@ -129,18 +134,33 @@ void dicom::LayeredImageVisualizerView::acceptAnnotation()
 		model->setStatus(webservices::xmlWsdl::AnnotationStatus::Approved);
 		acceptAction->setEnabled(false);
 		rejectAction->setEnabled(false);
+		upld->setEnabled(false);
 	}catch(...){
 
 	}
+}
+
+const QString dicom::LayeredImageVisualizerView::getComment(const QString & title, const QString & content)
+{
+	QString ret;
+
+	MessageDialog dialog(nullptr, title, content);
+	auto dr = dialog.exec();
+	if(dr == QDialog::Accepted){
+		ret = dialog.getText();
+	}
+
+	return ret;
 }
 
 void dicom::LayeredImageVisualizerView::rejectAnnotation()
 {
 	try{
 		model->trySave();
-		model->setStatus(webservices::xmlWsdl::AnnotationStatus::Rejected);
+		model->setStatus(webservices::xmlWsdl::AnnotationStatus::Rejected, getComment(tr("Note")));
 		acceptAction->setEnabled(false);
 		rejectAction->setEnabled(false);
+		upld->setEnabled(false);
 	}catch(...){
 
 	}
@@ -150,8 +170,9 @@ void dicom::LayeredImageVisualizerView::requestAnnotationVerification()
 {
 	try{
 		model->trySave();
-		model->setStatus(webservices::xmlWsdl::AnnotationStatus::ReadyForReview);
+		model->setStatus(webservices::xmlWsdl::AnnotationStatus::ReadyForReview, getComment(tr("Comment")));
 		toVerifyAction->setEnabled(false);
+		upld->setEnabled(false);
 	}catch(...){
 
 	}
@@ -268,41 +289,58 @@ void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex & )
 		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
 		
 		//auto status = webservices::xmlWsdl::AnnotationStatus::UnderConstruction;
-		auto status = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
+		auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
+
+		if(as.note.empty() == false){
+			ui->noteTextEdit->setText(QString::fromStdString(as.note));
+			ui->noteGroupBox->setVisible(true);
+		}else{
+			ui->noteGroupBox->setVisible(false);
+		}
+
+		if(as.comment.empty() == false){
+			ui->commentTextEdit->setText(QString::fromStdString(as.comment));
+			ui->commentGroupBox->setVisible(true);
+		}else{
+			ui->commentGroupBox->setVisible(false);
+		}
 
 		if(model->userIsReviewer() == true){
 
 			bool enabled = true;
 
-			if(status == webservices::xmlWsdl::AnnotationStatus::Approved ||
-				status == webservices::xmlWsdl::AnnotationStatus::Rejected){
+			if(as.status == webservices::xmlWsdl::AnnotationStatus::Approved ||
+				as.status == webservices::xmlWsdl::AnnotationStatus::Rejected){
 				
 				enabled = false;
 			}
-
+			upld->setEnabled(enabled);
 			acceptAction->setEnabled(enabled);
 			rejectAction->setEnabled(enabled);
 
 		}else {
+
 			if(model->getCurrentLayerUserName() == model->getUserName()){
-				if(status == webservices::xmlWsdl::AnnotationStatus::Approved ||
-					status == webservices::xmlWsdl::AnnotationStatus::UnderReview ||
-					status == webservices::xmlWsdl::AnnotationStatus::ReadyForReview){
+				if(as.status == webservices::xmlWsdl::AnnotationStatus::Approved ||
+					as.status == webservices::xmlWsdl::AnnotationStatus::UnderReview ||
+					as.status == webservices::xmlWsdl::AnnotationStatus::ReadyForReview){
 
 					toVerifyAction->setEnabled(false);
-
+					upld->setEnabled(false);
 				}else{
 					toVerifyAction->setEnabled(true);
+					upld->setEnabled(true);
 				}
 			}else{
 				toVerifyAction->setEnabled(false);
+				upld->setEnabled(false);
 			}
 		}
     }
 
-    ui->treeView->blockSignals(true);
-    ui->treeView->clearSelection();
-    ui->treeView->blockSignals(false);
+    //ui->treeView->blockSignals(true);
+    //ui->treeView->clearSelection();
+    //ui->treeView->blockSignals(false);
 }
 
 void dicom::LayeredImageVisualizerView::crop()

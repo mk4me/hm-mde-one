@@ -104,7 +104,8 @@ namespace dicom {
 
     private:
 
-		void setStatus(const webservices::xmlWsdl::AnnotationStatus::Type type);
+		void setStatus(const webservices::xmlWsdl::AnnotationStatus::Type type,
+			const QString & comment = QString());
 
 		const std::string getCurrentLayerUserName() const;
 		const int currnetTrialID() const;

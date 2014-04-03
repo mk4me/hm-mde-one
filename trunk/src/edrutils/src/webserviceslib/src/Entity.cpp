@@ -407,6 +407,16 @@ public:
 		XMLHelper::extractTagValue(element, "LastName", userDetails.lastName);
 	}
 
+	//! TODO
+	//! ta metoda albo poprzednia musi znikn¹æ po ujednoliceniu opisu usera w odpowiedzi us³ug
+	static void _extractUserDetails(TiXmlElement * element, UserDetails & userDetails)
+	{		
+		XMLHelper::extractAttributeValue(element, "ID", userDetails.id);		
+		XMLHelper::extractAttributeValue(element, "Login", userDetails.login);		
+		XMLHelper::extractAttributeValue(element, "FirstName", userDetails.firstName);
+		XMLHelper::extractAttributeValue(element, "LastName", userDetails.lastName);
+	}
+
 	static void extractUserData(TiXmlElement * element, User & user)
 	{		
 		extractUserDetails(element, user);
@@ -602,7 +612,7 @@ const UsersList webservices::xmlWsdl::parseUsersList(const std::string & xmlResp
 	while(userDetailsElement != nullptr) {
 		UserDetails ud;
 
-		XMLHelper::extractUserDetails(userDetailsElement, ud);
+		XMLHelper::_extractUserDetails(userDetailsElement, ud);
 
 		ret.push_back(ud);
 

@@ -65,6 +65,11 @@ private Q_SLOTS:
 	void acceptAnnotation();
 	void rejectAnnotation();
 	void requestAnnotationVerification();
+
+private:
+
+	static const QString getComment(const QString & title, const QString & content = QString());
+
 private:
     //! ui z designera
     Ui::LayeredImageVisualizer* ui;
@@ -74,6 +79,7 @@ private:
 	coreUI::CoreAction* toVerifyAction;
 	coreUI::CoreAction* acceptAction;
 	coreUI::CoreAction* rejectAction;
+	coreUI::CoreAction*  upld;
 	AdnotationsDelegate * adnotationDelegate0;
 	AdnotationsDelegate * adnotationDelegate1;
 };

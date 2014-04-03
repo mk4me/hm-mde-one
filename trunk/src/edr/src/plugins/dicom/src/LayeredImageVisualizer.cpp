@@ -27,14 +27,6 @@ using namespace dicom;
 
 LayeredImageVisualizer::LayeredImageVisualizer() :  currentTrialID(-1)
 {
-	communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
-	if(comm != nullptr){
-		auto user = comm->currentUser();
-		//TODO
-		//uzupelnic inicjalizacje czy user to student czy reviewer
-		//userIsReviewer_ = ;
-	}
-
 	mainWidget = new LayeredImageVisualizerView(this);
 	currentSerie = -1;
 }
@@ -59,10 +51,11 @@ plugin::IVisualizer* LayeredImageVisualizer::create() const
     return new LayeredImageVisualizer();
 }
 
-void LayeredImageVisualizer::setStatus(const webservices::xmlWsdl::AnnotationStatus::Type type)
+void LayeredImageVisualizer::setStatus(const webservices::xmlWsdl::AnnotationStatus::Type type,
+	const QString & comment)
 {
 	auto ds = core::queryService<IDicomService>(plugin::getServiceManager());
-	ds->setAnnotationStatus(currentLayerUser_, currentTrialID, type, "");
+	ds->setAnnotationStatus(currentLayerUser_, currentTrialID, type, comment.toStdString());
 }
 
 const std::string LayeredImageVisualizer::getCurrentLayerUserName() const

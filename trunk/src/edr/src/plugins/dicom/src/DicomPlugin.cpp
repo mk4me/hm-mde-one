@@ -24,11 +24,6 @@ CLASS_DESCRIPTION("DicomTempService", "DicomTempService");
 		
 private:
 
-	struct AnnotationStatus {
-		webservices::xmlWsdl::AnnotationStatus::Type status;
-		std::string comment;
-	};
-
 	typedef std::map<int, std::map<int, AnnotationStatus>> AnnotationsMap;
 
 private:
@@ -44,6 +39,7 @@ private:
 			AnnotationStatus as;
 			as.status = a.status;
 			as.comment = a.comment;
+			as.note = a.note;
 
 			ret[a.userID][a.trialID] = as;
 		}
@@ -132,8 +128,12 @@ public:
 		return verifiedFilterIDX;
 	}
 
-	virtual const webservices::xmlWsdl::AnnotationStatus::Type annotationStatus(const std::string & user, const int trialID) const
+	virtual const AnnotationStatus annotationStatus(const std::string & user, const int trialID) const
 	{
+		AnnotationStatus ret;
+
+		ret.status = webservices::xmlWsdl::AnnotationStatus::UnderConstruction;
+
 		auto id = userID(user);
 
 		auto it = annotations.find(id);
@@ -143,14 +143,11 @@ public:
 			auto IT = it->second.find(trialID);
 			if(IT != it->second.end()){
 
-				if(IT->second.status == webservices::xmlWsdl::AnnotationStatus::Approved ||
-					IT->second.status == webservices::xmlWsdl::AnnotationStatus::ReadyForReview){
-					return IT->second.status;
-				}
+				ret = IT->second;
 			}
 		}
 
-		return webservices::xmlWsdl::AnnotationStatus::UnderConstruction;
+		return ret;
 	}
 
 	virtual void setAnnotationStatus(const std::string & user, const int trialID,
@@ -168,7 +165,13 @@ public:
 		comm->setAnnotationStatus(id, trialID, status, comment);
 		AnnotationStatus as;
 		as.status = status;
-		as.comment = comment;
+
+		if(comm->userIsReviewer() == true){
+			as.note = comment;
+		}else{
+			as.comment = comment;
+		}
+		
 		annotations[id][trialID] = as;
 
 		updateFilters(comm.get());
