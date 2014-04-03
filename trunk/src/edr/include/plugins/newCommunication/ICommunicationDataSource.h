@@ -88,6 +88,8 @@ public:
 	//! \param name Nazwa triala
 	//! \return Globalny ID triala
 	virtual const int trialID(const std::string & name) const = 0;
+	//! \return ID wszystkich triali
+	virtual const std::set<int> trialsIDs() const = 0;
 };
 DEFINE_SMART_POINTERS(ICommunicationDataSource);
 

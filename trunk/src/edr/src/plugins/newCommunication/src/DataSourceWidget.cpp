@@ -804,6 +804,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 				}
 			}
+
 		}else if(dataSource->offlineMode() == false){
 
 			QMessageBox messageBox(this);
@@ -833,6 +834,9 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 		setTabEnabled(indexOf(motionDataTab), true);
 		setTabEnabled(indexOf(configTab), true);
 		setCurrentWidget(motionDataTab);
+
+		//notyfikuj o zmianie stanu
+		dataSource->notify();
 
 	}else{
 

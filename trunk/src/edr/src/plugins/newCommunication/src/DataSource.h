@@ -124,6 +124,7 @@ public:
 
 	virtual const int trialID(const std::string & name) const;
 
+	virtual const std::set<int> trialsIDs() const;
 private:
 
 	void tryRefreshAnnotationStatus();

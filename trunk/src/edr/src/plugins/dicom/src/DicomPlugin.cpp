@@ -200,6 +200,8 @@ private:
 		AnnotationStatusFilter::Identifiers inVerification;
 		AnnotationStatusFilter::Identifiers verified;
 
+		auto allTrialsID = subject->trialsIDs();
+
 		auto ug = subject->currentUser()->userGroups();
 
 		if(subject->userIsReviewer() == false){
@@ -280,6 +282,14 @@ private:
 				}
 			}
 		}
+
+		std::set<int> noEditingTrials(inVerification);
+		noEditingTrials.insert(verified.begin(), verified.end());
+
+		std::vector<int> result(allTrialsID.size());
+		auto retIT = std::set_difference(allTrialsID.begin(), allTrialsID.end(), noEditingTrials.begin(), noEditingTrials.end(), result.begin());
+
+		inEdition.insert(result.begin(), retIT);
 
 		//aktualizuje filtry
 		inEditionFilter->setIdentifiers(inEdition);

@@ -292,7 +292,11 @@ public:
 		TiXmlElement * element = rE.FirstChildElement(tag.c_str()).Element();
 
 		if(element != nullptr){
-			value = element->GetText();
+			auto ret = element->GetText();
+			if(ret != nullptr){
+				value = std::string(ret);
+			}
+			
 			return true;
 		}
 

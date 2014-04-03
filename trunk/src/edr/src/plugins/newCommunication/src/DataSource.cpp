@@ -311,8 +311,6 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
     if(isLogged() == true){
         //tworzę ścieżki dla danych użytkownika
         pathsManager->createUserDataPaths();
-        //informuj wszystkich o zalogowaniu
-        notify();
     }
 }
 
@@ -335,9 +333,6 @@ void CommunicationDataSource::logout()
     fullShallowCopy = ShallowCopy();
 	fileStatusManager->removeAllFiles();
 	fullShallowCopyStatus->setShallowCopy(nullptr);
-
-    //notyfikuj o zmianie stanu
-    notify();
 }
 
 bool CommunicationDataSource::isLogged() const
@@ -815,6 +810,7 @@ void CommunicationDataSource::setShallowCopy(const ShallowCopy & shallowCopy)
 	PLUGIN_LOG_DEBUG( "Plik: " << (*it).name << " -> rozmiar: " << (*it).size);
 	}*/
 
+	//notyfikuj o zmianie stanu
 	notify();
 }
 
@@ -1192,4 +1188,18 @@ void CommunicationDataSource::refreshAnnotationStatus()
 		std::string annotationsRes = ws->motionBasicQueriesService()->listAnnotationsXML();		
 		annotations = webservices::xmlWsdl::parseAnnotations(annotationsRes);		
 	}
+}
+
+
+const std::set<int> CommunicationDataSource::trialsIDs() const
+{
+	std::set<int> ret;
+
+	for(auto it = fullShallowCopy.motionShallowCopy->trials.begin();
+		it != fullShallowCopy.motionShallowCopy->trials.end(); ++it){
+
+		ret.insert(it->second->trialID);
+	}
+
+	return ret;
 }
