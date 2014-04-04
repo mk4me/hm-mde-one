@@ -772,7 +772,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 			}else if(dataSource->offlineMode() == false){
 
                 try {
-                    dataSource->testDownloadBranchIncrement();
+                    //dataSource->testDownloadBranchIncrement();
                     //std::string test = DataSourceWebServicesManager::instance()->motionFileStoremanService()->getShallowCopyBranchesIncrement(userShallowCopy.motionShallowCopy->timestamp);
                     //test += " ";
                 } catch (const webservices::WSConnectionInvokeException& e) {

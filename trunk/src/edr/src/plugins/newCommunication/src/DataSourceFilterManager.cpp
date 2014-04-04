@@ -157,8 +157,8 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 											std::set<webservices::MotionShallowCopy::File*> verifiedMotionFiles;
 
 											//filtrujemy pliki motiona
-											auto filesITEnd = perfConfIT->second->session->files.end();
-											for(auto fileIT = perfConfIT->second->session->files.begin(); fileIT != filesITEnd; ++fileIT){
+											auto filesITEnd = motionIT->second->files.end();
+											for(auto fileIT = motionIT->second->files.begin(); fileIT != filesITEnd; ++fileIT){
 												if(filter->filterFile(fileIT->second) == true){
 
 													auto file = new MotionShallowCopy::File();
@@ -218,6 +218,20 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 										session->sessionName        = perfConfIT->second->session->sessionName;
 										session->tags               = perfConfIT->second->session->tags;
 										session->userID             = perfConfIT->second->session->userID;
+
+										if(perfConfIT->second->session->groupAssigment != nullptr){
+											auto it = outShallow.motionShallowCopy->groupAssigments.find(perfConfIT->second->session->groupAssigment->sessionGroupID);
+											if(it != outShallow.motionShallowCopy->groupAssigments.end()){
+												it->second->sessions[session->sessionID] = session;
+												session->groupAssigment = it->second;
+											}else{
+												auto ga = new webservices::MotionShallowCopy::GroupAssigment();
+												ga->sessionGroupID = perfConfIT->second->session->groupAssigment->sessionGroupID;
+												ga->sessions[session->sessionID] = session;
+												session->groupAssigment = ga;
+												outShallow.motionShallowCopy->groupAssigments[ga->sessionGroupID] = ga;
+											}
+										}
 
 										for(auto it = verifiedSessionFiles.begin(); it != verifiedSessionFiles.end(); ++it){
 											(*it)->session = session;
@@ -380,8 +394,8 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 								std::set<webservices::MotionShallowCopy::File*> verifiedMotionFiles;
 
 								//filtrujemy pliki motiona
-								auto filesITEnd = perfConfIT->second->session->files.end();
-								for(auto fileIT = perfConfIT->second->session->files.begin(); fileIT != filesITEnd; ++fileIT){
+								auto filesITEnd = motionIT->second->files.end();
+								for(auto fileIT = motionIT->second->files.begin(); fileIT != filesITEnd; ++fileIT){
 									if(filter->filterFile(fileIT->second) == true){
 
 										auto file = new MotionShallowCopy::File();
@@ -441,6 +455,20 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 							session->sessionName        = perfConfIT->second->session->sessionName;
 							session->tags               = perfConfIT->second->session->tags;
 							session->userID             = perfConfIT->second->session->userID;
+
+							if(perfConfIT->second->session->groupAssigment != nullptr){
+								auto it = outShallow.motionShallowCopy->groupAssigments.find(perfConfIT->second->session->groupAssigment->sessionGroupID);
+								if(it != outShallow.motionShallowCopy->groupAssigments.end()){
+									it->second->sessions[session->sessionID] = session;
+									session->groupAssigment = it->second;
+								}else{
+									auto ga = new webservices::MotionShallowCopy::GroupAssigment();
+									ga->sessionGroupID = perfConfIT->second->session->groupAssigment->sessionGroupID;
+									ga->sessions[session->sessionID] = session;
+									session->groupAssigment = ga;
+									outShallow.motionShallowCopy->groupAssigments[ga->sessionGroupID] = ga;
+								}
+							}
 
 							for(auto it = verifiedSessionFiles.begin(); it != verifiedSessionFiles.end(); ++it){
 								(*it)->session = session;

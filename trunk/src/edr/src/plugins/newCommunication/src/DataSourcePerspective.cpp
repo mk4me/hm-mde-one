@@ -152,6 +152,9 @@ const std::string DataSourceMedusaPerspective::name() const
 
 void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy)
 {
+
+	std::vector<SessionItem*> sessionItems;
+
     //auto patientsITEnd = shallowCopy.medicalShallowCopy->patients.end();
     //for(auto patientIT = shallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
     auto subjectsITEnd = shallowCopy.motionShallowCopy->performers.end();
@@ -173,7 +176,7 @@ void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidget * treeWidget, c
             //generuje item sesji
             auto sessionItem = new SessionItem(perfConfIT->second->session);
 
-            treeWidget->addTopLevelItem(sessionItem);
+			sessionItems.push_back(sessionItem);            
 
             auto motionsITEnd = perfConfIT->second->session->trials.end();
             for(auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){
@@ -189,6 +192,24 @@ void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidget * treeWidget, c
             }
         }
     }
+
+	//! Dodano na potrzeby medusa
+	//! wstępne filtrowanie po numerach sesji żeby były zawsze w porządku numerycznym
+	std::sort(sessionItems.begin(), sessionItems.end(),
+		[](const SessionItem* a, const SessionItem* b) -> bool
+	{
+		auto numA = a->value()->sessionName.find("-S")+2;
+		auto numB = b->value()->sessionName.find("-S")+2;
+		
+		numA = boost::lexical_cast<int>(a->value()->sessionName.substr(numA, a->value()->sessionName.size()-numA));
+		numB = boost::lexical_cast<int>(b->value()->sessionName.substr(numB, b->value()->sessionName.size()-numB));
+
+		return numA < numB;
+	});
+
+	for(auto it = sessionItems.begin(); it != sessionItems.end(); ++it){
+		treeWidget->addTopLevelItem(*it);
+	}
 }
 
 bool DataSourceMedusaPerspective::headers( const QTreeWidgetItem * item, QStringList & headers ) const
