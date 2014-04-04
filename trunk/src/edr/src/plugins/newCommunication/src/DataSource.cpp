@@ -43,6 +43,7 @@
 #include <webserviceslib/IncrementalBranchShallowCopyParser.h>
 #include "IncrementalBranchShallowCopyHelper.h"
 #include "coreui/CorePopup.h"
+#include "DataSourceWidget.h"
 
 using namespace communication;
 using namespace webservices;
@@ -967,15 +968,15 @@ void uploadCallback(communication::IDownloadRequest::State s, const std::string&
 {
     switch (s) {
     case communication::IDownloadRequest::FinishedCancel:
-        coreUI::CorePopup::showMessage(QObject::tr("Status"), QObject::tr("Uploading cancelled"));
+		DataSourceWidget::showMessage(QObject::tr("Status"), QObject::tr("Uploading cancelled"), 3000);        
         break;
 
     case communication::IDownloadRequest::FinishedError:
-        coreUI::CorePopup::showMessage(QObject::tr("Status"), QObject::tr("Upload error:") + QString::fromStdString(message));
+		DataSourceWidget::showMessage(QObject::tr("Status"), QObject::tr("Upload error:") + QString::fromStdString(message), 3000);        
         break;
 
     case communication::IDownloadRequest::FinishedOK:
-        coreUI::CorePopup::showMessage(QObject::tr("Status"), QObject::tr("Uploading successful"));
+		DataSourceWidget::showMessage(QObject::tr("Status"), QObject::tr("Uploading successful"), 3000);        
         break;
     }
 

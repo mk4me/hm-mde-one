@@ -183,29 +183,27 @@ void LocalDataLoader::showFinalMessage()
 	if(sourceWidget->downloadCanceled == true){
 		//anulowano pobieranie
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-			coreUI::CorePopup::showMessage(tr("Synchronization canceled"), tr("Synchronization successfully canceled"), popupDelay);
+			DataSourceWidget::showMessage(tr("Synchronization canceled"), tr("Synchronization successfully canceled"), popupDelay);
 		}else{
-			coreUI::CorePopup::showMessage(tr("Download canceled"), tr("Download successfully canceled"), popupDelay);
+			DataSourceWidget::showMessage(tr("Download canceled"), tr("Download successfully canceled"), popupDelay);			
 		}
 	}else if(sourceWidget->downloadCrashed == true){
 		//błąd pobierania
 		QMessageBox messageBox(sourceWidget);
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-			coreUI::CorePopup::showMessage(
-                tr("Synchronization error"), tr("Synchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"),
-                popupDelay);
+			DataSourceWidget::showMessage(tr("Synchronization error"), tr("Synchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"),
+				popupDelay);
 		}else{
-            coreUI::CorePopup::showMessage(
-			    tr("Download error"), tr("Download has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to download later. If this error continues to happen contact producer"),
-                popupDelay);
+			DataSourceWidget::showMessage(tr("Download error"), tr("Download has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to download later. If this error continues to happen contact producer"),
+				popupDelay);
 		}
 
 	}else{
 		//wszystko ok
 		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
-			coreUI::CorePopup::showMessage(tr("Synchronization successful"), tr("Synchronization has finished successfully"), popupDelay);
+			DataSourceWidget::showMessage(tr("Synchronization successful"), tr("Synchronization has finished successfully"), popupDelay);
 		}else{
-			coreUI::CorePopup::showMessage(tr("Download successful"), tr("Download has finished successfully"), popupDelay);
+			DataSourceWidget::showMessage(tr("Download successful"), tr("Download has finished successfully"), popupDelay);			
 		}
 	}
 }
@@ -228,6 +226,11 @@ bool DataSourceWidget::LoginEventFilter::eventFilter(QObject * watched, QEvent *
 	return false;
 }
 
+void DataSourceWidget::showMessage(const QString & title, const QString & message, int delay)
+{
+	PLUGIN_LOG_INFO((title + " -> " +message).toStdString());
+	coreUI::CorePopup::showMessage(title, message, delay);
+}
 
 DataSourceWidget::DataSourceWidget(DataSourceFilterManager* fm,
 	CommunicationDataSource * dataSource, QWidget * parent)
@@ -2515,8 +2518,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 		//próbujemy teraz przez plugin subject realizować hierarchię danych
 
 		loadSubjectHierarchy(loadedFilesObjects);
-
-        coreUI::CorePopup::showMessage(tr("Loading info"), tr("Data loaded successfully to application."), popupDelay);
+		DataSourceWidget::showMessage(tr("Loading info"), tr("Data loaded successfully to application."), popupDelay);        
 	}else{
 		QString message(tr("Errors while data loading:"));
 
@@ -2531,8 +2533,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 			message += tr("\n%1. File ID: %2. Unknown error.").arg(i).arg(*it);
 			++i;
 		}
-
-		coreUI::CorePopup::showMessage(tr("Loading error"), message, popupDelay);
+		DataSourceWidget::showMessage(tr("Loading error"), message, popupDelay);		
 	}
 }
 
