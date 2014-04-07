@@ -42,46 +42,43 @@ bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
        // }
     } else if (e->button() == Qt::RightButton) {
         QMenu menu;
-		bool enabled = machine->getSerie()->editionEnable();
         int numSelected = getNumSelected();
         if (numSelected == 0) {
             QAction* boneAction = menu.addAction(tr("Tag bone"));
-			boneAction->setEnabled(enabled);
             connect(boneAction, SIGNAL(triggered()), this, SLOT(addBone()));
 
             QAction* skinAction = menu.addAction(tr("Tag skin"));
-			skinAction->setEnabled(enabled);
             connect(skinAction, SIGNAL(triggered()), this, SLOT(addSkin()));
 
             QAction* tendonAction = menu.addAction(tr("Tag tendon"));
-			tendonAction->setEnabled(enabled);
             connect(tendonAction, SIGNAL(triggered()), this, SLOT(addTendon()));
 
             QAction* jointAction = menu.addAction(tr("Tag joint"));
-			jointAction->setEnabled(enabled);
             connect(jointAction, SIGNAL(triggered()), this, SLOT(addJoint()));
 
             QAction* inflamatoryAction = menu.addAction(tr("Tag region of inflammatory synovitis"));
-			inflamatoryAction->setEnabled(enabled);
             connect(inflamatoryAction, SIGNAL(triggered()), this, SLOT(addInflamatory()));
 
             QAction* noiseAction = menu.addAction(tr("Tag noise"));
-			noiseAction->setEnabled(enabled);
-
             connect(noiseAction, SIGNAL(triggered()), this, SLOT(addNoise()));
 
         } else if (numSelected == 1) {
             QAction* moveAction = menu.addAction(tr("Move"));
-			moveAction->setEnabled(enabled);
             connect(moveAction, SIGNAL(triggered()), this, SLOT(move()));
 
             QAction* editAction = menu.addAction(tr("Edit"));
-			editAction->setEnabled(enabled);
             connect(editAction, SIGNAL(triggered()), this, SLOT(edit()));
 
             QAction* removeAction = menu.addAction(tr("Remove"));
             connect(removeAction, SIGNAL(triggered()), this, SLOT(removeLayer()));
         }
+
+		bool enable = machine->getSerie()->editionEnable();
+		auto actions = menu.actions();
+		for(auto it = actions.begin(); it != actions.end(); ++it){
+			(*it)->setEnabled(enable);
+		}
+
         menu.exec(e->screenPos());
     }
     // celowo zwracany jest false, nawet gdy obs³u¿yliœmy event (domyœlna obs³uga jest w tym przypadku porz¹dana)

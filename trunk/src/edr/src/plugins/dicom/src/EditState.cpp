@@ -37,18 +37,22 @@ bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
     if (e->button() == Qt::RightButton) {
         QMenu menu;
-		bool enable = machine->getSerie()->editionEnable();
 
         QAction* doneAction = menu.addAction(tr("Done"));
-		doneAction->setEnabled(enable);
         connect(doneAction, SIGNAL(triggered()), this, SLOT(done()));
         auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
         if (layer->hasPoint(item)) {
             delPointIdx = layer->getPointIdx(item);
             QAction* deleteAction = menu.addAction(tr("Delete point"));
-			deleteAction->setEnabled(enable);
             connect(deleteAction, SIGNAL(triggered()), this, SLOT(deletePoint()));
         }
+
+		bool enable = machine->getSerie()->editionEnable();
+		auto actions = menu.actions();
+		for(auto it = actions.begin(); it != actions.end(); ++it){
+			(*it)->setEnabled(enable);
+		}
+
         menu.exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {
         auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
