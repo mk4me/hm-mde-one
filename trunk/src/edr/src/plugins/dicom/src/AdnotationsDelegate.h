@@ -35,11 +35,15 @@ namespace dicom {
         void updateEditorGeometry(QWidget *editor,
             const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
+		void setEditionActive(const bool active);
+
 	private:
 		//! Obraz adnotacji
 		ILayeredImageConstPtr val;
 		//! Kolumna dla której mamy delegata
 		const int column;
+		//! czy edycja aktywna
+		bool editionActive;
     };
 }
 

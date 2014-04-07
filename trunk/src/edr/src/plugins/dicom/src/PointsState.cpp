@@ -116,11 +116,13 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
     if (e->button() == Qt::RightButton && layer->getNumPoint() > 0) {
         QMenu menu;
+		bool enable = machine->getSerie()->editionEnable();
         QAction* clearAction = menu.addAction(tr("Remove"));
-        
+        clearAction->setEnabled(enable);
         connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
 
         QAction* addAction = menu.addAction(tr("Save"));
+		addAction->setEnabled(enable);
         connect(addAction, SIGNAL(triggered()), this, SLOT(addLayer()));
         menu.exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {

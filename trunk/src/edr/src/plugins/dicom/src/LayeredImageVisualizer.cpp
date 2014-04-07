@@ -108,7 +108,7 @@ bool LayeredImageVisualizer::eventFilter(QObject * watched, QEvent * event)
 
 plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie( const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data )
 {
-    auto serie = new LayeredSerie(this);
+    auto serie = new LayeredSerie(this, mainWidget);
     serie->setData(requestedType, data);
 
     series.push_back(serie);

@@ -119,8 +119,9 @@ dicom::ILayeredImagePtr dicom::LayeredSerie::getImage()
     return image;
 }
 
-dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer) :
+dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer, LayeredImageVisualizerView * view) :
     visualizer(visualizer),
+	view(view),
     //pixmapItem(nullptr),
     initialized(false),
     layersModel(visualizer),
@@ -133,6 +134,12 @@ dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer) :
     graphicsScene->setSceneRect( graphicsView->rect() );
 
     QObject::connect(graphicsScene, SIGNAL(selectionChanged()), stateMachine.get(), SLOT(selectionChanged()));
+}
+
+const bool dicom::LayeredSerie::editionEnable() const
+{
+	auto actions = view->actions();
+	return actions.empty() == false ? actions.first()->isEnabled() : false;
 }
 
 coreUI::WheelGraphicsView* dicom::LayeredSerie::getGraphicsView() const

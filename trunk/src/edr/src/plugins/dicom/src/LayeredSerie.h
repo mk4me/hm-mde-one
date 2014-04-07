@@ -30,12 +30,13 @@ class QGraphicsPixmapItem;
 namespace dicom {
 
     class LayeredImageVisualizer;
+	class LayeredImageVisualizerView;
 
     // TODO : wywalic to time avare...
     class LayeredSerie : public plugin::AbstractSerie
     {
     public:
-        LayeredSerie(LayeredImageVisualizer* visualizer);
+        LayeredSerie(LayeredImageVisualizer* visualizer, LayeredImageVisualizerView * view);
         virtual ~LayeredSerie() {}
 
 		virtual void update() {}
@@ -44,6 +45,7 @@ namespace dicom {
         virtual void setupData( const core::ObjectWrapperConstPtr & data );  
 
     public:
+		const bool editionEnable() const;
         QPixmap getPixmap() const;
         QSize getSize() const;
         std::string getXmlOutputFilename() const;
@@ -87,6 +89,7 @@ namespace dicom {
         coreUI::GraphicSceneWithStateMachine* graphicsScene;
         LayeredStateMachinePtr stateMachine;
         LayeredImageVisualizer* visualizer;
+		LayeredImageVisualizerView * view;
         LayeredModelView layersModel;
         utils::ObjectWrapperConstPtr data;
         utils::CommandStackPtr commandStack;

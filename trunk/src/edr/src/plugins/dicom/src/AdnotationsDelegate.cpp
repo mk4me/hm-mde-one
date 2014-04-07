@@ -7,9 +7,14 @@
 
 
 dicom::AdnotationsDelegate::AdnotationsDelegate(const int column, QObject *parent /*= 0*/ ) : 
-    QItemDelegate(parent), column(column)
+    QItemDelegate(parent), column(column), editionActive(false)
 {
 
+}
+
+void dicom::AdnotationsDelegate::setEditionActive(const bool active)
+{
+	editionActive = active;
 }
 
 void dicom::AdnotationsDelegate::setImage(ILayeredImageConstPtr val)
@@ -22,7 +27,7 @@ QWidget *dicom::AdnotationsDelegate::createEditor(QWidget *parent,
     const QModelIndex & index ) const
 {
 	QWidget * ret = nullptr;
-	if(val != nullptr){
+	if(val != nullptr && editionActive == true){
 
 		LayeredModelView::treedata* td = static_cast<LayeredModelView::treedata*>(index.internalPointer());
 		int idx = td->idx;

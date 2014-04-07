@@ -17,6 +17,7 @@
 #include "LayeredStateMachine.h"
 #include <coreui/CoreAction.h>
 #include "AdnotationsDelegate.h"
+#include "IDicomService.h"
 
 class QGraphicsScene;
 
@@ -70,16 +71,16 @@ private:
 
 	static const QString getComment(const QString & title, const QString & content = QString());
 
+	void setActionsEnabled(const bool enable);
+
+	void refreshChat(const IDicomService::AnnotationStatus & as);
+
 private:
     //! ui z designera
     Ui::LayeredImageVisualizer* ui;
     //! model wizualizatora
     LayeredImageVisualizer* model;
-    QGraphicsView* lastView;	
-	coreUI::CoreAction* toVerifyAction;
-	coreUI::CoreAction* acceptAction;
-	coreUI::CoreAction* rejectAction;
-	coreUI::CoreAction*  upld;
+    QGraphicsView* lastView;
 	AdnotationsDelegate * adnotationDelegate0;
 	AdnotationsDelegate * adnotationDelegate1;
 };
