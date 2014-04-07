@@ -89,6 +89,8 @@ public:
 
     virtual ~DataSourceWidget();
 
+	static void showMessage(const QString & title, const QString & message, int delay);
+
 public slots:
     // medusa code
 	//void showUserData();
