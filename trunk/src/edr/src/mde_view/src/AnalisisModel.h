@@ -84,6 +84,7 @@ Q_SIGNALS:
     void filterBundleAdded(core::IFilterBundlePtr);
     void reportCreated(const QString& html);
     void expandTree(int);
+    void dataAdded();
 
 private:
     // TODO : przyda sie madrzejszy sposob zarzadzania elementami przefiltrowanymi i nieprzefiltrowanymi 

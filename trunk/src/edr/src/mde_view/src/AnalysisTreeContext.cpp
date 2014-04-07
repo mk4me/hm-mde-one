@@ -127,7 +127,7 @@ void AnalysisTreeContext::refresh()
 {
    QAbstractItemView* tree = qobject_cast<QAbstractItemView*>(getCurrentContextWidget());
    if (tree) {
-       core::IHierarchyItemConstPtr itm = treeModel->internalSmart(tree->currentIndex());
+       core::IHierarchyItemConstPtr itm = treeModel->internalSmart(tree->currentIndex()); 
        recreateFlexiSectionWidget(flexiContent, itm);
    }
 }

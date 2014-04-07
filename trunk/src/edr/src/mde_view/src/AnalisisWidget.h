@@ -52,7 +52,7 @@ public:
     ContextEventFilterPtr getContextEventFilter() const { return contextEventFilter; }
 public Q_SLOTS:
     void createVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper);
-    void addRoot(core::IHierarchyItemPtr root);
+    //void addRoot(core::IHierarchyItemPtr root);
     void switchToFirstTab();
     void createNewVisualizer();
 
@@ -75,6 +75,7 @@ Q_SIGNALS:
     //! Sygnał generowany, gdy użytkownik kliknął przycisk 'utwórz raport'
     //! \param str Wygenerowany raport (w HTML)
     void reportCreated(const QString& str);
+    void dataAdded();
 
 private Q_SLOTS:
     void visualizerDestroyed(QObject * visualizer);

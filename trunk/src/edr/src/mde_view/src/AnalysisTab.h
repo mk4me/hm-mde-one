@@ -18,6 +18,7 @@
 
 class AnalysisTab : public coreUI::AbstractTab
 {
+    Q_OBJECT;
 public:
     AnalysisTab(AnalisisWidget* widget, const QIcon& icon, const QString& label);
 	virtual ~AnalysisTab() {}
@@ -25,6 +26,9 @@ public:
 public:
     virtual QWidget* getMainWidget();
     virtual void registerConxtext( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget ) ;
+
+private Q_SLOTS:
+    void dataAdded();
 
 private:
     AnalisisWidget* widget;

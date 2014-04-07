@@ -28,6 +28,12 @@ void ReportsTab::registerConxtext( coreUI::IAppUsageContextManager* manager, cor
     manager->addWidgetToContext(context, widget);
 }
 
+void coreUI::ReportsTab::enable()
+{
+    setEnabled(true);
+    setActive(true);
+}
+
 ReportsTabContext::ReportsTabContext( QTabWidget * flexiTabWidget ) :
 flexiTabWidget(flexiTabWidget),
     editSection(nullptr),

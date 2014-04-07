@@ -13,7 +13,7 @@ void VisualizerContextTest::testEventFilter()
     MdeMainWindow mmw([](){});
 
     QWidget w;
-    IAppUsageContextPtr context = utils::make_shared<MdeEmptyContext>();
+    coreUI::IAppUsageContextPtr context = utils::make_shared<MdeEmptyContext>();
     mmw.addContext(context);
     mmw.addWidgetToContext(context, &w);
     ContextEventFilterPtr cef = utils::make_shared<ContextEventFilter>(&mmw);

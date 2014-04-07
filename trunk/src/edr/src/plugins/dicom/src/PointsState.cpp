@@ -115,7 +115,7 @@ bool dicom::PointsState::keyReleaseEvent( QKeyEvent *event )
 bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
     if (e->button() == Qt::RightButton && layer->getNumPoint() > 0) {
-        QMenu menu;
+        /*QMenu menu;
 		bool enable = machine->getSerie()->editionEnable();
         QAction* clearAction = menu.addAction(tr("Remove"));
         clearAction->setEnabled(enable);
@@ -124,7 +124,7 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
         QAction* addAction = menu.addAction(tr("Save"));
 		addAction->setEnabled(enable);
         connect(addAction, SIGNAL(triggered()), this, SLOT(addLayer()));
-        menu.exec(e->screenPos());
+        menu.exec(e->screenPos());*/
     } else if (e->button() == Qt::LeftButton) {
         auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
         if (layer->hasPoint(item)) {

@@ -89,6 +89,7 @@ public slots:
     //! \param html kod, który ma zostać wyświetlony 
     void setHtml(const QString& html);
 
+
 public:
     //! \return akcje związane z zapisem / odczytem plików
     const QList<QObject*>& getFileActions() const { return fileList; }

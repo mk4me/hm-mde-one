@@ -235,6 +235,12 @@ void dicom::LayeredSerie::removeLayer( int tagIdx, int idx )
 {
     auto img = this->getImage();
     auto tag = img->getTag(tagIdx);
+    removeLayer(tag, idx);
+}
+
+void dicom::LayeredSerie::removeLayer( const std::string& tag, int idx )
+{
+    auto img = this->getImage();
     if (idx >= 0 && idx < img->getNumLayerItems(tag)) {
         auto layer = img->getLayerItem(tag, idx);
         commandStack->addCommand(utils::make_shared<RemoveLayerCommand>(this, img, layer));    

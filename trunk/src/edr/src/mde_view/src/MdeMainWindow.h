@@ -25,9 +25,14 @@ public:
 public Q_SLOTS:
     void addTab(coreUI::IMdeTabPtr tab);
     void activateTab(coreUI::IMdeTabPtr tab);
+    void update();
 
 private Q_SLOTS:
     void buttonClicked();
+    void activateTab();
+
+private:
+    void handleContext( coreUI::IMdeTabPtr tab, QToolButton* button );
 
 private:
     MdeMainWindow* window;
@@ -55,6 +60,7 @@ public:
 Q_SIGNALS:
     void tabAdded(coreUI::IMdeTabPtr tab);
     void activateTab(coreUI::IMdeTabPtr tab);
+    void modelChanged();
 
 private:	
 	virtual void initializeSplashScreen(QSplashScreen * splashScreen);

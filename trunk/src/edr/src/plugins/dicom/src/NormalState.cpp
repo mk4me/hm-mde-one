@@ -78,6 +78,9 @@ bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
             QAction* editAction = menu.addAction(tr("Edit"));
 			editAction->setEnabled(enabled);
             connect(editAction, SIGNAL(triggered()), this, SLOT(edit()));
+
+            QAction* removeAction = menu.addAction(tr("Remove"));
+            connect(removeAction, SIGNAL(triggered()), this, SLOT(removeLayer()));
         }
         menu.exec(e->screenPos());
     }
@@ -202,6 +205,26 @@ void dicom::NormalState::edit()
     }
 }
 
+void dicom::NormalState::removeLayer()
+{
+    PointsLayerPtr points = utils::dynamic_pointer_cast<PointsLayer>(getFirstSelected());
+    if (points) {
+        auto image = machine->getSerie()->getImage();
+        auto tags = image->getTags();
+        BOOST_FOREACH (std::string tag, tags) {
+            int numItems = image->getNumLayerItems(tag);
+
+            for (int i = 0; i < numItems; ++i) {
+                if (image->getLayerItem(tag, i) == points) {
+                    machine->getSerie()->removeLayer(tag, i);
+                    return;
+                }
+            }
+
+        }
+    }
+}
+
 void dicom::NormalState::addBone()
 {
     machine->setState(machine->getBoneState());
@@ -231,3 +254,5 @@ void dicom::NormalState::addNoise()
 {
     machine->setState(machine->getNoiseState());
 }
+
+

@@ -58,6 +58,7 @@ namespace dicom {
         void refresh();
         void save();
         void removeLayer(int tagIdx, int idx);
+        void removeLayer(const std::string& tag, int idx);
         void editLayer(int tagIdx, int idx);
         void undo();
         void redo();

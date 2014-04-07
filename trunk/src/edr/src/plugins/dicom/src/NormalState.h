@@ -56,6 +56,7 @@ private Q_SLOTS:
 
     void move();
     void edit();
+    void removeLayer();
 };
 DEFINE_SMART_POINTERS(NormalState);
 

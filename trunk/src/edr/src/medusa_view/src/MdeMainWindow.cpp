@@ -78,11 +78,6 @@ void MdeMainWindow::customViewInit(QWidget * console)
    trySetStyleByName("hmm");
  
    this->showFullScreen();
-   
-
-
-   
-
 
    communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);

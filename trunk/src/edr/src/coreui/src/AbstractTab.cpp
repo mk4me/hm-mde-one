@@ -21,6 +21,7 @@ void AbstractTab::attachChildContext( coreUI::IAppUsageContextPtr child )
 void AbstractTab::setEnabled( bool enabled )
 {
     this->enabled = enabled;
+    emit tabEnabled(enabled);
 }
 
 bool AbstractTab::isEnabled() const
@@ -47,4 +48,5 @@ bool AbstractTab::isActive() const
 void AbstractTab::setActive( bool val )
 {
     this->active = val;
+    emit tabActivated(val);
 }

@@ -70,6 +70,7 @@ typedef utils::shared_ptr<const ReportsTabContext> ReportsTabContextConstPtr;
 
 class COREUI_EXPORT ReportsTab : public AbstractTab
 {
+    Q_OBJECT
 public:
     ReportsTab(const QIcon& icon, const QString& label);
 	virtual ~ReportsTab() {}
@@ -77,6 +78,9 @@ public:
 public:
     virtual QWidget* getMainWidget();
     virtual void registerConxtext( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget ) ;
+
+public Q_SLOTS:
+    void enable();
 
 private:
     QWidget* widget;

@@ -17,8 +17,9 @@
 namespace coreUI {
 //! Zak³adka g³ównego okna MDE, zapewnia podstawow¹ funkcjonalnoœæ.
 //! Wymaga podania widgeta dla zak³adki oraz zarejstrowania kontekstu we flexi tabie
-class COREUI_EXPORT AbstractTab : public IContextRoot, public IMdeTab
+class COREUI_EXPORT AbstractTab : public QObject, public IContextRoot, public IMdeTab
 {
+    Q_OBJECT
 public:
     AbstractTab(const QIcon& icon, const QString& label);
 	virtual ~AbstractTab() {}
@@ -31,6 +32,10 @@ public:
     virtual QString getLabel() const;
     virtual bool isActive() const;
     virtual void setActive( bool val );
+
+Q_SIGNALS:
+    void tabEnabled(bool enabled);
+    void tabActivated(bool activated);
 
 private:
     QString label;

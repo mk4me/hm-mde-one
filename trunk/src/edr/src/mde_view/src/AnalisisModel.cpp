@@ -20,7 +20,7 @@ void AnalisisModel::observe( const core::IMemoryDataManagerHierarchy::HierarchyC
             if (model.getNumChildren() == 1) {
                 emit expandTree(1);
             }
-            
+            emit dataAdded();
             break;
         case core::IDataManagerReader::REMOVE_OBJECT:
             model.removeRootItem(it->value);

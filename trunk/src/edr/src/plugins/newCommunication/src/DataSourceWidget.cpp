@@ -717,7 +717,11 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
         loginButton->setVisible(false);
         setTabEnabled(indexOf(configTab), false);
         // zapisanie loginu i hasła
-        saveCredentials();
+        if (rememberMeCheckBox->isChecked()) {
+            saveCredentials();
+        } else {
+            clearCredentials();
+        }
 
         statusWidget->setUserName(userEdit->text());
 
@@ -2880,8 +2884,10 @@ void DataSourceWidget::saveCredentials()
     QSettings settings(crypt("Credentials", false));
     QString usr = userEdit->text();
     QString pwd = passwordEdit->text();
+    QString chk = rememberMeCheckBox->isChecked() ? "true" : "false";
     settings.setValue(crypt("User", false), crypt(usr, true));
     settings.setValue(crypt("Password", false), crypt(pwd, true));
+    settings.setValue(crypt("Remember", false), crypt(chk, true));
 }
 
 void DataSourceWidget::loadCredentials()
@@ -2889,9 +2895,24 @@ void DataSourceWidget::loadCredentials()
     QSettings settings(crypt("Credentials", false));
     QString usr = settings.value(crypt("User", false)).toString();
     QString pwd = settings.value(crypt("Password", false)).toString();
+    QString chk = settings.value(crypt("Remember", false)).toString();
     userEdit->setText(crypt(usr, false));
     passwordEdit->setText(crypt(pwd, false));
+    rememberMeCheckBox->setChecked(crypt(chk, false) == "true");
 }
+
+
+void DataSourceWidget::clearCredentials()
+{
+    QSettings settings(crypt("Credentials", false));
+    QString usr = "";
+    QString pwd = "";
+    QString chk = "false";
+    settings.setValue(crypt("User", false), crypt(usr, true));
+    settings.setValue(crypt("Password", false), crypt(pwd, true));
+    settings.setValue(crypt("Remember", false), crypt(chk, true));
+}
+
 
 QString DataSourceWidget::crypt( const QString& input, bool encrypt )
 {

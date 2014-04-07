@@ -1094,7 +1094,7 @@ const webservices::xmlWsdl::AnnotationsList CommunicationDataSource::getAllAnnot
 
 const bool CommunicationDataSource::userIsReviewer() const
 {
-	return userIsReviewer_;
+	return userIsReviewer_; 
 }
 
 const webservices::xmlWsdl::UsersList CommunicationDataSource::listUsers() const

@@ -46,6 +46,7 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     connect(treeView, SIGNAL(customContextMenuRequested(const QPoint &)), contextMenu ,SLOT(contextualMenu(const QPoint &)));
     connect(treeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onTreeItemActivated(const QModelIndex&)));
     connect(model.get(), SIGNAL(expandTree(int)), treeView, SLOT(expandToDepth(int)));
+    connect(model.get(), SIGNAL(dataAdded()), this, SIGNAL(dataAdded()));
     connect(contextMenu, SIGNAL(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)), this, SLOT(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)));
     connect(visualizerFilter.get(), SIGNAL(focusOn(QWidget*)), this, SLOT(onVisualizerFocus(QWidget*)));
     
@@ -237,10 +238,11 @@ void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, 
     manager->addWidgetToContext(treeContext, treeView);
 }
 
-void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
-{
-    model->getTreeModel()->addRootItem(root);
-}
+//void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
+//{
+//    model->getTreeModel()->addRootItem(root);
+//    emit dataAdded();
+//}
 
 void AnalisisWidget::onFilterBundleAdded( core::IFilterBundlePtr bundle )
 {
