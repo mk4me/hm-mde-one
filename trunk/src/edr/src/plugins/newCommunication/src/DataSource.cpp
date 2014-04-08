@@ -241,7 +241,7 @@ void CommunicationDataSource::setCurrentUser(const User & user)
     currentUser_ = user;
 
 	auto ug = user.userGroups();
-	userIsReviewer_ = (ug.find(1) != ug.end());
+	userIsReviewer_ = (ug.find(11) != ug.end());
     //inicjuje pathManagera - tworzę strukturę danych użytkownika i generuje ścieżki dla danych
     pathsManager->setUser(currentUser_);
 }

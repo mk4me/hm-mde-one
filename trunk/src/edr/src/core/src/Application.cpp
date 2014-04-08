@@ -526,8 +526,10 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 	char buffer[PATH_BUFFER_SIZE];
 	DWORD dwType, dwSize = PATH_BUFFER_SIZE;
 
-	Filesystem::Path resourcesPath;
+	Filesystem::Path resourcesPath = Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path() / "resources";
 
+	/*
+	Filesystem::Path resourcesPath;
 	LPTSTR lpValueName = "ProgramFilesPath";
 	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
 	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
@@ -536,10 +538,11 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 	} else {
 		return false;
 	}
+	}*/
 
 	Filesystem::Path applicationDataPath;
 
-	lpValueName = "ApplicationDataPath";
+	LPTSTR lpValueName = "ApplicationDataPath";
 	dwSize = sizeof(buffer);
 	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
 	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
