@@ -1,9 +1,11 @@
-/**
-@author Marek Daniluk
-@brief Klasa CommunicationManager wykorzystująca wzorce projektowe fasada oraz singleton do zarządzania połączeniem
-z bazą danych i przesyłania/odbierania plików między serwerem i klientem. Obecnie implementacja opiera się o protokół FTP
-i web serwisy wsdl.
-*/
+/********************************************************************
+    created:  2014/04/09
+    created:  9:4:2014   9:25
+    filename: CommunicationManager.h
+    author:   Mateusz Janiak
+    
+    purpose:  
+*********************************************************************/
 
 #ifndef HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
 #define HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
@@ -21,6 +23,9 @@ i web serwisy wsdl.
 #include <curl/curl.h>
 #include <threading/SynchronizationPolicies.h>
 #include <corelib/IThread.h>
+#include <QtCore/QWaitCondition>
+#include <QtCore/QMutex>
+
 
 //! Klasa odpowiedzialna za dostarczanie plików z bazy danych
 class CommunicationManager
@@ -326,7 +331,7 @@ public:
 
 	public:
 		RequestsExecutor(CommunicationManager * manager,
-			const time_type sleepTime = 10000);
+			const time_type sleepTime = 250000);
 
 		~RequestsExecutor();
 
@@ -348,6 +353,10 @@ public:
 	};
 
 private:
+	//! Mwtoda inicjalizuje wątek obsługujący zlecenia i warstwę sieci
+	void init();
+	//! Metoda probuje inicjalizować wątek obsługujący zlecenia i warstwę sieci
+	void tryInit();
 
     /**
     Metoda statyczna (wymagana przez curla) typu callback do odbierania danych podczas pingowania.
@@ -527,6 +536,10 @@ private:
 	core::IThreadPtr executorThread;
 	//! Wykonawca zleceń ściągania danych
 	core::shared_ptr<RequestsExecutor> requestsExecutor;
+	//! Warunek oczekiwania na zlecenia w kolejce
+	QWaitCondition requestsWait_;
+	//! Obiekt synchronizujący kolejkę zleceń
+	QMutex requestsSynch_;
 };
 
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

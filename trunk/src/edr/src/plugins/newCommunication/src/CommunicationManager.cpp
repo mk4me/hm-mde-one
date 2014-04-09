@@ -128,14 +128,19 @@ void CommunicationManager::RequestsExecutor::run()
 			if(manager->state != Ready){
 				manager->setState(Ready);
 			}
-			OpenThreads::Thread::microSleep(sleepTime_);
+
+			QMutexLocker lock(&manager->requestsSynch_);
+			manager->requestsWait_.wait(&manager->requestsSynch_);
 		}
 	}
 }
 
 void CommunicationManager::RequestsExecutor::finish()
 {
-	finish_ = true;
+	if(finish_ == false){
+		finish_ = true;
+		manager->requestsWait_.wakeAll();
+	}
 }
 
 void CommunicationManager::RequestsExecutor::setSleepTime(const time_type sleepTime)
@@ -331,13 +336,16 @@ double CommunicationManager::ComplexRequest::getProgress() const
 }
 
 CommunicationManager::CommunicationManager(core::IThreadPtr executorThread)
-	: executorThread(executorThread),	finish(false), state(Ready), pingCurl(nullptr)
+	: executorThread(executorThread), finish(false), state(Ready), pingCurl(nullptr)
 {
 
 	if(executorThread == nullptr){
 		throw std::invalid_argument("Uninitialized requests processing thread");
 	}
+}
 
+void CommunicationManager::init()
+{
 	pingCurl = curl_easy_init();
 	if(pingCurl) {
 		curl_easy_setopt(pingCurl, CURLOPT_URL, "127.0.0.1");
@@ -350,13 +358,20 @@ CommunicationManager::CommunicationManager(core::IThreadPtr executorThread)
 	requestsExecutor.reset(new RequestsExecutor(this));
 }
 
+void CommunicationManager::tryInit()
+{
+	if(requestsExecutor == nullptr){
+		init();
+	}
+}
+
 CommunicationManager::~CommunicationManager()
 {
     if(pingCurl) {
         curl_easy_cleanup(pingCurl);
     }
 
-	if(executorThread->running() == true){    
+	if(executorThread != nullptr && executorThread->running() == true){    
         requestsExecutor->finish();
         executorThread->join();
     }
@@ -418,9 +433,13 @@ void CommunicationManager::pushRequest(const CompleteRequest & request)
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	requestsQueue.push(request);
 
+	tryInit();
+
 	if(executorThread->running() == false){
 		executorThread->start(requestsExecutor);
 	}
+
+	requestsWait_.wakeOne();
 }
 
 void CommunicationManager::setCurrentDownloadHelper(webservices::IDownloadHelper * downloadHelper)

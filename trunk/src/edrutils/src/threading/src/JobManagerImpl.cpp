@@ -228,6 +228,6 @@ void JobManager::JobManagerImpl::maintainerRunner()
 		}
 
 		//chwila przerwy
-		OpenThreads::Thread::microSleep(10000);
+		OpenThreads::Thread::microSleep(100000);
 	}
 }
