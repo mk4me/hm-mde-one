@@ -96,13 +96,10 @@ void MdeMainWindow::customViewInit(QWidget * console)
    commWidget->setMaximumWidth(304);
 
    QSplitter* compound = new QSplitter();
-   compound->setLayout(new QHBoxLayout);
-
-
    AnalisisWidget* aw = new AnalisisWidget(analysisModel, contextEventFilter, nullptr);
    // -----------------------
-   compound->layout()->addWidget(commWidget);
-   compound->layout()->addWidget(aw);
+   compound->addWidget(commWidget);
+   compound->addWidget(aw);
    addTab(coreUI::IMdeTabPtr(new CompoundAnalysisTab(compound, aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
    addTab(coreUI::IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/Operacje.png"),tr("Console"))));
 
