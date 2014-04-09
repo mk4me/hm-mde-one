@@ -236,6 +236,24 @@ void dicom::LayeredImageVisualizerView::refresh()
         for (auto it = expands.begin(); it != expands.end(); ++it) {
             ui->treeView->setExpanded(it->first, it->second);
         }
+
+		int row = 0;
+
+		if(model->userIsReviewer() == false){
+			for(int i = 0; i < treeModel->getImage()->getNumTags(); ++i){
+				if(treeModel->getImage()->getTag(i) == model->getUserName()){
+					row = i;
+					break;
+				}
+			}
+		}		
+
+		auto idx = treeModel->index(row, 0);
+
+		ui->treeView->setCurrentIndex(idx);
+
+		selectionChanged(idx);
+
     } else {
 
     }

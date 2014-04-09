@@ -270,7 +270,7 @@ QString dicom::DicomSource::createDesc( const internalData::Image& image )
     desc += QString("imageFile : %1\n").arg(image.imageFile.c_str());
     //desc += QString("adnotationsFile : %1\n").arg(image.adnotationsFile.c_str());
     desc += QString("originFilePath : %1\n").arg(image.originFilePath.c_str());
-    desc += QString("isPowerDoppler : %1\n").arg(image.isPowerDoppler);
+    desc += QString("isPowerDoppler : %1\n").arg(image.isPowerDoppler == true ? QObject::tr("yes") : QObject::tr("no"));
     return desc;
 }
 
