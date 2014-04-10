@@ -117,7 +117,7 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     this->addAction(infl);
     this->addAction(nois);
 
-    //this->addAction(save);
+    this->addAction(save);
     this->addAction(upld);
     this->addAction(crop);
     

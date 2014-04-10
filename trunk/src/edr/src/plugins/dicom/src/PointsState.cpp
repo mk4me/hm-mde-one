@@ -198,8 +198,12 @@ void dicom::PointsState::end()
 {
     if (layer->getNumPoint() > 2) {
         addLayer(adnotationIdx);
-        resetLayer();
+    } else {
+        for (int i = layer->getNumPoint() - 1; i >= 0; --i) {
+            machine->getCommandStack()->addCommand(utils::make_shared<RemovePointCommand>(layer, i));
+        }
     }
+    resetLayer();
     machine->changeCursor(Qt::ArrowCursor);
 }
 
