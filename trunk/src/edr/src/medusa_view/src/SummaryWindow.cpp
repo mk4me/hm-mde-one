@@ -95,6 +95,8 @@ SummaryWindowController::SummaryWindowController( SummaryWindowPtr sw, AnalisisM
     
 void SummaryWindowController::onVisualizer( coreUI::CoreVisualizerWidget* visualizatorWidget )
 {
+    // TODO, tymczasowo wylaczone (jest problem przy ponownym otwieraniu wizualizatora)
+    return;
     core::VisualizerPtr visualizer = visualizatorWidget->getVisualizer();
     
     SummaryWindow::HelpersCollection collection;
