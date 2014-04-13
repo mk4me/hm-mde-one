@@ -31,7 +31,5 @@ SET_PROJECTS_GROUP("view")
 ADD_PROJECT(old_view "core;coreui;plugin_newTimeline;OPENGL;c3dlib")
 ADD_PROJECT(mde_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
 ADD_PROJECT(imu_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
-ADD_PROJECT(medusa_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
-
-ADD_PROJECT(medusa_view "core;coreui;c3dlib;timelinelib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
+ADD_PROJECT(medusa_view "core;coreui;c3dlib;timelinelib;kinematiclib;plugin_newTimeline;webserviceslib")
 #ADD_PROJECT(console_view "BOOST;utils;QT;TINYXML;core;corelib;coreui;plugin_newTimeline")
