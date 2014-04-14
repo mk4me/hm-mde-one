@@ -16,6 +16,9 @@ webservices::IncrementalBranchShallowCopy communication::IncrementalBranchShallo
     cpl.callbacks = helper.singleTransferCallbacks;
     cm->pushRequest(cpl);
     State s = helper.getState();
+
+	//TODO - to jest odpalane w wątku Qt - takie czekanie mrozi całą aplikację na czas ściągania
+	// tak ma być?
     while (s != Success && s != Error) {
         s = helper.getState();
     }

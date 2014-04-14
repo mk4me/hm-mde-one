@@ -134,7 +134,7 @@ void LocalDataLoader::run()
 	//TODO
 	// dlaczego to jestg tutaj? Skoro to byl request dla shallow to znaczy ze dostałem pełną płytką kopię
 	// to powinno być realizowane gdzieś wyżej, na poziomie metody void DataSourceWidget::performShallowCopyUpdate()
-    /*
+    
 	if (wasShallow) {
         auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
         webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
@@ -157,7 +157,7 @@ void LocalDataLoader::run()
 		if(sourceWidget->filesToDownload.empty() == false){
 			sourceWidget->onDownload();
 		}
-    }*/
+    }
 }
 
 void LocalDataLoader::prepareStatusWidget()
@@ -777,15 +777,16 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 				messageBox.setDefaultButton(QMessageBox::Ok);
 				messageBox.exec();
 			}else if(dataSource->offlineMode() == false){
-
+				/*
                 try {
-                    //dataSource->testDownloadBranchIncrement();
-                    //std::string test = DataSourceWebServicesManager::instance()->motionFileStoremanService()->getShallowCopyBranchesIncrement(userShallowCopy.motionShallowCopy->timestamp);
-                    //test += " ";
+                    dataSource->testDownloadBranchIncrement();
+                    std::string test = DataSourceWebServicesManager::instance()->motionFileStoremanService()->getShallowCopyBranchesIncrement(userShallowCopy.motionShallowCopy->timestamp);
+                    test += " ";
                 } catch (const webservices::WSConnectionInvokeException& e) {
                     std::string mes = e.what();
                     mes += " ";
                 }
+                }*/
 				//pobierz datę ostatenij modyfikacji i porównaj
 				//jeśli nowsza to zaproponuj synchronizację
 				//jeśli odmówi załaduj już sparsowaną płytką kopię bazy danych
@@ -1655,7 +1656,9 @@ void DataSourceWidget::performShallowCopyUpdate()
 {
 	//generujemy ścieżki
 
-    //auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
+	//TODO
+	// czy to tutaj jest potrzebne? Jesli tak to po co?
+	//auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
     //webservices::IncrementalBranchShallowCopy incCpy = dataSource->getIncrementalShallowCopy(time);
 
 	auto downloadRequest = dataSource->generateDownloadShallowCopyRequestToLocalUserSpace();
