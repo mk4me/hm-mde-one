@@ -81,7 +81,7 @@ namespace dicom {
 
 		void markAsEdited(const bool edited);
 
-		const bool isEdited()const;
+		const bool isEdited()const;		
 
     private:
         bool initialized;

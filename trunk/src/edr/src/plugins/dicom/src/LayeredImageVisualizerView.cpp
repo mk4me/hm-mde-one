@@ -11,6 +11,7 @@
 #include <webserviceslib/Entity.h>
 #include <corelib/IServiceManager.h>
 #include "MessageDialog.h"
+#include <QtGui/QMessageBox>
 
 using namespace dicom;
 
@@ -132,8 +133,13 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 
 void dicom::LayeredImageVisualizerView::acceptAnnotation()
 {
+	if(verifySerie() == false){
+		return;
+	}
+
 	try{
-		model->trySave();
+		//model->trySave();
+		model->uploadSerie();
 		model->setStatus(webservices::xmlWsdl::AnnotationStatus::Approved);
 		setActionsEnabled(false);
 	}catch(...){
@@ -156,8 +162,13 @@ const QString dicom::LayeredImageVisualizerView::getComment(const QString & titl
 
 void dicom::LayeredImageVisualizerView::rejectAnnotation()
 {
+	if(verifySerie() == false){
+		return;
+	}
+
 	try{
-		model->trySave();
+		//model->trySave();
+		model->uploadSerie();
 		model->setStatus(webservices::xmlWsdl::AnnotationStatus::Rejected, getComment(tr("Note")));
 		setActionsEnabled(false);
 		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
@@ -171,8 +182,14 @@ void dicom::LayeredImageVisualizerView::rejectAnnotation()
 
 void dicom::LayeredImageVisualizerView::requestAnnotationVerification()
 {
+
+	if(verifySerie() == false){
+		return;
+	}
+
 	try{
-		model->trySave();
+		//model->trySave();
+		model->uploadSerie();
 		model->setStatus(webservices::xmlWsdl::AnnotationStatus::ReadyForReview, getComment(tr("Comment")));
 		setActionsEnabled(false);
 		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
@@ -324,6 +341,32 @@ void dicom::LayeredImageVisualizerView::refreshChat(const IDicomService::Annotat
 	}else{
 		ui->commentGroupBox->setVisible(false);
 	}
+}
+
+const bool dicom::LayeredImageVisualizerView::verifySerie()
+{
+	QString message(tr("Annotation verification status:\n"));
+
+	int counter = 1;
+
+	if(model->verifyCompletness() == false){
+		message += tr("%1: Annotations contain only required properties\n").arg(counter++);
+	}
+
+	if(model->verifyImflamatoryLevel() == false){
+		message += tr("%1: inflammatory level not set\n").arg(counter++);
+	}
+
+	if(model->verifyBloodLevel() == false){
+		message += tr("%1: blood level not set\n").arg(counter++);
+	}
+
+	if(counter > 1){
+		message += tr("\nContinue anyway?");
+		return QMessageBox::question(this, tr("Incomplete annotation description"), message, QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes;
+	}
+
+	return true;
 }
 
 void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex & )

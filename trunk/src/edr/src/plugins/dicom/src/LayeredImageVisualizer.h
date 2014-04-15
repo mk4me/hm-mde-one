@@ -91,6 +91,12 @@ namespace dicom {
 
 		const bool userIsReviewer() const;
 
+		const bool verifyCompletness() const;
+
+		const bool verifyImflamatoryLevel() const;
+
+		const bool verifyBloodLevel() const;
+
     public Q_SLOTS:
         void setPrevSerie();
         void setNextSerie();

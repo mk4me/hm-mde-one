@@ -68,7 +68,7 @@ public:
         image->addLayer(layer, machine->getSerie()->getLoggedUserName());
 		machine->getSerie()->markAsEdited(true);
         machine->getSerie()->refresh();
-        machine->getSerie()->save();
+        //machine->getSerie()->save();
     }
     
     virtual void undoIt() {
@@ -76,7 +76,7 @@ public:
 
 		machine->getSerie()->markAsEdited(wasEdited);
         machine->getSerie()->refresh();
-        machine->getSerie()->save();
+        //machine->getSerie()->save();
         layer->setEditable(true);
         pointsState->layer = layer;
     }

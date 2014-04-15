@@ -75,6 +75,8 @@ private:
 
 	void refreshChat(const IDicomService::AnnotationStatus & as);
 
+	const bool verifySerie();
+
 private:
     //! ui z designera
     Ui::LayeredImageVisualizer* ui;

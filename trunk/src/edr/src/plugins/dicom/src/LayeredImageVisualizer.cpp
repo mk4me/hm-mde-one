@@ -78,7 +78,7 @@ const bool LayeredImageVisualizer::trySave()
 		QMessageBox::Save, QMessageBox::Discard) == QMessageBox::Save){		
 
 		try{
-			uploadSerie();
+			saveSerie();
 		}catch(...){
 			return false;
 		}
@@ -376,4 +376,68 @@ void dicom::LayeredImageVisualizer::removeSelectedLayers()
             }
         }
     }
+}
+
+const bool dicom::LayeredImageVisualizer::verifyCompletness() const
+{
+	bool ret = true;
+
+	const LayeredSerie* serie = dynamic_cast<const LayeredSerie*>(getActiveSerie());
+
+	auto image = serie->getImage();
+
+	int minimumLayers = 2;
+
+	if(image->isPowerDoppler() == true){
+		minimumLayers = 3;
+	}
+
+	if(image->getNumLayerItems(currentLayerUser_) < minimumLayers)
+	{
+		ret = false;
+	}
+
+	return ret;
+}
+
+const bool dicom::LayeredImageVisualizer::verifyImflamatoryLevel() const
+{
+	const LayeredSerie* serie = dynamic_cast<const LayeredSerie*>(getActiveSerie());
+
+	auto image = serie->getImage();
+
+	auto s = image->getNumLayerItems(currentLayerUser_);
+
+	for(int i = 0; i < s; ++i){
+		auto l = image->getLayerItem(currentLayerUser_, i);
+		if(l->getAdnotationIdx() == dicom::adnotations::inflammatoryLevel){
+			auto il = utils::dynamic_pointer_cast<const InflammatoryLevelLayer>(l);
+			return il->value() != dicom::adnotations::unknownInflammatoryLevel;
+		}
+	}
+
+	return false;
+}
+
+const bool dicom::LayeredImageVisualizer::verifyBloodLevel() const
+{
+	const LayeredSerie* serie = dynamic_cast<const LayeredSerie*>(getActiveSerie());
+
+	auto image = serie->getImage();
+
+	if(image->isPowerDoppler() == false){
+		return true;
+	}
+
+	auto s = image->getNumLayerItems(currentLayerUser_);
+
+	for(int i = 0; i < s; ++i){
+		auto l = image->getLayerItem(currentLayerUser_, i);
+		if(l->getAdnotationIdx() == dicom::adnotations::bloodLevel){
+			auto bl = utils::dynamic_pointer_cast<const BloodLevelLayer>(l);
+			return bl->value() != dicom::adnotations::unknownBloodLevel;
+		}
+	}
+
+	return false;
 }

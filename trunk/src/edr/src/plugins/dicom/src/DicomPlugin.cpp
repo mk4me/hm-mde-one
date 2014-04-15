@@ -205,8 +205,6 @@ private:
 
 		auto allTrialsID = subject->trialsIDs();
 
-		auto ug = subject->currentUser()->userGroups();
-
 		if(subject->userIsReviewer() == false){
 			//student
 			if(annotations.empty() == false){
