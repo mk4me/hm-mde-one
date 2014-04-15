@@ -174,7 +174,7 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 		// a qt w takiej wersji jest domyslnie i dla niej nie ma
 		// translatora
 		
-		auto en = LanguagesHelper::languageFromISO639Code("en");
+		const auto en = LanguagesHelper::languageFromISO639Code("en");
 
 		languagesManager_->registerTranslator("qt",	en,
 			LanguagesManager::TranslatorPtr());
@@ -185,24 +185,26 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 		// czy user juz nie wybral jezyka, jesli tak to ten jezyk ustawic,
 		// a jak nie to probowac go pobrac z systemu i jak ten sie nie
 		// powiedzie to domyslnie angielski
-		std::string locale = QLocale::system().name().toStdString();
+		const std::string locale = QLocale::system().name().toStdString();
 
 		auto lang = LanguagesHelper::extractLanguageISO639Code(locale);
 
-		if(lang.empty() == true){
-			lang = en;
+		if(lang.empty() == true){			
 			
 			QMessageBox::information(nullptr, QObject::tr("Translation problem"),
-				QObject::tr("Could not deduce application language from locale %1. Application will be launched with English translation").arg(QLocale::system().name()));
+				QObject::tr("Could not deduce application language from locale %1. Application will be launched with English translation").arg(QString::fromStdString(locale)));
 
-		}else {
+			lang = en;
+
+		} else {
 
 			auto registeredLangs = languagesManager_->registeredLanguages();
 			if(registeredLangs.find(lang) == registeredLangs.end()){
-				lang = en;
-
+				
 				QMessageBox::information(nullptr, QObject::tr("Translation problem"),
 					QObject::tr("Could not load application with %1 language - no translations for this language. Application will be launched with English translation").arg(QString::fromStdString(lang)));
+
+				lang = en;
 			}
 		}
 
