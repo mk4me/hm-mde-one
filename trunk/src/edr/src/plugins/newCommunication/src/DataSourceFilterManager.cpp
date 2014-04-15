@@ -144,6 +144,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 											file->session         = nullptr;
 											file->subdirPath      = fileIT->second->subdirPath;
 											file->trial           = nullptr;
+											file->fileSize		  = fileIT->second->fileSize;
 
 											verifiedSessionFiles.insert(file);
 										}
@@ -169,6 +170,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 													file->session         = nullptr;
 													file->subdirPath      = fileIT->second->subdirPath;
 													file->trial           = nullptr;
+													file->fileSize		  = fileIT->second->fileSize;
 
 													verifiedMotionFiles.insert(file);
 												}
@@ -381,6 +383,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 								file->session         = nullptr;
 								file->subdirPath      = fileIT->second->subdirPath;
 								file->trial           = nullptr;
+								file->fileSize		  = fileIT->second->fileSize;
 
 								verifiedSessionFiles.insert(file);
 							}
@@ -406,6 +409,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 										file->session         = nullptr;
 										file->subdirPath      = fileIT->second->subdirPath;
 										file->trial           = nullptr;
+										file->fileSize		  = fileIT->second->fileSize;
 
 										verifiedMotionFiles.insert(file);
 									}
@@ -566,6 +570,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 							file->session         = nullptr;
 							file->subdirPath      = fileIT->second->subdirPath;
 							file->trial           = nullptr;
+							file->fileSize		  = fileIT->second->fileSize;
 
 							verifiedSessionFiles.insert(file);
 						}
@@ -591,6 +596,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 									file->session         = nullptr;
 									file->subdirPath      = fileIT->second->subdirPath;
 									file->trial           = nullptr;
+									file->fileSize		  = fileIT->second->fileSize;
 
 									verifiedMotionFiles.insert(file);
 								}
