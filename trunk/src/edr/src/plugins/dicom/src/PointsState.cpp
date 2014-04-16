@@ -115,20 +115,25 @@ bool dicom::PointsState::keyReleaseEvent( QKeyEvent *event )
 bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
     if (e->button() == Qt::RightButton && layer->getNumPoint() > 0) {
-        /*QMenu menu;
-        QAction* clearAction = menu.addAction(tr("Remove"));
+
+        //machine->setState(machine->getNormalState());
+        //return true;
+
+        utils::shared_ptr<QMenu> menu = utils::make_shared<QMenu>();
+        rightClickMenu = menu;
+        QAction* clearAction = menu->addAction(tr("Remove"));
         connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
 
-        QAction* addAction = menu.addAction(tr("Save"));
+        QAction* addAction = menu->addAction(tr("Save"));
         connect(addAction, SIGNAL(triggered()), this, SLOT(addLayer()));
 
 		bool enable = machine->getSerie()->editionEnable();
-		auto actions = menu.actions();
+		auto actions = menu->actions();
 		for(auto it = actions.begin(); it != actions.end(); ++it){
 			(*it)->setEnabled(enable);
 		}
 
-        menu.exec(e->screenPos());*/
+        menu->exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {
         auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
         if (layer->hasPoint(item)) {
@@ -242,6 +247,9 @@ void dicom::PointsState::resetLayer()
 
 bool dicom::PointsState::focusOutEvent( QFocusEvent * event )
 {
-    machine->setState(machine->getNormalState());
-    return true;
+    if (!rightClickMenu.lock()) {
+        machine->setState(machine->getNormalState());
+        return true;
+    }
+    return false;
 }

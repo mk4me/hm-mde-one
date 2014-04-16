@@ -46,6 +46,7 @@ private:
     bool curved;
     bool openLine;
     adnotations::annotationsIdx adnotationIdx;
+    utils::weak_ptr<QMenu> rightClickMenu;
 };
 DEFINE_SMART_POINTERS(PointsState);
 
