@@ -233,8 +233,11 @@ private:
 
     void saveCredentials();
     void loadCredentials();
+
+    QString getCredentialsIniPath() const;
+
     void clearCredentials();
-    QString crypt(const QString& input, bool encyprt);
+    QString crypt(const QString& input, bool encyprt) const;
     void setCompactMode( bool compact );
 
 private:

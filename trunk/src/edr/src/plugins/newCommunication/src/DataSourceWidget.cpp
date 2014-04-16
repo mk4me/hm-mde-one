@@ -2884,7 +2884,7 @@ void DataSourceWidget::setPatientCard(webservices::MedicalShallowCopy::Patient *
 
 void DataSourceWidget::saveCredentials()
 {
-    QSettings settings(crypt("Credentials", false));
+    QSettings settings(getCredentialsIniPath(), QSettings::IniFormat);
     QString usr = userEdit->text();
     QString pwd = passwordEdit->text();
     QString chk = rememberMeCheckBox->isChecked() ? "true" : "false";
@@ -2895,7 +2895,7 @@ void DataSourceWidget::saveCredentials()
 
 void DataSourceWidget::loadCredentials()
 {
-    QSettings settings(crypt("Credentials", false));
+    QSettings settings(getCredentialsIniPath(), QSettings::IniFormat);
     QString usr = settings.value(crypt("User", false)).toString();
     QString pwd = settings.value(crypt("Password", false)).toString();
     QString chk = settings.value(crypt("Remember", false)).toString();
@@ -2907,7 +2907,7 @@ void DataSourceWidget::loadCredentials()
 
 void DataSourceWidget::clearCredentials()
 {
-    QSettings settings(crypt("Credentials", false));
+    QSettings settings(getCredentialsIniPath(), QSettings::IniFormat);
     QString usr = "";
     QString pwd = "";
     QString chk = "false";
@@ -2917,7 +2917,7 @@ void DataSourceWidget::clearCredentials()
 }
 
 
-QString DataSourceWidget::crypt( const QString& input, bool encrypt )
+QString DataSourceWidget::crypt( const QString& input, bool encyprt ) const
 {
     QByteArray tempArray = input.toLocal8Bit();
     const char* indata = tempArray.data();
@@ -2932,7 +2932,7 @@ QString DataSourceWidget::crypt( const QString& input, bool encrypt )
     AES_set_encrypt_key(ckey, 128, &key);
 
     int num = 0;
-    AES_cfb128_encrypt((const unsigned char*)indata, outdata.get(), length, &key, ivec, &num, encrypt? AES_ENCRYPT:AES_DECRYPT);
+    AES_cfb128_encrypt((const unsigned char*)indata, outdata.get(), length, &key, ivec, &num, encyprt? AES_ENCRYPT:AES_DECRYPT);
 
     QString output = QString::fromLocal8Bit((const char*)outdata.get(), length);
     return output;
@@ -2988,4 +2988,11 @@ void DataSourceWidget::onForced()
 {
     filesToDownload = filesToForcedDownload;
     onDownload();
+}
+
+QString DataSourceWidget::getCredentialsIniPath() const
+{
+    //auto path = plugin::getPaths()->getUserApplicationDataPath() / (crypt("Credentials", false).toStdString() + ".dat");
+    auto path = plugin::getPaths()->getUserApplicationDataPath() / "ncconf.dat";
+    return QString::fromStdString(path.string());
 }
