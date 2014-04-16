@@ -384,7 +384,7 @@ void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex & )
 		 
 		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
 		auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
-
+        setAnnotationStatus(as.status);
 		refreshChat(as);
 
 		bool enabled = true;
@@ -480,6 +480,28 @@ void dicom::LayeredImageVisualizerView::noiseState()
     LayeredSerie* serie = dynamic_cast<LayeredSerie*>(model->getActiveSerie());
     if (serie) {
         serie->setNoiseState();
+    }
+}
+
+void dicom::LayeredImageVisualizerView::setAnnotationStatus( webservices::xmlWsdl::AnnotationStatus::Type status )
+{
+    switch (status) {
+        case webservices::xmlWsdl::AnnotationStatus::Unspecified:
+        case webservices::xmlWsdl::AnnotationStatus::UnderConstruction:
+            ui->label->setText(tr("ANNOTATIONS"));
+            break;
+        case webservices::xmlWsdl::AnnotationStatus::ReadyForReview:
+            ui->label->setText(tr("ANNOTATIONS - review ready"));
+            break;
+        case webservices::xmlWsdl::AnnotationStatus::UnderReview:
+            ui->label->setText(tr("ANNOTATIONS - under review"));
+            break;
+        case webservices::xmlWsdl::AnnotationStatus::Approved:
+            ui->label->setText(tr("ANNOTATIONS - approved"));
+            break;
+        case webservices::xmlWsdl::AnnotationStatus::Rejected:
+            ui->label->setText(tr("ANNOTATIONS - rejected"));
+            break;
     }
 }
 
