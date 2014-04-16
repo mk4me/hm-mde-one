@@ -25,11 +25,11 @@ namespace core {
 		virtual ~Path();
 
 	public:
-		//! \return Zwraca pelna sciezke do folderu "MyDocuments\MDE"
+		//! \return Zwraca pelna sciezke do folderu "MyDocuments\APP"
 		virtual const Filesystem::Path& getUserDataPath() const;
-		//! \return Zwraca pelna sciezke do folderu "ApplicationData\MDE" dla wszystkich u¿ytkowników
+		//! \return Zwraca pelna sciezke do folderu "ApplicationData\APP" dla wszystkich u¿ytkowników
 		virtual const Filesystem::Path& getApplicationDataPath() const;
-		//! \return Zwraca pelna sciezke do folderu "ApplicationData\MDE" dla aktualnego u¿ytkownika
+		//! \return Zwraca pelna sciezke do folderu "ApplicationData\APP" dla aktualnego u¿ytkownika
 		virtual const Filesystem::Path& getUserApplicationDataPath() const;
 		//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 		virtual const Filesystem::Path& getResourcesPath() const;

@@ -189,6 +189,8 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 
 		auto lang = LanguagesHelper::extractLanguageISO639Code(locale);
 
+		CORE_LOG_INFO("System locale and language: " << locale << " -> " << lang);
+
 		if(lang.empty() == true){			
 			
 			QMessageBox::information(nullptr, QObject::tr("Translation problem"),
