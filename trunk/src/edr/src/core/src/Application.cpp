@@ -37,7 +37,7 @@
 //#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
 // Od Visty dodawane s? przedrostki typu Wow6432Node do sciezki w rejestrach
 // adres podawany do oczytu klucza powinien by? automatycznie konwertowany.
-#define KEY_PATH TEXT("Software\\PJWSTK\\MDE")
+#define KEY_PATH TEXT("Software\\PJWSTK\\MEDUSA")
 #endif
 
 #ifdef CORE_ENABLE_LEAK_DETECTION
@@ -104,7 +104,7 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 	//obs?uga argument?w i opisu uzycia aplikacji z konsoli
 	osg::ArgumentParser arguments(&argc,argv);
 	arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
-	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" example usage of MDE.");
+	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" example usage of MEDUSA.");
 	arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename");
 	arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display this information");
 	arguments.getApplicationUsage()->addCommandLineOption("--plugins <path>","Additional plugins directory");
@@ -592,7 +592,7 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path)
 {
 	//TODO
 	//mie? na uwadze nazw? aplikacji i PJWSTK
-	auto userPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString()) / "PJWSTK" / "MDE";
+	auto userPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString()) / "PJWSTK" / "MEDUSA";
 	auto appDataPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DataLocation).toStdString());
 	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia³aj¹ takie wspólne foldery?
 	auto userAppDataPath = appDataPath;
