@@ -281,22 +281,32 @@ void dicom::LayeredImageVisualizer::selectLayer(int tagIdx, int idx )
         std::string tag = img->getTag(tagIdx);
 		currentLayerUser_ = tag;
 		currentTrialID = img->getTrialID();
-        if (selected.second != -1 && (tag != selected.first || idx != selected.second)) {
-			auto li = img->getLayerItem(tag, idx);			
+        if (/*selected.second != -1 && */(tag != selected.first || idx != selected.second)) {
+			
+			if(idx > -1){
+				auto li = img->getLayerItem(tag, idx);			
 
-			auto pl = utils::dynamic_pointer_cast<PointsLayer>(li);
+				auto pl = utils::dynamic_pointer_cast<PointsLayer>(li);
 
-			if(pl == nullptr){
-				mainWidget->setDeletionButtonEnabled(false);
-			}else{
-				mainWidget->setDeletionButtonEnabled(true);
+				if(pl == nullptr){
+					mainWidget->setDeletionButtonEnabled(false);
+				}else{
+					mainWidget->setDeletionButtonEnabled(true);
+				}
 			}
 			
 			serie->getGraphicsScene()->blockSignals(true);
             BOOST_FOREACH(std::string t, img->getTags()) {
-                int count = img->getNumGraphicLayerItems(t);
+                int count = img->getNumLayerItems(t);
                 for (int i = 0; i < count; ++i) {
-                    img->getLayerGraphicItem(t, i)->setSelected(tag == t && i == idx);
+
+                    auto li = img->getLayerItem(t, i);
+					
+					auto gli = utils::dynamic_pointer_cast<ILayerGraphicItem>(li);
+
+					if(gli != nullptr){
+						gli->setSelected(tag == t && i == idx);
+					}
                 }
             }
             serie->getGraphicsScene()->blockSignals(false);
