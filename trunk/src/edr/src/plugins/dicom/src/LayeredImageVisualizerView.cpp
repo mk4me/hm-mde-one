@@ -497,20 +497,17 @@ void dicom::LayeredImageVisualizerView::setAnnotationStatus( webservices::xmlWsd
 {
     switch (status) {
         case webservices::xmlWsdl::AnnotationStatus::Unspecified:
+        case webservices::xmlWsdl::AnnotationStatus::Rejected:
         case webservices::xmlWsdl::AnnotationStatus::UnderConstruction:
-            ui->label->setText(tr("ANNOTATIONS"));
+            ui->label->setText(tr("ANNOTATIONS - in edition"));
             break;
-        case webservices::xmlWsdl::AnnotationStatus::ReadyForReview:
-            ui->label->setText(tr("ANNOTATIONS - review ready"));
-            break;
+
         case webservices::xmlWsdl::AnnotationStatus::UnderReview:
-            ui->label->setText(tr("ANNOTATIONS - under review"));
+        case webservices::xmlWsdl::AnnotationStatus::ReadyForReview:
+            ui->label->setText(tr("ANNOTATIONS - in verification"));
             break;
         case webservices::xmlWsdl::AnnotationStatus::Approved:
-            ui->label->setText(tr("ANNOTATIONS - approved"));
-            break;
-        case webservices::xmlWsdl::AnnotationStatus::Rejected:
-            ui->label->setText(tr("ANNOTATIONS - rejected"));
+            ui->label->setText(tr("ANNOTATIONS - verified"));
             break;
     }
 }
