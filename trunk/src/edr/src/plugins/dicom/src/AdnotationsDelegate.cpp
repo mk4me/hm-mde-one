@@ -80,6 +80,15 @@ QWidget *dicom::AdnotationsDelegate::createEditor(QWidget *parent,
 								}
 							}
 							break;
+
+						case adnotations::imageType:
+							{
+								auto adn = dicom::adnotations::instanceImageTypes();
+								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
+									editor->addItem(it->second, it->first);
+								}
+							}
+							break;
 						}
 
 						ret = editor;

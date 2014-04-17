@@ -70,18 +70,19 @@ dicom::adnotations::JointTypePtr dicom::adnotations::instanceJointTypes()
 	return getDefaultJointTypes();
 }
 
-dicom::adnotations::ImageQualityTypePtr dicom::adnotations::getDefaultImageQualityTypes()
+dicom::adnotations::ImageTypePtr dicom::adnotations::getDefaultImageTypes()
 {
-	ImageQualityTypePtr adn = utils::make_shared<ImageQualityType>();
-	adn->insert(JointType::value_type(low, QObject::tr("Low image quality")));	
-	adn->insert(ImageQualityType::value_type(ok, QObject::tr("OK image quality"))); 
+	ImageTypePtr adn = utils::make_shared<ImageType>();
+	adn->insert(ImageType::value_type(incorrect, QObject::tr("incorrect")));	
+	adn->insert(ImageType::value_type(correct, QObject::tr("correct"))); 
+	adn->insert(ImageType::value_type(identical, QObject::tr("identical"))); 
 
 	return adn;
 }
 
-dicom::adnotations::ImageQualityTypePtr dicom::adnotations::instanceImageQualityTypes()
+dicom::adnotations::ImageTypePtr dicom::adnotations::instanceImageTypes()
 {
-	return getDefaultImageQualityTypes();
+	return getDefaultImageTypes();
 }
 
 dicom::adnotations::AdnotationsTypePtr dicom::adnotations::getDefault()
@@ -100,7 +101,7 @@ dicom::adnotations::AdnotationsTypePtr dicom::adnotations::getDefault()
 	adn->insert(AdnotationsType::value_type(inflammatoryLevel, QObject::tr("inflammatory level")));
 	adn->insert(AdnotationsType::value_type(fingerType, QObject::tr("finger type")));
 	adn->insert(AdnotationsType::value_type(jointType, QObject::tr("joint type")));
-	adn->insert(AdnotationsType::value_type(imageQuality, QObject::tr("image quality")));
+	adn->insert(AdnotationsType::value_type(imageType, QObject::tr("image status")));
 	
     return adn;
 }

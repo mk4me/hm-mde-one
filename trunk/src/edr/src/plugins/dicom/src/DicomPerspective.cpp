@@ -201,7 +201,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 				fFound = true;
 				break;
 
-			case dicom::adnotations::imageQuality:
+			case dicom::adnotations::imageType:
 				imgFound = true;
 				break;
 			}
@@ -210,31 +210,31 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 		if(iFound == false){
 			auto l = dicom::ILayerItemPtr(new InflammatoryLevelLayer(dicom::adnotations::inflammatoryLevel, dicom::adnotations::unknownInflammatoryLevel));
 			l->setName(QObject::tr("Inflammatory level"));			
-			img->addLayer(l, name);
+			img->addLayer(l, xmlUser);
 		}
 
 		if(bFound == false && img->isPowerDoppler() == true){
 			auto l = dicom::ILayerItemPtr(new BloodLevelLayer(dicom::adnotations::bloodLevel, dicom::adnotations::unknownBloodLevel));
 			l->setName(QObject::tr("Blood level"));			
-			img->addLayer(l, name);
+			img->addLayer(l, xmlUser);
 		}
 
 		if(fFound == false){
 			auto l = dicom::ILayerItemPtr(new FingerTypeLayer(dicom::adnotations::fingerType, dicom::adnotations::unknownFinger));
 			l->setName(QObject::tr("Finger type"));			
-			img->addLayer(l, name);
+			img->addLayer(l, xmlUser);
 		}
 
 		if(jFound == false){
 			auto l = dicom::ILayerItemPtr(new JointTypeLayer(dicom::adnotations::jointType, dicom::adnotations::unknownJoint));
 			l->setName(QObject::tr("Joint type"));			
-			img->addLayer(l, name);
+			img->addLayer(l, xmlUser);
 		}
 
 		if(imgFound == false){
-			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageQuality, 1));
-			l->setName(QObject::tr("Image quality low"));			
-			img->addLayer(l, name);
+			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageType, dicom::adnotations::correct));
+			l->setName(QObject::tr("Image"));			
+			img->addLayer(l, xmlUser);
 		}
 
         for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
@@ -273,7 +273,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 					fFound = true;
 					break;
 
-				case dicom::adnotations::imageQuality:
+				case dicom::adnotations::imageType:
 					imgFound = true;
 					break;
 				}
@@ -305,8 +305,8 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 		}
 
 		if(imgFound == false){
-			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageQuality, 1));
-			l->setName(QObject::tr("Image quality low"));			
+			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageType, dicom::adnotations::correct));
+			l->setName(QObject::tr("Image"));			
 			img->addLayer(l, name);
 		}
 

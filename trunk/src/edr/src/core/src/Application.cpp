@@ -134,11 +134,6 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 	//inicjalizacja ?cie?ek aplikacji, katalog?w tymczasowych itp, u?ywane do ?adowania t?umacze?
 	{
 		if(trySetPathsFromRegistry(paths_) == false){
-
-#ifdef WIN32
-			CORE_LOG_DEBUG("Failed to load paths from registery, loading default paths");
-#endif
-
 			setDefaultPaths(paths_);
 		}
 
@@ -146,14 +141,6 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 		if(paths_ == nullptr){
 			throw std::runtime_error("Could not initialize application path interface");
 		}
-
-		CORE_LOG_INFO("UserDataPath: " << paths_->getUserDataPath());
-		CORE_LOG_INFO("ApplicationDataPath: " << paths_->getApplicationDataPath());
-		CORE_LOG_INFO("UserApplicationDataPath: " << paths_->getUserApplicationDataPath());
-		CORE_LOG_INFO("ResourcesPath: " << paths_->getResourcesPath());
-		CORE_LOG_INFO("TmpPath: " << paths_->getTmpPath());
-		CORE_LOG_INFO("PluginPath: " << paths_->getPluginPath());
-		CORE_LOG_INFO("TranslationsPath: " << paths_->getTranslationsPath());
 	}	
 
 	//teraz inicjujemy logger zeby moc juz wszystko logowaæ
@@ -166,6 +153,14 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 	}
 
 	//! DOPIERO OD TEGO MOMENTU MOGÊ LOGOWAC INFORMACJE!!
+
+	CORE_LOG_INFO("UserDataPath: " << paths_->getUserDataPath());
+	CORE_LOG_INFO("ApplicationDataPath: " << paths_->getApplicationDataPath());
+	CORE_LOG_INFO("UserApplicationDataPath: " << paths_->getUserApplicationDataPath());
+	CORE_LOG_INFO("ResourcesPath: " << paths_->getResourcesPath());
+	CORE_LOG_INFO("TmpPath: " << paths_->getTmpPath());
+	CORE_LOG_INFO("PluginPath: " << paths_->getPluginPath());
+	CORE_LOG_INFO("TranslationsPath: " << paths_->getTranslationsPath());
 
 	//t?umaczenia aplikacji - musze to robi? tutaj aby wszystkie nowo utworzone widgety ju? widzia?y t?umaczenia
 	//alternatywnie mog? to robi? p?niej pod warunkiem ?e wszystkie widgety sa ?wiadome t?umacze? - obs?uguj? event
@@ -561,7 +556,6 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 	auto lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
 
 	if(lResult != ERROR_SUCCESS){
-		CORE_LOG_DEBUG("Could not open required root node in registry: " << HKEY_LOCAL_MACHINE << ":" << KEY_PATH << ":" << KEY_READ );
 		return false;
 	}
 
@@ -571,8 +565,7 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 	dwSize = sizeof(buffer);
 	if(RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
 		applicationDataPath = Filesystem::Path(buffer);		
-	} else {
-		CORE_LOG_DEBUG("Could not read registry value: " << lpValueName);
+	} else {		
 		RegCloseKey(hKey);
 		return false;
 	}
@@ -583,8 +576,7 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 	dwSize = sizeof(buffer);	
 	if(RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
 		userApplicationDataPath = Filesystem::Path(buffer);		
-	} else {
-		CORE_LOG_DEBUG("Could not read registry value: " << lpValueName);
+	} else {		
 		RegCloseKey(hKey);
 		return false;
 	}
@@ -595,8 +587,7 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 	dwSize = sizeof(buffer);
 	if(RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
 		userDataPath = Filesystem::Path(buffer);		
-	}else{
-		CORE_LOG_DEBUG("Could not read registry value: " << lpValueName);
+	}else{		
 		RegCloseKey(hKey);
 		return false;
 	}
