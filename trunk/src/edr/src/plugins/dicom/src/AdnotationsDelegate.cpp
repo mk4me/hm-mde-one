@@ -5,24 +5,25 @@
 #include "Adnotations.h"
 #include "LayeredModelView.h"
 
+using namespace dicom;
 
-dicom::AdnotationsDelegate::AdnotationsDelegate(const int column, QObject *parent /*= 0*/ ) : 
-    QItemDelegate(parent), column(column), editionActive(false)
+AdnotationsDelegate::AdnotationsDelegate(const int column, QObject *parent /*= 0*/ ) : 
+    QStyledItemDelegate(parent), column(column), editionActive(false)
 {
 
 }
 
-void dicom::AdnotationsDelegate::setEditionActive(const bool active)
+void AdnotationsDelegate::setEditionActive(const bool active)
 {
 	editionActive = active;
 }
 
-void dicom::AdnotationsDelegate::setImage(ILayeredImageConstPtr val)
+void AdnotationsDelegate::setImage(dicom::ILayeredImageConstPtr val)
 {
 	this->val = val;
 }
 
-QWidget *dicom::AdnotationsDelegate::createEditor(QWidget *parent,
+QWidget * AdnotationsDelegate::createEditor(QWidget *parent,
     const QStyleOptionViewItem &/* option */,
     const QModelIndex & index ) const
 {
@@ -94,8 +95,8 @@ QWidget *dicom::AdnotationsDelegate::createEditor(QWidget *parent,
 						ret = editor;
 					}
 				}else if(column == 0){
-					ret = new QLineEdit(parent);
-				}
+					ret = new QLineEdit(parent);					
+				}			
 			}
 		}
 	}
@@ -103,7 +104,7 @@ QWidget *dicom::AdnotationsDelegate::createEditor(QWidget *parent,
     return ret;
 }
 
-void dicom::AdnotationsDelegate::setEditorData(QWidget *editor,
+void AdnotationsDelegate::setEditorData(QWidget *editor,
     const QModelIndex &index) const
 {
     QString value = index.model()->data(index, Qt::DisplayRole).toString();
@@ -126,6 +127,8 @@ void dicom::AdnotationsDelegate::setEditorData(QWidget *editor,
 					int idx = box->findText(value);
 					box->setCurrentIndex(idx);
 					set = true;
+					connect(box, SIGNAL(currentIndexChanged(int)), this, SLOT(onChange()));
+
 				}
 			}
 		}	
@@ -134,10 +137,11 @@ void dicom::AdnotationsDelegate::setEditorData(QWidget *editor,
 	if(set == false) {
 		QLineEdit * edit = static_cast<QLineEdit*>(editor);
 		edit->setText(value);
+		connect(edit, SIGNAL(textChanged(const QString &)), this, SLOT(onChange()));
 	}
 }
 
-void dicom::AdnotationsDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+void AdnotationsDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     const QModelIndex &index) const
 {
 	bool set = false;
@@ -169,10 +173,17 @@ void dicom::AdnotationsDelegate::setModelData(QWidget *editor, QAbstractItemMode
 	}
 }
 
-void dicom::AdnotationsDelegate::updateEditorGeometry(QWidget *editor,
+void AdnotationsDelegate::updateEditorGeometry(QWidget *editor,
     const QStyleOptionViewItem &option, const QModelIndex &/* index */) const
 {
     editor->setGeometry(option.rect);
+}
+
+void AdnotationsDelegate::onChange()
+{
+	QWidget * w = qobject_cast<QWidget*>(sender());
+	emit commitData(w);
+	emit closeEditor(w);
 }
 
 

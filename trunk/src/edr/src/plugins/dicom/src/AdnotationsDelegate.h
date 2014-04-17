@@ -10,41 +10,43 @@
 #ifndef HEADER_GUARD_DICOM__ADNOTATIONSDELEGATE_H__
 #define HEADER_GUARD_DICOM__ADNOTATIONSDELEGATE_H__
 
-#include <QtGui/QItemDelegate>
+#include <QtGui/QStyledItemDelegate>
 #include <plugins/dicom/ILayeredImage.h>
 
 class QWidget;
 
-namespace dicom {
-    class AdnotationsDelegate : public QItemDelegate
-    {
-        Q_OBJECT
+class AdnotationsDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
 
-    public:
-        AdnotationsDelegate(const int column, QObject *parent = 0);
-		//! \param val Obraz adnotacji dla którego bêdzie tworzony edytor
-		void setImage(ILayeredImageConstPtr val);
+public:
+    AdnotationsDelegate(const int column, QObject *parent = 0);
+	//! \param val Obraz adnotacji dla którego bêdzie tworzony edytor
+	void setImage(dicom::ILayeredImageConstPtr val);
 
-        QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-            const QModelIndex &index) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+        const QModelIndex &index) const;
 
-        void setEditorData(QWidget *editor, const QModelIndex &index) const;
-        void setModelData(QWidget *editor, QAbstractItemModel *model,
-            const QModelIndex &index) const;
+    void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model,
+        const QModelIndex &index) const;
 
-        void updateEditorGeometry(QWidget *editor,
-            const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    void updateEditorGeometry(QWidget *editor,
+        const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
-		void setEditionActive(const bool active);
+	void setEditionActive(const bool active);
 
-	private:
-		//! Obraz adnotacji
-		ILayeredImageConstPtr val;
-		//! Kolumna dla której mamy delegata
-		const int column;
-		//! czy edycja aktywna
-		bool editionActive;
-    };
-}
+private Q_SLOTS:
+
+	void onChange();
+
+private:
+	//! Obraz adnotacji
+	dicom::ILayeredImageConstPtr val;
+	//! Kolumna dla której mamy delegata
+	const int column;
+	//! czy edycja aktywna
+	bool editionActive;
+};
 
 #endif
