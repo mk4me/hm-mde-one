@@ -306,6 +306,9 @@ private:
 	//! --------------------- Status adnotacji ---------------------------
 	webservices::xmlWsdl::AnnotationsList annotations;
 	mutable webservices::DateTime lastStatusUpdate;	
+
+    //! --------------------- Upload -------------------------------------
+    core::shared_ptr<std::map<std::string, int>> alreadyUploaded;
 };
 
 #endif HEADER_GUARD___COMMUNICATIONDATASOURCE_H__

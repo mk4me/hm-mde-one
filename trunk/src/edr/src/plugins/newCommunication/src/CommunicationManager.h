@@ -219,12 +219,16 @@ public:
     {
         friend class CommunicationManager;
 
+    public:
+        typedef std::map<std::string, int> Filename2ID;
+        DEFINE_SMART_POINTERS(Filename2ID);
+
     private:
         //! Kosntruktor
         //! \param filePath Ścieżka do lokalnego pliku
         //! \param filePath Ścieżka zapisu pliku
         //! \param fileID ID pliku do ściągnięcia
-        UploadRequest(const std::string& sourcePath, const std::string & filePath, unsigned int trialID);
+        UploadRequest(const std::string& sourcePath, const std::string & filePath, unsigned int trialID, Filename2IDPtr uploadedFiles);
 
     public:
         //! \return Identyfikator triala, pod który ma trafić plik
@@ -232,11 +236,22 @@ public:
         //! \return nazwa uploadowanego pliku
         std::string getFileName() const;
 
+        //! \return identyfikator pliku nadany po udanym uploadzie
+        int getFileID() const;
+        //! ustawia identyfikator pliku nadany po udanym uploadzie
+        void setFileID(int val);
+        //! kolekcja, do ktorej trafia nazwa i identyfikator po udanym uploadzie
+        CommunicationManager::UploadRequest::Filename2IDPtr getUploadedFiles() const;
+
     private:
         //! Identyfikator triala, pod który ma trafić plik
         unsigned int trialID;
         //! Ścieżka do lokalnego pliku
         std::string sourcePath;
+        //! identyfikator pliku nadany po udanym uploadzie
+        int fileID;
+        //! kolekcja, do ktorej trafia nazwa i identyfikator po udanym uploadzie
+        Filename2IDPtr uploadedFiles;
     };
 
 	//! Klasa odpowiedzialna za request zdjęć
@@ -438,7 +453,7 @@ public:
 	//! Metody tworzące obsługiwane typy zleceń
     static ComplexRequestPtr createRequestComplex(const std::vector<CompleteRequest> & requests);
     static FileRequestPtr createRequestFile(unsigned int fileID, const std::string & filePath);
-    static UploadRequestPtr createRequestUpload(const std::string & sourcePath, const std::string & filePath, unsigned int trialID);
+    static UploadRequestPtr createRequestUpload(const std::string & sourcePath, const std::string & filePath, unsigned int trialID, UploadRequest::Filename2IDPtr uploadedFiles);
     static ReplaceRequestPtr createRequestReplace(const std::string & sourcePath, const std::string & filePath, unsigned int fileID);
     static PhotoRequestPtr createRequestPhoto(unsigned int fileID, const std::string & filePath);
     static MetadataRequestPtr createRequestMotionShallowCopy(const std::string & filePath);

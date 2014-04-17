@@ -35,6 +35,8 @@ DicomImporterSourceWidget::DicomImporterSourceWidget( DicomImporterSource* sourc
     connect(ui->importFromButton, SIGNAL(clicked()), this, SLOT(onSelectImportDir()));
     connect(ui->exportToButton, SIGNAL(clicked()), this, SLOT(onSelectSaveDir()));
     connect(ui->importButton, SIGNAL(clicked()), this, SLOT(onImport()));
+
+    connect(ui->updateMetaButton, SIGNAL(clicked()), this, SLOT(onUpdateMeta()));
     
 
     // TODO : wywalic
@@ -142,6 +144,31 @@ void dicomImporter::DicomImporterSourceWidget::onSelectSaveDir()
     QString dirPath = QFileDialog::getExistingDirectory(this, tr("Directory"));
     if ( dirPath.isNull() == false ) {
         ui->exportToEdit->setText(dirPath);
+    }
+}
+
+void dicomImporter::DicomImporterSourceWidget::onUpdateMeta()
+{
+    core::Filesystem::Path dir = "C:/Users/Wojciech/Desktop/dbrip/data";
+    auto subdirs = core::Filesystem::listSubdirectories(dir);
+    for (auto iDir = subdirs.begin(); iDir != subdirs.end(); ++iDir) {
+        DicomLoader l;
+        std::string name = iDir->stem().string() + ".xml";
+
+        auto inter = l.load(*iDir / name);
+        UTILS_ASSERT(inter->getNumPatients() == 1);
+        UTILS_ASSERT(inter->patients[0]->sessions.size() == 1);
+        UTILS_ASSERT(inter->patients[0]->sessions[0]->series.size() == 1);
+
+        auto images = inter->patients[0]->sessions[0]->series[0]->images;
+        //auto files = core::Filesystem::listFiles(*iDir, false, "png");
+        //UTILS_ASSERT(files.size() == images.size());
+        for (auto iImg = images.begin(); iImg != images.end(); ++iImg) {
+            (*iImg)->isPowerDoppler = DicomImporter::testPowerDoppler(QPixmap((*iDir / (*iImg)->imageFile).string().c_str()));
+        }
+        DicomSaver s;
+        name += "2";
+        s.save("C:/Users/Wojciech/Desktop/dbrip/drop", inter);
     }
 }
 

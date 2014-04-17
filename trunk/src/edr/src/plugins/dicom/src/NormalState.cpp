@@ -50,8 +50,8 @@ bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
             QAction* skinAction = menu.addAction(tr("Tag skin"));
             connect(skinAction, SIGNAL(triggered()), this, SLOT(addSkin()));
 
-            QAction* tendonAction = menu.addAction(tr("Tag tendon"));
-            connect(tendonAction, SIGNAL(triggered()), this, SLOT(addTendon()));
+            //QAction* tendonAction = menu.addAction(tr("Tag tendon"));
+            //connect(tendonAction, SIGNAL(triggered()), this, SLOT(addTendon()));
 
             QAction* jointAction = menu.addAction(tr("Tag joint"));
             connect(jointAction, SIGNAL(triggered()), this, SLOT(addJoint()));
@@ -59,8 +59,8 @@ bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
             QAction* inflamatoryAction = menu.addAction(tr("Tag region of inflammatory synovitis"));
             connect(inflamatoryAction, SIGNAL(triggered()), this, SLOT(addInflamatory()));
 
-            QAction* noiseAction = menu.addAction(tr("Tag noise"));
-            connect(noiseAction, SIGNAL(triggered()), this, SLOT(addNoise()));
+            //QAction* noiseAction = menu.addAction(tr("Tag noise"));
+            //connect(noiseAction, SIGNAL(triggered()), this, SLOT(addNoise()));
 
         } else if (numSelected == 1) {
             QAction* moveAction = menu.addAction(tr("Move"));

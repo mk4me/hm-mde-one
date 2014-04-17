@@ -51,7 +51,7 @@ using namespace webservices;
 CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSourceLoginManager()),
 	memoryDM(nullptr), fileDM(nullptr),	offlineMode_(false),
 	serwerPingUrl("http://v21.pjwstk.edu.pl/"), dataSourceWidget(nullptr),
-	userIsReviewer_(false)
+	userIsReviewer_(false), alreadyUploaded(new std::map<std::string, int>)
 {    
 #if (defined _WIN32) || (defined _WIN64)
 	//konfiguracja wsdlpulla żeby pisać pliki tymczasowe tam gdzie mamy prawo zapisu
@@ -1007,25 +1007,63 @@ bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& pa
             break;
         }
     }
+
+    if (fileID == -1) {
+        auto it = alreadyUploaded->find(filename);
+        if (it != alreadyUploaded->end()) {
+            fileID = it->second;
+            if (fileID == -1) {
+                // upload trwa, nie znamy rezultatu
+                return false;
+            }
+        }
+    }
     // TODO : obsluga bledow
     CommunicationManager::BasicRequestPtr  req;
     if (fileID != -1) {
-        req = CommunicationManager::createRequestReplace(path.string(), std::string("BDR/w/") + path.filename().string(), fileID );
+        req = CommunicationManager::createRequestReplace(path.string(), std::string("BDR/w/") + path.filename().string(), fileID);
     } else if (trialID != -1) {
-        req = CommunicationManager::createRequestUpload(path.string(), std::string("BDR/w/") + path.filename().string(), trialID );
+        (*alreadyUploaded)[filename] = -1;
+        req = CommunicationManager::createRequestUpload(path.string(), std::string("BDR/w/") + path.filename().string(), trialID, alreadyUploaded );
     } else {
         throw std::runtime_error("Unable to find file or trial ID for requested file");
     }
     CommunicationManager::RequestCallbacks singleTransferCallbacks;
-    singleTransferCallbacks.onEndCallback = (CommunicationManager::RequestCallback)[&](const CommunicationManager::BasicRequestPtr &) 
+    singleTransferCallbacks.onEndCallback = (CommunicationManager::RequestCallback)[&](const CommunicationManager::BasicRequestPtr &br) 
         { 
-            std::string s("Success");
-            uploadCallback(communication::IDownloadRequest::FinishedOK, s); 
+            CommunicationManager::UploadRequestPtr ur = core::dynamic_pointer_cast<CommunicationManager::UploadRequest>(br);
+            if (ur) {
+                auto uploaded = ur->getUploadedFiles();
+                (*uploaded)[ur->getFileName()] = ur->getFileID();
+            }
+            uploadCallback(communication::IDownloadRequest::FinishedOK, "Success"); 
         };
-    singleTransferCallbacks.onCancelCallback = (CommunicationManager::RequestCallback)[&](const CommunicationManager::BasicRequestPtr &) 
-        { uploadCallback(communication::IDownloadRequest::FinishedCancel, "Cancelled"); };
-    singleTransferCallbacks.onErrorCallback = (CommunicationManager::RequestErrorCallback)[&](const CommunicationManager::BasicRequestPtr &, const std::string &e) 
-        { uploadCallback(communication::IDownloadRequest::FinishedError, e); };
+    singleTransferCallbacks.onCancelCallback = (CommunicationManager::RequestCallback)[&](const CommunicationManager::BasicRequestPtr &br) 
+        {
+            CommunicationManager::UploadRequestPtr ur = core::dynamic_pointer_cast<CommunicationManager::UploadRequest>(br);
+            if (ur) {
+                auto uploaded = ur->getUploadedFiles();
+                auto it = uploaded->find(ur->getFileName());
+                if (it != uploaded->end()) {
+                    uploaded->erase(it);
+                }
+                uploaded->erase(ur->getFileName());
+            }
+            uploadCallback(communication::IDownloadRequest::FinishedCancel, "Cancelled"); 
+        };
+    singleTransferCallbacks.onErrorCallback = (CommunicationManager::RequestErrorCallback)[&](const CommunicationManager::BasicRequestPtr &br, const std::string &e) 
+        { 
+            CommunicationManager::UploadRequestPtr ur = core::dynamic_pointer_cast<CommunicationManager::UploadRequest>(br);
+            if (ur) {
+                auto uploaded = ur->getUploadedFiles();
+                auto it = uploaded->find(ur->getFileName());
+                if (it != uploaded->end()) {
+                    uploaded->erase(it);
+                }
+                uploaded->erase(ur->getFileName());
+            }
+            uploadCallback(communication::IDownloadRequest::FinishedError, e); 
+        };
 
 
     CommunicationManager::CompleteRequest cpl;

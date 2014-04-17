@@ -35,12 +35,16 @@ public:
 
     void setCallBack(refresher r);
 
+    static bool testPowerDoppler( const QPixmap &pixmap );
+
 private:
     void handlePatientRecord( DcmDirectoryRecord * patientRecord, internalData::PatientPtr patient, std::string basePath );
     void handleStudyRecord( DcmDirectoryRecord * studyRecord, internalData::StudyPtr study,  std::string basePath );
     void handleSeriesRecord( DcmDirectoryRecord * seriesRecord, internalData::SeriePtr serie, std::string basePath );
     void handleFileRecord( DcmDirectoryRecord * fileRecord, internalData::ImagePtr image, std::string basePath );
     void convertImage( internalData::ImagePtr inter, const core::Filesystem::Path& from, const core::Filesystem::Path& to, const std::string& filenameBase );
+
+
     std::string getSessionDir() const;
 
 private:

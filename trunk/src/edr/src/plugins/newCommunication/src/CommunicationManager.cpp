@@ -269,10 +269,12 @@ std::string CommunicationManager::ReplaceRequest::getSourcePath() const
     return sourcePath;
 }
 
-CommunicationManager::UploadRequest::UploadRequest(const std::string& sourcePath, const std::string & filePath, unsigned int trialID) : 
+CommunicationManager::UploadRequest::UploadRequest(const std::string& sourcePath, const std::string & filePath, unsigned int trialID, Filename2IDPtr uploadedFiles) : 
     MetadataRequest(UploadFile, filePath), 
     sourcePath(sourcePath),
-    trialID(trialID)
+    trialID(trialID),
+    fileID(-1),
+    uploadedFiles(uploadedFiles)
 {
 
 }
@@ -286,6 +288,21 @@ std::string CommunicationManager::UploadRequest::getFileName() const
 {
     core::Filesystem::Path p(getFilePath());
     return p.filename().string();
+}
+
+void CommunicationManager::UploadRequest::setFileID( int val )
+{
+    fileID = val;
+}
+
+int CommunicationManager::UploadRequest::getFileID() const
+{
+    return fileID;
+}
+
+CommunicationManager::UploadRequest::Filename2IDPtr CommunicationManager::UploadRequest::getUploadedFiles() const
+{
+    return uploadedFiles;
 }
 
 
@@ -747,16 +764,19 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processUploa
         
         fileUploadHelper.setFileUpload(uploadRequest->sourcePath, uploadRequest->filePath);
 
+        int fileID = -1;
+
         {
             utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
             ret = fileUploadHelper.put(uploadRequest.get());
             //if (ret == webservices::IFtpsConnection::Complete) {
 #ifdef _DEVELOPER
-				motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "test xml file", uploadRequest->getFileName());
+				fileID = motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "test xml file", uploadRequest->getFileName());
 #else
-                motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "MEDUSA", uploadRequest->getFileName());
+                fileID = motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "MEDUSA", uploadRequest->getFileName());
 #endif
             //}
+            uploadRequest->setFileID(fileID);
         }
 
         //ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
@@ -1241,9 +1261,9 @@ CommunicationManager::FileRequestPtr CommunicationManager::createRequestFile(uns
 }
 
 
-CommunicationManager::UploadRequestPtr CommunicationManager::createRequestUpload( const std::string & sourcePath, const std::string & filePath, unsigned int trialID )
+CommunicationManager::UploadRequestPtr CommunicationManager::createRequestUpload( const std::string & sourcePath, const std::string & filePath, unsigned int trialID, UploadRequest::Filename2IDPtr uploadedFiles )
 {
-    return UploadRequestPtr(new UploadRequest(sourcePath, filePath, trialID));
+    return UploadRequestPtr(new UploadRequest(sourcePath, filePath, trialID, uploadedFiles));
 }
 
 

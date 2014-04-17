@@ -44,7 +44,8 @@ namespace dicomImporter {
         void onImport();
         void onSelectImportDir();
         void onSelectSaveDir();
-    
+        void onUpdateMeta();
+
     private:
         DicomImporterSource* dicomSource;
         Ui::DicomSource* ui;

@@ -188,6 +188,8 @@ void dicomImporter::DicomImporter::convertImage( internalData::ImagePtr inter, c
         DicomImagePtr image = (*objs.begin())->get();
         QPixmap pixmap = convertToPixmap(image);
 
+        inter->isPowerDoppler = testPowerDoppler(pixmap);
+
         core::Filesystem::Path outfile = to / (filenameBase + ".png");
     
         pixmap.save(outfile.string().c_str());
@@ -237,6 +239,34 @@ void dicomImporter::DicomImporter::setCallBack( refresher r )
     refresh = r;
 }
 
+bool dicomImporter::DicomImporter::testPowerDoppler( const QPixmap &pixmap )
+{
+    int x1 = 855, y1 = 130, x2 = 950, y2 = 400, grey = 140;
+    if (!pixmap.isNull() && pixmap.width() >= x2 && pixmap.height() >= y2) {
+        QImage cut = (pixmap.copy(x1, y1, x2 - x1, y2 - y1)).toImage();
+        
+        int count = 0;
+        for (int i = cut.width() - 1; i >= 0; --i) {
+            for (int j = cut.height() - 1; j >= 0; --j) {
+                QColor c(cut.pixel(i , j));
+                if (c.red() == grey && c.green() == grey && c.blue() == grey) {
+                    count ++;
+                }
+                //count += c.red();
+                //count += c.green();
+                //count += c.blue();
+            }
+        }
+
+        //if (count > 2000000) {
+        if (count > 2500) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void DicomSaver::save( const core::Filesystem::Path& to, DicomInternalStructPtr inter )
 {
     core::Filesystem::Path filename;
@@ -246,11 +276,14 @@ void DicomSaver::save( const core::Filesystem::Path& to, DicomInternalStructPtr 
     } else {
         filename = to / "main.xml";
     }
+    //filename = "C:/Users/Wojciech/Desktop/dbrip/drop/2013-08-21-S0001/test.xml";
     std::ofstream ofs(filename.c_str());
     if(ofs.good()) {
         boost::archive::xml_oarchive oa(ofs);
         oa << BOOST_SERIALIZATION_NVP(inter);
         ofs.close();
+    } else {
+        throw std::runtime_error("Unable to create file");
     }
 }
 
