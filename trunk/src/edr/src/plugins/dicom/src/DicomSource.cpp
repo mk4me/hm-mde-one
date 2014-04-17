@@ -159,6 +159,8 @@ dicom::LayersVectorPtr DicomLoader::loadLayers(const core::Filesystem::Path &p )
     xmlIn.register_type<PointsLayer>();
 	xmlIn.register_type<BloodLevelLayer>();
 	xmlIn.register_type<InflammatoryLevelLayer>();
+	xmlIn.register_type<FingerTypeLayer>();
+	xmlIn.register_type<JointTypeLayer>();
     LayersVectorPtr layers = utils::make_shared<LayersVector>();
     //xmlIn >> BOOST_SERIALIZATION_NVP(layers);
     xmlIn >> boost::serialization::make_nvp("layers", *layers);

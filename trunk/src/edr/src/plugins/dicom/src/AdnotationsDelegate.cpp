@@ -62,6 +62,24 @@ QWidget *dicom::AdnotationsDelegate::createEditor(QWidget *parent,
 								}
 							}
 							break;
+
+						case adnotations::fingerType:
+							{
+								auto adn = dicom::adnotations::instanceFingerTypes();
+								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
+									editor->addItem(it->second, it->first);
+								}
+							}
+							break;
+
+						case adnotations::jointType:
+							{
+								auto adn = dicom::adnotations::instanceJointTypes();
+								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
+									editor->addItem(it->second, it->first);
+								}
+							}
+							break;
 						}
 
 						ret = editor;

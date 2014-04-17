@@ -1404,10 +1404,10 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 
 void DataSourceWidget::generateCommonContextMenu(QMenu & menu, QTreeWidget * perspective)
 {
-	auto saveProject = menu.addAction(tr("Save project as..."));
-	auto loadProject = menu.addMenu(tr("Load project"));
-	auto deleteProject = menu.addMenu(tr("Delete project"));
-	menu.addSeparator();
+	//auto saveProject = menu.addAction(tr("Save project as..."));
+	//auto loadProject = menu.addMenu(tr("Load project"));
+	//auto deleteProject = menu.addMenu(tr("Delete project"));
+	//menu.addSeparator();
   #ifdef DEMO_VERSION_COMMUNICATION
 	auto synch = menu.addAction(tr("Synchronize - not available in demo version"));
 	synch->setEnabled(false);
@@ -1417,11 +1417,12 @@ void DataSourceWidget::generateCommonContextMenu(QMenu & menu, QTreeWidget * per
 	//skoro coś ściągam muszę poczekać!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
 
-		connect(saveProject, SIGNAL(triggered()), this, SLOT(onSaveProject()));
+		//connect(saveProject, SIGNAL(triggered()), this, SLOT(onSaveProject()));
     #ifndef DEMO_VERSION_COMMUNICATION
 		connect(synch, SIGNAL(triggered()), this, SLOT(updateShallowCopy()));
     #endif
 
+		/*
 		for(auto it = projects.begin(); it != projects.end(); ++it){
 			auto loadAction = loadProject->addAction(QString::fromUtf8(it->first.c_str()));
 			auto deleteAction = deleteProject->addAction(QString::fromUtf8(it->first.c_str()));
@@ -1431,13 +1432,16 @@ void DataSourceWidget::generateCommonContextMenu(QMenu & menu, QTreeWidget * per
 		}
 
 		if(projects.empty() == true){
-			loadProject->setEnabled(false);
-			deleteProject->setEnabled(false);
+			//loadProject->setEnabled(false);
+			//deleteProject->setEnabled(false);
 		}
+		}*/
 	}else{
+		/*
 		saveProject->setEnabled(false);
 		loadProject->setEnabled(false);
 		deleteProject->setEnabled(false);
+		*/
 		synch->setEnabled(false);
 	}
 }

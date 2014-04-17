@@ -40,21 +40,23 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     coreUI::CoreAction*  undo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/undo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  redo = new coreUI::CoreAction(tr("Edit")  , QIcon(":/dicom/redo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
 
+	
 	QIcon normalIcon(":/dicom/arrowIcon.png");
 	normalIcon.addFile(":/dicom/arrowIconDisabled.png", QSize(), QIcon::Disabled);
     coreUI::CoreAction*  nrml = new coreUI::CoreAction(tr("Annotations")  , normalIcon, tr("Normal"), this, coreUI::CoreTitleBar::Left);
+	
     coreUI::CoreAction*  move = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/moveIcon.png"), tr("Move"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  edit = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/moveIcon.png"), tr("Edit"), this, coreUI::CoreTitleBar::Left);
-/*                                                        
+                                                      
     coreUI::CoreAction*  curv = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/curveIcon.png"), tr("Add curve"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);*/
+    coreUI::CoreAction*  poly = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/pathIcon.png"), tr("Add polygon"), this, coreUI::CoreTitleBar::Left);
                                                           
     coreUI::CoreAction*  bone = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/BoneIcon.png"), tr("Tag bone"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  skin = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/SkinIcon.png"), tr("Tag skin"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  tend = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/TendonIcon.png"), tr("Tag tendon"), this, coreUI::CoreTitleBar::Left);
+    //coreUI::CoreAction*  tend = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/TendonIcon.png"), tr("Tag tendon"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  join = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/JointIcon.png"), tr("Tag joint"), this, coreUI::CoreTitleBar::Left);
     coreUI::CoreAction*  infl = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/InflammatoryIcon.png"), tr("Tag region inflamatory synovitis"), this, coreUI::CoreTitleBar::Left);
-    coreUI::CoreAction*  nois = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/NoiseIcon.png"), tr("Tag noise"), this, coreUI::CoreTitleBar::Left);
+    //coreUI::CoreAction*  nois = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/NoiseIcon.png"), tr("Tag noise"), this, coreUI::CoreTitleBar::Left);
      
     coreUI::CoreAction*  save = new coreUI::CoreAction(tr("I/O")  , QIcon(":/dicom/save.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
 
@@ -94,10 +96,10 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 
     connect(bone, SIGNAL(triggered()), this, SLOT(boneState()));
     connect(skin, SIGNAL(triggered()), this, SLOT(skinState()));
-    connect(tend, SIGNAL(triggered()), this, SLOT(tendonState()));
+    //connect(tend, SIGNAL(triggered()), this, SLOT(tendonState()));
     connect(join, SIGNAL(triggered()), this, SLOT(jointState()));
     connect(infl, SIGNAL(triggered()), this, SLOT(inflamatoryState()));
-    connect(nois, SIGNAL(triggered()), this, SLOT(noiseState()));
+    //connect(nois, SIGNAL(triggered()), this, SLOT(noiseState()));
 
     connect(save, SIGNAL(triggered()), model, SLOT(saveSerie()));
     connect(upld, SIGNAL(triggered()), model, SLOT(uploadSerie()));
@@ -113,10 +115,10 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
 
     this->addAction(bone);
     this->addAction(skin);
-    this->addAction(tend);
+    //this->addAction(tend);
     this->addAction(join);
     this->addAction(infl);
-    this->addAction(nois);
+    //this->addAction(nois);
 
     this->addAction(save);
     this->addAction(upld);
@@ -359,6 +361,14 @@ const bool dicom::LayeredImageVisualizerView::verifySerie()
 
 	if(model->verifyBloodLevel() == false){
 		message += tr("%1: blood level not set\n").arg(counter++);
+	}
+
+	if(model->verifyFingerType() == false){
+		message += tr("%1: finger type not set\n").arg(counter++);
+	}
+
+	if(model->verifyJointType() == false){
+		message += tr("%1: joint type not set\n").arg(counter++);
 	}
 
 	if(counter > 1){

@@ -174,6 +174,58 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
             layersVector = resolveLocalXml(xmlFilename, layersVector);
             localAdded = true;
         }
+
+		bool bFound = false;
+		bool iFound = false;
+		bool fFound = false;
+		bool jFound = false;
+
+		for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
+
+			switch((*layerIt)->getAdnotationIdx()){
+			case dicom::adnotations::bloodLevel:
+				bFound = true;
+				break;
+
+
+			case dicom::adnotations::inflammatoryLevel:
+				iFound = true;
+				break;
+
+			case dicom::adnotations::jointType:
+				jFound = true;
+				break;
+
+			case dicom::adnotations::fingerType:
+				fFound = true;
+				break;
+			}
+		}		
+
+		if(iFound == false){
+			auto l = dicom::ILayerItemPtr(new InflammatoryLevelLayer(dicom::adnotations::inflammatoryLevel, dicom::adnotations::unknownInflammatoryLevel));
+			l->setName(QObject::tr("Inflammatory level"));			
+			img->addLayer(l, name);
+		}
+
+		if(bFound == false && img->isPowerDoppler() == true){
+			auto l = dicom::ILayerItemPtr(new BloodLevelLayer(dicom::adnotations::bloodLevel, dicom::adnotations::unknownBloodLevel));
+			l->setName(QObject::tr("Blood level"));			
+			img->addLayer(l, name);
+		}
+
+		if(fFound == false){
+			auto l = dicom::ILayerItemPtr(new FingerTypeLayer(dicom::adnotations::fingerType, dicom::adnotations::unknownFinger));
+			l->setName(QObject::tr("Finger type"));			
+			img->addLayer(l, name);
+		}
+
+		if(jFound == false){
+			auto l = dicom::ILayerItemPtr(new JointTypeLayer(dicom::adnotations::jointType, dicom::adnotations::unknownJoint));
+			l->setName(QObject::tr("Joint type"));			
+			img->addLayer(l, name);
+		}
+
         for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
             img->addLayer(*layerIt, xmlUser);
         }
@@ -184,6 +236,8 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 
 		bool bFound = false;
 		bool iFound = false;
+		bool fFound = false;
+		bool jFound = false;
 
         auto layersVector = resolveLocalXml(xmlFilename);
         if (layersVector) {
@@ -198,6 +252,14 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 				case dicom::adnotations::inflammatoryLevel:
 					iFound = true;
 					break;
+
+				case dicom::adnotations::jointType:
+					jFound = true;
+					break;
+
+				case dicom::adnotations::fingerType:
+					fFound = true;
+					break;
 				}
             }
         }
@@ -211,6 +273,18 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 		if(bFound == false && img->isPowerDoppler() == true){
 			auto l = dicom::ILayerItemPtr(new BloodLevelLayer(dicom::adnotations::bloodLevel, dicom::adnotations::unknownBloodLevel));
 			l->setName(QObject::tr("Blood level"));			
+			img->addLayer(l, name);
+		}
+
+		if(fFound == false){
+			auto l = dicom::ILayerItemPtr(new FingerTypeLayer(dicom::adnotations::fingerType, dicom::adnotations::unknownFinger));
+			l->setName(QObject::tr("Finger type"));			
+			img->addLayer(l, name);
+		}
+
+		if(jFound == false){
+			auto l = dicom::ILayerItemPtr(new JointTypeLayer(dicom::adnotations::jointType, dicom::adnotations::unknownJoint));
+			l->setName(QObject::tr("Joint type"));			
 			img->addLayer(l, name);
 		}
 

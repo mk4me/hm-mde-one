@@ -31,7 +31,9 @@ namespace adnotations {
         intensity = 6,
         noise = 7,
 		bloodLevel = 8,
-		inflammatoryLevel = 9
+		inflammatoryLevel = 9,
+		fingerType = 10,
+		jointType = 11
     };
 
 	//! Mapowanie indesków adnotacji do ich nazw
@@ -89,7 +91,50 @@ namespace adnotations {
 	InflammatoryLevelsTypePtr getDefaultInflammatoryLevels();	
 	//! \return Instancja poziomów schorzenia
 	InflammatoryLevelsTypePtr instanceInflammatoryLevels();
+
+	//! Nowe rzeczy
+
+	//! Typ palca
+	enum fingerTypeDescriptor {
+
+		unknownFinger = -1,
+		finger1,
+		finger2,
+		finger3,
+		finger4,
+		finger5
+	};
+
+	//! Mapiowanie indeksów do nazw z ich opisem
+	typedef boost::bimap<fingerTypeDescriptor, QString> FingerType;
+	DEFINE_SMART_POINTERS(FingerType);
+
+	//! \return Zwraca domyœlne poziomy krwi
+	FingerTypePtr getDefaultFingerTypes();	
+	//! Zwracaj instancjê poziomów krwi
+	FingerTypePtr instanceFingerTypes();
+
+	//! Typ jointa
+	enum jointTypeDescriptor {
+
+		unknownJoint = -1,
+		LPIP,
+		RPIP,
+		LMCP,
+		RMCP		
+	};
+
+	//! Mapiowanie indeksów do nazw z ich opisem
+	typedef boost::bimap<jointTypeDescriptor, QString> JointType;
+	DEFINE_SMART_POINTERS(JointType);
+
+	//! \return Zwraca domyœlne poziomy krwi
+	JointTypePtr getDefaultJointTypes();	
+	//! Zwracaj instancjê poziomów krwi
+	JointTypePtr instanceJointTypes();
+
 }
+
 }
 
 #endif

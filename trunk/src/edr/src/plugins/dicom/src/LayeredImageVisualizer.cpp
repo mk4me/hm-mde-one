@@ -451,3 +451,41 @@ const bool dicom::LayeredImageVisualizer::verifyBloodLevel() const
 
 	return false;
 }
+
+const bool dicom::LayeredImageVisualizer::verifyJointType() const
+{
+	const LayeredSerie* serie = dynamic_cast<const LayeredSerie*>(getActiveSerie());
+
+	auto image = serie->getImage();
+
+	auto s = image->getNumLayerItems(currentLayerUser_);
+
+	for(int i = 0; i < s; ++i){
+		auto l = image->getLayerItem(currentLayerUser_, i);
+		if(l->getAdnotationIdx() == dicom::adnotations::jointType){
+			auto jt = utils::dynamic_pointer_cast<const JointTypeLayer>(l);
+			return jt->value() != dicom::adnotations::unknownJoint;
+		}
+	}
+
+	return false;
+}
+
+const bool dicom::LayeredImageVisualizer::verifyFingerType() const
+{
+	const LayeredSerie* serie = dynamic_cast<const LayeredSerie*>(getActiveSerie());
+
+	auto image = serie->getImage();
+
+	auto s = image->getNumLayerItems(currentLayerUser_);
+
+	for(int i = 0; i < s; ++i){
+		auto l = image->getLayerItem(currentLayerUser_, i);
+		if(l->getAdnotationIdx() == dicom::adnotations::fingerType){
+			auto ft = utils::dynamic_pointer_cast<const FingerTypeLayer>(l);
+			return ft->value() != dicom::adnotations::unknownFinger;
+		}
+	}
+
+	return false;
+}

@@ -231,9 +231,13 @@ namespace dicom {
 
 	typedef ValueLayer<dicom::adnotations::bloodLevelDescriptor> BloodLevelLayer;
 	typedef ValueLayer<dicom::adnotations::inflammatoryLevelDescriptor> InflammatoryLevelLayer;
+	typedef ValueLayer<dicom::adnotations::fingerTypeDescriptor> FingerTypeLayer;
+	typedef ValueLayer<dicom::adnotations::jointTypeDescriptor> JointTypeLayer;
 
 	DEFINE_SMART_POINTERS(BloodLevelLayer);
 	DEFINE_SMART_POINTERS(InflammatoryLevelLayer);
+	DEFINE_SMART_POINTERS(FingerTypeLayer);
+	DEFINE_SMART_POINTERS(JointTypeLayer);
 }
 
 #endif

@@ -35,6 +35,40 @@ dicom::adnotations::InflammatoryLevelsTypePtr dicom::adnotations::instanceInflam
 	return getDefaultInflammatoryLevels();
 }
 
+dicom::adnotations::FingerTypePtr dicom::adnotations::getDefaultFingerTypes()
+{
+	FingerTypePtr adn = utils::make_shared<FingerType>();
+	adn->insert(FingerType::value_type(unknownFinger, QObject::tr("unknown finger"))); 
+	adn->insert(FingerType::value_type(finger1, QObject::tr("Finger 1"))); 
+	adn->insert(FingerType::value_type(finger2, QObject::tr("Finger 2"))); 
+	adn->insert(FingerType::value_type(finger3, QObject::tr("Finger 3"))); 
+	adn->insert(FingerType::value_type(finger4, QObject::tr("Finger 4")));	
+	adn->insert(FingerType::value_type(finger5, QObject::tr("Finger 5")));	
+
+	return adn;
+}
+
+dicom::adnotations::FingerTypePtr dicom::adnotations::instanceFingerTypes()
+{
+	return getDefaultFingerTypes();
+}
+
+dicom::adnotations::JointTypePtr dicom::adnotations::getDefaultJointTypes()
+{
+	JointTypePtr adn = utils::make_shared<JointType>();
+	adn->insert(JointType::value_type(unknownJoint, QObject::tr("unknown joint"))); 
+	adn->insert(JointType::value_type(LPIP, QObject::tr("LPIP"))); 
+	adn->insert(JointType::value_type(RPIP, QObject::tr("RPIP"))); 
+	adn->insert(JointType::value_type(LMCP, QObject::tr("LMCP"))); 
+	adn->insert(JointType::value_type(RMCP, QObject::tr("RMCP")));
+
+	return adn;
+}
+
+dicom::adnotations::JointTypePtr dicom::adnotations::instanceJointTypes()
+{
+	return getDefaultJointTypes();
+}
 
 dicom::adnotations::AdnotationsTypePtr dicom::adnotations::getDefault()
 {
@@ -50,6 +84,9 @@ dicom::adnotations::AdnotationsTypePtr dicom::adnotations::getDefault()
     adn->insert(AdnotationsType::value_type(noise, QObject::tr("noise")));
 	adn->insert(AdnotationsType::value_type(bloodLevel, QObject::tr("blood level")));
 	adn->insert(AdnotationsType::value_type(inflammatoryLevel, QObject::tr("inflammatory level")));
+	adn->insert(AdnotationsType::value_type(fingerType, QObject::tr("finger type")));
+	adn->insert(AdnotationsType::value_type(jointType, QObject::tr("joint type")));
+	
     return adn;
 }
 

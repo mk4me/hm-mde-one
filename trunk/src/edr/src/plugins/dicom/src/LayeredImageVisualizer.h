@@ -97,6 +97,10 @@ namespace dicom {
 
 		const bool verifyBloodLevel() const;
 
+		const bool verifyJointType() const;
+
+		const bool verifyFingerType() const;
+
     public Q_SLOTS:
         void setPrevSerie();
         void setNextSerie();

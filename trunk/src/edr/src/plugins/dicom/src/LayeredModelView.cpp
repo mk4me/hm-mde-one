@@ -96,6 +96,28 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 						}
 						break;
 
+					case adnotations::fingerType:
+						{
+							auto fil = utils::dynamic_pointer_cast<const FingerTypeLayer>(itm);
+							if(fil != nullptr){
+
+								auto flt = adnotations::instanceFingerTypes();
+								return flt->left.at(fil->value());
+							}
+						}
+						break;
+
+					case adnotations::jointType:
+						{
+							auto jil = utils::dynamic_pointer_cast<const JointTypeLayer>(itm);
+							if(jil != nullptr){
+
+								auto jlt = adnotations::instanceJointTypes();
+								return jlt->left.at(jil->value());
+							}
+						}
+						break;
+
 					default:
 						{
 							adnotations::AdnotationsTypePtr adn = adnotations::instance();
@@ -191,6 +213,36 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 
 								auto alt = adnotations::instanceInflammatoryLevels();
 								QString result = alt->left.at(ail->value());
+								Q_EMIT editCompleted( result );
+							}
+						}
+						break;
+
+					case adnotations::fingerType:
+						{
+							auto fil = utils::dynamic_pointer_cast<FingerTypeLayer>(il);
+							if(fil != nullptr){
+
+								int val = value.toInt();
+								fil->setValue((dicom::adnotations::fingerTypeDescriptor)val);
+
+								auto flt = adnotations::instanceFingerTypes();
+								QString result = flt->left.at(fil->value());
+								Q_EMIT editCompleted( result );
+							}
+						}
+						break;
+
+					case adnotations::jointType:
+						{
+							auto jil = utils::dynamic_pointer_cast<JointTypeLayer>(il);
+							if(jil != nullptr){
+
+								int val = value.toInt();
+								jil->setValue((dicom::adnotations::jointTypeDescriptor)val);
+
+								auto jlt = adnotations::instanceJointTypes();
+								QString result = jlt->left.at(jil->value());
 								Q_EMIT editCompleted( result );
 							}
 						}
