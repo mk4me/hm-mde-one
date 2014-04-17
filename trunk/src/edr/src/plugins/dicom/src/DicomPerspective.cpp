@@ -179,6 +179,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 		bool iFound = false;
 		bool fFound = false;
 		bool jFound = false;
+		bool imgFound = false;
 
 		for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
 
@@ -198,6 +199,10 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 
 			case dicom::adnotations::fingerType:
 				fFound = true;
+				break;
+
+			case dicom::adnotations::imageQuality:
+				imgFound = true;
 				break;
 			}
 		}		
@@ -226,6 +231,12 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 			img->addLayer(l, name);
 		}
 
+		if(imgFound == false){
+			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageQuality, 1));
+			l->setName(QObject::tr("Image quality low"));			
+			img->addLayer(l, name);
+		}
+
         for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
             img->addLayer(*layerIt, xmlUser);
         }
@@ -238,6 +249,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 		bool iFound = false;
 		bool fFound = false;
 		bool jFound = false;
+		bool imgFound = false;
 
         auto layersVector = resolveLocalXml(xmlFilename);
         if (layersVector) {
@@ -259,6 +271,10 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 
 				case dicom::adnotations::fingerType:
 					fFound = true;
+					break;
+
+				case dicom::adnotations::imageQuality:
+					imgFound = true;
 					break;
 				}
             }
@@ -285,6 +301,12 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 		if(jFound == false){
 			auto l = dicom::ILayerItemPtr(new JointTypeLayer(dicom::adnotations::jointType, dicom::adnotations::unknownJoint));
 			l->setName(QObject::tr("Joint type"));			
+			img->addLayer(l, name);
+		}
+
+		if(imgFound == false){
+			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageQuality, 1));
+			l->setName(QObject::tr("Image quality low"));			
 			img->addLayer(l, name);
 		}
 

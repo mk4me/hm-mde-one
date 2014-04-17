@@ -228,6 +228,7 @@ void dicom::LayeredSerie::save()
 	oa.register_type<InflammatoryLevelLayer>();
 	oa.register_type<FingerTypeLayer>();
 	oa.register_type<JointTypeLayer>();
+	oa.register_type<ImageQualityLayer>();
     LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(getImage());
     oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize(visualizer->getUserName()));
     ofs.close();

@@ -118,6 +118,16 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 						}
 						break;
 
+					case adnotations::imageQuality:
+						{
+							auto jil = utils::dynamic_pointer_cast<const ImageQualityLayer>(itm);
+							if(jil != nullptr){
+								auto jlt = adnotations::instanceImageQualityTypes();
+								return jlt->left.at(jil->value());
+							}
+						}
+						break;
+
 					default:
 						{
 							adnotations::AdnotationsTypePtr adn = adnotations::instance();
@@ -242,6 +252,21 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 								jil->setValue((dicom::adnotations::jointTypeDescriptor)val);
 
 								auto jlt = adnotations::instanceJointTypes();
+								QString result = jlt->left.at(jil->value());
+								Q_EMIT editCompleted( result );
+							}
+						}
+						break;
+
+					case adnotations::imageQuality:
+						{
+							auto jil = utils::dynamic_pointer_cast<ImageQualityLayer>(il);
+							if(jil != nullptr){
+
+								char val = value.toChar();
+								jil->setValue(val);
+
+								auto jlt = adnotations::instanceImageQualityTypes();
 								QString result = jlt->left.at(jil->value());
 								Q_EMIT editCompleted( result );
 							}

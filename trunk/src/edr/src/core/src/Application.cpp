@@ -134,6 +134,11 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 	//inicjalizacja ?cie?ek aplikacji, katalog?w tymczasowych itp, u?ywane do ?adowania t?umacze?
 	{
 		if(trySetPathsFromRegistry(paths_) == false){
+
+#ifdef WIN32
+			CORE_LOG_DEBUG("Failed to load paths from registery, loading default paths");
+#endif
+
 			setDefaultPaths(paths_);
 		}
 
@@ -141,6 +146,14 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 		if(paths_ == nullptr){
 			throw std::runtime_error("Could not initialize application path interface");
 		}
+
+		CORE_LOG_INFO("UserDataPath: " << paths_->getUserDataPath());
+		CORE_LOG_INFO("ApplicationDataPath: " << paths_->getApplicationDataPath());
+		CORE_LOG_INFO("UserApplicationDataPath: " << paths_->getUserApplicationDataPath());
+		CORE_LOG_INFO("ResourcesPath: " << paths_->getResourcesPath());
+		CORE_LOG_INFO("TmpPath: " << paths_->getTmpPath());
+		CORE_LOG_INFO("PluginPath: " << paths_->getPluginPath());
+		CORE_LOG_INFO("TranslationsPath: " << paths_->getTranslationsPath());
 	}	
 
 	//teraz inicjujemy logger zeby moc juz wszystko logowaæ
@@ -210,6 +223,8 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 			}
 		}
 
+
+		CORE_LOG_DEBUG("Setting appliaction language to " << lang);
 		languagesManager_->setLanguage(lang);
 	}
 
@@ -526,7 +541,6 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 #ifdef WIN32
 #define PATH_BUFFER_SIZE 1024
 	HKEY hKey;
-	LONG lResult;
 	char buffer[PATH_BUFFER_SIZE];
 	DWORD dwType, dwSize = PATH_BUFFER_SIZE;
 
@@ -535,7 +549,7 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 	/*
 	Filesystem::Path resourcesPath;
 	LPTSTR lpValueName = "ProgramFilesPath";
-	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
+	auto lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
 	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
 		resourcesPath = Filesystem::Path(buffer) / "bin" / "resources";
 		RegCloseKey(hKey);
@@ -544,27 +558,34 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 	}
 	}*/
 
+	auto lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
+
+	if(lResult != ERROR_SUCCESS){
+		CORE_LOG_DEBUG("Could not open required root node in registry: " << HKEY_LOCAL_MACHINE << ":" << KEY_PATH << ":" << KEY_READ );
+		return false;
+	}
+
 	Filesystem::Path applicationDataPath;
 
 	LPTSTR lpValueName = "ApplicationDataPath";
 	dwSize = sizeof(buffer);
-	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
-	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		applicationDataPath = Filesystem::Path(buffer);
-		RegCloseKey(hKey);
+	if(RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
+		applicationDataPath = Filesystem::Path(buffer);		
 	} else {
+		CORE_LOG_DEBUG("Could not read registry value: " << lpValueName);
+		RegCloseKey(hKey);
 		return false;
 	}
 
 	Filesystem::Path userApplicationDataPath;
 
 	lpValueName = "UserApplicationDataPath";
-	dwSize = sizeof(buffer);
-	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
-	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		userApplicationDataPath = Filesystem::Path(buffer);
-		RegCloseKey(hKey);
+	dwSize = sizeof(buffer);	
+	if(RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
+		userApplicationDataPath = Filesystem::Path(buffer);		
 	} else {
+		CORE_LOG_DEBUG("Could not read registry value: " << lpValueName);
+		RegCloseKey(hKey);
 		return false;
 	}
 
@@ -572,13 +593,15 @@ bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
 
 	lpValueName = "UserDataPath";
 	dwSize = sizeof(buffer);
-	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
-	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		userDataPath = Filesystem::Path(buffer);
-		RegCloseKey(hKey);
+	if(RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
+		userDataPath = Filesystem::Path(buffer);		
 	}else{
+		CORE_LOG_DEBUG("Could not read registry value: " << lpValueName);
+		RegCloseKey(hKey);
 		return false;
 	}
+
+	RegCloseKey(hKey);
 
 	path.reset(new Path(userDataPath, applicationDataPath, userApplicationDataPath, resourcesPath, userDataPath / "tmp", applicationDataPath / "plugins"));
 

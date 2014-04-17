@@ -33,7 +33,8 @@ namespace adnotations {
 		bloodLevel = 8,
 		inflammatoryLevel = 9,
 		fingerType = 10,
-		jointType = 11
+		jointType = 11,
+		imageQuality = 12
     };
 
 	//! Mapowanie indesków adnotacji do ich nazw
@@ -132,6 +133,21 @@ namespace adnotations {
 	JointTypePtr getDefaultJointTypes();	
 	//! Zwracaj instancjê poziomów krwi
 	JointTypePtr instanceJointTypes();
+
+	//! Typ jakoœci obrazu
+	enum imageQualityTypeDescriptor {
+		low = 0,
+		ok = 1
+	};
+
+	//! Mapiowanie indeksów do nazw z ich opisem
+	typedef boost::bimap<imageQualityTypeDescriptor, QString> ImageQualityType;
+	DEFINE_SMART_POINTERS(ImageQualityType);
+
+	//! \return Zwraca domyœlne poziomy krwi
+	ImageQualityTypePtr getDefaultImageQualityTypes();	
+	//! Zwracaj instancjê poziomów krwi
+	ImageQualityTypePtr instanceImageQualityTypes();
 
 }
 
