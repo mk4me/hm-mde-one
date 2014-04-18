@@ -26,15 +26,20 @@ class QScrollArea;
 class QPushButton;
 class QSlider;
 class QGraphicsPixmapItem;
+class RemoveLayerCommand;
 
 namespace dicom {
 
     class LayeredImageVisualizer;
 	class LayeredImageVisualizerView;
+	class AddLayerCommand;
 
     // TODO : wywalic to time avare...
     class LayeredSerie : public plugin::AbstractSerie
     {
+
+		friend class AddLayerCommand;
+		friend class RemoveLayerCommand;
     public:
         LayeredSerie(LayeredImageVisualizer* visualizer, LayeredImageVisualizerView * view);
         virtual ~LayeredSerie() {}

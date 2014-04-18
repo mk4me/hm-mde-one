@@ -24,10 +24,13 @@ class QScrollArea;
 class QPushButton;
 class QSlider;
 
+class RemoveLayerCommand;
+
 namespace dicom {
 
     class LayeredImageVisualizerView;
 	class LayeredSerie;
+	class AddLayerCommand;
     //! Wizualizator Dicom
     class LayeredImageVisualizer : public QObject, public plugin::IVisualizer
     {
@@ -37,6 +40,8 @@ namespace dicom {
 
 		friend class LayeredImageVisualizerView;
 		friend class LayeredSerie;
+		friend class AddLayerCommand;
+		friend class RemoveLayerCommand;
 
     public:
         LayeredImageVisualizer();

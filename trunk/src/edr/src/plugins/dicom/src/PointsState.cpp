@@ -13,6 +13,7 @@
 #include "LayeredSerie.h"
 #include "PointsLayer.h"
 #include "Adnotations.h"
+#include "LayeredImageVisualizer.h"
 
 
 using namespace dicom;
@@ -65,7 +66,7 @@ public:
 		wasEdited = machine->getSerie()->isEdited();
 
         layer->setEditable(false);
-        image->addLayer(layer, machine->getSerie()->getLoggedUserName());
+        image->addLayer(layer, machine->getSerie()->visualizer->getCurrentLayerUserName());
 		machine->getSerie()->markAsEdited(true);
         machine->getSerie()->refresh();
         //machine->getSerie()->save();

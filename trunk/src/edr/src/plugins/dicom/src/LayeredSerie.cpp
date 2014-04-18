@@ -50,7 +50,7 @@ public:
     //! cofa wykonane ju¿ polecenie
     virtual void undoIt() 
     {
-        img->addLayer(layer, serie->getLoggedUserName());
+        img->addLayer(layer, serie->visualizer->getCurrentLayerUserName());
 		auto glayer = core::dynamic_pointer_cast<ILayerGraphicItem>(layer);
 
 		if (glayer) {
@@ -232,7 +232,7 @@ void dicom::LayeredSerie::save()
 	oa.register_type<JointTypeLayer>();
 	oa.register_type<ImageQualityLayer>();
     LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(getImage());
-    oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize(visualizer->getUserName()));
+    oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize(visualizer->getCurrentLayerUserName()));
     ofs.close();
 }
 
