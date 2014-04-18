@@ -26,7 +26,7 @@
 
 class AnalisisTreeWidget;
 class AnalysisTreeContextMenu;
-
+class QSortFilterProxyModel;
 class HelperAction;
 
 //! Klasa jest odpowiedzialna za widok zakładki analiz
@@ -109,6 +109,7 @@ private:
     coreUI::IAppUsageContextManager* manager;
     coreUI::IAppUsageContextPtr parent;
     QTabWidget * flexiTabWidget;
+    QSortFilterProxyModel *proxyModel;
     ////! szerokość filtru w zakładce
     //int filterWidth;
     ////! wysokość filtru w zakładce

@@ -124,8 +124,10 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 						ncimg->setTrialID(comm->trialID(stem.string()));
                         
                         QIcon icon;
-                        if (!layers.empty() || fs::pathExists(xmlFilename)) {
+                        if (fs::pathExists(xmlFilename)) {
                             icon = QIcon(":/dicom/file_done.png");
+                        } else if (!layers.empty()) {
+                            icon = QIcon(":/dicom/file_blue.png");
                         } else {
                             icon = QIcon(":/dicom/file.png");
                         }

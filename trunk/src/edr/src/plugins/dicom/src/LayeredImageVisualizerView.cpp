@@ -142,7 +142,9 @@ void dicom::LayeredImageVisualizerView::acceptAnnotation()
 	try{
 		//model->trySave();
 		model->uploadSerie();
-		model->setStatus(webservices::xmlWsdl::AnnotationStatus::Approved);
+        auto status = webservices::xmlWsdl::AnnotationStatus::Approved;
+		model->setStatus(status);
+        setAnnotationStatus(status);
 		setActionsEnabled(false);
 	}catch(...){
 
@@ -175,7 +177,7 @@ void dicom::LayeredImageVisualizerView::rejectAnnotation()
 		setActionsEnabled(false);
 		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
 		auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
-
+        setAnnotationStatus(as.status);
 		refreshChat(as);
 	}catch(...){
 
@@ -196,7 +198,7 @@ void dicom::LayeredImageVisualizerView::requestAnnotationVerification()
 		setActionsEnabled(false);
 		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
 		auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
-
+        setAnnotationStatus(as.status);
 		refreshChat(as);
 	}catch(...){
 

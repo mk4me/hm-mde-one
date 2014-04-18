@@ -6,6 +6,7 @@
     <file alias="arrowIconDisabled.png">../resources/embedded/arrowIconDisabled.png</file>
     <file alias="file.png">../resources/embedded/file.png</file>
     <file alias="file_done.png">../resources/embedded/file_done.png</file>
+    <file alias="file_blue.png">../resources/embedded/file_blue.png</file>
     <file alias="undo.png">../resources/embedded/undo.png</file>
     <file alias="redo.png">../resources/embedded/redo.png</file>
     <file alias="save.png">../resources/embedded/save.png</file>

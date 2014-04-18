@@ -18,6 +18,7 @@
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <QtGui/QMessageBox>
+#include <QtGui/QSortFilterProxyModel>
 #include "AnalysisTreeContext.h"
 #include <coreui/SimpleContext.h>
 //#include "SummaryWindow.h"
@@ -58,7 +59,14 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     //showTimeline();
     bottomMainWindow->setVisible(false);
 
-    treeView->setModel(model->getTreeModel());
+    treeView->setSortingEnabled(true);
+    proxyModel = new QSortFilterProxyModel(this);
+    //proxyModel->setDynamicSortFilter(true);
+    proxyModel->setSourceModel(model->getTreeModel());
+    treeView->setModel(proxyModel);
+    
+    //treeView->sortByColumn ( 0, Qt::AscendingOrder);
+    proxyModel->sort(0, Qt::AscendingOrder);
     //treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     
     contextMenu = new AnalysisTreeContextMenu(model, this);
@@ -87,7 +95,8 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
 
 void AnalisisWidget::onTreeItemDoubleClicked(const QModelIndex& modelIDX)
 {
-	auto item = model->getTreeModel()->internalSmart(modelIDX);
+    auto mapped = proxyModel->mapToSource(modelIDX);
+	auto item = model->getTreeModel()->internalSmart(mapped);
 	core::IHierarchyDataItemConstPtr dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
 	if (dataItem) {
 		auto helper = dataItem->getDefaultHelper();
@@ -522,7 +531,7 @@ void AnalysisTreeContextMenu::onCreateVisualizer()
 {
     HelperAction* ha = qobject_cast<HelperAction*>(sender());
     UTILS_ASSERT(ha);
-    QModelIndex index = widget->getTreeView()->currentIndex();
+    QModelIndex index = widget->proxyModel->mapToSource(widget->getTreeView()->currentIndex());
     core::IHierarchyItemConstPtr item = model->getTreeModel()->internalSmart(index);
     core::IHierarchyDataItemConstPtr dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
     UTILS_ASSERT(dataItem);
@@ -732,7 +741,8 @@ void AnalysisTreeContextMenu::menuHighlightVisualizer( QAction* action /*= nullp
 
 void AnalysisTreeContextMenu::createMenu( QModelIndex index, QMenu * menu )
 {
-    core::IHierarchyItemConstPtr item = model->getTreeModel()->internalSmart(index);
+    auto mapped = widget->proxyModel->mapToSource(index);
+    core::IHierarchyItemConstPtr item = model->getTreeModel()->internalSmart(mapped);
     createMenu(item, menu);
 
 }
@@ -837,7 +847,8 @@ void AnalisisWidget::createNewVisualizer()
 
 void AnalisisWidget::onTreeItemActivated( const QModelIndex& index)
 {
-    auto item = model->getTreeModel()->internalSmart(index);
+    auto mapped = proxyModel->mapToSource(index);
+    auto item = model->getTreeModel()->internalSmart(mapped);
     if (item) {
         summary->display(item);
     } else {

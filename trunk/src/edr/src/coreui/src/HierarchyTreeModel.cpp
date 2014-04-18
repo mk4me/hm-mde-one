@@ -127,15 +127,15 @@ int HierarchyTreeModel::rowCount(const QModelIndex &parent) const
 
 void HierarchyTreeModel::addRootItem( core::IHierarchyItemConstPtr root )
 {
+
     auto it = std::find(rootOrigins.begin(), rootOrigins.end(), root);
     if (it != rootOrigins.end()) {
         throw std::runtime_error("Root item is already present in tree model");
     } else {
         roots.push_back(currentFilter->getFilteredTree(root));
         rootOrigins.push_back(root);
-        // TODO : zrobic to wlasciwie, nie trzeba odswiezac calego drzewa
-        //this->reset();
-        Q_EMIT layoutChanged();
+        //Q_EMIT layoutChanged();
+        reset();
     }
 }
 
@@ -164,7 +164,8 @@ void HierarchyTreeModel::updateItem( core::IHierarchyItemConstPtr item )
     // TODO : zrobic to wlasciwie
     //reset();
     rebuildFilteredRoots();
-    Q_EMIT layoutChanged();
+    //Q_EMIT layoutChanged();
+    reset();
 }
 
 void HierarchyTreeModel::removeRootItem( core::IHierarchyItemConstPtr root )
