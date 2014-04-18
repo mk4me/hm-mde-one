@@ -22,6 +22,7 @@
 #include "DicomSource.h"
 #include "PointsLayer.h"
 #include <corelib/ISourceManager.h>
+#include <boost/format.hpp>
 
 typedef core::Filesystem fs;
 
@@ -104,7 +105,8 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                     if (wrapper->getMetadata("core/source", sourceFile)) {
                         fs::Path stem = fs::Path(sourceFile).stem();
 						std::string sstem = stem.string();
-                        fs::Path xmlFilename = tmpDir / (sstem + "." + name + ".xml");
+						std::string xmlFilenamePattern = (tmpDir / sstem).string() + ".%1%.xml";
+                        fs::Path xmlFilename(boost::str(boost::format(xmlFilenamePattern) % name));
                         
                         LayeredImageConstPtr img = wrapper->get();
 						LayeredImagePtr ncimg = utils::const_pointer_cast<LayeredImage>(img);
@@ -128,7 +130,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                             icon = QIcon(":/dicom/file.png");
                         }
                         
-                        DicomHelperPtr helper = DicomHelperPtr(new DicomHelper(wrapper, layers, xmlFilename.string(), trialName));
+                        DicomHelperPtr helper = DicomHelperPtr(new DicomHelper(wrapper, layers, xmlFilenamePattern, trialName));
                         core::IHierarchyItemPtr imgItem(new core::HierarchyDataItem(icon, QString::fromStdString(imageFilename), desc, helper));
                         sessionItem->appendChild(imgItem);
                         hasData = true;
@@ -155,7 +157,9 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
     UTILS_ASSERT(wrapper, "Item should be initialized");
     std::string name = getUserName();
     core::ObjectWrapperPtr wrp = wrapper->clone();
-    wrp->setMetadata("DICOM_XML", xmlFilename);
+	fs::Path realXmlFilename(boost::str(boost::format(xmlFilename) % name));
+    wrp->setMetadata("DICOM_XML", realXmlFilename.string());
+	wrp->setMetadata("DICOM_XML_PATTERN", xmlFilename);
     wrp->setMetadata("TRIAL_NAME", trialName);
                         
     LayeredImagePtr img = wrp->get();
@@ -171,7 +175,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
             xmlUser = xmlUser.substr(xmlUser.find_last_of(".") + 1);
         }
         if (name == xmlUser) {
-            layersVector = resolveLocalXml(xmlFilename, layersVector);
+            layersVector = resolveLocalXml(realXmlFilename, layersVector);
             localAdded = true;
         }
 
@@ -251,7 +255,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 		bool jFound = false;
 		bool imgFound = false;
 
-        auto layersVector = resolveLocalXml(xmlFilename);
+        auto layersVector = resolveLocalXml(realXmlFilename);
         if (layersVector) {
             for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
                 

@@ -16,6 +16,7 @@
 #include "LayeredImage.h"
 #include <utils/ICommand.h>
 #include <QtGui/QScrollBar>
+#include <boost/format.hpp>
 
 using namespace dicom;
 
@@ -170,9 +171,10 @@ void dicom::LayeredSerie::refresh()
 
 std::string dicom::LayeredSerie::getXmlOutputFilename() const
 {
-	std::string xml;
-	data->getMetadata("DICOM_XML",xml);
-    return xml;
+	std::string xmlPattern;
+	data->getMetadata("DICOM_XML_PATTERN",xmlPattern);
+
+    return boost::str(boost::format(xmlPattern) % visualizer->getCurrentLayerUserName());
 }
 
 dicom::LayeredModelView* dicom::LayeredSerie::getLayersModel()

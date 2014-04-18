@@ -27,6 +27,7 @@ class QSlider;
 namespace dicom {
 
     class LayeredImageVisualizerView;
+	class LayeredSerie;
     //! Wizualizator Dicom
     class LayeredImageVisualizer : public QObject, public plugin::IVisualizer
     {
@@ -35,6 +36,7 @@ namespace dicom {
         CLASS_DESCRIPTION("Layered Image Visualizer", "Layered Image Visualizer");
 
 		friend class LayeredImageVisualizerView;
+		friend class LayeredSerie;
 
     public:
         LayeredImageVisualizer();
