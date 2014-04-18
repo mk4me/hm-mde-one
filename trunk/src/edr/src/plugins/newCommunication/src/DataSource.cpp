@@ -57,8 +57,11 @@ CommunicationDataSource::CommunicationDataSource() : loginManager(new DataSource
 	//konfiguracja wsdlpulla żeby pisać pliki tymczasowe tam gdzie mamy prawo zapisu
 	//pod windows
 	XmlUtils::TMPFILESDIR = plugin::getPaths()->getTmpPath().string();
+	//XmlUtils::TMPFILESDIR = "%USERPROFILE%\\Documents\\PJWSTK\\MEDUSA\\tmp\\newCommunication";
+	PLUGIN_LOG_INFO("WSDLPULL tmp dir: " << XmlUtils::TMPFILESDIR);
     // rev - zeby to przeszlo, w nagłówku musial być wywalony warunek na WIN32
     WsdlPull::SCHEMADIR = (plugin::getPaths()->getResourcesPath() / "schemas/").string();
+	PLUGIN_LOG_INFO("WSDLPULL SCHEMADIR: " << WsdlPull::SCHEMADIR);
 #endif
     WsdlPull::WsdlParser::useLocalSchema_ = false;
     //konfigurujemy ustawienia połączeń - adresy serwisów i ftp
