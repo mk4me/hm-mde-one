@@ -48,6 +48,7 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <zorder>widget</zorder>
          </widget>
         </item>
         <item>
@@ -165,9 +166,6 @@ background-color: white;
  }</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
-           <property name="margin">
-            <number>9</number>
-           </property>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
@@ -223,43 +221,61 @@ background-color: white;
              </property>
             </widget>
            </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QGroupBox" name="noteGroupBox">
+               <property name="title">
+                <string>Note</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout">
+                <item>
+                 <widget class="QTextEdit" name="noteTextEdit">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="commentGroupBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="title">
+                <string>Comment</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_5">
+                <item>
+                 <widget class="QTextEdit" name="commentTextEdit">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </item>
           </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_6">
-     <item>
-      <widget class="QGroupBox" name="noteGroupBox">
-       <property name="title">
-        <string>Note</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QTextEdit" name="noteTextEdit">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="commentGroupBox">
-       <property name="title">
-        <string>Comment</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
-        <item>
-         <widget class="QTextEdit" name="commentTextEdit">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
          </widget>
         </item>
        </layout>
