@@ -10,6 +10,7 @@
     <file alias="undo.png">../resources/embedded/undo.png</file>
     <file alias="redo.png">../resources/embedded/redo.png</file>
     <file alias="save.png">../resources/embedded/save.png</file>
+    <file alias="saveDisabled.png">../resources/embedded/saveDisabled.png</file>
     <file alias="edit.png">../resources/embedded/edit.png</file>
     <file alias="remove.png">../resources/embedded/remove.png</file>
 	  <file alias="crop.png">../resources/embedded/crop.png</file>

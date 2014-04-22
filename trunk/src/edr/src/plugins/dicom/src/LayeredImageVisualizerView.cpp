@@ -58,7 +58,9 @@ LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* m
     coreUI::CoreAction*  infl = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/InflammatoryIcon.png"), tr("Tag region inflamatory synovitis"), this, coreUI::CoreTitleBar::Left);
     //coreUI::CoreAction*  nois = new coreUI::CoreAction(tr("Annotations")  , QIcon(":/dicom/NoiseIcon.png"), tr("Tag noise"), this, coreUI::CoreTitleBar::Left);
      
-    coreUI::CoreAction*  save = new coreUI::CoreAction(tr("I/O")  , QIcon(":/dicom/save.png"), tr("Save"), this, coreUI::CoreTitleBar::Left);
+	QIcon saveIcon(":/dicom/save.png");
+	saveIcon.addFile(":/dicom/saveDisabled.png", QSize(), QIcon::Disabled);
+    coreUI::CoreAction*  save = new coreUI::CoreAction(tr("I/O"), saveIcon, tr("Save"), this, coreUI::CoreTitleBar::Left);
 
 	QIcon uploadIcon(":/dicom/upload.png");
 	uploadIcon.addFile(":/dicom/uploadDisabled.png", QSize(), QIcon::Disabled);
