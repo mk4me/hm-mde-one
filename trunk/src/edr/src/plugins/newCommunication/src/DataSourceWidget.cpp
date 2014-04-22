@@ -1239,20 +1239,20 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 #endif
 	menu.addSeparator();
 
-	auto refresh = menu.addAction(tr("Refresh status"));
+	//auto refresh = menu.addAction(tr("Refresh status"));
 
 	load->setEnabled(false);
 	//unload->setEnabled(false);
 	download->setEnabled(false);
     force->setEnabled(false);
-	refresh->setEnabled(false);
+	//refresh->setEnabled(false);
 
 	//skoro coś ściągam muszę poczekać!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
 	if(currentDownloadRequest == nullptr){
 
 		//aktywujemy podstaweowe operacje
-		connect(refresh, SIGNAL(triggered()), this, SLOT(refreshStatus()));
-		refresh->setEnabled(true);
+		//connect(refresh, SIGNAL(triggered()), this, SLOT(refreshStatus()));
+		//refresh->setEnabled(true);
 
 		//sprawdzamy co to za item, potrzebujemy wszystkich plików z nim związanych
 		std::set<int> filesIDs;
