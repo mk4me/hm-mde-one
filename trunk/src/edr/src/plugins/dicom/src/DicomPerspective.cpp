@@ -124,7 +124,17 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 						ncimg->setTrialID(comm->trialID(stem.string()));
                         
                         QIcon icon;
-                        if (fs::pathExists(xmlFilename)) {
+                        auto hasAnnotation = [&](const std::string& filename, const core::ConstObjectsList& layers) -> bool {
+                            for (auto it = layers.begin(); it != layers.end(); ++it) {
+                                std::string source;
+                                (*it)->getMetadata("core/source", source);
+                                if (source.find(filename) != std::string::npos) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        };
+                        if (fs::pathExists(xmlFilename) || hasAnnotation(name, layers)) {
                             icon = QIcon(":/dicom/file_done.png");
                         } else if (!layers.empty()) {
                             icon = QIcon(":/dicom/file_blue.png");
