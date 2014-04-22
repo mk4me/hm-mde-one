@@ -549,9 +549,14 @@ FunctionEnd
 ;Pages
   !insertmacro MUI_PAGE_WELCOME
 
-  ;@CPACK_NSIS_CUSTOM_LICENSE_PAGE_CODE@
+  !define MUI_PAGE_CUSTOMFUNCTION_PRE licensePre
+  !insertmacro MUI_PAGE_LICENSE "@CPACK_RESOURCE_FILE_LICENSE@"
   Page custom InstallOptionsPage
   !insertmacro MUI_PAGE_DIRECTORY
+  
+  Function licensePre
+	@CPACK_NSIS_CUSTOM_SHOW_LICENSE_CODE@
+  FunctionEnd
   
   ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "SHCTX" 
