@@ -1228,7 +1228,7 @@ QString DataSourceWidget::formatFileSize(unsigned long long size)
 void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget * perspective)
 {
 	auto load = menu.addAction(tr("Load"));
-	auto unload = menu.addAction(tr("Unload"));
+	//auto unload = menu.addAction(tr("Unload"));
 	menu.addSeparator();
 #ifdef DEMO_VERSION_COMMUNICATION
 	auto download = menu.addAction(tr("Download - not available in demo version"));
@@ -1242,7 +1242,7 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 	auto refresh = menu.addAction(tr("Refresh status"));
 
 	load->setEnabled(false);
-	unload->setEnabled(false);
+	//unload->setEnabled(false);
 	download->setEnabled(false);
     force->setEnabled(false);
 	refresh->setEnabled(false);
@@ -1325,8 +1325,8 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 				if(filesToUnload.empty() == false){
 					//! TODO - sprawdzic czy wyzej jeszcze ktos tego nie trzyma!
 					filesToUnload.insert(additionalFilesToUnload.begin(), additionalFilesToUnload.end());
-					unload->setEnabled(true);
-					connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
+					//unload->setEnabled(true);
+					//connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
 				}
 
         #ifndef DEMO_VERSION_COMMUNICATION
@@ -1353,7 +1353,7 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 {
 	//poszczeólne akcje
 	auto loadAll = menu.addAction(tr("Load All"));
-	auto unloadAll = menu.addAction(tr("Unload All"));
+	//auto unloadAll = menu.addAction(tr("Unload All"));
   #ifdef DEMO_VERSION_COMMUNICATION
 	auto downloadAll = menu.addAction(tr("Download All - not available in demo version"));
   #else
@@ -1382,8 +1382,8 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 		}
 
 		if(filesToUnload.empty() == false){
-			unloadAll->setEnabled(true);
-			connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnload()));
+			//unloadAll->setEnabled(true);
+			//connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnload()));
 		}
 
     #ifndef DEMO_VERSION_COMMUNICATION
@@ -1397,7 +1397,7 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 
 	}else{
 		loadAll->setEnabled(false);
-		unloadAll->setEnabled(false);
+		//unloadAll->setEnabled(false);
 		downloadAll->setEnabled(false);
 	}
 }
@@ -1745,7 +1745,7 @@ void DataSourceWidget::onDownload()
 	unsigned long long size = 0;
 
 	for(auto it = filesToDownload.begin(); it != filesToDownload.end(); ++it){
-		auto f = filteredShallowCopy.motionShallowCopy->files.find(*it);
+		auto f = dataSource->fullShallowCopy.motionShallowCopy->files.find(*it);
 		size += f->second->fileSize;
 	}
 

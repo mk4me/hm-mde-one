@@ -238,7 +238,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 		}
 
 		if(imgFound == false){
-			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageType, dicom::adnotations::correct));
+			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageType, dicom::adnotations::different));
 			l->setName(QObject::tr("Image"));			
 			img->addLayer(l, xmlUser);
 		}
@@ -311,7 +311,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 		}
 
 		if(imgFound == false){
-			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageType, dicom::adnotations::correct));
+			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::adnotations::imageType, dicom::adnotations::different));
 			l->setName(QObject::tr("Image"));			
 			img->addLayer(l, name);
 		}

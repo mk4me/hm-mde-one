@@ -137,7 +137,7 @@ namespace adnotations {
 	//! Typ jakoœci obrazu
 	enum imageTypeDescriptor {
 		incorrect = 0,
-		correct = 1,
+		different = 1,
 		identical = 2,
 	};
 

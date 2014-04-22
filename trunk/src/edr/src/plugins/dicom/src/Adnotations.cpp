@@ -74,7 +74,7 @@ dicom::adnotations::ImageTypePtr dicom::adnotations::getDefaultImageTypes()
 {
 	ImageTypePtr adn = utils::make_shared<ImageType>();
 	adn->insert(ImageType::value_type(incorrect, QObject::tr("incorrect")));	
-	adn->insert(ImageType::value_type(correct, QObject::tr("correct"))); 
+	adn->insert(ImageType::value_type(different, QObject::tr("different"))); 
 	adn->insert(ImageType::value_type(identical, QObject::tr("identical"))); 
 
 	return adn;
