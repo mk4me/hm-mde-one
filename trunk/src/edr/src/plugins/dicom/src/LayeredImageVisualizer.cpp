@@ -253,7 +253,13 @@ int dicom::LayeredImageVisualizer::getCurrentSerieNo() const
 void dicom::LayeredImageVisualizer::saveSerie()
 {
     if (correctIndex(currentSerie)) {
+        
         series[currentSerie]->save();
+        
+        auto service = core::queryService<IDicomService>(plugin::getServiceManager());
+        QIcon icon(":/dicom/file_done.png");
+        service->updateItemIcon(series[currentSerie]->getImageFilename(), icon);
+        
 		mainWidget->setWindowModified(false);
     }
 }

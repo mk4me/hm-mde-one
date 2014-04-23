@@ -49,6 +49,13 @@ color: white
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="updateMetaButton">
+        <property name="text">
+         <string>Update meta</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="openFileButton">
         <property name="text">
          <string>Open File</string>

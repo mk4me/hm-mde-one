@@ -12,6 +12,7 @@
 #include <string>
 #include <corelib/IService.h>
 #include <webserviceslib/Entity.h>
+#include <corelib/HierarchyDataItem.h>
 
 namespace dicom
 {
@@ -34,6 +35,8 @@ namespace dicom
 		virtual void setAnnotationStatus(const std::string & user, const int trialID,
 			const webservices::xmlWsdl::AnnotationStatus::Type status,
 			const std::string & comment) = 0;
+
+        virtual void updateItemIcon(const std::string& filename, const QIcon& icon) = 0;
 	};
 
 }

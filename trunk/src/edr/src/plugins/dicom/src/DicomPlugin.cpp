@@ -48,13 +48,14 @@ private:
 	}
 
 public:			
-    DicomTempService() : sourceManager(nullptr), inEditionFilterIDX(-1),
+    DicomTempService() : sourceManager(nullptr), memoryDataManager(nullptr), inEditionFilterIDX(-1), perspective(new DicomPerspective),
 	inVerificationFilterIDX(-1), verifiedFilterIDX(-1), usersToRefresh(true) {}
 
     virtual void init(core::ISourceManager * sourceManager,core::IVisualizerManager * visualizerManager,						
         core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager ) 
     {
         this->sourceManager = sourceManager;
+        this->memoryDataManager = memoryDataManager;
     }		
 
     virtual const bool lateInit()  
@@ -70,7 +71,7 @@ public:
 			inEditionFilterIDX = comm->addDataFilter(inEditionFilter = new AnnotationStatusFilter(std::string((as + ": " + QObject::tr("in edition")).toStdString()), true, false));
 			inVerificationFilterIDX = comm->addDataFilter(inVerificationFilter = new AnnotationStatusFilter(std::string((as + ": " + QObject::tr("in verification")).toStdString()), true, false));
 			verifiedFilterIDX = comm->addDataFilter(verifiedFilter = new AnnotationStatusFilter(std::string((as + ": " + QObject::tr("verified")).toStdString()), true, false));
-			comm->addHierarchyPerspective(utils::make_shared<DicomPerspective>());
+			comm->addHierarchyPerspective(perspective);
 			return true; 
 		}
 
@@ -306,9 +307,27 @@ private:
 				comm->refreshCurrentFilter();
 		}
 	}
+    
+    virtual void updateItemIcon( const std::string& filename, const QIcon& icon )
+    {
+        auto item = perspective->tryGetHierarchyItem(filename);
+        if (item) {
+            item->setIcon(icon);
+            auto transaction = memoryDataManager->transaction();
+            auto hierarchyTransaction = memoryDataManager->hierarchyTransaction();
+            core::IHierarchyItemConstPtr root = item;
+            while (root->getParent() && root->getParent()->getParent()) {
+                root = root->getParent();
+            }
+            if (root) {
+                hierarchyTransaction->updateRoot(root);        
+            }
+        }
+    }
 
 private:
     core::ISourceManager *sourceManager;
+    core::IMemoryDataManager* memoryDataManager;
 	communication::ICommunicationDataSourcePtr comm;
 	AnnotationStatusFilter * inEditionFilter;
 	AnnotationStatusFilter * inVerificationFilter;
@@ -320,6 +339,7 @@ private:
 	int inVerificationFilterIDX;
 	int verifiedFilterIDX;
 
+    DicomPerspectivePtr perspective;
 	webservices::DateTime lastUpdate;
 	AnnotationsMap annotations;
 };																			 

@@ -110,3 +110,8 @@ core::IHierarchyItemPtr core::HierarchyItem::shallowCopy(bool withChildren) cons
     }
     return hi;
 }
+
+void core::HierarchyItem::setIcon( const QIcon& icon )
+{
+    this->icon = icon;
+}

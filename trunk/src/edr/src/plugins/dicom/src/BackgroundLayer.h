@@ -24,7 +24,7 @@ class BackgroundLayer : public ILayerGraphicItem
 public:
     BackgroundLayer(const QPixmap& p, const QString& name = QString("Background"));
     BackgroundLayer(const QString& pixmapPath, const QString& name = QString("Background"));
-	virtual ~BackgroundLayer() {}
+	virtual ~BackgroundLayer();
 
 public:
     virtual QGraphicsItem* getItem();

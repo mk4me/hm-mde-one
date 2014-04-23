@@ -6,9 +6,11 @@
 #include <QtGui/QDockWidget>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <corelib/IServiceManager.h>
+//#include "ModelTest.h"
 
 AnalisisModel::AnalisisModel()
 {
+    //new ModelTest(&model, this);
 }
 
 void AnalisisModel::observe( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )

@@ -53,6 +53,7 @@ namespace dicom {
 		const bool editionEnable() const;
         QPixmap getPixmap() const;
         QSize getSize() const;
+        std::string getImageFilename() const;
         std::string getXmlOutputFilename() const;
         std::string getLoggedUserName() const;
         ILayeredImagePtr getImage();
@@ -67,8 +68,6 @@ namespace dicom {
         void editLayer(int tagIdx, int idx);
         void undo();
         void redo();
-        //void setPolyState();
-        //void setCurveState();
         void setNormalState();
         void switchCrop();
         void setMoveState();

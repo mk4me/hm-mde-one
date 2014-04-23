@@ -23,6 +23,8 @@
 #include "PointsLayer.h"
 #include <corelib/ISourceManager.h>
 #include <boost/format.hpp>
+#include "LayeredSerie.h"
+#include "LayeredImageVisualizerView.h"
 
 typedef core::Filesystem fs;
 
@@ -143,7 +145,15 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                         }
                         
                         DicomHelperPtr helper = DicomHelperPtr(new DicomHelper(wrapper, layers, xmlFilenamePattern, trialName));
-                        core::IHierarchyItemPtr imgItem(new core::HierarchyDataItem(icon, QString::fromStdString(imageFilename), desc, helper));
+                        core::HierarchyDataItemPtr imgItem(new core::HierarchyDataItem(icon, QString::fromStdString(imageFilename), desc, helper));
+                        std::string mapName = imageFilename + ".png";
+
+                        // TODO : to rozwiazanie moze byc problematyczne w przyszlosci, bo w calosci zalezy od implementacji update'a drzewa danych
+                        auto itName = name2hierarchy.find(mapName);
+                        if (itName == name2hierarchy.end()) {
+                            name2hierarchy[imageFilename + ".png"] = imgItem;
+                        }
+
                         sessionItem->appendChild(imgItem);
                         hasData = true;
                     } else {
@@ -164,17 +174,33 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
     return core::IHierarchyItemPtr();
 }
 
+core::HierarchyDataItemPtr dicom::DicomPerspective::tryGetHierarchyItem( const std::string& filename )
+{
+    auto it = name2hierarchy.find(filename);
+    if (it != name2hierarchy.end()) {
+        return (it->second).lock();
+    }
+
+    return core::HierarchyDataItemPtr();
+}
+
+
 void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
+    core::ObjectWrapperPtr wrp = utils::const_pointer_cast<core::ObjectWrapper>(wrapper);
     std::string name = getUserName();
-    core::ObjectWrapperPtr wrp = wrapper->clone();
 	fs::Path realXmlFilename(boost::str(boost::format(xmlFilename) % name));
     wrp->setMetadata("DICOM_XML", realXmlFilename.string());
 	wrp->setMetadata("DICOM_XML_PATTERN", xmlFilename);
     wrp->setMetadata("TRIAL_NAME", trialName);
+    //core::ObjectWrapperPtr wrp = wrapper->clone();
+    auto serie = visualizer->createSerie(wrp->getTypeInfo(), wrp);
+    auto layeredSerie = dynamic_cast<LayeredSerie*>(serie->serie());
+    UTILS_ASSERT(layeredSerie);
+    layeredSerie->setName(path.toStdString());
                         
-    LayeredImagePtr img = wrp->get();
+    ILayeredImagePtr img = layeredSerie->getImage();
     //LayeredImagePtr img = utils::const_pointer_cast<LayeredImage>(cimg);
     bool localAdded = false;
 
@@ -337,8 +363,11 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
         std::string tag = img->getTag(row);
         img->setTagVisible(tag, tag == name);
     }
-    auto serie = visualizer->createSerie(wrp->getTypeInfo(), wrp);
-    serie->serie()->setName(path.toStdString());
+    layeredSerie->refresh();
+    LayeredImageVisualizerView* view = dynamic_cast<LayeredImageVisualizerView*>(visualizer->getOrCreateWidget());
+    UTILS_ASSERT(view);
+    view->refresh();
+    visualizer->setActiveSerie(serie);
     series.push_back(serie);    
 }
 

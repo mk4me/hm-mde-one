@@ -22,6 +22,12 @@ dicom::BackgroundLayer::BackgroundLayer( const QPixmap& p, const QString& name /
 {
     
 }
+
+
+dicom::BackgroundLayer::~BackgroundLayer()
+{
+
+}
     
 QString dicom::BackgroundLayer::getName() const
 {
@@ -96,4 +102,5 @@ dicom::BackgroundLayer* dicom::BackgroundLayer::clone() const
     bl->setCrop(this->getCrop());
     return bl;
 }
+
 

@@ -103,14 +103,21 @@ QModelIndex HierarchyTreeModel::parent(const QModelIndex &index) const
     if (!parentItem) {
         return QModelIndex();
     }
-
-    return createSmartIndex(parentItem->getIndex(), 0, parentItem);
+    int row = parentItem->getIndex();
+    for (int i = roots.size() - 1; i >= 0; --i) {
+        if (parentItem == roots[i]) {
+            row = i;
+            break;
+        }
+    }
+    return createSmartIndex(row, 0, parentItem);
 }
 
 int HierarchyTreeModel::rowCount(const QModelIndex &parent) const
 {
     core::IHierarchyItemConstPtr parentItem;
     if (parent.column() > 0) {
+        UTILS_ASSERT(false);
         return 0;
     }
 
@@ -120,7 +127,7 @@ int HierarchyTreeModel::rowCount(const QModelIndex &parent) const
 
 
     parentItem = internalSmart(parent);
-    return parentItem ? parentItem->getNumChildren() : 0;
+    return parentItem->getNumChildren();
 }
 
 
@@ -132,6 +139,8 @@ void HierarchyTreeModel::addRootItem( core::IHierarchyItemConstPtr root )
     if (it != rootOrigins.end()) {
         throw std::runtime_error("Root item is already present in tree model");
     } else {
+
+        //Q_EMIT layoutAboutToBeChanged();
         roots.push_back(currentFilter->getFilteredTree(root));
         rootOrigins.push_back(root);
         //Q_EMIT layoutChanged();
@@ -162,7 +171,6 @@ core::IHierarchyItemConstPtr HierarchyTreeModel::internalSmart( const QModelInde
 void HierarchyTreeModel::updateItem( core::IHierarchyItemConstPtr item )
 {
     // TODO : zrobic to wlasciwie
-    //reset();
     rebuildFilteredRoots();
     //Q_EMIT layoutChanged();
     reset();

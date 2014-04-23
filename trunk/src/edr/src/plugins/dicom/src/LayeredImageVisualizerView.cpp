@@ -5,6 +5,7 @@
 #include "ui_layeredImageVisualizer.h"
 #include "LayeredImageVisualizer.h"
 #include <QtGui/QGraphicsScene>
+#include <QtGui/QPainter>
 #include <coreui/WheelGraphicsView.h>
 #include <QtGui/QGraphicsItem>
 #include <QtGui/QMouseEvent>

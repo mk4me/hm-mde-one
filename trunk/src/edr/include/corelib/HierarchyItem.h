@@ -34,6 +34,7 @@ public:
     virtual IHierarchyItemConstPtr getParent() const;
     virtual QString getName() const;
     virtual QIcon getIcon() const;
+    void setIcon(const QIcon& icon);
     virtual void setParent(IHierarchyItemPtr parent);
 
     virtual QString getDescription() const;

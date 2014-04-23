@@ -73,11 +73,10 @@ private:
 
 void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
 {
-    // TODO: jak zastosowac update danych?
     auto cloneWrp = data->clone();
     image = cloneWrp->get();
     if (image) {
-        //image = utils::const_pointer_cast<ILayeredImage>(img);
+
         graphicsScene->addItem(image->getBackgroundLayer()->getItem());
 
         BOOST_FOREACH(std::string tag, image->getTags()) {
@@ -351,6 +350,16 @@ void dicom::LayeredSerie::init()
 bool dicom::LayeredSerie::wasInitialized() const
 {
     return initialized;
+}
+
+std::string dicom::LayeredSerie::getImageFilename() const
+{
+    std::string sourceFile;
+    if (data->getMetadata("core/source", sourceFile)) {
+        return sourceFile;
+    }
+
+    throw std::runtime_error("Unable to find image file name");
 }
 
 

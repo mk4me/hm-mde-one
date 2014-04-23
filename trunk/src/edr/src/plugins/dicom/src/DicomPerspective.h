@@ -13,6 +13,7 @@
 #include <plugins/newCommunication/IHierarchyPerspective.h>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/Visualizer.h>
+#include <corelib/HierarchyDataItem.h>
 
 namespace dicom {
 
@@ -38,7 +39,11 @@ public:
 	virtual ~DicomPerspective() {}
 
     virtual core::IHierarchyItemPtr getPerspective( PluginSubject::SubjectPtr subject );
-    
+
+    core::HierarchyDataItemPtr tryGetHierarchyItem(const std::string& filename);
+
+private:
+    std::map<std::string, core::HierarchyDataItemWeakPtr> name2hierarchy;
 };
 DEFINE_SMART_POINTERS(DicomPerspective);
 
