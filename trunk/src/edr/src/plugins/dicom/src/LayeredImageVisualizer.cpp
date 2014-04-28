@@ -355,8 +355,11 @@ void dicom::LayeredImageVisualizer::uploadSerie()
         communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
         core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
         /// TODO : pobrac dane z OW
-        
-        comm->uploadMotionFile(p, "");
+        if (!comm->offlineMode()) {
+            comm->uploadMotionFile(p, "");
+        } else {
+            coreUI::CorePopup::showMessage(tr("Unable to upload file"), tr("Application is in offline mode"));
+        }
 
 		//TODO
 		//zapis statusu adnotacji

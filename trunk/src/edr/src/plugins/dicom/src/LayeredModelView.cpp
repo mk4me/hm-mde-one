@@ -7,22 +7,34 @@
 #include "LayeredImageVisualizer.h"
 #include <coreui/CoreVisualizerWidget.h>
 #include <coreui/CoreDockWidget.h>
+#include <utils/modeltest.h>
 
 using namespace dicom; 
 
 LayeredModelView::LayeredModelView(LayeredImageVisualizer *parent)
-    :QAbstractItemModel(parent), parent_(parent)
+    :QAbstractItemModel(parent), layeredVisualizer(parent)
 {
+#ifdef _DEBUG
+    new ModelTest(this, this);
+#endif
 }
 
 //-----------------------------------------------------------------
 int LayeredModelView::rowCount(const QModelIndex & parent) const
 {
     if (!parent.isValid()) {
-        return image->getNumTags();
+        if (!image) {
+            return 0;
+        } else if (layeredVisualizer->userIsReviewer()) {
+            return image->getNumTags();
+        } else {
+            auto tags = image->getTags();
+            auto it = std::find(tags.begin(), tags.end(), layeredVisualizer->getUserName());
+            return it != tags.end() ? 1 : 0;
+        }
     } else {
         treedata* td = static_cast<treedata*>(parent.internalPointer());
-        if (td->idx == -1) {
+        if (td->idx == -1 && parent.column() == 0) {
             std::string tag = image->getTag(td->tag);
             return image->getNumLayerItems(tag);
         } else {
@@ -34,14 +46,23 @@ int LayeredModelView::rowCount(const QModelIndex & parent) const
 //-----------------------------------------------------------------
 int LayeredModelView::columnCount(const QModelIndex & parent) const
 {
-    return 2;
-    //return parent.isValid() ? 2 : 1;
+    if (!parent.isValid()) {
+        return 2;
+    } else {
+        treedata* td = static_cast<treedata*>(parent.internalPointer());
+        if (td->idx == -1 && parent.column() == 0) {
+            return 2;
+        } else {
+            return 0;
+        }
+    }
+
 }
 
 //-----------------------------------------------------------------
 QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 {
-    if (image) {
+    if (image && index.isValid()) {
         if ( role == Qt::CheckStateRole){
 			if( index.column() == 0 ) {
 				treedata* td = static_cast<treedata*>(index.internalPointer());
@@ -163,7 +184,9 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 //! [quoting mymodel_e]
 bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value, int role)
 {
-    if ( role == Qt::CheckStateRole) {
+    if (!index.isValid()) {
+        return false;
+    } else if ( role == Qt::CheckStateRole) {
         treedata* td = static_cast<treedata*>(index.internalPointer());
         if (td->idx == -1) {
             Qt::CheckState checked = static_cast< Qt::CheckState >( value.toInt() );
@@ -173,7 +196,7 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 
     } else if (role == Qt::EditRole) {
 
-		auto w = parent_->createWidget();
+		auto w = layeredVisualizer->createWidget();
 		if(w != nullptr){
 			w->setWindowModified(true);
 		}
@@ -374,10 +397,21 @@ bool dicom::LayeredModelView::removeRows( int row, int count, const QModelIndex 
 
 QModelIndex dicom::LayeredModelView::index( int row, int column, const QModelIndex &parent /*= QModelIndex( ) */ ) const
 {
+    if (!image || column < 0 || parent.column() > 0) {
+        return QModelIndex();
+    }
     if (!parent.isValid()) {
-        if (row >= 0 && row < image->getNumTags() && (parent_->userIsReviewer() || parent_->getUserName() == image->getTag(row))) {
-            return createIndex(row, column, (void*)getData(row, -1));
-        } 
+        if (layeredVisualizer->userIsReviewer()) {
+            if (row >= 0 && row < image->getNumTags()) {
+                return createIndex(row, column, (void*)getData(row, -1));
+            }
+        } else if (row == 0) { 
+            for (int i = image->getNumTags() - 1; i >= 0; --i) {
+                if (layeredVisualizer->getUserName() == image->getTag(i)) {
+                    return createIndex(row, column, (void*)getData(i, -1));
+                }
+            }
+        }
         return QModelIndex();
     } else {
         treedata* td = static_cast<treedata*>(parent.internalPointer());
@@ -396,7 +430,7 @@ QModelIndex dicom::LayeredModelView::parent( const QModelIndex &child ) const
     if (child.isValid()) {
         treedata* td = static_cast<treedata*>(child.internalPointer());
         if (td->idx != -1) {
-            return createIndex(td->tag, 0, (void*)getData(td->tag, -1));
+            return createIndex(layeredVisualizer->userIsReviewer() ? td->tag : 0, 0, (void*)getData(td->tag, -1));
         }
     }
     return QModelIndex();
@@ -429,8 +463,19 @@ void dicom::LayeredModelView::refreshSelected()
 dicom::LayeredModelView::Expands dicom::LayeredModelView::getExpands() const
 {
     Expands exp;
-    for (int row = image->getNumTags() - 1; row >= 0; --row) {
-        exp.push_back(std::make_pair(createIndex(row, 0, (void*)getData(row, -1)), image->getTagVisible(image->getTag(row))));
+    if (layeredVisualizer->userIsReviewer()) {
+        for (int row = image->getNumTags() - 1; row >= 0; --row) {
+            exp.push_back(std::make_pair(createIndex(row, 0, (void*)getData(row, -1)), image->getTagVisible(image->getTag(row))));
+        }
+    } else {
+        int row = -1;
+        for (int i = image->getNumTags() - 1; i >= 0; --i) {
+            if (image->getTag(i) == layeredVisualizer->getUserName()) {
+                exp.push_back(std::make_pair(createIndex(0, 0, (void*)getData(i, -1)), image->getTagVisible(image->getTag(i))));
+                break;
+            }
+        }
+        
     }
     return exp;
 }

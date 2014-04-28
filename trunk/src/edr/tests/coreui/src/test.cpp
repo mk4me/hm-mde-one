@@ -2,9 +2,13 @@
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 #include <utils/Debug.h>
+#include <QtGui/QApplication>
 
 int main(int argc, char* argv[])
 {
+
+    int arg = 0;
+    QApplication app(arg, nullptr);
 
     // Get the top level suite from the registry
     CppUnit::Test *suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
@@ -14,8 +18,7 @@ int main(int argc, char* argv[])
     runner.addTest( suite );
 
     // Change the default outputter to a compiler error format outputter
-    runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),
-    std::cerr ) );
+    //runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(), std::cerr ) );
     // Run the tests.
     bool wasSucessful = runner.run();
 

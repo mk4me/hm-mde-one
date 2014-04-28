@@ -5,6 +5,7 @@
 #include <corelib/IHierarchyItem.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/AbstractFilterCommand.h>
+#include <utils/modeltest.h>
 
 
 using namespace coreUI;
@@ -13,7 +14,9 @@ HierarchyTreeModel::HierarchyTreeModel(QObject *parent) :
     QAbstractItemModel(parent),
     currentFilter(new core::NullFilter())
 {
-        
+#ifdef _DEBUG
+    new ModelTest(this, this);
+#endif
 }
 
 HierarchyTreeModel::~HierarchyTreeModel()
@@ -241,7 +244,7 @@ int coreUI::HierarchyTreeModel::getNumChildren() const
 
 core::IHierarchyItemConstPtr coreUI::HierarchyTreeModel::getChild( int idx )
 {
-    return roots[idx];
+    return rootOrigins[idx];
 }
 
 

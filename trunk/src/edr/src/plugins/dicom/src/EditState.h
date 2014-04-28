@@ -134,6 +134,7 @@ private:
     LayeredStateMachine* machine;
     bool possibleMove;
     int delPointIdx;
+    utils::weak_ptr<QMenu> rightClickMenu;
 };
 DEFINE_SMART_POINTERS(EditState);
 

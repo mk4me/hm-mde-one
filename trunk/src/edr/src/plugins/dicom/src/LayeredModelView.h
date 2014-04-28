@@ -68,7 +68,7 @@ public:
     QPixmap getItemColorPixmap( ILayerItemConstPtr itm ) const;
 private:
     ILayeredImagePtr image;
-	LayeredImageVisualizer* parent_;
+	LayeredImageVisualizer* layeredVisualizer;
     
 Q_SIGNALS:
     void editCompleted(const QString &);

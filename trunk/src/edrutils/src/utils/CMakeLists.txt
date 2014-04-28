@@ -42,6 +42,8 @@ SET_PUBLIC_HEADERS(
 	ICommandStack.h
 	CommandStack.h
 	StreamData.h
+	dynamictreemodel.h
+	modeltest.h
 )
 
 #------------------------------------------------------------------------------
@@ -54,6 +56,8 @@ SET_SOURCE_FILES(
 	TypeInfo.cpp
 	ObjectWrapper.cpp
 	CommandStack.cpp
+	dynamictreemodel.cpp
+	modeltest.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(
@@ -62,6 +66,8 @@ SET_CONFIGURATION_INPUT_FILES(
 
 SET_MOC_FILES(
 	CommandStack.h
+	dynamictreemodel.h
+	modeltest.h
 )
 
 CONFIGURE_PUBLIC_HEADER("Config.h.in" "Config.h")

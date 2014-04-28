@@ -109,76 +109,7 @@ void HierarchyTest::testShallowCopy()
     CPPUNIT_ASSERT(child2Copy->getData() == child2->getData());
 }
 
-void HierarchyTest::testModel()
-{
-    coreUI::HierarchyTreeModel model;
-    core::IHierarchyItemPtr rootItem1 = createSimpleTree();
-    core::IHierarchyItemPtr rootItem2 = createSimpleTree();
-    core::IHierarchyItemPtr rootItem3 = createSimpleTree();
 
-    model.addRootItem(rootItem1);
-    model.addRootItem(rootItem2);
-
-    CPPUNIT_ASSERT(model.getNumChildren() == 2);
-    CPPUNIT_ASSERT(!rootItem1->getParent());
-    CPPUNIT_ASSERT_THROW(model.addRootItem(rootItem1), std::runtime_error);
-    CPPUNIT_ASSERT_THROW(model.removeRootItem(rootItem3), std::runtime_error);
-    model.addRootItem(rootItem3);
-    CPPUNIT_ASSERT(model.getNumChildren() == 3);
-    CPPUNIT_ASSERT(model.getChild(0) == rootItem1);
-    CPPUNIT_ASSERT(model.getChild(2) == rootItem3);
-    model.removeRootItem(rootItem3);
-    CPPUNIT_ASSERT(model.getNumChildren() == 2);
-
-    
-
-    core::IMemoryDataManagerHierarchy::HierarchyChange change;
-    change.value = rootItem3;
-    change.modification = core::IDataManagerReader::ADD_OBJECT;
-    model.applyChange(change);
-    CPPUNIT_ASSERT(model.getNumChildren() == 3);
-    CPPUNIT_ASSERT(model.getChild(2) == rootItem3);
-
-    core::IMemoryDataManagerHierarchy::HierarchyChange change1;
-    core::IMemoryDataManagerHierarchy::HierarchyChange change2;
-    core::IMemoryDataManagerHierarchy::HierarchyChange change3;
-
-    change1.value = createSimpleTree();
-    change1.modification = core::IDataManagerReader::ADD_OBJECT;
-
-    change2.value = rootItem2;
-    change2.modification = core::IDataManagerReader::UPDATE_OBJECT;
-
-    change3.value = rootItem1;
-    change3.modification = core::IDataManagerReader::REMOVE_OBJECT;
-    
-    core::IMemoryDataManagerHierarchy::HierarchyChangeList l;
-    l.push_back(change1);
-    l.push_back(change2);
-    l.push_back(change3);
-
-    model.applyChanges(l);
-    CPPUNIT_ASSERT(model.getNumChildren() == 3);
-    CPPUNIT_ASSERT(model.getChild(2) == change1.value);
-
-    CPPUNIT_ASSERT_THROW(model.applyChanges(l), std::runtime_error);
-
-    CPPUNIT_ASSERT(model.getNumChildren() == 3);
-    CPPUNIT_ASSERT(model.getChild(2) == change1.value);
-}
-
-void HierarchyTest::testModelView()
-{
-    core::IHierarchyItemPtr rootItem1 = createSimpleTree();
-    core::IHierarchyItemPtr rootItem2 = createSimpleTree();
-    core::IHierarchyItemPtr rootItem3 = createSimpleTree();
-    coreUI::HierarchyTreeModel model;
-    model.addRootItem(rootItem1);
-    model.addRootItem(rootItem2);
-    model.addRootItem(rootItem3);
-    QTreeView view;
-    view.setModel(&model);
-}
 
 core::IHierarchyItemPtr HierarchyTest::createSimpleTree()
 {
