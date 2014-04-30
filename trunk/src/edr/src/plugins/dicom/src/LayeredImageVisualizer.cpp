@@ -380,17 +380,13 @@ void dicom::LayeredImageVisualizer::removeSelectedLayers()
         int tagsNo = image->getNumTags();
         for (int iTag = 0; iTag < tagsNo; ++iTag) {
             auto tag = image->getTag(iTag);
-            for (int itm = image->getNumGraphicLayerItems(tag) - 1; itm >= 0; --itm) {
+            for (int itm = image->getNumLayerItems(tag) - 1; itm >= 0; --itm) {
 
-				auto li = image->getLayerGraphicItem(tag, itm);
+				auto li = image->getLayerItem(tag, itm);
+				auto pl = utils::dynamic_pointer_cast<PointsLayer>(li);
 
-				if (li->getSelected() == true) {
-
-					auto pl = utils::dynamic_pointer_cast<PointsLayer>(li);
-
-					if(pl != nullptr){
-						serie->removeLayer(iTag, itm);
-					}
+				if (pl != nullptr && pl->getSelected() == true) {
+					serie->removeLayer(iTag, itm);
                 }
             }
         }
