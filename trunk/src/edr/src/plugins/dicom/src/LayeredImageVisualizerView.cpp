@@ -195,14 +195,18 @@ void dicom::LayeredImageVisualizerView::requestAnnotationVerification()
 	}
 
 	try{
-		//model->trySave();
-		model->uploadSerie();
-		model->setStatus(webservices::xmlWsdl::AnnotationStatus::ReadyForReview, getComment(tr("Comment")));
-		setActionsEnabled(false);
-		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
-		auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
-        setAnnotationStatus(as.status);
-		refreshChat(as);
+		auto reply = QMessageBox::question(this, tr("Confirm"), tr("Are you sure you want to send this annotation to review?"), QMessageBox::Yes | QMessageBox::No);
+		if (reply == QMessageBox::Yes) {
+			//model->trySave();
+			model->uploadSerie();
+			model->setStatus(webservices::xmlWsdl::AnnotationStatus::ReadyForReview, getComment(tr("Comment")));
+			setActionsEnabled(false);
+			auto service = core::queryService<IDicomService>(plugin::getServiceManager());
+			auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
+			setAnnotationStatus(as.status);
+			refreshChat(as);
+		}
+		
 	}catch(...){
 
 	}

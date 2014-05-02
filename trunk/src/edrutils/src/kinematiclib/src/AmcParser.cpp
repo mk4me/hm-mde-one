@@ -95,13 +95,15 @@ void AmcParser::parse(SkeletalDataPtr data, const std::string& filename )
             iss.clear();
 			SkeletalData::singleJointStatePtr jointState(new SkeletalData::singleJointState);
             iss >> jointState->name;
-            jointState->channelValues.clear();
-            
-            double val = 0.0;
-            while (iss >> val) {
-                jointState->channelValues.push_back(val);
-            }
-            frame->jointsData.push_back(jointState);
+			if (!jointState->name.empty()) {
+				jointState->channelValues.clear();
+
+				double val = 0.0;
+				while (iss >> val) {
+					jointState->channelValues.push_back(val);
+				}
+				frame->jointsData.push_back(jointState);
+			}
         }
      }
      frames.push_back(frame);
