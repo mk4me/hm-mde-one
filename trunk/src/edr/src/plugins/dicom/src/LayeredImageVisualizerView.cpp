@@ -190,8 +190,7 @@ void dicom::LayeredImageVisualizerView::rejectAnnotation()
 void dicom::LayeredImageVisualizerView::requestAnnotationVerification()
 {
 
-	if (verifySerie() == false ||
-		QMessageBox::question(this, tr("Annotation status change request"), tr("Are you sure you want to change annotation status?")) == QMessageBox::No){
+	if (verifySerie() == false){
 		return;
 	}
 
