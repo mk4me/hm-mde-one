@@ -89,9 +89,14 @@ void dicom::BackgroundLayer::lazy() const
         pixmap = QPixmap(pixmapPath);
     }
     if (crop.isEmpty()) {
-        crop = pixmap.rect();
-        cropped = getPixmap().copy(crop);
-        pixmapItem->setPixmap(cropped);
+
+		if(pixmap.isNull() == true){
+			PLUGIN_LOG_INFO("Background layer lazy initialization failed for pixmapPath: " << pixmapPath.toStdString());
+		}else{
+			crop = pixmap.rect();
+			cropped = pixmap.copy(crop);
+			pixmapItem->setPixmap(cropped);
+		}
     }
 }
 

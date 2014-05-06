@@ -12,35 +12,42 @@
 
 C3DParser::C3DParser()
 {
-    // sztywne stworzenie obiektów, zachowanie kompatybilności
-	for(int i = 0; i < 4; ++i){
-		GRFChannels.push_back(core::ObjectWrapper::create<GRFChannel>());
-	}
-	for(int i = 0; i < 16; ++i){
-		EMGChannels.push_back(core::ObjectWrapper::create<EMGChannel>());
-	}
-
-    // GRF i EMG są dosepne tez poprzez standardowe kolekcje
-	GRFs = core::ObjectWrapper::create<GRFCollection>();
-	EMGs = core::ObjectWrapper::create<EMGCollection>();
-    // reszta kolekcji już bez udziwnien
-	markerChannels = core::ObjectWrapper::create<MarkerCollection>();
-	forceChannels  = core::ObjectWrapper::create<ForceCollection>();
-	angleChannels  = core::ObjectWrapper::create<AngleCollection>();
-	momentChannels = core::ObjectWrapper::create<MomentCollection>();
-	powerChannels  = core::ObjectWrapper::create<PowerCollection>();
-	allEvents = core::ObjectWrapper::create<C3DEventsCollection>();
-    movieDelays = core::ObjectWrapper::create<MovieDelays>();
+    
 }
 
 C3DParser::~C3DParser()
 {
+
+}
+
+void C3DParser::initObjects(utils::ObjectsVector & objects)
+{
+	// sztywne stworzenie obiektów, zachowanie kompatybilności
+	for (int i = 0; i < 4; ++i){
+		objects.push_back(utils::ObjectWrapper::create<GRFChannel>());
+	}
+	for (int i = 0; i < 16; ++i){
+		objects.push_back(utils::ObjectWrapper::create<EMGChannel>());
+	}
+
+	// GRF i EMG są dosepne tez poprzez standardowe kolekcje
+	objects.push_back(utils::ObjectWrapper::create<GRFCollection>());
+	objects.push_back(utils::ObjectWrapper::create<EMGCollection>());
+
+	objects.push_back(utils::ObjectWrapper::create<C3DEventsCollection>());
+	objects.push_back(utils::ObjectWrapper::create<MovieDelays>());
+
+	// reszta kolekcji już bez udziwnien
+	objects.push_back(utils::ObjectWrapper::create<MarkerCollection>());
+	objects.push_back(utils::ObjectWrapper::create<ForceCollection>());
+	objects.push_back(utils::ObjectWrapper::create<AngleCollection>());
+	objects.push_back(utils::ObjectWrapper::create<MomentCollection>());
+	objects.push_back(utils::ObjectWrapper::create<PowerCollection>());
 }
 
 void C3DParser::parse( const std::string & source  )
 {
 	core::Filesystem::Path path(source);
-    //path = std::string("C:/Users/Wojciech/Desktop/poprawiony-trial/2011-10-28-B0047-S02-T04.c3d");
 	parserPtr = utils::make_shared<c3dlib::C3DParser>();
 
     std::vector<std::string> files;
@@ -48,8 +55,10 @@ void C3DParser::parse( const std::string & source  )
 	std::string importWarnings;
     parserPtr->importFrom(files, importWarnings);
 
-	MovieDelaysPtr delays = utils::make_shared<MovieDelays>(parserPtr->getMovieDelays());
-    movieDelays->set(delays);
+	utils::ObjectsVector localData;
+
+	initObjects(localData);
+
     // wczytanie danych analogowych
     GRFCollectionPtr grfs(new GRFCollection());
     EMGCollectionPtr e(new EMGCollection());
@@ -57,25 +66,19 @@ void C3DParser::parse( const std::string & source  )
     {
         for (int i = 0; i < 4; ++i) {
             GRFChannelPtr ptr(new GRFChannel(*parserPtr , i));
-            GRFChannels[i]->set(ptr);
-			GRFChannels[i]->setMetadata("core/name", ptr->getName());
-            GRFChannels[i]->setMetadata("core/source", path.string());
+            localData[i]->set(ptr);			
             grfs->addChannel(ptr);
         }
 
-		GRFs->set(grfs);
-        GRFs->setMetadata("core/source", path.string());
+		localData[20]->set(grfs);        
 
         for (int i = 12; i < 28; ++i) {
             EMGChannelPtr ptr(new EMGChannel(*parserPtr , i));
-            EMGChannels[i-12]->set(ptr);
-			EMGChannels[i-12]->setMetadata("core/name", ptr->getName());
-			EMGChannels[i-12]->setMetadata("core/source", path.string());
+            localData[4+i-12]->set(ptr);			
             e->addChannel(ptr);
         }
         
-		EMGs->set(e);
-        EMGs->setMetadata("core/name", path.string());
+		localData[21]->set(e);        
     }
 
     // wczytanie eventów
@@ -87,8 +90,11 @@ void C3DParser::parse( const std::string & source  )
         allEventsCollection->addEvent(e);
 	}
     
-	allEvents->set(allEventsCollection);
-	allEvents->setMetadata("core/source", path.string());
+	localData[22]->set(allEventsCollection);	
+
+	MovieDelaysPtr delays = utils::make_shared<MovieDelays>(parserPtr->getMovieDelays());
+	localData[23]->set(delays);	
+
     // wczytanie plików *vsk, które dostarczaja opis do markerów
     core::Filesystem::Path dir = path.parent_path();
     auto vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
@@ -103,17 +109,11 @@ void C3DParser::parse( const std::string & source  )
 	MomentCollectionPtr moments(new MomentCollection);
 	PowerCollectionPtr powers(new PowerCollection);
 
-	powerChannels->set(powers);
-	powerChannels->setMetadata("core/source", path.string());
-
-	markerChannels->set(markers);
-	markerChannels->setMetadata("core/source", path.string());
-	forceChannels->set(forces);
-	forceChannels->setMetadata("core/source", path.string());
-	angleChannels->set(angles);
-	angleChannels->setMetadata("core/source", path.string());
-	momentChannels->set(moments);
-	momentChannels->setMetadata("core/source", path.string());
+	localData[24]->set(markers);
+	localData[25]->set(forces);
+	localData[26]->set(angles);
+	localData[27]->set(moments);
+	localData[28]->set(powers);	
 
 	int markersCount = parserPtr->getNumPoints();
 	for (int i = 0; i < markersCount; ++i) {
@@ -155,6 +155,31 @@ void C3DParser::parse( const std::string & source  )
         }
 		grfs->setPlatforms(platforms);
 	} catch(...) {}
+	this->path = source;
+	data.swap(localData);
+}
+
+void C3DParser::reset()
+{
+	std::string().swap(path);
+	utils::ObjectsVector().swap(data);
+}
+
+void C3DParser::getObject(core::Variant & object, const unsigned int idx) const
+{
+	object.set(data[idx]);
+	object.setMetadata("core/source", path);
+	if (0 <= idx && idx < 4){
+		GRFChannelPtr ptr = data[idx]->get();
+		object.setMetadata("core/name", ptr->getName());
+	}
+	else if(idx < 20){
+		EMGChannelPtr ptr = data[idx]->get();
+		object.setMetadata("core/name", ptr->getName());
+	}
+	else if (idx < 22){
+		object.setMetadata("core/name", path);
+	}
 }
 
 plugin::IParser* C3DParser::create() const
@@ -167,34 +192,15 @@ void C3DParser::acceptedExpressions(Expressions & expressions) const
     ExpressionDescription expDesc;
     expDesc.description = "C3D format";
 
-    expDesc.types.insert(typeid(GRFChannel));
-    expDesc.types.insert(typeid(EMGChannel));
-    expDesc.types.insert(typeid(GRFCollection));
-    expDesc.types.insert(typeid(EMGCollection));
-    expDesc.types.insert(typeid(MarkerCollection));
-    expDesc.types.insert(typeid(ForceCollection));
-    expDesc.types.insert(typeid(AngleCollection));
-    expDesc.types.insert(typeid(MomentCollection));
-    expDesc.types.insert(typeid(PowerCollection));
-    expDesc.types.insert(typeid(C3DEventsCollection));
-    expDesc.types.insert(typeid(MovieDelays));
+	utils::ObjectsVector localData;
+	initObjects(localData);
+	expDesc.objectsTypes.reserve(localData.size());
+
+	for (auto it = localData.begin(); it != localData.end(); ++it){
+		expDesc.objectsTypes.push_back((*it)->getTypeInfo());
+	}	
 
     expressions.insert(Expressions::value_type(".*\\.c3d$", expDesc));
-}
-
-void C3DParser::getObjects( core::Objects& objects )
-{
-	objects.insert(GRFChannels.begin(), GRFChannels.end());
-	objects.insert(EMGChannels.begin(), EMGChannels.end());
-	objects.insert(markerChannels);    objects.insert(allEvents);
-	objects.insert(EMGs);
-	objects.insert(GRFs);
-	objects.insert(forceChannels );
-	objects.insert(angleChannels );
-	objects.insert(momentChannels);
-	objects.insert(powerChannels );
-    objects.insert(movieDelays   );
-	//objects.insert(c3dMisc);
 }
 
 void C3DParser::saveFile( const core::Filesystem::Path& path )

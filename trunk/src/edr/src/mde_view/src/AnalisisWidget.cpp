@@ -456,7 +456,7 @@ void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::
                 core::VisualizerPtr visualizer = vw->getVisualizer();
                 auto hierarchyManager = plugin::getDataHierachyManagerReader();
                 bool compatibile = false;
-                core::TypeInfoSet supportedTypes;
+                utils::TypeInfoSet supportedTypes;
                 visualizer->getSupportedTypes(supportedTypes);
 
                 std::vector<utils::TypeInfo> types = helper->getTypeInfos();
@@ -658,7 +658,7 @@ void AnalisisWidget::removeFromVisualizers( HelperAction* action, bool once)
             // na razie kopia, w przeciwnym razie jest problem z usuwaniem.
             AnalisisModel::DataItemDescriptionConstPtr desc = *it;
 
-			AnalisisModel::TimeDataItemDescriptionConstPtr timeDesc = core::dynamic_pointer_cast<const AnalisisModel::TimeDataItemDescription>(desc);
+			AnalisisModel::TimeDataItemDescriptionConstPtr timeDesc = utils::dynamic_pointer_cast<const AnalisisModel::TimeDataItemDescription>(desc);
             // jeśli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
             // to znaczy, ze chcemy usunąć dane z wszystkich wizualizatorw
             if (timeDesc != nullptr && action->getVisualizer() == nullptr || desc->visualizerWidget->getVisualizer() == action->getVisualizer()) {

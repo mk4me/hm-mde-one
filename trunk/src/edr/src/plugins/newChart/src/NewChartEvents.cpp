@@ -93,7 +93,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
                 if (currentSegment) {
                     UTILS_ASSERT(currentSegment->event1);
                     currentSegment->end = event->getTime();
-                    ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
+                    ScalarChannelReaderInterfacePtr nonConstChannel(utils::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
                     currentSegment->stats = ScalarChannelStatsPtr(new ScalarChannelStats(nonConstChannel, currentSegment->begin, currentSegment->end));
                     collection.push_back(currentSegment);
                 }
@@ -108,7 +108,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
     }
 
     for (unsigned int i = 0; i < collection.size(); ++i) {
-        ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
+        ScalarChannelReaderInterfacePtr nonConstChannel(utils::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
         SegmentPtr segment = collection[i];
         QString name = QString("%1:%2").arg(scalar->getName().c_str()).arg(i);
         segment->normalizedCurve = PlotCurvePtr(new QwtPlotCurve(name));

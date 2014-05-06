@@ -20,7 +20,6 @@ void CoreConsoleWidget::init()
 {
     addAction(ui->actionToogle_word_wrap);
 	addAction(ui->actionClear_console);
-	setWindowTitle(tr("Console"));
 }
 
 void CoreConsoleWidget::logEntry( const CoreConsoleWidgetEntry& entry )

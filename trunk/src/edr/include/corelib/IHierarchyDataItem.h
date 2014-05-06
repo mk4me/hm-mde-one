@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_MDE_VIEW__IANALYSISDATAITEM_H__
 #define HEADER_GUARD_MDE_VIEW__IANALYSISDATAITEM_H__
 
-#include <utils/ObjectWrapper.h>
+#include <corelib/Variant.h>
 #include <corelib/HierarchyHelper.h>
 
 namespace core {
@@ -28,7 +28,7 @@ public:
 	//! \return domyœlny helper dla danych, najlepiej do nich pasuj¹cy, domyœlnie null
 	virtual HierarchyHelperPtr getDefaultHelper() const { return HierarchyHelperPtr(); }
     //! \return wrapper zwi¹zany z elementem w hierarchii, mo¿e byæ pusty wskaŸnik, jeœli dane s¹ na wy¿szym poziomie abstrakcji   
-    virtual utils::ObjectWrapperConstPtr getData() const = 0;
+	virtual VariantConstPtr getData() const = 0;
 };
 DEFINE_SMART_POINTERS(IHierarchyDataItem);
 

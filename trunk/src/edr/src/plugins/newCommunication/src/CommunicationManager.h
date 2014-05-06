@@ -550,7 +550,7 @@ private:
 	//! Wątek obsługujący komunikację
 	core::IThreadPtr executorThread;
 	//! Wykonawca zleceń ściągania danych
-	core::shared_ptr<RequestsExecutor> requestsExecutor;
+	utils::shared_ptr<RequestsExecutor> requestsExecutor;
 	//! Warunek oczekiwania na zlecenia w kolejce
 	QWaitCondition requestsWait_;
 	//! Obiekt synchronizujący kolejkę zleceń

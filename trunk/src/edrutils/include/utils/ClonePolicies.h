@@ -14,7 +14,7 @@ namespace utils {
     struct ClonePolicyCopyConstructor
     {
         template <typename T>
-        T* clone(const T* s) const {
+        static T* clone(const T* s) {
             return new T(*s);
         }
     };
@@ -23,7 +23,7 @@ namespace utils {
     struct ClonePolicyVirtualCloneMethod
     {
         template <typename T>
-        T* clone(T* s) const {
+		static T* clone(T* s) {
             auto copy = s->clone();
             T* result = dynamic_cast<T*>(copy);
             UTILS_ASSERT(result);
@@ -35,7 +35,7 @@ namespace utils {
     struct ClonePolicyOsgCloneMethod
     {
         template <typename T>
-        T* clone(T* s) const {
+		static T* clone(T* s) {
             auto copy = osg::clone(s, osg::CopyOp::DEEP_COPY_ALL);
             T* result = dynamic_cast<T*>(copy);
             UTILS_ASSERT(result);
@@ -47,7 +47,7 @@ namespace utils {
     struct ClonePolicyForbidden
     {
         template <typename T>
-        T* clone(const T* s) const {
+		static T* clone(const T* s) {
             //UTILS_STATIC_ASSERT(false, "Cloning forbidden!");
             throw std::runtime_error("Cloning forbidden!");
         }

@@ -167,7 +167,7 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
             if (td->idx != -1) {
                 std::string tag = image->getTag(td->tag);
                 ILayerItemConstPtr itm = image->getLayerItem(tag, index.row());
-				auto gitm = core::dynamic_pointer_cast<const ILayerGraphicItem>(itm);
+				auto gitm = utils::dynamic_pointer_cast<const ILayerGraphicItem>(itm);
                 QFont f;
 				if(gitm != nullptr){
 					f.setBold(gitm->getSelected());

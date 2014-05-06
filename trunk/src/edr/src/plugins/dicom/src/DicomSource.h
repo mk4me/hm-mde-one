@@ -39,16 +39,16 @@ DEFINE_SMART_POINTERS(DicomLoader);
 class LayerHelper : public core::HierarchyHelper
 {
 public:
-    LayerHelper(const core::ObjectWrapperConstPtr& imgWrapper);
+    LayerHelper(const core::VariantConstPtr& imgWrapper);
     virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series );
     virtual core::VisualizerPtr createVisualizer( core::IVisualizerManager* manager );
-    virtual std::vector<core::TypeInfo> getTypeInfos() const;
+    virtual std::vector<utils::TypeInfo> getTypeInfos() const;
 
 protected:
     LayerHelper() {}
 
 private:
-    utils::ObjectWrapperConstPtr imageWrapper;
+    core::VariantConstPtr imageWrapper;
 
 };
 DEFINE_SMART_POINTERS(LayerHelper);
@@ -70,7 +70,7 @@ public:
     virtual QWidget* getWidget();
     virtual QWidget* getControlWidget();
     virtual QWidget* getSettingsWidget();
-    virtual void getOfferedTypes( core::TypeInfoList & offeredTypes ) const;
+    virtual void getOfferedTypes( utils::TypeInfoList & offeredTypes ) const;
     void addFile( const core::Filesystem::Path& path );
     void openInternalDataMainFile( core::Filesystem::Path path );
 

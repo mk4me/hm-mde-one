@@ -906,7 +906,7 @@ void DataSourceWidget::onLogin()
 		//wyładować wszystkie dane
 		for(auto it = filesLoadedToDM.begin(); it != filesLoadedToDM.end(); ++it){
 			try{
-				std::vector<core::ObjectWrapperPtr> objects;
+				std::vector<core::VariantPtr> objects;
 				const auto & p = dataSource->fileStatusManager->filePath(*it);
 				dataSource->fileDM->removeFile(p);
 				//unloadedFiles.insert(*it);
@@ -1228,7 +1228,7 @@ QString DataSourceWidget::formatFileSize(unsigned long long size)
 void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget * perspective)
 {
 	auto load = menu.addAction(tr("Load"));
-	//auto unload = menu.addAction(tr("Unload"));
+	auto unload = menu.addAction(tr("Unload"));
 	menu.addSeparator();
 #ifdef DEMO_VERSION_COMMUNICATION
 	auto download = menu.addAction(tr("Download - not available in demo version"));
@@ -1242,7 +1242,7 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 	//auto refresh = menu.addAction(tr("Refresh status"));
 
 	load->setEnabled(false);
-	//unload->setEnabled(false);
+	unload->setEnabled(false);
 	download->setEnabled(false);
     force->setEnabled(false);
 	//refresh->setEnabled(false);
@@ -1325,8 +1325,8 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 				if(filesToUnload.empty() == false){
 					//! TODO - sprawdzic czy wyzej jeszcze ktos tego nie trzyma!
 					filesToUnload.insert(additionalFilesToUnload.begin(), additionalFilesToUnload.end());
-					//unload->setEnabled(true);
-					//connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
+					unload->setEnabled(true);
+					connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
 				}
 
         #ifndef DEMO_VERSION_COMMUNICATION
@@ -1804,26 +1804,48 @@ void DataSourceWidget::onLoad()
 	loadFiles(filesToLoad);
 }
 
-void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core::ObjectWrapperConstPtr>> & loadedFilesObjects)
+void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core::VariantConstPtr>> & loadedFilesObjects)
 {
 	typedef std::map<int, std::set<int>> MotionFiles;
 	typedef std::map<int, std::pair<std::set<int>, MotionFiles>> SessionFiles;
 	typedef std::map<int, SessionFiles> SubjectFiles;
 
 
-	class JointsInitializer
+	class JointsInitializer : public core::IVariantInitializer
 	{
 	public:
-		  static void initialize(core::ObjectWrapper & object, const core::ObjectWrapperConstPtr & dataWrapper, const core::ObjectWrapperConstPtr & modelWrapper)
-		  {
-			  kinematic::SkeletalDataConstPtr data;
-			  kinematic::SkeletalModelConstPtr model;
-			  if(dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
-				  kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
-				  joints->setSkeletal(model, data);
-				  object.trySet(joints);
-			  }
-		  }
+
+		JointsInitializer(core::VariantConstPtr dataWrapper,
+		core::VariantConstPtr modelWrapper)
+		: dataWrapper(dataWrapper), modelWrapper(modelWrapper)
+		{
+
+		}
+
+		virtual ~JointsInitializer()
+		{
+
+		}
+
+		virtual void initialize(core::Variant * object)
+		{
+			kinematic::SkeletalDataConstPtr data;
+			kinematic::SkeletalModelConstPtr model;
+			if(dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
+				kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
+				joints->setSkeletal(model, data);
+				object->set(joints);
+			}
+		}
+
+		virtual IVariantInitializer * clone() const
+		{
+			return new JointsInitializer(dataWrapper, modelWrapper);
+		}
+
+	private:
+		core::VariantConstPtr dataWrapper;
+		core::VariantConstPtr modelWrapper;
 	};
 
 	auto subjectService = core::queryService<PluginSubject::ISubjectService>(plugin::getServiceManager());
@@ -1873,7 +1895,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		//tworzę subject jeśli to konieczne!!
 
 		PluginSubject::SubjectPtr subPtr;
-		core::ObjectWrapperPtr subOW;
+		core::VariantPtr subOW;
 
 		auto subIT = subjectsMapping.find(subjectIT->first);
 		if(subIT != subjectsMapping.end()){
@@ -1915,7 +1937,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		for(auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
 
 			PluginSubject::SessionPtr sPtr;
-			core::ObjectWrapperPtr sOW;
+			core::VariantPtr sOW;
 
 			auto sIT = sessionsMapping.find(sessionIT->first);
 			if(sIT != sessionsMapping.end()){
@@ -1927,7 +1949,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			}else{
 				//tworzę sesję
 				//generuję zbiór ow dla sesji
-				std::vector<core::ObjectWrapperConstPtr> sessionObjects;
+				std::vector<core::VariantConstPtr> sessionObjects;
 				for(auto fIT = sessionIT->second.first.begin(); fIT != sessionIT->second.first.end(); ++fIT){
 					//pobieram obiekty
 					const auto & objects = loadedFilesObjects.find(*fIT)->second;
@@ -1942,7 +1964,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				//dane antropometryczne
 				auto antro = createAntropometricData(s->performerConf->attrs);
 				//tworze OW dla danych antropometrycznych
-				auto antroOW = core::ObjectWrapper::create<communication::AntropometricData>();
+				auto antroOW = core::Variant::create<communication::AntropometricData>();
 				antroOW->set(antro);
 
 				sessionObjects.push_back(antroOW);
@@ -1993,7 +2015,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				}else{
 					//tworzę sesję
 					//generuję zbiór ow dla motiona
-					std::vector<core::ObjectWrapperConstPtr> motionObjects;
+					std::vector<core::VariantConstPtr> motionObjects;
 					for(auto fIT = motionIT->second.begin(); fIT != motionIT->second.end(); ++fIT){
 						//pobieram obiekty
 						const auto & objects = loadedFilesObjects.find(*fIT)->second;
@@ -2007,29 +2029,30 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 
 					//sprawdzamy joint angles - jeśli nie ma budujemy i dodajemy do DM
-					core::ObjectWrapperConstPtr dataWrapper;
-					core::ObjectWrapperConstPtr modelWrapper;
+					core::VariantConstPtr dataWrapper;
+					core::VariantConstPtr modelWrapper;
 					for (auto it = motionObjects.begin(); it != motionObjects.end(); ++it) {
-						if ((*it)->isSupported(typeid(kinematic::JointAnglesCollection))) {
+						if ((*it)->data()->isSupported(typeid(kinematic::JointAnglesCollection))) {
 							return;
-						} else if ((*it)->isSupported(typeid(kinematic::SkeletalData))) {
+						}
+						else if ((*it)->data()->isSupported(typeid(kinematic::SkeletalData))) {
 							dataWrapper = *it;
 							break;
 						}
 					}
 
-					core::ObjectWrapperCollection modelWrappers(typeid(kinematic::SkeletalModel), false);
+					core::VariantsCollection modelWrappers(typeid(kinematic::SkeletalModel), false);
 					sPtr->getObjects(modelWrappers);
 
-					core::ObjectWrapperPtr jointsWrapper;
+					core::VariantPtr jointsWrapper;
 
 					if(modelWrappers.empty() == false){
 
 						modelWrapper = modelWrappers.front();
 						
 						if (dataWrapper && modelWrapper) {
-							jointsWrapper = core::ObjectWrapper::create<kinematic::JointAnglesCollection>();
-							jointsWrapper->setInitializer(core::ObjectWrapper::LazyInitializer(boost::bind(&JointsInitializer::initialize, _1, dataWrapper, modelWrapper)));
+							jointsWrapper = core::Variant::create<kinematic::JointAnglesCollection>();
+							jointsWrapper->setInitializer(core::VariantInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));
 							motionObjects.push_back(jointsWrapper);
 							motionsMapping[motionIT->first].second.push_back(jointsWrapper);
 							transaction->addData(jointsWrapper);
@@ -2045,16 +2068,16 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					}
 
                     if (mPtr->hasObject(typeid(VideoChannel), false) && mPtr->hasObject(typeid(MovieDelays), false)) {
-                        core::ObjectWrapperCollection videoCollection(typeid(VideoChannel), false);
-                        core::ObjectWrapperCollection movieDelaysCollection(typeid(MovieDelays), false);
+                        core::VariantsCollection videoCollection(typeid(VideoChannel), false);
+                        core::VariantsCollection movieDelaysCollection(typeid(MovieDelays), false);
                         mPtr->getObjects(videoCollection);
                         mPtr->getObjects(movieDelaysCollection);
                         if (movieDelaysCollection.size() == 1 ) {
-                            MovieDelaysConstPtr delays = *(movieDelaysCollection.begin())->get();
+                            MovieDelaysConstPtr delays = (*(movieDelaysCollection.begin()))->get();
                             if (delays->size() == videoCollection.size()) {
                                 int i = 0;
                                 for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
-                                    core::ObjectWrapperPtr wrp = utils::const_pointer_cast<core::ObjectWrapper>(*it);
+                                    core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(*it);
                                     wrp->setMetadata("movieDelay", boost::lexical_cast<std::string>(delays->at(i++)));
                                 }
                             } else {
@@ -2119,7 +2142,7 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 		Patient::decodeGender(patient->gender), utils::shared_ptr<const QPixmap>(), disorders));
 
 	//dodaję do DM
-	auto pOW = core::ObjectWrapper::create<communication::IPatient>();
+	auto pOW = core::Variant::create<communication::IPatient>();
 	pOW->set(pPtr);
 
 	dataSource->memoryDM->addData(pOW);
@@ -2265,7 +2288,7 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 				//FIX dla linux RtR
 				//sPtr = sIT->second.first->get();
 				sIT->second.first->tryGet(sPtr);
-				core::ConstObjectsList motions;
+				core::ConstVariantsList motions;
 				sPtr->getMotions(motions);
 				if(motions.empty() == true){
 					//sesja jest pusta - do usunięcia
@@ -2293,7 +2316,7 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 			//FIX dla linux RtR
 			//subPtr = subIT->second.first->get();
 			subIT->second.first->tryGet(subPtr);
-			core::ConstObjectsList sessions;
+			core::ConstVariantsList sessions;
 			subPtr->getSessions(sessions);
 			if(sessions.empty() == true){
 
@@ -2486,7 +2509,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 
 	//! Ładuje pliki do DM	
 	std::set<int> loadedFiles;
-	std::map<int, std::vector<core::ObjectWrapperConstPtr>> loadedFilesObjects;
+	std::map<int, std::vector<core::VariantConstPtr>> loadedFilesObjects;
 	std::map<int, std::string> loadingErrors;
 	std::vector<int> unknownErrors;
 
@@ -2507,10 +2530,10 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 				}
 
 				transaction->addFile(p);
-				core::ConstObjectsList oList;
+				core::ConstVariantsList oList;
 				transaction->getObjects(p, oList);
 				loadedFiles.insert(*it);
-				loadedFilesObjects[*it] = std::vector<core::ObjectWrapperConstPtr>(oList.begin(), oList.end());
+				loadedFilesObjects[*it] = std::vector<core::VariantConstPtr>(oList.begin(), oList.end());
 			}catch(std::exception & e){
 				loadingErrors[*it] = std::string(e.what());
 			}catch(...){
@@ -2568,7 +2591,7 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 
 		for(auto it = files.begin(); it != files.end(); ++it){
 			try{
-				std::vector<core::ObjectWrapperPtr> objects;
+				std::vector<core::VariantPtr> objects;
 				const auto & p = dataSource->fileStatusManager->filePath(*it);
 				transaction->removeFile(p);
 				unloadedFiles.insert(*it);
@@ -2587,7 +2610,10 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
             auto roots = entry->second;
             for (auto it = roots.begin(); it != roots.end(); ++it) {
                 hierarchyTransaction->removeRoot(*it);
+				name2root.erase((*it)->getName());
             }
+
+			files2roots.erase(entry);
         }
 	}
 

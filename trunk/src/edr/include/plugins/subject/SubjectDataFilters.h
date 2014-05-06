@@ -11,7 +11,7 @@
 #define HEADER_GUARD_SUBJECT__IDATAFILTER_H__
 
 #include <plugins/subject/Export.h>
-#include <corelib/BaseDataTypes.h>
+#include <corelib/Variant.h>
 #include <plugins/subject/Types.h>
 
 class ISubjectHierarchyFilter;
@@ -23,16 +23,16 @@ class ISubjectHierarchyFilter
 public:
 	virtual ~ISubjectHierarchyFilter() {}
 
-	virtual void filterSubjects(const core::ConstObjectsList & inputSubjects, core::ConstObjectsList & outputSubjects) const = 0;
-	virtual void filterSubjectData(const core::ObjectWrapperConstPtr & subject, core::ConstObjectsList & outputSubjectData) const = 0;
-	virtual void filterSubjectSessions(const core::ObjectWrapperConstPtr & subject, core::ConstObjectsList & outputSubjectSessions) const = 0;
+	virtual void filterSubjects(const core::ConstVariantsList & inputSubjects, core::ConstVariantsList & outputSubjects) const = 0;
+	virtual void filterSubjectData(const core::VariantConstPtr & subject, core::ConstVariantsList & outputSubjectData) const = 0;
+	virtual void filterSubjectSessions(const core::VariantConstPtr & subject, core::ConstVariantsList & outputSubjectSessions) const = 0;
 
-	virtual void filterSessions(const core::ConstObjectsList & inputSessions, core::ConstObjectsList & outputSessions) const = 0;
-	virtual void filterSessionData(const core::ObjectWrapperConstPtr & session, core::ConstObjectsList & outputSessionData) const = 0;
-	virtual void filterSessionMotions(const core::ObjectWrapperConstPtr & session, core::ConstObjectsList & outputSessionMotions) const = 0;
+	virtual void filterSessions(const core::ConstVariantsList & inputSessions, core::ConstVariantsList & outputSessions) const = 0;
+	virtual void filterSessionData(const core::VariantConstPtr & session, core::ConstVariantsList & outputSessionData) const = 0;
+	virtual void filterSessionMotions(const core::VariantConstPtr & session, core::ConstVariantsList & outputSessionMotions) const = 0;
 
-	virtual void filterMotions(const core::ConstObjectsList & inputMotion, core::ConstObjectsList & outputMotions) const = 0;
-	virtual void filterMotionData(const core::ObjectWrapperConstPtr & motion, core::ConstObjectsList & outputMotionData) const = 0;	
+	virtual void filterMotions(const core::ConstVariantsList & inputMotion, core::ConstVariantsList & outputMotions) const = 0;
+	virtual void filterMotionData(const core::VariantConstPtr & motion, core::ConstVariantsList & outputMotionData) const = 0;	
 };
 
 class PLUGINSUBJECT_EXPORT SubjectHierarchyEmptyFilter : public ISubjectHierarchyFilter
@@ -43,21 +43,21 @@ public:
 
 	virtual ~SubjectHierarchyEmptyFilter();
 
-	virtual void filterSubjects(const core::ConstObjectsList & inputSubjects, core::ConstObjectsList & outputSubjects) const;
+	virtual void filterSubjects(const core::ConstVariantsList & inputSubjects, core::ConstVariantsList & outputSubjects) const;
 
-	virtual void filterSubjectData(const core::ObjectWrapperConstPtr & subject, core::ConstObjectsList & outputSubjectData) const;
+	virtual void filterSubjectData(const core::VariantConstPtr & subject, core::ConstVariantsList & outputSubjectData) const;
 
-	virtual void filterSubjectSessions(const core::ObjectWrapperConstPtr & subject, core::ConstObjectsList & outputSubjectSessions) const;
+	virtual void filterSubjectSessions(const core::VariantConstPtr & subject, core::ConstVariantsList & outputSubjectSessions) const;
 
-	virtual void filterSessions(const core::ConstObjectsList & inputSessions, core::ConstObjectsList & outputSessions) const;
+	virtual void filterSessions(const core::ConstVariantsList & inputSessions, core::ConstVariantsList & outputSessions) const;
 
-	virtual void filterSessionData(const core::ObjectWrapperConstPtr & session, core::ConstObjectsList & outputSessionData) const;
+	virtual void filterSessionData(const core::VariantConstPtr & session, core::ConstVariantsList & outputSessionData) const;
 
-	virtual void filterSessionMotions(const core::ObjectWrapperConstPtr & session, core::ConstObjectsList & outputSessionMotions) const;
+	virtual void filterSessionMotions(const core::VariantConstPtr & session, core::ConstVariantsList & outputSessionMotions) const;
 
-	virtual void filterMotions(const core::ConstObjectsList & inputMotion, core::ConstObjectsList & outputMotions) const;
+	virtual void filterMotions(const core::ConstVariantsList & inputMotion, core::ConstVariantsList & outputMotions) const;
 
-	virtual void filterMotionData(const core::ObjectWrapperConstPtr & motion, core::ConstObjectsList & outputMotionData) const;
+	virtual void filterMotionData(const core::VariantConstPtr & motion, core::ConstVariantsList & outputMotionData) const;
 };
 
 class PLUGINSUBJECT_EXPORT SubjectHierarchyCompoundFilter : public ISubjectHierarchyFilter
@@ -71,21 +71,21 @@ public:
 
 	virtual ~SubjectHierarchyCompoundFilter();
 
-	virtual void filterSubjects(const core::ConstObjectsList & inputSubjects, core::ConstObjectsList & outputSubjects) const;
+	virtual void filterSubjects(const core::ConstVariantsList & inputSubjects, core::ConstVariantsList & outputSubjects) const;
 
-	virtual void filterSubjectData(const core::ObjectWrapperConstPtr & subject, core::ConstObjectsList & outputSubjectData) const;
+	virtual void filterSubjectData(const core::VariantConstPtr & subject, core::ConstVariantsList & outputSubjectData) const;
 
-	virtual void filterSubjectSessions(const core::ObjectWrapperConstPtr & subject, core::ConstObjectsList & outputSubjectSessions) const;
+	virtual void filterSubjectSessions(const core::VariantConstPtr & subject, core::ConstVariantsList & outputSubjectSessions) const;
 
-	virtual void filterSessions(const core::ConstObjectsList & inputSessions, core::ConstObjectsList & outputSessions) const;
+	virtual void filterSessions(const core::ConstVariantsList & inputSessions, core::ConstVariantsList & outputSessions) const;
 
-	virtual void filterSessionData(const core::ObjectWrapperConstPtr & session, core::ConstObjectsList & outputSessionData) const;
+	virtual void filterSessionData(const core::VariantConstPtr & session, core::ConstVariantsList & outputSessionData) const;
 
-	virtual void filterSessionMotions(const core::ObjectWrapperConstPtr & session, core::ConstObjectsList & outputSessionMotions) const;
+	virtual void filterSessionMotions(const core::VariantConstPtr & session, core::ConstVariantsList & outputSessionMotions) const;
 
-	virtual void filterMotions(const core::ConstObjectsList & inputMotion, core::ConstObjectsList & outputMotions) const;
+	virtual void filterMotions(const core::ConstVariantsList & inputMotion, core::ConstVariantsList & outputMotions) const;
 
-	virtual void filterMotionData(const core::ObjectWrapperConstPtr & motion, core::ConstObjectsList & outputMotionData) const;
+	virtual void filterMotionData(const core::VariantConstPtr & motion, core::ConstVariantsList & outputMotionData) const;
 
 private:
 
@@ -96,22 +96,22 @@ class PLUGINSUBJECT_EXPORT SubjectHierarchyTypeFilter : public SubjectHierarchyE
 {
 public:
 
-	SubjectHierarchyTypeFilter(const core::TypeInfo & type);
-	SubjectHierarchyTypeFilter(const core::TypeInfoList & types);
+	SubjectHierarchyTypeFilter(const utils::TypeInfo & type);
+	SubjectHierarchyTypeFilter(const utils::TypeInfoList & types);
 
 	virtual ~SubjectHierarchyTypeFilter();
 
-	virtual void filterSubjects(const core::ConstObjectsList & inputSubjects, core::ConstObjectsList & outputSubjects) const;
+	virtual void filterSubjects(const core::ConstVariantsList & inputSubjects, core::ConstVariantsList & outputSubjects) const;
 
-	virtual void filterSessions(const core::ConstObjectsList & inputSessions, core::ConstObjectsList & outputSessions) const;
+	virtual void filterSessions(const core::ConstVariantsList & inputSessions, core::ConstVariantsList & outputSessions) const;
 
-	virtual void filterMotions(const core::ConstObjectsList & inputMotion, core::ConstObjectsList & outputMotions) const;
+	virtual void filterMotions(const core::ConstVariantsList & inputMotion, core::ConstVariantsList & outputMotions) const;
 
-	virtual void filterMotionData(const core::ObjectWrapperConstPtr & motion, core::ConstObjectsList & outputMotionData) const;
+	virtual void filterMotionData(const core::VariantConstPtr & motion, core::ConstVariantsList & outputMotionData) const;
 
 private:
 
-	core::TypeInfoSet types;
+	utils::TypeInfoSet types;
 };
 
 #endif

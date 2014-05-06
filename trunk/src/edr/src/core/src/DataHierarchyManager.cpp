@@ -5,17 +5,17 @@
 
 namespace core {
 
-ObjectWrapperPtr DataHierarchyManager::createWrapper(const TypeInfo & typeInfo) const
+	VariantPtr DataHierarchyManager::createWrapper(const utils::TypeInfo & typeInfo) const
 {
 	auto it = typesHierarchy.find(typeInfo);
 	if(it != typesHierarchy.end() && it->second.prototype != nullptr) {
-		return it->second.prototype->create();
+		return Variant::create(it->second.prototype->create());
 	}
 
-	return ObjectWrapperPtr();
+	return VariantPtr();
 }
 
-void DataHierarchyManager::getRegisteredTypes(TypeInfoSet & registeredTypes) const
+	void DataHierarchyManager::getRegisteredTypes(utils::TypeInfoSet & registeredTypes) const
 {
 	for(auto it = typesHierarchy.begin(); it != typesHierarchy.end(); ++it){
 		if(it->second.prototype != nullptr){
@@ -24,7 +24,7 @@ void DataHierarchyManager::getRegisteredTypes(TypeInfoSet & registeredTypes) con
 	}
 }
 
-const bool DataHierarchyManager::isRegistered(const core::TypeInfo & typeInfo) const
+const bool DataHierarchyManager::isRegistered(const utils::TypeInfo & typeInfo) const
 {
 	auto it = typesHierarchy.find(typeInfo);
 	if(it == typesHierarchy.end() || it->second.prototype == nullptr) {
@@ -34,7 +34,7 @@ const bool DataHierarchyManager::isRegistered(const core::TypeInfo & typeInfo) c
 	return true;
 }
 
-const bool DataHierarchyManager::isTypeCompatible(const TypeInfo & base, const TypeInfo & derrived) const
+const bool DataHierarchyManager::isTypeCompatible(const utils::TypeInfo & base, const utils::TypeInfo & derrived) const
 {
 	auto baseIT = typesHierarchy.find(base);
 	auto derrivedIT = typesHierarchy.find(derrived);
@@ -46,7 +46,7 @@ const bool DataHierarchyManager::isTypeCompatible(const TypeInfo & base, const T
 	return derrivedIT->second.baseTypes.find(base) != derrivedIT->second.baseTypes.end();
 }
 
-void DataHierarchyManager::getTypeBaseTypes(const TypeInfo & type, TypeInfoSet & baseTypes) const
+void DataHierarchyManager::getTypeBaseTypes(const utils::TypeInfo & type, utils::TypeInfoSet & baseTypes) const
 {
 	auto it = typesHierarchy.find(type);
 	if(it != typesHierarchy.end() && it->second.prototype != nullptr) {
@@ -54,7 +54,7 @@ void DataHierarchyManager::getTypeBaseTypes(const TypeInfo & type, TypeInfoSet &
 	}
 }
 
-void DataHierarchyManager::getTypeDerrivedTypes(const TypeInfo & type, TypeInfoSet & derrivedTypes) const
+void DataHierarchyManager::getTypeDerrivedTypes(const utils::TypeInfo & type, utils::TypeInfoSet & derrivedTypes) const
 {
 	auto it = typesHierarchy.find(type);
 	if(it != typesHierarchy.end() && it->second.prototype != nullptr) {
@@ -62,11 +62,10 @@ void DataHierarchyManager::getTypeDerrivedTypes(const TypeInfo & type, TypeInfoS
 	}
 }
 
-void DataHierarchyManager::registerObjectWrapperPrototype(const ObjectWrapperPtr & owp)
+void DataHierarchyManager::registerObjectWrapperPrototype(const utils::ObjectWrapperPtr & owp)
 {
 	UTILS_ASSERT((owp->getRawPtr() == nullptr), "Obiekt powinien byc pusty jako prototyp");
-	UTILS_ASSERT((owp->initializer().empty() == true), "Obiekt powinien nie zawiera� inicjalizatora - jest prototypem");
-	const TypeInfo & typeInfo = owp->getTypeInfo();
+	const utils::TypeInfo & typeInfo = owp->getTypeInfo();
 	auto it = typesHierarchy.find(typeInfo);
 	if(it == typesHierarchy.end()){
 		TypeHierarchy th;
@@ -79,7 +78,7 @@ void DataHierarchyManager::registerObjectWrapperPrototype(const ObjectWrapperPtr
 	}
 
 	//pobieramy typy bazowe
-	TypeInfoList baseTypes;
+	utils::TypeInfoList baseTypes;
 	it->second.prototype->getSupportedTypes(baseTypes);
 	baseTypes.remove(typeInfo);
 	//inicjujemy typy bazowe

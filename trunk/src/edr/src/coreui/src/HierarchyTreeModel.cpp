@@ -5,7 +5,10 @@
 #include <corelib/IHierarchyItem.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/AbstractFilterCommand.h>
-#include <utils/modeltest.h>
+
+#ifdef _DEBUG
+	#include <utils/modeltest.h>
+#endif
 
 
 using namespace coreUI;
@@ -260,4 +263,6 @@ void coreUI::HierarchyTreeModel::rebuildFilteredRoots()
     for (auto it = rootOrigins.begin(); it != rootOrigins.end(); ++it) {
         roots.push_back(currentFilter->getFilteredTree(*it));
     }
+
+	reset();
 }

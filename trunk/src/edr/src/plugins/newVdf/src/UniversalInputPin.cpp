@@ -37,12 +37,12 @@ UniversalInputPin::~UniversalInputPin()
 
 }
 
-void UniversalInputPinBase::setWrapper( utils::ObjectWrapperConstPtr val )
+void UniversalInputPinBase::setWrapper( core::VariantConstPtr val )
 {
     wrapper = val;
 }
 
-utils::ObjectWrapperConstPtr UniversalInputPinBase::getWrapper() const
+core::VariantConstPtr UniversalInputPinBase::getWrapper() const
 {
     return wrapper;
 }
@@ -65,7 +65,7 @@ void UniversalInputPinBase::copyData( const df::IDFOutput * pin )
 
 void UniversalInputPinBase::reset()
 {
-    wrapper = utils::ObjectWrapperPtr();
+    wrapper = core::VariantPtr();
 }
 
 

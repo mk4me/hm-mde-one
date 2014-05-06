@@ -25,7 +25,7 @@ public:
     {
         core::IHierarchyDataItemConstPtr data = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
         if (data) {
-            return data->getData()? data->getData()->isSupported(typeid(T)) : false;
+            return data->getData()? data->getData()->data()->isSupported(typeid(T)) : false;
         } else {
             return false;
         }

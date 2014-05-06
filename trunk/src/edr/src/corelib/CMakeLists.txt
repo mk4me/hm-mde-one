@@ -11,7 +11,7 @@ SET_PUBLIC_HEADERS(
 	Filesystem.h
 	StringTools.h
 	Visualizer.h
-	ObjectWrapperCollection.h
+	VariantsCollection.h
 	PluginCommon.h
 	IPlugin.h
 	IVisualizerManager.h
@@ -51,6 +51,7 @@ SET_PUBLIC_HEADERS(
 	IJob.h
 	IThread.h
 	Version.h
+	Variant.h
 )
 
 SET_SOURCE_FILES(
@@ -60,11 +61,12 @@ SET_SOURCE_FILES(
 	Visualizer.cpp
 	FilterBundle.cpp
 	CoreLibPCH.cpp
-	ObjectWrapperCollection.cpp	
+	VariantsCollection.cpp	
 	HierarchyDataItem.cpp
 	HierarchyHelper.cpp
 	HierarchyItem.cpp
 	Version.cpp
+	Variant.cpp
 )
 
 SET_PRIVATE_HEADERS(

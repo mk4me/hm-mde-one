@@ -27,7 +27,7 @@ protected:
 	friend class MemoryReaderTransaction;
 
 	//! Typ mapy obiektów.
-	typedef std::map< TypeInfo, Objects > ObjectsByTypes;
+	typedef std::map< utils::TypeInfo, VariantsSet > ObjectsByTypes;
 
 	typedef utils::RecursiveSyncPolicy SyncPolicy;
 	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
@@ -57,63 +57,63 @@ public:
 	virtual void removeObserver(const ObjectObserverPtr & objectWatcher);
 
 
-	virtual void getObjects(core::ConstObjectsList & objects) const;
+	virtual void getObjects(ConstVariantsList & objects) const;
 	//! \param objects [out] Obiekty pasuj¹ce do zapytania
 	//! \param type Typ obniektów o które pytamy
 	//! \param exact Czy typ musi byæ zgodny czy moga to byæ tez typy pochodne
-	virtual void getObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact) const;
+	virtual void getObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const;
 	
 	//! \param objects [out] Obiekty zarz¹dzane przez DM
-	virtual void getObjects(ObjectWrapperCollection& objects) const;
+	virtual void getObjects(VariantsCollection& objects) const;
 
-	virtual const bool isManaged(const ObjectWrapperConstPtr & object) const;
+	virtual const bool isManaged(const VariantConstPtr & object) const;
 
-	virtual const bool hasObject(const TypeInfo & type, bool exact) const;
+	virtual const bool hasObject(const utils::TypeInfo & type, bool exact) const;
 
 	virtual IDataManagerReader::TransactionPtr transaction() const;
 
 public:
 	// IMemoryDataManager API
 
-	virtual void addData(const ObjectWrapperPtr & data);
+	virtual void addData(const VariantPtr & data);
 
-	virtual void removeData(const ObjectWrapperConstPtr & data);
+	virtual void removeData(const VariantConstPtr & data);
 
 	//! Ta metoda notyfikuje o zmianie stanu DM!!
 	//! \param Obiekt który zostanie zmieniony jeœli zarz¹dza nim DataManager, operacja nie musi byæ wykonana od razu
 	//! mo¿e trafiæ do kolejki zadañ i byæ wykonana póŸniej - powinno siê obserwowaæ obiekt i wykonaæ specyficzne
 	//! operacje po uzyskaniu notyfikacji o zmianie
-	virtual void updateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData);
+	virtual void updateData(const VariantConstPtr & data, const VariantConstPtr & newData);
 
-	virtual const bool tryAddData(const ObjectWrapperPtr & data);
+	virtual const bool tryAddData(const VariantPtr & data);
 
-	virtual const bool tryRemoveData(const ObjectWrapperConstPtr & data);
+	virtual const bool tryRemoveData(const VariantConstPtr & data);
 
-	virtual const bool tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData);
+	virtual const bool tryUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData);
 
 	virtual IMemoryDataManager::TransactionPtr transaction();
 
 protected:	
 
-	const bool rawHasObject(const TypeInfo & type, bool exact) const;
+	const bool rawHasObject(const utils::TypeInfo & type, bool exact) const;
 
-	void rawAddData(const ObjectWrapperPtr & data);
+	void rawAddData(const VariantPtr & data);
 
-	void rawRemoveData(const ObjectWrapperConstPtr & data);
+	void rawRemoveData(const VariantConstPtr & data);
 
-	void rawUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData);
+	void rawUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData);
 
-	const bool rawIsManaged(const ObjectWrapperConstPtr & object) const;
+	const bool rawIsManaged(const VariantConstPtr & object) const;
 
-	void rawGetObjects(core::ConstObjectsList & objects) const;
+	void rawGetObjects(ConstVariantsList & objects) const;
 
-	void rawGetObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact) const;
+	void rawGetObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const;
 
-	void rawGetObjects(ObjectWrapperCollection& objects) const;	
+	void rawGetObjects(VariantsCollection& objects) const;	
 
 	void updateObservers(const ChangeList & changes );
 
-	static void requestedTypes(const TypeInfo & type, bool exact, TypeInfoSet & types);
+	static void requestedTypes(const utils::TypeInfo & type, bool exact, utils::TypeInfoSet & types);
 
 
 };

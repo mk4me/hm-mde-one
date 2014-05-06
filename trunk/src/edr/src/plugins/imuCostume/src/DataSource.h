@@ -10,6 +10,7 @@
 #define HEADER_GUARD_IMU_COSTUME__DATASOURCE_H__
 
 #include <plugins/imuCostume/Wrappers.h>
+#include <corelib/Variant.h>
 #include <corelib/ISource.h>
 #include <corelib/IThread.h>
 #include <utils/StreamData.h>
@@ -91,7 +92,7 @@ namespace IMU
 		//! \return Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
 		virtual QWidget* getSettingsWidget();
 		//! \param offeredTypes Typy oferowane przez to Ÿród³o
-		virtual void getOfferedTypes(core::TypeInfoList & offeredTypes) const;
+		virtual void getOfferedTypes(utils::TypeInfoList & offeredTypes) const;
 
 		const unsigned int costumesCout() const;
 
@@ -139,7 +140,7 @@ namespace IMU
 		static core::HierarchyItemPtr createIMUsItem();
 
 		void generateCostumeItem(const unsigned int idx,
-			const core::ObjectsList & data,
+			const core::VariantsList & data,
 			core::HierarchyItemPtr parent);
 
 		void tryCreateRootItem();
@@ -147,7 +148,7 @@ namespace IMU
 		void tryCreateStreamItem();
 		void tryCreateRecordedItem();
 
-		static const core::ObjectsList generateCoreData(const CostumeRawData crd);
+		static const core::VariantsList generateCoreData(const CostumeRawData crd);
 
 		static const std::string imuName(const unsigned int idx);
 
@@ -177,7 +178,7 @@ namespace IMU
 		//! Status danych
 		std::vector<CostumeDataStatus> costumesDataStatus_;
 		//! Mapowanie kostiumu do dostarczanych danych
-		std::map<unsigned int, core::ObjectsList> coreData;
+		std::map<unsigned int, core::VariantsList> coreData;
 		//! Mapowanie kostiumu do danych surowych
 		std::map<unsigned int, CostumeRawData> rawData;
 		//! Korzen drzewa dla analiz

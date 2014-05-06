@@ -28,29 +28,29 @@ public:
     //! \return "Przyjazna" lub "naturalna" nazwa obiektu.
     virtual const std::string & getName() const = 0;
     //! \param sessions Lista sesji związanych z tym obiektem
-    virtual void getSessions(core::ConstObjectsList & sessions) const = 0;
+    virtual void getSessions(core::ConstVariantsList & sessions) const = 0;
 
-	virtual void addSession(const core::ObjectWrapperConstPtr & session) = 0;
-	virtual void removeSession(const core::ObjectWrapperConstPtr & session) = 0;
+	virtual void addSession(const core::VariantConstPtr & session) = 0;
+	virtual void removeSession(const core::VariantConstPtr & session) = 0;
 
 	//! \data Dane wchodzące pod kontrolę DM
-	virtual void addData(const core::ObjectWrapperConstPtr & data) = 0;
+	virtual void addData(const core::VariantConstPtr & data) = 0;
 	//! Dane usuwane z DM
-	virtual void removeData(const core::ObjectWrapperConstPtr & data) = 0;
+	virtual void removeData(const core::VariantConstPtr & data) = 0;
 
-	virtual const bool tryAddData(const core::ObjectWrapperConstPtr & data) = 0;
+	virtual const bool tryAddData(const core::VariantConstPtr & data) = 0;
 
-	virtual const bool tryRemoveData(const core::ObjectWrapperConstPtr & data) = 0;
+	virtual const bool tryRemoveData(const core::VariantConstPtr & data) = 0;
 
-	virtual void getObjects(core::ConstObjectsList & objects) const = 0;
+	virtual void getObjects(core::ConstVariantsList & objects) const = 0;
 
-	virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const = 0;
+	virtual void getObjects(core::ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const = 0;
 
-	virtual void getObjects(core::ObjectWrapperCollection& objects) const = 0;
+	virtual void getObjects(core::VariantsCollection& objects) const = 0;
 
-	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const = 0;
+	virtual const bool isManaged(const core::VariantConstPtr & object) const = 0;
 
-	virtual const bool hasObject(const core::TypeInfo & type, bool exact) const = 0;
+	virtual const bool hasObject(const utils::TypeInfo & type, bool exact) const = 0;
 };
 
 }

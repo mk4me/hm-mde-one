@@ -40,7 +40,7 @@ namespace core
 
 	private:
 		//! Faktyczny jobManager
-		shared_ptr<utils::JobManager> jobManager_;
+		utils::shared_ptr<utils::JobManager> jobManager_;
 		//! Obiekt synchronizuj¹cy
 		mutable utils::StrictSyncPolicy synch_;
 	};

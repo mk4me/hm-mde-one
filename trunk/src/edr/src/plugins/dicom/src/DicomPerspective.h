@@ -21,12 +21,12 @@ namespace dicom {
 class DicomHelper : public core::WrappedItemHelper
 {
 public:
-    DicomHelper(const core::ObjectWrapperConstPtr & wrapper, const core::ConstObjectsList& layers,
+    DicomHelper(const core::VariantConstPtr & wrapper, const core::ConstVariantsList& layers,
         const std::string& xmlFilename, const std::string& trialName);
     virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series );
 
 private:
-    core::ConstObjectsList layers;
+    core::ConstVariantsList layers;
     std::string xmlFilename; 
     std::string trialName;
 };

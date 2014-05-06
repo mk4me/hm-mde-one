@@ -23,16 +23,16 @@ namespace plugin {
     public:
         virtual void setName( const std::string & name );
         virtual const std::string getName() const;
-        virtual const core::ObjectWrapperConstPtr & getData() const;
-        virtual const core::TypeInfo & getRequestedDataType() const;
-        virtual void setData( const core::TypeInfo & requestedDataType, const core::ObjectWrapperConstPtr & data );
+        virtual const core::VariantConstPtr & getData() const;
+        virtual const utils::TypeInfo & getRequestedDataType() const;
+        virtual void setData( const utils::TypeInfo & requestedDataType, const core::VariantConstPtr & data );
 
     public:
-        virtual void setupData( const core::ObjectWrapperConstPtr & data ) = 0;
+        virtual void setupData( const core::VariantConstPtr & data ) = 0;
 
     protected:
         //! wrapper przekazany serii
-        core::ObjectWrapperConstPtr data;
+        core::VariantConstPtr data;
         utils::TypeInfo requestedType;
         //! nazwa serii
         std::string name;

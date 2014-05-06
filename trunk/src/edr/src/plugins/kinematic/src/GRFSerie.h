@@ -35,7 +35,7 @@ public:
 	//! Konstruktor
 	//! \param visualizer wizualizator tworzący ta serie
 	GRFSerie(KinematicVisualizer * visualizer, const utils::TypeInfo & requestedType,
-		const core::ObjectWrapperConstPtr & data);
+		const core::VariantConstPtr & data);
 
 public:
 	//! Ustawia nazwę serii
@@ -46,7 +46,7 @@ public:
 
 	virtual void update();
     //! \return ustawione dane
-    virtual const core::ObjectWrapperConstPtr & getData() const;
+    virtual const core::VariantConstPtr & getData() const;
 
 	virtual const utils::TypeInfo & getRequestedDataType() const;
 	//! \return długość kanału w sekundach
@@ -171,7 +171,7 @@ private:
     //! pobrana z zasobów tekstura dla drugiej płyty
     static osg::ref_ptr<osg::Texture2D> texture2;
     //! wrapper przekazany serii
-    core::ObjectWrapperConstPtr data;
+    core::VariantConstPtr data;
 
 	utils::TypeInfo requestedType;
     //! nazwa serii

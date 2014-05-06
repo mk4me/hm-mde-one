@@ -8,7 +8,7 @@ using namespace dicom;
 
 PngParser::PngParser()
 {
-    image = core::ObjectWrapper::create<LayeredImage>();
+
 }
 
 PngParser::~PngParser()
@@ -19,8 +19,14 @@ PngParser::~PngParser()
 
 void PngParser::parse( const std::string & source  )
 {
+	image = utils::ObjectWrapper::create<LayeredImage>();
     LayeredImagePtr l = utils::make_shared<LayeredImage>(source);
     image->set(l);
+}
+
+void PngParser::reset()
+{
+	image.reset();
 }
 
 plugin::IParser* PngParser::create() const
@@ -33,13 +39,13 @@ void PngParser::acceptedExpressions(Expressions & expressions) const
     ExpressionDescription expDesc;
     expDesc.description = "Png format";
 
-    expDesc.types.insert(typeid(LayeredImage));
+    expDesc.objectsTypes.push_back(typeid(LayeredImage));
     expressions.insert(Expressions::value_type(".*\\.png$", expDesc));
 }
 
-void PngParser::getObjects( core::Objects& objects )
+void PngParser::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const
 {
-    objects.insert(image);
+	object.set(image);	
 }
 
 

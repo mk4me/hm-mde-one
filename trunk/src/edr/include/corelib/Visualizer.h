@@ -14,7 +14,7 @@
 #include <utils/DataChannel.h>
 #include <utils/DataChannelDescriptors.h>
 #include <utils/StreamData.h>
-#include <corelib/ObjectWrapperCollection.h>
+#include <corelib/VariantsCollection.h>
 #include <corelib/IVisualizer.h>
 #include <QtCore/QObject>
 #include <QtGui/QIcon>
@@ -66,7 +66,7 @@ public:
 		//! \return Podstawowy interfejs serii danych
 		plugin::IVisualizer::ISerie * serie();
 		//! Metoda ustawia dane serii - podmienia ją na inną jeżeli requestedType inny niż zadany w serii
-		void setData(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+		void setData(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data);
 		//! \tparam Typ który powinna wspierać seria danych
 		//! \return Wskaźnik do danego typu jeśli go wspiera, nullptr jesli nie ma serii
 		//! lub nie wspiera typu
@@ -99,7 +99,7 @@ public:
 		//! \param type Typdanych jaki nas interesuje
 		//! \param objects [out] Lista obiektów zadanego typu
 		//! \param exact Czy typ ma się zgadzać czy może być też typ pochodny
-		virtual void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact = false) const = 0;
+		virtual void getData(const utils::TypeInfo & type, ConstVariantsList & objects, bool exact = false) const = 0;
 	};
 
 	//! Smart pointer do źródła
@@ -175,7 +175,7 @@ public:
 	//! \param data Dane na bazie których ma powstać seria, muszą być wspierane przez wizualizator,
 	//! w przeciwnym wypadku seria nie zostanie stworozna i dostaniemy nullptr, podobna reakcja będzie miała miejsce
 	//! gdy osiągneliśmy już maksymalną ilość seri jaką wspiera wizualizator i chcemy utworzyć nową
-    VisualizerSerie * createSerie(const TypeInfo & requestedType, const ObjectWrapperConstPtr & data);
+	VisualizerSerie * createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data);
 	//! \param serie Seria na bazie której ma powstać nowa seria, musi pochodzić od tego wizualizatora,
 	//! w przeciwnym wypadku seria nie zostanie stworzozna i dostaniemy nullptr, podobna reakcja będzie miała miejsce
 	//! gdy osiągneliśmy już maksymalną ilość seri jaką wspiera wizualizator i chcemy utworzyć nową
@@ -200,7 +200,7 @@ public:
 
 
 	//! \return Zbiór wspieranych typów przez wizualizator (od nich można też brać pochodne, któe je wspierają -> iść w górę ścieżki typów)
-	void getSupportedTypes(TypeInfoSet & supportedTypes) const;
+	void getSupportedTypes(utils::TypeInfoSet & supportedTypes) const;
 	//! Usuwa wszystkie serie
     void destroyAllSeries();
 
@@ -221,7 +221,7 @@ public:
 	//! \param type Typ danych jaki chcemy pobrać
 	//! \param objects [out] Lista obiektów z danymi zadanego typu
 	//! \param exact Czy interesują nas tylko typy zgodne czy mogą być też pochodne
-	void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact);
+	void getData(const utils::TypeInfo & type, ConstVariantsList & objects, bool exact);
 
 	//! \return Wizualizator opakowany
 	plugin::IVisualizer * visualizer();
@@ -234,10 +234,7 @@ private:
 	void update(double deltaTime);
 };
 
-typedef utils::shared_ptr<Visualizer> VisualizerPtr;
-typedef utils::shared_ptr<const Visualizer> VisualizerConstPtr;
-typedef utils::weak_ptr<Visualizer> VisualizerWeakPtr;
-typedef utils::weak_ptr<const Visualizer> VisualizerConstWeakPtr;
+DEFINE_SMART_POINTERS(Visualizer);
 
 //! Klasa obsługująca jako źródło danych manager danych
 class CORELIB_EXPORT VisualizerMemoryDataSource : public Visualizer::IVisualizerDataSource
@@ -246,7 +243,7 @@ public:
 	//! \param dmr DataManagerReader jako źródło danych
 	VisualizerMemoryDataSource(core::IDataManagerReader * dmr);
 
-	virtual void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact = false) const;
+	virtual void getData(const utils::TypeInfo & type, ConstVariantsList & objects, bool exact = false) const;
 
 private:
 	//! DataManagerReader

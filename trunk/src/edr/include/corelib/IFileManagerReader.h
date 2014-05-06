@@ -11,7 +11,7 @@
 
 #include <corelib/Filesystem.h>
 #include <corelib/BaseDataTypes.h>
-#include <corelib/ObjectWrapperCollection.h>
+#include <corelib/VariantsCollection.h>
 
 namespace core {
 
@@ -30,11 +30,11 @@ namespace core {
 
 		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const Filesystem::Path & file, ConstObjectsList & objects) const = 0;
+		virtual void getObjects(const Filesystem::Path & file, ConstVariantsList & objects) const = 0;
 
 		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const = 0;
+		virtual void getObjects(const Filesystem::Path & file, VariantsCollection & objects) const = 0;
 	};
 
 	//! Zapewnia dostêp do danych plikowych aplikacji, pozwala obserwowaæ zmiany z nimi zwi¹zane

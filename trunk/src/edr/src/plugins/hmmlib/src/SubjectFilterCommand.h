@@ -34,7 +34,7 @@ protected:
     virtual bool checkItem( core::IHierarchyItemConstPtr item );
 
 private:
-    std::set<core::TypeInfo> typeinfos;
+    std::set<utils::TypeInfo> typeinfos;
 };
 typedef boost::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;
 typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr;

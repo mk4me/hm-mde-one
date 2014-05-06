@@ -15,15 +15,13 @@ osg::ref_ptr<osg::Texture2D> GRFSerie::texture2;
 
 GRFSerie::GRFSerie( KinematicVisualizer * visualizer,
 	const utils::TypeInfo & requestedType,
-	const core::ObjectWrapperConstPtr & data ) : visualizer(visualizer),
-    maxLength(0.0f)
+	const core::VariantConstPtr & data ) : visualizer(visualizer),
+	maxLength(0.0f), data(data)
 {
-	UTILS_ASSERT(data->getTypeInfo() == typeid(GRFCollection));
-	this->data = data;
+	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(GRFCollection));	
 	this->requestedType = requestedType;
 	//FIX tymczasowy dla linuxa
-	//grfCollection = this->data->get();
-	data->tryGet(grfCollection);
+	grfCollection = data->get();	
 
 	const IForcePlatformCollection& platforms = grfCollection->getPlatforms();
 	matrixTransform->addChild(createPlatformsGroup(platforms));
@@ -285,7 +283,7 @@ GRFSerie::ArrowPtr GRFSerie::createArrow()
 	return a;
 }
 
-const core::ObjectWrapperConstPtr & GRFSerie::getData() const
+const core::VariantConstPtr & GRFSerie::getData() const
 {
     return data;
 }

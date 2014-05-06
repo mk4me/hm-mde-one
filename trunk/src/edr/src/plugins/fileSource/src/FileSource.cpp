@@ -50,7 +50,7 @@ QWidget* FileSource::getSettingsWidget()
     return nullptr;
 }
 
-void FileSource::getOfferedTypes( core::TypeInfoList & offeredTypes ) const
+void FileSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) const
 {
     
 }
@@ -59,7 +59,7 @@ void FileSource::addFile( const core::Filesystem::Path& path )
 {
     auto transaction = fileDM->transaction();
     transaction->addFile(path);
-    core::ConstObjectsList oList;
+    core::ConstVariantsList oList;
     transaction->getObjects(path, oList);
 
     auto hierarchyTransaction = memoryDM->hierarchyTransaction();

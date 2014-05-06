@@ -22,8 +22,8 @@ using namespace coreUI;
 
 struct FutureSerieData {
 	std::string serieName;
-	core::TypeInfo requestedType;
-	core::ObjectWrapperConstPtr data;
+	utils::TypeInfo requestedType;
+	core::VariantConstPtr data;
 	int localIdx;
 };
 
@@ -225,7 +225,7 @@ void CoreVisualizerWidget::fillSourcesMenu()
 		//oznaczyć serie które są w wizualizatorze ale nie ma ich już w samych danych wizualizatora!!
 
 		//najpierw serie aktywne
-		std::map<core::TypeInfo, QMenu*> typeMenus;
+		std::map<utils::TypeInfo, QMenu*> typeMenus;
 		for(auto typeIT = activeData.begin(); typeIT != activeData.end(); ++typeIT){
 			auto typeMenu = activeDataSubmenu->addMenu(QString::fromUtf8(typeIT->first.name()));
 			for(auto dataIT = typeIT->second.begin(); dataIT != typeIT->second.end(); ++dataIT){
@@ -254,7 +254,7 @@ void CoreVisualizerWidget::fillSourcesMenu()
 
 	//wszystkie dane wg typów jakie obsługuje wizualizator
 	for(auto typeIT = supportedDataTypes.begin(); typeIT != supportedDataTypes.end(); ++typeIT){
-		core::ConstObjectsList data;
+		core::ConstVariantsList data;
 		visualizer_->getData(*typeIT, data, false);
 		if(data.empty() == false){
 
@@ -342,7 +342,7 @@ void CoreVisualizerWidget::removeAllSeries()
 		tryRefreshActiveSerieSwitchesContent();
 	}
 	std::set<int>().swap(usedLocalNameIndexes);
-	std::map<core::TypeInfo, std::map<core::ObjectWrapperConstPtr, core::Visualizer::VisualizerSerie*>>().swap(activeData);
+	std::map<utils::TypeInfo, std::map<core::VariantConstPtr, core::Visualizer::VisualizerSerie*>>().swap(activeData);
 	std::map<core::Visualizer::VisualizerSerie*, int>().swap(serieLocalIdx);
 	visualizer_->destroyAllSeries();
 }
@@ -362,7 +362,7 @@ void CoreVisualizerWidget::addSerie()
 	FutureSerieData data = action->data().value<FutureSerieData>();
 	auto serie = visualizer_->createSerie(data.requestedType, data.data);
 	serie->serie()->setName(data.serieName);
-	activeData[data.requestedType].insert(std::map<core::ObjectWrapperConstPtr, core::Visualizer::VisualizerSerie*>::value_type(data.data, serie));
+	activeData[data.requestedType].insert(std::map<core::VariantConstPtr, core::Visualizer::VisualizerSerie*>::value_type(data.data, serie));
 	if(data.localIdx > -1){
 		serieLocalIdx[serie] = data.localIdx;
 		usedLocalNameIndexes.insert(data.localIdx);
@@ -432,13 +432,13 @@ void CoreVisualizerWidget::removeSerie()
 	
 }
 
-const bool CoreVisualizerWidget::getDataName(core::ObjectWrapperConstPtr data, std::string & dataName)
+const bool CoreVisualizerWidget::getDataName(core::VariantConstPtr data, std::string & dataName)
 {
 	return (data->getMetadata("core/uiUserName", dataName) == true || data->getMetadata("core/uiName", dataName) == true
 		|| data->getMetadata("core/name", dataName) == true);
 }
 
-const bool CoreVisualizerWidget::getDataSource(core::ObjectWrapperConstPtr data, std::string & dataSource)
+const bool CoreVisualizerWidget::getDataSource(core::VariantConstPtr data, std::string & dataSource)
 {
 	return data->getMetadata("core/source", dataSource);
 }

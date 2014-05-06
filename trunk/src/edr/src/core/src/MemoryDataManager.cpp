@@ -39,7 +39,7 @@ public:
 	{
 		transactionRollbacked = true;
 
-		std::set<ObjectWrapperConstPtr> firstChanges;
+		ConstVariantsSet firstChanges;
 
 		//szybkie cofanie edycji - tylko pierwotna jest przywracana
 		for(auto it = modyfications.begin(); it != modyfications.end(); ++it){
@@ -59,7 +59,7 @@ public:
 				break;
 
 			case IDataManagerReader::REMOVE_OBJECT:
-				mdm->rawAddData(core::const_pointer_cast<ObjectWrapper>((*it).previousValue));
+				mdm->rawAddData(utils::const_pointer_cast<Variant>((*it).previousValue));
 				break;
 			}
 		}
@@ -68,7 +68,7 @@ public:
 	}
 
 	//! \data Dane wchodz�ce pod kontrol� DM
-	virtual void addData(const ObjectWrapperPtr & data)
+	virtual void addData(const VariantPtr & data)
 	{
 		if(transactionRollbacked == true){
 			throw std::runtime_error("Memory transaction rolled-back");
@@ -83,7 +83,7 @@ public:
 	}
 
 	//! Dane usuwane z DM
-	virtual void removeData(const ObjectWrapperConstPtr & data)
+	virtual void removeData(const VariantConstPtr & data)
 	{
 		if(transactionRollbacked == true){
 			throw std::runtime_error("Memory transaction rolled-back");
@@ -111,7 +111,7 @@ public:
 
 	//! \param data Aktualizowane dane
 	//! \param newData Nowa warto�� danych
-	virtual void updateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData)
+	virtual void updateData(const VariantConstPtr & data, const VariantConstPtr & newData)
 	{
 		if(transactionRollbacked == true){
 			throw std::runtime_error("Memory transaction rolled-back");
@@ -130,7 +130,7 @@ public:
 		}
 	}
 
-	virtual const bool tryAddData(const ObjectWrapperPtr & data)
+	virtual const bool tryAddData(const VariantPtr & data)
 	{
 		if(transactionRollbacked == true || mdm->rawIsManaged(data) == true){
 			return false;
@@ -145,7 +145,7 @@ public:
 		return true;
 	}
 
-	virtual const bool tryRemoveData(const ObjectWrapperConstPtr & data)
+	virtual const bool tryRemoveData(const VariantConstPtr & data)
 	{
 		if(transactionRollbacked == true || mdm->rawIsManaged(data) == false){
 			return false;
@@ -160,7 +160,7 @@ public:
 		return true;
 	}
 
-	virtual const bool tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData)
+	virtual const bool tryUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
 	{
 		if(transactionRollbacked == true || mdm->rawIsManaged(data) == false){
 			return false;
@@ -175,7 +175,7 @@ public:
 		return true;
 	}
 
-	virtual void getObjects(core::ConstObjectsList & objects) const
+	virtual void getObjects(ConstVariantsList & objects) const
 	{
 		if(transactionRollbacked == true){
 			throw std::runtime_error("Memory transaction rolled-back");
@@ -184,7 +184,7 @@ public:
 		mdm->rawGetObjects(objects);
 	}
 
-	virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const
+	virtual void getObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
 	{
 		if(transactionRollbacked == true){
 			throw std::runtime_error("Memory transaction rolled-back");
@@ -193,7 +193,7 @@ public:
 		mdm->rawGetObjects(objects, type, exact);
 	}
 
-	virtual void getObjects(core::ObjectWrapperCollection& objects) const
+	virtual void getObjects(VariantsCollection& objects) const
 	{
 		if(transactionRollbacked == true){
 			throw std::runtime_error("Memory transaction rolled-back");
@@ -202,7 +202,7 @@ public:
 		mdm->rawGetObjects(objects);
 	}
 
-	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const
+	virtual const bool isManaged(const VariantConstPtr & object) const
 	{
 		if(transactionRollbacked == true){
 			throw std::runtime_error("Memory transaction rolled-back");
@@ -211,7 +211,7 @@ public:
 		return mdm->rawIsManaged(object);
 	}
 
-	virtual const bool hasObject(const TypeInfo & type, bool exact) const
+	virtual const bool hasObject(const utils::TypeInfo & type, bool exact) const
 	{
 		if(transactionRollbacked == true){
 			throw std::runtime_error("Memory transaction rolled-back");
@@ -222,7 +222,7 @@ public:
 
 private:
 
-	void rawAddData(const ObjectWrapperPtr & data)
+	void rawAddData(const VariantPtr & data)
 	{
 		//dodajemy dane do dm
 		mdm->rawAddData(data);
@@ -230,11 +230,11 @@ private:
 		ObjectChange change;
 		change.currentValue = data;
 		change.modyfication = IDataManagerReader::ADD_OBJECT;
-		change.type = data->getTypeInfo();
+		change.type = data->data()->getTypeInfo();
 		modyfications.push_back(change);
 	}
 
-	void rawRemoveData(const ObjectWrapperConstPtr & data)
+	void rawRemoveData(const VariantConstPtr & data)
 	{
 		//dodajemy dane do dm
 		mdm->rawRemoveData(data);
@@ -242,11 +242,11 @@ private:
 		ObjectChange change;
 		change.previousValue = data;
 		change.modyfication = IDataManagerReader::REMOVE_OBJECT;
-		change.type = data->getTypeInfo();
+		change.type = data->data()->getTypeInfo();
 		modyfications.push_back(change);
 	}
 
-	void rawUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData)
+	void rawUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
 	{
 		ObjectChange change;
 		change.previousValue = data->clone();
@@ -255,7 +255,7 @@ private:
 		//aktualizujemy liste zmian
 		change.currentValue = data;
 		change.modyfication = IDataManagerReader::UPDATE_OBJECT;
-		change.type = data->getTypeInfo();
+		change.type = data->data()->getTypeInfo();
 		modyfications.push_back(change);
 	}
 };
@@ -275,27 +275,27 @@ public:
 
 public:
 
-	virtual void getObjects(core::ConstObjectsList & objects) const
+	virtual void getObjects(ConstVariantsList & objects) const
 	{
 		mdm->rawGetObjects(objects);
 	}
 
-	virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const
+	virtual void getObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
 	{
 		mdm->rawGetObjects(objects, type, exact);
 	}
 
-	virtual void getObjects(core::ObjectWrapperCollection& objects) const
+	virtual void getObjects(VariantsCollection& objects) const
 	{
 		mdm->rawGetObjects(objects);
 	}
 
-	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const
+	virtual const bool isManaged(const VariantConstPtr & object) const
 	{
 		return mdm->rawIsManaged(object);
 	}
 
-	virtual const bool hasObject(const TypeInfo & type, bool exact) const
+	virtual const bool hasObject(const utils::TypeInfo & type, bool exact) const
 	{
 		return mdm->rawHasObject(type, exact);
 	}
@@ -336,31 +336,31 @@ void MemoryDataManager::removeObserver(const ObjectObserverPtr & objectWatcher)
 	observers.erase(it);
 }
 
-void MemoryDataManager::getObjects(core::ConstObjectsList & objects) const
+void MemoryDataManager::getObjects(ConstVariantsList & objects) const
 {
 	ScopedLock lock(sync);
 	rawGetObjects(objects);
 }
 
-void MemoryDataManager::getObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact) const
+void MemoryDataManager::getObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
 {
 	ScopedLock lock(sync);
 	rawGetObjects(objects, type, exact);
 }
 
-void MemoryDataManager::getObjects(ObjectWrapperCollection& objects) const
+void MemoryDataManager::getObjects(VariantsCollection& objects) const
 {
 	ScopedLock lock(sync);
 	rawGetObjects(objects);
 }
 
-const bool MemoryDataManager::isManaged(const ObjectWrapperConstPtr & object) const
+const bool MemoryDataManager::isManaged(const VariantConstPtr & object) const
 {
 	ScopedLock lock(sync);
 	return rawIsManaged(object);
 }
 
-void MemoryDataManager::addData(const ObjectWrapperPtr & data)
+void MemoryDataManager::addData(const VariantPtr & data)
 {
 	ScopedLock lock(sync);
 
@@ -373,12 +373,12 @@ void MemoryDataManager::addData(const ObjectWrapperPtr & data)
 	ObjectChange change;
 	change.currentValue = data;
 	change.modyfication = IDataManagerReader::ADD_OBJECT;
-	change.type = data->getTypeInfo();
+	change.type = data->data()->getTypeInfo();
 	changes.push_back(change);
 	updateObservers(changes);
 }
 
-void MemoryDataManager::removeData(const ObjectWrapperConstPtr & data)
+void MemoryDataManager::removeData(const VariantConstPtr & data)
 {
 	ScopedLock lock(sync);
 
@@ -389,7 +389,7 @@ void MemoryDataManager::removeData(const ObjectWrapperConstPtr & data)
 	rawRemoveData(data);
 }
 
-void MemoryDataManager::updateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData)
+void MemoryDataManager::updateData(const VariantConstPtr & data, const VariantConstPtr & newData)
 {
 	ScopedLock lock(sync);
 
@@ -400,7 +400,7 @@ void MemoryDataManager::updateData(const ObjectWrapperConstPtr & data, const Obj
 	rawUpdateData(data, newData);
 }
 
-const bool MemoryDataManager::tryAddData(const ObjectWrapperPtr & data)
+const bool MemoryDataManager::tryAddData(const VariantPtr & data)
 {
 	bool ret = true;
 
@@ -413,7 +413,7 @@ const bool MemoryDataManager::tryAddData(const ObjectWrapperPtr & data)
 	return ret;
 }
 
-const bool MemoryDataManager::tryRemoveData(const ObjectWrapperConstPtr & data)
+const bool MemoryDataManager::tryRemoveData(const VariantConstPtr & data)
 {
 	bool ret = true;
 
@@ -426,7 +426,7 @@ const bool MemoryDataManager::tryRemoveData(const ObjectWrapperConstPtr & data)
 	return ret;
 }
 
-const bool MemoryDataManager::tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData)
+const bool MemoryDataManager::tryUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
 {
 	bool ret = true;
 
@@ -451,16 +451,16 @@ IDataManagerReader::TransactionPtr MemoryDataManager::transaction() const
 
 
 
-void MemoryDataManager::rawGetObjects(core::ConstObjectsList & objects) const
+void MemoryDataManager::rawGetObjects(ConstVariantsList & objects) const
 {
 	for(auto it = objectsByTypes.begin(); it != objectsByTypes.end(); ++it){
 		objects.insert(objects.end(), it->second.begin(), it->second.end());
 	}
 }
 
-void MemoryDataManager::rawGetObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact) const
+void MemoryDataManager::rawGetObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
 {
-	TypeInfoSet types;
+	utils::TypeInfoSet types;
 	requestedTypes(type, exact, types);
 
 	for(auto it = types.begin(); it != types.end(); ++it)
@@ -472,36 +472,36 @@ void MemoryDataManager::rawGetObjects(ConstObjectsList & objects, const TypeInfo
 	}
 }
 
-void MemoryDataManager::rawGetObjects(ObjectWrapperCollection& objects) const
+void MemoryDataManager::rawGetObjects(VariantsCollection& objects) const
 {
-	ConstObjectsList locObjects;
+	ConstVariantsList locObjects;
 	rawGetObjects(locObjects, objects.getTypeInfo(), objects.exactTypes());
 	objects.nonCheckInsert(objects.end(), locObjects.begin(), locObjects.end());
 }
 
-void MemoryDataManager::rawAddData(const ObjectWrapperPtr & data)
+void MemoryDataManager::rawAddData(const VariantPtr & data)
 {
-	objectsByTypes[data->getTypeInfo()].insert(data);
+	objectsByTypes[data->data()->getTypeInfo()].insert(data);
 }
 
-void MemoryDataManager::rawRemoveData(const ObjectWrapperConstPtr & data)
+void MemoryDataManager::rawRemoveData(const VariantConstPtr & data)
 {
-	objectsByTypes[data->getTypeInfo()].erase(const_pointer_cast<ObjectWrapper>(data));
+	objectsByTypes[data->data()->getTypeInfo()].erase(utils::const_pointer_cast<Variant>(data));
 }
 
-void MemoryDataManager::rawUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData)
+void MemoryDataManager::rawUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
 {
 	//TODO
 	//assign value - clone?
 }
 
-const bool MemoryDataManager::rawIsManaged(const ObjectWrapperConstPtr & object) const
+const bool MemoryDataManager::rawIsManaged(const VariantConstPtr & object) const
 {
-	if(getDataHierarchyManager()->isRegistered(object->getTypeInfo()) == false){
+	if(getDataHierarchyManager()->isRegistered(object->data()->getTypeInfo()) == false){
 		throw std::runtime_error("Type not registered");
 	}
 
-	auto it = objectsByTypes.find(object->getTypeInfo());
+	auto it = objectsByTypes.find(object->data()->getTypeInfo());
 	if(it != objectsByTypes.end() && std::find(it->second.begin(), it->second.end(), object) != it->second.end()){
 		return true;
 	}
@@ -523,18 +523,18 @@ void MemoryDataManager::updateObservers(const ChangeList & changes )
 	}
 }
 
-const bool MemoryDataManager::hasObject(const TypeInfo & type, bool exact) const
+const bool MemoryDataManager::hasObject(const utils::TypeInfo & type, bool exact) const
 {
 	ScopedLock lock(sync);
 	return rawHasObject(type, exact);
 };
 
 
-const bool MemoryDataManager::rawHasObject(const TypeInfo & type, bool exact) const
+const bool MemoryDataManager::rawHasObject(const utils::TypeInfo & type, bool exact) const
 {
 	bool ret = false;
 
-	TypeInfoSet types;
+	utils::TypeInfoSet types;
 	requestedTypes(type, exact, types);
 
 	for(auto it = types.begin(); it != types.end(); ++it)
@@ -549,7 +549,7 @@ const bool MemoryDataManager::rawHasObject(const TypeInfo & type, bool exact) co
 	return ret;
 }
 
-void MemoryDataManager::requestedTypes( const TypeInfo & type, bool exact, TypeInfoSet & types )
+void MemoryDataManager::requestedTypes(const utils::TypeInfo & type, bool exact, utils::TypeInfoSet & types)
 {
 	types.insert(type);
 

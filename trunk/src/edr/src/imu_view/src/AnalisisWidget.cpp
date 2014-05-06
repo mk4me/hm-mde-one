@@ -461,7 +461,7 @@ void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::
                 core::VisualizerPtr visualizer = vw->getVisualizer();
                 auto hierarchyManager = plugin::getDataHierachyManagerReader();
                 bool compatibile = false;
-                core::TypeInfoSet supportedTypes;
+                utils::TypeInfoSet supportedTypes;
                 visualizer->getSupportedTypes(supportedTypes);
 
                 std::vector<utils::TypeInfo> types = helper->getTypeInfos();

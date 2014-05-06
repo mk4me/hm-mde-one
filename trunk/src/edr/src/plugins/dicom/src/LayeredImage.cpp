@@ -55,7 +55,7 @@ void dicom::LayeredImage::addLayer( ILayerItemPtr layer, const std::string& laye
     layers.insert(std::make_pair(layerName, layer));
     tags.insert(layerName);
 
-	auto graphicLayer = core::dynamic_pointer_cast<ILayerGraphicItem>(layer);
+	auto graphicLayer = utils::dynamic_pointer_cast<ILayerGraphicItem>(layer);
 	if(graphicLayer != nullptr){
 		graphicLayers.insert(std::make_pair(layerName, graphicLayer));
 
@@ -75,7 +75,7 @@ void dicom::LayeredImage::removeLayer( ILayerItemConstPtr layer )
         }
     }
 
-	auto graphicLayer = core::dynamic_pointer_cast<const ILayerGraphicItem>(layer);
+	auto graphicLayer = utils::dynamic_pointer_cast<const ILayerGraphicItem>(layer);
 	if(graphicLayer != nullptr){
 		for (auto it = graphicLayers.begin(); it != graphicLayers.end(); ++it) {
 			if (it->second == layer) {

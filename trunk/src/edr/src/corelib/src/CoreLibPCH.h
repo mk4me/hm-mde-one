@@ -36,7 +36,7 @@
 #include <utils/Export.h>
 
 #include <corelib/BaseDataTypes.h>
-#include <corelib/ObjectWrapperCollection.h>
+#include <corelib/VariantsCollection.h>
 #include <corelib/Filesystem.h>
 #include <corelib/IApplication.h>
 #include <corelib/PluginCommon.h>

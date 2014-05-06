@@ -13,7 +13,7 @@ BasicDataStorage::~BasicDataStorage()
 
 }
 
-void BasicDataStorage::getObjects(core::ConstObjectsList & objects) const
+void BasicDataStorage::getObjects(core::ConstVariantsList & objects) const
 {
 	ScopedLock lock(sync);
 	for(auto it = objectsByTypes.begin(); it != objectsByTypes.end(); ++it){
@@ -21,9 +21,9 @@ void BasicDataStorage::getObjects(core::ConstObjectsList & objects) const
 	}
 }
 
-void BasicDataStorage::getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const
+void BasicDataStorage::getObjects(core::ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
 {
-	core::TypeInfoSet types;
+	utils::TypeInfoSet types;
 	requestedTypes(type, exact, types);
 
 	ScopedLock lock(sync);
@@ -37,22 +37,22 @@ void BasicDataStorage::getObjects(core::ConstObjectsList & objects, const core::
 	}
 }
 
-void BasicDataStorage::getObjects(core::ObjectWrapperCollection& objects) const
+void BasicDataStorage::getObjects(core::VariantsCollection& objects) const
 {
-	core::ConstObjectsList locObjects;
+	core::ConstVariantsList locObjects;
 	getObjects(locObjects, objects.getTypeInfo(), objects.exactTypes());	
 	objects.insert(objects.end(), locObjects.begin(), locObjects.end());
 }
 
-const bool BasicDataStorage::isManaged(const core::ObjectWrapperConstPtr & object) const
+const bool BasicDataStorage::isManaged(const core::VariantConstPtr & object) const
 {
-	if(plugin::getDataHierachyManagerReader()->isRegistered(object->getTypeInfo()) == false){
+	if(plugin::getDataHierachyManagerReader()->isRegistered(object->data()->getTypeInfo()) == false){
 		throw std::runtime_error("Type not registered");
 	}
 
 	ScopedLock lock(sync);
 
-	auto it = objectsByTypes.find(object->getTypeInfo());
+	auto it = objectsByTypes.find(object->data()->getTypeInfo());
 	if(it != objectsByTypes.end() && std::find(it->second.begin(), it->second.end(), object) != it->second.end()){
 		return true;
 	}
@@ -60,11 +60,11 @@ const bool BasicDataStorage::isManaged(const core::ObjectWrapperConstPtr & objec
 	return false;
 }
 
-const bool BasicDataStorage::hasObject(const core::TypeInfo & type, bool exact) const
+const bool BasicDataStorage::hasObject(const utils::TypeInfo & type, bool exact) const
 {
 	bool ret = false;
 
-	core::TypeInfoSet types;
+	utils::TypeInfoSet types;
 	requestedTypes(type, exact, types);
 
 	ScopedLock lock(sync);
@@ -81,9 +81,9 @@ const bool BasicDataStorage::hasObject(const core::TypeInfo & type, bool exact) 
 	return ret;
 }
 
-void BasicDataStorage::addData(const core::ObjectWrapperConstPtr & data)
+void BasicDataStorage::addData(const core::VariantConstPtr & data)
 {
-	if(plugin::getDataHierachyManagerReader()->isRegistered(data->getTypeInfo()) == false){
+	if (plugin::getDataHierachyManagerReader()->isRegistered(data->data()->getTypeInfo()) == false){
 		throw std::runtime_error("Type not registered");
 	}
 
@@ -97,13 +97,13 @@ void BasicDataStorage::addData(const core::ObjectWrapperConstPtr & data)
 	if(found.first != objectsByTypes.end()){
 		found.first->second.insert(data);
 	}else{
-		objectsByTypes[data->getTypeInfo()].insert(data);
+		objectsByTypes[data->data()->getTypeInfo()].insert(data);
 	}
 }
 
-void BasicDataStorage::removeData(const core::ObjectWrapperConstPtr & data)
+void BasicDataStorage::removeData(const core::VariantConstPtr & data)
 {
-	if(plugin::getDataHierachyManagerReader()->isRegistered(data->getTypeInfo()) == false){
+	if (plugin::getDataHierachyManagerReader()->isRegistered(data->data()->getTypeInfo()) == false){
 		throw std::runtime_error("Type not registered");
 	}
 
@@ -121,7 +121,7 @@ void BasicDataStorage::removeData(const core::ObjectWrapperConstPtr & data)
 	}
 }
 
-const bool BasicDataStorage::tryAddData(const core::ObjectWrapperConstPtr & data)
+const bool BasicDataStorage::tryAddData(const core::VariantConstPtr & data)
 {
 	bool ret = true;
 	try{
@@ -133,7 +133,7 @@ const bool BasicDataStorage::tryAddData(const core::ObjectWrapperConstPtr & data
 	return ret;
 }
 
-const bool BasicDataStorage::tryRemoveData(const core::ObjectWrapperConstPtr & data)
+const bool BasicDataStorage::tryRemoveData(const core::VariantConstPtr & data)
 {
 	bool ret = true;
 	try{
@@ -145,7 +145,7 @@ const bool BasicDataStorage::tryRemoveData(const core::ObjectWrapperConstPtr & d
 	return ret;
 }
 
-void BasicDataStorage::requestedTypes( const core::TypeInfo & type, bool exact, core::TypeInfoSet & types )
+void BasicDataStorage::requestedTypes( const utils::TypeInfo & type, bool exact, utils::TypeInfoSet & types )
 {
 	types.insert(type);
 
@@ -154,11 +154,11 @@ void BasicDataStorage::requestedTypes( const core::TypeInfo & type, bool exact, 
 	}
 }
 
-std::pair<BasicDataStorage::ObjectsByTypes::iterator, core::ConstObjects::iterator> BasicDataStorage::find(const core::ObjectWrapperConstPtr & data)
+std::pair<BasicDataStorage::ObjectsByTypes::iterator, core::ConstVariantsSet::iterator> BasicDataStorage::find(const core::VariantConstPtr & data)
 {
-	std::pair<BasicDataStorage::ObjectsByTypes::iterator, core::ConstObjects::iterator> ret;
+	std::pair<BasicDataStorage::ObjectsByTypes::iterator, core::ConstVariantsSet::iterator> ret;
 
-	ret.first = objectsByTypes.find(data->getTypeInfo());
+	ret.first = objectsByTypes.find(data->data()->getTypeInfo());
 	if(ret.first != objectsByTypes.end()){
 		ret.second = ret.first->second.find(data);
 	}

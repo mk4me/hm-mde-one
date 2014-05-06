@@ -15,7 +15,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 
 	try{
 		if (motion->hasObject(typeid(MarkerCollection), false)) {
-			ConstObjectsList m;
+			ConstVariantsList m;
 			motion->getObjects(m, typeid(MarkerCollection), false);
 			if(m.front()->getRawPtr() != nullptr){
 				auto s = visualizer->createSerie(typeid(MarkerCollection), m.front());
@@ -26,7 +26,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 			}
 		}
 		if (motion->hasObject(typeid(kinematic::JointAnglesCollection), false)) {
-			ConstObjectsList m;
+			ConstVariantsList m;
 			motion->getObjects(m, typeid(kinematic::JointAnglesCollection), false);
 			if(m.front()->getRawPtr() != nullptr){
 				auto s = visualizer->createSerie(typeid(kinematic::JointAnglesCollection), m.front());
@@ -37,7 +37,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 			}
 		}
 		if (motion->hasObject(typeid(GRFCollection), false)) {
-			ConstObjectsList m;
+			ConstVariantsList m;
 			motion->getObjects(m, typeid(GRFCollection), false);
 			if(m.front()->getRawPtr() != nullptr){
 				auto s = visualizer->createSerie(typeid(GRFCollection), m.front());
@@ -61,9 +61,9 @@ VisualizerPtr Multiserie3D::createVisualizer(core::IVisualizerManager* manager)
 	return VisualizerPtr(prototypes.front()->create());
 }
 
-std::vector<core::TypeInfo> Multiserie3D::getTypeInfos() const
+std::vector<utils::TypeInfo> Multiserie3D::getTypeInfos() const
 {
-    std::vector<core::TypeInfo> ret;
+    std::vector<utils::TypeInfo> ret;
     ret.push_back(typeid(kinematic::JointAnglesCollection));
     ret.push_back(typeid(GRFCollection));
     ret.push_back(typeid(MarkerCollection));
@@ -85,9 +85,9 @@ VisualizerPtr JointsItemHelper::createVisualizer(core::IVisualizerManager* manag
 
 void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
-	ConstObjectsList m;
+	ConstVariantsList m;
 	motion->getObjects(m, typeid(kinematic::JointAnglesCollection), false);
-    core::ObjectWrapperConstPtr joints = m.front();
+    core::VariantConstPtr joints = m.front();
     if (joints && joints->getRawPtr() != nullptr) {
 		auto s = visualizer->createSerie(typeid(kinematic::JointAnglesCollection), joints);
 		s->serie()->setName(path.toStdString());
@@ -97,9 +97,9 @@ void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QSt
     }
 }
 
-std::vector<core::TypeInfo> JointsItemHelper::getTypeInfos() const
+std::vector<utils::TypeInfo> JointsItemHelper::getTypeInfos() const
 {
-    std::vector<core::TypeInfo> ret;
+    std::vector<utils::TypeInfo> ret;
     ret.push_back(typeid(kinematic::JointAnglesCollection));
     return ret;
 }
@@ -138,19 +138,19 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
 
 void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
-    auto serie = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
+    auto serie = visualizer->createSerie(wrapper->data()->getTypeInfo(), wrapper);
 	serie->serie()->setName(path.toStdString());
     series.push_back(serie);
 }
 
-std::vector<core::TypeInfo> NewChartItemHelper::getTypeInfos() const
+std::vector<utils::TypeInfo> NewChartItemHelper::getTypeInfos() const
 {
-    std::vector<core::TypeInfo> ret;
+    std::vector<utils::TypeInfo> ret;
     ret.push_back(typeid(ScalarChannelReaderInterface));
     return ret;
 }
 
-NewChartItemHelper::NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+NewChartItemHelper::NewChartItemHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
     WrappedItemHelper(wrapper),
     events(events)
 {
@@ -187,9 +187,9 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
     ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
     ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(vectorChannel, 2));
-    core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-    core::ObjectWrapperPtr wrapperY = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-    core::ObjectWrapperPtr wrapperZ = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    core::VariantPtr wrapperX = core::Variant::create<ScalarChannelReaderInterface>();
+    core::VariantPtr wrapperY = core::Variant::create<ScalarChannelReaderInterface>();
+    core::VariantPtr wrapperZ = core::Variant::create<ScalarChannelReaderInterface>();
     wrapperX->set(x);
     wrapperY->set(y);
     wrapperZ->set(z);
@@ -207,11 +207,11 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
 	wrapperZ->setMetadata("core/source", p + "/Z_" + suffix);
     visualizer->getOrCreateWidget();
 
-	auto serieX = visualizer->createSerie(wrapperX->getTypeInfo(), wrapperX);
+	auto serieX = visualizer->createSerie(wrapperX->data()->getTypeInfo(), wrapperX);
 	serieX->serie()->setName("X_" + suffix);
-	auto serieY = visualizer->createSerie(wrapperY->getTypeInfo(), wrapperY);
+	auto serieY = visualizer->createSerie(wrapperY->data()->getTypeInfo(), wrapperY);
 	serieY->serie()->setName("Y_" + suffix);
-	auto serieZ = visualizer->createSerie(wrapperZ->getTypeInfo(), wrapperZ);
+	auto serieZ = visualizer->createSerie(wrapperZ->data()->getTypeInfo(), wrapperZ);
 	serieZ->serie()->setName("Z_" + suffix);
 
     INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
@@ -233,15 +233,15 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     series.push_back(serieZ);
 }
 
-NewVector3ItemHelper::NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+NewVector3ItemHelper::NewVector3ItemHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
     WrappedItemHelper(wrapper),
     events(events)
 {
 }
 
-std::vector<core::TypeInfo> NewVector3ItemHelper::getTypeInfos() const
+std::vector<utils::TypeInfo> NewVector3ItemHelper::getTypeInfos() const
 {
-    std::vector<core::TypeInfo> ret;
+    std::vector<utils::TypeInfo> ret;
     ret.push_back(typeid(ScalarChannelReaderInterface));
     return ret;
 }
@@ -253,7 +253,7 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
         auto wrapper = wrappers[i].wrapper;
 		std::string source;
 		wrapper->getMetadata("core/source", source);
-        auto serieX = visualizer->createSerie(wrapper->getTypeInfo(), wrapper);
+		auto serieX = visualizer->createSerie(wrapper->data()->getTypeInfo(), wrapper);
 		serieX->serie()->setName(source);
         if (wrappers[i].events) {
             EventSerieBase * eventSerie = dynamic_cast<EventSerieBase*>(serieX->serie());
@@ -287,9 +287,9 @@ VisualizerPtr NewMultiserieHelper::createVisualizer(core::IVisualizerManager* ma
     return visualizer;
 }
 
-std::vector<core::TypeInfo> NewMultiserieHelper::getTypeInfos() const
+std::vector<utils::TypeInfo> NewMultiserieHelper::getTypeInfos() const
 {
-    std::vector<core::TypeInfo> ret;
+    std::vector<utils::TypeInfo> ret;
     ret.push_back(typeid(ScalarChannelReaderInterface));
     return ret;
 }
@@ -301,7 +301,7 @@ NewMultiserieHelper::NewMultiserieHelper(const ChartWithDescriptionCollection& c
 {
 }
 
-NewMultiserieHelper::NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts ):
+NewMultiserieHelper::NewMultiserieHelper(const std::vector<core::VariantConstPtr>& charts ):
     title(""),
     colorStrategy(new RandomMultiserieColorStrategy())
 {
@@ -313,7 +313,7 @@ NewMultiserieHelper::NewMultiserieHelper(const std::vector<core::ObjectWrapperCo
 
 
 
-EMGFilterHelper::EMGFilterHelper( const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+EMGFilterHelper::EMGFilterHelper( const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
     NewChartItemHelper(wrapper, events)
 {
 }
@@ -329,7 +329,7 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     //utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
     utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, RMSModifier()));
 
-    core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    core::VariantPtr wrapperX = core::Variant::create<ScalarChannelReaderInterface>();
     wrapperX->set(utils::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
     wrapperX->copyMetadata(*wrapper);
     visualizer->getOrCreateWidget();

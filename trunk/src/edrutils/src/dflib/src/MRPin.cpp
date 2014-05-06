@@ -56,7 +56,7 @@ void MRInputPin::consumeData()
 		}
 		outputsReady = 0;
 		consumed_ = true;
-	}catch(std::exception & e){
+	}catch(std::exception &){
 		
 	}catch(...){
 

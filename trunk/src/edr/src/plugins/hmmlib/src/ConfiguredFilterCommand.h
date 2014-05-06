@@ -32,7 +32,7 @@
 #include <corelib/IFilterCommand.h>
 #include <corelib/IHierarchyItem.h>
 #include <plugins/hmmlib/ConfigurationDialog.h>
-#include <corelib/ObjectWrapperCollection.h>
+#include <corelib/VariantsCollection.h>
 #include "Measurements.h"
 #include "SubjectFilterCommand.h"
 

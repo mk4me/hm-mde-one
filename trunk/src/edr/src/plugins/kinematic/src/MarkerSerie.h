@@ -28,8 +28,8 @@ public:
     //! Konstuktor
     //! \param visualizer wizualizator, który stworzył serie danych
 	MarkerSerie(KinematicVisualizer * visualizer,
-		const core::TypeInfo & requestedType,
-		const core::ObjectWrapperConstPtr & data);
+		const utils::TypeInfo & requestedType,
+		const core::VariantConstPtr & data);
 
 public:
     //! Ustawia nowa nazwę serii
@@ -37,7 +37,7 @@ public:
     //! \return nazwa serii
     virtual const std::string getName() const;
     //! \return ustawione dane
-    virtual const core::ObjectWrapperConstPtr & getData() const;
+    virtual const core::VariantConstPtr & getData() const;
 
 	virtual void update();
 
@@ -77,7 +77,7 @@ private:
     //! Wizualizator, który utworzył serie
 	KinematicVisualizer * visualizer;
     //! wrapper przekazany serii
-    core::ObjectWrapperConstPtr data;
+    core::VariantConstPtr data;
 	//! Wypakowane markery
 	MarkerCollectionConstPtr markersCollection;
 	//! Czas faktycznej aktualizacji
@@ -89,11 +89,11 @@ private:
 	//! Konfiguracja połączeń
 	SegmentsDescriptors connectionsConfigurations;
 	//! Obiekt rysujący punkty
-	core::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
+	utils::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
     //! Obiekt rysujący połączenia
-	core::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
+	utils::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
     //! Klasa pomocnicza przy rysowaniu ducha
-	core::shared_ptr<GhostSchemeDrawer> ghostDrawer;
+	utils::shared_ptr<GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
 	TrajectoryDrawerManagerPtr trajectoriesManager;
 };

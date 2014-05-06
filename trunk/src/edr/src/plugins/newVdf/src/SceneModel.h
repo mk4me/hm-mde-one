@@ -263,7 +263,7 @@ private:
 	IModelPtr model;
 	mutable Connections pinsHelper;
 	std::vector<MergedItemPtr> mergedItems;
-	core::shared_ptr<utils::IThreadPool> dfThreadFactory;
+	utils::shared_ptr<utils::IThreadPool> dfThreadFactory;
 };
 
 }

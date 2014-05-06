@@ -23,7 +23,7 @@ core::IJobPtr core::JobManager::addJob(const std::string & who, const std::strin
 		throw std::invalid_argument("Uninitialized job");
 	}
 
-	core::shared_ptr<core::Job> ret(new core::Job(who, name, runnable));	
+	utils::shared_ptr<core::Job> ret(new core::Job(who, name, runnable));	
 
 	jobManager_->addJob(ret);
 

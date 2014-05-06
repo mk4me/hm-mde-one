@@ -13,7 +13,7 @@
 #include <osg/Quat>
 #include <utils/StreamData.h>
 #include <utils/SmartPtr.h>
-#include <corelib/BaseDataTypes.h>
+#include <utils/ObjectWrapper.h>
 #include <kinematiclib/JointAnglesCollection.h>
 
 namespace IMU

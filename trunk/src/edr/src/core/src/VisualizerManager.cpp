@@ -41,7 +41,7 @@ VisualizerConstPtr VisualizerManager::getVisualizerPrototype(UniqueID id)
 	}
 }
 
-void VisualizerManager::getVisualizerPrototypes(const core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact)
+void VisualizerManager::getVisualizerPrototypes(const utils::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact)
 {
 	for(auto it = visualizerPrototypes_.begin(); it != visualizerPrototypes_.end(); ++it){
 		if(it->second.basicSupportedTypes.find(type) != it->second.basicSupportedTypes.end()){
@@ -132,7 +132,7 @@ void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visua
 
 	auto dhm = getDataHierarchyManager();
 
-	TypeInfoList visTypes;
+	utils::TypeInfoList visTypes;
 	visualizerPrototype->getSupportedTypes(visTypes);
 	protoData.basicSupportedTypes.insert(visTypes.begin(), visTypes.end());
 	for(auto it = visTypes.begin(); it != visTypes.end(); ++it){

@@ -87,7 +87,7 @@ QWidget* DicomSource::getSettingsWidget()
     return nullptr;
 }
 
-void DicomSource::getOfferedTypes( core::TypeInfoList & offeredTypes ) const
+void DicomSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) const
 {
     
 }
@@ -107,20 +107,20 @@ core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Pa
 {
     auto transaction = fileDM->transaction();
     transaction->addFile(path);
-    core::ConstObjectsList cList;
+    core::ConstVariantsList cList;
     transaction->getObjects(path, cList);
 
-    core::ObjectsList oList;
+    core::VariantsList oList;
     std::transform(cList.begin(), cList.end(), std::back_inserter(oList), 
-        [&](utils::ObjectWrapperConstPtr w) 
+        [&](core::VariantConstPtr w) 
         { 
-            return utils::const_pointer_cast<utils::ObjectWrapper>(w); 
+            return utils::const_pointer_cast<core::Variant>(w); 
         });
     QString filename = QString::fromStdString(path.stem().string());
     QString desc2 = QString::fromStdString(path.string()) + QString("\n") + desc;
 
     if (oList.size() == 1) {
-        utils::ObjectWrapperPtr wrapper = *oList.begin();
+        core::VariantPtr wrapper = *oList.begin();
         core::Filesystem::Path p = path;
         p.replace_extension("xml");
         wrapper->setMetadata("DICOM_XML", std::string(p.string()));
@@ -142,7 +142,7 @@ core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Pa
     UTILS_ASSERT(false, "Obsolete code");
     core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(filename, desc2, QIcon());
     for (auto it = oList.begin(); it != oList.end(); ++it) {
-        core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(*it, QIcon(), QString((*it)->getClassName().c_str()), desc2,  utils::make_shared<Helper>(*it));
+        core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(*it, QIcon(), QString((*it)->data()->getClassName().c_str()), desc2,  utils::make_shared<Helper>(*it));
         root->appendChild(item);
     }
 
@@ -277,9 +277,9 @@ QString dicom::DicomSource::createDesc( const internalData::Image& image )
     return desc;
 }
 
-std::vector<core::TypeInfo> dicom::LayerHelper::getTypeInfos() const
+std::vector<utils::TypeInfo> dicom::LayerHelper::getTypeInfos() const
 {
-    std::vector<core::TypeInfo> ret;
+    std::vector<utils::TypeInfo> ret;
     ret.push_back(typeid(ILayeredImage));
     return ret;
 }
@@ -293,12 +293,12 @@ core::VisualizerPtr dicom::LayerHelper::createVisualizer( core::IVisualizerManag
 
 void dicom::LayerHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
 {
-    auto serie = visualizer->createSerie(imageWrapper->getTypeInfo(), imageWrapper);
+    auto serie = visualizer->createSerie(imageWrapper->data()->getTypeInfo(), imageWrapper);
     serie->serie()->setName(path.toStdString());
     series.push_back(serie);
 }
 
-dicom::LayerHelper::LayerHelper( const core::ObjectWrapperConstPtr& imgWrapper ) :
+dicom::LayerHelper::LayerHelper( const core::VariantConstPtr& imgWrapper ) :
 imageWrapper(imgWrapper)
 {
 

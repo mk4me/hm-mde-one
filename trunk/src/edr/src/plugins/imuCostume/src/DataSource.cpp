@@ -100,7 +100,7 @@ QWidget* IMUCostumeDataSource::getSettingsWidget()
 	return nullptr;
 }
 
-void IMUCostumeDataSource::getOfferedTypes(core::TypeInfoList & offeredTypes) const
+void IMUCostumeDataSource::getOfferedTypes(utils::TypeInfoList & offeredTypes) const
 {
 	offeredTypes.push_back(typeid(SkeletonDataStream));
 	offeredTypes.push_back(typeid(IMUStream));
@@ -213,11 +213,11 @@ void IMUCostumeDataSource::innerLoadCostume(const unsigned int idx)
 }
 
 void IMUCostumeDataSource::generateCostumeItem(const unsigned int idx,
-	const core::ObjectsList & data, core::HierarchyItemPtr parent)
+	const core::VariantsList & data, core::HierarchyItemPtr parent)
 {
 	auto it = data.begin();
 
-	if((*it)->getTypeInfo() == typeid(SkeletonDataStream)){
+	if((*it)->data()->getTypeInfo() == typeid(SkeletonDataStream)){
 
 		auto sdi = utils::make_shared<core::HierarchyDataItem>(*it, QIcon(), QObject::tr("Skeleton"), QObject::tr("Skeleton data stream"));
 		parent->appendChild(sdi);
@@ -313,13 +313,13 @@ const std::string IMUCostumeDataSource::imuName(const unsigned int idx)
 	return ret.toStdString();
 }
 
-const core::ObjectsList IMUCostumeDataSource::generateCoreData(const CostumeRawData crd)
+const core::VariantsList IMUCostumeDataSource::generateCoreData(const CostumeRawData crd)
 {
-	core::ObjectsList ret;
+	core::VariantsList ret;
 
 	if(crd.skeletonDataStream != nullptr){
 
-		auto ow = core::ObjectWrapper::create<SkeletonDataStream>();
+		auto ow = core::Variant::create<SkeletonDataStream>();
 		ow->setMetadata("core/name", QObject::tr("Skeleton Stream").toStdString());
 		ow->set(crd.skeletonDataStream);
 		ret.push_back(ow);
@@ -329,7 +329,7 @@ const core::ObjectsList IMUCostumeDataSource::generateCoreData(const CostumeRawD
 
 		for(unsigned int i = 0; i < crd.imuDataStreams.size(); ++i){
 
-			auto owv = core::ObjectWrapper::create<Vec3Stream>();
+			auto owv = core::Variant::create<Vec3Stream>();
 			Vec3StreamPtr vec3Stream(new utils::StreamAdapterT<IMUData, osg::Vec3>(crd.imuDataStreams[i],
 				utils::StreamAdapterT<IMUData, osg::Vec3>::ExtractorFunction(&IMUCostumeDataSource::extractAccelerometer)));
 
@@ -337,7 +337,7 @@ const core::ObjectsList IMUCostumeDataSource::generateCoreData(const CostumeRawD
 			owv->set(vec3Stream);
 			ret.push_back(owv);
 
-			owv = core::ObjectWrapper::create<Vec3Stream>();
+			owv = core::Variant::create<Vec3Stream>();
 			vec3Stream.reset(new utils::StreamAdapterT<IMUData, osg::Vec3>(crd.imuDataStreams[i],
 				utils::StreamAdapterT<IMUData, osg::Vec3>::ExtractorFunction(&IMUCostumeDataSource::extractGyroscope)));
 
@@ -345,7 +345,7 @@ const core::ObjectsList IMUCostumeDataSource::generateCoreData(const CostumeRawD
 			owv->set(vec3Stream);
 			ret.push_back(owv);
 
-			owv = core::ObjectWrapper::create<Vec3Stream>();
+			owv = core::Variant::create<Vec3Stream>();
 			vec3Stream.reset(new utils::StreamAdapterT<IMUData, osg::Vec3>(crd.imuDataStreams[i],
 				utils::StreamAdapterT<IMUData, osg::Vec3>::ExtractorFunction(&IMUCostumeDataSource::extractMagnetometer)));
 

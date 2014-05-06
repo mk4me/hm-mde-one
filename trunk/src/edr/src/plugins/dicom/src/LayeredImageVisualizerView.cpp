@@ -154,17 +154,16 @@ void dicom::LayeredImageVisualizerView::acceptAnnotation()
 	}
 }
 
-const QString dicom::LayeredImageVisualizerView::getComment(const QString & title, const QString & content)
+const bool dicom::LayeredImageVisualizerView::getComment(const QString & title, const QString & content, QString & comment)
 {
-	QString ret;
-
-	MessageDialog dialog(nullptr, title, content);
+	MessageDialog dialog(this, title, content);
 	auto dr = dialog.exec();
 	if(dr == QDialog::Accepted){
-		ret = dialog.getText();
+		comment = dialog.getText();
+		return true;
 	}
 
-	return ret;
+	return false;
 }
 
 void dicom::LayeredImageVisualizerView::rejectAnnotation()
@@ -172,18 +171,22 @@ void dicom::LayeredImageVisualizerView::rejectAnnotation()
 	if(verifySerie() == false){
 		return;
 	}
+		
+	QString comment;
+	if (getComment(tr("Note"), QString(), comment) == true){
 
-	try{
-		//model->trySave();
-		model->uploadSerie();
-		model->setStatus(webservices::xmlWsdl::AnnotationStatus::Rejected, getComment(tr("Note")));
-		setActionsEnabled(false);
-		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
-		auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
-        setAnnotationStatus(as.status);
-		refreshChat(as);
-	}catch(...){
+		try{
+			model->uploadSerie();
+			model->setStatus(webservices::xmlWsdl::AnnotationStatus::Rejected, comment);
+			setActionsEnabled(false);
+			auto service = core::queryService<IDicomService>(plugin::getServiceManager());
+			auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
+			setAnnotationStatus(as.status);
+			refreshChat(as);
+		}
+		catch (...){
 
+		}
 	}
 }
 
@@ -194,21 +197,22 @@ void dicom::LayeredImageVisualizerView::requestAnnotationVerification()
 		return;
 	}
 
-	try{
-		auto reply = QMessageBox::question(this, tr("Confirm"), tr("Are you sure you want to send this annotation to review?"), QMessageBox::Yes | QMessageBox::No);
-		if (reply == QMessageBox::Yes) {
+	QString comment;
+	if (getComment(tr("Comment"), QString(), comment) == true){
+
+		try{
 			//model->trySave();
 			model->uploadSerie();
-			model->setStatus(webservices::xmlWsdl::AnnotationStatus::ReadyForReview, getComment(tr("Comment")));
+			model->setStatus(webservices::xmlWsdl::AnnotationStatus::ReadyForReview, comment);
 			setActionsEnabled(false);
 			auto service = core::queryService<IDicomService>(plugin::getServiceManager());
 			auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
 			setAnnotationStatus(as.status);
 			refreshChat(as);
 		}
-		
-	}catch(...){
+		catch (...){
 
+		}
 	}
 }
 

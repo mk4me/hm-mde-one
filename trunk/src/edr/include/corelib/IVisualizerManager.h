@@ -50,7 +50,7 @@ namespace core
 		virtual VisualizerConstPtr getVisualizerPrototype(UniqueID id) = 0;
 		//! \param type Typ dla którego poszukujeemy wizualizatorów
 		//! \param prototypes [out] Prototypy wizualizatorów potrafi¹cych obs³u¿yæ zadany typ
-		virtual void getVisualizerPrototypes(const core::TypeInfo & type, VisualizerPrototypes & prototypes, bool exact) = 0;
+		virtual void getVisualizerPrototypes(const utils::TypeInfo & type, VisualizerPrototypes & prototypes, bool exact) = 0;
 		//! \param visInstances [out] Obiekt do ktorego zapiszemy aktualnie zyjace instancje wizualizatorow
 		virtual void getVisualizersInstances(VisualizerInstances & visInstances) const = 0;
 		//! \param observer Obserwator tworzonych wizualziatorów w³¹czony do obserwacji

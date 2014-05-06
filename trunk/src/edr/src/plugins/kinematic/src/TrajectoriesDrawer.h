@@ -16,7 +16,7 @@ class TrajectoryDrawerManager : public IBaseDrawerScheme, public IOsgSchemeDrawe
 {
 private:
 
-	typedef std::vector<core::shared_ptr<TrajectorySchemeDrawer>> FeaturesDescriptors;
+	typedef std::vector<utils::shared_ptr<TrajectorySchemeDrawer>> FeaturesDescriptors;
 
 public:
 	TrajectoryDrawerManager();

@@ -9,7 +9,7 @@ using namespace dicom;
 
 LayersXmlParser::LayersXmlParser()
 {
-    layers = core::ObjectWrapper::create<LayersVector>();
+
 }
 
 LayersXmlParser::~LayersXmlParser()
@@ -20,6 +20,7 @@ LayersXmlParser::~LayersXmlParser()
 
 void LayersXmlParser::parse( const std::string & source  )
 {
+	layers = utils::ObjectWrapper::create<LayersVector>();
     LayersVectorPtr layers = DicomLoader::loadLayers(source);
     this->layers->set(layers);
 }
@@ -34,14 +35,19 @@ void LayersXmlParser::acceptedExpressions(Expressions & expressions) const
     ExpressionDescription expDesc;
     expDesc.description = "Layers Xml";
 
-    expDesc.types.insert(typeid(LayersVector));
+    expDesc.objectsTypes.push_back(typeid(LayersVector));
     expressions.insert(Expressions::value_type(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}-T[0-9]{4}\\.xml$", expDesc));
     expressions.insert(Expressions::value_type(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}-T[0-9]{4}\\..*\\.xml$", expDesc));
 }
 
-void LayersXmlParser::getObjects( core::Objects& objects )
+void LayersXmlParser::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const
 {
-    objects.insert(layers);
+	object.set(layers);	
+}
+
+void LayersXmlParser::reset()
+{
+	layers.reset();
 }
 
 

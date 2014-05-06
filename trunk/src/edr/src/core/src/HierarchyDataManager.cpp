@@ -49,7 +49,7 @@ public:
                 break;
 
             case IDataManagerReader::REMOVE_OBJECT:
-                mdm->addRoot(core::const_pointer_cast<IHierarchyItem>((*it).value));
+                mdm->addRoot(utils::const_pointer_cast<IHierarchyItem>((*it).value));
                 break;
             }
         }

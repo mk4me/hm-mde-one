@@ -4,7 +4,7 @@
 #include <corelib/IHierarchyDataItem.h>
 
 
-SimpleFilterCommand::SimpleFilterCommand( const std::set<core::TypeInfo>& typeinfos, const QString& name, const QIcon& icon ) :
+SimpleFilterCommand::SimpleFilterCommand( const std::set<utils::TypeInfo>& typeinfos, const QString& name, const QIcon& icon ) :
     core::AbstractFilterCommand(name, icon),
     typeinfos(typeinfos)
 {
@@ -20,7 +20,7 @@ bool SimpleFilterCommand::checkItem( core::IHierarchyItemConstPtr item )
 {
     core::IHierarchyDataItemConstPtr dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
     if (dataItem && dataItem->getData() ) {
-        auto info = dataItem->getData()->getTypeInfo();
+        auto info = dataItem->getData()->data()->getTypeInfo();
         if (typeinfos.find(info) != typeinfos.end()) {
             return true; 
         }

@@ -58,7 +58,7 @@ namespace core {
     {
         for ( int i = 0; i < manager->getNumServices(); ++i ) {
             plugin::IServicePtr service = manager->getService(i);
-            utils::shared_ptr<T> casted = dynamic_pointer_cast<T>(service);
+            utils::shared_ptr<T> casted = utils::dynamic_pointer_cast<T>(service);
             if ( casted ) {
                 target.push_back(casted);
             }

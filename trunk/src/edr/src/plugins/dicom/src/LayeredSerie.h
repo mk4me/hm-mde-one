@@ -47,7 +47,7 @@ namespace dicom {
 		virtual void update() {}
 
     public:
-        virtual void setupData( const core::ObjectWrapperConstPtr & data );  
+        virtual void setupData( const core::VariantConstPtr & data );  
 
     public:
 		const bool editionEnable() const;
@@ -96,7 +96,7 @@ namespace dicom {
         LayeredImageVisualizer* visualizer;
 		LayeredImageVisualizerView * view;
         LayeredModelView layersModel;
-        utils::ObjectWrapperConstPtr data;
+        core::VariantConstPtr data;
         utils::CommandStackPtr commandStack;
     };
     DEFINE_SMART_POINTERS(LayeredSerie)

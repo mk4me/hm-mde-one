@@ -12,6 +12,7 @@
 
 #include <plugins/newVdf/IDataProcessor.h>
 #include <plugins/newVdf/Export.h>
+#include <boost/function.hpp>
 
 namespace df { class IProcessingNode; }
 

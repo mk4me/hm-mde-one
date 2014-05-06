@@ -2,18 +2,12 @@
 #define BASE_DATA_TYPES_H
 
 #include <corelib/Export.h>
-//#include <stdint.h>
 #include <string>
-//#include <ostream>
-//#include <algorithm>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <utils/ObjectWrapper.h>
 
 namespace core {
-
-	using namespace utils;
 
 //! Typ unikalnego identyfikatora
 typedef boost::uuids::uuid UniqueID;

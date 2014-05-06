@@ -1034,7 +1034,7 @@ bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& pa
     CommunicationManager::RequestCallbacks singleTransferCallbacks;
     singleTransferCallbacks.onEndCallback = (CommunicationManager::RequestCallback)[&](const CommunicationManager::BasicRequestPtr &br) 
         { 
-            CommunicationManager::UploadRequestPtr ur = core::dynamic_pointer_cast<CommunicationManager::UploadRequest>(br);
+            CommunicationManager::UploadRequestPtr ur = utils::dynamic_pointer_cast<CommunicationManager::UploadRequest>(br);
             if (ur) {
                 auto uploaded = ur->getUploadedFiles();
                 (*uploaded)[ur->getFileName()] = ur->getFileID();
@@ -1043,7 +1043,7 @@ bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& pa
         };
     singleTransferCallbacks.onCancelCallback = (CommunicationManager::RequestCallback)[&](const CommunicationManager::BasicRequestPtr &br) 
         {
-            CommunicationManager::UploadRequestPtr ur = core::dynamic_pointer_cast<CommunicationManager::UploadRequest>(br);
+            CommunicationManager::UploadRequestPtr ur = utils::dynamic_pointer_cast<CommunicationManager::UploadRequest>(br);
             if (ur) {
                 auto uploaded = ur->getUploadedFiles();
                 auto it = uploaded->find(ur->getFileName());
@@ -1056,7 +1056,7 @@ bool CommunicationDataSource::uploadMotionFile( const core::Filesystem::Path& pa
         };
     singleTransferCallbacks.onErrorCallback = (CommunicationManager::RequestErrorCallback)[&](const CommunicationManager::BasicRequestPtr &br, const std::string &e) 
         { 
-            CommunicationManager::UploadRequestPtr ur = core::dynamic_pointer_cast<CommunicationManager::UploadRequest>(br);
+            CommunicationManager::UploadRequestPtr ur = utils::dynamic_pointer_cast<CommunicationManager::UploadRequest>(br);
             if (ur) {
                 auto uploaded = ur->getUploadedFiles();
                 auto it = uploaded->find(ur->getFileName());

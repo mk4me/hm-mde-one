@@ -255,7 +255,7 @@ private:
     utils::shared_ptr<DataSourceStatusManager> fullShallowCopyStatus;
 
 	//! ConnectionManager
-	core::shared_ptr<CommunicationManager> communicationManager;
+	utils::shared_ptr<CommunicationManager> communicationManager;
 	//! ------------------------------- Obsługa DM ------------------------------
 
 	//! Manager surowych danych w pamięci
@@ -266,9 +266,9 @@ private:
 
 	//! ---------------------------Obsługa plugin subject ------------------------
 
-	std::map<int, core::ObjectWrapperPtr> sSubjects;
-	std::map<int, core::ObjectWrapperPtr> sSessions;
-	std::map<int, core::ObjectWrapperPtr> sMotion;
+	std::map<int, core::VariantPtr> sSubjects;
+	std::map<int, core::VariantPtr> sSessions;
+	std::map<int, core::VariantPtr> sMotion;
 
 	//! ------------------------------- Web Services -----------------------------
 
@@ -308,7 +308,7 @@ private:
 	mutable webservices::DateTime lastStatusUpdate;	
 
     //! --------------------- Upload -------------------------------------
-    core::shared_ptr<std::map<std::string, int>> alreadyUploaded;
+    utils::shared_ptr<std::map<std::string, int>> alreadyUploaded;
 };
 
 #endif HEADER_GUARD___COMMUNICATIONDATASOURCE_H__

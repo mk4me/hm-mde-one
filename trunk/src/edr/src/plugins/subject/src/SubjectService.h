@@ -46,11 +46,11 @@ public:
 //ISubjectService
 public:
 
-    core::ObjectWrapperPtr createSubject();
+    core::VariantPtr createSubject();
 
-    core::ObjectWrapperPtr createSession(const core::ObjectWrapperConstPtr & subject);
+    core::VariantPtr createSession(const core::VariantConstPtr & subject);
 
-    core::ObjectWrapperPtr createMotion(const core::ObjectWrapperConstPtr & session);
+    core::VariantPtr createMotion(const core::VariantConstPtr & session);
 
 private:
 

@@ -24,7 +24,7 @@
 class NEWCOMMUNICATION_EXPORT NewChartItemHelper : public core::WrappedItemHelper
 {
 public:
-    NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
+    NewChartItemHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
 
 public:
     //! Tworzy wizualizator newChart
@@ -35,7 +35,7 @@ public:
     //! \param series tutaj trafia stworzone serie 
     virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
     //! \return typ ScalarChannelReaderInterface
-    std::vector<core::TypeInfo> getTypeInfos() const;
+    std::vector<utils::TypeInfo> getTypeInfos() const;
 
 protected:
     EventsCollectionConstPtr events;
@@ -49,7 +49,7 @@ class NEWCOMMUNICATION_EXPORT NewVector3ItemHelper : public core::WrappedItemHel
 public:
     //! Konstruktor pobiera obiekt z wrapperem wektora 3D
     //! \param wrapper 
-    NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
+    NewVector3ItemHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
 
 public:
     //! zwraca utworzone serie danych
@@ -60,7 +60,7 @@ public:
     //! \return wizualizator 2D
     virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
     //! \return typ ScalarChannelReaderInterface
-    std::vector<core::TypeInfo> getTypeInfos() const;
+    std::vector<utils::TypeInfo> getTypeInfos() const;
 private:
     EventsCollectionConstPtr events;
 };
@@ -75,7 +75,7 @@ public:
     struct ChartWithDescription 
     {
         //! obiekt, z danymi serii
-        core::ObjectWrapperConstPtr wrapper;
+        core::VariantConstPtr wrapper;
         //! związane z obiektem zdarzenia
         EventsCollectionConstPtr events;
         //! próba, z której pochodzi obiekt z danymi
@@ -85,7 +85,7 @@ public:
         //! \param w obiekt, z danymi serii
         //! \param e związane z obiektem zdarzenia
         //! \param m próba, z której pochodzi obiekt z danymi
-        ChartWithDescription(core::ObjectWrapperConstPtr w, EventsCollectionConstPtr e, PluginSubject::MotionConstPtr m) :
+        ChartWithDescription(core::VariantConstPtr w, EventsCollectionConstPtr e, PluginSubject::MotionConstPtr m) :
             wrapper(w),
             events(e),
             motion(m)
@@ -99,7 +99,7 @@ public:
     NewMultiserieHelper(const ChartWithDescriptionCollection& charts);
     //! Koknstruktor
     //! \param charts kolekcja wrapperów, ich opis wypełniany pustymi obiektami
-    NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts);
+    NewMultiserieHelper(const std::vector<core::VariantConstPtr>& charts);
     
 public:
     //! Ustawia strategie kolorów (np. random)
@@ -118,7 +118,7 @@ public:
     //! \param val 
     void setTitle(const QString& val) { title = val; }
     //! \return typ ScalarChannelReaderInterface
-    virtual std::vector<core::TypeInfo> getTypeInfos() const;
+    virtual std::vector<utils::TypeInfo> getTypeInfos() const;
     //! \return ustawiona kolekcja wrapperów wraz z opisami
     const ChartWithDescriptionCollection& getChartWithDescriptions() const { return wrappers; }
 private:
@@ -149,7 +149,7 @@ public:
     //! \return wizualizator 3D
     virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
     //! \return typ JointAnglesCollection
-    std::vector<core::TypeInfo> getTypeInfos() const;
+    std::vector<utils::TypeInfo> getTypeInfos() const;
 
 private:
     //! motion, z którego beda wyciagane elementy do stworzenia JointAnglesCollection
@@ -175,7 +175,7 @@ public:
     //! \return wizualizator 3D
     virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
     //! \return kolekcja ze wspieranymi przez wizualizator 3D typami
-    std::vector<core::TypeInfo> getTypeInfos() const;
+    std::vector<utils::TypeInfo> getTypeInfos() const;
 
 private:
     //! próba pomiarowa, z której beda wyciagane elementy 3D
@@ -191,7 +191,7 @@ class EMGFilterHelper : public NewChartItemHelper
 public:
     //! Konstruktor
     //! \param wrapper 
-    EMGFilterHelper(const core::ObjectWrapperConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
+    EMGFilterHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
     virtual ~EMGFilterHelper() {}
 
 public:

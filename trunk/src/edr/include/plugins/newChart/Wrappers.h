@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_NEW_CHART__WRAPPERS_H__
 #define HEADER_GUARD_NEW_CHART__WRAPPERS_H__
 
-#include <corelib/BaseDataTypes.h>
+#include <utils/ObjectWrapper.h>
 #include <utils/DataChannelDescriptors.h>
 #include <utils/StreamData.h>
 

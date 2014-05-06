@@ -3,7 +3,8 @@
 
 #include <list>
 #include <corelib/BaseDataTypes.h>
-#include <corelib/ObjectWrapperCollection.h>
+#include <corelib/Variant.h>
+#include <corelib/VariantsCollection.h>
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,22 +15,22 @@ namespace core {
 		//! Destruktor wirtualny
 		virtual ~IDataManagerReaderOperations() {}
 		//! \param objects [out] Wszystkie obiekty DM
-		virtual void getObjects(ConstObjectsList & objects) const = 0;
+		virtual void getObjects(ConstVariantsList & objects) const = 0;
 		//! \param objects [out] Obiekty pasujące do zapytania
 		//! \param type Typ obniektów o które pytamy
 		//! \param exact Czy typ musi być zgodny czy moga to być tez typy pochodne
 		//! \param initialzie Czy automatycznie zainicjalizować wszystkie obiekty? UWAGA - te, których się nie udało zainicjalizować nie zostaną zwrócone - DM usunie je jako popsute dane
-		virtual void getObjects(ConstObjectsList & objects, const TypeInfo & type, bool exact) const = 0;
+		virtual void getObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const = 0;
 		//! \param objects [out] Obiekty zarządzane przez DM
 		//! \param initialzie Czy automatycznie zainicjalizować wszystkie obiekty? UWAGA - te, których się nie udało zainicjalizować nie zostaną zwrócone - DM usunie je jako popsute dane
-		virtual void getObjects(ObjectWrapperCollection& objects) const = 0;
+		virtual void getObjects(VariantsCollection& objects) const = 0;
 		//! \param object Obiekt który sprawdzamy pod kątem zarządzania przez DM
 		//! \return Prawda jesli dany OW jest zarządzany przez DM
-		virtual const bool isManaged(const ObjectWrapperConstPtr & object) const = 0;
+		virtual const bool isManaged(const VariantConstPtr & object) const = 0;
 		//! \param type Czy DM aktualnie zarządza jakimkolwiek obiektem danego typu
 		//! \param exact Czy typ musi się zgadzać czy może być pochodny
 		//! \return Prawda jesli obiekt danego typu jest zarządzany przez DM
-		virtual const bool hasObject(const TypeInfo & type, bool exact) const = 0;
+		virtual const bool hasObject(const utils::TypeInfo & type, bool exact) const = 0;
 	};
 	
 	//! Podstawowe operacje związane z danymi - pobieranie danych, informacje o hierarchi typów danych, informacje o wspieranych typach danych
@@ -47,9 +48,9 @@ namespace core {
 		//! Obiekt opisujący zmianę w DM
 		struct ObjectChange
 		{
-			ObjectWrapperConstPtr previousValue;	//! Kopia OW przed zmianą, nie jest zarejestrowana w DM
-			ObjectWrapperConstPtr currentValue;		//! Aktualny OW zarejestrowany w DM
-			TypeInfo type;							//! Typ OW
+			VariantConstPtr previousValue;	//! Kopia OW przed zmianą, nie jest zarejestrowana w DM
+			VariantConstPtr currentValue;		//! Aktualny OW zarejestrowany w DM
+			utils::TypeInfo type;							//! Typ OW
 			ModificationType modyfication;			//! Typ zmiany na OW
 		};
 

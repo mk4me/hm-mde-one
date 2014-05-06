@@ -4,7 +4,7 @@
 
 using namespace core;
 
-HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,  
+HierarchyDataItem::HierarchyDataItem(VariantConstPtr wrapper,
     const QIcon& icon, const QString& name, const QString& description, HierarchyHelperPtr helper) :
     HierarchyItem(name, description, icon),
     data(wrapper), defaultHelperIDX(0)
@@ -12,7 +12,7 @@ HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
     helpers.push_back(helper);
 }
 
-HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,  
+HierarchyDataItem::HierarchyDataItem(VariantConstPtr wrapper,
     const QIcon& icon, const QString& name, const QString& description, std::list<HierarchyHelperPtr> helpers) :
     HierarchyItem(name, description, icon),
     helpers(helpers),
@@ -20,7 +20,7 @@ HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
 {
 }
 
-core::HierarchyDataItem::HierarchyDataItem( const QIcon& icon, const QString& name, const QString& description ) :
+HierarchyDataItem::HierarchyDataItem( const QIcon& icon, const QString& name, const QString& description ) :
     HierarchyItem(name, description, icon), defaultHelperIDX(-1)
 {
     // helpery i data pozostaja niewypelnione danymi
@@ -28,7 +28,7 @@ core::HierarchyDataItem::HierarchyDataItem( const QIcon& icon, const QString& na
 }
 
 
-HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
+HierarchyDataItem::HierarchyDataItem(VariantConstPtr wrapper,
     const QIcon& icon, const QString& name, const QString& description) :
     HierarchyItem(name, description, icon),
     data(wrapper), defaultHelperIDX(0)
@@ -37,8 +37,8 @@ HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
     helpers.push_back(helper);
 }
 
-HierarchyDataItem::HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, const QString& description, const QIcon& icon) :
-    HierarchyItem( QString::fromStdString(wrapper->getClassName()), description, icon),
+HierarchyDataItem::HierarchyDataItem(VariantConstPtr wrapper, const QString& description, const QIcon& icon) :
+    HierarchyItem( QString::fromStdString(wrapper->data()->getClassName()), description, icon),
     data(wrapper), defaultHelperIDX(0)
 {
     HierarchyHelperPtr helper = utils::make_shared<WrappedItemHelper>(wrapper);
@@ -55,12 +55,12 @@ HierarchyDataItem::~HierarchyDataItem()
 {
 }
 
-utils::ObjectWrapperConstPtr core::HierarchyDataItem::getData() const
+VariantConstPtr HierarchyDataItem::getData() const
 {
     return data;
 }
 
-void core::HierarchyDataItem::addHelper( HierarchyHelperPtr helper )
+void HierarchyDataItem::addHelper( HierarchyHelperPtr helper )
 {
     helper->setParent(HierarchyItem::shared_from_this());
     helpers.push_back(helper);
@@ -70,7 +70,7 @@ void core::HierarchyDataItem::addHelper( HierarchyHelperPtr helper )
 	}
 }
 
-std::list<HierarchyHelperPtr> core::HierarchyDataItem::getHelpers() const
+std::list<HierarchyHelperPtr> HierarchyDataItem::getHelpers() const
 {
     auto ptr = shared_from_this();
 
@@ -82,12 +82,12 @@ std::list<HierarchyHelperPtr> core::HierarchyDataItem::getHelpers() const
     return helpers;
 }
 
-void core::HierarchyDataItem::setDefaultHelper(const int idx)
+void HierarchyDataItem::setDefaultHelper(const int idx)
 {
 	defaultHelperIDX = idx;
 }
 
-HierarchyHelperPtr core::HierarchyDataItem::getDefaultHelper() const
+HierarchyHelperPtr HierarchyDataItem::getDefaultHelper() const
 {
 	if(defaultHelperIDX > -1){	
 		auto ptr = shared_from_this();
@@ -101,9 +101,9 @@ HierarchyHelperPtr core::HierarchyDataItem::getDefaultHelper() const
 	return HierarchyHelperPtr();
 }
 
-core::IHierarchyItemPtr core::HierarchyDataItem::shallowCopy(bool withChildren) const
+IHierarchyItemPtr HierarchyDataItem::shallowCopy(bool withChildren) const
 {
-    auto hi = utils::make_shared<core::HierarchyDataItem>(*this);
+    auto hi = utils::make_shared<HierarchyDataItem>(*this);
     hi->childItems.clear();
     if (withChildren) {
         for (auto it = childItems.begin(); it != childItems.end(); ++it) {

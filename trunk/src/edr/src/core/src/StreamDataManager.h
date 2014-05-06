@@ -66,14 +66,14 @@ namespace core {
 
 		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::istream * stream, ConstObjectsList & objects) const
+		virtual void getObjects(const std::istream * stream, ConstVariantsList & objects) const
 		{
 
 		}
 
 		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::istream * stream, ObjectWrapperCollection & objects) const
+		virtual void getObjects(const std::istream * stream, VariantsCollection & objects) const
 		{
 
 		}

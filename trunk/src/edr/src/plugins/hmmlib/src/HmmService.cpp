@@ -68,7 +68,7 @@ core::IFilterProvider::FilterBundles HmmService::getFilterBundles() const
     return bundles;
 }
 
-void HmmService::addSubjectFilterToBundle( core::IFilterBundlePtr fb, const core::TypeInfo& typeInfo, const QString& name, const QIcon& icon) const
+void HmmService::addSubjectFilterToBundle( core::IFilterBundlePtr fb, const utils::TypeInfo& typeInfo, const QString& name, const QIcon& icon) const
 {
     //SubjectHierarchyFilterPtr filter = utils::make_shared<SubjectHierarchyTypeFilter>(typeInfo);
     core::IFilterCommandPtr command = core::IFilterCommandPtr(new SimpleFilterCommand(typeInfo, name, icon));

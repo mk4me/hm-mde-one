@@ -12,7 +12,7 @@
 #include <string>
 #include <utils/SmartPtr.h>
 #include <threading/SynchronizationPolicies.h>
-#include <corelib/BaseDataTypes.h>
+#include <corelib/Variant.h>
 #include <corelib/IIdentifiable.h>
 #include <QtGui/QPixmap>
 
@@ -44,9 +44,9 @@ namespace plugin
             //! \return Nazwa serii danych
             virtual const std::string getName() const = 0;
             //! \return Dane serii
-            virtual const core::ObjectWrapperConstPtr & getData() const = 0;
+            virtual const core::VariantConstPtr & getData() const = 0;
 			//! \return Typ, jak mają być traktowane dane - może chcę pokazać dane z niższego typu
-			virtual const core::TypeInfo & getRequestedDataType() const = 0;
+			virtual const utils::TypeInfo & getRequestedDataType() const = 0;
 			//! Próbujemy odświeżać dane jeśli jest to konieczne
 			void tryUpdate()
 			{
@@ -123,10 +123,10 @@ namespace plugin
 		//! \param requestedType Typ danych który faktycznie ma być przedstawiony w serii
 		//! \param data Dane które będą brane do wizualizaowania w serii
 		//! \return Seria danych która można ustawiac - nazwa i dane, nie zarządza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
-		virtual ISerie* createSerie(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data) = 0;
+		virtual ISerie* createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data) = 0;
 		//! \param serie Seria bazowa której konfigurację powielamy
 		//! \return Nowa seria danych na bazie zadanej serii - powiela odwołąnie do danych
-		virtual ISerie* createSerie(const ISerie* serie, const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data) = 0;
+		virtual ISerie* createSerie(const ISerie* serie, const utils::TypeInfo & requestedType, const core::VariantConstPtr & data) = 0;
 		//! \param serie Seria bazowa której konfigurację powielamy
 		//! \return Nowa seria danych na bazie zadanej serii - powiela odwołąnie do danych
 		virtual ISerie* createSerie(const ISerie* serie) = 0;
@@ -143,7 +143,7 @@ namespace plugin
 		virtual ISerie * getActiveSerie() = 0;
 
 		//! \param supportedTypes [out] Lista typów wspieranych przez dany wizualizator, z których potrafi stworzyć serię danych
-		virtual void getSupportedTypes(core::TypeInfoList & supportedTypes) const = 0;
+		virtual void getSupportedTypes(utils::TypeInfoList & supportedTypes) const = 0;
 		//----------------- Obsługa serii danych ---------------------
 		//! Wizualizator musi zapewnic ze da się stworzyć MAX serii za pomoca metody createSerie. Ilos serii jest dynamicznie zarządzana z zewnątrz poprzez create i remove serie.
 		//! ISerie to klasa delegata, która implementuje specyficzne dla danego wizualizatora operacje ustawiania nazwy serii i jej danych. Kazdy wizualizator może inaczej ustawiac te informacje i prezentować je.
@@ -151,10 +151,7 @@ namespace plugin
 		virtual int getMaxDataSeries() const = 0;
     };
 
-    typedef utils::shared_ptr<IVisualizer> IVisualizerPtr;
-    typedef utils::shared_ptr<const IVisualizer> IVisualizerConstPtr;
-    typedef utils::weak_ptr<IVisualizer> IVisualizerWeakPtr;
-    typedef utils::weak_ptr<const IVisualizer> IVisualizerConstWeakPtr;
+	DEFINE_SMART_POINTERS(IVisualizer);    
 
 } // namespace plugin
 

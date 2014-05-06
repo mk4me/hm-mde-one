@@ -29,7 +29,7 @@ protected:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series) = 0;
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series) = 0;
 
 public:
     //! \return utworzony obiekt wizualizatora
@@ -38,25 +38,25 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie
-    void getSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+    void getSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series);
     //! \return opis do np. menu kontekstowego -> 'multichart/create x from session"
     QString getText() const { return text; }
     //! ustawia opis do np. menu kontekstowego -> 'multichart/create x from session"
     //! \param val 
     void setText(QString val) { text = val; }
     //! \return typy wspierane przez helper
-    virtual std::vector<core::TypeInfo> getTypeInfos() const = 0;
+    virtual std::vector<utils::TypeInfo> getTypeInfos() const = 0;
     
-    void setParent(const core::IHierarchyItemConstPtr val) { parent = val; }
-    const core::IHierarchyItemConstWeakPtr getParent() const { return parent; }
+    void setParent(const IHierarchyItemConstPtr val) { parent = val; }
+    const IHierarchyItemConstWeakPtr getParent() const { return parent; }
 
 private:
     //! utworzony przez helper wizualizator
-    core::VisualizerWeakPtr createdVisualizer;
+    VisualizerWeakPtr createdVisualizer;
     //! opis do np. menu kontekstowego -> 'multichart/create x from session"
     QString text;
     //! 
-    core::IHierarchyItemConstWeakPtr parent;
+    IHierarchyItemConstWeakPtr parent;
 };
 DEFINE_SMART_POINTERS(HierarchyHelper);
 
@@ -68,7 +68,7 @@ class CORELIB_EXPORT WrappedItemHelper : public HierarchyHelper
 public:
     //! Konstruktor wymaga podania wrappera z danymi
     //! \param wrapper 
-    WrappedItemHelper(const core::ObjectWrapperConstPtr & wrapper);
+    WrappedItemHelper(const VariantConstPtr & wrapper);
     virtual ~WrappedItemHelper() {}
 
 public:
@@ -76,16 +76,16 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie 
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series);
     //! \return tworzy wizualizator o typie zgodnym z wrapperem (gdy w systemie jest zarejstrowanych wiecej wizualizatorów danego typu to tworzony jest przpadkowy)
-    virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
+    virtual VisualizerPtr createVisualizer(IVisualizerManager* manager);
     //! \return typ wspierany przez helper (typ wpisany do wrappera)
-    std::vector<core::TypeInfo> getTypeInfos() const;
+    std::vector<utils::TypeInfo> getTypeInfos() const;
     //! \return przypisany do helpera wrapper
-    const core::ObjectWrapperConstPtr getWrapper() const { return wrapper; }
+	const VariantConstPtr getWrapper() const { return wrapper; }
 protected:
     //! przypisany do helpera wrapper
-    core::ObjectWrapperConstPtr wrapper;
+	VariantConstPtr wrapper;
 };
 DEFINE_SMART_POINTERS(WrappedItemHelper);
 

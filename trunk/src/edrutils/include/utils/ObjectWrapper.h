@@ -1,8 +1,7 @@
 /********************************************************************
-	created:  2011/02/11
-	created:  11:2:2011   15:32
+	created:  2014/04/29	14:32:28
 	filename: ObjectWrapper.h
-	author:	  Piotr Gwiazdowski
+	author:	  Mateusz Janiak
 
 	purpose:
 *********************************************************************/
@@ -13,13 +12,12 @@
 #include <string>
 #include <map>
 #include <list>
+#include <algorithm>
 #include <boost/type_traits.hpp>
-#include <boost/function.hpp>
-#include <utils/TypeInfo.h>
-#include <utils/Debug.h>
+#include <utils/ObjectWrapperTraits.h>
 #include <utils/PtrPolicyBoost.h>
 #include <utils/ClonePolicies.h>
-#include <algorithm>
+#include <threading/SynchronizationPolicies.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -39,26 +37,24 @@ namespace utils {
 	typedef std::vector<ObjectWrapperPtr> ObjectsVector;
 	typedef std::vector<ObjectWrapperConstPtr> ConstObjectsVector;
 
-	template<class T>
+	//! Forward declaration
+	template<typename T>
 	class ObjectWrapperT;
-
-	template <class T, class PtrPolicyT, class ClonePolicyT>
-	class __ObjectWrapperT;
 
     //! Baza dla typu wrapującego jakiś obiekt. Poza trzymaniem metadanych klasy pochodne
     //! trzymają referencje do obiektów.
     class ObjectWrapper
     {
-		template<class T>
-		friend class ObjectWrapperT;
-		
-		template <class T, class PtrPolicyT, class ClonePolicyT>
-		friend class __ObjectWrapperT;
-
 	public:
 
-		//! Typ inicjalizatora danych - używany do leniwej inicjalizacji
-		typedef boost::function<void(ObjectWrapper &)> LazyInitializer;
+		//! Para opisująca typ
+		typedef std::pair<TypeInfo, TypeInfo> TypeInfoPair;
+
+		//! Typ klonowania
+		enum CloneOp {
+			DeepClone,		//! Pełne, głębokie
+			ShallowClone	//! Płytkie
+		};
 
 		//! Lista typów.
 		typedef TypeInfoList Types;
@@ -95,38 +91,7 @@ namespace utils {
 			}
 		};
 
-	private:
-
-		//! Typ przechowujący metadane OW
-		typedef std::map<std::string, std::string> Metadata;
-
-	private:
-		//! Inicjalizator danych
-		LazyInitializer initializer_;
-		//! Czy obiekt był już inicjalizowany
-		bool initialized;
-		//! Metadane w formie klucz -> wartość tekstowo
-		Metadata metadata_;
-		
-
 	public:
-
-		//! \param key Klucz metadanych który sprawdzamy czy istnieje
-		//! \return Czy dany klucz istnieje
-		const bool existMetadata(const std::string & key) const;
-		//! \param key Klucz metadanych który sprawdzamy czy istnieje
-		//! \param val [out] Wartość dla zadanego klucza, w przypadku braku klucza zmienna nie zostanie nadpisana
-		//! \return Czy udalo sie pobrac wartosc klucza
-		const bool getMetadata(const std::string & key, std::string & val) const;
-		//! \param key Klucz metadanych
-		//! \param val Wartość dla zadanego klucza
-		void setMetadata(const std::string & key, const std::string & val);
-		//! \param key Klucz ktorego wpis usuwamy
-		void removeMetadata(const std::string & key);
-		//! \param srcWrapper Zrodlowy OW z ktorego kopiujemy wpisy
-		void copyMetadata(const ObjectWrapper & srcWrapper);
-		//! Metoda usuwa wszystkie metadane
-		void clearMetadata();
 
 		//! \tparam Ptr Typ wskaznika o który pytamy
 		template <class Ptr>
@@ -159,7 +124,7 @@ namespace utils {
 		//! \tparam T Typ obiektu ktorego nazwe OW chcemy pobrac
 		//! \return Nazwa dla zadanego typu.
 		template <class T>
-		static const char* getClassName(T* dummy = nullptr)
+		static const std::string getClassName(T* dummy = nullptr)
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
 			return ObjectWrapperT<T>::className();
@@ -191,7 +156,6 @@ namespace utils {
 		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
 		//! \return Return Type Resolver
 		get_t get(bool exact = false);
-
 		//! \tparam T Typ obiektu ktory chemy pobrac z OW
 		//! \param dummy Pozostawić pusty.
 		//! \return Wrappowany obiekt. Gdy wrapper jest innego typu niż parametr szablonu rzucany jest wyjątek.
@@ -201,6 +165,7 @@ namespace utils {
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
 			return static_cast<typename ObjectWrapperT<T>::Ptr>(get());
 		}
+
 		//! \tparam T Typ obiektu ktory chemy pobrac z OW
 		//! \param dummy Pozostawić pusty.
 		//! \return Wrappowany obiekt. Gdy wrapper jest innego typu niż parametr szablonu rzucany jest wyjątek.
@@ -216,7 +181,6 @@ namespace utils {
 		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
 		//! \return Return Type Resolver
 		const get_t get(bool exact = false) const;
-
 		//! Ustawia obiekt wrappera. W razie błędu rzuca bad_castem.
 		//! \tparam Ptr Typ wskaznika ktory chcemy przypisac do OW
 		//! \param object Obiekt.
@@ -227,11 +191,6 @@ namespace utils {
 				throw std::bad_cast();
 			}
 		}
-
-		//! \param initializer Obiekt leniwie inicjujący wartość OW
-		void setInitializer(const LazyInitializer & initializer);
-		//! \return Obiekt leniwie inicjujący wartość OW
-		const LazyInitializer & initializer() const;
 
 		//! Ustawia obiekt wrappera.
 		//! \tparam Ptr Typ wskaznika ktory chcemy przypisac do OW
@@ -245,47 +204,48 @@ namespace utils {
     
         //! Pusty polimorficzny destruktor.
         virtual ~ObjectWrapper();
-
+		//! \return Ilość referencji do naszych danych
+		virtual const int getReferenceCount() const = 0;
         //! \return Nazwa typu.
-        virtual const std::string& getClassName() const = 0;
-
+        virtual const std::string getClassName() const = 0;
 		//! \return Informacje o typie.
-		virtual const TypeInfo & getTypeInfo() const = 0;
-
+		virtual const TypeInfo getTypeInfo() const = 0;
 		//! \param type 
 		//! \return Czy obiekt wspiera określony typ?
 		virtual const bool isSupported(const TypeInfo& type) const;
-
 		//! \param supported Lista wspieranych rozszerzeń.
-		virtual void getSupportedTypes(Types& supported) const;
-
-		//! \return Czy wrappowany obiekt jest wyzerowany?
-		const bool isNull() const;
-
+		virtual void getSupportedTypes(Types& supported) const = 0;
+		//! \param co Typ klonowania
 		//! \return Klon bieżącego obiektu. Wewnętrzny wskaźnik również jest kopiowany.
-		const ObjectWrapperPtr clone() const;
-
+		const ObjectWrapperPtr clone(const CloneOp co = DeepClone) const;
+		//! \param dest [out] Obiekt docelowy
+		//! \param co Typ klonowania
+		virtual void clone(ObjectWrapper & dest, const CloneOp co = DeepClone) const;
+		//! \param dest [out] Obiekt docelowy
+		//! \param co Typ klonowania
+		//! \return Czy udało się sklonować obiekt
+		const bool tryClone(ObjectWrapper & dest, const CloneOp co = DeepClone) const;
 		//! \return Pusty OW dla danego typu
 		virtual const ObjectWrapperPtr create() const = 0;
-
 		//! \return Surowa wartość wskaźnika danych przechowywanych w OW
 		const void* getRawPtr() const;
-
 		//! \return Surowa wartość wskaźnika danych przechowywanych w OW
 		void* getRawPtr();
-
 		//! \return Informacje o typie odpowiednio normalnego i stałego wskaźnika.
-		virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const = 0;
+		virtual const TypeInfoPair getPtrTypeInfo() const = 0;
 		//! \param ptrInfo Informacja o wskaźniku
 		//! \return Prawda jeśli wskaźnik można pobrać z danego OW
 		virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const = 0;
 		//! Zeruje obiekt
-		void reset();
+		virtual void reset();
 		//! Zamienia zawartosc OW jesli to możliwe
 		//! \param ow Obiekt z którym zamienimy przechowywane wartości
-		void swap(ObjectWrapper & ow);
+		virtual void swap(ObjectWrapper & ow);
+		//! \param obj Obiekt z którym się porównujemy
+		//! \return Czy obiekty są takie same - trzymają te same dane
+		virtual const bool isEqual(const ObjectWrapper & obj) const;
 
-	private:
+	protected:
 
 		//! \param className
 		//! \param classId
@@ -294,6 +254,7 @@ namespace utils {
 		//! \param wrapper Obiekt ktory kopiujemy
 		ObjectWrapper(const ObjectWrapper & wrapper);
 
+	private:
 		//! Ustawia obiekt wrappera.
 		//! \tparam Ptr Typ wskaznika ktory chcemy przypisac do OW
 		//! \param object Obiekt.
@@ -333,7 +294,8 @@ namespace utils {
 		const bool __tryGetRawPtr(Ptr& object, bool exact)
 		{
 			TypeInfo ptrInfo(typeid(Ptr));
-			if ( ptrInfo == getPtrTypeInfo().first || ptrInfo == getPtrTypeInfo().second ) {
+			auto p = getPtrTypeInfo();
+			if ( ptrInfo == p.first || ptrInfo == p.second ) {
 				return __tryUnpackData(&object, ptrInfo);
 			} else if(exact == false && isPtrSupported(ptrInfo) == true){
 				return __tryUnpackBaseData(&object, ptrInfo);
@@ -370,7 +332,7 @@ namespace utils {
 		template <class Ptr>
 		const bool __tryGetRawPtr(Ptr& object, bool exact, boost::false_type) const
 		{
-			UTILS_STATIC_ASSERT((boost::is_const<typename Ptr::element_type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");		
+			UTILS_STATIC_ASSERT((boost::is_const<typename Ptr::element_type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
 
 			TypeInfo ptrInfo(typeid(Ptr));
 			if ( ptrInfo == getPtrTypeInfo().second ) {
@@ -384,27 +346,24 @@ namespace utils {
 
 		//! \param object Wskaźnik z którego rozpakowujemy dane
 		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
-		const bool __tryUnpackData(void * object, const TypeInfo & ptrType);
+		virtual const bool __tryUnpackData(void * object, const TypeInfo & ptrType);
 		//! \param object Wskaźnik z którego rozpakowujemy dane
 		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
-		const bool __tryUnpackData(void * object, const TypeInfo & ptrType) const;
+		virtual const bool __tryUnpackData(void * object, const TypeInfo & ptrType) const;
 		//! \param object Wskaźnik z którego rozpakowujemy dane
 		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
-		const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType);
+		virtual const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType);
 		//! \param object Wskaźnik z którego rozpakowujemy dane
 		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
-		const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType) const;
-		//! Metoda próbuje inicjowac obiekt
-		void initialize() const;
+		virtual const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType) const;
 		//! \return Surowy wskaźnik do przechowywanego obiektu
 		virtual const void* __getRawPtr() const = 0;
 		//! \return Surowy wskaźnik do przechowywanego obiektu
 		virtual void* __getRawPtr() = 0;
 		//! \param dest Obiekt docelowy do którego kopiujemy dane
-		virtual void __clone(const ObjectWrapperPtr & dest) const = 0;
-
+		virtual void __clone(ObjectWrapper & dest, const CloneOp co) const = 0;
+		//! Ważne!! Swap może rzucać wyjątkiem!!
 		//! \param ow Object wrapper z ktorym zamieniamy zawartość
-		//! Ważne!! To może rzucać wyjątkiem!!
 		virtual void __swap(ObjectWrapper & ow) = 0;
 		//! Zeruje dane OW
 		virtual void __reset() = 0;
@@ -418,52 +377,31 @@ namespace utils {
 		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) = 0;
 		//! \return Czy udało się pobrać mądry wskaźnik?
 		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const = 0;
+		//! \param obj Obiekt z którym się porównujemy
+		//! \return Czy obiekty są takie same - trzymają te same dane
+		virtual const bool __isEqual(const ObjectWrapper & obj) const = 0;
     };
 
     //! Pomocniczy typ bazowy, zarządzający obiektem za pomocą parametru
     //! PtrPolicy. Tego typu nigdy nie używa się wprost.
-    template <class T, class PtrPolicyT, class ClonePolicyT>
-    class __ObjectWrapperT : public ObjectWrapper, protected PtrPolicyT, protected ClonePolicyT
+	template <typename T>
+	class __ObjectWrapperT : public ObjectWrapper
     {
-		friend class ObjectWrapperT<T>;
-
     public:
-        //! Mechanizm inteligetnego wskaźnika obsługujący dane
-        typedef PtrPolicyT PtrPolicy;
-        //! Bazowy inteligetny wskaznik obsługujacy dane
-        typedef PtrPolicyT Base;
-        //! Polityka klonowania danych
-        typedef ClonePolicyT ClonePolicy;
-
-        //! Wrappowany obiekt.
-        typedef typename Base::template Ptr<T>::Type Ptr;
-        //! Stały wrappowany obiekt
-        typedef typename Base::template Ptr<const T>::Type ConstPtr;
-
-	private:
-		typedef __ObjectWrapperT<T, PtrPolicy, ClonePolicy> ImplType;
+		//! Typ wrapowanych danych
+		typedef T Type;
+		//! Pełny typ aktualnego wrappera
+		typedef __ObjectWrapperT<Type> ImplType;
 
     private:
         //! Wrappowany obiekt.
-        Ptr wrapped_;
+        typename ObjectWrapperTraits<Type>::Ptr wrapped_;
 
 	protected:
 
-		const Ptr & wrapped()
-		{
-			return wrapped_;
-		}
-
-		const ConstPtr wrapped() const
-		{
-			return wrapped_;
-		}
-
-    private:
-        //! \param wrapped
-        __ObjectWrapperT() : ObjectWrapper()
+		__ObjectWrapperT() : ObjectWrapper()
         {
-			PtrPolicy::initPtr(wrapped_);
+			ObjectWrapperTraits<Type>::PtrPolicy::initPtr(wrapped_);
         }
 
 		__ObjectWrapperT(const __ObjectWrapperT & wrapper)
@@ -472,393 +410,196 @@ namespace utils {
 		
 		}
 
+	private:
+
+		//! \param dest ObjectWrapper do którego chcemy kopiować dane
+		//! \return Wskaźnik na ObjectWrapper mojego typu lub rzuca wyjątkiem
+		static ImplType * __getMe(ObjectWrapper & dest)
+		{
+			auto cloned = dynamic_cast<ImplType*>(&dest);
+
+			if (cloned == nullptr){
+				throw std::runtime_error("Clone destination wrapper type mismatch");
+			}
+
+			return cloned;
+		}
+
+		//! \param cloned Wskaźnik na ObjectWrapper mojego typu
+		//! \param co Typ klonowania
+		void __cloneImpl(ImplType * cloned, const ObjectWrapper::CloneOp co) const
+		{
+			if (co == ObjectWrapper::ShallowClone){
+				cloned->wrapped_ = wrapped_;
+			}
+			else{
+				ObjectWrapperTraits<Type>::Ptr newPtr(ObjectWrapperTraits<Type>::ClonePolicy::clone(&*wrapped_));
+				cloned->wrapped_ = newPtr;
+			}
+		}		
+
 		virtual void __setData(const void * object)
 		{
-			__setData(object, wrapped_);
+			ObjectWrapperTraits<Type>::PtrPolicy::setPtr(wrapped_, *(static_cast<const ObjectWrapperTraits<Type>::Ptr *>(object)));
 		}
 
 		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType)
 		{
-			return __tryGetData(object, ptrType, wrapped_);
+			return ObjectWrapperTraits<Type>::tryGetData(object, ptrType, wrapped_);
 		}
 
 		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType) const
 		{
-			return __tryGetConstData(object, ptrType, wrapped_);
+			return ObjectWrapperTraits<Type>::tryGetConstData(object, ptrType, wrapped_);
 		}
 
 		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType)
 		{
-			//UTILS_STATIC_ASSERT((false), "Nie mozna pobierac typu bazowego dla tego ObjectWrappera - on jest baza")
-			return false;
+			return ObjectWrapperTraits<Type>::tryGetBaseData(object, ptrType, wrapped_);
 		}
 
 		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const
 		{
-			//UTILS_STATIC_ASSERT((false), "Nie mozna pobierac typu bazowego dla tego ObjectWrappera - on jest baza")
-			return false;
+			return ObjectWrapperTraits<Type>::tryGetConstBaseData(object, ptrType, wrapped_);
 		}
 
-    public:
-        //!
-        virtual ~__ObjectWrapperT()
-        {
-
-        }
-
-		static void __setData(const void * object, Ptr & wrapped)
+		virtual const bool __isEqual(const ObjectWrapper & obj) const
 		{
-			PtrPolicy::setPtr(wrapped, *(static_cast<const Ptr *>(object)));
+			ObjectWrapperTraits<Type>::ConstPtr w;
+			bool res = obj.tryGet(w);
+
+			return (res == true) && (wrapped_ == w);
 		}
 
-		template<class PtrIn>
-		static const bool __tryGetData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
-		{
-			if(ptrType == ptrTypeInfo().first){
-				*(static_cast<Ptr*>(object)) = wrapped;
-			}else if(ptrType == ptrTypeInfo().second){
-				*(static_cast<ConstPtr*>(object)) = wrapped;
-			}else{
-				//tu nas nigdy nie powinno być - powinniśmy rzucać wyjatkiem?
-				return false;
-			}
+		virtual void __clone(ObjectWrapper & dest, const ObjectWrapper::CloneOp co) const {
 
-			return true;
+			auto me = __getMe(dest);
+			__cloneImpl(me, co);
 		}
-
-		template<class PtrIn>
-		static const bool __tryGetConstData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
-		{
-			if(ptrType == ptrTypeInfo().second){
-				*(static_cast<ConstPtr*>(object)) = wrapped;
-			}else{
-				//tu nas nigdy nie powinno być - powinniśmy rzucać wyjatkiem?
-				return false;
-			}
-
-			return true;
-		}
-
-		template<class PtrIn>
-		static const bool __tryGetBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
-		{
-			return false;
-		}
-
-		template<class PtrIn>
-		static const bool __tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
-		{
-			return false;
-		}
-
-		virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const
-		{
-			return ptrTypeSupported(ptrInfo);
-		}
-
-		static const std::pair<TypeInfo, TypeInfo> & ptrTypeInfo()
-		{
-			static const std::pair<TypeInfo, TypeInfo> ptrTypeInfo_ = std::make_pair(TypeInfo(typeid(Ptr)), TypeInfo(typeid(ConstPtr)));
-			return ptrTypeInfo_;
-		}
-
-		static const bool ptrTypeSupported(const TypeInfo & ptrInfo)
-		{			
-			return ptrInfo == ptrTypeInfo().first || ptrInfo == ptrTypeInfo().second;
-		}
-
-		static const bool typeSupported(const TypeInfo & type)
-		{
-			return type == typeInfo();
-		}
-
-		static void supportedTypes(Types & types)
-		{
-			types.push_back(typeInfo());
-		}
-
-		virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const
-		{
-			return ptrTypeInfo();
-		}
-
-		static const TypeInfo & typeInfo()
-		{
-			static const TypeInfo typeInfo_ = TypeInfo(typeid(T));
-			return typeInfo_;
-		}
-
-		//! \return Nazwa typu.
-		virtual const std::string& getClassName() const
-		{
-			return ObjectWrapperT<T>::className();
-		}
-
-		//! \return Informacje o typie.
-		virtual const TypeInfo & getTypeInfo() const
-		{
-			return typeInfo();
-		}
-
-        virtual void __clone(const ObjectWrapperPtr & dest) const {
-			T* newPtr = ClonePolicy::clone(&*wrapped_);
-			Ptr temp;
-			PtrPolicy::setPtr(temp, newPtr);
-			auto cloned = boost::dynamic_pointer_cast<ImplType>(dest);
-			cloned->wrapped_ = temp;
-        }
-
-        virtual const ObjectWrapperPtr create() const {
-            return ObjectWrapper::create<T>();
-        }
-
-	private:
 
 		virtual const void* __getRawPtr() const
 		{
-			return PtrPolicy::getConstRawPtr(wrapped_);
+			return ObjectWrapperTraits<Type>::PtrPolicy::getConstRawPtr(wrapped_);
 		}
 
 		virtual void* __getRawPtr()
 		{
-			return PtrPolicy::getRawPtr(wrapped_);
+			return ObjectWrapperTraits<Type>::PtrPolicy::getRawPtr(wrapped_);
 		}
 
 		virtual void __swap(ObjectWrapper & ow)
 		{
-			auto owT = dynamic_cast<ImplType*>(&ow);
-			if(owT == nullptr){
-				throw std::runtime_error("Wrong swap ObjectWrapper");
-			}
-
-			PtrPolicy::swapPtr(wrapped_, owT->wrapped_);
+			auto me = __getMe(ow);
+			ObjectWrapperTraits<Type>::PtrPolicy::swapPtr(wrapped_, me->wrapped_);
 		}
 
-        virtual void __reset()
-        {
-            PtrPolicy::setPtr(wrapped_, static_cast<T*>(nullptr));
-        }
-    };
-
-	template <class T>
-	struct ObjectWrapperTraits
-	{
-		static const bool isDefinitionVisible = false;
-
-		struct PtrPolicy
+		virtual void __reset()
 		{
-			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
-		};
+			ObjectWrapperTraits<Type>::PtrPolicy::setPtr(wrapped_, static_cast<T*>(nullptr));
+		}
 
-		struct Ptr
-		{
-			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
-		};
-
-		struct ConstPtr
-		{
-			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
-		};
-
-		struct ClonePolicy
-		{
-			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
-		};
-	};
-
-	//! Deklaracja typu. Trzeba go specjalizować za pomocą makr. Ta wersja będzie
-	//! rzucać statyczną asercją.
-	template <class T>
-	class ObjectWrapperT : public ObjectWrapper
-	{
-		UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-
-		/*
 	public:
-		//! \return Nazwa typu.
-		virtual const std::string& getClassName() const
+		//!
+		virtual ~__ObjectWrapperT()
 		{
-			const static std::string className = "";
-			return className;
-		}
 
-		//! \return Informacje o typie.
-		virtual const TypeInfo & getTypeInfo() const
-		{
-			static const TypeInfo typeInfo_ = TypeInfo();
-			return typeInfo_;
-		}
+		}	
 
-		//! \return Klon bieżącego obiektu. Wewnętrzny wskaźnik również jest kopiowany.
-		virtual const ObjectWrapperPtr clone() const
+		virtual const int getReferenceCount() const
 		{
-			return ObjectWrapperPtr();
-		}
-
-		virtual const ObjectWrapperPtr create() const
-		{
-			return ObjectWrapperPtr();
-		}
-
-		virtual const void* getRawPtr() const
-		{
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-			return nullptr;
-		}
-
-		virtual void* getRawPtr()
-		{
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-			return nullptr;
-		}
-
-		//! \return Informacje o typie odpowiednio normalnego i stałego wskaźnika.
-		virtual const std::pair<TypeInfo, TypeInfo> & getPtrTypeInfo() const
-		{
-			static const std::pair<TypeInfo, TypeInfo> ptrTypeInfo_ = std::pair<TypeInfo, TypeInfo>();
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-			return ptrTypeInfo_;
+			return ObjectWrapperTraits<Type>::PtrPolicy::referenceCount(wrapped_);
 		}
 
 		virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const
 		{
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-			return false;
+			return ObjectWrapperTraits<Type>::ptrTypeSupported(ptrInfo);
 		}
 
-	private:
-
-		virtual void __reset()
+		virtual const ObjectWrapper::TypeInfoPair getPtrTypeInfo() const
 		{
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return ObjectWrapperTraits<Type>::ptrTypeInfo();
 		}
 
-		virtual const bool __setData(const void * object)
+		//! \return Nazwa typu.
+		virtual const std::string getClassName() const
 		{
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+			return ObjectWrapperT<Type>::className();
 		}
 
-		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType)
+		//! \return Informacje o typie.
+		virtual const TypeInfo getTypeInfo() const
 		{
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-			return false;
+			return ObjectWrapperTraits<Type>::typeInfo();
 		}
 
-		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType) const
+		virtual void getSupportedTypes(Types& supported) const
 		{
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-			return false;
+			ObjectWrapperTraits<Type>::supportedTypes(supported);
 		}
 
-		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType)
-		{
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-			return false;
-		}
+        virtual const ObjectWrapperPtr create() const {
+            return ObjectWrapper::create<T>();
+        }
+    };
 
-		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const
-		{
-			UTILS_STATIC_ASSERT((false), "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
-			return false;
-		}
-	*/
+	//! Deklaracja typu. Trzeba go specjalizować za pomocą makr. Ta wersja będzie
+	//! rzucać statyczną asercją.
+	template <typename T>
+	class ObjectWrapperT : public ObjectWrapper
+	{
+		UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
 	};
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils
 ////////////////////////////////////////////////////////////////////////////////
 
-#define __DEFINE_WRAPPER_META(type, ptrPolicy, clonePolicy)\
-template <> struct ObjectWrapperTraits<type>\
-{\
-    static const bool isDefinitionVisible = true;\
-	typedef ptrPolicy PtrPolicy;\
-	typedef PtrPolicy::Ptr<type>::Type Ptr;\
-	typedef PtrPolicy::Ptr<const type>::Type ConstPtr;\
-	typedef clonePolicy ClonePolicy;\
-};
+////////////////////////////////////////////////////////////////////////////////
+// Operatory porównania dla OW
+////////////////////////////////////////////////////////////////////////////////
 
-#define __DEFINE_WRAPPER_DERIVED_META(typeT, baseTypeT)\
-template <> struct ObjectWrapperTraits<typeT>\
+//! Operator poównania realizowany w oparciu o metodę isEqual
+bool operator==(const utils::ObjectWrapper & a, const utils::ObjectWrapper & b);
+
+//! Operator różności realizowany w oparciu o operator porównania
+bool operator!=(const utils::ObjectWrapper & a, const utils::ObjectWrapper & b);
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Makra dla definiowaia wrapperów
+////////////////////////////////////////////////////////////////////////////////
+
+#define __DEFINE_WRAPPER_CLASS(typeT)\
+	template <> class ObjectWrapperT<typeT> : public __ObjectWrapperT<typeT>\
 {\
-	static const bool isDefinitionVisible = ObjectWrapperTraits<baseTypeT>::isDefinitionVisible;\
-	typedef ObjectWrapperTraits<baseTypeT>::PtrPolicy PtrPolicy;\
-	typedef PtrPolicy::Ptr<typeT>::Type Ptr;\
-	typedef PtrPolicy::Ptr<const typeT>::Type ConstPtr;\
-	typedef ObjectWrapperTraits<baseTypeT>::ClonePolicy ClonePolicy;\
+	friend class ImplType;\
+	friend class ObjectWrapper;\
+private:\
+	ObjectWrapperT() : ImplType() {}\
+public:\
+	virtual ~ObjectWrapperT() {}\
+	static const std::string className(){\
+		return #typeT;\
+	}\
 };
 
 // Makro tworzące specjalizację ObjectWrapperT. Musi występować w globalnym
 // namespace. Drugim parametrem może być dowolny typ mający cechy ptrPolicy,
 // wbudowane: PtrPolicyRaw, PtrPolicyBoost, PtrPolicyOSG
-#define DEFINE_WRAPPER(type, ptrPolicy, clonePolicy)\
+#define DEFINE_WRAPPER(typeT, ptrPolicyT, clonePolicyT)\
 namespace utils {\
-	__DEFINE_WRAPPER_META(type, ptrPolicy, clonePolicy)\
-    template <>\
-class ObjectWrapperT<type> : public __ObjectWrapperT<type,  ptrPolicy, clonePolicy>\
-{\
-	friend class __ObjectWrapperT<type,  ptrPolicy, clonePolicy>;\
-	friend class ObjectWrapper;\
-public:\
-	typedef type Type;\
-	typedef type BaseType;\
-    typedef ObjectWrapperT<Type> ObjectWrapperType;\
-    typedef __ObjectWrapperT<Type,  ptrPolicy, clonePolicy> Base;\
-private: \
-    ObjectWrapperT() : Base() {}\
-public:\
-	static const std::string & className(){\
-		static const std::string className_ = #type;\
-		return className_;\
-	}\
-};\
+	__DEFINE_WRAPPER_META(typeT, ptrPolicyT, clonePolicyT)\
+	__DEFINE_WRAPPER_CLASS(typeT)\
 }
 
+// Tutaj PtrPolicy i ClonePolicy są dziedziczone po typie bazowym,
+// dla któego wcześniej musiał być zdefiniowany wrapper
 #define DEFINE_WRAPPER_INHERITANCE(typeT, baseTypeT)\
 namespace utils {\
-__DEFINE_WRAPPER_DERIVED_META(typeT, baseTypeT)\
-	template<>\
-class ObjectWrapperT<typeT> : public __ObjectWrapperT<typeT, ObjectWrapperTraits<baseTypeT>::PtrPolicy, ObjectWrapperTraits<baseTypeT>::ClonePolicy>\
-{\
-	UTILS_STATIC_ASSERT((boost::is_base_of<baseTypeT, typeT>::value), "Type type must inherit from baseTypeT");\
-	friend class __ObjectWrapperT<typeT, ObjectWrapperTraits<baseTypeT>::PtrPolicy, ObjectWrapperTraits<baseTypeT>::ClonePolicy>;\
-	friend class ObjectWrapper;\
-	template<class T> friend class ObjectWrapperT;\
-public:\
-	typedef typeT Type;\
-	typedef baseTypeT BaseType;\
-	typedef ObjectWrapperT<Type> ObjectWrapperType;\
-	typedef __ObjectWrapperT<typeT, ObjectWrapperTraits<baseTypeT>::PtrPolicy, ObjectWrapperTraits<baseTypeT>::ClonePolicy> Base;\
-private:\
-	ObjectWrapperT() : Base() {}\
-	template<class PtrIn>\
-	static const bool __tryGetBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped) {\
-		if(ObjectWrapperT<baseTypeT>::ptrTypeInfo().first == ptrType || ObjectWrapperT<Type>::ptrTypeInfo().second == ptrType){\
-			return ObjectWrapperT<baseTypeT>::__tryGetData(object, ptrType, wrapped);\
-		}\
-		return ObjectWrapperT<baseTypeT>::__tryGetBaseData(object, ptrType, wrapped);\
-	}\
-	template<class PtrIn>\
-	static const bool __tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped) {\
-		if(ObjectWrapperT<baseTypeT>::ptrTypeInfo().second == ptrType){\
-			return ObjectWrapperT<baseTypeT>::__tryGetConstData(object, ptrType, wrapped);\
-		}\
-		return ObjectWrapperT<baseTypeT>::__tryGetConstBaseData(object, ptrType, wrapped);\
-	}\
-	virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) { return __tryGetBaseData(object, ptrType, wrapped()); }\
-	virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const { return __tryGetConstBaseData(object, ptrType, wrapped()); }\
-public:\
-	static const bool ptrTypeSupported(const TypeInfo & ptrInfo) { return Base::ptrTypeSupported(ptrInfo) || ObjectWrapperT<baseTypeT>::ptrTypeSupported(ptrInfo); }\
-	static void supportedTypes(Types & types) {	ObjectWrapperT<baseTypeT>::supportedTypes(types); Base::supportedTypes(types); }\
-	static const bool typeSupported(const TypeInfo & type) { return Base::typeSupported(type) || ObjectWrapperT<baseTypeT>::typeSupported(type); }\
-	virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const {	return ptrTypeSupported(ptrInfo); }\
-	virtual const bool isSupported(const TypeInfo& type) const { return typeSupported(type); }\
-	virtual void getSupportedTypes(Types& supported) const { supportedTypes(supported); }\
-	static const std::string & className(){\
-		static const std::string className_ = #typeT;\
-		return className_;\
-	}\
-};\
+	__DEFINE_WRAPPER_DERIVED_META(typeT, baseTypeT)\
+	__DEFINE_WRAPPER_CLASS(typeT)\
 }
 
 #endif  // __HEADER_GUARD_UTILS__OBJECTWRAPPER_H__

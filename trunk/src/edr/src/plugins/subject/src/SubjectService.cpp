@@ -46,19 +46,19 @@ QWidgetList SubjectService::getPropertiesWidgets()
 }
 
 
-core::ObjectWrapperPtr SubjectService::createSubject()
+core::VariantPtr SubjectService::createSubject()
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(subjectCreationMutex);
-	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::ISubject>();
+	core::VariantPtr ret = core::Variant::create<PluginSubject::ISubject>();
 	ret->set(SubjectPtr(new Subject()));
     return ret;
 }
 
-core::ObjectWrapperPtr SubjectService::createSession(const core::ObjectWrapperConstPtr & subject)
+core::VariantPtr SubjectService::createSession(const core::VariantConstPtr & subject)
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(sessionCreationMutex);	
 
-    if(subject == nullptr || subject->isNull() == true){
+    if(subject == nullptr || subject->getRawPtr() == nullptr){
         throw std::runtime_error("Wrong subject for session");
     }
 
@@ -75,7 +75,7 @@ core::ObjectWrapperPtr SubjectService::createSession(const core::ObjectWrapperCo
 		throw std::runtime_error("Other subject implementation passed in wrapper");
 	}
 
-	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::ISession>();
+	core::VariantPtr ret = core::Variant::create<PluginSubject::ISession>();
 	SessionPtr session(new Session(subject,unpackedSubject, subImpl->nextSessionID()));
 	ret->set(session);
 	ret->setMetadata("name", session->getName());
@@ -83,11 +83,11 @@ core::ObjectWrapperPtr SubjectService::createSession(const core::ObjectWrapperCo
     return ret;
 }
 
-core::ObjectWrapperPtr SubjectService::createMotion(const core::ObjectWrapperConstPtr & session)
+core::VariantPtr SubjectService::createMotion(const core::VariantConstPtr & session)
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(motionCreationMutex);
 
-	if(session == nullptr || session->isNull() == true){
+	if(session == nullptr || session->getRawPtr() == nullptr){
 		throw std::runtime_error("Wrong session for motion");
 	}
 
@@ -104,7 +104,7 @@ core::ObjectWrapperPtr SubjectService::createMotion(const core::ObjectWrapperCon
 		throw std::runtime_error("Other session implementation passed in wrapper");
 	}
 
-	core::ObjectWrapperPtr ret = core::ObjectWrapper::create<PluginSubject::IMotion>();
+	core::VariantPtr ret = core::Variant::create<PluginSubject::IMotion>();
 	MotionPtr motion(new Motion(session,unpackedSession, sessionImpl->nextMotionID()));
 	ret->set(motion);
 	ret->setMetadata("name", motion->getName());

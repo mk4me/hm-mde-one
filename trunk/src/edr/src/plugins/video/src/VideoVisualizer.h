@@ -55,9 +55,9 @@ private:
 
 		virtual const std::string getName() const;
 
-		virtual void setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+		virtual void setData(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data);
 
-		virtual const core::ObjectWrapperConstPtr & getData() const;
+		virtual const core::VariantConstPtr & getData() const;
 
 		virtual const utils::TypeInfo & getRequestedDataType() const;
 
@@ -79,7 +79,7 @@ private:
 	private:
 		VideoVisualizer * visualizer;
 		std::string name;
-		core::ObjectWrapperConstPtr data;
+		core::VariantConstPtr data;
 		utils::TypeInfo requestedType;
         double offset;
         
@@ -141,7 +141,7 @@ public:
     //! \see IVisualizer::create
     virtual plugin::IVisualizer* create() const;
     //! \see IVisualizer::getSlotInfo
-    virtual void getSupportedTypes(core::TypeInfoList & supportedTypes) const;
+    virtual void getSupportedTypes(utils::TypeInfoList & supportedTypes) const;
     //! Nic nie robi.
     //! \see IVisualizer::update
     virtual void update(double deltaTime);
@@ -154,11 +154,11 @@ public:
     virtual int getMaxDataSeries() const;
 
     //! \return Seria danych która można ustawiac - nazwa i dane, nie zarządza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
-    virtual plugin::IVisualizer::ISerie* createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+    virtual plugin::IVisualizer::ISerie* createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data);
 
     virtual plugin::IVisualizer::ISerie* createSerie(const plugin::IVisualizer::ISerie * serie);
 
-	virtual plugin::IVisualizer::ISerie* createSerie(const plugin::IVisualizer::ISerie * serie, const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+	virtual plugin::IVisualizer::ISerie* createSerie(const plugin::IVisualizer::ISerie * serie, const utils::TypeInfo & requestedType, const core::VariantConstPtr & data);
 
     //! \param serie Seria danych do usunięcia, nie powinien usuwać tej serii! Zarządzamy nią my!!
     virtual void removeSerie(plugin::IVisualizer::ISerie* serie);

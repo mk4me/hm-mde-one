@@ -77,9 +77,9 @@ namespace core {
 		utils::shared_ptr<ServiceManager> serviceManager_;
 		utils::shared_ptr<SourceManager> sourceManager_;
 		utils::shared_ptr<VisualizerManager> visualizerManager_;
-		shared_ptr<utils::IThreadFactory> threadFactory_;
-		shared_ptr<core::ThreadPool> threadPool_;
-		shared_ptr<JobManager> jobManager_;
+		utils::shared_ptr<utils::IThreadFactory> threadFactory_;
+		utils::shared_ptr<core::ThreadPool> threadPool_;
+		utils::shared_ptr<JobManager> jobManager_;
 
 		Filesystem::Path additionalPluginsPath;
 
@@ -102,7 +102,7 @@ namespace core {
 		void safeRegisterService(const plugin::IServicePtr & service);
 		void safeRegisterSource(const plugin::ISourcePtr & source);
 		void safeRegisterParser(const plugin::IParserPtr & parser);
-		void safeRegisterObjectWrapperPrototype(const ObjectWrapperPtr & prototype);
+		void safeRegisterObjectWrapperPrototype(const utils::ObjectWrapperPtr & prototype);
 		void safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer);
 		//void registerCoreDomainTypes();
 		void unpackPlugin(coreUI::CoreMainWindow * splashScreen, const PluginPtr & plugin);

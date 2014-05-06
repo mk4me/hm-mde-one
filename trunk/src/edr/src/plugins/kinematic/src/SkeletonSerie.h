@@ -34,7 +34,7 @@ public:
 	//! Konstuktor
 	//! \param visualizer wizualizator, który stworzył serie danych
 	SkeletonSerie(KinematicVisualizer * visualizer,
-		const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+		const utils::TypeInfo & requestedType, const core::VariantConstPtr & data);
 
 	virtual ~SkeletonSerie() {}
 
@@ -50,7 +50,7 @@ public:
     //! \return nazwa serii
     virtual const std::string getName() const;
     //! \return ustawione dane
-    virtual const core::ObjectWrapperConstPtr & getData() const;
+    virtual const core::VariantConstPtr & getData() const;
 
 	virtual void update();
 
@@ -65,7 +65,7 @@ public:
 	virtual const bool ghostVisible() const;
 	virtual void setGhostVisible(const bool visible);
 
-    core::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
+    utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
 
 protected:
 	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
@@ -92,7 +92,7 @@ private:
     //! Wizualizator, który utworzył serie
 	KinematicVisualizer * visualizer;
     //! wrapper przekazany serii
-    core::ObjectWrapperConstPtr data;
+    core::VariantConstPtr data;
 	//! Dane rozpakowane
 	kinematic::JointAnglesCollectionConstPtr jointAngles;
 	//! Typ danych
@@ -102,15 +102,15 @@ private:
     //! czy operujemy na układzie XYZ czy innym
     bool xyzAxis;
 	//! Obiekt rysujący punkty
-	core::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
+	utils::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
 	//! Obiekt rysujący połączenia
-	core::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
+	utils::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
 	//! Obiekt pomocniczny do mapowania jointów z danych do wizualizacji
-	core::shared_ptr<SkeletonJointsMapping> jointsMapping;
+	utils::shared_ptr<SkeletonJointsMapping> jointsMapping;
 	//! Klasa pomocnicza przy rysowaniu szkieletu
-	core::shared_ptr<SkeletalVisualizationSchemeHelper> skeletonSchemeHelper;
+	utils::shared_ptr<SkeletalVisualizationSchemeHelper> skeletonSchemeHelper;
 	//! Klasa pomocnicza przy rysowaniu ducha
-	core::shared_ptr<GhostSchemeDrawer> ghostDrawer;
+	utils::shared_ptr<GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
 	TrajectoryDrawerManagerPtr trajectoriesManager;
 };
@@ -124,7 +124,7 @@ public:
 	//! Konstuktor
 	//! \param visualizer wizualizator, który stworzył serie danych
 	SkeletonStreamSerie(KinematicVisualizer * visualizer,
-		const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+		const utils::TypeInfo & requestedType, const core::VariantConstPtr & data);
 
 	virtual ~SkeletonStreamSerie();
 
@@ -146,7 +146,7 @@ public:
 	//! \return nazwa serii
 	virtual const std::string getName() const;
 	//! \return ustawione dane
-	virtual const core::ObjectWrapperConstPtr & getData() const;
+	virtual const core::VariantConstPtr & getData() const;
 
 	virtual void update();
 
@@ -170,7 +170,7 @@ private:
 	//! Wizualizator, który utworzył serie
 	KinematicVisualizer * visualizer;
 	//! wrapper przekazany serii
-	core::ObjectWrapperConstPtr data;
+	core::VariantConstPtr data;
 	//! Dane rozpakowane
 	SkeletonDataStreamConstPtr skeletalData;
 	//! Typ danych
@@ -180,9 +180,9 @@ private:
 	//! czy operujemy na układzie XYZ czy innym
 	bool xyzAxis;
 	//! Obiekt rysujący punkty
-	core::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
+	utils::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
 	//! Obiekt rysujący połączenia
-	core::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
+	utils::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
 };
 
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;

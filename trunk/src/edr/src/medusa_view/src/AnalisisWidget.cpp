@@ -21,8 +21,6 @@
 #include <QtGui/QSortFilterProxyModel>
 #include "AnalysisTreeContext.h"
 #include <coreui/SimpleContext.h>
-//#include "SummaryWindow.h"
-//#include "AnalisisTreeWidget.h"
 
 //! uniwersalny kontekst, sam rozmieszcza akcje
 class MedusaVisualizerSimpleContext : public coreUI::SimpleContext
@@ -573,7 +571,7 @@ void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::
                 core::VisualizerPtr visualizer = vw->getVisualizer();
                 auto hierarchyManager = plugin::getDataHierachyManagerReader();
                 bool compatibile = false;
-                core::TypeInfoSet supportedTypes;
+                utils::TypeInfoSet supportedTypes;
                 visualizer->getSupportedTypes(supportedTypes);
 
                 std::vector<utils::TypeInfo> types = helper->getTypeInfos();

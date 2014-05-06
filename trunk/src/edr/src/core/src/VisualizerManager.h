@@ -19,9 +19,6 @@
 #include <corelib/IVisualizer.h>
 #include <threading/SynchronizationPolicies.h>
 
-
-//class SceneGraphWidget;
-
 namespace core {
 
 class VisualizerManager : public IVisualizerManager {
@@ -32,9 +29,9 @@ private:
 		//! Prototyp wizualizatora
 		VisualizerPtr visualizerPrototype;
 		//! Zbiór wspieranych przez niego typów bezpośrednio
-		TypeInfoSet basicSupportedTypes;
+		utils::TypeInfoSet basicSupportedTypes;
 		//! Zbiór wspieranych przez niego typów
-		TypeInfoSet derrivedSupportedTypes;
+		utils::TypeInfoSet derrivedSupportedTypes;
 	};
 	//! Typ agregujący aktualnie żywe instancje wizualizatorów
 	typedef std::list<Visualizer*> InnerVisualizerInstances;
@@ -47,22 +44,25 @@ private:
 	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
 
 private:
-
+	//! Prototypy wizualizatorów
 	VisualizerPrototypes visualizerPrototypes_;
+	//! Obserwatorzy
 	Observers observers_;
+	//! Instancje wizualizatorów
 	InnerVisualizerInstances visualizerInstances_;
 
 	//! Obiekt na potrzeby synchronizacji update
 	mutable SyncPolicy updateSync;
 	//! Obiekt na potrzeby synchronizacji obserwatorów
 	mutable SyncPolicy observerSync;
-
+	//! Flaga pozwalająca szybko pominąć notyfikację MemoryManager, którą sami spowodowalismy
 	bool skipNotify;
 
 public:
-
+	//! Domyslny konstruktor
 	VisualizerManager();
-	~VisualizerManager();
+	//! Destruktor wirtualny
+	virtual ~VisualizerManager();
 
 public:
 
@@ -75,28 +75,29 @@ public:
 	virtual VisualizerConstPtr getVisualizerPrototype(UniqueID id);
 	//! \param type Typ dla którego poszukujeemy wizualizatorów
 	//! \param prototypes [out] Prototypy wizualizatorów potrafiących obsłużyć zadany typ
-	virtual void getVisualizerPrototypes(const core::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact);
-
+	virtual void getVisualizerPrototypes(const utils::TypeInfo & type, IVisualizerManager::VisualizerPrototypes & prototypes, bool exact);
+	//! \param visInstances [out] Aktualne instancje wizualizatorów
 	virtual void getVisualizersInstances(VisualizerInstances & visInstances) const;
-	
 	//! \param observer Obserwator tworzonych wizualziatorów włączony do obserwacji
 	virtual void registerObserver(IVisualizerManagerObserver * observer);
 	//! \param observer Obserwator tworzonych wizualziatorów wyłanczany z obserwacji
 	virtual void unregisterObserver(IVisualizerManagerObserver * observer);
 
 private:
-
+	//! \param visualizer Wizualizator który się tworzy i jest rejestrowany w managerze
 	virtual void registerVisualizer(Visualizer* visualizer);
+	//! \param visualizer Wizualizator który zostaje zwolniony i wyrejesetrowany
 	virtual void unregisterVisualizer(Visualizer* visualizer);
 
 public:
-
+	//! \param visualizerPrototype Rejestrowany prototyp wizualizatora
 	void registerVisualizerPrototype(plugin::IVisualizerPtr visualizerPrototype);
-
+	//! \param deltaTime Zmiana czasu w wizualizatorach
 	void update(double deltaTime);
 
 private:
-
+	//! \param visualizer Wizualizator który notyfikuje
+	//! \param modyfication Typ notyfikowanej zmiany
 	void notify(Visualizer * visualizer, VisuzalizerOperation modyfication);
 
 };

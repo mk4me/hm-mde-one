@@ -160,7 +160,7 @@ void SchemeDialog::blockAllSignals( bool val )
 //    QPushButton* button = qobject_cast<QPushButton*>(sender());
 //    if (button) {
 //        QTreeWidgetItem* item = getItemWhichContains(button);
-//        //VisualizationSchemePtr scheme = core::const_pointer_cast<VisualizationScheme>(item2Root[item]->getVisualiztionScheme());
+//        //VisualizationSchemePtr scheme = utils::const_pointer_cast<VisualizationScheme>(item2Root[item]->getVisualiztionScheme());
 //        //if (scheme) {
 //        //    QColor color(255, 255, 255, 80);
 //        //    color = QColorDialog::getColor ( color, this, tr("Choose color"), QColorDialog::ShowAlphaChannel);

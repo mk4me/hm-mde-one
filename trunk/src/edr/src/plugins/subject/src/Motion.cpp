@@ -20,7 +20,7 @@ PluginSubject::SubjectID Motion::nextGlobalID()
 	return globalID++;
 }
 
-Motion::Motion(const core::ObjectWrapperConstPtr & session,
+Motion::Motion(const core::VariantConstPtr & session,
 	const PluginSubject::SessionConstPtr & unpackedSession,
     PluginSubject::SubjectID localMotionID)
 	: motionID(nextGlobalID()), session(session), unpackedSession(unpackedSession), localMotionID(localMotionID),
@@ -79,7 +79,7 @@ SubjectID Motion::getLocalID() const
 }
 
 
-const core::ObjectWrapperConstPtr & Motion::getSession() const
+const core::VariantConstPtr & Motion::getSession() const
 {
     return session;
 }
@@ -89,47 +89,47 @@ const PluginSubject::SessionConstPtr & Motion::getUnpackedSession() const
 	return unpackedSession;
 }
 
-void Motion::addData(const core::ObjectWrapperConstPtr & data)
+void Motion::addData(const core::VariantConstPtr & data)
 {
 	storage.addData(data);
 }
 
-void Motion::removeData(const core::ObjectWrapperConstPtr & data)
+void Motion::removeData(const core::VariantConstPtr & data)
 {
 	storage.removeData(data);
 }
 
-const bool Motion::tryAddData(const core::ObjectWrapperConstPtr & data)
+const bool Motion::tryAddData(const core::VariantConstPtr & data)
 {
 	return storage.tryAddData(data);
 }
 
-const bool Motion::tryRemoveData(const core::ObjectWrapperConstPtr & data)
+const bool Motion::tryRemoveData(const core::VariantConstPtr & data)
 {
 	return storage.tryRemoveData(data);
 }
 
-void Motion::getObjects(core::ConstObjectsList & objects) const
+void Motion::getObjects(core::ConstVariantsList & objects) const
 {
 	storage.getObjects(objects);
 }
 
-void Motion::getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const
+void Motion::getObjects(core::ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
 {
 	storage.getObjects(objects, type, exact);
 }
 
-void Motion::getObjects(core::ObjectWrapperCollection& objects) const
+void Motion::getObjects(core::VariantsCollection& objects) const
 {
 	storage.getObjects(objects);
 }
 
-const bool Motion::isManaged(const core::ObjectWrapperConstPtr & object) const
+const bool Motion::isManaged(const core::VariantConstPtr & object) const
 {
 	return storage.isManaged(object);
 }
 
-const bool Motion::hasObject(const core::TypeInfo & type, bool exact) const
+const bool Motion::hasObject(const utils::TypeInfo & type, bool exact) const
 {
 	return storage.hasObject(type, exact);
 }

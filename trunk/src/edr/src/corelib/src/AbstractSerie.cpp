@@ -1,19 +1,19 @@
 #include "CoreLibPCH.h"
 #include <corelib/AbstractSerie.h>
 
-void plugin::AbstractSerie::setData( const core::TypeInfo & requestedDataType, const core::ObjectWrapperConstPtr & data )
+void plugin::AbstractSerie::setData( const utils::TypeInfo & requestedDataType, const core::VariantConstPtr & data )
 {
     this->requestedType = requestedDataType;
     this->data = data;
     setupData(data);
 }
 
-const core::TypeInfo & plugin::AbstractSerie::getRequestedDataType() const
+const utils::TypeInfo & plugin::AbstractSerie::getRequestedDataType() const
 {
     return requestedType;
 }
 
-const core::ObjectWrapperConstPtr & plugin::AbstractSerie::getData() const
+const core::VariantConstPtr & plugin::AbstractSerie::getData() const
 {
     return data;
 }

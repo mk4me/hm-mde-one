@@ -37,7 +37,7 @@ public:
 
     virtual QWidget* getSettingsWidget();
 
-    virtual void getOfferedTypes( core::TypeInfoList & offeredTypes ) const;
+    virtual void getOfferedTypes( utils::TypeInfoList & offeredTypes ) const;
     void addFile( const core::Filesystem::Path& path );
 
 private:

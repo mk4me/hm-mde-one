@@ -14,33 +14,33 @@
 #include <vector>
 #include <stdexcept>
 #include <utils/SmartPtr.h>
-#include <corelib/BaseDataTypes.h>
+#include <corelib/Variant.h>
 
 namespace core {
 
 class MemoryDataManager;
 
 //! Klasa służy do agregowania obiektów domenowych tego samego typu lub pocohdnych od tego samego typu
-class CORELIB_EXPORT ObjectWrapperCollection
+class CORELIB_EXPORT VariantsCollection
 {
     friend class MemoryDataManager;
 
 public:
-    typedef ConstObjectsList::size_type size_type;
-    typedef ConstObjectsList::const_iterator const_iterator;
-    typedef ConstObjectsList::iterator iterator;
-	typedef ConstObjectsList::reverse_iterator reverse_iterator;
-	typedef ConstObjectsList::const_reverse_iterator const_reverse_iterator;
-	typedef ConstObjectsList::reference reference;
-	typedef ConstObjectsList::const_reference const_reference;
+    typedef ConstVariantsList::size_type size_type;
+    typedef ConstVariantsList::const_iterator const_iterator;
+    typedef ConstVariantsList::iterator iterator;
+	typedef ConstVariantsList::reverse_iterator reverse_iterator;
+	typedef ConstVariantsList::const_reverse_iterator const_reverse_iterator;
+	typedef ConstVariantsList::reference reference;
+	typedef ConstVariantsList::const_reference const_reference;
 
 private:
     //! Czy kolekcja przechowyje elementy wylacznie danego typu czy również pochodne mu
     bool exact;
 	//! Dane
-	ConstObjectsList data;
+	ConstVariantsList data;
 	//! Typ danych
-	TypeInfo typeInfo;
+	utils::TypeInfo typeInfo;
 
 private:
 
@@ -52,7 +52,7 @@ private:
 
 private:
 
-	ObjectWrapperCollection() {}
+	VariantsCollection() {}
 
 public:
 
@@ -60,16 +60,16 @@ public:
 	//ObjectWrapperCollection(bool exact = true) : typeInfo(typeid(T)), exact(exact) {}
 
     //! \param info typ przechowywanych obiektów
-    ObjectWrapperCollection(const TypeInfo & typeInfo, bool exact = true);
+    VariantsCollection(const utils::TypeInfo & typeInfo, bool exact = true);
 
-    ObjectWrapperCollection(const ObjectWrapperCollection & owc);
+    VariantsCollection(const VariantsCollection & owc);
 
-    virtual ~ObjectWrapperCollection();
+    virtual ~VariantsCollection();
 
 public:
 
     //! \return Najniższy typ w hierarchi dziedziczenia który kolekcja może przechować
-    const TypeInfo & getTypeInfo() const;
+	const utils::TypeInfo & getTypeInfo() const;
 
     //! \return Czy dane musza być dokłądnie tego samego typu dla którego utworzono kolekcję czy mogą też być pochodne od niego
     const bool exactTypes() const;
@@ -102,11 +102,11 @@ public:
 
 	iterator erase(iterator first, iterator last);
 
-	void push_front(const ObjectWrapperConstPtr & obj);
+	void push_front(const VariantConstPtr & obj);
 
 	void pop_front();
 
-	void push_back(const ObjectWrapperConstPtr & obj);
+	void push_back(const VariantConstPtr & obj);
 
 	void pop_back();
 
@@ -118,15 +118,15 @@ public:
 
 	const_reference back() const;
 
-	iterator insert(iterator position, const ObjectWrapperConstPtr& val);
+	iterator insert(iterator position, const VariantConstPtr& val);
 
 	template<class InputIterator>
 	void insert(iterator position, InputIterator first, InputIterator last)
 	{
-		ConstObjectsList tmp(first, last);
+		ConstVariantsList tmp(first, last);
 
 		for(auto it = tmp.begin(); it != tmp.end(); ++it){
-			if( (exact == true && (*it)->getTypeInfo() != typeInfo) || (*it)->isSupported(typeInfo) == false ) {
+			if ((exact == true && (*it)->data()->getTypeInfo() != typeInfo) || (*it)->data()->isSupported(typeInfo) == false) {
 				throw std::bad_cast();
 			}
 		}
@@ -134,11 +134,11 @@ public:
 		data.insert(position, tmp.begin(), tmp.end());
 	}
 
-	void swap(ObjectWrapperCollection & owc);
+	void swap(VariantsCollection & owc);
 
 	void clear();
 
-	void remove (const ObjectWrapperConstPtr& val);
+	void remove(const VariantConstPtr& val);
 	
 	template <class Predicate>
 	void remove_if (Predicate pred)
@@ -168,13 +168,7 @@ public:
     void removeDerivedTypes();
 };
 
-typedef utils::shared_ptr<ObjectWrapperCollection> ObjectWrapperCollectionPtr;
-typedef utils::shared_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstPtr;
-
-typedef const utils::shared_ptr<const ObjectWrapperCollection> ConstObjectWrapperCollectionConstPtr;
-
-typedef utils::weak_ptr<ObjectWrapperCollection> ObjectWrapperCollectionWeakPtr;
-typedef utils::weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeakPtr;
+DEFINE_SMART_POINTERS(VariantsCollection);
 
 }
 

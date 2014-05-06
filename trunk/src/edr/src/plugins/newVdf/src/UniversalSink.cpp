@@ -27,28 +27,28 @@ void UniversalSink::_UniversalSink()
 
 void UniversalSink::consume()
 {
-    utils::ObjectWrapperConstPtr wrapper = inPinA->getWrapper();	
+    core::VariantConstPtr wrapper = inPinA->getWrapper();	
 
     core::IHierarchyItemPtr dataItem;
 
-    if (wrapper->isSupported(typeid(core::ConstObjectsList))) {
+    if (wrapper->data()->isSupported(typeid(core::ConstVariantsList))) {
 
         dataItem = core::HierarchyItemPtr(new core::HierarchyItem("Motion Analysis Results", QString()));
 
-        core::shared_ptr<const core::ConstObjectsList> data;
+        utils::shared_ptr<const core::ConstVariantsList> data;
         data = wrapper->get();
 
         for(auto it = data->begin(); it != data->end(); ++it){
 
             core::HierarchyHelperPtr helper;
 
-            if ((*it)->isSupported(typeid(VectorChannelReaderInterface))) {
+			if ((*it)->data()->isSupported(typeid(VectorChannelReaderInterface))) {
                 helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(*it));
             } else {
                 helper = core::HierarchyHelperPtr(new core::WrappedItemHelper(*it));
             }
 
-            std::string name = (*it)->getClassName();
+			std::string name = (*it)->data()->getClassName();
             (*it)->getMetadata("core/label", name);
 
             core::IHierarchyItemPtr di = 
@@ -61,13 +61,13 @@ void UniversalSink::consume()
 
         core::HierarchyHelperPtr helper;
 
-        if (wrapper->isSupported(typeid(VectorChannelReaderInterface))) {
+		if (wrapper->data()->isSupported(typeid(VectorChannelReaderInterface))) {
             helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(wrapper));
         } else {
             helper = core::HierarchyHelperPtr(new core::WrappedItemHelper(wrapper));
         }
 
-        dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(wrapper->getClassName()), QString(), helper));
+		dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(wrapper->data()->getClassName()), QString(), helper));
     }
 
     emit itemConsumed(dataItem);

@@ -47,6 +47,9 @@ void QtMessageHandler(QtMsgType type, const char *msg)
 class OsgNotifyHandlerLog4cxx : public osg::NotifyHandler
 {
 public:	
+	//! Destruktor wirtualny
+	virtual ~OsgNotifyHandlerLog4cxx() {}
+
 	  //! \param severity
 	  //! \param message
 	  virtual void notify(osg::NotifySeverity severity, const char *message)
@@ -124,7 +127,8 @@ public:
 public:
     virtual void close()
 	{
-
+		setConsole(nullptr);
+		std::queue<CoreConsoleWidgetEntryPtr>().swap(queuedEntries);
 	}
 
     virtual bool requiresLayout() const
@@ -222,20 +226,10 @@ LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
 
 LogInitializer::~LogInitializer()
 {
-	//wylaczam appender dla widgeta konsoli
-	LoggerList loggers = Logger::getRootLogger()->getLoggerRepository()->getCurrentLoggers();
-	loggers.push_back(Logger::getRootLogger());
-	BOOST_FOREACH(LoggerPtr logger, loggers) {
-		AppenderList appenders = logger->getAllAppenders();
-		BOOST_FOREACH(AppenderPtr appender, appenders) {
-			if ( ConsoleWidgetAppenderPtr consoleAppender = appender ) {
-				logger->removeAppender(consoleAppender);
-			}
-		}
-	}
-
-    // koniecznie trzeba przywrócić, inaczej będzie błąd
-    osg::setNotifyHandler( new osg::StandardNotifyHandler() );
+	// koniecznie trzeba przywrócić, inaczej będzie błąd
+	qInstallMsgHandler(0);
+	osg::setNotifyHandler( new osg::StandardNotifyHandler() );
+	setConsoleWidget(nullptr);
 }
 
 void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
@@ -301,6 +295,8 @@ public:
     OsgNotifyHandlerConsoleWidget(osg::NotifyHandler* handler) :
     console(nullptr), defaultHandler(handler)
     {}
+
+	virtual ~OsgNotifyHandlerConsoleWidget() {}
 
 	//! \return Domyślny handler.
 	osg::NotifyHandler* getDefaultHandler()
@@ -369,6 +365,7 @@ LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
 
 LogInitializer::~LogInitializer()
 {
+	qInstallMsgHandler(0);
     OsgNotifyHandlerConsoleWidget* handler = dynamic_cast<OsgNotifyHandlerConsoleWidget*>(osg::getNotifyHandler());
     UTILS_ASSERT(handler);
     osg::setNotifyHandler( handler->getDefaultHandler() );
@@ -417,6 +414,7 @@ LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
 
 LogInitializer::~LogInitializer()
 {
+	qInstallMsgHandler(0);
 	osg::setNotifyHandler( new osg::StandardNotifyHandler() );
 }
 

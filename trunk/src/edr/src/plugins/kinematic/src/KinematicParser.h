@@ -5,13 +5,13 @@
 #include <corelib/IDataManagerReader.h>
 
 //! klasa wykorzystuje bibliotekę kinematiclib w celu wczytania danych animacji szkieletowej
-class KinematicParser : public plugin::IParser, public plugin::ISourceParserCapabilities
+class KinematicParser : public plugin::ISourceParser
 {
 	UNIQUE_ID("{AE673002-AE76-4E79-983E-ABDB15713E74}")
 	CLASS_DESCRIPTION("Kinematic parser", "Kinematic parser")
 private:
     //! wrapper, do którego trafią wczytane dane
-    core::ObjectWrapperPtr skeletonData;
+    utils::ObjectWrapperPtr skeletonData;
 
 public:
     KinematicParser();
@@ -26,8 +26,9 @@ public:
     //! zwraca wspierane rozszerzenia plików (amc, bvh)
     //! \param extensions kolecja, do której trafią wspierane rozszerzenia
     virtual void acceptedExpressions(Expressions & expressions) const;
-    //! \param objects kolekcja z object wrapperem (skeletonData)
-    virtual void getObjects(core::Objects& objects);
+	virtual void getObject(core::Variant& object, const core::VariantsVector::size_type idx) const;
+	virtual void reset();
+	
 };
 
 #endif  // __HEADER_GUARD_KINEMATIC__KINEMATICPARSER_H__

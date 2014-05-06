@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <corelib/BaseDataTypes.h>
-#include <corelib/ObjectWrapperCollection.h>
+#include <corelib/VariantsCollection.h>
 
 namespace core {
 	
@@ -43,11 +43,11 @@ namespace core {
 		virtual const bool isManaged(const std::istream * stream) const = 0;
 		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::istream * stream, ConstObjectsList & objects) const = 0;
+		virtual void getObjects(const std::istream * stream, ConstVariantsList & objects) const = 0;
 
 		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
 		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::istream * stream, ObjectWrapperCollection & objects) const = 0;
+		virtual void getObjects(const std::istream * stream, VariantsCollection & objects) const = 0;
 	};
 
 	//! Interfejs zapewniaj¹cy dostêp do danych strumieniowych zarzazanych przez aplikacjê

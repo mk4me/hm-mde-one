@@ -72,7 +72,7 @@ private Q_SLOTS:
 
 private:
 
-	static const QString getComment(const QString & title, const QString & content = QString());
+	const bool getComment(const QString & title, const QString & content, QString & comment);
 
 	void setActionsEnabled(const bool enable);
 

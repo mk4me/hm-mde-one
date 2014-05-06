@@ -9,9 +9,8 @@
 #ifndef HEADER_GUARD___ISUBJECTSERVICE_H__
 #define HEADER_GUARD___ISUBJECTSERVICE_H__
 
-#include <vector>
 #include <plugins/subject/Types.h>
-#include <corelib/BaseDataTypes.h>
+#include <corelib/Variant.h>
 
 namespace PluginSubject {
 
@@ -22,11 +21,11 @@ class ISubjectService
 public:
     virtual ~ISubjectService() {}
 
-    virtual core::ObjectWrapperPtr createSubject() = 0;
+    virtual core::VariantPtr createSubject() = 0;
 
-    virtual core::ObjectWrapperPtr createSession(const core::ObjectWrapperConstPtr & subject) = 0;
+    virtual core::VariantPtr createSession(const core::VariantConstPtr & subject) = 0;
 
-    virtual core::ObjectWrapperPtr createMotion(const core::ObjectWrapperConstPtr & session) = 0;
+    virtual core::VariantPtr createMotion(const core::VariantConstPtr & session) = 0;
 };
 
 }

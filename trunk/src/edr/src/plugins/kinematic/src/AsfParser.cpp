@@ -10,7 +10,7 @@
 
 AsfParser::AsfParser()
 {
-    this->skeletalModel = core::ObjectWrapper::create<kinematic::SkeletalModel>();
+
 }
 
 AsfParser::~AsfParser()
@@ -20,6 +20,7 @@ AsfParser::~AsfParser()
 
 void AsfParser::parse( const std::string & source )
 {
+	skeletalModel = utils::ObjectWrapper::create<kinematic::SkeletalModel>();
 	core::Filesystem::Path path(source);
     //path = std::string("C:/Users/Wojciech/Desktop/nowyTest/KrakowiakAdam.asf");
   
@@ -39,13 +40,17 @@ void AsfParser::acceptedExpressions(Expressions & expressions) const
     plugin::IParser::ExpressionDescription expDesc;
     expDesc.description = "Acclaim Skeleton File format";
 
-    expDesc.types.insert(typeid(kinematic::SkeletalModel));
+    expDesc.objectsTypes.push_back(typeid(kinematic::SkeletalModel));
 
     expressions[".*\\.asf$"] = expDesc;
 }
 
-void AsfParser::getObjects( core::Objects& objects )
+void AsfParser::reset()
 {
-    objects.insert(this->skeletalModel);
+	skeletalModel.reset();
 }
 
+void AsfParser::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const
+{
+	object.set(skeletalModel);
+}

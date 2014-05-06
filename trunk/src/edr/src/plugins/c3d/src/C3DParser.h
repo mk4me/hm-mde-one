@@ -17,36 +17,21 @@
 
 
 //! Klasa wykorzystuje c3dlib do zasilenia systemu w obiekty domenowe pochodzące z plików C3D
-class C3DParser : public plugin::IParser, public plugin::ISourceParserCapabilities
+class C3DParser : public plugin::ISourceParser
 {
     UNIQUE_ID("{D7801231-BACA-42C6-9A8E-706F561A563F}")
 	CLASS_DESCRIPTION("C3D parser", "C3D parser")
 	typedef utils::shared_ptr<c3dlib::C3DParser> ParserPtr;
 private:
-    //! Obsolete. Wektor zawiera 4 kanały analogowe z płyt GRF
-	std::vector<core::ObjectWrapperPtr> GRFChannels;
-    //! Obsolete. Wektor zawiera 16 kanałów analogowych EMG
-	std::vector<core::ObjectWrapperPtr> EMGChannels;
-    //! Kolekcja z danymi GRF
-	core::ObjectWrapperPtr GRFs;
-    //! Kolekcja z danymi EMG
-	core::ObjectWrapperPtr EMGs;
-    //! Kolekcja z markerami
-	core::ObjectWrapperPtr markerChannels;
-    //! Kolekcja z siłami w stawach - dane są estymowane
-	core::ObjectWrapperPtr forceChannels;
-    //! Kolekcja z kątami w stawach - dane są estymowane
-	core::ObjectWrapperPtr angleChannels;
-    //! Kolekcja z momentami sił w stawach - dane są estymowane
-	core::ObjectWrapperPtr momentChannels;
-    //! Kolekcja z mocami w stawach - dane są estymowane
-	core::ObjectWrapperPtr powerChannels;
-    //! Kolekcja ze zdarzeniami zapisanymi w pliku C3D (np. stąpnięcie stopy)
-    core::ObjectWrapperPtr allEvents;
-    //! Offsety video
-    core::ObjectWrapperPtr movieDelays;
+	//! Dane parsera po parsowaniu
+	utils::ObjectsVector data;
     //! wskaźnik do właściwego parsera z biblioteki c3dlib
 	ParserPtr parserPtr;
+	std::string path;
+
+private:
+
+	static void initObjects(utils::ObjectsVector & objects);
 
 public:
     C3DParser();
@@ -58,15 +43,14 @@ public:
     virtual void parse(const std::string & source);
     //! \return pusty obiekt nowego parsera
     virtual plugin::IParser* create() const;
-    //! Zwraca obiekty dostarczone przez parser
-    //! \param objects kolekcja z obiektami (set)
-    virtual void getObjects(core::Objects& objects);
+	virtual void getObject(core::Variant & object, const unsigned int idx) const;
     //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;
 	//! Zapisauje dane w konkretnym miejscu, nie używane
 	//! \param path ścieżka zapisu
 	void saveFile(const core::Filesystem::Path& path);
+	virtual void reset();
 };
 
 

@@ -60,16 +60,16 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 
     bool hasData = false;
     auto rootItem = utils::make_shared<core::HierarchyItem>(QString(), QString(), QIcon());
-    core::ConstObjectsList sessions;
+    core::ConstVariantsList sessions;
     subject->getSessions(sessions);
     for (auto it = sessions.crbegin(); it != sessions.crend(); ++it) {
-        core::ConstObjectsList motions;
+        core::ConstVariantsList motions;
         PluginSubject::SessionConstPtr s = (*it)->get();
         QString label(QString::fromUtf8(s->getLocalName().c_str()));
         QString desc("");
-        utils::ObjectWrapperConstPtr sessionWrp;
+        core::VariantConstPtr sessionWrp;
         if (s->hasObject(typeid(dicom::DicomInternalStruct),false)) {
-            core::ConstObjectsList inter;
+            core::ConstVariantsList inter;
             s->getObjects(inter, typeid(dicom::DicomInternalStruct), false);
             sessionWrp = *inter.begin();
             std::string sessionName;
@@ -88,21 +88,21 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
         rootItem->appendChild(sessionItem);
         s->getMotions(motions);
 
-        BOOST_FOREACH(utils::ObjectWrapperConstPtr motionOW, motions) {	
+        BOOST_FOREACH(core::VariantConstPtr motionOW, motions) {	
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
             std::string trialName;
             motionOW->getMetadata("core/source", trialName);
             
             if (motion->hasObject(typeid(dicom::ILayeredImage), false)) {
-                core::ConstObjectsList images;
-                core::ConstObjectsList layers;
+                core::ConstVariantsList images;
+                core::ConstVariantsList layers;
                 motion->getObjects(images, typeid(dicom::ILayeredImage), false);	
                 motion->getObjects(layers, typeid(dicom::LayersVector), false);
                 
                 // w bazie jest po jednym pliku na motion
                 if (images.size() == 1) {
-                    utils::ObjectWrapperConstPtr wrapper = (*images.begin());
+                    core::VariantConstPtr wrapper = (*images.begin());
                     std::string sourceFile;
                     if (wrapper->getMetadata("core/source", sourceFile)) {
                         fs::Path stem = fs::Path(sourceFile).stem();
@@ -126,7 +126,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 						ncimg->setTrialID(comm->trialID(stem.string()));
                         
                         QIcon icon;
-                        auto hasAnnotation = [&](const std::string& filename, const core::ConstObjectsList& layers) -> bool {
+                        auto hasAnnotation = [&](const std::string& filename, const core::ConstVariantsList& layers) -> bool {
                             for (auto it = layers.begin(); it != layers.end(); ++it) {
                                 std::string source;
                                 (*it)->getMetadata("core/source", source);
@@ -188,14 +188,14 @@ core::HierarchyDataItemPtr dicom::DicomPerspective::tryGetHierarchyItem( const s
 void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
-    core::ObjectWrapperPtr wrp = utils::const_pointer_cast<core::ObjectWrapper>(wrapper);
+    core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(wrapper);
     std::string name = getUserName();
 	fs::Path realXmlFilename(boost::str(boost::format(xmlFilename) % name));
     wrp->setMetadata("DICOM_XML", realXmlFilename.string());
 	wrp->setMetadata("DICOM_XML_PATTERN", xmlFilename);
     wrp->setMetadata("TRIAL_NAME", trialName);
-    //core::ObjectWrapperPtr wrp = wrapper->clone();
-    auto serie = visualizer->createSerie(wrp->getTypeInfo(), wrp);
+    //core::VariantPtr wrp = wrapper->clone();
+    auto serie = visualizer->createSerie(wrp->data()->getTypeInfo(), wrp);
     auto layeredSerie = dynamic_cast<LayeredSerie*>(serie->serie());
     UTILS_ASSERT(layeredSerie);
     layeredSerie->setName(path.toStdString());
@@ -371,7 +371,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
     series.push_back(serie);    
 }
 
-dicom::DicomHelper::DicomHelper( const core::ObjectWrapperConstPtr & wrapper, const core::ConstObjectsList& layers,
+dicom::DicomHelper::DicomHelper( const core::VariantConstPtr & wrapper, const core::ConstVariantsList& layers,
     const std::string& xmlFilename, const std::string& trialName) :
     WrappedItemHelper(wrapper),
     layers(layers),

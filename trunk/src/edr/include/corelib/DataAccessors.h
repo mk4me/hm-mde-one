@@ -20,9 +20,9 @@ namespace core {
     template <class T, class Ptr>
     void queryDataIsConvertible__(IDataManagerReaderOperations* manager, std::vector<Ptr> & target, bool exact, boost::true_type)
     {
-		const static TypeInfo type = TypeInfo(typeid(T));
+		const static utils::TypeInfo type = utils::TypeInfo(typeid(T));
         // pobieramy wrappery
-        ConstObjectsList objects;
+        ConstVariantsList objects;
         manager->getObjects(objects, type, exact);
 
         for(auto it = objects.begin(); it != objects.end(); ++it){
@@ -46,8 +46,8 @@ namespace core {
     inline void queryDataPtr(IDataManagerReaderOperations* manager, std::vector<SmartPtr>& target, bool exact = false)
     {
         UTILS_STATIC_ASSERT(boost::is_const<typename SmartPtr::element_type>::value, "Interfejs pobierania danych operuje na stalych obiektach.");
-        UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename boost::remove_const<typename SmartPtr::element_type>::type>::isDefinitionVisible ||
-            ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+		UTILS_STATIC_ASSERT(utils::ObjectWrapperTraits<typename boost::remove_const<typename SmartPtr::element_type>::type>::isDefinitionVisible ||
+			utils::ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
         queryDataIsConvertible__<typename SmartPtr::element_type, SmartPtr>(manager, target, exact, boost::true_type());
     }
 
@@ -103,8 +103,8 @@ namespace core {
     template <class T, class Ptr>
     inline void queryData(IDataManagerReaderOperations* manager, std::vector<Ptr>& target, bool exact = false)
     {
-        UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-        queryDataIsConvertible__<T, Ptr>(manager, target, exact, boost::is_convertible<Ptr, typename ObjectWrapperT<T>::ConstPtr>());
+		UTILS_STATIC_ASSERT(utils::ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+		queryDataIsConvertible__<T, Ptr>(manager, target, exact, boost::is_convertible<Ptr, typename utils::ObjectWrapperT<T>::ConstPtr>());
     }
 
     //! \param manager Data manager.
@@ -112,10 +112,10 @@ namespace core {
     //!     zdefiniowanego w zasadach wskaźników dla wrappera.
     //! \param exact Czy mają być wyciągane obiekty konkretnie tego typu (z pominięciem polimorfizmu)?
     template <class T>
-    inline std::vector<typename ObjectWrapperT<T>::ConstPtr> queryData(IDataManagerReaderOperations* manager, bool exact = false, T* /*dummy*/ = nullptr)
+	inline std::vector<typename utils::ObjectWrapperT<T>::ConstPtr> queryData(IDataManagerReaderOperations* manager, bool exact = false, T* /*dummy*/ = nullptr)
     {
-        UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-        std::vector<typename ObjectWrapperT<T>::ConstPtr> target;
+		UTILS_STATIC_ASSERT(utils::ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+		std::vector<typename utils::ObjectWrapperT<T>::ConstPtr> target;
         queryData<T>(manager, target, exact);
         return target;
     }

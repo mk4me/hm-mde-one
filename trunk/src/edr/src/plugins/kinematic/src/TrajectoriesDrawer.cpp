@@ -36,7 +36,7 @@ void TrajectoryDrawerManager::initialize(const std::vector<std::vector<osg::Vec3
 	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
 
 	for(auto it = pointsPositions.begin(); it != pointsPositions.end(); ++it){
-		core::shared_ptr<TrajectorySchemeDrawer> td(new TrajectorySchemeDrawer());
+		utils::shared_ptr<TrajectorySchemeDrawer> td(new TrajectorySchemeDrawer());
 		td->init(*it);
 		tmpNode->addChild(td->getNode(), false);
 		locFDs.push_back(td);

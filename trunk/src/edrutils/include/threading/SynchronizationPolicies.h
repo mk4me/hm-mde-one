@@ -1,10 +1,10 @@
 /********************************************************************
-    created:  2011/06/14
-    created:  14:6:2011   8:48
-    filename: SynchronizationPolicies.h
-    author:   Mateusz Janiak
-    
-    purpose:  
+created:  2011/06/14
+created:  14:6:2011   8:48
+filename: SynchronizationPolicies.h
+author:   Mateusz Janiak
+
+purpose:
 *********************************************************************/
 #ifndef HEADER_GUARD_UTILS__SYNCHRONIZATIONPOLICIES_H__
 #define HEADER_GUARD_UTILS__SYNCHRONIZATIONPOLICIES_H__
@@ -14,101 +14,111 @@
 
 namespace utils {
 
-class LockingPolicy
-{
-public:
-	virtual void lock() = 0;
-	virtual void unlock() = 0;
-	virtual const bool tryLock() = 0;
-};
+	class LockingPolicy
+	{
+	public:
+		virtual void lock() = 0;
+		virtual void unlock() = 0;
+		virtual const bool tryLock() = 0;
+	};
 
-class NoSyncPolicy : public LockingPolicy
-{
-public:
-    virtual void lock() {}
-    virtual void unlock() {}
-    virtual const bool tryLock() { return true; }
-};
+	class NoSyncPolicy : public LockingPolicy
+	{
+	public:
+		virtual void lock() {}
+		virtual void unlock() {}
+		virtual const bool tryLock() { return true; }
+	private:
+		NoSyncPolicy(const NoSyncPolicy &);
+		NoSyncPolicy & operator=(const NoSyncPolicy &);
+	};
 
-class RecursiveSyncPolicy : public LockingPolicy
-{
-public:
+	class RecursiveSyncPolicy : public LockingPolicy
+	{
+	public:
 
-	RecursiveSyncPolicy() : recMutex(QMutex::Recursive) {}
+		RecursiveSyncPolicy() : recMutex(QMutex::Recursive) {}
 
-    virtual void lock() { recMutex.lock(); }
-    virtual void unlock() { recMutex.unlock(); }
-    virtual const bool tryLock() { return recMutex.tryLock(); }
+		virtual void lock() { recMutex.lock(); }
+		virtual void unlock() { recMutex.unlock(); }
+		virtual const bool tryLock() { return recMutex.tryLock(); }
 
-private:    
-	QMutex recMutex;
-};
+	private:
+		RecursiveSyncPolicy(const RecursiveSyncPolicy &);
+		RecursiveSyncPolicy & operator=(const RecursiveSyncPolicy &);
 
-class StrictSyncPolicy : public LockingPolicy
-{
-public:
+	private:
+		QMutex recMutex;
+	};
 
-	StrictSyncPolicy() : mut(QMutex::NonRecursive) {}
+	class StrictSyncPolicy : public LockingPolicy
+	{
+	public:
 
-    virtual void lock() { mut.lock(); }
-    virtual void unlock() { mut.unlock(); }
-    virtual const bool tryLock() { return mut.tryLock(); }
+		StrictSyncPolicy() : mut(QMutex::NonRecursive) {}
 
-private:    
-	QMutex mut;
-};
+		virtual void lock() { mut.lock(); }
+		virtual void unlock() { mut.unlock(); }
+		virtual const bool tryLock() { return mut.tryLock(); }
+	private:
+		StrictSyncPolicy(const StrictSyncPolicy &);
+		StrictSyncPolicy & operator=(const StrictSyncPolicy &);
 
-class EmptyScopedLock
-{
-public:
+	private:
+		QMutex mut;
+	};
+
+	class EmptyScopedLock
+	{
+	public:
+		template<class SyncPolicy>
+		EmptyScopedLock(SyncPolicy & mux) {}
+
+		virtual ~EmptyScopedLock() {}
+	};
+
+
 	template<class SyncPolicy>
-	EmptyScopedLock(SyncPolicy & mux) {}
-
-	virtual ~EmptyScopedLock() {}
-};
-
-
-template<class SyncPolicy>
-class ScopedLock
-{
-public:
-	ScopedLock(SyncPolicy & mux) : mux(mux)
+	class ScopedLock
 	{
-		mux.lock();
-	}
+	public:
+		ScopedLock(SyncPolicy & mux) : mux(mux)
+		{
+			mux.lock();
+		}
 
-	virtual ~ScopedLock()
+		virtual ~ScopedLock()
+		{
+			mux.unlock();
+		}
+
+	private:
+		LockingPolicy & mux;
+	};
+
+	template<bool threading>
+	class SynchronizedT : public boost::mpl::if_c<threading, RecursiveSyncPolicy, NoSyncPolicy>::type
 	{
-		mux.unlock();
-	}
+	public:
 
-private:
-	LockingPolicy & mux;
-};
+		typedef typename boost::mpl::if_c<threading, RecursiveSyncPolicy, NoSyncPolicy>::type RecursiveSyncPolicy;
+		typedef typename boost::mpl::if_c<threading, ScopedLock<RecursiveSyncPolicy>, EmptyScopedLock>::type ScopedLock;
 
-template<bool threading>
-class SynchronizedT : public boost::mpl::if_c<threading, RecursiveSyncPolicy, NoSyncPolicy>::type
-{
-public:
+	protected:
 
-	typedef typename boost::mpl::if_c<threading, RecursiveSyncPolicy, NoSyncPolicy>::type RecursiveSyncPolicy;
-	typedef typename boost::mpl::if_c<threading, ScopedLock<RecursiveSyncPolicy>, EmptyScopedLock>::type ScopedLock;
+		SynchronizedT()
+		{
+			mux = this;
+		}
 
-protected:
+	public:
 
-	SynchronizedT()
-	{
-		mux = this;
-	}
+		virtual ~SynchronizedT() {}
 
-public:
+	protected:
 
-	virtual ~SynchronizedT() {}
-
-protected:
-
-	mutable RecursiveSyncPolicy * mux;
-};
+		mutable RecursiveSyncPolicy * mux;
+	};
 
 }
 

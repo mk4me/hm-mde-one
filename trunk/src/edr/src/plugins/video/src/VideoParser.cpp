@@ -56,10 +56,9 @@ public:
 
 
 
-VideoParser::VideoParser() :
-	adapter(core::ObjectWrapper::create< ::VideoStream>()),
-	channelWrapper(core::ObjectWrapper::create<VideoChannel>())
+VideoParser::VideoParser()
 {
+
 }
 
 VideoParser::~VideoParser()
@@ -68,8 +67,12 @@ VideoParser::~VideoParser()
 
 void VideoParser::parse(const std::string & source)
 {
+	utils::ObjectsVector localData;	
+
 	core::Filesystem::Path path(source);
     if ( core::Filesystem::fileExtension(path).compare(".imgsequence") == 0 ) {
+
+		localData.push_back(utils::ObjectWrapper::create<::VideoStream>());
 
         std::ostringstream errbuff;
         TiXmlDocument document(path.string());
@@ -115,29 +118,42 @@ void VideoParser::parse(const std::string & source)
             VideoStreamPtr realStream(new ::VideoStream(innerStream.release()));
 
             realStream->setTime(0);
-            adapter->set(realStream);
-			//metadane
-            adapter->setMetadata("core/source", realStream->getSource());
+			localData[0]->set(realStream);
         }
     } else {
-        {
-            // tworzymy strumień ffmpeg
-            std::auto_ptr<FFmpegVideoStream> innerStream(new FFmpegVideoStream(path.string()));
-            // UTILS_ASSERT(!innerStream->getLastError());
+		localData.push_back(utils::ObjectWrapper::create<VideoChannel>());
 
-            // podpinay go pod adapter strumienia
-            VideoStreamPtr realStream(new ::VideoStream(innerStream.release()));
-            realStream->setTime(0);
+        // tworzymy strumień ffmpeg
+        std::auto_ptr<FFmpegVideoStream> innerStream(new FFmpegVideoStream(path.string()));
+        // UTILS_ASSERT(!innerStream->getLastError());
 
+        // podpinay go pod adapter strumienia
+        VideoStreamPtr realStream(new ::VideoStream(innerStream.release()));
+        realStream->setTime(0);
+		
+        //adapter->set(realStream);
+		//TODO
 
-            //adapter->set(realStream);
-			//TODO
-
-			VideoChannelPtr channel(new VideoChannel(realStream));
-			channel->setName(path.filename().string());
-			channelWrapper->set(channel);			
-        }
+		VideoChannelPtr channel(new VideoChannel(realStream));
+		channel->setName(path.filename().string());
+		localData[0]->set(channel);
     }
+
+	path = source;
+	data.swap(localData);
+}
+
+void VideoParser::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const
+{
+	UTILS_ASSERT((idx == 0), "Parser index out of range");
+	object.set(data[idx]);
+	object.setMetadata("core/source", path);
+}
+
+void VideoParser::reset()
+{
+	std::string().swap(path);
+	utils::ObjectsVector().swap(data);
 }
 
 plugin::IParser* VideoParser::create() const
@@ -149,22 +165,14 @@ void VideoParser::acceptedExpressions(Expressions & expressions) const
 {
 	ExpressionDescription expDesc;
 	expDesc.description = "Audio Video Interleaved format";
-	expDesc.types.insert(typeid(VideoChannel));
+	expDesc.objectsTypes.push_back(typeid(VideoChannel));
 	expressions.insert(Expressions::value_type(".*\\.avi$", expDesc));
 
 	expDesc.description = "Moving Picture Experts Group format";
-	expressions.insert(Expressions::value_type(".*\\.mpg$", expDesc));
 	expressions.insert(Expressions::value_type(".*\\.mpeg$", expDesc));
 
-
 	expDesc.description = "Custom image sequence format (XML based)";
-	expDesc.types.clear();
-	expDesc.types.insert(typeid(::VideoStream));
+	expDesc.objectsTypes.clear();
+	expDesc.objectsTypes.push_back(typeid(::VideoStream));
 	expressions.insert(Expressions::value_type(".*\\.imgsequence$", expDesc));
-}
-
-void VideoParser::getObjects( core::Objects& objects )
-{
-    objects.insert(adapter);
-	objects.insert(channelWrapper);
 }

@@ -38,7 +38,7 @@ public:
 
         img->removeLayer(layer);
 
-		auto glayer = core::dynamic_pointer_cast<ILayerGraphicItem>(layer);
+		auto glayer = utils::dynamic_pointer_cast<ILayerGraphicItem>(layer);
 
         if (glayer) {
             glayer->getItem()->setVisible(false);
@@ -51,7 +51,7 @@ public:
     virtual void undoIt() 
     {
         img->addLayer(layer, serie->visualizer->getCurrentLayerUserName());
-		auto glayer = core::dynamic_pointer_cast<ILayerGraphicItem>(layer);
+		auto glayer = utils::dynamic_pointer_cast<ILayerGraphicItem>(layer);
 
 		if (glayer) {
 			glayer->getItem()->setVisible(true);
@@ -71,7 +71,7 @@ private:
 	bool wasEdited;
 };
 
-void LayeredSerie::setupData( const core::ObjectWrapperConstPtr & data )
+void LayeredSerie::setupData( const core::VariantConstPtr & data )
 {
     auto cloneWrp = data->clone();
     image = cloneWrp->get();

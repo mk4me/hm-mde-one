@@ -17,7 +17,7 @@
 #include <utils/ObjectWrapper.h>
 
 using namespace PluginSubject;
-core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, const core::ConstObjectsList& sessions)
+core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, const core::ConstVariantsList& sessions)
 {
     SubjectHierarchyFilterPtr nullFilter;
     return TreeBuilder::createTree(rootItemName, sessions, nullFilter);
@@ -26,7 +26,7 @@ core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, con
 
 core::IHierarchyItemPtr TreeBuilder::createTree( const QString& rootItemName, const PluginSubject::SubjectConstPtr& subject, const SubjectHierarchyFilterPtr & dataFilter )
 {
-    core::ConstObjectsList sessions;
+    core::ConstVariantsList sessions;
     subject->getSessions(sessions);
     return createTree(rootItemName, sessions, dataFilter);
 }
@@ -39,10 +39,10 @@ core::IHierarchyItemPtr TreeBuilder::createTree( const QString& rootItemName, co
 
 
 
-core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, const core::ConstObjectsList& sessions, const SubjectHierarchyFilterPtr & dataFilter)
+core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, const core::ConstVariantsList& sessions, const SubjectHierarchyFilterPtr & dataFilter)
 {
     core::IHierarchyItemPtr rootItem(new core::HierarchyItem(rootItemName, QString()));
-    core::ConstObjectsList filteredSessions;
+    core::ConstVariantsList filteredSessions;
     if(dataFilter != nullptr){
         dataFilter->filterSessions(sessions, filteredSessions);
     }else {
@@ -54,7 +54,7 @@ core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, co
         std::string emgConfigName;
         (*it)->getMetadata("EMGConf", emgConfigName);
         
-        core::ConstObjectsList filteredMotions;
+        core::ConstVariantsList filteredMotions;
 
         if(dataFilter != nullptr){
             dataFilter->filterSessionMotions(*it, filteredMotions);
@@ -63,7 +63,7 @@ core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, co
             s->getMotions(filteredMotions);
         }
 
-        BOOST_FOREACH(utils::ObjectWrapperConstPtr motionOW, filteredMotions) {	
+        BOOST_FOREACH(core::VariantConstPtr motionOW, filteredMotions) {	
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
            
@@ -95,11 +95,11 @@ core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, co
             if (motion->hasObject(typeid(ForceCollection), false) || motion->hasObject(typeid(MomentCollection), false) || motion->hasObject(typeid(PowerCollection), false)) {
                 core::IHierarchyItemPtr kineticItem(new core::HierarchyItem(QObject::tr("Kinetic data"), desc));
                 motionItem->appendChild(kineticItem);
-                core::ConstObjectsList forces;
+                core::ConstVariantsList forces;
                 motion->getObjects(forces, typeid(ForceCollection), false);
-                core::ConstObjectsList moments;
+                core::ConstVariantsList moments;
                 motion->getObjects(moments, typeid(MomentCollection), false);
-                core::ConstObjectsList powers;
+                core::ConstVariantsList powers;
                 motion->getObjects(powers, typeid(PowerCollection), false);
                 if (!forces.empty()) {
                     kineticItem->appendChild(createForcesBranch(motion, QObject::tr("Forces"), getRootForcesIcon(), getForcesIcon(), std::string()));
@@ -149,7 +149,7 @@ core::IHierarchyItemPtr TreeBuilder::createEMGBranch( const MotionConstPtr & mot
 {
     QString desc = createDescription(motion);
     core::IHierarchyItemPtr emgItem = utils::make_shared<core::HierarchyItem>(rootName, desc, rootIcon);
-    core::ConstObjectsList emgs;
+    core::ConstVariantsList emgs;
     motion->getObjects(emgs, typeid(EMGCollection), false);
 
     EMGCollectionConstPtr collection = emgs.front()->get();
@@ -168,7 +168,7 @@ core::IHierarchyItemPtr TreeBuilder::createEMGBranch( const MotionConstPtr & mot
     //    PLUGIN_LOG_WARNING("Problem with setting EMG names");
     //}
 
-    core::ConstObjectsList().swap(emgs);
+    core::ConstVariantsList().swap(emgs);
 
     motion->getObjects(emgs, typeid(EMGChannel), false);		
     for(auto it = emgs.begin(); it != emgs.end(); ++it) {	
@@ -193,12 +193,12 @@ core::IHierarchyItemPtr TreeBuilder::createEMGBranch( const MotionConstPtr & mot
 core::IHierarchyItemPtr TreeBuilder::createGRFBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
     QString desc = createDescription(motion);
-    core::ConstObjectsList grfCollections;
+    core::ConstVariantsList grfCollections;
     motion->getObjects(grfCollections, typeid(GRFCollection), false);
     //TreeWrappedItemHelperPtr grfCollectionHelper(new TreeWrappedItemHelper(grfCollections.front()));
     core::IHierarchyItemPtr grfItem(new core::HierarchyDataItem(grfCollections.front(), rootIcon, rootName, desc));
     
-    core::ConstObjectsList grfs;
+    core::ConstVariantsList grfs;
     motion->getObjects(grfs, typeid(GRFChannel), false);
     for(auto it = grfs.begin(); it != grfs.end(); ++it) {
         GRFChannelConstPtr c = (*it)->get();
@@ -221,7 +221,7 @@ core::IHierarchyItemPtr TreeBuilder::createVideoBranch( const MotionConstPtr & m
     QString desc = createDescription(motion);
     core::IHierarchyItemPtr videoItem(new core::HierarchyItem(rootName, desc, rootIcon));
    
-    core::ConstObjectsList videos;
+    core::ConstVariantsList videos;
     motion->getObjects(videos, typeid(VideoChannel), false);	
     for(auto it = videos.begin(); it != videos.end(); ++it) {			
         std::string l("UNKNOWN");
@@ -244,13 +244,13 @@ core::IHierarchyItemPtr TreeBuilder::createJointsBranch( const MotionConstPtr & 
         // todo setmotion
         //skeletonHelper->setMotion(motion);
         
-        core::ConstObjectsList jCollections;
+        core::ConstVariantsList jCollections;
         motion->getObjects(jCollections, typeid(kinematic::JointAnglesCollection), false);
         if (jCollections.size() != 1) {
             // error
         }
 
-        core::ObjectWrapperConstPtr joints = jCollections.front();
+        core::VariantConstPtr joints = jCollections.front();
 
 
 
@@ -260,9 +260,9 @@ core::IHierarchyItemPtr TreeBuilder::createJointsBranch( const MotionConstPtr & 
     }
 
     try {
-        core::ConstObjectsList aCollections;
+        core::ConstVariantsList aCollections;
         motion->getObjects(aCollections, typeid(AngleCollection), false);
-        core::ObjectWrapperConstPtr angleCollection = aCollections.front();
+        core::VariantConstPtr angleCollection = aCollections.front();
         AngleCollectionConstPtr m = angleCollection->get();
         tryAddVectorToTree<AngleChannel>(motion, m, "Angle collection", itemIcon, skeletonItem, false);
     } catch (...) {
@@ -275,9 +275,9 @@ core::IHierarchyItemPtr TreeBuilder::createJointsBranch( const MotionConstPtr & 
 core::IHierarchyItemPtr TreeBuilder::createMarkersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon, const std::string & )
 {
     QString desc = createDescription(motion);
-    core::ConstObjectsList mCollections;
+    core::ConstVariantsList mCollections;
     motion->getObjects(mCollections, typeid(MarkerCollection), false);
-    core::ObjectWrapperConstPtr markerCollection = mCollections.front();
+    core::VariantConstPtr markerCollection = mCollections.front();
     core::WrappedItemHelperPtr markersHelper(new core::WrappedItemHelper(markerCollection));
     // todo setmotion
     //markersHelper->setMotion(motion);
@@ -323,12 +323,12 @@ core::IHierarchyItemPtr TreeBuilder::createPowersBranch( const MotionConstPtr & 
 template <class Channel, class Collection>
 core::IHierarchyItemPtr TreeBuilder::createTBranch( const PluginSubject::MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
 {
-    typedef typename core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
-    typedef typename core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
+    typedef typename utils::ObjectWrapperTraits<Collection>::Ptr CollectionPtr;
+	typedef typename utils::ObjectWrapperTraits<Collection>::ConstPtr CollectionConstPtr;
     //typedef typename Collection::ChannelType Channel;
     QString desc = createDescription(motion);
 
-    core::ConstObjectsList collection;
+    core::ConstVariantsList collection;
     motion->getObjects(collection, typeid(Collection), false);
     core::IHierarchyItemPtr rootItem (new core::HierarchyItem(rootName, desc, rootIcon));
     CollectionConstPtr m = collection.front()->get();
@@ -341,10 +341,10 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
 {
     QString desc = createDescription(motion);
     if (collection) {
-        std::vector<core::ObjectWrapperConstPtr> wrappers;
+        std::vector<core::VariantConstPtr> wrappers;
         for (int i = 0; i < collection->getNumChannels(); ++i) {
-            core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<Channel>();
-            wrapper->set(core::const_pointer_cast<Channel>(boost::dynamic_pointer_cast<const Channel>(collection->getChannel(i))));
+            core::VariantPtr wrapper = core::Variant::create<Channel>();
+            wrapper->set(utils::const_pointer_cast<Channel>(boost::dynamic_pointer_cast<const Channel>(collection->getChannel(i))));
 
             static int number = 0;
             std::string();
@@ -387,17 +387,17 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
 core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo )
 {
     NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
-    core::ConstObjectsList motions;
+    core::ConstVariantsList motions;
     s->getMotions(motions);
 
     for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
         PluginSubject::MotionConstPtr m = (*itMotion)->get();
-        core::ConstObjectsList wrappers;
+        core::ConstVariantsList wrappers;
         m->getObjects(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
 
         EventsCollectionConstPtr events;
         if (m->hasObject(typeid(C3DEventsCollection), false)) {
-            core::ConstObjectsList e;
+            core::ConstVariantsList e;
             m->getObjects(e, typeid(C3DEventsCollection), false);
             events = e.front()->get();
         }
@@ -409,7 +409,7 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
                 VectorChannelConstPtr channel = collection->getChannel(i);
                 if (channel->getName() == channelName) {
                     ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
-                    core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+                    core::VariantPtr wrapper = core::Variant::create<ScalarChannelReaderInterface>();
                     wrapper->set(reader);
                     int no = toVisualize.size();
                     std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
@@ -430,33 +430,33 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
     return multi;
 }
 
-core::HierarchyHelperPtr TreeBuilder::createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context )
+core::HierarchyHelperPtr TreeBuilder::createNormalized( core::VariantConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context )
 {
     NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
     //MotionConstPtr motion = helper->getMotion();
     EventsCollectionConstPtr events;
     std::vector<FloatPairPtr> segments;
     if (motion->hasObject(typeid(C3DEventsCollection), false)) {
-        core::ConstObjectsList wrappers;
+        core::ConstVariantsList wrappers;
         motion->getObjects(wrappers, typeid(C3DEventsCollection), false);
         events = wrappers.front()->get();
         segments = getTimeSegments(events, context);
     }
-    std::map<utils::ObjectWrapperConstPtr, QColor> colorMap;
+    std::map<core::VariantConstPtr, QColor> colorMap;
     VectorChannelConstPtr channel = wrapper->get();
     for (int j = 0; j != segments.size(); ++j) {
         FloatPairPtr segment = segments[j];
         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
             ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
             ScalarChannelReaderInterfacePtr normalized(new ScalarWithTimeSegment(reader, segment->first, segment->second));
-            core::ObjectWrapperPtr newWrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+            core::VariantPtr newWrapper = core::Variant::create<ScalarChannelReaderInterface>();
             newWrapper->set(normalized);
             int no = toVisualize.size();
             std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
             colorMap[newWrapper] = channelNo == 0 ? QColor(255, 0, 0) : (channelNo == 1 ? QColor(0, 255, 0) : QColor(0, 0, 255));
             newWrapper->setMetadata("core/name", prefix + ":" + boost::lexical_cast<std::string>(j));
             std::string src;
-            wrapper->getMetadata("core/sources", src);
+			wrapper->getMetadata("core/sources", src);
             newWrapper->setMetadata("core/sources", src + boost::lexical_cast<std::string>(no));
             toVisualize.push_back(NewMultiserieHelper::ChartWithDescription(newWrapper, events, motion));
         }
@@ -480,19 +480,19 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
 {
     NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
     //SessionConstPtr s = helper->getMotion()->getUnpackedSession();
-    core::ConstObjectsList motions;
+    core::ConstVariantsList motions;
     s->getMotions(motions);
 
-    std::map<utils::ObjectWrapperConstPtr, QColor> colorMap;
+    std::map<core::VariantConstPtr, QColor> colorMap;
     for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
         PluginSubject::MotionConstPtr m = (*itMotion)->get();
-        core::ConstObjectsList wrappers;
+        core::ConstVariantsList wrappers;
         m->getObjects(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
 
         EventsCollectionConstPtr events;
         std::vector<FloatPairPtr> segments;
         if (m->hasObject(typeid(C3DEventsCollection), false)) {
-            core::ConstObjectsList e;
+            core::ConstVariantsList e;
             m->getObjects(e, typeid(C3DEventsCollection), false);
             events = e.front()->get();
             segments = getTimeSegments(events, context);
@@ -517,7 +517,7 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
                         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
                             ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
                             ScalarChannelReaderInterfacePtr normalized(new ScalarWithTimeSegment(reader, segment->first, segment->second));
-                            core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+                            core::VariantPtr wrapper = core::Variant::create<ScalarChannelReaderInterface>();
                             wrapper->set(normalized);
                             colorMap[wrapper] = channelNo == 0 ? colorX : (channelNo == 1 ? colorY : colorZ);
                             int no = toVisualize.size();
@@ -565,7 +565,7 @@ QString TreeBuilder::createDescription( PluginSubject::MotionConstPtr motion )
     text += QObject::tr("Session: ") + QString::fromStdString(session->getLocalName()) + "\n";
     text += QObject::tr("Subject: ") + QString::fromStdString(subject->getName()) + "\n";
    
-    std::vector<core::ObjectWrapperConstPtr> metadata;      
+    std::vector<core::VariantConstPtr> metadata;      
     try {
 
 		std::string groupName, groupID;
@@ -587,14 +587,14 @@ QString TreeBuilder::createDescription( PluginSubject::MotionConstPtr motion )
     }
     
     if (session->hasObject(typeid(communication::IPatient), false)) {
-		core::ConstObjectsList patients;
+		core::ConstVariantsList patients;
 		session->getObjects(patients, typeid(communication::IPatient), false);
         communication::PatientConstPtr patient = patients.front()->get();
         text += QObject::tr("Patient: ") + QString::fromStdString(patient->getName()) + " " + QString::fromStdString(patient->getSurname()) + "\n";
     }
 
     if (session->hasObject(typeid(communication::AntropometricData), false)) {
-		core::ConstObjectsList antropo;
+		core::ConstVariantsList antropo;
 		session->getObjects(antropo, typeid(communication::AntropometricData), false);
         utils::shared_ptr<const communication::AntropometricData> antro = antropo.front()->get();
         text += " ";
@@ -607,7 +607,7 @@ EventsCollectionConstPtr TreeBuilder::getEvents( const PluginSubject::MotionCons
 {
     EventsCollectionConstPtr events;
     if (motion->hasObject(typeid(C3DEventsCollection), false)) {
-        utils::ConstObjectsList m;
+        core::ConstVariantsList m;
         motion->getObjects(m, typeid(C3DEventsCollection), false);
         events = m.front()->get();
     }
@@ -625,7 +625,7 @@ core::IHierarchyItemPtr MotionPerspective::getPerspective( PluginSubject::Subjec
 
 bool MotionPerspective::hasValidData(PluginSubject::SubjectPtr subject)
 {
-    std::set<core::TypeInfo> types;
+    std::set<utils::TypeInfo> types;
     types.insert(typeid(C3DEventsCollection));
     types.insert(typeid(EMGChannel));
     types.insert(typeid(GRFCollection));
@@ -639,14 +639,14 @@ bool MotionPerspective::hasValidData(PluginSubject::SubjectPtr subject)
     types.insert(typeid(EMGCollection));
     types.insert(typeid(GRFChannel));
 
-    core::ConstObjectsList sessions;
+    core::ConstVariantsList sessions;
     subject->getSessions(sessions);
     for (auto it = sessions.crbegin(); it != sessions.crend(); ++it) {
-        core::ConstObjectsList motions;
+        core::ConstVariantsList motions;
         PluginSubject::SessionConstPtr s = (*it)->get();
         s->getMotions(motions);
 
-        BOOST_FOREACH(utils::ObjectWrapperConstPtr motionOW, motions) {	
+        BOOST_FOREACH(core::VariantConstPtr motionOW, motions) {	
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
             for (auto it = types.begin(); it != types.end(); ++it) {

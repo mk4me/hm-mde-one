@@ -178,7 +178,7 @@ private:
 
 	static bool isItemLoadable(const QTreeWidgetItem * item);
 
-	void loadSubjectHierarchy(const std::map<int, std::vector<core::ObjectWrapperConstPtr>> & loadedFilesObjects);
+	void loadSubjectHierarchy(const std::map<int, std::vector<core::VariantConstPtr>> & loadedFilesObjects);
 
     void updateOrAddRoot( core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots, core::IMemoryDataManager::HierarchyTransactionPtr hierarchyTransaction );
 
@@ -309,7 +309,7 @@ private:
 
 	//! ------------ Logika danych w DM (ObjectWrappers) ----------------
 
-	typedef std::pair<core::ObjectWrapperPtr, std::vector<core::ObjectWrapperPtr>> MappingValue;
+	typedef std::pair<core::VariantPtr, std::vector<core::VariantPtr>> MappingValue;
 
 	std::map<int, MappingValue> patientsMapping;
 	std::map<int, MappingValue> subjectsMapping;

@@ -23,14 +23,14 @@ namespace utils {
 struct PtrPolicyBoost
 {
     //! Typ wskaźnika.
-    template <class T> struct Ptr 
+    template <typename T> struct Ptr 
     {
         typedef boost::shared_ptr<T> Type;
     };
     //! Tylko deklaracja, specjalizacja wyciąga wskaźnik!
-    template <class T> struct Pointed;
+	template <typename T> struct Pointed;
     //! Specjalizacja wyciągająca wskaźnik.
-    template <class T> struct Pointed< boost::shared_ptr<T> >
+	template <typename T> struct Pointed< boost::shared_ptr<T> >
     {
         typedef typename boost::shared_ptr<T>::element_type Type;
     };
@@ -40,15 +40,15 @@ struct PtrPolicyBoost
 
     //! Zerowanie wskaźnika.
     //! \param ptr
-    template <class T>
+	template <typename T>
     static void initPtr( T & ptr )
     {}
 
     //! Ustawienie wartości wskaźnika surowymi danymi.
     //! \param ptr
     //! \param data
-    template<class T>
-    static void setPtr(boost::shared_ptr<T> & ptr, T * data)
+	template<typename T, typename Y>
+    static void setPtr(boost::shared_ptr<T> & ptr, Y * data)
     {
         ptr.reset(data);
     }
@@ -56,21 +56,33 @@ struct PtrPolicyBoost
     //! Ustawienie wartości wskaźnika poprzes kopiowanie z innego mądrego wskaźnika.
     //! \param ptr
     //! \param data
-    template<class T>
-    static void setPtr(boost::shared_ptr<T> & ptr, const boost::shared_ptr<T> & data)
+	template<typename T, typename Y>
+    static void setPtr(boost::shared_ptr<T> & ptr, const boost::shared_ptr<Y> & data)
     {
         ptr = data;
     }
 
-	template<class T>
+	template<typename T>
 	static void swapPtr(boost::shared_ptr<T> & ptr, boost::shared_ptr<T> & data)
 	{
 		std::swap(ptr, data);
 	}
 
+	template<typename T, typename Y>
+	static const boost::shared_ptr<Y> dynamicCastPtr(const boost::shared_ptr<T> & ptr)
+	{
+		return boost::dynamic_pointer_cast<Y>(ptr);
+	}
+
+	template<typename T, typename Y>
+	static const boost::shared_ptr<Y> constCastPtr(const boost::shared_ptr<T> & ptr)
+	{
+		return boost::const_pointer_cast<Y>(ptr);
+	}
+
     //! Zwraca surowy wskaźnik
     //! \param ptr
-    template<class T>
+	template<typename T>
     static void* getRawPtr(const boost::shared_ptr<T> & ptr)
     {
         return ptr.get();
@@ -78,19 +90,42 @@ struct PtrPolicyBoost
 
     //! Zwraca surowy wskaźnik
     //! \param ptr
-    template<class T>
+	template<typename T>
     static const void* getConstRawPtr(const boost::shared_ptr<T> & ptr)
     {
         return ptr.get();
     }
 
+	//! Zwraca surowy wskaźnik
+	//! \param ptr
+	template<typename T>
+	static T* getPtr(const boost::shared_ptr<T> & ptr)
+	{
+		return ptr.get();
+	}
+
+	//! Zwraca surowy wskaźnik
+	//! \param ptr
+	template<typename T>
+	static const T* getConstPtr(const boost::shared_ptr<T> & ptr)
+	{
+		return ptr.get();
+	}
+
     //! Czy wskaźnik jest unikatowy?
     //! \param ptr
-    template<class T>
-    static const bool isUnique(boost::shared_ptr<T> & ptr)
+	template<typename T>
+    static const bool isUnique(const boost::shared_ptr<T> & ptr)
     {
         return ptr.unique();
     }
+
+	//! \return Ilość referencji do tego wskaźnika
+	template<typename T>
+	static const long referenceCount(const boost::shared_ptr<T> & ptr)
+	{
+		return ptr.use_count();
+	}
 };
 
 template <> struct is_ptr_policy<PtrPolicyBoost> : public __traits::true_type {};

@@ -271,6 +271,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	sourceManager_.reset(new SourceManager());
 	visualizerManager_.reset(new VisualizerManager());
 
+	memoryDataManager_->addObserver(fileDataManager_);
+
 	//Wielow¹tkowoœæ
 	{	
 		showSplashScreenMessage(QObject::tr("Initializing threading"));
@@ -410,7 +412,7 @@ int Application::run()
 Application::~Application()
 {
 	if(uiInit == true){
-		//zeruje ju? konsole - wi?cej z niej nie b?d? korzysta?
+
 		CORE_LOG_INFO("Closing core application");
 
 		CORE_LOG_INFO("Releasing sources");
@@ -422,6 +424,7 @@ Application::~Application()
 		CORE_LOG_INFO("Releasing stream data manager");
 		streamDataManager_.reset();
 		CORE_LOG_INFO("Releasing file data manager");
+		memoryDataManager_->removeObserver(fileDataManager_);
 		fileDataManager_.reset();
 		CORE_LOG_INFO("Releasing parsers manager");
 		parserManager_.reset();
@@ -451,7 +454,7 @@ Application::~Application()
 		CORE_LOG_INFO("Releasing application description");
 		applicationDescription_.reset();
 
-		CORE_LOG_INFO("Releasing core log");
+		CORE_LOG_INFO("Releasing core log and finally closing application");
 		logger_.reset();
 	}
 }
@@ -531,7 +534,7 @@ core::JobManager* Application::jobManager()
 	return jobManager_.get();
 }
 
-bool Application::trySetPathsFromRegistry(shared_ptr<Path> & path)
+bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
 {
 #ifdef WIN32
 #define PATH_BUFFER_SIZE 1024
@@ -663,7 +666,7 @@ void Application::safeRegisterParser(const plugin::IParserPtr & parser)
 	}
 }
 
-void Application::safeRegisterObjectWrapperPrototype(const ObjectWrapperPtr & prototype)
+void Application::safeRegisterObjectWrapperPrototype(const utils::ObjectWrapperPtr & prototype)
 {
 	try{
 
@@ -744,10 +747,10 @@ void Application::finalizeUI(){
 			logInitializer_->setConsoleWidget(nullptr);
 
 			CORE_LOG_INFO("Reseting log system");
-			logInitializer_.reset();		
+			logInitializer_.reset();	
 		
 		}catch(std::exception & e){
-			CORE_LOG_ERROR("Error while closing UI during sources and services finalization: " << e.what());
+			CORE_LOG_ERROR("Error while closing UI during sources, services and log finalization: " << e.what());
 		}catch(...){
 			CORE_LOG_ERROR("UNKNOWN error while closing UI during sources and services finalization");
 		}

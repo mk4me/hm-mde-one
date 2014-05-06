@@ -15,6 +15,7 @@
 #include <QtGui/QIcon>
 
 namespace core {
+
 class IHierarchyItem;
 DEFINE_SMART_POINTERS(IHierarchyItem);
 class IHierarchyItem;

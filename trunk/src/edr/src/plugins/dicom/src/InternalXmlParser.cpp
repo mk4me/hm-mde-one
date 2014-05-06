@@ -11,7 +11,7 @@ using namespace dicom;
 
 InternalXmlParser::InternalXmlParser()
 {
-    sessionInternal = core::ObjectWrapper::create<DicomInternalStruct>();
+    
 }
 
 InternalXmlParser::~InternalXmlParser()
@@ -21,7 +21,8 @@ InternalXmlParser::~InternalXmlParser()
 
 
 void InternalXmlParser::parse( const std::string & source  )
-{    
+{
+	sessionInternal = utils::ObjectWrapper::create<DicomInternalStruct>();
     DicomInternalStructPtr inter = DicomLoader::load(source);
     sessionInternal->set(inter);
     //LayeredImagePtr l = utils::make_shared<LayeredImage>(source);
@@ -38,16 +39,21 @@ void InternalXmlParser::acceptedExpressions(Expressions & expressions) const
     ExpressionDescription expDesc;
     expDesc.description = "Internal Dicom Xml";
 
-    expDesc.types.insert(typeid(DicomInternalStruct));
+    expDesc.objectsTypes.push_back(typeid(DicomInternalStruct));
     expressions.insert(Expressions::value_type(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}\\.xml$", expDesc));
 
     //std::cmatch cm;
     //bool test = std::regex_match("C:\\Users\\Wojciech\\Documents\\PJWSTK\\MDE\\tmp\\newCommunication\\data\\zxl2rjizxf56pzxl2rjizxf7i\\data\\2013-08-21-S0007\\2013-08-21-S0007.xml", cm,std::regex(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}\.xml$"));
 }
 
-void InternalXmlParser::getObjects( core::Objects& objects )
+void InternalXmlParser::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const
 {
-    objects.insert(sessionInternal);
+	object.set(sessionInternal);	
+}
+
+void InternalXmlParser::reset()
+{
+	sessionInternal.reset();
 }
 
 

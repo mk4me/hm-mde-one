@@ -250,13 +250,13 @@ QWidget* NewChartVisualizer::createWidget()
     return widget; 
 }
 
-void NewChartVisualizer::getSupportedTypes(core::TypeInfoList & supportedTypes) const
+void NewChartVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes) const
 {
     supportedTypes.push_back(typeid(ScalarChannelReader));
 	supportedTypes.push_back(typeid(ScalarStream));
 }
 
-plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data)
+plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr& data)
 {
     NewChartSerie * ret = new NewChartSerie(this);
 	auto name = "Serie " + boost::lexical_cast<std::string>(series.size());
@@ -296,7 +296,7 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie( const plugin::IVi
 }
 
 plugin::IVisualizer::ISerie *NewChartVisualizer::createSerie(const plugin::IVisualizer::ISerie * serie,
-	const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data)
+	const utils::TypeInfo & requestedType, const core::VariantConstPtr& data)
 {
 	return nullptr;
 }

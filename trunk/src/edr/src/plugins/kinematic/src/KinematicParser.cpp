@@ -11,7 +11,7 @@
 
 KinematicParser::KinematicParser()
 {
-    skeletonData = core::ObjectWrapper::create<kinematic::SkeletalData>();
+
 }
 
 KinematicParser::~KinematicParser()
@@ -21,6 +21,7 @@ KinematicParser::~KinematicParser()
 
 void KinematicParser::parse( const std::string & source)
 {
+	skeletonData = utils::ObjectWrapper::create<kinematic::SkeletalData>();
 	core::Filesystem::Path path(source);
     //path = std::string("C:/Users/Wojciech/Desktop/nowyTest/2011-10-28-B0047-S02-T04.amc");
 	using namespace kinematic;
@@ -44,6 +45,16 @@ void KinematicParser::parse( const std::string & source)
 	}
 }
 
+void KinematicParser::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const
+{
+	object.set(skeletonData);
+}
+
+void KinematicParser::reset()
+{
+	skeletonData.reset();
+}
+
 plugin::IParser* KinematicParser::create() const
 {
     return new KinematicParser();
@@ -54,14 +65,9 @@ void KinematicParser::acceptedExpressions(Expressions & extensions) const
     plugin::IParser::ExpressionDescription expDesc;
 
     expDesc.description = "Acclaim Motion Capture format";
-    expDesc.types.insert(typeid(kinematic::SkeletalData));
+    expDesc.objectsTypes.push_back(typeid(kinematic::SkeletalData));
     extensions[".*\\.amc$"] = expDesc;
 
     //expDesc.description = "Biovision Hierarchical Data format";
     //extensions["bvh"] = expDesc;
-}
-
-void KinematicParser::getObjects( core::Objects& objects )
-{
-	objects.insert(skeletonData);
 }

@@ -167,7 +167,7 @@ const plugin::IVisualizerPtr & Plugin::getVisualizerPrototype(int i)
 	return this->visualizers[i];
 }
 
-void Plugin::addObjectWrapperPrototype(core::ObjectWrapperPtr objectWrapperPrototype)
+void Plugin::addObjectWrapperPrototype(utils::ObjectWrapperPtr objectWrapperPrototype)
 {
 	this->objectWrapperPrototypes.push_back(objectWrapperPrototype);
 }
@@ -177,7 +177,7 @@ int Plugin::getNumObjectWrapperPrototypes() const
 	return static_cast<int>(this->objectWrapperPrototypes.size());
 }
 
-const ObjectWrapperPtr & Plugin::getObjectWrapperPrototype(int i)
+const utils::ObjectWrapperPtr & Plugin::getObjectWrapperPrototype(int i)
 {
 	return this->objectWrapperPrototypes[i];
 }

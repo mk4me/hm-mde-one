@@ -9,8 +9,8 @@
 static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
 SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer,
-	const core::TypeInfo & requestedType,
-	const core::ObjectWrapperConstPtr & data ) : 
+	const utils::TypeInfo & requestedType,
+	const core::VariantConstPtr & data ) : 
 	visualizer(visualizer),
 	data(data), requestedType(requestedType),
 	lastUpdateTime(std::numeric_limits<double>::min()),
@@ -21,7 +21,7 @@ SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer,
 	jointsMapping(new SkeletonJointsMapping),
 	localRootNode(new osg::PositionAttitudeTransform)
 {	
-	UTILS_ASSERT(data->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
+	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
 	data->getMetadata("core/name", name);	
 	jointAngles = data->get();
 
@@ -100,7 +100,7 @@ const std::string SkeletonSerie::getName() const
     return name;
 }
 
-const core::ObjectWrapperConstPtr & SkeletonSerie::getData() const
+const core::VariantConstPtr & SkeletonSerie::getData() const
 {
     return data;
 }
@@ -208,7 +208,7 @@ void SkeletonSerie::setGhostVisible(const bool visible)
 	ghostDrawer->getNode()->setNodeMask( visible == true ? 1 : 0);
 }
 
-core::shared_ptr<TrajectoryDrawerManager> SkeletonSerie::getTrajectoriesManager() 
+utils::shared_ptr<TrajectoryDrawerManager> SkeletonSerie::getTrajectoriesManager() 
 {
     if (!trajectoriesManager) {
         createGhostAndTrajectories();
@@ -246,8 +246,8 @@ private:
 
 
 SkeletonStreamSerie::SkeletonStreamSerie( KinematicVisualizer * visualizer,
-	const core::TypeInfo & requestedType,
-	const core::ObjectWrapperConstPtr & data ) : 
+	const utils::TypeInfo & requestedType,
+	const core::VariantConstPtr & data ) : 
 visualizer(visualizer),
 	data(data), requestedType(requestedType),	
 	xyzAxis(false),
@@ -257,7 +257,7 @@ visualizer(visualizer),
 	heightCompensation(false),
 	localRootNode(new osg::PositionAttitudeTransform)
 {	
-	UTILS_ASSERT(data->getTypeInfo() == typeid(SkeletonDataStream));
+	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(SkeletonDataStream));
 	data->getMetadata("core/name", name);	
 	skeletalData = data->get();
 	
@@ -308,7 +308,7 @@ const std::string SkeletonStreamSerie::getName() const
 	return name;
 }
 
-const core::ObjectWrapperConstPtr & SkeletonStreamSerie::getData() const
+const core::VariantConstPtr & SkeletonStreamSerie::getData() const
 {
 	return data;
 }

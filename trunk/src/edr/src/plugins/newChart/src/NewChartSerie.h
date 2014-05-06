@@ -78,9 +78,9 @@ public:
     virtual const std::string getName() const;
     //! dostarcza ObjectWrapper z danymi
     //! \param data ObjectWrapper przechowujący interfejs ScalarChannelReaderInterface
-    virtual void setData(const utils::TypeInfo & requestedData, const core::ObjectWrapperConstPtr & data);
+    virtual void setData(const utils::TypeInfo & requestedData, const core::VariantConstPtr & data);
     //! \return ObjectWrapper przechowujący interfejs ScalarChannelReaderInterface
-    virtual const core::ObjectWrapperConstPtr & getData() const;
+    virtual const core::VariantConstPtr & getData() const;
 
 	virtual const utils::TypeInfo & getRequestedDataType() const;
 
@@ -143,7 +143,7 @@ private:
     //! nazwa serii
     std::string name;
     //! OW z danymi
-    core::ObjectWrapperConstPtr data;
+    core::VariantConstPtr data;
 
 	utils::TypeInfo requestedType;
     //! wizualizowana krzywa

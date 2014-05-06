@@ -10,11 +10,11 @@
 #ifndef HEADER_GUARD_NEWVDF__UNIVERSALINPUTPIN_H__
 #define HEADER_GUARD_NEWVDF__UNIVERSALINPUTPIN_H__
 
-#include <utils/ObjectWrapper.h>
-#include <utils/TypeInfo.h>
+#include <plugins/newVdf/Export.h>
+#include <corelib/Variant.h>
 #include <dflib/IDFPin.h>
 #include <dflib/Pin.h>
-#include <plugins/newVdf/Export.h>
+
 
 namespace vdf {
 
@@ -36,13 +36,13 @@ public:
     //! \param pin 
     virtual const bool pinCompatible( const df::IOutputPin * pin ) const;
     //! 
-    utils::ObjectWrapperConstPtr getWrapper() const;
+    core::VariantConstPtr getWrapper() const;
     //! 
     //! \param val 
-    void setWrapper(utils::ObjectWrapperConstPtr val);
+    void setWrapper(core::VariantConstPtr val);
 
 private:
-    utils::ObjectWrapperConstPtr wrapper;
+    core::VariantConstPtr wrapper;
 };
 
 
@@ -63,8 +63,8 @@ template <class T>
 class UniversalInputPinT : public UniversalInputPin
 {
 public:
-    typedef typename utils::ObjectWrapperT<T>::Ptr Ptr;
-    typedef typename utils::ObjectWrapperT<T>::ConstPtr ConstPtr;
+    typedef typename utils::ObjectWrapperTraits<T>::Ptr Ptr;
+    typedef typename utils::ObjectWrapperTraits<T>::ConstPtr ConstPtr;
 public:
     UniversalInputPinT(df::ISinkNode * node) : UniversalInputPin(node, typeid(T)) {}
     virtual ~UniversalInputPinT() {}
@@ -72,7 +72,7 @@ public:
     ConstPtr getValue() { return getWrapper()->get(); }
     void setValue(Ptr item)
     {
-        utils::ObjectWrapperPtr wrapper = utils::ObjectWrapper::create<T>();
+        core::VariantPtr wrapper = core::Variant::create<T>();
         wrapper->set(item);
         setWrapper(wrapper);
     }

@@ -20,38 +20,38 @@ private:
 	//! Opis hierarchi typu
 	struct TypeHierarchy {
 
-		ObjectWrapperPtr prototype;	//! Prototyp ObjectWrappera
-		TypeInfoSet baseTypes;		//! Lista typów bazowych
-		TypeInfoSet derrivedTypes;	//! Lista typów pochodnych
+		utils::ObjectWrapperPtr prototype;	//! Prototyp ObjectWrappera
+		utils::TypeInfoSet baseTypes;		//! Lista typów bazowych
+		utils::TypeInfoSet derrivedTypes;	//! Lista typów pochodnych
 
 	};
 
 	//! S³ownik hierarchii typow -> mapuje typ do jego typow bazowych (hierarchia dziedziczenia) [first] i do typów po nim dziedziczacych [second]
-	typedef std::map<TypeInfo, TypeHierarchy > TypesHierarchy;
+	typedef std::map<utils::TypeInfo, TypeHierarchy > TypesHierarchy;
 
 public:
 	//! \param typeInfo Typ zarejestrowany w DM dla któego chemy utworzyæ OW
 	//! \return Pusty OW dla zadanego typu lub wyj¹tek/nullptr gdy typ niezarejestrowany
-	virtual ObjectWrapperPtr createWrapper(const TypeInfo & typeInfo) const;
+	virtual VariantPtr createWrapper(const utils::TypeInfo & typeInfo) const;
 
 	//! \return Zarejestrowane w aplikacji typy danych
-	virtual void getRegisteredTypes(TypeInfoSet & registeredTypes) const;
+	virtual void getRegisteredTypes(utils::TypeInfoSet & registeredTypes) const;
 
-	virtual const bool isRegistered(const core::TypeInfo &) const;
+	virtual const bool isRegistered(const utils::TypeInfo &) const;
 
 	//! \return Hierarchia typów danych - jakie operacje moge realizowaæ, po czym dziedzicze
-	virtual void getTypeBaseTypes(const TypeInfo & type, TypeInfoSet & baseTypes) const;
+	virtual void getTypeBaseTypes(const utils::TypeInfo & type, utils::TypeInfoSet & baseTypes) const;
 
 	//! \return Hierarchia typów danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
-	virtual void getTypeDerrivedTypes(const TypeInfo & type, TypeInfoSet & derrivedTypes) const;
+	virtual void getTypeDerrivedTypes(const utils::TypeInfo & type, utils::TypeInfoSet & derrivedTypes) const;
 
 	//! \param base Typ bazowy którego kompatybilnoœc sprawdzamy
 	//! \param derrived Typ pochodny wzglêdem kótrego sprawdzamy kompatybilnoœc typu bazowego
 	//! \return Prawda kiedy typ bazowy jest faktycznie wspierany przez typ pochodny
-	virtual const bool isTypeCompatible(const TypeInfo & base, const TypeInfo & derrived) const;
+	virtual const bool isTypeCompatible(const utils::TypeInfo & base, const utils::TypeInfo & derrived) const;
 
 	//! \param owp Rejestrowany ObjectWrapper, które niesie informacjê o typach danych
-	void registerObjectWrapperPrototype(const ObjectWrapperPtr & owp);
+	void registerObjectWrapperPrototype(const utils::ObjectWrapperPtr & owp);
 
 private:
 	//! Opis hierarchi wszystkich zarejestrowanych typów

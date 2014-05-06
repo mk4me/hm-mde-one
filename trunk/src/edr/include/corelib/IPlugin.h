@@ -244,13 +244,13 @@ public:
 	//! \param parserPrototype Prototyp parsera
 	virtual void addParserPrototype(plugin::IParserPtr parserPrototype) = 0;
 	//! \param objectWrapperPrototype Prototyp obiektu domenowego
-	virtual void addObjectWrapperPrototype(core::ObjectWrapperPtr objectWrapperPrototype) = 0;
+	virtual void addObjectWrapperPrototype(utils::ObjectWrapperPtr objectWrapperPrototype) = 0;
 	//! \tparam T Typ dla którego rejestrujemy prototyp OW
 	//! \param dummy Wskaźnik nie powinien być używany
 	template<class T>
 	void addObjectWrapperPrototype(const T * dummy = nullptr)
 	{
-		addObjectWrapperPrototype(core::ObjectWrapper::create<T>());
+		addObjectWrapperPrototype(utils::ObjectWrapper::create<T>());
 	}
 };
 

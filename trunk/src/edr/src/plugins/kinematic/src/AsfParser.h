@@ -14,16 +14,18 @@
 #include <corelib/IDataManagerReader.h>
 
 //! klasa wykorzystuje bibliotekę kinematiclib aby wczytywać pliki asf
-class AsfParser : public plugin::IParser, public plugin::ISourceParserCapabilities
+class AsfParser : public plugin::ISourceParser
 {    
 	UNIQUE_ID("{0E3B8309-AA5B-4ECD-B941-8FA64F8C9625}")
 	CLASS_DESCRIPTION("Asf parser", "Asf parser")
 private:
     //! object wrapper z wczytanym plikiem
-    core::ObjectWrapperPtr skeletalModel;
+    utils::ObjectWrapperPtr skeletalModel;
 
 public:
+	//! Konstruktor domyślny
     AsfParser();
+	//! Destruktor wirtualny
     virtual ~AsfParser();
 
 public:
@@ -35,9 +37,11 @@ public:
 	//! zwraca wspierane rozszerzenia plików (asf)
 	//! \param extensions kolecja, do której trafią wspierane rozszerzenia
 	virtual void acceptedExpressions(Expressions & expressions) const;
-    //! Zwraca obiekty dostarczone przez parser
-    //! \param objects kolekcja z obiektami (set)
-    virtual void getObjects(core::Objects& objects);
+	//! Zwraca obiekty dostarczone przez parser
+	//! \param objects kolekcja z obiektami (set)
+	virtual void getObject(core::Variant& object, const core::VariantsVector::size_type idx) const;
+	//! Reset
+	virtual void reset();
 };
 
 

@@ -18,7 +18,7 @@
 namespace dicom {
 
 //! Parser plików png, dostarcza obrazow z warstwami
-class PngParser : public plugin::IParser, public plugin::ISourceParserCapabilities
+class PngParser : public plugin::ISourceParser
 {
     UNIQUE_ID("{6A61FFCF-696C-439A-986A-B3EE3A26405F}")
 	CLASS_DESCRIPTION("PNG parser", "PNG parser")
@@ -33,9 +33,8 @@ public:
     virtual void parse(const std::string & source);
     //! \return pusty obiekt nowego parsera
     virtual plugin::IParser* create() const;
-    //! Zwraca obiekty dostarczone przez parser
-    //! \param objects kolekcja z obiektami (set)
-    virtual void getObjects(core::Objects& objects);
+	virtual void getObject(core::Variant& object, const core::VariantsVector::size_type idx) const;
+	virtual void reset();
     //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;

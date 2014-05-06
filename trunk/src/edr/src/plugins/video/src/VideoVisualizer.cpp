@@ -71,7 +71,7 @@ const std::string VideoVisualizer::VideoSerie::getName() const
 	return name;
 }
 
-void VideoVisualizer::VideoSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data)
+void VideoVisualizer::VideoSerie::setData(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data)
 {
 	bool success = false;
 
@@ -79,11 +79,11 @@ void VideoVisualizer::VideoSerie::setData(const utils::TypeInfo & requestedType,
     if (data->getMetadata("movieDelay", delayIt)) {
         this->offset = boost::lexical_cast<double>(delayIt);
     }
-	if (data->isSupported(typeid(VideoStreamPtr))) {
+	if (data->data()->isSupported(typeid(VideoStreamPtr))) {
 		auto clonedData = data->clone();
 		visualizer->clear();
 		success = clonedData->tryGet(visualizer->stream);
-	} else if (data->isSupported(typeid(VideoChannel))) {
+	} else if (data->data()->isSupported(typeid(VideoChannel))) {
 		auto clonedData = data->clone();
 		VideoChannelPtr channel = clonedData->get();
 		if (channel) {
@@ -123,7 +123,7 @@ void VideoVisualizer::VideoSerie::update()
 	visualizer->currentStreamTime = stream->getTime();
 }
 
-const core::ObjectWrapperConstPtr & VideoVisualizer::VideoSerie::getData() const
+const core::VariantConstPtr & VideoVisualizer::VideoSerie::getData() const
 {
 	return data;
 }
@@ -183,7 +183,7 @@ plugin::IVisualizer* VideoVisualizer::create() const
     return new VideoVisualizer();
 }
 
-void VideoVisualizer::getSupportedTypes(core::TypeInfoList & supportedTypes) const
+void VideoVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes) const
 {
     supportedTypes.push_back(typeid(VideoStream));
 	supportedTypes.push_back(typeid(VideoChannel));
@@ -363,7 +363,7 @@ int VideoVisualizer::getMaxDataSeries() const
     return 1;
 }
 
-plugin::IVisualizer::ISerie* VideoVisualizer::createSerie(const utils::TypeInfo & requestedType, const ObjectWrapperConstPtr & data)
+plugin::IVisualizer::ISerie* VideoVisualizer::createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data)
 {
     VideoSerie* ret = new VideoSerie(this);
 
@@ -378,7 +378,7 @@ plugin::IVisualizer::ISerie* VideoVisualizer::createSerie(const plugin::IVisuali
     return nullptr;
 }
 
-plugin::IVisualizer::ISerie* VideoVisualizer::createSerie(const plugin::IVisualizer::ISerie * serie, const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data)
+plugin::IVisualizer::ISerie* VideoVisualizer::createSerie(const plugin::IVisualizer::ISerie * serie, const utils::TypeInfo & requestedType, const core::VariantConstPtr & data)
 {
 	return nullptr;
 }

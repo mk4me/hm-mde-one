@@ -17,7 +17,7 @@
 namespace dicom {
 
 //! Parser plików xml z warstwami
-class LayersXmlParser : public plugin::IParser, public plugin::ISourceParserCapabilities
+class LayersXmlParser : public plugin::ISourceParser
 {
     UNIQUE_ID("{D572DC2F-934B-43CE-9460-12ABAFFB20E0}")
 	CLASS_DESCRIPTION("Layers parser", "Layers parser")
@@ -32,9 +32,8 @@ public:
     virtual void parse(const std::string & source);
     //! \return pusty obiekt nowego parsera
     virtual plugin::IParser* create() const;
-    //! Zwraca obiekty dostarczone przez parser
-    //! \param objects kolekcja z obiektami (set)
-    virtual void getObjects(core::Objects& objects);
+	virtual void getObject(core::Variant& object, const core::VariantsVector::size_type idx) const;
+	virtual void reset();
     //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;

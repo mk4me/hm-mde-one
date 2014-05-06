@@ -67,14 +67,14 @@ public:
     //! Fabryka serii, na podstawie typu danych we wrapperze tworzona jest konkretna seria
     //! \param data Obiekt z danymi
     //! \param name Nazwa danych
-    virtual plugin::IVisualizer::ISerie *createSerie(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data);
+    virtual plugin::IVisualizer::ISerie *createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data);
     //! Tworzenie serii na podstawie już istniejącej, nie zaimplementowane
     //! \param serie Kopiowana seria
     virtual plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie* serie);
 
-	virtual plugin::IVisualizer::ISerie * createSerie(const plugin::IVisualizer::ISerie *,const utils::TypeInfo &,const utils::ObjectWrapperConstPtr &);
+	virtual plugin::IVisualizer::ISerie * createSerie(const plugin::IVisualizer::ISerie *,const utils::TypeInfo &,const core::VariantConstPtr &);
 
-    QString getRootName( const core::ObjectWrapperConstPtr & data, const QString& suffix );
+    QString getRootName( const core::VariantConstPtr & data, const QString& suffix );
 
 
     //! Usuwa serie z wizualizatora

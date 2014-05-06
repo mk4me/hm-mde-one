@@ -4,8 +4,8 @@
 #include "VisualizationScheme.h"
 
 MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
-	const core::TypeInfo & requestedType,
-	const core::ObjectWrapperConstPtr & data) : 
+	const utils::TypeInfo & requestedType,
+	const core::VariantConstPtr & data) : 
 	visualizer(visualizer), requestedType(requestedType),
 	data(data), lastUpdateTime(std::numeric_limits<double>::min()),
 	name("Markers"),
@@ -249,7 +249,7 @@ double MarkerSerie::getEnd() const
 	return getLength();
 }
 
-const core::ObjectWrapperConstPtr & MarkerSerie::getData() const
+const core::VariantConstPtr & MarkerSerie::getData() const
 {
     return data;
 }

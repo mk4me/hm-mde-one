@@ -38,7 +38,7 @@ int KinematicVisualizer::getMaxDataSeries() const
     return -1;
 }
 
-plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data)
+plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data)
 {
 	KinematicSerieBase * ret = nullptr;
 	if (requestedType == typeid(GRFCollection)) {
@@ -77,7 +77,7 @@ plugin::IVisualizer::ISerie * KinematicVisualizer::createSerie(const plugin::IVi
     return nullptr;
 }
 
-plugin::IVisualizer::ISerie * KinematicVisualizer::createSerie(const plugin::IVisualizer::ISerie *,const utils::TypeInfo &,const utils::ObjectWrapperConstPtr &)
+plugin::IVisualizer::ISerie * KinematicVisualizer::createSerie(const plugin::IVisualizer::ISerie *,const utils::TypeInfo &,const core::VariantConstPtr &)
 {
 	return nullptr;
 }
@@ -882,7 +882,7 @@ void KinematicVisualizer::scaleZ( double d )
     setScale(tryGetCurrentSerie(), 2, d);
 }
 
-QString KinematicVisualizer::getRootName( const core::ObjectWrapperConstPtr & data, const QString& suffix )
+QString KinematicVisualizer::getRootName( const core::VariantConstPtr & data, const QString& suffix )
 {    
 	std::string name;
     if (data->getMetadata("core/name", name) == true) {

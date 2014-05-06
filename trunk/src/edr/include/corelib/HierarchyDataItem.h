@@ -12,7 +12,7 @@
 
 #include <QtCore/QList>
 #include <QtCore/QVariant>
-#include <utils/ObjectWrapper.h>
+#include <corelib/Variant.h>
 #include <boost/enable_shared_from_this.hpp>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/HierarchyItem.h>
@@ -30,7 +30,7 @@ namespace core {
         //! \param icon 
         //! \param name 
         //! \param helper 
-        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
+		HierarchyDataItem(VariantConstPtr wrapper,
             const QIcon& icon, const QString& name, const QString& description, HierarchyHelperPtr helper);
 
         //! 
@@ -38,7 +38,7 @@ namespace core {
         //! \param icon 
         //! \param name 
         //! \param helpers 
-        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper,
+		HierarchyDataItem(VariantConstPtr wrapper,
             const QIcon& icon, const QString& name, const QString& description, std::list<HierarchyHelperPtr> helpers);
 
         //! 
@@ -51,13 +51,13 @@ namespace core {
         //! \param wrapper 
         //! \param icon 
         //! \param name 
-        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, 
+		HierarchyDataItem(VariantConstPtr wrapper,
             const QIcon& icon, const QString& name, const QString& description);
 
         //! 
         //! \param wrapper 
         //! \param icon 
-        HierarchyDataItem(utils::ObjectWrapperConstPtr wrapper, const QString& description, 
+		HierarchyDataItem(VariantConstPtr wrapper, const QString& description,
             const QIcon& icon = QIcon());
 
         //! 
@@ -75,7 +75,7 @@ namespace core {
 		//!
 		virtual HierarchyHelperPtr getDefaultHelper() const;
         //! 
-        virtual utils::ObjectWrapperConstPtr getData() const;
+		virtual VariantConstPtr getData() const;
         //! 
         //! \param helper 
         void addHelper(HierarchyHelperPtr helper);
@@ -87,7 +87,7 @@ namespace core {
     private:
         std::list<HierarchyHelperPtr> helpers;
 		int defaultHelperIDX;
-        utils::ObjectWrapperConstPtr data;
+		VariantConstPtr data;
     };
     DEFINE_SMART_POINTERS(HierarchyDataItem)
 }

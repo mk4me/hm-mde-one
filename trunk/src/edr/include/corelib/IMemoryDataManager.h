@@ -24,17 +24,17 @@ namespace core {
 
 		//! \data Dane wchodz¹ce pod kontrolê DM
 		//! rzuca wyj¹tkiem jeœli nie uda siê dodaæ danych
-		virtual void addData(const ObjectWrapperPtr & data) = 0;
+		virtual void addData(const VariantPtr & data) = 0;
 		//! Dane usuwane z DM
 		//! rzuca wyj¹tkiem jeœli nie uda siê usun¹æ danych
-		virtual void removeData(const ObjectWrapperConstPtr & data) = 0;
+		virtual void removeData(const VariantConstPtr & data) = 0;
 
 		//! \param data Dane do dodaniwa w DM
 		//! \return Czy uda³o siê poprawnie dodaæ dane do DM
-		virtual const bool tryAddData(const ObjectWrapperPtr & data) = 0;
+		virtual const bool tryAddData(const VariantPtr & data) = 0;
 		//! \param data Dane do dodaniwa w DM
 		//! \return Czy uda³o siê poprawnie usun¹æ dane do DM
-		virtual const bool tryRemoveData(const ObjectWrapperConstPtr & data) = 0;
+		virtual const bool tryRemoveData(const VariantConstPtr & data) = 0;
 	};
 
     //! Operacje zwi¹zane z zarz¹dzaniem hierarchicznymi danymi
@@ -96,9 +96,9 @@ namespace core {
 		
 		//! \param data Aktualizowane dane
 		//! \param newData Nowa wartoœæ danych
-		virtual void updateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData) = 0;
+		virtual void updateData(const VariantConstPtr & data, const VariantConstPtr & newData) = 0;
 
-		virtual const bool tryUpdateData(const ObjectWrapperConstPtr & data, const ObjectWrapperConstPtr & newData) = 0;
+		virtual const bool tryUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData) = 0;
 	};
 
     

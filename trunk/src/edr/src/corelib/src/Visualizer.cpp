@@ -1,4 +1,5 @@
 #include "CoreLibPCH.h"
+#include <corelib/Variant.h>
 #include <corelib/Visualizer.h>
 #include <corelib/IVisualizerManager.h>
 #include <corelib/IDataManagerReader.h>
@@ -105,10 +106,10 @@ private:
 		//! \param type Typ danych o które pytamy
 		//! \param objects [out] Lista obiektów zadanego typu z wszystkich źródeł danych
 		//! \param exact Czy dane muszą być dokłądnie zadanego typu czy mogą go wspierać
-		void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
+		void getData(const utils::TypeInfo & type, ConstVariantsList & objects, bool exact)
 		{
 			utils::ScopedLock<utils::StrictSyncPolicy> lock(sourcesSync);
-			ConstObjectsList locObjects;
+			ConstVariantsList locObjects;
 			for(auto it = sources_.begin(); it != sources_.end(); ++it){
 				try{
 					(*it)->getData(type, locObjects, exact);
@@ -117,7 +118,7 @@ private:
 				}
 			}
 
-			ConstObjects uniqueObjects(locObjects.begin(), locObjects.end());
+			ConstVariantsSet uniqueObjects(locObjects.begin(), locObjects.end());
 			objects.insert(objects.end(), uniqueObjects.begin(), uniqueObjects.end());
 		}
 
@@ -132,7 +133,7 @@ private:
 				}
 			}
 
-			std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>>().swap(dataToUpdate);
+			std::map<VariantConstPtr, std::list<Visualizer::VisualizerSerie*>>().swap(dataToUpdate);
 		}
 
 	private:
@@ -147,9 +148,9 @@ private:
 		//! Czy live observe jest aktywne
 		bool liveObserve; 
 		//! Mapa seri wizualizatorów obserwujących dane
-		std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataSeriesToObserve;
+		std::map<VariantConstPtr, std::list<Visualizer::VisualizerSerie*>> dataSeriesToObserve;
 		//! Mapa danych do aktualizacji (odświeżenia) w seriach
-		std::map<ObjectWrapperConstPtr, std::list<Visualizer::VisualizerSerie*>> dataToUpdate;
+		std::map<VariantConstPtr, std::list<Visualizer::VisualizerSerie*>> dataToUpdate;
 	};
 
 	//! Zaprzyjaźniona klasa pomocnicza wizualizatora
@@ -161,11 +162,11 @@ private:
 	void init()
 	{
 		{
-			scoped_ptr<QIcon> i(innerVisualizer_->createIcon());
+			utils::scoped_ptr<QIcon> i(innerVisualizer_->createIcon());
 			icon = *i;
 		}
 
-		TypeInfoList types;
+		utils::TypeInfoList types;
 		innerVisualizer_->getSupportedTypes(types);
 		supportedTypes.insert(types.begin(),types.end());
 
@@ -292,9 +293,9 @@ public:
 	}
 
 	//! \param supportedTypes Typy wspierane przez wizualizator
-	void getSupportedTypes(TypeInfoSet & supportedTypes) const
+	void getSupportedTypes(utils::TypeInfoSet & supportedTypes) const
 	{
-		TypeInfoList list;
+		utils::TypeInfoList list;
 		innerVisualizer_->getSupportedTypes(list);
 		supportedTypes.insert(list.begin(), list.end());
 	}
@@ -302,7 +303,7 @@ public:
 	//! \param requestedType Typ danych oczekiwanych do wyświetlenia
 	//! \param data Dane
 	//! \return Seria danych wizualizatora
-	Visualizer::VisualizerSerie * createSerie(const TypeInfo & requestedType, const ObjectWrapperConstPtr & data)
+	Visualizer::VisualizerSerie * createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data)
 	{
 		utils::ScopedLock<utils::RecursiveSyncPolicy> lock(sync);
 		VisualizerSerie * serie = nullptr;
@@ -427,7 +428,7 @@ public:
 	//! \param type Typ danych
 	//! \param objects [out] Dane pobrane ze źróeł danych wizualizatora dla danego typu
 	//! \param exact Czy dane musza być dokłądnie  tego samego typu o który pytano
-	void getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
+	void getData(const utils::TypeInfo & type, ConstVariantsList & objects, bool exact)
 	{
 		visualizerHelper_->getData(type, objects, exact);
 	}
@@ -513,7 +514,7 @@ private:
 	//! Ikona widgeta
 	QIcon icon;
 	//! Wspierane typy danych przez wizualizator
-	TypeInfoSet supportedTypes;
+	utils::TypeInfoSet supportedTypes;
 	//! Serie danych utrworzone przez użytkownika
 	DataSeries dataSeries;
 	//! Lista obserwujących
@@ -634,12 +635,12 @@ const int Visualizer::getMaxSeries() const
 	return visualizerImpl->getMaxSeries();
 }
 
-void Visualizer::getSupportedTypes(TypeInfoSet & supportedTypes) const
+void Visualizer::getSupportedTypes(utils::TypeInfoSet & supportedTypes) const
 {
 	visualizerImpl->getSupportedTypes(supportedTypes);
 }
 
-Visualizer::VisualizerSerie * Visualizer::createSerie(const TypeInfo & requestedType, const ObjectWrapperConstPtr & data)
+Visualizer::VisualizerSerie * Visualizer::createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data)
 {
 	return visualizerImpl->createSerie(requestedType, data);
 }
@@ -696,7 +697,7 @@ Visualizer::VisualizerDataSourcePtr Visualizer::getDataSource(int idx)
 	return visualizerImpl->getDataSource(idx);
 }
 
-void Visualizer::getData(const TypeInfo & type, ConstObjectsList & objects, bool exact)
+void Visualizer::getData(const utils::TypeInfo & type, ConstVariantsList & objects, bool exact)
 {
 	visualizerImpl->getData(type, objects, exact);
 }
@@ -751,7 +752,7 @@ VisualizerMemoryDataSource::VisualizerMemoryDataSource(core::IDataManagerReader 
 
 }
 
-void VisualizerMemoryDataSource::getData(const TypeInfo & type, ConstObjectsList & objects, bool exact) const
+void VisualizerMemoryDataSource::getData(const utils::TypeInfo & type, ConstVariantsList & objects, bool exact) const
 {
 	dmr->getObjects(objects, type, exact);
 }

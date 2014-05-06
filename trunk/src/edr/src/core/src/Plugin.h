@@ -39,7 +39,7 @@ public:
     //! Typ listy wizualizatorów.
     typedef std::vector<plugin::IVisualizerPtr> Visualizers;
     //! Typ listy wrapperów.
-    typedef std::vector<ObjectWrapperPtr> ObjectWrapperPrototypes;
+    typedef std::vector<utils::ObjectWrapperPtr> ObjectWrapperPrototypes;
 
 private:
     //! Lista us³ug pluginu.
@@ -62,9 +62,9 @@ private:
 	//! Opis pluginu
 	plugin::Description desc;
 	//! Dostawca pluginu
-	core::shared_ptr<plugin::VendorDescription> vendor_;
+	utils::shared_ptr<plugin::VendorDescription> vendor_;
 	//! Wersja pluginu
-	core::shared_ptr<Version> version_;
+	utils::shared_ptr<Version> version_;
 
 public:
 	//! Domyœlny konstruktor
@@ -154,19 +154,18 @@ public:
     //! \param i
     const plugin::IVisualizerPtr & getVisualizerPrototype(int i);
 
-	virtual void addObjectWrapperPrototype(core::ObjectWrapperPtr objectWrapperPrototype);
+	virtual void addObjectWrapperPrototype(utils::ObjectWrapperPtr objectWrapperPrototype);
 
     //! \return
     int getNumObjectWrapperPrototypes() const;
     //! \param i
-    const ObjectWrapperPtr & getObjectWrapperPrototype(int i);
+    const utils::ObjectWrapperPtr & getObjectWrapperPrototype(int i);
 	//! \return Czy plugin cokolwiek wnosi do aplikacji
 	const bool empty() const;
 };
 
 //! Definicja wskaŸnika.
-typedef utils::shared_ptr<Plugin> PluginPtr;
-typedef utils::shared_ptr<const Plugin> PluginConstPtr;
+DEFINE_SMART_POINTERS(Plugin);
 
 }
 

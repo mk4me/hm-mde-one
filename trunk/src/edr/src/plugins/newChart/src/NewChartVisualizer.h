@@ -64,12 +64,12 @@ public:
       //! \param data ObjectWrapper z interfejsem do odczytu DataChannela
       //! \param name nazwa tworzonej serii danych
       //! \return utworzona seria
-      plugin::IVisualizer::ISerie *createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data);
+      plugin::IVisualizer::ISerie *createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr& data);
       // \return metoda nie jest obsługiwana, nullptr
       plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie * serie);
 
 	  plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie * serie,
-		  const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data);
+		  const utils::TypeInfo & requestedType, const core::VariantConstPtr& data);
       //! Usuwa serie z wizualizatora
       //! \param serie seria do usunięcia, musi należeć do wizualizatora i musi być przez niego stworzona
       virtual void removeSerie(plugin::IVisualizer::ISerie *serie);
@@ -87,7 +87,7 @@ public:
       virtual int getMaxDataSeries() const;
       //! Zwraca info o wspieranych typach (tylko ScalarChannelReaderInterface)
       //! \param info zwracana struktura z opisami
-      virtual void getSupportedTypes(core::TypeInfoList & supportedTypes) const;
+      virtual void getSupportedTypes(utils::TypeInfoList & supportedTypes) const;
       //! Metoda wywoływana cyklicznie pozwala odświeżyć stan wizualizatora
       //! \param deltaTime czas od ostatniego wywołania metody
       virtual void update(double deltaTime);

@@ -11,6 +11,7 @@
 #define HEADER_GUARD_NEWVDF__UNIVERSALOUTPUTPIN_H__
 
 #include <plugins/newVdf/Export.h>
+#include <corelib/Variant.h>
 #include <dflib/IDFPin.h>
 #include <utils/ObjectWrapper.h>
 #include <dflib/IDFPin.h>
@@ -23,7 +24,7 @@ class PLUGIN_NEWVDF_EXPORT UniversalOutputPinBase : public df::OutputPin, public
 public:
     UniversalOutputPinBase(df::ISourceNode * node);
 
-    typedef utils::ObjectWrapperConstPtr ConstPtr;
+    typedef core::VariantConstPtr ConstPtr;
 
     const ConstPtr getWrapper() const;
 
@@ -51,8 +52,8 @@ template <class T>
 class UniversalOutputPinT : public UniversalOutputPin
 {
 public:
-    typedef typename utils::ObjectWrapperT<T>::Ptr Ptr;
-    typedef typename utils::ObjectWrapperT<T>::ConstPtr ConstPtr;
+    typedef typename utils::ObjectWrapperTraits<T>::Ptr Ptr;
+    typedef typename utils::ObjectWrapperTraits<T>::ConstPtr ConstPtr;
 public:
     UniversalOutputPinT (df::ISourceNode* node) : UniversalOutputPin(node, typeid(T)) {}
     virtual ~UniversalOutputPinT() {}
@@ -60,7 +61,7 @@ public:
     ConstPtr getValue() { return getWrapper()->get(); }
     void setValue(Ptr item)
     {
-        utils::ObjectWrapperPtr wrapper = utils::ObjectWrapper::create<T>();
+        core::VariantPtr wrapper = core::Variant::create<T>();
         wrapper->set(item);
         setWrapper(wrapper);
     }

@@ -1,5 +1,6 @@
 #include "DicomPCH.h"
 #include "MessageDialog.h"
+#include <QtGui/QPushButton>
 
 MessageDialog::MessageDialog(QWidget * parent, const QString & title, const QString & content)
 	: QDialog(parent)
@@ -9,6 +10,8 @@ MessageDialog::MessageDialog(QWidget * parent, const QString & title, const QStr
 	textEdit->setText(content);
 	textEdit->setAcceptRichText(false);
 	setModal(true);
+
+	buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Send"));
 }
 
 MessageDialog::~MessageDialog()

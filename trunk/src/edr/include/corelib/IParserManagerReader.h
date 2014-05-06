@@ -10,6 +10,7 @@
 #define HEADER_GUARD___IPARSERMANAGERREADER_H__
 
 #include <list>
+#include <map>
 #include <corelib/IParser.h>
 
 namespace core {
@@ -20,6 +21,8 @@ namespace core {
 	public:
 		//! Typ agregujπcy prototypy parserÛw
 		typedef std::list<plugin::IParserConstPtr> ParserPrototypes;
+		//! Typ opisujπcy indexy i typ parsera dla danego ürÛd≥a
+		typedef std::map<int, utils::TypeInfo> TypesMap;
 
 	public:
 		//! Destrutkor wirtualny
@@ -43,7 +46,11 @@ namespace core {
 		virtual const bool sourceIsAccepted(const std::string & source) const = 0;
 		//! \param source åcieøka ürÛd≥a danych dla ktÛrej spradzamy moøliwe do uzyskania typy danych
 		//! \param types [out] ZbiÛr moøliwych do uzyskania z danego ürÛd≥a typÛw danych
-		virtual void sourcePossibleTypes(const std::string & source, TypeInfoSet & types) const = 0;
+		virtual void sourcePossibleTypes(const std::string & source, utils::TypeInfoSet & types) const = 0;
+		//! \param parserID Identyfikator parsera
+		//! \param source èrÛd≥o
+		//! \return Wspierane typy zarejestrowane w HierarchyManager
+		virtual const TypesMap parserTypes(const core::UniqueID parserID, const std::string & source) const = 0;
 	};
 }
 

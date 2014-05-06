@@ -11,6 +11,7 @@
 
 #include <corelib/IIdentifiable.h>
 #include <utils/SmartPtr.h>
+#include <utils/TypeInfo.h>
 
 class QWidget;
 
@@ -59,7 +60,7 @@ namespace plugin
 		//! \return Widget dostarczający opcji związanych z usługą/usługami zależnymi.
 		virtual QWidget* getSettingsWidget() = 0;
 		//! \param offeredTypes Typy oferowane przez to źródło
-		virtual void getOfferedTypes(core::TypeInfoList & offeredTypes) const = 0;
+		virtual void getOfferedTypes(utils::TypeInfoList & offeredTypes) const = 0;
     };
 
 	DEFINE_SMART_POINTERS(ISource);

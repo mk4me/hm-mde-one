@@ -23,14 +23,14 @@ namespace utils {
 struct PtrPolicyOSG
 {
     //! Typ wskaźnika.
-    template <class T> struct Ptr 
+    template <typename T> struct Ptr 
     {
         typedef osg::ref_ptr<T> Type;
     };
     //! Tylko deklaracja, specjalizacja wyciąga wskaźnik!
-    template <class T> struct Pointed;
+	template <typename T> struct Pointed;
     //! Specjalizacja wyciągająca wskaźnik.
-    template <class T> struct Pointed<osg::ref_ptr<T> >
+	template <typename T> struct Pointed<osg::ref_ptr<T> >
     {
         typedef T Type;
     };
@@ -40,15 +40,15 @@ struct PtrPolicyOSG
 
     //! Inicjalizacja wartości.
     //! \param ptr
-    template <class T>
+	template <typename T>
     static void initPtr( T & ptr )
     {}
 
     //! Implemetnacja resetowania wskaźnika dla osg::ref_ptr.
     //! \param ptr
     //! \param data
-    template<class T>
-    static void setPtr(osg::ref_ptr<T> & ptr, T * data)
+	template<typename T, typename Y>
+    static void setPtr(osg::ref_ptr<T> & ptr, Y * data)
     {
         ptr = data;
     }
@@ -56,21 +56,33 @@ struct PtrPolicyOSG
     //! Implemetnacja resetowania wskaźnika dla osg::ref_ptr.
     //! \param ptr
     //! \param data
-    template<class T>
-    static void setPtr(osg::ref_ptr<T> & ptr, const osg::ref_ptr<T> & data)
+	template<typename T, typename Y>
+    static void setPtr(osg::ref_ptr<T> & ptr, const osg::ref_ptr<Y> & data)
     {
         ptr = data;
     }
 
-	template<class T>
+	template<typename T>
 	static void swapPtr(osg::ref_ptr<T> & ptr, osg::ref_ptr<T> & data)
 	{
 		std::swap(ptr, data);
 	}
 
+	template<typename T, typename Y>
+	static const osg::ref_ptr<Y> dynamicCastPtr(const osg::ref_ptr<T> & ptr)
+	{
+		return osg::dynamic_pointer_cast<Y*>(ptr);
+	}
+
+	template<typename T, typename Y>
+	static const osg::ref_ptr<Y> constCastPtr(const osg::ref_ptr<T> & ptr)
+	{
+		return osg::const_pointer_cast<Y*>(ptr);
+	}
+
     //! Zwraca surowy wskaźnik
     //! \param ptr
-    template<class T>
+	template<typename T>
     static void* getRawPtr(const osg::ref_ptr<T> & ptr)
     {
         return ptr.get();
@@ -78,19 +90,42 @@ struct PtrPolicyOSG
 
     //! Zwraca surowy wskaźnik
     //! \param ptr
-    template<class T>
+	template<typename T>
     static const void* getConstRawPtr(const osg::ref_ptr<T> & ptr)
     {
         return ptr.get();
     }
 
+	//! Zwraca surowy wskaźnik
+	//! \param ptr
+	template<typename T>
+	static T* getPtr(const osg::ref_ptr<T> & ptr)
+	{
+		return ptr.get();
+	}
+
+	//! Zwraca surowy wskaźnik
+	//! \param ptr
+	template<typename T>
+	static const T* getConstPtr(const osg::ref_ptr<T> & ptr)
+	{
+		return ptr.get();
+	}
+
     //! Implementacja unikalności wskaźnika dla osg::ref_ptr.
     //! \param ptr
-    template<class T>
+	template<typename T>
     static const bool isUnique(const osg::ref_ptr<T> & ptr)
     {
         return ptr->referenceCount() == 0;
     }
+
+	//! \return Ilość referencji do tego wskaźnika
+	template<typename T>
+	static const long referenceCount(const osg::ref_ptr<T> & ptr)
+	{
+		return (ptr != nullptr) ? ptr->referenceCount() : 0;
+	}
 };
 
 template <> struct is_ptr_policy<PtrPolicyOSG> : public __traits::true_type {};

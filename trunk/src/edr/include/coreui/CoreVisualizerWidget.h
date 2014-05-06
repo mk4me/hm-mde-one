@@ -39,13 +39,13 @@ private:
 	//! Akcja czyszcząca wszystkie dane aktualnego wizualizatora
 	QAction * dataDeselectAll;
 	//! Zbiór typów danych wspieranych przez wizualizator
-	core::TypeInfoSet supportedDataTypes;
+	utils::TypeInfoSet supportedDataTypes;
     //! Bieżący wizualizator.
     core::VisualizerPtr visualizer_;
 	//! Użyte indeksy dla danych bez opisu
 	std::set<int> usedLocalNameIndexes;
 	//! Mapa danych aktywnych - dane do serii wg typów
-	std::map<core::TypeInfo, std::map<core::ObjectWrapperConstPtr, core::Visualizer::VisualizerSerie*>> activeData;
+	std::map<utils::TypeInfo, std::map<core::VariantConstPtr, core::Visualizer::VisualizerSerie*>> activeData;
 	std::map<core::Visualizer::VisualizerSerie*, int> serieLocalIdx;
 
 public:
@@ -87,11 +87,11 @@ private:
 	//! \param data Dane dla których poszukujemy nazwy
 	//! \param dataName [out] Nazwa danych
 	//! \return Czy udało się pobrać nazwę dla danych
-	static const bool getDataName(core::ObjectWrapperConstPtr data, std::string & dataName);
+	static const bool getDataName(core::VariantConstPtr data, std::string & dataName);
 	//! \param data Dane dla których poszukujemy źródła
 	//! \param dataSource [out] Nazwa źródła
 	//! \return Czy udało się pobrać źródło dla danych
-	static const bool getDataSource(core::ObjectWrapperConstPtr data, std::string & dataSource);
+	static const bool getDataSource(core::VariantConstPtr data, std::string & dataSource);
         
 private slots:
 

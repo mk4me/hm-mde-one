@@ -12,6 +12,7 @@
 
 #include <plugins/newVdf/IDataSource.h>
 #include <plugins/newVdf/Export.h>
+#include <boost/function.hpp>
 
 namespace df { class ISourceNode; }
 

@@ -57,11 +57,11 @@ namespace dicom {
         //! \param data ObjectWrapper z interfejsem do odczytu DataChannela
         //! \param name nazwa tworzonej serii danych
         //! \return utworzona seria
-        plugin::IVisualizer::ISerie *createSerie(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data);
+        plugin::IVisualizer::ISerie *createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr& data);
         // \return metoda nie jest obs³ugiwana, nullptr
         plugin::IVisualizer::ISerie *createSerie(const plugin::IVisualizer::ISerie * serie);
 
-        virtual ISerie* createSerie( const ISerie* serie, const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data );
+        virtual ISerie* createSerie( const ISerie* serie, const utils::TypeInfo & requestedType, const core::VariantConstPtr & data );
 
         //! Usuwa serie z wizualizatora
         //! \param serie seria do usuniêcia, musi nale¿eæ do wizualizatora i musi byæ przez niego stworzona
@@ -80,7 +80,7 @@ namespace dicom {
         virtual int getMaxDataSeries() const;
         //! Zwraca info o wspieranych typach (tylko ScalarChannelReaderInterface)
         //! \param info zwracana struktura z opisami
-        virtual void getSupportedTypes(core::TypeInfoList & supportedTypes) const;
+        virtual void getSupportedTypes(utils::TypeInfoList & supportedTypes) const;
         //! Metoda wywo³ywana cyklicznie pozwala odœwie¿yæ stan wizualizatora
         //! \param deltaTime czas od ostatniego wywo³ania metody
         virtual void update(double deltaTime);

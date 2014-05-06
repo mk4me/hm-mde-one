@@ -19,7 +19,7 @@ visualizer(visualizer),
 
 }
 
-void NewChartSerie::setData(const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
+void NewChartSerie::setData(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data )
 {
     this->data = data;
 	this->requestedType = requestedType;
@@ -29,7 +29,7 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType, const core::O
     curve = new NewChartCurve(name.c_str());	
     data->tryGet(reader);    
     ScalarChannelReaderInterfacePtr nonConstChannel;
-    nonConstChannel = core::const_pointer_cast<ScalarChannelReaderInterface>(reader);
+    nonConstChannel = utils::const_pointer_cast<ScalarChannelReaderInterface>(reader);
     stats.reset(new ScalarChannelStats(nonConstChannel));
     curve->setSamples(new NewChartSeriesData(reader));
     int r = rand() % 256;
@@ -247,7 +247,7 @@ const std::string NewChartSerie::getName() const
     return name;
 }
 
-const core::ObjectWrapperConstPtr & NewChartSerie::getData() const
+const core::VariantConstPtr & NewChartSerie::getData() const
 {
     return data;
 }

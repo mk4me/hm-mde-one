@@ -106,7 +106,7 @@ bool LayeredImageVisualizer::eventFilter(QObject * watched, QEvent * event)
 	return QObject::eventFilter(watched, event);
 }
 
-plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie( const utils::TypeInfo & requestedType, const core::ObjectWrapperConstPtr& data )
+plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie( const utils::TypeInfo & requestedType, const core::VariantConstPtr& data )
 {
     auto serie = new LayeredSerie(this, mainWidget);
     serie->setData(requestedType, data);
@@ -127,7 +127,7 @@ plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie( const plugin:
     return nullptr;
 }
 
-plugin::IVisualizer::ISerie* dicom::LayeredImageVisualizer::createSerie( const ISerie* serie, const core::TypeInfo & requestedType, const core::ObjectWrapperConstPtr & data )
+plugin::IVisualizer::ISerie* dicom::LayeredImageVisualizer::createSerie( const ISerie* serie, const utils::TypeInfo & requestedType, const core::VariantConstPtr & data )
 {
     return nullptr;
 }
@@ -190,7 +190,7 @@ int LayeredImageVisualizer::getMaxDataSeries() const
     return -1;
 }
 
-void LayeredImageVisualizer::getSupportedTypes( core::TypeInfoList & supportedTypes ) const
+void LayeredImageVisualizer::getSupportedTypes( utils::TypeInfoList & supportedTypes ) const
 {
     supportedTypes.push_back(typeid(ILayeredImage));
 }

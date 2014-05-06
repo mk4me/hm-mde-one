@@ -35,7 +35,7 @@ public:
     virtual core::IFilterProvider::FilterBundles getFilterBundles() const;
 
 private:
-    void addSubjectFilterToBundle( core::IFilterBundlePtr fb, const core::TypeInfo&, const QString& name, const QIcon& icon) const;
+    void addSubjectFilterToBundle( core::IFilterBundlePtr fb, const utils::TypeInfo&, const QString& name, const QIcon& icon) const;
 };										
 DEFINE_SMART_POINTERS(HmmService);
 

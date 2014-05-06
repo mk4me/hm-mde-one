@@ -27,13 +27,13 @@ public:
     //! \return Unikalne, lokalne ID sesji w obrębie sesji tego samego obiektu wykonującego ruch. Podobnie jak globalne - po usunięci i ponownym dodaniu ID może ulec zmianie!
     virtual SubjectID getLocalID() const = 0;
     //! \param motions Zbiór wypełniany konkretnymi ruchami danego obiektu w ramach aktualnej sesji
-    virtual void getMotions(core::ConstObjectsList & motions) const = 0;
+    virtual void getMotions(core::ConstVariantsList & motions) const = 0;
 
-	virtual void addMotion(const core::ObjectWrapperConstPtr & motion) = 0;
-	virtual void removeMotion(const core::ObjectWrapperConstPtr & motion) = 0;
+	virtual void addMotion(const core::VariantConstPtr & motion) = 0;
+	virtual void removeMotion(const core::VariantConstPtr & motion) = 0;
 
     //! \return Obiekt z którym związana jest ta sesja
-    virtual const core::ObjectWrapperConstPtr & getSubject() const = 0;
+    virtual const core::VariantConstPtr & getSubject() const = 0;
 	virtual const SubjectConstPtr & getUnpackedSubject() const = 0;
 
     //! \return Globalna nazwa sesji
@@ -42,23 +42,23 @@ public:
     virtual const std::string & getLocalName() const = 0;
 
 	//! \data Dane wchodzące pod kontrolę DM
-	virtual void addData(const core::ObjectWrapperConstPtr & data) = 0;
+	virtual void addData(const core::VariantConstPtr & data) = 0;
 	//! Dane usuwane z DM
-	virtual void removeData(const core::ObjectWrapperConstPtr & data) = 0;
+	virtual void removeData(const core::VariantConstPtr & data) = 0;
 
-	virtual const bool tryAddData(const core::ObjectWrapperConstPtr & data) = 0;
+	virtual const bool tryAddData(const core::VariantConstPtr & data) = 0;
 
-	virtual const bool tryRemoveData(const core::ObjectWrapperConstPtr & data) = 0;
+	virtual const bool tryRemoveData(const core::VariantConstPtr & data) = 0;
 
-	virtual void getObjects(core::ConstObjectsList & objects) const = 0;
+	virtual void getObjects(core::ConstVariantsList & objects) const = 0;
 
-	virtual void getObjects(core::ConstObjectsList & objects, const core::TypeInfo & type, bool exact) const = 0;
+	virtual void getObjects(core::ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const = 0;
 
-	virtual void getObjects(core::ObjectWrapperCollection& objects) const = 0;
+	virtual void getObjects(core::VariantsCollection& objects) const = 0;
 
-	virtual const bool isManaged(const core::ObjectWrapperConstPtr & object) const = 0;
+	virtual const bool isManaged(const core::VariantConstPtr & object) const = 0;
 
-	virtual const bool hasObject(const core::TypeInfo & type, bool exact) const = 0;
+	virtual const bool hasObject(const utils::TypeInfo & type, bool exact) const = 0;
 };
 
 }

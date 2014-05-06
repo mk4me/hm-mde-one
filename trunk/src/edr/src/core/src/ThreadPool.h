@@ -54,7 +54,7 @@ namespace core
 
 	private:
 		//! Faktyczny pool
-		shared_ptr<utils::ThreadPool> threadPool_;
+		utils::shared_ptr<utils::ThreadPool> threadPool_;
 		//! Obiekt synchronizuj¹cy
 		mutable utils::StrictSyncPolicy synch_;
 	};

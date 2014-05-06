@@ -21,7 +21,7 @@ public:
 public:
     //! Na podstawie serii i wrappera dobierany jest kolor
     //! \return kolor dla dajnej serii
-    virtual QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr ow) const = 0;
+    virtual QColor getColor(INewChartSerie* s, core::VariantConstPtr ow) const = 0;
 };
 typedef utils::shared_ptr<IMultiserieColorStrategy> IMultiserieColorStrategyPtr;
 typedef utils::shared_ptr<const IMultiserieColorStrategy> IMultiserieColorStrategyConstPtr;
@@ -31,7 +31,7 @@ class RandomMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
     //! \return losowy kolor
-    QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const
+    QColor getColor(INewChartSerie* s, core::VariantConstPtr w) const
     {
         return QColor(rand() % 256, rand() % 256, rand() % 256);
     }
@@ -42,7 +42,7 @@ class CopyColorMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
     //! \return przypisany do serii kolor
-    QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const
+    QColor getColor(INewChartSerie* s, core::VariantConstPtr w) const
     {
         return s->getColor();
     }
@@ -58,7 +58,7 @@ public:
     RandomBetweenMultiserieColorStrategy(QColor c1, QColor c2) : c1(c1), c2(c2) {}
 
     //! \return interpolowany kolor
-    QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const
+    QColor getColor(INewChartSerie* s, core::VariantConstPtr w) const
     {
         float r = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
         return QColor(
@@ -86,9 +86,9 @@ class ColorMapMultiserieStrategy : public IMultiserieColorStrategy
 public:
     //! Konstruktor
     //! \param colorMap mapa przechowuje kolory dla konkretnych widgetów
-    ColorMapMultiserieStrategy(const std::map<core::ObjectWrapperConstPtr, QColor>& colorMap) : colorMap(colorMap) {}
+    ColorMapMultiserieStrategy(const std::map<core::VariantConstPtr, QColor>& colorMap) : colorMap(colorMap) {}
     //! \return przypisany kolor
-    virtual QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const 
+    virtual QColor getColor(INewChartSerie* s, core::VariantConstPtr w) const 
     {
         auto it = colorMap.find(w);
         if (it != colorMap.end()) {
@@ -100,7 +100,7 @@ public:
 
 private:
     //! mapa przechowuje kolory dla konkretnych widgetów
-    std::map<core::ObjectWrapperConstPtr, QColor> colorMap;
+    std::map<core::VariantConstPtr, QColor> colorMap;
 };
 
 

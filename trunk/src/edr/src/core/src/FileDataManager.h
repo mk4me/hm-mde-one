@@ -13,12 +13,13 @@
 #include <list>
 #include <corelib/IFileManagerReader.h>
 #include <corelib/IFileDataManager.h>
+#include <corelib/IDataManagerReader.h>
 #include <threading/SynchronizationPolicies.h>
 #include <corelib/IParserManagerReader.h>
 
 namespace core {
 
-class FileDataManager : public IFileDataManager, public IFileManagerReader
+	class FileDataManager : public IFileDataManager, public IFileManagerReader, public IDataManagerReader::IObjectObserver
 {
 private:
 
@@ -28,25 +29,11 @@ private:
 	class FileReaderTransaction;
 	friend class FileReaderTransaction;
 
-	//! Deklaracja wewn�trznej reprezentacji parsera, obudowauj�cej core::IParser
-	class Parser;
-	class FileParser;
-	class StreameFileParser;
-
-	friend class FileParser;
-	friend class StreameFileParser;
-
-	//! Wska�nik na parser.
-	typedef utils::shared_ptr<Parser> ParserPtr;
-	//! S�aby wska�nik na parser
-	typedef utils::weak_ptr<Parser> ParserWeakPtr;
 	//! S�ownik aktualnie obs�ugiwanych plik�w i skojarzonych z nimi parser�w
-	typedef std::map<Filesystem::Path, ObjectsList> ObjectsByFiles;
+	typedef std::map<Filesystem::Path, VariantsList> ObjectsByFiles;
 
 	typedef utils::RecursiveSyncPolicy SyncPolicy;
 	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
-
-	typedef boost::function<ParserPtr(plugin::IParser*, const Filesystem::Path &)> ParserCreator;
 
 private:
 
@@ -59,17 +46,10 @@ private:
 	//! Obiekty obserwuj�ce stan DM
 	std::list<FileObserverPtr> observers;
 
-	const static ParserCreator streamParserCreator;
-	const static ParserCreator sourceParserCreator;
+	//! Zmienna pozwalająca szybko opuscic update memory data managera
+	volatile bool skipUpdate;
 
 private:
-
-	static ParserPtr createSourceParser(plugin::IParser * parser, const Filesystem::Path & path);
-	static ParserPtr createStreamParser(plugin::IParser * parser, const Filesystem::Path & path);
-
-	void initializeDataWithParser(ObjectWrapper & object, const ParserPtr & parser);
-	void initializeDataWithExternalInitializer(ObjectWrapper & object, const ObjectWrapper::LazyInitializer & li, const ParserPtr & parser);
-	void verifyAndRemoveUninitializedParserObjects(const ParserPtr & parser);
 
 	void rawRemoveFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction);
 
@@ -81,13 +61,11 @@ private:
 
 	void rawGetFiles(Files & files) const;
 
-	void rawGetObjects(const Filesystem::Path & file, ConstObjectsList & objects) const;
+	void rawGetObjects(const Filesystem::Path & file, ConstVariantsList & objects) const;
 
-	void rawGetObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const;
+	void rawGetObjects(const Filesystem::Path & file, VariantsCollection & objects) const;
 
-	void rawGetObjects(const Filesystem::Path & file, ObjectsList & objects);
-
-	void initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const Filesystem::Path & path, const ParserCreator & parserCreator, ObjectsList & objects);
+	void rawGetObjects(const Filesystem::Path & file, VariantsList & objects);
 
 public:
 	//IFileDataManager API
@@ -122,19 +100,30 @@ public:
 
 	//! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
 	//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
-	virtual void getObjects(const Filesystem::Path & file, ConstObjectsList & objects) const;
+	virtual void getObjects(const Filesystem::Path & file, ConstVariantsList & objects) const;
 
 	//! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
 	//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
-	virtual void getObjects(const Filesystem::Path & file, ObjectWrapperCollection & objects) const;
+	virtual void getObjects(const Filesystem::Path & file, VariantsCollection & objects) const;
 
 	virtual IFileManagerReader::TransactionPtr transaction() const;
+
+public:
+
+	//IDataManagerReader::IObjectObserver API
+	virtual void observe(const IDataManagerReader::ChangeList & changes);
 
 public:
 
 	FileDataManager();
 
 	virtual ~FileDataManager();
+
+private:
+	//! \param path Ścieżka pliku który weryfikujemy pod kątem dostępności danych,
+	//! jeśli brak to usuwamy nieużywany plik
+	void tryRemoveUnusedFile(const core::Filesystem::Path & file);
+
 };
 
 }

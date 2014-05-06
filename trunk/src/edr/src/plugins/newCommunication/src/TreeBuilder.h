@@ -36,9 +36,9 @@ public:
     //! \param sessions dostarczone sesje
     //! \param dataFilter obiekt filtruj¹cy sesje
     //! \return stworzony element
-    static core::IHierarchyItemPtr  createTree(const QString& rootItemName, const core::ConstObjectsList& sessions, const SubjectHierarchyFilterPtr & dataFilter);
+    static core::IHierarchyItemPtr  createTree(const QString& rootItemName, const core::ConstVariantsList& sessions, const SubjectHierarchyFilterPtr & dataFilter);
 
-    static core::IHierarchyItemPtr createTree(const QString& rootItemName, const core::ConstObjectsList& sessions);
+    static core::IHierarchyItemPtr createTree(const QString& rootItemName, const core::ConstVariantsList& sessions);
 
     static core::IHierarchyItemPtr createTree(const QString& rootItemName, const PluginSubject::SubjectConstPtr& subject);
     static core::IHierarchyItemPtr createTree(const QString& rootItemName, const PluginSubject::SubjectConstPtr& subject, const SubjectHierarchyFilterPtr & dataFilter);
@@ -147,7 +147,7 @@ private:
     static EventsCollectionConstPtr getEvents( const PluginSubject::MotionConstPtr & motion);
 
     static core::HierarchyHelperPtr allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo );
-    static core::HierarchyHelperPtr createNormalized( utils::ObjectWrapperConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context );
+    static core::HierarchyHelperPtr createNormalized( core::VariantConstPtr wrapper, PluginSubject::MotionConstPtr motion, c3dlib::C3DParser::IEvent::Context context );
     static core::HierarchyHelperPtr createNormalizedFromAll( const std::string& channelName, PluginSubject::SessionConstPtr s, c3dlib::C3DParser::IEvent::Context context );
     static QString createDescription( PluginSubject::MotionConstPtr motion);
 };
