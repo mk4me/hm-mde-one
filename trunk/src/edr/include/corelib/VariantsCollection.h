@@ -1,7 +1,7 @@
 /********************************************************************
 	created:	2011/05/23
 	created:	23:5:2011   23:14
-	filename: 	ObjectWrapperCollection.h
+	filename: 	VariantsCollection.h
 	author:		Wojciech Knieć
 
 	purpose:

@@ -1,5 +1,5 @@
 #include "CoreLibPCH.h"
-#include <corelib/ObjectWrapperCollection.h>
+#include <corelib/VariantsCollection.h>
 
 using namespace core;
 
