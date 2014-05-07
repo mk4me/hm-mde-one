@@ -183,9 +183,10 @@ void dicomImporter::DicomImporter::convertImage( internalData::ImagePtr inter, c
     if (core::Filesystem::pathExists(origin)) {
         DicomParser parser;
         parser.parse(origin.string());
-        core::Objects objs;
-        parser.getObjects(objs);
-        DicomImagePtr image = (*objs.begin())->get();
+		auto object = core::Variant::create<DicomImage>();
+        parser.getObject(*object, 0);
+        //utils::ObjectWrapperPtr wrapper = object->get();
+		DicomImagePtr image = object->get();
         QPixmap pixmap = convertToPixmap(image);
 
         inter->isPowerDoppler = testPowerDoppler(pixmap);

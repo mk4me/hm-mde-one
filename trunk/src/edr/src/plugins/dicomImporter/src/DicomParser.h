@@ -17,7 +17,7 @@
 namespace dicomImporter {
 
 //! Klasa wykorzystuje dcmtk do zasilenia systemu w obiekty domenowe DICOM
-class DicomParser : public plugin::IParser, public plugin::ISourceParserCapabilities
+class DicomParser :  public plugin::ISourceParser
 {
     UNIQUE_ID("{5E9E4252-2CC4-4992-8A86-381EE5AE611D}")
 	CLASS_DESCRIPTION("DICOM parser", "DICOM parser")
@@ -34,10 +34,12 @@ public:
     virtual plugin::IParser* create() const;
     //! Zwraca obiekty dostarczone przez parser
     //! \param objects kolekcja z obiektami (set)
-    virtual void getObjects(core::Objects& objects);
+	virtual void getObject(core::Variant& object, const core::VariantsVector::size_type idx) const;
     //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;
+
+	virtual void reset();
 
 private:
     utils::ObjectWrapperPtr image;

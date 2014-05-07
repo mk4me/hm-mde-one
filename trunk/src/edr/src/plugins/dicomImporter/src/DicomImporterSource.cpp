@@ -128,7 +128,7 @@ QWidget* DicomImporterSource::getSettingsWidget()
     return nullptr;
 }
 
-void DicomImporterSource::getOfferedTypes( core::TypeInfoList & offeredTypes ) const
+void DicomImporterSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) const
 {
     
 }

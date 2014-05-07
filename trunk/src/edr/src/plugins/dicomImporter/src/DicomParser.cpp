@@ -37,7 +37,7 @@ using namespace dicomImporter;
 
 DicomParser::DicomParser()
 {
-    image = core::ObjectWrapper::create<DicomImage>();
+    
 }
 
 DicomParser::~DicomParser()
@@ -107,7 +107,7 @@ void DicomParser::parse( const std::string & source  )
    //     // use partial read access to pixel data (only in case of multiple frames)
    //     opt_compatibilityMode |= CIF_UsePartialAccessToPixelData;
    // }
-
+	image = utils::ObjectWrapper::create<DicomImage>();
     DicomImagePtr di = utils::make_shared<DicomImage>(source.c_str());//dfile, xfer, opt_compatibilityMode, opt_frame - 1, opt_frameCount);
     if (di && di->getStatus() == EIS_Normal)  {
         di->processNextFrames();
@@ -123,22 +123,29 @@ plugin::IParser* DicomParser::create() const
 
 void DicomParser::acceptedExpressions(Expressions & expressions) const
 {
-    ExpressionDescription expDesc;
-    expDesc.description = "Dicom format";
+	ExpressionDescription expDesc;
+	expDesc.description = "Dicom format";
+	expDesc.objectsTypes.reserve(2);
+	expDesc.objectsTypes.push_back(typeid(DcmDataset));
+	expDesc.objectsTypes.push_back(typeid(DicomImage));
 
-    expDesc.types.insert(typeid(DcmDataset));
-    expDesc.types.insert(typeid(DicomImage));
-
-    expressions.insert(Expressions::value_type(".*\.dcm$", expDesc));
-    // HACK: regex pasuje do plikow, ktore nie maja kropki w sciezce...
-    // przez to mozna skojarzyc pliki bez rozszerzenia z parserem dicoma
-    // TODO, jak lepiej rozwiazac ten problem?
-    expressions.insert(Expressions::value_type("^[^.]*$", expDesc));
+	expressions.insert(Expressions::value_type(".*\.dcm$", expDesc));
+	// HACK: regex pasuje do plikow, ktore nie maja kropki w sciezce...
+	// przez to mozna skojarzyc pliki bez rozszerzenia z parserem dicoma
+	// TODO, jak lepiej rozwiazac ten 
+	expressions.insert(Expressions::value_type("^[^.]*$", expDesc));
 }
 
-void DicomParser::getObjects( core::Objects& objects )
+void DicomParser::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const
 {
-    objects.insert(image);
+	if (idx == 0) {
+		object.set(image);
+	}
+}
+
+void dicomImporter::DicomParser::reset()
+{
+	image = utils::ObjectWrapperPtr();
 }
 
 
