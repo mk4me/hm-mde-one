@@ -157,6 +157,8 @@ private:
 
 	void onLogin(const QString & user, const QString & password);
 
+	bool synchronizationRequiredDialog();
+
 	static QString formatFileSize(unsigned long long size);
 
 	void generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget * perspective);

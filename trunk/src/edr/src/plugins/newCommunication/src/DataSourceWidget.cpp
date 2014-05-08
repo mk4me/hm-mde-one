@@ -793,23 +793,19 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 				try{
 					auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
 
+					if (DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(userShallowCopy, time) == true){
+						synch = synchronizationRequiredDialog();
 
-					if(DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(userShallowCopy, time) == true){
-						QMessageBox messageBox(this);
-						messageBox.setWindowTitle(tr("Synchronization required"));
-						messageBox.setText(tr("Database was updated. Some data might be not available. Would You like to synchronize?"));
-						messageBox.setIcon(QMessageBox::Information);
-						messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-						messageBox.setDefaultButton(QMessageBox::Yes);
-						auto ret = messageBox.exec();
-						if(ret == QMessageBox::Yes){
-							synch = true;
-						}
 					}
-				}catch(std::exception & ){
-
-				}catch(...){
-
+				} catch (webservices::WSConnectionInitializationException& e) {
+					PLUGIN_LOG_WARNING(e.what());
+					synch = synchronizationRequiredDialog();
+				} catch(std::exception & e){
+					PLUGIN_LOG_WARNING(e.what());
+					synch = synchronizationRequiredDialog();
+				} catch(...){
+					PLUGIN_LOG_WARNING("Problem with sychronization");
+					synch = synchronizationRequiredDialog();
 				}
 			}
 
@@ -3025,4 +3021,16 @@ QString DataSourceWidget::getCredentialsIniPath() const
     //auto path = plugin::getPaths()->getUserApplicationDataPath() / (crypt("Credentials", false).toStdString() + ".dat");
     auto path = plugin::getPaths()->getUserApplicationDataPath() / "ncconf.dat";
     return QString::fromStdString(path.string());
+}
+
+bool DataSourceWidget::synchronizationRequiredDialog()
+{
+	QMessageBox messageBox(this);
+	messageBox.setWindowTitle(tr("Synchronization required"));
+	messageBox.setText(tr("Database was updated. Some data might be not available. Would You like to synchronize?"));
+	messageBox.setIcon(QMessageBox::Information);
+	messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	messageBox.setDefaultButton(QMessageBox::Yes);
+	auto ret = messageBox.exec();
+	return ret == QMessageBox::Yes;
 }
