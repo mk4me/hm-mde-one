@@ -377,9 +377,11 @@ bool DateTime::operator<(const DateTime & dateTimer) const
 {
     bool ret = false;
 
-    if((const Date &)(*this) < (const Date &)(dateTimer) && (const Time &)(*this) < (const Time &)(dateTimer)){
+    if((const Date &)(*this) < (const Date &)(dateTimer)){
         ret = true;
-    }
+	} else if ((const Date &)(*this) == (const Date &)(dateTimer) && (const Time &)(*this) < (const Time &)(dateTimer)) {
+		ret = true;
+	}
 
     return ret;
 }
