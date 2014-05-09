@@ -109,7 +109,7 @@ public:
     //! \return wartoœæ konkretnej próbki
 	virtual osg::Vec3 getValue(int index) const
 	{
-		const btk::Measure<3>::Values& value = point->GetValues();
+		const auto& value = point->GetValues();
 		return osg::Vec3(value[index ], value[index + numOfFrames], value[index + 2 * numOfFrames]) * scale;
 	}
 };
