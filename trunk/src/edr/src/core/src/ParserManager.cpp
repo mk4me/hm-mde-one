@@ -8,7 +8,7 @@ using namespace core;
 
 void ParserManager::parsers(ParserPrototypes & parserPrototypes) const
 {
-	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
+	for (auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		parserPrototypes.push_back(it->second.parser);
 	}
 }
@@ -30,18 +30,18 @@ const bool ParserManager::verifyParserExpressions(const std::string & source,
 {
 	bool ret = false;
 	for (auto eIT = expressions.begin(); eIT != expressions.end(); ++eIT){
-		if(verifyExpression(source, eIT->second.regularExpression) == true){
+		if (verifyExpression(source, eIT->second.regularExpression) == true){
 			ret = true;
 			break;
 		}
 	}
 
-	return true;
+	return ret;
 }
 
 void ParserManager::parsers(const std::string & source, ParserPrototypes & parserPrototypes) const
 {
-	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
+	for (auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		if (verifyParserExpressions(source, it->second.expressions) == true){
 			parserPrototypes.push_back(it->second.parser);
 		}
@@ -50,7 +50,7 @@ void ParserManager::parsers(const std::string & source, ParserPrototypes & parse
 
 void ParserManager::sourceParsers(const std::string & source, ParserPrototypes & parserPrototypes) const
 {
-	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
+	for (auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		if (it->second.sourceParser && verifyParserExpressions(source, it->second.expressions) == true){
 			parserPrototypes.push_back(it->second.parser);
 		}
@@ -59,7 +59,7 @@ void ParserManager::sourceParsers(const std::string & source, ParserPrototypes &
 
 void ParserManager::streamParsers(const std::string & source, ParserPrototypes & parserPrototypes) const
 {
-	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
+	for (auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		if (it->second.streamParser && verifyParserExpressions(source, it->second.expressions) == true){
 			parserPrototypes.push_back(it->second.parser);
 		}
@@ -68,7 +68,7 @@ void ParserManager::streamParsers(const std::string & source, ParserPrototypes &
 
 const bool ParserManager::sourceIsAccepted(const std::string & source) const
 {
-	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
+	for (auto it = parsers_.begin(); it != parsers_.end(); ++it){
 		if (verifyParserExpressions(source, it->second.expressions) == true){
 			return true;
 		}
@@ -79,8 +79,8 @@ const bool ParserManager::sourceIsAccepted(const std::string & source) const
 
 void ParserManager::sourcePossibleTypes(const std::string & source, utils::TypeInfoSet & types) const
 {
-	for(auto it = parsers_.begin(); it != parsers_.end(); ++it){
-		for(auto eIT = it->second.expressions.begin(); eIT != it->second.expressions.end(); ++eIT){
+	for (auto it = parsers_.begin(); it != parsers_.end(); ++it){
+		for (auto eIT = it->second.expressions.begin(); eIT != it->second.expressions.end(); ++eIT){
 			if (verifyExpression(source, eIT->second.regularExpression) == true){
 				types.insert(eIT->second.supportedTypes.begin(), eIT->second.supportedTypes.end());
 			}
@@ -91,7 +91,7 @@ void ParserManager::sourcePossibleTypes(const std::string & source, utils::TypeI
 const ParserManager::TypesMap ParserManager::parserTypes(const UniqueID parserID, const std::string & source) const
 {
 	auto it = parsers_.find(parserID);
-	
+
 	if (it == parsers_.end()){
 		return TypesMap();
 	}
@@ -120,7 +120,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 	pData.sourceParser = dynamic_cast<plugin::ISourceParser*>(parser.get());
 	pData.streamParser = dynamic_cast<plugin::IStreamParser*>(parser.get());
 
-	if( !(pData.sourceParser || pData.streamParser) ){
+	if (!(pData.sourceParser || pData.streamParser)){
 		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " does not support any of known capabilities to parse");
 		throw std::runtime_error("Parser does not support any known parse capabilities");
 	}
@@ -129,7 +129,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 	plugin::IParser::Expressions expressions;
 	parser->acceptedExpressions(expressions);
 
-	if(expressions.empty() == true){
+	if (expressions.empty() == true){
 		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " does not support any sources");
 		throw std::runtime_error("Parser does not support any sources");
 	}
@@ -137,7 +137,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 	auto typesHierarchy = getDataHierarchyManager();
 
 	//! Weryfikujemy oferowane typy - zawężamy jeśli coś jest nieznane
-	for(auto it = expressions.begin(); it != expressions.end(); ++it){
+	for (auto it = expressions.begin(); it != expressions.end(); ++it){
 		ExpressionDescription desc;
 		desc.objectsTypes = it->second.objectsTypes;
 		for (int i = 0; i < desc.objectsTypes.size(); ++i){
@@ -151,7 +151,8 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 		//! Weryfikacja czy wyrażenie wspiera jakieś znane typy
 		if (desc.supportedTypes.empty() == true){
 			CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " does not provide any known type for expression: " + it->first);
-		}else{
+		}
+		else{
 			desc.description = it->second.description;
 			desc.regularExpression = std::regex(it->first);
 			pData.expressions.insert(Expressions::value_type(it->first, desc));
@@ -159,19 +160,22 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 	}
 
 	//! Weryfikacja czy mamy jakies wyrażenia wspierające znane typy
-	if(pData.expressions.empty() == true){
+	if (pData.expressions.empty() == true){
 		CORE_LOG_NAMED_WARNING("parser", "Parser ID: " + boost::lexical_cast<std::string>(parser->ID()) + " doest not provide any known type for any offered expression - skiping registration");
-	}else{
+	}
+	else{
 		pData.parser = parser;
 		parsers_[parser->ID()] = pData;
 		std::string capabilities;
-		if(pData.sourceParser && pData.streamParser){
+		if (pData.sourceParser && pData.streamParser){
 			capabilities = "custom I/O capabilities and stream capabilities";
-		}else if(pData.sourceParser){
+		}
+		else if (pData.sourceParser){
 			capabilities = "custom I/O capabilities";
-		}else{
+		}
+		else{
 			capabilities = "stream capabilities";
 		}
-		CORE_LOG_NAMED_INFO("parser", "Parser ID: " + boost::lexical_cast<std::string>(parser->ID()) + " (" << parser->shortName() <<") successfully registered offering: " + capabilities);
+		CORE_LOG_NAMED_INFO("parser", "Parser ID: " + boost::lexical_cast<std::string>(parser->ID()) + " (" << parser->shortName() << ") successfully registered offering: " + capabilities);
 	}
 }

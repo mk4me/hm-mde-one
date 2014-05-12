@@ -34,7 +34,7 @@ const VariantPtr Variant::create() const
 }
 
 Variant::Variant(const Variant & ow, const CloneOp co)
-	: initialized_(ow.initialized_), initializing_(false)
+: initialized_(ow.initialized_), initializing_(false)
 {
 	auto data = ow.data();
 	if (co == utils::ObjectWrapper::ShallowClone){
@@ -50,16 +50,15 @@ Variant::Variant(const Variant & ow, const CloneOp co)
 
 		if (ow.metadata_ != nullptr){
 			metadata_.reset(new Metadata(*(ow.metadata_)));
-		}		
+		}
 	}
 }
 
 Variant::Variant(const utils::ObjectWrapperPtr & wrapper)
-	: wrapper_(wrapper), initialized_(false), initializing_(false)
+: wrapper_(wrapper), initialized_(false), initializing_(false)
 {
 	UTILS_ASSERT((wrapper_ != nullptr), "Wrapper dla danych nie mo¿e byæ pusty");
 }
-
 
 void Variant::set(const utils::ObjectWrapperPtr & wrapper)
 {
@@ -98,7 +97,6 @@ const void * Variant::getRawPtr() const
 
 Variant::~Variant()
 {
-
 }
 
 const bool Variant::getMetadata(const std::string & key, std::string & val) const
@@ -196,7 +194,7 @@ void Variant::initialize() const
 	ScopedLock lock(sync_);
 	if (initialized() == false && initializer_ != nullptr){
 		utils::Push<mutable bool> init(initializing_, true);
-		initializer_->initialize(*(const_cast<Variant*>(this)->wrapper_));
+		initializer_->initialize(const_cast<Variant*>(this));
 		initialized_ = true;
 	}
 }
@@ -242,14 +240,14 @@ void Variant::reset()
 }
 
 void Variant::swap(Variant & ow)
-{		
+{
 	std::swap(initialized_, ow.initialized_);
 	std::swap(initializer_, ow.initializer_);
 	std::swap(metadata_, ow.metadata_);
 }
 
 const bool Variant::isEqual(const Variant & obj) const
-{	
+{
 	//czy zgadza siê meta - wskaŸniki
 	return ((metadata_ == obj.metadata_) ||
 		//czy zgadza siê meta - zawartoœæ
