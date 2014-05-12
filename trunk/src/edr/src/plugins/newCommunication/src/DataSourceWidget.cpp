@@ -136,20 +136,34 @@ void LocalDataLoader::run()
 	// to powinno być realizowane gdzieś wyżej, na poziomie metody void DataSourceWidget::performShallowCopyUpdate()
 
 	if (wasShallow) {
-		auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
-		webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
+        auto time = sourceWidget->lastSynchroTime;
+        webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
+		DataSourceLocalStorage* locals = DataSourceLocalStorage::instance();
 
-		auto addToDownload = [&](const webservices::IncrementalBranchShallowCopy::Trials& trials) -> void
-		{
-			for (auto it = trials.begin(); it != trials.end(); ++it) {
-				for (auto iFile = it->addedFiles.begin(); iFile != it->addedFiles.end(); ++iFile) {
-					sourceWidget->filesToDownload.insert(iFile->fileID);
-				}
-				for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
-					sourceWidget->filesToDownload.insert(iFile->fileID);
-				}
-			}
-		};
+		auto& shallowTrials = sourceWidget->dataSource->fullShallowCopy.motionShallowCopy->trials;
+		
+		
+        auto addToDownload = [&]( const webservices::IncrementalBranchShallowCopy::Trials& trials ) -> void
+        {
+            for (auto it = trials.begin(); it != trials.end(); ++it) {
+                for (auto iFile = it->addedFiles.begin(); iFile != it->addedFiles.end(); ++iFile) {
+					auto shallowTrial = shallowTrials[iFile->trialID];
+					bool toAdd = false;
+					// jesli choc jeden plik triala jest lokalny, to nowododany plik sciagamy
+					for (auto tf = shallowTrial->files.begin(); tf != shallowTrial->files.end(); ++tf) {
+						if (locals->fileIsLocal(tf->second->fileName)) {
+							sourceWidget->filesToDownload.insert(iFile->fileID);
+							break;
+						}
+					}
+                }
+                for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
+					if (locals->fileIsLocal(iFile->fileName)) {
+						sourceWidget->filesToDownload.insert(iFile->fileID);
+					}
+                } 
+            }
+        };
 
 		addToDownload(incCpy.added.trials);
 		addToDownload(incCpy.modified.trials);
@@ -823,6 +837,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 		}
 
 		if (synch == true){
+			lastSynchroTime = userShallowCopy.motionShallowCopy->timestamp;
 			performShallowCopyUpdate();
 		}
 		else if (shallowCopyAvailable == true){

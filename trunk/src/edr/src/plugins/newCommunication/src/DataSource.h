@@ -39,6 +39,7 @@ class CommunicationDataSource : public communication::ICommunicationDataSource, 
 
 	//! Zaprzyjaźniona klasa realizująca widok danych
 	friend class DataSourceWidget;
+	friend class LocalDataLoader;
 
 private:
 	//! Typ smart pointera do requesta ściągania danych

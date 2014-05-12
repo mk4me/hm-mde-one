@@ -322,6 +322,8 @@ private:
 
     std::map<std::set<int>, std::set<core::IHierarchyItemConstPtr>> files2roots;
     std::map<QString, core::IHierarchyItemConstPtr> name2root;
+
+	webservices::DateTime lastSynchroTime;
 };
 
 #endif	//	HEADER_GUARD___DATASOURCEWIDGET_H__
