@@ -142,7 +142,7 @@ void LocalDataLoader::run()
 
 		auto& shallowTrials = sourceWidget->dataSource->fullShallowCopy.motionShallowCopy->trials;
 		
-		
+		PLUGIN_LOG_INFO("Auto-update...");
         auto addToDownload = [&]( const webservices::IncrementalBranchShallowCopy::Trials& trials ) -> void
         {
             for (auto it = trials.begin(); it != trials.end(); ++it) {
@@ -153,6 +153,7 @@ void LocalDataLoader::run()
 					for (auto tf = shallowTrial->files.begin(); tf != shallowTrial->files.end(); ++tf) {
 						if (locals->fileIsLocal(tf->second->fileName)) {
 							sourceWidget->filesToDownload.insert(iFile->fileID);
+							PLUGIN_LOG_INFO("Downloading: " << iFile->fileName);
 							break;
 						}
 					}
@@ -160,6 +161,7 @@ void LocalDataLoader::run()
                 for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
 					if (locals->fileIsLocal(iFile->fileName)) {
 						sourceWidget->filesToDownload.insert(iFile->fileID);
+						PLUGIN_LOG_INFO("Downloading: " << iFile->fileName);
 					}
                 } 
             }
@@ -1655,7 +1657,7 @@ void DataSourceWidget::updateShallowCopy()
 			return;
 		}
 	}
-
+	lastSynchroTime = dataSource->fullShallowCopy.motionShallowCopy->timestamp;
 	performShallowCopyUpdate();
 }
 
