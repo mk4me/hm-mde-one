@@ -49,7 +49,6 @@
 
 //#define DEMO_VERSION_COMMUNICATION
 
-
 using namespace communication;
 using namespace webservices;
 
@@ -57,12 +56,10 @@ const int popupDelay = 3000;
 
 LocalDataLoader::LocalDataLoader(DataSourceWidget * sourceWidget) : sourceWidget(sourceWidget), counter(-1)
 {
-
 }
 
 LocalDataLoader::~LocalDataLoader()
 {
-
 }
 
 void LocalDataLoader::run()
@@ -72,29 +69,31 @@ void LocalDataLoader::run()
 	auto localStorage = DataSourceLocalStorage::instance();
 
 	//jeśli mamy synchronizację to próbujemy parsować dane, ustawić je, jeśli wszystko ok to ładujemy do localstorage
-	if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest && sourceWidget->downloadCanceled == false){
+	if (sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest && sourceWidget->downloadCanceled == false){
 		communication::ShallowCopy shallowCopy;
 		try{
 			synch = sourceWidget->refreshShallowCopy();
-		}catch(...){
+		}
+		catch (...){
 			synch = false;
 		}
 
-		if(synch == false){
+		if (synch == false){
 			sourceWidget->downloadCrashed = true;
 			sourceWidget->downloadError = tr("Synchronization data corrupted");
 		}
 	}
 
-	if(synch == true){
+	if (synch == true){
 		QMetaObject::invokeMethod(this, "prepareStatusWidget", Qt::BlockingQueuedConnection);
 		//od razu ładujemy do local storage
 		info = (tr("Synchronizing files:") + " %1 / " + QString::number(sourceWidget->downloadedFiles.size()));
 		counter = 1;
-		for(auto it = sourceWidget->downloadedFiles.begin(); it != sourceWidget->downloadedFiles.end(); ++it){
+		for (auto it = sourceWidget->downloadedFiles.begin(); it != sourceWidget->downloadedFiles.end(); ++it){
 			try{
 				localStorage->loadFile(*it);
-			}catch(...){
+			}
+			catch (...){
 				//TODO
 				//co jak pliku jednak nie ma?
 			}
@@ -103,26 +102,27 @@ void LocalDataLoader::run()
 		}
 	}
 
-    bool wasShallow = false;
+	bool wasShallow = false;
 	//definitywnie kończymy pobieranie i jego obsługę
-	if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
+	if (sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 		//TODO - jedna wspolna metoda
 		//usuwam płytką kopię
-        wasShallow = true;
-		for(auto it = sourceWidget->downloadedFiles.begin(); it != sourceWidget->downloadedFiles.end(); ++it){
+		wasShallow = true;
+		for (auto it = sourceWidget->downloadedFiles.begin(); it != sourceWidget->downloadedFiles.end(); ++it){
 			try{
 				core::Filesystem::deleteFile(*it);
-			}catch(...){
-
+			}
+			catch (...){
 			}
 		}
-	}else{
+	}
+	else{
 		//nie był to shallowCopy więc zwykły transfer - muszę odświezyć status plików!!
 		QMetaObject::invokeMethod(sourceWidget, "refreshStatusAfterDownload", Qt::BlockingQueuedConnection);
 	}
 
 	QMetaObject::invokeMethod(this, "showFinalMessage", Qt::BlockingQueuedConnection);
-	if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
+	if (sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 		sourceWidget->shallowCopyRequest.reset();
 	}
 
@@ -134,30 +134,30 @@ void LocalDataLoader::run()
 	//TODO
 	// dlaczego to jestg tutaj? Skoro to byl request dla shallow to znaczy ze dostałem pełną płytką kopię
 	// to powinno być realizowane gdzieś wyżej, na poziomie metody void DataSourceWidget::performShallowCopyUpdate()
-    
+
 	if (wasShallow) {
-        auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
-        webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
+		auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
+		webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
 
-        auto addToDownload = [&]( const webservices::IncrementalBranchShallowCopy::Trials& trials ) -> void
-        {
-            for (auto it = trials.begin(); it != trials.end(); ++it) {
-                for (auto iFile = it->addedFiles.begin(); iFile != it->addedFiles.end(); ++iFile) {
-                    sourceWidget->filesToDownload.insert(iFile->fileID);
-                }
-                for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
-                    sourceWidget->filesToDownload.insert(iFile->fileID);
-                } 
-            }
-        };
+		auto addToDownload = [&](const webservices::IncrementalBranchShallowCopy::Trials& trials) -> void
+		{
+			for (auto it = trials.begin(); it != trials.end(); ++it) {
+				for (auto iFile = it->addedFiles.begin(); iFile != it->addedFiles.end(); ++iFile) {
+					sourceWidget->filesToDownload.insert(iFile->fileID);
+				}
+				for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
+					sourceWidget->filesToDownload.insert(iFile->fileID);
+				}
+			}
+		};
 
-        addToDownload(incCpy.added.trials);
-        addToDownload(incCpy.modified.trials);
+		addToDownload(incCpy.added.trials);
+		addToDownload(incCpy.modified.trials);
 
-		if(sourceWidget->filesToDownload.empty() == false){
+		if (sourceWidget->filesToDownload.empty() == false){
 			sourceWidget->onDownload();
 		}
-    }
+	}
 }
 
 void LocalDataLoader::prepareStatusWidget()
@@ -180,47 +180,51 @@ void LocalDataLoader::updateStatusWidget()
 void LocalDataLoader::showFinalMessage()
 {
 	//obsługa komunikatu
-	if(sourceWidget->downloadCanceled == true){
+	if (sourceWidget->downloadCanceled == true){
 		//anulowano pobieranie
-		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
+		if (sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 			DataSourceWidget::showMessage(tr("Synchronization canceled"), tr("Synchronization successfully canceled"), popupDelay);
-		}else{
-			DataSourceWidget::showMessage(tr("Download canceled"), tr("Download successfully canceled"), popupDelay);			
 		}
-	}else if(sourceWidget->downloadCrashed == true){
+		else{
+			DataSourceWidget::showMessage(tr("Download canceled"), tr("Download successfully canceled"), popupDelay);
+		}
+	}
+	else if (sourceWidget->downloadCrashed == true){
 		//błąd pobierania
 		QMessageBox messageBox(sourceWidget);
-		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
+		if (sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 			DataSourceWidget::showMessage(tr("Synchronization error"), tr("Synchronization has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to synchronize later. If this error continues to happen contact producer"),
 				popupDelay);
-		}else{
+		}
+		else{
 			DataSourceWidget::showMessage(tr("Download error"), tr("Download has failed with the following error: ") + sourceWidget->downloadError + "\n" + tr("Please try to download later. If this error continues to happen contact producer"),
 				popupDelay);
 		}
-
-	}else{
+	}
+	else{
 		//wszystko ok
-		if(sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
+		if (sourceWidget->currentDownloadRequest == sourceWidget->shallowCopyRequest){
 			DataSourceWidget::showMessage(tr("Synchronization successful"), tr("Synchronization has finished successfully"), popupDelay);
-		}else{
-			DataSourceWidget::showMessage(tr("Download successful"), tr("Download has finished successfully"), popupDelay);			
+		}
+		else{
+			DataSourceWidget::showMessage(tr("Download successful"), tr("Download has finished successfully"), popupDelay);
 		}
 	}
 }
 
 DataSourceWidget::LoginEventFilter::LoginEventFilter(DataSourceWidget * sourceWidget, QObject * parent) : QObject(parent), sourceWidget(sourceWidget)
 {
-
 }
 
 bool DataSourceWidget::LoginEventFilter::eventFilter(QObject * watched, QEvent * event)
 {
-	if(event->type() == QEvent::KeyPress){
+	if (event->type() == QEvent::KeyPress){
 		QKeyEvent * keyEvent = static_cast<QKeyEvent*>(event);
 		if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {
 			sourceWidget->onLogin();
 			return true;
-		} else
+		}
+		else
 			return false;
 	}
 	return false;
@@ -228,28 +232,28 @@ bool DataSourceWidget::LoginEventFilter::eventFilter(QObject * watched, QEvent *
 
 void DataSourceWidget::showMessage(const QString & title, const QString & message, int delay)
 {
-	PLUGIN_LOG_INFO((title + " -> " +message).toStdString());
+	PLUGIN_LOG_INFO((title + " -> " + message).toStdString());
 	coreUI::CorePopup::showMessage(title, message, delay);
 }
 
 DataSourceWidget::DataSourceWidget(DataSourceFilterManager* fm,
 	CommunicationDataSource * dataSource, QWidget * parent)
 	: QTabWidget(parent), fm(fm), loginEventFilter(nullptr), dataSource(dataSource),
-	downloadStatusWidget(new DownloadStatusWidget()), 
+	downloadStatusWidget(new DownloadStatusWidget()),
 	downloadCanceled(false), downloadCrashed(false)
 {
 	setupUi(this);
 	loginRecoveryButton->setVisible(false);
-    // wczytanie ostatnio użytego loginu i hasła
-    loadCredentials();
+	// wczytanie ostatnio użytego loginu i hasła
+	loadCredentials();
 	initializeStatusIcons();
 
 	setTabEnabled(indexOf(motionDataTab), false);
 	//setTabEnabled(indexOf(userDataTab), false);
 	setTabEnabled(indexOf(configTab), true);
 
-    // medusa code
-//   userDataTab->setVisible(false);
+	// medusa code
+	//   userDataTab->setVisible(false);
 
 	setCurrentWidget(configTab);
 
@@ -267,7 +271,7 @@ DataSourceWidget::DataSourceWidget(DataSourceFilterManager* fm,
 	patientCardManager.currentPatientCard()->setPatient(nullptr);
 
 	//inicjujemy perspektywy
-    registerPerspective(new DataSourceMedusaPerspective()); // medusa_code tymczasowo
+	registerPerspective(new DataSourceMedusaPerspective()); // medusa_code tymczasowo
 	registerPerspective(new DataSourcePatientPerspective());
 	registerPerspective(new DataSourceDisorderPerspective());
 	registerPerspective(new DataSourceGenderPerspective());
@@ -281,37 +285,37 @@ DataSourceWidget::DataSourceWidget(DataSourceFilterManager* fm,
 	//ustawiamy aktualną perspektywę
 	perspectiveComboBox->setCurrentIndex(0);
 
-	for(int i = 0; i < fm->size(); ++i){
+	for (int i = 0; i < fm->size(); ++i){
 		auto f = fm->dataFilter(i);
 		filterComboBox->addItem(QString::fromStdString(f->name()), QVariant(i));
 	}
 
-    statusWidget = new communication::StatusWidget(dataSource->getServerStatusManager(), "http://v21.pjwstk.edu.pl/");
-    connect(statusWidget->getLogoutButton(), SIGNAL(clicked()), this, SLOT(onLogin()));
-    // hack - tymczasowo ukryte, drugi przycisk ukrywany po pozytywnym zalogowaniu (onLogin(u,p) - przy save credentials)
-    statusWidget->getLogoutButton()->setVisible(false); 
+	statusWidget = new communication::StatusWidget(dataSource->getServerStatusManager(), "http://v21.pjwstk.edu.pl/");
+	connect(statusWidget->getLogoutButton(), SIGNAL(clicked()), this, SLOT(onLogin()));
+	// hack - tymczasowo ukryte, drugi przycisk ukrywany po pozytywnym zalogowaniu (onLogin(u,p) - przy save credentials)
+	statusWidget->getLogoutButton()->setVisible(false);
 
 	dataViewWidget->layout()->addWidget(downloadStatusWidget);
-    dataViewWidget->layout()->addWidget(statusWidget);
+	dataViewWidget->layout()->addWidget(statusWidget);
 
 	loginEventFilter = new LoginEventFilter(this);
 	loginPage->installEventFilter(loginEventFilter);
 	userEdit->installEventFilter(loginEventFilter);
 	passwordEdit->installEventFilter(loginEventFilter);
 
-    // medusa code : usunieto userDataTab!
+	// medusa code : usunieto userDataTab!
 #ifdef DEMO_VERSION_COMMUNICATION
 
 	dataSource->setOfflineMode(true);
 	onLogin("matiegon", "Matiegon9");
 	//onLogin("bdrdemo", ";bdrdemo");
-	
+
 	setCurrentWidget(motionDataTab);
 	setTabEnabled(indexOf(configTab), false);
 	//setTabEnabled(indexOf(userDataTab), false);
-	
+
 #else
-	
+
 	setTabEnabled(indexOf(motionDataTab), false);
 	//setTabEnabled(indexOf(userDataTab), false);
 	setCurrentWidget(configTab);
@@ -320,37 +324,36 @@ DataSourceWidget::DataSourceWidget(DataSourceFilterManager* fm,
 
 DataSourceWidget::~DataSourceWidget()
 {
-
 }
 
 void DataSourceWidget::initializeStatusIcons()
 {
-	DataSourceStatusManager::setStatusIcon(DataStatus(Remote, Unloaded),statusIcon(Remote, Unloaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(Remote, Loaded),statusIcon(Remote, Loaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(Remote, PartiallyLoaded),statusIcon(Remote, PartiallyLoaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(Remote, UnknownUsage),statusIcon(Remote, UnknownUsage));
+	DataSourceStatusManager::setStatusIcon(DataStatus(Remote, Unloaded), statusIcon(Remote, Unloaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(Remote, Loaded), statusIcon(Remote, Loaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(Remote, PartiallyLoaded), statusIcon(Remote, PartiallyLoaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(Remote, UnknownUsage), statusIcon(Remote, UnknownUsage));
 
-	DataSourceStatusManager::setStatusIcon(DataStatus(Local, Unloaded),statusIcon(Local, Unloaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(Local, Loaded),statusIcon(Local, Loaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(Local, PartiallyLoaded),statusIcon(Local, PartiallyLoaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(Local, UnknownUsage),statusIcon(Local, UnknownUsage));
+	DataSourceStatusManager::setStatusIcon(DataStatus(Local, Unloaded), statusIcon(Local, Unloaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(Local, Loaded), statusIcon(Local, Loaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(Local, PartiallyLoaded), statusIcon(Local, PartiallyLoaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(Local, UnknownUsage), statusIcon(Local, UnknownUsage));
 
-	DataSourceStatusManager::setStatusIcon(DataStatus(PartiallyLocal, Unloaded),statusIcon(PartiallyLocal, Unloaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(PartiallyLocal, Loaded),statusIcon(PartiallyLocal, Loaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(PartiallyLocal, PartiallyLoaded),statusIcon(PartiallyLocal, PartiallyLoaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(PartiallyLocal, UnknownUsage),statusIcon(PartiallyLocal, UnknownUsage));
+	DataSourceStatusManager::setStatusIcon(DataStatus(PartiallyLocal, Unloaded), statusIcon(PartiallyLocal, Unloaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(PartiallyLocal, Loaded), statusIcon(PartiallyLocal, Loaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(PartiallyLocal, PartiallyLoaded), statusIcon(PartiallyLocal, PartiallyLoaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(PartiallyLocal, UnknownUsage), statusIcon(PartiallyLocal, UnknownUsage));
 
-	DataSourceStatusManager::setStatusIcon(DataStatus(UnknownStorage, Unloaded),statusIcon(UnknownStorage, Unloaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(UnknownStorage, Loaded),statusIcon(UnknownStorage, Loaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(UnknownStorage, PartiallyLoaded),statusIcon(UnknownStorage, PartiallyLoaded));
-	DataSourceStatusManager::setStatusIcon(DataStatus(UnknownStorage, UnknownUsage),statusIcon(UnknownStorage, UnknownUsage));
+	DataSourceStatusManager::setStatusIcon(DataStatus(UnknownStorage, Unloaded), statusIcon(UnknownStorage, Unloaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(UnknownStorage, Loaded), statusIcon(UnknownStorage, Loaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(UnknownStorage, PartiallyLoaded), statusIcon(UnknownStorage, PartiallyLoaded));
+	DataSourceStatusManager::setStatusIcon(DataStatus(UnknownStorage, UnknownUsage), statusIcon(UnknownStorage, UnknownUsage));
 }
 
 void DataSourceWidget::refreshCurrentPerspectiveContent()
 {
 	//odświeżam bieżącą
 	contentManager.refreshCurrentContent(perspectiveManager.currentPerspectiveWidget(), filteredShallowCopy, perspectiveManager.currentPerspective().get(),
-		filteredShallowCopyStatus.get(),dataSource->fullShallowCopyStatus.get(), true);
+		filteredShallowCopyStatus.get(), dataSource->fullShallowCopyStatus.get(), true);
 
 	//aktualna perspektywa jest już ok
 	perspectivesContent[perspectiveManager.currentPerspectiveWidget()] = contentManager.currentContentIndex();
@@ -359,7 +362,7 @@ void DataSourceWidget::refreshCurrentPerspectiveContent()
 
 	auto selected = perspectiveManager.currentPerspectiveWidget()->selectedItems();
 
-	if(selected.empty() == true && perspectiveManager.currentPerspectiveWidget()->topLevelItemCount() > 0){
+	if (selected.empty() == true && perspectiveManager.currentPerspectiveWidget()->topLevelItemCount() > 0){
 		perspectiveManager.currentPerspectiveWidget()->topLevelItem(0)->setSelected(true);
 	}
 }
@@ -368,7 +371,7 @@ void DataSourceWidget::connectionModeChanged()
 {
 	QCheckBox * widget = qobject_cast<QCheckBox*>(sender());
 
-	if(widget == nullptr){
+	if (widget == nullptr){
 		return;
 	}
 
@@ -378,7 +381,7 @@ void DataSourceWidget::connectionModeChanged()
 void DataSourceWidget::refreshStatus()
 {
 	//ustaw kursor na myślenie
-	coreUI::CoreCursorChanger cursorChanger;	
+	coreUI::CoreCursorChanger cursorChanger;
 	QApplication::processEvents();
 	//odświeżam status plików
 	//dataSource->fileStatusManager->refreshFilesStatus();
@@ -412,13 +415,12 @@ void DataSourceWidget::refreshStatusAfterDownload()
 	refreshStatus(filesToDownload);
 }
 
-
 QIcon DataSourceWidget::statusIcon(const communication::DataStorage storage, const communication::DataUsage usage)
 {
 	//zaczynamy ze sposobem składowania
 	QPixmap s;
 
-	switch(storage){
+	switch (storage){
 	case Local:
 		s = QPixmap(QString::fromUtf8(":/newCommunication/icons/lokalne.png"));
 		break;
@@ -435,7 +437,7 @@ QIcon DataSourceWidget::statusIcon(const communication::DataStorage storage, con
 	// teraz stan użycia
 	QPixmap u;
 
-	switch(usage){
+	switch (usage){
 	case Loaded:
 		u = QPixmap(QString::fromUtf8(":/newCommunication/icons/zaladowane.png"));
 		break;
@@ -453,12 +455,11 @@ QIcon DataSourceWidget::statusIcon(const communication::DataStorage storage, con
 	return QIcon(mergePixmaps(s, u));
 }
 
-
 QPixmap DataSourceWidget::mergePixmaps(const QPixmap & pmL, const QPixmap & pmR)
 {
 	int halfWidth = (std::max)(pmL.width(), pmR.width());
 	int width = (std::max)(pmL.width() + pmR.width(), 2 * halfWidth);
-	int pomHalfWidth = halfWidth/4;
+	int pomHalfWidth = halfWidth / 4;
 	width += pomHalfWidth;
 
 	int height = (std::max)(pmL.height(), pmR.height());
@@ -466,7 +467,7 @@ QPixmap DataSourceWidget::mergePixmaps(const QPixmap & pmL, const QPixmap & pmR)
 	QPixmap ret(width, height);
 
 	QPainter painter(&ret);
-	painter.fillRect(0,0, width, height, Qt::white);
+	painter.fillRect(0, 0, width, height, Qt::white);
 
 	painter.setOpacity(1);
 
@@ -516,14 +517,13 @@ void DataSourceWidget::registerPatientCard(communication::IPatientCard * patient
 void DataSourceWidget::getPatientAndSubject(QTreeWidgetItem * item, const webservices::MedicalShallowCopy::Patient *& patient,
 	const webservices::MotionShallowCopy::Performer *& subject)
 {
-	while(item != nullptr){
+	while (item != nullptr){
 		IContent * content = dynamic_cast<IContent*>(item);
-		if(content != nullptr){
+		if (content != nullptr){
 			//wystarczy switch + dynamic_cast
 			bool found = false;
 
-			switch(content->contentType()){
-
+			switch (content->contentType()){
 			case PatientContent:
 				patient = dynamic_cast<PatientItem*>(item)->value();
 				subject = patient->performer;
@@ -545,12 +545,12 @@ void DataSourceWidget::getPatientAndSubject(QTreeWidgetItem * item, const webser
 				found = true;
 				break;
 			case FileContent:
-				{
-					auto file = dynamic_cast<FileItem*>(item)->value();
-					subject = file->isSessionFile() == true ? file->session->performerConf->performer : file->trial->session->performerConf->performer;
-					patient = subject->patient;
-					found = true;
-				}
+			{
+				auto file = dynamic_cast<FileItem*>(item)->value();
+				subject = file->isSessionFile() == true ? file->session->performerConf->performer : file->trial->session->performerConf->performer;
+				patient = subject->patient;
+				found = true;
+			}
 				break;
 			case SessionsGroupContent:
 				break;
@@ -560,7 +560,7 @@ void DataSourceWidget::getPatientAndSubject(QTreeWidgetItem * item, const webser
 				break;
 			}
 
-			if(found == true){
+			if (found == true){
 				break;
 			}
 		}
@@ -573,14 +573,14 @@ void DataSourceWidget::onPerspectiveSelectionChanged()
 {
 	QTreeWidget * perspective = qobject_cast<QTreeWidget*>(sender());
 
-	if(perspective == nullptr){
+	if (perspective == nullptr){
 		return;
 	}
 
 	QTreeWidgetItem * current = nullptr;
 
 	auto sel = perspective->selectedItems();
-	if(sel.empty() == false){
+	if (sel.empty() == false){
 		current = sel.first();
 	}
 
@@ -594,9 +594,9 @@ void DataSourceWidget::onPerspectiveSelectionChanged()
 	//nagłówek danych
 	QStringList headers;
 	bool ok = perspectiveManager.currentPerspective()->headers(current, headers);
-	if(ok == false){
+	if (ok == false){
 		headers.clear();
-		if(contentManager.currentContent()->headers(current, headers) == false){
+		if (contentManager.currentContent()->headers(current, headers) == false){
 			headers.clear();
 			headers << tr("Data");
 		}
@@ -604,16 +604,15 @@ void DataSourceWidget::onPerspectiveSelectionChanged()
 
 	auto currentPerspective = perspectiveManager.currentPerspectiveWidget();
 	currentPerspective->setHeaderLabels(headers);
-	for(int i = 0; i < headers.size(); ++i){
+	for (int i = 0; i < headers.size(); ++i){
 		currentPerspective->resizeColumnToContents(i);
 	}
 }
 
-
 void DataSourceWidget::onFilterChange(int idx)
 {
 	int fIDX = -1;
-	if(idx > 0){
+	if (idx > 0){
 		fIDX = filterComboBox->itemData(idx).toInt();
 	}
 
@@ -623,13 +622,13 @@ void DataSourceWidget::onFilterChange(int idx)
 void DataSourceWidget::filterChange(const int idx)
 {
 	try{
-
 		ShallowCopy tmpShallow;
 
-		if(idx > -1){
+		if (idx > -1){
 			//filtrujemy dane
 			DataSourceFilterManager::filterShallowCopy(dataSource->fullShallowCopy, tmpShallow, fm->dataFilter(idx));
-		}else{
+		}
+		else{
 			//nie trzeba filtrować - wystarczy przepisać
 			tmpShallow = dataSource->fullShallowCopy;
 		}
@@ -651,32 +650,28 @@ void DataSourceWidget::filterChange(const int idx)
 		invalidatePerspectivesContent();
 		//wypełniamy content aktualnej perspektywy
 		refreshCurrentPerspectiveContent();
-
-	}catch(...){
-
+	}
+	catch (...){
 	}
 }
 
 void DataSourceWidget::invalidatePerspectivesContent()
 {
-	for(auto it = perspectivesContent.begin(); it != perspectivesContent.end(); ++it){
+	for (auto it = perspectivesContent.begin(); it != perspectivesContent.end(); ++it){
 		it->second = -1;
 	}
 }
 
 void DataSourceWidget::onFilterEdit()
 {
-
 }
 
 void DataSourceWidget::onFilterAdd()
 {
-
 }
 
 void DataSourceWidget::onFilterRemove()
 {
-
 }
 
 void DataSourceWidget::onLogin(const QString & user, const QString & password)
@@ -690,18 +685,20 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 	bool wasError = false;
 	try{
 		dataSource->login(user.toStdString(), password.toStdString());
-	}catch(std::exception & e){
+	}
+	catch (std::exception & e){
 		error += e.what();
 		wasError = true;
-	}catch(...){
+	}
+	catch (...){
 		error += tr("UNKNOWN ERROR");
 		wasError = true;
 	}
 
 	// błąd logowania - błąd połączenia z webserwisami
 
-	if(wasError == true){
-        statusWidget->setUserName("");
+	if (wasError == true){
+		statusWidget->setUserName("");
 		error += ". " + tr("Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.");
 
 		QMessageBox messageBox(this);
@@ -711,19 +708,20 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 		messageBox.setStandardButtons(QMessageBox::Ok);
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
+	}
+	else if (dataSource->isLogged() == true){
+		// hack - tymczasowo ukryte
+		loginButton->setVisible(false);
+		setTabEnabled(indexOf(configTab), false);
+		// zapisanie loginu i hasła
+		if (rememberMeCheckBox->isChecked()) {
+			saveCredentials();
+		}
+		else {
+			clearCredentials();
+		}
 
-	}else if(dataSource->isLogged() == true){
-        // hack - tymczasowo ukryte
-        loginButton->setVisible(false);
-        setTabEnabled(indexOf(configTab), false);
-        // zapisanie loginu i hasła
-        if (rememberMeCheckBox->isChecked()) {
-            saveCredentials();
-        } else {
-            clearCredentials();
-        }
-
-        statusWidget->setUserName(userEdit->text());
+		statusWidget->setUserName(userEdit->text());
 
 		bool synch = false;
 		bool shallowCopyAvailable = false;
@@ -736,7 +734,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 		// poprawna komunikacja, użytkownik zweryfikowany || brak komunikacji i logowanie lokalne
 
-		if(dataSource->offlineMode() == true) {
+		if (dataSource->offlineMode() == true) {
 			// jeżeli jestem zalogowany lokalnie to informuję o tym
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Login information"));
@@ -747,28 +745,27 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 			messageBox.exec();
 		}
 
-		if(dataSource->isShallowCopyComplete() == true){
-
+		if (dataSource->isShallowCopyComplete() == true){
 			bool extractStatus = false;
 
 			try{
 				dataSource->extractShallowCopyFromLocalStorageToUserSpace();
 				extractStatus = dataSource->buildShallowCopyFromLocalUserSpace(userShallowCopy);
 				dataSource->removeShallowCopyFromUserSpace();
-				if(extractStatus == false){
+				if (extractStatus == false){
 					//TODO
 					//coś nie tak z nasza płytkąkopią bazy danych - trzeba ją walidować i poprawiać - pewnie obcinać aż będzie poprawna i spójna
-				}else{
+				}
+				else{
 					shallowCopyAvailable = true;
 				}
-
-			}catch(std::exception & ){
-
-			}catch(...){
-
+			}
+			catch (std::exception &){
+			}
+			catch (...){
 			}
 
-			if(extractStatus == false){
+			if (extractStatus == false){
 				QMessageBox messageBox(this);
 				messageBox.setWindowTitle(tr("Synchronization error"));
 				messageBox.setText(tr("Synchronization data is corrupted. Please try again later. If problem continues contact producer"));
@@ -776,17 +773,18 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 				messageBox.setStandardButtons(QMessageBox::Ok);
 				messageBox.setDefaultButton(QMessageBox::Ok);
 				messageBox.exec();
-			}else if(dataSource->offlineMode() == false){
+			}
+			else if (dataSource->offlineMode() == false){
 				/*
-                try {
-                    dataSource->testDownloadBranchIncrement();
-                    std::string test = DataSourceWebServicesManager::instance()->motionFileStoremanService()->getShallowCopyBranchesIncrement(userShallowCopy.motionShallowCopy->timestamp);
-                    test += " ";
-                } catch (const webservices::WSConnectionInvokeException& e) {
-                    std::string mes = e.what();
-                    mes += " ";
-                }
-                }*/
+				try {
+				dataSource->testDownloadBranchIncrement();
+				std::string test = DataSourceWebServicesManager::instance()->motionFileStoremanService()->getShallowCopyBranchesIncrement(userShallowCopy.motionShallowCopy->timestamp);
+				test += " ";
+				} catch (const webservices::WSConnectionInvokeException& e) {
+				std::string mes = e.what();
+				mes += " ";
+				}
+				}*/
 				//pobierz datę ostatenij modyfikacji i porównaj
 				//jeśli nowsza to zaproponuj synchronizację
 				//jeśli odmówi załaduj już sparsowaną płytką kopię bazy danych
@@ -795,22 +793,23 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 					if (DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(userShallowCopy, time) == true){
 						synch = synchronizationRequiredDialog();
-
 					}
-				} catch (webservices::WSConnectionInitializationException& e) {
+				}
+				catch (webservices::WSConnectionInitializationException& e) {
 					PLUGIN_LOG_WARNING(e.what());
 					synch = synchronizationRequiredDialog();
-				} catch(std::exception & e){
+				}
+				catch (std::exception & e){
 					PLUGIN_LOG_WARNING(e.what());
 					synch = synchronizationRequiredDialog();
-				} catch(...){
+				}
+				catch (...){
 					PLUGIN_LOG_WARNING("Problem with sychronization");
 					synch = synchronizationRequiredDialog();
 				}
 			}
-
-		}else if(dataSource->offlineMode() == false){
-
+		}
+		else if (dataSource->offlineMode() == false){
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Synchronization required"));
 			messageBox.setText(tr("Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?"));
@@ -818,15 +817,15 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 			messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 			messageBox.setDefaultButton(QMessageBox::Yes);
 			int ret = messageBox.exec();
-			if(ret == QMessageBox::Yes){
+			if (ret == QMessageBox::Yes){
 				synch = true;
 			}
-
 		}
 
-		if(synch == true){
+		if (synch == true){
 			performShallowCopyUpdate();
-		}else if(shallowCopyAvailable == true){
+		}
+		else if (shallowCopyAvailable == true){
 			//ustawiamy nową płytką kopię bazy danych
 			dataSource->setShallowCopy(userShallowCopy);
 			//odświeżam przefiltrowaną płytką kopię danych co wiąże się z unieważnieniem dotychczasowych perspektyw
@@ -841,9 +840,8 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 
 		//notyfikuj o zmianie stanu
 		dataSource->notify();
-
-	}else{
-
+	}
+	else{
 		//poprawna komunikacja, nie udało się zweryfikować użytkownika
 
 		QMessageBox messageBox(this);
@@ -867,9 +865,8 @@ void DataSourceWidget::onLogin()
 {
 	// jeżeli zalogowany to wyloguj
 
-	if(dataSource->isLogged() == true){
-
-		if(currentDownloadRequest != nullptr){
+	if (dataSource->isLogged() == true){
+		if (currentDownloadRequest != nullptr){
 			//mamy jakieś ściąganie w międzyczasie!!
 			//pytamy czy na pewno wylogować - wtedy je anulujemy
 
@@ -877,18 +874,19 @@ void DataSourceWidget::onLogin()
 			messageBox.setWindowTitle(tr("Logout process"));
 			messageBox.setText(tr("Some download is currently performed. Do you want to logout and cancel it?"));
 			messageBox.setIcon(QMessageBox::Warning);
-			messageBox.setStandardButtons(QMessageBox::Yes| QMessageBox::No);
+			messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 			messageBox.setDefaultButton(QMessageBox::No);
 			int ret = messageBox.exec();
-			if(ret == QMessageBox::No){
+			if (ret == QMessageBox::No){
 				return;
-			}else{
-				if(statusWidget != nullptr){
+			}
+			else{
+				if (statusWidget != nullptr){
 					statusWidget->stopUpdating();
 				}
 				currentDownloadRequest->cancel();
 				downloadRefreshTimer.stop();
-				if(localDataLoader != nullptr && localDataLoader->isRunning()){
+				if (localDataLoader != nullptr && localDataLoader->isRunning()){
 					localDataLoader->terminate();
 					localDataLoader->wait();
 					localDataLoader.reset();
@@ -900,15 +898,17 @@ void DataSourceWidget::onLogin()
 		unloadSubjectHierarchy();
 
 		//wyładować wszystkie dane
-		for(auto it = filesLoadedToDM.begin(); it != filesLoadedToDM.end(); ++it){
+		for (auto it = filesLoadedToDM.begin(); it != filesLoadedToDM.end(); ++it){
 			try{
 				std::vector<core::VariantPtr> objects;
 				const auto & p = dataSource->fileStatusManager->filePath(*it);
 				dataSource->fileDM->removeFile(p);
 				//unloadedFiles.insert(*it);
-			}catch(std::exception & ){
+			}
+			catch (std::exception &){
 				//unloadingErrors[*it] = std::string(e.what());
-			}catch(...){
+			}
+			catch (...){
 				//unknownErrors.push_back(*it);
 			}
 		}
@@ -928,11 +928,10 @@ void DataSourceWidget::onLogin()
 		std::map<std::string, std::set<int>>().swap(projects);
 
 		loginButton->setText(tr("Login"));
-	}else{
-
+	}
+	else{
 		// pierwsza weryfikacja danych wejściowych do logowania - czy podano niezbędne dane
-		if(userEdit->text().isEmpty() == true || passwordEdit->text().isEmpty() == true){
-
+		if (userEdit->text().isEmpty() == true || passwordEdit->text().isEmpty() == true){
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Login problem"));
 			messageBox.setText(tr("Both fields: User and Password need to be filled. Please fill them and retry."));
@@ -940,9 +939,8 @@ void DataSourceWidget::onLogin()
 			messageBox.setStandardButtons(QMessageBox::Ok);
 			messageBox.setDefaultButton(QMessageBox::Ok);
 			messageBox.exec();
-
-		}else{
-
+		}
+		else{
 			////uruchamiam progressbar
 			////resetuje go
 			//loginProgressBar->setRange(0,100);
@@ -962,7 +960,8 @@ void DataSourceWidget::saveAndRemoveShallowCopy()
 	try{
 		dataSource->saveShallowCopyInLocalStorage();
 		dataSource->removeShallowCopyFromUserSpace();
-	}catch(...){
+	}
+	catch (...){
 		//TODO
 		//zareagować kiedy nie możemy zapisać danych do loaclStorage - w sumie już ich nie potrzebujemy, tylko przy kolejnym logowaniu trzeba znów płytką kopię ściągnąc
 	}
@@ -970,7 +969,6 @@ void DataSourceWidget::saveAndRemoveShallowCopy()
 
 void DataSourceWidget::onLoginRecovery()
 {
-
 }
 
 void DataSourceWidget::onRegistration()
@@ -979,28 +977,26 @@ void DataSourceWidget::onRegistration()
 	static const QRegExp rx(strPatt, Qt::CaseInsensitive);
 
 	QStringList verification;
-	if(regLoginEdit->text().isEmpty() == true || regPassEdit->text().isEmpty() == true
+	if (regLoginEdit->text().isEmpty() == true || regPassEdit->text().isEmpty() == true
 		|| regRepPassEdit->text().isEmpty() == true || nameEdit->text().isEmpty() == true
 		|| surnameEdit->text().isEmpty() == true || emailEdit->text().isEmpty() == true){
-
-			verification.push_back(tr("All fields: Login, Password, Repeat password, Name, Surname and E-mail must be filled. Please correct them and try again."));
+		verification.push_back(tr("All fields: Login, Password, Repeat password, Name, Surname and E-mail must be filled. Please correct them and try again."));
 	}
 
-	if(regPassEdit->text().isEmpty() == false && regRepPassEdit->text().isEmpty() == false && regPassEdit->text() != regRepPassEdit->text()){
+	if (regPassEdit->text().isEmpty() == false && regRepPassEdit->text().isEmpty() == false && regPassEdit->text() != regRepPassEdit->text()){
 		verification.push_back(tr("Password differs from its repeat. Please verify password."));
 	}
 
 	/*if(emailEdit->text().isEmpty() == false && rx.exactMatch(emailEdit->text()) == false){
 		verification.push_back(tr("Incorrect E-mail. Please verify Your E-mail address."));
-	}*/
+		}*/
 
-	if(verification.empty() == false){
-
+	if (verification.empty() == false){
 		//generuje liste problemów
 		QString message;
 
-		for(int i = 0; i < verification.size(); ++i){
-			message += QString::number(i+1) + ". " + verification[i] + "\n";
+		for (int i = 0; i < verification.size(); ++i){
+			message += QString::number(i + 1) + ". " + verification[i] + "\n";
 		}
 
 		QMessageBox messageBox(this);
@@ -1010,11 +1006,10 @@ void DataSourceWidget::onRegistration()
 		messageBox.setStandardButtons(QMessageBox::Ok);
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
-	}else {
-
-		if(dataSource->registerUser(regLoginEdit->text().toStdString(), emailEdit->text().toStdString(), regPassEdit->text().toStdString(),
+	}
+	else {
+		if (dataSource->registerUser(regLoginEdit->text().toStdString(), emailEdit->text().toStdString(), regPassEdit->text().toStdString(),
 			nameEdit->text().toStdString(), surnameEdit->text().toStdString()) == true){
-
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Registration successful"));
 			messageBox.setText(tr("Your registration has finished. Activate Your account to be able to login and get access to database."));
@@ -1023,13 +1018,14 @@ void DataSourceWidget::onRegistration()
 			messageBox.setDefaultButton(QMessageBox::Ok);
 			messageBox.exec();
 
-			if(dataSource->isLogged() == false){
+			if (dataSource->isLogged() == false){
 				//jeśli nikt nie jest jeszcze zalogowany to przenosimy do strony logowania
 				toolBox->setCurrentIndex(2);
 				//częsciowo wypełniam już dane usera
 				activationLoginEdit->setText(regLoginEdit->text());
 			}
-		} else{
+		}
+		else{
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Registration failed"));
 			messageBox.setText(tr("Could not registrate. Please change login or email and try again. If problem continues contact producer."));
@@ -1043,7 +1039,7 @@ void DataSourceWidget::onRegistration()
 
 void DataSourceWidget::onActivate()
 {
-	if(activationLoginEdit->text().isEmpty() == true || activationCodeEdit->text().isEmpty() == true){
+	if (activationLoginEdit->text().isEmpty() == true || activationCodeEdit->text().isEmpty() == true){
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Activation validation"));
 		messageBox.setText(tr("Both fields: Login and Activation code must be filled. Please correct them and try again."));
@@ -1051,7 +1047,8 @@ void DataSourceWidget::onActivate()
 		messageBox.setStandardButtons(QMessageBox::Ok);
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
-	}else if(dataSource->tryActivateAccount(activationLoginEdit->text().toStdString(), activationCodeEdit->text().toStdString()) == true){
+	}
+	else if (dataSource->tryActivateAccount(activationLoginEdit->text().toStdString(), activationCodeEdit->text().toStdString()) == true){
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Activation successful"));
 		messageBox.setText(tr("Given login has been successfully activated. You can now login using this account."));
@@ -1060,13 +1057,14 @@ void DataSourceWidget::onActivate()
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
 
-		if(dataSource->isLogged() == false){
+		if (dataSource->isLogged() == false){
 			//jeśli nikt nie jest jeszcze zalogowany to przenosimy do strony logowania
 			toolBox->setCurrentIndex(0);
 			//częsciowo wypełniam już dane usera
 			userEdit->setText(activationLoginEdit->text());
 		}
-	}else{
+	}
+	else{
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Activation failed"));
 		messageBox.setText(tr("Could not activate given login with provided activation code. Verify data and try again. If problem continiues please contact the producer."));
@@ -1079,7 +1077,7 @@ void DataSourceWidget::onActivate()
 
 void DataSourceWidget::onPasswordReset()
 {
-	if(emailResetEdit->text().isEmpty() == true){
+	if (emailResetEdit->text().isEmpty() == true){
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Password reset validation"));
 		messageBox.setText(tr("E-mail field must be filled correctly for password reset procedure."));
@@ -1087,7 +1085,8 @@ void DataSourceWidget::onPasswordReset()
 		messageBox.setStandardButtons(QMessageBox::Ok);
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
-	}else if(dataSource->tryResetPassword(emailResetEdit->text().toStdString())){
+	}
+	else if (dataSource->tryResetPassword(emailResetEdit->text().toStdString())){
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Password reset successful"));
 		messageBox.setText(tr("For the given email address further instructions about password reset procedure have been sent. Check your email in several minutes. Check your spam if no email have been received. Contact application administrator if email was not received in more than 2 hours."));
@@ -1096,7 +1095,8 @@ void DataSourceWidget::onPasswordReset()
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
 		setCurrentIndex(0);
-	}else{
+	}
+	else{
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Password reset failed"));
 		messageBox.setText(tr("Either given email was not registered or there is some problem with database and connection. Try again in several minutes. If problem continues contact application administrator."));
@@ -1110,7 +1110,7 @@ void DataSourceWidget::onPasswordReset()
 void DataSourceWidget::onPerspectiveChange(int idx)
 {
 	auto currentPW = perspectiveManager.currentPerspectiveWidget();
-	if(currentPW != nullptr){
+	if (currentPW != nullptr){
 		disconnect(currentPW, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(perspectiveContextMenu(QPoint)));
 		disconnect(currentPW, SIGNAL(itemSelectionChanged()), this, SLOT(onPerspectiveSelectionChanged()));
 	}
@@ -1122,36 +1122,38 @@ void DataSourceWidget::onPerspectiveChange(int idx)
 		perspectiveManager.rebuildCurrentPerspective(filteredShallowCopy);
 
 		currentPW = perspectiveManager.currentPerspectiveWidget();
-		if(currentPW != nullptr){
+		if (currentPW != nullptr){
 			connect(currentPW, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(perspectiveContextMenu(QPoint)));
 			connect(currentPW, SIGNAL(itemSelectionChanged()), this, SLOT(onPerspectiveSelectionChanged()));
 		}
 
 		auto it = perspectivesContent.find(perspectiveManager.currentPerspectiveWidget());
 		bool refreshContent = false;
-		if(it == perspectivesContent.end()){
+		if (it == perspectivesContent.end()){
 			perspectivesContent[perspectiveManager.currentPerspectiveWidget()] = -1;
 			refreshContent = true;
-		}else if(it->second != contentManager.currentContentIndex()){
+		}
+		else if (it->second != contentManager.currentContentIndex()){
 			refreshContent = true;
 		}
 
-		if(refreshContent == true){
+		if (refreshContent == true){
 			//wypełniamy content aktualnej perspektywy
 			refreshCurrentPerspectiveContent();
 		}
 
-		if(currentPW->topLevelItemCount() > 0){
+		if (currentPW->topLevelItemCount() > 0){
 			currentPW->setCurrentItem(currentPW->topLevelItem(0));
 			currentPW->setItemSelected(currentPW->topLevelItem(0), true);
-		}else{
+		}
+		else{
 			QStringList headers;
 			headers << tr("Data");
 			currentPW->setHeaderLabels(headers);
 			currentPW->resizeColumnToContents(0);
 		}
-	}catch(...){
-
+	}
+	catch (...){
 	}
 }
 
@@ -1163,8 +1165,8 @@ void DataSourceWidget::onContentChange(int idx)
 
 		//wypełniamy content aktualnej perspektywy
 		refreshCurrentPerspectiveContent();
-	}catch(...){
-
+	}
+	catch (...){
 	}
 }
 
@@ -1172,7 +1174,7 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 {
 	QTreeWidget * perspective = qobject_cast<QTreeWidget*>(sender());
 
-	if(perspective == nullptr){
+	if (perspective == nullptr){
 		return;
 	}
 
@@ -1188,9 +1190,10 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	QMenu menu;
 
 	auto selectedItems = perspective->selectedItems();
-	if(selectedItems.empty() == false){
+	if (selectedItems.empty() == false){
 		generateItemSpecyficContextMenu(menu, perspective);
-	}else{
+	}
+	else{
 		generateGeneralContextMenu(menu, perspective);
 	}
 
@@ -1212,13 +1215,13 @@ QString DataSourceWidget::formatFileSize(unsigned long long size)
 	QStringListIterator i(list);
 	QString unit("bytes");
 
-	while(num >= 1024.0 && i.hasNext())
+	while (num >= 1024.0 && i.hasNext())
 	{
 		unit = i.next();
 		num /= 1024.0;
 	}
 
-	return QString().setNum(num,'d',2) + " " + unit;
+	return QString().setNum(num, 'd', 2) + " " + unit;
 }
 
 void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget * perspective)
@@ -1228,10 +1231,10 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 	menu.addSeparator();
 #ifdef DEMO_VERSION_COMMUNICATION
 	auto download = menu.addAction(tr("Download - not available in demo version"));
-    auto force = menu.addAction(tr("Force download - not available in demo version"));
+	auto force = menu.addAction(tr("Force download - not available in demo version"));
 #else
-  auto download = menu.addAction(tr("Download"));
-  auto force = menu.addAction(tr("Force download"));
+	auto download = menu.addAction(tr("Download"));
+	auto force = menu.addAction(tr("Force download"));
 #endif
 	menu.addSeparator();
 
@@ -1240,12 +1243,11 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 	load->setEnabled(false);
 	unload->setEnabled(false);
 	download->setEnabled(false);
-    force->setEnabled(false);
+	force->setEnabled(false);
 	//refresh->setEnabled(false);
 
 	//skoro coś ściągam muszę poczekać!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
-	if(currentDownloadRequest == nullptr){
-
+	if (currentDownloadRequest == nullptr){
 		//aktywujemy podstaweowe operacje
 		//connect(refresh, SIGNAL(triggered()), this, SLOT(refreshStatus()));
 		//refresh->setEnabled(true);
@@ -1257,15 +1259,13 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 
 		//sprawdzam czy to cos co mogę załadować?
 
-		if(isItemLoadable(selectedItems[0]) == true){
-
+		if (isItemLoadable(selectedItems[0]) == true){
 			currentPerspectiveItem = selectedItems[0];
 			//pobieram pliki dla wybranego elementu
 			getItemsFiles(currentPerspectiveItem, filesIDs, filteredShallowCopy);
 			//UTILS_ASSERT(filesIDs.empty() == false, "Brak danych w drzewie");
 
-			if(filesIDs.empty() == false){
-
+			if (filesIDs.empty() == false){
 				std::set<int> additionalFiles;
 
 				getAdditionalItemsFiles(currentPerspectiveItem, additionalFiles);
@@ -1277,13 +1277,12 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 
 				//pomijamy wszystkie niekompatybilne z DM pliki
 
-
 				std::set<int> dmAdditionalOKFiles;
 				std::set<int> additionalFilesToLoad;
 				std::set<int> additionalFilesToUnload;
 				std::set<int> additionalFilesToDownload;
 
-				if(additionalFiles.empty() == false){
+				if (additionalFiles.empty() == false){
 					//filtruje pliki obsługiwane przez DM
 					FilesHelper::filterFiles(additionalFiles, dmAdditionalOKFiles, *(dataSource->fileStatusManager));
 
@@ -1308,38 +1307,38 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 				FilesHelper::filterFiles(dmOKFiles, communication::Loaded, filesToUnload, *(dataSource->fileStatusManager));
 
 				//pliki do ściągnięcia
-                filesToForcedDownload = dmOKFiles;
+				filesToForcedDownload = dmOKFiles;
 
 				FilesHelper::filterFiles(filesIDs, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
-				if(filesToLoad.empty() == false){
+				if (filesToLoad.empty() == false){
 					filesToLoad.insert(additionalFilesToLoad.begin(), additionalFilesToLoad.end());
 					load->setEnabled(true);
 					connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
 				}
 
-				if(filesToUnload.empty() == false){
+				if (filesToUnload.empty() == false){
 					//! TODO - sprawdzic czy wyzej jeszcze ktos tego nie trzyma!
 					filesToUnload.insert(additionalFilesToUnload.begin(), additionalFilesToUnload.end());
 					unload->setEnabled(true);
 					connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
 				}
 
-        #ifndef DEMO_VERSION_COMMUNICATION
-				
-				if(filesToDownload.empty() == false){
+#ifndef DEMO_VERSION_COMMUNICATION
+
+				if (filesToDownload.empty() == false){
 					filesToDownload.insert(additionalFilesToDownload.begin(), additionalFilesToDownload.end());
 					download->setEnabled(true);
 					connect(download, SIGNAL(triggered()), this, SLOT(onDownload()));
 				}
 
-                if (filesToForcedDownload.empty() == false) {
+				if (filesToForcedDownload.empty() == false) {
 					filesToForcedDownload.insert(dmAdditionalOKFiles.begin(), dmAdditionalOKFiles.end());
-                    force->setEnabled(true);
-                    connect(force, SIGNAL(triggered()), this, SLOT(onForced()));
-                }
-				
-        #endif
+					force->setEnabled(true);
+					connect(force, SIGNAL(triggered()), this, SLOT(onForced()));
+				}
+
+#endif
 			}
 		}
 	}
@@ -1350,15 +1349,14 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 	//poszczeólne akcje
 	auto loadAll = menu.addAction(tr("Load All"));
 	//auto unloadAll = menu.addAction(tr("Unload All"));
-  #ifdef DEMO_VERSION_COMMUNICATION
+#ifdef DEMO_VERSION_COMMUNICATION
 	auto downloadAll = menu.addAction(tr("Download All - not available in demo version"));
-  #else
-  auto downloadAll = menu.addAction(tr("Download All"));
-  #endif
+#else
+	auto downloadAll = menu.addAction(tr("Download All"));
+#endif
 
 	//skoro coś ściągam muszę poczekać!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
-	if(currentDownloadRequest == nullptr){
-
+	if (currentDownloadRequest == nullptr){
 		std::set<int> allFiles;
 
 		filteredFiles(allFiles);
@@ -1372,26 +1370,26 @@ void DataSourceWidget::generateGeneralContextMenu(QMenu & menu, QTreeWidget * pe
 		//pliki do ściągnięcia
 		FilesHelper::filterFiles(dmOkFiles, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
-		if(filesToLoad.empty() == false){
+		if (filesToLoad.empty() == false){
 			loadAll->setEnabled(true);
 			connect(loadAll, SIGNAL(triggered()), this, SLOT(onLoad()));
 		}
 
-		if(filesToUnload.empty() == false){
+		if (filesToUnload.empty() == false){
 			//unloadAll->setEnabled(true);
 			//connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnload()));
 		}
 
-    #ifndef DEMO_VERSION_COMMUNICATION
-		
-		if(filesToDownload.empty() == false){
+#ifndef DEMO_VERSION_COMMUNICATION
+
+		if (filesToDownload.empty() == false){
 			downloadAll->setEnabled(true);
 			connect(downloadAll, SIGNAL(triggered()), this, SLOT(onDownload()));
 		}
-		
-    #endif
 
-	}else{
+#endif
+	}
+	else{
 		loadAll->setEnabled(false);
 		//unloadAll->setEnabled(false);
 		downloadAll->setEnabled(false);
@@ -1404,35 +1402,35 @@ void DataSourceWidget::generateCommonContextMenu(QMenu & menu, QTreeWidget * per
 	//auto loadProject = menu.addMenu(tr("Load project"));
 	//auto deleteProject = menu.addMenu(tr("Delete project"));
 	//menu.addSeparator();
-  #ifdef DEMO_VERSION_COMMUNICATION
+#ifdef DEMO_VERSION_COMMUNICATION
 	auto synch = menu.addAction(tr("Synchronize - not available in demo version"));
 	synch->setEnabled(false);
-  #else
-  auto synch = menu.addAction(tr("Synchronize"));
-  #endif
+#else
+	auto synch = menu.addAction(tr("Synchronize"));
+#endif
 	//skoro coś ściągam muszę poczekać!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
-	if(currentDownloadRequest == nullptr){
-
+	if (currentDownloadRequest == nullptr){
 		//connect(saveProject, SIGNAL(triggered()), this, SLOT(onSaveProject()));
-    #ifndef DEMO_VERSION_COMMUNICATION
+#ifndef DEMO_VERSION_COMMUNICATION
 		connect(synch, SIGNAL(triggered()), this, SLOT(updateShallowCopy()));
-    #endif
+#endif
 
 		/*
 		for(auto it = projects.begin(); it != projects.end(); ++it){
-			auto loadAction = loadProject->addAction(QString::fromUtf8(it->first.c_str()));
-			auto deleteAction = deleteProject->addAction(QString::fromUtf8(it->first.c_str()));
+		auto loadAction = loadProject->addAction(QString::fromUtf8(it->first.c_str()));
+		auto deleteAction = deleteProject->addAction(QString::fromUtf8(it->first.c_str()));
 
-			connect(loadAction, SIGNAL(triggered()), this, SLOT(onLoadProject()));
-			connect(deleteAction, SIGNAL(triggered()), this, SLOT(onDeleteProject()));
+		connect(loadAction, SIGNAL(triggered()), this, SLOT(onLoadProject()));
+		connect(deleteAction, SIGNAL(triggered()), this, SLOT(onDeleteProject()));
 		}
 
 		if(projects.empty() == true){
-			//loadProject->setEnabled(false);
-			//deleteProject->setEnabled(false);
+		//loadProject->setEnabled(false);
+		//deleteProject->setEnabled(false);
 		}
 		}*/
-	}else{
+	}
+	else{
 		/*
 		saveProject->setEnabled(false);
 		loadProject->setEnabled(false);
@@ -1446,12 +1444,10 @@ bool DataSourceWidget::isItemLoadable(const QTreeWidgetItem * item)
 {
 	bool ret = false;
 	auto content = dynamic_cast<const IContent*>(item);
-	if(content != nullptr){
-
+	if (content != nullptr){
 		ret = true;
 		//wystarczy switch + dynamic_cast
-		switch(content->contentType()){
-
+		switch (content->contentType()){
 		case FileContent:
 		case FilesGroupContent:
 		case CustomContent:
@@ -1467,96 +1463,94 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 {
 	bool found = false;
 	auto content = dynamic_cast<const IContent*>(item);
-	if(content != nullptr){
-
+	if (content != nullptr){
 		found = true;
 		//wystarczy switch + dynamic_cast
-		switch(content->contentType()){
-
+		switch (content->contentType()){
 		case DisorderContent:
-			{
-				auto disorder = dynamic_cast<DisorderItem*>(item);
-				FilesHelper::getFiles(disorder->value(), shallowCopy, filesIDs);
-			}
+		{
+			auto disorder = dynamic_cast<DisorderItem*>(item);
+			FilesHelper::getFiles(disorder->value(), shallowCopy, filesIDs);
+		}
 			break;
 		case PatientContent:
-			{
-				auto patient = dynamic_cast<PatientItem*>(item);
-				FilesHelper::getFiles(patient->value(), filesIDs);
-			}
+		{
+			auto patient = dynamic_cast<PatientItem*>(item);
+			FilesHelper::getFiles(patient->value(), filesIDs);
+		}
 			break;
 		case SubjectContent:
-			{
-				auto subject = dynamic_cast<SubjectItem*>(item);
-				FilesHelper::getFiles(subject->value(), filesIDs);
-			}
+		{
+			auto subject = dynamic_cast<SubjectItem*>(item);
+			FilesHelper::getFiles(subject->value(), filesIDs);
+		}
 			break;
 		case SessionContent:
-			{
-				auto session = dynamic_cast<SessionItem*>(item);
-				FilesHelper::getFiles(session->value(), filesIDs);
-			}
+		{
+			auto session = dynamic_cast<SessionItem*>(item);
+			FilesHelper::getFiles(session->value(), filesIDs);
+		}
 			break;
 		case MotionContent:
-			{
-				auto motion = dynamic_cast<MotionItem*>(item);
-				FilesHelper::getFiles(motion->value(), filesIDs);
-			}
+		{
+			auto motion = dynamic_cast<MotionItem*>(item);
+			FilesHelper::getFiles(motion->value(), filesIDs);
+		}
 			break;
 		case FileContent:
-			{
-				auto file = dynamic_cast<FileItem*>(item);
-				auto f = file->value();
-				filesIDs.insert(f->fileID);
-			}
+		{
+			auto file = dynamic_cast<FileItem*>(item);
+			auto f = file->value();
+			filesIDs.insert(f->fileID);
+		}
 			break;
 		case DisordersGroupContent:
-			{
-				auto disordersGroup = dynamic_cast<DisordersGroupItem*>(item);
-				for(auto it = disordersGroup->value().begin(); it != disordersGroup->value().end(); ++it){
-					FilesHelper::getFiles(*it, shallowCopy, filesIDs);
-				}
+		{
+			auto disordersGroup = dynamic_cast<DisordersGroupItem*>(item);
+			for (auto it = disordersGroup->value().begin(); it != disordersGroup->value().end(); ++it){
+				FilesHelper::getFiles(*it, shallowCopy, filesIDs);
 			}
+		}
 			break;
 		case PatientsGroupContent:
-			{
-				auto patientsGroup = dynamic_cast<PatientsGroupItem*>(item);
-				for(auto it = patientsGroup->value().begin(); it != patientsGroup->value().end(); ++it){
-					FilesHelper::getFiles(*it, filesIDs);
-				}
+		{
+			auto patientsGroup = dynamic_cast<PatientsGroupItem*>(item);
+			for (auto it = patientsGroup->value().begin(); it != patientsGroup->value().end(); ++it){
+				FilesHelper::getFiles(*it, filesIDs);
 			}
+		}
 			break;
 		case SubjectsGroupContent:
-			{
-				auto subjectsGroup = dynamic_cast<SubjectsGroupItem*>(item);
-				for(auto it = subjectsGroup->value().begin(); it != subjectsGroup->value().end(); ++it){
-					FilesHelper::getFiles(*it, filesIDs);
-				}
+		{
+			auto subjectsGroup = dynamic_cast<SubjectsGroupItem*>(item);
+			for (auto it = subjectsGroup->value().begin(); it != subjectsGroup->value().end(); ++it){
+				FilesHelper::getFiles(*it, filesIDs);
 			}
+		}
 			break;
 		case SessionsGroupContent:
-			{
-				auto sessionsGroup = dynamic_cast<SessionsGroupItem*>(item);
-				for(auto it = sessionsGroup->value().begin(); it != sessionsGroup->value().end(); ++it){
-					FilesHelper::getFiles(*it, filesIDs);
-				}
+		{
+			auto sessionsGroup = dynamic_cast<SessionsGroupItem*>(item);
+			for (auto it = sessionsGroup->value().begin(); it != sessionsGroup->value().end(); ++it){
+				FilesHelper::getFiles(*it, filesIDs);
 			}
+		}
 			break;
 		case MotionsGroupContent:
-			{
-				auto motionsGroup = dynamic_cast<MotionsGroupItem*>(item);
-				for(auto it = motionsGroup->value().begin(); it != motionsGroup->value().end(); ++it){
-					FilesHelper::getFiles(*it, filesIDs);					
-				}
+		{
+			auto motionsGroup = dynamic_cast<MotionsGroupItem*>(item);
+			for (auto it = motionsGroup->value().begin(); it != motionsGroup->value().end(); ++it){
+				FilesHelper::getFiles(*it, filesIDs);
 			}
+		}
 			break;
 		case FilesGroupContent:
-			{
-				auto filesGroup = dynamic_cast<FilesGroupItem*>(item);
-				for(auto it = filesGroup->value().begin(); it != filesGroup->value().end(); ++it){
-					filesIDs.insert((*it)->fileID);
-				}
+		{
+			auto filesGroup = dynamic_cast<FilesGroupItem*>(item);
+			for (auto it = filesGroup->value().begin(); it != filesGroup->value().end(); ++it){
+				filesIDs.insert((*it)->fileID);
 			}
+		}
 			break;
 		case CustomContent:
 			found = false;
@@ -1565,9 +1559,9 @@ void DataSourceWidget::getItemsFiles(QTreeWidgetItem * item, std::set<int> & fil
 	}
 
 	//jezeli nie znalazlem to ide w dół hierarchi perspektywy - może tam coś znajdę
-	if(found == false){
+	if (found == false){
 		int childrenCount = item->childCount();
-		for(int i = 0; i < childrenCount; ++i){
+		for (int i = 0; i < childrenCount; ++i){
 			getItemsFiles(item->child(i), filesIDs, shallowCopy);
 		}
 	}
@@ -1577,43 +1571,41 @@ void DataSourceWidget::getAdditionalItemsFiles(QTreeWidgetItem * item, std::set<
 {
 	bool found = false;
 	auto content = dynamic_cast<const IContent*>(item);
-	if(content != nullptr){
-
+	if (content != nullptr){
 		found = true;
 		//wystarczy switch + dynamic_cast
-		switch(content->contentType()){
-
+		switch (content->contentType()){
 		case MotionContent:
-			{
-				auto motion = dynamic_cast<MotionItem*>(item);
-				FilesHelper::getSpecificFiles(motion->value()->session, filesIDs);
-			}
+		{
+			auto motion = dynamic_cast<MotionItem*>(item);
+			FilesHelper::getSpecificFiles(motion->value()->session, filesIDs);
+		}
 			break;
 		case FileContent:
-			{
-				auto file = dynamic_cast<FileItem*>(item);
-				auto f = file->value();
-				//extra dodaję pliki specyficzne sesji
-				FilesHelper::getSpecificFiles(f->isSessionFile() == true ? f->session : f->trial->session, filesIDs);
-			}
+		{
+			auto file = dynamic_cast<FileItem*>(item);
+			auto f = file->value();
+			//extra dodaję pliki specyficzne sesji
+			FilesHelper::getSpecificFiles(f->isSessionFile() == true ? f->session : f->trial->session, filesIDs);
+		}
 			break;
 		case MotionsGroupContent:
-			{
-				auto motionsGroup = dynamic_cast<MotionsGroupItem*>(item);
-				for(auto it = motionsGroup->value().begin(); it != motionsGroup->value().end(); ++it){
-					//extra dodaję pliki specyficzne sesji
-					FilesHelper::getSpecificFiles((*it)->session, filesIDs);
-				}
+		{
+			auto motionsGroup = dynamic_cast<MotionsGroupItem*>(item);
+			for (auto it = motionsGroup->value().begin(); it != motionsGroup->value().end(); ++it){
+				//extra dodaję pliki specyficzne sesji
+				FilesHelper::getSpecificFiles((*it)->session, filesIDs);
 			}
+		}
 			break;
 		case FilesGroupContent:
-			{
-				auto filesGroup = dynamic_cast<FilesGroupItem*>(item);
-				for(auto it = filesGroup->value().begin(); it != filesGroup->value().end(); ++it){
-					//extra dodaję pliki specyficzne sesji
-					FilesHelper::getSpecificFiles((*it)->isSessionFile() == true ? (*it)->session : (*it)->trial->session, filesIDs);
-				}
+		{
+			auto filesGroup = dynamic_cast<FilesGroupItem*>(item);
+			for (auto it = filesGroup->value().begin(); it != filesGroup->value().end(); ++it){
+				//extra dodaję pliki specyficzne sesji
+				FilesHelper::getSpecificFiles((*it)->isSessionFile() == true ? (*it)->session : (*it)->trial->session, filesIDs);
 			}
+		}
 			break;
 		case CustomContent:
 			found = false;
@@ -1622,9 +1614,9 @@ void DataSourceWidget::getAdditionalItemsFiles(QTreeWidgetItem * item, std::set<
 	}
 
 	//jezeli nie znalazlem to ide w dół hierarchi perspektywy - może tam coś znajdę
-	if(found == false){
+	if (found == false){
 		int childrenCount = item->childCount();
-		for(int i = 0; i < childrenCount; ++i){
+		for (int i = 0; i < childrenCount; ++i){
 			getAdditionalItemsFiles(item->child(i), filesIDs);
 		}
 	}
@@ -1635,7 +1627,7 @@ void DataSourceWidget::updateShallowCopy()
 	//lokujemy - nie można teraz zmienić użytkownika z zewnątrz
 	//w sumie powinniśmy lokować całe źródło
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*DataSourcePathsManager::instance());
-	if(dataSource->isShallowCopyComplete() == true && dataSource->isShallowCopyCurrent() == true){
+	if (dataSource->isShallowCopyComplete() == true && dataSource->isShallowCopyCurrent() == true){
 		//message box - nie musimy aktualizować, mamy najświeższą wersję
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Database synchronization"));
@@ -1644,7 +1636,7 @@ void DataSourceWidget::updateShallowCopy()
 		messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 		messageBox.setDefaultButton(QMessageBox::No);
 		int ret = messageBox.exec();
-		if(ret == QMessageBox::No){
+		if (ret == QMessageBox::No){
 			return;
 		}
 	}
@@ -1659,13 +1651,14 @@ void DataSourceWidget::performShallowCopyUpdate()
 	//TODO
 	// czy to tutaj jest potrzebne? Jesli tak to po co?
 	//auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
-    //webservices::IncrementalBranchShallowCopy incCpy = dataSource->getIncrementalShallowCopy(time);
+	//webservices::IncrementalBranchShallowCopy incCpy = dataSource->getIncrementalShallowCopy(time);
 
 	auto downloadRequest = dataSource->generateDownloadShallowCopyRequestToLocalUserSpace();
-	if(downloadRequest != nullptr){
+	if (downloadRequest != nullptr){
 		shallowCopyRequest = downloadRequest;
 		processShallowCopyDownload(downloadRequest);
-	}else{
+	}
+	else{
 		//TODO
 		//error genrerowania requesta!!
 	}
@@ -1691,10 +1684,12 @@ void DataSourceWidget::processDownload(const CommunicationDataSource::DownloadRe
 	//to operuje na communication manager - coś może jednak pójść nie tak
 	try{
 		request->start();
-	}catch(std::exception & ){
+	}
+	catch (std::exception &){
 		//TODO
 		//message box z informacją
-	}catch(...){
+	}
+	catch (...){
 		//TODO
 		//message box z informacją
 	}
@@ -1706,15 +1701,17 @@ bool DataSourceWidget::refreshShallowCopy()
 
 	communication::ShallowCopy shallowCopy;
 	try{
-		if(dataSource->buildShallowCopyFromLocalUserSpace(shallowCopy) == true){			
+		if (dataSource->buildShallowCopyFromLocalUserSpace(shallowCopy) == true){
 			//ustawiam nowa płytka kopię danych
 			dataSource->setShallowCopy(shallowCopy);
 			//odświeżam przefiltrowaną płytką kopię danych co wiąże się z unieważnieniem dotychczasowych perspektyw
 			QMetaObject::invokeMethod(this, "onFilterChange", Q_ARG(int, fm->currentFilterIndex()));
-		}else{
+		}
+		else{
 			ret = false;
 		}
-	}catch(...){
+	}
+	catch (...){
 		ret = false;
 	}
 
@@ -1723,14 +1720,13 @@ bool DataSourceWidget::refreshShallowCopy()
 
 void DataSourceWidget::filteredFiles(std::set<int> & files) const
 {
-	if(filteredShallowCopy.motionShallowCopy != nullptr){
+	if (filteredShallowCopy.motionShallowCopy != nullptr){
 		auto filesITEnd = filteredShallowCopy.motionShallowCopy->files.end();
-		for(auto it = filteredShallowCopy.motionShallowCopy->files.begin(); it != filesITEnd; ++it){
+		for (auto it = filteredShallowCopy.motionShallowCopy->files.begin(); it != filesITEnd; ++it){
 			files.insert(it->first);
 		}
 	}
 }
-
 
 void DataSourceWidget::onDownload()
 {
@@ -1740,7 +1736,7 @@ void DataSourceWidget::onDownload()
 
 	unsigned long long size = 0;
 
-	for(auto it = filesToDownload.begin(); it != filesToDownload.end(); ++it){
+	for (auto it = filesToDownload.begin(); it != filesToDownload.end(); ++it){
 		auto f = dataSource->fullShallowCopy.motionShallowCopy->files.find(*it);
 		size += f->second->fileSize;
 	}
@@ -1748,17 +1744,18 @@ void DataSourceWidget::onDownload()
 	unsigned long long avaiable = dataSource->pathsManager->freeSpace(dataSource->pathsManager->userDataPath());
 
 	//mnoże razy 2 bo muszę to potem jeszcze do local storage wrzucić!!
-	if(avaiable < (size << 1)){
+	if (avaiable < (size << 1)){
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Download problem"));
-		messageBox.setText(tr("Download request requires %1 of free space while there is only %2 free space left. Download could not be continued. Please free some space or limit your download request.").arg(formatFileSize(size)).arg( formatFileSize(avaiable)));
+		messageBox.setText(tr("Download request requires %1 of free space while there is only %2 free space left. Download could not be continued. Please free some space or limit your download request.").arg(formatFileSize(size)).arg(formatFileSize(avaiable)));
 		messageBox.setIcon(QMessageBox::Warning);
 		messageBox.setStandardButtons(QMessageBox::Ok);
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.exec();
-	}else{
+	}
+	else{
 		//ok - mogę ściągać ale może tego jest sporo więc trzeba użytkownika uświadomić
-		if(size > downloadSizeWarningLevel){
+		if (size > downloadSizeWarningLevel){
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Download warning"));
 			messageBox.setText(tr("Download request contains %1. This will take some time to download such amount of data. Are you sure you can wait some longer time?").arg(formatFileSize(size)));
@@ -1768,7 +1765,7 @@ void DataSourceWidget::onDownload()
 
 			int ret = messageBox.exec();
 
-			if(ret == QMessageBox::No){
+			if (ret == QMessageBox::No){
 				//użytkownik się nawrócił - anulujemy
 				return;
 			}
@@ -1780,8 +1777,8 @@ void DataSourceWidget::onDownload()
 			auto downloadRequest = dataSource->generateDownloadFilesRequest(filesToDownload);
 			//zacznij przetwarzać request
 			processDataDownload(nullptr, downloadRequest);
-
-		}catch(std::exception & e){
+		}
+		catch (std::exception & e){
 			//nie udało się utworzyć/przygotować requesta więc info o błędzie
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Download preparation error"));
@@ -1806,28 +1803,25 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	typedef std::map<int, std::pair<std::set<int>, MotionFiles>> SessionFiles;
 	typedef std::map<int, SessionFiles> SubjectFiles;
 
-
 	class JointsInitializer : public core::IVariantInitializer
 	{
 	public:
 
 		JointsInitializer(core::VariantConstPtr dataWrapper,
-		core::VariantConstPtr modelWrapper)
-		: dataWrapper(dataWrapper), modelWrapper(modelWrapper)
+			core::VariantConstPtr modelWrapper)
+			: dataWrapper(dataWrapper), modelWrapper(modelWrapper)
 		{
-
 		}
 
 		virtual ~JointsInitializer()
 		{
-
 		}
 
 		virtual void initialize(core::Variant * object)
 		{
 			kinematic::SkeletalDataConstPtr data;
 			kinematic::SkeletalModelConstPtr model;
-			if(dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
+			if (dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
 				kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
 				joints->setSkeletal(model, data);
 				object->set(joints);
@@ -1846,7 +1840,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 	auto subjectService = core::queryService<PluginSubject::ISubjectService>(plugin::getServiceManager());
 
-	if(subjectService == nullptr){
+	if (subjectService == nullptr){
 		return;
 	}
 
@@ -1854,74 +1848,77 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	//na bazie tej mapy będę realizował hierarchię pluginu subject
 
 	SubjectFiles subjectHierarchy;
-    std::set<int> loadedFiles;
+	std::set<int> loadedFiles;
 
 	auto itEND = loadedFilesObjects.end();
-	for(auto it = loadedFilesObjects.begin(); it != itEND; ++it){
-        loadedFiles.insert(it->first);
-		if(it->first < 0){
-			auto s = filteredShallowCopy.motionShallowCopy->sessions.find(- it->first);
+	for (auto it = loadedFilesObjects.begin(); it != itEND; ++it){
+		loadedFiles.insert(it->first);
+		if (it->first < 0){
+			auto s = filteredShallowCopy.motionShallowCopy->sessions.find(-it->first);
 
-			if(s != filteredShallowCopy.motionShallowCopy->sessions.end()){
+			if (s != filteredShallowCopy.motionShallowCopy->sessions.end()){
 				subjectHierarchy[s->second->performerConf->performer->performerID][s->second->sessionID].first.insert(it->first);
-			}else{
+			}
+			else{
 				//TODO
 				//INFO o nieobsługiwanym pliku
 			}
-
-		}else{
+		}
+		else{
 			auto fileIT = filteredShallowCopy.motionShallowCopy->files.find(it->first);
-			if(fileIT == filteredShallowCopy.motionShallowCopy->files.end()){
+			if (fileIT == filteredShallowCopy.motionShallowCopy->files.end()){
 				//TODO
 				//INFO o nieobsługiwanym pliku
 				continue;
 			}
 
-			if(fileIT->second->isSessionFile() == true){
+			if (fileIT->second->isSessionFile() == true){
 				subjectHierarchy[fileIT->second->session->performerConf->performer->performerID][fileIT->second->session->sessionID].first.insert(it->first);
-			}else{
+			}
+			else{
 				subjectHierarchy[fileIT->second->trial->session->performerConf->performer->performerID][fileIT->second->trial->session->sessionID].second[fileIT->second->trial->trialID].insert(it->first);
 			}
 		}
 	}
 
 	auto transaction = dataSource->memoryDM->transaction();
-    auto hierarchyTransaction = dataSource->memoryDM->hierarchyTransaction();
-	for(auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
+	auto hierarchyTransaction = dataSource->memoryDM->hierarchyTransaction();
+	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
 		//tworzę subject jeśli to konieczne!!
 
 		PluginSubject::SubjectPtr subPtr;
 		core::VariantPtr subOW;
 
 		auto subIT = subjectsMapping.find(subjectIT->first);
-		if(subIT != subjectsMapping.end()){
+		if (subIT != subjectsMapping.end()){
 			//mam subjecta - nie musze już nic robić
 			subOW = subIT->second.first;
 			//FIX dla linux RtR
 			//subPtr = subOW->get();
 			subOW->tryGet(subPtr);
-		}else{
+		}
+		else{
 			//tworzę subjecta
 			subOW = subjectService->createSubject();
 			//tworze ow dla subjecta
 			//FIX dla linux - RtR nie działa dla boost::shared_ptr
 			//subPtr = subOW->get();
 			subOW->tryGet(subPtr);
-			
+
 			std::stringstream label;
 
 			auto pIT = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first);
 
-			if(pIT == filteredShallowCopy.medicalShallowCopy->patients.end()){
+			if (pIT == filteredShallowCopy.medicalShallowCopy->patients.end()){
 				label << "Subject " << subjectIT->first;
-			}else{
+			}
+			else{
 				label << pIT->second->name << ", " << pIT->second->surname;
 				addPatientObject(pIT->second, subPtr->getID());
 			}
 
 			subOW->setMetadata("label", label.str());
 
-            
 			//dodaję do DM
 			transaction->addData(subOW);
 
@@ -1930,27 +1927,27 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		}
 
 		//mam subjecta, mogę iść dalej do sesji
-		for(auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
-
+		for (auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
 			PluginSubject::SessionPtr sPtr;
 			core::VariantPtr sOW;
 
 			auto sIT = sessionsMapping.find(sessionIT->first);
-			if(sIT != sessionsMapping.end()){
+			if (sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze już nic robić
 				sOW = sIT->second.first;
 				//FIX dla linux RtR
 				//sPtr = sOW->get();
 				sOW->tryGet(sPtr);
-			}else{
+			}
+			else{
 				//tworzę sesję
 				//generuję zbiór ow dla sesji
 				std::vector<core::VariantConstPtr> sessionObjects;
-				for(auto fIT = sessionIT->second.first.begin(); fIT != sessionIT->second.first.end(); ++fIT){
+				for (auto fIT = sessionIT->second.first.begin(); fIT != sessionIT->second.first.end(); ++fIT){
 					//pobieram obiekty
 					const auto & objects = loadedFilesObjects.find(*fIT)->second;
 					//kopiuje
-					for(auto oIT = objects.begin(); oIT != objects.end(); ++oIT){
+					for (auto oIT = objects.begin(); oIT != objects.end(); ++oIT){
 						sessionObjects.push_back(*oIT);
 					}
 				}
@@ -1966,23 +1963,21 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				sessionObjects.push_back(antroOW);
 				sessionsMapping[sessionIT->first].second.push_back(antroOW);
 
-
 				sOW = subjectService->createSession(subOW);
 				//FIX dla linux RtR
 				//sPtr = sOW->get();
 				sOW->tryGet(sPtr);
-				for(auto it = sessionObjects.begin(); it != sessionObjects.end(); ++it){
+				for (auto it = sessionObjects.begin(); it != sessionObjects.end(); ++it){
 					sPtr->addData(*it);
 				}
 
-                
 				sOW->setMetadata("label", s->sessionName);
 				sOW->setMetadata("EMGConf", boost::lexical_cast<std::string>(s->emgConf));
 				sOW->setMetadata("data", webservices::toString(s->sessionDate));
-				if(s->groupAssigment != nullptr){
+				if (s->groupAssigment != nullptr){
 					sOW->setMetadata("groupID", boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID));
 					auto sgIT = filteredShallowCopy.motionMetaData.sessionGroups.find(s->groupAssigment->sessionGroupID);
-					if(sgIT != filteredShallowCopy.motionMetaData.sessionGroups.end()){
+					if (sgIT != filteredShallowCopy.motionMetaData.sessionGroups.end()){
 						sOW->setMetadata("groupName", sgIT->second.sessionGroupName);
 					}
 				}
@@ -1996,33 +1991,32 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			}
 
 			//mam sesję - mogę iść dalej z motionami!!
-			for(auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
-
+			for (auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
 				PluginSubject::MotionPtr mPtr;
 
 				auto mIT = motionsMapping.find(motionIT->first);
-				if(mIT != motionsMapping.end()){
+				if (mIT != motionsMapping.end()){
 					//mam subjecta - nie musze już nic robić
 					//TODO
 					//nie powinno mnie tu być wg aktualnego działania pluginu subject!!
 					//FIX dla linux RtR
 					//mPtr = mIT->second.first->get();
 					mIT->second.first->tryGet(mPtr);
-				}else{
+				}
+				else{
 					//tworzę sesję
 					//generuję zbiór ow dla motiona
 					std::vector<core::VariantConstPtr> motionObjects;
-					for(auto fIT = motionIT->second.begin(); fIT != motionIT->second.end(); ++fIT){
+					for (auto fIT = motionIT->second.begin(); fIT != motionIT->second.end(); ++fIT){
 						//pobieram obiekty
 						const auto & objects = loadedFilesObjects.find(*fIT)->second;
 						//kopiuje
-						for(auto oIT = objects.begin(); oIT != objects.end(); ++oIT){
+						for (auto oIT = objects.begin(); oIT != objects.end(); ++oIT){
 							motionObjects.push_back(*oIT);
 						}
 					}
 
 					auto m = filteredShallowCopy.motionShallowCopy->trials.find(motionIT->first)->second;
-
 
 					//sprawdzamy joint angles - jeśli nie ma budujemy i dodajemy do DM
 					core::VariantConstPtr dataWrapper;
@@ -2042,10 +2036,9 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 					core::VariantPtr jointsWrapper;
 
-					if(modelWrappers.empty() == false){
-
+					if (modelWrappers.empty() == false){
 						modelWrapper = modelWrappers.front();
-						
+
 						if (dataWrapper && modelWrapper) {
 							jointsWrapper = core::Variant::create<kinematic::JointAnglesCollection>();
 							jointsWrapper->setInitializer(core::VariantInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));
@@ -2059,38 +2052,39 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					//FIX dla linux RtR
 					//mPtr = mOW->get();
 					mOW->tryGet(mPtr);
-					for(auto it = motionObjects.begin(); it != motionObjects.end(); ++it){
+					for (auto it = motionObjects.begin(); it != motionObjects.end(); ++it){
 						mPtr->addData(*it);
 					}
 
-                    if (mPtr->hasObject(typeid(VideoChannel), false) && mPtr->hasObject(typeid(MovieDelays), false)) {
-                        core::VariantsCollection videoCollection(typeid(VideoChannel), false);
-                        core::VariantsCollection movieDelaysCollection(typeid(MovieDelays), false);
-                        mPtr->getObjects(videoCollection);
-                        mPtr->getObjects(movieDelaysCollection);
-                        if (movieDelaysCollection.size() == 1 ) {
-                            MovieDelaysConstPtr delays = (*(movieDelaysCollection.begin()))->get();
-                            if (delays->size() == videoCollection.size()) {
-                                int i = 0;
-                                for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
-                                    core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(*it);
-                                    wrp->setMetadata("movieDelay", boost::lexical_cast<std::string>(delays->at(i++)));
-                                }
-                            } else {
-                                PLUGIN_LOG_ERROR("Unable to map movie delays");
-                            }
-                        } else {
-                            PLUGIN_LOG_ERROR("Wrong movie delays");
-                        }
-                    }
-                    
+					if (mPtr->hasObject(typeid(VideoChannel), false) && mPtr->hasObject(typeid(MovieDelays), false)) {
+						core::VariantsCollection videoCollection(typeid(VideoChannel), false);
+						core::VariantsCollection movieDelaysCollection(typeid(MovieDelays), false);
+						mPtr->getObjects(videoCollection);
+						mPtr->getObjects(movieDelaysCollection);
+						if (movieDelaysCollection.size() == 1) {
+							MovieDelaysConstPtr delays = (*(movieDelaysCollection.begin()))->get();
+							if (delays->size() == videoCollection.size()) {
+								int i = 0;
+								for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
+									core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(*it);
+									wrp->setMetadata("movieDelay", boost::lexical_cast<std::string>(delays->at(i++)));
+								}
+							}
+							else {
+								PLUGIN_LOG_ERROR("Unable to map movie delays");
+							}
+						}
+						else {
+							PLUGIN_LOG_ERROR("Wrong movie delays");
+						}
+					}
 
-					if(jointsWrapper != nullptr){
+					if (jointsWrapper != nullptr){
 						//metadane
 						jointsWrapper->setMetadata("name", mPtr->getLocalName() + " joints");
 						jointsWrapper->setMetadata("source", "newCommunication->motion->" + mPtr->getLocalName());
 					}
-					
+
 					mOW->setMetadata("label", m->trialName);
 
 					transaction->addData(mOW);
@@ -2101,21 +2095,21 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 				}
 			}
 		}
-		
-        std::vector<IHierarchyPerspectivePtr> perspectives = dataSource->getHierarchyPerspectives();
-        std::set<core::IHierarchyItemConstPtr> roots;
-        for (auto it = perspectives.begin(); it != perspectives.end(); ++it) {
-            //auto root = TreeBuilder::createTree("SUB", subPtr);
-            auto root = (*it)->getPerspective(subPtr);
-            if (root) {
-                int childCount = root->getNumChildren();
-                for (int c = 0; c < childCount; ++c) {
-                    auto r = root->getChild(c);
-                    updateOrAddRoot(r, roots, hierarchyTransaction);
-                }
-            }
-        }
-        files2roots[loadedFiles] = roots;
+
+		std::vector<IHierarchyPerspectivePtr> perspectives = dataSource->getHierarchyPerspectives();
+		std::set<core::IHierarchyItemConstPtr> roots;
+		for (auto it = perspectives.begin(); it != perspectives.end(); ++it) {
+			//auto root = TreeBuilder::createTree("SUB", subPtr);
+			auto root = (*it)->getPerspective(subPtr);
+			if (root) {
+				int childCount = root->getNumChildren();
+				for (int c = 0; c < childCount; ++c) {
+					auto r = root->getChild(c);
+					updateOrAddRoot(r, roots, hierarchyTransaction);
+				}
+			}
+		}
+		files2roots[loadedFiles] = roots;
 	}
 }
 
@@ -2123,8 +2117,7 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 {
 	//generuję listę schorzeń
 	std::vector<communication::Disorder> disorders;
-	for(auto it = patient->disorders.begin(); it != patient->disorders.end(); ++it)	{
-
+	for (auto it = patient->disorders.begin(); it != patient->disorders.end(); ++it)	{
 		communication::Disorder dis;
 		dis.focus = it->second.focus;
 		dis.diagnosisDate = webservices::toString(it->second.diagnosisDate);
@@ -2193,7 +2186,7 @@ utils::shared_ptr<communication::AntropometricData> DataSourceWidget::createAntr
 float DataSourceWidget::getAntropometricValue(const std::string & attribute, const webservices::MotionShallowCopy::Attrs & attrs, float defValue)
 {
 	auto it = attrs.find(attribute);
-	if(it != attrs.end()){
+	if (it != attrs.end()){
 		return boost::lexical_cast<float>(it->second);
 	}
 
@@ -2215,7 +2208,7 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 
 	auto subjectService = core::queryService<PluginSubject::ISubjectService>(plugin::getServiceManager());
 
-	if(subjectService == nullptr){
+	if (subjectService == nullptr){
 		return;
 	}
 
@@ -2227,25 +2220,23 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 	SubjectFiles subjectHierarchy;
 
 	auto itEND = unloadedFilesIDs.end();
-	for(auto it = unloadedFilesIDs.begin(); it != itEND; ++it){
+	for (auto it = unloadedFilesIDs.begin(); it != itEND; ++it){
 		auto fileIT = filteredShallowCopy.motionShallowCopy->files.find(*it);
-		if(fileIT->second->isSessionFile() == true){
+		if (fileIT->second->isSessionFile() == true){
 			subjectHierarchy[fileIT->second->session->performerConf->performer->performerID][fileIT->second->session->sessionID].first.insert(*it);
-		}else{
+		}
+		else{
 			subjectHierarchy[fileIT->second->trial->session->performerConf->performer->performerID][fileIT->second->trial->session->sessionID].second[fileIT->second->trial->trialID].insert(*it);
 		}
 	}
 
-	for(auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
-
-		for(auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
-
-			for(auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
-
+	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
+		for (auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
+			for (auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
 				PluginSubject::MotionPtr mPtr;
 
 				auto mIT = motionsMapping.find(motionIT->first);
-				if(mIT != motionsMapping.end()){
+				if (mIT != motionsMapping.end()){
 					//mam motion - sprawdzam czy mogę go usunąć
 					std::set<int> motionFiles;
 					FilesHelper::getMotionFiles(motionIT->first, filteredShallowCopy, motionFiles);
@@ -2254,21 +2245,23 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 					std::vector<int> diff((std::max)(motionFiles.size(), motionIT->second.size()));
 					auto diffIT = std::set_difference(motionFiles.begin(), motionFiles.end(), motionIT->second.begin(), motionIT->second.end(), diff.begin());
 
-					if(diffIT == diff.begin()){
+					if (diffIT == diff.begin()){
 						//to znaczy że usunąłem wszystkie pliki motiona -> mogę usuwać motiona
-						for(auto rIT = mIT->second.second.begin(); rIT != mIT->second.second.end(); ++rIT){
+						for (auto rIT = mIT->second.second.begin(); rIT != mIT->second.second.end(); ++rIT){
 							transaction->removeData(*rIT);
 						}
 
 						transaction->removeData(mIT->second.first);
 
 						motionsMapping.erase(mIT);
-					}else{
+					}
+					else{
 						//TODO
 						//ta sytuacja obecnie nie powinna mieć miejsca ze względu na specyfikę pluginu subject!!
 						throw std::runtime_error("Plugin subject to redesign");
 					}
-				}else{
+				}
+				else{
 					//TODO
 					//tutaj mnie nie powinno być - chyba że plugin subject wcześniej nie działał
 					//w takim razie nie reaguje
@@ -2279,68 +2272,98 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 			PluginSubject::SessionPtr sPtr;
 
 			auto sIT = sessionsMapping.find(sessionIT->first);
-			if(sIT != sessionsMapping.end()){
+			if (sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze już nic robić
 				//FIX dla linux RtR
 				//sPtr = sIT->second.first->get();
-				sIT->second.first->tryGet(sPtr);
-				core::ConstVariantsList motions;
-				sPtr->getMotions(motions);
-				if(motions.empty() == true){
+
+				bool motionsEmpty = true;
+
+				if (motionsMapping.empty() == false){
+					sIT->second.first->tryGet(sPtr);
+					core::ConstVariantsList motions;
+					sPtr->getMotions(motions);
+
+					for (auto it = motions.begin(); it != motions.end(); ++it){
+						PluginSubject::MotionConstPtr m;
+						(*it)->tryGet(m);
+						if (m != nullptr && motionsMapping.find(m->getID()) != motionsMapping.end()){
+							motionsEmpty = false;
+							break;
+						}
+					}
+				}
+
+				if (motionsEmpty == true){
 					//sesja jest pusta - do usunięcia
-					for(auto rIT = sIT->second.second.begin(); rIT != sIT->second.second.end(); ++rIT){
+					for (auto rIT = sIT->second.second.begin(); rIT != sIT->second.second.end(); ++rIT){
 						transaction->removeData(*rIT);
 					}
 
 					transaction->removeData(sIT->second.first);
 					sessionsMapping.erase(sIT);
 				}
-			}else{
+			}
+			else {
 				//TODO
 				//tutaj mnie nie powinno być - chyba że plugin subject wcześniej nie działał
 				//w takim razie nie reaguje
 			}
-		}
 
-		//usuwam subject jeśli to konieczne!!
+			//usuwam subject jeśli to konieczne!!
 
-		PluginSubject::SubjectPtr subPtr;
+			PluginSubject::SubjectPtr subPtr;
 
-		auto subIT = subjectsMapping.find(subjectIT->first);
-		if(subIT != subjectsMapping.end()){
-			//mam subjecta - nie musze już nic robić
-			//FIX dla linux RtR
-			//subPtr = subIT->second.first->get();
-			subIT->second.first->tryGet(subPtr);
-			core::ConstVariantsList sessions;
-			subPtr->getSessions(sessions);
-			if(sessions.empty() == true){
+			auto subIT = subjectsMapping.find(subjectIT->first);
+			if (subIT != subjectsMapping.end()){
+				//mam subjecta - nie musze już nic robić
+				//FIX dla linux RtR
+				//subPtr = subIT->second.first->get();
 
-				for(auto rIT = subIT->second.second.begin(); rIT != subIT->second.second.end(); ++rIT){
-					transaction->removeData(*rIT);
+				bool sessionsEmpty = true;
+
+				if (sessionsMapping.empty() == false){
+					subIT->second.first->tryGet(subPtr);
+					core::ConstVariantsList sessions;
+					subPtr->getSessions(sessions);
+
+					for (auto it = sessions.begin(); it != sessions.end(); ++it){
+						PluginSubject::SessionConstPtr s;
+						(*it)->tryGet(s);
+						if (s != nullptr && sessionsMapping.find(s->getID()) != sessionsMapping.end()){
+							sessionsEmpty = false;
+							break;
+						}
+					}
 				}
 
-				transaction->removeData(subIT->second.first);
-
-				//musze jeszcze usunąć pacjenta jeśli mam!!
-				auto patientIT = patientsMapping.find(subIT->first);
-				if(patientIT != patientsMapping.end()){
-
-					for(auto rIT = patientIT->second.second.begin(); rIT != patientIT->second.second.end(); ++rIT){
+				if (sessionsEmpty == true){
+					for (auto rIT = subIT->second.second.begin(); rIT != subIT->second.second.end(); ++rIT){
 						transaction->removeData(*rIT);
 					}
 
-					transaction->removeData(patientIT->second.first);
+					transaction->removeData(subIT->second.first);
 
-					patientsMapping.erase(patientIT);
+					//musze jeszcze usunąć pacjenta jeśli mam!!
+					auto patientIT = patientsMapping.find(subIT->first);
+					if (patientIT != patientsMapping.end()){
+						for (auto rIT = patientIT->second.second.begin(); rIT != patientIT->second.second.end(); ++rIT){
+							transaction->removeData(*rIT);
+						}
+
+						transaction->removeData(patientIT->second.first);
+
+						patientsMapping.erase(patientIT);
+					}
+
+					subjectsMapping.erase(subIT);
 				}
-
-				subjectsMapping.erase(subIT);
+				else{
+					//TODO
+					//tutaj mnie nie powinno być - chyba że plugin subject wcześniej nie działał
+					//w takim razie nie reaguje
+				}
 			}
-		}else{
-			//TODO
-			//tutaj mnie nie powinno być - chyba że plugin subject wcześniej nie działał
-			//w takim razie nie reaguje
 		}
 	}
 }
@@ -2349,36 +2372,32 @@ void DataSourceWidget::unloadSubjectHierarchy()
 {
 	auto transaction = dataSource->memoryDM->transaction();
 
-	for(auto it = motionsMapping.begin(); it != motionsMapping.end(); ++it){
-
-		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
+	for (auto it = motionsMapping.begin(); it != motionsMapping.end(); ++it){
+		for (auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
 			transaction->removeData(*rIT);
 		}
 
 		transaction->removeData(it->second.first);
 	}
 
-	for(auto it = sessionsMapping.begin(); it != sessionsMapping.end(); ++it){
-
-		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
+	for (auto it = sessionsMapping.begin(); it != sessionsMapping.end(); ++it){
+		for (auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
 			transaction->removeData(*rIT);
 		}
 
 		transaction->removeData(it->second.first);
 	}
 
-	for(auto it = subjectsMapping.begin(); it != subjectsMapping.end(); ++it){
-
-		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
+	for (auto it = subjectsMapping.begin(); it != subjectsMapping.end(); ++it){
+		for (auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
 			transaction->removeData(*rIT);
 		}
 
 		transaction->removeData(it->second.first);
 	}
 
-	for(auto it = patientsMapping.begin(); it != patientsMapping.end(); ++it){
-
-		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
+	for (auto it = patientsMapping.begin(); it != patientsMapping.end(); ++it){
+		for (auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
 			transaction->removeData(*rIT);
 		}
 
@@ -2393,24 +2412,23 @@ void DataSourceWidget::unloadSubjectHierarchy()
 
 void DataSourceWidget::onUpdateDownloadRequest()
 {
-	switch(currentDownloadRequest->state()){
-
+	switch (currentDownloadRequest->state()){
 	case IDownloadRequest::Started:
-		{
-			resetDownloadProgressStatus();
+	{
+		resetDownloadProgressStatus();
 
-			if(currentDownloadRequest->totalFilesToDownload() == 1){
-				downloadStatusWidget->fileProgressBar->setVisible(false);
-				downloadStatusWidget->fileProgressLabel->setVisible(false);
-			}
-
-			refreshDownloadProgress();
-
-			downloadStatusWidget->setVisible(true);
-
-			//rozpocznij odświeżanie widgeta w osobnym wątku
-			downloadRefreshTimer.start(40);
+		if (currentDownloadRequest->totalFilesToDownload() == 1){
+			downloadStatusWidget->fileProgressBar->setVisible(false);
+			downloadStatusWidget->fileProgressLabel->setVisible(false);
 		}
+
+		refreshDownloadProgress();
+
+		downloadStatusWidget->setVisible(true);
+
+		//rozpocznij odświeżanie widgeta w osobnym wątku
+		downloadRefreshTimer.start(40);
+	}
 		break;
 
 	case IDownloadRequest::FinishedCancel:
@@ -2420,18 +2438,19 @@ void DataSourceWidget::onUpdateDownloadRequest()
 		break;
 
 	case IDownloadRequest::FinishedError:
-		{
-			downloadCrashed = true;
-			//info co się stało
-			auto reqError = currentDownloadRequest->error();
-			if(reqError.empty() == true){
-				downloadError = tr("Unknown error");
-			}else{
-				downloadError = QString::fromStdString(reqError);
-			}
-
-			finishDownloadRequest();
+	{
+		downloadCrashed = true;
+		//info co się stało
+		auto reqError = currentDownloadRequest->error();
+		if (reqError.empty() == true){
+			downloadError = tr("Unknown error");
 		}
+		else{
+			downloadError = QString::fromStdString(reqError);
+		}
+
+		finishDownloadRequest();
+	}
 		break;
 
 	case IDownloadRequest::FinishedOK:
@@ -2452,17 +2471,17 @@ void DataSourceWidget::finishDownloadRequest()
 void DataSourceWidget::tryHideStatusWidget()
 {
 	//if(getObservedObjects().empty() == true){
-		downloadStatusWidget->setVisible(false);
+	downloadStatusWidget->setVisible(false);
 	//}
 }
 
 void DataSourceWidget::update(const communication::IDownloadRequest * request)
 {
-	if(request->state() == IDownloadRequest::Pending){
+	if (request->state() == IDownloadRequest::Pending){
 		return;
 	}
 
-	if(currentDownloadRequest == nullptr){
+	if (currentDownloadRequest == nullptr){
 		auto it = registeredRequests.find((void*)request);
 		currentDownloadRequest = it->second;
 		registeredRequests.erase(it);
@@ -2470,14 +2489,16 @@ void DataSourceWidget::update(const communication::IDownloadRequest * request)
 	//TODO
 	// te invoke są bardzo niebezpieczne, trzeba to wyprostować
 	//zapamiętuje sobie pliki które się dobrze ściągneły
-	if(currentDownloadRequest->state() == IDownloadRequest::SingleFinished){
-		if(core::Filesystem::pathExists(currentDownloadRequest->currentFilePath()) == true){
+	if (currentDownloadRequest->state() == IDownloadRequest::SingleFinished){
+		if (core::Filesystem::pathExists(currentDownloadRequest->currentFilePath()) == true){
 			downloadedFiles.push_back(currentDownloadRequest->currentFilePath());
 		}
-	}else if(currentDownloadRequest->state() == IDownloadRequest::Started){
+	}
+	else if (currentDownloadRequest->state() == IDownloadRequest::Started){
 		//TO JEST BARDZO NIEDOBRE ALE INACZEJ NIE ZAGWARANTUJEMY NATYCHMIASTOWEGO ODSWIEZENIA UI WZGLEDEM COMMUNICATION MANAGER
 		QMetaObject::invokeMethod(this, "onUpdateDownloadRequest");
-	}else{
+	}
+	else{
 		//TO JEST BARDZO NIEDOBRE ALE INACZEJ NIE ZAGWARANTUJEMY NATYCHMIASTOWEGO ODSWIEZENIA UI WZGLEDEM COMMUNICATION MANAGER
 		QMetaObject::invokeMethod(this, "onUpdateDownloadRequest", Qt::BlockingQueuedConnection);
 	}
@@ -2503,7 +2524,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	coreUI::CoreCursorChanger cursorChanger;
 	QApplication::processEvents();
 
-	//! Ładuje pliki do DM	
+	//! Ładuje pliki do DM
 	std::set<int> loadedFiles;
 	std::map<int, std::vector<core::VariantConstPtr>> loadedFilesObjects;
 	std::map<int, std::string> loadingErrors;
@@ -2512,13 +2533,12 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	{
 		auto transaction = dataSource->fileDM->transaction();
 
-		for(auto it = filesToLoad.begin(); it != filesToLoad.end(); ++it){
+		for (auto it = filesToLoad.begin(); it != filesToLoad.end(); ++it){
 			try{
 				const auto & p = dataSource->fileStatusManager->filePath(*it);
 
-				if(core::Filesystem::pathExists(p) == false){
-
-					if(core::Filesystem::pathExists(p.parent_path()) == false){
+				if (core::Filesystem::pathExists(p) == false){
+					if (core::Filesystem::pathExists(p.parent_path()) == false){
 						core::Filesystem::createDirectory(p.parent_path());
 					}
 
@@ -2530,16 +2550,17 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 				transaction->getObjects(p, oList);
 				loadedFiles.insert(*it);
 				loadedFilesObjects[*it] = std::vector<core::VariantConstPtr>(oList.begin(), oList.end());
-			}catch(std::exception & e){
+			}
+			catch (std::exception & e){
 				loadingErrors[*it] = std::string(e.what());
-			}catch(...){
+			}
+			catch (...){
 				unknownErrors.push_back(*it);
 			}
 		}
 	}
 
-	if(loadingErrors.empty() == true && unknownErrors.empty() == true){
-
+	if (loadingErrors.empty() == true && unknownErrors.empty() == true){
 		filesLoadedToDM.insert(loadedFiles.begin(), loadedFiles.end());
 
 		refreshStatus(loadedFiles);
@@ -2548,22 +2569,23 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 		//próbujemy teraz przez plugin subject realizować hierarchię danych
 
 		loadSubjectHierarchy(loadedFilesObjects);
-		DataSourceWidget::showMessage(tr("Loading info"), tr("Data loaded successfully to application."), popupDelay);        
-	}else{
+		DataSourceWidget::showMessage(tr("Loading info"), tr("Data loaded successfully to application."), popupDelay);
+	}
+	else{
 		QString message(tr("Errors while data loading:"));
 
 		int i = 1;
 
-		for(auto it = loadingErrors.begin(); it != loadingErrors.end(); ++it){
+		for (auto it = loadingErrors.begin(); it != loadingErrors.end(); ++it){
 			message += tr("\n%1. File ID: %2. Error description: %3").arg(i).arg(it->first).arg(QString::fromUtf8(it->second.c_str()));
 			++i;
 		}
 
-		for(auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
+		for (auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
 			message += tr("\n%1. File ID: %2. Unknown error.").arg(i).arg(*it);
 			++i;
 		}
-		DataSourceWidget::showMessage(tr("Loading error"), message, popupDelay);		
+		DataSourceWidget::showMessage(tr("Loading error"), message, popupDelay);
 	}
 }
 
@@ -2582,47 +2604,48 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 	std::vector<int> unknownErrors;
 
 	{
-
 		auto transaction = dataSource->fileDM->transaction();
 
-		for(auto it = files.begin(); it != files.end(); ++it){
+		for (auto it = files.begin(); it != files.end(); ++it){
 			try{
 				std::vector<core::VariantPtr> objects;
 				const auto & p = dataSource->fileStatusManager->filePath(*it);
 				transaction->removeFile(p);
 				unloadedFiles.insert(*it);
-			}catch(std::exception & e){
+			}
+			catch (std::exception & e){
 				unloadingErrors[*it] = std::string(e.what());
-			}catch(...){
+			}
+			catch (...){
 				unknownErrors.push_back(*it);
 			}
 		}
 	}
 
-    {
-        auto hierarchyTransaction = dataSource->memoryDM->hierarchyTransaction();
-        auto entry = files2roots.find(files);
-        if (entry != files2roots.end()) {
-            auto roots = entry->second;
-            for (auto it = roots.begin(); it != roots.end(); ++it) {
-                hierarchyTransaction->removeRoot(*it);
+	{
+		auto hierarchyTransaction = dataSource->memoryDM->hierarchyTransaction();
+		auto entry = files2roots.find(files);
+		if (entry != files2roots.end()) {
+			auto roots = entry->second;
+			for (auto it = roots.begin(); it != roots.end(); ++it) {
+				hierarchyTransaction->removeRoot(*it);
 				name2root.erase((*it)->getName());
-            }
+			}
 
 			files2roots.erase(entry);
-        }
+		}
 	}
 
 	std::vector<int> diff(filesLoadedToDM.size() - unloadedFiles.size());
 	std::set_difference(filesLoadedToDM.begin(), filesLoadedToDM.end(), unloadedFiles.begin(), unloadedFiles.end(), diff.begin());
 
-    std::set<int> s(diff.begin(), diff.end());
+	std::set<int> s(diff.begin(), diff.end());
 	filesLoadedToDM.swap(s);
 
 	refreshStatus(unloadedFiles);
 
-	if(showMessage == true){
-		if(unloadingErrors.empty() == true && unknownErrors.empty() == true){
+	if (showMessage == true){
+		if (unloadingErrors.empty() == true && unknownErrors.empty() == true){
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Unloading info"));
 			messageBox.setText(tr("Data unloaded successfully."));
@@ -2631,17 +2654,18 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 			messageBox.setDefaultButton(QMessageBox::Ok);
 
 			messageBox.exec();
-		}else{
+		}
+		else{
 			QString message(tr("Errors while data unloading:"));
 
 			int i = 1;
 
-			for(auto it = unloadingErrors.begin(); it != unloadingErrors.end(); ++it){
+			for (auto it = unloadingErrors.begin(); it != unloadingErrors.end(); ++it){
 				message += tr("\n%1. File ID: %2. Error description: %3").arg(i).arg(it->first).arg(QString::fromUtf8(it->second.c_str()));
 				++i;
 			}
 
-			for(auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
+			for (auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
 				message += tr("\n%1. File ID: %2. Unknown error.").arg(i).arg(*it);
 				++i;
 			}
@@ -2679,13 +2703,13 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 
 	std::vector<int> accessibleFiles;
 	auto filesITEnd = filteredShallowCopy.motionShallowCopy->files.end();
-	for(auto it = projectFiles.begin(); it != projectFiles.end(); ++it){
-		if(filteredShallowCopy.motionShallowCopy->files.find(*it) != filesITEnd){
+	for (auto it = projectFiles.begin(); it != projectFiles.end(); ++it){
+		if (filteredShallowCopy.motionShallowCopy->files.find(*it) != filesITEnd){
 			accessibleFiles.push_back(*it);
 		}
 	}
 
-	if(accessibleFiles.size() < projectFiles.size()){
+	if (accessibleFiles.size() < projectFiles.size()){
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Loading project warning"));
 		messageBox.setText(tr("Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?"));
@@ -2695,7 +2719,7 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 
 		int ret = messageBox.exec();
 
-		if(ret == QMessageBox::No){
+		if (ret == QMessageBox::No){
 			return;
 		}
 	}
@@ -2710,7 +2734,7 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 	//pliki do ściągnięcia
 	FilesHelper::filterFiles(dmOKFiles, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
-	if(filesToDownload.empty() == false){
+	if (filesToDownload.empty() == false){
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("Loading project warning"));
 		messageBox.setText(tr("Some project files must are missing. Data download is required. Do You want to continue?"));
@@ -2720,13 +2744,12 @@ void DataSourceWidget::loadProject(const std::string & projectName)
 
 		int ret = messageBox.exec();
 
-		if(ret == QMessageBox::No){
+		if (ret == QMessageBox::No){
 			return;
 		}
 
 		//TODO
 		//obsługa ściągania - jak się całe skończy to łąduje projekt z powodzeniem, jak tylko częsciowo to warning!!
-
 	}
 
 	std::set<int>().swap(filesToDownload);
@@ -2753,11 +2776,11 @@ void DataSourceWidget::onSaveProject()
 		input.setWindowTitle(tr("Save project as..."));
 		int ret = input.exec();
 
-		if(!ret){
+		if (!ret){
 			return;
 		}
 
-		if(input.textValue().isEmpty() == true){
+		if (input.textValue().isEmpty() == true){
 			again = true;
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("Save project warning"));
@@ -2766,13 +2789,13 @@ void DataSourceWidget::onSaveProject()
 			messageBox.setStandardButtons(QMessageBox::Ok);
 			messageBox.setDefaultButton(QMessageBox::Ok);
 			messageBox.exec();
-		}else{
+		}
+		else{
 			again = false;
 			//realizacja zapisu
 			saveProject(input.textValue().toStdString(), filesLoadedToDM);
 		}
-	}while(again);
-
+	} while (again);
 }
 
 void DataSourceWidget::onDeleteProject()
@@ -2791,13 +2814,13 @@ void DataSourceWidget::onLoadProject()
 
 void DataSourceWidget::trySaveProjects()
 {
-	if(projects.empty() == true){
+	if (projects.empty() == true){
 		std::string projectsFile(DataSourcePathsManager::instance()->projectsPath().filename().string());
-		if(DataSourceLocalStorage::instance()->fileIsLocal(projectsFile) == true){
+		if (DataSourceLocalStorage::instance()->fileIsLocal(projectsFile) == true){
 			try{
 				DataSourceLocalStorage::instance()->removeFile(projectsFile);
-			}catch(...){
-
+			}
+			catch (...){
 			}
 		}
 		return;
@@ -2805,38 +2828,35 @@ void DataSourceWidget::trySaveProjects()
 
 	std::ofstream projectsOut(DataSourcePathsManager::instance()->projectsPath().string());
 
-	if(projectsOut.is_open() == false){
+	if (projectsOut.is_open() == false){
 		//TODO
 		//błąd zapisu
 	}
 
 	try{
-
-	for(auto it = projects.begin(); it != projects.end(); ++it){
-		projectsOut << it->first << ":";
-		auto fIT = it->second.begin();
-		projectsOut << *fIT;
-		++fIT;
-		for( ; fIT != it->second.end(); ++ fIT){
-			projectsOut<< "," << *fIT;
+		for (auto it = projects.begin(); it != projects.end(); ++it){
+			projectsOut << it->first << ":";
+			auto fIT = it->second.begin();
+			projectsOut << *fIT;
+			++fIT;
+			for (; fIT != it->second.end(); ++fIT){
+				projectsOut << "," << *fIT;
+			}
+			projectsOut << ";" << std::endl;
 		}
-		projectsOut << ";" << std::endl;
+
+		projectsOut.close();
+
+		DataSourceLocalStorage::instance()->loadFile(DataSourcePathsManager::instance()->projectsPath());
 	}
-
-	projectsOut.close();
-
-	DataSourceLocalStorage::instance()->loadFile(DataSourcePathsManager::instance()->projectsPath());
-
-	}catch(...){
-
+	catch (...){
 	}
 }
 
 void DataSourceWidget::tryLoadProjects()
 {
 	try{
-
-		if(DataSourceLocalStorage::instance()->fileIsLocal(DataSourcePathsManager::instance()->projectsPath().filename().string()) == false){
+		if (DataSourceLocalStorage::instance()->fileIsLocal(DataSourcePathsManager::instance()->projectsPath().filename().string()) == false){
 			return;
 		}
 
@@ -2844,45 +2864,43 @@ void DataSourceWidget::tryLoadProjects()
 
 		std::ifstream projectsInput(DataSourcePathsManager::instance()->projectsPath().string());
 
-		while(projectsInput.good()){
-
+		while (projectsInput.good()){
 			std::string line;
 			std::getline(projectsInput, line);
 
-			if(line.empty() == true || line.size() < 4){
+			if (line.empty() == true || line.size() < 4){
 				continue;
 			}
 
 			//parsujemy
 			std::string::size_type pos = line.find(':', 1);
 
-			if(pos != std::string::npos){
+			if (pos != std::string::npos){
 				using namespace boost;
 				//mamy nazwę
 				std::string projectName(line.substr(0, pos));
 				std::set<int> files;
 				//szukam plików
 				static const char_separator<char> sep(":,;");
-				auto filesString = line.substr(pos+1, line.size()-1);
+				auto filesString = line.substr(pos + 1, line.size() - 1);
 				tokenizer< char_separator<char> > tokens(filesString, sep);
-				for(auto it = tokens.begin(); it != tokens.end(); ++it){
-
-					if((*it).empty() == false){
+				for (auto it = tokens.begin(); it != tokens.end(); ++it){
+					if ((*it).empty() == false){
 						try{
 							files.insert(boost::lexical_cast<int>(*it));
-						}catch(...){
-
+						}
+						catch (...){
 						}
 					}
 				}
 
-				if(files.empty() == false){
+				if (files.empty() == false){
 					projects[projectName] = files;
 				}
 			}
 		}
-	}catch(...){
-
+	}
+	catch (...){
 	}
 }
 
@@ -2910,117 +2928,115 @@ void DataSourceWidget::setPatientCard(webservices::MedicalShallowCopy::Patient *
 
 void DataSourceWidget::saveCredentials()
 {
-    QSettings settings(getCredentialsIniPath(), QSettings::IniFormat);
-    QString usr = userEdit->text();
-    QString pwd = passwordEdit->text();
-    QString chk = rememberMeCheckBox->isChecked() ? "true" : "false";
-    settings.setValue(crypt("User", false), crypt(usr, true));
-    settings.setValue(crypt("Password", false), crypt(pwd, true));
-    settings.setValue(crypt("Remember", false), crypt(chk, true));
+	QSettings settings(getCredentialsIniPath(), QSettings::IniFormat);
+	QString usr = userEdit->text();
+	QString pwd = passwordEdit->text();
+	QString chk = rememberMeCheckBox->isChecked() ? "true" : "false";
+	settings.setValue(crypt("User", false), crypt(usr, true));
+	settings.setValue(crypt("Password", false), crypt(pwd, true));
+	settings.setValue(crypt("Remember", false), crypt(chk, true));
 }
 
 void DataSourceWidget::loadCredentials()
 {
-    QSettings settings(getCredentialsIniPath(), QSettings::IniFormat);
-    QString usr = settings.value(crypt("User", false)).toString();
-    QString pwd = settings.value(crypt("Password", false)).toString();
-    QString chk = settings.value(crypt("Remember", false)).toString();
-    userEdit->setText(crypt(usr, false));
-    passwordEdit->setText(crypt(pwd, false));
-    rememberMeCheckBox->setChecked(crypt(chk, false) == "true");
+	QSettings settings(getCredentialsIniPath(), QSettings::IniFormat);
+	QString usr = settings.value(crypt("User", false)).toString();
+	QString pwd = settings.value(crypt("Password", false)).toString();
+	QString chk = settings.value(crypt("Remember", false)).toString();
+	userEdit->setText(crypt(usr, false));
+	passwordEdit->setText(crypt(pwd, false));
+	rememberMeCheckBox->setChecked(crypt(chk, false) == "true");
 }
-
 
 void DataSourceWidget::clearCredentials()
 {
-    QSettings settings(getCredentialsIniPath(), QSettings::IniFormat);
-    QString usr = "";
-    QString pwd = "";
-    QString chk = "false";
-    settings.setValue(crypt("User", false), crypt(usr, true));
-    settings.setValue(crypt("Password", false), crypt(pwd, true));
-    settings.setValue(crypt("Remember", false), crypt(chk, true));
+	QSettings settings(getCredentialsIniPath(), QSettings::IniFormat);
+	QString usr = "";
+	QString pwd = "";
+	QString chk = "false";
+	settings.setValue(crypt("User", false), crypt(usr, true));
+	settings.setValue(crypt("Password", false), crypt(pwd, true));
+	settings.setValue(crypt("Remember", false), crypt(chk, true));
 }
 
-
-QString DataSourceWidget::crypt( const QString& input, bool encyprt ) const
+QString DataSourceWidget::crypt(const QString& input, bool encyprt) const
 {
-    QByteArray tempArray = input.toLocal8Bit();
-    const char* indata = tempArray.data();
-    auto length = strlen(indata);
-    boost::scoped_array<unsigned char> outdata(new unsigned char [length]);
-    
-    
-    unsigned char ckey[] = "XlzuthN1WoyiDzsj";
-    unsigned char ivec[] = "4SX9GRId6tAtHzmx";
+	QByteArray tempArray = input.toLocal8Bit();
+	const char* indata = tempArray.data();
+	auto length = strlen(indata);
+	boost::scoped_array<unsigned char> outdata(new unsigned char[length]);
 
-    AES_KEY key;
-    AES_set_encrypt_key(ckey, 128, &key);
+	unsigned char ckey[] = "XlzuthN1WoyiDzsj";
+	unsigned char ivec[] = "4SX9GRId6tAtHzmx";
 
-    int num = 0;
-    AES_cfb128_encrypt((const unsigned char*)indata, outdata.get(), length, &key, ivec, &num, encyprt? AES_ENCRYPT:AES_DECRYPT);
+	AES_KEY key;
+	AES_set_encrypt_key(ckey, 128, &key);
 
-    QString output = QString::fromLocal8Bit((const char*)outdata.get(), length);
-    return output;
+	int num = 0;
+	AES_cfb128_encrypt((const unsigned char*)indata, outdata.get(), length, &key, ivec, &num, encyprt ? AES_ENCRYPT : AES_DECRYPT);
+
+	QString output = QString::fromLocal8Bit((const char*)outdata.get(), length);
+	return output;
 }
 
-void DataSourceWidget::setCompactMode( bool compact )
+void DataSourceWidget::setCompactMode(bool compact)
 {
-    // medusa_code
-    this->patientCardPlaceholerWidget->setVisible(!compact);
-    this->perspectiveComboBox->setVisible(!compact);
-    this->perspectiveLabel->setVisible(!compact);
-    //this->filterLabel->setVisible(!compact);
+	// medusa_code
+	this->patientCardPlaceholerWidget->setVisible(!compact);
+	this->perspectiveComboBox->setVisible(!compact);
+	this->perspectiveLabel->setVisible(!compact);
+	//this->filterLabel->setVisible(!compact);
 
-    QWidget* w = dynamic_cast<QWidget*>(filterLabel->parent());
-    if (w) {
-        w->layout()->setSpacing(compact ? 0 : 3);
-    }
-    //this->filterComboBox->setVisible(!compact);
-    int margin = compact ? 0 : 9;
-    this->dataViewWidget->setContentsMargins(0,0,0,0);
-    this->motionDataTab->setContentsMargins(0,0,0,0);
+	QWidget* w = dynamic_cast<QWidget*>(filterLabel->parent());
+	if (w) {
+		w->layout()->setSpacing(compact ? 0 : 3);
+	}
+	//this->filterComboBox->setVisible(!compact);
+	int margin = compact ? 0 : 9;
+	this->dataViewWidget->setContentsMargins(0, 0, 0, 0);
+	this->motionDataTab->setContentsMargins(0, 0, 0, 0);
 }
 
-bool hasChild(core::IHierarchyItemConstPtr root, const QString& childName) 
+bool hasChild(core::IHierarchyItemConstPtr root, const QString& childName)
 {
-    for (int i = root->getNumChildren() - 1; i >= 0; --i) {
-        if (root->getChild(i)->getName() == childName) {
-            return true;
-        }
-    }
-    return false;
+	for (int i = root->getNumChildren() - 1; i >= 0; --i) {
+		if (root->getChild(i)->getName() == childName) {
+			return true;
+		}
+	}
+	return false;
 }
-void DataSourceWidget::updateOrAddRoot( core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots, core::IMemoryDataManager::HierarchyTransactionPtr hierarchyTransaction )
+void DataSourceWidget::updateOrAddRoot(core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots, core::IMemoryDataManager::HierarchyTransactionPtr hierarchyTransaction)
 {
-    auto it = name2root.find(root->getName());
-    if (it != name2root.end()) {
-        for (int i = root->getNumChildren() - 1; i >= 0; --i) {
-            auto nroot = utils::const_pointer_cast<core::IHierarchyItem>(it->second);
-            auto nchild = utils::const_pointer_cast<core::IHierarchyItem>(root->getChild(i));
-            if (!hasChild(nroot, nchild->getName())) {
-                nroot->appendChild(nchild);
-                hierarchyTransaction->updateRoot(nroot);
-            }
-        }
-    } else {
-        name2root[root->getName()] = root;
-        roots.insert(root);
-        hierarchyTransaction->addRoot(root);
-    }
+	auto it = name2root.find(root->getName());
+	if (it != name2root.end()) {
+		for (int i = root->getNumChildren() - 1; i >= 0; --i) {
+			auto nroot = utils::const_pointer_cast<core::IHierarchyItem>(it->second);
+			auto nchild = utils::const_pointer_cast<core::IHierarchyItem>(root->getChild(i));
+			if (!hasChild(nroot, nchild->getName())) {
+				nroot->appendChild(nchild);
+				hierarchyTransaction->updateRoot(nroot);
+			}
+		}
+	}
+	else {
+		name2root[root->getName()] = root;
+		roots.insert(root);
+		hierarchyTransaction->addRoot(root);
+	}
 }
 
 void DataSourceWidget::onForced()
 {
-    filesToDownload = filesToForcedDownload;
-    onDownload();
+	filesToDownload = filesToForcedDownload;
+	onDownload();
 }
 
 QString DataSourceWidget::getCredentialsIniPath() const
 {
-    //auto path = plugin::getPaths()->getUserApplicationDataPath() / (crypt("Credentials", false).toStdString() + ".dat");
-    auto path = plugin::getPaths()->getUserApplicationDataPath() / "ncconf.dat";
-    return QString::fromStdString(path.string());
+	//auto path = plugin::getPaths()->getUserApplicationDataPath() / (crypt("Credentials", false).toStdString() + ".dat");
+	auto path = plugin::getPaths()->getUserApplicationDataPath() / "ncconf.dat";
+	return QString::fromStdString(path.string());
 }
 
 bool DataSourceWidget::synchronizationRequiredDialog()

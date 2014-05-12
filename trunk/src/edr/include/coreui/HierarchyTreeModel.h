@@ -3,9 +3,9 @@
 	created:	17:4:2013   10:13
 	filename: 	HierarchyTreeModel.h
 	author:		Wojciech Kniec
-	
-	purpose:	
-*********************************************************************/
+
+	purpose:
+	*********************************************************************/
 
 #ifndef HEADER_GUARD_COREUI__HierarchyTreeModel_H__
 #define HEADER_GUARD_COREUI__HierarchyTreeModel_H__
@@ -21,56 +21,52 @@
 #include <corelib/IFilterCommand.h>
 
 namespace coreUI {
+	//! Klasa jest poœrednikiem pomiêdzy hierarchiczn¹ struktur¹ opart¹ na IHierarchyItem, a klasami widoku Qt
+	class COREUI_EXPORT HierarchyTreeModel : public QAbstractItemModel
+	{
+		Q_OBJECT
+	public:
+		HierarchyTreeModel(QObject* parent = nullptr);
+		virtual ~HierarchyTreeModel();
 
+	public:
+		QVariant data(const QModelIndex &index, int role) const;
+		Qt::ItemFlags flags(const QModelIndex &index) const;
+		QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+		QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+		QModelIndex parent(const QModelIndex &index) const;
+		int rowCount(const QModelIndex &parent = QModelIndex()) const;
+		int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-//! Klasa jest poœrednikiem pomiêdzy hierarchiczn¹ struktur¹ opart¹ na IHierarchyItem, a klasami widoku Qt
-class COREUI_EXPORT HierarchyTreeModel : public QAbstractItemModel
-{
-    Q_OBJECT
-public:
-    HierarchyTreeModel(QObject* parent = nullptr);
-    virtual ~HierarchyTreeModel();
+		void addRootItem(core::IHierarchyItemConstPtr root);
+		void removeRootItem(core::IHierarchyItemConstPtr root);
+		void updateItem(core::IHierarchyItemConstPtr item);
+		void clear();
+		int getNumChildren() const;
+		core::IHierarchyItemConstPtr getChild(int idx);
 
-public:
-    QVariant data(const QModelIndex &index, int role) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex &index) const;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+		core::IHierarchyItemConstPtr internalSmart(const QModelIndex& idx) const;
 
-    void addRootItem(core::IHierarchyItemConstPtr root);
-    void removeRootItem(core::IHierarchyItemConstPtr root);
-    void updateItem(core::IHierarchyItemConstPtr item);
-    void clear();
-    int getNumChildren() const;
-    core::IHierarchyItemConstPtr getChild(int idx);
-    
-    core::IHierarchyItemConstPtr internalSmart(const QModelIndex& idx) const;
+		void applyChange(const core::IMemoryDataManagerHierarchy::HierarchyChange& change);
+		void applyChanges(const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes);
 
-    void applyChange( const core::IMemoryDataManagerHierarchy::HierarchyChange& change );
-    void applyChanges( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes );
+		void setFilter(const core::IFilterCommandPtr& filter);
 
+		void rebuildFilteredRoots();
 
-    void setFilter(const core::IFilterCommandPtr& filter);
+	private:
+		QModelIndex createSmartIndex(int row, int col, core::IHierarchyItemConstPtr ptr) const;
+		void clearSmartIndex(core::IHierarchyItemConstPtr ptr);
+		bool hasChild(core::IHierarchyItemConstPtr parent, core::IHierarchyItemConstPtr child) const;
 
-    void rebuildFilteredRoots();
+	private:
+		mutable std::map<const void*, core::IHierarchyItemConstWeakPtr> raw2Smart;
+		//core::IHierarchyItemPtr rootItem;
+		std::vector<core::IHierarchyItemConstPtr> roots;
 
-private:
-    QModelIndex createSmartIndex(int row, int col, core::IHierarchyItemConstPtr ptr) const;
-    bool hasChild(core::IHierarchyItemConstPtr parent, core::IHierarchyItemConstPtr child) const;
-    
-private:
-    mutable std::map<const void*, core::IHierarchyItemConstWeakPtr> raw2Smart;
-    //core::IHierarchyItemPtr rootItem;
-    std::vector<core::IHierarchyItemConstPtr> roots;
-
-    std::vector<core::IHierarchyItemConstPtr> rootOrigins;
-    core::IFilterCommandPtr currentFilter;
-};
-
-
+		std::vector<core::IHierarchyItemConstPtr> rootOrigins;
+		core::IFilterCommandPtr currentFilter;
+	};
 }
 
 #endif
