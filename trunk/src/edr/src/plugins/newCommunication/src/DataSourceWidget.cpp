@@ -2651,6 +2651,24 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 
 			files2roots.erase(entry);
 		}
+		else{
+			auto locFiles2roots = files2roots;
+
+			//szukam po rootach czy ich przecięcie z aktualną grupą istnieje
+			for (auto IT = locFiles2roots.begin(); IT != locFiles2roots.end(); ++IT){
+				std::vector<int> inter(min(files.size(), IT->first.size()));
+				auto retIT = std::set_intersection(files.begin(), files.end(), IT->first.begin(), IT->first.end(), inter.begin());
+				if (std::distance(inter.begin(), retIT) == IT->first.size()){
+					auto roots = IT->second;
+					for (auto it = roots.begin(); it != roots.end(); ++it) {
+						hierarchyTransaction->removeRoot(*it);
+						name2root.erase((*it)->getName());
+					}
+
+					files2roots.erase(IT->first);
+				}
+			}
+		}
 	}
 
 	std::vector<int> diff(filesLoadedToDM.size() - unloadedFiles.size());
