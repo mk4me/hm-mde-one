@@ -137,8 +137,10 @@ lastView(nullptr)
 
 void dicom::LayeredImageVisualizerView::acceptAnnotation()
 {
-	if (verifySerie() == false ||
-		QMessageBox::question(this, tr("Annotations acceptance verification"), tr("Are You sure You want to permanently accept verified annotations?")) == QMessageBox::No){
+	if (verifySerie() == false || QMessageBox::question(this,
+				tr("Annotations acceptance verification"),
+				tr("Are You sure You want to permanently accept verified annotations?"),
+				QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
 		return;
 	}
 
