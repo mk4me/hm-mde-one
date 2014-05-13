@@ -35,7 +35,13 @@ lastView(nullptr)
 	ui->treeView->header()->setResizeMode(QHeaderView::ResizeToContents);
 	ui->treeView->setItemDelegateForColumn(0, adnotationDelegate0);
 	ui->treeView->setItemDelegateForColumn(1, adnotationDelegate1);
+
+	ui->treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
+	ui->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+	connect(model, SIGNAL(changeSelection(const QModelIndex&)), this, SLOT(changeSelection(const QModelIndex &)));
 	connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
+
 
 	coreUI::CoreAction*  undo = new coreUI::CoreAction(tr("Edit"), QIcon(":/dicom/undo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
 	coreUI::CoreAction*  redo = new coreUI::CoreAction(tr("Edit"), QIcon(":/dicom/redo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
@@ -275,16 +281,7 @@ void dicom::LayeredImageVisualizerView::refresh()
 		}
 
 		int row = 0;
-
-		if (model->userIsReviewer() == false){
-			for (int i = 0; i < treeModel->getImage()->getNumTags(); ++i){
-				if (treeModel->getImage()->getTag(i) == model->getUserName()){
-					row = i;
-					break;
-				}
-			}
-		}
-
+		
 		auto idx = treeModel->index(row, 0);
 
 		ui->treeView->setCurrentIndex(idx);
@@ -525,4 +522,10 @@ void dicom::LayeredImageVisualizerView::setAnnotationStatus(webservices::xmlWsdl
 		ui->label->setText(tr("ANNOTATIONS - verified"));
 		break;
 	}
+}
+
+void dicom::LayeredImageVisualizerView::changeSelection(const QModelIndex &mi)
+{
+	ui->treeView->selectionModel()->select(mi, QItemSelectionModel::ClearAndSelect);
+	selectionChanged(mi);
 }

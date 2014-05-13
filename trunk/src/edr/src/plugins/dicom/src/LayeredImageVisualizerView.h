@@ -61,6 +61,8 @@ namespace dicom {
 		void noiseState();
 
 		void editSelectedSerie();
+		
+		void changeSelection(const QModelIndex &);
 		void selectionChanged(const QModelIndex &);
 
 		void acceptAnnotation();

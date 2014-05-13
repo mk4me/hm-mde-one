@@ -118,6 +118,7 @@ namespace dicom {
 
     Q_SIGNALS:
         void serieChanged();        
+		void changeSelection(const QModelIndex&);
 
     private:
 

@@ -192,6 +192,7 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
             Qt::CheckState checked = static_cast< Qt::CheckState >( value.toInt() );
             std::string tag = image->getTag(td->tag);
             image->setTagVisible(tag, checked == Qt::Checked);
+			emit changeSelection(index);
         }
 
     } else if (role == Qt::EditRole) {

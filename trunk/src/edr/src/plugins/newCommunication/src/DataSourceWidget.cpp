@@ -135,45 +135,45 @@ void LocalDataLoader::run()
 	// dlaczego to jestg tutaj? Skoro to byl request dla shallow to znaczy ze dostałem pełną płytką kopię
 	// to powinno być realizowane gdzieś wyżej, na poziomie metody void DataSourceWidget::performShallowCopyUpdate()
 
-	if (wasShallow) {
-        auto time = sourceWidget->lastSynchroTime;
-        webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
-		DataSourceLocalStorage* locals = DataSourceLocalStorage::instance();
+	//if (wasShallow) {
+ //       auto time = sourceWidget->lastSynchroTime;
+ //       webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
+	//	DataSourceLocalStorage* locals = DataSourceLocalStorage::instance();
 
-		auto& shallowTrials = sourceWidget->dataSource->fullShallowCopy.motionShallowCopy->trials;
-		
-		PLUGIN_LOG_INFO("Auto-update...");
-        auto addToDownload = [&]( const webservices::IncrementalBranchShallowCopy::Trials& trials ) -> void
-        {
-            for (auto it = trials.begin(); it != trials.end(); ++it) {
-                for (auto iFile = it->addedFiles.begin(); iFile != it->addedFiles.end(); ++iFile) {
-					auto shallowTrial = shallowTrials[iFile->trialID];
-					bool toAdd = false;
-					// jesli choc jeden plik triala jest lokalny, to nowododany plik sciagamy
-					for (auto tf = shallowTrial->files.begin(); tf != shallowTrial->files.end(); ++tf) {
-						if (locals->fileIsLocal(tf->second->fileName)) {
-							sourceWidget->filesToDownload.insert(iFile->fileID);
-							PLUGIN_LOG_INFO("Downloading: " << iFile->fileName);
-							break;
-						}
-					}
-                }
-                for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
-					if (locals->fileIsLocal(iFile->fileName)) {
-						sourceWidget->filesToDownload.insert(iFile->fileID);
-						PLUGIN_LOG_INFO("Downloading: " << iFile->fileName);
-					}
-                } 
-            }
-        };
+	//	auto& shallowTrials = sourceWidget->dataSource->fullShallowCopy.motionShallowCopy->trials;
+	//	
+	//	PLUGIN_LOG_INFO("Auto-update...");
+ //       auto addToDownload = [&]( const webservices::IncrementalBranchShallowCopy::Trials& trials ) -> void
+ //       {
+ //           for (auto it = trials.begin(); it != trials.end(); ++it) {
+ //               for (auto iFile = it->addedFiles.begin(); iFile != it->addedFiles.end(); ++iFile) {
+	//				auto shallowTrial = shallowTrials[iFile->trialID];
+	//				bool toAdd = false;
+	//				// jesli choc jeden plik triala jest lokalny, to nowododany plik sciagamy
+	//				for (auto tf = shallowTrial->files.begin(); tf != shallowTrial->files.end(); ++tf) {
+	//					if (locals->fileIsLocal(tf->second->fileName)) {
+	//						sourceWidget->filesToDownload.insert(iFile->fileID);
+	//						PLUGIN_LOG_INFO("Downloading: " << iFile->fileName);
+	//						break;
+	//					}
+	//				}
+ //               }
+ //               for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
+	//				if (locals->fileIsLocal(iFile->fileName)) {
+	//					sourceWidget->filesToDownload.insert(iFile->fileID);
+	//					PLUGIN_LOG_INFO("Downloading: " << iFile->fileName);
+	//				}
+ //               } 
+ //           }
+ //       };
 
-		addToDownload(incCpy.added.trials);
-		addToDownload(incCpy.modified.trials);
+	//	addToDownload(incCpy.added.trials);
+	//	addToDownload(incCpy.modified.trials);
 
-		if (sourceWidget->filesToDownload.empty() == false){
-			sourceWidget->onDownload();
-		}
-	}
+	//	if (sourceWidget->filesToDownload.empty() == false){
+	//		sourceWidget->onDownload();
+	//	}
+	//}
 }
 
 void LocalDataLoader::prepareStatusWidget()

@@ -72,6 +72,7 @@ private:
     
 Q_SIGNALS:
     void editCompleted(const QString &);
+	void changeSelection(const QModelIndex&);
 };
 
 }

@@ -116,7 +116,7 @@ plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie( const utils::
     if (series.size() == 1) {
         setActiveSerie(series[0]);
     }
-
+	connect(serie->getLayersModel(), SIGNAL(changeSelection(const QModelIndex&)), this, SIGNAL(changeSelection(const QModelIndex&)));
     Q_EMIT serieChanged();
 
     return serie; 
