@@ -1,11 +1,11 @@
 /********************************************************************
-    created:  2014/03/26
-    created:  26:3:2014   12:39
-    filename: AnnotationStatusFilter.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2014/03/26
+	created:  26:3:2014   12:39
+	filename: AnnotationStatusFilter.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
 #define HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
 
@@ -14,10 +14,8 @@
 
 namespace dicom
 {
-
 	class AnnotationStatusFilter : public DataSourceFilter
 	{
-
 	public:
 		//! Zbiór identyfikatorów
 		typedef std::set<int> Identifiers;
@@ -46,13 +44,12 @@ namespace dicom
 		//! Nazwa filtra
 		const std::string name_;
 		//! Identyfikatory
-		Identifiers identifiers;
+		mutable Identifiers identifiers;
 		//! Czy akceptowaæ jeœli znajdziemy identyfikator
 		const bool accept;
 		//! Czy akceptowaæ jeœli nie znajdziemy identyfikator
 		const bool missingDefault;
 	};
-
 }
 
 #endif	//	HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
