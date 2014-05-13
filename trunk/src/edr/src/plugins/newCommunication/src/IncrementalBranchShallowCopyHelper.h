@@ -59,7 +59,7 @@ namespace communication {
         //! Zbiór callbacków realizujących obsługę stanu zlecenia pojedynczego ściągania
         CommunicationManager::RequestCallbacks singleTransferCallbacks;
         CommunicationManager* communicationManager;
-        State state;
+        mutable State state;
         std::string error;
     };
 }
