@@ -1,0 +1,6 @@
+ADD_TEST_PROJECT(vidlib "vidlib;BOOST" vidlib)
+ADD_TEST_PROJECT(utils "OSG;utils" utils)
+ADD_TEST_PROJECT(kinematiclib "kinematiclib" kinematiclib)
+ADD_TEST_PROJECT(dflib "dflib;BOOST;QT;OSG;threading" dflib)
+ADD_TEST_PROJECT(timelinelib "timelinelib;utils;BOOST" timelinelib)
+ADD_TEST_PROJECT(threading "utils;BOOST;QT;OPENTHREADS;threading" threading)
