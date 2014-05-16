@@ -5,12 +5,11 @@
 
 MRNodeImpl::MRNodeImpl() : paused_(false)
 {
-
 }
 
 void MRNodeImpl::pause()
 {
-	if(paused_ == false)
+	if (paused_ == false)
 	{
 		paused_ = true;
 		syncPolicy.lock();
@@ -19,7 +18,7 @@ void MRNodeImpl::pause()
 
 void MRNodeImpl::resume()
 {
-	if(paused_ == true)
+	if (paused_ == true)
 	{
 		paused_ = false;
 		syncPolicy.unlock();
@@ -33,18 +32,16 @@ const bool MRNodeImpl::paused() const
 
 void MRNodeImpl::tryPause()
 {
-	utils::ScopedLock<utils::StrictSyncPolicy> lock(syncPolicy);
+	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(syncPolicy);
 }
-
 
 MRSourceNodeImpl::MRSourceNodeImpl(IMRSourceNode * source, unsigned int toConsume) : source_(source), toConsume(toConsume), currentlyConsumed(0)
 {
-
 }
 
 MRSourceNodeImpl::~MRSourceNodeImpl()
 {
-	for(auto it = outputPins.begin(); it != outputPins.end(); ++it){
+	for (auto it = outputPins.begin(); it != outputPins.end(); ++it){
 		delete *it;
 	}
 }
@@ -52,7 +49,7 @@ MRSourceNodeImpl::~MRSourceNodeImpl()
 void MRSourceNodeImpl::updateSrc()
 {
 	++currentlyConsumed;
-	if(currentlyConsumed == toConsume)
+	if (currentlyConsumed == toConsume)
 	{
 		currentlyConsumed = 0;
 		source_->unlockSrcProcessing();
@@ -61,7 +58,7 @@ void MRSourceNodeImpl::updateSrc()
 
 void MRSourceNodeImpl::updateOutputs()
 {
-	for(auto it = outputPins.begin(); it != outputPins.end(); ++it)
+	for (auto it = outputPins.begin(); it != outputPins.end(); ++it)
 	{
 		(*it)->update();
 	}
@@ -69,7 +66,7 @@ void MRSourceNodeImpl::updateOutputs()
 
 void MRSourceNodeImpl::resetOutputs()
 {
-	for(auto it = outputPins.begin(); it != outputPins.end(); ++it)
+	for (auto it = outputPins.begin(); it != outputPins.end(); ++it)
 	{
 		(*it)->reset();
 	}
@@ -77,7 +74,7 @@ void MRSourceNodeImpl::resetOutputs()
 
 void MRSourceNodeImpl::addPin(MROutputPin * pin)
 {
-	if(std::find(outputPins.begin(), outputPins.end(), pin) != outputPins.end())
+	if (std::find(outputPins.begin(), outputPins.end(), pin) != outputPins.end())
 	{
 		throw std::runtime_error("Pin already added to node");
 	}
@@ -107,12 +104,11 @@ const MROutputPin * MRSourceNodeImpl::pin(size_type idx) const
 
 MRSinkNodeImpl::MRSinkNodeImpl(IMRSinkNode * sink, unsigned int toConsume) : sink_(sink), toConsume(toConsume), readyToConsume(0)
 {
-
 }
 
 MRSinkNodeImpl::~MRSinkNodeImpl()
 {
-	for(auto it = inputPins.begin(); it != inputPins.end(); ++it){
+	for (auto it = inputPins.begin(); it != inputPins.end(); ++it){
 		delete *it;
 	}
 }
@@ -120,7 +116,7 @@ MRSinkNodeImpl::~MRSinkNodeImpl()
 void MRSinkNodeImpl::updateSnk()
 {
 	++readyToConsume;
-	if(readyToConsume == toConsume)
+	if (readyToConsume == toConsume)
 	{
 		readyToConsume = 0;
 		sink_->unlockSnkProcessing();
@@ -129,7 +125,7 @@ void MRSinkNodeImpl::updateSnk()
 
 void MRSinkNodeImpl::consumeInputs()
 {
-	for(auto it = inputPins.begin(); it != inputPins.end(); ++it)
+	for (auto it = inputPins.begin(); it != inputPins.end(); ++it)
 	{
 		(*it)->consumeData();
 	}
@@ -137,7 +133,7 @@ void MRSinkNodeImpl::consumeInputs()
 
 void MRSinkNodeImpl::resetInputs()
 {
-	for(auto it = inputPins.begin(); it != inputPins.end(); ++it)
+	for (auto it = inputPins.begin(); it != inputPins.end(); ++it)
 	{
 		(*it)->reset();
 	}
@@ -145,7 +141,7 @@ void MRSinkNodeImpl::resetInputs()
 
 void MRSinkNodeImpl::addPin(MRInputPin * pin)
 {
-	if(std::find(inputPins.begin(), inputPins.end(), pin) != inputPins.end())
+	if (std::find(inputPins.begin(), inputPins.end(), pin) != inputPins.end())
 	{
 		throw std::runtime_error("Pin already added to node");
 	}

@@ -1,11 +1,11 @@
 /********************************************************************
-    created:  2014/01/09
-    created:  9:1:2014   8:32
-    filename: ImuCostume.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2014/01/09
+	created:  9:1:2014   8:32
+	filename: ImuCostume.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD_IMUCOSTUME__IMUCOSTUME_H__
 #define HEADER_GUARD_IMUCOSTUME__IMUCOSTUME_H__
 
@@ -15,12 +15,11 @@
 #include <vector>
 #include <osg/Vec3>
 #include <osg/Quat>
-#include <boost/shared_ptr.hpp>
+#include <utils/SmartPtr.h>
 #include <boost/noncopyable.hpp>
 
 namespace imuCostume
 {
-
 	//! Wewnêtrzna implementacja kostiumu
 	class CostumeImpl;
 
@@ -76,7 +75,7 @@ namespace imuCostume
 		Costume(const std::string & ip = std::string(),
 			const unsigned int port = 1234, const float timeout = 0.01);
 		//! Destruktor
-		~Costume();		
+		~Costume();
 
 		//! \return Adres kostiumu
 		const std::string & ip() const;
@@ -88,7 +87,7 @@ namespace imuCostume
 		const CostumePacket costumePacket() const;
 		//! \return Czy dane gotowe do odbioru
 		const bool ready() const;
-		//! Metoda czytaj¹ca pojedynczy pakiet danych z kostiumu		
+		//! Metoda czytaj¹ca pojedynczy pakiet danych z kostiumu
 		void readPacket();
 		//! \return Czas na odbiór jednego pakietu
 		const float timeout() const;
@@ -97,9 +96,8 @@ namespace imuCostume
 
 	private:
 		//! Wewnêtrzna implementacja
-		boost::shared_ptr<CostumeImpl> impl_;
+		utils::shared_ptr<CostumeImpl> impl_;
 	};
-
 }
 
 #endif	//	HEADER_GUARD_IMUCOSTUME__IMUCOSTUME_H__

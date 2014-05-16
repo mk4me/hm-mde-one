@@ -1,11 +1,11 @@
 /********************************************************************
-    created:  2012/12/10
-    created:  10:12:2012   17:32
-    filename: MRNode.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2012/12/10
+	created:  10:12:2012   17:32
+	filename: MRNode.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___MRNODE_H__
 #define HEADER_GUARD___MRNODE_H__
 
@@ -15,9 +15,9 @@
 #include <dflib/IDFNode.h>
 #include "MRNodeImpl.h"
 
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/Synchronized.h>
 
-class MRSinkNode : public IMRSinkNode, public utils::SynchronizedT<true>
+class MRSinkNode : public IMRSinkNode, public threadingUtils::SynchronizedT<true>
 {
 public:
 
@@ -55,7 +55,7 @@ private:
 	df::IDFSink * sink_;
 };
 
-class MRSourceNode : public IMRSourceNode, public utils::SynchronizedT<true>
+class MRSourceNode : public IMRSourceNode, public threadingUtils::SynchronizedT<true>
 {
 public:
 
@@ -70,11 +70,11 @@ public:
 	virtual const bool paused() const;
 
 	virtual void tryPause();
-	
+
 	virtual void updateSrc();
 
 	virtual void reset();
-	
+
 	virtual void lockSrcProcessing();
 	virtual void unlockSrcProcessing();
 
@@ -93,7 +93,7 @@ private:
 	df::IDFSource * source_;
 };
 
-class MRProcessingNode : public IMRProcessingNode, public utils::SynchronizedT<true>
+class MRProcessingNode : public IMRProcessingNode, public threadingUtils::SynchronizedT<true>
 {
 public:
 

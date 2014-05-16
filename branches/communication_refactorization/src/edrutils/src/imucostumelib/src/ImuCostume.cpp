@@ -1,5 +1,5 @@
 #include <imucostumelib/ImuCostume.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 #include <boost/asio.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/array.hpp>
@@ -14,22 +14,23 @@ public:
 
 public:
 	CostumeImpl(const std::string & ip, const unsigned int port, const float timeout) :
-	  ip_(ip), port_(port), timeout_(0.0), ready_(false), imusNumber_(Costume::MaxIMUsPerCostume),
-		  io_service(), socket(io_service),
-		  serverEndpoint(ip.empty() == true ? boost::asio::ip::address_v4::broadcast() :
-		  boost::asio::ip::address::from_string(ip), port),
-		  deadline(io_service)
+		ip_(ip), port_(port), timeout_(0.0), ready_(false), imusNumber_(Costume::MaxIMUsPerCostume),
+		io_service(), socket(io_service),
+		serverEndpoint(ip.empty() == true ? boost::asio::ip::address_v4::broadcast() :
+		boost::asio::ip::address::from_string(ip), port),
+		deadline(io_service)
 	{
 		setTimeout(timeout);
 
 		boost::system::error_code error;
 		socket.open(boost::asio::ip::udp::v4(), error);
-		if(!error) {			
+		if (!error) {
 			socket.bind(
 				boost::asio::ip::udp::endpoint(
-					boost::asio::ip::address_v4::any(),
-					port));
-		}else{
+				boost::asio::ip::address_v4::any(),
+				port));
+		}
+		else{
 			throw std::runtime_error(error.message());
 		}
 	}
@@ -37,18 +38,17 @@ public:
 	//! Destruktor
 	~CostumeImpl()
 	{
-
 	}
 
 	const float timeout() const
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(synch);
+		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
 		return timeout_;
 	}
 
 	void setTimeout(const float timeout)
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(synch);
+		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
 		timeout_ = timeout;
 	}
 
@@ -70,20 +70,20 @@ public:
 	//! \return Opis odebranych danych kostiumu - odczyty IMU + stan odczytów
 	const Costume::CostumePacket costumePacket() const
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(synch);
+		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
 		return costumePacket_;
 	}
 	//! \return Czy dane gotowe do odbioru
 	const bool ready() const
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(synch);
+		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
 		return ready_;
 	}
 
 	//! Metoda czytaj¹ca pojedynczy pakiet danych z kostiumu
 	void readPacket()
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(synch);
+		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
 
 		const boost::posix_time::time_duration td(boost::posix_time::millisec(1000 * timeout_));
 
@@ -102,18 +102,15 @@ public:
 
 		// Block until the asynchronous operation has completed.
 		do {
-
 			io_service.run_one();
-
-		}while(ec == boost::asio::error::would_block);
+		} while (ec == boost::asio::error::would_block);
 
 		deadline.cancel();
 
 		costumePacket_.data.resize(Costume::MaxIMUsPerCostume);
 		costumePacket_.status.resize(Costume::MaxIMUsPerCostume);
 
-		if(length == ImuBufferDataSize){
-
+		if (length == ImuBufferDataSize){
 			ready_ = true;
 
 			// Chyba moje dane
@@ -121,14 +118,14 @@ public:
 			// Jak wszystko ok to zaznaczam ¿e ready
 
 			std::fill(costumePacket_.status.begin(), costumePacket_.status.end(), Costume::DATA);
-			
-			for(unsigned int i = 0; i < Costume::MaxIMUsPerCostume; ++i)
+
+			for (unsigned int i = 0; i < Costume::MaxIMUsPerCostume; ++i)
 			{
 				//il.ramek, dl. ramki
 				//auto offs = 4 * 8 * i;
 				auto offs = i << 5;
 
-				{				
+				{
 					osg::Vec3 acc;
 
 					acc.x() = int16_t((uint16_t(buf[offs + 1]) << 8) | uint16_t(buf[offs + 0])) / 1024.0f;
@@ -137,7 +134,7 @@ public:
 
 					costumePacket_.data[i].accelerometer = acc;
 					offs += 8;
-				}				
+				}
 
 				{
 					osg::Vec3 mag;
@@ -152,11 +149,11 @@ public:
 
 				{
 					osg::Vec3 gyro;
-				
+
 					gyro.x() = int16_t((uint16_t(buf[offs + 1]) << 8) | uint16_t(buf[offs + 0])) / 1024.0f;
 					gyro.y() = int16_t((uint16_t(buf[offs + 3]) << 8) | uint16_t(buf[offs + 2])) / 1024.0f;
 					gyro.z() = int16_t((uint16_t(buf[offs + 5]) << 8) | uint16_t(buf[offs + 4])) / 1024.0f;
-					
+
 					offs += 8;
 					costumePacket_.data[i].gyroscope = gyro;
 				}
@@ -172,8 +169,8 @@ public:
 					costumePacket_.data[i].orientation = orient;
 				}
 			}
-
-		}else{
+		}
+		else{
 			std::fill(costumePacket_.status.begin(), costumePacket_.status.end(), Costume::NODATA);
 		}
 	}
@@ -219,7 +216,7 @@ private:
 	//! Czy dane gotowe
 	volatile bool ready_;
 	//! Obiekt synchronizuj¹cy odczyt danych i pobieranie danych
-	mutable utils::StrictSyncPolicy synch;
+	mutable threadingUtils::StrictSyncPolicy synch;
 	//! Obiekty do odbierania danych po UDP
 	//! Serwis
 	boost::asio::io_service io_service;
@@ -237,14 +234,11 @@ Costume::Costume(const std::string & ip /* = std::string() */,
 	const unsigned int port /* = 1234 */,
 	const float timeout /* = 0.01 */) : impl_(new CostumeImpl(ip, port, timeout))
 {
-
 }
 
 Costume::~Costume()
 {
-
 }
-
 
 const std::string & Costume::ip() const
 {
@@ -283,11 +277,9 @@ const float Costume::timeout() const
 
 void Costume::setTimeout(const float timeout)
 {
-	if(timeout <= 0.0){
+	if (timeout <= 0.0){
 		throw std::invalid_argument("Non-positive timeout value");
 	}
 
 	impl_->setTimeout(timeout);
 }
-
-

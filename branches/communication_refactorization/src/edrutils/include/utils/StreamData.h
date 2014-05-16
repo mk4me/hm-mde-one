@@ -1,23 +1,22 @@
 /********************************************************************
-    created:  2013/11/18
-    created:  18:11:2013   12:01
-    filename: StreamData.h
-    author:   Mateusz Janiak
-    
-    purpose:  Baza dla danych strumieniowych
-*********************************************************************/
+	created:  2013/11/18
+	created:  18:11:2013   12:01
+	filename: StreamData.h
+	author:   Mateusz Janiak
+
+	purpose:  Baza dla danych strumieniowych
+	*********************************************************************/
 #ifndef HEADER_GUARD_UTILS__STREAMDATABASE_H__
 #define HEADER_GUARD_UTILS__STREAMDATABASE_H__
 
 #include <utils/SmartPtr.h>
 #include <boost/type_traits.hpp>
 #include <boost/function.hpp>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 #include <utils/Debug.h>
 #include <list>
 
 namespace utils {
-
 	//! Interfejs obiektu obserwującego strumień
 	//! Implementacja musi gwarantować bezpieczne operacje wielowątkowe
 	class IStreamStatusObserver
@@ -63,8 +62,8 @@ namespace utils {
 		//! Pomiadamia obserwatorów o zmianie
 		void notify()
 		{
-			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
-			for(auto it = observers.begin(); it != observers.end(); ++it){
+			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			for (auto it = observers.begin(); it != observers.end(); ++it){
 				(*it)->update();
 			}
 		}
@@ -76,12 +75,12 @@ namespace utils {
 		//! \param observer Dołączany obiekt obserwujący strumień
 		void attachObserver(StreamStatusObserverPtr observer)
 		{
-			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
-			if(observer == nullptr){
+			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			if (observer == nullptr){
 				throw std::invalid_argument("Empty observer");
 			}
 
-			if(std::find(observers.begin(), observers.end(), observer) == observers.end()){
+			if (std::find(observers.begin(), observers.end(), observer) == observers.end()){
 				observers.push_back(observer);
 			}
 		}
@@ -89,13 +88,13 @@ namespace utils {
 		//! \param observer Odłączany obiekt obserwujący strumień
 		void detachObserver(StreamStatusObserverPtr observer)
 		{
-			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
-			observers.remove(observer);			
+			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			observers.remove(observer);
 		}
 
 	protected:
 		//! Obiekt synchronizujący
-		mutable utils::RecursiveSyncPolicy synch_;
+		mutable threadingUtils::RecursiveSyncPolicy synch_;
 
 	private:
 		//! Lista obserwatorów
@@ -129,11 +128,11 @@ namespace utils {
 		//! \param size Maksymalny rozmiar bufora - 0 oznacza brak ograniczeń
 		//! (implementacja listy)
 		void setMaxBufferSize(const size_type size)
-		{			
-			utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+		{
+			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
 			bufferSize_ = size;
 
-			if(verifyBufferSize() == false){
+			if (verifyBufferSize() == false){
 				auto diff = bufferData.size() - bufferSize_;
 				auto it = bufferData.begin();
 				std::advance(it, diff);
@@ -144,24 +143,24 @@ namespace utils {
 		//! \return Maksymalny rozmiar bufora
 		const size_type maxBufferSize() const
 		{
-			utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
 			return bufferSize_;
 		}
 
 		//! \return Aktualny rozmiar bufora
 		const size_type size() const
 		{
-			utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
 			return bufferData.size();
 		}
 
 		//! \param data Dane do włożenia do bufora
 		void pushData(const_ref_type data)
 		{
-			utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
 			bufferData.push_back(data);
 
-			if(verifyBufferSize() == false){
+			if (verifyBufferSize() == false){
 				bufferData.pop_front();
 			}
 		}
@@ -169,7 +168,7 @@ namespace utils {
 		//! \param data [out] Obiekt docelowy dla danych bufora
 		void data(ListT & data)
 		{
-			utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
 			data.insert(bufferData.begin(), bufferData.end());
 			ListT().swap(data);
 		}
@@ -184,13 +183,12 @@ namespace utils {
 
 	private:
 		//! Obiekt synchronizujący
-		utils::StrictSyncPolicy synch_;
+		threadingUtils::StrictSyncPolicy synch_;
 		//! Bufor danych
 		ListT bufferData;
 		//! Maksymalny rozmiar bufora
 		volatile size_type bufferSize_;
 	};
-
 
 	template<typename T>
 	class IStreamT : public StreamBase
@@ -224,11 +222,11 @@ namespace utils {
 		//! \param bufferPtr Nowy bufor danych aktualizowany danymi strumienia
 		void attachBuffer(StreamBufferPtr bufferPtr)
 		{
-			if(bufferPtr == nullptr){
+			if (bufferPtr == nullptr){
 				throw std::runtime_error("Uninitialized buffer pointer");
 			}
 
-			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
+			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
 			streamBufferList.remove(bufferPtr);
 			streamBufferList.push_back(bufferPtr);
 		}
@@ -236,8 +234,8 @@ namespace utils {
 		//! \param bufferPtr Odłanczany bufor danych
 		void detachBuffer(StreamBufferPtr bufferPtr)
 		{
-			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
-			streamBufferList.remove(bufferPtr);			
+			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			streamBufferList.remove(bufferPtr);
 		}
 
 	protected:
@@ -245,8 +243,8 @@ namespace utils {
 		//! Return Czy podłączono jakieś bufory
 		const bool buffersAttached() const
 		{
-			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
-			return !streamBufferList.empty();	
+			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			return !streamBufferList.empty();
 		}
 
 		//! \param data Data received from the stream
@@ -254,14 +252,13 @@ namespace utils {
 		{
 			UTILS_ASSERT(streamBufferList.empty() == true, "Stream data with no buffers");
 
-			for(auto it = streamBufferList.begin();
+			for (auto it = streamBufferList.begin();
 				it != streamBufferList.end(); ++it){
-
-					(*it)->pushData(data);
+				(*it)->pushData(data);
 			}
 		}
 
-	private:	
+	private:
 		//! Lista buforów
 		StreamBuffersList streamBufferList;
 	};
@@ -278,12 +275,12 @@ namespace utils {
 		//! \param data Data received from the stream
 		void pushData(const_ref_type data)
 		{
-			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
+			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
 
 			try{
 				pushBufferData(data);
-			}catch(...){
-
+			}
+			catch (...){
 			}
 
 			data_ = data;
@@ -297,7 +294,7 @@ namespace utils {
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia
 		virtual void data(ref_type d) const
 		{
-			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(synch_);
+			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
 			d = data_;
 		}
 
@@ -305,7 +302,6 @@ namespace utils {
 		//! Aktualne dane
 		T data_;
 	};
-
 
 	//! Klasa zmieniająca reprezentację strumienia
 	template<typename Base, typename Dest>
@@ -335,7 +331,6 @@ namespace utils {
 			BaseStreamUpdater(StreamAdapterType * destStream)
 				: destStream(destStream)
 			{
-
 			}
 
 			//! Lapie zmiane w strumieniu zrodlowym i propaguje na nasz strumien
@@ -358,11 +353,11 @@ namespace utils {
 			const ExtractorFunction & extractorFunction)
 			: baseStream_(baseStream), extractorFunction_(extractorFunction)
 		{
-			if(baseStream_ == nullptr){
+			if (baseStream_ == nullptr){
 				throw std::invalid_argument("Uninitialized base stream");
 			}
 
-			if(extractorFunction.empty() == true){
+			if (extractorFunction.empty() == true){
 				throw std::invalid_argument("Empty extractor function");
 			}
 
@@ -389,7 +384,7 @@ namespace utils {
 		//! Realizuje aktualizacje buforów jeśli jest to konieczne + notyfikuje o zmianach
 		void localUpdate()
 		{
-			if(buffersAttached() == true){
+			if (buffersAttached() == true){
 				Dest d;
 				data(d);
 				pushBufferData(d);

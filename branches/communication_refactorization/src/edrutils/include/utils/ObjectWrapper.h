@@ -4,7 +4,7 @@
 	author:	  Mateusz Janiak
 
 	purpose:
-*********************************************************************/
+	*********************************************************************/
 #ifndef __HEADER_GUARD_UTILS__OBJECTWRAPPER_H__
 #define __HEADER_GUARD_UTILS__OBJECTWRAPPER_H__
 
@@ -17,19 +17,19 @@
 #include <utils/ObjectWrapperTraits.h>
 #include <utils/PtrPolicyBoost.h>
 #include <utils/ClonePolicies.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
-////////////////////////////////////////////////////////////////////////////////
-    class ObjectWrapper;
-    typedef boost::shared_ptr<ObjectWrapper> ObjectWrapperPtr;
-    typedef boost::shared_ptr<const ObjectWrapper> ObjectWrapperConstPtr;
-    typedef boost::weak_ptr<ObjectWrapper> ObjectWrapperWeakPtr;
-    typedef boost::weak_ptr<const ObjectWrapper> ObjectWrapperConstWeakPtr;
+	////////////////////////////////////////////////////////////////////////////////
+	class ObjectWrapper;
+	typedef utils::shared_ptr<ObjectWrapper> ObjectWrapperPtr;
+	typedef utils::shared_ptr<const ObjectWrapper> ObjectWrapperConstPtr;
+	typedef utils::weak_ptr<ObjectWrapper> ObjectWrapperWeakPtr;
+	typedef utils::weak_ptr<const ObjectWrapper> ObjectWrapperConstWeakPtr;
 
-    typedef std::set<ObjectWrapperPtr> Objects;
-    typedef std::set<ObjectWrapperConstPtr> ConstObjects;
+	typedef std::set<ObjectWrapperPtr> Objects;
+	typedef std::set<ObjectWrapperConstPtr> ConstObjects;
 
 	typedef std::list<ObjectWrapperPtr> ObjectsList;
 	typedef std::list<ObjectWrapperConstPtr> ConstObjectsList;
@@ -41,10 +41,10 @@ namespace utils {
 	template<typename T>
 	class ObjectWrapperT;
 
-    //! Baza dla typu wrapującego jakiś obiekt. Poza trzymaniem metadanych klasy pochodne
-    //! trzymają referencje do obiektów.
-    class ObjectWrapper
-    {
+	//! Baza dla typu wrapującego jakiś obiekt. Poza trzymaniem metadanych klasy pochodne
+	//! trzymają referencje do obiektów.
+	class ObjectWrapper
+	{
 	public:
 
 		//! Para opisująca typ
@@ -72,7 +72,8 @@ namespace utils {
 				Ptr result;
 				if (wrapper->tryGet(result, exact)) {
 					return result;
-				} else {
+				}
+				else {
 					//throw std::bad_cast("Invalid cast");
 					throw std::bad_cast();
 				}
@@ -84,7 +85,8 @@ namespace utils {
 				Ptr result;
 				if (constWrapper->tryGet(result, exact)) {
 					return result;
-				} else {
+				}
+				else {
 					//throw std::bad_cast("Invalid cast");
 					throw std::bad_cast();
 				}
@@ -187,7 +189,7 @@ namespace utils {
 		template <class Ptr>
 		void set(const Ptr& object)
 		{
-			if ( !trySet(object) ) {
+			if (!trySet(object)) {
 				throw std::bad_cast();
 			}
 		}
@@ -201,16 +203,16 @@ namespace utils {
 		{
 			return __trySetRawPtr(object, boost::is_pointer<Ptr>());
 		}
-    
-        //! Pusty polimorficzny destruktor.
-        virtual ~ObjectWrapper();
+
+		//! Pusty polimorficzny destruktor.
+		virtual ~ObjectWrapper();
 		//! \return Ilość referencji do naszych danych
 		virtual const int getReferenceCount() const = 0;
-        //! \return Nazwa typu.
-        virtual const std::string getClassName() const = 0;
+		//! \return Nazwa typu.
+		virtual const std::string getClassName() const = 0;
 		//! \return Informacje o typie.
 		virtual const TypeInfo getTypeInfo() const = 0;
-		//! \param type 
+		//! \param type
 		//! \return Czy obiekt wspiera określony typ?
 		virtual const bool isSupported(const TypeInfo& type) const;
 		//! \param supported Lista wspieranych rozszerzeń.
@@ -263,7 +265,7 @@ namespace utils {
 		const bool __trySetRawPtr(const Ptr& object, boost::true_type)
 		{
 			UTILS_STATIC_ASSERT((!boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Nalezy zapisywac dane bez modyfikatora const");
-			if(getPtrTypeInfo().first == typeid(Ptr)){
+			if (getPtrTypeInfo().first == typeid(Ptr)){
 				__setData(&object);
 				return true;
 			}
@@ -278,7 +280,7 @@ namespace utils {
 		const bool __trySetRawPtr(const Ptr& object, boost::false_type)
 		{
 			UTILS_STATIC_ASSERT((!boost::is_const<typename Ptr::element_type>::value), "Nalezy zapisywac dane bez modyfikatora const");
-			if(getPtrTypeInfo().first == typeid(Ptr)){
+			if (getPtrTypeInfo().first == typeid(Ptr)){
 				__setData(&object);
 				return true;
 			}
@@ -295,11 +297,13 @@ namespace utils {
 		{
 			TypeInfo ptrInfo(typeid(Ptr));
 			auto p = getPtrTypeInfo();
-			if ( ptrInfo == p.first || ptrInfo == p.second ) {
+			if (ptrInfo == p.first || ptrInfo == p.second) {
 				return __tryUnpackData(&object, ptrInfo);
-			} else if(exact == false && isPtrSupported(ptrInfo) == true){
+			}
+			else if (exact == false && isPtrSupported(ptrInfo) == true){
 				return __tryUnpackBaseData(&object, ptrInfo);
-			} else {
+			}
+			else {
 				return false;
 			}
 		}
@@ -312,14 +316,16 @@ namespace utils {
 		template <class Ptr>
 		const bool __tryGetRawPtr(Ptr& object, bool exact, boost::true_type) const
 		{
-			UTILS_STATIC_ASSERT((boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");		
+			UTILS_STATIC_ASSERT((boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
 
 			TypeInfo ptrInfo(typeid(Ptr));
-			if ( ptrInfo == getPtrTypeInfo().second ) {
+			if (ptrInfo == getPtrTypeInfo().second) {
 				return __tryUnpackData(&object, ptrInfo);
-			} else if(exact == false && isPtrSupported(ptrInfo) == true){
+			}
+			else if (exact == false && isPtrSupported(ptrInfo) == true){
 				return __tryUnpackBaseData(&object, ptrInfo);
-			} else {
+			}
+			else {
 				return false;
 			}
 		}
@@ -335,11 +341,13 @@ namespace utils {
 			UTILS_STATIC_ASSERT((boost::is_const<typename Ptr::element_type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
 
 			TypeInfo ptrInfo(typeid(Ptr));
-			if ( ptrInfo == getPtrTypeInfo().second ) {
+			if (ptrInfo == getPtrTypeInfo().second) {
 				return __tryUnpackData(&object, ptrInfo);
-			} else if(exact == false && isPtrSupported(ptrInfo) == true){
+			}
+			else if (exact == false && isPtrSupported(ptrInfo) == true){
 				return __tryUnpackBaseData(&object, ptrInfo);
-			} else {
+			}
+			else {
 				return false;
 			}
 		}
@@ -380,34 +388,33 @@ namespace utils {
 		//! \param obj Obiekt z którym się porównujemy
 		//! \return Czy obiekty są takie same - trzymają te same dane
 		virtual const bool __isEqual(const ObjectWrapper & obj) const = 0;
-    };
+	};
 
-    //! Pomocniczy typ bazowy, zarządzający obiektem za pomocą parametru
-    //! PtrPolicy. Tego typu nigdy nie używa się wprost.
+	//! Pomocniczy typ bazowy, zarządzający obiektem za pomocą parametru
+	//! PtrPolicy. Tego typu nigdy nie używa się wprost.
 	template <typename T>
 	class __ObjectWrapperT : public ObjectWrapper
-    {
-    public:
+	{
+	public:
 		//! Typ wrapowanych danych
 		typedef T Type;
 		//! Pełny typ aktualnego wrappera
 		typedef __ObjectWrapperT<Type> ImplType;
 
-    private:
-        //! Wrappowany obiekt.
-        typename ObjectWrapperTraits<Type>::Ptr wrapped_;
+	private:
+		//! Wrappowany obiekt.
+		typename ObjectWrapperTraits<Type>::Ptr wrapped_;
 
 	protected:
 
 		__ObjectWrapperT() : ObjectWrapper()
-        {
+		{
 			ObjectWrapperTraits<Type>::PtrPolicy::initPtr(wrapped_);
-        }
+		}
 
 		__ObjectWrapperT(const __ObjectWrapperT & wrapper)
 			: ObjectWrapper(wrapper), wrapped_(wrapper.wrapped_)
 		{
-		
 		}
 
 	private:
@@ -436,7 +443,7 @@ namespace utils {
 				ObjectWrapperTraits<Type>::Ptr newPtr(ObjectWrapperTraits<Type>::ClonePolicy::clone(&*wrapped_));
 				cloned->wrapped_ = newPtr;
 			}
-		}		
+		}
 
 		virtual void __setData(const void * object)
 		{
@@ -472,7 +479,6 @@ namespace utils {
 		}
 
 		virtual void __clone(ObjectWrapper & dest, const ObjectWrapper::CloneOp co) const {
-
 			auto me = __getMe(dest);
 			__cloneImpl(me, co);
 		}
@@ -502,8 +508,7 @@ namespace utils {
 		//!
 		virtual ~__ObjectWrapperT()
 		{
-
-		}	
+		}
 
 		virtual const int getReferenceCount() const
 		{
@@ -537,10 +542,10 @@ namespace utils {
 			ObjectWrapperTraits<Type>::supportedTypes(supported);
 		}
 
-        virtual const ObjectWrapperPtr create() const {
-            return ObjectWrapper::create<T>();
-        }
-    };
+		virtual const ObjectWrapperPtr create() const {
+			return ObjectWrapper::create<T>();
+		}
+	};
 
 	//! Deklaracja typu. Trzeba go specjalizować za pomocą makr. Ta wersja będzie
 	//! rzucać statyczną asercją.
@@ -550,7 +555,7 @@ namespace utils {
 		UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
 	};
 
-////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 } // namespace utils
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -566,7 +571,6 @@ bool operator!=(const utils::ObjectWrapper & a, const utils::ObjectWrapper & b);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Makra dla definiowaia wrapperów
 ////////////////////////////////////////////////////////////////////////////////
@@ -581,8 +585,8 @@ private:\
 public:\
 	virtual ~ObjectWrapperT() {}\
 	static const std::string className(){\
-		return #typeT;\
-	}\
+	return #typeT;\
+}\
 };
 
 // Makro tworzące specjalizację ObjectWrapperT. Musi występować w globalnym
