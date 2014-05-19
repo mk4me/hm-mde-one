@@ -1,10 +1,11 @@
-BEGIN_PROJECT("static")
+BEGIN_PROJECT("dynamic")
 
 SET_PRIVATE_HEADERS(
 	JobManagerImpl.h
 )
 
 SET_PUBLIC_HEADERS(
+	Export.h
 	JobManager.h
 	Synchronized.h
 	SynchronizationPolicies.h
@@ -15,6 +16,7 @@ SET_PUBLIC_HEADERS(
 	IProgress.h
 	Runnable.h
 	QtThreadFactory.h
+	StreamData.h
 )
 
 SET_SOURCE_FILES(
@@ -24,6 +26,7 @@ SET_SOURCE_FILES(
 	Runnable.cpp
 	QtThreadFactory.cpp
 	SynchronizationPolicies.cpp
+	StreamData.cpp
 )
 
 END_PROJECT()

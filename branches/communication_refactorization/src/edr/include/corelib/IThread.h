@@ -1,20 +1,19 @@
 /********************************************************************
-    created:  2013/07/05
-    created:  5:7:2013   13:38
-    filename: IThread.h
-    author:   Mateusz Janiak
-    
-    purpose:  Interfejs w¹tku
-*********************************************************************/
+	created:  2013/07/05
+	created:  5:7:2013   13:38
+	filename: IThread.h
+	author:   Mateusz Janiak
+
+	purpose:  Interfejs w¹tku
+	*********************************************************************/
 #ifndef HEADER_GUARD_CORE__ITHREAD_H__
 #define HEADER_GUARD_CORE__ITHREAD_H__
 
-#include <threading/IThread.h>
+#include <threadingUtils/IThread.h>
 
 namespace core
 {
-
-	class IThread : public utils::IThread
+	class IThread : public threadingUtils::IThread
 	{
 	public:
 		//! Destruktor wirtualny
@@ -29,7 +28,6 @@ namespace core
 	};
 
 	DEFINE_SMART_POINTERS(IThread)
-
 }
 
 #endif	//	HEADER_GUARD_CORE__ITHREAD_H__

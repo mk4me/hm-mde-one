@@ -9,10 +9,12 @@
 #ifndef HEADER_GUARD_THREADINGUTILS__IPROGRESS_H__
 #define HEADER_GUARD_THREADINGUTILS__IPROGRESS_H__
 
+#include <threadingUtils/Export.h>
+
 namespace threadingUtils {
 	//! Interfejs pozwalaj�cy okre�li� stan pracy w�tku
 	//! Post�p podawany jest od 0.0 do 1.0;
-	class IProgress
+	class THREADINGUTILS_EXPORT IProgress
 	{
 	public:
 		//! Destruktor wirtualny
@@ -23,7 +25,7 @@ namespace threadingUtils {
 
 	//! Interfejs pozwalaj�cy okre�li� procentowy stan pracy w�tku
 	//! Post�p podawany jest w procentach od 0% do 100%;
-	class IPercentageProgress
+	class THREADINGUTILS_EXPORT IPercentageProgress
 	{
 	public:
 		//! Destruktor wirtualny
@@ -34,7 +36,7 @@ namespace threadingUtils {
 
 	//! Interfejs pozwalaj�cy okre�li� szacowany czas do ko�ca zadania oraz czas jaki up�yn�� od momentu jego wystartowania
 	//! Czas podawany jest w sekundach
-	class ITimeProgress
+	class THREADINGUTILS_EXPORT ITimeProgress
 	{
 	public:
 		//! Destruktor wirtualny

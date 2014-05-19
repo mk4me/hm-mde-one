@@ -6,15 +6,16 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___IUSERPERSONALSPACEWS_H__
-#define HEADER_GUARD___IUSERPERSONALSPACEWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_IUSERPERSONALSPACEWS_H__
+#define HEADER_GUARD__HMDBSERVICES_IUSERPERSONALSPACEWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <utils/SmartPtr.h>
 
 namespace hmdbServices
 {
 	//! Interfejs usługi zarządzającej prywatną przestrzenią użytkownika w bazie
-	class IUserPersonalSpaceWS
+	class HMDBSERVICES_EXPORT IUserPersonalSpaceWS
 	{
 	public:
 		//! Wirtualny destruktor
@@ -25,4 +26,4 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IUserPersonalSpaceWS> UserPersonalSpaceWSConstPtr;
 }
 
-#endif	//	HEADER_GUARD___IUSERPERSONALSPACEWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_IUSERPERSONALSPACEWS_H__

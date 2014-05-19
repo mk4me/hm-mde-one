@@ -6,16 +6,17 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___IAUTHORIZATIONWS_H__
-#define HEADER_GUARD___IAUTHORIZATIONWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_IAUTHORIZATIONWS_H__
+#define HEADER_GUARD__HMDBSERVICES_IAUTHORIZATIONWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <string>
 #include <utils/SmartPtr.h>
 
 namespace hmdbServices
 {
 	//! Interfejs usługi autoryzacji użytkowników, zarządzania ich prawami do danych
-	class IAuthorizationWS
+	class HMDBSERVICES_EXPORT IAuthorizationWS
 	{
 	public:
 		//! Wirtualny destruktor
@@ -92,4 +93,4 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IAuthorizationWS> AuthorizationWSConstPtr;
 }
 
-#endif	//	HEADER_GUARD___IAUTHORIZATIONWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_IAUTHORIZATIONWS_H__

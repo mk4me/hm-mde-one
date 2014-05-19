@@ -1,17 +1,20 @@
-/**
-@author Marek Daniluk
-@brief Klasa MotionBasicUpdatesService dziedzicząca po WsdlConnection wykonująca operacje dokumentu MotionBasicUpdatesService.wsdl.
-*/
+/********************************************************************
+	created:  2014/05/19	12:17:45
+	filename: BasicUpdatesWS.h
+	author:	  Mateusz Janiak
 
-#ifndef HEADER_GUARD_COMMUNICATION_BASICUPDATESSERVICE_H__
-#define HEADER_GUARD_COMMUNICATION_BASICUPDATESSERVICE_H__
+	purpose:
+	*********************************************************************/
+#ifndef __HEADER_GUARD_HMDBSERVICES__BASICUPDATESWS_H__
+#define __HEADER_GUARD_HMDBSERVICES__BASICUPDATESWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/IBasicUpdatesWS.h>
 #include <networkUtils/IWSDLService.h>
 
 namespace hmdbServices
 {
-	class MotionBasicUpdatesWS : public IMotionBasicUpdatesWS
+	class HMDBSERVICES_EXPORT MotionBasicUpdatesWS : public IMotionBasicUpdatesWS
 	{
 	public:
 		/**
@@ -136,7 +139,7 @@ namespace hmdbServices
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
-	class MedicalBasicUpdatesWS : public IMedicalBasicUpdatesWS
+	class HMDBSERVICES_EXPORT MedicalBasicUpdatesWS : public IMedicalBasicUpdatesWS
 	{
 	public:
 		MedicalBasicUpdatesWS(networkUtils::IWSDLServicePtr wsdlService);
@@ -146,4 +149,4 @@ namespace hmdbServices
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 }
-#endif
+#endif	// __HEADER_GUARD_HMDBSERVICES__BASICUPDATESWS_H__

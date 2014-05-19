@@ -6,16 +6,17 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___FILESTOREMANWS_H__
-#define HEADER_GUARD___FILESTOREMANWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_FILESTOREMANWS_H__
+#define HEADER_GUARD__HMDBSERVICES_FILESTOREMANWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/IFileStoremanWS.h>
 #include <networkUtils/IWSDLService.h>
 
 namespace hmdbServices
 {
 	//! Klasa przygotowująca pliki do pobrania
-	class SimpleFileStoremanWS : public IBasicStoremanWS
+	class HMDBSERVICES_EXPORT SimpleFileStoremanWS : public IBasicStoremanWS
 	{
 	public:
 
@@ -32,7 +33,7 @@ namespace hmdbServices
 	};
 
 	//! Klasa przygotowująca zdjęcia do pobrania
-	class PhotoStoremanWS : public IBasicStoremanWS
+	class HMDBSERVICES_EXPORT PhotoStoremanWS : public IBasicStoremanWS
 	{
 	public:
 
@@ -49,7 +50,7 @@ namespace hmdbServices
 	};
 
 	//! Klasa przygotowująca płytkie kopie do pobrania
-	class ShallowStoremanWS : public IShallowStoremanWS
+	class HMDBSERVICES_EXPORT ShallowStoremanWS : public IShallowStoremanWS
 	{
 	public:
 
@@ -71,7 +72,7 @@ namespace hmdbServices
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
-	class MotionFileStoremanWS : public IMotionFileStoremanWS
+	class HMDBSERVICES_EXPORT MotionFileStoremanWS : public IMotionFileStoremanWS
 	{
 	public:
 
@@ -141,7 +142,7 @@ namespace hmdbServices
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
-	class MedicalFileStoremanWS : public IMedicalFileStoremanWS
+	class HMDBSERVICES_EXPORT MedicalFileStoremanWS : public IMedicalFileStoremanWS
 	{
 	public:
 
@@ -168,4 +169,4 @@ namespace hmdbServices
 	};
 }
 
-#endif	//	HEADER_GUARD___FILESTOREMANWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_FILESTOREMANWS_H__

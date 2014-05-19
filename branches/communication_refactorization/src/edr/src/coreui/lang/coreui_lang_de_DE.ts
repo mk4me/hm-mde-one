@@ -80,6 +80,24 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>CorePopup</name>
+    <message>
+        <location filename="../ui/CorePopup.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/CorePopup.ui" line="26"/>
+        <source>Header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/CorePopup.ui" line="42"/>
+        <source>Body</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CoreTitleBar</name>
     <message>
         <location filename="../ui/CoreTitleBar.ui" line="35"/>
@@ -202,6 +220,25 @@ p, li { white-space: pre-wrap; }
         <source>Filter bundle</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../src/ReportsTab.cpp" line="55"/>
+        <location filename="../src/ReportsThumbnailContext.cpp" line="34"/>
+        <source>Raports Tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SimpleContext.cpp" line="53"/>
+        <source>Operations</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QWidget</name>
+    <message>
+        <location filename="../src/CoreTitleBar.cpp" line="104"/>
+        <source>*</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SceneGraphWidget</name>
@@ -291,22 +328,14 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>coreUI::CoreConsoleWidget</name>
-    <message>
-        <location filename="../src/CoreConsoleWidget.cpp" line="23"/>
-        <source>Console</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>coreUI::CoreMainWindow</name>
     <message>
-        <location filename="../src/CoreMainWindow.cpp" line="156"/>
+        <location filename="../src/CoreMainWindow.cpp" line="192"/>
         <source>Confirm exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreMainWindow.cpp" line="156"/>
+        <location filename="../src/CoreMainWindow.cpp" line="192"/>
         <source>Are You sure You want to exit application?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -501,61 +530,121 @@ Do you want to save your changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="152"/>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="166"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="151"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="165"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="162"/>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="341"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="161"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="340"/>
         <source>No active session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="173"/>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="183"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="172"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="182"/>
         <source>Utils</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="173"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="172"/>
         <source>Screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="179"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="178"/>
         <source>Remove all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="183"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="182"/>
         <source>Live data update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="209"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="208"/>
         <source>(Source: %1) Name: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="210"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="209"/>
         <source>Local data name %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="211"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="210"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="215"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="214"/>
         <source>All data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/CoreVisualizerWidget.cpp" line="216"/>
+        <location filename="../src/CoreVisualizerWidget.cpp" line="215"/>
         <source>Active data</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>coreUI::HierarchyTreeModel</name>
+    <message>
+        <location filename="../src/HierarchyTreeModel.cpp" line="65"/>
+        <source>User area</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>coreUI::ReportsTabContext</name>
+    <message>
+        <location filename="../src/ReportsTab.cpp" line="91"/>
+        <source>File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ReportsTab.cpp" line="96"/>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ReportsTab.cpp" line="101"/>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>coreUI::ReportsThumbnailContext</name>
+    <message>
+        <location filename="../src/ReportsThumbnailContext.cpp" line="61"/>
+        <source>Create raport</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ReportsThumbnailContext.cpp" line="65"/>
+        <source>Simple Raport</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ReportsThumbnailContext.cpp" line="75"/>
+        <location filename="../src/ReportsThumbnailContext.cpp" line="82"/>
+        <source>Empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ReportsThumbnailContext.cpp" line="97"/>
+        <source>Raport template:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ReportsThumbnailContext.cpp" line="138"/>
+        <source>&lt;tr&gt;&lt;td&gt;Screenshot %1 &lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ReportsThumbnailContext.cpp" line="139"/>
+        <source>&lt;tr&gt;&lt;td&gt;&lt;IMG SRC=&quot;data:image/png;base64,%1&quot; ALIGN=BOTTOM WIDTH=%2 HEIGHT=%3 BORDER=0&gt;&lt;/P&gt; &lt;/td&gt;&lt;/tr&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -31,7 +31,7 @@
 #include <QtCore/QThread>
 #include "FilesHelper.h"
 #include <plugins/subject/ISubjectService.h>
-#include <webserviceslib/DateTimeUtils.h>
+#include <hmdbserviceslib/DateTimeUtils.h>
 #include <QtGui/QInputDialog>
 #include <plugins/kinematic/Wrappers.h>
 #include <corelib/IFileDataManager.h>
@@ -136,17 +136,17 @@ void LocalDataLoader::run()
 	// to powinno być realizowane gdzieś wyżej, na poziomie metody void DataSourceWidget::performShallowCopyUpdate()
 
 	//if (wasShallow) {
- //       auto time = sourceWidget->lastSynchroTime;
- //       webservices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
+	//       auto time = sourceWidget->lastSynchroTime;
+	//       hmdbServices::IncrementalBranchShallowCopy incCpy = sourceWidget->dataSource->getIncrementalShallowCopy(time);
 	//	DataSourceLocalStorage* locals = DataSourceLocalStorage::instance();
 
 	//	auto& shallowTrials = sourceWidget->dataSource->fullShallowCopy.motionShallowCopy->trials;
-	//	
+	//
 	//	PLUGIN_LOG_INFO("Auto-update...");
- //       auto addToDownload = [&]( const webservices::IncrementalBranchShallowCopy::Trials& trials ) -> void
- //       {
- //           for (auto it = trials.begin(); it != trials.end(); ++it) {
- //               for (auto iFile = it->addedFiles.begin(); iFile != it->addedFiles.end(); ++iFile) {
+	//       auto addToDownload = [&]( const hmdbServices::IncrementalBranchShallowCopy::Trials& trials ) -> void
+	//       {
+	//           for (auto it = trials.begin(); it != trials.end(); ++it) {
+	//               for (auto iFile = it->addedFiles.begin(); iFile != it->addedFiles.end(); ++iFile) {
 	//				auto shallowTrial = shallowTrials[iFile->trialID];
 	//				bool toAdd = false;
 	//				// jesli choc jeden plik triala jest lokalny, to nowododany plik sciagamy
@@ -157,15 +157,15 @@ void LocalDataLoader::run()
 	//						break;
 	//					}
 	//				}
- //               }
- //               for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
+	//               }
+	//               for (auto iFile = it->modifiedFiles.begin(); iFile != it->modifiedFiles.end(); ++iFile) {
 	//				if (locals->fileIsLocal(iFile->fileName)) {
 	//					sourceWidget->filesToDownload.insert(iFile->fileID);
 	//					PLUGIN_LOG_INFO("Downloading: " << iFile->fileName);
 	//				}
- //               } 
- //           }
- //       };
+	//               }
+	//           }
+	//       };
 
 	//	addToDownload(incCpy.added.trials);
 	//	addToDownload(incCpy.modified.trials);
@@ -530,8 +530,8 @@ void DataSourceWidget::registerPatientCard(communication::IPatientCard * patient
 	//dodać jakieś combo do zmiany widoku karty pacjenta?
 }
 
-void DataSourceWidget::getPatientAndSubject(QTreeWidgetItem * item, const webservices::MedicalShallowCopy::Patient *& patient,
-	const webservices::MotionShallowCopy::Performer *& subject)
+void DataSourceWidget::getPatientAndSubject(QTreeWidgetItem * item, const hmdbServices::MedicalShallowCopy::Patient *& patient,
+	const hmdbServices::MotionShallowCopy::Performer *& subject)
 {
 	while (item != nullptr){
 		IContent * content = dynamic_cast<IContent*>(item);
@@ -796,7 +796,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 				dataSource->testDownloadBranchIncrement();
 				std::string test = DataSourceWebServicesManager::instance()->motionFileStoremanService()->getShallowCopyBranchesIncrement(userShallowCopy.motionShallowCopy->timestamp);
 				test += " ";
-				} catch (const webservices::WSConnectionInvokeException& e) {
+				} catch (const hmdbServices::WSConnectionInvokeException& e) {
 				std::string mes = e.what();
 				mes += " ";
 				}
@@ -811,7 +811,7 @@ void DataSourceWidget::onLogin(const QString & user, const QString & password)
 						synch = synchronizationRequiredDialog();
 					}
 				}
-				catch (webservices::WSConnectionInitializationException& e) {
+				catch (hmdbServices::WSConnectionInitializationException& e) {
 					PLUGIN_LOG_WARNING(e.what());
 					synch = synchronizationRequiredDialog();
 				}
@@ -1668,7 +1668,7 @@ void DataSourceWidget::performShallowCopyUpdate()
 	//TODO
 	// czy to tutaj jest potrzebne? Jesli tak to po co?
 	//auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
-	//webservices::IncrementalBranchShallowCopy incCpy = dataSource->getIncrementalShallowCopy(time);
+	//hmdbServices::IncrementalBranchShallowCopy incCpy = dataSource->getIncrementalShallowCopy(time);
 
 	auto downloadRequest = dataSource->generateDownloadShallowCopyRequestToLocalUserSpace();
 	if (downloadRequest != nullptr){
@@ -1990,7 +1990,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 				sOW->setMetadata("label", s->sessionName);
 				sOW->setMetadata("EMGConf", boost::lexical_cast<std::string>(s->emgConf));
-				sOW->setMetadata("data", webservices::toString(s->sessionDate));
+				sOW->setMetadata("data", hmdbServices::toString(s->sessionDate));
 				if (s->groupAssigment != nullptr){
 					sOW->setMetadata("groupID", boost::lexical_cast<std::string>(s->groupAssigment->sessionGroupID));
 					auto sgIT = filteredShallowCopy.motionMetaData.sessionGroups.find(s->groupAssigment->sessionGroupID);
@@ -2130,14 +2130,14 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	}
 }
 
-void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID)
+void DataSourceWidget::addPatientObject(const hmdbServices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID)
 {
 	//generuję listę schorzeń
 	std::vector<communication::Disorder> disorders;
 	for (auto it = patient->disorders.begin(); it != patient->disorders.end(); ++it)	{
 		communication::Disorder dis;
 		dis.focus = it->second.focus;
-		dis.diagnosisDate = webservices::toString(it->second.diagnosisDate);
+		dis.diagnosisDate = hmdbServices::toString(it->second.diagnosisDate);
 		dis.comments = it->second.comments;
 		dis.name = it->second.disorder->name;
 
@@ -2157,7 +2157,7 @@ void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::P
 	patientsMapping[patient->patientID].first = pOW;
 }
 
-utils::shared_ptr<communication::AntropometricData> DataSourceWidget::createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs)
+utils::shared_ptr<communication::AntropometricData> DataSourceWidget::createAntropometricData(const hmdbServices::MotionShallowCopy::Attrs & attrs)
 {
 	auto antro = utils::shared_ptr<communication::AntropometricData>(new communication::AntropometricData());
 	antro->bodyMass = communication::AntropometricData::value_type(getAntropometricValue("BodyMass", attrs), "kg");
@@ -2200,7 +2200,7 @@ utils::shared_ptr<communication::AntropometricData> DataSourceWidget::createAntr
 	return antro;
 }
 
-float DataSourceWidget::getAntropometricValue(const std::string & attribute, const webservices::MotionShallowCopy::Attrs & attrs, float defValue)
+float DataSourceWidget::getAntropometricValue(const std::string & attribute, const hmdbServices::MotionShallowCopy::Attrs & attrs, float defValue)
 {
 	auto it = attrs.find(attribute);
 	if (it != attrs.end()){
@@ -2955,7 +2955,7 @@ void DataSourceWidget::showPatientCard()
 	setCurrentWidget(motionDataTab);
 }
 
-void DataSourceWidget::setPatientCard(webservices::MedicalShallowCopy::Patient * patient, webservices::MotionShallowCopy::Performer * subject)
+void DataSourceWidget::setPatientCard(hmdbServices::MedicalShallowCopy::Patient * patient, hmdbServices::MotionShallowCopy::Performer * subject)
 {
 	perspectiveManager.currentPerspectiveWidget()->clearSelection();
 	patientCardManager.currentPatientCard()->setPatient(patient, subject, QPixmap(), dataSource->currentUser_.userData());

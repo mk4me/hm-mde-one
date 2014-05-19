@@ -7,14 +7,15 @@
 	purpose:
 	*********************************************************************/
 
-#ifndef HEADER_GUARD_WEBSERVICES__INCREMENTALBRANCHSHALLOWCOPY_H__
-#define HEADER_GUARD_WEBSERVICES__INCREMENTALBRANCHSHALLOWCOPY_H__
+#ifndef HEADER_GUARD_HMDBSERVICES__INCREMENTALBRANCHSHALLOWCOPY_H__
+#define HEADER_GUARD_HMDBSERVICES__INCREMENTALBRANCHSHALLOWCOPY_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/ShallowCopy.h>
 #include <vector>
 
 namespace hmdbServices {
-	struct IncrementalBranchShallowCopy
+	struct HMDBSERVICES_EXPORT IncrementalBranchShallowCopy
 	{
 		struct File;
 		struct Trial;
@@ -28,7 +29,7 @@ namespace hmdbServices {
 		typedef std::map<std::string, std::string> Attrs;
 
 		//! Plik
-		struct File
+		struct HMDBSERVICES_EXPORT File
 		{
 			//! \return Czy plik nale¿y do sesji
 			const bool isSessionFile() const
@@ -50,7 +51,7 @@ namespace hmdbServices {
 		typedef std::vector<File> Files;
 
 		//! Próba pomiarowa
-		struct Trial
+		struct HMDBSERVICES_EXPORT Trial
 		{
 			int sessionID;				//! Sesja
 			Attrs attrs;					//! Atrybuty
@@ -65,7 +66,7 @@ namespace hmdbServices {
 		typedef std::vector<Trial> Trials;
 
 		//! Sesje
-		struct Session
+		struct HMDBSERVICES_EXPORT Session
 		{
 			int performerConfID;		//! Konfiguracja aktora
 			int groupAssigmentID;	//! Przynale¿noœc do grupy
@@ -88,7 +89,7 @@ namespace hmdbServices {
 		typedef std::vector<Session> Sessions;
 
 		//! Grupa sesji
-		struct GroupAssigment
+		struct HMDBSERVICES_EXPORT GroupAssigment
 		{
 			int sessionGroupID;		//! Identyfikator
 			Sessions sessions;		//! Sesje
@@ -99,7 +100,7 @@ namespace hmdbServices {
 		typedef std::vector<GroupAssigment> GroupAssigments;
 
 		//! Konfiguracja aktora
-		struct PerformerConf
+		struct HMDBSERVICES_EXPORT PerformerConf
 		{
 			int performerConfID;	//! Identyfikator
 			Attrs attrs;			//! Atrybuty
@@ -111,7 +112,7 @@ namespace hmdbServices {
 		typedef std::vector<PerformerConf> PerformerConfs;
 
 		//! Aktor
-		struct Performer
+		struct HMDBSERVICES_EXPORT Performer
 		{
 			int performerID;						//! Identyfikator
 			Attrs attrs;							//! Atrybuty
@@ -123,7 +124,7 @@ namespace hmdbServices {
 		typedef std::vector<Performer> Performers;
 
 		//! P³ytka kopia bazy danych
-		struct ShallowCopy
+		struct HMDBSERVICES_EXPORT ShallowCopy
 		{
 		public:
 			//DateTime timestamp;					//! Data

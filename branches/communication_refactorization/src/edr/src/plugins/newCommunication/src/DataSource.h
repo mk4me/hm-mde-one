@@ -1,24 +1,24 @@
 /********************************************************************
-    created:  2011/10/28
-    created:  28:10:2011   13:11
-    filename: CommunicationDataSource.h
-    author:   Mateusz Janiak
+	created:  2011/10/28
+	created:  28:10:2011   13:11
+	filename: CommunicationDataSource.h
+	author:   Mateusz Janiak
 
-    purpose:
-*********************************************************************/
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___COMMUNICATIONDATASOURCE_H__
 #define HEADER_GUARD___COMMUNICATIONDATASOURCE_H__
 
 #include <corelib/Filesystem.h>
 #include <plugins/newCommunication/ICommunicationDataSource.h>
 #include <plugins/newCommunication/DataSourceShallowCopy.h>
-#include <webserviceslib/IFtpsConnection.h>
+#include <hmdbserviceslib/IFtpsConnection.h>
 #include "DataSourceUser.h"
 #include <corelib/ISource.h>
-#include <webserviceslib/WSConnection.h>
+#include <hmdbserviceslib/WSConnection.h>
 #include "ServerStatusManager.h"
-#include "webserviceslib/IncrementalBranchShallowCopy.h"
-#include "webserviceslib/DateTime.h"
+#include "hmdbserviceslib/IncrementalBranchShallowCopy.h"
+#include "hmdbserviceslib/DateTime.h"
 #include "DataSourceFilterManager.h"
 
 //! Forward declarations
@@ -34,7 +34,7 @@ class CommunicationManager;
 //! Źródło danych EDR typu communication - dostarcza danych z Bazy Danych Ruchu
 class CommunicationDataSource : public communication::ICommunicationDataSource, public plugin::ISource
 {
-    UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}");
+	UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}");
 	CLASS_DESCRIPTION("Communication", "Communication Data Source");
 
 	//! Zaprzyjaźniona klasa realizująca widok danych
@@ -56,52 +56,52 @@ private:
 
 public:
 	//! Domyślny konstruktor
-    CommunicationDataSource();
+	CommunicationDataSource();
 	//! Destruktor
-    virtual ~CommunicationDataSource();
-    
-    //! Inicjalizacja źródła. Następuje już po wczytaniu pluginów i skonstruowaniu
-    //! (nie zainicjalizowaniu!) wszystkich źródeł.
-    virtual void init(core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamManager, core::IFileDataManager * fileDM);
+	virtual ~CommunicationDataSource();
+
+	//! Inicjalizacja źródła. Następuje już po wczytaniu pluginów i skonstruowaniu
+	//! (nie zainicjalizowaniu!) wszystkich źródeł.
+	virtual void init(core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamManager, core::IFileDataManager * fileDM);
 
 	virtual bool lateInit() { return true; }
-	virtual void finalize() ;
+	virtual void finalize();
 	virtual void update(double) {}
 	virtual QWidget * getControlWidget() { return nullptr; }
 	virtual QWidget * getSettingsWidget() { return nullptr; }
 	virtual void getOfferedTypes(utils::TypeInfoList & offeredTypes) const;
 
-    //! Źródło nie musi mieć wizualnej reprezentacji.
-    //! \return Widget tworzony przez źródło bądź NULL.
-    virtual QWidget* getWidget();
+	//! Źródło nie musi mieć wizualnej reprezentacji.
+	//! \return Widget tworzony przez źródło bądź NULL.
+	virtual QWidget* getWidget();
 
 	//! \param offline Czy źródło danych ma działać w trybie offline?
 	void setOfflineMode(bool offline = true);
 	//! \return Czy źródło działa w trybie offline
 	bool offlineMode() const;
 
-    //! \param user Nazwa użytkownika
-    //! \param password Hasło użytkownika
-    virtual void login(const std::string & user, const std::string & password);
-    //! Wylogowuje użytkownika
-    virtual void logout();
-    //! \return prawda jeśli użytkownik zalogowany
-    virtual bool isLogged() const;
+	//! \param user Nazwa użytkownika
+	//! \param password Hasło użytkownika
+	virtual void login(const std::string & user, const std::string & password);
+	//! Wylogowuje użytkownika
+	virtual void logout();
+	//! \return prawda jeśli użytkownik zalogowany
+	virtual bool isLogged() const;
 
-    //! \return Dane aktualnego użytkownika ( w szczególności pusty obiekt jeśli niezalogowano)
-    virtual const User * currentUser() const;
+	//! \return Dane aktualnego użytkownika ( w szczególności pusty obiekt jeśli niezalogowano)
+	virtual const User * currentUser() const;
 
 	//! Implementacja interfejsu communication::ICommunicationDataSource
 	virtual void showPatientCard(const PluginSubject::SubjectConstPtr & subject, const communication::PatientConstPtr & patient = communication::PatientConstPtr());
 	virtual void showUserDataCard();
 	virtual void showConfigurationCard();
 
-    virtual void addHierarchyPerspective( communication::IHierarchyPerspectivePtr perspective );
-    std::vector<communication::IHierarchyPerspectivePtr> getHierarchyPerspectives();
+	virtual void addHierarchyPerspective(communication::IHierarchyPerspectivePtr perspective);
+	std::vector<communication::IHierarchyPerspectivePtr> getHierarchyPerspectives();
 
-    ServerStatusManagerConstPtr getServerStatusManager() const;
+	ServerStatusManagerConstPtr getServerStatusManager() const;
 
-    webservices::IncrementalBranchShallowCopy getIncrementalShallowCopy(const webservices::DateTime& dt);
+	hmdbServices::IncrementalBranchShallowCopy getIncrementalShallowCopy(const hmdbServices::DateTime& dt);
 
 	virtual int addDataFilter(DataSourceFilter* filter);
 
@@ -110,18 +110,18 @@ public:
 	virtual const int currentFilter() const;
 
 	virtual void refreshCurrentFilter();
-	
-	virtual const webservices::xmlWsdl::AnnotationsList getAllAnnotationStatus() const;
+
+	virtual const hmdbServices::xmlWsdl::AnnotationsList getAllAnnotationStatus() const;
 
 	virtual void setAnnotationStatus(const int userID, const int motionID,
-		const webservices::xmlWsdl::AnnotationStatus::Type type,
+		const hmdbServices::xmlWsdl::AnnotationStatus::Type type,
 		const std::string & comment);
 
-	virtual const webservices::DateTime lastUpdateTime() const;
+	virtual const hmdbServices::DateTime lastUpdateTime() const;
 
 	virtual const bool userIsReviewer() const;
 
-	virtual const webservices::xmlWsdl::UsersList listUsers() const;
+	virtual const hmdbServices::xmlWsdl::UsersList listUsers() const;
 
 	virtual const int trialID(const std::string & name) const;
 
@@ -135,7 +135,7 @@ private:
 	//! \param connection Połączenie z webService które inicjalizuję - ustawiam adres jeżeli jest inny niż aktualnie ustawiony w połączeniu
 	//! Ta metoda w przypadku zmiany adresu usługi powinna ściągnąc jej definicję, sparsować ją i przygotować połaczenie do dalszej pracy
 	//! Jest to leniwa inicjalizacja, kiedy nie chcemy od razu nawiazaywać połączenia ponieważ user może sobie zarzyczyć trybu offline
-	void ensureConnection(const webservices::WSConnectionPtr & connection);
+	void ensureConnection(const hmdbServices::WSConnectionPtr & connection);
 
 	//! \param login Login który próbujemy aktywować po stronie bazy danych
 	//! \param activationCode Kod aktywacyjny otrzymany w mailu
@@ -193,7 +193,7 @@ private:
 	void extractDataFromLocalStorageToUserSpace();
 	//! \param file Plik który chcemy wypakować z lokalnego storage
 	//! \param sessionName Nazwa sesji z której pochodzi plik
-	void extractFileFromLocalStorageToUserSpace(const webservices::MotionShallowCopy::File * file, const std::string & sessionName);
+	void extractFileFromLocalStorageToUserSpace(const hmdbServices::MotionShallowCopy::File * file, const std::string & sessionName);
 
 	//! \param oldShallowCopy Poprzednia płytka kopia dla której wypakowywano dane
 	//! \param newShallowCopy Nowa płytka kopia dla której wypakowywujemy dane
@@ -226,34 +226,34 @@ private:
 	//! \param outFile Gdzie zapisujemy dane z rozpakowanego pliku zip
 	static bool copyData(QIODevice &inFile, QIODevice &outFile);
 
-    virtual bool uploadMotionFile( const core::Filesystem::Path& path, const std::string& trialName );
+	virtual bool uploadMotionFile(const core::Filesystem::Path& path, const std::string& trialName);
 
-    virtual void setCompactMode( bool compact = true );
+	virtual void setCompactMode(bool compact = true);
 
-    void testDownloadBranchIncrement();
-    
+	void testDownloadBranchIncrement();
+
 private:
-    // ------------------------ LOGIKA -------------------------------
+	// ------------------------ LOGIKA -------------------------------
 	//! Aktualny użytkownik
 	User currentUser_;
 	bool userIsReviewer_;
-    //! Manager logowania - zawiera użytkownika
-    DataSourceLoginManager * loginManager;
+	//! Manager logowania - zawiera użytkownika
+	DataSourceLoginManager * loginManager;
 
-    //! Pełna płytka kopia bazy danych
-    communication::ShallowCopy fullShallowCopy;
+	//! Pełna płytka kopia bazy danych
+	communication::ShallowCopy fullShallowCopy;
 
-    //! Manager statusu plików
-    utils::shared_ptr<FileStatusManager> fileStatusManager;
+	//! Manager statusu plików
+	utils::shared_ptr<FileStatusManager> fileStatusManager;
 
 	//! Manager danych lokalnych
 	DataSourcePathsManager * pathsManager;
 
-    //! Manager danych lokalnych
-    DataSourceLocalStorage * localStorage;
+	//! Manager danych lokalnych
+	DataSourceLocalStorage * localStorage;
 
-    //! Manager statusów pełnej płytkiej kopi
-    utils::shared_ptr<DataSourceStatusManager> fullShallowCopyStatus;
+	//! Manager statusów pełnej płytkiej kopi
+	utils::shared_ptr<DataSourceStatusManager> fullShallowCopyStatus;
 
 	//! ConnectionManager
 	utils::shared_ptr<CommunicationManager> communicationManager;
@@ -276,40 +276,39 @@ private:
 	//! Czy user zażądał trybu offline?
 	bool offlineMode_;
 	//! Mapa połączeń i ich statusów
-	std::map<webservices::WSConnectionPtr, ConnectionStatus> connectionsStatus;
+	std::map<hmdbServices::WSConnectionPtr, ConnectionStatus> connectionsStatus;
 	//! Adres serwera który pingujemy
 	std::string serwerPingUrl;
 	//! Połączenie z web services dla danych ruchu
-	webservices::WSConnectionPtr motionFileStoremanWSConnection;
+	hmdbServices::WSConnectionPtr motionFileStoremanWSConnection;
 	//! Połączenie z web services dla danych medycznych
-	webservices::WSConnectionPtr medicalFileStoremanConnection;
+	hmdbServices::WSConnectionPtr medicalFileStoremanConnection;
 
-    ServerStatusManagerPtr serverStatusManager;
+	ServerStatusManagerPtr serverStatusManager;
 	//! ------------------------------- FTPS -----------------------------
 
 	//! Połączenie ftps z bazą danych ruchu
-	webservices::FtpsConnectionPtr motionFtps_;
+	hmdbServices::FtpsConnectionPtr motionFtps_;
 
 	//! Połączenie ftps z bazą danych medycznych
-	webservices::FtpsConnectionPtr medicalFtps_;
+	hmdbServices::FtpsConnectionPtr medicalFtps_;
 
-    // -------------------------- UI ------------------------------------
+	// -------------------------- UI ------------------------------------
 	//! Widget źródła danych
 	DataSourceWidget * dataSourceWidget;
 
-
-    // ----------------------- Hierarchie -------------------------------
-    std::vector<communication::IHierarchyPerspectivePtr> perspectives;
+	// ----------------------- Hierarchie -------------------------------
+	std::vector<communication::IHierarchyPerspectivePtr> perspectives;
 
 	//! Manager filtrów danych
 	DataSourceFilterManager filterManager;
 
 	//! --------------------- Status adnotacji ---------------------------
-	webservices::xmlWsdl::AnnotationsList annotations;
-	mutable webservices::DateTime lastStatusUpdate;	
+	hmdbServices::xmlWsdl::AnnotationsList annotations;
+	mutable hmdbServices::DateTime lastStatusUpdate;
 
-    //! --------------------- Upload -------------------------------------
-    utils::shared_ptr<std::map<std::string, int>> alreadyUploaded;
+	//! --------------------- Upload -------------------------------------
+	utils::shared_ptr<std::map<std::string, int>> alreadyUploaded;
 };
 
 #endif HEADER_GUARD___COMMUNICATIONDATASOURCE_H__

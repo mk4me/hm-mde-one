@@ -9,12 +9,13 @@
 #ifndef HEADER_GUARD_THREADINGUTILS__ITHREAD_H__
 #define HEADER_GUARD_THREADINGUTILS__ITHREAD_H__
 
+#include <threadingUtils/Export.h>
 #include <utils/SmartPtr.h>
 #include <threadingUtils/Runnable.h>
 
 namespace threadingUtils {
 	//! Interfejs klasy obs�uguj�cej w�tki
-	class IThread
+	class THREADINGUTILS_EXPORT IThread
 	{
 	public:
 		//! Typ rozmiaru stosu w bajtach

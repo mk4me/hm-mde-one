@@ -6,9 +6,10 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___IFILESTOREMANWS_H__
-#define HEADER_GUARD___IFILESTOREMANWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_IFILESTOREMANWS_H__
+#define HEADER_GUARD__HMDBSERVICES_IFILESTOREMANWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <string>
 #include <utils/SmartPtr.h>
 #include <hmdbserviceslib/Entity.h>
@@ -16,7 +17,7 @@
 namespace hmdbServices
 {
 	//! Podstawowy interfejs przygotowujący pliki do ściągnięcia i czyszczący po zakończeniu komunikacji
-	class IBasicStoremanWS
+	class HMDBSERVICES_EXPORT IBasicStoremanWS
 	{
 	public:
 		//! Destruktor wirtualny
@@ -41,7 +42,7 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IBasicStoremanWS> BasicStoremanWSConstPtr;
 
 	//! Interfejs usługi zarządzającej pobieraniem/wysyłaniem plików do serwera
-	class IShallowStoremanWS
+	class HMDBSERVICES_EXPORT IShallowStoremanWS
 	{
 	public:
 		//! Destruktor wirtualny
@@ -74,7 +75,7 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IShallowStoremanWS> ShallowStoremanWSConstPtr;
 
 	//! Inerfejs obsługujący podstawowe operacje na danych instancji bazy
-	class IFileStoremanWS : public IShallowStoremanWS, public IBasicStoremanWS
+	class HMDBSERVICES_EXPORT IFileStoremanWS : public IShallowStoremanWS, public IBasicStoremanWS
 	{
 	public:
 		//! Destruktor wirtualny
@@ -85,7 +86,7 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IFileStoremanWS> FileStoremanWSConstPtr;
 
 	//! Interfejs obsługujący dane bazy ruchu
-	class IMotionFileStoremanWS : public IFileStoremanWS
+	class HMDBSERVICES_EXPORT IMotionFileStoremanWS : public IFileStoremanWS
 	{
 	public:
 		//! Destruktor wirtualny
@@ -158,7 +159,7 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IMotionFileStoremanWS> MotionFileStoremanWSConstPtr;
 
 	//! Interfejs obsługujący dane bazy medycznej
-	class IMedicalFileStoremanWS : public IFileStoremanWS
+	class HMDBSERVICES_EXPORT IMedicalFileStoremanWS : public IFileStoremanWS
 	{
 	public:
 		//! Destruktor wirtualny
@@ -169,4 +170,4 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IMedicalFileStoremanWS> MedicalFileStoremanWSConstPtr;
 }
 
-#endif	//	HEADER_GUARD___IFILESTOREMANWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_IFILESTOREMANWS_H__

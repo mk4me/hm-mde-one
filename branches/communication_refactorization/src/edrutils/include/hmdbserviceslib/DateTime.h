@@ -6,15 +6,16 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___DATETIME_H__
-#define HEADER_GUARD___DATETIME_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_DATETIME_H__
+#define HEADER_GUARD__HMDBSERVICES_DATETIME_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <string>
 
 namespace hmdbServices
 {
 	//! Klasa reprezentuje prosta obsługę daty
-	class Date{
+	class HMDBSERVICES_EXPORT Date{
 	private:
 		/**
 		Pole klasy przechowujace informacje o roku
@@ -99,7 +100,7 @@ namespace hmdbServices
 	};
 
 	//! Klasa przechowująca czas
-	class Time{
+	class HMDBSERVICES_EXPORT Time{
 	private:
 		/**
 		Pole klasy przechowujace informacje o godzinie
@@ -185,7 +186,7 @@ namespace hmdbServices
 	};
 
 	//! Klasa przechowująca datę i czas
-	class DateTime : public Date, public Time {
+	class HMDBSERVICES_EXPORT DateTime : public Date, public Time {
 	public:
 		//! \return Aktualna data i czas
 		static const DateTime now();
@@ -235,4 +236,4 @@ namespace hmdbServices
 	};
 }
 
-#endif	//	HEADER_GUARD___DATETIME_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_DATETIME_H__

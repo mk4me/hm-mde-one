@@ -5,32 +5,29 @@
 
 ServerStatusManager::StatusChecker::StatusChecker(ServerStatusManager * manager) : manager(manager), checkDelay_(10000000), finish_(false)
 {
-
 }
 
 ServerStatusManager::StatusChecker::~StatusChecker()
 {
-
 }
 
 void ServerStatusManager::StatusChecker::run()
 {
-	while(!finish_){
-        {
-		    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(*manager);
+	while (!finish_){
+		{
+			OpenThreads::ScopedLock<OpenThreads::Mutex> lock(*manager);
 
-		    if(manager->refreshingServers() == false){
+			if (manager->refreshingServers() == false){
+				for (auto it = manager->serverStatuses.begin(); it != manager->serverStatuses.end(); ++it){
+					CommunicationManager::CompleteRequest completeRequest;
+					completeRequest.callbacks = manager->pingCallbacks;
+					completeRequest.request = manager->manager->createRequestPing(it->first);
+					manager->manager->pushRequest(completeRequest);
+				}
 
-			    for(auto it = manager->serverStatuses.begin(); it != manager->serverStatuses.end(); ++it){
-				    CommunicationManager::CompleteRequest completeRequest;
-				    completeRequest.callbacks = manager->pingCallbacks;
-				    completeRequest.request = manager->manager->createRequestPing(it->first);
-				    manager->manager->pushRequest(completeRequest);
-			    }
-
-			    manager->toCheck = manager->serverStatuses.size();
-		    }
-        }
+				manager->toCheck = manager->serverStatuses.size();
+			}
+		}
 		microSleep(checkDelay_);
 	}
 }
@@ -51,8 +48,8 @@ unsigned int ServerStatusManager::StatusChecker::checkDelay()
 }
 
 ServerStatusManager::ServerStatusManager(CommunicationManager * manager) :
-    manager(manager),
-    toCheck(0)
+manager(manager),
+toCheck(0)
 {
 	mThis = this;
 	pingCallbacks.onEndCallback = boost::bind(&ServerStatusManager::onPingEnd, this, _1);
@@ -62,7 +59,7 @@ ServerStatusManager::ServerStatusManager(CommunicationManager * manager) :
 
 ServerStatusManager::~ServerStatusManager()
 {
-	if(statusChecker->isRunning() == true){
+	if (statusChecker->isRunning() == true){
 		statusChecker->finish();
 		statusChecker->join();
 	}
@@ -73,15 +70,15 @@ void ServerStatusManager::addServer(const std::string & url)
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(*mThis);
 	auto it = serverStatuses.find(url);
 
-	if(it == serverStatuses.end()){
+	if (it == serverStatuses.end()){
 		ServerStatus status;
 		status.serverUrl = url;
 		status.online = false;
-		status.time = webservices::DateTime::now();
+		status.time = hmdbServices::DateTime::now();
 		serverStatuses[url] = status;
 	}
 
-	if(statusChecker->isRunning() == false){
+	if (statusChecker->isRunning() == false){
 		statusChecker->start();
 	}
 }
@@ -143,10 +140,10 @@ void ServerStatusManager::onPingEnd(const CommunicationManager::BasicRequestPtr 
 	--toCheck;
 	CommunicationManager::PingRequestPtr ping = utils::dynamic_pointer_cast<CommunicationManager::PingRequest>(request);
 	auto it = serverStatuses.find(ping->urlToPing());
-	if(it != serverStatuses.end()){
+	if (it != serverStatuses.end()){
 		it->second.online = ping->getProgress() == 0.0 ? false : true;
 		it->second.error = std::string();
-		it->second.time = webservices::DateTime::now();
+		it->second.time = hmdbServices::DateTime::now();
 	}
 }
 
@@ -156,9 +153,9 @@ void ServerStatusManager::onPingError(const CommunicationManager::BasicRequestPt
 	--toCheck;
 	CommunicationManager::PingRequestPtr ping = utils::dynamic_pointer_cast<CommunicationManager::PingRequest>(request);
 	auto it = serverStatuses.find(ping->urlToPing());
-	if(it != serverStatuses.end()){
+	if (it != serverStatuses.end()){
 		it->second.online = ping->getProgress() == 0.0 ? false : true;
 		it->second.error = error;
-		it->second.time = webservices::DateTime::now();
+		it->second.time = hmdbServices::DateTime::now();
 	}
 }

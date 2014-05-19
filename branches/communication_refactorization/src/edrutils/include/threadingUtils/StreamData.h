@@ -6,9 +6,10 @@
 
 	purpose:  Baza dla danych strumieniowych
 	*********************************************************************/
-#ifndef HEADER_GUARD_UTILS__STREAMDATABASE_H__
-#define HEADER_GUARD_UTILS__STREAMDATABASE_H__
+#ifndef HEADER_GUARD_THREADINGUTILS__STREAMDATABASE_H__
+#define HEADER_GUARD_THREADINGUTILS__STREAMDATABASE_H__
 
+#include <threadingUtils/Export.h>
 #include <utils/SmartPtr.h>
 #include <boost/type_traits.hpp>
 #include <boost/function.hpp>
@@ -16,10 +17,10 @@
 #include <utils/Debug.h>
 #include <list>
 
-namespace utils {
+namespace threadingUtils {
 	//! Interfejs obiektu obserwującego strumień
 	//! Implementacja musi gwarantować bezpieczne operacje wielowątkowe
-	class IStreamStatusObserver
+	class THREADINGUTILS_EXPORT IStreamStatusObserver
 	{
 	public:
 		virtual ~IStreamStatusObserver() {}
@@ -29,7 +30,7 @@ namespace utils {
 
 	//! Klasa obsługująca odpytywanie statusu strumienia
 	//! (czy dane uległy aktualizacji) i resetująca status po sprawdzeniu
-	class ResetableStreamStatusObserver : public IStreamStatusObserver
+	class THREADINGUTILS_EXPORT ResetableStreamStatusObserver : public IStreamStatusObserver
 	{
 	private:
 
@@ -53,48 +54,28 @@ namespace utils {
 	typedef utils::shared_ptr<IStreamStatusObserver> StreamStatusObserverPtr;
 
 	//! Klasa bazowa strumienia
-	class StreamBase
+	class THREADINGUTILS_EXPORT StreamBase
 	{
 	protected:
 		//! Chroniony konstruktor domyślny
-		StreamBase() {}
+		StreamBase();
 
 		//! Pomiadamia obserwatorów o zmianie
-		void notify()
-		{
-			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
-			for (auto it = observers.begin(); it != observers.end(); ++it){
-				(*it)->update();
-			}
-		}
+		void notify();
 
 	public:
 		//! Destruktor wirtualny
-		virtual ~StreamBase() {}
+		virtual ~StreamBase();
 
 		//! \param observer Dołączany obiekt obserwujący strumień
-		void attachObserver(StreamStatusObserverPtr observer)
-		{
-			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
-			if (observer == nullptr){
-				throw std::invalid_argument("Empty observer");
-			}
-
-			if (std::find(observers.begin(), observers.end(), observer) == observers.end()){
-				observers.push_back(observer);
-			}
-		}
+		void attachObserver(StreamStatusObserverPtr observer);
 
 		//! \param observer Odłączany obiekt obserwujący strumień
-		void detachObserver(StreamStatusObserverPtr observer)
-		{
-			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
-			observers.remove(observer);
-		}
+		void detachObserver(StreamStatusObserverPtr observer);
 
 	protected:
 		//! Obiekt synchronizujący
-		mutable threadingUtils::RecursiveSyncPolicy synch_;
+		mutable RecursiveSyncPolicy synch_;
 
 	private:
 		//! Lista obserwatorów
@@ -129,7 +110,7 @@ namespace utils {
 		//! (implementacja listy)
 		void setMaxBufferSize(const size_type size)
 		{
-			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
+			ScopedLock<StrictSyncPolicy> lock(synch_);
 			bufferSize_ = size;
 
 			if (verifyBufferSize() == false){
@@ -143,21 +124,21 @@ namespace utils {
 		//! \return Maksymalny rozmiar bufora
 		const size_type maxBufferSize() const
 		{
-			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
+			ScopedLock<StrictSyncPolicy> lock(synch_);
 			return bufferSize_;
 		}
 
 		//! \return Aktualny rozmiar bufora
 		const size_type size() const
 		{
-			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
+			ScopedLock<StrictSyncPolicy> lock(synch_);
 			return bufferData.size();
 		}
 
 		//! \param data Dane do włożenia do bufora
 		void pushData(const_ref_type data)
 		{
-			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
+			ScopedLock<StrictSyncPolicy> lock(synch_);
 			bufferData.push_back(data);
 
 			if (verifyBufferSize() == false){
@@ -168,7 +149,7 @@ namespace utils {
 		//! \param data [out] Obiekt docelowy dla danych bufora
 		void data(ListT & data)
 		{
-			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
+			ScopedLock<StrictSyncPolicy> lock(synch_);
 			data.insert(bufferData.begin(), bufferData.end());
 			ListT().swap(data);
 		}
@@ -183,7 +164,7 @@ namespace utils {
 
 	private:
 		//! Obiekt synchronizujący
-		threadingUtils::StrictSyncPolicy synch_;
+		StrictSyncPolicy synch_;
 		//! Bufor danych
 		ListT bufferData;
 		//! Maksymalny rozmiar bufora
@@ -226,7 +207,7 @@ namespace utils {
 				throw std::runtime_error("Uninitialized buffer pointer");
 			}
 
-			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			ScopedLock<RecursiveSyncPolicy> lock(synch_);
 			streamBufferList.remove(bufferPtr);
 			streamBufferList.push_back(bufferPtr);
 		}
@@ -234,7 +215,7 @@ namespace utils {
 		//! \param bufferPtr Odłanczany bufor danych
 		void detachBuffer(StreamBufferPtr bufferPtr)
 		{
-			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			ScopedLock<RecursiveSyncPolicy> lock(synch_);
 			streamBufferList.remove(bufferPtr);
 		}
 
@@ -243,7 +224,7 @@ namespace utils {
 		//! Return Czy podłączono jakieś bufory
 		const bool buffersAttached() const
 		{
-			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			ScopedLock<RecursiveSyncPolicy> lock(synch_);
 			return !streamBufferList.empty();
 		}
 
@@ -275,7 +256,7 @@ namespace utils {
 		//! \param data Data received from the stream
 		void pushData(const_ref_type data)
 		{
-			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			ScopedLock<RecursiveSyncPolicy> lock(synch_);
 
 			try{
 				pushBufferData(data);
@@ -294,7 +275,7 @@ namespace utils {
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia
 		virtual void data(ref_type d) const
 		{
-			threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+			ScopedLock<RecursiveSyncPolicy> lock(synch_);
 			d = data_;
 		}
 
@@ -403,4 +384,4 @@ namespace utils {
 	};
 }
 
-#endif	//	HEADER_GUARD_UTILS__STREAMDATABASE_H__
+#endif	//	HEADER_GUARD_THREADINGUTILS__STREAMDATABASE_H__

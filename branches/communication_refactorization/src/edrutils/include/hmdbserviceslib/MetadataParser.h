@@ -6,15 +6,16 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___METADATAPARSER_H__
-#define HEADER_GUARD___METADATAPARSER_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_METADATAPARSER_H__
+#define HEADER_GUARD__HMDBSERVICES_METADATAPARSER_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/ShallowCopy.h>
 
 namespace hmdbServices
 {
 	//! Parser metadanych ruchu
-	class MotionMetadataParser
+	class HMDBSERVICES_EXPORT MotionMetadataParser
 	{
 	public:
 		//! \param path Ścieżka do pliku do przeparsowania
@@ -23,7 +24,7 @@ namespace hmdbServices
 	};
 
 	//! Parser metadanych medycznych
-	class MedicalMetadataParser
+	class HMDBSERVICES_EXPORT MedicalMetadataParser
 	{
 	public:
 		//! \param path Ścieżka do pliku do przeparsowania
@@ -32,4 +33,4 @@ namespace hmdbServices
 	};
 }
 
-#endif	//	HEADER_GUARD___METADATAPARSER_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_METADATAPARSER_H__

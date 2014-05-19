@@ -2,10 +2,9 @@
 #define __HEADER_GUARD_KINEMATIC__WRAPPERS_H__
 
 #include <corelib/BaseDataTypes.h>
-#include <utils/StreamData.h>
+#include <threadingUtils/StreamData.h>
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/JointAnglesCollection.h>
-
 
 //! Typ definiuj¹cy indeksy na po³¹czonych punktach
 typedef std::pair<unsigned int, unsigned int> SegmentRange;
@@ -20,7 +19,7 @@ struct SegmentDescriptor
 typedef std::vector<SegmentDescriptor> SegmentsDescriptors;
 
 //! Strumieñ danych szkieletu
-typedef utils::StreamT<std::vector<osg::Vec3>> PointsCloudStream;
+typedef threadingUtils::StreamT<std::vector<osg::Vec3>> PointsCloudStream;
 
 DEFINE_SMART_POINTERS(PointsCloudStream);
 
@@ -39,6 +38,5 @@ DEFINE_WRAPPER(kinematic::SkeletalData, utils::PtrPolicyBoost, utils::ClonePolic
 DEFINE_WRAPPER(kinematic::SkeletalModel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(SkeletonDataStream, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
 DEFINE_WRAPPER(std::string, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
-
 
 #endif  // __HEADER_GUARD_KINEMATIC__WRAPPERS_H__

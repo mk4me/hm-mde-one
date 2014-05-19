@@ -1,22 +1,23 @@
 #include "CommunicationPCH.h"
 #include "DataSourceWebServicesManager.h"
-#include <webserviceslib/AdministrationWS.h>
-#include <webserviceslib/AuthorizationWS.h>
-#include <webserviceslib/BasicQueriesWS.h>
-#include <webserviceslib/BasicUpdatesWS.h>
-#include <webserviceslib/FileStoremanWS.h>
-#include <webserviceslib/UserPersonalSpaceWS.h>
-#include <webserviceslib/AccountFactoryWS.h>
+#include <hmdbserviceslib/AdministrationWS.h>
+#include <hmdbserviceslib/AuthorizationWS.h>
+#include <hmdbserviceslib/BasicQueriesWS.h>
+#include <hmdbserviceslib/BasicUpdatesWS.h>
+#include <hmdbserviceslib/FileStoremanWS.h>
+#include <hmdbserviceslib/UserPersonalSpaceWS.h>
+#include <hmdbserviceslib/AccountFactoryWS.h>
 
-using namespace webservices;
+using namespace hmdbServices;
 
 DataSourceWebServicesManager * DataSourceWebServicesManager::instance_ = nullptr;
 
 DataSourceWebServicesManager * DataSourceWebServicesManager::create()
 {
-	if(instance_ == nullptr){
+	if (instance_ == nullptr){
 		instance_ = new DataSourceWebServicesManager();
-	}else{
+	}
+	else{
 		throw std::runtime_error("Instance already created");
 	}
 
@@ -25,7 +26,7 @@ DataSourceWebServicesManager * DataSourceWebServicesManager::create()
 
 void DataSourceWebServicesManager::destroy()
 {
-	if(instance_ != nullptr){
+	if (instance_ != nullptr){
 		delete instance_;
 		instance_ = nullptr;
 	}
@@ -87,21 +88,19 @@ const MultiAccountFactoryWSPtr & DataSourceWebServicesManager::accountFactorySer
 }
 
 DataSourceWebServicesManager::DataSourceWebServicesManager()
-	:	motionBasicQueriesService_(new MotionBasicQueriesWS()),
-		medicalBasicQueriesService_(new MedicalBasicQueriesWS()),
-		motionBasicUpdatesService_(new MotionBasicUpdatesWS()),
-		medicalBasicUpdatesService_(new MedicalBasicUpdatesWS()),
-		motionFileStoremanService_(new MotionFileStoremanWS()),
-		medicalFileSoremanService_(new MedicalFileStoremanWS()),
-		accountFactoryService_(new MultiAccountFactoryWS()),
-		authorizationService_(new AuthorizationWS()),
-		administrationService_(new AdministrationWS()),
-		userPersonalSpaceService_(new UserPersonalSpaceWS())
+: motionBasicQueriesService_(new MotionBasicQueriesWS()),
+medicalBasicQueriesService_(new MedicalBasicQueriesWS()),
+motionBasicUpdatesService_(new MotionBasicUpdatesWS()),
+medicalBasicUpdatesService_(new MedicalBasicUpdatesWS()),
+motionFileStoremanService_(new MotionFileStoremanWS()),
+medicalFileSoremanService_(new MedicalFileStoremanWS()),
+accountFactoryService_(new MultiAccountFactoryWS()),
+authorizationService_(new AuthorizationWS()),
+administrationService_(new AdministrationWS()),
+userPersonalSpaceService_(new UserPersonalSpaceWS())
 {
-
 }
 
 DataSourceWebServicesManager::~DataSourceWebServicesManager()
 {
-
 }

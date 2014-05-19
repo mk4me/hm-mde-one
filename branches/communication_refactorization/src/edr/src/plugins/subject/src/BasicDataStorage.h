@@ -1,18 +1,18 @@
 /********************************************************************
-    created:  2013/02/07
-    created:  7:2:2013   11:24
-    filename: BasicDataStorage.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2013/02/07
+	created:  7:2:2013   11:24
+	filename: BasicDataStorage.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___BASICDATASTORAGE_H__
 #define HEADER_GUARD___BASICDATASTORAGE_H__
 
 #include <map>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/VariantsCollection.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 
 class BasicDataStorage
 {
@@ -21,9 +21,9 @@ private:
 	//! Typ mapy obiektów.
 	typedef std::map< utils::TypeInfo, core::ConstVariantsSet > ObjectsByTypes;
 	//! Typ synchronizacji
-	typedef utils::RecursiveSyncPolicy SyncPolicy;
+	typedef threadingUtils::RecursiveSyncPolicy SyncPolicy;
 	//! Typ lokalnej synchronizacji
-	typedef utils::ScopedLock<SyncPolicy> ScopedLock;
+	typedef threadingUtils::ScopedLock<SyncPolicy> ScopedLock;
 
 private:
 

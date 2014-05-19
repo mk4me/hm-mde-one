@@ -1,11 +1,11 @@
 /********************************************************************
-    created:  2012/03/23
-    created:  23:3:2012   13:47
-    filename: IDataSourceContent.h
-    author:   Mateusz Janiak
+	created:  2012/03/23
+	created:  23:3:2012   13:47
+	filename: IDataSourceContent.h
+	author:   Mateusz Janiak
 
-    purpose:
-*********************************************************************/
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___IDATASOURCECONTENT_H__
 #define HEADER_GUARD___IDATASOURCECONTENT_H__
 
@@ -55,13 +55,11 @@ namespace communication
 		//! \param value Wartość przechowywanych danych
 		Item(const value_type * value) : value_(value)
 		{
-
 		}
 
 		//! Destruktor wirtualny
 		~Item()
 		{
-
 		}
 
 		//! \return Typ zawartości reprezentowanej przez ten element - własne RTTI
@@ -81,7 +79,6 @@ namespace communication
 		const value_type * value_;
 	};
 
-
 	//! Wzorzec klasy agregującej elementy danego typu
 	//! Patrz opis wzorca Item
 	template<class T>
@@ -95,13 +92,11 @@ namespace communication
 		//! \param value Elementu które opisujemy
 		ItemGroup(const value_type & value) : value_(value)
 		{
-
 		}
 
 		//! Destruktor
 		~ItemGroup()
 		{
-
 		}
 
 		//! \return Typ zawartości reprezentowanej przez ten element - własne RTTI
@@ -121,93 +116,93 @@ namespace communication
 
 	//! Specjalizacje
 	template<>
-	inline ContentType Item<webservices::MedicalShallowCopy::Patient>::contentType() const
+	inline ContentType Item<hmdbServices::MedicalShallowCopy::Patient>::contentType() const
 	{
 		return PatientContent;
 	}
 
 	template<>
-	inline ContentType Item<webservices::MedicalShallowCopy::Disorder>::contentType() const
+	inline ContentType Item<hmdbServices::MedicalShallowCopy::Disorder>::contentType() const
 	{
 		return DisorderContent;
 	}
 
 	template<>
-	inline ContentType Item<webservices::MotionShallowCopy::Performer>::contentType() const
+	inline ContentType Item<hmdbServices::MotionShallowCopy::Performer>::contentType() const
 	{
 		return SubjectContent;
 	}
 
 	template<>
-	inline ContentType Item<webservices::MotionShallowCopy::Session>::contentType() const
+	inline ContentType Item<hmdbServices::MotionShallowCopy::Session>::contentType() const
 	{
 		return SessionContent;
 	}
 
 	template<>
-	inline ContentType Item<webservices::MotionShallowCopy::Trial>::contentType() const
+	inline ContentType Item<hmdbServices::MotionShallowCopy::Trial>::contentType() const
 	{
 		return MotionContent;
 	}
 
 	template<>
-	inline ContentType Item<webservices::MotionShallowCopy::File>::contentType() const
+	inline ContentType Item<hmdbServices::MotionShallowCopy::File>::contentType() const
 	{
 		return FileContent;
 	}
 
 	template<>
-	inline ContentType ItemGroup<webservices::MedicalShallowCopy::Patient>::contentType() const
+	inline ContentType ItemGroup<hmdbServices::MedicalShallowCopy::Patient>::contentType() const
 	{
 		return PatientsGroupContent;
 	}
 
 	template<>
-	inline ContentType ItemGroup<webservices::MedicalShallowCopy::Disorder>::contentType() const
+	inline ContentType ItemGroup<hmdbServices::MedicalShallowCopy::Disorder>::contentType() const
 	{
 		return DisordersGroupContent;
 	}
 
 	template<>
-	inline ContentType ItemGroup<webservices::MotionShallowCopy::Performer>::contentType() const
+	inline ContentType ItemGroup<hmdbServices::MotionShallowCopy::Performer>::contentType() const
 	{
 		return SubjectsGroupContent;
 	}
 
 	template<>
-	inline ContentType ItemGroup<webservices::MotionShallowCopy::Session>::contentType() const
+	inline ContentType ItemGroup<hmdbServices::MotionShallowCopy::Session>::contentType() const
 	{
 		return SessionsGroupContent;
 	}
 
 	template<>
-	inline ContentType ItemGroup<webservices::MotionShallowCopy::Trial>::contentType() const
+	inline ContentType ItemGroup<hmdbServices::MotionShallowCopy::Trial>::contentType() const
 	{
 		return MotionsGroupContent;
 	}
 
 	template<>
-	inline ContentType ItemGroup<webservices::MotionShallowCopy::File>::contentType() const
+	inline ContentType ItemGroup<hmdbServices::MotionShallowCopy::File>::contentType() const
 	{
 		return FilesGroupContent;
 	}
 
 	//! Definicje typów
-	typedef Item<webservices::MotionShallowCopy::Performer> SubjectItem;
-	typedef Item<webservices::MotionShallowCopy::Session> SessionItem;
-	typedef Item<webservices::MotionShallowCopy::Trial> MotionItem;
-	typedef Item<webservices::MotionShallowCopy::File> FileItem;
+	typedef Item<hmdbServices::MotionShallowCopy::Performer> SubjectItem;
+	typedef Item<hmdbServices::MotionShallowCopy::Session> SessionItem;
+	typedef Item<hmdbServices::MotionShallowCopy::Trial> MotionItem;
+	typedef Item<hmdbServices::MotionShallowCopy::File> FileItem;
 
-	typedef Item<webservices::MedicalShallowCopy::Patient> PatientItem;
-	typedef Item<webservices::MedicalShallowCopy::Disorder> DisorderItem;
+	typedef Item<hmdbServices::MedicalShallowCopy::Patient> PatientItem;
+	typedef Item<hmdbServices::MedicalShallowCopy::Disorder> DisorderItem;
 
-	typedef ItemGroup<webservices::MotionShallowCopy::Performer> SubjectsGroupItem;
-	typedef ItemGroup<webservices::MotionShallowCopy::Session> SessionsGroupItem;
-	typedef ItemGroup<webservices::MotionShallowCopy::Trial> MotionsGroupItem;
-	typedef ItemGroup<webservices::MotionShallowCopy::File> FilesGroupItem;
+	typedef ItemGroup<hmdbServices::MotionShallowCopy::Performer> SubjectsGroupItem;
+	typedef ItemGroup<hmdbServices::MotionShallowCopy::Session> SessionsGroupItem;
+	typedef ItemGroup<hmdbServices::MotionShallowCopy::Trial> MotionsGroupItem;
+	typedef ItemGroup<hmdbServices::MotionShallowCopy::File> FilesGroupItem;
 
-	typedef ItemGroup<webservices::MedicalShallowCopy::Patient> PatientsGroupItem;
-	typedef ItemGroup<webservices::MedicalShallowCopy::Disorder> DisordersGroupItem;
+	typedef ItemGroup<hmdbServices::MedicalShallowCopy::Patient> PatientsGroupItem;
+	typedef ItemGroup<hmdbServices::MedicalShallowCopy::Disorder> DisordersGroupItem;
 
 	//! Interfejs podstawowej funkcjonalności generatorów zawartości - zarówno perspektywa jak i generatory go implementują
 	class IDataSourceContentFunctionality
@@ -231,17 +226,17 @@ namespace communication
 		virtual int downloadField(const QTreeWidgetItem * item) const = 0;
 		//! Czyścimy dane contentu (np. bo zmieniamy perspektywę)
 		virtual void release() = 0;
-		//! \param c Znak symbolizujący płeć - z webservices::MedicalShallowCopy::Patient, m,M => Mężczyzna, f,F,w,W,k,K => Kobieta
+		//! \param c Znak symbolizujący płeć - z hmdbServices::MedicalShallowCopy::Patient, m,M => Mężczyzna, f,F,w,W,k,K => Kobieta
 		//! \return Przetłumaczona nazwa płci
-		static QString decodeGender(const webservices::xmlWsdl::Gender::Type g)
+		static QString decodeGender(const hmdbServices::xmlWsdl::Gender::Type g)
 		{
 			QString gender;
 
-			switch(g){
-			case webservices::xmlWsdl::Gender::Male:
+			switch (g){
+			case hmdbServices::xmlWsdl::Gender::Male:
 				gender = QObject::tr("Man");
 				break;
-			case webservices::xmlWsdl::Gender::Female:
+			case hmdbServices::xmlWsdl::Gender::Female:
 				gender = QObject::tr("Woman");
 				break;
 			default:

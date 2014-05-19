@@ -1,22 +1,21 @@
 /********************************************************************
-    created:  2013/07/05
-    created:  5:7:2013   13:31
-    filename: ThreadPool.h
-    author:   Mateusz Janiak
-    
-    purpose:  Implementacja puli w¹tków
-*********************************************************************/
+	created:  2013/07/05
+	created:  5:7:2013   13:31
+	filename: ThreadPool.h
+	author:   Mateusz Janiak
+
+	purpose:  Implementacja puli w¹tków
+	*********************************************************************/
 #ifndef HEADER_GUARD_CORE__THREADPOOL_H__
 #define HEADER_GUARD_CORE__THREADPOOL_H__
 
 #include <corelib/IThreadPool.h>
-#include <threading/ThreadPool.h>
+#include <threadingUtils/ThreadPool.h>
 #include <corelib/BaseDataTypes.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 
 namespace core
 {
-
 	class ThreadPool : public IThreadPool
 	{
 	public:
@@ -24,7 +23,7 @@ namespace core
 		//! \param threadFactory Fabryka w¹tków
 		//! \param minThreads Minimalna iloœæ w¹tków jakie nale¿y utrzymywaæ
 		//! \param maxThreads Maksymalna iloœæ w¹tków
-		ThreadPool(utils::IThreadFactoryPtr threadFactory,
+		ThreadPool(threadingUtils::IThreadFactoryPtr threadFactory,
 			const size_type minThreads, const size_type maxThreads);
 
 		//! Destruktor wirtualny
@@ -40,7 +39,7 @@ namespace core
 		virtual const size_type count() const;
 
 		//! Metoda pobiera w¹tki z puli podaj¹c kto i po co pobiera
-		//! \param who Kto pobiera w¹tki		
+		//! \param who Kto pobiera w¹tki
 		//! \param[out] threads Agregat ³¹dowany pobieranymi w¹tkami
 		//! \param count Iloœæ w¹tków do pobrania
 		//! \param exact Czy mo¿na pobraæ mniej w¹tków ni¿ ¿¹dano
@@ -54,11 +53,10 @@ namespace core
 
 	private:
 		//! Faktyczny pool
-		utils::shared_ptr<utils::ThreadPool> threadPool_;
+		utils::shared_ptr<threadingUtils::ThreadPool> threadPool_;
 		//! Obiekt synchronizuj¹cy
-		mutable utils::StrictSyncPolicy synch_;
+		mutable threadingUtils::StrictSyncPolicy synch_;
 	};
-
 }
 
 #endif	//	HEADER_GUARD_CORE__THREADPOOL_H__

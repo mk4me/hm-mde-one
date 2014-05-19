@@ -4,21 +4,20 @@
 	author:	  Mateusz Janiak
 
 	purpose:
-*********************************************************************/
+	*********************************************************************/
 #ifndef __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
 #define __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
 
 #include <corelib/Export.h>
 #include <utils/SmartPtr.h>
 #include <utils/ObjectWrapper.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 #include <list>
 #include <set>
 #include <vector>
 
 namespace core
 {
-
 	class Variant;
 
 	//! Klasa realizuj¹ca inicjalizacjê danych dla OW
@@ -48,7 +47,6 @@ namespace core
 	typedef std::set<VariantConstPtr> ConstVariantsSet;
 	typedef std::vector<VariantPtr> VariantsVector;
 	typedef std::vector<VariantConstPtr> ConstVariantsVector;
-	
 
 	class CORELIB_EXPORT Variant
 	{
@@ -57,7 +55,7 @@ namespace core
 		//! Typ przechowuj¹cy metadane OW
 		typedef std::map<std::string, std::string> Metadata;
 		//! Typ loklanej synchronizacji
-		typedef utils::ScopedLock<utils::RecursiveSyncPolicy> ScopedLock;
+		typedef threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> ScopedLock;
 
 	public:
 
@@ -96,7 +94,7 @@ namespace core
 		//! Faktyczne dane
 		utils::ObjectWrapperPtr wrapper_;
 		//! Obiekt synchronizuj¹cy
-		mutable utils::RecursiveSyncPolicy sync_;
+		mutable threadingUtils::RecursiveSyncPolicy sync_;
 		//! Czy jesteœmy w trakcie inicjalizacji
 		mutable bool initializing_;
 

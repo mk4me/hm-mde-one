@@ -1,11 +1,11 @@
 /********************************************************************
-    created:  2013/11/15
-    created:  15:11:2013   13:54
-    filename: DataSource.h
-    author:   Mateusz Janiak
-    
-    purpose:  èrÛd≥o danych obs≥ugujπce kostiumy z IMU
-*********************************************************************/
+	created:  2013/11/15
+	created:  15:11:2013   13:54
+	filename: DataSource.h
+	author:   Mateusz Janiak
+
+	purpose:  èrÛd≥o danych obs≥ugujπce kostiumy z IMU
+	*********************************************************************/
 #ifndef HEADER_GUARD_IMU_COSTUME__DATASOURCE_H__
 #define HEADER_GUARD_IMU_COSTUME__DATASOURCE_H__
 
@@ -13,11 +13,11 @@
 #include <corelib/Variant.h>
 #include <corelib/ISource.h>
 #include <corelib/IThread.h>
-#include <utils/StreamData.h>
+#include <threadingUtils/StreamData.h>
 #include <osg/Vec3>
 #include <kinematiclib/hAnimSkeleton.h>
 #include <kinematiclib/JointAnglesCollection.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 #include <imucostumelib/ImuCostume.h>
 #include <corelib/HierarchyItem.h>
 #include <plugins/kinematic/Wrappers.h>
@@ -26,7 +26,6 @@ namespace IMU
 {
 	class IMUCostumeDataSource : public plugin::ISource
 	{
-
 		UNIQUE_ID("{441BB894-1019-4382-97EE-F18A511A49CB}");
 		CLASS_DESCRIPTION("IMUCostume", "IMU Costume Data Source");
 
@@ -37,7 +36,7 @@ namespace IMU
 			std::string name;						//! Nazwa
 			unsigned int id;						//! Identyfikator
 			unsigned int imusCount;					//! IlosÊ czujnikÛw
-			unsigned int jointsCount;				//! Ilosc stawow w modelu			
+			unsigned int jointsCount;				//! Ilosc stawow w modelu
 		};
 
 		//! Wyliczenie opisujπce status danych kostiumu
@@ -49,12 +48,12 @@ namespace IMU
 
 	private:
 
-		typedef utils::StreamT<IMUData> RIMUStream;
+		typedef threadingUtils::StreamT<IMUData> RIMUStream;
 
 		DEFINE_SMART_POINTERS(RIMUStream);
 
 		struct CostumeRawData
-		{			
+		{
 			SkeletonDataStreamPtr skeletonDataStream;
 			std::vector<RIMUStreamPtr> imuDataStreams;
 		};
@@ -158,17 +157,15 @@ namespace IMU
 
 		static void extractScalar(const osg::Vec3 & data, float & ret, const unsigned int idx);
 
-
-
 	private:
 		//! Czy odúwieøamy dane
 		volatile bool refreshData_;
 		//! Czy po≥πczono juø z kostiumami
 		bool connected_;
 		//! Obiekt synchronizujπcy
-		mutable utils::RecursiveSyncPolicy synch;
+		mutable threadingUtils::RecursiveSyncPolicy synch;
 		//! Obiekt synchronizujπcy aktualizacjÍ danych
-		utils::RecursiveSyncPolicy updateSynch;
+		threadingUtils::RecursiveSyncPolicy updateSynch;
 		//! Manager danych w pamiÍci
 		core::IMemoryDataManager * memoryDM;
 		//! Watek odswiezajacy dane

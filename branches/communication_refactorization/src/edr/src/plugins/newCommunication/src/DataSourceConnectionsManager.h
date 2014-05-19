@@ -1,16 +1,16 @@
 /********************************************************************
-    created:  2012/03/07
-    created:  7:3:2012   13:29
-    filename: DataSourceConnectionsManager.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2012/03/07
+	created:  7:3:2012   13:29
+	filename: DataSourceConnectionsManager.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___DATASOURCECONNECTIONSMANAGER_H__
 #define HEADER_GUARD___DATASOURCECONNECTIONSMANAGER_H__
 
-#include <webserviceslib/WSConnection.h>
-#include <webserviceslib/FtpsConnection.h>
+//#include <hmdbserviceslib/WSConnection.h>
+//#include <hmdbserviceslib/FtpsConnection.h>
 
 //! Klasa agregująca połączenia webservices - singletone
 class DataSourceConnectionManager
@@ -25,33 +25,32 @@ public:
 	static DataSourceConnectionManager * instance();
 
 	//! \return Połączenie z usługą FileStoremanWS dla danych ruchu
-	const webservices::WSSecureConnectionPtr & motionFileStoremanWSConnection() const;
+	const hmdbServices::WSSecureConnectionPtr & motionFileStoremanWSConnection() const;
 	//! \return Połączenie z usługą BasicQueriesWS dla danych ruchu
-	const webservices::WSSecureConnectionPtr & motionBasicQueriesWSConnection() const;
+	const hmdbServices::WSSecureConnectionPtr & motionBasicQueriesWSConnection() const;
 	//! \return Połączenie z usługą BasicUpdatesWS dla danych ruchu
-	const webservices::WSSecureConnectionPtr & motionBasicUpdatesWSConnection() const;
+	const hmdbServices::WSSecureConnectionPtr & motionBasicUpdatesWSConnection() const;
 
 	//! \return Połączenie z usługą FileStoremanWS dla danych medycznych
-	const webservices::WSSecureConnectionPtr & medicalFileStoremanWSConnection() const;
+	const hmdbServices::WSSecureConnectionPtr & medicalFileStoremanWSConnection() const;
 	//! \return Połączenie z usługą BasicQueriesWS dla danych medycznych
-	const webservices::WSSecureConnectionPtr & medicalBasicQueriesWSConnection() const;
+	const hmdbServices::WSSecureConnectionPtr & medicalBasicQueriesWSConnection() const;
 	//! \return Połączenie z usługą BasicUpdatesWS dla danych medycznych
-	const webservices::WSSecureConnectionPtr & medicalBasicUpdatesWSConnection() const;
-
+	const hmdbServices::WSSecureConnectionPtr & medicalBasicUpdatesWSConnection() const;
 
 	//! \return Połączenie z usługą AcvcountFactoryWS
-	const webservices::WSSecureConnectionPtr & accountFactoryWSConnection() const;
+	const hmdbServices::WSSecureConnectionPtr & accountFactoryWSConnection() const;
 	//! \return Połączenie z usługą UserPersonalSpaceWS
-	const webservices::WSSecureConnectionPtr & userPersonalSpaceWSConnection() const;
+	const hmdbServices::WSSecureConnectionPtr & userPersonalSpaceWSConnection() const;
 	//! \return Połączenie z usługą AdministrationWS
-	const webservices::WSSecureConnectionPtr & administrationWSConnection() const;
+	const hmdbServices::WSSecureConnectionPtr & administrationWSConnection() const;
 	//! \return Połączenie z usługą AuthorizationWS
-	const webservices::WSSecureConnectionPtr & authorizationWSConnection() const;
+	const hmdbServices::WSSecureConnectionPtr & authorizationWSConnection() const;
 
 	//! \return Połączenie ftps z danymi ruchu
-	const webservices::FtpsConnectionPtr & motionFtps() const;
+	const hmdbServices::FtpsConnectionPtr & motionFtps() const;
 	//! \return Połączenie ftps z danymi medycznymi
-	const webservices::FtpsConnectionPtr & medicalFtps() const;
+	const hmdbServices::FtpsConnectionPtr & medicalFtps() const;
 
 private:
 	//! Prywatny domyślny konstruktor
@@ -61,21 +60,21 @@ private:
 
 private:
 
-	webservices::WSSecureConnectionPtr motionFilesStoremanWSConnection_;
-	webservices::WSSecureConnectionPtr motionBasicQueriesWSConnection_;
-	webservices::WSSecureConnectionPtr motionBasicUpdatesWSConnection_;
-				 
-	webservices::WSSecureConnectionPtr medicalFilesStoremanWSConnection_;
-	webservices::WSSecureConnectionPtr medicalBasicQueriesWSConnection_;
-	webservices::WSSecureConnectionPtr medicalBasicUpdatesWSConnection_;
-				 
-	webservices::WSSecureConnectionPtr accountFactoryWSConnection_;
-	webservices::WSSecureConnectionPtr userPersonalSpaceWSConnection_;
-	webservices::WSSecureConnectionPtr administrationWSConnection_;
-	webservices::WSSecureConnectionPtr authorizationWSConnection_;
+	hmdbServices::WSSecureConnectionPtr motionFilesStoremanWSConnection_;
+	hmdbServices::WSSecureConnectionPtr motionBasicQueriesWSConnection_;
+	hmdbServices::WSSecureConnectionPtr motionBasicUpdatesWSConnection_;
 
-	webservices::FtpsConnectionPtr motionFtps_;
-	webservices::FtpsConnectionPtr medicalFtps_;
+	hmdbServices::WSSecureConnectionPtr medicalFilesStoremanWSConnection_;
+	hmdbServices::WSSecureConnectionPtr medicalBasicQueriesWSConnection_;
+	hmdbServices::WSSecureConnectionPtr medicalBasicUpdatesWSConnection_;
+
+	hmdbServices::WSSecureConnectionPtr accountFactoryWSConnection_;
+	hmdbServices::WSSecureConnectionPtr userPersonalSpaceWSConnection_;
+	hmdbServices::WSSecureConnectionPtr administrationWSConnection_;
+	hmdbServices::WSSecureConnectionPtr authorizationWSConnection_;
+
+	hmdbServices::FtpsConnectionPtr motionFtps_;
+	hmdbServices::FtpsConnectionPtr medicalFtps_;
 
 	static DataSourceConnectionManager * instance_;
 };

@@ -6,16 +6,17 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___IADMINISTRATIONWS_H__
-#define HEADER_GUARD___IADMINISTRATIONWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_IADMINISTRATIONWS_H__
+#define HEADER_GUARD__HMDBSERVICES_IADMINISTRATIONWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <string>
 #include <utils/SmartPtr.h>
 
 namespace hmdbServices
 {
 	//! Interfejs serwisu z operacjami administracyjnymi
-	class IAdministrationWS
+	class HMDBSERVICES_EXPORT IAdministrationWS
 	{
 	public:
 		//! Destruktor wirtualny
@@ -63,4 +64,4 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IAdministrationWS> AdministrationWSConstPtr;
 }
 
-#endif	//	HEADER_GUARD___IADMINISTRATIONWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_IADMINISTRATIONWS_H__

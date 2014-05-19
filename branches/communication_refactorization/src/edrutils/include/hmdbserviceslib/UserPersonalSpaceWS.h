@@ -6,15 +6,16 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___USERPERSONALSPACEWS_H__
-#define HEADER_GUARD___USERPERSONALSPACEWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_USERPERSONALSPACEWS_H__
+#define HEADER_GUARD__HMDBSERVICES_USERPERSONALSPACEWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/IUserPersonalSpaceWS.h>
 #include <networkUtils/IWSDLService.h>
 
 namespace hmdbServices
 {
-	class UserPersonalSpaceWS : public IUserPersonalSpaceWS
+	class HMDBSERVICES_EXPORT UserPersonalSpaceWS : public IUserPersonalSpaceWS
 	{
 	public:
 		UserPersonalSpaceWS(networkUtils::IWSDLServicePtr wsdlService);
@@ -25,4 +26,4 @@ namespace hmdbServices
 	};
 }
 
-#endif	//	HEADER_GUARD___USERPERSONALSPACEWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_USERPERSONALSPACEWS_H__

@@ -6,15 +6,16 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___AUTHORIZATIONSERVICE_H__
-#define HEADER_GUARD___AUTHORIZATIONSERVICE_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_AUTHORIZATIONSERVICE_H__
+#define HEADER_GUARD__HMDBSERVICES_AUTHORIZATIONSERVICE_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/IAuthorizationWS.h>
 #include <networkUtils/IWSDLService.h>
 
 namespace hmdbServices
 {
-	class AuthorizationWS : public IAuthorizationWS
+	class HMDBSERVICES_EXPORT AuthorizationWS : public IAuthorizationWS
 	{
 	public:
 		/**
@@ -81,4 +82,4 @@ namespace hmdbServices
 	};
 }
 
-#endif	//	HEADER_GUARD___AUTHORIZATIONSERVICE_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_AUTHORIZATIONSERVICE_H__

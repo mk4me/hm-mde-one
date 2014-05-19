@@ -122,33 +122,33 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="580"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="611"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="619"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="598"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="629"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="637"/>
         <source>Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="580"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="619"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="598"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="637"/>
         <source>%1: Left step %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="584"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="611"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="623"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="602"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="629"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="641"/>
         <source>Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="584"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="623"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="602"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="641"/>
         <source>%1: Right step %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="608"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="626"/>
         <source>Whole chart</source>
         <translation type="unfinished"></translation>
     </message>

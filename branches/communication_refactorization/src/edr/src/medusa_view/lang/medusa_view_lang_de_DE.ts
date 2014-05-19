@@ -84,65 +84,34 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/AnalisisWidget.ui" line="205"/>
-        <location filename="../ui/AnalisisWidget.ui" line="279"/>
-        <source>Filters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/AnalisisWidget.ui" line="289"/>
-        <source>Reset All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/AnalisisWidget.ui" line="308"/>
-        <source>hide</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/AnalisisWidget.ui" line="407"/>
-        <source>Apply</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/AnalisisWidget.ui" line="442"/>
-        <source>Raports</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/AnalisisWidget.cpp" line="156"/>
+        <location filename="../src/AnalisisWidget.cpp" line="236"/>
         <source>Visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="218"/>
-        <location filename="../src/AnalisisWidget.cpp" line="711"/>
+        <location filename="../src/AnalisisWidget.cpp" line="319"/>
+        <location filename="../src/AnalisisWidget.cpp" line="824"/>
         <source>Group %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="233"/>
-        <source>Create report</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/AnalisisWidget.cpp" line="535"/>
+        <location filename="../src/AnalisisWidget.cpp" line="646"/>
         <source>reason: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="537"/>
-        <location filename="../src/AnalisisWidget.cpp" line="539"/>
+        <location filename="../src/AnalisisWidget.cpp" line="648"/>
+        <location filename="../src/AnalisisWidget.cpp" line="650"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="539"/>
+        <location filename="../src/AnalisisWidget.cpp" line="650"/>
         <source>Unable to add data to visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="716"/>
+        <location filename="../src/AnalisisWidget.cpp" line="831"/>
         <source>...TEST...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -150,32 +119,32 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>AnalysisTreeContextMenu</name>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="451"/>
+        <location filename="../src/AnalisisWidget.cpp" line="562"/>
         <source>Add to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="547"/>
+        <location filename="../src/AnalisisWidget.cpp" line="658"/>
         <source>Remove from:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="574"/>
+        <location filename="../src/AnalisisWidget.cpp" line="685"/>
         <source>All visualizers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="588"/>
+        <location filename="../src/AnalisisWidget.cpp" line="699"/>
         <source>Create in:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="595"/>
+        <location filename="../src/AnalisisWidget.cpp" line="706"/>
         <source>Set %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="608"/>
+        <location filename="../src/AnalisisWidget.cpp" line="719"/>
         <source>New Group</source>
         <translation type="unfinished"></translation>
     </message>
@@ -184,66 +153,71 @@ p, li { white-space: pre-wrap; }
     <name>HMMMain</name>
     <message>
         <location filename="../ui/toolboxmaindeffile.ui" line="14"/>
-        <source>EDR</source>
+        <source>MDE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="118"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="111"/>
+        <source>ver. unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/toolboxmaindeffile.ui" line="137"/>
         <source>?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="156"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="175"/>
         <source>_</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="201"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="220"/>
         <source>x</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="311"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="330"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="675"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="694"/>
         <source>About...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="684"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="703"/>
         <source>&amp;Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="687"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="706"/>
         <source>O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="692"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="711"/>
         <source>Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="697"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="716"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="706"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="725"/>
         <source>Save layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="711"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="730"/>
         <source>Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/toolboxmaindeffile.ui" line="716"/>
+        <location filename="../ui/toolboxmaindeffile.ui" line="735"/>
         <source>Create workflow</source>
         <translation type="unfinished"></translation>
     </message>
@@ -251,18 +225,23 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MdeMainWindow</name>
     <message>
-        <location filename="../src/MdeMainWindow.cpp" line="85"/>
+        <location filename="../src/MdeMainWindow.cpp" line="103"/>
         <source>Analysis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MdeMainWindow.cpp" line="86"/>
-        <source>Reports</source>
+        <location filename="../src/MdeMainWindow.cpp" line="104"/>
+        <source>Console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MdeMainWindow.cpp" line="88"/>
-        <source>Console</source>
+        <location filename="../src/MdeMainWindow.cpp" line="264"/>
+        <source>Confirm exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MdeMainWindow.cpp" line="264"/>
+        <source>There are some unsaved data changes. Do You want to close application and discard them?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -284,71 +263,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ContextAutoPlacer.cpp" line="40"/>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ContextAutoPlacer.cpp" line="175"/>
-        <source>Operations</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ReportsTab.cpp" line="46"/>
-        <location filename="../src/ReportsThumbnailContext.cpp" line="29"/>
-        <source>Raports Tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/SummaryWindow.cpp" line="33"/>
         <source>Data Info</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ReportsTabContext</name>
-    <message>
-        <location filename="../src/ReportsTab.cpp" line="82"/>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ReportsTab.cpp" line="87"/>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ReportsTab.cpp" line="92"/>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ReportsThumbnailContext</name>
-    <message>
-        <location filename="../src/ReportsThumbnailContext.cpp" line="56"/>
-        <source>Create raport</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ReportsThumbnailContext.cpp" line="60"/>
-        <source>Simple Raport</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ReportsThumbnailContext.cpp" line="70"/>
-        <location filename="../src/ReportsThumbnailContext.cpp" line="77"/>
-        <source>Empty</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ReportsThumbnailContext.cpp" line="92"/>
-        <source>Raport template:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ReportsThumbnailContext.cpp" line="133"/>
-        <source>Screenshot %1 &lt;br&gt; &lt;IMG SRC=&quot;data:image/png;base64,%2&quot; ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0&gt;&lt;/P&gt; &lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

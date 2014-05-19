@@ -7,14 +7,16 @@
 	purpose:
 	*********************************************************************/
 
-#ifndef HEADER_GUARD_WEBSERVICES__INCREMENTALBRANCHSHALLOWCOPYPARSER_H__
-#define HEADER_GUARD_WEBSERVICES__INCREMENTALBRANCHSHALLOWCOPYPARSER_H__
+#ifndef HEADER_GUARD_HMDBSERVICES__INCREMENTALBRANCHSHALLOWCOPYPARSER_H__
+#define HEADER_GUARD_HMDBSERVICES__INCREMENTALBRANCHSHALLOWCOPYPARSER_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <string>
 #include <hmdbserviceslib/IncrementalBranchShallowCopy.h>
+
 namespace hmdbServices {
 	//! Parser przyrostowej p³ytkiej kopii bazy danych
-	class IncrementalBranchShallowCopyParser
+	class HMDBSERVICES_EXPORT IncrementalBranchShallowCopyParser
 	{
 	public:
 		//! \param path Œcie¿ka do pliku do przeparsowania

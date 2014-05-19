@@ -81,12 +81,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/NormalState.cpp" line="83"/>
+        <location filename="../src/NormalState.cpp" line="81"/>
         <source>Change node name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NormalState.cpp" line="84"/>
+        <location filename="../src/NormalState.cpp" line="82"/>
         <source>New name:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -123,14 +123,22 @@
     </message>
 </context>
 <context>
+    <name>vdf::MergedWidget</name>
+    <message>
+        <location filename="../src/MergedWidget.cpp" line="11"/>
+        <source>Merged items</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>vdf::NewVdfService</name>
     <message>
-        <location filename="../src/NewVdfService.cpp" line="50"/>
+        <location filename="../src/NewVdfService.cpp" line="51"/>
         <source>Transfer results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfService.cpp" line="169"/>
+        <location filename="../src/NewVdfService.cpp" line="196"/>
         <source>Processed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -138,72 +146,97 @@
 <context>
     <name>vdf::NewVdfWidget</name>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="33"/>
-        <location filename="../src/NewVdfWidget.cpp" line="34"/>
+        <location filename="../src/NewVdfWidget.cpp" line="36"/>
         <location filename="../src/NewVdfWidget.cpp" line="37"/>
+        <location filename="../src/NewVdfWidget.cpp" line="44"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="33"/>
+        <location filename="../src/NewVdfWidget.cpp" line="36"/>
         <source>Undo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="34"/>
+        <location filename="../src/NewVdfWidget.cpp" line="37"/>
         <source>Redo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="35"/>
+        <location filename="../src/NewVdfWidget.cpp" line="39"/>
+        <location filename="../src/NewVdfWidget.cpp" line="40"/>
+        <location filename="../src/NewVdfWidget.cpp" line="41"/>
         <source>Misc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="35"/>
+        <location filename="../src/NewVdfWidget.cpp" line="39"/>
         <source>Merge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="36"/>
+        <location filename="../src/NewVdfWidget.cpp" line="40"/>
+        <source>Demerge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/NewVdfWidget.cpp" line="41"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/NewVdfWidget.cpp" line="43"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="36"/>
+        <location filename="../src/NewVdfWidget.cpp" line="43"/>
         <source>Scene</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="37"/>
+        <location filename="../src/NewVdfWidget.cpp" line="44"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="38"/>
+        <location filename="../src/NewVdfWidget.cpp" line="45"/>
         <source>Run</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="91"/>
+        <location filename="../src/NewVdfWidget.cpp" line="116"/>
         <source>Confirm operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="91"/>
+        <location filename="../src/NewVdfWidget.cpp" line="116"/>
         <source>Are You sure You want to clear scene?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="106"/>
-        <location filename="../src/NewVdfWidget.cpp" line="127"/>
-        <location filename="../src/NewVdfWidget.cpp" line="129"/>
+        <location filename="../src/NewVdfWidget.cpp" line="131"/>
+        <location filename="../src/NewVdfWidget.cpp" line="152"/>
+        <location filename="../src/NewVdfWidget.cpp" line="154"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="129"/>
+        <location filename="../src/NewVdfWidget.cpp" line="154"/>
         <source>Unknown error</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>vdf::PresetsWidget</name>
+    <message>
+        <location filename="../src/PresetsWidget.cpp" line="17"/>
+        <source>Load</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/PresetsWidget.cpp" line="18"/>
+        <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

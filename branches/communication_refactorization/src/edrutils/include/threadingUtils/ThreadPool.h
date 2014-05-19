@@ -9,11 +9,12 @@
 #ifndef HEADER_GUARD_THREADINGUTILS__THREADPOOL_H__
 #define HEADER_GUARD_THREADINGUTILS__THREADPOOL_H__
 
+#include <threadingUtils/Export.h>
 #include <threadingUtils/IThreadPool.h>
 #include <threadingUtils/IThreadFactory.h>
 
 namespace threadingUtils {
-	class ThreadPool : public IThreadPool
+	class THREADINGUTILS_EXPORT ThreadPool : public IThreadPool
 	{
 	private:
 		//! Typ implementujący faktyczną funkcjonalność

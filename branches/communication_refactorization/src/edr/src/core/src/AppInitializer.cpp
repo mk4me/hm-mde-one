@@ -1,6 +1,6 @@
 #include "CorePCH.h"
 #include <core/AppInitializer.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 #include "ApplicationCommon.h"
 #include <corelib/PluginCommon.h>
 #include <boost/bind.hpp>
@@ -28,22 +28,20 @@ public:
 
 	~AppInitializerImpl()
 	{
-
 	}
 
 	//! Metoda uruchamiaj�ca aplikacje, pobiera jako parametr wzorca widok kt�ry b�dzie uruchomiony, widok powinien dziedziczy� po CoreMainWindow
 	int start(coreUI::CoreMainWindow * mainWindow)
 	{
 		int result = 0;
-		if(initUIContextRes == 1){
+		if (initUIContextRes == 1){
 			result = 1;
-		}else{			
-
+		}
+		else{
 			coreUI::SingleInstanceWindow * siw = dynamic_cast<coreUI::SingleInstanceWindow*>(mainWindow);
 			bool allowed = true;
-			if(siw != nullptr){
-				if(siw->isSingle() == false){
-
+			if (siw != nullptr){
+				if (siw->isSingle() == false){
 					mainWindow->setCloseConfirmationRequired(false);
 					mainWindow->setAttribute(Qt::WA_QuitOnClose);
 					mainWindow->close();
@@ -53,19 +51,17 @@ public:
 				}
 			}
 
-			if(allowed == true){
-
+			if (allowed == true){
 				try{
-
 					//inicjalizujemy widok
 					coreApplication->initWithUI(mainWindow, translations);
 
-					if(translations.empty() == false){
+					if (translations.empty() == false){
 						auto it = translations.begin();
 						std::string files((*it).string());
 						++it;
 
-						for( ; it != translations.end(); ++it){
+						for (; it != translations.end(); ++it){
 							files += "\n" + (*it).string();
 						}
 
@@ -82,18 +78,21 @@ public:
 						//faktycznie blokowane wywo�anie
 						//uruchamia kontekst Qt
 						result = coreApplication->run();
-					}catch(std::exception & e){
+					}
+					catch (std::exception & e){
 						result = -2;
 						CORE_LOG_ERROR("Error while UI run: " << e.what());
-					}catch(...){
+					}
+					catch (...){
 						result = -2;
 						CORE_LOG_ERROR("Unknown error while UI run");
 					}
-
-				}catch(std::exception & e){
+				}
+				catch (std::exception & e){
 					result = -1;
 					CORE_LOG_ERROR("Error while UI initialization: " << e.what());
-				}catch(...){
+				}
+				catch (...){
 					result = -1;
 					CORE_LOG_ERROR("Unknown error while UI initialization");
 				}
@@ -114,17 +113,14 @@ private:
 	MainViewApplication mainViewApplication;
 	int initUIContextRes;
 	coreUI::CoreMainWindow::CloseUpOperations cleanUp_;
-
 };
 
 AppInitializer::AppInitializer(int & argc, char *argv[]) : impl(new AppInitializerImpl(argc, argv))
 {
-	
 }
 
 AppInitializer::~AppInitializer()
 {
-
 }
 
 int AppInitializer::start(coreUI::CoreMainWindow * mainWindow)

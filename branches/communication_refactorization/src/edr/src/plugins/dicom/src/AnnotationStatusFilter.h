@@ -35,7 +35,7 @@ namespace dicom
 		virtual std::string name() const;
 
 		//! Filtr dla motionów opisuj¹cych badania USG
-		virtual bool filterMotion(const webservices::MotionShallowCopy::Trial* motion) const;
+		virtual bool filterMotion(const hmdbServices::MotionShallowCopy::Trial* motion) const;
 
 		//! \param identifiers Identyfikatory na których bêdzie operowa³ filtr
 		void setIdentifiers(const Identifiers & identifiers);

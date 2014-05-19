@@ -6,9 +6,10 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___SHALLOWCOPY_H__
-#define HEADER_GUARD___SHALLOWCOPY_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_SHALLOWCOPY_H__
+#define HEADER_GUARD__HMDBSERVICES_SHALLOWCOPY_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <map>
 #include <set>
 #include <string>
@@ -43,7 +44,7 @@ namespace hmdbServices
 		typedef std::map<std::string, std::string> Attrs;
 
 		//! Plik
-		struct File
+		struct HMDBSERVICES_EXPORT File
 		{
 			//! \return Czy plik nale¿y do sesji
 			const bool isSessionFile() const
@@ -64,7 +65,7 @@ namespace hmdbServices
 		typedef std::map<int, File*> Files;
 
 		//! Próba pomiarowa
-		struct Trial
+		struct HMDBSERVICES_EXPORT Trial
 		{
 			Session * session;				//! Sesja
 			Attrs attrs;					//! Atrybuty
@@ -78,7 +79,7 @@ namespace hmdbServices
 		typedef std::map<int, Trial*> Trials;
 
 		//! Sesje
-		struct Session
+		struct HMDBSERVICES_EXPORT Session
 		{
 			PerformerConf * performerConf;		//! Konfiguracja aktora
 			GroupAssigment * groupAssigment;	//! Przynale¿noœc do grupy
@@ -100,7 +101,7 @@ namespace hmdbServices
 		typedef std::map<int, Session*> Sessions;
 
 		//! Grupa sesji
-		struct GroupAssigment
+		struct HMDBSERVICES_EXPORT GroupAssigment
 		{
 			int sessionGroupID;		//! Identyfikator
 			Sessions sessions;		//! Sesje
@@ -110,7 +111,7 @@ namespace hmdbServices
 		typedef std::map<int, GroupAssigment*> GroupAssigments;
 
 		//! Konfiguracja aktora
-		struct PerformerConf
+		struct HMDBSERVICES_EXPORT PerformerConf
 		{
 			int performerConfID;	//! Identyfikator
 			Attrs attrs;			//! Atrybuty
@@ -122,7 +123,7 @@ namespace hmdbServices
 		typedef std::map<int, PerformerConf*> PerformerConfs;
 
 		//! Aktor
-		struct Performer
+		struct HMDBSERVICES_EXPORT Performer
 		{
 			int performerID;						//! Identyfikator
 			Attrs attrs;							//! Atrybuty
@@ -134,7 +135,7 @@ namespace hmdbServices
 		typedef std::map<int, Performer*> Performers;
 
 		//! P³ytka kopia bazy danych
-		struct ShallowCopy
+		struct HMDBSERVICES_EXPORT ShallowCopy
 		{
 		public:
 			DateTime timestamp;					//! Data
@@ -181,7 +182,7 @@ namespace hmdbServices
 	namespace MedicalShallowCopy
 	{
 		//! Schorzenie
-		struct Disorder
+		struct HMDBSERVICES_EXPORT Disorder
 		{
 			int disorderID;		//! Identyfikator
 			std::string name;	//! Nazwa schorzenia
@@ -191,7 +192,7 @@ namespace hmdbServices
 		typedef std::map<int, Disorder*> Disorders;
 
 		//! Wystapienie schorzenia
-		struct DisorderOccurence
+		struct HMDBSERVICES_EXPORT DisorderOccurence
 		{
 			Disorder * disorder;		//! Szchorzenie
 			std::string focus;			//! Poziom istotnoœci schorzenia
@@ -203,7 +204,7 @@ namespace hmdbServices
 		typedef std::map<int, DisorderOccurence> PatientDisorders;
 
 		//! Pacjent
-		struct Patient
+		struct HMDBSERVICES_EXPORT Patient
 		{
 			int patientID;								//! Identyfikator
 			int motionPerformerID;						//! Identyfikator aktora bazy danych ruchu
@@ -225,7 +226,7 @@ namespace hmdbServices
 		typedef std::map<int, std::set<Patient*> > PatientsByDisorder;
 
 		//! P³ytka kopia
-		struct ShallowCopy
+		struct HMDBSERVICES_EXPORT ShallowCopy
 		{
 			DateTime timestamp;						//! Data
 			Disorders disorders;					//! Schorzenia
@@ -256,7 +257,7 @@ namespace hmdbServices
 	namespace MotionMetaData
 	{
 		//! Grupa sesji
-		struct SessionGroup
+		struct HMDBSERVICES_EXPORT SessionGroup
 		{
 			int sessionGroupID;				//! Identyfikator
 			std::string sessionGroupName;	//! Nazwa grupy sesji
@@ -266,7 +267,7 @@ namespace hmdbServices
 		typedef std::map<int, SessionGroup> SessionGroups;
 
 		//! Typ ruchu
-		struct MotionKind
+		struct HMDBSERVICES_EXPORT MotionKind
 		{
 			std::string motionKindName;		//! Nazwa typu ruchu
 		};
@@ -275,7 +276,7 @@ namespace hmdbServices
 		typedef std::list<MotionKind> MotionKinds;
 
 		//! Laboratorium
-		struct Lab
+		struct HMDBSERVICES_EXPORT Lab
 		{
 			int labID;				//! Identyfikator
 			std::string labName;	//! Nazwa laboratorium
@@ -285,7 +286,7 @@ namespace hmdbServices
 		typedef std::map<int, Lab> Labs;
 
 		//! Atrybut
-		struct Attribute
+		struct HMDBSERVICES_EXPORT Attribute
 		{
 			std::string attributeName;					//! Nazwa atrybutu (identyfikator, klucz)
 			xmlWsdl::AttributeType::Type attributeType;	//! Typ atrybutu
@@ -296,7 +297,7 @@ namespace hmdbServices
 		typedef std::map<std::string, Attribute> Attributes;
 
 		//! Grupa atrybutów
-		struct AttributeGroup
+		struct HMDBSERVICES_EXPORT AttributeGroup
 		{
 			int attributeGroupID;					//! Identyfikator grupy atrybutów
 			Attributes attributes;					//! Atrybuty tworz¹ce grupê
@@ -308,7 +309,7 @@ namespace hmdbServices
 		typedef std::map<int, AttributeGroup> AttributeGroups;
 
 		//! Metadane
-		struct MetaData
+		struct HMDBSERVICES_EXPORT MetaData
 		{
 			DateTime timestamp;					//! Data
 			SessionGroups sessionGroups;		//! Grupy sesji
@@ -324,7 +325,7 @@ namespace hmdbServices
 	namespace MedicalMetaData
 	{
 		//! Typ badania
-		struct ExamType
+		struct HMDBSERVICES_EXPORT ExamType
 		{
 			int examTypeID;		//! Identyfikator
 			std::string name;	//! Nazwa typu badania
@@ -334,7 +335,7 @@ namespace hmdbServices
 		typedef std::map<int, ExamType> ExamTypes;
 
 		//! Typ schorzenia
-		struct DisorderType
+		struct HMDBSERVICES_EXPORT DisorderType
 		{
 			int disorderTpeID;	//! Identyfikator
 			std::string name;	//! Nazwa schorzenia
@@ -344,7 +345,7 @@ namespace hmdbServices
 		typedef std::map<int, DisorderType> DisorderTypes;
 
 		//! Metadane
-		struct MetaData
+		struct HMDBSERVICES_EXPORT MetaData
 		{
 			DateTime timestamp;				//! Data
 			ExamTypes examTypes;			//! Typy badañ
@@ -356,4 +357,4 @@ namespace hmdbServices
 	}
 }
 
-#endif	//	HEADER_GUARD___SHALLOWCOPY_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_SHALLOWCOPY_H__

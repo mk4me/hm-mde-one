@@ -5,18 +5,19 @@ DataSourceConnectionManager * DataSourceConnectionManager::instance_ = nullptr;
 
 DataSourceConnectionManager * DataSourceConnectionManager::create()
 {
-	if(instance_ == nullptr){
+	if (instance_ == nullptr){
 		instance_ = new DataSourceConnectionManager();
-	}else{
+	}
+	else{
 		throw std::runtime_error("Instance already created");
 	}
 
-    return instance_;
+	return instance_;
 }
 
 void DataSourceConnectionManager::destroy()
 {
-	if(instance_ != nullptr){
+	if (instance_ != nullptr){
 		delete instance_;
 	}
 }
@@ -27,83 +28,81 @@ DataSourceConnectionManager * DataSourceConnectionManager::instance()
 }
 
 DataSourceConnectionManager::DataSourceConnectionManager()
-	:	motionFilesStoremanWSConnection_(new webservices::WSSecureConnection()),
-		motionBasicQueriesWSConnection_(new webservices::WSSecureConnection()),
-		motionBasicUpdatesWSConnection_(new webservices::WSSecureConnection()),
-		medicalFilesStoremanWSConnection_(new webservices::WSSecureConnection()),
-		medicalBasicQueriesWSConnection_(new webservices::WSSecureConnection()),
-		medicalBasicUpdatesWSConnection_(new webservices::WSSecureConnection()),
-		accountFactoryWSConnection_(new webservices::WSSecureConnection()),
-		userPersonalSpaceWSConnection_(new webservices::WSSecureConnection()),
-		administrationWSConnection_(new webservices::WSSecureConnection()),
-		authorizationWSConnection_(new webservices::WSSecureConnection()),
-		motionFtps_(new webservices::FtpsConnection()),
-		medicalFtps_(new webservices::FtpsConnection())
+: motionFilesStoremanWSConnection_(new hmdbServices::WSSecureConnection()),
+motionBasicQueriesWSConnection_(new hmdbServices::WSSecureConnection()),
+motionBasicUpdatesWSConnection_(new hmdbServices::WSSecureConnection()),
+medicalFilesStoremanWSConnection_(new hmdbServices::WSSecureConnection()),
+medicalBasicQueriesWSConnection_(new hmdbServices::WSSecureConnection()),
+medicalBasicUpdatesWSConnection_(new hmdbServices::WSSecureConnection()),
+accountFactoryWSConnection_(new hmdbServices::WSSecureConnection()),
+userPersonalSpaceWSConnection_(new hmdbServices::WSSecureConnection()),
+administrationWSConnection_(new hmdbServices::WSSecureConnection()),
+authorizationWSConnection_(new hmdbServices::WSSecureConnection()),
+motionFtps_(new hmdbServices::FtpsConnection()),
+medicalFtps_(new hmdbServices::FtpsConnection())
 {
-	
 }
 
 DataSourceConnectionManager::~DataSourceConnectionManager()
 {
-
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::motionFileStoremanWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::motionFileStoremanWSConnection() const
 {
 	return motionFilesStoremanWSConnection_;
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::motionBasicQueriesWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::motionBasicQueriesWSConnection() const
 {
 	return motionBasicQueriesWSConnection_;
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::motionBasicUpdatesWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::motionBasicUpdatesWSConnection() const
 {
 	return motionBasicUpdatesWSConnection_;
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::medicalFileStoremanWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::medicalFileStoremanWSConnection() const
 {
 	return medicalFilesStoremanWSConnection_;
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::medicalBasicQueriesWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::medicalBasicQueriesWSConnection() const
 {
 	return medicalBasicQueriesWSConnection_;
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::medicalBasicUpdatesWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::medicalBasicUpdatesWSConnection() const
 {
 	return medicalBasicUpdatesWSConnection_;
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::accountFactoryWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::accountFactoryWSConnection() const
 {
 	return accountFactoryWSConnection_;
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::userPersonalSpaceWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::userPersonalSpaceWSConnection() const
 {
 	return userPersonalSpaceWSConnection_;
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::administrationWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::administrationWSConnection() const
 {
 	return administrationWSConnection_;
 }
 
-const webservices::WSSecureConnectionPtr & DataSourceConnectionManager::authorizationWSConnection() const
+const hmdbServices::WSSecureConnectionPtr & DataSourceConnectionManager::authorizationWSConnection() const
 {
 	return authorizationWSConnection_;
 }
 
-const webservices::FtpsConnectionPtr & DataSourceConnectionManager::motionFtps() const
+const hmdbServices::FtpsConnectionPtr & DataSourceConnectionManager::motionFtps() const
 {
 	return motionFtps_;
 }
 
-const webservices::FtpsConnectionPtr & DataSourceConnectionManager::medicalFtps() const
+const hmdbServices::FtpsConnectionPtr & DataSourceConnectionManager::medicalFtps() const
 {
 	return medicalFtps_;
 }

@@ -1,19 +1,19 @@
 /********************************************************************
-    created:  2013/07/04
-    created:  4:7:2013   21:33
-    filename: IJob.h
-    author:   Mateusz Janiak
-    
-    purpose:  Interfejs reprezentuj¹ca opakowane zadanie u¿ytkownika
-*********************************************************************/
+	created:  2013/07/04
+	created:  4:7:2013   21:33
+	filename: IJob.h
+	author:   Mateusz Janiak
+
+	purpose:  Interfejs reprezentuj¹ca opakowane zadanie u¿ytkownika
+	*********************************************************************/
 #ifndef HEADER_GUARD_CORE__IJOB_H__
 #define HEADER_GUARD_CORE__IJOB_H__
 
-#include <threading/Runnable.h>
+#include <threadingUtils/Runnable.h>
 #include <string>
 
 namespace core
-{	
+{
 	//! Interfejs klasy reprezentuj¹cej zadanie do wykonania
 	class IJob
 	{
@@ -31,9 +31,9 @@ namespace core
 		//Desturuktor wirtualny
 		virtual ~IJob() {}
 		//! \return Zadanie do przetworzenia
-		virtual utils::IRunnablePtr runnable() = 0;
+		virtual threadingUtils::IRunnablePtr runnable() = 0;
 		//! \return Zadanie do przetworzenia
-		virtual utils::IRunnableConstPtr runnable() const = 0;
+		virtual threadingUtils::IRunnableConstPtr runnable() const = 0;
 		//! \return Nazwa zleceniodawcy
 		virtual const std::string & who() const = 0;
 		//! \return Nazwa zadania
@@ -45,7 +45,6 @@ namespace core
 	};
 
 	DEFINE_SMART_POINTERS(IJob)
-
 }
 
 #endif	//	HEADER_GUARD_CORE__IJOB_H__

@@ -6,15 +6,16 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___ADMINISTRATIONWS_H__
-#define HEADER_GUARD___ADMINISTRATIONWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_ADMINISTRATIONWS_H__
+#define HEADER_GUARD__HMDBSERVICES_ADMINISTRATIONWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/IAdministrationWS.h>
 #include <networkUtils/IWSDLService.h>
 
 namespace hmdbServices
 {
-	class AdministrationWS : public IAdministrationWS
+	class HMDBSERVICES_EXPORT AdministrationWS : public IAdministrationWS
 	{
 	public:
 
@@ -42,4 +43,4 @@ namespace hmdbServices
 	};
 }
 
-#endif	//	HEADER_GUARD___ADMINISTRATIONWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_ADMINISTRATIONWS_H__

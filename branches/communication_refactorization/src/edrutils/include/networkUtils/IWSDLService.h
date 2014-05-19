@@ -40,7 +40,7 @@ namespace networkUtils
 		//! \return Typ wyj¹tku
 		inline const ExceptionType type() const { return type_; }
 		//! \return Opis wyj¹tku
-		const char * what() const { error.c_str(); }
+		inline const char * what() const { error.c_str(); }
 
 	private:
 		//! Opis wyj¹tku

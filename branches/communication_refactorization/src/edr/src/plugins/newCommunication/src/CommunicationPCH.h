@@ -23,8 +23,8 @@
 
 #include <corelib/IPlugin.h>
 
-#include <webserviceslib/ShallowCopyParser.h>
-#include <webserviceslib/MetadataParser.h>
+#include <hmdbserviceslib/ShallowCopyParser.h>
+#include <hmdbserviceslib/MetadataParser.h>
 
 #endif
 #endif

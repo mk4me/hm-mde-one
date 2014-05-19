@@ -6,9 +6,10 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___IBASICQUERIESWS_H__
-#define HEADER_GUARD___IBASICQUERIESWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_IBASICQUERIESWS_H__
+#define HEADER_GUARD__HMDBSERVICES_IBASICQUERIESWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <string>
 #include <utils/SmartPtr.h>
 #include <hmdbserviceslib/DateTime.h>
@@ -16,7 +17,7 @@
 namespace hmdbServices
 {
 	//! Interfejs dostarczający informacji o czasie ostatnich zmian danych po stronie bazy danych
-	class IGeneralBasicQueriesWS
+	class HMDBSERVICES_EXPORT IGeneralBasicQueriesWS
 	{
 	public:
 		//! Wirtualny destruktor
@@ -31,7 +32,7 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IGeneralBasicQueriesWS> GeneralBasicQueriesWSConstPtr;
 
 	//! Interfejs usługi związanej z danymi ruchu
-	class IMotionBasicQueriesWS : public IGeneralBasicQueriesWS
+	class HMDBSERVICES_EXPORT IMotionBasicQueriesWS : public IGeneralBasicQueriesWS
 	{
 	public:
 		//! Wirtualny destruktor
@@ -177,4 +178,4 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IMedicalBasicQueriesWS> MedicalBasicQueriesWSConstPtr;
 }
 
-#endif	//	HEADER_GUARD___IBASICQUERIESWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_IBASICQUERIESWS_H__

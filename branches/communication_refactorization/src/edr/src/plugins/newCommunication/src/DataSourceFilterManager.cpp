@@ -3,7 +3,7 @@
 #include <utils/Debug.h>
 
 using namespace communication;
-using namespace webservices;
+using namespace hmdbServices;
 
 DataSourceFilterManager::DataSourceFilterManager() : currentFilter_(-1)
 {
@@ -104,20 +104,20 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 		if (filter->filterDisorder(disorderIT->second) == true){
 			if (patientsToVerifyIT != inShallow.medicalShallowCopy->patientsByDisorder.end()
 				&& patientsToVerifyIT->second.empty() == false){
-				std::set<webservices::MedicalShallowCopy::Patient*> verifiedPatients;
+				std::set<hmdbServices::MedicalShallowCopy::Patient*> verifiedPatients;
 
 				//pacjenci
 				for (auto patientIT = patientsToVerifyIT->second.begin(); patientIT != patientsToVerifyIT->second.end(); ++patientIT){
 					if (filter->filterPatient(*patientIT) == true){
 						if (filter->filterSubject((*patientIT)->performer) == true){
-							std::set<webservices::MotionShallowCopy::Session*> verifiedSessions;
+							std::set<hmdbServices::MotionShallowCopy::Session*> verifiedSessions;
 
 							//konfiguracje i sesje
 							auto performerConfsITEnd = (*patientIT)->performer->performerConfs.end();
 							for (auto perfConfIT = (*patientIT)->performer->performerConfs.begin(); perfConfIT != performerConfsITEnd; ++perfConfIT){
 								if (filter->filterSession(perfConfIT->second->session) == true){
-									std::set<webservices::MotionShallowCopy::File*> verifiedSessionFiles;
-									std::set<webservices::MotionShallowCopy::Trial*> verifiedMotions;
+									std::set<hmdbServices::MotionShallowCopy::File*> verifiedSessionFiles;
+									std::set<hmdbServices::MotionShallowCopy::Trial*> verifiedMotions;
 
 									//filtrujemy pliki sesji
 									auto filesITEnd = perfConfIT->second->session->files.end();
@@ -142,7 +142,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 									auto motionsITEnd = perfConfIT->second->session->trials.end();
 									for (auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){
 										if (filter->filterMotion(motionIT->second) == true){
-											std::set<webservices::MotionShallowCopy::File*> verifiedMotionFiles;
+											std::set<hmdbServices::MotionShallowCopy::File*> verifiedMotionFiles;
 
 											//filtrujemy pliki motiona
 											auto filesITEnd = motionIT->second->files.end();
@@ -213,7 +213,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 												session->groupAssigment = it->second;
 											}
 											else{
-												auto ga = new webservices::MotionShallowCopy::GroupAssigment();
+												auto ga = new hmdbServices::MotionShallowCopy::GroupAssigment();
 												ga->sessionGroupID = perfConfIT->second->session->groupAssigment->sessionGroupID;
 												ga->sessions[session->sessionID] = session;
 												session->groupAssigment = ga;
@@ -335,14 +335,14 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 
 		if (filter->filterPatient(patientIT->second) == true){
 			if (filter->filterSubject(patientIT->second->performer) == true){
-				std::set<webservices::MotionShallowCopy::Session*> verifiedSessions;
+				std::set<hmdbServices::MotionShallowCopy::Session*> verifiedSessions;
 
 				//konfiguracje i sesje
 				auto performerConfsITEnd = patientIT->second->performer->performerConfs.end();
 				for (auto perfConfIT = patientIT->second->performer->performerConfs.begin(); perfConfIT != performerConfsITEnd; ++perfConfIT){
 					if (filter->filterSession(perfConfIT->second->session) == true){
-						std::set<webservices::MotionShallowCopy::File*> verifiedSessionFiles;
-						std::set<webservices::MotionShallowCopy::Trial*> verifiedMotions;
+						std::set<hmdbServices::MotionShallowCopy::File*> verifiedSessionFiles;
+						std::set<hmdbServices::MotionShallowCopy::Trial*> verifiedMotions;
 
 						//filtrujemy pliki sesji
 						auto filesITEnd = perfConfIT->second->session->files.end();
@@ -367,7 +367,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 						auto motionsITEnd = perfConfIT->second->session->trials.end();
 						for (auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){
 							if (filter->filterMotion(motionIT->second) == true){
-								std::set<webservices::MotionShallowCopy::File*> verifiedMotionFiles;
+								std::set<hmdbServices::MotionShallowCopy::File*> verifiedMotionFiles;
 
 								//filtrujemy pliki motiona
 								auto filesITEnd = motionIT->second->files.end();
@@ -438,7 +438,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 									session->groupAssigment = it->second;
 								}
 								else{
-									auto ga = new webservices::MotionShallowCopy::GroupAssigment();
+									auto ga = new hmdbServices::MotionShallowCopy::GroupAssigment();
 									ga->sessionGroupID = perfConfIT->second->session->groupAssigment->sessionGroupID;
 									ga->sessions[session->sessionID] = session;
 									session->groupAssigment = ga;
@@ -513,14 +513,14 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 		}
 
 		if (filter->filterSubject(subjectIT->second) == true){
-			std::set<webservices::MotionShallowCopy::Session*> verifiedSessions;
+			std::set<hmdbServices::MotionShallowCopy::Session*> verifiedSessions;
 
 			//konfiguracje i sesje
 			auto performerConfsITEnd = subjectIT->second->performerConfs.end();
 			for (auto perfConfIT = subjectIT->second->performerConfs.begin(); perfConfIT != performerConfsITEnd; ++perfConfIT){
 				if (filter->filterSession(perfConfIT->second->session) == true){
-					std::set<webservices::MotionShallowCopy::File*> verifiedSessionFiles;
-					std::set<webservices::MotionShallowCopy::Trial*> verifiedMotions;
+					std::set<hmdbServices::MotionShallowCopy::File*> verifiedSessionFiles;
+					std::set<hmdbServices::MotionShallowCopy::Trial*> verifiedMotions;
 
 					//filtrujemy pliki sesji
 					auto filesITEnd = perfConfIT->second->session->files.end();
@@ -545,7 +545,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 					auto motionsITEnd = perfConfIT->second->session->trials.end();
 					for (auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){
 						if (filter->filterMotion(motionIT->second) == true){
-							std::set<webservices::MotionShallowCopy::File*> verifiedMotionFiles;
+							std::set<hmdbServices::MotionShallowCopy::File*> verifiedMotionFiles;
 
 							//filtrujemy pliki motiona
 							auto filesITEnd = motionIT->second->files.end();
@@ -616,7 +616,7 @@ void DataSourceFilterManager::filterShallowCopy(const communication::ShallowCopy
 								session->groupAssigment = it->second;
 							}
 							else{
-								auto ga = new webservices::MotionShallowCopy::GroupAssigment();
+								auto ga = new hmdbServices::MotionShallowCopy::GroupAssigment();
 								ga->sessionGroupID = perfConfIT->second->session->groupAssigment->sessionGroupID;
 								ga->sessions[session->sessionID] = session;
 								session->groupAssigment = ga;

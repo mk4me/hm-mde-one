@@ -6,16 +6,17 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___IACCOUNTFACTORYWS_H__
-#define HEADER_GUARD___IACCOUNTFACTORYWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_IACCOUNTFACTORYWS_H__
+#define HEADER_GUARD__HMDBSERVICES_IACCOUNTFACTORYWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <string>
 #include <utils/SmartPtr.h>
 
 namespace hmdbServices
 {
 	//! Interfejs serwisu do rejestracji i aktywacji kont w jednej usłudze - Med lub Motion
-	class ISingleAccountFactoryWS
+	class HMDBSERVICES_EXPORT ISingleAccountFactoryWS
 	{
 	public:
 		//! Destruktor wirtualny
@@ -43,7 +44,7 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const ISingleAccountFactoryWS> SingleAccountFactoryWSConstPtr;
 
 	//! Interfejs serwisu do rejestracji i aktywacji kont w obu usługach - Med i Motion
-	class IMultiAccountFactoryWS
+	class HMDBSERVICES_EXPORT IMultiAccountFactoryWS
 	{
 	public:
 		//! Destruktor wirtualny
@@ -75,4 +76,4 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IMultiAccountFactoryWS> MultiAccountFactoryWSConstPtr;
 }
 
-#endif	//	HEADER_GUARD___IACCOUNTFACTORYWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_IACCOUNTFACTORYWS_H__

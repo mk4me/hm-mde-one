@@ -1,12 +1,20 @@
-#ifndef HEADER_GUARD_COMMUNICATION_BASICQUERIESSERVICE_H__
-#define HEADER_GUARD_COMMUNICATION_BASICQUERIESSERVICE_H__
+/********************************************************************
+	created:  2014/05/19	12:16:56
+	filename: BasicQueriesWS.h
+	author:	  Mateusz Janiak
 
+	purpose:
+	*********************************************************************/
+#ifndef __HEADER_GUARD_HMDBSERVICES__BASICQUERIESWS_H__
+#define __HEADER_GUARD_HMDBSERVICES__BASICQUERIESWS_H__
+
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/IBasicQueriesWS.h>
 #include <networkUtils/IWSDLService.h>
 
 namespace hmdbServices
 {
-	class GeneralBasicQueriesWS : public IGeneralBasicQueriesWS
+	class HMDBSERVICES_EXPORT GeneralBasicQueriesWS : public IGeneralBasicQueriesWS
 	{
 	public:
 		/**
@@ -27,7 +35,7 @@ namespace hmdbServices
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
-	class MotionBasicQueriesWS : public IMotionBasicQueriesWS
+	class HMDBSERVICES_EXPORT MotionBasicQueriesWS : public IMotionBasicQueriesWS
 	{
 	public:
 		/**
@@ -178,7 +186,7 @@ namespace hmdbServices
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
-	class MedicalBasicQueriesWS : public IMedicalBasicQueriesWS
+	class HMDBSERVICES_EXPORT MedicalBasicQueriesWS : public IMedicalBasicQueriesWS
 	{
 	public:
 		/**
@@ -199,4 +207,4 @@ namespace hmdbServices
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 }
-#endif
+#endif	// __HEADER_GUARD_HMDBSERVICES__BASICQUERIESWS_H__

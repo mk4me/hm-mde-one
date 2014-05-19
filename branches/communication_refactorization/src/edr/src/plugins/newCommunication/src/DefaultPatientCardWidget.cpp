@@ -6,16 +6,16 @@
 #include <QtGui/QVBoxLayout>
 #include <plugins/newCommunication/IDataSourceContent.h>
 #include <QtGui/QGroupBox>
-#include <webserviceslib/DateTimeUtils.h>
+#include <hmdbserviceslib/DateTimeUtils.h>
 
 using namespace communication;
 using namespace webservices;
 
-QString getDate(const webservices::Date & date)
+QString getDate(const hmdbServices::Date & date)
 {
 	QString ret;
 
-	if(date.getYear() >= 1800){
+	if (date.getYear() >= 1800){
 		ret = QString::fromStdString(date.toString());
 	}
 
@@ -28,12 +28,10 @@ public:
 
 	SessionTreeItem(const MotionShallowCopy::Attrs & attributes) : QTreeWidgetItem(), attributes_(attributes)
 	{
-
 	}
 
 	virtual ~SessionTreeItem()
 	{
-
 	}
 
 	const MotionShallowCopy::Attrs & attributes()  const
@@ -47,8 +45,8 @@ private:
 };
 
 DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(parent), sessionsWidget(new QTreeWidget()),
-	personalDataWidget(new PersonalDataWidget()), disordersDataWidget(new DisordersDataWidget()),
-	antropomtricDataWidget(new AntropometricDataWidget()), notesWidget(new NotesWidget())
+personalDataWidget(new PersonalDataWidget()), disordersDataWidget(new DisordersDataWidget()),
+antropomtricDataWidget(new AntropometricDataWidget()), notesWidget(new NotesWidget())
 {
 	QStringList headers;
 
@@ -66,7 +64,7 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 	auto hBLayout = new QHBoxLayout();
 	groupA->setLayout(hBLayout);
 	groupA->layout()->addWidget(personalDataWidget);
-	hBLayout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Expanding, QSizePolicy::Fixed));
+	hBLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed));
 
 	disordersDataWidget->setMaximumHeight(250);
 
@@ -87,7 +85,7 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 	QWidget * leftWidget = new QWidget();
 	leftWidget->setObjectName(QString::fromUtf8("leftWidget"));
 	QVBoxLayout * vLayout = new QVBoxLayout();
-	vLayout->setContentsMargins(0,0,0,0);
+	vLayout->setContentsMargins(0, 0, 0, 0);
 	vLayout->addWidget(groupA);
 	vLayout->addWidget(groupB);
 	vLayout->addWidget(groupC);
@@ -96,7 +94,7 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 	leftWidget->setLayout(vLayout);
 
 	leftWidget->setMinimumWidth(450);
-	leftWidget->setContentsMargins(0,0,0,0);
+	leftWidget->setContentsMargins(0, 0, 0, 0);
 
 	antropomtricDataWidget->setMinimumWidth(450);
 	QGroupBox * groupE = new QGroupBox(tr("Anthropometric Data"));
@@ -115,11 +113,10 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 
 DefaultPatientCardWidget::~DefaultPatientCardWidget()
 {
-
 }
 
-void DefaultPatientCardWidget::setPatient(const webservices::MedicalShallowCopy::Patient * patient,
-	const webservices::MotionShallowCopy::Performer * subject,
+void DefaultPatientCardWidget::setPatient(const hmdbServices::MedicalShallowCopy::Patient * patient,
+	const hmdbServices::MotionShallowCopy::Performer * subject,
 	const QPixmap & photo, const communication::IUserData & userData)
 {
 	innerSetPatient(patient, photo, subject, userData);
@@ -127,9 +124,10 @@ void DefaultPatientCardWidget::setPatient(const webservices::MedicalShallowCopy:
 
 void DefaultPatientCardWidget::setPersonalData(const MedicalShallowCopy::Patient * patient, const QPixmap & photo)
 {
-	if(patient == nullptr){
+	if (patient == nullptr){
 		personalDataWidget->reset();
-	}else{
+	}
+	else{
 		personalDataWidget->setName(QString::fromUtf8(patient->name.c_str()));
 		personalDataWidget->setSurname(QString::fromUtf8(patient->surname.c_str()));
 		personalDataWidget->setGender(communication::IDataSourceContent::decodeGender(patient->gender));
@@ -142,24 +140,25 @@ void DefaultPatientCardWidget::setDisordersData(const MedicalShallowCopy::Patien
 {
 	disordersDataWidget->setAutoUpdate(false);
 
-	if(patientDisorders.empty() == false){
+	if (patientDisorders.empty() == false){
 		int s = (std::max)(patientDisorders.size(), static_cast<MedicalShallowCopy::PatientDisorders::size_type>(2));
 		disordersDataWidget->setDisordersCount(s);
 
 		int i = 0;
-		for(auto it = patientDisorders.begin(); it != patientDisorders.end(); ++it){
+		for (auto it = patientDisorders.begin(); it != patientDisorders.end(); ++it){
 			disordersDataWidget->setDisorder(i++, QString::fromUtf8(it->second.disorder->name.c_str()),
 				getDate(it->second.diagnosisDate), QString::fromUtf8(it->second.focus.c_str()));
 		}
 
-		for( ; i < s; ++i){
+		for (; i < s; ++i){
 			disordersDataWidget->setDisorder(i, QString(), QString(), QString());
 		}
-	}else{
+	}
+	else{
 		int emptyRows = 2;
 		disordersDataWidget->setDisordersCount(emptyRows);
 
-		for(int i = 0; i < emptyRows; ++i){
+		for (int i = 0; i < emptyRows; ++i){
 			disordersDataWidget->setDisorder(i, QString(), QString(), QString());
 		}
 	}
@@ -172,11 +171,12 @@ void DefaultPatientCardWidget::currentSessionChanged(QTreeWidgetItem * current, 
 	SessionTreeItem * item = dynamic_cast<SessionTreeItem*>(current);
 	QStringList headers;
 
-	if(item == nullptr){
+	if (item == nullptr){
 		setAntropometricData(MotionShallowCopy::Attrs());
 		headers << tr("Session group");
 		headers << tr("Date");
-	}else{
+	}
+	else{
 		setAntropometricData(item->attributes());
 
 		headers << tr("Session");
@@ -188,7 +188,7 @@ void DefaultPatientCardWidget::currentSessionChanged(QTreeWidgetItem * current, 
 	}
 
 	sessionsWidget->setHeaderLabels(headers);
-	for(int i = 0; i < sessionsWidget->columnCount(); ++i){
+	for (int i = 0; i < sessionsWidget->columnCount(); ++i){
 		sessionsWidget->resizeColumnToContents(i);
 	}
 }
@@ -198,36 +198,37 @@ void DefaultPatientCardWidget::setSessionsData(const MotionShallowCopy::Performe
 	//czyścimy zawartość sesji
 	sessionsWidget->clear();
 
-	if(subjectConfigurations.empty() == false){
+	if (subjectConfigurations.empty() == false){
 		//wypełniamy sesjami
 
 		//grupujemy wykresy na przed/po badaniu + upperBody, lowerBody
-		std::map<webservices::DateTime, std::map<int, const MotionShallowCopy::Session *>> groupedData;
+		std::map<hmdbServices::DateTime, std::map<int, const MotionShallowCopy::Session *>> groupedData;
 
-		for(auto it = subjectConfigurations.begin(); it != subjectConfigurations.end(); ++it){
+		for (auto it = subjectConfigurations.begin(); it != subjectConfigurations.end(); ++it){
 			auto session = it->second->session;
 			groupedData[session->sessionDate][session->sessionID] = session;
 		}
 
-		if(groupedData.begin()->second.empty() == false){
+		if (groupedData.begin()->second.empty() == false){
 			QTreeWidgetItem * item = createBranch(QObject::tr("Before treatment"), groupedData.begin()->second);
 			sessionsWidget->addTopLevelItem(item);
 		}
 
-		if(groupedData.begin()->first != groupedData.rbegin()->first && groupedData.rbegin()->second.empty() == false){
+		if (groupedData.begin()->first != groupedData.rbegin()->first && groupedData.rbegin()->second.empty() == false){
 			QTreeWidgetItem * item = createBranch(tr("After treatment"), groupedData.rbegin()->second);
 			sessionsWidget->addTopLevelItem(item);
 		}
-	}else{
+	}
+	else{
 		setAntropometricData(MotionShallowCopy::Attrs());
 	}
 
 	sessionsWidget->expandAll();
-	for(int i = 0; i < sessionsWidget->columnCount(); ++i){
+	for (int i = 0; i < sessionsWidget->columnCount(); ++i){
 		sessionsWidget->resizeColumnToContents(i);
 	}
 
-	if(sessionsWidget->topLevelItemCount() > 0 && sessionsWidget->topLevelItem(0)->childCount() > 0){
+	if (sessionsWidget->topLevelItemCount() > 0 && sessionsWidget->topLevelItem(0)->childCount() > 0){
 		sessionsWidget->setCurrentItem(sessionsWidget->topLevelItem(0)->child(0));
 	}
 }
@@ -240,7 +241,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 	ret->setText(1, getDate(sessions.begin()->second->sessionDate));
 
 	//górna partia
-	if(sessions.begin()->first % 2 == 0){
+	if (sessions.begin()->first % 2 == 0){
 		SessionTreeItem * item = new SessionTreeItem(sessions.begin()->second->performerConf->attrs);
 		item->setText(0, tr("Upper body") + " - " + sessions.begin()->second->sessionName.c_str());
 		item->setText(1, QString::number(sessions.begin()->second->labID));
@@ -250,7 +251,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 
 		std::string attr;
 
-		for(auto it = sessions.begin()->second->attrs.begin(); it != sessions.begin()->second->attrs.end(); ++it){
+		for (auto it = sessions.begin()->second->attrs.begin(); it != sessions.begin()->second->attrs.end(); ++it){
 			attr += it->first + "=" + it->second + ";";
 		}
 
@@ -262,7 +263,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 	QString sname(tr("Lower body"));
 
 	//górna partia
-	if(sessions.begin()->first % 2 == 1){
+	if (sessions.begin()->first % 2 == 1){
 		sname = tr("Upper body");
 	}
 
@@ -275,7 +276,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 
 	std::string attr;
 
-	for(auto it = sessions.begin()->second->attrs.begin(); it != sessions.begin()->second->attrs.end(); ++it){
+	for (auto it = sessions.begin()->second->attrs.begin(); it != sessions.begin()->second->attrs.end(); ++it){
 		attr += it->first + "=" + it->second + ";";
 	}
 
@@ -283,7 +284,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 
 	ret->addChild(item);
 
-	if(sessions.rbegin()->first % 2 == 1){
+	if (sessions.rbegin()->first % 2 == 1){
 		return ret;
 	}
 
@@ -298,7 +299,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 
 	std::string().swap(attr);
 
-	for(auto it = sessions.rbegin()->second->attrs.begin(); it != sessions.rbegin()->second->attrs.end(); ++it){
+	for (auto it = sessions.rbegin()->second->attrs.begin(); it != sessions.rbegin()->second->attrs.end(); ++it){
 		attr += it->first + "=" + it->second + ";";
 	}
 
@@ -310,7 +311,7 @@ QTreeWidgetItem * DefaultPatientCardWidget::createBranch(const QString & name, c
 }
 
 void DefaultPatientCardWidget::setNotes(const MedicalShallowCopy::Patient * patient,
-	const webservices::MotionShallowCopy::Performer * subject,
+	const hmdbServices::MotionShallowCopy::Performer * subject,
 	const IUserData & userData)
 {
 	notesWidget->setCurrentPatient(patient == nullptr ? -1 : patient->patientID);
@@ -364,21 +365,22 @@ QString DefaultPatientCardWidget::getAttribute(const MotionShallowCopy::Attrs & 
 {
 	QString value(defaultVal);
 	auto it = attributes.find(name);
-	if(it != attributes.end()){
+	if (it != attributes.end()){
 		value = QString::fromStdString(it->second);
 	}
 
 	return value;
 }
 
-void DefaultPatientCardWidget::innerSetPatient( const webservices::MedicalShallowCopy::Patient * patient, const QPixmap & photo, const webservices::MotionShallowCopy::Performer * subject, const communication::IUserData & userData )
+void DefaultPatientCardWidget::innerSetPatient(const hmdbServices::MedicalShallowCopy::Patient * patient, const QPixmap & photo, const hmdbServices::MotionShallowCopy::Performer * subject, const communication::IUserData & userData)
 {
 	setPersonalData(patient, photo);
 	setDisordersData(patient == nullptr ? MedicalShallowCopy::PatientDisorders() : patient->disorders);
 
-	if(subject == nullptr){
+	if (subject == nullptr){
 		setSessionsData(MotionShallowCopy::PerformerConfs());
-	}else{
+	}
+	else{
 		setSessionsData(subject->performerConfs);
 	}
 
@@ -387,12 +389,10 @@ void DefaultPatientCardWidget::innerSetPatient( const webservices::MedicalShallo
 
 DefaultPatientCard::DefaultPatientCard() : patientCardWidget(new DefaultPatientCardWidget())
 {
-
 }
 
 DefaultPatientCard::~DefaultPatientCard()
 {
-
 }
 
 const std::string DefaultPatientCard::name()
@@ -405,7 +405,7 @@ QWidget * DefaultPatientCard::widget()
 	return patientCardWidget;
 }
 
-void DefaultPatientCard::setPatient(const MedicalShallowCopy::Patient * patient, const webservices::MotionShallowCopy::Performer * subject,
+void DefaultPatientCard::setPatient(const MedicalShallowCopy::Patient * patient, const hmdbServices::MotionShallowCopy::Performer * subject,
 	const QPixmap & photo, const IUserData & userData)
 {
 	patientCardWidget->setPatient(patient, subject, photo, userData);

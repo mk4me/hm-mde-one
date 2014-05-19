@@ -1,18 +1,18 @@
 /********************************************************************
-    created:  2012/05/25
-    created:  25:5:2012   11:52
-    filename: ServerStatusManager.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2012/05/25
+	created:  25:5:2012   11:52
+	filename: ServerStatusManager.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___SERVERSTATUSMANAGER_H__
 #define HEADER_GUARD___SERVERSTATUSMANAGER_H__
 
 #include "CommunicationManager.h"
 #include <OpenThreads/ReentrantMutex>
 #include <OpenThreads/Thread>
-#include <webserviceslib/DateTime.h>
+#include <hmdbserviceslib/DateTime.h>
 
 //! Struktura opisująca status pingu
 struct ServerStatus
@@ -24,7 +24,7 @@ struct ServerStatus
 	//! Błąd pingowania jeśli był
 	std::string error;
 	//! Czas ostatniego pinga
-	webservices::DateTime time;
+	hmdbServices::DateTime time;
 };
 
 //! Manager zarządzający odświeżaniem statusu serwerów poprzez ich pingowanie
@@ -92,7 +92,6 @@ public:
 	unsigned int checkDelay() const;
 	//! \return Czy jeszcze odświeżamy status serwerów
 	bool refreshingServers() const;
-
 
 private:
 	//! Metoda wywoływana w momencie zakończenia poprawnego pingowania

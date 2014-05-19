@@ -10,11 +10,12 @@
 #ifndef HEADER_GUARD_THREADINGUTILS__QTTHREADFACTORY_H__
 #define HEADER_GUARD_THREADINGUTILS__QTTHREADFACTORY_H__
 
+#include <threadingUtils/Export.h>
 #include <threadingUtils/IThreadFactory.h>
 
 namespace threadingUtils
 {
-	class QtThreadFactory : public IThreadFactory
+	class THREADINGUTILS_EXPORT QtThreadFactory : public IThreadFactory
 	{
 	public:
 		//! Konstruktor domyœlny

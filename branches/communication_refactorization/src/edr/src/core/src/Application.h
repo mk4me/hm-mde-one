@@ -1,11 +1,11 @@
 /********************************************************************
-    created:  2013/01/14
-    created:  14:1:2013   16:55
-    filename: Application.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2013/01/14
+	created:  14:1:2013   16:55
+	filename: Application.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___APPLICATION_H__
 #define HEADER_GUARD___APPLICATION_H__
 
@@ -19,20 +19,17 @@
 #include "Plugin.h"
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
-#include <threading/QtThreadFactory.h>
+#include <threadingUtils/QtThreadFactory.h>
 
 class QSplashScreen;
 class QTranslator;
 
 namespace coreUI {
-
 	class UIApplication;
 	class CoreMainWindow;
-	
 }
 
 namespace core {
-
 	class MemoryDataManager;
 	class StreamDataManager;
 	class FileDataManager;
@@ -53,7 +50,6 @@ namespace core {
 	class Application : private QObject
 	{
 		Q_OBJECT;
-
 
 		friend class UIApplication;
 
@@ -77,8 +73,8 @@ namespace core {
 		utils::shared_ptr<ServiceManager> serviceManager_;
 		utils::shared_ptr<SourceManager> sourceManager_;
 		utils::shared_ptr<VisualizerManager> visualizerManager_;
-		utils::shared_ptr<utils::IThreadFactory> threadFactory_;
-		utils::shared_ptr<core::ThreadPool> threadPool_;
+		utils::shared_ptr<threadingUtils::IThreadFactory> threadFactory_;
+		utils::shared_ptr<ThreadPool> threadPool_;
 		utils::shared_ptr<JobManager> jobManager_;
 
 		Filesystem::Path additionalPluginsPath;
@@ -107,7 +103,7 @@ namespace core {
 		//void registerCoreDomainTypes();
 		void unpackPlugin(coreUI::CoreMainWindow * splashScreen, const PluginPtr & plugin);
 
-	private slots:
+		private slots:
 
 		void updateServices();
 
@@ -123,7 +119,7 @@ namespace core {
 			std::vector<Filesystem::Path> & translations);
 
 		int run();
-		
+
 		ApplicationDescription * description();
 		LanguagesManager * languageManager();
 		MemoryDataManager* memoryDataManager();
@@ -142,8 +138,6 @@ namespace core {
 
 		void finalizeUI();
 	};
-
-
 }
 
 #endif	//	HEADER_GUARD___APPLICATION_H__

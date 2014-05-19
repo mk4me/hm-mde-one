@@ -6,7 +6,7 @@ ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_OSG "Enable osg for vidlib?" ON 
 ADD_PROJECT(vidlib "BOOST;FFMPEG;utils;STDINT;OPENTHREADS")
 
 
-ADD_PROJECT(kinematiclib "BOOST;TINYXML;OSG;utils")
+ADD_PROJECT(kinematiclib "BOOST;TINYXML;OSG;utils;threadingUtils")
 ADD_PROJECT(imucostumelib "threadingUtils;BOOST;utils;OSG")
 ADD_PROJECT(osgui "utils;OSG;QT;BOOST")
 ADD_PROJECT(osgutils "utils;OSG;BOOST")

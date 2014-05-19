@@ -1,6 +1,7 @@
-BEGIN_PROJECT("static")
+BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
+	Export.h
 	ShallowCopy.h
 	IAccountFactoryWS.h
 	AccountFactoryWS.h

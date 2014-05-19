@@ -17,7 +17,6 @@
 #include <utils/ObjectWrapperTraits.h>
 #include <utils/PtrPolicyBoost.h>
 #include <utils/ClonePolicies.h>
-#include <threadingUtils/SynchronizationPolicies.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {

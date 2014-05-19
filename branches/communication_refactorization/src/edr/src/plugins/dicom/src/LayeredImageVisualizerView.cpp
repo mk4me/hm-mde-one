@@ -9,7 +9,7 @@
 #include <coreui/WheelGraphicsView.h>
 #include <QtGui/QGraphicsItem>
 #include <QtGui/QMouseEvent>
-#include <webserviceslib/Entity.h>
+#include <hmdbserviceslib/Entity.h>
 #include <corelib/IServiceManager.h>
 #include "MessageDialog.h"
 #include <QtGui/QMessageBox>
@@ -41,7 +41,6 @@ lastView(nullptr)
 
 	connect(model, SIGNAL(changeSelection(const QModelIndex&)), this, SLOT(changeSelection(const QModelIndex &)));
 	connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
-
 
 	coreUI::CoreAction*  undo = new coreUI::CoreAction(tr("Edit"), QIcon(":/dicom/undo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
 	coreUI::CoreAction*  redo = new coreUI::CoreAction(tr("Edit"), QIcon(":/dicom/redo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);
@@ -144,16 +143,16 @@ lastView(nullptr)
 void dicom::LayeredImageVisualizerView::acceptAnnotation()
 {
 	if (verifySerie() == false || QMessageBox::question(this,
-				tr("Annotations acceptance verification"),
-				tr("Are You sure You want to permanently accept verified annotations?"),
-				QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+		tr("Annotations acceptance verification"),
+		tr("Are You sure You want to permanently accept verified annotations?"),
+		QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
 		return;
 	}
 
 	try{
 		//model->trySave();
 		model->uploadSerie();
-		auto status = webservices::xmlWsdl::AnnotationStatus::Approved;
+		auto status = hmdbServices::xmlWsdl::AnnotationStatus::Approved;
 		model->setStatus(status);
 		setAnnotationStatus(status);
 		setActionsEnabled(false);
@@ -186,7 +185,7 @@ void dicom::LayeredImageVisualizerView::rejectAnnotation()
 	if (getComment(tr("Note"), QString(), comment) == true){
 		try{
 			model->uploadSerie();
-			model->setStatus(webservices::xmlWsdl::AnnotationStatus::Rejected, comment);
+			model->setStatus(hmdbServices::xmlWsdl::AnnotationStatus::Rejected, comment);
 			setActionsEnabled(false);
 			auto service = core::queryService<IDicomService>(plugin::getServiceManager());
 			auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
@@ -211,7 +210,7 @@ void dicom::LayeredImageVisualizerView::requestAnnotationVerification()
 		try{
 			//model->trySave();
 			model->uploadSerie();
-			model->setStatus(webservices::xmlWsdl::AnnotationStatus::ReadyForReview, comment);
+			model->setStatus(hmdbServices::xmlWsdl::AnnotationStatus::ReadyForReview, comment);
 			setActionsEnabled(false);
 			auto service = core::queryService<IDicomService>(plugin::getServiceManager());
 			auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
@@ -281,7 +280,7 @@ void dicom::LayeredImageVisualizerView::refresh()
 		}
 
 		int row = 0;
-		
+
 		auto idx = treeModel->index(row, 0);
 
 		ui->treeView->setCurrentIndex(idx);
@@ -415,16 +414,16 @@ void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex &)
 		bool enabled = true;
 
 		if (model->userIsReviewer() == true){
-			if (as.status == webservices::xmlWsdl::AnnotationStatus::Approved ||
-				as.status == webservices::xmlWsdl::AnnotationStatus::Rejected){
+			if (as.status == hmdbServices::xmlWsdl::AnnotationStatus::Approved ||
+				as.status == hmdbServices::xmlWsdl::AnnotationStatus::Rejected){
 				enabled = false;
 			}
 		}
 		else {
 			if (model->getCurrentLayerUserName() == model->getUserName()){
-				if (as.status == webservices::xmlWsdl::AnnotationStatus::Approved ||
-					as.status == webservices::xmlWsdl::AnnotationStatus::UnderReview ||
-					as.status == webservices::xmlWsdl::AnnotationStatus::ReadyForReview){
+				if (as.status == hmdbServices::xmlWsdl::AnnotationStatus::Approved ||
+					as.status == hmdbServices::xmlWsdl::AnnotationStatus::UnderReview ||
+					as.status == hmdbServices::xmlWsdl::AnnotationStatus::ReadyForReview){
 					enabled = false;
 				}
 			}
@@ -505,20 +504,20 @@ void dicom::LayeredImageVisualizerView::noiseState()
 	}
 }
 
-void dicom::LayeredImageVisualizerView::setAnnotationStatus(webservices::xmlWsdl::AnnotationStatus::Type status)
+void dicom::LayeredImageVisualizerView::setAnnotationStatus(hmdbServices::xmlWsdl::AnnotationStatus::Type status)
 {
 	switch (status) {
-	case webservices::xmlWsdl::AnnotationStatus::Unspecified:
-	case webservices::xmlWsdl::AnnotationStatus::Rejected:
-	case webservices::xmlWsdl::AnnotationStatus::UnderConstruction:
+	case hmdbServices::xmlWsdl::AnnotationStatus::Unspecified:
+	case hmdbServices::xmlWsdl::AnnotationStatus::Rejected:
+	case hmdbServices::xmlWsdl::AnnotationStatus::UnderConstruction:
 		ui->label->setText(tr("ANNOTATIONS - in edition"));
 		break;
 
-	case webservices::xmlWsdl::AnnotationStatus::UnderReview:
-	case webservices::xmlWsdl::AnnotationStatus::ReadyForReview:
+	case hmdbServices::xmlWsdl::AnnotationStatus::UnderReview:
+	case hmdbServices::xmlWsdl::AnnotationStatus::ReadyForReview:
 		ui->label->setText(tr("ANNOTATIONS - in verification"));
 		break;
-	case webservices::xmlWsdl::AnnotationStatus::Approved:
+	case hmdbServices::xmlWsdl::AnnotationStatus::Approved:
 		ui->label->setText(tr("ANNOTATIONS - verified"));
 		break;
 	}

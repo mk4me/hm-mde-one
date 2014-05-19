@@ -10,11 +10,12 @@
 #ifndef HEADER_GUARD_THREADINGUTILS__JOBMANAGER_H__
 #define HEADER_GUARD_THREADINGUTILS__JOBMANAGER_H__
 
+#include <threadingUtils/Export.h>
 #include <threadingUtils/Runnable.h>
 #include <threadingUtils/IThread.h>
 
 namespace threadingUtils {
-	class IJobManager
+	class THREADINGUTILS_EXPORT IJobManager
 	{
 	public:
 		//! Wirtualny destruktor
@@ -25,7 +26,7 @@ namespace threadingUtils {
 
 	DEFINE_SMART_POINTERS(IJobManager)
 
-	class JobManager : public IJobManager
+	class THREADINGUTILS_EXPORT JobManager : public IJobManager
 	{
 	private:
 		//! Klasa implementuj¹ca funkcjonalnoœæ

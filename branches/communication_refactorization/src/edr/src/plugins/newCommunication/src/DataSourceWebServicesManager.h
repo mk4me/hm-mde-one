@@ -1,44 +1,44 @@
 /********************************************************************
-    created:  2012/03/07
-    created:  7:3:2012   13:45
-    filename: DataSourceWebServicesManager.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2012/03/07
+	created:  7:3:2012   13:45
+	filename: DataSourceWebServicesManager.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___DATASOURCEWEBSERVICESMANAGER_H__
 #define HEADER_GUARD___DATASOURCEWEBSERVICESMANAGER_H__
 
-#include <webserviceslib/IAdministrationWS.h>
-#include <webserviceslib/IAuthorizationWS.h>
-#include <webserviceslib/IBasicQueriesWS.h>
-#include <webserviceslib/IBasicUpdatesWS.h>
-#include <webserviceslib/IFileStoremanWS.h>
-#include <webserviceslib/IUserPersonalSpaceWS.h>
-#include <webserviceslib/IAccountFactoryWS.h>
+#include <hmdbserviceslib/IAdministrationWS.h>
+#include <hmdbserviceslib/IAuthorizationWS.h>
+#include <hmdbserviceslib/IBasicQueriesWS.h>
+#include <hmdbserviceslib/IBasicUpdatesWS.h>
+#include <hmdbserviceslib/IFileStoremanWS.h>
+#include <hmdbserviceslib/IUserPersonalSpaceWS.h>
+#include <hmdbserviceslib/IAccountFactoryWS.h>
 
 class DataSourceWebServicesManager
 {
 public:
 
-    static DataSourceWebServicesManager * create();
-    static void destroy();
+	static DataSourceWebServicesManager * create();
+	static void destroy();
 
-    static DataSourceWebServicesManager * instance();
+	static DataSourceWebServicesManager * instance();
 
-	const webservices::MotionBasicQueriesWSPtr & motionBasicQueriesService() const;
-	const webservices::MedicalBasicQueriesWSPtr & medicalBasicQueriesService() const;
+	const hmdbServices::MotionBasicQueriesWSPtr & motionBasicQueriesService() const;
+	const hmdbServices::MedicalBasicQueriesWSPtr & medicalBasicQueriesService() const;
 
-	const webservices::MotionBasicUpdatesWSPtr & motionBasicUpdatesService() const;
-	const webservices::MedicalBasicUpdatesWSPtr & medicalBasicUpdatesService() const;
+	const hmdbServices::MotionBasicUpdatesWSPtr & motionBasicUpdatesService() const;
+	const hmdbServices::MedicalBasicUpdatesWSPtr & medicalBasicUpdatesService() const;
 
-	const webservices::MotionFileStoremanWSPtr & motionFileStoremanService() const;
-	const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService() const;
+	const hmdbServices::MotionFileStoremanWSPtr & motionFileStoremanService() const;
+	const hmdbServices::MedicalFileStoremanWSPtr & medicalFileStoremanService() const;
 
-	const webservices::MultiAccountFactoryWSPtr & accountFactoryService() const;
-	const webservices::AuthorizationWSPtr & authorizationService() const;
-	const webservices::AdministrationWSPtr & administrationService() const;
-	const webservices::UserPersonalSpaceWSPtr & userPersonalSpaceService() const;
+	const hmdbServices::MultiAccountFactoryWSPtr & accountFactoryService() const;
+	const hmdbServices::AuthorizationWSPtr & authorizationService() const;
+	const hmdbServices::AdministrationWSPtr & administrationService() const;
+	const hmdbServices::UserPersonalSpaceWSPtr & userPersonalSpaceService() const;
 
 private:
 
@@ -47,19 +47,19 @@ private:
 
 	static DataSourceWebServicesManager * instance_;
 
-	webservices::MotionBasicQueriesWSPtr motionBasicQueriesService_; 
-	webservices::MedicalBasicQueriesWSPtr medicalBasicQueriesService_;
+	hmdbServices::MotionBasicQueriesWSPtr motionBasicQueriesService_;
+	hmdbServices::MedicalBasicQueriesWSPtr medicalBasicQueriesService_;
 
-	webservices::MotionBasicUpdatesWSPtr motionBasicUpdatesService_;
-	webservices::MedicalBasicUpdatesWSPtr medicalBasicUpdatesService_;
+	hmdbServices::MotionBasicUpdatesWSPtr motionBasicUpdatesService_;
+	hmdbServices::MedicalBasicUpdatesWSPtr medicalBasicUpdatesService_;
 
-	webservices::MotionFileStoremanWSPtr motionFileStoremanService_;
-	webservices::MedicalFileStoremanWSPtr medicalFileSoremanService_;
+	hmdbServices::MotionFileStoremanWSPtr motionFileStoremanService_;
+	hmdbServices::MedicalFileStoremanWSPtr medicalFileSoremanService_;
 
-	webservices::MultiAccountFactoryWSPtr accountFactoryService_;
-	webservices::AuthorizationWSPtr authorizationService_;
-	webservices::AdministrationWSPtr administrationService_;
-	webservices::UserPersonalSpaceWSPtr userPersonalSpaceService_;
+	hmdbServices::MultiAccountFactoryWSPtr accountFactoryService_;
+	hmdbServices::AuthorizationWSPtr authorizationService_;
+	hmdbServices::AdministrationWSPtr administrationService_;
+	hmdbServices::UserPersonalSpaceWSPtr userPersonalSpaceService_;
 };
 
 #endif	//	HEADER_GUARD___DATASOURCEWEBSERVICESMANAGER_H__

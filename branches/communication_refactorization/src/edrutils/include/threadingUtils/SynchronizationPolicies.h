@@ -9,6 +9,7 @@ purpose:
 #ifndef HEADER_GUARD_THREADINGUTILS__SYNCHRONIZATIONPOLICIES_H__
 #define HEADER_GUARD_THREADINGUTILS__SYNCHRONIZATIONPOLICIES_H__
 
+#include <threadingUtils/Export.h>
 #include <limits>
 #include <utils/SmartPtr.h>
 
@@ -17,7 +18,7 @@ namespace threadingUtils {
 	class ConditionVariable;
 
 	//! Klasa bazowa polityk sycnhronizacji - nic nie robi
-	class LockingPolicy
+	class THREADINGUTILS_EXPORT LockingPolicy
 	{
 	public:
 		//! Domyœlny konstruktor
@@ -41,7 +42,7 @@ namespace threadingUtils {
 	typedef LockingPolicy NoSyncPolicy;
 
 	//! Polityka synchronizacji rekurencyjnej
-	class RecursiveSyncPolicy : public LockingPolicy
+	class THREADINGUTILS_EXPORT RecursiveSyncPolicy : public LockingPolicy
 	{
 		friend class ConditionVariable;
 
@@ -67,7 +68,7 @@ namespace threadingUtils {
 	};
 
 	//! Polityka œcis³ej synchronizacji
-	class StrictSyncPolicy : public LockingPolicy
+	class THREADINGUTILS_EXPORT StrictSyncPolicy : public LockingPolicy
 	{
 		friend class ConditionVariable;
 
@@ -92,7 +93,7 @@ namespace threadingUtils {
 		utils::shared_ptr<StrictSyncPolicyImpl> impl;
 	};
 
-	class ConditionVariable
+	class THREADINGUTILS_EXPORT ConditionVariable
 	{
 		//! Forward declaration
 		class ConditionVariableImpl;
@@ -120,7 +121,7 @@ namespace threadingUtils {
 		utils::shared_ptr<ConditionVariableImpl> impl;
 	};
 
-	class EmptyScopedLock
+	class THREADINGUTILS_EXPORT EmptyScopedLock
 	{
 	public:
 		template<class SyncPolicy>

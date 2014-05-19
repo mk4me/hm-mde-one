@@ -10,7 +10,7 @@
 CommunicationManager::RequestsExecutor::RequestsExecutor(CommunicationManager * manager,
 	const time_type sleepTime) : manager(manager), sleepTime_(sleepTime), finish_(false)
 {
-	if(manager == nullptr){
+	if (manager == nullptr){
 		throw std::invalid_argument("Uninitialized CommunicationManager");
 	}
 }
@@ -22,18 +22,14 @@ CommunicationManager::RequestsExecutor::~RequestsExecutor()
 
 void CommunicationManager::RequestsExecutor::run()
 {
-	while(!finish_){
-		
-		if(manager->requestsQueueEmpty() == false){
-
+	while (!finish_){
+		if (manager->requestsQueueEmpty() == false){
 			manager->cancelDownloading = false;
 			CompleteRequest currentRequest;
 			manager->popRequest(currentRequest);
 			manager->currentRequest = currentRequest;
-			if(currentRequest.request->canceled == false){
-
-				switch(currentRequest.request->type) {
-
+			if (currentRequest.request->canceled == false){
+				switch (currentRequest.request->type) {
 				case Complex:
 
 					manager->setState(ProcessingComplex);
@@ -50,21 +46,21 @@ void CommunicationManager::RequestsExecutor::run()
 
 					break;
 
-                case UploadFile:
+				case UploadFile:
 
-                    manager->setState(UploadingFile);
+					manager->setState(UploadingFile);
 
-                    manager->processUpload(currentRequest);
+					manager->processUpload(currentRequest);
 
-                    break;
+					break;
 
-                case ReplaceFile:
+				case ReplaceFile:
 
-                    manager->setState(ReplacingFile);
+					manager->setState(ReplacingFile);
 
-                    manager->processReplace(currentRequest);
+					manager->processReplace(currentRequest);
 
-                    break;
+					break;
 
 				case DownloadPhoto:
 
@@ -82,12 +78,12 @@ void CommunicationManager::RequestsExecutor::run()
 
 					break;
 
-                case CopyMotionBranchIncrement:
+				case CopyMotionBranchIncrement:
 
-                    manager->setState(CopyingMotionBranchIncrement);
+					manager->setState(CopyingMotionBranchIncrement);
 
-                    manager->processMotionBranchIncrementShallowCopy(currentRequest);
-                    break;
+					manager->processMotionBranchIncrementShallowCopy(currentRequest);
+					break;
 
 				case CopyMotionMetadata:
 
@@ -124,8 +120,9 @@ void CommunicationManager::RequestsExecutor::run()
 
 				currentRequest.request.reset();
 			}
-		}else{
-			if(manager->state != Ready){
+		}
+		else{
+			if (manager->state != Ready){
 				manager->setState(Ready);
 			}
 
@@ -137,7 +134,7 @@ void CommunicationManager::RequestsExecutor::run()
 
 void CommunicationManager::RequestsExecutor::finish()
 {
-	if(finish_ == false){
+	if (finish_ == false){
 		finish_ = true;
 		manager->requestsWait_.wakeAll();
 	}
@@ -153,10 +150,8 @@ const CommunicationManager::RequestsExecutor::time_type CommunicationManager::Re
 	return sleepTime_;
 }
 
-
 CommunicationManager::BasicRequest::~BasicRequest()
 {
-
 }
 
 void CommunicationManager::BasicRequest::cancel()
@@ -183,12 +178,10 @@ bool CommunicationManager::BasicRequest::isComplete() const
 
 CommunicationManager::BasicRequest::BasicRequest(Request type) : type(type), canceled(false)
 {
-
 }
 
 CommunicationManager::PingRequest::PingRequest(const std::string & urlToPing) : BasicRequest(PingServer), urlToPing_(urlToPing), response(false)
 {
-
 }
 
 void CommunicationManager::PingRequest::setServerResponse(bool response)
@@ -206,13 +199,12 @@ const std::string & CommunicationManager::PingRequest::urlToPing() const
 	return urlToPing_;
 }
 
-CommunicationManager::MetadataRequest::MetadataRequest(Request type, const std::string & filePath, const webservices::DateTime& dateTime) : 
-    BasicRequest(type), 
-    filePath(filePath),
-    progress(0),
-    dateTime(dateTime)
+CommunicationManager::MetadataRequest::MetadataRequest(Request type, const std::string & filePath, const hmdbServices::DateTime& dateTime) :
+BasicRequest(type),
+filePath(filePath),
+progress(0),
+dateTime(dateTime)
 {
-
 }
 
 const std::string & CommunicationManager::MetadataRequest::getFilePath() const
@@ -230,14 +222,13 @@ double CommunicationManager::MetadataRequest::getProgress() const
 	return progress;
 }
 
-webservices::DateTime CommunicationManager::MetadataRequest::getDateTime() const
+hmdbServices::DateTime CommunicationManager::MetadataRequest::getDateTime() const
 {
-    return dateTime;
+	return dateTime;
 }
 
 CommunicationManager::FileRequest::FileRequest(const std::string & filePath, unsigned int fileID) : MetadataRequest(DownloadFile, filePath), fileID(fileID)
 {
-
 }
 
 unsigned int CommunicationManager::FileRequest::getFileID() const
@@ -245,70 +236,66 @@ unsigned int CommunicationManager::FileRequest::getFileID() const
 	return fileID;
 }
 
-CommunicationManager::ReplaceRequest::ReplaceRequest( unsigned int fileID, const std::string & sourcePath, const std::string & filePath) : 
-    MetadataRequest(ReplaceFile, filePath), 
-    sourcePath(sourcePath),
-    fileID(fileID)
+CommunicationManager::ReplaceRequest::ReplaceRequest(unsigned int fileID, const std::string & sourcePath, const std::string & filePath) :
+MetadataRequest(ReplaceFile, filePath),
+sourcePath(sourcePath),
+fileID(fileID)
 {
-
 }
 
 unsigned int CommunicationManager::ReplaceRequest::getFileID() const
 {
-    return fileID;
+	return fileID;
 }
 
 std::string CommunicationManager::ReplaceRequest::getFileName() const
 {
-    core::Filesystem::Path p(getFilePath());
-    return p.filename().string();
+	core::Filesystem::Path p(getFilePath());
+	return p.filename().string();
 }
 
 std::string CommunicationManager::ReplaceRequest::getSourcePath() const
 {
-    return sourcePath;
+	return sourcePath;
 }
 
-CommunicationManager::UploadRequest::UploadRequest(const std::string& sourcePath, const std::string & filePath, unsigned int trialID, Filename2IDPtr uploadedFiles) : 
-    MetadataRequest(UploadFile, filePath), 
-    sourcePath(sourcePath),
-    trialID(trialID),
-    fileID(-1),
-    uploadedFiles(uploadedFiles)
+CommunicationManager::UploadRequest::UploadRequest(const std::string& sourcePath, const std::string & filePath, unsigned int trialID, Filename2IDPtr uploadedFiles) :
+MetadataRequest(UploadFile, filePath),
+sourcePath(sourcePath),
+trialID(trialID),
+fileID(-1),
+uploadedFiles(uploadedFiles)
 {
-
 }
 
 unsigned int CommunicationManager::UploadRequest::getTrialID() const
 {
-    return trialID;
+	return trialID;
 }
 
 std::string CommunicationManager::UploadRequest::getFileName() const
 {
-    core::Filesystem::Path p(getFilePath());
-    return p.filename().string();
+	core::Filesystem::Path p(getFilePath());
+	return p.filename().string();
 }
 
-void CommunicationManager::UploadRequest::setFileID( int val )
+void CommunicationManager::UploadRequest::setFileID(int val)
 {
-    fileID = val;
+	fileID = val;
 }
 
 int CommunicationManager::UploadRequest::getFileID() const
 {
-    return fileID;
+	return fileID;
 }
 
 CommunicationManager::UploadRequest::Filename2IDPtr CommunicationManager::UploadRequest::getUploadedFiles() const
 {
-    return uploadedFiles;
+	return uploadedFiles;
 }
-
 
 CommunicationManager::PhotoRequest::PhotoRequest(const std::string & filePath, unsigned int photoID) : MetadataRequest(DownloadPhoto, filePath), photoID(photoID)
 {
-
 }
 
 unsigned int CommunicationManager::PhotoRequest::getPhotoID() const
@@ -318,7 +305,6 @@ unsigned int CommunicationManager::PhotoRequest::getPhotoID() const
 
 CommunicationManager::ComplexRequest::ComplexRequest(const std::vector<CompleteRequest> & requests) : BasicRequest(Complex), requests(requests)
 {
-
 }
 
 unsigned int CommunicationManager::ComplexRequest::size() const
@@ -340,9 +326,9 @@ double CommunicationManager::ComplexRequest::getProgress() const
 {
 	double ret = 0;
 
-	for(auto it = requests.begin(); it != requests.end(); ++it){
+	for (auto it = requests.begin(); it != requests.end(); ++it){
 		double loc = (*it).request->getProgress();
-		if(loc == 0){
+		if (loc == 0){
 			break;
 		}
 
@@ -353,10 +339,9 @@ double CommunicationManager::ComplexRequest::getProgress() const
 }
 
 CommunicationManager::CommunicationManager(core::IThreadPtr executorThread)
-	: executorThread(executorThread), finish(false), state(Ready), pingCurl(nullptr)
+: executorThread(executorThread), finish(false), state(Ready), pingCurl(nullptr)
 {
-
-	if(executorThread == nullptr){
+	if (executorThread == nullptr){
 		throw std::invalid_argument("Uninitialized requests processing thread");
 	}
 }
@@ -364,37 +349,38 @@ CommunicationManager::CommunicationManager(core::IThreadPtr executorThread)
 void CommunicationManager::init()
 {
 	pingCurl = curl_easy_init();
-	if(pingCurl) {
+	if (pingCurl) {
 		curl_easy_setopt(pingCurl, CURLOPT_URL, "127.0.0.1");
 		curl_easy_setopt(pingCurl, CURLOPT_CONNECTTIMEOUT, 1);
 		curl_easy_setopt(pingCurl, CURLOPT_WRITEFUNCTION, pingDataCallback);
-	}else{
+	}
+	else{
 		throw std::runtime_error("Error while initializing CURL");
-	}	
+	}
 
 	requestsExecutor.reset(new RequestsExecutor(this));
 }
 
 void CommunicationManager::tryInit()
 {
-	if(requestsExecutor == nullptr){
+	if (requestsExecutor == nullptr){
 		init();
 	}
 }
 
 CommunicationManager::~CommunicationManager()
 {
-    if(pingCurl) {
-        curl_easy_cleanup(pingCurl);
-    }
+	if (pingCurl) {
+		curl_easy_cleanup(pingCurl);
+	}
 
-	if(executorThread != nullptr && executorThread->running() == true){    
-        requestsExecutor->finish();
-        executorThread->join();
-    }
+	if (executorThread != nullptr && executorThread->running() == true){
+		requestsExecutor->finish();
+		executorThread->join();
+	}
 }
 
-void CommunicationManager::setMedicalFtps(const webservices::FtpsConnectionPtr & medicalFtps)
+void CommunicationManager::setMedicalFtps(const hmdbServices::FtpsConnectionPtr & medicalFtps)
 {
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	medicalFtps_ = medicalFtps;
@@ -402,25 +388,25 @@ void CommunicationManager::setMedicalFtps(const webservices::FtpsConnectionPtr &
 	photoDownloadHelper.configure(medicalFileStoremanService_, medicalFtps_);
 }
 
-void CommunicationManager::setMotionFtps(const webservices::FtpsConnectionPtr & motionFtps)
+void CommunicationManager::setMotionFtps(const hmdbServices::FtpsConnectionPtr & motionFtps)
 {
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	motionFtps_ = motionFtps;
 	motionShallowDownloadHelper.configure(motionFileStoremanService_, motionFtps);
 	fileDownloadHelper.configure(motionFileStoremanService_, motionFtps);
-    fileUploadHelper.configure(motionFileStoremanService_, motionFtps_);
+	fileUploadHelper.configure(motionFileStoremanService_, motionFtps_);
 }
 
-void CommunicationManager::setMotionFileStoremanService(const webservices::MotionFileStoremanWSPtr & motionFileStoremanService)
+void CommunicationManager::setMotionFileStoremanService(const hmdbServices::MotionFileStoremanWSPtr & motionFileStoremanService)
 {
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	motionFileStoremanService_ = motionFileStoremanService;
 	fileDownloadHelper.configure(motionFileStoremanService_, motionFtps_);
-    //fileUploadHelper.configure(motionFileStoremanService_, motionFtps_);
+	//fileUploadHelper.configure(motionFileStoremanService_, motionFtps_);
 	motionShallowDownloadHelper.configure(motionFileStoremanService_, motionFtps_);
 }
 
-void CommunicationManager::setMedicalFileStoremanService(const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService)
+void CommunicationManager::setMedicalFileStoremanService(const hmdbServices::MedicalFileStoremanWSPtr & medicalFileStoremanService)
 {
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 	medicalFileStoremanService_ = medicalFileStoremanService;
@@ -428,12 +414,12 @@ void CommunicationManager::setMedicalFileStoremanService(const webservices::Medi
 	medicalShallowDownloadHelper.configure(medicalFileStoremanService_, medicalFtps_);
 }
 
-const webservices::FtpsConnectionPtr & CommunicationManager::medicalFtps()
+const hmdbServices::FtpsConnectionPtr & CommunicationManager::medicalFtps()
 {
 	return medicalFtps_;
 }
 
-const webservices::FtpsConnectionPtr & CommunicationManager::motionFtps()
+const hmdbServices::FtpsConnectionPtr & CommunicationManager::motionFtps()
 {
 	return motionFtps_;
 }
@@ -452,14 +438,14 @@ void CommunicationManager::pushRequest(const CompleteRequest & request)
 
 	tryInit();
 
-	if(executorThread->running() == false){
+	if (executorThread->running() == false){
 		executorThread->start(requestsExecutor);
 	}
 
 	requestsWait_.wakeOne();
 }
 
-void CommunicationManager::setCurrentDownloadHelper(webservices::IDownloadHelper * downloadHelper)
+void CommunicationManager::setCurrentDownloadHelper(hmdbServices::IDownloadHelper * downloadHelper)
 {
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(downloadHelperMutex);
 	currentDownloadHelper = downloadHelper;
@@ -474,9 +460,9 @@ bool CommunicationManager::requestsQueueEmpty() const
 void CommunicationManager::cancelAllPendingRequests()
 {
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
-	while(requestsQueue.empty() == false)
+	while (requestsQueue.empty() == false)
 	{
-		if(requestsQueue.front().callbacks.onCancelCallback.empty() == false){
+		if (requestsQueue.front().callbacks.onCancelCallback.empty() == false){
 			requestsQueue.front().callbacks.onCancelCallback(requestsQueue.front().request);
 		}
 
@@ -484,17 +470,16 @@ void CommunicationManager::cancelAllPendingRequests()
 	}
 }
 
-
 int CommunicationManager::getProgress() const
 {
-    utils::ScopedLock<utils::RecursiveSyncPolicy> lock(downloadHelperMutex);
-    return (currentDownloadHelper == nullptr || currentRequest.request == nullptr) ? 0 : currentRequest.request->getProgress();
+	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(downloadHelperMutex);
+	return (currentDownloadHelper == nullptr || currentRequest.request == nullptr) ? 0 : currentRequest.request->getProgress();
 }
 
 void CommunicationManager::setState(State state)
 {
 	utils::ScopedLock<utils::RecursiveSyncPolicy> lock(trialsMutex);
-	this->state = state;    
+	this->state = state;
 }
 
 CommunicationManager::State CommunicationManager::getState()
@@ -505,653 +490,637 @@ CommunicationManager::State CommunicationManager::getState()
 
 void CommunicationManager::cancelRequest(const BasicRequestPtr & request)
 {
-    request->cancel();
-    if(currentRequest.request == request){
-        if(currentDownloadHelper != nullptr){
-            currentDownloadHelper->abort();
-        }
-    }
+	request->cancel();
+	if (currentRequest.request == request){
+		if (currentDownloadHelper != nullptr){
+			currentDownloadHelper->abort();
+		}
+	}
 }
 
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processComplex(const CompleteRequest & request, std::string & message)
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processComplex(const CompleteRequest & request, std::string & message)
 {
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
 
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
 
-    utils::shared_ptr<ComplexRequest> complexRequest = utils::dynamic_pointer_cast<ComplexRequest>(request.request);
-    
-    unsigned int s = complexRequest->size();
-    unsigned int i = 0;
+	utils::shared_ptr<ComplexRequest> complexRequest = utils::dynamic_pointer_cast<ComplexRequest>(request.request);
 
-    for( ; i < s; i++){
-        
-        if(request.request->isCancelled()){
-            ret = webservices::IFtpsConnection::Cancelled;
-        }
+	unsigned int s = complexRequest->size();
+	unsigned int i = 0;
 
-        //sprawdz czy anulowano lub blad
-        //jeśli nie to kontynuj
-        if(ret != webservices::IFtpsConnection::Complete){
-            break;
-        }
-  
-        const auto & r = complexRequest->getRequest(i);
+	for (; i < s; i++){
+		if (request.request->isCancelled()){
+			ret = hmdbServices::IFtpsConnection::Cancelled;
+		}
 
-        switch(r.request->type){
+		//sprawdz czy anulowano lub blad
+		//jeśli nie to kontynuj
+		if (ret != hmdbServices::IFtpsConnection::Complete){
+			break;
+		}
 
-            case Complex:
-                ret = processComplex(r, message);
-                break;
+		const auto & r = complexRequest->getRequest(i);
 
-            case DownloadFile:
-                ret = processFile(r, message);
-                break;
+		switch (r.request->type){
+		case Complex:
+			ret = processComplex(r, message);
+			break;
 
-            case UploadFile:
-                ret = processUpload(r, message);
-                break;
+		case DownloadFile:
+			ret = processFile(r, message);
+			break;
 
-            case ReplaceFile:
-                ret = processReplace(r, message);
-                break;
+		case UploadFile:
+			ret = processUpload(r, message);
+			break;
 
-            case DownloadPhoto:
-                ret = processPhoto(r, message);
-                break;
+		case ReplaceFile:
+			ret = processReplace(r, message);
+			break;
 
-            case CopyMotionShallowCopy:
-                ret = processMotionShallowCopy(r, message);
-                break;
+		case DownloadPhoto:
+			ret = processPhoto(r, message);
+			break;
 
-            case CopyMotionBranchIncrement:
-                ret = processMotionBranchIncrementShallowCopy(r, message);
-                break;
+		case CopyMotionShallowCopy:
+			ret = processMotionShallowCopy(r, message);
+			break;
 
-            case CopyMotionMetadata:
-                ret = processMotionMetadata(r, message);
-                break;
+		case CopyMotionBranchIncrement:
+			ret = processMotionBranchIncrementShallowCopy(r, message);
+			break;
 
-            case CopyMedicalShallowCopy:
-                ret = processMedicalShallowCopy(r, message);
-                break;
+		case CopyMotionMetadata:
+			ret = processMotionMetadata(r, message);
+			break;
 
-            case CopyMedicalMetadata:
-                ret = processMedicalMetadata(r, message);
-                break;
+		case CopyMedicalShallowCopy:
+			ret = processMedicalShallowCopy(r, message);
+			break;
 
-            case PingServer:
-                ret = processPing(r, message);
-                break;
-        }
-    }
+		case CopyMedicalMetadata:
+			ret = processMedicalMetadata(r, message);
+			break;
 
-    switch(ret){
-    case webservices::IFtpsConnection::Error:
-        
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
+		case PingServer:
+			ret = processPing(r, message);
+			break;
+		}
+	}
 
-        break;
+	switch (ret){
+	case hmdbServices::IFtpsConnection::Error:
 
-    case webservices::IFtpsConnection::Complete:
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
 
-        if(request.callbacks.onEndCallback.empty() == false){
-            request.callbacks.onEndCallback(request.request);
-        }
+		break;
 
-        break;
+	case hmdbServices::IFtpsConnection::Complete:
 
-    case webservices::IFtpsConnection::Cancelled:
+		if (request.callbacks.onEndCallback.empty() == false){
+			request.callbacks.onEndCallback(request.request);
+		}
 
-        if(request.callbacks.onCancelCallback.empty() == false){
-            request.callbacks.onCancelCallback(request.request);
-        }
+		break;
 
-        break;
+	case hmdbServices::IFtpsConnection::Cancelled:
 
-    }
+		if (request.callbacks.onCancelCallback.empty() == false){
+			request.callbacks.onCancelCallback(request.request);
+		}
 
-    return ret;
+		break;
+	}
+
+	return ret;
 }
 
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processPhoto(const CompleteRequest & request, std::string & message)
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processPhoto(const CompleteRequest & request, std::string & message)
 {
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
 
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
 
-    try {
+	try {
+		utils::shared_ptr<PhotoRequest> photoRequest = utils::dynamic_pointer_cast<PhotoRequest>(request.request);
 
-        utils::shared_ptr<PhotoRequest> photoRequest = utils::dynamic_pointer_cast<PhotoRequest>(request.request);
-        
 		setCurrentDownloadHelper(&photoDownloadHelper);
 
 		photoDownloadHelper.setDownload(photoRequest->getPhotoID(), photoRequest->getFilePath());
-		
+
 		{
 			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = photoDownloadHelper.get(photoRequest.get());
 		}
 
-        //ret = medicalTransportManager->downloadPhoto(photoRequest->getPhotoID(), photoRequest->getFilePath(), photoRequest.get());
+		//ret = medicalTransportManager->downloadPhoto(photoRequest->getPhotoID(), photoRequest->getFilePath(), photoRequest.get());
 
-        switch(ret){
+		switch (ret){
+		case hmdbServices::IFtpsConnection::Complete:
+			if (request.callbacks.onEndCallback.empty() == false){
+				request.callbacks.onEndCallback(request.request);
+			}
 
-        case webservices::IFtpsConnection::Complete:
-            if(request.callbacks.onEndCallback.empty() == false){
-                request.callbacks.onEndCallback(request.request);
-            }
+			break;
 
-            break;
+		case hmdbServices::IFtpsConnection::Cancelled:
+			if (request.callbacks.onCancelCallback.empty() == false){
+				request.callbacks.onCancelCallback(request.request);
+			}
 
-        case webservices::IFtpsConnection::Cancelled:
-            if(request.callbacks.onCancelCallback.empty() == false){
-                request.callbacks.onCancelCallback(request.request);
-            }
+			break;
 
-            break;
+		case hmdbServices::IFtpsConnection::Error:
 
-        case webservices::IFtpsConnection::Error:
+			message += photoDownloadHelper.errorMessage();
 
-            message += photoDownloadHelper.errorMessage();
+			if (request.callbacks.onErrorCallback.empty() == false){
+				request.callbacks.onErrorCallback(request.request, message);
+			}
+		}
+	}
+	catch (std::exception& e) {
+		message += e.what();
 
-            if(request.callbacks.onErrorCallback.empty() == false){
-                request.callbacks.onErrorCallback(request.request, message);
-            }
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
+	}
 
-        }
-    } catch(std::exception& e) {
-
-        message += e.what();
-
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
-    }
-
-	if(ret == webservices::IFtpsConnection::Error){
+	if (ret == hmdbServices::IFtpsConnection::Error){
 		serverResponse = false;
-	}else{
+	}
+	else{
 		serverResponse = true;
 	}
 
-    return ret;
+	return ret;
 }
 
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processFile(const CompleteRequest & request, std::string & message)
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processFile(const CompleteRequest & request, std::string & message)
 {
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
 
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
 
-    try {
-
-        utils::shared_ptr<FileRequest> fileRequest = utils::dynamic_pointer_cast<FileRequest>(request.request);
-        setCurrentDownloadHelper(&fileDownloadHelper);
+	try {
+		utils::shared_ptr<FileRequest> fileRequest = utils::dynamic_pointer_cast<FileRequest>(request.request);
+		setCurrentDownloadHelper(&fileDownloadHelper);
 
 		fileDownloadHelper.setDownload(fileRequest->fileID, fileRequest->filePath);
-		
+
 		{
 			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = fileDownloadHelper.get(fileRequest.get());
 		}
 
-        //ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
+		//ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
 
-        switch(ret){
+		switch (ret){
+		case hmdbServices::IFtpsConnection::Complete:
+			if (request.callbacks.onEndCallback.empty() == false){
+				request.callbacks.onEndCallback(request.request);
+			}
 
-        case webservices::IFtpsConnection::Complete:
-            if(request.callbacks.onEndCallback.empty() == false){
-                request.callbacks.onEndCallback(request.request);
-            }
+			break;
 
-            break;
+		case hmdbServices::IFtpsConnection::Cancelled:
+			if (request.callbacks.onCancelCallback.empty() == false){
+				request.callbacks.onCancelCallback(request.request);
+			}
 
-        case webservices::IFtpsConnection::Cancelled:
-            if(request.callbacks.onCancelCallback.empty() == false){
-                request.callbacks.onCancelCallback(request.request);
-            }
+			break;
 
-            break;
+		case hmdbServices::IFtpsConnection::Error:
 
-        case webservices::IFtpsConnection::Error:
+			message += fileDownloadHelper.errorMessage();
 
-            message += fileDownloadHelper.errorMessage();
+			if (request.callbacks.onErrorCallback.empty() == false){
+				request.callbacks.onErrorCallback(request.request, message);
+			}
+		}
+	}
+	catch (std::exception& e) {
+		message += e.what();
 
-            if(request.callbacks.onErrorCallback.empty() == false){
-                request.callbacks.onErrorCallback(request.request, message);
-            }
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
+	}
 
-        }
-    } catch(std::exception& e) {
-
-        message += e.what();
-
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
-    }
-
-	if(ret == webservices::IFtpsConnection::Error){
+	if (ret == hmdbServices::IFtpsConnection::Error){
 		serverResponse = false;
-	}else{
+	}
+	else{
 		serverResponse = true;
 	}
 
-    return ret;
+	return ret;
 }
 
-
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processUpload(const CompleteRequest & request, std::string & message)
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processUpload(const CompleteRequest & request, std::string & message)
 {
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
 
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
 
-    try {
+	try {
+		utils::shared_ptr<UploadRequest> uploadRequest = utils::dynamic_pointer_cast<UploadRequest>(request.request);
 
-        utils::shared_ptr<UploadRequest> uploadRequest = utils::dynamic_pointer_cast<UploadRequest>(request.request);
-        
-        fileUploadHelper.setFileUpload(uploadRequest->sourcePath, uploadRequest->filePath);
+		fileUploadHelper.setFileUpload(uploadRequest->sourcePath, uploadRequest->filePath);
 
-        int fileID = -1;
+		int fileID = -1;
 
-        {
-            utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
-            ret = fileUploadHelper.put(uploadRequest.get());
-            //if (ret == webservices::IFtpsConnection::Complete) {
-#ifdef _DEVELOPER
-				fileID = motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "test xml file", uploadRequest->getFileName());
-#else
-                fileID = motionFileStoremanService_->storeTrialFile(uploadRequest->trialID,  "/BDR/w", "MEDUSA", uploadRequest->getFileName());
-#endif
-            //}
-            uploadRequest->setFileID(fileID);
-        }
-
-        //ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
-
-        switch(ret){
-
-        case webservices::IFtpsConnection::Complete:
-            if(request.callbacks.onEndCallback.empty() == false){
-                request.callbacks.onEndCallback(request.request);
-            }
-
-            break;
-
-        case webservices::IFtpsConnection::Cancelled:
-            if(request.callbacks.onCancelCallback.empty() == false){
-                request.callbacks.onCancelCallback(request.request);
-            }
-
-            break;
-
-        case webservices::IFtpsConnection::Error:
-
-            message += fileUploadHelper.errorMessage();
-
-            if(request.callbacks.onErrorCallback.empty() == false){
-                request.callbacks.onErrorCallback(request.request, message);
-            }
-
-        }
-    } catch(std::exception& e) {
-
-        message += e.what();
-
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
-    }
-
-    if(ret == webservices::IFtpsConnection::Error){
-        serverResponse = false;
-    }else{
-        serverResponse = true;
-    }
-
-    return ret;
-}
-
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processReplace(const CompleteRequest & request, std::string & message)
-{
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
-
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
-
-    try {
-
-        utils::shared_ptr<ReplaceRequest> replaceRequest = utils::dynamic_pointer_cast<ReplaceRequest>(request.request);
-
-        fileUploadHelper.setFileUpload(replaceRequest->sourcePath, replaceRequest->filePath);
-
-        {
-            utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
-            ret = fileUploadHelper.put(replaceRequest.get());
-            //if (ret == webservices::IFtpsConnection::Complete) {
-            motionFileStoremanService_->replaceFile(replaceRequest->fileID,  "/BDR/w", replaceRequest->getFileName());
-            //}
-        }
-
-        //ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
-
-        switch(ret){
-
-        case webservices::IFtpsConnection::Complete:
-            if(request.callbacks.onEndCallback.empty() == false){
-                request.callbacks.onEndCallback(request.request);
-            }
-
-            break;
-
-        case webservices::IFtpsConnection::Cancelled:
-            if(request.callbacks.onCancelCallback.empty() == false){
-                request.callbacks.onCancelCallback(request.request);
-            }
-
-            break;
-
-        case webservices::IFtpsConnection::Error:
-
-            message += fileUploadHelper.errorMessage();
-
-            if(request.callbacks.onErrorCallback.empty() == false){
-                request.callbacks.onErrorCallback(request.request, message);
-            }
-
-        }
-    } catch(std::exception& e) {
-
-        message += e.what();
-
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
-    }
-
-    if(ret == webservices::IFtpsConnection::Error){
-        serverResponse = false;
-    }else{
-        serverResponse = true;
-    }
-
-    return ret;
-}
-
-
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processMotionShallowCopy(const CompleteRequest & request, std::string & message)
-{
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
-
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
-
-    try {
-        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
-        setCurrentDownloadHelper(&motionShallowDownloadHelper);
-        
-		motionShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowData, metaRequest->filePath);
-		
 		{
 			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
-			ret = motionShallowDownloadHelper.get(metaRequest.get());
+			ret = fileUploadHelper.put(uploadRequest.get());
+			//if (ret == hmdbServices::IFtpsConnection::Complete) {
+#ifdef _DEVELOPER
+			fileID = motionFileStoremanService_->storeTrialFile(uploadRequest->trialID, "/BDR/w", "test xml file", uploadRequest->getFileName());
+#else
+			fileID = motionFileStoremanService_->storeTrialFile(uploadRequest->trialID, "/BDR/w", "MEDUSA", uploadRequest->getFileName());
+#endif
+			//}
+			uploadRequest->setFileID(fileID);
 		}
 
+		//ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
 
-        //ret = motionTransportManager->getShallowCopy(metaRequest->filePath, metaRequest.get());
+		switch (ret){
+		case hmdbServices::IFtpsConnection::Complete:
+			if (request.callbacks.onEndCallback.empty() == false){
+				request.callbacks.onEndCallback(request.request);
+			}
 
-        switch(ret){
+			break;
 
-        case webservices::IFtpsConnection::Complete:
-            if(request.callbacks.onEndCallback.empty() == false){
-                request.callbacks.onEndCallback(request.request);
-            }
+		case hmdbServices::IFtpsConnection::Cancelled:
+			if (request.callbacks.onCancelCallback.empty() == false){
+				request.callbacks.onCancelCallback(request.request);
+			}
 
-            break;
+			break;
 
-        case webservices::IFtpsConnection::Cancelled:
-            if(request.callbacks.onCancelCallback.empty() == false){
-                request.callbacks.onCancelCallback(request.request);
-            }
+		case hmdbServices::IFtpsConnection::Error:
 
-            break;
+			message += fileUploadHelper.errorMessage();
 
-        case webservices::IFtpsConnection::Error:
+			if (request.callbacks.onErrorCallback.empty() == false){
+				request.callbacks.onErrorCallback(request.request, message);
+			}
+		}
+	}
+	catch (std::exception& e) {
+		message += e.what();
 
-            message += motionShallowDownloadHelper.errorMessage();
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
+	}
 
-            if(request.callbacks.onErrorCallback.empty() == false){
-                request.callbacks.onErrorCallback(request.request, message);
-            }
-        }
-    } catch(std::exception& e) {
-
-        message += e.what();
-
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
-    }
-
-	if(ret == webservices::IFtpsConnection::Error){
+	if (ret == hmdbServices::IFtpsConnection::Error){
 		serverResponse = false;
-	}else{
+	}
+	else{
 		serverResponse = true;
 	}
 
-    return ret;
+	return ret;
 }
 
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processMotionMetadata(const CompleteRequest & request, std::string & message)
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processReplace(const CompleteRequest & request, std::string & message)
 {
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
 
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
 
-    try {
-        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
+	try {
+		utils::shared_ptr<ReplaceRequest> replaceRequest = utils::dynamic_pointer_cast<ReplaceRequest>(request.request);
+
+		fileUploadHelper.setFileUpload(replaceRequest->sourcePath, replaceRequest->filePath);
+
+		{
+			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
+			ret = fileUploadHelper.put(replaceRequest.get());
+			//if (ret == hmdbServices::IFtpsConnection::Complete) {
+			motionFileStoremanService_->replaceFile(replaceRequest->fileID, "/BDR/w", replaceRequest->getFileName());
+			//}
+		}
+
+		//ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
+
+		switch (ret){
+		case hmdbServices::IFtpsConnection::Complete:
+			if (request.callbacks.onEndCallback.empty() == false){
+				request.callbacks.onEndCallback(request.request);
+			}
+
+			break;
+
+		case hmdbServices::IFtpsConnection::Cancelled:
+			if (request.callbacks.onCancelCallback.empty() == false){
+				request.callbacks.onCancelCallback(request.request);
+			}
+
+			break;
+
+		case hmdbServices::IFtpsConnection::Error:
+
+			message += fileUploadHelper.errorMessage();
+
+			if (request.callbacks.onErrorCallback.empty() == false){
+				request.callbacks.onErrorCallback(request.request, message);
+			}
+		}
+	}
+	catch (std::exception& e) {
+		message += e.what();
+
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
+	}
+
+	if (ret == hmdbServices::IFtpsConnection::Error){
+		serverResponse = false;
+	}
+	else{
+		serverResponse = true;
+	}
+
+	return ret;
+}
+
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processMotionShallowCopy(const CompleteRequest & request, std::string & message)
+{
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
+
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
+
+	try {
+		utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
 		setCurrentDownloadHelper(&motionShallowDownloadHelper);
 
-		motionShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowMetadata, metaRequest->filePath);
-		
+		motionShallowDownloadHelper.setDownload(hmdbServices::ShallowDownloadHelper::ShallowData, metaRequest->filePath);
+
 		{
 			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = motionShallowDownloadHelper.get(metaRequest.get());
 		}
 
-        switch(ret){
+		//ret = motionTransportManager->getShallowCopy(metaRequest->filePath, metaRequest.get());
 
-        case webservices::IFtpsConnection::Complete:
-            if(request.callbacks.onEndCallback.empty() == false){
-                request.callbacks.onEndCallback(request.request);
-            }
+		switch (ret){
+		case hmdbServices::IFtpsConnection::Complete:
+			if (request.callbacks.onEndCallback.empty() == false){
+				request.callbacks.onEndCallback(request.request);
+			}
 
-            break;
+			break;
 
-        case webservices::IFtpsConnection::Cancelled:
-            if(request.callbacks.onCancelCallback.empty() == false){
-                request.callbacks.onCancelCallback(request.request);
-            }
+		case hmdbServices::IFtpsConnection::Cancelled:
+			if (request.callbacks.onCancelCallback.empty() == false){
+				request.callbacks.onCancelCallback(request.request);
+			}
 
-            break;
+			break;
 
-        case webservices::IFtpsConnection::Error:
+		case hmdbServices::IFtpsConnection::Error:
 
-            message += motionShallowDownloadHelper.errorMessage();
+			message += motionShallowDownloadHelper.errorMessage();
 
-            if(request.callbacks.onErrorCallback.empty() == false){
-                request.callbacks.onErrorCallback(request.request, message);
-            }
+			if (request.callbacks.onErrorCallback.empty() == false){
+				request.callbacks.onErrorCallback(request.request, message);
+			}
+		}
+	}
+	catch (std::exception& e) {
+		message += e.what();
 
-        }
-    } catch(std::exception& e) {
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
+	}
 
-        message += e.what();
-
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
-    }
-
-	if(ret == webservices::IFtpsConnection::Error){
+	if (ret == hmdbServices::IFtpsConnection::Error){
 		serverResponse = false;
-	}else{
+	}
+	else{
 		serverResponse = true;
 	}
 
-    return ret;
+	return ret;
 }
 
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processMedicalShallowCopy(const CompleteRequest & request, std::string & message)
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processMotionMetadata(const CompleteRequest & request, std::string & message)
 {
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
 
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
 
-    try {
-        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
+	try {
+		utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
+		setCurrentDownloadHelper(&motionShallowDownloadHelper);
+
+		motionShallowDownloadHelper.setDownload(hmdbServices::ShallowDownloadHelper::ShallowMetadata, metaRequest->filePath);
+
+		{
+			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
+			ret = motionShallowDownloadHelper.get(metaRequest.get());
+		}
+
+		switch (ret){
+		case hmdbServices::IFtpsConnection::Complete:
+			if (request.callbacks.onEndCallback.empty() == false){
+				request.callbacks.onEndCallback(request.request);
+			}
+
+			break;
+
+		case hmdbServices::IFtpsConnection::Cancelled:
+			if (request.callbacks.onCancelCallback.empty() == false){
+				request.callbacks.onCancelCallback(request.request);
+			}
+
+			break;
+
+		case hmdbServices::IFtpsConnection::Error:
+
+			message += motionShallowDownloadHelper.errorMessage();
+
+			if (request.callbacks.onErrorCallback.empty() == false){
+				request.callbacks.onErrorCallback(request.request, message);
+			}
+		}
+	}
+	catch (std::exception& e) {
+		message += e.what();
+
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
+	}
+
+	if (ret == hmdbServices::IFtpsConnection::Error){
+		serverResponse = false;
+	}
+	else{
+		serverResponse = true;
+	}
+
+	return ret;
+}
+
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processMedicalShallowCopy(const CompleteRequest & request, std::string & message)
+{
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
+
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
+
+	try {
+		utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
 		setCurrentDownloadHelper(&medicalShallowDownloadHelper);
 
-		medicalShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowData, metaRequest->filePath);
-		
+		medicalShallowDownloadHelper.setDownload(hmdbServices::ShallowDownloadHelper::ShallowData, metaRequest->filePath);
+
 		{
 			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = medicalShallowDownloadHelper.get(metaRequest.get());
 		}
 
-        switch(ret){
+		switch (ret){
+		case hmdbServices::IFtpsConnection::Complete:
+			if (request.callbacks.onEndCallback.empty() == false){
+				request.callbacks.onEndCallback(request.request);
+			}
 
-        case webservices::IFtpsConnection::Complete:
-            if(request.callbacks.onEndCallback.empty() == false){
-                request.callbacks.onEndCallback(request.request);
-            }
+			break;
 
-            break;
+		case hmdbServices::IFtpsConnection::Cancelled:
+			if (request.callbacks.onCancelCallback.empty() == false){
+				request.callbacks.onCancelCallback(request.request);
+			}
 
-        case webservices::IFtpsConnection::Cancelled:
-            if(request.callbacks.onCancelCallback.empty() == false){
-                request.callbacks.onCancelCallback(request.request);
-            }
+			break;
 
-            break;
+		case hmdbServices::IFtpsConnection::Error:
 
-        case webservices::IFtpsConnection::Error:
+			message += medicalShallowDownloadHelper.errorMessage();
 
-            message += medicalShallowDownloadHelper.errorMessage();
+			if (request.callbacks.onErrorCallback.empty() == false){
+				request.callbacks.onErrorCallback(request.request, message);
+			}
+		}
+	}
+	catch (std::exception& e) {
+		message += e.what();
 
-            if(request.callbacks.onErrorCallback.empty() == false){
-                request.callbacks.onErrorCallback(request.request, message);
-            }
-        }
-    } catch(std::exception& e) {
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
+	}
 
-        message += e.what();
-
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
-    }
-
-	if(ret == webservices::IFtpsConnection::Error){
+	if (ret == hmdbServices::IFtpsConnection::Error){
 		serverResponse = false;
-	}else{
+	}
+	else{
 		serverResponse = true;
 	}
 
-    return ret;
+	return ret;
 }
 
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processMedicalMetadata(const CompleteRequest & request, std::string & message)
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processMedicalMetadata(const CompleteRequest & request, std::string & message)
 {
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
 
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
 
-    try {
-        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
+	try {
+		utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
 		setCurrentDownloadHelper(&medicalShallowDownloadHelper);
 
-		medicalShallowDownloadHelper.setDownload(webservices::ShallowDownloadHelper::ShallowMetadata, metaRequest->filePath);
-		
+		medicalShallowDownloadHelper.setDownload(hmdbServices::ShallowDownloadHelper::ShallowMetadata, metaRequest->filePath);
+
 		{
 			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
 			ret = medicalShallowDownloadHelper.get(metaRequest.get());
 		}
 
-        switch(ret){
+		switch (ret){
+		case hmdbServices::IFtpsConnection::Complete:
+			if (request.callbacks.onEndCallback.empty() == false){
+				request.callbacks.onEndCallback(request.request);
+			}
 
-        case webservices::IFtpsConnection::Complete:
-            if(request.callbacks.onEndCallback.empty() == false){
-                request.callbacks.onEndCallback(request.request);
-            }
+			break;
 
-            break;
+		case hmdbServices::IFtpsConnection::Cancelled:
+			if (request.callbacks.onCancelCallback.empty() == false){
+				request.callbacks.onCancelCallback(request.request);
+			}
 
-        case webservices::IFtpsConnection::Cancelled:
-            if(request.callbacks.onCancelCallback.empty() == false){
-                request.callbacks.onCancelCallback(request.request);
-            }
+			break;
 
-            break;
+		case hmdbServices::IFtpsConnection::Error:
 
-        case webservices::IFtpsConnection::Error:
+			message += medicalShallowDownloadHelper.errorMessage();
 
-            message += medicalShallowDownloadHelper.errorMessage();
+			if (request.callbacks.onErrorCallback.empty() == false){
+				request.callbacks.onErrorCallback(request.request, message);
+			}
+		}
+	}
+	catch (std::exception& e) {
+		message += e.what();
 
-            if(request.callbacks.onErrorCallback.empty() == false){
-                request.callbacks.onErrorCallback(request.request, message);
-            }
-        }
-    } catch(std::exception& e) {
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
+	}
 
-        message += e.what();
-
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
-    }
-
-	if(ret == webservices::IFtpsConnection::Error){
+	if (ret == hmdbServices::IFtpsConnection::Error){
 		serverResponse = false;
-	}else{
+	}
+	else{
 		serverResponse = true;
 	}
 
-    return ret;
+	return ret;
 }
 
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processPing(const CompleteRequest & request, std::string & message)
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processPing(const CompleteRequest & request, std::string & message)
 {
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
 
-    setCurrentDownloadHelper(nullptr);
-    
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
+	setCurrentDownloadHelper(nullptr);
 
-    try{
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
 
+	try{
 		utils::shared_ptr<PingRequest> pingRequest = utils::dynamic_pointer_cast<PingRequest>(request.request);
 		CURLcode pingCurlResult;
 		{
@@ -1159,151 +1128,147 @@ webservices::IFtpsConnection::OperationStatus CommunicationManager::processPing(
 			pingCurlResult = curl_easy_perform(pingCurl);
 		}
 
-        if(pingCurlResult == CURLE_OK) {
-            pingRequest->setServerResponse(true);
-        } else {
-            pingRequest->setServerResponse(false);
-        }
+		if (pingCurlResult == CURLE_OK) {
+			pingRequest->setServerResponse(true);
+		}
+		else {
+			pingRequest->setServerResponse(false);
+		}
 
-        if(request.callbacks.onEndCallback.empty() == false){
-            request.callbacks.onEndCallback(request.request);
-        }
+		if (request.callbacks.onEndCallback.empty() == false){
+			request.callbacks.onEndCallback(request.request);
+		}
+	}
+	catch (const std::exception & e){
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, e.what());
+		}
 
-    }catch(const std::exception & e){
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, e.what());
-        }
+		ret = hmdbServices::IFtpsConnection::Error;
+	}
 
-        ret = webservices::IFtpsConnection::Error;
-    }
-
-    return ret;
+	return ret;
 }
 
-webservices::IFtpsConnection::OperationStatus CommunicationManager::processMotionBranchIncrementShallowCopy(const CompleteRequest & request, std::string & message)
+hmdbServices::IFtpsConnection::OperationStatus CommunicationManager::processMotionBranchIncrementShallowCopy(const CompleteRequest & request, std::string & message)
 {
-    webservices::IFtpsConnection::OperationStatus ret = webservices::IFtpsConnection::Complete;
+	hmdbServices::IFtpsConnection::OperationStatus ret = hmdbServices::IFtpsConnection::Complete;
 
-    if(request.callbacks.onBeginCallback.empty() == false){
-        request.callbacks.onBeginCallback(request.request);
-    }
+	if (request.callbacks.onBeginCallback.empty() == false){
+		request.callbacks.onBeginCallback(request.request);
+	}
 
-    try {
-        utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
-        setCurrentDownloadHelper(&motionShallowDownloadHelper);
+	try {
+		utils::shared_ptr<MetadataRequest> metaRequest = utils::dynamic_pointer_cast<MetadataRequest>(request.request);
+		setCurrentDownloadHelper(&motionShallowDownloadHelper);
 
-        motionShallowDownloadHelper.setIncrementalDownload(metaRequest->filePath, metaRequest->getDateTime());
+		motionShallowDownloadHelper.setIncrementalDownload(metaRequest->filePath, metaRequest->getDateTime());
 
-        {
-            utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
-            ret = motionShallowDownloadHelper.get(metaRequest.get());
-        }
+		{
+			utils::ScopedLock<utils::RecursiveSyncPolicy> lock(requestsMutex);
+			ret = motionShallowDownloadHelper.get(metaRequest.get());
+		}
 
+		//ret = motionTransportManager->getShallowCopy(metaRequest->filePath, metaRequest.get());
 
-        //ret = motionTransportManager->getShallowCopy(metaRequest->filePath, metaRequest.get());
+		switch (ret){
+		case hmdbServices::IFtpsConnection::Complete:
+			if (request.callbacks.onEndCallback.empty() == false){
+				request.callbacks.onEndCallback(request.request);
+			}
 
-        switch(ret){
+			break;
 
-        case webservices::IFtpsConnection::Complete:
-            if(request.callbacks.onEndCallback.empty() == false){
-                request.callbacks.onEndCallback(request.request);
-            }
+		case hmdbServices::IFtpsConnection::Cancelled:
+			if (request.callbacks.onCancelCallback.empty() == false){
+				request.callbacks.onCancelCallback(request.request);
+			}
 
-            break;
+			break;
 
-        case webservices::IFtpsConnection::Cancelled:
-            if(request.callbacks.onCancelCallback.empty() == false){
-                request.callbacks.onCancelCallback(request.request);
-            }
+		case hmdbServices::IFtpsConnection::Error:
 
-            break;
+			message += motionShallowDownloadHelper.errorMessage();
 
-        case webservices::IFtpsConnection::Error:
+			if (request.callbacks.onErrorCallback.empty() == false){
+				request.callbacks.onErrorCallback(request.request, message);
+			}
+		}
+	}
+	catch (std::exception& e) {
+		message += e.what();
 
-            message += motionShallowDownloadHelper.errorMessage();
+		if (request.callbacks.onErrorCallback.empty() == false){
+			request.callbacks.onErrorCallback(request.request, message);
+		}
+	}
 
-            if(request.callbacks.onErrorCallback.empty() == false){
-                request.callbacks.onErrorCallback(request.request, message);
-            }
-        }
-    } catch(std::exception& e) {
+	if (ret == hmdbServices::IFtpsConnection::Error){
+		serverResponse = false;
+	}
+	else{
+		serverResponse = true;
+	}
 
-        message += e.what();
-
-        if(request.callbacks.onErrorCallback.empty() == false){
-            request.callbacks.onErrorCallback(request.request, message);
-        }
-    }
-
-    if(ret == webservices::IFtpsConnection::Error){
-        serverResponse = false;
-    }else{
-        serverResponse = true;
-    }
-
-    return ret;
+	return ret;
 }
-
 
 size_t CommunicationManager::pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream)
 {
-    return size*nmemb;
+	return size*nmemb;
 }
 
 CommunicationManager::ComplexRequestPtr CommunicationManager::createRequestComplex(const std::vector<CompleteRequest> & requests)
 {
-    return ComplexRequestPtr(new ComplexRequest(requests));
+	return ComplexRequestPtr(new ComplexRequest(requests));
 }
 
 CommunicationManager::FileRequestPtr CommunicationManager::createRequestFile(unsigned int fileID, const std::string & filePath)
 {
-    return FileRequestPtr(new FileRequest(filePath, fileID));
+	return FileRequestPtr(new FileRequest(filePath, fileID));
 }
 
-
-CommunicationManager::UploadRequestPtr CommunicationManager::createRequestUpload( const std::string & sourcePath, const std::string & filePath, unsigned int trialID, UploadRequest::Filename2IDPtr uploadedFiles )
+CommunicationManager::UploadRequestPtr CommunicationManager::createRequestUpload(const std::string & sourcePath, const std::string & filePath, unsigned int trialID, UploadRequest::Filename2IDPtr uploadedFiles)
 {
-    return UploadRequestPtr(new UploadRequest(sourcePath, filePath, trialID, uploadedFiles));
+	return UploadRequestPtr(new UploadRequest(sourcePath, filePath, trialID, uploadedFiles));
 }
-
 
 CommunicationManager::PhotoRequestPtr CommunicationManager::createRequestPhoto(unsigned int fileID, const std::string & filePath)
 {
-    return PhotoRequestPtr(new PhotoRequest(filePath, fileID));
+	return PhotoRequestPtr(new PhotoRequest(filePath, fileID));
 }
 
 CommunicationManager::MetadataRequestPtr CommunicationManager::createRequestMotionShallowCopy(const std::string & filePath)
 {
-    return MetadataRequestPtr(new MetadataRequest(CopyMotionShallowCopy, filePath));
+	return MetadataRequestPtr(new MetadataRequest(CopyMotionShallowCopy, filePath));
 }
 
 CommunicationManager::MetadataRequestPtr CommunicationManager::createRequestMotionMetadata(const std::string & filePath)
 {
-    return MetadataRequestPtr(new MetadataRequest(CopyMotionMetadata, filePath));
+	return MetadataRequestPtr(new MetadataRequest(CopyMotionMetadata, filePath));
 }
 
 CommunicationManager::MetadataRequestPtr CommunicationManager::createRequestMedicalShallowCopy(const std::string & filePath)
 {
-    return MetadataRequestPtr(new MetadataRequest(CopyMedicalShallowCopy, filePath));
+	return MetadataRequestPtr(new MetadataRequest(CopyMedicalShallowCopy, filePath));
 }
 
 CommunicationManager::MetadataRequestPtr CommunicationManager::createRequestMedicalMetadata(const std::string & filePath)
 {
-    return MetadataRequestPtr(new MetadataRequest(CopyMedicalMetadata, filePath));    
+	return MetadataRequestPtr(new MetadataRequest(CopyMedicalMetadata, filePath));
 }
 
 CommunicationManager::PingRequestPtr CommunicationManager::createRequestPing(const std::string & urlToPing)
 {
-    return PingRequestPtr(new PingRequest(urlToPing));
+	return PingRequestPtr(new PingRequest(urlToPing));
 }
 
-CommunicationManager::ReplaceRequestPtr CommunicationManager::createRequestReplace( const std::string & sourcePath, const std::string & filePath, unsigned int fileID )
+CommunicationManager::ReplaceRequestPtr CommunicationManager::createRequestReplace(const std::string & sourcePath, const std::string & filePath, unsigned int fileID)
 {
-    return ReplaceRequestPtr(new ReplaceRequest(fileID, sourcePath, filePath));
+	return ReplaceRequestPtr(new ReplaceRequest(fileID, sourcePath, filePath));
 }
 
-CommunicationManager::MetadataRequestPtr CommunicationManager::createRequestMotionShallowBranchIncrement( const std::string& path, const webservices::DateTime& since )
+CommunicationManager::MetadataRequestPtr CommunicationManager::createRequestMotionShallowBranchIncrement(const std::string& path, const hmdbServices::DateTime& since)
 {
-    return MetadataRequestPtr(new MetadataRequest(CopyMotionBranchIncrement, path, since));
+	return MetadataRequestPtr(new MetadataRequest(CopyMotionBranchIncrement, path, since));
 }
-

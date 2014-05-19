@@ -6,9 +6,10 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___IBASICUPDATESWS_H__
-#define HEADER_GUARD___IBASICUPDATESWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_IBASICUPDATESWS_H__
+#define HEADER_GUARD__HMDBSERVICES_IBASICUPDATESWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <set>
 #include <string>
 #include <utils/SmartPtr.h>
@@ -16,7 +17,7 @@
 namespace hmdbServices
 {
 	//! Interfejs usługi pozwalającej edytować dane w bazie ruchu
-	class IMotionBasicUpdatesWS
+	class HMDBSERVICES_EXPORT IMotionBasicUpdatesWS
 	{
 	public:
 		//! Wirtualny destruktor
@@ -139,7 +140,7 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IMotionBasicUpdatesWS> MotionBasicUpdatesWSConstPtr;
 
 	//! Interfejs usługi pozwalającej edytować dane w bazie medycznej
-	class IMedicalBasicUpdatesWS
+	class HMDBSERVICES_EXPORT IMedicalBasicUpdatesWS
 	{
 	public:
 		//! Destrutkor wirtualny
@@ -150,4 +151,4 @@ namespace hmdbServices
 	typedef utils::shared_ptr<const IMedicalBasicUpdatesWS> MedicalBasicUpdatesWSConstPtr;
 }
 
-#endif	//	HEADER_GUARD___IBASICUPDATESWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_IBASICUPDATESWS_H__

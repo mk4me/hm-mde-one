@@ -6,15 +6,16 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___ACCOUNTFACTORYWS_H__
-#define HEADER_GUARD___ACCOUNTFACTORYWS_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_ACCOUNTFACTORYWS_H__
+#define HEADER_GUARD__HMDBSERVICES_ACCOUNTFACTORYWS_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/IAccountFactoryWS.h>
 #include <networkUtils/IWSDLService.h>
 
 namespace hmdbServices{
 	//! Klasa tworząca konto po stronie bazy danych
-	class SingleAccountFactoryWS : public ISingleAccountFactoryWS
+	class HMDBSERVICES_EXPORT SingleAccountFactoryWS : public ISingleAccountFactoryWS
 	{
 	public:
 		SingleAccountFactoryWS(networkUtils::IWSDLServicePtr wsdlService);
@@ -32,7 +33,7 @@ namespace hmdbServices{
 	};
 
 	//! Klasa tworząca konto po stronie bazy danych (medycznej i ruchu)
-	class MultiAccountFactoryWS : public IMultiAccountFactoryWS
+	class HMDBSERVICES_EXPORT MultiAccountFactoryWS : public IMultiAccountFactoryWS
 	{
 	public:
 		MultiAccountFactoryWS(networkUtils::IWSDLServicePtr wsdlService);
@@ -64,4 +65,4 @@ namespace hmdbServices{
 	};
 }
 
-#endif	//	HEADER_GUARD___ACCOUNTFACTORYWS_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_ACCOUNTFACTORYWS_H__

@@ -6,15 +6,16 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___SHALLOWCOPYPARSER_H__
-#define HEADER_GUARD___SHALLOWCOPYPARSER_H__
+#ifndef HEADER_GUARD__HMDBSERVICES_SHALLOWCOPYPARSER_H__
+#define HEADER_GUARD__HMDBSERVICES_SHALLOWCOPYPARSER_H__
 
+#include <hmdbserviceslib/Export.h>
 #include <hmdbserviceslib/ShallowCopy.h>
 
 namespace hmdbServices
 {
 	//! Parser płytkiej kopi danych ruchu
-	class MotionShallowCopyParser
+	class HMDBSERVICES_EXPORT MotionShallowCopyParser
 	{
 	public:
 		//! \param path Ścieżka do pliku do przeparsowania
@@ -23,7 +24,7 @@ namespace hmdbServices
 	};
 
 	//! Parser płytkiej kopi danych medycznych
-	class MedicalShallowCopyParser
+	class HMDBSERVICES_EXPORT MedicalShallowCopyParser
 	{
 	public:
 		//! \param path Ścieżka do pliku do przeparsowania
@@ -32,4 +33,4 @@ namespace hmdbServices
 	};
 }
 
-#endif	//	HEADER_GUARD___SHALLOWCOPYPARSER_H__
+#endif	//	HEADER_GUARD__HMDBSERVICES_SHALLOWCOPYPARSER_H__

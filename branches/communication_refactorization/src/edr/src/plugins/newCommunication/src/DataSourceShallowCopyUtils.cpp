@@ -1,16 +1,16 @@
 #include "CommunicationPCH.h"
 #include "DataSourceShallowCopyUtils.h"
 
-#include <webserviceslib/ShallowCopyParser.h>
-#include <webserviceslib/MetadataParser.h>
+#include <hmdbserviceslib/ShallowCopyParser.h>
+#include <hmdbserviceslib/MetadataParser.h>
 
 using namespace communication;
 
 void DataSourceShallowCopyUtils::createShallowCopy(ShallowCopy & shallowCopy, const core::Filesystem::Path & motionShallowCopy,
-    const core::Filesystem::Path & motionMetadata, const core::Filesystem::Path & medicalShallowCopy,
-    const core::Filesystem::Path & medicalMetadata)
+	const core::Filesystem::Path & motionMetadata, const core::Filesystem::Path & medicalShallowCopy,
+	const core::Filesystem::Path & medicalMetadata)
 {
-	using namespace webservices;
+	using namespace hmdbServices;
 
 	ShallowCopy tmpShallowCopy;
 
@@ -19,17 +19,17 @@ void DataSourceShallowCopyUtils::createShallowCopy(ShallowCopy & shallowCopy, co
 	tmpShallowCopy.medicalShallowCopy.reset(new MedicalShallowCopy::ShallowCopy());
 
 	//parsujemy
-    MotionShallowCopyParser::parseFile(motionShallowCopy.string(), *(tmpShallowCopy.motionShallowCopy));
-    MedicalShallowCopyParser::parseFile(medicalShallowCopy.string(), *(tmpShallowCopy.medicalShallowCopy));
-    MotionMetadataParser::parseFile(motionMetadata.string(), tmpShallowCopy.motionMetaData);
-    MedicalMetadataParser::parseFile(medicalMetadata.string(), tmpShallowCopy.medicalMetaData);
+	MotionShallowCopyParser::parseFile(motionShallowCopy.string(), *(tmpShallowCopy.motionShallowCopy));
+	MedicalShallowCopyParser::parseFile(medicalShallowCopy.string(), *(tmpShallowCopy.medicalShallowCopy));
+	MotionMetadataParser::parseFile(motionMetadata.string(), tmpShallowCopy.motionMetaData);
+	MedicalMetadataParser::parseFile(medicalMetadata.string(), tmpShallowCopy.medicalMetaData);
 
 	//mamy teoretycznie wszystko - teraz próbuje połączyć obie bazy
 	auto subjectsITEnd = tmpShallowCopy.motionShallowCopy->performers.end();
 	auto patientsITEnd = tmpShallowCopy.medicalShallowCopy->patients.end();
-	for(auto patientIT = tmpShallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
+	for (auto patientIT = tmpShallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
 		auto subjectIT = tmpShallowCopy.motionShallowCopy->performers.find(patientIT->second->motionPerformerID);
-		if(subjectIT != subjectsITEnd){
+		if (subjectIT != subjectsITEnd){
 			patientIT->second->performer = subjectIT->second;
 			subjectIT->second->patient = patientIT->second;
 		}
@@ -41,12 +41,12 @@ void DataSourceShallowCopyUtils::createShallowCopy(ShallowCopy & shallowCopy, co
 
 bool DataSourceShallowCopyUtils::checkShallowCopyIntegrity(const ShallowCopy & shallowCopy)
 {
-    //TODO
-    //sprawdzać integralność danych w płytkiej kopii bazy danych
-    return true;
+	//TODO
+	//sprawdzać integralność danych w płytkiej kopii bazy danych
+	return true;
 }
 
-bool DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(const ShallowCopy & shallowCopy, webservices::DateTime & currentVersion)
+bool DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(const ShallowCopy & shallowCopy, hmdbServices::DateTime & currentVersion)
 {
 	return shallowCopy.motionShallowCopy->timestamp < currentVersion ? true : false;
 }

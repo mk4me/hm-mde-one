@@ -4,7 +4,7 @@
 #include <boost/utility.hpp>
 #include <kinematiclib/Joint.h>
 #include <kinematiclib/Skeleton.h>
-#include <utils/StreamData.h>
+#include <threadingUtils/StreamData.h>
 #include <utils/Debug.h>
 namespace kinematic
 {
@@ -130,9 +130,9 @@ namespace kinematic
 		std::vector<osg::Quat> rotations; //!< rotacje
 	};
 
-	typedef utils::StreamT<StreamSingleFrame> SkeletalFramesStream;
+	typedef threadingUtils::StreamT<StreamSingleFrame> SkeletalFramesStream;
 
-	typedef utils::StreamT<StreamSkeletonDataFrame> SkeletalDataStream;
+	typedef threadingUtils::StreamT<StreamSkeletonDataFrame> SkeletalDataStream;
 
 	typedef utils::shared_ptr<SkeletalDataStream> SkeletalDataStreamPtr;
 	typedef utils::shared_ptr<const SkeletalDataStream> SkeletalDataStreamConstPtr;

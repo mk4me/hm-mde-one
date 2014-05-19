@@ -9,12 +9,13 @@
 #ifndef HEADER_GUARD_THREADINGUTILS__RUNNABLE_H__
 #define HEADER_GUARD_THREADINGUTILS__RUNNABLE_H__
 
+#include <threadingUtils/Export.h>
 #include <utils/SmartPtr.h>
 #include <boost/function.hpp>
 
 namespace threadingUtils {
 	//! Interfejs obiektu realizuj�cego przetwarzanie w w�tkach
-	class IRunnable
+	class THREADINGUTILS_EXPORT IRunnable
 	{
 	public:
 		//! Wirtualny destruktor
@@ -26,7 +27,7 @@ namespace threadingUtils {
 	DEFINE_SMART_POINTERS(IRunnable);
 
 	//! Klasa implementująca interfejs Runnable w oparciu o funktor
-	class FunctorRunnable : public IRunnable
+	class THREADINGUTILS_EXPORT FunctorRunnable : public IRunnable
 	{
 	public:
 		//! Typ funktora bezargumentowego

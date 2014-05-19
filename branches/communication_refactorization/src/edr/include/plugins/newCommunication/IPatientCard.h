@@ -1,17 +1,17 @@
 /********************************************************************
-    created:  2012/03/09
-    created:  9:3:2012   11:31
-    filename: IPatientCard.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2012/03/09
+	created:  9:3:2012   11:31
+	filename: IPatientCard.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___IPATIENTCARD_H__
 #define HEADER_GUARD___IPATIENTCARD_H__
 
 #include <QtGui/QWidget>
 #include <QtGui/QPixmap>
-#include <webserviceslib/ShallowCopy.h>
+#include <hmdbserviceslib/ShallowCopy.h>
 #include <plugins/newCommunication/IDataSourceUserData.h>
 
 namespace communication
@@ -32,8 +32,8 @@ namespace communication
 		//! \param subject Subject którego sesje będziemy czytać
 		//! \param photo Zdjęcie pacjenta
 		//! \param userData Dane użytkownika (na potrzeby notatek!!)
-		virtual void setPatient(const webservices::MedicalShallowCopy::Patient * patient = nullptr,
-			const webservices::MotionShallowCopy::Performer * subject = nullptr,
+		virtual void setPatient(const hmdbServices::MedicalShallowCopy::Patient * patient = nullptr,
+			const hmdbServices::MotionShallowCopy::Performer * subject = nullptr,
 			const QPixmap & photo = QPixmap(), const IUserData & userData = IUserData()) = 0;
 	};
 }
