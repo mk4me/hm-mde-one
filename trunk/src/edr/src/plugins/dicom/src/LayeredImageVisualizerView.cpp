@@ -37,7 +37,7 @@ lastView(nullptr)
 	ui->treeView->setItemDelegateForColumn(1, adnotationDelegate1);
 
 	ui->treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
-	ui->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	connect(model, SIGNAL(changeSelection(const QModelIndex&)), this, SLOT(changeSelection(const QModelIndex &)));
 	connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
