@@ -90,6 +90,11 @@ public:
 	virtual const int trialID(const std::string & name) const = 0;
 	//! \return ID wszystkich triali
 	virtual const std::set<int> trialsIDs() const = 0;
+	//! ściąga wszystkie pliki, które są dostępne dla użytkownika
+	virtual void downloadAllFiles() = 0;
+	//! wypakowuje ściągniete dane do podanego miejsca
+	//! \param outputDir istniejący folder wyjściowy
+	virtual void extractDataFromLocalStorage(const core::Filesystem::Path& outputDir) = 0;
 };
 DEFINE_SMART_POINTERS(ICommunicationDataSource);
 

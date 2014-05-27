@@ -16,7 +16,7 @@
 #include <corelib/AbstractSerie.h>
 #include <plugins/dicom/ILayeredImage.h>
 #include "LayeredSerie.h"
-#include "Adnotations.h"
+#include <plugins/dicom/Annotations.h>
 #include <webserviceslib/Entity.h>
 
 class QLabel;

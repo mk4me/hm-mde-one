@@ -13,6 +13,7 @@
 #include <utils/SmartPtr.h>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <vector>
 
 class QPainter;
 class QRect;
@@ -66,6 +67,8 @@ public:
 	virtual QGraphicsItem* getItem() = 0;
 
 	virtual ILayerGraphicItem* clone() const = 0;
+
+	virtual std::vector<QPointF> getPointsCloud(int density = 0) const = 0;
 };
 DEFINE_SMART_POINTERS(ILayerGraphicItem);
 

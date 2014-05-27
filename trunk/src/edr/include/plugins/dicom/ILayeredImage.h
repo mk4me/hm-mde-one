@@ -55,8 +55,11 @@ public:
     virtual ILayeredImage* clone() const = 0;
 };
 DEFINE_SMART_POINTERS(ILayeredImage);
+typedef std::vector<dicom::ILayerItemPtr> LayersVector;
+DEFINE_SMART_POINTERS(LayersVector);
 }
 
 DEFINE_WRAPPER(dicom::ILayeredImage, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(dicom::LayersVector, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
 
 #endif

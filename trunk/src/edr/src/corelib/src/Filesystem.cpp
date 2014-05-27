@@ -225,6 +225,51 @@ std::vector<Filesystem::Path> Filesystem::listFiles(const Path& path, bool recur
 	return files;
 }
 
+std::vector<std::string> Filesystem::listFilteredFiles(const std::string& path, bool recursive, boost::function<bool(const std::string&)> filter)
+{
+	auto _filter = [&](const Path& p) {
+		return filter(p.string());
+	};
+
+	auto pathFiles = listFilteredFiles(Path(path), recursive, _filter);
+	std::vector<std::string> files;
+	for (auto it = pathFiles.begin(); it != pathFiles.end(); ++it) {
+		files.push_back(it->string());
+	}
+
+	return files;
+}
+
+std::vector<Filesystem::Path> Filesystem::listFilteredFiles(const Path& path, bool recursive, boost::function<bool(const Filesystem::Path&)> filter)
+{
+
+	std::vector<Path> files;
+
+	if (pathExists(path) == true)
+	{
+		if (recursive)
+		{
+			std::vector<Path> dirs = listSubdirectories(path);
+			BOOST_FOREACH(Path& dir, dirs)
+			{
+				std::vector<Path> subfiles = listFilteredFiles(dir, recursive, filter);
+				BOOST_FOREACH(Path& file, subfiles)
+				{
+					files.push_back(file);
+				}
+			}
+		}
+		Iterator end;
+		for (Iterator iter(path); iter != end; ++iter)
+		{
+			if (isDirectory(iter->path()) == false && filter(iter->path()))	{
+				files.push_back(iter->path());
+			}
+		}
+	}
+	return files;
+}
+
 std::vector<std::string> Filesystem::listSubdirectories(const std::string& path)
 {
     auto subdirs = listSubdirectories(Path(path));

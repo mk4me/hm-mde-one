@@ -12,7 +12,7 @@
 #include "BackgroundLayer.h"
 #include "LayeredSerie.h"
 #include "PointsLayer.h"
-#include "Adnotations.h"
+#include <plugins/dicom/Annotations.h>
 
 
 using namespace dicom;

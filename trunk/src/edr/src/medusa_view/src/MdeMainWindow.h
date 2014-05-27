@@ -61,6 +61,9 @@ Q_SIGNALS:
     void tabAdded(coreUI::IMdeTabPtr tab);
     void activateTab(coreUI::IMdeTabPtr tab);
 
+private Q_SLOTS:
+	void showMedusaExporterDialog();
+
 private:	
 	virtual void initializeSplashScreen(QSplashScreen * splashScreen);
 	virtual void customViewInit(QWidget * console);

@@ -1,7 +1,7 @@
 #include "DicomPCH.h"
 #include <QtGui/QPixmap>
 #include "LayeredModelView.h"
-#include "Adnotations.h"
+#include <plugins/dicom/Annotations.h>
 #include <QtGui/QFont>
 #include "PointsLayer.h"
 #include "LayeredImageVisualizer.h"
@@ -95,55 +95,55 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 
 					switch(aidx) {
 
-					case adnotations::bloodLevel:
+					case annotations::bloodLevel:
 						{
 							auto bil = utils::dynamic_pointer_cast<const BloodLevelLayer>(itm);
 							if(bil != nullptr){
 
-								auto blt = adnotations::instanceBloodLevels();
+								auto blt = annotations::instanceBloodLevels();
 								return blt->left.at(bil->value());								
 							}
 						}
 						break;
 
-					case adnotations::inflammatoryLevel:
+					case annotations::inflammatoryLevel:
 						{
 							auto ail = utils::dynamic_pointer_cast<const InflammatoryLevelLayer>(itm);
 							if(ail != nullptr){
 
-								auto alt = adnotations::instanceInflammatoryLevels();
+								auto alt = annotations::instanceInflammatoryLevels();
 								return alt->left.at(ail->value());
 							}
 						}
 						break;
 
-					case adnotations::fingerType:
+					case annotations::fingerType:
 						{
 							auto fil = utils::dynamic_pointer_cast<const FingerTypeLayer>(itm);
 							if(fil != nullptr){
 
-								auto flt = adnotations::instanceFingerTypes();
+								auto flt = annotations::instanceFingerTypes();
 								return flt->left.at(fil->value());
 							}
 						}
 						break;
 
-					case adnotations::jointType:
+					case annotations::jointType:
 						{
 							auto jil = utils::dynamic_pointer_cast<const JointTypeLayer>(itm);
 							if(jil != nullptr){
 
-								auto jlt = adnotations::instanceJointTypes();
+								auto jlt = annotations::instanceJointTypes();
 								return jlt->left.at(jil->value());
 							}
 						}
 						break;
 
-					case adnotations::imageType:
+					case annotations::imageType:
 						{
 							auto jil = utils::dynamic_pointer_cast<const ImageQualityLayer>(itm);
 							if(jil != nullptr){
-								auto jlt = adnotations::instanceImageTypes();
+								auto jlt = annotations::instanceImageTypes();
 								return jlt->left.at(jil->value());
 							}
 						}
@@ -151,8 +151,8 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 
 					default:
 						{
-							adnotations::AdnotationsTypePtr adn = adnotations::instance();
-							auto it = adn->left.find(static_cast<adnotations::annotationsIdx>(aidx));
+							annotations::AdnotationsTypePtr adn = annotations::instance();
+							auto it = adn->left.find(static_cast<annotations::annotationsIdx>(aidx));
 							if (it != adn->left.end()) {
 								return it->second;
 							}
@@ -222,75 +222,75 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 
 					switch(aidx) {
 
-					case adnotations::bloodLevel:
+					case annotations::bloodLevel:
 						{
 							auto bil = utils::dynamic_pointer_cast<BloodLevelLayer>(il);
 							if(bil != nullptr){
 
 								int val = value.toInt();
-								bil->setValue((dicom::adnotations::bloodLevelDescriptor)val);
+								bil->setValue((dicom::annotations::bloodLevelDescriptor)val);
 
-								auto blt = adnotations::instanceBloodLevels();
+								auto blt = annotations::instanceBloodLevels();
 								QString result = blt->left.at(bil->value());
 								Q_EMIT editCompleted( result );
 							}
 						}
 						break;
 
-					case adnotations::inflammatoryLevel:
+					case annotations::inflammatoryLevel:
 						{
 							auto ail = utils::dynamic_pointer_cast<InflammatoryLevelLayer>(il);
 							if(ail != nullptr){
 
 								int val = value.toInt();
-								ail->setValue((dicom::adnotations::inflammatoryLevelDescriptor)val);
+								ail->setValue((dicom::annotations::inflammatoryLevelDescriptor)val);
 
-								auto alt = adnotations::instanceInflammatoryLevels();
+								auto alt = annotations::instanceInflammatoryLevels();
 								QString result = alt->left.at(ail->value());
 								Q_EMIT editCompleted( result );
 							}
 						}
 						break;
 
-					case adnotations::fingerType:
+					case annotations::fingerType:
 						{
 							auto fil = utils::dynamic_pointer_cast<FingerTypeLayer>(il);
 							if(fil != nullptr){
 
 								int val = value.toInt();
-								fil->setValue((dicom::adnotations::fingerTypeDescriptor)val);
+								fil->setValue((dicom::annotations::fingerTypeDescriptor)val);
 
-								auto flt = adnotations::instanceFingerTypes();
+								auto flt = annotations::instanceFingerTypes();
 								QString result = flt->left.at(fil->value());
 								Q_EMIT editCompleted( result );
 							}
 						}
 						break;
 
-					case adnotations::jointType:
+					case annotations::jointType:
 						{
 							auto jil = utils::dynamic_pointer_cast<JointTypeLayer>(il);
 							if(jil != nullptr){
 
 								int val = value.toInt();
-								jil->setValue((dicom::adnotations::jointTypeDescriptor)val);
+								jil->setValue((dicom::annotations::jointTypeDescriptor)val);
 
-								auto jlt = adnotations::instanceJointTypes();
+								auto jlt = annotations::instanceJointTypes();
 								QString result = jlt->left.at(jil->value());
 								Q_EMIT editCompleted( result );
 							}
 						}
 						break;
 
-					case adnotations::imageType:
+					case annotations::imageType:
 						{
 							auto jil = utils::dynamic_pointer_cast<ImageQualityLayer>(il);
 							if(jil != nullptr){
 
 								int val = value.toInt();
-								jil->setValue((dicom::adnotations::imageTypeDescriptor)val);
+								jil->setValue((dicom::annotations::imageTypeDescriptor)val);
 
-								auto jlt = adnotations::instanceImageTypes();
+								auto jlt = annotations::instanceImageTypes();
 								QString result = jlt->left.at(jil->value());
 								Q_EMIT editCompleted( result );
 							}
@@ -483,7 +483,7 @@ dicom::LayeredModelView::Expands dicom::LayeredModelView::getExpands() const
 
 QPixmap dicom::LayeredModelView::getItemColorPixmap( ILayerItemConstPtr itm ) const
 {
-    return DrawersBuilder::getColorPixmap(static_cast<adnotations::annotationsIdx>(itm->getAdnotationIdx()));
+    return DrawersBuilder::getColorPixmap(static_cast<annotations::annotationsIdx>(itm->getAdnotationIdx()));
 }
 
 //! [quoting mymodel_f]

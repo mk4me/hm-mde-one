@@ -28,6 +28,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
 #include <corelib/Version.h>
+#include <plugins/medusaExporter/IMedusaExporterService.h>
 
 using namespace core;
 
@@ -55,6 +56,8 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
     contextEventFilter = ContextEventFilterPtr(new ContextEventFilter(this));
     analysisModel = AnalisisModelPtr(new AnalisisModel());
 	ui->versionLabel->setText(QString("ver. %1").arg(Version::formatedVersion().c_str()));
+
+	connect(ui->medusaExporterButton, SIGNAL(clicked()), this, SLOT(showMedusaExporterDialog()));
 }
 
 MdeMainWindow::~MdeMainWindow()
@@ -273,5 +276,13 @@ void MdeMainWindow::closeEvent(QCloseEvent* event)
 		}
 	}else{
 		coreUI::CoreMainWindow::closeEvent(event);
+	}
+}
+
+void MdeMainWindow::showMedusaExporterDialog()
+{
+	auto exporter = core::queryService<medusaExporter::IMedusaExporterService>(plugin::getServiceManager());
+	if (exporter) {
+		exporter->getExporterDialog()->show();
 	}
 }

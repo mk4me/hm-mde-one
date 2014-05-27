@@ -12,7 +12,7 @@
 #include "BackgroundLayer.h"
 #include "LayeredSerie.h"
 #include "PointsLayer.h"
-#include "Adnotations.h"
+#include <plugins/dicom/Annotations.h>
 #include "LayeredImageVisualizer.h"
 
 
@@ -95,7 +95,7 @@ private:
 }
 
 
-dicom::PointsState::PointsState( LayeredStateMachine* machine, bool curved, bool openLine, adnotations::annotationsIdx adnotationIdx ) :
+dicom::PointsState::PointsState( LayeredStateMachine* machine, bool curved, bool openLine, annotations::annotationsIdx adnotationIdx ) :
     coreUI::AbstractState(machine),
     machine(machine),
     possibleMove(false),

@@ -425,9 +425,9 @@ const bool dicom::LayeredImageVisualizer::verifyImflamatoryLevel() const
 
 	for(int i = 0; i < s; ++i){
 		auto l = image->getLayerItem(currentLayerUser_, i);
-		if(l->getAdnotationIdx() == dicom::adnotations::inflammatoryLevel){
+		if(l->getAdnotationIdx() == dicom::annotations::inflammatoryLevel){
 			auto il = utils::dynamic_pointer_cast<const InflammatoryLevelLayer>(l);
-			return il->value() != dicom::adnotations::unknownInflammatoryLevel;
+			return il->value() != dicom::annotations::unknownInflammatoryLevel;
 		}
 	}
 
@@ -448,9 +448,9 @@ const bool dicom::LayeredImageVisualizer::verifyBloodLevel() const
 
 	for(int i = 0; i < s; ++i){
 		auto l = image->getLayerItem(currentLayerUser_, i);
-		if(l->getAdnotationIdx() == dicom::adnotations::bloodLevel){
+		if(l->getAdnotationIdx() == dicom::annotations::bloodLevel){
 			auto bl = utils::dynamic_pointer_cast<const BloodLevelLayer>(l);
-			return bl->value() != dicom::adnotations::unknownBloodLevel;
+			return bl->value() != dicom::annotations::unknownBloodLevel;
 		}
 	}
 
@@ -467,9 +467,9 @@ const bool dicom::LayeredImageVisualizer::verifyJointType() const
 
 	for(int i = 0; i < s; ++i){
 		auto l = image->getLayerItem(currentLayerUser_, i);
-		if(l->getAdnotationIdx() == dicom::adnotations::jointType){
+		if(l->getAdnotationIdx() == dicom::annotations::jointType){
 			auto jt = utils::dynamic_pointer_cast<const JointTypeLayer>(l);
-			return jt->value() != dicom::adnotations::unknownJoint;
+			return jt->value() != dicom::annotations::unknownJoint;
 		}
 	}
 
@@ -486,9 +486,9 @@ const bool dicom::LayeredImageVisualizer::verifyFingerType() const
 
 	for(int i = 0; i < s; ++i){
 		auto l = image->getLayerItem(currentLayerUser_, i);
-		if(l->getAdnotationIdx() == dicom::adnotations::fingerType){
+		if(l->getAdnotationIdx() == dicom::annotations::fingerType){
 			auto ft = utils::dynamic_pointer_cast<const FingerTypeLayer>(l);
-			return ft->value() != dicom::adnotations::unknownFinger;
+			return ft->value() != dicom::annotations::unknownFinger;
 		}
 	}
 

@@ -1,8 +1,9 @@
 #include "DicomPCH.h"
-#include "Adnotations.h"
+#include <plugins/dicom/Annotations.h>
 #include <boost/serialization/shared_ptr.hpp>
+#include "qstring_serialization.h"
 
-dicom::adnotations::BloodLevelsTypePtr dicom::adnotations::getDefaultBloodLevels()
+dicom::annotations::BloodLevelsTypePtr dicom::annotations::getDefaultBloodLevels()
 {
 	BloodLevelsTypePtr adn = utils::make_shared<BloodLevelsType>();
 	adn->insert(BloodLevelsType::value_type(unknownBloodLevel, QObject::tr("unknown blood level"))); 
@@ -13,12 +14,12 @@ dicom::adnotations::BloodLevelsTypePtr dicom::adnotations::getDefaultBloodLevels
 	return adn;
 }
 
-dicom::adnotations::BloodLevelsTypePtr dicom::adnotations::instanceBloodLevels()
+dicom::annotations::BloodLevelsTypePtr dicom::annotations::instanceBloodLevels()
 {
 	return getDefaultBloodLevels();
 }
 
-dicom::adnotations::InflammatoryLevelsTypePtr dicom::adnotations::getDefaultInflammatoryLevels()
+dicom::annotations::InflammatoryLevelsTypePtr dicom::annotations::getDefaultInflammatoryLevels()
 {
 	InflammatoryLevelsTypePtr adn = utils::make_shared<InflammatoryLevelsType>();
 	adn->insert(InflammatoryLevelsType::value_type(unknownInflammatoryLevel, QObject::tr("unknown inflammatory level"))); 
@@ -30,12 +31,12 @@ dicom::adnotations::InflammatoryLevelsTypePtr dicom::adnotations::getDefaultInfl
 	return adn;
 }
 
-dicom::adnotations::InflammatoryLevelsTypePtr dicom::adnotations::instanceInflammatoryLevels()
+dicom::annotations::InflammatoryLevelsTypePtr dicom::annotations::instanceInflammatoryLevels()
 {
 	return getDefaultInflammatoryLevels();
 }
 
-dicom::adnotations::FingerTypePtr dicom::adnotations::getDefaultFingerTypes()
+dicom::annotations::FingerTypePtr dicom::annotations::getDefaultFingerTypes()
 {
 	FingerTypePtr adn = utils::make_shared<FingerType>();
 	adn->insert(FingerType::value_type(unknownFinger, QObject::tr("unknown finger"))); 
@@ -48,12 +49,12 @@ dicom::adnotations::FingerTypePtr dicom::adnotations::getDefaultFingerTypes()
 	return adn;
 }
 
-dicom::adnotations::FingerTypePtr dicom::adnotations::instanceFingerTypes()
+dicom::annotations::FingerTypePtr dicom::annotations::instanceFingerTypes()
 {
 	return getDefaultFingerTypes();
 }
 
-dicom::adnotations::JointTypePtr dicom::adnotations::getDefaultJointTypes()
+dicom::annotations::JointTypePtr dicom::annotations::getDefaultJointTypes()
 {
 	JointTypePtr adn = utils::make_shared<JointType>();
 	adn->insert(JointType::value_type(unknownJoint, QObject::tr("unknown joint"))); 
@@ -65,12 +66,12 @@ dicom::adnotations::JointTypePtr dicom::adnotations::getDefaultJointTypes()
 	return adn;
 }
 
-dicom::adnotations::JointTypePtr dicom::adnotations::instanceJointTypes()
+dicom::annotations::JointTypePtr dicom::annotations::instanceJointTypes()
 {
 	return getDefaultJointTypes();
 }
 
-dicom::adnotations::ImageTypePtr dicom::adnotations::getDefaultImageTypes()
+dicom::annotations::ImageTypePtr dicom::annotations::getDefaultImageTypes()
 {
 	ImageTypePtr adn = utils::make_shared<ImageType>();
 	adn->insert(ImageType::value_type(incorrect, QObject::tr("incorrect")));	
@@ -80,12 +81,12 @@ dicom::adnotations::ImageTypePtr dicom::adnotations::getDefaultImageTypes()
 	return adn;
 }
 
-dicom::adnotations::ImageTypePtr dicom::adnotations::instanceImageTypes()
+dicom::annotations::ImageTypePtr dicom::annotations::instanceImageTypes()
 {
 	return getDefaultImageTypes();
 }
 
-dicom::adnotations::AdnotationsTypePtr dicom::adnotations::getDefault()
+dicom::annotations::AdnotationsTypePtr dicom::annotations::getDefault()
 {
     AdnotationsTypePtr adn = utils::make_shared<AdnotationsType>();
     adn->insert(AdnotationsType::value_type(unknownAnnotation, QObject::tr("unknown annotation"))); 
@@ -106,7 +107,7 @@ dicom::adnotations::AdnotationsTypePtr dicom::adnotations::getDefault()
     return adn;
 }
 
-dicom::adnotations::AdnotationsTypePtr dicom::adnotations::load( const core::Filesystem::Path& p )
+dicom::annotations::AdnotationsTypePtr dicom::annotations::load( const core::Filesystem::Path& p )
 {
     AdnotationsTypePtr adnotations;
     std::ifstream ifs(p.c_str());
@@ -120,7 +121,7 @@ dicom::adnotations::AdnotationsTypePtr dicom::adnotations::load( const core::Fil
     return adnotations;
 }
 
-void dicom::adnotations::save( const core::Filesystem::Path& p, AdnotationsTypeConstPtr adnotations )
+void dicom::annotations::save( const core::Filesystem::Path& p, AdnotationsTypeConstPtr adnotations )
 {
     std::ofstream ofs(p.c_str());
     if(ofs.good()) {
@@ -130,27 +131,28 @@ void dicom::adnotations::save( const core::Filesystem::Path& p, AdnotationsTypeC
     }
 }
 
-dicom::adnotations::AdnotationsTypePtr dicom::adnotations::instance()
+dicom::annotations::AdnotationsTypePtr dicom::annotations::instance()
 {
-    static adnotations::AdnotationsTypePtr adn;
+	static annotations::AdnotationsTypePtr adn;
 
-    if (!adn) {
-        adn = adnotations::load(adnotationsFile());
-        if (!adn) {
-            adn = adnotations::getDefault();
-        }
-    }
+	if (!adn) {
+		adn = annotations::load(adnotationsFile());
+		if (!adn) {
+			adn = annotations::getDefault();
+		}
+	}
 
-    return adn;
+	return adn;
 
 }
 
-void dicom::adnotations::autoSave()
+void dicom::annotations::autoSave()
 {
     save(adnotationsFile(), instance());
 }
 
-core::Filesystem::Path dicom::adnotations::adnotationsFile()
+core::Filesystem::Path dicom::annotations::adnotationsFile()
 {
     return plugin::getUserApplicationDataPath("DicomAdnotations.xml");
 }
+

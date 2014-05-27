@@ -15,14 +15,15 @@
 #include <QtGui/QPainterPath>
 #include <QtGui/QGraphicsPathItem>
 #include <qwt_spline.h>
-
+#include <plugins/dicom/ValueLayer.h>
 
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/string.hpp>
 #include "qstring_serialization.h"
 #include "Serializers.h"
-#include "Adnotations.h"
+#include <plugins/dicom/Annotations.h>
+#include "boost/lexical_cast.hpp"
 
 namespace dicom {
 
@@ -36,7 +37,7 @@ namespace dicom {
         virtual QBrush getLineBrush(bool editable) = 0;
         //virtual QPen getPointPen() = 0;
         virtual QString methodName() = 0;
-        virtual QPainterPath createPath(const QVector<QGraphicsItem*>& points) = 0;
+        virtual QPainterPath createPath(const QVector<QGraphicsItem*>& points, int density = -1) = 0;
         virtual QGraphicsItem* createPoint() = 0;
         virtual IPointsDrawer* clone() const = 0;
     };
@@ -45,11 +46,11 @@ namespace dicom {
     class DrawersBuilder 
     {
     public:
-        static IPointsDrawerPtr createDrawer(adnotations::annotationsIdx annotationIdx);
-        static std::pair<QColor, QColor> getColors(adnotations::annotationsIdx annotationIdx);
-        static bool isOpenLine(adnotations::annotationsIdx annotationIdx);
-        static bool isCurved(adnotations::annotationsIdx annotationIdx);
-        static QPixmap getColorPixmap(adnotations::annotationsIdx annotationIdx);
+        static IPointsDrawerPtr createDrawer(annotations::annotationsIdx annotationIdx);
+        static std::pair<QColor, QColor> getColors(annotations::annotationsIdx annotationIdx);
+        static bool isOpenLine(annotations::annotationsIdx annotationIdx);
+        static bool isCurved(annotations::annotationsIdx annotationIdx);
+        static QPixmap getColorPixmap(annotations::annotationsIdx annotationIdx);
     };
 
     class CurveDrawer : public IPointsDrawer 
@@ -58,7 +59,7 @@ namespace dicom {
         CurveDrawer(bool openLine, const QColor& color, const QColor& colorEdit);
         QPen getLinePen(bool editable);
         QString methodName();
-        QPainterPath createPath(const QVector<QGraphicsItem*>& points);
+		QPainterPath createPath(const QVector<QGraphicsItem*>& points, int density = -1);
         QGraphicsItem* createPoint();
 
         virtual QBrush getLineBrush( bool editable );
@@ -75,7 +76,7 @@ namespace dicom {
         PolyDrawer(bool openLine, const QColor& color, const QColor& colorEdit);
         QPen getLinePen(bool editable);
         QString methodName();
-        QPainterPath createPath(const QVector<QGraphicsItem*>& points);
+        QPainterPath createPath(const QVector<QGraphicsItem*>& points, int density = -1);
         QGraphicsItem* createPoint();
 
         virtual QBrush getLineBrush( bool editable );
@@ -156,13 +157,7 @@ namespace dicom {
             ar & BOOST_SERIALIZATION_NVP(name);
             QString method;
             ar & BOOST_SERIALIZATION_NVP(method);
-            // TODO: jesli dojdzie drawerow to koniecznie trzeba wprowadzic fabryke.
-            /*if (method == "Curve") {
-                pointsDrawer = utils::make_shared<CurveDrawer>();
-            } else if (method == "Polygon") {
-                pointsDrawer = utils::make_shared<PolyDrawer>();
-            }*/
-            pointsDrawer = DrawersBuilder::createDrawer(static_cast<adnotations::annotationsIdx>(getAdnotationIdx()));
+            pointsDrawer = DrawersBuilder::createDrawer(static_cast<annotations::annotationsIdx>(getAdnotationIdx()));
             pathItem->setPen(pointsDrawer->getLinePen(false));
 
             for (auto it = rawPoints.begin(); it != rawPoints.end(); ++it) {
@@ -173,18 +168,20 @@ namespace dicom {
 
         BOOST_SERIALIZATION_SPLIT_MEMBER();
 
+		virtual std::vector<QPointF> getPointsCloud(int density = 0) const;
+
 
     };
     DEFINE_SMART_POINTERS(PointsLayer);
 
 	template<typename T>
-	class ValueLayer : public ILayerItem
+	class ValueLayer : public IValueLayer
 	{
 	public:
-		ValueLayer(const int annotationIDX = -1) : ILayerItem(annotationIDX), value_(T()), selected(false) {}
-		ValueLayer(const int annotationIDX, const T & val) : ILayerItem(annotationIDX),value_(val), selected(false) {}
+		ValueLayer(const int annotationIDX = -1) : IValueLayer(annotationIDX), value_(T()), selected(false) {}
+		ValueLayer(const int annotationIDX, const T & val) : IValueLayer(annotationIDX), value_(val), selected(false) {}
 		ValueLayer(const ValueLayer & other)
-			: ILayerItem(other.getAdnotationIdx()),
+			: IValueLayer(other.getAdnotationIdx()),
 			value_(other.value_), name(other.getName()),
 			selected(false) {}
 
@@ -227,13 +224,19 @@ namespace dicom {
         }
 
         BOOST_SERIALIZATION_SPLIT_MEMBER();
+
+		virtual std::string valueAsString() const
+		{
+			return annotations::annotationValueAsString<T>(value_).toStdString();
+		}
+
 	};
 
-	typedef ValueLayer<dicom::adnotations::bloodLevelDescriptor> BloodLevelLayer;
-	typedef ValueLayer<dicom::adnotations::inflammatoryLevelDescriptor> InflammatoryLevelLayer;
-	typedef ValueLayer<dicom::adnotations::fingerTypeDescriptor> FingerTypeLayer;
-	typedef ValueLayer<dicom::adnotations::jointTypeDescriptor> JointTypeLayer;
-	typedef ValueLayer<dicom::adnotations::imageTypeDescriptor> ImageQualityLayer;
+	typedef ValueLayer<dicom::annotations::bloodLevelDescriptor> BloodLevelLayer;
+	typedef ValueLayer<dicom::annotations::inflammatoryLevelDescriptor> InflammatoryLevelLayer;
+	typedef ValueLayer<dicom::annotations::fingerTypeDescriptor> FingerTypeLayer;
+	typedef ValueLayer<dicom::annotations::jointTypeDescriptor> JointTypeLayer;
+	typedef ValueLayer<dicom::annotations::imageTypeDescriptor> ImageQualityLayer;
 
 	DEFINE_SMART_POINTERS(BloodLevelLayer);
 	DEFINE_SMART_POINTERS(InflammatoryLevelLayer);

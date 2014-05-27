@@ -21,7 +21,7 @@ MedusaExporterService::~MedusaExporterService()
 
 QWidget* MedusaExporterService::getWidget()
 {
-	return exportWidget;
+	return nullptr;
 }
 
 QWidgetList MedusaExporterService::getPropertiesWidgets()
@@ -51,6 +51,13 @@ void MedusaExporterService::update(double time)
 void MedusaExporterService::init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager)
 {
 	this->memoryManager = memoryDataManager;
+	exporterModel = utils::make_shared<ExporterModel>(fileDataManager, this->memoryManager);
+	exportWidget->setExporter(exporterModel);
+}
+
+QWidget* medusaExporter::MedusaExporterService::getExporterDialog()
+{
+	return exportWidget;
 }
 
 

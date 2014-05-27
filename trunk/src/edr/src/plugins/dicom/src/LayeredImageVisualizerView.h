@@ -16,7 +16,7 @@
 #include "LayeredModelView.h"
 #include "LayeredStateMachine.h"
 #include <coreui/CoreAction.h>
-#include "AdnotationsDelegate.h"
+#include "AnnotationsDelegate.h"
 #include "IDicomService.h"
 
 class QGraphicsScene;

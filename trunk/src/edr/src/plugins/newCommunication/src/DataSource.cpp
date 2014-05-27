@@ -507,25 +507,58 @@ bool CommunicationDataSource::copyData(QIODevice &inFile, QIODevice &outFile)
 	return true;
 }
 
+
+
 void CommunicationDataSource::extractDataFromLocalStorageToUserSpace()
+{
+	std::vector<core::Filesystem::Path> extractedFiles;
+
+	auto sessionsItEnd = fullShallowCopy.motionShallowCopy->sessions.end();
+	for (auto sessionIT = fullShallowCopy.motionShallowCopy->sessions.begin(); sessionIT != sessionsItEnd; ++sessionIT){
+		try{
+			core::Filesystem::createDirectory(pathsManager->sessionPath(sessionIT->second->sessionName));
+			auto filesItEnd = sessionIT->second->files.end();
+			for (auto fileIT = sessionIT->second->files.begin(); fileIT != filesItEnd; ++fileIT){
+				extractFileFromLocalStorageToUserSpace(fileIT->second, sessionIT->second->sessionName);
+			}
+
+			auto motionsItEnd = sessionIT->second->trials.end();
+			for (auto motionIT = sessionIT->second->trials.begin(); motionIT != motionsItEnd; ++motionIT){
+
+				auto filesItEnd = motionIT->second->files.end();
+				for (auto fileIT = motionIT->second->files.begin(); fileIT != filesItEnd; ++fileIT){
+					extractFileFromLocalStorageToUserSpace(fileIT->second, sessionIT->second->sessionName);
+				}
+			}
+		}
+		catch (...){
+
+		}
+	}
+}
+
+void CommunicationDataSource::extractDataFromLocalStorage(const core::Filesystem::Path& outputDir)
 {
     std::vector<core::Filesystem::Path> extractedFiles;
 
     auto sessionsItEnd = fullShallowCopy.motionShallowCopy->sessions.end();
     for(auto sessionIT = fullShallowCopy.motionShallowCopy->sessions.begin(); sessionIT != sessionsItEnd; ++sessionIT){
         try{
-            core::Filesystem::createDirectory(pathsManager->sessionPath(sessionIT->second->sessionName));
+			auto sessionDir = outputDir / sessionIT->second->sessionName;
+            core::Filesystem::createDirectory(sessionDir);
             auto filesItEnd = sessionIT->second->files.end();
             for(auto fileIT = sessionIT->second->files.begin(); fileIT != filesItEnd; ++fileIT){
-                extractFileFromLocalStorageToUserSpace(fileIT->second, sessionIT->second->sessionName);
+				auto fileName = fileIT->second->fileName;
+                localStorage->extractFile(fileName, sessionDir / fileName);
             }
 
             auto motionsItEnd = sessionIT->second->trials.end();
             for(auto motionIT = sessionIT->second->trials.begin(); motionIT != motionsItEnd; ++motionIT){
 
                 auto filesItEnd = motionIT->second->files.end();
-                for(auto fileIT = motionIT->second->files.begin(); fileIT != filesItEnd; ++fileIT){
-                    extractFileFromLocalStorageToUserSpace(fileIT->second, sessionIT->second->sessionName);
+				for (auto fileIT = motionIT->second->files.begin(); fileIT != filesItEnd; ++fileIT){
+					auto fileName = fileIT->second->fileName;
+					localStorage->extractFile(fileName, sessionDir / fileName);
                 }
             }
         }catch(...){
@@ -533,6 +566,7 @@ void CommunicationDataSource::extractDataFromLocalStorageToUserSpace()
         }
     }
 }
+
 
 void CommunicationDataSource::extractFileFromLocalStorageToUserSpace(const webservices::MotionShallowCopy::File * file, const std::string & sessionName)
 {
@@ -1244,4 +1278,13 @@ const std::set<int> CommunicationDataSource::trialsIDs() const
 	}
 
 	return ret;
+}
+
+void CommunicationDataSource::downloadAllFiles()
+{
+	auto& files = fullShallowCopy.motionShallowCopy->files;
+	for (auto it = files.begin(); it != files.end(); ++it) {
+		dataSourceWidget->filesToDownload.insert(it->second->fileID);
+	}
+	dataSourceWidget->onDownload();
 }

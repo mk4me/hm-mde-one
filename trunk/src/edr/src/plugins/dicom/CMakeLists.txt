@@ -1,18 +1,19 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS (
-	#Export.h
-	#Dicom.h
+	Export.h
+	Dicom.h
 	ILayer.h
 	ILayeredImage.h
-	#IDicomInternalStruct.h
+	IDicomInternalStruct.h
+	Annotations.h
+	ValueLayer.h
 )
 
 SET_PRIVATE_HEADERS (
 	MessageDialog.h
 	IDicomService.h
-	AdnotationsDelegate.h
-	Adnotations.h
+	AnnotationsDelegate.h
 	LayeredStateMachine.h
 	#DicomParser.h
 	DicomPCH.h
@@ -44,8 +45,8 @@ SET_PRIVATE_HEADERS (
 
 SET_SOURCE_FILES(
 	MessageDialog.cpp
-	AdnotationsDelegate.cpp
-	Adnotations.cpp
+	AnnotationsDelegate.cpp
+	Annotations.cpp
 	LayeredStateMachine.cpp
 	PointsState.cpp
 	NormalState.cpp
@@ -76,7 +77,7 @@ SET_SOURCE_FILES(
 
 SET_MOC_FILES(
 	MessageDialog.h
-	AdnotationsDelegate.h
+	AnnotationsDelegate.h
 	LayeredStateMachine.h
 	LayeredImageVisualizer.h
 	#DicomVisualizer.h

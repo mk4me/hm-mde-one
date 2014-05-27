@@ -13,6 +13,7 @@
 
 #include <QtGui/QWidget>
 #include <corelib/IFileDataManager.h>
+#include "ExporterModel.h"
 
 class QPushButton;
 class QLayout;
@@ -37,12 +38,27 @@ namespace medusaExporter {
     public:
 		MedusaExporterServiceWidget(MedusaExporterService* service);
 
-    private slots:
-        void onExport();
+	public:
+		void setExporter(ExporterModelPtr exporterModel);
+
+	private Q_SLOTS:
+		void onExport();
+		void onDownload();
+		void onExtract();
+		void onExtractDirDialog();
+		void onPackImages();
+		void onPackMeta();
+		void onExportFrom();
+
+	private:
+		void setExportFrom(const QString& dir);
+		void callback(float ratio, const QString& description);
 
     private:
 		MedusaExporterService* medusaService;
 		Ui::MedusaExporter* ui;
+		ExporterModelPtr exporterModel;
+		ExporterModel::CallbackFunction callbackFunction;
     };
 }
 

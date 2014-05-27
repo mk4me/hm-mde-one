@@ -12,6 +12,7 @@
 
 #include <coreui/AbstractState.h>
 #include "PointsLayer.h"
+
 namespace dicom {
 
 class LayeredStateMachine;
@@ -20,7 +21,7 @@ class PointsState : public QObject, public coreUI::AbstractState
 {
     Q_OBJECT
 public:
-    PointsState(LayeredStateMachine* machine, bool curved, bool openLine, adnotations::annotationsIdx adnotationIdx);
+    PointsState(LayeredStateMachine* machine, bool curved, bool openLine, annotations::annotationsIdx adnotationIdx);
 	virtual ~PointsState() {}
     friend class AddLayerCommand;
 public:
@@ -45,7 +46,7 @@ private:
     bool possibleMove;
     bool curved;
     bool openLine;
-    adnotations::annotationsIdx adnotationIdx;
+    annotations::annotationsIdx adnotationIdx;
     utils::weak_ptr<QMenu> rightClickMenu;
 };
 DEFINE_SMART_POINTERS(PointsState);

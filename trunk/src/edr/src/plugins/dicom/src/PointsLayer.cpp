@@ -212,6 +212,24 @@ dicom::PointsLayer* dicom::PointsLayer::clone() const
     return pl.release();
 }
 
+std::vector<QPointF> dicom::PointsLayer::getPointsCloud(int density /*= 0*/) const
+{
+	std::vector<QPointF> res;
+	if (DrawersBuilder::isCurved((annotations::annotationsIdx)getAdnotationIdx())) {
+		QPainterPath path = pointsDrawer->createPath(points, density);
+		int count = path.elementCount();
+		for (int i = 0; i < count; ++i) {
+			auto e = path.elementAt(i);
+			res.push_back(QPointF(e.x, e.y));
+		}
+	} else {
+		for (auto it = points.begin(); it != points.end(); ++it) {
+			res.push_back((*it)->pos());
+		}
+	}
+	return res;
+}
+
 
 
 
@@ -229,7 +247,7 @@ QString dicom::PolyDrawer::methodName()
     return "Polygon";
 }
 
-QPainterPath dicom::PolyDrawer::createPath(const QVector<QGraphicsItem*>& points)
+QPainterPath dicom::PolyDrawer::createPath(const QVector<QGraphicsItem*>& points, int density)
 {
     int count = points.size();
     if (count >= 2) {
@@ -291,7 +309,7 @@ QString dicom::CurveDrawer::methodName()
     return "Curve";
 }
 
-QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& points)
+QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& points, int density)
 {
     int count = points.size();
     if (count > 2) {
@@ -306,6 +324,9 @@ QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& point
         }
 
         SplineCurveFitter fitter;
+		if (density >= 0) {
+			fitter.setSplineSize(density);
+		}
         poly = fitter.fitCurve(poly);
         QPainterPath path;
         path.addPolygon(poly);
@@ -344,33 +365,33 @@ dicom::CurveDrawer::CurveDrawer(bool openLine, const QColor& color, const QColor
 
 }
 
-std::pair<QColor, QColor> dicom::DrawersBuilder::getColors( adnotations::annotationsIdx annotationIdx )
+std::pair<QColor, QColor> dicom::DrawersBuilder::getColors( annotations::annotationsIdx annotationIdx )
 {
     switch(annotationIdx) {
-        case adnotations::unknownAnnotation:
+        case annotations::unknownAnnotation:
             return std::make_pair(QColor(50, 50, 50), QColor(0, 0, 0));
-        case adnotations::otherAnnotation:                           
+        case annotations::otherAnnotation:                           
             return std::make_pair(QColor(150, 75, 50), QColor(100, 50, 0));
-        case adnotations::skin:                            
+        case annotations::skin:                            
             return std::make_pair(QColor(220, 175, 128), QColor(255, 100, 0));
-        case adnotations::bone:                            
+        case annotations::bone:                            
             return std::make_pair(QColor(128, 220, 128), QColor(0, 255, 0));
-        case adnotations::tendon:                          
+        case annotations::tendon:                          
             return std::make_pair(QColor(200, 200, 128), QColor(255, 255, 0));
-        case adnotations::joint: 
+        case annotations::joint: 
             return std::make_pair(QColor(128, 212, 220), QColor(0, 100, 255));
-        case adnotations::inflammatory:
+        case annotations::inflammatory:
             return std::make_pair(QColor(220, 128, 128), QColor(255, 0, 0));
-        case adnotations::intensity:
+        case annotations::intensity:
             return std::make_pair(QColor(50, 75, 150), QColor(0, 50, 100));
-        case adnotations::noise:                           
+        case annotations::noise:                           
             return std::make_pair(QColor(200, 200, 200), QColor(150, 150, 150));
         default:
             throw std::runtime_error("Unknown annotation");
     }
 }
 
-dicom::IPointsDrawerPtr dicom::DrawersBuilder::createDrawer( adnotations::annotationsIdx annotationIdx )
+dicom::IPointsDrawerPtr dicom::DrawersBuilder::createDrawer( annotations::annotationsIdx annotationIdx )
 {
     auto color = getColors(annotationIdx);
     auto openLine = isOpenLine(annotationIdx);
@@ -381,76 +402,76 @@ dicom::IPointsDrawerPtr dicom::DrawersBuilder::createDrawer( adnotations::annota
     }
 }
 
-bool dicom::DrawersBuilder::isOpenLine( adnotations::annotationsIdx annotationIdx )
+bool dicom::DrawersBuilder::isOpenLine( annotations::annotationsIdx annotationIdx )
 {
     switch(annotationIdx) {
-    case adnotations::unknownAnnotation:
+    case annotations::unknownAnnotation:
         return false;
-    case adnotations::otherAnnotation:                           
+    case annotations::otherAnnotation:                           
         return false;
-    case adnotations::skin:                            
+    case annotations::skin:                            
         return true;
-    case adnotations::bone:                            
+    case annotations::bone:                            
         return true;
-    case adnotations::tendon:                          
+    case annotations::tendon:                          
         return true;
-    case adnotations::joint: 
+    case annotations::joint: 
         return false;
-    case adnotations::inflammatory:
+    case annotations::inflammatory:
         return false;
-    case adnotations::intensity:
+    case annotations::intensity:
         return false;
-    case adnotations::noise:                           
+    case annotations::noise:                           
         return false;
     default:
         throw std::runtime_error("Unknown annotation");
     }
 }
 
-bool dicom::DrawersBuilder::isCurved( adnotations::annotationsIdx annotationIdx )
+bool dicom::DrawersBuilder::isCurved( annotations::annotationsIdx annotationIdx )
 {
     switch(annotationIdx) {
-    case adnotations::unknownAnnotation:
+    case annotations::unknownAnnotation:
         return false;
-    case adnotations::otherAnnotation:                           
+    case annotations::otherAnnotation:                           
         return false;
-    case adnotations::skin:                            
+    case annotations::skin:                            
         return true;
-    case adnotations::bone:                            
+    case annotations::bone:                            
         return false;
-    case adnotations::tendon:                          
+    case annotations::tendon:                          
         return false;
-    case adnotations::joint: 
+    case annotations::joint: 
         return false;
-    case adnotations::inflammatory:
+    case annotations::inflammatory:
         return true;
-    case adnotations::intensity:
+    case annotations::intensity:
         return false;
-    case adnotations::noise:                           
+    case annotations::noise:                           
         return false;
     default:
         throw std::runtime_error("Unknown annotation");
     }
 }
 
-QPixmap dicom::DrawersBuilder::getColorPixmap( adnotations::annotationsIdx annotationIdx )
+QPixmap dicom::DrawersBuilder::getColorPixmap( annotations::annotationsIdx annotationIdx )
 {
-    static std::map<adnotations::annotationsIdx, QPixmap> pixmaps;
+    static std::map<annotations::annotationsIdx, QPixmap> pixmaps;
     if (pixmaps.empty()) {
-        auto makePix = [&](adnotations::annotationsIdx idx) -> QPixmap {
+        auto makePix = [&](annotations::annotationsIdx idx) -> QPixmap {
             QPixmap pix(8, 8);
             pix.fill(getColors(idx).second);
             return pix;
         };
-        pixmaps[adnotations::unknownAnnotation     ] = makePix(adnotations::unknownAnnotation     );
-        pixmaps[adnotations::otherAnnotation       ] = makePix(adnotations::otherAnnotation       );
-        pixmaps[adnotations::skin        ] = makePix(adnotations::skin        );
-        pixmaps[adnotations::bone        ] = makePix(adnotations::bone        );
-        pixmaps[adnotations::tendon      ] = makePix(adnotations::tendon      );
-        pixmaps[adnotations::joint       ] = makePix(adnotations::joint       );
-        pixmaps[adnotations::inflammatory] = makePix(adnotations::inflammatory);
-        pixmaps[adnotations::intensity   ] = makePix(adnotations::intensity   );
-        pixmaps[adnotations::noise       ] = makePix(adnotations::noise       );
+        pixmaps[annotations::unknownAnnotation     ] = makePix(annotations::unknownAnnotation     );
+        pixmaps[annotations::otherAnnotation       ] = makePix(annotations::otherAnnotation       );
+        pixmaps[annotations::skin        ] = makePix(annotations::skin        );
+        pixmaps[annotations::bone        ] = makePix(annotations::bone        );
+        pixmaps[annotations::tendon      ] = makePix(annotations::tendon      );
+        pixmaps[annotations::joint       ] = makePix(annotations::joint       );
+        pixmaps[annotations::inflammatory] = makePix(annotations::inflammatory);
+        pixmaps[annotations::intensity   ] = makePix(annotations::intensity   );
+        pixmaps[annotations::noise       ] = makePix(annotations::noise       );
     }
     return pixmaps[annotationIdx];
 }

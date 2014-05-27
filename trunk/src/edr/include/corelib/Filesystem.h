@@ -11,6 +11,7 @@
 #include <string>
 
 #include <boost/filesystem.hpp>
+#include <boost/function.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -88,6 +89,15 @@ public:
 	*/
 	static std::vector<std::string> listFiles(const std::string& path, bool recursive, const std::vector<std::string>& masks);
     static std::vector<Path> listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks);
+	/*
+	Listuje wszystkie pliki danego folderu spełniające kryterium przekazywanego filtru.
+	@param path ścieżka do folderu który ma być przeszukany
+	@param recursive czy szukać plików w podfolderach
+	@param filter funkcja testująca przeszukiwane pliki
+	@return lista wszystkich plików wraz ze ścieżką
+	*/
+	static std::vector<std::string> listFilteredFiles(const std::string& path, bool recursive, boost::function<bool(const std::string&)> filter);
+	static std::vector<Path> listFilteredFiles(const Path& path, bool recursive, boost::function<bool(const Path&)> filter);          
 	/*
 	Listuje wszystkie podfoldery danego folderu.
 	@param path ścieżka do folderu który ma być przeszukany

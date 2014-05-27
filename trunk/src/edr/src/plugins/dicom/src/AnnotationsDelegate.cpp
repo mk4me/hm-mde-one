@@ -1,8 +1,8 @@
 #include "DicomPCH.h"
-#include "AdnotationsDelegate.h"
+#include "AnnotationsDelegate.h"
 #include <QtGui/QComboBox>
 #include <QtGui/QLineEdit.h>
-#include "Adnotations.h"
+#include <plugins/dicom/Annotations.h>
 #include "LayeredModelView.h"
 
 using namespace dicom;
@@ -46,45 +46,45 @@ QWidget * AdnotationsDelegate::createEditor(QWidget *parent,
 
 						switch(aidx) {
 
-						case adnotations::bloodLevel:
+						case annotations::bloodLevel:
 							{
-								auto adn = dicom::adnotations::instanceBloodLevels();
+								auto adn = dicom::annotations::instanceBloodLevels();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}
 							}
 							break;
 
-						case adnotations::inflammatoryLevel:
+						case annotations::inflammatoryLevel:
 							{
-								auto adn = dicom::adnotations::instanceInflammatoryLevels();
+								auto adn = dicom::annotations::instanceInflammatoryLevels();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}
 							}
 							break;
 
-						case adnotations::fingerType:
+						case annotations::fingerType:
 							{
-								auto adn = dicom::adnotations::instanceFingerTypes();
+								auto adn = dicom::annotations::instanceFingerTypes();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}
 							}
 							break;
 
-						case adnotations::jointType:
+						case annotations::jointType:
 							{
-								auto adn = dicom::adnotations::instanceJointTypes();
+								auto adn = dicom::annotations::instanceJointTypes();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}
 							}
 							break;
 
-						case adnotations::imageType:
+						case annotations::imageType:
 							{
-								auto adn = dicom::adnotations::instanceImageTypes();
+								auto adn = dicom::annotations::instanceImageTypes();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}

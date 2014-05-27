@@ -131,6 +131,7 @@ void LocalDataLoader::run()
 
 	sourceWidget->currentDownloadRequest.reset();
 
+	
 	//TODO
 	// dlaczego to jestg tutaj? Skoro to byl request dla shallow to znaczy ze dostałem pełną płytką kopię
 	// to powinno być realizowane gdzieś wyżej, na poziomie metody void DataSourceWidget::performShallowCopyUpdate()
@@ -1256,6 +1257,11 @@ void DataSourceWidget::generateItemSpecyficContextMenu(QMenu & menu, QTreeWidget
 	menu.addSeparator();
 
 	//auto refresh = menu.addAction(tr("Refresh status"));
+
+	int breakpoint = 0;
+	if (breakpoint) {
+		dataSource->extractDataFromLocalStorageToUserSpace();
+	}
 
 	load->setEnabled(false);
 	unload->setEnabled(false);

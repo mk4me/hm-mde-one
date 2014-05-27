@@ -126,6 +126,8 @@ public:
 	virtual const int trialID(const std::string & name) const;
 
 	virtual const std::set<int> trialsIDs() const;
+
+	virtual void downloadAllFiles();
 private:
 
 	void tryRefreshAnnotationStatus();
@@ -191,10 +193,15 @@ private:
 
 	//! Wyciągamy dane z lokalnego storage (SQLite/SQLCipher - szyfrowany SQLite) - tylko przy logowaniu
 	void extractDataFromLocalStorageToUserSpace();
+
+	//! Wyciągamy dane z lokalnego storage do wybranego miejsca
+	//! \param outputDir folder wyjściowy
+	void extractDataFromLocalStorage(const core::Filesystem::Path& outputDir);
+
 	//! \param file Plik który chcemy wypakować z lokalnego storage
 	//! \param sessionName Nazwa sesji z której pochodzi plik
 	void extractFileFromLocalStorageToUserSpace(const webservices::MotionShallowCopy::File * file, const std::string & sessionName);
-
+	
 	//! \param oldShallowCopy Poprzednia płytka kopia dla której wypakowywano dane
 	//! \param newShallowCopy Nowa płytka kopia dla której wypakowywujemy dane
 	//! Algorytm opiera się na różnicy zbioru plików do których użytkownik ma dostęp zdefiniowany płytką kopią bazy danych

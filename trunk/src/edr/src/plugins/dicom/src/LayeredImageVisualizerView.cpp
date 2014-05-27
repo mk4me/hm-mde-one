@@ -1,6 +1,6 @@
 #include "DicomPCH.h"
 #include "IDicomService.h"
-#include "AdnotationsDelegate.h"
+#include "AnnotationsDelegate.h"
 #include "LayeredImageVisualizerView.h"
 #include "ui_layeredImageVisualizer.h"
 #include "LayeredImageVisualizer.h"
