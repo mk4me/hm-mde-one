@@ -108,7 +108,7 @@ dicom::BackgroundLayer* dicom::BackgroundLayer::clone() const
     return bl;
 }
 
-std::vector<QPointF> dicom::BackgroundLayer::getPointsCloud(int density /*= 0*/) const
+std::vector<QPointF> dicom::BackgroundLayer::getPointsCloud(int density, int normalizeLength) const
 {
 	return std::vector<QPointF>();
 }

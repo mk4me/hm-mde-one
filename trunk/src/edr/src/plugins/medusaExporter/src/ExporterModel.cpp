@@ -169,13 +169,15 @@ void medusaExporter::ExporterModel::pack(const QString& dirPath, const QString& 
 		float ratio = 0.0f;
 		float delta = 1.0f / files.size();
 		for (auto it = files.begin(); it != files.end(); ++it) {
-			QString fileName = QString::fromStdString(it->string());
-			QString fileDesc = qdir.relativeFilePath(fileName);
-			fun(ratio, QString("Packing: %1").arg(fileName));
+			QString filePath = QString::fromStdString(it->string());
+			QString fileDesc = qdir.relativeFilePath(filePath);
+            QString filename = QString::fromStdString(it->filename().string());
+            fun(ratio, QString("Packing: %1").arg(filename));
 			ratio += delta;
-			bool res = compressFile(&zip, fileName, fileDesc);
+            auto tst = zip.getMode();
+			bool res = compressFile(&zip, filePath, fileDesc);
 			if (!res) {
-				// TODO
+                throw std::runtime_error("Zip creation error");
 			}
 		}
 		zip.close();
@@ -195,8 +197,26 @@ void medusaExporter::ExporterModel::packMeta(const QString& dirPath, const QStri
 {
 	auto filter = [&](const fs::Path& path) -> bool {
 		return path.extension() == ".xml";
-	};
-	pack(dirPath, outFile, filter, fun);
+	};    
+    pack(dirPath, outFile, filter, fun);
+}
+
+void medusaExporter::ExporterModel::packBoth(const QString& dirPath, const QString& outFile, CallbackFunction fun)
+{
+    // lambda pobiera pliki, ktore maja rozszerzenie png, lub sa plikami zawierajace zbiorcze metadane
+    auto filter = [&](const fs::Path& path) -> bool {
+        if (path.extension() == ".png" || path.extension() == ".xml") {
+            return true;
+        }
+        return false;
+    };
+    pack(dirPath, outFile, filter, fun);
+}
+
+void medusaExporter::ExporterModel::packBoth(const QString& dirPath, const QString& outFile)
+{
+    auto dummy = [&](float f, const QString& q) {};
+    packBoth(dirPath, outFile, dummy);
 }
 
 
@@ -224,13 +244,13 @@ void medusaExporter::ExporterModel::packImages(const QString& dirPath, const QSt
 	pack(dirPath, outFile, filter, fun);
 }
 
-void medusaExporter::ExporterModel::exportData(const QString& outFile, const QString& user, const QString& dirPath, const ExportConfig& config)
+void medusaExporter::ExporterModel::exportData(const QString& outDir, const QString& user, const QString& dirPath, const ExportConfig& config)
 {
-	auto dummy = [&](float f, const QString& q) {};
-	exportData(outFile, user, dirPath, config, dummy);
+    auto dummy = [&](float f, const QString& q) {};
+    exportData(outDir, user, dirPath, config, dummy);
 }
 
-void medusaExporter::ExporterModel::exportData(const QString& outFile, const QString& user, const QString& dirPath, const ExportConfig& config, CallbackFunction fun)
+void medusaExporter::ExporterModel::exportData(const QString& outDir, const QString& user, const QString& dirPath, const ExportConfig& config, CallbackFunction fun)
 {
 	auto filter = [&](const fs::Path& path) -> bool {
 		if (path.extension() == ".xml") {
@@ -253,7 +273,7 @@ void medusaExporter::ExporterModel::exportData(const QString& outFile, const QSt
 	for (auto it = files.begin(); it != files.end(); ++it) {
 		core::ConstVariantsList oList;
 		transaction->addFile(*it);
-		fun(ratio, QObject::tr("Getting annotations: %1").arg(QString::fromStdString(it->string())));
+		fun(ratio, QObject::tr("Getting annotations: %1").arg(QString::fromStdString(it->filename().string())));
 		transaction->getObjects(*it, oList);
 		for (auto imgIt = oList.begin(); imgIt != oList.end(); ++imgIt) {
 			AnnotationData::ImageInfo li;
@@ -272,7 +292,7 @@ void medusaExporter::ExporterModel::exportData(const QString& outFile, const QSt
 
 
 	CSVExporter exporter;
-	exporter.exportAnnotations(core::Filesystem::Path(outFile.toStdString()), *annotations, config);
+	exporter.exportAnnotations(core::Filesystem::Path(outDir.toStdString()), *annotations, config);
 	fun(1.0f, QObject::tr("Done"));
 	//transaction->getObjects()
 }
@@ -291,7 +311,7 @@ std::map<std::string, bool> medusaExporter::ExporterModel::gatherPowerDopplers(c
 	for (auto it = files.begin(); it != files.end(); ++it) {
 		core::ConstVariantsList oList;
 		transaction->addFile(*it);
-		fun(ratio, QObject::tr("Parsing dopplers: %1").arg(QString::fromStdString(it->string())));
+		fun(ratio, QObject::tr("Parsing dopplers: %1").arg(QString::fromStdString(it->filename().string())));
 		ratio += delta;
 		transaction->getObjects(*it, oList);
 		for (auto imgIt = oList.begin(); imgIt != oList.end(); ++imgIt) {
@@ -358,3 +378,21 @@ std::vector<core::Filesystem::Path> medusaExporter::ExporterModel::gatherInterna
 
 	return fs::listFilteredFiles(fs::Path(dirPath.toStdString()), true, filter);
 }
+
+void medusaExporter::ExporterModel::clearMedusaExportDir()
+{
+    auto path = plugin::getUserDataPath("Export");
+    if (fs::isDirectory(path)) {
+        auto files = fs::listFiles(path, false);
+        for (auto it = files.begin(); it != files.end(); ++it) {
+            fs::deleteFile(*it);
+        }
+        auto dirs = fs::listSubdirectories(path);
+        for (auto it = dirs.begin(); it != dirs.end(); ++it) {
+            fs::deleteDirectory(*it);
+        }
+    } else {
+        throw std::runtime_error("Wrong directory path");
+    }
+}
+

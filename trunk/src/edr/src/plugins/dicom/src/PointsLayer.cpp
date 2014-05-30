@@ -212,15 +212,18 @@ dicom::PointsLayer* dicom::PointsLayer::clone() const
     return pl.release();
 }
 
-std::vector<QPointF> dicom::PointsLayer::getPointsCloud(int density /*= 0*/) const
+std::vector<QPointF> dicom::PointsLayer::getPointsCloud(int density , int normalizeLength) const
 {
-	std::vector<QPointF> res;
-	if (DrawersBuilder::isCurved((annotations::annotationsIdx)getAdnotationIdx())) {
-		QPainterPath path = pointsDrawer->createPath(points, density);
+    UTILS_ASSERT(density >= 0);
+    std::vector<QPointF> res;
+    if (DrawersBuilder::isCurved((annotations::annotationsIdx)getAdnotationIdx()) || normalizeLength > 0) {
+		QPainterPath path = pointsDrawer->createPath(points); 
 		int count = path.elementCount();
-		for (int i = 0; i < count; ++i) {
-			auto e = path.elementAt(i);
-			res.push_back(QPointF(e.x, e.y));
+        int newCount = normalizeLength > 0 ? normalizeLength : points.size() * (density + 1);
+		for (int i = 0; i < newCount; ++i) {
+            float percent = float(i) / newCount;
+			auto e = path.pointAtPercent(percent);
+			res.push_back(QPointF(e.x(), e.y()));
 		}
 	} else {
 		for (auto it = points.begin(); it != points.end(); ++it) {
@@ -247,7 +250,7 @@ QString dicom::PolyDrawer::methodName()
     return "Polygon";
 }
 
-QPainterPath dicom::PolyDrawer::createPath(const QVector<QGraphicsItem*>& points, int density)
+QPainterPath dicom::PolyDrawer::createPath(const QVector<QGraphicsItem*>& points)
 {
     int count = points.size();
     if (count >= 2) {
@@ -309,7 +312,7 @@ QString dicom::CurveDrawer::methodName()
     return "Curve";
 }
 
-QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& points, int density)
+QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& points)
 {
     int count = points.size();
     if (count > 2) {
@@ -324,9 +327,6 @@ QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& point
         }
 
         SplineCurveFitter fitter;
-		if (density >= 0) {
-			fitter.setSplineSize(density);
-		}
         poly = fitter.fitCurve(poly);
         QPainterPath path;
         path.addPolygon(poly);

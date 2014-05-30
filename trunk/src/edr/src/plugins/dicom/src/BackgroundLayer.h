@@ -57,7 +57,7 @@ private:
 private:
     void lazy() const;
 
-	virtual std::vector<QPointF> getPointsCloud(int density = 0) const;
+    virtual std::vector<QPointF> getPointsCloud(int density = 0, int normalizeLength = -1) const;
 
 private:
     QString pixmapPath;

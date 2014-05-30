@@ -22,9 +22,13 @@ class MdeMainWindowController : public QObject
     Q_OBJECT;
 public:
     MdeMainWindowController(MdeMainWindow* mw);
-
+    QToolButton* createButton(const QString& label, const QIcon& icon);
+     
 public Q_SLOTS:
     void addTab(coreUI::IMdeTabPtr tab);
+
+    void addToolbarButton(QToolButton* button);
+
     void activateTab(coreUI::IMdeTabPtr tab);
 
 private Q_SLOTS:

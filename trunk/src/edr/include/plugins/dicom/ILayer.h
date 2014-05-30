@@ -68,7 +68,8 @@ public:
 
 	virtual ILayerGraphicItem* clone() const = 0;
 
-	virtual std::vector<QPointF> getPointsCloud(int density = 0) const = 0;
+    virtual std::vector<QPointF> getPointsCloud(int density = 0, int normalizeLength = -1) const = 0;
+
 };
 DEFINE_SMART_POINTERS(ILayerGraphicItem);
 

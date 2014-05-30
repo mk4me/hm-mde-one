@@ -23,6 +23,10 @@ namespace medusaExporter {
 	public:
 		virtual void exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const;
 
+    private:
+        void exportMeta(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const;
+        void exportData(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const;
+
 	};
 	DEFINE_SMART_POINTERS(CSVExporter);
 }

@@ -40,15 +40,18 @@ namespace medusaExporter {
 
 	public:
 		void setExporter(ExporterModelPtr exporterModel);
+        void setExportDir(const QString& dir);
+        QString getExportDir() const;
 
 	private Q_SLOTS:
 		void onExport();
 		void onDownload();
 		void onExtract();
 		void onExtractDirDialog();
-		void onPackImages();
-		void onPackMeta();
 		void onExportFrom();
+        void onPackChecks();
+        void onClearMedusaExport();
+        void onOpenMedusaExport();
 
 	private:
 		void setExportFrom(const QString& dir);

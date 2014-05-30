@@ -18,6 +18,7 @@ namespace medusaExporter {
 	{
 		bool skipIdentical;
 		int pointsDensity;
+        bool normalizePointVectorsLenght;
 	};
 
 	class IExporter

@@ -166,24 +166,39 @@ namespace annotations {
 	template <>
 	inline QString annotationValueAsString(const dicom::annotations::bloodLevelDescriptor& val)
 	{
-		return instanceBloodLevels()->left.at(val);
+        /*if (val == dicom::annotations::unknownBloodLevel) {
+            return "-1";
+        }
+		return instanceBloodLevels()->left.at(val);*/
+        return QString("%1").arg((int)val);
 	}
 
 	template <>
 	inline QString annotationValueAsString(const dicom::annotations::inflammatoryLevelDescriptor& val)
 	{
-		return instanceInflammatoryLevels()->left.at(val);
+        /*if (val == dicom::annotations::unknownInflammatoryLevel) {
+            return "-1";
+        }
+		return instanceInflammatoryLevels()->left.at(val);*/
+        return QString("%1").arg((int)val);
 	}
 
 	template <>
 	inline QString annotationValueAsString(const dicom::annotations::fingerTypeDescriptor& val)
 	{
-		return instanceFingerTypes()->left.at(val);
+        /*if (val == dicom::annotations::unknownFinger) {
+            return "-1";
+        }
+		return instanceFingerTypes()->left.at(val);*/
+        return QString("%1").arg((int)val);
 	}
 
 	template <>
 	inline QString annotationValueAsString(const dicom::annotations::jointTypeDescriptor& val)
 	{
+        if (val == dicom::annotations::unknownJoint) {
+            return "-1";
+        }
 		return instanceJointTypes()->left.at(val);
 	}
 

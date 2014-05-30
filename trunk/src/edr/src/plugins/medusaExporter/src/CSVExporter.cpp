@@ -5,9 +5,10 @@
 #include <plugins/dicom/ValueLayer.h>
 #include <plugins/dicom/ILayer.h>
 
+using namespace std;
 using namespace medusaExporter;
 
-bool isIdentical(const  std::vector<dicom::ILayerItemConstPtr>& layers) 
+bool isIdentical(const std::vector<dicom::ILayerItemConstPtr>& layers) 
 {
 	for (auto it = layers.begin(); it != layers.end(); ++it) {
 		auto val = utils::dynamic_pointer_cast<const dicom::IValueLayer>(*it);
@@ -21,41 +22,112 @@ bool isIdentical(const  std::vector<dicom::ILayerItemConstPtr>& layers)
 	return false;
 }
 
+dicom::ILayerItemConstPtr tryGetAnnotation(const std::vector<dicom::ILayerItemConstPtr>& layers, dicom::annotations::annotationsIdx annotationsIdx)
+{
+    for (auto it = layers.begin(); it != layers.end(); ++it) {
+        if ((*it)->getAdnotationIdx() == (int)annotationsIdx) {
+            return *it;
+        }
+    }
+    return dicom::ILayerItemConstPtr();
+}
+
 void medusaExporter::CSVExporter::exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
 {
-	using namespace std;
-	
-	ofstream file;
-	file.open(path.c_str(), ios::out);
-	auto names = dicom::annotations::instance()->left;
-	const auto& layers = data.getAnnotations();
+    exportMeta(path, data, config);
+    exportData(path, data, config);
+}
 
-	for (auto itLayer = layers.begin(); itLayer != layers.end(); ++itLayer) {
-		if (config.skipIdentical && isIdentical(itLayer->second)) {
-			continue;
-		}
-		file << itLayer->first.imageName << ", " << "numberOfLayers, " << (itLayer->second.size() + 1 ) << std::endl;
-		file << "isPowerDoppler, " << itLayer->first.isPowerDoppler << std::endl;
-		for (auto it = itLayer->second.begin(); it != itLayer->second.end(); ++it) {
-			dicom::ILayerItemConstPtr itm = *it;
+void medusaExporter::CSVExporter::exportMeta(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
+{
+    std::string outFile = (path / "meta.csv").string();
+    ofstream file;
+    file.open(outFile, ios::out);
+    auto names = dicom::annotations::instance()->left;
+    const auto& layers = data.getAnnotations();
 
-			file << names.at((dicom::annotations::annotationsIdx)itm->getAdnotationIdx()).toStdString(); // << ", " << itm->getName().toStdString();
-			dicom::IValueLayerConstPtr val = utils::dynamic_pointer_cast<const dicom::IValueLayer>(itm);
-			if (val) {
-				file << ", " << val->valueAsString();
-			}
+    file << "fileName, powerDoppler, inflammatoryLevel, jointType, imageStatus" << std::endl;
+    for (auto itLayer = layers.begin(); itLayer != layers.end(); ++itLayer) {
+        if (config.skipIdentical && isIdentical(itLayer->second)) {
+            continue;
+        }
+        file << itLayer->first.imageName << ", ";
+        
+        auto pd = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::bloodLevel));
+        std::string doppler = pd ? pd->valueAsString() : std::string("-1");
 
-			dicom::ILayerGraphicItemConstPtr graphic = utils::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(itm);
-			if (graphic) {
-				auto points = graphic->getPointsCloud(config.pointsDensity);
-				file << ", " << points.size();
-				for (auto it = points.begin(); it != points.end(); ++it) {
-					file << ", " << it->x() << ", " << it->y();
-				}
-			}
-			file << std::endl;
-		}
-	}
+        auto infl = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::inflammatoryLevel));
+        std::string inflammatory = infl ? infl->valueAsString() : std::string("-1");
+        
+        auto joint = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::jointType));
+        auto finger = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::fingerType));
+        std::string jointType = "-1";
+        if (joint && finger) {
+            auto v1 = joint->valueAsString();
+            auto v2 = finger->valueAsString();
+            if (v1 != "-1" && v2 != "-1") {
+                jointType = v1 + v2;
+            }
+        }
 
-	file.close();
+        auto img = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::imageType));
+        std::string imageType = img ? img->valueAsString() : "-1";
+
+        file << doppler << ", " << inflammatory << ", " << jointType << ", " << imageType << ", " << std::endl;
+    }
+
+    file.close();
+}
+
+
+int getMaxPointsCount(const AnnotationData::Layers& layers, int density)
+{
+    int maxCount = 0;
+    for (auto itLayer = layers.begin(); itLayer != layers.end(); ++itLayer) {
+        for (auto it = itLayer->second.begin(); it != itLayer->second.end(); ++it) {
+            dicom::ILayerGraphicItemConstPtr graphic = utils::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(*it);
+            if (graphic) {
+                int points = graphic->getPointsCloud(density).size();
+                if (points > maxCount) {
+                    maxCount = points;
+                }
+            }
+        }
+    }
+
+    return maxCount;
+}
+
+void medusaExporter::CSVExporter::exportData(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
+{
+    std::string outFile = (path / "data.csv").string();
+    ofstream file;
+    file.open(outFile, ios::out);
+    auto names = dicom::annotations::instance()->left;
+    const auto& layers = data.getAnnotations();
+
+    int maxCount = getMaxPointsCount(layers, config.pointsDensity);
+    for (auto itLayer = layers.begin(); itLayer != layers.end(); ++itLayer) {
+        if (config.skipIdentical && isIdentical(itLayer->second)) {
+            continue;
+        }
+        file << itLayer->first.imageName << ", " << (itLayer->second.size() + 1) << std::endl;
+        for (auto it = itLayer->second.begin(); it != itLayer->second.end(); ++it) {
+            dicom::ILayerItemConstPtr itm = *it;
+
+            dicom::ILayerGraphicItemConstPtr graphic = utils::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(itm);
+            if (graphic) {
+                file << names.at((dicom::annotations::annotationsIdx)itm->getAdnotationIdx()).toStdString(); // << ", " << itm->getName().toStdString();
+
+                auto points = config.normalizePointVectorsLenght ? graphic->getPointsCloud(config.pointsDensity, maxCount) : graphic->getPointsCloud(config.pointsDensity);
+                file << ", " << points.size();
+                for (auto it = points.begin(); it != points.end(); ++it) {
+                    file << ", " << it->x() << ", " << it->y();
+                }
+                file << std::endl;
+            }
+        }
+    }
+
+    file.close();
 }

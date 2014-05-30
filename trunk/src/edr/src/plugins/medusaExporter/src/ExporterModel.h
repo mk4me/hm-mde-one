@@ -39,9 +39,12 @@ namespace medusaExporter {
 		void extractData(const QString& path, CallbackFunction fun);
 		void packMeta(const QString& dirPath, const QString& outFile);
 		void packMeta(const QString& dirPath, const QString& outFile, CallbackFunction fun);
-		void exportData(const QString& outFile, const QString& user, const QString& dirPath, const ExportConfig& config);
-		void exportData(const QString& outFile, const QString& user, const QString& dirPath, const ExportConfig& config, CallbackFunction fun);
+        void packBoth(const QString& dirPath, const QString& outFile);
+        void packBoth(const QString& dirPath, const QString& outFile, CallbackFunction fun);
+        void exportData(const QString& outDir, const QString& user, const QString& dirPath, const ExportConfig& config);
+        void exportData(const QString& outDir, const QString& user, const QString& dirPath, const ExportConfig& config, CallbackFunction fun);
 		QStringList getUsers(const QString& path) const;
+        void clearMedusaExportDir();
 
 	private:
 		void pack(const QString& dirPath, const QString& outFile, boost::function<bool(const core::Filesystem::Path&)> filter, CallbackFunction fun);
@@ -53,7 +56,7 @@ namespace medusaExporter {
 		std::vector<IExporterConstPtr> exporters;
 		core::IMemoryDataManager* dataManager;
 		core::IFileDataManager* fileManager;
-	};
+    };
 	DEFINE_SMART_POINTERS(ExporterModel);
 }
 

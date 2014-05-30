@@ -53,6 +53,8 @@ void MedusaExporterService::init(core::ISourceManager * sourceManager, core::IVi
 	this->memoryManager = memoryDataManager;
 	exporterModel = utils::make_shared<ExporterModel>(fileDataManager, this->memoryManager);
 	exportWidget->setExporter(exporterModel);
+    QString exportDir = QString::fromStdString(plugin::getUserDataPath("Export").string());
+    exportWidget->setExportDir(exportDir);
 }
 
 QWidget* medusaExporter::MedusaExporterService::getExporterDialog()

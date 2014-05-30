@@ -57,7 +57,6 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
     analysisModel = AnalisisModelPtr(new AnalisisModel());
 	ui->versionLabel->setText(QString("ver. %1").arg(Version::formatedVersion().c_str()));
 
-	connect(ui->medusaExporterButton, SIGNAL(clicked()), this, SLOT(showMedusaExporterDialog()));
 }
 
 MdeMainWindow::~MdeMainWindow()
@@ -127,6 +126,11 @@ void MdeMainWindow::customViewInit(QWidget * console)
         }
    }
 
+   QToolButton* exporterButton = controller.createButton(tr("Exporter"), QIcon(":/mde/icons/Operacje.png"));
+   controller.addToolbarButton(exporterButton);
+   connect(exporterButton, SIGNAL(clicked()), this, SLOT(showMedusaExporterDialog()));
+
+   
    emit activateTab(*tabs.begin());
 }
 
@@ -175,23 +179,9 @@ void MdeMainWindow::addPropertiesToServiceWindow( plugin::IServicePtr service, M
 
 void MdeMainWindowController::addTab( coreUI::IMdeTabPtr tab )
 {
-    QToolButton* templateB = window->ui->templateButton;
-    QToolButton* button = new QToolButton();
-    button->setText(tab->getLabel());
-    button->setIcon(tab->getIcon());
-    button->setIconSize(templateB->iconSize());
-    button->setToolButtonStyle(templateB->toolButtonStyle());
-    button->setStyleSheet(templateB->styleSheet());
-    button->setMinimumSize(templateB->minimumSize());
-    button->setCheckable(true);
-    button->setFixedWidth(templateB->width());
+    QToolButton* button = createButton(tab->getLabel(), tab->getIcon());
+    addToolbarButton(button);
 
-    QLayout* layout = window->ui->toolBar->layout();
-    auto count = layout->count();
-    auto item = layout->itemAt(count - 1);
-    layout->removeItem(item);
-    layout->addWidget(button);
-    layout->addItem(item);
 
     button2TabWindow[button] = tab;
     connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -244,6 +234,31 @@ void MdeMainWindowController::activateTab( coreUI::IMdeTabPtr tab )
     tab->getMainWidget()->setVisible(true);
 }
 
+QToolButton* MdeMainWindowController::createButton(const QString& label, const QIcon& icon)
+{
+    QToolButton* templateB = window->ui->templateButton;
+    QToolButton* button = new QToolButton();
+    button->setText(label);
+    button->setIcon(icon);
+    button->setIconSize(templateB->iconSize());
+    button->setToolButtonStyle(templateB->toolButtonStyle());
+    button->setStyleSheet(templateB->styleSheet());
+    button->setMinimumSize(templateB->minimumSize());
+    button->setCheckable(true);
+    button->setFixedWidth(templateB->width());
+    return button;
+}
+
+void MdeMainWindowController::addToolbarButton(QToolButton* button)
+{
+    QLayout* layout = window->ui->toolBar->layout();
+    auto count = layout->count();
+    auto item = layout->itemAt(count - 1);
+    layout->removeItem(item);
+    layout->addWidget(button);
+    layout->addItem(item);
+}
+
 void MdeMainWindow::closeEvent(QCloseEvent* event)
 {
 	bool close = true;
@@ -283,6 +298,8 @@ void MdeMainWindow::showMedusaExporterDialog()
 {
 	auto exporter = core::queryService<medusaExporter::IMedusaExporterService>(plugin::getServiceManager());
 	if (exporter) {
-		exporter->getExporterDialog()->show();
+        QWidget* dlg = exporter->getExporterDialog();
+        dlg->setWindowModality(Qt::ApplicationModal);
+		dlg->show();
 	}
 }

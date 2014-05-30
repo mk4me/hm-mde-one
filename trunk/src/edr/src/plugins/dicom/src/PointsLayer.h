@@ -37,7 +37,7 @@ namespace dicom {
         virtual QBrush getLineBrush(bool editable) = 0;
         //virtual QPen getPointPen() = 0;
         virtual QString methodName() = 0;
-        virtual QPainterPath createPath(const QVector<QGraphicsItem*>& points, int density = -1) = 0;
+        virtual QPainterPath createPath(const QVector<QGraphicsItem*>& points) = 0;
         virtual QGraphicsItem* createPoint() = 0;
         virtual IPointsDrawer* clone() const = 0;
     };
@@ -59,7 +59,7 @@ namespace dicom {
         CurveDrawer(bool openLine, const QColor& color, const QColor& colorEdit);
         QPen getLinePen(bool editable);
         QString methodName();
-		QPainterPath createPath(const QVector<QGraphicsItem*>& points, int density = -1);
+		QPainterPath createPath(const QVector<QGraphicsItem*>& points);
         QGraphicsItem* createPoint();
 
         virtual QBrush getLineBrush( bool editable );
@@ -76,7 +76,7 @@ namespace dicom {
         PolyDrawer(bool openLine, const QColor& color, const QColor& colorEdit);
         QPen getLinePen(bool editable);
         QString methodName();
-        QPainterPath createPath(const QVector<QGraphicsItem*>& points, int density = -1);
+        QPainterPath createPath(const QVector<QGraphicsItem*>& points);
         QGraphicsItem* createPoint();
 
         virtual QBrush getLineBrush( bool editable );
@@ -168,7 +168,7 @@ namespace dicom {
 
         BOOST_SERIALIZATION_SPLIT_MEMBER();
 
-		virtual std::vector<QPointF> getPointsCloud(int density = 0) const;
+		virtual std::vector<QPointF> getPointsCloud(int density = 0, int normalizeLength = -1) const;
 
 
     };
