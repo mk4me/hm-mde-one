@@ -277,7 +277,7 @@ void medusaExporter::ExporterModel::exportData(const QString& outDir, const QStr
 		transaction->getObjects(*it, oList);
 		for (auto imgIt = oList.begin(); imgIt != oList.end(); ++imgIt) {
 			AnnotationData::ImageInfo li;
-			li.imageName = it->stem().string();
+			li.imageName = it->stem().stem().string();
 			li.isPowerDoppler = dopplers[li.imageName];
 			try {
 				dicom::LayersVectorConstPtr lv = (*imgIt)->get();

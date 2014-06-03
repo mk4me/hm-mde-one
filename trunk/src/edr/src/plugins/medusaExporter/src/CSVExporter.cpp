@@ -98,6 +98,18 @@ int getMaxPointsCount(const AnnotationData::Layers& layers, int density)
     return maxCount;
 }
 
+int getGraphicsLayersCount(const std::vector<dicom::ILayerItemConstPtr>& layers)
+{
+    int counter = 0;
+    for (auto it = layers.begin(); it != layers.end(); ++it) {
+        auto val = utils::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(*it);
+        if (val) {
+            ++counter;
+        }
+    }
+    return counter;
+}
+
 void medusaExporter::CSVExporter::exportData(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
 {
     std::string outFile = (path / "data.csv").string();
@@ -111,7 +123,13 @@ void medusaExporter::CSVExporter::exportData(const core::Filesystem::Path& path,
         if (config.skipIdentical && isIdentical(itLayer->second)) {
             continue;
         }
-        file << itLayer->first.imageName << ", " << (itLayer->second.size() + 1) << std::endl;
+        
+        int graphicsCount = getGraphicsLayersCount(itLayer->second);
+        if (graphicsCount == 0) {
+            continue;
+        }
+
+        file << itLayer->first.imageName << ", " << graphicsCount << std::endl;
         for (auto it = itLayer->second.begin(); it != itLayer->second.end(); ++it) {
             dicom::ILayerItemConstPtr itm = *it;
 

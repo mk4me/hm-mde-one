@@ -122,7 +122,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExtract()
         }
     }
 
-    QString innerDirPath = dirPath + "/" + "Export_" + QDateTime::currentDateTimeUtc().toString("dd.MM.yyyy_hh.mm.ss");
+    QString innerDirPath = dirPath + "/" + "Export_" + QDateTime::currentDateTime().toString("dd.MM.yyyy_hh.mm.ss");
     QDir innerDir(innerDirPath);
     QDir innerDataDir(innerDirPath + "/" + "Data");
     innerDataDir.mkpath(".");
