@@ -15,7 +15,8 @@
 #include <boost/function.hpp>
 #include "IExporter.h"
 #include "AnnotationData.h"
-#include "plugins/dicom/IDicomInternalStruct.h"
+#include <plugins/dicom/IDicomInternalStruct.h>
+#include <tuple>
 
 namespace medusaExporter {
 
@@ -23,7 +24,7 @@ namespace medusaExporter {
 	class ExporterModel
 	{
 	public:
-		typedef boost::function<void(float, const QString&)> CallbackFunction;
+		typedef boost::function<void(double, const QString&)> CallbackFunction;
 	public:
 		ExporterModel(core::IFileDataManager* fileManager, core::IMemoryDataManager* dataManager);
 		virtual ~ExporterModel() {}
@@ -43,7 +44,7 @@ namespace medusaExporter {
         void packBoth(const QString& dirPath, const QString& outFile, CallbackFunction fun);
         void exportData(const QString& outDir, const QString& user, const QString& dirPath, const ExportConfig& config);
         void exportData(const QString& outDir, const QString& user, const QString& dirPath, const ExportConfig& config, CallbackFunction fun);
-		QStringList getUsers(const QString& path) const;
+		QStringList getUsers(const QString& path, const ExporterModel::CallbackFunction& fun) const;
         void clearMedusaExportDir();
 
 	private:
@@ -58,6 +59,30 @@ namespace medusaExporter {
 		core::IFileDataManager* fileManager;
     };
 	DEFINE_SMART_POINTERS(ExporterModel);
+
+
+    class CallbackCollector
+    {
+    public:
+        typedef boost::function<void(ExporterModel::CallbackFunction)> Operation;
+        CallbackCollector(const ExporterModel::CallbackFunction& mainCallback);
+        virtual ~CallbackCollector();
+
+    public:
+        void addOperation(const Operation& op, double weight, const QString& desc);
+        void run();
+
+    private:
+        void innerCallback(double ratio, const QString& desc);
+
+    private:
+        double getWeightSum() const;
+
+    private:
+        ExporterModel::CallbackFunction mainCallback;
+        std::vector<std::tuple<Operation, double, QString>> operations;
+        int currentOperation;
+    };
 }
 
 #endif

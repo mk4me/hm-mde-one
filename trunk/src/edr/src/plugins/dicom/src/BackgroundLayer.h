@@ -19,6 +19,7 @@
 
 namespace dicom {
 
+//! Layer z obrazem t³a
 class BackgroundLayer : public ILayerGraphicItem
 {
 public:

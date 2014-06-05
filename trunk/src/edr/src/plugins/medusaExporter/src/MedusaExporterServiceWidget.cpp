@@ -17,11 +17,34 @@
 #include <quazip/JlCompress.h>
 #include <boost/bind.hpp>
 #include <QtCore/QUrl>
+#include <tuple>
 
 using namespace medusaExporter;
 typedef core::Filesystem fs;
 
+class WidgetDisabler
+{
+public:
+    WidgetDisabler() {}
+    WidgetDisabler(QWidget* w) { addWidget(w);  }
+    WidgetDisabler(QWidget* w1, QWidget* w2) { addWidget(w1); addWidget(w2); }
+    virtual ~WidgetDisabler() 
+    {
+        for (auto it = widgets.begin(); it != widgets.end(); ++it) {
+            (*it)->setEnabled(true);
+        }
+        QApplication::processEvents();
+    }
 
+    void addWidget(QWidget* w) {
+        w->setEnabled(false);
+        widgets.push_back(w);
+        QApplication::processEvents();
+    }
+
+private:
+    QWidgetList widgets;
+};
 
 MedusaExporterServiceWidget::MedusaExporterServiceWidget(MedusaExporterService* service) :
     medusaService(service),
@@ -47,6 +70,14 @@ MedusaExporterServiceWidget::MedusaExporterServiceWidget(MedusaExporterService* 
 
 void medusaExporter::MedusaExporterServiceWidget::onExport()
 {
+    WidgetDisabler w(ui->miscBox, ui->dataBox);
+    w.addWidget(ui->exportFromButton);
+    w.addWidget(ui->normalizePointsCheck);
+    w.addWidget(ui->skipIdenticalComboBox);
+    w.addWidget(ui->chooseFormatComboBox);
+    w.addWidget(ui->curveDensitySpinBox);
+    w.addWidget(ui->chooseUserComboBox);
+    w.addWidget(ui->exportButton);
     QString user = ui->chooseUserComboBox->currentText();
     QDir exportFrom(ui->exportFromLineEdit->text() + "/data");
     QDir outDir(ui->exportFromLineEdit->text());
@@ -74,6 +105,8 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
 	} catch (...) {
 		QMessageBox::critical(this, tr("Error"), tr("Unknown error"));
 	}
+
+    ui->exportButton->setChecked(false);
 }
 
 void medusaExporter::MedusaExporterServiceWidget::onDownload()
@@ -96,6 +129,11 @@ void medusaExporter::MedusaExporterServiceWidget::setExporter(ExporterModelPtr e
 
 void medusaExporter::MedusaExporterServiceWidget::onExtract()
 {
+    WidgetDisabler w(ui->miscBox, ui->atributesBox);
+    w.addWidget(ui->compressOptionBox);
+    w.addWidget(ui->compressBox);
+    w.addWidget(ui->extractButton);
+    w.addWidget(ui->extractToButton);
 	QString dirPath = ui->extractToLineEdit->text();
 
     communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
@@ -127,22 +165,36 @@ void medusaExporter::MedusaExporterServiceWidget::onExtract()
     QDir innerDataDir(innerDirPath + "/" + "Data");
     innerDataDir.mkpath(".");
 	try {
-        exporterModel->extractData(innerDataDir.absolutePath(), callbackFunction);
-        setExportFrom(innerDirPath);
+        CallbackCollector cc(callbackFunction);
+        //exporterModel->extractData(innerDataDir.absolutePath(), callbackFunction);
+        auto extractOp = boost::bind(&ExporterModel::extractData, exporterModel.get(), innerDataDir.absolutePath(), ::_1);
+        cc.addOperation(extractOp, 0.2, tr("Exporting"));
         QString fileName = dirPath + "/" + innerDir.dirName() + "/";
         if (ui->metaCheck->isChecked() && ui->imagesCheck->isChecked() && ui->togetherRadio->isChecked()) {
             fileName += "all.zip";
-            exporterModel->packBoth(innerDirPath, fileName, callbackFunction);
+            //exporterModel->packBoth(innerDirPath, fileName, callbackFunction);
+            auto compressOp = boost::bind(&ExporterModel::packBoth, exporterModel.get(), innerDirPath, fileName, ::_1);
+            cc.addOperation(compressOp, 0.8, tr("Compressing"));
         } else {
             if (ui->metaCheck->isChecked()) {
                 QString fn = fileName + "metadata.zip";
-                exporterModel->packMeta(innerDirPath, fn, callbackFunction);
+                //exporterModel->packMeta(innerDirPath, fn, callbackFunction);
+                auto compressOp = boost::bind(&ExporterModel::packMeta, exporterModel.get(), innerDirPath, fn, ::_1);
+                cc.addOperation(compressOp, 0.2, tr("Compressing metadata"));
             }
             if (ui->imagesCheck->isChecked()) {
                 QString fn = fileName + "images.zip";
-                exporterModel->packImages(innerDirPath, fn, callbackFunction);
+                //exporterModel->packImages(innerDirPath, fn, callbackFunction);
+                CallbackCollector::Operation compressOp = boost::bind(&ExporterModel::packImages, exporterModel.get(), innerDirPath, fn, ::_1);
+                cc.addOperation(compressOp, 0.6, tr("Compressing images"));
             }
         }
+
+        auto usersOp = boost::bind(&MedusaExporterServiceWidget::setExportFrom, this, innerDirPath, ::_1);
+        cc.addOperation(usersOp, 0.05, tr("Collecting users"));
+        cc.run();
+
+        ui->extractButton->setChecked(false);
 
 	} catch (const std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), tr(e.what()));
@@ -157,15 +209,15 @@ void medusaExporter::MedusaExporterServiceWidget::onExtractDirDialog()
 	ui->extractToLineEdit->setText(dir);
 }
 
-void medusaExporter::MedusaExporterServiceWidget::setExportFrom(const QString& dir)
+void medusaExporter::MedusaExporterServiceWidget::setExportFrom(const QString& dir, const ExporterModel::CallbackFunction& fun)
 {
-	ui->exportFromLineEdit->setText(dir);
+	ui->exportFromLineEdit->setText(QDir::toNativeSeparators(dir));
     QDir d(dir);
     ui->curveDensitySpinBox->setEnabled(true);
 	ui->skipIdenticalComboBox->setEnabled(true);
 	ui->exportButton->setEnabled(true);
 	ui->chooseUserComboBox->setEnabled(true);
-	ui->chooseUserComboBox->addItems(exporterModel->getUsers(dir));
+	ui->chooseUserComboBox->addItems(exporterModel->getUsers(dir, fun));
 }
 
 void medusaExporter::MedusaExporterServiceWidget::onExportFrom()
@@ -189,9 +241,9 @@ void medusaExporter::MedusaExporterServiceWidget::callback(float ratio, const QS
 void medusaExporter::MedusaExporterServiceWidget::onPackChecks()
 {
     if (ui->imagesCheck->isChecked() && ui->metaCheck->isChecked()) {
-        ui->packOptionGroup->setEnabled(true);
+        ui->compressOptionBox->setEnabled(true);
     } else {
-        ui->packOptionGroup->setEnabled(false);
+        ui->compressOptionBox->setEnabled(false);
     }
 }
 

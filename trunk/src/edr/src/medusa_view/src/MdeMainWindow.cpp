@@ -299,6 +299,7 @@ void MdeMainWindow::showMedusaExporterDialog()
 	auto exporter = core::queryService<medusaExporter::IMedusaExporterService>(plugin::getServiceManager());
 	if (exporter) {
         QWidget* dlg = exporter->getExporterDialog();
+        dlg->setWindowFlags(Qt::Tool);
         dlg->setWindowModality(Qt::ApplicationModal);
 		dlg->show();
 	}

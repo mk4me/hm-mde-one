@@ -21,6 +21,7 @@ class QGraphicsItem;
 
 namespace dicom {
 
+//! Podstawowy element warstwy wizualizatora
 class ILayerItem
 {
 public:
@@ -33,6 +34,7 @@ public:
     virtual QString getName() const = 0;
     virtual void setName(const QString& name) = 0;
 
+    //! \return G³êboka kopia elementu
     virtual ILayerItem* clone() const = 0;
 
     // TODO : dobrze byloby przeniest to do jakiegos dekoratora...

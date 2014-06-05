@@ -11,6 +11,7 @@
 #include <corelib/PluginCommon.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/ISourceManager.h>
+#include <boost/bind.hpp>
 #include "CSVExporter.h"
 
 
@@ -134,12 +135,12 @@ void medusaExporter::ExporterModel::extractData(const QString& path)
 
 void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFunction fun)
 {
-	fun(0.0f, QObject::tr("Extracting data"));
 	communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
 	if (icomm) {
 		core::Filesystem::Path dir(path.toStdString());
 		if (core::Filesystem::isDirectory(dir)) {
             if (icomm->isLogged()) {
+                fun(0.0f, QObject::tr("Extracting data"));
                 icomm->extractDataFromLocalStorage(dir);
                 fun(1.0f, QObject::tr("Done extracting"));
             } else {
@@ -252,28 +253,34 @@ void medusaExporter::ExporterModel::exportData(const QString& outDir, const QStr
 
 void medusaExporter::ExporterModel::exportData(const QString& outDir, const QString& user, const QString& dirPath, const ExportConfig& config, CallbackFunction fun)
 {
+    CallbackCollector cc(fun);
+    double ratio = 0.0;
 	auto filter = [&](const fs::Path& path) -> bool {
 		if (path.extension() == ".xml") {
 			std::string stem = path.stem().string();
-			return stem.find(user.toStdString()) != std::string::npos;
+            if (stem.find(user.toStdString()) != std::string::npos) {
+                ratio = ratio < 0.1 ? ratio + 0.0005 : 0.1;
+                return true;
+            }
 		}
 		return false;
 	};
 
-	fun(0.0f, QObject::tr("Export: gethering files"));
+	fun(0.0, QObject::tr("Export: gethering files"));
 	auto files = fs::listFilteredFiles(fs::Path(dirPath.toStdString()), true, filter);
 	auto transaction = fileManager->transaction();
 
-	fun(0.05f, QObject::tr("Gathering power dopplers"));
+	fun(0.1, QObject::tr("Gathering power dopplers"));
 	auto dopplers = gatherPowerDopplers(dirPath, fun);
 
-	float ratio = 0.15f;
+	ratio = 0.15;
 	float delta = (1.0f / files.size()) / (10.0f / 8.0f);
 	AnnotationDataPtr annotations = utils::make_shared<AnnotationData>();
 	for (auto it = files.begin(); it != files.end(); ++it) {
 		core::ConstVariantsList oList;
 		transaction->addFile(*it);
 		fun(ratio, QObject::tr("Getting annotations: %1").arg(QString::fromStdString(it->filename().string())));
+        ratio += delta;
 		transaction->getObjects(*it, oList);
 		for (auto imgIt = oList.begin(); imgIt != oList.end(); ++imgIt) {
 			AnnotationData::ImageInfo li;
@@ -317,7 +324,10 @@ std::map<std::string, bool> medusaExporter::ExporterModel::gatherPowerDopplers(c
 		for (auto imgIt = oList.begin(); imgIt != oList.end(); ++imgIt) {
 			try {
 				dicom::IDicomInternalStructConstPtr inter = (*imgIt)->get();
-				gatherPowerDopplers(inter, dopplers);
+                if (inter) {
+                    gatherPowerDopplers(inter, dopplers);
+                } else {
+                }
 			}
 			catch (...) {}
 		}
@@ -341,12 +351,17 @@ void medusaExporter::ExporterModel::gatherPowerDopplers(dicom::IDicomInternalStr
 	}
 }
 
-QStringList medusaExporter::ExporterModel::getUsers(const QString& path) const
+QStringList medusaExporter::ExporterModel::getUsers(const QString& path, const ExporterModel::CallbackFunction& fun) const
 {
+    double ratio = 0.0;
 	auto filter = [&](const fs::Path& path) -> bool {
 		if (path.extension() == ".xml") {
 			std::string stem = path.stem().string();
-			return stem.find(".") != std::string::npos;
+            if (stem.find(".") != std::string::npos) {
+                ratio = ratio < 0.99 ? ratio + 0.002 : 0.99;
+                fun(ratio, QString::fromStdString(stem));
+                return true;
+            }
 		}
 		return false;
 	};
@@ -363,6 +378,7 @@ QStringList medusaExporter::ExporterModel::getUsers(const QString& path) const
 	for (auto it = users.begin(); it != users.end(); ++it) {
 		usersList.push_back(QString::fromStdString(*it));
 	}
+    fun(1.0, "Done");
 	return usersList;
 }
 
@@ -396,3 +412,60 @@ void medusaExporter::ExporterModel::clearMedusaExportDir()
     }
 }
 
+
+double medusaExporter::CallbackCollector::getWeightSum() const
+{
+    double sum = 0.0;
+    for (auto it = operations.begin(); it != operations.end(); ++it) {
+        sum += std::get<1>(*it);
+    }
+    return sum;
+}
+
+void medusaExporter::CallbackCollector::innerCallback(double ratio, const QString& desc)
+{
+    UTILS_ASSERT(currentOperation >= 0);
+
+    QString operationDesc;
+    double weight;
+    std::tie(std::ignore, weight, operationDesc) = operations[currentOperation];
+
+    double sum = getWeightSum();
+    double fullRatio = 0.0;
+    for (int i = 0; i < currentOperation; ++i) {
+        fullRatio += std::get<1>(operations[i]) / sum;
+    }
+    fullRatio += ratio * (weight / sum);
+    QString message = QString("(%1/%2) %3: %4").arg(currentOperation + 1).arg(operations.size()).arg(operationDesc).arg(desc);
+    mainCallback(fullRatio, message);
+}
+
+void medusaExporter::CallbackCollector::run()
+{
+    double sum = getWeightSum();
+    auto callback = (boost::bind(&CallbackCollector::innerCallback, this, ::_1, ::_2));
+    currentOperation = 0;
+    for (auto it = operations.begin(); it != operations.end(); ++it) {
+        Operation op = std::get<0>(*it);
+        op(callback);
+        currentOperation++;
+    }
+
+    currentOperation = -1;
+}
+
+void medusaExporter::CallbackCollector::addOperation(const Operation& op, double weight, const QString& desc)
+{
+    operations.push_back(std::make_tuple(op, weight, desc));
+}
+
+medusaExporter::CallbackCollector::~CallbackCollector()
+{
+
+}
+
+medusaExporter::CallbackCollector::CallbackCollector(const ExporterModel::CallbackFunction& mainCallback) :
+mainCallback(mainCallback), currentOperation(-1)
+{
+
+}

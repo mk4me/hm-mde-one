@@ -54,7 +54,7 @@ namespace medusaExporter {
         void onOpenMedusaExport();
 
 	private:
-		void setExportFrom(const QString& dir);
+        void setExportFrom(const QString& dir, const ExporterModel::CallbackFunction& fun = ExporterModel::CallbackFunction());
 		void callback(float ratio, const QString& description);
 
     private:
