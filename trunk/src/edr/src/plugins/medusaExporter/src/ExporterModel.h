@@ -74,8 +74,6 @@ namespace medusaExporter {
 
     private:
         void innerCallback(double ratio, const QString& desc);
-
-    private:
         double getWeightSum() const;
 
     private:

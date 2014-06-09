@@ -436,7 +436,12 @@ void medusaExporter::CallbackCollector::innerCallback(double ratio, const QStrin
         fullRatio += std::get<1>(operations[i]) / sum;
     }
     fullRatio += ratio * (weight / sum);
-    QString message = QString("(%1/%2) %3: %4").arg(currentOperation + 1).arg(operations.size()).arg(operationDesc).arg(desc);
+    QString message;
+    if (operations.size() > 1) {
+        message = QString("(%1/%2) %3: %4").arg(currentOperation + 1).arg(operations.size()).arg(operationDesc).arg(desc);
+    } else {
+        message = QString("%1: %2").arg(operationDesc).arg(desc);
+    }
     mainCallback(fullRatio, message);
 }
 

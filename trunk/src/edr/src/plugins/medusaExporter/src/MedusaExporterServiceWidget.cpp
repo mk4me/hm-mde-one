@@ -22,29 +22,8 @@
 using namespace medusaExporter;
 typedef core::Filesystem fs;
 
-class WidgetDisabler
-{
-public:
-    WidgetDisabler() {}
-    WidgetDisabler(QWidget* w) { addWidget(w);  }
-    WidgetDisabler(QWidget* w1, QWidget* w2) { addWidget(w1); addWidget(w2); }
-    virtual ~WidgetDisabler() 
-    {
-        for (auto it = widgets.begin(); it != widgets.end(); ++it) {
-            (*it)->setEnabled(true);
-        }
-        QApplication::processEvents();
-    }
 
-    void addWidget(QWidget* w) {
-        w->setEnabled(false);
-        widgets.push_back(w);
-        QApplication::processEvents();
-    }
 
-private:
-    QWidgetList widgets;
-};
 
 MedusaExporterServiceWidget::MedusaExporterServiceWidget(MedusaExporterService* service) :
     medusaService(service),
@@ -69,15 +48,8 @@ MedusaExporterServiceWidget::MedusaExporterServiceWidget(MedusaExporterService* 
 }
 
 void medusaExporter::MedusaExporterServiceWidget::onExport()
-{
-    WidgetDisabler w(ui->miscBox, ui->dataBox);
-    w.addWidget(ui->exportFromButton);
-    w.addWidget(ui->normalizePointsCheck);
-    w.addWidget(ui->skipIdenticalComboBox);
-    w.addWidget(ui->chooseFormatComboBox);
-    w.addWidget(ui->curveDensitySpinBox);
-    w.addWidget(ui->chooseUserComboBox);
-    w.addWidget(ui->exportButton);
+{    
+    
     QString user = ui->chooseUserComboBox->currentText();
     QDir exportFrom(ui->exportFromLineEdit->text() + "/data");
     QDir outDir(ui->exportFromLineEdit->text());
@@ -99,14 +71,33 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
     config.normalizePointVectorsLenght = ui->normalizePointsCheck->isChecked();
 
 	try {
-		exporterModel->exportData(outDir.absolutePath(), user, exportFrom.absolutePath(), config, callbackFunction);
+        ExporterThread* t = new ExporterThread();
+        connect(t, SIGNAL(progressChanged(double, const QString&)), this, SLOT(callback(double, const QString&)), Qt::QueuedConnection);
+        connect(t, SIGNAL(finished()), this, SLOT(afterExport()));
+        connect(t, SIGNAL(finished()), t, SLOT(deleteLater()));
+        connect(t, SIGNAL(terminated()), this, SLOT(afterExport()));
+        connect(t, SIGNAL(terminated()), t, SLOT(deleteLater()));
+        
+		//exporterModel->exportData(outDir.absolutePath(), user, exportFrom.absolutePath(), config, callbackFunction);
+        CallbackCollector::Operation op = boost::bind(&ExporterModel::exportData, exporterModel.get(),
+                                                      outDir.absolutePath(), user, exportFrom.absolutePath(), config, ::_1);
+        t->addOperation(op, 1.0, tr("Exporting"));
+
+        disabler = utils::make_shared<WidgetDisabler>(ui->miscBox, ui->dataBox);
+        disabler->addWidget(ui->exportFromButton);
+        disabler->addWidget(ui->normalizePointsCheck);
+        disabler->addWidget(ui->skipIdenticalComboBox);
+        disabler->addWidget(ui->chooseFormatComboBox);
+        disabler->addWidget(ui->curveDensitySpinBox);
+        disabler->addWidget(ui->chooseUserComboBox);
+        disabler->addWidget(ui->exportButton);
+        disabler->checkButton(ui->exportButton);
+        t->start();
 	} catch (const std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), tr(e.what()));
 	} catch (...) {
 		QMessageBox::critical(this, tr("Error"), tr("Unknown error"));
 	}
-
-    ui->exportButton->setChecked(false);
 }
 
 void medusaExporter::MedusaExporterServiceWidget::onDownload()
@@ -128,12 +119,8 @@ void medusaExporter::MedusaExporterServiceWidget::setExporter(ExporterModelPtr e
 }
 
 void medusaExporter::MedusaExporterServiceWidget::onExtract()
-{
-    WidgetDisabler w(ui->miscBox, ui->atributesBox);
-    w.addWidget(ui->compressOptionBox);
-    w.addWidget(ui->compressBox);
-    w.addWidget(ui->extractButton);
-    w.addWidget(ui->extractToButton);
+{    
+    
 	QString dirPath = ui->extractToLineEdit->text();
 
     communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
@@ -165,34 +152,51 @@ void medusaExporter::MedusaExporterServiceWidget::onExtract()
     QDir innerDataDir(innerDirPath + "/" + "Data");
     innerDataDir.mkpath(".");
 	try {
-        CallbackCollector cc(callbackFunction);
+        //CallbackCollector cc(callbackFunction);
+        ExporterThread* t = new ExporterThread();
+        connect(t, SIGNAL(progressChanged(double, const QString&)), this, SLOT(callback(double, const QString&)), Qt::QueuedConnection);
+        connect(t, SIGNAL(finished()), this, SLOT(afterExtract()));
+        connect(t, SIGNAL(finished()), t, SLOT(deleteLater()));
+        connect(t, SIGNAL(terminated()), this, SLOT(afterExtract()));
+        connect(t, SIGNAL(terminated()), t, SLOT(deleteLater()));
+               
+        
         //exporterModel->extractData(innerDataDir.absolutePath(), callbackFunction);
         auto extractOp = boost::bind(&ExporterModel::extractData, exporterModel.get(), innerDataDir.absolutePath(), ::_1);
-        cc.addOperation(extractOp, 0.2, tr("Exporting"));
+        t->addOperation(extractOp, 0.2, tr("Exporting"));
         QString fileName = dirPath + "/" + innerDir.dirName() + "/";
         if (ui->metaCheck->isChecked() && ui->imagesCheck->isChecked() && ui->togetherRadio->isChecked()) {
             fileName += "all.zip";
             //exporterModel->packBoth(innerDirPath, fileName, callbackFunction);
             auto compressOp = boost::bind(&ExporterModel::packBoth, exporterModel.get(), innerDirPath, fileName, ::_1);
-            cc.addOperation(compressOp, 0.8, tr("Compressing"));
+            t->addOperation(compressOp, 0.8, tr("Compressing"));
         } else {
             if (ui->metaCheck->isChecked()) {
                 QString fn = fileName + "metadata.zip";
                 //exporterModel->packMeta(innerDirPath, fn, callbackFunction);
                 auto compressOp = boost::bind(&ExporterModel::packMeta, exporterModel.get(), innerDirPath, fn, ::_1);
-                cc.addOperation(compressOp, 0.2, tr("Compressing metadata"));
+                t->addOperation(compressOp, 0.2, tr("Compressing metadata"));
             }
             if (ui->imagesCheck->isChecked()) {
                 QString fn = fileName + "images.zip";
                 //exporterModel->packImages(innerDirPath, fn, callbackFunction);
                 CallbackCollector::Operation compressOp = boost::bind(&ExporterModel::packImages, exporterModel.get(), innerDirPath, fn, ::_1);
-                cc.addOperation(compressOp, 0.6, tr("Compressing images"));
+                t->addOperation(compressOp, 0.6, tr("Compressing images"));
             }
         }
-
-        auto usersOp = boost::bind(&MedusaExporterServiceWidget::setExportFrom, this, innerDirPath, ::_1);
-        cc.addOperation(usersOp, 0.05, tr("Collecting users"));
-        cc.run();
+        innerExportDirPath = innerDirPath;
+        auto collectUsers = [&](ExporterModel::CallbackFunction f) {
+            this->tempUsers = this->exporterModel->getUsers(this->innerExportDirPath, f);
+        };
+        //auto usersOp = boost::bind(&MedusaExporterServiceWidget::setExportFrom, this, innerDirPath, ::_1);
+        t->addOperation(collectUsers, 0.05, tr("Collecting users"));
+        disabler = utils::make_shared<WidgetDisabler>(ui->miscBox, ui->atributesBox);
+        disabler->addWidget(ui->compressOptionBox);
+        disabler->addWidget(ui->compressBox);
+        disabler->addWidget(ui->extractButton);
+        disabler->addWidget(ui->extractToButton);
+        disabler->checkButton(ui->extractButton);
+        t->start();
 
         ui->extractButton->setChecked(false);
 
@@ -209,7 +213,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExtractDirDialog()
 	ui->extractToLineEdit->setText(dir);
 }
 
-void medusaExporter::MedusaExporterServiceWidget::setExportFrom(const QString& dir, const ExporterModel::CallbackFunction& fun)
+void medusaExporter::MedusaExporterServiceWidget::setExportFrom(const QString& dir, const QStringList& users)
 {
 	ui->exportFromLineEdit->setText(QDir::toNativeSeparators(dir));
     QDir d(dir);
@@ -217,7 +221,7 @@ void medusaExporter::MedusaExporterServiceWidget::setExportFrom(const QString& d
 	ui->skipIdenticalComboBox->setEnabled(true);
 	ui->exportButton->setEnabled(true);
 	ui->chooseUserComboBox->setEnabled(true);
-	ui->chooseUserComboBox->addItems(exporterModel->getUsers(dir, fun));
+	ui->chooseUserComboBox->addItems(users);
 }
 
 void medusaExporter::MedusaExporterServiceWidget::onExportFrom()
@@ -225,11 +229,12 @@ void medusaExporter::MedusaExporterServiceWidget::onExportFrom()
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"));
 	ui->extractToLineEdit->setText(dir);
 	if (!dir.isEmpty()) {
-		setExportFrom(dir);
+        auto users = exporterModel->getUsers(dir, callbackFunction);
+		setExportFrom(dir, users);
 	}
 }
 
-void medusaExporter::MedusaExporterServiceWidget::callback(float ratio, const QString& description)
+void medusaExporter::MedusaExporterServiceWidget::callback(double ratio, const QString& description)
 {
 	ui->progressBar->setVisible(true);
 	ui->progressBar->setValue(ratio * 100);
@@ -261,7 +266,22 @@ void medusaExporter::MedusaExporterServiceWidget::onClearMedusaExport()
 {
     auto create = QMessageBox::question(this, tr("Warning"), tr("Are you sure you want to delete whole export folder?"), QMessageBox::Yes | QMessageBox::No);
     if (create == QMessageBox::Yes) {
-        exporterModel->clearMedusaExportDir();
+        ExporterThread* t = new ExporterThread();
+        connect(t, SIGNAL(progressChanged(double, const QString&)), this, SLOT(callback(double, const QString&)), Qt::QueuedConnection);
+        connect(t, SIGNAL(finished()), this, SLOT(afterClear()));
+        connect(t, SIGNAL(finished()), t, SLOT(deleteLater()));
+        connect(t, SIGNAL(terminated()), this, SLOT(afterClear()));
+        auto op = [&](ExporterModel::CallbackFunction f) {
+            f(0.0, tr("Started"));
+            this->exporterModel->clearMedusaExportDir();
+            f(1.0, tr("Done"));
+        }; 
+        t->addOperation(op, 1.0, tr("Clearing folder"));
+        disabler = utils::make_shared<WidgetDisabler>(ui->dataBox, ui->atributesBox);
+        disabler->addWidget(ui->openMedusaFolderButton);
+        disabler->addWidget(ui->clearMedusaFolderButton);
+        disabler->checkButton(ui->clearMedusaFolderButton);
+        t->start();
     }
 }
 
@@ -273,4 +293,23 @@ void medusaExporter::MedusaExporterServiceWidget::onOpenMedusaExport()
         dir.mkpath(".");
     }
     QDesktopServices::openUrl(QUrl("file:///" + dir.path()));
+}
+
+void medusaExporter::MedusaExporterServiceWidget::afterExtract()
+{
+    UTILS_ASSERT(this->innerExportDirPath.isEmpty() == false);
+    UTILS_ASSERT(this->tempUsers.isEmpty() == false);
+    setExportFrom(this->innerExportDirPath, tempUsers);
+    disabler = WidgetDisablerPtr();
+}
+
+void medusaExporter::MedusaExporterServiceWidget::afterExport()
+{
+    //setExportFrom(this->innerExportDirPath, tempUsers);
+    disabler = WidgetDisablerPtr();
+}
+
+void medusaExporter::MedusaExporterServiceWidget::afterClear()
+{
+    disabler = WidgetDisablerPtr();
 }
