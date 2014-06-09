@@ -22,6 +22,7 @@ ADD_INSTALLER_GROUP_COMPONENT(plugin_kinematic "kinematic" "Plugin offering skel
 ADD_INSTALLER_GROUP_COMPONENT(plugin_newCommunication "newCommunication" "Plugin offering motion database and services access" "" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_subject "subject" "Plugin supporting motion data organisation" "" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_dicom "dicom" "Plugin delivering dicom images support" "" "Full")
+ADD_INSTALLER_GROUP_COMPONENT(plugin_medusaExporter "dicom" "Plugin delivering dicom images support" "" "Full")
 
 END_INSTALLER_GROUP()
 
