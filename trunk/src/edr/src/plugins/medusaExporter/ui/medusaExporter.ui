@@ -38,7 +38,7 @@ color: white*/
            </font>
           </property>
           <property name="title">
-           <string>Data export</string>
+           <string>Data Export</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="3" column="1" colspan="2">
@@ -174,7 +174,7 @@ color: white*/
            </font>
           </property>
           <property name="title">
-           <string>Extract atributes from metadata</string>
+           <string>Atributes Export</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
            <item row="8" column="0" colspan="3">
@@ -183,7 +183,7 @@ color: white*/
               <bool>false</bool>
              </property>
              <property name="text">
-              <string>Export</string>
+              <string>Export attributes</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -244,7 +244,7 @@ color: white*/
            <item row="5" column="1" colspan="2">
             <widget class="QComboBox" name="chooseFormatComboBox">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>

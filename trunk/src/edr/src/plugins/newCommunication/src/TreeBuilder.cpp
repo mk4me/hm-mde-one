@@ -362,20 +362,24 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
         int count = wrappers.size();
 
         EventsCollectionConstPtr events = getEvents(motion);
-        
+        auto pushIfValid = [](std::list<core::HierarchyHelperPtr>& helpers, core::HierarchyHelperPtr helper) {
+            if (helper) {
+                helpers.push_back(helper);
+            }
+        };
         for (int i = 0; i < count; ++i) {
             VectorChannelConstPtr c = wrappers[i]->get();
             std::string channelName = c->getName();
             std::list<core::HierarchyHelperPtr> helpers;
             NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i], events));
-            helpers.push_back(channelHelper);
-            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 0));
-            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 1));
-            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 2));
-            helpers.push_back(createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Left));
-            helpers.push_back(createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
-            helpers.push_back(createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
-            helpers.push_back(createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
+            pushIfValid(helpers, channelHelper);
+            pushIfValid(helpers, allTFromSession(channelName, motion->getUnpackedSession(), 0));
+            pushIfValid(helpers, allTFromSession(channelName, motion->getUnpackedSession(), 1));
+            pushIfValid(helpers, allTFromSession(channelName, motion->getUnpackedSession(), 2));
+            pushIfValid(helpers, createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Left));
+            pushIfValid(helpers, createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
+            pushIfValid(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
+            pushIfValid(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
             core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getName()), desc, helpers));
             collectionItem->appendChild(channelItem);
         }

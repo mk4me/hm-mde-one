@@ -207,7 +207,7 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
         if (idx != -1) {
             std::string tag = image->getTag(td->tag);
             int col = index.column();
-            if (image->getNumLayerItems(tag) > idx ) {// && idx >= 0) { //! TODO: wczeœniej sprawdzxamy czy rozne od -1 wiec chyba mniej juz nigdy nie ma
+            if (image->getNumLayerItems(tag) > idx ) {
                 if (col == 0) {
                     auto result = value.toString();
                     if (!result.isEmpty()) {

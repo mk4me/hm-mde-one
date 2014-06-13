@@ -24,8 +24,10 @@ GRFSerie::GRFSerie( KinematicVisualizer * visualizer,
 	grfCollection = data->get();	
 
 	const IForcePlatformCollection& platforms = grfCollection->getPlatforms();
-	matrixTransform->addChild(createPlatformsGroup(platforms));
-	matrixTransform->addChild(createButterfly(grfCollection, this->maxLength));
+    if (!platforms.empty()) {
+        matrixTransform->addChild(createPlatformsGroup(platforms));
+        matrixTransform->addChild(createButterfly(grfCollection, this->maxLength));
+    }
 
 	for (auto it = platforms.begin(); it != platforms.end(); ++it) {
 		auto range = (*it)->getSteps();

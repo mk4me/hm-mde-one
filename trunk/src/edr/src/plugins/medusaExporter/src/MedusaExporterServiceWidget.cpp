@@ -55,7 +55,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
     QDir outDir(ui->exportFromLineEdit->text());
 
     if (!exportFrom.exists()) {
-        QMessageBox::warning(this, tr("Error"), tr("'Export from' directory does not exist"));
+        QMessageBox::warning(this, tr("Error"), tr("Data export doesn't exist. Please Export Data before Export Attributes"));
         return;
     }
 
@@ -87,7 +87,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
         disabler->addWidget(ui->exportFromButton);
         disabler->addWidget(ui->normalizePointsCheck);
         disabler->addWidget(ui->skipIdenticalComboBox);
-        disabler->addWidget(ui->chooseFormatComboBox);
+        //disabler->addWidget(ui->chooseFormatComboBox);
         disabler->addWidget(ui->curveDensitySpinBox);
         disabler->addWidget(ui->chooseUserComboBox);
         disabler->addWidget(ui->exportButton);
@@ -221,6 +221,7 @@ void medusaExporter::MedusaExporterServiceWidget::setExportFrom(const QString& d
 	ui->skipIdenticalComboBox->setEnabled(true);
 	ui->exportButton->setEnabled(true);
 	ui->chooseUserComboBox->setEnabled(true);
+    ui->chooseUserComboBox->clear();
 	ui->chooseUserComboBox->addItems(users);
 }
 
@@ -282,6 +283,9 @@ void medusaExporter::MedusaExporterServiceWidget::onClearMedusaExport()
         disabler->addWidget(ui->clearMedusaFolderButton);
         disabler->checkButton(ui->clearMedusaFolderButton);
         t->start();
+
+        ui->exportFromLineEdit->setText("");
+        ui->chooseUserComboBox->clear();
     }
 }
 

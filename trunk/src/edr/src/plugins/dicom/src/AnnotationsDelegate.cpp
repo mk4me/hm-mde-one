@@ -34,7 +34,7 @@ QWidget * AdnotationsDelegate::createEditor(QWidget *parent,
 		int idx = td->idx;
 		if (idx != -1) {
 			std::string tag = val->getTag(td->tag);
-			if (val->getNumLayerItems(tag) > idx ) {// && idx >= 0) { //! TODO: wczeœniej sprawdzxamy czy rozne od -1 wiec chyba mniej juz nigdy nie ma
+			if (val->getNumLayerItems(tag) > idx ) {
 				auto il = val->getLayerItem(tag, idx);
 				auto aidx = il->getAdnotationIdx();
 
@@ -117,7 +117,7 @@ void AdnotationsDelegate::setEditorData(QWidget *editor,
 		int idx = td->idx;
 		if (idx != -1) {
 			std::string tag = val->getTag(td->tag);
-			if (val->getNumLayerItems(tag) > idx ) {// && idx >= 0) { //! TODO: wczeœniej sprawdzxamy czy rozne od -1 wiec chyba mniej juz nigdy nie ma
+			if (val->getNumLayerItems(tag) > idx ) {
 				auto il = val->getLayerItem(tag, idx);
 				auto aidx = il->getAdnotationIdx();
 
@@ -151,7 +151,7 @@ void AdnotationsDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
 		int idx = td->idx;
 		if (idx != -1) {
 			std::string tag = val->getTag(td->tag);
-			if (val->getNumLayerItems(tag) > idx ) {// && idx >= 0) { //! TODO: wczeœniej sprawdzxamy czy rozne od -1 wiec chyba mniej juz nigdy nie ma
+			if (val->getNumLayerItems(tag) > idx ) {
 				auto il = val->getLayerItem(tag, idx);
 				auto aidx = il->getAdnotationIdx();
 
