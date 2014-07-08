@@ -14,7 +14,7 @@
 #include <map>
 #include <vector>
 #include <set>
-
+#include <tinyxml2.h>
 
 namespace kinematic {
 
