@@ -19,6 +19,7 @@
 #include <time.h>
 
 #if defined(WIN32)
+#define NOMINMAX
 #include <windows.h>
 #elif defined(__GNUC__)
 #else
