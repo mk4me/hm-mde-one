@@ -9,7 +9,7 @@ namespace webservices
 void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::MetaData & metadata)
 {    
     tinyxml2::XMLDocument document;
-    if (document.LoadFile(path.c_str()) == tinyxml2::XML_NO_ERROR) {
+    if (document.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR) {
         UTILS_ASSERT(false, "Blad wczytania pliku MotionMetadata");
     }
     tinyxml2::XMLHandle hDocument(&document);
@@ -29,7 +29,7 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
         while(session_goup_element) {
             MotionMetaData::SessionGroup sessionGroup;
             session_goup_element->QueryIntAttribute("SessionGroupID", &sessionGroup.sessionGroupID);
-            sessionGroup.sessionGroupName = session_goup_element->Attribute("SessionGroupName");
+            sessionGroup.sessionGroupName = utils::safeString( session_goup_element->Attribute("SessionGroupName"));
 
             metadata.sessionGroups[sessionGroup.sessionGroupID] = sessionGroup;
             session_goup_element = session_goup_element->NextSiblingElement();
@@ -41,7 +41,7 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
         tinyxml2::XMLElement* motion_kind_element = motion_kinds_element->FirstChildElement("MotionKind");
         while(motion_kind_element) {
             MotionMetaData::MotionKind motionKind;
-            motionKind.motionKindName = motion_kind_element->Attribute("MotionKindName");
+            motionKind.motionKindName = utils::safeString( motion_kind_element->Attribute("MotionKindName"));
 
             metadata.motionKinds.push_back(motionKind);
             motion_kind_element = motion_kind_element->NextSiblingElement();
@@ -54,7 +54,7 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
         while(lab_element) {
             MotionMetaData::Lab lab;
             lab_element->QueryIntAttribute("LabID", &lab.labID);
-            lab.labName = lab_element->Attribute("LabName");
+            lab.labName = utils::safeString( lab_element->Attribute("LabName"));
 
             metadata.labs[lab.labID] = lab;
             lab_element = lab_element->NextSiblingElement();
@@ -67,10 +67,10 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
         while(attribute_group_element) {
             MotionMetaData::AttributeGroup attributeGroup;
             attribute_group_element->QueryIntAttribute("AttributeGroupID", &attributeGroup.attributeGroupID);
-            attributeGroup.attributeGroupName = attribute_group_element->Attribute("AttributeGroupName");
+            attributeGroup.attributeGroupName = utils::safeString( attribute_group_element->Attribute("AttributeGroupName"));
 			{
 				std::string describedEntity;
-				describedEntity = attribute_group_element->Attribute("DescribedEntity");
+				describedEntity = utils::safeString( attribute_group_element->Attribute("DescribedEntity"));
 				attributeGroup.describedEntity = xmlWsdl::Entity::convert(describedEntity);
 			}
 
@@ -80,22 +80,22 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
                 tinyxml2::XMLElement* attr_element = attrs_element->FirstChildElement("Attribute");
                 while(attr_element) {
                     MotionMetaData::Attribute attribute;
-                    attribute.attributeName = attr_element->Attribute("AttributeName");
+                    attribute.attributeName = utils::safeString( attr_element->Attribute("AttributeName"));
 
 					{
 						std::string attributeType;
-						attributeType = attr_element->Attribute("AttributeType");
+						attributeType = utils::safeString( attr_element->Attribute("AttributeType"));
 						attribute.attributeType = xmlWsdl::AttributeType::convert(attributeType);
 					}
 
-                    attribute.unit = attr_element->Attribute("Unit");
+                    attribute.unit = utils::safeString( attr_element->Attribute("Unit"));
                     //EnumValues
                     /*tinyxml2::XMLElement* enum_values_element = attr_element->FirstChildElement("EnumValues");
                     if(enum_values_element) {
                         tinyxml2::XMLElement* enum_value_element = enum_values_element->FirstChildElement("Enumeration");
                         while(enum_value_element) {
                             communication::MotionMetaData::Enumeration enumeration;
-                            enumeration.enumValue = enum_value_element->Attribute("EnumValue");
+                            enumeration.enumValue = utils::safeString( enum_value_element->Attribute("EnumValue"));
 
                             attribute.enumValues.push_back(enumeration);
                             enum_value_element = enum_value_element->NextSiblingElement();
@@ -116,7 +116,7 @@ void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::M
 void MedicalMetadataParser::parseFile(const std::string & path, MedicalMetaData::MetaData & metadata)
 {
     tinyxml2::XMLDocument document;
-    if(!document.LoadFile(path.c_str())) {
+    if(document.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR) {
         UTILS_ASSERT(false, "Blad wczytania pliku MedicalMetadata");
     }
     tinyxml2::XMLHandle hDocument(&document);
@@ -136,7 +136,7 @@ void MedicalMetadataParser::parseFile(const std::string & path, MedicalMetaData:
         while(exam_type_element) {
             MedicalMetaData::ExamType examType;
             exam_type_element->QueryIntAttribute("ExamTypeID", &examType.examTypeID);
-            examType.name = exam_type_element->Attribute("ExamTypeName");
+            examType.name = utils::safeString( exam_type_element->Attribute("ExamTypeName"));
 
             metadata.examTypes[examType.examTypeID] = examType;
             exam_type_element = exam_type_element->NextSiblingElement();
@@ -149,7 +149,7 @@ void MedicalMetadataParser::parseFile(const std::string & path, MedicalMetaData:
         while(disorder_element) {
             MedicalMetaData::DisorderType disorderType;
             disorder_element->QueryIntAttribute("DisorderID", &disorderType.disorderTpeID);
-            disorderType.name = disorder_element->Attribute("DisorderName");
+            disorderType.name = utils::safeString( disorder_element->Attribute("DisorderName"));
 
             metadata.disorderTypes[disorderType.disorderTpeID] = disorderType;
             disorder_element = disorder_element->NextSiblingElement();

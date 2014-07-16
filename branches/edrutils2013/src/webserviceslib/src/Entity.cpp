@@ -330,16 +330,16 @@ public:
 
 			Attribute attribute;
 
-			attribute.name = element->Attribute("Name");
-			attribute.value = element->Attribute("Value");
+			attribute.name = utils::safeString( element->Attribute("Name"));
+			attribute.value = utils::safeString( element->Attribute("Value"));
 
 			std::string entity;
-			entity = element->Attribute("Value");
+			entity = utils::safeString( element->Attribute("Value"));
 			attribute.entity = Entity::convert(entity);
 
-            attribute.attributeGroup = element->Attribute("AttributeGroup ");
+            attribute.attributeGroup = utils::safeString( element->Attribute("AttributeGroup "));
 
-			std::string type = element->Attribute("Type");
+			std::string type = utils::safeString( element->Attribute("Type"));
 			attribute.type = AttributeType::convert(type);
 
 			locAttributes.push_back(attribute);
@@ -457,10 +457,10 @@ public:
 	static void extractFile(tinyxml2::XMLElement * element, FileDetails & file)
 	{
 		element->QueryIntAttribute("FileID", &file.id);
-		file.name = element->Attribute("FileName");
-		file.description = element->Attribute("FileDescription");
-		file.subdirPath = element->Attribute("SubdirPath");
-		file.attributeName = element->Attribute("AttributeName");		
+		file.name = utils::safeString( element->Attribute("FileName"));
+		file.description = utils::safeString( element->Attribute("FileDescription"));
+		file.subdirPath = utils::safeString( element->Attribute("SubdirPath"));
+		file.attributeName = utils::safeString( element->Attribute("AttributeName"));		
 	}
 
 	static void extractMeasurementConf(tinyxml2::XMLElement * element, MeasurementConfDetails & mcDetails)
@@ -717,8 +717,8 @@ const PerformerList webservices::xmlWsdl::parsePerfomers(const std::string & xml
 		PerformerDetails pd;
 
 		performerDetails->QueryIntAttribute("PerformerID", &pd.id);
-		pd.firstName = performerDetails->Attribute("FirstName");
-		pd.lastName = performerDetails->Attribute("LastName");
+		pd.firstName = utils::safeString( performerDetails->Attribute("FirstName"));
+		pd.lastName = utils::safeString( performerDetails->Attribute("LastName"));
 
 		ret.push_back(pd);
 
@@ -818,14 +818,14 @@ const SessionList webservices::xmlWsdl::parseSessions(const std::string & xmlRes
 		_element->QueryIntAttribute("SessionID", &sd.id);
 		_element->QueryIntAttribute("UserID", &sd.userID);
 		_element->QueryIntAttribute("LabID", &sd.labID);
-        sd.motionKind = _element->Attribute("MotionKind");
+        sd.motionKind = utils::safeString( _element->Attribute("MotionKind"));
 
-        std::string sessionDate = _element->Attribute("SessionDate");
+        std::string sessionDate = utils::safeString( _element->Attribute("SessionDate"));
 		
 		sd.dateTime = toTime(sessionDate);
 
-		sd.description = _element->Attribute("SessionDescription");
-		sd.label = _element->Attribute("SessionLabel ");
+		sd.description = utils::safeString( _element->Attribute("SessionDescription"));
+		sd.label = utils::safeString( _element->Attribute("SessionLabel "));
 
 		ret.push_back(sd);
 
@@ -1003,7 +1003,7 @@ const TrialList webservices::xmlWsdl::parseTrials(const std::string & xmlRespons
 
 		_element->QueryIntAttribute("TrialID", &td.id);
 		_element->QueryIntAttribute("SessionID", &td.sessionID);
-		td.description = _element->Attribute("TrialDescription");		
+		td.description = utils::safeString( _element->Attribute("TrialDescription"));		
 
 		ret.push_back(td);
 

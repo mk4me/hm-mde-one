@@ -16,7 +16,7 @@ void parseFilesBranch( tinyxml2::XMLElement* trial_element, IncrementalBranchSha
 void IncrementalBranchShallowCopyParser::parseFile( const std::string & path, IncrementalBranchShallowCopy& shallowCopy )
 {
     tinyxml2::XMLDocument document;
-    if(!document.LoadFile(path.c_str())) {
+    if(document.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR) {
         UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
     }
 
@@ -75,11 +75,11 @@ void parseBranch( tinyxml2::XMLHandle &hParent, IncrementalBranchShallowCopy::Sh
     //                MotionShallowCopy::Attrs::key_type name;
     //                MotionShallowCopy::Attrs::mapped_type value;
 
-    //                name = attr_element->Attribute("Name");
-    //                value = attr_element->Attribute("Value");
+    //                name = utils::safeString(attr_element->Attribute("Name"));
+    //                value = utils::safeString(attr_element->Attribute("Value"));
 
     //                performer->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
-    //                attr_element = attr_element->NextSiblingElement();
+    //                attr_element = utils::safeString(attr_element->NextSiblingElement());
     //            }
     //        }
 
@@ -112,16 +112,16 @@ void parseBranch( tinyxml2::XMLHandle &hParent, IncrementalBranchShallowCopy::Sh
 
     //        session_element->QueryIntAttribute("UserID", &session->userID);
     //        session_element->QueryIntAttribute("LabID", &session->labID);
-    //        session->motionKind = session_element->Attribute("MotionKind");
+    //        session->motionKind = utils::safeString(session_element->Attribute("MotionKind"));
     //        {
     //            std::string sessionDate;
-    //            sessionDate = session_element->Attribute("SessionDate");
+    //            sessionDate = utils::safeString(session_element->Attribute("SessionDate"));
     //            session->sessionDate = toTime(sessionDate);
     //        }
-    //        session->sessionName = session_element->Attribute("SessionName");
-    //        session->tags = session_element->Attribute("Tags");
-    //        session->sessionDescription = session_element->Attribute("SessionDescription");
-    //        session->emgConf = session_element->Attribute("EMGConf");
+    //        session->sessionName = utils::safeString(session_element->Attribute("SessionName"));
+    //        session->tags = utils::safeString(session_element->Attribute("Tags"));
+    //        session->sessionDescription = utils::safeString(session_element->Attribute("SessionDescription"));
+    //        session->emgConf = utils::safeString(session_element->Attribute("EMGConf"));
 
     //        //Attrs
     //        tinyxml2::XMLElement* attrs_element = session_element->FirstChildElement("Attrs");
@@ -131,8 +131,8 @@ void parseBranch( tinyxml2::XMLHandle &hParent, IncrementalBranchShallowCopy::Sh
     //                MotionShallowCopy::Attrs::key_type name;
     //                MotionShallowCopy::Attrs::mapped_type value;
 
-    //                name = attr_element->Attribute("Name");
-    //                value = attr_element->Attribute("Value");
+    //                name = utils::safeString( attr_element->Attribute("Name"));
+    //                value = utils::safeString( attr_element->Attribute("Value"));
 
     //                session->attrs.insert(MotionShallowCopy::Attrs::value_type(name,value));
 
@@ -167,9 +167,9 @@ void parseBranch( tinyxml2::XMLHandle &hParent, IncrementalBranchShallowCopy::Sh
     //                file->fileSize = 0;
     //                unsigned int s = 0;
 
-    //                file->fileName = file_element->Attribute("FileName");
-    //                file->fileDescription = file_element->Attribute("FileDescription");
-    //                file->subdirPath = file_element->Attribute("SubdirPath");
+    //                file->fileName = utils::safeString( file_element->Attribute("FileName"));
+    //                file->fileDescription = utils::safeString( file_element->Attribute("FileDescription"));
+    //                file->subdirPath = utils::safeString( file_element->Attribute("SubdirPath"));
     //                file_element->QueryUnsignedAttribute("Size", &s);
     //                file->fileSize = s;
 
@@ -229,8 +229,8 @@ void parseBranch( tinyxml2::XMLHandle &hParent, IncrementalBranchShallowCopy::Sh
 
             //trial->session->trials[trial->trialID] = trial;
 
-            trial.trialName = trial_element->Attribute("TrialName");
-            trial.trialDescription = trial_element->Attribute("TrialDescription");
+            trial.trialName = utils::safeString( trial_element->Attribute("TrialName"));
+            trial.trialDescription = utils::safeString( trial_element->Attribute("TrialDescription"));
 
             //Attrs
             tinyxml2::XMLElement* attrs_element = trial_element->FirstChildElement("Attrs");
@@ -240,8 +240,8 @@ void parseBranch( tinyxml2::XMLHandle &hParent, IncrementalBranchShallowCopy::Sh
                     MotionShallowCopy::Attrs::key_type name;
                     MotionShallowCopy::Attrs::mapped_type value;
 
-                    name = attr_element->Attribute("Name");
-                    value = attr_element->Attribute("Value");
+                    name = utils::safeString( attr_element->Attribute("Name"));
+                    value = utils::safeString( attr_element->Attribute("Value"));
 
                     trial.attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
 
@@ -311,8 +311,8 @@ void parseBranch( tinyxml2::XMLHandle &hParent, IncrementalBranchShallowCopy::Sh
     //                MotionShallowCopy::Attrs::key_type name;
     //                MotionShallowCopy::Attrs::mapped_type value;
 
-    //                name = attr_element->Attribute("Name");
-    //                value = attr_element->Attribute("Value");
+    //                name = utils::safeString( attr_element->Attribute("Name"));
+    //                value = utils::safeString( attr_element->Attribute("Value"));
 
     //                performerConf->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
 
@@ -337,9 +337,9 @@ void parseFilesBranch( tinyxml2::XMLElement* files_element, IncrementalBranchSha
         file.fileSize = 0;
         unsigned int s = 0;
 
-        file.fileName = file_element->Attribute("FileName");
-        file.fileDescription = file_element->Attribute("FileDescription");
-        file.subdirPath = file_element->Attribute("SubdirPath");
+        file.fileName = utils::safeString( file_element->Attribute("FileName"));
+        file.fileDescription = utils::safeString( file_element->Attribute("FileDescription"));
+        file.subdirPath = utils::safeString( file_element->Attribute("SubdirPath"));
         file_element->QueryUnsignedAttribute("Size", &s);
         file.fileSize = s;
 

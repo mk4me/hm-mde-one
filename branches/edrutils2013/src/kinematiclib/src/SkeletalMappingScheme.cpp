@@ -67,8 +67,7 @@ namespace kinematic {
 	void SkeletonMappingScheme::loadFromXML(const std::string& filename, std::vector<SkeletonMappingSchemePtr>& outSchemes)
 	{
 		tinyxml2::XMLDocument doc;
-		bool loadOkay = doc.LoadFile(filename.c_str());
-		if (loadOkay) {
+		if (doc.LoadFile(filename.c_str()) == tinyxml2::XML_SUCCESS) {
 			readNode(&doc, outSchemes);
 		} else {
 			throw UnableToOpenFileException(filename);
